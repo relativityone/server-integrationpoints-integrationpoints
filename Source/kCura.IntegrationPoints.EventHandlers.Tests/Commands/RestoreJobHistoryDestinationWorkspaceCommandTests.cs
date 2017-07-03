@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
@@ -14,9 +15,12 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 {
 	public class RestoreJobHistoryDestinationWorkspaceCommandTests : TestBase
 	{
+		private const int _WORKSPACE_ARTIFACT_ID = 623424;
+
 		private IRSAPIService _rsapiService;
 		private IDestinationParser _destinationParser;
 		private IFederatedInstanceManager _federatedInstanceManager;
+		private IWorkspaceManager _workspaceManager;
 		private RestoreJobHistoryDestinationWorkspaceCommand _command;
 
 		public override void SetUp()
@@ -24,7 +28,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 			_rsapiService = Substitute.For<IRSAPIService>();
 			_destinationParser = new DestinationParser();
 			_federatedInstanceManager = Substitute.For<IFederatedInstanceManager>();
-			_command = new RestoreJobHistoryDestinationWorkspaceCommand(_rsapiService, _destinationParser, _federatedInstanceManager);
+			_workspaceManager = Substitute.For<IWorkspaceManager>();
+			_command = new RestoreJobHistoryDestinationWorkspaceCommand(_rsapiService, _destinationParser, _federatedInstanceManager, _workspaceManager, _WORKSPACE_ARTIFACT_ID);
 		}
 
 		[Test]
@@ -111,6 +116,38 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 
 			// ASSERT
 			_rsapiService.JobHistoryLibrary.Received(1).Query(Arg.Any<Query<RDO>>());
+		}
+
+		[Test(Description = "Case for old version of RIP")]
+		public void ItShouldHandleEmptyDestinationWorkspace()
+		{
+			// ARRANGE
+			var expectedWorkspaceName = "current_workspace";
+
+			var jobHistories = new List<JobHistory>
+			{
+				new JobHistory
+				{
+					DestinationWorkspace = null,
+					DestinationInstance = null
+				}
+			};
+
+			_rsapiService.JobHistoryLibrary.Query(Arg.Any<Query<RDO>>()).Returns(jobHistories);
+
+			_workspaceManager.RetrieveWorkspace(_WORKSPACE_ARTIFACT_ID).Returns(new WorkspaceDTO
+			{
+				Name = expectedWorkspaceName
+			});
+
+			// ACT
+			_command.Execute();
+
+			// ASSERT
+			_rsapiService.JobHistoryLibrary.Received(1).Query(Arg.Any<Query<RDO>>());
+			_rsapiService.JobHistoryLibrary.Received(1)
+				.Update(Arg.Is<JobHistory>(x => x.DestinationWorkspace == $"{expectedWorkspaceName} - {_WORKSPACE_ARTIFACT_ID}" &&
+												x.DestinationInstance == FederatedInstanceManager.LocalInstance.Name));
 		}
 	}
 }
