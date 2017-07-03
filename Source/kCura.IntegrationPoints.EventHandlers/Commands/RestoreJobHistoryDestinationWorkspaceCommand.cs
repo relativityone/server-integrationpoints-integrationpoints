@@ -44,15 +44,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 				}
 				else
 				{
-					var elements = _destinationParser.GetElements(jobHistory.DestinationWorkspace);
-					string instanceName = GetInstanceName(elements);
-					int? instanceArtifactId = GetInstanceArtifactId(instanceName);
-					string workspaceName = GetWorkspaceName(elements);
-					int workspaceArtifactId = GetWorkspaceArtifactId(elements);
-
-					jobHistory.DestinationWorkspace = Utils.GetFormatForWorkspaceOrJobDisplay(workspaceName, workspaceArtifactId);
-					jobHistory.DestinationInstance = Utils.GetFormatForWorkspaceOrJobDisplay(instanceName, instanceArtifactId);
-					_rsapiService.JobHistoryLibrary.Update(jobHistory);
+					UpdateJobHistoryBasedOnDestinationWorkspace(jobHistory);
 				}
 			}
 		}
@@ -66,6 +58,19 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 			//Old version of RIP could import data to the current workspace only
 			jobHistory.DestinationWorkspace = Utils.GetFormatForWorkspaceOrJobDisplay(_workspaceManager.RetrieveWorkspace(_workspaceArtifactId).Name, _workspaceArtifactId);
 			jobHistory.DestinationInstance = FederatedInstanceManager.LocalInstance.Name;
+			_rsapiService.JobHistoryLibrary.Update(jobHistory);
+		}
+
+		private void UpdateJobHistoryBasedOnDestinationWorkspace(JobHistory jobHistory)
+		{
+			var elements = _destinationParser.GetElements(jobHistory.DestinationWorkspace);
+			string instanceName = GetInstanceName(elements);
+			int? instanceArtifactId = GetInstanceArtifactId(instanceName);
+			string workspaceName = GetWorkspaceName(elements);
+			int workspaceArtifactId = GetWorkspaceArtifactId(elements);
+
+			jobHistory.DestinationWorkspace = Utils.GetFormatForWorkspaceOrJobDisplay(workspaceName, workspaceArtifactId);
+			jobHistory.DestinationInstance = Utils.GetFormatForWorkspaceOrJobDisplay(instanceName, instanceArtifactId);
 			_rsapiService.JobHistoryLibrary.Update(jobHistory);
 		}
 
