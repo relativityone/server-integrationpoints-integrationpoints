@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Core.Managers.Implementations;
+﻿using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
@@ -13,8 +14,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 		{
 			IRSAPIService rsapiService = new RSAPIService(helper, workspaceArtifactId);
 			IDestinationParser destinationParser = new DestinationParser();
-			IFederatedInstanceManager federatedInstanceManager = new FederatedInstanceManager(new RepositoryFactory(helper, helper.GetServicesManager()));
-			return new RestoreJobHistoryDestinationWorkspaceCommand(rsapiService, destinationParser, federatedInstanceManager);
+			var repositoryFactory = new RepositoryFactory(helper, helper.GetServicesManager());
+			IFederatedInstanceManager federatedInstanceManager = new FederatedInstanceManager(repositoryFactory);
+			IWorkspaceManager workspaceManager = new WorkspaceManager(repositoryFactory);
+			return new RestoreJobHistoryDestinationWorkspaceCommand(rsapiService, destinationParser, federatedInstanceManager, workspaceManager, workspaceArtifactId);
 		}
 	}
 }
