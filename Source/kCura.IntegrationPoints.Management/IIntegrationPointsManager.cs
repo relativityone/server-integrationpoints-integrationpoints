@@ -2,6 +2,6 @@
 {
 	public interface IIntegrationPointsManager
 	{
-		void Execute();
+		void Start();
 	}
 }

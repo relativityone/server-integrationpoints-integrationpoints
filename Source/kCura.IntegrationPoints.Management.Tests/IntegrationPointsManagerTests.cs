@@ -13,22 +13,22 @@ namespace kCura.IntegrationPoints.Management.Tests
 	{
 		private IntegrationPointsManager _instance;
 		private IAPILog _logger;
-		private IList<IMonitoring> _monitoring;
+		private IList<IManagerTask> _monitoring;
 
 		public override void SetUp()
 		{
 			_logger = Substitute.For<IAPILog>();
-			_monitoring = new List<IMonitoring>();
+			_monitoring = new List<IManagerTask>();
 
 			_instance = new IntegrationPointsManager(_logger, _monitoring);
 		}
 
 		[Test]
-		public void ItShouldRunAllMonitoringIndependently()
+		public void ItShouldRunAllTasksIndependently()
 		{
-			var monitoringValid1 = Substitute.For<IMonitoring>();
-			var monitoringThrowingException = Substitute.For<IMonitoring>();
-			var monitoringValid2 = Substitute.For<IMonitoring>();
+			var monitoringValid1 = Substitute.For<IManagerTask>();
+			var monitoringThrowingException = Substitute.For<IManagerTask>();
+			var monitoringValid2 = Substitute.For<IManagerTask>();
 
 			_monitoring.Add(monitoringValid1);
 			_monitoring.Add(monitoringThrowingException);
@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Management.Tests
 			monitoringThrowingException.When(x => x.Run()).Throw<Exception>();
 
 			// ACT
-			_instance.Execute();
+			_instance.Start();
 
 			// ASSERT
 			foreach (var monitoring in _monitoring)

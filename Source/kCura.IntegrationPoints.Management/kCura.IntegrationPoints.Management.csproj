@@ -198,7 +198,7 @@
     <Compile Include="Installers\IntegrationPointsManagerInstaller.cs" />
     <Compile Include="IntegrationPointsManager.cs" />
     <Compile Include="IntegrationPointsManagerAgent.cs" />
-    <Compile Include="Monitoring\IMonitoring.cs" />
+    <Compile Include="Monitoring\IManagerTask.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="LICENSE.txt" />

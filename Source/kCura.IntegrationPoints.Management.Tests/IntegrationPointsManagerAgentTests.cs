@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.Management.Tests
 		}
 
 		[Test]
-		public void ItShouldExecuteManager()
+		public void ItShouldStartManager()
 		{
 			var manager = Substitute.For<IIntegrationPointsManager>();
 
@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.Management.Tests
 			_integrationPointsManagerAgent.Execute();
 
 			// ASSERT
-			manager.Received(1).Execute();
+			manager.Received(1).Start();
 		}
 
 		[Test]

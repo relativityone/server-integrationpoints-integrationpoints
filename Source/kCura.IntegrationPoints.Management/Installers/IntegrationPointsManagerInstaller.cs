@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.Management.Installers
 			container.Register(Component.For<IIntegrationPointsManager>().ImplementedBy<IntegrationPointsManager>().LifestyleTransient());
 			container.Register(Component.For<IAPILog>().UsingFactoryMethod(k => _helper.GetLoggerFactory().GetLogger()).LifestyleSingleton());
 
-			container.Register(Classes.FromAssembly(typeof(IntegrationPointsManagerInstaller).Assembly).BasedOn<IMonitoring>().WithService.FromInterface().LifestyleTransient());
+			container.Register(Classes.FromAssembly(typeof(IntegrationPointsManagerInstaller).Assembly).BasedOn<IManagerTask>().WithService.FromInterface().LifestyleTransient());
 		}
 	}
 }

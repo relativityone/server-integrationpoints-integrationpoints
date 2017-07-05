@@ -1,6 +1,6 @@
 ﻿namespace kCura.IntegrationPoints.Management.Monitoring
 {
-	public interface IMonitoring
+	public interface IManagerTask
 	{
 		void Run();
 	}

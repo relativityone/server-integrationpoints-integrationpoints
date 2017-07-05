@@ -20,6 +20,8 @@ namespace kCura.IntegrationPoints.Manager
 		private readonly IContainerFactory _containerFactory;
 		internal virtual IAPILog Logger => Helper.GetLoggerFactory().GetLogger();
 
+		public override string Name => _AGENT_NAME;
+
 		public IntegrationPointsManagerAgent() : this(new ContainerFactory())
 		{
 		}
@@ -29,25 +31,23 @@ namespace kCura.IntegrationPoints.Manager
 			_containerFactory = containerFactory;
 		}
 
-		public override string Name => _AGENT_NAME;
-
 		public override void Execute()
 		{
 			RaiseMessage("Started", _LOGGING_MESSAGE_LEVEL);
 
-			ExecuteInstanced();
+			StartIntegrationPointsManager();
 
 			RaiseMessage("Completed.", _LOGGING_MESSAGE_LEVEL);
 		}
 
-		private void ExecuteInstanced()
+		private void StartIntegrationPointsManager()
 		{
 			try
 			{
 				using (var container = _containerFactory.Create(Helper))
 				{
 					var integrationPointsManager = container.Resolve<IIntegrationPointsManager>();
-					integrationPointsManager.Execute();
+					integrationPointsManager.Start();
 				}
 			}
 			catch (Exception ex)
