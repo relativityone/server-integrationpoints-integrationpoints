@@ -502,6 +502,7 @@
           <Assembly>lib\kCura.DocumentTransferProvider.dll</Assembly>
           <Assembly>lib\kCura.IntegrationPoints.Services.dll</Assembly>
           <Assembly>lib\kCura.IntegrationPoints.Services.Interfaces.Private.dll</Assembly>
+          <Assembly>lib\kCura.IntegrationPoints.Management.dll</Assembly>
           <Assembly>lib\Castle.Windsor.dll</Assembly>
           <Assembly>lib\Newtonsoft.Json.dll</Assembly>
           <Assembly>lib\kCura.IntegrationPoints.Security.dll</Assembly>
