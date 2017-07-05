@@ -192,6 +192,16 @@
             <Platform>x64</Platform>
           </Platforms>
         </Project>
+        <Project path="Source\kCura.IntegrationPoints.Management\kCura.IntegrationPoints.Management.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
+        <Project path="Source\kCura.IntegrationPoints.Management.Tests\kCura.IntegrationPoints.Management.Tests.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
+        </Project>
         <Project path="Source\kCura.IntegrationPoints.SourceProviderInstaller\kCura.IntegrationPoints.SourceProviderInstaller.csproj">
           <Platforms>
             <Platform>x64</Platform>
@@ -469,6 +479,7 @@
       <DLL type="x64">Source\kCura.IntegrationPoints.FtpProvider.Parser.Tests\bin\x64\kCura.IntegrationPoints.FtpProvider.Parser.Tests.dll</DLL>
       <DLL type="x64">Source\kCura.IntegrationPoints.FtpProvider.Tests\bin\x64\kCura.IntegrationPoints.FtpProvider.Tests.dll</DLL>
       <DLL type="x64">Source\kCura.IntegrationPoints.Services.Tests\bin\x64\kCura.IntegrationPoints.Services.Tests.dll</DLL>
+      <DLL type="x64">Source\kCura.IntegrationPoints.Management.Tests\bin\x64\kCura.IntegrationPoints.Management.Tests.dll</DLL>
       <DLL type="x64">Source\kCura.IntegrationPoints.ImportProvider.Parser.Tests\bin\x64\kCura.IntegrationPoints.ImportProvider.Parser.Tests.dll</DLL>
       <DLL type="x64">Source\kCura.IntegrationPoints.LDAPProvider.Tests\bin\x64\kCura.IntegrationPoints.LDAPProvider.Tests.dll</DLL>
       <DLL type="x64">Source\kCura.IntegrationPoints.Domain.Tests\bin\x64\kCura.IntegrationPoints.Domain.Tests.dll</DLL>
