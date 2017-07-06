@@ -192,5 +192,10 @@ namespace kCura.IntegrationPoints.Core
 			Relativity = 1,
 			LoadFile = 2
 		}
+
+		public static class Export
+		{
+			public const string TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME = "Text Precedence";
+		}
 	}
 }
