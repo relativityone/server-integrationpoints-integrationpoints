@@ -684,6 +684,7 @@
     <Compile Include="Validation\IntegrationPointProviderValidationException.cs" />
     <Compile Include="Validation\IntegrationPointProviderValidationMessages.cs" />
     <Compile Include="Validation\Abstract\BasePermissionValidator.cs" />
+    <Compile Include="Validation\Parts\ImportProductionValidator.cs" />
     <Compile Include="Validation\Parts\ImportPermissionValidator.cs" />
     <Compile Include="Validation\Parts\ArtifactValidator.cs" />
     <Compile Include="Validation\Parts\IntegrationPointTypeValidator.cs" />
