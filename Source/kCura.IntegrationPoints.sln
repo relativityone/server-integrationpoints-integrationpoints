@@ -192,6 +192,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.LDA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Domain.Tests", "kCura.IntegrationPoints.Domain.Tests\kCura.IntegrationPoints.Domain.Tests.csproj", "{16F7FFEC-DE2D-4656-BA37-65A854EBEFCE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Management", "kCura.IntegrationPoints.Management\kCura.IntegrationPoints.Management.csproj", "{740D99BE-11AF-4476-BE13-09EE54F664A4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Management.Tests", "kCura.IntegrationPoints.Management.Tests\kCura.IntegrationPoints.Management.Tests.csproj", "{23B046F0-B59B-4D56-9F2F-3D6EE25BDDB5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -614,6 +618,18 @@ Global
 		{16F7FFEC-DE2D-4656-BA37-65A854EBEFCE}.Release|Any CPU.ActiveCfg = Release|x64
 		{16F7FFEC-DE2D-4656-BA37-65A854EBEFCE}.Release|x64.ActiveCfg = Release|x64
 		{16F7FFEC-DE2D-4656-BA37-65A854EBEFCE}.Release|x64.Build.0 = Release|x64
+		{740D99BE-11AF-4476-BE13-09EE54F664A4}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{740D99BE-11AF-4476-BE13-09EE54F664A4}.Debug|x64.ActiveCfg = Debug|x64
+		{740D99BE-11AF-4476-BE13-09EE54F664A4}.Debug|x64.Build.0 = Debug|x64
+		{740D99BE-11AF-4476-BE13-09EE54F664A4}.Release|Any CPU.ActiveCfg = Release|x64
+		{740D99BE-11AF-4476-BE13-09EE54F664A4}.Release|x64.ActiveCfg = Release|x64
+		{740D99BE-11AF-4476-BE13-09EE54F664A4}.Release|x64.Build.0 = Release|x64
+		{23B046F0-B59B-4D56-9F2F-3D6EE25BDDB5}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{23B046F0-B59B-4D56-9F2F-3D6EE25BDDB5}.Debug|x64.ActiveCfg = Debug|x64
+		{23B046F0-B59B-4D56-9F2F-3D6EE25BDDB5}.Debug|x64.Build.0 = Debug|x64
+		{23B046F0-B59B-4D56-9F2F-3D6EE25BDDB5}.Release|Any CPU.ActiveCfg = Release|x64
+		{23B046F0-B59B-4D56-9F2F-3D6EE25BDDB5}.Release|x64.ActiveCfg = Release|x64
+		{23B046F0-B59B-4D56-9F2F-3D6EE25BDDB5}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -661,5 +677,6 @@ Global
 		{D58E7906-E0C5-4138-BE22-D3A300057EB6} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}
 		{2034058F-F57F-411A-9699-87BBD72F1598} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}
 		{16F7FFEC-DE2D-4656-BA37-65A854EBEFCE} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}
+		{23B046F0-B59B-4D56-9F2F-3D6EE25BDDB5} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}
 	EndGlobalSection
 EndGlobal
