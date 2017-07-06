@@ -562,6 +562,8 @@
     <Compile Include="Helpers\LongPathFile.cs" />
     <Compile Include="Helpers\Implementations\MultiObjectSavedSearchCondition.cs" />
     <Compile Include="IServiceManagerProvider.cs" />
+    <Compile Include="Queries\IGetSourceProviderRdoByApplicationIdentifier.cs" />
+    <Compile Include="Queries\IGetSourceProviderRdoByIdentifier.cs" />
     <Compile Include="ServiceManagerProvider.cs" />
     <Compile Include="IContextContainer.cs" />
     <Compile Include="Factories\IContextContainerFactory.cs" />
