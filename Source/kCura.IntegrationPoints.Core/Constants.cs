@@ -121,6 +121,12 @@ namespace kCura.IntegrationPoints.Core
 
 				#endregion
 
+				#region Healthcheck
+
+				public const string APM_HEALTHCHECK = "IntegrationPoints.HealthCheck";
+
+				#endregion
+
 			}
 
 			public class SourceProviders
