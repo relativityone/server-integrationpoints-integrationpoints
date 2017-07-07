@@ -1,17 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
+using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using NUnit.Framework;
 
@@ -25,6 +31,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		private const string _FIELDMAP = "Map";
 		private const int _ADMIN_USER_ID = 9;
 		private const string _REALTIVITY_SERVICE_ACCOUNT_FULL_NAME = "Service Account, Relativity";
+		private const string _INTEGRATION_POINT_PROVIDER_VALIDATION_EXCEPTION_MESSAGE = "Integration Points provider validation failed, please review result property for the details.";
 		private DestinationProvider _destinationProvider;
 		private IIntegrationPointService _integrationPointService;
 		private IRepositoryFactory _repositoryFactory;
@@ -47,7 +54,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		#region UpdateProperties
 
 		[Test]
-		[Ignore("Test doesn't work and needs fix")]
 		public void SaveIntegration_UpdateNothing()
 		{
 			const string name = "Resaved Rip";
@@ -59,7 +65,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		}
 
 		[Test]
-		[Ignore("Test doesn't work and needs fix")]
 		public void SaveIntegration_UpdateName_OnRanIp_ErrorCase()
 		{
 			const string name = "Update Name - OnRanIp";
@@ -72,14 +77,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		}
 
 		[Test]
-		[Ignore("Test doesn't work and needs fix")]
 		public void SaveIntegration_UpdateMap_OnRanIp()
 		{
 			const string name = "Update Map - OnRanIp";
 			IntegrationPointModel originalModel = CreateIntegrationPointThatIsAlreadyRunModel(name);
 			IntegrationPointModel defaultModel = CreateOrUpdateIntegrationPoint(originalModel);
 
-			defaultModel.Map = "Blahh";
+			defaultModel.Map = CreateSampleFieldsMapWithLongTextField();
 
 			IntegrationPointModel newModel = CreateOrUpdateIntegrationPoint(defaultModel);
 			ValidateModel(originalModel, newModel, new string[] { _FIELDMAP });
@@ -90,44 +94,48 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		}
 
 		[Test]
-		[Ignore("Test doesn't work and needs fix")]
 		public void SaveIntegration_UpdateConfig_OnNewRip()
 		{
+			//Arrange
 			const string name = "Update Source Config - SavedSearch - OnNewRip";
 			IntegrationPointModel originalModel = CreateIntegrationPointThatIsAlreadyRunModel(name);
 			IntegrationPointModel defaultModel = CreateOrUpdateIntegrationPoint(originalModel);
 
 			int newSavedSearch = SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactId, name);
-			defaultModel.SourceConfiguration = CreateSourceConfig(newSavedSearch, SourceWorkspaceArtifactId);
+			defaultModel.SourceConfiguration = CreateSourceConfig(newSavedSearch, SourceWorkspaceArtifactId, SourceConfiguration.ExportType.SavedSearch);
 
-			Assert.Throws<Exception>(() => CreateOrUpdateIntegrationPoint(defaultModel), "Unable to save Integration Point: Source Configuration cannot be changed once the Integration Point has been run");
+			//Act & Assert
+			Assert.DoesNotThrow(() => CreateOrUpdateIntegrationPoint(defaultModel));
 		}
 
 		[Test]
-		[Ignore("Test doesn't work and needs fix")]
 		public void SaveIntegration_UpdateName_OnNewRip()
 		{
+			//Arrange
 			const string name = "Update Name - OnNewRip";
 			IntegrationPointModel originalModel = CreateIntegrationPointThatIsAlreadyRunModel(name);
 			IntegrationPointModel defaultModel = CreateOrUpdateIntegrationPoint(originalModel);
 
 			defaultModel.Name = name + " 2";
 
+			//Act & Assert
 			Assert.Throws<Exception>(() => CreateOrUpdateIntegrationPoint(defaultModel), "Unable to save Integration Point: Name cannot be changed once the Integration Point has been run");
 		}
 
 		[Test]
-		[Ignore("Test doesn't work and needs fix")]
 		public void SaveIntegration_UpdateMap_OnNewRip()
 		{
+			//Arrange
 			const string name = "Update Map - OnNewRip";
 			IntegrationPointModel originalModel = CreateIntegrationPointThatIsAlreadyRunModel(name);
 			IntegrationPointModel defaultModel = CreateOrUpdateIntegrationPoint(originalModel);
 
-			defaultModel.Map = "New Map string";
+			defaultModel.Map = CreateSampleFieldsMapWithLongTextField();
 
+			//Act
 			IntegrationPointModel newModel = CreateOrUpdateIntegrationPoint(defaultModel);
 
+			//Assert
 			ValidateModel(originalModel, newModel, new[] { _FIELDMAP });
 
 			Audit audit = this.GetLastAuditsForIntegrationPoint(defaultModel.Name, 1).First();
@@ -165,9 +173,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 				EnableScheduler = true,
 				StartDate = DateTime.UtcNow.ToString("MM/dd/yyyy"),
 				EndDate = DateTime.UtcNow.ToString("MM/dd/yyyy"),
-				ScheduledTime = DateTime.UtcNow.Hour + ":" + DateTime.UtcNow.AddMinutes(1),
+				ScheduledTime = DateTime.UtcNow.ToString("HH") + ":" + DateTime.UtcNow.AddMinutes(1).ToString("mm"),
 				Reoccur = 0,
-				SelectedFrequency = ScheduleInterval.None.ToString()
+				SelectedFrequency = ScheduleInterval.None.ToString(),
+				TimeZoneId = TimeZoneInfo.Utc.Id
 			};
 			IntegrationPointModel modifiedIntegrationPoint = CreateOrUpdateIntegrationPoint(integrationPoint);
 
@@ -297,12 +306,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		}
 
 		[Test]
-		[Ignore("Test doesn't work and needs fix")]
 		public void CreateAndRunIntegrationPoint_ScheduledIntegrationPoint_GoldFlow()
 		{
 			//Arrange
 
 			DateTime utcNow = DateTime.UtcNow;
+			const int schedulerRunTimeDelayMinutes = 2;
 
 			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
@@ -318,8 +327,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 					EnableScheduler = true,
 					StartDate = utcNow.ToString("MM/dd/yyyy"),
 					EndDate = utcNow.AddDays(1).ToString("MM/dd/yyyy"),
-					ScheduledTime = utcNow.ToString("HH") + ":" + utcNow.AddMinutes(1).ToString("mm"),
+					ScheduledTime = utcNow.ToString("HH") + ":" + utcNow.AddMinutes(schedulerRunTimeDelayMinutes).ToString("mm"),
 					SelectedFrequency = ScheduleInterval.Daily.ToString(),
+					TimeZoneId = TimeZoneInfo.Utc.Id
 				},
 				Map = CreateDefaultFieldMap(),
 				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
@@ -356,7 +366,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		[TestCase("abcdefg")]
 		[TestCase("12345")]
 		[TestCase("-01/31/3000")]
-		[Ignore("Test doesn't work and needs fix")]
 		public void CreateScheduledIntegrationPoint_WithInvalidStartDate_ExpectError(string startDate)
 		{
 			//Arrange
@@ -378,24 +387,25 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 					EndDate = utcNow.AddDays(1).ToString("MM/dd/yyyy"),
 					ScheduledTime = utcNow.ToString("HH") + ":" + utcNow.AddMinutes(1).ToString("mm"),
 					SelectedFrequency = ScheduleInterval.Daily.ToString(),
+					TimeZoneId = TimeZoneInfo.Utc.Id
 				},
 				Map = CreateDefaultFieldMap(),
-				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
+				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
 			};
 
 			//Act & Assert
-			Assert.Throws<Exception>(() => CreateOrUpdateIntegrationPoint(integrationModel), "Unable to save Integration Point.");
+			Assert.Throws<IntegrationPointProviderValidationException>(() => CreateOrUpdateIntegrationPoint(integrationModel),
+				_INTEGRATION_POINT_PROVIDER_VALIDATION_EXCEPTION_MESSAGE);
 		}
 
 		[Test]
 		[TestCase("")]
 		[TestCase(null)]
-		[TestCase("02/31/3000")]
-		[TestCase("01-31-3000")]
+		[TestCase("15/31/3000")]
+		[TestCase("31-01-3000")]
 		[TestCase("abcdefg")]
 		[TestCase("12345")]
 		[TestCase("-01/31/3000")]
-		[Ignore("Test doesn't work and needs fix")]
 		public void CreateScheduledIntegrationPoint_WithInvalidEndDate_ExpectError(string endDate)
 		{
 			//Arrange
@@ -422,8 +432,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
 			};
 
-			//Act & Assert
-			Assert.Throws<Exception>(() => CreateOrUpdateIntegrationPoint(integrationModel), "Unable to save Integration Point.");
+			//Act
+			IntegrationPointModel integrationPointModel = CreateOrUpdateIntegrationPoint(integrationModel);
+			
+			//Assert 
+			Assert.IsNull(integrationPointModel.Scheduler.EndDate);
 		}
 
 		private void AssertThatAuditDetailsChanged(Audit audit, HashSet<string> fieldNames)
@@ -470,22 +483,29 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			return assertion;
 		}
 
-		private string CreateSourceConfig(int savedSearchId, int targetWorkspaceId)
+		private string CreateSourceConfig(int savedSearchId, int targetWorkspaceId, SourceConfiguration.ExportType typeOfExport)
 		{
-			return $"{{\"SavedSearchArtifactId\":{savedSearchId},\"SourceWorkspaceArtifactId\":\"{SourceWorkspaceArtifactId}\",\"TargetWorkspaceArtifactId\":{targetWorkspaceId}}}";
+			var sourceConfiguration = new SourceConfiguration()
+			{
+				SavedSearchArtifactId = savedSearchId,
+				SourceWorkspaceArtifactId = SourceWorkspaceArtifactId,
+				TargetWorkspaceArtifactId = targetWorkspaceId,
+				TypeOfExport = typeOfExport
+			};
+			return Container.Resolve<ISerializer>().Serialize(sourceConfiguration);
 		}
-
+		
 		private IntegrationPointModel CreateIntegrationPointThatHasNotRun(string name)
 		{
 			return new IntegrationPointModel()
 			{
-				Destination = $"{{\"artifactTypeID\":10,\"CaseArtifactId\":{TargetWorkspaceArtifactId},\"Provider\":\"relativity\",\"DoNotUseFieldsMapCache\":true,\"ImportOverwriteMode\":\"AppendOnly\",\"importNativeFile\":\"false\",\"UseFolderPathInformation\":\"false\",\"ExtractedTextFieldContainsFilePath\":\"false\",\"ExtractedTextFileEncoding\":\"utf - 16\",\"CustodianManagerFieldContainsLink\":\"true\",\"FieldOverlayBehavior\":\"Use Field Settings\"}}",
+				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.OverlayOnly),
 				DestinationProvider = _destinationProvider.ArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
-				SourceConfiguration = CreateSourceConfig(SavedSearchArtifactId, TargetWorkspaceArtifactId),
+				SourceConfiguration = CreateSourceConfig(SavedSearchArtifactId, TargetWorkspaceArtifactId, SourceConfiguration.ExportType.SavedSearch),
 				LogErrors = true,
 				Name = $"${name} - {DateTime.Today}",
-				Map = "[]",
+				Map = CreateDefaultFieldMap(),
 				SelectedOverwrite = "Append Only",
 				Scheduler = new Scheduler(),
 				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
@@ -495,8 +515,64 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		private IntegrationPointModel CreateIntegrationPointThatIsAlreadyRunModel(string name)
 		{
 			IntegrationPointModel model = CreateIntegrationPointThatHasNotRun(name);
-			model.LastRun = DateTime.Now;
+			model.LastRun = DateTime.UtcNow;
 			return model;
+		}
+
+		private FieldMap[] GetSampleFields()
+		{
+			var repositoryFactory = Container.Resolve<IRepositoryFactory>();
+			IFieldQueryRepository sourceFieldQueryRepository = repositoryFactory.GetFieldQueryRepository(SourceWorkspaceArtifactId);
+			IFieldQueryRepository destinationFieldQueryRepository = repositoryFactory.GetFieldQueryRepository(TargetWorkspaceArtifactId);
+
+			ArtifactDTO identifierSourceField = sourceFieldQueryRepository.RetrieveTheIdentifierField((int)ArtifactType.Document);
+			ArtifactDTO identifierDestinationField = destinationFieldQueryRepository.RetrieveTheIdentifierField((int)ArtifactType.Document);
+
+			ArtifactFieldDTO[] sourceFields = sourceFieldQueryRepository.RetrieveLongTextFieldsAsync((int)ArtifactType.Document).Result;
+			ArtifactFieldDTO[] destinationFields = destinationFieldQueryRepository.RetrieveLongTextFieldsAsync((int)ArtifactType.Document).Result;
+
+			var map = new[]
+			{
+				new FieldMap()
+				{
+					SourceField = new FieldEntry()
+					{
+						FieldIdentifier = identifierSourceField.ArtifactId.ToString(),
+						DisplayName = identifierSourceField.Fields.First(field => field.Name == "Name").Value as string + " [Object Identifier]",
+						IsIdentifier = true
+					},
+					FieldMapType = FieldMapTypeEnum.Identifier,
+					DestinationField = new FieldEntry()
+					{
+						FieldIdentifier = identifierDestinationField.ArtifactId.ToString(),
+						DisplayName = identifierDestinationField.Fields.First(field => field.Name == "Name").Value as string + " [Object Identifier]",
+						IsIdentifier = true
+					},
+				},
+				new FieldMap()
+				{
+					SourceField = new FieldEntry()
+					{
+						FieldIdentifier = sourceFields.First().ArtifactId.ToString(),
+						DisplayName = sourceFields.First().Name,
+						IsIdentifier = false
+					},
+					FieldMapType = FieldMapTypeEnum.None,
+					DestinationField = new FieldEntry()
+					{
+						FieldIdentifier = destinationFields.First().ArtifactId.ToString(),
+						DisplayName = destinationFields.First().Name,
+						IsIdentifier = false
+					}
+				}
+			};
+			return map;
+		}
+
+		private string CreateSampleFieldsMapWithLongTextField()
+		{
+			FieldMap[] map = GetSampleFields();
+			return Container.Resolve<ISerializer>().Serialize(map);
 		}
 	}
 }
