@@ -121,6 +121,12 @@ namespace kCura.IntegrationPoints.Core
 
 				#endregion
 
+				#region Healthcheck
+
+				public const string APM_HEALTHCHECK = "IntegrationPoints.HealthCheck";
+
+				#endregion
+
 			}
 
 			public class SourceProviders
@@ -191,6 +197,11 @@ namespace kCura.IntegrationPoints.Core
 			Other = 0,
 			Relativity = 1,
 			LoadFile = 2
+		}
+
+		public static class Export
+		{
+			public const string TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME = "Text Precedence";
 		}
 	}
 }

@@ -184,6 +184,7 @@
 			<arg line='/lib:"${source.packages.directory}\RelativityCore.${relativityDependencyVersion}\lib\net462"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Kepler.1.0.1.333\lib\net462"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Kepler.Client.1.0.1.333\lib\net462"' />
+			<arg line='/lib:"${source.packages.directory}\Relativity.Telemetry.APM.9.4.139\lib\net462"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Toggles.1.0.0.84\lib\net462"' />
 			<arg line='/lib:"${source.packages.directory}\systemwrapper.interfaces.0.19.0.115\lib\net45"'/>
 			<arg line='/lib:"${source.packages.directory}\systemwrapper.wrappers.0.19.0.115\lib\net45"'/>

@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 	public class SourceFieldsController : ApiController
 	{
-		private readonly GetSourceProviderRdoByIdentifier _sourceProviderIdentifier;
+		private readonly IGetSourceProviderRdoByIdentifier _sourceProviderIdentifier;
 		private readonly ICaseServiceContext _caseService;
 		private readonly IContextContainerFactory _contextContainerFactory;
 		private readonly IManagerFactory _managerFactory;
@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly IHelper _helper;
 
 		public SourceFieldsController(
-			GetSourceProviderRdoByIdentifier sourceProviderIdentifier,
+			IGetSourceProviderRdoByIdentifier sourceProviderIdentifier,
 			ICaseServiceContext caseService,
 			IContextContainerFactory contextContainerFactory,
 			IManagerFactory managerFactory,
@@ -48,6 +48,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			_managerFactory = managerFactory;
 			_factory = factory;
 			_helper = helper;
+
 		}
 
 		[HttpPost]

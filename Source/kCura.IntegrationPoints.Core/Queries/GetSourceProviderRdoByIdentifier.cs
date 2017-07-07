@@ -7,8 +7,8 @@ using kCura.Relativity.Client.DTOs;
 
 namespace kCura.IntegrationPoints.Core.Queries
 {
-	public class GetSourceProviderRdoByIdentifier : GetObjectBase
-	{
+	public class GetSourceProviderRdoByIdentifier : GetObjectBase, IGetSourceProviderRdoByIdentifier
+    {
 		private ICaseServiceContext _context;
 		public GetSourceProviderRdoByIdentifier(ICaseServiceContext context)
 			: base(typeof(Data.SourceProvider))

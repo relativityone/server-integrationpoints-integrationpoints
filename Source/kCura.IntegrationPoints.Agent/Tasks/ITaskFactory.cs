@@ -11,6 +11,7 @@ using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Monitoring;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
@@ -19,6 +20,8 @@ using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.Services;
 using Relativity.API;
+using Relativity.Telemetry.APM;
+using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -247,6 +250,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_jobHistoryService.UpdateRdo(jobHistory);
 
 			// No updates to IP since the job history error service handles IP updates
+			
+			var healthcheck = Client.APMClient.HealthCheckOperation(Constants.IntegrationPoints.Telemetry.APM_HEALTHCHECK, HealthCheck.CreateJobFailedMetric);
+			healthcheck.Write();
 		}
 
 		internal bool HasOtherJobsExecuting(Job job)

@@ -17,13 +17,18 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 		{
 			if (_settings.SelViewFieldIds != null && _settings.SelViewFieldIds.Any())
 			{
-				if (_settings.SelViewFieldIds.ContainsKey(fieldInfo.AvfId))
+				if (IsRenamedField(fieldInfo))
 				{
 					// It should point to renamed column text if DisplayedName was changed by the user
 					return _settings.SelViewFieldIds[fieldInfo.AvfId].DisplayName;
 				}
 			}
 			return base.GetDisplayName(fieldInfo);
+		}
+
+		private bool IsRenamedField(ViewFieldInfo fieldInfo)
+		{
+			return _settings.SelViewFieldIds.ContainsKey(fieldInfo.AvfId) && !(fieldInfo is CoalescedTextViewField);
 		}
 	}
 }

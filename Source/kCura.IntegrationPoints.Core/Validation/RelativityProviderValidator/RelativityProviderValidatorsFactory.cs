@@ -60,7 +60,15 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			return new ProductionValidator(workspaceArtifactId, productionManager);
 		}
 
-		public RelativityProviderWorkspaceValidator CreateWorkspaceValidator(string prefix)
+	    public ImportProductionValidator CreateImportProductionValidator(int workspaceArtifactId, int? federatedInstanceArtifactId, string credentials)
+	    {
+	        IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(_helper);
+	        IProductionManager importProductionManager = _managerFactory.CreateProductionManager(contextContainer);
+
+            return new ImportProductionValidator(workspaceArtifactId, importProductionManager, federatedInstanceArtifactId, credentials);
+	    }
+
+	    public RelativityProviderWorkspaceValidator CreateWorkspaceValidator(string prefix)
 		{
 			IWorkspaceManager workspaceManager = _managerFactory.CreateWorkspaceManager(_contextContainerFactory.CreateContextContainer(_helper, _helper.GetServicesManager()));
 			return new RelativityProviderWorkspaceValidator(workspaceManager, prefix);

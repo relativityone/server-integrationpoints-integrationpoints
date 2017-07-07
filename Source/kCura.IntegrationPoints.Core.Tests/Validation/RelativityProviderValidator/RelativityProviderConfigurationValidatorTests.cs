@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Managers;
@@ -18,25 +19,31 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 	[TestFixture]
 	public class RelativityProviderConfigurationValidatorTests
 	{
-		private const int SavedSearchArtifactId = 1038052;
-		private const int SourceWorkspaceArtifactId = 1074540;
-		private const int TargetWorkspaceArtifactId = 1075642;
+		private const int _SAVED_SEARCH_ARTIFACT_ID = 1038052;
+		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 1074540;
+		private const int _TARGET_WORKSPACE_ARTIFACT_ID = 1075642;
+	    private const int _PRODUCTION_ARTIFACT_ID = 4;
+	    private const int _DESTINATION_WORKSPACE_ARTIFACT_ID = 4;
 
-		private readonly string SourceConfiguration =
-			"{\"SavedSearchArtifactId\":" + SavedSearchArtifactId + ",\"SourceWorkspaceArtifactId\":\"" + SourceWorkspaceArtifactId + "\",\"TargetWorkspaceArtifactId\":" + TargetWorkspaceArtifactId + ",\"FolderArtifactId\":\"1039185\",\"FolderArtifactName\":\"Test Folder\",\"TypeOfExport\":\"3\"}";
+        private readonly string _sourceConfiguration =
+			"{\"SavedSearchArtifactId\":" + _SAVED_SEARCH_ARTIFACT_ID + ",\"SourceWorkspaceArtifactId\":\"" + _SOURCE_WORKSPACE_ARTIFACT_ID + "\",\"TargetWorkspaceArtifactId\":" + _TARGET_WORKSPACE_ARTIFACT_ID + ",\"FolderArtifactId\":\"1039185\",\"FolderArtifactName\":\"Test Folder\",\"TypeOfExport\":\"3\"}";
 
-		private readonly string DestinationConfiguration =
-			"{\"artifactTypeID\":10,\"destinationProviderType\":\"74A863B9-00EC-4BB7-9B3E-1E22323010C6\",\"CaseArtifactId\":1075642}";
+	    private static IEnumerable ConfigurationTestsData()
+	    {
+	        yield return new TestCaseData(true, 0, "{\"artifactTypeID\":10,\"destinationProviderType\":\"74A863B9-00EC-4BB7-9B3E-1E22323010C6\",\"CaseArtifactId\":1075642, \"ProductionArtifactId\":\"" + _PRODUCTION_ARTIFACT_ID + "\"}");
+	        yield return new TestCaseData(true, 0, "{\"artifactTypeID\":10,\"destinationProviderType\":\"74A863B9-00EC-4BB7-9B3E-1E22323010C6\",\"CaseArtifactId\":1075642, \"DestinationFolderArtifactId\":\"" + _DESTINATION_WORKSPACE_ARTIFACT_ID + "\"}");
+            yield return new TestCaseData(false, 1, "{\"artifactTypeID\":10,\"destinationProviderType\":\"74A863B9-00EC-4BB7-9B3E-1E22323010C6\",\"CaseArtifactId\":1075642}");
+        }
 
-		[Test]
-		public void ItShouldValidateConfiguration()
+        [TestCaseSource(typeof(RelativityProviderConfigurationValidatorTests), nameof(ConfigurationTestsData))]
+		public void ItShouldValidateConfiguration(bool expectedValidationResult, int numberOfErrorMessages, string destinationConfiguration)
 		{
 			// arrange
 			var serializerMock = new JSONSerializer();
 			var validatorsFactoryMock = Substitute.For<IRelativityProviderValidatorsFactory>();
 
 			var workspaceManagerMock = Substitute.For<IWorkspaceManager>();
-			var workspaceValidatorMock = Substitute.For<RelativityProviderWorkspaceValidator>(workspaceManagerMock, String.Empty);
+			var workspaceValidatorMock = Substitute.For<RelativityProviderWorkspaceValidator>(workspaceManagerMock, string.Empty);
 			workspaceValidatorMock.Validate(Arg.Any<int>())
 				.Returns(new ValidationResult());
 			validatorsFactoryMock.CreateWorkspaceValidator(Arg.Any<string>(), Arg.Any<int?>(), Arg.Any<string>())
@@ -45,7 +52,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 				.Returns(workspaceValidatorMock);
 
 			var savedSearchRepositoryMock = Substitute.For<ISavedSearchQueryRepository>();
-			var savedSearchValidatorMock = Substitute.For<SavedSearchValidator>(savedSearchRepositoryMock, SavedSearchArtifactId);
+			var savedSearchValidatorMock = Substitute.For<SavedSearchValidator>(savedSearchRepositoryMock, _SAVED_SEARCH_ARTIFACT_ID);
 			savedSearchValidatorMock.Validate(Arg.Any<int>())
 				.Returns(new ValidationResult());
 			validatorsFactoryMock.CreateSavedSearchValidator(Arg.Any<int>(), Arg.Any<int>())
@@ -71,24 +78,31 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 				.Returns(new ValidationResult());
 			validatorsFactoryMock.CreateTransferredObjectValidator()
 				.Returns(transferredObjectValidatorMock);
+            
+		    var productionManagerMock = Substitute.For<IProductionManager>();
+		    var importProductionValidatorMock = Substitute.For<ImportProductionValidator>(Arg.Any<int>(), productionManagerMock, Arg.Any<int?>(), Arg.Any<string>());
+		    importProductionValidatorMock.Validate(Arg.Any<int>())
+		        .Returns(new ValidationResult());
+		    validatorsFactoryMock.CreateImportProductionValidator(Arg.Any<int>(), Arg.Any<int?>(), Arg.Any<string>())
+		        .Returns(importProductionValidatorMock);
 
-			var validator = new RelativityProviderConfigurationValidator(serializerMock, validatorsFactoryMock);
+            var validator = new RelativityProviderConfigurationValidator(serializerMock, validatorsFactoryMock);
 
 			var model = new IntegrationPointProviderValidationModel
 			{
 				FieldsMap = string.Empty,
 				SourceProviderIdentifier = IntegrationPoints.Domain.Constants.RELATIVITY_PROVIDER_GUID,
 				DestinationProviderIdentifier = Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID.ToString(),
-				SourceConfiguration = SourceConfiguration,
-				DestinationConfiguration = DestinationConfiguration
-			};
+				SourceConfiguration = _sourceConfiguration,
+				DestinationConfiguration = destinationConfiguration
+            };
 
 			// act
-			var actual = validator.Validate(model);
+			ValidationResult actual = validator.Validate(model);
 
 			// assert
-			Assert.IsTrue(actual.IsValid);
-			Assert.That(actual.Messages.Count(), Is.EqualTo(0));
+			Assert.That(actual.IsValid, Is.EqualTo(expectedValidationResult));
+			Assert.That(actual.Messages.Count(), Is.EqualTo(numberOfErrorMessages));
 		}
-	}
+    }
 }
