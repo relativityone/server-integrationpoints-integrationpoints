@@ -4,6 +4,7 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.Tabs;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.LDAPProvider;
 
 namespace kCura.IntegrationPoints.Web.Controllers
 {
@@ -11,13 +12,15 @@ namespace kCura.IntegrationPoints.Web.Controllers
 	{
 		private readonly IIntegrationPointService _integrationPointService;
 
-		public IntegrationPointsController(RSAPIRdoQuery rdoQuery, IRepositoryFactory repositoryFactory, ITabService tabService,
-			IIntegrationPointService integrationPointService) : base(rdoQuery, repositoryFactory, tabService)
-		{
-			_integrationPointService = integrationPointService;
-		}
+	    public IntegrationPointsController(RSAPIRdoQuery rdoQuery, IRepositoryFactory repositoryFactory,
+	        ITabService tabService, ILDAPServiceFactory ldapServiceFactory,
+	        IIntegrationPointService integrationPointService) : base(rdoQuery, repositoryFactory, tabService,
+	        ldapServiceFactory)
+	    {
+	        _integrationPointService = integrationPointService;
+	    }
 
-		protected override string ObjectTypeGuid => ObjectTypeGuids.IntegrationPoint;
+	    protected override string ObjectTypeGuid => ObjectTypeGuids.IntegrationPoint;
 		protected override string ObjectType => ObjectTypes.IntegrationPoint;
 		protected override string APIControllerName => Core.Constants.IntegrationPoints.API_CONTROLLER_NAME;
 

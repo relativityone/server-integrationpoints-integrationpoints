@@ -7,7 +7,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.LDAPProvider
 {
-	public class LDAPService
+	public class LDAPService : ILDAPService
 	{
 		private readonly LDAPSettings _settings;
 		private DirectoryEntry _searchRoot;
@@ -45,6 +45,12 @@ namespace kCura.IntegrationPoints.LDAPProvider
 
 			return authentic;
 		}
+
+	    public List<string> FetchAllProperties(int? overrideSizeLimit = null)
+	    {
+	        IEnumerable<SearchResult> searchResult = FetchItems(overrideSizeLimit);
+	        return GetAllProperties(searchResult);
+	    }
 
 		public IEnumerable<SearchResult> FetchItems(int? overrideSizeLimit = null)
 		{
@@ -125,7 +131,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
 			} // SearchResultCollection will be disposed here
 		}
 
-		public List<string> GetAllProperties(IEnumerable<SearchResult> previewItems)
+		private List<string> GetAllProperties(IEnumerable<SearchResult> previewItems)
 		{
 			HashSet<string> properties = new HashSet<string>();
 			foreach (SearchResult item in previewItems)

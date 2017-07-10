@@ -19,12 +19,14 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		private readonly RSAPIRdoQuery _rdoQuery;
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly ITabService _tabService;
+	    private readonly ILDAPServiceFactory _ldapServiceFactory;
 
-		protected IntegrationPointBaseController(RSAPIRdoQuery rdoQuery, IRepositoryFactory repositoryFactory, ITabService tabService)
+	    protected IntegrationPointBaseController(RSAPIRdoQuery rdoQuery, IRepositoryFactory repositoryFactory, ITabService tabService, ILDAPServiceFactory ldapServiceFactory)
 		{
 			_rdoQuery = rdoQuery;
 			_repositoryFactory = repositoryFactory;
 			_tabService = tabService;
+		    _ldapServiceFactory = ldapServiceFactory;
 			_apiLog = ConnectionHelper.Helper().GetLoggerFactory().GetLogger().ForContext<IntegrationPointBaseController>();
 		}
 
@@ -114,7 +116,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		[HttpPost]
 		public ActionResult CheckLdap(LDAPSettings model)
 		{
-			var service = new LDAPService(_apiLog, model);
+			var service = _ldapServiceFactory.Create(_apiLog, model);
 			service.InitializeConnection();
 			bool isAuthenticated = service.IsAuthenticated();
 			return isAuthenticated ? JsonNetResult(new object()) : JsonNetResult(new {}, HttpStatusCode.BadRequest);

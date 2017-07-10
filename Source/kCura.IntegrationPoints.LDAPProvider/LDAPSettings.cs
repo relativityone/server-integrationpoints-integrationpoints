@@ -8,21 +8,24 @@ namespace kCura.IntegrationPoints.LDAPProvider
 		#region Constructor
 
 		public const string FILTER_DEFAULT = "(objectClass=*)";
-		public const string MULTIVALUEDELIMITER_DEFAULT = ";";
+		public const char MULTIVALUEDELIMITER_DEFAULT = ';';
+	    public const int PAGESIZE_DEFAULT = 1000;
+	    public const int GETPROPERTIESITEMSEARCHLIMIT_DEFAULT = 100;
 
-		public LDAPSettings()
+
+        public LDAPSettings()
 		{
 			ConnectionPath = null;
 			ConnectionAuthenticationType = AuthenticationTypesEnum.Secure;// - dotNet default
 			Filter = FILTER_DEFAULT;// - dotNet default
 			ImportNested = false;
 			//PageSize = 0;// - dotNet default
-			PageSize = 1000;
+			PageSize = PAGESIZE_DEFAULT;
 			SizeLimit = 0;// - dotNet default
 			PropertyNamesOnly = false;// - dotNet default
 			ProviderReferralChasing = ReferralChasingOption.External;
 			ProviderExtendedDN = ExtendedDNEnum.None;
-			MultiValueDelimiter = char.Parse(MULTIVALUEDELIMITER_DEFAULT);
+			MultiValueDelimiter = MULTIVALUEDELIMITER_DEFAULT;
 		}
 
 		#endregion

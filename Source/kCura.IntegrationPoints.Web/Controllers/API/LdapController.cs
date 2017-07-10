@@ -5,22 +5,20 @@ using kCura.IntegrationPoints.LDAPProvider;
 using kCura.IntegrationPoints.Security;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Models;
-using Newtonsoft.Json;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
 	public class LdapController : ApiController
 	{
-		private readonly IEncryptionManager _manager;
-		private readonly IHelper _helper;
-		private readonly ISerializer _serializer;
+	    private readonly ILDAPSettingsReader _settingsReader;
+	    private readonly IEncryptionManager _manager;
+	    private readonly ISerializer _serializer;
 
-		public LdapController(IEncryptionManager manager, IHelper helper, ISerializer serializer)
+		public LdapController(ILDAPSettingsReader settingsReader, IEncryptionManager manager, ISerializer serializer)
 		{
-			_manager = manager;
-			_helper = helper;
-			_serializer = serializer;
+		    _settingsReader = settingsReader;
+		    _manager = manager;
+		    _serializer = serializer;
 		}
 
 		[HttpPost]
@@ -39,36 +37,17 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[LogApiExceptionFilter(Message = "Unable to Decrypt message data.")]
 		public IHttpActionResult Decrypt([FromBody] string message)
 		{
-			var decryptedText = this.GetSettings(message);
+			string decryptedText = _settingsReader.DecryptSettings(message);
 			return Ok(decryptedText);
-		}
-
-		private string GetSettings(string message)
-		{
-			var decryptedText = string.Empty;
-			try
-			{
-				JsonConvert.DeserializeObject<LDAPSettings>(message);
-				decryptedText = message;
-			}
-			catch (Exception)
-			{
-				//already taken care of so we can just decrypt
-				try { message = JsonConvert.DeserializeObject<string>(message); }
-				catch (Exception) {/*just a regular string so we pass and decrypt it.*/ }
-				decryptedText = _manager.Decrypt(message);
-			}
-			return decryptedText;
 		}
 
 		[HttpPost]
 		[LogApiExceptionFilter(Message = "Unable to retrieve LDAP provider settings.")]
 		public IHttpActionResult GetViewFields([FromBody] object data)
 		{
-			LDAPProvider.LDAPProvider provider = new LDAPProvider.LDAPProvider(_manager, _helper);
-			LDAPSettings settings = provider.GetSettings(data.ToString());
+			LDAPSettings settings = _settingsReader.GetSettings(data.ToString());
 
-			LdapProviderSummaryPageSettingsModel ldapSummarySettingsModel = new LdapProviderSummaryPageSettingsModel(settings);
+			var ldapSummarySettingsModel = new LdapProviderSummaryPageSettingsModel(settings);
 			string serializedModel = _serializer.Serialize(ldapSummarySettingsModel);
 			return Ok(serializedModel);
 		}
