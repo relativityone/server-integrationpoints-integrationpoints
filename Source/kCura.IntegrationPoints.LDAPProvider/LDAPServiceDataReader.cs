@@ -11,14 +11,14 @@ namespace kCura.IntegrationPoints.LDAPProvider
 		private DataTable _dataTable;
 		private bool _readerOpen;
 		private int _position = 0;
-		private LDAPService _ldapService;
+		private ILDAPService _ldapService;
 		private List<string> _fields;
 		private ILDAPDataFormatter _dataFormattter;
 		private IEnumerator<string> _entryIds;
 		private string _identifier;
 		private SearchResult _currentItem;
 
-		public LDAPServiceDataReader(LDAPService ldapService, IEnumerable<string> entryIds, string identifier, List<string> fields, ILDAPDataFormatter dataFormattter)
+		public LDAPServiceDataReader(ILDAPService ldapService, IEnumerable<string> entryIds, string identifier, List<string> fields, ILDAPDataFormatter dataFormattter)
 		{
 			_ldapService = ldapService;
 			_entryIds = entryIds.GetEnumerator();

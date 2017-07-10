@@ -3,6 +3,7 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.Tabs;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.LDAPProvider;
 
 namespace kCura.IntegrationPoints.Web.Controllers
 {
@@ -10,8 +11,9 @@ namespace kCura.IntegrationPoints.Web.Controllers
 	{
 		private readonly IIntegrationPointProfileService _profileService;
 
-		public IntegrationPointProfilesController(RSAPIRdoQuery rdoQuery, IRepositoryFactory repositoryFactory, ITabService tabService,
-			IIntegrationPointProfileService profileService) : base(rdoQuery, repositoryFactory, tabService)
+		public IntegrationPointProfilesController(RSAPIRdoQuery rdoQuery, IRepositoryFactory repositoryFactory, ITabService tabService, ILDAPServiceFactory ldapServiceFactory,
+
+            IIntegrationPointProfileService profileService) : base(rdoQuery, repositoryFactory, tabService, ldapServiceFactory)
 		{
 			_profileService = profileService;
 		}

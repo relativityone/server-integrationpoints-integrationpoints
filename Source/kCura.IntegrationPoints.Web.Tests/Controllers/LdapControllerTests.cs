@@ -1,9 +1,12 @@
-﻿using System.Web.Http.Results;
+﻿using System;
+using System.Web.Http.Results;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.LDAPProvider;
 using kCura.IntegrationPoints.Security;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
 
@@ -20,22 +23,19 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 		}
 
 		[Test]
-		public void Decrypt_stringJustJSON_returnsJSONString()
+		public void Decrypt_stringJustJSON_ThrowsLDAPProviderException()
 		{
 			//ARRANGE
 			var manager = Substitute.For<IEncryptionManager>();
+		    manager.Decrypt(Arg.Any<string>()).ThrowsForAnyArgs(new Exception());
 			var helper = Substitute.For<IHelper>();
 			var serializer = Substitute.For<ISerializer>();
-			var controller = new LdapController(manager, helper, serializer);
+            var reader = new LDAPSettingsReader(manager, helper);
+			var controller = new LdapController(reader, manager, serializer);
 			var message = "{\"a\":\"Asdf\"}";
 
-			//ACT
-			var result = controller.Decrypt(message) as OkNegotiatedContentResult<string>;
-
-			//ASSERT
-			var value = result.Content;
-			Assert.AreEqual(message, value);
-
+			//ACT, ASSERT
+			Assert.Throws<LDAPProviderException>(() => controller.Decrypt(message));
 		}
 
 		[Test]
@@ -49,7 +49,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			var helper = Substitute.For<IHelper>();
 
 			var serializer = Substitute.For<ISerializer>();
-			var controller = new LdapController(manager, helper, serializer);
+		    var reader = new LDAPSettingsReader(manager, helper);
+            var controller = new LdapController(reader, manager, serializer);
 
 			//ACT
 			var result = controller.Decrypt(encryptedMessage) as OkNegotiatedContentResult<string>;

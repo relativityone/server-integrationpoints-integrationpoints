@@ -1,0 +1,160 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.DirectoryServices;
+using System.Linq;
+using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Security;
+using NSubstitute;
+using NUnit.Framework;
+using Relativity.API;
+
+namespace kCura.IntegrationPoints.LDAPProvider.Tests
+{
+    [TestFixture]
+    public class LDAPProviderTests : TestBase
+    {
+        private LDAPSettings _fullyFilledSettings;
+        private IEncryptionManager _encryptionManager;
+        private ILDAPServiceFactory _serviceFactory;
+        private IAPILog _logger;
+        private ILDAPService _ldapService;
+        private IHelper _helper;
+        private List<string> _fieldProperties;
+        private List<FieldEntry> _fieldEntries;
+        private ILDAPSettingsReader _ldapSettingsReader;
+        private List<string> _entryIds;
+        private string _optionsString = "options are mocked anyway";
+
+        public override void SetUp()
+        {
+            _ldapService = Substitute.For<ILDAPService>();
+            _serviceFactory = Substitute.For<ILDAPServiceFactory>();
+            _serviceFactory.Create(_logger, _fullyFilledSettings).ReturnsForAnyArgs(_ldapService);
+
+            _fullyFilledSettings = new LDAPSettings
+            {
+                AttributeScopeQuery = "scope",
+                ConnectionAuthenticationType = AuthenticationTypesEnum.Delegation,
+                ConnectionPath = "connection path",
+                Filter = "filter",
+                GetPropertiesItemSearchLimit = 123,
+                IgnorePathValidation = true,
+                ImportNested = true,
+                MultiValueDelimiter = '_',
+                PageSize = 432,
+                Password = "password",
+                PropertyNamesOnly = true,
+                ProviderExtendedDN = ExtendedDNEnum.HexString,
+                ProviderReferralChasing = ReferralChasingOption.External,
+                SizeLimit = 4231,
+                UserName = "username"
+            };
+            _fieldProperties = new List<string> { "1prop", "2prop", "3prop", "4prop", "5prop", };
+            _fieldEntries = new List<FieldEntry>
+            {
+                new FieldEntry(),
+                new FieldEntry(),
+                new FieldEntry()
+            };
+            _entryIds = new List<string>();
+        }
+
+        public override void FixtureSetUp()
+        {
+            base.FixtureSetUp();
+            _ldapSettingsReader = Substitute.For<ILDAPSettingsReader>();
+            _ldapSettingsReader.GetSettings(Arg.Any<string>()).ReturnsForAnyArgs(_fullyFilledSettings);
+            _helper = Substitute.For<IHelper>();
+            _logger = Substitute.For<IAPILog>();
+            _encryptionManager = Substitute.For<IEncryptionManager>();
+            _encryptionManager.Decrypt(Arg.Any<string>()).Returns(info => info.Arg<string>());
+        }
+
+        [Test]
+        public void GetData_FieldsListHasIdentifierElement_CallsFetchItemsAndReturnsProperDataReader()
+        {
+            _fieldEntries[1].IsIdentifier = true;
+            var provider = new LDAPProvider(_ldapSettingsReader, _serviceFactory, _helper);
+
+            IDataReader reader = provider.GetData(_fieldEntries, _entryIds, _optionsString);
+
+            _ldapService.ReceivedWithAnyArgs().FetchItems();
+            Assert.IsInstanceOf<LDAPServiceDataReader>(reader);
+        }
+
+        [Test]
+        public void GetData_FieldsListDoesNotHaveIdentifierElement_Throws()
+        {
+
+            var provider = new LDAPProvider(_ldapSettingsReader, _serviceFactory, _helper);
+
+            Assert.Catch(() => provider.GetData(_fieldEntries, _entryIds, _optionsString));
+        }
+
+        [Test]
+        public void GetData_FieldsCollectionEmpty_Throws()
+        {
+            var provider = new LDAPProvider(_ldapSettingsReader, _serviceFactory, _helper);
+            var emptyFieldEntriesList = new List<FieldEntry>();
+
+            Assert.Catch(() => provider.GetData(emptyFieldEntriesList, _entryIds, _optionsString));
+        }
+
+        [Test]
+        public void GetBatchableIds_CallsFetchItemsAndReturnsProperDataReader()
+        {
+            var provider = new LDAPProvider(_ldapSettingsReader, _serviceFactory, _helper);
+
+            IDataReader reader = provider.GetBatchableIds(new FieldEntry(), _optionsString);
+
+            _ldapService.ReceivedWithAnyArgs().FetchItems();
+            Assert.IsInstanceOf<LDAPDataReader>(reader);
+        }
+
+        [Test]
+        public void GetBatchableIds_IdentifierIsNull_ThrowsArgumentNullException()
+        {
+            var provider = new LDAPProvider(_ldapSettingsReader, _serviceFactory, _helper);
+
+            Assert.Throws<ArgumentNullException>(() => provider.GetBatchableIds(null, _optionsString));
+        }
+
+        [Test]
+        public void GetFields_LdapServiceReturnsEmptyList_ReturnsEmptyCollection()
+        {
+            _ldapService.FetchAllProperties(Arg.Any<int?>()).ReturnsForAnyArgs(new List<string>());
+            var provider = new LDAPProvider(_ldapSettingsReader, _serviceFactory, _helper);
+
+            IEnumerable<FieldEntry> result = provider.GetFields("");
+
+            Assert.AreEqual(result.Any(), false);
+        }
+
+        [Test]
+        public void GetFields_LdapServiceReturnsProperList_ReturnsCollectionWithProperCount()
+        {
+            _ldapService.FetchAllProperties(Arg.Any<int?>()).ReturnsForAnyArgs(_fieldProperties);
+            var provider = new LDAPProvider(_ldapSettingsReader, _serviceFactory, _helper);
+
+            IEnumerable<FieldEntry> result = provider.GetFields("");
+
+            Assert.AreEqual(result.Count(), _fieldProperties.Count);
+        }
+
+        [TestCase("FirstParticularProperty")]
+        [TestCase("SecondParticularProperty")]
+        public void GetFields_LdapServiceReturnsOneElement_ReturnsProperElement(string testString)
+        {
+            _ldapService.FetchAllProperties(Arg.Any<int?>()).ReturnsForAnyArgs(new List<string> {testString});
+            var provider = new LDAPProvider(_ldapSettingsReader, _serviceFactory, _helper);
+
+            IEnumerable<FieldEntry> result = provider.GetFields("");
+            FieldEntry firstFromCollection = result.First();
+
+            Assert.AreEqual(firstFromCollection.DisplayName, testString);
+            Assert.AreEqual(firstFromCollection.FieldIdentifier, testString);
+        }
+    }
+}
