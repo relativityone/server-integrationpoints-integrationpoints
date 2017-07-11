@@ -18,6 +18,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
+using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using NUnit.Framework;
 
@@ -36,6 +37,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		private IIntegrationPointService _integrationPointService;
 		private IRepositoryFactory _repositoryFactory;
 		private IJobHistoryService _jobHistoryService;
+		private IJobService _jobService;
 
 		public IntegrationPointServiceTests() : base("IntegrationPointService Source", null)
 		{
@@ -48,6 +50,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();
+			_jobService = Container.Resolve<IJobService>();
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, Import.GetImportTable("IPTestDocument", 3));
 		}
 
@@ -179,6 +182,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 				TimeZoneId = TimeZoneInfo.Utc.Id
 			};
 			IntegrationPointModel modifiedIntegrationPoint = CreateOrUpdateIntegrationPoint(integrationPoint);
+			DeleteAllIntegrationPointJobs(integrationPoint.ArtifactID);
 
 			//Assert
 			Audit postRunAudit = this.GetLastAuditsForIntegrationPoint(modifiedIntegrationPoint.Name, 1).First();
@@ -356,6 +360,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.AreEqual(_REALTIVITY_SERVICE_ACCOUNT_FULL_NAME, postRunAudit.UserFullName, "The user should be correct");
 
 			AssertThatAuditDetailsChanged(postRunAudit, new HashSet<string>() { "Next Scheduled Runtime (UTC)", "Last Runtime (UTC)" });
+
+			DeleteAllIntegrationPointJobs(integrationPointPreJobExecution.ArtifactID);
 		}
 
 		[Test]
@@ -434,9 +440,22 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 			//Act
 			IntegrationPointModel integrationPointModel = CreateOrUpdateIntegrationPoint(integrationModel);
-			
+			DeleteAllIntegrationPointJobs(integrationPointModel.ArtifactID);
+
 			//Assert 
 			Assert.IsNull(integrationPointModel.Scheduler.EndDate);
+		}
+
+
+		#region "Helpers"
+
+		private void DeleteAllIntegrationPointJobs(int integrationPointArtifactId)
+		{
+			IList<Job> jobs = _jobService.GetJobs(integrationPointArtifactId);
+			foreach (Job job in jobs)
+			{
+				_jobService.DeleteJob(job.JobId);
+			}
 		}
 
 		private void AssertThatAuditDetailsChanged(Audit audit, HashSet<string> fieldNames)
@@ -464,6 +483,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 			Assert.AreEqual(expectedModel.HasErrors, actual.HasErrors);
 			Assert.AreEqual(expectedModel.DestinationProvider, actual.DestinationProvider);
+			Assert.NotNull(expectedModel.LastRun);
+			Assert.NotNull(actual.LastRun);
 			Assert.AreEqual(expectedModel.LastRun.Value.Date, actual.LastRun.Value.Date);
 			Assert.AreEqual(expectedModel.LastRun.Value.Hour, actual.LastRun.Value.Hour);
 			Assert.AreEqual(expectedModel.LastRun.Value.Minute, actual.LastRun.Value.Minute);
@@ -574,5 +595,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			FieldMap[] map = GetSampleFields();
 			return Container.Resolve<ISerializer>().Serialize(map);
 		}
+		#endregion
 	}
 }
