@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using NUnit.Framework;
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
@@ -219,7 +220,10 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		protected IntegrationPointModel CreateDefaultIntegrationPointModelScheduled(ImportOverwriteModeEnum overwriteMode, string name, string overwrite, string startDate, string endDate, ScheduleInterval interval)
 		{
-			IntegrationPointModel integrationModel = new IntegrationPointModel
+		    const int offsetInSeconds = 30;
+		    DateTime newScheduledTime = DateTime.UtcNow.AddSeconds(offsetInSeconds);
+
+            var integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(overwriteMode),
 				DestinationProvider = DestinationProvider.ArtifactId,
@@ -234,15 +238,16 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 					//Date format "MM/dd/yyyy". For testing purpose. No sanity check here
 					StartDate = startDate,
 					EndDate = endDate,
-					ScheduledTime = DateTime.UtcNow.Hour + ":" + DateTime.UtcNow.AddMinutes(1),
+					ScheduledTime = newScheduledTime.ToString("HH:mm:ss"),
 					Reoccur = 0,
-					SelectedFrequency = interval.ToString()
+					SelectedFrequency = interval.ToString(),
+                    TimeZoneId = TimeZoneInfo.Utc.Id
 				},
 				Map = CreateDefaultFieldMap(),
 				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
 			};
 
-			return integrationModel;
+           return integrationModel;
 		}
 		
 		#endregion Helper Methods

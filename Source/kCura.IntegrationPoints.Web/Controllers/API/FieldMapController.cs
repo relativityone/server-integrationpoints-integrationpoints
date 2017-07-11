@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -22,19 +23,13 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[LogApiExceptionFilter(Message = "Unable to retrieve fields mapping information.")]
 		public HttpResponseMessage Get(int id)
 		{
-			var fieldsMap = _integrationPointReader.GetFieldMap(id).ToList();
-			for(int index = 0; index < fieldsMap.Count; index++)
-			{
-				FieldMap fieldMap = fieldsMap[index];
-				if (fieldMap.FieldMapType == FieldMapTypeEnum.FolderPathInformation)
-				{
-					if (String.IsNullOrEmpty(fieldMap.DestinationField.FieldIdentifier))
-					{
-						fieldsMap.RemoveAt(index);
-					}
-				}
-			}
-			return Request.CreateResponse(HttpStatusCode.OK, fieldsMap, Configuration.Formatters.JsonFormatter);
+			List<FieldMap> fieldsMaps = _integrationPointReader.GetFieldMap(id).ToList();
+			fieldsMaps.RemoveAll(
+				fieldMap =>
+					fieldMap.FieldMapType == FieldMapTypeEnum.FolderPathInformation &&
+					string.IsNullOrEmpty(fieldMap.DestinationField.FieldIdentifier));
+
+			return Request.CreateResponse(HttpStatusCode.OK, fieldsMaps, Configuration.Formatters.JsonFormatter);
 		}
 	}
 }
