@@ -163,6 +163,10 @@
       <HintPath>..\packages\Relativity.ServiceBus.Utilities.9.5.182.17\lib\net462\Relativity.ServiceBus.Utilities.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.Telemetry.APM, Version=9.4.143.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Telemetry.APM.9.4.143\lib\net462\Relativity.Telemetry.APM.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Relativity.Toggles, Version=1.0.0.68, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Toggles.1.0.0.68\lib\net45\Relativity.Toggles.dll</HintPath>
       <Private>True</Private>
@@ -170,6 +174,17 @@
     <Reference Include="Relativity.Vfs, Version=1.0.20.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Vfs.1.0.20\lib\net45\Relativity.Vfs.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.IntegrationPoints">
+      <HintPath>..\..\lib\kCura.IntegrationPoints.dll</HintPath>
+    </Reference>
+    <Reference Include="kCura.IntegrationPoints.Contracts, Version=9.4.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\kCura.IntegrationPoints.Contracts.dll</HintPath>
+    </Reference>
+    <Reference Include="kCura.IntegrationPoints.Domain, Version=9.4.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\kCura.IntegrationPoints.Domain.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -198,7 +213,10 @@
     <Compile Include="Installers\IntegrationPointsManagerInstaller.cs" />
     <Compile Include="IntegrationPointsManager.cs" />
     <Compile Include="IntegrationPointsManagerAgent.cs" />
-    <Compile Include="Monitoring\IManagerTask.cs" />
+    <Compile Include="Tasks\AlertJobsWithInvalidStatusTask.cs" />
+    <Compile Include="Tasks\Helpers\IJobsWithInvalidStatus.cs" />
+    <Compile Include="Tasks\Helpers\JobsWithInvalidStatus.cs" />
+    <Compile Include="Tasks\IManagementTask.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="LICENSE.txt" />

@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data;
 using Relativity.Telemetry.APM;
 
 namespace kCura.IntegrationPoints.Core.Monitoring
@@ -12,6 +10,12 @@ namespace kCura.IntegrationPoints.Core.Monitoring
 		public static HealthCheckOperationResult CreateJobFailedMetric()
 		{
 			return new HealthCheckOperationResult("Integration Points job failed!");
+		}
+
+		public static HealthCheckOperationResult CreateJobsWithInvalidStatusMetric(IDictionary<int, IList<JobHistory>> jobHistories)
+		{
+			var customData = jobHistories.ToDictionary(x => $"Workspace {x.Key}", y => (object) y.Value);
+			return new HealthCheckOperationResult(false, "Jobs with invalid status found.", null, customData);
 		}
 	}
 }

@@ -12,6 +12,15 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 {
 	public static class JobExtensions
 	{
+		public static T CreateJob<T>(long workspaceArtifactId, int jobId, Func<DataRow, T> creator)
+		{
+			DataRow jobData = CreateDefaultJobData();
+			jobData["JobID"] = jobId;
+			jobData["WorkspaceID"] = workspaceArtifactId;
+
+			return creator(jobData);
+		}
+
 		public static Job CreateJob(long workspaceArtifactId, long integrationPointArtifactId, int submittedByArtifactId, int jobId)
 		{
 			DataRow jobData = CreateDefaultJobData();

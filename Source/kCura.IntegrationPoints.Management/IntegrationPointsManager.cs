@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
-using kCura.IntegrationPoints.Management.Monitoring;
+using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Management.Tasks;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Management
@@ -8,25 +10,28 @@ namespace kCura.IntegrationPoints.Management
 	public class IntegrationPointsManager : IIntegrationPointsManager
 	{
 		private readonly IAPILog _logger;
-		private readonly IEnumerable<IManagerTask> _monitoring;
+		private readonly IEnumerable<IManagementTask> _tasks;
+		private readonly IApplicationRepository _applicationRepository;
 
-		public IntegrationPointsManager(IAPILog logger, IEnumerable<IManagerTask> monitoring)
+		public IntegrationPointsManager(IAPILog logger, IEnumerable<IManagementTask> tasks, IApplicationRepository applicationRepository)
 		{
-			_monitoring = monitoring;
+			_tasks = tasks;
+			_applicationRepository = applicationRepository;
 			_logger = logger;
 		}
 
 		public void Start()
 		{
-			foreach (var monitoring in _monitoring)
+			var workspaceArtifactIds = _applicationRepository.GetWorkspaceArtifactIdsWhereApplicationInstalled(Guid.Parse(Constants.IntegrationPoints.APPLICATION_GUID_STRING));
+			foreach (var task in _tasks)
 			{
 				try
 				{
-					monitoring.Run();
+					task.Run(workspaceArtifactIds);
 				}
 				catch (Exception e)
 				{
-					_logger.LogError(e, "Failed to execute monitoring {type}", monitoring.GetType());
+					_logger.LogError(e, "Failed to execute tasks {type}", task.GetType());
 				}
 			}
 		}

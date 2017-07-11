@@ -393,7 +393,21 @@ namespace kCura.ScheduleQueue.Core.Tests
             Assert.IsFalse(result.Any());
         }
 
-        [Test]
+	    [Test]
+	    public void GetAllScheduledJobs()
+		{
+			DataTable dataTable = GetDataTableWithRow();
+			IJobServiceDataProvider dataProvider = _mockDataProvider;
+			dataProvider.GetAllJobs().Returns(dataTable);
+			var service = new JobService(_agentService, dataProvider, _mockEmptyDbHelper);
+
+			// ACT
+			IEnumerable<Job> result = service.GetAllScheduledJobs();
+
+			Assert.IsTrue(result.Any());
+		}
+
+		[Test]
         public void UpdateStopState_RunsUpdateStopState()
         {
             var jobIds = new List<long> { 1, 2 };

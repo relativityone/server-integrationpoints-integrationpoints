@@ -529,6 +529,7 @@
     <Compile Include="Services\Export\ImageTransferDataReaderTests.cs" />
     <Compile Include="Services\IntegrationPointProfileServiceTests.cs" />
     <Compile Include="Services\JobHistory\DestinationParserTests.cs" />
+    <Compile Include="Services\JobHistory\UnfinishedJobServiceTests.cs" />
     <Compile Include="Services\JobTrackerTests.cs" />
     <Compile Include="SetupAndTeardown.cs" />
     <Compile Include="JobHelper.cs" />

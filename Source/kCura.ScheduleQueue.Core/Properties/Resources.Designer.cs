@@ -236,6 +236,34 @@ namespace kCura.ScheduleQueue.Core.Properties {
         ///			,[SubmittedBy]
         ///			,[StopState]
         ///FROM
+        ///			[eddsdbo].[{0}] WITH(NOLOCK).
+        /// </summary>
+        internal static string GetAllJobs {
+            get {
+                return ResourceManager.GetString("GetAllJobs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SELECT 
+        ///			[JobID]
+        ///			,[RootJobID]
+        ///			,[ParentJobID]
+        ///			,[AgentTypeID]
+        ///			,[LockedByAgentID]
+        ///			,[WorkspaceID]
+        ///			,[RelatedObjectArtifactID]
+        ///			,[TaskType]
+        ///			,[NextRunTime]
+        ///			,[LastRunTime]
+        ///			,[ScheduleRuleType]
+        ///			,[ScheduleRule]
+        ///			,[JobDetails]
+        ///			,[JobFlags]
+        ///			,[SubmittedDate]
+        ///			,[SubmittedBy]
+        ///			,[StopState]
+        ///FROM
         ///			[eddsdbo].[{0}] WITH(NOLOCK)
         ///WHERE
         ///			JobID = @JobID

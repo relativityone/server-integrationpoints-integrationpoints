@@ -148,6 +148,8 @@
     <Compile Include="Extensions\ObjectQueryResultSetExtensions.cs" />
     <Compile Include="Extensions\ResultSetExtensions.cs" />
     <Compile Include="Extensions\TaskExtension.cs" />
+    <Compile Include="Factories\IRSAPIServiceFactory.cs" />
+    <Compile Include="Factories\Implementations\RSAPIServiceFactory.cs" />
     <Compile Include="GenericLibraryFactory.cs" />
     <Compile Include="Helpers\ApiHelper.cs" />
     <Compile Include="IChoiceQuery.cs" />
@@ -175,6 +177,8 @@
     <Compile Include="QueryBuilders\Implementations\QueryBuilder.cs" />
     <Compile Include="QueryBuilders\Implementations\SourceProviderArtifactIdByGuidQueryBuilder.cs" />
     <Compile Include="QueryBuilders\ISourceProviderArtifactIdByGuidQueryBuilder.cs" />
+    <Compile Include="Repositories\ApplicationRepository.cs" />
+    <Compile Include="Repositories\IApplicationRepository.cs" />
     <Compile Include="Repositories\Implementations\ProductionRepository.cs" />
     <Compile Include="Repositories\IProductionRepository.cs" />
     <Compile Include="Repositories\IKeywordSearchRepository.cs" />

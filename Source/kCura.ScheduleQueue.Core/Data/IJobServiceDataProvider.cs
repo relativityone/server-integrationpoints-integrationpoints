@@ -20,7 +20,8 @@ namespace kCura.ScheduleQueue.Core.Data
 
         DataTable GetJobs(int workspaceId, int relatedObjectArtifactId, string taskType);
         DataTable GetJobs(int workspaceId, int relatedObjectArtifactId, List<string> taskTypes);
-        int UpdateStopState(IList<long> jobIds, StopState state);
+	    DataTable GetAllJobs();
+		int UpdateStopState(IList<long> jobIds, StopState state);
         void CleanupJobQueueTable();
         void UnlockScheduledJob(int agentId);
     }

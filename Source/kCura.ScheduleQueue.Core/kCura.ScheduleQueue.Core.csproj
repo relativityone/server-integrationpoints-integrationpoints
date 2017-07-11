@@ -110,6 +110,7 @@
     <Compile Include="Data\Queries\AddStopStateColumnToQueueTable.cs" />
     <Compile Include="Data\Queries\CleanupJobQueueTable.cs" />
     <Compile Include="Data\Queries\CreateJobLogTable.cs" />
+    <Compile Include="Data\Queries\GetAllJobs.cs" />
     <Compile Include="Data\Queries\GetJobByRelatedObjectIdAndTaskType.cs" />
     <Compile Include="Data\Queries\GetJobsByIntegrationPointId.cs" />
     <Compile Include="Data\Queries\InsertJobLogEntry.cs" />
@@ -164,6 +165,7 @@
   <ItemGroup>
     <Content Include="Data\Resources\CleanupJobQueueTable.sql" />
     <Content Include="Data\Resources\AddStopStateColumnToQueueTable.sql" />
+    <Content Include="Data\Resources\GetAllJobs.sql" />
     <Content Include="Data\Resources\GetJobByRelatedObjectIDandTaskType.sql" />
     <Content Include="Data\Resources\InsertJobLogEntry.sql" />
     <Content Include="Data\Resources\CreateJobLogTable.sql" />

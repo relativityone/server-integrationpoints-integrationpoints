@@ -31,6 +31,8 @@ namespace kCura.ScheduleQueue.Core
 
 		IEnumerable<Job> GetScheduledJobs(int workspaceID, int relatedObjectArtifactID, List<string> taskTypes);
 
+		IEnumerable<Job> GetAllScheduledJobs();
+
 		void UpdateStopState(IList<long> jobIds, StopState state);
 
 		/// <summary>
