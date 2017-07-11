@@ -235,6 +235,7 @@
     </Compile>
     <Compile Include="Attributes\WebAPIFilterExceptionTests.cs" />
     <Compile Include="Controllers\API\FieldCatalogControllerTests.cs" />
+    <Compile Include="Controllers\API\FieldMapControllerTests.cs" />
     <Compile Include="Controllers\API\ImportPrevewControllerTests.cs" />
     <Compile Include="Controllers\API\ImportProviderDocumentControllerTests.cs" />
     <Compile Include="Controllers\API\ImportProviderImageControllerTests.cs" />
