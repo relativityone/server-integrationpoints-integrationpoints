@@ -225,7 +225,12 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Services.Interfaces.Private\kCura.IntegrationPoints.Services.Interfaces.Private.csproj">
+      <Project>{b8bf6d01-e190-4c2c-b07f-3b627ffc1bfc}</Project>
+      <Name>kCura.IntegrationPoints.Services.Interfaces.Private</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\kCura.9.5.182.17\build\kCura.targets" Condition="Exists('..\packages\kCura.9.5.182.17\build\kCura.targets')" />
   <PropertyGroup>
