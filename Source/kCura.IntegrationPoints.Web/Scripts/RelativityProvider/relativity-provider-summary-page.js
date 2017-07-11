@@ -85,7 +85,7 @@ var loadData = function (ko, dataContainer) {
 			return self.productionPrecedence() +  self.imagePrecedence();
 		}, self);
 		this.copyFilesToRepository = formatToYesOrNo(dataContainer.destinationConfiguration.importNativeFile);
-
+		this.createSavedSearch = formatToYesOrNo(dataContainer.destinationConfiguration.CreateSavedSearchForTagging);
 		this.stats = new SavedSearchStatistics(dataContainer.sourceConfiguration, dataContainer.destinationConfiguration);
 		
 	};
