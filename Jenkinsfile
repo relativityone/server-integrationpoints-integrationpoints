@@ -24,6 +24,14 @@ installing_datagrid = 'false'
 knife = "C:\\Python27\\Lib\\site-packages\\jeeves\\knife.rb"
 username = "testing\\Administrator"
 password = "P@ssw0rd@1"
+def is_nightly_test_execution_develop = true
+
+try {
+	println "  nightly_test_execution_develop=$nightly_test_execution_develop"
+}
+catch (MissingPropertyException e) {
+	is_nightly_test_execution_develop = false
+}
 
 //region GlobalVariables
 installing_relativity = (installing_relativity == 'true') ? true : false
@@ -135,11 +143,54 @@ stage('Get Server') {
     }
 }
 
+def execute_nunit_tests(String test_dll, String tests_filter, String session_id, String phase){
+
+	def where_clause = "_SKIPREASON !~ .+"
+	
+	if(tests_filter != ''){
+		where_clause = where_clause + ' && ' + tests_filter
+	}
+	
+	dir('c:/SourceCode/integrationpoints'){
+		try {
+			bat String.format('"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" C:\\SourceCode\\integrationpoints\\lib\\UnitTests\\%1$s --where "%2$s" --inprocess --result=C:\\SourceCode\\integrationpoints\\nunit-result.xml;format=nunit2', "$test_dll", "$where_clause")
+		} catch(Exception e){ }
+		
+		//To provide compatibility with 'nunit_curiosity_listener' script we need to remove 'Properties' node from TestCase
+		def commandString =  """Get-ChildItem .\\nunit-result.xml | %% {; 	[Xml]\$xml = Get-Content \$_.FullName;    \$xml | Select-Xml -XPath '//*[local-name() = ''properties'']' | ForEach-Object{\$_.Node.ParentNode.RemoveChild(\$_.Node)};    \$xml.OuterXml | Out-File .\\result.xml -encoding 'UTF8'; }"""
+		bat String.format('powershell.exe "%s"', commandString)
+				
+		//And also ensure there is no Skipped test as 'nunit_curiosity_listener' doesn't handle 'Skipped; state
+		commandString =  """Get-ChildItem .\\result.xml | %% {; 	[Xml]\$xml = Get-Content \$_.FullName; 	\$xml | Select-Xml -XPath '//*[@result = ''Skipped'']' | ForEach-Object{echo \$_.Node.LocalName; if(\$_.Node.LocalName -eq 'test-case'){\$_.Node.ParentNode.RemoveChild(\$_.Node)}}; \$xml.OuterXml | Out-File .\\result.xml -encoding 'UTF8'; }"""
+				bat String.format('powershell.exe "%s"', commandString)
+		
+		//Finally we can run 'nunit_curiosity_listener' as we're almost certain there will be no problems
+		bat String.format('python C:\\Python27\\Talos\\bin\\listeners\\nunit_curiosity_listener.py --phase %2$s -p C:\\SourceCode\\integrationpoints\\result.xml --session_id %1$s', session_id, phase)
+		
+		bat 'powershell.exe Remove-Item C:\\SourceCode\\integrationpoints\\nunit-result.xml'
+	}
+}
+
 // WTF Java has a 64kb limit for any function that it runs.
 // This means that the number of steps that we can run is limited.
 // https://issues.jenkins-ci.org/browse/JENKINS-37984
-def build_tests(String server_name, String domain, String session_id, String relativity_branch, String automation_branch, Boolean installing_invariant, Boolean installing_datagrid) {
-		bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" lib\\UnitTests\\kCura.IntegrationPoints.Agent.Tests.Integration.dll lib\\UnitTests\\kCura.IntegrationPoints.Core.Tests.Integration.dll lib\\UnitTests\\kCura.IntegrationPoints.Data.Tests.Integration.dll lib\\UnitTests\\kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration.dll lib\\UnitTests\\kCura.IntegrationPoints.EventHandlers.Tests.Integration.dll lib\\UnitTests\\kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.dll lib\\UnitTests\\kCura.IntegrationPoints.Services.Tests.Integration.dll lib\\UnitTests\\kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration.dll lib\\UnitTests\\kCura.IntegrationPoints.Web.Tests.Integration.dll lib\\UnitTests\\kCura.ScheduleQueue.Core.Tests.Integration.dll --where "cat == SmokeTest" --inprocess --result=C:\\SourceCode\\integrationpoints\\nunit-result.xml;format=nunit2'
+def build_tests(String server_name, String domain, String session_id, String relativity_branch, String automation_branch, Boolean installing_invariant, Boolean installing_datagrid, Boolean is_nightly_test_execution_develop) {
+		def tests_filter = "cat == SmokeTest"
+		if (is_nightly_test_execution_develop) {
+			tests_filter = ""
+		}
+		
+		//Integration tests
+		execute_nunit_tests("kCura.IntegrationPoints.Agent.Tests.Integration.dll", tests_filter, session_id, "production")
+		execute_nunit_tests("kCura.IntegrationPoints.Core.Tests.Integration.dll", tests_filter, session_id, "production")
+		execute_nunit_tests("kCura.IntegrationPoints.Data.Tests.Integration.dll", tests_filter, session_id, "production")
+		execute_nunit_tests("kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration.dll", tests_filter, session_id, "production")
+		execute_nunit_tests("kCura.IntegrationPoints.EventHandlers.Tests.Integration.dll", tests_filter, session_id, "production")
+		execute_nunit_tests("kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.dll", tests_filter, session_id, "production")
+		execute_nunit_tests("kCura.IntegrationPoints.Services.Tests.Integration.dll", tests_filter, session_id, "production")
+		execute_nunit_tests("kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration.dll", tests_filter, session_id, "production")
+		execute_nunit_tests("kCura.IntegrationPoints.Web.Tests.Integration.dll", tests_filter, session_id, "production")
+		execute_nunit_tests("kCura.ScheduleQueue.Core.Tests.Integration.dll", tests_filter, session_id, "production")
 		
 		//RIP_System_Tests: {build job: 'test.Parameterized.Robot', parameters: [
     	//	[$class: 'NodeParameterValue', name: 'node_label', labels: [server_name], nodeEligibility: [$class: 'AllNodeEligibility']],
@@ -156,14 +207,18 @@ def build_tests(String server_name, String domain, String session_id, String rel
 try {
 
 	node('buildslave') {
-
 		stage('IP Build & UnitTests') {
 						
 			dir('C:/SourceCode') {
 				bat 'powershell.exe "taskkill /f /im msbuild.exe /T /fi \'IMAGENAME eq msbuild.exe\'"'
 
+				def rip_branch = env.BRANCH_NAME
+				if (is_nightly_test_execution_develop) {
+					rip_branch = '*/develop'
+				}
+				
 				checkout([$class : 'GitSCM',
-						branches : [[name : env.BRANCH_NAME]],
+						branches : [[name : rip_branch]],
 						doGenerateSubmoduleConfigurations : false,
 						extensions :
 						[[$class : 'CleanBeforeCheckout'],
@@ -178,10 +233,25 @@ try {
 			dir('C:/SourceCode/integrationpoints') {
 				bat 'powershell.exe "& {./build.ps1 release; exit $lastexitcode}"'
 			}			
-
-			dir('C:/SourceCode/integrationpoints') {
-				bat 'powershell.exe "& {./build.ps1 -test -skip; exit $lastexitcode}"'
-			}			
+			
+			//Unit tests
+			execute_nunit_tests("kCura.IntegrationPoints.Agent.Tests.dll", "", session_id, "staged")
+			execute_nunit_tests("kCura.IntegrationPoints.Core.Contracts.Tests.dll", "", session_id, "staged")
+			execute_nunit_tests("kCura.IntegrationPoints.Core.Tests.dll", "", session_id, "staged")
+			execute_nunit_tests("kCura.IntegrationPoints.Data.Tests.dll", "", session_id, "staged")
+			execute_nunit_tests("kCura.IntegrationPoints.DocumentTransferProvider.Tests.dll", "", session_id, "staged")
+			execute_nunit_tests("kCura.IntegrationPoints.EventHandlers.Tests.dll", "", session_id, "staged")
+			execute_nunit_tests("kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.dll", "", session_id, "staged")
+			execute_nunit_tests("kCura.IntegrationPoints.FtpProvider.Helpers.Tests.dll", "", session_id, "staged")
+			execute_nunit_tests("kCura.IntegrationPoints.FtpProvider.Parser.Tests.dll", "", session_id, "staged")
+			execute_nunit_tests("kCura.IntegrationPoints.FtpProvider.Tests.dll", "", session_id, "staged")
+			execute_nunit_tests("kCura.IntegrationPoints.ImportProvider.Parser.Tests.dll", "", session_id, "staged")
+			execute_nunit_tests("kCura.IntegrationPoints.ImportProvider.Tests.dll", "", session_id, "staged")
+			execute_nunit_tests("kCura.IntegrationPoints.Services.Tests.dll", "", session_id, "staged")
+			execute_nunit_tests("kCura.IntegrationPoints.Synchronizers.RDO.Tests.dll", "", session_id, "staged")
+			execute_nunit_tests("kCura.IntegrationPoints.Web.Tests.dll", "", session_id, "staged")
+			execute_nunit_tests("kCura.ScheduleQueue.Core.Tests.dll", "", session_id, "staged")
+			
 
 			dir('C:/SourceCode/integrationpoints') {
 				stash includes: 'lib/UnitTests/*', name: 'testdlls'				
@@ -327,7 +397,7 @@ try {
 				unstash 'testdata_natives'
 				unstash 'integrationPointsRap'
 
-				build_tests(server_name, domain, session_id, relativity_branch, automation_branch, installing_invariant, installing_datagrid)
+				build_tests(server_name, domain, session_id, relativity_branch, automation_branch, installing_invariant, installing_datagrid, is_nightly_test_execution_develop)
 			}	
 		}
 	}	
