@@ -89,7 +89,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IIntegrationPointService>().ImplementedBy<IntegrationPointService>().LifestyleTransient());
 			container.Register(Component.For<IIntegrationPointProfileService>().ImplementedBy<IntegrationPointProfileService>().LifestyleTransient());
 			container.Register(Component.For<IIntegrationPointTypeService>().ImplementedBy<IntegrationPointTypeService>().LifestyleTransient());
-			container.Register(Component.For<GetSourceProviderRdoByIdentifier>().ImplementedBy<GetSourceProviderRdoByIdentifier>().LifestyleTransient());
+			container.Register(Component.For<IGetSourceProviderRdoByIdentifier>().ImplementedBy<GetSourceProviderRdoByIdentifier>().LifestyleTransient());
 			container.Register(Component.For<IBatchStatus>().ImplementedBy<BatchEmail>().LifestyleTransient());
 			container.Register(Component.For<IBatchStatus>().ImplementedBy<JobHistoryBatchUpdateStatus>().LifestyleTransient());
 			container.Register(Component.For<ISourceTypeFactory>().ImplementedBy<SourceTypeFactory>().LifestyleTransient());
