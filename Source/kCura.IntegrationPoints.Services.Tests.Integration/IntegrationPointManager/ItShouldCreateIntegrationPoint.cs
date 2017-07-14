@@ -3,6 +3,8 @@ using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.SecretStore;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core;
+using kCura.IntegrationPoints.Services.Interfaces.Private.Models;
 using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Newtonsoft.Json;
@@ -158,12 +160,12 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 		[Test]
 		public void ItShouldCreateIntegrationPointWithEncryptedCredentials()
 		{
-			string username = "username_933";
-			string password = "password_729";
+			var username = "username_933";
+			var password = "password_729";
 
-			var overwriteFieldsModel = _client.GetOverwriteFieldsChoicesAsync(SourceWorkspaceArtifactId).Result.First(x => x.Name == "Append/Overlay");
+			OverwriteFieldsModel overwriteFieldsModel = _client.GetOverwriteFieldsChoicesAsync(SourceWorkspaceArtifactId).Result.First(x => x.Name == "Append/Overlay");
 
-			var createRequest = IntegrationPointBaseHelper.CreateCreateIntegrationPointRequest(Helper, RepositoryFactory, SourceWorkspaceArtifactId, SavedSearchArtifactId,
+			CreateIntegrationPointRequest createRequest = IntegrationPointBaseHelper.CreateCreateIntegrationPointRequest(Helper, RepositoryFactory, SourceWorkspaceArtifactId, SavedSearchArtifactId, TypeOfExport,
 				TargetWorkspaceArtifactId, false, true, false, string.Empty, "Use Field Settings", overwriteFieldsModel,
 				GetDefaultFieldMap().ToList(), false);
 
@@ -173,16 +175,16 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 				Password = password
 			};
 
-			var integrationPointModel = _client.CreateIntegrationPointAsync(createRequest).Result;
+			IntegrationPointModel integrationPointModel = _client.CreateIntegrationPointAsync(createRequest).Result;
 
 			var actualSecretId =
 				Helper.GetDBContext(SourceWorkspaceArtifactId)
 					.ExecuteSqlStatementAsScalar<string>($"SELECT SecuredConfiguration FROM [IntegrationPoint] WHERE ArtifactID = {integrationPointModel.ArtifactId}");
 
-			var integrationPoint = new RsapiClientLibrary<Data.IntegrationPoint>(Helper, SourceWorkspaceArtifactId).Read(integrationPointModel.ArtifactId);
+			Data.IntegrationPoint integrationPoint = new RsapiClientLibrary<Data.IntegrationPoint>(Helper, SourceWorkspaceArtifactId).Read(integrationPointModel.ArtifactId);
 
-			var actualSecret = ReadSecret(integrationPoint.SecuredConfiguration);
-			var expectedSecret = JsonConvert.SerializeObject(createRequest.IntegrationPoint.SecuredConfiguration);
+			string actualSecret = ReadSecret(integrationPoint.SecuredConfiguration);
+			string expectedSecret = JsonConvert.SerializeObject(createRequest.IntegrationPoint.SecuredConfiguration);
 			Assert.That(actualSecretId, Is.EqualTo(integrationPoint.SecuredConfiguration));
 			Assert.That(actualSecret, Is.EqualTo(expectedSecret));
 		}
@@ -195,16 +197,16 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 		public void ItShouldCreateRelativityIntegrationPoint(bool importNativeFile, bool logErrors, bool useFolderPathInformation, string emailNotificationRecipients,
 			string fieldOverlayBehavior, string overwriteFieldsChoices, bool promoteEligible)
 		{
-			var overwriteFieldsModel = _client.GetOverwriteFieldsChoicesAsync(SourceWorkspaceArtifactId).Result.First(x => x.Name == overwriteFieldsChoices);
+			OverwriteFieldsModel overwriteFieldsModel = _client.GetOverwriteFieldsChoicesAsync(SourceWorkspaceArtifactId).Result.First(x => x.Name == overwriteFieldsChoices);
 
-			var createRequest = IntegrationPointBaseHelper.CreateCreateIntegrationPointRequest(Helper, RepositoryFactory, SourceWorkspaceArtifactId, SavedSearchArtifactId,
-				TargetWorkspaceArtifactId,
-				importNativeFile, logErrors, useFolderPathInformation, emailNotificationRecipients, fieldOverlayBehavior, overwriteFieldsModel, GetDefaultFieldMap().ToList(), promoteEligible);
+			CreateIntegrationPointRequest createRequest = IntegrationPointBaseHelper.CreateCreateIntegrationPointRequest(Helper, RepositoryFactory, SourceWorkspaceArtifactId, SavedSearchArtifactId, TypeOfExport,
+				TargetWorkspaceArtifactId, importNativeFile, logErrors, useFolderPathInformation, emailNotificationRecipients, fieldOverlayBehavior, overwriteFieldsModel, 
+				GetDefaultFieldMap().ToList(), promoteEligible);
 
-			var createdIntegrationPoint = _client.CreateIntegrationPointAsync(createRequest).Result;
+			IntegrationPointModel createdIntegrationPoint = _client.CreateIntegrationPointAsync(createRequest).Result;
 
-			var actualIntegrationPoint = CaseContext.RsapiService.IntegrationPointLibrary.Read(createdIntegrationPoint.ArtifactId);
-			var expectedIntegrationPointModel = createRequest.IntegrationPoint;
+			Data.IntegrationPoint actualIntegrationPoint = CaseContext.RsapiService.IntegrationPointLibrary.Read(createdIntegrationPoint.ArtifactId);
+			IntegrationPointModel expectedIntegrationPointModel = createRequest.IntegrationPoint;
 
 			IntegrationPointBaseHelper.AssertIntegrationPointModelBase(actualIntegrationPoint, expectedIntegrationPointModel, new IntegrationPointFieldGuidsConstants());
 		}

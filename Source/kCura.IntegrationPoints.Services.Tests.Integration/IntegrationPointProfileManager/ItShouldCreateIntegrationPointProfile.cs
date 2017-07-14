@@ -2,6 +2,7 @@
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Services.Interfaces.Private.Models;
 using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
@@ -37,17 +38,16 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointPro
 		public void ItShouldCreateRelativityIntegrationPoint(bool importNativeFile, bool logErrors, bool useFolderPathInformation, string emailNotificationRecipients,
 			string fieldOverlayBehavior, string overwriteFieldsChoices, bool promoteEligible)
 		{
-			var overwriteFieldsModel = _client.GetOverwriteFieldsChoicesAsync(SourceWorkspaceArtifactId).Result.First(x => x.Name == overwriteFieldsChoices);
+			OverwriteFieldsModel overwriteFieldsModel = _client.GetOverwriteFieldsChoicesAsync(SourceWorkspaceArtifactId).Result.First(x => x.Name == overwriteFieldsChoices);
 
-			var createRequest = IntegrationPointBaseHelper.CreateCreateIntegrationPointRequest(Helper, RepositoryFactory, SourceWorkspaceArtifactId, SavedSearchArtifactId,
-				TargetWorkspaceArtifactId,
-				importNativeFile, logErrors, useFolderPathInformation, emailNotificationRecipients, fieldOverlayBehavior, overwriteFieldsModel, GetDefaultFieldMap().ToList(),
+			CreateIntegrationPointRequest createRequest = IntegrationPointBaseHelper.CreateCreateIntegrationPointRequest(Helper, RepositoryFactory, SourceWorkspaceArtifactId, SavedSearchArtifactId, TypeOfExport,
+				TargetWorkspaceArtifactId, importNativeFile, logErrors, useFolderPathInformation, emailNotificationRecipients, fieldOverlayBehavior, overwriteFieldsModel, GetDefaultFieldMap().ToList(),
 				promoteEligible);
 
-			var createdIntegrationPointProfile = _client.CreateIntegrationPointProfileAsync(createRequest).Result;
+			IntegrationPointModel createdIntegrationPointProfile = _client.CreateIntegrationPointProfileAsync(createRequest).Result;
 
-			var actualIntegrationPointProfile = CaseContext.RsapiService.IntegrationPointProfileLibrary.Read(createdIntegrationPointProfile.ArtifactId);
-			var expectedIntegrationPointModel = createRequest.IntegrationPoint;
+			IntegrationPointProfile actualIntegrationPointProfile = CaseContext.RsapiService.IntegrationPointProfileLibrary.Read(createdIntegrationPointProfile.ArtifactId);
+			IntegrationPointModel expectedIntegrationPointModel = createRequest.IntegrationPoint;
 
 			IntegrationPointBaseHelper.AssertIntegrationPointModelBase(actualIntegrationPointProfile, expectedIntegrationPointModel,
 				new IntegrationPointProfileFieldGuidsConstants());

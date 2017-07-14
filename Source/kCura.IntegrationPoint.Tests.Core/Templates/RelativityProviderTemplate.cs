@@ -35,6 +35,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		public int SourceWorkspaceArtifactId { get; protected set; }
 		public int TargetWorkspaceArtifactId { get; protected set; }
 		public int SavedSearchArtifactId { get; set; }
+		public int TypeOfExport { get; set; }
 		public int FolderArtifactId { get; set; }
 
 		public RelativityProviderTemplate(string sourceWorkspaceName, string targetWorkspaceName,
@@ -176,6 +177,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				: await Task.Run(() => Workspace.CreateWorkspace(_targetWorkspaceName, _targetWorkspaceTemplate));
 
 			SavedSearchArtifactId = await Task.Run(() => SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactId, "All documents"));
+			TypeOfExport = (int)SourceConfiguration.ExportType.SavedSearch;
 		}
 
 		protected IntegrationPointModel CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum overwriteMode, string name, string overwrite, bool promoteEligible = true)

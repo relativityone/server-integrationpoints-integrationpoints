@@ -12,6 +12,7 @@ using NUnit.Framework;
 using Relativity;
 using Relativity.Services.Folder;
 using Constants = kCura.IntegrationPoints.Core.Constants;
+using ExportSettings = kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportSettings;
 
 namespace kCura.IntegrationPoints.Services.Tests.Integration.Helpers
 {
@@ -52,7 +53,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.Helpers
 		}
 
 		public static CreateIntegrationPointRequest CreateCreateIntegrationPointRequest(ITestHelper helper, IRepositoryFactory repositoryFactory, int workspaceArtifactId,
-			int savedSearchArtifactId, int targetWorkspaceArtifactId, bool importNativeFile, bool logErrors, bool useFolderPathInformation, string emailNotificationRecipients,
+			int savedSearchArtifactId, int typeOfExport, int targetWorkspaceArtifactId, bool importNativeFile, bool logErrors, bool useFolderPathInformation, string emailNotificationRecipients,
 			string fieldOverlayBehavior, OverwriteFieldsModel overwriteFieldsModel, List<FieldMap> fieldMappings, bool promoteEligible)
 		{
 			var folderPathSourceField = 0;
@@ -75,7 +76,8 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.Helpers
 			var expectedSourceConfiguration = new RelativityProviderSourceConfiguration
 			{
 				SourceWorkspaceArtifactId = workspaceArtifactId,
-				SavedSearchArtifactId = savedSearchArtifactId
+				SavedSearchArtifactId = savedSearchArtifactId,
+				TypeOfExport = typeOfExport
 			};
 			var expectedIntegrationPointModel = new IntegrationPointModel
 			{

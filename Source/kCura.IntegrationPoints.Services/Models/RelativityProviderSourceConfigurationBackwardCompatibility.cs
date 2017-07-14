@@ -10,6 +10,7 @@
 		///     This is not used - DestinationFolderArtifactId
 		/// </summary>
 		public int FolderArtifactId { get; }
+		public int TypeOfExport { get; }
 
 		public RelativityProviderSourceConfigurationBackwardCompatibility(RelativityProviderSourceConfiguration sourceConfiguration,
 			RelativityProviderDestinationConfiguration destinationConfiguration)
@@ -18,6 +19,7 @@
 			SourceWorkspaceArtifactId = sourceConfiguration.SourceWorkspaceArtifactId;
 			TargetWorkspaceArtifactId = destinationConfiguration.CaseArtifactId;
 			FolderArtifactId = destinationConfiguration.DestinationFolderArtifactId;
+			TypeOfExport = sourceConfiguration.TypeOfExport;
 		}
 	}
 }
