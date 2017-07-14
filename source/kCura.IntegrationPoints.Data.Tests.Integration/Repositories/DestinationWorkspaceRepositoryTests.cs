@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
-			IRepositoryFactory repositoryFactory = Container.Resolve<IRepositoryFactory>();
+			var repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_destinationWorkspaceRepository = repositoryFactory.GetDestinationWorkspaceRepository(SourceWorkspaceArtifactId);
 			_destinationWorkspaceDto = _destinationWorkspaceRepository.Create(SourceWorkspaceArtifactId, "DestinationWorkspaceRepositoryTests", -1, "This Instance");
 			var federatedInstanceManager = Substitute.For<IFederatedInstanceManager>();
@@ -69,7 +69,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		public void Query_DestinationWorkspaceDto_Success()
 		{
 			//Act
-			DestinationWorkspace queriedDestinationWorkspaceDto = _destinationWorkspaceRepository.Query(SourceWorkspaceArtifactId, -1);
+			var queriedDestinationWorkspaceDto = _destinationWorkspaceRepository.Query(SourceWorkspaceArtifactId, -1);
 
 			//Assert
 			Assert.AreEqual(_destinationWorkspaceDto.ArtifactId, queriedDestinationWorkspaceDto.ArtifactId);
@@ -81,7 +81,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		public void Query_DestinationWorkspaceDto_ReturnsNull()
 		{
 			//Act
-			DestinationWorkspace queriedDestinationWorkspaceDto = _destinationWorkspaceRepository.Query(-1, -1);
+			var queriedDestinationWorkspaceDto = _destinationWorkspaceRepository.Query(-1, -1);
 
 			//Assert
 			Assert.IsNull(queriedDestinationWorkspaceDto);
@@ -93,7 +93,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			//Arrange
 			const string expectedWorkspaceName = "Updated Workspace";
 
-			DestinationWorkspace destinationWorkspaceDto = new DestinationWorkspace
+			var destinationWorkspaceDto = new DestinationWorkspace
 			{
 				ArtifactId = _destinationWorkspaceDto.ArtifactId,
 				DestinationWorkspaceArtifactID = _destinationWorkspaceDto.DestinationWorkspaceArtifactID,
@@ -103,7 +103,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 
 			//Act
 			_destinationWorkspaceRepository.Update(destinationWorkspaceDto);
-			DestinationWorkspace updatedDestinationWorkspaceDto = _destinationWorkspaceRepository.Query(SourceWorkspaceArtifactId, -1);
+			var updatedDestinationWorkspaceDto = _destinationWorkspaceRepository.Query(SourceWorkspaceArtifactId, -1);
 
 			//Assert
 			Assert.AreEqual(_destinationWorkspaceDto.ArtifactId, updatedDestinationWorkspaceDto.ArtifactId);
@@ -117,7 +117,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		public void Link_JobHistoryErrorToDestinationWorkspace_Success(int? federatedInstanceArtifactId)
 		{
 			//Arrange
-			IntegrationPointModel integrationModel = new IntegrationPointModel
+			var integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly, federatedInstanceArtifactId),
 				DestinationProvider = DestinationProvider.ArtifactId,
@@ -134,15 +134,15 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
 			};
 
-			IntegrationPointModel integrationModelCreated = CreateOrUpdateIntegrationPoint(integrationModel);
-			IntegrationPoint integrationPoint = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationModelCreated.ArtifactID);
+			var integrationModelCreated = CreateOrUpdateIntegrationPoint(integrationModel);
+			var integrationPoint = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationModelCreated.ArtifactID);
 
-			Guid batchInstance = Guid.NewGuid();
-			JobHistory jobHistory = _jobHistoryService.CreateRdo(integrationPoint, batchInstance, JobTypeChoices.JobHistoryRun, DateTime.Now);
+			var batchInstance = Guid.NewGuid();
+			var jobHistory = _jobHistoryService.CreateRdo(integrationPoint, batchInstance, JobTypeChoices.JobHistoryRun, DateTime.Now);
 
 			//Act
 			_destinationWorkspaceRepository.LinkDestinationWorkspaceToJobHistory(_destinationWorkspaceDto.ArtifactId, jobHistory.ArtifactId);
-			JobHistory linkedJobHistory = _jobHistoryService.GetRdo(batchInstance);
+			var linkedJobHistory = _jobHistoryService.GetRdo(batchInstance);
 
 			//Assert
 			Assert.AreEqual($"DestinationWorkspaceRepositoryTests - {SourceWorkspaceArtifactId}", linkedJobHistory.DestinationWorkspace);
@@ -150,16 +150,15 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		}
 
 		[Test]
-		[Ignore("Test doesn't work and needs fix")]
 		public void Tag_DocumentsWithDestinationWorkspaceAndJobHistory_Success()
 		{
 			//Arrange
-			DataTable dataTable = Import.GetImportTable("DocsToTag", 10);
+			var dataTable = Import.GetImportTable("DocsToTag", 10);
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, dataTable);
-			int[] documentArtifactIds = _documentRepository.RetrieveDocumentByIdentifierPrefixAsync(Fields.GetDocumentIdentifierFieldName(_fieldQueryRepository), "DocsToTag").ConfigureAwait(false).GetAwaiter().GetResult();
+			var documentArtifactIds = _documentRepository.RetrieveDocumentByIdentifierPrefixAsync(Fields.GetDocumentIdentifierFieldName(_fieldQueryRepository), "DocsToTag").ConfigureAwait(false).GetAwaiter().GetResult();
 			_scratchTableRepository.AddArtifactIdsIntoTempTable(documentArtifactIds);
 
-			IntegrationPointModel integrationModel = new IntegrationPointModel
+			var integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
@@ -176,11 +175,11 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
 			};
 
-			IntegrationPointModel integrationModelCreated = CreateOrUpdateIntegrationPoint(integrationModel);
-			IntegrationPoint integrationPoint = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationModelCreated.ArtifactID);
+			var integrationModelCreated = CreateOrUpdateIntegrationPoint(integrationModel);
+			var integrationPoint = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationModelCreated.ArtifactID);
 
-			Guid batchInstance = Guid.NewGuid();
-			JobHistory jobHistory = _jobHistoryService.CreateRdo(integrationPoint, batchInstance, JobTypeChoices.JobHistoryRun, DateTime.Now);
+			var batchInstance = Guid.NewGuid();
+			var jobHistory = _jobHistoryService.CreateRdo(integrationPoint, batchInstance, JobTypeChoices.JobHistoryRun, DateTime.Now);
 
 			//Act
 			_destinationWorkspaceRepository.TagDocsWithDestinationWorkspaceAndJobHistory(ClaimsPrincipal.Current, 10, _destinationWorkspaceDto.ArtifactId, jobHistory.ArtifactId, _scratchTableRepository.GetTempTableName(), SourceWorkspaceArtifactId);
@@ -196,7 +195,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			IDestinationWorkspaceRepository destinationWorkspaceRepository = new DestinationWorkspaceRepository(Helper, -1, Substitute.For<IRSAPIService>());
 
 			//Act
-			DestinationWorkspace destinationWorkspace= destinationWorkspaceRepository.Create(-999, "Invalid Workspace", -1, "This Instance");
+			var destinationWorkspace= destinationWorkspaceRepository.Create(-999, "Invalid Workspace", -1, "This Instance");
 
 			//Assert
 			Assert.AreEqual(destinationWorkspace.ArtifactId, 0);
@@ -206,6 +205,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		public void Link_DestinationWorkspaceDTOWithInvalidWorkspaceId_ThrowsException()
 		{
 			//Act & Assert
+			Assert.NotNull(_destinationWorkspaceDto.DestinationWorkspaceArtifactID);
 			Assert.Throws<Exception>(() => _destinationWorkspaceRepository.LinkDestinationWorkspaceToJobHistory(_destinationWorkspaceDto.DestinationWorkspaceArtifactID.Value, -1), "Unable to link Destination Workspace object to Job History object");
 		}
 
@@ -213,7 +213,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		public void Update_DestinationWorkspaceDtoWithInvalidArtifactId_ThrowsError()
 		{
 			//Arrange
-			DestinationWorkspace destinationWorkspaceDto = new DestinationWorkspace
+			var destinationWorkspaceDto = new DestinationWorkspace
 			{
 				ArtifactId = 12345,
 				DestinationWorkspaceArtifactID = _destinationWorkspaceDto.DestinationWorkspaceArtifactID,
@@ -235,11 +235,11 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		private void VerifyDocumentTagging(int[] documentArtifactIds, string expectedJobHistory)
 		{
 			string expectedDestinationCase = $"DestinationWorkspaceRepositoryTests - { SourceWorkspaceArtifactId }";
-			int? documentJobHistoryFieldArtifactId = _fieldQueryRepository.RetrieveField((int)Relativity.Client.ArtifactType.Document, "Job History", FieldTypes.MultipleObject, new HashSet<string>() { "ArtifactID" })?.ArtifactId;
-			int? documentDestinationCaseFieldArtifactId = _fieldQueryRepository.RetrieveField((int)Relativity.Client.ArtifactType.Document, "Relativity Destination Case", FieldTypes.MultipleObject, new HashSet<string>() { "ArtifactID" })?.ArtifactId;
-			ArtifactDTO[] documentArtifacts = _documentRepository.RetrieveDocumentsAsync(documentArtifactIds, new HashSet<int>() { documentDestinationCaseFieldArtifactId.GetValueOrDefault(), documentJobHistoryFieldArtifactId.GetValueOrDefault() }).ConfigureAwait(false).GetAwaiter().GetResult();
+			var documentJobHistoryFieldArtifactId = _fieldQueryRepository.RetrieveField((int)Relativity.Client.ArtifactType.Document, "Job History", FieldTypes.MultipleObject, new HashSet<string>() { "ArtifactID" })?.ArtifactId;
+			var documentDestinationCaseFieldArtifactId = _fieldQueryRepository.RetrieveField((int)Relativity.Client.ArtifactType.Document, "Relativity Destination Case", FieldTypes.MultipleObject, new HashSet<string>() { "ArtifactID" })?.ArtifactId;
+			var documentArtifacts = _documentRepository.RetrieveDocumentsAsync(documentArtifactIds, new HashSet<int>() { documentDestinationCaseFieldArtifactId.GetValueOrDefault(), documentJobHistoryFieldArtifactId.GetValueOrDefault() }).ConfigureAwait(false).GetAwaiter().GetResult();
 
-			foreach (ArtifactDTO artifact in documentArtifacts)
+			foreach (var artifact in documentArtifacts)
 			{
 				StringAssert.Contains(expectedDestinationCase, artifact.Fields[0].Value.ToString());
 				StringAssert.Contains(expectedJobHistory, artifact.Fields[1].Value.ToString());
