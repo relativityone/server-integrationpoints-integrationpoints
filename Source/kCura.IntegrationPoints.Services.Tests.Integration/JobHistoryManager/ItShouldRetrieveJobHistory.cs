@@ -5,6 +5,7 @@ using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -63,6 +64,9 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			if (testData.IsLdapProvider)
 			{
 				integrationPointModel.SourceProvider = LdapProvider.ArtifactId;
+				integrationPointModel.Type = Container.Resolve<IIntegrationPointTypeService>()
+					.GetIntegrationPointType(kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid)
+					.ArtifactId;
 			}
 
 			var integrationPoint = CreateOrUpdateIntegrationPoint(integrationPointModel);
