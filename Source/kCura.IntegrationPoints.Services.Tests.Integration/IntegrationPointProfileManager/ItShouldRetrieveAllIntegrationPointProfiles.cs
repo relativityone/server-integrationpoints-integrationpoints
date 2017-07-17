@@ -4,6 +4,7 @@ using Castle.Core.Internal;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
@@ -28,6 +29,9 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointPro
 			var rel2 = CreateDefaultIntegrationPointProfileModel(ImportOverwriteModeEnum.AppendOnly, "Relativity_Provider_2", "Append Only", false);
 			var ldap1 = CreateDefaultIntegrationPointProfileModel(ImportOverwriteModeEnum.AppendOnly, "LDAP_Provider_1", "Append Only", true);
 			ldap1.SourceProvider = LdapProvider.ArtifactId;
+			ldap1.Type = Container.Resolve<IIntegrationPointTypeService>()
+				.GetIntegrationPointType(kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid)
+				.ArtifactId;
 
 			_expectedIntegrationPointProfiles = new List<IntegrationPointProfileModel> {rel1, rel2, ldap1};
 

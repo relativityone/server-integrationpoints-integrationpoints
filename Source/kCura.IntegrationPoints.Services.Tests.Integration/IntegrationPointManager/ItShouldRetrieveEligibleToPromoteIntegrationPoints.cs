@@ -4,6 +4,7 @@ using System.Linq;
 using Castle.Core.Internal;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
@@ -101,6 +102,9 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 			var notEligibleToPromoteLdap = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly,
 				"Relativity_Provider_4", "Append Only", false);
 			notEligibleToPromoteLdap.SourceProvider = LdapProvider.ArtifactId;
+			notEligibleToPromoteLdap.Type = Container.Resolve<IIntegrationPointTypeService>()
+				.GetIntegrationPointType(kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid)
+				.ArtifactId;
 
 			return new List<Core.Models.IntegrationPointModel>() {notEligibleToPromote1, notEligibleToPromoteLdap};
 		}
