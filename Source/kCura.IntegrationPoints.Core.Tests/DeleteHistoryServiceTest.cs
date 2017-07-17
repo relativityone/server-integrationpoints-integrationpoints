@@ -23,9 +23,9 @@ namespace kCura.IntegrationPoints.Core.Tests
 		{
 			//ARRANGE
 			var service = NSubstitute.Substitute.For<IRSAPIService>();
-			var deleteError = NSubstitute.Substitute.For<IDeleteHistoryErrorService>();
+			var integrationPointsId = new List<int>() { 1, 2 };
 
-			var deleteHistoryService = new DeleteHistoryService(service, deleteError);
+			var deleteHistoryService = new DeleteHistoryService(service);
 
 			var integrationPoint = new List<Data.IntegrationPoint>()
 			{
@@ -38,12 +38,11 @@ namespace kCura.IntegrationPoints.Core.Tests
 					JobHistory = new int[] {1, 2, 3}
 				}
 			};
-			deleteError.DeleteErrorAssociatedWithHistories(Arg.Any<List<int>>());
 
 			service.IntegrationPointLibrary.Query(Arg.Any<Query<RDO>>()).Returns(integrationPoint);
 
 			//ACT
-			deleteHistoryService.DeleteHistoriesAssociatedWithIPs(new List<int>() { 1, 2 });
+			deleteHistoryService.DeleteHistoriesAssociatedWithIPs(integrationPointsId);
 
 			//ASSERT
 			service.IntegrationPointLibrary.Received().Update(Arg.Is<IEnumerable<Data.IntegrationPoint>>(x => x.All(y => !y.JobHistory.Any())));

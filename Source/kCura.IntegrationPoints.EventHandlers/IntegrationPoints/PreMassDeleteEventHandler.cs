@@ -10,22 +10,10 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoint
 	public class PreMassDeleteEventHandler : PreMassDeleteEventHandlerBase
 	{
 		private DeleteHistoryService deleteHistoryService;
-		private DeleteHistoryErrorService deleteHistoryError;
-
-		public DeleteHistoryErrorService DeleteHistoryError
-		{
-			get
-			{
-				return deleteHistoryError ??
-							 (deleteHistoryError =
-								 new DeleteHistoryErrorService(ServiceContextFactory.CreateRSAPIService(base.Helper, base.Application.ArtifactID)));
-			}
-			set { deleteHistoryError = value; } 
-		}
-
+		
 		public DeleteHistoryService DeleteHistoryService
 		{
-			get { return deleteHistoryService ?? (deleteHistoryService = new DeleteHistoryService(ServiceContextFactory.CreateRSAPIService(base.Helper, base.Application.ArtifactID), DeleteHistoryError)); }
+			get { return deleteHistoryService ?? (deleteHistoryService = new DeleteHistoryService(ServiceContextFactory.CreateRSAPIService(base.Helper, base.Application.ArtifactID))); }
 			set { deleteHistoryService = value; }
 		}
 

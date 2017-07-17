@@ -590,8 +590,10 @@
     <Compile Include="RelativitySourceRdo\RelativitySourceRdoObjectType.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceWorkspaceRdoInitializer.cs" />
     <Compile Include="Services\IJobTracker.cs" />
+    <Compile Include="Services\JobHistory\IUnlinkedJobHistoryService.cs" />
     <Compile Include="Services\JobHistory\IUnfinishedJobService.cs" />
     <Compile Include="Services\JobHistory\UnfinishedJobService.cs" />
+    <Compile Include="Services\JobHistory\UnlinkedJobHistoryService.cs" />
     <Compile Include="Tagging\ITagSavedSearch.cs" />
     <Compile Include="Tagging\ITagSavedSearchFolder.cs" />
     <Compile Include="Tagging\ITagSavedSearchManager.cs" />

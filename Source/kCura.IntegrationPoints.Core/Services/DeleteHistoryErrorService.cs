@@ -1,39 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
-	public class DeleteHistoryErrorService :IDeleteHistoryErrorService
+	public class DeleteHistoryErrorService : IDeleteHistoryErrorService
 	{
-		private readonly IRSAPIService _context;
-		public DeleteHistoryErrorService(IRSAPIService context)
+		private readonly IRSAPIServiceFactory _rsapiServiceFactory;
+
+		public DeleteHistoryErrorService(IRSAPIServiceFactory rsapiServiceFactory)
 		{
-			_context = context;
+			_rsapiServiceFactory = rsapiServiceFactory;
 		}
 
-		public void DeleteErrorAssociatedWithHistory(int historyId)
+		public void DeleteErrorAssociatedWithHistories(List<int> historiesId, int workspaceArtifactId)
 		{
-			DeleteErrorAssociatedWithHistories(new List<int>() { historyId });
-		}
+			var rsapiService = _rsapiServiceFactory.Create(workspaceArtifactId);
 
-		public  void DeleteErrorAssociatedWithHistories(List<int> historiesId)
-		{
+			var qry = new Query<RDO>
+			{
+				Fields = FieldValue.NoFields,
+				Condition = new ObjectCondition(JobHistoryErrorFields.JobHistory, ObjectConditionEnum.AnyOfThese, historiesId)
+			};
+			var result = rsapiService.JobHistoryErrorLibrary.Query(qry);
+			var allJobHistoryError = result.Select(x => x.ArtifactId).ToList();
 
-			var qry = new Query<Relativity.Client.DTOs.RDO>();
-			qry.Fields = new List<FieldValue>()
-				{
-					new FieldValue(Guid.Parse(Data.JobHistoryErrorFieldGuids.Name))
-				};
-			qry.Condition = new ObjectCondition(Data.JobHistoryErrorFields.JobHistory, ObjectConditionEnum.AnyOfThese, historiesId);
-			var result = _context.JobHistoryErrorLibrary.Query(qry);
-			var allJobHistoryError = result.Select(jobHistoryError => jobHistoryError.ArtifactId).ToList();
-
-			_context.JobHistoryErrorLibrary.Delete(allJobHistoryError);
-
+			rsapiService.JobHistoryErrorLibrary.Delete(allJobHistoryError);
 		}
 	}
 }

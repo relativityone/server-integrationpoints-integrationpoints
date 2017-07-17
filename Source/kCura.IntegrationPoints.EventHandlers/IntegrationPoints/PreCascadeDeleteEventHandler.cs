@@ -21,7 +21,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		private IRepositoryFactory _repositoryFactory;
 
 		private IWorkspaceDBContext _workspaceDbContext;
-		private DeleteHistoryErrorService _deleteHistoryErrorService;
 
 		private DeleteHistoryService _deleteHistoryService;
 
@@ -60,18 +59,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			}
 		}
 
-		public DeleteHistoryErrorService DeleteHistoryErrorService
-		{
-			get
-			{
-				return _deleteHistoryErrorService ??
-						(_deleteHistoryErrorService =
-                                 new DeleteHistoryErrorService(
-								ServiceContextFactory.CreateRSAPIService(Helper, Application.ArtifactID)));
-			}
-			set { _deleteHistoryErrorService = value; }
-		}
-
 		public DeleteHistoryService DeleteHistoryService
 		{
 			get
@@ -79,8 +66,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				return _deleteHistoryService ??
 						(_deleteHistoryService =
                            new DeleteHistoryService(
-								ServiceContextFactory.CreateRSAPIService(Helper, Application.ArtifactID),
-                               DeleteHistoryErrorService));
+								ServiceContextFactory.CreateRSAPIService(Helper, Application.ArtifactID)));
 			}
 			set { _deleteHistoryService = value; }
 		}

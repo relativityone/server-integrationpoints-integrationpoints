@@ -219,6 +219,7 @@
     <Compile Include="IntegrationPointsManagerAgentTests.cs" />
     <Compile Include="IntegrationPointsManagerTests.cs" />
     <Compile Include="Tasks\AlertJobsWithInvalidStatusTaskTests.cs" />
+    <Compile Include="Tasks\CleanUnlinkedJobHistoryErrorsTaskTests.cs" />
     <Compile Include="Tasks\Helpers\JobsWithInvalidStatusTests.cs" />
   </ItemGroup>
   <ItemGroup>
