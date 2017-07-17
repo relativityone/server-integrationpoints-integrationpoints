@@ -1,8 +1,10 @@
 ﻿using System;
+using kCura.IntegrationPoints.Core.Monitoring;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Queries;
+using Relativity.Telemetry.APM;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
@@ -43,6 +45,9 @@ namespace kCura.IntegrationPoints.Core.Services
 				}
 				if (recent.ErrorType.EqualsToChoice(Data.ErrorTypeChoices.JobHistoryErrorJob))
 				{
+					var healthcheck = Client.APMClient.HealthCheckOperation(Constants.IntegrationPoints.Telemetry.APM_HEALTHCHECK, HealthCheck.CreateJobFailedMetric);
+					healthcheck.Write();
+
 					return Data.JobStatusChoices.JobHistoryErrorJobFailed;
 				}
 			}
