@@ -219,22 +219,21 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 		private void CheckPreviousJobHistoryStatusOnRetry(int workspaceArtifactId, int integrationPointArtifactId)
 		{
-			const string failToRetrieveJobHistory = "Unable to retrieve the previous job history.";
 			Data.JobHistory lastJobHistory = null;
 			try
 			{
-				var jobHistoryManager = ManagerFactory.CreateJobHistoryManager(SourceContextContainer);
+				IJobHistoryManager jobHistoryManager = ManagerFactory.CreateJobHistoryManager(SourceContextContainer);
 				int lastJobHistoryArtifactId = jobHistoryManager.GetLastJobHistoryArtifactId(workspaceArtifactId, integrationPointArtifactId);
 				lastJobHistory = Context.RsapiService.JobHistoryLibrary.Read(lastJobHistoryArtifactId);
 			}
 			catch (Exception exception)
 			{
-				throw new Exception(failToRetrieveJobHistory, exception);
+				throw new Exception(Constants.IntegrationPoints.FAILED_TO_RETRIEVE_JOB_HISTORY, exception);
 			}
 
 			if (lastJobHistory == null)
 			{
-				throw new Exception(failToRetrieveJobHistory);
+				throw new Exception(Constants.IntegrationPoints.FAILED_TO_RETRIEVE_JOB_HISTORY);
 			}
 
 			if (lastJobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryStopped))

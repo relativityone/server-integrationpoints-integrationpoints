@@ -35,11 +35,11 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		private IJobHistoryErrorManager _jobHistoryErrorManager;
 		private IBatchStatus _batchStatus;
 		private const int _ADMIN_USER_ID = 9;
-		private const string jobStartTempTablePrefix = "IntegrationPoint_Relativity_JobHistoryErrors_JobStart";
-		private const string jobCompleteTempTablePrefix = "IntegrationPoint_Relativity_JobHistoryErrors_JobComplete";
-		private const string itemStartIncludedTempTablePrefix = "IntegrationPoint_Relativity_JobHistoryErrors_ItemStart";
-		private const string itemStartExcludedTempTablePrefix = "IntegrationPoint_Relativity_JobHistoryErrors_ItemStart_Excluded";
-		private const string itemCompleteIncludedTempTablePrefix = "IntegrationPoint_Relativity_JobHistoryErrors_ItemComplete";
+		private const string _JOB_START_TEMP_TABLE_PREFIX = "IntegrationPoint_Relativity_JobHistoryErrors_JobStart";
+		private const string _JOB_COMPLETE_TEMP_TABLE_PREFIX = "IntegrationPoint_Relativity_JobHistoryErrors_JobComplete";
+		private const string _ITEM_START_INCLUDED_TEMP_TABLE_PREFIX = "IntegrationPoint_Relativity_JobHistoryErrors_ItemStart";
+		private const string _ITEM_START_EXCLUDED_TEMP_TABLE_PREFIX = "IntegrationPoint_Relativity_JobHistoryErrors_ItemStart_Excluded";
+		private const string _ITEM_COMPLETE_INCLUDED_TEMP_TABLE_PREFIX = "IntegrationPoint_Relativity_JobHistoryErrors_ItemComplete";
 		
 		public JobHistoryErrorsBatchingTests() : base("JobHistoryErrorsSource", null)
 		{
@@ -55,35 +55,34 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		[Test]
 		public void ExpectItemLevelJobHistoryErrorsUpdatedWithErrorsMatchingBatchSize()
 		{
-			string docPrefix = "EqualBatchDoc";
-			string expDocPrefix = "EqualBatchExp";
+			var docPrefix = "EqualBatchDoc";
+			var expDocPrefix = "EqualBatchExp";
 			ExpectJobHistoryErrorsUpdatedWithBatchingOnRetry(1, 100, docPrefix, expDocPrefix);
 		}
 
 		[Test]
 		public void ExpectItemLevelJobHistoryErrorsUpdatedWithErrorsUnderBatchSize()
 		{
-			string docPrefix = "LessThanBatchDoc";
-			string expDocPrefix = "LessThanBatchExp";
+			var docPrefix = "LessThanBatchDoc";
+			var expDocPrefix = "LessThanBatchExp";
 			ExpectJobHistoryErrorsUpdatedWithBatchingOnRetry(300, 98, docPrefix, expDocPrefix);
 		}
 
 		[Test]
 		public void ExpectItemLevelJobHistoryErrorsUpdatedWithErrorsOverBatchSize()
 		{
-			string docPrefix = "MoreThanBatchDoc";
-			string expDocPrefix = "MoreThanBatchExp";
+			var docPrefix = "MoreThanBatchDoc";
+			var expDocPrefix = "MoreThanBatchExp";
 			ExpectJobHistoryErrorsUpdatedWithBatchingOnRetry(500, 102, docPrefix, expDocPrefix);
 		}
 
 		[Test]
-		[Ignore("Test doesn't work and needs fix")]
 		public void ExpectErrorWhenRetryingErrorsOnIpWithoutAJobHistory()
 		{
 			//Arrange
-			bool errorReceived = false;
+			var errorReceived = false;
 
-			IntegrationPointModel integrationModel = new IntegrationPointModel
+			var integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
@@ -110,7 +109,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			}
 			catch (Exception ex)
 			{
-				if (ex.Message.Contains("The integration point cannot be retried as there are no errors to be retried."))
+				if (ex.Message.Contains("Unable to retrieve the previous job history"))
 				{
 					errorReceived = true;
 				}
@@ -124,17 +123,16 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		}
 
 		[Test]
-		[Ignore("Test doesn't work and needs fix")]
 		public void ExpectErrorWhenRetryingErrorsOnIpWithoutJobHistoryErrors()
 		{
 			//Arrange
-			bool errorReceived = false;
-			string docPrefix = "ErrorScenarioDoc";
+			var errorReceived = false;
+			var docPrefix = "ErrorScenarioDoc";
 
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable(1, 1, docPrefix, docPrefix));
 			SavedSearch.ModifySavedSearchByAddingPrefix(RepositoryFactory, SourceWorkspaceArtifactId, SavedSearchArtifactId, docPrefix, false);
 
-			IntegrationPointModel integrationModel = new IntegrationPointModel
+			var integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
@@ -162,7 +160,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			}
 			catch (Exception ex)
 			{
-				if (ex.Message.Contains("The integration point cannot be retried as there are no errors to be retried."))
+				if (ex.Message.Contains(Core.Constants.IntegrationPoints.FAILED_TO_RETRIEVE_JOB_HISTORY))
 				{
 					errorReceived = true;
 				}
@@ -179,13 +177,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		public void ExpectJobLevelJobHistoryErrorUpdatedForJobLevelErrorWhenBatching()
 		{
 			//Arrange
-			string docPrefix = "JobLevelImport";
-			IJobStopManager stopJobManager = NSubstitute.Substitute.For<IJobStopManager>();
-			IHelper helper = NSubstitute.Substitute.For<IHelper>();
+			var docPrefix = "JobLevelImport";
+			var stopJobManager = NSubstitute.Substitute.For<IJobStopManager>();
+			var helper = NSubstitute.Substitute.For<IHelper>();
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable(1, 1, docPrefix, docPrefix));
 			SavedSearch.ModifySavedSearchByAddingPrefix(RepositoryFactory, SourceWorkspaceArtifactId, SavedSearchArtifactId, docPrefix, false);
 
-			IntegrationPointModel integrationModel = new IntegrationPointModel
+			var integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
@@ -219,8 +217,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			//Act
 			_jobHistoryErrorManager.StageForUpdatingErrors(job, JobTypeChoices.JobHistoryRetryErrors);
 
-			string startTempTableName = $"{ jobStartTempTablePrefix }_{ tempTableSuffix }";
-			string completeTempTableName = $"{ jobCompleteTempTablePrefix }_{ tempTableSuffix }";
+			string startTempTableName = $"{ _JOB_START_TEMP_TABLE_PREFIX }_{ tempTableSuffix }";
+			string completeTempTableName = $"{ _JOB_COMPLETE_TEMP_TABLE_PREFIX }_{ tempTableSuffix }";
 			DataTable startTempTable = GetTempTable(startTempTableName);
 			_batchStatus = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, RepositoryFactory, new OnBehalfOfUserClaimsPrincipalFactory(), stopJobManager, SourceWorkspaceArtifactId, _ADMIN_USER_ID, new JobHistoryErrorDTO.UpdateStatusType());
 
@@ -240,16 +238,16 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		public void ExpectJobandItemLevelJobHistoryErrorsUpdatedWhenBatching()
 		{
 			//Arrange
-			string docPrefix = "DocForItemAndJob";
-			string expiredDocPrefix = "ExpForItemAndJob";
+			var docPrefix = "DocForItemAndJob";
+			var expiredDocPrefix = "ExpForItemAndJob";
 			DataTable importTable = GetImportTable(800, 100, docPrefix, expiredDocPrefix);
-			IJobStopManager stopJobManager = NSubstitute.Substitute.For<IJobStopManager>();
-			IHelper helper = NSubstitute.Substitute.For<IHelper>();
+			var stopJobManager = NSubstitute.Substitute.For<IJobStopManager>();
+			var helper = NSubstitute.Substitute.For<IHelper>();
 
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, importTable);
 			SavedSearch.ModifySavedSearchByAddingPrefix(RepositoryFactory, SourceWorkspaceArtifactId, SavedSearchArtifactId, docPrefix, false);
 
-			IntegrationPointModel integrationModel = new IntegrationPointModel
+			var integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
@@ -285,14 +283,14 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			//Act
 			_jobHistoryErrorManager.StageForUpdatingErrors(job, JobTypeChoices.JobHistoryRetryErrors);
 
-			string startTempTableName = $"{ jobStartTempTablePrefix }_{ tempTableSuffix }";
-			string completeTempTableName = $"{ jobCompleteTempTablePrefix }_{ tempTableSuffix }";
-			string otherTempTableName = $"{ itemStartIncludedTempTablePrefix }_{ tempTableSuffix }";
+			string startTempTableName = $"{ _JOB_START_TEMP_TABLE_PREFIX }_{ tempTableSuffix }";
+			string completeTempTableName = $"{ _JOB_COMPLETE_TEMP_TABLE_PREFIX }_{ tempTableSuffix }";
+			string otherTempTableName = $"{ _ITEM_START_INCLUDED_TEMP_TABLE_PREFIX }_{ tempTableSuffix }";
 
 			DataTable startTempTable = GetTempTable(startTempTableName);
 			DataTable otherTempTable = GetTempTable(otherTempTableName);
 
-			JobHistoryErrorDTO.UpdateStatusType updateStatusType = new JobHistoryErrorDTO.UpdateStatusType
+			var updateStatusType = new JobHistoryErrorDTO.UpdateStatusType
 			{
 				ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem
 			};
@@ -314,17 +312,16 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		}
 
 		[Test]
-		[Ignore("Test doesn't work and needs fix")]
 		public void ExpectTempSavedSearchCreatedAndDeleted()
 		{
 			//Arrange
-			string docPrefix = "SavedSearchDoc";
-			string expiredDocPrefix = "TempSavedSearchExp";
+			var docPrefix = "SavedSearchDoc";
+			var expiredDocPrefix = "TempSavedSearchExp";
 			DataTable importTable = GetImportTable(1, 100, docPrefix, expiredDocPrefix);
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, importTable);
 			SavedSearch.ModifySavedSearchByAddingPrefix(RepositoryFactory, SourceWorkspaceArtifactId, SavedSearchArtifactId, docPrefix, false);
 
-			IntegrationPointModel integrationModel = new IntegrationPointModel
+			var integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
@@ -365,10 +362,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			DataTable importTable = GetImportTable(startingControlNumber, numberOfDocuments, documentPrefix, expiredDocumentPrefix);
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, importTable);
 			SavedSearch.ModifySavedSearchByAddingPrefix(RepositoryFactory, SourceWorkspaceArtifactId, SavedSearchArtifactId, documentPrefix, true);
-			IJobStopManager stopJobManager = NSubstitute.Substitute.For<IJobStopManager>();
-			IHelper helper = NSubstitute.Substitute.For<IHelper>();
+			var stopJobManager = NSubstitute.Substitute.For<IJobStopManager>();
+			var helper = NSubstitute.Substitute.For<IHelper>();
 
-			IntegrationPointModel integrationModel = new IntegrationPointModel
+			var integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = DestinationProvider.ArtifactId,
@@ -408,14 +405,14 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			SavedSearch.ModifySavedSearchByAddingPrefix(RepositoryFactory, SourceWorkspaceArtifactId, SavedSearchArtifactId, documentPrefix, true);
 			_jobHistoryErrorManager.CreateErrorListTempTablesForItemLevelErrors(job, SavedSearchArtifactId);
 
-			string startTempTableName = $"{ itemStartIncludedTempTablePrefix }_{ tempTableSuffix }";
-			string completeTempTableName = $"{ itemCompleteIncludedTempTablePrefix }_{ tempTableSuffix }";
-			string otherTempTableName = $"{ itemStartExcludedTempTablePrefix }_{ tempTableSuffix }";
+			string startTempTableName = $"{ _ITEM_START_INCLUDED_TEMP_TABLE_PREFIX }_{ tempTableSuffix }";
+			string completeTempTableName = $"{ _ITEM_COMPLETE_INCLUDED_TEMP_TABLE_PREFIX }_{ tempTableSuffix }";
+			string otherTempTableName = $"{ _ITEM_START_EXCLUDED_TEMP_TABLE_PREFIX }_{ tempTableSuffix }";
 
 			DataTable startTempTable = GetTempTable(startTempTableName);
 			DataTable otherTempTable = GetTempTable(otherTempTableName);
 
-			JobHistoryErrorDTO.UpdateStatusType updateStatusType = new JobHistoryErrorDTO.UpdateStatusType
+			var updateStatusType = new JobHistoryErrorDTO.UpdateStatusType
 			{
 				ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly
 			};
@@ -437,7 +434,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 
 		private DataTable GetImportTable(int startingDocNumber, int numberOfDocuments, string documentPrefix, string expiredDocumentPrefix)
 		{
-			DataTable table = new DataTable();
+			var table = new DataTable();
 			table.Columns.Add("Control Number", typeof(string));
 			int endDocNumber = startingDocNumber + numberOfDocuments - 1;
 			int halfDocCount = endDocNumber - (numberOfDocuments / 2);
@@ -469,11 +466,11 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 
 		private List<int> CreateItemLevelJobHistoryErrors(int jobHistoryArtifactId, Relativity.Client.DTOs.Choice errorStatus, DataTable importedDocuments)
 		{
-			List<JobHistoryError> jobHistoryErrors = new List<JobHistoryError>();
+			var jobHistoryErrors = new List<JobHistoryError>();
 
 			foreach (DataRow dataRow in importedDocuments.Rows)
 			{
-				JobHistoryError jobHistoryError = new JobHistoryError
+				var jobHistoryError = new JobHistoryError
 				{
 					ParentArtifactId = jobHistoryArtifactId,
 					JobHistory = jobHistoryArtifactId,
@@ -495,8 +492,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 
 		private List<int> CreateJobLevelJobHistoryError(int jobHistoryArtifactId, Relativity.Client.DTOs.Choice errorStatus)
 		{
-			List<JobHistoryError> jobHistoryErrors = new List<JobHistoryError>();
-			JobHistoryError jobHistoryError = new JobHistoryError
+			var jobHistoryErrors = new List<JobHistoryError>();
+			var jobHistoryError = new JobHistoryError
 			{
 				ParentArtifactId = jobHistoryArtifactId,
 				JobHistory = jobHistoryArtifactId,
@@ -548,7 +545,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 				throw new Exception($"Error: Expected { expectedJobHistoryErrorArtifacts.Count } JobHistoryError ArtifactIds. { tempTable } contains { tempTable.Rows.Count } ArtifactIds.");
 			}
 
-			List<int> actualJobHistoryArtifactIds = new List<int>();
+			var actualJobHistoryArtifactIds = new List<int>();
 			foreach (DataRow dataRow in tempTable.Rows)
 			{
 				actualJobHistoryArtifactIds.Add(Convert.ToInt32((object) dataRow["ArtifactID"]));
@@ -564,7 +561,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 
 		private List<int> GetExpectedInprogressAndRetriedErrors(IDictionary<int, string> errors)
 		{
-			List<int> inProgressAndRetriedErrors = new List<int>();
+			var inProgressAndRetriedErrors = new List<int>();
 			foreach (KeyValuePair<int, string> entry in errors)
 			{
 				if (entry.Value.Contains("Doc"))
@@ -577,7 +574,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 
 		private List<int> GetExpectedExpiredErrors(IDictionary<int, string> errors)
 		{
-			List<int> expiredErrors = new List<int>();
+			var expiredErrors = new List<int>();
 			foreach (KeyValuePair<int, string> entry in errors)
 			{
 				if (entry.Value.Contains("Exp"))
@@ -601,10 +598,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		private void VerifyTempSavedSearchDeletion(int integrationPointArtifactId, int jobHistoryArtifactId)
 		{
 			string tempSavedSearchName = $"{Constants.TEMPORARY_JOB_HISTORY_ERROR_SAVED_SEARCH_NAME} - {integrationPointArtifactId} - {jobHistoryArtifactId}";
-			global::Relativity.Services.Query savedSearchQuery = new global::Relativity.Services.Query();
+			var savedSearchQuery = new global::Relativity.Services.Query();
 			savedSearchQuery.Condition = $"'Name' EqualTo '{tempSavedSearchName}'";
 
-			using (IKeywordSearchManager proxy = Kepler.CreateProxy<IKeywordSearchManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true))
+			using (var proxy = Kepler.CreateProxy<IKeywordSearchManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true))
 			{
 				KeywordSearchQueryResultSet resultSet = proxy.QueryAsync(SourceWorkspaceArtifactId, savedSearchQuery).Result;
 				if (resultSet.TotalCount != 0)
