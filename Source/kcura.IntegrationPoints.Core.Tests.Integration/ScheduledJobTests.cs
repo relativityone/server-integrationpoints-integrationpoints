@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 		[TestCase]
 		public void ShouldChangeScheduledJobStopState()
 		{
-		    const int second = 1000;
+		    const int delayInMiliseconds = 100;
 		    const int maxWaitTimeInSeconds = 180;
 		    var stopwatch = new Stopwatch();
             
@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 		    stopwatch.Start(); 
             while (stopwatch.Elapsed.TotalSeconds < maxWaitTimeInSeconds && jobInitial.StopState == jobProcessed.StopState)
             {
-			    Thread.Sleep(second);
+			    Thread.Sleep(delayInMiliseconds);
                 jobProcessed = _jobService.GetJobs(integrationPoint.ArtifactID).FirstOrDefault();
             }
 
@@ -68,7 +68,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 	    [TestCase]
 	    public void ShouldChangeScheduledJobNextRunTime()
 	    {
-	        const int second = 1000;
+	        const int delayInMiliseconds = 500;
 	        const int maxWaitTimeInSeconds = 180;
 	        var stopwatch = new Stopwatch();
 
@@ -82,7 +82,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 	        stopwatch.Start();
             while (stopwatch.Elapsed.TotalSeconds < maxWaitTimeInSeconds && jobInitial.NextRunTime == jobProcessed.NextRunTime)
 	        {
-	            Thread.Sleep(second);
+	            Thread.Sleep(delayInMiliseconds);
 	            jobProcessed = _jobService.GetJobs(integrationPoint.ArtifactID).FirstOrDefault();
 	        }
 
