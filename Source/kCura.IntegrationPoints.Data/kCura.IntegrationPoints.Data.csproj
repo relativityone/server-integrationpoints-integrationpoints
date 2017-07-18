@@ -159,6 +159,7 @@
     <Compile Include="IntegrationPointBaseQuery.cs" />
     <Compile Include="EncryptingRsapiClientLibrary.cs" />
     <Compile Include="IResourceDbProvider.cs" />
+    <Compile Include="IRSAPIRdoQuery.cs" />
     <Compile Include="Logging\ISystemEventLoggingService.cs" />
     <Compile Include="Migrations\Migration.cs" />
     <Compile Include="Queries\GetSavedSearchQuery.cs" />
@@ -299,7 +300,7 @@
     <Compile Include="Queries\JobStatisticsQuery.cs" />
     <Compile Include="RdoGetter.cs" />
     <Compile Include="RdoHelper.cs" />
-    <Compile Include="RelativityRdoQuery.cs" />
+    <Compile Include="RSAPIRdoQuery.cs" />
     <Compile Include="Repositories\ISourceWorkspaceRepository.cs" />
     <Compile Include="Repositories\IWorkspaceRepository.cs" />
     <Compile Include="ResourceDbProvider.cs" />

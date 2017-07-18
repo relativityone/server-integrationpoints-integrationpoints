@@ -16,11 +16,11 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 	{
 		private readonly ISourceTypeFactory _factory;
 		private readonly ICaseServiceContext _serviceContext;
-		private readonly IObjectTypeQuery _rdoQuery;
+		private readonly IRsapiRdoQuery _rdoQuery;
 
         public SourceTypeController(ISourceTypeFactory factory,
 			ICaseServiceContext serviceContext,
-			RSAPIRdoQuery objectTypeQuery)
+			IRsapiRdoQuery objectTypeQuery)
 		{
 			_factory = factory;
 			_rdoQuery = objectTypeQuery;

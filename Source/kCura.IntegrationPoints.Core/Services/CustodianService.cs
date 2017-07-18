@@ -6,8 +6,8 @@ namespace kCura.IntegrationPoints.Core.Services
 {
 	public class CustodianService
 	{
-		private readonly RSAPIRdoQuery _rdoQuery;
-		public CustodianService(RSAPIRdoQuery rdoQuery)
+		private readonly IRsapiRdoQuery _rdoQuery;
+		public CustodianService(IRsapiRdoQuery rdoQuery)
 		{
 			_rdoQuery = rdoQuery;
 		}

@@ -5,9 +5,9 @@ namespace kCura.IntegrationPoints.Data
 {
 	public class RdoGetter
 	{
-		public RSAPIRdoQuery _RdoQuery;
+		public IRsapiRdoQuery _RdoQuery;
 
-		public RdoGetter(RSAPIRdoQuery rdoQuery)
+		public RdoGetter(IRsapiRdoQuery rdoQuery)
 		{
 			_RdoQuery = rdoQuery; 
 		}

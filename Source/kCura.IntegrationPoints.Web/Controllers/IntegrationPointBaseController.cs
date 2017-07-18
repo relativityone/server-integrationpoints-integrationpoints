@@ -16,12 +16,12 @@ namespace kCura.IntegrationPoints.Web.Controllers
 	public abstract class IntegrationPointBaseController : BaseController
 	{
 		private readonly IAPILog _apiLog;
-		private readonly RSAPIRdoQuery _rdoQuery;
+		private readonly IRsapiRdoQuery _rdoQuery;
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly ITabService _tabService;
 	    private readonly ILDAPServiceFactory _ldapServiceFactory;
 
-	    protected IntegrationPointBaseController(RSAPIRdoQuery rdoQuery, IRepositoryFactory repositoryFactory, ITabService tabService, ILDAPServiceFactory ldapServiceFactory)
+	    protected IntegrationPointBaseController(IRsapiRdoQuery rdoQuery, IRepositoryFactory repositoryFactory, ITabService tabService, ILDAPServiceFactory ldapServiceFactory)
 		{
 			_rdoQuery = rdoQuery;
 			_repositoryFactory = repositoryFactory;

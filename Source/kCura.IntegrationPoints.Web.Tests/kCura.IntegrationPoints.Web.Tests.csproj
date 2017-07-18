@@ -121,6 +121,7 @@
       <HintPath>..\packages\Relativity.ImportExport.9.5.182.17\lib\net462\kCura.WinEDDS.ImportExtension.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
       <Private>True</Private>
@@ -242,6 +243,7 @@
     <Compile Include="Controllers\API\InstanceFinderControllerTests.cs" />
     <Compile Include="Controllers\API\IntegrationPointsAPIControllerTests.cs" />
     <Compile Include="Controllers\API\ProductionControllerTests.cs" />
+    <Compile Include="Controllers\API\RdoFilterControllerTests.cs" />
     <Compile Include="Controllers\API\ResourcePoolControllerTests.cs" />
     <Compile Include="Controllers\API\GetAvailableEncodingsControllerTests.cs" />
     <Compile Include="Controllers\API\SourceFieldsControllerTests.cs" />

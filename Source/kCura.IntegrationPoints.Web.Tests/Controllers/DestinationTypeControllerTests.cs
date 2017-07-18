@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 		private IWindsorContainer _windsorContainer;
 		private IDestinationTypeFactory _destinationTypeFactory;
 		private ICaseServiceContext _iCaseServiceContext;
-		private RSAPIRdoQuery _objTypeQuery;
+		private IRsapiRdoQuery _objTypeQuery;
 		private Guid _documentObjectGuid;
 		private Guid _randomRdoGuid;
 
@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			_windsorContainer.Register(Component.For<IDestinationTypeFactory>().Instance(_destinationTypeFactory).LifestyleTransient());
 			_windsorContainer.Register(Component.For<DestinationTypeController>());
 			_windsorContainer.Register(Component.For<ICaseServiceContext>().Instance(_iCaseServiceContext).LifestyleTransient());
-			_windsorContainer.Register(Component.For<RSAPIRdoQuery>().Instance(_objTypeQuery).LifestyleTransient());
+			_windsorContainer.Register(Component.For<IRsapiRdoQuery>().Instance(_objTypeQuery).LifestyleTransient());
 		}
 
 		[SetUp]

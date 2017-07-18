@@ -6,7 +6,7 @@ using kCura.Relativity.Client.DTOs;
 
 namespace kCura.IntegrationPoints.Data
 {
-	public class RSAPIRdoQuery : IObjectTypeQuery
+	public class RSAPIRdoQuery : IRsapiRdoQuery
 	{
 		private readonly IRSAPIClient _client;
 

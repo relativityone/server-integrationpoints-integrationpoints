@@ -12,7 +12,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
 	{
 		private readonly IIntegrationPointService _integrationPointService;
 
-	    public IntegrationPointsController(RSAPIRdoQuery rdoQuery, IRepositoryFactory repositoryFactory,
+	    public IntegrationPointsController(IRsapiRdoQuery rdoQuery, IRepositoryFactory repositoryFactory,
 	        ITabService tabService, ILDAPServiceFactory ldapServiceFactory,
 	        IIntegrationPointService integrationPointService) : base(rdoQuery, repositoryFactory, tabService,
 	        ldapServiceFactory)

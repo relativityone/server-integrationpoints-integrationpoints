@@ -6,7 +6,7 @@ using kCura.Relativity.Client.DTOs;
 
 namespace kCura.IntegrationPoints.Core.Models
 {
-	public class RdoFilter
+	public class RdoFilter : IRdoFilter
 	{
 		private IObjectTypeQuery _rdoQuery;
 		private readonly ICaseServiceContext _serviceContext;

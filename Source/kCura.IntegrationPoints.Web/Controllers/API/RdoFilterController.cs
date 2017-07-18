@@ -10,9 +10,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 {
 	public class RdoFilterController : ApiController
 	{
-		private readonly Core.Models.RdoFilter _rdoFilter;
-		private readonly RSAPIRdoQuery _query;
-		public RdoFilterController(Core.Models.RdoFilter rdoFilter, RSAPIRdoQuery query)
+		private readonly Core.Models.IRdoFilter _rdoFilter;
+		private readonly IRsapiRdoQuery _query;
+
+		public RdoFilterController(Core.Models.IRdoFilter rdoFilter, IRsapiRdoQuery query)
 		{
 			_rdoFilter = rdoFilter;
 			_query = query;
