@@ -11,8 +11,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 	{
 		public static GroupPermissions GetGroupPermissions(int workspaceId, int groupId)
 		{
-			GroupRef groupRef = new GroupRef(groupId);
-			using (IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true))
+			var groupRef = new GroupRef(groupId);
+			using (var proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true))
 			{
 				return proxy.GetWorkspaceGroupPermissionsAsync(workspaceId, groupRef).GetResultsWithoutContextSync();
 			}
@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static void SavePermission(int workspaceId, GroupPermissions permissions)
 		{
-			using (IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true))
+			using (var proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true))
 			{
 				Task.Run(async () => await proxy.SetWorkspaceGroupPermissionsAsync(workspaceId, permissions)).Wait();
 			}
@@ -28,31 +28,26 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static void RemoveAddWorkspaceGroup(int workspaceId, GroupSelector groupSelector)
 		{
-			GroupSelector originalGroupSelector = null;
-			using (IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true))
+			using (var proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true))
 			{
-				originalGroupSelector = proxy.GetAdminGroupSelectorAsync().GetResultsWithoutContextSync();
+				GroupSelector workspaceGroupSelector = proxy.GetWorkspaceGroupSelectorAsync(workspaceId).GetResultsWithoutContextSync();
+				GroupSelector originalGroupSelector = proxy.GetAdminGroupSelectorAsync().GetResultsWithoutContextSync();
 				originalGroupSelector.DisabledGroups = groupSelector.DisabledGroups;
 				originalGroupSelector.EnabledGroups = groupSelector.EnabledGroups;
-			}
+				originalGroupSelector.LastModified = workspaceGroupSelector.LastModified;
 
-			using (IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true))
-			{
 				proxy.AddRemoveWorkspaceGroupsAsync(workspaceId, originalGroupSelector).GetAwaiter().GetResult();
 			}
 		}
 
 		public static void AddRemoveItemGroups(int workspaceId, int itemArtifactId, GroupSelector groupSelector)
 		{
-			using (IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true))
+			using (var proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true))
 			{
 				ItemLevelSecurity itemLevel = proxy.GetItemLevelSecurityAsync(workspaceId, itemArtifactId).Result;
 				itemLevel.Enabled = true;
 				proxy.SetItemLevelSecurityAsync(workspaceId, itemLevel).GetAwaiter().GetResult();
-			}
 
-			using (IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true))
-			{
 				GroupSelector originalSelector = proxy.GetItemGroupSelectorAsync(workspaceId, itemArtifactId).Result;
 				originalSelector.DisabledGroups = groupSelector.DisabledGroups;
 				originalSelector.EnabledGroups = groupSelector.EnabledGroups;
@@ -62,9 +57,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static void SetMinimumRelativityProviderPermissions(int workspaceId, int groupId)
 		{
-			GroupRef groupRef = new GroupRef(groupId);
+			var groupRef = new GroupRef(groupId);
 
-			using (IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName,
+			using (var proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName,
 				SharedVariables.RelativityPassword, true))
 			{
 				GroupPermissions groupPermissions = proxy.GetWorkspaceGroupPermissionsAsync(workspaceId, groupRef).Result;
@@ -81,7 +76,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		public static void SetGroupPermissions(int workspaceId, GroupPermissions groupPermissions)
 		{
 			using (
-				IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true))
+				var proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true))
 
 			{
 				proxy.SetWorkspaceGroupPermissionsAsync(workspaceId, groupPermissions).GetAwaiter().GetResult();
@@ -90,10 +85,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static void SetPermissions(int workspaceId, int groupId, PermissionProperty permissionProperty)
 		{
-			GroupRef groupRef = new GroupRef(groupId);
+			var groupRef = new GroupRef(groupId);
 
-			using (
-				IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true))
+			using (var proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true))
 			{
 				GroupPermissions groupPermissions = proxy.GetWorkspaceGroupPermissionsAsync(workspaceId, groupRef).GetResultsWithoutContextSync();
 
@@ -127,7 +121,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				.Where(x => permissionNames.Contains(x.value.Name))
 				.Select(x => x.index);
 
-			foreach (int index in indices)
+			foreach (var index in indices)
 			{
 				groupPermissions.AdminPermissions[index].Editable = true;
 				groupPermissions.AdminPermissions[index].Selected = true;
@@ -140,7 +134,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				.Where(x => permissionNames.Contains(x.value.Name))
 				.Select(x => x.index);
 
-			foreach (int index in indices)
+			foreach (var index in indices)
 			{
 				groupPermissions.BrowserPermissions[index].Editable = true;
 				groupPermissions.BrowserPermissions[index].Selected = true;

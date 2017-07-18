@@ -10,6 +10,7 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
 using Relativity.Services.Group;
 using Relativity.Services.Permission;
@@ -24,7 +25,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		private UserModel _user;
 		private GroupPermissions _groupPermission;
 		private IObjectTypeRepository _typeRepo;
-		private Random _rand;
+		private readonly Random _rand;
 
 		public PermissionRepositoryTests() : base("PermissionRepositoryTests", null)
 		{
@@ -118,11 +119,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		}
 
 		[Test]
-		[Ignore("Keep getting exception when trying to remove group from the workspace. Need to investigate.")]
 		public void UserHasPermissionToAccessWorkspace_DoNotHavePermission()
 		{
 			// arrange
-			GroupSelector selector = new GroupSelector()
+			var selector = new GroupSelector()
 			{
 				EnabledGroups = new List<GroupRef>(),
 				DisabledGroups = new List<GroupRef>()
@@ -168,7 +168,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			ObjectPermission permission = _groupPermission.ObjectPermissions.FindPermission("Job History");
 			permission.ViewSelected = viewSelected;
 			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactId, _groupPermission);
-			var result = _permissionRepo.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.JobHistory), ArtifactPermission.View);
+			bool result = _permissionRepo.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.JobHistory), ArtifactPermission.View);
 
 			Assert.AreEqual(result, expectedResult);
 		}
@@ -182,7 +182,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactId, _groupPermission);
 			int jobHistoryErrorTypeId = _typeRepo.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.JobHistory));
 
-			bool result = _permissionRepo.UserHasArtifactTypePermissions(jobHistoryErrorTypeId, new ArtifactPermission[] { ArtifactPermission.View });
+			bool result = _permissionRepo.UserHasArtifactTypePermissions(jobHistoryErrorTypeId, new[] { ArtifactPermission.View });
 			Assert.AreEqual(expectedResult, result);
 		}
 
@@ -198,7 +198,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactId, _groupPermission);
 			int jobHistoryErrorTypeId = _typeRepo.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.JobHistory));
 
-			bool result = _permissionRepo.UserHasArtifactTypePermissions(jobHistoryErrorTypeId, new ArtifactPermission[] { ArtifactPermission.View, ArtifactPermission.Edit });
+			bool result = _permissionRepo.UserHasArtifactTypePermissions(jobHistoryErrorTypeId, new[] { ArtifactPermission.View, ArtifactPermission.Edit });
 			Assert.AreEqual(expectedResult, result);
 		}
 
@@ -216,28 +216,27 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			kCura.IntegrationPoint.Tests.Core.Permission.SavePermission(SourceWorkspaceArtifactId, _groupPermission);
 			int jobHistoryErrorTypeId = _typeRepo.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.JobHistory));
 
-			bool result = _permissionRepo.UserHasArtifactTypePermissions(jobHistoryErrorTypeId, new ArtifactPermission[] { ArtifactPermission.Edit, ArtifactPermission.Create });
+			bool result = _permissionRepo.UserHasArtifactTypePermissions(jobHistoryErrorTypeId, new[] { ArtifactPermission.Edit, ArtifactPermission.Create });
 			Assert.AreEqual(expectedResult, result);
 		}
 
 		[TestCase(true)]
 		[TestCase(false)]
-		[Ignore("Test doesn't work and needs fix")]
 		public void UserHasArtifactInstancePermission_UsingAdmin(bool useAdmin)
 		{
 			// arrange
 			Helper.RelativityUserName = SharedVariables.RelativityUserName;
 			Helper.RelativityPassword = SharedVariables.RelativityPassword;
 
-			IntegrationPointModel model = new IntegrationPointModel()
+			var model = new IntegrationPointModel()
 			{
-				Destination = $"{{\"artifactTypeID\":10,\"CaseArtifactId\":{TargetWorkspaceArtifactId},\"Provider\":\"relativity\",\"DoNotUseFieldsMapCache\":true,\"ImportOverwriteMode\":\"AppendOnly\",\"importNativeFile\":\"false\",\"UseFolderPathInformation\":\"false\",\"ExtractedTextFieldContainsFilePath\":\"false\",\"ExtractedTextFileEncoding\":\"utf - 16\",\"CustodianManagerFieldContainsLink\":\"true\",\"FieldOverlayBehavior\":\"Use Field Settings\"}}",
+				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				DestinationProvider = CaseContext.RsapiService.DestinationProviderLibrary.ReadAll().First().ArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
 				LogErrors = true,
 				Name = $"UserHasArtifactInstancePermission - {DateTime.Today}",
-				Map = "[]",
+				Map = CreateDefaultFieldMap(),
 				SelectedOverwrite = "Append Only",
 				Scheduler = new Scheduler(),
 				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
