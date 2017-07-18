@@ -1,6 +1,8 @@
-﻿using kCura.IntegrationPoints.Core.Helpers;
+﻿using System.Linq;
+using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.Relativity.Client;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 {
@@ -17,8 +19,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 
 		public JsTreeItemDTO GetArtifactTreeWithWorkspaceSet(string artifactTypeName, int workspaceId = 0)
 		{
-			var artifacts = _artifactService.GetArtifacts(workspaceId, artifactTypeName);
-
+			IOrderedEnumerable<Artifact> artifacts = _artifactService.GetArtifacts(workspaceId, artifactTypeName).OrderBy(x=>x.Name);
 			return _treeCreator.Create(artifacts);
 		}
 	}

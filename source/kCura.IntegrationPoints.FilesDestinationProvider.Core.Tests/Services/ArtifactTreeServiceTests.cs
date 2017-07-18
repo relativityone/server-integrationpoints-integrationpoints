@@ -83,19 +83,21 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 			var artifact1 = new Artifact
 			{
 				ArtifactID = 1,
-				ParentArtifactID = 2
+				ParentArtifactID = 2, 
+				Name = "ZZ"
 			};
 			var artifact2 = new Artifact
 			{
 				ArtifactID = 2,
-				ParentArtifactID = 1
+				ParentArtifactID = 1, 
+				Name = "AA"
 			};
 
-			_queryResult.QueryArtifacts.AddRange(new List<Artifact> { artifact2, artifact1 });
-
+			_queryResult.QueryArtifacts.AddRange(new List<Artifact> { artifact1, artifact2 });
 			_artifactTreeService.GetArtifactTreeWithWorkspaceSet("artifact_type");
 
-			_treeCreator.Received().Create(Arg.Is<IList<Artifact>>(x => x.SequenceEqual(new List<Artifact> { artifact2, artifact1 })));
+			IOrderedEnumerable<Artifact> receivedArg = new List<Artifact> { artifact2, artifact1 }.OrderBy(n => n.Name);
+			_treeCreator.Received().Create(Arg.Is<IOrderedEnumerable<Artifact>>(x => x.SequenceEqual(receivedArg)));
 		}
 	}
 }
