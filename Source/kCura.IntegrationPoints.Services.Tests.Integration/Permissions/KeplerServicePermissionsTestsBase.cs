@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.Permissions
 		{
 			base.TestSetup();
 			GroupId = Group.CreateGroup($"group_{Utils.FormatedDateTimeNow}");
-			UserModel = User.CreateUser("firstname", "lastname", $"test_{Utils.FormatedDateTimeNow}@kcura.com", new List<int> {GroupId});
+			UserModel = User.CreateUser("firstname", "lastname", $"test_{Utils.FormatedDateTimeNow}@relativity.com", new List<int> {GroupId});
 		}
 
 		public override void TestTeardown()

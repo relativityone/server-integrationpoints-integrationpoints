@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			_jobHistoryLibrary = new RsapiClientLibrary<JobHistory>(Helper, SourceWorkspaceArtifactId);
 
 			_groupId = Group.CreateGroup($"group_{Utils.FormatedDateTimeNow}");
-			_user = User.CreateUser("firstname", "lastname", $"a_{Utils.FormatedDateTimeNow}@kcura.com", new List<int> {_groupId});
+			_user = User.CreateUser("firstname", "lastname", $"a_{Utils.FormatedDateTimeNow}@relativity.com", new List<int> {_groupId});
 
 			Group.AddGroupToWorkspace(SourceWorkspaceArtifactId, _groupId);
 

@@ -99,7 +99,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
 		public void GetRecipientEmails_OneEmailTest()
 		{
 			// ARRANGE
-			string email1 = "email1@kcura.com";
+			string email1 = "email1@relativity.com";
 
 			var integrationPoint = new Data.IntegrationPoint
 			{
@@ -121,8 +121,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
 		public void GetRecipientEmails_TwoEmailTest()
 		{
 			// ARRANGE
-			string email1 = "email1@kcura.com";
-			string email2 = "email2@kcura.com";
+			string email1 = "email1@relativity.com";
+			string email2 = "email2@relativity.com";
 
 			var integrationPoint = new Data.IntegrationPoint
 			{ 
@@ -145,9 +145,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
 		public void GetRecipientEmails_MultipleEmailTest()
 		{
 			// ARRANGE
-			string email1 = "email1@kcura.com";
-			string email2 = "email2@kcura.com";
-			string email3 = "email3@kcura.com";
+			string email1 = "email1@relativity.com";
+			string email2 = "email2@relativity.com";
+			string email3 = "email3@relativity.com";
 
 			var integrationPoint = new Data.IntegrationPoint
 			{

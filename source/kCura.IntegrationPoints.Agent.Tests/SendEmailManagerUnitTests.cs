@@ -51,8 +51,8 @@ namespace kCura.IntegrationPoints.Agent.Tests
 
 		private static object[] emailLists = new object[]
 		{
-			new List<string>() {"abc@kcura.com", "email2@kcura.com"},
-			new List<string>() {"abc@kcura.com"},
+			new List<string>() {"abc@relativity.com", "email2@relativity.com"},
+			new List<string>() {"abc@relativity.com"},
 			new List<string>() {""}
 		};
 

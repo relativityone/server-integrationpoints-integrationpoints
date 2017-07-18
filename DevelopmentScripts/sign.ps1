@@ -15,7 +15,7 @@ function SignDLL($dll) {
 		For($i =0; $i -lt 3; $i++) {
 			ForEach($site in $sites){
 				Write-Host "Attempting to sign" $dll "using" $site "..."
-				$proc = start-process -filepath $SIGNTOOL -argumentlist "sign /a /t $site /d 'Relativity' /du 'http://www.kcura.com' $dll" -WindowStyle hidden -Wait -PassThru
+				$proc = start-process -filepath $SIGNTOOL -argumentlist "sign /a /t $site /d 'Relativity' /du 'http://www.relativity.com' $dll" -WindowStyle hidden -Wait -PassThru
 				$signed = ($proc.ExitCode -eq 0)
 			
 				if($signed) {

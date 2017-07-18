@@ -190,10 +190,10 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 		}
 
 		[Test]
-		[TestCase(false, false, false, "a421248620@kcura.com", "Use Field Settings", "Overlay Only", true)]
+		[TestCase(false, false, false, "a421248620@relativity.com", "Use Field Settings", "Overlay Only", true)]
 		[TestCase(true, true, true, "", "Use Field Settings", "Append Only", false)]
 		[TestCase(false, false, false, null, "Replace Values", "Append/Overlay", false)]
-		[TestCase(false, false, false, "a937467@kcura.com", "Merge Values", "Append/Overlay", false)]
+		[TestCase(false, false, false, "a937467@relativity.com", "Merge Values", "Append/Overlay", false)]
 		public void ItShouldCreateRelativityIntegrationPoint(bool importNativeFile, bool logErrors, bool useFolderPathInformation, string emailNotificationRecipients,
 			string fieldOverlayBehavior, string overwriteFieldsChoices, bool promoteEligible)
 		{

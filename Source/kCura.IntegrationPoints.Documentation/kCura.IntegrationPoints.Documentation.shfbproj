@@ -53,10 +53,10 @@
       <DocumentationSource sourceFile="..\kCura.IntegrationPoints.SourceProviderInstaller\bin\kCura.IntegrationPoints.SourceProviderInstaller.dll" />
       <DocumentationSource sourceFile="..\kCura.IntegrationPoints.SourceProviderInstaller\bin\kCura.IntegrationPoints.SourceProviderInstaller.xml" />
     </DocumentationSources>
-    <FeedbackEMailLinkText>kCura documentation</FeedbackEMailLinkText>
-    <FeedbackEMailAddress>documentation%40kcura.com</FeedbackEMailAddress>
-    <CopyrightText>2015 kCura Corporation</CopyrightText>
-    <CopyrightHref>http://www.kcura.com</CopyrightHref>
+    <FeedbackEMailLinkText>Relativity documentation</FeedbackEMailLinkText>
+    <FeedbackEMailAddress>documentation%40relativity.com</FeedbackEMailAddress>
+    <CopyrightText>2017 Relativity Corporation</CopyrightText>
+    <CopyrightHref>http://www.relativity.com</CopyrightHref>
     <ProjectSummary>The kCura.IntegrationPoints.Contracts namespace contains all base functionality used for creating source providers for integrating data into a Relativity object.</ProjectSummary>
     <VisibleItems>InheritedMembers, InheritedFrameworkMembers, ProtectedInternalAsProtected</VisibleItems>
     <MissingTags>AutoDocumentCtors</MissingTags>

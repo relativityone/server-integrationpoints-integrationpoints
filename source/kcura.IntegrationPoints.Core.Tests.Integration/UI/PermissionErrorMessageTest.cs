@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.UI
 			_webDriver = new ChromeDriver();
 			string groupName = "Permission Group" + DateTime.Now;
 			Regex regex = new Regex("[^a-zA-Z0-9]");
-			_email = regex.Replace(DateTime.Now.ToString(), "") + "test@kcura.com";
+			_email = regex.Replace(DateTime.Now.ToString(), "") + "test@relativity.com";
 			_groupId = kCura.IntegrationPoint.Tests.Core.Group.CreateGroup(groupName);
 			kCura.IntegrationPoint.Tests.Core.Group.AddGroupToWorkspace(SourceWorkspaceArtifactId, _groupId);
 

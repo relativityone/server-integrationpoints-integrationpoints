@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 		{
 			base.TestSetup();
 			_groupId = Group.CreateGroup($"group_{Utils.FormatedDateTimeNow}");
-			_userModel = User.CreateUser("firstname", "lastname", $"test_{Utils.FormatedDateTimeNow}@kcura.com", new List<int> {_groupId});
+			_userModel = User.CreateUser("firstname", "lastname", $"test_{Utils.FormatedDateTimeNow}@relativity.com", new List<int> {_groupId});
 		}
 
 		public override void TestTeardown()

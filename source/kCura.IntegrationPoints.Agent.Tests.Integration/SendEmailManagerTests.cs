@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		public void VerifyGetUnbatchedId()
 		{
 			string jobDetails =
-				"{\"Subject\":\"testing stuff\",\"MessageBody\":\"Hello, this is GeeeRizzle \",\"Emails\":[\"testing1234@kcura.com\",\"kwu@kcura.com\"]}";
+				"{\"Subject\":\"testing stuff\",\"MessageBody\":\"Hello, this is GeeeRizzle \",\"Emails\":[\"testing1234@relativity.com\",\"kwu@relativity.com\"]}";
 
 			_agentService.CreateQueueTableOnce();
 
@@ -79,8 +79,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 		        //Assert
 		        Assert.AreEqual(2, list.Count());
-		        Assert.IsTrue(list.Contains("testing1234@kcura.com"));
-		        Assert.IsTrue(list.Contains("kwu@kcura.com"));
+		        Assert.IsTrue(list.Contains("testing1234@relativity.com"));
+		        Assert.IsTrue(list.Contains("kwu@relativity.com"));
 		    }
 		}
 	}

@@ -80,13 +80,12 @@ Running unit tests:
 * Workflow diagrams
 
 ## Maintainers
-* Diffendoofer team (diffendoofer@kcura.com)
-* Krakow team (krakow@kcura.com)
-* Art Kelenzon (akelenzon@kcura.com)
+* Codigo O Plomo team (codigooplomo@relativity.com)
+* Buena Vista Coding Club team (buenavistacodingclub@relativity.com>)
 
 ## Miscellaneous
-[Documentation](https://help.kcura.com/integrationpoints/Content/Relativity_Integration_Points/Integration_Points/Relativity_Integration_Points.htm)
-[Developer Documentation](https://platform.kcura.com/9.3/Content/Relativity_Integration_Points/Get_started_with_integration_points.htm)
+[Documentation](https://help.relativity.com/integrationpoints/Content/Relativity_Integration_Points/Integration_Points/Relativity_Integration_Points.htm)
+[Developer Documentation](https://platform.relativity.com/9.5/Content/Relativity_Integration_Points/Get_started_with_integration_points.htm)
 
 Integration Points hosts the following private Kepler services:
 * Job History Manager

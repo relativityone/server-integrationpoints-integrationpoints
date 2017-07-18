@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			_typeRepo = Container.Resolve<IObjectTypeRepository>();
 			_permissionRepo = new PermissionRepository(Helper, SourceWorkspaceArtifactId);
 			_groupId = Group.CreateGroup("krowten");
-			_user = User.CreateUser("Gerron", "BadMan", $"gbadman{_rand.Next(int.MaxValue)}@kcura.com", new[] { _groupId });
+			_user = User.CreateUser("Gerron", "BadMan", $"gbadman{_rand.Next(int.MaxValue)}@relativity.com", new[] { _groupId });
 
 			Helper.RelativityUserName = _user.EmailAddress;
 			Helper.RelativityPassword = _user.Password;
