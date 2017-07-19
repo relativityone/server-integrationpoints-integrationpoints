@@ -54,6 +54,7 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="FilenameFormatterTest.cs" />
+    <Compile Include="Models\SettingsTests.cs" />
     <Compile Include="SettingsTests.cs" />
   </ItemGroup>
   <ItemGroup>
