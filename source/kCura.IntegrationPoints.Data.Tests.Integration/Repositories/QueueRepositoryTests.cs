@@ -196,7 +196,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 
 		[Test]
 		[Description("This test takes sometime to process. It requires the IP agent to be running.")]
-		[Ignore("Test doesn't work and needs fix")]
 		public void OneExecutedScheduledJobInTheQueue_ExpectCountZero()
 		{
 			ControlIntegrationPointAgents(true);
@@ -216,7 +215,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 					Reoccur = 2,
 					StartDate = DateTime.UtcNow.AddDays(-1).ToString(),
 					ScheduledTime = DateTime.UtcNow.AddMinutes(1).TimeOfDay.ToString(),
-					SelectedFrequency = ScheduleInterval.Daily.ToString()
+					SelectedFrequency = ScheduleInterval.Daily.ToString(),
+					TimeZoneId = TimeZoneInfo.Utc.Id
 				},
 				SelectedOverwrite = "Append Only",
 				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
