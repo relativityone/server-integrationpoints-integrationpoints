@@ -139,10 +139,14 @@
     </Compile>
     <Compile Include="Commands\EventHandlerCommandExecutor.cs" />
     <Compile Include="Commands\Factories\SetPromoteEligibleFieldCommandFactory.cs" />
+    <Compile Include="Commands\Factories\SetTypeOfExportDefaultValueCommandFactory.cs" />
     <Compile Include="Commands\Helpers\CommandExecutionException.cs" />
     <Compile Include="Commands\ICommand.cs" />
+    <Compile Include="Commands\ISourceConfigurationTypeOfExportUpdater.cs" />
     <Compile Include="Commands\RestoreJobHistoryDestinationWorkspaceCommand.cs" />
     <Compile Include="Commands\SetPromoteEligibleFieldCommand.cs" />
+    <Compile Include="Commands\SetTypeOfExportDefaultValueCommand.cs" />
+    <Compile Include="Commands\SourceConfigurationTypeOfExportUpdater.cs" />
     <Compile Include="Commands\UpdateDestinationWorkspaceEntriesCommand.cs" />
     <Compile Include="Installers\CreateTenantIdForSecretStoreInstaller.cs" />
     <Compile Include="Installers\Helpers\CreateTenantIdForSecretStoreEventHandlerWrapper.cs" />
@@ -165,6 +169,7 @@
     <Compile Include="Installers\SecretStoreUninstaller.cs" />
     <Compile Include="Installers\SetIntegrationPointType.cs" />
     <Compile Include="Installers\SetPromoteEligibleFieldEventHandler.cs" />
+    <Compile Include="Installers\SetTypeOfExportDefaultValue.cs" />
     <Compile Include="Installers\UpdateDestinationWorkspaceEntriesEventHandler.cs" />
     <Compile Include="Installers\UpdateJobHistoryDestinationWorkspace.cs" />
     <Compile Include="IntegrationPoints\DataTransferLocationMigrationEventHandler.cs" />

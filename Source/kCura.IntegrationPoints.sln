@@ -193,14 +193,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Domain.Tests", "kCura.IntegrationPoints.Domain.Tests\kCura.IntegrationPoints.Domain.Tests.csproj", "{16F7FFEC-DE2D-4656-BA37-65A854EBEFCE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Management", "kCura.IntegrationPoints.Management\kCura.IntegrationPoints.Management.csproj", "{740D99BE-11AF-4476-BE13-09EE54F664A4}"
-	ProjectSection(ProjectDependencies) = postProject
-		{B8BF6D01-E190-4C2C-B07F-3B627FFC1BFC} = {B8BF6D01-E190-4C2C-B07F-3B627FFC1BFC}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Management.Tests", "kCura.IntegrationPoints.Management.Tests\kCura.IntegrationPoints.Management.Tests.csproj", "{23B046F0-B59B-4D56-9F2F-3D6EE25BDDB5}"
-	ProjectSection(ProjectDependencies) = postProject
-		{B8BF6D01-E190-4C2C-B07F-3B627FFC1BFC} = {B8BF6D01-E190-4C2C-B07F-3B627FFC1BFC}
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

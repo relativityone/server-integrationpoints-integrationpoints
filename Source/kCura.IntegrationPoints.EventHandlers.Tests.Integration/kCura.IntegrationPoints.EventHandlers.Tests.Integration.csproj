@@ -137,6 +137,7 @@
     <Compile Include="Installers\InstallEveryTimeTests.cs" />
     <Compile Include="Installers\RegisterDocumentTransferProviderTests.cs" />
     <Compile Include="Installers\SecretStoreCleanUpTests.cs" />
+    <Compile Include="Installers\SetTypeOfExportDefaultValueCommandTests.cs" />
     <Compile Include="Installers\SourceProvidersMigrationEventHandlerTests.cs" />
     <Compile Include="IntegrationPoints\ConsoleEventHandlerTests.cs" />
     <Compile Include="IntegrationPoints\DataTransferMigrationTests.cs" />

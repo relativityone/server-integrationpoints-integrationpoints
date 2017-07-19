@@ -121,6 +121,8 @@
     <Compile Include="Commands\EventHandlerCommandExecutorTests.cs" />
     <Compile Include="Commands\RestoreJobHistoryDestinationWorkspaceCommandTests.cs" />
     <Compile Include="Commands\SetPromoteEligibleFieldCommandTests.cs" />
+    <Compile Include="Commands\SetTypeOfExportDefaultValueCommandTests.cs" />
+    <Compile Include="Commands\SourceConfigurationTypeOfExportUpdaterTests.cs" />
     <Compile Include="Commands\UpdateDestinationWorkspaceEntriesCommandTests.cs" />
     <Compile Include="Installers\CreateTenantIdForSecretStoreEventHandlerWrapperTests.cs" />
     <Compile Include="Installers\Helpers\CreateTenantIdForSecretStoreTests.cs" />
