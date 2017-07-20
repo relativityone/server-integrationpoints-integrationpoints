@@ -349,6 +349,8 @@ ko.validation.insertValidationMessage = function (element) {
 			} else {
 				self.FieldOverlayBehavior('Use Field Settings');
 			}
+			self.MoveExistingDocuments("false");
+			self.SelectedFolderPathType('No');
 		});
 
 		this.getFolderPathOptions = function (model) {
@@ -373,6 +375,7 @@ ko.validation.insertValidationMessage = function (element) {
 				self.UseDynamicFolderPath('false');
 			} else if (value === 'Read From Field') {
 				self.UseFolderPathInformation('true');
+				self.FolderPathSourceField.isModified(false);
 				self.UseDynamicFolderPath('false');
 			} else {
 				self.UseFolderPathInformation('false');
@@ -931,6 +934,7 @@ ko.validation.insertValidationMessage = function (element) {
 			this.returnModel.UseFolderPathInformation = this.model.UseFolderPathInformation();
 			this.returnModel.UseDynamicFolderPath = this.model.UseDynamicFolderPath();
 			this.returnModel.FolderPathSourceField = this.model.FolderPathSourceField();
+			this.returnModel.MoveExistingDocuments = this.model.MoveExistingDocuments();
 			this.returnModel.LongTextColumnThatContainsPathToFullText = this.model.LongTextColumnThatContainsPathToFullText();
 			this.returnModel.ExtractedTextFieldContainsFilePath = this.model.ExtractedTextFieldContainsFilePath();
 			this.returnModel.ExtractedTextFileEncoding = this.model.ExtractedTextFileEncoding();

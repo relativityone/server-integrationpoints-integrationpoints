@@ -185,7 +185,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="field-row" data-bind="visible: isDocument() == 'true' && ImageImport() == 'false' && (UseFolderPathInformation() == 'true' || UseDynamicFolderPath() == 'true')">
+						<div class="field-row" data-bind="visible: isDocument() == 'true' && ImageImport() == 'false' && SelectedOverwrite() != 'Append Only' && (UseFolderPathInformation() == 'true' || UseDynamicFolderPath() == 'true')">
 							<div class="field-label required ">Move Existing Documents:</div>
 							<div class="field-value">
 								<ul>
