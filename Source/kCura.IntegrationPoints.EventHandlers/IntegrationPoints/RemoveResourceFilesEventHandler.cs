@@ -37,12 +37,15 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
                 foreach (var assemblyName in assemblyNames)
                 {
-                    var assembly = am.Read(baseServiceContext, assemblyName, applicationGuid);
-                    int assemblyArtifactId = assembly.ArtifactID;
-
-                    if (assemblyArtifactId > 0)
+                    if (am.Exists(baseServiceContext, assemblyName, applicationGuid))
                     {
-                        am.Delete(baseServiceContext, assemblyArtifactId);
+                        var assembly = am.Read(baseServiceContext, assemblyName, applicationGuid);
+                        int assemblyArtifactId = assembly.ArtifactID;
+
+                        if (assemblyArtifactId > 0)
+                        {
+                            am.Delete(baseServiceContext, assemblyArtifactId);
+                        }
                     }
                 }
             }
