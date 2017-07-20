@@ -137,11 +137,17 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Commands\Container\EventHandlerInstaller.cs" />
     <Compile Include="Commands\EventHandlerCommandExecutor.cs" />
+    <Compile Include="Commands\EventHandlerExecutor.cs" />
     <Compile Include="Commands\Factories\SetPromoteEligibleFieldCommandFactory.cs" />
     <Compile Include="Commands\Factories\SetTypeOfExportDefaultValueCommandFactory.cs" />
     <Compile Include="Commands\Helpers\CommandExecutionException.cs" />
+    <Compile Include="Commands\Container\ContainerFactory.cs" />
+    <Compile Include="Commands\Container\IContainerFactory.cs" />
     <Compile Include="Commands\ICommand.cs" />
+    <Compile Include="Commands\IEHCommand.cs" />
+    <Compile Include="Commands\IEventHandler.cs" />
     <Compile Include="Commands\ISourceConfigurationTypeOfExportUpdater.cs" />
     <Compile Include="Commands\RestoreJobHistoryDestinationWorkspaceCommand.cs" />
     <Compile Include="Commands\SetPromoteEligibleFieldCommand.cs" />
