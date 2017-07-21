@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Email.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    public class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.Email.Properties {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("kCura.IntegrationPoints.Email.Properties.Resources", typeof(Resources).Assembly);
@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.Email.Properties {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoints.Email.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Unable to retrieve email notification configuration. Please verify kCura.Notification&apos;s settings to enable emailing functionality..
         /// </summary>
-        internal static string Invalid_SMTP_Settings {
+        public static string Invalid_SMTP_Settings {
             get {
                 return ResourceManager.GetString("Invalid_SMTP_Settings", resourceCulture);
             }
@@ -72,7 +72,7 @@ namespace kCura.IntegrationPoints.Email.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Smtp Port cannot be negative..
         /// </summary>
-        internal static string SMTP_Port_Negative {
+        public static string SMTP_Port_Negative {
             get {
                 return ResourceManager.GetString("SMTP_Port_Negative", resourceCulture);
             }
@@ -81,7 +81,7 @@ namespace kCura.IntegrationPoints.Email.Properties {
         /// <summary>
         ///   Looks up a localized string similar to The SMTP host was not specified..
         /// </summary>
-        internal static string SMTP_Requires_SMTP_Domain {
+        public static string SMTP_Requires_SMTP_Domain {
             get {
                 return ResourceManager.GetString("SMTP_Requires_SMTP_Domain", resourceCulture);
             }

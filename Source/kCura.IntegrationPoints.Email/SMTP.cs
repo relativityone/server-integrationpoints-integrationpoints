@@ -12,10 +12,12 @@ namespace kCura.IntegrationPoints.Email
 	{
 		private readonly EmailConfiguration _configuration;
 		private readonly IAPILog _logger;
+		private readonly ISMTPClientFactory _clientFactory;
 
-		public SMTP(IHelper helper, EmailConfiguration configuration)
+		public SMTP(IHelper helper, ISMTPClientFactory clientFactory, EmailConfiguration configuration)
 		{
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<SMTP>();
+			_clientFactory = clientFactory;
 			_configuration = configuration;
 		}
 
@@ -58,14 +60,7 @@ namespace kCura.IntegrationPoints.Email
 		private SmtpClient GetClient()
 		{
 			Validate();
-
-			var client = new SmtpClient(_configuration.Domain, _configuration.Port)
-			{
-				UseDefaultCredentials = false,
-				Credentials = new NetworkCredential(_configuration.UserName, _configuration.Password),
-				DeliveryMethod = SmtpDeliveryMethod.Network,
-				EnableSsl = _configuration.UseSSL
-			};
+			var client = _clientFactory.GetClient(_configuration);
 			return client;
 		}
 
