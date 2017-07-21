@@ -101,7 +101,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			}
 			catch (Exception ex)
 			{
-				throw new Exception("Unexpected error occured when cheching user permissions", ex);
+				throw new Exception(Constants.PERMISSION_CHECKING_UNEXPECTED_ERROR, ex);
 			}
 		}
 

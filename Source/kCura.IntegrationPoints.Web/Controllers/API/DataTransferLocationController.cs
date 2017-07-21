@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Attributes;
 
@@ -59,7 +60,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			try
 			{
-				var permissionRepository = _respositoryFactory.GetPermissionRepository(workspaceId);
+				IPermissionRepository permissionRepository = _respositoryFactory.GetPermissionRepository(workspaceId);
 				var integrationPointGuid = new Guid(ObjectTypeGuids.IntegrationPoint);
 
 				return (permissionRepository.UserCanExport() || permissionRepository.UserCanImport())
@@ -68,7 +69,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			}
 			catch (Exception ex)
 			{
-				throw new Exception("Unexpected error occured when cheching user permissions", ex);
+				throw new Exception(Constants.PERMISSION_CHECKING_UNEXPECTED_ERROR, ex);
 			}
 		}
 	}

@@ -235,6 +235,7 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Attributes\WebAPIFilterExceptionTests.cs" />
+    <Compile Include="Controllers\API\DataTransferLocationControllerTests.cs" />
     <Compile Include="Controllers\API\FieldCatalogControllerTests.cs" />
     <Compile Include="Controllers\API\FieldMapControllerTests.cs" />
     <Compile Include="Controllers\API\ImportPrevewControllerTests.cs" />
