@@ -14,8 +14,7 @@ namespace kCura.IntegrationPoints.Email.Tests
         private IAPILog _logger;
         private IHelper _helper;
 	    private ISMTPClientFactory _clientFactory;
-
-        private SMTP _smtp;
+	
 
         [SetUp]
         public override void SetUp()
