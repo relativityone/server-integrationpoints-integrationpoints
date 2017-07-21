@@ -6,6 +6,8 @@ using Newtonsoft.Json.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using Relativity.Services.Security;
+using Relativity.Services.Security.Models;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -99,7 +101,30 @@ namespace kCura.IntegrationPoint.Tests.Core
 			string response = Rest.PostRequestAsJson("Relativity/User", parameters);
 			JObject resultObject = JObject.Parse(response);
 			user.ArtifactId = resultObject["Results"][0]["ArtifactID"].Value<int>();
+
+			CreateLoginProfile(user);
 			return user;
+		}
+
+		private static void CreateLoginProfile(UserModel user)
+		{
+			using (var manager = Kepler.CreateProxy<ILoginProfileManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true))
+			{
+				manager.SaveLoginProfileAsync(new LoginProfile()
+				{
+					Password = new PasswordMethod()
+					{
+						Email = user.EmailAddress,
+						InvalidLoginAttempts = 0,
+						IsEnabled = true,
+						MustResetPasswordOnNextLogin = false,
+						PasswordExpirationInDays = 0,
+						TwoFactorMode = TwoFactorMode.None,
+						UserCanChangePassword = true
+					},
+					UserId = user.ArtifactId
+				}).Wait();
+			}
 		}
 
 		public static void DeleteUser(int userArtifactId)

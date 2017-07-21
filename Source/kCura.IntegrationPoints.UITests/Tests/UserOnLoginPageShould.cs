@@ -38,6 +38,5 @@ namespace IntegrationPointsUITests.Tests
             // WHEN / THEN
             generalPage.ChooseWorkspace("Smoke Workspace");
         }
-
     }
 }
