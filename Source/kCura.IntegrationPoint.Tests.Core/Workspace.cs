@@ -43,6 +43,16 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return workspaceId;
 		}
 
+		public static int CreateWorkspace(string name)
+		{
+			var workspaceService = new WorkspaceService(new ImportHelper());
+			int workspaceId = workspaceService.CreateWorkspace(name);
+			var documentsTestData = DocumentTestDataBuilder.BuildTestData();
+			workspaceService.ImportData(workspaceId, documentsTestData);
+
+			return workspaceId;
+		}
+
 		public static void DeleteWorkspace(int workspaceArtifactId)
 		{
 			if (workspaceArtifactId == 0) return;

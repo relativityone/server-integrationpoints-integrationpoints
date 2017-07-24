@@ -17,5 +17,11 @@ namespace kCura.IntegrationPoints.Core.Monitoring
 			var customData = jobHistories.ToDictionary(x => $"Workspace {x.Key}", y => (object) y.Value);
 			return new HealthCheckOperationResult(false, "Jobs with invalid status found.", null, customData);
 		}
+
+		public static HealthCheckOperationResult CreateStuckJobsMetric(IDictionary<int, IList<JobHistory>> jobHistories)
+		{
+			var customData = jobHistories.ToDictionary(x => $"Workspace {x.Key}", y => (object)y.Value);
+			return new HealthCheckOperationResult(false, "Stuck jobs found.", null, customData);
+		}
 	}
 }

@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			var search = new KeywordSearch
 			{
 				Name = savedSearchName,
-				ArtifactTypeID = (int) ArtifactType.Document,
+				ArtifactTypeID = (int)ArtifactType.Document,
 				SearchContainer = new SearchContainerRef(folderArtifactId),
 				Fields = fields
 			};

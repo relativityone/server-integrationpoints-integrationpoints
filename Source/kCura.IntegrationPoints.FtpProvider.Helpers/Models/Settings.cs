@@ -103,9 +103,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Helpers.Models
         }
         public Boolean ValidateCSVName()
         {
-            return !string.IsNullOrWhiteSpace(this._filename) 
-                && 
-                this._filename.IndexOfAny(Path.GetInvalidFileNameChars()) < 0;
+            return !string.IsNullOrWhiteSpace(this._filename);
         }
     }
 }
