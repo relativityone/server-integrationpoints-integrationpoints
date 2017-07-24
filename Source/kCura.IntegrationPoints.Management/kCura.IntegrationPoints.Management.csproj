@@ -218,9 +218,12 @@
     <Compile Include="IntegrationPointsManager.cs" />
     <Compile Include="IntegrationPointsManagerAgent.cs" />
     <Compile Include="Tasks\AlertJobsWithInvalidStatusTask.cs" />
+    <Compile Include="Tasks\AlertStuckJobsTask.cs" />
     <Compile Include="Tasks\CleanUnlinkedJobHistoryErrorsTask.cs" />
     <Compile Include="Tasks\Helpers\IJobsWithInvalidStatus.cs" />
+    <Compile Include="Tasks\Helpers\IStuckJobs.cs" />
     <Compile Include="Tasks\Helpers\JobsWithInvalidStatus.cs" />
+    <Compile Include="Tasks\Helpers\StuckJobs.cs" />
     <Compile Include="Tasks\IManagementTask.cs" />
   </ItemGroup>
   <ItemGroup>

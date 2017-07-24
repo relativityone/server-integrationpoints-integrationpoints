@@ -57,6 +57,10 @@
       <HintPath>..\packages\kCura.Injection.9.5.218.64\lib\net462\kCura.Injection.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="kCura.Relativity.Client, Version=9.5.218.64, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.Relativity.Client.9.5.218.64\lib\net462\kCura.Relativity.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
       <Private>True</Private>
@@ -216,8 +220,10 @@
     <Compile Include="IntegrationPointsManagerAgentTests.cs" />
     <Compile Include="IntegrationPointsManagerTests.cs" />
     <Compile Include="Tasks\AlertJobsWithInvalidStatusTaskTests.cs" />
+    <Compile Include="Tasks\AlertStuckJobsTaskTests.cs" />
     <Compile Include="Tasks\CleanUnlinkedJobHistoryErrorsTaskTests.cs" />
     <Compile Include="Tasks\Helpers\JobsWithInvalidStatusTests.cs" />
+    <Compile Include="Tasks\Helpers\StuckJobsTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

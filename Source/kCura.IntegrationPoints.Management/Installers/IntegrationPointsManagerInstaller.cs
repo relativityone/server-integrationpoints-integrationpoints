@@ -26,6 +26,7 @@ namespace kCura.IntegrationPoints.Management.Installers
 			container.Register(Component.For<IApplicationRepository>().ImplementedBy<ApplicationRepository>().LifestyleTransient());
 
 			container.Register(Component.For<IJobsWithInvalidStatus>().ImplementedBy<JobsWithInvalidStatus>().LifestyleTransient());
+			container.Register(Component.For<IStuckJobs>().ImplementedBy<StuckJobs>().LifestyleTransient());
 
 			container.Register(Classes.FromAssembly(typeof(IntegrationPointsManagerInstaller).Assembly).BasedOn<IManagementTask>().WithService.FromInterface().LifestyleTransient());
 		}
