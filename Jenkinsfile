@@ -24,13 +24,15 @@ installing_datagrid = 'false'
 knife = "C:\\Python27\\Lib\\site-packages\\jeeves\\knife.rb"
 username = "testing\\Administrator"
 password = "P@ssw0rd@1"
-def is_nightly_test_execution_develop = true
+is_nightly_test_execution_develop = false
+has_errors = false
 
-try {
-	println "  nightly_test_execution_develop=$nightly_test_execution_develop"
+
+try {	
+	is_nightly_test_execution_develop = params.nightly_test_execution_develop
 }
 catch (MissingPropertyException e) {
-	is_nightly_test_execution_develop = false
+	//parameter 'params.nightly_test_execution_develop' is not set in other branches than nightly.
 }
 
 //region GlobalVariables
@@ -152,22 +154,29 @@ def execute_nunit_tests(String test_dll, String tests_filter, String session_id,
 	}
 	
 	dir('c:/SourceCode/integrationpoints'){
-		try {
-			bat String.format('"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" C:\\SourceCode\\integrationpoints\\lib\\UnitTests\\%1$s --where "%2$s" --inprocess --result=C:\\SourceCode\\integrationpoints\\nunit-result.xml;format=nunit2', "$test_dll", "$where_clause")
-		} catch(Exception e){ }
+		try {			
+			def testsHavePassed = bat (script: String.format('"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" C:\\SourceCode\\integrationpoints\\lib\\UnitTests\\%1$s --where "%2$s" --inprocess --result=C:\\SourceCode\\integrationpoints\\nunit-result.xml;format=nunit2', "$test_dll", "$where_clause"), 
+			returnStatus: true) == 0
+						
+			has_errors = has_errors || !testsHavePassed			
+			println 'DEBUG: has_errors = ' + has_errors
 		
-		//To provide compatibility with 'nunit_curiosity_listener' script we need to remove 'Properties' node from TestCase
-		def commandString =  """Get-ChildItem .\\nunit-result.xml | %% {; 	[Xml]\$xml = Get-Content \$_.FullName;    \$xml | Select-Xml -XPath '//*[local-name() = ''properties'']' | ForEach-Object{\$_.Node.ParentNode.RemoveChild(\$_.Node)};    \$xml.OuterXml | Out-File .\\result.xml -encoding 'UTF8'; }"""
-		bat String.format('powershell.exe "%s"', commandString)
-				
-		//And also ensure there is no Skipped test as 'nunit_curiosity_listener' doesn't handle 'Skipped; state
-		commandString =  """Get-ChildItem .\\result.xml | %% {; 	[Xml]\$xml = Get-Content \$_.FullName; 	\$xml | Select-Xml -XPath '//*[@result = ''Skipped'']' | ForEach-Object{echo \$_.Node.LocalName; if(\$_.Node.LocalName -eq 'test-case'){\$_.Node.ParentNode.RemoveChild(\$_.Node)}}; \$xml.OuterXml | Out-File .\\result.xml -encoding 'UTF8'; }"""
-				bat String.format('powershell.exe "%s"', commandString)
+			//To provide compatibility with 'nunit_curiosity_listener' script we need to remove 'Properties' node from TestCase
+			def commandString =  """Get-ChildItem .\\nunit-result.xml | %% {; 	[Xml]\$xml = Get-Content \$_.FullName;    \$xml | Select-Xml -XPath '//*[local-name() = ''properties'']' | ForEach-Object{\$_.Node.ParentNode.RemoveChild(\$_.Node)};    \$xml.OuterXml | Out-File .\\result.xml -encoding 'UTF8'; }"""
+			bat String.format('powershell.exe "%s"', commandString)
+					
+			//And also ensure there is no Skipped test as 'nunit_curiosity_listener' doesn't handle 'Skipped; state
+			commandString =  """Get-ChildItem .\\result.xml | %% {; 	[Xml]\$xml = Get-Content \$_.FullName; 	\$xml | Select-Xml -XPath '//*[@result = ''Skipped'']' | ForEach-Object{echo \$_.Node.LocalName; if(\$_.Node.LocalName -eq 'test-case'){\$_.Node.ParentNode.RemoveChild(\$_.Node)}}; \$xml.OuterXml | Out-File .\\result.xml -encoding 'UTF8'; }"""
+					bat String.format('powershell.exe "%s"', commandString)
+			
+			//Finally we can run 'nunit_curiosity_listener' as we're almost certain there will be no problems
+			bat String.format('python C:\\Python27\\Talos\\bin\\listeners\\nunit_curiosity_listener.py --phase %2$s -p C:\\SourceCode\\integrationpoints\\result.xml --session_id %1$s', session_id, phase)
+			
+			bat 'powershell.exe Remove-Item C:\\SourceCode\\integrationpoints\\nunit-result.xml'
 		
-		//Finally we can run 'nunit_curiosity_listener' as we're almost certain there will be no problems
-		bat String.format('python C:\\Python27\\Talos\\bin\\listeners\\nunit_curiosity_listener.py --phase %2$s -p C:\\SourceCode\\integrationpoints\\result.xml --session_id %1$s', session_id, phase)
-		
-		bat 'powershell.exe Remove-Item C:\\SourceCode\\integrationpoints\\nunit-result.xml'
+		} catch(Exception e){  		
+			has_errors = true
+		}
 	}
 }
 
@@ -215,7 +224,7 @@ try {
 				def rip_branch = env.BRANCH_NAME
 				if (is_nightly_test_execution_develop) {
 					rip_branch = '*/develop'
-				}
+				}				
 				
 				checkout([$class : 'GitSCM',
 						branches : [[name : rip_branch]],
@@ -295,12 +304,14 @@ try {
 				bat String.format('knife node run_list add %1$s %3$s -c %2$s', server_name, "$knife", run_list)
 				bat String.format('python -m jeeves.register_event --session_id %1$s -ds chef_setup --status PASS -u --host %2$s --profile %3$s --event_hash %4$s --component relativity --job_link unknown', session_id, random_server, profile, event_hash)
 				} catch(Exception ex)  {
+					has_errors = true
 					bat String.format('python -m jeeves.register_event --session_id %1$s -ds chef_setup --status FAIL -u --host %2$s --profile %3$s --event_hash %4$s --component relativity --job_link unknown', session_id, random_server, profile, event_hash)
 					}
 				try {
 				  bat String.format('python -m jeeves.chef_functions -f run_chef_client -n %1$s -r %2$s -un %3$s -up %4$s', ip, "$knife", "$username", "$password")
 				}catch(Exception ex)  {
-				  echo 'Something failed in the installation'
+					has_errors = true
+					echo 'Something failed in the installation'
 				}
 			}
     		
@@ -403,7 +414,10 @@ try {
 	}	
 	
 	passed = true
-	status = "PASS"
+	if (!has_errors)
+		status = "PASS"
+	
+	println 'DEBUG: has_errors: ' + has_errors + ' , status: ' + status
 }
 finally {
     try {
@@ -450,4 +464,8 @@ finally {
 			}
 		}
 	}
+	
+	//this part is crucial to return the error. Otherwise Jenkins returns SUCCESS.
+	if (has_errors)
+		error "The build has errors."
 }
