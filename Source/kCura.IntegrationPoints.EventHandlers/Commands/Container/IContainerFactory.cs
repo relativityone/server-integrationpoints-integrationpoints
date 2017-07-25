@@ -1,10 +1,10 @@
 ﻿using Castle.Windsor;
-using Relativity.API;
+using kCura.IntegrationPoints.EventHandlers.Commands.Context;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 {
 	public interface IContainerFactory
 	{
-		IWindsorContainer Create(IEHHelper helper);
+		IWindsorContainer Create(IEHContext context);
 	}
 }

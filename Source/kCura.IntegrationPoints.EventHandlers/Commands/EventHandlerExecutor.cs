@@ -65,12 +65,12 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 
 		private IWindsorContainer CreateContainer(IEventHandler eventHandler)
 		{
-			return _containerFactory.Create(eventHandler.Helper);
+			return _containerFactory.Create(eventHandler.Context);
 		}
 
 		private void LogException(IEventHandler eventHandler, Exception e, string message)
 		{
-			eventHandler.Helper.GetLoggerFactory().GetLogger().ForContext(eventHandler.CommandType).LogError(e, message);
+			eventHandler.Context.Helper.GetLoggerFactory().GetLogger().ForContext(eventHandler.CommandType).LogError(e, message);
 		}
 	}
 }

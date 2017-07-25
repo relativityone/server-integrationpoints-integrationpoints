@@ -1,11 +1,11 @@
 ﻿using System;
-using Relativity.API;
+using kCura.IntegrationPoints.EventHandlers.Commands.Context;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands
 {
 	public interface IEventHandler
 	{
-		IEHHelper Helper { get; }
+		IEHContext Context { get; }
 
 		string SuccessMessage { get; }
 
