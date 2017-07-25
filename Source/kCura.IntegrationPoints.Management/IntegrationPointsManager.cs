@@ -23,6 +23,11 @@ namespace kCura.IntegrationPoints.Management
 		public void Start()
 		{
 			var workspaceArtifactIds = _applicationRepository.GetWorkspaceArtifactIdsWhereApplicationInstalled(Guid.Parse(Constants.IntegrationPoints.APPLICATION_GUID_STRING));
+			if (workspaceArtifactIds.Count == 0)
+			{
+				_logger.LogInformation("RIP is not installed in any workspace. Skipping execution.");
+				return;
+			}
 			foreach (var task in _tasks)
 			{
 				try

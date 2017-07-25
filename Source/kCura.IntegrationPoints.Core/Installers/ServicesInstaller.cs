@@ -151,6 +151,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IFolderPathReaderFactory>().ImplementedBy<FolderPathReaderFactory>().LifestyleTransient());
 			container.Register(Component.For<IUnfinishedJobService>().ImplementedBy<UnfinishedJobService>().LifestyleTransient());
 			container.Register(Component.For<IRSAPIServiceFactory>().ImplementedBy<RSAPIServiceFactory>().LifestyleTransient());
+			container.Register(Component.For<IRunningJobService>().ImplementedBy<RunningJobService>().LifestyleTransient());
 
 			// TODO: we need to make use of an async GetDBContextAsync (pending Dan Wells' patch) -- biedrzycki: Feb 5th, 2016
 			container.Register(Component.For<IToggleProvider>().Instance(new SqlServerToggleProvider(
@@ -185,7 +186,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IServiceFactory>().ImplementedBy<ServiceFactory>().LifestyleTransient());
 			container.Register(Component.For<IArtifactServiceFactory>().ImplementedBy<ArtifactServiceFactory>().LifestyleTransient());
 			container.Register(Component.For<IHelperFactory>().ImplementedBy<HelperFactory>().LifestyleSingleton());
-			container.Register(Component.For<IAPM>().UsingFactoryMethod(k => Client.APMClient).LifestyleTransient());
+			container.Register(Component.For<IAPM>().UsingFactoryMethod(k => Client.APMClient, managedExternally: true).LifestyleTransient());
 		}
 	}
 }
