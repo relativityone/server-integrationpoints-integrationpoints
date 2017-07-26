@@ -452,7 +452,6 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="EventHandlerTest.cs" />
     <Compile Include="Installers\CreateTenantIdForSecretStoreInstallerTests.cs" />
     <Compile Include="Installers\InstallEveryTimeTests.cs" />
     <Compile Include="Installers\RegisterDocumentTransferProviderTests.cs" />
