@@ -3,6 +3,7 @@ using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NUnit.Framework;
@@ -12,40 +13,47 @@ namespace kCura.IntegrationPoints.Core.Tests
 	[TestFixture]
 	public class DeleteHistoryServiceTest : TestBase
 	{
+		private const int _WORKSPACE_ID = 813386;
+
+		private DeleteHistoryService _instance;
+		private IRSAPIService _rsapiService;
+
 		[SetUp]
 		public override void SetUp()
 		{
-			
+			_rsapiService = Substitute.For<IRSAPIService>();
+
+			IRSAPIServiceFactory rsapiServiceFactory = Substitute.For<IRSAPIServiceFactory>();
+			rsapiServiceFactory.Create(_WORKSPACE_ID).Returns(_rsapiService);
+
+			_instance = new DeleteHistoryService(rsapiServiceFactory);
 		}
 
 		[Test]
-		public void DeleteHistoriesAssociatedWithIPs_IntegrationPoint_SetJobHistoryNull()
+		public void ItShouldSetJobHistoryNull()
 		{
 			//ARRANGE
-			var service = NSubstitute.Substitute.For<IRSAPIService>();
-			var integrationPointsId = new List<int>() { 1, 2 };
+			var integrationPointsId = new List<int> {1, 2};
 
-			var deleteHistoryService = new DeleteHistoryService(service);
-
-			var integrationPoint = new List<Data.IntegrationPoint>()
+			var integrationPoint = new List<Data.IntegrationPoint>
 			{
-				new Data.IntegrationPoint()
+				new Data.IntegrationPoint
 				{
-					JobHistory = new int[] {1, 2, 3}
+					JobHistory = new[] {1, 2, 3}
 				},
-					new Data.IntegrationPoint()
+				new Data.IntegrationPoint
 				{
-					JobHistory = new int[] {1, 2, 3}
+					JobHistory = new[] {1, 2, 3}
 				}
 			};
 
-			service.IntegrationPointLibrary.Query(Arg.Any<Query<RDO>>()).Returns(integrationPoint);
+			_rsapiService.IntegrationPointLibrary.Query(Arg.Any<Query<RDO>>()).Returns(integrationPoint);
 
 			//ACT
-			deleteHistoryService.DeleteHistoriesAssociatedWithIPs(integrationPointsId);
+			_instance.DeleteHistoriesAssociatedWithIPs(integrationPointsId, _rsapiService);
 
 			//ASSERT
-			service.IntegrationPointLibrary.Received().Update(Arg.Is<IEnumerable<Data.IntegrationPoint>>(x => x.All(y => !y.JobHistory.Any())));
+			_rsapiService.IntegrationPointLibrary.Received().Update(Arg.Is<IEnumerable<Data.IntegrationPoint>>(x => x.All(y => !y.JobHistory.Any())));
 		}
 	}
 }

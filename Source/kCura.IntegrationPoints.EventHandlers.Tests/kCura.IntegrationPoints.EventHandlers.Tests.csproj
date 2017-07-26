@@ -118,7 +118,10 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Commands\DeleteIntegrationPointCommandTests.cs" />
     <Compile Include="Commands\EventHandlerCommandExecutorTests.cs" />
+    <Compile Include="Commands\Helpers\ArtifactsToDeleteTests.cs" />
+    <Compile Include="Commands\PreCascadeDeleteIntegrationPointCommandTests.cs" />
     <Compile Include="Commands\RestoreJobHistoryDestinationWorkspaceCommandTests.cs" />
     <Compile Include="Commands\SetPromoteEligibleFieldCommandTests.cs" />
     <Compile Include="Commands\SetTypeOfExportDefaultValueCommandTests.cs" />
@@ -130,7 +133,6 @@
     <Compile Include="Installers\SecretStoreCleanUpEventHandlerWrapperTests.cs" />
     <Compile Include="Installers\SetHasErrorsFieldTests.cs" />
     <Compile Include="Installers\UpdateJobHistoryDestinationWorkspaceTests.cs" />
-    <Compile Include="IntegrationPoints\DeleteEventHandlerTests.cs" />
     <Compile Include="IntegrationPoints\Helpers\ConsoleBuilderTests.cs" />
     <Compile Include="IntegrationPoints\Helpers\CorrespondingJobDeleteTests.cs" />
     <Compile Include="IntegrationPoints\Helpers\DataTransferLocationMigrationHelperTests.cs" />
@@ -139,8 +141,6 @@
     <Compile Include="IntegrationPoints\Helpers\RelativityProviderDestinationConfigurationTests.cs" />
     <Compile Include="IntegrationPoints\Helpers\RelativityProviderSourceConfigurationTests.cs" />
     <Compile Include="IntegrationPoints\Validators\PreCascadeDeleteEventHandlerValidatorTests.cs" />
-    <Compile Include="MassOperations\MassCopyIntegrationPointHelper.cs" />
-    <Compile Include="MassOperations\IntegrationPointMassCopyTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">

@@ -586,6 +586,7 @@
     <Compile Include="RelativitySourceRdo\RelativitySourceRdoHelpersFactory.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceRdoObjectType.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceWorkspaceRdoInitializer.cs" />
+    <Compile Include="Services\IDeleteHistoryService.cs" />
     <Compile Include="Services\IJobTracker.cs" />
     <Compile Include="Services\JobHistory\IRunningJobService.cs" />
     <Compile Include="Services\JobHistory\IUnlinkedJobHistoryService.cs" />
