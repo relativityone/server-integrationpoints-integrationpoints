@@ -17,6 +17,8 @@
 			required: true
 		});
 
+		this.fileShareInvalidated = this.Fileshare() !== undefined && this.Fileshare() != null;
+
 		self.rootDataTransferLocation = "";
 
 		this.loadRootDataTransferLocation = function () {
@@ -63,9 +65,14 @@
 
 		this.onDOMLoaded = function () {
 			self.locationSelector = new LocationJSTreeSelector();
-			self.locationSelector = new LocationJSTreeSelector();
 			self.locationSelector.init(self.Fileshare(), [], {
-				onNodeSelectedEventHandler: function (node) { self.Fileshare(node.id) }
+				onNodeSelectedEventHandler: function (node) {
+					if (self.fileShareInvalidated) {
+						self.fileShareInvalidated = false;
+						return;
+					}
+					self.Fileshare(node.id);
+				}
 			});
 
 			self.locationSelector.toggle(true); // !!self.ProcessingSourceLocation()

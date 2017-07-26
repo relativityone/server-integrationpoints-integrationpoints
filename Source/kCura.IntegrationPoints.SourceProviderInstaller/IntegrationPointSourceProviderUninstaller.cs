@@ -3,6 +3,7 @@ using kCura.EventHandler;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.SourceProviderInstaller.Services;
 
@@ -72,7 +73,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 
 		internal DeleteHistoryService DeleteHistory
 		{
-			get { return _deleteHistoryService ?? (_deleteHistoryService = new DeleteHistoryService(Service)); }
+			get { return _deleteHistoryService ?? (_deleteHistoryService = new DeleteHistoryService(new RSAPIServiceFactory(Helper))); }
 		}
 
 		internal IRSAPIService Service

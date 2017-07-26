@@ -1,7 +1,7 @@
 ﻿using System;
-using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Data.Repositories;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Validators
 {
@@ -9,29 +9,29 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Validators
 	{
 		#region Fields
 
-		private readonly IQueueManager _queueManager;
-		private readonly IRepositoryFactory _repositoryFactory;
+		private readonly IQueueRepository _queueRepository;
+		private readonly IRSAPIServiceFactory _rsapiServiceFactory;
 
 		#endregion Fields
 
 		#region Constructors
 
-		public PreCascadeDeleteEventHandlerValidator(IQueueManager queueManager, IRepositoryFactory repositoryFactory)
+		public PreCascadeDeleteEventHandlerValidator(IQueueRepository queueRepository, IRSAPIServiceFactory rsapiServiceFactory)
 		{
-			_queueManager = queueManager;
-			_repositoryFactory = repositoryFactory;
+			_queueRepository = queueRepository;
+			_rsapiServiceFactory = rsapiServiceFactory;
 		}
 
 		#endregion //Constructors
 
 		#region Methods
 
-		public void Validate(int wkspId, int integrationPointId)
+		public void Validate(int workspaceId, int integrationPointId)
 		{
-			if (_queueManager.HasJobsExecutingOrInQueue(wkspId, integrationPointId))
+			if (_queueRepository.GetNumberOfJobsExecutingOrInQueue(workspaceId, integrationPointId) > 0)
 			{
-				IntegrationPointDTO ipDto = _repositoryFactory.GetIntegrationPointRepository(wkspId).Read(integrationPointId);
-				throw new Exception($"Intgration Point '{ipDto.Name}' can not be deleted as the associated agent job has been already started!");
+				IntegrationPoint integrationPoint = _rsapiServiceFactory.Create(workspaceId).IntegrationPointLibrary.Read(integrationPointId);
+				throw new Exception($"Integration Point '{integrationPoint.Name}' can not be deleted as the associated agent job has been already started!");
 			}
 		}
 
