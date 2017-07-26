@@ -248,6 +248,7 @@
     <Compile Include="Controllers\API\ResourcePoolControllerTests.cs" />
     <Compile Include="Controllers\API\GetAvailableEncodingsControllerTests.cs" />
     <Compile Include="Controllers\API\SourceFieldsControllerTests.cs" />
+    <Compile Include="Controllers\API\WorkspaceFinderControllerTests.cs" />
     <Compile Include="Controllers\API\WorkspaceFieldControllerTests.cs" />
     <Compile Include="Controllers\API\WorkspaceViewControllerTests.cs" />
     <Compile Include="Controllers\DestinationTypeControllerTests.cs" />
