@@ -80,12 +80,6 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return new FieldRepository(_servicesMgr, _helper, workspaceArtifactId);
 		}
 
-		public IIntegrationPointRepository GetIntegrationPointRepository(int workspaceArtifactId)
-		{
-			IIntegrationPointRepository integrationPointRepository = new IntegrationPointRepository(_helper, workspaceArtifactId);
-			return integrationPointRepository;
-		}
-
 		public IJobHistoryRepository GetJobHistoryRepository(int workspaceArtifactId = 0)
 		{
 			IJobHistoryRepository jobHistoryRepository = new JobHistoryRepository(_helper, this, workspaceArtifactId);

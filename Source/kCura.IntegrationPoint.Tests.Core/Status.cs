@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
@@ -44,17 +45,16 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static void WaitForScheduledJobToComplete(IWindsorContainer container, int workspaceArtifactId, int integrationPointArtifactId, int timeoutInSeconds = 300, int sleepIntervalInMilliseconds = 500)
 		{
-			IRepositoryFactory repositoryFactory = container.Resolve<IRepositoryFactory>();
-			IIntegrationPointRepository integrationPointRepository = repositoryFactory.GetIntegrationPointRepository(workspaceArtifactId);
+			var rsapiService = container.Resolve<IRSAPIService>();
 
 			double timeWaitedInSeconds = 0.0;
-			IntegrationPointDTO integrationPoint = integrationPointRepository.Read(integrationPointArtifactId);
+			IntegrationPoints.Data.IntegrationPoint integrationPoint = rsapiService.IntegrationPointLibrary.Read(integrationPointArtifactId);
 
 			while (integrationPoint.LastRuntimeUTC == null)
 			{
 				VerifyTimeout(timeWaitedInSeconds, timeoutInSeconds);
 				timeWaitedInSeconds = SleepAndUpdateTimeout(sleepIntervalInMilliseconds, timeWaitedInSeconds);
-				integrationPoint = integrationPointRepository.Read(integrationPointArtifactId);
+				integrationPoint = rsapiService.IntegrationPointLibrary.Read(integrationPointArtifactId);
 			}
 		}
 

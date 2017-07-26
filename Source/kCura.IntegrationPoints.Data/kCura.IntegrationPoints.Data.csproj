@@ -216,11 +216,9 @@
     <Compile Include="Repositories\IErrorRepository.cs" />
     <Compile Include="Repositories\IFederatedInstanceRepository.cs" />
     <Compile Include="Repositories\IInstanceSettingRepository.cs" />
-    <Compile Include="Repositories\IIntegrationPointRepository.cs" />
     <Compile Include="Repositories\IJobHistoryErrorRepository.cs" />
     <Compile Include="Repositories\Implementations\HardCodedServiceUrlRepository.cs" />
     <Compile Include="Repositories\Implementations\DestinationProviderRepository.cs" />
-    <Compile Include="Repositories\Implementations\IntegrationPointRepository.cs" />
     <Compile Include="Repositories\ICodeRepository.cs" />
     <Compile Include="Repositories\Implementations\JobHistoryErrorRepository.cs" />
     <Compile Include="Repositories\Implementations\KeplerFederatedInstanceRepository.cs" />
@@ -339,7 +337,6 @@
     <Compile Include="Statistics\Implementations\RdoStatistics.cs" />
     <Compile Include="Transformers\IDtoTransformer.cs" />
     <Compile Include="Transformers\JobHistoryErrorTransformer.cs" />
-    <Compile Include="Transformers\IntegrationPointTransformer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GeneratedStringConstants.cs">

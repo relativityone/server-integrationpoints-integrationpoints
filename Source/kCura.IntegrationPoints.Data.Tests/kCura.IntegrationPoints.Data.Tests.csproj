@@ -202,13 +202,11 @@
     <Compile Include="Statistics\NativeTotalStatisticsTests.cs" />
     <Compile Include="Statistics\RdoStatisticsTests.cs" />
     <Compile Include="Transformer\JobHistoryErrorTransformerTests.cs" />
-    <Compile Include="Transformer\IntegrationPointTransformerTests.cs" />
     <Compile Include="BaseRdoTests.cs" />
     <Compile Include="MockDBContext.cs" />
     <Compile Include="PermissionServiceTest.cs" />
     <Compile Include="RdoGetterTest.cs" />
     <Compile Include="RelativityReaderBaseTests.cs" />
-    <Compile Include="Repositories\IntegrationPointRepositoryTests.cs" />
     <Compile Include="Repositories\JobHistoryErrorRepositoryTests.cs" />
     <Compile Include="Repositories\PermissionRepositoryTests.cs" />
     <Compile Include="Repositories\QueueRepositoryTests.cs" />
