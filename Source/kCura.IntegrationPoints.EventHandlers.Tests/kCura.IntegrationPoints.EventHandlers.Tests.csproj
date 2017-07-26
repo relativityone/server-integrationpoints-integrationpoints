@@ -118,17 +118,18 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Commands\CreateTenantIdForSecretStoreCommandTests.cs" />
     <Compile Include="Commands\DeleteIntegrationPointCommandTests.cs" />
     <Compile Include="Commands\EventHandlerCommandExecutorTests.cs" />
     <Compile Include="Commands\Helpers\ArtifactsToDeleteTests.cs" />
+    <Compile Include="Commands\Helpers\TenantForSecretStoreCreationValidatorTests.cs" />
     <Compile Include="Commands\PreCascadeDeleteIntegrationPointCommandTests.cs" />
     <Compile Include="Commands\RestoreJobHistoryDestinationWorkspaceCommandTests.cs" />
     <Compile Include="Commands\SetPromoteEligibleFieldCommandTests.cs" />
     <Compile Include="Commands\SetTypeOfExportDefaultValueCommandTests.cs" />
     <Compile Include="Commands\SourceConfigurationTypeOfExportUpdaterTests.cs" />
     <Compile Include="Commands\UpdateDestinationWorkspaceEntriesCommandTests.cs" />
-    <Compile Include="Installers\CreateTenantIdForSecretStoreEventHandlerWrapperTests.cs" />
-    <Compile Include="Installers\Helpers\CreateTenantIdForSecretStoreTests.cs" />
+    <Compile Include="Commands\Helpers\CreateTenantIdForSecretStoreTests.cs" />
     <Compile Include="Installers\Helpers\SecretStoreCleanUpTests.cs" />
     <Compile Include="Installers\SecretStoreCleanUpEventHandlerWrapperTests.cs" />
     <Compile Include="Installers\SetHasErrorsFieldTests.cs" />

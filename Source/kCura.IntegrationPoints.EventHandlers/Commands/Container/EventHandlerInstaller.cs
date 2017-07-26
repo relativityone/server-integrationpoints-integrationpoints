@@ -28,11 +28,14 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 
 			container.Register(Component.For<DeleteIntegrationPointCommand>().ImplementedBy<DeleteIntegrationPointCommand>().LifestyleTransient());
 			container.Register(Component.For<PreCascadeDeleteIntegrationPointCommand>().ImplementedBy<PreCascadeDeleteIntegrationPointCommand>().LifestyleTransient());
+			container.Register(Component.For<CreateTenantIdForSecretStoreCommand>().ImplementedBy<CreateTenantIdForSecretStoreCommand>().LifestyleTransient());
 			container.Register(Component.For<IIntegrationPointSecretDelete>().UsingFactoryMethod(k => IntegrationPointSecretDeleteFactory.Create(k.Resolve<IEHContext>().Helper))
 				.LifestyleTransient());
 			container.Register(Component.For<ICorrespondingJobDelete>().ImplementedBy<CorrespondingJobDelete>().LifestyleTransient());
 			container.Register(Component.For<IPreCascadeDeleteEventHandlerValidator>().ImplementedBy<PreCascadeDeleteEventHandlerValidator>().LifestyleTransient());
 			container.Register(Component.For<IArtifactsToDelete>().ImplementedBy<ArtifactsToDelete>().LifestyleTransient());
+			container.Register(Component.For<ICreateTenantIdForSecretStore>().ImplementedBy<CreateTenantIdForSecretStore>().LifestyleTransient());
+			container.Register(Component.For<ITenantForSecretStoreCreationValidator>().ImplementedBy<TenantForSecretStoreCreationValidator>().LifestyleTransient());
 		}
 	}
 }
