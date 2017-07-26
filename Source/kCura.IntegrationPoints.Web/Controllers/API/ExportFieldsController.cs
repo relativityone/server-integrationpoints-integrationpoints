@@ -18,7 +18,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 	public class ExportFieldsController : ApiController
 	{
 		private readonly IExportFieldsService _exportFieldsService;
-		public static string InvalidExportType = "Invalid export type specified";
 
 		public ExportFieldsController(IExportFieldsService exportFieldsService)
 		{
@@ -45,7 +44,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			ExportSettings.ExportType exportType;
 			if (!Enum.TryParse(settings.ExportType, out exportType))
 			{
-				throw new InvalidEnumArgumentException(InvalidExportType);
+				throw new InvalidEnumArgumentException(Constants.INVALID_EXPORT_TYPE_ERROR);
 			}
 
 			int artifactId = RetrieveArtifactIdBasedOnExportType(exportType, settings);
