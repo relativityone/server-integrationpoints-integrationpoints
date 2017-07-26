@@ -5,6 +5,7 @@ using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Services.Interfaces.Private.Exceptions;
 using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
@@ -93,6 +94,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 		[Test]
 		public void MissingIntegrationPointPermissionsInSourceWorkspace()
 		{
+			//Arrange
 			Group.AddGroupToWorkspace(SourceWorkspaceArtifactId, _groupId);
 			Group.AddGroupToWorkspace(TargetWorkspaceArtifactId, _groupId);
 
@@ -106,9 +108,9 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			};
 
 			var jobHistoryClient = Helper.CreateUserProxy<IJobHistoryManager>(_userModel.EmailAddress);
-			JobHistorySummaryModel jobHistory = jobHistoryClient.GetJobHistoryAsync(jobHistoryRequest).Result;
 
-			Assert.That(jobHistory.Data.Length, Is.EqualTo(1));
+			//Act & Assert
+			Assert.That(() => jobHistoryClient.GetJobHistoryAsync(jobHistoryRequest).Result, Throws.TypeOf<InternalServerErrorException>().With.Message.EqualTo("Error occurred during request processing. Please contact your administrator."));
 		}
 
 		private void RemoveIntegrationPointPermissionsFromSourceWorkspace()
