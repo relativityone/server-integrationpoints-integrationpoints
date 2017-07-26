@@ -1,11 +1,13 @@
 ﻿using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.SecretStore;
-using kCura.IntegrationPoints.EventHandlers.Installers.Helpers.Implementations;
+using kCura.IntegrationPoints.EventHandlers.Commands.Context;
+using kCura.IntegrationPoints.EventHandlers.Commands.Helpers;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.SecretCatalog;
 
-namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers.Helpers
+namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands.Helpers
 {
 	public class CreateTenantIdForSecretStoreTests : TestBase
 	{
@@ -17,7 +19,20 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers.Helpers
 		{
 			_secretManager = Substitute.For<ISecretManager>();
 			_secretCatalog = Substitute.For<ISecretCatalog>();
-			_createTenantIdForSecretStore = new CreateTenantIdForSecretStore(_secretCatalog, _secretManager);
+
+			var workspaceId = 798243;
+			var helper = Substitute.For<IEHHelper>();
+			helper.GetActiveCaseID().Returns(workspaceId);
+			var context = new EHContext
+			{
+				Helper = helper
+			};
+			var secretManagerFactory = Substitute.For<ISecretManagerFactory>();
+			secretManagerFactory.Create(workspaceId).Returns(_secretManager);
+			var secretCatalogFactory = Substitute.For<ISecretCatalogFactory>();
+			secretCatalogFactory.Create(workspaceId).Returns(_secretCatalog);
+
+			_createTenantIdForSecretStore = new CreateTenantIdForSecretStore(context, secretCatalogFactory, secretManagerFactory);
 		}
 
 		[Test]

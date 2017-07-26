@@ -142,6 +142,7 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Commands\Container\EventHandlerInstaller.cs" />
+    <Compile Include="Commands\CreateTenantIdForSecretStoreCommand.cs" />
     <Compile Include="Commands\DeleteIntegrationPointCommand.cs" />
     <Compile Include="Commands\Context\EHContext.cs" />
     <Compile Include="Commands\EventHandlerCommandExecutor.cs" />
@@ -153,6 +154,8 @@
     <Compile Include="Commands\Container\ContainerFactory.cs" />
     <Compile Include="Commands\Container\IContainerFactory.cs" />
     <Compile Include="Commands\Helpers\IArtifactsToDelete.cs" />
+    <Compile Include="Commands\Helpers\ITenantForSecretStoreCreationValidator.cs" />
+    <Compile Include="Commands\Helpers\TenantForSecretStoreCreationValidator.cs" />
     <Compile Include="Commands\ICommand.cs" />
     <Compile Include="Commands\IEHCommand.cs" />
     <Compile Include="Commands\Context\IEHContext.cs" />
@@ -165,13 +168,11 @@
     <Compile Include="Commands\SourceConfigurationTypeOfExportUpdater.cs" />
     <Compile Include="Commands\UpdateDestinationWorkspaceEntriesCommand.cs" />
     <Compile Include="Installers\CreateTenantIdForSecretStoreInstaller.cs" />
-    <Compile Include="Installers\Helpers\CreateTenantIdForSecretStoreEventHandlerWrapper.cs" />
-    <Compile Include="Installers\Helpers\Factories\CreateTenantIdForSecretStoreFactory.cs" />
     <Compile Include="Commands\Factories\RestoreJobHistoryDestinationWorkspaceCommandFactory.cs" />
     <Compile Include="Installers\Helpers\Factories\SecretStoreCleanUpFactory.cs" />
     <Compile Include="Commands\Factories\UpdateDestinationWorkspaceEntriesFactory.cs" />
-    <Compile Include="Installers\Helpers\Implementations\CreateTenantIdForSecretStore.cs" />
-    <Compile Include="Installers\Helpers\ICreateTenantIdForSecretStore.cs" />
+    <Compile Include="Commands\Helpers\CreateTenantIdForSecretStore.cs" />
+    <Compile Include="Commands\Helpers\ICreateTenantIdForSecretStore.cs" />
     <Compile Include="Installers\Helpers\ISecretStoreCleanUp.cs" />
     <Compile Include="Installers\Helpers\Implementations\SecretStoreCleanUp.cs" />
     <Compile Include="Installers\Helpers\SecretStoreCleanUpEventHandlerWrapper.cs" />

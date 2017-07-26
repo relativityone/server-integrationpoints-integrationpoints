@@ -1,4 +1,4 @@
-﻿namespace kCura.IntegrationPoints.EventHandlers.Installers.Helpers
+﻿namespace kCura.IntegrationPoints.EventHandlers.Commands.Helpers
 {
 	public interface ICreateTenantIdForSecretStore
 	{
