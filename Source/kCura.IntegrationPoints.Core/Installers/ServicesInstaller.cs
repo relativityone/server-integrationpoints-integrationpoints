@@ -47,6 +47,7 @@ using SystemInterface.IO;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Services.Exporter;
+using kCura.IntegrationPoints.Data.SecretStore;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.ScheduleQueue.Core.Data;
 using Relativity.Telemetry.APM;
@@ -153,6 +154,8 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IUnfinishedJobService>().ImplementedBy<UnfinishedJobService>().LifestyleTransient());
 			container.Register(Component.For<IRSAPIServiceFactory>().ImplementedBy<RSAPIServiceFactory>().LifestyleTransient());
 			container.Register(Component.For<IRunningJobService>().ImplementedBy<RunningJobService>().LifestyleTransient());
+			container.Register(Component.For<ISecretCatalogFactory>().ImplementedBy<DefaultSecretCatalogFactory>().LifestyleTransient());
+			container.Register(Component.For<ISecretManagerFactory>().ImplementedBy<SecretManagerFactory>().LifestyleTransient());
 
 			// TODO: we need to make use of an async GetDBContextAsync (pending Dan Wells' patch) -- biedrzycki: Feb 5th, 2016
 			container.Register(Component.For<IToggleProvider>().Instance(new SqlServerToggleProvider(
