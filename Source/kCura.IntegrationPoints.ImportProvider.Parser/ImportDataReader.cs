@@ -49,6 +49,13 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 							sourceOrdinal,
 							curColIdx++);
 					}
+				} else if(cur.FieldMapType == FieldMapTypeEnum.NativeFilePath)
+				{
+					//Add special native file path column
+					AddColumn(
+						kCura.IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD,
+						sourceOrdinal,
+						curColIdx++);
 				}
 				//general case
 				else
