@@ -970,15 +970,11 @@ ko.validation.insertValidationMessage = function (element) {
 			if (this.model.errors().length === 0) {
 				var mapping = ko.toJS(self.model);
 				var map = [];
-				var allSourceField = mapping.sourceField.concat(mapping.selectedSourceField);
+			    var allSourceField = mapping.sourceField.concat(mapping.sourceMapped);
 				for (var i = 0; i < mapping.sourceMapped.length; i++) {
 					var source = mapping.sourceMapped[i];
 					var destination = mapping.mappedWorkspace[i];
 
-					if (this.model.importNativeFile() === "true" && source.name === this.model.nativeFilePathValue()) {
-						IP.message.error.raise("You cannot map a field used for the Native File Path.");
-						return;
-					}
 					if (mapping.selectedUniqueId === destination.name) {
 						map.push({
 							sourceField: _createEntry(source),

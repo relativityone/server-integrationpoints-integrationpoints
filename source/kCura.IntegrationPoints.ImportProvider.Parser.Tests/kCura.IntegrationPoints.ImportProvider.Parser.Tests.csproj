@@ -210,6 +210,7 @@
     <EmbeddedResource Include="CsvResources\small.csv" />
     <EmbeddedResource Include="JsonResources\FieldMap-Without-Folder.json" />
     <EmbeddedResource Include="JsonResources\FieldMap-With-Folder.json" />
+    <EmbeddedResource Include="JsonResources\FieldMap-With-Native-File-Path.json" />
     <None Include="oi\unmanaged\cmmap000.bin" />
     <None Include="packages.config" />
   </ItemGroup>
