@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
     {
         private readonly IEncryptionManager _securityManager;
         private readonly ISettingsManager _settingsManager;
-        private IDataProviderFactory _providerFactory;
+        private readonly IDataProviderFactory _providerFactory;
         private readonly IHelper _helper;
 	    private readonly ISerializer _serializer;
 
@@ -69,7 +69,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		public HttpResponseMessage GetViewFields([FromBody] object data)
         {
             Settings settings = _settingsManager.ConvertFromEncryptedString(data.ToString());
-			FtpProviderSummaryPageSettingsModel model = new FtpProviderSummaryPageSettingsModel(settings);
+			var model = new FtpProviderSummaryPageSettingsModel(settings);
 	        string serializedModel = _serializer.Serialize(model);
             return Request.CreateResponse(HttpStatusCode.OK, serializedModel);
         }
