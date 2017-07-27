@@ -26,7 +26,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		public void Execute(Job job)
 		{
-			var details = _serializer.Deserialize<EmailMessage>(job.JobDetails);
+		    LogExecuteStart(job);
+
+            var details = _serializer.Deserialize<EmailMessage>(job.JobDetails);
 
 			var exceptions = new List<Exception>();
 			var emails = details.Emails;
@@ -40,7 +42,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					message.To.Add(email);
 					message.From = new MailAddress(NotificationConfig.EmailFrom);
 					_sendable.Send(message);
-				}
+				    LogExecuteSuccesfulEnd(job);
+                }
 				catch (Exception e)
 				{
 					LogSendingEmailError(job, e, email);
@@ -54,9 +57,21 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 		}
 
-		#region Logging
 
-		private void LogSendingEmailError(Job job, Exception e, string email)
+
+
+	    #region Logging
+
+	    private void LogExecuteStart(Job job)
+	    {
+	        _logger.LogInformation("Started executing send email worker, job: {JobId}", job.JobId);
+	    }
+	    private void LogExecuteSuccesfulEnd(Job job)
+	    {
+	        _logger.LogInformation("Succesfully sent email in worker, job: {Job}", job);
+	    }
+
+        private void LogSendingEmailError(Job job, Exception e, string email)
 		{
 			_logger.LogError(e, "Failed to send message to {Email} for job {JobId}.", email, job.JobId);
 		}

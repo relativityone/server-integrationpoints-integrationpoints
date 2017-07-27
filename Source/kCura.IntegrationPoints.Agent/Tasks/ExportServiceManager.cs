@@ -91,7 +91,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			try
 			{
-				InitializeService(job);
+			    LogExecuteStart(job);
+                InitializeService(job);
 
 				JobStopManager.ThrowIfStopRequested();
 
@@ -115,7 +116,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 						job.SubmittedBy,
 						userImportApiSettings))
 					{
-						IScratchTableRepository[] scratchTables = _exportServiceJobObservers.OfType<IConsumeScratchTableBatchStatus>()
+					    LogPushingDocumentsStart(job);
+                        IScratchTableRepository[] scratchTables = _exportServiceJobObservers.OfType<IConsumeScratchTableBatchStatus>()
 								.Select(observer => observer.ScratchTableRepository).ToArray();
 
 						var exporterTransferConfiguration = new ExporterTransferConfiguration(scratchTables, JobHistoryService, Identifier, Serializer.Deserialize<ImportSettings>(userImportApiSettings));
@@ -137,7 +139,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 								synchronizer.SyncData(dataTransferContext, MappedFields, userImportApiSettings);
 							}
 						}
-					}
+					    LogPushingDocumetsSuccesfulEnd(job);
+                    }
 				}
 				finally
 				{
@@ -166,10 +169,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				JobHistoryErrorService.CommitErrors();
 				FinalizeExportService(job);
 				FinalizeService(job);
-			}
+			    LogExecuteEnd(job);
+            }
 		}
 
-		protected override void SetupSubscriptions(IDataSynchronizer synchronizer, Job job)
+
+
+
+	    protected override void SetupSubscriptions(IDataSynchronizer synchronizer, Job job)
 		{
 			IScratchTableRepository[] scratchTableToMonitorItemLevelError =
 				_exportServiceJobObservers.OfType<IConsumeScratchTableBatchStatus>()
@@ -185,7 +192,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		protected string GetImportApiSettingsForUser(Job job, string originalImportApiSettings)
 		{
-			var importSettings = Serializer.Deserialize<ImportSettings>(originalImportApiSettings);
+		    LogGetImportApiSettingsForUserStart(job);
+
+            var importSettings = Serializer.Deserialize<ImportSettings>(originalImportApiSettings);
 			importSettings.OnBehalfOfUserId = job.SubmittedBy;
 			importSettings.FederatedInstanceCredentials = IntegrationPointDto.SecuredConfiguration;
 
@@ -209,13 +218,15 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 
 			string jsonString = Serializer.Serialize(importSettings);
-			return jsonString;
+		    GetImportApiSettingsForUserSuccesfulEnd(job, jsonString);
+            return jsonString;
 		}
 
-		protected override void JobHistoryErrorManagerSetup(Job job)
+	    protected override void JobHistoryErrorManagerSetup(Job job)
 		{
-			//Load Job History Errors if any
-			string uniqueJobId = GetUniqueJobId(job);
+		    LogJobHistoryErrorManagerSetupStart(job);
+            //Load Job History Errors if any
+            string uniqueJobId = GetUniqueJobId(job);
 			_jobHistoryErrorManager = ManagerFactory.CreateJobHistoryErrorManager(ContextContainer, SourceConfiguration.SourceWorkspaceArtifactId, uniqueJobId);
 			_updateStatusType = _jobHistoryErrorManager.StageForUpdatingErrors(job, JobHistoryDto.JobType);
 
@@ -244,11 +255,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					_jobHistoryErrorManager.CreateErrorListTempTablesForItemLevelErrors(job, _savedSearchArtifactId);
 				}
 			}
-		}
+		    LogJobHistoryErrorManagerSetupSuccesfulEnd(job);
+        }
 
-		private void FinalizeExportServiceObservers(Job job)
+        private void FinalizeExportServiceObservers(Job job)
 		{
-			SetJobStateAsUnstoppable(job);
+		    LogFinalizeExportServiceObserversStart(job);
+            SetJobStateAsUnstoppable(job);
 
 			var exceptions = new ConcurrentQueue<Exception>();
 			Parallel.ForEach(_exportServiceJobObservers, batch =>
@@ -262,12 +275,15 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					exceptions.Enqueue(exception);
 				}
 			});
+            LogProblemsInFinalizeExportServiceObservers(job, exceptions);
 			ThrowNewExceptionIfAny(exceptions);
-		}
+		    LogFinalizeExportServiceObserversSuccesfulEnd(job);
+        }
 
-		private void InitializeExportServiceObservers(Job job, string userImportApiSettings)
+        private void InitializeExportServiceObservers(Job job, string userImportApiSettings)
 		{
-			var settings = Serializer.Deserialize<SourceConfiguration>(IntegrationPointDto.SourceConfiguration);
+		    LogInitializeExportServiceObserversStart(job);
+            var settings = Serializer.Deserialize<SourceConfiguration>(IntegrationPointDto.SourceConfiguration);
 			var targetHelper = _helperFactory.CreateTargetHelper(_helper, settings.FederatedInstanceArtifactId, IntegrationPointDto.SecuredConfiguration);
 			IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(_helper,
 				targetHelper.GetServicesManager());
@@ -293,12 +309,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				}
 			});
 
-			ThrowNewExceptionIfAny(exceptions);
-		}
+		    LogProblemsInInitializeExportServiceObservers(job, exceptions);
+            ThrowNewExceptionIfAny(exceptions);
+		    LogInitializeExportServiceObserversSuccesfulEnd(job);
+        }
 
-		private void FinalizeExportService(Job job)
+	    private void FinalizeExportService(Job job)
 		{
-			_exportServiceJobObservers?.OfType<IScratchTableRepository>().ForEach(observer =>
+		    LogFinalizeExportServiceStart(job);
+
+            _exportServiceJobObservers?.OfType<IScratchTableRepository>().ForEach(observer =>
 			{
 				try
 				{
@@ -313,21 +333,25 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			DeleteTempSavedSearch();
 			FinalizeInProgressErrors(job);
+		    LogFinalizeExportServiceSuccesfulEnd(job);
 		}
 
-		private void FinalizeInProgressErrors(Job job)
+
+	    private void FinalizeInProgressErrors(Job job)
 		{
-			// Finalize any In Progress Job History Errors
-			if (JobHistoryErrorService.JobLevelErrorOccurred)
-			{
-				JobHistoryErrorBatchUpdateManager sourceJobHistoryErrorUpdater = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _repositoryFactory,
+            // Finalize any In Progress Job History Errors
+            if (JobHistoryErrorService.JobLevelErrorOccurred)
+            {
+                LogFinalizeInProgressErrors(job);
+
+                JobHistoryErrorBatchUpdateManager sourceJobHistoryErrorUpdater = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _repositoryFactory,
 					OnBehalfOfUserClaimsPrincipalFactory, JobStopManager, SourceConfiguration.SourceWorkspaceArtifactId, job.SubmittedBy, _updateStatusType);
 				sourceJobHistoryErrorUpdater.OnJobComplete(job);
-			}
+                LogFinalizeInProgressErrorsDone(job);
+            }
 		}
 
-
-		private void DeleteTempSavedSearch()
+	    private void DeleteTempSavedSearch()
 		{
 			try
 			{
@@ -345,7 +369,28 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 		}
 
-		#region Logging
+        #region Logging
+
+	    private void LogGetImportApiSettingsForUserStart(Job job)
+	    {
+	        Logger.LogInformation("Getting Import API settings for user in job: {JobId}", job.JobId);
+	    }
+
+        protected void LogProblemsInInitializeExportServiceObservers(Job job, IEnumerable<Exception> exceptions)
+		{
+		    foreach (Exception ex in exceptions)
+		    {
+		        Logger.LogError(ex, "There was a problem while initializing export service observers {JobId}.", job.JobId);
+		    }
+		}
+
+		protected void  LogProblemsInFinalizeExportServiceObservers(Job job, IEnumerable<Exception> exceptions)
+		{
+		    foreach (Exception ex in exceptions)
+		    {
+                Logger.LogError(ex, "There was a problem while finalizing export service observers {JobId}.", job.JobId);
+		    }
+		}
 
 		protected override void LogExecutingTaskError(Job job, Exception ex)
 		{
@@ -362,6 +407,80 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			Logger.LogError(e, "Failed to delete temp Saved Search {SavedSearchArtifactId}.", sourceConfiguration?.SavedSearchArtifactId);
 		}
 
-		#endregion
-	}
+	    private void LogPushingDocumetsSuccesfulEnd(Job job)
+	    {
+	        Logger.LogInformation("Succesfully finished pushing documents in Export Service Manager for job: {JobId}.", job.JobId);
+	    }
+
+	    private void LogPushingDocumentsStart(Job job)
+	    {
+	        Logger.LogInformation("Starting pushing documents in Export Service Manager for job: {JobId}.", job.JobId);
+	    }
+
+	    private void LogExecuteStart(Job job)
+	    {
+	        Logger.LogInformation("Started execution of job in Export Service Manager for job: {JobId}.", job.JobId);
+	    }
+
+	    private void LogExecuteEnd(Job job)
+	    {
+	        Logger.LogInformation("Finished execution of job in Export Service Manager for job: {JobId}.", job.JobId);
+	    }
+
+	    private void GetImportApiSettingsForUserSuccesfulEnd(Job job, string jsonString)
+	    {
+	        Logger.LogInformation("Succesfully finished getting Import API settings for user. job: {JobId}", job.JobId);
+	        Logger.LogDebug("Getting Import API settings for user returned following json {jsonString}, job: {JobId} ", jsonString, job.JobId);
+	    }
+
+	    private void LogJobHistoryErrorManagerSetupStart(Job job)
+	    {
+	        Logger.LogInformation("Setting up Job History Error Manager for job: {JobId}", job.JobId);
+	    }
+
+	    private void LogJobHistoryErrorManagerSetupSuccesfulEnd(Job job)
+	    {
+	        Logger.LogInformation("Succesfully finished Setting up Job History Error Manager for job: {JobId}", job.JobId);
+	    }
+
+	    private void LogFinalizeExportServiceObserversStart(Job job)
+	    {
+	        Logger.LogInformation("Finalizing export service observers for job: {JobId}", job.JobId);
+	    }
+
+	    private void LogFinalizeExportServiceObserversSuccesfulEnd(Job job)
+	    {
+	        Logger.LogInformation("Succesfully finalized export service observers for job: {JobId}", job.JobId);
+	    }
+
+	    private void LogInitializeExportServiceObserversStart(Job job)
+	    {
+	        Logger.LogInformation("Initializing export service observers for job: {JobId}", job.JobId);
+	    }
+	    private void LogInitializeExportServiceObserversSuccesfulEnd(Job job)
+	    {
+	        Logger.LogInformation("Initialized export service observers for job: {JobId}", job.JobId);
+	    }
+
+	    private void LogFinalizeExportServiceSuccesfulEnd(Job job)
+	    {
+	        Logger.LogInformation("Finalized export service for job: {Job}", job);
+	    }
+
+	    private void LogFinalizeExportServiceStart(Job job)
+	    {
+	        Logger.LogInformation("Finalizing export service for job: {Job}", job);
+	    }
+
+	    private void LogFinalizeInProgressErrorsDone(Job job)
+	    {
+	        Logger.LogInformation("Finished Finalizing job level errors for job: {JobId}", job.JobId);
+	    }
+
+	    private void LogFinalizeInProgressErrors(Job job)
+	    {
+	        Logger.LogInformation("Finalizing job level errors for job: {JobId}", job.JobId);
+	    }
+        #endregion
+    }
 }

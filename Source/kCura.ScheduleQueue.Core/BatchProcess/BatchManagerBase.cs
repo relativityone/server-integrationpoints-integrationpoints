@@ -23,14 +23,17 @@ namespace kCura.ScheduleQueue.Core.BatchProcess
 
 		public virtual void Execute(Job job)
 		{
-			TaskResult taskResult = new TaskResult();
+		    LogExecuteStart(job);
+
+            TaskResult taskResult = new TaskResult();
 			int items = 0;
 			try
 			{
 				OnRaiseJobPreExecute(job);
 				items = BatchTask(job, GetUnbatchedIDs(job));
 				taskResult.Status = TaskStatusEnum.Success;
-			}
+			    LogExecuteSuccesfulEnd(job);
+            }
 			catch (OperationCanceledException e)
 			{
 				taskResult.Status = TaskStatusEnum.Success;
@@ -46,30 +49,34 @@ namespace kCura.ScheduleQueue.Core.BatchProcess
 			}
 			finally
 			{
-				OnRaiseJobPostExecute(job, taskResult, items);
+			    OnRaiseJobPostExecute(job, taskResult, items);
+			    LogExecuteFinalize(job);
 			}
 		}
 
-		public event JobPreExecuteEvent RaiseJobPreExecute;
+
+	    public event JobPreExecuteEvent RaiseJobPreExecute;
 		public event JobPostExecuteEvent RaiseJobPostExecute;
 
 		protected virtual void OnRaiseJobPreExecute(Job job)
 		{
 			if (RaiseJobPreExecute != null)
 			{
-				RaiseJobPreExecute(job);
+			    LogRaisePreExecute(job);
+			    RaiseJobPreExecute(job);
 			}
 		}
 
-		protected virtual void OnRaiseJobPostExecute(Job job, TaskResult taskResult, int items)
+	    protected virtual void OnRaiseJobPostExecute(Job job, TaskResult taskResult, int items)
 		{
 			if (RaiseJobPostExecute != null)
 			{
-				RaiseJobPostExecute(job, taskResult, items);
+			    LogRaisePostExecute(job);
+			    RaiseJobPostExecute(job, taskResult, items);
 			}
 		}
 
-		public abstract IEnumerable<T> GetUnbatchedIDs(Job job);
+        public abstract IEnumerable<T> GetUnbatchedIDs(Job job);
 
 		public virtual int BatchTask(Job job, IEnumerable<T> batchIDs)
 		{
@@ -110,6 +117,31 @@ namespace kCura.ScheduleQueue.Core.BatchProcess
 			_logger.LogInformation(e, "Someone attempted to stop the job");
 		}
 
-		#endregion
-	}
+	    private void LogExecuteFinalize(Job job)
+	    {
+	        _logger.LogInformation("Batch Manager Base: Finalizing execution of job: {JobId}", job.JobId);
+	    }
+
+	    private void LogExecuteSuccesfulEnd(Job job)
+	    {
+	        _logger.LogInformation("Batch Manager Base: Succesfully executed job: {JobId}", job.JobId);
+	    }
+
+	    private void LogExecuteStart(Job job)
+	    {
+	        _logger.LogInformation("Batch Manager Base: Started execution of job: {JobId}", job.JobId);
+	    }
+
+	    private void LogRaisePostExecute(Job job)
+	    {
+	        _logger.LogInformation("Batch Manager Base: Raising post execute event for job: {JobId}", job.JobId);
+	    }
+
+	    private void LogRaisePreExecute(Job job)
+	    {
+	        _logger.LogInformation("Batch Manager Base: Raising pre execute event for job: {JobId}", job.JobId);
+	    }
+
+        #endregion
+    }
 }

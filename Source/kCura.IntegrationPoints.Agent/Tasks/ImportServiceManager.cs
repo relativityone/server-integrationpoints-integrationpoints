@@ -69,7 +69,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			try
 			{
-				InitializeService(job);
+			    LogExecuteStart(job);
+
+                InitializeService(job);
 
 				JobStopManager.ThrowIfStopRequested();
 
@@ -93,7 +95,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 						synchronizer.SyncData(context, MappedFields, Serializer.Serialize(settings));
 					}
 				}
-			}
+			    LogExecuteSuccesfulEnd(job);
+            }
 			catch (OperationCanceledException e)
 			{
 				LogJobStoppedException(job, e);
@@ -110,10 +113,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				SetJobStateAsUnstoppable(job);
 				JobHistoryErrorService.CommitErrors();
 				FinalizeService(job);
+			    LogExecuteFinalize(job);
 			}
 		}
 
-		protected override void SetupSubscriptions(IDataSynchronizer synchronizer, Job job)
+	    protected override void SetupSubscriptions(IDataSynchronizer synchronizer, Job job)
 		{
 			StatisticsService?.Subscribe(synchronizer as IBatchReporter, job);
 			JobHistoryErrorService.SubscribeToBatchReporterEvents(synchronizer);
@@ -121,7 +125,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private ImportSettings GetImportApiSettingsObjectForUser(Job job)
 		{
-			ImportProviderSettings providerSettings = Serializer.Deserialize<ImportProviderSettings>(IntegrationPointDto.SourceConfiguration);
+		    LogGetImportApiSettingsObjectForUserStart(job);
+            ImportProviderSettings providerSettings = Serializer.Deserialize<ImportProviderSettings>(IntegrationPointDto.SourceConfiguration);
 			ImportSettings importSettings = Serializer.Deserialize<ImportSettings>(IntegrationPointDto.DestinationConfiguration);
 
 			importSettings.OnBehalfOfUserId = job.SubmittedBy;
@@ -144,14 +149,15 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			//Copy multi-value and nested delimiter settings chosen on configuration page to importAPI settings
 			importSettings.MultiValueDelimiter = (char)providerSettings.AsciiMultiLine;
 			importSettings.NestedValueDelimiter = (char)providerSettings.AsciiNestedValue;
-
-			return importSettings;
+		    LogGetImportApiSettingsObjectForUserSuccesfulEnd(job);
+            return importSettings;
 		}
 
-		private int UpdateSourceRecordCount(ImportSettings settings)
-		{
-			//Cannot re-use the LoadFileDataReader once record count has been obtained (error file is not created properly due to an off-by-one error)
-			using (IDataReader sourceReader = _dataReaderFactory.GetDataReader(MappedFields.ToArray(), IntegrationPointDto.SourceConfiguration))
+	    private int UpdateSourceRecordCount(ImportSettings settings)
+	    {
+	        LogUpdateSourceRecordCountStart();
+	        //Cannot re-use the LoadFileDataReader once record count has been obtained (error file is not created properly due to an off-by-one error)
+            using (IDataReader sourceReader = _dataReaderFactory.GetDataReader(MappedFields.ToArray(), IntegrationPointDto.SourceConfiguration))
 			{
 				int recordCount =
 					settings.ImageImport ?
@@ -165,15 +171,56 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					UpdateJobStatus();
 				}
 
-				return recordCount;
+			    LogUpdateSourceRecordSuccesfulEnd();
+                return recordCount;
 			}
-		}
+	    }
 
-		private string UpdatedProviderSettingsLoadFile()
+
+	    private string UpdatedProviderSettingsLoadFile()
 		{
 			ImportProviderSettings providerSettings = Serializer.Deserialize<ImportProviderSettings>(IntegrationPointDto.SourceConfiguration);
 			providerSettings.LoadFile = _importFileLocationService.LoadFileFullPath(IntegrationPointDto.ArtifactId);
 			return Serializer.Serialize(providerSettings);
 		}
-	}
+
+
+        #region Logging
+        private void LogExecuteFinalize(Job job)
+	    {
+	        Logger.LogInformation("Finalized execution of job in Import Service Manager. job: {JobId}.", job.JobId);
+	    }
+
+	    private void LogExecuteSuccesfulEnd(Job job)
+	    {
+	        Logger.LogInformation("Succesfully finished execution of job in Import Service Manager. job: {JobId}.", job.JobId);
+	    }
+
+	    private void LogExecuteStart(Job job)
+	    {
+	        Logger.LogInformation("Starting execution of job in Import Service Manager. job: {JobId}.", job.JobId);
+	    }
+
+	    private void LogGetImportApiSettingsObjectForUserSuccesfulEnd(Job job)
+	    {
+	        Logger.LogInformation("Succesfully finished getting Import API settings for user. job: {JobId}.", job.JobId);
+	    }
+
+	    private void LogGetImportApiSettingsObjectForUserStart(Job job)
+	    {
+	        Logger.LogInformation("Getting Import API settings for user. job: {JobId}.", job.JobId);
+	    }
+
+	    private void LogUpdateSourceRecordSuccesfulEnd()
+	    {
+	        Logger.LogInformation("Succesfully finished updating source record count.");
+	    }
+
+	    private void LogUpdateSourceRecordCountStart()
+	    {
+	        Logger.LogInformation("Started updating source record count.");
+	    }
+
+        #endregion 
+    }
 }

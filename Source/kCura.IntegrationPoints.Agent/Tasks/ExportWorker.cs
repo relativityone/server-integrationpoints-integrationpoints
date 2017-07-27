@@ -87,15 +87,19 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			string destinationConfiguration, List<string> entryIDs,
 			SourceProvider sourceProviderRdo, DestinationProvider destinationProvider, Job job)
 		{
-			var sourceSettings = DeserializeSourceSettings(sourceConfiguration, job);
+		    LogExecuteImportStart(job);
+
+            var sourceSettings = DeserializeSourceSettings(sourceConfiguration, job);
 			var destinationSettings = DeserializeDestinationSettings(destinationConfiguration, job);
 
 			PrepareDestinationLocation(sourceSettings);
 
 			_exportProcessRunner.StartWith(sourceSettings, fieldMap, destinationSettings.ArtifactTypeId, job);
+		    LogExecuteImportSuccesfulEnd(job);
+
 		}
 
-		private ExportUsingSavedSearchSettings DeserializeSourceSettings(string sourceConfiguration, Job job)
+	    private ExportUsingSavedSearchSettings DeserializeSourceSettings(string sourceConfiguration, Job job)
 		{
 			try
 			{
@@ -154,6 +158,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_logger.LogError(e, "Failed to create transfer location'sdirectory structure", path);
 		}
 
-		#endregion
-	}
+	    private void LogExecuteImportSuccesfulEnd(Job job)
+	    {
+	        _logger.LogInformation("Succesfully finished execution of import in Export Worker for: {JobId}.", job.JobId);
+	    }
+
+	    private void LogExecuteImportStart(Job job)
+	    {
+	        _logger.LogInformation("Starting execution of import in Export Worker for: {JobId}.", job.JobId);
+	    }
+
+        #endregion
+    }
 }

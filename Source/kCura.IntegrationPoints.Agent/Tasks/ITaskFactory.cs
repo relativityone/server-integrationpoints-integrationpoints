@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Agent.Attributes;
 using kCura.IntegrationPoints.Agent.Exceptions;
@@ -15,6 +16,7 @@ using kCura.IntegrationPoints.Core.Monitoring;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Email;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
@@ -85,7 +87,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		public ITask CreateTask(Job job, ScheduleQueueAgentBase agentBase)
 		{
-			LogCreatingTaskInformation(job);
+		    LogCreateTaskStart(job);
+            LogCreatingTaskInformation(job);
 			Install(job, agentBase);
 			IntegrationPoint integrationPointDto = GetIntegrationPoint(job);
 			ResolveDependencies(integrationPointDto);
@@ -93,8 +96,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				TaskType taskType;
 				Enum.TryParse(job.TaskType, true, out taskType);
+			    LogCreateTaskSyncCheck(job, taskType);
 
-				switch (taskType)
+                switch (taskType)
 				{
 					case TaskType.SyncManager:
 						CheckForSynchronization(typeof(SyncManager), job, integrationPointDto, agentBase);
@@ -151,7 +155,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 		}
 
-		public void Release(ITask task)
+	    public void Release(ITask task)
 		{
 			try
 			{
@@ -209,8 +213,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private IntegrationPoint GetIntegrationPoint(Job job)
 		{
-			_caseServiceContext = Container.Resolve<ICaseServiceContext>();
-
+		    LogGetIntegrationPointStart(job);
+            _caseServiceContext = Container.Resolve<ICaseServiceContext>();
 			var integrationPoint = _caseServiceContext.RsapiService.IntegrationPointLibrary.Read(job.RelatedObjectArtifactID);
 
 			if (integrationPoint == null)
@@ -220,12 +224,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					$"Unable to retrieve the integration point for the following job: {job.JobId}");
 			}
 
-			return integrationPoint;
+		    LogGetIntegrationPointSuccesfullEnd(job, integrationPoint);
+            return integrationPoint;
 		}
 
-		private JobHistory GetJobHistory(Job job, IntegrationPoint integrationPointDto)
+	    private JobHistory GetJobHistory(Job job, IntegrationPoint integrationPointDto)
 		{
-			TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
+		    LogGetJobHistoryStart(job, integrationPointDto);
+            TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
 			JobHistory jobHistory = _jobHistoryService.CreateRdo(
 				integrationPointDto,
 				taskParameters.BatchInstance,
@@ -233,27 +239,29 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					? JobTypeChoices.JobHistoryRun
 					: JobTypeChoices.JobHistoryScheduledRun, DateTime.Now);
 
-			return jobHistory;
+		    LogGetJobHistorySuccesfulEnd(job, integrationPointDto);
+            return jobHistory;
 		}
 
-		private void UpdateJobHistoryOnFailure(Job job, IntegrationPoint integrationPointDto, Exception e)
+
+	    private void UpdateJobHistoryOnFailure(Job job, IntegrationPoint integrationPointDto, Exception e)
 		{
-			JobHistory jobHistory = GetJobHistory(job, integrationPointDto);
+		    LogUpdateJobHistoryOnFailureStart(job, integrationPointDto, e);
+            JobHistory jobHistory = GetJobHistory(job, integrationPointDto);
 
 			IJobHistoryErrorService jobHistoryErrorService = Container.Resolve<IJobHistoryErrorService>();
 			jobHistoryErrorService.IntegrationPoint = integrationPointDto;
 			jobHistoryErrorService.JobHistory = jobHistory;
 			jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, e);
 			jobHistoryErrorService.CommitErrors();
-
 			jobHistory.JobStatus = JobStatusChoices.JobHistoryErrorJobFailed;
 			_jobHistoryService.UpdateRdo(jobHistory);
 
-			// No updates to IP since the job history error service handles IP updates
-			
+			// No updates to IP since the job history error service handles IP updates			
 			var healthcheck = Client.APMClient.HealthCheckOperation(Constants.IntegrationPoints.Telemetry.APM_HEALTHCHECK, HealthCheck.CreateJobFailedMetric);
 			healthcheck.Write();
-		}
+		    LogUpdateJobHistoryOnFailureSuccesfulEnd(job, integrationPointDto);
+        }
 
 		internal bool HasOtherJobsExecuting(Job job)
 		{
@@ -288,7 +296,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		internal void RemoveJobHistoryFromIntegrationPoint(IntegrationPoint integrationPointDto, JobHistory jobHistory)
 		{
-			List<int> jobHistoryIds = integrationPointDto.JobHistory.ToList();
+		    LogRemoveJobHistoryFromIntegrationPointStart(integrationPointDto);
+            List<int> jobHistoryIds = integrationPointDto.JobHistory.ToList();
 			jobHistoryIds.Remove(jobHistory.ArtifactId);
 			integrationPointDto.JobHistory = jobHistoryIds.ToArray();
 			_caseServiceContext.RsapiService.IntegrationPointLibrary.Update(integrationPointDto);
@@ -296,23 +305,44 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			jobHistory.JobStatus = JobStatusChoices.JobHistoryStopped;
 			_jobHistoryService.UpdateRdo(jobHistory);
 			_jobHistoryService.DeleteRdo(jobHistory.ArtifactId);
-		}
+		    LogRemoveJobHistoryFromIntegrationPointSuccesfulEnd(integrationPointDto);
+        }
 
-		private IJobHistoryService CreateJobHistoryService(IntegrationPoint integrationPoint)
+	    private IJobHistoryService CreateJobHistoryService(IntegrationPoint integrationPoint)
 		{
 			DestinationConfiguration destinationConfiguration = _serializer.Deserialize<DestinationConfiguration>(integrationPoint.DestinationConfiguration);
 			var targetHelper = _helperFactory.CreateTargetHelper(_helper, destinationConfiguration.FederatedInstanceArtifactId, integrationPoint.SecuredConfiguration);
 			return _serviceFactory.CreateJobHistoryService(_helper, targetHelper);
 		}
 
-		#region Logging
+        #region Logging
 
-		private void LogCreatingTaskInformation(Job job)
+	    private void LogRemoveJobHistoryFromIntegrationPointSuccesfulEnd(IntegrationPoint integrationPointDto)
+	    {
+	        _logger.LogInformation("Succesfully removed job history from integration point: {ArtifactId}",
+	            integrationPointDto.ArtifactId);
+	    }
+
+	    private void LogRemoveJobHistoryFromIntegrationPointStart(IntegrationPoint integrationPointDto)
+	    {
+	        _logger.LogInformation("Removing job history from integration point: {ArtifactId}", integrationPointDto.ArtifactId);
+	    }
+
+        private void LogCreatingTaskInformation(Job job)
 		{
 			_logger.LogInformation("Attempting to create task {TaskType} for job {JobId}.", job.TaskType, job.JobId);
 		}
+	    private void LogCreateTaskSyncCheck(Job job, TaskType taskType)
+	    {
+	        _logger.LogInformation("Checking for synchronization in task factory. Job: {JobId}, Task Type: {TaskType} ", job.JobId, taskType);
+	    }
 
-		private void LogUnknownTaskTypeError(TaskType taskType)
+        private void LogCreateTaskStart(Job job)
+	    {
+	        _logger.LogInformation("Creating task for job: {JobId}", job.JobId);
+	    }
+
+        private void LogUnknownTaskTypeError(TaskType taskType)
 		{
 			_logger.LogError("Unable to create task. Unknown task type ({TaskType})", taskType);
 		}
@@ -338,6 +368,38 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				integrationPointDto.ArtifactId);
 		}
 
-		#endregion
-	}
+	    private void LogGetIntegrationPointSuccesfullEnd(Job job, IntegrationPoint integrationPoint)
+	    {
+	        _logger.LogInformation("Retrieved integration point, job: {JobId}, ArtifactId: {ArtifactId}", job.JobId, integrationPoint.ArtifactId);
+	    }
+
+	    private void LogGetIntegrationPointStart(Job job)
+	    {
+	        _logger.LogInformation("Getting integration point, job: {JobId}", job.JobId);
+	    }
+
+	    private void LogGetJobHistorySuccesfulEnd(Job job, IntegrationPoint integrationPointDto)
+	    {
+	        _logger.LogInformation("Succesfully retrieved job history,  job: {JobId}, ArtifactId: {ArtifactId} ", job.JobId,
+	            integrationPointDto.ArtifactId);
+	    }
+
+	    private void LogGetJobHistoryStart(Job job, IntegrationPoint integrationPointDto)
+	    {
+	        _logger.LogInformation("Getting job history,  job: {JobId}, ArtifactId: {ArtifactId} ", job.JobId,
+	            integrationPointDto.ArtifactId);
+	    }
+
+	    private void LogUpdateJobHistoryOnFailureSuccesfulEnd(Job job, IntegrationPoint integrationPointDto)
+	    {
+	        _logger.LogInformation("Succesfully updated job history on failure,  job: {Job}, ArtifactId: {ArtifactId} ", job, integrationPointDto.ArtifactId);
+	    }
+
+	    private void LogUpdateJobHistoryOnFailureStart(Job job, IntegrationPoint integrationPointDto, Exception e)
+	    {
+	        _logger.LogInformation(e, "Updating job history on failure,  job: {Job}, ArtifactId: {ArtifactId} ", job, integrationPointDto.ArtifactId);
+	    }
+
+        #endregion
+    }
 }

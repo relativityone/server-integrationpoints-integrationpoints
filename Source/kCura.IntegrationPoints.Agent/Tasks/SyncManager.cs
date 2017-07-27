@@ -101,9 +101,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		public override IEnumerable<string> GetUnbatchedIDs(Job job)
 		{
-			try
+		    LogGetUnbatchedIds(job);
+            try
 			{
-				if (string.IsNullOrEmpty(job.JobDetails))
+                if (string.IsNullOrEmpty(job.JobDetails))
 				{
 					//job is scheduled so give it the same look as import now
 					var details = new TaskParameters
@@ -131,8 +132,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				IDataReader idReader = provider.GetBatchableIds(idField, options);
 
 				JobStopManager?.ThrowIfStopRequested();
-
-				return new ReaderEnumerable(idReader, JobStopManager);
+                var result = new ReaderEnumerable(idReader, JobStopManager);
+			    LogGetUnbatchedIdsSuccesfulEnd(job, result);
+                return result;
 			}
 			catch (OperationCanceledException e)
 			{
@@ -149,13 +151,18 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			finally
 			{
 				_jobHistoryErrorService.CommitErrors();
-			}
+			    LogGetUnbatchedIdsFinalize(job);
+            }
 			return new List<string>();
 		}
 
-		public override void CreateBatchJob(Job job, List<string> batchIDs)
+
+
+	    public override void CreateBatchJob(Job job, List<string> batchIDs)
 		{
-			JobStopManager?.ThrowIfStopRequested();
+		    LogCreateBatchJobStart(job, batchIDs);
+
+            JobStopManager?.ThrowIfStopRequested();
 
 			TaskParameters taskParameters = new TaskParameters
 			{
@@ -164,9 +171,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			};
 			_jobManager.CreateJobWithTracker(job, taskParameters, GetTaskType(), BatchInstance.ToString());
 			BatchJobCount++;
-		}
+		    LogCreateBatchJobEnd(job, batchIDs);
+        }
 
-		protected virtual TaskType GetTaskType()
+	    protected virtual TaskType GetTaskType()
 		{
 			return TaskType.SyncWorker;
 		}
@@ -175,7 +183,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			try
 			{
-				InjectionManager.Instance.Evaluate("B50CD1DD-6FEC-439E-A730-B84B730C9D44");
+			    LogJobPreExecuteStart(job);
+                InjectionManager.Instance.Evaluate("B50CD1DD-6FEC-439E-A730-B84B730C9D44");
 
 				BatchInstance = GetBatchInstance(job);
 				if (job.RelatedObjectArtifactID < 1)
@@ -204,7 +213,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					//TODO: jobHistory.Status = "";
 					_jobHistoryService.UpdateRdo(JobHistory);
 				}
-			}
+			    LogJobPreExecuteSuccesfulEnd(job);
+            }
 			catch (OperationCanceledException e)
 			{
 				LogJobStoppedException(job, e);
@@ -219,15 +229,17 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 			finally
 			{
-				_jobHistoryErrorService.CommitErrors();
+			    _jobHistoryErrorService.CommitErrors();
+			    LogJobPreExecuteFinalize(job);
 			}
 		}
 
-		private void JobPostExecute(Job job, TaskResult taskResult, int items)
+	    private void JobPostExecute(Job job, TaskResult taskResult, int items)
 		{
 			try
 			{
-				List<Exception> exceptions = new List<Exception>();
+			    LogJobPostExecuteStart(job);
+                List<Exception> exceptions = new List<Exception>();
 				try
 				{
 					UpdateLastRuntimeAndCalculateNextRuntime(job, taskResult);
@@ -269,7 +281,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				{
 					throw new AggregateException(exceptions);
 				}
-			}
+			    LogJobPostExecuteSuccesfulEnd(job);
+            }
 			catch (Exception ex)
 			{
 				LogPostExecuteAggregatedError(job, ex);
@@ -277,21 +290,24 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 			finally
 			{
-				_jobHistoryErrorService.CommitErrors();
+			    _jobHistoryErrorService.CommitErrors();
+			    LogJobPostExecuteFinalize(job);
 			}
 		}
 
-		private void UpdateStopState(Job job)
+        private void UpdateStopState(Job job)
 		{
 			if (job.SerializedScheduleRule != null)
 			{
-				_jobService.UpdateStopState(new List<long> {job.JobId}, StopState.None);
+			    LogUpdateStopState(job);
+			    _jobService.UpdateStopState(new List<long> {job.JobId}, StopState.None);
 			}
 		}
 
-		private void FinalizeJob(Job job)
+	    private void FinalizeJob(Job job)
 		{
-			List<Exception> exceptions = new List<Exception>();
+		    LogFinalizeJobStart(job);
+            List<Exception> exceptions = new List<Exception>();
 
 			try
 			{
@@ -335,35 +351,40 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				throw new AggregateException("Failed to finalize the job.", exceptions);
 			}
-		}
+		    LogFinalizeJobSuccesfulEnd(job);
+        }
 
-		private void UpdateLastRuntimeAndCalculateNextRuntime(Job job, TaskResult taskResult)
+	    private void UpdateLastRuntimeAndCalculateNextRuntime(Job job, TaskResult taskResult)
 		{
-			IntegrationPoint.LastRuntimeUTC = DateTime.UtcNow;
+		    LogUpdateLastRuntimeAndCalculateNextRuntimeStart(job);
+            IntegrationPoint.LastRuntimeUTC = DateTime.UtcNow;
 			if (job.SerializedScheduleRule != null)
 			{
 				IntegrationPoint.NextScheduledRuntimeUTC = _jobService.GetJobNextUtcRunDateTime(job, _scheduleRuleFactory, taskResult);
 			}
 			_caseServiceContext.RsapiService.IntegrationPointLibrary.Update(IntegrationPoint);
-		}
+		    LogUpdateLastRuntimeAndCalculateNextRuntimeSuccesfulEnd(job);
+        }
 
-		public Guid GetBatchInstance(Job job)
+	    public Guid GetBatchInstance(Job job)
 		{
 			return new TaskParameterHelper(Serializer, _guidService).GetBatchInstance(job);
 		}
 
 		public override void Execute(Job job)
 		{
-			using (APMClient.APMClient.TimedOperation(Constants.IntegrationPoints.Telemetry.BUCKET_SYNC_MANAGER_EXEC_DURATION_METRIC_COLLECTOR))
+		    LogExecuteStart(job);
+            using (APMClient.APMClient.TimedOperation(Constants.IntegrationPoints.Telemetry.BUCKET_SYNC_MANAGER_EXEC_DURATION_METRIC_COLLECTOR))
 			using (Client.MetricsClient.LogDuration(
 				Constants.IntegrationPoints.Telemetry.BUCKET_SYNC_MANAGER_EXEC_DURATION_METRIC_COLLECTOR,
 				Guid.Empty))
 			{
 				base.Execute(job);
 			}
-		}
+		    LogExecuteEnd(job);
+        }
 
-		private class ReaderEnumerable : IEnumerable<string>, IDisposable
+	    private class ReaderEnumerable : IEnumerable<string>, IDisposable
 		{
 			private readonly IJobStopManager _jobStopManager;
 			private readonly IDataReader _reader;
@@ -469,6 +490,83 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_logger.LogError(exception, "Failed to update stop state for job {JobId}.", job.JobId);
 		}
 
-		#endregion
-	}
+	    private void LogGetUnbatchedIds(Job job)
+	    {
+	        _logger.LogInformation("Started getting unbatched IDs in SyncManager for job: {JobId}.", job.JobId);
+	    }
+	    private void LogGetUnbatchedIdsSuccesfulEnd(Job job, IEnumerable<string> ids)
+	    {
+	        _logger.LogInformation("Succesfully retrieved unbatched IDs in SyncManager for job: {JobId}.", job.JobId);
+            _logger.LogDebug("Retrieved unbatched IDs for job: {JobId}, ids: {ids}.", job.JobId , ids);
+	    }
+
+	    private void LogGetUnbatchedIdsFinalize(Job job)
+	    {
+	        _logger.LogInformation("Finalized getting unbatched IDs for job: {JobId}.", job.JobId);
+        }
+	    private void LogCreateBatchJobEnd(Job job, List<string> batchIDs)
+	    {
+	        _logger.LogInformation("Finished creating batch job: {Job}, batchIDs: {batchIDs}.", job, batchIDs);
+	    }
+	    private void LogCreateBatchJobStart(Job job, List<string> batchIDs)
+	    {
+	        _logger.LogInformation("Started creating batch job: {Job}, batchIDs: {batchIDs}.", job, batchIDs);
+	    }
+	    private void LogJobPreExecuteStart(Job job)
+	    {
+	        _logger.LogInformation("Starting pre execute in SyncManager for job: {JobId}.", job.JobId);
+	    }
+	    private void LogJobPreExecuteSuccesfulEnd(Job job)
+	    {
+	        _logger.LogInformation("Succesfully finished pre execute in SyncManager for: {JobId}.", job.JobId);
+	    }
+	    private void LogJobPreExecuteFinalize(Job job)
+	    {
+	        _logger.LogInformation("Finished pre execute in SyncManager for: {JobId}.", job.JobId);
+	    }
+	    private void LogJobPostExecuteStart(Job job)
+	    {
+	        _logger.LogInformation("Starting post execute in SyncManager for job: {JobId}.", job.JobId);
+	    }
+
+	    private void LogJobPostExecuteFinalize(Job job)
+	    {
+	        _logger.LogInformation("Finalized post execute in SyncManager for job: {JobId}.", job.JobId);
+	    }
+        private void LogJobPostExecuteSuccesfulEnd(Job job)
+	    {
+	        _logger.LogInformation("Succesfully finished post execute in SyncManager for job: {JobId}.", job.JobId);
+	    }
+	    private void LogUpdateStopState(Job job)
+	    {
+	        _logger.LogInformation("Updating stop state in SyncManager to None for job: {JobId}.", job.JobId);
+	    }
+
+	    private void LogFinalizeJobSuccesfulEnd(Job job)
+	    {
+	        _logger.LogInformation("Succesfully finished finalization method in SyncManager for job: {JobId}.", job.JobId);
+	    }
+	    private void LogFinalizeJobStart(Job job)
+	    {
+	        _logger.LogInformation("Starting Finalize Job method in SyncManager for job: {JobId}.", job.JobId);
+	    }
+	    private void LogUpdateLastRuntimeAndCalculateNextRuntimeSuccesfulEnd(Job job)
+	    {
+	        _logger.LogInformation("Succesfully finished updating last runtime and calculated next runtime for job: {JobId}.", job.JobId);
+	    }
+	    private void LogUpdateLastRuntimeAndCalculateNextRuntimeStart(Job job)
+	    {
+	        _logger.LogInformation("Started updating last runtime and calculating next runtime for job: {JobId}.", job.JobId);
+	    }
+	    private void LogExecuteEnd(Job job)
+	    {
+	        _logger.LogInformation("Finished execution of job in SyncManager: {JobId}.", job.JobId);
+	    }
+	    private void LogExecuteStart(Job job)
+	    {
+	        _logger.LogInformation("Starting execution of job in SyncManager: {JobId}.", job.JobId);
+	    }
+
+        #endregion
+    }
 }

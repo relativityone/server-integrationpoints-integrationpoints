@@ -73,7 +73,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			return TaskType.ExportWorker;
 		}
-
 		/// <summary>
 		///     This method returns record (batch) ids that should be processed by ExportWorker class
 		/// </summary>
@@ -81,14 +80,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		/// <returns>List of batch ids to be processed</returns>
 		public override IEnumerable<string> GetUnbatchedIDs(Job job)
 		{
-			//Currently Export Shared library (kCura.WinEDDS) is making usage of batching internalLy
+		    //Currently Export Shared library (kCura.WinEDDS) is making usage of batching internalLy
 			//so for now we need to create only one worker job
-			yield break;
+		    LogGettingUnbatchedIDs(job);
+		    yield break;
 		}
 
-		public override int BatchTask(Job job, IEnumerable<string> batchIDs)
+        public override int BatchTask(Job job, IEnumerable<string> batchIDs)
 		{
-			var integrationPoint = IntegrationPointService.GetRdo(job.RelatedObjectArtifactID);
+		    LogBatchTaskStart(job, batchIDs);
+            var integrationPoint = IntegrationPointService.GetRdo(job.RelatedObjectArtifactID);
 
 			if (integrationPoint == null)
 			{
@@ -105,14 +106,19 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				CreateBatchJob(job, new List<string>());
 			}
-			return totalCount;
+
+		    LogBatchTaskSuccesfulEnd(job, totalCount);
+            return totalCount;
 		}
 
-		private int GetTotalExportItemsCount(ExportUsingSavedSearchSettings settings, DestinationConfiguration destinationConfiguration, Job job)
+	    private int GetTotalExportItemsCount(ExportUsingSavedSearchSettings settings, DestinationConfiguration destinationConfiguration, Job job)
 		{
 			try
 			{
-				return _exportInitProcessService.CalculateDocumentCountToTransfer(settings, destinationConfiguration.ArtifactTypeId);
+                LogGetTotalExportItemsCountStart(job);
+                int count = _exportInitProcessService.CalculateDocumentCountToTransfer(settings, destinationConfiguration.ArtifactTypeId);
+			    LogGetTotalExportItemsCountSuccesfulEnd(job, count);
+			    return count;
 			}
 			catch (Exception ex)
 			{
@@ -120,8 +126,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				throw;
 			}
 		}
-
-		#endregion //Methods
+	    #endregion //Methods
 
 		#region Logging
 
@@ -135,6 +140,34 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_logger.LogError("Failed to retrieve Integration Point object for job {JobId}.", job.JobId);
 		}
 
-		#endregion
-	}
+	    private void LogGettingUnbatchedIDs(Job job)
+	    {
+	        _logger.LogInformation("Getting unbatched IDs in Export Worker for job {JobId}.", job.JobId);
+	    }
+
+	    private void LogBatchTaskStart(Job job, IEnumerable<string> batchIDs)
+	    {
+	        _logger.LogInformation("Started batch task in Export Manager for job: {JobId}, batchIds: {batchIDs}",
+	            job.JobId,
+	            batchIDs);
+	    }
+
+	    private void LogBatchTaskSuccesfulEnd(Job job, int totalCount)
+	    {
+	        _logger.LogInformation("Finished batch task in Export Manager for job: {JobId}, totalCount: {totalCount}",
+	            job.JobId, totalCount);
+	    }
+
+	    private void LogGetTotalExportItemsCountStart(Job job)
+	    {
+	        _logger.LogInformation("Trying to get total export items count for job: {JobId}", job.JobId);
+	    }
+
+	    private void LogGetTotalExportItemsCountSuccesfulEnd(Job job, int count)
+	    {
+	        _logger.LogInformation("Retrieved total export items count for job: {JobId}, count: {count}", job.JobId, count);
+	    }
+
+        #endregion
+    }
 }

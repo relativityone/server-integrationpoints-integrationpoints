@@ -93,7 +93,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		protected void InitializeService(Job job)
 		{
-			LoadIntegrationPointData(job);
+		    LogInitializeServiceStart(job);
+            LoadIntegrationPointData(job);
 			ConfigureBatchInstance(job);
 			ConfigureJobHistory();
 			LoadSourceProvider();
@@ -102,11 +103,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			JobHistoryErrorManagerSetup(job);
 			ConfigureJobStopManager(job);
 			ConfigureBatchExceptions(job);
-		}
+		    LogInitializeServiceEnd(job);
+        }
 
-		protected void FinalizeService(Job job)
+	    protected void FinalizeService(Job job)
 		{
-			foreach (IBatchStatus completedItem in BatchStatus)
+		    LogFinalizeServiceStart(job);
+
+            foreach (IBatchStatus completedItem in BatchStatus)
 			{
 				try
 				{
@@ -138,9 +142,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				}
 			}
 			UpdateIntegrationPointRuntimes(job);
-		}
+		    LogFinalizeServiceEnd(job);
+        }
 
-		protected IDataSynchronizer CreateDestinationProvider(string configuration)
+
+
+	    protected IDataSynchronizer CreateDestinationProvider(string configuration)
 		{
 			// if you want to create add another synchronizer aka exporter, you may add it here.
 			// RDO synchronizer
@@ -180,24 +187,28 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		}
 		protected IntegrationPoint LoadIntegrationPointDto(Job job)
 		{
-			int integrationPointId = job.RelatedObjectArtifactID;
+		    LogLoadInformationPointDtoStart(job);
+
+            int integrationPointId = job.RelatedObjectArtifactID;
 			IntegrationPoint integrationPoint = CaseServiceContext.RsapiService.IntegrationPointLibrary.Read(integrationPointId);
 			if (integrationPoint == null)
 			{
 				LogLoadingIntegrationPointDtoError(job);
 				throw new ArgumentException("Failed to retrieve corresponding Integration Point.");
 			}
-			return integrationPoint;
+		    LogLoadIntegrationPointDtoSuccesfulEnd(job);
+            return integrationPoint;
 		}
 
-		protected string GetUniqueJobId(Job job)
+	    protected string GetUniqueJobId(Job job)
 		{
 			return job.JobId + "_" + Identifier;
 		}
 
 		protected void UpdateIntegrationPointRuntimes(Job job)
 		{
-			try
+		    LogUpdateIntegrationPointRuntimesStart(job);
+		    try
 			{
 				IntegrationPointDto.LastRuntimeUTC = DateTime.UtcNow;
 				if (job.SerializedScheduleRule != null)
@@ -210,19 +221,22 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					IntegrationPointDto.NextScheduledRuntimeUTC = JobService.GetJobNextUtcRunDateTime(job, ScheduleRuleFactory, Result);
 				}
 				CaseServiceContext.RsapiService.IntegrationPointLibrary.Update(IntegrationPointDto);
-			}
+			    LogUpdateIntegrationPointRuntimesSuccesfulEnd(job);
+            }
 			catch (Exception e)
 			{
 				LogUpdatingIntegrationPointRuntimesError(job, e);
 			}
 		}
 
-		protected void SetJobStateAsUnstoppable(Job job)
+
+	    protected void SetJobStateAsUnstoppable(Job job)
 		{
 			try
 			{
 				JobStopManager?.Dispose();
-				JobService.UpdateStopState(new List<long> {job.JobId}, StopState.Unstoppable);
+			    LogSetJobStateAsUnstoppable(job);
+                JobService.UpdateStopState(new List<long> {job.JobId}, StopState.Unstoppable);
 			}
 			catch (Exception e)
 			{
@@ -231,7 +245,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 		}
 
-		private void LoadIntegrationPointData(Job job)
+	    private void LoadIntegrationPointData(Job job)
 		{
 			IntegrationPointDto = LoadIntegrationPointDto(job);
 			SourceConfiguration = Serializer.Deserialize<SourceConfiguration>(IntegrationPointDto.SourceConfiguration);
@@ -266,10 +280,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void LoadSourceProvider()
 		{
-			SourceProvider = CaseServiceContext.RsapiService.SourceProviderLibrary.Read(IntegrationPointDto.SourceProvider.Value);
+		    LogLoadSourceProviderStart();
+		    SourceProvider = CaseServiceContext.RsapiService.SourceProviderLibrary.Read(IntegrationPointDto.SourceProvider.Value);
+		    LogLoadSourceProviderEnd();
 		}
 
-		private void SanitizeMappedFields()
+        private void SanitizeMappedFields()
 		{
 			MappedFields = Serializer.Deserialize<List<FieldMap>>(IntegrationPointDto.FieldMappings);
 			MappedFields.ForEach(f => f.SourceField.IsIdentifier = f.FieldMapType == FieldMapTypeEnum.Identifier);
@@ -283,7 +299,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void ConfigureBatchExceptions(Job job)
 		{
-			List<Exception> exceptions = new List<Exception>();
+		    LogConfigureBatchExceptionsStart(job);
+            List<Exception> exceptions = new List<Exception>();
 			BatchStatus.ForEach(batch =>
 			{
 				try
@@ -297,12 +314,24 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					exceptions.Add(exception);
 				}
 			});
+            
+            LogBatchExceptions(job, exceptions);
 			ThrowNewExceptionIfAny(exceptions);
-		}
+		    LogConfigureBatchExceptionsSuccesfulEnd(job);
+        }
 
-		#region Logging
 
-		protected virtual void LogJobStoppedException(Job job, OperationCanceledException e)
+	    #region Logging
+
+	    protected void LogBatchExceptions(Job job, IEnumerable<Exception> exceptions)
+	    {
+	        foreach (Exception ex in exceptions)
+	        {
+	            Logger.LogError(ex, "There was a problem while configuring batch exceptions for job: {JobId}.", job.JobId);
+	        }
+	    }
+
+        protected virtual void LogJobStoppedException(Job job, OperationCanceledException e)
 		{
 			Logger.LogInformation(e, "Job {JobId} has been stopped.", job.JobId);
 		}
@@ -342,6 +371,72 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			Logger.LogError("Failed to retrieve corresponding Integration Point ({IntegrationPointId}) for job {JobId}.", job.RelatedObjectArtifactID, job.JobId);
 		}
 
-		#endregion
-	}
+	    private void LogInitializeServiceEnd(Job job)
+	    {
+	        Logger.LogInformation("Finished initializing service for job: {JobId}", job.JobId);
+	    }
+
+	    private void LogInitializeServiceStart(Job job)
+	    {
+	        Logger.LogInformation("Initializing service for job: {JobId}", job.JobId);
+	    }
+
+	    private void LogFinalizeServiceEnd(Job job)
+	    {
+	        Logger.LogInformation("Finalized service for job: {JobId}", job.JobId);
+	    }
+
+	    private void LogFinalizeServiceStart(Job job)
+	    {
+	        Logger.LogInformation("Started finalizing service for job: {JobId}", job.JobId);
+	    }
+
+	    private void LogLoadIntegrationPointDtoSuccesfulEnd(Job job)
+	    {
+	        Logger.LogInformation("Succesfully loaded integration point DTO for job : {JobId}", job.JobId);
+	    }
+
+	    private void LogLoadInformationPointDtoStart(Job job)
+	    {
+	        Logger.LogInformation("Loading integration point DTO for job: {JobId}", job.JobId);
+	    }
+
+
+	    private void LogUpdateIntegrationPointRuntimesSuccesfulEnd(Job job)
+	    {
+	        Logger.LogInformation("Succesfully updated integration point runtimes for job: {JobId}", job.JobId);
+	    }
+
+	    private void LogUpdateIntegrationPointRuntimesStart(Job job)
+	    {
+	        Logger.LogInformation("Trying to update integration point runtimes for job: {JobId}", job.JobId);
+	    }
+
+	    private void LogSetJobStateAsUnstoppable(Job job)
+	    {
+	        Logger.LogInformation("Updating job state to Unstoppable, job: {JobId}", job.JobId);
+	    }
+
+	    private void LogLoadSourceProviderStart()
+	    {
+	        Logger.LogInformation("Loading source provider in Service Manager Base.");
+	    }
+
+	    private void LogLoadSourceProviderEnd()
+	    {
+	        Logger.LogInformation("Finished loading source provider in Service Manager Base.");
+	    }
+
+	    private void LogConfigureBatchExceptionsSuccesfulEnd(Job job)
+	    {
+	        Logger.LogInformation("Succesfully configured batch exceptions for job: {JobId}", job.JobId);
+	    }
+
+	    private void LogConfigureBatchExceptionsStart(Job job)
+	    {
+	        Logger.LogInformation("Started configuring batch exceptions for job: {JobId}", job.JobId);
+	    }
+
+        #endregion
+    }
 }
