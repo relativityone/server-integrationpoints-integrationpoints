@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			var settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(data.Options.ToString());
 
-			var fields = _exportFieldsService.GetAllExportableFields(settings.SourceWorkspaceArtifactId, data.TransferredArtifactTypeId);
+			FieldEntry[] fields = _exportFieldsService.GetAllExportableFields(settings.SourceWorkspaceArtifactId, data.TransferredArtifactTypeId);
 				
 			return Request.CreateResponse(HttpStatusCode.OK, SortFields(fields));
 		}
@@ -44,12 +44,12 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			ExportSettings.ExportType exportType;
 			if (!Enum.TryParse(settings.ExportType, out exportType))
 			{
-				throw new InvalidEnumArgumentException("Invalid export type specified");
+				throw new InvalidEnumArgumentException(Constants.INVALID_EXPORT_TYPE_ERROR);
 			}
 
-			var artifactId = RetrieveArtifactIdBasedOnExportType(exportType, settings);
+			int artifactId = RetrieveArtifactIdBasedOnExportType(exportType, settings);
 
-			var fields = _exportFieldsService.GetDefaultViewFields(settings.SourceWorkspaceArtifactId, artifactId, data.TransferredArtifactTypeId,
+			FieldEntry[] fields = _exportFieldsService.GetDefaultViewFields(settings.SourceWorkspaceArtifactId, artifactId, data.TransferredArtifactTypeId,
 				exportType == ExportSettings.ExportType.ProductionSet);
 
 			return Request.CreateResponse(HttpStatusCode.OK, SortFields(fields));
@@ -77,7 +77,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[LogApiExceptionFilter(Message = "Unable to retrieve export long text fields.")]
 		public HttpResponseMessage GetExportableLongTextFields(int sourceWorkspaceArtifactId, int artifactTypeId)
 		{
-			var fields = _exportFieldsService.GetAllExportableLongTextFields(sourceWorkspaceArtifactId, artifactTypeId);
+			FieldEntry[] fields = _exportFieldsService.GetAllExportableLongTextFields(sourceWorkspaceArtifactId, artifactTypeId);
 
 			return Request.CreateResponse(HttpStatusCode.OK, SortFields(fields));
 		}
