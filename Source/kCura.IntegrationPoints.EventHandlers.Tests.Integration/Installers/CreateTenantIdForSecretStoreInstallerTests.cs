@@ -1,6 +1,9 @@
-﻿using kCura.IntegrationPoint.Tests.Core.Templates;
+﻿using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Data.SecretStore;
+using kCura.IntegrationPoints.EventHandlers.Commands.Context;
+using kCura.IntegrationPoints.EventHandlers.Commands.Helpers;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
@@ -14,12 +17,17 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 		[Test(Description = "This test is to verify that Tenant ID is created during installation")]
 		public void ItShouldCreatedTenantIDDuringInstallation()
 		{
-			//var tenantId = new SecretManager(WorkspaceArtifactId).GetTenantID();
-			//var secretId = $"tenant{tenantId}encryptionkey";
+			IEHContext context = new EHContext
+			{
+				Helper = new EHHelper(Helper, WorkspaceArtifactId)
+			};
+			var validator = new TenantForSecretStoreCreationValidator(context, new SecretManagerFactory(), new DefaultSecretCatalogFactory());
 
-			//var sqlStatement = $"SELECT COUNT(*) FROM [SQLSecretStore] WHERE [TenantID] = '{tenantId}' AND [SecretID] = '{secretId}'";
-			//var tenantCount = Helper.GetDBContext(-1).ExecuteSqlStatementAsScalar<int>(sqlStatement);
-			//Assert.That(tenantCount, Is.EqualTo(1));
+			// ACT
+			var result = validator.Validate();
+
+			// ASSERT
+			Assert.That(result, Is.True);
 		}
 	}
 }
