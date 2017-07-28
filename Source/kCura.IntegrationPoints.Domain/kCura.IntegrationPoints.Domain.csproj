@@ -525,7 +525,6 @@
     <Compile Include="Models\FieldMap.cs" />
     <Compile Include="Models\FieldMapTypeEnum.cs" />
     <Compile Include="Models\InstanceUrlCollectionDTO.cs" />
-    <Compile Include="Models\IntegrationPointDTO.cs" />
     <Compile Include="Models\JobHistoryErrorDTO.cs" />
     <Compile Include="Models\JsTreeItemIconEnum.cs" />
     <Compile Include="Models\OAuthClientDto.cs" />

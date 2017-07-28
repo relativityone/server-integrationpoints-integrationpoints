@@ -60,7 +60,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		private IManagerFactory _managerFactory;
 		private IServiceFactory _serviceFactory;
 		private Data.IntegrationPoint _integrationPoint;
-		private IntegrationPointDTO _integrationPointDto;
 		private SourceProvider _sourceProvider;
 		private DestinationProvider _destinationProvider;
 		private IntegrationPointType _integrationPointType;
@@ -160,27 +159,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_sourceProvider = new SourceProvider();
 			_destinationProvider = new DestinationProvider();
 			_integrationPointType = new IntegrationPointType();
-
-			_integrationPointDto = new IntegrationPointDTO()
-			{
-				ArtifactId = _integrationPoint.ArtifactId,
-				Name = _integrationPoint.Name,
-				DestinationConfiguration = _integrationPoint.DestinationConfiguration,
-				DestinationProvider = _integrationPoint.DestinationProvider,
-				EmailNotificationRecipients = _integrationPoint.EmailNotificationRecipients,
-				EnableScheduler = _integrationPoint.EnableScheduler,
-				FieldMappings = _integrationPoint.FieldMappings,
-				HasErrors = _integrationPoint.HasErrors,
-				JobHistory = _integrationPoint.JobHistory,
-				LastRuntimeUTC = _integrationPoint.LastRuntimeUTC,
-				LogErrors = _integrationPoint.LogErrors,
-				SourceProvider = _integrationPoint.SourceProvider,
-				SourceConfiguration = _integrationPoint.SourceConfiguration,
-				NextScheduledRuntimeUTC = _integrationPoint.NextScheduledRuntimeUTC,
-				OverwriteFields = (IntegrationPointDTO.Choices.OverwriteFields.Values)
-					Enum.Parse(typeof(IntegrationPointDTO.Choices.OverwriteFields.Values), _integrationPoint.OverwriteFields.Name),
-				ScheduleRule = _integrationPoint.ScheduleRule
-			};
+			
 			_previousJobHistory = new Data.JobHistory() { JobStatus = JobStatusChoices.JobHistoryCompleted };
 			_stopPermissionChecksResults = new ValidationResult();
 
@@ -726,7 +705,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_destinationProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID;
 
 			_integrationPoint.HasErrors = null;
-			_integrationPointDto.HasErrors = null;
 
 			_permissionValidator.Validate(
 				Arg.Is<IntegrationPointModelBase>(x => MatchHelper.Matches(_integrationPointModel, x)),
@@ -869,7 +847,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				.Returns(new ValidationResult());
 
 			_integrationPoint.HasErrors = true;
-			_integrationPointDto.HasErrors = true;
 			_caseServiceContext.RsapiService.JobHistoryLibrary.Read(_previousJobHistoryArtifactId).Returns((Data.JobHistory)null);
 
 			// Act
@@ -895,7 +872,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				.Returns(new ValidationResult());
 
 			_integrationPoint.HasErrors = true;
-			_integrationPointDto.HasErrors = true;
 			_caseServiceContext.RsapiService.JobHistoryLibrary.Read(_previousJobHistoryArtifactId).Throws<Exception>();
 
 			// Act
@@ -921,7 +897,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				.Returns(new ValidationResult());
 
 			_integrationPoint.HasErrors = true;
-			_integrationPointDto.HasErrors = true;
 			_previousJobHistory.JobStatus = JobStatusChoices.JobHistoryStopped;
 
 			// Act
@@ -947,7 +922,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				.Returns(new ValidationResult());
 
 			_integrationPoint.HasErrors = true;
-			_integrationPointDto.HasErrors = true;
 
 			// Act
 			_instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId);

@@ -18,6 +18,7 @@ using kCura.Relativity.ImportAPI;
 using NSubstitute;
 using NUnit.Framework;
 using System.Collections.Generic;
+using kCura.IntegrationPoints.Data;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers
 {
@@ -27,7 +28,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 		private IRSAPIClient _client;
 		private IImportApiFactory _importApiFactory;
 		private IConfig _config;
-		private IRepositoryFactory _repositoryFactory;
+		private IRSAPIService _rsapiService;
 		private IChoiceService _choiceService;
 
 		private HttpConfiguration _configuration;
@@ -39,7 +40,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			_client = Substitute.For<IRSAPIClient>();
 			_importApiFactory = Substitute.For<IImportApiFactory>();
 			_config = Substitute.For<IConfig>();
-			_repositoryFactory = Substitute.For<IRepositoryFactory>();
+			_rsapiService = Substitute.For<IRSAPIService>();
 			_choiceService = Substitute.For<IChoiceService>();
 			_configuration = Substitute.For<HttpConfiguration>();
 
@@ -48,7 +49,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			IHttpRoute route = config.Routes.MapHttpRoute("DefaultApi", "api/{controller}/{id}");
 			HttpRouteData routeData = new HttpRouteData(route, new HttpRouteValueDictionary { { "controller", "GetFolderPathFieldsController" } });
 
-			_instance = new FolderPathController(_client, _importApiFactory, _config, _repositoryFactory, _choiceService)
+			_instance = new FolderPathController(_client, _importApiFactory, _config, _choiceService, _rsapiService)
 			{
 				ControllerContext = new HttpControllerContext(config, routeData, request),
 				Request = request
@@ -110,15 +111,13 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			int workspaceId = 1234567;
 			_client.APIOptions = new APIOptions(workspaceId);
 
-			IntegrationPointDTO integrationPoint = new IntegrationPointDTO
+			Data.IntegrationPoint integrationPoint = new Data.IntegrationPoint
 			{
 				SourceConfiguration = "{SavedSearchArtifactId: 123}",
 				DestinationConfiguration = "{UseFolderPathInformation: false}"
 			};
-
-			IIntegrationPointRepository integrationPointRepository = NSubstitute.Substitute.For<IIntegrationPointRepository>();
-			_repositoryFactory.GetIntegrationPointRepository(workspaceId).Returns(integrationPointRepository);
-			integrationPointRepository.Read(Convert.ToInt32(integrationPointArtifactId)).Returns(integrationPoint);
+			
+			_rsapiService.IntegrationPointLibrary.Read(integrationPointArtifactId).Returns(integrationPoint);
 
 			// ACT
 			HttpResponseMessage response = _instance.GetFolderCount(integrationPointArtifactId);
@@ -129,9 +128,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			int folderCount = Int32.MinValue;
 			response.TryGetContentValue(out folderCount);
 			Assert.AreEqual(expectedFolderCount, folderCount);
-
-			_repositoryFactory.Received(1).GetIntegrationPointRepository(workspaceId);
-			integrationPointRepository.Received(1).Read(Convert.ToInt32(integrationPointArtifactId));
 		}
 
         private void GetFieldsSharedSetup()

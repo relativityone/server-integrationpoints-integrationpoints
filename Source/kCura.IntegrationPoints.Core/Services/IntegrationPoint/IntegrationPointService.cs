@@ -383,41 +383,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 	        }
         }
 
-
-        private static IntegrationPointDTO ConvertToIntegrationPointDto(Data.IntegrationPoint integrationPoint)
-		{
-			int[] jobHistory = null;
-			try
-			{
-				jobHistory = integrationPoint.JobHistory;
-			}
-			catch
-			{
-				// if there are no job histories (i.e. on create) there will be no results and this will except
-			}
-
-			IntegrationPointDTO integrationPointDto = new IntegrationPointDTO
-			{
-				ArtifactId = integrationPoint.ArtifactId,
-				Name = integrationPoint.Name,
-				DestinationConfiguration = integrationPoint.DestinationConfiguration,
-				DestinationProvider = integrationPoint.DestinationProvider,
-				EmailNotificationRecipients = integrationPoint.EmailNotificationRecipients,
-				EnableScheduler = integrationPoint.EnableScheduler,
-				FieldMappings = integrationPoint.FieldMappings,
-				HasErrors = integrationPoint.HasErrors,
-				JobHistory = jobHistory,
-				LastRuntimeUTC = integrationPoint.LastRuntimeUTC,
-				LogErrors = integrationPoint.LogErrors,
-				SourceProvider = integrationPoint.SourceProvider,
-				SourceConfiguration = integrationPoint.SourceConfiguration,
-				NextScheduledRuntimeUTC = integrationPoint.NextScheduledRuntimeUTC,
-				//				OverwriteFields = integrationPoint.OverwriteFields, -- This would require further transformation
-				ScheduleRule = integrationPoint.ScheduleRule
-			};
-			return integrationPointDto;
-		}
-
 		private void CreateJob(Data.IntegrationPoint integrationPoint, SourceProvider sourceProvider, DestinationProvider destinationProvider, Choice jobType, int workspaceArtifactId, int userId)
 		{
 			lock (Lock)

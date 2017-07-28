@@ -7,6 +7,7 @@ using System.Web.Http;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
@@ -18,6 +19,7 @@ using kCura.Relativity.Client.DTOs;
 using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Enumeration;
 using Newtonsoft.Json;
+using Document = kCura.Relativity.Client.DTOs.Document;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -37,20 +39,20 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly IRSAPIClient _client;
 		private readonly IImportApiFactory _importApiFactory;
 		private readonly IConfig _config;
-		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly IChoiceService _choiceService;
+		private readonly IRSAPIService _rsapiService;
 
 		public FolderPathController(IRSAPIClient client,
 			IImportApiFactory importApiFactory,
 			IConfig config,
-			IRepositoryFactory repositoryFactory,
-			IChoiceService choiceService)
+			IChoiceService choiceService,
+			IRSAPIService rsapiService)
 		{
 			_client = client;
 			_importApiFactory = importApiFactory;
 			_config = config;
-			_repositoryFactory = repositoryFactory;
 			_choiceService = choiceService;
+			_rsapiService = rsapiService;
 		}
 
 
@@ -91,8 +93,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[LogApiExceptionFilter(Message = "Unable to retrieve fields data.")]
 		public HttpResponseMessage GetFolderCount(int integrationPointArtifactId)
 		{
-			IIntegrationPointRepository integrationPointRepository = _repositoryFactory.GetIntegrationPointRepository(_client.APIOptions.WorkspaceID);
-			IntegrationPointDTO integrationPoint = integrationPointRepository.Read(Convert.ToInt32(integrationPointArtifactId));
+			IntegrationPoint integrationPoint = _rsapiService.IntegrationPointLibrary.Read(Convert.ToInt32(integrationPointArtifactId));
 			IntegrationPointSourceConfiguration sourceConfiguration = JsonConvert.DeserializeObject<IntegrationPointSourceConfiguration>(integrationPoint.SourceConfiguration);
 			IntegrationPointDestinationConfiguration destinationConfiguration = JsonConvert.DeserializeObject<IntegrationPointDestinationConfiguration>(integrationPoint.DestinationConfiguration);
 

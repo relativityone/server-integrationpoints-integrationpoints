@@ -57,14 +57,7 @@ namespace kCura.IntegrationPoints.Data.Factories
 		IFieldQueryRepository GetFieldQueryRepository(int workspaceArtifactId);
 		
 		IFieldRepository GetFieldRepository(int workspaceArtifactId);
-
-		/// <summary>
-		/// Returns a class implementing the IntegrationPointRepository interface
-		/// </summary>
-		/// <param name="workspaceArtifactId">The workspace artifact id</param>
-		/// <returns>A class implementing the IntegrationPointRepository interface</returns>
-		IIntegrationPointRepository GetIntegrationPointRepository(int workspaceArtifactId);
-
+		
 		/// <summary>
 		/// Returns a class implementing the IJobHistoryRepository interface.
 		/// </summary>
