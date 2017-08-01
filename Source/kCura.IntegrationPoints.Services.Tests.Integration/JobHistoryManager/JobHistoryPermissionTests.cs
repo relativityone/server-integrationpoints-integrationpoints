@@ -110,7 +110,9 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			var jobHistoryClient = Helper.CreateUserProxy<IJobHistoryManager>(_userModel.EmailAddress);
 
 			//Act & Assert
-			Assert.That(() => jobHistoryClient.GetJobHistoryAsync(jobHistoryRequest).Result, Throws.TypeOf<InternalServerErrorException>().With.Message.EqualTo("Error occurred during request processing. Please contact your administrator."));
+			Assert.That(() => jobHistoryClient.GetJobHistoryAsync(jobHistoryRequest).Result,
+				Throws.Exception.With.InnerException.TypeOf<InternalServerErrorException>()
+					.And.With.InnerException.Message.EqualTo("Error occurred during request processing. Please contact your administrator."));
 		}
 
 		private void RemoveIntegrationPointPermissionsFromSourceWorkspace()
