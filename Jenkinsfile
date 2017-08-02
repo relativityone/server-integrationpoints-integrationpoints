@@ -443,18 +443,12 @@ finally {
 				string(name: 'host', value: random_server),
 				string(name: 'event_hash', value: event_hash),
 				string(name: 'job', value: env.BUILD_URL)]
-					
-
-			def slack_recipients = 	'#cd_poland'
-			
-			if (has_errors)
-				slack_recipients += ',@akrzysztofek'
-					
+										
 			build job: "Reporting.AutomationReport", parameters: [
 				[$class: 'NodeParameterValue', name: 'node_label', labels: ['chef'], nodeEligibility: [$class: 'AllNodeEligibility']],
 				string(name: 'branch', value: relativity_branch),
 				string(name: 'session_id', value: session_id),
-				string(name: 'slack_recipients', value: slack_recipients),
+				string(name: 'slack_recipients', value: '#cd_poland'),
 				string(name: 'notify', value: ''),
 				string(name: 'event_hash', value: event_hash),
 				string(name: 'report_health', value: 'report_health'),
