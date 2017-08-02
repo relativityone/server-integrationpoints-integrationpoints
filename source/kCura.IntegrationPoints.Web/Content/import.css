@@ -80,7 +80,7 @@
 	user-select: none;
 }
 
-.ui-dialog * {
+.ui-dialog *, input {
     -moz-user-select: auto;
     -webkit-user-select: auto;
     -ms-user-select: auto;
