@@ -8,9 +8,6 @@ using System.Web.Http.Routing;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Config;
-using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using kCura.Relativity.Client;
@@ -18,7 +15,11 @@ using kCura.Relativity.ImportAPI;
 using NSubstitute;
 using NUnit.Framework;
 using System.Collections.Generic;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data;
+using kCura.Relativity.ImportAPI.Enumeration;
+using Field = kCura.Relativity.ImportAPI.Data.Field;
+using Query = kCura.Relativity.Client.Query;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers
 {
@@ -44,10 +45,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			_choiceService = Substitute.For<IChoiceService>();
 			_configuration = Substitute.For<HttpConfiguration>();
 
-			HttpConfiguration config = new HttpConfiguration();
-			HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Get");
+			var config = new HttpConfiguration();
+			var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Get");
 			IHttpRoute route = config.Routes.MapHttpRoute("DefaultApi", "api/{controller}/{id}");
-			HttpRouteData routeData = new HttpRouteData(route, new HttpRouteValueDictionary { { "controller", "GetFolderPathFieldsController" } });
+			var routeData = new HttpRouteData(route, new HttpRouteValueDictionary { { "controller", "GetFolderPathFieldsController" } });
 
 			_instance = new FolderPathController(_client, _importApiFactory, _config, _choiceService, _rsapiService)
 			{
@@ -84,8 +85,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 		public void GetFields_Exception()
 		{
 			//ARRANGE
-			string message = "This is an example failure";
-			QueryResult result = new QueryResult
+			var message = "This is an example failure";
+			var result = new QueryResult
 			{
 				Success = false,
 				Message = message
@@ -103,56 +104,40 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 		}
 
 		[Test]
-		public void GetFolderCount_UseFolderInformationPath_False()
+		public void GetChoiceFields_Success()
 		{
-			// ARRANGE
-			int integrationPointArtifactId = 1;
-			int expectedFolderCount = 0;
-			int workspaceId = 1234567;
-			_client.APIOptions = new APIOptions(workspaceId);
+			//ARRANGE
+			GetFieldsSharedSetup();
 
-			Data.IntegrationPoint integrationPoint = new Data.IntegrationPoint
-			{
-				SourceConfiguration = "{SavedSearchArtifactId: 123}",
-				DestinationConfiguration = "{UseFolderPathInformation: false}"
-			};
-			
-			_rsapiService.IntegrationPointLibrary.Read(integrationPointArtifactId).Returns(integrationPoint);
-
-			// ACT
-			HttpResponseMessage response = _instance.GetFolderCount(integrationPointArtifactId);
-
-			// ASSERT
+			HttpResponseMessage response = _instance.GetChoiceFields();
 			Assert.IsTrue(response.IsSuccessStatusCode);
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-			int folderCount = Int32.MinValue;
-			response.TryGetContentValue(out folderCount);
-			Assert.AreEqual(expectedFolderCount, folderCount);
 		}
 
-        private void GetFieldsSharedSetup()
+		private void GetFieldsSharedSetup()
         {
-            string webServiceUrl = @"http://localhost/";
-            int workspaceId = 123;
-            int documentArtifactTypeId = 10;
+            var webServiceUrl = @"http://localhost/";
+            var workspaceId = 123;
+            var documentArtifactTypeId = 10;
 
-            QueryResult result = new QueryResult { Success = true };
-            ImportSettings settings = new ImportSettings { WebServiceURL = webServiceUrl };
-            _client.APIOptions = new APIOptions(workspaceId);
+            var result = new QueryResult { Success = true };
+            var settings = new ImportSettings { WebServiceURL = webServiceUrl };
+			   _client.APIOptions = new APIOptions(workspaceId);
 
-            IImportAPI importApi = NSubstitute.Substitute.For<IExtendedImportAPI>();
+			var listOfFields = new List<FieldEntry> {new FieldEntry()};
+	        _choiceService.GetChoiceFields(Arg.Any<int>()).Returns(listOfFields);
+	     
+			IImportAPI importApi = Substitute.For<IExtendedImportAPI>();
 			_choiceService.ConvertToFieldEntries(null).ReturnsForAnyArgs(new List<Contracts.Models.FieldEntry>());
 
-            _config.WebApiPath
-                .Returns(webServiceUrl);
+			_config.WebApiPath.Returns(webServiceUrl);
 
-            _importApiFactory.GetImportAPI(settings)
-                .Returns(importApi);
+	        _importApiFactory.GetImportAPI(settings).Returns(importApi);
 
-            importApi.GetWorkspaceFields(workspaceId, documentArtifactTypeId);
+			importApi.GetWorkspaceFields(workspaceId, documentArtifactTypeId).Returns(new List<Field> { new Field() });
 
-            _client.Query(Arg.Any<APIOptions>(), Arg.Any<Query>())
-                .Returns(result);
+			_client.Query(Arg.Any<APIOptions>(), Arg.Any<Query>()).Returns(result);
         }
+		
 	}
 }

@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			IImportAPI importApi = ImportApiConfiguration();
 			List<FieldEntry> textFields = GetTextFields(Convert.ToInt32(ArtifactType.Document), false);
 
-			var textMappableFields = GetFieldCategory(importApi, textFields);
+			IEnumerable<FieldEntry> textMappableFields = GetFieldCategory(importApi, textFields);
 			return Request.CreateResponse(HttpStatusCode.OK, textMappableFields, Configuration.Formatters.JsonFormatter);
 		}
 
@@ -88,29 +88,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			IEnumerable<FieldEntry> choiceMappableFields = GetFieldCategory(importApi, choiceFields);
 			return Request.CreateResponse(HttpStatusCode.OK, choiceMappableFields, Configuration.Formatters.JsonFormatter);
 		}
-
-		[HttpGet]
-		[LogApiExceptionFilter(Message = "Unable to retrieve fields data.")]
-		public HttpResponseMessage GetFolderCount(int integrationPointArtifactId)
-		{
-			IntegrationPoint integrationPoint = _rsapiService.IntegrationPointLibrary.Read(Convert.ToInt32(integrationPointArtifactId));
-			IntegrationPointSourceConfiguration sourceConfiguration = JsonConvert.DeserializeObject<IntegrationPointSourceConfiguration>(integrationPoint.SourceConfiguration);
-			IntegrationPointDestinationConfiguration destinationConfiguration = JsonConvert.DeserializeObject<IntegrationPointDestinationConfiguration>(integrationPoint.DestinationConfiguration);
-
-			if (!destinationConfiguration.UseFolderPathInformation)
-			{
-				return Request.CreateResponse(HttpStatusCode.OK, 0, Configuration.Formatters.JsonFormatter);
-			}
-
-			ArtifactDTO[] documentDtos = GetDocumentDtos(sourceConfiguration, destinationConfiguration);
-			int folderCount = GetFolderCount(documentDtos);
-
-			return Request.CreateResponse(HttpStatusCode.OK, folderCount, Configuration.Formatters.JsonFormatter);
-		}
-
+				
 		private IImportAPI ImportApiConfiguration()
 		{
-			ImportSettings settings = new ImportSettings { WebServiceURL = _config.WebApiPath };
+			var settings = new ImportSettings { WebServiceURL = _config.WebApiPath };
 			IImportAPI importApi = _importApiFactory.GetImportAPI(settings);
 
 			return importApi;
@@ -119,60 +100,13 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private IEnumerable<FieldEntry> GetFieldCategory(IImportAPI importApi, List<FieldEntry> textFields)
 		{
 			IEnumerable<Relativity.ImportAPI.Data.Field> workspaceFields = importApi.GetWorkspaceFields(_client.APIOptions.WorkspaceID, Convert.ToInt32(ArtifactType.Document));
-			HashSet<int> mappableArtifactIds = new HashSet<int>(workspaceFields.Where(y => y.FieldCategory != FieldCategoryEnum.Identifier).Select(x => x.ArtifactID));
+			var mappableArtifactIds = new HashSet<int>(workspaceFields.Where(y => y.FieldCategory != FieldCategoryEnum.Identifier).Select(x => x.ArtifactID));
 			IEnumerable<FieldEntry> textMappableFields = textFields.Where(x => mappableArtifactIds.Contains(Convert.ToInt32(x.FieldIdentifier)));
 
 			return textMappableFields;
 		}
-
-
-		private ArtifactDTO[] GetDocumentDtos(IntegrationPointSourceConfiguration sourceConfiguration, IntegrationPointDestinationConfiguration destinationConfiguration)
-		{
-			Query<Document> query = new Query<Document>
-			{
-				Condition = new SavedSearchCondition(sourceConfiguration.SavedSearchArtifactId),
-				Fields = new List<FieldValue> { new FieldValue(destinationConfiguration.FolderPathSourceField) }
-			};
-
-			QueryResultSet<Document> resultSet = _client.Repositories.Document.Query(query, 1000);
-
-			ArtifactDTO[] results = { };
-			if (resultSet != null && resultSet.Success)
-			{
-				results = resultSet.Results.Select(
-					x => new ArtifactDTO(
-						x.Artifact.ArtifactID,
-						x.Artifact.ArtifactTypeID.Value,
-						"Document",
-						x.Artifact.Fields.Select(
-							y => new ArtifactFieldDTO() { ArtifactId = y.ArtifactID, FieldType = y.FieldType.ToString(), Name = y.Name, Value = y.Value }))
-					).ToArray();
-
-			}
-			return results;
-		}
-
-		private int GetFolderCount(ArtifactDTO[] artifactDtos)
-		{
-			FolderTree folderTree = new FolderTree();
-
-			foreach (ArtifactDTO document in artifactDtos)
-			{
-				ArtifactFieldDTO artifactFieldDto = document.Fields.FirstOrDefault();
-				string folderPath = String.Empty;
-				if (artifactFieldDto != null)
-				{
-					folderPath = artifactFieldDto.Value as string;
-				}
-
-				if (!String.IsNullOrEmpty(folderPath) && folderPath != @"\")
-				{
-					folderTree.AddEntry(folderPath);
-				}
-			}
-			return folderTree.FolderCount;
-		}
-
+		
+		
 		private List<FieldEntry> GetTextFields(int rdoTypeId, bool longTextFieldsOnly)
 		{
 			var rdoCondition = new ObjectCondition
@@ -196,7 +130,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				Value = kCura.IntegrationPoints.Data.FieldTypes.FixedLengthText
 			};
 
-			Query query = new Query
+			var query = new Query
 			{
 				ArtifactTypeName = "Field",
 				Fields = new List<kCura.Relativity.Client.Field>(),
@@ -209,10 +143,11 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 					}
 				}
 			};
-			CompositeCondition documentLongTextCondition = new CompositeCondition(rdoCondition, CompositeConditionEnum.And, longTextCondition);
-			CompositeCondition documentFixedLengthTextCondition = new CompositeCondition(rdoCondition, CompositeConditionEnum.And, fixedLengthTextCondition);
+			var documentLongTextCondition = new CompositeCondition(rdoCondition, CompositeConditionEnum.And, longTextCondition);
+			var documentFixedLengthTextCondition = new CompositeCondition(rdoCondition, CompositeConditionEnum.And, fixedLengthTextCondition);
 			query.Condition = longTextFieldsOnly ? documentLongTextCondition : new CompositeCondition(documentLongTextCondition, CompositeConditionEnum.Or, documentFixedLengthTextCondition);
-			var result = _client.Query(_client.APIOptions, query);
+
+			QueryResult result = _client.Query(_client.APIOptions, query);
 
 			if (!result.Success)
 			{
