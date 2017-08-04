@@ -70,7 +70,7 @@ Running unit tests:
 * SDK
     kCura.IntegrationPoints.Contracts.dll
     kCura.IntegrationPonits.Domain.dll
-    kCura.SourceProviderInstaller.dll
+    kCura.IntegrationPonits.SourceProviderInstaller.dll
     frame-messaging.js
     jquery-1.8.2.js
     jquery-postMessage.js

@@ -227,14 +227,12 @@
     <Compile Include="IntegrationPoints\Helpers\Scripts\ICommonScriptsFactory.cs" />
     <Compile Include="IntegrationPoints\Helpers\Scripts\RelativityProviderScripts.cs" />
     <Compile Include="IntegrationPoints\Helpers\Scripts\ScriptsHelper.cs" />
-    <Compile Include="IntegrationPoints\ImportProviderResourceFilePreInstallEventHandler.cs" />
     <Compile Include="IntegrationPoints\IntegrationPointDataTransferLocationMigrationEventHandler.cs" />
     <Compile Include="IntegrationPoints\IntegrationPointPageInteractionEventHandler.cs" />
     <Compile Include="IntegrationPoints\IntegrationPointPreLoadEventHandler.cs" />
     <Compile Include="IntegrationPoints\IntegrationPointProfilePageInteractionEventHandler.cs" />
     <Compile Include="IntegrationPoints\IntegrationPointProfilePreLoadEventHandler.cs" />
     <Compile Include="IntegrationPoints\IntegrationPointTypesMigrationEventHandler.cs" />
-    <Compile Include="IntegrationPoints\RemoveResourceFilesEventHandler.cs" />
     <Compile Include="IntegrationPoints\Validators\IPreCascadeDeleteEventHandlerValidator.cs" />
     <Compile Include="Installers\RegisterDocumentTransferProvider.cs" />
     <Compile Include="Installers\RegisterFtpProvider.cs" />

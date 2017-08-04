@@ -23,13 +23,13 @@ namespace kCura.IntegrationPoints.Domain
 		//AK: perhaps the filter should be a little more generic to cover all related binaries  kCura.IntegrationPoints.*
 		private static readonly HashSet<string> _allowedInstallerAssemblies = new HashSet<string>()
 		{
-			"kCura.IntegrationPoints",
 			"kCura.IntegrationPoints.Contracts",
 			"kCura.IntegrationPoints.Core",
 			"kCura.IntegrationPoints.Data",
-            "kCura.LDAPProvider",
-            "kCura.IntegrationPoints.FtpProvider",
-            "kCura.IntegrationPoints.ImportProvider.Parser"
+			"kCura.IntegrationPoints.FilesDestinationProvider.Core",
+			"kCura.IntegrationPoints.FtpProvider",
+			"kCura.IntegrationPoints.ImportProvider.Parser",
+			"kCura.IntegrationPoints.LDAPProvider"
 		};
 
 		private IProviderFactory _providerFactory;

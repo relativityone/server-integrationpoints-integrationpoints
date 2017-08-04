@@ -179,9 +179,6 @@
       <HintPath>..\packages\Relativity.Vfs.1.0.22\lib\net462\Relativity.Vfs.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.IntegrationPoints">
-      <HintPath>..\..\lib\kCura.IntegrationPoints.dll</HintPath>
-    </Reference>
     <Reference Include="kCura.IntegrationPoints.Contracts, Version=9.4.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\kCura.IntegrationPoints.Contracts.dll</HintPath>
@@ -234,9 +231,25 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Core.Contracts\kCura.IntegrationPoints.Core.Contracts.csproj">
+      <Project>{30503682-e18d-49df-a308-fe7996c4108e}</Project>
+      <Name>kCura.IntegrationPoints.Core.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">
+      <Project>{a1ae667b-1b6e-4bb9-af1d-912620292283}</Project>
+      <Name>kCura.IntegrationPoints.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
+      <Project>{599d771d-2ae7-4321-9bac-be06f827ce0a}</Project>
+      <Name>kCura.IntegrationPoints.Data</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Services.Interfaces.Private\kCura.IntegrationPoints.Services.Interfaces.Private.csproj">
       <Project>{b8bf6d01-e190-4c2c-b07f-3b627ffc1bfc}</Project>
       <Name>kCura.IntegrationPoints.Services.Interfaces.Private</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj">
+      <Project>{c831c856-e74f-48b4-aebc-1cf15576e082}</Project>
+      <Name>kCura.ScheduleQueue.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

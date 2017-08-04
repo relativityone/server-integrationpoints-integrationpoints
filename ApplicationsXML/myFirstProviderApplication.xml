@@ -11,7 +11,7 @@
     <Assembly>
       <ArtifactId>1017653</ArtifactId>
       <Keywords />
-      <Name>kCura.SourceProviderInstaller.dll</Name>
+      <Name>kCura.IntegrationPoints.SourceProviderInstaller.dll</Name>
       <Notes />
     </Assembly>
     <Assembly>

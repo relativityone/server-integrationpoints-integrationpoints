@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using SystemInterface;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Core.Contracts.Agent;

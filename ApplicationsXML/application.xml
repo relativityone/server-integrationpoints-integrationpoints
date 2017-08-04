@@ -1914,27 +1914,9 @@
   </ArtifactViewFields>
   <Assemblies>
     <Assembly>
-      <ArtifactId>1021839</ArtifactId>
-      <Keywords />
-      <Name>kCura.IntegrationPoints.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
       <ArtifactId>1021840</ArtifactId>
       <Keywords />
       <Name>kCura.IntegrationPoints.Contracts.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>1021841</ArtifactId>
-      <Keywords />
-      <Name>kCura.LDAPProvider.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>1021842</ArtifactId>
-      <Keywords />
-      <Name>kCura.DocumentTransferProvider.dll</Name>
       <Notes />
     </Assembly>
     <Assembly>
@@ -2009,10 +1991,166 @@
       <Name>kCura.IntegrationPoints.Management.dll</Name>
       <Notes />
     </Assembly>
+    <Assembly>
+      <ArtifactId>2275504</ArtifactId>
+      <Keywords />
+      <Name>kCura.IntegrationPoints.Agent.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>2275505</ArtifactId>
+      <Keywords />
+      <Name>kCura.IntegrationPoints.Config.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>2275506</ArtifactId>
+      <Keywords />
+      <Name>kCura.IntegrationPoints.Core.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>2275507</ArtifactId>
+      <Keywords />
+      <Name>kCura.IntegrationPoints.Core.Contracts.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>2275508</ArtifactId>
+      <Keywords />
+      <Name>kCura.IntegrationPoints.Data.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>2275509</ArtifactId>
+      <Keywords />
+      <Name>kCura.IntegrationPoints.Email.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>2275510</ArtifactId>
+      <Keywords />
+      <Name>kCura.IntegrationPoints.EventHandlers.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>2275511</ArtifactId>
+      <Keywords />
+      <Name>kCura.IntegrationPoints.FilesDestinationProvider.Core.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>2275512</ArtifactId>
+      <Keywords />
+      <Name>kCura.IntegrationPoints.Injection.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>2275513</ArtifactId>
+      <Keywords />
+      <Name>kCura.IntegrationPoints.DocumentTransferProvider.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>2275514</ArtifactId>
+      <Keywords />
+      <Name>kCura.IntegrationPoints.LDAPProvider.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>2275515</ArtifactId>
+      <Keywords />
+      <Name>kCura.IntegrationPoints.SourceProviderInstaller.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>2275516</ArtifactId>
+      <Keywords />
+      <Name>kCura.IntegrationPoints.Synchronizers.RDO.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>2275517</ArtifactId>
+      <Keywords />
+      <Name>kCura.ScheduleQueue.AgentBase.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>2275518</ArtifactId>
+      <Keywords />
+      <Name>kCura.ScheduleQueue.Core.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>2275519</ArtifactId>
+      <Keywords />
+      <Name>SystemInterface.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>2275520</ArtifactId>
+      <Keywords />
+      <Name>kCura.Apps.Common.Utils.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>2275521</ArtifactId>
+      <Keywords />
+      <Name>kCura.WinEDDS.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>2275522</ArtifactId>
+      <Keywords />
+      <Name>kCura.WinEDDS.Core.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>2275523</ArtifactId>
+      <Keywords />
+      <Name>kCura.LongPath.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>2275524</ArtifactId>
+      <Keywords />
+      <Name>kCura.IntegrationPoints.ImportProvider.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>2275525</ArtifactId>
+      <Keywords />
+      <Name>kCura.IntegrationPoints.ImportProvider.Parser.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>2275526</ArtifactId>
+      <Keywords />
+      <Name>kCura.Apps.Common.Data.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>2275527</ArtifactId>
+      <Keywords />
+      <Name>kCura.Apps.Common.Config.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>2275528</ArtifactId>
+      <Keywords />
+      <Name>kCura.Relativity.Client.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>2275529</ArtifactId>
+      <Keywords />
+      <Name>kCura.Relativity.DataReaderClient.dll</Name>
+      <Notes />
+    </Assembly>
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2017-07-05T11:57:48.2164305Z</ExtractionDate>
+  <ExtractionDate>2017-08-03T14:08:52.214284Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -2071,7 +2209,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID>1038218</SiblingFieldArtifactID>
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -2123,7 +2261,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID>1038220</SiblingFieldArtifactID>
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
       </Fields>
       <Guid>15c36703-74ea-4ff8-9dfb-ad30ece7530d</Guid>
@@ -3343,7 +3481,7 @@
           <PayloadArtifactViewFieldId xsi:nil="true" />
           <DisplayArtifactViewFieldId xsi:nil="true" />
           <GroupDefinitionArtifactViewFieldID xsi:nil="true" />
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </View>
       </Views>
       <ApplicationVersion>9.5.0.17</ApplicationVersion>
@@ -3351,59 +3489,59 @@
     <Object>
       <ActiveSyncs>
         <ActiveSync>
-          <Id>1038213</Id>
+          <Id>1042995</Id>
           <ArtifactTypeId>1000033</ArtifactTypeId>
-          <AssemblyArtifactId>1021839</AssemblyArtifactId>
+          <AssemblyArtifactId>2275510</AssemblyArtifactId>
           <ClassName>kCura.IntegrationPoints.EventHandlers.IntegrationPoints.DeleteEventHandler</ClassName>
           <Description>Deletes any corresponding jobs</Description>
           <ExecutionType>3</ExecutionType>
-          <Guid>88883054-4192-44d0-a04a-0206b1a958f4</Guid>
-          <SyncDll>kCura.IntegrationPoints</SyncDll>
-          <ApplicationVersion>0.0.0.1</ApplicationVersion>
+          <Guid>a0207480-9e72-4621-9a0b-d7420a6896d9</Guid>
+          <SyncDll>kCura.IntegrationPoints.EventHandlers</SyncDll>
+          <ApplicationVersion>9.5.0.3</ApplicationVersion>
         </ActiveSync>
         <ActiveSync>
-          <Id>1038214</Id>
+          <Id>1042996</Id>
           <ArtifactTypeId>1000033</ArtifactTypeId>
-          <AssemblyArtifactId>1021839</AssemblyArtifactId>
-          <ClassName>kCura.IntegrationPoints.EventHandlers.IntegrationPoints.ConsoleEventHandler</ClassName>
-          <Description />
-          <ExecutionType>4</ExecutionType>
-          <Guid>f1094843-acc1-4595-921e-af1d46118519</Guid>
-          <SyncDll>kCura.IntegrationPoints</SyncDll>
-          <ApplicationVersion>0.0.0.1</ApplicationVersion>
-        </ActiveSync>
-        <ActiveSync>
-          <Id>1038215</Id>
-          <ArtifactTypeId>1000033</ArtifactTypeId>
-          <AssemblyArtifactId>1021839</AssemblyArtifactId>
-          <ClassName>kCura.IntegrationPoints.EventHandlers.IntegrationPoints.PreCascadeDeleteEventHandler</ClassName>
-          <Description />
-          <ExecutionType>6</ExecutionType>
-          <Guid>b5f2d14c-2c46-43af-aa00-78c1560c8f84</Guid>
-          <SyncDll>kCura.IntegrationPoints</SyncDll>
-          <ApplicationVersion>0.0.0.1</ApplicationVersion>
-        </ActiveSync>
-        <ActiveSync>
-          <Id>1040667</Id>
-          <ArtifactTypeId>1000033</ArtifactTypeId>
-          <AssemblyArtifactId>1021839</AssemblyArtifactId>
-          <ClassName>kCura.IntegrationPoints.EventHandlers.IntegrationPoints.IntegrationPointPageInteractionEventHandler</ClassName>
-          <Description>This is a details page interaction event handler for Integration Point RDO</Description>
-          <ExecutionType>13</ExecutionType>
-          <Guid>680cbae0-ebde-4d6c-80df-7658b00e7b64</Guid>
-          <SyncDll>kCura.IntegrationPoints</SyncDll>
-          <ApplicationVersion>2.0.95.39</ApplicationVersion>
-        </ActiveSync>
-        <ActiveSync>
-          <Id>1040668</Id>
-          <ArtifactTypeId>1000033</ArtifactTypeId>
-          <AssemblyArtifactId>1021839</AssemblyArtifactId>
+          <AssemblyArtifactId>2275510</AssemblyArtifactId>
           <ClassName>kCura.IntegrationPoints.EventHandlers.IntegrationPoints.IntegrationPointPreLoadEventHandler</ClassName>
           <Description>This is a details pre load event handler for Integration Point RDO</Description>
           <ExecutionType>5</ExecutionType>
-          <Guid>b6351f7b-ecbe-4719-8499-a3aa8290dc02</Guid>
-          <SyncDll>kCura.IntegrationPoints</SyncDll>
-          <ApplicationVersion>2.0.95.39</ApplicationVersion>
+          <Guid>b1ef1c86-ad20-46a8-b07a-d8f55b130351</Guid>
+          <SyncDll>kCura.IntegrationPoints.EventHandlers</SyncDll>
+          <ApplicationVersion>9.5.0.3</ApplicationVersion>
+        </ActiveSync>
+        <ActiveSync>
+          <Id>1042997</Id>
+          <ArtifactTypeId>1000033</ArtifactTypeId>
+          <AssemblyArtifactId>2275510</AssemblyArtifactId>
+          <ClassName>kCura.IntegrationPoints.EventHandlers.IntegrationPoints.ConsoleEventHandler</ClassName>
+          <Description />
+          <ExecutionType>4</ExecutionType>
+          <Guid>8f12203e-b0ad-47de-9030-7b81190a27c0</Guid>
+          <SyncDll>kCura.IntegrationPoints.EventHandlers</SyncDll>
+          <ApplicationVersion>9.5.0.3</ApplicationVersion>
+        </ActiveSync>
+        <ActiveSync>
+          <Id>1042998</Id>
+          <ArtifactTypeId>1000033</ArtifactTypeId>
+          <AssemblyArtifactId>2275510</AssemblyArtifactId>
+          <ClassName>kCura.IntegrationPoints.EventHandlers.IntegrationPoints.IntegrationPointPageInteractionEventHandler</ClassName>
+          <Description>This is a details page interaction event handler for Integration Point RDO</Description>
+          <ExecutionType>13</ExecutionType>
+          <Guid>671bc9be-9bbb-4d31-ba37-ddd93d9bfe71</Guid>
+          <SyncDll>kCura.IntegrationPoints.EventHandlers</SyncDll>
+          <ApplicationVersion>9.5.0.3</ApplicationVersion>
+        </ActiveSync>
+        <ActiveSync>
+          <Id>1042999</Id>
+          <ArtifactTypeId>1000033</ArtifactTypeId>
+          <AssemblyArtifactId>2275510</AssemblyArtifactId>
+          <ClassName>kCura.IntegrationPoints.EventHandlers.IntegrationPoints.PreCascadeDeleteEventHandler</ClassName>
+          <Description />
+          <ExecutionType>6</ExecutionType>
+          <Guid>e2eb22e1-04fe-41f3-b12a-b52504133e3a</Guid>
+          <SyncDll>kCura.IntegrationPoints.EventHandlers</SyncDll>
+          <ApplicationVersion>9.5.0.3</ApplicationVersion>
         </ActiveSync>
       </ActiveSyncs>
       <ArtifactId>1038160</ArtifactId>
@@ -3459,7 +3597,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -3511,7 +3649,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -3563,7 +3701,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -3615,7 +3753,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -3667,7 +3805,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -3719,7 +3857,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -3771,7 +3909,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -3823,7 +3961,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -3843,7 +3981,7 @@
               <ParentArtifactId>1003663</ParentArtifactId>
               <ParentIsCode>false</ParentIsCode>
               <UpdateInSearchEngine>true</UpdateInSearchEngine>
-              <ApplicationVersion>9.5.0.18</ApplicationVersion>
+              <ApplicationVersion>9.5.0.2</ApplicationVersion>
             </Code>
             <Code>
               <ArtifactId>1038232</ArtifactId>
@@ -3857,7 +3995,7 @@
               <ParentArtifactId>1003663</ParentArtifactId>
               <ParentIsCode>false</ParentIsCode>
               <UpdateInSearchEngine>false</UpdateInSearchEngine>
-              <ApplicationVersion>9.5.0.18</ApplicationVersion>
+              <ApplicationVersion>9.5.0.2</ApplicationVersion>
             </Code>
             <Code>
               <ArtifactId>1038233</ArtifactId>
@@ -3871,7 +4009,7 @@
               <ParentArtifactId>1003663</ParentArtifactId>
               <ParentIsCode>false</ParentIsCode>
               <UpdateInSearchEngine>false</UpdateInSearchEngine>
-              <ApplicationVersion>9.5.0.18</ApplicationVersion>
+              <ApplicationVersion>9.5.0.2</ApplicationVersion>
             </Code>
           </Codes>
           <CodeTypeId>1000115</CodeTypeId>
@@ -3918,7 +4056,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>true</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -3970,7 +4108,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -4022,7 +4160,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID>1038236</SiblingFieldArtifactID>
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -4074,7 +4212,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -4126,7 +4264,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -4178,7 +4316,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -4230,7 +4368,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -4282,7 +4420,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -4334,7 +4472,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
       </Fields>
       <Guid>03d4f67e-22c9-488c-bee6-411f05c52e01</Guid>
@@ -4345,7 +4483,7 @@
           <ArtifactId>1038295</ArtifactId>
           <Categories>
             <Category>
-              <CategoryId>1005378</CategoryId>
+              <CategoryId>1005399</CategoryId>
               <LayoutArtifactId>1038295</LayoutArtifactId>
               <Order>0</Order>
               <Title>General</Title>
@@ -4353,11 +4491,11 @@
               <Collapsible>false</Collapsible>
               <DefaultCollapsed>false</DefaultCollapsed>
               <TabbedDisplay>0</TabbedDisplay>
-              <ParentCategory>1005377</ParentCategory>
+              <ParentCategory>1005398</ParentCategory>
               <Type>0</Type>
             </Category>
             <Category>
-              <CategoryId>1005377</CategoryId>
+              <CategoryId>1005398</CategoryId>
               <LayoutArtifactId>1038295</LayoutArtifactId>
               <Order>0</Order>
               <Title>Layout Group</Title>
@@ -4369,7 +4507,7 @@
               <Type>1</Type>
             </Category>
             <Category>
-              <CategoryId>1005379</CategoryId>
+              <CategoryId>1005400</CategoryId>
               <LayoutArtifactId>1038295</LayoutArtifactId>
               <Order>1</Order>
               <Title>Scheduling</Title>
@@ -4377,7 +4515,7 @@
               <Collapsible>false</Collapsible>
               <DefaultCollapsed>false</DefaultCollapsed>
               <TabbedDisplay>0</TabbedDisplay>
-              <ParentCategory>1005377</ParentCategory>
+              <ParentCategory>1005398</ParentCategory>
               <Type>0</Type>
             </Category>
           </Categories>
@@ -4386,7 +4524,7 @@
           <LayoutArtifactTypeId>1000033</LayoutArtifactTypeId>
           <LayoutFields>
             <LayoutField>
-              <CategoryId>1005378</CategoryId>
+              <CategoryId>1005399</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1038157</FieldArtifactId>
@@ -4402,7 +4540,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1005378</CategoryId>
+              <CategoryId>1005399</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>2</Column>
               <FieldArtifactId>1038237</FieldArtifactId>
@@ -4419,7 +4557,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1005378</CategoryId>
+              <CategoryId>1005399</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>2</Column>
               <FieldArtifactId>1038239</FieldArtifactId>
@@ -4435,7 +4573,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1005378</CategoryId>
+              <CategoryId>1005399</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1038230</FieldArtifactId>
@@ -4452,7 +4590,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1005378</CategoryId>
+              <CategoryId>1005399</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>2</Column>
               <FieldArtifactId>1038238</FieldArtifactId>
@@ -4469,7 +4607,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1005378</CategoryId>
+              <CategoryId>1005399</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1038228</FieldArtifactId>
@@ -4485,7 +4623,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1005378</CategoryId>
+              <CategoryId>1005399</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>2</Column>
               <FieldArtifactId>1040891</FieldArtifactId>
@@ -4501,7 +4639,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1005378</CategoryId>
+              <CategoryId>1005399</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1038227</FieldArtifactId>
@@ -4517,7 +4655,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1005378</CategoryId>
+              <CategoryId>1005399</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1038226</FieldArtifactId>
@@ -4533,7 +4671,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1005379</CategoryId>
+              <CategoryId>1005400</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1038225</FieldArtifactId>
@@ -4549,7 +4687,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1005379</CategoryId>
+              <CategoryId>1005400</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>2</Column>
               <FieldArtifactId>1038222</FieldArtifactId>
@@ -4566,7 +4704,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1005379</CategoryId>
+              <CategoryId>1005400</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1038229</FieldArtifactId>
@@ -4582,7 +4720,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1005379</CategoryId>
+              <CategoryId>1005400</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>2</Column>
               <FieldArtifactId>1038223</FieldArtifactId>
@@ -4615,7 +4753,7 @@
           <Name>Integration Point Details</Name>
           <Notes />
           <Order>10</Order>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Layout>
       </Layouts>
       <Name>Integration Point</Name>
@@ -4631,7 +4769,7 @@
           <Operator />
           <Type>MassActionVisibility</Type>
           <Value>&lt;value /&gt;</Value>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </ObjectRule>
         <ObjectRule>
           <Name>Remove Add/Delete/Rename from Overwrite Fields</Name>
@@ -4643,7 +4781,7 @@
           <Operator />
           <Type>ChoiceAddLinkVisibility</Type>
           <Value>&lt;value /&gt;</Value>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </ObjectRule>
         <ObjectRule>
           <Name>New Integration Point Custom Page</Name>
@@ -4655,7 +4793,7 @@
           <Operator />
           <Type>NewButtonOverride</Type>
           <Value>&lt;value /&gt;</Value>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </ObjectRule>
         <ObjectRule>
           <Name>Edit Integration Point Custom Page</Name>
@@ -4667,7 +4805,7 @@
           <Operator />
           <Type>OverrideEditLinkURL</Type>
           <Value>&lt;value /&gt;</Value>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </ObjectRule>
       </ObjectRules>
       <MassOperations />
@@ -4729,7 +4867,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>0.0.0.5</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -4781,7 +4919,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>0.0.0.5</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -4833,7 +4971,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>0.0.0.5</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -4885,7 +5023,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>0.0.0.5</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -4937,7 +5075,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>0.0.0.5</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -4989,7 +5127,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>1.0.82.1</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
       </SystemFields>
       <SystemLayouts />
@@ -5004,7 +5142,7 @@
         <ParentArtifactId>1038151</ParentArtifactId>
         <TabDisplay>0</TabDisplay>
         <Visible>true</Visible>
-        <ApplicationVersion>9.5.0.22</ApplicationVersion>
+        <ApplicationVersion>9.5.0.23</ApplicationVersion>
       </Tab>
       <Views>
         <View>
@@ -5089,10 +5227,10 @@
           <PayloadArtifactViewFieldId xsi:nil="true" />
           <DisplayArtifactViewFieldId xsi:nil="true" />
           <GroupDefinitionArtifactViewFieldID xsi:nil="true" />
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </View>
       </Views>
-      <ApplicationVersion>9.5.0.18</ApplicationVersion>
+      <ApplicationVersion>9.5.0.2</ApplicationVersion>
     </Object>
     <Object>
       <ActiveSyncs />
@@ -5149,7 +5287,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -5201,7 +5339,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -5253,7 +5391,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -5305,7 +5443,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -5357,7 +5495,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
       </Fields>
       <Guid>5be4a1f7-87a8-4cbe-a53f-5027d4f70b80</Guid>
@@ -5368,7 +5506,7 @@
           <ArtifactId>1038296</ArtifactId>
           <Categories>
             <Category>
-              <CategoryId>1005380</CategoryId>
+              <CategoryId>1005401</CategoryId>
               <LayoutArtifactId>1038296</LayoutArtifactId>
               <Order>0</Order>
               <Title>Default Category</Title>
@@ -5384,7 +5522,7 @@
           <LayoutArtifactTypeId>1000034</LayoutArtifactTypeId>
           <LayoutFields>
             <LayoutField>
-              <CategoryId>1005380</CategoryId>
+              <CategoryId>1005401</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1038167</FieldArtifactId>
@@ -5405,7 +5543,7 @@
           <Name>Source Provider Layout</Name>
           <Notes />
           <Order>0</Order>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Layout>
       </Layouts>
       <Name>Source Provider</Name>
@@ -5470,7 +5608,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>0.0.0.5</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -5522,7 +5660,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>0.0.0.5</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -5574,7 +5712,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>0.0.0.5</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -5626,7 +5764,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>0.0.0.5</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -5678,7 +5816,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>0.0.0.5</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -5730,7 +5868,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>1.0.82.1</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
       </SystemFields>
       <SystemLayouts />
@@ -5772,10 +5910,10 @@
           <PayloadArtifactViewFieldId xsi:nil="true" />
           <DisplayArtifactViewFieldId xsi:nil="true" />
           <GroupDefinitionArtifactViewFieldID xsi:nil="true" />
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </View>
       </Views>
-      <ApplicationVersion>9.5.0.18</ApplicationVersion>
+      <ApplicationVersion>9.5.0.2</ApplicationVersion>
     </Object>
     <Object>
       <ActiveSyncs />
@@ -5832,7 +5970,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -5884,7 +6022,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
       </Fields>
       <Guid>d014f00d-f2c0-4e7a-b335-84fcb6eae980</Guid>
@@ -5895,7 +6033,7 @@
           <ArtifactId>1038297</ArtifactId>
           <Categories>
             <Category>
-              <CategoryId>1005381</CategoryId>
+              <CategoryId>1005402</CategoryId>
               <LayoutArtifactId>1038297</LayoutArtifactId>
               <Order>0</Order>
               <Title>Default Category</Title>
@@ -5911,7 +6049,7 @@
           <LayoutArtifactTypeId>1000035</LayoutArtifactTypeId>
           <LayoutFields>
             <LayoutField>
-              <CategoryId>1005381</CategoryId>
+              <CategoryId>1005402</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1038176</FieldArtifactId>
@@ -5932,7 +6070,7 @@
           <Name>DestinationProvider Layout</Name>
           <Notes />
           <Order>0</Order>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Layout>
       </Layouts>
       <Name>Destination Provider</Name>
@@ -5997,7 +6135,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>0.0.0.5</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -6049,7 +6187,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>0.0.0.5</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -6101,7 +6239,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>0.0.0.5</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -6153,7 +6291,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>0.0.0.5</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -6205,7 +6343,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>0.0.0.5</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -6257,7 +6395,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>1.0.82.1</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
       </SystemFields>
       <SystemLayouts />
@@ -6299,10 +6437,10 @@
           <PayloadArtifactViewFieldId xsi:nil="true" />
           <DisplayArtifactViewFieldId xsi:nil="true" />
           <GroupDefinitionArtifactViewFieldID xsi:nil="true" />
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </View>
       </Views>
-      <ApplicationVersion>9.5.0.18</ApplicationVersion>
+      <ApplicationVersion>9.5.0.2</ApplicationVersion>
     </Object>
     <Object>
       <ActiveSyncs />
@@ -6359,7 +6497,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID>1038219</SiblingFieldArtifactID>
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -6411,7 +6549,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID>1038235</SiblingFieldArtifactID>
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -6431,7 +6569,7 @@
               <ParentArtifactId>1003663</ParentArtifactId>
               <ParentIsCode>false</ParentIsCode>
               <UpdateInSearchEngine>false</UpdateInSearchEngine>
-              <ApplicationVersion>9.5.0.18</ApplicationVersion>
+              <ApplicationVersion>9.5.0.2</ApplicationVersion>
             </Code>
             <Code>
               <ArtifactId>1038249</ArtifactId>
@@ -6445,7 +6583,7 @@
               <ParentArtifactId>1003663</ParentArtifactId>
               <ParentIsCode>false</ParentIsCode>
               <UpdateInSearchEngine>false</UpdateInSearchEngine>
-              <ApplicationVersion>9.5.0.18</ApplicationVersion>
+              <ApplicationVersion>9.5.0.2</ApplicationVersion>
             </Code>
             <Code>
               <ArtifactId>1038250</ArtifactId>
@@ -6459,7 +6597,7 @@
               <ParentArtifactId>1003663</ParentArtifactId>
               <ParentIsCode>false</ParentIsCode>
               <UpdateInSearchEngine>false</UpdateInSearchEngine>
-              <ApplicationVersion>9.5.0.18</ApplicationVersion>
+              <ApplicationVersion>9.5.0.2</ApplicationVersion>
             </Code>
             <Code>
               <ArtifactId>1038251</ArtifactId>
@@ -6473,7 +6611,7 @@
               <ParentArtifactId>1003663</ParentArtifactId>
               <ParentIsCode>false</ParentIsCode>
               <UpdateInSearchEngine>false</UpdateInSearchEngine>
-              <ApplicationVersion>9.5.0.18</ApplicationVersion>
+              <ApplicationVersion>9.5.0.2</ApplicationVersion>
             </Code>
             <Code>
               <ArtifactId>1038252</ArtifactId>
@@ -6487,7 +6625,7 @@
               <ParentArtifactId>1003663</ParentArtifactId>
               <ParentIsCode>false</ParentIsCode>
               <UpdateInSearchEngine>false</UpdateInSearchEngine>
-              <ApplicationVersion>9.5.0.18</ApplicationVersion>
+              <ApplicationVersion>9.5.0.2</ApplicationVersion>
             </Code>
             <Code>
               <ArtifactId>1040465</ArtifactId>
@@ -6501,7 +6639,7 @@
               <ParentArtifactId>1003663</ParentArtifactId>
               <ParentIsCode>false</ParentIsCode>
               <UpdateInSearchEngine>false</UpdateInSearchEngine>
-              <ApplicationVersion>9.5.0.18</ApplicationVersion>
+              <ApplicationVersion>9.5.0.2</ApplicationVersion>
             </Code>
             <Code>
               <ArtifactId>1040466</ArtifactId>
@@ -6515,7 +6653,7 @@
               <ParentArtifactId>1003663</ParentArtifactId>
               <ParentIsCode>false</ParentIsCode>
               <UpdateInSearchEngine>false</UpdateInSearchEngine>
-              <ApplicationVersion>9.5.0.18</ApplicationVersion>
+              <ApplicationVersion>9.5.0.2</ApplicationVersion>
             </Code>
           </Codes>
           <CodeTypeId>1000116</CodeTypeId>
@@ -6562,7 +6700,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>true</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -6614,7 +6752,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -6666,7 +6804,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -6718,7 +6856,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -6770,7 +6908,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -6822,7 +6960,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -6874,7 +7012,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -6926,7 +7064,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -6978,7 +7116,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID>1038261</SiblingFieldArtifactID>
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -6998,7 +7136,7 @@
               <ParentArtifactId>1003663</ParentArtifactId>
               <ParentIsCode>false</ParentIsCode>
               <UpdateInSearchEngine>true</UpdateInSearchEngine>
-              <ApplicationVersion>9.5.0.18</ApplicationVersion>
+              <ApplicationVersion>9.5.0.2</ApplicationVersion>
             </Code>
             <Code>
               <ArtifactId>1038264</ArtifactId>
@@ -7012,7 +7150,7 @@
               <ParentArtifactId>1003663</ParentArtifactId>
               <ParentIsCode>false</ParentIsCode>
               <UpdateInSearchEngine>true</UpdateInSearchEngine>
-              <ApplicationVersion>9.5.0.18</ApplicationVersion>
+              <ApplicationVersion>9.5.0.2</ApplicationVersion>
             </Code>
             <Code>
               <ArtifactId>1038265</ArtifactId>
@@ -7026,7 +7164,7 @@
               <ParentArtifactId>1003663</ParentArtifactId>
               <ParentIsCode>false</ParentIsCode>
               <UpdateInSearchEngine>false</UpdateInSearchEngine>
-              <ApplicationVersion>9.5.0.18</ApplicationVersion>
+              <ApplicationVersion>9.5.0.2</ApplicationVersion>
             </Code>
           </Codes>
           <CodeTypeId>1000117</CodeTypeId>
@@ -7073,7 +7211,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>true</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -7125,7 +7263,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
       </Fields>
       <Guid>08f4b1f7-9692-4a08-94ab-b5f3a88b6cc9</Guid>
@@ -7136,7 +7274,7 @@
           <ArtifactId>1038298</ArtifactId>
           <Categories>
             <Category>
-              <CategoryId>1005382</CategoryId>
+              <CategoryId>1005403</CategoryId>
               <LayoutArtifactId>1038298</LayoutArtifactId>
               <Order>0</Order>
               <Title>Job Details</Title>
@@ -7147,7 +7285,7 @@
               <Type>0</Type>
             </Category>
             <Category>
-              <CategoryId>1005383</CategoryId>
+              <CategoryId>1005404</CategoryId>
               <LayoutArtifactId>1038298</LayoutArtifactId>
               <Order>10</Order>
               <Title>Import Statistics</Title>
@@ -7163,7 +7301,7 @@
           <LayoutArtifactTypeId>1000036</LayoutArtifactTypeId>
           <LayoutFields>
             <LayoutField>
-              <CategoryId>1005382</CategoryId>
+              <CategoryId>1005403</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1038185</FieldArtifactId>
@@ -7179,7 +7317,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1005382</CategoryId>
+              <CategoryId>1005403</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1038236</FieldArtifactId>
@@ -7195,7 +7333,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1005382</CategoryId>
+              <CategoryId>1005403</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1038262</FieldArtifactId>
@@ -7211,7 +7349,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1005382</CategoryId>
+              <CategoryId>1005403</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1038247</FieldArtifactId>
@@ -7228,7 +7366,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1005382</CategoryId>
+              <CategoryId>1005403</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1038255</FieldArtifactId>
@@ -7244,7 +7382,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1005382</CategoryId>
+              <CategoryId>1005403</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1038256</FieldArtifactId>
@@ -7260,7 +7398,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1005383</CategoryId>
+              <CategoryId>1005404</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1038253</FieldArtifactId>
@@ -7276,7 +7414,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1005383</CategoryId>
+              <CategoryId>1005404</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1038254</FieldArtifactId>
@@ -7307,7 +7445,7 @@
           <Name>Job Details</Name>
           <Notes />
           <Order>0</Order>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Layout>
       </Layouts>
       <Name>Job History</Name>
@@ -7323,7 +7461,7 @@
           <Operator />
           <Type>GlobalButtonVisibility</Type>
           <Value>&lt;value /&gt;</Value>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </ObjectRule>
         <ObjectRule>
           <Name>Show Tally/Sum/Average only</Name>
@@ -7335,7 +7473,7 @@
           <Operator />
           <Type>MassActionVisibility</Type>
           <Value>&lt;value /&gt;</Value>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </ObjectRule>
         <ObjectRule>
           <Name>Remove Add/Delete/Rename from Status</Name>
@@ -7347,7 +7485,7 @@
           <Operator />
           <Type>ChoiceAddLinkVisibility</Type>
           <Value>&lt;value /&gt;</Value>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </ObjectRule>
         <ObjectRule>
           <Name>Remove Add/Delete/Rename from Job Type</Name>
@@ -7359,7 +7497,7 @@
           <Operator />
           <Type>ChoiceAddLinkVisibility</Type>
           <Value>&lt;value /&gt;</Value>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </ObjectRule>
       </ObjectRules>
       <MassOperations />
@@ -7421,7 +7559,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.7</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -7473,7 +7611,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.7</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -7525,7 +7663,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.7</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -7577,7 +7715,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.7</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -7629,7 +7767,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.7</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -7681,7 +7819,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.7</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
       </SystemFields>
       <SystemLayouts />
@@ -7696,7 +7834,7 @@
         <ParentArtifactId>1038151</ParentArtifactId>
         <TabDisplay>0</TabDisplay>
         <Visible>true</Visible>
-        <ApplicationVersion>9.5.0.22</ApplicationVersion>
+        <ApplicationVersion>9.5.0.23</ApplicationVersion>
       </Tab>
       <Views>
         <View>
@@ -7796,7 +7934,7 @@
           <PayloadArtifactViewFieldId xsi:nil="true" />
           <DisplayArtifactViewFieldId xsi:nil="true" />
           <GroupDefinitionArtifactViewFieldID xsi:nil="true" />
-          <ApplicationVersion>9.5.0.20</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </View>
         <View>
           <ArtifactId>1038292</ArtifactId>
@@ -7881,23 +8019,23 @@
           <PayloadArtifactViewFieldId xsi:nil="true" />
           <DisplayArtifactViewFieldId xsi:nil="true" />
           <GroupDefinitionArtifactViewFieldID xsi:nil="true" />
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </View>
       </Views>
-      <ApplicationVersion>9.5.0.18</ApplicationVersion>
+      <ApplicationVersion>9.5.0.2</ApplicationVersion>
     </Object>
     <Object>
       <ActiveSyncs>
         <ActiveSync>
-          <Id>1038216</Id>
+          <Id>1043000</Id>
           <ArtifactTypeId>1000037</ArtifactTypeId>
-          <AssemblyArtifactId>1021839</AssemblyArtifactId>
+          <AssemblyArtifactId>2275510</AssemblyArtifactId>
           <ClassName>kCura.IntegrationPoints.EventHandlers.IntegrationPoints.JobHistoryErrorPageInteraction</ClassName>
           <Description>Removes ability to edit the Job History field on the Job History Error object</Description>
           <ExecutionType>13</ExecutionType>
-          <Guid>237eab6c-6013-47f5-957b-a03876536ee7</Guid>
-          <SyncDll>kCura.IntegrationPoints</SyncDll>
-          <ApplicationVersion>2.0.0.23</ApplicationVersion>
+          <Guid>6660b03b-77e1-4fc2-92d3-2c5a409f9569</Guid>
+          <SyncDll>kCura.IntegrationPoints.EventHandlers</SyncDll>
+          <ApplicationVersion>9.5.0.3</ApplicationVersion>
         </ActiveSync>
       </ActiveSyncs>
       <ArtifactId>1038199</ArtifactId>
@@ -7953,7 +8091,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -8005,7 +8143,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -8057,7 +8195,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -8077,7 +8215,7 @@
               <ParentArtifactId>1003663</ParentArtifactId>
               <ParentIsCode>false</ParentIsCode>
               <UpdateInSearchEngine>false</UpdateInSearchEngine>
-              <ApplicationVersion>9.5.0.18</ApplicationVersion>
+              <ApplicationVersion>9.5.0.2</ApplicationVersion>
             </Code>
             <Code>
               <ArtifactId>1038271</ArtifactId>
@@ -8091,7 +8229,7 @@
               <ParentArtifactId>1003663</ParentArtifactId>
               <ParentIsCode>false</ParentIsCode>
               <UpdateInSearchEngine>false</UpdateInSearchEngine>
-              <ApplicationVersion>9.5.0.18</ApplicationVersion>
+              <ApplicationVersion>9.5.0.2</ApplicationVersion>
             </Code>
           </Codes>
           <CodeTypeId>1000118</CodeTypeId>
@@ -8138,7 +8276,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>true</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -8190,7 +8328,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -8210,7 +8348,7 @@
               <ParentArtifactId>1003663</ParentArtifactId>
               <ParentIsCode>false</ParentIsCode>
               <UpdateInSearchEngine>false</UpdateInSearchEngine>
-              <ApplicationVersion>9.5.0.18</ApplicationVersion>
+              <ApplicationVersion>9.5.0.2</ApplicationVersion>
             </Code>
             <Code>
               <ArtifactId>1038275</ArtifactId>
@@ -8224,7 +8362,7 @@
               <ParentArtifactId>1003663</ParentArtifactId>
               <ParentIsCode>false</ParentIsCode>
               <UpdateInSearchEngine>false</UpdateInSearchEngine>
-              <ApplicationVersion>9.5.0.18</ApplicationVersion>
+              <ApplicationVersion>9.5.0.2</ApplicationVersion>
             </Code>
             <Code>
               <ArtifactId>1038276</ArtifactId>
@@ -8238,7 +8376,7 @@
               <ParentArtifactId>1003663</ParentArtifactId>
               <ParentIsCode>false</ParentIsCode>
               <UpdateInSearchEngine>false</UpdateInSearchEngine>
-              <ApplicationVersion>9.5.0.18</ApplicationVersion>
+              <ApplicationVersion>9.5.0.2</ApplicationVersion>
             </Code>
             <Code>
               <ArtifactId>1038277</ArtifactId>
@@ -8252,7 +8390,7 @@
               <ParentArtifactId>1003663</ParentArtifactId>
               <ParentIsCode>false</ParentIsCode>
               <UpdateInSearchEngine>false</UpdateInSearchEngine>
-              <ApplicationVersion>9.5.0.18</ApplicationVersion>
+              <ApplicationVersion>9.5.0.2</ApplicationVersion>
             </Code>
           </Codes>
           <CodeTypeId>1000119</CodeTypeId>
@@ -8299,7 +8437,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>true</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
       </Fields>
       <Guid>17e7912d-4f57-4890-9a37-abc2b8a37bdb</Guid>
@@ -8310,7 +8448,7 @@
           <ArtifactId>1038299</ArtifactId>
           <Categories>
             <Category>
-              <CategoryId>1005384</CategoryId>
+              <CategoryId>1005405</CategoryId>
               <LayoutArtifactId>1038299</LayoutArtifactId>
               <Order>0</Order>
               <Title>Error Details</Title>
@@ -8327,7 +8465,7 @@
           <LayoutArtifactTypeId>1000037</LayoutArtifactTypeId>
           <LayoutFields>
             <LayoutField>
-              <CategoryId>1005384</CategoryId>
+              <CategoryId>1005405</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1038196</FieldArtifactId>
@@ -8343,7 +8481,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1005384</CategoryId>
+              <CategoryId>1005405</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>2</Column>
               <FieldArtifactId>1038190</FieldArtifactId>
@@ -8359,7 +8497,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1005384</CategoryId>
+              <CategoryId>1005405</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1038266</FieldArtifactId>
@@ -8375,7 +8513,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1005384</CategoryId>
+              <CategoryId>1005405</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>2</Column>
               <FieldArtifactId>1038192</FieldArtifactId>
@@ -8391,7 +8529,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1005384</CategoryId>
+              <CategoryId>1005405</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1038195</FieldArtifactId>
@@ -8408,7 +8546,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1005384</CategoryId>
+              <CategoryId>1005405</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>2</Column>
               <FieldArtifactId>1038193</FieldArtifactId>
@@ -8424,7 +8562,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1005384</CategoryId>
+              <CategoryId>1005405</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1038267</FieldArtifactId>
@@ -8440,7 +8578,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1005384</CategoryId>
+              <CategoryId>1005405</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1038273</FieldArtifactId>
@@ -8456,7 +8594,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1005384</CategoryId>
+              <CategoryId>1005405</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1038269</FieldArtifactId>
@@ -8472,7 +8610,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1005384</CategoryId>
+              <CategoryId>1005405</CategoryId>
               <ColSpan>2</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1038272</FieldArtifactId>
@@ -8494,7 +8632,7 @@
           <Name>Job History Error Layout</Name>
           <Notes />
           <Order>0</Order>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Layout>
       </Layouts>
       <Name>Job History Error</Name>
@@ -8510,7 +8648,7 @@
           <Operator />
           <Type>GlobalButtonVisibility</Type>
           <Value>&lt;value /&gt;</Value>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </ObjectRule>
         <ObjectRule>
           <Name>Show Tally/Sum/Average only</Name>
@@ -8522,7 +8660,7 @@
           <Operator />
           <Type>MassActionVisibility</Type>
           <Value>&lt;value /&gt;</Value>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </ObjectRule>
         <ObjectRule>
           <Name>Remove Add/Delete/Rename from Error Status</Name>
@@ -8534,7 +8672,7 @@
           <Operator />
           <Type>ChoiceAddLinkVisibility</Type>
           <Value>&lt;value /&gt;</Value>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </ObjectRule>
         <ObjectRule>
           <Name>Remove Add/Delete/Rename from Error Type</Name>
@@ -8546,7 +8684,7 @@
           <Operator />
           <Type>ChoiceAddLinkVisibility</Type>
           <Value>&lt;value /&gt;</Value>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </ObjectRule>
       </ObjectRules>
       <MassOperations />
@@ -8608,7 +8746,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>0.0.0.5</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -8660,7 +8798,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>0.0.0.5</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -8712,7 +8850,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>0.0.0.5</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -8764,7 +8902,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>0.0.0.5</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -8816,7 +8954,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>0.0.0.5</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -8868,7 +9006,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.56</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -8920,7 +9058,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>1.1.105.3</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
       </SystemFields>
       <SystemLayouts />
@@ -8935,7 +9073,7 @@
         <ParentArtifactId>1038151</ParentArtifactId>
         <TabDisplay>0</TabDisplay>
         <Visible>true</Visible>
-        <ApplicationVersion>9.5.0.22</ApplicationVersion>
+        <ApplicationVersion>9.5.0.23</ApplicationVersion>
       </Tab>
       <Views>
         <View>
@@ -9005,10 +9143,10 @@
           <PayloadArtifactViewFieldId xsi:nil="true" />
           <DisplayArtifactViewFieldId xsi:nil="true" />
           <GroupDefinitionArtifactViewFieldID xsi:nil="true" />
-          <ApplicationVersion>9.5.0.20</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </View>
       </Views>
-      <ApplicationVersion>9.5.0.18</ApplicationVersion>
+      <ApplicationVersion>9.5.0.2</ApplicationVersion>
     </Object>
     <Object>
       <ActiveSyncs />
@@ -9065,7 +9203,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID>1038217</SiblingFieldArtifactID>
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -9117,7 +9255,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID>1038260</SiblingFieldArtifactID>
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -9169,7 +9307,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -9221,7 +9359,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -9273,7 +9411,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -9325,7 +9463,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
       </Fields>
       <Guid>3f45e490-b4cf-4c7d-8bb6-9ca891c0c198</Guid>
@@ -9336,7 +9474,7 @@
           <ArtifactId>1038300</ArtifactId>
           <Categories>
             <Category>
-              <CategoryId>1005385</CategoryId>
+              <CategoryId>1005406</CategoryId>
               <LayoutArtifactId>1038300</LayoutArtifactId>
               <Order>0</Order>
               <Title>Destination Workspace</Title>
@@ -9353,7 +9491,7 @@
           <LayoutArtifactTypeId>1000038</LayoutArtifactTypeId>
           <LayoutFields>
             <LayoutField>
-              <CategoryId>1005385</CategoryId>
+              <CategoryId>1005406</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1038206</FieldArtifactId>
@@ -9384,7 +9522,7 @@
           <Name>Destination Workspace Layout</Name>
           <Notes />
           <Order>0</Order>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Layout>
       </Layouts>
       <Name>Destination Workspace</Name>
@@ -9400,7 +9538,7 @@
           <Operator />
           <Type>GlobalButtonVisibility</Type>
           <Value>&lt;value /&gt;</Value>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </ObjectRule>
         <ObjectRule>
           <Name>Show Tally/Sum/Average only</Name>
@@ -9412,7 +9550,7 @@
           <Operator />
           <Type>MassActionVisibility</Type>
           <Value>&lt;value /&gt;</Value>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </ObjectRule>
       </ObjectRules>
       <MassOperations />
@@ -9474,7 +9612,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.7</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -9526,7 +9664,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.7</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -9578,7 +9716,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.7</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -9630,7 +9768,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.7</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -9682,7 +9820,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.7</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -9734,7 +9872,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.7</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
       </SystemFields>
       <SystemLayouts />
@@ -9749,7 +9887,7 @@
         <ParentArtifactId>1038151</ParentArtifactId>
         <TabDisplay>0</TabDisplay>
         <Visible>true</Visible>
-        <ApplicationVersion>9.5.0.22</ApplicationVersion>
+        <ApplicationVersion>9.5.0.23</ApplicationVersion>
       </Tab>
       <Views>
         <View>
@@ -9808,10 +9946,10 @@
           <PayloadArtifactViewFieldId xsi:nil="true" />
           <DisplayArtifactViewFieldId xsi:nil="true" />
           <GroupDefinitionArtifactViewFieldID xsi:nil="true" />
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </View>
       </Views>
-      <ApplicationVersion>9.5.0.18</ApplicationVersion>
+      <ApplicationVersion>9.5.0.2</ApplicationVersion>
     </Object>
     <Object>
       <ActiveSyncs />
@@ -9868,7 +10006,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -9920,7 +10058,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
       </Fields>
       <Guid>3c4acdf0-41c8-4888-a374-383c25a734cb</Guid>
@@ -9931,7 +10069,7 @@
           <ArtifactId>1040631</ArtifactId>
           <Categories>
             <Category>
-              <CategoryId>1005386</CategoryId>
+              <CategoryId>1005407</CategoryId>
               <LayoutArtifactId>1040631</LayoutArtifactId>
               <Order>0</Order>
               <Title>Default Category</Title>
@@ -9947,7 +10085,7 @@
           <LayoutArtifactTypeId>1001048</LayoutArtifactTypeId>
           <LayoutFields>
             <LayoutField>
-              <CategoryId>1005386</CategoryId>
+              <CategoryId>1005407</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1040629</FieldArtifactId>
@@ -9968,7 +10106,7 @@
           <Name>Integration Point Type Layout</Name>
           <Notes />
           <Order>0</Order>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Layout>
       </Layouts>
       <Name>Integration Point Type</Name>
@@ -10033,7 +10171,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.95.37</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -10085,7 +10223,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.95.37</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -10137,7 +10275,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.95.37</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -10189,7 +10327,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.95.37</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -10241,7 +10379,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.95.37</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -10293,7 +10431,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.95.37</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
       </SystemFields>
       <SystemLayouts />
@@ -10335,34 +10473,34 @@
           <PayloadArtifactViewFieldId xsi:nil="true" />
           <DisplayArtifactViewFieldId xsi:nil="true" />
           <GroupDefinitionArtifactViewFieldID xsi:nil="true" />
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </View>
       </Views>
-      <ApplicationVersion>9.5.0.18</ApplicationVersion>
+      <ApplicationVersion>9.5.0.2</ApplicationVersion>
     </Object>
     <Object>
       <ActiveSyncs>
         <ActiveSync>
-          <Id>1040669</Id>
+          <Id>1043001</Id>
           <ArtifactTypeId>1001049</ArtifactTypeId>
-          <AssemblyArtifactId>1021839</AssemblyArtifactId>
-          <ClassName>kCura.IntegrationPoints.EventHandlers.IntegrationPoints.IntegrationPointProfilePageInteractionEventHandler</ClassName>
-          <Description>This is a details page interaction event handler for Integration Point Profile RDO</Description>
-          <ExecutionType>13</ExecutionType>
-          <Guid>a27ce122-f832-44b1-a60c-9c51ce3bb022</Guid>
-          <SyncDll>kCura.IntegrationPoints</SyncDll>
-          <ApplicationVersion>2.0.95.39</ApplicationVersion>
-        </ActiveSync>
-        <ActiveSync>
-          <Id>1040670</Id>
-          <ArtifactTypeId>1001049</ArtifactTypeId>
-          <AssemblyArtifactId>1021839</AssemblyArtifactId>
+          <AssemblyArtifactId>2275510</AssemblyArtifactId>
           <ClassName>kCura.IntegrationPoints.EventHandlers.IntegrationPoints.IntegrationPointProfilePreLoadEventHandler</ClassName>
           <Description>This is a details pre load event handler for Integration Point Profile RDO</Description>
           <ExecutionType>5</ExecutionType>
-          <Guid>06e82265-078d-4e6a-9115-c370d0bdd428</Guid>
-          <SyncDll>kCura.IntegrationPoints</SyncDll>
-          <ApplicationVersion>2.0.95.39</ApplicationVersion>
+          <Guid>c70c4ef1-5b3f-4319-a60b-02ca274d4873</Guid>
+          <SyncDll>kCura.IntegrationPoints.EventHandlers</SyncDll>
+          <ApplicationVersion>9.5.0.3</ApplicationVersion>
+        </ActiveSync>
+        <ActiveSync>
+          <Id>1043002</Id>
+          <ArtifactTypeId>1001049</ArtifactTypeId>
+          <AssemblyArtifactId>2275510</AssemblyArtifactId>
+          <ClassName>kCura.IntegrationPoints.EventHandlers.IntegrationPoints.IntegrationPointProfilePageInteractionEventHandler</ClassName>
+          <Description>This is a details page interaction event handler for Integration Point Profile RDO</Description>
+          <ExecutionType>13</ExecutionType>
+          <Guid>8fde9080-7eed-4281-ad14-65e2173cf675</Guid>
+          <SyncDll>kCura.IntegrationPoints.EventHandlers</SyncDll>
+          <ApplicationVersion>9.5.0.3</ApplicationVersion>
         </ActiveSync>
       </ActiveSyncs>
       <ArtifactId>1040645</ArtifactId>
@@ -10418,7 +10556,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -10470,7 +10608,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -10522,7 +10660,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -10574,7 +10712,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -10626,7 +10764,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -10678,7 +10816,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -10730,7 +10868,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -10750,7 +10888,7 @@
               <ParentArtifactId>1003663</ParentArtifactId>
               <ParentIsCode>false</ParentIsCode>
               <UpdateInSearchEngine>false</UpdateInSearchEngine>
-              <ApplicationVersion>9.5.0.18</ApplicationVersion>
+              <ApplicationVersion>9.5.0.2</ApplicationVersion>
             </Code>
             <Code>
               <ArtifactId>1040663</ArtifactId>
@@ -10764,7 +10902,7 @@
               <ParentArtifactId>1003663</ParentArtifactId>
               <ParentIsCode>false</ParentIsCode>
               <UpdateInSearchEngine>false</UpdateInSearchEngine>
-              <ApplicationVersion>9.5.0.18</ApplicationVersion>
+              <ApplicationVersion>9.5.0.2</ApplicationVersion>
             </Code>
             <Code>
               <ArtifactId>1040664</ArtifactId>
@@ -10778,7 +10916,7 @@
               <ParentArtifactId>1003663</ParentArtifactId>
               <ParentIsCode>false</ParentIsCode>
               <UpdateInSearchEngine>false</UpdateInSearchEngine>
-              <ApplicationVersion>9.5.0.18</ApplicationVersion>
+              <ApplicationVersion>9.5.0.2</ApplicationVersion>
             </Code>
           </Codes>
           <CodeTypeId>1001173</CodeTypeId>
@@ -10825,7 +10963,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>true</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -10877,7 +11015,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -10929,7 +11067,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -10981,7 +11119,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -11033,7 +11171,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -11085,7 +11223,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Field>
       </Fields>
       <Guid>6dc915a9-25d7-4500-97f7-07cb98a06f64</Guid>
@@ -11096,7 +11234,7 @@
           <ArtifactId>1040644</ArtifactId>
           <Categories>
             <Category>
-              <CategoryId>1005388</CategoryId>
+              <CategoryId>1005409</CategoryId>
               <LayoutArtifactId>1040644</LayoutArtifactId>
               <Order>0</Order>
               <Title>General</Title>
@@ -11104,11 +11242,11 @@
               <Collapsible>false</Collapsible>
               <DefaultCollapsed>false</DefaultCollapsed>
               <TabbedDisplay>0</TabbedDisplay>
-              <ParentCategory>1005387</ParentCategory>
+              <ParentCategory>1005408</ParentCategory>
               <Type>0</Type>
             </Category>
             <Category>
-              <CategoryId>1005387</CategoryId>
+              <CategoryId>1005408</CategoryId>
               <LayoutArtifactId>1040644</LayoutArtifactId>
               <Order>0</Order>
               <Title>Layout Group</Title>
@@ -11120,7 +11258,7 @@
               <Type>1</Type>
             </Category>
             <Category>
-              <CategoryId>1005389</CategoryId>
+              <CategoryId>1005410</CategoryId>
               <LayoutArtifactId>1040644</LayoutArtifactId>
               <Order>1</Order>
               <Title>Scheduling</Title>
@@ -11128,7 +11266,7 @@
               <Collapsible>false</Collapsible>
               <DefaultCollapsed>false</DefaultCollapsed>
               <TabbedDisplay>0</TabbedDisplay>
-              <ParentCategory>1005387</ParentCategory>
+              <ParentCategory>1005408</ParentCategory>
               <Type>0</Type>
             </Category>
           </Categories>
@@ -11137,7 +11275,7 @@
           <LayoutArtifactTypeId>1001049</LayoutArtifactTypeId>
           <LayoutFields>
             <LayoutField>
-              <CategoryId>1005388</CategoryId>
+              <CategoryId>1005409</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1040642</FieldArtifactId>
@@ -11153,7 +11291,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1005388</CategoryId>
+              <CategoryId>1005409</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>2</Column>
               <FieldArtifactId>1040655</FieldArtifactId>
@@ -11170,7 +11308,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1005388</CategoryId>
+              <CategoryId>1005409</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1040657</FieldArtifactId>
@@ -11186,7 +11324,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1005388</CategoryId>
+              <CategoryId>1005409</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>2</Column>
               <FieldArtifactId>1040652</FieldArtifactId>
@@ -11203,7 +11341,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1005388</CategoryId>
+              <CategoryId>1005409</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1040660</FieldArtifactId>
@@ -11219,7 +11357,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1005388</CategoryId>
+              <CategoryId>1005409</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>2</Column>
               <FieldArtifactId>1040892</FieldArtifactId>
@@ -11235,7 +11373,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1005388</CategoryId>
+              <CategoryId>1005409</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1040650</FieldArtifactId>
@@ -11251,7 +11389,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1005388</CategoryId>
+              <CategoryId>1005409</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1040659</FieldArtifactId>
@@ -11267,7 +11405,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1005389</CategoryId>
+              <CategoryId>1005410</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1040653</FieldArtifactId>
@@ -11283,7 +11421,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1005389</CategoryId>
+              <CategoryId>1005410</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>2</Column>
               <FieldArtifactId>1040656</FieldArtifactId>
@@ -11300,7 +11438,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1005389</CategoryId>
+              <CategoryId>1005410</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1040658</FieldArtifactId>
@@ -11321,7 +11459,7 @@
           <Name>Integration Point Profile Layout</Name>
           <Notes />
           <Order>0</Order>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </Layout>
       </Layouts>
       <Name>Integration Point Profile</Name>
@@ -11337,7 +11475,7 @@
           <Operator />
           <Type>NewButtonOverride</Type>
           <Value>&lt;value /&gt;</Value>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </ObjectRule>
         <ObjectRule>
           <Name>Edit</Name>
@@ -11349,7 +11487,7 @@
           <Operator />
           <Type>OverrideEditLinkURL</Type>
           <Value>&lt;value /&gt;</Value>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </ObjectRule>
         <ObjectRule>
           <Name>Mass Action Visibility</Name>
@@ -11361,7 +11499,7 @@
           <Operator />
           <Type>MassActionVisibility</Type>
           <Value>&lt;value /&gt;</Value>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </ObjectRule>
         <ObjectRule>
           <Name>Remove Add/Delete/Rename from Overwrite Fields</Name>
@@ -11373,7 +11511,7 @@
           <Operator />
           <Type>ChoiceAddLinkVisibility</Type>
           <Value>&lt;value /&gt;</Value>
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </ObjectRule>
       </ObjectRules>
       <MassOperations />
@@ -11435,7 +11573,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.95.37</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -11487,7 +11625,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.95.37</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -11539,7 +11677,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.95.37</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -11591,7 +11729,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.95.37</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -11643,7 +11781,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.95.37</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -11695,7 +11833,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.95.37</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </SystemField>
       </SystemFields>
       <SystemLayouts />
@@ -11710,7 +11848,7 @@
         <ParentArtifactId>1038151</ParentArtifactId>
         <TabDisplay>0</TabDisplay>
         <Visible>true</Visible>
-        <ApplicationVersion>9.5.0.22</ApplicationVersion>
+        <ApplicationVersion>9.5.0.23</ApplicationVersion>
       </Tab>
       <Views>
         <View>
@@ -11770,30 +11908,30 @@
           <PayloadArtifactViewFieldId xsi:nil="true" />
           <DisplayArtifactViewFieldId xsi:nil="true" />
           <GroupDefinitionArtifactViewFieldID xsi:nil="true" />
-          <ApplicationVersion>9.5.0.18</ApplicationVersion>
+          <ApplicationVersion>9.5.0.2</ApplicationVersion>
         </View>
       </Views>
-      <ApplicationVersion>9.5.0.18</ApplicationVersion>
+      <ApplicationVersion>9.5.0.2</ApplicationVersion>
     </Object>
   </Objects>
   <ParentTabs />
-  <RelativityVersion>9.5.167.69</RelativityVersion>
-  <Version>9.5.0.22</Version>
+  <RelativityVersion>9.5.224.9</RelativityVersion>
+  <Version>9.5.0.23</Version>
   <TabDisplay>true</TabDisplay>
-  <OriginSignature>822363b1-5445-471e-af4f-61384a89304f</OriginSignature>
+  <OriginSignature>34ce6777-a06d-4873-aec0-667e7f876b76</OriginSignature>
   <MasterScripts />
   <ApplicationScripts />
   <CustomPages>
     <CustomPage>
       <ArtifactID>1038313</ArtifactID>
       <Guid>c2c93191-7b15-4a9b-aa56-6a8c2dac5494</Guid>
-      <ApplicationVersion>9.5.0.18</ApplicationVersion>
+      <ApplicationVersion>9.5.0.2</ApplicationVersion>
       <Name>Web</Name>
       <FileName>DCF6E9D1-22B6-4DA3-98F6-41381E93C30C.zip</FileName>
-      <Size>18363170</Size>
+      <Size>23899808</Size>
       <Keywords />
       <Notes />
-      <Hash>03-5A-72-B6-92-F1-6A-C8-95-C8-E9-29-14-11-97-5B-95-40-1A-92</Hash>
+      <Hash>86-2F-BA-14-B9-D4-EC-4A-35-C7-BA-81-14-15-C4-B4-3A-A3-31-40</Hash>
     </CustomPage>
   </CustomPages>
   <AgentTypes>
@@ -11812,7 +11950,7 @@
       <MinInstanceResourcePool>0</MinInstanceResourcePool>
       <MaxInstanceResourcePool>0</MaxInstanceResourcePool>
       <AssemblyArtifactID>0</AssemblyArtifactID>
-      <AgentDll>kCura.IntegrationPoints.dll</AgentDll>
+      <AgentDll>kCura.IntegrationPoints.Agent.dll</AgentDll>
       <Keywords />
       <Notes />
       <Description />
@@ -11841,292 +11979,280 @@
   <IsRelativityApplication>true</IsRelativityApplication>
   <InstallEventHandlers>
     <InstallEventHandler>
-      <ArtifactId>1038145</ArtifactId>
-      <AssemblyArtifactId>1021839</AssemblyArtifactId>
-      <Name>kCura.IntegrationPoints.EventHandlers.Installers.Uninstaller</Name>
-      <Guid>55b133df-a0b6-4755-aa05-11aa2a982b46</Guid>
-      <Guids>35161995-0b8b-4ff9-8b13-c288570eea73</Guids>
-      <ExecutionType>12</ExecutionType>
-      <Order>20</Order>
-      <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.22</ApplicationVersion>
-      <RunTarget>0</RunTarget>
-    </InstallEventHandler>
-    <InstallEventHandler>
-      <ArtifactId>1038146</ArtifactId>
-      <AssemblyArtifactId>1021839</AssemblyArtifactId>
-      <Name>kCura.IntegrationPoints.EventHandlers.Installers.RunEveryTimeInstaller</Name>
-      <Guid>fb52b882-22d3-481f-b000-b976c13baf49</Guid>
-      <Guids>b69e1d1a-498d-49b3-aee8-7f073244205a</Guids>
-      <ExecutionType>8</ExecutionType>
-      <Order>10</Order>
-      <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.22</ApplicationVersion>
-      <RunTarget>0</RunTarget>
-    </InstallEventHandler>
-    <InstallEventHandler>
-      <ArtifactId>1038147</ArtifactId>
-      <AssemblyArtifactId>1021839</AssemblyArtifactId>
-      <Name>kCura.IntegrationPoints.EventHandlers.Installers.RegisterLDAPInstaller</Name>
-      <Guid>02ec5d64-208a-44fb-a5e3-c3a1103e7da7</Guid>
-      <Guids>be7e6e76-d6fe-4d40-b66f-63077a890fcd</Guids>
-      <ExecutionType>8</ExecutionType>
-      <Order>1</Order>
-      <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.22</ApplicationVersion>
-      <RunTarget>0</RunTarget>
-    </InstallEventHandler>
-    <InstallEventHandler>
-      <ArtifactId>1038148</ArtifactId>
-      <AssemblyArtifactId>1021839</AssemblyArtifactId>
-      <Name>kCura.IntegrationPoints.EventHandlers.Installers.RegisterDocumentTransferProvider</Name>
-      <Guid>93057ef0-9b7e-4fc5-9691-7f97e98cc703</Guid>
-      <Guids>683eed57-e0e8-4eac-8d4a-1ca068f4e537</Guids>
-      <ExecutionType>8</ExecutionType>
-      <Order>5</Order>
-      <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.22</ApplicationVersion>
-      <RunTarget>0</RunTarget>
-    </InstallEventHandler>
-    <InstallEventHandler>
-      <ArtifactId>1038149</ArtifactId>
-      <AssemblyArtifactId>1021839</AssemblyArtifactId>
-      <Name>kCura.IntegrationPoints.EventHandlers.IntegrationPoints.SourceProvidersMigrationEventHandler</Name>
-      <Guid>0846cffc-757d-4f19-a439-24510012ccbe</Guid>
-      <Guids>f16b83c6-8631-49f9-84b0-c444fdbfae25</Guids>
-      <ExecutionType>14</ExecutionType>
-      <Order>60</Order>
-      <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.22</ApplicationVersion>
-      <RunTarget>0</RunTarget>
-    </InstallEventHandler>
-    <InstallEventHandler>
-      <ArtifactId>1038150</ArtifactId>
-      <AssemblyArtifactId>1021839</AssemblyArtifactId>
-      <Name>kCura.IntegrationPoints.EventHandlers.Installers.SetHasErrorsField</Name>
-      <Guid>5e882ee9-9e9d-4afa-9b2c-eac6c749a8d4</Guid>
-      <Guids>e85c4254-daaa-4e8b-9e68-62e9a8f93210</Guids>
-      <ExecutionType>10</ExecutionType>
-      <Order>80</Order>
-      <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.22</ApplicationVersion>
-      <RunTarget>0</RunTarget>
-    </InstallEventHandler>
-    <InstallEventHandler>
-      <ArtifactId>1040411</ArtifactId>
-      <AssemblyArtifactId>1021839</AssemblyArtifactId>
-      <Name>kCura.IntegrationPoints.EventHandlers.Installers.RegisterFtpProvider</Name>
-      <Guid>d1578a7b-e662-4dee-bd59-c224e27f5296</Guid>
-      <Guids>5f4567d2-a515-4c77-bc22-9cfce85eaead</Guids>
-      <ExecutionType>8</ExecutionType>
-      <Order>3</Order>
-      <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.22</ApplicationVersion>
-      <RunTarget>0</RunTarget>
-    </InstallEventHandler>
-    <InstallEventHandler>
-      <ArtifactId>1040623</ArtifactId>
-      <AssemblyArtifactId>1021839</AssemblyArtifactId>
-      <Name>kCura.IntegrationPoints.EventHandlers.Installers.RegisterImportProvider</Name>
-      <Guid>01e26cbc-98ca-48a6-942e-fd546e2d5f7e</Guid>
-      <Guids>76a67acb-7461-47c6-ac17-40679ae9e483</Guids>
-      <ExecutionType>8</ExecutionType>
-      <Order>4</Order>
-      <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.22</ApplicationVersion>
-      <RunTarget>0</RunTarget>
-    </InstallEventHandler>
-    <InstallEventHandler>
-      <ArtifactId>1040671</ArtifactId>
-      <AssemblyArtifactId>1021839</AssemblyArtifactId>
-      <Name>kCura.IntegrationPoints.EventHandlers.Installers.RegisterIntegrationPointTypeInstaller</Name>
-      <Guid>28d0fb0a-3ce9-44a3-9774-3ccc9dd57870</Guid>
-      <Guids>3024c117-981b-4af7-b47f-553f13563a1b</Guids>
-      <ExecutionType>8</ExecutionType>
-      <Order>6</Order>
-      <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.22</ApplicationVersion>
-      <RunTarget>0</RunTarget>
-    </InstallEventHandler>
-    <InstallEventHandler>
-      <ArtifactId>1040672</ArtifactId>
-      <AssemblyArtifactId>1021839</AssemblyArtifactId>
-      <Name>kCura.IntegrationPoints.EventHandlers.Installers.SetIntegrationPointType</Name>
-      <Guid>d767fc26-7369-4845-8b94-973f60d0caad</Guid>
-      <Guids>b540b405-eff0-4c86-aa2f-f9ec2c71473f</Guids>
-      <ExecutionType>10</ExecutionType>
-      <Order>7</Order>
-      <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.22</ApplicationVersion>
-      <RunTarget>0</RunTarget>
-    </InstallEventHandler>
-    <InstallEventHandler>
-      <ArtifactId>1040675</ArtifactId>
-      <AssemblyArtifactId>1021839</AssemblyArtifactId>
-      <Name>kCura.IntegrationPoints.EventHandlers.Installers.RemoveUnusedEventHandlers</Name>
-      <Guid>1a4c2ec1-079e-4f8f-8fc8-1358627617de</Guid>
-      <Guids>ddd0d764-d3ee-46a4-a118-d78e476ac3e5</Guids>
-      <ExecutionType>8</ExecutionType>
-      <Order>8</Order>
-      <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.22</ApplicationVersion>
-      <RunTarget>0</RunTarget>
-    </InstallEventHandler>
-    <InstallEventHandler>
-      <ArtifactId>1040862</ArtifactId>
-      <AssemblyArtifactId>1021839</AssemblyArtifactId>
-      <Name>kCura.IntegrationPoints.EventHandlers.IntegrationPoints.IntegrationPointTypesMigrationEventHandler</Name>
-      <Guid>bc67bb8a-5c10-4559-a7cf-765556bd5748</Guid>
-      <Guids>b2000703-a2d9-40c4-8533-048dceb12e49</Guids>
-      <ExecutionType>14</ExecutionType>
-      <Order>70</Order>
-      <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.22</ApplicationVersion>
-      <RunTarget>0</RunTarget>
-    </InstallEventHandler>
-    <InstallEventHandler>
-      <ArtifactId>1040864</ArtifactId>
-      <AssemblyArtifactId>1021839</AssemblyArtifactId>
+      <ArtifactId>1042971</ArtifactId>
+      <AssemblyArtifactId>2275510</AssemblyArtifactId>
       <Name>kCura.IntegrationPoints.EventHandlers.IntegrationPoints.IntegrationPointDataTransferLocationMigrationEventHandler</Name>
       <Guid>a48963ea-ab72-4b98-a634-7721b6d2bb9e</Guid>
-      <Guids>ab0364d8-0359-4083-b955-ddefb7e5cd80</Guids>
+      <Guids>475d5c65-60c0-4ad2-8c71-646a478ffdba</Guids>
       <ExecutionType>10</ExecutionType>
       <Order>90</Order>
-      <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.22</ApplicationVersion>
+      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
+      <ApplicationVersion>9.5.0.23</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
-      <ArtifactId>1040865</ArtifactId>
-      <AssemblyArtifactId>1021839</AssemblyArtifactId>
-      <Name>kCura.IntegrationPoints.EventHandlers.IntegrationPoints.DataTransferLocationMigrationEventHandler</Name>
-      <Guid>d9f2468c-9480-4e70-9ac7-837e2afd3237</Guid>
-      <Guids>6bc5b724-5109-4ebe-bb10-86235f33b718</Guids>
-      <ExecutionType>14</ExecutionType>
-      <Order>80</Order>
-      <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.22</ApplicationVersion>
-      <RunTarget>0</RunTarget>
-    </InstallEventHandler>
-    <InstallEventHandler>
-      <ArtifactId>1040866</ArtifactId>
-      <AssemblyArtifactId>1021839</AssemblyArtifactId>
-      <Name>kCura.IntegrationPoints.EventHandlers.Installers.RegisterDataTransferLocationInstaller</Name>
-      <Guid>f391252a-fd72-4ef4-b323-650c70a66b81</Guid>
-      <Guids>357be489-81c0-4eea-9e3f-3438ea61d989</Guids>
-      <ExecutionType>8</ExecutionType>
-      <Order>20</Order>
-      <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.22</ApplicationVersion>
-      <RunTarget>0</RunTarget>
-    </InstallEventHandler>
-    <InstallEventHandler>
-      <ArtifactId>1040881</ArtifactId>
-      <AssemblyArtifactId>1021839</AssemblyArtifactId>
+      <ArtifactId>1042972</ArtifactId>
+      <AssemblyArtifactId>2275510</AssemblyArtifactId>
       <Name>kCura.IntegrationPoints.EventHandlers.Installers.CreateTenantIdForSecretStoreInstaller</Name>
       <Guid>24a52901-3b2e-4db7-b45f-562a64fc4386</Guid>
-      <Guids>d484d891-3157-47f4-b099-b42a674dbe2c</Guids>
+      <Guids>97008beb-6b49-4989-b4e9-47a426d110e2</Guids>
       <ExecutionType>10</ExecutionType>
       <Order>30</Order>
-      <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.22</ApplicationVersion>
+      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
+      <ApplicationVersion>9.5.0.23</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
-      <ArtifactId>1040882</ArtifactId>
-      <AssemblyArtifactId>1021839</AssemblyArtifactId>
-      <Name>kCura.IntegrationPoints.EventHandlers.Installers.SecretStorePostWorkspaceCreateEventHandler</Name>
-      <Guid>09854211-85c1-4360-adae-ced54096d86a</Guid>
-      <Guids>9b521c73-9f16-4530-a027-a1b325ee03bc</Guids>
-      <ExecutionType>14</ExecutionType>
-      <Order>95</Order>
-      <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.22</ApplicationVersion>
-      <RunTarget>0</RunTarget>
-    </InstallEventHandler>
-    <InstallEventHandler>
-      <ArtifactId>1040883</ArtifactId>
-      <AssemblyArtifactId>1021839</AssemblyArtifactId>
-      <Name>kCura.IntegrationPoints.EventHandlers.Installers.SecretStorePreWorkspaceDeleteEventHandler</Name>
-      <Guid>725134df-aa9a-4aae-80ff-4cc047af8c15</Guid>
-      <Guids>4b55609b-9226-4e4a-bfa1-5029661734c5</Guids>
-      <ExecutionType>18</ExecutionType>
-      <Order>25</Order>
-      <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.22</ApplicationVersion>
-      <RunTarget>0</RunTarget>
-    </InstallEventHandler>
-    <InstallEventHandler>
-      <ArtifactId>1040884</ArtifactId>
-      <AssemblyArtifactId>1021839</AssemblyArtifactId>
-      <Name>kCura.IntegrationPoints.EventHandlers.Installers.SecretStoreUninstaller</Name>
-      <Guid>cfb90708-63cb-4c9c-a0ae-bbcfcde1e07e</Guid>
-      <Guids>0d7e70b0-560d-4796-8aa6-0ccc85229b6d</Guids>
-      <ExecutionType>12</ExecutionType>
-      <Order>26</Order>
-      <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.22</ApplicationVersion>
-      <RunTarget>0</RunTarget>
-    </InstallEventHandler>
-    <InstallEventHandler>
-      <ArtifactId>1040889</ArtifactId>
-      <AssemblyArtifactId>1021839</AssemblyArtifactId>
-      <Name>kCura.IntegrationPoints.EventHandlers.Installers.UpdateDestinationWorkspaceEntriesEventHandler</Name>
-      <Guid>c91e34a1-856b-490f-b15d-575ca9021bd2</Guid>
-      <Guids>0d0fed9e-c479-4791-8977-c579f270adc9</Guids>
-      <ExecutionType>10</ExecutionType>
-      <Order>110</Order>
-      <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.22</ApplicationVersion>
-      <RunTarget>0</RunTarget>
-    </InstallEventHandler>
-    <InstallEventHandler>
-      <ArtifactId>1040893</ArtifactId>
-      <AssemblyArtifactId>1021839</AssemblyArtifactId>
-      <Name>kCura.IntegrationPoints.EventHandlers.Installers.SetPromoteEligibleFieldEventHandler</Name>
-      <Guid>6d9d621c-d873-47ed-a1d5-528b05184907</Guid>
-      <Guids>866d363b-6e20-4e1c-aa42-5ec9f7224576</Guids>
-      <ExecutionType>10</ExecutionType>
-      <Order>120</Order>
-      <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.22</ApplicationVersion>
-      <RunTarget>0</RunTarget>
-    </InstallEventHandler>
-    <InstallEventHandler>
-      <ArtifactId>1040895</ArtifactId>
-      <AssemblyArtifactId>1021839</AssemblyArtifactId>
+      <ArtifactId>1042973</ArtifactId>
+      <AssemblyArtifactId>2275510</AssemblyArtifactId>
       <Name>kCura.IntegrationPoints.EventHandlers.Installers.RestoreJobHistoryDestinationWorkspaceEventHandler</Name>
       <Guid>b7ee6a17-7b0e-4391-9014-99618f7c72f9</Guid>
-      <Guids>1c76d364-2e46-4153-819b-8e1fc18da1cf</Guids>
+      <Guids>7cae83f2-21be-4dc3-8fd7-9cb64098ca34</Guids>
       <ExecutionType>10</ExecutionType>
       <Order>130</Order>
-      <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.22</ApplicationVersion>
+      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
+      <ApplicationVersion>9.5.0.23</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
-      <ArtifactId>1040896</ArtifactId>
-      <AssemblyArtifactId>1021839</AssemblyArtifactId>
-      <Name>kCura.IntegrationPoints.EventHandlers.IntegrationPoints.ImportProviderResourceFilePreInstallEventHandler</Name>
-      <Guid>8cad683a-0aac-4eb7-94c9-ab4d1450656d</Guid>
-      <Guids>2d65dea6-1c5c-47a5-8464-ad46930c4fb6</Guids>
-      <ExecutionType>9</ExecutionType>
-      <Order>1</Order>
-      <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.22</ApplicationVersion>
-      <RunTarget>1</RunTarget>
+      <ArtifactId>1042974</ArtifactId>
+      <AssemblyArtifactId>2275510</AssemblyArtifactId>
+      <Name>kCura.IntegrationPoints.EventHandlers.Installers.SetIntegrationPointType</Name>
+      <Guid>d767fc26-7369-4845-8b94-973f60d0caad</Guid>
+      <Guids>ccfc0d31-4d39-4f3f-a42a-734905ade940</Guids>
+      <ExecutionType>10</ExecutionType>
+      <Order>7</Order>
+      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
+      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
-      <ArtifactId>1042898</ArtifactId>
-      <AssemblyArtifactId>1021839</AssemblyArtifactId>
-      <Name>kCura.IntegrationPoints.EventHandlers.IntegrationPoints.RemoveResourceFileEventHandler</Name>
-      <Guid>51baafb6-898f-48ac-bb6e-a5b9fcd4ef1f</Guid>
-      <Guids>634fe91c-6a95-40e9-b853-1d33cffc51e3</Guids>
-      <ExecutionType>9</ExecutionType>
-      <Order>2</Order>
-      <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.22</ApplicationVersion>
-      <RunTarget>1</RunTarget>
+      <ArtifactId>1042975</ArtifactId>
+      <AssemblyArtifactId>2275510</AssemblyArtifactId>
+      <Name>kCura.IntegrationPoints.EventHandlers.Installers.SetPromoteEligibleFieldEventHandler</Name>
+      <Guid>6d9d621c-d873-47ed-a1d5-528b05184907</Guid>
+      <Guids>8570ab09-b80d-4f5b-9ee2-0ef23b67e117</Guids>
+      <ExecutionType>10</ExecutionType>
+      <Order>120</Order>
+      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
+      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <RunTarget>0</RunTarget>
+    </InstallEventHandler>
+    <InstallEventHandler>
+      <ArtifactId>1042976</ArtifactId>
+      <AssemblyArtifactId>2275510</AssemblyArtifactId>
+      <Name>kCura.IntegrationPoints.EventHandlers.Installers.UpdateDestinationWorkspaceEntriesEventHandler</Name>
+      <Guid>c91e34a1-856b-490f-b15d-575ca9021bd2</Guid>
+      <Guids>f7c6a60f-07a1-43b2-bffd-e59aa6baf5bf</Guids>
+      <ExecutionType>10</ExecutionType>
+      <Order>110</Order>
+      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
+      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <RunTarget>0</RunTarget>
+    </InstallEventHandler>
+    <InstallEventHandler>
+      <ArtifactId>1042977</ArtifactId>
+      <AssemblyArtifactId>2275510</AssemblyArtifactId>
+      <Name>kCura.IntegrationPoints.EventHandlers.Installers.SecretStorePreWorkspaceDeleteEventHandler</Name>
+      <Guid>725134df-aa9a-4aae-80ff-4cc047af8c15</Guid>
+      <Guids>b5a96c47-922b-45fd-9b11-a0bf157cda21</Guids>
+      <ExecutionType>18</ExecutionType>
+      <Order>25</Order>
+      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
+      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <RunTarget>0</RunTarget>
+    </InstallEventHandler>
+    <InstallEventHandler>
+      <ArtifactId>1042978</ArtifactId>
+      <AssemblyArtifactId>2275510</AssemblyArtifactId>
+      <Name>kCura.IntegrationPoints.EventHandlers.Installers.SecretStoreUninstaller</Name>
+      <Guid>cfb90708-63cb-4c9c-a0ae-bbcfcde1e07e</Guid>
+      <Guids>c26aaba3-3274-4143-ac8c-108469d71951</Guids>
+      <ExecutionType>12</ExecutionType>
+      <Order>26</Order>
+      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
+      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <RunTarget>0</RunTarget>
+    </InstallEventHandler>
+    <InstallEventHandler>
+      <ArtifactId>1042979</ArtifactId>
+      <AssemblyArtifactId>2275510</AssemblyArtifactId>
+      <Name>kCura.IntegrationPoints.EventHandlers.Installers.Uninstaller</Name>
+      <Guid>55b133df-a0b6-4755-aa05-11aa2a982b46</Guid>
+      <Guids>617e1be4-d8d8-47bc-94e9-4855d9a9a24f</Guids>
+      <ExecutionType>12</ExecutionType>
+      <Order>20</Order>
+      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
+      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <RunTarget>0</RunTarget>
+    </InstallEventHandler>
+    <InstallEventHandler>
+      <ArtifactId>1042980</ArtifactId>
+      <AssemblyArtifactId>2275510</AssemblyArtifactId>
+      <Name>kCura.IntegrationPoints.EventHandlers.IntegrationPoints.DataTransferLocationMigrationEventHandler</Name>
+      <Guid>d9f2468c-9480-4e70-9ac7-837e2afd3237</Guid>
+      <Guids>14b23358-574e-4062-b89e-78e3b82aeb4f</Guids>
+      <ExecutionType>14</ExecutionType>
+      <Order>80</Order>
+      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
+      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <RunTarget>0</RunTarget>
+    </InstallEventHandler>
+    <InstallEventHandler>
+      <ArtifactId>1042981</ArtifactId>
+      <AssemblyArtifactId>2275510</AssemblyArtifactId>
+      <Name>kCura.IntegrationPoints.EventHandlers.IntegrationPoints.IntegrationPointTypesMigrationEventHandler</Name>
+      <Guid>bc67bb8a-5c10-4559-a7cf-765556bd5748</Guid>
+      <Guids>7ffd0816-7cbe-49b9-b5c9-2f9618669448</Guids>
+      <ExecutionType>14</ExecutionType>
+      <Order>70</Order>
+      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
+      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <RunTarget>0</RunTarget>
+    </InstallEventHandler>
+    <InstallEventHandler>
+      <ArtifactId>1042982</ArtifactId>
+      <AssemblyArtifactId>2275510</AssemblyArtifactId>
+      <Name>kCura.IntegrationPoints.EventHandlers.IntegrationPoints.SourceProvidersMigrationEventHandler</Name>
+      <Guid>0846cffc-757d-4f19-a439-24510012ccbe</Guid>
+      <Guids>c658ca09-9e6e-4d46-88d1-9e5e4e475b78</Guids>
+      <ExecutionType>14</ExecutionType>
+      <Order>60</Order>
+      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
+      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <RunTarget>0</RunTarget>
+    </InstallEventHandler>
+    <InstallEventHandler>
+      <ArtifactId>1042983</ArtifactId>
+      <AssemblyArtifactId>2275510</AssemblyArtifactId>
+      <Name>kCura.IntegrationPoints.EventHandlers.Installers.SecretStorePostWorkspaceCreateEventHandler</Name>
+      <Guid>09854211-85c1-4360-adae-ced54096d86a</Guid>
+      <Guids>811a82c5-e23a-4dc9-9c73-1b546c8be451</Guids>
+      <ExecutionType>14</ExecutionType>
+      <Order>95</Order>
+      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
+      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <RunTarget>0</RunTarget>
+    </InstallEventHandler>
+    <InstallEventHandler>
+      <ArtifactId>1042984</ArtifactId>
+      <AssemblyArtifactId>2275510</AssemblyArtifactId>
+      <Name>kCura.IntegrationPoints.EventHandlers.Installers.RegisterDataTransferLocationInstaller</Name>
+      <Guid>f391252a-fd72-4ef4-b323-650c70a66b81</Guid>
+      <Guids>218a788c-b903-410e-8a25-dce3d76fb620</Guids>
+      <ExecutionType>8</ExecutionType>
+      <Order>20</Order>
+      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
+      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <RunTarget>0</RunTarget>
+    </InstallEventHandler>
+    <InstallEventHandler>
+      <ArtifactId>1042985</ArtifactId>
+      <AssemblyArtifactId>2275510</AssemblyArtifactId>
+      <Name>kCura.IntegrationPoints.EventHandlers.Installers.RegisterImportProvider</Name>
+      <Guid>01e26cbc-98ca-48a6-942e-fd546e2d5f7e</Guid>
+      <Guids>0bf7dde0-3513-4ac4-8d94-edfd01b31ebc</Guids>
+      <ExecutionType>8</ExecutionType>
+      <Order>4</Order>
+      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
+      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <RunTarget>0</RunTarget>
+    </InstallEventHandler>
+    <InstallEventHandler>
+      <ArtifactId>1042986</ArtifactId>
+      <AssemblyArtifactId>2275510</AssemblyArtifactId>
+      <Name>kCura.IntegrationPoints.EventHandlers.Installers.RegisterIntegrationPointTypeInstaller</Name>
+      <Guid>28d0fb0a-3ce9-44a3-9774-3ccc9dd57870</Guid>
+      <Guids>6e246884-445c-4b5d-855d-a12fc8eb1d03</Guids>
+      <ExecutionType>8</ExecutionType>
+      <Order>6</Order>
+      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
+      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <RunTarget>0</RunTarget>
+    </InstallEventHandler>
+    <InstallEventHandler>
+      <ArtifactId>1042987</ArtifactId>
+      <AssemblyArtifactId>2275510</AssemblyArtifactId>
+      <Name>kCura.IntegrationPoints.EventHandlers.Installers.RemoveUnusedEventHandlers</Name>
+      <Guid>1a4c2ec1-079e-4f8f-8fc8-1358627617de</Guid>
+      <Guids>4f15f975-8c12-47c0-a0ae-ac504f7d960b</Guids>
+      <ExecutionType>8</ExecutionType>
+      <Order>8</Order>
+      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
+      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <RunTarget>0</RunTarget>
+    </InstallEventHandler>
+    <InstallEventHandler>
+      <ArtifactId>1042988</ArtifactId>
+      <AssemblyArtifactId>2275510</AssemblyArtifactId>
+      <Name>kCura.IntegrationPoints.EventHandlers.Installers.RegisterDocumentTransferProvider</Name>
+      <Guid>93057ef0-9b7e-4fc5-9691-7f97e98cc703</Guid>
+      <Guids>a8321700-8c06-4bb2-96fb-c89654a28d49</Guids>
+      <ExecutionType>8</ExecutionType>
+      <Order>5</Order>
+      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
+      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <RunTarget>0</RunTarget>
+    </InstallEventHandler>
+    <InstallEventHandler>
+      <ArtifactId>1042989</ArtifactId>
+      <AssemblyArtifactId>2275510</AssemblyArtifactId>
+      <Name>kCura.IntegrationPoints.EventHandlers.Installers.RegisterFtpProvider</Name>
+      <Guid>d1578a7b-e662-4dee-bd59-c224e27f5296</Guid>
+      <Guids>48209217-c944-497e-9b9d-2394ff7e57b9</Guids>
+      <ExecutionType>8</ExecutionType>
+      <Order>3</Order>
+      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
+      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <RunTarget>0</RunTarget>
+    </InstallEventHandler>
+    <InstallEventHandler>
+      <ArtifactId>1042990</ArtifactId>
+      <AssemblyArtifactId>2275510</AssemblyArtifactId>
+      <Name>kCura.IntegrationPoints.EventHandlers.Installers.RunEveryTimeInstaller</Name>
+      <Guid>fb52b882-22d3-481f-b000-b976c13baf49</Guid>
+      <Guids>7a94acce-1fe5-493b-83d9-0931ef4b5539</Guids>
+      <ExecutionType>8</ExecutionType>
+      <Order>10</Order>
+      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
+      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <RunTarget>0</RunTarget>
+    </InstallEventHandler>
+    <InstallEventHandler>
+      <ArtifactId>1042991</ArtifactId>
+      <AssemblyArtifactId>2275510</AssemblyArtifactId>
+      <Name>kCura.IntegrationPoints.EventHandlers.Installers.RegisterLDAPInstaller</Name>
+      <Guid>02ec5d64-208a-44fb-a5e3-c3a1103e7da7</Guid>
+      <Guids>c1c3cc2f-7a23-4106-a0cd-2ce306571e60</Guids>
+      <ExecutionType>8</ExecutionType>
+      <Order>1</Order>
+      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
+      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <RunTarget>0</RunTarget>
+    </InstallEventHandler>
+    <InstallEventHandler>
+      <ArtifactId>1042992</ArtifactId>
+      <AssemblyArtifactId>2275510</AssemblyArtifactId>
+      <Name>kCura.IntegrationPoints.EventHandlers.Installers.SetHasErrorsField</Name>
+      <Guid>5e882ee9-9e9d-4afa-9b2c-eac6c749a8d4</Guid>
+      <Guids>585c6a24-4a8c-44bd-a645-d4580f51f967</Guids>
+      <ExecutionType>10</ExecutionType>
+      <Order>80</Order>
+      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
+      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <RunTarget>0</RunTarget>
+    </InstallEventHandler>
+    <InstallEventHandler>
+      <ArtifactId>1042993</ArtifactId>
+      <AssemblyArtifactId>2275510</AssemblyArtifactId>
+      <Name>kCura.IntegrationPoints.EventHandlers.Installers.SetTypeOfExportDefaultValue</Name>
+      <Guid>b8284448-09bc-4bca-b81a-6fe154da42d7</Guid>
+      <Guids>52d10a6e-d588-438a-be83-2815d7348889</Guids>
+      <ExecutionType>10</ExecutionType>
+      <Order>140</Order>
+      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
+      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <RunTarget>0</RunTarget>
     </InstallEventHandler>
   </InstallEventHandlers>
   <SavedSearches />
