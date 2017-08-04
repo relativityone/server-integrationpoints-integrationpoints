@@ -22,6 +22,7 @@ using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers.FileNaming;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
+using kCura.WinEDDS;
 using kCura.WinEDDS.Exporters;
 using NSubstitute;
 using NUnit.Framework;
@@ -83,6 +84,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 		private static void RegisterConfig(ConfigSettings configSettings, WindsorContainer windsorContainer)
 		{
 			windsorContainer.Register(Component.For<ConfigSettings>().Instance(configSettings).LifestyleTransient());
+
+			var exportConfig = Substitute.For<IExportConfig>();
+			exportConfig.ExportBatchSize.Returns(1000);
+			exportConfig.ExportThreadCount.Returns(2);
+			windsorContainer.Register(Component.For<IExportConfig>().Instance(exportConfig).LifestyleTransient());
 
 			var configMock = Substitute.For<IConfig>();
 			configMock.WebApiPath.Returns(SharedVariables.RelativityWebApiUrl);

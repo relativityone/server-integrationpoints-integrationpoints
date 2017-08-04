@@ -17,7 +17,7 @@
 	<property name="source.dependency.kCuraAppsCommonData.directory" value="${source.packages.directory}\kCura.Apps.Common.Data.2.1.3\lib\net462" />
 	<property name="source.dependency.kCuraAppsCommonUtils.directory" value="${source.packages.directory}\kCura.Apps.Common.Utils.2.1.3\lib\net462" />
 	<property name="source.dependency.Polly.directory" value="${source.packages.directory}\Polly.5.1.0\lib\net45" />
-	<property name="relativityDependencyVersion" value="9.5.218.64" />
+	<property name="relativityDependencyVersion" value="9.5.231.8" />
 	
 	<!-- Log properties -->
 	<echo message="Root: ${root}" />

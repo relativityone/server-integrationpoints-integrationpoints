@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 		private ExtendedExporter Create(ExtendedExportFile exportFile, Controller processController, IServiceFactory serviceFactory,
 			ILoadFileHeaderFormatterFactory loadFileFormatterFactory, bool nameTextAndNativesAfterBegBates, IFileNameProvider fileNameProvider)
 		{
-			return new ExtendedExporter(exportFile, processController, serviceFactory, loadFileFormatterFactory)
+			return new ExtendedExporter(exportFile, processController, serviceFactory, loadFileFormatterFactory, new ExportConfig())
 			{
 				NameTextAndNativesAfterBegBates = nameTextAndNativesAfterBegBates,
 				FileHelper = new LongPathFileHelper(),

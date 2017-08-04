@@ -28,67 +28,69 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibrary
 {
-    [TestFixture]
-    public class FactoryConfigBuilderTests : TestBase
-    {
-        private FactoryConfigBuilder _factory;
-        private ExportDataContext _exportDataContext;
-        private JobHistoryErrorServiceProvider _jobHistoryErrorServiceProvider;
-        private IHelper _helper;
-        private ICaseServiceContext _context;
-        private IJobHistoryErrorService _jobHistoryErrorService;
-        private IInstanceSettingRepository _instanceSettingRepository;
-        private IFileNameProvidersDictionaryBuilder _fileNameProvidersDictionaryBuilder;
+	[TestFixture]
+	public class FactoryConfigBuilderTests : TestBase
+	{
+		private FactoryConfigBuilder _factory;
+		private ExportDataContext _exportDataContext;
+		private JobHistoryErrorServiceProvider _jobHistoryErrorServiceProvider;
+		private IHelper _helper;
+		private ICaseServiceContext _context;
+		private IJobHistoryErrorService _jobHistoryErrorService;
+		private IInstanceSettingRepository _instanceSettingRepository;
+		private IFileNameProvidersDictionaryBuilder _fileNameProvidersDictionaryBuilder;
+		private IExportConfig _exportConfig;
 
-        [SetUp]
-        public override void SetUp()
-        {
-            _helper = Substitute.For<IHelper>();
-            _context = Substitute.For<ICaseServiceContext>();
-            _jobHistoryErrorService = new JobHistoryErrorService(_context, _helper);
-            _jobHistoryErrorServiceProvider = new JobHistoryErrorServiceProvider(_jobHistoryErrorService);
-            _instanceSettingRepository = Substitute.For<IInstanceSettingRepository>();
-            _fileNameProvidersDictionaryBuilder = new FileNameProvidersDictionaryBuilder();
+		[SetUp]
+		public override void SetUp()
+		{
+			_helper = Substitute.For<IHelper>();
+			_exportConfig = Substitute.For<IExportConfig>();
+			_context = Substitute.For<ICaseServiceContext>();
+			_jobHistoryErrorService = new JobHistoryErrorService(_context, _helper);
+			_jobHistoryErrorServiceProvider = new JobHistoryErrorServiceProvider(_jobHistoryErrorService);
+			_instanceSettingRepository = Substitute.For<IInstanceSettingRepository>();
+			_fileNameProvidersDictionaryBuilder = new FileNameProvidersDictionaryBuilder();
 
-            _exportDataContext = new ExportDataContext
-            {
-                ExportFile = new ExtendedExportFile(1)
-                {
-                    AppendOriginalFileName = true
-                },
-                Settings = new ExportSettings()
-                {
-                    ArtifactTypeId = 1
-                }
-            };
+			_exportDataContext = new ExportDataContext
+			{
+				ExportFile = new ExtendedExportFile(1)
+				{
+					AppendOriginalFileName = true
+				},
+				Settings = new ExportSettings()
+				{
+					ArtifactTypeId = 1
+				}
+			};
 
-            _factory = new FactoryConfigBuilder(_helper, _jobHistoryErrorServiceProvider, _instanceSettingRepository,
-                _fileNameProvidersDictionaryBuilder);
-        }
+			_factory = new FactoryConfigBuilder(_helper, _jobHistoryErrorServiceProvider, _instanceSettingRepository,
+				_fileNameProvidersDictionaryBuilder, _exportConfig);
+		}
 
-        [Test]
-        [TestCase("True", typeof(CoreServiceFactory))]
-        [TestCase("False", typeof(WebApiServiceFactory))]
-        [TestCase("invalid boolean string", typeof(WebApiServiceFactory))]
-        [TestCase("", typeof(WebApiServiceFactory))]
-        public void ShouldCreateCoreServiceFactoryWhenFlagSetToTrue(string useCoreApiConfig, Type type)
-        {
-            var config = _factory.SetupServiceFactory(_exportDataContext, useCoreApiConfig);
-            Assert.IsInstanceOf(type, config);
-        }
+		[Test]
+		[TestCase("True", typeof(CoreServiceFactory))]
+		[TestCase("False", typeof(WebApiServiceFactory))]
+		[TestCase("invalid boolean string", typeof(WebApiServiceFactory))]
+		[TestCase("", typeof(WebApiServiceFactory))]
+		public void ShouldCreateCoreServiceFactoryWhenFlagSetToTrue(string useCoreApiConfig, Type type)
+		{
+			var config = _factory.SetupServiceFactory(_exportDataContext, useCoreApiConfig);
+			Assert.IsInstanceOf(type, config);
+		}
 
-        [Test]
-        public void ShouldCreateCompleteFactoryConfig()
-        {
-            var factoryConfig = _factory.BuildFactoryConfig(_exportDataContext);
-            Assert.IsNotNull(factoryConfig.Controller);
-            Assert.IsNotNull(factoryConfig.FileNameProvider);
-            Assert.AreSame(factoryConfig.JobStopManager, _jobHistoryErrorServiceProvider?.JobHistoryErrorService.JobStopManager);
-            Assert.IsNotNull(factoryConfig.LoadFileFormatterFactory);
-            Assert.IsNotNull(factoryConfig.ServiceFactory);
-            Assert.AreEqual(factoryConfig.NameTextAndNativesAfterBegBates, _exportDataContext.ExportFile.AreSettingsApplicableForProdBegBatesNameCheck());
-        }
+		[Test]
+		public void ShouldCreateCompleteFactoryConfig()
+		{
+			var factoryConfig = _factory.BuildFactoryConfig(_exportDataContext);
+			Assert.IsNotNull(factoryConfig.Controller);
+			Assert.IsNotNull(factoryConfig.FileNameProvider);
+			Assert.AreSame(factoryConfig.JobStopManager, _jobHistoryErrorServiceProvider?.JobHistoryErrorService.JobStopManager);
+			Assert.IsNotNull(factoryConfig.LoadFileFormatterFactory);
+			Assert.IsNotNull(factoryConfig.ServiceFactory);
+			Assert.AreEqual(factoryConfig.NameTextAndNativesAfterBegBates, _exportDataContext.ExportFile.AreSettingsApplicableForProdBegBatesNameCheck());
+			Assert.IsNotNull(factoryConfig.ExportConfig);
+		}
 
-
-    }
+	}
 }

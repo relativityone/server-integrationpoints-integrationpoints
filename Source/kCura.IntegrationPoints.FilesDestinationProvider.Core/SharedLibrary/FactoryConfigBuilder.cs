@@ -21,19 +21,22 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 		private readonly IInstanceSettingRepository _instanceSettingRepository;
 		private readonly JobHistoryErrorServiceProvider _jobHistoryErrorServiceProvider;
 		private readonly IFileNameProvidersDictionaryBuilder _fileNameProvidersDictionaryBuilder;
+		private readonly IExportConfig _exportConfig;
 
 		public FactoryConfigBuilder(IHelper helper, JobHistoryErrorServiceProvider jobHistoryErrorServiceProvider,
-			IInstanceSettingRepository instanceSettingRepository, IFileNameProvidersDictionaryBuilder fileNameProvidersDictionaryBuilder)
+			IInstanceSettingRepository instanceSettingRepository, IFileNameProvidersDictionaryBuilder fileNameProvidersDictionaryBuilder,
+			IExportConfig exportConfig)
 		{
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ExtendedExporterFactory>();
 			_jobHistoryErrorServiceProvider = jobHistoryErrorServiceProvider;
 			_instanceSettingRepository = instanceSettingRepository;
 			_fileNameProvidersDictionaryBuilder = fileNameProvidersDictionaryBuilder;
+			_exportConfig = exportConfig;
 		}
 
 		public ExporterFactoryConfig BuildFactoryConfig(ExportDataContext exportDataContext)
 		{
-			ExporterFactoryConfig config = new ExporterFactoryConfig();
+			var config = new ExporterFactoryConfig();
 			var useCoreApiConfig = _instanceSettingRepository.GetConfigurationValue(Constants.INTEGRATION_POINT_INSTANCE_SETTING_SECTION,
 				Constants.REPLACE_WEB_API_WITH_EXPORT_CORE);
 			config.JobStopManager = _jobHistoryErrorServiceProvider?.JobHistoryErrorService.JobStopManager;
@@ -41,6 +44,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 			config.ServiceFactory = SetupServiceFactory(exportDataContext, useCoreApiConfig);
 			config.LoadFileFormatterFactory = new ExportFileFormatterFactory(new ExtendedFieldNameProvider(exportDataContext.Settings));
 			config.NameTextAndNativesAfterBegBates = exportDataContext.ExportFile.AreSettingsApplicableForProdBegBatesNameCheck();
+			config.ExportConfig = _exportConfig;
 			IDictionary<ExportNativeWithFilenameFrom, IFileNameProvider> fileNameProvidersDictionary = _fileNameProvidersDictionaryBuilder.Build(exportDataContext);
 
 			var fileNameProviderContainerFactory = new FileNameProviderContainerFactory(fileNameProvidersDictionary);

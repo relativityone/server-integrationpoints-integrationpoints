@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Services;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation;
+using kCura.WinEDDS;
 using kCura.WinEDDS.Exporters;
 using IExporterFactory = kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary.IExporterFactory;
 
@@ -42,7 +43,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 
 			container.Register(Component.For<IJobInfoFactory>().ImplementedBy<JobInfoFactory>().LifestyleTransient());
 			container.Register(Component.For<IDirectoryHelper>().ImplementedBy<WinEDDS.Core.IO.LongPathDirectoryHelper>().LifestyleTransient());
-			
+			container.Register(Component.For<IExportConfig>().ImplementedBy<LoadFileExportConfig>().LifestyleTransient());
+
 		}
 	}
 }

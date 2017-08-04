@@ -28,6 +28,7 @@ using kCura.IntegrationPoints.Email;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
+using kCura.WinEDDS;
 using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
@@ -245,6 +246,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		{
 			// Arrange
 			ICaseServiceContext caseServiceContext = Substitute.For<ICaseServiceContext>();
+			IExportConfig exportConfig = Substitute.For<IExportConfig>();
 			IRSAPIService rsapiService = Substitute.For<IRSAPIService>();
 			IGenericLibrary<Data.IntegrationPoint> integrationPointLibrary = Substitute.For<IGenericLibrary<Data.IntegrationPoint>>();
             var sqlServiceFactory = Substitute.For<ISqlServiceFactory>();
@@ -264,6 +266,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			windsorContainer.Register(Component.For<ICaseServiceContext>().Instance(caseServiceContext));
             windsorContainer.Register(Component.For<ISqlServiceFactory>().Instance(sqlServiceFactory));
             windsorContainer.Register(Component.For<IServiceManagerProvider>().Instance(_serviceManagerProvider));
+			windsorContainer.Register(Component.For<IExportConfig>().Instance(exportConfig));
 
 			var taskFactory = new TaskFactory(_helper, windsorContainer);
 			ScheduleQueueAgentBase agentBase = new TestAgentBase(Guid.NewGuid());
