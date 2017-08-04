@@ -14,32 +14,27 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
 {
     public class DelimitedFileParser : IDataReader, IParser
     {
-        internal bool _disposed;
-        internal TextFieldParser _parser;
-        internal Stream _fileStream;
-        internal TextReader _textReader;
+        internal bool Disposed;
+        internal TextFieldParser Parser;
+        internal Stream FileStream;
+        internal TextReader TextReader;
 
-        internal String _fileLocation;
-        internal String[] _columns;
-        internal String[] _currentLine;
-        internal Int32 _lineNumber = 0;
+        internal string FileLocation;
+        internal string[] Columns;
+        internal string[] CurrentLine;
+        internal int LineNumber = 0;
 
-        public int RecordsAffected
-        {
-            get { return _lineNumber; }
-        }
-        public bool IsClosed
-        {
-            get { return _disposed; }
-        }
+        public int RecordsAffected => LineNumber;
 
-        public DelimitedFileParser(string fileLocation, ParserOptions parserOptions)
+	    public bool IsClosed => Disposed;
+
+	    public DelimitedFileParser(string fileLocation, ParserOptions parserOptions)
         {
-            _fileLocation = fileLocation;
+            FileLocation = fileLocation;
             if (SourceExists())
             {
-                _parser = new TextFieldParser(_fileLocation);
-                SetParserOptions(_parser, parserOptions);
+                Parser = new TextFieldParser(FileLocation);
+                SetParserOptions(Parser, parserOptions);
             }
 
             if (parserOptions.FirstLineContainsColumnNames)
@@ -50,11 +45,11 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
 
         public DelimitedFileParser(Stream stream, ParserOptions parserOptions)
         {
-            _fileStream = stream;
+            FileStream = stream;
             if (SourceExists())
             {
-                _parser = new TextFieldParser(_fileStream, Encoding.UTF8, true);
-                SetParserOptions(_parser, parserOptions);
+                Parser = new TextFieldParser(FileStream, Encoding.UTF8, true);
+                SetParserOptions(Parser, parserOptions);
             }
             if (parserOptions.FirstLineContainsColumnNames)
             {
@@ -62,15 +57,16 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
             }
         }
 
+		//this one is not tested
         public DelimitedFileParser(TextReader reader, ParserOptions parserOptions, List<string> columnList)
         {
-            _textReader = reader;
+            TextReader = reader;
             if (SourceExists())
             {
-                _parser = new TextFieldParser(_textReader);
-                SetParserOptions(_parser, parserOptions);
+                Parser = new TextFieldParser(TextReader);
+                SetParserOptions(Parser, parserOptions);
             }
-            _columns = columnList.ToArray();
+            Columns = columnList.ToArray();
         }
 
         private void SetParserOptions(TextFieldParser parser, ParserOptions parserOptions)
@@ -81,36 +77,36 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
             parser.TrimWhiteSpace = parserOptions.HasFieldsEnclosedInQuotes;
         }
 
-        public Boolean SourceExists()
+        public bool SourceExists()
         {
-            if ((_fileLocation != null && !new FileInfo(_fileLocation).Exists) && _fileStream == null && _textReader == null)
+            if ((FileLocation != null && !new FileInfo(FileLocation).Exists) && FileStream == null && TextReader == null)
             {
                 throw new Exceptions.CantAccessSourceException();
             }
             return true;
         }
 
-        public IEnumerable<String> ParseColumns()
+        public IEnumerable<string> ParseColumns()
         {
-            String[] retVal = null;
+            string[] retVal = null;
             if (SourceExists())
             {
-                if (_columns != null)
+                if (Columns != null)
                 {
-                    retVal = _columns;
+                    retVal = Columns;
                 }
                 else
                 {
                     if (NextResult())
                     {
-                        _columns = _currentLine;
+                        Columns = CurrentLine;
                         //Make sure headers exist in file
-                        if (_columns == null || _columns.Length < 1)
+                        if (Columns == null || Columns.Length < 1)
                         {
                             throw new Exceptions.NoColumnsExcepetion();
                         }
-                        ValidateColumns(_columns);
-                        retVal = _columns;
+                        ValidateColumns(Columns);
+                        retVal = Columns;
                     }
                     else
                     {
@@ -121,20 +117,20 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
             return retVal;
         }
 
-        internal void ValidateColumns(IEnumerable<String> columns)
+        internal void ValidateColumns(IEnumerable<string> columns)
         {
             //Validate Blank Columns
-            foreach (var column in columns)
+            foreach (string column in columns)
             {
-                if (String.IsNullOrWhiteSpace(column))
+                if (string.IsNullOrWhiteSpace(column))
                 {
                     throw new Exceptions.BlankColumnExcepetion();
                 }
             }
 
             //Validate Duplicates
-            var destination = new List<String>();
-            foreach (var column in columns)
+            var destination = new List<string>();
+            foreach (string column in columns)
             {
                 if (!destination.Contains(column))
                 {
@@ -152,30 +148,27 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
             return this;
         }
 
-        public int Depth
-        {
-            get { return 1; }
-        }
+        public int Depth => 1;
 
-        public bool Read()
+	    public bool Read()
         {
             return NextResult();
         }
 
         public bool NextResult()
         {
-            bool retVal = false;
-            if (!_parser.EndOfData)
+            var retVal = false;
+            if (!Parser.EndOfData)
             {
-                _lineNumber++;
-                string[] data = _parser.ReadFields();
+                LineNumber++;
+                string[] data = Parser.ReadFields();
                 if (data != null)
                 {
-                    if (_columns != null && data.Length != _columns.Length)
+                    if (Columns != null && data.Length != Columns.Length)
                     {
-                        throw new Exceptions.NumberOfColumnsNotEqualToNumberOfDataValuesException(_lineNumber);
+                        throw new Exceptions.NumberOfColumnsNotEqualToNumberOfDataValuesException(LineNumber);
                     }
-                    _currentLine = data;
+                    CurrentLine = data;
                     retVal = true;
                 }
             }
@@ -189,112 +182,109 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
 
         public DataTable GetSchemaTable()
         {
-            DataTable t = new DataTable();
+            var t = new DataTable();
             t.Columns.Add("Name");
-            for (int i = 0; i < _columns.Length; i++)
+            for (var i = 0; i < Columns.Length; i++)
             {
                 DataRow row = t.NewRow();
-                row["Name"] = _columns[i];
+                row["Name"] = Columns[i];
                 t.Rows.Add(row);
             }
             return t;
         }
 
-        public int FieldCount
-        {
-            get { return _columns.Length; }
-        }
+        public int FieldCount => Columns.Length;
 
-        public bool GetBoolean(int i)
+	    public bool GetBoolean(int i)
         {
-            return Boolean.Parse(_currentLine[i]);
+            return bool.Parse(CurrentLine[i]);
         }
 
         public byte GetByte(int i)
         {
-            return Byte.Parse(_currentLine[i]);
+            return byte.Parse(CurrentLine[i]);
         }
 
         public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public char GetChar(int i)
         {
-            return Char.Parse(_currentLine[i]);
+            return char.Parse(CurrentLine[i]);
         }
 
         public long GetChars(int i, long fieldoffset, char[] buffer, int bufferoffset, int length)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public IDataReader GetData(int i)
         {
-            return (IDataReader)this;
-        }
+			throw new NotSupportedException();
+		}
 
         public string GetDataTypeName(int i)
         {
-            throw new NotImplementedException();
-        }
+			throw new NotSupportedException();
+		}
 
         public DateTime GetDateTime(int i)
         {
-            return DateTime.Parse(_currentLine[i]);
+            return DateTime.Parse(CurrentLine[i]);
         }
 
         public decimal GetDecimal(int i)
         {
-            return Decimal.Parse(_currentLine[i]);
+            return decimal.Parse(CurrentLine[i]);
         }
 
         public double GetDouble(int i)
         {
-            return Double.Parse(_currentLine[i]);
+            return double.Parse(CurrentLine[i]);
         }
 
         public Type GetFieldType(int i)
         {
-            return typeof(String);
+            return (CurrentLine[i]).GetType();
         }
 
         public float GetFloat(int i)
         {
-            return float.Parse(_currentLine[i]);
+            return float.Parse(CurrentLine[i]);
         }
 
         public Guid GetGuid(int i)
         {
-            return Guid.Parse(_currentLine[i]);
+            return Guid.Parse(CurrentLine[i]);
         }
 
         public short GetInt16(int i)
         {
-            return Int16.Parse(_currentLine[i]);
+            return short.Parse(CurrentLine[i]);
         }
 
         public int GetInt32(int i)
         {
-            return Int32.Parse(_currentLine[i]);
+            return int.Parse(CurrentLine[i]);
         }
 
         public long GetInt64(int i)
         {
-            return Int64.Parse(_currentLine[i]);
+            return long.Parse(CurrentLine[i]);
         }
 
         public string GetName(int i)
         {
-            return _columns[i];
+            return Columns[i];
         }
 
         public int GetOrdinal(string name)
         {
             int result = -1;
-            for (int i = 0; i < _columns.Length; i++)
-                if (_columns[i] == name)
+            for (var i = 0; i < Columns.Length; i++)
+                if (Columns[i] == name)
                 {
                     result = i;
                     break;
@@ -304,55 +294,43 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
 
         public string GetString(int i)
         {
-            return _currentLine[i];
+            return CurrentLine[i];
         }
 
         public object GetValue(int i)
         {
-            return _currentLine[i];
+            return CurrentLine[i];
         }
 
         public int GetValues(object[] values)
         {
-            for (var i = 0; i < _currentLine.Length; i++)
+            for (var i = 0; i < CurrentLine.Length; i++)
             {
-                values[i] = _currentLine[i];
+                values[i] = CurrentLine[i];
             }
             return 1;
         }
 
         public bool IsDBNull(int i)
         {
-            return string.IsNullOrWhiteSpace(_currentLine[i]);
+            return string.IsNullOrWhiteSpace(CurrentLine[i]);
         }
 
-        public object this[string name]
-        {
-            get { return _currentLine[GetOrdinal(name)]; }
-        }
+        public object this[string name] => CurrentLine[GetOrdinal(name)];
 
-        public object this[int i]
-        {
-            get { return GetValue(i); }
-        }
+	    public object this[int i] => GetValue(i);
 
-        protected virtual void Dispose(bool disposing)
+	    protected virtual void Dispose(bool disposing)
         {
-            if (!_disposed)
+            if (!Disposed)
             {
                 if (disposing)
                 {
-                    if (_fileStream != null)
-                    {
-                        _fileStream.Dispose();
-                    }
-                    if (_parser != null)
-                    {
-                        _parser.Dispose();
-                    }
+	                FileStream?.Dispose();
+	                Parser?.Dispose();
                 }
             }
-            _disposed = true;
+            Disposed = true;
         }
 
         public void Dispose()

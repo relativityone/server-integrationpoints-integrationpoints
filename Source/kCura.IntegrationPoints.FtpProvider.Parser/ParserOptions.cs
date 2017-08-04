@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
         /// <summary>
         /// Defines the delimiters for a text file.
         /// </summary>
-        public String[] Delimiters { get; set; }
+        public string[] Delimiters { get; set; }
 
         /// <summary>
         /// Denotes whether fields are enclosed in quotation marks when a delimited file is being parsed.
@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
             return new ParserOptions()
             {
                 TextFieldType = FieldType.Delimited,
-                Delimiters = new String[] { Constants.Delimiter },
+                Delimiters = new [] { Constants.Delimiter },
                 HasFieldsEnclosedInQuotes = true,
                 TrimWhiteSpace = true,
                 FirstLineContainsColumnNames = true
