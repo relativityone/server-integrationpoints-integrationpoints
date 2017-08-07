@@ -506,6 +506,7 @@
           <Assembly>lib\Newtonsoft.Json.dll</Assembly>
           <Assembly>lib\Renci.SshNet.dll</Assembly>
           <Assembly>lib\SystemInterface.dll</Assembly>
+          <Assembly>lib\ZetaLongPaths.dll</Assembly>
         </Assemblies>
         <ResourceFiles />
         <CustomPages>

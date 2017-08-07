@@ -2147,10 +2147,16 @@
       <Name>kCura.Relativity.DataReaderClient.dll</Name>
       <Notes />
     </Assembly>
+    <Assembly>
+      <ArtifactId>2275606</ArtifactId>
+      <Keywords />
+      <Name>ZetaLongPaths.dll</Name>
+      <Notes />
+    </Assembly>
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2017-08-03T14:08:52.214284Z</ExtractionDate>
+  <ExtractionDate>2017-08-07T13:44:42.1319834Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -11916,9 +11922,9 @@
   </Objects>
   <ParentTabs />
   <RelativityVersion>9.5.224.9</RelativityVersion>
-  <Version>9.5.0.23</Version>
+  <Version>9.5.0.24</Version>
   <TabDisplay>true</TabDisplay>
-  <OriginSignature>34ce6777-a06d-4873-aec0-667e7f876b76</OriginSignature>
+  <OriginSignature>822363b1-5445-471e-af4f-61384a89304f</OriginSignature>
   <MasterScripts />
   <ApplicationScripts />
   <CustomPages>
@@ -11938,7 +11944,7 @@
     <AgentType>
       <ArtifactId>1039273</ArtifactId>
       <Guid>08c0ce2d-8191-4e8f-b037-899ceaee493d</Guid>
-      <ApplicationVersion>9.5.0.20</ApplicationVersion>
+      <ApplicationVersion>9.5.0.24</ApplicationVersion>
       <AgentTypeName>Integration Points Agent</AgentTypeName>
       <FullNameSpace>kCura.IntegrationPoints.Agent.Agent</FullNameSpace>
       <DefaultInterval>5</DefaultInterval>
@@ -11958,7 +11964,7 @@
     <AgentType>
       <ArtifactId>1042899</ArtifactId>
       <Guid>f37752eb-d204-4f7d-9d6b-f55e64991846</Guid>
-      <ApplicationVersion>9.5.0.21</ApplicationVersion>
+      <ApplicationVersion>9.5.0.24</ApplicationVersion>
       <AgentTypeName>Integration Points Manager</AgentTypeName>
       <FullNameSpace>kCura.IntegrationPoints.Manager.IntegrationPointsManagerAgent</FullNameSpace>
       <DefaultInterval>3600</DefaultInterval>
@@ -11987,7 +11993,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>90</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <ApplicationVersion>9.5.0.24</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -11999,7 +12005,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>30</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <ApplicationVersion>9.5.0.24</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12011,7 +12017,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>130</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <ApplicationVersion>9.5.0.24</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12023,7 +12029,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>7</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <ApplicationVersion>9.5.0.24</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12035,7 +12041,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>120</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <ApplicationVersion>9.5.0.24</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12047,7 +12053,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>110</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <ApplicationVersion>9.5.0.24</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12059,7 +12065,7 @@
       <ExecutionType>18</ExecutionType>
       <Order>25</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <ApplicationVersion>9.5.0.24</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12071,7 +12077,7 @@
       <ExecutionType>12</ExecutionType>
       <Order>26</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <ApplicationVersion>9.5.0.24</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12083,7 +12089,7 @@
       <ExecutionType>12</ExecutionType>
       <Order>20</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <ApplicationVersion>9.5.0.24</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12095,7 +12101,7 @@
       <ExecutionType>14</ExecutionType>
       <Order>80</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <ApplicationVersion>9.5.0.24</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12107,7 +12113,7 @@
       <ExecutionType>14</ExecutionType>
       <Order>70</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <ApplicationVersion>9.5.0.24</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12119,7 +12125,7 @@
       <ExecutionType>14</ExecutionType>
       <Order>60</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <ApplicationVersion>9.5.0.24</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12131,7 +12137,7 @@
       <ExecutionType>14</ExecutionType>
       <Order>95</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <ApplicationVersion>9.5.0.24</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12143,7 +12149,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>20</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <ApplicationVersion>9.5.0.24</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12155,7 +12161,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>4</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <ApplicationVersion>9.5.0.24</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12167,7 +12173,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>6</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <ApplicationVersion>9.5.0.24</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12179,7 +12185,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>8</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <ApplicationVersion>9.5.0.24</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12191,7 +12197,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>5</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <ApplicationVersion>9.5.0.24</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12203,7 +12209,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>3</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <ApplicationVersion>9.5.0.24</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12215,7 +12221,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>10</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <ApplicationVersion>9.5.0.24</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12227,7 +12233,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>1</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <ApplicationVersion>9.5.0.24</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12239,7 +12245,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>80</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <ApplicationVersion>9.5.0.24</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12251,7 +12257,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>140</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.23</ApplicationVersion>
+      <ApplicationVersion>9.5.0.24</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
   </InstallEventHandlers>

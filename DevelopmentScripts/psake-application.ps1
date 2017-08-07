@@ -16,6 +16,7 @@ task copy_libraries {
 	Copy-Item ([System.IO.Path]::Combine($nuget_packages_directory, 'Newtonsoft.Json.6.0.8', 'lib', 'net45', 'Newtonsoft.Json.dll')) $lib_directory
 	Copy-Item ([System.IO.Path]::Combine($nuget_packages_directory, 'SSH.NET.2013.4.7', 'lib', 'net40', 'Renci.SshNet.dll')) $lib_directory
 	Copy-Item ([System.IO.Path]::Combine($nuget_packages_directory, 'SystemWrapper.Interfaces.0.19.0.115', 'lib', 'net45', 'SystemInterface.dll')) $lib_directory
+	Copy-Item ([System.IO.Path]::Combine($nuget_packages_directory, 'ZetaLongPaths.1.0.0.16', 'lib', 'net40-full', 'ZetaLongPaths.dll')) $lib_directory
 }
 
 task get_rapbuilder -precondition { (-not [System.IO.File]::Exists($rapbuilder_exe)) } {
