@@ -12,6 +12,31 @@ using Relativity.Services.Exceptions;
 
 namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 {
+	public class RipUserManger : UserManager
+	{
+		public RipUserManger(ICredentials credentials, CookieContainer cookieContainer) : base(credentials, cookieContainer)
+		{
+		}
+
+		public RipUserManger(ICredentials credentials, CookieContainer cookieContainer, string webServiceUrl) : base(credentials, cookieContainer)
+		{
+			this.Url = string.Format("{0}UserManager.asmx", webServiceUrl);
+		}
+
+		public static NetworkCredential LoginUsernamePassword(string username, string password, CookieContainer cookieContainer,
+			string webServiceUrl)
+		{
+			var networkCred = new NetworkCredential(username, password);
+			var userMgr = new RipUserManger(networkCred, cookieContainer, webServiceUrl);
+
+			if (userMgr.Login(username, password))
+			{
+				return networkCred;
+			}
+			return null;
+		}
+	}
+
 	public class RipFolderManager : FolderManager
 	{
 		public RipFolderManager(ICredentials credentials, CookieContainer cookieContainer, string url) : base(credentials, cookieContainer)

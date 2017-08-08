@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Web.Services;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
@@ -66,7 +67,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				return new WsInstanceInfo
 				{
 					NetworkCredential =
-						LoginHelper.LoginUsernamePassword(_RELATIVITY_BEARER_USERNAME, token, cookieContainer, federatedInstance.WebApiUrl),
+						RipUserManger.LoginUsernamePassword(_RELATIVITY_BEARER_USERNAME, token, cookieContainer, federatedInstance.WebApiUrl),
 					WebServiceUrl = federatedInstance.WebApiUrl
 				};
 			}
