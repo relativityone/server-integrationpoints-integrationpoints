@@ -17,6 +17,7 @@ namespace kCura.IntegrationPoints.Core.Models
 
 		public Scheduler(bool enableScheduler, string scheduleRule)
 		{
+			const string defaultDateFormat = "MM/dd/yyyy";
 			EnableScheduler = enableScheduler;
 
 			var rule = ScheduleRuleBase.Deserialize<PeriodicScheduleRule>(scheduleRule);
@@ -25,11 +26,11 @@ namespace kCura.IntegrationPoints.Core.Models
 
 				if (rule.EndDate.HasValue)
 				{
-					EndDate = rule.EndDate.Value.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture);
+					EndDate = rule.EndDate.Value.ToString(defaultDateFormat, CultureInfo.InvariantCulture);
 				}
 				if (rule.StartDate.HasValue)
 				{
-					StartDate = rule.StartDate.Value.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture);
+					StartDate = rule.StartDate.Value.ToString(defaultDateFormat, CultureInfo.InvariantCulture);
 				}
 				if (rule.OccuranceInMonth.HasValue)
 				{

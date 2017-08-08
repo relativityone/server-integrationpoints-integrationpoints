@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Exceptions;
@@ -123,14 +124,15 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 		protected PeriodicScheduleRule ConvertModelToScheduleRule(IntegrationPointModelBase model)
 		{
+			const string dateFormat = "M/dd/yyyy";
 			var periodicScheduleRule = new PeriodicScheduleRule();
 			DateTime startDate;
-			if (DateTime.TryParse(model.Scheduler.StartDate, out startDate))
+			if (DateTime.TryParseExact(model.Scheduler.StartDate, dateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out startDate))
 			{
 				periodicScheduleRule.StartDate = startDate;
 			}
 			DateTime endDate;
-			if (DateTime.TryParse(model.Scheduler.EndDate, out endDate))
+			if (DateTime.TryParseExact(model.Scheduler.EndDate, dateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out endDate))
 			{
 				periodicScheduleRule.EndDate = endDate;
 			}
