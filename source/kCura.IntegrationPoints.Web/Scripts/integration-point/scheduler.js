@@ -217,34 +217,46 @@
 		}
 	});
 
-	this.startDate = ko.observable(this.options.startDate).extend({
-		date: {
-			message: 'The field Start Date must be a date.'
-		}
-	}).extend({
-		validation: {
+	this.localDateFormat = ko.observable(IP.timeUtil.getCurrentUserDateFormat());
+
+	this.startDate = ko.observable(this.options.startDate);
+
+	this.displayedStartDate = ko.observable(this.options.startDate ? IP.timeUtil.formatDate(this.options.startDate, IP.timeUtil.defaultDateFormat, this.localDateFormat()) : "").extend({
+		validation: [{
 			validator: function (value) {
 				if (!self.isEnabled()) {
 					return true;
 				}
-				if (value) {
-					if (!IP.timeUtil.isValidDate(value, IP.timeUtil.dateFormat)) {
-						return false;
-					}
-
-					if (IP.timeUtil.isTodayOrInTheFuture(value)) {
-						return true;
-					}
+				if (value && IP.timeUtil.isValidDate(value, self.localDateFormat())) {
+					return true;
 				}
 				return false;
 			},
-			message: 'Please enter a valid date.'
-		}
+			message: "Incorrect Syntax. Please enter a valid date."
+		}, {
+			validator: function (value) {
+				if (!self.isEnabled()) {
+					return true;
+				}
+				if (value && IP.timeUtil.isTodayOrInTheFuture(value, self.localDateFormat())) {
+					return true;
+				}
+				return false;
+			},
+			message: "Past date is not allowed."
+		}]
 	}).extend({
 		required: {
 			onlyIf: function () {
 				return self.isEnabled();
 			}
+		}
+	});
+
+	this.displayedStartDate.subscribe(function (value) {
+		if (value) {
+			var formattedStartDate = IP.timeUtil.formatDate(value, self.localDateFormat(), IP.timeUtil.defaultDateFormat);
+			self.startDate(formattedStartDate);
 		}
 	});
 
@@ -297,35 +309,39 @@
 		}
 	});
 
-	this.endDate = ko.observable(this.options.endDate).extend({
-		date: {
-			message: 'The field End Date must be a date.'
-		}
-	}).extend({
+	this.endDate = ko.observable(this.options.endDate);
+
+	this.displayedEndDate = ko.observable(this.options.endDate ? IP.timeUtil.formatDate(this.options.endDate, IP.timeUtil.defaultDateFormat, this.localDateFormat()) : "").extend({
 		validation: [{
 			validator: function (value) {
-				if (value) {
-					if (!IP.timeUtil.isValidDate(value, IP.timeUtil.dateFormat)) {
-						return false;
-					}
+				if (value && !IP.timeUtil.isValidDate(value, self.localDateFormat())) {
+					return false;
 				}
 
 				return true;
 			},
-			message: 'Please enter a valid date.'
+			message: "Incorrect Syntax. Please enter a valid date."
 		}, {
 			validator: function (value) {
 				if (!value) {
 					return true;
 				}
-				var date = new Date(value);
-				if (self.startDate() && self.startDate.isValid() && date.compareTo(new Date(self.startDate())) < 0) {
+				var dateValue = IP.timeUtil.formatDate(value, self.localDateFormat(), IP.timeUtil.defaultDateFormat);
+				var date = new Date(dateValue);
+				if (self.displayedStartDate() && self.displayedStartDate.isValid() && date.compareTo(new Date(self.startDate())) < 0) {
 					return false;
 				}
 				return true;
 			},
-			message: 'The start date must come before the end date.'
+			message: "The start date must come before the end date."
 		}]
+	});
+
+	this.displayedEndDate.subscribe(function (value) {
+		if (value) {
+			var formattedEndDate = IP.timeUtil.formatDate(value, self.localDateFormat(), IP.timeUtil.defaultDateFormat);
+			self.endDate(formattedEndDate);
+		}
 	});
 
 	this.getScheduledTime = function () {
@@ -385,11 +401,26 @@
 				var sendOnMonthly = new SendOnMonthly(state);
 				self.sendOn(sendOnMonthly);
 			}
+			self.displayedStartDate(self.options.startDate ? IP.timeUtil.formatDate(self.options.startDate, IP.timeUtil.defaultDateFormat, IP.timeUtil.getCurrentUserDateFormat()) : "");
+			self.displayedEndDate(self.options.endDate ? IP.timeUtil.formatDate(self.options.endDate, IP.timeUtil.defaultDateFormat, IP.timeUtil.getCurrentUserDateFormat()) : "");
 			self.startDate(self.options.startDate);
 			self.endDate(self.options.endDate);
 			self.scheduledTime(IP.timeUtil.format24HourToMilitaryTime(self.options.scheduledTime, "h:mm"));
 			self.selectedTimeMeridiem(IP.timeUtil.format24HourToMilitaryTime(self.options.scheduledTime, "A"));
 			self.timeZoneId(self.options.timeZoneId);
 		}
+	};
+
+	$.datepicker.parseDate = function (format, value) {
+		var parsedDate = new Date();
+		if (value) {
+			var dateValue = IP.timeUtil.formatDate(value, self.localDateFormat(), IP.timeUtil.defaultDateFormat);
+			parsedDate = new Date(dateValue);
+		}
+		return parsedDate;
+	};
+
+	$.datepicker.formatDate = function (format, value) {
+		return IP.timeUtil.formatDate(value, IP.timeUtil.defaultDateFormat, self.localDateFormat());
 	};
 };

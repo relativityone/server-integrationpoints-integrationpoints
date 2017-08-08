@@ -1,10 +1,11 @@
 ﻿var IP = IP || {};
 IP.timeUtil = (function () {
 
-	var dateFormat = "MM/DD/YYYY";
+	var defaultDateFormat = "MM/DD/YYYY";
 	var dateTimeFormat = "MM/DD/YYYY h:mm A";
 	var format24H = "H:m";
 	var militaryFormat = "h:mm A";
+	var discoveredCurrentUserLocale = null;
 
 	function isValidMilitaryTime(militaryTime) {
 		if (!militaryTime) {
@@ -20,7 +21,7 @@ IP.timeUtil = (function () {
 		}
 
 		if (!format) {
-			format = dateFormat;
+			format = defaultDateFormat;
 		}
 
 		return moment(date, format, true).isValid();
@@ -32,7 +33,7 @@ IP.timeUtil = (function () {
 		}
 
 		if (!format) {
-			format = dateFormat;
+			format = defaultDateFormat;
 		}
 		
 		var today = moment();
@@ -74,22 +75,60 @@ IP.timeUtil = (function () {
 		return moment(dateTime).isValid() ? moment(dateTime).format(format) : "";
 	}
 
+	function formatDate(date, fromFormat, toFormat) {
+		if (!date || !fromFormat || !toFormat) {
+			return "";
+		}
+
+		return moment(date, fromFormat).format(toFormat);
+	}
+
 	function getLocalIanaTimeZoneId() {
 		return moment.tz.guess();
+	}
+
+	function getCurrentUserLocale() {
+		var currentLocale;
+
+		if (!!discoveredCurrentUserLocale) {
+			currentLocale = discoveredCurrentUserLocale;
+		} else {
+			if (!!window.navigator.languages) {
+				currentLocale = window.navigator.languages[0];
+			} else if (!!window.navigator.userLanguage) {
+				currentLocale = window.navigator.userLanguage;
+			} else if (!!window.navigator.language) {
+				currentLocale = window.navigator.language;
+			} else {
+				currentLocale = "en-us";
+			}
+
+			discoveredCurrentUserLocale = currentLocale;
+		}
+
+		return currentLocale;
+	}
+
+	function getCurrentUserDateFormat() {
+		var currentUserLocale = getCurrentUserLocale();
+		var localDateFormat = moment().locale(currentUserLocale).localeData()._longDateFormat.L;
+		return localDateFormat;
 	}
 
 	return {
 		anteMeridiem: "AM",
 		postMeridiem: "PM",
-		dateFormat: dateFormat,
+		defaultDateFormat: defaultDateFormat,
 		dateTimeFormat: dateTimeFormat,
 		getLocalIanaTimeZoneId: getLocalIanaTimeZoneId,
 		format24HourToMilitaryTime: format24HourToMilitaryTime,
 		formatMilitaryTimeTo24HourTime: formatMilitaryTimeTo24HourTime,
 		formatDateTime: formatDateTime,
+		formatDate: formatDate,
 		isValidMilitaryTime: isValidMilitaryTime,
 		isValidDate: isValidDate,
-		isTodayOrInTheFuture: isTodayOrInTheFuture
+		isTodayOrInTheFuture: isTodayOrInTheFuture,
+		getCurrentUserDateFormat: getCurrentUserDateFormat
 	};
 
 }());

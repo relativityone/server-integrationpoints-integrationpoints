@@ -24,18 +24,17 @@ var loadData = function (ko, dataContainer) {
 			'128': "day"
 		};
 
+		var getLocalDateTimeFormat = function() {
+			var timeFormat = "h:mm A";
+			return IP.timeUtil.getCurrentUserDateFormat() + " " + timeFormat;
+		}
+
 		var getLastRun = function (dataContainer) {
-			if (!dataContainer.lastRun)
-				return "";
-			return moment(dataContainer.lastRun).format('M/D/YYYY h:mm A');
+			return IP.timeUtil.formatDateTime(dataContainer.lastRun, getLocalDateTimeFormat());
 		}
 
 		var getNextRun = function (dataContainer) {
-			if (!dataContainer.nextRun) {
-				return "";
-			}
-
-			return moment(dataContainer.nextRun).format('M/D/YYYY h:mm A');
+			return IP.timeUtil.formatDateTime(dataContainer.nextRun, getLocalDateTimeFormat());
 		}
 
 		var getFrequency = function (scheduler) {
@@ -52,11 +51,11 @@ var loadData = function (ko, dataContainer) {
 		};
 
 		var getStartDate = function (scheduler) {
-			return scheduler.startDate || "";
+			return IP.timeUtil.formatDate(scheduler.startDate, IP.timeUtil.defaultDateFormat, IP.timeUtil.getCurrentUserDateFormat());
 		};
 
 		var getEndDate = function (scheduler) {
-			return scheduler.endDate || "";
+			return IP.timeUtil.formatDate(scheduler.endDate, IP.timeUtil.defaultDateFormat, IP.timeUtil.getCurrentUserDateFormat());
 		};
 
 		var buildDaysList = function (selectedDays) {
