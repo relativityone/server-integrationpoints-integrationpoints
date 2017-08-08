@@ -1,6 +1,5 @@
 ﻿using System;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Statistics.Implementations;
 using kCura.Relativity.Client.DTOs;
@@ -27,12 +26,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			_logger = Substitute.For<IAPILog>();
 			_helper = Substitute.For<IHelper>();
 			_rdoRepository = Substitute.For<IRdoRepository>();
-
-			var repositoryFactory = Substitute.For<IRepositoryFactory>();
-			repositoryFactory.GetRdoRepository(_WORKSPACE_ID).Returns(_rdoRepository);
 			_helper.GetLoggerFactory().GetLogger().ForContext<DocumentTotalStatistics>().Returns(_logger);
 
-			_instance = new DocumentTotalStatistics(_helper, repositoryFactory);
+			_instance = new DocumentTotalStatistics(_helper, _rdoRepository);
 		}
 
 		[Test]

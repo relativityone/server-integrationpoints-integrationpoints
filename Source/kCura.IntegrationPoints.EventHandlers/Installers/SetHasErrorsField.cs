@@ -24,12 +24,13 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Domain;
-using kCura.IntegrationPoints.Domain.Managers;
+using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.Services;
 using Relativity.API;
+using IFederatedInstanceManager = kCura.IntegrationPoints.Domain.Managers.IFederatedInstanceManager;
 
 namespace kCura.IntegrationPoints.EventHandlers.Installers
 {
@@ -93,16 +94,16 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 		/// </summary>
 		private void CreateServices()
 		{
-			RsapiClientFactory rsapiClientFactory = new RsapiClientFactory(Helper);
+			IRsapiClientFactory rsapiClientFactory = new RsapiClientFactory(Helper);
 			IServiceContextHelper serviceContextHelper = new ServiceContextHelperForEventHandlers(Helper, Helper.GetActiveCaseID(), rsapiClientFactory);
 			ICaseServiceContext caseServiceContext = new CaseServiceContext(serviceContextHelper);
 			IRepositoryFactory repositoryFactory = new RepositoryFactory(Helper, Helper.GetServicesManager());
-			IRSAPIClient rsapiClient = rsapiClientFactory.CreateClientForWorkspace(Helper.GetActiveCaseID(), ExecutionIdentity.System);
+			IRSAPIClient rsapiClient = rsapiClientFactory.CreateAdminClient(Helper.GetActiveCaseID());
 			IChoiceQuery choiceQuery = new ChoiceQuery(rsapiClient);
 			IEddsServiceContext eddsServiceContext = new EddsServiceContext(serviceContextHelper);
 			IAgentService agentService = new AgentService(Helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
-		    IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(agentService, Helper);
-		    IJobService jobService = new JobService(agentService, jobServiceDataProvider, Helper);
+			IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(agentService, Helper);
+			IJobService jobService = new JobService(agentService, jobServiceDataProvider, Helper);
 			IDBContext dbContext = Helper.GetDBContext(Helper.GetActiveCaseID());
 			IWorkspaceDBContext workspaceDbContext = new WorkspaceContext(dbContext);
 			IJobResourceTracker jobResourceTracker = new JobResourceTracker(repositoryFactory, workspaceDbContext);
@@ -115,19 +116,21 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			_jobHistoryService = new JobHistoryService(caseServiceContext, federatedInstanceManager, workspaceManager, Helper, integrationPointSerializer);
 			IContextContainerFactory contextContainerFactory = new ContextContainerFactory();
 
-            IConfigFactory configFactory = new ConfigFactory();
-			ICredentialProvider credentialProvider = new TokenCredentialProvider();
+			IConfigFactory configFactory = new ConfigFactory();
+			IAuthProvider authProvider = new AuthProvider();
+			IAuthTokenGenerator authTokenGenerator = new ClaimsTokenGenerator();
+			ICredentialProvider credentialProvider = new TokenCredentialProvider(authProvider, authTokenGenerator, Helper);
 			ITokenProvider tokenProvider = new RelativityCoreTokenProvider();
 			ISerializer serializer = new JSONSerializer();
-            ISqlServiceFactory sqlServiceFactory = new HelperConfigSqlServiceFactory(Helper);
-            IServiceManagerProvider serviceManagerProvider = new ServiceManagerProvider(configFactory, credentialProvider, serializer, tokenProvider, sqlServiceFactory);
+			ISqlServiceFactory sqlServiceFactory = new HelperConfigSqlServiceFactory(Helper);
+			IServiceManagerProvider serviceManagerProvider = new ServiceManagerProvider(configFactory, credentialProvider, serializer, tokenProvider, sqlServiceFactory);
 			IManagerFactory managerFactory = new ManagerFactory(Helper, serviceManagerProvider);
 
 			_caseServiceContext = caseServiceContext;
 			IIntegrationPointProviderValidator ipValidator = new IntegrationPointProviderValidator(Enumerable.Empty<IValidator>(), integrationPointSerializer);
 			IIntegrationPointPermissionValidator permissionValidator = new IntegrationPointPermissionValidator(Enumerable.Empty<IPermissionValidator>(), integrationPointSerializer);
-			
-			_integrationPointService = new IntegrationPointService(Helper, caseServiceContext, contextContainerFactory, integrationPointSerializer, 
+
+			_integrationPointService = new IntegrationPointService(Helper, caseServiceContext, contextContainerFactory, integrationPointSerializer,
 				choiceQuery, jobManager, _jobHistoryService, managerFactory, ipValidator, permissionValidator);
 		}
 

@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 				throw new NotImplementedException();
 			}
 
-			public IRSAPIClient GetRsapiClient(ExecutionIdentity identity)
+			public IRSAPIClient GetRsapiClient()
 			{
 				throw new NotImplementedException();
 			}

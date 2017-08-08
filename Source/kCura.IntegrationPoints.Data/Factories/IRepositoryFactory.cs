@@ -213,10 +213,6 @@ namespace kCura.IntegrationPoints.Data.Factories
 		/// <returns>A class implementing the IServiceUrlRepository interface.</returns>
 		IServiceUrlRepository GetServiceUrlRepository();
 
-		IRdoStatistics GetRdoStatistics();
-
-		IDocumentTotalStatistics GetDocumentTotalStatistics();
-
 		IKeywordSearchRepository GetKeywordSearchRepository();
 	}
 }

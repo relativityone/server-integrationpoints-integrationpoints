@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Installers;
+using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Services.Helpers;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Helpers;
 using kCura.IntegrationPoints.Services.Repositories;
@@ -39,12 +40,14 @@ namespace kCura.IntegrationPoints.Services.Installers
 			container.Register(Component.For<IRSAPIService>().UsingFactoryMethod(k => new RSAPIService(k.Resolve<IHelper>(), workspaceId), true));
 
 			container.Register(Component.For<IUserInfo>().UsingFactoryMethod(k => k.Resolve<IServiceHelper>().GetAuthenticationManager().UserInfo, true));
+			container.Register(Component.For<IRsapiClientFactory>().ImplementedBy<RsapiClientFactory>());
 
 			container.Register(Component.For<IServiceContextHelper>()
 				.UsingFactoryMethod(k =>
 				{
 					IServiceHelper helper = k.Resolve<IServiceHelper>();
-					return new ServiceContextHelperForKelperService(helper, workspaceId);
+					var rsapiClientFactory = k.Resolve<IRsapiClientFactory>();
+					return new ServiceContextHelperForKelperService(helper, workspaceId, rsapiClientFactory);
 				}));
 			container.Register(
 				Component.For<IWorkspaceDBContext>()
@@ -68,6 +71,7 @@ namespace kCura.IntegrationPoints.Services.Installers
 			container.Register(Component.For<IProviderRepository>().ImplementedBy<ProviderRepository>().LifestyleTransient());
 			container.Register(Component.For<IBackwardCompatibility>().ImplementedBy<BackwardCompatibility>().LifestyleTransient());
 			container.Register(Component.For<IIntegrationPointRuntimeServiceFactory>().ImplementedBy<IntegrationPointRuntimeServiceFactory>().LifestyleTransient());
+			container.Register(Component.For<IAuthTokenGenerator>().ImplementedBy<ClaimsTokenGenerator>().LifestyleTransient());
 		}
 	}
 }

@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Agent.kCura.IntegrationPoints.Agent;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Agent.Validation;
 using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -18,7 +19,8 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
-using kCura.IntegrationPoints.Domain.Managers;
+using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Email;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
@@ -29,6 +31,7 @@ using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.WinEDDS.Service.Export;
 using Relativity.API;
 using CreateErrorRdo = kCura.ScheduleQueue.Core.Logging.CreateErrorRdo;
+using IFederatedInstanceManager = kCura.IntegrationPoints.Domain.Managers.IFederatedInstanceManager;
 using ITaskFactory = kCura.IntegrationPoints.Agent.Tasks.ITaskFactory;
 
 namespace kCura.IntegrationPoints.Agent.Installer
@@ -71,10 +74,10 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Register(Component.For<IServiceContextHelper>().ImplementedBy<ServiceContextHelperForAgent>().DependsOn(Dependency.OnValue<int>(_job.WorkspaceID)).LifestyleTransient());
 			container.Register(Component.For<IWorkspaceDBContext>().UsingFactoryMethod(k => new WorkspaceContext(_agentHelper.GetDBContext(_job.WorkspaceID))).LifestyleTransient());
 			container.Register(Component.For<Job>().UsingFactoryMethod(k => _job).LifestyleTransient());
-			container.Register(Component.For<IRSAPIClient>().UsingFactoryMethod(k => k.Resolve<RsapiClientFactory>().CreateClientForWorkspace(_job.WorkspaceID, ExecutionIdentity.System)));
+			container.Register(Component.For<IRSAPIClient>().UsingFactoryMethod(k => k.Resolve<IRsapiClientFactory>().CreateAdminClient(_job.WorkspaceID)));
 			container.Register(Component.For<IRSAPIService>().Instance(new RSAPIService(container.Resolve<IHelper>(), _job.WorkspaceID)).LifestyleTransient());
 			container.Register(Component.For<IRelativityConfigurationFactory>().ImplementedBy<RelativityConfigurationFactory>().LifestyleSingleton());
-			container.Register(Component.For<IDBContext>().UsingFactoryMethod((k) => k.Resolve<RsapiClientFactory>().CreateDbContext(_job.WorkspaceID)).LifestyleTransient());
+			container.Register(Component.For<IDBContext>().UsingFactoryMethod((k) => k.Resolve<IHelper>().GetDBContext(_job.WorkspaceID)).LifestyleTransient());
 			container.Register(Component.For<ISendable>().ImplementedBy<SMTP>().DependsOn(Dependency.OnValue<EmailConfiguration>(container.Resolve<IRelativityConfigurationFactory>().GetConfiguration())));
 			container.Register(Component.For<ISMTPClientFactory>().ImplementedBy<SMTPClientFactory>().LifestyleTransient());
 			container.Register(Component.For<SyncWorker>().ImplementedBy<SyncWorker>().LifestyleTransient());
@@ -129,6 +132,21 @@ namespace kCura.IntegrationPoints.Agent.Installer
 						IFolderPathReaderFactory folderPathReaderFactory = k.Resolve<IFolderPathReaderFactory>();
 						return new global::kCura.IntegrationPoints.Core.Factories.Implementations.ExporterFactory(claimsPrincipalFactory, sourceRepositoryFactory, targetRepositoryFactory, sourceHelper, federatedInstanceManager, folderPathReaderFactory);
 					}).LifestyleTransient());
+
+			container.Register(Component.For<CurrentUser>().Instance(new CurrentUser() {ID = _job.SubmittedBy})
+				.LifestyleTransient());
+
+			container.Register(Component.For<IAuthTokenGenerator>().UsingFactoryMethod(kernel =>
+			{
+				var helper = kernel.Resolve<IHelper>();
+				var oauth2ClientFactory = kernel.Resolve<IOAuth2ClientFactory>();
+				var tokenProviderFactory = kernel.Resolve<ITokenProviderFactoryFactory>();
+				var contextUser = kernel.Resolve<CurrentUser>();
+
+				return new OAuth2TokenGenerator(helper, oauth2ClientFactory, tokenProviderFactory, contextUser);
+			}).LifestyleTransient());
+
+			container.Register(Component.For<IRsapiClientFactory>().ImplementedBy<ExtendedRsapiClientFactory>().LifestyleTransient());
 		}
 	}
 }

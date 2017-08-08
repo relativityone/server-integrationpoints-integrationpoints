@@ -5,8 +5,6 @@ using kCura.IntegrationPoints.Data.Adaptors.Implementations;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using kCura.IntegrationPoints.Data.Statistics;
-using kCura.IntegrationPoints.Data.Statistics.Implementations;
 using kCura.IntegrationPoints.Data.Transformers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
@@ -135,7 +133,8 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		{
 			var objectTypeRepository = GetObjectTypeRepository(workspaceArtifactId);
 			var fieldRepository = GetFieldRepository(workspaceArtifactId);
-			IRdoRepository rdoRepository = new RsapiRdoRepository(_helper, _servicesMgr, workspaceArtifactId);
+			IRsapiClientFactory rsapiClientFactory = new RsapiClientFactory(_helper);
+			IRdoRepository rdoRepository = new RsapiRdoRepository(_helper, workspaceArtifactId, rsapiClientFactory);
 			ISourceJobRepository repository = new SourceJobRepository(objectTypeRepository, fieldRepository, rdoRepository);
 
 			return repository;
@@ -151,7 +150,8 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		{
 			var objectTypeRepository = GetObjectTypeRepository(workspaceArtifactId);
 			var fieldRepository = GetFieldRepository(workspaceArtifactId);
-			IRdoRepository rdoRepository = new RsapiRdoRepository(_helper, _servicesMgr, workspaceArtifactId);
+			IRsapiClientFactory rsapiClientFactory = new RsapiClientFactory(_helper);
+			IRdoRepository rdoRepository = new RsapiRdoRepository(_helper, workspaceArtifactId, rsapiClientFactory);
 			ISourceWorkspaceRepository repository = new SourceWorkspaceRepository(objectTypeRepository, fieldRepository, rdoRepository);
 
 			return repository;
@@ -237,13 +237,14 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IRdoRepository GetRdoRepository(int workspaceArtifactId)
 		{
-			IRdoRepository rdoRepository = new RsapiRdoRepository(_helper, _helper.GetServicesManager(), workspaceArtifactId);
+			IRsapiClientFactory rsapiClientFactory = new RsapiClientFactory(_helper);
+			IRdoRepository rdoRepository = new RsapiRdoRepository(_helper, workspaceArtifactId, rsapiClientFactory);
 			return rdoRepository;
 		}
-		
-        #region Helper Methods
 
-        private IObjectQueryManagerAdaptor CreateObjectQueryManagerAdaptor(int workspaceArtifactId, ArtifactType artifactType)
+		#region Helper Methods
+
+		private IObjectQueryManagerAdaptor CreateObjectQueryManagerAdaptor(int workspaceArtifactId, ArtifactType artifactType)
 		{
 			IObjectQueryManagerAdaptor adaptor = CreateObjectQueryManagerAdaptor(workspaceArtifactId, (int)artifactType);
 			return adaptor;
@@ -290,16 +291,6 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return contextContainer;
 		}
 
-		public IRdoStatistics GetRdoStatistics()
-		{
-			return new RdoStatistics(this);
-		}
-
-		public IDocumentTotalStatistics GetDocumentTotalStatistics()
-		{
-			return new DocumentTotalStatistics(_helper, this);
-		}
-
 		public IKeywordSearchRepository GetKeywordSearchRepository()
 		{
 			return new KeplerKeywordSearchRepository(_servicesMgr);
@@ -307,7 +298,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		#endregion Helper Methods
 
-        private class ContextContainer
+		private class ContextContainer
 		{
 			public BaseServiceContext BaseServiceContext { get; set; }
 			public BaseContext BaseContext { get; set; }

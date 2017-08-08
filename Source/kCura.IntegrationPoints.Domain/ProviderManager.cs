@@ -9,6 +9,7 @@ using Castle.Windsor;
 using Castle.Windsor.Installer;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Contracts.Provider;
+using kCura.IntegrationPoints.Domain.Authentication;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Domain
@@ -127,6 +128,8 @@ namespace kCura.IntegrationPoints.Domain
 				FromAssembly.InDirectory(
 					new AssemblyFilter(AppDomain.CurrentDomain.BaseDirectory)
 					.FilterByName(this.FilterByAllowedAssemblyNames)));
+			
+			_windsorContainer.Register(Component.For<IAuthTokenGenerator>().Instance(new ClaimsTokenGenerator()).LifestyleTransient());
 			_windsorContainer.Register(Component.For<IHelper>().UsingFactoryMethod(k => helper, true));
 		}
 

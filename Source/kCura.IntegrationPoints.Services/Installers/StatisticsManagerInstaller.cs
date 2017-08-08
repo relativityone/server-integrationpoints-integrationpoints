@@ -3,6 +3,7 @@ using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Core.Installers;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Installers;
 using Relativity.API;
@@ -30,6 +31,14 @@ namespace kCura.IntegrationPoints.Services.Installers
 			container.Register(Component.For<IHelper>().UsingFactoryMethod(k => k.Resolve<IServiceHelper>(), true));
 			container.Register(Component.For<IServicesMgr>().UsingFactoryMethod(k => k.Resolve<IHelper>().GetServicesManager(), true));
 			container.Register(Component.For<IRSAPIService>().UsingFactoryMethod(k => new RSAPIService(k.Resolve<IHelper>(), workspaceId), true));
+			container.Register(Component.For<IRsapiClientFactory>().ImplementedBy<RsapiClientFactory>().LifestyleTransient());
+			container.Register(Component.For<IServiceContextHelper>()
+				.UsingFactoryMethod(k =>
+				{
+					var helper = k.Resolve<IServiceHelper>();
+					var rsapiClientFactory = k.Resolve<IRsapiClientFactory>();
+					return new ServiceContextHelperForKelperService(helper, workspaceId, rsapiClientFactory);
+				}));
 		}
 	}
 }

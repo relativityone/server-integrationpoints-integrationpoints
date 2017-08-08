@@ -1,5 +1,4 @@
 ﻿using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Statistics.Implementations;
 using kCura.Relativity.Client;
@@ -12,8 +11,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 	[TestFixture]
 	public class RdoStatisticsTests : TestBase
 	{
-		private const int _WORKSPACE_ID = 246693;
-
 		private IRdoRepository _rdoRepository;
 		private RdoStatistics _instance;
 
@@ -21,10 +18,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 		{
 			_rdoRepository = Substitute.For<IRdoRepository>();
 
-			var repositoryFactory = Substitute.For<IRepositoryFactory>();
-			repositoryFactory.GetRdoRepository(_WORKSPACE_ID).Returns(_rdoRepository);
-
-			_instance = new RdoStatistics(repositoryFactory);
+			_instance = new RdoStatistics(_rdoRepository);
 		}
 
 		[Test]
@@ -42,7 +36,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			});
 
 			// ACT
-			var actualResult = _instance.ForView(_WORKSPACE_ID, artifactTypeId, viewId);
+			var actualResult = _instance.ForView(artifactTypeId, viewId);
 
 			// ASSERT
 			Assert.That(actualResult, Is.EqualTo(expectedResult));

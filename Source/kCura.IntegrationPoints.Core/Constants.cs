@@ -50,7 +50,9 @@ namespace kCura.IntegrationPoints.Core
 			public static Regex InvalidMultiObjectsValueFormat = new Regex($".*{kCura.IntegrationPoints.Domain.Constants.MULTI_VALUE_DELIMITER}.*", RegexOptions.Compiled);
 
 			public const string API_CONTROLLER_NAME = "IntegrationPointsAPI";
-
+			public const string OAUTH2_CLIENT_NAME_PREFIX = "F6B8C2B4B3E8465CA00775F699375D3C";
+			public const string RELATIVITY_AUTH_ENDPOINT = "Relativity/Identity/connect/token";
+			
 			public static class IntegrationPoint
 			{
 				public static Guid ObjectTypeGuid = new Guid("03D4F67E-22C9-488C-BEE6-411F05C52E01");

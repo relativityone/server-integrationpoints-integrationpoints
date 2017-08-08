@@ -2,6 +2,6 @@
 {
 	public interface IRdoStatistics
 	{
-		int ForView(int workspaceArtifactId, int artifactTypeId, int viewId);
+		int ForView(int artifactTypeId, int viewId);
 	}
 }

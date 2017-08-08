@@ -20,6 +20,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
@@ -33,7 +34,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
     {
         public static SetTypeOfExportDefaultValueCommand Create(IEHHelper helper, int workspaceArtifactId)
         {
-            var rsapiClientFactory = new RsapiClientFactory(helper);
+            IRsapiClientFactory rsapiClientFactory = new RsapiClientFactory(helper);
             IServiceContextHelper serviceContextHelper = new ServiceContextHelperForEventHandlers(helper, helper.GetActiveCaseID(), rsapiClientFactory);
             ICaseServiceContext caseServiceContext = new CaseServiceContext(serviceContextHelper);
 
@@ -41,7 +42,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 
             IIntegrationPointSerializer integrationPointSerializer = new IntegrationPointSerializer();
 
-            IRSAPIClient rsapiClient = rsapiClientFactory.CreateClientForWorkspace(helper.GetActiveCaseID(), ExecutionIdentity.System);
+            IRSAPIClient rsapiClient = rsapiClientFactory.CreateAdminClient(helper.GetActiveCaseID());
             IChoiceQuery choiceQuery = new ChoiceQuery(rsapiClient);
 
             IAgentService agentService = new AgentService(helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
@@ -60,7 +61,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
             IJobHistoryService jobHistoryService = new JobHistoryService(caseServiceContext, federatedInstanceManager, workspaceManager, helper, integrationPointSerializer);
 
             IConfigFactory configFactory = new ConfigFactory();
-            ICredentialProvider credentialProvider = new TokenCredentialProvider();
+			IAuthProvider authProvider = new AuthProvider();
+			IAuthTokenGenerator tokenGenerator = new ClaimsTokenGenerator();
+            ICredentialProvider credentialProvider = new TokenCredentialProvider(authProvider, tokenGenerator, helper);
             ITokenProvider tokenProvider = new RelativityCoreTokenProvider();
             ISerializer serializer = new JSONSerializer();
             ISqlServiceFactory sqlServiceFactory = new HelperConfigSqlServiceFactory(helper);

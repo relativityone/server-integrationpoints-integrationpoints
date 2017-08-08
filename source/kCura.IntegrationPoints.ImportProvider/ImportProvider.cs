@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 

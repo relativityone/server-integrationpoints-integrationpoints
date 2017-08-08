@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
 using Relativity.API;
@@ -16,7 +17,9 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
 		public static IRelativityProviderConfiguration Create(IEHHelper helper, IFederatedInstanceModelFactory federatedInstanceModelFactory, IInstanceSettingsManager federatedInstanceManager)
 		{
 			IConfigFactory configFactory = new ConfigFactory();
-			ICredentialProvider credentialProvider = new TokenCredentialProvider();
+			IAuthProvider authProvider = new AuthProvider();
+			IAuthTokenGenerator authTokenGenerator = new ClaimsTokenGenerator();
+			ICredentialProvider credentialProvider = new TokenCredentialProvider(authProvider, authTokenGenerator, helper);
 			ISerializer serializer = new JSONSerializer();
 			ITokenProvider tokenProvider = new RelativityCoreTokenProvider();
             ISqlServiceFactory sqlServiceFactory = new HelperConfigSqlServiceFactory(helper);

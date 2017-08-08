@@ -19,6 +19,8 @@ using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
+using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Authentication;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 using Relativity.API;
@@ -45,8 +47,11 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 		{
 			var permissionRepository = new PermissionRepository(ConnectionHelper.Helper(), ConnectionHelper.Helper().GetActiveCaseID());
             ISqlServiceFactory sqlServiceFactory = new HelperConfigSqlServiceFactory(ConnectionHelper.Helper());
-		    IServiceManagerProvider serviceManagerProvider = new ServiceManagerProvider(new ConfigFactory(),
-		        new TokenCredentialProvider(), new JSONSerializer(),
+			IAuthProvider authProvider = new AuthProvider();
+			IAuthTokenGenerator authTokenGenerator = new ClaimsTokenGenerator();
+			ICredentialProvider credentialProvider = new TokenCredentialProvider(authProvider, authTokenGenerator, ConnectionHelper.Helper());
+			IServiceManagerProvider serviceManagerProvider = new ServiceManagerProvider(new ConfigFactory(),
+				credentialProvider, new JSONSerializer(),
 		        new RelativityCoreTokenProvider(), sqlServiceFactory);
             _managerFactory = new ManagerFactory(ConnectionHelper.Helper(), serviceManagerProvider);
             var queueManager = _managerFactory.CreateQueueManager(_contextContainer);

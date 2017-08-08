@@ -1,4 +1,4 @@
-﻿using kCura.IntegrationPoints.Data.Factories;
+﻿using kCura.IntegrationPoints.Data.Repositories;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 
@@ -6,14 +6,14 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 {
 	public class RdoStatistics : IRdoStatistics
 	{
-		private readonly IRepositoryFactory _repositoryFactory;
+		private readonly IRdoRepository _rdoRepository;
 
-		public RdoStatistics(IRepositoryFactory repositoryFactory)
+		public RdoStatistics(IRdoRepository rdoRepository)
 		{
-			_repositoryFactory = repositoryFactory;
+			_rdoRepository = rdoRepository;
 		}
 
-		public int ForView(int workspaceArtifactId, int artifactTypeId, int viewId)
+		public int ForView(int artifactTypeId, int viewId)
 		{
 			var query = new Query<RDO>
 			{
@@ -21,8 +21,8 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 				Fields = FieldValue.NoFields,
 				Condition = new ViewCondition(viewId)
 			};
-			var rdoRepository = _repositoryFactory.GetRdoRepository(workspaceArtifactId);
-			return rdoRepository.Query(query).TotalCount;
+
+			return _rdoRepository.Query(query).TotalCount;
 		}
 	}
 }

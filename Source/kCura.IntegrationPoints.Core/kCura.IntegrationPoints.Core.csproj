@@ -330,6 +330,22 @@
       <HintPath>..\packages\RelativityCore.9.5.231.8\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.OAuth2Client, Version=1.0.8.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.1.0.8\lib\net462\Relativity.OAuth2Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.OAuth2Client.IdentityModel, Version=1.0.8.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.1.0.8\lib\net462\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.OAuth2Client.IdentityModel.Interfaces, Version=1.0.8.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.Interfaces.1.0.8\lib\net462\Relativity.OAuth2Client.IdentityModel.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.OAuth2Client.Interfaces, Version=1.0.8.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.Interfaces.1.0.8\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Relativity.ProcessingBase, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\RelativityCore.9.5.231.8\lib\net462\Relativity.ProcessingBase.dll</HintPath>
       <Private>True</Private>
@@ -512,8 +528,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Authentication\AuthProvider.cs" />
     <Compile Include="Authentication\ICredentialProvider.cs" />
+    <Compile Include="Authentication\ITokenProviderFactoryFactory.cs" />
+    <Compile Include="Authentication\OAuth2TokenGenerator.cs" />
+    <Compile Include="Authentication\IAuthProvider.cs" />
+    <Compile Include="Authentication\IOAuth2ClientFactory.cs" />
+    <Compile Include="Authentication\OAuth2ClientFactory.cs" />
     <Compile Include="Authentication\TokenCredentialProvider.cs" />
+    <Compile Include="Authentication\TokenProviderFactoryFactory.cs" />
     <Compile Include="BatchEmail.cs" />
     <Compile Include="BatchStatusCommands\Implementations\IConsumeScratchTableBatchStatus.cs" />
     <Compile Include="BatchStatusCommands\Implementations\JobHistoryErrorBatchUpdateManager.cs" />
@@ -523,6 +546,7 @@
     <Compile Include="Constants.cs" />
     <Compile Include="ContextContainer.cs" />
     <Compile Include="Exceptions\PermissionException.cs" />
+    <Compile Include="ExtendedRsapiClientFactory.cs" />
     <Compile Include="Factories\Implementations\ConfigFactory.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Factories\IArtifactServiceFactory.cs" />
@@ -791,7 +815,6 @@
     </Compile>
     <Compile Include="Models\IntegrationPointModel.cs" />
     <Compile Include="Models\RdoFilter.cs" />
-    <Compile Include="RsapiClientFactory.cs" />
     <Compile Include="Services\ServiceContext\CaseServiceContext.cs" />
     <Compile Include="Services\AgentJobManager.cs" />
     <Compile Include="Services\ChoiceService.cs" />

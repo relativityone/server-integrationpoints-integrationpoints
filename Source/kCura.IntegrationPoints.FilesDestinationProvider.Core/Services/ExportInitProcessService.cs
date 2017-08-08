@@ -1,6 +1,5 @@
 ﻿using System;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Statistics;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
@@ -10,12 +9,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 {
 	public class ExportInitProcessService : IExportInitProcessService
 	{
-		private readonly IRepositoryFactory _repositoryFactory;
+		private readonly IRdoStatistics _rdoStatistics;
+		private readonly IDocumentTotalStatistics _documentStatistics;
 		private readonly IAPILog _logger;
-
-		public ExportInitProcessService(IHelper helper, IRepositoryFactory repositoryFactory)
+		
+		public ExportInitProcessService(IHelper helper, IDocumentTotalStatistics documentStatistics, IRdoStatistics rdoStatistics)
 		{
-			_repositoryFactory = repositoryFactory;
+			_documentStatistics = documentStatistics;
+			_rdoStatistics = rdoStatistics;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ExportInitProcessService>();
 		}
 
@@ -29,13 +30,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 
 			if (artifactTypeId == (int) ArtifactType.Document)
 			{
-				IDocumentTotalStatistics documentTotalStatistics = _repositoryFactory.GetDocumentTotalStatistics();
-				docsCount = GetTotalDocCount(exportSettings, exportType, documentTotalStatistics);
+				docsCount = GetTotalDocCount(exportSettings, exportType, _documentStatistics);
 			}
 			else
 			{
-				IRdoStatistics rdoStatistics = _repositoryFactory.GetRdoStatistics();
-				docsCount = GetTotalRdoCount(exportSettings, artifactTypeId, rdoStatistics);
+				docsCount = GetTotalRdoCount(exportSettings, artifactTypeId, _rdoStatistics);
 			}
 
 
@@ -63,7 +62,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 
 		private int GetTotalRdoCount(ExportUsingSavedSearchSettings exportSettings, int artifactTypeId, IRdoStatistics rdoStatistics)
 		{
-			return rdoStatistics.ForView(exportSettings.SourceWorkspaceArtifactId, artifactTypeId, exportSettings.ViewId);
+			return rdoStatistics.ForView(artifactTypeId, exportSettings.ViewId);
 		}
 
 		private ExportSettings.ExportType GetExportType(ExportUsingSavedSearchSettings exportSettings)

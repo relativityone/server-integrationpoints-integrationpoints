@@ -5,7 +5,6 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client;
 using Relativity.API;
-using Relativity.CustomPages;
 using IDBContext = Relativity.API.IDBContext;
 
 namespace kCura.IntegrationPoints.Web
@@ -58,7 +57,7 @@ namespace kCura.IntegrationPoints.Web
 			else
 				return null;
 		}
-		public IRSAPIClient GetRsapiClient(ExecutionIdentity identity = ExecutionIdentity.CurrentUser)
+		public IRSAPIClient GetRsapiClient()
 		{
 			return _factory.CreateClient();
 		}

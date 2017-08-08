@@ -160,6 +160,7 @@
     <Compile Include="EncryptingRsapiClientLibrary.cs" />
     <Compile Include="IResourceDbProvider.cs" />
     <Compile Include="IRSAPIRdoQuery.cs" />
+    <Compile Include="IRsapiClientFactory.cs" />
     <Compile Include="Logging\ISystemEventLoggingService.cs" />
     <Compile Include="Migrations\Migration.cs" />
     <Compile Include="Queries\GetSavedSearchQuery.cs" />
@@ -188,6 +189,7 @@
     <Compile Include="Repositories\IFieldRepository.cs" />
     <Compile Include="SecretStore\ISecretManagerFactory.cs" />
     <Compile Include="SecretStore\SecretManagerFactory.cs" />
+    <Compile Include="RsapiClientFactory.cs" />
     <Compile Include="Statistics\Implementations\DocumentTotalStatistics.cs" />
     <Compile Include="Statistics\IDocumentTotalStatistics.cs" />
     <Compile Include="Statistics\IImageTotalStatistics.cs" />

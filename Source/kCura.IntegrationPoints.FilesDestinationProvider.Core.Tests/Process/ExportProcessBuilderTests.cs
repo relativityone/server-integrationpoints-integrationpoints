@@ -8,14 +8,13 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.ScheduleQueue.Core;
-using kCura.WinEDDS;
 using kCura.WinEDDS.Core.Model.Export;
 using kCura.WinEDDS.Exporters;
 using kCura.WinEDDS.Service.Export;
@@ -23,7 +22,6 @@ using NSubstitute;
 using NUnit.Framework;
 using Relativity;
 using Relativity.API;
-using IExporterFactory = kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary.IExporterFactory;
 using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
@@ -52,26 +50,22 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 
 		#region Fields
 
-		private ICaseManagerFactory _caseManagerFactory;
 		private ICredentialProvider _credentialProvider;
 		private IExtendedExporterFactory _exporterFactory;
-
 		private ExtendedExportFile _exportFile;
 		private ExportDataContext _exportDataContext;
 		private IExportFileBuilder _exportFileBuilder;
-
 		private ExportProcessBuilder _exportProcessBuilder;
 		private ICompositeLoggingMediator _loggingMediator;
-		private IServiceManagerFactory<ISearchManager> _searchManagerFactory;
 		private IUserMessageNotification _userMessageNotification;
 		private IUserNotification _userNotification;
 		private IConfigFactory _configFactory;
 		private JobStatisticsService _jobStatisticsService;
-
 		private IJobInfoFactory _jobInfoFactoryMock;
 		private IJobInfo _jobInfoMock;
-
 		private IDirectoryHelper _directoryHelper;
+		private IExportServiceFactory _exportServiceFactory;
+		private IExtendedServiceFactory _serviceFactory;
 
 		private Job _job;
 
@@ -92,12 +86,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		[SetUp]
 		public override void SetUp()
 		{
-			_caseManagerFactory = Substitute.For<ICaseManagerFactory>();
 			_credentialProvider = Substitute.For<ICredentialProvider>();
 			_exporterFactory = Substitute.For<IExtendedExporterFactory>();
 			_exportFileBuilder = Substitute.For<IExportFileBuilder>();
 			_loggingMediator = Substitute.For<ICompositeLoggingMediator>();
-			_searchManagerFactory = Substitute.For<IServiceManagerFactory<ISearchManager>>();
 			_userMessageNotification = Substitute.For<IUserMessageNotification>();
 			_userNotification = Substitute.For<IUserNotification>();
 			_configFactory = Substitute.For<IConfigFactory>();
@@ -111,6 +103,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 
 			_jobInfoMock.GetStartTimeUtc().Returns(JobStart);
 			_jobInfoMock.GetName().Returns(JobName);
+			_serviceFactory = Substitute.For<IExtendedServiceFactory>();
+			_exportServiceFactory = Substitute.For<IExportServiceFactory>();
+			_exportServiceFactory.Create(Arg.Any<ExportDataContext>()).Returns(_serviceFactory);
+
 
 			var helper = Substitute.For<IHelper>();
 
@@ -126,14 +122,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 				_userMessageNotification,
 				_userNotification,
 				_credentialProvider,
-				_caseManagerFactory,
-				_searchManagerFactory,
 				_exporterFactory,
 				_exportFileBuilder,
 				helper,
 				_jobStatisticsService,
 				_jobInfoFactoryMock,
-				_directoryHelper
+				_directoryHelper,
+				_exportServiceFactory
 			);
 
 			_job = JobExtensions.CreateJob();
@@ -185,14 +180,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			searchManager.RetrieveAllExportableViewFields(_exportFile.CaseInfo.ArtifactID, _exportFile.ArtifactTypeID).Returns(
 				ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(AllExportableAvfIds.Keys.ToList()));
 
-			_searchManagerFactory.Create(null, null).ReturnsForAnyArgs(searchManager);
-
+			_serviceFactory.CreateSearchManager().Returns(searchManager);
 			_exportProcessBuilder.Create(new ExportSettings()
 			{
 				SelViewFieldIds = SelectedAvfIds
 			}, _job);
 
-			_searchManagerFactory.ReceivedWithAnyArgs().Create(null, null);
+			_serviceFactory.Received(1).CreateSearchManager();
 			searchManager.Received().Dispose();
 		}
 
@@ -200,14 +194,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		public void ItShouldCreateAndDisposeCaseManager()
 		{
 			var caseManager = Substitute.For<ICaseManager>();
-			_caseManagerFactory.Create(null, null).ReturnsForAnyArgs(caseManager);
+			_serviceFactory.CreateCaseManager().Returns(caseManager);
 
 			_exportProcessBuilder.Create(new ExportSettings()
 			{
 				SelViewFieldIds = SelectedAvfIds
 			}, _job);
 
-			_caseManagerFactory.ReceivedWithAnyArgs().Create(null, null);
+			_serviceFactory.Received(1).CreateCaseManager();
 			caseManager.Received().Dispose();
 		}
 
@@ -222,7 +216,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			{
 				ArtifactID = _exportFile.CaseInfo.ArtifactID
 			});
-			_caseManagerFactory.Create(null, null).ReturnsForAnyArgs(caseManager);
+			_serviceFactory.CreateCaseManager().Returns(caseManager);
 
 			_exportProcessBuilder.Create(new ExportSettings()
 			{
@@ -238,7 +232,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			_exportFile.CaseInfo.DocumentPath = "document_path";
 
 			var caseManager = Substitute.For<ICaseManager>();
-			_caseManagerFactory.Create(null, null).ReturnsForAnyArgs(caseManager);
+			_serviceFactory.CreateCaseManager().Returns(caseManager);
 
 			_exportProcessBuilder.Create(new ExportSettings()
 			{
@@ -334,14 +328,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 				SelViewFieldIds = SelectedAvfIds
 			}, _job);
 
-			_exporterFactory.Received().Create(Arg.Is<ExportDataContext>(context => context.ExportFile == _exportDataContext.ExportFile));
+			_exporterFactory.Received().Create(Arg.Is<ExportDataContext>(context => context.ExportFile == _exportDataContext.ExportFile), _serviceFactory);
 		}
 
 		[Test]
 		public void ItShouldAttachEventHandlers()
 		{
-			var exporter = Substitute.For<Core.SharedLibrary.IExporter>();
-			_exporterFactory.Create(Arg.Is<ExportDataContext>(item => item.ExportFile == _exportFile )).Returns(exporter);
+			var exporter = Substitute.For<IExporter>();
+			_exporterFactory.Create(Arg.Is<ExportDataContext>(item => item.ExportFile == _exportFile ), _serviceFactory).Returns(exporter);
 
 			_exportProcessBuilder.Create(new ExportSettings()
 			{
@@ -356,11 +350,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		public void ItShouldSubscribeBatchRepoertToJobStatsService()
 		{
 			//Arrange
-			var exporter = Substitute.For<Core.SharedLibrary.IExporter>();
+			var exporter = Substitute.For<IExporter>();
 			var batchReporterMock = new BatchReporterMock();
 			var job = _job;
 
-			_exporterFactory.Create(Arg.Is<ExportDataContext>(item => item.ExportFile == _exportFile)).Returns(exporter);
+			_exporterFactory.Create(Arg.Is<ExportDataContext>(item => item.ExportFile == _exportFile), _serviceFactory).Returns(exporter);
 
 			_loggingMediator.LoggingMediators.Returns(
 				new List<ILoggingMediator>( new [] { batchReporterMock } ));
@@ -437,7 +431,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		{
 			var searchManager = Substitute.For<ISearchManager>();
 			searchManager.RetrieveAllExportableViewFields(_exportFile.CaseInfo.ArtifactID, _exportFile.ArtifactTypeID).Returns(expectedExportableFields);
-			_searchManagerFactory.Create(null, null).ReturnsForAnyArgs(searchManager);
+			_serviceFactory.CreateSearchManager().Returns(searchManager);
 		}
 
 		#endregion

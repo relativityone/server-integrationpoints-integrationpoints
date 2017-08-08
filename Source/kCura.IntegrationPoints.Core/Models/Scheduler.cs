@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using kCura.ScheduleQueue.Core.Helpers;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -24,11 +25,11 @@ namespace kCura.IntegrationPoints.Core.Models
 
 				if (rule.EndDate.HasValue)
 				{
-					EndDate = rule.EndDate.Value.ToString("MM/dd/yyyy");
+					EndDate = rule.EndDate.Value.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture);
 				}
 				if (rule.StartDate.HasValue)
 				{
-					StartDate = rule.StartDate.Value.ToString("MM/dd/yyyy");
+					StartDate = rule.StartDate.Value.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture);
 				}
 				if (rule.OccuranceInMonth.HasValue)
 				{

@@ -325,6 +325,14 @@
       <HintPath>..\packages\RelativityCore.9.5.231.8\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.OAuth2Client.IdentityModel.Interfaces, Version=1.0.12.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.Interfaces.1.0.12\lib\net462\Relativity.OAuth2Client.IdentityModel.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.OAuth2Client.Interfaces, Version=1.0.12.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.Interfaces.1.0.12\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Relativity.ProcessingBase, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\RelativityCore.9.5.231.8\lib\net462\Relativity.ProcessingBase.dll</HintPath>
       <Private>True</Private>
@@ -507,6 +515,9 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Authentication\OAuth2ClientFactoryTests.cs" />
+    <Compile Include="Authentication\OAuth2TokenGeneratorTests.cs" />
+    <Compile Include="Authentication\TokenCredentialProviderTests.cs" />
     <Compile Include="Factories\HelperFactoryTests.cs" />
     <Compile Include="Helpers\ButtonStateBuilderTests.cs" />
     <Compile Include="Helpers\MatchHelper.cs" />

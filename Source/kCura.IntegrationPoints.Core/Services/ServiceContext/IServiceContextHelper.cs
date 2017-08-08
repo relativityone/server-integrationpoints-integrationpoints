@@ -11,6 +11,6 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 		int GetWorkspaceUserID();
 		IDBContext GetDBContext(int workspaceID = -1);
 		IRSAPIService GetRsapiService();
-		IRSAPIClient GetRsapiClient(ExecutionIdentity identity);
+		IRSAPIClient GetRsapiClient();
 	}
 }

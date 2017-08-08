@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client;
@@ -40,7 +36,7 @@ namespace kCura.IntegrationPoints.Core
 			throw new NotImplementedException();
 		}
 
-		public IRSAPIClient GetRsapiClient(ExecutionIdentity identity)
+		public IRSAPIClient GetRsapiClient()
 		{
 			throw new NotImplementedException();
 		}

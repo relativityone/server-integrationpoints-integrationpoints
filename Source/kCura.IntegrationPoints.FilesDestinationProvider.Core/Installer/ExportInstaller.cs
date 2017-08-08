@@ -10,7 +10,6 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Exporters;
-using IExporterFactory = kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary.IExporterFactory;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 {
@@ -27,15 +26,16 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 			container.Register(Component.For<IExportedObjectBuilder>().ImplementedBy<ExportedObjectBuilder>());
 			container.Register(Component.For<IExportedArtifactNameRepository>().ImplementedBy<ExportedArtifactNameRepository>());
 			container.Register(Component.For<IExportFileBuilder>().ImplementedBy<ExportFileBuilder>());
-			container.Register(Component.For<IExportProcessBuilder>().ImplementedBy<ExportProcessBuilder>());
+			container.Register(Component.For<IExportProcessBuilder>().ImplementedBy<ExportProcessBuilder>().LifestyleTransient());
 			container.Register(Component.For<IExportSettingsBuilder>().ImplementedBy<ExportSettingsBuilder>());
 			container.Register(Component.For<ExportProcessRunner>().ImplementedBy<ExportProcessRunner>());
 
 			container.Register(Component.For<ICaseManagerFactory>().ImplementedBy<CaseManagerFactory>());
-		    container.Register(Component.For<IFactoryConfigBuilder>().ImplementedBy<FactoryConfigBuilder>());
-		    container.Register(Component.For<IExtendedExporterFactory>().ImplementedBy<ExtendedExporterFactory>());
 
-            container.Register(Component.For<IExportFieldsService>().ImplementedBy<ExportFieldsService>().LifestyleTransient());
+			container.Register(Component.For<IFactoryConfigBuilder>().ImplementedBy<FactoryConfigBuilder>().LifestyleTransient());
+			container.Register(Component.For<IExtendedExporterFactory>().ImplementedBy<ExtendedExporterFactory>());
+
+			container.Register(Component.For<IExportFieldsService>().ImplementedBy<ExportFieldsService>().LifestyleTransient());
 			container.Register(Component.For<IViewService>().ImplementedBy<ViewService>().LifestyleTransient());
 			container.Register(Component.For<IExportInitProcessService>().ImplementedBy<ExportInitProcessService>().LifestyleTransient());
 			container.Register(Component.For<IArtifactTreeService>().ImplementedBy<ArtifactTreeService>().LifestyleTransient());
@@ -44,6 +44,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 			container.Register(Component.For<IJobInfoFactory>().ImplementedBy<JobInfoFactory>().LifestyleTransient());
 			container.Register(Component.For<IDirectoryHelper>().ImplementedBy<WinEDDS.Core.IO.LongPathDirectoryHelper>().LifestyleTransient());
 			container.Register(Component.For<IExportConfig>().ImplementedBy<LoadFileExportConfig>().LifestyleTransient());
+			container.Register(Component.For<IExportServiceFactory>().ImplementedBy<ExportServiceFactory>().LifestyleTransient());
 
 		}
 	}

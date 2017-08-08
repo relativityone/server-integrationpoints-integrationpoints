@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -8,7 +7,6 @@ using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
@@ -22,7 +20,8 @@ using Castle.Core.Internal;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers.FileNaming;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain;
 using kCura.WinEDDS.Core.IO;
 using kCura.WinEDDS.Exporters;
 using NSubstitute;
@@ -48,7 +47,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		private WorkspaceService _workspaceService;
 
 		private static WindsorContainer _windsorContainer;
-	    private IExtendedExporterFactory _extendedExporterFactory;
 
 	    #endregion //Fields
 
@@ -58,9 +56,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			// TODO: ConfigSettings and WorkspaceService have some unhealthy coupling going on...
 
 			_workspaceService = new WorkspaceService(new ImportHelper());
-
-		    _extendedExporterFactory = _windsorContainer.Resolve<IExtendedExporterFactory>();
-
 		    _configSettings.WorkspaceId = _workspaceService.CreateWorkspace(_configSettings.WorkspaceName);
 
 			var fieldsService = _windsorContainer.Resolve<IExportFieldsService>();
@@ -106,8 +101,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				exportUserNotification,
 				userNotification,
 				new UserPasswordCredentialProvider(_configSettings),
-				new CaseManagerFactory(),
-				new SearchManagerFactory(),
 				_windsorContainer.Resolve<IExtendedExporterFactory>(),
 				new ExportFileBuilder(new DelimitersBuilder(), new VolumeInfoBuilder(),
 					new ExportedObjectBuilder(new ExportedArtifactNameRepository(_windsorContainer.Resolve<IRSAPIClient>(), _windsorContainer.Resolve<IServiceManagerProvider>()))
@@ -115,7 +108,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				helper,
 				jobStats,
 				GetJobInfo(),
-				new LongPathDirectoryHelper()
+				new LongPathDirectoryHelper(),
+				new ExportServiceFactory(helper, _windsorContainer.Resolve<IInstanceSettingRepository>(), new CurrentUser() {ID = 9})
 			);
 
 			var exportSettingsBuilder = new ExportSettingsBuilder(helper, null);

@@ -485,7 +485,10 @@
     </Compile>
     <Compile Include="ApplicationBinary.cs" />
     <Compile Include="AssemblyDomainLoader.cs" />
+    <Compile Include="Authentication\IAuthTokenGenerator.cs" />
+    <Compile Include="Authentication\ClaimsTokenGenerator.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="CurrentUser.cs" />
     <Compile Include="DataReaderWrapper.cs" />
     <Compile Include="DefaultProviderFactory.cs" />
     <Compile Include="DefaultSynchronizerFactory.cs" />

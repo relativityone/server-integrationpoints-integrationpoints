@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.Agent
 		private CreateErrorRdo _errorService;
 
 		private IRSAPIClient EddsRsapiClient => _eddsRsapiClient ??
-												(_eddsRsapiClient = new RsapiClientFactory(Helper).CreateClientForWorkspace(-1, ExecutionIdentity.System));
+												(_eddsRsapiClient = new RsapiClientFactory(Helper).CreateAdminClient(-1));
 
 		private ITaskFactory TaskFactory => _taskFactory ?? (_taskFactory = new TaskFactory(Helper));
 

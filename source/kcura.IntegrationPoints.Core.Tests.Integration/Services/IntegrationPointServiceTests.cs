@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
@@ -331,8 +332,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 				Scheduler = new Scheduler()
 				{
 					EnableScheduler = true,
-					StartDate = utcNow.ToString("MM/dd/yyyy"),
-					EndDate = utcNow.AddDays(1).ToString("MM/dd/yyyy"),
+					StartDate = utcNow.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture),
+					EndDate = utcNow.AddDays(1).ToString("MM/dd/yyyy", CultureInfo.InvariantCulture),
 					ScheduledTime = utcNow.ToString("HH") + ":" + utcNow.AddMinutes(schedulerRunTimeDelayMinutes).ToString("mm"),
 					SelectedFrequency = ScheduleInterval.Daily.ToString(),
 					TimeZoneId = TimeZoneInfo.Utc.Id
@@ -433,7 +434,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 				Scheduler = new Scheduler()
 				{
 					EnableScheduler = true,
-					StartDate = utcNow.ToString("MM/dd/yyyy"),
+					StartDate = utcNow.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture),
 					EndDate = endDate,
 					ScheduledTime = utcNow.ToString("HH") + ":" + utcNow.AddMinutes(1).ToString("mm"),
 					SelectedFrequency = ScheduleInterval.Daily.ToString(),

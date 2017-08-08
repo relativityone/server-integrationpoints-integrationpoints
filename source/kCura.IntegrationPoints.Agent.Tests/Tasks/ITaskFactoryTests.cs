@@ -25,7 +25,6 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Email;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
 using kCura.WinEDDS;
@@ -190,7 +189,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			Job tempJob = JobExtensions.CreateJob(jobId, taskType, relatedId);
 			_rsapiClient.APIOptions = new APIOptions(40234);
-			
+
 
 			TaskParameters paramerters = new TaskParameters();
 			JobHistory jobHistory = new JobHistory() { ArtifactId = 1234 };
@@ -249,9 +248,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			IExportConfig exportConfig = Substitute.For<IExportConfig>();
 			IRSAPIService rsapiService = Substitute.For<IRSAPIService>();
 			IGenericLibrary<Data.IntegrationPoint> integrationPointLibrary = Substitute.For<IGenericLibrary<Data.IntegrationPoint>>();
-            var sqlServiceFactory = Substitute.For<ISqlServiceFactory>();
+			var sqlServiceFactory = Substitute.For<ISqlServiceFactory>();
 
-            caseServiceContext.RsapiService.Returns(rsapiService);
+			caseServiceContext.RsapiService.Returns(rsapiService);
 			rsapiService.IntegrationPointLibrary.Returns(integrationPointLibrary);
 
 			int relatedId = 453245;
@@ -296,9 +295,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			ICaseServiceContext caseServiceContext = Substitute.For<ICaseServiceContext>();
 			IRSAPIService rsapiService = Substitute.For<IRSAPIService>();
 			IGenericLibrary<Data.IntegrationPoint> integrationPointLibrary = Substitute.For<IGenericLibrary<Data.IntegrationPoint>>();
-		    var sqlServiceFactory = Substitute.For<ISqlServiceFactory>();
+			var sqlServiceFactory = Substitute.For<ISqlServiceFactory>();
 
-            caseServiceContext.RsapiService.Returns(rsapiService);
+			caseServiceContext.RsapiService.Returns(rsapiService);
 			rsapiService.IntegrationPointLibrary.Returns(integrationPointLibrary);
 
 			int relatedId = 453245;
@@ -312,8 +311,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			IWindsorContainer windsorContainer = new WindsorContainer();
 			windsorContainer.Register(Component.For<IRelativityConfigurationFactory>().Instance(_relativityConfigurationFactory));
 			windsorContainer.Register(Component.For<ICaseServiceContext>().Instance(caseServiceContext));
-		    windsorContainer.Register(Component.For<ISqlServiceFactory>().Instance(sqlServiceFactory));
-            windsorContainer.Register(Component.For<IServiceManagerProvider>().Instance(_serviceManagerProvider));
+			windsorContainer.Register(Component.For<ISqlServiceFactory>().Instance(sqlServiceFactory));
+			windsorContainer.Register(Component.For<IServiceManagerProvider>().Instance(_serviceManagerProvider));
 			windsorContainer.Register(Component.For<IHelperFactory>().Instance(_helperFactory));
 
 			var taskFactory = new TaskFactory(_helper, windsorContainer);
@@ -355,10 +354,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			}
 
 			public override string Name { get; }
-		    public override ITask GetTask(Job job)
-		    {
-		        throw new NotImplementedException();
-		    }
+			public override ITask GetTask(Job job)
+			{
+				throw new NotImplementedException();
+			}
 		}
 	}
 }

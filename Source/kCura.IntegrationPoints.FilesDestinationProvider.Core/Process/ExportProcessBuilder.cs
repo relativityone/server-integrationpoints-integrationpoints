@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
@@ -19,14 +20,12 @@ using kCura.WinEDDS.Service.Export;
 using Relativity;
 using Relativity.API;
 using IExporter = kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary.IExporter;
-using IExporterFactory = kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary.IExporterFactory;
 using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 {
 	public class ExportProcessBuilder : IExportProcessBuilder
 	{
-		private readonly ICaseManagerFactory _caseManagerFactory;
 		private readonly IConfigFactory _configFactory;
 		private readonly ICredentialProvider _credentialProvider;
 		private readonly IExtendedExporterFactory _extendedExporterFactory;
@@ -36,38 +35,27 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 		private readonly IDirectoryHelper _dirHelper;
 		private readonly IAPILog _logger;
 		private readonly ICompositeLoggingMediator _loggingMediator;
-		private readonly IServiceManagerFactory<ISearchManager> _searchManagerFactory;
 		private readonly IUserMessageNotification _userMessageNotification;
 		private readonly IUserNotification _userNotification;
+		private readonly IExportServiceFactory _exportServiceFactory;
 
-		public ExportProcessBuilder(
-			IConfigFactory configFactory,
-			ICompositeLoggingMediator loggingMediator,
-			IUserMessageNotification userMessageNotification,
-			IUserNotification userNotification,
-			ICredentialProvider credentialProvider,
-			ICaseManagerFactory caseManagerFactory,
-			IServiceManagerFactory<ISearchManager> searchManagerFactory,
-			IExtendedExporterFactory extendedExporterFactory,
-			IExportFileBuilder exportFileBuilder,
-			IHelper helper,
-			JobStatisticsService jobStatisticsService,
-			IJobInfoFactory jobHistoryFactory,
-			IDirectoryHelper dirHelper
-		)
+		public ExportProcessBuilder(IConfigFactory configFactory, ICompositeLoggingMediator loggingMediator,
+			IUserMessageNotification userMessageNotification, IUserNotification userNotification,
+			ICredentialProvider credentialProvider, IExtendedExporterFactory extendedExporterFactory,
+			IExportFileBuilder exportFileBuilder, IHelper helper, JobStatisticsService jobStatisticsService,
+			IJobInfoFactory jobHistoryFactory, IDirectoryHelper dirHelper, IExportServiceFactory exportServiceFactory)
 		{
 			_configFactory = configFactory;
 			_loggingMediator = loggingMediator;
 			_userMessageNotification = userMessageNotification;
 			_userNotification = userNotification;
 			_credentialProvider = credentialProvider;
-			_caseManagerFactory = caseManagerFactory;
-			_searchManagerFactory = searchManagerFactory;
 			_extendedExporterFactory = extendedExporterFactory;
 			_exportFileBuilder = exportFileBuilder;
 			_jobStatisticsService = jobStatisticsService;
 			_jobHistoryFactory = jobHistoryFactory;
 			_dirHelper = dirHelper;
+			_exportServiceFactory = exportServiceFactory;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ExportProcessBuilder>();
 		}
 
@@ -85,10 +73,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 				};
 
 				PerformLogin(exportFile);
-				PopulateExportFieldsSettings(exportDataContext);
+				IExtendedServiceFactory serviceFactory = _exportServiceFactory.Create(exportDataContext);
+				PopulateExportFieldsSettings(exportDataContext, serviceFactory);
 
 				SetRuntimeSettings(exportFile, settings, job);
-				IExporter exporter = _extendedExporterFactory.Create(exportDataContext);
+				IExporter exporter = _extendedExporterFactory.Create(exportDataContext, serviceFactory);
 				AttachHandlers(exporter);
 				SubscribeToJobStatisticsEvents(job);
 				return exporter;
@@ -123,12 +112,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			exportFile.Credential = _credentialProvider.Authenticate(cookieContainer);
 		}
 
-		private void PopulateExportFieldsSettings(ExportDataContext exportDataContext)
+		private void PopulateExportFieldsSettings(ExportDataContext exportDataContext, IExtendedServiceFactory serviceFactory)
 		{
 			LogPopulatingFields();
-			using (var searchManager = _searchManagerFactory.Create(exportDataContext.ExportFile.Credential, exportDataContext.ExportFile.CookieContainer))
+			using (ISearchManager searchManager = serviceFactory.CreateSearchManager())
 			{
-				using (var caseManager = _caseManagerFactory.Create(exportDataContext.ExportFile.Credential, exportDataContext.ExportFile.CookieContainer))
+				using (ICaseManager caseManager = serviceFactory.CreateCaseManager())
 				{
 					PopulateCaseInfo(exportDataContext.ExportFile, caseManager);
 					SetRdoModeSpecificSettings(exportDataContext.ExportFile);

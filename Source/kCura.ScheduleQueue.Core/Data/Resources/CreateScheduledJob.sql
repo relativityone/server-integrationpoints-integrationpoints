@@ -25,6 +25,7 @@ SET
 		[NextRunTime] = @NextRunTime
 		,[ScheduleRule] = @ScheduleRule
 		,[JobDetails] = @JobDetails
+		,[SubmittedBy] = @SubmittedBy
 OUTPUT 
 		Inserted.[JobID]
 		,Inserted.[RootJobID]

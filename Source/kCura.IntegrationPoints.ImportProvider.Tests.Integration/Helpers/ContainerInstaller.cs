@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Net;
-
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
 using NSubstitute;
 using NUnit.Framework;
-
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Config;

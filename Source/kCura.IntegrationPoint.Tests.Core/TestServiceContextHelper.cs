@@ -8,10 +8,12 @@ namespace kCura.IntegrationPoint.Tests.Core
 	public class TestServiceContextHelper : IServiceContextHelper
 	{
 		private readonly IHelper _helper;
+		private readonly IRsapiClientFactory _rsapiClientFactory;
 
-		public TestServiceContextHelper(IHelper helper, int workspaceArtifactId)
+		public TestServiceContextHelper(IHelper helper, int workspaceArtifactId, IRsapiClientFactory rsapiClientFactory)
 		{
 			_helper = helper;
+			_rsapiClientFactory = rsapiClientFactory;
 			WorkspaceID = workspaceArtifactId;
 		}
 
@@ -37,9 +39,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return ServiceContextFactory.CreateRSAPIService(_helper, WorkspaceID);
 		}
 
-		public IRSAPIClient GetRsapiClient(ExecutionIdentity identity)
+		public IRSAPIClient GetRsapiClient()
 		{
-			return _helper.GetServicesManager().CreateProxy<IRSAPIClient>(identity);
+			return _rsapiClientFactory.CreateUserClient(WorkspaceID);
 		}
 	}
 }

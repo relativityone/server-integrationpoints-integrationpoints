@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using kCura.Windows.Process;
+﻿using kCura.Windows.Process;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Core.Export;
 using kCura.WinEDDS.Core.IO;
@@ -40,11 +35,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 			};
 		}
 
-		public IExporter Create(ExportDataContext context)
+		public IExporter Create(ExportDataContext context, IServiceFactory serviceFactory)
 		{
-			var config = _configFactory.BuildFactoryConfig(context);
+			ExporterFactoryConfig config = _configFactory.BuildFactoryConfig(context, serviceFactory);
 
-			var exporter = Create(context.ExportFile, config.Controller,
+			ExtendedExporter exporter = Create(context.ExportFile, config.Controller,
 				config.ServiceFactory,
 				config.LoadFileFormatterFactory, config.NameTextAndNativesAfterBegBates, config.FileNameProvider);
 

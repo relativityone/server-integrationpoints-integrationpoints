@@ -18,6 +18,7 @@ using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
@@ -53,12 +54,14 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			{
 				if (_managerFactory == null)
 				{
-                    IConfigFactory configFactory = new ConfigFactory();
-					ICredentialProvider credentialProvider = new TokenCredentialProvider();
+					IConfigFactory configFactory = new ConfigFactory();
+					IAuthProvider authProvider = new AuthProvider();
+					IAuthTokenGenerator authTokenGenerator = new ClaimsTokenGenerator();
+					ICredentialProvider credentialProvider = new TokenCredentialProvider(authProvider, authTokenGenerator, Helper);
 					ISerializer serializer = new JSONSerializer();
 					ITokenProvider tokenProvider = new RelativityCoreTokenProvider();
-                    ISqlServiceFactory sqlServiceFactory = new HelperConfigSqlServiceFactory(Helper);
-                    IServiceManagerProvider serviceManagerProvider = new ServiceManagerProvider(configFactory, credentialProvider,
+					ISqlServiceFactory sqlServiceFactory = new HelperConfigSqlServiceFactory(Helper);
+					IServiceManagerProvider serviceManagerProvider = new ServiceManagerProvider(configFactory, credentialProvider,
 						serializer, tokenProvider, sqlServiceFactory);
 					_managerFactory = new ManagerFactory(Helper, serviceManagerProvider);
 				}
@@ -78,7 +81,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 					IStateManager stateManager = ManagerFactory.CreateStateManager();
 					IRepositoryFactory repositoryFactory = new RepositoryFactory(Helper, Helper.GetServicesManager());
 					IIntegrationPointPermissionValidator permissionValidator =
-						new IntegrationPointPermissionValidator(new[] {new ViewErrorsPermissionValidator(repositoryFactory)}, new IntegrationPointSerializer());
+						new IntegrationPointPermissionValidator(new[] { new ViewErrorsPermissionValidator(repositoryFactory) }, new IntegrationPointSerializer());
 					IPermissionRepository permissionRepository = new PermissionRepository(Helper, Helper.GetActiveCaseID());
 					IRSAPIService rsapiService = new RSAPIService(Helper, Helper.GetActiveCaseID());
 					IProviderTypeService providerTypeService = new ProviderTypeService(rsapiService);

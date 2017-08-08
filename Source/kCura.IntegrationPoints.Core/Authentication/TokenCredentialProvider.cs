@@ -1,17 +1,35 @@
-﻿using System.Linq;
+﻿using System;
 using System.Net;
-using kCura.WinEDDS.Api;
+using kCura.IntegrationPoints.Domain.Authentication;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Authentication
 {
 	public class TokenCredentialProvider : ICredentialProvider
 	{
-		private const string _RELATIVITY_BEARER_USERNAME = "XxX_BearerTokenCredentials_XxX";
+		private readonly IAuthProvider _authProvider;
+		private readonly IAuthTokenGenerator _tokenGenerator;
+		private readonly IAPILog _logger;
+
+		public TokenCredentialProvider(IAuthProvider authProvider, IAuthTokenGenerator tokenGenerator, IHelper helper)
+		{
+			_authProvider = authProvider;
+			_tokenGenerator = tokenGenerator;
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<TokenCredentialProvider>();
+		}
 
 		public NetworkCredential Authenticate(CookieContainer cookieContainer)
 		{
-			string token = System.Security.Claims.ClaimsPrincipal.Current.Claims.Single(x => x.Type.Equals("access_token")).Value;
-			return LoginHelper.LoginUsernamePassword(_RELATIVITY_BEARER_USERNAME, token, cookieContainer);
+			try
+			{
+				string token = _tokenGenerator.GetAuthToken();
+				return _authProvider.LoginUsingAuthToken(token, cookieContainer);
+			}
+			catch (Exception e)
+			{
+				_logger.LogError(e, $"Error occured while authenticating user. Details: {e.Message}");
+				throw;
+			}
 		}
 	}
 }

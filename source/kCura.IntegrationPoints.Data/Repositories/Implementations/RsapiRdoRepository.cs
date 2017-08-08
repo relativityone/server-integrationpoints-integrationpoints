@@ -8,20 +8,20 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class RsapiRdoRepository : IRdoRepository
 	{
-		private readonly IServicesMgr _servicesMgr;
 		private readonly IAPILog _logger;
 		private readonly int _workspaceArtifactId;
+		private readonly IRsapiClientFactory _rsapiClientFactory;
 
-		public RsapiRdoRepository(IHelper helper, IServicesMgr servicesMgr, int workspaceArtifactId)
+		public RsapiRdoRepository(IHelper helper, int workspaceArtifactId, IRsapiClientFactory rsapiClientFactory)
 		{
-			_servicesMgr = servicesMgr;
 			_workspaceArtifactId = workspaceArtifactId;
+			_rsapiClientFactory = rsapiClientFactory;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<RsapiRdoRepository>();
 		}
 
 		public QueryResultSet<RDO> Query(Query<RDO> query)
 		{
-			using (IRSAPIClient rsapiClient = _servicesMgr.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			using (IRSAPIClient rsapiClient = GetRsapiClient())
 			{
 				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 
@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			try
 			{
-				using (var rsapiClient = _servicesMgr.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+				using (var rsapiClient = GetRsapiClient())
 				{
 					rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 					return rsapiClient.Repositories.RDO.CreateSingle(rdo);
@@ -74,7 +74,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			try
 			{
-				using (var rsapiClient = _servicesMgr.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+				using (var rsapiClient = GetRsapiClient())
 				{
 					rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 					rsapiClient.Repositories.RDO.UpdateSingle(rdo);
@@ -91,7 +91,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			try
 			{
-				using (var rsapiClient = _servicesMgr.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+				using (var rsapiClient = GetRsapiClient())
 				{
 					rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 					return rsapiClient.Repositories.RDO.ReadSingle(artifactId);
@@ -102,6 +102,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				_logger.LogError(e, "Failed to read RDO.");
 				throw;
 			}
+		}
+
+		private IRSAPIClient GetRsapiClient()
+		{
+			return _rsapiClientFactory.CreateUserClient(_workspaceArtifactId);
 		}
 	}
 }

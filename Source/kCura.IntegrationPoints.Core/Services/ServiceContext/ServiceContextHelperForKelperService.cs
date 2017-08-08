@@ -8,11 +8,13 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 	{
 		private readonly IServiceHelper _helper;
 		private int _workspaceArtifactId;
+		private readonly IRsapiClientFactory _rsapiClientFactory;
 
-		public ServiceContextHelperForKelperService(IServiceHelper helper, int workspaceArtifactId)
+		public ServiceContextHelperForKelperService(IServiceHelper helper, int workspaceArtifactId, IRsapiClientFactory rsapiClientFactory)
 		{
 			_helper = helper;
 			_workspaceArtifactId = workspaceArtifactId;
+			_rsapiClientFactory = rsapiClientFactory;
 		}
 
 		public int WorkspaceID {
@@ -40,10 +42,9 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 			return ServiceContextFactory.CreateRSAPIService(_helper, WorkspaceID);
 		}
 
-		public IRSAPIClient GetRsapiClient(ExecutionIdentity identity)
+		public IRSAPIClient GetRsapiClient()
 		{
-			IRSAPIClient client = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(identity);
-			client.APIOptions.WorkspaceID = _workspaceArtifactId;
+			IRSAPIClient client = _rsapiClientFactory.CreateUserClient(_workspaceArtifactId);
 			return client;
 		}
 	}

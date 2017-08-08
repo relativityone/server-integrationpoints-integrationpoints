@@ -42,12 +42,12 @@ namespace kCura.IntegrationPoints.Data.Installers
 			container.Register(Component.For<IIntegrationPointByProvidersQueryBuilder>().ImplementedBy<IntegrationPointByProvidersQueryBuilder>().LifestyleSingleton());
 			container.Register(Component.For<IIntegrationPointsCompletedJobsQueryBuilder>().ImplementedBy<IntegrationPointsCompletedJobsQueryBuilder>().LifestyleSingleton());
 
-			container.Register(Component.For<IDocumentTotalStatistics>().ImplementedBy<DocumentTotalStatistics>().LifestyleSingleton());
+			container.Register(Component.For<IDocumentTotalStatistics>().ImplementedBy<DocumentTotalStatistics>().LifestyleTransient());
 			container.Register(Component.For<INativeTotalStatistics>().ImplementedBy<NativeTotalStatistics>().LifestyleSingleton());
 			container.Register(Component.For<INativeFileSizeStatistics>().ImplementedBy<NativeFileSizeStatistics>().LifestyleSingleton());
 			container.Register(Component.For<IImageTotalStatistics>().ImplementedBy<ImageTotalStatistics>().LifestyleSingleton());
 			container.Register(Component.For<IImageFileSizeStatistics>().ImplementedBy<ImageFileSizeStatistics>().LifestyleSingleton());
-			container.Register(Component.For<IRdoStatistics>().ImplementedBy<RdoStatistics>().LifestyleSingleton());
+			container.Register(Component.For<IRdoStatistics>().ImplementedBy<RdoStatistics>().LifestyleTransient());
 		}
 	}
 }
