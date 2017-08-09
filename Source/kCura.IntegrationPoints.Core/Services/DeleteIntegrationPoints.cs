@@ -6,11 +6,11 @@ namespace kCura.IntegrationPoints.Core.Services
 {
 	public class DeleteIntegrationPoints
 	{
-		private readonly IntegrationPointQuery _integrationPointQuery ;
-		private readonly DeleteHistoryService _deleteHistoryService;
+		private readonly IIntegrationPointQuery _integrationPointQuery;
+		private readonly IDeleteHistoryService _deleteHistoryService;
 		private readonly IRSAPIService _service;
 
-		public DeleteIntegrationPoints(IntegrationPointQuery integrationPointQuery, DeleteHistoryService deleteHistoryService,IRSAPIService service)
+		public DeleteIntegrationPoints(IIntegrationPointQuery integrationPointQuery, IDeleteHistoryService deleteHistoryService, IRSAPIService service)
 		{
 			_integrationPointQuery = integrationPointQuery;
 			_deleteHistoryService = deleteHistoryService;
@@ -19,12 +19,9 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public void DeleteIPsWithSourceProvider(List<int> sourceProvider)
 		{
-			
-			var integrationPoint = _integrationPointQuery.GetIntegrationPoints(sourceProvider);
-			_deleteHistoryService.DeleteHistoriesAssociatedWithIPs(integrationPoint.Select(x => x.ArtifactId).ToList(), _service);
-			_service.IntegrationPointLibrary.Delete(integrationPoint);
-
-
+			var integrationPoints = _integrationPointQuery.GetIntegrationPoints(sourceProvider);
+			_deleteHistoryService.DeleteHistoriesAssociatedWithIPs(integrationPoints.Select(x => x.ArtifactId).ToList(), _service);
+			_service.IntegrationPointLibrary.Delete(integrationPoints);
 		}
 	}
 }

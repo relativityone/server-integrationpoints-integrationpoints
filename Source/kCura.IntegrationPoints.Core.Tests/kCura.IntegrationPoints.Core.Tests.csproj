@@ -535,6 +535,7 @@
     <Compile Include="RelativitySourceRdo\RelativitySourceWorkspaceRdoInitializerTests.cs" />
     <Compile Include="Services\ChoiceServiceTests.cs" />
     <Compile Include="Services\DataTransferLocationServiceTests.cs" />
+    <Compile Include="Services\DeleteIntegrationPointsTests.cs" />
     <Compile Include="Services\Export\DynamicFolderPathReaderTests.cs" />
     <Compile Include="Services\Export\ExportTransferDataReaderTestsBase.cs" />
     <Compile Include="Services\Export\ImageTransferDataReaderTests.cs" />

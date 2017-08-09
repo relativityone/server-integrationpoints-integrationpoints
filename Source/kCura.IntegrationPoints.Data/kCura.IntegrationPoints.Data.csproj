@@ -156,6 +156,7 @@
     <Compile Include="IGenericLibraryFactory.cs" />
     <Compile Include="IIntegrationPointBaseFieldGuidsConstants.cs" />
     <Compile Include="IIntegrationPointBaseFieldsConstants.cs" />
+    <Compile Include="IIntegrationPointQuery.cs" />
     <Compile Include="IntegrationPointBaseQuery.cs" />
     <Compile Include="EncryptingRsapiClientLibrary.cs" />
     <Compile Include="IResourceDbProvider.cs" />
