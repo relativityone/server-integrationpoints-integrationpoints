@@ -25,7 +25,7 @@ properties {
     $Injections = 'DisableInjections'
 
     #assembly info variables
-    $company = 'kCura LLC'
+    $company = 'Relativity ODA LLC'
     $product = 'kCura.IntegrationPoints'
     $product_description = 'kCura.IntegrationPoints'
 

@@ -3,14 +3,14 @@
   <metadata>
     <id>kCura.IntegrationPoints.Services.Interfaces.Private</id>
     <version>1.0.0-DEV-0-Debug-local</version>
-    <authors>kCura LLC</authors>
-    <owners>kCura LLC</owners>
-    <licenseUrl>https://www.kcura.com/terms-of-use/</licenseUrl>
-    <projectUrl>https://platform.kcura.com/index.html</projectUrl>
+    <authors>Relativity ODA LLC</authors>
+    <owners>Relativity ODA LLC</owners>
+    <licenseUrl>https://www.relativity.com/terms-of-use/</licenseUrl>
+    <projectUrl>https://platform.relativity.com/index.html</projectUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>Provides the services and contracts needed to interact with Integration Points.</description>
-    <copyright>Copyright (c) 2016, kCura LLC</copyright>
-    <tags>kCura IntegrationPoints Services Interfaces Private</tags>
+    <copyright>© Relativity</copyright>
+    <tags>Relativity IntegrationPoints Services Interfaces Private</tags>
     <dependencies>
       <dependency id="Relativity.Kepler" version="1.0.1.333" />
     </dependencies>

@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("kCura.IntegrationPoints")]
 [assembly: AssemblyDescription("kCura.IntegrationPoints")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Relativity LLC")]
+[assembly: AssemblyCompany("Relativity ODA LLC")]
 [assembly: AssemblyProduct("kCura.IntegrationPoints")]
-[assembly: AssemblyCopyright("Copyright (c) 2017, Relativity LLC")]
+[assembly: AssemblyCopyright("© Relativity")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

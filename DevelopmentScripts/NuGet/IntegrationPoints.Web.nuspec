@@ -3,13 +3,13 @@
   <metadata>
     <id>kCura.IntegrationPoints.Web</id>
     <version>1.0.0-DEV-0-Debug-local</version>
-    <authors>kCura LLC</authors>
-    <owners>kCura LLC</owners>
+    <authors>Relativity ODA LLC</authors>
+    <owners>Relativity ODA LLC</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Provides the libraries that are needed for the web component of Integration points.</description>
     <releaseNotes>Release</releaseNotes>
-    <copyright>Copyright (c) 2016, kCura LLC</copyright>
-    <tags>kCura IntegrationPoints Web</tags>  
+    <copyright>© Relativity</copyright>
+    <tags>Relativity IntegrationPoints Web</tags>  
   </metadata>
   <files>
     <file src="..\..\Source\Dependencies\ProviderIncludes\frame-messaging.js" target="content\scripts\" />
