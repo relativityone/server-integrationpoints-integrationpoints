@@ -63,6 +63,7 @@ var LocationJSTreeSelector = function () {
 			if ((!self.domSelectorSettings.selectFilesOnly) || (!data.node.original.isDirectory && self.domSelectorSettings.selectFilesOnly)) {
 				self.setSelection(data.node.id);
 				self.SelectedNode = data.node.text;
+				data.node.fullPath = data.instance.get_path(data.node, '/');
 				self.domSelectorSettings.onNodeSelectedEventHandler(data.node);
 				self.setTreeVisibility(false);
 			}

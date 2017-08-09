@@ -273,7 +273,7 @@ var ExportSourceViewModel = function (state) {
 		} else {
 			self.LocationSelector.init(self.FolderArtifactName(), [], {
 				onNodeSelectedEventHandler: function (node) {
-					self.FolderArtifactName(node.text);
+					self.FolderArtifactName(node.fullPath);
 					self.FolderArtifactId(node.id);
 				}
 			});
