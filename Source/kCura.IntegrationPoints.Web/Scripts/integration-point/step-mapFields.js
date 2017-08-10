@@ -536,16 +536,20 @@ ko.validation.insertValidationMessage = function (element) {
 		};
 		var mapHelper = (function () {
 			function find(fields, fieldMapping, key, func) {
-				return $.grep(fields, function (item) {
-					var remove = false;
-					$.each(fieldMapping, function () {
-						if (this[key].fieldIdentifier === item.fieldIdentifier && this["fieldMapType"] !== mapTypes.parent && this["fieldMapType"] !== mapTypes.native) {
-							remove = true;
-							return false;
-						}
+				return $.grep(fields,
+					function(item) {
+						var remove = false;
+						$.each(fieldMapping,
+							function() {
+								if (this[key].fieldIdentifier === item.fieldIdentifier &&
+									this["fieldMapType"] !== mapTypes.parent &&
+									this["fieldMapType"] !== mapTypes.native) {
+									remove = true;
+									return false;
+								}
+							});
+						return func(remove);
 					});
-					return func(remove);
-				});
 			}
 
 			function getNotMapped(fields, fieldMapping, key) {
@@ -651,7 +655,7 @@ ko.validation.insertValidationMessage = function (element) {
 				}
 
 				mapping = $.map(mapping, function (value) {
-					if (value.fieldMapType !== mapTypes.parent && value.fieldMapType !== mapTypes.native) {
+					if (value.fieldMapType !== mapTypes.parent && (value.fieldMapType !== mapTypes.native || value.destinationField.fieldIdentifier !== undefined)) {
 						return value;
 					}
 					return null;
@@ -924,6 +928,27 @@ ko.validation.insertValidationMessage = function (element) {
 			}
 		};
 
+	    var _addNativePathFieldToMapping = function(map, nativePathField) {
+
+			var nativePathMapping = undefined;
+			for (var i = 0; i < map.length; i++) {
+				if (map[i].sourceField.fieldIdentifier === nativePathField.identifer) {
+					nativePathMapping = map[i];
+					break;
+				}
+			}
+
+			if (nativePathMapping === undefined) {
+				map.push({
+					sourceField: _createEntry(nativePathField),
+					destinationField: {},
+					fieldMapType: "NativeFilePath"
+				});
+			} else {
+				nativePathMapping.fieldMapType = "NativeFilePath";
+			}
+		}
+
 		this.back = function () {
 			var d = root.data.deferred().defer();
 			this.returnModel.importNativeFile = this.model.importNativeFile();
@@ -1024,11 +1049,8 @@ ko.validation.insertValidationMessage = function (element) {
 							}
 						}
 						if (nativePathField !== "") {
-							map.push({
-								sourceField: _createEntry(nativePathField),
-								destinationField: {},
-								fieldMapType: "NativeFilePath"
-							});
+							_addNativePathFieldToMapping(map, nativePathField);
+
 						}
 					}
 

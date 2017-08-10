@@ -56,6 +56,14 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 						kCura.IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD,
 						sourceOrdinal,
 						curColIdx++);
+
+					if (cur.DestinationField.FieldIdentifier != null)
+					{
+						AddColumn(
+							cur.SourceField.FieldIdentifier,
+							sourceOrdinal,
+							curColIdx++);
+					}
 				}
 				//general case
 				else

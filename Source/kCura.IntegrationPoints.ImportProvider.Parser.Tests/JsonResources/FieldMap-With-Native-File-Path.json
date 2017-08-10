@@ -1,1 +1,34 @@
-[{"sourceField":{"displayName":"FileID","isIdentifier":true,"fieldIdentifier":"0","isRequired":false},"destinationField":{"displayName":"Control Number [Object Identifier]","isIdentifier":true,"fieldIdentifier":"1003667","isRequired":true},"fieldMapType":"Identifier"},{"sourceField":{"displayName":"FILE_PATH","isIdentifier":false,"fieldIdentifier":"4","isRequired":false},"destinationField":{"displayName":"Group Identifier","isIdentifier":false,"fieldIdentifier":"1003671","isRequired":false},"fieldMapType":"None"},{"sourceField":{"displayName":"FILE_PATH","isIdentifier":false,"fieldIdentifier":"4","isRequired":false},"destinationField":{},"fieldMapType":"NativeFilePath"}]
+[
+  {
+    "sourceField": {
+      "displayName": "FileID",
+      "isIdentifier": true,
+      "fieldIdentifier": "0",
+      "isRequired": false
+    },
+    "destinationField": {
+      "displayName": "Control Number [Object Identifier]",
+      "isIdentifier": true,
+      "fieldIdentifier": "1003667",
+      "isRequired": true
+    },
+    "fieldMapType": "Identifier"
+  },
+  {
+    "sourceField": {
+      "displayName": "FILE_PATH",
+      "isIdentifier": false,
+      "fieldIdentifier": "4",
+      "isRequired": false
+    },
+    "destinationField": {
+      "displayName": "Group Identifier",
+      "isIdentifier": false,
+      "fieldIdentifier": "1003671",
+      "isRequired": false
+    },
+    "fieldMapType": "NativeFilePath"
+  }
+]
+
+

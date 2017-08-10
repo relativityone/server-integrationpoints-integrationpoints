@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 		}
 
 		[Test]
-		public void ItShouldHaveAllMappedColumns_WithNativeFileMapping()
+		public void ItShouldHaveAdditionalColumn_WithNativeFileMapping()
 		{
 			//Arrange
 			DataTable sourceDataTable = SourceDataTable(_LOADFILE_1);
@@ -80,47 +80,12 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 			}
 
 			//ImportDataReader schema should have no extra columns
-			Assert.AreEqual(fieldMaps.Count, columnNames.Count);
+			Assert.AreEqual(fieldMaps.Count + 1, columnNames.Count);
 			//ImportDataReader schema should have number of mapped columns
-			Assert.AreEqual(fieldMaps.Count, idr.FieldCount);
+			Assert.AreEqual(fieldMaps.Count + 1, idr.FieldCount);
 		}
 
-		[Test]
-		public void ItShouldProvideCorrectData_WithNativeFileMapping()
-		{
-			//Arrange
-			DataTable sourceDataTable = SourceDataTable(_LOADFILE_1);
-			List<FieldMap> fieldMaps = FieldMapObject(_FIELDMAP_WITH_NATIVE_FILE_PATH);
 
-			//Act
-			ImportDataReader idr = new ImportDataReader(sourceDataTable.CreateDataReader());
-			idr.Setup(fieldMaps.ToArray());
-
-			//Assert
-
-			List<string> columnNames = idr.GetSchemaTable().Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToList();
-			string nativePathColumnName  =
-				fieldMaps.FirstOrDefault(x => x.FieldMapType == FieldMapTypeEnum.NativeFilePath)?.SourceField.FieldIdentifier;
-
-			int dtRowIndex = 0;
-			while (idr.Read())
-			{
-				for (int i = 0; i < columnNames.Count; i++)
-				{
-					if (columnNames[i] == Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD)
-					{
-						Assert.AreEqual(sourceDataTable.Rows[dtRowIndex][nativePathColumnName], idr[i]);
-					}
-					else
-					{
-						Assert.AreEqual(sourceDataTable.Rows[dtRowIndex][columnNames[i]], idr[i]);
-					}
-				}
-				dtRowIndex++;
-			}
-
-			Assert.AreEqual(sourceDataTable.Rows.Count, dtRowIndex);
-		}
 
 		[Test]
 		public void ItShouldHaveAllMappedColumnsAndFolder_WithFolderMapping()
@@ -220,7 +185,46 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 			Assert.AreEqual(sourceDataTable.Rows.Count, dtRowIndex);
 		}
 
-		[Test]
+	    [Test]
+	    public void ItShouldProvideCorrectData_WithNativeFileMapping()
+	    {
+	        //Arrange
+	        DataTable sourceDataTable = SourceDataTable(_LOADFILE_1);
+	        List<FieldMap> fieldMaps = FieldMapObject(_FIELDMAP_WITH_NATIVE_FILE_PATH);
+
+	        //Act
+	        ImportDataReader idr = new ImportDataReader(sourceDataTable.CreateDataReader());
+	        idr.Setup(fieldMaps.ToArray());
+
+	        //Assert
+
+	        List<string> columnNames = idr.GetSchemaTable().Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToList();
+	        Assert.IsTrue(columnNames.Contains(Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD));
+
+            string nativePathColumnName =
+	            fieldMaps.FirstOrDefault(x => x.FieldMapType == FieldMapTypeEnum.NativeFilePath)?.SourceField.FieldIdentifier;
+
+	        int dtRowIndex = 0;
+	        while (idr.Read())
+	        {
+	            for (int i = 0; i < columnNames.Count; i++)
+	            {
+	                if (columnNames[i] == Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD)
+	                {
+	                    Assert.AreEqual(sourceDataTable.Rows[dtRowIndex][nativePathColumnName], idr[i]);
+	                }
+	                else
+	                {
+	                    Assert.AreEqual(sourceDataTable.Rows[dtRowIndex][columnNames[i]], idr[i]);
+	                }
+	            }
+	            dtRowIndex++;
+	        }
+
+	        Assert.AreEqual(sourceDataTable.Rows.Count, dtRowIndex);
+	    }
+
+        [Test]
 		public void ItShouldPassThroughCallsToManageErrorRecords()
 		{
 			//Arrange
