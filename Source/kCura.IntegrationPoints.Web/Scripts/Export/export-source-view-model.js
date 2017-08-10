@@ -142,28 +142,6 @@ var ExportSourceViewModel = function (state) {
 
 	self.Folders = ko.observable();
 
-	self.GetFolderFullName = function () {
-		if (self.ExportRdoMode()) {
-			return "";
-		}
-		var getFullName = function (currentFolder, folderId) {
-			if (currentFolder.id === folderId) {
-				return currentFolder.text;
-			} else {
-				for (var i = 0; i < currentFolder.children.length; i++) {
-					var childFolderPath = getFullName(currentFolder.children[i], folderId);
-					if (childFolderPath !== "") {
-						return currentFolder.text + "/" + childFolderPath;
-					}
-				}
-			}
-			return "";
-		};
-		return getFullName(self.Folders(), self.FolderArtifactId());
-	};
-
-
-
 	// views
 
 	self.AvailableViews = ko.observableArray();
