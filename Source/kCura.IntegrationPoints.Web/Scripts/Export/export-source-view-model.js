@@ -172,7 +172,6 @@ var ExportSourceViewModel = function (state) {
 		if (!!selectedView) {
 			self.ViewId(selectedView.artifactId);
 		} else {
-			self.FolderArtifactName(undefined);
 			self.ViewId(undefined);
 		}
 	};
