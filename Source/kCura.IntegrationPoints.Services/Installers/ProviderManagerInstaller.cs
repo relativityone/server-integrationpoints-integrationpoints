@@ -5,6 +5,7 @@ using Castle.Windsor;
 using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Installers;
+using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Services.Repositories;
 using kCura.IntegrationPoints.Services.Repositories.Implementations;
 using Relativity.API;
@@ -33,6 +34,7 @@ namespace kCura.IntegrationPoints.Services.Installers
 			container.Register(Component.For<IRSAPIService>().UsingFactoryMethod(k => new RSAPIService(k.Resolve<IHelper>(), workspaceId), true));
 			container.Register(Component.For<IServicesMgr>().UsingFactoryMethod(k => k.Resolve<IHelper>().GetServicesManager()));
 			container.Register(Component.For<IProviderRepository>().ImplementedBy<ProviderRepository>().LifestyleTransient());
+			container.Register(Component.For<IAuthTokenGenerator>().ImplementedBy<ClaimsTokenGenerator>().LifestyleTransient());
 		}
 	}
 }

@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Installers;
+using kCura.IntegrationPoints.Domain.Authentication;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Services.Installers
@@ -39,6 +40,7 @@ namespace kCura.IntegrationPoints.Services.Installers
 					var rsapiClientFactory = k.Resolve<IRsapiClientFactory>();
 					return new ServiceContextHelperForKelperService(helper, workspaceId, rsapiClientFactory);
 				}));
+			container.Register(Component.For<IAuthTokenGenerator>().ImplementedBy<ClaimsTokenGenerator>().LifestyleTransient());
 		}
 	}
 }
