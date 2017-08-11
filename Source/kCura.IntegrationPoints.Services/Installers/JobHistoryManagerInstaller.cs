@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Installers;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Services.JobHistory;
 using kCura.IntegrationPoints.Services.Repositories;
 using kCura.IntegrationPoints.Services.Repositories.Implementations;
@@ -53,6 +54,7 @@ namespace kCura.IntegrationPoints.Services.Installers
 					.LifestyleTransient());
 			container.Register(Component.For<ICompletedJobsHistoryRepository>().ImplementedBy<CompletedJobsHistoryRepository>().LifestyleTransient());
 			container.Register(Component.For<IRSAPIService>().UsingFactoryMethod(k => ServiceContextFactory.CreateRSAPIService(k.Resolve<IHelper>(), workspaceId), true));
+			container.Register(Component.For<IAuthTokenGenerator>().ImplementedBy<ClaimsTokenGenerator>().LifestyleTransient());
 		}
 	}
 }
