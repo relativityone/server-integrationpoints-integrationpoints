@@ -67,6 +67,7 @@
 			}));
 
 			self.model.errors = ko.validation.group(self.model);
+			self.model.errors.showAllMessages(false);
 
 			self.getAvailableFields = function (fieldName, fieldValue) {
 				self.ipModel.sourceConfiguration[fieldName] = fieldValue || 0;
@@ -201,28 +202,25 @@
 				});
 
 				self.model.exportSource.ViewId.subscribe(function (value) {
-					if (value) {
-						self.getAvailableFields("ViewId", value);
-					}
+					self.getAvailableFields("ViewId", value);
 				});
 			});
 		};
-
+		
 		self.updateModel = function () {
 			self.ipModel.sourceConfiguration.StartExportAtRecord = self.model.startExportAtRecord();
-
 			switch (self.ipModel.sourceConfiguration.ExportType) {
 			case ExportEnums.SourceOptionsEnum.Folder:
 			case ExportEnums.SourceOptionsEnum.FolderSubfolder:
 				self.ipModel.sourceConfiguration.FolderArtifactId = self.model.exportSource.FolderArtifactId();
 				self.ipModel.sourceConfiguration.FolderArtifactName = self.model.exportSource.FolderArtifactName();
-				self.ipModel.sourceConfiguration.FolderFullName = self.model.exportSource.GetFolderFullName();
 
 				var selectedView = self.model.exportSource.GetSelectedView();
-				self.ipModel.sourceConfiguration.ViewId = selectedView.artifactId;
-				self.ipModel.sourceConfiguration.ViewName = selectedView.name;
+				if (selectedView) {
+					self.ipModel.sourceConfiguration.ViewId = selectedView.artifactId;
+					self.ipModel.sourceConfiguration.ViewName = selectedView.name;
+				}
 				break;
-
 			case ExportEnums.SourceOptionsEnum.Production:
 				self.ipModel.sourceConfiguration.ProductionId = self.model.exportSource.ProductionId();
 				self.ipModel.sourceConfiguration.ProductionName = self.model.exportSource.ProductionName();
@@ -234,7 +232,6 @@
 				self.ipModel.sourceConfiguration.SavedSearch = selectedSavedSearch.displayName;
 				break;
 			}
-
 			self.ipModel.map = self.model.fields.getMappedFields();
 			var fileNamingFieldsList = self.model.fields.availableFields().concat(self.model.fields.mappedFields());
 			fileNamingFieldsList.sort(function(a, b) {

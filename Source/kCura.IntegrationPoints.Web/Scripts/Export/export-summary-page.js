@@ -39,10 +39,10 @@ var loadData = function (ko, dataContainer) {
 				return "Saved search: " + self.settings.SavedSearch;
 			}
 			if (self.settings.ExportType == ExportEnums.SourceOptionsEnum.Folder) {
-				return "Folder: " + self.settings.FolderFullName;
+				return "Folder: " + self.settings.FolderArtifactName;
 			}
 			if (self.settings.ExportType == ExportEnums.SourceOptionsEnum.FolderSubfolder) {
-				return "Folder + Subfolders: " + self.settings.FolderFullName;
+				return "Folder + Subfolders: " + self.settings.FolderArtifactName;
 			}
 			if (self.settings.ExportType == ExportEnums.SourceOptionsEnum.Production) {
 				return "Production: " + self.settings.ProductionName;

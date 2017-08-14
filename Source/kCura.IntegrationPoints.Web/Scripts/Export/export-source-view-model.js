@@ -142,28 +142,6 @@ var ExportSourceViewModel = function (state) {
 
 	self.Folders = ko.observable();
 
-	self.GetFolderFullName = function () {
-		if (self.ExportRdoMode()) {
-			return "";
-		}
-		var getFullName = function (currentFolder, folderId) {
-			if (currentFolder.id === folderId) {
-				return currentFolder.text;
-			} else {
-				for (var i = 0; i < currentFolder.children.length; i++) {
-					var childFolderPath = getFullName(currentFolder.children[i], folderId);
-					if (childFolderPath !== "") {
-						return currentFolder.text + "/" + childFolderPath;
-					}
-				}
-			}
-			return "";
-		};
-		return getFullName(self.Folders(), self.FolderArtifactId());
-	};
-
-
-
 	// views
 
 	self.AvailableViews = ko.observableArray();
@@ -194,7 +172,6 @@ var ExportSourceViewModel = function (state) {
 		if (!!selectedView) {
 			self.ViewId(selectedView.artifactId);
 		} else {
-			self.FolderArtifactName(undefined);
 			self.ViewId(undefined);
 		}
 	};
@@ -273,7 +250,7 @@ var ExportSourceViewModel = function (state) {
 		} else {
 			self.LocationSelector.init(self.FolderArtifactName(), [], {
 				onNodeSelectedEventHandler: function (node) {
-					self.FolderArtifactName(node.text);
+					self.FolderArtifactName(node.fullPath);
 					self.FolderArtifactId(node.id);
 				}
 			});
