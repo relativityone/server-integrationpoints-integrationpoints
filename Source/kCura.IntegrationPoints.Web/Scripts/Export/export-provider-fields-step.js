@@ -67,6 +67,7 @@
 			}));
 
 			self.model.errors = ko.validation.group(self.model);
+			self.model.errors.showAllMessages(false);
 
 			self.getAvailableFields = function (fieldName, fieldValue) {
 				self.ipModel.sourceConfiguration[fieldName] = fieldValue || 0;
@@ -201,9 +202,7 @@
 				});
 
 				self.model.exportSource.ViewId.subscribe(function (value) {
-					if (value) {
-						self.getAvailableFields("ViewId", value);
-					}
+					self.getAvailableFields("ViewId", value);
 				});
 			});
 		};
