@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		private readonly ImportHelper _importHelper;
 
-		private const string _TEMPLATE_WORKSPACE_NAME = "kCura Starter Template";
+		private const string _TEMPLATE_WORKSPACE_NAME = "Relativity Starter Template";
 		private const string _SAVED_SEARCH_FOLDER = "Testing Folder";
 		private const string _SAVED_SEARCH_NAME = "Testing Saved Search";
 

@@ -106,7 +106,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		public static class WorkspaceTemplates
 		{
 			public const string NEW_CASE_TEMPLATE = "New Case Template";
-			public const string KCURA_STARTER_TEMPLATE = "kCura Starter Template";
 		}
 
 		protected virtual void Install()

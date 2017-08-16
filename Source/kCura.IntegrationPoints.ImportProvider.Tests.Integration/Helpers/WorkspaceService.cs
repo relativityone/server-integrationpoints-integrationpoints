@@ -5,7 +5,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
 {
 	public static class WorkspaceService
 	{
-		private static readonly string _TEMPLATE_WORKSPACE_NAME = "kCura Starter Template";
+		private static readonly string _TEMPLATE_WORKSPACE_NAME = "Relativity Starter Template";
 
 		public static int CreateWorkspace(string name)
 		{
