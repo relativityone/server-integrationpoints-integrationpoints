@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.LDAPProvider
 {
+    [Serializable]
     public class LDAPProviderException : Exception
     {
         public LDAPProviderException()
