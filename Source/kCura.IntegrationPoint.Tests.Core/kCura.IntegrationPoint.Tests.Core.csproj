@@ -426,19 +426,19 @@
   <PropertyGroup>
     <PostBuildEvent>mkdir "$(ProjectDir)..\..\lib\UnitTests"
 xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y
-xcopy "$(ProjectDir)TestData" "$(ProjectDir)..\..\lib\UnitTests\TestData" /E /Y /I /R</PostBuildEvent>
+xcopy "$(ProjectDir)TestData" "$(ProjectDir)..\..\lib\UnitTests\TestData" /E /Y /I /R
+xcopy "$(ProjectDir)oi\unmanaged" "$(ProjectDir)..\..\lib\UnitTests\oi"  /E /Y /I /R</PostBuildEvent>
   </PropertyGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\kCura.OutsideIn.FI.Win32.2017.1.2\build\kCura.OutsideIn.FI.Win32.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\kCura.OutsideIn.FI.Win32.2017.1.2\build\kCura.OutsideIn.FI.Win32.targets'))" />
-    <Error Condition="!Exists('..\packages\Relativity.ImportExport.9.5.245.43\build\Relativity.ImportExport.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Relativity.ImportExport.9.5.245.43\build\Relativity.ImportExport.targets'))" />
     <Error Condition="!Exists('..\packages\kCura.9.5.245.43\build\kCura.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\kCura.9.5.245.43\build\kCura.targets'))" />
+    <Error Condition="!Exists('..\packages\kCura.OutsideIn.FI.Win32.2017.1.2\build\kCura.OutsideIn.FI.Win32.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\kCura.OutsideIn.FI.Win32.2017.1.2\build\kCura.OutsideIn.FI.Win32.targets'))" />
   </Target>
-  <Import Project="..\packages\kCura.OutsideIn.FI.Win32.2017.1.2\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\packages\kCura.OutsideIn.FI.Win32.2017.1.2\build\kCura.OutsideIn.FI.Win32.targets')" />
   <Import Project="..\packages\Relativity.ImportExport.9.5.245.43\build\Relativity.ImportExport.targets" Condition="Exists('..\packages\Relativity.ImportExport.9.5.245.43\build\Relativity.ImportExport.targets')" />
   <Import Project="..\packages\kCura.9.5.245.43\build\kCura.targets" Condition="Exists('..\packages\kCura.9.5.245.43\build\kCura.targets')" />
+  <Import Project="..\packages\kCura.OutsideIn.FI.Win32.2017.1.2\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\packages\kCura.OutsideIn.FI.Win32.2017.1.2\build\kCura.OutsideIn.FI.Win32.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

@@ -107,7 +107,7 @@ def get_ip(name) {
   
 stage('Get Server') {
     def file_name = UUID.randomUUID().toString() + ".txt"
-	def windows_path = $/\\dv-file-01.testing.corp\Testing\TestingData\PooledServers\/$ + file_name
+	def windows_path = "\\\\dv-file-01.testing.corp\\Testing\\TestingData\\PooledServers\\" + file_name
 	def linux_path = "/mnt/dv-file-01.testing.corp/TestingData/PooledServers/" + file_name
 
 	build job: 'Provision.VMware.GetServerFromPool', parameters: [
@@ -267,6 +267,7 @@ try {
 				stash includes: 'lib/UnitTests/TestData/*', name: 'testdata'				
 				stash includes: 'lib/UnitTests/TestData/IMAGES/*', name: 'testdata_images'				
 				stash includes: 'lib/UnitTests/TestData/NATIVES/*', name: 'testdata_natives'		
+				stash includes: 'lib/UnitTests/oi/*', name: 'outside_in'		
 				stash includes: 'Applications/RelativityIntegrationPoints.Auto.rap', name: 'integrationPointsRap'		
 			}
 		}
@@ -407,6 +408,7 @@ try {
 				unstash 'testdata_images'
 				unstash 'testdata_natives'
 				unstash 'integrationPointsRap'
+				unstash 'outside_in'
 
 				build_tests(server_name, domain, session_id, relativity_branch, automation_branch, installing_invariant, installing_datagrid, is_nightly_test_execution_develop)
 			}	
