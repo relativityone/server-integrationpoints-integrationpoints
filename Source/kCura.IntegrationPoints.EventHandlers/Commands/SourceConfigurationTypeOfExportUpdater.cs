@@ -2,6 +2,7 @@ using System;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands
@@ -36,7 +37,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 				if (sourceConf.SelectToken(TYPE_OF_EXPORT_NODE_NAME) == null)
 				{
 					sourceConf.Add(TYPE_OF_EXPORT_NODE_NAME, JToken.FromObject(DEFAULT_EXPORT_TYPE));
-					result = sourceConf.ToString();
+					result = sourceConf.ToString(Formatting.None);
 				}
 			}
 			catch (Exception)
