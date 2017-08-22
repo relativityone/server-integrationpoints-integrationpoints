@@ -25,6 +25,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Authentication
 		private IOAuth2ClientFactory _oAuth2ClientFactory;
 		private ITokenProviderFactoryFactory _tokenProviderFactory;
 		private ITokenProvider _tokenProvider;
+		private IProvideServiceUris _uriProvider;
 		private CurrentUser _currentUser;
 
 		[SetUp]
@@ -40,6 +41,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Authentication
 			_tokenProvider = Substitute.For<ITokenProvider>();
 			_tokenProviderFactory = Substitute.For<ITokenProviderFactoryFactory>();
 			_currentUser = new CurrentUser() {ID = 1234};
+			_uriProvider = Substitute.For<IProvideServiceUris>();
+			_uriProvider.AuthenticationUri().Returns(uri);
+			ExtensionPointServiceFinder.ServiceUriProvider = _uriProvider;
 
 			_instance = new OAuth2TokenGenerator(_helper, _oAuth2ClientFactory, _tokenProviderFactory, _currentUser);	
 		}
