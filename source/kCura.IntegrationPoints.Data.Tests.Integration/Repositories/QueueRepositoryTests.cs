@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading;
 using kCura.Data.RowDataGateway;
 using kCura.IntegrationPoint.Tests.Core.Templates;
@@ -211,9 +212,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 				Scheduler = new Scheduler()
 				{
 					EnableScheduler = true,
-					EndDate = DateTime.UtcNow.AddYears(1000).ToString(),
+					EndDate = DateTime.UtcNow.AddYears(1000).ToString("MM/dd/yyyy", CultureInfo.InvariantCulture),
 					Reoccur = 2,
-					StartDate = DateTime.UtcNow.AddDays(-1).ToString(),
+					StartDate = DateTime.UtcNow.AddDays(-1).ToString("MM/dd/yyyy", CultureInfo.InvariantCulture),
 					ScheduledTime = DateTime.UtcNow.AddMinutes(1).TimeOfDay.ToString(),
 					SelectedFrequency = ScheduleInterval.Daily.ToString(),
 					TimeZoneId = TimeZoneInfo.Utc.Id
