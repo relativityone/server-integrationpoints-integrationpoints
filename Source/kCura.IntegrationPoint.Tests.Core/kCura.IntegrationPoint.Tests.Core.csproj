@@ -433,7 +433,7 @@ xcopy "$(ProjectDir)oi\unmanaged" "$(ProjectDir)..\..\lib\UnitTests\oi"  /E /Y /
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\kCura.9.5.245.43\build\kCura.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\kCura.9.5.245.43\build\kCura.targets'))" />
+    <Error Condition="!Exists('..\packages\kCura.9.5.250.10\build\kCura.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\kCura.9.5.250.10\build\kCura.targets'))" />
     <Error Condition="!Exists('..\packages\kCura.OutsideIn.FI.Win32.2017.1.2\build\kCura.OutsideIn.FI.Win32.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\kCura.OutsideIn.FI.Win32.2017.1.2\build\kCura.OutsideIn.FI.Win32.targets'))" />
     <Error Condition="!Exists('..\packages\Relativity.ImportExport.9.5.250.10\build\Relativity.ImportExport.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Relativity.ImportExport.9.5.250.10\build\Relativity.ImportExport.targets'))" />
     <Error Condition="!Exists('..\packages\kCura.9.5.250.10\build\kCura.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\kCura.9.5.250.10\build\kCura.targets'))" />
