@@ -281,22 +281,14 @@ var IP = IP || {};
 				self.isExportType(guid === exportGuid);
 			}
 
-			if (self.hasBeenRun() || self.isEdit()) {
-				self.source.isSourceProviderDisabled(true);
-				self.destination.isDestinationProviderDisabled(true);
-				self.destination.isDestinationObjectDisabled(true);
-				self.isTypeDisabled(true);
-			}
-			else {
-				self.source.displayRelativityInSourceTypes(self.isExportType());
-				self.source.isSourceProviderDisabled(self.isExportType());
-				self.destination.isDestinationProviderDisabled(!self.isExportType());
-				if (self.isExportType() === false) {
-					self.destination.setRelativityAsDestinationProvider();
-				} else {
-					var relativitySourceProviderGuid = "423b4d43-eae9-4e14-b767-17d629de4bb2";
-					self.source.selectedType(relativitySourceProviderGuid);
-				}
+			self.source.displayRelativityInSourceTypes(self.isExportType());
+			self.source.isSourceProviderDisabled(self.isExportType());
+			self.destination.isDestinationProviderDisabled(!self.isExportType());
+			if (self.isExportType() === false) {
+				self.destination.setRelativityAsDestinationProvider();
+			} else {
+				var relativitySourceProviderGuid = "423b4d43-eae9-4e14-b767-17d629de4bb2";
+				self.source.selectedType(relativitySourceProviderGuid);
 			}
 		};
 	};
