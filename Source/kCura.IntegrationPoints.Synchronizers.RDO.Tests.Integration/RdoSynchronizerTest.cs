@@ -42,6 +42,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 		}
 
 		[Test]
+		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
 		public void ItShouldReturnSourceWorkspaceFields()
 		{
 			//Arrange
@@ -60,6 +61,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 		}
 
 		[Test]
+		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
 		public void ItShouldSyncDataToWorkspace()
 		{
 			//Arange
@@ -198,6 +200,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 				ArtifactTypeId = Convert.ToInt32(ArtifactType.Document),
 				RelativityUsername = SharedVariables.RelativityUserName,
 				RelativityPassword = SharedVariables.RelativityPassword,
+				WebServiceURL = SharedVariables.RelativityWebApiUrl,
 				CaseArtifactId = WorkspaceArtifactId
 			};
 
