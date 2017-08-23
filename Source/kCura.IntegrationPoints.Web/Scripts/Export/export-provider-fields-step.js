@@ -73,10 +73,10 @@
 				self.ipModel.sourceConfiguration[fieldName] = fieldValue || 0;
 				self.ipModel.sourceConfiguration.ExportType = self.model.exportSource.TypeOfExport();
 
-                // check if its first run, to prevent mapping clearance when editing IP
-				if (self.model.fields.firstRun){
+				// check if its first run, to prevent mapping clearance when editing IP
+				if (self.model.fields.firstRun) {
 					self.model.fields.firstRun = false;
-				}else{
+				} else {
 					if (!!fieldValue) {
 						root.data.ajax({
 							type: 'post',
@@ -112,7 +112,9 @@
 				self.ipModel.sourceConfiguration.ProductionName = undefined;
 				self.ipModel.sourceConfiguration.ViewId = 0;
 
-				self.model.fields.removeAllFields();
+				if (self.shouldUpdateFieldMapping()) {
+					self.model.fields.removeAllFields();
+				}
 
 				self.model.exportSource.Cache = self.cache = {};
 
@@ -186,27 +188,29 @@
 				self.model.fields.selectedAvailableFields(getMappedFields(mappedFields));
 				self.model.fields.addField();
 
-                // flag used to prevent mapping clearance
-			    self.model.fields.firstRun = self.ipModel.artifactID > 0;
+				// flag used to prevent mapping clearance
+				self.model.fields.firstRun = self.ipModel.artifactID > 0;
 
 				self.model.exportSource.SavedSearchArtifactId.subscribe(function (value) {
-					if (value) {
+					if (value && self.shouldUpdateFieldMapping()) {
 						self.getAvailableFields("SavedSearchArtifactId", value);
 					}
 				});
 
 				self.model.exportSource.ProductionId.subscribe(function (value) {
-					if (value) {
+					if (value && self.shouldUpdateFieldMapping()) {
 						self.getAvailableFields("ProductionId", value);
 					}
 				});
 
 				self.model.exportSource.ViewId.subscribe(function (value) {
-					self.getAvailableFields("ViewId", value);
+					if (self.shouldUpdateFieldMapping()) {
+						self.getAvailableFields("ViewId", value);
+					}
 				});
 			});
 		};
-		
+
 		self.updateModel = function () {
 			self.ipModel.sourceConfiguration.StartExportAtRecord = self.model.startExportAtRecord();
 			switch (self.ipModel.sourceConfiguration.ExportType) {
@@ -234,7 +238,7 @@
 			}
 			self.ipModel.map = self.model.fields.getMappedFields();
 			var fileNamingFieldsList = self.model.fields.availableFields().concat(self.model.fields.mappedFields());
-			fileNamingFieldsList.sort(function(a, b) {
+			fileNamingFieldsList.sort(function (a, b) {
 				if (a.displayName < b.displayName) return -1;
 				if (a.displayName > b.displayName) return 1;
 				return 0;
@@ -271,6 +275,10 @@
 
 			return d.promise;
 		};
+
+		self.shouldUpdateFieldMapping = function () {
+			return !self.ipModel.isEdit && !self.ipModel.isProfileLoaded;
+		}
 	};
 
 	var step = new stepModel({
