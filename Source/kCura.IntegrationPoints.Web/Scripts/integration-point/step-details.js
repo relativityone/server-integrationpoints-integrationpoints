@@ -199,6 +199,10 @@ var IP = IP || {};
 			self.profile.getProfiles(value);
 		});
 
+		this.profile.selectedProfile.subscribe(function (profileId) {
+			self.isProfileLoaded = self.isProfileLoaded || profileId != undefined;
+		});
+
 		this.loadProfile = function (result) {
 			self.loadSettings(result.model);
 			self.destination.loadSettings(JSON.parse(result.model.destination || "{}"));
@@ -214,11 +218,11 @@ var IP = IP || {};
 		var ipTypesPromise = IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('IntegrationPointTypes') });
 
 		root.data.deferred().all([
-				sourceTypePromise,
-				destinationTypePromise,
-				rdoFilterPromise,
-				defaultRdoTypeIdPromise,
-				ipTypesPromise
+			sourceTypePromise,
+			destinationTypePromise,
+			rdoFilterPromise,
+			defaultRdoTypeIdPromise,
+			ipTypesPromise
 		]).then(function (result) {
 
 			var sTypes = $.map(result[0], function (entry) {
