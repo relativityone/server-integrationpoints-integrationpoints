@@ -595,6 +595,7 @@
     <Compile Include="Telemetry\ExportTelemetryMetricProviderTest.cs" />
     <Compile Include="Telemetry\TelemetryMangerTest.cs" />
     <Compile Include="Validation\ArtifactValidatorTests.cs" />
+    <Compile Include="Validation\Helpers\NonValidCharactersValidatorTests.cs" />
     <Compile Include="Validation\ImportProductionValidatorTests.cs" />
     <Compile Include="Validation\IntegrationPointTypeValidatorTests.cs" />
     <Compile Include="Validation\ImportPermissionValidatorTests.cs" />

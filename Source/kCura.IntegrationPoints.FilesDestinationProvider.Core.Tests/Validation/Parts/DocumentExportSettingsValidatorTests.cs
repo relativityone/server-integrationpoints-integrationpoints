@@ -1,8 +1,8 @@
-﻿using System;
-using System.Linq;
-using kCura.IntegrationPoints.Core.Models;
+﻿using System.Linq;
+using kCura.IntegrationPoints.Core.Validation.Helpers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts;
+using NSubstitute;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation.Parts
@@ -22,7 +22,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 				SubdirectoryImagePrefix = "prefix"
 			};
 
-			var validator = new DocumentExportSettingsValidator();
+			var nonValidCharactersValidator = Substitute.For<INonValidCharactersValidator>();
+			var validator = new DocumentExportSettingsValidator(nonValidCharactersValidator);
 
 			// act
 			var actual = validator.ValidateImages(settings);
@@ -41,7 +42,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 				ExportImages = true
 			};
 
-			var validator = new DocumentExportSettingsValidator();
+			var nonValidCharactersValidator = Substitute.For<INonValidCharactersValidator>();
+			var validator = new DocumentExportSettingsValidator(nonValidCharactersValidator);
 
 			// act
 			var actual = validator.ValidateImages(settings);

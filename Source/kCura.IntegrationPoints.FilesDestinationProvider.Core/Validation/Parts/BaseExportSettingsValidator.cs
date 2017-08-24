@@ -1,12 +1,19 @@
-﻿using System;
-using System.Text.RegularExpressions;
-using kCura.IntegrationPoints.Core.Validation.Abstract;
+﻿using kCura.IntegrationPoints.Core.Validation.Abstract;
+using kCura.IntegrationPoints.Core.Validation.Helpers;
 using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 {
 	public abstract class BaseExportSettingsValidator : BasePartsValidator<ExportSettings>
 	{
+		protected INonValidCharactersValidator NonValidCharactersValidator { get; }
+
+		public BaseExportSettingsValidator(INonValidCharactersValidator nonValidCharactersValidator)
+		{
+			NonValidCharactersValidator = nonValidCharactersValidator;
+		}
+
+
 		public override ValidationResult Validate(ExportSettings value)
 		{
 			var result = new ValidationResult();
@@ -28,7 +35,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 		{
 			var result = new ValidationResult();
 
-			if (String.IsNullOrWhiteSpace(location))
+			if (string.IsNullOrWhiteSpace(location))
 			{
 				result.Add(FileDestinationProviderValidationMessages.SETTINGS_UNKNOWN_LOCATION);
 			}
@@ -61,15 +68,16 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 		{
 			var result = new ValidationResult();
 
-			if (String.IsNullOrWhiteSpace(value.SubdirectoryNativePrefix))
+			if (string.IsNullOrWhiteSpace(value.SubdirectoryNativePrefix))
 			{
 				result.Add(FileDestinationProviderValidationMessages.SETTINGS_NATIVES_UNKNOWN_SUBDIR_PREFIX);
 			}
-			else if (!ValidateSpecialCharactersOccurences(value.SubdirectoryNativePrefix))
+			else
 			{
-				result.Add(FileDestinationProviderValidationMessages.SETTINGS_NATIVES_PREFIX_ILLEGAL_CHARACTERS);
+				string errorMessage = FileDestinationProviderValidationMessages.SETTINGS_NATIVES_PREFIX_ILLEGAL_CHARACTERS;
+				ValidationResult isValidNameForDirectory = NonValidCharactersValidator.Validate(value.SubdirectoryNativePrefix, errorMessage);
+				result.Add(isValidNameForDirectory);
 			}
-
 
 			return result;
 		}
@@ -88,15 +96,17 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 				{
 					result.Add(FileDestinationProviderValidationMessages.SETTINGS_TEXTFILES_UNKNOWN_PRECEDENCE);
 				}
-				if (String.IsNullOrWhiteSpace(value.SubdirectoryTextPrefix))
+				if (string.IsNullOrWhiteSpace(value.SubdirectoryTextPrefix))
 				{
 					result.Add(FileDestinationProviderValidationMessages.SETTINGS_TEXTFILES_UNKNOWN_SUBDIR_PREFIX);
 				}
-				else if (!ValidateSpecialCharactersOccurences(value.SubdirectoryTextPrefix))
+				else
 				{
-					result.Add(FileDestinationProviderValidationMessages.SETTINGS_TEXTFILES_PREFIX_ILLEGAL_CHARACTERS);
+					string errrorMessage = FileDestinationProviderValidationMessages.SETTINGS_TEXTFILES_PREFIX_ILLEGAL_CHARACTERS;
+					ValidationResult isValidNameForDirectory =
+						NonValidCharactersValidator.Validate(value.SubdirectoryTextPrefix, errrorMessage);
+					result.Add(isValidNameForDirectory);
 				}
-
 			}
 
 			return result;
@@ -106,27 +116,18 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 		{
 			var result = new ValidationResult();
 
-			if (String.IsNullOrWhiteSpace(value.VolumePrefix))
+			if (string.IsNullOrWhiteSpace(value.VolumePrefix))
 			{
 				result.Add(FileDestinationProviderValidationMessages.SETTINGS_VOLUME_PREFIX_UNKNOWN);
 			}
-			else if (!ValidateSpecialCharactersOccurences(value.VolumePrefix))
+			else
 			{
-				result.Add(FileDestinationProviderValidationMessages.SETTINGS_VOLUME_PREFIX_ILLEGAL_CHARACTERS);
+				string errorMessage = FileDestinationProviderValidationMessages.SETTINGS_VOLUME_PREFIX_ILLEGAL_CHARACTERS;
+				ValidationResult isValidNameForDirectory = NonValidCharactersValidator.Validate(value.VolumePrefix, errorMessage);
+				result.Add(isValidNameForDirectory);
 			}
 
-
 			return result;
-		}
-
-		protected virtual bool ValidateSpecialCharactersOccurences(string text)
-		{
-			string pattern = "^[^<>:\\\"\\\\\\/|\\?\\*]*$";
-			Regex regex = new Regex(pattern, RegexOptions.IgnoreCase);
-			Match match = regex.Match(text);
-
-			//If validated string doesn't contain any illegal characters
-			return match.Success;
 		}
 	}
 }

@@ -1,10 +1,13 @@
-﻿using System;
+﻿using kCura.IntegrationPoints.Core.Validation.Helpers;
 using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 {
 	public sealed class DocumentExportSettingsValidator : BaseExportSettingsValidator
 	{
+		public DocumentExportSettingsValidator(INonValidCharactersValidator nonValidCharactersValidator) : base(nonValidCharactersValidator)
+		{ }
+
 		internal override ValidationResult ValidateImages(ExportSettings value)
 		{
 			var result = new ValidationResult();
@@ -18,15 +21,17 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 
 				// 'ProductionPrecedence' - no need to explicitly validate as it must be set to proper value already
 
-				if (String.IsNullOrWhiteSpace(value.SubdirectoryImagePrefix))
+				if (string.IsNullOrWhiteSpace(value.SubdirectoryImagePrefix))
 				{
 					result.Add(FileDestinationProviderValidationMessages.SETTINGS_IMAGES_UNKNOWN_SUBDIR_PREFIX);
 				}
-				else if (!ValidateSpecialCharactersOccurences(value.SubdirectoryImagePrefix))
+				else
 				{
-					result.Add(FileDestinationProviderValidationMessages.SETTINGS_IMAGES_PREFIX_ILLEGAL_CHARACTERS);
+					string errorMessage = FileDestinationProviderValidationMessages.SETTINGS_IMAGES_PREFIX_ILLEGAL_CHARACTERS;
+					ValidationResult isValidNameForDirectory =
+						NonValidCharactersValidator.Validate(value.SubdirectoryImagePrefix, errorMessage);
+					result.Add(isValidNameForDirectory);
 				}
-
 			}
 
 			return result;

@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using kCura.IntegrationPoints.Core.Validation.Helpers;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts;
+using NSubstitute;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation.Parts
@@ -19,7 +22,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 				ExportFilesLocation = "location"
 			};
 
-			var validator = new RdoExportSettingsValidator();
+			var nonValidCharactersValidator = Substitute.For<INonValidCharactersValidator>();
+			var validator = new RdoExportSettingsValidator(nonValidCharactersValidator);
 
 			// act
 			var actual = validator.ValidateExportLocation(settings.ExportFilesLocation);
@@ -39,7 +43,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 				ExportFilesLocation = location
 			};
 
-			var validator = new RdoExportSettingsValidator();
+			var nonValidCharactersValidator = Substitute.For<INonValidCharactersValidator>();
+			var validator = new RdoExportSettingsValidator(nonValidCharactersValidator);
 
 			// act
 			var actual = validator.ValidateExportLocation(settings.ExportFilesLocation);
@@ -60,7 +65,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 				FilePath = ExportSettings.FilePathType.Absolute
 			};
 
-			var validator = new RdoExportSettingsValidator();
+			var nonValidCharactersValidator = Substitute.For<INonValidCharactersValidator>();
+			var validator = new RdoExportSettingsValidator(nonValidCharactersValidator);
 
 			// act
 			var actual = validator.ValidateLoadFile(settings);
@@ -76,7 +82,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 			// arrange
 			var settings = new ExportSettings();
 
-			var validator = new RdoExportSettingsValidator();
+			var nonValidCharactersValidator = Substitute.For<INonValidCharactersValidator>();
+			var validator = new RdoExportSettingsValidator(nonValidCharactersValidator);
 
 			// act
 			var actual = validator.ValidateLoadFile(settings);
@@ -95,7 +102,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 				SubdirectoryNativePrefix = "prefix"
 			};
 
-			var validator = new RdoExportSettingsValidator();
+			var nonValidCharactersValidator = Substitute.For<INonValidCharactersValidator>();
+			var validator = new RdoExportSettingsValidator(nonValidCharactersValidator);
 
 			// act
 			var actual = validator.ValidateNatives(settings);
@@ -115,7 +123,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 				SubdirectoryNativePrefix = prefix
 			};
 
-			var validator = new RdoExportSettingsValidator();
+			var nonValidCharactersValidator = Substitute.For<INonValidCharactersValidator>();
+			var validator = new RdoExportSettingsValidator(nonValidCharactersValidator);
 
 			// act
 			var actual = validator.ValidateNatives(settings);
@@ -137,7 +146,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 				SubdirectoryTextPrefix = "prefix"
 			};
 
-			var validator = new RdoExportSettingsValidator();
+			var nonValidCharactersValidator = Substitute.For<INonValidCharactersValidator>();
+			var validator = new RdoExportSettingsValidator(nonValidCharactersValidator);
 
 			// act
 			var actual = validator.ValidateTextFieldsAsFiles(settings);
@@ -156,7 +166,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 				ExportFullTextAsFile = true
 			};
 
-			var validator = new RdoExportSettingsValidator();
+			var nonValidCharactersValidator = Substitute.For<INonValidCharactersValidator>();
+			var validator = new RdoExportSettingsValidator(nonValidCharactersValidator);
 
 			// act
 			var actual = validator.ValidateTextFieldsAsFiles(settings);
@@ -177,7 +188,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 				VolumePrefix = "VOL"
 			};
 
-			var validator = new RdoExportSettingsValidator();
+			var nonValidCharactersValidator = Substitute.For<INonValidCharactersValidator>();
+			var validator = new RdoExportSettingsValidator(nonValidCharactersValidator);
 
 			// act
 			var actual = validator.ValidateVolumePrefix(settings);
@@ -187,13 +199,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 			Assert.That(actual.Messages.FirstOrDefault(), Is.Null);
 		}
 
-		[Test]
 		[TestCase("VOL<")]
 		[TestCase("\\1234")]
-		[TestCase("V*O/L>U<M:E")]
-		[TestCase("")]
-		[TestCase(null)]
-		public void ItShouldFailValidationForInvalidVolumePrefix(string volumePrefix)
+		public void ItShouldCallNonValidCharactersValidatorWithProperArguments(string volumePrefix)
 		{
 			// arrange
 			var settings = new ExportSettings
@@ -201,14 +209,45 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 				VolumePrefix = volumePrefix
 			};
 
-			var validator = new RdoExportSettingsValidator();
+			var nonValidCharactersValidator = Substitute.For<INonValidCharactersValidator>();
+			var validator = new RdoExportSettingsValidator(nonValidCharactersValidator);
 
 			// act
-			var actual = validator.ValidateVolumePrefix(settings);
+			validator.ValidateVolumePrefix(settings);
 
 			// assert
-			Assert.IsFalse(actual.IsValid);
-			Assert.That(actual.Messages, Is.Not.Empty);
+			nonValidCharactersValidator.Received().Validate(volumePrefix,
+				FileDestinationProviderValidationMessages.SETTINGS_VOLUME_PREFIX_ILLEGAL_CHARACTERS);
+		}
+
+		[TestCase(false, "EM1")]
+		[TestCase(false, "Error message")]
+		[TestCase(true, null)]
+		[TestCase(false, null)]
+		public void ItShouldReturErrorsReturnedByNonValidCharactersValidatorForNonEmptyVolumePrefix(bool isValid, string errorMessage)
+		{
+			// arrange
+			var settings = new ExportSettings
+			{
+				VolumePrefix = "VolPrefix"
+			};
+
+			var nonValidCharactersValidator = Substitute.For<INonValidCharactersValidator>();
+			ValidationResult validationResult = errorMessage != null
+				? new ValidationResult(isValid, errorMessage)
+				: new ValidationResult(isValid);
+			nonValidCharactersValidator.Validate(Arg.Any<string>(), Arg.Any<string>()).Returns(validationResult);
+			var validator = new RdoExportSettingsValidator(nonValidCharactersValidator);
+
+			// act
+			ValidationResult actual = validator.ValidateVolumePrefix(settings);
+
+			// assert
+			Assert.AreEqual(isValid, actual.IsValid);
+			if (errorMessage != null)
+			{
+				Assert.IsTrue(actual.Messages.Contains(errorMessage));
+			}
 		}
 	}
 }

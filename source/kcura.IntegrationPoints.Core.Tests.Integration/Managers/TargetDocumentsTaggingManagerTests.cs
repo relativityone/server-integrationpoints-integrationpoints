@@ -85,7 +85,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
 				LogErrors = true,
-				Name = "IntegrationPointServiceTest" + DateTime.Now,
+				Name = $"IntegrationPointServiceTest{DateTime.Now:yy-MM-dd HH-mm-ss}",
 				SelectedOverwrite = "Overlay Only",
 				Scheduler = new Scheduler()
 				{

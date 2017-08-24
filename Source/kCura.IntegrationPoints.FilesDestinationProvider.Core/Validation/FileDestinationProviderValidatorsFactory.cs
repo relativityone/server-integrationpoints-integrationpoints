@@ -3,6 +3,7 @@ using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Validation.Helpers;
 using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
@@ -46,6 +47,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 		private readonly IViewService _viewService;
 		private readonly IExportFieldsService _exportFieldsService;
 		private readonly IArtifactService _artifactService;
+		private readonly INonValidCharactersValidator _nonValidCharactersValidator;
 
 		public FileDestinationProviderValidatorsFactory(
 			ISerializer serializer,
@@ -58,7 +60,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 			IManagerFactory managerFactory,
 			IViewService viewService,
 			IExportFieldsService exportFieldsService,
-			IArtifactService artifactService
+			IArtifactService artifactService,
+			INonValidCharactersValidator nonValidCharactersValidator
 		)
 		{
 			_serializer = serializer;
@@ -72,6 +75,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 			_viewService = viewService;
 			_exportFieldsService = exportFieldsService;
 			_artifactService = artifactService;
+			_nonValidCharactersValidator = nonValidCharactersValidator;
 		}
 
 		public ExportFileValidator CreateExportFileValidator()
@@ -122,10 +126,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 			switch (artifactTypeId)
 			{
 				case (int)ArtifactType.Document:
-					return new DocumentExportSettingsValidator();
+					return new DocumentExportSettingsValidator(_nonValidCharactersValidator);
 
 				default:
-					return new RdoExportSettingsValidator();
+					return new RdoExportSettingsValidator(_nonValidCharactersValidator);
 			}
 		}
 	}

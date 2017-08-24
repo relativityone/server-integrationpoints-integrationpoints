@@ -115,7 +115,10 @@ var IP = IP || {};
 		var settings = $.extend({}, m);
 		var self = this;
 
-		this.name = ko.observable().extend({ required: true });
+		this.name = ko.observable().extend({
+			required: true,
+			textFieldWithoutSpecialCharacters: {}
+		});
 		if (!!settings.name) {
 			self.name(settings.name);
 		}

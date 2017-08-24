@@ -4,6 +4,7 @@ using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
+using kCura.IntegrationPoints.Core.Validation.Helpers;
 using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts;
@@ -16,6 +17,8 @@ namespace kCura.IntegrationPoints.Core.Installers
 		public void Install(IWindsorContainer container, IConfigurationStore store)
 		{
 			container.Kernel.Resolver.AddSubResolver(new CollectionResolver(container.Kernel));
+
+			container.Register(Component.For<INonValidCharactersValidator>().ImplementedBy<NonValidCharactersValidator>());
 
 			container.Register(Component.For<IValidator>().ImplementedBy<EmailValidator>().LifestyleTransient());
 			container.Register(Component.For<IValidator>().ImplementedBy<NameValidator>().LifestyleTransient());

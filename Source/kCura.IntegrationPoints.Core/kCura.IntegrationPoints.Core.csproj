@@ -713,6 +713,8 @@
     <Compile Include="Validation\Abstract\BasePartsValidator.cs" />
     <Compile Include="Validation\Abstract\IIntegrationPointPermissionValidator.cs" />
     <Compile Include="Validation\Abstract\IIntegrationPointValidator.cs" />
+    <Compile Include="Validation\Helpers\INonValidCharactersValidator.cs" />
+    <Compile Include="Validation\Helpers\NonValidCharactersValidator.cs" />
     <Compile Include="Validation\IntegrationPointPermissionValidator.cs" />
     <Compile Include="Validation\IntegrationPointProviderValidationException.cs" />
     <Compile Include="Validation\IntegrationPointProviderValidationMessages.cs" />

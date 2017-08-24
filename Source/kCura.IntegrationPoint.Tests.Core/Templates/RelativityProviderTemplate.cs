@@ -201,7 +201,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			modelBase.SourceProvider = RelativityProvider.ArtifactId;
 			modelBase.SourceConfiguration = CreateDefaultSourceConfig();
 			modelBase.LogErrors = true;
-			modelBase.Name = name + DateTime.Now;
+			modelBase.Name = $"{name}{DateTime.Now:yy-MM-dd HH-mm-ss}";
 			modelBase.SelectedOverwrite = overwrite;
 			modelBase.Scheduler = new Scheduler() { EnableScheduler = false };
 			modelBase.Map = CreateDefaultFieldMap();

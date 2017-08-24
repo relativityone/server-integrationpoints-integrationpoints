@@ -210,7 +210,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
 				LogErrors = true,
-				Name = "IntegrationPointServiceTest" + DateTime.Now,
+				Name = $"IntegrationPointServiceTest{ DateTime.Now:yy - MM - dd HH - mm - ss}",
 				SelectedOverwrite = "Overlay Only",
 				Scheduler = new Scheduler()
 				{
@@ -522,7 +522,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			};
 			return Container.Resolve<ISerializer>().Serialize(sourceConfiguration);
 		}
-		
+
 		private IntegrationPointModel CreateIntegrationPointThatHasNotRun(string name)
 		{
 			return new IntegrationPointModel()

@@ -11,7 +11,7 @@ ko.validation.rules['textFieldWithoutSpecialCharacters'] = {
 	validator: function (fieldValue) {
 		return ko.validation.rules['pattern'].validator(fieldValue, { regExp: ValidationPatterns.textFieldWithoutForbiddenCharacters });
 	},
-	message: 'Field cannot contain special characters such as: < > " \\ / | ? *'
+	message: 'Field cannot contain special characters such as: < > : " \\ / | ? *'
 };
 
 ko.validation.rules['nonNegativeNaturalNumber'] = {
