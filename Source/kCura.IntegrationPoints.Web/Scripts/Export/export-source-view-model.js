@@ -245,25 +245,21 @@ var ExportSourceViewModel = function (state) {
 	self.InitializeLocationSelector = function () {
 		self.LocationSelector = new LocationJSTreeSelector();
 
-		if (self.HasBeenRun()) {
-			self.LocationSelector.toggle(false);
-		} else {
-			self.LocationSelector.init(self.FolderArtifactName(), [], {
-				onNodeSelectedEventHandler: function (node) {
-					self.FolderArtifactName(node.fullPath);
-					self.FolderArtifactId(node.id);
-				}
-			});
-			self.LocationSelector.toggle(true);
-
-			self.Folders.subscribe(function (value) {
-				self.LocationSelector.reload(value);
-			});
-
-			var folders = self.Folders();
-			if (folders !== undefined) {
-				self.LocationSelector.reload(folders);
+		self.LocationSelector.init(self.FolderArtifactName(), [], {
+			onNodeSelectedEventHandler: function (node) {
+				self.FolderArtifactName(node.fullPath);
+				self.FolderArtifactId(node.id);
 			}
+		});
+		self.LocationSelector.toggle(true);
+
+		self.Folders.subscribe(function (value) {
+			self.LocationSelector.reload(value);
+		});
+
+		var folders = self.Folders();
+		if (folders !== undefined) {
+			self.LocationSelector.reload(folders);
 		}
 	};
 
