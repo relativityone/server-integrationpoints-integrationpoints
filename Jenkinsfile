@@ -469,7 +469,7 @@ finally {
 			
 
 			// Customized Jenkins Slack notification:
-			if (nightly_test_execution_develop)
+			if (is_nightly_test_execution_develop)
 			{
 				def slackMessage = "\n *Commits:*"
 				for (changelog in currentBuild.changeSets)
