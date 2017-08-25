@@ -118,6 +118,7 @@
 		self.EnableLocationRadio = ko.observable(state.EnableLocationRadio || false);
 	    self.LocationFolderChecked = ko.observable(state.LocationFolderChecked || "true");
 		self.DestinationProductionSets = ko.observableArray();
+		self.SavedSearchesTree = ko.observable();
 		self.ProductionArtifactId = ko.observable().extend({
 		    required: {
 		        onlyIf: function () {
@@ -304,14 +305,39 @@
 			self.locationSelector.toggle(self.TargetWorkspaceArtifactId.isValid());
 		};
 
+		self.IsSavedSearchTreeNode = function (node) {
+			return !!node && (node.icon === "jstree-search" || node.icon === "jstree-search-personal");
+		}
+
+		self.FlatSavedSearches = function (tree) {
+			var _searches = [];
+			var _iterate = function (node, depth) {
+				if (self.IsSavedSearchTreeNode(node)) {
+					_searches.push({
+						value: node.id,
+						displayName: node.text
+					});
+				}
+
+				for (var i = 0, len = node.children.length; i < len; i++) {
+					_iterate(node.children[i], depth + 1);
+				}
+			};
+
+			_iterate(tree, 0);
+
+			return _searches;
+		};
+
 		// load the data first before preceding this could cause problems below when we try to do validation on fields
 		if (self.savedSearches.length === 0) {
 			IP.data.ajax({
 				type: 'GET',
-				url: IP.utils.generateWebAPIURL('SavedSearchFinder'),
+				url: IP.utils.generateWebAPIURL('SavedSearchesTree', IP.utils.getParameterByName("AppID", window.top)),
 				async: true,
 				success: function (result) {
-					self.savedSearches(result);
+					self.SavedSearchesTree(result);
+					self.savedSearches(self.FlatSavedSearches(result));
 					self.SavedSearchArtifactId(state.SavedSearchArtifactId);
 				},
 				error: function () {
@@ -357,6 +383,17 @@
 				}
 			});
 		}
+
+		var savedSearchPickerViewModel = new SavedSearchPickerViewModel(function (value) {
+			self.SavedSearchArtifactId(value.id);
+		}, self.IsSavedSearchTreeNode);
+
+		Picker.create("Fileshare", "savedSearchPicker", "SavedSearchPicker", savedSearchPickerViewModel);
+
+
+		self.OpenSavedSearchPicker = function () {
+			savedSearchPickerViewModel.open(self.SavedSearchesTree(), self.SavedSearchArtifactId());
+		};
 
 		self.updateSecuredConfiguration = function (clientId, clientSecret) {
 			self.SecuredConfiguration(IP.utils.generateCredentialsData(self.FederatedInstanceArtifactId(), clientId, clientSecret));
