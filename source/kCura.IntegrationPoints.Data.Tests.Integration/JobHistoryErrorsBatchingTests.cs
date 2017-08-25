@@ -89,7 +89,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
 				LogErrors = true,
-				Name = "JobHistoryErrors" + DateTime.Now,
+				Name = $"JobHistoryErrors{DateTime.Now:yy-MM-dd HH-mm-ss}",
 				SelectedOverwrite = "Overlay Only",
 				Scheduler = new Scheduler()
 				{
@@ -139,7 +139,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
 				LogErrors = true,
-				Name = "JobHistoryErrors" + DateTime.Now,
+				Name = $"JobHistoryErrors{DateTime.Now:yy-MM-dd HH-mm-ss}",
 				SelectedOverwrite = "Overlay Only",
 				Scheduler = new Scheduler()
 				{
@@ -190,7 +190,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
 				LogErrors = true,
-				Name = "JobHistoryErrors" + DateTime.Now,
+				Name = $"JobHistoryErrors{DateTime.Now:yy-MM-dd HH-mm-ss}",
 				SelectedOverwrite = "Overlay Only",
 				Scheduler = new Scheduler()
 				{
@@ -254,7 +254,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
 				LogErrors = true,
-				Name = "JobHistoryErrors" + DateTime.Now,
+				Name = $"JobHistoryErrors{DateTime.Now:yy-MM-dd HH-mm-ss}",
 				SelectedOverwrite = "Append Only",
 				Scheduler = new Scheduler()
 				{
@@ -328,7 +328,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
 				LogErrors = true,
-				Name = "JobHistoryErrors" + DateTime.Now,
+				Name = $"JobHistoryErrors{DateTime.Now:yy-MM-dd HH-mm-ss}",
 				SelectedOverwrite = "Append Only",
 				Scheduler = new Scheduler()
 				{
@@ -372,7 +372,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
 				LogErrors = true,
-				Name = "JobHistoryErrors" + DateTime.Now,
+				Name = $"JobHistoryErrors{DateTime.Now:yy-MM-dd HH-mm-ss}",
 				SelectedOverwrite = "Append Only",
 				Scheduler = new Scheduler()
 				{

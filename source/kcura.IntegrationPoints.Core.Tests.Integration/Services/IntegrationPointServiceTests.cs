@@ -160,7 +160,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
 				LogErrors = true,
-				Name = "IntegrationPointServiceTest" + DateTime.Now,
+				Name = $"IntegrationPointServiceTest{DateTime.Now:yy-MM-dd HH-mm-ss}",
 				SelectedOverwrite = "Overlay Only",
 				Scheduler = new Scheduler()
 				{
@@ -258,7 +258,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
 				LogErrors = true,
-				Name = "IntegrationPointServiceTest" + DateTime.Now,
+				Name = $"IntegrationPointServiceTest{DateTime.Now:yy-MM-dd HH-mm-ss}",
 				SelectedOverwrite = "Append Only",
 				Scheduler = new Scheduler()
 				{
@@ -327,7 +327,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
 				LogErrors = true,
-				Name = "IntegrationPointServiceTest" + DateTime.Now,
+				Name = $"IntegrationPointServiceTest{DateTime.Now:yy-MM-dd HH-mm-ss}",
 				SelectedOverwrite = "Overlay Only",
 				Scheduler = new Scheduler()
 				{
@@ -389,7 +389,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
 				LogErrors = true,
-				Name = "IntegrationPointServiceTest" + DateTime.Now,
+				Name = $"IntegrationPointServiceTest{DateTime.Now:yy-MM-dd HH-mm-ss}",
 				SelectedOverwrite = "Overlay Only",
 				Scheduler = new Scheduler()
 				{
@@ -429,7 +429,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
 				LogErrors = true,
-				Name = "IntegrationPointServiceTest" + DateTime.Now,
+				Name = $"IntegrationPointServiceTest{DateTime.Now:yy-MM-dd HH-mm-ss}",
 				SelectedOverwrite = "Overlay Only",
 				Scheduler = new Scheduler()
 				{
@@ -532,7 +532,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateSourceConfig(SavedSearchArtifactId, TargetWorkspaceArtifactId, SourceConfiguration.ExportType.SavedSearch),
 				LogErrors = true,
-				Name = $"${name} - {DateTime.Today}",
+				Name = $"${name} - {DateTime.Today:yy-MM-dd HH-mm-ss}",
 				Map = CreateDefaultFieldMap(),
 				SelectedOverwrite = "Append Only",
 				Scheduler = new Scheduler(),

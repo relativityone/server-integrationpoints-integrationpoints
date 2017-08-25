@@ -124,7 +124,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
 				LogErrors = true,
-				Name = "IntegrationPointServiceTest" + DateTime.Now,
+				Name = $"IntegrationPointServiceTest{DateTime.Now:yy-MM-dd HH-mm-ss}",
 				SelectedOverwrite = "Overlay Only",
 				Scheduler = new Scheduler()
 				{
@@ -165,7 +165,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
 				LogErrors = true,
-				Name = "IntegrationPointServiceTest" + DateTime.Now,
+				Name = $"IntegrationPointServiceTest{DateTime.Now:yy-MM-dd HH-mm-ss}",
 				SelectedOverwrite = "Overlay Only",
 				Scheduler = new Scheduler()
 				{

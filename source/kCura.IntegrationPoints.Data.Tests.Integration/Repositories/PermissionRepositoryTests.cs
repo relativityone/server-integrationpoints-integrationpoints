@@ -235,7 +235,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
 				LogErrors = true,
-				Name = $"UserHasArtifactInstancePermission - {DateTime.Today}",
+				Name = $"UserHasArtifactInstancePermission - {DateTime.Today:yy-MM-dd HH-mm-ss}",
 				Map = CreateDefaultFieldMap(),
 				SelectedOverwrite = "Append Only",
 				Scheduler = new Scheduler(),
