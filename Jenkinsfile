@@ -99,11 +99,21 @@ def s = relativity_branch + invariant_branch + env.JOB_NAME
 def event_hash = java.security.MessageDigest.getInstance("MD5").digest(s.bytes).encodeHex().toString()
 //endregion
   
+  
+  
 def get_ip(name) {
    def ugly = String.format('python -m vmware.create_ci_environment --platform get_ip_address_of_vm -s %1$s', name)
    def ip = bat returnStdout: true, script: ugly
    return ip.trim().split('\r\n')[2]
 }
+
+def send_slack_message(recipients_list, message, color="E8E8E8") {
+    for (recipient in recipients_list) {
+        slackSend channel: "${recipient}", color: "${color}", message: "${message}", teamDomain: 'kcura-pd', token: 'nd9zSTCysTjKA7Ky5mMCCA5b'
+        sleep(1) // Slack has a rate limit of 1 msg / second
+    }
+}
+
   
 stage('Get Server') {
     def file_name = UUID.randomUUID().toString() + ".txt"
@@ -455,6 +465,27 @@ finally {
 				string(name: 'event_hash', value: event_hash),
 				string(name: 'report_health', value: 'report_health'),
 				string(name: 'exclude_post_install_steps', value: 'true')]
+				
+			
+
+			// Customized Jenkins Slack notification:
+			if (nightly_test_execution_develop)
+			{
+				def slackMessage = "\n *Commits:*"
+				for (changelog in currentBuild.changeSets)
+				{
+					for (commit in changelog.items)
+					{
+						slackMessage += "\n\n*${commit.author}:* ${commit.msg}"
+					}
+				}			
+				
+				def message = "*${status}*: <${env.BUILD_URL}|Build #${env.BUILD_NUMBER}> from <${env.JOB_URL}|${env.JOB_NAME}> \n${slackMessage}"
+				if (has_errors)
+					message = "@here --> " + message
+				
+				send_slack_message(['#cd_poland'], message, (has_errors) ? 'ff0000' : '00ff00')	
+			}
 		}
 	}
     finally {
