@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Castle.Components.DictionaryAdapter;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Services;
@@ -33,53 +34,44 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			var repoFactoryMock = Substitute.For<IRepositoryFactory>();
 			var savedSearchQueryRepoMock = Substitute.For<ISavedSearchQueryRepository>();
+		    var searchContainerManager = Substitute.For<ISearchContainerManager>();
+            var servicesManager = Substitute.For<IServicesMgr>();
+            var helper = Substitute.For<IHelper>();
+		    var creator = Substitute.For<ISavedSearchesTreeCreator>();
 
-			repoFactoryMock.GetSavedSearchQueryRepository(workspaceArtifactId).Returns(savedSearchQueryRepoMock);
+		    servicesManager.CreateProxy<ISearchContainerManager>(Arg.Any<ExecutionIdentity>())
+		        .Returns(searchContainerManager);
+		    helper.GetServicesManager()
+		        .Returns(servicesManager);
+		    repoFactoryMock.GetSavedSearchQueryRepository(workspaceArtifactId).Returns(savedSearchQueryRepoMock);
 
-			var sampleContainerCollection = SavedSearchesTreeTestHelper.GetSampleContainerCollection();
+            var subjectUnderTest = new SavedSearchesTreeService(helper, creator, repoFactoryMock);
 
-			// take all SavedSearches without the last one
-			int sampleItemCount = sampleContainerCollection.SavedSearchContainerItems.Count - 1;
-
-			IEnumerable<SavedSearchContainerItem> savedSearchContainerItems = sampleContainerCollection.SavedSearchContainerItems
-				.Take(sampleItemCount);
-
-			List<SavedSearchDTO> retSavedSearches = savedSearchContainerItems
-				.Select(item =>
-						new SavedSearchDTO()
-						{
-							ArtifactId = item.SavedSearch.ArtifactID
-						})
-				.ToList();
-
-			List<int> expectedSavedSearchesArtifactIds = new List<int>(retSavedSearches.Select(_ => _.ArtifactId));
-
-			savedSearchQueryRepoMock.RetrievePublicSavedSearches().Returns(retSavedSearches);
-
-			var searchContainerManager = Substitute.For<ISearchContainerManager>();
-			searchContainerManager.GetSearchContainerTreeAsync(Arg.Any<int>(), Arg.Is<List<int>>(x => x.SequenceEqual(expectedSavedSearchesArtifactIds)))
-				.Returns(sampleContainerCollection);
-
-			var servicesManager = Substitute.For<IServicesMgr>();
-			servicesManager.CreateProxy<ISearchContainerManager>(Arg.Any<ExecutionIdentity>())
-				.Returns(searchContainerManager);
-
-			var helper = Substitute.For<IHelper>();
-			helper.GetServicesManager()
-				.Returns(servicesManager);
-
-			var expected = SavedSearchesTreeTestHelper.GetSampleTreeWithSearches();
 
 			
 
-			var creator = Substitute.For<ISavedSearchesTreeCreator>();
-			creator.Create(Arg.Any<IEnumerable<SearchContainerItem>>(), Arg.Is<IEnumerable<SavedSearchContainerItem>>(list => list.SequenceEqual(savedSearchContainerItems)))
-				.Returns(expected);
+            var folders = new SearchContainerQueryResultSet();
+            folders.Results = new EditableList<Result<SearchContainer>>();
+		    foreach (var folder in SavedSearchesTreeTestHelper.GetSampleContainerCollection().SearchContainerItems)
+		    {
+		        var result = new Result<SearchContainer>() { Success = true};
+                result.Artifact = new SearchContainer();
+		        result.Artifact.ArtifactID = folder.SearchContainer.ArtifactID;
 
-			var service = new SavedSearchesTreeService(helper, creator, repoFactoryMock);
+                folders.Results.Add( result );
+		    }
+
+
+            searchContainerManager.QueryAsync(workspaceArtifactId, Arg.Any<Query>()).Returns( folders );
+			searchContainerManager.GetSearchContainerTreeAsync(Arg.Any<int>(), Arg.Any<List<int>>())
+				.Returns(SavedSearchesTreeTestHelper.GetSampleContainerCollection());
+
+			var expected = SavedSearchesTreeTestHelper.GetSampleTreeWithSearches();
+			
+			creator.Create(Arg.Any<IEnumerable<SearchContainerItem>>(), Arg.Any<IEnumerable<SavedSearchContainerItem>>()).Returns(expected);
 
 			// act
-			var actual = service.GetSavedSearchesTree(workspaceArtifactId);
+			var actual = subjectUnderTest.GetSavedSearchesTree(workspaceArtifactId);
 
 			// assert
 			Assert.That(actual, Is.Not.Null);
