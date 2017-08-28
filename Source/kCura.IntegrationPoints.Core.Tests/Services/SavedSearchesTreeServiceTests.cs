@@ -26,6 +26,18 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 		}
 
+	    private SearchContainerQueryResultSet GetAllFolders()
+	    {
+	        var searchContainerQueryResultSet = new SearchContainerQueryResultSet();
+	        searchContainerQueryResultSet.Results = new EditableList<Result<SearchContainer>>();
+	        foreach (var searchContainerItem in SavedSearchesTreeTestHelper.GetSampleContainerCollection().SearchContainerItems)
+	        {
+	            var item = new Result<SearchContainer>() { Success = true, Artifact = new SearchContainer() { ArtifactID = searchContainerItem.SearchContainer.ArtifactID } };
+	            searchContainerQueryResultSet.Results.Add(item);
+	        }
+	        return searchContainerQueryResultSet;
+	    }
+
 		[Test]
 		public void ItShouldReturnSavedSearchesTree()
 		{
@@ -47,35 +59,21 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
             var subjectUnderTest = new SavedSearchesTreeService(helper, creator, repoFactoryMock);
 
-
-			
-
-            var folders = new SearchContainerQueryResultSet();
-            folders.Results = new EditableList<Result<SearchContainer>>();
-		    foreach (var folder in SavedSearchesTreeTestHelper.GetSampleContainerCollection().SearchContainerItems)
-		    {
-		        var result = new Result<SearchContainer>() { Success = true};
-                result.Artifact = new SearchContainer();
-		        result.Artifact.ArtifactID = folder.SearchContainer.ArtifactID;
-
-                folders.Results.Add( result );
-		    }
-
-
-            searchContainerManager.QueryAsync(workspaceArtifactId, Arg.Any<Query>()).Returns( folders );
-			searchContainerManager.GetSearchContainerTreeAsync(Arg.Any<int>(), Arg.Any<List<int>>())
+            searchContainerManager.QueryAsync(workspaceArtifactId, Arg.Any<Query>()).Returns( GetAllFolders() );
+			searchContainerManager.GetSearchContainerTreeAsync(workspaceArtifactId, 
+                Arg.Is<List<int>>( list => list.TrueForAll( i => SavedSearchesTreeTestHelper.GetSampleContainerIds().Contains(i) )))
 				.Returns(SavedSearchesTreeTestHelper.GetSampleContainerCollection());
 
-			var expected = SavedSearchesTreeTestHelper.GetSampleTreeWithSearches();
-			
-			creator.Create(Arg.Any<IEnumerable<SearchContainerItem>>(), Arg.Any<IEnumerable<SavedSearchContainerItem>>()).Returns(expected);
+			creator.Create(Arg.Any<IEnumerable<SearchContainerItem>>(), Arg.Any<IEnumerable<SavedSearchContainerItem>>()).Returns(SavedSearchesTreeTestHelper.GetSampleTreeWithSearches());
 
 			// act
 			var actual = subjectUnderTest.GetSavedSearchesTree(workspaceArtifactId);
 
 			// assert
 			Assert.That(actual, Is.Not.Null);
-			Assert.That(actual.Id, Is.EqualTo(expected.Id));
+
+		    var expected = SavedSearchesTreeTestHelper.GetSampleTreeWithSearches();
+            Assert.That(actual.Id, Is.EqualTo(expected.Id));
 			Assert.That(actual.Text, Is.EqualTo(expected.Text));
 			Assert.That(actual.Children.Count, Is.EqualTo(expected.Children.Count));
 		}
