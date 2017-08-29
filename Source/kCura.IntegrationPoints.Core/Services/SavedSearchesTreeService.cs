@@ -30,8 +30,8 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public JsTreeItemDTO GetSavedSearchesTree(int workspaceArtifactId)
 		{
-		    List<Result<SearchContainer>> results = _searchContainerManager.QueryAsync(workspaceArtifactId, new Query( )).ConfigureAwait(false).GetAwaiter().GetResult().Results;
-            List<int> searchContainersArtifactIds = results.Select(x => x.Artifact.ArtifactID).ToList();
+		    List<Result<SearchContainer>> folders = _searchContainerManager.QueryAsync(workspaceArtifactId, new Query( )).ConfigureAwait(false).GetAwaiter().GetResult().Results;
+            List<int> searchContainersArtifactIds = folders.Select(x => x.Artifact.ArtifactID).ToList();
 
 			SearchContainerItemCollection searchContainterCollection = _searchContainerManager.GetSearchContainerTreeAsync(workspaceArtifactId, searchContainersArtifactIds).ConfigureAwait(false).GetAwaiter().GetResult();
 			return _treeCreator.Create(searchContainterCollection.SearchContainerItems, searchContainterCollection.SavedSearchContainerItems.Where(i=> i.Secured == false));
