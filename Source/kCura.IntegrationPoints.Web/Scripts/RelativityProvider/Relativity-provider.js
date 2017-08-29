@@ -309,26 +309,6 @@
 			return !!node && (node.icon === "jstree-search" || node.icon === "jstree-search-personal");
 		}
 
-		self.FlatSavedSearches = function (tree) {
-			var _searches = [];
-			var _iterate = function (node, depth) {
-				if (self.IsSavedSearchTreeNode(node)) {
-					_searches.push({
-						value: node.id,
-						displayName: node.text
-					});
-				}
-
-				for (var i = 0, len = node.children.length; i < len; i++) {
-					_iterate(node.children[i], depth + 1);
-				}
-			};
-
-			_iterate(tree, 0);
-
-			return _searches;
-		};
-
 		// load the data first before preceding this could cause problems below when we try to do validation on fields
 		if (self.savedSearches.length === 0) {
 			IP.data.ajax({
@@ -337,7 +317,7 @@
 				async: true,
 				success: function (result) {
 					self.SavedSearchesTree(result);
-					self.savedSearches(self.FlatSavedSearches(result));
+					self.savedSearches(FlatSavedSearches(result));
 					self.SavedSearchArtifactId(state.SavedSearchArtifactId);
 				},
 				error: function () {
