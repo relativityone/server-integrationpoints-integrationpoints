@@ -305,10 +305,6 @@
 			self.locationSelector.toggle(self.TargetWorkspaceArtifactId.isValid());
 		};
 
-		self.IsSavedSearchTreeNode = function (node) {
-			return !!node && (node.icon === "jstree-search" || node.icon === "jstree-search-personal");
-		}
-
 		// load the data first before preceding this could cause problems below when we try to do validation on fields
 		if (self.savedSearches.length === 0) {
 			IP.data.ajax({
@@ -366,7 +362,7 @@
 
 		var savedSearchPickerViewModel = new SavedSearchPickerViewModel(function (value) {
 			self.SavedSearchArtifactId(value.id);
-		}, self.IsSavedSearchTreeNode);
+		}, IsSavedSearchTreeNode);
 
 		Picker.create("Fileshare", "savedSearchPicker", "SavedSearchPicker", savedSearchPickerViewModel);
 

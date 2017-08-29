@@ -54,13 +54,10 @@ var ExportSourceViewModel = function (state) {
 		return selectedSavedSearch;
 	};
 
-	self.IsSavedSearchTreeNode = function (node) {
-		return !!node && (node.icon === "jstree-search" || node.icon === "jstree-search-personal");
-	}
 
 	var savedSearchPickerViewModel = new SavedSearchPickerViewModel(function (value) {
 		self.SavedSearchArtifactId(value.id);
-	}, self.IsSavedSearchTreeNode);
+	}, IsSavedSearchTreeNode);
 
 	Picker.create("Fileshare", "savedSearchPicker", "SavedSearchPicker", savedSearchPickerViewModel);
 

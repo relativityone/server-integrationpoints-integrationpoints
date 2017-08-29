@@ -1,7 +1,11 @@
-﻿var FlatSavedSearches = function(tree) {
+﻿var IsSavedSearchTreeNode = function (node) {
+    return !!node && (node.icon === "jstree-search" || node.icon === "jstree-search-personal");
+}
+
+var FlatSavedSearches = function(tree) {
     var _searches = [];
     var _iterate = function(node, depth) {
-        if (self.IsSavedSearchTreeNode(node)) {
+        if (IsSavedSearchTreeNode(node)) {
             _searches.push({
                 value: node.id,
                 displayName: node.text
