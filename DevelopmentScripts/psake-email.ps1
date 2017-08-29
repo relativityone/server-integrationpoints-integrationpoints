@@ -169,7 +169,7 @@ Function GetBuildChanges([Build] $bld) {
             $chng = New-Object Change
             $chng.id = $node.id
             $chng.user = $hg.split('|')[0]
-            $chng.email = $hg.split('|')[1].replace(" + '@kcura.com'", "@kcura.com")
+            $chng.email = $hg.split('|')[1].replace(" + '@relativity.com'", "@relativity.com")
             $chng.date = $hg.split('|')[2]
             $chng.node = $hg.split('|')[3]            
             $chng.desc = $hg.split('|')[4]
