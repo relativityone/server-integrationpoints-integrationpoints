@@ -61,10 +61,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
             searchContainerManager.QueryAsync(workspaceArtifactId, Arg.Any<Query>()).Returns( GetAllFolders() );
 			searchContainerManager.GetSearchContainerTreeAsync(workspaceArtifactId, 
-                Arg.Is<List<int>>( list => list.TrueForAll( i => SavedSearchesTreeTestHelper.GetSampleContainerIds().Contains(i) )))
+                Arg.Is<List<int>>( list => list.SequenceEqual( SavedSearchesTreeTestHelper.GetSampleContainerIds() )))
 				.Returns(SavedSearchesTreeTestHelper.GetSampleContainerCollection());
 
-			creator.Create(Arg.Any<IEnumerable<SearchContainerItem>>(), Arg.Any<IEnumerable<SavedSearchContainerItem>>()).Returns(SavedSearchesTreeTestHelper.GetSampleTreeWithSearches());
+		    creator.Create(
+		            Arg.Any<IEnumerable<SearchContainerItem>>(),
+		            Arg.Any<IEnumerable<SavedSearchContainerItem>>())
+		        .Returns(SavedSearchesTreeTestHelper.GetSampleTreeWithSearches());
 
 			// act
 			var actual = subjectUnderTest.GetSavedSearchesTree(workspaceArtifactId);
@@ -76,6 +79,18 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
             Assert.That(actual.Id, Is.EqualTo(expected.Id));
 			Assert.That(actual.Text, Is.EqualTo(expected.Text));
 			Assert.That(actual.Children.Count, Is.EqualTo(expected.Children.Count));
-		}
+
+            //check mock arguments
+		    creator.Received(1).Create(
+		            Arg.Is<IEnumerable<SearchContainerItem>>( list => list.Count() == SavedSearchesTreeTestHelper.GetSampleContainerCollection().SearchContainerItems.Count ),
+		            Arg.Is<IEnumerable<SavedSearchContainerItem>>( list => list.Count() != SavedSearchesTreeTestHelper.GetSampleContainerCollection().SavedSearchContainerItems.Count));
+
+		    var publicSearches = SavedSearchesTreeTestHelper.GetSampleContainerCollection().SavedSearchContainerItems
+		        .Where(s => !s.Secured);
+
+		    creator.Received(1).Create(
+		        Arg.Is<IEnumerable<SearchContainerItem>>(list => list.Count() == SavedSearchesTreeTestHelper.GetSampleContainerCollection().SearchContainerItems.Count),
+		        Arg.Is<IEnumerable<SavedSearchContainerItem>>(list => list.Count() == publicSearches.Count()));
+        }
 	}
 }
