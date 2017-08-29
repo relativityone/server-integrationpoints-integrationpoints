@@ -25,9 +25,12 @@ namespace kCura.IntegrationPoints.Management.Tasks
 
 		private void CleanInWorkspace(int workspaceArtifactId)
 		{
-			var jobHistories = _unlinkedJobHistoryService.FindUnlinkedJobHistories(workspaceArtifactId);
+			List<int> jobHistories = _unlinkedJobHistoryService.FindUnlinkedJobHistories(workspaceArtifactId);
 
-			_deleteHistoryErrorService.DeleteErrorAssociatedWithHistories(jobHistories, workspaceArtifactId);
+			if (jobHistories.Count > 0)
+			{
+				_deleteHistoryErrorService.DeleteErrorAssociatedWithHistories(jobHistories, workspaceArtifactId);
+			}
 		}
 	}
 }
