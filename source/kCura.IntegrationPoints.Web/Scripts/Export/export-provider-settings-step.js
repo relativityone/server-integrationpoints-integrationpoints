@@ -13,6 +13,42 @@
 			return self.ArtifactTypeID !== self.DefaultRdoTypeId;
 		}
 
+		this.ProcessingSourceLocationList = ko.observableArray([]);
+
+		this.ProcessingSourceLocationArtifactId = state.ProcessingSourceLocation || 0;
+
+		this.ProcessingSourceLocation = ko.observable(self.ProcessingSourceLocationArtifactId).extend({
+			required: true
+		});
+
+		this.ProcessingSourceLocation.isModified(false);
+
+		self.getSelectedProcessingSourceLocationPath = function (artifactId) {
+			var selectedPath = ko.utils.arrayFirst(self.ProcessingSourceLocationList(), function (item) {
+				if (item.artifactId === artifactId) {
+					return item;
+				}
+			});
+			return selectedPath;
+		};
+
+		this.updateProcessingSourceLocation = function (value) {
+			self.ProcessingSourceLocationPath = self.getSelectedProcessingSourceLocationPath(self.ProcessingSourceLocation()).location;
+			if (self.Fileshare() != undefined && self.Fileshare().indexOf(self.ProcessingSourceLocationPath) == -1) //fileshare does not contain path
+			{
+				self.Fileshare(undefined);
+				self.Fileshare.isModified(false);
+			}
+
+			if (self.locationSelector) {
+				self.locationSelector.clear();
+			}
+
+			self.getDirectories();
+
+			self.locationSelector.toggle(!!value);
+		};
+
 		this.Fileshare = ko.observable(state.Fileshare).extend({
 			required: true
 		});
@@ -75,8 +111,9 @@
 				}
 			});
 
-			self.locationSelector.toggle(true); // !!self.ProcessingSourceLocation()
+			self.locationSelector.toggle(!!self.ProcessingSourceLocation());
 			self.loadRootDataTransferLocation();
+			self.ProcessingSourceLocation.isModified(false);
 		};
 
 		this.SelectedDataFileFormat = ko.observable(state.SelectedDataFileFormat || ExportEnums.Defaults.DataFileFormatValue).extend({
@@ -283,7 +320,7 @@
 			}
 		});
 
-		this.IsCustomFileNameOptionSelected = function() {
+		this.IsCustomFileNameOptionSelected = function () {
 			return self.SelectedExportNativesWithFileNameFrom() === ExportEnums.ExportNativeWithFilenameFromTypesEnum.Custom;
 		};
 
@@ -676,7 +713,7 @@
 
 		var exportHelper = new ExportHelper();
 
-		var getFileNameSelectionRepresentation = function() {
+		var getFileNameSelectionRepresentation = function () {
 			var fileNameParts = self.FileNameParts();
 			return exportHelper.convertFileNamePartsToText(fileNameParts);
 		};
@@ -795,6 +832,36 @@
 				}));
 
 			self.model.errors = ko.validation.group(self.model);
+
+			var processingSourceLocationListPromise = root.data.ajax({
+				type: "get",
+				url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocations"),
+				data: {
+					sourceWorkspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
+				}
+			}).fail(function (error) {
+				IP.message.error.raise("No processing source locations were returned from source provider");
+			});
+
+			root.data.deferred()
+				.all([processingSourceLocationListPromise])
+				.then(function (result) {
+					self.model.ProcessingSourceLocationList(result[0]);
+					self.model.ProcessingSourceLocation(self.model.ProcessingSourceLocationArtifactId);
+					self.model.ProcessingSourceLocation.isModified(false);
+
+					if (!self.model.HasBeenRun()) {
+						if (self.model.ProcessingSourceLocationArtifactId > 0) {
+							self.model.updateProcessingSourceLocation(self.model.ProcessingSourceLocationArtifactId)
+						}
+
+						self.model.ProcessingSourceLocation.subscribe(function (value) {
+							if (value != undefined) {
+								self.model.updateProcessingSourceLocation(value);
+							}
+						});
+					}
+				});
 		};
 
 		self.submit = function () {
