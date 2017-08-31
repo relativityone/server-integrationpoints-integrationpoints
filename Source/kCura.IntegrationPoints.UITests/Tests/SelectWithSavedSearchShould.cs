@@ -12,14 +12,12 @@ namespace IntegrationPointsUITests.Tests
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            Console.WriteLine("Setup");
             EnsureGeneralPageIsOpened();
         }
         
         [Test, Order(10)]
         public void ChangeValueWhenSavedSearchIsChosenInDialog()
         {
-            Console.WriteLine("testooo");
             // GIVEN
             var generalPage = new GeneralPage(Driver);
             generalPage.ChooseWorkspace("Smoke Workspace");

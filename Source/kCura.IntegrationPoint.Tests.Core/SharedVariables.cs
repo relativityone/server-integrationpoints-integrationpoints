@@ -45,12 +45,13 @@ namespace kCura.IntegrationPoint.Tests.Core
 		#region ConnectionString Settings
 
 		public static string TargetHost => GetTargetHost();
+		public static string TargetDbHost => GetTargetDbHost();
 
 		public static string DatabaseUserId { get; set; } = ConfigurationManager.AppSettings["databaseUserId"];
 
 		public static string DatabasePassword { get; set; } = ConfigurationManager.AppSettings["databasePassword"];
 
-		public static string EddsConnectionString => String.Format(ConfigurationManager.AppSettings["connectionStringEDDS"], TargetHost, DatabaseUserId, DatabasePassword);
+		public static string EddsConnectionString => String.Format(ConfigurationManager.AppSettings["connectionStringEDDS"], TargetDbHost, DatabaseUserId, DatabasePassword);
 
 		public static string WorkspaceConnectionStringFormat => String.Format(ConfigurationManager.AppSettings["connectionStringWorkspace"], "{0}", TargetHost, DatabaseUserId, DatabasePassword);
 
@@ -109,6 +110,18 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			return ConfigurationManager.AppSettings["targetHost"];
 		}
+		
+		private static string GetTargetDbHost()
+	    {
+	        string environmentVariableName = ConfigurationManager.AppSettings["JenkinsBuildHostEnvironmentVariableName"];
+
+	        if (environmentVariableName != null)
+	        {
+	            return Environment.GetEnvironmentVariable(environmentVariableName, EnvironmentVariableTarget.Machine);
+	        }
+
+	        return ConfigurationManager.AppSettings["targetDbHost"];
+	    }
 
 		public static bool UseIPRapFile()
 		{
