@@ -25,17 +25,25 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 
 		public IHelper CreateTargetHelper(IHelper sourceInstanceHelper, int? federatedInstanceArtifactId, string credentials)
 		{
-			if (federatedInstanceArtifactId.HasValue)
+			if (federatedInstanceArtifactId.HasValue && federatedInstanceArtifactId.Value > 0)
 			{
 				IContextContainer sourceContextContainer = _contextContainerFactory.CreateContextContainer(sourceInstanceHelper);
 				IFederatedInstanceManager federatedInstanceManager = _managerFactory.CreateFederatedInstanceManager(sourceContextContainer);
 				FederatedInstanceDto federatedInstance = federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(federatedInstanceArtifactId.Value);
-				OAuthClientDto authClientDto = _serializer.Deserialize<OAuthClientDto>(credentials);
 
-				IHelper targetHelper = new OAuthHelper(new Uri(federatedInstance.InstanceUrl), new Uri(federatedInstance.RsapiUrl), new Uri(federatedInstance.KeplerUrl), authClientDto,
-					_tokenProvider);
-
-				return targetHelper;
+				try
+				{
+					OAuthClientDto authClientDto = _serializer.Deserialize<OAuthClientDto>(credentials);
+					IHelper targetHelper = new OAuthHelper(new Uri(federatedInstance.InstanceUrl), new Uri(federatedInstance.RsapiUrl),
+						new Uri(federatedInstance.KeplerUrl), authClientDto,
+						_tokenProvider);
+					return targetHelper;
+				}
+				catch (Exception ex)
+				{
+					sourceInstanceHelper.GetLoggerFactory().GetLogger().LogError(ex, $"Unable to find Federated instance with Id: {federatedInstanceArtifactId}");
+					throw;
+				}
 			}
 
 			return sourceInstanceHelper;

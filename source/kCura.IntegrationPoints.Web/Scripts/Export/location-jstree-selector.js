@@ -46,9 +46,16 @@ var LocationJSTreeSelector = function () {
 	};
 
 	self.reloadWithRootWithData = function (data) {
-		self.initJsTree(data, true);
+		self.initJsTreeWithRoot(data, true);
 		self.setTreeVisibility(self.treeVisible);
 	};
+
+
+	self.reloadWithRoot = function (ajaxCallback) {
+		self.initJsTreeWithRoot(ajaxCallback);
+		self.setTreeVisibility(self.treeVisible);
+	};
+
 
 	self.initJsTree = function (data, openRoot) {
 		$(self.domSelectorSettings.jstreeHolderDivSelector).width($(self.domSelectorSettings.dropdownSelector).innerWidth());
@@ -80,7 +87,7 @@ var LocationJSTreeSelector = function () {
 		});
 	};
 
-	self.openRootNode = function(treeSelector) {
+	self.openRootNode = function (treeSelector) {
 		$(treeSelector).on('ready.jstree', function () {
 			$(treeSelector).jstree('open_node', 'ul > li:first');
 		});
@@ -104,7 +111,7 @@ var LocationJSTreeSelector = function () {
 		self.setTreeVisibility(self.treeVisible);
 	};
 
-	self.initJsTreeWithRoot = function (ajaxCallback) {
+	self.initJsTreeWithRoot = function (ajaxCallback, openRoot) {
 		$(self.domSelectorSettings.jstreeHolderDivSelector).width($(self.domSelectorSettings.dropdownSelector).innerWidth());
 		$(self.domSelectorSettings.browserTreeSelector).jstree('destroy');
 		var extendWithDefault = function (child) {
@@ -120,7 +127,6 @@ var LocationJSTreeSelector = function () {
 					var ajaxSuccess = function (returnData) {
 						//will open the root folder in jstree for both export and import
 						$(self.domSelectorSettings.browserTreeSelector).on('ready.jstree', function () {
-							$(self.domSelectorSettings.browserTreeSelector).jstree('select_node', 'ul > li:first');
 							var selectedNode = $(self.domSelectorSettings.browserTreeSelector).jstree("get_selected");
 							$(self.domSelectorSettings.browserTreeSelector).jstree("open_node", selectedNode, false, true);
 						});
@@ -147,6 +153,9 @@ var LocationJSTreeSelector = function () {
 						console.log('JsTree load fail:');
 						console.log(errorThrown);
 					}
+					if (openRoot) {
+						self.openRootNode(self.domSelectorSettings.browserTreeSelector);
+					}
 					ajaxCallback(obj, ajaxSuccess, ajaxFail);
 
 				}
@@ -168,12 +177,6 @@ var LocationJSTreeSelector = function () {
 			}
 		});
 	};
-
-	self.reloadWithRoot = function (ajaxCallback) {
-		self.initJsTreeWithRoot(ajaxCallback);
-		self.setTreeVisibility(self.treeVisible);
-	};
-
 
 	self.setTreeVisibility = function (visible) {
 		if (visible) {
