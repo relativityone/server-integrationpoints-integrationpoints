@@ -53,7 +53,17 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public void DeployIntegrationPointsCustomPage()
+	    public void InstallIntegrationPointFromAppLibraryToWorkspace(int workspaceArtifactId)
+	    {
+	        LibraryApplication libraryApplication = GetLibraryApplicationDTO(new Guid(IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING));
+
+	        using (var applicationInstallManager = _helper.CreateAdminProxy<IApplicationInstallManager>())
+	        {
+	            applicationInstallManager.InstallLibraryApplicationByGuid(workspaceArtifactId, libraryApplication.ApplicationGuid).Wait();
+	        }
+	    }
+
+        public void DeployIntegrationPointsCustomPage()
 		{
 			string sqlText =
 				$@"Update EDDS.eddsdbo.ApplicationServer set state = 0 where AppGuid = '{IntegrationPoints.Core.Constants

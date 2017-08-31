@@ -33,9 +33,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		#region Methods
 
-		public int CreateWorkspace(string name)
+		public int CreateWorkspace(string name, string template = _TEMPLATE_WORKSPACE_NAME)
 		{
-			return Workspace.CreateWorkspace(name, _TEMPLATE_WORKSPACE_NAME);
+			return Workspace.CreateWorkspace(name, template);
 		}
 
 		public void ImportData(int workspaceArtifactId, DocumentsTestData documentsTestData)

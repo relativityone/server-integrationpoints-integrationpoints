@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				}
 				catch (Exception ex)
 				{
-					throw new Exception($"An error occurred while creating workspace {workspaceName}. Error Message: {ex.Message}");
+					throw new Exception($"An error occurred while creating workspace {workspaceName}. Error Message: {ex.Message}, error type: {ex.GetType()}", ex);
 				}
 			}
 			return workspaceId;

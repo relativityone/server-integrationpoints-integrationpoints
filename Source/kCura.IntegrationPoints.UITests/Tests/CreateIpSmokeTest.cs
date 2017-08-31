@@ -20,11 +20,10 @@ namespace IntegrationPointsUITests.Tests
         [Test, Order(10)]
         public void CreateIp()
         {
-            Console.WriteLine("testooo");
             // GIVEN
             var generalPage = new GeneralPage(Driver);
-            generalPage.ChooseWorkspace("Smoke Workspace");
-
+            generalPage.ChooseWorkspace(WorkspaceName);
+            
             // WHEN
             IntegrationPointsPage ipPage = generalPage.GoToIntegrationPointsPage();
             ExportFirstPage first = ipPage.CreateNewIntegrationPoint();
