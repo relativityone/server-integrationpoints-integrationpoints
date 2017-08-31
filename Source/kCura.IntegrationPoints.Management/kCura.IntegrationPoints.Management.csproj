@@ -167,8 +167,8 @@
       <HintPath>..\packages\Relativity.ServiceBus.Utilities.9.5.250.10\lib\net462\Relativity.ServiceBus.Utilities.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Telemetry.APM, Version=9.4.143.4, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Telemetry.APM.9.4.143\lib\net462\Relativity.Telemetry.APM.dll</HintPath>
+    <Reference Include="Relativity.Telemetry.APM, Version=9.4.148.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Telemetry.APM.9.4.148\lib\net462\Relativity.Telemetry.APM.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Toggles, Version=1.0.0.84, Culture=neutral, processorArchitecture=MSIL">

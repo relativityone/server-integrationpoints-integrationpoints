@@ -98,7 +98,8 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<ISourceTypeFactory>().ImplementedBy<SourceTypeFactory>().LifestyleTransient());
 			container.Register(Component.For<IDestinationTypeFactory>().ImplementedBy<DestinationTypeFactory>().LifestyleTransient());
 			container.Register(Component.For<IResourceDbProvider>().ImplementedBy<ResourceDbProvider>().LifestyleTransient());
-			container.Register(Component.For<IRepositoryFactory>().ImplementedBy<RepositoryFactory>().LifestyleTransient());
+		    container.Register(Component.For<IServicesMgr>().UsingFactoryMethod(k => k.Resolve<IHelper>().GetServicesManager(), true));
+            container.Register(Component.For<IRepositoryFactory>().ImplementedBy<RepositoryFactory>().LifestyleTransient());
 			container.Register(Component.For<IWorkspaceRepository>().ImplementedBy<KeplerWorkspaceRepository>().UsingFactoryMethod((k) => k.Resolve<IRepositoryFactory>().GetWorkspaceRepository()).LifestyleTransient());
 			container.Register(Component.For<IRdoFilter>().ImplementedBy<RdoFilter>().LifestyleTransient());
 			container.Register(Component.For<UserService>().ImplementedBy<UserService>().LifestyleTransient());

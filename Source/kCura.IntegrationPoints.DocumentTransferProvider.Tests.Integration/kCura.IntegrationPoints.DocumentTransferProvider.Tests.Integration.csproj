@@ -46,6 +46,14 @@
       <HintPath>..\packages\BCrypt-Official.0.1.109\lib\BCrypt.Net.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Castle.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Castle.Core.3.3.0\lib\net45\Castle.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Castle.Windsor, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="kCura, Version=9.5.250.10, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\kCura.9.5.250.10\lib\net462\kCura.dll</HintPath>
       <Private>True</Private>
@@ -70,11 +78,28 @@
       <HintPath>..\packages\Relativity.Authentication.Interfaces.9.5.250.10\lib\net462\Relativity.Authentication.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.Core, Version=9.5.250.10, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Core.9.5.250.10\lib\net462\Relativity.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Kepler, Version=1.0.1.333, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Kepler.1.0.1.333\lib\net462\Relativity.Kepler.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Relativity.Logging.Interfaces, Version=9.4.308.17, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Logging.Interfaces.9.4.308\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.Services.ServiceProxy, Version=1.0.1.333, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Kepler.Client.1.0.1.333\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Telemetry.APM, Version=9.4.148.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Telemetry.APM.9.4.148\lib\net462\Relativity.Telemetry.APM.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\Version\AssemblyInfo.cs">
@@ -87,9 +112,17 @@
       <Project>{ad3e5540-fa39-4983-8a23-fcc756d51a32}</Project>
       <Name>kCura.IntegrationPoint.Tests.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Config\kCura.IntegrationPoints.Config.csproj">
+      <Project>{DEF928B5-37CE-4BF3-B663-F0B8912C9C3F}</Project>
+      <Name>kCura.IntegrationPoints.Config</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
       <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
       <Name>kCura.IntegrationPoints.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">
+      <Project>{A1AE667B-1B6E-4BB9-AF1D-912620292283}</Project>
+      <Name>kCura.IntegrationPoints.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
       <Project>{599D771D-2AE7-4321-9BAC-BE06F827CE0A}</Project>

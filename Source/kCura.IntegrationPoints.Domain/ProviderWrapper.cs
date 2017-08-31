@@ -8,7 +8,7 @@ using kCura.IntegrationPoints.Contracts.Provider;
 namespace kCura.IntegrationPoints.Domain
 {
 	//represents a wrapper to allow for certain safeties to be guaranteed when marshalling
-	internal class ProviderWrapper : MarshalByRefObject, IInternalDataSourceProvider, IEmailBodyData
+	internal class ProviderWrapper : MarshalByRefObject, IDataSourceProvider, IEmailBodyData
 	{
 		private readonly IDataSourceProvider _provider;
 		internal ProviderWrapper(IDataSourceProvider provider)
@@ -67,12 +67,6 @@ namespace kCura.IntegrationPoints.Domain
 			{
 				return string.Empty;
 			}
-		}
-
-		public void RegisterDependency<T>(T dependencies)
-		{
-			IInternalDataSourceProvider internalProvider = _provider as IInternalDataSourceProvider;
-			internalProvider?.RegisterDependency(dependencies);
 		}
 	}
 }

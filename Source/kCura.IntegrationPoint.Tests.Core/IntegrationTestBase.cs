@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Security.Claims;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -15,24 +16,29 @@ namespace kCura.IntegrationPoint.Tests.Core
 		protected IConfigurationStore ConfigurationStore;
 		public ITestHelper Helper => _help.Value;
 		private readonly Lazy<ITestHelper> _help;
-		private int _ADMIN_USER_ID = 9;
+		public const int ADMIN_USER_ID = 9;
 
 		protected IntegrationTestBase()
 		{
-			kCura.Data.RowDataGateway.Config.MockConfigurationValue("LongRunningQueryTimeout", 100);
+			Data.RowDataGateway.Config.MockConfigurationValue("LongRunningQueryTimeout", 100);
 			Config.Config.SetConnectionString(SharedVariables.EddsConnectionString);
 			global::Relativity.Data.Config.InjectConfigSettings(new Dictionary<string, object>()
 			{
 				{"connectionString", SharedVariables.EddsConnectionString}
 			});
 
-			ClaimsPrincipal.ClaimsPrincipalSelector += () =>
-			{
-				ClaimsPrincipalFactory factory = new ClaimsPrincipalFactory();
-				return factory.CreateClaimsPrincipal2(_ADMIN_USER_ID);
-			};
+			IProvideServiceUris serviceUrisProvider = Substitute.For<IProvideServiceUris>();
+			serviceUrisProvider.AuthenticationUri().Returns(new Uri($"{SharedVariables.ProtocolVersion}://{SharedVariables.TargetHost}/Relativity"));
 
-			Container = new WindsorContainer();
+			ExtensionPointServiceFinder.ServiceUriProvider = serviceUrisProvider;
+
+			ClaimsPrincipal.ClaimsPrincipalSelector += () =>
+            {
+                var factory = new ClaimsPrincipalFactory();
+                return factory.CreateClaimsPrincipal2(ADMIN_USER_ID, Helper);
+            };
+
+            Container = new WindsorContainer();
 			ConfigurationStore = new DefaultConfigurationStore();
 			_help = new Lazy<ITestHelper>(() => new TestHelper());
 		}

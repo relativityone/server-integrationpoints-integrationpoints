@@ -48,7 +48,6 @@ namespace kCura.IntegrationPoints.Web.Installers
 			container.Register(Component.For<WebAPIFilterException>().ImplementedBy<WebAPIFilterException>().LifestyleSingleton());
 			container.Register(Component.For<IRSAPIClient>().UsingFactoryMethod((k) => k.Resolve<WebClientFactory>().CreateClient()).LifestyleTransient());
 			container.Register(Component.For<global::Relativity.API.IDBContext>().UsingFactoryMethod((k) => k.Resolve<WebClientFactory>().CreateDbContext()).LifestyleTransient());
-			container.Register(Component.For<IServicesMgr>().UsingFactoryMethod((k) => k.Resolve<WebClientFactory>().CreateServicesMgr()).LifestyleTransient());
 			container.Register(Component.For<GridModelFactory>().ImplementedBy<GridModelFactory>().LifestyleTransient());
 			container.Register(Component.For<IRelativityUrlHelper>().ImplementedBy<RelativityUrlHelper>().LifestyleTransient());
 			container.Register(Component.For<IRSAPIService>().UsingFactoryMethod(k => k.Resolve<IServiceContextHelper>().GetRsapiService()).LifestyleTransient());

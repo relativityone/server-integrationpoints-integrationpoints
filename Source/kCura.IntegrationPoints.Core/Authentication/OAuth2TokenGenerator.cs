@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.WinEDDS.Credentials;
+using Newtonsoft.Json;
 using Relativity.API;
 using Relativity.OAuth2Client.Interfaces;
 using Relativity.Services.Security.Models;
@@ -36,7 +38,8 @@ namespace kCura.IntegrationPoints.Core.Authentication
 			{
 				OAuth2Client oauth2Client = _oAuth2ClientFactory.GetOauth2Client(_contextUser.ID);
 				ITokenProvider tokenProvider = CreateTokenProvider(oauth2Client);
-				string token = tokenProvider.GetAccessTokenAsync(_cancellationTokenSource.Token).Result;
+				string token = tokenProvider.GetAccessTokenAsync(_cancellationTokenSource.Token).ConfigureAwait(false)
+					.GetAwaiter().GetResult();
 
 				return token;
 			}
@@ -57,7 +60,7 @@ namespace kCura.IntegrationPoints.Core.Authentication
 
 		private Uri GetRelativityStsUri()
 		{
-			string relativityInstance = global::Relativity.API.ExtensionPointServiceFinder.ServiceUriProvider
+			string relativityInstance = ExtensionPointServiceFinder.ServiceUriProvider
 				.AuthenticationUri().ToString();
 			var relativityStsUri = new Uri(System.IO.Path.Combine(relativityInstance, Constants.IntegrationPoints.RELATIVITY_AUTH_ENDPOINT));
 			LogRelativityStsUrl(relativityInstance);

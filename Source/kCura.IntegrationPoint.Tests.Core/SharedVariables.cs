@@ -100,7 +100,11 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			if (environmentVariableName != null)
 			{
-				return Environment.GetEnvironmentVariable(environmentVariableName, EnvironmentVariableTarget.Machine);
+				string environmentSetting = Environment.GetEnvironmentVariable(environmentVariableName, EnvironmentVariableTarget.Machine);
+			    if (!string.IsNullOrEmpty(environmentSetting))
+			    {
+			        return environmentSetting;
+			    }
 			}
 
 			return ConfigurationManager.AppSettings["targetHost"];

@@ -137,20 +137,20 @@
       <HintPath>..\packages\Relativity.ImportExport.9.5.250.10\lib\net462\Relativity.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.OAuth2Client, Version=1.0.8.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.OAuth2Client.1.0.8\lib\net462\Relativity.OAuth2Client.dll</HintPath>
+    <Reference Include="Relativity.OAuth2Client, Version=1.0.23.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.1.0.23\lib\net462\Relativity.OAuth2Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.OAuth2Client.IdentityModel, Version=1.0.8.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.OAuth2Client.1.0.8\lib\net462\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
+    <Reference Include="Relativity.OAuth2Client.IdentityModel, Version=1.0.23.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.1.0.23\lib\net462\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.OAuth2Client.IdentityModel.Interfaces, Version=1.0.8.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.OAuth2Client.Interfaces.1.0.8\lib\net462\Relativity.OAuth2Client.IdentityModel.Interfaces.dll</HintPath>
+    <Reference Include="Relativity.OAuth2Client.IdentityModel.Interfaces, Version=1.0.23.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.Interfaces.1.0.23\lib\net462\Relativity.OAuth2Client.IdentityModel.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.OAuth2Client.Interfaces, Version=1.0.8.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.OAuth2Client.Interfaces.1.0.8\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
+    <Reference Include="Relativity.OAuth2Client.Interfaces, Version=1.0.23.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.Interfaces.1.0.23\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="SystemInterface, Culture=neutral, processorArchitecture=MSIL">
