@@ -15,37 +15,42 @@ var LocationJSTreeSelector = function () {
 			$.extend(self.domSelectorSettings, settings);
 		}
 
-	    $(self.domSelectorSettings.dropdownSelector).mousedown(function () {
-	        self.setTreeVisibility(!self.treeVisible);
-	    });
+		$(self.domSelectorSettings.dropdownSelector).mousedown(function () {
+			self.setTreeVisibility(!self.treeVisible);
+		});
 
-	    $(self.domSelectorSettings.dropdownSelector).click(function (e) {
-	        e.stopPropagation();
-	    });
+		$(self.domSelectorSettings.dropdownSelector).click(function (e) {
+			e.stopPropagation();
+		});
 
-	    $(self.domSelectorSettings.jstreeHolderDivSelector).click(function (e) {
-	        e.stopPropagation();
-	    });
+		$(self.domSelectorSettings.jstreeHolderDivSelector).click(function (e) {
+			e.stopPropagation();
+		});
 
-	    $(document).click(function () {
-	        self.setTreeVisibility(false);
-	    });
+		$(document).click(function () {
+			self.setTreeVisibility(false);
+		});
 
 		if (selectedNode !== undefined) {
 			self.SelectedNode = selectedNode;
 			self.setSelection(selectedNode);
 		}
 
-		self.initJsTree(data);
+		self.initJsTree(data, false);
 		self.setTreeVisibility(self.treeVisible);
 	};
 
 	self.reload = function (data) {
-		self.initJsTree(data);
+		self.initJsTree(data, false);
 		self.setTreeVisibility(self.treeVisible);
 	};
 
-	self.initJsTree = function (data) {
+	self.reloadWithRootWithData = function (data) {
+		self.initJsTree(data, true);
+		self.setTreeVisibility(self.treeVisible);
+	};
+
+	self.initJsTree = function (data, openRoot) {
 		$(self.domSelectorSettings.jstreeHolderDivSelector).width($(self.domSelectorSettings.dropdownSelector).innerWidth());
 
 		$(self.domSelectorSettings.browserTreeSelector).jstree('destroy');
@@ -53,7 +58,12 @@ var LocationJSTreeSelector = function () {
 
 		$(self.domSelectorSettings.browserTreeSelector).jstree({
 			'core': {
-				'data': root
+				'data': function (obj, callback) {
+					if (openRoot) {
+						self.openRootNode(self.domSelectorSettings.browserTreeSelector);
+					}
+					callback.call(this, root);
+				}
 			}
 		});
 
@@ -69,6 +79,12 @@ var LocationJSTreeSelector = function () {
 			}
 		});
 	};
+
+	self.openRootNode = function(treeSelector) {
+		$(treeSelector).on('ready.jstree', function () {
+			$(treeSelector).jstree('open_node', 'ul > li:first');
+		});
+	}
 
 	self.initWithRoot = function (selectedNode, ajaxCallback, settings) {
 		if (settings !== undefined) {
@@ -189,6 +205,7 @@ var LocationJSTreeSelector = function () {
 	return {
 		init: self.init,
 		reload: self.reload,
+		reloadWithRootWithData: self.reloadWithRootWithData,
 		reloadWithRoot: self.reloadWithRoot,
 		clear: self.clearSelection,
 		toggle: self.toggleLocation,

@@ -254,12 +254,12 @@ var ExportSourceViewModel = function (state) {
 		self.LocationSelector.toggle(true);
 
 		self.Folders.subscribe(function (value) {
-			self.LocationSelector.reload(value);
+			self.LocationSelector.reloadWithRootWithData(value);
 		});
 
 		var folders = self.Folders();
 		if (folders !== undefined) {
-			self.LocationSelector.reload(folders);
+			self.LocationSelector.reloadWithRootWithData(folders);
 		}
 	};
 

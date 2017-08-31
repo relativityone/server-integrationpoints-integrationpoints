@@ -274,7 +274,7 @@
 					self.TargetFolder.isModified(false);
 				}
 				self.foldersStructure = result;
-				self.locationSelector.reload(result);
+				self.locationSelector.reloadWithRootWithData(result);
 			}).fail(function (error) {
 				IP.frameMessaging().dFrame.IP.message.error.raise(error);
 			});
