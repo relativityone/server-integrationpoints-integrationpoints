@@ -35,16 +35,19 @@
 
 		this.ProcessingSourceLocationList = ko.observableArray([]);
 
-		this.ProcessingSourceLocationArtifactId = state.ProcessingSourceLocation;
-
 		this.ProcessingSourceLocation = ko.observable().extend({
 			required: true
 		});
 
-		if (this.ProcessingSourceLocationArtifactId) {
-			this.ProcessingSourceLocation(this.ProcessingSourceLocationArtifactId);
+		if (state.ProcessingSourceLocation) {
+			self.ProcessingSourceLocationArtifactId = state.ProcessingSourceLocation;
+		} else if(state.Fileshare) { // case when user created IP before PSL support was added
+			self.ProcessingSourceLocationArtifactId = -1;
 		}
 
+		if (self.ProcessingSourceLocationArtifactId) {
+			this.ProcessingSourceLocation(self.ProcessingSourceLocationArtifactId);
+		}
 		this.ProcessingSourceLocation.isModified(false);
 
 		self.getSelectedProcessingSourceLocationPath = function (artifactId) {
@@ -57,8 +60,21 @@
 		};
 
 		this.updateProcessingSourceLocation = function (value) {
-			if (value === undefined) {
+			var disableDirectorySelector = function() {
 				self.locationSelector.toggle(false);
+				self.Fileshare(undefined);
+			}
+
+			var enableDirectorySelector = function () {
+				self.locationSelector.toggle(true);
+			}
+
+			if (self.locationSelector) {
+				self.locationSelector.clear();
+			}
+
+			if (value === undefined) {
+				disableDirectorySelector();
 				return;
 			}
 
@@ -68,21 +84,21 @@
 			//	self.Fileshare(undefined);
 			//	self.Fileshare.isModified(false);
 			//}
-
-			if (self.locationSelector) {
-				self.locationSelector.clear();
-			}
+			
 
 			self.getDirectories();
 
-			self.locationSelector.toggle(!!value);
+			if (!value) {
+				disableDirectorySelector();
+			}
+			else {
+				enableDirectorySelector();
+			}
 		};
 
 		this.Fileshare = ko.observable(state.Fileshare).extend({
 			required: true
 		});
-
-		this.fileShareInvalidated = this.Fileshare() !== undefined && this.Fileshare() != null;
 
 		self.rootDataTransferLocation = "";
 
@@ -166,10 +182,6 @@
 			self.locationSelector = new LocationJSTreeSelector();
 			self.locationSelector.init(self.Fileshare(), [], {
 				onNodeSelectedEventHandler: function (node) {
-					if (self.fileShareInvalidated) {
-						self.fileShareInvalidated = false;
-						return;
-					}
 					self.Fileshare(node.id);
 				}
 			});
@@ -844,6 +856,7 @@
 				"NewlineSeparator": self.NewlineSeparator(),
 				"OverwriteFiles": self.OverwriteFiles(),
 				"ProductionPrecedence": self.ProductionPrecedence(),
+				"ProcessingSourceLocation": self.ProcessingSourceLocation(),
 				"QuoteSeparator": self.QuoteSeparator(),
 				"SelectedDataFileFormat": self.SelectedDataFileFormat(),
 				"SelectedImageDataFileFormat": self.SelectedImageDataFileFormat(),
