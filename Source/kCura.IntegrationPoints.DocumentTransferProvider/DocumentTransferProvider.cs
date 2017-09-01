@@ -137,7 +137,6 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		{
 			const string username = "XxX_BearerTokenCredentials_XxX";
 			string authToken = System.Security.Claims.ClaimsPrincipal.Current.Claims.Single(x => x.Type.Equals("access_token")).Value;
-
 			return new ExtendedImportAPI(username, authToken, _webApiConfig.GetWebApiUrl);
 		}
 		
