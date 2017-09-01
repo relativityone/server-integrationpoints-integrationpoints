@@ -1,8 +1,28 @@
 ﻿var IP = IP || {};
 
 (function (root, ko) {
+	var ExportDetailsService = function (root) {
+		var self = this;
+
+		self.loadRootDataTransferLocation = function (integrationPointTypeIdentifier, successCallback, failCallback) {
+			root.data.ajax({
+				type: "post",
+				contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+				url: root.utils.generateWebAPIURL("DataTransferLocation/GetRoot", integrationPointTypeIdentifier)
+			})
+			.then(successCallback)
+			.fail(failCallback);
+		}
+
+		return {
+			loadRootDataTransferLocation: self.loadRootDataTransferLocation
+		}
+	};
+
+
 	var viewModel = function (state) {
 		var self = this;
+		self.ExportDetailsService = new ExportDetailsService(root);
 
 		this.IPName = state.name;
 
@@ -37,6 +57,11 @@
 		};
 
 		this.updateProcessingSourceLocation = function (value) {
+			if (value === undefined) {
+				self.locationSelector.toggle(false);
+				return;
+			}
+
 			//self.ProcessingSourceLocationPath = self.getSelectedProcessingSourceLocationPath(self.ProcessingSourceLocation()).location;
 			//if (self.Fileshare() != undefined && self.Fileshare().indexOf(self.ProcessingSourceLocationPath) == -1) //fileshare does not contain path
 			//{
@@ -44,13 +69,13 @@
 			//	self.Fileshare.isModified(false);
 			//}
 
-			//if (self.locationSelector) {
-			//	self.locationSelector.clear();
-			//}
+			if (self.locationSelector) {
+				self.locationSelector.clear();
+			}
 
 			self.getDirectories();
 
-			//self.locationSelector.toggle(!!value);
+			self.locationSelector.toggle(!!value);
 		};
 
 		this.Fileshare = ko.observable(state.Fileshare).extend({
@@ -62,20 +87,23 @@
 		self.rootDataTransferLocation = "";
 
 		this.loadRootDataTransferLocation = function () {
-			root.data.ajax({
-				type: "post",
-				contentType: "application/x-www-form-urlencoded; charset=UTF-8",
-				url: root.utils.generateWebAPIURL("DataTransferLocation/GetRoot", state.integrationPointTypeIdentifier)
-			}).then(function (result) {
+			var success = function (result) {
 				self.rootDataTransferLocation = result;
 				self.getDirectories();
-			}).fail(function (error) {
+			};
+
+			var fail = function (error) {
 				IP.message.error.raise("Can not retrieve data transfer location root path");
-			});
+			};
+			self.ExportDetailsService.loadRootDataTransferLocation(state.integrationPointTypeIdentifier, success, fail);
 		}
 
 		this.getDirectories = function () {
-			var psl = self.getSelectedProcessingSourceLocationPath(self.ProcessingSourceLocation());
+			var processingSourceLocationArtifactId = self.ProcessingSourceLocation();
+			if (!processingSourceLocationArtifactId) {
+				return;
+			}
+			var processingSourceLocation = self.getSelectedProcessingSourceLocationPath(processingSourceLocationArtifactId);
 
 			var reloadTree = function (params, onSuccess, onFail) {
 				var $locationErrorContainer = $("#processingLocationErrorContainer");
@@ -84,7 +112,7 @@
 				var isRoot = params.id === '#';
 				var path = params.id;
 				if (isRoot) {
-					path = psl.location;
+					path = processingSourceLocation.location;
 				}
 
 				root.data.ajax({
@@ -124,7 +152,7 @@
 			};
 
 			if (self.locationSelector) {
-				if (psl.isFileshare) {
+				if (processingSourceLocation.isFileshare) {
 					self.locationSelector.reloadWithRoot(reloadTreeFileshare);
 				} else {
 					self.locationSelector.reloadWithRoot(reloadTree);
@@ -146,8 +174,7 @@
 				}
 			});
 
-			self.locationSelector.toggle(true);
-			//self.locationSelector.toggle(!!self.ProcessingSourceLocation());
+			self.locationSelector.toggle(!!self.ProcessingSourceLocation());
 			self.loadRootDataTransferLocation();
 			self.ProcessingSourceLocation.isModified(false);
 		};
@@ -894,14 +921,10 @@
 					self.model.ProcessingSourceLocation(self.model.ProcessingSourceLocationArtifactId);
 					self.model.ProcessingSourceLocation.isModified(false);
 
-					if (self.model.ProcessingSourceLocationArtifactId > 0) {
-						self.model.updateProcessingSourceLocation(self.model.ProcessingSourceLocationArtifactId);
-					}
+					self.model.updateProcessingSourceLocation(self.model.ProcessingSourceLocationArtifactId);
 
 					self.model.ProcessingSourceLocation.subscribe(function (value) {
-						if (value != undefined) {
-							self.model.updateProcessingSourceLocation(value);
-						}
+						self.model.updateProcessingSourceLocation(value);
 					});
 				});
 		};
