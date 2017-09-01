@@ -15,11 +15,15 @@
 
 		this.ProcessingSourceLocationList = ko.observableArray([]);
 
-		this.ProcessingSourceLocationArtifactId = state.ProcessingSourceLocation || 0;
+		this.ProcessingSourceLocationArtifactId = state.ProcessingSourceLocation;
 
-		this.ProcessingSourceLocation = ko.observable(self.ProcessingSourceLocationArtifactId).extend({
+		this.ProcessingSourceLocation = ko.observable().extend({
 			required: true
 		});
+
+		if (this.ProcessingSourceLocationArtifactId) {
+			this.ProcessingSourceLocation(this.ProcessingSourceLocationArtifactId);
+		}
 
 		this.ProcessingSourceLocation.isModified(false);
 
@@ -33,20 +37,20 @@
 		};
 
 		this.updateProcessingSourceLocation = function (value) {
-			self.ProcessingSourceLocationPath = self.getSelectedProcessingSourceLocationPath(self.ProcessingSourceLocation()).location;
-			if (self.Fileshare() != undefined && self.Fileshare().indexOf(self.ProcessingSourceLocationPath) == -1) //fileshare does not contain path
-			{
-				self.Fileshare(undefined);
-				self.Fileshare.isModified(false);
-			}
+			//self.ProcessingSourceLocationPath = self.getSelectedProcessingSourceLocationPath(self.ProcessingSourceLocation()).location;
+			//if (self.Fileshare() != undefined && self.Fileshare().indexOf(self.ProcessingSourceLocationPath) == -1) //fileshare does not contain path
+			//{
+			//	self.Fileshare(undefined);
+			//	self.Fileshare.isModified(false);
+			//}
 
-			if (self.locationSelector) {
-				self.locationSelector.clear();
-			}
+			//if (self.locationSelector) {
+			//	self.locationSelector.clear();
+			//}
 
 			self.getDirectories();
 
-			self.locationSelector.toggle(!!value);
+			//self.locationSelector.toggle(!!value);
 		};
 
 		this.Fileshare = ko.observable(state.Fileshare).extend({
@@ -71,7 +75,32 @@
 		}
 
 		this.getDirectories = function () {
+			var psl = self.getSelectedProcessingSourceLocationPath(self.ProcessingSourceLocation());
+
 			var reloadTree = function (params, onSuccess, onFail) {
+				var $locationErrorContainer = $("#processingLocationErrorContainer");
+				IP.message.error.clear($locationErrorContainer);
+
+				var isRoot = params.id === '#';
+				var path = params.id;
+				if (isRoot) {
+					path = psl.location;
+				}
+
+				root.data.ajax({
+					type: "post",
+					contentType: "application/json",
+					url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationSubItems", isRoot),
+					data: JSON.stringify(path)
+				}).then(function (result) {
+					onSuccess(result);
+				}).fail(function (error) {
+					onFail(error);
+					IP.message.error.raise(error, $locationErrorContainer);
+				});
+			};
+
+			var reloadTreeFileshare = function (params, onSuccess, onFail) {
 				var $locationErrorContainer = $("#processingLocationErrorContainer");
 				IP.message.error.clear($locationErrorContainer);
 
@@ -95,9 +124,15 @@
 			};
 
 			if (self.locationSelector) {
-				self.locationSelector.reloadWithRoot(reloadTree);
+				if (psl.isFileshare) {
+					self.locationSelector.reloadWithRoot(reloadTreeFileshare);
+				} else {
+					self.locationSelector.reloadWithRoot(reloadTree);
+				}
 			}
 		};
+
+
 
 		this.onDOMLoaded = function () {
 			self.locationSelector = new LocationJSTreeSelector();
@@ -111,7 +146,8 @@
 				}
 			});
 
-			self.locationSelector.toggle(!!self.ProcessingSourceLocation());
+			self.locationSelector.toggle(true);
+			//self.locationSelector.toggle(!!self.ProcessingSourceLocation());
 			self.loadRootDataTransferLocation();
 			self.ProcessingSourceLocation.isModified(false);
 		};
@@ -846,21 +882,27 @@
 			root.data.deferred()
 				.all([processingSourceLocationListPromise])
 				.then(function (result) {
+					var fileShareExportLocation = {
+						artifactId: -1,
+						location: "EDDS",
+						isFileshare: true
+					};
+					var locations = result[0];
+					locations.push(fileShareExportLocation);
+
 					self.model.ProcessingSourceLocationList(result[0]);
 					self.model.ProcessingSourceLocation(self.model.ProcessingSourceLocationArtifactId);
 					self.model.ProcessingSourceLocation.isModified(false);
 
-					if (!self.model.HasBeenRun()) {
-						if (self.model.ProcessingSourceLocationArtifactId > 0) {
-							self.model.updateProcessingSourceLocation(self.model.ProcessingSourceLocationArtifactId)
-						}
-
-						self.model.ProcessingSourceLocation.subscribe(function (value) {
-							if (value != undefined) {
-								self.model.updateProcessingSourceLocation(value);
-							}
-						});
+					if (self.model.ProcessingSourceLocationArtifactId > 0) {
+						self.model.updateProcessingSourceLocation(self.model.ProcessingSourceLocationArtifactId);
 					}
+
+					self.model.ProcessingSourceLocation.subscribe(function (value) {
+						if (value != undefined) {
+							self.model.updateProcessingSourceLocation(value);
+						}
+					});
 				});
 		};
 
