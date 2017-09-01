@@ -129,7 +129,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			try
 			{
-				settings.Fileshare = _dataTransferLocationService.VerifyAndPrepare(CaseServiceContext.WorkspaceID, settings.Fileshare,
+                settings.Fileshare = _dataTransferLocationService.VerifyAndPrepare(CaseServiceContext.WorkspaceID, settings.Fileshare,
 					Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid);
 			}
 			catch (Exception e)

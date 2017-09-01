@@ -62,13 +62,15 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public string VerifyAndPrepare(int workspaceArtifactId, string path, Guid providerType)
 		{
+
+
 			// Get the give provider type path eg: DataTransfer\Export
 			string providerTypeRelativePathPrefix = GetDefaultRelativeLocationFor(providerType);
 			
 			// First validate if provided path match the correct destnation folder on the server (eg: DataTransfer\Export)
 			if (!path.StartsWith(providerTypeRelativePathPrefix))
 			{
-				throw new Exception($"Provided realtive path '{path}' does not match the correct destination folder!");
+			    return path;
 			}
 
 			string fileShareRootLocation = GetWorkspaceFileLocationRootPath(workspaceArtifactId);
