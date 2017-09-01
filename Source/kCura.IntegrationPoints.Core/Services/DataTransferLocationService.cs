@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		private const string _WORKSPACE_FOLDER_FORMAT = "EDDS{0}";
 		private const string _PARENT_FOLDER = "DataTransfer";
-	    private const string _INVALID_PATH = "Given Destination Folder path is invalid!";
+	    private const string _INVALID_PATH_ERROR_MSG = "Given Destination Folder path is invalid!";
 
 
         private readonly IAPILog _logger;
@@ -81,7 +81,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 			if (!destinationFolderPhysicalPath.IsSubPathOf(fileShareRootLocationWithRelativePath))
 			{
-                throw new ArgumentException(_INVALID_PATH, paramName:path);
+                throw new ArgumentException(_INVALID_PATH_ERROR_MSG, paramName:path);
 			}
 
 			CreateDirectoryIfNotExists(destinationFolderPhysicalPath);
