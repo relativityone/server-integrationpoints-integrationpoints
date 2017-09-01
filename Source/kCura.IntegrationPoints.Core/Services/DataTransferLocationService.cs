@@ -17,8 +17,10 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		private const string _WORKSPACE_FOLDER_FORMAT = "EDDS{0}";
 		private const string _PARENT_FOLDER = "DataTransfer";
+	    private const string _INVALID_PATH = "Given Destination Folder path is invalid!";
 
-		private readonly IAPILog _logger;
+
+        private readonly IAPILog _logger;
 		private readonly IHelper _helper;
 
 		private readonly IIntegrationPointTypeService _integrationPointTypeService;
@@ -62,9 +64,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public string VerifyAndPrepare(int workspaceArtifactId, string path, Guid providerType)
 		{
-
-
-			// Get the give provider type path eg: DataTransfer\Export
+			// Get the given provider type path eg: DataTransfer\Export
 			string providerTypeRelativePathPrefix = GetDefaultRelativeLocationFor(providerType);
 			
 			// First validate if provided path match the correct destnation folder on the server (eg: DataTransfer\Export)
@@ -81,7 +81,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 			if (!destinationFolderPhysicalPath.IsSubPathOf(fileShareRootLocationWithRelativePath))
 			{
-				throw new Exception("Given Destination Folder path is invalid!");
+                throw new ArgumentException(_INVALID_PATH, paramName:path);
 			}
 
 			CreateDirectoryIfNotExists(destinationFolderPhysicalPath);
