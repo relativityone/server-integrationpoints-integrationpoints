@@ -744,14 +744,26 @@
 		};
 
 		this.fileShareDisplayText = function () {
-			if (self.Fileshare()) {
-				if (self.IsExportFolderCreationEnabled()) {
-					return "EDDS" + state.SourceWorkspaceArtifactId + "\\" + self.Fileshare() + "\\" + self.IPName + "_{TimeStamp}";
-				}
-
-				return "EDDS" + state.SourceWorkspaceArtifactId + "\\" + self.Fileshare();
+			var fileshare = self.Fileshare();
+			if (!fileshare) {
+				return "Select...";
 			}
-			return "Select...";
+
+			var processingSourceLocationId = self.ProcessingSourceLocation();
+			if (processingSourceLocationId) {
+				var psl = self.getSelectedProcessingSourceLocationPath(processingSourceLocationId);
+				if (!!psl && !psl.isFileshare) {
+					if (self.IsExportFolderCreationEnabled()) {
+						return fileshare + "\\" + self.IPName + "_{TimeStamp}";
+					}
+					return fileshare;
+				}
+			}
+
+			if (self.IsExportFolderCreationEnabled()) {
+				return "EDDS" + state.SourceWorkspaceArtifactId + "\\" + fileshare + "\\" + self.IPName + "_{TimeStamp}";
+			}
+			return "EDDS" + state.SourceWorkspaceArtifactId + "\\" + fileshare;
 		};
 
 		this.IsExportFolderCreationEnabled = ko.observable(state.isExportFolderCreationEnabled || true);
