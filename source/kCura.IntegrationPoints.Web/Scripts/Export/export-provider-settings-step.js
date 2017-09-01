@@ -39,7 +39,12 @@
 			required: true
 		});
 
-		self.ProcessingSourceLocationArtifactId = state.ProcessingSourceLocation;
+		if (state.ProcessingSourceLocation) {
+			self.ProcessingSourceLocationArtifactId = state.ProcessingSourceLocation;
+		} else if(state.Fileshare) { // case when user created IP before PSL support was added
+			self.ProcessingSourceLocationArtifactId = -1;
+		}
+
 		if (self.ProcessingSourceLocationArtifactId) {
 			this.ProcessingSourceLocation(self.ProcessingSourceLocationArtifactId);
 		}
