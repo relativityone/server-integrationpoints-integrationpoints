@@ -1,4 +1,5 @@
-﻿using kCura.Relativity.DataReaderClient;
+﻿using System.Collections;
+using kCura.Relativity.DataReaderClient;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 {
@@ -44,5 +45,15 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 		protected abstract TJob CreateJob();
 
 		public abstract void Execute();
-	}
+
+        protected virtual void OnOnError(IDictionary row)
+        {
+            OnError?.Invoke(row);
+        }
+
+        protected virtual void OnOnMessage(Status status)
+        {
+            OnMessage?.Invoke(status);
+        }
+    }
 }
