@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using Castle.MicroKernel.Registration;
@@ -11,6 +12,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Domain;
+using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
 
@@ -21,7 +23,6 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration
 	public class DocumentTransferProviderTests : RelativityProviderTemplate
 	{
 		private DocumentTransferProvider _documentTransferProvider;
-		private IWebApiConfig _webApiConfig;
 	    private string[] _forbiddenFields;
 
 	    public DocumentTransferProviderTests() : base("SourceWorkspace", "DestinationWorkspace")
@@ -38,11 +39,14 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration
 	            DocumentFields.RelativityDestinationCase,
 	            DocumentFields.JobHistory
 	        };
-            _webApiConfig = new WebApiConfig();
-	        _documentTransferProvider = new DocumentTransferProvider(_webApiConfig, Container.Resolve<IRepositoryFactory>(), Container.Resolve<IHelper>());
+
+		    var webApiConfig = Substitute.For<IWebApiConfig>();
+		    webApiConfig.GetWebApiUrl.Returns(SharedVariables.RelativityWebApiUrl);
+			_documentTransferProvider = new DocumentTransferProvider(webApiConfig, Container.Resolve<IRepositoryFactory>(), Container.Resolve<IHelper>());
         }
 
 	    [Test]
+	    [Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
 		public void Get_RelativityFieldsFromSourceWorkspace_Success()
 		{
 			//Arrange

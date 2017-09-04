@@ -29,7 +29,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			IProvideServiceUris serviceUrisProvider = Substitute.For<IProvideServiceUris>();
 			serviceUrisProvider.AuthenticationUri().Returns(new Uri($"{SharedVariables.ProtocolVersion}://{SharedVariables.TargetHost}/Relativity"));
-
 			ExtensionPointServiceFinder.ServiceUriProvider = serviceUrisProvider;
 
 			ClaimsPrincipal.ClaimsPrincipalSelector += () =>
