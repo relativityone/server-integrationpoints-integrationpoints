@@ -59,7 +59,7 @@
 			return selectedPath;
 		};
 
-		this.updateProcessingSourceLocation = function (value) {
+		this.updateProcessingSourceLocation = function (value, isInitializationCall) {
 			var disableDirectorySelector = function() {
 				self.locationSelector.toggle(false);
 				self.Fileshare(undefined);
@@ -78,12 +78,9 @@
 				return;
 			}
 
-			//self.ProcessingSourceLocationPath = self.getSelectedProcessingSourceLocationPath(self.ProcessingSourceLocation()).location;
-			//if (self.Fileshare() != undefined && self.Fileshare().indexOf(self.ProcessingSourceLocationPath) == -1) //fileshare does not contain path
-			//{
-			//	self.Fileshare(undefined);
-			//	self.Fileshare.isModified(false);
-			//}
+			if (!isInitializationCall) {
+				self.Fileshare(undefined);
+			}
 			
 
 			self.getDirectories();
@@ -946,7 +943,7 @@
 					self.model.ProcessingSourceLocation(self.model.ProcessingSourceLocationArtifactId);
 					self.model.ProcessingSourceLocation.isModified(false);
 
-					self.model.updateProcessingSourceLocation(self.model.ProcessingSourceLocationArtifactId);
+					self.model.updateProcessingSourceLocation(self.model.ProcessingSourceLocationArtifactId, true);
 
 					self.model.ProcessingSourceLocation.subscribe(function (value) {
 						self.model.updateProcessingSourceLocation(value);
