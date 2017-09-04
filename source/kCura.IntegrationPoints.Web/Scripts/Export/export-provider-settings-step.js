@@ -113,6 +113,11 @@
 		};
 
 		self.onLoadded = function () {
+			self.InitializeLocationSelector();
+			self.loadRootDataTransferLocation();
+		};
+
+		self.InitializeLocationSelector = function () {
 			self.locationSelector = new LocationJSTreeSelector();
 			self.locationSelector.init(self.Fileshare(),
 				[],
@@ -121,9 +126,7 @@
 						self.Fileshare(node.id);
 					}
 				});
-
-			self.loadRootDataTransferLocation();
-		};
+		}
 
 		self.loadRootDataTransferLocation = function () {
 			var success = function (result) {
