@@ -26,6 +26,7 @@
 							<div class="field-label required">Saved Search:</div>
 							<div class="field-value">
 								<select id="savedSearchSelector" data-bind="options: savedSearches, optionsText: 'displayName', optionsValue: 'value', value: SavedSearchArtifactId,  optionsCaption: 'Select...', select2searchable: {}"></select>
+							    <button id="saved-search-selection-button" data-bind="click: OpenSavedSearchPicker" class="actionButtonSmall">...</button>
 							</div>
 						</div>
 					</td>
@@ -133,6 +134,8 @@
     <script src="~/Scripts/integration-point/picker.js"></script>
     <script src="~/Scripts/integration-point/tooltip-definitions.js"></script>
     <script src="~/Scripts/integration-point/tooltip-view-model.js"></script>
+	<script src="~/Scripts/export/saved-search-flat.js"></script>
+	<script src="~/Scripts/export/saved-search-picker.js"></script>
 	<script src="~/Scripts/export/export-enums.js"></script>
 	<script src="~/Scripts/RelativityProvider/Relativity-provider.js"></script>
 }
