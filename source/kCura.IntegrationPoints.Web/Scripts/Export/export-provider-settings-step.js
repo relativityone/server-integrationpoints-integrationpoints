@@ -36,18 +36,9 @@
 			self.fileShareDisplayText();
 		});
 
-		this.Fileshare = ko.observable(state.Fileshare).extend({
+		self.Fileshare = ko.observable(state.Fileshare).extend({
 			required: true
 		});
-
-		var isProcessingSourceLocationSelected = function () {
-			var processingSourceLocationId = self.ProcessingSourceLocation();
-			if (processingSourceLocationId) {
-				var psl = self.getSelectedProcessingSourceLocationViewModel(processingSourceLocationId);
-				return !!psl && !psl.isFileshare;
-			}
-			return false;
-		}
 
 		self.fileShareDisplayText = function () {
 			var fileshare = self.Fileshare();
@@ -56,7 +47,7 @@
 			}
 
 			var output;
-			if (isProcessingSourceLocationSelected()) {
+			if (self.isProcessingSourceLocationSelected()) {
 				output = fileshare;
 			}
 			else {
@@ -69,7 +60,7 @@
 
 			return output;
 		};
-	
+
 		// TODO is it necessary ? mayber it is better way to implement it
 		if (state.ProcessingSourceLocation) {
 			self.ProcessingSourceLocationArtifactId = state.ProcessingSourceLocation;
@@ -77,33 +68,17 @@
 			self.ProcessingSourceLocationArtifactId = FILESHARE_EXPORT_LOCATION_ARTIFACT_ID;
 		}
 
-		if (self.ProcessingSourceLocationArtifactId) {
-			self.ProcessingSourceLocation(self.ProcessingSourceLocationArtifactId);
-		}
-		self.ProcessingSourceLocation.isModified(false);
-
-		self.getSelectedProcessingSourceLocationViewModel = function (artifactId) {
-			var selectedPath = ko.utils.arrayFirst(self.ProcessingSourceLocationList(), function (item) {
-				if (item.artifactId === artifactId) {
-					return item;
-				}
-			});
-			return selectedPath;
-		};
-
 		this.updateProcessingSourceLocation = function (value, isInitializationCall) {
-			var disableDirectorySelector = function () {
+			var disableDirectorySelector = function() {
 				self.locationSelector.toggle(false);
 				self.Fileshare(undefined);
-			}
+			};
 
-			var enableDirectorySelector = function () {
+			var enableDirectorySelector = function() {
 				self.locationSelector.toggle(true);
-			}
+			};
 
-			if (self.locationSelector) {
-				self.locationSelector.clear();
-			}
+			self.locationSelector.clear();
 
 			if (value === undefined) {
 				disableDirectorySelector();
@@ -113,7 +88,6 @@
 			if (!isInitializationCall) {
 				self.Fileshare(undefined);
 			}
-
 
 			self.loadDirectories();
 
@@ -201,17 +175,17 @@
 			}
 		};
 
-		this.onLoadded = function () {
+		this.onLoadded = function() {
 			self.locationSelector = new LocationJSTreeSelector();
-			self.locationSelector.init(self.Fileshare(), [], {
-				onNodeSelectedEventHandler: function (node) {
-					self.Fileshare(node.id);
-				}
-			});
+			self.locationSelector.init(self.Fileshare(),
+				[],
+				{
+					onNodeSelectedEventHandler: function(node) {
+						self.Fileshare(node.id);
+					}
+				});
 
-			self.locationSelector.toggle(!!self.ProcessingSourceLocation());
 			self.loadRootDataTransferLocation();
-			self.ProcessingSourceLocation.isModified(false);
 
 			var processingSourceLocationListPromise = root.data.ajax({
 				type: "get",
@@ -219,13 +193,13 @@
 				data: {
 					sourceWorkspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
 				}
-			}).fail(function (error) {
+			}).fail(function(error) {
 				IP.message.error.raise("No processing source locations were returned from source provider");
 			});
 
 			root.data.deferred()
 				.all([processingSourceLocationListPromise])
-				.then(function (result) {
+				.then(function(result) {
 					var fileShareExportLocation = {
 						artifactId: FILESHARE_EXPORT_LOCATION_ARTIFACT_ID,
 						location: ".\\EDDS" + state.SourceWorkspaceArtifactId + "\\" + self.rootDataTransferLocation,
@@ -234,17 +208,36 @@
 					var locations = result[0];
 					locations.push(fileShareExportLocation);
 
-					self.ProcessingSourceLocationList(result[0]);
+					self.ProcessingSourceLocationList(locations);
+
 					self.ProcessingSourceLocation(self.ProcessingSourceLocationArtifactId);
 					self.ProcessingSourceLocation.isModified(false);
 
 					self.updateProcessingSourceLocation(self.ProcessingSourceLocationArtifactId, true);
 
-					self.ProcessingSourceLocation.subscribe(function (value) {
+					self.ProcessingSourceLocation.subscribe(function(value) {
 						self.updateProcessingSourceLocation(value);
 					});
 				});
-		}
+		};
+
+		self.isProcessingSourceLocationSelected = function() {
+			var processingSourceLocationId = self.ProcessingSourceLocation();
+			if (processingSourceLocationId) {
+				var psl = self.getSelectedProcessingSourceLocationViewModel(processingSourceLocationId);
+				return !!psl && !psl.isFileshare;
+			}
+			return false;
+		};
+
+		self.getSelectedProcessingSourceLocationViewModel = function (artifactId) {
+			var selectedPath = ko.utils.arrayFirst(self.ProcessingSourceLocationList(), function (item) {
+				if (item.artifactId === artifactId) {
+					return item;
+				}
+			});
+			return selectedPath;
+		};
 	}
 
 	var viewModel = function (state) {
