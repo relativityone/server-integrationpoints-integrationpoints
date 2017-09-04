@@ -1,7 +1,8 @@
 ﻿var IP = IP || {};
 
 (function (root, ko) {
-	var ExportDetailsService = function (root) {
+
+	var ExportDestinationLocationService = function () {
 		var self = this;
 
 		self.loadRootDataTransferLocation = function (integrationPointTypeIdentifier, successCallback, failCallback) {
@@ -19,38 +20,62 @@
 		}
 	};
 
-
-	var viewModel = function (state) {
+	var ExportDestinationLocationViewModel = function (state) {
 		var self = this;
-		self.ExportDetailsService = new ExportDetailsService(root);
+		self.ExportDestinationLocationService = new ExportDestinationLocationService();
 
-		this.IPName = state.name;
+		self.ProcessingSourceLocationList = ko.observableArray([]);
 
-		this.ArtifactTypeID = state.artifactTypeId;
-		this.DefaultRdoTypeId = state.defaultRdoTypeId;
-
-		this.ExportRdoMode = function () {
-			return self.ArtifactTypeID !== self.DefaultRdoTypeId;
-		}
-
-		this.ProcessingSourceLocationList = ko.observableArray([]);
-
-		this.ProcessingSourceLocation = ko.observable().extend({
+		self.ProcessingSourceLocation = ko.observable().extend({
 			required: true
 		});
 
+		self.IsExportFolderCreationEnabled = ko.observable(state.isExportFolderCreationEnabled || true); // TODO: should it work that way ? it is always evaluated to true
+		self.IsExportFolderCreationEnabled.subscribe(function () {
+			self.fileShareDisplayText();
+		});
+
+		this.Fileshare = ko.observable(state.Fileshare).extend({
+			required: true
+		});
+
+
+		self.fileShareDisplayText = function () {
+			var fileshare = self.Fileshare();
+			if (!fileshare) {
+				return "Select...";
+			}
+
+			var processingSourceLocationId = self.ProcessingSourceLocation();
+			if (processingSourceLocationId) {
+				var psl = self.getSelectedProcessingSourceLocationViewModel(processingSourceLocationId);
+				if (!!psl && !psl.isFileshare) {
+					if (self.IsExportFolderCreationEnabled()) {
+						return fileshare + "\\" + state.name + "_{TimeStamp}";
+					}
+					return fileshare;
+				}
+			}
+
+			if (self.IsExportFolderCreationEnabled()) {
+				return "EDDS" + state.SourceWorkspaceArtifactId + "\\" + fileshare + "\\" + state.name + "_{TimeStamp}";
+			}
+			return "EDDS" + state.SourceWorkspaceArtifactId + "\\" + fileshare;
+		};
+
+		// TODO is it necessary ? mayber it is better way to implement it
 		if (state.ProcessingSourceLocation) {
 			self.ProcessingSourceLocationArtifactId = state.ProcessingSourceLocation;
-		} else if(state.Fileshare) { // case when user created IP before PSL support was added
+		} else if (state.Fileshare) { // case when user created IP before PSL support was added
 			self.ProcessingSourceLocationArtifactId = -1;
 		}
 
 		if (self.ProcessingSourceLocationArtifactId) {
-			this.ProcessingSourceLocation(self.ProcessingSourceLocationArtifactId);
+			self.ProcessingSourceLocation(self.ProcessingSourceLocationArtifactId);
 		}
-		this.ProcessingSourceLocation.isModified(false);
+		self.ProcessingSourceLocation.isModified(false);
 
-		self.getSelectedProcessingSourceLocationPath = function (artifactId) {
+		self.getSelectedProcessingSourceLocationViewModel = function (artifactId) {
 			var selectedPath = ko.utils.arrayFirst(self.ProcessingSourceLocationList(), function (item) {
 				if (item.artifactId === artifactId) {
 					return item;
@@ -60,7 +85,7 @@
 		};
 
 		this.updateProcessingSourceLocation = function (value, isInitializationCall) {
-			var disableDirectorySelector = function() {
+			var disableDirectorySelector = function () {
 				self.locationSelector.toggle(false);
 				self.Fileshare(undefined);
 			}
@@ -81,9 +106,9 @@
 			if (!isInitializationCall) {
 				self.Fileshare(undefined);
 			}
-			
 
-			self.getDirectories();
+
+			self.loadDirectories();
 
 			if (!value) {
 				disableDirectorySelector();
@@ -93,30 +118,26 @@
 			}
 		};
 
-		this.Fileshare = ko.observable(state.Fileshare).extend({
-			required: true
-		});
-
 		self.rootDataTransferLocation = "";
 
-		this.loadRootDataTransferLocation = function () {
+		self.loadRootDataTransferLocation = function () {
 			var success = function (result) {
 				self.rootDataTransferLocation = result;
-				self.getDirectories();
+				self.loadDirectories();
 			};
 
 			var fail = function (error) {
 				IP.message.error.raise("Can not retrieve data transfer location root path");
 			};
-			self.ExportDetailsService.loadRootDataTransferLocation(state.integrationPointTypeIdentifier, success, fail);
+			self.ExportDestinationLocationService.loadRootDataTransferLocation(state.integrationPointTypeIdentifier, success, fail);
 		}
 
-		this.getDirectories = function () {
+		self.loadDirectories = function () {
 			var processingSourceLocationArtifactId = self.ProcessingSourceLocation();
 			if (!processingSourceLocationArtifactId) {
 				return;
 			}
-			var processingSourceLocation = self.getSelectedProcessingSourceLocationPath(processingSourceLocationArtifactId);
+			var processingSourceLocation = self.getSelectedProcessingSourceLocationViewModel(processingSourceLocationArtifactId);
 
 			var reloadTree = function (params, onSuccess, onFail) {
 				var $locationErrorContainer = $("#processingLocationErrorContainer");
@@ -173,9 +194,7 @@
 			}
 		};
 
-
-
-		this.onDOMLoaded = function () {
+		this.onLoadded = function () {
 			self.locationSelector = new LocationJSTreeSelector();
 			self.locationSelector.init(self.Fileshare(), [], {
 				onNodeSelectedEventHandler: function (node) {
@@ -218,6 +237,23 @@
 						self.updateProcessingSourceLocation(value);
 					});
 				});
+		}
+	}
+
+	var viewModel = function (state) {
+		var self = this;
+		this.exportDestinationLocationViewModel = new ExportDestinationLocationViewModel(state);
+
+		this.IPName = state.name;
+		this.ArtifactTypeID = state.artifactTypeId;
+		this.DefaultRdoTypeId = state.defaultRdoTypeId;
+
+		this.ExportRdoMode = function () {
+			return self.ArtifactTypeID !== self.DefaultRdoTypeId;
+		}
+
+		this.onDOMLoaded = function () {
+			self.exportDestinationLocationViewModel.onLoadded();
 		};
 
 		this.SelectedDataFileFormat = ko.observable(state.SelectedDataFileFormat || ExportEnums.Defaults.DataFileFormatValue).extend({
@@ -784,34 +820,6 @@
 			imageProductionPickerViewModel.open(self.ImagePrecedence());
 		};
 
-		this.fileShareDisplayText = function () {
-			var fileshare = self.Fileshare();
-			if (!fileshare) {
-				return "Select...";
-			}
-
-			var processingSourceLocationId = self.ProcessingSourceLocation();
-			if (processingSourceLocationId) {
-				var psl = self.getSelectedProcessingSourceLocationPath(processingSourceLocationId);
-				if (!!psl && !psl.isFileshare) {
-					if (self.IsExportFolderCreationEnabled()) {
-						return fileshare + "\\" + self.IPName + "_{TimeStamp}";
-					}
-					return fileshare;
-				}
-			}
-
-			if (self.IsExportFolderCreationEnabled()) {
-				return "EDDS" + state.SourceWorkspaceArtifactId + "\\" + fileshare + "\\" + self.IPName + "_{TimeStamp}";
-			}
-			return "EDDS" + state.SourceWorkspaceArtifactId + "\\" + fileshare;
-		};
-
-		this.IsExportFolderCreationEnabled = ko.observable(state.isExportFolderCreationEnabled || true);
-		self.IsExportFolderCreationEnabled.subscribe(function () {
-			self.fileShareDisplayText();
-		});
-
 		var availableFields = state.availableFields || [];
 
 		var getDefaultFileSelections = function (availFields) {
@@ -877,7 +885,7 @@
 				"ExportImages": self.ExportImages(),
 				"ExportMultipleChoiceFieldsAsNested": self.ExportMultipleChoiceFieldsAsNested(),
 				"FilePath": self.FilePath(),
-				"Fileshare": self.Fileshare(),
+				"Fileshare": self.exportDestinationLocationViewModel.Fileshare(),
 				"ImagePrecedence": self.ImagePrecedence(),
 				"IncludeOriginalImages": self.IncludeOriginalImages(),
 				"MultiValueSeparator": self.MultiValueSeparator(),
@@ -885,7 +893,7 @@
 				"NewlineSeparator": self.NewlineSeparator(),
 				"OverwriteFiles": self.OverwriteFiles(),
 				"ProductionPrecedence": self.ProductionPrecedence(),
-				"ProcessingSourceLocation": self.ProcessingSourceLocation(),
+				"ProcessingSourceLocation": self.exportDestinationLocationViewModel.ProcessingSourceLocation(),
 				"QuoteSeparator": self.QuoteSeparator(),
 				"SelectedDataFileFormat": self.SelectedDataFileFormat(),
 				"SelectedImageDataFileFormat": self.SelectedImageDataFileFormat(),
@@ -904,7 +912,7 @@
 				"VolumePrefix": self.VolumePrefix(),
 				"VolumeStartNumber": self.VolumeStartNumber(),
 				"IncludeNativeFilesPath": self.IncludeNativeFilesPath(),
-				"IsAutomaticFolderCreationEnabled": self.IsExportFolderCreationEnabled(),
+				"IsAutomaticFolderCreationEnabled": self.exportDestinationLocationViewModel.IsExportFolderCreationEnabled(),
 				"FileNameParts": self.FileNameParts()
 			};
 		};

@@ -64,7 +64,7 @@
 						Export Location:
 					</div>
 					<div class="field-value select2-double-width">
-						<select class="fluid-mock-select" id="processingSources" data-bind="optionsText: 'location', optionsValue: 'artifactId', options: ProcessingSourceLocationList, optionsCaption: 'Select...', value: ProcessingSourceLocation, select2searchable: { width: '100%' }"></select>
+						<select class="fluid-mock-select" id="processingSources" data-bind="optionsText: 'location', optionsValue: 'artifactId', options: exportDestinationLocationViewModel.ProcessingSourceLocationList, optionsCaption: 'Select...', value: exportDestinationLocationViewModel.ProcessingSourceLocation, select2searchable: { width: '100%' }"></select>
 					</div>
 				</div>
 			</td>
@@ -77,7 +77,7 @@
 					</div>
 					<div class="field-value select2-double-width">
 						<div id="location-select" class="select2-container fluid-mock-select filter-container">
-							<input id="location-input" type="text" readonly='readonly' placeholder="Select..." data-bind="value: fileShareDisplayText()" />
+							<input id="location-input" type="text" readonly='readonly' placeholder="Select..." data-bind="value: exportDestinationLocationViewModel.fileShareDisplayText()" />
 							<span id="location-span" class="icon legal-hold icon-chevron-down" role="presentation"></span>
 						</div>
 						<div id="jstree-holder-div" class="jstree-holder browse" hidden="hidden">
@@ -92,7 +92,7 @@
 				<div class="field-row">
 					<div class="field-label" />
 					<div class="field-value middle-vertical-align">
-						<input id="create-export-directory-checkbox" type="checkbox" data-bind=" checked: IsExportFolderCreationEnabled" class="middle-vertical-align">
+						<input id="create-export-directory-checkbox" type="checkbox" data-bind=" checked: exportDestinationLocationViewModel.IsExportFolderCreationEnabled" class="middle-vertical-align">
 						<label for="create-export-directory-checkbox">Create Export Folder</label>
 					</div>
 				</div>
