@@ -21,6 +21,7 @@
 	};
 
 	var ExportDestinationLocationViewModel = function (state) {
+		var FILESHARE_EXPORT_LOCATION_ARTIFACT_ID = -1;
 		var self = this;
 		self.ExportDestinationLocationService = new ExportDestinationLocationService();
 
@@ -73,7 +74,7 @@
 		if (state.ProcessingSourceLocation) {
 			self.ProcessingSourceLocationArtifactId = state.ProcessingSourceLocation;
 		} else if (state.Fileshare) { // case when user created IP before PSL support was added
-			self.ProcessingSourceLocationArtifactId = -1;
+			self.ProcessingSourceLocationArtifactId = FILESHARE_EXPORT_LOCATION_ARTIFACT_ID;
 		}
 
 		if (self.ProcessingSourceLocationArtifactId) {
@@ -226,7 +227,7 @@
 				.all([processingSourceLocationListPromise])
 				.then(function (result) {
 					var fileShareExportLocation = {
-						artifactId: -1,
+						artifactId: FILESHARE_EXPORT_LOCATION_ARTIFACT_ID,
 						location: ".\\EDDS" + state.SourceWorkspaceArtifactId + "\\" + self.rootDataTransferLocation,
 						isFileshare: true
 					};
