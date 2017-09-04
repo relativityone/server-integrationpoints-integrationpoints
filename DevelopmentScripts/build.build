@@ -3,6 +3,7 @@
 
 	<!-- Build properties -->
 	<property name="source.code.directory" value="${root}\source" />
+	<property name="dlls.directory" value="${root}\Dlls" />
 	<property name="source.dependency.directory" value="${source.code.directory}\Dependencies" />
 	<property name="source.packages.directory" value="${source.code.directory}\packages" />
 	<property name="source.provider.includes.directory" value="${source.code.directory}\Dependencies\ProviderIncludes" />
@@ -100,7 +101,7 @@
 			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net462\kCura.Relativity.ImportAPI.Extension.dll"' />
 			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net462\kCura.Windows.Forms.dll"' />
 			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net462\kCura.Windows.Process.dll"' />
-			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net462\kCura.WinEDDS.dll"' />
+			<arg line='"${dlls.directory}\kCura.WinEDDS.dll"' />
 			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net462\kCura.WinEDDS.Core.dll"' />
 			<arg line='"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net462\kCura.WinEDDS.ImportExtension.dll"' />
 			<arg line='"${source.packages.directory}\kCura.OutsideIn.FI.Win32.2017.1.2\lib\net40\oi.dll"' />

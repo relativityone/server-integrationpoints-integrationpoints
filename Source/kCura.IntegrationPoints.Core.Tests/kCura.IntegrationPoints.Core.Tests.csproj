@@ -149,9 +149,8 @@
       <HintPath>..\packages\Relativity.ImportExport.9.5.253.62\lib\net462\kCura.Windows.Process.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.WinEDDS, Version=9.5.253.62, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\Relativity.ImportExport.9.5.253.62\lib\net462\kCura.WinEDDS.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="kCura.WinEDDS">
+      <HintPath>..\..\Dlls\kCura.WinEDDS.dll</HintPath>
     </Reference>
     <Reference Include="kCura.WinEDDS.Core, Version=9.5.253.62, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\Relativity.ImportExport.9.5.253.62\lib\net462\kCura.WinEDDS.Core.dll</HintPath>
