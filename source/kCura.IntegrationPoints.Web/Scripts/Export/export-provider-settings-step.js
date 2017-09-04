@@ -186,6 +186,38 @@
 			self.locationSelector.toggle(!!self.ProcessingSourceLocation());
 			self.loadRootDataTransferLocation();
 			self.ProcessingSourceLocation.isModified(false);
+
+			var processingSourceLocationListPromise = root.data.ajax({
+				type: "get",
+				url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocations"),
+				data: {
+					sourceWorkspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
+				}
+			}).fail(function (error) {
+				IP.message.error.raise("No processing source locations were returned from source provider");
+			});
+
+			root.data.deferred()
+				.all([processingSourceLocationListPromise])
+				.then(function (result) {
+					var fileShareExportLocation = {
+						artifactId: -1,
+						location: ".\\EDDS" + state.SourceWorkspaceArtifactId + "\\" + self.rootDataTransferLocation,
+						isFileshare: true
+					};
+					var locations = result[0];
+					locations.push(fileShareExportLocation);
+
+					self.ProcessingSourceLocationList(result[0]);
+					self.ProcessingSourceLocation(self.ProcessingSourceLocationArtifactId);
+					self.ProcessingSourceLocation.isModified(false);
+
+					self.updateProcessingSourceLocation(self.ProcessingSourceLocationArtifactId, true);
+
+					self.ProcessingSourceLocation.subscribe(function (value) {
+						self.updateProcessingSourceLocation(value);
+					});
+				});
 		};
 
 		this.SelectedDataFileFormat = ko.observable(state.SelectedDataFileFormat || ExportEnums.Defaults.DataFileFormatValue).extend({
@@ -917,38 +949,6 @@
 				}));
 
 			self.model.errors = ko.validation.group(self.model);
-
-			var processingSourceLocationListPromise = root.data.ajax({
-				type: "get",
-				url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocations"),
-				data: {
-					sourceWorkspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
-				}
-			}).fail(function (error) {
-				IP.message.error.raise("No processing source locations were returned from source provider");
-			});
-
-			root.data.deferred()
-				.all([processingSourceLocationListPromise])
-				.then(function (result) {
-					var fileShareExportLocation = {
-						artifactId: -1,
-						location: "EDDS",
-						isFileshare: true
-					};
-					var locations = result[0];
-					locations.push(fileShareExportLocation);
-
-					self.model.ProcessingSourceLocationList(result[0]);
-					self.model.ProcessingSourceLocation(self.model.ProcessingSourceLocationArtifactId);
-					self.model.ProcessingSourceLocation.isModified(false);
-
-					self.model.updateProcessingSourceLocation(self.model.ProcessingSourceLocationArtifactId, true);
-
-					self.model.ProcessingSourceLocation.subscribe(function (value) {
-						self.model.updateProcessingSourceLocation(value);
-					});
-				});
 		};
 
 		self.submit = function () {
