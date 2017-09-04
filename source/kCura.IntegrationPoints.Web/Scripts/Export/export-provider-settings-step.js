@@ -10,13 +10,31 @@
 				type: "post",
 				contentType: "application/x-www-form-urlencoded; charset=UTF-8",
 				url: root.utils.generateWebAPIURL("DataTransferLocation/GetRoot", integrationPointTypeIdentifier)
-			})
-			.then(successCallback)
-			.fail(failCallback);
+			}).then(successCallback).fail(failCallback);
+		};
+
+		self.getProcessingSourceLocationSubItems = function (path, isRoot, successCallback, failCallback) {
+			root.data.ajax({
+				type: "post",
+				contentType: "application/json",
+				url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationSubItems", isRoot),
+				data: JSON.stringify(path)
+			}).then(successCallback).fail(failCallback);
+		};
+
+		self.getFileshareSubItems = function (path, isRoot, integrationPointTypeIdentifier, successCallback, failCallback) {
+			root.data.ajax({
+				type: "post",
+				contentType: "application/json",
+				url: root.utils.generateWebAPIURL("DataTransferLocation/GetStructure", integrationPointTypeIdentifier) + "?isRoot=" + isRoot,
+				data: JSON.stringify(path)
+			}).then(successCallback).fail(failCallback);
 		}
 
 		return {
-			loadRootDataTransferLocation: self.loadRootDataTransferLocation
+			loadRootDataTransferLocation: self.loadRootDataTransferLocation,
+			getProcessingSourceLocationSubItems: self.getProcessingSourceLocationSubItems,
+			getFileshareSubItems: self.getFileshareSubItems
 		}
 	};
 
@@ -68,13 +86,14 @@
 			self.ProcessingSourceLocationArtifactId = FILESHARE_EXPORT_LOCATION_ARTIFACT_ID;
 		}
 
-		this.updateProcessingSourceLocation = function (value, isInitializationCall) {
-			var disableDirectorySelector = function() {
+
+		self.updateProcessingSourceLocation = function (value, isInitializationCall) {
+			var disableDirectorySelector = function () {
 				self.locationSelector.toggle(false);
 				self.Fileshare(undefined);
 			};
 
-			var enableDirectorySelector = function() {
+			var enableDirectorySelector = function () {
 				self.locationSelector.toggle(true);
 			};
 
@@ -119,9 +138,16 @@
 				return;
 			}
 			var processingSourceLocation = self.getSelectedProcessingSourceLocationViewModel(processingSourceLocationArtifactId);
+			var $locationErrorContainer = $("#processingLocationErrorContainer");
 
-			var reloadTree = function (params, onSuccess, onFail) {
-				var $locationErrorContainer = $("#processingLocationErrorContainer");
+			var createErrorCallback = function (callback) {
+				return function(error) {
+					callback(error);
+					IP.message.error.raise(error, $locationErrorContainer);
+				};
+			};
+
+			var reloadTreeProcessingSourceLocation = function (params, onSuccess, onFail) {
 				IP.message.error.clear($locationErrorContainer);
 
 				var isRoot = params.id === '#';
@@ -130,21 +156,10 @@
 					path = processingSourceLocation.location;
 				}
 
-				root.data.ajax({
-					type: "post",
-					contentType: "application/json",
-					url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationSubItems", isRoot),
-					data: JSON.stringify(path)
-				}).then(function (result) {
-					onSuccess(result);
-				}).fail(function (error) {
-					onFail(error);
-					IP.message.error.raise(error, $locationErrorContainer);
-				});
+				self.ExportDestinationLocationService.getProcessingSourceLocationSubItems(path, isRoot, onSuccess, createErrorCallback(onFail));
 			};
 
 			var reloadTreeFileshare = function (params, onSuccess, onFail) {
-				var $locationErrorContainer = $("#processingLocationErrorContainer");
 				IP.message.error.clear($locationErrorContainer);
 
 				var isRoot = params.id === '#';
@@ -153,34 +168,22 @@
 					path = self.rootDataTransferLocation;
 				}
 
-				root.data.ajax({
-					type: "post",
-					contentType: "application/json",
-					url: root.utils.generateWebAPIURL("DataTransferLocation/GetStructure", state.integrationPointTypeIdentifier) + "?isRoot=" + isRoot,
-					data: JSON.stringify(path)
-				}).then(function (result) {
-					onSuccess(result);
-				}).fail(function (error) {
-					onFail(error);
-					IP.message.error.raise(error, $locationErrorContainer);
-				});
+				self.ExportDestinationLocationService.getFileshareSubItems(path, isRoot, state.integrationPointTypeIdentifier, onSuccess, createErrorCallback(onFail));
 			};
 
-			if (self.locationSelector) {
-				if (processingSourceLocation.isFileshare) {
-					self.locationSelector.reloadWithRoot(reloadTreeFileshare);
-				} else {
-					self.locationSelector.reloadWithRoot(reloadTree);
-				}
+			if (processingSourceLocation.isFileshare) {
+				self.locationSelector.reloadWithRoot(reloadTreeFileshare);
+			} else {
+				self.locationSelector.reloadWithRoot(reloadTreeProcessingSourceLocation);
 			}
 		};
 
-		this.onLoadded = function() {
+		this.onLoadded = function () {
 			self.locationSelector = new LocationJSTreeSelector();
 			self.locationSelector.init(self.Fileshare(),
 				[],
 				{
-					onNodeSelectedEventHandler: function(node) {
+					onNodeSelectedEventHandler: function (node) {
 						self.Fileshare(node.id);
 					}
 				});
@@ -193,13 +196,13 @@
 				data: {
 					sourceWorkspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
 				}
-			}).fail(function(error) {
+			}).fail(function (error) {
 				IP.message.error.raise("No processing source locations were returned from source provider");
 			});
 
 			root.data.deferred()
 				.all([processingSourceLocationListPromise])
-				.then(function(result) {
+				.then(function (result) {
 					var fileShareExportLocation = {
 						artifactId: FILESHARE_EXPORT_LOCATION_ARTIFACT_ID,
 						location: ".\\EDDS" + state.SourceWorkspaceArtifactId + "\\" + self.rootDataTransferLocation,
@@ -215,13 +218,13 @@
 
 					self.updateProcessingSourceLocation(self.ProcessingSourceLocationArtifactId, true);
 
-					self.ProcessingSourceLocation.subscribe(function(value) {
+					self.ProcessingSourceLocation.subscribe(function (value) {
 						self.updateProcessingSourceLocation(value);
 					});
 				});
 		};
 
-		self.isProcessingSourceLocationSelected = function() {
+		self.isProcessingSourceLocationSelected = function () {
 			var processingSourceLocationId = self.ProcessingSourceLocation();
 			if (processingSourceLocationId) {
 				var psl = self.getSelectedProcessingSourceLocationViewModel(processingSourceLocationId);
