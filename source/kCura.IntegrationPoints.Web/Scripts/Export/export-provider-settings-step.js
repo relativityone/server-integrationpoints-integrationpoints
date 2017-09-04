@@ -43,13 +43,15 @@
 		var self = this;
 		self.ExportDestinationLocationService = new ExportDestinationLocationService();
 
+		self.rootDataTransferLocation = "";
+
 		self.ProcessingSourceLocationList = ko.observableArray([]);
 
 		self.ProcessingSourceLocation = ko.observable().extend({
 			required: true
 		});
 
-		self.IsExportFolderCreationEnabled = ko.observable(state.isExportFolderCreationEnabled || true); // TODO: should it work that way ? it is always evaluated to true
+		self.IsExportFolderCreationEnabled = ko.observable(state.isExportFolderCreationEnabled || true);
 		self.IsExportFolderCreationEnabled.subscribe(function () {
 			self.fileShareDisplayText();
 		});
@@ -78,14 +80,6 @@
 
 			return output;
 		};
-
-		// TODO is it necessary ? mayber it is better way to implement it
-		if (state.ProcessingSourceLocation) {
-			self.ProcessingSourceLocationArtifactId = state.ProcessingSourceLocation;
-		} else if (state.Fileshare) { // case when user created IP before PSL support was added
-			self.ProcessingSourceLocationArtifactId = FILESHARE_EXPORT_LOCATION_ARTIFACT_ID;
-		}
-
 
 		self.updateProcessingSourceLocation = function (value, isInitializationCall) {
 			var disableDirectorySelector = function () {
@@ -118,7 +112,19 @@
 			}
 		};
 
-		self.rootDataTransferLocation = "";
+		self.onLoadded = function () {
+			self.locationSelector = new LocationJSTreeSelector();
+			self.locationSelector.init(self.Fileshare(),
+				[],
+				{
+					onNodeSelectedEventHandler: function (node) {
+						self.Fileshare(node.id);
+					}
+				});
+
+			self.loadRootDataTransferLocation();
+			self.loadProcessingSourceLocations();
+		};
 
 		self.loadRootDataTransferLocation = function () {
 			var success = function (result) {
@@ -132,6 +138,37 @@
 			self.ExportDestinationLocationService.loadRootDataTransferLocation(state.integrationPointTypeIdentifier, success, fail);
 		}
 
+		self.loadProcessingSourceLocations = function () {
+			var processingSourceLocationListPromise = root.data.ajax({
+				type: "get",
+				url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocations"),
+				data: {
+					sourceWorkspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
+				}
+			}).fail(function (error) {
+				IP.message.error.raise("No processing source locations were returned from source provider");
+			});
+
+			root.data.deferred()
+				.all([processingSourceLocationListPromise])
+				.then(function (result) {
+					var locations = result[0];
+					var fileShareExportLocation = self.createProcessingSourceListItemForFileshare();
+					locations.push(fileShareExportLocation);
+
+					self.ProcessingSourceLocationList(locations);
+
+					var initialProcessingSourceLocationArtifactId = self.getInitialProcessingSourceLocationArtifactId();
+					self.ProcessingSourceLocation(initialProcessingSourceLocationArtifactId);
+					self.ProcessingSourceLocation.isModified(false);
+					self.updateProcessingSourceLocation(self.ProcessingSourceLocation(), true);
+
+					self.ProcessingSourceLocation.subscribe(function (value) {
+						self.updateProcessingSourceLocation(value);
+					});
+				});
+		}
+
 		self.loadDirectories = function () {
 			var processingSourceLocationArtifactId = self.ProcessingSourceLocation();
 			if (!processingSourceLocationArtifactId) {
@@ -141,7 +178,7 @@
 			var $locationErrorContainer = $("#processingLocationErrorContainer");
 
 			var createErrorCallback = function (callback) {
-				return function(error) {
+				return function (error) {
 					callback(error);
 					IP.message.error.raise(error, $locationErrorContainer);
 				};
@@ -178,52 +215,6 @@
 			}
 		};
 
-		this.onLoadded = function () {
-			self.locationSelector = new LocationJSTreeSelector();
-			self.locationSelector.init(self.Fileshare(),
-				[],
-				{
-					onNodeSelectedEventHandler: function (node) {
-						self.Fileshare(node.id);
-					}
-				});
-
-			self.loadRootDataTransferLocation();
-
-			var processingSourceLocationListPromise = root.data.ajax({
-				type: "get",
-				url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocations"),
-				data: {
-					sourceWorkspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
-				}
-			}).fail(function (error) {
-				IP.message.error.raise("No processing source locations were returned from source provider");
-			});
-
-			root.data.deferred()
-				.all([processingSourceLocationListPromise])
-				.then(function (result) {
-					var fileShareExportLocation = {
-						artifactId: FILESHARE_EXPORT_LOCATION_ARTIFACT_ID,
-						location: ".\\EDDS" + state.SourceWorkspaceArtifactId + "\\" + self.rootDataTransferLocation,
-						isFileshare: true
-					};
-					var locations = result[0];
-					locations.push(fileShareExportLocation);
-
-					self.ProcessingSourceLocationList(locations);
-
-					self.ProcessingSourceLocation(self.ProcessingSourceLocationArtifactId);
-					self.ProcessingSourceLocation.isModified(false);
-
-					self.updateProcessingSourceLocation(self.ProcessingSourceLocationArtifactId, true);
-
-					self.ProcessingSourceLocation.subscribe(function (value) {
-						self.updateProcessingSourceLocation(value);
-					});
-				});
-		};
-
 		self.isProcessingSourceLocationSelected = function () {
 			var processingSourceLocationId = self.ProcessingSourceLocation();
 			if (processingSourceLocationId) {
@@ -241,6 +232,22 @@
 			});
 			return selectedPath;
 		};
+
+		self.createProcessingSourceListItemForFileshare = function () {
+			return {
+				artifactId: FILESHARE_EXPORT_LOCATION_ARTIFACT_ID,
+				location: ".\\EDDS" + state.SourceWorkspaceArtifactId + "\\" + self.rootDataTransferLocation,
+				isFileshare: true
+			};
+		};
+
+		self.getInitialProcessingSourceLocationArtifactId = function () {
+			if (state.ProcessingSourceLocation) {
+				return state.ProcessingSourceLocation;
+			} else if (state.Fileshare) { // case when user created IP before PSL support was added
+				return FILESHARE_EXPORT_LOCATION_ARTIFACT_ID;
+			}
+		}
 	}
 
 	var viewModel = function (state) {
