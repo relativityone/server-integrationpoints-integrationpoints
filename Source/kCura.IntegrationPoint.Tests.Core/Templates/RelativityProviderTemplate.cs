@@ -232,7 +232,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
 				LogErrors = true,
-				Name = name + DateTime.Now,
+				Name = $"{name}{DateTime.Now:yy-MM-dd HH-mm-ss}",
 				SelectedOverwrite = overwrite,
 				Scheduler = new Scheduler()
 				{

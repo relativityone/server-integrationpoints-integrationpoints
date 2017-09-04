@@ -15,37 +15,49 @@ var LocationJSTreeSelector = function () {
 			$.extend(self.domSelectorSettings, settings);
 		}
 
-	    $(self.domSelectorSettings.dropdownSelector).mousedown(function () {
-	        self.setTreeVisibility(!self.treeVisible);
-	    });
+		$(self.domSelectorSettings.dropdownSelector).mousedown(function () {
+			self.setTreeVisibility(!self.treeVisible);
+		});
 
-	    $(self.domSelectorSettings.dropdownSelector).click(function (e) {
-	        e.stopPropagation();
-	    });
+		$(self.domSelectorSettings.dropdownSelector).click(function (e) {
+			e.stopPropagation();
+		});
 
-	    $(self.domSelectorSettings.jstreeHolderDivSelector).click(function (e) {
-	        e.stopPropagation();
-	    });
+		$(self.domSelectorSettings.jstreeHolderDivSelector).click(function (e) {
+			e.stopPropagation();
+		});
 
-	    $(document).click(function () {
-	        self.setTreeVisibility(false);
-	    });
+		$(document).click(function () {
+			self.setTreeVisibility(false);
+		});
 
 		if (selectedNode !== undefined) {
 			self.SelectedNode = selectedNode;
 			self.setSelection(selectedNode);
 		}
 
-		self.initJsTree(data);
+		self.initJsTree(data, false);
 		self.setTreeVisibility(self.treeVisible);
 	};
 
 	self.reload = function (data) {
-		self.initJsTree(data);
+		self.initJsTree(data, false);
 		self.setTreeVisibility(self.treeVisible);
 	};
 
-	self.initJsTree = function (data) {
+	self.reloadWithRootWithData = function (data) {
+		self.initJsTreeWithRoot(data, true);
+		self.setTreeVisibility(self.treeVisible);
+	};
+
+
+	self.reloadWithRoot = function (ajaxCallback) {
+		self.initJsTreeWithRoot(ajaxCallback);
+		self.setTreeVisibility(self.treeVisible);
+	};
+
+
+	self.initJsTree = function (data, openRoot) {
 		$(self.domSelectorSettings.jstreeHolderDivSelector).width($(self.domSelectorSettings.dropdownSelector).innerWidth());
 
 		$(self.domSelectorSettings.browserTreeSelector).jstree('destroy');
@@ -53,7 +65,12 @@ var LocationJSTreeSelector = function () {
 
 		$(self.domSelectorSettings.browserTreeSelector).jstree({
 			'core': {
-				'data': root
+				'data': function (obj, callback) {
+					if (openRoot) {
+						self.openRootNode(self.domSelectorSettings.browserTreeSelector);
+					}
+					callback.call(this, root);
+				}
 			}
 		});
 
@@ -69,6 +86,12 @@ var LocationJSTreeSelector = function () {
 			}
 		});
 	};
+
+	self.openRootNode = function (treeSelector) {
+		$(treeSelector).on('ready.jstree', function () {
+			$(treeSelector).jstree('open_node', 'ul > li:first');
+		});
+	}
 
 	self.initWithRoot = function (selectedNode, ajaxCallback, settings) {
 		if (settings !== undefined) {
@@ -88,7 +111,7 @@ var LocationJSTreeSelector = function () {
 		self.setTreeVisibility(self.treeVisible);
 	};
 
-	self.initJsTreeWithRoot = function (ajaxCallback) {
+	self.initJsTreeWithRoot = function (ajaxCallback, openRoot) {
 		$(self.domSelectorSettings.jstreeHolderDivSelector).width($(self.domSelectorSettings.dropdownSelector).innerWidth());
 		$(self.domSelectorSettings.browserTreeSelector).jstree('destroy');
 		var extendWithDefault = function (child) {
@@ -104,7 +127,6 @@ var LocationJSTreeSelector = function () {
 					var ajaxSuccess = function (returnData) {
 						//will open the root folder in jstree for both export and import
 						$(self.domSelectorSettings.browserTreeSelector).on('ready.jstree', function () {
-							$(self.domSelectorSettings.browserTreeSelector).jstree('select_node', 'ul > li:first');
 							var selectedNode = $(self.domSelectorSettings.browserTreeSelector).jstree("get_selected");
 							$(self.domSelectorSettings.browserTreeSelector).jstree("open_node", selectedNode, false, true);
 						});
@@ -131,6 +153,9 @@ var LocationJSTreeSelector = function () {
 						console.log('JsTree load fail:');
 						console.log(errorThrown);
 					}
+					if (openRoot) {
+						self.openRootNode(self.domSelectorSettings.browserTreeSelector);
+					}
 					ajaxCallback(obj, ajaxSuccess, ajaxFail);
 
 				}
@@ -152,12 +177,6 @@ var LocationJSTreeSelector = function () {
 			}
 		});
 	};
-
-	self.reloadWithRoot = function (ajaxCallback) {
-		self.initJsTreeWithRoot(ajaxCallback);
-		self.setTreeVisibility(self.treeVisible);
-	};
-
 
 	self.setTreeVisibility = function (visible) {
 		if (visible) {
@@ -189,6 +208,7 @@ var LocationJSTreeSelector = function () {
 	return {
 		init: self.init,
 		reload: self.reload,
+		reloadWithRootWithData: self.reloadWithRootWithData,
 		reloadWithRoot: self.reloadWithRoot,
 		clear: self.clearSelection,
 		toggle: self.toggleLocation,

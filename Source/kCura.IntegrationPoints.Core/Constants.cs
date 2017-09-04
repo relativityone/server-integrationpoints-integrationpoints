@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.Core
 
 			public const string API_CONTROLLER_NAME = "IntegrationPointsAPI";
 			public const string OAUTH2_CLIENT_NAME_PREFIX = "F6B8C2B4B3E8465CA00775F699375D3C";
-			public const string RELATIVITY_AUTH_ENDPOINT = "Relativity/Identity/connect/token";
+			public const string RELATIVITY_AUTH_ENDPOINT = "Identity/connect/token";
 			
 			public static class IntegrationPoint
 			{

@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
 				LogErrors = true,
-				Name = "JobHistoryErrorRepositoryTests" + DateTime.Now,
+				Name = $"JobHistoryErrorRepositoryTests{DateTime.Now:yy-MM-dd HH-mm-ss}",
 				SelectedOverwrite = "Overlay Only",
 				Scheduler = new Scheduler()
 				{

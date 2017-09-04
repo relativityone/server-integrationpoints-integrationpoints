@@ -1,4 +1,5 @@
 ﻿using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.DocumentTransferProvider;
 using kCura.IntegrationPoints.Domain.Models;
@@ -32,8 +33,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests
 			repositoryFactory.GetWorkspaceRepository().Returns(workspaceRepository);
 			workspaceRepository.Retrieve(Arg.Any<int>()).Returns(workspace);
 
-			IntegrationPoints.DocumentTransferProvider.DocumentTransferProvider mockDocumentTransferProvider = new IntegrationPoints.DocumentTransferProvider.DocumentTransferProvider(NSubstitute.Substitute.For<IHelper>());
-			mockDocumentTransferProvider.RegisterDependency(repositoryFactory);
+			var mockDocumentTransferProvider = new DocumentTransferProvider(Substitute.For<IWebApiConfig>(), repositoryFactory, Substitute.For<IHelper>());
 
 			var settings = new DocumentTransferSettings { SourceWorkspaceArtifactId = workspaceId };
 			var options = JsonConvert.SerializeObject(settings);
@@ -56,8 +56,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests
 			repositoryFactory.GetWorkspaceRepository().Returns(workspaceRepository);
 			workspaceRepository.Retrieve(Arg.Any<int>()).Returns(workspace);
 
-			IntegrationPoints.DocumentTransferProvider.DocumentTransferProvider mockDocumentTransferProvider = new IntegrationPoints.DocumentTransferProvider.DocumentTransferProvider(NSubstitute.Substitute.For<IHelper>());
-			mockDocumentTransferProvider.RegisterDependency(repositoryFactory);
+			var mockDocumentTransferProvider = new DocumentTransferProvider(Substitute.For<IWebApiConfig>(), Substitute.For<IRepositoryFactory>(), Substitute.For<IHelper>());
 			var settings = new DocumentTransferSettings { SourceWorkspaceArtifactId = workspaceId };
 			var options = JsonConvert.SerializeObject(settings);
 

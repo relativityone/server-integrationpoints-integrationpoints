@@ -30,8 +30,9 @@ namespace kCura.IntegrationPoints.Domain
 			"kCura.IntegrationPoints.FilesDestinationProvider.Core",
 			"kCura.IntegrationPoints.FtpProvider",
 			"kCura.IntegrationPoints.ImportProvider.Parser",
-			"kCura.IntegrationPoints.LDAPProvider"
-		};
+		    "kCura.IntegrationPoints.LDAPProvider",
+            "kCura.IntegrationPoints.DocumentTransferProvider"
+        };
 
 		private IProviderFactory _providerFactory;
 		private WindsorContainer _windsorContainer;

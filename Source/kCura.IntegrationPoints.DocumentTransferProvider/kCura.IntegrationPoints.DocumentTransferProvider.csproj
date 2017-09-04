@@ -44,6 +44,14 @@
       <HintPath>..\packages\BCrypt-Official.0.1.109\lib\BCrypt.Net.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Castle.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Castle.Core.3.3.0\lib\net45\Castle.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Castle.Windsor, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="FreeImageNET, Version=3.15.1.0, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\Relativity.ImportExport.9.5.250.10\lib\net462\FreeImageNET.dll</HintPath>
       <Private>True</Private>
@@ -145,6 +153,7 @@
     </Compile>
     <Compile Include="Constants.cs" />
     <Compile Include="DataReaders\DocumentArtifactIdDataReader.cs" />
+    <Compile Include="DestinationConfigurationModel.cs" />
     <Compile Include="DocumentTransferProvider.cs" />
     <Compile Include="DocumentTransferSettings.cs" />
   </ItemGroup>
@@ -156,14 +165,6 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
       <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
       <Name>kCura.IntegrationPoints.Contracts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.Core.Contracts\kCura.IntegrationPoints.Core.Contracts.csproj">
-      <Project>{30503682-E18D-49DF-A308-FE7996C4108E}</Project>
-      <Name>kCura.IntegrationPoints.Core.Contracts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">
-      <Project>{a1ae667b-1b6e-4bb9-af1d-912620292283}</Project>
-      <Name>kCura.IntegrationPoints.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
       <Project>{599D771D-2AE7-4321-9BAC-BE06F827CE0A}</Project>
@@ -196,6 +197,9 @@
     <None Include="app.config" />
     <None Include="oi\unmanaged\cmmap000.bin" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\packages\CSharpGuidelineAnalyzer.1.0.3.0\analyzers\dotnet\cs\CSharpGuidelineAnalyzer.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

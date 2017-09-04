@@ -362,12 +362,12 @@
       <HintPath>..\packages\Relativity.Kepler.Client.1.0.1.333\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.143.4, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.143\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.148.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.148\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Telemetry.MetricsCollection, Version=9.4.143.4, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Telemetry.MetricsCollection.9.4.143\lib\net462\Relativity.Telemetry.MetricsCollection.dll</HintPath>
+    <Reference Include="Relativity.Telemetry.MetricsCollection, Version=9.4.148.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Telemetry.MetricsCollection.9.4.148\lib\net462\Relativity.Telemetry.MetricsCollection.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Telemetry.MetricsCollection.Factory, Version=9.5.250.10, Culture=neutral, processorArchitecture=MSIL">
@@ -631,6 +631,9 @@
     <Content Include="oi\unmanaged\scclo-R1.dll" />
     <Content Include="oi\unmanaged\sccut-R1.dll" />
     <Content Include="oi\unmanaged\wvcore-R1.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\packages\CSharpGuidelineAnalyzer.1.0.3.0\analyzers\dotnet\cs\CSharpGuidelineAnalyzer.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

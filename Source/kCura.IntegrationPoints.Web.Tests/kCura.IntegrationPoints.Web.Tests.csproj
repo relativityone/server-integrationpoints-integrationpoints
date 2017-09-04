@@ -174,8 +174,8 @@
       <HintPath>..\packages\Relativity.Services.Interfaces.9.5.250.10\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.143.4, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.143\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.148.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.148\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Telemetry.Services.Interface, Version=9.5.250.10, Culture=neutral, processorArchitecture=MSIL">
@@ -367,6 +367,9 @@
     <Content Include="oi\unmanaged\scclo-R1.dll" />
     <Content Include="oi\unmanaged\sccut-R1.dll" />
     <Content Include="oi\unmanaged\wvcore-R1.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\packages\CSharpGuidelineAnalyzer.1.0.3.0\analyzers\dotnet\cs\CSharpGuidelineAnalyzer.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

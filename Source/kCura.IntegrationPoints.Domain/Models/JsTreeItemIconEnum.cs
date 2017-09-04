@@ -6,7 +6,7 @@ namespace kCura.IntegrationPoints.Domain.Models
 {
     public enum JsTreeItemIconEnum
     {
-        [Description("jstree-folder-root")]
+        [Description("jstree-root-folder")]
         Root = 0,
 
         [Description("jstree-folder")]
