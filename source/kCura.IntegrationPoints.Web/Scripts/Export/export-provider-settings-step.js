@@ -39,6 +39,14 @@
 			required: true
 		});
 
+		var isProcessingSourceLocationSelected = function () {
+			var processingSourceLocationId = self.ProcessingSourceLocation();
+			if (processingSourceLocationId) {
+				var psl = self.getSelectedProcessingSourceLocationViewModel(processingSourceLocationId);
+				return !!psl && !psl.isFileshare;
+			}
+			return false;
+		}
 
 		self.fileShareDisplayText = function () {
 			var fileshare = self.Fileshare();
@@ -46,23 +54,21 @@
 				return "Select...";
 			}
 
-			var processingSourceLocationId = self.ProcessingSourceLocation();
-			if (processingSourceLocationId) {
-				var psl = self.getSelectedProcessingSourceLocationViewModel(processingSourceLocationId);
-				if (!!psl && !psl.isFileshare) {
-					if (self.IsExportFolderCreationEnabled()) {
-						return fileshare + "\\" + state.name + "_{TimeStamp}";
-					}
-					return fileshare;
-				}
+			var output;
+			if (isProcessingSourceLocationSelected()) {
+				output = fileshare;
+			}
+			else {
+				output = "EDDS" + state.SourceWorkspaceArtifactId + "\\" + fileshare;
 			}
 
 			if (self.IsExportFolderCreationEnabled()) {
-				return "EDDS" + state.SourceWorkspaceArtifactId + "\\" + fileshare + "\\" + state.name + "_{TimeStamp}";
+				output += "\\" + state.name + "_{TimeStamp}";
 			}
-			return "EDDS" + state.SourceWorkspaceArtifactId + "\\" + fileshare;
-		};
 
+			return output;
+		};
+	
 		// TODO is it necessary ? mayber it is better way to implement it
 		if (state.ProcessingSourceLocation) {
 			self.ProcessingSourceLocationArtifactId = state.ProcessingSourceLocation;
