@@ -123,13 +123,13 @@
 				});
 
 			self.loadRootDataTransferLocation();
-			self.loadProcessingSourceLocations();
 		};
 
 		self.loadRootDataTransferLocation = function () {
 			var success = function (result) {
 				self.rootDataTransferLocation = result;
 				self.loadDirectories();
+				self.loadProcessingSourceLocations();
 			};
 
 			var fail = function (error) {
