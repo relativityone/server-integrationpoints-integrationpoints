@@ -157,7 +157,7 @@
 				.then(function (result) {
 					var locations = result[0];
 					var fileShareExportLocation = self.createProcessingSourceListItemForFileshare();
-					locations.push(fileShareExportLocation);
+					locations.unshift(fileShareExportLocation);
 
 					self.ProcessingSourceLocationList(locations);
 
