@@ -83,6 +83,17 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			return new HttpResponseMessage(HttpStatusCode.Unauthorized);
 		}
 
+		[HttpGet]
+		[LogApiExceptionFilter(Message = "Unable to determine if processing source location is enabled.")]
+		public HttpResponseMessage IsProcessingSourceLocationEnabled(int workspaceId)
+		{
+			if (HasPermissions(workspaceId))
+			{
+				return Request.CreateResponse(HttpStatusCode.OK, true);
+			}
+			return new HttpResponseMessage(HttpStatusCode.Unauthorized);
+		}
+
 		private bool HasPermissions(int workspaceId)
 		{
 			try

@@ -5,6 +5,13 @@
 	var ExportDestinationLocationService = function () {
 		var self = this;
 
+		self.isProcessingSourceLocationEnabled = function (successCallback, failCallback) {
+			root.data.ajax({
+				type: "get",
+				url: root.utils.generateWebAPIURL("ResourcePool/IsProcessingSourceLocationEnabled")
+			}).then(successCallback).fail(failCallback);
+		};
+
 		self.loadRootDataTransferLocation = function (integrationPointTypeIdentifier, successCallback, failCallback) {
 			root.data.ajax({
 				type: "post",
@@ -32,6 +39,7 @@
 		}
 
 		return {
+			isProcessingSourceLocationEnabled: self.isProcessingSourceLocationEnabled,
 			loadRootDataTransferLocation: self.loadRootDataTransferLocation,
 			getProcessingSourceLocationSubItems: self.getProcessingSourceLocationSubItems,
 			getFileshareSubItems: self.getFileshareSubItems
@@ -113,6 +121,15 @@
 		};
 
 		self.onLoadded = function () {
+			var s = function(result) {
+				console.log(result);
+			};
+			var f = function() {
+
+			};
+			self.ExportDestinationLocationService.isProcessingSourceLocationEnabled(s, f);
+
+
 			self.InitializeLocationSelector();
 			self.loadRootDataTransferLocation();
 		};

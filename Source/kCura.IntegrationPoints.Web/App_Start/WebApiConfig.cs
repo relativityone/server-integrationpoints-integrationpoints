@@ -182,6 +182,12 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
+				name: "IsProcessingSourceLocationEnabled",
+				routeTemplate: "{workspaceID}/api/ResourcePool/IsProcessingSourceLocationEnabled",
+				defaults: new { controller = "ResourcePool", action = "IsProcessingSourceLocationEnabled" }
+			);
+
+			config.Routes.MapHttpRoute(
 				name: "SavedSearchesTree",
 				routeTemplate: "{workspaceID}/api/SavedSearchesTree/{workspaceArtifactId}",
 				defaults: new { controller = "SavedSearchesTree", action = "Get" }
