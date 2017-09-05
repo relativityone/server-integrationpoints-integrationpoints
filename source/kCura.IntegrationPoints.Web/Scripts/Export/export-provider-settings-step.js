@@ -59,7 +59,7 @@
 			required: true
 		});
 
-		self.IsExportFolderCreationEnabled = ko.observable(state.isExportFolderCreationEnabled || true);
+		self.IsExportFolderCreationEnabled = ko.observable(state.IsAutomaticFolderCreationEnabled === undefined ? true : state.IsAutomaticFolderCreationEnabled);
 		self.IsExportFolderCreationEnabled.subscribe(function () {
 			self.fileShareDisplayText();
 		});
@@ -121,10 +121,10 @@
 		};
 
 		self.onLoadded = function () {
-			var s = function(result) {
+			var s = function (result) {
 				console.log(result);
 			};
-			var f = function() {
+			var f = function () {
 
 			};
 			self.ExportDestinationLocationService.isProcessingSourceLocationEnabled(s, f);
@@ -134,44 +134,46 @@
 			self.loadRootDataTransferLocation();
 		};
 
-		self.InitializeLocationSelector = function () {
+		self.InitializeLocationSelector = function() {
 			self.locationSelector = new LocationJSTreeSelector();
 			self.locationSelector.init(self.Fileshare(),
 				[],
 				{
-					onNodeSelectedEventHandler: function (node) {
+					onNodeSelectedEventHandler: function(node) {
 						self.Fileshare(node.id);
 					}
 				});
-		}
+		};
 
-		self.loadRootDataTransferLocation = function () {
-			var success = function (result) {
+		self.loadRootDataTransferLocation = function() {
+			var success = function(result) {
 				self.rootDataTransferLocation = result;
 				self.loadDirectories();
 				self.loadProcessingSourceLocations();
 			};
 
-			var fail = function (error) {
+			var fail = function(error) {
 				IP.message.error.raise("Can not retrieve data transfer location root path");
 			};
-			self.ExportDestinationLocationService.loadRootDataTransferLocation(state.integrationPointTypeIdentifier, success, fail);
-		}
+			self.ExportDestinationLocationService.loadRootDataTransferLocation(state.integrationPointTypeIdentifier,
+				success,
+				fail);
+		};
 
-		self.loadProcessingSourceLocations = function () {
+		self.loadProcessingSourceLocations = function() {
 			var processingSourceLocationListPromise = root.data.ajax({
 				type: "get",
 				url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocations"),
 				data: {
 					sourceWorkspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
 				}
-			}).fail(function (error) {
+			}).fail(function(error) {
 				IP.message.error.raise("No processing source locations were returned from source provider");
 			});
 
 			root.data.deferred()
 				.all([processingSourceLocationListPromise])
-				.then(function (result) {
+				.then(function(result) {
 					var locations = result[0];
 					var fileShareExportLocation = self.createProcessingSourceListItemForFileshare();
 					locations.unshift(fileShareExportLocation);
@@ -183,11 +185,11 @@
 					self.ProcessingSourceLocation.isModified(false);
 					self.updateProcessingSourceLocation(self.ProcessingSourceLocation(), true);
 
-					self.ProcessingSourceLocation.subscribe(function (value) {
+					self.ProcessingSourceLocation.subscribe(function(value) {
 						self.updateProcessingSourceLocation(value);
 					});
 				});
-		}
+		};
 
 		self.loadDirectories = function () {
 			var processingSourceLocationArtifactId = self.ProcessingSourceLocation();
@@ -267,7 +269,7 @@
 			} else if (state.Fileshare) { // case when user created IP before PSL support was added
 				return FILESHARE_EXPORT_LOCATION_ARTIFACT_ID;
 			}
-		}
+		};
 	}
 
 	var viewModel = function (state) {
