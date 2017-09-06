@@ -37,5 +37,12 @@ namespace kCura.IntegrationPoints.Core.Services
 		/// <param name="providerType">provider type guid (Export/Import)</param>
 		/// <returns>Verified path</returns>
 		string VerifyAndPrepare(int workspaceArtifactId, string path, Guid providerType);
+
+	    /// <summary>
+	    /// Checks if given path is EDDS
+	    /// </summary>
+	    /// <param name="path">Path to be used</param>
+	    /// <returns>Boolean value</returns>
+        bool IsEddsPath(string path);
 	}
 }

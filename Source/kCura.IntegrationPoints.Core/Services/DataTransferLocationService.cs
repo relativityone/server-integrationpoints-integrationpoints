@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		#region Fields
 
 		private const string _WORKSPACE_FOLDER_FORMAT = "EDDS{0}";
-		private const string _PARENT_FOLDER = "DataTransfer";
+		private const string _EDDS_PARENT_FOLDER = "DataTransfer";
 	    private const string _INVALID_PATH_ERROR_MSG = "Given Destination Folder path is invalid!";
 
 
@@ -59,19 +59,25 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			IntegrationPointType type = _integrationPointTypeService.GetIntegrationPointType(integrationPointTypeIdentifier);
 
-			return Path.Combine(_PARENT_FOLDER, type.Name);
+			return Path.Combine(_EDDS_PARENT_FOLDER, type.Name);
 		}
+
+
+	    public bool IsEddsPath(string path)
+	    {
+	        return path.StartsWith(_EDDS_PARENT_FOLDER);
+	    }
 
 		public string VerifyAndPrepare(int workspaceArtifactId, string path, Guid providerType)
 		{
-			// Get the given provider type path eg: DataTransfer\Export
-			string providerTypeRelativePathPrefix = GetDefaultRelativeLocationFor(providerType);
-			
-			// First validate if provided path match the correct destnation folder on the server (eg: DataTransfer\Export)
-			if (!path.StartsWith(providerTypeRelativePathPrefix))
+		    // Get the given provider type path eg: DataTransfer\Export
+		    string providerTypeRelativePathPrefix = GetDefaultRelativeLocationFor(providerType);
+
+            // First validate if provided path match the correct destnation folder on the server (eg: DataTransfer\Export)
+            if (!path.StartsWith(providerTypeRelativePathPrefix))
 			{
-			    return path;
-			}
+			    throw new ArgumentException($"Provided realtive path '{path}' does not match the correct destination folder!", paramName: path);
+            }
 
 			string fileShareRootLocation = GetWorkspaceFileLocationRootPath(workspaceArtifactId);
 			string fileShareRootLocationWithRelativePath = Path.Combine(fileShareRootLocation, providerTypeRelativePathPrefix);
@@ -114,7 +120,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			string workspaceFileLocation = GetWorkspaceFileLocationRootPath(workspaceArtifactId);
 
-			return Path.Combine(workspaceFileLocation, _PARENT_FOLDER);
+			return Path.Combine(workspaceFileLocation, _EDDS_PARENT_FOLDER);
 		}
 
 		private void CreateDirectoryIfNotExists(string path)

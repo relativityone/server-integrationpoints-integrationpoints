@@ -149,7 +149,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			_directoryMock.Exists(physicalPath).Returns(false);
 
-			Assert.Throws<Exception>(() => _subjectUnderTest.VerifyAndPrepare(_WKSP_ID, path, type));
+			Assert.Throws<ArgumentException>(() => _subjectUnderTest.VerifyAndPrepare(_WKSP_ID, path, type));
 
 			// Assert
 			_directoryMock.Received(0).CreateDirectory(physicalPath);
@@ -174,10 +174,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			_directoryMock.Exists(physicalPath).Returns(false);
 
-			Assert.Throws<Exception>(() => _subjectUnderTest.VerifyAndPrepare(_WKSP_ID, path, type));
+			Assert.Throws<ArgumentException>(() => _subjectUnderTest.VerifyAndPrepare(_WKSP_ID, path, type));
 
 			// Assert
 			_directoryMock.Received(0).CreateDirectory(physicalPath);
 		}
-	}
+    }
 }
