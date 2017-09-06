@@ -94,7 +94,7 @@
 		self.updateProcessingSourceLocation = function (value, isInitializationCall) {
 			var disableDirectorySelector = function () {
 				self.locationSelector.toggle(false);
-				self.Fileshare(undefined);
+				self.Fileshare(null);
 			};
 
 			var enableDirectorySelector = function () {
@@ -103,13 +103,13 @@
 
 			self.locationSelector.clear();
 
-			if (value === undefined) {
+			if (value === null) {
 				disableDirectorySelector();
 				return;
 			}
 
 			if (!isInitializationCall) {
-				self.Fileshare(undefined);
+				self.Fileshare(null);
 			}
 
 			self.loadDirectories();
@@ -924,6 +924,7 @@
 		this.errors = ko.validation.group(this, { deep: true });
 
 		this.getSelectedOption = function () {
+			var processingSourceLocation = self.exportDestinationLocationViewModel.ProcessingSourceLocation();
 			return {
 				"AppendOriginalFileName": self.AppendOriginalFileName(),
 				"ColumnSeparator": self.ColumnSeparator(),
@@ -942,7 +943,7 @@
 				"NewlineSeparator": self.NewlineSeparator(),
 				"OverwriteFiles": self.OverwriteFiles(),
 				"ProductionPrecedence": self.ProductionPrecedence(),
-				"ProcessingSourceLocation": self.exportDestinationLocationViewModel.ProcessingSourceLocation(),
+				"ProcessingSourceLocation": processingSourceLocation !== undefined ? processingSourceLocation : null,
 				"QuoteSeparator": self.QuoteSeparator(),
 				"SelectedDataFileFormat": self.SelectedDataFileFormat(),
 				"SelectedImageDataFileFormat": self.SelectedImageDataFileFormat(),
