@@ -59,6 +59,8 @@
 			required: true
 		});
 
+		self.IsProcessingSourceLocationEnabled = ko.observable(false);
+
 		self.IsExportFolderCreationEnabled = ko.observable(state.IsAutomaticFolderCreationEnabled === undefined ? true : state.IsAutomaticFolderCreationEnabled);
 		self.IsExportFolderCreationEnabled.subscribe(function () {
 			self.fileShareDisplayText();
@@ -122,7 +124,9 @@
 
 		self.onLoadded = function () {
 			var s = function (result) {
-				console.log(result);
+				if (result) {
+					self.IsProcessingSourceLocationEnabled(true);
+				}
 			};
 			var f = function () {
 
@@ -160,7 +164,16 @@
 				fail);
 		};
 
-		self.loadProcessingSourceLocations = function() {
+		self.loadProcessingSourceLocations = function () {
+			if (!self.IsProcessingSourceLocationEnabled()) {
+				var locations = [];
+				var fileShareExportLocation = self.createProcessingSourceListItemForFileshare();
+				locations.push(fileShareExportLocation);
+				self.xyz(locations, FILESHARE_EXPORT_LOCATION_ARTIFACT_ID);
+				return;
+			}
+
+
 			var processingSourceLocationListPromise = root.data.ajax({
 				type: "get",
 				url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocations"),
@@ -178,17 +191,21 @@
 					var fileShareExportLocation = self.createProcessingSourceListItemForFileshare();
 					locations.unshift(fileShareExportLocation);
 
-					self.ProcessingSourceLocationList(locations);
-
 					var initialProcessingSourceLocationArtifactId = self.getInitialProcessingSourceLocationArtifactId();
-					self.ProcessingSourceLocation(initialProcessingSourceLocationArtifactId);
-					self.ProcessingSourceLocation.isModified(false);
-					self.updateProcessingSourceLocation(self.ProcessingSourceLocation(), true);
-
-					self.ProcessingSourceLocation.subscribe(function(value) {
-						self.updateProcessingSourceLocation(value);
-					});
+					self.xyz(locations, initialProcessingSourceLocationArtifactId);
 				});
+		};
+
+		self.xyz = function (locations, selectedLocationId) { // TODO rename
+			self.ProcessingSourceLocationList(locations);
+
+			self.ProcessingSourceLocation(selectedLocationId);
+			self.ProcessingSourceLocation.isModified(false);
+			self.updateProcessingSourceLocation(self.ProcessingSourceLocation(), true);
+
+			self.ProcessingSourceLocation.subscribe(function (value) {
+				self.updateProcessingSourceLocation(value);
+			});
 		};
 
 		self.loadDirectories = function () {
