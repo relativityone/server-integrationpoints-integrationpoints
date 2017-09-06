@@ -23,30 +23,31 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration
 	public class DocumentTransferProviderTests : RelativityProviderTemplate
 	{
 		private DocumentTransferProvider _documentTransferProvider;
-	    private string[] _forbiddenFields;
+		private string[] _forbiddenFields;
 
-	    public DocumentTransferProviderTests() : base("SourceWorkspace", "DestinationWorkspace")
-	    {
-	    }
+		public DocumentTransferProviderTests() : base("SourceWorkspace", "DestinationWorkspace")
+		{
+		}
 
-	    public override void SuiteSetup()
-	    {
-	        base.SuiteSetup();
-	        _forbiddenFields = new[]
-	        {
-	            Domain.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
-	            Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME,
-	            DocumentFields.RelativityDestinationCase,
-	            DocumentFields.JobHistory
-	        };
+		public override void SuiteSetup()
+		{
+			base.SuiteSetup();
+			_forbiddenFields = new[]
+			{
+				Domain.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
+				Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME,
+				DocumentFields.RelativityDestinationCase,
+				DocumentFields.JobHistory
+			};
 
-		    var webApiConfig = Substitute.For<IWebApiConfig>();
-		    webApiConfig.GetWebApiUrl.Returns(SharedVariables.RelativityWebApiUrl);
-			_documentTransferProvider = new DocumentTransferProvider(webApiConfig, Container.Resolve<IRepositoryFactory>(), Container.Resolve<IHelper>());
-        }
+			var webApiConfig = Substitute.For<IWebApiConfig>();
+			webApiConfig.GetWebApiUrl.Returns(SharedVariables.RelativityWebApiUrl);
+			var importApiFactory = new ExtendedImportApiFactory(webApiConfig);
+			_documentTransferProvider = new DocumentTransferProvider(importApiFactory, Container.Resolve<IRepositoryFactory>(), Container.Resolve<IHelper>());
+		}
 
-	    [Test]
-	    [Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
+		[Test]
+		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
 		public void Get_RelativityFieldsFromSourceWorkspace_Success()
 		{
 			//Arrange
@@ -56,8 +57,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration
 			IEnumerable<FieldEntry> documentFields = _documentTransferProvider.GetFields(documentTransferSettings);
 
 			//Assert
-            Assert.That(() => documentFields.Any());
-		    Assert.That(() => documentFields.All(df => _forbiddenFields.All(ff => ff != df.DisplayName)));
+			Assert.That(() => documentFields.Any());
+			Assert.That(() => documentFields.All(df => _forbiddenFields.All(ff => ff != df.DisplayName)));
 		}
 	}
 }

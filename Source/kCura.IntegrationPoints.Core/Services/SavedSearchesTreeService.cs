@@ -6,8 +6,8 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client;
 using Relativity.API;
+using Relativity.Services;
 using Relativity.Services.Field;
 using Relativity.Services.Search;
 using Relativity.Services.User;
@@ -30,18 +30,11 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public JsTreeItemDTO GetSavedSearchesTree(int workspaceArtifactId)
 		{
-			IEnumerable<SavedSearchDTO> savedSearchDtos = _repositoryFactory.GetSavedSearchQueryRepository(workspaceArtifactId).RetrievePublicSavedSearches();
+		    List<Result<SearchContainer>> folders = _searchContainerManager.QueryAsync(workspaceArtifactId, new Query( )).ConfigureAwait(false).GetAwaiter().GetResult().Results;
+            List<int> searchContainersArtifactIds = folders.Select(x => x.Artifact.ArtifactID).ToList();
 
-			List<int> searchContainersArtifactIds = savedSearchDtos.Select(x => x.ArtifactId).ToList();
-
-			SearchContainerItemCollection searchContainterCollection = _searchContainerManager.GetSearchContainerTreeAsync(workspaceArtifactId, searchContainersArtifactIds).Result;
-
-			IEnumerable<SavedSearchContainerItem> publicSearchContainerItemCollection = searchContainterCollection.SavedSearchContainerItems.Where(
-				item => searchContainersArtifactIds.Contains(item.SavedSearch.ArtifactID));
-
-			JsTreeItemDTO tree = _treeCreator.Create(searchContainterCollection.SearchContainerItems, publicSearchContainerItemCollection);
-
-			return tree;
+			SearchContainerItemCollection searchContainterCollection = _searchContainerManager.GetSearchContainerTreeAsync(workspaceArtifactId, searchContainersArtifactIds).ConfigureAwait(false).GetAwaiter().GetResult();
+			return _treeCreator.Create(searchContainterCollection.SearchContainerItems, searchContainterCollection.SavedSearchContainerItems.Where(i=> i.Secured == false));
 		}
 	}
 }

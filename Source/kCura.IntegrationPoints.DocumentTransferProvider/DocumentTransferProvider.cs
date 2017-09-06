@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
-using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Data;
@@ -12,7 +11,6 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
-using kCura.Relativity.ImportAPI;
 using Newtonsoft.Json;
 using Relativity.API;
 
@@ -21,15 +19,15 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 	[Contracts.DataSourceProvider(Domain.Constants.RELATIVITY_PROVIDER_GUID)]
 	public class DocumentTransferProvider : IDataSourceProvider, IEmailBodyData
 	{
+		private readonly IExtendedImportApiFactory _importApiFactory;
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly IAPILog _logger;
-		private readonly IWebApiConfig _webApiConfig;
 
-		public DocumentTransferProvider(IWebApiConfig webApiConfig, IRepositoryFactory repositoryFactory , IHelper helper)
+		public DocumentTransferProvider(IExtendedImportApiFactory importApiFactory, IRepositoryFactory repositoryFactory , IHelper helper)
 		{
+			_importApiFactory = importApiFactory;
 			_repositoryFactory = repositoryFactory;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<DocumentTransferProvider>();
-			_webApiConfig = webApiConfig;
 		}
 
 		public IEnumerable<FieldEntry> GetFields(string options)
@@ -55,6 +53,18 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 
 		private ArtifactDTO[] GetRelativityFields(int sourceWorkspaceId, int rdoTypeId)
 		{
+			var ignoreFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+			{
+				Domain.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
+				Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME,
+				DocumentFields.RelativityDestinationCase,
+				DocumentFields.JobHistory
+			};
+			IEnumerable<Relativity.ImportAPI.Data.Field> properWorkspaceFields = _importApiFactory.Create()
+				.GetWorkspaceFields(sourceWorkspaceId, rdoTypeId)
+				.Where(f => !ignoreFields.Contains(f.Name));
+			var mappableArtifactIds = new HashSet<int>(properWorkspaceFields.Select(x => x.ArtifactID));
+			
 			IFieldQueryRepository fieldQueryRepository = _repositoryFactory.GetFieldQueryRepository(sourceWorkspaceId);
 
 			ArtifactDTO[] fieldArtifacts = fieldQueryRepository.RetrieveFields(
@@ -69,16 +79,6 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 					Fields.IsIdentifier,
 					Fields.FieldTypeName,
 				}));
-
-			var ignoreFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-			{
-				Domain.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
-				Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME,
-				DocumentFields.RelativityDestinationCase,
-				DocumentFields.JobHistory
-			};
-
-			var mappableArtifactIds = new HashSet<int>(GetImportApi().GetWorkspaceFields(sourceWorkspaceId, rdoTypeId).Where(f => !ignoreFields.Contains(f.Name)).Select(x => x.ArtifactID));
 
 			// Contains is 0(1) https://msdn.microsoft.com/en-us/library/kw5aaea4.aspx
 			return fieldArtifacts.Where(x => mappableArtifactIds.Contains(x.ArtifactId)).ToArray();
@@ -131,13 +131,6 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 					IsRequired = isIdentifier
 				};
 			}
-		}
-		
-		private IImportAPI GetImportApi()
-		{
-			const string username = "XxX_BearerTokenCredentials_XxX";
-			string authToken = System.Security.Claims.ClaimsPrincipal.Current.Claims.Single(x => x.Type.Equals("access_token")).Value;
-			return new ExtendedImportAPI(username, authToken, _webApiConfig.GetWebApiUrl);
 		}
 		
 		/// <summary>

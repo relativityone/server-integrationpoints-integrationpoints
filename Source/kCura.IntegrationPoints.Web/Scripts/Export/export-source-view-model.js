@@ -54,38 +54,15 @@ var ExportSourceViewModel = function (state) {
 		return selectedSavedSearch;
 	};
 
-	self.IsSavedSearchTreeNode = function (node) {
-		return !!node && (node.icon === "jstree-search" || node.icon === "jstree-search-personal");
-	}
 
 	var savedSearchPickerViewModel = new SavedSearchPickerViewModel(function (value) {
 		self.SavedSearchArtifactId(value.id);
-	}, self.IsSavedSearchTreeNode);
+	}, IsSavedSearchTreeNode);
 
 	Picker.create("Fileshare", "savedSearchPicker", "SavedSearchPicker", savedSearchPickerViewModel);
 
 	self.OpenSavedSearchPicker = function () {
 		savedSearchPickerViewModel.open(self.SavedSearchesTree(), self.SavedSearchArtifactId());
-	};
-
-	self.GetSavedSearches = function (tree) {
-		var _searches = [];
-		var _iterate = function (node, depth) {
-			if (self.IsSavedSearchTreeNode(node)) {
-				_searches.push({
-					value: node.id,
-					displayName: node.text
-				});
-			}
-
-			for (var i = 0, len = node.children.length; i < len; i++) {
-				_iterate(node.children[i], depth + 1);
-			}
-		};
-
-		_iterate(tree, 0);
-
-		return _searches;
 	};
 
 	self.UpdateSelectedSavedSearch = function (artifactId) {
@@ -100,7 +77,7 @@ var ExportSourceViewModel = function (state) {
 
 	self.UpdateSavedSearches = function (artifactId) {
 		self.SavedSearchesTree(self.Cache.SavedSearchesResult);
-		self.SavedSearches(self.GetSavedSearches(self.Cache.SavedSearchesResult));
+		self.SavedSearches(FlatSavedSearches(self.Cache.SavedSearchesResult));
 		self.UpdateSelectedSavedSearch(artifactId || self.SavedSearchArtifactId());
 	};
 
