@@ -18,7 +18,17 @@
 				contentType: "application/x-www-form-urlencoded; charset=UTF-8",
 				url: root.utils.generateWebAPIURL("DataTransferLocation/GetRoot", integrationPointTypeIdentifier)
 			}).fail(failCallback);
-		}
+		};
+
+		self.createPromiseForGetProcessingSourceLocationList = function (failCallback) {
+			return root.data.ajax({
+				type: "get",
+				url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocations"),
+				data: {
+					sourceWorkspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
+				}
+			}).fail(failCallback);
+		};
 
 		self.getProcessingSourceLocationSubItems = function (path, isRoot, successCallback, failCallback) {
 			root.data.ajax({
@@ -33,16 +43,17 @@
 			root.data.ajax({
 				type: "post",
 				contentType: "application/json",
-				url: root.utils.generateWebAPIURL("DataTransferLocation/GetStructure", integrationPointTypeIdentifier) + "?isRoot=" + isRoot,
+				url: root.utils.generateWebAPIURL("DataTransferLocation/GetStructure", integrationPointTypeIdentifier) +
+					"?isRoot=" +
+					isRoot,
 				data: JSON.stringify(path)
 			}).then(successCallback).fail(failCallback);
-		}
+		};
 
 		return {
 			createPromiseForIsProcessingSourceLocationEnabled: self.createPromiseForIsProcessingSourceLocationEnabled,
-			isProcessingSourceLocationEnabled: self.isProcessingSourceLocationEnabled,
 			createPromiseForGetRootDataTransferLocation: self.createPromiseForGetRootDataTransferLocation,
-			loadRootDataTransferLocation: self.loadRootDataTransferLocation,
+			createPromiseForGetProcessingSourceLocationList: self.createPromiseForGetProcessingSourceLocationList,
 			getProcessingSourceLocationSubItems: self.getProcessingSourceLocationSubItems,
 			getFileshareSubItems: self.getFileshareSubItems
 		}
@@ -128,7 +139,7 @@
 			self.InitializeLocationSelector();
 
 			var determiningIfProcessingSourceLocationIsEnabledFailed = function (error) {
-				IP.message.error.raise("Determining if Processing Source Location is enabled failed"); 
+				IP.message.error.raise("Determining if Processing Source Location is enabled failed");
 			};
 
 			var retrievingRootDataTransferLocationFailed = function (error) {
@@ -178,16 +189,13 @@
 				return;
 			}
 
-
-			var processingSourceLocationListPromise = root.data.ajax({
-				type: "get",
-				url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocations"),
-				data: {
-					sourceWorkspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
-				}
-			}).fail(function (error) {
+			var retrievingProcessingSourceLocationsListFailed = function (error) {
 				IP.message.error.raise("No processing source locations were returned from source provider");
-			});
+			}
+
+			var processingSourceLocationListPromise =
+				self.ExportDestinationLocationService.createPromiseForGetProcessingSourceLocationList(
+					retrievingProcessingSourceLocationsListFailed);
 
 			root.data.deferred()
 				.all([processingSourceLocationListPromise])
