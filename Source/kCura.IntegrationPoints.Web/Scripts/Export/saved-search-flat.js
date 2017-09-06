@@ -33,4 +33,4 @@ var FlatSavedSearches = function(tree) {
 
     _iterate(tree, 0);
     return _searches.sort(_sort);
-}
+};
