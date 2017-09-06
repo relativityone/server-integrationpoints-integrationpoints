@@ -118,6 +118,7 @@
 		self.EnableLocationRadio = ko.observable(state.EnableLocationRadio || false);
 		self.LocationFolderChecked = ko.observable(state.LocationFolderChecked || "true");
 		self.DestinationProductionSets = ko.observableArray();
+		self.SavedSearchesTree = ko.observable();
 		self.ProductionArtifactId = ko.observable().extend({
 			required: {
 				onlyIf: function () {
@@ -322,10 +323,11 @@
 		if (self.savedSearches.length === 0) {
 			IP.data.ajax({
 				type: 'GET',
-				url: IP.utils.generateWebAPIURL('SavedSearchFinder'),
+				url: IP.utils.generateWebAPIURL('SavedSearchesTree', IP.utils.getParameterByName("AppID", window.top)),
 				async: true,
 				success: function (result) {
-					self.savedSearches(result);
+					self.SavedSearchesTree(result);
+					self.savedSearches(FlatSavedSearches(result));
 					self.SavedSearchArtifactId(state.SavedSearchArtifactId);
 				},
 				error: function () {
@@ -371,6 +373,17 @@
 				}
 			});
 		}
+
+		var savedSearchPickerViewModel = new SavedSearchPickerViewModel(function (value) {
+			self.SavedSearchArtifactId(value.id);
+		}, IsSavedSearchTreeNode);
+
+		Picker.create("Fileshare", "savedSearchPicker", "SavedSearchPicker", savedSearchPickerViewModel);
+
+
+		self.OpenSavedSearchPicker = function () {
+			savedSearchPickerViewModel.open(self.SavedSearchesTree(), self.SavedSearchArtifactId());
+		};
 
 		self.updateSecuredConfiguration = function (clientId, clientSecret) {
 			self.SecuredConfiguration(IP.utils.generateCredentialsData(self.FederatedInstanceArtifactId(), clientId, clientSecret));

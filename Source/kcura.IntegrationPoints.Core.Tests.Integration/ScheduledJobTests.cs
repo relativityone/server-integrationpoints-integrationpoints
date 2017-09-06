@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using kCura.IntegrationPoint.Tests.Core.Templates;
@@ -46,7 +47,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 		    var stopwatch = new Stopwatch();
             
             //Arrange
-            IntegrationPointModel integrationModel = CreateDefaultIntegrationPointModelScheduled(ImportOverwriteModeEnum.AppendOnly, "testing", "Append Only", DateTime.UtcNow.AddDays(-1).ToShortDateString(), DateTime.UtcNow.AddDays(1).ToShortDateString(), kCura.ScheduleQueue.Core.ScheduleRules.ScheduleInterval.Daily);
+            IntegrationPointModel integrationModel = CreateDefaultIntegrationPointModelScheduled(ImportOverwriteModeEnum.AppendOnly, "testing", "Append Only", 
+				DateTime.UtcNow.AddDays(-1).ToString("MM/dd/yyyy", CultureInfo.InvariantCulture), DateTime.UtcNow.AddDays(1).ToString("MM/dd/yyyy", CultureInfo.InvariantCulture), 
+				ScheduleQueue.Core.ScheduleRules.ScheduleInterval.Daily);
 			IntegrationPointModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
 		    Job jobInitial = _jobService.GetJobs(integrationPoint.ArtifactID).FirstOrDefault();
 		    _jobId = jobInitial.JobId;
@@ -73,7 +76,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 	        var stopwatch = new Stopwatch();
 
             //Arrange
-            IntegrationPointModel integrationModel = CreateDefaultIntegrationPointModelScheduled(ImportOverwriteModeEnum.AppendOnly, "testing", "Append Only", DateTime.UtcNow.AddDays(-1).ToShortDateString(), DateTime.UtcNow.AddDays(1).ToShortDateString(), kCura.ScheduleQueue.Core.ScheduleRules.ScheduleInterval.Daily);
+            IntegrationPointModel integrationModel = CreateDefaultIntegrationPointModelScheduled(ImportOverwriteModeEnum.AppendOnly, "testing", "Append Only", 
+				DateTime.UtcNow.AddDays(-1).ToString("MM/dd/yyyy", CultureInfo.InvariantCulture), DateTime.UtcNow.AddDays(1).ToString("MM/dd/yyyy", CultureInfo.InvariantCulture), 
+				ScheduleQueue.Core.ScheduleRules.ScheduleInterval.Daily);
 	        IntegrationPointModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
 	        Job jobInitial = _jobService.GetJobs(integrationPoint.ArtifactID).FirstOrDefault();
 	        _jobId = jobInitial.JobId;

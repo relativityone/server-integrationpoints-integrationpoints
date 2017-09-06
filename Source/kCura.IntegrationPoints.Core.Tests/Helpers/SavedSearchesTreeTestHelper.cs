@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity.Services.Search;
 
@@ -83,6 +84,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
             #endregion
 
             return collection;
+        }
+
+        public static List<int> GetSampleContainerIds()
+        {
+            return new List<int>(GetSampleContainerCollection().SearchContainerItems
+                .Select(folder => folder.SearchContainer.ArtifactID));
         }
 
         public static JsTreeItemDTO GetSampleTree()
