@@ -75,7 +75,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			RepositoryFactory = Container.Resolve<IRepositoryFactory>();
 
 			IToggleProvider toggleProviderMock = Substitute.For<IToggleProvider>();
-			toggleProviderMock.IsEnabled<AOAGToggle>().Returns(true);
+			//toggleProviderMock.IsEnabled<AOAGToggle>().Returns(true); TODO Remove or replace
 			ToggleProvider.Current = toggleProviderMock;
 		}
 

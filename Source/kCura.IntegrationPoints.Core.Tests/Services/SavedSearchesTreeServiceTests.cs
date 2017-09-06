@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Castle.Components.DictionaryAdapter;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Services;
@@ -25,6 +26,18 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 		}
 
+	    private SearchContainerQueryResultSet GetAllFolders()
+	    {
+	        var searchContainerQueryResultSet = new SearchContainerQueryResultSet();
+	        searchContainerQueryResultSet.Results = new EditableList<Result<SearchContainer>>();
+	        foreach (var searchContainerItem in SavedSearchesTreeTestHelper.GetSampleContainerCollection().SearchContainerItems)
+	        {
+	            var item = new Result<SearchContainer>() { Success = true, Artifact = new SearchContainer() { ArtifactID = searchContainerItem.SearchContainer.ArtifactID } };
+	            searchContainerQueryResultSet.Results.Add(item);
+	        }
+	        return searchContainerQueryResultSet;
+	    }
+
 		[Test]
 		public void ItShouldReturnSavedSearchesTree()
 		{
@@ -33,59 +46,51 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			var repoFactoryMock = Substitute.For<IRepositoryFactory>();
 			var savedSearchQueryRepoMock = Substitute.For<ISavedSearchQueryRepository>();
+		    var searchContainerManager = Substitute.For<ISearchContainerManager>();
+            var servicesManager = Substitute.For<IServicesMgr>();
+            var helper = Substitute.For<IHelper>();
+		    var creator = Substitute.For<ISavedSearchesTreeCreator>();
 
-			repoFactoryMock.GetSavedSearchQueryRepository(workspaceArtifactId).Returns(savedSearchQueryRepoMock);
+		    servicesManager.CreateProxy<ISearchContainerManager>(Arg.Any<ExecutionIdentity>())
+		        .Returns(searchContainerManager);
+		    helper.GetServicesManager()
+		        .Returns(servicesManager);
+		    repoFactoryMock.GetSavedSearchQueryRepository(workspaceArtifactId).Returns(savedSearchQueryRepoMock);
 
-			var sampleContainerCollection = SavedSearchesTreeTestHelper.GetSampleContainerCollection();
+            var subjectUnderTest = new SavedSearchesTreeService(helper, creator, repoFactoryMock);
 
-			// take all SavedSearches without the last one
-			int sampleItemCount = sampleContainerCollection.SavedSearchContainerItems.Count - 1;
+            searchContainerManager.QueryAsync(workspaceArtifactId, Arg.Any<Query>()).Returns( GetAllFolders() );
+			searchContainerManager.GetSearchContainerTreeAsync(workspaceArtifactId, 
+                Arg.Is<List<int>>( list => list.SequenceEqual( SavedSearchesTreeTestHelper.GetSampleContainerIds() )))
+				.Returns(SavedSearchesTreeTestHelper.GetSampleContainerCollection());
 
-			IEnumerable<SavedSearchContainerItem> savedSearchContainerItems = sampleContainerCollection.SavedSearchContainerItems
-				.Take(sampleItemCount);
-
-			List<SavedSearchDTO> retSavedSearches = savedSearchContainerItems
-				.Select(item =>
-						new SavedSearchDTO()
-						{
-							ArtifactId = item.SavedSearch.ArtifactID
-						})
-				.ToList();
-
-			List<int> expectedSavedSearchesArtifactIds = new List<int>(retSavedSearches.Select(_ => _.ArtifactId));
-
-			savedSearchQueryRepoMock.RetrievePublicSavedSearches().Returns(retSavedSearches);
-
-			var searchContainerManager = Substitute.For<ISearchContainerManager>();
-			searchContainerManager.GetSearchContainerTreeAsync(Arg.Any<int>(), Arg.Is<List<int>>(x => x.SequenceEqual(expectedSavedSearchesArtifactIds)))
-				.Returns(sampleContainerCollection);
-
-			var servicesManager = Substitute.For<IServicesMgr>();
-			servicesManager.CreateProxy<ISearchContainerManager>(Arg.Any<ExecutionIdentity>())
-				.Returns(searchContainerManager);
-
-			var helper = Substitute.For<IHelper>();
-			helper.GetServicesManager()
-				.Returns(servicesManager);
-
-			var expected = SavedSearchesTreeTestHelper.GetSampleTreeWithSearches();
-
-			
-
-			var creator = Substitute.For<ISavedSearchesTreeCreator>();
-			creator.Create(Arg.Any<IEnumerable<SearchContainerItem>>(), Arg.Is<IEnumerable<SavedSearchContainerItem>>(list => list.SequenceEqual(savedSearchContainerItems)))
-				.Returns(expected);
-
-			var service = new SavedSearchesTreeService(helper, creator, repoFactoryMock);
+		    creator.Create(
+		            Arg.Any<IEnumerable<SearchContainerItem>>(),
+		            Arg.Any<IEnumerable<SavedSearchContainerItem>>())
+		        .Returns(SavedSearchesTreeTestHelper.GetSampleTreeWithSearches());
 
 			// act
-			var actual = service.GetSavedSearchesTree(workspaceArtifactId);
+			var actual = subjectUnderTest.GetSavedSearchesTree(workspaceArtifactId);
 
 			// assert
 			Assert.That(actual, Is.Not.Null);
-			Assert.That(actual.Id, Is.EqualTo(expected.Id));
+
+		    var expected = SavedSearchesTreeTestHelper.GetSampleTreeWithSearches();
+            Assert.That(actual.Id, Is.EqualTo(expected.Id));
 			Assert.That(actual.Text, Is.EqualTo(expected.Text));
 			Assert.That(actual.Children.Count, Is.EqualTo(expected.Children.Count));
-		}
+
+            //check mock arguments
+		    creator.Received(1).Create(
+		            Arg.Is<IEnumerable<SearchContainerItem>>( list => list.Count() == SavedSearchesTreeTestHelper.GetSampleContainerCollection().SearchContainerItems.Count ),
+		            Arg.Is<IEnumerable<SavedSearchContainerItem>>( list => list.Count() != SavedSearchesTreeTestHelper.GetSampleContainerCollection().SavedSearchContainerItems.Count));
+
+		    var publicSearches = SavedSearchesTreeTestHelper.GetSampleContainerCollection().SavedSearchContainerItems
+		        .Where(s => !s.Secured);
+
+		    creator.Received(1).Create(
+		        Arg.Is<IEnumerable<SearchContainerItem>>(list => list.Count() == SavedSearchesTreeTestHelper.GetSampleContainerCollection().SearchContainerItems.Count),
+		        Arg.Is<IEnumerable<SavedSearchContainerItem>>(list => list.Count() == publicSearches.Count()));
+        }
 	}
 }

@@ -14,6 +14,8 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Security.Claims;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
+using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using NUnit.Framework.Interfaces;
 using Relativity.Core.Authentication;
 
@@ -21,17 +23,26 @@ namespace IntegrationPointsUITests.Tests
 {
 	public abstract class UiTest
 	{
+		private const string _TEMPALTE_WKSP_NAME = "Relativity Starter Template";
+
+		private Lazy<ITestHelper> _help;
+
 		protected static int WorkspaceId { get; set; } = int.MinValue;
 		protected static string WorkspaceName { get; set; }
 
 		protected IWebDriver Driver { get; set; }
 
+		public ITestHelper Helper => _help.Value;
+		
 		[OneTimeSetUp]
 		protected void CreateDriver()
 		{
 			kCura.Data.RowDataGateway.Config.MockConfigurationValue("LongRunningQueryTimeout", 100);
 			string connString = string.Format(ConfigurationManager.AppSettings["connectionStringEDDS"], "il1ddmlpl3db001.kcura.corp", "EDDSdbo", "P@ssw0rd@1");
 			kCura.Config.Config.SetConnectionString(connString);
+
+			_help = new Lazy<ITestHelper>(() => new TestHelper());
+
 			global::Relativity.Data.Config.InjectConfigSettings(new Dictionary<string, object>
 			{
 				{"connectionString", SharedVariables.EddsConnectionString}
@@ -43,9 +54,9 @@ namespace IntegrationPointsUITests.Tests
 
 			try
 			{
-				WorkspaceId = Workspace.CreateWorkspace($"Test Workspace {testTimeStamp}", "kCura Starter Template");
+				WorkspaceId = Workspace.CreateWorkspace($"Test Workspace {testTimeStamp}", _TEMPALTE_WKSP_NAME);
 			}
-			catch (NullReferenceException ex)
+			catch (System.Exception ex)
 			{
 				Console.WriteLine($@"Cannot create workspace. Check if Relativity works correctly (services, ...). Exception: {ex}.");
 				throw;
@@ -57,14 +68,11 @@ namespace IntegrationPointsUITests.Tests
 			Group.AddGroupToWorkspace(WorkspaceId, groupId);
 			GroupPermissions permissions = Permission.GetGroupPermissions(WorkspaceId, groupId);
 
-
-
-
 			ClaimsPrincipal.ClaimsPrincipalSelector += () =>
 			{
 				var factory = new ClaimsPrincipalFactory();
 				var _ADMIN_USER_ID = 9;
-				return factory.CreateClaimsPrincipal2(_ADMIN_USER_ID);
+				return factory.CreateClaimsPrincipal2(_ADMIN_USER_ID, Helper);
 			};
 
 			try
@@ -75,13 +83,15 @@ namespace IntegrationPointsUITests.Tests
 			}
 			catch (System.Exception) // probably no IP in workspace
 			{
-				ICoreContext coreContext = GetBaseServiceContext(ClaimsPrincipal.Current, -1);
-				var ipAppManager = new RelativityApplicationManager(coreContext, new TestHelper());
+				ICoreContext coreContext = SourceProviderTemplate.GetBaseServiceContext(-1);
+
+				var ipAppManager = new RelativityApplicationManager(coreContext, Helper);
 				ipAppManager.InstallIntegrationPointFromAppLibraryToWorkspace(WorkspaceId);
 
-				ObjectPermission permissionsForRdo =
-					permissions.ObjectPermissions.FindPermission(ObjectTypes.IntegrationPointType);
-				permissionsForRdo.ViewSelected = false;
+				//????
+				//ObjectPermission permissionsForRdo =
+				//	permissions.ObjectPermissions.FindPermission(ObjectTypes.IntegrationPointType);
+				//permissionsForRdo.ViewSelected = false;
 			}
 
 

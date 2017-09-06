@@ -23,7 +23,8 @@ namespace kCura.IntegrationPoints.Management.Tasks
 
 			if (stuckJobs != null && stuckJobs.Keys.Count > 0)
 			{
-				_apm.HealthCheckOperation(Constants.IntegrationPoints.Telemetry.APM_HEALTHCHECK, () => HealthCheck.CreateStuckJobsMetric(stuckJobs));
+				var healthCheck = _apm.HealthCheckOperation(Constants.IntegrationPoints.Telemetry.APM_HEALTHCHECK, () => HealthCheck.CreateStuckJobsMetric(stuckJobs));
+				healthCheck.Write();
 			}
 		}
 	}

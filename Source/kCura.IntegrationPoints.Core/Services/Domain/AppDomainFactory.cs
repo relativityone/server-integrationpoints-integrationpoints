@@ -31,9 +31,7 @@ namespace kCura.IntegrationPoints.Core.Domain
 			_newDomain = _domainHelper.CreateNewDomain(_relativityFeaturePathService);
 			DomainManager domainManager = _domainHelper.SetupDomainAndCreateManager(_newDomain, _provider, applicationGuid);
 
-			IDataSourceProvider provider = domainManager.GetProvider(providerGuid, helper);
-			IInternalDataSourceProvider internalProvider = provider as IInternalDataSourceProvider;
-			internalProvider?.RegisterDependency<IRepositoryFactory>(new RepositoryFactory(helper, helper.GetServicesManager()));
+		    IDataSourceProvider provider = domainManager.GetProvider(providerGuid, helper);
 
 			return provider;
 		}

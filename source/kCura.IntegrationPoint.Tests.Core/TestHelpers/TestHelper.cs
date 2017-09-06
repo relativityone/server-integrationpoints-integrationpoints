@@ -10,6 +10,7 @@ using Relativity.Services.InstanceSetting;
 using Relativity.Services.ObjectQuery;
 using Relativity.Services.Permission;
 using Relativity.Services.Search;
+using Relativity.Services.Security;
 using Relativity.Services.ServiceProxy;
 using Relativity.Services.Workspace;
 
@@ -42,6 +43,8 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			_serviceManager.CreateProxy<IArtifactGuidManager>(ExecutionIdentity.System).Returns(new ExtendedIArtifactGuidManager(this, ExecutionIdentity.System));
 			_serviceManager.CreateProxy<IFieldManager>(ExecutionIdentity.System).Returns(new ExtendedIFieldManager(this, ExecutionIdentity.System));
 			_serviceManager.CreateProxy<IInstanceSettingManager>(ExecutionIdentity.CurrentUser).Returns(new ExtendedInstanceSettingManager(this, ExecutionIdentity.CurrentUser));
+		    _serviceManager.CreateProxy<IOAuth2ClientManager>(ExecutionIdentity.System).Returns(_ => CreateAdminProxy<IOAuth2ClientManager>());
+		    _serviceManager.GetServicesURL().Returns(SharedVariables.RestClientServiceUri);
 		}
 
 		public T CreateUserProxy<T>() where T : IDisposable

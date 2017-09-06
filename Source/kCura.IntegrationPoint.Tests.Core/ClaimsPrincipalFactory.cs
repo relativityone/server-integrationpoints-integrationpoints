@@ -1,32 +1,28 @@
-﻿using System;
-using System.Security.Claims;
-using System.Text;
+﻿using System.Security.Claims;
+using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Data.Contexts;
+using kCura.IntegrationPoints.Domain;
 using Relativity;
+using Relativity.API;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
-	public class ClaimsPrincipalFactory : IOnBehalfOfUserClaimsPrincipalFactory
-	{
-		public ClaimsPrincipal CreateClaimsPrincipal(int userArtifactId)
-		{
-			Claim[] claims = new Claim[] { new Claim(Claims.USER_ID, userArtifactId.ToString()) };
-			ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(claims));
-			return claimsPrincipal;
-		}
+    public class ClaimsPrincipalFactory : IOnBehalfOfUserClaimsPrincipalFactory
+    {
+        public ClaimsPrincipal CreateClaimsPrincipal(int userArtifactId)
+        {
+            var claims = new[] { new Claim(Claims.USER_ID, userArtifactId.ToString()) };
+            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(claims));
+            return claimsPrincipal;
+        }
 
-		public ClaimsPrincipal CreateClaimsPrincipal2(int userArtifactId)
-		{
-			string authToken = GetBase64String("relativity.admin@kcura.com:Test!");
-			Claim[] claims = new Claim[] { new Claim(Claims.USER_ID, userArtifactId.ToString()), new Claim(Claims.ACCESS_TOKEN_IDENTIFIER, authToken) };
-			ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(claims));
-			return claimsPrincipal;
-		}
-
-		private static string GetBase64String(string stringToConvertToBase64)
-		{
-			string base64String = Convert.ToBase64String(Encoding.ASCII.GetBytes(stringToConvertToBase64));
-			return base64String;
-		}
-	}
+        public ClaimsPrincipal CreateClaimsPrincipal2(int userArtifactId, IHelper helper)
+        {
+            var generator = new OAuth2TokenGenerator(helper, new OAuth2ClientFactory(helper), new TokenProviderFactoryFactory(), new CurrentUser {ID = userArtifactId});
+            string authToken = generator.GetAuthToken();
+            var claims = new[] { new Claim(Claims.USER_ID, userArtifactId.ToString()), new Claim(Claims.ACCESS_TOKEN_IDENTIFIER, authToken) };
+            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(claims));
+            return claimsPrincipal;
+        }
+    }
 }

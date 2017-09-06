@@ -1,47 +1,39 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
-using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
-using kCura.Relativity.ImportAPI;
 using Newtonsoft.Json;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider
 {
-	public class DestinationConfigurationModel
-	{
-		public int ArtifactId;
-		public string ImportOverwriteMode;
-		public int CaseArtifactId;
-		public bool CustodianManagerFieldContainsLink;
-		public bool ExtractedTextFieldContainsFilePath;
-	}
-
 	[Contracts.DataSourceProvider(Domain.Constants.RELATIVITY_PROVIDER_GUID)]
-	public class DocumentTransferProvider : IInternalDataSourceProvider, IEmailBodyData
+	public class DocumentTransferProvider : IDataSourceProvider, IEmailBodyData
 	{
-		private readonly IDictionary<Type, object> _dependencies = new Dictionary<Type, object>();
+		private readonly IExtendedImportApiFactory _importApiFactory;
+		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly IAPILog _logger;
 
-		public DocumentTransferProvider(IHelper helper)
+		public DocumentTransferProvider(IExtendedImportApiFactory importApiFactory, IRepositoryFactory repositoryFactory , IHelper helper)
 		{
+			_importApiFactory = importApiFactory;
+			_repositoryFactory = repositoryFactory;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<DocumentTransferProvider>();
 		}
 
 		public IEnumerable<FieldEntry> GetFields(string options)
 		{
 			LogRetrievingFields(options);
-			DocumentTransferSettings settings = JsonConvert.DeserializeObject<DocumentTransferSettings>(options);
+			var settings = JsonConvert.DeserializeObject<DocumentTransferSettings>(options);
 			ArtifactDTO[] fields = GetRelativityFields(settings.SourceWorkspaceArtifactId, Convert.ToInt32(ArtifactType.Document));
 			IEnumerable<FieldEntry> fieldEntries = ParseFields(fields);
 
@@ -61,8 +53,19 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 
 		private ArtifactDTO[] GetRelativityFields(int sourceWorkspaceId, int rdoTypeId)
 		{
-			IRepositoryFactory repositoryFactory = ResolveDependencies<IRepositoryFactory>();
-			IFieldQueryRepository fieldQueryRepository = repositoryFactory.GetFieldQueryRepository(sourceWorkspaceId);
+			var ignoreFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+			{
+				Domain.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
+				Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME,
+				DocumentFields.RelativityDestinationCase,
+				DocumentFields.JobHistory
+			};
+			IEnumerable<Relativity.ImportAPI.Data.Field> properWorkspaceFields = _importApiFactory.Create()
+				.GetWorkspaceFields(sourceWorkspaceId, rdoTypeId)
+				.Where(f => !ignoreFields.Contains(f.Name));
+			var mappableArtifactIds = new HashSet<int>(properWorkspaceFields.Select(x => x.ArtifactID));
+			
+			IFieldQueryRepository fieldQueryRepository = _repositoryFactory.GetFieldQueryRepository(sourceWorkspaceId);
 
 			ArtifactDTO[] fieldArtifacts = fieldQueryRepository.RetrieveFields(
 				rdoTypeId,
@@ -77,16 +80,6 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 					Fields.FieldTypeName,
 				}));
 
-			HashSet<string> ignoreFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-			{
-				Domain.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
-				Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME,
-				DocumentFields.RelativityDestinationCase,
-				DocumentFields.JobHistory
-			};
-
-			HashSet<int> mappableArtifactIds = new HashSet<int>(GetImportAPI().GetWorkspaceFields(sourceWorkspaceId, rdoTypeId).Where(f => !ignoreFields.Contains(f.Name)).Select(x => x.ArtifactID));
-
 			// Contains is 0(1) https://msdn.microsoft.com/en-us/library/kw5aaea4.aspx
 			return fieldArtifacts.Where(x => mappableArtifactIds.Contains(x.ArtifactId)).ToArray();
 		}
@@ -97,7 +90,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 			{
 				string fieldName = string.Empty;
 				string fieldType = string.Empty;
-				int isIdentifierFieldValue = 0;
+				var isIdentifierFieldValue = 0;
 
 				foreach (ArtifactFieldDTO field in fieldArtifact.Fields)
 				{
@@ -138,16 +131,6 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 					IsRequired = isIdentifier
 				};
 			}
-		}
-		
-		private IImportAPI GetImportAPI()
-		{
-			const string username = "XxX_BearerTokenCredentials_XxX";
-			var authToken = System.Security.Claims.ClaimsPrincipal.Current.Claims.Single(x => x.Type.Equals("access_token")).Value;
-
-			// TODO: we need to make IIntegrationPointsConfig a dependency or use a factory -- biedrzycki: Feb 16th, 2016
-			IWebApiConfig config = new WebApiConfig();
-			return new ExtendedImportAPI(username, authToken, config.GetWebApiUrl);
 		}
 		
 		/// <summary>
@@ -200,28 +183,11 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 
 		protected virtual WorkspaceDTO GetWorkspace(int workspaceArtifactIds)
 		{
-			IRepositoryFactory repositoryFactory = ResolveDependencies<IRepositoryFactory>();
-			IWorkspaceRepository workspaceRepository = repositoryFactory.GetWorkspaceRepository();
+			IWorkspaceRepository workspaceRepository = _repositoryFactory.GetWorkspaceRepository();
 			return workspaceRepository.Retrieve(workspaceArtifactIds);
-		}
-		
-		public void RegisterDependency<T>(T dependencies)
-		{
-			LogRegisterDependency();
-			_dependencies.Add(typeof(T), dependencies);
-		}
-		
-		private T ResolveDependencies<T>()
-		{
-			return (T)_dependencies[typeof(T)];
 		}
 
 		#region Logging
-
-		private void LogRegisterDependency()
-		{
-			_logger.LogInformation("Attempting to register dependency in Document Transfer Provider.");
-		}
 
 		private void LogReceivingEmailBodyData(IEnumerable<FieldEntry> fields, string options)
 		{

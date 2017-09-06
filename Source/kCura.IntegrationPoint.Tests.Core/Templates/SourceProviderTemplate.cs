@@ -32,6 +32,7 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.Core;
 using Relativity.Core.Authentication;
+using Relativity.Core.Service;
 using Relativity.Services.ResourceServer;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
@@ -57,7 +58,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		{
 			_workspaceName = workspaceName;
 			_workspaceTemplate = workspaceTemplate;
-			CoreContext = GetBaseServiceContext(ClaimsPrincipal.Current, -1);
+			CoreContext = GetBaseServiceContext(-1);
 			RelativityApplicationManager = new RelativityApplicationManager(CoreContext, Helper);
 		}
 
@@ -134,7 +135,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				})
 				.LifeStyle.Transient);
 
-			Container.Register(Component.For<IServicesMgr>().UsingFactoryMethod(k => Helper.GetServicesManager()));
 			Container.Register(Component.For<IWorkspaceService>().ImplementedBy<ControllerCustomPageService>().LifestyleTransient());
 			Container.Register(Component.For<IWorkspaceService>().ImplementedBy<WebAPICustomPageService>().LifestyleTransient());
 			Container.Register(Component.For<WebClientFactory>().ImplementedBy<WebClientFactory>().LifestyleTransient());
@@ -343,12 +343,14 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			await ResourcePoolHelper.AddAgentServerToResourcePool(agentServer, "Default");
 		}
 
-		private ICoreContext GetBaseServiceContext(ClaimsPrincipal claimsPrincipal, int workspaceId)
+		public static ICoreContext GetBaseServiceContext(int workspaceId)
 		{
 			try
 			{
-				return claimsPrincipal.GetServiceContextUnversionShortTerm(workspaceId);
-			}
+			    var loginManager = new LoginManager();
+				Identity identity = loginManager.GetLoginIdentity(9);
+				return new ServiceContext(identity, "<auditElement><RequestOrigination><IP /><Page /></RequestOrigination></auditElement>", workspaceId);
+            }
 			catch (Exception exception)
 			{
 				throw new Exception("Unable to initialize the user context.", exception);

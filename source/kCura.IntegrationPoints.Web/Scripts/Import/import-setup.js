@@ -316,7 +316,7 @@
 				windowObj.RelativityImport.koModel.TargetFolder.isModified(false);
 			}
 			windowObj.RelativityImport.koModel.foldersStructure = result;
-			windowObj.RelativityImport.destinationLocationSelector.reload(result);
+			windowObj.RelativityImport.destinationLocationSelector.reloadWithRootWithData(result);
 		}).fail(function (error) {
 			IP.frameMessaging().dFrame.IP.message.error.raise(error);
 		});

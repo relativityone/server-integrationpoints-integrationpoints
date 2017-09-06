@@ -116,14 +116,15 @@
 		self.ProductionImport = ko.observable(state.ProductionImport || false);//Import into production in destination workspace
 		self.SourceProductionSets = ko.observableArray();
 		self.EnableLocationRadio = ko.observable(state.EnableLocationRadio || false);
-	    self.LocationFolderChecked = ko.observable(state.LocationFolderChecked || "true");
+		self.LocationFolderChecked = ko.observable(state.LocationFolderChecked || "true");
 		self.DestinationProductionSets = ko.observableArray();
+		self.SavedSearchesTree = ko.observable();
 		self.ProductionArtifactId = ko.observable().extend({
-		    required: {
-		        onlyIf: function () {
-		            return self.LocationFolderChecked() === "false";
-		        }
-		    }
+			required: {
+				onlyIf: function () {
+					return self.LocationFolderChecked() === "false";
+				}
+			}
 		});
 		self.ProductionArtifactId.subscribe(function (value) {
 			self.ProductionImport(!!value);
@@ -159,28 +160,28 @@
 			{ value: 3, key: "Saved Search" },
 			{ value: 2, key: "Production" }
 		];
-		self.TypeOfExport.subscribe(function(value) {
+		self.TypeOfExport.subscribe(function (value) {
 			if (value === ExportEnums.SourceOptionsEnum.Production) {
-				
-					var productionSetsPromise = IP.data.ajax({
-						type: "get",
-						url: IP.utils.generateWebAPIURL("Production/GetProductionsForExport"),
-						data: {
-							sourceWorkspaceArtifactId: IP.utils.getParameterByName("AppID", window.top)
-						}
-					}).fail(function(error) {
-						IP.message.error.raise("No production sets were returned from the source provider.");
-					});
 
-					IP.data.deferred().all(productionSetsPromise).then(function(result) {
-						
-						self.SourceProductionSets(result);
-						self.SourceProductionId(state.SourceProductionId);
-					});
+				var productionSetsPromise = IP.data.ajax({
+					type: "get",
+					url: IP.utils.generateWebAPIURL("Production/GetProductionsForExport"),
+					data: {
+						sourceWorkspaceArtifactId: IP.utils.getParameterByName("AppID", window.top)
+					}
+				}).fail(function (error) {
+					IP.message.error.raise("No production sets were returned from the source provider.");
+				});
+
+				IP.data.deferred().all(productionSetsPromise).then(function (result) {
+
+					self.SourceProductionSets(result);
+					self.SourceProductionId(state.SourceProductionId);
+				});
 			}
 		});
 		self.TypeOfExport(state.TypeOfExport);
-		
+
 
 		self.ShowRelativityInstance = ko.observable(false);
 		self.ShowAuthentiactionButton = ko.observable(false);
@@ -234,7 +235,7 @@
 						}
 						self.ShowAuthentiactionButton(isRemoteInstance);
 					});
-				    self.ShowRelativityInstance(result.length >= 2);
+					self.ShowRelativityInstance(result.length >= 2);
 				},
 				error: function () {
 					IP.frameMessaging().dFrame.IP.message.error.raise("Unable to retrieve Relativity instances. Please contact your system administrator.");
@@ -242,65 +243,79 @@
 				}
 			});
 		}
-		self.setDestinationFolder = function (folderArtifactId, destinationWorkspaceId) {
-			if (!folderArtifactId) {
-				return;
-			}
 
-			IP.data.ajax({
+		self.getFolderAndSubFolders = function (destinationWorkspaceId, folderArtifactId) {
+			var reloadTree = function (params, onSuccess, onFail) {
+				IP.data.ajax({
 					type: "POST",
-					url: IP.utils.generateWebAPIURL("SearchFolder/GetFolders", destinationWorkspaceId, self.FederatedInstanceArtifactId()),
+					url: IP.utils.generateWebAPIURL("SearchFolder/GetStructure",
+						destinationWorkspaceId,
+						params.id != "#" ? params.id : "0",
+						self.FederatedInstanceArtifactId() ? self.FederatedInstanceArtifactId() : 0),
+					data: self.SecuredConfiguration()
+				}).then(function (result) {
+					onSuccess(result);
+					if (!!folderArtifactId) {
+						self.FolderArtifactId(folderArtifactId);
+						self.TargetFolder(self.getFolderPath(destinationWorkspaceId, folderArtifactId));
+						self.TargetFolder.isModified(false);
+					}
+					self.foldersStructure = result;
+				}).fail(function (error) {
+					onFail(error);
+					IP.frameMessaging().dFrame.IP.message.error.raise(error);
+				});
+			}
+			self.locationSelector.reloadWithRootWithData(reloadTree);
+		};
+
+		self.LocationFolderChecked.subscribe(function (value) {
+			if (value === "true") {
+				self.ProductionArtifactId(null);
+				self.getFolderAndSubFolders(self.TargetWorkspaceArtifactId());
+				self.locationSelector.toggle(self.TargetWorkspaceArtifactId.isValid());
+			} else {
+				self.TargetFolder("");
+				self.TargetFolder.isModified(false);
+				self.locationSelector.toggle(false);
+				self.ProductionArtifactId.isModified(false);
+			}
+		});
+
+		self.getFolderPath = function (destinationWorkspaceId, folderArtifactId) {
+			IP.data.ajax({
+					contentType: "application/json",
+					dataType: "json",
+					headers: { "X-CSRF-Header": "-" },
+					type: "POST",
+					url: IP.utils.generateWebAPIURL("SearchFolder/GetFullPathList",
+						destinationWorkspaceId,
+						folderArtifactId,
+						self.FederatedInstanceArtifactId() ? self.FederatedInstanceArtifactId() : 0),
+					async: true,
 					data: self.SecuredConfiguration()
 				})
 				.then(function (result) {
-					self.TargetFolder(self.getFolderFullName(result, folderArtifactId));
-				})
-				.fail(function (error) {
-					IP.frameMessaging().dFrame.IP.message.error.raise(error);
+					if (result[0]) {
+						self.TargetFolder(result[0].fullPath);
+					}
 				});
 		}
 
-		self.setDestinationFolder(state.FolderArtifactId, state.TargetWorkspaceArtifactId);
-
-		self.getFolderAndSubFolders = function (destinationWorkspaceId) {
-			IP.data.ajax({
-				type: "POST",
-				url: IP.utils.generateWebAPIURL("SearchFolder/GetFolders", destinationWorkspaceId, self.FederatedInstanceArtifactId()),
-				data: self.SecuredConfiguration()
-			}).then(function (result) {
-				if (!!self.TargetFolder() && self.TargetFolder().indexOf(result.text) === -1) {
-					self.FolderArtifactId("");
-					self.TargetFolder("");
-					self.TargetFolder.isModified(false);
-				}
-				self.foldersStructure = result;
-				self.locationSelector.reload(result);
-			}).fail(function (error) {
-				IP.frameMessaging().dFrame.IP.message.error.raise(error);
-			});
-		};
-
-	    self.LocationFolderChecked.subscribe(function(value) {
-	        if (value === "true") {
-	            self.ProductionArtifactId(null);
-	            self.getFolderAndSubFolders(self.TargetWorkspaceArtifactId());
-	            self.locationSelector.toggle(self.TargetWorkspaceArtifactId.isValid());
-	        } else {
-	            self.TargetFolder("");
-	            self.TargetFolder.isModified(false);
-	            self.locationSelector.toggle(false);
-	            self.ProductionArtifactId.isModified(false);
-	        }
-	    });
-
 		self.onDOMLoaded = function () {
 			self.locationSelector = new LocationJSTreeSelector();
+
 			self.locationSelector.init(self.TargetFolder(), [], {
 				onNodeSelectedEventHandler: function (node) {
 					self.FolderArtifactId(node.id);
-					self.TargetFolder(self.getFolderFullName(self.foldersStructure, self.FolderArtifactId()));
+					self.getFolderPath(self.TargetWorkspaceArtifactId(), self.FolderArtifactId());
 				}
 			});
+
+			if (self.FolderArtifactId() && self.TargetWorkspaceArtifactId()) {
+				self.getFolderAndSubFolders(self.TargetWorkspaceArtifactId(), self.FolderArtifactId());
+			}
+
 			self.locationSelector.toggle(self.TargetWorkspaceArtifactId.isValid());
 		};
 
@@ -308,10 +323,11 @@
 		if (self.savedSearches.length === 0) {
 			IP.data.ajax({
 				type: 'GET',
-				url: IP.utils.generateWebAPIURL('SavedSearchFinder'),
+				url: IP.utils.generateWebAPIURL('SavedSearchesTree', IP.utils.getParameterByName("AppID", window.top)),
 				async: true,
 				success: function (result) {
-					self.savedSearches(result);
+					self.SavedSearchesTree(result);
+					self.savedSearches(FlatSavedSearches(result));
 					self.SavedSearchArtifactId(state.SavedSearchArtifactId);
 				},
 				error: function () {
@@ -335,17 +351,17 @@
 					self.TargetWorkspaceArtifactId(state.TargetWorkspaceArtifactId);
 					self.getDestinationProductionSets(self.TargetWorkspaceArtifactId());
 					self.TargetWorkspaceArtifactId.subscribe(function (value) {
-                        if (value) {
-                            self.EnableLocationRadio(true);
-                        } else {
-                            self.EnableLocationRadio(false);
-                            state.ProductionArtifactId = null;
-                            self.ProductionArtifactId(null);
-                        }
-						if (self.TargetWorkspaceArtifactId !== value) {
+						if (value) {
+							self.EnableLocationRadio(true);
+							self.TargetFolder("");
+						} else {
+							self.EnableLocationRadio(false);
+							state.ProductionArtifactId = null;
+							self.ProductionArtifactId(null);
+						}
+						if (self.TargetWorkspaceArtifactId() !== value) {
 
 							self.getDestinationProductionSets(self.TargetWorkspaceArtifactId());
-
 							self.TargetWorkspaceArtifactId.isModified(false);
 							self.WorkspaceHasChanged = true;
 						}
@@ -357,6 +373,17 @@
 				}
 			});
 		}
+
+		var savedSearchPickerViewModel = new SavedSearchPickerViewModel(function (value) {
+			self.SavedSearchArtifactId(value.id);
+		}, IsSavedSearchTreeNode);
+
+		Picker.create("Fileshare", "savedSearchPicker", "SavedSearchPicker", savedSearchPickerViewModel);
+
+
+		self.OpenSavedSearchPicker = function () {
+			savedSearchPickerViewModel.open(self.SavedSearchesTree(), self.SavedSearchArtifactId());
+		};
 
 		self.updateSecuredConfiguration = function (clientId, clientSecret) {
 			self.SecuredConfiguration(IP.utils.generateCredentialsData(self.FederatedInstanceArtifactId(), clientId, clientSecret));
@@ -398,12 +425,12 @@
 
 		Picker.create("Modals", "authenticate-modal", "AuthenticationModalView", authenticateModalViewModel);
 
-	    self.openAuthenticateModal = function () {
+		self.openAuthenticateModal = function () {
 			self.AuthenticationFailed(false);
 			authenticateModalViewModel.open(self.SecuredConfiguration());
-	    };
-		
-	    var creatingProductionSetModalViewModel = new CreatingProductionSetViewModel(
+		};
+
+		var creatingProductionSetModalViewModel = new CreatingProductionSetViewModel(
 			function (newProductionArtifactId) {
 				self.getDestinationProductionSets(self.TargetWorkspaceArtifactId());
 				state.ProductionArtifactId = newProductionArtifactId;
@@ -411,26 +438,26 @@
 			}
 		);
 
-	    Picker.create("Modals", "creating-production-set-modal", "CreatingProductionSetModalView", creatingProductionSetModalViewModel);
+		Picker.create("Modals", "creating-production-set-modal", "CreatingProductionSetModalView", creatingProductionSetModalViewModel);
 
-	    var createProductionSetModalViewModel = new CreateProductionSetViewModel(
-            function (newProductionSetName, positionLeft) {
-            	creatingProductionSetModalViewModel.open(newProductionSetName, self.TargetWorkspaceArtifactId(), self.SecuredConfiguration(), self.FederatedInstanceArtifactId(), positionLeft);
-            }
+		var createProductionSetModalViewModel = new CreateProductionSetViewModel(
+			function (newProductionSetName, positionLeft) {
+				creatingProductionSetModalViewModel.open(newProductionSetName, self.TargetWorkspaceArtifactId(), self.SecuredConfiguration(), self.FederatedInstanceArtifactId(), positionLeft);
+			}
 		);
 
-	    Picker.create("Modals", "create-production-set-modal", "CreateProductionSetModalView", createProductionSetModalViewModel);
+		Picker.create("Modals", "create-production-set-modal", "CreateProductionSetModalView", createProductionSetModalViewModel);
 
-        self.openCreateProductionSetModal = function() {
-        	createProductionSetModalViewModel.open();
-        }
+		self.openCreateProductionSetModal = function () {
+			createProductionSetModalViewModel.open();
+		}
 
 		this.TargetFolder.extend({
-		    required: {
-		        onlyIf: function () {
-		            return self.LocationFolderChecked() === "true";
-		        }
-		    }
+			required: {
+				onlyIf: function () {
+					return self.LocationFolderChecked() === "true";
+				}
+			}
 		});
 		this.TargetWorkspaceArtifactId.extend({
 			required: true
@@ -475,16 +502,16 @@
 		});
 
 		self.TargetWorkspaceArtifactId.subscribe(function (value) {
-		    if (value) {
-			    self.getFolderAndSubFolders(value);
-			    self.EnableLocationRadio(true);
-			    self.LocationFolderChecked((state.ProductionArtifactId != undefined && state.ProductionArtifactId > 0) ? 'false' : 'true');
-		    } else {
-                self.EnableLocationRadio(false);
-                self.ProductionArtifactId(null);
-                self.ProductionArtifactId.isModified(false);
-            }
-		    if (!self.TargetWorkspaceArtifactId.isValid()) {
+			if (value) {
+				self.getFolderAndSubFolders(value);
+				self.EnableLocationRadio(true);
+				self.LocationFolderChecked((state.ProductionArtifactId != undefined && state.ProductionArtifactId > 0) ? 'false' : 'true');
+			} else {
+				self.EnableLocationRadio(false);
+				self.ProductionArtifactId(null);
+				self.ProductionArtifactId.isModified(false);
+			}
+			if (!self.TargetWorkspaceArtifactId.isValid()) {
 				self.TargetFolder("");
 				self.TargetFolder.isModified(false);
 			}
@@ -505,7 +532,7 @@
 			return {
 				"FederatedInstanceArtifactId": self.FederatedInstanceArtifactId(),
 				"SavedSearchArtifactId": self.SavedSearchArtifactId(),
-				"TypeOfExport": self.TypeOfExport(), 
+				"TypeOfExport": self.TypeOfExport(),
 				"ProductionImport": self.ProductionImport(),
 				"ProductionArtifactId": self.ProductionArtifactId(),
 				"SourceProductionId": self.SourceProductionId(),
@@ -516,14 +543,14 @@
 			}
 		}
 
-	    /********** Tooltips  **********/
+		/********** Tooltips  **********/
 		var destinationTooltipViewModel = new TooltipViewModel(TooltipDefs.RelativityProviderDestinationDetails, TooltipDefs.RelativityProviderDestinationDetailsTitle);
 
 		Picker.create("Tooltip", "tooltipDestinationId", "TooltipView", destinationTooltipViewModel);
 
-	    this.openRelativityProviderDetailsTooltip = function (data, event) {
-	        destinationTooltipViewModel.open(event);
-	    };
+		this.openRelativityProviderDetailsTooltip = function (data, event) {
+			destinationTooltipViewModel.open(event);
+		};
 
 	}
 
