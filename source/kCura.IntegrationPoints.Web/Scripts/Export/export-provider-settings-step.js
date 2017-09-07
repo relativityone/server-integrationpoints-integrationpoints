@@ -5,19 +5,29 @@
 	var ExportDestinationLocationService = function () {
 		var self = this;
 
-		self.isProcessingSourceLocationEnabled = function (successCallback, failCallback) {
-			root.data.ajax({
+		self.createPromiseForIsProcessingSourceLocationEnabled = function (failCallback) {
+			return root.data.ajax({
 				type: "get",
 				url: root.utils.generateWebAPIURL("ResourcePool/IsProcessingSourceLocationEnabled")
-			}).then(successCallback).fail(failCallback);
+			}).fail(failCallback);
 		};
 
-		self.loadRootDataTransferLocation = function (integrationPointTypeIdentifier, successCallback, failCallback) {
-			root.data.ajax({
+		self.createPromiseForGetRootDataTransferLocation = function (integrationPointTypeIdentifier, failCallback) {
+			return root.data.ajax({
 				type: "post",
 				contentType: "application/x-www-form-urlencoded; charset=UTF-8",
 				url: root.utils.generateWebAPIURL("DataTransferLocation/GetRoot", integrationPointTypeIdentifier)
-			}).then(successCallback).fail(failCallback);
+			}).fail(failCallback);
+		};
+
+		self.createPromiseForGetProcessingSourceLocationList = function (failCallback) {
+			return root.data.ajax({
+				type: "get",
+				url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocations"),
+				data: {
+					sourceWorkspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
+				}
+			}).fail(failCallback);
 		};
 
 		self.getProcessingSourceLocationSubItems = function (path, isRoot, successCallback, failCallback) {
@@ -33,14 +43,17 @@
 			root.data.ajax({
 				type: "post",
 				contentType: "application/json",
-				url: root.utils.generateWebAPIURL("DataTransferLocation/GetStructure", integrationPointTypeIdentifier) + "?isRoot=" + isRoot,
+				url: root.utils.generateWebAPIURL("DataTransferLocation/GetStructure", integrationPointTypeIdentifier) +
+					"?isRoot=" +
+					isRoot,
 				data: JSON.stringify(path)
 			}).then(successCallback).fail(failCallback);
-		}
+		};
 
 		return {
-			isProcessingSourceLocationEnabled: self.isProcessingSourceLocationEnabled,
-			loadRootDataTransferLocation: self.loadRootDataTransferLocation,
+			createPromiseForIsProcessingSourceLocationEnabled: self.createPromiseForIsProcessingSourceLocationEnabled,
+			createPromiseForGetRootDataTransferLocation: self.createPromiseForGetRootDataTransferLocation,
+			createPromiseForGetProcessingSourceLocationList: self.createPromiseForGetProcessingSourceLocationList,
 			getProcessingSourceLocationSubItems: self.getProcessingSourceLocationSubItems,
 			getFileshareSubItems: self.getFileshareSubItems
 		}
@@ -95,6 +108,7 @@
 			var disableDirectorySelector = function () {
 				self.locationSelector.toggle(false);
 				self.Fileshare(null);
+				self.Fileshare.isModified(false);
 			};
 
 			var enableDirectorySelector = function () {
@@ -110,6 +124,7 @@
 
 			if (!isInitializationCall) {
 				self.Fileshare(null);
+				self.Fileshare.isModified(false);
 			}
 
 			self.loadDirectories();
@@ -123,45 +138,48 @@
 		};
 
 		self.onLoadded = function () {
-			var s = function (result) {
-				if (result) {
-					self.IsProcessingSourceLocationEnabled(true);
-				}
-			};
-			var f = function () {
-
-			};
-			self.ExportDestinationLocationService.isProcessingSourceLocationEnabled(s, f);
-
-
 			self.InitializeLocationSelector();
-			self.loadRootDataTransferLocation();
+
+			var determiningIfProcessingSourceLocationIsEnabledFailed = function (error) {
+				IP.message.error.raise("Determining if Processing Source Location is enabled failed");
+			};
+
+			var retrievingRootDataTransferLocationFailed = function (error) {
+				IP.message.error.raise("Can not retrieve data transfer location root path");
+			};
+
+			var p1 = self.ExportDestinationLocationService.createPromiseForIsProcessingSourceLocationEnabled(determiningIfProcessingSourceLocationIsEnabledFailed);
+			var p2 = self.ExportDestinationLocationService.createPromiseForGetRootDataTransferLocation(state.integrationPointTypeIdentifier, retrievingRootDataTransferLocationFailed);
+
+			root.data.deferred()
+				.all([p1, p2])
+				.then(function (result) {
+					var isProcessingSourceLocationEnabled = result[0];
+					var rootDataTransferLocation = result[1];
+
+					if (isProcessingSourceLocationEnabled) {
+						self.IsProcessingSourceLocationEnabled(true);
+					}
+
+					self.rootDataTransferLocationLoaded(rootDataTransferLocation);
+				});
 		};
 
-		self.InitializeLocationSelector = function() {
+		self.InitializeLocationSelector = function () {
 			self.locationSelector = new LocationJSTreeSelector();
 			self.locationSelector.init(self.Fileshare(),
 				[],
 				{
-					onNodeSelectedEventHandler: function(node) {
+					onNodeSelectedEventHandler: function (node) {
 						self.Fileshare(node.id);
 					}
 				});
 		};
 
-		self.loadRootDataTransferLocation = function() {
-			var success = function(result) {
-				self.rootDataTransferLocation = result;
-				self.loadDirectories();
-				self.loadProcessingSourceLocations();
-			};
-
-			var fail = function(error) {
-				IP.message.error.raise("Can not retrieve data transfer location root path");
-			};
-			self.ExportDestinationLocationService.loadRootDataTransferLocation(state.integrationPointTypeIdentifier,
-				success,
-				fail);
+		self.rootDataTransferLocationLoaded = function (rootDataTransferLocation) {
+			self.rootDataTransferLocation = rootDataTransferLocation;
+			self.loadDirectories();
+			self.loadProcessingSourceLocations();
 		};
 
 		self.loadProcessingSourceLocations = function () {
@@ -173,20 +191,17 @@
 				return;
 			}
 
-
-			var processingSourceLocationListPromise = root.data.ajax({
-				type: "get",
-				url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocations"),
-				data: {
-					sourceWorkspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
-				}
-			}).fail(function(error) {
+			var retrievingProcessingSourceLocationsListFailed = function (error) {
 				IP.message.error.raise("No processing source locations were returned from source provider");
-			});
+			}
+
+			var processingSourceLocationListPromise =
+				self.ExportDestinationLocationService.createPromiseForGetProcessingSourceLocationList(
+					retrievingProcessingSourceLocationsListFailed);
 
 			root.data.deferred()
 				.all([processingSourceLocationListPromise])
-				.then(function(result) {
+				.then(function (result) {
 					var locations = result[0];
 					var fileShareExportLocation = self.createProcessingSourceListItemForFileshare();
 					locations.unshift(fileShareExportLocation);
