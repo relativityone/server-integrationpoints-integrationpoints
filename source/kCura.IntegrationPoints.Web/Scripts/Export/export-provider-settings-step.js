@@ -66,7 +66,7 @@
 
 		self.rootDataTransferLocation = "";
 
-		self.ProcessingSourceLocationList = ko.observableArray([]);
+		self.DestinationLocationsList = ko.observableArray([]);
 
 		self.ProcessingSourceLocation = ko.observable().extend({
 			required: true
@@ -148,11 +148,11 @@
 				IP.message.error.raise("Can not retrieve data transfer location root path");
 			};
 
-			var p1 = self.ExportDestinationLocationService.createPromiseForIsProcessingSourceLocationEnabled(determiningIfProcessingSourceLocationIsEnabledFailed);
-			var p2 = self.ExportDestinationLocationService.createPromiseForGetRootDataTransferLocation(state.integrationPointTypeIdentifier, retrievingRootDataTransferLocationFailed);
+			var isProcessingSourceLocationEnabledPromise = self.ExportDestinationLocationService.createPromiseForIsProcessingSourceLocationEnabled(determiningIfProcessingSourceLocationIsEnabledFailed);
+			var rootDataTransferLocationPromise = self.ExportDestinationLocationService.createPromiseForGetRootDataTransferLocation(state.integrationPointTypeIdentifier, retrievingRootDataTransferLocationFailed);
 
 			root.data.deferred()
-				.all([p1, p2])
+				.all([isProcessingSourceLocationEnabledPromise, rootDataTransferLocationPromise])
 				.then(function (result) {
 					var isProcessingSourceLocationEnabled = result[0];
 					var rootDataTransferLocation = result[1];
@@ -161,7 +161,8 @@
 						self.IsProcessingSourceLocationEnabled(true);
 					}
 
-					self.rootDataTransferLocationLoaded(rootDataTransferLocation);
+					self.rootDataTransferLocation = rootDataTransferLocation;
+					self.rootDataTransferLocationLoaded();
 				});
 		};
 
@@ -176,13 +177,12 @@
 				});
 		};
 
-		self.rootDataTransferLocationLoaded = function (rootDataTransferLocation) {
-			self.rootDataTransferLocation = rootDataTransferLocation;
+		self.rootDataTransferLocationLoaded = function () {
 			self.loadDirectories();
-			self.loadProcessingSourceLocations();
+			self.loadDestinationLocations();
 		};
 
-		self.loadProcessingSourceLocations = function () {
+		self.loadDestinationLocations = function () {
 			if (!self.IsProcessingSourceLocationEnabled()) {
 				var locations = [];
 				var fileShareExportLocation = self.createProcessingSourceListItemForFileshare();
@@ -212,7 +212,7 @@
 		};
 
 		self.xyz = function (locations, selectedLocationId) { // TODO rename
-			self.ProcessingSourceLocationList(locations);
+			self.DestinationLocationsList(locations);
 
 			self.ProcessingSourceLocation(selectedLocationId);
 			self.ProcessingSourceLocation.isModified(false);
@@ -279,7 +279,7 @@
 		};
 
 		self.getSelectedProcessingSourceLocationViewModel = function (artifactId) {
-			var selectedPath = ko.utils.arrayFirst(self.ProcessingSourceLocationList(), function (item) {
+			var selectedPath = ko.utils.arrayFirst(self.DestinationLocationsList(), function (item) {
 				if (item.artifactId === artifactId) {
 					return item;
 				}
