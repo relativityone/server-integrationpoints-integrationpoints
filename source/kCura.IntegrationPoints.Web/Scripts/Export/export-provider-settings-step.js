@@ -104,7 +104,7 @@
 			return output;
 		};
 
-		self.updateProcessingSourceLocation = function (value, isInitializationCall) {
+		self.destinationLocationSelectionChanged = function (value, isInitializationCall) {
 			var disableDirectorySelector = function () {
 				self.locationSelector.toggle(false);
 				self.Fileshare(null);
@@ -184,10 +184,10 @@
 
 		self.loadDestinationLocations = function () {
 			if (!self.IsProcessingSourceLocationEnabled()) {
-				var locations = [];
+				var destinationLocations = [];
 				var fileShareExportLocation = self.createProcessingSourceListItemForFileshare();
-				locations.push(fileShareExportLocation);
-				self.xyz(locations, FILESHARE_EXPORT_LOCATION_ARTIFACT_ID);
+				destinationLocations.push(fileShareExportLocation);
+				self.xyz(destinationLocations, FILESHARE_EXPORT_LOCATION_ARTIFACT_ID);
 				return;
 			}
 
@@ -202,24 +202,24 @@
 			root.data.deferred()
 				.all([processingSourceLocationListPromise])
 				.then(function (result) {
-					var locations = result[0];
+					var destinationLocations = result[0];
 					var fileShareExportLocation = self.createProcessingSourceListItemForFileshare();
-					locations.unshift(fileShareExportLocation);
+					destinationLocations.unshift(fileShareExportLocation);
 
 					var initialProcessingSourceLocationArtifactId = self.getInitialProcessingSourceLocationArtifactId();
-					self.xyz(locations, initialProcessingSourceLocationArtifactId);
+					self.xyz(destinationLocations, initialProcessingSourceLocationArtifactId);
 				});
 		};
 
-		self.xyz = function (locations, selectedLocationId) { // TODO rename
-			self.DestinationLocationsList(locations);
+		self.xyz = function (destinationLocations, selectedLocationId) { // TODO rename
+			self.DestinationLocationsList(destinationLocations);
 
 			self.SelectedDestinationLocationId(selectedLocationId);
 			self.SelectedDestinationLocationId.isModified(false);
-			self.updateProcessingSourceLocation(self.SelectedDestinationLocationId(), true);
+			self.destinationLocationSelectionChanged(self.SelectedDestinationLocationId(), true);
 
 			self.SelectedDestinationLocationId.subscribe(function (value) {
-				self.updateProcessingSourceLocation(value);
+				self.destinationLocationSelectionChanged(value);
 			});
 		};
 
