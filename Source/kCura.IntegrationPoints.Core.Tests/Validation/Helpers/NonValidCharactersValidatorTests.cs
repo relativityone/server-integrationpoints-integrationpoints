@@ -9,8 +9,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.Helpers
 	[TestFixture]
 	public class NonValidCharactersValidatorTests
 	{
-		private string _errorMessage = "EM";
-		private readonly char[] _forbiddenCharacters = { '<', '>', ':', '"', '/', '\\', '|', '?', '*' };
+		private const char _FIRST_NON_PRINTABLE_ASCII_CHARACTER = (char)0;
+		private const char _LAST_NON_PRINTABLE_ASCII_CHARACTER = (char)31;
+		private const char _FIRST_PRINTABLE_ASCII_CHARACTER = (char)32;
+		private const char _LAST_PRINTABLE_ASCII_CHARACTER = (char)126;
+		private const string _ERROR_MESSAGE = "EM";
+		private readonly char[] _forbiddenPrintableCharacters = { '<', '>', ':', '"', '/', '\\', '|', '?', '*' };
 		private readonly NonValidCharactersValidator _validator = new NonValidCharactersValidator();
 
 		[TestCase("abc")]
@@ -18,19 +22,19 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.Helpers
 		[TestCase("Name with spaces")]
 		public void ItShouldReturnValidResultForValidData(string name)
 		{
-			ValidationResult validationResult = _validator.Validate(name, _errorMessage);
+			ValidationResult validationResult = _validator.Validate(name, _ERROR_MESSAGE);
 
 			Assert.IsTrue(validationResult.IsValid);
 			Assert.IsEmpty(validationResult.Messages);
 		}
 
 		[Test]
-		public void ItShouldReturnValidResultForASCIICharactersExceptForbidden()
+		public void ItShouldReturnValidResultForAsciiCharactersExceptForbidden()
 		{
 			foreach (char asciiCharacter in GetAllowedAsciiCharacters())
 			{
 				string name = $"IntegrationPoint{asciiCharacter}";
-				ValidationResult validationResult = _validator.Validate(name, _errorMessage);
+				ValidationResult validationResult = _validator.Validate(name, _ERROR_MESSAGE);
 
 				Assert.IsTrue(validationResult.IsValid);
 			}
@@ -39,10 +43,31 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.Helpers
 		[Test]
 		public void ItShouldReturnInvalidResultForForbiddenCharactersPresent()
 		{
-			foreach (char character in _forbiddenCharacters)
+			foreach (char character in _forbiddenPrintableCharacters)
 			{
 				string name = $"IntegrationPoint{character}";
-				ValidationResult validationResult = _validator.Validate(name, _errorMessage);
+				ValidationResult validationResult = _validator.Validate(name, _ERROR_MESSAGE);
+
+				Assert.IsFalse(validationResult.IsValid);
+			}
+		}
+
+		[Test]
+		public void ItShouldReturnInvalidResultForTabPresentInName()
+		{
+			const string name = "a\tb";
+			ValidationResult validationResult = _validator.Validate(name, _ERROR_MESSAGE);
+
+			Assert.IsFalse(validationResult.IsValid);
+		}
+
+		[Test]
+		public void ItShouldReturnInvalidResultForAsciiCodesFrom0To31PresentInName()
+		{
+			for (char c = _FIRST_NON_PRINTABLE_ASCII_CHARACTER; c <= _LAST_NON_PRINTABLE_ASCII_CHARACTER; c++)
+			{
+				string invalidName = $"Integration Point {c}";
+				ValidationResult validationResult = _validator.Validate(invalidName, _ERROR_MESSAGE);
 
 				Assert.IsFalse(validationResult.IsValid);
 			}
@@ -52,21 +77,19 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.Helpers
 		[TestCase("Invalid IP name !!!")]
 		public void ItShouldSetProperErrorMessage(string errorMessage)
 		{
-			string name = "InvalidName\\";
+			const string name = "InvalidName\\";
 			ValidationResult validationResult = _validator.Validate(name, errorMessage);
 
 			Assert.AreEqual(1, validationResult.Messages.Count());
-			var actualMessage = validationResult.Messages.First();
+			string actualMessage = validationResult.Messages.First();
 			Assert.AreEqual(errorMessage, actualMessage);
 		}
 
 		private IEnumerable<char> GetAllowedAsciiCharacters()
 		{
-			var firstPrintableASCIICharacter = (char)32;
-			var lastPrintableASCIICharacter = (char)126;
-			for (char asciiCharacter = firstPrintableASCIICharacter; asciiCharacter <= lastPrintableASCIICharacter; asciiCharacter++)
+			for (char asciiCharacter = _FIRST_PRINTABLE_ASCII_CHARACTER; asciiCharacter <= _LAST_PRINTABLE_ASCII_CHARACTER; asciiCharacter++)
 			{
-				if (!_forbiddenCharacters.Contains(asciiCharacter))
+				if (!_forbiddenPrintableCharacters.Contains(asciiCharacter))
 				{
 					yield return asciiCharacter;
 				}

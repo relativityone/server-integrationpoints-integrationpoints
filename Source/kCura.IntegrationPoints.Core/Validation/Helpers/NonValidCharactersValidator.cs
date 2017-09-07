@@ -1,30 +1,24 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Linq;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.Utility.Extensions;
 
 namespace kCura.IntegrationPoints.Core.Validation.Helpers
 {
 	public class NonValidCharactersValidator : INonValidCharactersValidator
 	{
+		private static readonly char[] _allForbiddenCharacters = System.IO.Path.GetInvalidFileNameChars();
+
 		public ValidationResult Validate(string name, string errorMessage)
 		{
 			var result = new ValidationResult();
 
-			if (!ValidateSpecialCharactersOccurences(name))
+			bool areForbiddenCharactersPresent = name.Any(c => c.In(_allForbiddenCharacters));
+			if (areForbiddenCharactersPresent)
 			{
 				result.Add(errorMessage);
 			}
 
 			return result;
-		}
-
-		private static bool ValidateSpecialCharactersOccurences(string text)
-		{
-			var pattern = "^[^<>:\\\"\\\\\\/|\\?\\*]*$";
-			var regex = new Regex(pattern, RegexOptions.IgnoreCase);
-			Match match = regex.Match(text);
-
-			//If validated string doesn't contain any illegal characters
-			return match.Success;
 		}
 	}
 }
