@@ -108,6 +108,7 @@
 			var disableDirectorySelector = function () {
 				self.locationSelector.toggle(false);
 				self.Fileshare(null);
+				self.Fileshare.isModified(false);
 			};
 
 			var enableDirectorySelector = function () {
@@ -123,6 +124,7 @@
 
 			if (!isInitializationCall) {
 				self.Fileshare(null);
+				self.Fileshare.isModified(false);
 			}
 
 			self.loadDirectories();
