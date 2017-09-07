@@ -95,22 +95,19 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[LogApiExceptionFilter(Message = "Unable to determine if processing source location is enabled.")]
 		public HttpResponseMessage IsProcessingSourceLocationEnabled(int workspaceId)
 		{
-		    if (_toggleProvider.IsEnabledAsync<ProcessingSourceLocationToggle>().ConfigureAwait(false).GetAwaiter().GetResult())
-		    {
-		        return new HttpResponseMessage(HttpStatusCode.OK);
-		    }
-		    else
-		    {
-		        return new HttpResponseMessage(HttpStatusCode.Unauthorized);
+            if (HasPermissions(workspaceId))
+            {
+                if (_toggleProvider.IsEnabled<ProcessingSourceLocationToggle>() && !_serviceContextHelper.IsCloudInstance())
+                {
+                    return Request.CreateResponse(HttpStatusCode.OK, true);
+                }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.OK, false);
+                }
             }
-
-            // TODO: Uncomment this code when toggle is removed
-		    //if (HasPermissions(workspaceId) && !_serviceContextHelper.IsCloudInstance())
-			//{
-			//	return Request.CreateResponse(HttpStatusCode.OK, true);
-			//}
-			//return new HttpResponseMessage(HttpStatusCode.Unauthorized);
-		}
+            return new HttpResponseMessage(HttpStatusCode.Unauthorized);
+        }
 
 		private bool HasPermissions(int workspaceId)
 		{
