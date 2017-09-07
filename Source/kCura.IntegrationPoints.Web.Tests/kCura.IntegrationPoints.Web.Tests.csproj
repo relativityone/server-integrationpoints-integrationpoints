@@ -182,6 +182,10 @@
       <HintPath>..\packages\Relativity.Telemetry.Services.Interface.9.5.264.6\lib\net462\Relativity.Telemetry.Services.Interface.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.Toggles, Version=1.0.0.84, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Toggles.1.0.0.84\lib\net462\Relativity.Toggles.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />

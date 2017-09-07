@@ -6,13 +6,16 @@ using System.Web.Http;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Controllers.API;
+using kCura.IntegrationPoints.Web.Toggles;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
@@ -26,7 +29,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		private IResourcePoolManager _resourcePoolManagerMock;
 		private IRepositoryFactory _repositoryFactoryMock;
 		private IPermissionRepository _permissionRepositoryMock;
+	    private IServiceContextHelper _serviceContextHelperMock;
 		private IDirectoryTreeCreator<JsTreeItemDTO> _directoryTreeCreatorMock;
+	    private IToggleProvider _toggleProviderMock;
 
 		private const int _WORKSPACE_ID = 1;
 		private const int _PROC_SOURCE_LOC_ID = 2;
@@ -46,10 +51,12 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			_directoryTreeCreatorMock = Substitute.For<IDirectoryTreeCreator<JsTreeItemDTO>>();
 			_repositoryFactoryMock = Substitute.For<IRepositoryFactory>();
 			_permissionRepositoryMock = Substitute.For<IPermissionRepository>();
-
+		    _serviceContextHelperMock = Substitute.For<IServiceContextHelper>();
+		    _toggleProviderMock = Substitute.For<IToggleProvider>();
 			_repositoryFactoryMock.GetPermissionRepository(_WORKSPACE_ID).Returns(_permissionRepositoryMock);
 
-			_subjectUnderTest = new ResourcePoolController(_resourcePoolManagerMock, _repositoryFactoryMock, _directoryTreeCreatorMock);
+			_subjectUnderTest = new ResourcePoolController(_resourcePoolManagerMock, _repositoryFactoryMock, _directoryTreeCreatorMock, _serviceContextHelperMock, _toggleProviderMock);
+
 
 			_subjectUnderTest.Request = new HttpRequestMessage();
 			_subjectUnderTest.Request.SetConfiguration(new HttpConfiguration());
@@ -129,6 +136,39 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			Assert.That(httpResponseMessageGetSubItems.StatusCode, Is.EqualTo(hasPermission ? HttpStatusCode.OK : HttpStatusCode.Unauthorized));
 			Assert.That(httpResponseMessageProcSourceLoc.StatusCode, Is.EqualTo(hasPermission ? HttpStatusCode.OK : HttpStatusCode.Unauthorized));
 		}
+
+	    [Test]
+	    [TestCase(true, true, true)]
+	    [TestCase(false, true, true)]
+	    [TestCase(true, false, true)]
+	    [TestCase(true, true, false)]
+	    [TestCase(false, false, true)]
+	    [TestCase(true, false, false)]
+	    [TestCase(false, true, false)]
+	    [TestCase(false, false, false)]
+        public void ItShouldCheckIfIsProcessingSourceLocationEnabled(bool hasPermission, bool toggleEnabled, bool isCloudInstance)
+	    {
+	        //Arrange
+	        _permissionRepositoryMock.UserCanExport().Returns(true);
+	        _permissionRepositoryMock.UserCanImport().Returns(true);
+	        _permissionRepositoryMock.UserHasPermissionToAccessWorkspace().Returns(true);
+	        _permissionRepositoryMock.UserHasArtifactTypePermission(Arg.Any<Guid>(), ArtifactPermission.Create).Returns(hasPermission);
+	        _permissionRepositoryMock.UserHasArtifactTypePermission(Arg.Any<Guid>(), ArtifactPermission.Edit).Returns(hasPermission);
+
+            _toggleProviderMock.IsEnabled<ProcessingSourceLocationToggle>().Returns(toggleEnabled);
+	        _serviceContextHelperMock.IsCloudInstance().Returns(isCloudInstance);
+
+	        //Act
+	        HttpResponseMessage response = _subjectUnderTest.IsProcessingSourceLocationEnabled(_WORKSPACE_ID);
+
+            //Assert
+	        Assert.That(response.StatusCode, Is.EqualTo(hasPermission ? HttpStatusCode.OK : HttpStatusCode.Unauthorized));
+
+	        bool retValue;
+	        response.TryGetContentValue(out retValue);
+
+            Assert.That( retValue, Is.EqualTo(hasPermission && toggleEnabled && !isCloudInstance) );
+        }
 
 		private void SetUserPermissions()
 		{
