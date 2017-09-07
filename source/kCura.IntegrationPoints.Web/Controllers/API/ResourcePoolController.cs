@@ -7,6 +7,7 @@ using System.Security;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -23,17 +24,19 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly IResourcePoolManager _resourcePoolManager;
 		private readonly IRepositoryFactory _respositoryFactory;
 		private readonly IDirectoryTreeCreator<JsTreeItemDTO> _directoryTreeCreator;
+	    private readonly IServiceContextHelper _serviceContextHelper;
 
 		#endregion //Fields
 
 		#region Constructors
 
 		public ResourcePoolController(IResourcePoolManager resourcePoolManager, IRepositoryFactory respositoryFactory, 
-			IDirectoryTreeCreator<JsTreeItemDTO> directoryTreeCreator)
+			IDirectoryTreeCreator<JsTreeItemDTO> directoryTreeCreator, IServiceContextHelper serviceContextHelper)
 		{
 			_resourcePoolManager = resourcePoolManager;
 			_respositoryFactory = respositoryFactory;
 			_directoryTreeCreator = directoryTreeCreator;
+		    _serviceContextHelper = serviceContextHelper;
 		}
 
 		#endregion //Constructors
@@ -87,7 +90,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[LogApiExceptionFilter(Message = "Unable to determine if processing source location is enabled.")]
 		public HttpResponseMessage IsProcessingSourceLocationEnabled(int workspaceId)
 		{
-			if (HasPermissions(workspaceId))
+			if (HasPermissions(workspaceId) && _serviceContextHelper.IsCloudInstance())
 			{
 				return Request.CreateResponse(HttpStatusCode.OK, true);
 			}

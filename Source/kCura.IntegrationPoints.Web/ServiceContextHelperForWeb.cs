@@ -3,6 +3,8 @@ using System.Linq;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.Relativity.Client;
 using Relativity.API;
 using IDBContext = Relativity.API.IDBContext;
@@ -12,15 +14,17 @@ namespace kCura.IntegrationPoints.Web
 	public class ServiceContextHelperForWeb : IServiceContextHelper
 	{
 		private readonly WebClientFactory _factory;
+	    private readonly IRepositoryFactory _repositoryFactory;
 		private const string USER_HEADER_VALUE = "X-IP-USERID";
 		private const string CASEUSER_HEADER_VALUE = "X-IP-CASEUSERID";
 		private ISessionService _sessionService;
-		public ServiceContextHelperForWeb(ICPHelper helper, IEnumerable<IWorkspaceService> services, WebClientFactory factory, ISessionService sessionService)
+		public ServiceContextHelperForWeb(ICPHelper helper, IEnumerable<IWorkspaceService> services, WebClientFactory factory, ISessionService sessionService, IRepositoryFactory repositoryFactory)
 		{
 			this.helper = helper;
 			this.customPageServices = services;
 			_factory = factory;
 			_sessionService = sessionService;
+		    _repositoryFactory = repositoryFactory;
 		}
 
 		private ICPHelper helper { get; set; }
@@ -77,5 +81,17 @@ namespace kCura.IntegrationPoints.Web
 			}
 			return returnValue;
 		}
+
+	    public bool IsCloudInstance()
+	    {
+	        IInstanceSettingRepository instanceSettings = _repositoryFactory.GetInstanceSettingRepository();
+	        string isCloudInstance = instanceSettings.GetConfigurationValue(Domain.Constants.RELATIVITY_CORE_SECTION, Domain.Constants.CLOUD_INSTANCE_NAME);
+	        if (string.IsNullOrEmpty(isCloudInstance))
+	        {
+	            isCloudInstance = "false";
+	        }
+
+	        return bool.Parse(isCloudInstance);
+	    }
 	}
 }

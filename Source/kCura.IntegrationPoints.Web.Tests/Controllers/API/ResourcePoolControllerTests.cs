@@ -6,6 +6,7 @@ using System.Web.Http;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -26,6 +27,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		private IResourcePoolManager _resourcePoolManagerMock;
 		private IRepositoryFactory _repositoryFactoryMock;
 		private IPermissionRepository _permissionRepositoryMock;
+	    private IServiceContextHelper _serviceContextHelperMock;
 		private IDirectoryTreeCreator<JsTreeItemDTO> _directoryTreeCreatorMock;
 
 		private const int _WORKSPACE_ID = 1;
@@ -46,10 +48,11 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			_directoryTreeCreatorMock = Substitute.For<IDirectoryTreeCreator<JsTreeItemDTO>>();
 			_repositoryFactoryMock = Substitute.For<IRepositoryFactory>();
 			_permissionRepositoryMock = Substitute.For<IPermissionRepository>();
-
+		    _serviceContextHelperMock = Substitute.For<IServiceContextHelper>();
 			_repositoryFactoryMock.GetPermissionRepository(_WORKSPACE_ID).Returns(_permissionRepositoryMock);
 
-			_subjectUnderTest = new ResourcePoolController(_resourcePoolManagerMock, _repositoryFactoryMock, _directoryTreeCreatorMock);
+			_subjectUnderTest = new ResourcePoolController(_resourcePoolManagerMock, _repositoryFactoryMock, _directoryTreeCreatorMock, _serviceContextHelperMock);
+
 
 			_subjectUnderTest.Request = new HttpRequestMessage();
 			_subjectUnderTest.Request.SetConfiguration(new HttpConfiguration());
