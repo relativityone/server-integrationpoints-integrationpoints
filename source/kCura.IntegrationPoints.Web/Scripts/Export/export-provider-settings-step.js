@@ -183,7 +183,7 @@
 		};
 
 		self.loadDestinationLocations = function () {
-			var destinationLocations = [self.createProcessingSourceListItemForFileshare()];
+			var destinationLocations = [self.createDestinationLocationListItemForFileshare()];
 
 			if (self.IsProcessingSourceLocationEnabled()) {
 				self.loadDestinationLocationsWithProcessingSourceLocations(destinationLocations);
@@ -212,34 +212,34 @@
 		};
 
 		self.loadDirectories = function () {
-			var processingSourceLocationArtifactId = self.SelectedDestinationLocationId();
-			if (!processingSourceLocationArtifactId) {
+			var LOCATION_ERROR_CONTAINER_SELECTOR = $("#processingLocationErrorContainer");
+
+			var selectedDestinationLocationViewModel = self.getSelectedDestinationLocationViewModel();
+			if (!selectedDestinationLocationViewModel) {
 				return;
 			}
-			var processingSourceLocation = self.getSelectedProcessingSourceLocationViewModel(processingSourceLocationArtifactId);
-			var $locationErrorContainer = $("#processingLocationErrorContainer");
 
 			var createErrorCallback = function (callback) {
 				return function (error) {
 					callback(error);
-					IP.message.error.raise(error, $locationErrorContainer);
+					IP.message.error.raise(error, LOCATION_ERROR_CONTAINER_SELECTOR);
 				};
 			};
 
 			var reloadTreeProcessingSourceLocation = function (params, onSuccess, onFail) {
-				IP.message.error.clear($locationErrorContainer);
+				IP.message.error.clear(LOCATION_ERROR_CONTAINER_SELECTOR);
 
 				var isRoot = params.id === '#';
 				var path = params.id;
 				if (isRoot) {
-					path = processingSourceLocation.location;
+					path = selectedDestinationLocationViewModel.location;
 				}
 
 				self.ExportDestinationLocationService.getProcessingSourceLocationSubItems(path, isRoot, onSuccess, createErrorCallback(onFail));
 			};
 
 			var reloadTreeFileshare = function (params, onSuccess, onFail) {
-				IP.message.error.clear($locationErrorContainer);
+				IP.message.error.clear(LOCATION_ERROR_CONTAINER_SELECTOR);
 
 				var isRoot = params.id === '#';
 				var path = params.id;
@@ -250,7 +250,7 @@
 				self.ExportDestinationLocationService.getFileshareSubItems(path, isRoot, state.integrationPointTypeIdentifier, onSuccess, createErrorCallback(onFail));
 			};
 
-			if (processingSourceLocation.isFileshare) {
+			if (selectedDestinationLocationViewModel.isFileshare) {
 				self.locationSelector.reloadWithRoot(reloadTreeFileshare);
 			} else {
 				self.locationSelector.reloadWithRoot(reloadTreeProcessingSourceLocation);
@@ -270,24 +270,24 @@
 		};
 
 		self.isProcessingSourceLocationSelected = function () {
-			var processingSourceLocationId = self.SelectedDestinationLocationId();
-			if (processingSourceLocationId) {
-				var psl = self.getSelectedProcessingSourceLocationViewModel(processingSourceLocationId);
-				return !!psl && !psl.isFileshare;
+			var destinationLocation = self.getSelectedDestinationLocationViewModel();
+			return !!destinationLocation && !destinationLocation.isFileshare;
+		};
+
+		self.getSelectedDestinationLocationViewModel = function () {
+			var artifactId = self.SelectedDestinationLocationId();
+			if (artifactId) {
+				var selecteDestinationLocation = ko.utils.arrayFirst(self.DestinationLocationsList(),
+					function (item) {
+						if (item.artifactId === artifactId) {
+							return item;
+						}
+					});
+				return selecteDestinationLocation;
 			}
-			return false;
 		};
 
-		self.getSelectedProcessingSourceLocationViewModel = function (artifactId) {
-			var selectedPath = ko.utils.arrayFirst(self.DestinationLocationsList(), function (item) {
-				if (item.artifactId === artifactId) {
-					return item;
-				}
-			});
-			return selectedPath;
-		};
-
-		self.createProcessingSourceListItemForFileshare = function () {
+		self.createDestinationLocationListItemForFileshare = function () {
 			return {
 				artifactId: FILESHARE_EXPORT_LOCATION_ARTIFACT_ID,
 				location: ".\\EDDS" + state.SourceWorkspaceArtifactId + "\\" + self.rootDataTransferLocation,
