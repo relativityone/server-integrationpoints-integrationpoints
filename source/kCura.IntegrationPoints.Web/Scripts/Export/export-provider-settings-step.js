@@ -68,7 +68,7 @@
 
 		self.DestinationLocationsList = ko.observableArray([]);
 
-		self.ProcessingSourceLocation = ko.observable().extend({
+		self.SelectedDestinationLocationId = ko.observable().extend({
 			required: true
 		});
 
@@ -214,17 +214,17 @@
 		self.xyz = function (locations, selectedLocationId) { // TODO rename
 			self.DestinationLocationsList(locations);
 
-			self.ProcessingSourceLocation(selectedLocationId);
-			self.ProcessingSourceLocation.isModified(false);
-			self.updateProcessingSourceLocation(self.ProcessingSourceLocation(), true);
+			self.SelectedDestinationLocationId(selectedLocationId);
+			self.SelectedDestinationLocationId.isModified(false);
+			self.updateProcessingSourceLocation(self.SelectedDestinationLocationId(), true);
 
-			self.ProcessingSourceLocation.subscribe(function (value) {
+			self.SelectedDestinationLocationId.subscribe(function (value) {
 				self.updateProcessingSourceLocation(value);
 			});
 		};
 
 		self.loadDirectories = function () {
-			var processingSourceLocationArtifactId = self.ProcessingSourceLocation();
+			var processingSourceLocationArtifactId = self.SelectedDestinationLocationId();
 			if (!processingSourceLocationArtifactId) {
 				return;
 			}
@@ -270,7 +270,7 @@
 		};
 
 		self.isProcessingSourceLocationSelected = function () {
-			var processingSourceLocationId = self.ProcessingSourceLocation();
+			var processingSourceLocationId = self.SelectedDestinationLocationId();
 			if (processingSourceLocationId) {
 				var psl = self.getSelectedProcessingSourceLocationViewModel(processingSourceLocationId);
 				return !!psl && !psl.isFileshare;
