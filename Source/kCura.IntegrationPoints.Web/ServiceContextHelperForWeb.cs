@@ -85,13 +85,8 @@ namespace kCura.IntegrationPoints.Web
 	    public bool IsCloudInstance()
 	    {
 	        IInstanceSettingRepository instanceSettings = _repositoryFactory.GetInstanceSettingRepository();
-	        string isCloudInstance = instanceSettings.GetConfigurationValue(Domain.Constants.RELATIVITY_CORE_SECTION, Domain.Constants.CLOUD_INSTANCE_NAME);
-	        if (string.IsNullOrEmpty(isCloudInstance))
-	        {
-	            isCloudInstance = "false";
-	        }
-
-	        return bool.Parse(isCloudInstance);
+	        string cloudInstanceName = instanceSettings.GetConfigurationValue(Domain.Constants.RELATIVITY_CORE_SECTION, Domain.Constants.CLOUD_INSTANCE_NAME);
+	        return !string.IsNullOrWhiteSpace(cloudInstanceName);
 	    }
 	}
 }
