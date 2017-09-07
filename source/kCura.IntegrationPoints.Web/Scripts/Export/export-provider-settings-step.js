@@ -76,25 +76,25 @@
 
 		self.IsExportFolderCreationEnabled = ko.observable(state.IsAutomaticFolderCreationEnabled === undefined ? true : state.IsAutomaticFolderCreationEnabled);
 		self.IsExportFolderCreationEnabled.subscribe(function () {
-			self.fileShareDisplayText();
+			self.selectedFolderDisplayText();
 		});
 
-		self.Fileshare = ko.observable(state.Fileshare).extend({
+		self.DestinationFolder = ko.observable(state.Fileshare).extend({
 			required: true
 		});
 
-		self.fileShareDisplayText = function () {
-			var fileshare = self.Fileshare();
-			if (!fileshare) {
+		self.selectedFolderDisplayText = function () {
+			var destinationFolder = self.DestinationFolder();
+			if (!destinationFolder) {
 				return "Select...";
 			}
 
 			var output;
 			if (self.isProcessingSourceLocationSelected()) {
-				output = fileshare;
+				output = destinationFolder;
 			}
 			else {
-				output = "EDDS" + state.SourceWorkspaceArtifactId + "\\" + fileshare;
+				output = "EDDS" + state.SourceWorkspaceArtifactId + "\\" + destinationFolder;
 			}
 
 			if (self.IsExportFolderCreationEnabled()) {
@@ -107,8 +107,8 @@
 		self.destinationLocationSelectionChanged = function (value, isInitializationCall) {
 			var disableDirectorySelector = function () {
 				self.locationSelector.toggle(false);
-				self.Fileshare(null);
-				self.Fileshare.isModified(false);
+				self.DestinationFolder(null);
+				self.DestinationFolder.isModified(false);
 			};
 
 			var enableDirectorySelector = function () {
@@ -123,8 +123,8 @@
 			}
 
 			if (!isInitializationCall) {
-				self.Fileshare(null);
-				self.Fileshare.isModified(false);
+				self.DestinationFolder(null);
+				self.DestinationFolder.isModified(false);
 			}
 
 			self.loadDirectories();
@@ -168,11 +168,11 @@
 
 		self.InitializeLocationSelector = function () {
 			self.locationSelector = new LocationJSTreeSelector();
-			self.locationSelector.init(self.Fileshare(),
+			self.locationSelector.init(self.DestinationFolder(),
 				[],
 				{
 					onNodeSelectedEventHandler: function (node) {
-						self.Fileshare(node.id);
+						self.DestinationFolder(node.id);
 					}
 				});
 		};
@@ -206,8 +206,8 @@
 				.then(function (result) {
 					var processingSourceLocations = result[0];
 					var destinationLocations = destinationLocationsWithoutProcessingSourceLocations.concat(processingSourceLocations);
-					var initialProcessingSourceLocationArtifactId = self.getInitialDestinationLocationId();
-					self.initializeDestinationLocations(destinationLocations, initialProcessingSourceLocationArtifactId);
+					var initialDestinationLocationId = self.getInitialDestinationLocationId();
+					self.initializeDestinationLocations(destinationLocations, initialDestinationLocationId);
 				});
 		};
 
@@ -296,8 +296,8 @@
 		};
 
 		self.getInitialDestinationLocationId = function () {
-			if (state.ProcessingSourceLocation) {
-				return state.ProcessingSourceLocation;
+			if (state.DestinationLocationId) {
+				return state.DestinationLocationId;
 			} else if (state.Fileshare) { // case when user created IP before PSL support was added
 				return FILESHARE_EXPORT_LOCATION_ARTIFACT_ID;
 			}
@@ -939,10 +939,11 @@
 		this.errors = ko.validation.group(this, { deep: true });
 
 		this.getSelectedOption = function () {
-			var processingSourceLocation = self.exportDestinationLocationViewModel.ProcessingSourceLocation();
+			var destinationLocation = self.exportDestinationLocationViewModel.SelectedDestinationLocationId();
 			return {
 				"AppendOriginalFileName": self.AppendOriginalFileName(),
 				"ColumnSeparator": self.ColumnSeparator(),
+				"DestinationLocationId": destinationLocation !== undefined ? destinationLocation : null,
 				"ExportNatives": self.ExportNatives(),
 				"ExportNativesToFileNamedFrom": self.SelectedExportNativesWithFileNameFrom(),
 				"DataFileEncodingType": self.DataFileEncodingType(),
@@ -950,7 +951,7 @@
 				"ExportImages": self.ExportImages(),
 				"ExportMultipleChoiceFieldsAsNested": self.ExportMultipleChoiceFieldsAsNested(),
 				"FilePath": self.FilePath(),
-				"Fileshare": self.exportDestinationLocationViewModel.Fileshare(),
+				"Fileshare": self.exportDestinationLocationViewModel.DestinationFolder(),
 				"ImagePrecedence": self.ImagePrecedence(),
 				"IncludeOriginalImages": self.IncludeOriginalImages(),
 				"MultiValueSeparator": self.MultiValueSeparator(),
@@ -958,7 +959,6 @@
 				"NewlineSeparator": self.NewlineSeparator(),
 				"OverwriteFiles": self.OverwriteFiles(),
 				"ProductionPrecedence": self.ProductionPrecedence(),
-				"ProcessingSourceLocation": processingSourceLocation !== undefined ? processingSourceLocation : null,
 				"QuoteSeparator": self.QuoteSeparator(),
 				"SelectedDataFileFormat": self.SelectedDataFileFormat(),
 				"SelectedImageDataFileFormat": self.SelectedImageDataFileFormat(),
