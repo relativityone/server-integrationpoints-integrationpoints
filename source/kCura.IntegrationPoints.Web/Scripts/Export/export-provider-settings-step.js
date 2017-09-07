@@ -183,14 +183,16 @@
 		};
 
 		self.loadDestinationLocations = function () {
-			if (!self.IsProcessingSourceLocationEnabled()) {
-				var destinationLocations = [];
-				var fileShareExportLocation = self.createProcessingSourceListItemForFileshare();
-				destinationLocations.push(fileShareExportLocation);
-				self.xyz(destinationLocations, FILESHARE_EXPORT_LOCATION_ARTIFACT_ID);
-				return;
-			}
+			var destinationLocations = [self.createProcessingSourceListItemForFileshare()];
 
+			if (self.IsProcessingSourceLocationEnabled()) {
+				self.loadDestinationLocationsWithProcessingSourceLocations(destinationLocations);
+			} else {
+				self.initializeDestinationLocations(destinationLocations, FILESHARE_EXPORT_LOCATION_ARTIFACT_ID);
+			}
+		};
+
+		self.loadDestinationLocationsWithProcessingSourceLocations = function (destinationLocationsWithoutProcessingSourceLocations) {
 			var retrievingProcessingSourceLocationsListFailed = function (error) {
 				IP.message.error.raise("No processing source locations were returned from source provider");
 			}
@@ -202,25 +204,11 @@
 			root.data.deferred()
 				.all([processingSourceLocationListPromise])
 				.then(function (result) {
-					var destinationLocations = result[0];
-					var fileShareExportLocation = self.createProcessingSourceListItemForFileshare();
-					destinationLocations.unshift(fileShareExportLocation);
-
-					var initialProcessingSourceLocationArtifactId = self.getInitialProcessingSourceLocationArtifactId();
-					self.xyz(destinationLocations, initialProcessingSourceLocationArtifactId);
+					var processingSourceLocations = result[0];
+					var destinationLocations = destinationLocationsWithoutProcessingSourceLocations.concat(processingSourceLocations);
+					var initialProcessingSourceLocationArtifactId = self.getInitialDestinationLocationId();
+					self.initializeDestinationLocations(destinationLocations, initialProcessingSourceLocationArtifactId);
 				});
-		};
-
-		self.xyz = function (destinationLocations, selectedLocationId) { // TODO rename
-			self.DestinationLocationsList(destinationLocations);
-
-			self.SelectedDestinationLocationId(selectedLocationId);
-			self.SelectedDestinationLocationId.isModified(false);
-			self.destinationLocationSelectionChanged(self.SelectedDestinationLocationId(), true);
-
-			self.SelectedDestinationLocationId.subscribe(function (value) {
-				self.destinationLocationSelectionChanged(value);
-			});
 		};
 
 		self.loadDirectories = function () {
@@ -269,6 +257,18 @@
 			}
 		};
 
+		self.initializeDestinationLocations = function (destinationLocations, selectedLocationId) {
+			self.DestinationLocationsList(destinationLocations);
+
+			self.SelectedDestinationLocationId(selectedLocationId);
+			self.SelectedDestinationLocationId.isModified(false);
+			self.destinationLocationSelectionChanged(self.SelectedDestinationLocationId(), true);
+
+			self.SelectedDestinationLocationId.subscribe(function (value) {
+				self.destinationLocationSelectionChanged(value);
+			});
+		};
+
 		self.isProcessingSourceLocationSelected = function () {
 			var processingSourceLocationId = self.SelectedDestinationLocationId();
 			if (processingSourceLocationId) {
@@ -295,7 +295,7 @@
 			};
 		};
 
-		self.getInitialProcessingSourceLocationArtifactId = function () {
+		self.getInitialDestinationLocationId = function () {
 			if (state.ProcessingSourceLocation) {
 				return state.ProcessingSourceLocation;
 			} else if (state.Fileshare) { // case when user created IP before PSL support was added
