@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Attributes;
+using kCura.IntegrationPoints.Web.Toggles;
 using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
@@ -94,7 +95,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[LogApiExceptionFilter(Message = "Unable to determine if processing source location is enabled.")]
 		public HttpResponseMessage IsProcessingSourceLocationEnabled(int workspaceId)
 		{
-		    if (_toggleProvider.IsEnabledByName(_TOGGLE_PROCESSING_SOURCE_LOCATION_ENABLED))
+		    if (_toggleProvider.IsEnabledAsync<ProcessingSourceLocationToggle>().ConfigureAwait(false).GetAwaiter().GetResult())
 		    {
 		        return new HttpResponseMessage(HttpStatusCode.OK);
 		    }
