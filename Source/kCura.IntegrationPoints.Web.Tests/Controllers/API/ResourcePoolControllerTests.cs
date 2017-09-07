@@ -14,6 +14,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
@@ -29,6 +30,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		private IPermissionRepository _permissionRepositoryMock;
 	    private IServiceContextHelper _serviceContextHelperMock;
 		private IDirectoryTreeCreator<JsTreeItemDTO> _directoryTreeCreatorMock;
+	    private IToggleProvider _toggleProviderMock;
 
 		private const int _WORKSPACE_ID = 1;
 		private const int _PROC_SOURCE_LOC_ID = 2;
@@ -49,9 +51,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			_repositoryFactoryMock = Substitute.For<IRepositoryFactory>();
 			_permissionRepositoryMock = Substitute.For<IPermissionRepository>();
 		    _serviceContextHelperMock = Substitute.For<IServiceContextHelper>();
+		    _toggleProviderMock = Substitute.For<IToggleProvider>();
 			_repositoryFactoryMock.GetPermissionRepository(_WORKSPACE_ID).Returns(_permissionRepositoryMock);
 
-			_subjectUnderTest = new ResourcePoolController(_resourcePoolManagerMock, _repositoryFactoryMock, _directoryTreeCreatorMock, _serviceContextHelperMock);
+			_subjectUnderTest = new ResourcePoolController(_resourcePoolManagerMock, _repositoryFactoryMock, _directoryTreeCreatorMock, _serviceContextHelperMock, _toggleProviderMock);
 
 
 			_subjectUnderTest.Request = new HttpRequestMessage();

@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Attributes;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -20,23 +21,26 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 	public class ResourcePoolController : ApiController
 	{
 		#region Fields
+	    private const string _TOGGLE_PROCESSING_SOURCE_LOCATION_ENABLED = "kCura.IntegrationPoints.Web.Toggles.ProcessingSourceLocationEnabled";
 
 		private readonly IResourcePoolManager _resourcePoolManager;
 		private readonly IRepositoryFactory _respositoryFactory;
 		private readonly IDirectoryTreeCreator<JsTreeItemDTO> _directoryTreeCreator;
 	    private readonly IServiceContextHelper _serviceContextHelper;
+	    private readonly IToggleProvider _toggleProvider;
 
-		#endregion //Fields
+        #endregion //Fields
 
-		#region Constructors
+        #region Constructors
 
-		public ResourcePoolController(IResourcePoolManager resourcePoolManager, IRepositoryFactory respositoryFactory, 
-			IDirectoryTreeCreator<JsTreeItemDTO> directoryTreeCreator, IServiceContextHelper serviceContextHelper)
+        public ResourcePoolController(IResourcePoolManager resourcePoolManager, IRepositoryFactory respositoryFactory, 
+			IDirectoryTreeCreator<JsTreeItemDTO> directoryTreeCreator, IServiceContextHelper serviceContextHelper, IToggleProvider toggleProvider)
 		{
 			_resourcePoolManager = resourcePoolManager;
 			_respositoryFactory = respositoryFactory;
 			_directoryTreeCreator = directoryTreeCreator;
 		    _serviceContextHelper = serviceContextHelper;
+		    _toggleProvider = toggleProvider;
 		}
 
 		#endregion //Constructors
@@ -90,11 +94,21 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[LogApiExceptionFilter(Message = "Unable to determine if processing source location is enabled.")]
 		public HttpResponseMessage IsProcessingSourceLocationEnabled(int workspaceId)
 		{
-			if (HasPermissions(workspaceId) && _serviceContextHelper.IsCloudInstance())
-			{
-				return Request.CreateResponse(HttpStatusCode.OK, true);
-			}
-			return new HttpResponseMessage(HttpStatusCode.Unauthorized);
+		    if (_toggleProvider.IsEnabledByName(_TOGGLE_PROCESSING_SOURCE_LOCATION_ENABLED))
+		    {
+		        return new HttpResponseMessage(HttpStatusCode.OK);
+		    }
+		    else
+		    {
+		        return new HttpResponseMessage(HttpStatusCode.Unauthorized);
+            }
+
+            // TODO: Uncomment this code when toggle is removed
+		    //if (HasPermissions(workspaceId) && !_serviceContextHelper.IsCloudInstance())
+			//{
+			//	return Request.CreateResponse(HttpStatusCode.OK, true);
+			//}
+			//return new HttpResponseMessage(HttpStatusCode.Unauthorized);
 		}
 
 		private bool HasPermissions(int workspaceId)
