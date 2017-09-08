@@ -5,9 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Castle.Windsor;
 using Castle.MicroKernel.Registration;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Data;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Factories.Implementations
@@ -30,7 +32,12 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				k =>
 					new ServiceContextHelperForLoadFileReader(workspaceId)));
 			}
-			dtService = new DataTransferLocationService(_container.Resolve<IHelper>(), _container.Resolve<IIntegrationPointTypeService>(), _container.Resolve<SystemInterface.IO.IDirectory>());
+			dtService = new DataTransferLocationService(
+                _container.Resolve<IHelper>(),
+                _container.Resolve<IIntegrationPointTypeService>(),
+                _container.Resolve<SystemInterface.IO.IDirectory>(),
+                _container.Resolve<IResourcePoolContext>(),
+                _container.Resolve<IResourcePoolManager>());
 			return dtService;
 		}
 	}
