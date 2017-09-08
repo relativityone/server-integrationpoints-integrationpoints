@@ -14,7 +14,6 @@ namespace kCura.IntegrationPoints.Web
 	public class ServiceContextHelperForWeb : IServiceContextHelper
 	{
 		private readonly WebClientFactory _factory;
-	    
 		private const string USER_HEADER_VALUE = "X-IP-USERID";
 		private const string CASEUSER_HEADER_VALUE = "X-IP-CASEUSERID";
 		private ISessionService _sessionService;
