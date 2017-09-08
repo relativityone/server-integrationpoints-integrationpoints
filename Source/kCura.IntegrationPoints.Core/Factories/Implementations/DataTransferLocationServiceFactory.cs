@@ -35,9 +35,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			dtService = new DataTransferLocationService(
                 _container.Resolve<IHelper>(),
                 _container.Resolve<IIntegrationPointTypeService>(),
-                _container.Resolve<SystemInterface.IO.IDirectory>(),
-                _container.Resolve<IResourcePoolContext>(),
-                _container.Resolve<IResourcePoolManager>());
+                _container.Resolve<SystemInterface.IO.IDirectory>());
 			return dtService;
 		}
 	}

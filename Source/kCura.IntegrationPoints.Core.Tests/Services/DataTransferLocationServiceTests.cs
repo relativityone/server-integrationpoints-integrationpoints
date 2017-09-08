@@ -20,8 +20,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		class DataTransferLocationServiceTest : DataTransferLocationService
 		{
 			public DataTransferLocationServiceTest(IHelper helper, IIntegrationPointTypeService integrationPointTypeService,
-				IDirectory directory, IResourcePoolContext resourcePoolContext, IResourcePoolManager resourcePoolManager) : 
-                base(helper, integrationPointTypeService, directory, resourcePoolContext, resourcePoolManager)
+				IDirectory directory) : 
+                base(helper, integrationPointTypeService, directory)
 			{
 			}
 
@@ -83,7 +83,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 						Name = _IMPORT_PROV_TYPE_NAME
 					}
 				});
-			_subjectUnderTest = new DataTransferLocationServiceTest(_helperMock, _integrationPointTypeServiceMock, _directoryMock, _resourcePoolContextMock, _resourcePoolManagerMock );
+			_subjectUnderTest = new DataTransferLocationServiceTest(_helperMock, _integrationPointTypeServiceMock, _directoryMock );
 		}
 
 		[Test]

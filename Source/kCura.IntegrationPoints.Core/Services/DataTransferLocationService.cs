@@ -21,31 +21,22 @@ namespace kCura.IntegrationPoints.Core.Services
 		private const string _WORKSPACE_FOLDER_FORMAT = "EDDS{0}";
 		private const string _EDDS_PARENT_FOLDER = "DataTransfer";
 	    private const string _INVALID_PATH_ERROR_MSG = "Given Destination Folder path is invalid!";
-	    private const string _PSL_DISABLED_ERROR_MSG = "Given Destination Folder path is invalid. Processing Source Location is not enabled!";
-	    private const string _PSL_INVALID_ERROR_MSG = "Given Destination Folder path is invalid for Processing Source Location!";
-
         private readonly IAPILog _logger;
 		private readonly IHelper _helper;
 
 		private readonly IIntegrationPointTypeService _integrationPointTypeService;
 		private readonly IDirectory _directoryService;
-        private readonly IResourcePoolContext _resourcePoolContext;
-	    private readonly IResourcePoolManager _resourcePoolManager;
-
-
         #endregion //Fields
 
         #region Constructors
 
-        public DataTransferLocationService(IHelper helper, IIntegrationPointTypeService integrationPointTypeService, IDirectory directoryService, IResourcePoolContext resourcePoolContext, IResourcePoolManager resourcePoolManager)
+        public DataTransferLocationService(IHelper helper, IIntegrationPointTypeService integrationPointTypeService, IDirectory directoryService)
 		{
 			_helper = helper;
 			_logger = _helper.GetLoggerFactory().GetLogger().ForContext<DataTransferLocationService>();
 
 			_integrationPointTypeService = integrationPointTypeService;
 			_directoryService = directoryService;
-		    _resourcePoolContext = resourcePoolContext;
-		    _resourcePoolManager = resourcePoolManager;
 		}
 
 		#endregion //Constructors
@@ -71,64 +62,35 @@ namespace kCura.IntegrationPoints.Core.Services
 			return Path.Combine(_EDDS_PARENT_FOLDER, type.Name);
 		}
 
-
 	    public bool IsEddsPath(string path)
 	    {
 	        return path.StartsWith(_EDDS_PARENT_FOLDER);
 	    }
 
-	    private string VerifyAndPrepareEdds(int workspaceArtifactId, string path, Guid providerType)
-	    {
-	        string providerTypeRelativePathPrefix = GetDefaultRelativeLocationFor(providerType);
-
-	        // First validate if provided path match the correct destnation folder on the server (eg: DataTransfer\Export)
-	        if (!path.StartsWith(providerTypeRelativePathPrefix))
-	        {
-	            throw new ArgumentException($@"Provided realtive path '{path}' does not match the correct destination folder!", path);
-	        }
-
-	        string fileShareRootLocation = GetWorkspaceFileLocationRootPath(workspaceArtifactId);
-	        string fileShareRootLocationWithRelativePath = Path.Combine(fileShareRootLocation, providerTypeRelativePathPrefix);
-
-	        // Get physical path for destination folder eg: \\localhost\FileShare\EDDS123456\Export\SomeFolder
-	        string destinationFolderPhysicalPath = Path.Combine(fileShareRootLocation, path);
-
-	        if (!destinationFolderPhysicalPath.IsSubPathOf(fileShareRootLocationWithRelativePath))
-	        {
-	            throw new ArgumentException(_INVALID_PATH_ERROR_MSG, path);
-	        }
-
-	        CreateDirectoryIfNotExists(destinationFolderPhysicalPath);
-	        return destinationFolderPhysicalPath;
-        }
-
-	    private string VerifyAndPrepareProcessingSourceLocation(int workspaceArtifactId, string path)
-	    {
-	        if (!_resourcePoolContext.IsProcessingSourceLocationEnabled())
-	        {
-	            throw new ArgumentException(_PSL_DISABLED_ERROR_MSG,path);
-	        }
-
-	        List<ProcessingSourceLocationDTO> processingSourceLocations =
-	            _resourcePoolManager.GetProcessingSourceLocation(workspaceArtifactId);
-
-	        if (processingSourceLocations.Select(dto => dto.Location).All(location => location != path))
-	        {
-	            throw new ArgumentException(_PSL_INVALID_ERROR_MSG, path);
-	        }
-
-            return path;
-	    }
-
 		public string VerifyAndPrepare(int workspaceArtifactId, string path, Guid providerType)
 		{
-		    if (IsEddsPath(path))
+		    string providerTypeRelativePathPrefix = GetDefaultRelativeLocationFor(providerType);
+
+		    // First validate if provided path match the correct destnation folder on the server (eg: DataTransfer\Export)
+		    if (!path.StartsWith(providerTypeRelativePathPrefix))
 		    {
-		        return VerifyAndPrepareEdds(workspaceArtifactId, path, providerType);
+		        throw new ArgumentException($@"Provided realtive path '{path}' does not match the correct destination folder!", path);
 		    }
 
-		    return VerifyAndPrepareProcessingSourceLocation(workspaceArtifactId, path);
-		}
+		    string fileShareRootLocation = GetWorkspaceFileLocationRootPath(workspaceArtifactId);
+		    string fileShareRootLocationWithRelativePath = Path.Combine(fileShareRootLocation, providerTypeRelativePathPrefix);
+
+		    // Get physical path for destination folder eg: \\localhost\FileShare\EDDS123456\Export\SomeFolder
+		    string destinationFolderPhysicalPath = Path.Combine(fileShareRootLocation, path);
+
+		    if (!destinationFolderPhysicalPath.IsSubPathOf(fileShareRootLocationWithRelativePath))
+		    {
+		        throw new ArgumentException(_INVALID_PATH_ERROR_MSG, path);
+		    }
+
+		    CreateDirectoryIfNotExists(destinationFolderPhysicalPath);
+		    return destinationFolderPhysicalPath;
+        }
 
 		public string GetWorkspaceFileLocationRootPath(int workspaceArtifactId)
 		{

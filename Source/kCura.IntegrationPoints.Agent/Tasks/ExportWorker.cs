@@ -41,7 +41,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IManagerFactory managerFactory,
 			IContextContainerFactory contextContainerFactory,
 			IJobService jobService,
-			IDataTransferLocationService dataTransferLocationService
+			IDataTransferLocationService dataTransferLocationService,
+            IProcessingSourceLocationService processingSourceLocationService
 		) : base(
 			caseServiceContext,
 			helper,
@@ -60,6 +61,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_exportProcessRunner = exportProcessRunner;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ExportWorker>();
 			_dataTransferLocationService = dataTransferLocationService;
+		    _processingSourceLocationService = processingSourceLocationService;
 		}
 
 		#endregion //Constructor
@@ -69,6 +71,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly ExportProcessRunner _exportProcessRunner;
 		private readonly IAPILog _logger;
 		private readonly IDataTransferLocationService _dataTransferLocationService;
+		private readonly IProcessingSourceLocationService _processingSourceLocationService;
 
 		#endregion //Fields
 
@@ -129,9 +132,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			try
 			{
-                settings.Fileshare = _dataTransferLocationService.VerifyAndPrepare(CaseServiceContext.WorkspaceID,
-                    settings.Fileshare,
-                    Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid);
+			    if (PathIsProcessingSourceLocation(settings))
+			    {
+			        return;
+			    }
+
+			    settings.Fileshare = _dataTransferLocationService.VerifyAndPrepare(CaseServiceContext.WorkspaceID,
+			        settings.Fileshare,
+			        Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid);
 			}
 			catch (Exception e)
 			{
@@ -140,7 +148,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 		}
 
-		#endregion //Methods
+	    private bool PathIsProcessingSourceLocation(ExportUsingSavedSearchSettings settings)
+	    {
+	        return _processingSourceLocationService.IsEnabled() &&
+	               _processingSourceLocationService.IsProcessingSourceLocation(settings.Fileshare,
+	                   CaseServiceContext.WorkspaceID);
+	    }
+
+	    #endregion //Methods
 
 		#region Logging
 
