@@ -47,10 +47,5 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 			IRSAPIClient client = _rsapiClientFactory.CreateUserClient(_workspaceArtifactId);
 			return client;
 		}
-
-	    public bool IsCloudInstance()
-	    {
-	        throw new System.NotImplementedException();
-	    }
 	}
 }

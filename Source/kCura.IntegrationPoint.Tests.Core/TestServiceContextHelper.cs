@@ -43,10 +43,5 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			return _rsapiClientFactory.CreateUserClient(WorkspaceID);
 		}
-
-	    public bool IsCloudInstance()
-	    {
-	        throw new System.NotImplementedException();
-	    }
 	}
 }

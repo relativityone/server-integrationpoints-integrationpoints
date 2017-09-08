@@ -34,11 +34,6 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 				return null;
 		}
 
-	    public bool IsCloudInstance()
-	    {
-	        throw new System.NotImplementedException();
-	    }
-
 	    public IDBContext GetDBContext(int workspaceID = -1) { return helper.GetDBContext(workspaceID); }
 	}
 }
