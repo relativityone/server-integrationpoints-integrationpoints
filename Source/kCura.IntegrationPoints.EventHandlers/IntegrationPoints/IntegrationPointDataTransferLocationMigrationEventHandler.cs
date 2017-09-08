@@ -134,7 +134,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				if (_dataTransferLocationService == null)
 				{
 					IIntegrationPointTypeService typeService = new IntegrationPointTypeService(Helper, CaseServiceContext);
-					_dataTransferLocationService = new DataTransferLocationService(Helper, typeService, new LongPathDirectory());
+					_dataTransferLocationService = new DataTransferLocationService(Helper, typeService, new LongPathDirectory(), null, null);
 				}
 
 				return _dataTransferLocationService;

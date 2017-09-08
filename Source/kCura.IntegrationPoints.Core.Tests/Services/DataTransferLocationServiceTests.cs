@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using SystemInterface.IO;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
@@ -18,7 +19,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		class DataTransferLocationServiceTest : DataTransferLocationService
 		{
 			public DataTransferLocationServiceTest(IHelper helper, IIntegrationPointTypeService integrationPointTypeService,
-				IDirectory directory) : base(helper, integrationPointTypeService, directory)
+				IDirectory directory, IResourcePoolContext resourcePoolContext, IResourcePoolManager resourcePoolManager) : 
+                base(helper, integrationPointTypeService, directory, resourcePoolContext, resourcePoolManager)
 			{
 			}
 
@@ -76,7 +78,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 						Name = _IMPORT_PROV_TYPE_NAME
 					}
 				});
-			_subjectUnderTest = new DataTransferLocationServiceTest(_helperMock, _integrationPointTypeServiceMock, _directoryMock);
+			_subjectUnderTest = new DataTransferLocationServiceTest(_helperMock, _integrationPointTypeServiceMock, _directoryMock, null, null);
 		}
 
 		[Test]

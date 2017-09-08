@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 					ICaseServiceContext context = ServiceContextFactory.CreateCaseServiceContext(Helper, Helper.GetActiveCaseID());
 					IIntegrationPointTypeService typeService = new IntegrationPointTypeService(Helper, context);
 
-					_dataTransferLocationService = new DataTransferLocationService(Helper, typeService, new LongPathDirectory());
+					_dataTransferLocationService = new DataTransferLocationService(Helper, typeService, new LongPathDirectory(), null, null);
 				}
 
 				return _dataTransferLocationService;
