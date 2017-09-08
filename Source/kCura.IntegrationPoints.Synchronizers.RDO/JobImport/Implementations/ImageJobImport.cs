@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 		public override event OnErrorEventHandler OnError;
 		public override event OnMessageEventHandler OnMessage;
 
-		protected override ImageImportBulkArtifactJob CreateJob()
+		protected internal override ImageImportBulkArtifactJob CreateJob()
 		{
 			return ImportApi.NewImageImportJob();
 		}

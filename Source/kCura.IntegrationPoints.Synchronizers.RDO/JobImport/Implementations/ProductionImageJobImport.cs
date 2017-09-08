@@ -10,7 +10,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 		{
 		}
 
-		protected override ImageImportBulkArtifactJob CreateJob()
+		protected internal override ImageImportBulkArtifactJob CreateJob()
 		{
 			return ImportApi.NewProductionImportJob(ImportSettings.ProductionArtifactId);
 		}
