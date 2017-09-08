@@ -138,15 +138,11 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		}
 
 	    [Test]
-	    [TestCase(true, true, true)]
-	    [TestCase(false, true, true)]
-	    [TestCase(true, false, true)]
-	    [TestCase(true, true, false)]
-	    [TestCase(false, false, true)]
-	    [TestCase(true, false, false)]
-	    [TestCase(false, true, false)]
-	    [TestCase(false, false, false)]
-        public void ItShouldCheckIfIsProcessingSourceLocationEnabled(bool hasPermission, bool toggleEnabled, bool isCloudInstance)
+	    [TestCase(true, true)]
+	    [TestCase(false, true)]
+	    [TestCase(true, false)]
+	    [TestCase(false, false)]
+        public void ItShouldCheckIfIsProcessingSourceLocationEnabled(bool hasPermission, bool isEnabled)
 	    {
 	        //Arrange
 	        _permissionRepositoryMock.UserCanExport().Returns(true);
@@ -155,8 +151,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 	        _permissionRepositoryMock.UserHasArtifactTypePermission(Arg.Any<Guid>(), ArtifactPermission.Create).Returns(hasPermission);
 	        _permissionRepositoryMock.UserHasArtifactTypePermission(Arg.Any<Guid>(), ArtifactPermission.Edit).Returns(hasPermission);
 
-            _toggleProviderMock.IsEnabled<ProcessingSourceLocationToggle>().Returns(toggleEnabled);
-	        _resourcePoolContextMock.IsProcessingSourceLocationEnabled().Returns(isCloudInstance);
+	        _resourcePoolContextMock.IsProcessingSourceLocationEnabled().Returns(isEnabled);
 
 	        //Act
 	        HttpResponseMessage response = _subjectUnderTest.IsProcessingSourceLocationEnabled(_WORKSPACE_ID);
@@ -167,7 +162,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 	        bool retValue;
 	        response.TryGetContentValue(out retValue);
 
-            Assert.That( retValue, Is.EqualTo(hasPermission && toggleEnabled && !isCloudInstance) );
+            Assert.That( retValue, Is.EqualTo(hasPermission && isEnabled) );
         }
 
 		private void SetUserPermissions()
