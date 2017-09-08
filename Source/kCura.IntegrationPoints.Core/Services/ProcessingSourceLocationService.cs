@@ -10,13 +10,6 @@ namespace kCura.IntegrationPoints.Core.Services
     public class ProcessingSourceLocationService : IProcessingSourceLocationService
     {
         #region Fields
-
-        private const string _PSL_DISABLED_ERROR_MSG =
-            "Given Destination Folder path is invalid. Processing Source Location is not enabled!";
-
-        private const string _PSL_INVALID_ERROR_MSG =
-            "Given Destination Folder path is invalid for Processing Source Location!";
-
         private readonly IResourcePoolContext _resourcePoolContext;
         private readonly IResourcePoolManager _resourcePoolManager;
         #endregion //Fields
