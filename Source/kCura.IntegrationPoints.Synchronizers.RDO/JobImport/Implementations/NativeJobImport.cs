@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 		public override event OnErrorEventHandler OnError;
 		public override event OnMessageEventHandler OnMessage;
 
-		protected override ImportBulkArtifactJob CreateJob()
+		protected internal override ImportBulkArtifactJob CreateJob()
 		{
 			if (_importSettings.ArtifactTypeId == (int) ArtifactType.Document)
 			{

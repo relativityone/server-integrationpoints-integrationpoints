@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 
 		public abstract void RegisterEventHandlers();
 
-		protected abstract TJob CreateJob();
+		protected internal abstract TJob CreateJob();
 
 		public abstract void Execute();
 

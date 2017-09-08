@@ -323,12 +323,18 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		protected async Task SetupAsync()
 		{
 			await AddAgentServerToResourcePool();
+			
 			await Task.Run(() =>
 			{
-			
-				RelativityApplicationManager.ImportApplicationToWorkspace(WorkspaceArtifactId);
+				if (SharedVariables.UseIPRapFile())
+				{
+					RelativityApplicationManager.ImportApplicationToLibrary();
+				}
+
+				RelativityApplicationManager.InstallApplicationFromLibrary(WorkspaceArtifactId);
 				RelativityApplicationManager.DeployIntegrationPointsCustomPage();
 			});
+			
 			if (CreateAgent)
 			{
 				Result agentCreatedResult = await Task.Run(() => Agent.CreateIntegrationPointAgent());

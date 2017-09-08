@@ -109,5 +109,35 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			return ConfigurationManager.AppSettings["targetHost"];
 		}
+
+		public static bool UseIPRapFile()
+		{
+			string environmentVariableName = ConfigurationManager.AppSettings["JenkinsBuildUseIPRapFile"];
+
+			if (environmentVariableName != null)
+			{
+				string environmentSetting = Environment.GetEnvironmentVariable(environmentVariableName, EnvironmentVariableTarget.Machine);
+				if (!string.IsNullOrEmpty(environmentSetting))
+				{
+					return Convert.ToBoolean(environmentSetting);
+				}
+			}
+			return true;
+		}
+
+		public static bool UseLegacyTemplateName()
+		{
+			string environmentVariableName = ConfigurationManager.AppSettings["UseLegacyTemplateName"];
+
+			if (environmentVariableName != null)
+			{
+				string environmentSetting = Environment.GetEnvironmentVariable(environmentVariableName, EnvironmentVariableTarget.Machine);
+				if (!string.IsNullOrEmpty(environmentSetting))
+				{
+					return Convert.ToBoolean(environmentSetting);
+				}
+			}
+			return false;
+		}
 	}
 }

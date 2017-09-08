@@ -183,7 +183,9 @@
     <Compile Include="ImportServiceTests.cs" />
     <Compile Include="ImportSettingsTests.cs" />
     <Compile Include="JobImport\Implementations\ImageImportSettingsBuilderTests.cs" />
+    <Compile Include="JobImport\Implementations\ImageJobImportTests.cs" />
     <Compile Include="JobImport\Implementations\ImageRelativityToRelativityImportSettingsBuilderTests.cs" />
+    <Compile Include="JobImport\Implementations\NativeJobImportTests.cs" />
     <Compile Include="JobImport\ImportJobFactoryTests.cs" />
     <Compile Include="RdoCustodianSynchronizerTests.cs" />
     <Compile Include="RdoSynchronizerTests.cs" />

@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			_sendEmailManager = new SendEmailManager(this._serializer, this._jobManager, helper);
 			_queueContext = new QueueDBContext(Helper, GlobalConst.SCHEDULE_AGENT_QUEUE_TABLE_NAME);
 		}
-		
+
 		[Test]
 		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
 		public void VerifyGetUnbatchedId()
@@ -56,32 +56,20 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 			_agentService.CreateQueueTableOnce();
 
-		    using (DataTable dataTable = new CreateScheduledJob(this._queueContext).Execute(
-		        SourceWorkspaceArtifactId,
-		        1,
-		        "SendEmaiManager",
-		        DateTime.Now.AddDays(30),
-		        1,
-		        null,
-		        null,
-		        jobDetails,
-		        0,
-		        777,
-		        1,
-		        1))
-		    {
-		        Job tempJob = new Job(dataTable.Rows[0]);
+			using (DataTable dataTable = new CreateScheduledJob(this._queueContext)
+				.Execute(SourceWorkspaceArtifactId, 1, "SendEmaiManager", DateTime.Now.AddDays(30), 1, null, null, jobDetails, 0, 777, 1, 1))
+			{
+				var tempJob = new Job(dataTable.Rows[0]);
+				_jobId = tempJob.JobId;
 
-		        _jobId = tempJob.JobId;
+				//Act
+				IEnumerable<string> list = _sendEmailManager.GetUnbatchedIDs(tempJob);
 
-		        //Act
-		        IEnumerable<string> list = _sendEmailManager.GetUnbatchedIDs(tempJob);
-
-		        //Assert
-		        Assert.AreEqual(2, list.Count());
-		        Assert.IsTrue(list.Contains("testing1234@relativity.com"));
-		        Assert.IsTrue(list.Contains("kwu@relativity.com"));
-		    }
+				//Assert
+				Assert.AreEqual(2, list.Count());
+				Assert.IsTrue(list.Contains("testing1234@relativity.com"));
+				Assert.IsTrue(list.Contains("kwu@relativity.com"));
+			}
 		}
 	}
 }

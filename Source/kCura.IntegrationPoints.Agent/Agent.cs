@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Agent
 		private IRSAPIClient _eddsRsapiClient;
 		private ITaskFactory _taskFactory;
 		private CreateErrorRdo _errorService;
-
+	    private IAPILog _logger;
 		private IRSAPIClient EddsRsapiClient => _eddsRsapiClient ??
 												(_eddsRsapiClient = new RsapiClientFactory(Helper).CreateAdminClient(-1));
 
@@ -45,6 +45,12 @@ namespace kCura.IntegrationPoints.Agent
 		}
 
 		public override string Name => _AGENT_NAME;
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			_logger = Helper.GetLoggerFactory().GetLogger().ForContext<Agent>();
+		}
 
 		public override ITask GetTask(Job job)
 		{
@@ -68,8 +74,7 @@ namespace kCura.IntegrationPoints.Agent
 
 		private void RaiseJobLog(Job job, JobLogState state, string details = null)
 		{
-			var jobLogService = new JobLogService(Helper);
-			jobLogService.Log(AgentService.AgentTypeInformation, job, state, details);
+			_logger.LogInformation("Integraiton Points job status update : {@JobLogInformation}", new JobLogInformation() { Job = job, State = state, Details = details });
 		}
 
 		public void Dispose()
