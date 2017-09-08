@@ -12,6 +12,5 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 		IDBContext GetDBContext(int workspaceID = -1);
 		IRSAPIService GetRsapiService();
 		IRSAPIClient GetRsapiClient();
-	    bool IsCloudInstance();
 	}
 }

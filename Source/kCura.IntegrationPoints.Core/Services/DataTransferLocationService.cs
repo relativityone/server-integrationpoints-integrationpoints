@@ -76,7 +76,7 @@ namespace kCura.IntegrationPoints.Core.Services
             // First validate if provided path match the correct destnation folder on the server (eg: DataTransfer\Export)
             if (!path.StartsWith(providerTypeRelativePathPrefix))
 			{
-			    throw new ArgumentException($"Provided realtive path '{path}' does not match the correct destination folder!", paramName: path);
+			    throw new ArgumentException($@"Provided realtive path '{path}' does not match the correct destination folder!", path);
             }
 
 			string fileShareRootLocation = GetWorkspaceFileLocationRootPath(workspaceArtifactId);
@@ -87,7 +87,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 			if (!destinationFolderPhysicalPath.IsSubPathOf(fileShareRootLocationWithRelativePath))
 			{
-                throw new ArgumentException(_INVALID_PATH_ERROR_MSG, paramName:path);
+                throw new ArgumentException(_INVALID_PATH_ERROR_MSG, path);
 			}
 
 			CreateDirectoryIfNotExists(destinationFolderPhysicalPath);

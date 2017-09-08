@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		private IResourcePoolManager _resourcePoolManagerMock;
 		private IRepositoryFactory _repositoryFactoryMock;
 		private IPermissionRepository _permissionRepositoryMock;
-	    private IServiceContextHelper _serviceContextHelperMock;
+	    private IInstanceContext _instanceContextMock;
 		private IDirectoryTreeCreator<JsTreeItemDTO> _directoryTreeCreatorMock;
 	    private IToggleProvider _toggleProviderMock;
 
@@ -51,11 +51,11 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			_directoryTreeCreatorMock = Substitute.For<IDirectoryTreeCreator<JsTreeItemDTO>>();
 			_repositoryFactoryMock = Substitute.For<IRepositoryFactory>();
 			_permissionRepositoryMock = Substitute.For<IPermissionRepository>();
-		    _serviceContextHelperMock = Substitute.For<IServiceContextHelper>();
+		    _instanceContextMock = Substitute.For<IInstanceContext>();
 		    _toggleProviderMock = Substitute.For<IToggleProvider>();
 			_repositoryFactoryMock.GetPermissionRepository(_WORKSPACE_ID).Returns(_permissionRepositoryMock);
 
-			_subjectUnderTest = new ResourcePoolController(_resourcePoolManagerMock, _repositoryFactoryMock, _directoryTreeCreatorMock, _serviceContextHelperMock, _toggleProviderMock);
+			_subjectUnderTest = new ResourcePoolController(_resourcePoolManagerMock, _repositoryFactoryMock, _directoryTreeCreatorMock, _instanceContextMock, _toggleProviderMock);
 
 
 			_subjectUnderTest.Request = new HttpRequestMessage();
@@ -156,7 +156,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 	        _permissionRepositoryMock.UserHasArtifactTypePermission(Arg.Any<Guid>(), ArtifactPermission.Edit).Returns(hasPermission);
 
             _toggleProviderMock.IsEnabled<ProcessingSourceLocationToggle>().Returns(toggleEnabled);
-	        _serviceContextHelperMock.IsCloudInstance().Returns(isCloudInstance);
+	        _instanceContextMock.IsCloudInstance().Returns(isCloudInstance);
 
 	        //Act
 	        HttpResponseMessage response = _subjectUnderTest.IsProcessingSourceLocationEnabled(_WORKSPACE_ID);

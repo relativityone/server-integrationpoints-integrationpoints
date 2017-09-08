@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly IResourcePoolManager _resourcePoolManager;
 		private readonly IRepositoryFactory _respositoryFactory;
 		private readonly IDirectoryTreeCreator<JsTreeItemDTO> _directoryTreeCreator;
-	    private readonly IServiceContextHelper _serviceContextHelper;
+	    private readonly IInstanceContext _instanceContext;
 	    private readonly IToggleProvider _toggleProvider;
 
         #endregion //Fields
@@ -35,12 +35,12 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         #region Constructors
 
         public ResourcePoolController(IResourcePoolManager resourcePoolManager, IRepositoryFactory respositoryFactory, 
-			IDirectoryTreeCreator<JsTreeItemDTO> directoryTreeCreator, IServiceContextHelper serviceContextHelper, IToggleProvider toggleProvider)
+			IDirectoryTreeCreator<JsTreeItemDTO> directoryTreeCreator, IInstanceContext instanceContext, IToggleProvider toggleProvider)
 		{
 			_resourcePoolManager = resourcePoolManager;
 			_respositoryFactory = respositoryFactory;
 			_directoryTreeCreator = directoryTreeCreator;
-		    _serviceContextHelper = serviceContextHelper;
+		    _instanceContext = instanceContext;
 		    _toggleProvider = toggleProvider;
 		}
 
@@ -97,7 +97,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
             if (HasPermissions(workspaceId))
             {
-                if (_toggleProvider.IsEnabled<ProcessingSourceLocationToggle>() && !_serviceContextHelper.IsCloudInstance())
+                if (_toggleProvider.IsEnabled<ProcessingSourceLocationToggle>() && !_instanceContext.IsCloudInstance())
                 {
                     return Request.CreateResponse(HttpStatusCode.OK, true);
                 }

@@ -636,8 +636,10 @@
     <Compile Include="GridModelFactory.cs" />
     <Compile Include="Helpers\SummaryPageSelector.cs" />
     <Compile Include="IErrorFactory.cs" />
+    <Compile Include="IInstanceContext.cs" />
     <Compile Include="Installers\ControllerInstaller.cs" />
     <Compile Include="Controllers\IntegrationPointProfilesController.cs" />
+    <Compile Include="InstanceContext.cs" />
     <Compile Include="IRelativityUrlHelper.cs" />
     <Compile Include="Models\EditPoint.cs" />
     <Compile Include="Models\FtpProviderSummaryPageSettingsModel.cs" />
