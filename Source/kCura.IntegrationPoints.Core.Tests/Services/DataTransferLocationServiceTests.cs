@@ -47,8 +47,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		private IIntegrationPointTypeService _integrationPointTypeServiceMock;
 		private IDirectory _directoryMock;
 		private IAPILog _loggerMock;
-	    private IResourcePoolContext _resourcePoolContextMock;
-	    private IResourcePoolManager _resourcePoolManagerMock;
 
 		private const int _WKSP_ID = 1234;
 		private const string _RESOURCE_POOL_FILESHARE = @"\\localhost\Fileshare";
@@ -64,8 +62,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_integrationPointTypeServiceMock = Substitute.For<IIntegrationPointTypeService>();
 			_directoryMock = Substitute.For<IDirectory>();
 			_loggerMock = Substitute.For<IAPILog>();
-		    _resourcePoolContextMock = Substitute.For<IResourcePoolContext>();
-		    _resourcePoolManagerMock = Substitute.For<IResourcePoolManager>();
 
 			ILogFactory logFactoryMock = Substitute.For<ILogFactory>();
 
@@ -161,37 +157,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			// Assert
 			_directoryMock.Received(0).CreateDirectory(physicalPath);
 		}
-
-	    [Test]
-        [TestCase(false, @"\\CorrectPslLocation")]
-	    [TestCase(true, @"\\IncorrectPslLocation")]
-	    [TestCase(false, @"\\IncorrectPslLocation")]
-        public void ItShouldVerifyProcessingSourceLocationPath(bool processingSourceLocationEnabled, string path)
-	    {
-            // Arrange
-	        Guid type = Guid.NewGuid();
-
-	        _integrationPointTypeServiceMock.GetIntegrationPointType(type).Returns(
-	            new IntegrationPointType
-	            {
-	                Name = _EXPORT_PROV_TYPE_NAME
-	            });
-
-	        _resourcePoolContextMock.IsProcessingSourceLocationEnabled().Returns(processingSourceLocationEnabled);
-	        _resourcePoolManagerMock.GetProcessingSourceLocation(_WKSP_ID).Returns(new List<ProcessingSourceLocationDTO>()
-	        {
-                new ProcessingSourceLocationDTO()
-                {
-                    Location = @"\\CorrectPslLocation"
-                }
-	        });
-
-	        string physicalPath = Path.Combine(_RESOURCE_POOL_FILESHARE, _WKSP_FOLDER, path);
-
-	        _directoryMock.Exists(physicalPath).Returns(false);
-
-	        Assert.Throws<ArgumentException>(() => _subjectUnderTest.VerifyAndPrepare(_WKSP_ID, path, type));
-	    }
 
         [Test]
 		public void ItShouldThrowIfPathIsNotChildOfDataTransferLocation()
