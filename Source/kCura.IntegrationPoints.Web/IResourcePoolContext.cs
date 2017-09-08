@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.Web
 {
-    public interface IInstanceContext
+    public interface IResourcePoolContext
     {
-        bool IsCloudInstance();
+        bool IsProcessingSourceLocationEnabled();
     }
 }

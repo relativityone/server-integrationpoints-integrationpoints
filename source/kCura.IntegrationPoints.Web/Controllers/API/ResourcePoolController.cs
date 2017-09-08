@@ -27,21 +27,20 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly IResourcePoolManager _resourcePoolManager;
 		private readonly IRepositoryFactory _respositoryFactory;
 		private readonly IDirectoryTreeCreator<JsTreeItemDTO> _directoryTreeCreator;
-	    private readonly IInstanceContext _instanceContext;
-	    private readonly IToggleProvider _toggleProvider;
+	    private readonly IResourcePoolContext _resourcePoolContext;
+
 
         #endregion //Fields
 
         #region Constructors
 
         public ResourcePoolController(IResourcePoolManager resourcePoolManager, IRepositoryFactory respositoryFactory, 
-			IDirectoryTreeCreator<JsTreeItemDTO> directoryTreeCreator, IInstanceContext instanceContext, IToggleProvider toggleProvider)
+			IDirectoryTreeCreator<JsTreeItemDTO> directoryTreeCreator, IResourcePoolContext resourcePoolContext)
 		{
 			_resourcePoolManager = resourcePoolManager;
 			_respositoryFactory = respositoryFactory;
 			_directoryTreeCreator = directoryTreeCreator;
-		    _instanceContext = instanceContext;
-		    _toggleProvider = toggleProvider;
+		    _resourcePoolContext = resourcePoolContext;
 		}
 
 		#endregion //Constructors
@@ -97,14 +96,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
             if (HasPermissions(workspaceId))
             {
-                if (_toggleProvider.IsEnabled<ProcessingSourceLocationToggle>() && !_instanceContext.IsCloudInstance())
-                {
-                    return Request.CreateResponse(HttpStatusCode.OK, true);
-                }
-                else
-                {
-                    return Request.CreateResponse(HttpStatusCode.OK, false);
-                }
+                return Request.CreateResponse(HttpStatusCode.OK, _resourcePoolContext.IsProcessingSourceLocationEnabled());
             }
             return new HttpResponseMessage(HttpStatusCode.Unauthorized);
         }
