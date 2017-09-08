@@ -118,6 +118,10 @@
       <HintPath>..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.148\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.Toggles, Version=1.0.0.84, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Toggles.1.0.0.84\lib\net462\Relativity.Toggles.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -160,6 +164,7 @@
     <Compile Include="IntegrationPointBaseQuery.cs" />
     <Compile Include="EncryptingRsapiClientLibrary.cs" />
     <Compile Include="IResourceDbProvider.cs" />
+    <Compile Include="IResourcePoolContext.cs" />
     <Compile Include="IRSAPIRdoQuery.cs" />
     <Compile Include="IRsapiClientFactory.cs" />
     <Compile Include="Logging\ISystemEventLoggingService.cs" />
@@ -188,6 +193,7 @@
     <Compile Include="Repositories\Implementations\KeplerKeywordSearchRepository.cs" />
     <Compile Include="Repositories\Implementations\FieldRepository.cs" />
     <Compile Include="Repositories\IFieldRepository.cs" />
+    <Compile Include="ResourcePoolContext.cs" />
     <Compile Include="SecretStore\ISecretManagerFactory.cs" />
     <Compile Include="SecretStore\SecretManagerFactory.cs" />
     <Compile Include="RsapiClientFactory.cs" />
@@ -338,6 +344,7 @@
     <Compile Include="Statistics\IDocumentStatistics.cs" />
     <Compile Include="Statistics\IRdoStatistics.cs" />
     <Compile Include="Statistics\Implementations\RdoStatistics.cs" />
+    <Compile Include="Toggles\ProcessingSourceLocationToggle.cs" />
     <Compile Include="Transformers\IDtoTransformer.cs" />
     <Compile Include="Transformers\JobHistoryErrorTransformer.cs" />
   </ItemGroup>
@@ -420,7 +427,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
-    <Folder Include="Toggle\" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\CSharpGuidelineAnalyzer.1.0.3.0\analyzers\dotnet\cs\CSharpGuidelineAnalyzer.dll" />

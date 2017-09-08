@@ -636,10 +636,8 @@
     <Compile Include="GridModelFactory.cs" />
     <Compile Include="Helpers\SummaryPageSelector.cs" />
     <Compile Include="IErrorFactory.cs" />
-    <Compile Include="IResourcePoolContext.cs" />
     <Compile Include="Installers\ControllerInstaller.cs" />
     <Compile Include="Controllers\IntegrationPointProfilesController.cs" />
-    <Compile Include="ResourcePoolContext.cs" />
     <Compile Include="IRelativityUrlHelper.cs" />
     <Compile Include="Models\EditPoint.cs" />
     <Compile Include="Models\FtpProviderSummaryPageSettingsModel.cs" />
@@ -659,7 +657,6 @@
     <Compile Include="SignalRHubs\IntegrationPointDataHubInput.cs" />
     <Compile Include="SignalRHubs\IntegrationPointDataHub.cs" />
     <Compile Include="Startup.cs" />
-    <Compile Include="Toggles\ProcessingSourceLocationToggle.cs" />
     <Compile Include="WebAPICustomPageService.cs" />
     <Compile Include="WebClientFactory.cs" />
     <Compile Include="WindsorCompositionRoot.cs" />

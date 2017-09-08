@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using kCura.IntegrationPoints.Data.Factories;
+﻿using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Web.Toggles;
 using Relativity.Toggles;
 
-namespace kCura.IntegrationPoints.Web
+namespace kCura.IntegrationPoints.Data
 {
     public class ResourcePoolContext : IResourcePoolContext
     {

@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using SystemInterface.IO;
 using kCura.IntegrationPoints.Core.Extensions;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using Relativity.API;
@@ -18,25 +21,31 @@ namespace kCura.IntegrationPoints.Core.Services
 		private const string _WORKSPACE_FOLDER_FORMAT = "EDDS{0}";
 		private const string _EDDS_PARENT_FOLDER = "DataTransfer";
 	    private const string _INVALID_PATH_ERROR_MSG = "Given Destination Folder path is invalid!";
-
+	    private const string _PSL_DISABLED_ERROR_MSG = "Given Destination Folder path is invalid. Processing Source Location is not enabled!";
+	    private const string _PSL_INVALID_ERROR_MSG = "Given Destination Folder path is invalid for Processing Source Location!";
 
         private readonly IAPILog _logger;
 		private readonly IHelper _helper;
 
 		private readonly IIntegrationPointTypeService _integrationPointTypeService;
 		private readonly IDirectory _directoryService;
+        private readonly IResourcePoolContext _resourcePoolContext;
+	    private readonly IResourcePoolManager _resourcePoolManager;
 
-		#endregion //Fields
 
-		#region Constructors
+        #endregion //Fields
 
-		public DataTransferLocationService(IHelper helper, IIntegrationPointTypeService integrationPointTypeService, IDirectory directoryService)
+        #region Constructors
+
+        public DataTransferLocationService(IHelper helper, IIntegrationPointTypeService integrationPointTypeService, IDirectory directoryService, IResourcePoolContext resourcePoolContext, IResourcePoolManager resourcePoolManager)
 		{
 			_helper = helper;
 			_logger = _helper.GetLoggerFactory().GetLogger().ForContext<DataTransferLocationService>();
 
 			_integrationPointTypeService = integrationPointTypeService;
 			_directoryService = directoryService;
+		    _resourcePoolContext = resourcePoolContext;
+		    _resourcePoolManager = resourcePoolManager;
 		}
 
 		#endregion //Constructors
@@ -93,11 +102,22 @@ namespace kCura.IntegrationPoints.Core.Services
 	        return destinationFolderPhysicalPath;
         }
 
-	    private string VerifyAndPrepareProcessingSourceLocation(string path)
+	    private string VerifyAndPrepareProcessingSourceLocation(int workspaceArtifactId, string path)
 	    {
+	        if (!_resourcePoolContext.IsProcessingSourceLocationEnabled())
+	        {
+	            throw new ArgumentException(_PSL_DISABLED_ERROR_MSG,path);
+	        }
 
+	        List<ProcessingSourceLocationDTO> processingSourceLocations =
+	            _resourcePoolManager.GetProcessingSourceLocation(workspaceArtifactId);
 
-	        return path;
+	        if (processingSourceLocations.Select(dto => dto.Location).All(location => location != path))
+	        {
+	            throw new ArgumentException(_PSL_INVALID_ERROR_MSG, path);
+	        }
+
+            return path;
 	    }
 
 		public string VerifyAndPrepare(int workspaceArtifactId, string path, Guid providerType)
@@ -107,7 +127,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		        return VerifyAndPrepareEdds(workspaceArtifactId, path, providerType);
 		    }
 
-		    return VerifyAndPrepareProcessingSourceLocation(path);
+		    return VerifyAndPrepareProcessingSourceLocation(workspaceArtifactId, path);
 		}
 
 		public string GetWorkspaceFileLocationRootPath(int workspaceArtifactId)
