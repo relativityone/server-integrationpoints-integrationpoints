@@ -54,7 +54,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			}
 		}
 
-		public void Initialize()
+		protected virtual void Initialize()
 		{
 			//Logger cannot be initialized in constructor because Helper from Agent.Base is initialized later on
 			_logger = Helper.GetLoggerFactory().GetLogger().ForContext<ScheduleQueueAgentBase>();
