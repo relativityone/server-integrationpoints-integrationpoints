@@ -213,8 +213,17 @@ var ExportSourceViewModel = function (state) {
 	}
 
 	// -----
-
+	self.IsLocationSelectorInitialized = false;
 	self.InitializeLocationSelector = function () {
+		if (self.IsLocationSelectorInitialized) {
+			return;
+		}
+		var typeOfExport = self.TypeOfExport();
+		if (typeOfExport !== ExportEnums.SourceOptionsEnum.Folder &&
+			typeOfExport !== ExportEnums.SourceOptionsEnum.FolderSubfolder) {
+			return;
+		}
+
 		self.LocationSelector = new LocationJSTreeSelector();
 
 		self.LocationSelector.init(self.FolderArtifactName(), [], {
@@ -230,6 +239,7 @@ var ExportSourceViewModel = function (state) {
 		});
 
 		self.getFolderAndSubfolders();
+		self.IsLocationSelectorInitialized = true;
 	};
 
 	self.getFolderPath = function (destinationWorkspaceId, folderArtifactId) {
@@ -288,21 +298,20 @@ var ExportSourceViewModel = function (state) {
 				IP.message.error.raise("No views were returned from the source provider.");
 			});
 
+			var viewPromiseDone = function(result) {
+				self.Cache.ViewsResult = result;
+				self.UpdateViews(currentViewId);
+				self.InitializeLocationSelector();
+			};
+
 			if (self.ExportRdoMode()) {
 				var currentViewId = self.ViewId();
-
-				viewsPromise.done(function (result) {
-					self.Cache.ViewsResult = result;
-					self.UpdateViews(currentViewId);
-				});
+				viewsPromise.done(viewPromiseDone);
 			}
 			else if (typeof (self.Cache.ViewsResult) === 'undefined') {
 				var currentViewId = self.ViewId();
 
-				IP.data.deferred().all([viewsPromise]).then(function (result) {
-					self.Cache.ViewsResult = result;
-					self.UpdateViews(currentViewId);
-				});
+				IP.data.deferred().all([viewsPromise]).then(viewPromiseDone);
 			} else {
 				self.UpdateViews();
 			}
