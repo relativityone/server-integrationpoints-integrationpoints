@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Core.Extensions;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Models;
@@ -37,7 +38,7 @@ namespace kCura.IntegrationPoints.Core.Services
             List<ProcessingSourceLocationDTO> processingSourceLocations =
                 _resourcePoolManager.GetProcessingSourceLocation(workspaceArtifactId);
 
-            return processingSourceLocations.Select(dto => dto.Location).Any(location => location == path);
+            return processingSourceLocations.Select(dto => dto.Location).Any(path.IsSubPathOf);
         }
     }
 }
