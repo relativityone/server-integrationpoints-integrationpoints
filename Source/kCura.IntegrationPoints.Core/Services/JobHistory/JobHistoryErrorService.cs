@@ -30,10 +30,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			JobLevelErrorOccurred = false;
 		}
 
-		internal int PendingErrorCount
-		{
-			get { return _jobHistoryErrorList.Count; }
-		}
+		internal int PendingErrorCount => _jobHistoryErrorList.Count;
 
 		public bool JobLevelErrorOccurred { get; private set; }
 
@@ -73,13 +70,12 @@ namespace kCura.IntegrationPoints.Core.Services
 				catch (Exception ex)
 				{
 					//if failed to commit, throw all buffered errors as part of an exception
-					string allErrors = string.Empty;
 					List<string> errorList = _jobHistoryErrorList.Select(x =>
 						x.ErrorType.Name.Equals(ErrorTypeChoices.JobHistoryErrorJob.Name)
-							? string.Format("{0} Type: {1}    Error: {2}", x.TimestampUTC, x.ErrorType.Name, x.Error)
-							: string.Format("{0} Type: {1}    Identifier: {2}    Error: {3}", x.TimestampUTC, x.ErrorType.Name,
-								x.SourceUniqueID, x.Error)).ToList();
-					allErrors = string.Join(Environment.NewLine, errorList.ToArray());
+							? $"{x.TimestampUTC} Type: {x.ErrorType.Name}    Error: {x.Error}"
+							: $"{x.TimestampUTC} Type: {x.ErrorType.Name}    Identifier: {x.SourceUniqueID}    Error: {x.Error}").ToList();
+
+					string allErrors = string.Join(Environment.NewLine, errorList.ToArray());
 					allErrors += string.Format("{0}{0}Reason for exception: {1}", Environment.NewLine, ex.FlattenErrorMessages());
 
 					LogCommittingErrorsFailed(ex, allErrors);
@@ -107,16 +103,18 @@ namespace kCura.IntegrationPoints.Core.Services
 				{
 					DateTime now = DateTime.UtcNow;
 
-					JobHistoryError jobHistoryError = new JobHistoryError();
-					jobHistoryError.ParentArtifactId = JobHistory.ArtifactId;
-					jobHistoryError.JobHistory = JobHistory.ArtifactId;
-					jobHistoryError.Name = Guid.NewGuid().ToString();
-					jobHistoryError.ErrorType = errorType;
-					jobHistoryError.ErrorStatus = ErrorStatusChoices.JobHistoryErrorNew;
-					jobHistoryError.SourceUniqueID = documentIdentifier;
-					jobHistoryError.Error = errorMessage;
-					jobHistoryError.StackTrace = stackTrace;
-					jobHistoryError.TimestampUTC = now;
+					var jobHistoryError = new JobHistoryError
+					{
+						ParentArtifactId = JobHistory.ArtifactId,
+						JobHistory = JobHistory.ArtifactId,
+						Name = Guid.NewGuid().ToString(),
+						ErrorType = errorType,
+						ErrorStatus = ErrorStatusChoices.JobHistoryErrorNew,
+						SourceUniqueID = documentIdentifier,
+						Error = errorMessage,
+						StackTrace = stackTrace,
+						TimestampUTC = now
+					};
 
 					_jobHistoryErrorList.Add(jobHistoryError);
 
@@ -135,7 +133,7 @@ namespace kCura.IntegrationPoints.Core.Services
 					LogMissingJobHistoryError();
 					//we can't create JobHistoryError without JobHistory,
 					//in such case log error into Error Tab by throwing Exception.
-					throw new Exception(string.Format("Type:{0}  Id:{1}  Error:{2}", errorType.Name, documentIdentifier, errorMessage));
+					throw new Exception($"Type:{errorType.Name}  Id:{documentIdentifier}  Error:{errorMessage}");
 				}
 			}
 		}
@@ -174,7 +172,7 @@ namespace kCura.IntegrationPoints.Core.Services
 				//The field may be out of state with the true job status, or subsequent Update calls may succeed.
 			}
 		}
-
+		
 		#region Logging
 
 		private void LogCommittingErrorsFailed(Exception ex, string allErrors)
@@ -186,12 +184,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			_logger.LogError("Failed to create Job History Error: Job History doesn't exists.");
 		}
-
-		private void LogUpdatingHasErrorsFieldError(Exception e)
-		{
-			_logger.LogError(e, "Failed to update Integration Point's Has Error field.");
-		}
-
+		
 		#endregion
 	}
 }

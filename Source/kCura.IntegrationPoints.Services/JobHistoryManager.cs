@@ -35,9 +35,9 @@ namespace kCura.IntegrationPoints.Services
 				new[] {new PermissionModel(ObjectTypeGuids.JobHistory, ObjectTypes.JobHistory, ArtifactPermission.View)});
 			try
 			{
-				using (var container = GetDependenciesContainer(request.WorkspaceArtifactId))
+				using (IWindsorContainer container = GetDependenciesContainer(request.WorkspaceArtifactId))
 				{
-					IJobHistoryRepository jobHistoryRepository = container.Resolve<IJobHistoryRepository>();
+					var jobHistoryRepository = container.Resolve<IJobHistoryRepository>();
 					return await Task.Run(() => jobHistoryRepository.GetJobHistory(request)).ConfigureAwait(false);
 				}
 			}

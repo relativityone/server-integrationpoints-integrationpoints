@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			try
 			{
 				var queryBuilder = new DocumentQueryBuilder();
-				var query = queryBuilder.AddFolderCondition(folderId, viewId, includeSubFoldersTotals).AddHasNativeCondition().NoFields().Build();
+				Query<RDO> query = queryBuilder.AddFolderCondition(folderId, viewId, includeSubFoldersTotals).AddHasNativeCondition().NoFields().Build();
 				return ExecuteQuery(query, workspaceArtifactId).TotalCount;
 			}
 			catch (Exception e)
@@ -35,13 +35,13 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 				throw;
 			}
 		}
-
+		
 		public int ForProduction(int workspaceArtifactId, int productionSetId)
 		{
 			try
 			{
 				var queryBuilder = new ProductionInformationQueryBuilder();
-				var query = queryBuilder.AddProductionSetCondition(productionSetId).AddHasNativeCondition().NoFields().Build();
+				Query<RDO> query = queryBuilder.AddProductionSetCondition(productionSetId).AddHasNativeCondition().NoFields().Build();
 				return ExecuteQuery(query, workspaceArtifactId).TotalCount;
 			}
 			catch (Exception e)
@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			try
 			{
 				var queryBuilder = new DocumentQueryBuilder();
-				var query = queryBuilder.AddSavedSearchCondition(savedSearchId).AddHasNativeCondition().NoFields().Build();
+				Query<RDO> query = queryBuilder.AddSavedSearchCondition(savedSearchId).AddHasNativeCondition().NoFields().Build();
 				return ExecuteQuery(query, workspaceArtifactId).TotalCount;
 			}
 			catch (Exception e)

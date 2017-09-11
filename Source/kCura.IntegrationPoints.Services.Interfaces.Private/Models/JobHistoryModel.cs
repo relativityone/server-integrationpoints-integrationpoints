@@ -11,5 +11,9 @@ namespace kCura.IntegrationPoints.Services
 		public string DestinationWorkspace { get; set; }
 
 		public string DestinationInstance { get; set; }
+
+		public string FilesSize { get; set; }
+
+		public string Overwrite { get; set; }
 	}
 }

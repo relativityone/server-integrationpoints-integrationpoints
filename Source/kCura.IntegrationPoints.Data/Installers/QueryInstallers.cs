@@ -47,6 +47,7 @@ namespace kCura.IntegrationPoints.Data.Installers
 			container.Register(Component.For<INativeFileSizeStatistics>().ImplementedBy<NativeFileSizeStatistics>().LifestyleSingleton());
 			container.Register(Component.For<IImageTotalStatistics>().ImplementedBy<ImageTotalStatistics>().LifestyleSingleton());
 			container.Register(Component.For<IImageFileSizeStatistics>().ImplementedBy<ImageFileSizeStatistics>().LifestyleSingleton());
+			container.Register(Component.For<IErrorFilesSizeStatistics>().ImplementedBy<ErrorFilesSizeStatistics>().LifestyleSingleton());
 			container.Register(Component.For<IRdoStatistics>().ImplementedBy<RdoStatistics>().LifestyleTransient());
 		}
 	}

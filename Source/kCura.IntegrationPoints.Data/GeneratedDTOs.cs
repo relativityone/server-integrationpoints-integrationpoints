@@ -705,6 +705,32 @@ namespace kCura.IntegrationPoints.Data
 				SetField<string>(new System.Guid(JobHistoryFieldGuids.DestinationInstance), value);
 			}
 		}
+		public const int OverwriteFieldLength = 25;
+		[DynamicField(JobHistoryFields.Overwrite, JobHistoryFieldGuids.Overwrite, FieldTypes.FixedLengthText, 25)]
+		public string Overwrite
+		{
+			get
+			{
+				return GetField<string>(new System.Guid(JobHistoryFieldGuids.Overwrite));
+			}
+			set
+			{
+				SetField<string>(new System.Guid(JobHistoryFieldGuids.Overwrite), value);
+			}
+		}
+		public const int FilesSizeFieldLength = 20;
+		[DynamicField(JobHistoryFields.FilesSize, JobHistoryFieldGuids.FilesSize, FieldTypes.FixedLengthText, 20)]
+		public string FilesSize
+		{
+			get
+			{
+				return GetField<string>(new System.Guid(JobHistoryFieldGuids.FilesSize));
+			}
+			set
+			{
+				SetField<string>(new System.Guid(JobHistoryFieldGuids.FilesSize), value);
+			}
+		}
 		public const int NameFieldLength = 255;
 		[DynamicField(JobHistoryFields.Name, JobHistoryFieldGuids.Name, FieldTypes.FixedLengthText, 255)]
 		public string Name

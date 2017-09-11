@@ -9,7 +9,6 @@ using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
@@ -93,6 +92,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			_userMessageNotification = Substitute.For<IUserMessageNotification>();
 			_userNotification = Substitute.For<IUserNotification>();
 			_configFactory = Substitute.For<IConfigFactory>();
+		
 			_jobStatisticsService = Substitute.For<JobStatisticsService>();
 
 			_jobInfoFactoryMock = Substitute.For<IJobInfoFactory>();

@@ -89,6 +89,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private SourceProvider _sourceProvider;
 		private List<FieldMap> _mappings;
 		private JobHistoryErrorDTO.UpdateStatusType _updateStatusType;
+		private JobStatisticsService _jobStatisticsService;
+
 		private object _lock;
 		//not sure
 		private IBatchStatus _updateJobHistoryStatus;
@@ -119,6 +121,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_batchStatuses = new List<IBatchStatus>() {_sendingEmailNotification, _updateJobHistoryStatus};
 			_serializer = Substitute.For<ISerializer>();
 			_jobService = Substitute.For<IJobService>();
+			
 			_scheduleRuleFactory = Substitute.For<IScheduleRuleFactory>();
 			_jobHistoryService = Substitute.For<IJobHistoryService>();
 			_jobHistoryErrorService = Substitute.For<IJobHistoryErrorService>();
@@ -134,6 +137,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_opticonFileReader = Substitute.For<IDataReader, IOpticonDataReader>();
 			((IArtifactReader)_loadFileReader).CountRecords().Returns(_RECORD_COUNT);
 			((IOpticonDataReader)_opticonFileReader).CountRecords().Returns(_RECORD_COUNT);
+
+			_jobStatisticsService = Substitute.For<JobStatisticsService>();
 
 			_dataReaderFactory.GetDataReader(Arg.Any<FieldMap[]>(), _IMPORT_PROVIDER_SETTINGS_FOR_DOC).Returns(_loadFileReader);
 			_dataReaderFactory.GetDataReader(Arg.Any<FieldMap[]>(), _IMPORT_PROVIDER_SETTINGS_FOR_IMAGE).Returns(_opticonFileReader);
@@ -196,7 +201,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				_caseContext, _contextContainerFactory,
 				_synchronizerFactory,
 				_claimPrincipleFactory,	_managerFactory, _batchStatuses, _serializer, _jobService, _scheduleRuleFactory, _jobHistoryService,
-				_jobHistoryErrorService, null,
+				_jobHistoryErrorService, _jobStatisticsService,
 				_dataReaderFactory, _importFileLocationService);
 		}
 

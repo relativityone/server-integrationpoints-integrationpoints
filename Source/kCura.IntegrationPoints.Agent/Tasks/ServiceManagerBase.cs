@@ -96,6 +96,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		    LogInitializeServiceStart(job);
             LoadIntegrationPointData(job);
 			ConfigureBatchInstance(job);
+			ConfigureJobStatistics();
 			ConfigureJobHistory();
 			LoadSourceProvider();
 			UpdateJobStatus();
@@ -105,8 +106,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			ConfigureBatchExceptions(job);
 		    LogInitializeServiceEnd(job);
         }
-
-	    protected void FinalizeService(Job job)
+		
+		protected void FinalizeService(Job job)
 		{
 		    LogFinalizeServiceStart(job);
 
@@ -256,7 +257,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			if (string.IsNullOrWhiteSpace(job.JobDetails))
 			{
-				TaskParameters taskParameters = new TaskParameters
+				var taskParameters = new TaskParameters
 				{
 					BatchInstance = Guid.NewGuid()
 				};
@@ -265,9 +266,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 			else
 			{
-				TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
+				var taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
 				Identifier = taskParameters.BatchInstance;
 			}
+		}
+		private void ConfigureJobStatistics()
+		{
+			StatisticsService.IntegrationPointSourceConfiguration = SourceConfiguration;
 		}
 
 		private void ConfigureJobHistory()
@@ -299,8 +304,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void ConfigureBatchExceptions(Job job)
 		{
-		    LogConfigureBatchExceptionsStart(job);
-            List<Exception> exceptions = new List<Exception>();
+			LogConfigureBatchExceptionsStart(job);
+			var exceptions = new List<Exception>();
 			BatchStatus.ForEach(batch =>
 			{
 				try

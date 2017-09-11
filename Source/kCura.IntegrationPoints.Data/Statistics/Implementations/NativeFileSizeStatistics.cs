@@ -34,9 +34,9 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			try
 			{
 				var queryBuilder = new DocumentQueryBuilder();
-				var query = queryBuilder.AddFolderCondition(folderId, viewId, includeSubFoldersTotals).AddHasNativeCondition().NoFields().Build();
-				var queryResult = ExecuteQuery(query, workspaceArtifactId);
-				var artifactIds = queryResult.Results.Select(x => x.Artifact.ArtifactID).ToList();
+				Query<RDO> query = queryBuilder.AddFolderCondition(folderId, viewId, includeSubFoldersTotals).AddHasNativeCondition().NoFields().Build();
+				QueryResultSet<RDO> queryResult = ExecuteQuery(query, workspaceArtifactId);
+				List<int> artifactIds = queryResult.Results.Select(x => x.Artifact.ArtifactID).ToList();
 				return GetTotalFileSize(artifactIds, workspaceArtifactId);
 			}
 			catch (Exception e)
@@ -45,15 +45,15 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 				throw;
 			}
 		}
-
+		
 		public int ForProduction(int workspaceArtifactId, int productionSetId)
 		{
 			try
 			{
 				var queryBuilder = new ProductionInformationQueryBuilder();
-				var query = queryBuilder.AddProductionSetCondition(productionSetId).AddHasNativeCondition().AddField(ProductionConsts.DocumentFieldGuid).Build();
-				var queryResult = ExecuteQuery(query, workspaceArtifactId);
-				var artifactIds = queryResult.Results.Select(x => ((Artifact) x.Artifact[ProductionConsts.DocumentFieldGuid].Value).ArtifactID).ToList();
+				Query<RDO> query = queryBuilder.AddProductionSetCondition(productionSetId).AddHasNativeCondition().AddField(ProductionConsts.DocumentFieldGuid).Build();
+				QueryResultSet<RDO> queryResult = ExecuteQuery(query, workspaceArtifactId);
+				List<int> artifactIds = queryResult.Results.Select(x => ((Artifact) x.Artifact[ProductionConsts.DocumentFieldGuid].Value).ArtifactID).ToList();
 				return GetTotalFileSize(artifactIds, workspaceArtifactId);
 			}
 			catch (Exception e)
@@ -68,9 +68,9 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			try
 			{
 				var queryBuilder = new DocumentQueryBuilder();
-				var query = queryBuilder.AddSavedSearchCondition(savedSearchId).AddHasNativeCondition().NoFields().Build();
-				var queryResult = ExecuteQuery(query, workspaceArtifactId);
-				var artifactIds = queryResult.Results.Select(x => x.Artifact.ArtifactID).ToList();
+				Query<RDO> query = queryBuilder.AddSavedSearchCondition(savedSearchId).AddHasNativeCondition().NoFields().Build();
+				QueryResultSet<RDO> queryResult = ExecuteQuery(query, workspaceArtifactId);
+				List<int> artifactIds = queryResult.Results.Select(x => x.Artifact.ArtifactID).ToList();
 				return GetTotalFileSize(artifactIds, workspaceArtifactId);
 			}
 			catch (Exception e)
@@ -88,21 +88,21 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 		private int GetTotalFileSize(IList<int> artifactIds, int workspaceArtifactId)
 		{
 			const string sqlText = "SELECT COALESCE(SUM([Size]),0) FROM [File] WHERE [Type] = @FileType AND [DocumentArtifactID] IN (SELECT * FROM @ArtifactIds)";
-
-			DataTable idsDataTable = artifactIds.ToDataTable();
-
-			SqlParameter artifactIdsParameter = new SqlParameter("@ArtifactIds", SqlDbType.Structured)
+			
+			var artifactIdsParameter = new SqlParameter("@ArtifactIds", SqlDbType.Structured)
 			{
 				TypeName = "IDs",
-				Value = idsDataTable
+				Value = artifactIds.ToDataTable()
 			};
-			SqlParameter fileTypeParameter = new SqlParameter("@FileType", SqlDbType.Int)
+
+			var fileTypeParameter = new SqlParameter("@FileType", SqlDbType.Int)
 			{
 				Value = FileType.Native
 			};
 
-			var dbContext = _helper.GetDBContext(workspaceArtifactId);
+			IDBContext dbContext = _helper.GetDBContext(workspaceArtifactId);
 			return dbContext.ExecuteSqlStatementAsScalar<int>(sqlText, artifactIdsParameter, fileTypeParameter);
 		}
+		
 	}
 }

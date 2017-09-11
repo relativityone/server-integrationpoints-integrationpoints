@@ -72,11 +72,11 @@ namespace kCura.IntegrationPoints.Data
 
 	public partial class DocumentFieldGuids 
 	{
-		public const string MarkupSetPrimary = @"b9b8964b-92f9-4d34-bd8a-69e303821db5";
+		public const string MarkupSetPrimary = @"2ff67989-9579-4519-8cdf-2a0978954168";
 		public const string Batch = @"d7a9d9fd-68fc-4c85-ad44-ba524a0ca872";
-		public const string BatchBatchSet = @"de165970-de80-4c1e-90e3-8dd330b8138a";
-		public const string BatchAssignedTo = @"81c45cf6-71e8-443c-ab82-877651aa5be4";
-		public const string BatchStatus = @"478d3913-f243-4e43-93ad-c95935e71657";
+		public const string BatchBatchSet = @"119a2992-009b-4e0b-ac8e-1d71918f5945";
+		public const string BatchAssignedTo = @"de5e371d-1576-4866-8ffd-3f6ee0dbaa6e";
+		public const string BatchStatus = @"cc5b825e-1dc4-4b7f-aeb5-0e9c0bb11238";
 		public const string RelativityDestinationCase = @"8980c2fa-0d33-4686-9a97-ea9d6f0b4196";
 		public const string JobHistory = @"97bc12fa-509b-4c75-8413-6889387d8ef6";
 		public const string ControlNumber = @"2a3f1212-c8ca-4fa9-ad6b-f76c97f05438";
@@ -183,6 +183,8 @@ namespace kCura.IntegrationPoints.Data
 		public const string DestinationWorkspaceInformation = @"Destination Workspace Information";
 		public const string JobType = @"Job Type";
 		public const string DestinationInstance = @"Destination Instance";
+		public const string Overwrite = @"Overwrite";
+		public const string FilesSize = @"FilesSize";
 		public const string Name = @"Name";
 	}
 
@@ -201,6 +203,8 @@ namespace kCura.IntegrationPoints.Data
 		public const string DestinationWorkspaceInformation = @"20a24c4e-55e8-4fc2-abbe-f75c07fad91b";
 		public const string JobType = @"e809db5e-5e99-4a75-98a1-26129313a3f5";
 		public const string DestinationInstance = @"6d91ea1e-7b34-46a9-854e-2b018d4e35ef";
+		public const string Overwrite = @"d423e1ac-3c90-45bd-a977-c79c5e963d21";
+		public const string FilesSize = @"6f007a80-7acb-4d5f-8982-9523f7ba38e8";
 		public const string Name = @"07061466-5fab-4581-979c-c801e8207370";
 	}
 

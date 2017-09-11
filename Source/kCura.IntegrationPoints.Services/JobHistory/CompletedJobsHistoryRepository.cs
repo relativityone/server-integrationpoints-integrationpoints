@@ -19,18 +19,20 @@ namespace kCura.IntegrationPoints.Services.JobHistory
 
 		public IList<JobHistoryModel> RetrieveCompleteJobsForIntegrationPoints(JobHistoryRequest request, List<int> integrationPointIds)
 		{
-			var sortDescending = (request.SortDescending != null) && request.SortDescending.Value;
+			bool sortDescending = (request.SortDescending != null) && request.SortDescending.Value;
 			Query<RDO> query = _integrationPointsCompletedJobsQueryBuilder.CreateQuery(request.SortColumnName, sortDescending, integrationPointIds);
 
 			IGenericLibrary<Data.JobHistory> library = _libraryFactory.Create<Data.JobHistory>(request.WorkspaceArtifactId);
 			IList<Data.JobHistory> queryResult = library.Query(query);
-
+			
 			return queryResult.Select(x => new JobHistoryModel
 			{
 				ItemsTransferred = x.ItemsTransferred ?? 0,
 				DestinationWorkspace = x.DestinationWorkspace,
 				DestinationInstance = x.DestinationInstance,
-				EndTimeUTC = x.EndTimeUTC.GetValueOrDefault()
+				EndTimeUTC = x.EndTimeUTC.GetValueOrDefault(),
+				FilesSize =  x.FilesSize, 
+				Overwrite = x.Overwrite
 			}).ToList();
 		}
 
