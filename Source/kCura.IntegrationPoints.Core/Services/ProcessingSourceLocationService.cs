@@ -29,10 +29,15 @@ namespace kCura.IntegrationPoints.Core.Services
 
         public bool IsProcessingSourceLocation(string path, int workspaceArtifactId)
         {
+            if (!IsEnabled())
+            {
+                return false;
+            }
+
             List<ProcessingSourceLocationDTO> processingSourceLocations =
                 _resourcePoolManager.GetProcessingSourceLocation(workspaceArtifactId);
 
-            return processingSourceLocations.Select(dto => dto.Location).All(location => location != path);
+            return processingSourceLocations.Select(dto => dto.Location).Any(location => location == path);
         }
     }
 }
