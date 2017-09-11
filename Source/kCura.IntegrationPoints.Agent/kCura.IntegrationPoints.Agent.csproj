@@ -294,6 +294,7 @@
     <Compile Include="Exceptions\AgentDropJobException.cs" />
     <Compile Include="Installer\AgentInstaller.cs" />
     <Compile Include="IRelativityConfigurationFactory.cs" />
+    <Compile Include="JobLogInformation.cs" />
     <Compile Include="Tasks\ExportManager.cs" />
     <Compile Include="Tasks\ExportWorker.cs" />
     <Compile Include="RelativityConfigurationFactory.cs" />

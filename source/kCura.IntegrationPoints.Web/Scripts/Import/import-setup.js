@@ -203,6 +203,25 @@
 		};
 	};
 
+	windowObj.RelativityImport.getFolderPath = function (destinationWorkspaceId, folderArtifactId) {
+		IP.data.ajax({
+				contentType: "application/json",
+				dataType: "json",
+				headers: { "X-CSRF-Header": "-" },
+				type: "POST",
+				url: IP.utils.generateWebAPIURL("SearchFolder/GetFullPathList",
+					destinationWorkspaceId,
+					folderArtifactId,
+					0),
+				async: true
+			})
+			.then(function (result) {
+				if (result[0]) {
+					windowObj.RelativityImport.koModel.TargetFolder(result[0].fullPath);
+				}
+			});
+	}
+
 	windowObj.RelativityImport.getFolderFullName = function (currentFolder, folderId) {
 		if (currentFolder.id === folderId) {
 			return currentFolder.text;
@@ -247,7 +266,7 @@
 		jstreeHolderDivSelector: '#destination-jstree-holder-div',
 		onNodeSelectedEventHandler: function (node) {
 			windowObj.RelativityImport.koModel.DestinationFolderArtifactId(node.id);
-			windowObj.RelativityImport.koModel.TargetFolder(windowObj.RelativityImport.getFolderFullName(windowObj.RelativityImport.koModel.foldersStructure, windowObj.RelativityImport.koModel.DestinationFolderArtifactId()));
+			windowObj.RelativityImport.getFolderPath(root.utils.getParameterByName("AppID", window.top), windowObj.RelativityImport.koModel.DestinationFolderArtifactId());
 		}
 	});
 
@@ -303,23 +322,27 @@
 	};
 
 	windowObj.RelativityImport.getFolderAndSubFolders = function (folderArtifactId) {
-		$.ajax({
-			type: "POST",
-			url: IP.utils.generateWebAPIURL("SearchFolder/GetFolders", root.utils.getParameterByName("AppID", window.top))
-		}).then(function (result) {
-			if (folderArtifactId) {
-				windowObj.RelativityImport.koModel.TargetFolder(windowObj.RelativityImport.getFolderFullName(result, folderArtifactId));
-			}
-			if (!!windowObj.RelativityImport.koModel.TargetFolder() && windowObj.RelativityImport.koModel.TargetFolder().indexOf(result.text) === -1) {
-				windowObj.RelativityImport.koModel.FolderArtifactId("");
-				windowObj.RelativityImport.koModel.TargetFolder("");
-				windowObj.RelativityImport.koModel.TargetFolder.isModified(false);
-			}
-			windowObj.RelativityImport.koModel.foldersStructure = result;
-			windowObj.RelativityImport.destinationLocationSelector.reloadWithRootWithData(result);
-		}).fail(function (error) {
-			IP.frameMessaging().dFrame.IP.message.error.raise(error);
-		});
+		var reloadTree = function (params, onSuccess, onFail) {
+			IP.data.ajax({
+				type: "POST",
+				url: IP.utils.generateWebAPIURL("SearchFolder/GetStructure",
+					root.utils.getParameterByName("AppID", window.top),
+					params.id != "#" ? params.id : "0",
+					0)
+			}).then(function (result) {
+				onSuccess(result);
+				if (!!folderArtifactId) {
+					self.FolderArtifactId(folderArtifactId);
+					self.TargetFolder(self.getFolderPath(root.utils.getParameterByName("AppID", window.top), folderArtifactId));
+					self.TargetFolder.isModified(false);
+				}
+				self.foldersStructure = result;
+			}).fail(function (error) {
+				onFail(error);
+				IP.frameMessaging().dFrame.IP.message.error.raise(error);
+			});
+		}
+		windowObj.RelativityImport.destinationLocationSelector.reloadWithRootWithData(reloadTree);
 	};
 
 	$.ajax({
@@ -329,8 +352,8 @@
 		success: function (data) {
 			var array = [];
 			$.each(data, function (index, value) {
-				array.push({ "asciiID": (index + 1), "asciiText": value })
-			}
+					array.push({ "asciiID": (index + 1), "asciiText": value })
+				}
 			);
 			windowObj.RelativityImport.koModel.setAsciiDelimiters(array);
 			assignAsciiDropDownDefault(array);
@@ -340,7 +363,7 @@
 	$.ajax({
 		url: root.utils.generateWebAPIURL("Production/GetProductionsForImport", root.utils.getParameterByName("AppID", window.top)),
 		type: "POST",
-		success: function(data) {
+		success: function (data) {
 			windowObj.RelativityImport.koModel.productionSets(data);
 		}
 	});

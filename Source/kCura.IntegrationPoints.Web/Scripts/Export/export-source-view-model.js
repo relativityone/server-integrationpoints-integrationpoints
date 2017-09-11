@@ -153,13 +153,8 @@ var ExportSourceViewModel = function (state) {
 		}
 	};
 
-	self.UpdateViewsAndFolders = function (viewId) {
-		self.Folders(self.Cache.ViewsResult[0]);
-		self.UpdateViews(viewId);
-	};
-
 	self.UpdateViews = function (viewId) {
-		self.AvailableViews(self.Cache.ViewsResult[1]);
+		self.AvailableViews(self.Cache.ViewsResult[0]);
 		self.UpdateSelectedView(viewId || self.ViewId());
 	};
 
@@ -224,8 +219,8 @@ var ExportSourceViewModel = function (state) {
 
 		self.LocationSelector.init(self.FolderArtifactName(), [], {
 			onNodeSelectedEventHandler: function (node) {
-				self.FolderArtifactName(node.fullPath);
 				self.FolderArtifactId(node.id);
+				self.getFolderPath(IP.utils.getParameterByName("AppID", window.top), node.id);
 			}
 		});
 		self.LocationSelector.toggle(true);
@@ -234,93 +229,127 @@ var ExportSourceViewModel = function (state) {
 			self.LocationSelector.reloadWithRootWithData(value);
 		});
 
-		var folders = self.Folders();
-		if (folders !== undefined) {
-			self.LocationSelector.reloadWithRootWithData(folders);
-		}
+		self.getFolderAndSubfolders();
+	};
+
+	self.getFolderPath = function (destinationWorkspaceId, folderArtifactId) {
+		IP.data.ajax({
+				contentType: "application/json",
+				dataType: "json",
+				headers: { "X-CSRF-Header": "-" },
+				type: "POST",
+				url: IP.utils.generateWebAPIURL("SearchFolder/GetFullPathList",
+					destinationWorkspaceId,
+					folderArtifactId,
+					0),
+				async: true
+			})
+			.then(function (result) {
+				if (result[0]) {
+					self.FolderArtifactName(result[0].fullPath);
+				}
+			});
+	}
+
+	self.getFolderAndSubfolders = function (folderArtifactId) {
+		var reloadTree = function (params, onSuccess, onFail) {
+			IP.data.ajax({
+				type: "POST",
+				url: IP.utils.generateWebAPIURL("SearchFolder/GetStructure",
+					IP.utils.getParameterByName("AppID", window.top),
+					params.id != "#" ? params.id : "0",
+					0)
+			}).then(function (result) {
+				onSuccess(result);
+				if (!!folderArtifactId) {
+					self.FolderArtifactId(folderArtifactId);
+					self.FolderArtifactName(self.getFolderPath(IP.utils.getParameterByName("AppID", window.top), folderArtifactId));
+					self.FolderArtifactName.isModified(false);
+				}
+				self.foldersStructure = result;
+			}).fail(function (error) {
+				onFail(error);
+				IP.frameMessaging().dFrame.IP.message.error.raise(error);
+			});
+		};
+
+		self.LocationSelector.reloadWithRootWithData(reloadTree);
 	};
 
 	self.Reload = function () {
 		switch (self.TypeOfExport()) {
-			case ExportEnums.SourceOptionsEnum.Folder:
-			case ExportEnums.SourceOptionsEnum.FolderSubfolder:
+		case ExportEnums.SourceOptionsEnum.Folder:
+		case ExportEnums.SourceOptionsEnum.FolderSubfolder:
 
-				var viewsPromise = IP.data.ajax({
+			var viewsPromise = IP.data.ajax({
+				type: "get",
+				url: IP.utils.generateWebAPIURL("WorkspaceView/GetViews", self.ArtifactTypeID)
+			}).fail(function (error) {
+				IP.message.error.raise("No views were returned from the source provider.");
+			});
+
+			if (self.ExportRdoMode()) {
+				var currentViewId = self.ViewId();
+
+				viewsPromise.done(function (result) {
+					self.Cache.ViewsResult = result;
+					self.UpdateViews(currentViewId);
+				});
+			}
+			else if (typeof (self.Cache.ViewsResult) === 'undefined') {
+				var currentViewId = self.ViewId();
+
+				IP.data.deferred().all([viewsPromise]).then(function (result) {
+					self.Cache.ViewsResult = result;
+					self.UpdateViews(currentViewId);
+				});
+			} else {
+				self.UpdateViews();
+			}
+			break;
+
+		case ExportEnums.SourceOptionsEnum.Production:
+			if (typeof (self.Cache.ProductionsResult) === 'undefined') {
+				var productionSetsPromise = IP.data.ajax({
 					type: "get",
-					url: IP.utils.generateWebAPIURL("WorkspaceView/GetViews", self.ArtifactTypeID)
+					url: IP.utils.generateWebAPIURL("Production/GetProductionsForExport"),
+					data: {
+						sourceWorkspaceArtifactId: IP.utils.getParameterByName("AppID", window.top)
+					}
 				}).fail(function (error) {
-					IP.message.error.raise("No views were returned from the source provider.");
+					IP.message.error.raise("No production sets were returned from the source provider.");
 				});
 
-				if (self.ExportRdoMode()) {
-					var currentViewId = self.ViewId();
+				var currentProductionId = self.ProductionId();
 
-					viewsPromise.done(function (result) {
-						self.Cache.ViewsResult = [null, result];
-						self.UpdateViews(currentViewId);
-					});
-				}
-				else if (typeof (self.Cache.ViewsResult) === 'undefined') {
-					var searchFoldersPromise = IP.data.ajax({
-						type: 'POST',
-						url: IP.utils.generateWebAPIURL('SearchFolder/GetFolders', IP.utils.getParameterByName("AppID", window.top))
-					}).fail(function (error) {
-						IP.message.error.raise("No folders were returned from the source provider.");
-					});
+				IP.data.deferred().all(productionSetsPromise).then(function (result) {
+					self.Cache.ProductionsResult = result;
+					self.UpdateProductions(currentProductionId);
+				});
+			} else {
+				self.UpdateProductions();
+			}
+			break;
 
-					var currentViewId = self.ViewId();
+		case ExportEnums.SourceOptionsEnum.SavedSearch:
+			if (typeof (self.Cache.SavedSearchesResult) === 'undefined') {
+				var savedSearchesTreePromise = IP.data.ajax({
+					type: 'get',
+					url: IP.utils.generateWebAPIURL('SavedSearchesTree', IP.utils.getParameterByName("AppID", window.top))
+				}).fail(function (error) {
+					IP.message.error.raise(error);
+				});
 
-					IP.data.deferred().all([searchFoldersPromise, viewsPromise]).then(function (result) {
-						self.Cache.ViewsResult = result;
-						self.UpdateViewsAndFolders(currentViewId);
-					});
-				} else {
-					self.UpdateViewsAndFolders();
-				}
-				break;
+				var currentSavedSearchArtifactId = self.SavedSearchArtifactId();
 
-			case ExportEnums.SourceOptionsEnum.Production:
-				if (typeof (self.Cache.ProductionsResult) === 'undefined') {
-					var productionSetsPromise = IP.data.ajax({
-						type: "get",
-						url: IP.utils.generateWebAPIURL("Production/GetProductionsForExport"),
-						data: {
-							sourceWorkspaceArtifactId: IP.utils.getParameterByName("AppID", window.top)
-						}
-					}).fail(function (error) {
-						IP.message.error.raise("No production sets were returned from the source provider.");
-					});
-
-					var currentProductionId = self.ProductionId();
-
-					IP.data.deferred().all(productionSetsPromise).then(function (result) {
-						self.Cache.ProductionsResult = result;
-						self.UpdateProductions(currentProductionId);
-					});
-				} else {
-					self.UpdateProductions();
-				}
-				break;
-
-			case ExportEnums.SourceOptionsEnum.SavedSearch:
-				if (typeof (self.Cache.SavedSearchesResult) === 'undefined') {
-					var savedSearchesTreePromise = IP.data.ajax({
-						type: 'get',
-						url: IP.utils.generateWebAPIURL('SavedSearchesTree', IP.utils.getParameterByName("AppID", window.top))
-					}).fail(function (error) {
-						IP.message.error.raise(error);
-					});
-
-					var currentSavedSearchArtifactId = self.SavedSearchArtifactId();
-
-					IP.data.deferred().all(savedSearchesTreePromise).then(function (result) {
-						self.Cache.SavedSearchesResult = result;
-						self.UpdateSavedSearches(currentSavedSearchArtifactId);
-					});
-				} else {
-					self.UpdateSavedSearches();
-				}
-				break;
+				IP.data.deferred().all(savedSearchesTreePromise).then(function (result) {
+					self.Cache.SavedSearchesResult = result;
+					self.UpdateSavedSearches(currentSavedSearchArtifactId);
+				});
+			} else {
+				self.UpdateSavedSearches();
+			}
+			break;
 		}
 	};
 };
