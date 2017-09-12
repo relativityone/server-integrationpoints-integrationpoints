@@ -1,102 +1,131 @@
 ﻿using IntegrationPointsUITests.Pages;
 using kCura.IntegrationPoint.Tests.Core;
 using TestHelper = kCura.IntegrationPoint.Tests.Core.TestHelpers.TestHelper;
-using kCura.IntegrationPoints.Data;
-using kCura.Notification;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using Relativity.Core;
-using Relativity.Services.Permission;
-using Permission = kCura.IntegrationPoint.Tests.Core.Permission;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Security.Claims;
-using kCura.IntegrationPoint.Tests.Core.Extensions;
+using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using NUnit.Framework.Interfaces;
-using Relativity.Core.Authentication;
 
 namespace IntegrationPointsUITests.Tests
 {
 	public abstract class UiTest
 	{
+		private Lazy<ITestHelper> _helper;
 		private const string _TEMPALTE_WKSP_NAME = "Relativity Starter Template";
+		private const int _ADMIN_USER_ID = 9;
 
-		private Lazy<ITestHelper> _help;
+		protected string TestTimeStamp { get; set; }
 
-		protected static int WorkspaceId { get; set; } = int.MinValue;
-		protected static string WorkspaceName { get; set; }
+		protected int WorkspaceId { get; set; } = int.MinValue;
+		protected string WorkspaceName { get; set; }
+
+		protected int GroupId { get; set; }
+		protected int UserId { get; set; }
 
 		protected IWebDriver Driver { get; set; }
 
-		public ITestHelper Helper => _help.Value;
-		
+		public ITestHelper Helper => _helper.Value;
+
 		[OneTimeSetUp]
-		protected void CreateDriver()
+		protected void SetupSuite()
+		{
+			TestTimeStamp = DateTime.UtcNow.ToString("yyyy-MM-dd_HH-mm-ss");
+			SetupConfiguration();
+			CreateWorkspace();
+			SetupUser();
+			ImportDocuments();
+			InstallIntegrationPoints();
+			CreateDriver();
+		}
+
+		protected void SetupConfiguration()
 		{
 			kCura.Data.RowDataGateway.Config.MockConfigurationValue("LongRunningQueryTimeout", 100);
-			string connString = string.Format(ConfigurationManager.AppSettings["connectionStringEDDS"], "il1ddmlpl3db001.kcura.corp", "EDDSdbo", "P@ssw0rd@1");
+			string connString = string.Format(ConfigurationManager.AppSettings["connectionStringEDDS"],
+				SharedVariables.TargetDbHost, SharedVariables.DatabaseUserId, SharedVariables.DatabasePassword);
 			kCura.Config.Config.SetConnectionString(connString);
 
-			_help = new Lazy<ITestHelper>(() => new TestHelper());
+			_helper = new Lazy<ITestHelper>(() => new TestHelper());
 
-			global::Relativity.Data.Config.InjectConfigSettings(new Dictionary<string, object>
+			Relativity.Data.Config.InjectConfigSettings(new Dictionary<string, object>
 			{
 				{"connectionString", SharedVariables.EddsConnectionString}
 			});
+		}
 
-
-			string testTimeStamp = DateTime.UtcNow.ToString("yyyy-MM-dd_HH-mm-ss");
-			WorkspaceName = $"Test Workspace {testTimeStamp}";
+		protected void CreateWorkspace()
+		{
+			WorkspaceName = $"Test Workspace {TestTimeStamp}";
 
 			try
 			{
-				WorkspaceId = Workspace.CreateWorkspace($"Test Workspace {testTimeStamp}", _TEMPALTE_WKSP_NAME);
+				WorkspaceId = Workspace.CreateWorkspace($"Test Workspace {TestTimeStamp}", _TEMPALTE_WKSP_NAME);
 			}
 			catch (System.Exception ex)
 			{
 				Console.WriteLine($@"Cannot create workspace. Check if Relativity works correctly (services, ...). Exception: {ex}.");
 				throw;
 			}
+		}
 
-			// setup user and group
-			// create group for 
-			int groupId = Group.CreateGroup($"TestGroup_{testTimeStamp}");
-			Group.AddGroupToWorkspace(WorkspaceId, groupId);
-			GroupPermissions permissions = Permission.GetGroupPermissions(WorkspaceId, groupId);
-
+		protected void SetupUser()
+		{
+			GroupId = Group.CreateGroup($"TestGroup_{TestTimeStamp}");
+			Group.AddGroupToWorkspace(WorkspaceId, GroupId);
+			
 			ClaimsPrincipal.ClaimsPrincipalSelector += () =>
 			{
 				var factory = new ClaimsPrincipalFactory();
-				var _ADMIN_USER_ID = 9;
 				return factory.CreateClaimsPrincipal2(_ADMIN_USER_ID, Helper);
 			};
 
+			UserModel userModel = User.CreateUser("UI", $"Test_User_{TestTimeStamp}", $"UI_Test_User_{TestTimeStamp}@relativity.com", new List<int> { GroupId });
+			UserId = userModel.ArtifactId;
+		}
+
+		protected void InstallIntegrationPoints()
+		{
 			try
-			{
-				ObjectPermission permissionsForRdo =
-					permissions.ObjectPermissions.FindPermission(ObjectTypes.IntegrationPointType);
-				permissionsForRdo.ViewSelected = false;
-			}
-			catch (System.Exception) // probably no IP in workspace
 			{
 				ICoreContext coreContext = SourceProviderTemplate.GetBaseServiceContext(-1);
 
 				var ipAppManager = new RelativityApplicationManager(coreContext, Helper);
-				ipAppManager.InstallIntegrationPointFromAppLibraryToWorkspace(WorkspaceId);
-
-				//????
-				//ObjectPermission permissionsForRdo =
-				//	permissions.ObjectPermissions.FindPermission(ObjectTypes.IntegrationPointType);
-				//permissionsForRdo.ViewSelected = false;
+				bool isAppInstalled = ipAppManager.IsGetApplicationInstalled(1017399);
+				if (!isAppInstalled)
+				{
+					ipAppManager.InstallIntegrationPointFromAppLibraryToWorkspace(WorkspaceId);
+				}
 			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($@"Unexpected error when detecting or installing Integration Points application in the workspace, Exception: {ex.Message}");
+				throw;
+			}
+			Console.WriteLine("Application is installed.");
+		}
+
+		protected void ImportDocuments()
+		{
+			Console.WriteLine(@"Importing documents...");
+			string testDir = TestContext.CurrentContext.TestDirectory.Replace("kCura.IntegrationPoints.UITests",
+				"kCura.IntegrationPoint.Tests.Core");
+			DocumentsTestData data = DocumentTestDataBuilder.BuildTestData(testDir);
+			var workspaceService = new WorkspaceService(new ImportHelper());
+			workspaceService.ImportData(WorkspaceId, data);
+			Console.WriteLine(@"Documents imported.");
+		}
 
 
-			User.CreateUser("John", $"Doe_{testTimeStamp}", $"test_{testTimeStamp}@kcura.com", new List<int> { groupId });
-
+		protected void CreateDriver()
+		{
 			ChromeDriverService driverService = ChromeDriverService.CreateDefaultService();
 			// Otherwise console window appears for chromedriver process
 			driverService.HideCommandPromptWindow = true;
@@ -112,23 +141,9 @@ namespace IntegrationPointsUITests.Tests
 			// Long implicit wait as Relativity uses IFrames and is usually quite slow
 			Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(SharedVariables.UiImplicitWaitInSec);
 			Driver.Manage().Window.Maximize();
-			Driver.Url = SharedVariables.TargetHost + "/Relativity";
-			Driver.Url = "https://il1ddmlpl3wb001.kcura.corp/Relativity/";
-
+			Driver.Url = SharedVariables.ProtocolVersion + "://" + SharedVariables.TargetHost + "/Relativity";
 		}
-
-		private ICoreContext GetBaseServiceContext(ClaimsPrincipal claimsPrincipal, int workspaceId)
-		{
-			try
-			{
-				return claimsPrincipal.GetServiceContextUnversionShortTerm(workspaceId);
-			}
-			catch (System.Exception exception)
-			{
-				throw new kCura.Notification.Exception("Unable to initialize the user context.", exception);
-			}
-		}
-
+		
 		[OneTimeTearDown]
 		protected void CloseAndQuitDriver()
 		{
@@ -141,6 +156,10 @@ namespace IntegrationPointsUITests.Tests
 			{
 				Workspace.DeleteWorkspace(WorkspaceId);
 			}
+
+			Group.DeleteGroup(GroupId);
+
+			User.DeleteUser(UserId);
 
 			Driver?.Quit();
 		}
@@ -161,7 +180,7 @@ namespace IntegrationPointsUITests.Tests
 			{
 				return;
 			}
-			Screenshot screenshot = ((ITakesScreenshot)Driver).GetScreenshot();
+			Screenshot screenshot = ((ITakesScreenshot) Driver).GetScreenshot();
 			string testDir = TestContext.CurrentContext.TestDirectory;
 			string testName = TestContext.CurrentContext.Test.FullName;
 			string timeStamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss-ffff");

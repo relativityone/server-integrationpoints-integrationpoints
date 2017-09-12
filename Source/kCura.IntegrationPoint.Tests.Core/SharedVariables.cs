@@ -24,6 +24,7 @@ namespace kCura.IntegrationPoint.Tests.Core
         #region UI Tests Settings
         public static int UiImplicitWaitInSec { get; set; } = int.Parse(ConfigurationManager.AppSettings["ui.implicitWaitInSec"]);
         public static int UiWaitForAjaxCallsInSec { get; set; } = int.Parse(ConfigurationManager.AppSettings["ui.waitForAjaxCallsInSec"]);
+        public static int UiWaitForPageInSec { get; set; } = int.Parse(ConfigurationManager.AppSettings["ui.waitForPageInSec"]);
         #endregion UI Tests Settings
         
         #region Relativity Settings

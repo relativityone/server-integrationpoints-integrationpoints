@@ -90,6 +90,7 @@ namespace IntegrationPointsUITests.Pages
 
         public ExportToFileThirdPage GoToNextPage()
         {
+			WaitForPage();
             NextButton.Click();
             return new ExportToFileThirdPage(Driver);
         }
