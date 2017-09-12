@@ -4,6 +4,8 @@ using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Statistics;
+using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
 
@@ -63,6 +65,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		private readonly IErrorFilesSizeStatistics _errorFilesSizeStatistics;
 
 		public SourceConfiguration IntegrationPointSourceConfiguration { get; set; }
+		public ImportSettings IntegrationPointImportSettings { get; set; }
 
 		internal JobStatisticsService()
 		{
@@ -200,6 +203,11 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
 		private int CalculatePushedFilesSizeForJobHistory()
 		{
+			if (!IntegrationPointImportSettings.ImportNativeFile)
+			{
+				return 0;
+			}
+
 			var filesSize = 0;
 
 			switch (IntegrationPointSourceConfiguration.TypeOfExport)

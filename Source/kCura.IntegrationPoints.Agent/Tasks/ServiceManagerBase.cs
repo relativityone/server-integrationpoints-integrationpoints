@@ -19,6 +19,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -45,6 +46,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		protected ISynchronizerFactory SynchronizerFactory { get; private set; }
 		protected IJobStopManager JobStopManager { get; set; }
 		protected SourceConfiguration SourceConfiguration { get; set; }
+		protected ImportSettings ImportSettings { get; set; }
 		protected Guid Identifier { get; set; }
 		protected TaskResult Result { get; set; }
 
@@ -250,6 +252,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			IntegrationPointDto = LoadIntegrationPointDto(job);
 			SourceConfiguration = Serializer.Deserialize<SourceConfiguration>(IntegrationPointDto.SourceConfiguration);
+			ImportSettings = Serializer.Deserialize<ImportSettings>(IntegrationPointDto.DestinationConfiguration);
 			JobHistoryErrorService.IntegrationPoint = IntegrationPointDto;
 		}
 
@@ -273,6 +276,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private void ConfigureJobStatistics()
 		{
 			StatisticsService.IntegrationPointSourceConfiguration = SourceConfiguration;
+			StatisticsService.IntegrationPointImportSettings = ImportSettings;
 		}
 
 		private void ConfigureJobHistory()
