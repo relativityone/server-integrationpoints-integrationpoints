@@ -1,5 +1,6 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Support.PageObjects;
+using OpenQA.Selenium.Support.UI;
 
 namespace IntegrationPointsUITests.Pages
 {
@@ -46,16 +47,23 @@ namespace IntegrationPointsUITests.Pages
         {
             NavigateHome.Click();
             MainMenu.FindElement(By.LinkText("Workspaces")).Click();
-            IWebElement element = Driver.SwitchTo().Frame("externalPage").FindElement(By.LinkText(name));
+	        IWebElement viewMenu = Driver.SwitchTo().Frame("externalPage").FindElement(By.Id("viewMenu"));
+			var viewMenuSelect = new SelectElement(viewMenu);
+			viewMenuSelect.SelectByText("All Case Templates");
+
+	        IWebElement element = Driver.FindElement(By.LinkText(name));
             element.Click();
             return this;
         }
 
         public IntegrationPointsPage GoToIntegrationPointsPage()
         {
+			WaitForPage();
             QuickNavigation.Click();
             QuickNavigationInput.SendKeys("Integration Points" + Keys.Enter);
-            QuickNavigationResult.Click();
+			Sleep(300);
+			QuickNavigationInput.SendKeys(Keys.Enter);
+            //QuickNavigationResult.Click();
             return new IntegrationPointsPage(Driver);
         }
         

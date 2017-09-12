@@ -349,7 +349,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			await ResourcePoolHelper.AddAgentServerToResourcePool(agentServer, "Default");
 		}
 
-		private ICoreContext GetBaseServiceContext(int workspaceId)
+		public static ICoreContext GetBaseServiceContext(int workspaceId)
 		{
 			try
 			{

@@ -69,7 +69,16 @@ namespace kCura.IntegrationPoint.Tests.Core
 	        }
 	    }
 
-        public void DeployIntegrationPointsCustomPage()
+		public bool IsGetApplicationInstalled(int workspaceArtifactId)
+		{
+			var caseApplicationManager = new CaseApplicationManager();
+			int appId = caseApplicationManager.FindCurrentApplicationInstallID(_baseServiceContext.ChicagoContext, workspaceArtifactId,
+					new Guid(IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING));
+			
+			return appId > 0;
+		}
+
+		public void DeployIntegrationPointsCustomPage()
 		{
 			string sqlText =
 				$@"Update EDDS.eddsdbo.ApplicationServer set state = 0 where AppGuid = '{IntegrationPoints.Core.Constants

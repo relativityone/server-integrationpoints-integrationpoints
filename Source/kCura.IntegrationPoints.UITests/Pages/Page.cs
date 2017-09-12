@@ -9,10 +9,11 @@ namespace IntegrationPointsUITests.Pages
 {
     public abstract class Page
     {
-
         protected readonly IWebDriver Driver;
 
-        protected Page(IWebDriver driver)
+	    private static int SleepInterval { get; } = 200;
+
+	    protected Page(IWebDriver driver)
         {
             Driver = driver;
         }
@@ -30,10 +31,11 @@ namespace IntegrationPointsUITests.Pages
                     {
                         timeWithoutProgressIndicator.Restart();
                     }
-                    Thread.Sleep(200);
-                    if (totalTime.Elapsed.Minutes > 2)
+                    Thread.Sleep(SleepInterval);
+                    if (totalTime.Elapsed.Seconds > SharedVariables.UiWaitForPageInSec)
                     {
-                        throw new WebDriverTimeoutException("Progress indicator is visible longer than 2 minutes.");
+                        throw new WebDriverTimeoutException("Progress indicator is visible longer than 2 minutes. Some popup is displayed or your system is way too slow. Check screenshot.");
+						// TODO popup is recognized as progress -> IsKreciolekVisible()
                     }
                 }
             }
@@ -56,9 +58,10 @@ namespace IntegrationPointsUITests.Pages
                 }
                 catch (NoSuchElementException)
                 {
-                    // ignore
-                }
-            }
+					// ignore
+					// TODO add logging
+				}
+			}
             return false;
         }
 
