@@ -332,9 +332,9 @@
 			}).then(function (result) {
 				onSuccess(result);
 				if (!!folderArtifactId) {
-					self.FolderArtifactId(folderArtifactId);
-					self.TargetFolder(self.getFolderPath(root.utils.getParameterByName("AppID", window.top), folderArtifactId));
-					self.TargetFolder.isModified(false);
+					windowObj.RelativityImport.koModel.TargetFolder(
+						windowObj.RelativityImport.getFolderPath(root.utils.getParameterByName("AppID", window.top), folderArtifactId));
+					windowObj.RelativityImport.koModel.TargetFolder.isModified(false);
 				}
 				self.foldersStructure = result;
 			}).fail(function (error) {
