@@ -203,7 +203,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
 		private int CalculatePushedFilesSizeForJobHistory()
 		{
-			if (!IntegrationPointImportSettings.ImportNativeFile)
+			if (!(IntegrationPointImportSettings?.ImportNativeFile).GetValueOrDefault(false) || IntegrationPointSourceConfiguration == null )
 			{
 				return 0;
 			}
