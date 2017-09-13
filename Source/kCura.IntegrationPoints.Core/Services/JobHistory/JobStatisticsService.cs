@@ -1,7 +1,11 @@
 ﻿using System;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
+using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Queries;
+using kCura.IntegrationPoints.Data.Statistics;
+using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
 
@@ -56,6 +60,12 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		private Job _job;
 
 		private int _rowErrors;
+		private readonly INativeFileSizeStatistics _nativeFileSizeStatistics;
+		private readonly IImageFileSizeStatistics _imageFileSizeStatistics;
+		private readonly IErrorFilesSizeStatistics _errorFilesSizeStatistics;
+
+		public SourceConfiguration IntegrationPointSourceConfiguration { get; set; }
+		public ImportSettings IntegrationPointImportSettings { get; set; }
 
 		internal JobStatisticsService()
 		{
@@ -65,12 +75,18 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			TaskParameterHelper taskParameterHelper,
 			IJobHistoryService service,
 			IWorkspaceDBContext context,
-			IHelper helper)
+			IHelper helper, 
+			INativeFileSizeStatistics nativeFileSizeStatistics, 
+			IImageFileSizeStatistics imageFileSizeStatistics,
+			IErrorFilesSizeStatistics errorFilesSizeStatistics)
 		{
 			_query = query;
 			_helper = taskParameterHelper;
 			_service = service;
 			_context = context;
+			_nativeFileSizeStatistics = nativeFileSizeStatistics;
+			_imageFileSizeStatistics = imageFileSizeStatistics;
+			_errorFilesSizeStatistics = errorFilesSizeStatistics;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<JobStatisticsService>();
 		}
 
@@ -97,12 +113,17 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			string tableName = JobTracker.GenerateJobTrackerTempTableName(_job, _helper.GetBatchInstance(_job).ToString());
 			JobStatistics stats = _query.UpdateAndRetrieveStats(tableName, _job.JobId, new JobStatistics {Completed = total, Errored = _rowErrors}, _job.WorkspaceID);
 			_rowErrors = 0;
+
+			int totalSize = CalculatePushedFilesSizeForJobHistory();
+
 			Data.JobHistory historyRdo = _service.GetRdo(_helper.GetBatchInstance(_job));
 			historyRdo.ItemsTransferred = stats.Imported > 0 ? stats.Imported : 0;
 			historyRdo.ItemsWithErrors = stats.Errored;
+			historyRdo.FilesSize = FormatFileSize(totalSize);
 			_service.UpdateRdo(historyRdo);
-		}
 
+		}
+		
 		private void StatusUpdate(int importedCount, int errorCount)
 		{
 			Update(_helper.GetBatchInstance(_job), importedCount, errorCount);
@@ -149,10 +170,10 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		/// </summary>
 		private void EnableMutex(Guid identifier)
 		{
-			string enableJobHistoryMutex = string.Format(@"
+			string enableJobHistoryMutex = $@"
 				DECLARE @res INT
 				EXEC @res = sp_getapplock
-								@Resource = '{0}',
+								@Resource = '{identifier}',
 								@LockMode = 'Exclusive',
 								@LockOwner = 'Transaction',
 								@LockTimeout = 5000,
@@ -161,9 +182,51 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 				IF @res NOT IN (0, 1)
 						BEGIN
 							RAISERROR ( 'Unable to acquire mutex', 16, 1 )
-						END", identifier);
+						END";
 
 			_context.ExecuteNonQuerySQLStatement(enableJobHistoryMutex);
+		}
+
+		private string FormatFileSize(int? bytes)
+		{
+			if (!bytes.HasValue || bytes == 0)
+			{
+				return "0 Bytes";
+			}
+
+			var k = 1024;
+			string[] sizes = { "Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
+
+			var i = (int)Math.Floor(Math.Log((int)bytes) / Math.Log(k));
+			return $"{bytes / Math.Pow(k, i):0.##} {sizes[i]}";
+		}
+
+		private int CalculatePushedFilesSizeForJobHistory()
+		{
+			if (!IntegrationPointImportSettings.ImportNativeFile)
+			{
+				return 0;
+			}
+
+			var filesSize = 0;
+
+			switch (IntegrationPointSourceConfiguration.TypeOfExport)
+			{
+				case SourceConfiguration.ExportType.SavedSearch:
+					filesSize = _nativeFileSizeStatistics.ForSavedSearch(IntegrationPointSourceConfiguration.SourceWorkspaceArtifactId, IntegrationPointSourceConfiguration.SavedSearchArtifactId) +
+								_imageFileSizeStatistics.ForSavedSearch(IntegrationPointSourceConfiguration.SourceWorkspaceArtifactId, IntegrationPointSourceConfiguration.SavedSearchArtifactId);
+					break;
+
+				case SourceConfiguration.ExportType.ProductionSet:
+					filesSize = _nativeFileSizeStatistics.ForProduction(IntegrationPointSourceConfiguration.SourceWorkspaceArtifactId, IntegrationPointSourceConfiguration.SourceProductionId) +
+								_imageFileSizeStatistics.ForProduction(IntegrationPointSourceConfiguration.SourceWorkspaceArtifactId, IntegrationPointSourceConfiguration.SourceProductionId);
+					break;
+			}
+			
+			int errorsFileSize = _errorFilesSizeStatistics.ForJobHistoryOmmitedFiles(IntegrationPointSourceConfiguration.SourceWorkspaceArtifactId, (int)_job.JobId);
+			int copiedFilesFileSize = filesSize - errorsFileSize;
+
+			return copiedFilesFileSize;
 		}
 
 		#region Logging

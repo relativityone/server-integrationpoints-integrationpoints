@@ -118,7 +118,7 @@ namespace kCura.IntegrationPoints.Services
 			CheckPermissions($"{nameof(StatisticsManager)} - {nameof(T)}", workspaceArtifactId);
 			try
 			{
-				using (var container = GetDependenciesContainer(workspaceArtifactId))
+				using (IWindsorContainer container = GetDependenciesContainer(workspaceArtifactId))
 				{
 					var statistics = container.Resolve<T>();
 					return Task.Run(() => action(statistics));

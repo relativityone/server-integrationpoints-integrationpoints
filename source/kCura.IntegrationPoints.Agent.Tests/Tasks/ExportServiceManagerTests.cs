@@ -87,6 +87,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private SourceProvider _sourceProvider;
 		private List<FieldMap> _mappings;
 		private JobHistoryErrorDTO.UpdateStatusType _updateStatusType;
+		private JobStatisticsService _jobStatisticsService;
 		private object _lock;
 		private IBatchStatus _exportServiceObserver;
 		private IJobHistoryErrorRepository _jobHistoryErrorRepository;
@@ -142,6 +143,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_exportServiceObserver = Substitute.For<IBatchStatus>();
 			_synchornizer = Substitute.For<IDataSynchronizer>();
 			_historyManager = Substitute.For<IJobHistoryManager>();
+
+			_jobStatisticsService = Substitute.For<JobStatisticsService>();
 
 			_exporterFactory.InitializeExportServiceJobObservers(Arg.Any<Job>(), _tagsCreator, _tagSavedSearchManager,
 				_synchronizerFactory, _serializer, _jobHistoryErrorManager, _jobStopManager,
@@ -210,7 +213,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				_claimPrincipleFactory, _repositoryFactory,
 				_managerFactory, _batchStatuses, _serializer, _jobService, _scheduleRuleFactory, _jobHistoryService,
 				_jobHistoryErrorService,
-				null);
+				_jobStatisticsService);
 			_managerFactory.CreateJobHistoryManager(_contextContainer).Returns(_historyManager);
 		}
 
@@ -422,7 +425,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				_claimPrincipleFactory, _repositoryFactory,
 				_managerFactory, _batchStatuses, _serializer, _jobService, _scheduleRuleFactory, _jobHistoryService,
 				_jobHistoryErrorService,
-				null);
+				_jobStatisticsService);
 			instance.Execute(_job);
 
 			// ASSERT

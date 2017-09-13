@@ -52,7 +52,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			{
 				ArtifactId = 98475,
 				Name = "RIP RIP",
-				DestinationConfiguration = "dest config"
+				DestinationConfiguration = "dest config",
+				OverwriteFields = OverwriteFieldsChoices.IntegrationPointAppendOnly
 			};
 			_settings = new ImportSettings()
 			{
@@ -150,8 +151,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			_caseServiceContext.RsapiService.JobHistoryLibrary.Query(Arg.Any<Query<RDO>>()).Returns(new List<Data.JobHistory>());
 			_serializer.Deserialize<ImportSettings>(_integrationPoint.DestinationConfiguration).Returns(_settings);
 			_workspaceManager.RetrieveWorkspace(_settings.CaseArtifactId).Returns(_workspace);
-			_federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(_settings.FederatedInstanceArtifactId)
-				.Returns(new FederatedInstanceDto());
+			_federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(_settings.FederatedInstanceArtifactId).Returns(new FederatedInstanceDto());
 			_caseServiceContext.RsapiService.JobHistoryLibrary.Create(Arg.Any<Data.JobHistory>()).Returns(_jobHistoryArtifactId);
 			
 			// ACT

@@ -183,6 +183,8 @@ namespace kCura.IntegrationPoints.Data
 		public const string DestinationWorkspaceInformation = @"Destination Workspace Information";
 		public const string JobType = @"Job Type";
 		public const string DestinationInstance = @"Destination Instance";
+		public const string FilesSize = @"FilesSize";
+		public const string Overwrite = @"Overwrite";
 		public const string Name = @"Name";
 	}
 
@@ -201,6 +203,8 @@ namespace kCura.IntegrationPoints.Data
 		public const string DestinationWorkspaceInformation = @"20a24c4e-55e8-4fc2-abbe-f75c07fad91b";
 		public const string JobType = @"e809db5e-5e99-4a75-98a1-26129313a3f5";
 		public const string DestinationInstance = @"6d91ea1e-7b34-46a9-854e-2b018d4e35ef";
+		public const string FilesSize = @"d81817dc-91cb-44c4-b9b7-7c445da64f5a";
+		public const string Overwrite = @"42d49f5e-b0e7-4632-8d30-1c6ee1d97fa7";
 		public const string Name = @"07061466-5fab-4581-979c-c801e8207370";
 	}
 

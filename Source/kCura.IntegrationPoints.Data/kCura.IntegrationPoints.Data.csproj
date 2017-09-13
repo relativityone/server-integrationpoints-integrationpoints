@@ -197,10 +197,12 @@
     <Compile Include="SecretStore\ISecretManagerFactory.cs" />
     <Compile Include="SecretStore\SecretManagerFactory.cs" />
     <Compile Include="RsapiClientFactory.cs" />
+    <Compile Include="Statistics\IErrorFilesSizeStatistics.cs" />
     <Compile Include="Statistics\Implementations\DocumentTotalStatistics.cs" />
     <Compile Include="Statistics\IDocumentTotalStatistics.cs" />
     <Compile Include="Statistics\IImageTotalStatistics.cs" />
     <Compile Include="Statistics\IImageFileSizeStatistics.cs" />
+    <Compile Include="Statistics\Implementations\ErrorFilesSizeStatistics.cs" />
     <Compile Include="Statistics\Implementations\ImageFileSizeStatistics.cs" />
     <Compile Include="Statistics\Implementations\ImageTotalStatistics.cs" />
     <Compile Include="Statistics\INativeFileSizeStatistics.cs" />

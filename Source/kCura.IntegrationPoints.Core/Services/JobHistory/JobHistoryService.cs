@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
@@ -43,7 +42,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 						batchInstance.ToString()),
 				Fields = GetFields<Data.JobHistory>()
 			};
-			var jobHistories = _caseServiceContext.RsapiService.JobHistoryLibrary.Query(query);
+			List<Data.JobHistory> jobHistories = _caseServiceContext.RsapiService.JobHistoryLibrary.Query(query);
 			if (jobHistories.Count > 1)
 			{
 				LogMoreThanOneHistoryInstanceWarning(batchInstance);
@@ -85,12 +84,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 				// ignored
 			}
 
-			if (jobHistory == null)
-			{
-				jobHistory = CreateRdo(integrationPoint, batchInstance, JobTypeChoices.JobHistoryScheduledRun, startTimeUtc);
-			}
-
-			return jobHistory;
+			return jobHistory ?? (CreateRdo(integrationPoint, batchInstance, JobTypeChoices.JobHistoryScheduledRun, startTimeUtc));
 		}
 
 		public Data.JobHistory CreateRdo(Data.IntegrationPoint integrationPoint, Guid batchInstance, Choice jobType, DateTime? startTimeUtc)
@@ -117,19 +111,20 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 					JobType = jobType,
 					JobStatus = JobStatusChoices.JobHistoryPending,
 					ItemsTransferred = 0,
-					ItemsWithErrors = 0
+					ItemsWithErrors = 0,
+					Overwrite =  integrationPoint.OverwriteFields.Name
 				};
 
-				ImportSettings setting = _serializer.Deserialize<ImportSettings>(integrationPoint.DestinationConfiguration);
-
-				WorkspaceDTO workspaceDto = _workspaceManager.RetrieveWorkspace(setting.CaseArtifactId);
+				var importSettings = _serializer.Deserialize<ImportSettings>(integrationPoint.DestinationConfiguration);
+				
+				WorkspaceDTO workspaceDto = _workspaceManager.RetrieveWorkspace(importSettings.CaseArtifactId);
 
 				FederatedInstanceDto federatedInstanceDto =
-					_federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(setting.FederatedInstanceArtifactId);
+					_federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(importSettings.FederatedInstanceArtifactId);
 
-				jobHistory.DestinationWorkspace = Utils.GetFormatForWorkspaceOrJobDisplay(workspaceDto.Name, setting.CaseArtifactId);
+				jobHistory.DestinationWorkspace = Utils.GetFormatForWorkspaceOrJobDisplay(workspaceDto.Name, importSettings.CaseArtifactId);
 				jobHistory.DestinationInstance = Utils.GetFormatForWorkspaceOrJobDisplay(federatedInstanceDto.Name, federatedInstanceDto.ArtifactId);
-
+				
 				if (startTimeUtc.HasValue)
 				{
 					jobHistory.StartTimeUTC = startTimeUtc.Value;
