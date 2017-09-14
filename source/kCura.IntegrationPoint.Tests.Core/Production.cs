@@ -120,7 +120,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 				$@"
 				{{
 					""workspaceArtifactID"": {workspaceId},
-					""productionArtifactID"": {productionId}
+					""productionArtifactID"": {productionId},
+					""dataSourceReadMode"": ""OnlyDataSources""
 				}}";
 
 			var output = Rest.PostRequestAsJson(_READ_PRODUCTION_SERVICE, json);
