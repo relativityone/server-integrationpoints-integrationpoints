@@ -38,8 +38,8 @@
       <HintPath>..\packages\BCrypt-Official.0.1.109\lib\BCrypt.Net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura, Version=9.5.271.67, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCura.9.5.271.67\lib\net462\kCura.dll</HintPath>
+    <Reference Include="kCura, Version=9.5.275.29, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.9.5.275.29\lib\net462\kCura.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Apps.Common.Data, Version=2.1.3.2, Culture=neutral, processorArchitecture=MSIL">
@@ -50,8 +50,8 @@
       <HintPath>..\packages\kCura.Apps.Common.Utils.2.1.3\lib\net462\kCura.Apps.Common.Utils.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Injection">
-      <HintPath>..\packages\kCura.Injection.9.5.271.67\lib\net462\kCura.Injection.dll</HintPath>
+    <Reference Include="kCura.Injection, Version=1.0.8.0, Culture=neutral, PublicKeyToken=318fc9f898ce154d, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.Injection.9.5.275.29\lib\net462\kCura.Injection.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -66,32 +66,32 @@
       <HintPath>..\packages\NUnit.3.4.1\lib\net45\nunit.framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.API, Version=9.5.271.67, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.API.9.5.271.67\lib\net462\Relativity.API.dll</HintPath>
+    <Reference Include="Relativity.API, Version=9.5.275.29, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.API.9.5.275.29\lib\net462\Relativity.API.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Authentication.Interfaces, Version=9.5.271.67, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Authentication.Interfaces.9.5.271.67\lib\net462\Relativity.Authentication.Interfaces.dll</HintPath>
+    <Reference Include="Relativity.Authentication.Interfaces, Version=9.5.275.29, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Authentication.Interfaces.9.5.275.29\lib\net462\Relativity.Authentication.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Core, Version=9.5.271.67, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\Relativity.Core.9.5.271.67\lib\net462\Relativity.Core.dll</HintPath>
+    <Reference Include="Relativity.Core, Version=9.5.275.29, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Core.9.5.275.29\lib\net462\Relativity.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Data, Version=9.5.271.67, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\Relativity.Data.9.5.271.67\lib\net462\Relativity.Data.dll</HintPath>
+    <Reference Include="Relativity.Data, Version=9.5.275.29, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Data.9.5.275.29\lib\net462\Relativity.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Kepler, Version=1.0.1.333, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Kepler.1.0.1.333\lib\net462\Relativity.Kepler.dll</HintPath>
+    <Reference Include="Relativity.Kepler, Version=1.0.1.409, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Kepler.1.0.1.409\lib\net462\Relativity.Kepler.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Logging.Interfaces, Version=9.4.308.17, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Logging.Interfaces.9.4.308\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Services.ServiceProxy, Version=1.0.1.333, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Kepler.Client.1.0.1.333\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
+    <Reference Include="Relativity.Services.ServiceProxy, Version=1.0.1.409, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Kepler.Client.1.0.1.409\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Telemetry.APM, Version=9.4.148.3, Culture=neutral, processorArchitecture=MSIL">
@@ -157,11 +157,11 @@
     <PostBuildEvent>mkdir "$(ProjectDir)..\..\lib\UnitTests"
 xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y</PostBuildEvent>
   </PropertyGroup>
-  <Import Project="..\packages\kCura.9.5.271.67\build\kCura.targets" Condition="Exists('..\packages\kCura.9.5.271.67\build\kCura.targets')" />
+  <Import Project="..\packages\kCura.9.5.275.29\build\kCura.targets" Condition="Exists('..\packages\kCura.9.5.275.29\build\kCura.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\kCura.9.5.271.67\build\kCura.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\kCura.9.5.271.67\build\kCura.targets'))" />
+    <Error Condition="!Exists('..\packages\kCura.9.5.275.29\build\kCura.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\kCura.9.5.275.29\build\kCura.targets'))" />
   </Target>
 </Project>
