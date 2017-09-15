@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using kCura.Crypto.DataProtection;
 
+
+
 namespace kCura.IntegrationPoints.Domain
 {
 	/// <summary>
