@@ -837,6 +837,7 @@
     <None Include="oi\unmanaged\cmmap000.bin" />
     <None Include="Properties\PublishProfiles\default.pubxml" />
     <Content Include="LICENSE.txt" />
+    <None Include="oi\unmanaged\oilink.exe" />
     <None Include="oi\unmanaged\oilink.jar" />
     <None Include="oi\unmanaged\sccca-R1.dll" />
     <None Include="oi\unmanaged\sccch-R1.dll" />
@@ -851,7 +852,6 @@
     <None Include="oi\unmanaged\scclo-R1.dll" />
     <None Include="oi\unmanaged\sccut-R1.dll" />
     <None Include="oi\unmanaged\wvcore-R1.dll" />
-    <Content Include="oi\unmanaged\oilink.exe" />
     <Content Include="Scripts\core\messaging.js" />
     <Content Include="Scripts\es5-shim.js" />
     <Content Include="Scripts\es5-shim.min.js" />
