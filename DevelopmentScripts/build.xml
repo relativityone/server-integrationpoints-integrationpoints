@@ -468,8 +468,8 @@
         <ApplicationSchema>ApplicationsXML\application.xml</ApplicationSchema>
         <Assemblies>
           <Assembly>lib\Castle.Windsor.dll</Assembly>
-		  <Assembly>lib\kCura.Apps.Common.Config.dll</Assembly>
-		  <Assembly>lib\kCura.Apps.Common.Data.dll</Assembly>
+          <Assembly>lib\kCura.Apps.Common.Config.dll</Assembly>
+          <Assembly>lib\kCura.Apps.Common.Data.dll</Assembly>
           <Assembly>lib\kCura.Apps.Common.Utils.dll</Assembly>
           <Assembly>lib\kCura.IntegrationPoints.Agent.dll</Assembly>
           <Assembly>lib\kCura.IntegrationPoints.Config.dll</Assembly>
@@ -500,7 +500,15 @@
           <Assembly>lib\kCura.Relativity.Client.dll</Assembly>
           <Assembly>lib\kCura.Relativity.DataReaderClient.dll</Assembly>
           <Assembly>lib\kCura.WinEDDS.dll</Assembly>
+          <Assembly>lib\kCura.WinEDDS.TApi.dll</Assembly>
           <Assembly>lib\kCura.WinEDDS.Core.dll</Assembly>
+          <Assembly>lib\Relativity.Transfer.Client.Aspera.dll</Assembly>
+          <Assembly>lib\Relativity.Transfer.Client.dll</Assembly>
+          <Assembly>lib\Relativity.Transfer.Client.Core.dll</Assembly>
+          <Assembly>lib\Relativity.Transfer.Client.FileShare.dll</Assembly>
+          <Assembly>lib\Relativity.Transfer.Client.Http.dll</Assembly>
+          <Assembly>lib\FaspManager.dll</Assembly>
+          <Assembly>lib\Polly.dll</Assembly>
           <Assembly>lib\kCura.ScheduleQueue.AgentBase.dll</Assembly>
           <Assembly>lib\kCura.ScheduleQueue.Core.dll</Assembly>
           <Assembly>lib\Newtonsoft.Json.dll</Assembly>

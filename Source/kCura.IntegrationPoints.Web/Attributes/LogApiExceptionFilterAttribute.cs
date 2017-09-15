@@ -2,7 +2,6 @@
 using System.Net;
 using System.Net.Http;
 using System.Web.Http.Filters;
-using kCura.Utility.Extensions;
 using Relativity.Logging;
 
 namespace kCura.IntegrationPoints.Web.Attributes
@@ -39,7 +38,7 @@ namespace kCura.IntegrationPoints.Web.Attributes
 		public override void OnException(HttpActionExecutedContext actionExecutedContext)
 		{
 			string msg = string.Format("{0}{1}", 
-				Message.IsNullOrEmpty() ? "Unexpected error occurred" : Message,
+				string.IsNullOrEmpty(Message) ? "Unexpected error occurred" : Message,
 				IsUserMessage ? " Please contact system administrator" : string.Empty);
 
 			actionExecutedContext.Response = actionExecutedContext.Request.CreateResponse(HttpStatusCode.InternalServerError, msg);
