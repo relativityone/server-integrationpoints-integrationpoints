@@ -158,23 +158,23 @@
       <HintPath>..\packages\Relativity.Telemetry.MetricsCollection.9.4.148\lib\net462\Relativity.Telemetry.MetricsCollection.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client, Version=1.1.17250.6, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Transfer.Client, Version=1.1.17254.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\relativity.transfer.client.1.1.4\lib\net462\Relativity.Transfer.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.Aspera, Version=1.1.17250.6, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Transfer.Client.Aspera, Version=1.1.17254.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\relativity.transfer.client.1.1.4\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.Core, Version=1.1.17250.6, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Transfer.Client.Core, Version=1.1.17254.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\relativity.transfer.client.1.1.4\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.FileShare, Version=1.1.17250.6, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Transfer.Client.FileShare, Version=1.1.17254.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\relativity.transfer.client.1.1.4\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.Http, Version=1.1.17250.6, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Transfer.Client.Http, Version=1.1.17254.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\relativity.transfer.client.1.1.4\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
       <Private>True</Private>
     </Reference>
