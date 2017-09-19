@@ -7,7 +7,9 @@ using Relativity.Services.FieldManager;
 
 namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 {
-	class ExtendedIFieldManager : IFieldManager
+    using global::Relativity.Services.DataContracts.DTOs.Results;
+
+    class ExtendedIFieldManager : IFieldManager
 	{
 		private readonly ITestHelper _helper;
 		private readonly ExecutionIdentity _identity;
@@ -56,5 +58,10 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 		{
 			await Manager.SetPropagateToAsync(workspaceArtifactId, fieldArtifactId, relationalFieldArtifactIDs);
 		}
+
+	    public Task<UniqueFieldValuesResult> RetrieveUniqueFieldValuesAsync(int workspaceId, int artifactTypeId, string fieldName)
+	    {
+	        throw new NotImplementedException();
+	    }
 	}
 }
