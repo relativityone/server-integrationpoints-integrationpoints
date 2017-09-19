@@ -203,7 +203,8 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
 		private int CalculatePushedFilesSizeForJobHistory()
 		{
-			if (!(IntegrationPointImportSettings?.ImportNativeFile).GetValueOrDefault(false) || IntegrationPointSourceConfiguration == null )
+			if (!(IntegrationPointImportSettings?.ImportNativeFile).GetValueOrDefault(false) ||
+				IntegrationPointSourceConfiguration == null)
 			{
 				return 0;
 			}
@@ -213,17 +214,23 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			switch (IntegrationPointSourceConfiguration.TypeOfExport)
 			{
 				case SourceConfiguration.ExportType.SavedSearch:
-					filesSize = _nativeFileSizeStatistics.ForSavedSearch(IntegrationPointSourceConfiguration.SourceWorkspaceArtifactId, IntegrationPointSourceConfiguration.SavedSearchArtifactId) +
-								_imageFileSizeStatistics.ForSavedSearch(IntegrationPointSourceConfiguration.SourceWorkspaceArtifactId, IntegrationPointSourceConfiguration.SavedSearchArtifactId);
+
+					filesSize = IntegrationPointImportSettings.ImageImport
+						? _imageFileSizeStatistics.ForSavedSearch(IntegrationPointSourceConfiguration.SourceWorkspaceArtifactId,
+							IntegrationPointSourceConfiguration.SavedSearchArtifactId)
+						: _nativeFileSizeStatistics.ForSavedSearch(IntegrationPointSourceConfiguration.SourceWorkspaceArtifactId,
+							IntegrationPointSourceConfiguration.SavedSearchArtifactId);
 					break;
 
 				case SourceConfiguration.ExportType.ProductionSet:
-					filesSize = _nativeFileSizeStatistics.ForProduction(IntegrationPointSourceConfiguration.SourceWorkspaceArtifactId, IntegrationPointSourceConfiguration.SourceProductionId) +
-								_imageFileSizeStatistics.ForProduction(IntegrationPointSourceConfiguration.SourceWorkspaceArtifactId, IntegrationPointSourceConfiguration.SourceProductionId);
+					filesSize = _imageFileSizeStatistics.ForProduction(IntegrationPointSourceConfiguration.SourceWorkspaceArtifactId,
+						IntegrationPointSourceConfiguration.SourceProductionId);
 					break;
 			}
-			
-			int errorsFileSize = _errorFilesSizeStatistics.ForJobHistoryOmmitedFiles(IntegrationPointSourceConfiguration.SourceWorkspaceArtifactId, (int)_job.JobId);
+
+			int errorsFileSize =
+				_errorFilesSizeStatistics.ForJobHistoryOmmitedFiles(IntegrationPointSourceConfiguration.SourceWorkspaceArtifactId,
+					(int) _job.JobId);
 			int copiedFilesFileSize = filesSize - errorsFileSize;
 
 			return copiedFilesFileSize;
