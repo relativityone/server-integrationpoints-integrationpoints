@@ -7,12 +7,19 @@ namespace kCura.IntegrationPoints.Data
 	public class RsapiClientFactory : IRsapiClientFactory
 	{
 		protected readonly IHelper Helper;
+		private readonly IServicesMgr _servicesMgr;
 		private readonly IAPILog _logger;
 
-		public RsapiClientFactory(IHelper helper)
+
+		public RsapiClientFactory(IHelper helper, IServicesMgr servicesMgr)
 		{
 			Helper = helper;
+			_servicesMgr = servicesMgr;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<RsapiClientFactory>();
+		}
+
+		public RsapiClientFactory(IHelper helper) : this(helper, helper.GetServicesManager())
+		{
 		}
 
 		public virtual IRSAPIClient CreateAdminClient(int workspaceArtifactId)
@@ -30,12 +37,12 @@ namespace kCura.IntegrationPoints.Data
 			IRSAPIClient client;
 			try
 			{
-				client = Helper.GetServicesManager().CreateProxy<IRSAPIClient>(identity);
+				client = _servicesMgr.CreateProxy<IRSAPIClient>(identity);
 			}
 			catch (NullReferenceException e)
 			{
 				LogCreatingRsapiClientError(e);
-				client = Helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System);
+				client = _servicesMgr.CreateProxy<IRSAPIClient>(ExecutionIdentity.System);
 			}
 			client.APIOptions.WorkspaceID = workspaceID;
 			return client;
