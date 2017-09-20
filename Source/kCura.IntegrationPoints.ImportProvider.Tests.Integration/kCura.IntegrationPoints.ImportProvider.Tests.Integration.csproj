@@ -202,10 +202,13 @@
       <Name>kCura.ScheduleQueue.Core</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <None Include="..\kCura.IntegrationPoint.Tests.Core\Release\app.config" />
+  </ItemGroup>
   <ItemGroup>
-    <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config">
-      <Link>app.config</Link>
-    </None>
     <Content Include="LICENSE.txt" />
     <Content Include="TestData\CsvWithMetadata.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
