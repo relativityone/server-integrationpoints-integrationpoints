@@ -133,7 +133,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		{
 			var objectTypeRepository = GetObjectTypeRepository(workspaceArtifactId);
 			var fieldRepository = GetFieldRepository(workspaceArtifactId);
-			IRsapiClientFactory rsapiClientFactory = new RsapiClientFactory(_helper);
+			IRsapiClientFactory rsapiClientFactory = new RsapiClientFactory(_helper, _servicesMgr);
 			IRdoRepository rdoRepository = new RsapiRdoRepository(_helper, workspaceArtifactId, rsapiClientFactory);
 			ISourceJobRepository repository = new SourceJobRepository(objectTypeRepository, fieldRepository, rdoRepository);
 
@@ -150,7 +150,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		{
 			var objectTypeRepository = GetObjectTypeRepository(workspaceArtifactId);
 			var fieldRepository = GetFieldRepository(workspaceArtifactId);
-			IRsapiClientFactory rsapiClientFactory = new RsapiClientFactory(_helper);
+			IRsapiClientFactory rsapiClientFactory = new RsapiClientFactory(_helper, _servicesMgr);
 			IRdoRepository rdoRepository = new RsapiRdoRepository(_helper, workspaceArtifactId, rsapiClientFactory);
 			ISourceWorkspaceRepository repository = new SourceWorkspaceRepository(objectTypeRepository, fieldRepository, rdoRepository);
 
