@@ -53,12 +53,12 @@
       <HintPath>..\packages\BCrypt-Official.0.1.109\lib\BCrypt.Net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura, Version=9.5.275.29, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCura.9.5.275.29\lib\net462\kCura.dll</HintPath>
+    <Reference Include="kCura, Version=9.5.280.10, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.9.5.280.10\lib\net462\kCura.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Injection, Version=1.0.8.0, Culture=neutral, PublicKeyToken=318fc9f898ce154d, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCura.Injection.9.5.275.29\lib\net462\kCura.Injection.dll</HintPath>
+      <HintPath>..\packages\kCura.Injection.9.5.280.10\lib\net462\kCura.Injection.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -100,12 +100,12 @@
     <PostBuildEvent>mkdir "$(ProjectDir)..\..\lib"
 $(ProjectDir)..\Dependencies\PECOPY "$(TargetDir)$(TargetFileName)" "$(ProjectDir)..\..\lib\$(TargetFileName)" "$(TargetDir)$(TargetName).pdb" "$(ProjectDir)..\..\lib\$(TargetName).pdb"</PostBuildEvent>
   </PropertyGroup>
-  <Import Project="..\packages\kCura.9.5.275.29\build\kCura.targets" Condition="Exists('..\packages\kCura.9.5.275.29\build\kCura.targets')" />
+  <Import Project="..\packages\kCura.9.5.280.10\build\kCura.targets" Condition="Exists('..\packages\kCura.9.5.280.10\build\kCura.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\kCura.9.5.275.29\build\kCura.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\kCura.9.5.275.29\build\kCura.targets'))" />
+    <Error Condition="!Exists('..\packages\kCura.9.5.280.10\build\kCura.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\kCura.9.5.280.10\build\kCura.targets'))" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
