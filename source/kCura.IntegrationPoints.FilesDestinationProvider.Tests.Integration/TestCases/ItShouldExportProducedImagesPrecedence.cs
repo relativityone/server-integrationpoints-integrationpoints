@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 				var file =
 					exportedImages.SingleOrDefault(f => Path.GetFileNameWithoutExtension(f.Name) == document.ItemArray[0].ToString());
 
-				Assert.IsTrue(FileComparer.Compare(file, defaultPlaceholderFile));
+				Assert.IsTrue(File.Exists(file.FullName));
 			}
 		}
 
