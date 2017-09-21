@@ -164,8 +164,22 @@ def execute_nunit_tests(String test_dll, String tests_filter, String session_id,
 	}
 	
 	dir('c:/SourceCode/integrationpoints'){
-		try {			
-			def testsHavePassed = bat (script: String.format('"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" C:\\SourceCode\\integrationpoints\\lib\\UnitTests\\%1$s --where "%2$s" --inprocess --result=C:\\SourceCode\\integrationpoints\\nunit-result.xml;format=nunit2', "$test_dll", "$where_clause"), 
+		try {		
+			def nunitPath1 = "C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe"
+			def nunitPath2 = "C:\\Program Files (x86)\\NUnit.org\\3.6.1\\nunit-console\\nunit3-console.exe"			
+			def nunitConsolePath = ''
+			
+			if (fileExists(nunitPath1))
+			{
+				nunitConsolePath = nunitPath1
+			}
+			else
+			{
+				nunitConsolePath = nunitPath2
+			}
+
+		
+			def testsHavePassed = bat (script: String.format('"'+nunitConsolePath+'" C:\\SourceCode\\integrationpoints\\lib\\UnitTests\\%1$s --where "%2$s" --inprocess --result=C:\\SourceCode\\integrationpoints\\nunit-result.xml;format=nunit2', "$test_dll", "$where_clause"), 
 			returnStatus: true) == 0
 						
 			has_errors = has_errors || !testsHavePassed			
@@ -237,16 +251,16 @@ try {
 				}				
 				
 				checkout([$class : 'GitSCM',
-						branches : [[name : rip_branch]],
-						doGenerateSubmoduleConfigurations : false,
-						extensions :
-						[[$class : 'CleanBeforeCheckout'],
-							[$class : 'RelativeTargetDirectory',
-								relativeTargetDir : 'integrationpoints']],
-						submoduleCfg : [],
-						userRemoteConfigs :
-						[[credentialsId : 'TalosCI (bitbucket)',
-							url : 'ssh://git@git.kcura.com:7999/in/integrationpoints.git']]])
+				branches : [[name : rip_branch]],
+				doGenerateSubmoduleConfigurations : false,
+				extensions :
+				[[$class : 'CleanBeforeCheckout'],
+					[$class : 'RelativeTargetDirectory',
+						relativeTargetDir : 'integrationpoints']],
+				submoduleCfg : [],
+				userRemoteConfigs :
+				[[credentialsId : 'TalosCI (bitbucket)',
+					url : 'ssh://git@git.kcura.com:7999/in/integrationpoints.git']]])
 			}		
 			
 			dir('C:/SourceCode/integrationpoints') {
