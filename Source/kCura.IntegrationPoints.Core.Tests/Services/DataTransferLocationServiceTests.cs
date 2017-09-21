@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using SystemInterface.IO;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
@@ -18,7 +20,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		class DataTransferLocationServiceTest : DataTransferLocationService
 		{
 			public DataTransferLocationServiceTest(IHelper helper, IIntegrationPointTypeService integrationPointTypeService,
-				IDirectory directory) : base(helper, integrationPointTypeService, directory)
+				IDirectory directory) : 
+                base(helper, integrationPointTypeService, directory)
 			{
 			}
 
@@ -76,7 +79,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 						Name = _IMPORT_PROV_TYPE_NAME
 					}
 				});
-			_subjectUnderTest = new DataTransferLocationServiceTest(_helperMock, _integrationPointTypeServiceMock, _directoryMock);
+			_subjectUnderTest = new DataTransferLocationServiceTest(_helperMock, _integrationPointTypeServiceMock, _directoryMock );
 		}
 
 		[Test]
@@ -149,13 +152,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			_directoryMock.Exists(physicalPath).Returns(false);
 
-			Assert.Throws<Exception>(() => _subjectUnderTest.VerifyAndPrepare(_WKSP_ID, path, type));
+			Assert.Throws<ArgumentException>(() => _subjectUnderTest.VerifyAndPrepare(_WKSP_ID, path, type));
 
 			// Assert
 			_directoryMock.Received(0).CreateDirectory(physicalPath);
 		}
 
-		[Test]
+        [Test]
 		public void ItShouldThrowIfPathIsNotChildOfDataTransferLocation()
 		{
 			Guid type = Guid.NewGuid();
@@ -174,10 +177,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			_directoryMock.Exists(physicalPath).Returns(false);
 
-			Assert.Throws<Exception>(() => _subjectUnderTest.VerifyAndPrepare(_WKSP_ID, path, type));
+			Assert.Throws<ArgumentException>(() => _subjectUnderTest.VerifyAndPrepare(_WKSP_ID, path, type));
 
 			// Assert
 			_directoryMock.Received(0).CreateDirectory(physicalPath);
 		}
-	}
+    }
 }

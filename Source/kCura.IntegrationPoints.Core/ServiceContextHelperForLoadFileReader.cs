@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.Core
 			throw new NotImplementedException();
 		}
 
-		public IRSAPIService GetRsapiService()
+	    public IRSAPIService GetRsapiService()
 		{
 			throw new NotImplementedException();
 		}

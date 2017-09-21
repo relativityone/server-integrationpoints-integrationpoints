@@ -125,11 +125,7 @@ var LocationJSTreeSelector = function () {
 			'core': {
 				'data': function (obj, callback) {
 					var ajaxSuccess = function (returnData) {
-						//will open the root folder in jstree for both export and import
-						$(self.domSelectorSettings.browserTreeSelector).on('ready.jstree', function () {
-							var selectedNode = $(self.domSelectorSettings.browserTreeSelector).jstree("get_selected");
-							$(self.domSelectorSettings.browserTreeSelector).jstree("open_node", selectedNode, false, true);
-						});
+						self.openRootNode(self.domSelectorSettings.browserTreeSelector);
 						$.each(returnData, function (index, value) {
 							if (value.icon && value.icon === "jstree-root-folder") {
 								$.each(value.children, function (index, child) {

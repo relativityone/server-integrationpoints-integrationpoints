@@ -3,6 +3,8 @@ using System.Linq;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.Relativity.Client;
 using Relativity.API;
 using IDBContext = Relativity.API.IDBContext;

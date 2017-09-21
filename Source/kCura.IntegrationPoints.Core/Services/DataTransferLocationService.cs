@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using SystemInterface.IO;
 using kCura.IntegrationPoints.Core.Extensions;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using Relativity.API;
@@ -16,19 +19,18 @@ namespace kCura.IntegrationPoints.Core.Services
 		#region Fields
 
 		private const string _WORKSPACE_FOLDER_FORMAT = "EDDS{0}";
-		private const string _PARENT_FOLDER = "DataTransfer";
-
-		private readonly IAPILog _logger;
+		private const string _EDDS_PARENT_FOLDER = "DataTransfer";
+	    private const string _INVALID_PATH_ERROR_MSG = "Given Destination Folder path is invalid!";
+        private readonly IAPILog _logger;
 		private readonly IHelper _helper;
 
 		private readonly IIntegrationPointTypeService _integrationPointTypeService;
 		private readonly IDirectory _directoryService;
+        #endregion //Fields
 
-		#endregion //Fields
+        #region Constructors
 
-		#region Constructors
-
-		public DataTransferLocationService(IHelper helper, IIntegrationPointTypeService integrationPointTypeService, IDirectory directoryService)
+        public DataTransferLocationService(IHelper helper, IIntegrationPointTypeService integrationPointTypeService, IDirectory directoryService)
 		{
 			_helper = helper;
 			_logger = _helper.GetLoggerFactory().GetLogger().ForContext<DataTransferLocationService>();
@@ -57,34 +59,38 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			IntegrationPointType type = _integrationPointTypeService.GetIntegrationPointType(integrationPointTypeIdentifier);
 
-			return Path.Combine(_PARENT_FOLDER, type.Name);
+			return Path.Combine(_EDDS_PARENT_FOLDER, type.Name);
 		}
+
+	    public bool IsEddsPath(string path)
+	    {
+	        return path.StartsWith(_EDDS_PARENT_FOLDER);
+	    }
 
 		public string VerifyAndPrepare(int workspaceArtifactId, string path, Guid providerType)
 		{
-			// Get the give provider type path eg: DataTransfer\Export
-			string providerTypeRelativePathPrefix = GetDefaultRelativeLocationFor(providerType);
-			
-			// First validate if provided path match the correct destnation folder on the server (eg: DataTransfer\Export)
-			if (!path.StartsWith(providerTypeRelativePathPrefix))
-			{
-				throw new Exception($"Provided realtive path '{path}' does not match the correct destination folder!");
-			}
+		    string providerTypeRelativePathPrefix = GetDefaultRelativeLocationFor(providerType);
 
-			string fileShareRootLocation = GetWorkspaceFileLocationRootPath(workspaceArtifactId);
-			string fileShareRootLocationWithRelativePath = Path.Combine(fileShareRootLocation, providerTypeRelativePathPrefix);
+		    // First validate if provided path match the correct destnation folder on the server (eg: DataTransfer\Export)
+		    if (!path.StartsWith(providerTypeRelativePathPrefix))
+		    {
+		        throw new ArgumentException($@"Provided realtive path '{path}' does not match the correct destination folder!", path);
+		    }
 
-			// Get physical path for destination folder eg: \\localhost\FileShare\EDDS123456\Export\SomeFolder
-			string destinationFolderPhysicalPath = Path.Combine(fileShareRootLocation, path);
+		    string fileShareRootLocation = GetWorkspaceFileLocationRootPath(workspaceArtifactId);
+		    string fileShareRootLocationWithRelativePath = Path.Combine(fileShareRootLocation, providerTypeRelativePathPrefix);
 
-			if (!destinationFolderPhysicalPath.IsSubPathOf(fileShareRootLocationWithRelativePath))
-			{
-				throw new Exception("Given Destination Folder path is invalid!");
-			}
+		    // Get physical path for destination folder eg: \\localhost\FileShare\EDDS123456\Export\SomeFolder
+		    string destinationFolderPhysicalPath = Path.Combine(fileShareRootLocation, path);
 
-			CreateDirectoryIfNotExists(destinationFolderPhysicalPath);
-			return destinationFolderPhysicalPath;
-		}
+		    if (!destinationFolderPhysicalPath.IsSubPathOf(fileShareRootLocationWithRelativePath))
+		    {
+		        throw new ArgumentException(_INVALID_PATH_ERROR_MSG, path);
+		    }
+
+		    CreateDirectoryIfNotExists(destinationFolderPhysicalPath);
+		    return destinationFolderPhysicalPath;
+        }
 
 		public string GetWorkspaceFileLocationRootPath(int workspaceArtifactId)
 		{
@@ -112,7 +118,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			string workspaceFileLocation = GetWorkspaceFileLocationRootPath(workspaceArtifactId);
 
-			return Path.Combine(workspaceFileLocation, _PARENT_FOLDER);
+			return Path.Combine(workspaceFileLocation, _EDDS_PARENT_FOLDER);
 		}
 
 		private void CreateDirectoryIfNotExists(string path)

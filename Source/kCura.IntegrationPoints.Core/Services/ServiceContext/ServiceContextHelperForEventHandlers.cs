@@ -33,6 +33,6 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 			else
 				return null;
 		}
-		public IDBContext GetDBContext(int workspaceID = -1) { return helper.GetDBContext(workspaceID); }
+	    public IDBContext GetDBContext(int workspaceID = -1) { return helper.GetDBContext(workspaceID); }
 	}
 }

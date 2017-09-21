@@ -12,7 +12,12 @@ var loadData = function (ko, dataContainer) {
 		}
 
 		var getDestinationDetails = function () {
-			var destinationLocation = "FileShare: " + destinationFolderPrefix() + "\\" + self.settings.Fileshare;
+			var destinationLocation;
+			if (self.settings.DestinationLocationId > 0) {
+				destinationLocation = "Processing Source Location: " + self.settings.Fileshare;
+			} else {
+				destinationLocation = "FileShare: " + destinationFolderPrefix() + "\\" + self.settings.Fileshare;
+			}
 
 			if (self.settings.IsAutomaticFolderCreationEnabled) {
 				var exportFolderName = "\\" + self.name + "_{TimeStamp}";

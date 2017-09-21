@@ -1,43 +1,245 @@
 ﻿var IP = IP || {};
 
 (function (root, ko) {
-	var viewModel = function (state) {
+
+	var ExportDestinationLocationService = function () {
 		var self = this;
 
-		this.IPName = state.name;
+		self.createPromiseForIsProcessingSourceLocationEnabled = function (failCallback) {
+			return root.data.ajax({
+				type: "get",
+				url: root.utils.generateWebAPIURL("ResourcePool/IsProcessingSourceLocationEnabled")
+			}).fail(failCallback);
+		};
 
-		this.ArtifactTypeID = state.artifactTypeId;
-		this.DefaultRdoTypeId = state.defaultRdoTypeId;
+		self.createPromiseForGetRootDataTransferLocation = function (integrationPointTypeIdentifier, failCallback) {
+			return root.data.ajax({
+				type: "post",
+				contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+				url: root.utils.generateWebAPIURL("DataTransferLocation/GetRoot", integrationPointTypeIdentifier)
+			}).fail(failCallback);
+		};
 
-		this.ExportRdoMode = function () {
-			return self.ArtifactTypeID !== self.DefaultRdoTypeId;
+		self.createPromiseForGetProcessingSourceLocationList = function (failCallback) {
+			return root.data.ajax({
+				type: "get",
+				url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocations"),
+				data: {
+					sourceWorkspaceArtifactId: root.utils.getParameterByName("AppID", window.top)
+				}
+			}).fail(failCallback);
+		};
+
+		self.getProcessingSourceLocationSubItems = function (path, isRoot, successCallback, failCallback) {
+			root.data.ajax({
+				type: "post",
+				contentType: "application/json",
+				url: root.utils.generateWebAPIURL("ResourcePool/GetProcessingSourceLocationSubItems", isRoot),
+				data: JSON.stringify(path)
+			}).then(successCallback).fail(failCallback);
+		};
+
+		self.getFileshareSubItems = function (path, isRoot, integrationPointTypeIdentifier, successCallback, failCallback) {
+			root.data.ajax({
+				type: "post",
+				contentType: "application/json",
+				url: root.utils.generateWebAPIURL("DataTransferLocation/GetStructure", integrationPointTypeIdentifier) +
+					"?isRoot=" +
+					isRoot,
+				data: JSON.stringify(path)
+			}).then(successCallback).fail(failCallback);
+		};
+
+		return {
+			createPromiseForIsProcessingSourceLocationEnabled: self.createPromiseForIsProcessingSourceLocationEnabled,
+			createPromiseForGetRootDataTransferLocation: self.createPromiseForGetRootDataTransferLocation,
+			createPromiseForGetProcessingSourceLocationList: self.createPromiseForGetProcessingSourceLocationList,
+			getProcessingSourceLocationSubItems: self.getProcessingSourceLocationSubItems,
+			getFileshareSubItems: self.getFileshareSubItems
 		}
+	};
 
-		this.Fileshare = ko.observable(state.Fileshare).extend({
-			required: true
-		});
-
-		this.fileShareInvalidated = this.Fileshare() !== undefined && this.Fileshare() != null;
+	var ExportDestinationLocationViewModel = function (state) {
+		var FILESHARE_EXPORT_LOCATION_ARTIFACT_ID = -1;
+		var self = this;
+		self.ExportDestinationLocationService = new ExportDestinationLocationService();
 
 		self.rootDataTransferLocation = "";
 
-		this.loadRootDataTransferLocation = function () {
-			root.data.ajax({
-				type: "post",
-				contentType: "application/x-www-form-urlencoded; charset=UTF-8",
-				url: root.utils.generateWebAPIURL("DataTransferLocation/GetRoot", state.integrationPointTypeIdentifier)
-			}).then(function (result) {
-				self.rootDataTransferLocation = result;
-				self.getDirectories();
-			}).fail(function (error) {
-				IP.message.error.raise("Can not retrieve data transfer location root path");
-			});
-		}
+		self.DestinationLocationsList = ko.observableArray([]);
 
-		this.getDirectories = function () {
-			var reloadTree = function (params, onSuccess, onFail) {
-				var $locationErrorContainer = $("#processingLocationErrorContainer");
-				IP.message.error.clear($locationErrorContainer);
+		self.SelectedDestinationLocationId = ko.observable().extend({
+			required: true
+		});
+
+		self.IsProcessingSourceLocationEnabled = ko.observable(false);
+
+		self.IsExportFolderCreationEnabled = ko.observable(state.IsAutomaticFolderCreationEnabled === undefined ? true : state.IsAutomaticFolderCreationEnabled);
+		self.IsExportFolderCreationEnabled.subscribe(function () {
+			self.selectedFolderDisplayText();
+		});
+
+		self.DestinationFolder = ko.observable(state.Fileshare).extend({
+			required: true
+		});
+
+		self.selectedFolderDisplayText = function () {
+			var destinationFolder = self.DestinationFolder();
+			if (!destinationFolder) {
+				return "Select...";
+			}
+
+			var output;
+			if (self.isProcessingSourceLocationSelected()) {
+				output = destinationFolder;
+			}
+			else {
+				output = "EDDS" + state.SourceWorkspaceArtifactId + "\\" + destinationFolder;
+			}
+
+			if (self.IsExportFolderCreationEnabled()) {
+				output += "\\" + state.name + "_{TimeStamp}";
+			}
+
+			return output;
+		};
+
+		self.destinationLocationSelectionChanged = function (value, isInitializationCall) {
+			var disableDirectorySelector = function () {
+				self.locationSelector.toggle(false);
+				self.DestinationFolder(null);
+				self.DestinationFolder.isModified(false);
+			};
+
+			var enableDirectorySelector = function () {
+				self.locationSelector.toggle(true);
+			};
+
+			self.locationSelector.clear();
+
+			if (value === null) {
+				disableDirectorySelector();
+				return;
+			}
+
+			if (!isInitializationCall) {
+				self.DestinationFolder(null);
+				self.DestinationFolder.isModified(false);
+			}
+
+			self.loadDirectories();
+
+			if (!value) {
+				disableDirectorySelector();
+			}
+			else {
+				enableDirectorySelector();
+			}
+		};
+
+		self.onLoadded = function () {
+			self.InitializeLocationSelector();
+
+			var determiningIfProcessingSourceLocationIsEnabledFailed = function (error) {
+				IP.message.error.raise("Determining if Processing Source Location is enabled failed");
+			};
+
+			var retrievingRootDataTransferLocationFailed = function (error) {
+				IP.message.error.raise("Can not retrieve data transfer location root path");
+			};
+
+			var isProcessingSourceLocationEnabledPromise = self.ExportDestinationLocationService.createPromiseForIsProcessingSourceLocationEnabled(determiningIfProcessingSourceLocationIsEnabledFailed);
+			var rootDataTransferLocationPromise = self.ExportDestinationLocationService.createPromiseForGetRootDataTransferLocation(state.integrationPointTypeIdentifier, retrievingRootDataTransferLocationFailed);
+
+			root.data.deferred()
+				.all([isProcessingSourceLocationEnabledPromise, rootDataTransferLocationPromise])
+				.then(function (result) {
+					var isProcessingSourceLocationEnabled = result[0];
+					var rootDataTransferLocation = result[1];
+
+					if (isProcessingSourceLocationEnabled) {
+						self.IsProcessingSourceLocationEnabled(true);
+					}
+
+					self.rootDataTransferLocation = rootDataTransferLocation;
+					self.rootDataTransferLocationLoaded();
+				});
+		};
+
+		self.InitializeLocationSelector = function () {
+			self.locationSelector = new LocationJSTreeSelector();
+			self.locationSelector.init(self.DestinationFolder(),
+				[],
+				{
+					onNodeSelectedEventHandler: function (node) {
+						self.DestinationFolder(node.id);
+					}
+				});
+		};
+
+		self.rootDataTransferLocationLoaded = function () {
+			self.loadDirectories();
+			self.loadDestinationLocations();
+		};
+
+		self.loadDestinationLocations = function () {
+			var destinationLocations = [self.createDestinationLocationListItemForFileshare()];
+
+			if (self.IsProcessingSourceLocationEnabled()) {
+				self.loadDestinationLocationsWithProcessingSourceLocations(destinationLocations);
+			} else {
+				self.initializeDestinationLocations(destinationLocations, FILESHARE_EXPORT_LOCATION_ARTIFACT_ID);
+			}
+		};
+
+		self.loadDestinationLocationsWithProcessingSourceLocations = function (destinationLocationsWithoutProcessingSourceLocations) {
+			var retrievingProcessingSourceLocationsListFailed = function (error) {
+				IP.message.error.raise("No processing source locations were returned from source provider");
+			}
+
+			var processingSourceLocationListPromise =
+				self.ExportDestinationLocationService.createPromiseForGetProcessingSourceLocationList(
+					retrievingProcessingSourceLocationsListFailed);
+
+			root.data.deferred()
+				.all([processingSourceLocationListPromise])
+				.then(function (result) {
+					var processingSourceLocations = result[0];
+					var destinationLocations = destinationLocationsWithoutProcessingSourceLocations.concat(processingSourceLocations);
+					var initialDestinationLocationId = self.getInitialDestinationLocationId();
+					self.initializeDestinationLocations(destinationLocations, initialDestinationLocationId);
+				});
+		};
+
+		self.loadDirectories = function () {
+			var LOCATION_ERROR_CONTAINER_SELECTOR = $("#processingLocationErrorContainer");
+
+			var selectedDestinationLocationViewModel = self.getSelectedDestinationLocationViewModel();
+			if (!selectedDestinationLocationViewModel) {
+				return;
+			}
+
+			var createErrorCallback = function (callback) {
+				return function (error) {
+					callback(error);
+					IP.message.error.raise(error, LOCATION_ERROR_CONTAINER_SELECTOR);
+				};
+			};
+
+			var reloadTreeProcessingSourceLocation = function (params, onSuccess, onFail) {
+				IP.message.error.clear(LOCATION_ERROR_CONTAINER_SELECTOR);
+
+				var isRoot = params.id === '#';
+				var path = params.id;
+				if (isRoot) {
+					path = selectedDestinationLocationViewModel.location;
+				}
+
+				self.ExportDestinationLocationService.getProcessingSourceLocationSubItems(path, isRoot, onSuccess, createErrorCallback(onFail));
+			};
+
+			var reloadTreeFileshare = function (params, onSuccess, onFail) {
+				IP.message.error.clear(LOCATION_ERROR_CONTAINER_SELECTOR);
 
 				var isRoot = params.id === '#';
 				var path = params.id;
@@ -45,38 +247,77 @@
 					path = self.rootDataTransferLocation;
 				}
 
-				root.data.ajax({
-					type: "post",
-					contentType: "application/json",
-					url: root.utils.generateWebAPIURL("DataTransferLocation/GetStructure", state.integrationPointTypeIdentifier) + "?isRoot=" + isRoot,
-					data: JSON.stringify(path)
-				}).then(function (result) {
-					onSuccess(result);
-				}).fail(function (error) {
-					onFail(error);
-					IP.message.error.raise(error, $locationErrorContainer);
-				});
+				self.ExportDestinationLocationService.getFileshareSubItems(path, isRoot, state.integrationPointTypeIdentifier, onSuccess, createErrorCallback(onFail));
 			};
 
-			if (self.locationSelector) {
-				self.locationSelector.reloadWithRoot(reloadTree);
+			if (selectedDestinationLocationViewModel.isFileshare) {
+				self.locationSelector.reloadWithRoot(reloadTreeFileshare);
+			} else {
+				self.locationSelector.reloadWithRoot(reloadTreeProcessingSourceLocation);
 			}
 		};
 
-		this.onDOMLoaded = function () {
-			self.locationSelector = new LocationJSTreeSelector();
-			self.locationSelector.init(self.Fileshare(), [], {
-				onNodeSelectedEventHandler: function (node) {
-					if (self.fileShareInvalidated) {
-						self.fileShareInvalidated = false;
-						return;
-					}
-					self.Fileshare(node.id);
-				}
-			});
+		self.initializeDestinationLocations = function (destinationLocations, selectedLocationId) {
+			self.DestinationLocationsList(destinationLocations);
 
-			self.locationSelector.toggle(true); // !!self.ProcessingSourceLocation()
-			self.loadRootDataTransferLocation();
+			self.SelectedDestinationLocationId(selectedLocationId);
+			self.SelectedDestinationLocationId.isModified(false);
+			self.destinationLocationSelectionChanged(self.SelectedDestinationLocationId(), true);
+
+			self.SelectedDestinationLocationId.subscribe(function (value) {
+				self.destinationLocationSelectionChanged(value);
+			});
+		};
+
+		self.isProcessingSourceLocationSelected = function () {
+			var destinationLocation = self.getSelectedDestinationLocationViewModel();
+			return !!destinationLocation && !destinationLocation.isFileshare;
+		};
+
+		self.getSelectedDestinationLocationViewModel = function () {
+			var artifactId = self.SelectedDestinationLocationId();
+			if (artifactId) {
+				var selecteDestinationLocation = ko.utils.arrayFirst(self.DestinationLocationsList(),
+					function (item) {
+						if (item.artifactId === artifactId) {
+							return item;
+						}
+					});
+				return selecteDestinationLocation;
+			}
+		};
+
+		self.createDestinationLocationListItemForFileshare = function () {
+			return {
+				artifactId: FILESHARE_EXPORT_LOCATION_ARTIFACT_ID,
+				location: ".\\EDDS" + state.SourceWorkspaceArtifactId + "\\" + self.rootDataTransferLocation,
+				isFileshare: true
+			};
+		};
+
+		self.getInitialDestinationLocationId = function () {
+			if (state.DestinationLocationId) {
+				return state.DestinationLocationId;
+			} else if (state.Fileshare) { // case when user created IP before PSL support was added
+				return FILESHARE_EXPORT_LOCATION_ARTIFACT_ID;
+			}
+		};
+	}
+
+	var viewModel = function (state) {
+		var self = this;
+		this.exportDestinationLocationViewModel = new ExportDestinationLocationViewModel(state);
+
+		this.IPName = state.name;
+		this.ArtifactTypeID = state.artifactTypeId;
+		this.DefaultRdoTypeId = state.defaultRdoTypeId;
+
+		this.ExportRdoMode = function () {
+			return self.ArtifactTypeID !== self.DefaultRdoTypeId;
+		}
+
+		this.onDOMLoaded = function () {
+			self.exportDestinationLocationViewModel.onLoadded();
 		};
 
 		this.SelectedDataFileFormat = ko.observable(state.SelectedDataFileFormat || ExportEnums.Defaults.DataFileFormatValue).extend({
@@ -283,7 +524,7 @@
 			}
 		});
 
-		this.IsCustomFileNameOptionSelected = function() {
+		this.IsCustomFileNameOptionSelected = function () {
 			return self.SelectedExportNativesWithFileNameFrom() === ExportEnums.ExportNativeWithFilenameFromTypesEnum.Custom;
 		};
 
@@ -643,22 +884,6 @@
 			imageProductionPickerViewModel.open(self.ImagePrecedence());
 		};
 
-		this.fileShareDisplayText = function () {
-			if (self.Fileshare()) {
-				if (self.IsExportFolderCreationEnabled()) {
-					return "EDDS" + state.SourceWorkspaceArtifactId + "\\" + self.Fileshare() + "\\" + self.IPName + "_{TimeStamp}";
-				}
-
-				return "EDDS" + state.SourceWorkspaceArtifactId + "\\" + self.Fileshare();
-			}
-			return "Select...";
-		};
-
-		this.IsExportFolderCreationEnabled = ko.observable(state.isExportFolderCreationEnabled || true);
-		self.IsExportFolderCreationEnabled.subscribe(function () {
-			self.fileShareDisplayText();
-		});
-
 		var availableFields = state.availableFields || [];
 
 		var getDefaultFileSelections = function (availFields) {
@@ -676,7 +901,7 @@
 
 		var exportHelper = new ExportHelper();
 
-		var getFileNameSelectionRepresentation = function() {
+		var getFileNameSelectionRepresentation = function () {
 			var fileNameParts = self.FileNameParts();
 			return exportHelper.convertFileNamePartsToText(fileNameParts);
 		};
@@ -714,9 +939,11 @@
 		this.errors = ko.validation.group(this, { deep: true });
 
 		this.getSelectedOption = function () {
+			var destinationLocation = self.exportDestinationLocationViewModel.SelectedDestinationLocationId();
 			return {
 				"AppendOriginalFileName": self.AppendOriginalFileName(),
 				"ColumnSeparator": self.ColumnSeparator(),
+				"DestinationLocationId": destinationLocation !== undefined ? destinationLocation : null,
 				"ExportNatives": self.ExportNatives(),
 				"ExportNativesToFileNamedFrom": self.SelectedExportNativesWithFileNameFrom(),
 				"DataFileEncodingType": self.DataFileEncodingType(),
@@ -724,7 +951,7 @@
 				"ExportImages": self.ExportImages(),
 				"ExportMultipleChoiceFieldsAsNested": self.ExportMultipleChoiceFieldsAsNested(),
 				"FilePath": self.FilePath(),
-				"Fileshare": self.Fileshare(),
+				"Fileshare": self.exportDestinationLocationViewModel.DestinationFolder(),
 				"ImagePrecedence": self.ImagePrecedence(),
 				"IncludeOriginalImages": self.IncludeOriginalImages(),
 				"MultiValueSeparator": self.MultiValueSeparator(),
@@ -750,7 +977,7 @@
 				"VolumePrefix": self.VolumePrefix(),
 				"VolumeStartNumber": self.VolumeStartNumber(),
 				"IncludeNativeFilesPath": self.IncludeNativeFilesPath(),
-				"IsAutomaticFolderCreationEnabled": self.IsExportFolderCreationEnabled(),
+				"IsAutomaticFolderCreationEnabled": self.exportDestinationLocationViewModel.IsExportFolderCreationEnabled(),
 				"FileNameParts": self.FileNameParts()
 			};
 		};
