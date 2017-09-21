@@ -275,8 +275,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		}
 		private void ConfigureJobStatistics()
 		{
-			StatisticsService.IntegrationPointSourceConfiguration = SourceConfiguration;
-			StatisticsService.IntegrationPointImportSettings = ImportSettings;
+			if (StatisticsService != null)
+			{
+				StatisticsService.IntegrationPointSourceConfiguration = SourceConfiguration;
+				StatisticsService.IntegrationPointImportSettings = ImportSettings;
+			}
 		}
 
 		private void ConfigureJobHistory()

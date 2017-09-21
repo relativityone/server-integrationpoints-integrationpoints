@@ -206,6 +206,7 @@ def build_tests(String server_name, String domain, String session_id, String rel
 		execute_nunit_tests("kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration.dll", tests_filter, session_id, "production")
 		execute_nunit_tests("kCura.IntegrationPoints.EventHandlers.Tests.Integration.dll", tests_filter, session_id, "production")
 		execute_nunit_tests("kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.dll", tests_filter, session_id, "production")
+		execute_nunit_tests("kCura.IntegrationPoints.ImportProvider.Tests.Integration.dll", tests_filter, session_id, "production")
 		execute_nunit_tests("kCura.IntegrationPoints.Services.Tests.Integration.dll", tests_filter, session_id, "production")
 		execute_nunit_tests("kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration.dll", tests_filter, session_id, "production")
 		execute_nunit_tests("kCura.IntegrationPoints.Web.Tests.Integration.dll", tests_filter, session_id, "production")
