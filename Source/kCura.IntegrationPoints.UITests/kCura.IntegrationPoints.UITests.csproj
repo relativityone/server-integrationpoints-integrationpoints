@@ -73,12 +73,12 @@
       <HintPath>..\packages\Relativity.Kepler.1.0.1.409\lib\net462\Relativity.Kepler.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Logging.Interfaces, Version=9.4.308.17, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Logging.Interfaces.9.4.308\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+    <Reference Include="Relativity.Services.DataContracts, Version=9.5.281.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Services.DataContracts.9.5.281.1\lib\net462\Relativity.Services.DataContracts.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Services.DataContracts, Version=9.5.275.159, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Services.DataContracts.9.5.275.159\lib\net462\Relativity.Services.DataContracts.dll</HintPath>
+    <Reference Include="Relativity.Services.Interfaces, Version=9.5.281.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Services.Interfaces.9.5.281.1\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Services.Interfaces, Version=9.5.275.159, Culture=neutral, processorArchitecture=MSIL">
