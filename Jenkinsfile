@@ -293,6 +293,10 @@ try {
 				stash includes: 'lib/UnitTests/TestData/IMAGES/*', name: 'testdata_images'				
 				stash includes: 'lib/UnitTests/TestData/NATIVES/*', name: 'testdata_natives'		
 				stash includes: 'lib/UnitTests/oi/*', name: 'outside_in'		
+				stash includes: 'lib/UnitTests/TestDataForImport/*', name: 'testdataforimport'
+				stash includes: 'lib/UnitTests/TestDataForImport/et-files/*', name: 'testdataforimport_et'
+				stash includes: 'lib/UnitTests/TestDataForImport/img/*', name: 'testdataforimport_img'
+				stash includes: 'lib/UnitTests/TestDataForImport/native-files/*', name: 'testdataforimport_native'
 				stash includes: 'Applications/RelativityIntegrationPoints.Auto.rap', name: 'integrationPointsRap'		
 			}
 		}
@@ -434,6 +438,10 @@ try {
 				unstash 'testdata_natives'
 				unstash 'integrationPointsRap'
 				unstash 'outside_in'
+				unstash 'testdataforimport'
+				unstash 'testdataforimport_et'
+				unstash 'testdataforimport_img'
+				unstash 'testdataforimport_native'
 
 				build_tests(server_name, domain, session_id, relativity_branch, automation_branch, installing_invariant, installing_datagrid, is_nightly_test_execution_develop)
 			}	

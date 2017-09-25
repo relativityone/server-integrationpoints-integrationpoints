@@ -210,7 +210,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="LICENSE.txt" />
-    <Content Include="TestData\CsvWithMetadata.csv">
+    <Content Include="TestDataForImport\CsvWithMetadata.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <EmbeddedResource Include="SettingsResources\FieldMaps\FieldMapsCsvWithMetadata.json" />
@@ -218,83 +218,83 @@
     <EmbeddedResource Include="SettingsResources\ImportSettings\ImportSettingsCsvWithMetadata.json" />
     <EmbeddedResource Include="SettingsResources\FieldMaps\FieldMapsOpticonWithText.json" />
     <EmbeddedResource Include="SettingsResources\ImportProviderSettings\ImportProviderSettingsOpticonWithText.json" />
-    <Content Include="TestData\et-files\1.txt">
+    <Content Include="TestDataForImport\et-files\1.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="TestData\et-files\2.txt">
+    <Content Include="TestDataForImport\et-files\2.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="TestData\et-files\3.txt">
+    <Content Include="TestDataForImport\et-files\3.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="TestData\img\01.jpg">
+    <Content Include="TestDataForImport\img\01.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="TestData\img\01.txt">
+    <Content Include="TestDataForImport\img\01.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="TestData\img\02.jpg">
+    <Content Include="TestDataForImport\img\02.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="TestData\img\02.txt">
+    <Content Include="TestDataForImport\img\02.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="TestData\img\03.jpg">
+    <Content Include="TestDataForImport\img\03.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="TestData\img\03.txt">
+    <Content Include="TestDataForImport\img\03.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="TestData\img\04.jpg">
+    <Content Include="TestDataForImport\img\04.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="TestData\img\04.txt">
+    <Content Include="TestDataForImport\img\04.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="TestData\img\05.jpg">
+    <Content Include="TestDataForImport\img\05.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="TestData\img\05.txt">
+    <Content Include="TestDataForImport\img\05.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="TestData\img\06.jpg">
+    <Content Include="TestDataForImport\img\06.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="TestData\img\06.txt">
+    <Content Include="TestDataForImport\img\06.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="TestData\img\07.jpg">
+    <Content Include="TestDataForImport\img\07.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="TestData\img\07.txt">
+    <Content Include="TestDataForImport\img\07.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="TestData\native-files\1.png">
+    <Content Include="TestDataForImport\native-files\1.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="TestData\native-files\2.png">
+    <Content Include="TestDataForImport\native-files\2.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="TestData\native-files\3.png">
+    <Content Include="TestDataForImport\native-files\3.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="TestData\OpticonWithText.opt">
+    <Content Include="TestDataForImport\OpticonWithText.opt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <EmbeddedResource Include="SettingsResources\ImportSettings\ImportSettingsOpticonWithText.json" />
     <EmbeddedResource Include="SettingsResources\FieldMaps\FieldMapsCsvWithETPath.json" />
     <EmbeddedResource Include="SettingsResources\ImportProviderSettings\ImportProviderSettingsCsvWithETPath.json" />
     <EmbeddedResource Include="SettingsResources\ImportSettings\ImportSettingsCsvWithETPath.json" />
-    <Content Include="TestData\CsvWithETPath.csv">
+    <Content Include="TestDataForImport\CsvWithETPath.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="TestData\CsvWithNativePath.csv">
+    <Content Include="TestDataForImport\CsvWithNativePath.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <EmbeddedResource Include="SettingsResources\FieldMaps\FieldMapsCsvWithNativePath.json" />
     <EmbeddedResource Include="SettingsResources\ImportProviderSettings\ImportProviderSettingsCsvWithNativePath.json" />
     <EmbeddedResource Include="SettingsResources\ImportSettings\ImportSettingsCsvWithNativePath.json" />
-    <Content Include="TestData\CsvWithChoices.csv">
+    <Content Include="TestDataForImport\CsvWithChoices.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <EmbeddedResource Include="SettingsResources\FieldMaps\FieldMapsCsvWithChoices.json" />
@@ -303,7 +303,7 @@
     <EmbeddedResource Include="SettingsResources\FieldMaps\FieldMapsCsvWithFolders.json" />
     <EmbeddedResource Include="SettingsResources\ImportProviderSettings\ImportProviderSettingsCsvWithFolders.json" />
     <EmbeddedResource Include="SettingsResources\ImportSettings\ImportSettingsCsvWithFolders.json" />
-    <Content Include="TestData\ConcordanceWithMetadata.csv">
+    <Content Include="TestDataForImport\ConcordanceWithMetadata.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="packages.config" />
@@ -315,7 +315,9 @@
   <PropertyGroup>
     <PostBuildEvent>xcopy $(ProjectDir)..\packages\Relativity.ImportExport.9.5.281.1\lib\native\*  $(ProjectDir)$(OutDir)  /y
 mkdir "$(ProjectDir)..\..\lib\UnitTests"
-xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y</PostBuildEvent>
+xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y
+xcopy "$(ProjectDir)TestDataForImport" "$(ProjectDir)..\..\lib\UnitTests\TestDataForImport" /E /Y /I /R
+</PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\packages\kCura.9.5.281.1\build\kCura.targets" Condition="Exists('..\packages\kCura.9.5.281.1\build\kCura.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

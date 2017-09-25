@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 	[TestFixture]
 	public class ImportServiceManagerTests
 	{
-		private const string _TEST_DATA_PATH = "TestData";
+		private const string _TEST_DATA_PATH = "TestDataForImport";
 		private const string _INPUT_FOLDER_KEY = "InputFolder";
 
 		private int _workspaceId;
