@@ -306,6 +306,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 			_isJobComplete = false;
 			_rowErrors = new List<KeyValuePair<string, string>>();
+
+			_logger.LogDebug("Initializing Import Job completed.");
 		}
 
 		private void WaitUntilTheJobIsDone()
@@ -355,6 +357,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				importService.OnDocumentError += OnDocumentError;
 			}
 			importService.Initialize();
+
+			_logger.LogDebug("Initialization Import Service...finished");
 
 			return importService;
 		}
@@ -427,6 +431,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				}
 			}
 
+			_logger.LogDebug($"Rip Import Settings:\n {JsonConvert.SerializeObject(settings)}");
 			return settings;
 		}
 
@@ -558,7 +563,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		private void LogSyncingData()
 		{
-			_logger.LogVerbose("Attempting to Sync Data.");
+			_logger.LogDebug("Preparing import process in synchronizer...");
 		}
 
 		private void LogRetrievingEmailBody()
@@ -573,12 +578,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		private void LogInitializingImportJob()
 		{
-			_logger.LogVerbose("Initializing Import Job.");
+			_logger.LogDebug("Initializing Import Job.");
 		}
 
 		private void LogInitializingImportService()
 		{
-			_logger.LogVerbose("Attempting to Initialize Import Service.");
+			_logger.LogDebug("Start initializing Import Service...");
 		}
 
 		private void LogMissingIdentifierField()
@@ -588,7 +593,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		private void LogRetrievingImportSettings()
 		{
-			_logger.LogVerbose("Retrieving sync data Import Settings.");
+			_logger.LogDebug("Starting RIP Import Settings creation...");
 		}
 
 		private void LogInvalidFieldMap(Exception ex)

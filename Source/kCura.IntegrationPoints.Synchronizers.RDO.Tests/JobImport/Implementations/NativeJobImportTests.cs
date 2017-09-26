@@ -7,6 +7,7 @@ using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport.Implementations
 {
@@ -17,6 +18,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport.Implementati
 		private ImportSettings _importSettings;
 		private IExtendedImportAPI _importApi;
 		private IImportSettingsBaseBuilder<Settings> _builder;
+		private IAPILog _loggerMock;
+		private IHelper _helperMock;
 
 		[SetUp]
 		public override void SetUp()
@@ -25,8 +28,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport.Implementati
 			_importApi = Substitute.For<IExtendedImportAPI>();
 			_builder = Substitute.For<IImportSettingsBaseBuilder<Settings>>();
 			var context = Substitute.For<IDataTransferContext>();
+			_loggerMock = Substitute.For<IAPILog>();
+			_helperMock = Substitute.For<IHelper>();
+			_helperMock.GetLoggerFactory().GetLogger().ForContext<NativeJobImport>().Returns(_loggerMock);
 
-			_instance = new NativeJobImport(_importSettings, _importApi, _builder, context);
+			_instance = new NativeJobImport(_importSettings, _importApi, _builder, context, _helperMock);
 		}
 
 		[Test]

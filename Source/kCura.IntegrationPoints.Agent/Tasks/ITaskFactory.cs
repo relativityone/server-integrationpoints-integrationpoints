@@ -87,8 +87,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		public ITask CreateTask(Job job, ScheduleQueueAgentBase agentBase)
 		{
-		    LogCreateTaskStart(job);
-            LogCreatingTaskInformation(job);
+			LogCreatingTaskInformation(job);
 			Install(job, agentBase);
 			IntegrationPoint integrationPointDto = GetIntegrationPoint(job);
 			ResolveDependencies(integrationPointDto);
@@ -334,12 +333,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		}
 	    private void LogCreateTaskSyncCheck(Job job, TaskType taskType)
 	    {
-	        _logger.LogInformation("Checking for synchronization in task factory. Job: {JobId}, Task Type: {TaskType} ", job.JobId, taskType);
-	    }
-
-        private void LogCreateTaskStart(Job job)
-	    {
-	        _logger.LogInformation("Creating task for job: {JobId}", job.JobId);
+	        _logger.LogInformation("Creating job specific manger/worker class in task factory. Job: {JobId}, Task Type: {TaskType}", job.JobId, taskType);
 	    }
 
         private void LogUnknownTaskTypeError(TaskType taskType)
@@ -370,12 +364,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 	    private void LogGetIntegrationPointSuccesfullEnd(Job job, IntegrationPoint integrationPoint)
 	    {
-	        _logger.LogInformation("Retrieved integration point, job: {JobId}, ArtifactId: {ArtifactId}", job.JobId, integrationPoint.ArtifactId);
+	        _logger.LogInformation("Read integration point record completed for job: {JobId}, IP ArtifactId: {ArtifactId}", job.JobId, integrationPoint.ArtifactId);
 	    }
 
 	    private void LogGetIntegrationPointStart(Job job)
 	    {
-	        _logger.LogInformation("Getting integration point, job: {JobId}", job.JobId);
+	        _logger.LogInformation("Reading integration point record for job: {JobId}", job.JobId);
 	    }
 
 	    private void LogGetJobHistorySuccesfulEnd(Job job, IntegrationPoint integrationPointDto)

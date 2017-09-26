@@ -59,9 +59,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			//Logger cannot be initialized in constructor because Helper from Agent.Base is initialized later on
 			_logger = Helper.GetLoggerFactory().GetLogger().ForContext<ScheduleQueueAgentBase>();
 
-			string message = "Initialize Local Services";
-			OnRaiseAgentLogEntry(20, LogCategory.Info, message);
-			LogOnInitialize(message);
+			OnRaiseAgentLogEntry(20, LogCategory.Debug, "Initialize Agent core services");
 			
 			if (this.DBContext == null)
 			{
@@ -129,26 +127,28 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		private void InitializeManagerConfigSettingsFactory()
 		{
-			OnRaiseAgentLogEntry(20, LogCategory.Info, "Initialize Manager Config settings factory");
+			OnRaiseAgentLogEntry(20, LogCategory.Info, "Initialize Config Settings factory");
 			LogOnInitializeManagerConfigSettingsFactory();
 			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(base.Helper);
 		}
 
 		private void CheckQueueTable()
 		{
-			OnRaiseAgentLogEntry(20, LogCategory.Info, "Check for Queue Table");
-			LogOnCheckForQueueTable();
+			OnRaiseAgentLogEntry(20, LogCategory.Info, "Check Schedule Agent Queue table exists");
 
 			AgentService.InstallQueueTable();
 		}
 
 		public void ProcessQueueJobs()
 		{
-			OnRaiseAgentLogEntry(20, LogCategory.Info, "Process jobs");
-			LogOnProcessJobs();
+			OnRaiseAgentLogEntry(20, LogCategory.Info, "Checking for active jobs in Schedule Agent Queue table");
 
 			Job nextJob = jobService.GetNextQueueJob(base.GetResourceGroupIDs(), base.AgentID);
 
+			if (nextJob == null)
+			{
+				_logger.LogDebug("No active job found in Schedule Agent Queue table");
+			}
 			while (nextJob != null)
 			{
 				string agentMessage = string.Format(START_PROCESSING_JOB_MESSAGE_TEMPLATE, nextJob.JobId, nextJob.WorkspaceID,
@@ -294,18 +294,8 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		private void LogOnInitializeManagerConfigSettingsFactory()
 		{
-			_logger.LogInformation("Attempting to initialize Manager Config settings factory in {TypeName}",
+			_logger.LogInformation("Attempting to initialize Config Settings factory in {TypeName}",
 				nameof(ScheduleQueueAgentBase));
-		}
-
-		private void LogOnCheckForQueueTable()
-		{
-			_logger.LogInformation("Attempting to check for Queue Table in {TypeName}", nameof(ScheduleQueueAgentBase));
-		}
-
-		private void LogOnProcessJobs()
-		{
-			_logger.LogInformation("Attempting to process jobs in {TypeName}", nameof(ScheduleQueueAgentBase));
 		}
 
 		private void LogOnCleanupJobs()
