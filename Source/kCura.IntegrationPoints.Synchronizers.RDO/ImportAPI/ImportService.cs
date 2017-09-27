@@ -30,10 +30,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		private int _lastJobProgressUpdate;
 		private int _totalRowsImported;
 		private int _totalRowsWithErrors;
+		private IHelper _helper;
 
 		public ImportService(ImportSettings settings, Dictionary<string, int> fieldMappings, BatchManager batchManager, NativeFileImportService nativeFileImportService,
 			IImportApiFactory factory, IImportJobFactory jobFactory, IHelper helper)
 		{
+			_helper = helper;
 			AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
 			Settings = settings;
 			_batchManager = batchManager;
@@ -41,7 +43,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			NativeFileImportService = nativeFileImportService;
 			_factory = factory;
 			_jobFactory = jobFactory;
-			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ImportService>();
+			_logger = _helper.GetLoggerFactory().GetLogger().ForContext<ImportService>();
 			if (_batchManager != null)
 			{
 				_batchManager.OnBatchCreate += ImportService_OnBatchCreate;
@@ -124,7 +126,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		public virtual void KickOffImport(IDataTransferContext context)
 		{
 			LogSettingUpImportJob();
-			IJobImport importJob = _jobFactory.Create(_importApi, Settings, context);
+			IJobImport importJob = _jobFactory.Create(_importApi, Settings, context, _helper);
 
 			//Assign events
 			importJob.OnComplete += ImportJob_OnComplete;

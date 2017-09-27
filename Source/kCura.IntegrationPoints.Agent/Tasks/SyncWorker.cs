@@ -372,12 +372,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void LogExecutingTaskError(Job job, Exception ex)
 		{
-			_logger.LogError(ex, "Failed to execute SyncWorker task for job {JobId}.", job.JobId);
+			_logger.LogError(ex, "Failed to execute SyncWorker task for Job ID {JobId}.", job.JobId);
 		}
 
 		private void LogAuthenticationException(Job job, AuthenticationException e)
 		{
-			_logger.LogError(e, "Error occurred during authentication for job {JobId}.", job.JobId);
+			_logger.LogError(e, "Error occurred during authentication for Job ID {JobId}.", job.JobId);
 		}
 
 		private void LogJobStoppedException(Job job, OperationCanceledException e)
@@ -387,12 +387,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void LogUnknownDestinationProvider(Job job)
 		{
-			_logger.LogError("Destination provider for job {JobId} is unknown.", job.JobId);
+			_logger.LogError("Destination provider for Job ID {JobId} is unknown.", job.JobId);
 		}
 
 		private void LogUnknownSourceProvider(Job job)
 		{
-			_logger.LogError("Source provider for job {JobId} is unknown.", job.JobId);
+			_logger.LogError("Source provider for Job ID {JobId} is unknown.", job.JobId);
 		}
 
 		private void LogPostExecuteError(Job job, Exception e)
@@ -417,49 +417,49 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 	    private void LogExecuteEnd(Job job)
 	    {
-	        _logger.LogInformation("Finished execution of job in SyncWorker: {JobId}", job.JobId);
+	        _logger.LogInformation("Finished execution of job in SyncWorker for Job ID: {JobId}", job.JobId);
 	    }
 
 	    private void LogExecuteStart(Job job)
 	    {
-	        _logger.LogInformation("Starting execution of job in SyncWorker: {JobId}", job.JobId);
+	        _logger.LogInformation("Starting execution of job in SyncWorker for Job ID: {JobId}", job.JobId);
 	    }
 	    private void LogExecuteImportSuccesfulEnd(Job job)
 	    {
-	        _logger.LogInformation("Succesfully finished execution of import in SyncWorker for: {JobId}.", job.JobId);
+	        _logger.LogInformation("Succesfully finished execution of import in SyncWorker for Job ID: {JobId}.", job.JobId);
 	    }
 
 	    private void LogExecuteImportStart(Job job)
 	    {
-	        _logger.LogInformation("Starting execution of import in SyncWorker for: {JobId}.", job.JobId);
+	        _logger.LogInformation("Starting execution of import in SyncWorker for Job ID: {JobId}.", job.JobId);
 	    }
 	    private void LogExecuteTaskFinalize(Job job)
 	    {
-	        _logger.LogInformation("Finalized execution of task in SyncWorker for job: {JobId}", job.JobId);
+	        _logger.LogInformation("Finalized execution of task in SyncWorker for Job ID: {JobId}", job.JobId);
 	    }
 	    private void LogExecuteTaskSuccesfulEnd(Job job)
 	    {
-	        _logger.LogInformation("Succesfully finished execution of task in SyncWorker for job: {JobId}.", job.JobId);
+	        _logger.LogInformation("Succesfully finished execution of task in SyncWorker for Job ID: {JobId}.", job.JobId);
 	    }
         private void LogExecuteTaskStart(Job job)
 	    {
-	        _logger.LogInformation("Starting execution of task in SyncWorker for job: {JobId}", job.JobId);
+	        _logger.LogInformation("Starting execution of task in SyncWorker for Job ID: {JobId}", job.JobId);
 	    }
 	    private void LogPostExecuteFinalize(Job job)
 	    {
-	        _logger.LogInformation("Finalized post execute method in SyncWorker for job: {JobId}.", job.JobId);
+	        _logger.LogInformation("Finalized post execute method in SyncWorker for Job ID: {JobId}.", job.JobId);
 	    }
 	    private void LogUpdateStopStateToNone(List<long> ids)
 	    {
-	        _logger.LogInformation("Updating stop state to None in SyncWorker for: {ids}.", ids);
+	        _logger.LogInformation("Updating stop state to None in SyncWorker Job ID: {ids}.", ids);
 	    }
 	    private void LogUpdateStopStateToUnstoppable(List<long> ids)
 	    {
-	        _logger.LogInformation("Updating stop state to Unstoppable in SyncWorker for: {ids}.", ids);
+	        _logger.LogInformation("Updating stop state to Unstoppable in SyncWorker Job ID: {ids}.", ids);
 	    }
 	    private void LogPostExecuteStart(Job job)
 	    {
-	        _logger.LogInformation("Starting post execute method in SyncWorker for job: {JobId}.", job.JobId);
+	        _logger.LogInformation("Starting post execute method in SyncWorker for Job ID: {JobId}.", job.JobId);
 	    }
         #endregion
     }

@@ -2,12 +2,15 @@
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
+using Relativity.API;
+using Relativity.Core.AgentJobManagement.ScriptAddins;
+using Relativity.Logging;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 {
 	public class ImportJobFactory : IImportJobFactory
 	{
-		public IJobImport Create(IExtendedImportAPI importApi, ImportSettings settings, IDataTransferContext context)
+		public IJobImport Create(IExtendedImportAPI importApi, ImportSettings settings, IDataTransferContext context, IHelper helper)
 		{
 			IJobImport rv;
 			switch (GetJobContextType(settings))
@@ -26,7 +29,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 					break;
 				case JobContextType.Native:
 					IImportSettingsBaseBuilder<Settings> nativeImportSettingsBuilder = new NativeImportSettingsBuilder(importApi);
-					rv = new NativeJobImport(settings, importApi, nativeImportSettingsBuilder, context);
+					rv = new NativeJobImport(settings, importApi, nativeImportSettingsBuilder, context, helper);
 					break;
 				default:
 					throw new ArgumentOutOfRangeException();
