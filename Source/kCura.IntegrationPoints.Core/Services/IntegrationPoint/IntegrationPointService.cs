@@ -146,7 +146,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 					String.Join(Environment.NewLine, new[] { exception.Message, exception.StackTrace })
 				);
 
-				throw new Exception(Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_SAVE_INTEGRATION_POINT_USER_MESSAGE);
+				throw new Exception(Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_SAVE_INTEGRATION_POINT_USER_MESSAGE, exception);
 			}
 			return integrationPoint.ArtifactId;
 		}
