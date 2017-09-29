@@ -293,6 +293,7 @@
     <Compile Include="TestCases\ItShouldExportSavedSearchMetadataOnly.cs" />
     <Compile Include="TestCases\ItShouldExportTextFilesWithCustomDirectoryPrefix.cs" />
     <Compile Include="TestCases\ItShouldExportVolumeWithCustomName.cs" />
+    <Compile Include="TestCases\Resources\ExpectedOutput.Designer.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
     <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />
@@ -366,6 +367,9 @@
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\CSharpGuidelineAnalyzer.1.0.3.0\analyzers\dotnet\cs\CSharpGuidelineAnalyzer.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="TestCases\Resources\ExpectedOutput.resx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
