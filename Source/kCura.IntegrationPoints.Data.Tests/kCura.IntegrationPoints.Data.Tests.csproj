@@ -97,12 +97,12 @@
       <HintPath>..\packages\Relativity.Logging.Interfaces.9.4.308\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Productions.Services.Interfaces, Version=9.5.19.9, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Productions.Services.Interfaces.9.5.19\lib\net45\Relativity.Productions.Services.Interfaces.dll</HintPath>
+    <Reference Include="Relativity.Productions.Services.Interfaces, Version=9.5.43.12, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Productions.Services.Interfaces.9.5.43\lib\net45\Relativity.Productions.Services.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Productions.Services.Interfaces.Private, Version=9.5.19.9, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Productions.Services.Interfaces.9.5.19\lib\net45\Relativity.Productions.Services.Interfaces.Private.dll</HintPath>
+    <Reference Include="Relativity.Productions.Services.Interfaces.Private, Version=9.5.43.12, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Productions.Services.Interfaces.9.5.43\lib\net45\Relativity.Productions.Services.Interfaces.Private.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.SecretCatalog, Version=1.0.19.3, Culture=neutral, processorArchitecture=MSIL">
