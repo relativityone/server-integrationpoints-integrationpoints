@@ -68,7 +68,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura, Version=9.5.292.19, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>9.5.292.19.9.5.292.19\lib\net462\kCura.dll</HintPath>
+      <HintPath>9.5.292.19\lib\net462\kCura.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Agent, Version=9.5.292.19, Culture=neutral, processorArchitecture=MSIL">
@@ -535,9 +535,9 @@ xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y</PostBuildEvent>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Baseclass.Contrib.Nuget.Output.1.0.0\build\net40\Baseclass.Contrib.Nuget.Output.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Baseclass.Contrib.Nuget.Output.1.0.0\build\net40\Baseclass.Contrib.Nuget.Output.targets'))" />
     <Error Condition="!Exists('..\packages\RelativityCore.9.5.292.19\build\RelativityCore.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\RelativityCore.9.5.292.19\build\RelativityCore.targets'))" />
-    <Error Condition="!Exists('9.5.292.19.9.5.292.19\build\kCura.targets')" Text="$([System.String]::Format('$(ErrorText)', '9.5.292.19.9.5.292.19\build\kCura.targets'))" />
+    <Error Condition="!Exists('9.5.292.19\build\kCura.targets')" Text="$([System.String]::Format('$(ErrorText)', '9.5.292.19\build\kCura.targets'))" />
   </Target>
   <Import Project="..\packages\Baseclass.Contrib.Nuget.Output.1.0.0\build\net40\Baseclass.Contrib.Nuget.Output.targets" Condition="Exists('..\packages\Baseclass.Contrib.Nuget.Output.1.0.0\build\net40\Baseclass.Contrib.Nuget.Output.targets')" />
   <Import Project="..\packages\RelativityCore.9.5.292.19\build\RelativityCore.targets" Condition="Exists('..\packages\RelativityCore.9.5.292.19\build\RelativityCore.targets')" />
-  <Import Project="9.5.292.19.9.5.292.19\build\kCura.targets" Condition="Exists('9.5.292.19.9.5.292.19\build\kCura.targets')" />
+  <Import Project="9.5.292.19\build\kCura.targets" Condition="Exists('9.5.292.19\build\kCura.targets')" />
 </Project>

@@ -443,10 +443,10 @@ $(ProjectDir)..\Dependencies\PECOPY "$(TargetDir)$(TargetFileName)" "$(ProjectDi
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('9.5.292.19.OutsideIn.FI.Win32.2017.3.3\build\kCura.OutsideIn.FI.Win32.targets')" Text="$([System.String]::Format('$(ErrorText)', '9.5.292.19.OutsideIn.FI.Win32.2017.3.3\build\kCura.OutsideIn.FI.Win32.targets'))" />
-    <Error Condition="!Exists('9.5.292.19.9.5.292.19\build\kCura.targets')" Text="$([System.String]::Format('$(ErrorText)', '9.5.292.19.9.5.292.19\build\kCura.targets'))" />
+    <Error Condition="!Exists('9.5.292.19\build\kCura.targets')" Text="$([System.String]::Format('$(ErrorText)', '9.5.292.19\build\kCura.targets'))" />
     <Error Condition="!Exists('..\packages\Relativity.ImportExport.9.5.292.19\build\Relativity.ImportExport.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Relativity.ImportExport.9.5.292.19\build\Relativity.ImportExport.targets'))" />
   </Target>
   <Import Project="9.5.292.19.OutsideIn.FI.Win32.2017.3.3\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('9.5.292.19.OutsideIn.FI.Win32.2017.3.3\build\kCura.OutsideIn.FI.Win32.targets')" />
-  <Import Project="9.5.292.19.9.5.292.19\build\kCura.targets" Condition="Exists('9.5.292.19.9.5.292.19\build\kCura.targets')" />
+  <Import Project="9.5.292.19\build\kCura.targets" Condition="Exists('9.5.292.19\build\kCura.targets')" />
   <Import Project="..\packages\Relativity.ImportExport.9.5.292.19\build\Relativity.ImportExport.targets" Condition="Exists('..\packages\Relativity.ImportExport.9.5.292.19\build\Relativity.ImportExport.targets')" />
 </Project>
