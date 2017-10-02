@@ -9,11 +9,11 @@ task copy_libraries {
 	Copy-Item ([System.IO.Path]::Combine($nuget_packages_directory, 'kCura.Apps.Common.Data.2.1.3', 'lib', 'net462', 'kCura.Apps.Common.Data.dll')) $lib_directory
 	Copy-Item ([System.IO.Path]::Combine($nuget_packages_directory, 'kCura.Apps.Common.Utils.2.1.3', 'lib', 'net462', 'kCura.Apps.Common.Utils.dll')) $lib_directory
 	Copy-Item ([System.IO.Path]::Combine($nuget_packages_directory, 'kCura.LongPath.1.0.10', 'lib', 'net462', 'kCura.LongPath.dll')) $lib_directory	
-	Copy-Item ([System.IO.Path]::Combine($nuget_packages_directory, 'kCura.Relativity.Client.9.5.292.4', 'lib', 'net462', 'kCura.Relativity.Client.dll')) $lib_directory	
-	Copy-Item ([System.IO.Path]::Combine($nuget_packages_directory, 'Relativity.ImportExport.9.5.292.4', 'lib', 'net462', 'kCura.Relativity.DataReaderClient.dll')) $lib_directory	
-	Copy-Item ([System.IO.Path]::Combine($nuget_packages_directory, 'Relativity.ImportExport.9.5.292.4', 'lib', 'net462', 'kCura.WinEDDS.dll')) $lib_directory
-	Copy-Item ([System.IO.Path]::Combine($nuget_packages_directory, 'Relativity.ImportExport.9.5.292.4', 'lib', 'net462', 'kCura.WinEDDS.Core.dll')) $lib_directory	
-	Copy-Item ([System.IO.Path]::Combine($nuget_packages_directory, 'Relativity.ImportExport.9.5.292.4', 'lib', 'net462', 'kCura.WinEDDS.TApi.dll')) $lib_directory
+	Copy-Item ([System.IO.Path]::Combine($nuget_packages_directory, 'kCura.Relativity.Client.9.5.292.11', 'lib', 'net462', 'kCura.Relativity.Client.dll')) $lib_directory	
+	Copy-Item ([System.IO.Path]::Combine($nuget_packages_directory, 'Relativity.ImportExport.9.5.292.11', 'lib', 'net462', 'kCura.Relativity.DataReaderClient.dll')) $lib_directory	
+	Copy-Item ([System.IO.Path]::Combine($nuget_packages_directory, 'Relativity.ImportExport.9.5.292.11', 'lib', 'net462', 'kCura.WinEDDS.dll')) $lib_directory
+	Copy-Item ([System.IO.Path]::Combine($nuget_packages_directory, 'Relativity.ImportExport.9.5.292.11', 'lib', 'net462', 'kCura.WinEDDS.Core.dll')) $lib_directory	
+	Copy-Item ([System.IO.Path]::Combine($nuget_packages_directory, 'Relativity.ImportExport.9.5.292.11', 'lib', 'net462', 'kCura.WinEDDS.TApi.dll')) $lib_directory
 	Copy-Item ([System.IO.Path]::Combine($nuget_packages_directory, 'relativity.transfer.client.1.1.4', 'lib', 'net462', 'Relativity.Transfer.Client.Aspera.dll')) $lib_directory
 	Copy-Item ([System.IO.Path]::Combine($nuget_packages_directory, 'relativity.transfer.client.1.1.4', 'lib', 'net462', 'Relativity.Transfer.Client.Core.dll')) $lib_directory
 	Copy-Item ([System.IO.Path]::Combine($nuget_packages_directory, 'relativity.transfer.client.1.1.4', 'lib', 'net462', 'Relativity.Transfer.Client.dll')) $lib_directory
