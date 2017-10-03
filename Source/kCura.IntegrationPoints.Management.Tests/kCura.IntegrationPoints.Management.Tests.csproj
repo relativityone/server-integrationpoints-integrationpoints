@@ -46,19 +46,19 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura, Version=9.5.292.19, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>9.5.292.19\lib\net462\kCura.dll</HintPath>
+      <HintPath>..\packages\kCura.9.5.292.19\lib\net462\kCura.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Agent, Version=9.5.292.19, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>9.5.292.19.Agent.9.5.292.19\lib\net462\kCura.Agent.dll</HintPath>
+      <HintPath>..\packages\kCura.Agent.9.5.292.19\lib\net462\kCura.Agent.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Injection, Version=1.0.8.0, Culture=neutral, PublicKeyToken=318fc9f898ce154d, processorArchitecture=MSIL">
-      <HintPath>9.5.292.19.Injection.9.5.292.19\lib\net462\kCura.Injection.dll</HintPath>
+      <HintPath>..\packages\kCura.Injection.9.5.292.19\lib\net462\kCura.Injection.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Relativity.Client, Version=9.5.292.19, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>9.5.292.19.Relativity.Client.9.5.292.19\lib\net462\kCura.Relativity.Client.dll</HintPath>
+      <HintPath>..\packages\kCura.Relativity.Client.9.5.292.19\lib\net462\kCura.Relativity.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -265,12 +265,12 @@
       xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y
     </PostBuildEvent>
   </PropertyGroup>
-  <Import Project="9.5.292.19\build\kCura.targets" Condition="Exists('9.5.292.19\build\kCura.targets')" />
+  <Import Project="..\packages\kCura.9.5.292.19\build\kCura.targets" Condition="Exists('..\packages\kCura.9.5.292.19\build\kCura.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('9.5.292.19\build\kCura.targets')" Text="$([System.String]::Format('$(ErrorText)', '9.5.292.19\build\kCura.targets'))" />
+    <Error Condition="!Exists('..\packages\kCura.9.5.292.19\build\kCura.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\kCura.9.5.292.19\build\kCura.targets'))" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

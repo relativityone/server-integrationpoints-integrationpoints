@@ -57,11 +57,11 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura, Version=9.5.292.19, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>9.5.292.19\lib\net462\kCura.dll</HintPath>
+      <HintPath>..\packages\kCura.9.5.292.19\lib\net462\kCura.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Apps.Common.Utils, Version=2.1.3.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>9.5.292.19.Apps.Common.Utils.2.1.3\lib\net462\kCura.Apps.Common.Utils.dll</HintPath>
+      <HintPath>..\packages\kCura.Apps.Common.Utils.2.1.3\lib\net462\kCura.Apps.Common.Utils.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.ImageValidator, Version=9.5.292.19, Culture=neutral, processorArchitecture=MSIL">
@@ -69,7 +69,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Injection, Version=1.0.8.0, Culture=neutral, PublicKeyToken=318fc9f898ce154d, processorArchitecture=MSIL">
-      <HintPath>9.5.292.19.Injection.9.5.292.19\lib\net462\kCura.Injection.dll</HintPath>
+      <HintPath>..\packages\kCura.Injection.9.5.292.19\lib\net462\kCura.Injection.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.OI.FileID, Version=9.5.292.19, Culture=neutral, processorArchitecture=MSIL">
@@ -77,7 +77,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Relativity.Client, Version=9.5.292.19, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>9.5.292.19.Relativity.Client.9.5.292.19\lib\net462\kCura.Relativity.Client.dll</HintPath>
+      <HintPath>..\packages\kCura.Relativity.Client.9.5.292.19\lib\net462\kCura.Relativity.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Relativity.DataReaderClient, Version=9.5.292.19, Culture=neutral, processorArchitecture=MSIL">
@@ -121,7 +121,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="oi, Version=2017.3.3.13, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>9.5.292.19.OutsideIn.FI.Win32.2017.3.3\lib\net40\oi.dll</HintPath>
+      <HintPath>..\packages\kCura.OutsideIn.FI.Win32.2017.3.3\lib\net40\oi.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Polly, Version=5.3.1.0, Culture=neutral, processorArchitecture=MSIL">
@@ -294,11 +294,11 @@ $(ProjectDir)..\Dependencies\PECOPY "$(TargetDir)$(TargetFileName)" "$(ProjectDi
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('9.5.292.19.OutsideIn.FI.Win32.2017.3.3\build\kCura.OutsideIn.FI.Win32.targets')" Text="$([System.String]::Format('$(ErrorText)', '9.5.292.19.OutsideIn.FI.Win32.2017.3.3\build\kCura.OutsideIn.FI.Win32.targets'))" />
+    <Error Condition="!Exists('..\packages\kCura.OutsideIn.FI.Win32.2017.3.3\build\kCura.OutsideIn.FI.Win32.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\kCura.OutsideIn.FI.Win32.2017.3.3\build\kCura.OutsideIn.FI.Win32.targets'))" />
     <Error Condition="!Exists('..\packages\Relativity.ImportExport.9.5.292.19\build\Relativity.ImportExport.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Relativity.ImportExport.9.5.292.19\build\Relativity.ImportExport.targets'))" />
-    <Error Condition="!Exists('9.5.292.19\build\kCura.targets')" Text="$([System.String]::Format('$(ErrorText)', '9.5.292.19\build\kCura.targets'))" />
+    <Error Condition="!Exists('..\packages\kCura.9.5.292.19\build\kCura.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\kCura.9.5.292.19\build\kCura.targets'))" />
   </Target>
-  <Import Project="9.5.292.19.OutsideIn.FI.Win32.2017.3.3\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('9.5.292.19.OutsideIn.FI.Win32.2017.3.3\build\kCura.OutsideIn.FI.Win32.targets')" />
+  <Import Project="..\packages\kCura.OutsideIn.FI.Win32.2017.3.3\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\packages\kCura.OutsideIn.FI.Win32.2017.3.3\build\kCura.OutsideIn.FI.Win32.targets')" />
   <Import Project="..\packages\Relativity.ImportExport.9.5.292.19\build\Relativity.ImportExport.targets" Condition="Exists('..\packages\Relativity.ImportExport.9.5.292.19\build\Relativity.ImportExport.targets')" />
-  <Import Project="9.5.292.19\build\kCura.targets" Condition="Exists('9.5.292.19\build\kCura.targets')" />
+  <Import Project="..\packages\kCura.9.5.292.19\build\kCura.targets" Condition="Exists('..\packages\kCura.9.5.292.19\build\kCura.targets')" />
 </Project>
