@@ -4,6 +4,7 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases.Base;
+using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases.Resources;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases
@@ -26,6 +27,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 			var fileInfo = GetFileInfo(directory);
 			Assert.That(fileInfo.Name, Is.EqualTo($"{ExportSettings.SavedSearchName}_export_FULLTEXT_.{MetadataFormat}"));
 			Assert.That(DataFileFormatHelper.FileStartWith("FT,AMEYERS_0000757", fileInfo));
-		}
+        }
 	}
 }
