@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class ExpectedOutput {
+    public class ExpectedOutput {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases.Reso" +
@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -62,11 +62,20 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to fsdfsdfsdfsdf.
+        ///   Looks up a localized string similar to czekolada.
         /// </summary>
-        internal static string IPRO {
+        public static string IPRO {
             get {
                 return ResourceManager.GetString("IPRO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to fdsfsdsafasdfdsfsd.
+        /// </summary>
+        public static string IPROFullText {
+            get {
+                return ResourceManager.GetString("IPROFullText", resourceCulture);
             }
         }
         
@@ -77,7 +86,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
         ///AMEYERS_0001185_001,0,.\0\IMAGES\3\AMEYERS_0001185_001.tif,,,,
         ///.
         /// </summary>
-        internal static string Opticon {
+        public static string Opticon {
             get {
                 return ResourceManager.GetString("Opticon", resourceCulture);
             }

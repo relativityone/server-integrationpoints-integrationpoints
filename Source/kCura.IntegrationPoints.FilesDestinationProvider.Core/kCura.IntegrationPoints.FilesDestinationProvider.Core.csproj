@@ -151,8 +151,8 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.WinEDDS, Version=9.5.292.19, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.ImportExport.9.5.292.19\lib\net462\kCura.WinEDDS.dll</HintPath>
-      <Private>True</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\relativity\EDDS\kCura.WinEDDS\bin\kCura.WinEDDS.dll</HintPath>
     </Reference>
     <Reference Include="kCura.WinEDDS.Core, Version=9.5.292.19, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.ImportExport.9.5.292.19\lib\net462\kCura.WinEDDS.Core.dll</HintPath>

@@ -115,8 +115,8 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.WinEDDS, Version=9.5.292.19, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.ImportExport.9.5.292.19\lib\net462\kCura.WinEDDS.dll</HintPath>
-      <Private>True</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\relativity\EDDS\kCura.WinEDDS\bin\kCura.WinEDDS.dll</HintPath>
     </Reference>
     <Reference Include="kCura.WinEDDS.Core, Version=9.5.292.19, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.ImportExport.9.5.292.19\lib\net462\kCura.WinEDDS.Core.dll</HintPath>
@@ -293,7 +293,11 @@
     <Compile Include="TestCases\ItShouldExportSavedSearchMetadataOnly.cs" />
     <Compile Include="TestCases\ItShouldExportTextFilesWithCustomDirectoryPrefix.cs" />
     <Compile Include="TestCases\ItShouldExportVolumeWithCustomName.cs" />
-    <Compile Include="TestCases\Resources\ExpectedOutput.Designer.cs" />
+    <Compile Include="TestCases\Resources\ExpectedOutput1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ExpectedOutput.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
     <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />
@@ -369,7 +373,11 @@
     <Analyzer Include="..\packages\CSharpGuidelineAnalyzer.1.0.3.0\analyzers\dotnet\cs\CSharpGuidelineAnalyzer.dll" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="TestCases\Resources\ExpectedOutput.resx" />
+    <EmbeddedResource Include="TestCases\Resources\ExpectedOutput.resx">
+      <SubType>Designer</SubType>
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ExpectedOutput1.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
