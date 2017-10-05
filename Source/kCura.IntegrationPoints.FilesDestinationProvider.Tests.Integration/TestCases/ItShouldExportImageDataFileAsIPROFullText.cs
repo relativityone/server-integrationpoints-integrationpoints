@@ -27,7 +27,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 			var fileInfo = GetFileInfo(directory);
 			Assert.That(fileInfo.Name, Is.EqualTo($"{ExportSettings.SavedSearchName}_export_FULLTEXT_.{MetadataFormat}"));
 			Assert.That(DataFileFormatHelper.FileStartWith("FT,AMEYERS_0000757", fileInfo));
-		    Assert.AreEqual(ExpectedOutput.IPRO, DataFileFormatHelper.GetContent(fileInfo));
         }
 	}
 }

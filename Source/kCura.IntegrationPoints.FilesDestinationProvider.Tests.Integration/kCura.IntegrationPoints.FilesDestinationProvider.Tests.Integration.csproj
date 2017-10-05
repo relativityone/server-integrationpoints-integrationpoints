@@ -356,6 +356,9 @@
     <Content Include="oi\unmanaged\scclo-R1.dll" />
     <Content Include="oi\unmanaged\sccut-R1.dll" />
     <Content Include="oi\unmanaged\wvcore-R1.dll" />
+    <Content Include="TestCases\Resources\IPROFullTextExpectedOutput.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />

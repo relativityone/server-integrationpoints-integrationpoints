@@ -62,20 +62,15 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to czekolada.
+        ///   Looks up a localized string similar to IM,AMEYERS_0000757,D,0,@0;.\0\IMAGES\1;AMEYERS_0000757.tif;2
+        ///IM,AMEYERS_0000975,D,0,@0;.\0\IMAGES\2;AMEYERS_0000975.tif;2
+        ///IM,AMEYERS_0001185,D,0,@0;.\0\IMAGES\3;AMEYERS_0001185.tif;2
+        ///IM,AMEYERS_0001185_001,,0,@0;.\0\IMAGES\3;AMEYERS_0001185_001.tif;2
+        ///.
         /// </summary>
         public static string IPRO {
             get {
                 return ResourceManager.GetString("IPRO", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to fdsfsdsafasdfdsfsd.
-        /// </summary>
-        public static string IPROFullText {
-            get {
-                return ResourceManager.GetString("IPROFullText", resourceCulture);
             }
         }
         
