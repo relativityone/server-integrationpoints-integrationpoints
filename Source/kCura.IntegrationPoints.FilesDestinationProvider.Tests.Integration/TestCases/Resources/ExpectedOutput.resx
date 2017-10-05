@@ -121,7 +121,11 @@
     <value>fdsfsdsafasdfdsfsd</value>
   </data>
   <data name="IPRO" xml:space="preserve">
-    <value>czekolada</value>
+    <value>IM,AMEYERS_0000757,D,0,@0;.\0\IMAGES\1;AMEYERS_0000757.tif;2
+IM,AMEYERS_0000975,D,0,@0;.\0\IMAGES\2;AMEYERS_0000975.tif;2
+IM,AMEYERS_0001185,D,0,@0;.\0\IMAGES\3;AMEYERS_0001185.tif;2
+IM,AMEYERS_0001185_001,,0,@0;.\0\IMAGES\3;AMEYERS_0001185_001.tif;2
+</value>
   </data>
   <data name="Opticon" xml:space="preserve">
     <value>AMEYERS_0000757,0,.\0\IMAGES\1\AMEYERS_0000757.tif,Y,,,1
