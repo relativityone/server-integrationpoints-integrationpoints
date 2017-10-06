@@ -74,10 +74,14 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			QueryResult queryResult = new GetSavedSearchQuery(client, savedSearchArtifactId).ExecuteQuery();
 			if (queryResult.Success && queryResult.QueryArtifacts != null && queryResult.QueryArtifacts.Count > 0)
 			{
-				Field savedSearchField = queryResult.QueryArtifacts[0].getFieldByName("Text Identifier");
-				if (savedSearchField != null)
+				if (queryResult.QueryArtifacts != null && queryResult.QueryArtifacts.Count > 0)
 				{
-					settings[nameof(ExportUsingSavedSearchSettings.SavedSearch)] = savedSearchField.ToString();
+					Field savedSearchField = queryResult.QueryArtifacts[0].getFieldByName("Text Identifier");
+					if (savedSearchField != null)
+					{
+						settings[nameof(ExportUsingSavedSearchSettings.SavedSearch)] = savedSearchField.ToString();
+					}
+					
 				}
 			}
 			else

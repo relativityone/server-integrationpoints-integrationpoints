@@ -228,24 +228,24 @@
       <HintPath>..\packages\Relativity.Logging.Interfaces.9.4.308\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.ServiceBus, Version=2.1.13.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.ServiceBus.2.1.13\lib\net462\Relativity.ServiceBus.dll</HintPath>
+    <Reference Include="Relativity.ServiceBus, Version=2.2.5.17, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.ServiceBus.2.2.5\lib\net462\Relativity.ServiceBus.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.ServiceBus.PriorityQueue, Version=9.5.292.19, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.ServiceBus.PriorityQueue.9.5.292.19\lib\net462\Relativity.ServiceBus.PriorityQueue.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.ServiceBus.Provider.Azure, Version=2.1.13.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.ServiceBus.Provider.Azure.2.1.13\lib\net462\Relativity.ServiceBus.Provider.Azure.dll</HintPath>
+    <Reference Include="Relativity.ServiceBus.Provider.Azure, Version=2.2.5.17, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.ServiceBus.Provider.Azure.2.2.5\lib\net462\Relativity.ServiceBus.Provider.Azure.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.ServiceBus.Provider.Windows1_1, Version=2.1.13.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.ServiceBus.Provider.Windows1_1.2.1.13\lib\net462\Relativity.ServiceBus.Provider.Windows1_1.dll</HintPath>
+    <Reference Include="Relativity.ServiceBus.Provider.Windows1_1, Version=2.2.5.17, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.ServiceBus.Provider.Windows1_1.2.2.5\lib\net462\Relativity.ServiceBus.Provider.Windows1_1.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.ServiceBus.Providers.Configuration, Version=2.1.13.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.ServiceBus.2.1.13\lib\net462\Relativity.ServiceBus.Providers.Configuration.dll</HintPath>
+    <Reference Include="Relativity.ServiceBus.Providers.Configuration, Version=2.2.5.17, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.ServiceBus.2.2.5\lib\net462\Relativity.ServiceBus.Providers.Configuration.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.ServiceBus.Utilities, Version=9.5.292.19, Culture=neutral, processorArchitecture=MSIL">
