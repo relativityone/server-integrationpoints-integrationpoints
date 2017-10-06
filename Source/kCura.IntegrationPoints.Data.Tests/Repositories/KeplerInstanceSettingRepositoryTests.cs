@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 		{
 			_instanceSettingManager = Substitute.For<IInstanceSettingManager>();
 			var serviceMgr = Substitute.For<IServicesMgr>();
-			serviceMgr.CreateProxy<IInstanceSettingManager>(ExecutionIdentity.CurrentUser).Returns(_instanceSettingManager);
+			serviceMgr.CreateProxy<IInstanceSettingManager>(ExecutionIdentity.System).Returns(_instanceSettingManager);
 			_repository = new KeplerInstanceSettingRepository(serviceMgr);
 		}
 

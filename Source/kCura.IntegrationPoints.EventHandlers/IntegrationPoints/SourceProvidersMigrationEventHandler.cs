@@ -71,7 +71,12 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 			List<Data.SourceProvider> sourceProviderRdos = WorkspaceTemplateServiceContext.RsapiService.SourceProviderLibrary.Query(query);
 
-			return sourceProviderRdos ?? new List<Data.SourceProvider>();
+			if (sourceProviderRdos == null || sourceProviderRdos.Count == 0)
+			{
+				Logger.LogError("Could not retrieve source providers from previous workspace {PreviousWorkspaceArtifactID}", WorkspaceTemplateServiceContext.WorkspaceID);
+				return new List<Data.SourceProvider>();
+			}
+			return sourceProviderRdos;
 		}
 
 		private List<Relativity.Client.DTOs.FieldValue> GetAllSourceProviderFields()

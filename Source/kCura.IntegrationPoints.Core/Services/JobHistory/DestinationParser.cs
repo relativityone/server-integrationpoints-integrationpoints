@@ -7,7 +7,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		private const char _SEPARATOR = '-';
 
 		private readonly string parsingError =
-			"The formatting of the destination workspace information has changed and cannot be parsed.";
+			"Destination workspace object: {0} could not be parsed.";
 
 		public int GetArtifactId(string destinationWorkspace)
 		{
@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			}
 			catch (Exception e)
 			{
-				throw new Exception(parsingError, e);
+				throw CreateWrongFormatException(destinationWorkspace, e);
 			}
 		}
 
@@ -35,13 +35,18 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			}
 			catch (Exception e)
 			{
-				throw new Exception(parsingError, e);
+				throw CreateWrongFormatException(destinationWorkspace, e);
 			}
 		}
 
 		public string[] GetElements(string destinationWorkspace)
 		{
 			return destinationWorkspace.Split(_SEPARATOR);
+		}
+
+		private Exception CreateWrongFormatException(string destinationWorkspace, Exception e)
+		{
+			return new Exception(string.Format(parsingError, destinationWorkspace), e);
 		}
 	}
 }

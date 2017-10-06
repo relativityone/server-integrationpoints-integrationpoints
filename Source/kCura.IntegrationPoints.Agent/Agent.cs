@@ -74,7 +74,7 @@ namespace kCura.IntegrationPoints.Agent
 
 		private void RaiseJobLog(Job job, JobLogState state, string details = null)
 		{
-			_logger.LogInformation("Integraiton Points job status update : {@JobLogInformation}", new JobLogInformation() { Job = job, State = state, Details = details });
+			_logger.LogInformation("Integration Points job status update: {@JobLogInformation}", new JobLogInformation() { Job = job, State = state, Details = details });
 		}
 
 		public void Dispose()

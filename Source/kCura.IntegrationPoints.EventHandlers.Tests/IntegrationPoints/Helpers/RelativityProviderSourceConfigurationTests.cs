@@ -32,10 +32,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			_instanceSettingsManager = Substitute.For<IInstanceSettingsManager>();
 			federatedInstanceModelFactory.Create(Arg.Any<IDictionary<string, object>>(), Arg.Any<EventHandler.Artifact>()).Returns(new FederatedInstanceModel());
 
-			_instace = new RelativityProviderSourceConfiguration(_helper, _helperFactory, _managerFactory, _contextContainerFactory, federatedInstanceModelFactory, _instanceSettingsManager);
+			_instance = new RelativityProviderSourceConfiguration(_helper, _helperFactory, _managerFactory, _contextContainerFactory, federatedInstanceModelFactory, _instanceSettingsManager);
 		}
 
-		private RelativityProviderSourceConfiguration _instace;
+		private RelativityProviderSourceConfiguration _instance;
 		private IEHHelper _helper;
 		private IHelperFactory _helperFactory;
 		private IManagerFactory _managerFactory;
@@ -68,7 +68,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		    MockProductionName(productionName);
 
 			// act
-			_instace.UpdateNames(settings, new EventHandler.Artifact(934580, 990562, 533988, "", false, null));
+			_instance.UpdateNames(settings, new EventHandler.Artifact(934580, 990562, 533988, "", false, null));
 
 			//assert
 			Assert.AreEqual(sourceWorkspaceName, settings[nameof(ExportUsingSavedSearchSettings.SourceWorkspace)]);

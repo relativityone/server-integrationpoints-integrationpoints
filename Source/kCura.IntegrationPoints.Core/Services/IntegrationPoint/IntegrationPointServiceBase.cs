@@ -210,7 +210,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			}
 			catch (Exception e)
 			{
-				throw new Exception(Core.Constants.IntegrationPoints.UNABLE_TO_RETRIEVE_DESTINATION_PROVIDER, e);
+				throw new Exception(string.Format(Core.Constants.IntegrationPoints.UNABLE_TO_RETRIEVE_DESTINATION_PROVIDER_ARTIFACT_ID, destinationProviderArtifactId), e);
 			}
 
 			return destinationProvider;

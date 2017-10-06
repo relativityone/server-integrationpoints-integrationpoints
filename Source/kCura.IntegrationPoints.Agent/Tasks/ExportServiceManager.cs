@@ -344,7 +344,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private void FinalizeInProgressErrors(Job job)
 		{
 			// Finalize any In Progress Job History Errors
-			if (JobHistoryErrorService.JobLevelErrorOccurred)
+			if (UpdateStatusType != null && JobHistoryErrorService.JobLevelErrorOccurred)
 			{
 				LogFinalizeInProgressErrors(job);
 
@@ -362,7 +362,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			try
 			{
 				//we can delete the temp saved search (only gets called on retry for item-level only errors)
-				if (UpdateStatusType.IsItemLevelErrorRetry())
+				if (UpdateStatusType != null && UpdateStatusType.IsItemLevelErrorRetry())
 				{
 					IJobHistoryErrorRepository jobHistoryErrorRepository =
 						_repositoryFactory.GetJobHistoryErrorRepository(SourceConfiguration.SourceWorkspaceArtifactId);

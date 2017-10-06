@@ -55,8 +55,10 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 			{
 				return destinationProvider.ArtifactId;
 			}
-			LogRetrievingDestinationProviderError();
-			throw new Exception(Constants.IntegrationPoints.UNABLE_TO_RETRIEVE_DESTINATION_PROVIDER);
+			var errorMessage = FormatUnableToRetrieveDestinationProviderErrorMessage(RDO_SYNC_TYPE_GUID);
+			_logger.LogError(errorMessage);
+
+			throw new Exception(errorMessage);
 		}
 
 		private DestinationProvider GetDestinationProvider(string providerGuid)
@@ -83,14 +85,14 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 			_logger.LogVerbose("Updating existing destination provider {ProviderName} ({ProviderGuid}).", name, providerGuid);
 		}
 
-		private void LogRetrievingDestinationProviderError()
-		{
-			_logger.LogError(Constants.IntegrationPoints.UNABLE_TO_RETRIEVE_DESTINATION_PROVIDER);
-		}
-
 		private void LogMoreThanOneProviderFoundWarning(string providerGuid)
 		{
 			_logger.LogWarning("More than one Destination Provider with {GUID} found.", providerGuid);
+		}
+
+		private string FormatUnableToRetrieveDestinationProviderErrorMessage(string guid)
+		{
+			return string.Format(Constants.IntegrationPoints.UNABLE_TO_RETRIEVE_DESTINATION_PROVIDER_GUID, guid);
 		}
 
 		#endregion

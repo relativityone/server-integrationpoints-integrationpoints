@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				Condition = new CompositeCondition(nameCondition, CompositeConditionEnum.And, sectionCondition).ToQueryString()
 			};
 
-			using (var proxy = _servicesMgr.CreateProxy<IInstanceSettingManager>(ExecutionIdentity.CurrentUser))
+			using (var proxy = _servicesMgr.CreateProxy<IInstanceSettingManager>(ExecutionIdentity.System))
 			{
 				var result = proxy.QueryAsync(query, 1).Result;
 				if (!result.Success)

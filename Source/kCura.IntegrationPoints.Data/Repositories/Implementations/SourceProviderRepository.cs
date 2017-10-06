@@ -79,7 +79,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			if (sourceProviderArtifactId == 0)
 			{
-				throw new Exception($"Unable to retrieve Source Provider ({sourceProviderGuidIdentifier}).");
+				throw new Exception($"Unable to retrieve Source Provider ({sourceProviderGuidIdentifier}), query returned Artifact ID = 0");
 			}
 
 			return sourceProviderArtifactId;

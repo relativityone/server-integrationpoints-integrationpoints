@@ -51,9 +51,9 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			SetSourceProductionName(settings);
 		}
 
-		private void SetInstanceFriendlyName(IDictionary<string, object> settings, IInstanceSettingsManager federatedInstanceManager)
+		private void SetInstanceFriendlyName(IDictionary<string, object> settings, IInstanceSettingsManager instanceSettingsManager)
 		{
-			settings[SOURCE_RELATIVITY_INSTANCE] = $"{RELATIVITY_THIS_INSTANCE}({federatedInstanceManager.RetriveCurrentInstanceFriendlyName()})";
+			settings[SOURCE_RELATIVITY_INSTANCE] = $"{RELATIVITY_THIS_INSTANCE}({instanceSettingsManager.RetriveCurrentInstanceFriendlyName()})";
 		}
 
 		private void SetSavedSearchName(IDictionary<string, object> settings)
@@ -71,10 +71,15 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 
 		private void GetSavedSearchId(IDictionary<string, object> settings, IRSAPIClient client, int savedSearchArtifactId)
 		{
-			var queryResult = new GetSavedSearchQuery(client, savedSearchArtifactId).ExecuteQuery();
-			if (queryResult.Success)
-				settings[nameof(ExportUsingSavedSearchSettings.SavedSearch)] =
-					queryResult.QueryArtifacts[0].getFieldByName("Text Identifier").ToString();
+			QueryResult queryResult = new GetSavedSearchQuery(client, savedSearchArtifactId).ExecuteQuery();
+			if (queryResult.Success && queryResult.QueryArtifacts != null && queryResult.QueryArtifacts.Count > 0)
+			{
+				Field savedSearchField = queryResult.QueryArtifacts[0].getFieldByName("Text Identifier");
+				if (savedSearchField != null)
+				{
+					settings[nameof(ExportUsingSavedSearchSettings.SavedSearch)] = savedSearchField.ToString();
+				}
+			}
 			else
 				settings[nameof(ExportUsingSavedSearchSettings.SavedSearchArtifactId)] = 0;
 		}
@@ -99,7 +104,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 				Helper.GetLoggerFactory()
 					.GetLogger()
 					.ForContext<IntegrationPointViewPreLoad>()
-					.LogError(ex, "Destination Production Set not found");
+					.LogError(ex, "Source Production Set not found");
 				settings[sourceProductionId] = 0;
 			}
 		}

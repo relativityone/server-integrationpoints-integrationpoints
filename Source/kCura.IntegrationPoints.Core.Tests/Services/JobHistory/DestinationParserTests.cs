@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		public void ItShouldThrowExceptionForInvalidDestination(string destination)
 		{
 			Assert.That(() => _destinationParser.GetArtifactId(destination),
-				Throws.TypeOf<Exception>().With.Message.EqualTo("The formatting of the destination workspace information has changed and cannot be parsed."));
+				Throws.TypeOf<Exception>().With.Message.EqualTo($"Destination workspace object: {destination} could not be parsed."));
 		}
 
 		[TestCase("instance - workspace - 1", "instance")]
