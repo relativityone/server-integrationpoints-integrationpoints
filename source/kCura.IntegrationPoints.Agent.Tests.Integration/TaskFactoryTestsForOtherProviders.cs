@@ -62,6 +62,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			try
 			{
 				// ARRANGE
+				var FutureDate = DateTime.Now.AddYears(10);
 				IntegrationPointModel model = CreateDefaultLdapIntegrationModel("Ldap_MultipleJobs_AgentDropsJob");
 				model = CreateOrUpdateIntegrationPoint(model); // create integration point
 
@@ -72,7 +73,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			        workspaceID: WorkspaceArtifactId,
 			        relatedObjectArtifactID: model.ArtifactID,
 			        taskType: "SyncManager",
-			        nextRunTime: DateTime.MaxValue,
+			        nextRunTime: FutureDate,
 			        AgentTypeID: 1,
 			        scheduleRuleType: null,
 			        serializedScheduleRule: null,
@@ -91,7 +92,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 					workspaceID: WorkspaceArtifactId,
 					relatedObjectArtifactID: model.ArtifactID,
 					taskType: "SyncManager",
-					nextRunTime: DateTime.MaxValue,
+					nextRunTime: FutureDate,
 					AgentTypeID: 1,
 					scheduleRuleType: null,
 					serializedScheduleRule: null,
@@ -132,11 +133,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			try
 			{
 				// ARRANGE
+				var FutureDate = DateTime.Now.AddYears(10);
 				Scheduler scheduler = new Scheduler
 				{
 					EnableScheduler = true,
 					SelectedFrequency = ScheduleInterval.Daily.ToString(),
-					StartDate = DateTime.MaxValue.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture),
+					StartDate = FutureDate.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture),
 					ScheduledTime = DateTime.Now.TimeOfDay.ToString()
 				};
 				IntegrationPointModel model = CreateDefaultLdapIntegrationModel("Ldap_MultipleJobs_AgentDropsJob_ScheduledJob", scheduler);
@@ -154,7 +156,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 					workspaceID: WorkspaceArtifactId,
 					relatedObjectArtifactID: model.ArtifactID,
 					taskType: "SyncManager",
-					nextRunTime: DateTime.MaxValue.AddDays(-1),
+					nextRunTime: FutureDate.AddDays(-1),
 					AgentTypeID: 1,
 					scheduleRuleType: null,
 					serializedScheduleRule: null,
