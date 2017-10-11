@@ -382,7 +382,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 						.First();
 			}
 
-			if (settings.ImportNativeFile)
+            if (settings.ImportNativeFile && settings.ImportNativeFileCopyMode == ImportNativeFileCopyModeEnum.CopyFiles)
 			{
 				nativeFileImportService.ImportNativeFiles = true;
 				FieldMap field = fieldMap.FirstOrDefault(x => x.FieldMapType == FieldMapTypeEnum.NativeFilePath);
@@ -390,21 +390,37 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				settings.NativeFilePathSourceFieldName = nativeFileImportService.DestinationFieldName;
 				settings.DisableNativeLocationValidation = DisableNativeLocationValidation;
 				settings.DisableNativeValidation = DisableNativeValidation;
-				settings.ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.CopyFiles;
 				settings.CopyFilesToDocumentRepository = true;
-			}
-			else if ((SourceProvider != null) && SourceProvider.Config.AlwaysImportNativeFiles)
-			{
+
+                // NOTE :: So that the destination workspace file icons correctly display, we give the import API the file name of the document
+                settings.FileNameColumn = Constants.SPECIAL_FILE_NAME_FIELD_NAME;
+            }
+			else if (settings.ImportNativeFileCopyMode == ImportNativeFileCopyModeEnum.SetFileLinks)
+            {
 				nativeFileImportService.ImportNativeFiles = true;
-				nativeFileImportService.SourceFieldName = Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD;
-				settings.NativeFilePathSourceFieldName = nativeFileImportService.DestinationFieldName;
+                FieldMap field = fieldMap.FirstOrDefault(x => x.FieldMapType == FieldMapTypeEnum.NativeFilePath);
+                nativeFileImportService.SourceFieldName = field != null ? field.SourceField.FieldIdentifier : Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD;
+                settings.NativeFilePathSourceFieldName = nativeFileImportService.DestinationFieldName;
 				settings.DisableNativeLocationValidation = DisableNativeLocationValidation;
 				settings.DisableNativeValidation = DisableNativeValidation;
-				settings.ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.SetFileLinks;
 				settings.CopyFilesToDocumentRepository = false;
-			}
 
-			if (fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.FolderPathInformation))
+                // NOTE :: So that the destination workspace file icons correctly display, we give the import API the file name of the document
+                settings.FileNameColumn = Constants.SPECIAL_FILE_NAME_FIELD_NAME;
+            }
+            else if (settings.ImportNativeFileCopyMode == ImportNativeFileCopyModeEnum.DoNotImportNativeFiles)
+		    {
+                nativeFileImportService.ImportNativeFiles = false;
+                settings.DisableNativeLocationValidation = null;
+                settings.DisableNativeValidation = null;
+                settings.CopyFilesToDocumentRepository = false;
+
+                // NOTE :: Determines if we want to upload/delete native files and update "Has Native", "Supported by viewer" and "Relativity Native Type" fields
+                settings.NativeFilePathSourceFieldName = string.Empty;
+            }
+
+
+		    if (fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.FolderPathInformation))
 			{
 				// NOTE :: If you expect to import the folder path, the import API will expect this field to be specified upon import. This is to avoid the field being both mapped and used as a folder path.
 				settings.FolderPathSourceFieldName = Constants.SPECIAL_FOLDERPATH_FIELD_NAME;
@@ -413,12 +429,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			if (settings.UseDynamicFolderPath)
 			{
 				settings.FolderPathSourceFieldName = Constants.SPECIAL_FOLDERPATH_DYNAMIC_FIELD_NAME;
-			}
-
-			if ((SourceProvider != null) && SourceProvider.Config.AlwaysImportNativeFileNames)
-			{
-				// So that the destination workspace file icons correctly display, we give the import API the file name of the document
-				settings.FileNameColumn = Constants.SPECIAL_FILE_NAME_FIELD_NAME;
 			}
 
 			if ((SourceProvider != null) && SourceProvider.Config.OnlyMapIdentifierToIdentifier)

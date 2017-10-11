@@ -218,7 +218,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			};
 
 			NativeFileImportService nativeFileImportService = new NativeFileImportService();
-			string options = JsonConvert.SerializeObject(new ImportSettings { ArtifactTypeId = 1111111, CaseArtifactId = 2222222, ImportNativeFile = false});
+			string options = JsonConvert.SerializeObject(new ImportSettings { ArtifactTypeId = 1111111, CaseArtifactId = 2222222, ImportNativeFile = false, ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.DoNotImportNativeFiles});
 			TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
 
 			//ACT
@@ -230,7 +230,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			Assert.AreEqual("SourceFld2", result.ParentObjectIdSourceFieldName);
 			Assert.AreEqual(ImportNativeFileCopyModeEnum.DoNotImportNativeFiles, result.ImportNativeFileCopyMode);
 			Assert.AreEqual(false, result.CopyFilesToDocumentRepository);
-			Assert.IsNull(result.NativeFilePathSourceFieldName);
+			Assert.AreEqual(result.NativeFilePathSourceFieldName, string.Empty);
 			Assert.IsFalse(result.DisableNativeLocationValidation.HasValue);
 			Assert.IsFalse(result.DisableNativeValidation.HasValue);
 			Assert.AreEqual("NATIVE_FILE_PATH_001", nativeFileImportService.DestinationFieldName);
@@ -250,7 +250,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			};
 
 			NativeFileImportService nativeFileImportService = new NativeFileImportService();
-			string options = JsonConvert.SerializeObject(new ImportSettings { ArtifactTypeId = 1111111, CaseArtifactId = 2222222 });
+		    var importSettings = new ImportSettings { ArtifactTypeId = 1111111, CaseArtifactId = 2222222, ImportNativeFile = false, ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.SetFileLinks };
+		    string options = JsonConvert.SerializeObject(importSettings);
 			TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
 			rdoSynchronizer.SourceProvider = new SourceProvider()
 			{
@@ -289,8 +290,15 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 				new FieldMap() {DestinationField = null, FieldMapType = FieldMapTypeEnum.NativeFilePath, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld4"}},
 			};
 
-			NativeFileImportService nativeFileImportService = new NativeFileImportService();
-			string options = JsonConvert.SerializeObject(new ImportSettings { ArtifactTypeId = 1111111, CaseArtifactId = 2222222, ImportNativeFile = true });
+			var nativeFileImportService = new NativeFileImportService();
+		    var importSettings = new ImportSettings
+		    {
+		        ArtifactTypeId = 1111111,
+		        CaseArtifactId = 2222222,
+		        ImportNativeFile = true,
+		        ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.CopyFiles
+		    };
+		    string options = JsonConvert.SerializeObject(importSettings);
 			TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
 
 			//ACT

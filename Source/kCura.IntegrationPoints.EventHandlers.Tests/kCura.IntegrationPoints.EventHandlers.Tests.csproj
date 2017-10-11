@@ -123,6 +123,7 @@
     <Compile Include="Commands\EventHandlerCommandExecutorTests.cs" />
     <Compile Include="Commands\Helpers\ArtifactsToDeleteTests.cs" />
     <Compile Include="Commands\Helpers\TenantForSecretStoreCreationValidatorTests.cs" />
+    <Compile Include="Commands\ImportNativeFileCopyModeUpdaterTests.cs" />
     <Compile Include="Commands\PreCascadeDeleteIntegrationPointCommandTests.cs" />
     <Compile Include="Commands\RestoreJobHistoryDestinationWorkspaceCommandTests.cs" />
     <Compile Include="Commands\SetPromoteEligibleFieldCommandTests.cs" />

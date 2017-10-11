@@ -223,11 +223,38 @@ ko.validation.insertValidationMessage = function (element) {
 		this.hasParent = ko.observable(false);
 		this.parentField = ko.observableArray([]);
 
+	    //We want to dispable options CopyFile, SetLinks and None for Copy Images job
+		this.ImportNativeFileCopyModeEnabled = ko.observable(model.ImageImport === "true" ? "false" : "true");
+
 		this.importNativeFile = ko.observable(model.importNativeFile || "false");
+
+	    var setDefaultImportNativeFileCopyMode = function(importNativeFile, importNativeFileCopyMode) {
+	        if (importNativeFile === undefined && importNativeFileCopyMode === undefined) {
+	            return "DoNotImportNativeFiles";    //TODO Replace string by variables
+	        }
+
+	        if (importNativeFileCopyMode) {
+	            return importNativeFileCopyMode;
+	        }
+
+	        return importNativeFile === "true" ? "CopyFiles" : "SetFileLinks";
+	    };
+	    this.importNativeFileCopyMode = ko.observable(setDefaultImportNativeFileCopyMode(model.importNativeFile, model.importNativeFileCopyMode));
+	    this.importNativeFileCopyMode.subscribe(function (copyMode) {
+	        if (self.ImageImport() === "false") {
+	            if (copyMode === "CopyFiles" || copyMode === "SetFileLinks") {
+	                self.importNativeFile("true");
+	            } else if (copyMode === "DoNotImportNativeFiles") {
+	                self.importNativeFile("false");
+	            }
+	        }
+	    });
+
+
 		//use this to bind which elements show up depending on if the user is accessing Relativity Provider or not
 		this.IsRelativityProvider = ko.observable(IP.reverseMapFields);
 
-		var copyNativeFileText = "Copy Native File:";
+        var copyNativeFileText = "Copy Native Files:";
 		var copyFileToRepositoryText = "Copy Files to Repository:";
 		this.copyNativeLabel = ko.observable(copyNativeFileText);
 		this.ImageImport = ko.observable(model.ImageImport || "false");
@@ -240,8 +267,14 @@ ko.validation.insertValidationMessage = function (element) {
 		    }
 		    return false;
 		};
-		
-		var setCopyFilesLabel = function (isImageImport) {
+
+        this.importNativeFile.subscribe(function (importNative) {
+            if (self.ImageImport() === "true") {
+                self.importNativeFileCopyMode(importNative === "true" ? "CopyFiles" : "SetFileLinks");
+            }
+	    });
+
+	    var setCopyFilesLabel = function (isImageImport) {
 			if (isImageImport === "true") {
 				self.copyNativeLabel(copyFileToRepositoryText);
 			} else {
@@ -273,9 +306,12 @@ ko.validation.insertValidationMessage = function (element) {
 					var name = identfier.name.replace(" [Object Identifier]", "");
 					self.IdentifierField(name);
 				});
+			    self.ImportNativeFileCopyModeEnabled("false");
 			}
 			else {
-				root.utils.UI.disable("#fieldMappings", false);
+			    root.utils.UI.disable("#fieldMappings", false);
+			    self.ImportNativeFileCopyModeEnabled("true");
+			    self.importNativeFileCopyMode("DoNotImportNativeFiles");
 			}
 		});
 
@@ -636,7 +672,8 @@ ko.validation.insertValidationMessage = function (element) {
 
 				$.each(mapping, function () {
 					if (this.fieldMapType == mapTypes.native && artifactTypeId == 10) {
-						self.importNativeFile("true");
+					    self.importNativeFile("true");
+					    self.importNativeFileCopyMode(self.importNativeFileCopyMode() === "CopyFiles" || self.importNativeFileCopyMode() === "SetFileLinks" ? self.importNativeFileCopyMode() : "CopyFiles");
 						self.nativeFilePathValue(this.sourceField.displayName);
 						return false;
 					}
@@ -852,6 +889,7 @@ ko.validation.insertValidationMessage = function (element) {
 				identifer: model.identifer,
 				CustodianManagerFieldContainsLink: model.CustodianManagerFieldContainsLink,
 				importNativeFile: model.importNativeFile,
+				importNativeFileCopyMode: model.importNativeFileCopyMode,
 				nativeFilePathValue: model.nativeFilePathValue,
 				UseFolderPathInformation: model.UseFolderPathInformation,
 				UseDynamicFolderPath: model.UseDynamicFolderPath,
@@ -952,6 +990,7 @@ ko.validation.insertValidationMessage = function (element) {
 		this.back = function () {
 			var d = root.data.deferred().defer();
 			this.returnModel.importNativeFile = this.model.importNativeFile();
+		    this.returnModel.importNativeFileCopyMode = this.model.importNativeFileCopyMode();
 			this.returnModel.nativeFilePathValue = this.model.nativeFilePathValue();
 			this.returnModel.identifer = this.model.selectedUniqueId();
 			this.returnModel.parentIdentifier = this.model.selectedIdentifier();
@@ -1069,6 +1108,7 @@ ko.validation.insertValidationMessage = function (element) {
 
 					_destination.ImportOverwriteMode = ko.toJS(this.model.SelectedOverwrite).replace('/', '').replace(' ', '');
 					_destination.importNativeFile = this.model.importNativeFile();
+				    _destination.importNativeFileCopyMode = this.model.importNativeFileCopyMode();
 
 					// pushing create folder setting
 					_destination.UseFolderPathInformation = this.model.UseFolderPathInformation();

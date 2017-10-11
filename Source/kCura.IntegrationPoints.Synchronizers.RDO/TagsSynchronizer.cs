@@ -40,7 +40,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			importSettings.ProductionImport = false;
 			importSettings.ImageImport = false;
 			importSettings.UseDynamicFolderPath = false;
-			return JsonConvert.SerializeObject(importSettings);
+		    importSettings.ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.DoNotImportNativeFiles;
+            return JsonConvert.SerializeObject(importSettings);
 		}
 	}
 }

@@ -157,6 +157,7 @@ var IP = IP || {};
 				self.ExtractedTextFieldContainsFilePath = destinationSettings.ExtractedTextFieldContainsFilePath;
 				self.ExtractedTextFileEncoding = destinationSettings.ExtractedTextFileEncoding;
 				self.importNativeFile = destinationSettings.importNativeFile;
+			    self.importNativeFileCopyMode = destinationSettings.importNativeFileCopyMode;
 				self.CreateSavedSearchForTagging = destinationSettings.CreateSavedSearchForTagging;
 				self.IPDestinationSettings = destinationSettings;
 				self.destinationProvider = settings.destinationProvider;
