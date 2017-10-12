@@ -23,11 +23,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 		[TestCase(null, 1, "Not null")]
 		[TestCase(1, null, "Not null")]
 		[TestCase(1, 1, null)]
-		public void GetCorrectedSourceConfiguration_ImproperArguments_ReturnsNull(int? sourceProviderId, int? destinationProviderId, string sourceConfiguration)
+		public void GetCorrectedSourceConfiguration_ImproperArguments_ReturnsNull(int? sourceProviderId, int? destinationProviderId, string configuration)
 		{
-			var sourceConfigUpdater = new ImportNativeFileCopyModeUpdater(_providerTypeService);
+			var configUpdater = new ImportNativeFileCopyModeUpdater(_providerTypeService);
 
-			string result = sourceConfigUpdater.GetCorrectedSourceConfiguration(sourceProviderId, destinationProviderId, sourceConfiguration);
+			string result = configUpdater.GetCorrectedConfiguration(sourceProviderId, destinationProviderId, configuration);
 
 			Assert.IsNull(result);
 		}
@@ -43,10 +43,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 		public void GetCorrectedSourceConfiguration_SourceConfigIsMissingCopyModeField_ReturnsCorrectValueForGivenProviderType(ProviderType providerType, bool importNativeFileFlagValue, ImportNativeFileCopyModeEnum expectedResult)
 		{
 			_providerTypeService.GetProviderType(Arg.Any<int>(), Arg.Any<int>()).Returns(providerType);
-			var sourceConfigUpdater = new ImportNativeFileCopyModeUpdater(_providerTypeService);
-			string sourceConfiguration = CreateSerializedSourceConfigurationToBeCorrected(importNativeFileFlagValue, false);
+			var configUpdater = new ImportNativeFileCopyModeUpdater(_providerTypeService);
+			string configuration = CreateSerializedSourceConfigurationToBeCorrected(importNativeFileFlagValue, false);
 
-			string updatedSourceConfig = sourceConfigUpdater.GetCorrectedSourceConfiguration(1, 2, sourceConfiguration);
+			string updatedSourceConfig = configUpdater.GetCorrectedConfiguration(1, 2, configuration);
 
 			Assert.AreEqual(DeserializeConfig(updatedSourceConfig).ImportNativeFileCopyMode, expectedResult);
 		}
@@ -62,10 +62,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 		public void GetCorrectedSourceConfiguration_SourceConfigHasCopyModeField_ReturnsCorrectValueForGivenProviderType(ProviderType providerType, bool importNativeFileFlagValue, ImportNativeFileCopyModeEnum expectedResult)
 		{
 			_providerTypeService.GetProviderType(Arg.Any<int>(), Arg.Any<int>()).Returns(providerType);
-			var sourceConfigUpdater = new ImportNativeFileCopyModeUpdater(_providerTypeService);
-			string sourceConfiguration = CreateSerializedSourceConfigurationToBeCorrected(importNativeFileFlagValue, true);
+			var configUpdater = new ImportNativeFileCopyModeUpdater(_providerTypeService);
+			string configuration = CreateSerializedSourceConfigurationToBeCorrected(importNativeFileFlagValue, true);
 
-			string updatedSourceConfig = sourceConfigUpdater.GetCorrectedSourceConfiguration(1, 2, sourceConfiguration);
+			string updatedSourceConfig = configUpdater.GetCorrectedConfiguration(1, 2, configuration);
 
 			Assert.AreEqual(DeserializeConfig(updatedSourceConfig).ImportNativeFileCopyMode, expectedResult);
 		}
@@ -77,10 +77,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 		public void GetCorrectedSourceConfiguration_ProviderTypeDoesntNeedModification_ReturnsNull(ProviderType providerType, bool shouldHaveImportNativeFileCopyMode)
 		{
 			_providerTypeService.GetProviderType(Arg.Any<int>(), Arg.Any<int>()).Returns(providerType);
-			var sourceConfigUpdater = new ImportNativeFileCopyModeUpdater(_providerTypeService);
-			string sourceConfiguration = CreateSerializedSourceConfigurationToBeCorrected(true, shouldHaveImportNativeFileCopyMode);
+			var configUpdater = new ImportNativeFileCopyModeUpdater(_providerTypeService);
+			string configuration = CreateSerializedSourceConfigurationToBeCorrected(true, shouldHaveImportNativeFileCopyMode);
 
-			string updatedSourceConfig = sourceConfigUpdater.GetCorrectedSourceConfiguration(1, 2, sourceConfiguration);
+			string updatedSourceConfig = configUpdater.GetCorrectedConfiguration(1, 2, configuration);
 
 			Assert.IsNull(updatedSourceConfig);
 		}

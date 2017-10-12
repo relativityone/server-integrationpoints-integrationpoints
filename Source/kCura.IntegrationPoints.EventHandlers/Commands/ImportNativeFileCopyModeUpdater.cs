@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 			_providerTypeService = providerTypeService;
 		}
 
-		public string GetCorrectedSourceConfiguration(int? sourceProviderId, int? destinationProviderId, string configuration)
+		public string GetCorrectedConfiguration(int? sourceProviderId, int? destinationProviderId, string configuration)
 		{
 			if (!EnsureInputParametersNotNull(sourceProviderId, destinationProviderId, configuration))
 			{
@@ -62,17 +62,17 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 			return result;
 		}
 
-		private string TryUpdate(string configuration, UpdateValues updateValues)
+		private string TryUpdate(string configurationJson, UpdateValues updateValues)
 		{
 			string result = null;
 			try
 			{
-				JObject sourceConf = JObject.Parse(configuration);
-				JToken importNativeFileNode = sourceConf[IMPORT_NATIVE_FILE_NODE_NAME];
+				JObject configuration = JObject.Parse(configurationJson);
+				JToken importNativeFileNode = configuration.GetValue(IMPORT_NATIVE_FILE_NODE_NAME, StringComparison.InvariantCultureIgnoreCase);
 				if (importNativeFileNode != null)
 				{
-					sourceConf[IMPORT_NATIVE_FILE_COPY_MODE_NODE_NAME] = new JValue(importNativeFileNode.Value<bool>() ? updateValues.ValueIfTrue : updateValues.ValueIfFalse);
-					result = sourceConf.ToString(Formatting.None);
+					configuration[IMPORT_NATIVE_FILE_COPY_MODE_NODE_NAME] = new JValue(importNativeFileNode.Value<bool>() ? updateValues.ValueIfTrue : updateValues.ValueIfFalse);
+					result = configuration.ToString(Formatting.None);
 				}
 			}
 			catch (Exception)

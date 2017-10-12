@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using kCura.EventHandler;
 using kCura.EventHandler.CustomAttributes;
 using kCura.IntegrationPoints.EventHandlers.Commands;
@@ -27,8 +23,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			Helper = Helper
 		};
 
-		public string SuccessMessage => $"ImportNativeFiles flag set successfuly for all integration points. Workspace ID: {Helper.GetActiveCaseID()}";
-		public string FailureMessage => $"Problem with setting ImportNativesFlag. Workspace ID: {Helper.GetActiveCaseID()}";
+		public string SuccessMessage => "ImportNativeFilesCopyMode flag set successfuly for all integration points and integration point profiles.";
+		public string FailureMessage => "Problem with setting ImportNativesFilesCopyMode.";
 		public Type CommandType => typeof(SetImportNativeFileCopyModeCommand);
 	}
 }

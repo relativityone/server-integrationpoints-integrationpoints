@@ -13,14 +13,14 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 
 		public SetImportNativeFileCopyModeCommand(IIntegrationPointService integrationPointService,
 			IIntegrationPointProfileService integrationPointProfileService,
-			IGenericLibrary<IntegrationPoint> integrationPointLibrary,
-			IGenericLibrary<IntegrationPointProfile> integrationPointProfileLibrary,
+			IRSAPIService service,
 			ImportNativeFileCopyModeUpdater importNativeFileCopyModeUpdater)
 		{
+
 			_integrationPointService = integrationPointService;
 			_integrationPointProfileService = integrationPointProfileService;
-			_integrationPointLibrary = integrationPointLibrary;
-			_integrationPointProfileLibrary = integrationPointProfileLibrary;
+			_integrationPointLibrary = service.IntegrationPointLibrary;
+			_integrationPointProfileLibrary = service.IntegrationPointProfileLibrary;
 			_importNativeFileCopyModeUpdater = importNativeFileCopyModeUpdater;
 		}
 
@@ -34,11 +34,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 		{
 			foreach (IntegrationPoint point in _integrationPointService.GetAllRDOs())
 			{
-				string resultConf = _importNativeFileCopyModeUpdater.GetCorrectedSourceConfiguration(point.SourceProvider,
-					point.DestinationProvider, point.SourceConfiguration);
+				string resultConf = _importNativeFileCopyModeUpdater.GetCorrectedConfiguration(point.SourceProvider,
+					point.DestinationProvider, point.DestinationConfiguration);
 				if (resultConf != null)
 				{
-					point.SourceConfiguration = resultConf;
+					point.DestinationConfiguration = resultConf;
 					_integrationPointLibrary.Update(point);
 				}
 			}
@@ -48,11 +48,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 		{
 			foreach (IntegrationPointProfile profile in _integrationPointProfileService.GetAllRDOs())
 			{
-				string resultConf = _importNativeFileCopyModeUpdater.GetCorrectedSourceConfiguration(profile.SourceProvider,
+				string resultConf = _importNativeFileCopyModeUpdater.GetCorrectedConfiguration(profile.SourceProvider,
 					profile.DestinationProvider, profile.SourceConfiguration);
 				if (resultConf != null)
 				{
-					profile.SourceConfiguration = resultConf;
+					profile.DestinationConfiguration = resultConf;
 					_integrationPointProfileLibrary.Update(profile);
 				}
 			}
