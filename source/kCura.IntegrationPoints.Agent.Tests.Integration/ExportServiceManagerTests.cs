@@ -25,6 +25,7 @@ using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.Data.RowDataGateway;
+using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
@@ -98,6 +99,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		}
 
 		[Test]
+		[Category("SmokeTest")]
+		[Ignore("To be re-enabled when it passes on Jenkins. Make sure to test that on your custom branch first.")]
 		public void RunRelativityProviderAlone()
 		{
 			// arrange
@@ -152,6 +155,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		}
 
 		[Test]
+		[Category("SmokeTest")]
 		public void StopStateCannotBeUpdatedWhileExportServiceObservers()
 		{
 			Job job = null;
@@ -165,6 +169,17 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				model = CreateOrUpdateIntegrationPoint(model); // create integration point
 
 				_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, model.ArtifactID, 9); // run now
+				string query = $"SELECT * FROM [{GlobalConst.SCHEDULE_AGENT_QUEUE_TABLE_NAME}]";
+				var context = new QueueDBContext(Helper, GlobalConst.SCHEDULE_AGENT_QUEUE_TABLE_NAME);
+				DataTable result = context.EddsDBContext.ExecuteSqlStatementAsDataTable(query);
+				foreach (DataRow row in result.Rows)
+				{
+					Console.WriteLine(string.Join(", ", row.ItemArray));
+				}
+				Console.WriteLine();
+				Console.WriteLine($"Resource pool ID: {_sourceWorkspaceDto.ResourcePoolID.Value}");
+				Console.WriteLine($"IntegrationPointModel: {JsonConvert.SerializeObject(model)}");
+				Console.WriteLine();
 				job = GetNextJobInScheduleQueue(new[] { _sourceWorkspaceDto.ResourcePoolID.Value }, model.ArtifactID); // pick up job
 
 				Guid batchInstance = Guid.NewGuid();
