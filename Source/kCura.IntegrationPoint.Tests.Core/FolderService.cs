@@ -2,7 +2,7 @@
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
-	public static class Folder
+	public static class FolderService
 	{
 		public static int CreateFolder(int workspaceArtifactId, string folderName, int? parentFolderId)
 		{
@@ -26,6 +26,15 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 			var root = folderManager.GetWorkspaceRootAsync(workspaceArtifactId).Result;
 			return root.ArtifactID;
+		}
+
+		public static void DeleteUnusedFolders(int workspaceId)
+		{
+			using (var folderManager = Kepler.CreateProxy<IFolderManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true))
+			{
+				folderManager.DeleteUnusedFoldersAsync(workspaceId).Wait();
+			}
+
 		}
 	}
 }

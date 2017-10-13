@@ -32,11 +32,21 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		#endregion //Fields
 
+		#region Properties
+
+		public static string StarterTemplateName => SharedVariables.UseLegacyTemplateName()
+			? _LEGACY_TEMPLATE_WORKSPACE_NAME
+			: _TEMPLATE_WORKSPACE_NAME;
+
+		#endregion
+
 		#region Methods
+
+
 
 		public int CreateWorkspace(string name, string template = null)
 		{
-			string templateName = template ?? (SharedVariables.UseLegacyTemplateName() ? _LEGACY_TEMPLATE_WORKSPACE_NAME : _TEMPLATE_WORKSPACE_NAME);
+			string templateName = template ?? StarterTemplateName;
 			return Workspace.CreateWorkspace(name, templateName);
 		}
 

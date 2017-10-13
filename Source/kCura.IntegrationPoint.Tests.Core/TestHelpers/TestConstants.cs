@@ -1,4 +1,4 @@
-﻿namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
+﻿namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 {
 	public static class TestConstants
 	{
@@ -9,6 +9,7 @@
 			public static readonly string GROUP_IDENTIFIER = "Group Identifier";
 			public static readonly string EXTRACTED_TEXT = "Extracted Text";
 			public static readonly string HAS_IMAGES = "Has Images";
+			public static readonly string HAS_NATIVES = "Has Native";
 			public static readonly string IMAGE_COUNT = "Relativity Image Count";
 			public static readonly string CUSTODIAN = "Custodian - Single Choice";
 			public static readonly string ISSUE_DESIGNATION = "Issue Designation";

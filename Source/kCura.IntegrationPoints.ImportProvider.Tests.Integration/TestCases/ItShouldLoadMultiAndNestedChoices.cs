@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-
+using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using NUnit.Framework;
 
 using kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers;
 using kCura.IntegrationPoints.ImportProvider.Tests.Integration.TestCases.Base;
 using kCura.Relativity.Client.DTOs;
+using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.TestCases
 {

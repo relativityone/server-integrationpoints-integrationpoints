@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers;
+﻿using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers;
 
 namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.TestCases.Base
 {

@@ -8,34 +8,34 @@ namespace kCura.IntegrationPoint.Tests.Core
 {
 	public class DocumentTestDataBuilder
 	{
-		
-		public static DocumentsTestData BuildTestData(string testDirectory = null)
+
+		public static DocumentsTestData BuildTestData(string testDirectory = null, bool withNatives = true)
 		{
-			IList<FolderWithDocuments> foldersWithDocuments = GetFoldersWithDocuments(testDirectory ?? TestContext.CurrentContext.TestDirectory);
+			IList<FolderWithDocuments> foldersWithDocuments = GetFoldersWithDocuments(testDirectory ?? TestContext.CurrentContext.TestDirectory, withNatives);
 			DataTable images = GetImageDataTable(testDirectory ?? TestContext.CurrentContext.TestDirectory);
 			return new DocumentsTestData(foldersWithDocuments, images);
 		}
 
-		private static IList<FolderWithDocuments> GetFoldersWithDocuments(string testDirectory)
+		private static IList<FolderWithDocuments> GetFoldersWithDocuments(string testDirectory, bool withNatives)
 		{
 			var firstFolder = new FolderWithDocuments("first", CreateDataTableForDocuments());
 			firstFolder.Documents.Rows.Add("AMEYERS_0000757", "AMEYERS_0000757.htm",
-				Path.Combine(testDirectory, @"TestData\NATIVES\AMEYERS_0000757.htm"), "Level1\\Level2", true);
+				withNatives ? Path.Combine(testDirectory, @"TestData\NATIVES\AMEYERS_0000757.htm") : string.Empty, "Level1\\Level2", true);
 
 			var firstFolderChild = new FolderWithDocuments("child", CreateDataTableForDocuments());
 			firstFolderChild.Documents.Rows.Add("AMEYERS_0000975", "AMEYERS_0000975.pdf",
-				Path.Combine(testDirectory, @"TestData\NATIVES\AMEYERS_0000975.pdf"), "Level1\\Level2", true);
+				withNatives ? Path.Combine(testDirectory, @"TestData\NATIVES\AMEYERS_0000975.pdf") : string.Empty, "Level1\\Level2", true);
 
 			firstFolderChild.ParentFolderWithDocuments = firstFolder;
 			firstFolder.ChildrenFoldersWithDocument.Add(firstFolderChild);
 
 			var secondFolder = new FolderWithDocuments("second", CreateDataTableForDocuments());
 			secondFolder.Documents.Rows.Add("AMEYERS_0001185", "AMEYERS_0001185.xls",
-				Path.Combine(testDirectory, @"TestData\NATIVES\AMEYERS_0001185.xls"), "Level1\\Level2", true);
+				withNatives ? Path.Combine(testDirectory, @"TestData\NATIVES\AMEYERS_0001185.xls") : string.Empty, "Level1\\Level2", true);
 			secondFolder.Documents.Rows.Add("AZIPPER_0011318", "AZIPPER_0011318.msg",
-				Path.Combine(testDirectory, @"TestData\NATIVES\AZIPPER_0011318.msg"), "Level1\\Level2", false);
+				withNatives ? Path.Combine(testDirectory, @"TestData\NATIVES\AZIPPER_0011318.msg") : string.Empty, "Level1\\Level2", false);
 
-			return new[] {firstFolder, firstFolderChild, secondFolder};
+			return new[] { firstFolder, firstFolderChild, secondFolder };
 		}
 
 		private static DataTable CreateDataTableForDocuments()

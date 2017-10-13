@@ -279,6 +279,7 @@
     <Compile Include="Choice.cs" />
     <Compile Include="ClaimsPrincipalFactory.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="DocumentService.cs" />
     <Compile Include="DocumentTestDataBuilder.cs" />
     <Compile Include="EHHelper.cs" />
     <Compile Include="Extensions\GenericPermissionListExtension.cs" />
@@ -288,7 +289,7 @@
     <Compile Include="FieldMaps.cs" />
     <Compile Include="Fields.cs" />
     <Compile Include="FileToBase64Converter.cs" />
-    <Compile Include="Folder.cs" />
+    <Compile Include="FolderService.cs" />
     <Compile Include="ImportHelper.cs" />
     <Compile Include="Injection.cs" />
     <Compile Include="InstanceSetting.cs" />
@@ -335,6 +336,7 @@
     <Compile Include="TestHelpers\ExtendedIWorkspaceManager.cs" />
     <Compile Include="TestHelpers\IntegrationPointProviderEmptyValidator.cs" />
     <Compile Include="TestHelpers\ITestHelper.cs" />
+    <Compile Include="TestHelpers\TestConstants.cs" />
     <Compile Include="TestHelpers\TestHelper.cs" />
     <Compile Include="TestBase.cs" />
     <Compile Include="TestHelpers\Utils.cs" />

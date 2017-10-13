@@ -12,7 +12,13 @@ namespace kCura.IntegrationPoint.Tests.Core
 	public class ImportHelper
 	{
 		private const int _CONTROL_NUMBER_FIELD_ARTIFACT_ID = 1003667;
-		
+		private readonly bool _withNatives;
+
+		public ImportHelper(bool withNatives = true)
+		{
+			_withNatives = withNatives;
+		}
+
 		public void ImportData(int workspaceArtifactId, DocumentsTestData documentsTestData)
 		{
 			CreateFolders(workspaceArtifactId, documentsTestData);
@@ -40,11 +46,11 @@ namespace kCura.IntegrationPoint.Tests.Core
 				{
 					queue.Enqueue(folderWithDocuments);
 				}
-				folderWithDocuments.FolderId = Folder.CreateFolder(workspaceArtifactId, folderWithDocuments.FolderName, folderWithDocuments.ParentFolderWithDocuments?.FolderId);
+				folderWithDocuments.FolderId = FolderService.CreateFolder(workspaceArtifactId, folderWithDocuments.FolderName, folderWithDocuments.ParentFolderWithDocuments?.FolderId);
 			}
 		}
 
-		private static void ImportNativeFiles(int workspaceArtifactId, IDataReader dataReader, ImportAPI importApi, int identifyFieldArtifactId, int? folderId)
+		private void ImportNativeFiles(int workspaceArtifactId, IDataReader dataReader, ImportAPI importApi, int identifyFieldArtifactId, int? folderId)
 		{
 			var importJob = importApi.NewNativeDocumentImportJob();
 			importJob.OnMessage += ImportJobOnMessage;
@@ -55,11 +61,18 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			// Indicates file path for the native file.
 			importJob.Settings.NativeFilePathSourceFieldName = "Native File";
-			importJob.Settings.NativeFileCopyMode = NativeFileCopyModeEnum.CopyFiles;
+			importJob.Settings.NativeFileCopyMode = _withNatives ? NativeFileCopyModeEnum.CopyFiles : NativeFileCopyModeEnum.DoNotImportNativeFiles;
 			importJob.Settings.OverwriteMode = OverwriteModeEnum.Append;
 			importJob.Settings.FileNameColumn = "File Name";
-			importJob.Settings.CopyFilesToDocumentRepository = true;
+			importJob.Settings.CopyFilesToDocumentRepository = _withNatives;
 			importJob.Settings.DestinationFolderArtifactID = folderId.Value;
+
+			if (!_withNatives)
+			{
+				importJob.Settings.DisableNativeLocationValidation = null;
+				importJob.Settings.DisableNativeValidation = null;
+				importJob.Settings.CopyFilesToDocumentRepository = false;
+			}
 
 			// Specify the ArtifactID of the document identifier field, such as a control number.
 			importJob.Settings.IdentityFieldId = identifyFieldArtifactId;

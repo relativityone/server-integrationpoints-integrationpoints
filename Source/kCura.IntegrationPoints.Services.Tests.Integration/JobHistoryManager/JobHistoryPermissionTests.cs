@@ -138,7 +138,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 		private void RunDefaultIntegrationPoint()
 		{
 			Core.Models.IntegrationPointModel ipModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, $"ip_{Utils.FormatedDateTimeNow}", "Append Only");
-			ipModel.Destination = CreateDestinationConfigWithTargetWorkspace(ImportOverwriteModeEnum.AppendOnly, TargetWorkspaceArtifactId);
+			ipModel.Destination = CreateSerializedDestinationConfigWithTargetWorkspace(ImportOverwriteModeEnum.AppendOnly, TargetWorkspaceArtifactId);
 			Core.Models.IntegrationPointModel ip = CreateOrUpdateIntegrationPoint(ipModel);
 
 			var client = Helper.CreateAdminProxy<IIntegrationPointManager>();

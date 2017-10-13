@@ -2,13 +2,12 @@
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
-
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using Relativity.API;
 
-namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
+namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class DocumentService
 	{

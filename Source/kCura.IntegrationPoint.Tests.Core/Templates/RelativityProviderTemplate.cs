@@ -110,12 +110,18 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		protected string CreateDestinationConfig(ImportOverwriteModeEnum overwriteMode, int? federatedInstanceArtifactId = null)
 		{
-			return CreateDestinationConfigWithTargetWorkspace(overwriteMode, SourceWorkspaceArtifactId, federatedInstanceArtifactId);
+			return CreateSerializedDestinationConfigWithTargetWorkspace(overwriteMode, SourceWorkspaceArtifactId, federatedInstanceArtifactId);
 		}
 
-		protected string CreateDestinationConfigWithTargetWorkspace(ImportOverwriteModeEnum overwriteMode, int targetWorkspaceId, int? federatedInstanceArtifactId = null)
+		protected string CreateSerializedDestinationConfigWithTargetWorkspace(ImportOverwriteModeEnum overwriteMode, int targetWorkspaceId, int? federatedInstanceArtifactId = null)
 		{
-			var destinationConfig = new ImportSettings
+			ImportSettings destinationConfig = CreateDestinationConfigWithTargetWorkspace(overwriteMode, targetWorkspaceId, federatedInstanceArtifactId);
+			return Container.Resolve<ISerializer>().Serialize(destinationConfig);
+		}
+
+		protected ImportSettings CreateDestinationConfigWithTargetWorkspace(ImportOverwriteModeEnum overwriteMode, int targetWorkspaceId, int? federatedInstanceArtifactId = null)
+		{
+			return new ImportSettings
 			{
 				ArtifactTypeId = 10,
 				CaseArtifactId = targetWorkspaceId,
@@ -130,7 +136,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				DestinationFolderArtifactId = GetRootFolder(Helper, targetWorkspaceId),
 				FederatedInstanceArtifactId = federatedInstanceArtifactId
 			};
-			return Container.Resolve<ISerializer>().Serialize(destinationConfig);
 		}
 
 		protected string CreateDefaultFieldMap()
@@ -222,10 +227,10 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		protected IntegrationPointModel CreateDefaultIntegrationPointModelScheduled(ImportOverwriteModeEnum overwriteMode, string name, string overwrite, string startDate, string endDate, ScheduleInterval interval)
 		{
-		    const int offsetInSeconds = 30;
-		    DateTime newScheduledTime = DateTime.UtcNow.AddSeconds(offsetInSeconds);
+			const int offsetInSeconds = 30;
+			DateTime newScheduledTime = DateTime.UtcNow.AddSeconds(offsetInSeconds);
 
-            var integrationModel = new IntegrationPointModel
+			var integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(overwriteMode),
 				DestinationProvider = DestinationProvider.ArtifactId,
@@ -243,15 +248,15 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 					ScheduledTime = newScheduledTime.ToString("HH:mm:ss"),
 					Reoccur = 0,
 					SelectedFrequency = interval.ToString(),
-                    TimeZoneId = TimeZoneInfo.Utc.Id
+					TimeZoneId = TimeZoneInfo.Utc.Id
 				},
 				Map = CreateDefaultFieldMap(),
 				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
 			};
 
-           return integrationModel;
+			return integrationModel;
 		}
-		
+
 		#endregion Helper Methods
 	}
 }

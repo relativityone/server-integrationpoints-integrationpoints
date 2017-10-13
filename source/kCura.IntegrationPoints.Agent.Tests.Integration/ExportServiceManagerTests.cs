@@ -98,7 +98,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		}
 
 		[Test]
-		[Ignore("The test is failing on Jenkins, cannot reproduce on Dev machines - to be fixed.")]
 		public void RunRelativityProviderAlone()
 		{
 			// arrange

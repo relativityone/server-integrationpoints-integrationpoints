@@ -130,10 +130,8 @@
     </Compile>
     <Compile Include="Abstract\IImportTestCase.cs" />
     <Compile Include="Helpers\ContainerInstaller.cs" />
-    <Compile Include="Helpers\DocumentService.cs" />
     <Compile Include="Helpers\EmbeddedResource.cs" />
     <Compile Include="Helpers\SettingsObjects.cs" />
-    <Compile Include="Helpers\TestConstants.cs" />
     <Compile Include="Helpers\WorkspaceService.cs" />
     <Compile Include="ImportServiceManagerTests.cs" />
     <Compile Include="Synchronizer\TestRdoSynchronizer.cs" />
