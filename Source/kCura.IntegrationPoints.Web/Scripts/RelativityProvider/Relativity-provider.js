@@ -278,6 +278,8 @@
 				self.TargetFolder("");
 				self.TargetFolder.isModified(false);
 				self.locationSelector.toggle(false);
+
+				self.getDestinationProductionSets(self.TargetWorkspaceArtifactId());
 				self.ProductionArtifactId.isModified(false);
 			}
 		});
@@ -354,6 +356,7 @@
 						if (value) {
 							self.EnableLocationRadio(true);
 							self.TargetFolder("");
+							self.TargetFolder.isModified(false);
 						} else {
 							self.EnableLocationRadio(false);
 							state.ProductionArtifactId = null;
