@@ -27,6 +27,7 @@ using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.Data.RowDataGateway;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using Constants = kCura.IntegrationPoint.Tests.Core.Constants;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
@@ -99,7 +100,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		}
 
 		[Test]
-		[Category("SmokeTest")]
+		[Category(Constants.SMOKE_TEST)]
 		[Ignore("To be re-enabled when it passes on Jenkins. Make sure to test that on your custom branch first.")]
 		public void RunRelativityProviderAlone()
 		{
@@ -155,7 +156,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		}
 
 		[Test]
-		[Category("SmokeTest")]
+		[Category(Constants.SMOKE_TEST)]
 		public void StopStateCannotBeUpdatedWhileExportServiceObservers()
 		{
 			Job job = null;
