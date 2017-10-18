@@ -96,9 +96,22 @@ TooltipDefs.RelativityProviderSettingsDetails = [
         ]
     },
     {
-        name: "Copy Native File",
+        name: "Copy Native Files",
         description: "allows you to indicate whether Integration Points copies any native files while syncing data between the source and destination workspaces.",
-        subsection: []
+        subsection: [
+            {
+                s_name: "Physical Files",
+                s_description: "when you select this option physical natives files are transferred."
+            },
+            {
+                s_name: "Links Only",
+                s_description: "select this option if you want only reference links to be set to the source location of natives."
+            },
+            {
+                s_name: "Select No",
+                s_description: "if you don’t want to copy natives. When this option is selected only documents will be copied."
+            }
+        ]
     },
     {
         name: "Copy Images",
