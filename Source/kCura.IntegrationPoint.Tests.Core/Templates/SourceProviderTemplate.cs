@@ -223,7 +223,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			AgentTypeRef agentType = Agent.GetAgentTypeByName("Integration Points Agent");
 
 			string updateQuery = "UPDATE [Agent] SET [Enabled] = @enabledFlag, [Updated] = 1 WHERE [AgentTypeArtifactID] = @agentTypeArtifactId";
-			string monitoringQuery = "SELECT [Updated] FROM [Agent] WHERE [AgentTypeArtifactID] = @agentTypeArtifactId";
+			string monitoringQuery = "SELECT Count(*) FROM [Agent] WHERE [AgentTypeArtifactID] = @agentTypeArtifactId AND [Updated] = 1";
 
 			var enabledFlag = new SqlParameter("@enabledFlag", SqlDbType.Bit) {Value = enable};
 			var agentTypeArtifactId = new SqlParameter("@agentTypeArtifactId", SqlDbType.Int) {Value = agentType.ArtifactID};
@@ -235,7 +235,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			dbContext.ExecuteNonQuerySQLStatement(updateQuery, new[] { enabledFlag, agentTypeArtifactId });
 
 			int attempts = 0;
-			while (dbContext.ExecuteSqlStatementAsScalar<int>(monitoringQuery, agentTypeArtifactId) == 1)
+			while (dbContext.ExecuteSqlStatementAsScalar<int>(monitoringQuery, agentTypeArtifactId) > 0)
 			{
 				if (attempts == 5)
 				{
