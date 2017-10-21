@@ -101,7 +101,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 		[Test]
 		[Category(Constants.SMOKE_TEST)]
-		[Ignore("To be re-enabled when it passes on Jenkins. Make sure to test that on your custom branch first.")]
 		public void RunRelativityProviderAlone()
 		{
 			// arrange

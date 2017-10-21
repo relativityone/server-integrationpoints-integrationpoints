@@ -141,6 +141,11 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		public void ProcessQueueJobs()
 		{
+			if (!Enabled)
+			{
+				OnRaiseAgentLogEntry(20, LogCategory.Info, "Agent was disabled. Terminating job processing task.");
+				return;
+			}
 			OnRaiseAgentLogEntry(20, LogCategory.Info, "Checking for active jobs in Schedule Agent Queue table");
 
 			Job nextJob = jobService.GetNextQueueJob(base.GetResourceGroupIDs(), base.AgentID);
@@ -156,23 +161,12 @@ namespace kCura.ScheduleQueue.AgentBase
 				OnRaiseAgentLogEntry(1, LogCategory.Info, agentMessage);
 				LogOnStartJobProcessing(agentMessage, nextJob.JobId, nextJob.WorkspaceID, nextJob.TaskType);
 
-				//TODO: 
-				//if (!jobService.IsWorkspaceActive(nextJob.WorkspaceID))
-				//{
-				//	var warnMsg = string.Format("Deleting job {0} from workspace {1} due to inactive workspace", nextJob.JobId, nextJob.JobType.ToString());
-				//	mainLogger.Log(warnMsg, warnMsg, LogCategory.Warn);
-				//	jobService.DeleteJob(nextJob.JobId);
-				//	nextJob = jobService.GetNextQueueJob(AgentTypeInformation, base.GetResourceGroupIDs());
-				//	continue;
-				//}
-
 				TaskResult taskResult = ExecuteTask(nextJob);
 
 				FinalizeJob(nextJob, taskResult);
 
 				nextJob = jobService.GetNextQueueJob(base.GetResourceGroupIDs(), base.AgentID);
 			}
-
 			if (base.ToBeRemoved)
 			{
 				jobService.UnlockJobs(base.AgentID);

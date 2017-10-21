@@ -128,7 +128,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			try
 			{
 				job = GetNextJobInScheduleQueue(new[] { _sourceWorkspaceDto.ResourcePoolID.Value }, integrationPointModel.ArtifactID); // pick up job
-
 				// act
 				_exportManager.Execute(job); // run the job
 

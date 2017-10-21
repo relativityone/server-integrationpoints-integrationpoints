@@ -4,9 +4,8 @@ type = BUILD_TYPE
 installIntegrationPointFromRapFile = INSTALL_RIP_FROM_RAP
 relativity_branch = REL_BRANCH
 runSmokeTestsOnly = SMOKE_ONLY
-useLegacyTemplateNameInTests = USE_LEGACY_TEAMPLATE_NAME_IN_TESTS
 ripBranch = RIP_BRANCH
-includeRobotTests = RUN_ROBOT_TESTS
+slackChannel = SLACK_CHANNEL
 //endregion
 
 //region main scope variables
@@ -17,7 +16,6 @@ knife = "C:\\Python27\\Lib\\site-packages\\jeeves\\knife.rb"
 username = "testing\\Administrator"
 password = "P@ssw0rd@1"
 hasErrors = false
-slackChannel = "#cd_PL-RIP-Release"
 //endregion
 
 //region GlobalVariables
@@ -33,7 +31,6 @@ def ip_address = ""
 def random_server = ""
 def server_name = ""
 def domain = ""
-def robotConfigPath = ""
 
 def names_of_slaves = []
 def number_of_slaves = '2'
@@ -42,40 +39,7 @@ def s = relativity_branch + env.JOB_NAME
 def event_hash = java.security.MessageDigest.getInstance("MD5").digest(s.bytes).encodeHex().toString()
 //endregion
   
-  
-def generateConfigForRobot(serverName, configPath)
-{
-	bat 'echo ### Relativity ###  > ' + configPath
-	bat 'echo --variable UserName:relativity.admin@kcura.com >> ' + configPath
-	bat 'echo --variable DBHost:'+serverName+'.testing.corp >> ' + configPath 
-	bat 'echo --variable SDKHost:'+serverName+'.testing.corp >> ' + configPath
-	bat 'echo --variable AgentServer:'+serverName+'.testing.corp >> ' + configPath
-	bat 'echo --variable Root:https://'+serverName+'.testing.corp/Relativity >> ' + configPath 
-	bat 'echo --variable REST_ROOT:https://'+serverName+'.testing.corp/Relativity.REST >> ' + configPath
-	bat 'echo --variable HTTPS_REST_ROOT:https://'+serverName+'.testing.corp/Relativity.REST >> ' + configPath
-	bat 'echo --variable SDKHOST:'+serverName+'.testing.corp >> ' + configPath
-	bat 'echo --variable SDK_HOST_FULL_PATH:https://'+serverName+'.testing.corp/relativity.services >> ' + configPath 
-	bat 'echo --variable AGENTSERVER:' + serverName + ' >> ' + configPath
-
-	bat 'echo --variable filesDestinationProviderWorkspaceName:Smoke Workspace >> ' + configPath 
-	bat 'echo --variable savedSearchName:All Documents >> ' + configPath
-	bat 'echo --variable LIST_folderPath:Custodians >> ' + configPath
-	bat 'echo --variable folderName:GriffithJohn >> ' + configPath
-	bat 'echo --variable emptyFolderName:ParksJoe >> ' + configPath
-	bat 'echo --variable LIST_exportPath: >> ' + configPath
-	bat 'echo --variable exportFolder:.\\DataTransfer\\Export >> ' + configPath
-	bat 'echo --variable LIST_savedSearchExportPath: >> ' + configPath
-	bat 'echo --variable savedSearchExportFolder:SavedSearchExport >> ' + configPath
-	bat 'echo --variable LIST_folderSubfoldersExportPath: >> ' + configPath
-	bat 'echo --variable folderSubfoldersExportFolder:FolderSubfoldersExport >> ' + configPath
-	bat 'echo --variable LIST_productionSetExportPath: >> ' + configPath
-	bat 'echo --variable productionSetExportFolder:ProductionSetExport >> ' + configPath
-	bat 'echo --variable LIST_rdoExportPath: >> ' + configPath
-	bat 'echo --variable rdoExportFolder:RDOExport >> ' + configPath
-	bat 'echo --variable LIST_profilesExportPath: >> ' + configPath
-	bat 'echo --variable profilesExportFolder:ProfilesExport >> ' + configPath
-}  
-  
+   
 def getIpAddress(serverName) {
    def ip_address_raw = String.format('python -m vmware.create_ci_environment --platform get_ip_address_of_vm -s %1$s', serverName)
    def ip_address = bat returnStdout: true, script: ip_address_raw
@@ -157,7 +121,6 @@ stage('Get Server') {
 	"\n ripBranch = RIP_BRANCH = " + ripBranch +
 	"\n runSmokeTestsOnly = SMOKE_ONLY = " + runSmokeTestsOnly +	
 	"\n installIntegrationPointFromRapFile = INSTALL_RIP_FROM_RAP = " + installIntegrationPointFromRapFile + 
-	"\n useLegacyTemplateNameInTests = USE_LEGACY_TEAMPLATE_NAME_IN_TESTS = " + useLegacyTemplateNameInTests +
 	"\n*************************************************" 	
 	
     def file_name = UUID.randomUUID().toString() + ".txt"
@@ -237,6 +200,7 @@ try {
 				stash includes: 'lib/UnitTests/TestDataForImport/et-files/*', name: 'testdataforimport_et'
 				stash includes: 'lib/UnitTests/TestDataForImport/img/*', name: 'testdataforimport_img'
 				stash includes: 'lib/UnitTests/TestDataForImport/native-files/*', name: 'testdataforimport_native'
+				stash includes: 'DynamicallyLoadedDLLs/Search-Standard/*', name: 'DynamicallyLoadedDLLs'
 				stash includes: 'Applications/RelativityIntegrationPoints.Auto.rap', name: 'integrationPointsRap'	
 			}
 		}
@@ -339,7 +303,6 @@ try {
 			bat 'mkdir "C:\\SourceCode\\integrationpoints"'
 			bat "powershell.exe setx JenkinsBuildHost " + random_server + " /m"			
 			bat "powershell.exe setx JenkinsUseIPRapFile " + installIntegrationPointFromRapFile + " /m"
-			bat "powershell.exe setx JenkinsUseLegacyTemplateNameInTests " + useLegacyTemplateNameInTests + " /m"
 						
 			dir('C:/SourceCode/integrationpoints') {
 				unstash 'testdlls'
@@ -352,84 +315,10 @@ try {
 				unstash 'testdataforimport_et'
 				unstash 'testdataforimport_img'
 				unstash 'testdataforimport_native'				
+				unstash 'DynamicallyLoadedDLLs'
 				
 				run_tests(session_id)
 			}	
-		}
-	}
-
-	
-	if (includeRobotTests == 'true')
-	{
-		def robotStatus = 'FAILED'
-		try {			
-			node (server_name) {			
-				stage ('Get Automation Code')
-				{							
-					dir('C:/SourceCode') {	
-					
-						checkout([
-									$class: 'GitSCM',
-									branches: [[name: '*/develop']],
-									doGenerateSubmoduleConfigurations: false,
-									extensions:
-									[	
-										[$class: 'CleanBeforeCheckout'],
-										[$class: 'RelativeTargetDirectory', relativeTargetDir: 'automation']	
-									],
-									submoduleCfg: [],
-									userRemoteConfigs:
-									[
-										[credentialsId: 'TalosCI (bitbucket)', url: 'ssh://git@git.kcura.com:7999/aut/automation.git']
-										//refspec: '+refs/heads/develop:refs/remotes/origin/develop',
-									]
-								])									
-					
-						println 'preparing config file...'
-						println 'server_name = ' + server_name			
-						
-						robotConfigPath = 'C:\\SourceCode\\automation\\Config\\' + server_name + '.cfg'					
-						println 'configpath = ' + robotConfigPath		
-							
-						generateConfigForRobot(server_name, robotConfigPath)
-						
-						bat 'type ' + robotConfigPath
-					}
-				}
-				
-				stage ('Run Functional Tests')
-				{					
-					dir('C:/SourceCode/automation/') {
-						bat 'kBot.exe --log "C:\\SourceCode\\automation\\log.html" --report "C:\\SourceCode\\automation\\report.html" --outputdir "C:\\SourceCode\\automation" --argumentfile "'+robotConfigPath+'" -s "Automation.Tests.Relativity.Applications.RelativityIntegrationPoints.SmokeTests.RelativityIntegrationPoints" "C:\\SourceCode\\automation"'
-					}			
-					
-					step([$class: 'RobotPublisher',
-						disableArchiveOutput: false,
-						logFileName: 'log.html',
-						otherFiles: '',
-						outputFileName: 'output.xml',
-						outputPath: 'C:\\SourceCode\\automation',
-						passThreshold: 100,
-						reportFileName: 'report.html',
-						unstableThreshold: 80]);
-
-					robotStatus = 'PASSED'				
-				}
-			}
-		}
-		finally {		
-			mail body: env.BUILD_URL, subject: 'Integration Points Functional Tests '+ robotStatus, to: 'adrian.krzysztofek@relativity.com, filip.wrona@relativity.com'
-				
-		
-			try	
-			{
-				bat 'echo An attempt to display robot log.html'
-				bat 'type C:\\SourceCode\\automation\\log.html'
-			}
-			catch(Exception e)
-			{
-			
-			}		
 		}
 	}
 	

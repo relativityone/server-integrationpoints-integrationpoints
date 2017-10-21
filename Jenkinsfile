@@ -297,6 +297,7 @@ try {
 				stash includes: 'lib/UnitTests/TestDataForImport/et-files/*', name: 'testdataforimport_et'
 				stash includes: 'lib/UnitTests/TestDataForImport/img/*', name: 'testdataforimport_img'
 				stash includes: 'lib/UnitTests/TestDataForImport/native-files/*', name: 'testdataforimport_native'
+				stash includes: 'DynamicallyLoadedDLLs/Search-Standard/*', name: 'DynamicallyLoadedDLLs'
 				stash includes: 'Applications/RelativityIntegrationPoints.Auto.rap', name: 'integrationPointsRap'		
 			}
 		}
@@ -441,7 +442,8 @@ try {
 				unstash 'testdataforimport'
 				unstash 'testdataforimport_et'
 				unstash 'testdataforimport_img'
-				unstash 'testdataforimport_native'
+				unstash 'testdataforimport_native'				
+				unstash 'DynamicallyLoadedDLLs'
 
 				build_tests(server_name, domain, session_id, relativity_branch, automation_branch, installing_invariant, installing_datagrid, is_nightly_test_execution_develop)
 			}	
