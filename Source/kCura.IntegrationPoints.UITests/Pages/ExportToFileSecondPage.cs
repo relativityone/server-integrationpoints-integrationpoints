@@ -1,9 +1,9 @@
-﻿using IntegrationPointsUITests.Components;
+﻿using kCura.IntegrationPoints.UITests.Components;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.PageObjects;
 using OpenQA.Selenium.Support.UI;
 
-namespace IntegrationPointsUITests.Pages
+namespace kCura.IntegrationPoints.UITests.Pages
 {
 
     public class Select

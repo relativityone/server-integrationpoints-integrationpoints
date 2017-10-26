@@ -11,7 +11,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static string PostRequestAsJson(string serviceMethod, string parameter = null)
 		{
-			var isHttps = SharedVariables.ProtocolVersion.Equals("https", StringComparison.InvariantCultureIgnoreCase);
+			bool isHttps = SharedVariables.ProtocolVersion.Equals("https", StringComparison.InvariantCultureIgnoreCase);
 			return PostRequestAsJsonInternal(serviceMethod, isHttps, SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, parameter);
 		}
 
@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				string authorizationBase64 = GetBase64String($"{ username }:{ password }");
 				string authorizationHeader = $"Basic { authorizationBase64 }";
 				httpClient.DefaultRequestHeaders.Add("Authorization", authorizationHeader);
-				httpClient.DefaultRequestHeaders.Add("X-CSRF-Header", String.Empty);
+				httpClient.DefaultRequestHeaders.Add("X-CSRF-Header", string.Empty);
 
 				//Send Get Request
 				string output;
@@ -76,7 +76,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				string authorizationBase64 = GetBase64String($"{username}:{password}");
 				string authorizationHeader = $"Basic {authorizationBase64}";
 				httpClient.DefaultRequestHeaders.Add("Authorization", authorizationHeader);
-				httpClient.DefaultRequestHeaders.Add("X-CSRF-Header", String.Empty);
+				httpClient.DefaultRequestHeaders.Add("X-CSRF-Header", string.Empty);
 
 				//Assign parameter if needed and send Post Request
 				using (HttpContent content = parameter != null ? new StringContent(parameter, Encoding.UTF8, _JSON_MIME) : null)
@@ -88,7 +88,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 						{
 							if (!response.IsSuccessStatusCode)
 							{
-								string errorMessage = $"Failed submitting post request. Response Error: {response.Content.ReadAsStringAsync()}.";
+								string errorMessage = $"Failed submitting post request. Response Error: {response.Content.ReadAsStringAsync().Result}.";
 								throw new Exception(errorMessage);
 							}
 							output = response.Content.ReadAsStringAsync().Result;
@@ -96,8 +96,17 @@ namespace kCura.IntegrationPoint.Tests.Core
 					}
 					catch (Exception ex)
 					{
-						string errorMessage = $"An error occurred when attempting to submit post request. {ex.Message}.";
-						throw new Exception(errorMessage);
+						string message = string.Join(
+							Environment.NewLine,
+							$@"An error occurred when attempting to submit post request. {ex.Message}.",
+							$@"Username: {username}",
+							$@"Password: {password}",
+							$@"Param: {parameter}",
+							$@"Base address: {baseAddress}",
+							$@"Service: {serviceMethod}",
+							$@"Auth header: {authorizationHeader}"
+						);
+						throw new Exception(message, ex);
 					}
 					return output;
 				}

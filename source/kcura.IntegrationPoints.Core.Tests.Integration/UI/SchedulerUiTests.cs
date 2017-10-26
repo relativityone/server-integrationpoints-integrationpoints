@@ -146,7 +146,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.UI
 		private void GoToCreateAnIntegrationPointPageAndEnableScheduler()
 		{
 			_webDriver.SetFluidStatus(_ADMIN_USER_ID);
-			_webDriver.LogIntoRelativity("relativity.admin@kcura.com", SharedVariables.RelativityPassword);
+			_webDriver.LogIntoRelativity(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword);
 			_webDriver.GoToWorkspace(SourceWorkspaceArtifactId);
 			_webDriver.GoToTab(_INTEGRATION_POINTS_TAB);
 			_webDriver.ClickNewIntegrationPoint();

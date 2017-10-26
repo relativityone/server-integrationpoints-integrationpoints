@@ -1,103 +1,107 @@
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
-using IntegrationPointsUITests.Common;
-using IntegrationPointsUITests.Pages;
+using kCura.IntegrationPoints.UITests.Common;
+using kCura.IntegrationPoints.UITests.Logging;
+using kCura.IntegrationPoints.UITests.Pages;
 using OpenQA.Selenium;
+using Serilog;
 
-namespace IntegrationPointsUITests.Components
+namespace kCura.IntegrationPoints.UITests.Components
 {
-    public class SavedSearchDialog : Page // TODO logging
-    {
-        public SavedSearchDialog(IWebDriver driver) : base(driver)
-        {
-            Thread.Sleep(1000);
-        }
+	public class SavedSearchDialog : Page
+	{
 
-        public void ChooseSavedSearch(string name)
-        {
-            IWebElement element = FindSavedSearchElement(name);
-            if (element == null)
-            {
-                throw new PageException("Cannot find Saved Search element named " + name);
-            }
-            element.Click();
-            IWebElement ok = Driver.FindElement(By.Id("saved-search-picker-ok-button"));
-            ok.Click();
-        }
+		private static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(SavedSearchDialog));
 
-        public IWebElement FindSavedSearchElement(string name)
-        {
-            IWebElement tree = Driver.FindElement(By.Id("saved-search-picker-browser-tree"));
+		public SavedSearchDialog(IWebDriver driver) : base(driver)
+		{
+			Thread.Sleep(1000);
+		}
 
-            var nodes = new Stack<IWebElement>();
+		public void ChooseSavedSearch(string name)
+		{
+			IWebElement element = FindSavedSearchElement(name);
+			if (element == null)
+			{
+				throw new PageException($"Cannot find Saved Search element named {name}.");
+			}
+			element.Click();
+			IWebElement ok = Driver.FindElement(By.Id("saved-search-picker-ok-button"));
+			ok.Click();
+		}
 
-            AddChildrenToStack(tree, nodes);
+		public IWebElement FindSavedSearchElement(string name)
+		{
+			IWebElement tree = Driver.FindElement(By.Id("saved-search-picker-browser-tree"));
 
-            while (nodes.Any())
-            {
-                Console.WriteLine("Taking another node");
-                IWebElement node = nodes.Pop();
-                if (IsLeaf(node))
-                {
-                    Console.WriteLine("Leaf found");
-                    if (Text(node).Equals(name))
-                    {
-                        Console.WriteLine("Node found");
-                        IWebElement a = node.FindElement(By.TagName("a"));
-                        return a;
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Node found");
-                    if (IsClosed(node))
-                    {
-                        Console.WriteLine("Opening node");
-                        ToggleNode(node);
-                    }
-                    AddChildrenToStack(node, nodes);
-                }
-            }
-            return null;
-        }
+			var nodes = new Stack<IWebElement>();
 
-        private void AddChildrenToStack(IWebElement parent, Stack<IWebElement> nodes)
-        {
-            foreach (IWebElement webElement in GetChildren(parent))
-            {
-                nodes.Push(webElement);
-            }
-        }
+			AddChildrenToStack(tree, nodes);
 
-        public void ToggleNode(IWebElement node)
-        {
-            IWebElement icon = node.FindElement(By.CssSelector("i"));
-            icon.Click();
-        }
+			while (nodes.Any())
+			{
+				Log.Verbose("Taking another node");
+				IWebElement node = nodes.Pop();
+				if (IsLeaf(node))
+				{
+					Log.Verbose("Leaf found");
+					if (Text(node).Equals(name))
+					{
+						Log.Verbose("Node found");
+						IWebElement a = node.FindElement(By.TagName("a"));
+						return a;
+					}
+				}
+				else
+				{
+					Log.Verbose("Node found");
+					if (IsClosed(node))
+					{
+						Log.Verbose("Opening node");
+						ToggleNode(node);
+					}
+					AddChildrenToStack(node, nodes);
+				}
+			}
+			return null;
+		}
 
-        public string Text(IWebElement li)
-        {
-            IWebElement a = li.FindElement(By.CssSelector("a"));
-            return a.Text;
-        }
+		private void AddChildrenToStack(IWebElement parent, Stack<IWebElement> nodes)
+		{
+			foreach (IWebElement webElement in GetChildren(parent))
+			{
+				nodes.Push(webElement);
+			}
+		}
 
-        public ReadOnlyCollection<IWebElement> GetChildren(IWebElement li)
-        {
-            return li.FindElements(By.CssSelector("ul > li"));
-        }
+		public void ToggleNode(IWebElement node)
+		{
+			IWebElement icon = node.FindElement(By.CssSelector("i"));
+			icon.Click();
+		}
 
-        public bool IsLeaf(IWebElement element)
-        {
-            return element.GetAttribute("class").Contains("jstree-leaf");
-        }
+		public string Text(IWebElement li)
+		{
+			IWebElement a = li.FindElement(By.CssSelector("a"));
+			return a.Text;
+		}
 
-        public bool IsClosed(IWebElement element)
-        {
-            return element.GetAttribute("class").Contains("jstree-closed");
-        }
+		public ReadOnlyCollection<IWebElement> GetChildren(IWebElement li)
+		{
+			return li.FindElements(By.CssSelector("ul > li"));
+		}
 
-    }
+		public bool IsLeaf(IWebElement element)
+		{
+			return element.GetAttribute("class").Contains("jstree-leaf");
+		}
+
+		public bool IsClosed(IWebElement element)
+		{
+			return element.GetAttribute("class").Contains("jstree-closed");
+		}
+
+	}
 }

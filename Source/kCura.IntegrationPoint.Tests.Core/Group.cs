@@ -32,19 +32,19 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine("An error occurred: {0}", ex.Message);
+				Console.WriteLine($@"An error occurred while creating group {name}: {ex.Message}");
 				throw;
 			}
 
 			// Check for success.
 			if (!resultSet.Success)
 			{
-				Console.WriteLine("The Create operation failed.{0}{1}", Environment.NewLine, resultSet.Message);
+				Console.WriteLine($@"Creation of group {name} failed.{Environment.NewLine}{resultSet.Message}");
 				throw new Exception(resultSet.Message);
 			}
 
 			// Output the results.
-			Console.WriteLine("The Create succeeded.");
+			Console.WriteLine($@"The group {name} created succeessfully.");
 			kCura.Relativity.Client.DTOs.Group createdGroup = resultSet.Results[0].Artifact;
 
 			Console.WriteLine("{0}The Artifact of the New Group is: {1}", Environment.NewLine, createdGroup.ArtifactID);

@@ -1,23 +1,25 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
-namespace IntegrationPointsUITests.Common
+namespace kCura.IntegrationPoints.UITests.Common
 {
+	[Serializable]
+	public class PageException : Exception
+	{
+		public PageException()
+		{
+		}
 
-    public class PageException : Exception
-    {
-        public PageException()
-        {
-        }
+		public PageException(string message) : base(message)
+		{
+		}
 
-        public PageException(string message)
-            : base(message)
-        {
-        }
+		public PageException(string message, Exception inner) : base(message, inner)
+		{
+		}
 
-        public PageException(string message, Exception inner)
-            : base(message, inner)
-        {
-        }
-    }
-
+		protected PageException(SerializationInfo info, StreamingContext context) : base(info, context)
+		{
+		}
+	}
 }

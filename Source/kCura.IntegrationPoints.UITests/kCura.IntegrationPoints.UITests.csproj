@@ -7,8 +7,8 @@
     <ProjectGuid>{44849C37-810B-43E8-972B-12D3D0D87A7F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>IntegrationPointsUITests</RootNamespace>
-    <AssemblyName>IntegrationPointsUITests</AssemblyName>
+    <RootNamespace>kCura.IntegrationPoints.UITests</RootNamespace>
+    <AssemblyName>kCura.IntegrationPoints.UITests</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
@@ -45,6 +45,10 @@
       <HintPath>..\packages\kCura.Injection.9.5.335.7\lib\net462\kCura.Injection.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="nunit.framework, Version=3.4.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
       <HintPath>..\packages\NUnit.3.4.1\lib\net45\nunit.framework.dll</HintPath>
       <Private>True</Private>
@@ -71,6 +75,10 @@
     </Reference>
     <Reference Include="Relativity.Kepler, Version=1.0.1.409, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Kepler.1.0.1.409\lib\net462\Relativity.Kepler.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Logging, Version=9.4.308.17, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Logging.9.4.308\lib\net462\Relativity.Logging.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Services.DataContracts, Version=9.5.335.7, Culture=neutral, processorArchitecture=MSIL">
@@ -101,18 +109,19 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="WebDriver, Version=3.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Selenium.WebDriver.3.3.0\lib\net40\WebDriver.dll</HintPath>
+    <Reference Include="WebDriver, Version=3.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Selenium.WebDriver.3.7.0\lib\net45\WebDriver.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="WebDriver.Support, Version=3.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Selenium.Support.3.3.0\lib\net40\WebDriver.Support.dll</HintPath>
+    <Reference Include="WebDriver.Support, Version=3.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Selenium.Support.3.7.0\lib\net45\WebDriver.Support.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
@@ -124,6 +133,10 @@
     <Compile Include="Components\StatusTable.cs" />
     <Compile Include="Components\PropertiesTable.cs" />
     <Compile Include="Components\SavedSearchDialog.cs" />
+    <Compile Include="Configuration\TestConfiguration.cs" />
+    <Compile Include="Configuration\TestContext.cs" />
+    <Compile Include="Logging\LoggerFactory.cs" />
+    <Compile Include="Logging\LoggerNameEnricher.cs" />
     <Compile Include="Pages\ExportToFileThirdPage.cs" />
     <Compile Include="Pages\IntegrationPointDetailsPage.cs" />
     <Compile Include="Pages\IntegrationPointsPage.cs" />
@@ -143,6 +156,18 @@
       <Link>app.config</Link>
     </None>
     <None Include="packages.config" />
+    <None Include="UiTestsConfig\PL4.config">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="UiTestsConfig\PL5.config">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="UiTestsConfig\PL3.config">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
@@ -153,9 +178,6 @@
       <Project>{599D771D-2AE7-4321-9BAC-BE06F827CE0A}</Project>
       <Name>kCura.IntegrationPoints.Data</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="LICENSE.txt" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\CSharpGuidelineAnalyzer.1.0.3.0\analyzers\dotnet\cs\CSharpGuidelineAnalyzer.dll" />
@@ -171,10 +193,11 @@ xcopy "$(ProjectDir)..\kCura.IntegrationPoint.Tests.Core\oi\unmanaged" "$(Target
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Baseclass.Contrib.Nuget.Output.1.0.0\build\net40\Baseclass.Contrib.Nuget.Output.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Baseclass.Contrib.Nuget.Output.1.0.0\build\net40\Baseclass.Contrib.Nuget.Output.targets'))" />
     <Error Condition="!Exists('..\packages\kCura.9.5.335.7\build\kCura.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\kCura.9.5.335.7\build\kCura.targets'))" />
+    <Error Condition="!Exists('..\packages\Selenium.WebDriver.ChromeDriver.2.33.0\build\Selenium.WebDriver.ChromeDriver.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Selenium.WebDriver.ChromeDriver.2.33.0\build\Selenium.WebDriver.ChromeDriver.targets'))" />
   </Target>
   <Import Project="..\packages\Baseclass.Contrib.Nuget.Output.1.0.0\build\net40\Baseclass.Contrib.Nuget.Output.targets" Condition="Exists('..\packages\Baseclass.Contrib.Nuget.Output.1.0.0\build\net40\Baseclass.Contrib.Nuget.Output.targets')" />
-  <Import Project="..\packages\Selenium.WebDriver.ChromeDriver.2.29.0\build\Selenium.WebDriver.ChromeDriver.targets" Condition="Exists('..\packages\Selenium.WebDriver.ChromeDriver.2.29.0\build\Selenium.WebDriver.ChromeDriver.targets')" />
   <Import Project="..\packages\kCura.9.5.335.7\build\kCura.targets" Condition="Exists('..\packages\kCura.9.5.335.7\build\kCura.targets')" />
+  <Import Project="..\packages\Selenium.WebDriver.ChromeDriver.2.33.0\build\Selenium.WebDriver.ChromeDriver.targets" Condition="Exists('..\packages\Selenium.WebDriver.ChromeDriver.2.33.0\build\Selenium.WebDriver.ChromeDriver.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

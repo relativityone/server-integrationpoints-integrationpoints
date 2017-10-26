@@ -2,34 +2,69 @@
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using NUnit.Framework;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
 	public class SharedVariables
 	{
+		public static Configuration CustomConfig { get; set; }
+		
+		public static string AppSettingString(string name)
+		{
+			return CustomConfig?.AppSettings.Settings[name]?.Value ?? ConfigurationManager.AppSettings[name];
+		}
+
+		public static int AppSettingInt(string name)
+		{
+			return int.Parse(AppSettingString(name));
+		}
+
+		/// <summary>
+		/// Merges settings from custom config file with settings from app.config.
+		/// Custom settings take precedence before those defined in app.config.
+		/// </summary>
+		/// <param name="configFilePath">Path to config file, automatically prefixed by AppDomain.CurrentDomain.BaseDirectory (e.g. ./bin/x64) of given project.</param>
+		public static void MergeConfigurationWithAppConfig(string configFilePath)
+		{
+			string configFileFullPath = $@"{AppDomain.CurrentDomain.BaseDirectory}\{configFilePath}";
+			var configFileInfo = new FileInfo(configFileFullPath);
+			Assert.IsTrue(configFileInfo.Exists, "Specified config file '{0}' does not exist, full path: '{1}'.",
+				configFilePath, configFileInfo.FullName);
+
+			var map = new ExeConfigurationFileMap
+			{
+				ExeConfigFilename = configFileFullPath
+			};
+
+			Configuration c = ConfigurationManager.OpenMappedExeConfiguration(map, ConfigurationUserLevel.None);
+
+			CustomConfig = c;
+		}
+
 		#region User Settings
 
-		public static string RelativityUserName { get; set; } = ConfigurationManager.AppSettings["relativityUserName"];
+		public static string RelativityUserName => AppSettingString("relativityUserName");
 
-		public static string RelativityPassword { get; set; } = ConfigurationManager.AppSettings["relativityPassword"];
+		public static string RelativityPassword => AppSettingString("relativityPassword");
 
-		public static string RelativityUserFirstName { get; set; } = ConfigurationManager.AppSettings["relativityUserFirstName"];
+		public static string RelativityUserFirstName => AppSettingString("relativityUserFirstName");
 
-		public static string RelativityUserLastName { get; set; } = ConfigurationManager.AppSettings["relativityUserLastName"];
+		public static string RelativityUserLastName => AppSettingString("relativityUserLastName");
 
 		public static string UserFullName => $"{RelativityUserLastName}, {RelativityUserFirstName}";
 
         #endregion User Settings
         
         #region UI Tests Settings
-        public static int UiImplicitWaitInSec { get; set; } = int.Parse(ConfigurationManager.AppSettings["ui.implicitWaitInSec"]);
-        public static int UiWaitForAjaxCallsInSec { get; set; } = int.Parse(ConfigurationManager.AppSettings["ui.waitForAjaxCallsInSec"]);
-        public static int UiWaitForPageInSec { get; set; } = int.Parse(ConfigurationManager.AppSettings["ui.waitForPageInSec"]);
+        public static int UiImplicitWaitInSec => AppSettingInt("ui.implicitWaitInSec");
+        public static int UiWaitForAjaxCallsInSec => AppSettingInt("ui.waitForAjaxCallsInSec");
+        public static int UiWaitForPageInSec => AppSettingInt("ui.waitForPageInSec");
         #endregion UI Tests Settings
         
         #region Relativity Settings
 
-		public static string ProtocolVersion => ConfigurationManager.AppSettings["ProtocolVersion"];
+		public static string ProtocolVersion => AppSettingString("ProtocolVersion");
 
 		public static string RsapiClientUri => $"{ProtocolVersion}://{TargetHost}/Relativity.Services";
 
@@ -48,49 +83,49 @@ namespace kCura.IntegrationPoint.Tests.Core
 		public static string TargetHost => GetTargetHost();
 		public static string TargetDbHost => GetTargetDbHost();
 
-		public static string DatabaseUserId { get; set; } = ConfigurationManager.AppSettings["databaseUserId"];
+		public static string DatabaseUserId => AppSettingString("databaseUserId");
 
-		public static string DatabasePassword { get; set; } = ConfigurationManager.AppSettings["databasePassword"];
+		public static string DatabasePassword => AppSettingString("databasePassword");
 
-		public static string EddsConnectionString => String.Format(ConfigurationManager.AppSettings["connectionStringEDDS"], TargetDbHost, DatabaseUserId, DatabasePassword);
+		public static string EddsConnectionString => string.Format(AppSettingString("connectionStringEDDS"), TargetDbHost, DatabaseUserId, DatabasePassword);
 
-		public static string WorkspaceConnectionStringFormat => String.Format(ConfigurationManager.AppSettings["connectionStringWorkspace"], "{0}", TargetHost, DatabaseUserId, DatabasePassword);
+		public static string WorkspaceConnectionStringFormat => string.Format(AppSettingString("connectionStringWorkspace"), "{0}", TargetDbHost, DatabaseUserId, DatabasePassword);
 
-		public static int KeplerTimeout => int.Parse(ConfigurationManager.AppSettings["keplerTimeout"]);
+		public static int KeplerTimeout => AppSettingInt("keplerTimeout");
 
 		#endregion ConnectionString Settings
 
 		#region RAP File Settings
 
-		public static string ApplicationPath { get; set; } = ConfigurationManager.AppSettings["applicationPath"];
+		public static string ApplicationPath => AppSettingString("applicationPath");
 
-		public static string ApplicationRapFileName { get; set; } = ConfigurationManager.AppSettings["applicationRapFileName"];
+		public static string ApplicationRapFileName => AppSettingString("applicationRapFileName");
 
-		public static string BuildPackagesBranchPath => Path.Combine(ConfigurationManager.AppSettings["buildPackages"], ConfigurationManager.AppSettings["branch"]);
+		public static string BuildPackagesBranchPath => Path.Combine(AppSettingString("buildPackages"), AppSettingString("branch"));
 
 		public static string LatestRapLocationFromBuildPackages => Path.Combine(BuildPackagesBranchPath, LatestRapVersionFromBuildPackages);
 
 		public static string LatestRapVersionFromBuildPackages => GetLatestVersion();
 
-		public static bool UseLocalRap => bool.Parse(ConfigurationManager.AppSettings["UseLocalRAP"]);
+		public static bool UseLocalRap => bool.Parse(AppSettingString("UseLocalRAP"));
 
-		public static string RapFileLocation => ConfigurationManager.AppSettings["LocalRAPFileLocation"];
+		public static string RapFileLocation => AppSettingString("LocalRAPFileLocation");
 
 		#endregion RAP File Settings
 
 		#region LDAP Configuration Settings
 
-		public static string LdapConnectionPath { get; set; } = ConfigurationManager.AppSettings["ldapConnectionPath"];
+		public static string LdapConnectionPath => AppSettingString("ldapConnectionPath");
 
-		public static string LdapUsername { get; set; } = ConfigurationManager.AppSettings["ldapUsername"];
+		public static string LdapUsername => AppSettingString("ldapUsername");
 
-		public static string LdapPassword { get; set; } = ConfigurationManager.AppSettings["ldapPassword"];
+		public static string LdapPassword => AppSettingString("ldapPassword");
 
 		#endregion LDAP Configuration Settings
 
 		private static string GetLatestVersion()
 		{
-			DirectoryInfo buildPackagesBranchDirectory = new DirectoryInfo(BuildPackagesBranchPath);
+			var buildPackagesBranchDirectory = new DirectoryInfo(BuildPackagesBranchPath);
 			DirectoryInfo latestVersionFolder = buildPackagesBranchDirectory.GetDirectories().OrderByDescending(f => f.LastWriteTime).First();
 
 			return latestVersionFolder?.Name;
@@ -98,7 +133,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		
 		private static string GetTargetHost()
 		{
-			string environmentVariableName = ConfigurationManager.AppSettings["JenkinsBuildHostEnvironmentVariableName"];
+			string environmentVariableName = AppSettingString("JenkinsBuildHostEnvironmentVariableName");
 
 			if (environmentVariableName != null)
 			{
@@ -109,24 +144,24 @@ namespace kCura.IntegrationPoint.Tests.Core
 			    }
 			}
 
-			return ConfigurationManager.AppSettings["targetHost"];
+			return AppSettingString("targetHost");
 		}
 		
 		private static string GetTargetDbHost()
 	    {
-	        string environmentVariableName = ConfigurationManager.AppSettings["JenkinsBuildHostEnvironmentVariableName"];
+	        string environmentVariableName = AppSettingString("JenkinsBuildHostEnvironmentVariableName");
 
 	        if (environmentVariableName != null)
 	        {
 	            return Environment.GetEnvironmentVariable(environmentVariableName, EnvironmentVariableTarget.Machine);
 	        }
 
-	        return ConfigurationManager.AppSettings["targetDbHost"];
+	        return AppSettingString("targetDbHost");
 	    }
 
-		public static bool UseIPRapFile()
+		public static bool UseIpRapFile()
 		{
-			string environmentVariableName = ConfigurationManager.AppSettings["JenkinsBuildUseIPRapFile"];
+			string environmentVariableName = AppSettingString("JenkinsBuildUseIPRapFile");
 
 			if (environmentVariableName != null)
 			{
@@ -141,7 +176,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static bool UseLegacyTemplateName()
 		{
-			string environmentVariableName = ConfigurationManager.AppSettings["UseLegacyTemplateName"];
+			string environmentVariableName = AppSettingString("UseLegacyTemplateName");
 
 			if (environmentVariableName != null)
 			{

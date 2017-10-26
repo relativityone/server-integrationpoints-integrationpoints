@@ -1,9 +1,8 @@
-﻿using System;
-using IntegrationPointsUITests.Pages;
+﻿using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoint.Tests.Core;
 using NUnit.Framework;
 
-namespace IntegrationPointsUITests.Tests
+namespace kCura.IntegrationPoints.UITests.Tests
 {
     [TestFixture]
     public class UserOnLoginPageShould : UiTest
@@ -11,7 +10,6 @@ namespace IntegrationPointsUITests.Tests
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            Console.WriteLine("login Setup");
             var loginPage = new LoginPage(Driver);
             if (!loginPage.IsOnLoginPage())
             {

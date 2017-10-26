@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace IntegrationPointsUITests.Common
+﻿namespace kCura.IntegrationPoints.UITests.Common
 {
-    public class TestCategory
-    {
-        public const string SMOKE = "Smoke";
-    }
+	public class TestCategory
+	{
+		public const string SMOKE = "Smoke";
+	}
 }

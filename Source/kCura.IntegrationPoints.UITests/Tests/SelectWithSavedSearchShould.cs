@@ -1,41 +1,42 @@
-﻿using System;
-using System.Threading;
-using IntegrationPointsUITests.Components;
-using IntegrationPointsUITests.Pages;
+﻿using System.Threading;
+using kCura.IntegrationPoints.UITests.Components;
+using kCura.IntegrationPoints.UITests.Pages;
 using NUnit.Framework;
 
-namespace IntegrationPointsUITests.Tests
+namespace kCura.IntegrationPoints.UITests.Tests
 {
-    [TestFixture]
-    public class SelectWithSavedSearchShould : UiTest
-    {
-        [OneTimeSetUp]
-        public void OneTimeSetUp()
-        {
-            EnsureGeneralPageIsOpened();
-        }
-        
-        [Test, Order(10)]
-        public void ChangeValueWhenSavedSearchIsChosenInDialog()
-        {
-            // GIVEN
-            var generalPage = new GeneralPage(Driver);
-            generalPage.ChooseWorkspace("Smoke Workspace");
+	[TestFixture]
+	public class SelectWithSavedSearchShould : UiTest
+	{
+		private const int _MILLISECONDSTIMEOUT = 1000;
 
-            // WHEN
-            IntegrationPointsPage ipPage = generalPage.GoToIntegrationPointsPage();
-            ExportFirstPage first = ipPage.CreateNewIntegrationPoint();
-            first.Name = "Test IP";
-            first.Destination = "Load File";
+		[OneTimeSetUp]
+		public void OneTimeSetUp()
+		{
+			EnsureGeneralPageIsOpened();
+		}
+		
+		[Test, Order(10)]
+		public void ChangeValueWhenSavedSearchIsChosenInDialog()
+		{
+			// GIVEN
+			var generalPage = new GeneralPage(Driver);
+			generalPage.ChooseWorkspace(Context.WorkspaceName);
 
-            ExportToFileSecondPage second = first.GoToNextPage();
-            SavedSearchDialog ssd = second.OpenSavedSearchSelectionDialog();
-            ssd.ChooseSavedSearch("All Documents");
-            
-            // THEN
-            Thread.Sleep(1000);
-            Assert.AreEqual("All Documents", second.SavedSearch);
-        }
+			// WHEN
+			IntegrationPointsPage ipPage = generalPage.GoToIntegrationPointsPage();
+			ExportFirstPage first = ipPage.CreateNewIntegrationPoint();
+			first.Name = "Test IP";
+			first.Destination = "Load File";
 
-    }
+			ExportToFileSecondPage second = first.GoToNextPage();
+			SavedSearchDialog ssd = second.OpenSavedSearchSelectionDialog();
+			ssd.ChooseSavedSearch("All Documents");
+			
+			// THEN
+			Thread.Sleep(_MILLISECONDSTIMEOUT);
+			Assert.AreEqual("All Documents", second.SavedSearch);
+		}
+
+	}
 }

@@ -298,6 +298,7 @@
     <Compile Include="Models\DocumentsTestData.cs" />
     <Compile Include="Models\FolderWithDocuments.cs" />
     <Compile Include="ObjectType.cs" />
+    <Compile Include="TestException.cs" />
     <Compile Include="Permission.cs" />
     <Compile Include="Models\ImportOverwriteMode.cs" />
     <Compile Include="Models\FieldOverlayBehavior.cs" />
