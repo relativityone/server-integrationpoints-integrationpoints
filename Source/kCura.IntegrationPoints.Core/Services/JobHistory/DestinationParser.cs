@@ -26,19 +26,6 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			}
 		}
 
-		public string GetName(string destinationWorkspace)
-		{
-			try
-			{
-				string[] destinationWorkspaceElements = GetElements(destinationWorkspace);
-				return destinationWorkspaceElements[0].Trim();
-			}
-			catch (Exception e)
-			{
-				throw CreateWrongFormatException(destinationWorkspace, e);
-			}
-		}
-
 		public string[] GetElements(string destinationWorkspace)
 		{
 			return destinationWorkspace.Split(_SEPARATOR);

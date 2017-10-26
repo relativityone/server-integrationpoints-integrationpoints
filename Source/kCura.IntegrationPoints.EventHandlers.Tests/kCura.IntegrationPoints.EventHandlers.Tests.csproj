@@ -124,6 +124,7 @@
     <Compile Include="Commands\Helpers\ArtifactsToDeleteTests.cs" />
     <Compile Include="Commands\Helpers\TenantForSecretStoreCreationValidatorTests.cs" />
     <Compile Include="Commands\ImportNativeFileCopyModeUpdaterTests.cs" />
+    <Compile Include="Commands\JobHistoryDestinationWorkspaceParserTests.cs" />
     <Compile Include="Commands\PreCascadeDeleteIntegrationPointCommandTests.cs" />
     <Compile Include="Commands\RestoreJobHistoryDestinationWorkspaceCommandTests.cs" />
     <Compile Include="Commands\SetPromoteEligibleFieldCommandTests.cs" />

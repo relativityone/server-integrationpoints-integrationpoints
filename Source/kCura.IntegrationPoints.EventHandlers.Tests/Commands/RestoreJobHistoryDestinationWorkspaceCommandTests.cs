@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.EventHandlers.Commands;
+using kCura.IntegrationPoints.EventHandlers.Commands.RestoreJobHistoryParser;
 using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NUnit.Framework;
@@ -29,7 +30,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 			_destinationParser = new DestinationParser();
 			_federatedInstanceManager = Substitute.For<IFederatedInstanceManager>();
 			_workspaceManager = Substitute.For<IWorkspaceManager>();
-			_command = new RestoreJobHistoryDestinationWorkspaceCommand(_rsapiService, _destinationParser, _federatedInstanceManager, _workspaceManager, _WORKSPACE_ARTIFACT_ID);
+			
+			_command = new RestoreJobHistoryDestinationWorkspaceCommand(_rsapiService, new JobHistoryDestinationWorkspaceParser(_WORKSPACE_ARTIFACT_ID, _federatedInstanceManager, _workspaceManager));
 		}
 
 		[Test]
@@ -52,13 +54,18 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 
 			_rsapiService.JobHistoryLibrary.Query(Arg.Any<Query<RDO>>()).Returns(jobHistories);
 
-			_federatedInstanceManager.RetrieveFederatedInstanceByName("A").Returns(new FederatedInstanceDto
+			_federatedInstanceManager.RetrieveAll().Returns(new List<FederatedInstanceDto>
 			{
-				ArtifactId = 3
-			});
-			_federatedInstanceManager.RetrieveFederatedInstanceByName("C").Returns(new FederatedInstanceDto
-			{
-				ArtifactId = 4
+				new FederatedInstanceDto
+				{
+					ArtifactId = 3,
+					Name = "A"
+				},
+				new FederatedInstanceDto
+				{
+					ArtifactId = 4,
+					Name = "C"
+				}
 			});
 
 			// ACT

@@ -44,17 +44,5 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			Assert.That(() => _destinationParser.GetArtifactId(destination),
 				Throws.TypeOf<Exception>().With.Message.EqualTo($"Destination workspace object: {destination} could not be parsed."));
 		}
-
-		[TestCase("instance - workspace - 1", "instance")]
-		[TestCase(" instance - workspace - 1", "instance")]
-		[TestCase("instance1 - workspace1 - 1", "instance1")]
-		[TestCase("instance", "instance")]
-		[TestCase("instance - workspace", "instance")]
-		public void ItShouldReturnNames(string destination, string expectedName)
-		{
-			var actualName = _destinationParser.GetName(destination);
-
-			Assert.That(actualName, Is.EqualTo(expectedName));
-		}
 	}
 }

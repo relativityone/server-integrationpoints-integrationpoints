@@ -164,7 +164,17 @@
     <Compile Include="Commands\ISourceConfigurationTypeOfExportUpdater.cs" />
     <Compile Include="Commands\PreCascadeDeleteIntegrationPointCommand.cs" />
     <Compile Include="Commands\RemoveAgentJobLogTableCommand.cs" />
+    <Compile Include="Commands\RestoreJobHistoryParser\CheckForInputNullPath.cs" />
+    <Compile Include="Commands\RestoreJobHistoryParser\CheckIfHasLocalInstance.cs" />
+    <Compile Include="Commands\RestoreJobHistoryParser\CheckSeparatorsAmount.cs" />
+    <Compile Include="Commands\RestoreJobHistoryParser\CurrentParserState.cs" />
+    <Compile Include="Commands\RestoreJobHistoryParser\ExtractWorkspaceIdFromInput.cs" />
+    <Compile Include="Commands\RestoreJobHistoryParser\DestinationWorkspaceElementsParsingResult.cs" />
     <Compile Include="Commands\RestoreJobHistoryDestinationWorkspaceCommand.cs" />
+    <Compile Include="Commands\RestoreJobHistoryParser\IParserStateTransition.cs" />
+    <Compile Include="Commands\RestoreJobHistoryParser\JobHistoryDestinationWorkspaceParser.cs" />
+    <Compile Include="Commands\RestoreJobHistoryParser\ParseFederatedInstanceName.cs" />
+    <Compile Include="Commands\RestoreJobHistoryParser\ParserStateEnum.cs" />
     <Compile Include="Commands\SetImportNativeFileCopyModeCommand.cs" />
     <Compile Include="Commands\SetPromoteEligibleFieldCommand.cs" />
     <Compile Include="Commands\SetTypeOfExportDefaultValueCommand.cs" />
