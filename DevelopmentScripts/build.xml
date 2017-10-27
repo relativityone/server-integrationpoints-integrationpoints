@@ -468,6 +468,7 @@
         <ApplicationSchema>ApplicationsXML\application.xml</ApplicationSchema>
         <Assemblies>
           <Assembly>lib\Castle.Windsor.dll</Assembly>
+		  <Assembly>lib\Castle.Core.dll</Assembly>
           <Assembly>lib\kCura.Apps.Common.Config.dll</Assembly>
           <Assembly>lib\kCura.Apps.Common.Data.dll</Assembly>
           <Assembly>lib\kCura.Apps.Common.Utils.dll</Assembly>
