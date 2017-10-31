@@ -5,6 +5,7 @@ task default -depends build_applications
 
 task copy_libraries {
 	Copy-Item ([System.IO.Path]::Combine($nuget_packages_directory, 'Castle.Windsor.3.3.0', 'lib', 'net45', 'Castle.Windsor.dll')) $lib_directory
+	Copy-Item ([System.IO.Path]::Combine($nuget_packages_directory, 'Castle.Core.3.3.0', 'lib', 'net45', 'Castle.Core.dll')) $lib_directory
 	Copy-Item ([System.IO.Path]::Combine($nuget_packages_directory, 'kCura.Apps.Common.Config.2.1.3', 'lib', 'net462', 'kCura.Apps.Common.Config.dll')) $lib_directory
 	Copy-Item ([System.IO.Path]::Combine($nuget_packages_directory, 'kCura.Apps.Common.Data.2.1.3', 'lib', 'net462', 'kCura.Apps.Common.Data.dll')) $lib_directory
 	Copy-Item ([System.IO.Path]::Combine($nuget_packages_directory, 'kCura.Apps.Common.Utils.2.1.3', 'lib', 'net462', 'kCura.Apps.Common.Utils.dll')) $lib_directory
