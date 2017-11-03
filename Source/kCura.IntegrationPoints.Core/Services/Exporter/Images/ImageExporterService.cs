@@ -194,17 +194,22 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 		private string UnwrapDocumentIdentifierFieldName(string imageFileName, int rowIndex)
 		{
-			//Expected input format for Original Image - DocumentName_DocumentNumber_INDEX_GUID
-			var imageFileNameSplitted = imageFileName?.Split('_');
-			if (imageFileNameSplitted?.Length > 1)//Orignal
-			{
-				var documentName = imageFileNameSplitted?[0];
-				var documentNamePostFix = imageFileNameSplitted?[1];
-				imageFileName = $"{documentName}_{documentNamePostFix}";
-				imageFileName = BuildDocumentIdentifierFieldName(imageFileName, rowIndex);
-			}
-			return imageFileName;
-		}
+            //Expected input format for Original Image - DocumentName_DocumentNumber_INDEX_GUID OR DocumentNameDocumentNumber_INDEX_GUID OR DocumentName_DocumentNumber OR DocumentNameDocumentNumber
+            var imageFileNameSplitted = imageFileName?.Split('_');
+            if (imageFileNameSplitted?.Length == 4 || imageFileNameSplitted?.Length == 2)   //Orignal; expected DocumentName_DocumentNumber_INDEX_GUID || DocumentName_DocumentNumber
+            {
+                var documentName = imageFileNameSplitted?[0];
+                var documentNamePostFix = imageFileNameSplitted?[1];
+                imageFileName = $"{documentName}_{documentNamePostFix}";
+                imageFileName = BuildDocumentIdentifierFieldName(imageFileName, rowIndex);
+            }
+            else if (imageFileNameSplitted?.Length == 1 || imageFileNameSplitted?.Length == 3)   //Orignal; expected DocumentNameDocumentNumber_INDEX_GUID || DocumentNameDocumentNumber
+            {
+                imageFileName = imageFileNameSplitted?[0];
+                imageFileName = BuildDocumentIdentifierFieldName(imageFileName, rowIndex);
+            }
+            return imageFileName;
+        }
 
 		private string BuildDocumentIdentifierFieldName(string nativeFileName, int rowIndex)
 		{
