@@ -219,7 +219,12 @@ namespace kCura.IntegrationPoints.Data.Tests
 			throw new NotImplementedException();
 		}
 
-		public DbDataReader ExecuteProcedureAsReader(string procedureName, IEnumerable<SqlParameter> parameters)
+	    public IEnumerable<T> ExecuteSQLStatementAsEnumerable<T>(string sqlStatement, Func<SqlDataReader, T> converter, int timeout = -1)
+	    {
+	        throw new NotImplementedException();
+	    }
+
+	    public DbDataReader ExecuteProcedureAsReader(string procedureName, IEnumerable<SqlParameter> parameters)
 		{
 			throw new NotImplementedException();
 		}

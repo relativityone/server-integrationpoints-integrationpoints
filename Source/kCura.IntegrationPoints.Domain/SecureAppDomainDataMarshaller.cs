@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using kCura.Crypto.DataProtection;
+#pragma warning disable 612
 
 
 
@@ -10,11 +11,11 @@ namespace kCura.IntegrationPoints.Domain
 	/// </summary>
 	internal class SecureAppDomainDataMarshaller : IAppDomainDataMarshaller
 	{
-		private readonly DataProtector _dataProtector;
+        private readonly DataProtector _dataProtector;
 
 		internal SecureAppDomainDataMarshaller()
-		{
-			_dataProtector = new DataProtector(Store.MachineStore);
+        { 
+            _dataProtector = new DataProtector(Store.MachineStore);
 		}
 
 		public void MarshalDataToDomain(System.AppDomain targetAppDomain, IDictionary<string, byte[]> dataDictionary)

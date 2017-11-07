@@ -174,7 +174,12 @@ namespace kCura.IntegrationPoints.Data
 			return _context.ExecuteSQLStatementAsReader(sqlStatement, timeout);
 		}
 
-		public DbDataReader ExecuteProcedureAsReader(string procedureName, IEnumerable<SqlParameter> parameters)
+	    public IEnumerable<T> ExecuteSQLStatementAsEnumerable<T>(string sqlStatement, Func<SqlDataReader, T> converter, int timeout = -1)
+	    {
+	        return _context.ExecuteSQLStatementAsEnumerable(sqlStatement, converter, timeout);
+        }
+
+	    public DbDataReader ExecuteProcedureAsReader(string procedureName, IEnumerable<SqlParameter> parameters)
 		{
 			return _context.ExecuteProcedureAsReader(procedureName, parameters);
 		}
