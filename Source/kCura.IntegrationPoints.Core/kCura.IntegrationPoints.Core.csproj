@@ -587,6 +587,7 @@
     <Compile Include="ContextContainer.cs" />
     <Compile Include="Exceptions\PermissionException.cs" />
     <Compile Include="ExtendedRsapiClientFactory.cs" />
+    <Compile Include="Extensions\IAPILogExtensions.cs" />
     <Compile Include="Factories\Implementations\ConfigFactory.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Factories\IArtifactServiceFactory.cs" />
@@ -611,6 +612,7 @@
     <Compile Include="Helpers\IDirectoryTreeCreator.cs" />
     <Compile Include="Helpers\IFolderTreeBuilder.cs" />
     <Compile Include="Helpers\Implementations\FolderTreeBuilder.cs" />
+    <Compile Include="Helpers\Implementations\StackOfDisposables.cs" />
     <Compile Include="Helpers\IMultiObjectSavedSearchCondition.cs" />
     <Compile Include="Helpers\IRelativePathDirectoryTreeCreator.cs" />
     <Compile Include="Helpers\Implementations\ButtonStateBuilder.cs" />
