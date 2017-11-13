@@ -343,6 +343,7 @@
     <Compile Include="User.cs" />
     <Compile Include="TestServiceContextHelper.cs" />
     <Compile Include="View.cs" />
+    <Compile Include="WebControllerTestBase.cs" />
     <Compile Include="Workspace.cs" />
     <Compile Include="WorkspaceService.cs" />
   </ItemGroup>

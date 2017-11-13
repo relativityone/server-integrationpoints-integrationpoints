@@ -14,7 +14,7 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
 	[TestFixture]
-	public class FieldMapControllerTests : TestBase
+	public class FieldMapControllerTests : WebControllerTestBase
 	{
 		private FieldMapController _instance;
 		private IIntegrationPointService _integrationPointReader;
@@ -22,9 +22,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		[SetUp]
 		public override void SetUp()
 		{
+			base.SetUp();
 			_integrationPointReader = Substitute.For<IIntegrationPointService>();
 
-			_instance = new FieldMapController(_integrationPointReader)
+			_instance = new FieldMapController(_integrationPointReader, Helper)
 			{
 				Request = new HttpRequestMessage()
 			};

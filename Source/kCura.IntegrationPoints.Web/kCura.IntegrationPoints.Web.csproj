@@ -679,6 +679,7 @@
     <Compile Include="Installers\ControllerInstaller.cs" />
     <Compile Include="Controllers\IntegrationPointProfilesController.cs" />
     <Compile Include="IRelativityUrlHelper.cs" />
+    <Compile Include="MessageHandlers\CorrelationIdHandler.cs" />
     <Compile Include="Models\EditPoint.cs" />
     <Compile Include="Models\FtpProviderSummaryPageSettingsModel.cs" />
     <Compile Include="Models\IntegrationPointTypeModel.cs" />

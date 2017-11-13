@@ -167,7 +167,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 					movedNext = enumerator.MoveNext();
 					if (movedNext)
 					{
-						var importRow = GenerateImportRow(enumerator.Current, fieldMap, ImportSettings);
+						Dictionary<string, object> importRow = GenerateImportRow(enumerator.Current, fieldMap, ImportSettings);
 						if (importRow != null)
 						{
 							_importService.AddRow(importRow);

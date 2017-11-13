@@ -224,39 +224,5 @@ namespace kCura.IntegrationPoints.Domain
 				}
 			}
 		}
-
-		private void PrepAssemblies(AppDomain domain)
-		{
-			foreach (System.Reflection.Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
-			{
-				string assemblyName = assembly.GetName().Name;
-				if (!IsSystemDependencyName(assemblyName))
-				{
-					File.Copy(assembly.Location, Path.Combine(domain.BaseDirectory, Path.GetFileName(assembly.Location)), true);
-				}
-			}
-		}
-
-		private bool IsSystemDependencyName(string assemblyName)
-		{
-			string potentialSystemAssemblyName = assemblyName.ToLower();
-			if (potentialSystemAssemblyName.Equals("system"))
-			{
-				return true;
-			}
-			if (potentialSystemAssemblyName.Equals("mscorlib"))
-			{
-				return true;
-			}
-			if (potentialSystemAssemblyName.StartsWith("system."))
-			{
-				return true;
-			}
-			if (potentialSystemAssemblyName.StartsWith("microsoft."))
-			{
-				return true;
-			}
-			return false;
-		}
 	}
 }

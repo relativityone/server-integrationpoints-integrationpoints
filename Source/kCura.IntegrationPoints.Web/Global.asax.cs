@@ -11,6 +11,7 @@ using Castle.Windsor;
 using Castle.Windsor.Installer;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Data.Queries;
+using kCura.IntegrationPoints.Web.MessageHandlers;
 using kCura.Relativity.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -34,18 +35,18 @@ namespace kCura.IntegrationPoints.Web
 			CreateWindsorContainer();
 
 			WebApiConfig.Register(GlobalConfiguration.Configuration);
+			WebApiConfig.AddMessageHandlers(GlobalConfiguration.Configuration, ConnectionHelper.Helper());
 			FilterConfig.RegisterWebAPIFilters(GlobalConfiguration.Configuration, _container);
 			FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
 			RouteConfig.RegisterRoutes(RouteTable.Routes);
 			BundleConfig.RegisterBundles(BundleTable.Bundles);
-			
+
 			var formatters = GlobalConfiguration.Configuration.Formatters;
 			var jsonFormatter = formatters.JsonFormatter;
 			var settings = jsonFormatter.SerializerSettings;
 			settings.Formatting = Formatting.Indented;
 			settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
 			GlobalConfiguration.Configuration.EnsureInitialized();
-
 		}
 
 		public void Application_Error(object sender, EventArgs e)

@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Models;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -16,11 +17,13 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 	{
 		private readonly ISynchronizerFactory _appDomainRdoSynchronizerFactory;
 		private readonly ISerializer _serializer;
+		private readonly IAPILog _apiLog;
 
-		public WorkspaceFieldController(ISynchronizerFactory appDomainRdoSynchronizerFactory, ISerializer serializer)
+		public WorkspaceFieldController(ISynchronizerFactory appDomainRdoSynchronizerFactory, ISerializer serializer, ICPHelper helper)
 		{
 			_appDomainRdoSynchronizerFactory = appDomainRdoSynchronizerFactory;
 			_serializer = serializer;
+			_apiLog = helper.GetLoggerFactory().GetLogger().ForContext<WorkspaceFieldController>();
 		}
 
 		[HttpPost]
@@ -30,6 +33,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			ImportSettings importSettings = _serializer.Deserialize<ImportSettings>(settings.Settings);
 			importSettings.FederatedInstanceCredentials = settings.Credentials;
+			_apiLog.LogDebug($"Import Settings has been extracted successfully for workspace field retival process: {_serializer.Serialize(importSettings)}");
 			IDataSynchronizer synchronizer = _appDomainRdoSynchronizerFactory.CreateSynchronizer(Guid.Empty, settings.Settings, settings.Credentials);
 			var fields = synchronizer.GetFields(_serializer.Serialize(importSettings)).ToList();
 			return Request.CreateResponse(HttpStatusCode.OK, fields, Configuration.Formatters.JsonFormatter);

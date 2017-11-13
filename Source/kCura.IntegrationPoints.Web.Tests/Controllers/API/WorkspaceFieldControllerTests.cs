@@ -17,7 +17,7 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
 	[TestFixture]
-	internal class WorkspaceFieldControllerTests : TestBase
+	internal class WorkspaceFieldControllerTests : WebControllerTestBase
 	{
 		#region Fields
 
@@ -50,6 +50,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         [SetUp]
 		public override void SetUp()
 		{
+			base.SetUp();
+
 			_synchronizerFactoryMock = Substitute.For<ISynchronizerFactory>();
 		    _dataSynchronizerMock = Substitute.For<IDataSynchronizer>();
 
@@ -62,7 +64,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		        Credentials = _CREDENTIALS
 		    };
 
-            _subjectUnderTest = new WorkspaceFieldController(_synchronizerFactoryMock, _serializer)
+            _subjectUnderTest = new WorkspaceFieldController(_synchronizerFactoryMock, _serializer, Helper)
 			{
 				Request = new HttpRequestMessage()
 			};

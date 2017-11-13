@@ -17,11 +17,12 @@ using kCura.IntegrationPoints.Web.Controllers.API;
 using kCura.Relativity.Client;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers
 {
 	[TestFixture]
-	public class SourceTypeControllerTests : TestBase
+	public class SourceTypeControllerTests : WebControllerTestBase
 	{
 		private SourceTypeController _instance;
 		private IWindsorContainer _windsorContainer;
@@ -37,11 +38,13 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			_windsorContainer.Register(Component.For<SourceTypeController>());
 			_windsorContainer.Register(Component.For<ICaseServiceContext>().Instance(_iCaseServiceContext).LifestyleTransient());
 			_windsorContainer.Register(Component.For<IRsapiRdoQuery>().Instance(_objTypeQuery).LifestyleTransient());
+			_windsorContainer.Register(Component.For<ICPHelper>().UsingFactoryMethod((k) => Helper).LifestyleTransient());
 		}
 
 		[SetUp]
 		public override void SetUp()
 		{
+			base.SetUp();
 			_windsorContainer = new WindsorContainer();
 			_sourceTypeFactory = NSubstitute.Substitute.For<ISourceTypeFactory>();
 			_iCaseServiceContext = NSubstitute.Substitute.For<ICaseServiceContext>();
