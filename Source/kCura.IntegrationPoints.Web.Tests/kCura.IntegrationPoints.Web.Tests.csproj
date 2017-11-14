@@ -312,6 +312,7 @@
     <Compile Include="Controllers\JobControllerTests.cs" />
     <Compile Include="DataStructures\FolderTreeTests.cs" />
     <Compile Include="Helpers\SummaryPageSelectorTests.cs" />
+    <Compile Include="MessageHandlers\CorrelationIdHandlerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">

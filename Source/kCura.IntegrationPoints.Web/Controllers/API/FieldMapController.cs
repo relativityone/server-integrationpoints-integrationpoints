@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		public FieldMapController(IIntegrationPointService integrationPointReader, ICPHelper helper)
 		{
 			_integrationPointReader = integrationPointReader;
-			_apiLog = helper.GetLoggerFactory().GetLogger();
+			_apiLog = helper.GetLoggerFactory().GetLogger().ForContext<FieldMapController>();
 		}
 
 		[LogApiExceptionFilter(Message = "Unable to retrieve fields mapping information.")]

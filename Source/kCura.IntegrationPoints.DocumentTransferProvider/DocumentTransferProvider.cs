@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 
 		private ArtifactDTO[] GetRelativityFields(int sourceWorkspaceId, int rdoTypeId)
 		{
-			_logger.LogDebug($"Relativity Fields retrieval process started for workspace id: {sourceWorkspaceId}");
+			_logger.LogDebug("Relativity Fields retrieval process started for workspace id: {sourceWorkspaceId}", sourceWorkspaceId);
 			var ignoreFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
 			{
 				Domain.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
@@ -88,7 +88,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 
 			// TODO: Why we need to call Import API and RsAPI to check teh fields are correct???
 			ArtifactDTO[] filteredList = fieldArtifacts.Where(x => mappableArtifactIds.Contains(x.ArtifactId)).ToArray();
-			_logger.LogDebug($"Relativity Fields retrieval process completed for workspace id: {sourceWorkspaceId}, Found fields count: {filteredList.Length}");
+
+			_logger.LogDebug("Relativity Fields retrieval process completed for workspace id: {sourceWorkspaceId}, Found fields: {@filteredList}",
+				sourceWorkspaceId, filteredList);
 			return filteredList;
 		}
 
