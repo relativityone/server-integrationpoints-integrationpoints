@@ -74,7 +74,6 @@ namespace kCura.IntegrationPoints.Core.Installers
 			}).LifestyleTransient());
 
 			container.Register(Component.For<IContextContainerFactory>().ImplementedBy<ContextContainerFactory>().LifestyleTransient());
-			container.Register(Component.For<IErrorService>().ImplementedBy<ErrorService>().Named("ErrorService").LifestyleTransient());
 			container.Register(Component.For<ObjectTypeService>().ImplementedBy<ObjectTypeService>().LifestyleTransient());
 			container.Register(Component.For<ISourcePluginProvider>().ImplementedBy<DefaultSourcePluginProvider>().LifestyleTransient());
 			container.Register(Component.For<IDataProviderFactory>().ImplementedBy<AppDomainFactory>().LifestyleTransient());

@@ -658,6 +658,7 @@
     <Compile Include="RelativitySourceRdo\RelativitySourceRdoHelpersFactory.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceRdoObjectType.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceWorkspaceRdoInitializer.cs" />
+    <Compile Include="Services\ErrorServiceBase.cs" />
     <Compile Include="Services\IDeleteHistoryService.cs" />
     <Compile Include="Services\IJobTracker.cs" />
     <Compile Include="Services\IProcessingSourceLocationService.cs" />
@@ -872,7 +873,7 @@
     <Compile Include="Services\ChoiceService.cs" />
     <Compile Include="Services\Conversion\IObjectBuilder.cs" />
     <Compile Include="Services\Conversion\SynchronizerObjectBuilder.cs" />
-    <Compile Include="Services\ErrorService.cs" />
+    <Compile Include="Services\CustomPageErrorService.cs" />
     <Compile Include="Services\IntegrationPoint\IntegrationPointService.cs" />
     <Compile Include="Services\ObjectTypeService.cs" />
     <Compile Include="Services\Provider\IDataProviderFactory.cs" />

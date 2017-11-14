@@ -11,26 +11,6 @@ namespace kCura.IntegrationPoints.Domain.Tests
         private const string _OUTER_EXCEPTION_MESSAGE = "outer exception message";
         private const string _INNER_EXCEPTION_MESSAGE = "inner exception message";
 
-        [Test]
-        public void GetNonCustomExceptionTest()
-        {
-            // Arrange
-            Exception exception = Utils.GetNonCustomException(CreateException());
-
-            // Act / Assert
-            AssertStringRepresentationOfException(Utils.GetPrintableException(exception));
-        }
-
-        [Test]
-        public void GetPrintableExceptionTest()
-        {
-            // Arrange
-            Exception exception = CreateException();
-
-            // Act / Assert
-            AssertStringRepresentationOfException(Utils.GetPrintableException(exception));
-        }
-
         private void AssertStringRepresentationOfException(string stringRepresentation)
         {
             stringRepresentation.Should().StartWith(_OUTER_EXCEPTION_MESSAGE);

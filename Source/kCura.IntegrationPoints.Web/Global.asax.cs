@@ -10,6 +10,9 @@ using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
 using Castle.Windsor.Installer;
 using kCura.Apps.Common.Data;
+using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Web.MessageHandlers;
 using kCura.Relativity.Client;
@@ -51,8 +54,15 @@ namespace kCura.IntegrationPoints.Web
 
 		public void Application_Error(object sender, EventArgs e)
 		{
-			var error = Server.GetLastError();
-			new CreateErrorRdo(ConnectionHelper.Helper().GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System)).Execute(0,"Application", error);
+			Exception exception = Server.GetLastError();
+			var rsapiClientFactory = new RsapiClientFactory(ConnectionHelper.Helper());
+			var errorRdoCreator = new CreateErrorRdoQuery(rsapiClientFactory);
+			var errorService = new CustomPageErrorService(errorRdoCreator);
+			var errorModel = new ErrorModel(exception)
+			{
+				Location = "Global error handler",
+			};
+			errorService.Log(errorModel);
 		}
 
 		private void CreateWindsorContainer()

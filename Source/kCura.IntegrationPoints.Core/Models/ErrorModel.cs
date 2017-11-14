@@ -1,18 +1,26 @@
 ﻿using System;
+using kCura.IntegrationPoints.Domain.Exceptions;
 
 namespace kCura.IntegrationPoints.Core.Models
 {
 	public class ErrorModel
 	{
-		public int WorkspaceID { get; set; }
-		public string Message { get; set; }
-		public Exception Exception { get; set; }
+		public int WorkspaceId { get; set; }
 
-		public ErrorModel(int workspaceID, string message, Exception exception)
+		public string Message { get; set; }
+
+		public string FullError { get; set; }
+
+		public string Source { get; set; }
+
+		public string Location { get; set; }
+
+		public ErrorModel() { }
+
+		public ErrorModel(Exception exception, string message = null)
 		{
-			this.WorkspaceID = workspaceID;
-			this.Message = message;
-			this.Exception = exception;
+			Message = message ?? exception.Message;
+			FullError = exception.ToString();
 		}
 	}
 }

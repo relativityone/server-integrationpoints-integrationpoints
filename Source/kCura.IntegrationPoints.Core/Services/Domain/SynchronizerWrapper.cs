@@ -21,40 +21,17 @@ namespace kCura.IntegrationPoints.Core.Domain
 
 		public IEnumerable<FieldEntry> GetFields(string options)
 		{
-			try
-			{
 				return _synchronizer.GetFields(options).ToList();
-			}
-			catch (Exception e)
-			{
-				throw Utils.GetNonCustomException(e);
-			}
 		}
 
 		public void SyncData(IEnumerable<IDictionary<FieldEntry, object>> data, IEnumerable<FieldMap> fieldMap, string options)
 		{
-			try
-			{
-#pragma warning disable 612
 				_synchronizer.SyncData(data, fieldMap, options);
-#pragma warning restore 612
-			}
-			catch (Exception e)
-			{
-				throw Utils.GetNonCustomException(e);
-			}
 		}
 
 	    public void SyncData(IDataTransferContext context, IEnumerable<FieldMap> fieldMap, string options)
 	    {
-            try
-            {
                 _synchronizer.SyncData(context, fieldMap, options);
-            }
-            catch (Exception e)
-            {
-                throw Utils.GetNonCustomException(e);
-            }
         }
 	}
 }

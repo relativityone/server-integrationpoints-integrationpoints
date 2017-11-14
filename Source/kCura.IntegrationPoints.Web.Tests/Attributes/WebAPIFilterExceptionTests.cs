@@ -18,7 +18,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Attributes
 	[TestFixture]
 	public class WebAPIFilterExceptionTests : TestBase
 	{
-		private IErrorFactory _errorFactory;
 		private IErrorService _errorService;
 		private ISystemEventLoggingService _systemEventLoggingService;
 		private WebAPIFilterException _webAPIFilterException;
@@ -27,26 +26,23 @@ namespace kCura.IntegrationPoints.Web.Tests.Attributes
 		public override void SetUp()
 		{
 			_errorService = Substitute.For<IErrorService>();
-			_errorFactory = Substitute.For<IErrorFactory>();
 			_systemEventLoggingService = Substitute.For<ISystemEventLoggingService>();
-			_webAPIFilterException = new WebAPIFilterException(_errorFactory, _systemEventLoggingService);
-
-			_errorFactory.GetErrorService().Returns(_errorService);
+			_webAPIFilterException = new WebAPIFilterException(_errorService, _systemEventLoggingService);
 		}
 
 		[Test]
 		public void ItShouldLogErrorWithCorrespondingExceptionAndWorkspaceId()
 		{
-			var expectedWorkspaceId = 479;
-			var expectedErrorMessage = "example_message";
+			int expectedWorkspaceId = 479;
+			string expectedErrorMessage = "example_message";
 			var expectedException = new Exception(expectedErrorMessage);
-			var exceptionLoggerContext = CreateExceptionLoggerContextMock(expectedException, expectedWorkspaceId.ToString());
+			ExceptionLoggerContext exceptionLoggerContext = CreateExceptionLoggerContextMock(expectedException, expectedWorkspaceId.ToString());
 
 			_webAPIFilterException.Log(exceptionLoggerContext);
 
 
-			_errorService.Received(1)
-				.Log(Arg.Is<ErrorModel>(x => (x.Exception == expectedException) && (x.WorkspaceID == expectedWorkspaceId) && (x.Message == expectedErrorMessage)));
+			_errorService.Received(1).Log(Arg.Is<ErrorModel>(x => x.FullError == expectedException.ToString() &&
+																x.WorkspaceId == expectedWorkspaceId && x.Message == expectedErrorMessage));
 		}
 
 		[Test]
@@ -58,17 +54,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Attributes
 
 			_webAPIFilterException.Log(exceptionLoggerContext);
 
-			_errorService.Received(1).Log(Arg.Is<ErrorModel>(x => x.WorkspaceID == 0));
-		}
-
-		[Test]
-		public void ItShouldDisposeErrorService()
-		{
-			var exceptionLoggerContext = CreateExceptionLoggerContextMock(new Exception(), 1);
-
-			_webAPIFilterException.Log(exceptionLoggerContext);
-
-			_errorFactory.Received(1).Release(_errorService);
+			_errorService.Received(1).Log(Arg.Is<ErrorModel>(x => x.WorkspaceId == 0));
 		}
 
 		[Test]
