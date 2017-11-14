@@ -585,6 +585,8 @@
     <Compile Include="BatchStatusCommands\Implementations\TempTableReader.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="ContextContainer.cs" />
+    <Compile Include="Logging\AgentCorrelationContext.cs" />
+    <Compile Include="Logging\BaseCorrelationContext.cs" />
     <Compile Include="Exceptions\PermissionException.cs" />
     <Compile Include="ExtendedRsapiClientFactory.cs" />
     <Compile Include="Extensions\IAPILogExtensions.cs" />
@@ -630,6 +632,8 @@
     <Compile Include="Helpers\LongPathFile.cs" />
     <Compile Include="Helpers\Implementations\MultiObjectSavedSearchCondition.cs" />
     <Compile Include="IServiceManagerProvider.cs" />
+    <Compile Include="Logging\CorrelationContextCreationException.cs" />
+    <Compile Include="Logging\WebCorrelationContext.cs" />
     <Compile Include="Models\IRdoFilter.cs" />
     <Compile Include="Monitoring\HealthCheck.cs" />
     <Compile Include="Queries\IGetSourceProviderRdoByApplicationIdentifier.cs" />

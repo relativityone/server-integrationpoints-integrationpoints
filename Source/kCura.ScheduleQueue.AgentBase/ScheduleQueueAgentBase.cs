@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
 using kCura.Apps.Common.Utils;
+using kCura.IntegrationPoints.Core.Extensions;
+using kCura.IntegrationPoints.Core.Logging;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -184,7 +186,7 @@ namespace kCura.ScheduleQueue.AgentBase
 				task = GetTask(job);
 				if (task != null)
 				{
-					task.Execute(job);
+					StartTask(job, task);
 
 					OnRaiseJobLogEntry(job, JobLogState.Finished);
 					string msg = string.Format(FINISHED_PROCESSING_JOB_MESSAGE_TEMPLATE, job.JobId, job.WorkspaceID, job.TaskType);
@@ -209,6 +211,22 @@ namespace kCura.ScheduleQueue.AgentBase
 				ReleaseTask(task);
 			}
 			return result;
+		}
+
+		private void StartTask(Job job, ITask task)
+		{
+			var context = new AgentCorrelationContext
+			{
+				JobId = job.JobId,
+				WorkspaceId = job.WorkspaceID,
+				UserId = job.SubmittedBy,
+				ActionName = task.GetType().Name
+			};
+
+			using (_logger.LogContextPushProperties(context))
+			{
+				task.Execute(job);
+			}
 		}
 
 		private void FinalizeJob(Job job, TaskResult taskResult)
