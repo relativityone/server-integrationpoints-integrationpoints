@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Data
 		{
 		}
 
-		public virtual IRSAPIClient CreateAdminClient(int workspaceArtifactId)
+		public virtual IRSAPIClient CreateAdminClient(int workspaceArtifactId = -1)
 		{
 			return CreateClientForWorkspace(workspaceArtifactId, ExecutionIdentity.System);
 		}

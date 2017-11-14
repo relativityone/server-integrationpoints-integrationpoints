@@ -585,6 +585,8 @@
     <Compile Include="BatchStatusCommands\Implementations\TempTableReader.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="ContextContainer.cs" />
+    <Compile Include="Logging\AgentCorrelationContext.cs" />
+    <Compile Include="Logging\BaseCorrelationContext.cs" />
     <Compile Include="Exceptions\PermissionException.cs" />
     <Compile Include="ExtendedRsapiClientFactory.cs" />
     <Compile Include="Extensions\IAPILogExtensions.cs" />
@@ -630,6 +632,8 @@
     <Compile Include="Helpers\LongPathFile.cs" />
     <Compile Include="Helpers\Implementations\MultiObjectSavedSearchCondition.cs" />
     <Compile Include="IServiceManagerProvider.cs" />
+    <Compile Include="Logging\CorrelationContextCreationException.cs" />
+    <Compile Include="Logging\WebCorrelationContext.cs" />
     <Compile Include="Models\IRdoFilter.cs" />
     <Compile Include="Monitoring\HealthCheck.cs" />
     <Compile Include="Queries\IGetSourceProviderRdoByApplicationIdentifier.cs" />
@@ -654,6 +658,7 @@
     <Compile Include="RelativitySourceRdo\RelativitySourceRdoHelpersFactory.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceRdoObjectType.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceWorkspaceRdoInitializer.cs" />
+    <Compile Include="Services\ErrorServiceBase.cs" />
     <Compile Include="Services\IDeleteHistoryService.cs" />
     <Compile Include="Services\IJobTracker.cs" />
     <Compile Include="Services\IProcessingSourceLocationService.cs" />
@@ -868,7 +873,7 @@
     <Compile Include="Services\ChoiceService.cs" />
     <Compile Include="Services\Conversion\IObjectBuilder.cs" />
     <Compile Include="Services\Conversion\SynchronizerObjectBuilder.cs" />
-    <Compile Include="Services\ErrorService.cs" />
+    <Compile Include="Services\CustomPageErrorService.cs" />
     <Compile Include="Services\IntegrationPoint\IntegrationPointService.cs" />
     <Compile Include="Services\ObjectTypeService.cs" />
     <Compile Include="Services\Provider\IDataProviderFactory.cs" />

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Web.Http.Filters;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using Relativity.Logging;
 
 namespace kCura.IntegrationPoints.Web.Attributes
@@ -14,6 +16,8 @@ namespace kCura.IntegrationPoints.Web.Attributes
 	[AttributeUsage(AttributeTargets.All)]
 	public class LogApiExceptionFilterAttribute : ExceptionFilterAttribute
 	{
+		private const string _CONTACT_ADMIN_MESSAGE_ENDING = " Please contact system administrator";
+
 		#region Fields
 
 		private readonly ILog _apiLog = global::Relativity.Logging.Factory.LogFactory.GetLogger(
@@ -37,14 +41,32 @@ namespace kCura.IntegrationPoints.Web.Attributes
 
 		public override void OnException(HttpActionExecutedContext actionExecutedContext)
 		{
-			string msg = string.Format("{0}{1}", 
-				string.IsNullOrEmpty(Message) ? "Unexpected error occurred" : Message,
-				IsUserMessage ? " Please contact system administrator" : string.Empty);
 
+			var msgBuilder = new StringBuilder(GetMostSpecificMessage(actionExecutedContext.Exception));
+			if (IsUserMessage)
+			{
+				msgBuilder.Append(_CONTACT_ADMIN_MESSAGE_ENDING);
+			}
+
+			string msg = msgBuilder.ToString();
 			actionExecutedContext.Response = actionExecutedContext.Request.CreateResponse(HttpStatusCode.InternalServerError, msg);
 			actionExecutedContext.Response.Content = new StringContent(msg);
 			
 			_apiLog.LogError(actionExecutedContext.Exception, msg);
+		}
+
+		private string GetMostSpecificMessage(Exception exception)
+		{
+			var integrationPointsException = exception as IntegrationPointsException;
+			if (!string.IsNullOrWhiteSpace(integrationPointsException?.UserMessage))
+			{
+				return integrationPointsException.UserMessage;
+			}
+			if (!string.IsNullOrWhiteSpace(Message))
+			{
+				return Message;
+			}
+			return "UnexpectedErrorOccurred";
 		}
 
 		#endregion Methods

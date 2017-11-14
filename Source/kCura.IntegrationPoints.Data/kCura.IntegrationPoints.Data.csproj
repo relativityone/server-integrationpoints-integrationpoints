@@ -359,7 +359,7 @@
     <Compile Include="IBaseRdo.cs" />
     <Compile Include="IGenericLibrary.cs" />
     <Compile Include="Installers\QueryInstallers.cs" />
-    <Compile Include="Queries\CreateErrorRdo.cs" />
+    <Compile Include="Queries\CreateErrorRdoQuery.cs" />
     <Compile Include="RsapiClientLibrary.cs" />
   </ItemGroup>
   <ItemGroup>

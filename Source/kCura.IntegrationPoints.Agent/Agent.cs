@@ -4,7 +4,6 @@ using System.Runtime.InteropServices;
 using kCura.Agent.CustomAttributes;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Agent.Tasks;
-using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.AgentBase;

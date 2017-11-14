@@ -143,7 +143,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 			{
 				ex = e;
 				isSuccess = false;
-				throw Utils.GetNonCustomException(e);
+				throw;
 			}
 			finally
 			{

@@ -640,7 +640,6 @@
     <Compile Include="Controllers\TooltipController.cs" />
     <Compile Include="DataStructures\AvailableEncodingInfo.cs" />
     <Compile Include="DataStructures\ExportSourceOptions.cs" />
-    <Compile Include="ErrorFactory.cs" />
     <Compile Include="Extensions\LogErrorExtensions.cs" />
     <Compile Include="Controllers\API\ChoiceController.cs" />
     <Compile Include="Controllers\API\ExportFieldsController.cs" />
@@ -675,7 +674,6 @@
     </Compile>
     <Compile Include="GridModelFactory.cs" />
     <Compile Include="Helpers\SummaryPageSelector.cs" />
-    <Compile Include="IErrorFactory.cs" />
     <Compile Include="Installers\ControllerInstaller.cs" />
     <Compile Include="Controllers\IntegrationPointProfilesController.cs" />
     <Compile Include="IRelativityUrlHelper.cs" />

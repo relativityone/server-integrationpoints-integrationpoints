@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -73,7 +74,6 @@ namespace kCura.IntegrationPoints.Domain
 		public virtual void LoadClientLibraries(AppDomain domain, IPluginProvider provider, Guid applicationGuid)
 		{
 			List<System.Reflection.Assembly> domainAssemblies = domain.GetAssemblies().ToList();
-
 			IDictionary<ApplicationBinary, Stream> assemblies = provider.GetPluginLibraries(applicationGuid);
 			List<string> files = new List<string>();
 			foreach (ApplicationBinary appBinary in assemblies.Keys)
