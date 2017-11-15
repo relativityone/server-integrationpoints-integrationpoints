@@ -528,7 +528,7 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="oi\unmanaged\cmmap000.bin" />
+    <Content Include="oi\unmanaged\cmmap000.bin" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
@@ -537,21 +537,21 @@
     <Analyzer Include="..\packages\CSharpGuidelineAnalyzer.1.0.3.0\analyzers\dotnet\cs\CSharpGuidelineAnalyzer.dll" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="oi\unmanaged\oilink.exe" />
-    <None Include="oi\unmanaged\oilink.jar" />
-    <None Include="oi\unmanaged\sccca-R1.dll" />
-    <None Include="oi\unmanaged\sccch-R1.dll" />
-    <None Include="oi\unmanaged\sccda-R1.dll" />
-    <None Include="oi\unmanaged\sccex-R1.dll" />
-    <None Include="oi\unmanaged\sccfa-R1.dll" />
-    <None Include="oi\unmanaged\sccfi-R1.dll" />
-    <None Include="oi\unmanaged\sccfmt-R1.dll" />
-    <None Include="oi\unmanaged\sccfnt-R1.dll" />
-    <None Include="oi\unmanaged\sccfut-R1.dll" />
-    <None Include="oi\unmanaged\sccind-R1.dll" />
-    <None Include="oi\unmanaged\scclo-R1.dll" />
-    <None Include="oi\unmanaged\sccut-R1.dll" />
-    <None Include="oi\unmanaged\wvcore-R1.dll" />
+    <Content Include="oi\unmanaged\oilink.exe" />
+    <Content Include="oi\unmanaged\oilink.jar" />
+    <Content Include="oi\unmanaged\sccca-R1.dll" />
+    <Content Include="oi\unmanaged\sccch-R1.dll" />
+    <Content Include="oi\unmanaged\sccda-R1.dll" />
+    <Content Include="oi\unmanaged\sccex-R1.dll" />
+    <Content Include="oi\unmanaged\sccfa-R1.dll" />
+    <Content Include="oi\unmanaged\sccfi-R1.dll" />
+    <Content Include="oi\unmanaged\sccfmt-R1.dll" />
+    <Content Include="oi\unmanaged\sccfnt-R1.dll" />
+    <Content Include="oi\unmanaged\sccfut-R1.dll" />
+    <Content Include="oi\unmanaged\sccind-R1.dll" />
+    <Content Include="oi\unmanaged\scclo-R1.dll" />
+    <Content Include="oi\unmanaged\sccut-R1.dll" />
+    <Content Include="oi\unmanaged\wvcore-R1.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
