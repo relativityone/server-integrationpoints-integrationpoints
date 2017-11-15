@@ -218,6 +218,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			var context = new AgentCorrelationContext
 			{
 				JobId = job.JobId,
+				RootJobId = job.RootJobId,
 				WorkspaceId = job.WorkspaceID,
 				UserId = job.SubmittedBy,
 				ActionName = task.GetType().Name
