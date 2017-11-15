@@ -377,7 +377,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			try
 			{
 			    var loginManager = new LoginManager();
-			    return new ServiceContext(loginManager.GetLoginIdentity(9), "<auditElement><RequestOrigination><IP /><Page /></RequestOrigination></auditElement>", workspaceId);
+				Identity identity = loginManager.GetLoginIdentity(9);
+				return new ServiceContext(identity, "<auditElement><RequestOrigination><IP /><Page /></RequestOrigination></auditElement>", workspaceId);
             }
 			catch (Exception exception)
 			{
