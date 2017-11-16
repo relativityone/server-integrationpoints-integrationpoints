@@ -347,9 +347,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 		public class TestAgentBase : ScheduleQueueAgentBase
 		{
-			public TestAgentBase(Guid agentGuid, IDBContext dbContext = null, IAgentService agentService = null,
+			public TestAgentBase(Guid agentGuid, IAgentService agentService = null,
 				IJobService jobService = null, IScheduleRuleFactory scheduleRuleFactory = null)
-				: base(agentGuid, dbContext, agentService, jobService, scheduleRuleFactory)
+				: base(agentGuid, agentService, jobService, scheduleRuleFactory)
 			{
 			}
 

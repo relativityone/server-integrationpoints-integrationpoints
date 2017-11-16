@@ -28,7 +28,7 @@ namespace kCura.ScheduleQueue.AgentBase
 		private Guid agentGuid = Guid.Empty;
 		private IJobService jobService;
 		private bool errorRaised;
-		private IAPILog _logger;
+		protected IAPILog Logger { get; set; }
 
 		#region Constants
 
@@ -40,7 +40,6 @@ namespace kCura.ScheduleQueue.AgentBase
 		#endregion
 
 		public ScheduleQueueAgentBase(Guid agentGuid,
-			IDBContext dbContext = null,
 			IAgentService agentService = null,
 			IJobService jobService = null,
 			IScheduleRuleFactory scheduleRuleFactory = null)
@@ -49,7 +48,6 @@ namespace kCura.ScheduleQueue.AgentBase
 			this.AgentService = agentService;
 			this.jobService = jobService;
 			this.ScheduleRuleFactory = scheduleRuleFactory;
-			this.DBContext = dbContext;
 			if (this.ScheduleRuleFactory == null)
 			{
 				this.ScheduleRuleFactory = new DefaultScheduleRuleFactory();
@@ -59,15 +57,10 @@ namespace kCura.ScheduleQueue.AgentBase
 		protected virtual void Initialize()
 		{
 			//Logger cannot be initialized in constructor because Helper from Agent.Base is initialized later on
-			_logger = Helper.GetLoggerFactory().GetLogger().ForContext<ScheduleQueueAgentBase>();
+			Logger = Helper.GetLoggerFactory().GetLogger().ForContext<ScheduleQueueAgentBase>();
 
 			OnRaiseAgentLogEntry(20, LogCategory.Debug, "Initialize Agent core services");
 			
-			if (this.DBContext == null)
-			{
-				this.DBContext = base.Helper.GetDBContext(-1);
-			}
-
 			if (this.AgentService == null)
 			{
 				this.AgentService = new AgentService(base.Helper, agentGuid);
@@ -79,7 +72,6 @@ namespace kCura.ScheduleQueue.AgentBase
 			}
 		}
 
-		public IDBContext DBContext { get; private set; }
 		public IAgentService AgentService { get; private set; }
 		public IScheduleRuleFactory ScheduleRuleFactory { get; private set; }
 
@@ -141,6 +133,11 @@ namespace kCura.ScheduleQueue.AgentBase
 			AgentService.InstallQueueTable();
 		}
 
+		protected virtual IEnumerable<int> GetListOfResourceGroupIDs() // this method was added for unit testing purpose
+		{
+			return GetResourceGroupIDs();
+		}
+
 		public void ProcessQueueJobs()
 		{
 			if (!Enabled)
@@ -150,11 +147,11 @@ namespace kCura.ScheduleQueue.AgentBase
 			}
 			OnRaiseAgentLogEntry(20, LogCategory.Info, "Checking for active jobs in Schedule Agent Queue table");
 
-			Job nextJob = jobService.GetNextQueueJob(base.GetResourceGroupIDs(), base.AgentID);
+			Job nextJob = jobService.GetNextQueueJob(GetListOfResourceGroupIDs(), base.AgentID);
 
 			if (nextJob == null)
 			{
-				_logger.LogDebug("No active job found in Schedule Agent Queue table");
+				Logger.LogDebug("No active job found in Schedule Agent Queue table");
 			}
 			while (nextJob != null)
 			{
@@ -224,7 +221,7 @@ namespace kCura.ScheduleQueue.AgentBase
 				ActionName = task.GetType().Name
 			};
 
-			using (_logger.LogContextPushProperties(context))
+			using (Logger.LogContextPushProperties(context))
 			{
 				task.Execute(job);
 			}
@@ -302,57 +299,57 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		private void LogOnInitialize(string message)
 		{
-			_logger.LogInformation(message);
+			Logger.LogInformation(message);
 		}
 
 		private void LogOnInitializeManagerConfigSettingsFactory()
 		{
-			_logger.LogInformation("Attempting to initialize Config Settings factory in {TypeName}",
+			Logger.LogInformation("Attempting to initialize Config Settings factory in {TypeName}",
 				nameof(ScheduleQueueAgentBase));
 		}
 
 		private void LogOnCleanupJobs()
 		{
-			_logger.LogInformation("Attempting to cleanup jobs in {TypeName}", nameof(ScheduleQueueAgentBase));
+			Logger.LogInformation("Attempting to cleanup jobs in {TypeName}", nameof(ScheduleQueueAgentBase));
 		}
 
 		private void LogOnExecuteCompleteWithErrors()
 		{
-			_logger.LogInformation("Execution of scheduled jobs completed with errors in {TypeName}",
+			Logger.LogInformation("Execution of scheduled jobs completed with errors in {TypeName}",
 				nameof(ScheduleQueueAgentBase));
 		}
 
 		private void LogOnExecuteComplete()
 		{
-			_logger.LogInformation("Execution of scheduled jobs completed in {TypeName}", nameof(ScheduleQueueAgentBase));
+			Logger.LogInformation("Execution of scheduled jobs completed in {TypeName}", nameof(ScheduleQueueAgentBase));
 		}
 
 		private void LogOnExecuteError(Exception ex)
 		{
-			_logger.LogError(ex, "An error occured during executing scheduled jobs in {TypeName}", nameof(ScheduleQueueAgentBase));
+			Logger.LogError(ex, "An error occured during executing scheduled jobs in {TypeName}", nameof(ScheduleQueueAgentBase));
 		}
 
 		private void LogOnStartJobProcessing(string agentMessage, long nextJobJobId, int nextJobWorkspaceId,
 			string nextJobTaskType)
 		{
-			_logger.LogInformation(agentMessage, nextJobJobId, nextJobWorkspaceId, nextJobTaskType);
+			Logger.LogInformation(agentMessage, nextJobJobId, nextJobWorkspaceId, nextJobTaskType);
 		}
 
 		private void LogOnStartJobExecution(Job job)
 		{
-			_logger.LogInformation("Attempting to execute Job with ID: {JobID} in {TypeName}", job.JobId,
+			Logger.LogInformation("Attempting to execute Job with ID: {JobID} in {TypeName}", job.JobId,
 				nameof(ScheduleQueueAgentBase));
 		}
 
 		private void LogOnFinishJobExecution(Job job)
 		{
-			_logger.LogInformation("Finished execution of Job with ID: {JobID} in {TypeName}", job.JobId,
+			Logger.LogInformation("Finished execution of Job with ID: {JobID} in {TypeName}", job.JobId,
 				nameof(ScheduleQueueAgentBase));
 		}
 
 		private void LogOnJobExecutionError(Job job, Exception exception)
 		{
-			_logger.LogError(exception, "An error occured during execution of Job with ID: {JobID} in {TypeName}", job.JobId,
+			Logger.LogError(exception, "An error occured during execution of Job with ID: {JobID} in {TypeName}", job.JobId,
 				nameof(ScheduleQueueAgentBase));
 		}
 
@@ -362,12 +359,12 @@ namespace kCura.ScheduleQueue.AgentBase
 							$"{Environment.NewLine}Job result: {result.JobState}," +
 							$"{Environment.NewLine} Details: {result.Details}";
 				
-			_logger.LogInformation(message);
+			Logger.LogInformation(message);
 		}
 
 		private void LogOnFinalizeJobError(Job job, Exception exception)
 		{
-			_logger.LogError(exception, "An error occured during finalization of Job with ID: {JobID} in {TypeName}", job.JobId,
+			Logger.LogError(exception, "An error occured during finalization of Job with ID: {JobID} in {TypeName}", job.JobId,
 				nameof(ScheduleQueueAgentBase));
 		}
 
