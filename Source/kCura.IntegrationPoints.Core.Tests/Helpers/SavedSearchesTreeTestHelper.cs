@@ -178,5 +178,127 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 
             return root;
         }
+
+        public static JsTreeItemDTO GetSampleTreeWithSearchesBeforeSanitize()
+        {
+            var root = new JsTreeItemWithParentIdDTO
+            {
+                Id = "1035243",
+                Text = "<p>Kierkegaard</p>Platon",
+                ParentId = "1003663"
+            };
+
+            var search1 = new JsTreeItemWithParentIdDTO
+            {
+                Id = "1038812",
+                Text = "<img src=x onerror=alert(Saved Search 1) />Nitsche",
+                ParentId = root.Id
+            };
+
+            var folder1 = new JsTreeItemWithParentIdDTO
+            {
+                Id = "1038840",
+                Text = "<img src=x onerror=alert(Saved Folder 1) />Spinoza",
+                ParentId = root.Id
+            };
+            folder1.Children.Add(new JsTreeItemWithParentIdDTO
+            {
+                Id = "1038842",
+                Text = "Search Folder 3",
+                ParentId = folder1.Id
+            });
+            folder1.Children[0].Children.Add(new JsTreeItemWithParentIdDTO
+            {
+                Id = "1038843",
+                Text = "<i>Saved </i>Search 2",
+                ParentId = folder1.Children[0].Id
+            });
+
+            var folder2 = new JsTreeItemWithParentIdDTO
+            {
+                Id = "1038841",
+                Text = "Search <king> Folder</king>2",
+                ParentId = root.Id
+            };
+            folder2.Children.Add(new JsTreeItemWithParentIdDTO
+            {
+                Id = "1038860",
+                Text = "<em>Saved Search 3</em>",
+                ParentId = folder2.Id
+            });
+
+            root.Children.AddRange(new List<JsTreeItemWithParentIdDTO> { search1, folder1, folder2 });
+
+            return root;
+        }
+
+        public static JsTreeItemDTO GetSampleTreeWithSearchesAfterSanitize()
+        {
+            var root = new JsTreeItemWithParentIdDTO
+            {
+                Id = "1035243",
+                Text = "Platon",
+                ParentId = "1003663"
+            };
+
+            var search1 = new JsTreeItemWithParentIdDTO
+            {
+                Id = "1038812",
+                Text = "Nitsche",
+                ParentId = root.Id
+            };
+
+            var folder1 = new JsTreeItemWithParentIdDTO
+            {
+                Id = "1038840",
+                Text = "Spinoza",
+                ParentId = root.Id
+            };
+            folder1.Children.Add(new JsTreeItemWithParentIdDTO
+            {
+                Id = "1038842",
+                Text = "Search Folder 3",
+                ParentId = folder1.Id
+            });
+            folder1.Children[0].Children.Add(new JsTreeItemWithParentIdDTO
+            {
+                Id = "1038843",
+                Text = "Search 2",
+                ParentId = folder1.Children[0].Id
+            });
+
+            var folder2 = new JsTreeItemWithParentIdDTO
+            {
+                Id = "1038841",
+                Text = "Search 2",
+                ParentId = root.Id
+            };
+            folder2.Children.Add(new JsTreeItemWithParentIdDTO
+            {
+                Id = "1038860",
+                Text = "Default Search Name",
+                ParentId = folder2.Id
+            });
+
+            root.Children.AddRange(new List<JsTreeItemWithParentIdDTO> { search1, folder1, folder2 });
+
+            return root;
+        }
+
+        public static IEnumerable<string> GetNodesNames(JsTreeItemDTO tree)
+        {
+            var queue = new List<JsTreeItemDTO>() { tree };
+            while (queue.Count > 0)
+            {
+                var currentNode = queue.ElementAt(0);
+                foreach (var node in currentNode.Children)
+                {
+                    queue.Add(node);
+                }
+                yield return currentNode.Text;
+                queue.RemoveAt(0);
+            }
+        }
+
     }
 }
