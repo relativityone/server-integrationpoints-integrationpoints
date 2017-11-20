@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
         private string GetSanitizedText(string text)
         {
             SanitizeResult sanitizedResult = _htmlSanitizerManager.Sanitize(text);
-            return sanitizedResult.HasErrors && string.IsNullOrWhiteSpace(sanitizedResult.CleanHTML)
+            return sanitizedResult.HasErrors || string.IsNullOrWhiteSpace(sanitizedResult.CleanHTML)
                 ? SanitizedSavedSearchDefaultName
                 : sanitizedResult.CleanHTML;
         }
