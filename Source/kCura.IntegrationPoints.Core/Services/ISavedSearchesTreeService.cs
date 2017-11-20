@@ -7,6 +7,5 @@ namespace kCura.IntegrationPoints.Core.Services
     public interface ISavedSearchesTreeService
     {
         JsTreeItemDTO GetSavedSearchesTree(int workspaceArtifactId);
-        JsTreeItemDTO SanitizeTree(JsTreeItemDTO tree);
     }
 }

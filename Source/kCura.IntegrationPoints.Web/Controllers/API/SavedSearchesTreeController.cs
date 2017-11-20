@@ -21,7 +21,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		public HttpResponseMessage Get(int workspaceArtifactId)
         {	
 			var tree = _savedSearchesService.GetSavedSearchesTree(workspaceArtifactId);
-            _savedSearchesService.SanitizeTree(tree);
 			return Request.CreateResponse(HttpStatusCode.OK, tree);
 		}
 	}
