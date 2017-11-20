@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[HttpGet]
 		[LogApiExceptionFilter(Message = "Unable to retrieve saved searches list.")]
 		public HttpResponseMessage Get(int workspaceArtifactId)
-		{
+        {	
 			var tree = _savedSearchesService.GetSavedSearchesTree(workspaceArtifactId);
 			return Request.CreateResponse(HttpStatusCode.OK, tree);
 		}

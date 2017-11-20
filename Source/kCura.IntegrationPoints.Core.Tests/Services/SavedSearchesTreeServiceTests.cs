@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Core.Service;
 using Relativity.Services;
 using Relativity.Services.Search;
 
@@ -92,5 +93,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		        Arg.Is<IEnumerable<SearchContainerItem>>(list => list.Count() == SavedSearchesTreeTestHelper.GetSampleContainerCollection().SearchContainerItems.Count),
 		        Arg.Is<IEnumerable<SavedSearchContainerItem>>(list => list.Count() == publicSearches.Count()));
         }
+
 	}
 }

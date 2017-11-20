@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity.API;
+using Relativity.Core.Service;
 using Relativity.Services;
 using Relativity.Services.Field;
 using Relativity.Services.Search;
@@ -33,8 +34,10 @@ namespace kCura.IntegrationPoints.Core.Services
 		    List<Result<SearchContainer>> folders = _searchContainerManager.QueryAsync(workspaceArtifactId, new Query( )).ConfigureAwait(false).GetAwaiter().GetResult().Results;
             List<int> searchContainersArtifactIds = folders.Select(x => x.Artifact.ArtifactID).ToList();
 
-			SearchContainerItemCollection searchContainterCollection = _searchContainerManager.GetSearchContainerTreeAsync(workspaceArtifactId, searchContainersArtifactIds).ConfigureAwait(false).GetAwaiter().GetResult();
+			SearchContainerItemCollection searchContainterCollection = 
+                _searchContainerManager.GetSearchContainerTreeAsync(workspaceArtifactId, searchContainersArtifactIds).ConfigureAwait(false).GetAwaiter().GetResult();
 			return _treeCreator.Create(searchContainterCollection.SearchContainerItems, searchContainterCollection.SavedSearchContainerItems.Where(i=> i.Secured == false));
 		}
+
 	}
 }
