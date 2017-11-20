@@ -94,34 +94,5 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		        Arg.Is<IEnumerable<SavedSearchContainerItem>>(list => list.Count() == publicSearches.Count()));
         }
 
-	    //[Test]
-	    //public void ItShouldSanitizeNodesTextInTree()
-	    //{
-	    //    // arrange
-	    //    IHelper helper = Substitute.For<IHelper>();
-	    //    ISavedSearchesTreeCreator creator = Substitute.For<ISavedSearchesTreeCreator>();
-	    //    IRepositoryFactory repoFactoryMock = Substitute.For<IRepositoryFactory>();
-	    //    IHtmlSanitizerManager htmlSanitizer = Substitute.For<IHtmlSanitizerManager>();
-
-	    //    JsTreeItemDTO badTree = SavedSearchesTreeTestHelper.GetSampleTreeWithSearchesBeforeSanitize();
-	    //    JsTreeItemDTO goodTree = SavedSearchesTreeTestHelper.GetSampleTreeWithSearchesAfterSanitize();
-	    //    var mockedTextPairs = SavedSearchesTreeTestHelper.GetNodesNames(badTree)
-	    //        .Zip(SavedSearchesTreeTestHelper.GetNodesNames(goodTree), (s1, s2) => new {S1 = s1, S2 = s2});
-	    //    foreach (var pair in mockedTextPairs)
-	    //    {
-	    //        htmlSanitizer.Sanitize(pair.S1).Returns(new SanitizeResult() { CleanHTML = pair.S2, HasErrors = false });
-	    //    }
-
-	    //    var counter = 0;
-     //       htmlSanitizer.When(x => x.Sanitize(Arg.Any<string>())).Do(_ => counter++);
-	    //    var subjectUnderTest = new SavedSearchesTreeService(helper, creator, repoFactoryMock, htmlSanitizer);
-
-	    //    // act 
-	    //    JsTreeItemDTO sanitizedTree = subjectUnderTest.SanitizeTree(badTree);
-
-	    //    // assert 
-	    //    Assert.AreEqual(mockedTextPairs.Count(), counter, "Sanitize method was called different number of times than expected!");
-	    //}
-
 	}
 }

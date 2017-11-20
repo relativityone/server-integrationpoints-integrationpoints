@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Extensions;
+using kCura.IntegrationPoints.Domain.Models;
 using Relativity.Core.Service;
 using Relativity.Services.Search;
 
@@ -10,6 +10,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 {
     public class SavedSearchesTreeCreator : ISavedSearchesTreeCreator
     {
+        private const string SanitizedSavedSearchDefaultName = "Sanitized Search Name";
         private readonly IHtmlSanitizerManager _htmlSanitizerManager;
 
         public SavedSearchesTreeCreator(IHtmlSanitizerManager htmlSanitizerManager)
@@ -31,7 +32,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
         {
             SanitizeResult sanitizedResult = _htmlSanitizerManager.Sanitize(text);
             return sanitizedResult.HasErrors && string.IsNullOrWhiteSpace(sanitizedResult.CleanHTML)
-                ? "Sanitized Search Name"
+                ? SanitizedSavedSearchDefaultName
                 : sanitizedResult.CleanHTML;
         }
 
