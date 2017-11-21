@@ -85,6 +85,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
 				}
 				catch
 				{
+                    LogFetchItemsUpTheTreeError(currentSearchRoot, filter);
 				}
 			} while ((items == null || items.Count() == 0) && currentSearchRoot != null && isNewPath);
 
@@ -156,7 +157,15 @@ namespace kCura.IntegrationPoints.LDAPProvider
 				filter);
 		}
 
-		private void LogAuthenticationError(Exception ex)
+	    private void LogFetchItemsUpTheTreeError(DirectoryEntry searchRoot, string filter)
+	    {
+	        _logger.LogInformation(
+	            "Attempting to fetch items in LDAP Service. Search path: ({searchRoot}), search filter: ({filter})", searchRoot.Name,
+	            filter);
+	    }
+        
+
+        private void LogAuthenticationError(Exception ex)
 		{
 			_logger.LogError(ex, "Error occured during LDAP Service authentication");
 		}

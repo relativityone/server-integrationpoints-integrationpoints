@@ -85,16 +85,20 @@ namespace kCura.ScheduleQueue.Core.BatchProcess
 			foreach (var id in batchIDs)
 			{
 				//TODO: later we will need to generate error entry for every item we bypass
-				if ((id != null) && id is string && (id.ToString() != string.Empty))
-				{
-					list.Add(id);
-					count += 1;
-					if (list.Count == BatchSize)
-					{
-						CreateBatchJob(job, list);
-						list = new List<T>();
-					}
-				}
+			    if ((id != null) && id is string && (id.ToString() != string.Empty))
+			    {
+			        list.Add(id);
+			        count += 1;
+			        if (list.Count == BatchSize)
+			        {
+			            CreateBatchJob(job, list);
+			            list = new List<T>();
+			        }
+			    }
+			    else
+			    {
+			        LogMissingIdError(count);
+			    }
 			}
 			if (list.Any())
 			{
@@ -141,6 +145,11 @@ namespace kCura.ScheduleQueue.Core.BatchProcess
 	    {
 	        _logger.LogInformation("Batch Manager Base: Raising pre execute event for job: {JobId}", job.JobId);
 	    }
+
+	    private void LogMissingIdError(int count)
+	    {
+	        _logger.LogError($"One of the items has invalid id and will not be processed. It will not be included in batch. Current count in the batch is {count}. Stepping over to next item.");
+        }
 
         #endregion
     }
