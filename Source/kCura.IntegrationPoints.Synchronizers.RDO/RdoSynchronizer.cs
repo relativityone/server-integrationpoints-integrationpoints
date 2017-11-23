@@ -131,7 +131,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		public event RowError OnDocumentError;
 
-	    public void RaiseDocumentErrorEvent(string documentIdentifier, string errorMessage)
+	    protected void RaiseDocumentErrorEvent(string documentIdentifier, string errorMessage)
 	    {
 	        OnDocumentError?.Invoke(documentIdentifier, errorMessage);
 	    }

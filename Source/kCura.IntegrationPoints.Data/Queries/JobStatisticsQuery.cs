@@ -10,15 +10,15 @@ namespace kCura.IntegrationPoints.Data.Queries
     {
         public int Completed { get; set; }
         public int Errored { get; set; }
-        public int ImportErrors { get; set; }
-        public int Imported { get { return Completed - ImportErrors; } }
+        public int ImportApiErrors { get; set; }
+        public int Imported { get { return Completed - ImportApiErrors; } }
 
         public static JobStatistics Populate(DataRow row)
         {
             var s = new JobStatistics();
             s.Completed = row.Field<int>("TotalRecords");
             s.Errored = row.Field<int>("ErrorRecords");
-            s.ImportErrors = row.Field<int>("ImportErrors");
+            s.ImportApiErrors = row.Field<int>("ImportApiErrors");
             return s;
         }
     }
@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.Data.Queries
             sql += string.Format(Resources.Resource.UpdateJobStatistics, scratchTableRepository.GetResourceDBPrepend(), tableName);
             SqlParameter p1 = new SqlParameter("@total", stats.Completed);
             SqlParameter p2 = new SqlParameter("@errored", stats.Errored);
-            SqlParameter p3 = new SqlParameter("@importErrors", stats.ImportErrors);
+            SqlParameter p3 = new SqlParameter("@importApiErrors", stats.ImportApiErrors);
             SqlParameter p4 = new SqlParameter("@jobID", jobId);
 
             var dt = _context.ExecuteSqlStatementAsDataTable(sql, new List<SqlParameter> { p1, p2, p3, p4});
