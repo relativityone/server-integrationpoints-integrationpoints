@@ -82,7 +82,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 			FieldEntry fullNameField =
 				allRDOFields.Where(x => x.ArtifactGuids.Contains(new Guid(CustodianFieldGuids.FullName)))
-					.Select(x => new FieldEntry {DisplayName = x.Name, FieldIdentifier = x.ArtifactID.ToString(), IsIdentifier = false })
+					.Select(x => new FieldEntry {DisplayName = x.Name, FieldIdentifier = x.ArtifactID.ToString(), IsIdentifier = false})
 					.FirstOrDefault();
 
 			Dictionary<string, int> importFieldMap = base.GetSyncDataImportFieldMap(fieldMap, settings);
@@ -145,8 +145,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			ProcessManagerReference(importRow);
 			if (HandleFullNamePopulation && !importRow.ContainsKey(LDAPMapFullNameFieldName))
 			{
-				string firstName = (string)importRow[FirstNameSourceFieldId];
-				string lastName = (string)importRow[LastNameSourceFieldId];
+				string firstName = (string) importRow[FirstNameSourceFieldId];
+				string lastName = (string) importRow[LastNameSourceFieldId];
 				string fullName = GenerateFullName(lastName, firstName);
 				if (!string.IsNullOrWhiteSpace(fullName))
 				{
