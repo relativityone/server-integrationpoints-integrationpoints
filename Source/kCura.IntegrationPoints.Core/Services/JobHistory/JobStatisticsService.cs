@@ -109,7 +109,6 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
 		private void OnJobComplete(DateTime start, DateTime end, int total, int errorCount)
 		{
-			//skip errorCount because we do suppress some errors so RowError is a more reliable mechanism 
 			string tableName = JobTracker.GenerateJobTrackerTempTableName(_job, _helper.GetBatchInstance(_job).ToString());
 			JobStatistics stats = _query.UpdateAndRetrieveStats(tableName, _job.JobId, new JobStatistics {Completed = total, Errored = _rowErrors, ImportErrors = errorCount}, _job.WorkspaceID);
 			_rowErrors = 0;

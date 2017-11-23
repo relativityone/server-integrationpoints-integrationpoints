@@ -82,7 +82,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 			FieldEntry fullNameField =
 				allRDOFields.Where(x => x.ArtifactGuids.Contains(new Guid(CustodianFieldGuids.FullName)))
-					.Select(x => new FieldEntry { DisplayName = x.Name, FieldIdentifier = x.ArtifactID.ToString(), IsIdentifier = false })
+					.Select(x => new FieldEntry {DisplayName = x.Name, FieldIdentifier = x.ArtifactID.ToString(), IsIdentifier = false })
 					.FirstOrDefault();
 
 			Dictionary<string, int> importFieldMap = base.GetSyncDataImportFieldMap(fieldMap, settings);
@@ -138,8 +138,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			return importFieldMap;
 		}
 
-		protected override Dictionary<string, object> GenerateImportRow(IDictionary<FieldEntry, object> row,
-			IEnumerable<FieldMap> fieldMap, ImportSettings settings)
+		protected override Dictionary<string, object> GenerateImportRow(IDictionary<FieldEntry, object> row, IEnumerable<FieldMap> fieldMap, ImportSettings settings)
 		{
 			LogGeneratingImportRow();
 			var importRow = base.GenerateImportRow(row, fieldMap, settings);
@@ -157,8 +156,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				{
 					//if no Full Name, do not insert record
 					importRow = null;
-					GenerateImportRowError(row, fieldMap,
-						"Custodian is missing firstname/lastname/fullname. Record will be skipped.");
+					GenerateImportRowError(row, fieldMap, "Custodian is missing firstname/lastname/fullname. Record will be skipped.");
 				}
 			}
 			return importRow;
@@ -177,7 +175,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 			_logger.LogError($"There was a problem with record: {rowId}.{errorMessage}");
 		}
-
 
 		protected override void FinalizeSyncData(IEnumerable<IDictionary<FieldEntry, object>> data, IEnumerable<FieldMap> fieldMap, ImportSettings settings)
 		{
@@ -241,7 +238,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 
 			string custodianUniqueIdentifier = (string)importRow[UniqueIDSourceFieldId];
-			string managerReferenceLink = (string)importRow[ManagerSourceFieldId];
+			string managerReferenceLink = (string) importRow[ManagerSourceFieldId];
 			LogProcessingManagerReference(managerReferenceLink, custodianUniqueIdentifier);
 			if (!string.IsNullOrWhiteSpace(managerReferenceLink))
 			{
