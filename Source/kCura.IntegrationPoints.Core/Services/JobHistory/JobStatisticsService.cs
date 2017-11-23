@@ -109,9 +109,8 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
 		private void OnJobComplete(DateTime start, DateTime end, int total, int errorCount)
 		{
-			//skip errorCount because we do suppress some errors so RowError is a more reliable mechanism 
 			string tableName = JobTracker.GenerateJobTrackerTempTableName(_job, _helper.GetBatchInstance(_job).ToString());
-			JobStatistics stats = _query.UpdateAndRetrieveStats(tableName, _job.JobId, new JobStatistics {Completed = total, Errored = _rowErrors}, _job.WorkspaceID);
+			JobStatistics stats = _query.UpdateAndRetrieveStats(tableName, _job.JobId, new JobStatistics { Completed = total, Errored = _rowErrors, ImportApiErrors = errorCount }, _job.WorkspaceID);
 			_rowErrors = 0;
 
 			int totalSize = CalculatePushedFilesSizeForJobHistory();
@@ -121,9 +120,8 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			historyRdo.ItemsWithErrors = stats.Errored;
 			historyRdo.FilesSize = FormatFileSize(totalSize);
 			_service.UpdateRdo(historyRdo);
-
 		}
-		
+
 		private void StatusUpdate(int importedCount, int errorCount)
 		{
 			Update(_helper.GetBatchInstance(_job), importedCount, errorCount);

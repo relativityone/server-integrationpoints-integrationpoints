@@ -156,10 +156,24 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				{
 					//if no Full Name, do not insert record
 					importRow = null;
+					GenerateImportRowError(row, fieldMap, "Custodian is missing firstname and lastname. Record will be skipped.");
 				}
 			}
-			
 			return importRow;
+		}
+
+		private void GenerateImportRowError(IDictionary<FieldEntry, object> row, IEnumerable<FieldMap> fieldMap, string errorMessage)
+		{
+			string rowId = string.Empty;
+
+			FieldMap idMap = fieldMap?.FirstOrDefault(map => map.FieldMapType == FieldMapTypeEnum.Identifier);
+			if (idMap != null)
+			{
+				rowId = row[idMap.SourceField] as string ?? string.Empty;
+				RaiseDocumentErrorEvent(rowId, errorMessage);
+			}
+
+			_logger.LogError("There was a problem with record: {rowId}.{errorMessage}",rowId, errorMessage);
 		}
 
 		protected override void FinalizeSyncData(IEnumerable<IDictionary<FieldEntry, object>> data, IEnumerable<FieldMap> fieldMap, ImportSettings settings)

@@ -131,6 +131,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		public event RowError OnDocumentError;
 
+	    protected void RaiseDocumentErrorEvent(string documentIdentifier, string errorMessage)
+	    {
+	        OnDocumentError?.Invoke(documentIdentifier, errorMessage);
+	    }
+
 		public virtual IEnumerable<FieldEntry> GetFields(string options)
 		{
 			LogRetrievingFields();

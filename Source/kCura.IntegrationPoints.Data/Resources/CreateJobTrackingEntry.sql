@@ -4,6 +4,7 @@ BEGIN
 	([JobID] bigint,
 	[TotalRecords] int,
 	[ErrorRecords] int,
+	[ImportApiErrors] int,
 	[Completed] bit,
 	CONSTRAINT [PK_{1}] PRIMARY KEY CLUSTERED 
 	(
