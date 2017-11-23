@@ -156,7 +156,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				{
 					//if no Full Name, do not insert record
 					importRow = null;
-				}
+                    RaiseDocumentErrorEvent("adas", "dasd");
+                    //base.OnDocumentError.Invoke("abcd", "Wystapil powazny problem");
+                    _logger.LogError("Custodian record in Data Source is missing firstname/lastname/fullname and will be skipped during import.");
+                }
 			}
 			
 			return importRow;
