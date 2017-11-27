@@ -17,22 +17,28 @@ namespace kCura.IntegrationPoints.Domain.Exceptions
 		/// </summary>
 		public string DetailedMessage { get; set; }
 
+		public bool ShouldAddToErrorsTab { get; set; }
+
+		public string ExceptionSource { get; set; }
+
 		public IntegrationPointsException()
 		{
+			ExceptionSource = IntegrationPointsExceptionSource.GENERIC;
 		}
 
-		public IntegrationPointsException(string message): base (message)
+		public IntegrationPointsException(string message) : base(message)
 		{
 		}
 
-		public IntegrationPointsException(string message, Exception innerException): base (message, innerException)
+		public IntegrationPointsException(string message, Exception innerException) : base(message, innerException)
 		{
 		}
 
-		protected IntegrationPointsException(SerializationInfo info, StreamingContext context): base (info, context)
+		protected IntegrationPointsException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 			UserMessage = info.GetString(nameof(UserMessage));
 			DetailedMessage = info.GetString(nameof(DetailedMessage));
+			ShouldAddToErrorsTab = info.GetBoolean(nameof(ShouldAddToErrorsTab));
 		}
 
 		public override string ToString()
@@ -59,6 +65,7 @@ namespace kCura.IntegrationPoints.Domain.Exceptions
 		{
 			info.AddValue(nameof(DetailedMessage), DetailedMessage);
 			info.AddValue(nameof(UserMessage), UserMessage);
+			info.AddValue(nameof(ShouldAddToErrorsTab), ShouldAddToErrorsTab);
 			base.GetObjectData(info, context);
 		}
 	}
