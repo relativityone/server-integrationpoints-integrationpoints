@@ -48,7 +48,6 @@ using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Data.SecretStore;
-using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.ScheduleQueue.Core.Data;
 using Relativity.Telemetry.APM;

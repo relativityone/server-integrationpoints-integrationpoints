@@ -673,10 +673,15 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="GridModelFactory.cs" />
+    <Compile Include="Helpers\CacheHolder.cs" />
     <Compile Include="Helpers\SummaryPageSelector.cs" />
     <Compile Include="Installers\ControllerInstaller.cs" />
     <Compile Include="Controllers\IntegrationPointProfilesController.cs" />
     <Compile Include="IRelativityUrlHelper.cs" />
+    <Compile Include="Helpers\ICacheHolder.cs" />
+    <Compile Include="Logging\WebActionContext.cs" />
+    <Compile Include="Logging\WebActionContextProvider.cs" />
+    <Compile Include="Logging\WebCorrelationContext.cs" />
     <Compile Include="MessageHandlers\CorrelationIdHandler.cs" />
     <Compile Include="Models\EditPoint.cs" />
     <Compile Include="Models\FtpProviderSummaryPageSettingsModel.cs" />

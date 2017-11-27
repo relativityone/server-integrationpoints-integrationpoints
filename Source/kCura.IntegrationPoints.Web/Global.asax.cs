@@ -10,10 +10,12 @@ using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
 using Castle.Windsor.Installer;
 using kCura.Apps.Common.Data;
+using kCura.IntegrationPoints.Core.Logging.Web;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Queries;
+using kCura.IntegrationPoints.Web.Logging;
 using kCura.IntegrationPoints.Web.MessageHandlers;
 using kCura.Relativity.Client;
 using Newtonsoft.Json;
@@ -38,7 +40,8 @@ namespace kCura.IntegrationPoints.Web
 			CreateWindsorContainer();
 
 			WebApiConfig.Register(GlobalConfiguration.Configuration);
-			WebApiConfig.AddMessageHandlers(GlobalConfiguration.Configuration, ConnectionHelper.Helper());
+			WebApiConfig.AddMessageHandlers(GlobalConfiguration.Configuration, ConnectionHelper.Helper(), 
+				_container.Kernel.Resolve<IWebCorrelationContextProvider>());
 			FilterConfig.RegisterWebAPIFilters(GlobalConfiguration.Configuration, _container);
 			FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
 			RouteConfig.RegisterRoutes(RouteTable.Routes);

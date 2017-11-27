@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Logging;
+using kCura.IntegrationPoints.Web.Logging;
 using kCura.IntegrationPoints.Web.MessageHandlers;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
@@ -17,6 +18,7 @@ namespace kCura.IntegrationPoints.Web.Tests.MessageHandlers
 	{
 		private CorrelationIdHandlerMock _subjectUnderTests;
 
+		private IWebCorrelationContextProvider _webCorrelationContextProviderMock;
 		/// <summary>
 		/// We need to setup this dummy Handler to as CorrelationIdHandler will run the next in the chain message handler SyncAsync method
 		/// </summary>
@@ -30,7 +32,8 @@ namespace kCura.IntegrationPoints.Web.Tests.MessageHandlers
 
 		public class CorrelationIdHandlerMock : CorrelationIdHandler
 		{
-			public CorrelationIdHandlerMock(ICPHelper helper) : base(helper)
+			public CorrelationIdHandlerMock(ICPHelper helper, IWebCorrelationContextProvider webCorrelationContextProvide) 
+				: base(helper, webCorrelationContextProvide)
 			{
 			}
 
@@ -44,12 +47,13 @@ namespace kCura.IntegrationPoints.Web.Tests.MessageHandlers
 		{
 			base.SetUp();
 
+			_webCorrelationContextProviderMock = Substitute.For<IWebCorrelationContextProvider>();
 			var loggerFactory = Substitute.For<ILogFactory>();
 			loggerFactory.GetLogger().Returns(Logger);
 			Logger.ForContext<CorrelationIdHandler>().Returns(Logger);
 			Helper.GetLoggerFactory().Returns(loggerFactory);
 
-			_subjectUnderTests = new CorrelationIdHandlerMock(Helper)
+			_subjectUnderTests = new CorrelationIdHandlerMock(Helper, _webCorrelationContextProviderMock)
 			{
 				InnerHandler = new MockHandler()
 			};

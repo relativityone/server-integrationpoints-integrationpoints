@@ -15,6 +15,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Helpers;
+using kCura.IntegrationPoints.Web.Logging;
 using kCura.Relativity.Client;
 using Microsoft.AspNet.SignalR.Hubs;
 using Relativity.API;
@@ -59,6 +60,8 @@ namespace kCura.IntegrationPoints.Web.Installers
 			container.Register(Component.For<SummaryPageSelector>().ImplementedBy<SummaryPageSelector>().LifestyleSingleton());
 			container.Register(Component.For<IAuthTokenGenerator>().ImplementedBy<ClaimsTokenGenerator>().LifestyleTransient());
 			container.Register(Component.For<IRsapiClientFactory>().ImplementedBy<RsapiClientFactory>().LifestyleTransient());
+			container.Register(Component.For<ICacheHolder>().ImplementedBy<CacheHolder>().LifestyleSingleton());
+			container.Register(Component.For<IWebCorrelationContextProvider>().ImplementedBy<WebActionContextProvider>().LifestyleTransient());
 		}
 	}
 }

@@ -1,6 +1,7 @@
 ﻿using System;
+using kCura.IntegrationPoints.Core.Logging;
 
-namespace kCura.IntegrationPoints.Core.Logging
+namespace kCura.IntegrationPoints.Web.Logging
 {
 	public class WebCorrelationContext : BaseCorrelationContext
 	{
