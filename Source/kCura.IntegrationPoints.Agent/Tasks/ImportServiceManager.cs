@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.IO;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
-using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.ImportProvider.Parser;
@@ -107,6 +104,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				LogExecutingTaskError(job, ex);
 				Result.Status = TaskStatusEnum.Fail;
 				JobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, ex);
+				if (ex is IntegrationPointsException) // we want to rethrow, so it can be added to error tab if necessary
+				{
+					throw;
+				}
 			}
 			finally
 			{

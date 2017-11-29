@@ -81,6 +81,14 @@ namespace kCura.IntegrationPoints.Web.Logging
 			if (parsedAction.IsNullOrEmpty())
 			{
 				WebActionContext cachedAction = _cacheHolder.GetObject<WebActionContext>(key);
+				if (cachedAction == null)
+				{
+					cachedAction = new WebActionContext
+					{
+						ActionName = JOB_EDIT_ACTION,
+						ActionGuid = Guid.NewGuid()
+					};
+				}
 				return cachedAction;
 			}
 			var newActionContext = new WebActionContext

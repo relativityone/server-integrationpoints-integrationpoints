@@ -19,6 +19,7 @@ namespace kCura.IntegrationPoints.Data.Installers
 		{
 			container.Register(Component.For<CreateCustodianManagerResourceTable>().ImplementedBy<CreateCustodianManagerResourceTable>().LifestyleTransient());
 			container.Register(Component.For<CreateErrorRdoQuery>().ImplementedBy<CreateErrorRdoQuery>().LifestyleTransient());
+			container.Register(Component.For<IAPILog>().UsingFactoryMethod(x => x.Resolve<IHelper>().GetLoggerFactory().GetLogger()));
 			container.Register(Component.For<GetApplicationGuid>().ImplementedBy<GetApplicationGuid>().LifestyleTransient());
 			container.Register(Component.For<GetJobCustodianManagerLinks>().ImplementedBy<GetJobCustodianManagerLinks>().LifestyleTransient());
 			container.Register(Component.For<GetJobsCount>().ImplementedBy<GetJobsCount>().LifestyleTransient());

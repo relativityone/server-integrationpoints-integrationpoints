@@ -1,15 +1,11 @@
 ﻿using System.Collections;
 using System.Data;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Domain.Readers;
-using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.Relativity.Client;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
 using Newtonsoft.Json;
 using Relativity.API;
-using Relativity.Core.Helpers;
-using Relativity.Logging;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 {
@@ -80,9 +76,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 			ImportJob.Execute();
 
 			_logger.LogInformation("Import API process finished");
-
+			
 			if (! string.IsNullOrEmpty(_importSettings.ErrorFilePath))
-			{
+			{ // todo error tab
 				_logger.LogError("Import API process return errors");
 
 				ImportJob.ExportErrorFile(_importSettings.ErrorFilePath);

@@ -3,12 +3,13 @@ using System.ComponentModel;
 using System.Runtime.InteropServices;
 using kCura.Agent.CustomAttributes;
 using kCura.Apps.Common.Data;
+using kCura.IntegrationPoints.Agent.Logging;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Data;
-using kCura.Relativity.Client;
+using kCura.IntegrationPoints.Data.Logging;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
-using kCura.ScheduleQueue.Core.Logging;
 using kCura.ScheduleQueue.Core.TimeMachine;
 using Relativity.API;
 using ITaskFactory = kCura.IntegrationPoints.Agent.Tasks.ITaskFactory;
@@ -20,14 +21,10 @@ namespace kCura.IntegrationPoints.Agent
 	[Description("An agent that manages Integration Point jobs.")]
 	public class Agent : ScheduleQueueAgentBase, IDisposable
 	{
-		private const string _AGENT_NAME = "Integration Points Agent";
-
-		private IRSAPIClient _eddsRsapiClient;
-		private ITaskFactory _taskFactory;
 		private CreateErrorRdo _errorService;
-	    private IAPILog _logger;
-		private IRSAPIClient EddsRsapiClient => _eddsRsapiClient ??
-												(_eddsRsapiClient = new RsapiClientFactory(Helper).CreateAdminClient(-1));
+		private IAPILog _logger;
+		private ITaskFactory _taskFactory;
+		private const string _AGENT_NAME = "Integration Points Agent";
 
 		private ITaskFactory TaskFactory => _taskFactory ?? (_taskFactory = new TaskFactory(Helper));
 
@@ -44,6 +41,8 @@ namespace kCura.IntegrationPoints.Agent
 		}
 
 		public override string Name => _AGENT_NAME;
+
+		private CreateErrorRdo ErrorService => _errorService ?? (_errorService = new CreateErrorRdo(new RsapiClientFactory(Helper), Helper, new SystemEventLoggingService()));
 
 		protected override void Initialize()
 		{
@@ -64,11 +63,15 @@ namespace kCura.IntegrationPoints.Agent
 
 		private void RaiseJobException(Job job, Exception exception)
 		{
-			if (_errorService == null)
+			var integrationPointsException = exception as IntegrationPointsException;
+			if (integrationPointsException != null)
 			{
-				_errorService = new CreateErrorRdo(EddsRsapiClient, Helper);
+				ErrorService.Execute(job, integrationPointsException);
 			}
-			_errorService.Execute(job, exception, _AGENT_NAME);
+			else
+			{
+				ErrorService.Execute(job, exception, _AGENT_NAME);
+			}
 		}
 
 		private void RaiseJobLog(Job job, JobLogState state, string details = null)

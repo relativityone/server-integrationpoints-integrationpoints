@@ -115,6 +115,10 @@
       <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
       <Name>kCura.IntegrationPoints.Contracts</Name>
     </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
+      <Project>{5D5B52B4-8769-431A-9743-B96F15FED5FD}</Project>
+      <Name>kCura.IntegrationPoints.Domain</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Security\kCura.IntegrationPoints.Security.csproj">
       <Project>{e7d6a21d-acc6-4140-9e18-c2e6bca85449}</Project>
       <Name>kCura.IntegrationPoints.Security</Name>

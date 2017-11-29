@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Security.Authentication;
-using System.Security.Claims;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO.Properties;
@@ -82,18 +82,27 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 			catch (Exception ex)
 			{
-				if (ex.Message.Equals("Login failed."))
+				if (string.Equals(ex.Message, "Login failed."))
 				{
-					LogLoginFailed(ex, settings.WebServiceURL);
-					_systemEventLoggingService.WriteErrorEvent("Relativity Integration Points", "GetImportAPI", ex);
-					throw new AuthenticationException(ErrorMessages.Login_Failed, ex);
+					ThrowAuthenticationException(settings, ex);
 				}
-				//LoggedException.PreserveStack(ex);
 				LogCreatingImportApiError(ex, settings.WebServiceURL);
 				throw;
 			}
 			LogImportApiCreated();
 			return importApi;
+		}
+
+		private void ThrowAuthenticationException(ImportSettings settings, Exception ex)
+		{
+			LogLoginFailed(ex, settings.WebServiceURL);
+			_systemEventLoggingService.WriteErrorEvent("Relativity Integration Points", "GetImportAPI", ex);
+			var authException = new AuthenticationException(ErrorMessages.Login_Failed, ex);
+			throw new IntegrationPointsException(ErrorMessages.Login_Failed, authException)
+			{
+				ShouldAddToErrorsTab = true,
+				ExceptionSource = IntegrationPointsExceptionSource.IAPI
+			};
 		}
 
 		#region Logging

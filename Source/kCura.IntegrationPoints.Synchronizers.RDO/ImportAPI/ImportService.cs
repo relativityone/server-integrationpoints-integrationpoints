@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Reflection;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.Relativity.DataReaderClient;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
@@ -261,11 +262,15 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			{
 				ImportJob_OnError(jobReport.FatalException);
 				CompleteBatch(jobReport.StartTime, jobReport.EndTime, 0, 0);
+
+				throw new IntegrationPointsException("Fatal Exception in Import API", jobReport.FatalException)
+				{
+					ShouldAddToErrorsTab = true,
+					ExceptionSource = IntegrationPointsExceptionSource.IAPI
+				};
 			}
-			else
-			{
-				CompleteBatch(jobReport.StartTime, jobReport.EndTime, jobReport.TotalRows, jobReport.ErrorRowCount);
-			}
+
+			CompleteBatch(jobReport.StartTime, jobReport.EndTime, jobReport.TotalRows, jobReport.ErrorRowCount);
 		}
 
 		private void ImportJob_OnError(Exception fatalException)

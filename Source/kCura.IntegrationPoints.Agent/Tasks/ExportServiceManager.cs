@@ -20,6 +20,7 @@ using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Domain.Synchronizer;
@@ -124,7 +125,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 							Identifier, Serializer.Deserialize<ImportSettings>(userImportApiSettings));
 
 						IDataTransferContext dataTransferContext = exporter.GetDataTransferContext(exporterTransferConfiguration);
-						
+
 						lock (JobStopManager.SyncRoot)
 						{
 							JobHistoryDto = JobHistoryService.GetRdo(Identifier);
@@ -134,13 +135,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 						if (exporter.TotalRecordsFound > 0)
 						{
 
-							using (APMClient.APMClient.TimedOperation(Constants.IntegrationPoints.Telemetry.BUCKET_EXPORT_PUSH_KICK_OFF_IMPORT))
-								using (Client.MetricsClient.LogDuration(
-									Constants.IntegrationPoints.Telemetry.BUCKET_EXPORT_PUSH_KICK_OFF_IMPORT,
-									Guid.Empty))
-								{
-									synchronizer.SyncData(dataTransferContext, MappedFields, userImportApiSettings);
-								}
+							using (APMClient.APMClient.TimedOperation(Constants.IntegrationPoints.Telemetry
+								.BUCKET_EXPORT_PUSH_KICK_OFF_IMPORT))
+							using (Client.MetricsClient.LogDuration(
+								Constants.IntegrationPoints.Telemetry.BUCKET_EXPORT_PUSH_KICK_OFF_IMPORT,
+								Guid.Empty))
+							{
+								synchronizer.SyncData(dataTransferContext, MappedFields, userImportApiSettings);
+							}
 						}
 						LogPushingDocumetsSuccessfulEnd(job);
 					}
@@ -149,12 +151,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				{
 					using (APMClient.APMClient.TimedOperation(Constants.IntegrationPoints.Telemetry
 						.BUCKET_EXPORT_PUSH_TARGET_DOCUMENTS_TAGGING_IMPORT))
-						using (Client.MetricsClient.LogDuration(
-							Constants.IntegrationPoints.Telemetry.BUCKET_EXPORT_PUSH_TARGET_DOCUMENTS_TAGGING_IMPORT,
-							Guid.Empty))
-						{
-							FinalizeExportServiceObservers(job);
-						}
+					using (Client.MetricsClient.LogDuration(
+						Constants.IntegrationPoints.Telemetry.BUCKET_EXPORT_PUSH_TARGET_DOCUMENTS_TAGGING_IMPORT,
+						Guid.Empty))
+					{
+						FinalizeExportServiceObservers(job);
+					}
 				}
 			}
 			catch (OperationCanceledException e)
@@ -167,6 +169,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				LogExecutingTaskError(job, ex);
 				Result.Status = TaskStatusEnum.Fail;
 				JobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, ex);
+				if (ex is IntegrationPointsException) // we want to rethrow, so it can be added to error tab if necessary
+				{
+					throw;
+				}
 			}
 			finally
 			{
@@ -177,7 +183,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				LogExecuteEnd(job);
 			}
 		}
-		
+
 		protected override void SetupSubscriptions(IDataSynchronizer synchronizer, Job job)
 		{
 			IScratchTableRepository[] scratchTableToMonitorItemLevelError =
@@ -215,7 +221,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			//Switch to Append/Overlay for error retries where original setting was Append Only
 			if ((UpdateStatusType.JobType == JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors) &&
-			    (importSettings.OverwriteMode == OverwriteModeEnum.Append))
+				(importSettings.OverwriteMode == OverwriteModeEnum.Append))
 			{
 				importSettings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
 			}

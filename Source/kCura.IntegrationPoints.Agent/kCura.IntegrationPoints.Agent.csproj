@@ -335,6 +335,7 @@
     <Compile Include="Installer\AgentInstaller.cs" />
     <Compile Include="IRelativityConfigurationFactory.cs" />
     <Compile Include="JobLogInformation.cs" />
+    <Compile Include="Logging\CreateErrorRdo.cs" />
     <Compile Include="Tasks\ExportManager.cs" />
     <Compile Include="Tasks\ExportWorker.cs" />
     <Compile Include="RelativityConfigurationFactory.cs" />
@@ -348,6 +349,7 @@
     <Compile Include="Tasks\SyncManager.cs" />
     <Compile Include="Tasks\SyncWorker.cs" />
     <Compile Include="Tasks\TaskComponentSelector.cs" />
+    <Compile Include="Tasks\TaskFactory.cs" />
     <Compile Include="Validation\IntegrationPointExecutionEmptyValidator.cs" />
     <Compile Include="Validation\IntegrationPointPermissionEmptyValidator.cs" />
     <Compile Include="Validation\IntegrationPointProviderEmptyValidator.cs" />

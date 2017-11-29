@@ -18,6 +18,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Injection;
@@ -164,6 +165,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				LogExecutingTaskError(job, ex);
 				JobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, ex);
+				if (ex is IntegrationPointsException) // we want to rethrow, so it can be added to error tab if necessary
+				{
+					throw;
+				}
 			}
 			finally
 			{

@@ -1,5 +1,4 @@
 ﻿using System;
-using kCura.IntegrationPoints.Domain;
 
 namespace kCura.IntegrationPoints.Data.Logging
 {
@@ -10,7 +9,7 @@ namespace kCura.IntegrationPoints.Data.Logging
 			if (!System.Diagnostics.EventLog.SourceExists(source))
 				System.Diagnostics.EventLog.CreateEventSource(source, logName);
 
-			System.Diagnostics.EventLog.WriteEntry(source, ex.ToString(),
+			System.Diagnostics.EventLog.WriteEntry(source, ex.Message + Environment.NewLine + ex.StackTrace,
 				System.Diagnostics.EventLogEntryType.Error);
 		}
 	}

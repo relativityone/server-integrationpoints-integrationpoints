@@ -10,17 +10,14 @@ using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
 using Castle.Windsor.Installer;
 using kCura.Apps.Common.Data;
-using kCura.IntegrationPoints.Core.Logging.Web;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Web.Logging;
-using kCura.IntegrationPoints.Web.MessageHandlers;
-using kCura.Relativity.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Relativity.API;
 using Relativity.CustomPages;
 
 namespace kCura.IntegrationPoints.Web
@@ -59,7 +56,7 @@ namespace kCura.IntegrationPoints.Web
 		{
 			Exception exception = Server.GetLastError();
 			var rsapiClientFactory = new RsapiClientFactory(ConnectionHelper.Helper());
-			var errorRdoCreator = new CreateErrorRdoQuery(rsapiClientFactory);
+			var errorRdoCreator = new CreateErrorRdoQuery(rsapiClientFactory, ConnectionHelper.Helper().GetLoggerFactory().GetLogger(), new SystemEventLoggingService());
 			var errorService = new CustomPageErrorService(errorRdoCreator);
 			var errorModel = new ErrorModel(exception)
 			{

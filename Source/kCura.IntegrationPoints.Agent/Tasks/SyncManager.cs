@@ -17,13 +17,13 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Injection;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.BatchProcess;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
-using Relativity.Services.DataContracts.DTOs.MetricsCollection;
 using Relativity.Telemetry.MetricsCollection;
 using APMClient = Relativity.Telemetry.APM.Client;
 using Constants = kCura.IntegrationPoints.Core.Constants;
@@ -145,6 +145,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				LogRetrieveingUnbatchedIDsError(job, ex);
 				_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, ex);
+				if (ex is IntegrationPointsException) // we want to rethrow, so it can be added to error tab if necessary
+				{
+					throw;
+				}
 			}
 			finally
 			{
@@ -224,6 +228,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				LogJobPreExecuteError(job, ex);
 				_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, ex);
+				if (ex is IntegrationPointsException) // we want to rethrow, so it can be added to error tab if necessary
+				{
+					throw;
+				}
 			}
 			finally
 			{
@@ -285,6 +293,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				LogPostExecuteAggregatedError(job, ex);
 				_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, new Exception("Failed to update job statistics.", ex));
+				if (ex is IntegrationPointsException) // we want to rethrow, so it can be added to error tab if necessary
+				{
+					throw;
+				}
 			}
 			finally
 			{

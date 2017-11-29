@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
-using kCura.Apps.Common.Utils;
 using kCura.IntegrationPoints.Core.Extensions;
 using kCura.IntegrationPoints.Core.Logging;
 using kCura.ScheduleQueue.Core;
@@ -25,9 +24,9 @@ namespace kCura.ScheduleQueue.AgentBase
 		public event JobLoggingEventHandler RaiseJobLogEntry;
 		public event ExceptionEventHandler RaiseException;
 
-		private Guid agentGuid = Guid.Empty;
+		private readonly Guid agentGuid;
 		private IJobService jobService;
-		private bool errorRaised;
+
 		protected IAPILog Logger { get; set; }
 
 		#region Constants
@@ -47,11 +46,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			this.agentGuid = agentGuid;
 			this.AgentService = agentService;
 			this.jobService = jobService;
-			this.ScheduleRuleFactory = scheduleRuleFactory;
-			if (this.ScheduleRuleFactory == null)
-			{
-				this.ScheduleRuleFactory = new DefaultScheduleRuleFactory();
-			}
+			this.ScheduleRuleFactory = scheduleRuleFactory ?? new DefaultScheduleRuleFactory();
 		}
 
 		protected virtual void Initialize()
@@ -60,7 +55,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			Logger = Helper.GetLoggerFactory().GetLogger().ForContext<ScheduleQueueAgentBase>();
 
 			OnRaiseAgentLogEntry(20, LogCategory.Debug, "Initialize Agent core services");
-			
+
 			if (this.AgentService == null)
 			{
 				this.AgentService = new AgentService(base.Helper, agentGuid);
@@ -68,25 +63,17 @@ namespace kCura.ScheduleQueue.AgentBase
 
 			if (this.jobService == null)
 			{
-			    this.jobService = new JobService(AgentService, new JobServiceDataProvider(AgentService, Helper), Helper);
+				this.jobService = new JobService(AgentService, new JobServiceDataProvider(AgentService, Helper), Helper);
 			}
 		}
 
 		public IAgentService AgentService { get; private set; }
 		public IScheduleRuleFactory ScheduleRuleFactory { get; private set; }
 
-	    public abstract ITask GetTask(Job job);
-
-		public TimeProvider TimeProvider
-		{
-			get { return TimeProvider.Current; }
-			set { TimeProvider.Current = value; }
-		}
+		public abstract ITask GetTask(Job job);
 
 		public sealed override void Execute()
 		{
-			errorRaised = false;
-
 			OnRaiseAgentLogEntry(10, LogCategory.Info, "Started.");
 
 			try
@@ -103,16 +90,8 @@ namespace kCura.ScheduleQueue.AgentBase
 				LogOnExecuteError(ex);
 			}
 
-			if (errorRaised)
-			{
-				OnRaiseAgentLogEntry(10, LogCategory.Info, "Completed with errors.");
-				LogOnExecuteCompleteWithErrors();
-			}
-			else
-			{
-				OnRaiseAgentLogEntry(10, LogCategory.Info, "Completed.");
-				LogOnExecuteComplete();
-			}
+			OnRaiseAgentLogEntry(10, LogCategory.Info, "Completed.");
+			LogOnExecuteComplete();
 		}
 
 		protected virtual void ReleaseTask(ITask task)
@@ -155,16 +134,9 @@ namespace kCura.ScheduleQueue.AgentBase
 			}
 			while (nextJob != null)
 			{
-				string agentMessage = string.Format(START_PROCESSING_JOB_MESSAGE_TEMPLATE, nextJob.JobId, nextJob.WorkspaceID,
-					nextJob.TaskType);
-				OnRaiseAgentLogEntry(1, LogCategory.Info, agentMessage);
-				LogOnStartJobProcessing(agentMessage, nextJob.JobId, nextJob.WorkspaceID, nextJob.TaskType);
+				ProcessJob(nextJob);
 
-				TaskResult taskResult = ExecuteTask(nextJob);
-
-				FinalizeJob(nextJob, taskResult);
-
-				nextJob = jobService.GetNextQueueJob(base.GetResourceGroupIDs(), base.AgentID);
+				nextJob = jobService.GetNextQueueJob(GetListOfResourceGroupIDs(), base.AgentID);
 			}
 			if (base.ToBeRemoved)
 			{
@@ -172,33 +144,43 @@ namespace kCura.ScheduleQueue.AgentBase
 			}
 		}
 
+		private void ProcessJob(Job nextJob)
+		{
+			string agentMessage = string.Format(START_PROCESSING_JOB_MESSAGE_TEMPLATE, nextJob.JobId, nextJob.WorkspaceID,
+				nextJob.TaskType);
+			OnRaiseAgentLogEntry(1, LogCategory.Info, agentMessage);
+			LogOnStartJobProcessing(agentMessage, nextJob.JobId, nextJob.WorkspaceID, nextJob.TaskType);
+
+			TaskResult taskResult = ExecuteTask(nextJob);
+
+			FinalizeJob(nextJob, taskResult);
+		}
+
 		private TaskResult ExecuteTask(Job job)
 		{
-			TaskResult result = new TaskResult() {Status = TaskStatusEnum.Success, Exceptions = null};
+			TaskResult result = new TaskResult() { Status = TaskStatusEnum.Success, Exceptions = null };
 			ITask task = null;
 			try
 			{
 				OnRaiseJobLogEntry(job, JobLogState.Started);
 				LogOnStartJobExecution(job);
 				task = GetTask(job);
-				if (task != null)
-				{
-					StartTask(job, task);
-
-					OnRaiseJobLogEntry(job, JobLogState.Finished);
-					string msg = string.Format(FINISHED_PROCESSING_JOB_MESSAGE_TEMPLATE, job.JobId, job.WorkspaceID, job.TaskType);
-					OnRaiseAgentLogEntry(1, LogCategory.Info, msg);
-					LogOnFinishJobExecution(job);
-				}
-				else
+				if (task == null)
 				{
 					throw new Exception("Could not find corresponding Task.");
 				}
+
+				StartTask(job, task);
+
+				OnRaiseJobLogEntry(job, JobLogState.Finished);
+				string msg = string.Format(FINISHED_PROCESSING_JOB_MESSAGE_TEMPLATE, job.JobId, job.WorkspaceID, job.TaskType);
+				OnRaiseAgentLogEntry(1, LogCategory.Info, msg);
+				LogOnFinishJobExecution(job);
 			}
 			catch (Exception ex)
 			{
 				result.Status = TaskStatusEnum.Fail;
-				result.Exceptions = new List<Exception>() {ex};
+				result.Exceptions = new List<Exception>() { ex };
 				OnRaiseException(job, ex);
 				OnRaiseJobLogEntry(job, JobLogState.Error, ex);
 				LogOnJobExecutionError(job, ex);
@@ -271,36 +253,27 @@ namespace kCura.ScheduleQueue.AgentBase
 					throw new ArgumentOutOfRangeException("category");
 			}
 
-			if (RaiseAgentLogEntry != null)
-				RaiseAgentLogEntry(category, message, detailmessage);
+			RaiseAgentLogEntry?.Invoke(category, message, detailmessage);
 		}
 
 		protected virtual void OnRaiseJobLogEntry(Job job, JobLogState state, Exception exception = null,
 			string details = null)
 		{
-			if (RaiseJobLogEntry != null)
+			if (exception != null)
 			{
-				if (exception != null)
-				{
-					if (!string.IsNullOrEmpty(details)) details += Environment.NewLine;
-					details += exception.Message + Environment.NewLine + exception.StackTrace;
-				}
-				RaiseJobLogEntry(job, state, details);
+				details = details ?? string.Empty;
+				details += Environment.NewLine;
+				details += exception.Message + Environment.NewLine + exception.StackTrace;
 			}
+			RaiseJobLogEntry?.Invoke(job, state, details);
 		}
 
 		protected virtual void OnRaiseException(Job job, Exception ex)
 		{
-			if (RaiseException != null)
-				RaiseException(job, ex);
+			RaiseException?.Invoke(job, ex);
 		}
 
 		#region Logging
-
-		private void LogOnInitialize(string message)
-		{
-			Logger.LogInformation(message);
-		}
 
 		private void LogOnInitializeManagerConfigSettingsFactory()
 		{
@@ -311,12 +284,6 @@ namespace kCura.ScheduleQueue.AgentBase
 		private void LogOnCleanupJobs()
 		{
 			Logger.LogInformation("Attempting to cleanup jobs in {TypeName}", nameof(ScheduleQueueAgentBase));
-		}
-
-		private void LogOnExecuteCompleteWithErrors()
-		{
-			Logger.LogInformation("Execution of scheduled jobs completed with errors in {TypeName}",
-				nameof(ScheduleQueueAgentBase));
 		}
 
 		private void LogOnExecuteComplete()
@@ -358,7 +325,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			string message = $"Finished Finalization of Job with ID: {job.JobId} in {nameof(ScheduleQueueAgentBase)}." +
 							$"{Environment.NewLine}Job result: {result.JobState}," +
 							$"{Environment.NewLine} Details: {result.Details}";
-				
+
 			Logger.LogInformation(message);
 		}
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using Castle.Core.Internal;
 using kCura.Apps.Common.Utils.Serializers;
@@ -15,8 +14,8 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
-using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -124,6 +123,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					LogCompletingJobError(job, e, completedItem);
 					Result.Status = TaskStatusEnum.Fail;
 					JobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, e);
+					if (e is IntegrationPointsException) // we want to rethrow, so it can be added to error tab if necessary
+					{
+						throw;
+					}
 				}
 				finally
 				{
@@ -324,6 +327,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					Result.Status = TaskStatusEnum.Fail;
 					JobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, exception);
 					exceptions.Add(exception);
+					if (exception is IntegrationPointsException) // we want to rethrow, so it can be added to error tab if necessary
+					{
+						throw;
+					}
 				}
 			});
             

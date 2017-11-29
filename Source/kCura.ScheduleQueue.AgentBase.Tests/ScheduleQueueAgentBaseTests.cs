@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using kCura.IntegrationPoints.Core.Logging;
 using kCura.IntegrationPoints.Core.Tests;
 using kCura.ScheduleQueue.Core;
@@ -12,6 +13,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 	[TestFixture]
 	public class ScheduleQueueAgentBaseTests
 	{
+		private const int MAXIMUM_TEST_EXECUTION_TIME_IN_MILISECONDS = 5000;
 		private IAPILog logger;
 		private IAgentService agentService;
 		private IJobService jobService;
@@ -106,16 +108,30 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 		private void ExecuteJob(long jobId, long? rootJobId, int workspaceId, int submittedBy)
 		{
 			AddJobToQueue(jobId, rootJobId, workspaceId, submittedBy);
-
+			
 			var sut = new ScheduleQueueAgentBaseMock(logger, agentService, jobService);
+			sut.SetInterval(2 * MAXIMUM_TEST_EXECUTION_TIME_IN_MILISECONDS);
+
+			var semaphore = new Semaphore(0, 1); // Execute is executed in separate thread, so we need synchronization here
+			bool wasSemaphoreReleased = false;
+			sut.OnAgentExecuteFinish += () =>
+			{
+				wasSemaphoreReleased = true;
+				semaphore.Release(1);
+			};
+
 			sut.Enabled = true;
-			sut.Execute();
+			semaphore.WaitOne(MAXIMUM_TEST_EXECUTION_TIME_IN_MILISECONDS);
+			if (!wasSemaphoreReleased)
+			{
+				Assert.Fail("Test execution timeout"); 
+			}
 		}
 
 		private void AddJobToQueue(long jobId, long? rootJobId, int workspaceId, int submittedBy)
 		{
 			Job job = JobHelper.GetJob(jobId, rootJobId, null, 0, 0, workspaceId, 0, 0, DateTime.Now, null, null, 0, DateTime.Now, submittedBy, null, null);
-			jobService.GetNextQueueJob(Arg.Any<IEnumerable<int>>(), Arg.Any<int>()).Returns(x => job);
+			jobService.GetNextQueueJob(Arg.Any<IEnumerable<int>>(), Arg.Any<int>()).Returns(x => job, x => null);
 		}
 	}
 }

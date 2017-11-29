@@ -17,6 +17,7 @@ using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Injection;
@@ -27,6 +28,7 @@ using Newtonsoft.Json.Linq;
 using Relativity.API;
 using Relativity.Telemetry.MetricsCollection;
 using APMClient = Relativity.Telemetry.APM.Client;
+using Client = Relativity.Telemetry.MetricsCollection.Client;
 using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
@@ -172,15 +174,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			try
 			{
-			    LogExecuteTaskStart(job);
+				LogExecuteTaskStart(job);
 
-                InjectionManager.Instance.Evaluate("640E9695-AB99-4763-ADC5-03E1252277F7");
+				InjectionManager.Instance.Evaluate("640E9695-AB99-4763-ADC5-03E1252277F7");
 
 				SetIntegrationPoint(job);
 				List<string> entryIDs = GetEntryIDs(job);
 				SetJobHistory();
 
-				JobStopManager = ManagerFactory.CreateJobStopManager(JobService, JobHistoryService, BatchInstance, job.JobId, _isStoppable);
+				JobStopManager = ManagerFactory.CreateJobStopManager(JobService, JobHistoryService, BatchInstance, job.JobId,
+					_isStoppable);
 				JobHistoryErrorService.JobStopManager = JobStopManager;
 
 				InjectionManager.Instance.Evaluate("CB070ADB-8912-4B61-99B0-3321C0670FC6");
@@ -199,11 +202,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 				JobStopManager?.ThrowIfStopRequested();
 
-				ExecuteImport(fieldMap, IntegrationPoint.SourceConfiguration, IntegrationPoint.DestinationConfiguration, entryIDs, SourceProvider, DestinationProvider, job);
+				ExecuteImport(fieldMap, IntegrationPoint.SourceConfiguration, IntegrationPoint.DestinationConfiguration, entryIDs,
+					SourceProvider, DestinationProvider, job);
 
 				InjectErrors();
-			    LogExecuteTaskSuccesfulEnd(job);
-            }
+				LogExecuteTaskSuccesfulEnd(job);
+			}
 			catch (OperationCanceledException e)
 			{
 				LogJobStoppedException(job, e);
@@ -218,6 +222,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				LogExecutingTaskError(job, ex);
 				JobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, ex);
+				if (ex is IntegrationPointsException)
+				{
+					throw;
+				}
 			}
 			finally
 			{
@@ -288,6 +296,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 						{
 							LogCompletingJobError(job, e, completedItem);
 							JobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, e);
+							if (e is IntegrationPointsException) // we want to rethrow, so it can be added to error tab if necessary
+							{
+								throw;
+							}
 						}
 					}
 
@@ -305,6 +317,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				LogPostExecuteError(job, e);
 				JobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, e);
+				if (e is IntegrationPointsException) // we want to rethrow, so it can be added to error tab if necessary
+				{
+					throw;
+				}
 			}
 			finally
 			{
@@ -356,6 +372,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			catch (Exception ex)
 			{
 				JobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, ex);
+				if (ex is IntegrationPointsException) // we want to rethrow, so it can be added to error tab if necessary
+				{
+					throw;
+				}
 			}
 
 			try
