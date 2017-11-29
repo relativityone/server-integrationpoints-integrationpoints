@@ -1557,6 +1557,11 @@
       <ColumnName>ItemswithErrors</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
+      <ArtifactViewFieldId>1004981</ArtifactViewFieldId>
+      <ArtifactTypeId>1000036</ArtifactTypeId>
+      <ColumnName>JobID</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
       <ArtifactViewFieldId>1001298</ArtifactViewFieldId>
       <ArtifactTypeId>1000036</ArtifactTypeId>
       <ColumnName>JobStatus</ColumnName>
@@ -2220,7 +2225,7 @@
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2017-10-27T13:09:31.3834732Z</ExtractionDate>
+  <ExtractionDate>2017-11-29T09:49:42.7773961Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -7439,6 +7444,58 @@
           <AutoAddChoices>false</AutoAddChoices>
           <ApplicationVersion>9.5.0.26</ApplicationVersion>
         </Field>
+        <Field>
+          <AllowHTML>false</AllowHTML>
+          <ArtifactId>1043018</ArtifactId>
+          <ArtifactViewFieldId>1004981</ArtifactViewFieldId>
+          <AssociativeArtifactTypeId xsi:nil="true" />
+          <Codes />
+          <CodeTypeId xsi:nil="true" />
+          <ConnectorFieldArtifactId xsi:nil="true" />
+          <DisplayName>Job ID</DisplayName>
+          <DisplayValueFalse />
+          <DisplayValueTrue />
+          <FieldArtifactTypeId>1000036</FieldArtifactTypeId>
+          <FieldCategoryId>0</FieldCategoryId>
+          <FieldTypeId>0</FieldTypeId>
+          <FilterType>Search</FilterType>
+          <FormatString />
+          <FriendlyName />
+          <Guids>77d797ef-96c9-4b47-9ef8-33f498b5af0d</Guids>
+          <Guid>77d797ef-96c9-4b47-9ef8-33f498b5af0d</Guid>
+          <ImportBehavior xsi:nil="true" />
+          <EnableDataGrid>false</EnableDataGrid>
+          <OverlayBehavior xsi:nil="true" />
+          <IsAdditionalFileField>false</IsAdditionalFileField>
+          <IsArtifactBaseField>false</IsArtifactBaseField>
+          <IsAvailableInChoiceTree>false</IsAvailableInChoiceTree>
+          <IsAvailableToAssociativeObjects>false</IsAvailableToAssociativeObjects>
+          <IsEditable>true</IsEditable>
+          <IsGroupByEnabled>false</IsGroupByEnabled>
+          <IsIndexEnabled>false</IsIndexEnabled>
+          <IsLinked>true</IsLinked>
+          <IsRemovable>true</IsRemovable>
+          <IsRequired>false</IsRequired>
+          <IsSortable>true</IsSortable>
+          <IsVisible>true</IsVisible>
+          <Keywords />
+          <LinkType>false</LinkType>
+          <MaxLength>128</MaxLength>
+          <Notes />
+          <RelationalIndexViewArtifactID xsi:nil="true" />
+          <SourceFieldArtifactId xsi:nil="true" />
+          <UseUnicodeEncoding>false</UseUnicodeEncoding>
+          <Width />
+          <Wrapping>true</Wrapping>
+          <AllowPivot>false</AllowPivot>
+          <AllowGroupBy>false</AllowGroupBy>
+          <AvailableInViewer>false</AvailableInViewer>
+          <PopupPickerView xsi:nil="true" />
+          <FieldTreeView xsi:nil="true" />
+          <SiblingFieldArtifactID xsi:nil="true" />
+          <AutoAddChoices>false</AutoAddChoices>
+          <ApplicationVersion>9.5.0.33</ApplicationVersion>
+        </Field>
       </Fields>
       <Guid>08f4b1f7-9692-4a08-94ab-b5f3a88b6cc9</Guid>
       <KeyWords />
@@ -7478,15 +7535,33 @@
               <CategoryId>1005545</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
+              <FieldArtifactId>1043018</FieldArtifactId>
+              <FieldDisplayTypeId>0</FieldDisplayTypeId>
+              <FullTextFieldHeight xsi:nil="true" />
+              <IsReadOnly>false</IsReadOnly>
+              <LayoutArtifactId>1038298</LayoutArtifactId>
+              <NameValue />
+              <Order>0</Order>
+              <PickerViewArtifactId xsi:nil="true" />
+              <RepeatColumn>1</RepeatColumn>
+              <Row>2</Row>
+              <Rows>10</Rows>
+              <ShowNameColumn>true</ShowNameColumn>
+            </LayoutField>
+            <LayoutField>
+              <CategoryId>1005545</CategoryId>
+              <ColSpan>1</ColSpan>
+              <Column>1</Column>
               <FieldArtifactId>1038185</FieldArtifactId>
               <FieldDisplayTypeId>0</FieldDisplayTypeId>
               <FullTextFieldHeight xsi:nil="true" />
               <IsReadOnly>true</IsReadOnly>
               <LayoutArtifactId>1038298</LayoutArtifactId>
+              <NameValue />
               <Order>0</Order>
               <PickerViewArtifactId xsi:nil="true" />
               <RepeatColumn xsi:nil="true" />
-              <Row>1</Row>
+              <Row>3</Row>
               <Rows>0</Rows>
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
@@ -7499,10 +7574,11 @@
               <FullTextFieldHeight xsi:nil="true" />
               <IsReadOnly>true</IsReadOnly>
               <LayoutArtifactId>1038298</LayoutArtifactId>
+              <NameValue />
               <Order>0</Order>
               <PickerViewArtifactId xsi:nil="true" />
               <RepeatColumn>0</RepeatColumn>
-              <Row>2</Row>
+              <Row>4</Row>
               <Rows>1</Rows>
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
@@ -7515,10 +7591,11 @@
               <FullTextFieldHeight xsi:nil="true" />
               <IsReadOnly>true</IsReadOnly>
               <LayoutArtifactId>1038298</LayoutArtifactId>
+              <NameValue />
               <Order>0</Order>
               <PickerViewArtifactId xsi:nil="true" />
               <RepeatColumn>1</RepeatColumn>
-              <Row>3</Row>
+              <Row>5</Row>
               <Rows>10</Rows>
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
@@ -7535,7 +7612,7 @@
               <Order>0</Order>
               <PickerViewArtifactId xsi:nil="true" />
               <RepeatColumn>0</RepeatColumn>
-              <Row>4</Row>
+              <Row>6</Row>
               <Rows>1</Rows>
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
@@ -7548,10 +7625,11 @@
               <FullTextFieldHeight xsi:nil="true" />
               <IsReadOnly>true</IsReadOnly>
               <LayoutArtifactId>1038298</LayoutArtifactId>
+              <NameValue />
               <Order>0</Order>
               <PickerViewArtifactId xsi:nil="true" />
               <RepeatColumn>0</RepeatColumn>
-              <Row>5</Row>
+              <Row>7</Row>
               <Rows>1</Rows>
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
@@ -7564,10 +7642,11 @@
               <FullTextFieldHeight xsi:nil="true" />
               <IsReadOnly>true</IsReadOnly>
               <LayoutArtifactId>1038298</LayoutArtifactId>
+              <NameValue />
               <Order>0</Order>
               <PickerViewArtifactId xsi:nil="true" />
               <RepeatColumn>0</RepeatColumn>
-              <Row>6</Row>
+              <Row>8</Row>
               <Rows>1</Rows>
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
@@ -7619,7 +7698,7 @@
           <Name>Job Details</Name>
           <Notes />
           <Order>0</Order>
-          <ApplicationVersion>9.5.0.2</ApplicationVersion>
+          <ApplicationVersion>9.5.0.33</ApplicationVersion>
         </Layout>
       </Layouts>
       <Name>Job History</Name>
@@ -8031,64 +8110,69 @@
           <ViewCriteria />
           <ViewFields>
             <ViewField>
-              <ArtifactViewFieldId>1001301</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1004981</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>0</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001250</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001301</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>1</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001253</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001250</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>2</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001287</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001253</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>3</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001308</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001287</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>4</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001298</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001308</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>5</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001304</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001298</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>6</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1002935</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001304</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>7</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001299</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1002935</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>8</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001305</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001299</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>9</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001300</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001305</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>10</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001248</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001300</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>11</Order>
+            </ViewField>
+            <ViewField>
+              <ArtifactViewFieldId>1001248</ArtifactViewFieldId>
+              <IsEditable>false</IsEditable>
+              <Order>12</Order>
             </ViewField>
           </ViewFields>
           <ViewOrders>
@@ -8108,7 +8192,7 @@
           <PayloadArtifactViewFieldId xsi:nil="true" />
           <DisplayArtifactViewFieldId xsi:nil="true" />
           <GroupDefinitionArtifactViewFieldID xsi:nil="true" />
-          <ApplicationVersion>9.5.0.2</ApplicationVersion>
+          <ApplicationVersion>9.5.0.33</ApplicationVersion>
         </View>
         <View>
           <ArtifactId>1038292</ArtifactId>
@@ -8141,44 +8225,49 @@
           </ViewCriteria>
           <ViewFields>
             <ViewField>
-              <ArtifactViewFieldId>1001250</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1004981</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>0</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001253</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001250</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>1</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001287</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001253</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>2</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001308</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001287</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>3</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001298</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001308</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>4</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001299</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001298</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>5</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001300</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001299</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>6</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001301</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001300</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>7</Order>
+            </ViewField>
+            <ViewField>
+              <ArtifactViewFieldId>1001301</ArtifactViewFieldId>
+              <IsEditable>false</IsEditable>
+              <Order>8</Order>
             </ViewField>
           </ViewFields>
           <ViewOrders>
@@ -8193,7 +8282,7 @@
           <PayloadArtifactViewFieldId xsi:nil="true" />
           <DisplayArtifactViewFieldId xsi:nil="true" />
           <GroupDefinitionArtifactViewFieldID xsi:nil="true" />
-          <ApplicationVersion>9.5.0.2</ApplicationVersion>
+          <ApplicationVersion>9.5.0.33</ApplicationVersion>
         </View>
       </Views>
       <ApplicationVersion>9.5.0.2</ApplicationVersion>
@@ -12090,7 +12179,7 @@
   </Objects>
   <ParentTabs />
   <RelativityVersion>9.5.259.2</RelativityVersion>
-  <Version>9.5.0.31</Version>
+  <Version>9.5.0.33</Version>
   <TabDisplay>true</TabDisplay>
   <OriginSignature>3221b6ae-909c-4c79-9870-e469f8cfcb1c</OriginSignature>
   <MasterScripts />
@@ -12161,7 +12250,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>90</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.31</ApplicationVersion>
+      <ApplicationVersion>9.5.0.33</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12173,7 +12262,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>30</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.31</ApplicationVersion>
+      <ApplicationVersion>9.5.0.33</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12185,7 +12274,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>130</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.31</ApplicationVersion>
+      <ApplicationVersion>9.5.0.33</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12197,7 +12286,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>7</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.31</ApplicationVersion>
+      <ApplicationVersion>9.5.0.33</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12209,7 +12298,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>120</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.31</ApplicationVersion>
+      <ApplicationVersion>9.5.0.33</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12221,7 +12310,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>110</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.31</ApplicationVersion>
+      <ApplicationVersion>9.5.0.33</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12233,7 +12322,7 @@
       <ExecutionType>18</ExecutionType>
       <Order>25</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.31</ApplicationVersion>
+      <ApplicationVersion>9.5.0.33</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12245,7 +12334,7 @@
       <ExecutionType>12</ExecutionType>
       <Order>26</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.31</ApplicationVersion>
+      <ApplicationVersion>9.5.0.33</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12257,7 +12346,7 @@
       <ExecutionType>12</ExecutionType>
       <Order>20</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.31</ApplicationVersion>
+      <ApplicationVersion>9.5.0.33</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12269,7 +12358,7 @@
       <ExecutionType>14</ExecutionType>
       <Order>80</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.31</ApplicationVersion>
+      <ApplicationVersion>9.5.0.33</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12281,7 +12370,7 @@
       <ExecutionType>14</ExecutionType>
       <Order>70</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.31</ApplicationVersion>
+      <ApplicationVersion>9.5.0.33</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12293,7 +12382,7 @@
       <ExecutionType>14</ExecutionType>
       <Order>60</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.31</ApplicationVersion>
+      <ApplicationVersion>9.5.0.33</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12305,7 +12394,7 @@
       <ExecutionType>14</ExecutionType>
       <Order>95</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.31</ApplicationVersion>
+      <ApplicationVersion>9.5.0.33</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12317,7 +12406,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>20</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.31</ApplicationVersion>
+      <ApplicationVersion>9.5.0.33</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12329,7 +12418,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>4</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.31</ApplicationVersion>
+      <ApplicationVersion>9.5.0.33</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12341,7 +12430,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>6</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.31</ApplicationVersion>
+      <ApplicationVersion>9.5.0.33</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12353,7 +12442,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>8</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.31</ApplicationVersion>
+      <ApplicationVersion>9.5.0.33</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12365,7 +12454,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>5</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.31</ApplicationVersion>
+      <ApplicationVersion>9.5.0.33</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12377,7 +12466,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>3</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.31</ApplicationVersion>
+      <ApplicationVersion>9.5.0.33</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12389,7 +12478,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>10</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.31</ApplicationVersion>
+      <ApplicationVersion>9.5.0.33</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12401,7 +12490,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>1</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.31</ApplicationVersion>
+      <ApplicationVersion>9.5.0.33</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12413,7 +12502,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>80</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.31</ApplicationVersion>
+      <ApplicationVersion>9.5.0.33</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12425,7 +12514,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>140</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.31</ApplicationVersion>
+      <ApplicationVersion>9.5.0.33</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12437,7 +12526,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>150</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.31</ApplicationVersion>
+      <ApplicationVersion>9.5.0.33</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12449,7 +12538,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>160</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.5.0.31</ApplicationVersion>
+      <ApplicationVersion>9.5.0.33</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
   </InstallEventHandlers>
@@ -12603,6 +12692,7 @@
     <Id>1040894</Id>
     <Id>1043011</Id>
     <Id>1043012</Id>
+    <Id>1043018</Id>
   </FieldIds>
   <ChoiceIds>
     <Id>1038231</Id>

@@ -65,7 +65,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			_caseServiceContext = Substitute.For<ICaseServiceContext>();
 			_rsapiClient = Substitute.For<IRSAPIClient>();
-			_jobHistoryService = Substitute.For<IJobHistoryService>();
 			_agentService = Substitute.For<IAgentService>();
 			_jobService = Substitute.For<IJobService>();
 			_managerFactory = Substitute.For<IManagerFactory>();
@@ -79,6 +78,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_helperFactory = Substitute.For<IHelperFactory>();
 			_helperFactory.CreateTargetHelper(_helper, null, Arg.Any<string>()).Returns(_helper);
 			_helperFactory.CreateTargetHelper(_helper, Arg.Any<int>(), Arg.Any<string>()).Returns(_targetHelper);
+
+			_jobHistoryService = Substitute.For<IJobHistoryService>();
+			_jobHistoryService.CreateRdo(Arg.Any<Data.IntegrationPoint>(), Arg.Any<Guid>(),
+				Arg.Any<Relativity.Client.DTOs.Choice>(),
+				Arg.Any<DateTime?>()).Returns(new JobHistory());
 
 			_serviceFactory.CreateJobHistoryService(_helper, _helper).Returns(_jobHistoryService);
 			_serviceFactory.CreateJobHistoryService(_helper, _targetHelper).Returns(_jobHistoryService);
@@ -263,9 +267,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			IWindsorContainer windsorContainer = new WindsorContainer();
 			windsorContainer.Register(Component.For<IRelativityConfigurationFactory>().Instance(_relativityConfigurationFactory));
 			windsorContainer.Register(Component.For<ICaseServiceContext>().Instance(caseServiceContext));
-            windsorContainer.Register(Component.For<ISqlServiceFactory>().Instance(sqlServiceFactory));
-            windsorContainer.Register(Component.For<IServiceManagerProvider>().Instance(_serviceManagerProvider));
+			windsorContainer.Register(Component.For<ISqlServiceFactory>().Instance(sqlServiceFactory));
+			windsorContainer.Register(Component.For<IServiceManagerProvider>().Instance(_serviceManagerProvider));
 			windsorContainer.Register(Component.For<IExportConfig>().Instance(exportConfig));
+			windsorContainer.Register(Component.For<IServiceFactory>().Instance(_serviceFactory));
 
 			var taskFactory = new TaskFactory(_helper, windsorContainer);
 			ScheduleQueueAgentBase agentBase = new TestAgentBase(Guid.NewGuid());
@@ -286,6 +291,54 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			{
 				throw new Exception($"Unable to resolve the \"{taskType}\" task type.", ex);
 			}
+		}
+
+		[Test]
+		public void ItShouldUpdateJobHistoryJobId()
+		{
+			TaskType taskType = TaskType.SyncManager;
+
+			// Arrange
+			ICaseServiceContext caseServiceContext = Substitute.For<ICaseServiceContext>();
+			IExportConfig exportConfig = Substitute.For<IExportConfig>();
+			IRSAPIService rsapiService = Substitute.For<IRSAPIService>();
+			IGenericLibrary<Data.IntegrationPoint> integrationPointLibrary = Substitute.For<IGenericLibrary<Data.IntegrationPoint>>();
+			var sqlServiceFactory = Substitute.For<ISqlServiceFactory>();
+
+			caseServiceContext.RsapiService.Returns(rsapiService);
+			rsapiService.IntegrationPointLibrary.Returns(integrationPointLibrary);
+
+			int relatedId = 453245;
+			var integrationPoint = new Data.IntegrationPoint()
+			{
+				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings()),
+				SecuredConfiguration = "{}"
+			};
+			integrationPointLibrary.Read(relatedId).Returns(integrationPoint);
+			IWindsorContainer windsorContainer = new WindsorContainer();
+			windsorContainer.Register(Component.For<IRelativityConfigurationFactory>().Instance(_relativityConfigurationFactory));
+			windsorContainer.Register(Component.For<ICaseServiceContext>().Instance(caseServiceContext));
+			windsorContainer.Register(Component.For<ISqlServiceFactory>().Instance(sqlServiceFactory));
+			windsorContainer.Register(Component.For<IServiceManagerProvider>().Instance(_serviceManagerProvider));
+			windsorContainer.Register(Component.For<IExportConfig>().Instance(exportConfig));
+			windsorContainer.Register(Component.For<IServiceFactory>().Instance(_serviceFactory));
+
+			var taskFactory = new TaskFactory(_helper, windsorContainer);
+			ScheduleQueueAgentBase agentBase = new TestAgentBase(Guid.NewGuid());
+
+			_rsapiClient.APIOptions = new APIOptions(40234);
+			_helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System).Returns(_rsapiClient);
+			_relativityConfigurationFactory.GetConfiguration().Returns(new EmailConfiguration());
+
+			int jobId = 342343;
+
+			Job job = JobExtensions.CreateJob(jobId, taskType, relatedId);
+
+			// Act
+			taskFactory.CreateTask(job, agentBase);
+
+			// Assert
+			_jobHistoryService.Received().UpdateRdo(Arg.Is<JobHistory>(x => x.JobID == jobId.ToString()));
 		}
 
 		[Test]
@@ -314,6 +367,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			windsorContainer.Register(Component.For<ISqlServiceFactory>().Instance(sqlServiceFactory));
 			windsorContainer.Register(Component.For<IServiceManagerProvider>().Instance(_serviceManagerProvider));
 			windsorContainer.Register(Component.For<IHelperFactory>().Instance(_helperFactory));
+			windsorContainer.Register(Component.For<IServiceFactory>().Instance(_serviceFactory));
 
 			var taskFactory = new TaskFactory(_helper, windsorContainer);
 			ScheduleQueueAgentBase agentBase = new TestAgentBase(Guid.NewGuid());

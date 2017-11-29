@@ -69,24 +69,24 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				Guid batchInstance = Guid.NewGuid();
 				string jobDetails = $@"{{""BatchInstance"":""{batchInstance}"",""BatchParameters"":null}}";
 				CreateJobHistoryOnIntegrationPoint(model.ArtifactID, batchInstance, JobTypeChoices.JobHistoryRun);
-			    using (DataTable dataTable = new CreateScheduledJob(_queueContext).Execute(
-			        workspaceID: WorkspaceArtifactId,
-			        relatedObjectArtifactID: model.ArtifactID,
-			        taskType: "SyncManager",
-			        nextRunTime: FutureDate,
-			        AgentTypeID: 1,
-			        scheduleRuleType: null,
-			        serializedScheduleRule: null,
-			        jobDetails: jobDetails,
-			        jobFlags: 0,
-			        SubmittedBy: 777,
-			        rootJobID: 1,
-			        parentJobID: 1))
-			    {
-			        job1 = new Job(dataTable.Rows[0]);
-			    }
+				using (DataTable dataTable = new CreateScheduledJob(_queueContext).Execute(
+					workspaceID: WorkspaceArtifactId,
+					relatedObjectArtifactID: model.ArtifactID,
+					taskType: "SyncManager",
+					nextRunTime: FutureDate,
+					AgentTypeID: 1,
+					scheduleRuleType: null,
+					serializedScheduleRule: null,
+					jobDetails: jobDetails,
+					jobFlags: 0,
+					SubmittedBy: 777,
+					rootJobID: 1,
+					parentJobID: 1))
+				{
+					job1 = new Job(dataTable.Rows[0]);
+				}
 
-			    // inserts a job entry to the ScheduleQueue table that is locked by the disabled agent
+				// inserts a job entry to the ScheduleQueue table that is locked by the disabled agent
 				job2 = JobExtensions.Execute(
 					qDBContext: _queueContext,
 					workspaceID: WorkspaceArtifactId,
@@ -149,7 +149,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 				Guid batchInstance = Guid.NewGuid();
 				string jobDetails = $@"{{""BatchInstance"":""{batchInstance}"",""BatchParameters"":null}}";
-				
+
 				// inserts a job entry to the ScheduleQueue table that is locked by the disabled agent
 				job2 = JobExtensions.Execute(
 					qDBContext: _queueContext,
@@ -185,6 +185,54 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				if (job2 != null)
 				{
 					_jobService.DeleteJob(job2.JobId);
+				}
+			}
+		}
+
+		[Test]
+		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
+		public void ItShouldSetJobIdOnJobHistory()
+		{
+			Job job1 = null;
+			try
+			{
+				// ARRANGE
+				var FutureDate = DateTime.Now.AddYears(10);
+				IntegrationPointModel model = CreateDefaultLdapIntegrationModel("Ldap_MultipleJobs_AgentDropsJob");
+				model = CreateOrUpdateIntegrationPoint(model); // create integration point
+
+				Guid batchInstance = Guid.NewGuid();
+				string jobDetails = $@"{{""BatchInstance"":""{batchInstance}"",""BatchParameters"":null}}";
+				CreateJobHistoryOnIntegrationPoint(model.ArtifactID, batchInstance, JobTypeChoices.JobHistoryRun);
+				using (DataTable dataTable = new CreateScheduledJob(_queueContext).Execute(
+					workspaceID: WorkspaceArtifactId,
+					relatedObjectArtifactID: model.ArtifactID,
+					taskType: "SyncManager",
+					nextRunTime: FutureDate,
+					AgentTypeID: 1,
+					scheduleRuleType: null,
+					serializedScheduleRule: null,
+					jobDetails: jobDetails,
+					jobFlags: 0,
+					SubmittedBy: 777,
+					rootJobID: 1,
+					parentJobID: 1))
+				{
+					job1 = new Job(dataTable.Rows[0]);
+				}
+
+
+				// ACT & ASSERT
+				_taskFactory.CreateTask(job1, _agent);
+
+				JobHistory jobHistory = _jobHistoryService.GetRdo(batchInstance);
+				Assert.AreEqual(job1.JobId.ToString(), jobHistory.JobID);
+			}
+			finally
+			{
+				if (job1 != null)
+				{
+					_jobService.DeleteJob(job1.JobId);
 				}
 			}
 		}

@@ -731,6 +731,19 @@ namespace kCura.IntegrationPoints.Data
 				SetField<string>(new System.Guid(JobHistoryFieldGuids.Overwrite), value);
 			}
 		}
+		public const int JobIDFieldLength = 128;
+		[DynamicField(JobHistoryFields.JobID, JobHistoryFieldGuids.JobID, FieldTypes.FixedLengthText, 128)]
+		public string JobID
+		{
+			get
+			{
+				return GetField<string>(new System.Guid(JobHistoryFieldGuids.JobID));
+			}
+			set
+			{
+				SetField<string>(new System.Guid(JobHistoryFieldGuids.JobID), value);
+			}
+		}
 		public const int NameFieldLength = 255;
 		[DynamicField(JobHistoryFields.Name, JobHistoryFieldGuids.Name, FieldTypes.FixedLengthText, 255)]
 		public string Name
