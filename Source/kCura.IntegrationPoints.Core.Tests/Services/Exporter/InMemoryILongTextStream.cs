@@ -3,7 +3,7 @@ using System.Text;
 using kCura.EDDS.DocumentCompareGateway;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 
-namespace kCura.IntegrationPoints.Core.Tests.Services.Export
+namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 {
 	public class InMemoryILongTextStreamFactory : IILongTextStreamFactory
 	{

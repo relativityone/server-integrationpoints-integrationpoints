@@ -7,9 +7,10 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Data.Transformers;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client;
+using Relativity;
 using Relativity.API;
 using Relativity.Core;
+using ArtifactType = kCura.Relativity.Client.ArtifactType;
 
 namespace kCura.IntegrationPoints.Data.Factories.Implementations
 {
@@ -242,9 +243,25 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return rdoRepository;
 		}
 
-		#region Helper Methods
+	    public IQueryFieldLookupRepository GetQueryFieldLookupRepository(int workspaceArtifactId)
+        {
+            BaseServiceContext baseServiceContext = GetBaseServiceContextForWorkspace(workspaceArtifactId);
 
-		private IObjectQueryManagerAdaptor CreateObjectQueryManagerAdaptor(int workspaceArtifactId, ArtifactType artifactType)
+            IQueryFieldLookupRepository queryFieldLookupRepository = new QueryFieldLookupRepository(baseServiceContext);
+            return queryFieldLookupRepository;
+        }
+
+		public IFileRepository GetFileRepository(int workspaceArtifactId)
+		{
+			BaseServiceContext baseServiceContext = GetBaseServiceContextForWorkspace(workspaceArtifactId);
+
+			IFileRepository fileRepository = new FileRepository(baseServiceContext);
+			return fileRepository;
+		}
+
+        #region Helper Methods
+
+        private IObjectQueryManagerAdaptor CreateObjectQueryManagerAdaptor(int workspaceArtifactId, ArtifactType artifactType)
 		{
 			IObjectQueryManagerAdaptor adaptor = CreateObjectQueryManagerAdaptor(workspaceArtifactId, (int)artifactType);
 			return adaptor;

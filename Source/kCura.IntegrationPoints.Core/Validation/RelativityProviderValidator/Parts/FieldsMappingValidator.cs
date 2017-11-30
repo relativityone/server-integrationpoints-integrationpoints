@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			result.Add(ValidateUniqueIdentifierIsMapped(mappedIdentifier));
 			result.Add(ValidateSettingsFieldOverlayBehavior(destinationConfiguration));
 			result.Add(ValidateSettingsFolderPathInformation(sourceWorkpaceFields, destinationConfiguration));
-
+			result.Add(ValidateImageSettings(destinationConfiguration, fieldsMap));
 			return result;
 		}
 
@@ -71,6 +71,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			public bool UseFolderPathInformation { get; set; }
 			public string FieldOverlayBehavior { get; set; }
 			public bool UseDynamicFolderPath { get; set; }
+			public bool ImageImport { get; set; }
 		}
 
 		#region Internal validators
@@ -212,6 +213,19 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			return result;
 		}
 
+		private ValidationResult ValidateImageSettings(IntegrationPointDestinationConfiguration destinationConfiguration, List<FieldMap> mappedFields)
+		{
+			var result = new ValidationResult();
+
+			if (destinationConfiguration.ImageImport)
+			{
+				if (mappedFields.Count > 1)
+				{
+					result.Add(RelativityProviderValidationMessages.FIELD_MAP_IMAGE_TOO_MANY_FIELDS);
+				}
+			}
+			return result;
+		}
 		#endregion
 
 		private List<ArtifactDTO> RetrieveAllFields(IFieldManager fieldManager, int workspaceId)

@@ -82,15 +82,16 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			_baseContext = claimsPrincipal.GetUnversionContext(_sourceConfiguration.SourceWorkspaceArtifactId);
 
 			IFieldQueryRepository targetFieldQueryRepository = targetRepositoryFactory.GetFieldQueryRepository(_sourceConfiguration.TargetWorkspaceArtifactId);
-			ValidateDestinationFields(targetFieldQueryRepository, claimsPrincipal, _sourceConfiguration.TargetWorkspaceArtifactId, mappedFields);
-
-			IQueryFieldLookup fieldLookupHelper = new QueryFieldLookup(_baseContext, (int)ArtifactType.Document);
-
-			Dictionary<int, int> fieldsReferences = new Dictionary<int, int>();
+			ValidateDestinationFields(targetFieldQueryRepository, _sourceConfiguration.TargetWorkspaceArtifactId, mappedFields);
+            
+            IQueryFieldLookupRepository queryFieldLookupRepository =
+		        sourceRepositoryFactory.GetQueryFieldLookupRepository(_sourceConfiguration.SourceWorkspaceArtifactId);
+            
+            Dictionary<int, int> fieldsReferences = new Dictionary<int, int>();
 			foreach (FieldEntry source in mappedFields.Select(f => f.SourceField))
 			{
 				int artifactId = Convert.ToInt32(source.FieldIdentifier);
-				ViewFieldInfo fieldInfo = fieldLookupHelper.GetFieldByArtifactID(artifactId);
+				ViewFieldInfo fieldInfo = queryFieldLookupRepository.GetFieldByArtifactId(artifactId);
 
 				fieldsReferences[artifactId] = fieldInfo.AvfId;
 				switch (fieldInfo.FieldType)
@@ -228,7 +229,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			}
 		}
 
-		protected virtual void ValidateDestinationFields(IFieldQueryRepository fieldQueryRepository, ClaimsPrincipal claimsPrincipal, int destinationWorkspace, FieldMap[] mappedFields)
+		protected virtual void ValidateDestinationFields(IFieldQueryRepository fieldQueryRepository, int destinationWorkspace, FieldMap[] mappedFields)
 		{
 			IList<string> missingFields = new List<string>();
 			//BaseServiceContext destinationWorkspaceContext = claimsPrincipal.GetUnversionContext(destinationWorkspace);

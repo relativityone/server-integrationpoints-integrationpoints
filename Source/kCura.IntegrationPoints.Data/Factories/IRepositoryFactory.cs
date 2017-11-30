@@ -214,5 +214,19 @@ namespace kCura.IntegrationPoints.Data.Factories
 		IServiceUrlRepository GetServiceUrlRepository();
 
 		IKeywordSearchRepository GetKeywordSearchRepository();
+
+        /// <summary>
+        /// Returns a class implementing the IQueryFieldLookupRepository interface.
+        /// </summary>
+        /// <param name="workspaceArtifactId"></param>
+        /// <returns>A class implementing the IQueryFieldLookupRepository interface.</returns>
+	    IQueryFieldLookupRepository GetQueryFieldLookupRepository(int workspaceArtifactId);
+
+		/// <summary>
+		/// Returns a class implementing the IFileRepository interface.
+		/// </summary>
+		/// <param name="workspaceArtifactId"></param>
+		/// <returns>A class implementing the IFileRepository interface.</returns>
+		IFileRepository GetFileRepository(int workspaceArtifactId);
 	}
 }
