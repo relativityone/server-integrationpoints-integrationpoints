@@ -3,7 +3,9 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using kCura.EventHandler;
 using kCura.EventHandler.CustomAttributes;
+using kCura.IntegrationPoints.Core.Extensions;
 using kCura.IntegrationPoints.Core.Helpers;
+using kCura.IntegrationPoints.Core.Logging;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -51,7 +53,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 		public override Response Execute()
 		{
 			try
-			{				
+			{
+				Logger.LogDebug($"Start creating data transfer folders creation for wksp...{Helper.GetActiveCaseID()}");
 				DataTransferLocationService.CreateForAllTypes(Helper.GetActiveCaseID());
 
 				return new Response

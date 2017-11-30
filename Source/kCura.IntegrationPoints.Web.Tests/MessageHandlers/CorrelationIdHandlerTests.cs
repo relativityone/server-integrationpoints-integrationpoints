@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoints.Web.Tests.MessageHandlers
 
 			HttpResponseMessage response = _subjectUnderTests.SendAyncInternal(request, CancellationToken.None).Result;
 
-			Logger.Received().LogContextPushProperty(nameof(WebCorrelationContext.WebRequestCorrelationId), expectedCorrelationId.ToString());
+			Logger.Received().LogContextPushProperty($"RIP.{nameof(WebCorrelationContext.WebRequestCorrelationId)}", expectedCorrelationId.ToString());
 		}
 
 		[Test]
@@ -79,7 +79,7 @@ namespace kCura.IntegrationPoints.Web.Tests.MessageHandlers
 
 			HttpResponseMessage response = _subjectUnderTests.SendAyncInternal(request, CancellationToken.None).Result;
 
-			Logger.Received().LogContextPushProperty(nameof(WebCorrelationContext.WorkspaceId), expectedWorkspaceId.ToString());
+			Logger.Received().LogContextPushProperty($"RIP.{nameof(WebCorrelationContext.WorkspaceId)}", expectedWorkspaceId.ToString());
 		}
 
 		[Test]
@@ -110,7 +110,7 @@ namespace kCura.IntegrationPoints.Web.Tests.MessageHandlers
 
 			HttpResponseMessage response = _subjectUnderTests.SendAyncInternal(request, CancellationToken.None).Result;
 
-			Logger.Received().LogContextPushProperty(nameof(WebCorrelationContext.UserId), expectedUserId.ToString());
+			Logger.Received().LogContextPushProperty($"RIP.{nameof(WebCorrelationContext.UserId)}", expectedUserId.ToString());
 		}
 
 		[Test]

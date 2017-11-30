@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.SourceProviderInstaller;
-using SourceProvider = kCura.IntegrationPoints.SourceProviderInstaller.SourceProvider;
 
 namespace kCura.IntegrationPoints.EventHandlers.Installers
 {

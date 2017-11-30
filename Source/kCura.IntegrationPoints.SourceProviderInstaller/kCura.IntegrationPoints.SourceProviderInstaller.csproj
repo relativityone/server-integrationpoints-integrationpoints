@@ -88,6 +88,7 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="IntegrationPointSourceProviderUninstaller.cs" />
+    <Compile Include="PostInstallEventHandlerBase.cs" />
     <Compile Include="Services\IImportService.cs" />
     <Compile Include="Services\ImportService.cs" />
     <Compile Include="IntegrationPointSourceProviderInstaller.cs" />

@@ -13,10 +13,11 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 	[TestFixture]
 	public class ScheduleQueueAgentBaseTests
 	{
-		private const int MAXIMUM_TEST_EXECUTION_TIME_IN_MILISECONDS = 5000;
-		private IAPILog logger;
-		private IAgentService agentService;
-		private IJobService jobService;
+		private IAgentService _agentService;
+		private IAPILog _logger;
+		private IJobService _jobService;
+		private const int _MAXIMUM_TEST_EXECUTION_TIME_IN_MILISECONDS = 5000;
+		private const string _RIP_PREFIX = "RIP.";
 
 		private class ScheduleQueueAgentBaseMock : ScheduleQueueAgentBase
 		{
@@ -45,9 +46,9 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 		[SetUp]
 		public void SetUp()
 		{
-			logger = Substitute.For<IAPILog>();
-			agentService = Substitute.For<IAgentService>();
-			jobService = Substitute.For<IJobService>();
+			_logger = Substitute.For<IAPILog>();
+			_agentService = Substitute.For<IAgentService>();
+			_jobService = Substitute.For<IJobService>();
 		}
 
 		[Test]
@@ -58,7 +59,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 			ExecuteJob(jobId, 0, 0, 0);
 
 			string expectedJobId = jobId.ToString();
-			logger.Received().LogContextPushProperty(nameof(AgentCorrelationContext.JobId), expectedJobId);
+			_logger.Received().LogContextPushProperty($"{_RIP_PREFIX}{nameof(AgentCorrelationContext.JobId)}", expectedJobId);
 		}
 
 		[Test]
@@ -69,7 +70,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 			ExecuteJob(0, rootJobId, 0, 0);
 
 			string expectedRootJobId = rootJobId.ToString();
-			logger.Received().LogContextPushProperty(nameof(AgentCorrelationContext.RootJobId), expectedRootJobId);
+			_logger.Received().LogContextPushProperty($"{_RIP_PREFIX}{nameof(AgentCorrelationContext.RootJobId)}", expectedRootJobId);
 		}
 
 		[Test]
@@ -80,7 +81,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 			ExecuteJob(0, rootJobId, 0, 0);
 
 			object expectedRootJobId = string.Empty;
-			logger.Received().LogContextPushProperty(nameof(AgentCorrelationContext.RootJobId), expectedRootJobId);
+			_logger.Received().LogContextPushProperty($"{_RIP_PREFIX}{nameof(AgentCorrelationContext.RootJobId)}", expectedRootJobId);
 		}
 
 		[Test]
@@ -91,7 +92,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 			ExecuteJob(0, 0, 0, userId);
 
 			string expectedUserId = userId.ToString();
-			logger.Received().LogContextPushProperty(nameof(AgentCorrelationContext.UserId), expectedUserId);
+			_logger.Received().LogContextPushProperty($"{_RIP_PREFIX}{nameof(AgentCorrelationContext.UserId)}", expectedUserId);
 		}
 
 		[Test]
@@ -102,15 +103,15 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 			ExecuteJob(0, 0, workspaceId, 0);
 
 			string expectedWorkspaceId = workspaceId.ToString();
-			logger.Received().LogContextPushProperty(nameof(AgentCorrelationContext.WorkspaceId), expectedWorkspaceId);
+			_logger.Received().LogContextPushProperty($"{_RIP_PREFIX}{nameof(AgentCorrelationContext.WorkspaceId)}", expectedWorkspaceId);
 		}
 
 		private void ExecuteJob(long jobId, long? rootJobId, int workspaceId, int submittedBy)
 		{
 			AddJobToQueue(jobId, rootJobId, workspaceId, submittedBy);
 			
-			var sut = new ScheduleQueueAgentBaseMock(logger, agentService, jobService);
-			sut.SetInterval(2 * MAXIMUM_TEST_EXECUTION_TIME_IN_MILISECONDS);
+			var sut = new ScheduleQueueAgentBaseMock(_logger, _agentService, _jobService);
+			sut.SetInterval(2 * _MAXIMUM_TEST_EXECUTION_TIME_IN_MILISECONDS);
 
 			var semaphore = new Semaphore(0, 1); // Execute is executed in separate thread, so we need synchronization here
 			bool wasSemaphoreReleased = false;
@@ -121,7 +122,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 			};
 
 			sut.Enabled = true;
-			semaphore.WaitOne(MAXIMUM_TEST_EXECUTION_TIME_IN_MILISECONDS);
+			semaphore.WaitOne(_MAXIMUM_TEST_EXECUTION_TIME_IN_MILISECONDS);
 			if (!wasSemaphoreReleased)
 			{
 				Assert.Fail("Test execution timeout"); 
@@ -131,7 +132,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 		private void AddJobToQueue(long jobId, long? rootJobId, int workspaceId, int submittedBy)
 		{
 			Job job = JobHelper.GetJob(jobId, rootJobId, null, 0, 0, workspaceId, 0, 0, DateTime.Now, null, null, 0, DateTime.Now, submittedBy, null, null);
-			jobService.GetNextQueueJob(Arg.Any<IEnumerable<int>>(), Arg.Any<int>()).Returns(x => job, x => null);
+			_jobService.GetNextQueueJob(Arg.Any<IEnumerable<int>>(), Arg.Any<int>()).Returns(x => job, x => null);
 		}
 	}
 }

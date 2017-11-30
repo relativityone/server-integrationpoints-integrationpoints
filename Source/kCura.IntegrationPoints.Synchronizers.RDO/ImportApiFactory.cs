@@ -109,17 +109,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		private void LogCreatingImportApiWithPassword(string url)
 		{
-			_logger.LogInformation("Attempting to create ExtendedImportAPI ({URL}) using username and password for Relativity 9.3 or greater.", url);
+			_logger.LogDebug("Attempting to create ExtendedImportAPI ({URL}) using username and password for Relativity 9.3 or greater.", url);
 		}
 
 		private void LogCreatingImportApiWithToken(string url)
 		{
-			_logger.LogInformation("Attempting to create ExtendedImportAPI ({URL}) using token for Relativity 9.3 or greater.", url);
+			_logger.LogDebug("Attempting to create ExtendedImportAPI ({URL}) using token for Relativity 9.3 or greater.", url);
 		}
 
 		private void LogCreatingImportApiForOldRelativity(string url)
 		{
-			_logger.LogInformation("Attempting to create ExtendedImportAPI ({URL}) for old Relativity using only WebServiceURL.", url);
+			_logger.LogDebug("Attempting to create ExtendedImportAPI ({URL}) for old Relativity using only WebServiceURL.", url);
 		}
 
 		private void LogCreatingImportApiError(Exception ex, string url)
@@ -134,7 +134,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		private void LogImportApiCreated()
 		{
-			_logger.LogInformation("Successfully created Import API.");
+			_logger.LogDebug("Successfully created Import API.");
 		}
 
 		#endregion

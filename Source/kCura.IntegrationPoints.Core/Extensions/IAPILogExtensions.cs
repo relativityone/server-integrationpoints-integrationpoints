@@ -7,6 +7,8 @@ namespace kCura.IntegrationPoints.Core.Extensions
 {
 	public static class IAPILogExtensions
 	{
+		private const string _RIP_LOG_PREFIX = "RIP.";
+
 		/// <summary>
 		/// This method pushes all public properties from given object to logger LogContext
 		/// </summary>
@@ -25,7 +27,7 @@ namespace kCura.IntegrationPoints.Core.Extensions
 				string propertyName = property.Name;
 				string propertyValue = property.GetValue(obj, null)?.ToString() ?? string.Empty;
 
-				IDisposable disposable = logger.LogContextPushProperty(propertyName, propertyValue);
+				IDisposable disposable = logger.LogContextPushProperty($"{_RIP_LOG_PREFIX}{propertyName}", propertyValue);
 				stackOfDisposables.Push(disposable);
 			}
 			return stackOfDisposables;

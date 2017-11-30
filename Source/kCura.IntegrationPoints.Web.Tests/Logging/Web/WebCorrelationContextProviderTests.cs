@@ -50,6 +50,18 @@ namespace kCura.IntegrationPoints.Web.Tests.Logging.Web
 		[TestCase("https://test.kcura.corp/Relativity/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/1018658/api/IntegrationPointProfilesAPI/SaveAsProfile/1040489/LDAP Profile", true, WebActionContextProvider.JOB_SAVE_AS_PROFILE_ACTION)]
 		[TestCase("https://test.kcura.corp/Relativity/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/1018658/api/IntegrationPointProfilesAPI/SaveAsProfil", false, _ACTION_NAME)]
 		[TestCase("https://test.kcura.corp/Relativity/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/1018658/api/IntegrationPointProfilesAPI", false, _ACTION_NAME)]
+		// New Profile Action Test Cases
+		[TestCase("https://test.relativity.corp/Relativity/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/1018658/api/IntegrationPointProfilesAPI/0?_=1510730418617", true, WebActionContextProvider.JOB_NEW_PROFILE_ACTION)]
+		[TestCase("https://test.kcura.corp/Relativity/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/1018658/api/IntegrationPointProfilesAPI/1040486", false, _ACTION_NAME)]
+		[TestCase("https://test.relativity.corp/Relativity/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/1018658/api/IntegrationPointProfilesAPI/0?_=", false, _ACTION_NAME)]
+		[TestCase("https://test.relativity.corp/Relativity/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/1018658/api/IntegrationPointProfilesAPI/?_=1510730418617", false, _ACTION_NAME)]
+		[TestCase("https://test.relativity.corp/Relativity/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/1018658/api/IntegrationPointProfilesAPI/0?=1510730418617", false, _ACTION_NAME)]
+		// Edit Profile Action Test Cases
+		[TestCase("https://test.kcura.corp/Relativity/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/1018658/api/IntegrationPointProfilesAPI/1040486?_=1234", true, WebActionContextProvider.JOB_EDIT_PROFILE_ACTION)]
+		[TestCase("https://test.kcura.corp/Relativity/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/1018658/api/IntegrationPointProfilesAPI/1040486?_=", false, _ACTION_NAME)]
+		[TestCase("https://test.kcura.corp/Relativity/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/1018658/api/IntegrationPointProfilesAPI/?_=122", false, _ACTION_NAME)]
+		[TestCase("https://test.kcura.corp/Relativity/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/1018658/api/IntegrationPointProfilesAPI/1040486?=123", false, _ACTION_NAME)]
+		[TestCase("https://test.kcura.corp/Relativity/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/1018658/api/IntegrationPointProfilesAPI/1040486=", false, _ACTION_NAME)]
 		public void ItShouldValidateRunJobAction(string url, bool result, string actionName)
 		{
 			// Arrange

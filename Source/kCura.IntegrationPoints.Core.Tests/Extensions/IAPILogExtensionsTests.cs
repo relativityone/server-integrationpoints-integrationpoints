@@ -9,6 +9,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Extensions
 	[TestFixture]
 	public class IAPILogExtensionsTests
 	{
+		private const string _RIP_PREFIX = "RIP.";
+
 		[Test]
 		public void ItShouldPushPublicPropertiesWithProperValue()
 		{
@@ -21,8 +23,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Extensions
 			var logger = Substitute.For<IAPILog>();
 			logger.LogContextPushProperties(context);
 
-			logger.Received().LogContextPushProperty(nameof(context.Id), context.Id.ToString());
-			logger.Received().LogContextPushProperty(nameof(context.PublicName), context.PublicName);
+			logger.Received().LogContextPushProperty($"{_RIP_PREFIX}{nameof(context.Id)}", context.Id.ToString());
+			logger.Received().LogContextPushProperty($"{_RIP_PREFIX}{nameof(context.PublicName)}", context.PublicName);
 		}
 
 		[Test]
@@ -69,8 +71,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Extensions
 			var logger = Substitute.For<IAPILog>();
 			var disposableForId = Substitute.For<IDisposable>();
 			var disposableForPublicName = Substitute.For<IDisposable>();
-			logger.LogContextPushProperty(nameof(context.Id), Arg.Any<object>()).Returns(disposableForId);
-			logger.LogContextPushProperty(nameof(context.PublicName), Arg.Any<object>()).Returns(disposableForPublicName);
+			logger.LogContextPushProperty($"{_RIP_PREFIX}{nameof(context.Id)}", Arg.Any<object>()).Returns(disposableForId);
+			logger.LogContextPushProperty($"{_RIP_PREFIX}{nameof(context.PublicName)}", Arg.Any<object>()).Returns(disposableForPublicName);
 
 			// ACT
 			using (logger.LogContextPushProperties(context))
@@ -83,8 +85,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Extensions
 			{
 				Received.InOrder(() =>
 				{
-					logger.LogContextPushProperty("Id", Arg.Any<object>());
-					logger.LogContextPushProperty("PublicName", Arg.Any<object>());
+					logger.LogContextPushProperty($"{_RIP_PREFIX}Id", Arg.Any<object>());
+					logger.LogContextPushProperty($"{_RIP_PREFIX}PublicName", Arg.Any<object>());
 				});
 
 				shouldVerifyInCatch = false;
