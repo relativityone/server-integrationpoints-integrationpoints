@@ -90,9 +90,9 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		[Guid("DDF4C569-AE1D-45F8-9E0F-740399BA059F")]
 		private sealed class SourceProvidersMigration : IntegrationPointSourceProviderInstaller
 		{
-			private readonly List<SourceProviderInstaller.SourceProvider> _sourceProviders;
+			private readonly List<SourceProvider> _sourceProviders;
 
-			public SourceProvidersMigration(List<SourceProviderInstaller.SourceProvider> sourceProvidersToMigrate, IEHHelper helper, IImportService importService)
+			public SourceProvidersMigration(List<SourceProvider> sourceProvidersToMigrate, IEHHelper helper, IImportService importService)
 			{
 				_sourceProviders = sourceProvidersToMigrate;
 				Helper = helper;

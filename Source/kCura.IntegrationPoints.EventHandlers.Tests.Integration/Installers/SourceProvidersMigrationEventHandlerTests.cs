@@ -75,10 +75,12 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 				providerToInstalled
 			};
 
+			Helper = Substitute.For<IEHHelper>();
 			// act
-			Execute();
+			var result = Execute();
 
 			//assert
+			Assert.That(result.Success, Is.True);
 			MockImportService importService = (MockImportService)Importer;
 			Assert.IsNotNull(importService.InstalledProviders);
 			Assert.AreEqual(1, importService.InstalledProviders.Count());
