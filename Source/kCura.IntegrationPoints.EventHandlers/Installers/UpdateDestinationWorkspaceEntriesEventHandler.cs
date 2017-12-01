@@ -1,20 +1,35 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 using kCura.EventHandler;
 using kCura.EventHandler.CustomAttributes;
 using kCura.IntegrationPoints.EventHandlers.Commands;
 using kCura.IntegrationPoints.EventHandlers.Commands.Factories;
+using kCura.IntegrationPoints.SourceProviderInstaller;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.Installers
 {
 	[Description("Updates Destination Workspace entires with Federated Instance name.")]
 	[RunOnce(true)]
 	[Guid("C91E34A1-856B-490F-B15D-575CA9021BD2")]
-	public class UpdateDestinationWorkspaceEntriesEventHandler : PostInstallEventHandler
+	public class UpdateDestinationWorkspaceEntriesEventHandler : PostInstallEventHandlerBase
 	{
-		public override Response Execute()
+		protected override IAPILog CreateLogger()
 		{
-			var eventHandlerCommandExecutor = new EventHandlerCommandExecutor(Helper.GetLoggerFactory().GetLogger());
-			return eventHandlerCommandExecutor.Execute(UpdateDestinationWorkspaceEntriesFactory.Create(Helper, Helper.GetActiveCaseID()));
+			return Helper.GetLoggerFactory().GetLogger().ForContext<UpdateDestinationWorkspaceEntriesEventHandler>();
+		}
+
+		protected override string SuccessMessage => "Destination Workspace entries successfully updated.";
+
+		protected override string GetFailureMessage(Exception ex)
+		{
+			return "Failed to update Destination Workspace entries.";
+		}
+
+		protected override void Run()
+		{
+			ICommand command = SetTypeOfExportDefaultValueCommandFactory.Create(Helper, Helper.GetActiveCaseID());
+			command.Execute();
 		}
 	}
 }

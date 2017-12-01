@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Linq;
 using System.Runtime.InteropServices;
 using kCura.EventHandler;
 using kCura.EventHandler.CustomAttributes;
-using kCura.IntegrationPoints.Core.Extensions;
 using kCura.IntegrationPoints.Core.Helpers;
-using kCura.IntegrationPoints.Core.Logging;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.SourceProviderInstaller;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.Installers
@@ -16,24 +14,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 	[Description("Create Data Transfer folders structure")]
 	[RunOnce(false)]
 	[Guid("F391252A-FD72-4EF4-B323-650C70A66B81")]
-	public class RegisterDataTransferLocationInstaller : PostInstallEventHandler
+	public class RegisterDataTransferLocationInstaller : PostInstallEventHandlerBase
 	{
-		private IAPILog _logger;
 		private IDataTransferLocationService _dataTransferLocationService;
 
-		internal IAPILog Logger
-		{
-			get
-			{
-				if (_logger == null)
-				{
-					_logger = Helper.GetLoggerFactory().GetLogger().ForContext<RegisterDataTransferLocationInstaller>();
-				}
-
-				return _logger;
-			}
-		}
-
+		
 		internal IDataTransferLocationService DataTransferLocationService
 		{
 			get
@@ -50,39 +35,22 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			}
 		}
 
-		public override Response Execute()
+		protected override IAPILog CreateLogger()
 		{
-			try
-			{
-				Logger.LogDebug($"Start creating data transfer folders creation for wksp...{Helper.GetActiveCaseID()}");
-				DataTransferLocationService.CreateForAllTypes(Helper.GetActiveCaseID());
-
-				return new Response
-				{
-					Message = "Data Transfer directories created successfully",
-					Success = true
-				};
-			}
-			catch (Exception ex)
-			{
-				LogCreatingDataTransferLocationError(ex);
-
-				return new Response
-				{
-					Exception = ex,
-					Message = ex.Message,
-					Success = false
-				};
-			}
+			return Helper.GetLoggerFactory().GetLogger().ForContext<RegisterDataTransferLocationInstaller>();
 		}
 
-		#region Logging
+		protected override string SuccessMessage => "Data Transfer directories created successfully";
 
-		private void LogCreatingDataTransferLocationError(Exception exception)
+		protected override string GetFailureMessage(Exception ex)
 		{
-			Logger.LogError(exception, "Failed to create Data Transfer directories");
+			return "Failed to create Data Transfer directories";
 		}
 
-		#endregion
+		protected override void Run()
+		{
+			Logger.LogDebug($"Start creating data transfer folders creation for wksp...{Helper.GetActiveCaseID()}");
+			DataTransferLocationService.CreateForAllTypes(Helper.GetActiveCaseID());
+		}
 	}
 }

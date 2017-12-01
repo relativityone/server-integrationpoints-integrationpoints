@@ -9,13 +9,13 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
 	[Description("Deletes any corresponding jobs")]
 	[Guid("5EA14201-EEBE-4D1D-99FA-2E28C9FAB7F4")]
-	public class DeleteEventHandler : PreDeleteEventHandler, IEventHandler
+	public class DeleteEventHandler : PreDeleteEventHandler, IEventHandlerEx
 	{
 		public override FieldCollection RequiredFields => null;
 
 		public override Response Execute()
 		{
-			var executor = new EventHandlerExecutor();
+			var executor = new EventHandlerExecutorExHandler();
 			return executor.Execute(this);
 		}
 

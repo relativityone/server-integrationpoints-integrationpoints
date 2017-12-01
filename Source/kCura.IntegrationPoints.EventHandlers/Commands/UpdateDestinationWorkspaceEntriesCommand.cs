@@ -19,9 +19,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 			_destinationWorkspaceRepository = destinationWorkspaceRepository;
 		}
 
-		public string SuccessMessage => "Destination Workspace entries successfully updated.";
-		public string FailureMessage => "Failed to update Destination Workspace entries.";
-
 		public void Execute()
 		{
 			var thisInstance = FederatedInstanceManager.LocalInstance;

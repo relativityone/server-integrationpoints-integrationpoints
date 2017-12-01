@@ -3,13 +3,15 @@ using kCura.IntegrationPoints.EventHandlers.Commands.Context;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands
 {
+	public interface IEventHandlerEx : IEventHandler
+	{
+		string SuccessMessage { get; }
+		string FailureMessage { get; }
+	}
+
 	public interface IEventHandler
 	{
 		IEHContext Context { get; }
-
-		string SuccessMessage { get; }
-
-		string FailureMessage { get; }
 
 		Type CommandType { get; }
 	}

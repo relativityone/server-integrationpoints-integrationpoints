@@ -4,7 +4,6 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using kCura.Apps.Common.Data;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.EventHandler;
 using kCura.EventHandler.CustomAttributes;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Authentication;
@@ -25,6 +24,7 @@ using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Authentication;
+using kCura.IntegrationPoints.SourceProviderInstaller;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 	[Guid("5E882EE9-9E9D-4AFA-9B2C-EAC6C749A8D4")]
 	[Description("Updates the Has Errors field on existing Integration Points.")]
 	[RunOnce(true)]
-	public class SetHasErrorsField : PostInstallEventHandler
+	public class SetHasErrorsField : PostInstallEventHandlerBase
 	{
 		private ICaseServiceContext _caseServiceContext;
 		private IIntegrationPointService _integrationPointService;
@@ -54,38 +54,34 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			_caseServiceContext = caseServiceContext;
 		}
 
-		public override Response Execute()
+		protected override IAPILog CreateLogger()
 		{
-			CreateServices();
-			return ExecuteInstanced();
+			return Helper.GetLoggerFactory().GetLogger().ForContext<SetHasErrorsField>();
 		}
 
-		internal Response ExecuteInstanced()
+		protected override string SuccessMessage
+			=> "Updating the Has Errors field on the Integration Point object completed successfully";
+
+		protected override string GetFailureMessage(Exception ex)
 		{
-			var response = new Response
-			{
-				Message = "Updated successfully.",
-				Success = true
-			};
+			return "Updating the Has Errors field on the Integration Point object failed.";
+		}
 
-			try
-			{
-				IList<Data.IntegrationPoint> integrationPoints = GetIntegrationPoints();
+		protected override void Run()
+		{
+			CreateServices();
+			ExecuteInstanced();
+		}
 
-				foreach (Data.IntegrationPoint integrationPoint in integrationPoints)
-				{
-					UpdateIntegrationPointHasErrorsField(integrationPoint);
-				}
+		internal void ExecuteInstanced()
+		{
+			
+			IList<Data.IntegrationPoint> integrationPoints = GetIntegrationPoints();
+
+			foreach (Data.IntegrationPoint integrationPoint in integrationPoints)
+			{
+				UpdateIntegrationPointHasErrorsField(integrationPoint);
 			}
-			catch (Exception e)
-			{
-				LogSettingHasErrorsFieldError(e);
-				response.Message = $"Updating the Has Errors field on the Integration Point object failed. Exception message: {e.Message}.";
-				response.Exception = e;
-				response.Success = false;
-			}
-
-			return response;
 		}
 
 		/// <summary>
@@ -161,15 +157,5 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			IList<Data.IntegrationPoint> integrationPoints = _integrationPointService.GetAllRDOs();
 			return integrationPoints;
 		}
-
-		#region Logging
-
-		private void LogSettingHasErrorsFieldError(Exception e)
-		{
-			var logger = Helper.GetLoggerFactory().GetLogger().ForContext<SetHasErrorsField>();
-			logger.LogError(e, "Updating the Has Errors field on the Integration Point object failed.");
-		}
-
-		#endregion
 	}
 }

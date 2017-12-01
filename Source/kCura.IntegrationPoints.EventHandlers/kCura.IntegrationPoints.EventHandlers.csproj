@@ -145,7 +145,7 @@
     <Compile Include="Commands\CreateTenantIdForSecretStoreCommand.cs" />
     <Compile Include="Commands\DeleteIntegrationPointCommand.cs" />
     <Compile Include="Commands\Context\EHContext.cs" />
-    <Compile Include="Commands\EventHandlerCommandExecutor.cs" />
+    <Compile Include="Commands\EventHandlerExecutorExHandler.cs" />
     <Compile Include="Commands\EventHandlerExecutor.cs" />
     <Compile Include="Commands\Factories\SetPromoteEligibleFieldCommandFactory.cs" />
     <Compile Include="Commands\Factories\SetTypeOfExportDefaultValueCommandFactory.cs" />
@@ -183,7 +183,6 @@
     <Compile Include="Installers\CreateTenantIdForSecretStoreInstaller.cs" />
     <Compile Include="Commands\Factories\RestoreJobHistoryDestinationWorkspaceCommandFactory.cs" />
     <Compile Include="Installers\Helpers\Factories\SecretStoreCleanUpFactory.cs" />
-    <Compile Include="Commands\Factories\UpdateDestinationWorkspaceEntriesFactory.cs" />
     <Compile Include="Commands\Helpers\CreateTenantIdForSecretStore.cs" />
     <Compile Include="Commands\Helpers\ICreateTenantIdForSecretStore.cs" />
     <Compile Include="Installers\Helpers\ISecretStoreCleanUp.cs" />

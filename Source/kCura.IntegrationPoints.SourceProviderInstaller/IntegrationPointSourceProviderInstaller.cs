@@ -72,13 +72,6 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		/// <returns>The data source providers for registration.</returns>
 		public abstract IDictionary<Guid, SourceProvider> GetSourceProviders();
 
-		private IAPILog _logger;
-
-		/// <summary>
-		/// Logger instance used to track progress and errors
-		/// </summary>
-		protected override IAPILog Logger => _logger ?? (_logger = Helper.GetLoggerFactory().GetLogger().ForContext<IntegrationPointSourceProviderInstaller>());
-
 		private ICaseServiceContext _caseContext;
 		internal ICaseServiceContext CaseServiceContext
 		{

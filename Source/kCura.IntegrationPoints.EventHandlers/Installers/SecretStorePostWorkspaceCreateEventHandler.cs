@@ -10,11 +10,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 	[Description("Create TenantID for RIP's Secret Store")]
 	[RunOnce(true)]
 	[Guid("09854211-85C1-4360-ADAE-CED54096D86A")]
-	public class SecretStorePostWorkspaceCreateEventHandler : PostWorkspaceCreateEventHandlerBase, IEventHandler
+	public class SecretStorePostWorkspaceCreateEventHandler : PostWorkspaceCreateEventHandlerBase, IEventHandlerEx
 	{
 		public override Response Execute()
 		{
-			var executor = new EventHandlerExecutor();
+			var executor = new EventHandlerExecutorExHandler();
 			return executor.Execute(this);
 		}
 

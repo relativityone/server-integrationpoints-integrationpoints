@@ -22,14 +22,23 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 
 		private readonly Lazy<IErrorService> _errorService;
 
+		private readonly Lazy<IAPILog> _log;
+
 		protected abstract string SuccessMessage { get; }
 		protected abstract string GetFailureMessage(Exception ex);
-		protected abstract IAPILog Logger { get;  }
+
+		protected IAPILog Logger => _log.Value;
 
 		protected PostInstallEventHandlerBase()
 		{
+			_log = new Lazy<IAPILog>(CreateLogger);
 			_errorService = new Lazy<IErrorService>(() => 
 				new EhErrorService(new CreateErrorRdoQuery(new RsapiClientFactory(Helper), Logger, new SystemEventLoggingService())));
+		}
+
+		protected virtual IAPILog CreateLogger()
+		{
+			return Helper.GetLoggerFactory().GetLogger().ForContext<IntegrationPointSourceProviderInstaller>();
 		}
 
 		protected abstract void Run();

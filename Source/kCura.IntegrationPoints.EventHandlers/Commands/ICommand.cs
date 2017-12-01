@@ -4,8 +4,5 @@
 	public interface ICommand
 	{
 		void Execute();
-
-		string SuccessMessage { get; }
-		string FailureMessage { get; }
 	}
 }

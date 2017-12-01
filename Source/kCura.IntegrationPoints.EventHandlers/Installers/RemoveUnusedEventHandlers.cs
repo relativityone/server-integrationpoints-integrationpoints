@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Runtime.InteropServices;
-using kCura.EventHandler;
 using kCura.EventHandler.CustomAttributes;
+using kCura.IntegrationPoints.Domain.Exceptions;
+using kCura.IntegrationPoints.SourceProviderInstaller;
 using kCura.Relativity.Client;
 using Relativity.API;
 using ArtifactType = Relativity.ArtifactType;
@@ -14,36 +15,42 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 	[Description("Deletes/Removes old event handlers for Integration Point - PreLoad and PageInteraction")]
 	[RunOnce(false)]
 	[Guid("1A4C2EC1-079E-4F8F-8FC8-1358627617DE")]
-	public class RemoveUnusedEventHandlers : PostInstallEventHandler
+	public class RemoveUnusedEventHandlers : PostInstallEventHandlerBase
 	{
 		private const string _PRE_LOAD_EVENT_HANDLER_GUID = "c77369d2-3f9a-4598-b7bc-229050b3bbe6";
 		private const string _PAGE_INTERACTION_EVENT_HANDLER_GUID = "eed5ad4a-3137-4a93-a2b6-3d96e3894cd2";
 
 		private const int _ARTIFACTTYPEID_EVENTHANDLER = (int) ArtifactType.EventHandler;
 
-		public override Response Execute()
+		protected override IAPILog CreateLogger()
 		{
-			var response = new Response
-			{
-				Success = true,
-				Message = "Old EventHandlers successfully removed."
-			};
+			return Helper.GetLoggerFactory().GetLogger().ForContext<RemoveUnusedEventHandlers>();
+		}
 
-			List<int> artifactIds = RetrieveArtifactIdsByGuids(new List<string> {_PRE_LOAD_EVENT_HANDLER_GUID, _PAGE_INTERACTION_EVENT_HANDLER_GUID});
-			
+		protected override string SuccessMessage => "Deletes/Removes old event handlers for Integration Point - PreLoad and PageInteraction completed.";
+
+		protected override string GetFailureMessage(Exception ex)
+		{
+			return  "Deletes/Removes old event handlers for Integration Point - PreLoad and PageInteraction failed.";
+		}
+
+		protected override void Run()
+		{
+			List<int> artifactIds = RetrieveArtifactIdsByGuids(new List<string> { _PRE_LOAD_EVENT_HANDLER_GUID, _PAGE_INTERACTION_EVENT_HANDLER_GUID });
+
 			if (artifactIds.Count > 0)
 			{
 				UnlinkFromApplication(artifactIds);
 
 				ResultSet deleteResults = DeleteByArtifactIds(artifactIds);
-				response.Success = deleteResults.Success;
-				if (!response.Success)
+				if (!deleteResults.Success)
 				{
-					response.Message = deleteResults.Message;
+					throw new IntegrationPointsException(deleteResults.Message)
+					{
+						ExceptionSource = IntegrationPointsExceptionSource.RSAPI
+					};
 				}
 			}
-
-			return response;
 		}
 
 		private void UnlinkFromApplication(List<int> artifactIds)
@@ -66,7 +73,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			}
 			catch (Exception e)
 			{
-				Helper.GetLoggerFactory().GetLogger().ForContext<RemoveUnusedEventHandlers>().LogError(e, "Failed to unlink event handlers from application");
+				Logger.LogError(e, "Failed to unlink event handlers from application");
 			}
 		}
 

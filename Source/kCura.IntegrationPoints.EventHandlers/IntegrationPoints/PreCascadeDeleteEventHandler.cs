@@ -5,11 +5,11 @@ using kCura.IntegrationPoints.EventHandlers.Commands.Context;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
-	public class PreCascadeDeleteEventHandler : EventHandler.PreCascadeDeleteEventHandler, IEventHandler
+	public class PreCascadeDeleteEventHandler : EventHandler.PreCascadeDeleteEventHandler, IEventHandlerEx
 	{
 		public override Response Execute()
 		{
-			var executor = new EventHandlerExecutor();
+			var executor = new EventHandlerExecutorExHandler();
 			return executor.Execute(this);
 		}
 

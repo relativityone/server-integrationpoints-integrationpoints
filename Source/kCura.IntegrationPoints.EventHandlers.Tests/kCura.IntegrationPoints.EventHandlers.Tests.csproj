@@ -120,7 +120,6 @@
     </Compile>
     <Compile Include="Commands\CreateTenantIdForSecretStoreCommandTests.cs" />
     <Compile Include="Commands\DeleteIntegrationPointCommandTests.cs" />
-    <Compile Include="Commands\EventHandlerCommandExecutorTests.cs" />
     <Compile Include="Commands\Helpers\ArtifactsToDeleteTests.cs" />
     <Compile Include="Commands\Helpers\TenantForSecretStoreCreationValidatorTests.cs" />
     <Compile Include="Commands\ImportNativeFileCopyModeUpdaterTests.cs" />

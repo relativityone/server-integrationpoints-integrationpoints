@@ -13,8 +13,10 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.EventHandlers.Installers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
+using kCura.IntegrationPoints.SourceProviderInstaller;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
@@ -22,9 +24,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 	[Description("This is an event handler that migrates Integration Points that used Processing Source Location to use Data Transfer Location")]
 	[Guid("A48963EA-AB72-4B98-A634-7721B6D2BB9E")]
 	[RunOnce(true)]
-	public class IntegrationPointDataTransferLocationMigrationEventHandler : PostInstallEventHandler
+	public class IntegrationPointDataTransferLocationMigrationEventHandler : PostInstallEventHandlerBase
 	{
-		private IAPILog _logger;
 		private IDestinationProviderRepository _destinationProviderRepository;
 		private ISourceProviderRepository _sourceProviderRepository;
 		private IRepositoryFactory _repositoryFactory;
@@ -34,19 +35,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		private IDataTransferLocationService _dataTransferLocationService;
 		private IResourcePoolManager _resourcePoolManager;
 		private IDataTransferLocationMigration _dataTransferLocationMigration;
-
-		internal IAPILog Logger
-		{
-			get
-			{
-				if (_logger == null)
-				{
-					_logger = Helper.GetLoggerFactory().GetLogger().ForContext<DataTransferLocationMigrationEventHandler>();
-				}
-
-				return _logger;
-			}
-		}
 
 		internal IRepositoryFactory RepositoryFactory
 		{
@@ -169,27 +157,21 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			}
 		}
 
-		public override Response Execute()
+		protected override IAPILog CreateLogger()
 		{
-			try
-			{
-				DataTransferLocationMigration.Migrate();
+			return Helper.GetLoggerFactory().GetLogger().ForContext<IntegrationPointDataTransferLocationMigrationEventHandler>();
+		}
 
-				return new Response
-				{
-					Message = "Integration Points Data Transfer Location migrated successfully",
-					Success = true
-				};
-			}
-			catch (Exception e)
-			{
-				return new Response()
-				{
-					Exception = e,
-					Message = e.Message,
-					Success = false
-				};
-			}
+		protected override string SuccessMessage => "Integration Points Data Transfer Location migrated successfully";
+
+		protected override string GetFailureMessage(Exception ex)
+		{
+			return "Integration Points Data Transfer Location migration failed";
+		}
+
+		protected override void Run()
+		{
+			DataTransferLocationMigration.Migrate();
 		}
 	}
 }

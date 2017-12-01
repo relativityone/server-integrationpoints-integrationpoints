@@ -165,12 +165,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 			_integrationPointService.SaveIntegration(Arg.Is<IntegrationPointModel>(x => x.ArtifactID == integrationPoint.ArtifactId)).Returns(1);
 
 			// Act
-			Response response = _instance.ExecuteInstanced();
+			_instance.ExecuteInstanced();
 
 			// Assert
-			Assert.IsTrue(response.Success);
-			Assert.AreEqual("Updated successfully.", response.Message);
-
 			_integrationPointService.Received(1).GetAllRDOs();
 			_jobHistoryService.Received(1).GetJobHistory(Arg.Is<int[]>(x => CompareLists(x, integrationPoint.JobHistory)));
 			_caseServiceContext.RsapiService.IntegrationPointLibrary.Received(1)
@@ -185,11 +182,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 			_integrationPointService.GetAllRDOs().Throws(e);
 
 			// Act
-			Response response = _instance.ExecuteInstanced();
+			Assert.Throws<Exception>(() => _instance.ExecuteInstanced());
 
 			// Assert
-			Assert.IsFalse(response.Success);
-			Assert.AreEqual("Updating the Has Errors field on the Integration Point object failed. Exception message: Query failed.", response.Message);
 
 			_integrationPointService.Received(1).GetAllRDOs();
 			_jobHistoryService.Received(0).GetJobHistory(null);
