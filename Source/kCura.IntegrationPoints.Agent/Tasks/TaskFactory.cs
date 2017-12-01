@@ -236,9 +236,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void SetJobIdOnJobHistory(Job job, IntegrationPoint integrationPointDto)
 		{
-			var jobHistory = GetJobHistory(job, integrationPointDto);
-			jobHistory.JobID = job.JobId.ToString();
-			_jobHistoryService.UpdateRdo(jobHistory);
+			JobHistory jobHistory = GetJobHistory(job, integrationPointDto);
+			if (string.IsNullOrEmpty(jobHistory.JobID))
+			{
+				jobHistory.JobID = job.JobId.ToString();
+				_jobHistoryService.UpdateRdo(jobHistory);
+			}
 		}
 
 		private void UpdateJobHistoryOnFailure(Job job, IntegrationPoint integrationPointDto, Exception e)

@@ -281,8 +281,6 @@
     <Compile Include="Repositories\IObjectTypeRepository.cs" />
     <Compile Include="Repositories\ISavedSearchRepository.cs" />
     <Compile Include="Queries\GetSavedSearchesQuery.cs" />
-    <Compile Include="Queries\FileQuery.cs" />
-    <Compile Include="Queries\IFileQuery.cs" />
     <Compile Include="RelativityVersion.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="EddsDbContext.cs" />
