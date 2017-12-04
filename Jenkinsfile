@@ -125,7 +125,7 @@ stage('Get Server') {
         string(name: 'temp_file', value: windows_path),
         string(name: 'pool_name', value: 'cook')]
 					
-	def file = new File(linux_path)
+	def file = new File(windows_path)
 	random_server = file.text
 
 	def file_deleted = file.delete()
