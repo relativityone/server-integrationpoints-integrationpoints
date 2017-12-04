@@ -18,6 +18,7 @@ using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Web.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Relativity.API;
 using Relativity.CustomPages;
 
 namespace kCura.IntegrationPoints.Web
@@ -55,9 +56,10 @@ namespace kCura.IntegrationPoints.Web
 		public void Application_Error(object sender, EventArgs e)
 		{
 			Exception exception = Server.GetLastError();
+			IAPILog log = ConnectionHelper.Helper().GetLoggerFactory().GetLogger();
 			var rsapiClientFactory = new RsapiClientFactory(ConnectionHelper.Helper());
-			var errorRdoCreator = new CreateErrorRdoQuery(rsapiClientFactory, ConnectionHelper.Helper().GetLoggerFactory().GetLogger(), new SystemEventLoggingService());
-			var errorService = new CustomPageErrorService(errorRdoCreator);
+			var errorRdoCreator = new CreateErrorRdoQuery(rsapiClientFactory, log, new SystemEventLoggingService());
+			var errorService = new CustomPageErrorService(errorRdoCreator, log);
 			var errorModel = new ErrorModel(exception)
 			{
 				Location = "Global error handler",

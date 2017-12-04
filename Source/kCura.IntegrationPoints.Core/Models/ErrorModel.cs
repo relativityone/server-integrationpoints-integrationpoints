@@ -7,20 +7,37 @@ namespace kCura.IntegrationPoints.Core.Models
 	{
 		public int WorkspaceId { get; set; }
 
-		public string Message { get; set; }
+		public string Message { get; }
 
-		public string FullError { get; set; }
+		public string FullError { get; }
 
 		public string Source { get; set; }
 
 		public string Location { get; set; }
 
-		public ErrorModel() { }
+		/// <summary>
+		/// It can be GUID (Web/EH) or int (Agent Job Id)
+		/// </summary>
+		public object CorrelationId { get; set; }
 
-		public ErrorModel(Exception exception, string message = null)
+		public bool AddToErrorTab { get; }
+
+		public Exception Exception { get; }
+
+		public ErrorModel(Exception exception, bool addToErrorTab = false, string message = null)
 		{
 			Message = message ?? exception.Message;
 			FullError = exception.ToString();
+			AddToErrorTab = addToErrorTab;
+		}
+
+		public ErrorModel(IntegrationPointsException exception, bool addToErrorTab = false, string message = null)
+		{
+			Message = message ?? exception.Message;
+			FullError = exception.ToString();
+
+			// The root error handler (eg: installer) might decide to add the error to Error Tab even the source exception is set differently
+			AddToErrorTab = addToErrorTab || exception.ShouldAddToErrorsTab;
 		}
 	}
 }

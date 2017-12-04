@@ -10,7 +10,6 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Data.Queries;
-using kCura.IntegrationPoints.Domain.Extensions;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller
@@ -32,8 +31,9 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		protected PostInstallEventHandlerBase()
 		{
 			_log = new Lazy<IAPILog>(CreateLogger);
+
 			_errorService = new Lazy<IErrorService>(() => 
-				new EhErrorService(new CreateErrorRdoQuery(new RsapiClientFactory(Helper), Logger, new SystemEventLoggingService())));
+				new EhErrorService(new CreateErrorRdoQuery(new RsapiClientFactory(Helper), Logger, new SystemEventLoggingService()), Logger));
 		}
 
 		protected virtual IAPILog CreateLogger()
@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 				}
 				catch (Exception ex)
 				{
-					response = HandleError(correlationContext.WorkspaceId.GetValueOrDefault(), ex);
+					response = HandleError(correlationContext.WorkspaceId.GetValueOrDefault(), ex, correlationContext.CorrelationId);
 				}
 				finally
 				{
@@ -87,28 +87,27 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 			return new EhCorrelationContext
 			{
 				ActionName = _ACTION_NAME,
-				CorrelationId = ehGuid,
+				CorrelationId = Guid.NewGuid(),
+				InstallerGuid = ehGuid,
 				WorkspaceId = LogHelper.GetValueAndLogEx(() => Helper.GetActiveCaseID(), $"Cannot extract Workspace Id in {ehGuid} installer", Logger)
 			};
 		}
 
-		private Response HandleError(int wkspId, Exception ex)
+		private Response HandleError(int wkspId, Exception ex, Guid correlationId)
 		{
 			string descError = GetFailureMessage(ex);
-			string errorMessage = "Source: EventHandler - {0}";
 
-			_errorService.Value.Log(new ErrorModel()
+			var errorModel = new ErrorModel(ex, true/* We want to add each errro to Error tab*/, descError)
 			{
-				Message = string.Format(errorMessage, descError),
-				FullError = ex.FlattenErrorMessages(),
-				WorkspaceId = wkspId
-			}
-			);
-			Logger.LogError(ex, errorMessage, descError);
+				WorkspaceId = wkspId,
+				CorrelationId = correlationId
+			};
+			_errorService.Value.Log(errorModel);
+
 			return new Response
 			{
 				Exception = ex,
-				Message = string.Format(errorMessage, descError),
+				Message = descError,
 				Success = false
 			};
 		}

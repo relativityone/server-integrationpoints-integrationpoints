@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.Web.Attributes
 	[AttributeUsage(AttributeTargets.All)]
 	public class LogApiExceptionFilterAttribute : ExceptionFilterAttribute
 	{
-		private const string _CONTACT_ADMIN_MESSAGE_ENDING = " Please contact system administrator";
+		private const string _CONTACT_ADMIN_MESSAGE_ENDING = " Please check Error tab for more details";
 
 		#region Fields
 

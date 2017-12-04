@@ -144,12 +144,11 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		protected override void Run()
 		{
 			IDictionary<Guid, SourceProvider> sourceProviders = GetSourceProviders();
+			Logger.LogDebug("Starting Post-installation process for {sourceProviders} provider", sourceProviders.Values.Select(item => item.Name));
 			if (sourceProviders.Count == 0)
 			{
-				throw new IntegrationPointsException($"Empty list of source providers found in {GetType().Name} class");
+				throw new IntegrationPointsException($"Provider does not implement the contract (Empty source provider list retrieved from {GetType().Name} class)");
 			}
-			Logger.LogDebug("Starting Post-installation process for {sourceProviders} provider", sourceProviders.Values.Select(item => item.Name));
-
 			OnRaisePostInstallPreExecuteEvent();
 			InstallSourceProvider(GetSourceProviders());
 		}

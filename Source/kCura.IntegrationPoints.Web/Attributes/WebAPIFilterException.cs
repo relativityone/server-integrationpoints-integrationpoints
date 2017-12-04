@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.Web.Attributes
 
 		private static ErrorModel CreateErrorModel(ExceptionLoggerContext context, int workspaceId)
 		{
-			return new ErrorModel(context.Exception)
+			return new ErrorModel(context.Exception, true)
 			{
 				WorkspaceId = workspaceId,
 				Location = context.Request.RequestUri.PathAndQuery,
