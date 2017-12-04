@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 
 		protected virtual IAPILog CreateLogger()
 		{
-			return Helper.GetLoggerFactory().GetLogger().ForContext<IntegrationPointSourceProviderInstaller>();
+			return Helper.GetLoggerFactory().GetLogger().ForContext<PostInstallEventHandlerBase>();
 		}
 
 		protected abstract void Run();
