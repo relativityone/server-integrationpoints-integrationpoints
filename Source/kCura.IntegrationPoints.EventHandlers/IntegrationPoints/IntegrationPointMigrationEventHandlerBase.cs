@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		protected IntegrationPointMigrationEventHandlerBase()
 		{
 			_errorService = new Lazy<IErrorService>(() =>
-				new EhErrorService(new CreateErrorRdoQuery(new RsapiClientFactory(Helper), Logger, new SystemEventLoggingService())));
+				new EhErrorService(new CreateErrorRdoQuery(new RsapiClientFactory(Helper), Logger, new SystemEventLoggingService()), Logger));
 		}
 
 		private IAPILog Logger
@@ -71,7 +71,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				}
 				catch (Exception ex)
 				{
-					return HandleError(correlationContext.WorkspaceId.GetValueOrDefault(), ex);
+					return HandleError(correlationContext.WorkspaceId.GetValueOrDefault(), ex, correlationContext.CorrelationId);
 				}
 			}
 		}
@@ -88,28 +88,27 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			return new EhCorrelationContext
 			{
 				ActionName = _ACTION_NAME,
-				CorrelationId = ehGuid,
+				CorrelationId = Guid.NewGuid(),
+				InstallerGuid = ehGuid,
 				WorkspaceId = LogHelper.GetValueAndLogEx(() => Helper.GetActiveCaseID(), $"Cannot extract Workspace Id in {ehGuid} installer", Logger)
 			};
 		}
 
-		private Response HandleError(int wkspId, Exception ex)
+		private Response HandleError(int wkspId, Exception ex, Guid correlationId)
 		{
 			string descError = GetFailureMessage(ex);
-			string errorMessage = "Source: EventHandler - {0}";
 
-			_errorService.Value.Log(new ErrorModel()
-				{
-					Message = string.Format(errorMessage, descError),
-					FullError = ex.FlattenErrorMessages(),
-					WorkspaceId = wkspId
-				}
-			);
-			Logger.LogError(ex, errorMessage, descError);
+			var errorModel = new ErrorModel(ex, true/* We want to add each errro to Error tab*/, descError)
+			{
+				WorkspaceId = wkspId,
+				CorrelationId = correlationId
+			};
+			_errorService.Value.Log(errorModel);
+
 			return new Response
 			{
 				Exception = ex,
-				Message = string.Format(errorMessage, descError),
+				Message = descError,
 				Success = false
 			};
 		}
