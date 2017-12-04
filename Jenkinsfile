@@ -117,8 +117,8 @@ def send_slack_message(recipients_list, message, color="E8E8E8") {
   
 stage('Get Server') {
     def file_name = UUID.randomUUID().toString() + ".txt"
-	def windows_path = "\\\\dv-file-01.testing.corp\\Testing\\TestingData\\PooledServers\\" + file_name
-	def linux_path = "/mnt/dv-file-01.testing.corp/TestingData/PooledServers/" + file_name
+	def windows_path = "\\\\kcura.corp\\sdlc\\Testing\\TestingData\\PooledServers\\" + file_name
+	def linux_path = "/mnt/kcura.corp/sdlc/testing/TestingData/PooledServers/" + file_name
 
 	build job: 'Provision.VMware.GetServerFromPool', parameters: [
         [$class: 'NodeParameterValue', name: 'node_label', labels: ['chef'], nodeEligibility: [$class: 'AllNodeEligibility']],
