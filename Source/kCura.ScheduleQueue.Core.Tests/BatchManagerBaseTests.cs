@@ -73,6 +73,11 @@ namespace kCura.ScheduleQueue.Core.Tests
 		{
 			public int BatchCount { get; private set; }
 
+			public override void EndWithError(Exception ex)
+			{
+				throw new NotImplementedException();
+			}
+
 			public override IEnumerable<string> GetUnbatchedIDs(Job job)
 			{
 				throw new NotImplementedException();

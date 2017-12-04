@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Security.Authentication;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Agent.Tasks.Helpers;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core;
@@ -128,7 +129,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		}
 
 
-	    protected virtual void ExecuteImport(IEnumerable<FieldMap> fieldMap,
+		public void EndWithError(Exception ex)
+		{
+			new TaskCleanupHelper(JobHistoryErrorService, JobHistory, JobHistoryService, JobService).EndTaskWithError(ex);
+		}
+
+
+
+		protected virtual void ExecuteImport(IEnumerable<FieldMap> fieldMap,
 			string sourceConfiguration, string destinationConfiguration, List<string> entryIDs,
 			SourceProvider sourceProviderRdo, DestinationProvider destinationProvider, Job job)
 		{

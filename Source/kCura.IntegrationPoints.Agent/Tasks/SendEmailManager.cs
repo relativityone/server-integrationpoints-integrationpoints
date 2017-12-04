@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Models;
@@ -20,6 +21,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_serializer = serializer;
 			_jobManager = jobManager;
 		    _logger = helper.GetLoggerFactory().GetLogger().ForContext<SendEmailManager>();
+		}
+
+		public override void EndWithError(Exception ex)
+		{
+			//ToDo: Add Error handling here
 		}
 
 		public override IEnumerable<string> GetUnbatchedIDs(Job job)

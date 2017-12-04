@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.Attributes;
+using kCura.IntegrationPoints.Agent.Tasks.Helpers;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core;
@@ -23,6 +24,7 @@ using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.BatchProcess;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
+using kCura.ScheduleQueue.Core.Services;
 using Relativity.API;
 using Relativity.Telemetry.MetricsCollection;
 using APMClient = Relativity.Telemetry.APM.Client;
@@ -158,7 +160,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			return new List<string>();
 		}
 
-
+		public override void EndWithError(Exception ex)
+		{
+			new TaskCleanupHelper(_jobHistoryErrorService, JobHistory, _jobHistoryService, _jobService).EndTaskWithError(ex);
+		}
 
 		public override void CreateBatchJob(Job job, List<string> batchIDs)
 		{
