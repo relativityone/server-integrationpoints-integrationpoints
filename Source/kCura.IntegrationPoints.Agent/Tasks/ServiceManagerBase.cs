@@ -4,6 +4,7 @@ using System.Linq;
 using Castle.Core.Internal;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.Attributes;
+using kCura.IntegrationPoints.Agent.Tasks.Helpers;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
@@ -87,6 +88,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		public SourceProvider SourceProvider { get; protected set; }
 
 		public abstract void Execute(Job job);
+
+		public void EndWithError(Exception ex)
+		{
+			new TaskCleanupHelper(JobHistoryErrorService,JobHistoryDto,JobHistoryService,JobService).EndTaskWithError( ex );
+		}
 
 		protected abstract void SetupSubscriptions(IDataSynchronizer synchronizer, Job job);
 		

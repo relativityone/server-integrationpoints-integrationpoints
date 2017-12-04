@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
+using kCura.Apps.Common.Utils;
+using kCura.IntegrationPoints.Core.Agent;
 using kCura.IntegrationPoints.Core.Extensions;
 using kCura.IntegrationPoints.Core.Logging;
 using kCura.ScheduleQueue.Core;
@@ -167,7 +169,7 @@ namespace kCura.ScheduleQueue.AgentBase
 				task = GetTask(job);
 				if (task == null)
 				{
-					throw new Exception("Could not find corresponding Task.");
+					throw new Exception("Could not find corresponding Task. ");
 				}
 
 				StartTask(job, task);
@@ -184,6 +186,7 @@ namespace kCura.ScheduleQueue.AgentBase
 				OnRaiseException(job, ex);
 				OnRaiseJobLogEntry(job, JobLogState.Error, ex);
 				LogOnJobExecutionError(job, ex);
+				task?.EndWithError(ex);
 			}
 			finally
 			{

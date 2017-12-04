@@ -8,5 +8,6 @@ namespace kCura.IntegrationPoints.Core.Services
 	public interface IArtifactService
 	{
 		IEnumerable<Artifact> GetArtifacts(int workspaceArtifactId, string artifactTypeName);
+		Artifact GetArtifact(int workspaceArtifactId, string artifactTypeName, int artifactId);
 	}
 }

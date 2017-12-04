@@ -121,9 +121,9 @@ namespace kCura.IntegrationPoints.Core.Services
 					if (errorType == ErrorTypeChoices.JobHistoryErrorJob)
 					{
 						JobLevelErrorOccurred = true;
-					}
-
-					if (_jobHistoryErrorList.Count == ERROR_BATCH_SIZE)
+						CommitErrors();
+					} 
+					else if(_jobHistoryErrorList.Count == ERROR_BATCH_SIZE)
 					{
 						CommitErrors();
 					}

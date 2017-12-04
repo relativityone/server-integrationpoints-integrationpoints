@@ -340,6 +340,7 @@
     <Compile Include="Tasks\ExportWorker.cs" />
     <Compile Include="RelativityConfigurationFactory.cs" />
     <Compile Include="Tasks\ExportServiceManager.cs" />
+    <Compile Include="Tasks\Helpers\TaskCleanupHelper.cs" />
     <Compile Include="Tasks\ImportServiceManager.cs" />
     <Compile Include="Tasks\SendEmailManager.cs" />
     <Compile Include="Tasks\SendEmailWorker.cs" />

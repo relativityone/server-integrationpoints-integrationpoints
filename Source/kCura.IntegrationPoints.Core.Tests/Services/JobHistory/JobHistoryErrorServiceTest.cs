@@ -45,11 +45,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		}
 
 		[Test]
-		public void CommitErrors_HasJobHistory_CommitsJobHistoryErrors()
+		public void CommitErrors_HasJobHistory_CommitsJobHistoryErrors_ForDocumentLevelErrors()
 		{
 			// Arrange
-			_instance.AddError(ErrorTypeChoices.JobHistoryErrorJob, "", "Fake job error.", null);
 			_instance.AddError(ErrorTypeChoices.JobHistoryErrorItem, "MyIdentifier", "Fake item error.", "stack trace");
+			_instance.AddError(ErrorTypeChoices.JobHistoryErrorItem, "MyIdentifier2", "Fake item error2.", "stack trace2");
 			List<JobHistoryError> errors = new List<JobHistoryError>();
 			_caseServiceContext.RsapiService.JobHistoryErrorLibrary.Create(Arg.Do<IEnumerable<JobHistoryError>>(x => errors.AddRange(x)));
 			_instance.IntegrationPoint.HasErrors = false;
@@ -60,15 +60,34 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			// Assert
 			_caseServiceContext.RsapiService.JobHistoryErrorLibrary.Received(1).Create(Arg.Do<IEnumerable<JobHistoryError>>(x => errors.AddRange(x)));
 			Assert.AreEqual(2, errors.Count);
-			Assert.AreEqual(ErrorTypeChoices.JobHistoryErrorJob.Name, errors[0].ErrorType.Name);
-			Assert.AreEqual("Fake job error.", errors[0].Error);
-			Assert.AreEqual(null, errors[0].StackTrace);
+			Assert.AreEqual(ErrorTypeChoices.JobHistoryErrorItem.Name, errors[0].ErrorType.Name);
+			Assert.AreEqual("Fake item error.", errors[0].Error);
+			Assert.AreEqual("stack trace", errors[0].StackTrace);
 			Assert.AreEqual(ErrorTypeChoices.JobHistoryErrorItem.Name, errors[1].ErrorType.Name);
-			Assert.AreEqual("Fake item error.", errors[1].Error);
-			Assert.AreEqual("stack trace", errors[1].StackTrace);
+			Assert.AreEqual("Fake item error2.", errors[1].Error);
+			Assert.AreEqual("stack trace2", errors[1].StackTrace);
 			Assert.IsNotNull(_instance.IntegrationPoint.HasErrors);
 			Assert.IsTrue(_instance.IntegrationPoint.HasErrors.Value);
 		}
+
+
+		[Test]
+		public void AddError_CommitsJobHistoryErrors_ForJobLevelErrors()
+		{
+			// Arrange
+			List<JobHistoryError> errors = new List<JobHistoryError>();
+			_caseServiceContext.RsapiService.JobHistoryErrorLibrary.Create(Arg.Do<IEnumerable<JobHistoryError>>(x => errors.AddRange(x)));
+			_instance.IntegrationPoint.HasErrors = false;
+
+			// Act
+			_instance.AddError(ErrorTypeChoices.JobHistoryErrorJob, "", "Fake job error.", "stack trace");
+			_instance.AddError(ErrorTypeChoices.JobHistoryErrorJob, "", "Fake job error2.", "stack trace2");
+
+			// Assert
+			_caseServiceContext.RsapiService.JobHistoryErrorLibrary.Received(2).Create(Arg.Do<IEnumerable<JobHistoryError>>(x => errors.AddRange(x)));
+			Assert.AreEqual(2, errors.Count);
+		}
+
 
 		[Test]
 		public void CommitErrors_HasJobHistory_NoErrorsToCommit()
@@ -86,10 +105,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		}
 
 		[Test]
-		public void CommitErrors_FailsCommit_ThrowsException()
+		public void CommitErrors_FailsCommit_ThrowsException_ItemLevelError()
 		{
 			// Arrange
-			_instance.AddError(ErrorTypeChoices.JobHistoryErrorJob, "", "Fake job error.", null);
 			_instance.AddError(ErrorTypeChoices.JobHistoryErrorItem, "MyIdentifier", "Fake item error.", null);
 			_caseServiceContext.RsapiService.JobHistoryErrorLibrary.Create(Arg.Any<IEnumerable<JobHistoryError>>()).Throws(new Exception());
 			_caseServiceContext.RsapiService.IntegrationPointLibrary.Update(Arg.Any<Data.IntegrationPoint>()).Returns(true);
@@ -101,8 +119,25 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			// Assert
 			_caseServiceContext.RsapiService.IntegrationPointLibrary.Received().Update(Arg.Any<Data.IntegrationPoint>());
 			Assert.IsTrue(returnedException.Message.Contains("Could not commit Job History Errors. These are uncommitted errors:" + Environment.NewLine));
-			Assert.IsTrue(returnedException.Message.Contains("Type: Job    Error: Fake job error." + Environment.NewLine));
 			Assert.IsTrue(returnedException.Message.Contains("Type: Item    Identifier: MyIdentifier    Error: Fake item error."));
+		}
+
+		[Test]
+		public void CommitErrors_FailsCommit_ThrowsException_JobLevelError()
+		{
+			// Arrange
+		_caseServiceContext.RsapiService.JobHistoryErrorLibrary.Create(Arg.Any<IEnumerable<JobHistoryError>>()).Throws(new Exception());
+			_caseServiceContext.RsapiService.IntegrationPointLibrary.Update(Arg.Any<Data.IntegrationPoint>()).Returns(true);
+			_instance.IntegrationPoint.HasErrors = false;
+
+			// Act
+			//Adding job level error automatically commits errors
+			Exception returnedException = Assert.Throws<Exception>(() => _instance.AddError(ErrorTypeChoices.JobHistoryErrorJob, "", "Fake job error.", null));
+
+			// Assert
+			_caseServiceContext.RsapiService.IntegrationPointLibrary.Received().Update(Arg.Any<Data.IntegrationPoint>());
+			Assert.IsTrue(returnedException.Message.Contains("Could not commit Job History Errors. These are uncommitted errors:" + Environment.NewLine));
+			Assert.IsTrue(returnedException.Message.Contains("Type: Job    Error: Fake job error." + Environment.NewLine));
 		}
 
 		[Test]
@@ -188,7 +223,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			reporter.RaiseOnJobError(exception);
 
 			// ASSERT 
-			Assert.AreEqual(1, _instance.PendingErrorCount);
+			Assert.IsTrue(_instance.JobLevelErrorOccurred);
 		}
 
 		[Test]

@@ -20,29 +20,43 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public IEnumerable<Artifact> GetArtifacts(int workspaceArtifactId, string artifactTypeName)
 		{
+			return GetArtifactsByCondition(workspaceArtifactId, artifactTypeName);
+		}
+
+		public Artifact GetArtifact(int workspaceArtifactId, string artifactTypeName, int artifactId)
+		{
+			return GetArtifactsByCondition(workspaceArtifactId, artifactTypeName,
+				new ObjectCondition("ArtifactID", ObjectConditionEnum.EqualTo, artifactId)).Single();
+		}
+
+		private IEnumerable<Artifact> GetArtifactsByCondition(int workspaceArtifactId, string artifactTypeName, Condition condition = null)
+		{
 			if (workspaceArtifactId != 0)
 			{
 				_client.APIOptions.WorkspaceID = workspaceArtifactId;
 			}
 
-			var query = new Query { ArtifactTypeName = artifactTypeName };
+			var query = new Query
+			{
+				ArtifactTypeName = artifactTypeName,
+				Condition = condition
+			};
 
 			QueryResult result = _client.Query(_client.APIOptions, query);
 
 			if (!result.Success)
 			{
-				LogQueryingArtifactError(artifactTypeName);
-				throw new NotFoundException("Artifact query failed");
+				LogQueryingArtifactError(artifactTypeName, result.Message);
+				throw new NotFoundException($"Artifact query failed: {result.Message}");
 			}
 
 			return result.QueryArtifacts;
 		}
-
 		#region Logging
 
-		private void LogQueryingArtifactError(string artifactTypeName)
+		private void LogQueryingArtifactError(string artifactTypeName, string message)
 		{
-			_logger.LogError("Artifact query failed for {ArtifactTypeName}.", artifactTypeName);
+			_logger.LogError("Artifact query failed for {ArtifactTypeName}. Details: {Message}", artifactTypeName, message);
 		}
 
 		#endregion
