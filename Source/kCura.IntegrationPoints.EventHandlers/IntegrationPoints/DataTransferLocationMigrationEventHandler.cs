@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using kCura.EventHandler;
 using kCura.EventHandler.CustomAttributes;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
@@ -14,22 +12,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 	[Guid("D9F2468C-9480-4E70-9AC7-837E2AFD3237")]
 	public class DataTransferLocationMigrationEventHandler : IntegrationPointMigrationEventHandlerBase
 	{
-		private IAPILog _logger;
 		private IDataTransferLocationService _dataTransferLocationService;
-
-		internal IAPILog Logger
-		{
-			get
-			{
-				if (_logger == null)
-				{
-					_logger = Helper.GetLoggerFactory().GetLogger().ForContext<DataTransferLocationMigrationEventHandler>();
-				}
-
-				return _logger;
-			}
-		}
-
 		internal IDataTransferLocationService DataTransferLocationService
 		{
 			get
@@ -46,38 +29,12 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			}
 		}
 
-		public override Response Execute()
+		protected override void Run()
 		{
-			try
-			{
-				DataTransferLocationService.CreateForAllTypes(Helper.GetActiveCaseID());
-
-				return new Response
-				{
-					Message = "Data Transfer directories migrated successfully",
-					Success = true
-				};
-			}
-			catch (Exception ex)
-			{
-				LogCreatingDataTransferLocationError(ex);
-
-				return new Response
-				{
-					Exception = ex,
-					Message = ex.Message,
-					Success = false
-				};
-			}
+			DataTransferLocationService.CreateForAllTypes(Helper.GetActiveCaseID());
 		}
 
-		#region Logging
-
-		private void LogCreatingDataTransferLocationError(Exception exception)
-		{
-			Logger.LogError(exception, "Failed to create Data Transfer directories");
-		}
-
-		#endregion
+		protected override string SuccessMessage => "Data Transfer directories migrated successfully";
+		protected override string GetFailureMessage(Exception ex) => "Failed to create Data Transfer directories";
 	}
 }

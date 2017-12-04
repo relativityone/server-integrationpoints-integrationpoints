@@ -2,13 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using kCura.EventHandler;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.EventHandlers.Installers;
 using kCura.IntegrationPoints.SourceProviderInstaller;
 using kCura.IntegrationPoints.SourceProviderInstaller.Services;
 using kCura.Relativity.Client.DTOs;
-using kCura.Utility;
 using Relativity.API;
 using SourceProvider = kCura.IntegrationPoints.SourceProviderInstaller.SourceProvider;
 
@@ -18,8 +15,9 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 	[EventHandler.CustomAttributes.Description("This is an event handler to register back provider after creating workspace using the template that has integration point installed.")]
 	public class SourceProvidersMigrationEventHandler : IntegrationPointMigrationEventHandlerBase
 	{
-		internal IImportService Importer;
 		private IAPILog _logger;
+		internal IImportService Importer;
+		
 
 		public IAPILog Logger
 		{
@@ -27,25 +25,16 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			set { _logger = value; }
 		}
 
-		public override Response Execute()
+		protected override void Run()
 		{
-			try
-			{
-				List<SourceProviderInstaller.SourceProvider> sourceProviders = GetSourceProvidersToInstall();
-				SourceProvidersMigration migrationJob = new SourceProvidersMigration(sourceProviders, Helper, Importer);
-				return migrationJob.Execute();
-			}
-			catch (Exception e)
-			{
-				LogSourceProviderMigrationError(e);
-				return new Response
-				{
-					Message = e.Message,
-					Exception = e,
-					Success = false
-				};
-			}
+			List<SourceProviderInstaller.SourceProvider> sourceProviders = GetSourceProvidersToInstall();
+			var migrationJob = new SourceProvidersMigration(sourceProviders, Helper, Importer);
+			migrationJob.Execute();
 		}
+
+		protected override string SuccessMessage => "Source Provider migrated successfully.";
+
+		protected override string GetFailureMessage(Exception ex) => "Failed to migrate Source Provider.";
 
 		private List<SourceProviderInstaller.SourceProvider> GetSourceProvidersToInstall()
 		{
@@ -104,14 +93,5 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				return _sourceProviders.ToDictionary(provider => provider.GUID);
 			}
 		}
-
-		#region Logging
-
-		private void LogSourceProviderMigrationError(Exception e)
-		{
-			Logger.LogError(e, "Failed to migrate Source Provider.");
-		}
-
-		#endregion
 	}
 }

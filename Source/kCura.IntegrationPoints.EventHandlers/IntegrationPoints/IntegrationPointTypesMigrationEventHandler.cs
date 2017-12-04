@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using kCura.EventHandler;
 using kCura.EventHandler.CustomAttributes;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -19,14 +18,20 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 	[Guid("BC67BB8A-5C10-4559-A7CF-765556BD5748")]
 	public class IntegrationPointTypesMigrationEventHandler : IntegrationPointMigrationEventHandlerBase
 	{
-		private IAPILog _logger;
 		private IIntegrationPointTypeInstaller _integrationPointTypeInstaller;
+		private IAPILog _logger;
 
-
-		internal IAPILog Logger
+		private IAPILog Logger
 		{
-			get { return _logger ?? (_logger = Helper.GetLoggerFactory().GetLogger().ForContext<IntegrationPointTypesMigrationEventHandler>()); }
-			set { _logger = value; }
+			get
+			{
+				if (_logger == null)
+				{
+					_logger = Helper.GetLoggerFactory().GetLogger().ForContext<DataTransferLocationMigrationEventHandler>();
+				}
+
+				return _logger;
+			}
 		}
 
 		internal IIntegrationPointTypeInstaller IntegrationPointTypeInstaller
@@ -44,35 +49,21 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			set { _integrationPointTypeInstaller = value; }
 		}
 
-		public override Response Execute()
+		protected override void Run()
 		{
-			try
-			{
-				var integrationPointTypes = GetExistingIntegrationPointTypes();
+			List<IntegrationPointType> integrationPointTypes = GetExistingIntegrationPointTypes();
 
-				Dictionary<Guid, string> types = integrationPointTypes.ToDictionary(x => new Guid(x.Identifier), y => y.Name);
-				IntegrationPointTypeInstaller.Install(types);
-			}
-			catch (Exception e)
-			{
-				LogMigratingIntegrationPointTypesError(e);
-				return new Response
-				{
-					Exception = e,
-					Message = e.Message,
-					Success = false
-				};
-			}
-			return new Response
-			{
-				Message = "Types migrated successfully.",
-				Success = true
-			};
+			Dictionary<Guid, string> types = integrationPointTypes.ToDictionary(x => new Guid(x.Identifier), y => y.Name);
+			IntegrationPointTypeInstaller.Install(types);
 		}
+
+		protected override string SuccessMessage => "Types migrated successfully.";
+
+		protected override string GetFailureMessage(Exception ex) => "Failed to migrate Integration Point Types.";
 
 		private List<IntegrationPointType> GetExistingIntegrationPointTypes()
 		{
-			Query<RDO> query = new Query<RDO> {Fields = GetAllIntegrationPointTypeFields()};
+			var query = new Query<RDO> {Fields = GetAllIntegrationPointTypeFields()};
 			return WorkspaceTemplateServiceContext.RsapiService.IntegrationPointTypeLibrary.Query(query);
 		}
 
@@ -80,14 +71,5 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		{
 			return BaseRdo.GetFieldMetadata(typeof(IntegrationPointType)).Select(pair => new FieldValue(pair.Value.FieldGuid)).ToList();
 		}
-
-		#region Logging
-
-		private void LogMigratingIntegrationPointTypesError(Exception e)
-		{
-			Logger.LogError(e, "Failed to migrate Integration Point Types.");
-		}
-
-		#endregion
 	}
 }
