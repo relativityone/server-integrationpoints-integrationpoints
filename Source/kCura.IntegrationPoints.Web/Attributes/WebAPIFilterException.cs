@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Web.Http.ExceptionHandling;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data.Logging;
+using kCura.IntegrationPoints.Web.MessageHandlers;
 
 namespace kCura.IntegrationPoints.Web.Attributes
 {
@@ -56,10 +59,17 @@ namespace kCura.IntegrationPoints.Web.Attributes
 
 		private static ErrorModel CreateErrorModel(ExceptionLoggerContext context, int workspaceId)
 		{
+			string corrrelationId = string.Empty;
+			IEnumerable<string> headerValues = Enumerable.Empty<string>();
+			if (context.Request?.Headers.TryGetValues(CorrelationIdHandler.WebCorrelationIdName, out headerValues) == true)
+			{
+				corrrelationId = headerValues.FirstOrDefault();
+			}
 			return new ErrorModel(context.Exception, true)
 			{
 				WorkspaceId = workspaceId,
-				Location = context.Request.RequestUri.PathAndQuery,
+				Location = context.Request?.RequestUri.PathAndQuery,
+				CorrelationId = corrrelationId
 			};
 		}
 	}

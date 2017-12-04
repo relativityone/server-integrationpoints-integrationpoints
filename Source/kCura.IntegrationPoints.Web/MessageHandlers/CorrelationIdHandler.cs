@@ -2,10 +2,8 @@
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web.SessionState;
 using kCura.IntegrationPoints.Core.Extensions;
 using kCura.IntegrationPoints.Core.Logging;
-using kCura.IntegrationPoints.Core.Logging.Web;
 using kCura.IntegrationPoints.Web.Logging;
 using Relativity.API;
 
@@ -13,6 +11,8 @@ namespace kCura.IntegrationPoints.Web.MessageHandlers
 {
 	public class CorrelationIdHandler : DelegatingHandler
 	{
+		public const string WebCorrelationIdName = "X-Correlation-ID";
+
 		private readonly Lazy<IAPILog> _apiLogLocal;
 		private readonly ICPHelper _helper;
 		private readonly IWebCorrelationContextProvider _webCorrelationContextProvider;
@@ -40,11 +40,12 @@ namespace kCura.IntegrationPoints.Web.MessageHandlers
 			
 			using (_apiLogLocal.Value.LogContextPushProperties(correlationContext))
 			{
+				request.Headers.Add(WebCorrelationIdName, correlationContext.CorrelationId?.ToString());
 				_apiLogLocal.Value.LogDebug($"Integration Point Web Request: {request.RequestUri}");
 				return base.SendAsync(request, cancellationToken).ContinueWith(task =>
 				{
 					HttpResponseMessage response = task.Result;
-					response.Headers.Add("X-Correlation-ID", correlationContext.CorrelationId?.ToString());
+					response.Headers.Add(WebCorrelationIdName, correlationContext.CorrelationId?.ToString());
 					return response;
 				}, cancellationToken);
 			}
