@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
 using kCura.Crypto.DataProtection;
-#pragma warning disable 612
-
-
 
 namespace kCura.IntegrationPoints.Domain
 {
+#pragma warning disable CS0618
 	/// <summary>
 	/// This class marshals data to a target AppDomain after first encrypting each entry
 	/// </summary>
@@ -46,4 +44,5 @@ namespace kCura.IntegrationPoints.Domain
 			return decryptedData;
 		}
 	}
+#pragma warning restore CS0618
 }
