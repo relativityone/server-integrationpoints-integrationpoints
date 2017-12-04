@@ -80,9 +80,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_helperFactory.CreateTargetHelper(_helper, Arg.Any<int>(), Arg.Any<string>()).Returns(_targetHelper);
 
 			_jobHistoryService = Substitute.For<IJobHistoryService>();
+			var jobHistory = new JobHistory {JobID = "1"};
 			_jobHistoryService.CreateRdo(Arg.Any<Data.IntegrationPoint>(), Arg.Any<Guid>(),
 				Arg.Any<Relativity.Client.DTOs.Choice>(),
-				Arg.Any<DateTime?>()).Returns(new JobHistory());
+				Arg.Any<DateTime?>()).Returns(jobHistory);
 
 			_serviceFactory.CreateJobHistoryService(_helper, _helper).Returns(_jobHistoryService);
 			_serviceFactory.CreateJobHistoryService(_helper, _targetHelper).Returns(_jobHistoryService);
@@ -196,7 +197,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 
 			TaskParameters paramerters = new TaskParameters();
-			JobHistory jobHistory = new JobHistory() { ArtifactId = 1234 };
+			JobHistory jobHistory = new JobHistory() { ArtifactId = 1234, JobID = "1"};
 
 			ScheduleQueueAgentBase agentBase = new TestAgentBase(Guid.NewGuid());
 
@@ -293,8 +294,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			}
 		}
 
-		[Test]
-		public void ItShouldUpdateJobHistoryJobId()
+		[TestCaseSource(nameof(JobHistoryJobId_CaseData))]
+		public void ItShouldUpdateJobHistory(JobHistory jobHistory, bool shouldUpdateJobHistory)
 		{
 			TaskType taskType = TaskType.SyncManager;
 
@@ -333,12 +334,22 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			int jobId = 342343;
 
 			Job job = JobExtensions.CreateJob(jobId, taskType, relatedId);
-
+			
+			_jobHistoryService.CreateRdo(Arg.Any<Data.IntegrationPoint>(), Arg.Any<Guid>(),
+				Arg.Any<Relativity.Client.DTOs.Choice>(),
+				Arg.Any<DateTime?>()).Returns(jobHistory);
 			// Act
 			taskFactory.CreateTask(job, agentBase);
 
 			// Assert
-			_jobHistoryService.Received().UpdateRdo(Arg.Is<JobHistory>(x => x.JobID == jobId.ToString()));
+			if (shouldUpdateJobHistory)
+			{
+				_jobHistoryService.Received().UpdateRdo(Arg.Is<JobHistory>(x => x.JobID == jobId.ToString()));
+			}
+			else
+			{
+				_jobHistoryService.DidNotReceiveWithAnyArgs().UpdateRdo(Arg.Any<JobHistory>());
+			}
 		}
 
 		[Test]
@@ -397,6 +408,18 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				TestCaseData testCaseData = new TestCaseData(taskType) { TestName = taskType.ToString() };
 				yield return testCaseData;
 			}
+		}
+
+		private static IEnumerable<TestCaseData> JobHistoryJobId_CaseData()
+		{
+			yield return new TestCaseData(new JobHistory {JobID = null}, true)
+			{
+				TestName = "It should update jobId when it was null"
+			};
+			yield return new TestCaseData(new JobHistory { JobID = "3" }, false)
+			{
+				TestName = "It should not update jobId when it was already set"
+			};
 		}
 
 		public class TestAgentBase : ScheduleQueueAgentBase

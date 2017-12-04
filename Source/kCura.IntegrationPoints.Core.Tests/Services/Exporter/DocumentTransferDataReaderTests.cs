@@ -12,7 +12,7 @@ using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.Core;
 
-namespace kCura.IntegrationPoints.Core.Tests.Services.Export
+namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 {
 	[TestFixture]
 	public class DocumentTransferDataReaderTests : ExportTransferDataReaderTestsBase

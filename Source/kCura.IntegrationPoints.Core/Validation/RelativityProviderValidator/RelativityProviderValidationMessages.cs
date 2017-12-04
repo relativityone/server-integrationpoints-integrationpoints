@@ -19,6 +19,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 		public static readonly string FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_REPLACE = "Replace Values";
 		public static readonly string FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT = "Use Field Settings";
 		public static readonly string FIELD_MAP_DYNAMIC_FOLDER_PATH_AND_FOLDER_PATH_INFORMATION_CONFLICT = "You cannot use Folder Path Information from Document field when using Dynamic Folder Path generation.";
+		public static readonly string FIELD_MAP_IMAGE_TOO_MANY_FIELDS = "Too many fields mapped. Please map only identifier fields.";
 
 		public static readonly string WORKSPACE_INVALID_NAME = "workspace name contains an invalid character.";
 

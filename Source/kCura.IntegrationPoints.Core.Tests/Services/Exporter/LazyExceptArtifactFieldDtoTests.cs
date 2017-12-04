@@ -3,7 +3,7 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using NUnit.Framework;
 
-namespace kCura.IntegrationPoints.Core.Tests.Services.Export
+namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 {
 	[TestFixture]
 	public class LazyExceptArtifactFieldDtoTests : TestBase

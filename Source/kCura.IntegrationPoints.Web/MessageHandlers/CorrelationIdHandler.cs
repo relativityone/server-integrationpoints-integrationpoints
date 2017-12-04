@@ -41,7 +41,12 @@ namespace kCura.IntegrationPoints.Web.MessageHandlers
 			using (_apiLogLocal.Value.LogContextPushProperties(correlationContext))
 			{
 				_apiLogLocal.Value.LogDebug($"Integration Point Web Request: {request.RequestUri}");
-				return base.SendAsync(request, cancellationToken);
+				return base.SendAsync(request, cancellationToken).ContinueWith(task =>
+				{
+					HttpResponseMessage response = task.Result;
+					response.Headers.Add("X-Correlation-ID", correlationContext.CorrelationId?.ToString());
+					return response;
+				}, cancellationToken);
 			}
 		}
 

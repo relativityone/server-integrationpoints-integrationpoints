@@ -12,7 +12,7 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.Core.Api.Shared.Manager.Export;
 
-namespace kCura.IntegrationPoints.Core.Tests.Services.Export
+namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 {
 	[TestFixture]
 	public class RelativityExporterServiceTests : TestBase

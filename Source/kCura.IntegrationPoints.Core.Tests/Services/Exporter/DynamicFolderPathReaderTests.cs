@@ -9,7 +9,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NUnit.Framework;
 
-namespace kCura.IntegrationPoints.Core.Tests.Services.Export
+namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 {
 	public class DynamicFolderPathReaderTests : TestBase
 	{

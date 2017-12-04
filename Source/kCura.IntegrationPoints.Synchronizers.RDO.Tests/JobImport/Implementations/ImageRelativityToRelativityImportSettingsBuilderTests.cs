@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport.Implementati
 		{
 			// Arrange
 			var importSettings = GetImportSettings();
-			importSettings.IdentifierField = documentIdentifierField;
+			importSettings.DestinationIdentifierField = documentIdentifierField;
 			var imageSettings = GetImageSettings();
 
 			// Act
@@ -78,7 +78,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport.Implementati
 			SystemUnderTest.PopulateFrom(importSettings, imageSettings);
 
 			// Assert
-			Assert.AreEqual(autoNumberImages, imageSettings.AutoNumberImages);
+			Assert.AreEqual(true, imageSettings.AutoNumberImages);
 		}
 
 		[TestCase(true)]
@@ -180,7 +180,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport.Implementati
 		}
 
 		[TestCase(true, false, true, 54443, 232, "utf-8", "path\\to\\directory")]
-		[TestCase(false, true, true, 54443, 232, "utf-8", "C:\\path")]
+		[TestCase(true, true, true, 54443, 232, "utf-8", "C:\\path")]
 		[TestCase(true, false, false, 54443, 232, "ascii", "path\\to\\directory")]
 
 		public void ItShouldMapAllFields(bool autoNumberImages, bool forProduction, bool containsPath,
