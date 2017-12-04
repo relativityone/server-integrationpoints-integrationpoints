@@ -4,6 +4,7 @@ using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.Relativity.Client.DTOs;
 using NSubstitute;
+using NSubstitute.ReturnsExtensions;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation
@@ -21,8 +22,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			var artifact = new Relativity.Client.Artifact { ArtifactID = artifactId };
 
 			var artifactServiceMock = Substitute.For<IArtifactService>();
-			artifactServiceMock.GetArtifacts(Arg.Any<int>(), Arg.Is<string>(artifactTypeName))
-				.Returns(new[] { artifact });
+			artifactServiceMock.GetArtifact(Arg.Any<int>(), Arg.Is<string>(artifactTypeName), artifactId)
+				.Returns(artifact);
 
 			var validator = new ArtifactValidator(artifactServiceMock, workspaceArtifactId, artifactTypeName);
 
@@ -42,8 +43,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			var workspaceArtifactId = 42;
 
 			var artifactServiceMock = Substitute.For<IArtifactService>();
-			artifactServiceMock.GetArtifacts(Arg.Any<int>(), Arg.Is<string>(artifactTypeName))
-				.Returns(Enumerable.Empty<Relativity.Client.Artifact>());
+			artifactServiceMock.GetArtifact(Arg.Any<int>(), Arg.Is<string>(artifactTypeName), artifactId)
+				.ReturnsNull();
 
 			var validator = new ArtifactValidator(artifactServiceMock, workspaceArtifactId, artifactTypeName);
 
