@@ -22,8 +22,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 		{
 			var result = new ValidationResult();
 
-			var artifact = _artifactService.GetArtifacts(_workspaceArtifactId, _artifactTypeName)
-				.FirstOrDefault(x => x.ArtifactID.Equals(value));
+			var artifact = _artifactService.GetArtifact(_workspaceArtifactId, _artifactTypeName, value);
 
 			if (artifact == null)
 			{
