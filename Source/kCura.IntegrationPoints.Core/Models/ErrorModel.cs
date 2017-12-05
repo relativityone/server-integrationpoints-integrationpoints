@@ -26,6 +26,7 @@ namespace kCura.IntegrationPoints.Core.Models
 
 		public ErrorModel(Exception exception, bool addToErrorTab = false, string message = null)
 		{
+			Exception = exception;
 			Message = message ?? exception.Message;
 			FullError = exception.ToString();
 			AddToErrorTab = addToErrorTab;
