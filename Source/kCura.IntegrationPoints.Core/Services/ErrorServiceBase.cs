@@ -31,7 +31,8 @@ namespace kCura.IntegrationPoints.Core.Services
 				CreateErrorRdo.Execute(CreateErrorFromModel(error));
 			}
 			string sourceContent = FormatSourceContent(error.Source);
-			_log.LogError(error.Exception, "{sourceContent} {error.Message}", sourceContent, error.Message);
+			string errorMessage = error.Message;
+			_log.LogError(error.Exception, "{sourceContent} {errorMessage}", sourceContent, errorMessage);
 		}
 
 		protected virtual Error CreateErrorFromModel(ErrorModel error)
