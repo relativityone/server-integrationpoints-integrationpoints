@@ -11,7 +11,7 @@ $PRODUCT = 'Template'
 $PRODUCTDESCRIPTION = 'Template repo for kCura'
 $PACKAGEROOT = 'C:\Packages'
 $ENABLEINJECTIONS = $false
-
+$PUBLISHNUGET = $true
 }
 
 task default -depends runsteps
@@ -43,12 +43,15 @@ if ($psake.build_success -eq $false) { exit 1 }
 Invoke-psake .\psake-test.ps1
 if ($psake.build_success -eq $false) { exit 1 }  
 
-Invoke-psake .\psake-nugetpack.ps1 -properties @{'version'=$VERSION;
-                                                 'server_type'=$SERVERTYPE;
-                                                 'build_config'=$BUILDCONFIG;
-                                                 'build_type'=$BUILDTYPE;
-                                                 'company'=$COMPANY;}
-if ($psake.build_success -eq $false) { exit 1 }  
+if($PUBLISHNUGET)
+{
+    Invoke-psake .\psake-nugetpack.ps1 -properties @{'version'=$VERSION;
+                                                     'server_type'=$SERVERTYPE;
+                                                     'build_config'=$BUILDCONFIG;
+                                                     'build_type'=$BUILDTYPE;
+                                                     'company'=$COMPANY;}
+    if ($psake.build_success -eq $false) { exit 1 }  
+}
 
 Invoke-psake .\psake-nugetpublish.ps1 -properties @{'version'=$VERSION;
                                                     'server_type'=$SERVERTYPE;
