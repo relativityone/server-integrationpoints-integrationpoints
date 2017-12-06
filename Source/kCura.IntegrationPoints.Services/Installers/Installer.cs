@@ -8,10 +8,13 @@ namespace kCura.IntegrationPoints.Services.Installers
 {
 	public abstract class Installer
 	{
-		public void Install(IWindsorContainer container, IConfigurationStore store, int workspaceId)
+		static Installer()
 		{
 			Mapper.Initialize(x => x.CreateMissingTypeMaps = true);
+		}
 
+		public void Install(IWindsorContainer container, IConfigurationStore store, int workspaceId)
+		{
 			RegisterComponents(container, store, workspaceId);
 
 			foreach (var dependency in Dependencies)
