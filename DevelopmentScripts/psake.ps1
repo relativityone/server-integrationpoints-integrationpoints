@@ -43,21 +43,21 @@ if ($psake.build_success -eq $false) { exit 1 }
 Invoke-psake .\psake-test.ps1
 if ($psake.build_success -eq $false) { exit 1 }  
 
+Invoke-psake .\psake-nugetpack.ps1 -properties @{'version'=$VERSION;
+                                                 'server_type'=$SERVERTYPE;
+                                                 'build_config'=$BUILDCONFIG;
+                                                 'build_type'=$BUILDTYPE;
+                                                 'company'=$COMPANY;}
+if ($psake.build_success -eq $false) { exit 1 }  
+
 if($PUBLISHNUGET)
 {
-    Invoke-psake .\psake-nugetpack.ps1 -properties @{'version'=$VERSION;
-                                                     'server_type'=$SERVERTYPE;
-                                                     'build_config'=$BUILDCONFIG;
-                                                     'build_type'=$BUILDTYPE;
-                                                     'company'=$COMPANY;}
+    Invoke-psake .\psake-nugetpublish.ps1 -properties @{'version'=$VERSION;
+                                                        'server_type'=$SERVERTYPE;
+                                                        'build_config'=$BUILDCONFIG;
+                                                        'build_type'=$BUILDTYPE;}
     if ($psake.build_success -eq $false) { exit 1 }  
 }
-
-Invoke-psake .\psake-nugetpublish.ps1 -properties @{'version'=$VERSION;
-                                                    'server_type'=$SERVERTYPE;
-                                                    'build_config'=$BUILDCONFIG;
-                                                    'build_type'=$BUILDTYPE;}
-if ($psake.build_success -eq $false) { exit 1 }  
 
 Invoke-psake .\psake-builddoc.ps1 -properties @{'version'=$VERSION;
                                                 'server_type'=$SERVERTYPE;
