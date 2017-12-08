@@ -31,10 +31,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
 	public class ImageExporterService : ExporterServiceBase
 	{
-		private const string ImageNameColumn = "Identifier";
 		private const string ImageLocationColumn = "Location";
-
-		
 
 		public ImageExporterService(IRepositoryFactory sourceRepositoryFactory, IRepositoryFactory targetRepositoryFactory, IJobStopManager jobStopManager, IHelper helper, ClaimsPrincipal claimsPrincipal, FieldMap[] mappedFields, int startAt, string config, int savedSearchArtifactId) : base(sourceRepositoryFactory, targetRepositoryFactory, jobStopManager, helper, claimsPrincipal, mappedFields, startAt, config, savedSearchArtifactId)
 		{
@@ -110,7 +107,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 						{
 							DataRow row = imagesDataView.Table.Rows[index];
 							string fileLocation = (string)row[ImageLocationColumn];
-							string imageFileName = WrapImageFileName((string)row[ImageNameColumn], index);
 							var fileLocationField = new ArtifactFieldDTO()
 							{
 								Name = IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME ,
@@ -119,7 +115,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 							var nativeFileNameField = new ArtifactFieldDTO()
 							{
 								Name = IntegrationPoints.Domain.Constants.SPECIAL_FILE_NAME_FIELD_NAME,
-								Value = imageFileName
+								Value = fieldsValue[0]
 							};
 
 							var artifactFieldDtos = fields.ToList();
@@ -141,19 +137,5 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		}
 
 		//public override int TotalRecordsFound => _retrievedDataCount == 0 ? (int)_exportJobInfo.RowCount : _retrievedDataCount;//TODO: Item Count
-
-		private string WrapImageFileName(string imageFileName, int rowIndex)
-		{
-			//Expected input - DocumentName_DocumentNumber_INDEX_GUID
-			var imageFileNameSplitted = imageFileName?.Split('_');
-			if (imageFileNameSplitted?.Length > 1)
-			{
-				var documentName = imageFileNameSplitted?[0];
-				var documentNamePostFix = imageFileNameSplitted?[1];
-				imageFileName = $"{documentName}_{documentNamePostFix}";
-				imageFileName = rowIndex == 0 ? imageFileName : $"{imageFileName}_{rowIndex:00}";
-			}
-			return imageFileName;
-		}
 	}
 }
