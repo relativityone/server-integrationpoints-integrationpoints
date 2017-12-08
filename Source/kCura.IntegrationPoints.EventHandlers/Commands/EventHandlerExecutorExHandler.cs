@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 			};
 			try
 			{
-				Execute(eventHandler);
+				base.Execute(eventHandler);
 			}
 			catch (CommandExecutionException e)
 			{
