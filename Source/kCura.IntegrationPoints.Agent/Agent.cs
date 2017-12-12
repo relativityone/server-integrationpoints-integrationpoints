@@ -27,13 +27,13 @@ namespace kCura.IntegrationPoints.Agent
 		private IAPILog _logger;
 		private ITaskFactory _taskFactory;
 		private const string _AGENT_NAME = "Integration Points Agent";
+		//private ITaskExceptionService _taskExceptionService;
 
 		private ITaskFactory TaskFactory => _taskFactory ?? (_taskFactory = new TaskFactory(Helper));
 
 		public Agent() : base(Guid.Parse(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID))
 		{
-			RaiseException += RaiseJobException;
-			RaiseJobLogEntry += RaiseJobLog;
+			JobExecutionError += OnJobExecutionError;
 			Apps.Common.Config.Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
 
 #if TIME_MACHINE
@@ -63,8 +63,23 @@ namespace kCura.IntegrationPoints.Agent
 			TaskFactory.Release(task);
 		}
 
-		private void RaiseJobException(Job job, Exception exception)
+		protected override void LogJobState(Job job, JobLogState state, Exception exception = null, string details = null)
 		{
+			if (exception != null)
+			{
+				details = details ?? string.Empty;
+				details += Environment.NewLine;
+				details += exception.Message + Environment.NewLine + exception.StackTrace;
+			}
+
+			_logger.LogInformation("Integration Points job status update: {@JobLogInformation}",
+				new JobLogInformation() {Job = job, State = state, Details = details});
+		}
+
+		protected void OnJobExecutionError(Job job, ITask task, Exception exception)
+		{
+	        LogJobExecutionError(job, exception);
+			LogJobState(job, JobLogState.Error, exception);
 			var integrationPointsException = exception as IntegrationPointsException;
 			if (integrationPointsException != null)
 			{
@@ -76,13 +91,15 @@ namespace kCura.IntegrationPoints.Agent
 			}
 		}
 
-		private void RaiseJobLog(Job job, JobLogState state, string details = null)
-		{
-			_logger.LogInformation("Integration Points job status update: {@JobLogInformation}", new JobLogInformation() { Job = job, State = state, Details = details });
-		}
-
 		public void Dispose()
 		{
+		}
+
+
+		private void LogJobExecutionError(Job job, Exception exception)
+		{
+			Logger.LogError(exception, "An error occured during execution of Job with ID: {JobID} in {TypeName}", job.JobId,
+				nameof(ScheduleQueueAgentBase));
 		}
 	}
 }

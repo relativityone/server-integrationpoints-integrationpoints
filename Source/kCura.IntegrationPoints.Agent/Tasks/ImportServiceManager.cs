@@ -167,8 +167,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 				lock (JobStopManager.SyncRoot)
 				{
-					JobHistoryDto = JobHistoryService.GetRdo(Identifier);
-					JobHistoryDto.TotalItems = recordCount;
+					JobHistory = JobHistoryService.GetRdo(Identifier);
+					JobHistory.TotalItems = recordCount;
 					UpdateJobStatus();
 				}
 

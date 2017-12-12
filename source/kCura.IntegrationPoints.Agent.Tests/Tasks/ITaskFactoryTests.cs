@@ -53,6 +53,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IQueueManager _queueManager;
 		private IServiceManagerProvider _serviceManagerProvider;
 		private IHelperFactory _helperFactory;
+		private ITaskExceptionMediator _taskExceptionMediator;
+		private ITaskExceptionService _taskExceptionService;
 
 		[SetUp]
 		public override void SetUp()
@@ -70,6 +72,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_managerFactory = Substitute.For<IManagerFactory>();
 			_serviceFactory = Substitute.For<IServiceFactory>();
 			_serviceManagerProvider = Substitute.For<IServiceManagerProvider>();
+			_taskExceptionService = Substitute.For<ITaskExceptionService>();
+			_taskExceptionMediator = Substitute.For<ITaskExceptionMediator>();
 			var apiLog = Substitute.For<IAPILog>();
 
 			_jobHistoryErrorService = Substitute.For<IJobHistoryErrorService>();
@@ -89,7 +93,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_serviceFactory.CreateJobHistoryService(_helper, _targetHelper).Returns(_jobHistoryService);
 
 			_instance = new TaskFactory(_helper, _serializer, _contextContainerFactory, _caseServiceContext, _jobHistoryService, _agentService, _jobService,
-				_managerFactory, apiLog);
+				_managerFactory, _taskExceptionService, _taskExceptionMediator, apiLog);
 		}
 
 		[Test]
@@ -434,6 +438,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			public override ITask GetTask(Job job)
 			{
 				throw new NotImplementedException();
+			}
+
+			protected override void LogJobState(Job job, JobLogState state, Exception exception = null, string details = null)
+			{
 			}
 		}
 	}

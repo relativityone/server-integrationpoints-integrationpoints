@@ -54,8 +54,6 @@ namespace kCura.ScheduleQueue.Core.BatchProcess
 			}
 		}
 
-		public abstract void EndWithError(Exception ex);
-
 		public event JobPreExecuteEvent RaiseJobPreExecute;
 		public event JobPostExecuteEvent RaiseJobPostExecute;
 

@@ -4,7 +4,6 @@ using System.Linq;
 using Castle.Core.Internal;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.Attributes;
-using kCura.IntegrationPoints.Agent.Tasks.Helpers;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
@@ -28,7 +27,7 @@ using Relativity.API;
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
 	[SynchronizedTask]
-	public abstract class ServiceManagerBase : ITask
+	public abstract class ServiceManagerBase : ITaskWithJobHistory
 	{
 		protected IAPILog Logger { get; set; }
 		protected IJobService JobService { get; private set; }
@@ -83,16 +82,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		}
 
 		public IntegrationPoint IntegrationPointDto { get; protected set; }
-		public JobHistory JobHistoryDto { get; protected set; }
+		public JobHistory JobHistory { get; protected set; }
 		public List<FieldMap> MappedFields { get; protected set; }
 		public SourceProvider SourceProvider { get; protected set; }
 
 		public abstract void Execute(Job job);
-
-		public void EndWithError(Exception ex)
-		{
-			new TaskCleanupHelper(JobHistoryErrorService,JobHistoryDto,JobHistoryService,JobService).EndTaskWithError( ex );
-		}
 
 		protected abstract void SetupSubscriptions(IDataSynchronizer synchronizer, Job job);
 		
@@ -145,7 +139,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				try
 				{
 					IJobHistoryManager jobHistoryManager = ManagerFactory.CreateJobHistoryManager(ContextContainer);
-					jobHistoryManager.SetErrorStatusesToExpired(CaseServiceContext.WorkspaceID, JobHistoryDto.ArtifactId);
+					jobHistoryManager.SetErrorStatusesToExpired(CaseServiceContext.WorkspaceID, JobHistory.ArtifactId);
 				}
 				catch (Exception e)
 				{
@@ -174,7 +168,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		protected void UpdateJobStatus()
 		{
-			JobHistoryService.UpdateRdo(JobHistoryDto);
+			JobHistoryService.UpdateRdo(JobHistory);
 		}
 
 		protected void ThrowNewExceptionIfAny(IEnumerable<Exception> exceptions)
@@ -293,10 +287,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void ConfigureJobHistory()
 		{
-			JobHistoryDto = JobHistoryService.GetOrCreateScheduledRunHistoryRdo(IntegrationPointDto, Identifier, DateTime.UtcNow);
+			JobHistory = JobHistoryService.GetOrCreateScheduledRunHistoryRdo(IntegrationPointDto, Identifier, DateTime.UtcNow);
 
-			JobHistoryErrorService.JobHistory = JobHistoryDto;
-			JobHistoryDto.StartTimeUTC = DateTime.UtcNow;
+			JobHistoryErrorService.JobHistory = JobHistory;
+			JobHistory.StartTimeUTC = DateTime.UtcNow;
 		}
 
 		private void LoadSourceProvider()
@@ -344,7 +338,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			ThrowNewExceptionIfAny(exceptions);
 		    LogConfigureBatchExceptionsSuccesfulEnd(job);
         }
-
 
 	    #region Logging
 
@@ -463,5 +456,5 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 	    }
 
         #endregion
-    }
+	}
 }

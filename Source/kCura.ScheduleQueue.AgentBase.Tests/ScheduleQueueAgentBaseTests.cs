@@ -41,6 +41,10 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 			{
 				yield break;
 			}
+
+			protected override void LogJobState(Job job, JobLogState state, Exception exception = null, string details = null)
+			{
+			}
 		}
 
 		[SetUp]

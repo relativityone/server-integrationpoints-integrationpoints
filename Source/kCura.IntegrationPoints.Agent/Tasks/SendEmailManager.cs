@@ -22,12 +22,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_jobManager = jobManager;
 		    _logger = helper.GetLoggerFactory().GetLogger().ForContext<SendEmailManager>();
 		}
-
-		public override void EndWithError(Exception ex)
-		{
-			//ToDo: Add Error handling here
-		}
-
 		public override IEnumerable<string> GetUnbatchedIDs(Job job)
 		{		    
             if (!string.IsNullOrEmpty(job?.JobDetails))

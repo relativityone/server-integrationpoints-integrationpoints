@@ -57,12 +57,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 		}
 
-		public void EndWithError(Exception ex)
-		{
-			//ToDo: Add error handling here
-		}
-
-
 		#region Logging
 
 	    private void LogExecuteStart(Job job)

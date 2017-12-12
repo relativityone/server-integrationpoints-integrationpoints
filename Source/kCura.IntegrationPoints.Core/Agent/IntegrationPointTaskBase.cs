@@ -86,7 +86,7 @@ namespace kCura.IntegrationPoints.Core.Agent
 		}
 
 		protected IntegrationPoint IntegrationPoint { get; set; }
-		protected JobHistory JobHistory { get; set; }
+		public JobHistory JobHistory { get; set; }
 
 		protected SourceProvider SourceProvider
 		{

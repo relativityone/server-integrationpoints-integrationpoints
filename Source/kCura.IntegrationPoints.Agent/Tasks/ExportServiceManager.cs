@@ -128,7 +128,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 						lock (JobStopManager.SyncRoot)
 						{
-							JobHistoryDto = JobHistoryService.GetRdo(Identifier);
+							JobHistory = JobHistoryService.GetRdo(Identifier);
 							dataTransferContext.UpdateTransferStatus();
 						}
 
@@ -239,7 +239,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			JobHistoryErrorManager =
 				ManagerFactory.CreateJobHistoryErrorManager(ContextContainer, SourceConfiguration.SourceWorkspaceArtifactId,
 					uniqueJobId);
-			UpdateStatusType = JobHistoryErrorManager.StageForUpdatingErrors(job, JobHistoryDto.JobType);
+			UpdateStatusType = JobHistoryErrorManager.StageForUpdatingErrors(job, JobHistory.JobType);
 
 			if (SourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.SavedSearch)
 			{
@@ -303,7 +303,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				tagSavedSearchManager, SynchronizerFactory,
 				Serializer, JobHistoryErrorManager, JobStopManager,
 				MappedFields.ToArray(), SourceConfiguration,
-				UpdateStatusType, IntegrationPointDto, JobHistoryDto,
+				UpdateStatusType, IntegrationPointDto, JobHistory,
 				GetUniqueJobId(job), userImportApiSettings);
 
 			var exceptions = new ConcurrentQueue<Exception>();

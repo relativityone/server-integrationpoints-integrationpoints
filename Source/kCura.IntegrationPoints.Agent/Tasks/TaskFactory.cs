@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Monitoring;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
@@ -37,6 +38,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private IJobServiceDataProvider _jobServiceDataProvider;
 		private IManagerFactory _managerFactory;
 		private IServiceFactory _serviceFactory;
+		private ITaskExceptionService _taskExceptionService;
+		private ITaskExceptionMediator _taskExceptionMediator;
 
 		private IWindsorContainer _container;
 		private readonly IAgentHelper _helper;
@@ -57,7 +60,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		///     For unit tests only
 		/// </summary>
 		internal TaskFactory(IAgentHelper helper, IIntegrationPointSerializer serializer, IContextContainerFactory contextContainerFactory, ICaseServiceContext caseServiceContext,
-			IJobHistoryService jobHistoryService, IAgentService agentService, IJobService jobService, IManagerFactory managerFactory, IAPILog apiLog)
+			IJobHistoryService jobHistoryService, IAgentService agentService, IJobService jobService, IManagerFactory managerFactory, ITaskExceptionService taskExceptionService, ITaskExceptionMediator taskExceptionMediator, IAPILog apiLog)
 		{
 			_helper = helper;
 			_serializer = serializer;
@@ -68,6 +71,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_jobService = jobService;
 			_managerFactory = managerFactory;
 			_logger = apiLog;
+			_taskExceptionService = taskExceptionService;
+			_taskExceptionMediator = taskExceptionMediator;
 		}
 
 		private IWindsorContainer Container
@@ -88,6 +93,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				TaskType taskType;
 				Enum.TryParse(job.TaskType, true, out taskType);
 				LogCreateTaskSyncCheck(job, taskType);
+
+				_taskExceptionMediator.RegisterEvent(agentBase);
 
 				switch (taskType)
 				{
@@ -178,6 +185,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_contextContainerFactory = Container.Resolve<IContextContainerFactory>();
 			_helperFactory = Container.Resolve<IHelperFactory>();
 			_serviceFactory = Container.Resolve<IServiceFactory>();
+			_taskExceptionService = Container.Resolve<ITaskExceptionService>();
+			_taskExceptionMediator = Container.Resolve<ITaskExceptionMediator>();
 
 			_agentService = new AgentService(_helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
 			_jobServiceDataProvider = new JobServiceDataProvider(_agentService, _helper);

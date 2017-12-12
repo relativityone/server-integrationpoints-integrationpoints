@@ -4,7 +4,6 @@ using System.Data;
 using System.Linq;
 using System.Security.Authentication;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Agent.Tasks.Helpers;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core;
@@ -34,7 +33,7 @@ using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
-	public class SyncWorker : IntegrationPointTaskBase, ITask
+	public class SyncWorker : IntegrationPointTaskBase, ITaskWithJobHistory
 	{
 		private readonly bool _isStoppable;
 		private readonly IAPILog _logger;
@@ -127,14 +126,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
             LogExecuteEnd(job);
 		}
-
-
-		public void EndWithError(Exception ex)
-		{
-			new TaskCleanupHelper(JobHistoryErrorService, JobHistory, JobHistoryService, JobService).EndTaskWithError(ex);
-		}
-
-
 
 		protected virtual void ExecuteImport(IEnumerable<FieldMap> fieldMap,
 			string sourceConfiguration, string destinationConfiguration, List<string> entryIDs,
@@ -490,5 +481,5 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 	        _logger.LogInformation("Starting post execute method in SyncWorker for Job ID: {JobId}.", job.JobId);
 	    }
         #endregion
-    }
+	}
 }

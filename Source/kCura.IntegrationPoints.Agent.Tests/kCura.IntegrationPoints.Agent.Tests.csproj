@@ -337,6 +337,8 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="SendEmailManagerUnitTests.cs" />
+    <Compile Include="TaskExceptionServiceTests.cs" />
+    <Compile Include="TaskExceptionMediatorTests.cs" />
     <Compile Include="Tasks\ExportManagerTest.cs" />
     <Compile Include="Tasks\ExportServiceManagerTests.cs" />
     <Compile Include="Tasks\ImportServiceManagerTests.cs" />

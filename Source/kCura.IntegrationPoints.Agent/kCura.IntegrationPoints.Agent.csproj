@@ -340,8 +340,12 @@
     <Compile Include="Tasks\ExportWorker.cs" />
     <Compile Include="RelativityConfigurationFactory.cs" />
     <Compile Include="Tasks\ExportServiceManager.cs" />
-    <Compile Include="Tasks\Helpers\TaskCleanupHelper.cs" />
+    <Compile Include="Tasks\ITaskExceptionMediator.cs" />
+    <Compile Include="Tasks\ITaskExceptionService.cs" />
+    <Compile Include="Tasks\TaskExceptionMediator.cs" />
+    <Compile Include="Tasks\TaskExceptionService.cs" />
     <Compile Include="Tasks\ImportServiceManager.cs" />
+    <Compile Include="Tasks\ITaskWithHistory.cs" />
     <Compile Include="Tasks\SendEmailManager.cs" />
     <Compile Include="Tasks\SendEmailWorker.cs" />
     <Compile Include="Tasks\ServiceManagerBase.cs" />
