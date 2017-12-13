@@ -200,7 +200,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 								DisplayName = "CustodianIdentifier",
 								FieldIdentifier = fieldMap.Where(x => x.FieldMapType.Equals(FieldMapTypeEnum.Identifier)).Select(x => x.SourceField.FieldIdentifier).First()
 							},
-						DestinationField = new FieldEntry {DisplayName = "ManagerIdentidier", FieldIdentifier = "distinguishedName"},
+						DestinationField = new FieldEntry {DisplayName = "ManagerIdentidier", FieldIdentifier = "distinguishedname"},
 						FieldMapType = FieldMapTypeEnum.Identifier
 					}
 				},
