@@ -57,12 +57,16 @@ namespace kCura.IntegrationPoints.Core.Services
 					{
 						InjectionManager.Instance.Evaluate("9B9265FB-F63D-44D3-90A2-87C1570F746D");
 						_errorOccurredDuringJob = true;
-						IntegrationPoint.HasErrors = true;
+
+						if (IntegrationPoint != null)
+						{
+							IntegrationPoint.HasErrors = true;
+						}
 
 						_context.RsapiService.JobHistoryErrorLibrary.Create(_jobHistoryErrorList);
 					}
 
-					if (!_errorOccurredDuringJob || (JobStopManager?.IsStopRequested() == true))
+					if (IntegrationPoint!=null && !_errorOccurredDuringJob || (JobStopManager?.IsStopRequested() == true))
 					{
 						IntegrationPoint.HasErrors = false;
 					}
@@ -133,7 +137,7 @@ namespace kCura.IntegrationPoints.Core.Services
 					LogMissingJobHistoryError();
 					//we can't create JobHistoryError without JobHistory,
 					//in such case log error into Error Tab by throwing Exception.
-					throw new Exception($"Type:{errorType.Name}  Id:{documentIdentifier}  Error:{errorMessage}");
+					throw new Exception($"Type:{errorType.Name} Id:{documentIdentifier}  Error:{errorMessage}");
 				}
 			}
 		}

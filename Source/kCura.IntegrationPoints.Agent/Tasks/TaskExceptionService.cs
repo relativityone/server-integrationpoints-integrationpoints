@@ -24,6 +24,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			if (taskWithJobHistory != null)
 			{
+				_jobHistoryErrorService.JobHistory = taskWithJobHistory.JobHistory;
 				_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, string.Empty, ex.Message, ex.StackTrace);
 				taskWithJobHistory.JobHistory.JobStatus = JobStatusChoices.JobHistoryErrorJobFailed;
 				_jobHistoryService.UpdateRdo(taskWithJobHistory.JobHistory);
