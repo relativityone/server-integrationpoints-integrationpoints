@@ -230,6 +230,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private JobHistory GetJobHistory(Job job, IntegrationPoint integrationPointDto)
 		{
+			if (string.IsNullOrEmpty(job?.JobDetails))
+			{
+				return null;
+			}
 			LogGetJobHistoryStart(job, integrationPointDto);
 			TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
 			JobHistory jobHistory = _jobHistoryService.CreateRdo(
@@ -246,7 +250,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private void SetJobIdOnJobHistory(Job job, IntegrationPoint integrationPointDto)
 		{
 			JobHistory jobHistory = GetJobHistory(job, integrationPointDto);
-			if (string.IsNullOrEmpty(jobHistory.JobID))
+			if (jobHistory != null && string.IsNullOrEmpty(jobHistory.JobID))
 			{
 				jobHistory.JobID = job.JobId.ToString();
 				_jobHistoryService.UpdateRdo(jobHistory);

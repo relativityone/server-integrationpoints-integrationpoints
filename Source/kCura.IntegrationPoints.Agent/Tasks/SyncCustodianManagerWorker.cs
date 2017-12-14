@@ -229,7 +229,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				sourceFields.Add(new FieldEntry { FieldIdentifier = _oldKeyManagerFieldID });
 			}
-			sourceFields.ForEach(f => f.IsIdentifier = f.FieldIdentifier == _oldKeyManagerFieldID);
+			sourceFields.ForEach(f => f.IsIdentifier = f.FieldIdentifier.Equals(_oldKeyManagerFieldID, StringComparison.InvariantCultureIgnoreCase));
 			return sourceFields;
 		}
 
