@@ -266,7 +266,7 @@
 				File Type:
 			</div>
 			<div class="field-value">
-				<select id="imageFileTypesSelector" data-bind="enable: ExportNatives, options: ExportEnums.ImageFileTypes, optionsText: 'key', optionsValue: 'value', value: SelectedImageFileType, select2: {}"></select>
+				<select id="imageFileTypesSelector" data-bind="options: ExportEnums.ImageFileTypes, optionsText: 'key', optionsValue: 'value', value: SelectedImageFileType, select2: {}"></select>
 			</div>
 		</div>
 		<div class="field-row" data-bind="visible: !IsProductionExport()">
@@ -274,7 +274,7 @@
 				Image Precedence:
 			</div>
 			<div class="field-value">
-				<select id="image-production-precedence" data-bind=" options: ExportEnums.ProductionPrecedenceType, optionsText: 'key', optionsValue: 'value', value: ProductionPrecedence, select2: {}"></select>
+				<select id="image-production-precedence" data-bind="options: ExportEnums.ProductionPrecedenceType, optionsText: 'key', optionsValue: 'value', value: ProductionPrecedence, select2: {}"></select>
 			</div>
 		</div>
 		<div class="field-row" data-bind="visible: IsProductionPrecedenceSelected() && !IsProductionExport()">
