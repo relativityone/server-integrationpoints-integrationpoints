@@ -178,6 +178,7 @@
       <HintPath>..\packages\$(Relativity_Kepler_Client)\lib\net45\Relativity.Services.ServiceProxy.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Web.Services" />
     <Reference Include="SystemInterface, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\$(SystemWrapper_Interfaces)\lib\net45\SystemInterface.dll</HintPath>
       <Private>True</Private>
@@ -220,10 +221,12 @@
     <Compile Include="Factories\IDataReaderWrapperFactory.cs" />
     <Compile Include="Factories\IExporterFactory.cs" />
     <Compile Include="Factories\IHelperClassFactory.cs" />
+    <Compile Include="Factories\IHelperFactory.cs" />
     <Compile Include="Factories\Implementations\ContextContainerFactory.cs" />
     <Compile Include="Factories\IManagerFactory.cs" />
     <Compile Include="Factories\Implementations\DataReaderWrapperFactory.cs" />
     <Compile Include="Factories\Implementations\HelperClassFactory.cs" />
+    <Compile Include="Factories\Implementations\HelperFactory.cs" />
     <Compile Include="Factories\Implementations\ManagerFactory.cs" />
     <Compile Include="Helpers\IArtifactTreeCreator.cs" />
     <Compile Include="Helpers\IButtonStateBuilder.cs" />
