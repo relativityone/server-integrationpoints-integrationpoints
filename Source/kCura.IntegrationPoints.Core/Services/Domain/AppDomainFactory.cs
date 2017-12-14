@@ -1,10 +1,9 @@
 ﻿using System;
 using kCura.IntegrationPoints.Contracts.Provider;
+using kCura.IntegrationPoints.Core.Services.Domain;
 using kCura.IntegrationPoints.Core.Services.Provider;
-using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Logging;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Domain
@@ -17,8 +16,8 @@ namespace kCura.IntegrationPoints.Core.Domain
 		private RelativityFeaturePathService _relativityFeaturePathService;
 
 		public AppDomainFactory(
-			DomainHelper domainHelper, 
-			ISourcePluginProvider provider, 
+			DomainHelper domainHelper,
+			ISourcePluginProvider provider,
 			RelativityFeaturePathService relativityFeaturePathService)
 		{
 			_domainHelper = domainHelper;
@@ -28,12 +27,15 @@ namespace kCura.IntegrationPoints.Core.Domain
 
 		public IDataSourceProvider GetDataProvider(Guid applicationGuid, Guid providerGuid, IHelper helper)
 		{
-			_newDomain = _domainHelper.CreateNewDomain(_relativityFeaturePathService);
-			DomainManager domainManager = _domainHelper.SetupDomainAndCreateManager(_newDomain, _provider, applicationGuid);
+			using (new SerilogContextRestorer())
+			{
+				_newDomain = _domainHelper.CreateNewDomain(_relativityFeaturePathService);
+				DomainManager domainManager = _domainHelper.SetupDomainAndCreateManager(_newDomain, _provider, applicationGuid);
 
-		    IDataSourceProvider provider = domainManager.GetProvider(providerGuid, helper);
+				IDataSourceProvider provider = domainManager.GetProvider(providerGuid, helper);
 
-			return provider;
+				return new ProviderWithLogContextDecorator(provider);
+			}
 		}
 
 		public void Dispose()

@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
-using kCura.Apps.Common.Utils;
-using kCura.IntegrationPoints.Core.Agent;
-using kCura.IntegrationPoints.Core.Extensions;
-using kCura.IntegrationPoints.Core.Logging;
+using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Services;
 using Relativity.API;
+using kCura.IntegrationPoints.Domain.Logging;
 
 namespace kCura.ScheduleQueue.AgentBase
 {
@@ -200,9 +198,12 @@ namespace kCura.ScheduleQueue.AgentBase
 				ActionName = task.GetType().Name
 			};
 
+			using (LogContextHelper.CreateAgentLogContext(context))
 			using (Logger.LogContextPushProperties(context))
 			{
+				Logger.LogInformation("StartTask - Before Execute");
 				task.Execute(job);
+				Logger.LogInformation("StartTask - After Execute");
 			}
 		}
 

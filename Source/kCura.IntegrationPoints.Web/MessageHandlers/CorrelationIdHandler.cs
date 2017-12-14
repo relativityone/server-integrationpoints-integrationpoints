@@ -2,8 +2,8 @@
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Core.Extensions;
-using kCura.IntegrationPoints.Core.Logging;
+using kCura.IntegrationPoints.Domain.Extensions;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Web.Logging;
 using Relativity.API;
 
@@ -37,7 +37,8 @@ namespace kCura.IntegrationPoints.Web.MessageHandlers
 				ActionName = actionContext.ActionName,
 				CorrelationId = actionContext.ActionGuid
 			};
-			
+
+			using (LogContextHelper.CreateWebLogContext(correlationContext))
 			using (_apiLogLocal.Value.LogContextPushProperties(correlationContext))
 			{
 				request.Headers.Add(WebCorrelationIdName, correlationContext.CorrelationId?.ToString());

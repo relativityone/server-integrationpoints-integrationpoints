@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Logging;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Web.Logging;
 using kCura.IntegrationPoints.Web.MessageHandlers;
 using NSubstitute;

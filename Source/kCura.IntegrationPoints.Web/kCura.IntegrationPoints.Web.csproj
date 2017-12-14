@@ -681,7 +681,6 @@
     <Compile Include="Helpers\ICacheHolder.cs" />
     <Compile Include="Logging\WebActionContext.cs" />
     <Compile Include="Logging\WebActionContextProvider.cs" />
-    <Compile Include="Logging\WebCorrelationContext.cs" />
     <Compile Include="MessageHandlers\CorrelationIdHandler.cs" />
     <Compile Include="Models\EditPoint.cs" />
     <Compile Include="Models\FtpProviderSummaryPageSettingsModel.cs" />

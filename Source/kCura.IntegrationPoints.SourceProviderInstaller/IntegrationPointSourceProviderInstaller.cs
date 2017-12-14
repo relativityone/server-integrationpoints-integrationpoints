@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using kCura.EventHandler;
 using kCura.IntegrationPoints.Core.Extensions;
-using kCura.IntegrationPoints.Core.Logging;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;

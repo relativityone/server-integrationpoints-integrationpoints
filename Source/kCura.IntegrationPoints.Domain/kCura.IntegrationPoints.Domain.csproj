@@ -537,6 +537,7 @@
     <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="Extensions\ExceptionExtensions.cs" />
     <Compile Include="Extensions\ArtifactExtensions.cs" />
+    <Compile Include="Extensions\IAPILogExtensions.cs" />
     <Compile Include="IAppDomainDataMarshaller.cs" />
     <Compile Include="IEmailBodyData.cs" />
     <Compile Include="IPermissionValidator.cs" />
@@ -544,6 +545,13 @@
     <Compile Include="ISynchronizerFactory.cs" />
     <Compile Include="ITokenProvider.cs" />
     <Compile Include="IValidator.cs" />
+    <Compile Include="Logging\AgentCorrelationContext.cs" />
+    <Compile Include="Logging\BaseCorrelationContext.cs" />
+    <Compile Include="Logging\CorrelationContextCreationException.cs" />
+    <Compile Include="Logging\EhCorrelationContext.cs" />
+    <Compile Include="Logging\LogContextHelper.cs" />
+    <Compile Include="Logging\SerilogContextRestorer.cs" />
+    <Compile Include="Logging\WebCorrelationContext.cs" />
     <Compile Include="Managers\IFederatedInstanceManager.cs" />
     <Compile Include="Managers\IInstanceSettingsManager.cs" />
     <Compile Include="Models\ArtifactDTO.cs" />
@@ -581,7 +589,7 @@
     <Compile Include="Models\JsTreeItemWithParentIdDTO.cs" />
     <Compile Include="Models\ViewDTO.cs" />
     <Compile Include="Models\WorkspaceDTO.cs" />
-    <Compile Include="ProviderManager.cs" />
+    <Compile Include="DomainManager.cs" />
     <Compile Include="ProviderWrapper.cs" />
     <Compile Include="Readers\DataColumnWithValue.cs">
       <SubType>Component</SubType>
@@ -592,6 +600,7 @@
     <Compile Include="Readers\RelativityReaderBase.cs" />
     <Compile Include="RelativityFeaturePathService.cs" />
     <Compile Include="SecureAppDomainDataMarshaller.cs" />
+    <Compile Include="StackOfDisposables.cs" />
     <Compile Include="Synchronizer\IDataSynchronizer.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>

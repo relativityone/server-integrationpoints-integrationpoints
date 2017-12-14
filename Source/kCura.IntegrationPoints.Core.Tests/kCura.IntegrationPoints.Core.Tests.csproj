@@ -558,13 +558,11 @@
     <Compile Include="Authentication\OAuth2ClientFactoryTests.cs" />
     <Compile Include="Authentication\OAuth2TokenGeneratorTests.cs" />
     <Compile Include="Authentication\TokenCredentialProviderTests.cs" />
-    <Compile Include="Extensions\IAPILogExtensionsTests.cs" />
     <Compile Include="Factories\HelperFactoryTests.cs" />
     <Compile Include="Helpers\ButtonStateBuilderTests.cs" />
     <Compile Include="Helpers\MatchHelper.cs" />
     <Compile Include="Helpers\RelativePathDirectoryTreeProviderTests.cs" />
     <Compile Include="Helpers\SavedSearchesTreeTestHelper.cs" />
-    <Compile Include="Helpers\StackOfDisposablesTests.cs" />
     <Compile Include="Managers\InstanceSettingsManagerTests.cs" />
     <Compile Include="Managers\FederatedInstanceManagerTests.cs" />
     <Compile Include="Managers\ProductionManagerTests.cs" />

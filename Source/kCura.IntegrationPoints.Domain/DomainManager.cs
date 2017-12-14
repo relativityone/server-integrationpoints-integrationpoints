@@ -30,16 +30,16 @@ namespace kCura.IntegrationPoints.Domain
 			"kCura.IntegrationPoints.FilesDestinationProvider.Core",
 			"kCura.IntegrationPoints.FtpProvider",
 			"kCura.IntegrationPoints.ImportProvider.Parser",
-		    "kCura.IntegrationPoints.LDAPProvider",
-            "kCura.IntegrationPoints.DocumentTransferProvider"
-        };
+			"kCura.IntegrationPoints.LDAPProvider",
+			"kCura.IntegrationPoints.DocumentTransferProvider"
+		};
 
 		private IProviderFactory _providerFactory;
 		private WindsorContainer _windsorContainer;
 
-	    public DomainManager()
-	    {
-	    }
+		public DomainManager()
+		{
+		}
 
 		/// <summary>
 		/// Called to initialized the provider's app domain and do any setup work needed
@@ -61,9 +61,9 @@ namespace kCura.IntegrationPoints.Domain
 					{
 						startupTypes.Add(type);
 					}
-					else if (providerFactoryType.IsAssignableFrom(type) 
-							&& type != typeof (DefaultProviderFactory) 
-							&& type != typeof (ProviderFactoryBase)
+					else if (providerFactoryType.IsAssignableFrom(type)
+							&& type != typeof(DefaultProviderFactory)
+							&& type != typeof(ProviderFactoryBase)
 							&& type != providerFactoryType)
 					{
 						if (customProviderFactoryType != null)
@@ -96,7 +96,7 @@ namespace kCura.IntegrationPoints.Domain
 				}
 				catch (Exception ex)
 				{
-					throw new Exception(Constants.IntegrationPoints.UNABLE_TO_INSTANTIATE_PROVIDER_FACTORY, ex);	
+					throw new Exception(Constants.IntegrationPoints.UNABLE_TO_INSTANTIATE_PROVIDER_FACTORY, ex);
 				}
 			}
 
@@ -129,7 +129,7 @@ namespace kCura.IntegrationPoints.Domain
 				FromAssembly.InDirectory(
 					new AssemblyFilter(AppDomain.CurrentDomain.BaseDirectory)
 					.FilterByName(this.FilterByAllowedAssemblyNames)));
-			
+
 			_windsorContainer.Register(Component.For<IAuthTokenGenerator>().Instance(new ClaimsTokenGenerator()).LifestyleTransient());
 			_windsorContainer.Register(Component.For<IHelper>().UsingFactoryMethod(k => helper, true));
 		}
@@ -162,11 +162,11 @@ namespace kCura.IntegrationPoints.Domain
 				catch
 				{
 					// Handle case (in event handlers) where IProviderFactory cannot be resolved...
-					_providerFactory = new DefaultProviderFactory(_windsorContainer, helper);	
+					_providerFactory = new DefaultProviderFactory(_windsorContainer, helper);
 				}
 			}
-
-			return new ProviderWrapper(_providerFactory.CreateProvider(identifier));
+			IAPILog logger = helper.GetLoggerFactory().GetLogger();
+			return new ProviderWrapper(_providerFactory.CreateProvider(identifier), logger);
 		}
 	}
 }

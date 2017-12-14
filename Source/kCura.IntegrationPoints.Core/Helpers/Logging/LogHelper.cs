@@ -1,5 +1,5 @@
 ﻿using System;
-using kCura.IntegrationPoints.Core.Logging;
+using kCura.IntegrationPoints.Domain.Logging;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Helpers.Logging

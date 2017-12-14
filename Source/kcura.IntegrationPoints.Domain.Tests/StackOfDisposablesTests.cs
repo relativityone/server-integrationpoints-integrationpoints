@@ -1,9 +1,8 @@
 ﻿using System;
-using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using NSubstitute;
 using NUnit.Framework;
 
-namespace kCura.IntegrationPoints.Core.Tests.Helpers
+namespace kCura.IntegrationPoints.Domain.Tests
 {
 	[TestFixture]
 	public class StackOfDisposablesTests

@@ -1,10 +1,10 @@
 ﻿using System;
-using kCura.IntegrationPoints.Core.Extensions;
+using kCura.IntegrationPoints.Domain.Extensions;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
 
-namespace kCura.IntegrationPoints.Core.Tests.Extensions
+namespace kCura.IntegrationPoints.Domain.Tests.Extensions
 {
 	[TestFixture]
 	public class IAPILogExtensionsTests

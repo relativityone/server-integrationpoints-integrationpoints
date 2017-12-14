@@ -1,7 +1,7 @@
 ﻿
 using System;
 
-namespace kCura.IntegrationPoints.Core.Logging
+namespace kCura.IntegrationPoints.Domain.Logging
 {
 	public class EhCorrelationContext : BaseCorrelationContext
 	{

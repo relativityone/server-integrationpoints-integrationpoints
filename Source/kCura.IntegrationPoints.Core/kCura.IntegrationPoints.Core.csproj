@@ -586,11 +586,8 @@
     <Compile Include="Constants.cs" />
     <Compile Include="ContextContainer.cs" />
     <Compile Include="Helpers\Logging\LogHelper.cs" />
-    <Compile Include="Logging\AgentCorrelationContext.cs" />
-    <Compile Include="Logging\BaseCorrelationContext.cs" />
     <Compile Include="Exceptions\PermissionException.cs" />
     <Compile Include="ExtendedRsapiClientFactory.cs" />
-    <Compile Include="Extensions\IAPILogExtensions.cs" />
     <Compile Include="Factories\Implementations\ConfigFactory.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Factories\IArtifactServiceFactory.cs" />
@@ -615,7 +612,6 @@
     <Compile Include="Helpers\IDirectoryTreeCreator.cs" />
     <Compile Include="Helpers\IFolderTreeBuilder.cs" />
     <Compile Include="Helpers\Implementations\FolderTreeBuilder.cs" />
-    <Compile Include="Helpers\Implementations\StackOfDisposables.cs" />
     <Compile Include="Helpers\IMultiObjectSavedSearchCondition.cs" />
     <Compile Include="Helpers\IRelativePathDirectoryTreeCreator.cs" />
     <Compile Include="Helpers\Implementations\ButtonStateBuilder.cs" />
@@ -633,8 +629,6 @@
     <Compile Include="Helpers\LongPathFile.cs" />
     <Compile Include="Helpers\Implementations\MultiObjectSavedSearchCondition.cs" />
     <Compile Include="IServiceManagerProvider.cs" />
-    <Compile Include="Logging\CorrelationContextCreationException.cs" />
-    <Compile Include="Logging\EhCorrelationContext.cs" />
     <Compile Include="Models\IRdoFilter.cs" />
     <Compile Include="Monitoring\HealthCheck.cs" />
     <Compile Include="Queries\IGetSourceProviderRdoByApplicationIdentifier.cs" />
@@ -659,6 +653,8 @@
     <Compile Include="RelativitySourceRdo\RelativitySourceRdoHelpersFactory.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceRdoObjectType.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceWorkspaceRdoInitializer.cs" />
+    <Compile Include="Services\Domain\DataReaderWithLogContextDecorator.cs" />
+    <Compile Include="Services\Domain\ProviderWithLogContextDecorator.cs" />
     <Compile Include="Services\EhErrorService.cs" />
     <Compile Include="Services\ErrorServiceBase.cs" />
     <Compile Include="Services\IDeleteHistoryService.cs" />

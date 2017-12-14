@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using kCura.IntegrationPoints.Core.Logging;
 using kCura.IntegrationPoints.Core.Tests;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.ScheduleQueue.Core;
 using NSubstitute;
 using NUnit.Framework;

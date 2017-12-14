@@ -4,6 +4,9 @@ using System.Data;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
+using kCura.IntegrationPoints.Domain.Extensions;
+using kCura.IntegrationPoints.Domain.Logging;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Domain
 {
@@ -11,40 +14,61 @@ namespace kCura.IntegrationPoints.Domain
 	internal class ProviderWrapper : MarshalByRefObject, IDataSourceProvider, IEmailBodyData
 	{
 		private readonly IDataSourceProvider _provider;
-		internal ProviderWrapper(IDataSourceProvider provider)
+		private readonly IAPILog _logger;
+		internal ProviderWrapper(IDataSourceProvider provider, IAPILog logger)
 		{
 			if (provider == null)
 			{
 				throw new ArgumentNullException(nameof(provider));
 			}
+			if (logger == null)
+			{
+				throw new ArgumentNullException(nameof(logger));
+			}
+
 			_provider = provider;
+			_logger = logger.ForContext<ProviderWrapper>();
 		}
 
 		public IEnumerable<FieldEntry> GetFields(string options)
 		{
-			return _provider.GetFields(options).ToList();
+			return EnrichCallWithLogContext(() => _provider.GetFields(options).ToList());
 		}
 
 		public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, string options)
 		{
-			return new DataReaderWrapper(_provider.GetData(fields, entryIds, options));
+			return EnrichCallWithLogContext(() => new DataReaderWrapper(_provider.GetData(fields, entryIds, options)));
 		}
 
 		public IDataReader GetBatchableIds(FieldEntry identifier, string options)
 		{
-			return new DataReaderWrapper(_provider.GetBatchableIds(identifier, options));
+			return EnrichCallWithLogContext(() => new DataReaderWrapper(_provider.GetBatchableIds(identifier, options)));
 		}
 
 		public string GetEmailBodyData(IEnumerable<FieldEntry> fields, string options)
 		{
 			if (_provider is IEmailBodyData)
 			{
-				return ((IEmailBodyData)_provider).GetEmailBodyData(fields, options);
+				return EnrichCallWithLogContext(() => ((IEmailBodyData)_provider).GetEmailBodyData(fields, options));
 			}
 			else
 			{
 				return string.Empty;
 			}
+		}
+
+		private T EnrichCallWithLogContext<T>(Func<T> function)
+		{
+			object correlationContext = GetCorrelationContext();
+			using (_logger.LogContextPushProperties(correlationContext))
+			{
+				return function();
+			}
+		}
+
+		private object GetCorrelationContext()
+		{
+			return (object)LogContextHelper.GetAgentLogContext() ?? LogContextHelper.GetWebLogContext();
 		}
 	}
 }

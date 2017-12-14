@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Reflection;
-using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using Relativity.API;
 
-namespace kCura.IntegrationPoints.Core.Extensions
+namespace kCura.IntegrationPoints.Domain.Extensions
 {
 	public static class IAPILogExtensions
 	{

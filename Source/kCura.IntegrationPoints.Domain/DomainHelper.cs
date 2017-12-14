@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using kCura.IntegrationPoints.Contracts.Domain;
-using Relativity;
 using Relativity.APIHelper;
 
 namespace kCura.IntegrationPoints.Domain
@@ -171,12 +169,10 @@ namespace kCura.IntegrationPoints.Domain
 			// Marshal the data
 			IAppDomainDataMarshaller dataMarshaller = new SecureAppDomainDataMarshaller();
 			dataMarshaller.MarshalDataToDomain(domain, dataDictionary);
-
 			manager.Init();
-
 			Bootstrapper.InitAppDomain(Constants.IntegrationPoints.APP_DOMAIN_SUBSYSTEM_NAME,
 				Constants.IntegrationPoints.APPLICATION_GUID_STRING, domain);
-
+			
 			return manager;
 		}
 

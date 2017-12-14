@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace kCura.IntegrationPoints.Core.Helpers.Implementations
+namespace kCura.IntegrationPoints.Domain
 {
 	/// <summary>
 	/// This class will dispose pushed IDisposable objects in LIFO manner

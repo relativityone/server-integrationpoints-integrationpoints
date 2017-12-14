@@ -4,12 +4,13 @@ using System.Runtime.InteropServices;
 using kCura.EventHandler;
 using kCura.IntegrationPoints.Core.Extensions;
 using kCura.IntegrationPoints.Core.Helpers.Logging;
-using kCura.IntegrationPoints.Core.Logging;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Data.Queries;
+using kCura.IntegrationPoints.Domain.Extensions;
+using kCura.IntegrationPoints.Domain.Logging;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller
