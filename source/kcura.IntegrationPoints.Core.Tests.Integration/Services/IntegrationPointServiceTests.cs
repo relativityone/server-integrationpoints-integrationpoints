@@ -175,8 +175,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			integrationPoint.Scheduler = new Scheduler()
 			{
 				EnableScheduler = true,
-				StartDate = DateTime.UtcNow.ToString("MM/dd/yyyy"),
-				EndDate = DateTime.UtcNow.ToString("MM/dd/yyyy"),
+				StartDate = DateTime.UtcNow.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture),
+				EndDate = DateTime.UtcNow.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture),
 				ScheduledTime = DateTime.UtcNow.ToString("HH") + ":" + DateTime.UtcNow.AddMinutes(1).ToString("mm"),
 				Reoccur = 0,
 				SelectedFrequency = ScheduleInterval.None.ToString(),

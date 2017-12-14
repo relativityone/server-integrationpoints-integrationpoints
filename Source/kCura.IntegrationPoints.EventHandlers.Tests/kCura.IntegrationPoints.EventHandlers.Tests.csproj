@@ -134,6 +134,7 @@
     <Compile Include="Installers\Helpers\SecretStoreCleanUpTests.cs" />
     <Compile Include="Installers\SecretStoreCleanUpEventHandlerWrapperTests.cs" />
     <Compile Include="Installers\SetHasErrorsFieldTests.cs" />
+    <Compile Include="Installers\SourceProvidersMigrationEventHandlerTests.cs" />
     <Compile Include="Installers\UpdateJobHistoryDestinationWorkspaceTests.cs" />
     <Compile Include="IntegrationPoints\Helpers\ConsoleBuilderTests.cs" />
     <Compile Include="IntegrationPoints\Helpers\CorrespondingJobDeleteTests.cs" />

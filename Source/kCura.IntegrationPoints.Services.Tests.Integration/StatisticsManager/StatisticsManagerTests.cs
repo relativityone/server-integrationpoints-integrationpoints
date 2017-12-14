@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
@@ -31,7 +32,8 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.StatisticsManager
 			_testCaseSettings.ViewId = workspaceService.GetView(WorkspaceArtifactId, "Documents");
 			_testCaseSettings.FolderId = _testCaseSettings.DocumentsTestData.Documents.Last().FolderId.Value;
 
-			_testCaseSettings.ProductionId = workspaceService.CreateProduction(WorkspaceArtifactId, _testCaseSettings.SavedSearchId, "Production");
+			_testCaseSettings.ProductionId =
+				workspaceService.CreateProduction(WorkspaceArtifactId, _testCaseSettings.SavedSearchId, "Production");
 		}
 
 		[TestCaseSource(nameof(_testCases))]

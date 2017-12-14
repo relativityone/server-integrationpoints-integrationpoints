@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.SourceProviderInstaller;
 using kCura.IntegrationPoints.SourceProviderInstaller.Services;
@@ -17,7 +18,13 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 	{
 		private IAPILog _logger;
 		internal IImportService Importer;
-		
+
+		public SourceProvidersMigrationEventHandler()
+		{ }
+
+		public SourceProvidersMigrationEventHandler(IErrorService errorService) : base(errorService)
+		{ }
+
 
 		public IAPILog Logger
 		{

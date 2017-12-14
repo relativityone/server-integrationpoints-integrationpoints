@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.EventHandler;
 using kCura.IntegrationPoints.Contracts;
+using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints;
 using kCura.IntegrationPoints.SourceProviderInstaller.Services;
@@ -19,6 +21,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 	[TestFixture]
 	internal class SourceProvidersMigrationEventHandlerTests : SourceProvidersMigrationEventHandler
 	{
+		private static readonly IErrorService _errorService = Substitute.For<IErrorService>();
+
+		public SourceProvidersMigrationEventHandlerTests() : base(_errorService)
+		{ }
+
 		[OneTimeSetUp]
 		public void Setup()
 		{
@@ -37,14 +44,16 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 		{
 			// arrange
 			_providersStub = new List<SourceProvider>();
-			this.Logger = Substitute.For<IAPILog>();
+			Logger = Substitute.For<IAPILog>();
+
+			Helper = CreateHelperWithLogger(Logger);
 
 			Response actual = Execute();
 
 			// act & assert
 			Assert.IsNotNull(actual);
 			Assert.IsFalse(actual.Success);
-			this.Logger.Received(1).LogError(Arg.Any<Exception>(), "Failed to migrate Source Provider.");
+			_errorService.Received().Log(Arg.Is<ErrorModel>(error => error.Message == "Failed to migrate Source Provider."));
 		}
 
 		[Test]
@@ -119,6 +128,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 				provider2ToInstalled
 			};
 
+			IAPILog logger = Substitute.For<IAPILog>();
+			Helper = CreateHelperWithLogger(logger);
+
 			// act
 			Execute();
 
@@ -130,6 +142,18 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 			Assert.AreEqual(2, installedProviders.Count);
 			VerifyInstalledProvider(providerToInstalled, importService.InstalledProviders.ElementAt(0));
 			VerifyInstalledProvider(provider2ToInstalled, importService.InstalledProviders.ElementAt(1));
+		}
+
+		private IEHHelper CreateHelperWithLogger(IAPILog logger)
+		{
+			logger.ForContext<SourceProvidersMigrationEventHandler>().Returns(logger);
+
+			ILogFactory loggerFactory = Substitute.For<ILogFactory>();
+			loggerFactory.GetLogger().Returns(logger);
+
+			IEHHelper helper = Substitute.For<IEHHelper>();
+			helper.GetLoggerFactory().Returns(loggerFactory);
+			return helper;
 		}
 
 		private class MockImportService : IImportService

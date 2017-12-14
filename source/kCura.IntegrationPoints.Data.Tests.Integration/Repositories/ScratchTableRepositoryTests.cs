@@ -90,7 +90,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			if (numDocsWithErrors == 1)
 			{
 				string docIdentifierToRemove = controlNumbersByDocumentIds[docArtifactIdToRemove];
-				scratchTableRepository.RemoveErrorDocuments(new List<string> { docIdentifierToRemove});
+				scratchTableRepository.RemoveErrorDocuments(new List<string> { docIdentifierToRemove });
 			}
 			else //all docs have errors
 			{
@@ -226,7 +226,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			List<int> actualJobHistoryArtifactIds = new List<int>();
 			foreach (DataRow dataRow in tempTable.Rows)
 			{
-				actualJobHistoryArtifactIds.Add(Convert.ToInt32((object) dataRow["ArtifactID"]));
+				actualJobHistoryArtifactIds.Add(Convert.ToInt32((object)dataRow["ArtifactID"]));
 			}
 
 			List<int> discrepancies = expectedDocIds.Except(actualJobHistoryArtifactIds).ToList();

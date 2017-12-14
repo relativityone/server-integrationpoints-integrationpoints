@@ -85,8 +85,8 @@
 			<HintPath>..\packages\Relativity.Authentication.Interfaces.9.5.357.82\lib\net462\Relativity.Authentication.Interfaces.dll</HintPath>
 			<Private>True</Private>
 		</Reference>
-		<Reference Include="Relativity.Logging.Interfaces, Version=9.4.300.6, Culture=neutral, processorArchitecture=MSIL">
-			<HintPath>..\packages\Relativity.Logging.Interfaces.9.4.300\lib\net45\Relativity.Logging.Interfaces.dll</HintPath>
+		<Reference Include="Relativity.Logging.Interfaces, Version=9.4.308.17, Culture=neutral, processorArchitecture=MSIL">
+			<HintPath>..\packages\Relativity.Logging.Interfaces.9.4.308\lib\net45\Relativity.Logging.Interfaces.dll</HintPath>
 			<Private>True</Private>
 		</Reference>
 		<Reference Include="Relativity.ServiceBus, Version=2.2.5.17, Culture=neutral, processorArchitecture=MSIL">

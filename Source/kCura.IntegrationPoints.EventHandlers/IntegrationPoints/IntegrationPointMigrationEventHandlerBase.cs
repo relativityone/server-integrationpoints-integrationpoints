@@ -29,6 +29,10 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				new EhErrorService(new CreateErrorRdoQuery(new RsapiClientFactory(Helper), Logger, new SystemEventLoggingService()), Logger));
 		}
 
+		protected IntegrationPointMigrationEventHandlerBase(IErrorService errorService)
+		{
+			_errorService = new Lazy<IErrorService>(() => errorService);
+		}
 		private IAPILog Logger
 		{
 			get

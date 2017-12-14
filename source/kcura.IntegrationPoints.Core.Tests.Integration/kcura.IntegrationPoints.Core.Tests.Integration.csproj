@@ -58,6 +58,10 @@
       <HintPath>..\packages\Elasticsearch.Net.1.4.3\lib\net45\Elasticsearch.Net.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="FaspManager, Version=3.7.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\relativity.faspmanager.3.7.2.0\lib\net40\FaspManager.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="FluentValidation, Version=6.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\FluentValidation.6.1.0.0\lib\Net45\FluentValidation.dll</HintPath>
       <Private>True</Private>
@@ -190,6 +194,10 @@
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Polly, Version=5.3.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Polly.5.3.1\lib\net45\Polly.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Relativity, Version=9.5.357.82, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\RelativityCore.9.5.357.82\lib\net462\Relativity.dll</HintPath>
       <Private>True</Private>
@@ -271,11 +279,11 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Logging, Version=9.4.308.17, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.5.357.82\lib\net462\Relativity.Logging.dll</HintPath>
+      <HintPath>..\packages\Relativity.Logging.9.4.308\lib\net462\Relativity.Logging.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Logging.Interfaces, Version=9.4.308.17, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.5.357.82\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+      <HintPath>..\packages\Relativity.Logging.Interfaces.9.4.308\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.ProcessingBase, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -354,6 +362,26 @@
       <HintPath>..\packages\Relativity.Toggles.1.0.0.84\lib\net462\Relativity.Toggles.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.Transfer.Client, Version=1.2.17337.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\relativity.transfer.client.1.2.17\lib\net462\Relativity.Transfer.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Transfer.Client.Aspera, Version=1.2.17337.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\relativity.transfer.client.1.2.17\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Transfer.Client.Core, Version=1.2.17337.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\relativity.transfer.client.1.2.17\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Transfer.Client.FileShare, Version=1.2.17337.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\relativity.transfer.client.1.2.17\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Transfer.Client.Http, Version=1.2.17337.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\relativity.transfer.client.1.2.17\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Relativity.Vfs, Version=1.0.22.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Vfs.1.0.22\lib\net462\Relativity.Vfs.dll</HintPath>
       <Private>True</Private>
@@ -372,6 +400,10 @@
     </Reference>
     <Reference Include="Relativity.Vfs.IO.Interfaces, Version=1.0.22.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Vfs.IO.1.0.22\lib\net462\Relativity.Vfs.IO.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Renci.SshNet, Version=2016.0.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
+      <HintPath>..\packages\SSH.NET.2016.0.0\lib\net40\Renci.SshNet.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Serilog, Version=1.5.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">

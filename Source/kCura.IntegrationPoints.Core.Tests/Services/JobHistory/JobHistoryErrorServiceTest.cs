@@ -152,7 +152,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			// Assert
 			_caseServiceContext.RsapiService.IntegrationPointLibrary.DidNotReceive().Update(Arg.Any<Data.IntegrationPoint>());
 			_caseServiceContext.RsapiService.JobHistoryErrorLibrary.DidNotReceive().Create(Arg.Any<IEnumerable<JobHistoryError>>());
-			Assert.That(returnedException.Message, Is.EqualTo("Type:Job  Id:  Error:Fake job error."));
+			Assert.That(returnedException.Message, Is.EqualTo("Type:Job Id:  Error:Fake job error."));
 		}
 
 		[Test]
