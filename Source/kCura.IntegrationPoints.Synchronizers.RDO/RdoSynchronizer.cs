@@ -420,6 +420,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 					LogMissingIdentifierField();
 					throw new Exception("Source Provider requires the identifier field to be mapped with another identifier field.");
 				}
+				settings.DestinationIdentifierField = map.DestinationField.ActualName;
 			}
 
 			return settings;
