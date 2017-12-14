@@ -777,14 +777,16 @@ ko.validation.insertValidationMessage = function (element) {
 				}
 
 
-				//check for a match b/w the source and destination fields by name
+				//check for a match b/w the source and destination fields by identifier flag or name
 				for (var j = 0; j < self.workspaceFields().length; j++) {
 					//check to make sure that we ignore any workspace field that's already added
 					if (wspaceFieldToAdd().indexOf(self.workspaceFields()[j]) != -1) {
 						continue;
 					}
 
-					if (self.sourceField()[i].name === self.workspaceFields()[j].name) {
+					if ((self.sourceField()[i].isIdentifier && self.workspaceFields()[j].isIdentifier)
+						||
+						(self.sourceField()[i].name === self.workspaceFields()[j].name)) {
 						sourceFieldToAdd.push(self.sourceField()[i]);
 						wspaceFieldToAdd.push(self.workspaceFields()[j]);
 						fieldAlreadyMatched = true;
