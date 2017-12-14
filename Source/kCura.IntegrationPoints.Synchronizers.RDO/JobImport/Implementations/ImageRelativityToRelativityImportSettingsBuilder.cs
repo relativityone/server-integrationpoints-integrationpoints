@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 			target.DocumentIdentifierField = importSettings.IdentifierField;
 			target.BatesNumberField = IntegrationPoints.Domain.Constants.SPECIAL_FILE_NAME_FIELD_NAME;
 			target.FileLocationField = IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME;
-
+			target.AutoNumberImages = true;
 		}
 	}
 }
