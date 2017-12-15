@@ -1,14 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Extensions;
+using kCura.IntegrationPoints.Domain.Models;
+using Relativity.Core.Service;
 using Relativity.Services.Search;
 
 namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 {
     public class SavedSearchesTreeCreator : ISavedSearchesTreeCreator
     {
+        private const string SanitizedSavedSearchDefaultName = "Sanitized Search Name";
+        private readonly IHtmlSanitizerManager _htmlSanitizerManager;
+
+        public SavedSearchesTreeCreator(IHtmlSanitizerManager htmlSanitizerManager)
+        {
+            _htmlSanitizerManager = htmlSanitizerManager;
+        }
+
         public JsTreeItemDTO Create(IEnumerable<SearchContainerItem> nodes)
         {
             return CreateWithChildrenImpl(nodes, Enumerable.Empty<SavedSearchContainerItem>());
@@ -17,6 +26,14 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
         public JsTreeItemDTO Create(IEnumerable<SearchContainerItem> nodes, IEnumerable<SavedSearchContainerItem> children)
         {
             return CreateWithChildrenImpl(nodes, children);
+        }
+
+        private string GetSanitizedText(string text)
+        {
+            SanitizeResult sanitizedResult = _htmlSanitizerManager.Sanitize(text);
+            return sanitizedResult.HasErrors || string.IsNullOrWhiteSpace(sanitizedResult.CleanHTML)
+                ? SanitizedSavedSearchDefaultName
+                : sanitizedResult.CleanHTML;
         }
 
         private JsTreeItemDTO CreateWithChildrenImpl(IEnumerable<SearchContainerItem> nodes, IEnumerable<SavedSearchContainerItem> children)
@@ -28,7 +45,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
                 {
                     Id = x.SearchContainer.ArtifactID.ToString(),
                     ParentId = x.ParentContainer.ArtifactID.ToString(),
-                    Text = x.SearchContainer.Name,
+                    Text = GetSanitizedText(x.SearchContainer.Name),
                     Icon = JsTreeItemIconEnum.SavedSearchFolder.GetDescription()
                 };
             }).OrderBy(v => v.Text).ToDictionary(x => x.Id);
@@ -40,7 +57,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
                 {
                     Id = x.SavedSearch.ArtifactID.ToString(),
                     ParentId = x.ParentContainer.ArtifactID.ToString(),
-                    Text = x.SavedSearch.Name,
+                    Text = GetSanitizedText(x.SavedSearch.Name),
                     Icon = (x.Personal ? JsTreeItemIconEnum.SavedSearchPersonal : JsTreeItemIconEnum.SavedSearch).GetDescription()
                 };
             }).GroupBy(x => x.ParentId).ToDictionary(x => x.Key, x => x.OrderBy(v => v.Text).ToArray());
