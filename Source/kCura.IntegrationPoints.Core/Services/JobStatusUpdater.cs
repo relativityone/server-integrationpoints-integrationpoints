@@ -19,13 +19,13 @@ namespace kCura.IntegrationPoints.Core.Services
 			_jobHistoryService = jobHistoryService;
 		}
 
-		public Relativity.Client.DTOs.Choice GenerateStatus(Guid batchId)
+		public Relativity.Client.DTOs.Choice GenerateStatus(Guid batchId, long wkspId)
 		{
 			Data.JobHistory result = _jobHistoryService.GetRdo(batchId);
-			return GenerateStatus(result);
+			return GenerateStatus(result, wkspId);
 		}
 
-		public Relativity.Client.DTOs.Choice GenerateStatus(Data.JobHistory jobHistory)
+		public Relativity.Client.DTOs.Choice GenerateStatus(Data.JobHistory jobHistory, long wkspId)
 		{
 			if (jobHistory == null)
 			{
@@ -45,7 +45,8 @@ namespace kCura.IntegrationPoints.Core.Services
 				}
 				if (recent.ErrorType.EqualsToChoice(Data.ErrorTypeChoices.JobHistoryErrorJob))
 				{
-					var healthcheck = Client.APMClient.HealthCheckOperation(Constants.IntegrationPoints.Telemetry.APM_HEALTHCHECK, HealthCheck.CreateJobFailedMetric);
+					var healthcheck = Client.APMClient.HealthCheckOperation(Constants.IntegrationPoints.Telemetry.APM_HEALTHCHECK, 
+						() => HealthCheck.CreateJobFailedMetric(jobHistory, wkspId));
 					healthcheck.Write();
 
 					return Data.JobStatusChoices.JobHistoryErrorJobFailed;

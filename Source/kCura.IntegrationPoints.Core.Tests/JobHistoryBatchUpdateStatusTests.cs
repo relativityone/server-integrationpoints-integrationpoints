@@ -78,7 +78,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 			_jobService.GetJob(job.JobId).Returns(job.CopyJobWithStopState(StopState.None));
 			_serializer.Deserialize<TaskParameters>(job.JobDetails).Returns(parameters);
 			_jobHistoryService.GetRdo(parameters.BatchInstance).Returns(history);
-			_updater.GenerateStatus(history).Returns(expectedStatus);
+			_updater.GenerateStatus(history, job.JobId).Returns(expectedStatus);
 
 			// ACT
 			_instance.OnJobComplete(job);

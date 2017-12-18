@@ -17,6 +17,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 		private IRSAPIService _rsapi;
 		private JobHistoryErrorQuery _service;
 		private JobStatusUpdater _instance;
+		private const int _JOB_ID = 1;
 
 		[SetUp]
 		public override void SetUp()
@@ -31,7 +32,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 		[Test]
 		public void GenerateStatus_NullJobHistory()
 		{
-			Assert.Throws<ArgumentNullException>(() => _instance.GenerateStatus(null));
+			Assert.Throws<ArgumentNullException>(() => _instance.GenerateStatus(null, _JOB_ID));
 		}
 
 		[Test]
@@ -41,7 +42,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 			JobHistory jobHistory = new JobHistory() {JobStatus = JobStatusChoices.JobHistoryStopping};
 
 			// ACT
-			Relativity.Client.DTOs.Choice status = _instance.GenerateStatus(jobHistory);
+			Relativity.Client.DTOs.Choice status = _instance.GenerateStatus(jobHistory, _JOB_ID);
 
 			// ASSERT
 			Assert.IsTrue(status.EqualsToChoice(JobStatusChoices.JobHistoryStopped));
@@ -54,7 +55,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 			_service.GetJobErrorFailedStatus(Arg.Any<int>()).Returns(null, new JobHistoryError[] { });
 
 			//ACT
-			var choice = _instance.GenerateStatus(new JobHistory { JobStatus = JobStatusChoices.JobHistoryProcessing, ItemsWithErrors = 0 });
+			var choice = _instance.GenerateStatus(new JobHistory { JobStatus = JobStatusChoices.JobHistoryProcessing, ItemsWithErrors = 0 }, _JOB_ID);
 			
 			//ASSERT
 			Assert.IsTrue(choice.EqualsToChoice(JobStatusChoices.JobHistoryCompleted));
@@ -67,7 +68,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 			_service.GetJobErrorFailedStatus(Arg.Any<int>()).Returns(new JobHistoryError { ErrorType = Data.ErrorTypeChoices.JobHistoryErrorItem });
 
 			//ACT
-			var choice = _instance.GenerateStatus(new JobHistory() { JobStatus = JobStatusChoices.JobHistoryProcessing });
+			var choice = _instance.GenerateStatus(new JobHistory() { JobStatus = JobStatusChoices.JobHistoryProcessing }, _JOB_ID);
 
 			//ASSERT
 			Assert.IsTrue(choice.EqualsToChoice(JobStatusChoices.JobHistoryCompletedWithErrors));
@@ -80,7 +81,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 			_service.GetJobErrorFailedStatus(Arg.Any<int>()).Returns((JobHistoryError)null);
 
 			//ACT
-			var choice = _instance.GenerateStatus(new JobHistory() { JobStatus = JobStatusChoices.JobHistoryProcessing, ItemsWithErrors = 99 });
+			var choice = _instance.GenerateStatus(new JobHistory() { JobStatus = JobStatusChoices.JobHistoryProcessing, ItemsWithErrors = 99 }, _JOB_ID);
 
 			//ASSERT
 			Assert.IsTrue(choice.EqualsToChoice(JobStatusChoices.JobHistoryCompletedWithErrors));
@@ -93,7 +94,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 			_service.GetJobErrorFailedStatus(Arg.Any<int>()).Returns(new JobHistoryError { ErrorType = null});
 
 			//ACT
-			var choice = _instance.GenerateStatus(new JobHistory() { JobStatus = JobStatusChoices.JobHistoryProcessing });
+			var choice = _instance.GenerateStatus(new JobHistory() { JobStatus = JobStatusChoices.JobHistoryProcessing }, _JOB_ID);
 
 			//ASSERT
 			Assert.IsTrue(choice.EqualsToChoice(JobStatusChoices.JobHistoryCompleted));
@@ -106,7 +107,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 			_service.GetJobErrorFailedStatus(Arg.Any<int>()).Returns(new JobHistoryError { ErrorType = Data.ErrorTypeChoices.JobHistoryErrorJob });
 
 			//ACT
-			var choice = _instance.GenerateStatus(new JobHistory() { JobStatus = JobStatusChoices.JobHistoryProcessing});
+			var choice = _instance.GenerateStatus(new JobHistory() { JobStatus = JobStatusChoices.JobHistoryProcessing}, _JOB_ID);
 
 			//ASSERT
 			Assert.IsTrue(choice.EqualsToChoice(JobStatusChoices.JobHistoryErrorJobFailed));
@@ -121,7 +122,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 			_jobHistoryService.GetRdo(guid).Returns(jobHistory);
 
 			// ACT
-			var choice = _instance.GenerateStatus(guid);
+			var choice = _instance.GenerateStatus(guid, _JOB_ID);
 
 			//ASSERT
 			Assert.IsTrue(choice.EqualsToChoice(JobStatusChoices.JobHistoryStopped));

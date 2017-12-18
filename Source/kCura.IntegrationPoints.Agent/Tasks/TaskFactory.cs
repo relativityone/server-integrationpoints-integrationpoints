@@ -271,7 +271,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_jobHistoryService.UpdateRdo(jobHistory);
 
 			// No updates to IP since the job history error service handles IP updates			
-			var healthcheck = Client.APMClient.HealthCheckOperation(Constants.IntegrationPoints.Telemetry.APM_HEALTHCHECK, HealthCheck.CreateJobFailedMetric);
+			var healthcheck = Client.APMClient.HealthCheckOperation(Constants.IntegrationPoints.Telemetry.APM_HEALTHCHECK, () => HealthCheck.CreateJobFailedMetric(jobHistory, job.WorkspaceID));
 			healthcheck.Write();
 			LogUpdateJobHistoryOnFailureSuccesfulEnd(job, integrationPointDto);
 		}

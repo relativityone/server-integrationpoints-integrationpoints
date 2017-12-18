@@ -7,26 +7,29 @@ namespace kCura.IntegrationPoints.Core.Monitoring
 {
 	public static class HealthCheck
 	{
-		public static HealthCheckOperationResult CreateJobFailedMetric()
+		public static readonly string StuckJobMessage = "Stuck jobs found.";
+		public static readonly string InvalidJobMessage = "Jobs with invalid status found.";
+
+		public static HealthCheckOperationResult CreateJobFailedMetric(JobHistory jobHistory, long workspaceId)
 		{
-			return new HealthCheckOperationResult("Integration Points job failed!");
+			return new HealthCheckOperationResult($"Integration Points job failed! Job Id {jobHistory.JobID} in Workspace {workspaceId}!");
 		}
 
 		public static HealthCheckOperationResult CreateJobsWithInvalidStatusMetric(IDictionary<int, IList<JobHistory>> jobHistories)
 		{
 			Dictionary<string, object> customData = CreateJobHistoryCustomData(jobHistories);
-			return new HealthCheckOperationResult(false, "Jobs with invalid status found.", null, customData);
+			return new HealthCheckOperationResult(false, InvalidJobMessage, null, customData);
 		}
 
 		public static HealthCheckOperationResult CreateStuckJobsMetric(IDictionary<int, IList<JobHistory>> jobHistories)
 		{
 			Dictionary<string, object> customData = CreateJobHistoryCustomData(jobHistories);
-			return new HealthCheckOperationResult(false, "Stuck jobs found.", null, customData);
+			return new HealthCheckOperationResult(false, StuckJobMessage, null, customData);
 		}
 
 		private static Dictionary<string, object> CreateJobHistoryCustomData(IDictionary<int, IList<JobHistory>> jobHistories)
 		{
-			return jobHistories.ToDictionary(x => $"Workspace {x.Key}", y => (object) string.Join(", ", y.Value.Select(z => $"Job {z.ArtifactId} in Workspace {y.Key}")));
+			return jobHistories.ToDictionary(x => $"Workspace {x.Key}", y => (object)$"Job Ids: {string.Join(", ", y.Value.Select(z => z.JobID))}");
 		}
 	}
 }
