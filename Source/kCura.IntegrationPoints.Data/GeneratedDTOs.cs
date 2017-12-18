@@ -657,15 +657,15 @@ namespace kCura.IntegrationPoints.Data
 			}
 		}
 		[DynamicField(JobHistoryFields.TotalItems, JobHistoryFieldGuids.TotalItems, FieldTypes.WholeNumber)]
-		public int? TotalItems
+		public long? TotalItems
 		{
 			get
 			{
-				return GetField<int?>(new System.Guid(JobHistoryFieldGuids.TotalItems));
+				return GetField<long?>(new System.Guid(JobHistoryFieldGuids.TotalItems));
 			}
 			set
 			{
-				SetField<int?>(new System.Guid(JobHistoryFieldGuids.TotalItems), value);
+				SetField<long?>(new System.Guid(JobHistoryFieldGuids.TotalItems), value);
 			}
 		}
 		[DynamicField(JobHistoryFields.DestinationWorkspaceInformation, JobHistoryFieldGuids.DestinationWorkspaceInformation, FieldTypes.MultipleObject)]

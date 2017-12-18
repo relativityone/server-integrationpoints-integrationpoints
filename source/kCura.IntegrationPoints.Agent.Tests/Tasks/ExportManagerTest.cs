@@ -99,7 +99,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				.Returns(sourceConfiguration);
 
 			// Act
-			int retTotalCount = _instanceToTest.BatchTask(_job, null);
+			long retTotalCount = _instanceToTest.BatchTask(_job, null);
 
 			// Assert
 			Assert.That(retTotalCount, Is.EqualTo(totalSavedSearchCount));

@@ -20,13 +20,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ExportInitProcessService>();
 		}
 
-		public int CalculateDocumentCountToTransfer(ExportUsingSavedSearchSettings exportSettings, int artifactTypeId)
+		public long CalculateDocumentCountToTransfer(ExportUsingSavedSearchSettings exportSettings, int artifactTypeId)
 		{
 			_logger.LogDebug("Start retrieving Total Document count for {exportSettings.ExportType} export type...", exportSettings.ExportType);
 
 			ExportSettings.ExportType exportType = GetExportType(exportSettings);
 
-			int docsCount;
+			long docsCount;
 
 			if (artifactTypeId == (int) ArtifactType.Document)
 			{
@@ -38,14 +38,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 			}
 
 
-			int extractedIndex = Math.Min(docsCount, Math.Abs(exportSettings.StartExportAtRecord - 1));
-			int retValue = Math.Max(docsCount - extractedIndex, 0);
+			long extractedIndex = Math.Min(docsCount, Math.Abs(exportSettings.StartExportAtRecord - 1));
+			long retValue = Math.Max(docsCount - extractedIndex, 0);
 
 			_logger.LogDebug("Calculated Total Document count: {retValue}", retValue);
 			return retValue;
 		}
 
-		private static int GetTotalDocCount(ExportUsingSavedSearchSettings exportSettings, ExportSettings.ExportType exportType, IDocumentTotalStatistics documentTotalStatistics)
+		private static long GetTotalDocCount(ExportUsingSavedSearchSettings exportSettings, ExportSettings.ExportType exportType, IDocumentTotalStatistics documentTotalStatistics)
 		{
 			switch (exportType)
 			{

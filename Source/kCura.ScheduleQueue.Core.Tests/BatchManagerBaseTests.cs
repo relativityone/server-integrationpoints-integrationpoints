@@ -36,7 +36,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 			IEnumerable<string> batchIds = CreateItems(numItems);
 
 			// ACT
-			int total = _instance.BatchTask(_job, batchIds);
+			long total = _instance.BatchTask(_job, batchIds);
 
 			// ASSERT
 			Assert.AreEqual(numItems, total);
