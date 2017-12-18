@@ -34,7 +34,14 @@ namespace kCura.IntegrationPoints.Management.Tests.Tasks
 
 			var invalidJobs = new Dictionary<int, IList<JobHistory>>
 			{
-				{workspaceArtifactIds[0], new List<JobHistory> {new JobHistory()}}
+				{workspaceArtifactIds[0], new List<JobHistory>
+					{
+						new JobHistory
+						{
+							JobID = "1"
+						}
+					}
+				}
 			};
 
 			_jobsWithInvalidStatus.Find(workspaceArtifactIds).Returns(invalidJobs);

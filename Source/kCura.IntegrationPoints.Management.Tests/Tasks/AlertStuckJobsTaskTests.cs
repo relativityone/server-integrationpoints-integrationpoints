@@ -35,7 +35,14 @@ namespace kCura.IntegrationPoints.Management.Tests.Tasks
 
 			var stuckJobs = new Dictionary<int, IList<JobHistory>>
 			{
-				{workspaceArtifactIds[0], new List<JobHistory> {new JobHistory()}}
+				{workspaceArtifactIds[0], new List<JobHistory>
+					{
+						new JobHistory()
+						{
+							JobID = "1"
+						}
+					}
+				}
 			};
 
 			_stuckJobs.FindStuckJobs(workspaceArtifactIds).Returns(stuckJobs);
