@@ -8,6 +8,6 @@ namespace kCura.IntegrationPoints.Data.Statistics
 {
 	public interface IErrorFilesSizeStatistics
 	{
-		int ForJobHistoryOmmitedFiles(int workspaceArtifactId, int artifactId);
+		long ForJobHistoryOmmitedFiles(int workspaceArtifactId, int artifactId);
 	}
 }

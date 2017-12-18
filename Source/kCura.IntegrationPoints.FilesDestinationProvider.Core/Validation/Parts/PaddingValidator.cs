@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 			return Validate(value, 0);
 		}
 
-		public ValidationResult Validate(ExportFile value, int totalDocCount)
+		public ValidationResult Validate(ExportFile value, long totalDocCount)
 		{
 			//Logic extracted from SharedLibrary
 			var currentVolumeNumber = value.VolumeInfo.VolumeStartNumber;

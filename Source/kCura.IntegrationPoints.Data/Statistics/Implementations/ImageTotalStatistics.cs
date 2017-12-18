@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			_repositoryFactory = repositoryFactory;
 		}
 
-		public int ForFolder(int workspaceArtifactId, int folderId, int viewId, bool includeSubFoldersTotals)
+		public long ForFolder(int workspaceArtifactId, int folderId, int viewId, bool includeSubFoldersTotals)
 		{
 			try
 			{
@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			}
 		}
 
-		public int ForProduction(int workspaceArtifactId, int productionSetId)
+		public long ForProduction(int workspaceArtifactId, int productionSetId)
 		{
 			try
 			{
@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			}
 		}
 
-		public int ForSavedSearch(int workspaceArtifactId, int savedSearchId)
+		public long ForSavedSearch(int workspaceArtifactId, int savedSearchId)
 		{
 			try
 			{
@@ -75,14 +75,14 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			return _repositoryFactory.GetRdoRepository(workspaceArtifactId).Query(query);
 		}
 
-		private int SumDocumentImages(QueryResultSet<RDO> documents)
+		private long SumDocumentImages(QueryResultSet<RDO> documents)
 		{
-			return documents.Results.Sum(x => x.Artifact[DocumentFieldsConstants.RelativityImageCount].ValueAsWholeNumber ?? 0);
+			return documents.Results.Sum(x => x.Artifact[DocumentFieldsConstants.RelativityImageCount].ValueAsWholeNumber ?? 0L);
 		}
 
-		private int SumProductionImages(QueryResultSet<RDO> documents)
+		private long SumProductionImages(QueryResultSet<RDO> documents)
 		{
-			return documents.Results.Sum(x => x.Artifact[ProductionConsts.ImageCountFieldGuid].ValueAsWholeNumber ?? 0);
+			return documents.Results.Sum(x => x.Artifact[ProductionConsts.ImageCountFieldGuid].ValueAsWholeNumber ?? 0L);
 		}
 	}
 }

@@ -113,7 +113,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			JobStatistics stats = _query.UpdateAndRetrieveStats(tableName, _job.JobId, new JobStatistics { Completed = total, Errored = _rowErrors, ImportApiErrors = errorCount }, _job.WorkspaceID);
 			_rowErrors = 0;
 
-			int totalSize = CalculatePushedFilesSizeForJobHistory();
+			long totalSize = CalculatePushedFilesSizeForJobHistory();
 
 			Data.JobHistory historyRdo = _service.GetRdo(_helper.GetBatchInstance(_job));
 			historyRdo.ItemsTransferred = stats.Imported > 0 ? stats.Imported : 0;
@@ -185,29 +185,29 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			_context.ExecuteNonQuerySQLStatement(enableJobHistoryMutex);
 		}
 
-		private string FormatFileSize(int? bytes)
+		private string FormatFileSize(long? bytes)
 		{
 			if (!bytes.HasValue || bytes == 0)
 			{
 				return "0 Bytes";
 			}
 
-			var k = 1024;
+			var k = 1024L;
 			string[] sizes = { "Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
 
-			var i = (int)Math.Floor(Math.Log((int)bytes) / Math.Log(k));
+			var i = (long)Math.Floor(Math.Log((long)bytes) / Math.Log(k));
 			return $"{bytes / Math.Pow(k, i):0.##} {sizes[i]}";
 		}
 
-		private int CalculatePushedFilesSizeForJobHistory()
+		private long CalculatePushedFilesSizeForJobHistory()
 		{
 			if (!(IntegrationPointImportSettings?.ImportNativeFile).GetValueOrDefault(false) ||
 				IntegrationPointSourceConfiguration == null)
 			{
-				return 0;
+				return 0L;
 			}
 
-			var filesSize = 0;
+			var filesSize = 0L;
 
 			switch (IntegrationPointSourceConfiguration.TypeOfExport)
 			{
@@ -226,10 +226,10 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 					break;
 			}
 
-			int errorsFileSize =
+			long errorsFileSize =
 				_errorFilesSizeStatistics.ForJobHistoryOmmitedFiles(IntegrationPointSourceConfiguration.SourceWorkspaceArtifactId,
 					(int) _job.JobId);
-			int copiedFilesFileSize = filesSize - errorsFileSize;
+			long copiedFilesFileSize = filesSize - errorsFileSize;
 
 			return copiedFilesFileSize;
 		}

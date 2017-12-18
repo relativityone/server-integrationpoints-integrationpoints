@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			_repositoryFactory = repositoryFactory;
 		}
 
-		public int ForFolder(int workspaceArtifactId, int folderId, int viewId, bool includeSubFoldersTotals)
+		public long ForFolder(int workspaceArtifactId, int folderId, int viewId, bool includeSubFoldersTotals)
 		{
 			try
 			{
@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			}
 		}
 		
-		public int ForProduction(int workspaceArtifactId, int productionSetId)
+		public long ForProduction(int workspaceArtifactId, int productionSetId)
 		{
 			try
 			{
@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			}
 		}
 
-		public int ForSavedSearch(int workspaceArtifactId, int savedSearchId)
+		public long ForSavedSearch(int workspaceArtifactId, int savedSearchId)
 		{
 			try
 			{
