@@ -5,17 +5,14 @@ using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Agent.Exceptions;
-using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
-using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.Data.Queries;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using NUnit.Framework;
-using ITaskFactory = kCura.IntegrationPoints.Agent.Tasks.ITaskFactory;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
@@ -24,9 +21,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 	{
 		private IJobService _jobService;
 		private IQueueDBContext _queueContext;
-		private ScheduleQueueAgentBase _agent;
+		private Agent _agent;
 		private IJobHistoryService _jobHistoryService;
-		private ITaskFactory _taskFactory;
 
 		public TaskFactoryTestsForOtherProviders() : base("TaskFactoryTestsForOtherProviders")
 		{
@@ -49,8 +45,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		{
 			_jobService = Container.Resolve<IJobService>();
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();
-			_agent = new Agent();
-			_taskFactory = new TaskFactory(new ExtendedIAgentHelper(Helper));
+			_agent = new Agent
+			{
+				Helper = new ExtendedIAgentHelper(Helper)
+			};
 		}
 
 		[Test]
@@ -106,7 +104,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				// ACT & ASSERT
 				string exceptionMessage =
 					"Unable to execute Integration Point job: There is already a job currently running.";
-				AgentDropJobException ex = Assert.Throws<AgentDropJobException>(() => _taskFactory.CreateTask(job1, _agent));
+				AgentDropJobException ex = Assert.Throws<AgentDropJobException>(() => _agent.GetTask(job1));
 				Assert.That(exceptionMessage, Is.EqualTo(ex.Message));
 
 				JobHistory jobHistory = _jobHistoryService.GetRdo(batchInstance);
@@ -168,7 +166,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 					parentJobID: 1);
 
 				// ACT & ASSERT
-				AgentDropJobException ex = Assert.Throws<AgentDropJobException>(() => _taskFactory.CreateTask(job1, _agent));
+				AgentDropJobException ex = Assert.Throws<AgentDropJobException>(() => _agent.GetTask(job1));
 				string exceptionMessage =
 					"Unable to execute Integration Point job: There is already a job currently running. Job is re-scheduled for";
 				StringAssert.Contains(exceptionMessage, ex.Message);
@@ -223,7 +221,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 
 				// ACT & ASSERT
-				_taskFactory.CreateTask(job1, _agent);
+				_agent.GetTask(job1);
 
 				JobHistory jobHistory = _jobHistoryService.GetRdo(batchInstance);
 				Assert.AreEqual(job1.JobId.ToString(), jobHistory.JobID);

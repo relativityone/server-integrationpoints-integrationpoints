@@ -97,6 +97,21 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 			return new Job(jobData);
 		}
 
+		public static Job CreateJob(long jobId)
+		{
+			DataRow jobData = CreateDefaultJobData();
+			jobData["JobID"] = jobId;
+			return new Job(jobData);
+		}
+
+		public static Job CreateJob(long jobId, string scheduleRuleType)
+		{
+			DataRow jobData = CreateDefaultJobData();
+			jobData["JobID"] = jobId;
+			jobData["ScheduleRuleType"] = scheduleRuleType;
+			return new Job(jobData);
+		}
+
 		public static Job CreateJob(long jobId, TaskType taskType, int relatedObjectArtifactID)
 		{
 			DataRow jobData = CreateDefaultJobData();

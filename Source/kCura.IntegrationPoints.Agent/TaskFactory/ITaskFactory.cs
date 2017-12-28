@@ -1,12 +1,11 @@
-﻿using kCura.ScheduleQueue.AgentBase;
+﻿using Castle.Windsor;
+using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
 
-namespace kCura.IntegrationPoints.Agent.Tasks
+namespace kCura.IntegrationPoints.Agent.TaskFactory
 {
 	public interface ITaskFactory
 	{
 		ITask CreateTask(Job job, ScheduleQueueAgentBase agentBase);
-
-		void Release(ITask task);
 	}
 }

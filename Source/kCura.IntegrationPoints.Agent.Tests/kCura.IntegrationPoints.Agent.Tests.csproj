@@ -339,10 +339,12 @@
     <Compile Include="SendEmailManagerUnitTests.cs" />
     <Compile Include="TaskExceptionServiceTests.cs" />
     <Compile Include="TaskExceptionMediatorTests.cs" />
+    <Compile Include="TaskFactory\JobSynchronizationCheckerTests.cs" />
+    <Compile Include="TaskFactory\TaskFactoryJobHistoryServiceTests.cs" />
     <Compile Include="Tasks\ExportManagerTest.cs" />
     <Compile Include="Tasks\ExportServiceManagerTests.cs" />
     <Compile Include="Tasks\ImportServiceManagerTests.cs" />
-    <Compile Include="Tasks\ITaskFactoryTests.cs" />
+    <Compile Include="TaskFactory\TaskFactoryTests.cs" />
     <Compile Include="Tasks\SyncCustodianManagerWorkerTests.cs" />
     <Compile Include="Tasks\SyncManagerTests.cs" />
     <Compile Include="Tasks\SyncWorkerTests.cs" />

@@ -305,6 +305,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.IdentityModel" />
     <Reference Include="System.IdentityModel.Tokens.Jwt, Version=4.0.20622.1351, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -313,8 +314,10 @@
     </Reference>
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -332,10 +335,18 @@
     <Compile Include="Agent.cs" />
     <Compile Include="Attributes\SynchronizedTaskAttribute.cs" />
     <Compile Include="Exceptions\AgentDropJobException.cs" />
+    <Compile Include="Installer\AgentAggregatedInstaller.cs" />
     <Compile Include="Installer\AgentInstaller.cs" />
+    <Compile Include="Context\JobContextProvider.cs" />
     <Compile Include="IRelativityConfigurationFactory.cs" />
     <Compile Include="JobLogInformation.cs" />
     <Compile Include="Logging\CreateErrorRdo.cs" />
+    <Compile Include="TaskFactory\IJobSynchronizationChecker.cs" />
+    <Compile Include="TaskFactory\ITaskFactoryJobHistoryServiceFactory.cs" />
+    <Compile Include="TaskFactory\ITaskFactoryJobHistoryService.cs" />
+    <Compile Include="TaskFactory\JobSynchronizationChecker.cs" />
+    <Compile Include="TaskFactory\TaskFactoryJobHistoryServiceFactory.cs" />
+    <Compile Include="TaskFactory\TaskFactoryJobHistoryService.cs" />
     <Compile Include="Tasks\ExportManager.cs" />
     <Compile Include="Tasks\ExportWorker.cs" />
     <Compile Include="RelativityConfigurationFactory.cs" />
@@ -350,11 +361,10 @@
     <Compile Include="Tasks\SendEmailWorker.cs" />
     <Compile Include="Tasks\ServiceManagerBase.cs" />
     <Compile Include="Tasks\SyncCustodianManagerWorker.cs" />
-    <Compile Include="Tasks\ITaskFactory.cs" />
+    <Compile Include="TaskFactory\ITaskFactory.cs" />
     <Compile Include="Tasks\SyncManager.cs" />
     <Compile Include="Tasks\SyncWorker.cs" />
-    <Compile Include="Tasks\TaskComponentSelector.cs" />
-    <Compile Include="Tasks\TaskFactory.cs" />
+    <Compile Include="TaskFactory\TaskFactory.cs" />
     <Compile Include="Validation\IntegrationPointExecutionEmptyValidator.cs" />
     <Compile Include="Validation\IntegrationPointPermissionEmptyValidator.cs" />
     <Compile Include="Validation\IntegrationPointProviderEmptyValidator.cs" />
@@ -381,7 +391,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
     <Content Include="oi\unmanaged\cmmap000.bin" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
