@@ -5,7 +5,7 @@ namespace kCura.IntegrationPoints.UITests.Logging
 {
 	public class LoggerNameEnricher : ILogEventEnricher
 	{
-		public const string LoggerNamePropertyName = "LoggerName";
+		public const string LOGGER_NAME_PROPERTY_NAME = "LoggerName";
 
 		public readonly string LoggerName;
 
@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.UITests.Logging
 
 		public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
 		{
-			logEvent.AddPropertyIfAbsent(new LogEventProperty(LoggerNamePropertyName, new ScalarValue(LoggerName)));
+			logEvent.AddPropertyIfAbsent(new LogEventProperty(LOGGER_NAME_PROPERTY_NAME, new ScalarValue(LoggerName)));
 		}
 	}
 }

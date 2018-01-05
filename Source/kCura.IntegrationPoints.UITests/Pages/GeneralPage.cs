@@ -1,4 +1,5 @@
 ﻿using OpenQA.Selenium;
+using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Support.PageObjects;
 using OpenQA.Selenium.Support.UI;
 
@@ -30,7 +31,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
         [FindsBy(How = How.CssSelector, Using = "span[title = 'User Dropdown Menu']")]
         protected IWebElement UserDropdownMenu;
 
-        public GeneralPage(IWebDriver driver) : base(driver)
+        public GeneralPage(RemoteWebDriver driver) : base(driver)
         {
             PageFactory.InitElements(driver, this);
         }
@@ -48,8 +49,8 @@ namespace kCura.IntegrationPoints.UITests.Pages
             NavigateHome.Click();
             MainMenu.FindElement(By.LinkText("Workspaces")).Click();
 	        IWebElement viewMenu = Driver.SwitchTo().Frame("externalPage").FindElement(By.Id("viewMenu"));
-			var viewMenuSelect = new SelectElement(viewMenu);
-			viewMenuSelect.SelectByText("All Case Templates");
+			//var viewMenuSelect = new SelectElement(viewMenu);
+			//viewMenuSelect.SelectByText("All Case Templates");
 
 	        IWebElement element = Driver.FindElement(By.LinkText(name));
             element.Click();

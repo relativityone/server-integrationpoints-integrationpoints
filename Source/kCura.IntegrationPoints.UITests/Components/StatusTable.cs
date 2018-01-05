@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.UITests.Pages;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Remote;
 
 namespace kCura.IntegrationPoints.UITests.Components
 {
@@ -24,7 +25,7 @@ namespace kCura.IntegrationPoints.UITests.Components
             .Select(element => element.Text)
             .ToList()[Headers.IndexOf(column)];
 
-        public StatusTable(IWebDriver driver, ISearchContext parent = null) : base(driver)
+        public StatusTable(RemoteWebDriver driver, ISearchContext parent = null) : base(driver)
         {
             _parent = parent ?? driver;
         }

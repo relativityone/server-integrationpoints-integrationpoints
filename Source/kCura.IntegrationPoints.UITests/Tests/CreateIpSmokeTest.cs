@@ -32,9 +32,11 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			second.SelectAllDocuments();
 
 			ExportToFileThirdPage third = second.GoToNextPage();
+			third.DestinationFolder.ChooseRootElement();
+			
 			IntegrationPointDetailsPage detailsPage = third.SaveIntegrationPoint();
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
-
+			
 			// Assert
 			Assert.AreEqual("Relativity (.dat); Unicode", generalProperties.Properties["Load file format:"]);
 		}

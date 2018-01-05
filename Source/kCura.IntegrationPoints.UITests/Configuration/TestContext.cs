@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		
 		public int? WorkspaceId { get; private set; }
 
-		public string WorkspaceName { get; private set; }
+		public string WorkspaceName { get; set; }
 
 		public int? GroupId { get; private set; }
 
@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		public TestContext()
 		{
 			_helper = new Lazy<ITestHelper>(() => new TestHelper());
-			TimeStamp = DateTime.UtcNow.ToString("yyyy-MM-dd_HH-mm-ss");
+			TimeStamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
 		}
 
 		public TestContext CreateWorkspace()

@@ -3,6 +3,7 @@ using System.Linq;
 using kCura.IntegrationPoints.UITests.Logging;
 using kCura.IntegrationPoints.UITests.Pages;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Remote;
 using Serilog;
 
 namespace kCura.IntegrationPoints.UITests.Components
@@ -20,7 +21,7 @@ namespace kCura.IntegrationPoints.UITests.Components
 
 		protected IWebElement Table => _parent.FindElement(By.Id(_tableId));
 
-		public PropertiesTable(IWebDriver driver, string title, string tableId, ISearchContext parent = null) : base(driver)
+		public PropertiesTable(RemoteWebDriver driver, string title, string tableId, ISearchContext parent = null) : base(driver)
 		{
 			_title = title;
 			_tableId = tableId;

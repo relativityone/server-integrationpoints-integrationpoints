@@ -4,6 +4,7 @@ using System.Threading;
 using kCura.IntegrationPoints.UITests.Logging;
 using kCura.IntegrationPoint.Tests.Core;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Support.UI;
 using Serilog;
 
@@ -13,11 +14,11 @@ namespace kCura.IntegrationPoints.UITests.Pages
 	{
 		private static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(Page));
 
-		protected readonly IWebDriver Driver;
+		protected readonly RemoteWebDriver Driver;
 
 		private static int SleepInterval { get; } = 200;
 
-		protected Page(IWebDriver driver)
+		protected Page(RemoteWebDriver driver)
 		{
 			Driver = driver;
 		}
@@ -62,7 +63,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 				}
 				catch (NoSuchElementException ex)
 				{
-					Log.Warning(ex, "Exception occured while checking elements' visibility.");
+					Log.Verbose(ex, "Exception occured while checking elements' visibility.");
 				}
 			}
 			return false;

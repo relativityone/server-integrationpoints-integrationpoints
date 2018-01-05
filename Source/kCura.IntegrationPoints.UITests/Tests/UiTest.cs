@@ -4,9 +4,11 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using NUnit.Framework;
 using System;
+using System.Reflection;
 using kCura.IntegrationPoints.UITests.Configuration;
 using kCura.IntegrationPoints.UITests.Logging;
 using NUnit.Framework.Interfaces;
+using OpenQA.Selenium.Remote;
 using Serilog;
 using TestContext = kCura.IntegrationPoints.UITests.Configuration.TestContext;
 
@@ -14,13 +16,13 @@ namespace kCura.IntegrationPoints.UITests.Tests
 {
 	public abstract class UiTest
 	{
-		private static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(UiTest));
+		protected static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(UiTest));
 		
 		protected TestConfiguration Configuration { get; set; }
 
 		protected TestContext Context { get; set; }
 
-		protected IWebDriver Driver { get; set; }
+		protected RemoteWebDriver Driver { get; set; }
 		
 		[OneTimeSetUp]
 		protected void SetupSuite()
@@ -30,11 +32,16 @@ namespace kCura.IntegrationPoints.UITests.Tests
 				.SetupConfiguration()
 				.LogConfiguration();
 
-			Context = new TestContext()
-				.CreateWorkspace()
-				.ImportDocuments()
-				.InstallIntegrationPoints();
+//			Context = new TestContext()
+//				.CreateWorkspace()
+//				.ImportDocuments()
+//				.InstallIntegrationPoints();
 
+			Context = new TestContext
+			{
+				WorkspaceName = "Smoke Workspace"
+			};
+			
 			CreateDriver();
 		}
 		
@@ -92,6 +99,21 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			string testName = NUnit.Framework.TestContext.CurrentContext.Test.FullName;
 			string timeStamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss-ffff");
 			screenshot.SaveAsFile($@"{testDir}\{timeStamp}_{testName}.png", ScreenshotImageFormat.Png);
+		}
+
+		protected string GetExecutorUrl()
+		{
+			FieldInfo executorField = Driver.GetType().GetField("executor", BindingFlags.NonPublic | BindingFlags.Instance);
+			if (executorField == null)
+			{
+				executorField = Driver.GetType().BaseType.GetField("executor", BindingFlags.NonPublic | BindingFlags.Instance);
+			}
+			object executor = executorField.GetValue(Driver);
+			FieldInfo internalExecutorField = executor.GetType().GetField("internalExecutor", BindingFlags.Instance | BindingFlags.NonPublic);
+			object internalExecutor = internalExecutorField.GetValue(executor);
+			FieldInfo remoteServerUriField = internalExecutor.GetType().GetField("remoteServerUri", BindingFlags.Instance | BindingFlags.NonPublic);
+			var remoteServerUri = remoteServerUriField.GetValue(internalExecutor) as Uri;
+			return remoteServerUri.ToString();
 		}
 	}
 }

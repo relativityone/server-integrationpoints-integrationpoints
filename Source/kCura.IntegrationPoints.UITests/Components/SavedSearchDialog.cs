@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Logging;
 using kCura.IntegrationPoints.UITests.Pages;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Remote;
 using Serilog;
 
 namespace kCura.IntegrationPoints.UITests.Components
@@ -15,7 +16,7 @@ namespace kCura.IntegrationPoints.UITests.Components
 
 		private static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(SavedSearchDialog));
 
-		public SavedSearchDialog(IWebDriver driver) : base(driver)
+		public SavedSearchDialog(RemoteWebDriver driver) : base(driver)
 		{
 			Thread.Sleep(1000);
 		}

@@ -1,5 +1,6 @@
 ﻿using kCura.IntegrationPoints.UITests.Common;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Support.PageObjects;
 
 namespace kCura.IntegrationPoints.UITests.Pages
@@ -20,7 +21,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
         [FindsBy(How = How.Id, Using = "_login")]
         protected IWebElement LoginButton;
 
-        public LoginPage(IWebDriver driver) : base(driver)
+        public LoginPage(RemoteWebDriver driver) : base(driver)
         {
             PageFactory.InitElements(driver, this);
         }
