@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 	{
 		protected IExporterService _exportService;
 		protected IDataReader _instance;
-		protected ICoreContext _context;
+		protected BaseServiceContext _context;
 		protected IScratchTableRepository[] _scratchRepositories;
 		protected ISourceWorkspaceManager _sourceWorkspaceManager;
 		protected ISourceJobManager _sourceJobManager;
@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		protected abstract ExportTransferDataReaderBase CreatetDataReaderTestInstanceWithParameters(
 			IExporterService relativityExportService,
 			FieldMap[] fieldMappings,
-			ICoreContext context,
+			BaseServiceContext context,
 			IScratchTableRepository[] scratchTableRepositories);
 
 		protected readonly SourceWorkspaceDTO _sourceWorkspaceDto = new SourceWorkspaceDTO
@@ -87,7 +87,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		[SetUp]
 		public override void SetUp()
 		{
-			_context = Substitute.For<ICoreContext>();
+			_context = Substitute.For<BaseServiceContext>();
 			_exportService = Substitute.For<IExporterService>();
 			var scratchTable = Substitute.For<IScratchTableRepository>();
 			_scratchRepositories = new[] { scratchTable };

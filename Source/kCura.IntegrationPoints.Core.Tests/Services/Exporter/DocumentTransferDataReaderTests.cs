@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using Castle.Core.Logging;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Managers;
@@ -10,7 +11,9 @@ using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Core;
+using NullLogger = Relativity.Core.Applications.Logging.NullLogger;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 {
@@ -23,20 +26,20 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				_exportService,
 				_templateFieldEntries,
 				_context,
-				_scratchRepositories, false);
+				_scratchRepositories, false, Substitute.For<IAPILog>());
 		}
 
 		protected override ExportTransferDataReaderBase CreatetDataReaderTestInstanceWithParameters(
 			IExporterService relativityExportService,
 			FieldMap[] fieldMappings,
-			ICoreContext context,
+			BaseServiceContext context,
 			IScratchTableRepository[] scratchTableRepositories)
 		{
 			return new DocumentTransferDataReader(
 				relativityExportService,
 				fieldMappings,
 				context,
-				scratchTableRepositories, false);
+				scratchTableRepositories, false, Substitute.For<IAPILog>());
 		}
 	}
 }

@@ -1,7 +1,9 @@
 ﻿using System;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Services.Exporter;
+using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 {
@@ -80,7 +82,7 @@ The Consortium first published The Unicode Standard (ISBN 0-321-18578-1) in 1991
 Thus far the following major and minor versions of the Unicode standard have been published. Update versions, which do not include any changes to character repertoire, are signified by the third number (e.g., ""version 4.0.1"") and are omitted in the table below.[18]";
 
 			InMemoryILongTextStreamFactory factory = new InMemoryILongTextStreamFactory(data, true);
-			string result = ExportApiDataHelper.RetrieveLongTextFieldAsync(factory, 1, 2 ).ConfigureAwait(false).GetAwaiter().GetResult();
+			string result = ExportApiDataHelper.RetrieveLongTextFieldAsync(factory, 1, 2, Substitute.For<IAPILog>()).ConfigureAwait(false).GetAwaiter().GetResult();
 			Assert.AreEqual(data, result);
 		}
 	}

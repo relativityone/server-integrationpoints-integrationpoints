@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		protected override ExportTransferDataReaderBase CreatetDataReaderTestInstanceWithParameters(
 			IExporterService relativityExportService,
 			FieldMap[] fieldMappings,
-			ICoreContext context,
+			BaseServiceContext context,
 			IScratchTableRepository[] scratchTableRepositories)
 		{
 			return new ImageTransferDataReader(

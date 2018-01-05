@@ -16,14 +16,14 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		public const int FETCH_ARTIFACTDTOS_BATCH_SIZE = 200;
 
 		protected readonly IExporterService _relativityExporterService;
-		protected readonly ICoreContext _context;
+		protected readonly BaseServiceContext _context;
 		protected readonly IScratchTableRepository[] _scratchTableRepositories;
 		protected readonly int _folderPathFieldSourceArtifactId;
 
 		protected ExportTransferDataReaderBase(
 			IExporterService relativityExportService,
 			FieldMap[] fieldMappings,
-			ICoreContext context,
+			BaseServiceContext context,
 			IScratchTableRepository[] scratchTableRepositories,
 			bool useDynamicFolderPath) :
 				base(GenerateDataColumnsFromFieldEntries(fieldMappings, useDynamicFolderPath))
@@ -41,6 +41,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 		protected override ArtifactDTO[] FetchArtifactDTOs()
 		{
+
 			ArtifactDTO[] artifacts = _relativityExporterService.RetrieveData(FETCH_ARTIFACTDTOS_BATCH_SIZE);
 			List<int> artifactIds = artifacts.Select(x => x.ArtifactId).ToList();
 

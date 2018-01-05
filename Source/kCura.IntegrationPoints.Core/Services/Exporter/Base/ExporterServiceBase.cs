@@ -43,6 +43,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		protected IDataTransferContext _context;
 		protected SourceConfiguration _sourceConfiguration;
 		protected int _retrievedDataCount;
+		protected IQueryFieldLookupRepository QueryFieldLookupRepository;
 
 
 		/// <summary>
@@ -84,14 +85,13 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			IFieldQueryRepository targetFieldQueryRepository = targetRepositoryFactory.GetFieldQueryRepository(_sourceConfiguration.TargetWorkspaceArtifactId);
 			ValidateDestinationFields(targetFieldQueryRepository, _sourceConfiguration.TargetWorkspaceArtifactId, mappedFields);
             
-            IQueryFieldLookupRepository queryFieldLookupRepository =
-		        sourceRepositoryFactory.GetQueryFieldLookupRepository(_sourceConfiguration.SourceWorkspaceArtifactId);
+            QueryFieldLookupRepository = sourceRepositoryFactory.GetQueryFieldLookupRepository(_sourceConfiguration.SourceWorkspaceArtifactId);
             
             Dictionary<int, int> fieldsReferences = new Dictionary<int, int>();
 			foreach (FieldEntry source in mappedFields.Select(f => f.SourceField))
 			{
 				int artifactId = Convert.ToInt32(source.FieldIdentifier);
-				ViewFieldInfo fieldInfo = queryFieldLookupRepository.GetFieldByArtifactId(artifactId);
+				ViewFieldInfo fieldInfo = QueryFieldLookupRepository.GetFieldByArtifactId(artifactId);
 
 				fieldsReferences[artifactId] = fieldInfo.AvfId;
 				switch (fieldInfo.FieldType)
@@ -206,13 +206,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 					{
 						value = ExportApiDataHelper.SanitizeSingleChoiceField(value);
 					}
-					// export api will return a string constant represent the state of the string of which is too big. We will have to go and read this our self.
-					else if (_longTextFieldArtifactIds.Contains(artifactId)
-							&& global::Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN.Equals(value))
-					{
-						value = ExportApiDataHelper.RetrieveLongTextFieldAsync(_longTextStreamFactory, documentArtifactId, artifactId)
-							.GetResultsWithoutContextSync();
-					}
 				}
 				catch (Exception ex)
 				{
@@ -224,7 +217,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				{
 					Name = _exportJobInfo.ColumnNames[index],
 					ArtifactId = artifactId,
-					Value = value
+					Value = value,
+					FieldType = QueryFieldLookupRepository.GetFieldByArtifactId(artifactId).FieldType.ToString()
 				});
 			}
 		}
