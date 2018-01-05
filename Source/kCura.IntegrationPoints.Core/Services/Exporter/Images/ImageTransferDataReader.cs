@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		public ImageTransferDataReader(
 			IExporterService relativityExportService,
 			FieldMap[] fieldMappings,
-			ICoreContext context,
+			BaseServiceContext context,
 			IScratchTableRepository[] scratchTableRepositories) :
 			base(relativityExportService, fieldMappings, context, scratchTableRepositories, false)
 		{

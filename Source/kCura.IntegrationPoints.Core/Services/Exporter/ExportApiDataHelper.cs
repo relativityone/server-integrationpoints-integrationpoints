@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 using kCura.EDDS.DocumentCompareGateway;
+using kCura.IntegrationPoints.Data.Extensions;
+using Relativity.API;
 using Relativity.Core;
 using Relativity.Core.Service;
 using Relativity.Data;
@@ -107,25 +110,41 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			}
 		}
 
-		public static async Task<string> RetrieveLongTextFieldAsync(IILongTextStreamFactory longTextStreamFactory, int documentArtifactId, int fieldArtifactId)
+		public static async Task<string> RetrieveLongTextFieldAsync(IILongTextStreamFactory longTextStreamFactory,
+			int documentArtifactId, int fieldArtifactId, IAPILog logger)
 		{
 			const int bufferSize = 4016;
 			return await Task.Run(() =>
 			{
+				long textSize = 0;
+				var stopwatch = new Stopwatch();
+				stopwatch.Start();
 				StringBuilder strBuilder = null;
 				using (ILongTextStream stream = longTextStreamFactory.CreateLongTextStream(documentArtifactId, fieldArtifactId))
 				{
 					Encoding encoding = stream.IsUnicode ? Encoding.Unicode : Encoding.ASCII;
-					strBuilder  = new StringBuilder();
+					strBuilder = new StringBuilder();
 					byte[] buffer = new byte[bufferSize];
 					int read;
 					while ((read = stream.Read(buffer, 0, buffer.Length)) != 0)
 					{
+						textSize += read;
 						strBuilder.Append(encoding.GetString(buffer, 0, read));
 						buffer = new byte[bufferSize];
 					}
 				}
-				return strBuilder.ToString();
+				string result = strBuilder.ToString();
+
+				stopwatch.Stop();
+				long textInMB = textSize / (1024 * 1024);
+				double timeInS = Math.Round(stopwatch.Elapsed.TotalSeconds, 1);
+				logger.LogInformation(
+					"Retrieving of Long Text field exceeding limit finished.  Real Long Text size: {longTextFieldLength}MB; Load time: {fieldRetrievalTime}s; Transfer rate: {transfer}MB/s",
+					textInMB, timeInS, Math.Round(textInMB / timeInS, 2));
+				logger.LogVerbose("Document ArtifactId: {documentArtifactId}. Field ArtifactId: {fieldArtifactId}.", documentArtifactId, fieldArtifactId);
+
+				return result;
+
 			});
 		}
 	}

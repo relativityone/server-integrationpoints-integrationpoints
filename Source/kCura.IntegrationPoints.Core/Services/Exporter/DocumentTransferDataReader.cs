@@ -1,15 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
+using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
+using Relativity;
+using Relativity.API;
 using Relativity.Core;
-using Relativity.Core.Service;
+using Relativity.Data;
+using FileQuery = Relativity.Core.Service.FileQuery;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
 	public class DocumentTransferDataReader : ExportTransferDataReaderBase
 	{
+		private readonly IAPILog _logger;
 		private static readonly string _nativeDocumentArtifactIdColumn = "DocumentArtifactID";
 		private static readonly string _nativeFileNameColumn = "Filename";
 		private static readonly string _nativeLocationColumn = "Location";
@@ -21,16 +28,19 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		/// used as a flag to store the reference of the current artifacts array.
 		private object _readingArtifactIdsReference;
 
-		public DocumentTransferDataReader(
-			IExporterService relativityExportService,
+		private ExportApiDataHelper.RelativityLongTextStreamFactory _relativityLongTextStreamFactory;
+
+		public DocumentTransferDataReader(IExporterService relativityExportService,
 			FieldMap[] fieldMappings,
-			ICoreContext context,
+			BaseServiceContext context,
 			IScratchTableRepository[] scratchTableRepositories,
-			bool useDynamicFolderPath) :
+			bool useDynamicFolderPath, IAPILog logger) :
 			base(relativityExportService, fieldMappings, context, scratchTableRepositories, useDynamicFolderPath)
 		{
+			_logger = logger;
 			_nativeFileLocations = new Dictionary<int, string>();
 			_nativeFileNames = new Dictionary<int, string>();
+			_relativityLongTextStreamFactory = new ExportApiDataHelper.RelativityLongTextStreamFactory(_context, new DataGridContext(_context, true), _context.AppArtifactID);
 		}
 
 
@@ -44,6 +54,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			if (success)
 			{
 				ArtifactFieldDTO retrievedField = CurrentArtifact.GetFieldForIdentifier(fieldArtifactId);
+				if ((retrievedField.FieldType == FieldTypeHelper.FieldType.Text.ToString() || retrievedField.FieldType == FieldTypeHelper.FieldType.OffTableText.ToString()) 
+					&& retrievedField.Value.ToString() == global::Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN)
+				{
+					return ExportApiDataHelper.RetrieveLongTextFieldAsync(_relativityLongTextStreamFactory, CurrentArtifact.ArtifactId, fieldArtifactId, _logger).GetResultsWithoutContextSync();
+				}
 				return retrievedField.Value;
 			}
 			else if (fieldIdentifier == IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_FIELD)
