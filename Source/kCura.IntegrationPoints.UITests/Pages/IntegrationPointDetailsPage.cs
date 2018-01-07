@@ -1,8 +1,9 @@
-﻿using IntegrationPointsUITests.Components;
+﻿using kCura.IntegrationPoints.UITests.Components;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Support.PageObjects;
 
-namespace IntegrationPointsUITests.Pages
+namespace kCura.IntegrationPoints.UITests.Pages
 {
     public class IntegrationPointDetailsPage : GeneralPage
     {
@@ -30,7 +31,7 @@ namespace IntegrationPointsUITests.Pages
         [FindsBy(How = How.LinkText, Using = "General")]
         protected IWebElement GeneralTabLink;
         
-        public IntegrationPointDetailsPage(IWebDriver driver) : base(driver)
+        public IntegrationPointDetailsPage(RemoteWebDriver driver) : base(driver)
         {
             WaitForPage();
             PageFactory.InitElements(driver, this);

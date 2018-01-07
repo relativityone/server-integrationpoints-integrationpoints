@@ -18,11 +18,22 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 {
 	public class TestHelper : ITestHelper
 	{
+		private string _relativityUserName;
+		private string _relativityPassword;
+
 		private readonly IServicesMgr _serviceManager;
 		private readonly ILogFactory _logFactory;
+		
+		public string RelativityUserName {
+			get { return _relativityUserName ?? SharedVariables.RelativityUserName; }
+			set { _relativityUserName = value; }
+		}
 
-		public string RelativityUserName { get; set; } = SharedVariables.RelativityUserName;
-		public string RelativityPassword { get; set; } = SharedVariables.RelativityPassword;
+		public string RelativityPassword
+		{
+			get { return _relativityPassword ?? SharedVariables.RelativityPassword; }
+			set { _relativityPassword = value; }
+		}
 
 		public IPermissionRepository PermissionManager { get; }
 
@@ -54,7 +65,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 
 		public T CreateAdminProxy<T>() where T : IDisposable
 		{
-			var credential = new global::Relativity.Services.ServiceProxy.UsernamePasswordCredentials("relativity.admin@kcura.com", "Test1234!");
+			var credential = new global::Relativity.Services.ServiceProxy.UsernamePasswordCredentials(RelativityUserName, RelativityPassword);
 			ServiceFactorySettings settings = new ServiceFactorySettings(SharedVariables.RsapiClientServiceUri, SharedVariables.RestClientServiceUri, credential);
 			ServiceFactory adminServiceFactory = new ServiceFactory(settings);
 			return adminServiceFactory.CreateProxy<T>();
@@ -81,7 +92,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			}
 			else
 			{
-				string connectionString = String.Format(SharedVariables.WorkspaceConnectionStringFormat, caseId);
+				string connectionString = string.Format(SharedVariables.WorkspaceConnectionStringFormat, caseId);
 				baseContext = new Data.RowDataGateway.Context(connectionString);
 			}
 			DBContext context = new DBContext(baseContext);

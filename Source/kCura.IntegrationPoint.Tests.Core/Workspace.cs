@@ -11,16 +11,18 @@ namespace kCura.IntegrationPoint.Tests.Core
 	{
 		public static int CreateWorkspace(string workspaceName, string templateName)
 		{
-			if (String.IsNullOrEmpty(workspaceName)) return 0;
+			if (string.IsNullOrEmpty(workspaceName)) {
+				return 0; // TODO throw
+			}
 
 			//Create workspace DTO
 			Relativity.Client.DTOs.Workspace workspaceDto = new Relativity.Client.DTOs.Workspace { Name = workspaceName };
-			int workspaceId = 0;
+			int workspaceId;
 			using (IRSAPIClient proxy = Rsapi.CreateRsapiClient(ExecutionIdentity.System))
 			{
 				try
 				{
-					//Query for template workspace id
+					// Query for template workspace id
 					Relativity.Client.DTOs.Workspace workspace = FindWorkspaceByName(templateName);
 					int templateWorkspaceId = workspace.ArtifactID;
 
@@ -65,21 +67,28 @@ namespace kCura.IntegrationPoint.Tests.Core
 				}
 				catch (Exception ex)
 				{
-					throw new Exception($"An error occurred while deleting workspace [{workspaceArtifactId}]. Error Message: {ex.Message}");
+					throw new TestException($"An error occurred while deleting workspace [{workspaceArtifactId}]. Error Message: {ex.Message}");
 				}
 			}
 		}
 
 		public static Relativity.Client.DTOs.Workspace FindWorkspaceByName(string workspaceName)
 		{
-			TextCondition workspaceNameCondition = new TextCondition(WorkspaceFieldNames.Name, TextConditionEnum.EqualTo, workspaceName);
-			Query<Relativity.Client.DTOs.Workspace> query = new Query<Relativity.Client.DTOs.Workspace>
+			try
 			{
-				Condition = workspaceNameCondition
-			};
-			query.Fields.Add(new FieldValue(WorkspaceFieldNames.Name));
-			Relativity.Client.DTOs.Workspace workspace = QueryWorkspace(query, 0).Results[0].Artifact;
-			return workspace;
+				var workspaceNameCondition = new TextCondition(WorkspaceFieldNames.Name, TextConditionEnum.EqualTo, workspaceName);
+				var query = new Query<Relativity.Client.DTOs.Workspace>
+				{
+					Condition = workspaceNameCondition
+				};
+				query.Fields.Add(new FieldValue(WorkspaceFieldNames.Name));
+				Relativity.Client.DTOs.Workspace workspace = QueryWorkspace(query, 0).Results[0].Artifact;
+				return workspace;
+			}
+			catch (Exception ex)
+			{
+				throw new TestException("$@Finding workspace '{workspaceName}' failed.", ex);
+			}
 		}
 
 		public static Relativity.Client.DTOs.Workspace GetWorkspaceDto(int workspaceArtifactId)
@@ -92,42 +101,39 @@ namespace kCura.IntegrationPoint.Tests.Core
 					ResultSet<Relativity.Client.DTOs.Workspace> result = proxy.Repositories.Workspace.Read(workspaceArtifactId);
 					if (result.Success == false)
 					{
-						throw new Exception(result.Message);
+						throw new TestException(result.Message);
 					}
-					else if (result.Results.Count == 0)
+					if (result.Results.Count == 0)
 					{
-						throw new Exception("Unable to find the workspace.");
+						throw new TestException("Unable to find the workspace.");
 					}
 
 					return result.Results[0].Artifact;
 				}
 				catch (Exception ex)
 				{
-					throw new Exception($"An error occurred while deleting workspace [{workspaceArtifactId}]. Error Message: {ex.Message}");
+					throw new TestException($"An error occurred while deleting workspace [{workspaceArtifactId}]. Error Message: {ex.Message}");
 				}
 			}
 		}
 
 		public static QueryResultSet<Relativity.Client.DTOs.Workspace> QueryWorkspace(Query<Relativity.Client.DTOs.Workspace> query, int results)
 		{
-			QueryResultSet<Relativity.Client.DTOs.Workspace> resultSet = new QueryResultSet<Relativity.Client.DTOs.Workspace>();
 			using (IRSAPIClient proxy = Rsapi.CreateRsapiClient(ExecutionIdentity.System))
 			{
 				try
 				{
-					resultSet = proxy.Repositories.Workspace.Query(query, results);
+					QueryResultSet<Relativity.Client.DTOs.Workspace> resultSet = proxy.Repositories.Workspace.Query(query, results);
+					if (!resultSet.Success)
+					{
+						throw new TestException($"Query failed for workspace using Query: {query}");
+					}
+					return resultSet;
 				}
 				catch (Exception ex)
 				{
-					throw new Exception($"An error occurred attempting to query workspaces using query: {query}. Error Message: {ex.Message}");
+					throw new TestException($"An error occurred attempting to query workspaces using query: {query}. Error Message: {ex.Message}", ex);
 				}
-
-				if (!resultSet.Success)
-				{
-					throw new Exception($"Query failed for workspace using Query: {query}");
-				}
-
-				return resultSet;
 			}
 		}
 	}

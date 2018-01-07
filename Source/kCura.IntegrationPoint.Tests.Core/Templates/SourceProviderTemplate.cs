@@ -349,7 +349,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			
 			await Task.Run(() =>
 			{
-				if (SharedVariables.UseIPRapFile())
+				if (SharedVariables.UseIpRapFile())
 				{
 					RelativityApplicationManager.ImportApplicationToLibrary();
 				}

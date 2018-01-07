@@ -1,19 +1,16 @@
-using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using IntegrationPointsUITests.Pages;
+using kCura.IntegrationPoints.UITests.Pages;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Remote;
 
-namespace IntegrationPointsUITests.Components
+namespace kCura.IntegrationPoints.UITests.Components
 {
     public class StatusTable : Page
     {
-        private readonly IWebElement _parent;
+        private readonly ISearchContext _parent;
 
-        protected IWebElement Table => _parent != null
-            ? _parent.FindElement(By.ClassName("iFrameItemList"))
-            : Driver.FindElement(By.ClassName("iFrameItemList"));
+        protected IWebElement Table => _parent.FindElement(By.ClassName("iFrameItemList"));
 
         protected IWebElement HeaderRow => Table.FindElement(By.ClassName("itemListHead"));
 
@@ -28,9 +25,9 @@ namespace IntegrationPointsUITests.Components
             .Select(element => element.Text)
             .ToList()[Headers.IndexOf(column)];
 
-        public StatusTable(IWebDriver driver, IWebElement parent = null) : base(driver)
+        public StatusTable(RemoteWebDriver driver, ISearchContext parent = null) : base(driver)
         {
-            _parent = parent;
+            _parent = parent ?? driver;
         }
 
     }
