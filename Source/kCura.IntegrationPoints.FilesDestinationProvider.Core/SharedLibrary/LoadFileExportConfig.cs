@@ -5,6 +5,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 {
 	public class LoadFileExportConfig : ConfigBase, IExportConfig
 	{
+		private ExportConfig _exportConfig = new ExportConfig();
+
 		private const string _EXPORT_BATCH_SIZE_SETTING_NAME = "ExportBatchSize";
 		private const string _EXPORT_THREAD_COUNT_SETTING_NAME = "ExportThreadCount";
 
@@ -15,5 +17,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 
 		public int ExportThreadCount => GetValue(_EXPORT_THREAD_COUNT_SETTING_NAME, _DEF_EXPORT_THREAD_COUNT);
 
+		public int ExportIOErrorWaitTime => _exportConfig.ExportIOErrorWaitTime;
+		public int ExportIOErrorNumberOfRetries => _exportConfig.ExportIOErrorNumberOfRetries;
+		public int ExportErrorNumberOfRetries => _exportConfig.ExportErrorNumberOfRetries;
+		public int ExportErrorWaitTime => _exportConfig.ExportErrorWaitTime;
 	}
 }

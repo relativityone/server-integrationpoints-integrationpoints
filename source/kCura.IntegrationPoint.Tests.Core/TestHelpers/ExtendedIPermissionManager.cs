@@ -111,6 +111,11 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			return await Manager.GetPermissionSelectedForGroupAsync(workspaceArtifactId, permissions, group).ConfigureAwait(false);
 		}
 
+		public async Task<List<PermissionDetail>> GetAdminOperationPermissionSelectedListAsync(int workspaceArtifactID, List<int> permissionIds)
+		{
+			return await Manager.GetAdminOperationPermissionSelectedListAsync(workspaceArtifactID, permissionIds);
+		}
+
 		public async Task<List<PermissionValue>> GetPermissionSelectedForGroupAsync(int workspaceArtifactId, List<PermissionRef> permissions, global::Relativity.Services.Group.GroupRef group, int artifactId)
 		{
 			return await Manager.GetPermissionSelectedForGroupAsync(workspaceArtifactId, permissions, group, workspaceArtifactId).ConfigureAwait(false);
