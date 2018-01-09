@@ -12,12 +12,12 @@
     <tags>Relativity IntegrationPoints Office365 O365 Custom Provider Import</tags>
   </metadata>
   <files>
-    <file src="..\..\Source\kCura.IntegrationPoints.Core\bin\x64\kCura.IntegrationPoints.Core.dll" target="lib" />
-    <file src="..\..\Source\kCura.IntegrationPoints.Core.Contracts\bin\x64\kCura.IntegrationPoints.Core.Contracts.dll" target="lib" />
-    <file src="..\..\Source\kCura.IntegrationPoints.Data\bin\x64\kCura.IntegrationPoints.Data.dll" target="lib" />
-    <file src="..\..\Source\kCura.IntegrationPoints.Domain\bin\x64\kCura.IntegrationPoints.Domain.dll" target="lib" />
-    <file src="..\..\Source\kCura.IntegrationPoints.Security\bin\x64\kCura.IntegrationPoints.Security.dll" target="lib" />
-    <file src="..\..\Source\kCura.IntegrationPoints.Synchronizers.RDO\bin\x64\kCura.IntegrationPoints.Synchronizers.RDO.dll" target="lib" />
-    <file src="..\..\Source\kCura.ScheduleQueue.Core\bin\x64\kCura.ScheduleQueue.Core.dll" target="lib" />
+    <file src="..\..\lib\kCura.IntegrationPoints.Core.dll" target="lib" />
+    <file src="..\..\lib\kCura.IntegrationPoints.Core.Contracts.dll" target="lib" />
+    <file src="..\..\lib\kCura.IntegrationPoints.Data.dll" target="lib" />
+    <file src="..\..\lib\kCura.IntegrationPoints.Domain.dll" target="lib" />
+    <file src="..\..\lib\kCura.IntegrationPoints.Security.dll" target="lib" />
+    <file src="..\..\lib\kCura.IntegrationPoints.Synchronizers.RDO.dll" target="lib" />
+    <file src="..\..\lib\kCura.ScheduleQueue.Core.dll" target="lib" />
   </files>
 </package>
