@@ -199,8 +199,8 @@
       <HintPath>..\packages\NUnit.3.4.1\lib\net45\nunit.framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="oi, Version=2017.6.0.256, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCura.OutsideIn.FI.Win32.2017.6.0\lib\net40\oi.dll</HintPath>
+    <Reference Include="oi, Version=2017.6.1.32, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.OutsideIn.FI.Win32.2017.6.1\lib\net40\oi.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
@@ -597,10 +597,10 @@ xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y</PostBuildEvent>
     <Error Condition="!Exists('..\packages\Baseclass.Contrib.Nuget.Output.1.0.0\build\net40\Baseclass.Contrib.Nuget.Output.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Baseclass.Contrib.Nuget.Output.1.0.0\build\net40\Baseclass.Contrib.Nuget.Output.targets'))" />
     <Error Condition="!Exists('..\packages\kCura.9.5.390.13\build\kCura.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\kCura.9.5.390.13\build\kCura.targets'))" />
     <Error Condition="!Exists('..\packages\RelativityCore.9.5.390.13\build\RelativityCore.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\RelativityCore.9.5.390.13\build\RelativityCore.targets'))" />
-    <Error Condition="!Exists('..\packages\kCura.OutsideIn.FI.Win32.2017.6.0\build\kCura.OutsideIn.FI.Win32.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\kCura.OutsideIn.FI.Win32.2017.6.0\build\kCura.OutsideIn.FI.Win32.targets'))" />
+    <Error Condition="!Exists('..\packages\kCura.OutsideIn.FI.Win32.2017.6.1\build\kCura.OutsideIn.FI.Win32.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\kCura.OutsideIn.FI.Win32.2017.6.1\build\kCura.OutsideIn.FI.Win32.targets'))" />
   </Target>
   <Import Project="..\packages\Baseclass.Contrib.Nuget.Output.1.0.0\build\net40\Baseclass.Contrib.Nuget.Output.targets" Condition="Exists('..\packages\Baseclass.Contrib.Nuget.Output.1.0.0\build\net40\Baseclass.Contrib.Nuget.Output.targets')" />
   <Import Project="..\packages\kCura.9.5.390.13\build\kCura.targets" Condition="Exists('..\packages\kCura.9.5.390.13\build\kCura.targets')" />
   <Import Project="..\packages\RelativityCore.9.5.390.13\build\RelativityCore.targets" Condition="Exists('..\packages\RelativityCore.9.5.390.13\build\RelativityCore.targets')" />
-  <Import Project="..\packages\kCura.OutsideIn.FI.Win32.2017.6.0\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\packages\kCura.OutsideIn.FI.Win32.2017.6.0\build\kCura.OutsideIn.FI.Win32.targets')" />
+  <Import Project="..\packages\kCura.OutsideIn.FI.Win32.2017.6.1\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\packages\kCura.OutsideIn.FI.Win32.2017.6.1\build\kCura.OutsideIn.FI.Win32.targets')" />
 </Project>

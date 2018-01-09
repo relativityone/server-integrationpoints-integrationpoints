@@ -147,8 +147,8 @@
       <HintPath>..\packages\NUnit.3.4.1\lib\net45\nunit.framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="oi, Version=2017.6.0.256, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCura.OutsideIn.FI.Win32.2017.6.0\lib\net40\oi.dll</HintPath>
+    <Reference Include="oi, Version=2017.6.1.32, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.OutsideIn.FI.Win32.2017.6.1\lib\net40\oi.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Polly, Version=5.3.1.0, Culture=neutral, processorArchitecture=MSIL">
@@ -489,11 +489,11 @@ xcopy "$(ProjectDir)oi\unmanaged" "$(ProjectDir)..\..\lib\UnitTests\oi"  /E /Y /
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\kCura.9.5.390.13\build\kCura.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\kCura.9.5.390.13\build\kCura.targets'))" />
     <Error Condition="!Exists('..\packages\Relativity.ImportExport.9.5.390.13\build\Relativity.ImportExport.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Relativity.ImportExport.9.5.390.13\build\Relativity.ImportExport.targets'))" />
-    <Error Condition="!Exists('..\packages\kCura.OutsideIn.FI.Win32.2017.6.0\build\kCura.OutsideIn.FI.Win32.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\kCura.OutsideIn.FI.Win32.2017.6.0\build\kCura.OutsideIn.FI.Win32.targets'))" />
+    <Error Condition="!Exists('..\packages\kCura.OutsideIn.FI.Win32.2017.6.1\build\kCura.OutsideIn.FI.Win32.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\kCura.OutsideIn.FI.Win32.2017.6.1\build\kCura.OutsideIn.FI.Win32.targets'))" />
   </Target>
   <Import Project="..\packages\kCura.9.5.390.13\build\kCura.targets" Condition="Exists('..\packages\kCura.9.5.390.13\build\kCura.targets')" />
   <Import Project="..\packages\Relativity.ImportExport.9.5.390.13\build\Relativity.ImportExport.targets" Condition="Exists('..\packages\Relativity.ImportExport.9.5.390.13\build\Relativity.ImportExport.targets')" />
-  <Import Project="..\packages\kCura.OutsideIn.FI.Win32.2017.6.0\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\packages\kCura.OutsideIn.FI.Win32.2017.6.0\build\kCura.OutsideIn.FI.Win32.targets')" />
+  <Import Project="..\packages\kCura.OutsideIn.FI.Win32.2017.6.1\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\packages\kCura.OutsideIn.FI.Win32.2017.6.1\build\kCura.OutsideIn.FI.Win32.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
