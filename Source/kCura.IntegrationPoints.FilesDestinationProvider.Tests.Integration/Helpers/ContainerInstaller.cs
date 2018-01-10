@@ -33,7 +33,15 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 	{
 	    private static IInstanceSettingRepository _instanceSettings;
 
-	    public static WindsorContainer CreateContainer(ConfigSettings configSettings)
+		private const int _DEF_EXPORT_BATCH_SIZE = 1000;
+		private const int _DEF_EXPORT_THREAD_COUNT = 4;
+
+		private const int _EXPORT_LOADFILE_IO_ERROR_WAIT_TIME = 1;
+		private const int _EXPORT_LOADFILE_IO_ERROR_RETRIES_NUMBER = 1;
+		private const int _EXPORT_LOADFILE_ERROR_WAIT_TIME = 1;
+		private const int _EXPORT_LOADFILE_ERROR_RETRIES_NUMBER = 1;
+
+		public static WindsorContainer CreateContainer(ConfigSettings configSettings)
 		{
 			var windsorContainer = new WindsorContainer();
 			windsorContainer.Kernel.Resolver.AddSubResolver(new CollectionResolver(windsorContainer.Kernel));
@@ -84,10 +92,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 		private static void RegisterConfig(ConfigSettings configSettings, WindsorContainer windsorContainer)
 		{
 			windsorContainer.Register(Component.For<ConfigSettings>().Instance(configSettings).LifestyleTransient());
-
-			var exportConfig = Substitute.For<IExportConfig>();
-			exportConfig.ExportBatchSize.Returns(1000);
-			exportConfig.ExportThreadCount.Returns(2);
+			IExportConfig exportConfig = GetMockExportLoadFileConfig();
 			windsorContainer.Register(Component.For<IExportConfig>().Instance(exportConfig).LifestyleTransient());
 
 			var configMock = Substitute.For<IConfig>();
@@ -99,6 +104,21 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 
 			configFactoryMock.Create().Returns(configMock);
 			windsorContainer.Register(Component.For<IConfigFactory>().Instance(configFactoryMock).LifestyleTransient());
+		}
+
+		private static IExportConfig GetMockExportLoadFileConfig()
+		{
+			var exportConfig = Substitute.For<IExportConfig>();
+
+			exportConfig.ExportBatchSize.Returns(_DEF_EXPORT_BATCH_SIZE);
+			exportConfig.ExportThreadCount.Returns(_DEF_EXPORT_THREAD_COUNT);
+
+			exportConfig.ExportIOErrorWaitTime.Returns(_EXPORT_LOADFILE_IO_ERROR_WAIT_TIME);
+			exportConfig.ExportIOErrorNumberOfRetries.Returns(_EXPORT_LOADFILE_IO_ERROR_RETRIES_NUMBER);
+			exportConfig.ExportErrorNumberOfRetries.Returns(_DEF_EXPORT_BATCH_SIZE);
+			exportConfig.ExportErrorWaitTime.Returns(_DEF_EXPORT_THREAD_COUNT);
+
+			return exportConfig;
 		}
 
 		private static void RegisterJobManagers(WindsorContainer windsorContainer)

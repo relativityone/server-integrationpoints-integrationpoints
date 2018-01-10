@@ -23,15 +23,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 			return new ExtendedExporter(exportFile, processController, loadFileFormatterFactory);
 		}
 
-		private ExtendedExporter Create(ExtendedExportFile exportFile, Controller processController, IServiceFactory serviceFactory,
-			ILoadFileHeaderFormatterFactory loadFileFormatterFactory, bool nameTextAndNativesAfterBegBates, IFileNameProvider fileNameProvider)
+		private ExtendedExporter Create(ExtendedExportFile exportFile, ExporterFactoryConfig config)
 		{
-			return new ExtendedExporter(exportFile, processController, serviceFactory, loadFileFormatterFactory, new ExportConfig())
+			return new ExtendedExporter(exportFile, config.Controller, config.ServiceFactory, config.LoadFileFormatterFactory, config.ExportConfig)
 			{
-				NameTextAndNativesAfterBegBates = nameTextAndNativesAfterBegBates,
+				NameTextAndNativesAfterBegBates = config.NameTextAndNativesAfterBegBates,
 				FileHelper = new LongPathFileHelper(),
 				DirectoryHelper = new LongPathDirectoryHelper(),
-				FileNameProvider = fileNameProvider
+				FileNameProvider = config.FileNameProvider
 			};
 		}
 
@@ -39,9 +38,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 		{
 			ExporterFactoryConfig config = _configFactory.BuildFactoryConfig(context, serviceFactory);
 
-			ExtendedExporter exporter = Create(context.ExportFile, config.Controller,
-				config.ServiceFactory,
-				config.LoadFileFormatterFactory, config.NameTextAndNativesAfterBegBates, config.FileNameProvider);
+			ExtendedExporter exporter = Create(context.ExportFile, config);
 
 			return new StoppableExporter(exporter, config.Controller, config.JobStopManager);
 		}
