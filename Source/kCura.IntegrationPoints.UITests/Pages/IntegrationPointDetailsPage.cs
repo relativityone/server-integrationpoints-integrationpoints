@@ -46,14 +46,14 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
         public PropertiesTable SelectGeneralPropertiesTable()
         {
-            var t = new PropertiesTable(Driver, "General", "summaryPage");
+            var t = new PropertiesTable(Driver.FindElementById("summaryPage"), "General");
             t.Select();
             return t;
         }
 
         public PropertiesTable SelectSchedulingPropertiesTable()
         {
-            var t = new PropertiesTable(Driver, "Scheduling", "schedulerSummaryPage");
+            var t = new PropertiesTable(Driver.FindElementById("schedulerSummaryPage"), "Scheduling");
             t.Select();
             return t;
         }

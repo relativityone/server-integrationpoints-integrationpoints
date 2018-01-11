@@ -7,7 +7,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
     public class GeneralPage : Page
     {
         
-        // TODO Move to sam "SthBar", "Navigator" or something similar
+        // TODO Move to some "SthBar", "Navigator" or something similar
         [FindsBy(How = How.Id, Using = "GetNavigateHomeScript")]
         protected IWebElement NavigateHome;
 

@@ -6,18 +6,13 @@ namespace kCura.IntegrationPoints.UITests.Components
 {
 	public class PropertiesTable : Component
 	{
-		private readonly string _tableId;
-
 		private readonly string _title;
 		
-		protected IWebElement TitleLink => Parent.FindElement(By.LinkText(_title));
+		protected IWebElement TitleLink => Parent.FindElement(By.XPath("../..")).FindElement(By.LinkText(_title));
 
-		protected IWebElement Table => Parent.FindElement(By.Id(_tableId));
-
-		public PropertiesTable(ISearchContext parent, string title, string tableId) : base(parent)
+		public PropertiesTable(IWebElement parent, string title) : base(parent)
 		{
 			_title = title;
-			_tableId = tableId;
 		}
 
 		public PropertiesTable Select()
@@ -31,10 +26,10 @@ namespace kCura.IntegrationPoints.UITests.Components
 			get
 			{
 				var properties = new Dictionary<string, string>();
-				List<IWebElement> names = Table.FindElements(By.ClassName("dynamicViewFieldName"))
+				List<IWebElement> names = Parent.FindElements(By.ClassName("dynamicViewFieldName"))
 					.Where(e => e.Displayed)
 					.ToList();
-				List<IWebElement> values = Table.FindElements(By.ClassName("dynamicViewFieldValue"))
+				List<IWebElement> values = Parent.FindElements(By.ClassName("dynamicViewFieldValue"))
 					.Where(e => e.Displayed)
 					.ToList();
 				for (var i = 0; i < names.Count; ++i)

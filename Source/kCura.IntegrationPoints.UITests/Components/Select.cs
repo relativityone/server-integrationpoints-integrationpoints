@@ -4,17 +4,23 @@ namespace kCura.IntegrationPoints.UITests.Components
 {
 	public class Select : Component
 	{
-		private readonly string _id;
-
-		protected IWebElement SelectLink => Parent.FindElement(By.CssSelector($"#{_id} a"));
-		protected IWebElement Dropdown => Parent.FindElement(By.Id("select2-drop"));
+		protected IWebElement SelectLink => Parent.FindElement(By.CssSelector("a.select2-choice"));
+		protected IWebElement Dropdown => Parent.FindElement(By.XPath("/*")).FindElement(By.Id("select2-drop"));
 		protected IWebElement DropdownSearch => Dropdown.FindElement(By.TagName("input"));
 
-		public Select(ISearchContext parent, string id) : base(parent)
+		public string Value => Parent.FindElement(By.ClassName("select2-chosen")).Text;
+
+		public Select(IWebElement parent) : base(parent)
 		{
-			_id = id;
 		}
 
+		public Select Choose(string element)
+		{
+			EnsureOpen();
+			DropdownSearch.SendKeys(element + Keys.Enter);
+			return this;
+		}
+		
 		protected Select Toggle()
 		{
 			SelectLink.Click();
@@ -23,7 +29,7 @@ namespace kCura.IntegrationPoints.UITests.Components
 
 		protected bool IsOpen()
 		{
-			return Parent.FindElement(By.Id(_id)).GetCssValue("class").Contains("select2-dropdown-open");
+			return Parent.GetCssValue("class").Contains("select2-dropdown-open");
 		}
 
 		protected Select EnsureOpen()
@@ -34,15 +40,6 @@ namespace kCura.IntegrationPoints.UITests.Components
 			}
 			return this;
 		}
-
-		// read current value
-		// read all values
-
-		public Select Choose(string element)
-		{
-			EnsureOpen();
-			DropdownSearch.SendKeys(element + Keys.Enter);
-			return this;
-		}
+		
 	}
 }

@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.UITests.Tests
 {
 	[TestFixture]
-	public class SelectWithSavedSearchShould : UiTest
+	public class SelectWithSavedSearchTest : UiTest
 	{
 		private const int _MILLISECONDSTIMEOUT = 1000;
 
@@ -17,13 +17,13 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		}
 		
 		[Test, Order(10)]
-		public void ChangeValueWhenSavedSearchIsChosenInDialog()
+		public void ChangesValueWhenSavedSearchIsChosenInDialog()
 		{
-			// GIVEN
+			// Arrange
 			var generalPage = new GeneralPage(Driver);
 			generalPage.ChooseWorkspace(Context.WorkspaceName);
 
-			// WHEN
+			// Act
 			IntegrationPointsPage ipPage = generalPage.GoToIntegrationPointsPage();
 			ExportFirstPage first = ipPage.CreateNewIntegrationPoint();
 			first.Name = "Test IP";
@@ -33,9 +33,9 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			SavedSearchDialog ssd = second.OpenSavedSearchSelectionDialog();
 			ssd.ChooseSavedSearch("All Documents");
 			
-			// THEN
+			// Assert
 			Thread.Sleep(_MILLISECONDSTIMEOUT);
-			Assert.AreEqual("All Documents", second.SavedSearch);
+			Assert.AreEqual("All Documents", second.SavedSearch.Value);
 		}
 
 	}

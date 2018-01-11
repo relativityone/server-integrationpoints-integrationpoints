@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.UITests.Components
             .Select(element => element.Text)
             .ToList()[Headers.IndexOf(column)];
 
-        public StatusTable(ISearchContext parent) : base(parent)
+        public StatusTable(IWebElement parent) : base(parent)
         {
             
         }

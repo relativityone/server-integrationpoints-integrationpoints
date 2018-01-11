@@ -4,9 +4,9 @@ namespace kCura.IntegrationPoints.UITests.Components
 {
 	public abstract class Component
 	{
-		protected readonly ISearchContext Parent;
+		protected readonly IWebElement Parent;
 
-		protected Component(ISearchContext parent)
+		protected Component(IWebElement parent)
 		{
 			Parent = parent;
 		}

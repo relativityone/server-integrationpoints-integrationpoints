@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.UITests.Components
 
 		private static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(SavedSearchDialog));
 
-		public SavedSearchDialog(ISearchContext parent) : base(parent)
+		public SavedSearchDialog(IWebElement parent) : base(parent)
 		{
 			Thread.Sleep(1000);
 		}

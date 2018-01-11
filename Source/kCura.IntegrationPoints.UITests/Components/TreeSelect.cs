@@ -4,8 +4,7 @@ namespace kCura.IntegrationPoints.UITests.Components
 {
 	public class TreeSelect : Component
 	{
-
-		public TreeSelect(ISearchContext parent) : base(parent)
+		public TreeSelect(IWebElement parent) : base(parent)
 		{
 		}
 

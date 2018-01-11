@@ -157,8 +157,8 @@
     <Compile Include="Auxiliary\Grinder.cs" />
     <Compile Include="Tests\UiTest.cs" />
     <Compile Include="Common\PageException.cs" />
-    <Compile Include="Tests\SelectWithSavedSearchShould.cs" />
-    <Compile Include="Tests\UserOnLoginPageShould.cs" />
+    <Compile Include="Tests\SelectWithSavedSearchTest.cs" />
+    <Compile Include="Tests\UserOnLoginPageTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config">
