@@ -136,8 +136,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>mkdir "$(ProjectDir)..\..\lib"
-$(ProjectDir)..\Dependencies\PECOPY "$(TargetDir)$(TargetFileName)" "$(ProjectDir)..\..\lib\$(TargetFileName)" "$(TargetDir)$(TargetName).pdb" "$(ProjectDir)..\..\lib\$(TargetName).pdb"</PostBuildEvent>
+    <PostBuildEvent>$(ProjectDir)..\..\DevelopmentScripts\copyProjectFilesToLib.cmd $(ProjectDir)..\ $(TargetDir) $(TargetName)</PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\packages\kCura.9.5.390.13\build\kCura.targets" Condition="Exists('..\packages\kCura.9.5.390.13\build\kCura.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

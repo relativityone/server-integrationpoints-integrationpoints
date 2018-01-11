@@ -179,14 +179,6 @@
       <HintPath>..\packages\Relativity.Vfs.1.0.22\lib\net462\Relativity.Vfs.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.IntegrationPoints.Contracts, Version=9.4.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\kCura.IntegrationPoints.Contracts.dll</HintPath>
-    </Reference>
-    <Reference Include="kCura.IntegrationPoints.Domain, Version=9.4.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\kCura.IntegrationPoints.Domain.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.IdentityModel" />
@@ -231,6 +223,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
+      <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
+      <Name>kCura.IntegrationPoints.Contracts</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Core.Contracts\kCura.IntegrationPoints.Core.Contracts.csproj">
       <Project>{30503682-e18d-49df-a308-fe7996c4108e}</Project>
       <Name>kCura.IntegrationPoints.Core.Contracts</Name>
@@ -242,6 +238,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
       <Project>{599d771d-2ae7-4321-9bac-be06f827ce0a}</Project>
       <Name>kCura.IntegrationPoints.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
+      <Project>{5d5b52b4-8769-431a-9743-b96f15fed5fd}</Project>
+      <Name>kCura.IntegrationPoints.Domain</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Services.Interfaces.Private\kCura.IntegrationPoints.Services.Interfaces.Private.csproj">
       <Project>{b8bf6d01-e190-4c2c-b07f-3b627ffc1bfc}</Project>
@@ -257,8 +257,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>mkdir "$(ProjectDir)..\..\lib"
-$(ProjectDir)..\Dependencies\PECOPY "$(TargetDir)$(TargetFileName)" "$(ProjectDir)..\..\lib\$(TargetFileName)" "$(TargetDir)$(TargetName).pdb" "$(ProjectDir)..\..\lib\$(TargetName).pdb"</PostBuildEvent>
+    <PostBuildEvent>$(ProjectDir)..\..\DevelopmentScripts\copyProjectFilesToLib.cmd $(ProjectDir)..\ $(TargetDir) $(TargetName)</PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\packages\kCura.9.5.390.13\build\kCura.targets" Condition="Exists('..\packages\kCura.9.5.390.13\build\kCura.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
