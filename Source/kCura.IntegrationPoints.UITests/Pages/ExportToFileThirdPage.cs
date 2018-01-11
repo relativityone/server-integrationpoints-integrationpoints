@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
         {
             WaitForPage();
             PageFactory.InitElements(driver, this);
-	        DestinationFolder = new TreeSelect(driver, driver.FindElementByXPath(@"//div[@class='field-row']/div[contains(text(), 'Destination Folder:')]/.."));
+	        DestinationFolder = new TreeSelect(driver.FindElementByXPath(@"//div[@class='field-row']/div[contains(text(), 'Destination Folder:')]/.."));
 		}
 
         public IntegrationPointDetailsPage SaveIntegrationPoint()

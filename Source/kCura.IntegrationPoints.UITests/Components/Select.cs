@@ -2,19 +2,16 @@
 
 namespace kCura.IntegrationPoints.UITests.Components
 {
-	public class Select
+	public class Select : Component
 	{
-		private readonly IWebDriver _driver;
-        
 		private readonly string _id;
 
-		protected IWebElement SelectLink => _driver.FindElement(By.CssSelector($"#{_id} a"));
-		protected IWebElement Dropdown => _driver.FindElement(By.Id("select2-drop"));
+		protected IWebElement SelectLink => Parent.FindElement(By.CssSelector($"#{_id} a"));
+		protected IWebElement Dropdown => Parent.FindElement(By.Id("select2-drop"));
 		protected IWebElement DropdownSearch => Dropdown.FindElement(By.TagName("input"));
 
-		public Select(IWebDriver driver, string id)
+		public Select(ISearchContext parent, string id) : base(parent)
 		{
-			_driver = driver;
 			_id = id;
 		}
 
@@ -26,7 +23,7 @@ namespace kCura.IntegrationPoints.UITests.Components
 
 		protected bool IsOpen()
 		{
-			return _driver.FindElement(By.Id(_id)).GetCssValue("class").Contains("select2-dropdown-open");
+			return Parent.FindElement(By.Id(_id)).GetCssValue("class").Contains("select2-dropdown-open");
 		}
 
 		protected Select EnsureOpen()

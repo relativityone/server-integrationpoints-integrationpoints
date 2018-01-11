@@ -4,19 +4,17 @@ using System.Linq;
 using System.Threading;
 using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Logging;
-using kCura.IntegrationPoints.UITests.Pages;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Remote;
 using Serilog;
 
 namespace kCura.IntegrationPoints.UITests.Components
 {
-	public class SavedSearchDialog : Page
+	public class SavedSearchDialog : Component
 	{
 
 		private static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(SavedSearchDialog));
 
-		public SavedSearchDialog(RemoteWebDriver driver) : base(driver)
+		public SavedSearchDialog(ISearchContext parent) : base(parent)
 		{
 			Thread.Sleep(1000);
 		}
@@ -29,13 +27,13 @@ namespace kCura.IntegrationPoints.UITests.Components
 				throw new PageException($"Cannot find Saved Search element named {name}.");
 			}
 			element.Click();
-			IWebElement ok = Driver.FindElement(By.Id("saved-search-picker-ok-button"));
+			IWebElement ok = Parent.FindElement(By.Id("saved-search-picker-ok-button"));
 			ok.Click();
 		}
 
 		public IWebElement FindSavedSearchElement(string name)
 		{
-			IWebElement tree = Driver.FindElement(By.Id("saved-search-picker-browser-tree"));
+			IWebElement tree = Parent.FindElement(By.Id("saved-search-picker-browser-tree"));
 
 			var nodes = new Stack<IWebElement>();
 

@@ -1,31 +1,23 @@
 using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoints.UITests.Logging;
-using kCura.IntegrationPoints.UITests.Pages;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Remote;
-using Serilog;
 
 namespace kCura.IntegrationPoints.UITests.Components
 {
-	public class PropertiesTable : Page
+	public class PropertiesTable : Component
 	{
-		
-		private readonly ISearchContext _parent;
-
 		private readonly string _tableId;
 
 		private readonly string _title;
 		
-		protected IWebElement TitleLink => _parent.FindElement(By.LinkText(_title));
+		protected IWebElement TitleLink => Parent.FindElement(By.LinkText(_title));
 
-		protected IWebElement Table => _parent.FindElement(By.Id(_tableId));
+		protected IWebElement Table => Parent.FindElement(By.Id(_tableId));
 
-		public PropertiesTable(RemoteWebDriver driver, string title, string tableId, ISearchContext parent = null) : base(driver)
+		public PropertiesTable(ISearchContext parent, string title, string tableId) : base(parent)
 		{
 			_title = title;
 			_tableId = tableId;
-			_parent = parent ?? driver;
 		}
 
 		public PropertiesTable Select()
