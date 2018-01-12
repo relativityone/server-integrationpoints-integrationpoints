@@ -15,6 +15,7 @@ using kCura.WinEDDS.Api;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using System.Runtime.CompilerServices;
 using kCura.IntegrationPoints.ImportProvider.Parser.Helpers;
+using Relativity.Logging;
 
 
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.ImportProvider.Parser.Tests")]
@@ -85,7 +86,9 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 				colIdx++;
 			}
 
-			_loadFilePreviewer = new LoadFilePreviewerWrapper(_loadFile, 0, _errorsOnly, false);
+		    ILog logger = global::Relativity.Logging.Log.Logger;
+
+            _loadFilePreviewer = new LoadFilePreviewerWrapper(_loadFile, logger, 0, _errorsOnly, false);
 		}
 
 		public void StartRead()

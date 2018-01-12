@@ -3,9 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using kCura.WinEDDS;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
+using Relativity.Logging;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
@@ -13,9 +15,9 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 	{
 		private LoadFilePreviewer _loadFilePreviewer;
 
-		public LoadFilePreviewerWrapper(LoadFile loadFile,int timeZoneOffset, bool errorsOnly, bool doRetryLogic)
+		public LoadFilePreviewerWrapper(LoadFile loadFile, ILog logger, int timeZoneOffset, bool errorsOnly, bool doRetryLogic)
 		{
-			_loadFilePreviewer = new LoadFilePreviewer(loadFile, timeZoneOffset, errorsOnly, doRetryLogic);
+            _loadFilePreviewer = new LoadFilePreviewer(loadFile, logger, timeZoneOffset, errorsOnly, doRetryLogic, new CancellationTokenSource());
 		}
 
 		public List<object> ReadFile(bool previewChoicesAndFolders)

@@ -75,8 +75,8 @@
     <Reference Include="Relativity.API">
       <HintPath>..\..\ProviderIncludes\Relativity.API.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.CustomPages, Version=9.5.390.13, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.CustomPages.9.5.390.13\lib\net462\Relativity.CustomPages.dll</HintPath>
+    <Reference Include="Relativity.CustomPages, Version=9.5.393.22, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.CustomPages.9.5.393.22\lib\net462\Relativity.CustomPages.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
