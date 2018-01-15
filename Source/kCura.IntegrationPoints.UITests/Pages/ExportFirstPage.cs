@@ -43,6 +43,12 @@ namespace kCura.IntegrationPoints.UITests.Pages
             NextButton.Click();
             return new ExportToFileSecondPage(Driver);
         }
-        
+
+        public PushToRelativitySecondPage GoToNextPagePush()
+        {
+            NextButton.Click();
+            return new PushToRelativitySecondPage(Driver);
+        }
+
     }
 }

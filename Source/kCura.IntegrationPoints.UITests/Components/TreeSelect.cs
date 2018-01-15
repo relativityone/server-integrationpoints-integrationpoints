@@ -1,4 +1,6 @@
-﻿using OpenQA.Selenium;
+﻿using System;
+using System.Threading;
+using OpenQA.Selenium;
 
 namespace kCura.IntegrationPoints.UITests.Components
 {
@@ -10,7 +12,8 @@ namespace kCura.IntegrationPoints.UITests.Components
 
 		public TreeSelect Expand()
 		{
-			IWebElement select = Parent.FindElement(By.XPath(@"//div[@id='location-select']"));
+			IWebElement select = Parent.FindElement(By.XPath(@".//div[@id='location-select']"));
+			Thread.Sleep(TimeSpan.FromMilliseconds(200));
 			select.Click();
 			return this;
 		}
@@ -19,8 +22,10 @@ namespace kCura.IntegrationPoints.UITests.Components
 		{
 			Expand();
 
-			IWebElement selectListPopup = Parent.FindElement(By.XPath(@"//div[@id='jstree-holder-div']"));
-			IWebElement rootElement = selectListPopup.FindElements(By.XPath(@"//a"))[1];
+			IWebElement selectListPopup = Parent.FindElement(By.XPath(@".//div[@id='jstree-holder-div']"));
+			Thread.Sleep(TimeSpan.FromMilliseconds(1000));
+			IWebElement rootElement = selectListPopup.FindElements(By.XPath(@".//a"))[1];
+			Thread.Sleep(TimeSpan.FromMilliseconds(1000));
 			rootElement.Click();
 			return this;
 		}

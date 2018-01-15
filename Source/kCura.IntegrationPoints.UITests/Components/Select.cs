@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.UITests.Components
 			DropdownSearch.SendKeys(element + Keys.Enter);
 			return this;
 		}
-		
+
 		protected Select Toggle()
 		{
 			SelectLink.Click();
@@ -40,6 +40,6 @@ namespace kCura.IntegrationPoints.UITests.Components
 			}
 			return this;
 		}
-		
+
 	}
 }
