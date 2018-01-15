@@ -1,36 +1,49 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using kCura.EDDS.DocumentCompareGateway;
+using kCura.IntegrationPoints.Core.Toggles;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
+using Relativity;
 using Relativity.Core;
-using Relativity.Core.Service;
+using Relativity.Toggles;
+using FileQuery = Relativity.Core.Service.FileQuery;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
 	public class DocumentTransferDataReader : ExportTransferDataReaderBase
 	{
+
+		/// used as a flag to store the reference of the current artifacts array.
+		private object _readingArtifactIdsReference;
+
+		private readonly Dictionary<int, string> _nativeFileLocations;
+		private readonly Dictionary<int, string> _nativeFileNames;
+		private readonly IILongTextStreamFactory _relativityLongTextStreamFactory;
+		private readonly IToggleProvider _toggleProvider;
+		private readonly List<ILongTextStream> _openedStreams;
+
+
 		private static readonly string _nativeDocumentArtifactIdColumn = "DocumentArtifactID";
 		private static readonly string _nativeFileNameColumn = "Filename";
 		private static readonly string _nativeLocationColumn = "Location";
 		private static readonly string _separator = ",";
 
-		private readonly Dictionary<int, string> _nativeFileLocations;
-		private readonly Dictionary<int, string> _nativeFileNames;
-
-		/// used as a flag to store the reference of the current artifacts array.
-		private object _readingArtifactIdsReference;
-
-		public DocumentTransferDataReader(
-			IExporterService relativityExportService,
+		public DocumentTransferDataReader(IExporterService relativityExportService,
 			FieldMap[] fieldMappings,
-			ICoreContext context,
+			BaseServiceContext context,
 			IScratchTableRepository[] scratchTableRepositories,
+			IILongTextStreamFactory longTextStreamFactory,
+			IToggleProvider toggleProvider,
 			bool useDynamicFolderPath) :
 			base(relativityExportService, fieldMappings, context, scratchTableRepositories, useDynamicFolderPath)
 		{
 			_nativeFileLocations = new Dictionary<int, string>();
 			_nativeFileNames = new Dictionary<int, string>();
+			_relativityLongTextStreamFactory = longTextStreamFactory;
+			_toggleProvider = toggleProvider;
+			_openedStreams = new List<ILongTextStream>();
 		}
 
 
@@ -44,11 +57,20 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			if (success)
 			{
 				ArtifactFieldDTO retrievedField = CurrentArtifact.GetFieldForIdentifier(fieldArtifactId);
+				if (_toggleProvider.IsEnabled<UseStreamsForBigLongTextFieldsToggle>()&& IsLongTextField(retrievedField) && retrievedField.Value?.ToString() ==
+					global::Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN)
+				{
+					ILongTextStream stream =
+						_relativityLongTextStreamFactory.CreateLongTextStream(CurrentArtifact.ArtifactId, fieldArtifactId);
+					_openedStreams.Add(stream);
+					return stream;
+				}
+
 				return retrievedField.Value;
 			}
 			else if (fieldIdentifier == IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_FIELD)
 			{
-				ArtifactFieldDTO retrievedField = CurrentArtifact.GetFieldForIdentifier(_folderPathFieldSourceArtifactId);
+				ArtifactFieldDTO retrievedField = CurrentArtifact.GetFieldForIdentifier(FolderPathFieldSourceArtifactId);
 				return retrievedField.Value;
 			}
 			else if (fieldIdentifier == IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_DYNAMIC_FIELD)
@@ -62,7 +84,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				{
 					_readingArtifactIdsReference = ReadingArtifactIDs;
 					string documentArtifactIds = String.Join(_separator, ReadingArtifactIDs);
-					kCura.Data.DataView dataView = FileQuery.RetrieveNativesForDocuments(_context, documentArtifactIds);
+					kCura.Data.DataView dataView = FileQuery.RetrieveNativesForDocuments(Context, documentArtifactIds);
 
 					for (int index = 0; index < dataView.Table.Rows.Count; index++)
 					{
@@ -95,6 +117,34 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				}
 			}
 			return result;
+		}
+
+		public override bool Read()
+		{
+			DisposeExtractedTextStreams();
+			return base.Read();
+		}
+
+		public override void Close()
+		{
+			DisposeExtractedTextStreams();
+			base.Close();
+		}
+
+		private void DisposeExtractedTextStreams()
+		{
+			// Just to be absolutely sure we will not leave any open streams.
+			// IAPI should close the streams anyway
+			foreach (ILongTextStream stream in _openedStreams)
+			{
+				stream.Dispose();
+			}
+			_openedStreams.Clear();
+		}
+
+		private static bool IsLongTextField(ArtifactFieldDTO retrievedField)
+		{
+			return retrievedField.FieldType == FieldTypeHelper.FieldType.Text.ToString() || retrievedField.FieldType == FieldTypeHelper.FieldType.OffTableText.ToString();
 		}
 	}
 }

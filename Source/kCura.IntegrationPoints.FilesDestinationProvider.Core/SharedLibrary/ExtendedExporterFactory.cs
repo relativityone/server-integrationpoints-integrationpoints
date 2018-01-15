@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 
 			ExtendedExporter exporter = Create(context.ExportFile, config);
 
-		    kCura.WinEDDS.Container.ContainerFactoryProvider.ContainerFactory = new ContainerFactory();
+			kCura.WinEDDS.Container.ContainerFactoryProvider.ContainerFactory = new ContainerFactory();
 
             return new StoppableExporter(exporter, config.Controller, config.JobStopManager);
 		}

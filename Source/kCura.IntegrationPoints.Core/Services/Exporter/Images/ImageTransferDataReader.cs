@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		public ImageTransferDataReader(
 			IExporterService relativityExportService,
 			FieldMap[] fieldMappings,
-			ICoreContext context,
+			BaseServiceContext context,
 			IScratchTableRepository[] scratchTableRepositories) :
 			base(relativityExportService, fieldMappings, context, scratchTableRepositories, false)
 		{
@@ -26,10 +26,10 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 		protected override ArtifactDTO[] FetchArtifactDTOs()
 		{
-			ArtifactDTO[] artifacts = _relativityExporterService.RetrieveData(FETCH_ARTIFACTDTOS_BATCH_SIZE);
+			ArtifactDTO[] artifacts = RelativityExporterService.RetrieveData(FETCH_ARTIFACTDTOS_BATCH_SIZE);
 			
 			List<int> artifactIds = artifacts.Select(x => x.ArtifactId).Distinct().ToList();
-			_scratchTableRepositories.ForEach(repo => repo.AddArtifactIdsIntoTempTable(artifactIds));
+			ScratchTableRepositories.ForEach(repo => repo.AddArtifactIdsIntoTempTable(artifactIds));
 
 			return artifacts;
 		}
@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			}
 			else if (fieldIdentifier == IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_FIELD)
 			{
-				ArtifactFieldDTO retrievedField = CurrentArtifact.GetFieldForIdentifier(_folderPathFieldSourceArtifactId);
+				ArtifactFieldDTO retrievedField = CurrentArtifact.GetFieldForIdentifier(FolderPathFieldSourceArtifactId);
 				return retrievedField.Value;
 			}
 			else

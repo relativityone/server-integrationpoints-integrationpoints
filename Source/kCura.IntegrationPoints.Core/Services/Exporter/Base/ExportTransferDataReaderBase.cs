@@ -13,45 +13,46 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
 	public abstract class ExportTransferDataReaderBase : RelativityReaderBase
 	{
-		public const int FETCH_ARTIFACTDTOS_BATCH_SIZE = 200;
+		protected readonly BaseServiceContext Context;
 
-		protected readonly IExporterService _relativityExporterService;
-		protected readonly ICoreContext _context;
-		protected readonly IScratchTableRepository[] _scratchTableRepositories;
-		protected readonly int _folderPathFieldSourceArtifactId;
+		protected readonly IExporterService RelativityExporterService;
+		protected readonly int FolderPathFieldSourceArtifactId;
+		protected readonly IScratchTableRepository[] ScratchTableRepositories;
+		public const int FETCH_ARTIFACTDTOS_BATCH_SIZE = 200;
 
 		protected ExportTransferDataReaderBase(
 			IExporterService relativityExportService,
 			FieldMap[] fieldMappings,
-			ICoreContext context,
+			BaseServiceContext context,
 			IScratchTableRepository[] scratchTableRepositories,
 			bool useDynamicFolderPath) :
 				base(GenerateDataColumnsFromFieldEntries(fieldMappings, useDynamicFolderPath))
 		{
-			_context = context;
-			_scratchTableRepositories = scratchTableRepositories;
-			_relativityExporterService = relativityExportService;
+			Context = context;
+			ScratchTableRepositories = scratchTableRepositories;
+			RelativityExporterService = relativityExportService;
 
 			FieldMap folderPathInformationField = fieldMappings.FirstOrDefault(mappedField => mappedField.FieldMapType == FieldMapTypeEnum.FolderPathInformation);
 			if (folderPathInformationField != null)
 			{
-				_folderPathFieldSourceArtifactId = Int32.Parse(folderPathInformationField.SourceField.FieldIdentifier);
+				FolderPathFieldSourceArtifactId = Int32.Parse(folderPathInformationField.SourceField.FieldIdentifier);
 			}
 		}
 
 		protected override ArtifactDTO[] FetchArtifactDTOs()
 		{
-			ArtifactDTO[] artifacts = _relativityExporterService.RetrieveData(FETCH_ARTIFACTDTOS_BATCH_SIZE);
+
+			ArtifactDTO[] artifacts = RelativityExporterService.RetrieveData(FETCH_ARTIFACTDTOS_BATCH_SIZE);
 			List<int> artifactIds = artifacts.Select(x => x.ArtifactId).ToList();
 
-			_scratchTableRepositories.ForEach(repo => repo.AddArtifactIdsIntoTempTable(artifactIds));
+			ScratchTableRepositories.ForEach(repo => repo.AddArtifactIdsIntoTempTable(artifactIds));
 
 			return artifacts;
 		}
 
 		protected override bool AllArtifactsFetched()
 		{
-			return _relativityExporterService.HasDataToRetrieve == false;
+			return RelativityExporterService.HasDataToRetrieve == false;
 		}
 
 		protected static DataColumn[] GenerateDataColumnsFromFieldEntries(FieldMap[] mappingFields, bool useDynamicFolderPath)

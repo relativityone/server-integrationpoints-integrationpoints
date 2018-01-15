@@ -19,10 +19,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 	{
 		protected IExporterService _exportService;
 		protected IDataReader _instance;
-		protected ICoreContext _context;
+		protected BaseServiceContext _context;
 		protected IScratchTableRepository[] _scratchRepositories;
 		protected ISourceWorkspaceManager _sourceWorkspaceManager;
 		protected ISourceJobManager _sourceJobManager;
+		protected IILongTextStreamFactory _longTextStreamFactory;
 
 		protected const int _DOCUMENT_ARTIFACTID = 123423;
 		protected const string _FIELD_NAME = "DispName";
@@ -35,12 +36,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		protected const string _SOURCE_WORKSPACE_NAME = "Source Workspace";
 
 
-		protected abstract ExportTransferDataReaderBase CreatetDataReaderTestInstance();
+		protected abstract ExportTransferDataReaderBase CreateDataReaderTestInstance();
 
-		protected abstract ExportTransferDataReaderBase CreatetDataReaderTestInstanceWithParameters(
+		protected abstract ExportTransferDataReaderBase CreateDataReaderTestInstanceWithParameters(
 			IExporterService relativityExportService,
 			FieldMap[] fieldMappings,
-			ICoreContext context,
+			BaseServiceContext context,
 			IScratchTableRepository[] scratchTableRepositories);
 
 		protected readonly SourceWorkspaceDTO _sourceWorkspaceDto = new SourceWorkspaceDTO
@@ -87,7 +88,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		[SetUp]
 		public override void SetUp()
 		{
-			_context = Substitute.For<ICoreContext>();
+			_longTextStreamFactory = Substitute.For<IILongTextStreamFactory>();
 			_exportService = Substitute.For<IExporterService>();
 			var scratchTable = Substitute.For<IScratchTableRepository>();
 			_scratchRepositories = new[] { scratchTable };
@@ -106,7 +107,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			// Arrange
 			_exportService.RetrieveData(_FETCH_ARTIFACTDTOS_BATCH_SIZE).Returns<ArtifactDTO[]>(_templateArtifactDtos);
 
-			_instance = CreatetDataReaderTestInstance();
+			_instance = CreateDataReaderTestInstance();
 
 			// Act
 			bool result = _instance.Read();
@@ -124,7 +125,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			// Arrange
 			_exportService.RetrieveData(_FETCH_ARTIFACTDTOS_BATCH_SIZE).Returns<ArtifactDTO[]>(new ArtifactDTO[0]);
 
-			_instance = CreatetDataReaderTestInstance();
+			_instance = CreateDataReaderTestInstance();
 
 			// Act
 			bool result = _instance.Read();
@@ -140,7 +141,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			// Arrange
 			_exportService.RetrieveData(_FETCH_ARTIFACTDTOS_BATCH_SIZE).Throws<Exception>();
 
-			_instance = CreatetDataReaderTestInstance();
+			_instance = CreateDataReaderTestInstance();
 
 			// Act & Assert
 			Assert.Throws<Exception>(() => _instance.Read());
@@ -158,7 +159,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 					new ArtifactDTO(documentIds[1], 10, "Document", new ArtifactFieldDTO[0]),
 				});
 
-			_instance = CreatetDataReaderTestInstance();
+			_instance = CreateDataReaderTestInstance();
 
 			// Act
 			bool result1 = _instance.Read();
@@ -184,7 +185,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 					new ArtifactDTO(documentIds[1], 10, "Document", new ArtifactFieldDTO[0]),
 				});
 
-			_instance = CreatetDataReaderTestInstance();
+			_instance = CreateDataReaderTestInstance();
 
 			// Act
 			bool result1 = _instance.Read();
@@ -204,7 +205,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			_exportService.RetrieveData(_FETCH_ARTIFACTDTOS_BATCH_SIZE)
 				.Returns(_templateArtifactDtos);
 
-			_instance = CreatetDataReaderTestInstance();
+			_instance = CreateDataReaderTestInstance();
 
 			// Act
 			bool result = _instance.Read();
@@ -219,7 +220,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			// Arrange
 			_exportService.RetrieveData(_FETCH_ARTIFACTDTOS_BATCH_SIZE).Returns(new ArtifactDTO[0]);
 
-			_instance = CreatetDataReaderTestInstance();
+			_instance = CreateDataReaderTestInstance();
 
 			// Act
 			bool result = _instance.Read();
@@ -234,7 +235,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			// Arrange
 			_exportService.RetrieveData(_FETCH_ARTIFACTDTOS_BATCH_SIZE).Returns(new ArtifactDTO[0]);
 
-			_instance = CreatetDataReaderTestInstance();
+			_instance = CreateDataReaderTestInstance();
 
 			// Act
 			bool result = _instance.Read();
@@ -256,7 +257,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			// for retrieving all the
 			_exportService.RetrieveData(_FETCH_ARTIFACTDTOS_BATCH_SIZE).Returns<ArtifactDTO[]>(_templateArtifactDtos);
 
-			_instance = CreatetDataReaderTestInstance();
+			_instance = CreateDataReaderTestInstance();
 
 			// Act
 			bool readResult = _instance.Read();
@@ -275,7 +276,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			_exportService.RetrieveData(_FETCH_ARTIFACTDTOS_BATCH_SIZE)
 				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
 
-			_instance = CreatetDataReaderTestInstance();
+			_instance = CreateDataReaderTestInstance();
 
 			// Act
 			_instance.Read();
@@ -293,7 +294,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			_exportService.RetrieveData(_FETCH_ARTIFACTDTOS_BATCH_SIZE)
 				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
 
-			_instance = CreatetDataReaderTestInstance();
+			_instance = CreateDataReaderTestInstance();
 
 			// Act
 			_instance.Read();
@@ -307,7 +308,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		public void NextResult_ReturnsFalse()
 		{
 			// Arrange
-			_instance = CreatetDataReaderTestInstance();
+			_instance = CreateDataReaderTestInstance();
 
 			// Act
 			bool result = _instance.NextResult();
@@ -320,7 +321,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		public void Depth_ReturnsZero()
 		{
 			// Arrange
-			_instance = CreatetDataReaderTestInstance();
+			_instance = CreateDataReaderTestInstance();
 
 			// Act
 			int result = _instance.Depth;
@@ -333,7 +334,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		public void RecordsAffected_ReturnsNegativeOne()
 		{
 			// Arrange
-			_instance = CreatetDataReaderTestInstance();
+			_instance = CreateDataReaderTestInstance();
 
 			// Act
 			int result = _instance.RecordsAffected;
@@ -346,7 +347,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		public void GetName_FieldExists_LookUpSucceeds()
 		{
 			// Arrange
-			_instance = CreatetDataReaderTestInstance();
+			_instance = CreateDataReaderTestInstance();
 
 			// Act
 			string fieldName = _instance.GetName(0);
@@ -359,7 +360,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		public void GetName_ObjectIdentifierTextInFieldExists_LookUpSucceeds()
 		{
 			// Arrange
-			_instance =CreatetDataReaderTestInstanceWithParameters(
+			_instance =CreateDataReaderTestInstanceWithParameters(
 				_exportService,
 				new FieldMap[]
 				{
@@ -386,7 +387,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		public void GetOrdinal_FieldExists_LookUpSucceeds()
 		{
 			// Arrange
-			_instance = CreatetDataReaderTestInstance();
+			_instance = CreateDataReaderTestInstance();
 
 			// Act
 			int ordinal = _instance.GetOrdinal(_FIELD_IDENTIFIER.ToString());
@@ -399,7 +400,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		public void GetOrdinal_ObjectIdentifierTextInFieldExists_LookUpSucceeds()
 		{
 			// Arrange
-			_instance =CreatetDataReaderTestInstanceWithParameters(
+			_instance =CreateDataReaderTestInstanceWithParameters(
 				_exportService,
 				new FieldMap[]
 				{
@@ -430,7 +431,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			_exportService.RetrieveData(_FETCH_ARTIFACTDTOS_BATCH_SIZE)
 				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
 
-			_instance =CreatetDataReaderTestInstanceWithParameters(
+			_instance =CreateDataReaderTestInstanceWithParameters(
 				_exportService,
 				new FieldMap[]
 				{
@@ -462,7 +463,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			_exportService.RetrieveData(_FETCH_ARTIFACTDTOS_BATCH_SIZE)
 				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
 
-			_instance = CreatetDataReaderTestInstance();
+			_instance = CreateDataReaderTestInstance();
 
 			// Act
 			_instance.Read();
@@ -476,7 +477,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		public void FieldCount_NoLongTextFields_ReturnsCorrectCount()
 		{
 			// Arrange
-			_instance = CreatetDataReaderTestInstance();
+			_instance = CreateDataReaderTestInstance();
 
 			// Act
 			int fieldCount = _instance.FieldCount;
@@ -489,7 +490,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		public void FieldCount_WithLongTextFields_ReturnsCorrectCount()
 		{
 			// Arrange
-			_instance = CreatetDataReaderTestInstance();
+			_instance = CreateDataReaderTestInstance();
 
 			// Act
 			int fieldCount = _instance.FieldCount;
@@ -506,7 +507,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			_exportService.RetrieveData(_FETCH_ARTIFACTDTOS_BATCH_SIZE)
 				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
 
-			_instance = CreatetDataReaderTestInstance();
+			_instance = CreateDataReaderTestInstance();
 
 			// Act
 			bool exceptionThrown = false;
@@ -529,7 +530,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			// for retrieving long text field values (per doc)
 			_exportService.RetrieveData(_FETCH_ARTIFACTDTOS_BATCH_SIZE).Returns<ArtifactDTO[]>(_templateArtifactDtos);
 
-			_instance = CreatetDataReaderTestInstance();
+			_instance = CreateDataReaderTestInstance();
 
 			// Act
 			bool exceptionThrown = false;
@@ -553,7 +554,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			// for retrieving long text field values (per doc)
 			_exportService.RetrieveData(_FETCH_ARTIFACTDTOS_BATCH_SIZE).Returns<ArtifactDTO[]>(_templateArtifactDtos);
 
-			_instance = CreatetDataReaderTestInstance();
+			_instance = CreateDataReaderTestInstance();
 
 			// Act
 			_instance.Read();
@@ -571,7 +572,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			// for retrieving long text field values (per doc)
 			_exportService.RetrieveData(_FETCH_ARTIFACTDTOS_BATCH_SIZE).Returns<ArtifactDTO[]>(_templateArtifactDtos);
 
-			_instance = CreatetDataReaderTestInstance();
+			_instance = CreateDataReaderTestInstance();
 
 			// Act
 			_instance.Read();
@@ -589,7 +590,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			// for retrieving long text field values (per doc)
 			_exportService.RetrieveData(_FETCH_ARTIFACTDTOS_BATCH_SIZE).Returns<ArtifactDTO[]>(_templateArtifactDtos);
 
-			_instance = CreatetDataReaderTestInstance();
+			_instance = CreateDataReaderTestInstance();
 
 			// Act
 			_instance.Read();
@@ -607,7 +608,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			// for retrieving long text field values (per doc)
 			_exportService.RetrieveData(_FETCH_ARTIFACTDTOS_BATCH_SIZE).Returns<ArtifactDTO[]>(_templateArtifactDtos);
 
-			_instance = CreatetDataReaderTestInstance();
+			_instance = CreateDataReaderTestInstance();
 
 			// Act
 			_instance.Read();
@@ -635,7 +636,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		public void GetSchemaTable_OneField_ReturnsCorrectSchema()
 		{
 			// Arrange
-			_instance = CreatetDataReaderTestInstance();
+			_instance = CreateDataReaderTestInstance();
 
 			var expectedResult = new DataTable()
 			{
@@ -660,7 +661,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		public void GetSchemaTable_MultipleFields_ReturnsCorrectSchema()
 		{
 			// Arrange
-			_instance =CreatetDataReaderTestInstanceWithParameters(
+			_instance =CreateDataReaderTestInstanceWithParameters(
 				_exportService,
 				new FieldMap[]
 				{
@@ -700,7 +701,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		public void GetSchemaTable_NoFields_ReturnsCorrectSchema()
 		{
 			// Arrange
-			_instance = CreatetDataReaderTestInstanceWithParameters(
+			_instance = CreateDataReaderTestInstanceWithParameters(
 				_exportService,
 				new FieldMap[0],
 				_context,
@@ -728,7 +729,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		public void GetSchemaTable_NoDocumentsNoFields_ReturnsCorrectSchema()
 		{
 			// Arrange
-			_instance =CreatetDataReaderTestInstanceWithParameters(
+			_instance =CreateDataReaderTestInstanceWithParameters(
 				_exportService,
 				new FieldMap[0],
 				_context,
@@ -763,7 +764,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			_exportService.RetrieveData(_FETCH_ARTIFACTDTOS_BATCH_SIZE)
 				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
 
-			_instance = CreatetDataReaderTestInstance();
+			_instance = CreateDataReaderTestInstance();
 
 			// Act
 			_instance.Read();
@@ -796,7 +797,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 						})
 				});
 
-			_instance =CreatetDataReaderTestInstanceWithParameters(
+			_instance =CreateDataReaderTestInstanceWithParameters(
 				_exportService,
 				new FieldMap[]
 				{
@@ -839,7 +840,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 						})
 				});
 
-			_instance =CreatetDataReaderTestInstanceWithParameters(
+			_instance =CreateDataReaderTestInstanceWithParameters(
 				_exportService,
 				new FieldMap[]
 				{
@@ -881,7 +882,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 					})
 			});
 
-			_instance =CreatetDataReaderTestInstanceWithParameters(
+			_instance =CreateDataReaderTestInstanceWithParameters(
 				_exportService,
 				new FieldMap[]
 				{
@@ -922,7 +923,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 					})
 			});
 
-			_instance =CreatetDataReaderTestInstanceWithParameters(
+			_instance =CreateDataReaderTestInstanceWithParameters(
 				_exportService,
 				new FieldMap[]
 				{
@@ -964,7 +965,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 					})
 			});
 
-			_instance =CreatetDataReaderTestInstanceWithParameters(
+			_instance =CreateDataReaderTestInstanceWithParameters(
 				_exportService,
 				new FieldMap[]
 				{
@@ -1006,7 +1007,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 					})
 			});
 
-			_instance =CreatetDataReaderTestInstanceWithParameters(
+			_instance =CreateDataReaderTestInstanceWithParameters(
 				_exportService,
 				new FieldMap[]
 				{
@@ -1048,7 +1049,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 					})
 			});
 
-			_instance =CreatetDataReaderTestInstanceWithParameters(
+			_instance =CreateDataReaderTestInstanceWithParameters(
 				_exportService,
 				new FieldMap[]
 				{
@@ -1091,7 +1092,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 					})
 			});
 
-			_instance =CreatetDataReaderTestInstanceWithParameters(
+			_instance =CreateDataReaderTestInstanceWithParameters(
 				_exportService,
 				new FieldMap[]
 				{
@@ -1134,7 +1135,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 						})
 				});
 
-			_instance =CreatetDataReaderTestInstanceWithParameters(
+			_instance =CreateDataReaderTestInstanceWithParameters(
 				_exportService,
 				new FieldMap[]
 				{
@@ -1177,7 +1178,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 						})
 				});
 
-			_instance =CreatetDataReaderTestInstanceWithParameters(
+			_instance =CreateDataReaderTestInstanceWithParameters(
 				_exportService,
 				new FieldMap[]
 				{
@@ -1220,7 +1221,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 						})
 				});
 
-			_instance =CreatetDataReaderTestInstanceWithParameters(
+			_instance =CreateDataReaderTestInstanceWithParameters(
 				_exportService,
 				new FieldMap[]
 				{
