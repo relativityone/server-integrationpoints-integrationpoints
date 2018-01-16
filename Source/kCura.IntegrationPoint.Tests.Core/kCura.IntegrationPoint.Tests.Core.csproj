@@ -287,7 +287,11 @@
     <Compile Include="Kepler.cs" />
     <Compile Include="Models\Audit.cs" />
     <Compile Include="Models\DocumentsTestData.cs" />
+    <Compile Include="Models\ExportToLoadFileProviderModel.cs" />
     <Compile Include="Models\FolderWithDocuments.cs" />
+    <Compile Include="Models\IntegrationPointGeneralModel.cs" />
+    <Compile Include="Models\RelativityProviderModel.cs" />
+    <Compile Include="Models\SchedulerModel.cs" />
     <Compile Include="ObjectType.cs" />
     <Compile Include="TestException.cs" />
     <Compile Include="Permission.cs" />

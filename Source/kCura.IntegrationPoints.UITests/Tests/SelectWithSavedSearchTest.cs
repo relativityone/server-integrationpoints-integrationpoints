@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		{
 			EnsureGeneralPageIsOpened();
 		}
-		
+
 		[Test, Order(10)]
 		public void ChangesValueWhenSavedSearchIsChosenInDialog()
 		{
@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			ExportToFileSecondPage second = first.GoToNextPage();
 			SavedSearchDialog ssd = second.OpenSavedSearchSelectionDialog();
 			ssd.ChooseSavedSearch("All Documents");
-			
+
 			// Assert
 			Thread.Sleep(_MILLISECONDSTIMEOUT);
 			Assert.AreEqual("All Documents", second.SavedSearch.Value);
