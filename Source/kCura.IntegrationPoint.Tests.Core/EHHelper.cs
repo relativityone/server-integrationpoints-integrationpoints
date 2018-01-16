@@ -58,6 +58,11 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return _helper.GetGuid(workspaceID, artifactID);
 		}
 
+		public ISecretStore GetSecretStore()
+		{
+			throw new NotImplementedException();
+		}
+
 		public IAuthenticationMgr GetAuthenticationManager()
 		{
 			throw new NotImplementedException();
