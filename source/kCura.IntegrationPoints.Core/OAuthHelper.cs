@@ -68,5 +68,10 @@ namespace kCura.IntegrationPoints.Core
 		{
 			throw new System.NotImplementedException();
 		}
+
+		public ISecretStore GetSecretStore()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

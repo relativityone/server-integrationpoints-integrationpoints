@@ -24,6 +24,7 @@
     <RestorePackages>true</RestorePackages>
     <TargetFrameworkProfile />
     <UseGlobalApplicationHostFile />
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -75,9 +76,8 @@
     <Reference Include="Relativity.API">
       <HintPath>..\..\ProviderIncludes\Relativity.API.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.CustomPages, Version=9.5.393.22, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.CustomPages.9.5.393.22\lib\net462\Relativity.CustomPages.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Relativity.CustomPages, Version=9.6.12.15, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.CustomPages.9.6.12.15\lib\net462\Relativity.CustomPages.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Net.Http.Extensions">
