@@ -62,9 +62,8 @@
     <Reference Include="kCura, Version=9.6.12.15, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\kCura.9.6.12.15\lib\net462\kCura.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.Agent, Version=9.5.393.22, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCura.Agent.9.5.393.22\lib\net462\kCura.Agent.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="kCura.Agent, Version=9.6.12.15, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.Agent.9.6.12.15\lib\net462\kCura.Agent.dll</HintPath>
     </Reference>
     <Reference Include="kCura.Apps.Common.Data, Version=2.1.3.2, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\kCura.Apps.Common.Data.2.1.3\lib\net462\kCura.Apps.Common.Data.dll</HintPath>

@@ -82,7 +82,7 @@
       <HintPath>..\packages\RelativityCore.9.6.12.15\lib\net462\kCura.EDDS.DocumentCompareGateway.dll</HintPath>
     </Reference>
     <Reference Include="kCura.EventHandler, Version=9.6.12.15, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.6.12.15\lib\net462\kCura.EventHandler.dll</HintPath>
+      <HintPath>..\packages\kCura.EventHandler.9.6.12.15\lib\net462\kCura.EventHandler.dll</HintPath>
     </Reference>
     <Reference Include="kCura.HTMLSanitizer, Version=1.0.2.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\kCura.HTMLSanitizer.1.0.2\lib\net462\kCura.HTMLSanitizer.dll</HintPath>

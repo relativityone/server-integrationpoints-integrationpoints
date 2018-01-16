@@ -549,7 +549,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy $(ProjectDir)..\packages\Relativity.ImportExport.9.5.393.22\lib\native\*  $(ProjectDir)$(OutDir)  /y
+    <PostBuildEvent>xcopy $(ProjectDir)..\packages\Relativity.ImportExport.9.6.12.15\lib\native\*  $(ProjectDir)$(OutDir)  /y
 mkdir "$(ProjectDir)..\..\lib\UnitTests"
 xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y</PostBuildEvent>
   </PropertyGroup>
