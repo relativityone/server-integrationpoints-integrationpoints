@@ -53,24 +53,20 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="FreeImageNET, Version=3.15.1.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\Relativity.ImportExport.9.5.393.22\lib\net462\FreeImageNET.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\Relativity.ImportExport.9.6.12.15\lib\net462\FreeImageNET.dll</HintPath>
     </Reference>
     <Reference Include="IdentityModel, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\IdentityModel.1.6.0\lib\net45\IdentityModel.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Ionic.Zip, Version=1.8.4.28, Culture=neutral, PublicKeyToken=edbe51ad942a3f5c, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.ImportExport.9.5.393.22\lib\net462\Ionic.Zip.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\Relativity.ImportExport.9.6.12.15\lib\net462\Ionic.Zip.dll</HintPath>
     </Reference>
-    <Reference Include="kCura, Version=9.5.393.22, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.ImportExport.9.5.393.22\lib\net462\kCura.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="kCura, Version=9.6.12.15, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.9.6.12.15\lib\net462\kCura.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.Agent, Version=9.5.393.22, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCura.Agent.9.5.393.22\lib\net462\kCura.Agent.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="kCura.Agent, Version=9.6.12.15, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.Agent.9.6.12.15\lib\net462\kCura.Agent.dll</HintPath>
     </Reference>
     <Reference Include="kCura.Apps.Common.Config, Version=2.1.3.2, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\kCura.Apps.Common.Config.2.1.3\lib\net462\kCura.Apps.Common.Config.dll</HintPath>
@@ -84,56 +80,44 @@
       <HintPath>..\packages\kCura.Apps.Common.Utils.2.1.3\lib\net462\kCura.Apps.Common.Utils.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.ImageValidator, Version=9.5.393.22, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.ImportExport.9.5.393.22\lib\net462\kCura.ImageValidator.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="kCura.ImageValidator, Version=9.6.12.15, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.ImportExport.9.6.12.15\lib\net462\kCura.ImageValidator.dll</HintPath>
     </Reference>
     <Reference Include="kCura.Injection, Version=1.0.8.0, Culture=neutral, PublicKeyToken=318fc9f898ce154d, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCura.Injection.9.5.393.22\lib\net462\kCura.Injection.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\kCura.Injection.9.6.12.15\lib\net462\kCura.Injection.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.OI.FileID, Version=9.5.393.22, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.ImportExport.9.5.393.22\lib\net462\kCura.OI.FileID.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="kCura.OI.FileID, Version=9.6.12.15, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.ImportExport.9.6.12.15\lib\net462\kCura.OI.FileID.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.Relativity.Client, Version=9.5.393.22, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCura.Relativity.Client.9.5.393.22\lib\net462\kCura.Relativity.Client.dll</HintPath>
+    <Reference Include="kCura.Relativity.Client, Version=9.6.12.15, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.Relativity.Client.9.6.12.15\lib\net462\kCura.Relativity.Client.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.Relativity.DataReaderClient, Version=9.5.393.22, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.ImportExport.9.5.393.22\lib\net462\kCura.Relativity.DataReaderClient.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="kCura.Relativity.DataReaderClient, Version=9.6.12.15, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.ImportExport.9.6.12.15\lib\net462\kCura.Relativity.DataReaderClient.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.Relativity.ImportAPI, Version=9.5.393.22, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.ImportExport.9.5.393.22\lib\net462\kCura.Relativity.ImportAPI.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="kCura.Relativity.ImportAPI, Version=9.6.12.15, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.ImportExport.9.6.12.15\lib\net462\kCura.Relativity.ImportAPI.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.Relativity.ImportAPI.Extension, Version=9.5.393.22, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.ImportExport.9.5.393.22\lib\net462\kCura.Relativity.ImportAPI.Extension.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="kCura.Relativity.ImportAPI.Extension, Version=9.6.12.15, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.ImportExport.9.6.12.15\lib\net462\kCura.Relativity.ImportAPI.Extension.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.Windows.Forms, Version=9.5.393.22, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.ImportExport.9.5.393.22\lib\net462\kCura.Windows.Forms.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="kCura.Windows.Forms, Version=9.6.12.15, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.ImportExport.9.6.12.15\lib\net462\kCura.Windows.Forms.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.Windows.Process, Version=9.5.393.22, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.ImportExport.9.5.393.22\lib\net462\kCura.Windows.Process.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="kCura.Windows.Process, Version=9.6.12.15, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.ImportExport.9.6.12.15\lib\net462\kCura.Windows.Process.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.WinEDDS, Version=9.5.393.22, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.ImportExport.9.5.393.22\lib\net462\kCura.WinEDDS.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="kCura.WinEDDS, Version=9.6.12.15, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.ImportExport.9.6.12.15\lib\net462\kCura.WinEDDS.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.WinEDDS.Core, Version=9.5.393.22, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.ImportExport.9.5.393.22\lib\net462\kCura.WinEDDS.Core.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="kCura.WinEDDS.Core, Version=9.6.12.15, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.ImportExport.9.6.12.15\lib\net462\kCura.WinEDDS.Core.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.WinEDDS.ImportExtension, Version=9.5.393.22, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.ImportExport.9.5.393.22\lib\net462\kCura.WinEDDS.ImportExtension.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="kCura.WinEDDS.ImportExtension, Version=9.6.12.15, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.ImportExport.9.6.12.15\lib\net462\kCura.WinEDDS.ImportExtension.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.WinEDDS.TApi, Version=9.5.393.22, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.ImportExport.9.5.393.22\lib\net462\kCura.WinEDDS.TApi.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="kCura.WinEDDS.TApi, Version=9.6.12.15, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.ImportExport.9.6.12.15\lib\net462\kCura.WinEDDS.TApi.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
@@ -202,20 +186,17 @@
       <HintPath>..\packages\Polly.5.3.1\lib\net45\Polly.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity, Version=9.5.393.22, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.9.5.393.22\lib\net462\Relativity.dll</HintPath>
+    <Reference Include="Relativity, Version=9.6.12.15, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.9.6.12.15\lib\net462\Relativity.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.API, Version=9.5.393.22, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.API.9.5.393.22\lib\net462\Relativity.API.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Relativity.API, Version=9.6.12.15, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.API.9.6.12.15\lib\net462\Relativity.API.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Authentication, Version=9.5.393.22, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Authentication.9.5.393.22\lib\net462\Relativity.Authentication.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Relativity.Authentication, Version=9.6.12.15, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Authentication.9.6.12.15\lib\net462\Relativity.Authentication.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Authentication.Interfaces, Version=9.5.393.22, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Authentication.Interfaces.9.5.393.22\lib\net462\Relativity.Authentication.Interfaces.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Relativity.Authentication.Interfaces, Version=9.6.12.15, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Authentication.Interfaces.9.6.12.15\lib\net462\Relativity.Authentication.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Kepler, Version=1.0.1.409, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Kepler.1.0.1.409\lib\net462\Relativity.Kepler.dll</HintPath>
@@ -233,9 +214,8 @@
       <HintPath>..\packages\Relativity.ServiceBus.2.2.5\lib\net462\Relativity.ServiceBus.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.ServiceBus.PriorityQueue, Version=9.5.393.22, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.ServiceBus.PriorityQueue.9.5.393.22\lib\net462\Relativity.ServiceBus.PriorityQueue.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Relativity.ServiceBus.PriorityQueue, Version=9.6.12.15, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.ServiceBus.PriorityQueue.9.6.12.15\lib\net462\Relativity.ServiceBus.PriorityQueue.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.ServiceBus.Provider.Azure, Version=2.2.5.17, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.ServiceBus.Provider.Azure.2.2.5\lib\net462\Relativity.ServiceBus.Provider.Azure.dll</HintPath>
@@ -249,9 +229,8 @@
       <HintPath>..\packages\Relativity.ServiceBus.2.2.5\lib\net462\Relativity.ServiceBus.Providers.Configuration.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.ServiceBus.Utilities, Version=9.5.393.22, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.ServiceBus.Utilities.9.5.393.22\lib\net462\Relativity.ServiceBus.Utilities.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Relativity.ServiceBus.Utilities, Version=9.6.12.15, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.ServiceBus.Utilities.9.6.12.15\lib\net462\Relativity.ServiceBus.Utilities.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Services.ServiceProxy, Version=1.0.1.409, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Kepler.Client.1.0.1.409\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
@@ -273,20 +252,20 @@
       <HintPath>..\packages\Relativity.Toggles.1.0.0.84\lib\net462\Relativity.Toggles.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client, Version=1.2.18008.9, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\relativity.transfer.client.1.2.19-beta000005\lib\net462\Relativity.Transfer.Client.dll</HintPath>
+    <Reference Include="Relativity.Transfer.Client, Version=1.2.18014.6, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\relativity.transfer.client.1.2.20\lib\net462\Relativity.Transfer.Client.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.Aspera, Version=1.2.18008.9, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\relativity.transfer.client.1.2.19-beta000005\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
+    <Reference Include="Relativity.Transfer.Client.Aspera, Version=1.2.18014.6, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\relativity.transfer.client.1.2.20\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.Core, Version=1.2.18008.9, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\relativity.transfer.client.1.2.19-beta000005\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
+    <Reference Include="Relativity.Transfer.Client.Core, Version=1.2.18014.6, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\relativity.transfer.client.1.2.20\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.FileShare, Version=1.2.18008.9, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\relativity.transfer.client.1.2.19-beta000005\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
+    <Reference Include="Relativity.Transfer.Client.FileShare, Version=1.2.18014.6, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\relativity.transfer.client.1.2.20\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Transfer.Client.Http, Version=1.2.18008.9, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\relativity.transfer.client.1.2.19-beta000005\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
+    <Reference Include="Relativity.Transfer.Client.Http, Version=1.2.18014.6, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\relativity.transfer.client.1.2.20\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Vfs, Version=1.0.22.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Vfs.1.0.22\lib\net462\Relativity.Vfs.dll</HintPath>
@@ -456,11 +435,11 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\kCura.9.5.393.22\build\kCura.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\kCura.9.5.393.22\build\kCura.targets'))" />
-    <Error Condition="!Exists('..\packages\Relativity.ImportExport.9.5.393.22\build\Relativity.ImportExport.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Relativity.ImportExport.9.5.393.22\build\Relativity.ImportExport.targets'))" />
     <Error Condition="!Exists('..\packages\kCura.OutsideIn.FI.Win32.2017.7.0\build\kCura.OutsideIn.FI.Win32.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\kCura.OutsideIn.FI.Win32.2017.7.0\build\kCura.OutsideIn.FI.Win32.targets'))" />
+    <Error Condition="!Exists('..\packages\Relativity.ImportExport.9.6.12.15\build\Relativity.ImportExport.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Relativity.ImportExport.9.6.12.15\build\Relativity.ImportExport.targets'))" />
+    <Error Condition="!Exists('..\packages\kCura.9.6.12.15\build\kCura.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\kCura.9.6.12.15\build\kCura.targets'))" />
   </Target>
-  <Import Project="..\packages\kCura.9.5.393.22\build\kCura.targets" Condition="Exists('..\packages\kCura.9.5.393.22\build\kCura.targets')" />
-  <Import Project="..\packages\Relativity.ImportExport.9.5.393.22\build\Relativity.ImportExport.targets" Condition="Exists('..\packages\Relativity.ImportExport.9.5.393.22\build\Relativity.ImportExport.targets')" />
   <Import Project="..\packages\kCura.OutsideIn.FI.Win32.2017.7.0\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\packages\kCura.OutsideIn.FI.Win32.2017.7.0\build\kCura.OutsideIn.FI.Win32.targets')" />
+  <Import Project="..\packages\Relativity.ImportExport.9.6.12.15\build\Relativity.ImportExport.targets" Condition="Exists('..\packages\Relativity.ImportExport.9.6.12.15\build\Relativity.ImportExport.targets')" />
+  <Import Project="..\packages\kCura.9.6.12.15\build\kCura.targets" Condition="Exists('..\packages\kCura.9.6.12.15\build\kCura.targets')" />
 </Project>

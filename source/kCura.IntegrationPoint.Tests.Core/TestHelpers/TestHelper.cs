@@ -129,6 +129,11 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			throw new NotImplementedException();
 		}
 
+		public ISecretStore GetSecretStore()
+		{
+			throw new NotImplementedException();
+		}
+
 		public IServicesMgr GetServicesManager()
 		{
 			return _serviceManager;
