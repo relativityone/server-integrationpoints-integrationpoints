@@ -697,11 +697,8 @@
   <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+  <ItemGroup>
     <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Release'">
-    <None Include="..\kCura.IntegrationPoint.Tests.Core\Release\app.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="LICENSE.txt" />

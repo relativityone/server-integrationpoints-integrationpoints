@@ -87,7 +87,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 			catch (Exception ex)
 			{
-				throw new TestException("$@Finding workspace '{workspaceName}' failed.", ex);
+				throw new TestException($"Finding workspace '{workspaceName}' failed.", ex);
 			}
 		}
 

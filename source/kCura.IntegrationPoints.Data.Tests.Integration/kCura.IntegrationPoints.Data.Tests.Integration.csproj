@@ -495,11 +495,8 @@
     <Compile Include="Repositories\ScratchTableRepositorySqlTests.cs" />
     <Compile Include="Repositories\ScratchTableRepositoryTests.cs" />
   </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+  <ItemGroup>
     <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Release'">
-    <None Include="..\kCura.IntegrationPoint.Tests.Core\Release\app.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">

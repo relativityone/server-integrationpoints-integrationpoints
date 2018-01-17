@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+ <configSections>
+  <section name="kCura.Config" type="System.Configuration.DictionarySectionHandler, System, Version=1.0.3300.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"/>
+  <section name="kCura.WinEDDS" type="System.Configuration.DictionarySectionHandler, System, Version=1.0.3300.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"/>
+ </configSections>
+ <kCura.WinEDDS>
+  <add key="WebServiceURL" value="http://CD-SUT-COV1JK8Z.kcura.corp/RelativityWebAPI/"/>
+ </kCura.WinEDDS>
+ <kCura.Config>
+  <add key="connectionString" value="data source=CD-SUT-COV1JK8Z\EDDSINSTANCE001;initial catalog=EDDS;persist security info=False;user id=MOJUSER;password=MOJEHASLO; workstation id=localhost;packet size=4096"/>
+ </kCura.Config>
+ <appSettings>
+  <add key="RelativityInstanceAddress" value="CD-SUT-COV1JK8Z.kcura.corp"/>
+  <add key="AdminPassword" value="Test1234!"/>
+  <add key="AdminUsername" value="relativity.admin@kcura.com"/>
+  <add key="ClientSettingsProvider.ServiceUri" value=""/>
+  <add key="DATABASE_SNAPSHOT" value="DatabaseSnapShot9_2.xml"/>
+  <add key="DATAGRID_ENDPOINTS" value="//CD-SUT-COV1JK8Z.kcura.corp:9200"/>
+  <add key="INVARIANT_QM" value="CD-SUT-COV1JK8Z.kcura.corp"/>
+  <add key="INVARIANT_SANDBOX_PATH" value="\\dv-samba-fs01\TenantOne\InvariantSandbox"/>
+  <add key="INVARIANT_TEST_DATA_ROOT" value="\\dv-samba-fs01\TenantOne\InvariantTestData"/>
+  <add key="NetworkShareRoot" value="\\dv-samba-fs01\TenantOne\InvariantSandbox"/>
+  <add key="RESTServerAddress" value="CD-SUT-COV1JK8Z.kcura.corp"/>
+  <add key="RSAPIServerAddress" value="CD-SUT-COV1JK8Z.kcura.corp"/>
+  <add key="ServerBindingType" value="http"/>
+  <add key="SQLPassword" value="MOJEHASLO"/>
+  <add key="SQLServerAddress" value="CD-SUT-COV1JK8Z\EDDSINSTANCE001"/>
+  <add key="SQLUsername" value="MOJUSER"/>
+  <add key="TestDataLocation" value="\\kcura.corp\sdlc\Testing"/>
+  <add key="TestWorkspaceName" value="Integration Tests"/>
+  <add key="TestWorkspaceTemplateName" value="Relativity Starter Template"/>
+  <add key="WorkspaceID" value="0"/>
+  <add key="CLIENTID" value="daffb2261db9fdbb60477e4a68"/>
+  <add key="CLIENTSECRET" value="789987b8619603ac4a9e4f1d79b1c39fca911287"/>
+  <add key="IDENTITY_SERVER_TOKEN_URL" value="http://ml-lhs-dev-web1/Relativity/Identity/connect/token"/>
+  <!--Web settings-->
+  <add key="WebDriverBrowser" value="Chrome"/>
+  <add key="IsHttps" value="true"/>
+  <!--Analytics Engine settings-->
+  <add key="AnalyticsEngineHost" value="localhost"/>
+  <add key="AnalyticsEnginePort" value="8443"/>
+  <add key="AnalyticsEngineUsername" value="CARestUser"/>
+  <add key="AnalyticsEnginePassword" value="PASSWORD_HERE"/>
+ </appSettings>
+ <runtime>
+  <assemblyBinding xmlns="urn:schemas-microsoft-com:asm.v1">
+   <dependentAssembly>
+    <assemblyIdentity culture="neutral" name="System.Net.Http.Formatting" publicKeyToken="31bf3856ad364e35"/>
+    <bindingRedirect newVersion="5.2.2.0" oldVersion="0.0.0.0-5.2.2.0"/>
+   </dependentAssembly>
+   <dependentAssembly>
+    <assemblyIdentity culture="neutral" name="Newtonsoft.Json" publicKeyToken="30ad4fe6b2a6aeed"/>
+    <bindingRedirect newVersion="6.0.0.0" oldVersion="0.0.0.0-6.0.0.0"/>
+   </dependentAssembly>
+   <dependentAssembly>
+    <assemblyIdentity culture="neutral" name="nunit.framework" publicKeyToken="96d09a1eb7f44a77"/>
+    <bindingRedirect newVersion="2.6.4.14350" oldVersion="0.0.0.0-2.6.4.14350"/>
+   </dependentAssembly>
+  </assemblyBinding>
+ </runtime>
+ <system.web>
+  <membership defaultProvider="ClientAuthenticationMembershipProvider">
+   <providers>
+    <add name="ClientAuthenticationMembershipProvider" serviceUri="" type="System.Web.ClientServices.Providers.ClientFormsAuthenticationMembershipProvider, System.Web.Extensions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35"/>
+   </providers>
+  </membership>
+  <roleManager defaultProvider="ClientRoleProvider" enabled="true">
+   <providers>
+    <add cacheTimeout="86400" name="ClientRoleProvider" serviceUri="" type="System.Web.ClientServices.Providers.ClientRoleProvider, System.Web.Extensions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35"/>
+   </providers>
+  </roleManager>
+ </system.web>
+</configuration>
