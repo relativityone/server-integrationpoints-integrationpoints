@@ -11,7 +11,8 @@ def skipUnitTests = env.skipUnitTests == "true"
 def skipProvisioning = env.skipProvisioning == "true"
 def skipITests = env.skipITests == "true"
 
-def ripBranch = env.BRANCH_NAME
+def ripBranch = (env.ripBranch ?: env.BRANCH_NAME) ?: "develop"
+testsFilter = env.testsFilter ?: "cat == SmokeTest"
 
 def installing_relativity = true
 def installing_analytics = false
@@ -23,7 +24,7 @@ def profile = createProfile(installing_relativity, installing_invariant, install
 
 def session_id = System.currentTimeMillis().toString()
 def number_of_slaves = 2
-def slackChannel = '#cd_rip_' + ripBranch
+def slackChannel = env.slackChannel ?: ('#cd_rip_' + ripBranch)
 def event_hash = java.security.MessageDigest.getInstance("MD5").digest(env.JOB_NAME.bytes).encodeHex().toString()
 def status = "FAIL"
 
@@ -33,7 +34,6 @@ domain = "DUMMY.COM"
 ip = "DUMMY_IP"
 
 has_errors = false
-is_nightly_test_execution_develop = false // TODO delme
 
 def NUnit = new nunit()
 
@@ -65,6 +65,8 @@ Relativity version: ${relativityVersion ?: "Relativity version was not set, newe
 Install Analytics: ${installing_analytics}
 Install Invariant: ${installing_invariant}
 Install DataGrid: ${installing_datagrid}
+
+Tests filter: ${testsFilter}
 
 Session ID: ${session_id}
 Number of dynamic slaves: ${number_of_slaves}
@@ -110,26 +112,26 @@ def execute_nunit_tests(String test_dll, String session_id, String phase)
 	{
 		println("Error in test block: " + e.toString())
 		has_errors = true
-	}	
+	}
 }
 
-def execute_nunit_tests_2(String test_dll, String tests_filter, String session_id, String phase)
+def execute_nunit_tests_2(String test_dll, String session_id, String phase)
 {
-	println("Running tests for ${test_dll} with filter ${tests_filter}, session_id=${session_id}")
+	println("Running tests for ${test_dll} with filter ${testsFilter}, session_id=${session_id}")
 
 	def where_clause = "_SKIPREASON !~ .+"
-	if (tests_filter != '') {
-		where_clause = where_clause + ' && ' + tests_filter
+	if (testsFilter.trim() != '') {
+		where_clause += ' && ' + testsFilter
 	}
 	
 	try
-	{				
+	{
 		withCredentials([usernamePassword(credentialsId: 'eddsdbo', passwordVariable: 'eddsdboPassword', usernameVariable: 'eddsdboUsername')])
 		{
-			def extra_args = """.\\lib\\UnitTests\\${test_dll} --where "${where_clause}" --inprocess --result=.\\nunit-result.xml;format=nunit2"""			
+			def extra_args = """.\\lib\\UnitTests\\${test_dll} --where "${where_clause}" --inprocess --result=.\\nunit-result.xml;format=nunit2"""
 			
 			// TODO separate
-			def nunitCommand = """python -m jeeves.create_config -t nunit -n "app.jeeves-ci" --dbuser "${eddsdboUsername}" --dbpass "${eddsdboPassword}" -s "${server_name}.kcura.corp" -db "${server_name}\\EDDSINSTANCE001" -o .\\lib\\UnitTests\\"""			
+			def nunitCommand = """python -m jeeves.create_config -t nunit -n "app.jeeves-ci" --dbuser "${eddsdboUsername}" --dbpass "${eddsdboPassword}" -s "${server_name}.kcura.corp" -db "${server_name}\\EDDSINSTANCE001" -o .\\lib\\UnitTests\\"""
 			nunitCommand += """\n"${getNUnitPath()}" $extra_args"""
 			println("NUnit command: " + nunitCommand)
 			
@@ -146,23 +148,22 @@ def execute_nunit_tests_2(String test_dll, String tests_filter, String session_i
 	}
 }
 
-def build_tests(String server_name, String domain, String session_id, String relativityBranch, Boolean installing_invariant, Boolean installing_datagrid, Boolean is_nightly_test_execution_develop) {
-		def tests_filter = "cat == SmokeTest"
-		if (is_nightly_test_execution_develop) { // TODO remove
-			tests_filter = ""
-		}
+def build_tests(String server_name, String domain, String session_id, String relativityBranch, Boolean installing_invariant, Boolean installing_datagrid) {
+	execute_nunit_tests_2("kCura.IntegrationPoints.Agent.Tests.Integration.dll", session_id, "production")
+	execute_nunit_tests_2("kCura.IntegrationPoints.Core.Tests.Integration.dll", session_id, "production")
+	execute_nunit_tests_2("kCura.IntegrationPoints.Data.Tests.Integration.dll", session_id, "production")
+	execute_nunit_tests_2("kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration.dll", session_id, "production")
+	execute_nunit_tests_2("kCura.IntegrationPoints.EventHandlers.Tests.Integration.dll", session_id, "production")
+	execute_nunit_tests_2("kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.dll", session_id, "production")
+	execute_nunit_tests_2("kCura.IntegrationPoints.ImportProvider.Tests.Integration.dll", session_id, "production")
+	execute_nunit_tests_2("kCura.IntegrationPoints.Services.Tests.Integration.dll", session_id, "production")
+	execute_nunit_tests_2("kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration.dll", session_id, "production")
+	execute_nunit_tests_2("kCura.IntegrationPoints.Web.Tests.Integration.dll", session_id, "production")
+	execute_nunit_tests_2("kCura.ScheduleQueue.Core.Tests.Integration.dll", session_id, "production")
 
-		execute_nunit_tests_2("kCura.IntegrationPoints.Agent.Tests.Integration.dll", tests_filter, session_id, "production")
-		execute_nunit_tests_2("kCura.IntegrationPoints.Core.Tests.Integration.dll", tests_filter, session_id, "production")
-		execute_nunit_tests_2("kCura.IntegrationPoints.Data.Tests.Integration.dll", tests_filter, session_id, "production")
-		execute_nunit_tests_2("kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration.dll", tests_filter, session_id, "production")
-		execute_nunit_tests_2("kCura.IntegrationPoints.EventHandlers.Tests.Integration.dll", tests_filter, session_id, "production")
-		execute_nunit_tests_2("kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.dll", tests_filter, session_id, "production")
-		execute_nunit_tests_2("kCura.IntegrationPoints.ImportProvider.Tests.Integration.dll", tests_filter, session_id, "production")
-		execute_nunit_tests_2("kCura.IntegrationPoints.Services.Tests.Integration.dll", tests_filter, session_id, "production")
-		execute_nunit_tests_2("kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration.dll", tests_filter, session_id, "production")
-		execute_nunit_tests_2("kCura.IntegrationPoints.Web.Tests.Integration.dll", tests_filter, session_id, "production")
-		execute_nunit_tests_2("kCura.ScheduleQueue.Core.Tests.Integration.dll", tests_filter, session_id, "production")
+	if (has_errors) {
+		error("Tests failed.")
+	}
 }
 
 timestamps
@@ -176,7 +177,7 @@ timestamps
 				{
 					node('buildslave')
 					{			
-						timeout(time: 10, unit: 'MINUTES')
+						timeout(time: 20, unit: 'MINUTES')
 						{
 							stage('Build')
 							{
@@ -234,6 +235,10 @@ timestamps
 									execute_nunit_tests("kCura.IntegrationPoints.Synchronizers.RDO.Tests.dll", session_id, "staged")
 									execute_nunit_tests("kCura.IntegrationPoints.Web.Tests.dll", session_id, "staged")
 									execute_nunit_tests("kCura.ScheduleQueue.Core.Tests.dll", session_id, "staged")
+
+									if (has_errors) {
+										error("Tests failed.")
+									}
 								}
 							}
 						}
@@ -267,10 +272,10 @@ timestamps
 					timeout(time: 50, unit: 'MINUTES')
 					{
 						stage('Install RAID')
-						{
+						{							
 							if (skipProvisioning) return;
-							
-							tuple = getServerFromPool(this, session_id, relativityBranch, relativityVersion, relativityBuildType, event_hash)
+							println("Getting server from pool, session_id: ${session_id}, Relativity branch: ${relativityBranch}, Relativity version: ${relativityVersion}, Relativity build type: ${relativityBuildType}, event hash: ${event_hash}")
+							tuple = getServerFromPool(this, session_id, relativityBranch, relativityVersion, relativityBuildType, event_hash)							
 							server_name = tuple[0]
 							domain = tuple[1]
 							ip = tuple[2]
@@ -280,7 +285,6 @@ timestamps
 								Deploy:
 								{
 									registerEvent(this, session_id, 'Talos_Provision_test_CD', 'PASS', '-c', "${server_name}.${domain}", profile, event_hash)
-
 									if(installing_relativity)
 									{
 										if (!relativityVersion)
@@ -291,6 +295,7 @@ timestamps
 										println("Installing relativity, branch: ${relativityBranch}, version: ${relativityVersion}, type: ${relativityBuildType}")
 										sendVersionToElastic(this, "Relativity", relativityBranch, relativityVersion, relativityBuildType, session_id)
 									}
+									
 									if(installing_invariant)
 									{
 										invariantbuild = getBuildArtifactsPath(this, "Invariant", invariant_branch, invariantbuild, relativityBuildType, session_id)
@@ -308,6 +313,7 @@ timestamps
 								},
 								ProvisionNodes:
 								{
+									println("ML: provision nodes")
 									createNodes(this, session_id, number_of_slaves)
 									// TODO	try to delete, when everything works
 									bootstrapDependencies(this, python_packages, relativityBranch, relativityVersion, relativityBuildType, session_id)
@@ -349,9 +355,7 @@ timestamps
 				{
 					node("$session_id && dependencies")
 					{					
-						build_tests(server_name, domain, session_id, relativityBranch, installing_invariant, installing_datagrid, is_nightly_test_execution_develop)
-
-						if (has_errors)	status = "FAIL"
+						build_tests(server_name, domain, session_id, relativityBranch, installing_invariant, installing_datagrid)
 					}
 				}
 			}
@@ -366,6 +370,8 @@ timestamps
 				try
 				{
 					//NUnit.publish(this, session_id)
+
+					if (has_errors)	status = "FAIL"
 
 					node(session_id)
 					{
