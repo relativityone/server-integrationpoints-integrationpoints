@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
@@ -94,6 +95,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				onBehalfOfUser = 9;
 			}
 			ClaimsPrincipal claimsPrincipal = _claimsPrincipalFactory.CreateClaimsPrincipal(onBehalfOfUser);
+			IBaseServiceContextProvider baseServiceContextProvider = new BaseServiceContextProvider(claimsPrincipal);
 
 			ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(userImportApiSettings);
 			SourceConfiguration sourceConfiguration = JsonConvert.DeserializeObject<SourceConfiguration>(config);
@@ -113,9 +115,9 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 					exporter = BuildProductionExporter(baseServiceContext);
 					searchArtifactId = sourceConfiguration.SourceProductionId;
 				}
-
+				
 				exporterService = new ImageExporterService(exporter, _sourceRepositoryFactory, _targetRepositoryFactory, jobStopManager, _helper,
-					claimsPrincipal, mappedFiles, 0, config, searchArtifactId, settings);
+					baseServiceContextProvider, mappedFiles, 0, config, searchArtifactId, settings);
 			}
 			else
 			{
@@ -123,7 +125,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 
 				IFolderPathReader folderPathReader = _folderPathReaderFactory.Create(claimsPrincipal, settings, config);
                 exporterService = new RelativityExporterService(exporter, _sourceRepositoryFactory, _targetRepositoryFactory, jobStopManager, _helper,
-                    folderPathReader, _toggleProvider, claimsPrincipal, mappedFiles, 0, config, savedSearchArtifactId);
+                    folderPathReader, _toggleProvider, baseServiceContextProvider, mappedFiles, 0, config, savedSearchArtifactId);
             }
 
 			return exporterService;

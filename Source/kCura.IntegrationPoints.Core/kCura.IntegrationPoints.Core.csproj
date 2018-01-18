@@ -604,6 +604,8 @@
     <Compile Include="Services\JobHistory\UnfinishedJobService.cs" />
     <Compile Include="Services\JobHistory\UnlinkedJobHistoryService.cs" />
     <Compile Include="Services\ProcessingSourceLocationService.cs" />
+    <Compile Include="Services\ServiceContext\BaseServiceContextProvider.cs" />
+    <Compile Include="Services\ServiceContext\IBaseServiceContextProvider.cs" />
     <Compile Include="Tagging\ITagSavedSearch.cs" />
     <Compile Include="Tagging\ITagSavedSearchFolder.cs" />
     <Compile Include="Tagging\ITagSavedSearchManager.cs" />

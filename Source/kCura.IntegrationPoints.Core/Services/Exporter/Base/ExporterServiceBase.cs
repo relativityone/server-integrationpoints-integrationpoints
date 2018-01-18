@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime;
-using System.Security.Claims;
 using System.Text.RegularExpressions;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Core.Toggles;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -19,7 +17,6 @@ using Relativity.API;
 using Relativity.Core;
 using Relativity.Core.Api.Shared.Manager.Export;
 using Relativity.Data;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
@@ -72,7 +69,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			IRepositoryFactory targetRepositoryFactory,
 			IJobStopManager jobStopManager,
 			IHelper helper,
-			ClaimsPrincipal claimsPrincipal,
+			IBaseServiceContextProvider baseServiceContextProvider,
 			FieldMap[] mappedFields,
 			int startAt,
 			string config,
@@ -80,7 +77,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			: this(mappedFields, jobStopManager, helper)
 		{
 			SourceConfiguration = JsonConvert.DeserializeObject<SourceConfiguration>(config);
-			BaseContext = claimsPrincipal.GetUnversionContext(SourceConfiguration.SourceWorkspaceArtifactId);
+			BaseContext = baseServiceContextProvider.GetUnversionContext(SourceConfiguration.SourceWorkspaceArtifactId);
 
 			IFieldQueryRepository targetFieldQueryRepository = targetRepositoryFactory.GetFieldQueryRepository(SourceConfiguration.TargetWorkspaceArtifactId);
 			ValidateDestinationFields(targetFieldQueryRepository, SourceConfiguration.TargetWorkspaceArtifactId, mappedFields);

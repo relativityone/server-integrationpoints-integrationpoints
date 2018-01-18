@@ -8,6 +8,12 @@ namespace kCura.IntegrationPoints.Data.Extensions
 {
     public static class ClaimsPrincipalExtension
     {
+		/// <summary>
+		/// Method is deprecated. Use IBaseServiceContextProvider insted
+		/// </summary>
+		/// <param name="claimsPrincipal"></param>
+		/// <param name="workspaceArtifactId"></param>
+		/// <returns></returns>
         public static BaseServiceContext GetUnversionContext(this ClaimsPrincipal claimsPrincipal, int workspaceArtifactId)
         {
             try

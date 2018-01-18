@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Claims;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter.TransferContext;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Toggles;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
@@ -22,8 +22,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private readonly IToggleProvider _toggleProvider;
 
 		public RelativityExporterService(IExporter exporter, IRepositoryFactory sourceRepositoryFactory, IRepositoryFactory targetRepositoryFactory, IJobStopManager jobStopManager, IHelper helper,
-			IFolderPathReader folderPathReader, IToggleProvider toggleProvider, ClaimsPrincipal claimsPrincipal, FieldMap[] mappedFields, int startAt, string config, int searchArtifactId)
-			: base(exporter, sourceRepositoryFactory, targetRepositoryFactory, jobStopManager, helper, claimsPrincipal, mappedFields, startAt, config, searchArtifactId)
+			IFolderPathReader folderPathReader, IToggleProvider toggleProvider, IBaseServiceContextProvider baseServiceContextProvider, FieldMap[] mappedFields, int startAt, string config, int searchArtifactId)
+			: base(exporter, sourceRepositoryFactory, targetRepositoryFactory, jobStopManager, helper, baseServiceContextProvider, mappedFields, startAt, config, searchArtifactId)
 		{
 			_folderPathReader = folderPathReader;
 			_toggleProvider = toggleProvider;

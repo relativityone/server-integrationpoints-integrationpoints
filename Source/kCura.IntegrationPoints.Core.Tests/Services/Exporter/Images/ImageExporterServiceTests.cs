@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Services.Exporter.TransferContext;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
@@ -36,7 +37,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 		private IRepositoryFactory _targetRepositoryFactory;
 		private IJobStopManager _jobStopManager;
 		private IHelper _helper;
-		private ClaimsPrincipal _claimsPrincipal;
+		private IBaseServiceContextProvider _baseServiceContextProvider;
 		private FieldMap[] _mappedFields;
 		private IFileRepository _fileRepository;
 
@@ -58,7 +59,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 			_jobStopManager = Substitute.For<IJobStopManager>();
 			_helper = Substitute.For<IHelper>();
 
-			_claimsPrincipal = new ClaimsPrincipal();
+			_baseServiceContextProvider = Substitute.For<IBaseServiceContextProvider>();
 
 			_mappedFields = new[]
 			{
@@ -101,7 +102,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 			string config = GetConfig(SourceConfiguration.ExportType.SavedSearch);
 
 			_instance = new ImageExporterService(_exporter, _sourceRepositoryFactory, _targetRepositoryFactory,
-				_jobStopManager, _helper, _claimsPrincipal, _mappedFields, _START_AT, config, _SEARCH_ARTIFACT_ID, settings: null);
+				_jobStopManager, _helper, _baseServiceContextProvider, _mappedFields, _START_AT, config, _SEARCH_ARTIFACT_ID, settings: null);
 
 			var transferConfiguration = Substitute.For<IExporterTransferConfiguration>();
 
@@ -131,7 +132,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 				CreateDocumentImageDataView(SourceConfiguration.ExportType.SavedSearch, imageIdentifier));
 
 			_instance = new ImageExporterService(_exporter, _sourceRepositoryFactory, _targetRepositoryFactory,
-				_jobStopManager, _helper, _claimsPrincipal, _mappedFields, _START_AT, config, _SEARCH_ARTIFACT_ID, _settings);
+				_jobStopManager, _helper, _baseServiceContextProvider, _mappedFields, _START_AT, config, _SEARCH_ARTIFACT_ID, _settings);
 
 			_instance.GetDataTransferContext(Substitute.For<IExporterTransferConfiguration>());
 
@@ -164,7 +165,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 				CreateDocumentImageDataView(SourceConfiguration.ExportType.ProductionSet, imageIdentifier));
 
 			_instance = new ImageExporterService(_exporter, _sourceRepositoryFactory, _targetRepositoryFactory,
-				_jobStopManager, _helper, _claimsPrincipal, _mappedFields, _START_AT, config, _SEARCH_ARTIFACT_ID, _settings);
+				_jobStopManager, _helper, _baseServiceContextProvider, _mappedFields, _START_AT, config, _SEARCH_ARTIFACT_ID, _settings);
 
 			_instance.GetDataTransferContext(Substitute.For<IExporterTransferConfiguration>());
 

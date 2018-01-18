@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Security.Claims;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter.TransferContext;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
@@ -15,7 +15,6 @@ using Relativity.API;
 using Relativity.Core.Api.Shared.Manager.Export;
 using ArtifactType = kCura.Relativity.Client.ArtifactType;
 using ExportSettings = kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportSettings;
-using FileQuery = Relativity.Core.Service.FileQuery;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
@@ -27,9 +26,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private readonly IFileRepository _fileRepository;
 
 		public ImageExporterService(IExporter exporter, IRepositoryFactory sourceRepositoryFactory, IRepositoryFactory targetRepositoryFactory,
-			IJobStopManager jobStopManager, IHelper helper, ClaimsPrincipal claimsPrincipal, FieldMap[] mappedFields, int startAt,
+			IJobStopManager jobStopManager, IHelper helper, IBaseServiceContextProvider baseServiceContextProvider, FieldMap[] mappedFields, int startAt,
 			string config, int searchArtifactId, ImportSettings settings)
-			: base(exporter, sourceRepositoryFactory, targetRepositoryFactory, jobStopManager, helper, claimsPrincipal, mappedFields, startAt,
+			: base(exporter, sourceRepositoryFactory, targetRepositoryFactory, jobStopManager, helper, baseServiceContextProvider, mappedFields, startAt,
 				config, searchArtifactId)
 		{
 			_settings = settings;
