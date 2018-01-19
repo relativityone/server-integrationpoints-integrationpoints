@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Runtime;
 using System.Security.Claims;
@@ -8,6 +7,7 @@ using System.Text.RegularExpressions;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Toggles;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -19,30 +19,29 @@ using Relativity.API;
 using Relativity.Core;
 using Relativity.Core.Api.Shared.Manager.Export;
 using Relativity.Data;
-using ArtifactType = kCura.Relativity.Client.ArtifactType;
-using QueryFieldLookup = Relativity.Core.QueryFieldLookup;
-using UserPermissionsMatrix = Relativity.Core.UserPermissionsMatrix;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
 	public abstract class ExporterServiceBase : IExporterService
 	{
-		protected readonly int[] _avfIds;
-		protected readonly BaseServiceContext _baseContext;
-		protected readonly IExporter _exporter;
-		protected readonly Export.InitializationResults _exportJobInfo;
-		protected readonly int[] _fieldArtifactIds;
-		protected readonly IJobStopManager _jobStopManager;
-		protected readonly HashSet<int> _longTextFieldArtifactIds;
-		protected readonly IILongTextStreamFactory _longTextStreamFactory;
-		protected readonly FieldMap[] _mappedFields;
-		protected readonly HashSet<int> _multipleObjectFieldArtifactIds;
-		protected readonly HashSet<int> _singleChoiceFieldsArtifactIds;
-		protected readonly IAPILog _logger;
-		protected DataGridContext _dataGridContext;
-		protected IDataTransferContext _context;
-		protected SourceConfiguration _sourceConfiguration;
-		protected int _retrievedDataCount;
+		protected DataGridContext DataGridContext;
+		protected IDataTransferContext Context;
+		protected int RetrievedDataCount;
+		protected IQueryFieldLookupRepository QueryFieldLookupRepository;
+		protected SourceConfiguration SourceConfiguration;
+		protected readonly BaseServiceContext BaseContext;
+		protected readonly Export.InitializationResults ExportJobInfo;
+		protected readonly FieldMap[] MappedFields;
+		protected readonly HashSet<int> LongTextFieldArtifactIds;
+		protected readonly HashSet<int> MultipleObjectFieldArtifactIds;
+		protected readonly HashSet<int> SingleChoiceFieldsArtifactIds;
+		protected readonly IAPILog Logger;
+		protected readonly IExporter Exporter;
+		protected readonly IILongTextStreamFactory LongTextStreamFactory;
+		protected readonly IJobStopManager JobStopManager;
+		protected readonly int[] AvfIds;
+		protected readonly int[] FieldArtifactIds;
 
 
 		/// <summary>
@@ -53,19 +52,21 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			IILongTextStreamFactory longTextStreamFactory,
 			IJobStopManager jobStopManager,
 			IHelper helper,
+			IQueryFieldLookupRepository queryFieldLookupRepository,
 			FieldMap[] mappedFields,
 			HashSet<int> longTextField,
 			int[] avfIds)
 			: this(mappedFields, jobStopManager, helper)
 		{
-			_exporter = exporter;
-			_longTextStreamFactory = longTextStreamFactory;
-			_avfIds = avfIds;
-			_exportJobInfo = _exporter.InitializeExport(0, null, 0);
-			_longTextFieldArtifactIds = longTextField;
+			Exporter = exporter;
+			LongTextStreamFactory = longTextStreamFactory;
+			AvfIds = avfIds;
+			ExportJobInfo = Exporter.InitializeExport(0, null, 0);
+			LongTextFieldArtifactIds = longTextField;
+			QueryFieldLookupRepository = queryFieldLookupRepository;
 		}
 
-		protected ExporterServiceBase(
+		internal ExporterServiceBase(
 			IExporter exporter,
 			IRepositoryFactory sourceRepositoryFactory,
 			IRepositoryFactory targetRepositoryFactory,
@@ -78,62 +79,61 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			int searchArtifactId)
 			: this(mappedFields, jobStopManager, helper)
 		{
-			_sourceConfiguration = JsonConvert.DeserializeObject<SourceConfiguration>(config);
-			_baseContext = claimsPrincipal.GetUnversionContext(_sourceConfiguration.SourceWorkspaceArtifactId);
+			SourceConfiguration = JsonConvert.DeserializeObject<SourceConfiguration>(config);
+			BaseContext = claimsPrincipal.GetUnversionContext(SourceConfiguration.SourceWorkspaceArtifactId);
 
-			IFieldQueryRepository targetFieldQueryRepository = targetRepositoryFactory.GetFieldQueryRepository(_sourceConfiguration.TargetWorkspaceArtifactId);
-			ValidateDestinationFields(targetFieldQueryRepository, _sourceConfiguration.TargetWorkspaceArtifactId, mappedFields);
+			IFieldQueryRepository targetFieldQueryRepository = targetRepositoryFactory.GetFieldQueryRepository(SourceConfiguration.TargetWorkspaceArtifactId);
+			ValidateDestinationFields(targetFieldQueryRepository, SourceConfiguration.TargetWorkspaceArtifactId, mappedFields);
             
-            IQueryFieldLookupRepository queryFieldLookupRepository =
-		        sourceRepositoryFactory.GetQueryFieldLookupRepository(_sourceConfiguration.SourceWorkspaceArtifactId);
+            QueryFieldLookupRepository = sourceRepositoryFactory.GetQueryFieldLookupRepository(SourceConfiguration.SourceWorkspaceArtifactId);
             
             Dictionary<int, int> fieldsReferences = new Dictionary<int, int>();
 			foreach (FieldEntry source in mappedFields.Select(f => f.SourceField))
 			{
 				int artifactId = Convert.ToInt32(source.FieldIdentifier);
-				ViewFieldInfo fieldInfo = queryFieldLookupRepository.GetFieldByArtifactId(artifactId);
+				ViewFieldInfo fieldInfo = QueryFieldLookupRepository.GetFieldByArtifactId(artifactId);
 
 				fieldsReferences[artifactId] = fieldInfo.AvfId;
 				switch (fieldInfo.FieldType)
 				{
 					case FieldTypeHelper.FieldType.Objects:
-						_multipleObjectFieldArtifactIds.Add(artifactId);
-						IFieldQueryRepository fieldQueryRepository = sourceRepositoryFactory.GetFieldQueryRepository(_sourceConfiguration.SourceWorkspaceArtifactId);
+						MultipleObjectFieldArtifactIds.Add(artifactId);
+						IFieldQueryRepository fieldQueryRepository = sourceRepositoryFactory.GetFieldQueryRepository(SourceConfiguration.SourceWorkspaceArtifactId);
 						ArtifactDTO identifierField = fieldQueryRepository.RetrieveTheIdentifierField(fieldInfo.AssociativeArtifactTypeID);
 						string identifierFieldName = (string)identifierField.Fields.First(field => field.Name == "Name").Value;
-						IObjectRepository objectRepository = sourceRepositoryFactory.GetObjectRepository(_sourceConfiguration.SourceWorkspaceArtifactId, fieldInfo.AssociativeArtifactTypeID);
+						IObjectRepository objectRepository = sourceRepositoryFactory.GetObjectRepository(SourceConfiguration.SourceWorkspaceArtifactId, fieldInfo.AssociativeArtifactTypeID);
 						ArtifactDTO[] objects = objectRepository.GetFieldsFromObjects(new[] { identifierFieldName }).GetResultsWithoutContextSync();
 						VerifyValidityOfTheNestedOrMultiValuesField(fieldInfo.DisplayName, objects, Constants.IntegrationPoints.InvalidMultiObjectsValueFormat);
 						break;
 
 					case FieldTypeHelper.FieldType.Code:
-						_singleChoiceFieldsArtifactIds.Add(artifactId);
+						SingleChoiceFieldsArtifactIds.Add(artifactId);
 						break;
 
 					case FieldTypeHelper.FieldType.Text:
-						_longTextFieldArtifactIds.Add(artifactId);
+						LongTextFieldArtifactIds.Add(artifactId);
 						break;
 
 					case FieldTypeHelper.FieldType.MultiCode:
-						ICodeRepository codeRepository = sourceRepositoryFactory.GetCodeRepository(_sourceConfiguration.SourceWorkspaceArtifactId);
+						ICodeRepository codeRepository = sourceRepositoryFactory.GetCodeRepository(SourceConfiguration.SourceWorkspaceArtifactId);
 						ArtifactDTO[] codes = codeRepository.RetrieveCodeAsync(fieldInfo.DisplayName).GetResultsWithoutContextSync();
 						VerifyValidityOfTheNestedOrMultiValuesField(fieldInfo.DisplayName, codes, Constants.IntegrationPoints.InvalidMultiChoicesValueFormat);
 						break;
 				}
 
-				if (fieldInfo.EnableDataGrid && (_dataGridContext == null))
+				if (fieldInfo.EnableDataGrid && (DataGridContext == null))
 				{
-					_dataGridContext = new DataGridContext(_baseContext, true);	
+					DataGridContext = new DataGridContext(BaseContext, true);	
 				}
 			}
 
-			_avfIds = _fieldArtifactIds.Select(artifactId => fieldsReferences[artifactId]).ToArray(); // need to make sure that this is in order
+			AvfIds = FieldArtifactIds.Select(artifactId => fieldsReferences[artifactId]).ToArray(); // need to make sure that this is in order
 			
-			_exporter = exporter;
+			Exporter = exporter;
 
 			try
 			{
-				_exportJobInfo = _exporter.InitializeExport(searchArtifactId, _avfIds, startAt);
+				ExportJobInfo = Exporter.InitializeExport(searchArtifactId, AvfIds, startAt);
 			}
 			catch (Exception exception)
 			{
@@ -143,24 +143,24 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				throw new Exception(Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_EXPORT, exception);
 			}
 
-			_longTextStreamFactory = new ExportApiDataHelper.RelativityLongTextStreamFactory(_baseContext, _dataGridContext, _sourceConfiguration.SourceWorkspaceArtifactId);
+			LongTextStreamFactory = new ExportApiDataHelper.RelativityLongTextStreamFactory(BaseContext, DataGridContext, SourceConfiguration.SourceWorkspaceArtifactId);
 		}
 
 		protected ExporterServiceBase(FieldMap[] mappedFields, IJobStopManager jobStopManager, IHelper helper)
 		{
-			_singleChoiceFieldsArtifactIds = new HashSet<int>();
-			_multipleObjectFieldArtifactIds = new HashSet<int>();
-			_longTextFieldArtifactIds = new HashSet<int>();
-			_retrievedDataCount = 0;
-			_mappedFields = mappedFields;
-			_jobStopManager = jobStopManager;
-			_logger = helper.GetLoggerFactory().GetLogger().ForContext<RelativityExporterService>();
-			_fieldArtifactIds = mappedFields.Select(field => int.Parse(field.SourceField.FieldIdentifier)).ToArray();
+			SingleChoiceFieldsArtifactIds = new HashSet<int>();
+			MultipleObjectFieldArtifactIds = new HashSet<int>();
+			LongTextFieldArtifactIds = new HashSet<int>();
+			RetrievedDataCount = 0;
+			MappedFields = mappedFields;
+			JobStopManager = jobStopManager;
+			Logger = helper.GetLoggerFactory().GetLogger().ForContext<RelativityExporterService>();
+			FieldArtifactIds = mappedFields.Select(field => int.Parse(field.SourceField.FieldIdentifier)).ToArray();
 		}
 
-		public virtual bool HasDataToRetrieve => (TotalRecordsFound > _retrievedDataCount) && !_jobStopManager.IsStopRequested();
+		public virtual bool HasDataToRetrieve => (TotalRecordsFound > RetrievedDataCount) && !JobStopManager.IsStopRequested();
 
-		public virtual int TotalRecordsFound => (int)_exportJobInfo.RowCount;
+		public virtual int TotalRecordsFound => (int)ExportJobInfo.RowCount;
 
 		public abstract IDataTransferContext GetDataTransferContext(IExporterTransferConfiguration transferConfiguration);
 
@@ -168,64 +168,20 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 		public void Dispose()
 		{
-			if (_context.DataReader != null)
+			if (Context.DataReader != null)
 			{
-				_context.DataReader.Dispose();
-				_context.DataReader = null;
-				_context = null;
+				Context.DataReader.Dispose();
+				Context.DataReader = null;
+				Context = null;
 			}
 
-			if (_dataGridContext != null)
+			if (DataGridContext != null)
 			{
 				// dispose and cleanup won't do
-				_dataGridContext.BaseDataGridContext.BufferPool.BufferPoolBaseCollection.Clear();
-				_dataGridContext.BaseDataGridContext.Cleanup();
-				_dataGridContext.BaseDataGridContext.Dispose();
-				_dataGridContext = null;
-			}
-
-			GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
-			GC.Collect();
-		}
-
-		protected void SetupBaseFields(int documentArtifactId, object[] fieldsValue, List<ArtifactFieldDTO> fields)
-		{
-			for (int index = 0; index < _avfIds.Length; index++)
-			{
-				int artifactId = _fieldArtifactIds[index];
-				object value = fieldsValue[index];
-
-				Exception exception = null;
-				try
-				{
-					if (_multipleObjectFieldArtifactIds.Contains(artifactId))
-					{
-						value = ExportApiDataHelper.SanitizeMultiObjectField(value);
-					}
-					else if (_singleChoiceFieldsArtifactIds.Contains(artifactId))
-					{
-						value = ExportApiDataHelper.SanitizeSingleChoiceField(value);
-					}
-					// export api will return a string constant represent the state of the string of which is too big. We will have to go and read this our self.
-					else if (_longTextFieldArtifactIds.Contains(artifactId)
-							&& global::Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN.Equals(value))
-					{
-						value = ExportApiDataHelper.RetrieveLongTextFieldAsync(_longTextStreamFactory, documentArtifactId, artifactId)
-							.GetResultsWithoutContextSync();
-					}
-				}
-				catch (Exception ex)
-				{
-					LogRetrievingDataError(ex);
-					exception = ex;
-				}
-
-				fields.Add(new LazyExceptArtifactFieldDto(exception)
-				{
-					Name = _exportJobInfo.ColumnNames[index],
-					ArtifactId = artifactId,
-					Value = value
-				});
+				DataGridContext.BaseDataGridContext.BufferPool.BufferPoolBaseCollection.Clear();
+				DataGridContext.BaseDataGridContext.Cleanup();
+				DataGridContext.BaseDataGridContext.Dispose();
+				DataGridContext = null;
 			}
 		}
 
@@ -312,27 +268,27 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 		protected virtual void LogCreatingError(Exception exception)
 		{
-			_logger.LogError(exception, "Failed to create RelativityExporterService.");
+			Logger.LogError(exception, "Failed to create RelativityExporterService.");
 		}
 
 		protected virtual void LogRetrievingDataError(Exception ex)
 		{
-			_logger.LogError(ex, "Error occurred during data retrieval.");
+			Logger.LogError(ex, "Error occurred during data retrieval.");
 		}
 
 		private void LogFieldValidationError(Exception e)
 		{
-			_logger.LogError(e, "Error occurred during destination field validation.");
+			Logger.LogError(e, "Error occurred during destination field validation.");
 		}
 
 		protected virtual void LogInvalidFieldMappingError()
 		{
-			_logger.LogError("Job failed. Fields mapped may no longer be available or have been renamed. Please validate your field mapping settings.");
+			Logger.LogError("Job failed. Fields mapped may no longer be available or have been renamed. Please validate your field mapping settings.");
 		}
 
 		protected virtual void LogFieldValuesValidationError(string message)
 		{
-			_logger.LogError(message);
+			Logger.LogError(message);
 		}
 
 		#endregion

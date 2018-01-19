@@ -33,6 +33,7 @@ using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.WinEDDS.Service.Export;
 using Relativity.API;
+using Relativity.Toggles;
 using ITaskFactory = kCura.IntegrationPoints.Agent.TaskFactory.ITaskFactory;
 
 namespace kCura.IntegrationPoints.Agent.Installer
@@ -183,7 +184,10 @@ namespace kCura.IntegrationPoints.Agent.Installer
 					}
 					IFederatedInstanceManager federatedInstanceManager = k.Resolve<IFederatedInstanceManager>();
 					IFolderPathReaderFactory folderPathReaderFactory = k.Resolve<IFolderPathReaderFactory>();
-					return new global::kCura.IntegrationPoints.Core.Factories.Implementations.ExporterFactory(claimsPrincipalFactory, sourceRepositoryFactory, targetRepositoryFactory, sourceHelper, federatedInstanceManager, folderPathReaderFactory);
+					IToggleProvider toggleProvider = k.Resolve<IToggleProvider>();
+					return new global::kCura.IntegrationPoints.Core.Factories.Implementations.ExporterFactory(claimsPrincipalFactory,
+						sourceRepositoryFactory, targetRepositoryFactory, sourceHelper, federatedInstanceManager, folderPathReaderFactory,
+						toggleProvider);
 				}).LifestyleTransient());
 
 			container.Register(Component.For<IRsapiClientFactory>().ImplementedBy<ExtendedRsapiClientFactory>().LifestyleTransient());

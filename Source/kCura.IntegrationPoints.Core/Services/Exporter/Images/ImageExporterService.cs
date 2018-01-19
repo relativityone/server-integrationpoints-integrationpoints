@@ -29,24 +29,23 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		public ImageExporterService(IExporter exporter, IRepositoryFactory sourceRepositoryFactory, IRepositoryFactory targetRepositoryFactory,
 			IJobStopManager jobStopManager, IHelper helper, ClaimsPrincipal claimsPrincipal, FieldMap[] mappedFields, int startAt,
 			string config, int searchArtifactId, ImportSettings settings)
-			: base(
-				exporter, sourceRepositoryFactory, targetRepositoryFactory, jobStopManager, helper, claimsPrincipal, mappedFields, startAt,
+			: base(exporter, sourceRepositoryFactory, targetRepositoryFactory, jobStopManager, helper, claimsPrincipal, mappedFields, startAt,
 				config, searchArtifactId)
 		{
 			_settings = settings;
-			_fileRepository = sourceRepositoryFactory.GetFileRepository(_sourceConfiguration.SourceWorkspaceArtifactId);
+			_fileRepository = sourceRepositoryFactory.GetFileRepository(SourceConfiguration.SourceWorkspaceArtifactId);
 		}
 
 		public override IDataTransferContext GetDataTransferContext(IExporterTransferConfiguration transferConfiguration)
 		{
-			var imageTransferDataReader = new ImageTransferDataReader(this, _mappedFields, _baseContext, transferConfiguration.ScratchRepositories);
-			return _context ?? (_context = new ExporterTransferContext(imageTransferDataReader, transferConfiguration));
+			var imageTransferDataReader = new ImageTransferDataReader(this, MappedFields, BaseContext, transferConfiguration.ScratchRepositories);
+			return Context ?? (Context = new ExporterTransferContext(imageTransferDataReader, transferConfiguration));
 		}
 
 		public override ArtifactDTO[] RetrieveData(int size)
 		{
 			var imagesResult = new List<ArtifactDTO>();
-			object[] retrievedData = _exporter.RetrieveResults(_exportJobInfo.RunId, _avfIds, size);
+			object[] retrievedData = Exporter.RetrieveResults(ExportJobInfo.RunId, AvfIds, size);
 
 			if (retrievedData != null)
 			{
@@ -56,11 +55,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 					var fields = new List<ArtifactFieldDTO>();
 					object[] fieldsValue = (object[])data;
 
-					int documentArtifactId = Convert.ToInt32(fieldsValue[_avfIds.Length]);
-					if (_sourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.ProductionSet)
+					int documentArtifactId = Convert.ToInt32(fieldsValue[AvfIds.Length]);
+					if (SourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.ProductionSet)
 					{
 						SetProducedImagesByProductionId(documentArtifactId, fields, fieldsValue, artifactType, imagesResult,
-							_sourceConfiguration.SourceProductionId);
+							SourceConfiguration.SourceProductionId);
 					}
 					else
 					{
@@ -68,10 +67,10 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 					}
 					
 				}
-				_retrievedDataCount += retrievedData.Length;
+				RetrievedDataCount += retrievedData.Length;
 			}
 			
-			_context.TotalItemsFound = _context.TotalItemsFound.GetValueOrDefault() + imagesResult.Count;
+			Context.TotalItemsFound = Context.TotalItemsFound.GetValueOrDefault() + imagesResult.Count;
 			return imagesResult.ToArray();
 		}
 
@@ -131,7 +130,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private void CreateImageArtifactDtos(kCura.Data.DataView dataView, int documentArtifactId, List<ArtifactFieldDTO> fields, object[] fieldsValue, int artifactType,
 			List<ArtifactDTO> result)
 		{
-			SetupBaseFields(documentArtifactId, fieldsValue, fields);
+			SetupBaseFields(fieldsValue, fields);
 
 			// the assumption is based on the following facts:
 			// - for images we only allow maping identifier field, so _avfIds has only one object, this is guarded by validation
@@ -143,6 +142,23 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				var artifactDto = CreateImageArtifactDto(dataView.Table.Rows[index], documentArtifactId,
 					documentIdentifier, fields, artifactType);
 				result.Add(artifactDto);
+			}
+		}
+		
+		private void SetupBaseFields(object[] fieldsValue, List<ArtifactFieldDTO> fields)
+		{
+			for (int index = 0; index < AvfIds.Length; index++)
+			{
+				int artifactId = FieldArtifactIds[index];
+				object value = fieldsValue[index];
+				
+				fields.Add(new ArtifactFieldDTO
+				{
+					Name = ExportJobInfo.ColumnNames[index],
+					ArtifactId = artifactId,
+					Value = value,
+					FieldType = QueryFieldLookupRepository.GetFieldByArtifactId(artifactId).FieldType.ToString()
+				});
 			}
 		}
 

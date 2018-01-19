@@ -1,42 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Core.Services.Exporter;
+﻿using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.Core;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 {
 	[TestFixture]
 	public class DocumentTransferDataReaderTests : ExportTransferDataReaderTestsBase
 	{
-		protected override ExportTransferDataReaderBase CreatetDataReaderTestInstance()
+		protected override ExportTransferDataReaderBase CreateDataReaderTestInstance()
 		{
 			return new DocumentTransferDataReader(
 				_exportService,
 				_templateFieldEntries,
 				_context,
-				_scratchRepositories, false);
+				_scratchRepositories, 
+				_longTextStreamFactory, Substitute.For<IToggleProvider>(), false);
 		}
 
-		protected override ExportTransferDataReaderBase CreatetDataReaderTestInstanceWithParameters(
+		protected override ExportTransferDataReaderBase CreateDataReaderTestInstanceWithParameters(
 			IExporterService relativityExportService,
 			FieldMap[] fieldMappings,
-			ICoreContext context,
+			BaseServiceContext context,
 			IScratchTableRepository[] scratchTableRepositories)
 		{
 			return new DocumentTransferDataReader(
 				relativityExportService,
 				fieldMappings,
 				context,
-				scratchTableRepositories, false);
+				scratchTableRepositories,
+				_longTextStreamFactory, Substitute.For<IToggleProvider>(), false);
 		}
 	}
 }

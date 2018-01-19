@@ -11,7 +11,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 	[TestFixture]
 	public class ImageTransferDataReaderTests : ExportTransferDataReaderTestsBase
 	{
-		protected override ExportTransferDataReaderBase CreatetDataReaderTestInstance()
+		protected override ExportTransferDataReaderBase CreateDataReaderTestInstance()
 		{
 			return new ImageTransferDataReader(
 				_exportService,
@@ -20,10 +20,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				_scratchRepositories);
 		}
 
-		protected override ExportTransferDataReaderBase CreatetDataReaderTestInstanceWithParameters(
+		protected override ExportTransferDataReaderBase CreateDataReaderTestInstanceWithParameters(
 			IExporterService relativityExportService,
 			FieldMap[] fieldMappings,
-			ICoreContext context,
+			BaseServiceContext context,
 			IScratchTableRepository[] scratchTableRepositories)
 		{
 			return new ImageTransferDataReader(

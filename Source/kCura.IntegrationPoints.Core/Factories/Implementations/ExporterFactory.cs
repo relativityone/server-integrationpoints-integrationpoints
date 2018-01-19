@@ -20,6 +20,7 @@ using Newtonsoft.Json;
 using Relativity.API;
 using Relativity.Core;
 using Relativity.Core.Api.Shared.Manager.Export;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.Factories.Implementations
 {
@@ -31,13 +32,15 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		private readonly IHelper _helper;
 		private readonly IFederatedInstanceManager _federatedInstanceManager;
 		private readonly IFolderPathReaderFactory _folderPathReaderFactory;
+		private readonly IToggleProvider _toggleProvider;
 
 		public ExporterFactory(
 			IOnBehalfOfUserClaimsPrincipalFactory claimsPrincipalFactory,
 			IRepositoryFactory sourceRepositoryFactory,
 			IRepositoryFactory targetRepositoryFactory,
 			IHelper helper, IFederatedInstanceManager federatedInstanceManager,
-			IFolderPathReaderFactory folderPathReaderFactory)
+			IFolderPathReaderFactory folderPathReaderFactory,
+			IToggleProvider toggleProvider)
 		{
 			_claimsPrincipalFactory = claimsPrincipalFactory;
 			_sourceRepositoryFactory = sourceRepositoryFactory;
@@ -45,6 +48,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			_helper = helper;
 			_federatedInstanceManager = federatedInstanceManager;
 			_folderPathReaderFactory = folderPathReaderFactory;
+			_toggleProvider = toggleProvider;
 		}
 
 		public List<IBatchStatus> InitializeExportServiceJobObservers(Job job,
@@ -119,7 +123,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 
 				IFolderPathReader folderPathReader = _folderPathReaderFactory.Create(claimsPrincipal, settings, config);
                 exporterService = new RelativityExporterService(exporter, _sourceRepositoryFactory, _targetRepositoryFactory, jobStopManager, _helper,
-                    folderPathReader, claimsPrincipal, mappedFiles, 0, config, savedSearchArtifactId);
+                    folderPathReader, _toggleProvider, claimsPrincipal, mappedFiles, 0, config, savedSearchArtifactId);
             }
 
 			return exporterService;
