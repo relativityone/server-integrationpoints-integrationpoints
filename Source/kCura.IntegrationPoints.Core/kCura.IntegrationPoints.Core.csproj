@@ -698,6 +698,7 @@
     <Compile Include="Services\ProviderTypeService.cs" />
     <Compile Include="Tagging\TagsCreator.cs" />
     <Compile Include="Toggles\UseStreamsForBigLongTextFieldsToggle.cs" />
+    <Compile Include="Toggles\UseOldExportVolumeManagerToggle.cs" />
     <Compile Include="Validation\Abstract\BaseIntegrationPointValidator.cs" />
     <Compile Include="Validation\Abstract\BasePartsValidator.cs" />
     <Compile Include="Validation\Abstract\IIntegrationPointPermissionValidator.cs" />
