@@ -3,16 +3,17 @@ using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.SecretStore;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Models;
 using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using Relativity;
-using Relativity.Core;
+using Relativity.API;
 using Relativity.SecretCatalog;
 using Constants = kCura.IntegrationPoints.Core.Constants;
+using APIHelper_SecretStoreFactory = Relativity.APIHelper.SecretStore.SecretStoreFactory;
+using SecretStoreFactory = Relativity.Core.SecretStoreFactory;
 
 namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointManager
 {
@@ -30,8 +31,10 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
+			ExtensionPointServiceFinder.SecretStoreHelper = APIHelper_SecretStoreFactory.BuildSecretStore();
 			_secretCatalog = SecretStoreFactory.GetSecretStore(BaseServiceContextHelper.Create().GetMasterRdgContext());
 			_secretManager = new SecretManager(WorkspaceArtifactId);
+
 			_client = Helper.CreateAdminProxy<IIntegrationPointManager>();
 		}
 

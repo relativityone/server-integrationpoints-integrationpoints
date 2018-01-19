@@ -7,6 +7,8 @@ using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
+using APIHelper_SecretStoreFactory = Relativity.APIHelper.SecretStore.SecretStoreFactory;
+using SecretStoreFactory = Relativity.Core.SecretStoreFactory;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -30,6 +32,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			IProvideServiceUris serviceUrisProvider = Substitute.For<IProvideServiceUris>();
 			serviceUrisProvider.AuthenticationUri().Returns(new Uri($"{SharedVariables.ProtocolVersion}://{SharedVariables.TargetHost}/Relativity"));
 			ExtensionPointServiceFinder.ServiceUriProvider = serviceUrisProvider;
+			ExtensionPointServiceFinder.SecretStoreHelper = APIHelper_SecretStoreFactory.BuildSecretStore();
 
 			ClaimsPrincipal.ClaimsPrincipalSelector += () =>
             {

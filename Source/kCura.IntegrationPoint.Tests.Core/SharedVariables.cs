@@ -2,7 +2,6 @@
 using System.Configuration;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Text;
@@ -16,7 +15,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		static SharedVariables()
 		{
 			const string configFileName = "app.jeeves-ci.config";
-			string assemblyDir = Path.GetDirectoryName(Assembly.GetCallingAssembly().CodeBase);
+			string assemblyDir = Path.GetDirectoryName(System.Reflection.Assembly.GetCallingAssembly().CodeBase);
 			string jeevesConfigPath = Path.Combine(assemblyDir, configFileName);
 			if (File.Exists(jeevesConfigPath.Replace(@"file:\", "")))
 			{
