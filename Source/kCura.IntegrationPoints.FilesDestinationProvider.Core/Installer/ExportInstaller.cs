@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 			container.Register(Component.For<IExportFileBuilder>().ImplementedBy<ExportFileBuilder>());
 			container.Register(Component.For<IExportProcessBuilder>().ImplementedBy<ExportProcessBuilder>().LifestyleTransient());
 			container.Register(Component.For<IExportSettingsBuilder>().ImplementedBy<ExportSettingsBuilder>());
-			container.Register(Component.For<ExportProcessRunner>().ImplementedBy<ExportProcessRunner>());
+			container.Register(Component.For<ExportProcessRunner>().ImplementedBy<ExportProcessRunner>().LifestyleTransient());
 
 			container.Register(Component.For<ICaseManagerFactory>().ImplementedBy<CaseManagerFactory>());
 

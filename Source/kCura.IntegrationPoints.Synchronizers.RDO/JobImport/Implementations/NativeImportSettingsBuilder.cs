@@ -43,6 +43,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 				target.LongTextColumnThatContainsPathToFullText = importSettings.LongTextColumnThatContainsPathToFullText;
 			}
 
+			target.LoadImportedFullTextFromServer = importSettings.LoadImportedFullTextFromServer;
 			target.DestinationFolderArtifactID = GetDestinationFolderArtifactId(importSettings);
 			target.SelectedIdentifierFieldName = GetSelectedIdentifierFieldName(importSettings);
 		}

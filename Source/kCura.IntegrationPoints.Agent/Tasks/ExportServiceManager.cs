@@ -33,6 +33,7 @@ using Constants = kCura.IntegrationPoints.Core.Constants;
 using Relativity.Telemetry.MetricsCollection;
 using APMClient = Relativity.Telemetry.APM.Client;
 using kCura.IntegrationPoints.Domain.Managers;
+using Relativity;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -226,9 +227,39 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				importSettings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
 			}
 
+			importSettings.LoadImportedFullTextFromServer = ShouldUseDgPaths(importSettings, MappedFields, SourceConfiguration);
 			string jsonString = Serializer.Serialize(importSettings);
 			GetImportApiSettingsForUserSuccessfulEnd(job, jsonString);
 			return jsonString;
+		}
+
+		private bool ShouldUseDgPaths(ImportSettings settings, IEnumerable<FieldMap> fieldMap, SourceConfiguration configuration)
+		{
+			if (settings.FederatedInstanceArtifactId != null)
+			{
+				return false;
+			}
+
+			IQueryFieldLookupRepository sourceQueryFieldLookupRepository =
+				_repositoryFactory.GetQueryFieldLookupRepository(configuration.SourceWorkspaceArtifactId);
+			IQueryFieldLookupRepository destinationQueryFieldLookupRepository =
+				_repositoryFactory.GetQueryFieldLookupRepository(configuration.TargetWorkspaceArtifactId);
+
+
+			FieldMap longTextField = fieldMap.FirstOrDefault(fm => IsLongTextWithDgEnabled(sourceQueryFieldLookupRepository.GetFieldByArtifactId(int.Parse(fm.SourceField.FieldIdentifier))));
+
+			if (longTextField != null)
+			{
+				ViewFieldInfo destinationField = destinationQueryFieldLookupRepository.GetFieldByArtifactId(int.Parse(longTextField.DestinationField.FieldIdentifier));
+				return !destinationField.EnableDataGrid;
+			}
+
+			return false;
+		}
+
+		private bool IsLongTextWithDgEnabled(ViewFieldInfo info)
+		{
+			return info.Category == FieldCategory.FullText && info.EnableDataGrid;
 		}
 
 		protected override void JobHistoryErrorManagerSetup(Job job)

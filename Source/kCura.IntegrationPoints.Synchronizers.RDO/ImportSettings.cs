@@ -174,6 +174,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		public bool CreateSavedSearchForTagging { get; set; }
 
+		public bool LoadImportedFullTextFromServer { get; set; }
+
 		#endregion "Public Properties"
 
 		#region "Internal Properties"
