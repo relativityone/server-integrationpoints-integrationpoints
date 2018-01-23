@@ -74,6 +74,6 @@
 		<Dynamitey>Dynamitey.1.0.2.0</Dynamitey>
 		<kCura_EventHandler>kCura.EventHandler.9.4.353.4</kCura_EventHandler>
 		<Selenium_WebDriver_ChromeDriver>Selenium.WebDriver.ChromeDriver.2.21.0.0</Selenium_WebDriver_ChromeDriver>
-		<SSH_NET>SSH.NET.2013.4.7</SSH_NET>
+		<SSH_NET>SSH.NET.2016.0.0</SSH_NET>
 	</PropertyGroup>
 </Project>
