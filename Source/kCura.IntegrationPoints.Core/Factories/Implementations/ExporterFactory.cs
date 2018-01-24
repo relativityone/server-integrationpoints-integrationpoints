@@ -107,12 +107,12 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				int searchArtifactId;
 				if (sourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.SavedSearch)
 				{
-					exporter = BuildSavedSearchExporter(baseServiceContext);
+					exporter = BuildSavedSearchExporter(baseServiceContext, settings.LoadImportedFullTextFromServer);
 					searchArtifactId = savedSearchArtifactId;
 				}
 				else
 				{
-					exporter = BuildProductionExporter(baseServiceContext);
+					exporter = BuildProductionExporter(baseServiceContext, settings.LoadImportedFullTextFromServer);
 					searchArtifactId = sourceConfiguration.SourceProductionId;
 				}
 				
@@ -121,7 +121,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			}
 			else
 			{
-				IExporter exporter = BuildSavedSearchExporter(baseServiceContext);
+				IExporter exporter = BuildSavedSearchExporter(baseServiceContext, settings.LoadImportedFullTextFromServer);
 
 				IFolderPathReader folderPathReader = _folderPathReaderFactory.Create(claimsPrincipal, settings, config);
                 exporterService = new RelativityExporterService(exporter, _sourceRepositoryFactory, _targetRepositoryFactory, jobStopManager, _helper,
@@ -131,7 +131,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			return exporterService;
 		}
 
-		private IExporter BuildSavedSearchExporter(BaseServiceContext baseService)
+		private IExporter BuildSavedSearchExporter(BaseServiceContext baseService, bool shouldUseDgPaths)
 		{
 			return new SavedSearchExporter
 				(
@@ -140,11 +140,12 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				global::Relativity.ArtifactType.Document,
 				IntegrationPoints.Domain.Constants.MULTI_VALUE_DELIMITER,
 				IntegrationPoints.Domain.Constants.NESTED_VALUE_DELIMITER,
-				global::Relativity.Core.Api.Settings.RSAPI.Config.DynamicallyLoadedDllPaths
+				global::Relativity.Core.Api.Settings.RSAPI.Config.DynamicallyLoadedDllPaths,
+				shouldUseDgPaths
 				);
 		}
 
-		private IExporter BuildProductionExporter(BaseServiceContext baseService)
+		private IExporter BuildProductionExporter(BaseServiceContext baseService, bool shouldUseDgPaths)
 		{
 			return new ProductionExporter
 				(
@@ -153,7 +154,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				global::Relativity.ArtifactType.Document,
 				IntegrationPoints.Domain.Constants.MULTI_VALUE_DELIMITER,
 				IntegrationPoints.Domain.Constants.NESTED_VALUE_DELIMITER,
-				global::Relativity.Core.Api.Settings.RSAPI.Config.DynamicallyLoadedDllPaths
+				global::Relativity.Core.Api.Settings.RSAPI.Config.DynamicallyLoadedDllPaths,
+				shouldUseDgPaths
 				);
 		}
 	}
