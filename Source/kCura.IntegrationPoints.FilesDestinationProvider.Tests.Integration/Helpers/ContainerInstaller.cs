@@ -36,6 +36,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 		private const int _DEF_EXPORT_BATCH_SIZE = 1000;
 		private const int _DEF_EXPORT_THREAD_COUNT = 4;
 
+		private const bool _DEF_USE_OLD_EXPORT = false;
+
 		private const int _EXPORT_LOADFILE_IO_ERROR_WAIT_TIME = 1;
 		private const int _EXPORT_LOADFILE_IO_ERROR_RETRIES_NUMBER = 1;
 		private const int _EXPORT_LOADFILE_ERROR_WAIT_TIME = 1;
@@ -117,6 +119,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 			exportConfig.ExportIOErrorNumberOfRetries.Returns(_EXPORT_LOADFILE_IO_ERROR_RETRIES_NUMBER);
 			exportConfig.ExportErrorNumberOfRetries.Returns(_DEF_EXPORT_BATCH_SIZE);
 			exportConfig.ExportErrorWaitTime.Returns(_DEF_EXPORT_THREAD_COUNT);
+
+			exportConfig.UseOldExport.Returns(_DEF_USE_OLD_EXPORT);
 
 			return exportConfig;
 		}

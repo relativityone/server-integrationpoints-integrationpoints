@@ -43,11 +43,11 @@ namespace kCura.IntegrationPoint.Tests.Core
 			var table = new DataTable();
 
 			// The document identifer column name must match the field name in the workspace.
-			table.Columns.Add("Control Number", typeof(string));
-			table.Columns.Add("File Name", typeof(string));
-			table.Columns.Add("Native File", typeof(string));
-			table.Columns.Add("Issue Designation", typeof(string));
-			table.Columns.Add("Has Images", typeof(bool));
+			table.Columns.Add(Constants.CONTROL_NUMBER_FIELD, typeof(string));
+			table.Columns.Add(Constants.FILE_NAME_FIELD, typeof(string));
+			table.Columns.Add(Constants.NATIVE_FILE_FIELD, typeof(string));
+			table.Columns.Add(Constants.ISSUE_DESIGNATION_FIELD, typeof(string));
+			table.Columns.Add(Constants.HAS_IMAGES_FIELD, typeof(bool));
 			return table;
 		}
 
@@ -56,9 +56,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 			var table = new DataTable();
 
 			// The document identifer column name must match the field name in the workspace.
-			table.Columns.Add("Control Number", typeof(string));
-			table.Columns.Add("Bates Beg", typeof(string));
-			table.Columns.Add("File", typeof(string));
+			table.Columns.Add(Constants.CONTROL_NUMBER_FIELD, typeof(string));
+			table.Columns.Add(Constants.BATES_BEG_FIELD, typeof(string));
+			table.Columns.Add(Constants.FILE_FIELD, typeof(string));
 
 			table.Rows.Add("AMEYERS_0000757", "AMEYERS_0000757", Path.Combine(testDirectory, @"TestData\IMAGES\AMEYERS_0000757.tif"));
 			table.Rows.Add("AMEYERS_0000975", "AMEYERS_0000975", Path.Combine(testDirectory, @"TestData\IMAGES\AMEYERS_0000975.tif"));

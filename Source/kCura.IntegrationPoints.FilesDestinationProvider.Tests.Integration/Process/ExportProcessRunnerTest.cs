@@ -75,14 +75,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 			_configSettings.DocumentsTestData = DocumentTestDataBuilder.BuildTestData();
 
-            _workspaceService.ImportData(_configSettings.WorkspaceId, _configSettings.DocumentsTestData);
+			_workspaceService.ImportData(_configSettings.WorkspaceId, _configSettings.DocumentsTestData);
 
-            _configSettings.ViewId = _workspaceService.GetView(_configSettings.WorkspaceId, _configSettings.ViewName);
+			_configSettings.ViewId = _workspaceService.GetView(_configSettings.WorkspaceId, _configSettings.ViewName);
 
-            _configSettings.ProductionArtifactId = _workspaceService.CreateProduction(_configSettings.WorkspaceId, _configSettings.ExportedObjArtifactId,
-                _configSettings.ProductionArtifactName);
+			_configSettings.ProductionArtifactId = _workspaceService.CreateProduction(_configSettings.WorkspaceId, _configSettings.ExportedObjArtifactId,
+				_configSettings.ProductionArtifactName);
 
-            CreateOutputFolder(_configSettings.DestinationPath); // root folder for all tests
+			CreateOutputFolder(_configSettings.DestinationPath); // root folder for all tests
 
 			var helper = _windsorContainer.Resolve<IHelper>();
 			var userNotification = _windsorContainer.Resolve<IUserNotification>();
@@ -193,7 +193,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 							DisplayName = "Production"
 						}
 					},
-				SubdirectoryStartNumber = 1
+				SubdirectoryStartNumber = 1,
+				VolumeStartNumber = 1
 			};
 
 			return settings;

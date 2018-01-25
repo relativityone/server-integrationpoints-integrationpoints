@@ -15,6 +15,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 		public override ExportSettings Prepare(ExportSettings settings)
 		{
 			settings.ExportImages = true;
+			settings.ImageType = ExportSettings.ImageFileType.SinglePage;
 			settings.SelectedImageDataFileFormat = ExportSettings.ImageDataFileFormat.Opticon;
 			settings.FilePath = ExportSettings.FilePathType.Absolute;
 
@@ -23,9 +24,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 
 		public override void Verify(DirectoryInfo directory, DocumentsTestData documentsTestData)
 		{
-			var fileInfo = GetFileInfo(directory);
-			Assert.That(DataFileFormatHelper.LineNumberContains(1,
-				$"{ExportSettings.ExportFilesLocation}\\0\\IMAGES\\1\\AMEYERS_0000757.tif", fileInfo));
+			FileInfo fileInfo = GetFileInfo(directory);
+			Assert.That(DataFileFormatHelper.LineNumberContains(1, $"{ExportSettings.ExportFilesLocation}\\{ExportSettings.VolumeStartNumber}\\IMAGES\\1\\AMEYERS_0000757.tif", fileInfo));
 		}
 	}
 }

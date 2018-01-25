@@ -16,6 +16,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 		public override ExportSettings Prepare(ExportSettings settings)
 		{
 			settings.ExportImages = true;
+			settings.ImageType = ExportSettings.ImageFileType.SinglePage;
 			settings.SelectedImageDataFileFormat = ExportSettings.ImageDataFileFormat.Opticon;
 
 			return base.Prepare(settings);
@@ -23,12 +24,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 
 		public override void Verify(DirectoryInfo directory, DocumentsTestData documentsTestData)
 		{
-			var fileInfo = GetFileInfo(directory);
+			FileInfo fileInfo = GetFileInfo(directory);
 			Assert.That(fileInfo.Name, Is.EqualTo($"{ExportSettings.SavedSearchName}_export.{MetadataFormat}"));
 			Assert.That(DataFileFormatHelper.FileStartWith("AMEYERS_0000757", fileInfo));
             Assert.AreEqual( ExpectedOutput.Opticon, DataFileFormatHelper.GetContent(fileInfo));
-
-
 		}
 	}
 }

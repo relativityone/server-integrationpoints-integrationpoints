@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.Core.Models;
@@ -26,7 +27,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 		{
 			string expectedDirectoryName = $"{ExportSettings.VolumePrefix}00003";
 
-			var volumeDirectories = directory.EnumerateDirectories(expectedDirectoryName, SearchOption.TopDirectoryOnly).ToList();
+			List<DirectoryInfo> volumeDirectories = directory.EnumerateDirectories(expectedDirectoryName, SearchOption.TopDirectoryOnly).ToList();
 
 			Assert.That(volumeDirectories.Any(), $"There should be volume folder named {expectedDirectoryName}");
 		}

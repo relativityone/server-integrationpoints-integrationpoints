@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class ExpectedOutput {
@@ -62,10 +62,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to IM,AMEYERS_0000757,D,0,@0;.\0\IMAGES\1;AMEYERS_0000757.tif;2
-        ///IM,AMEYERS_0000975,D,0,@0;.\0\IMAGES\2;AMEYERS_0000975.tif;2
-        ///IM,AMEYERS_0001185,D,0,@0;.\0\IMAGES\3;AMEYERS_0001185.tif;2
-        ///IM,AMEYERS_0001185_001,,0,@0;.\0\IMAGES\3;AMEYERS_0001185_001.tif;2
+        ///   Looks up a localized string similar to IM,AMEYERS_0000757,D,0,@1;.\1\IMAGES\1;AMEYERS_0000757.tif;2
+        ///IM,AMEYERS_0000975,D,0,@1;.\1\IMAGES\2;AMEYERS_0000975.tif;2
+        ///IM,AMEYERS_0001185,D,0,@1;.\1\IMAGES\3;AMEYERS_0001185.tif;2
+        ///IM,AMEYERS_0001185_001,,0,@1;.\1\IMAGES\3;AMEYERS_0001185_001.tif;2
         ///.
         /// </summary>
         public static string IPRO {
@@ -75,10 +75,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to AMEYERS_0000757,0,.\0\IMAGES\1\AMEYERS_0000757.tif,Y,,,1
-        ///AMEYERS_0000975,0,.\0\IMAGES\2\AMEYERS_0000975.tif,Y,,,1
-        ///AMEYERS_0001185,0,.\0\IMAGES\3\AMEYERS_0001185.tif,Y,,,2
-        ///AMEYERS_0001185_001,0,.\0\IMAGES\3\AMEYERS_0001185_001.tif,,,,
+        ///   Looks up a localized string similar to AMEYERS_0000757,1,.\1\IMAGES\1\AMEYERS_0000757.tif,Y,,,1
+        ///AMEYERS_0000975,1,.\1\IMAGES\2\AMEYERS_0000975.tif,Y,,,1
+        ///AMEYERS_0001185,1,.\1\IMAGES\3\AMEYERS_0001185.tif,Y,,,2
+        ///AMEYERS_0001185_001,1,.\1\IMAGES\3\AMEYERS_0001185_001.tif,,,,
         ///.
         /// </summary>
         public static string Opticon {
