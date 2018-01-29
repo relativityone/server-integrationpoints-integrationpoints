@@ -20,11 +20,6 @@ namespace kCura.IntegrationPoints.Data
 
 		public IGenericLibrary<T> Create<T>(ExecutionIdentity executionIdentity) where T : BaseRdo, new()
 		{
-			if (typeof(T) == typeof(IntegrationPoint))
-			{
-				RsapiClientLibrary<IntegrationPoint> integrationPointLibrary = new RsapiClientLibrary<IntegrationPoint>(_helper, _workspaceArtifactId, executionIdentity);
-				return (IGenericLibrary<T>) new EncryptingRsapiClientLibrary(integrationPointLibrary, _secretCatalogFactory.Create(_workspaceArtifactId), _secretManager);
-			}
 			return new RsapiClientLibrary<T>(_helper, _workspaceArtifactId, executionIdentity);
 		}
 	}

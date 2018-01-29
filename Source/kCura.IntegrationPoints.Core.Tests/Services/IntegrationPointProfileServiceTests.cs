@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using Newtonsoft.Json;
 using NSubstitute;
@@ -71,8 +72,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			);
 
 			_caseServiceContext.RsapiService = Substitute.For<IRSAPIService>();
-			_caseServiceContext.RsapiService.GetGenericLibrary<IntegrationPointProfile>().Returns(Substitute.For<IGenericLibrary<IntegrationPointProfile>>());
-			_caseServiceContext.RsapiService.SourceProviderLibrary.Returns(Substitute.For<IGenericLibrary<SourceProvider>>());
+			_caseServiceContext.RsapiService.RelativityObjectManager.Returns(Substitute.For<IRelativityObjectManager>());
 			_caseServiceContext.WorkspaceID = _sourceWorkspaceArtifactId;
 
 			_sourceProvider = new SourceProvider();
@@ -95,9 +95,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				ScheduleRule = string.Empty
 			};
 
-			_caseServiceContext.RsapiService.GetGenericLibrary<IntegrationPointProfile>().Read(_integrationPointProfileArtifactId)
+			_caseServiceContext.RsapiService.RelativityObjectManager.Read<IntegrationPointProfile>(_integrationPointProfileArtifactId)
 				.Returns(_integrationPointProfile);
-			_caseServiceContext.RsapiService.SourceProviderLibrary.Read(_sourceProviderId).Returns(_sourceProvider);
+			_caseServiceContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(_sourceProviderId).Returns(_sourceProvider);
 
 			_integrationModelValidator.Validate(
 				Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(), Arg.Any<DestinationProvider>(),
@@ -139,7 +139,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				});
 
 			const int newIpProfileId = 389234;
-			_caseServiceContext.RsapiService.GetGenericLibrary<IntegrationPointProfile>().Create(
+			_caseServiceContext.RsapiService.RelativityObjectManager.Create(
 					Arg.Is<IntegrationPointProfile>(x => x.ArtifactId == 0))
 				.Returns(newIpProfileId);
 
@@ -150,7 +150,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			// Assert
 			Assert.AreEqual(newIpProfileId, result, "The resulting artifact id should match.");
-			_caseServiceContext.RsapiService.GetGenericLibrary<IntegrationPointProfile>().Received(1)
+			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1)
 				.Create(Arg.Is<IntegrationPointProfile>(x => x.ArtifactId == newIpProfileId));
 		}
 
@@ -194,7 +194,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			_caseServiceContext.EddsUserID = 1232;
 
-			_caseServiceContext.RsapiService.SourceProviderLibrary.Read(Arg.Is(model.SourceProvider))
+			_caseServiceContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(Arg.Is(model.SourceProvider))
 				.Returns(new SourceProvider()
 				{
 					Identifier =
@@ -208,12 +208,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			// Assert
 			Assert.AreEqual(model.ArtifactID, result, "The resulting artifact id should match.");
-			_caseServiceContext.RsapiService.GetGenericLibrary<IntegrationPointProfile>().Received(1)
+			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1)
 				.Update(Arg.Is<IntegrationPointProfile>(x => x.ArtifactId == model.ArtifactID));
 
-			_caseServiceContext.RsapiService.SourceProviderLibrary
+			_caseServiceContext.RsapiService.RelativityObjectManager
 				.Received(1)
-				.Read(Arg.Is(model.SourceProvider));
+				.Read<SourceProvider>(Arg.Is(model.SourceProvider));
 		}
 
 		[Test]
@@ -223,7 +223,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			IntegrationPointProfile integrationPointProfile = _instance.GetRdo(_integrationPointProfileArtifactId);
 
 			//Assert
-			_caseServiceContext.RsapiService.GetGenericLibrary<IntegrationPointProfile>().Received(1).Read(_integrationPointProfileArtifactId);
+			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1).Read<IntegrationPointProfile>(_integrationPointProfileArtifactId);
 			Assert.IsNotNull(integrationPointProfile);
 		}
 
@@ -231,7 +231,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		public void GetRdo_ArtifactIdDoesNotExist_ExceptionThrown_Test()
 		{
 			//Arrange
-			_caseServiceContext.RsapiService.GetGenericLibrary<IntegrationPointProfile>().Read(_integrationPointProfileArtifactId).Throws<Exception>();
+			_caseServiceContext.RsapiService.RelativityObjectManager.Read<IntegrationPointProfile>(_integrationPointProfileArtifactId).Throws<Exception>();
 
 			//Act
 			Assert.Throws<Exception>(() => _instance.GetRdo(_integrationPointProfileArtifactId), "Unable to retrieve Integration Point.");

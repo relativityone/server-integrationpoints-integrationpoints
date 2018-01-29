@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.Relativity.Client;
 using Relativity.API;
-using Relativity.Services.ObjectQuery;
-using Query = Relativity.Services.ObjectQuery.Query;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 {
@@ -19,114 +19,89 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 
 		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int) ArtifactType.Document;
 
-		private static readonly int[] _viewPermission = {1};
+		private IRelativityObjectManagerFactory _releRelativityObjectManagerFactory;
+
+		public DocumentRepository(IRelativityObjectManagerFactory relativityObjectManagerFactory)
+		{
+			_releRelativityObjectManagerFactory = relativityObjectManagerFactory;
+		}
 
 		public async Task<PercentagePushedToReviewModel> GetPercentagePushedToReviewAsync(PercentagePushedToReviewRequest request)
 		{
-			string destinationWorkspaceDisplayName = GetDisplayName(request.WorkspaceArtifactId, _DESTINATION_WORKSPACE_FIELD_GUID);
+			var releRelativityObjectManager =
+				_releRelativityObjectManagerFactory.CreateRelativityObjectManager(request.WorkspaceArtifactId);
+			var queryDocs = new QueryRequest
+			{
+				ObjectType = new ObjectTypeRef { ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID }
 
-			IObjectQueryManager objectQueryManager = global::Relativity.API.Services.Helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System);
-			Query totalDocumentsQuery = new Query();
-			Query totalDocumentsPushedToReviewQuery = new Query
+			};
+			string destinationWorkspaceDisplayName = GetDisplayName(request.WorkspaceArtifactId, _DESTINATION_WORKSPACE_FIELD_GUID);
+			var queryDocsPushedToReview = new QueryRequest
 			{
 				Condition = $"'{destinationWorkspaceDisplayName}' ISSET",
-				Fields = new[] {destinationWorkspaceDisplayName}
+				Fields = new [] { new FieldRef { Guid = new Guid(_DESTINATION_WORKSPACE_FIELD_GUID) } },
+				ObjectType = new ObjectTypeRef { ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID }
+
 			};
-
-			Task<ObjectQueryResultSet> totalDocumentsTask = objectQueryManager.QueryAsync(request.WorkspaceArtifactId, _DOCUMENT_ARTIFACT_TYPE_ID, totalDocumentsQuery, 1, 1,
-				_viewPermission,
-				string.Empty);
-			Task<ObjectQueryResultSet> totalDocumentsPushedToReviewTask = objectQueryManager.QueryAsync(request.WorkspaceArtifactId, _DOCUMENT_ARTIFACT_TYPE_ID,
-				totalDocumentsPushedToReviewQuery, 1, 1,
-				_viewPermission, string.Empty);
-
-			ObjectQueryResultSet totalDocumentsResultSet = await totalDocumentsTask;
-			ObjectQueryResultSet totalDocumentsPushedToReviewResultSet = await totalDocumentsPushedToReviewTask;
-
-			if (!totalDocumentsResultSet.Success)
-			{
-				throw new Exception(totalDocumentsResultSet.Message);
-			}
-			if (!totalDocumentsPushedToReviewResultSet.Success)
-			{
-				throw new Exception(totalDocumentsPushedToReviewResultSet.Message);
-			}
+			int totalDocuments = await releRelativityObjectManager.QueryTotalCountAsync(queryDocs).ConfigureAwait(false);
+			int totalDocumentsPushedToReview = await releRelativityObjectManager.QueryTotalCountAsync(queryDocsPushedToReview).ConfigureAwait(false);
 
 			PercentagePushedToReviewModel model = new PercentagePushedToReviewModel
 			{
-				TotalDocuments = totalDocumentsResultSet.Data.TotalResultCount,
-				TotalDocumentsPushedToReview = totalDocumentsPushedToReviewResultSet.Data.TotalResultCount
+				TotalDocuments = totalDocuments,
+				TotalDocumentsPushedToReview = totalDocumentsPushedToReview
 			};
 			return model;
 		}
 
 		public async Task<CurrentPromotionStatusModel> GetCurrentPromotionStatusAsync(CurrentPromotionStatusRequest request)
 		{
+			var relativityObjectManager =
+				_releRelativityObjectManagerFactory.CreateRelativityObjectManager(request.WorkspaceArtifactId);
 			string promotedDisplayName = GetDisplayName(request.WorkspaceArtifactId, _PROMOTE_GUID);
 			string destinationWorkspacedisplayName = GetDisplayName(request.WorkspaceArtifactId, _DESTINATION_WORKSPACE_FIELD_GUID);
 
-			IObjectQueryManager objectQueryManager = global::Relativity.API.Services.Helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System);
-			Query totalUntaggedDocumentsQuery = new Query
+			var totalUntaggedDocumentsQuery = new QueryRequest
 			{
 				Condition = $"NOT '{promotedDisplayName}' ISSET",
-				Fields = new[] {promotedDisplayName}
+				Fields = new[] { new FieldRef { Guid = new Guid(_PROMOTE_GUID) } },
+				ObjectType = new ObjectTypeRef { ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID }
 			};
-			Query totalIncludedDocumentsQuery = new Query
+			var totalIncludedDocumentsQuery = new QueryRequest
 			{
 				Condition = $"'{promotedDisplayName}' == CHOICE {_INCLUDE_GUID}",
-				Fields = new[] {promotedDisplayName}
+				Fields = new[] { new FieldRef { Guid = new Guid(_PROMOTE_GUID) } },
+				ObjectType = new ObjectTypeRef { ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID }
 			};
-			Query totalExcludedDocumentsQuery = new Query
+			var totalExcludedDocumentsQuery = new QueryRequest
 			{
 				Condition = $"'{promotedDisplayName}' == CHOICE {_EXCLUDE_GUID}",
-				Fields = new[] {promotedDisplayName}
+				Fields = new[] { new FieldRef { Guid = new Guid(_PROMOTE_GUID) } },
+				ObjectType = new ObjectTypeRef { ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID }
 			};
-			Query totalPushedToReviewDocumentsQuery = new Query
+			var totalPushedToReviewDocumentsQuery = new QueryRequest
 			{
 				Condition = $"'{destinationWorkspacedisplayName}' ISSET",
-				Fields = new[] {destinationWorkspacedisplayName}
+				Fields = new[] { new FieldRef { Guid = new Guid(_DESTINATION_WORKSPACE_FIELD_GUID) } },
+				ObjectType = new ObjectTypeRef { ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID }
 			};
 
-			var totalUntaggedDocumentsTask = objectQueryManager.QueryAsync(request.WorkspaceArtifactId, _DOCUMENT_ARTIFACT_TYPE_ID, totalUntaggedDocumentsQuery, 1, 1,
-				_viewPermission, string.Empty);
-			var totalIncludedDocumentsTask = objectQueryManager.QueryAsync(request.WorkspaceArtifactId, _DOCUMENT_ARTIFACT_TYPE_ID, totalIncludedDocumentsQuery, 1, 1,
-				_viewPermission, string.Empty);
-			var totalExcludedDocumentsTask = objectQueryManager.QueryAsync(request.WorkspaceArtifactId, _DOCUMENT_ARTIFACT_TYPE_ID, totalExcludedDocumentsQuery, 1, 1,
-				_viewPermission, string.Empty);
-			var totalPushedToReviewTask = objectQueryManager.QueryAsync(request.WorkspaceArtifactId, _DOCUMENT_ARTIFACT_TYPE_ID, totalPushedToReviewDocumentsQuery, 1, 1,
-				_viewPermission, string.Empty);
+			var totalUntaggedDocumentsTask = relativityObjectManager.QueryTotalCountAsync(totalUntaggedDocumentsQuery).ConfigureAwait(false);
+			var totalIncludedDocumentsTask = relativityObjectManager.QueryTotalCountAsync(totalIncludedDocumentsQuery).ConfigureAwait(false);
+			var totalExcludedDocumentsTask = relativityObjectManager.QueryTotalCountAsync(totalExcludedDocumentsQuery).ConfigureAwait(false);
+			var totalPushedToReviewTask = relativityObjectManager.QueryTotalCountAsync(totalPushedToReviewDocumentsQuery).ConfigureAwait(false);
 
-			ObjectQueryResultSet totalUntaggedDocumentsResultSet = await totalUntaggedDocumentsTask;
-			ObjectQueryResultSet totalIncludedDocumentsResultSet = await totalIncludedDocumentsTask;
-			ObjectQueryResultSet totalExcludedDocumentsResultSet = await totalExcludedDocumentsTask;
-			ObjectQueryResultSet totalPushedToReviewDocumentsResultSet = await totalPushedToReviewTask;
-
-			if (!totalUntaggedDocumentsResultSet.Success)
-			{
-				throw new Exception(totalUntaggedDocumentsResultSet.Message);
-			}
-
-			if (!totalIncludedDocumentsResultSet.Success)
-			{
-				throw new Exception(totalIncludedDocumentsResultSet.Message);
-			}
-
-			if (!totalExcludedDocumentsResultSet.Success)
-			{
-				throw new Exception(totalExcludedDocumentsResultSet.Message);
-			}
-
-			if (!totalPushedToReviewDocumentsResultSet.Success)
-			{
-				throw new Exception(totalPushedToReviewDocumentsResultSet.Message);
-			}
+			var totalUntaggedDocumentsResultSet = await totalUntaggedDocumentsTask;
+			var totalIncludedDocumentsResultSet = await totalIncludedDocumentsTask;
+			var totalExcludedDocumentsResultSet = await totalExcludedDocumentsTask;
+			var totalPushedToReviewDocumentsResultSet = await totalPushedToReviewTask;
 
 			CurrentPromotionStatusModel model = new CurrentPromotionStatusModel
 			{
-				TotalDocumentsUntagged = totalUntaggedDocumentsResultSet.Data.TotalResultCount,
-				TotalDocumentsIncluded = totalIncludedDocumentsResultSet.Data.TotalResultCount,
-				TotalDocumentsExcluded = totalExcludedDocumentsResultSet.Data.TotalResultCount,
-				TotalDocumentsPushedToReview = totalPushedToReviewDocumentsResultSet.Data.TotalResultCount
+				TotalDocumentsUntagged = totalUntaggedDocumentsResultSet,
+				TotalDocumentsIncluded = totalIncludedDocumentsResultSet,
+				TotalDocumentsExcluded = totalExcludedDocumentsResultSet,
+				TotalDocumentsPushedToReview = totalPushedToReviewDocumentsResultSet
 			};
 			return model;
 		}

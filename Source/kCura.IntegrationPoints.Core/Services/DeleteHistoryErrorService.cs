@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
@@ -18,17 +18,35 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public void DeleteErrorAssociatedWithHistories(List<int> historiesId, int workspaceArtifactId)
 		{
-			var rsapiService = _rsapiServiceFactory.Create(workspaceArtifactId);
+			IRSAPIService rsapiService = _rsapiServiceFactory.Create(workspaceArtifactId);
 
-			var qry = new Query<RDO>
+			// TODO remove
+			//var qry = new Query<RDO>
+			//{
+			//	Fields = FieldValue.NoFields,
+			//	Condition = new ObjectCondition(JobHistoryErrorFields.JobHistory, ObjectConditionEnum.AnyOfThese, historiesId)
+			//};
+
+			var query = new QueryRequest
 			{
-				Fields = FieldValue.NoFields,
-				Condition = new ObjectCondition(JobHistoryErrorFields.JobHistory, ObjectConditionEnum.AnyOfThese, historiesId)
+				ObjectType = new ObjectTypeRef
+				{
+					Guid = Guid.Parse(ObjectTypeGuids.JobHistoryError)
+				},
+				Fields = Enumerable.Empty<FieldRef>(),
+				Condition = CreateCondition(historiesId)
 			};
-			var result = rsapiService.JobHistoryErrorLibrary.Query(qry);
-			var allJobHistoryError = result.Select(x => x.ArtifactId).ToList();
 
+			List<JobHistoryError> result = rsapiService.RelativityObjectManager.Query<JobHistoryError>(query);
+			List<int> allJobHistoryError = result.Select(x => x.ArtifactId).ToList();
+			
 			rsapiService.JobHistoryErrorLibrary.Delete(allJobHistoryError);
+		}
+
+		private string CreateCondition(List<int> historiesId)
+		{
+			string historiesIdList = string.Join(",", historiesId.Select(x => x.ToString()));
+			return $"'{JobHistoryErrorFields.JobHistory}' IN OBJECT [{historiesIdList}]";
 		}
 	}
 }

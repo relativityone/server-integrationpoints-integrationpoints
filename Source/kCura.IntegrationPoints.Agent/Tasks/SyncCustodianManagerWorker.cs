@@ -23,12 +23,12 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Injection;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Relativity.API;
+using Relativity.Services.Objects.DataContracts;
 using Constants = kCura.IntegrationPoints.Core.Constants;
 using Field = kCura.Relativity.Client.DTOs.Field;
 using ObjectTypeGuids = kCura.IntegrationPoints.Core.Contracts.Custodian.ObjectTypeGuids;
@@ -41,6 +41,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly IManagerQueueService _managerQueueService;
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly IHelperFactory _helperFactory;
+		private readonly IRelativityObjectManager _relativityObjectManager;
 		private CustodianManagerDataReaderToEnumerableService _convertDataService;
 		private IEnumerable<FieldMap> _custodianManagerFieldMap;
 		private List<CustodianManagerMap> _custodianManagerMap;
@@ -56,7 +57,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IJobHistoryService jobHistoryService, IJobHistoryErrorService jobHistoryErrorService, IJobManager jobManager,
 			IManagerQueueService managerQueueService, JobStatisticsService statisticsService, IManagerFactory managerFactory,
 			IContextContainerFactory contextContainerFactory,
-			IJobService jobService, IRepositoryFactory repositoryFactory, IHelperFactory helperFactory)
+			IJobService jobService, IRepositoryFactory repositoryFactory, IHelperFactory helperFactory, IRelativityObjectManager relativityObjectManager)
 			: base(caseServiceContext, helper, dataProviderFactory, serializer,
 				appDomainRdoSynchronizerFactoryFactory, jobHistoryService, jobHistoryErrorService,
 				jobManager, null, statisticsService, managerFactory,
@@ -65,6 +66,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_managerQueueService = managerQueueService;
 			_repositoryFactory = repositoryFactory;
 			_helperFactory = helperFactory;
+			_relativityObjectManager = relativityObjectManager;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<SyncCustodianManagerWorker>();
 		}
 
@@ -72,9 +74,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			try
 			{
-			    LogExecuteTaskStart(job);
+				LogExecuteTaskStart(job);
 
-                InjectionManager.Instance.Evaluate("640E9695-AB99-4763-ADC5-03E1252277F7");
+				InjectionManager.Instance.Evaluate("640E9695-AB99-4763-ADC5-03E1252277F7");
 
 				//get all job parameters
 				CustodianManagerJobParameters jobParameters = GetParameters(job);
@@ -92,7 +94,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					return;
 				}
 
-				int destinationManagerUniqueIDFieldID = GetDestinationManagerUniqueIdFieldId();
+				string destinationManagerUniqueIdFieldDisplayName = GetDestinationManagerUniqueIdFieldDisplayName();
 				IDictionary<string, string> managersLookup = new Dictionary<string, string>();
 
 				if (SourceProvider.Identifier.Equals(Constants.IntegrationPoints.SourceProviders.LDAP, StringComparison.InvariantCultureIgnoreCase))
@@ -132,7 +134,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				}
 
 				var managerUniqueIDs = _custodianManagerMap.Where(x => x.NewManagerID != null).Select(x => x.NewManagerID).Distinct().ToArray();
-				IDictionary<string, int> managerArtifactIDs = GetImportedManagerArtifactIDs(destinationManagerUniqueIDFieldID, managerUniqueIDs);
+				IDictionary<string, int> managerArtifactIDs = GetImportedManagerArtifactIDs(destinationManagerUniqueIdFieldDisplayName, managerUniqueIDs);
 				_custodianManagerMap.ForEach(x => x.ManagerArtifactID =
 							x.NewManagerID != null && managerArtifactIDs.ContainsKey(x.NewManagerID) ? managerArtifactIDs[x.NewManagerID] : 0);
 
@@ -158,7 +160,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 				LinkManagers(job, newDestinationConfiguration, sourceData, managerLinkMap);
 				AddMissingManagersErrors(managersLookup, managerArtifactIDs);
-			    LogExecuteTaskSuccesfulEnd(job);
+				LogExecuteTaskSuccesfulEnd(job);
 
 			}
 			catch (Exception ex)
@@ -175,12 +177,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				//rdo last run and next scheduled time will be updated in Manager job
 				JobHistoryErrorService.CommitErrors();
 				PostExecute(job);
-			    LogExecuteTaskFinalize(job);
+				LogExecuteTaskFinalize(job);
 			}
 		}
 
 
-	    private CustodianManagerJobParameters GetParameters(Job job)
+		private CustodianManagerJobParameters GetParameters(Job job)
 		{
 			TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
 			BatchInstance = taskParameters.BatchInstance;
@@ -215,11 +217,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					.First();
 		}
 
-		private int GetDestinationManagerUniqueIdFieldId()
+		private string GetDestinationManagerUniqueIdFieldDisplayName()
 		{
-			return int.Parse(_managerFieldMap.First(
+			return _managerFieldMap.First(
 							x => x.SourceField.FieldIdentifier.Equals(_newKeyManagerFieldID, StringComparison.InvariantCultureIgnoreCase))
-						.DestinationField.FieldIdentifier);
+						.DestinationField.DisplayName;
 		}
 
 		protected override List<FieldEntry> GetSourceFields(IEnumerable<FieldMap> fieldMap)
@@ -298,39 +300,50 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			return managersData.ToDictionary(x => (string)x[managerIdentifiedFieldName], x => (string)x[identifierFieldName]);
 		}
 
-		private IDictionary<string, int> GetImportedManagerArtifactIDs(int uniqueFieldID, string[] managerUniqueIDs)
+		private IDictionary<string, int> GetImportedManagerArtifactIDs(string uniqueFieldName, string[] managerUniqueIDs)
 		{
-		    LogGetImportedManagerArtifactIDsStart(uniqueFieldID);
-            IRdoRepository rdoRepository = _repositoryFactory.GetRdoRepository(_workspaceArtifactId);
+			LogGetImportedManagerArtifactIDsStart(uniqueFieldName);
 
-			var query = new Query<RDO>();
-			query.ArtifactTypeGuid = Guid.Parse(ObjectTypeGuids.Custodian);
-			query.Condition = new TextCondition(uniqueFieldID, TextConditionEnum.In, managerUniqueIDs);
-			query.Fields.Add(new FieldValue(uniqueFieldID));
+			string ids = string.Join(",", managerUniqueIDs.Select(x => $"'{x}'"));
 
-			QueryResultSet<RDO> result;
+			var queryRequest = new QueryRequest
+			{
+				ObjectType = new ObjectTypeRef
+				{
+					Guid = Guid.Parse(ObjectTypeGuids.Custodian)
+				},
+				Fields = new[]
+				{
+					new FieldRef
+					{
+						Name = uniqueFieldName
+					}
+				},
+				Condition = $"'{uniqueFieldName}' IN [{ids}]"
+			};
+
+			List<RelativityObject> result;
 			try
 			{
-				result = rdoRepository.Query(query);
+				result = _relativityObjectManager.Query(queryRequest);
 			}
 			catch (AggregateException e)
 			{
-			    LogRetrievingManagerArtifactIds(e.InnerExceptions.Select(x => x.Message));
+				LogRetrievingManagerArtifactIds(e.InnerExceptions.Select(x => x.Message));
 				throw;
 			}
-			
+
 			IDictionary<string, int> managerIDs =
-				result.Results.ToDictionary(r => r.Artifact.Fields.First(f => f.ArtifactID.Equals(uniqueFieldID)).ToString(),
-					r => r.Artifact.ArtifactID);
-            LogGetImportedManagerArtifactIDsSuccesfulEnd(uniqueFieldID, managerIDs);
-            return managerIDs;
+				result.ToDictionary(r => r.FieldValues.First(f => f.Field.Name == uniqueFieldName).Value?.ToString(), r => r.ArtifactID);
+			LogGetImportedManagerArtifactIDsSuccesfulEnd(uniqueFieldName, managerIDs);
+			return managerIDs;
 		}
 
 
-        private int GetCustodianManagerFieldArtifactID()
+		private int GetCustodianManagerFieldArtifactID()
 		{
-		    LogGetCustodianManagerFieldArtifactIdStart();
-            IFieldQueryRepository fieldQueryRepository = _repositoryFactory.GetFieldQueryRepository(_workspaceArtifactId);
+			LogGetCustodianManagerFieldArtifactIdStart();
+			IFieldQueryRepository fieldQueryRepository = _repositoryFactory.GetFieldQueryRepository(_workspaceArtifactId);
 			Field dto = new Field(new Guid(CustodianFieldGuids.Manager));
 
 			ResultSet<Field> resultSet = fieldQueryRepository.Read(dto);
@@ -342,16 +355,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				throw e;
 			}
 
-		    int artifactID = resultSet.Results[0].Artifact.ArtifactID;
-            LogGetCustodianManagerFieldArtifactIdSuccesfulEnd(artifactID);
-		    return artifactID;
+			int artifactID = resultSet.Results[0].Artifact.ArtifactID;
+			LogGetCustodianManagerFieldArtifactIdSuccesfulEnd(artifactID);
+			return artifactID;
 		}
 
 
-	    private string ReconfigureImportAPISettings(int custodianManagerFieldArtifactID)
+		private string ReconfigureImportAPISettings(int custodianManagerFieldArtifactID)
 		{
-		    LogReconfigureImportApiSettingsStart(custodianManagerFieldArtifactID);
-            ImportSettings importSettings = JsonConvert.DeserializeObject<ImportSettings>(IntegrationPoint.DestinationConfiguration);
+			LogReconfigureImportApiSettingsStart(custodianManagerFieldArtifactID);
+			ImportSettings importSettings = JsonConvert.DeserializeObject<ImportSettings>(IntegrationPoint.DestinationConfiguration);
 			importSettings.ObjectFieldIdListContainsArtifactId = new[] { custodianManagerFieldArtifactID };
 			importSettings.ImportOverwriteMode = ImportOverwriteModeEnum.OverlayOnly;
 			importSettings.CustodianManagerFieldContainsLink = false;
@@ -362,7 +375,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				var targetHelper = _helperFactory.CreateTargetHelper(Helper, importSettings.FederatedInstanceArtifactId, importSettings.FederatedInstanceCredentials);
 				var contextContainer = ContextContainerFactory.CreateContextContainer(targetHelper);
 				var instanceSettingsManager = ManagerFactory.CreateInstanceSettingsManager(contextContainer);
-				
+
 				if (!instanceSettingsManager.RetrieveAllowNoSnapshotImport())
 				{
 					importSettings.ImportAuditLevel = ImportAuditLevelEnum.FullAudit;
@@ -370,11 +383,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 
 			string newDestinationConfiguration = JsonConvert.SerializeObject(importSettings);
-		    LogReconfigureImportApiSettingsSuccesfulEnd(custodianManagerFieldArtifactID, newDestinationConfiguration);
-            return newDestinationConfiguration;
+			LogReconfigureImportApiSettingsSuccesfulEnd(custodianManagerFieldArtifactID, newDestinationConfiguration);
+			return newDestinationConfiguration;
 		}
 
-	    private void LinkManagers(Job job, string newDestinationConfiguration, IEnumerable<IDictionary<FieldEntry, object>> sourceData,
+		private void LinkManagers(Job job, string newDestinationConfiguration, IEnumerable<IDictionary<FieldEntry, object>> sourceData,
 			IEnumerable<FieldMap> managerLinkMap)
 		{
 			IDataSynchronizer dataSynchronizer = GetDestinationProvider(DestinationProvider, newDestinationConfiguration, job);
@@ -436,55 +449,55 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				string.Join(", ", messages));
 		}
 
-	    private void LogExecuteTaskFinalize(Job job)
-	    {
-	        _logger.LogInformation("Finalized execution of task in Sync Custodian Manager Worker. job: {JobId}", job.JobId);
-	    }
+		private void LogExecuteTaskFinalize(Job job)
+		{
+			_logger.LogInformation("Finalized execution of task in Sync Custodian Manager Worker. job: {JobId}", job.JobId);
+		}
 
-	    private void LogExecuteTaskSuccesfulEnd(Job job)
-	    {
-	        _logger.LogInformation("Succesfully executed task in Sync Custodian Manager Worker. job: {JobId}", job.JobId);
-	    }
+		private void LogExecuteTaskSuccesfulEnd(Job job)
+		{
+			_logger.LogInformation("Succesfully executed task in Sync Custodian Manager Worker. job: {JobId}", job.JobId);
+		}
 
-	    private void LogExecuteTaskStart(Job job)
-	    {
-	        _logger.LogInformation("Starting execution of task in Sync Custodian Manager Worker. job: {JobId}", job.JobId);
-	    }
+		private void LogExecuteTaskStart(Job job)
+		{
+			_logger.LogInformation("Starting execution of task in Sync Custodian Manager Worker. job: {JobId}", job.JobId);
+		}
 
-	    private void LogGetImportedManagerArtifactIDsStart(int uniqueFieldID)
-	    {
-	        _logger.LogInformation("Started getting imported manager artifactIDs for uniqueFieldID: {uniqueFieldID}", uniqueFieldID);
-	    }
+		private void LogGetImportedManagerArtifactIDsStart(string uniqueFieldName)
+		{
+			_logger.LogInformation("Started getting imported manager artifactIDs for uniqueFieldID: {uniqueFieldName}", uniqueFieldName);
+		}
 
-	    private void LogGetImportedManagerArtifactIDsSuccesfulEnd(int uniqueFieldID, IDictionary<string, int> managerIDs)
-	    {
-	        _logger.LogInformation("Succesfully rertieved imported manager artifactIDs for uniqueFieldID: {uniqueFieldID}", uniqueFieldID);
-	        _logger.LogDebug("Retrieved manager artifactIDs for uniqueFieldID: {uniqueFieldID}, ids: {managerIDs}", uniqueFieldID, managerIDs.Values);
-	    }
+		private void LogGetImportedManagerArtifactIDsSuccesfulEnd(string uniqueFieldName, IDictionary<string, int> managerIDs)
+		{
+			_logger.LogInformation("Succesfully rertieved imported manager artifactIDs for uniqueFieldName: {uniqueFieldName}", uniqueFieldName);
+			_logger.LogDebug("Retrieved manager artifactIDs for uniqueFieldName: {uniqueFieldName}, ids: {managerIDs}", uniqueFieldName, managerIDs.Values);
+		}
 
-	    private void LogGetCustodianManagerFieldArtifactIdSuccesfulEnd(int artifactID)
-	    {
-	        _logger.LogInformation("Succesfully retrieved custodian manager field artifactID: {artifactID}", artifactID);
-	    }
+		private void LogGetCustodianManagerFieldArtifactIdSuccesfulEnd(int artifactID)
+		{
+			_logger.LogInformation("Succesfully retrieved custodian manager field artifactID: {artifactID}", artifactID);
+		}
 
-	    private void LogGetCustodianManagerFieldArtifactIdStart()
-	    {
-	        _logger.LogInformation("Getting custodian manager field artifactID.");
-	    }
-	    private void LogReconfigureImportApiSettingsSuccesfulEnd(int custodianManagerFieldArtifactID, string newDestinationConfiguration)
-	    {
-	        _logger.LogInformation("Succesfully reconfigured import API settings for: {custodianManagerFieldArtifactID}",
-	            custodianManagerFieldArtifactID);
-	        _logger.LogDebug(
-	            "Reconfigured import API settings for: {custodianManagerFieldArtifactID}, new destination configuration: {newDestinationCOnfiguration}",
-	            custodianManagerFieldArtifactID, newDestinationConfiguration);
-	    }
+		private void LogGetCustodianManagerFieldArtifactIdStart()
+		{
+			_logger.LogInformation("Getting custodian manager field artifactID.");
+		}
+		private void LogReconfigureImportApiSettingsSuccesfulEnd(int custodianManagerFieldArtifactID, string newDestinationConfiguration)
+		{
+			_logger.LogInformation("Succesfully reconfigured import API settings for: {custodianManagerFieldArtifactID}",
+				custodianManagerFieldArtifactID);
+			_logger.LogDebug(
+				"Reconfigured import API settings for: {custodianManagerFieldArtifactID}, new destination configuration: {newDestinationCOnfiguration}",
+				custodianManagerFieldArtifactID, newDestinationConfiguration);
+		}
 
-	    private void LogReconfigureImportApiSettingsStart(int custodianManagerFieldArtifactID)
-	    {
-	        _logger.LogInformation("Start reconfiguring import API settings for: {custodianManagerFieldArtifactID}", custodianManagerFieldArtifactID);
-	    }
+		private void LogReconfigureImportApiSettingsStart(int custodianManagerFieldArtifactID)
+		{
+			_logger.LogInformation("Start reconfiguring import API settings for: {custodianManagerFieldArtifactID}", custodianManagerFieldArtifactID);
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

@@ -120,7 +120,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 				JobStopManager?.ThrowIfStopRequested();
 
-				SourceProvider sourceProviderRdo = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(IntegrationPoint.SourceProvider.Value);
+				SourceProvider sourceProviderRdo = _caseServiceContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(IntegrationPoint.SourceProvider.Value);
 				Guid applicationGuid = new Guid(sourceProviderRdo.ApplicationIdentifier);
 				Guid providerGuid = new Guid(sourceProviderRdo.Identifier);
 				IDataSourceProvider provider = _providerFactory.GetDataProvider(applicationGuid, providerGuid, Helper);
@@ -271,7 +271,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					try
 					{
 						JobHistory.TotalItems = items;
-						_caseServiceContext.RsapiService.JobHistoryLibrary.Update(JobHistory);
+						_caseServiceContext.RsapiService.RelativityObjectManager.Update(JobHistory);
 					}
 					catch (Exception exception)
 					{
@@ -369,7 +369,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				IntegrationPoint.NextScheduledRuntimeUTC = _jobService.GetJobNextUtcRunDateTime(job, _scheduleRuleFactory, taskResult);
 			}
-			_caseServiceContext.RsapiService.IntegrationPointLibrary.Update(IntegrationPoint);
+			_caseServiceContext.RsapiService.RelativityObjectManager.Update(IntegrationPoint);
 			LogUpdateLastRuntimeAndCalculateNextRuntimeSuccesfulEnd(job);
 		}
 

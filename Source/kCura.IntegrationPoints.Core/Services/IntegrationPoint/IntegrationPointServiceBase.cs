@@ -76,7 +76,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		{
 			try
 			{
-				return Context.RsapiService.GetGenericLibrary<T>().Read(artifactId);
+				return Context.RsapiService.RelativityObjectManager.Read<T>(artifactId);
 			}
 			catch (Exception ex)
 			{
@@ -90,7 +90,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			if (artifactId > 0)
 			{
 				string fieldmap =
-						Context.RsapiService.GetGenericLibrary<T>().Read(artifactId, new Guid(_guidsConstants.FieldMappings)).GetField<string>(new Guid(_guidsConstants.FieldMappings));
+						Context.RsapiService.RelativityObjectManager.Read<T>(artifactId).GetField<string>(new Guid(_guidsConstants.FieldMappings));
 
 				if (!String.IsNullOrEmpty(fieldmap))
 				{
@@ -186,7 +186,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			SourceProvider sourceProvider = null;
 			try
 			{
-				sourceProvider = Context.RsapiService.SourceProviderLibrary.Read(sourceProviderArtifactId.Value);
+				sourceProvider = Context.RsapiService.RelativityObjectManager.Read<SourceProvider>(sourceProviderArtifactId.Value);
 			}
 			catch (Exception e)
 			{
@@ -206,7 +206,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			DestinationProvider destinationProvider = null;
 			try
 			{
-				destinationProvider = Context.RsapiService.DestinationProviderLibrary.Read(destinationProviderArtifactId.Value);
+				destinationProvider = Context.RsapiService.RelativityObjectManager.Read<DestinationProvider>(destinationProviderArtifactId.Value);
 			}
 			catch (Exception e)
 			{
@@ -226,7 +226,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			IntegrationPointType integrationPointType = null;
 			try
 			{
-				integrationPointType = Context.RsapiService.IntegrationPointTypeLibrary.Read(integrationPointTypeArtifactId.Value);
+				integrationPointType = Context.RsapiService.RelativityObjectManager.Read<Data.IntegrationPointType>(integrationPointTypeArtifactId.Value);
 			}
 			catch (Exception e)
 			{
@@ -270,7 +270,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			// needs to be here because custom page is the only place that has user context
 			try
 			{
-				Context.RsapiService.SourceProviderLibrary.Read(model.SourceProvider);
+				Context.RsapiService.RelativityObjectManager.Read<SourceProvider>(model.SourceProvider);
 			}
 			catch (Exception e)
 			{

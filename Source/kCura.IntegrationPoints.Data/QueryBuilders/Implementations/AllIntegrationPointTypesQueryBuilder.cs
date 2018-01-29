@@ -1,20 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
-using kCura.Relativity.Client.DTOs;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.QueryBuilders.Implementations
 {
 	public class AllIntegrationPointTypesQueryBuilder
 	{
-		public Query<RDO> Create()
+		public QueryRequest Create()
 		{
-			return new Query<RDO>
+			//return new Query<RDO>
+			//{
+			//	ArtifactTypeGuid = new Guid(ObjectTypeGuids.IntegrationPointType),
+			//	Fields = new List<FieldValue>
+			//	{
+			//		new FieldValue(new Guid(IntegrationPointTypeFieldGuids.Name)),
+			//		new FieldValue(new Guid(IntegrationPointTypeFieldGuids.Identifier))
+			//	}
+			//};
+
+			return new QueryRequest
 			{
-				ArtifactTypeGuid = new Guid(ObjectTypeGuids.IntegrationPointType),
-				Fields = new List<FieldValue>
+				ObjectType = new ObjectTypeRef { Guid = new Guid(ObjectTypeGuids.IntegrationPointType) },
+				Fields = new List<FieldRef>
 				{
-					new FieldValue(new Guid(IntegrationPointTypeFieldGuids.Name)),
-					new FieldValue(new Guid(IntegrationPointTypeFieldGuids.Identifier))
+					new FieldRef {Guid = new Guid(IntegrationPointTypeFieldGuids.Name)},
+					new FieldRef { Guid = new Guid(IntegrationPointTypeFieldGuids.Identifier)}
 				}
 			};
 		}

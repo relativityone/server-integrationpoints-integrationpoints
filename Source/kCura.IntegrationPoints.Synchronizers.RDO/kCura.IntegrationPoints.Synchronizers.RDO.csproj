@@ -72,6 +72,7 @@
     </Reference>
     <Reference Include="kCura.Relativity.Client, Version=9.6.12.15, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\kCura.Relativity.Client.9.6.12.15\lib\net462\kCura.Relativity.Client.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Relativity.DataReaderClient, Version=9.6.12.15, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.ImportExport.9.6.12.15\lib\net462\kCura.Relativity.DataReaderClient.dll</HintPath>

@@ -29,6 +29,7 @@ using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Services.Objects.DataContracts;
 using Field = kCura.Relativity.Client.DTOs.Field;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
@@ -61,6 +62,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private List<Job> _associatedJobs;
 		private IJobStopManager _jobStopManager;
 		private IDataSynchronizer _dataSynchronizer;
+		private IRelativityObjectManager _relativityObjectManager;
 
 		private string jsonParam1 =
 			"{\"BatchInstance\":\"2b7bda1b-11c9-4349-b446-ae5c8ca2c408\",\"BatchParameters\":{\"CustodianManagerMap\":{\"9E6D57BEE28D8D4CA9A64765AE9510FB\":\"CN=Middle Manager,OU=Nested,OU=Testing - Users,DC=testing,DC=corp\",\"779561316F4CE44191B150453DE9A745\":\"CN=Top Manager,OU=Testing - Users,DC=testing,DC=corp\",\"2845DA5813991740BA2D6CC6C9765799\":\"CN=Bottom Manager,OU=NestedAgain,OU=Nested,OU=Testing - Users,DC=testing,DC=corp\"},\"CustodianManagerFieldMap\":[{\"SourceField\":{\"DisplayName\":\"CustodianIdentifier\",\"FieldIdentifier\":\"objectguid\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"DestinationField\":{\"DisplayName\":\"ManagerIdentidier\",\"FieldIdentifier\":\"distinguishedname\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"FieldMapType\":1}],\"ManagerFieldIdIsBinary\":false,\"ManagerFieldMap\":[{\"SourceField\":{\"DisplayName\":\"mail\",\"FieldIdentifier\":\"mail\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"DestinationField\":{\"DisplayName\":\"Email\",\"FieldIdentifier\":\"1040539\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"FieldMapType\":0},{\"SourceField\":{\"DisplayName\":\"givenname\",\"FieldIdentifier\":\"givenname\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"DestinationField\":{\"DisplayName\":\"First Name\",\"FieldIdentifier\":\"1040546\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":true},\"FieldMapType\":0},{\"SourceField\":{\"DisplayName\":\"sn\",\"FieldIdentifier\":\"sn\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"DestinationField\":{\"DisplayName\":\"Last Name\",\"FieldIdentifier\":\"1040547\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":true},\"FieldMapType\":0},{\"SourceField\":{\"DisplayName\":\"manager\",\"FieldIdentifier\":\"manager\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"DestinationField\":{\"DisplayName\":\"Manager\",\"FieldIdentifier\":\"1040548\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"FieldMapType\":0},{\"SourceField\":{\"DisplayName\":\"objectguid\",\"FieldIdentifier\":\"objectguid\",\"FieldType\":0,\"IsIdentifier\":true,\"IsRequired\":false},\"DestinationField\":{\"DisplayName\":\"UniqueID\",\"FieldIdentifier\":\"1040555\",\"FieldType\":0,\"IsIdentifier\":true,\"IsRequired\":false},\"FieldMapType\":1}]}}";
@@ -105,6 +107,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_fieldQueryRepository = Substitute.For<IFieldQueryRepository>();
 
 			var helperFactory = Substitute.For<IHelperFactory>();
+			_relativityObjectManager = Substitute.For<IRelativityObjectManager>();
 
 			_workspaceArtifactId = 12345;
 
@@ -122,7 +125,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				_contextContainerFactory,
 				_jobService,
 				_repositoryFactory,
-				helperFactory
+				helperFactory,
+				_relativityObjectManager
 				);
 
 			_job = JobHelper.GetJob(
@@ -223,11 +227,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				}
 			};
 
-			QueryResultSet<RDO> rdoQueryResultSet = new QueryResultSet<RDO>
-			{
-				Success = true
-			};
-
 			ResultSet<Field> fieldResultSet = new ResultSet<Field>
 			{
 				Success = true,
@@ -242,9 +241,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			
 			_associatedJobs = new List<Job> { _job };
 			_fieldsMap = new List<FieldMap>();
-			_caseServiceContext.RsapiService.IntegrationPointLibrary.Read(_job.RelatedObjectArtifactID).Returns(_integrationPoint);
-			_caseServiceContext.RsapiService.SourceProviderLibrary.Read(_integrationPoint.SourceProvider.Value).Returns(_sourceProvider);
-			_caseServiceContext.RsapiService.DestinationProviderLibrary.Read(_integrationPoint.DestinationProvider.Value).Returns(_destinationProvider);
+			_caseServiceContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(_job.RelatedObjectArtifactID).Returns(_integrationPoint);
+			_caseServiceContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider.Value).Returns(_sourceProvider);
+			_caseServiceContext.RsapiService.RelativityObjectManager.Read<DestinationProvider>(_integrationPoint.DestinationProvider.Value).Returns(_destinationProvider);
 			_serializer.Deserialize<TaskParameters>(_job.JobDetails).Returns(_taskParams);
 			_jobHistoryService.CreateRdo(_integrationPoint, _taskParams.BatchInstance,
 				JobTypeChoices.JobHistoryRun, Arg.Any<DateTime>()).Returns(_jobHistory);
@@ -254,8 +253,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_managerFactory.CreateJobStopManager(_jobService, _jobHistoryService, _taskParams.BatchInstance, _job.JobId, true)
 				.Returns(_jobStopManager);
 			_serializer.Deserialize<List<FieldMap>>(_integrationPoint.FieldMappings).Returns(_fieldsMap);
-			_repositoryFactory.GetRdoRepository(_workspaceArtifactId).Returns(_rdoRepository);
-			_rdoRepository.Query(Arg.Any<Query<RDO>>()).Returns(rdoQueryResultSet);
+
+			_relativityObjectManager.Query(Arg.Any<QueryRequest>()).Returns(new List<RelativityObject>());
 			_repositoryFactory.GetFieldQueryRepository(_workspaceArtifactId).Returns(_fieldQueryRepository);
 			_fieldQueryRepository.Read(Arg.Any<Field>()).Returns(fieldResultSet);
 			_appDomainRdoSynchronizerFactory.CreateSynchronizer(new Guid(_destinationProvider.Identifier),
@@ -306,7 +305,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			//ARRANGE
 			Job job = GetJob(jsonParam1);
 			SyncCustodianManagerWorker task =
-				new SyncCustodianManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null);
+				new SyncCustodianManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null, null);
 
 			//ACT
 			MethodInfo dynMethod = task.GetType().GetMethod("GetParameters",
@@ -339,7 +338,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		{
 			//ARRANGE
 			SyncCustodianManagerWorker task =
-				new SyncCustodianManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null);
+				new SyncCustodianManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null, null);
 			_integrationPoint.DestinationConfiguration = jsonParam2;
 			task.GetType().GetProperty("IntegrationPoint", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).SetValue(task, _integrationPoint);
 			

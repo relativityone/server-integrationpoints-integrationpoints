@@ -13,7 +13,9 @@ using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
 using Relativity.Services.Group;
+using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Permission;
+using User = kCura.IntegrationPoint.Tests.Core.User;
 
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 {
@@ -231,7 +233,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			var model = new IntegrationPointModel()
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
-				DestinationProvider = CaseContext.RsapiService.DestinationProviderLibrary.ReadAll().First().ArtifactId,
+				DestinationProvider = CaseContext.RsapiService.RelativityObjectManager.Query<DestinationProvider>(new QueryRequest()).First().ArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
 				LogErrors = true,

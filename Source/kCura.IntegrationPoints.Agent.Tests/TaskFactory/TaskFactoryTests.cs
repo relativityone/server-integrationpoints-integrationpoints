@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -165,12 +166,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 		{
 			var integrationPoint = new Data.IntegrationPoint();
 
-			var integrationPointLibrary = Substitute.For<IGenericLibrary<Data.IntegrationPoint>>();
-			integrationPointLibrary.Read(Arg.Any<int>()).Returns(integrationPoint);
+			var relativityObjectManager = Substitute.For<IRelativityObjectManager>();
+			relativityObjectManager.Read<Data.IntegrationPoint>(Arg.Any<int>()).Returns(integrationPoint);
 
 
 			var rsapiService = Substitute.For<IRSAPIService>();
-			rsapiService.IntegrationPointLibrary.Returns(integrationPointLibrary);
+			rsapiService.RelativityObjectManager.Returns(relativityObjectManager);
 
 			var caseServiceContext = Substitute.For<ICaseServiceContext>();
 			caseServiceContext.RsapiService.Returns(rsapiService);

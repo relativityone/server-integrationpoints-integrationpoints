@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.Services.Installers
 				{
 					IServiceHelper helper = k.Resolve<IServiceHelper>();
 					var rsapiClientFactory = k.Resolve<IRsapiClientFactory>();
-					return new ServiceContextHelperForKelperService(helper, workspaceId, rsapiClientFactory);
+					return new ServiceContextHelperForKeplerService(helper, workspaceId, rsapiClientFactory);
 				}));
 			container.Register(
 				Component.For<IWorkspaceDBContext>()

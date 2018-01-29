@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.EventHandlers.Commands;
 using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 {
@@ -37,13 +38,13 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 				new DestinationWorkspace(),
 				new DestinationWorkspace()
 			};
-			_rsapiService.DestinationWorkspaceLibrary.Query(Arg.Any<Query<RDO>>()).Returns(entriesToUpdate);
+			_rsapiService.RelativityObjectManager.Query<DestinationWorkspace>(Arg.Any<QueryRequest>()).Returns(entriesToUpdate);
 
 			// ACT
 			_command.Execute();
 
 			// ASSERT
-			_rsapiService.DestinationWorkspaceLibrary.Received(1).Query(Arg.Any<Query<RDO>>());
+			_rsapiService.RelativityObjectManager.Received(1).Query<DestinationWorkspace>(Arg.Any<QueryRequest>());
 
 			foreach (var destinationWorkspace in entriesToUpdate)
 			{

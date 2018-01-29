@@ -11,9 +11,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// Queries an Rdo instance based on query conditions
 		/// </summary>
 		/// <param name="query">The rdo query with desired conditions</param>
-		/// <returns>An Rdo QueryResultSet based on the query provided</returns>
-		QueryResultSet<RDO> Query(Query<RDO> query);
-
+		/// <returns>An Rdo based on the query provided</returns>
 		RDO QuerySingle(Query<RDO> query);
 
 		int Create(RDO rdo);

@@ -4,6 +4,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Services.SourceTypes
 {
@@ -22,18 +23,22 @@ namespace kCura.IntegrationPoints.Core.Services.SourceTypes
 		{
 			var q = new Query<Relativity.Client.DTOs.RDO>();
 			q.Condition = new TextCondition(Guid.Parse(Data.SourceProviderFieldGuids.Identifier), TextConditionEnum.EqualTo, LDAP_SOURCE_TYPE_GUID);
-			var s = _context.RsapiService.SourceProviderLibrary.Query(q).SingleOrDefault(); //there should only be one!
+			QueryRequest request = new QueryRequest()
+			{
+				Condition = $"'{Data.SourceProviderFields.Identifier}' == '{LDAP_SOURCE_TYPE_GUID}'"
+			};
+			var s = _context.RsapiService.RelativityObjectManager.Query<SourceProvider>(request).SingleOrDefault(); //there should only be one!
 			if (s == null)
 			{
 				var rdo = new SourceProvider();
 				rdo.Name = "LDAP";
 				rdo.Identifier = LDAP_SOURCE_TYPE_GUID;
-				_context.RsapiService.SourceProviderLibrary.Create(rdo);
+				_context.RsapiService.RelativityObjectManager.Create(rdo);
 			}
 			else
 			{
 				s.SourceConfigurationUrl = "/%applicationpath%/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/IntegrationPoints/LDAPConfiguration/";
-				_context.RsapiService.SourceProviderLibrary.Update(s);
+				_context.RsapiService.RelativityObjectManager.Update(s);
 				//edit
 			}
 		}

@@ -130,6 +130,7 @@
     </Reference>
     <Reference Include="kCura.Relativity.Client, Version=9.6.12.15, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\kCura.Relativity.Client.9.6.12.15\lib\net462\kCura.Relativity.Client.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Relativity.DataReaderClient, Version=9.6.12.15, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.ImportExport.9.6.12.15\lib\net462\kCura.Relativity.DataReaderClient.dll</HintPath>
@@ -597,10 +598,8 @@
     <Compile Include="Services\IDeleteHistoryService.cs" />
     <Compile Include="Services\IJobTracker.cs" />
     <Compile Include="Services\IProcessingSourceLocationService.cs" />
-    <Compile Include="Services\JobHistory\IRunningJobService.cs" />
     <Compile Include="Services\JobHistory\IUnlinkedJobHistoryService.cs" />
     <Compile Include="Services\JobHistory\IUnfinishedJobService.cs" />
-    <Compile Include="Services\JobHistory\RunningJobService.cs" />
     <Compile Include="Services\JobHistory\UnfinishedJobService.cs" />
     <Compile Include="Services\JobHistory\UnlinkedJobHistoryService.cs" />
     <Compile Include="Services\ProcessingSourceLocationService.cs" />
@@ -816,7 +815,7 @@
     <Compile Include="Services\IntegrationPoint\IntegrationPointService.cs" />
     <Compile Include="Services\ObjectTypeService.cs" />
     <Compile Include="Services\Provider\IDataProviderFactory.cs" />
-    <Compile Include="Services\ServiceContext\ServiceContextHelperForKelperService.cs" />
+    <Compile Include="Services\ServiceContext\ServiceContextHelperForKeplerService.cs" />
     <Compile Include="Services\SourceTypes\ISourceTypeFactory.cs" />
     <Compile Include="Services\SourceTypes\LdapSourceTypeCreator.cs" />
     <Compile Include="Services\SourceTypes\SourceTypeFactory.cs" />

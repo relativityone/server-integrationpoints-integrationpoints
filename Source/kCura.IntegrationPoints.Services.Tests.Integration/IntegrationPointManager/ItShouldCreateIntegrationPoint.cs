@@ -126,7 +126,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 
 			var createdIntegrationPoint = _client.CreateIntegrationPointAsync(createRequest).Result;
 
-			var actualIntegrationPoint = CaseContext.RsapiService.IntegrationPointLibrary.Read(createdIntegrationPoint.ArtifactId);
+			var actualIntegrationPoint = CaseContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(createdIntegrationPoint.ArtifactId);
 			var expectedIntegrationPointModel = createRequest.IntegrationPoint;
 
 			Assert.That(expectedIntegrationPointModel.Name, Is.EqualTo(actualIntegrationPoint.Name));
@@ -145,7 +145,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 
 			var integrationPointModel = _client.CreateIntegrationPointFromProfileAsync(SourceWorkspaceArtifactId, profile.ArtifactID, integrationPointName).Result;
 
-			var actualIntegrationPoint = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointModel.ArtifactId);
+			var actualIntegrationPoint = CaseContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(integrationPointModel.ArtifactId);
 
 			Assert.That(actualIntegrationPoint.Name, Is.EqualTo(integrationPointName));
 			Assert.That(actualIntegrationPoint.SourceProvider, Is.EqualTo(profile.SourceProvider));
@@ -180,15 +180,10 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 
 			IntegrationPointModel integrationPointModel = _client.CreateIntegrationPointAsync(createRequest).Result;
 
-			var actualSecretId =
-				Helper.GetDBContext(SourceWorkspaceArtifactId)
-					.ExecuteSqlStatementAsScalar<string>($"SELECT SecuredConfiguration FROM [IntegrationPoint] WHERE ArtifactID = {integrationPointModel.ArtifactId}");
+			IntegrationPointModel integrationPoint = _client.GetIntegrationPointAsync(createRequest.WorkspaceArtifactId, integrationPointModel.ArtifactId).Result;
 
-			Data.IntegrationPoint integrationPoint = new RsapiClientLibrary<Data.IntegrationPoint>(Helper, SourceWorkspaceArtifactId).Read(integrationPointModel.ArtifactId);
-
-			string actualSecret = ReadSecret(integrationPoint.SecuredConfiguration);
+			string actualSecret = integrationPoint.SecuredConfiguration as string;
 			string expectedSecret = JsonConvert.SerializeObject(createRequest.IntegrationPoint.SecuredConfiguration);
-			Assert.That(actualSecretId, Is.EqualTo(integrationPoint.SecuredConfiguration));
 			Assert.That(actualSecret, Is.EqualTo(expectedSecret));
 		}
 
@@ -208,7 +203,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 
 			IntegrationPointModel createdIntegrationPoint = _client.CreateIntegrationPointAsync(createRequest).Result;
 
-			Data.IntegrationPoint actualIntegrationPoint = CaseContext.RsapiService.IntegrationPointLibrary.Read(createdIntegrationPoint.ArtifactId);
+			Data.IntegrationPoint actualIntegrationPoint = CaseContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(createdIntegrationPoint.ArtifactId);
 			IntegrationPointModel expectedIntegrationPointModel = createRequest.IntegrationPoint;
 
 			IntegrationPointBaseHelper.AssertIntegrationPointModelBase(actualIntegrationPoint, expectedIntegrationPointModel, new IntegrationPointFieldGuidsConstants());

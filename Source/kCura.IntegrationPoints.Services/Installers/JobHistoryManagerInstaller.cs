@@ -55,6 +55,16 @@ namespace kCura.IntegrationPoints.Services.Installers
 			container.Register(Component.For<ICompletedJobsHistoryRepository>().ImplementedBy<CompletedJobsHistoryRepository>().LifestyleTransient());
 			container.Register(Component.For<IRSAPIService>().UsingFactoryMethod(k => ServiceContextFactory.CreateRSAPIService(k.Resolve<IHelper>(), workspaceId), true));
 			container.Register(Component.For<IAuthTokenGenerator>().ImplementedBy<ClaimsTokenGenerator>().LifestyleTransient());
+
+			container.Register(Component.For<IRsapiClientFactory>().ImplementedBy<RsapiClientFactory>());
+
+			container.Register(Component.For<IServiceContextHelper>()
+				.UsingFactoryMethod(k =>
+				{
+					IServiceHelper helper = k.Resolve<IServiceHelper>();
+					var rsapiClientFactory = k.Resolve<IRsapiClientFactory>();
+					return new ServiceContextHelperForKeplerService(helper, workspaceId, rsapiClientFactory);
+				}));
 		}
 	}
 }

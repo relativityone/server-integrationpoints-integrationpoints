@@ -38,15 +38,9 @@ namespace kCura.IntegrationPoints.Data
 			}
 		}
 
-		public int Create(T integrationPoint)
+		public virtual List<int> Create(IEnumerable<T> rdos)
 		{
-			CheckObject(integrationPoint);
-			return Create(new List<T> {integrationPoint}).First();
-		}
-
-		public virtual List<int> Create(IEnumerable<T> integrationPoints)
-		{
-			List<T> localList = integrationPoints.ToList();
+			List<T> localList = rdos.ToList();
 			if (!localList.Any())
 			{
 				return new List<int>();
@@ -63,41 +57,6 @@ namespace kCura.IntegrationPoints.Data
 			CheckResult(result);
 
 			return result.Results.Select(x => x.Artifact.ArtifactID).ToList();
-		}
-
-		public T Read(int artifactId)
-		{
-			if (artifactId == 0)
-			{
-				throw new ArgumentException("artifactID");
-			}
-			return Read(new List<int> {artifactId}).First();
-		}
-
-		public virtual List<T> Read(IEnumerable<int> artifactIds)
-		{
-			List<int> local = artifactIds.ToList();
-			if (!local.Any())
-			{
-				return new List<T>();
-			}
-
-			ResultSet<RDO> result;
-			using (var rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(_executionIdentity))
-			{
-				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
-				result = rsapiClient.Repositories.RDO.Read(local.ToArray());
-			}
-
-			CheckResult(result);
-
-			return result.Results.Select(x => new T {Rdo = x.Artifact}).ToList();
-		}
-
-		public bool Update(T obj)
-		{
-			CheckObject(obj);
-			return Update(new List<T> {obj});
 		}
 
 		public virtual bool Update(IEnumerable<T> objs)
@@ -119,15 +78,6 @@ namespace kCura.IntegrationPoints.Data
 			return result.Success;
 		}
 
-		public bool Delete(int artifactId)
-		{
-			if (artifactId == 0)
-			{
-				throw new ArgumentException("artifactID");
-			}
-			return Delete(new List<int> {artifactId});
-		}
-
 		public bool Delete(IEnumerable<int> artifactIds)
 		{
 			List<int> localList = artifactIds.ToList();
@@ -145,12 +95,6 @@ namespace kCura.IntegrationPoints.Data
 
 			CheckResult(result);
 			return result.Success;
-		}
-
-		public bool Delete(T obj)
-		{
-			CheckObject(obj);
-			return Delete(new List<int> {obj.ArtifactId});
 		}
 
 		public bool Delete(IEnumerable<T> objs)
@@ -171,25 +115,6 @@ namespace kCura.IntegrationPoints.Data
 		public MassEditResult MassEdit(IEnumerable<T> objs)
 		{
 			throw new NotImplementedException();
-		}
-
-		public virtual List<T> Query(Query<RDO> q, int pageSize = 0)
-		{
-			if (!q.ArtifactTypeGuid.HasValue)
-			{
-				q.ArtifactTypeGuid = Guid.Parse(BaseRdo.GetObjectMetadata(typeof(T)).ArtifactTypeGuid);
-			}
-
-			QueryResultSet<RDO> result;
-			using (var rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(_executionIdentity))
-			{
-				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
-				result = rsapiClient.Repositories.RDO.Query(q, pageSize);
-			}
-
-			CheckResult(result);
-
-			return result.Results.Select(x => new T {Rdo = x.Artifact}).ToList();
 		}
 	}
 }

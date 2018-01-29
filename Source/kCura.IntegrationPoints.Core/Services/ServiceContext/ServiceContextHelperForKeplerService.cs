@@ -4,13 +4,13 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 {
-	public class ServiceContextHelperForKelperService : IServiceContextHelper
+	public class ServiceContextHelperForKeplerService : IServiceContextHelper
 	{
 		private readonly IServiceHelper _helper;
 		private int _workspaceArtifactId;
 		private readonly IRsapiClientFactory _rsapiClientFactory;
 
-		public ServiceContextHelperForKelperService(IServiceHelper helper, int workspaceArtifactId, IRsapiClientFactory rsapiClientFactory)
+		public ServiceContextHelperForKeplerService(IServiceHelper helper, int workspaceArtifactId, IRsapiClientFactory rsapiClientFactory)
 		{
 			_helper = helper;
 			_workspaceArtifactId = workspaceArtifactId;

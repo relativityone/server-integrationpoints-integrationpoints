@@ -79,7 +79,7 @@ namespace kCura.IntegrationPoints.Core.Agent
 				}
 				if (_destinationProvider == null)
 				{
-					_destinationProvider = CaseServiceContext.RsapiService.DestinationProviderLibrary.Read(IntegrationPoint.DestinationProvider.Value);
+					_destinationProvider = CaseServiceContext.RsapiService.RelativityObjectManager.Read<DestinationProvider>(IntegrationPoint.DestinationProvider.Value);
 				}
 				return _destinationProvider;
 			}
@@ -99,7 +99,7 @@ namespace kCura.IntegrationPoints.Core.Agent
 				}
 				if (_sourceProvider == null)
 				{
-					_sourceProvider = CaseServiceContext.RsapiService.SourceProviderLibrary.Read(IntegrationPoint.SourceProvider.Value);
+					_sourceProvider = CaseServiceContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(IntegrationPoint.SourceProvider.Value);
 				}
 				return _sourceProvider;
 			}
@@ -122,7 +122,7 @@ namespace kCura.IntegrationPoints.Core.Agent
 				factory.TaskJobSubmitter = new TaskJobSubmitter(JobManager, job, TaskType.SyncCustodianManagerWorker, BatchInstance);
 				factory.SourceProvider = SourceProvider;
 			}
-			var integrationPoint = CaseServiceContext.RsapiService.IntegrationPointLibrary.Read(job.RelatedObjectArtifactID);
+			var integrationPoint = CaseServiceContext.RsapiService.RelativityObjectManager.Read<IntegrationPoint>(job.RelatedObjectArtifactID);
 			IDataSynchronizer sourceProvider = AppDomainRdoSynchronizerFactoryFactory.CreateSynchronizer(providerGuid, configuration, integrationPoint.SecuredConfiguration);
 		    LogGetDestinationProviderSuccesfulEnd(job, sourceProvider);
             return sourceProvider;
@@ -185,7 +185,7 @@ namespace kCura.IntegrationPoints.Core.Agent
 			}
 
 			int integrationPointId = job.RelatedObjectArtifactID;
-			IntegrationPoint = CaseServiceContext.RsapiService.IntegrationPointLibrary.Read(integrationPointId);
+			IntegrationPoint = CaseServiceContext.RsapiService.RelativityObjectManager.Read<IntegrationPoint>(integrationPointId);
 			if (IntegrationPoint == null)
 			{
 				LogSettingIntegrationPointError(job);

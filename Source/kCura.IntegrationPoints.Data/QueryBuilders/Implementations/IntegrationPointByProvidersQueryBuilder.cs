@@ -1,28 +1,18 @@
-﻿using System;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
+﻿using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.QueryBuilders.Implementations
 {
 	public class IntegrationPointByProvidersQueryBuilder : IIntegrationPointByProvidersQueryBuilder
 	{
-		public Query<RDO> CreateQuery(int sourceProviderArtifactId, int destinationProviderArtifactId)
+		public QueryRequest CreateQuery(int sourceProviderArtifactId, int destinationProviderArtifactId)
 		{
-			return new Query<RDO>
+			return new QueryRequest()
 			{
-				ArtifactTypeGuid = new Guid(ObjectTypeGuids.IntegrationPoint),
-				Fields = FieldValue.AllFields,
-				Condition = CreateRelativityCondition(sourceProviderArtifactId, destinationProviderArtifactId)
+				Condition =
+					$"'{IntegrationPointFields.SourceProvider}' == {sourceProviderArtifactId} " +
+					$"AND " +
+					$"'{IntegrationPointFields.DestinationProvider}' == {destinationProviderArtifactId}"
 			};
-		}
-
-		private Condition CreateRelativityCondition(int sourceProviderArtifactId, int destinationProviderArtifactId)
-		{
-			var sourceProviderCondition = new ObjectCondition(new Guid(IntegrationPointFieldGuids.SourceProvider), ObjectConditionEnum.EqualTo, sourceProviderArtifactId);
-			var destinationProviderCondition = new ObjectCondition(new Guid(IntegrationPointFieldGuids.DestinationProvider), ObjectConditionEnum.EqualTo,
-				destinationProviderArtifactId);
-
-			return new CompositeCondition(sourceProviderCondition, CompositeConditionEnum.And, destinationProviderCondition);
 		}
 	}
 }

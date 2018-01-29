@@ -2,7 +2,9 @@
 using System.Linq;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.QueryBuilders;
+using kCura.IntegrationPoints.Data.Transformers;
 using kCura.Relativity.Client.DTOs;
+using Relativity.Services.Objects.DataContracts;
 using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.Services.JobHistory
@@ -36,19 +38,29 @@ namespace kCura.IntegrationPoints.Services.JobHistory
 		private IList<int> RetrieveRelativitySourceProviderIds()
 		{
 			var sourceProviderQuery = _sourceProviderArtifactIdByGuidQueryBuilder.Create(Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID);
-			return GetArtifactIds(_rsapiService.SourceProviderLibrary.Query(sourceProviderQuery));
+			QueryRequest request = new QueryRequest()
+			{
+				Condition = $"'{SourceProviderFields.Identifier}' == '{Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID}'"
+			};
+			return GetArtifactIds(_rsapiService.RelativityObjectManager.Query<SourceProvider>(request));
 		}
 
 		private IList<int> RetrieveRelativityDestinationProviderIds()
 		{
 			var destinationProviderQuery = _destinationProviderArtifactIdByGuidQueryBuilder.Create(Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID);
-			return GetArtifactIds(_rsapiService.DestinationProviderLibrary.Query(destinationProviderQuery));
+
+			QueryRequest request = new QueryRequest()
+			{
+				Condition = $"'{DestinationProviderFields.Identifier}' == '{Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID}'"
+			};
+			return GetArtifactIds(_rsapiService.RelativityObjectManager.Query<DestinationProvider>(request));
 		}
 
 		private List<Core.Models.IntegrationPointModel> RetrieveIntegrationPoints(IList<int> sourceProvider, IList<int> destinationProvider)
 		{
-			Query<RDO> integrationPointsQuery = _integrationPointByProvidersQueryBuilder.CreateQuery(sourceProvider[0], destinationProvider[0]);
-			return _rsapiService.IntegrationPointLibrary.Query(integrationPointsQuery).Select(Core.Models.IntegrationPointModel.FromIntegrationPoint).ToList();
+			QueryRequest integrationPointsQuery = _integrationPointByProvidersQueryBuilder.CreateQuery(sourceProvider[0], destinationProvider[0]);
+
+			return _rsapiService.RelativityObjectManager.Query<IntegrationPoint>(integrationPointsQuery).Select(Core.Models.IntegrationPointModel.FromIntegrationPoint).ToList();
 		}
 
 		private List<int> GetArtifactIds<T>(List<T> results) where T : BaseRdo

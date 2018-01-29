@@ -11,15 +11,16 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Authentication;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
@@ -34,36 +35,32 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 	{
 		private static SortedDictionary<string, IntegrationPointDataHubInput> _tasks;
 		private static Timer _updateTimer;
-		private readonly IButtonStateBuilder _buttonStateBuilder;
-		private readonly IRSAPIService _rsapiService;
-		private readonly IProviderTypeService _providerTypeService;
 		private readonly IContextContainer _contextContainer;
+		private readonly IQueueManager _queueManager;
+		private readonly IJobHistoryManager _jobHistoryManager;
+		private readonly IStateManager _stateManager;
 		private readonly IHelperClassFactory _helperClassFactory;
+		private readonly IIntegrationPointPermissionValidator _permissionValidator;
 		private readonly int _intervalBetweentasks = 100;
 		private readonly IManagerFactory _managerFactory;
 		private readonly int _updateInterval = 5000;
 
-		public IntegrationPointDataHub() : this(new ContextContainer(ConnectionHelper.Helper()), new HelperClassFactory())
+		public IntegrationPointDataHub() : this(new ContextContainer((IHelper)ConnectionHelper.Helper()), new HelperClassFactory())
 		{
-			var permissionRepository = new PermissionRepository(ConnectionHelper.Helper(), ConnectionHelper.Helper().GetActiveCaseID());
-            ISqlServiceFactory sqlServiceFactory = new HelperConfigSqlServiceFactory(ConnectionHelper.Helper());
+			ISqlServiceFactory sqlServiceFactory = new HelperConfigSqlServiceFactory((IHelper)ConnectionHelper.Helper());
 			IAuthProvider authProvider = new AuthProvider();
 			IAuthTokenGenerator authTokenGenerator = new ClaimsTokenGenerator();
-			ICredentialProvider credentialProvider = new TokenCredentialProvider(authProvider, authTokenGenerator, ConnectionHelper.Helper());
+			ICredentialProvider credentialProvider = new TokenCredentialProvider(authProvider, authTokenGenerator, (IHelper)ConnectionHelper.Helper());
 			IServiceManagerProvider serviceManagerProvider = new ServiceManagerProvider(new ConfigFactory(),
 				credentialProvider, new JSONSerializer(),
-		        new RelativityCoreTokenProvider(), sqlServiceFactory);
-            _managerFactory = new ManagerFactory(ConnectionHelper.Helper(), serviceManagerProvider);
-            var queueManager = _managerFactory.CreateQueueManager(_contextContainer);
-			var jobHistoryManager = _managerFactory.CreateJobHistoryManager(_contextContainer);
-			var stateManager = _managerFactory.CreateStateManager();
-			var repositoryFactory = new RepositoryFactory(ConnectionHelper.Helper(), ConnectionHelper.Helper().GetServicesManager());
-
-			IIntegrationPointPermissionValidator permissionValidator =
-				new IntegrationPointPermissionValidator(new[] { new ViewErrorsPermissionValidator(repositoryFactory) }, new IntegrationPointSerializer());
-			_rsapiService = new RSAPIService(ConnectionHelper.Helper(), ConnectionHelper.Helper().GetActiveCaseID());
-			_providerTypeService = new ProviderTypeService(_rsapiService);
-			_buttonStateBuilder = new ButtonStateBuilder(_providerTypeService, queueManager, jobHistoryManager, stateManager, permissionRepository, permissionValidator, _rsapiService);
+				new RelativityCoreTokenProvider(), sqlServiceFactory);
+			
+			_managerFactory = new ManagerFactory((IHelper)ConnectionHelper.Helper(), serviceManagerProvider);
+			_queueManager = _managerFactory.CreateQueueManager(_contextContainer);
+			_jobHistoryManager = _managerFactory.CreateJobHistoryManager(_contextContainer);
+			_stateManager = _managerFactory.CreateStateManager();
+			IRepositoryFactory repositoryFactory = new RepositoryFactory((IHelper)ConnectionHelper.Helper(), ConnectionHelper.Helper().GetServicesManager());
+			_permissionValidator = new IntegrationPointPermissionValidator(new[] { new ViewErrorsPermissionValidator(repositoryFactory) }, new IntegrationPointSerializer());
 		}
 
 		internal IntegrationPointDataHub(IContextContainer contextContainer, IHelperClassFactory helperClassFactory)
@@ -84,12 +81,6 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			}
 		}
 
-		internal IntegrationPointDataHub(IButtonStateBuilder buttonStateBuilder, IContextContainer contextContainer, IHelperClassFactory helperClassFactory) 
-            : this(contextContainer, helperClassFactory)
-		{
-			_buttonStateBuilder = buttonStateBuilder;
-		}
-
 		public override Task OnDisconnected(bool stopCalled)
 		{
 			RemoveTask();
@@ -98,7 +89,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 
 		public void GetIntegrationPointUpdate(int workspaceId, int artifactId)
 		{
-			int userId = ((ICPHelper) _contextContainer.Helper).GetAuthenticationManager().UserInfo.ArtifactID;
+			int userId = ((ICPHelper)_contextContainer.Helper).GetAuthenticationManager().UserInfo.ArtifactID;
 			AddTask(workspaceId, artifactId, userId);
 		}
 
@@ -112,7 +103,13 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 					foreach (var key in _tasks.Keys)
 					{
 						IntegrationPointDataHubInput input = _tasks[key];
-						IntegrationPoint integrationPoint = _rsapiService.IntegrationPointLibrary.Read(input.ArtifactId);
+
+						var permissionRepository = new PermissionRepository((IHelper)ConnectionHelper.Helper(), input.WorkspaceId);
+						var _rsapiService = new RSAPIService((IHelper)ConnectionHelper.Helper(), input.WorkspaceId);
+						var _providerTypeService = new ProviderTypeService(_rsapiService);
+						var _buttonStateBuilder = new ButtonStateBuilder(_providerTypeService, _queueManager, _jobHistoryManager, _stateManager, permissionRepository, _permissionValidator, _rsapiService);
+
+						IntegrationPoint integrationPoint = _rsapiService.RelativityObjectManager.Read<IntegrationPoint>(input.ArtifactId);
 
 						ProviderType providerType = _providerTypeService.GetProviderType(integrationPoint.SourceProvider.Value,
 							integrationPoint.DestinationProvider.Value);

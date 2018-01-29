@@ -2,11 +2,11 @@
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Statistics.Implementations;
-using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Tests.Statistics
 {
@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 
 		private IAPILog _logger;
 		private IHelper _helper;
-		private IRdoRepository _rdoRepository;
+		private IRelativityObjectManager _relativityObjectManager;
 
 		private DocumentTotalStatistics _instance;
 
@@ -25,10 +25,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 		{
 			_logger = Substitute.For<IAPILog>();
 			_helper = Substitute.For<IHelper>();
-			_rdoRepository = Substitute.For<IRdoRepository>();
+			_relativityObjectManager = Substitute.For<IRelativityObjectManager>();
 			_helper.GetLoggerFactory().GetLogger().ForContext<DocumentTotalStatistics>().Returns(_logger);
 
-			_instance = new DocumentTotalStatistics(_helper, _rdoRepository);
+			_instance = new DocumentTotalStatistics(_helper, _relativityObjectManager);
 		}
 
 		[Test]
@@ -40,10 +40,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			int viewId = 453234;
 			bool includeSubfolders = true;
 
-			_rdoRepository.Query(Arg.Any<Query<RDO>>()).Returns(new QueryResultSet<RDO>
-			{
-				TotalCount = expectedResult
-			});
+			_relativityObjectManager.QueryTotalCount(Arg.Any<QueryRequest>()).Returns(expectedResult);
 
 			var actualResult = _instance.ForFolder(_WORKSPACE_ID, folderId, viewId, includeSubfolders);
 
@@ -57,10 +54,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 
 			int savedSearchId = 883508;
 
-			_rdoRepository.Query(Arg.Any<Query<RDO>>()).Returns(new QueryResultSet<RDO>
-			{
-				TotalCount = expectedResult
-			});
+			_relativityObjectManager.QueryTotalCount(Arg.Any<QueryRequest>()).Returns(expectedResult);
 
 			var actualResult = _instance.ForSavedSearch(_WORKSPACE_ID, savedSearchId);
 
@@ -74,10 +68,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 
 			int productionId = 446524;
 
-			_rdoRepository.Query(Arg.Any<Query<RDO>>()).Returns(new QueryResultSet<RDO>
-			{
-				TotalCount = expectedResult
-			});
+			_relativityObjectManager.QueryTotalCount(Arg.Any<QueryRequest>()).Returns(expectedResult);
 
 			var actualResult = _instance.ForProduction(_WORKSPACE_ID, productionId);
 
@@ -87,7 +78,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 		[Test]
 		public void ItShouldLogError()
 		{
-			_rdoRepository.Query(Arg.Any<Query<RDO>>()).Throws(new Exception());
+			_relativityObjectManager.QueryTotalCount(Arg.Any<QueryRequest>()).Throws(new Exception());
 
 			Assert.That(() => _instance.ForFolder(_WORKSPACE_ID, 759, 464, true), Throws.Exception);
 			Assert.That(() => _instance.ForProduction(_WORKSPACE_ID, 523), Throws.Exception);

@@ -1,32 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
-using Relativity.API;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class SavedSearchRepository : ISavedSearchRepository
 	{
-		private readonly IHelper _helper;
-		private readonly int _workspaceArtifactId;
+		private readonly IRelativityObjectManager _objectManager;
 		private readonly int _savedSearchId;
 		private readonly int _pageSize;
-		private string _queryToken = null;
 		private int _documentsRetrieved = 0;
 		private int _totalDocumentsRetrieved = 0;
 		public bool StartedRetrieving = false;
+		private int currentPage = 0;
 
 		public SavedSearchRepository(
-			IHelper helper,
-			int workspaceArtifactId, 
-			int savedSearchId, 
+			IRelativityObjectManager objectManager,
+			int savedSearchId,
 			int pageSize)
 		{
-			_helper = helper;
-			_workspaceArtifactId = workspaceArtifactId;
+			_objectManager = objectManager;
 			_savedSearchId = savedSearchId;
 			_pageSize = pageSize;
 		}
@@ -35,45 +31,26 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			StartedRetrieving = true;
 
-			var query = new Query<kCura.Relativity.Client.DTOs.Document>
+			var request = new QueryRequest
 			{
-				Condition = new SavedSearchCondition(_savedSearchId),
-				Fields = new List<FieldValue>()
+				Fields = new List<FieldRef>
 				{
-					new FieldValue(ArtifactFieldNames.TextIdentifier)
-				}
+					new FieldRef { Name = ArtifactFieldNames.TextIdentifier }
+				},
+				Condition = $"'ArtifactId' IN SAVEDSEARCH {_savedSearchId}"
 			};
 
-			QueryResultSet<kCura.Relativity.Client.DTOs.Document> resultSet;
-			if (_queryToken == null)
+			UtilityDTO.ResultSet<Document> resultSet = _objectManager.Query<Document>(request, currentPage * _pageSize, _pageSize);
+
+			if (resultSet != null && resultSet.Items.Any())
 			{
-				using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
-				{
-					rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
+				_totalDocumentsRetrieved = resultSet.Items.Count;
 
-					resultSet = rsapiClient.Repositories.Document.Query(query, _pageSize);
-				}
-			}
-			else
-			{
-				using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
-				{
-					rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
-
-					resultSet = rsapiClient.Repositories.Document.QuerySubset(_queryToken, _documentsRetrieved + 1, _pageSize);
-				}
-			}
-
-			if (resultSet != null && resultSet.Success)
-			{
-				_queryToken = resultSet.QueryToken;
-				_totalDocumentsRetrieved = resultSet.TotalCount;
-
-				ArtifactDTO[] results = resultSet.Results.Select(
+				ArtifactDTO[] results = resultSet.Items.Select(
 					x => new ArtifactDTO(
-						x.Artifact.ArtifactID,
-						x.Artifact.ArtifactTypeID.GetValueOrDefault(),
-						x.Artifact.TextIdentifier,
+						x.Rdo.ArtifactID,
+						x.Rdo.ArtifactTypeID.GetValueOrDefault(),
+						x.Rdo.TextIdentifier,
 						new ArtifactFieldDTO[0])).ToArray();
 
 				_documentsRetrieved += results.Length;
@@ -81,12 +58,15 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				return results;
 			}
 
-			throw new Exception($"Failed to retrieve for saved search ID {_savedSearchId}");
+			throw new IntegrationPointsException($"Failed to retrieve for saved search ID {_savedSearchId}")
+			{
+				ExceptionSource = IntegrationPointsExceptionSource.GENERIC
+			};
 		}
 
 		public bool AllDocumentsRetrieved()
 		{
-			return StartedRetrieving && (string.IsNullOrEmpty(_queryToken) || _totalDocumentsRetrieved - _documentsRetrieved == 0);
+			return StartedRetrieving && _totalDocumentsRetrieved == _documentsRetrieved;
 		}
 	}
 }

@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
 		
 		public string Convert()
 		{
-			return _service.IntegrationPointLibrary.Read(_job.RelatedObjectArtifactID).Name;
+			return _service.RelativityObjectManager.Read<Data.IntegrationPoint>(_job.RelatedObjectArtifactID).Name;
 		}
 	}
 }

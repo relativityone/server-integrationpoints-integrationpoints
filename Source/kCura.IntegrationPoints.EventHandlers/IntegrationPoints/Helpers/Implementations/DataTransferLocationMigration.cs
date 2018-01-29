@@ -6,10 +6,12 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Transformers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using Relativity.API;
+using Relativity.Services.Objects.DataContracts;
 using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations
@@ -20,12 +22,12 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 		private readonly IDestinationProviderRepository _destinationProviderRepository;
 		private readonly ISourceProviderRepository _sourceProviderRepository;
 		private readonly IDataTransferLocationMigrationHelper _dataTransferLocationMigrationHelper;
-		private readonly IGenericLibrary<Data.IntegrationPoint> _integrationPointLibrary;
+		private readonly IRelativityObjectManager _integrationPointLibrary;
 		private readonly IDataTransferLocationService _dataTransferLocationService;
 		private readonly IResourcePoolManager _resourcePoolManager;
 		private readonly IEHHelper _helper;
 
-		public DataTransferLocationMigration(IAPILog logger, IDestinationProviderRepository destinationProviderRepository, ISourceProviderRepository sourceProviderRepository, IDataTransferLocationMigrationHelper dataTransferLocationMigrationHelper, ICaseServiceContext serviceContext, IGenericLibrary<Data.IntegrationPoint> integrationPointLibrary, IDataTransferLocationService dataTransferLocationService, IResourcePoolManager resourcePoolManager, IEHHelper helper)
+		public DataTransferLocationMigration(IAPILog logger, IDestinationProviderRepository destinationProviderRepository, ISourceProviderRepository sourceProviderRepository, IDataTransferLocationMigrationHelper dataTransferLocationMigrationHelper, ICaseServiceContext serviceContext, IRelativityObjectManager integrationPointLibrary, IDataTransferLocationService dataTransferLocationService, IResourcePoolManager resourcePoolManager, IEHHelper helper)
 		{
 			_logger = logger;
 			_destinationProviderRepository = destinationProviderRepository;
@@ -78,8 +80,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 		{
 			try
 			{
-				Query<RDO> query = BuildIntegrationPointsQuery(relativitySourceProviderArtifactId, loadFileDestinationProviderArtifactId);
-				return _integrationPointLibrary.Query(query);
+				QueryRequest request = BuildIntegrationPointsQuery(relativitySourceProviderArtifactId, loadFileDestinationProviderArtifactId);
+				return _integrationPointLibrary.Query<IntegrationPoint>(request);
 			}
 			catch (Exception ex)
 			{
@@ -151,21 +153,21 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			}
 		}
 
-		private Query<RDO> BuildIntegrationPointsQuery(int relativitySourceProviderArtifactId,
+		private QueryRequest BuildIntegrationPointsQuery(int relativitySourceProviderArtifactId,
 			int loadFileDestinationProviderArtifactId)
 		{
 			var sourceProviderCondition = new WholeNumberCondition()
 			{
 				Field = IntegrationPointFields.SourceProvider,
 				Operator = NumericConditionEnum.EqualTo,
-				Value = new List<int>() { relativitySourceProviderArtifactId }
+				Value = new List<int>() {relativitySourceProviderArtifactId}
 			};
 
 			var destinationProviderCondition = new WholeNumberCondition()
 			{
 				Field = IntegrationPointFields.DestinationProvider,
 				Operator = NumericConditionEnum.EqualTo,
-				Value = new List<int>() { loadFileDestinationProviderArtifactId }
+				Value = new List<int>() {loadFileDestinationProviderArtifactId}
 			};
 
 			Query<RDO> query = new Query<RDO>()
@@ -175,9 +177,18 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 						.Values.ToList()
 						.Select(field => new FieldValue(field.FieldGuid))
 						.ToList(),
-				Condition = new CompositeCondition(sourceProviderCondition, CompositeConditionEnum.And, destinationProviderCondition)
+				Condition = new CompositeCondition(sourceProviderCondition, CompositeConditionEnum.And,
+					destinationProviderCondition)
 			};
-			return query;
+			QueryRequest request = new QueryRequest()
+			{
+				Condition = $"'{IntegrationPointFields.SourceProvider}' == {relativitySourceProviderArtifactId} " +
+				            $"AND " +
+				            $"'{IntegrationPointFields.DestinationProvider}' == {loadFileDestinationProviderArtifactId}",
+				Fields = new IntegrationPoint().ToFieldList()
+			};
+
+			return request;
 		}
 	}
 }

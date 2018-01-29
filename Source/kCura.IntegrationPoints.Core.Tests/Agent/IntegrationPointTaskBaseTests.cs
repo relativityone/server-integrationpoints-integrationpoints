@@ -236,7 +236,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
 			{
 				SecuredConfiguration = "{}"
 			};
-			_caseServiceContext.RsapiService.IntegrationPointLibrary.Read(Arg.Any<int>()).Returns(integrationPoint);
+			_caseServiceContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(Arg.Any<int>()).Returns(integrationPoint);
 
 			_serializer.Deserialize<TaskParameters>(Arg.Is<string>(x => x.Equals(jobDetailsText))).Returns(taskParameters);
 

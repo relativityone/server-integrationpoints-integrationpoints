@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Validato
 			_instance.Validate(_WORKSPACE_ID, _INTEGRATION_POINT_ID);
 
 			// Assert
-			_rsapiService.IntegrationPointLibrary.DidNotReceive().Read(_WORKSPACE_ID);
+			_rsapiService.RelativityObjectManager.DidNotReceive().Read<Data.IntegrationPoint>(_WORKSPACE_ID);
 		}
 
 		[Test]
@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Validato
 			// Arrange
 			_queueRepository.GetNumberOfJobsExecutingOrInQueue(_WORKSPACE_ID, _INTEGRATION_POINT_ID).Returns(numberOfJobs);
 
-			_rsapiService.IntegrationPointLibrary.Read(_INTEGRATION_POINT_ID).Returns(new Data.IntegrationPoint
+			_rsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(_INTEGRATION_POINT_ID).Returns(new Data.IntegrationPoint
 			{
 				Name = "integration_point_524"
 			});

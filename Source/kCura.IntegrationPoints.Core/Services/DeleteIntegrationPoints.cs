@@ -21,7 +21,10 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			var integrationPoints = _integrationPointQuery.GetIntegrationPoints(sourceProvider);
 			_deleteHistoryService.DeleteHistoriesAssociatedWithIPs(integrationPoints.Select(x => x.ArtifactId).ToList(), _service);
-			_service.IntegrationPointLibrary.Delete(integrationPoints);
+			foreach (var ip in integrationPoints)
+			{
+				_service.RelativityObjectManager.Delete(ip);
+			}
 		}
 	}
 }

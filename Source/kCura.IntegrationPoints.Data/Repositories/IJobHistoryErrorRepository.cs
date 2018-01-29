@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Security.Claims;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Data.Repositories
@@ -45,7 +44,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// </summary>
 		/// <param name="artifactIds">Artifact ids of job history errors to read.</param>
 		/// <returns>Object representations of job history errors.</returns>
-		IList<JobHistoryErrorDTO> Read(IEnumerable<int> artifactIds);
+		IList<JobHistoryError> Read(IEnumerable<int> artifactIds);
 
 		/// <summary>
 		/// Retrieves the Job History Error artifact ids and Source Unique ids

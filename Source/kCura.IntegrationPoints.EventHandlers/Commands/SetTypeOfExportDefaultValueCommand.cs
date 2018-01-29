@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+﻿using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands
 {
@@ -9,8 +8,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
     {
 	    private readonly IIntegrationPointService _integrationPointService;
         private readonly IIntegrationPointProfileService _integrationPointProfileService;
-        private readonly IGenericLibrary<Data.IntegrationPoint> _integrationPointLibrary;
-        private readonly IGenericLibrary<IntegrationPointProfile> _integrationPointProfileLibrary;
+        private readonly IRelativityObjectManager _objectManager;
 	    private readonly ISourceConfigurationTypeOfExportUpdater _sourceConfigurationTypeOfExpertUpdater;
 
 	    public string SuccessMessage => "Type of Export field default value was set succesfully.";
@@ -18,14 +16,12 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 
 		public SetTypeOfExportDefaultValueCommand(IIntegrationPointService integrationPointService,
 		    IIntegrationPointProfileService integrationPointProfileService,
-		    IGenericLibrary<Data.IntegrationPoint> integrationPointLibrary,
-		    IGenericLibrary<IntegrationPointProfile> integrationPointProfileLibrary,
+		    IRelativityObjectManager objectManager,
 		    ISourceConfigurationTypeOfExportUpdater sourceConfigurationTypeOfExpertUpdater)
 	    {
 		    _integrationPointService = integrationPointService;
 		    _integrationPointProfileService = integrationPointProfileService;
-		    _integrationPointLibrary = integrationPointLibrary;
-		    _integrationPointProfileLibrary = integrationPointProfileLibrary;
+		    _objectManager = objectManager;
 		    _sourceConfigurationTypeOfExpertUpdater = sourceConfigurationTypeOfExpertUpdater;
 	    }
 
@@ -44,7 +40,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 				if (resultConf != null)
 				{
 					point.SourceConfiguration = resultConf;
-					_integrationPointLibrary.Update(point);
+					_objectManager.Update(point);
 				}
 			}
 		}
@@ -58,7 +54,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 			    if (resultConf != null)
 			    {
 				    profile.SourceConfiguration = resultConf;
-				    _integrationPointProfileLibrary.Update(profile);
+				    _objectManager.Update(profile);
 			    }
 		    }
 	    }

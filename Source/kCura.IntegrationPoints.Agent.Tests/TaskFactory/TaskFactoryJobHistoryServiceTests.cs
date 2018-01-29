@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
 using NSubstitute;
@@ -23,7 +24,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 		private ITaskFactoryJobHistoryService _sut;
 		private IJobHistoryService _jobHistoryService;
 		private IJobHistoryErrorService _jobHistoryErrorService;
-		private IGenericLibrary<Data.IntegrationPoint> _integrationPointLibrary;
+		private IRelativityObjectManager _objectmanager;
 
 
 		[Test]
@@ -121,7 +122,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 			_sut.RemoveJobHistoryFromIntegrationPoint(job);
 
 			// Assert
-			_integrationPointLibrary.Received()
+			_objectmanager.Received()
 				.Update(Arg.Is<Data.IntegrationPoint>(x => x.JobHistory.SequenceEqual(expectedIpJobHistoryIdsAfterUpdate)));
 		}
 
@@ -233,8 +234,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 
 			var caseServiceContext = Substitute.For<ICaseServiceContext>();
 			var rsapiService = Substitute.For<IRSAPIService>();
-			_integrationPointLibrary = Substitute.For<IGenericLibrary<Data.IntegrationPoint>>();
-			rsapiService.IntegrationPointLibrary.Returns(_integrationPointLibrary);
+			_objectmanager = Substitute.For<IRelativityObjectManager>();
+			rsapiService.RelativityObjectManager.Returns(_objectmanager);
 			caseServiceContext.RsapiService.Returns(rsapiService);
 
 			ip = ip ?? GetDefaultIntegrationPoint();

@@ -2,9 +2,9 @@
 using System.Linq;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
+using kCura.IntegrationPoints.Data.Transformers;
 using Relativity.API;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 {
@@ -38,13 +38,13 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 				destinationProvider.Name = name;
 				destinationProvider.Identifier = providerGuid;
 				destinationProvider.ApplicationIdentifier = Constants.IntegrationPoints.APPLICATION_GUID_STRING;
-				_context.RsapiService.DestinationProviderLibrary.Create(destinationProvider);
+				_context.RsapiService.RelativityObjectManager.Create(destinationProvider);
 			}
 			else
 			{
 				LogUpdatingProvider(name, providerGuid);
 				destinationProvider.Name = name;
-				_context.RsapiService.DestinationProviderLibrary.Update(destinationProvider);
+				_context.RsapiService.RelativityObjectManager.Update(destinationProvider);
 			}
 		}
 
@@ -63,9 +63,19 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 
 		private DestinationProvider GetDestinationProvider(string providerGuid)
 		{
-			var q = new Query<Relativity.Client.DTOs.RDO>();
-			q.Condition = new TextCondition(Guid.Parse(Data.DestinationProviderFieldGuids.Identifier), TextConditionEnum.EqualTo, providerGuid);
-			var destinationProviders = _context.RsapiService.DestinationProviderLibrary.Query(q);
+			var q = new QueryRequest
+			{
+				ObjectType = new ObjectTypeRef
+				{
+					Guid = Guid.Parse(ObjectTypeGuids.DestinationProvider)
+				},
+				Fields = RDOConverter.ConvertPropertiesToFields<DestinationProvider>(),
+				Condition = $"'{DestinationProviderFields.Identifier}' == '{providerGuid}'"
+			};
+			//q.Condition = new TextCondition(Guid.Parse(Data.DestinationProviderFieldGuids.Identifier), TextConditionEnum.EqualTo, providerGuid);
+			var destinationProviders = _context.RsapiService.RelativityObjectManager.Query<DestinationProvider>(q);
+
+
 			if (destinationProviders.Count > 1)
 			{
 				LogMoreThanOneProviderFoundWarning(providerGuid);

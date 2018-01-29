@@ -1,5 +1,6 @@
 ﻿using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.SecretStore;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
 using NSubstitute;
@@ -14,7 +15,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		private const int _INTEGRATION_POINT_ID = 659252;
 
 		private IntegrationPointSecretDelete _integrationPointSecretDelete;
-		private IGenericLibrary<Data.IntegrationPoint> _library;
+		private IRelativityObjectManager _objectManager;
 		private ISecretCatalog _secretCatalog;
 		private ISecretManager _secretManager;
 
@@ -22,8 +23,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		{
 			_secretManager = Substitute.For<ISecretManager>();
 			_secretCatalog = Substitute.For<ISecretCatalog>();
-			_library = Substitute.For<IGenericLibrary<Data.IntegrationPoint>>();
-			_integrationPointSecretDelete = new IntegrationPointSecretDelete(_secretManager, _secretCatalog, _library);
+			_objectManager = Substitute.For<IRelativityObjectManager>();
+			_integrationPointSecretDelete = new IntegrationPointSecretDelete(_secretManager, _secretCatalog, _objectManager);
 		}
 
 		[Test]
@@ -32,7 +33,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		[TestCase(null)]
 		public void ItShouldSkipForEmptySecret(string secret)
 		{
-			_library.Read(_INTEGRATION_POINT_ID).Returns(new Data.IntegrationPoint
+			_objectManager.Read<Data.IntegrationPoint>(_INTEGRATION_POINT_ID).Returns(new Data.IntegrationPoint
 			{
 				SecuredConfiguration = secret
 			});
@@ -47,7 +48,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		{
 			string securedConfiguration = "expected_secured_configuration";
 
-			_library.Read(_INTEGRATION_POINT_ID).Returns(new Data.IntegrationPoint
+			_objectManager.Read<Data.IntegrationPoint>(_INTEGRATION_POINT_ID).Returns(new Data.IntegrationPoint
 			{
 				SecuredConfiguration = securedConfiguration
 			});
@@ -62,7 +63,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		{
 			var expectedSecretRef = new SecretRef();
 
-			_library.Read(_INTEGRATION_POINT_ID).Returns(new Data.IntegrationPoint
+			_objectManager.Read<Data.IntegrationPoint>(_INTEGRATION_POINT_ID).Returns(new Data.IntegrationPoint
 			{
 				SecuredConfiguration = "secured_configuration"
 			});

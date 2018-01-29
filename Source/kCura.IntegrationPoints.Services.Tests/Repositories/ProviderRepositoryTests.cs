@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.QueryBuilders.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Services.Repositories.Implementations;
-using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Services.Tests.Repositories
 {
@@ -66,10 +64,8 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 		[Test]
 		public void ItShouldGetAllSourceProviders()
 		{
-			var library = Substitute.For<IGenericLibrary<SourceProvider>>();
-			_rsapiService.SourceProviderLibrary.Returns(library);
-
-			var expectedQuery = new AllSourceProvidersQueryBuilder().Create();
+			var objectManager = Substitute.For<IRelativityObjectManager>();
+			_rsapiService.RelativityObjectManager.Returns(objectManager);
 
 			var expectedResult = new List<SourceProvider>
 			{
@@ -85,8 +81,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 				}
 			};
 
-			library.Query(Arg.Is<Query<RDO>>(x => x.IsEqualOnTypeAndNameAndFields(expectedQuery)))
-				.Returns(expectedResult);
+			objectManager.Query<SourceProvider>(Arg.Any<QueryRequest>()).Returns(expectedResult);
 
 			var actualResult = _providerRepository.GetSourceProviders(521);
 
@@ -97,10 +92,8 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 		[Test]
 		public void ItShouldGetAllDestinationProviders()
 		{
-			var library = Substitute.For<IGenericLibrary<DestinationProvider>>();
-			_rsapiService.DestinationProviderLibrary.Returns(library);
-
-			var expectedQuery = new AllDestinationProvidersQueryBuilder().Create();
+			var objectManager = Substitute.For<IRelativityObjectManager>();
+			_rsapiService.RelativityObjectManager.Returns(objectManager);
 
 			var expectedResult = new List<DestinationProvider>
 			{
@@ -116,8 +109,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 				}
 			};
 
-			library.Query(Arg.Is<Query<RDO>>(x => x.IsEqualOnTypeAndNameAndFields(expectedQuery)))
-				.Returns(expectedResult);
+			objectManager.Query<DestinationProvider>(Arg.Any<QueryRequest>()).Returns(expectedResult);
 
 			var actualResult = _providerRepository.GetDesinationProviders(521);
 

@@ -2,21 +2,19 @@
 using System.Collections.Generic;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.QueryBuilders.Implementations
 {
 	public class DestinationProviderArtifactIdByGuidQueryBuilder : IDestinationProviderArtifactIdByGuidQueryBuilder
 	{
-		public Query<RDO> Create(string guid)
+		public QueryRequest Create(string guid)
 		{
-			return new Query<RDO>
+			return new QueryRequest
 			{
-				ArtifactTypeGuid = new Guid(ObjectTypeGuids.DestinationProvider),
-				Condition = new TextCondition(new Guid(DestinationProviderFieldGuids.Identifier), TextConditionEnum.EqualTo, guid),
-				Fields = new List<FieldValue>
-				{
-					new FieldValue("Artifact ID")
-				}
+				Condition = $"'{DestinationProviderFields.Identifier}' == '{guid}'",
+				Fields = new List<FieldRef>() { new FieldRef { Name = Domain.Constants.DESTINATION_PROVIDER_ARTIFACTID_FIELD_NAME } },
+				ObjectType = new ObjectTypeRef { Guid = new Guid(ObjectTypeGuids.DestinationProvider) }
 			};
 		}
 	}

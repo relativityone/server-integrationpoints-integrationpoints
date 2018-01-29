@@ -117,6 +117,7 @@
     </Reference>
     <Reference Include="kCura.Relativity.Client, Version=9.6.12.15, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\kCura.Relativity.Client.9.6.12.15\lib\net462\kCura.Relativity.Client.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="kCura.SearchProvider, Version=9.6.12.15, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\RelativityCore.9.6.12.15\lib\net462\kCura.SearchProvider.dll</HintPath>
@@ -242,7 +243,7 @@
       <HintPath>..\packages\RelativityCore.9.6.12.15\lib\net462\Relativity.CustomPages.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Data, Version=9.6.12.15, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Data.9.6.12.15\lib\net462\Relativity.Data.dll</HintPath>
+      <HintPath>..\packages\RelativityCore.9.6.12.15\lib\net462\Relativity.Data.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.DataGrid, Version=10.13.2.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\RelativityCore.9.6.12.15\lib\net462\Relativity.DataGrid.dll</HintPath>
@@ -262,6 +263,22 @@
     </Reference>
     <Reference Include="Relativity.Logging.Interfaces, Version=9.4.308.17, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\RelativityCore.9.6.12.15\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.OAuth2Client.IdentityModel.Interfaces, Version=1.0.23.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.Interfaces.1.0.23\lib\net462\Relativity.OAuth2Client.IdentityModel.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.OAuth2Client.Interfaces, Version=1.0.23.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.Interfaces.1.0.23\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.OAuth2Client, Version=1.0.23.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.1.0.23\lib\net462\Relativity.OAuth2Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.OAuth2Client.IdentityModel, Version=1.0.23.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OAuth2Client.1.0.23\lib\net462\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.OAuth2Client.IdentityModel.Interfaces, Version=1.0.23.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.OAuth2Client.Interfaces.1.0.23\lib\net462\Relativity.OAuth2Client.IdentityModel.Interfaces.dll</HintPath>

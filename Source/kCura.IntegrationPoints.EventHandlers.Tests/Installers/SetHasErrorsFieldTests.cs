@@ -70,7 +70,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 			_instance.UpdateIntegrationPointHasErrorsField(integrationPoint);
 
 			// Assert
-			_caseServiceContext.RsapiService.IntegrationPointLibrary.Received(1)
+			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1)
 				.Update(Arg.Is<Data.IntegrationPoint>(x => x.HasErrors.Value == false && x.ArtifactId == integrationPoint.ArtifactId));
 			_integrationPointService.Received(0).SaveIntegration(null);
 			_jobHistoryService.Received(0).GetJobHistory(null);
@@ -170,7 +170,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 			// Assert
 			_integrationPointService.Received(1).GetAllRDOs();
 			_jobHistoryService.Received(1).GetJobHistory(Arg.Is<int[]>(x => CompareLists(x, integrationPoint.JobHistory)));
-			_caseServiceContext.RsapiService.IntegrationPointLibrary.Received(1)
+			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1)
 				.Update(Arg.Is<Data.IntegrationPoint>(x => x.HasErrors.Value == false && x.ArtifactId == integrationPoint.ArtifactId));
 		}
 
@@ -203,7 +203,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 
 			// Assert
 			_jobHistoryService.Received(1).GetJobHistory(Arg.Is<int[]>(x => CompareLists(x, integrationPoint.JobHistory)));
-			_caseServiceContext.RsapiService.IntegrationPointLibrary.Received(1)
+			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1)
 				.Update(Arg.Is<Data.IntegrationPoint>(x => x.HasErrors.Value == hasErrorsExpectation && x.ArtifactId == integrationPoint.ArtifactId));
 			_integrationPointService.Received(0).SaveIntegration(null);
 		}

@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 		private bool IsRelativityProvider(Artifact artifact)
 		{
 			int sourceProvider = (int) artifact.Fields[_fieldsConstants.SourceProvider].Value.Value;
-			return _context.RsapiService.SourceProviderLibrary.Read(int.Parse(sourceProvider.ToString())).Name == Constants.IntegrationPoints.RELATIVITY_PROVIDER_NAME;
+			return _context.RsapiService.RelativityObjectManager.Read<SourceProvider>(int.Parse(sourceProvider.ToString())).Name == Constants.IntegrationPoints.RELATIVITY_PROVIDER_NAME;
 		}
 
 		private IDictionary<string, object> GetSourceConfiguration(Artifact artifact)

@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using kCura.Relativity.Client.DTOs;
 
-namespace kCura.IntegrationPoints.Core.Services.JobHistory
+namespace kCura.IntegrationPoints.Data.Repositories
 {
-	public interface IRunningJobService
+	public interface IRunningJobRepository
 	{
 		List<RDO> GetRunningJobs(int workspaceArtifactId);
 	}

@@ -15,6 +15,8 @@ namespace kCura.IntegrationPoints.Data.SecretStore
 
 		Dictionary<string, string> CreateSecretData(IntegrationPoint rdo);
 
+		Dictionary<string, string> CreateSecretData(string securedConfiguration);
+
 		string GetTenantID();
 	}
 }

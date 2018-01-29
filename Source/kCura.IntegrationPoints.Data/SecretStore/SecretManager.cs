@@ -51,6 +51,11 @@ namespace kCura.IntegrationPoints.Data.SecretStore
 			return new Dictionary<string, string> {{nameof(IntegrationPoint.SecuredConfiguration), rdo.SecuredConfiguration}};
 		}
 
+		public Dictionary<string, string> CreateSecretData(string securedConfiguration)
+		{
+			return new Dictionary<string, string> { { nameof(IntegrationPoint.SecuredConfiguration), securedConfiguration } };
+		}
+
 		public string GetTenantID()
 		{
 			return $"{SecretStoreConstants.TENANT_ID_PREFIX}:{_workspaceArtifactId}";

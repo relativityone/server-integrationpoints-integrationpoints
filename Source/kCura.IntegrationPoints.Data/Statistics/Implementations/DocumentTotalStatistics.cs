@@ -1,8 +1,8 @@
 ﻿using System;
 using kCura.IntegrationPoints.Data.QueryBuilders.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.Relativity.Client.DTOs;
 using Relativity.API;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 {
@@ -13,11 +13,11 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 		private const string _FOR_PRODUCTION_ERROR = "Failed to retrieve total documents count for production set: {productionSetId}.";
 
 		private readonly IAPILog _logger;
-		private readonly IRdoRepository _rdoRepository;
+		private readonly IRelativityObjectManager _relativityObjectManager;
 
-		public DocumentTotalStatistics(IHelper helper, IRdoRepository rdoRepository)
+		public DocumentTotalStatistics(IHelper helper, IRelativityObjectManager relativityObjectManager)
 		{
-			_rdoRepository = rdoRepository;
+			_relativityObjectManager = relativityObjectManager;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<DocumentTotalStatistics>();
 		}
 
@@ -25,8 +25,8 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 		{
 			try
 			{
-				Query<RDO> query = new DocumentQueryBuilder().AddFolderCondition(folderId, viewId, includeSubFoldersTotals).NoFields().Build();
-				return ExecuteQuery(query).TotalCount;
+				QueryRequest query = new DocumentQueryBuilder().AddFolderCondition(folderId, viewId, includeSubFoldersTotals).NoFields().Build();
+				return _relativityObjectManager.QueryTotalCount(query);
 			}
 			catch (Exception e)
 			{
@@ -39,8 +39,8 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 		{
 			try
 			{
-				Query<RDO> query = new ProductionInformationQueryBuilder().AddProductionSetCondition(productionSetId).NoFields().Build();
-				return ExecuteQuery(query).TotalCount;
+				QueryRequest query = new ProductionInformationQueryBuilder().AddProductionSetCondition(productionSetId).NoFields().Build();
+				return _relativityObjectManager.QueryTotalCount(query);
 			}
 			catch (Exception e)
 			{
@@ -53,19 +53,14 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 		{
 			try
 			{
-				Query<RDO> query = new DocumentQueryBuilder().AddSavedSearchCondition(savedSearchId).NoFields().Build();
-				return ExecuteQuery(query).TotalCount;
+				QueryRequest query = new DocumentQueryBuilder().AddSavedSearchCondition(savedSearchId).NoFields().Build();
+				return _relativityObjectManager.QueryTotalCount(query);
 			}
 			catch (Exception e)
 			{
 				_logger.LogError(e, _FOR_SAVED_SEARCH_ERROR, savedSearchId);
 				throw;
 			}
-		}
-
-		private QueryResultSet<RDO> ExecuteQuery(Query<RDO> query)
-		{
-			return _rdoRepository.Query(query);
 		}
 	}
 }

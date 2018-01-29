@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Transformers;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Services.JobHistory
 {
@@ -19,20 +21,25 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
 		public IList<Data.JobHistory> GetUnfinishedJobs(int workspaceArtifactId)
 		{
-			var unfinishedChoicesNames = new List<Guid>
-			{
+			Guid[] unfinishedChoicesNames = {
 				JobStatusChoices.JobHistoryPending.Guids.FirstOrDefault(),
 				JobStatusChoices.JobHistoryProcessing.Guids.FirstOrDefault(),
 				JobStatusChoices.JobHistoryStopping.Guids.FirstOrDefault()
 			};
-			Condition unfinishedJobsCondition = new SingleChoiceCondition(new Guid(JobHistoryFieldGuids.JobStatus), SingleChoiceConditionEnum.AnyOfThese, unfinishedChoicesNames);
-			Query<RDO> query = new Query<RDO>
+			//Condition unfinishedJobsCondition = new SingleChoiceCondition(new Guid(JobHistoryFieldGuids.JobStatus), SingleChoiceConditionEnum.AnyOfThese, unfinishedChoicesNames);
+			//Query<RDO> query = new Query<RDO>
+			//{
+			//	Fields = FieldValue.AllFields,
+			//	Condition = unfinishedJobsCondition
+			//};
+
+			QueryRequest request = new QueryRequest()
 			{
-				Fields = FieldValue.AllFields,
-				Condition = unfinishedJobsCondition
+				Fields = new Data.JobHistory().ToFieldList(),
+				Condition = $"'{JobHistoryFields.JobStatus}' IN CHOICE [{string.Join(",", unfinishedChoicesNames)}]"
 			};
 
-			return _rsapiServiceFactory.Create(workspaceArtifactId).JobHistoryLibrary.Query(query);
+			return _rsapiServiceFactory.Create(workspaceArtifactId).RelativityObjectManager.Query<Data.JobHistory>(request);
 		}
 	}
 }

@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.QueryBuilders.Implementations
 {
@@ -10,10 +9,15 @@ namespace kCura.IntegrationPoints.Data.QueryBuilders.Implementations
 	{
 		public DocumentQueryBuilder AddFolderCondition(int folderId, int viewId, bool includeSubFoldersTotals)
 		{
-			var folderNameCondition = new ObjectCondition("Folder Name", GetConditionOperator(includeSubFoldersTotals), folderId);
+			//var folderNameCondition = new ObjectCondition("Folder Name", GetConditionOperator(includeSubFoldersTotals), folderId);
+			// TODO 
+			string folderNameCondition = includeSubFoldersTotals
+				? $"'Folder Name' IN OBJECT [{folderId}]"
+				: $"'Folder Name' == OBJECT {folderId}";
+
 			Conditions.Add(folderNameCondition);
 
-			var viewCondition = new ViewCondition(viewId);
+			string viewCondition = $"'ArtifactId' IN VIEW {viewId}";
 			Conditions.Add(viewCondition);
 
 			return this;
@@ -21,70 +25,59 @@ namespace kCura.IntegrationPoints.Data.QueryBuilders.Implementations
 
 		public DocumentQueryBuilder AddSavedSearchCondition(int savedSearchId)
 		{
-			var savedSearchCondition = new SavedSearchCondition(savedSearchId);
-			Conditions.Add(savedSearchCondition);
+			string condition = $"'ArtifactId' IN SAVEDSEARCH {savedSearchId}";
+			Conditions.Add(condition);
 
 			return this;
 		}
 
 		public DocumentQueryBuilder AddHasNativeCondition()
 		{
-			var hasNativeCondition = new BooleanCondition(DocumentFieldsConstants.HasNativeFieldGuid, BooleanConditionEnum.EqualTo, true);
-			Conditions.Add(hasNativeCondition);
+			string condition = $"'{DocumentFieldsConstants.HasNativeFieldGuid}' == true";
+			Conditions.Add(condition);
 
 			return this;
 		}
 
 		public DocumentQueryBuilder AddHasImagesCondition()
 		{
-			var hasImagesCondition = new SingleChoiceCondition(DocumentFieldsConstants.HasImagesFieldGuid, SingleChoiceConditionEnum.AnyOfThese,
-				new[] {DocumentFieldsConstants.HAS_IMAGES_YES_ARTIFACT_ID});
-			Conditions.Add(hasImagesCondition);
-
-			return this;
-		}
-
-		public DocumentQueryBuilder AllFields()
-		{
-			Fields = FieldValue.AllFields;
+			string condition = $"'{DocumentFieldsConstants.HasImagesFieldName}' == CHOICE {DocumentFieldsConstants.HAS_IMAGES_YES_ARTIFACT_ID}";
+			Conditions.Add(condition);
 
 			return this;
 		}
 
 		public DocumentQueryBuilder NoFields()
 		{
-			Fields = FieldValue.NoFields;
-
+			Fields = new List<FieldRef>();
 			return this;
 		}
 
 		public DocumentQueryBuilder AddField(Guid fieldGuid)
 		{
-			Fields.Add(new FieldValue(fieldGuid));
+			Fields.Add(new FieldRef { Guid = fieldGuid });
 
 			return this;
 		}
 
 		public DocumentQueryBuilder AddFields(List<Guid> fieldGuids)
 		{
-			Fields.AddRange(fieldGuids.Select(x => new FieldValue(x)));
+			Fields.AddRange(fieldGuids.Select(x => new FieldRef { Guid = x }));
 
 			return this;
 		}
 
-		public override Query<RDO> Build()
+		public override QueryRequest Build()
 		{
-			return new Query<RDO>
+			return new QueryRequest
 			{
-				ArtifactTypeID = (int)ArtifactType.Document,
+				ObjectType = new ObjectTypeRef
+				{
+					Guid = Guid.Parse(ObjectTypeGuids.Document)
+				},
 				Fields = Fields,
 				Condition = BuildCondition()
 			};
-		}
-
-		private ObjectConditionEnum GetConditionOperator(bool includeChildren)
-		{
-			return includeChildren ? ObjectConditionEnum.AnyOfThese : ObjectConditionEnum.EqualTo;
 		}
 	}
 }

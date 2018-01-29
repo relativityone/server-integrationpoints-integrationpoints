@@ -15,8 +15,8 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public ProviderType GetProviderType(int sourceProviderId, int destinationProviderId)
 		{
-			string sourceProviderGuid = _rsapiService.SourceProviderLibrary.Read(sourceProviderId).Identifier;
-			string destinationProviderGuid = _rsapiService.DestinationProviderLibrary.Read(destinationProviderId).Identifier;
+			string sourceProviderGuid = _rsapiService.RelativityObjectManager.Read<SourceProvider>(sourceProviderId).Identifier;
+			string destinationProviderGuid = _rsapiService.RelativityObjectManager.Read<DestinationProvider>(destinationProviderId).Identifier;
 			return GetProviderType(sourceProviderGuid, destinationProviderGuid);
 		}
 

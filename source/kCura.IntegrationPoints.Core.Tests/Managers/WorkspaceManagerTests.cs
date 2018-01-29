@@ -4,8 +4,6 @@ using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.Core.Managers;
-using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NUnit.Framework;
 
@@ -18,20 +16,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		private const int CurrentUserWorkspaceArtifactId = 1234;
 		private IRepositoryFactory _repositoryFactory;
 		private IWorkspaceRepository _workspaceRepository;
-		private IRdoRepository _rdoRepository;
-		private int _workspaceArtifactId;
 
 		[SetUp]
 		public void Setup()
 		{
-			_workspaceArtifactId = -1;
-
-			QueryResultSet<RDO> rdoQueryResultSet = new QueryResultSet<RDO>
-			{
-				Success = true,
-				Results = new List<Result<RDO>>() { new Result<RDO>() {Artifact = new RDO(CurrentUserWorkspaceArtifactId)}}
-			};
-
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
 
 			_workspaceRepository = Substitute.For<IWorkspaceRepository>();
@@ -52,10 +40,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 				});
 
 			_repositoryFactory.GetWorkspaceRepository().Returns(_workspaceRepository);
-
-			_rdoRepository = Substitute.For<IRdoRepository>();
-			_rdoRepository.Query(Arg.Any<Query<RDO>>()).Returns(rdoQueryResultSet);
-			_repositoryFactory.GetRdoRepository(_workspaceArtifactId).Returns(_rdoRepository);
 		}
 
 		[Test]

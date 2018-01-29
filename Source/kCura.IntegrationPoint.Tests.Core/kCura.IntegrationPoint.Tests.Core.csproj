@@ -177,8 +177,8 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.IdentityModel.Protocol.Extensions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.Protocol.Extensions.1.0.0\lib\net45\Microsoft.IdentityModel.Protocol.Extensions.dll</HintPath>
+    <Reference Include="Microsoft.IdentityModel.Protocol.Extensions, Version=1.0.2.33, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Protocol.Extensions.1.0.2.206221351\lib\net45\Microsoft.IdentityModel.Protocol.Extensions.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Owin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -368,8 +368,8 @@
       <HintPath>..\packages\Relativity.SecretCatalog.1.0.19\lib\Relativity.SecretCatalog.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.SecretCatalog.AzureKeyVault, Version=1.0.18.4, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.SecretCatalog.AzureKeyVault.1.0.18\lib\Relativity.SecretCatalog.AzureKeyVault.dll</HintPath>
+    <Reference Include="Relativity.SecretCatalog.AzureKeyVault, Version=1.0.19.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.SecretCatalog.AzureKeyVault.1.0.19\lib\Relativity.SecretCatalog.AzureKeyVault.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.SecretCatalog.SQL.SQLCatalog, Version=9.6.12.15, Culture=neutral, processorArchitecture=MSIL">
@@ -409,8 +409,8 @@
       <HintPath>..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.148\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Telemetry.MetricsCollection, Version=9.4.74.5, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Telemetry.MetricsCollection.9.4.74\lib\net45\Relativity.Telemetry.MetricsCollection.dll</HintPath>
+    <Reference Include="Relativity.Telemetry.MetricsCollection, Version=9.4.148.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Telemetry.MetricsCollection.9.4.148\lib\net462\Relativity.Telemetry.MetricsCollection.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Telemetry.MetricsCollection.Factory, Version=9.6.12.15, Culture=neutral, processorArchitecture=MSIL">
@@ -444,24 +444,24 @@
     <Reference Include="Relativity.Transfer.Client.Http, Version=1.2.18014.6, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\relativity.transfer.client.1.2.20\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Vfs, Version=1.0.20.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Vfs.1.0.20\lib\net45\Relativity.Vfs.dll</HintPath>
+    <Reference Include="Relativity.Vfs, Version=1.0.22.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Vfs.1.0.22\lib\net462\Relativity.Vfs.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Vfs.IO, Version=1.0.20.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Vfs.IO.1.0.20\lib\net451\Relativity.Vfs.IO.dll</HintPath>
+    <Reference Include="Relativity.Vfs.IO, Version=1.0.22.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Vfs.IO.1.0.22\lib\net462\Relativity.Vfs.IO.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Vfs.IO.Azure, Version=1.0.20.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Vfs.IO.1.0.20\lib\net451\Relativity.Vfs.IO.Azure.dll</HintPath>
+    <Reference Include="Relativity.Vfs.IO.Azure, Version=1.0.22.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Vfs.IO.1.0.22\lib\net462\Relativity.Vfs.IO.Azure.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Vfs.IO.Disk, Version=1.0.20.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Vfs.IO.1.0.20\lib\net451\Relativity.Vfs.IO.Disk.dll</HintPath>
+    <Reference Include="Relativity.Vfs.IO.Disk, Version=1.0.22.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Vfs.IO.1.0.22\lib\net462\Relativity.Vfs.IO.Disk.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Vfs.IO.Interfaces, Version=1.0.20.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Vfs.IO.1.0.20\lib\net451\Relativity.Vfs.IO.Interfaces.dll</HintPath>
+    <Reference Include="Relativity.Vfs.IO.Interfaces, Version=1.0.22.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Vfs.IO.1.0.22\lib\net462\Relativity.Vfs.IO.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Renci.SshNet, Version=2016.0.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
@@ -498,8 +498,8 @@
     <Reference Include="System.DirectoryServices" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.IdentityModel" />
-    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.4.0.1\lib\net45\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=4.0.20622.1351, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.4.0.2.206221351\lib\net45\System.IdentityModel.Tokens.Jwt.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Net.Http.WebRequest" />
@@ -525,12 +525,12 @@
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml" />
-    <Reference Include="SystemInterface, Version=0.7.0.0, Culture=neutral, PublicKeyToken=fbc3a63dd3cf8960, processorArchitecture=MSIL">
-      <HintPath>..\packages\SystemWrapper.Interfaces.0.7.0.0\lib\net45\SystemInterface.dll</HintPath>
+    <Reference Include="SystemInterface, Version=0.19.0.115, Culture=neutral, PublicKeyToken=fbc3a63dd3cf8960, processorArchitecture=MSIL">
+      <HintPath>..\packages\SystemWrapper.Interfaces.0.19.0.115\lib\net45\SystemInterface.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SystemWrapper, Version=0.7.0.0, Culture=neutral, PublicKeyToken=fbc3a63dd3cf8960, processorArchitecture=MSIL">
-      <HintPath>..\packages\SystemWrapper.Wrappers.0.7.0.0\lib\net45\SystemWrapper.dll</HintPath>
+    <Reference Include="SystemWrapper, Version=0.19.0.115, Culture=neutral, PublicKeyToken=fbc3a63dd3cf8960, processorArchitecture=MSIL">
+      <HintPath>..\packages\SystemWrapper.Wrappers.0.19.0.115\lib\net45\SystemWrapper.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Thinktecture.IdentityModel.Client.Net45, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -564,7 +564,6 @@
     <Compile Include="Extensions\GenericPermissionListExtension.cs" />
     <Compile Include="Extensions\JobExtensions.cs" />
     <Compile Include="Extensions\ObjectPermissionListExtension.cs" />
-    <Compile Include="Extensions\RelativityQueryExtensions.cs" />
     <Compile Include="FieldMaps.cs" />
     <Compile Include="Fields.cs" />
     <Compile Include="FileToBase64Converter.cs" />

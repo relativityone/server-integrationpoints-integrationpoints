@@ -1,12 +1,9 @@
-﻿using System;
-using System.Linq;
-using kCura.IntegrationPoints.Core.Contracts;
-using kCura.IntegrationPoints.Core.Contracts.Configuration;
+﻿using System.Linq;
 using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NUnit.Framework;
@@ -16,11 +13,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 	[TestFixture]
 	public class IntegrationPointTypeValidatorTests
 	{
+		private IRelativityObjectManager _objectManager;
 		private const int _INTEGRATION_POINT_TYPE = 0;
 		private const string _LOAD_FILE_SOURCE_PROVIDE_IDENTIFIER = "548F0873-8E5E-4DA6-9F27-5F9CDA764636";
 		private const string _FTP_SOURCE_PROVIDE_IDENTIFIER = "85120bc8-b2b9-4f05-99e9-de37bb6c0e15";
 		private const string _LDAP_SOURCE_PROVIDE_IDENTIFIER = "5bf1f2c2-9670-4d6e-a3e9-dbc83db6c232";
-		private ICaseServiceContext _caseServiceContext;
 
 		public enum IpType
 		{
@@ -31,7 +28,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		[SetUp]
 		public void SetUp()
 		{
-			_caseServiceContext = Substitute.For<ICaseServiceContext>();
+			_objectManager = Substitute.For<IRelativityObjectManager>();
 		}
 
 		[Test]
@@ -43,7 +40,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		{
 			//Arrange
 			MockIpTypeId(ipType);
-			var validator = new IntegrationPointTypeValidator(_caseServiceContext);
+			var validator = new IntegrationPointTypeValidator(_objectManager);
 			var ipModel = GetProviderValidationModelObject(sourceProviderId);
 
 			//Act
@@ -62,7 +59,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		{
 			//Arrange
 			MockIpTypeId(ipType);
-			var validator = new IntegrationPointTypeValidator(_caseServiceContext);
+			var validator = new IntegrationPointTypeValidator(_objectManager);
 			var ipModel = GetProviderValidationModelObject(sourceProviderId);
 
 			//Act
@@ -77,8 +74,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		{
 			//Arrange
 			IntegrationPointType ipTypeObject = null;
-			_caseServiceContext.RsapiService.IntegrationPointTypeLibrary.Read(Arg.Any<int>()).Returns(ipTypeObject);
-			var validator = new IntegrationPointTypeValidator(_caseServiceContext);
+			_objectManager.Read<IntegrationPointType>(Arg.Any<int>()).Returns(ipTypeObject);
+			var validator = new IntegrationPointTypeValidator(_objectManager);
 			var ipModel = GetProviderValidationModelObject(IntegrationPoints.Domain.Constants.RELATIVITY_PROVIDER_GUID);
 
 			//Act
@@ -105,7 +102,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			{
 				Identifier = GetIpTypeId(ipType)
 			};
-			_caseServiceContext.RsapiService.IntegrationPointTypeLibrary.Read(Arg.Any<int>()).Returns(integrationPointType);
+			_objectManager.Read<IntegrationPointType>(Arg.Any<int>()).Returns(integrationPointType);
 		}
 
 		private string GetIpTypeId(IpType ipType)

@@ -6,12 +6,14 @@ using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Management.Tasks.Helpers;
 using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
 using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Management.Tests.Tasks.Helpers
 {
@@ -23,16 +25,16 @@ namespace kCura.IntegrationPoints.Management.Tests.Tasks.Helpers
 
 		private StuckJobs _instance;
 		private IJobService _jobService;
-		private IRunningJobService _runningJobService;
+		private IRunningJobRepository _runningJobRepository;
 		private IRSAPIServiceFactory _rsapiServiceFactory;
 
 		public override void SetUp()
 		{
 			_jobService = Substitute.For<IJobService>();
-			_runningJobService = Substitute.For<IRunningJobService>();
+			_runningJobRepository = Substitute.For<IRunningJobRepository>();
 			_rsapiServiceFactory = Substitute.For<IRSAPIServiceFactory>();
 
-			_instance = new StuckJobs(_jobService, _runningJobService, _rsapiServiceFactory);
+			_instance = new StuckJobs(_jobService, _runningJobRepository, _rsapiServiceFactory);
 		}
 
 		[Test]
@@ -88,10 +90,10 @@ namespace kCura.IntegrationPoints.Management.Tests.Tasks.Helpers
 
 			_jobService.GetAllScheduledJobs().Returns(new List<Job> {job1, job2, job3, job4});
 
-			_runningJobService.GetRunningJobs(_WORKSPACE_ID_A).Returns(new List<RDO>());
-			_runningJobService.GetRunningJobs(_WORKSPACE_ID_B).Returns(new List<RDO> {rdo2, rdo3});
+			_runningJobRepository.GetRunningJobs(_WORKSPACE_ID_A).Returns(new List<RDO>());
+			_runningJobRepository.GetRunningJobs(_WORKSPACE_ID_B).Returns(new List<RDO> {rdo2, rdo3});
 
-			_rsapiServiceFactory.Create(_WORKSPACE_ID_B).JobHistoryLibrary.Read(Arg.Is<List<int>>(x => x.Count == 1 && x[0] == rdo2.ArtifactID))
+			_rsapiServiceFactory.Create(_WORKSPACE_ID_B).RelativityObjectManager.Query<JobHistory>(Arg.Any<QueryRequest>())
 				.Returns(new List<JobHistory> {new JobHistory {BatchInstance = batchInstance3} });
 
 			// ACT

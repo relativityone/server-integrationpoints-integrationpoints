@@ -7,10 +7,14 @@ using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
+using kCura.IntegrationPoints.Data.SecretStore;
 using kCura.IntegrationPoints.Services.Tests.Integration.Helpers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client.DTOs;
 using NUnit.Framework;
+using Relativity.API;
 using Group = kCura.IntegrationPoint.Tests.Core.Group;
 using User = kCura.IntegrationPoint.Tests.Core.User;
 using Workspace = kCura.IntegrationPoint.Tests.Core.Workspace;
@@ -27,8 +31,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 		private IList<TestData> _testData;
 		private int _groupId;
 		private UserModel _user;
-		private RsapiClientLibrary<Data.IntegrationPoint> _integrationPointLibrary;
-		private RsapiClientLibrary<JobHistory> _jobHistoryLibrary;
+		private IRelativityObjectManager _objectManager;
 
 		private IList<TestData> _expectedResult;
 
@@ -36,8 +39,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 		{
 			base.SuiteSetup();
 
-			_integrationPointLibrary = new RsapiClientLibrary<Data.IntegrationPoint>(Helper, SourceWorkspaceArtifactId);
-			_jobHistoryLibrary = new RsapiClientLibrary<JobHistory>(Helper, SourceWorkspaceArtifactId);
+			_objectManager = new RelativityObjectManager(SourceWorkspaceArtifactId, Helper, new DefaultSecretCatalogFactory(), new SecretManager(SourceWorkspaceArtifactId));
 
 			_groupId = Group.CreateGroup($"group_{Utils.FormatedDateTimeNow}");
 			_user = User.CreateUser("firstname", "lastname", $"a_{Utils.FormatedDateTimeNow}@relativity.com", new List<int> {_groupId});
@@ -87,11 +89,11 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 				EndTimeUTC = DateTime.Now
 			};
 
-			_jobHistoryLibrary.Create(jobHistory);
+			_objectManager.Create(jobHistory);
 
 			if (testData.DeletedAfterRun)
 			{
-				_integrationPointLibrary.Delete(integrationPoint.ArtifactID);
+				_objectManager.Delete(integrationPoint.ArtifactID);
 			}
 		}
 

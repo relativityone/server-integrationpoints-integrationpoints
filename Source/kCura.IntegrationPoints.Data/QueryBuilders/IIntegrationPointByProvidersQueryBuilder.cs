@@ -1,9 +1,10 @@
 ﻿using kCura.Relativity.Client.DTOs;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.QueryBuilders
 {
 	public interface IIntegrationPointByProvidersQueryBuilder
 	{
-		Query<RDO> CreateQuery(int sourceProviderArtifactId, int destinationProviderArtifactId);
+		QueryRequest CreateQuery(int sourceProviderArtifactId, int destinationProviderArtifactId);
 	}
 }

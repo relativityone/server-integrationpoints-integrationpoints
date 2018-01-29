@@ -54,6 +54,7 @@
     </Reference>
     <Reference Include="kCura.Relativity.Client, Version=9.6.12.15, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\kCura.Relativity.Client.9.6.12.15\lib\net462\kCura.Relativity.Client.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -141,6 +142,8 @@
     <Compile Include="Extensions\ObjectQueryResultSetExtensions.cs" />
     <Compile Include="Extensions\ResultSetExtensions.cs" />
     <Compile Include="Extensions\TaskExtension.cs" />
+    <Compile Include="Factories\Implementations\RelativityObjectManagerFactory.cs" />
+    <Compile Include="Factories\IRelativityObjectManagerFactory.cs" />
     <Compile Include="Factories\IRSAPIServiceFactory.cs" />
     <Compile Include="Factories\Implementations\RSAPIServiceFactory.cs" />
     <Compile Include="GenericLibraryFactory.cs" />
@@ -151,7 +154,6 @@
     <Compile Include="IIntegrationPointBaseFieldsConstants.cs" />
     <Compile Include="IIntegrationPointQuery.cs" />
     <Compile Include="IntegrationPointBaseQuery.cs" />
-    <Compile Include="EncryptingRsapiClientLibrary.cs" />
     <Compile Include="IResourceDbProvider.cs" />
     <Compile Include="IResourcePoolContext.cs" />
     <Compile Include="IRSAPIRdoQuery.cs" />
@@ -161,11 +163,9 @@
     <Compile Include="Queries\GetSavedSearchQuery.cs" />
     <Compile Include="Queries\IJobResourceTracker.cs" />
     <Compile Include="QueryBuilders\Implementations\AllIntegrationPointTypesQueryBuilder.cs" />
-    <Compile Include="QueryBuilders\Implementations\AllDestinationProvidersQueryBuilder.cs" />
     <Compile Include="QueryBuilders\IDestinationProviderArtifactIdByGuidQueryBuilder.cs" />
     <Compile Include="QueryBuilders\IIntegrationPointByProvidersQueryBuilder.cs" />
     <Compile Include="QueryBuilders\IIntegrationPointsCompletedJobsQueryBuilder.cs" />
-    <Compile Include="QueryBuilders\Implementations\AllSourceProvidersQueryBuilder.cs" />
     <Compile Include="QueryBuilders\Implementations\DestinationProviderArtifactIdByGuidQueryBuilder.cs" />
     <Compile Include="QueryBuilders\Implementations\DocumentQueryBuilder.cs" />
     <Compile Include="QueryBuilders\Implementations\IntegrationPointByProvidersQueryBuilder.cs" />
@@ -180,12 +180,16 @@
     <Compile Include="Repositories\Implementations\FileRepository.cs" />
     <Compile Include="Repositories\Implementations\ProductionRepository.cs" />
     <Compile Include="Repositories\Implementations\QueryFieldLookupRepository.cs" />
+    <Compile Include="Repositories\Implementations\RelativityObjectManager.cs" />
+    <Compile Include="Repositories\Implementations\RunningJobRepository.cs" />
     <Compile Include="Repositories\IProductionRepository.cs" />
     <Compile Include="Repositories\IKeywordSearchRepository.cs" />
     <Compile Include="Repositories\Implementations\KeplerKeywordSearchRepository.cs" />
     <Compile Include="Repositories\Implementations\FieldRepository.cs" />
     <Compile Include="Repositories\IFieldRepository.cs" />
     <Compile Include="Repositories\IQueryFieldLookupRepository.cs" />
+    <Compile Include="Repositories\IRelativityObjectManager.cs" />
+    <Compile Include="Repositories\IRunningJobRepository.cs" />
     <Compile Include="ResourcePoolContext.cs" />
     <Compile Include="SecretStore\ISecretManagerFactory.cs" />
     <Compile Include="SecretStore\SecretManagerFactory.cs" />
@@ -278,7 +282,6 @@
     <Compile Include="IEddsDBContext.cs" />
     <Compile Include="EddsResourceConnection.cs" />
     <Compile Include="Extensions\DBContextExtensions.cs" />
-    <Compile Include="Extensions\GenericLibraryExtensions.cs" />
     <Compile Include="GetObjectBase.cs" />
     <Compile Include="IntegrationPointQuery.cs" />
     <Compile Include="IWorkspaceDBContext.cs" />
@@ -338,8 +341,12 @@
     <Compile Include="Statistics\IRdoStatistics.cs" />
     <Compile Include="Statistics\Implementations\RdoStatistics.cs" />
     <Compile Include="Toggles\ProcessingSourceLocationToggle.cs" />
-    <Compile Include="Transformers\IDtoTransformer.cs" />
-    <Compile Include="Transformers\JobHistoryErrorTransformer.cs" />
+    <Compile Include="Transformers\RDOConverter.cs" />
+    <Compile Include="UtilityDTO\RelativityObjectField.cs" />
+    <Compile Include="UtilityDTO\RelativityObjectQuery.cs" />
+    <Compile Include="UtilityDTO\RelativityObjectSort.cs" />
+    <Compile Include="UtilityDTO\RelativityObjectType.cs" />
+    <Compile Include="UtilityDTO\ResultSet.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GeneratedStringConstants.cs">
@@ -420,6 +427,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
+    <Folder Include="Security\" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\CSharpGuidelineAnalyzer.1.0.3.0\analyzers\dotnet\cs\CSharpGuidelineAnalyzer.dll" />

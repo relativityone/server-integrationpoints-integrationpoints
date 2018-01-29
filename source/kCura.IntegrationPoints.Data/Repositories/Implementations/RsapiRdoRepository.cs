@@ -19,30 +19,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<RsapiRdoRepository>();
 		}
 
-		public QueryResultSet<RDO> Query(Query<RDO> query)
-		{
-			using (IRSAPIClient rsapiClient = GetRsapiClient())
-			{
-				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
-
-				try
-				{
-					var result = rsapiClient.Repositories.RDO.Query(query);
-					if (!result.Success)
-					{
-						var messages = result.Results.Where(x => !x.Success).Select(x => x.Message);
-						throw new AggregateException(result.Message, messages.Select(x => new Exception(x)));
-					}
-					return result;
-				}
-				catch (Exception e)
-				{
-					_logger.LogError(e, "Failed to query RDOs.");
-					throw new Exception($"Unable to retrieve RDO: {e.Message}", e);
-				}
-			}
-		}
-
 		public RDO QuerySingle(Query<RDO> query)
 		{
 			var queryResult = Query(query).Results;
@@ -107,6 +83,30 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private IRSAPIClient GetRsapiClient()
 		{
 			return _rsapiClientFactory.CreateUserClient(_workspaceArtifactId);
+		}
+
+		private QueryResultSet<RDO> Query(Query<RDO> query)
+		{
+			using (IRSAPIClient rsapiClient = GetRsapiClient())
+			{
+				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
+
+				try
+				{
+					var result = rsapiClient.Repositories.RDO.Query(query);
+					if (!result.Success)
+					{
+						var messages = result.Results.Where(x => !x.Success).Select(x => x.Message);
+						throw new AggregateException(result.Message, messages.Select(x => new Exception(x)));
+					}
+					return result;
+				}
+				catch (Exception e)
+				{
+					_logger.LogError(e, "Failed to query RDOs.");
+					throw new Exception($"Unable to retrieve RDO: {e.Message}", e);
+				}
+			}
 		}
 	}
 }

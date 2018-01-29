@@ -1,28 +1,29 @@
 ﻿using kCura.IntegrationPoints.Data.Repositories;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 {
 	public class RdoStatistics : IRdoStatistics
 	{
-		private readonly IRdoRepository _rdoRepository;
+		private readonly IRelativityObjectManager _relativityObjectManager;
 
-		public RdoStatistics(IRdoRepository rdoRepository)
+		public RdoStatistics(IRelativityObjectManager relativityObjectManager)
 		{
-			_rdoRepository = rdoRepository;
+			_relativityObjectManager = relativityObjectManager;
 		}
 
 		public int ForView(int artifactTypeId, int viewId)
 		{
-			var query = new Query<RDO>
+			var queryRequest = new QueryRequest
 			{
-				ArtifactTypeID = artifactTypeId,
-				Fields = FieldValue.NoFields,
-				Condition = new ViewCondition(viewId)
+				ObjectType = new ObjectTypeRef
+				{
+					ArtifactTypeID = artifactTypeId
+				},
+				Condition = $"'ArtifactId' IN VIEW {viewId}"
 			};
 
-			return _rdoRepository.Query(query).TotalCount;
+			return _relativityObjectManager.QueryTotalCount(queryRequest);
 		}
 	}
 }

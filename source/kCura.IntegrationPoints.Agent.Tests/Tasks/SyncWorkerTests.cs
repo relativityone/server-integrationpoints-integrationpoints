@@ -106,9 +106,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			};
 			_associatedJobs = new List<Job>() {_job};
 			_fieldsMap = new List<FieldMap>();
-			_caseServiceContext.RsapiService.IntegrationPointLibrary.Read(_job.RelatedObjectArtifactID).Returns(_integrationPoint);
-			_caseServiceContext.RsapiService.SourceProviderLibrary.Read(_integrationPoint.SourceProvider.Value).Returns(_sourceProvider);
-			_caseServiceContext.RsapiService.DestinationProviderLibrary.Read(_integrationPoint.DestinationProvider.Value).Returns(_destinationProvider);
+			_caseServiceContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(_job.RelatedObjectArtifactID).Returns(_integrationPoint);
+			_caseServiceContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider.Value).Returns(_sourceProvider);
+			_caseServiceContext.RsapiService.RelativityObjectManager.Read<DestinationProvider>(_integrationPoint.DestinationProvider.Value).Returns(_destinationProvider);
 			_serializer.Deserialize<TaskParameters>(_job.JobDetails).Returns(_taskParams);
 			_jobHistoryService.CreateRdo(_integrationPoint, _taskParams.BatchInstance, 
 				JobTypeChoices.JobHistoryRun, Arg.Any<DateTime>()).Returns(_jobHistory);

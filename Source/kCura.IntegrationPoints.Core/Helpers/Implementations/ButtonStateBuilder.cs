@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
 		public ButtonStateDTO CreateButtonState(int applicationArtifactId, int integrationPointArtifactId)
 		{
-			var integrationPoint = _rsapiService.IntegrationPointLibrary.Read(integrationPointArtifactId);
+			var integrationPoint = _rsapiService.RelativityObjectManager.Read<IntegrationPoint>(integrationPointArtifactId);
 			var providerType = _providerTypeService.GetProviderType(integrationPoint.SourceProvider.Value, integrationPoint.DestinationProvider.Value);
 
 			ValidationResult jobHistoryErrorViewPermissionCheck = _permissionValidator.ValidateViewErrors(applicationArtifactId);

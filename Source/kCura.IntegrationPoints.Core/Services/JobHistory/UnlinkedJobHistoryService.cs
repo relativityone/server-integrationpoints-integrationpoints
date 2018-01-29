@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Services.JobHistory
 {
@@ -21,12 +22,17 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		{
 			var rsapiService = _rsapiServiceFactory.Create(workspaceArtifactId);
 
-			Query<RDO> query = new Query<RDO>
+			//Query<RDO> query = new Query<RDO>
+			//{
+			//	Fields = FieldValue.NoFields,
+			//	Condition = new NotCondition(new ObjectsCondition(new Guid(JobHistoryFieldGuids.IntegrationPoint), ObjectsConditionEnum.IsSet))
+			//};
+
+			QueryRequest request = new QueryRequest()
 			{
-				Fields = FieldValue.NoFields,
-				Condition = new NotCondition(new ObjectsCondition(new Guid(JobHistoryFieldGuids.IntegrationPoint), ObjectsConditionEnum.IsSet))
+				Condition = $"NOT '{JobHistoryFields.IntegrationPoint}' ISSET"
 			};
-			return rsapiService.JobHistoryLibrary.Query(query).Select(x => x.ArtifactId).ToList();
+			return rsapiService.RelativityObjectManager.Query<Data.JobHistory>(request).Select(x => x.ArtifactId).ToList();
 		}
 	}
 }

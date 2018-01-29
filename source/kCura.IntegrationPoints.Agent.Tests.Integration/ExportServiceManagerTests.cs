@@ -121,7 +121,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
 			};
 			model = CreateOrUpdateIntegrationPoint(model); // create integration point
-
+				
 			_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, model.ArtifactID, 9); // run now
 			Job job = null;
 			try

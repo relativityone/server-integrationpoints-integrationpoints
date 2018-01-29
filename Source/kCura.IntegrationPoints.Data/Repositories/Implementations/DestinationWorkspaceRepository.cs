@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Security.Claims;
 using kCura.IntegrationPoints.Data.Commands.MassEdit;
 using kCura.IntegrationPoints.Data.Extensions;
@@ -11,6 +12,7 @@ using kCura.Relativity.Client.DTOs;
 using Relativity.API;
 using Relativity.Core;
 using Relativity.Data;
+using Relativity.Services.Objects.DataContracts;
 using Artifact = kCura.Relativity.Client.DTOs.Artifact;
 using ArtifactType = Relativity.Query.ArtifactType;
 using Field = Relativity.Core.DTO.Field;
@@ -33,29 +35,22 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public DestinationWorkspace Query(int targetWorkspaceArtifactId, int? federatedInstanceArtifactId)
 		{
-			var query = new Query<RDO>();
-			query.ArtifactTypeGuid = new Guid(ObjectTypeGuids.DestinationWorkspace);
-			query.Fields = FieldValue.AllFields;
-
-			var workspaceCondition = new ObjectCondition(new Guid(DestinationWorkspaceFieldGuids.DestinationWorkspaceArtifactID), ObjectConditionEnum.EqualTo, targetWorkspaceArtifactId);
-
-			Condition federatedInstanceCondition;
+			string instanceCondition;
 			if (federatedInstanceArtifactId.HasValue)
 			{
-				federatedInstanceCondition = new ObjectCondition(new Guid(DestinationWorkspaceFieldGuids.DestinationInstanceArtifactID), ObjectConditionEnum.EqualTo,
-					federatedInstanceArtifactId.Value);
+				instanceCondition = $"'{DestinationWorkspaceFields.DestinationInstanceArtifactID}' == {federatedInstanceArtifactId}";
 			}
 			else
 			{
-				federatedInstanceCondition = new NotCondition(new ObjectCondition(new Guid(DestinationWorkspaceFieldGuids.DestinationInstanceArtifactID), ObjectConditionEnum.IsSet));
-				query.Condition = workspaceCondition;
+				instanceCondition = $"(NOT '{DestinationWorkspaceFields.DestinationInstanceArtifactID}' ISSET)";
 			}
-
-			query.Condition = new CompositeCondition(workspaceCondition, CompositeConditionEnum.And, federatedInstanceCondition);
-
+			
 			try
 			{
-				var rdos = _rsapiService.DestinationWorkspaceLibrary.Query(query);
+				var rdos = _rsapiService.RelativityObjectManager.Query<DestinationWorkspace>(new QueryRequest()
+				{
+					Condition = $"'{DestinationWorkspaceFields.DestinationWorkspaceArtifactID}' == {targetWorkspaceArtifactId} AND {instanceCondition}"
+				});
 
 				if (rdos.Count == 0)
 				{
@@ -83,10 +78,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				Name = instanceName
 			};
 
-
 			try
 			{
-				var artifactId = _rsapiService.DestinationWorkspaceLibrary.Create(destinationWorkspace);
+				int artifactId = (_rsapiService.DestinationWorkspaceLibrary.Create(new[] {destinationWorkspace}) ?? new List<int>()).FirstOrDefault();
 				destinationWorkspace.ArtifactId = artifactId;
 				return destinationWorkspace;
 			}
@@ -104,7 +98,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			try
 			{
-				_rsapiService.DestinationWorkspaceLibrary.Update(destinationWorkspace);
+				_rsapiService.RelativityObjectManager.Update(destinationWorkspace);
 			}
 			catch (Exception e)
 			{

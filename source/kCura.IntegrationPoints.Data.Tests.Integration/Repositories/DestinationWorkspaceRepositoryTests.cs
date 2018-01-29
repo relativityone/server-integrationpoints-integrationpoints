@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
+using System.Linq;
 using System.Security.Claims;
 using Castle.MicroKernel.Registration;
 using kCura.IntegrationPoint.Tests.Core;
@@ -16,6 +16,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 {
@@ -52,7 +53,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 				ArtifactId = null
 			};
 			federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(null).Returns(thisInstanceDto);
-			Container.Register(Component.For <IFederatedInstanceManager>().Instance(federatedInstanceManager).IsDefault());
+			Container.Register(Component.For<IFederatedInstanceManager>().Instance(federatedInstanceManager).IsDefault());
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();
 			_scratchTableRepository = repositoryFactory.GetScratchTableRepository(SourceWorkspaceArtifactId, "Documents2Tag", "LikeASir");
 			_documentRepository = repositoryFactory.GetDocumentRepository(SourceWorkspaceArtifactId);
@@ -135,7 +136,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			};
 
 			var integrationModelCreated = CreateOrUpdateIntegrationPoint(integrationModel);
-			var integrationPoint = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationModelCreated.ArtifactID);
+			var integrationPoint = CaseContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(integrationModelCreated.ArtifactID);
 
 			var batchInstance = Guid.NewGuid();
 			var jobHistory = _jobHistoryService.CreateRdo(integrationPoint, batchInstance, JobTypeChoices.JobHistoryRun, DateTime.Now);
@@ -176,7 +177,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			};
 
 			var integrationModelCreated = CreateOrUpdateIntegrationPoint(integrationModel);
-			var integrationPoint = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationModelCreated.ArtifactID);
+			var integrationPoint = CaseContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(integrationModelCreated.ArtifactID);
 
 			var batchInstance = Guid.NewGuid();
 			var jobHistory = _jobHistoryService.CreateRdo(integrationPoint, batchInstance, JobTypeChoices.JobHistoryRun, DateTime.Now);
@@ -195,7 +196,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			IDestinationWorkspaceRepository destinationWorkspaceRepository = new DestinationWorkspaceRepository(Helper, -1, Substitute.For<IRSAPIService>());
 
 			//Act
-			var destinationWorkspace= destinationWorkspaceRepository.Create(-999, "Invalid Workspace", -1, "This Instance");
+			var destinationWorkspace = destinationWorkspaceRepository.Create(-999, "Invalid Workspace", -1, "This Instance");
 
 			//Assert
 			Assert.AreEqual(destinationWorkspace.ArtifactId, 0);
@@ -241,9 +242,15 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 
 			foreach (var artifact in documentArtifacts)
 			{
-				StringAssert.Contains(expectedDestinationCase, artifact.Fields[0].Value.ToString());
-				StringAssert.Contains(expectedJobHistory, artifact.Fields[1].Value.ToString());
+				StringAssert.Contains(expectedDestinationCase, GetFirstMultiobjectFieldValueName(artifact.Fields[0]));
+				StringAssert.Contains(expectedJobHistory, GetFirstMultiobjectFieldValueName(artifact.Fields[1]));
 			}
+		}
+
+		private string GetFirstMultiobjectFieldValueName(ArtifactFieldDTO fields)
+		{
+			var fieldsValues = fields.Value as IEnumerable<RelativityObjectValue>;
+			return fieldsValues.First().Name;
 		}
 	}
 }
