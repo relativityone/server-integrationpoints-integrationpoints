@@ -1,0 +1,14 @@
+Castle.Windsor
+CSharpGuidelineAnalyzer
+kCura.Agent
+kCura.Apps.Common.Data
+kCura.Apps.Common.Utils
+kCura.Relativity.Client
+NSubstitute
+NUnit
+Relativity.Authentication
+Relativity.Data
+Relativity.ImportExport
+Relativity.Telemetry.APM
+Relativity.Telemetry.MetricsCollection
+Relativity.Services.Interfaces

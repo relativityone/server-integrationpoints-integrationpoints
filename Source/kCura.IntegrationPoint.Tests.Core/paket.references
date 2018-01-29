@@ -1,0 +1,20 @@
+AutoMapper
+Castle.Windsor
+CSharpGuidelineAnalyzer
+kCura.Apps.Common.Config
+kCura.Relativity.Client
+NSubstitute
+NUnit
+Relativity
+Relativity.API
+Relativity.Core
+Relativity.Data
+Relativity.ImportExport
+kCura.OutsideIn.FI.Win32 content: true
+Relativity.Kepler.Client
+Relativity.Services.Interfaces.Private
+Relativity.Telemetry.APM
+Relativity.Toggles
+Selenium.Support
+RelativityCore
+Relativity.OAuth2Client

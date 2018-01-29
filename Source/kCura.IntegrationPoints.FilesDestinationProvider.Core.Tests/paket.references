@@ -1,0 +1,8 @@
+CSharpGuidelineAnalyzer
+kCura.Apps.Common.Utils
+kCura.Relativity.Client
+NSubstitute
+NUnit
+Relativity.API
+Relativity.ImportExport
+Relativity.Telemetry.MetricsCollection

@@ -1,0 +1,10 @@
+Castle.Windsor
+CSharpGuidelineAnalyzer
+kCura.Apps.Common.Utils
+kCura.Relativity.Client
+NSubstitute
+NUnit
+Relativity.API
+Relativity.Data
+Relativity.Kepler
+relativity.transfer.client

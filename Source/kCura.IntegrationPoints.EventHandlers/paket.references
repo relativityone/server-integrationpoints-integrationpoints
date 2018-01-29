@@ -1,0 +1,11 @@
+Castle.Windsor
+CSharpGuidelineAnalyzer
+kCura.Apps.Common.Config
+kCura.EventHandler
+kCura.Relativity.Client
+Relativity
+Relativity.Core
+Relativity.Data
+Relativity.SecretCatalog
+Relativity.Services.Interfaces
+SystemWrapper.Interfaces

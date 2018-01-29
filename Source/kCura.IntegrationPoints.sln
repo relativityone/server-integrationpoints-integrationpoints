@@ -3,6 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{A7EC186E-BC93-4A69-92F7-778E2206D33F}"
+	ProjectSection(SolutionItems) = preProject
+		..\paket.dependencies = ..\paket.dependencies
+	EndProjectSection
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Web", "kCura.IntegrationPoints.Web\kCura.IntegrationPoints.Web.csproj", "{05724E56-C325-4CA2-9122-50A41411B691}"
 	ProjectSection(ProjectDependencies) = postProject
 		{599D771D-2AE7-4321-9BAC-BE06F827CE0A} = {599D771D-2AE7-4321-9BAC-BE06F827CE0A}

@@ -1,0 +1,13 @@
+CSharpGuidelineAnalyzer
+kCura.Agent
+kCura.Apps.Common.Data
+kCura.Apps.Common.Utils
+kCura.OutsideIn.FI.Win32
+kCura.Relativity.Client
+NUnit
+Relativity.Authentication
+Relativity.Data
+Relativity.Telemetry.APM
+relativity.transfer.client
+RelativityCore
+Relativity.OAuth2Client.Interfaces

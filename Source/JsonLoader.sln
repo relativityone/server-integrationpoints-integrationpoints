@@ -3,6 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{31AFAD24-A487-4980-8A90-CD3A48081B38}"
+	ProjectSection(SolutionItems) = preProject
+		..\paket.dependencies = ..\paket.dependencies
+	EndProjectSection
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonLoader", "JsonLoader\JsonLoader.csproj", "{DDB2C180-567F-4BE7-A0FC-E85560A16B11}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonWeb", "JsonWeb\JsonWeb.csproj", "{284B3D17-44FE-4AFD-8083-51CE18F9FD4B}"

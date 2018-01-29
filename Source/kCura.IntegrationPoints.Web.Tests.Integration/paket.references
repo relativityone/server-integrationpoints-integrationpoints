@@ -1,0 +1,11 @@
+CSharpGuidelineAnalyzer
+kCura.Apps.Common.Data
+kCura.Apps.Common.Utils
+Microsoft.AspNet.WebApi.Core
+NSubstitute
+NUnit
+Relativity.API
+Relativity.Core
+Relativity.Data
+Relativity.Kepler.Client
+Relativity.Telemetry.APM

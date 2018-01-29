@@ -1,0 +1,14 @@
+CSharpGuidelineAnalyzer
+kCura.Apps.Common.Config
+kCura.Relativity.Client
+Microsoft.AspNet.Mvc
+Microsoft.AspNet.SignalR.Core
+Microsoft.AspNet.Web.Optimization
+Microsoft.AspNet.WebApi.WebHost
+Relativity.API
+Relativity.Core
+Relativity.CustomPages
+Relativity.ImportExport
+Relativity.Productions.Services.Interfaces
+Relativity.Telemetry.Services.Interface
+RelativityCore
