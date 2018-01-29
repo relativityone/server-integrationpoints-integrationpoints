@@ -8,16 +8,6 @@ namespace kCura.IntegrationPoints.Data.QueryBuilders.Implementations
 	{
 		public QueryRequest Create()
 		{
-			//return new Query<RDO>
-			//{
-			//	ArtifactTypeGuid = new Guid(ObjectTypeGuids.IntegrationPointType),
-			//	Fields = new List<FieldValue>
-			//	{
-			//		new FieldValue(new Guid(IntegrationPointTypeFieldGuids.Name)),
-			//		new FieldValue(new Guid(IntegrationPointTypeFieldGuids.Identifier))
-			//	}
-			//};
-
 			return new QueryRequest
 			{
 				ObjectType = new ObjectTypeRef { Guid = new Guid(ObjectTypeGuids.IntegrationPointType) },

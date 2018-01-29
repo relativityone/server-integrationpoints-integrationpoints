@@ -1,9 +1,6 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Services.SourceTypes
@@ -21,11 +18,9 @@ namespace kCura.IntegrationPoints.Core.Services.SourceTypes
 
 		public virtual void CreateOrUpdateLdapSourceType()
 		{
-			var q = new Query<Relativity.Client.DTOs.RDO>();
-			q.Condition = new TextCondition(Guid.Parse(Data.SourceProviderFieldGuids.Identifier), TextConditionEnum.EqualTo, LDAP_SOURCE_TYPE_GUID);
-			QueryRequest request = new QueryRequest()
+			QueryRequest request = new QueryRequest
 			{
-				Condition = $"'{Data.SourceProviderFields.Identifier}' == '{LDAP_SOURCE_TYPE_GUID}'"
+				Condition = $"'{SourceProviderFields.Identifier}' == '{LDAP_SOURCE_TYPE_GUID}'"
 			};
 			var s = _context.RsapiService.RelativityObjectManager.Query<SourceProvider>(request).SingleOrDefault(); //there should only be one!
 			if (s == null)

@@ -11,21 +11,14 @@ namespace kCura.IntegrationPoints.Core.Queries
     {
 		private ICaseServiceContext _context;
 		public GetSourceProviderRdoByApplicationIdentifier(ICaseServiceContext context)
-			: base(typeof(Data.SourceProvider))
+			: base(typeof(SourceProvider))
 		{
 			_context = context;
 		}
 
-		public List<Data.SourceProvider> Execute(Guid appGuid)
+		public List<SourceProvider> Execute(Guid appGuid)
 		{
-			// TODO remove
-			//var query = new Query<RDO>();
-			//query.ArtifactTypeGuid = Guid.Parse(ObjectTypeGuids.SourceProvider);
-			//query.Condition = new TextCondition(Guid.Parse(SourceProviderFieldGuids.ApplicationIdentifier),
-			//																					 TextConditionEnum.EqualTo, appGuid.ToString());
-
-			//query.Fields = base.GetFields();
-			QueryRequest request = new QueryRequest
+			var request = new QueryRequest
 			{
 				ObjectType = new ObjectTypeRef
 				{

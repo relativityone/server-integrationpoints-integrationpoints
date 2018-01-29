@@ -8,8 +8,6 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Transformers;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
 using Constants = kCura.IntegrationPoints.Core.Constants;
@@ -156,35 +154,11 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 		private QueryRequest BuildIntegrationPointsQuery(int relativitySourceProviderArtifactId,
 			int loadFileDestinationProviderArtifactId)
 		{
-			var sourceProviderCondition = new WholeNumberCondition()
-			{
-				Field = IntegrationPointFields.SourceProvider,
-				Operator = NumericConditionEnum.EqualTo,
-				Value = new List<int>() {relativitySourceProviderArtifactId}
-			};
-
-			var destinationProviderCondition = new WholeNumberCondition()
-			{
-				Field = IntegrationPointFields.DestinationProvider,
-				Operator = NumericConditionEnum.EqualTo,
-				Value = new List<int>() {loadFileDestinationProviderArtifactId}
-			};
-
-			Query<RDO> query = new Query<RDO>()
-			{
-				Fields =
-					BaseRdo.GetFieldMetadata(typeof(Data.IntegrationPoint))
-						.Values.ToList()
-						.Select(field => new FieldValue(field.FieldGuid))
-						.ToList(),
-				Condition = new CompositeCondition(sourceProviderCondition, CompositeConditionEnum.And,
-					destinationProviderCondition)
-			};
-			QueryRequest request = new QueryRequest()
+			var request = new QueryRequest
 			{
 				Condition = $"'{IntegrationPointFields.SourceProvider}' == {relativitySourceProviderArtifactId} " +
-				            $"AND " +
-				            $"'{IntegrationPointFields.DestinationProvider}' == {loadFileDestinationProviderArtifactId}",
+							$"AND " +
+							$"'{IntegrationPointFields.DestinationProvider}' == {loadFileDestinationProviderArtifactId}",
 				Fields = new IntegrationPoint().ToFieldList()
 			};
 

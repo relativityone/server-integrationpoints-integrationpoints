@@ -342,10 +342,6 @@
     <Compile Include="Statistics\Implementations\RdoStatistics.cs" />
     <Compile Include="Toggles\ProcessingSourceLocationToggle.cs" />
     <Compile Include="Transformers\RDOConverter.cs" />
-    <Compile Include="UtilityDTO\RelativityObjectField.cs" />
-    <Compile Include="UtilityDTO\RelativityObjectQuery.cs" />
-    <Compile Include="UtilityDTO\RelativityObjectSort.cs" />
-    <Compile Include="UtilityDTO\RelativityObjectType.cs" />
     <Compile Include="UtilityDTO\ResultSet.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -72,7 +72,6 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 				Fields = RDOConverter.ConvertPropertiesToFields<DestinationProvider>(),
 				Condition = $"'{DestinationProviderFields.Identifier}' == '{providerGuid}'"
 			};
-			//q.Condition = new TextCondition(Guid.Parse(Data.DestinationProviderFieldGuids.Identifier), TextConditionEnum.EqualTo, providerGuid);
 			var destinationProviders = _context.RsapiService.RelativityObjectManager.Query<DestinationProvider>(q);
 
 

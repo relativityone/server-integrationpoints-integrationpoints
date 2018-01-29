@@ -21,16 +21,6 @@ namespace kCura.IntegrationPoints.Data.Queries
 				return historyError;
 			}
 
-			//var query = new Query<RDO>();
-			//query.Fields = new List<FieldValue>
-			//{
-			//	new FieldValue(Guid.Parse(Data.JobHistoryErrorFieldGuids.ErrorType)),
-			//	new FieldValue(Guid.Parse(Data.JobHistoryErrorFieldGuids.Error))
-			//};
-
-			//var historyCondition = new ObjectCondition(Guid.Parse(JobHistoryErrorFieldGuids.JobHistory), ObjectConditionEnum.EqualTo, jobHistoryId);
-			//JobHistoryError historyError = this.GetJobLevelError(jobHistoryId);
-
 			string historyCondition = CreateJobHistoryObjectCondition(jobHistoryId);
 			string expectedChoiceGuids = string.Join(",", ErrorTypeChoices.JobHistoryErrorItem.Guids.Select(x => x.ToString()));
 			string choiceJobItemCondition = $"'{JobHistoryErrorFields.ErrorType}' IN CHOICE [{expectedChoiceGuids}]";
@@ -43,39 +33,11 @@ namespace kCura.IntegrationPoints.Data.Queries
 			};
 			historyError = _service.RelativityObjectManager.Query<JobHistoryError>(query, 0, 1).Items.FirstOrDefault();
 
-			//var choiceJobItemCondition = new SingleChoiceCondition(Guid.Parse(JobHistoryErrorFieldGuids.ErrorType), SingleChoiceConditionEnum.AnyOfThese,
-			//ErrorTypeChoices.JobHistoryErrorItem.Guids);
-			//query.Condition = new CompositeCondition(choiceJobItemCondition, CompositeConditionEnum.And, historyCondition);
-			//historyError = _service.JobHistoryErrorLibrary.Query(query, 1).FirstOrDefault();
-
 			return historyError;
 		}
 
 		public virtual JobHistoryError GetJobLevelError(int jobHistoryId)
 		{
-			// TODO remove
-			//var query = new Query<RDO>();
-			//query.Fields = new List<FieldValue>
-			//{
-			//	new FieldValue(Guid.Parse(Data.JobHistoryErrorFieldGuids.ErrorType)),
-			//	new FieldValue(Guid.Parse(Data.JobHistoryErrorFieldGuids.Error))
-			//};
-			//query.Sorts = new List<Sort>
-			//{ 
-			//	new Sort
-			//	{
-			//		Field = "Artifact ID",
-			//		Direction = SortEnum.Descending
-			//	}
-			//};
-
-			//var historyCondition = new ObjectCondition(Guid.Parse(JobHistoryErrorFieldGuids.JobHistory), ObjectConditionEnum.EqualTo, jobHistoryId);
-			//var choiceJobErrorCondition = new SingleChoiceCondition(Guid.Parse(JobHistoryErrorFieldGuids.ErrorType), SingleChoiceConditionEnum.AnyOfThese,
-			//	ErrorTypeChoices.JobHistoryErrorJob.Guids);
-			//query.Condition = new CompositeCondition(choiceJobErrorCondition, CompositeConditionEnum.And, historyCondition);
-			//JobHistoryError historyError = _service.JobHistoryErrorLibrary.Query(query, 1).FirstOrDefault();
-			//return historyError;
-
 			string historyCondition = CreateJobHistoryObjectCondition(jobHistoryId);
 			string expectedChoiceGuids = string.Join(",", ErrorTypeChoices.JobHistoryErrorJob.Guids.Select(x => x.ToString()));
 			string choiceJobErrorCondition = $"'{JobHistoryErrorFields.ErrorType}' IN CHOICE [{expectedChoiceGuids}]";

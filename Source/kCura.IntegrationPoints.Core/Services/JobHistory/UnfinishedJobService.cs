@@ -4,8 +4,6 @@ using System.Linq;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Transformers;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Services.JobHistory
@@ -26,14 +24,8 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 				JobStatusChoices.JobHistoryProcessing.Guids.FirstOrDefault(),
 				JobStatusChoices.JobHistoryStopping.Guids.FirstOrDefault()
 			};
-			//Condition unfinishedJobsCondition = new SingleChoiceCondition(new Guid(JobHistoryFieldGuids.JobStatus), SingleChoiceConditionEnum.AnyOfThese, unfinishedChoicesNames);
-			//Query<RDO> query = new Query<RDO>
-			//{
-			//	Fields = FieldValue.AllFields,
-			//	Condition = unfinishedJobsCondition
-			//};
 
-			QueryRequest request = new QueryRequest()
+			var request = new QueryRequest
 			{
 				Fields = new Data.JobHistory().ToFieldList(),
 				Condition = $"'{JobHistoryFields.JobStatus}' IN CHOICE [{string.Join(",", unfinishedChoicesNames)}]"

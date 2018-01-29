@@ -9,7 +9,6 @@ using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
@@ -36,7 +35,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
 		public Data.JobHistory GetRdo(Guid batchInstance)
 		{
-			QueryRequest request = new QueryRequest()
+			var request = new QueryRequest
 			{
 				Condition = $"'{JobHistoryFields.BatchInstance}' == '{batchInstance}'"
 			};
@@ -52,14 +51,9 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
 		public IList<Data.JobHistory> GetJobHistory(IList<int> jobHistoryArtifactIds)
 		{
-			var condition = new WholeNumberCondition("ArtifactID", NumericConditionEnum.In)
+			var request = new QueryRequest
 			{
-				Value = jobHistoryArtifactIds.ToList()
-			};
-
-			QueryRequest request = new QueryRequest()
-			{
-				Condition = $"'{ArtifactQueryFieldNames.ArtifactID}' in [{String.Join(",", jobHistoryArtifactIds.ToList())}]",
+				Condition = $"'{ArtifactQueryFieldNames.ArtifactID}' in [{string.Join(",", jobHistoryArtifactIds.ToList())}]",
 				Fields = new Data.JobHistory().ToFieldList()
 			};
 

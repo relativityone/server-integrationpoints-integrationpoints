@@ -20,13 +20,6 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			IRSAPIService rsapiService = _rsapiServiceFactory.Create(workspaceArtifactId);
 
-			// TODO remove
-			//var qry = new Query<RDO>
-			//{
-			//	Fields = FieldValue.NoFields,
-			//	Condition = new ObjectCondition(JobHistoryErrorFields.JobHistory, ObjectConditionEnum.AnyOfThese, historiesId)
-			//};
-
 			var query = new QueryRequest
 			{
 				ObjectType = new ObjectTypeRef

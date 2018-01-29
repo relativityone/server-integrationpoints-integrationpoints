@@ -9,8 +9,6 @@ namespace kCura.IntegrationPoints.Data.QueryBuilders.Implementations
 	{
 		public DocumentQueryBuilder AddFolderCondition(int folderId, int viewId, bool includeSubFoldersTotals)
 		{
-			//var folderNameCondition = new ObjectCondition("Folder Name", GetConditionOperator(includeSubFoldersTotals), folderId);
-			// TODO 
 			string folderNameCondition = includeSubFoldersTotals
 				? $"'Folder Name' IN OBJECT [{folderId}]"
 				: $"'Folder Name' == OBJECT {folderId}";
