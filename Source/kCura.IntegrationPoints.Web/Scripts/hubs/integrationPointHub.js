@@ -14,13 +14,20 @@
 			} else {
 				$("input[fafriendlyname='Has Errors'][type='hidden']").siblings('.dynamicViewFieldValue').text("No");
 			}
+			var dateTimeRuntimeToStr = function (dateTime) {
+				return dateTime
+					? moment.utc(dateTime).format('M/D/YYYY h:mm A')
+					: '';
+			}
 			var lastRun = integrationPoint.LastRun;
 			if (lastRun) {
-				$("input[fafriendlyname='Last Runtime (UTC)'][type='hidden']").siblings('.dynamicViewFieldValue').text(Date.parse(lastRun).toString('M/d/yyyy h:mm tt'));
+				var lastRunText = dateTimeRuntimeToStr(lastRun);
+				$("input[fafriendlyname='Last Runtime (UTC)'][type='hidden']").siblings('.dynamicViewFieldValue').text(lastRunText);
 			}
 			var nextRun = integrationPoint.NextRun;
 			if (nextRun) {
-				$("input[fafriendlyname='Next Scheduled Runtime (UTC)'][type='hidden']").siblings('.dynamicViewFieldValue').text(Date.parse(nextRun).toString('M/d/yyyy h:mm tt'));
+				var nextRunText = dateTimeRuntimeToStr(nextRun);
+				$("input[fafriendlyname='Next Scheduled Runtime (UTC)'][type='hidden']").siblings('.dynamicViewFieldValue').text(nextRunText);
 			}
 
 			var consoleContainer = $(".ConsoleControl");
