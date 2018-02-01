@@ -75,7 +75,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 				JobContextProvider jobContextProvider = k.Resolve<JobContextProvider>();
 				return k.Resolve<IRsapiClientFactory>().CreateAdminClient(jobContextProvider.Job.WorkspaceID);
 
-			}));
+			}).LifestyleTransient());
 
 			//container.Register(Component.For<IServiceContextHelper>().ImplementedBy<ServiceContextHelperForAgent>().DependsOn(Dependency.OnValue<int>(_job.WorkspaceID)).LifestyleTransient());
 			container.Register(Component.For<IServiceContextHelper>().ImplementedBy<ServiceContextHelperForAgent>().DynamicParameters((k, d) =>
