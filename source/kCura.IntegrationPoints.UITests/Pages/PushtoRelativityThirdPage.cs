@@ -25,6 +25,12 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		[FindsBy(How = How.Id, Using = "native-file-mode-radio-2")]
 		protected IWebElement SelectCopyNoFilesElement { get; set; }
 
+		[FindsBy(How = How.Id, Using = "move-documents-radio-0")]
+		protected IWebElement SelectMoveExitstinDocumentsYesElement { get; set; }
+
+		[FindsBy(How = How.Id, Using = "move-documents-radio-1")]
+		protected IWebElement SelectMoveExitstinDocumentsNoElement { get; set; }
+
 		[FindsBy(How = How.Id, Using = "mapFieldsBtn")]
 		protected IWebElement MapAllFieldsElement { get; set; }
 
@@ -34,12 +40,15 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		[FindsBy(How = How.Id, Using = "folderPathInformationSelect")]
 		protected IWebElement UseFolderPathElement;
 
+		[FindsBy(How = How.Id, Using = "folderPath")]
+		protected IWebElement ReadFromFieldElement { get; set; }
+
 		protected SelectElement SelectOverwriteElement => new SelectElement(OverwriteElement);
 
 		protected SelectElement SelectUseFolderPathElement => new SelectElement(UseFolderPathElement);
 
-
-
+		protected SelectElement SelectReadFromFieldElement => new SelectElement(ReadFromFieldElement);
+		
 		public PushToRelativityThirdPage(RemoteWebDriver driver) : base(driver)
 		{
 			WaitForPage();
@@ -79,6 +88,24 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		{
 			get { return SelectUseFolderPathElement.SelectedOption.Text; }
 			set { SelectUseFolderPathElement.SelectByText(value); }
+		}
+
+		public string SelectReadFromField
+		{
+			get { return SelectReadFromFieldElement.SelectedOption.Text; }
+			set { SelectReadFromFieldElement.SelectByText(value); }
+		}
+
+		public void SelectMoveExitstinDocuments(string mode)
+		{
+			if (mode == "Yes")
+			{
+				SelectMoveExitstinDocumentsYesElement.Click();
+			}
+			else if (mode == "No")
+			{
+				SelectMoveExitstinDocumentsNoElement.Click();
+			}
 		}
 
 		public IntegrationPointDetailsPage SaveIntegrationPoint()
