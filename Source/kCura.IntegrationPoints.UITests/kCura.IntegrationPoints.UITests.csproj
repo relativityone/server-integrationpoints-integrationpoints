@@ -54,8 +54,8 @@
     <Compile Include="Common\IntegrationPointsAction.cs" />
     <Compile Include="Common\TestCategory.cs" />
     <Compile Include="Components\Component.cs" />
+    <Compile Include="Components\JobStatusTable.cs" />
     <Compile Include="Components\Select.cs" />
-    <Compile Include="Components\StatusTable.cs" />
     <Compile Include="Components\PropertiesTable.cs" />
     <Compile Include="Components\SavedSearchDialog.cs" />
     <Compile Include="Components\TreeSelect.cs" />
@@ -81,6 +81,8 @@
     <Compile Include="Common\PageException.cs" />
     <Compile Include="Tests\SelectWithSavedSearchTest.cs" />
     <Compile Include="Tests\UserOnLoginPageTest.cs" />
+    <Compile Include="Validation\ExportToLoadFileProviderValidator.cs" />
+    <Compile Include="Validation\BaseUiValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config">
@@ -183,6 +185,17 @@ xcopy "$(ProjectDir)..\kCura.IntegrationPoint.Tests.Core\oi\unmanaged" "$(Target
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="kCura.Relativity.Client">
+          <HintPath>..\..\packages\kCura.Relativity.Client\lib\net462\kCura.Relativity.Client.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Newtonsoft.Json">
           <HintPath>..\..\packages\Newtonsoft.Json\lib\net45\Newtonsoft.Json.dll</HintPath>
           <Private>True</Private>
@@ -196,6 +209,17 @@ xcopy "$(ProjectDir)..\kCura.IntegrationPoint.Tests.Core\oi\unmanaged" "$(Target
       <ItemGroup>
         <Reference Include="nunit.framework">
           <HintPath>..\..\packages\NUnit\lib\net45\nunit.framework.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Polly">
+          <HintPath>..\..\packages\Polly\lib\net45\Polly.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

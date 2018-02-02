@@ -59,8 +59,8 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 				SharedVariables.TargetDbHost, SharedVariables.DatabaseUserId, SharedVariables.DatabasePassword);
 			Log.Information("connString: " + connString);
 			Config.Config.SetConnectionString(connString);
-			
-			Relativity.Data.Config.InjectConfigSettings(new Dictionary<string, object>
+
+			global::Relativity.Data.Config.InjectConfigSettings(new Dictionary<string, object>
 			{
 				{"connectionString", SharedVariables.EddsConnectionString},
 			}

@@ -10,6 +10,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Models
 		{
 			Scheduler = null;
 
+			DestinationProvider = INTEGRATION_POINT_PROVIDER_LOADFILE;
+
 			ExportImages = false;
 			ExportNatives = false;
 			TextFieldsAsFiles = false;

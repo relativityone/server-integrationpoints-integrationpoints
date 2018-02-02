@@ -11,3 +11,5 @@ Selenium.Support
 Selenium.WebDriver.ChromeDriver
 Serilog
 Relativity.Services.Interfaces
+kCura.Relativity.Client
+Polly

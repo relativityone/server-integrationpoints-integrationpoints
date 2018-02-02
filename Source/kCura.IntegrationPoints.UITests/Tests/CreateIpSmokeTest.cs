@@ -1,7 +1,9 @@
 ﻿using kCura.IntegrationPoint.Tests.Core.Models;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Components;
 using kCura.IntegrationPoints.UITests.Pages;
+using kCura.IntegrationPoints.UITests.Validation;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.UITests.Tests
@@ -49,8 +51,6 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		{
 			var model = new ExportToLoadFileProviderModel("Test IP");
 
-			model.DestinationProvider = IntegrationPointGeneralModel.INTEGRATION_POINT_PROVIDER_LOADFILE;
-
 			return model;
 		}
 
@@ -59,12 +59,15 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		{
 			// Arrange
 			ExportToLoadFileProviderModel model = CreateExportToLoadFileProviderModel();
+			var validator = new ExportToLoadFileProviderValidator();
 
 			// Act
-			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewExportToLoadfileIntegrationPointAction(model);
+			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewExportToLoadfileIntegrationPoint(model);
+			detailsPage.RunIntegrationPoint();
 
 			// Assert
-			Assert.AreEqual("Relativity (.dat); Unicode", detailsPage.SelectGeneralPropertiesTable().Properties["Load file format:"]);
+			validator.ValidateSummaryPage(detailsPage, model);
+			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
 		}
 	}
 }
