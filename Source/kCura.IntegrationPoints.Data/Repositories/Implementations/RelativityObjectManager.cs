@@ -59,16 +59,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		private void FetchAndSetEncryptedSecuredConfigurationValue(IEnumerable<FieldRefValuePair> fieldValues)
-		{
-			var securedConfigurationField = fieldValues.FirstOrDefault(x =>
-						x.Field.Guid == new Guid(IntegrationPointFieldGuids.SecuredConfiguration));
-			if (securedConfigurationField != null)
-			{
-				securedConfigurationField.Value = EncryptSecuredConfigurationForNewRdo(securedConfigurationField.Value as string);
-			}
-		}
-
 		public int Create<T>(T rdo, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new()
 		{
 			try
@@ -83,7 +73,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 					SetParentArtifactId(createRequest, rdo);
 
-					FetchAndSetEncryptedSecuredConfigurationValue(createRequest.FieldValues);
+					SetEncryptedSecuredConfigurationForNewRdo(createRequest.FieldValues);
 
 					int artifactId = client.CreateAsync(_workspaceArtifactId, createRequest)
 						.GetAwaiter()
@@ -99,7 +89,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-
 		public T Read<T>(int artifactId, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new()
 		{
 			ReadRequest request = new ReadRequest()
@@ -107,7 +96,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				Object = new RelativityObjectRef { ArtifactID = artifactId },
 				Fields = new T().ToFieldList()
 			};
-			return SendReadRequest<T>(request);
+			return SendReadRequest<T>(request, true, executionIdentity);
 		}
 
 		public T Read<T>(int artifactId, IEnumerable<Guid> fieldsGuids, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new()
@@ -117,10 +106,19 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				Object = new RelativityObjectRef { ArtifactID = artifactId },
 				Fields = fieldsGuids.Select(x => new FieldRef { Guid = x }).ToArray()
 			};
-			return SendReadRequest<T>(request);
+			return SendReadRequest<T>(request, true, executionIdentity);
 		}
 
-		private T SendReadRequest<T>(ReadRequest request, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new()
+		private T Read<T>(int artifactId, bool decryptSecuredConfiguration, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new(){
+			ReadRequest request = new ReadRequest()
+			{
+				Object = new RelativityObjectRef { ArtifactID = artifactId },
+				Fields = new T().ToFieldList()
+			};
+			return SendReadRequest<T>(request, decryptSecuredConfiguration, executionIdentity);
+		}
+
+		private T SendReadRequest<T>(ReadRequest request, bool decryptSecuredConfiguration, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new()
 		{
 			try
 			{
@@ -130,14 +128,13 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 						.GetAwaiter()
 						.GetResult();
 					var rdo = result.Object.ToRDO<T>();
-					return SetDecryptedSecuredConfiguration(rdo) ?? rdo;
+					return decryptSecuredConfiguration ? SetDecryptedSecuredConfiguration(rdo) : rdo;
 				}
 			}
 			catch (Exception ex)
 			{
 				throw LogObjectManagerException(new T(), "read", ex);
 			}
-
 		}
 
 		private T SetDecryptedSecuredConfiguration<T>(T rdo) where T : BaseRdo, new()
@@ -167,10 +164,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					UpdateRequest request = new UpdateRequest()
 					{
 						Object = rdo.ToObjectRef(),
-						FieldValues = rdo.ToFieldValues()
+						FieldValues = rdo.ToFieldValues().ToList()
 					};
 
-					FetchAndSetEncryptedSecuredConfigurationValue(request.FieldValues);
+					SetEncryptedSecuredConfigurationForExistingRdo(rdo.ArtifactId, request.FieldValues);
 
 					var result = client.UpdateAsync(_workspaceArtifactId, request)
 						.GetAwaiter()
@@ -398,7 +395,60 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return string.Join(", ", fieldsAsString);
 		}
 
+		private void SetEncryptedSecuredConfigurationForNewRdo(IEnumerable<FieldRefValuePair> fieldValues)
+		{
+			SetEncryptedSecuredConfiguration(fieldValues,
+				(securedConfiguration) =>
+				{
+					return EncryptSecuredConfigurationForNewRdo(securedConfiguration);
+				});
+		}
+
+		private void SetEncryptedSecuredConfigurationForExistingRdo(int artifactId, IEnumerable<FieldRefValuePair> fieldValues, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+		{
+			SetEncryptedSecuredConfiguration(fieldValues,
+				(securedConfiguration) =>
+				{
+					return EncryptSecuredConfigurationForExistingRdo(artifactId, securedConfiguration, executionIdentity);
+				});
+		}
+
+		private void SetEncryptedSecuredConfiguration(IEnumerable<FieldRefValuePair> fieldValues, Func<string, string> encryptFunc)
+		{
+			var securedConfigurationField = fieldValues.FirstOrDefault(x =>
+				x.Field.Guid == new Guid(IntegrationPointFieldGuids.SecuredConfiguration));
+			if (securedConfigurationField != null)
+			{
+				securedConfigurationField.Value = encryptFunc(securedConfigurationField.Value as string);
+			}
+		}
+
 		private string EncryptSecuredConfigurationForNewRdo(string securedConfiguration)
+		{
+			return EncryptSecuredConfiguration(securedConfiguration,
+				(sc) =>
+				{
+					var secretData = _secretManager.CreateSecretData(sc);
+					var secretIdentifier = _secretManager.GenerateIdentifier();
+					SecretCatalog.WriteSecret(secretIdentifier, secretData);
+					return secretIdentifier.SecretID;
+				});
+		}
+
+		private string EncryptSecuredConfigurationForExistingRdo(int artifactId, string securedConfiguration, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+		{
+			return EncryptSecuredConfiguration(securedConfiguration,
+				(sc) =>
+				{
+					var secretData = _secretManager.CreateSecretData(sc);
+					IntegrationPoint existingRdo = Read<IntegrationPoint>(artifactId, false, executionIdentity);
+					var secretIdentifier = _secretManager.RetrieveIdentifier(existingRdo);
+					SecretCatalog.WriteSecret(secretIdentifier, secretData);
+					return secretIdentifier.SecretID;
+				});
+		}
+
+		private string EncryptSecuredConfiguration(string securedConfiguration, Func<string, string> encryptionFunc)
 		{
 			if (securedConfiguration == null)
 			{
@@ -406,19 +456,17 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 			try
 			{
-				var secretData = _secretManager.CreateSecretData(securedConfiguration);
-				var secretIdentifier = _secretManager.GenerateIdentifier();
-				SecretCatalog.WriteSecret(secretIdentifier, secretData);
-				return secretIdentifier.SecretID;
+				return encryptionFunc(securedConfiguration);
 			}
 			catch (FieldNotFoundException ex)
 			{
-			    _logger.LogWarning(ex, "Can not write Secured Configuration for Integration Point record during encryption process (Secret config: {securedConfiguration} )", securedConfiguration);
-                //Ignore as Integration Point RDO doesn't always include SecuredConfiguration
-                //Any access to missing fieldGuid will throw FieldNotFoundException
-                return securedConfiguration;
+				_logger.LogWarning(ex, "Can not write Secured Configuration for Integration Point record during encryption process (Secret config: {securedConfiguration} )", securedConfiguration);
+				//Ignore as Integration Point RDO doesn't always include SecuredConfiguration
+				//Any access to missing fieldGuid will throw FieldNotFoundException
+				return securedConfiguration;
 			}
 		}
+
 
 		private string DecryptSecuredConfiguration(string secretId)
 		{
@@ -434,11 +482,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 			catch (FieldNotFoundException ex)
 			{
-                //Ignore as Integration Point RDO doesn't always include SecuredConfiguration
-                //Any access to missing fieldGuid will throw FieldNotFoundException
-			    _logger.LogWarning(ex, "Can not retrieve Secured Configuration for Integration Point record during decryption process (Secret Id: {secretId} )", secretId);
+				//Ignore as Integration Point RDO doesn't always include SecuredConfiguration
+				//Any access to missing fieldGuid will throw FieldNotFoundException
+				_logger.LogWarning(ex, "Can not retrieve Secured Configuration for Integration Point record during decryption process (Secret Id: {secretId} )", secretId);
 
-                return secretId;
+				return secretId;
 			}
 		}
 	}

@@ -63,8 +63,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 		public int SaveIntegration(IntegrationPointModel model)
 		{
-			Data.IntegrationPoint integrationPoint;
-			PeriodicScheduleRule rule;
 			try
 			{
 				if (model.ArtifactID > 0)
@@ -90,16 +88,14 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 				IList<Choice> choices =
 					ChoiceQuery.GetChoicesOnField(Guid.Parse(IntegrationPointFieldGuids.OverwriteFields));
 
-				rule = ConvertModelToScheduleRule(model);
-				integrationPoint = model.ToRdo(choices, rule);
-
-				var integrationPointModel = IntegrationPointModel.FromIntegrationPoint(integrationPoint);
+				PeriodicScheduleRule rule = ConvertModelToScheduleRule(model);
+				Data.IntegrationPoint integrationPoint = model.ToRdo(choices, rule);
 
 				SourceProvider sourceProvider = GetSourceProvider(integrationPoint.SourceProvider);
 				DestinationProvider destinationProvider = GetDestinationProvider(integrationPoint.DestinationProvider);
 				IntegrationPointType integrationPointType = GetIntegrationPointType(integrationPoint.Type);
 
-				RunValidation(integrationPointModel, sourceProvider, destinationProvider, integrationPointType, ObjectTypeGuids.IntegrationPoint);
+				RunValidation(model, sourceProvider, destinationProvider, integrationPointType, ObjectTypeGuids.IntegrationPoint);
 
 				//save RDO
 				if (integrationPoint.ArtifactId > 0)
@@ -125,6 +121,8 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 						_jobService.DeleteJob(job.JobId);
 					}
 				}
+
+				return integrationPoint.ArtifactId;
 			}
 			catch (PermissionException)
 			{
@@ -148,7 +146,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 				throw new Exception(Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_SAVE_INTEGRATION_POINT_USER_MESSAGE, exception);
 			}
-			return integrationPoint.ArtifactId;
 		}
 
 		public void RunIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, int userId)
