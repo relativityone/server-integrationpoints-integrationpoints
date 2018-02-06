@@ -212,7 +212,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				_synchronizerFactory, _exporterFactory,
 				_claimPrincipleFactory, _repositoryFactory,
 				_managerFactory, _batchStatuses, _serializer, _jobService, _scheduleRuleFactory, _jobHistoryService,
-				_jobHistoryErrorService,
+				_jobHistoryErrorService, null,
 				_jobStatisticsService);
 			_managerFactory.CreateJobHistoryManager(_contextContainer).Returns(_historyManager);
 		}
@@ -424,7 +424,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				_synchronizerFactory, _exporterFactory,
 				_claimPrincipleFactory, _repositoryFactory,
 				_managerFactory, _batchStatuses, _serializer, _jobService, _scheduleRuleFactory, _jobHistoryService,
-				_jobHistoryErrorService,
+				_jobHistoryErrorService, null,
 				_jobStatisticsService);
 			instance.Execute(_job);
 

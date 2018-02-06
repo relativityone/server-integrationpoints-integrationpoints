@@ -34,6 +34,7 @@ using Relativity.Telemetry.MetricsCollection;
 using APMClient = Relativity.Telemetry.APM.Client;
 using kCura.IntegrationPoints.Domain.Managers;
 using Relativity;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -44,6 +45,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly IContextContainerFactory _contextContainerFactory;
 		private readonly IExporterFactory _exporterFactory;
 		private readonly IRepositoryFactory _repositoryFactory;
+		private readonly IToggleProvider _toggleProvider;
 		private ExportJobErrorService _exportJobErrorService;
 		private List<IBatchStatus> _exportServiceJobObservers;
 		private int _savedSearchArtifactId;
@@ -65,6 +67,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IScheduleRuleFactory scheduleRuleFactory,
 			IJobHistoryService jobHistoryService,
 			IJobHistoryErrorService jobHistoryErrorService,
+			IToggleProvider toggleProvider,
 			JobStatisticsService statisticsService)
 			: base(helper,
 				jobService,
@@ -83,6 +86,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			_contextContainerFactory = contextContainerFactory;
 			_repositoryFactory = repositoryFactory;
+			_toggleProvider = toggleProvider;
 			_exporterFactory = exporterFactory;
 			_helper = helper;
 			_helperFactory = helperFactory;
@@ -235,7 +239,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private bool ShouldUseDgPaths(ImportSettings settings, IEnumerable<FieldMap> fieldMap, SourceConfiguration configuration)
 		{
-			if (settings.FederatedInstanceArtifactId != null)
+			if (settings.FederatedInstanceArtifactId != null || _toggleProvider?.IsEnabled<TurnOnDgOptimizationToggle>() == false)
 			{
 				return false;
 			}
@@ -244,7 +248,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				_repositoryFactory.GetQueryFieldLookupRepository(configuration.SourceWorkspaceArtifactId);
 			IQueryFieldLookupRepository destinationQueryFieldLookupRepository =
 				_repositoryFactory.GetQueryFieldLookupRepository(configuration.TargetWorkspaceArtifactId);
-
 
 			FieldMap longTextField = fieldMap.FirstOrDefault(fm => IsLongTextWithDgEnabled(sourceQueryFieldLookupRepository.GetFieldByArtifactId(int.Parse(fm.SourceField.FieldIdentifier))));
 

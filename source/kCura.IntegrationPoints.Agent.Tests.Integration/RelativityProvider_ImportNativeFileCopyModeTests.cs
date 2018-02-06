@@ -83,7 +83,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				_jobService,
 				scheduleRuleFactory,
 				jobHistoryService,
-				jobHistoryErrorService,
+				jobHistoryErrorService, null,
 				jobStatisticsService
 			);
 

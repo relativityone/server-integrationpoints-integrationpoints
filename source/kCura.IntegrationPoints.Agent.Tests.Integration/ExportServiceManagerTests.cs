@@ -27,6 +27,7 @@ using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.Data.RowDataGateway;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using Relativity.Toggles;
 using Constants = kCura.IntegrationPoint.Tests.Core.Constants;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
@@ -75,10 +76,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			var jobHistoryService = Container.Resolve<IJobHistoryService>();
 			var jobHistoryErrorService = Container.Resolve<IJobHistoryErrorService>();
 			var jobStatisticsService = Container.Resolve<JobStatisticsService>();
-
 			var jobStatusUpdater = Container.Resolve<IJobStatusUpdater>();
 			var jobHistoryUpdater = new JobHistoryBatchUpdateStatus(jobStatusUpdater, jobHistoryService, _jobService, serializer);
-			
 			_exportManager = new ExportServiceManager(Helper, helperFactory,
 				_caseContext, contextContainerFactory,
 				synchronizerFactory,
@@ -91,7 +90,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				_jobService,
 				scheduleRuleFactory,
 				jobHistoryService,
-				jobHistoryErrorService,
+				jobHistoryErrorService, 
+				null,
 				jobStatisticsService
 				);
 
