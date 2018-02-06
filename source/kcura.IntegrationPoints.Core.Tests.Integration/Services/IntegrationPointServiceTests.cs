@@ -16,12 +16,14 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Transformers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using NUnit.Framework;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 {
@@ -47,7 +49,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
-			_destinationProvider = CaseContext.RsapiService.DestinationProviderLibrary.ReadAll().First();
+			QueryRequest request = new QueryRequest()
+			{
+				 Fields = new DestinationProvider().ToFieldList(),
+			};
+			_destinationProvider = CaseContext.RsapiService.RelativityObjectManager.Query<DestinationProvider>(request).First();
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();

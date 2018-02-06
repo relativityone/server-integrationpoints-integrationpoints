@@ -4,6 +4,7 @@ using System.Linq;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Services.DestinationTypes
 {
@@ -30,7 +31,14 @@ namespace kCura.IntegrationPoints.Core.Services.DestinationTypes
 
 		public virtual IEnumerable<DestinationType> GetDestinationTypes()
 		{
-			var types = _context.RsapiService.DestinationProviderLibrary.ReadAll(Guid.Parse(DestinationProviderFieldGuids.Name), Guid.Parse(Data.DestinationProviderFieldGuids.Identifier));
+			var types = _context.RsapiService.RelativityObjectManager.Query<DestinationProvider>(new QueryRequest()
+			{
+				Fields = new List<FieldRef>()
+				{
+					new FieldRef() {Guid = Guid.Parse(DestinationProviderFieldGuids.Name)},
+					new FieldRef() {Guid = Guid.Parse(Data.DestinationProviderFieldGuids.Identifier)}
+				}
+			});
 			return types.Select(x => new DestinationType { Name = x.Name, ID = x.Identifier, ArtifactID = x.ArtifactId }).OrderBy(x => x.Name).ToList();
 		}
 	}

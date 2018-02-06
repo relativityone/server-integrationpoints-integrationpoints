@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
+using kCura.IntegrationPoints.Data.Transformers;
 using Relativity.API;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 {
@@ -22,21 +22,16 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 		public IList<IntegrationPointType> GetAllIntegrationPointTypes()
 		{
-			var query = new Query<RDO>
-			{
-				Fields = GetFields()
-			};
-			return _context.RsapiService.IntegrationPointTypeLibrary.Query(query);
+			QueryRequest query = GetQueryToRetrieveAllIntegrationPointTypes();
+			return _context.RsapiService.RelativityObjectManager.Query<IntegrationPointType>(query);
 		}
 
 		public IntegrationPointType GetIntegrationPointType(Guid guid)
 		{
-			var query = new Query<RDO>
-			{
-				Condition = new TextCondition(Guid.Parse(IntegrationPointTypeFieldGuids.Identifier), TextConditionEnum.EqualTo, guid.ToString()),
-				Fields = GetFields()
-			};
-			var integrationPointTypes = _context.RsapiService.IntegrationPointTypeLibrary.Query(query);
+			QueryRequest query = GetQueryToRetrieveAllIntegrationPointTypes();
+			query.Condition = $"'{IntegrationPointTypeFields.Identifier}' == '{guid}'";
+			List<IntegrationPointType> integrationPointTypes = _context.RsapiService.RelativityObjectManager.Query<IntegrationPointType>(query);
+
 			if (integrationPointTypes.Count > 1)
 			{
 				LogMoreThanOneIntegrationPointType(guid);
@@ -44,9 +39,21 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			return integrationPointTypes.SingleOrDefault();
 		}
 
-		private List<FieldValue> GetFields()
+		private QueryRequest GetQueryToRetrieveAllIntegrationPointTypes()
 		{
-			return BaseRdo.GetFieldMetadata(typeof(IntegrationPointType)).Values.ToList().Select(field => new FieldValue(field.FieldGuid)).ToList();
+			return new QueryRequest
+			{
+				ObjectType = new ObjectTypeRef
+				{
+					Guid = Guid.Parse(ObjectTypeGuids.IntegrationPointType)
+				},
+				Fields = GetFields()
+			};
+		}
+
+		private List<FieldRef> GetFields()
+		{
+			return RDOConverter.ConvertPropertiesToFields<IntegrationPointType>().ToList();
 		}
 
 		#region Logging

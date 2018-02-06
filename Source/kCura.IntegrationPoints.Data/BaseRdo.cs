@@ -31,6 +31,10 @@ namespace kCura.IntegrationPoints.Data
 
 		protected BaseRdo() { }
 
+		public virtual bool HasField(Guid fieldGuid)
+		{
+			return _rdo.Fields.Any(x => x.Guids.Contains(fieldGuid));
+		}
 
 		public virtual T GetField<T>(Guid fieldGuid)
 		{
@@ -78,7 +82,7 @@ namespace kCura.IntegrationPoints.Data
 					var choice = value as Relativity.Client.DTOs.Choice;
 					if (choice != null)
 					{
-						return new Choice(choice.ArtifactID) {Name = choice.Name};
+						return new Choice(choice.ArtifactID) {Name = choice.Name, Guids = choice.Guids };
 					}
 					return value;
 				default:
@@ -116,14 +120,10 @@ namespace kCura.IntegrationPoints.Data
 					if (value is Choice)
 					{
 						singleChoice = (Choice)value;
-
-						if (!singleChoice.Guids.Any() && singleChoice.ArtifactID > 0)
+						
+						if (singleChoice.ArtifactID > 0 || singleChoice.Guids.Any())
 						{
-							newValue = new Relativity.Client.DTOs.Choice(singleChoice.ArtifactID) {Name = singleChoice.Name};
-						}
-						else if (singleChoice.Guids.Any())
-						{
-							newValue = new Relativity.Client.DTOs.Choice(singleChoice.Guids.First()) {Name = singleChoice.Name};
+							newValue = new Choice(singleChoice.ArtifactID) {Name = singleChoice.Name, Guids = singleChoice.Guids};
 						}
 						else
 						{

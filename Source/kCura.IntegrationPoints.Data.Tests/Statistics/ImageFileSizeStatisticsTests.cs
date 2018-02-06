@@ -6,12 +6,12 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Statistics.Implementations;
-using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity;
 using Relativity.API;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Tests.Statistics
 {
@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 
 		private IAPILog _logger;
 		private IHelper _helper;
-		private IRdoRepository _rdoRepository;
+		private IRelativityObjectManager _rdoRepository;
 
 		private ImageFileSizeStatistics _instance;
 
@@ -33,10 +33,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 		{
 			_logger = Substitute.For<IAPILog>();
 			_helper = Substitute.For<IHelper>();
-			_rdoRepository = Substitute.For<IRdoRepository>();
+			_rdoRepository = Substitute.For<IRelativityObjectManager>();
 
-			var repositoryFactory = Substitute.For<IRepositoryFactory>();
-			repositoryFactory.GetRdoRepository(_WORKSPACE_ID).Returns(_rdoRepository);
+			var repositoryFactory = Substitute.For<IRelativityObjectManagerFactory>();
+			repositoryFactory.CreateRelativityObjectManager(_WORKSPACE_ID).Returns(_rdoRepository);
 			_helper.GetLoggerFactory().GetLogger().ForContext<ImageFileSizeStatistics>().Returns(_logger);
 
 			_instance = new ImageFileSizeStatistics(_helper, repositoryFactory);
@@ -59,12 +59,12 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			};
 
 			var queryResult = MockQueryResult(artifactIds);
-			_rdoRepository.Query(Arg.Any<Query<RDO>>()).Returns(queryResult);
+			_rdoRepository.Query(Arg.Any<QueryRequest>()).Returns(queryResult);
 
 			_helper.GetDBContext(_WORKSPACE_ID).ExecuteSqlStatementAsScalar<long>(
 					_SQL_TEXT,
 					Arg.Is<SqlParameter>(x => x.ParameterName == "@ArtifactIds" && x.TypeName == "IDs"),
-					Arg.Is<SqlParameter>(x => x.ParameterName == "@FileType" && (FileType) x.Value == FileType.Tif))
+					Arg.Is<SqlParameter>(x => x.ParameterName == "@FileType" && (FileType)x.Value == FileType.Tif))
 				.Returns(expectedResult);
 
 			var actualResult = _instance.ForFolder(_WORKSPACE_ID, folderId, viewId, includeSubfolders);
@@ -87,12 +87,12 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			};
 
 			var queryResult = MockQueryResult(artifactIds);
-			_rdoRepository.Query(Arg.Any<Query<RDO>>()).Returns(queryResult);
+			_rdoRepository.Query(Arg.Any<QueryRequest>()).Returns(queryResult);
 
 			_helper.GetDBContext(_WORKSPACE_ID).ExecuteSqlStatementAsScalar<long>(
 					_SQL_TEXT,
 					Arg.Is<SqlParameter>(x => x.ParameterName == "@ArtifactIds" && x.TypeName == "IDs"),
-					Arg.Is<SqlParameter>(x => x.ParameterName == "@FileType" && (FileType) x.Value == FileType.Tif))
+					Arg.Is<SqlParameter>(x => x.ParameterName == "@FileType" && (FileType)x.Value == FileType.Tif))
 				.Returns(expectedResult);
 
 			var actualResult = _instance.ForSavedSearch(_WORKSPACE_ID, savedSearchId);
@@ -117,7 +117,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 		[Test]
 		public void ItShouldLogError()
 		{
-			_rdoRepository.Query(Arg.Any<Query<RDO>>()).Throws(new Exception());
+			_rdoRepository.Query(Arg.Any<QueryRequest>()).Throws(new Exception());
 			_helper.GetDBContext(_WORKSPACE_ID).Throws(new Exception());
 
 			Assert.That(() => _instance.ForFolder(_WORKSPACE_ID, 407, 653, true), Throws.Exception);
@@ -127,16 +127,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			_logger.Received(3).LogError(Arg.Any<Exception>(), Arg.Any<string>(), Arg.Any<object[]>());
 		}
 
-		private static QueryResultSet<RDO> MockQueryResult(List<int> artifactIds)
+		private static List<RelativityObject> MockQueryResult(List<int> artifactIds)
 		{
-			var queryResult = new QueryResultSet<RDO>
-			{
-				Results = new List<Result<RDO>>(artifactIds.Select(x => new Result<RDO>
-				{
-					Artifact = new RDO(x)
-				}))
-			};
-			return queryResult;
+			return artifactIds.Select(x => new RelativityObject { ArtifactID = x }).ToList();
 		}
 	}
 }

@@ -1,8 +1,8 @@
 ﻿using System;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.QueryBuilders.Implementations;
-using kCura.Relativity.Client.DTOs;
 using Relativity.API;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 {
@@ -13,12 +13,12 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 		private const string _FOR_SAVED_SEARCH_ERROR = "Failed to retrieve total native files count for saved search id: {savedSearchId}.";
 
 		private readonly IAPILog _logger;
-		private readonly IRepositoryFactory _repositoryFactory;
+		private readonly IRelativityObjectManagerFactory _relativityObjectManagerFactory;
 
-		public NativeTotalStatistics(IHelper helper, IRepositoryFactory repositoryFactory)
+		public NativeTotalStatistics(IHelper helper, IRelativityObjectManagerFactory relativityObjectManagerFactory)
 		{
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<NativeTotalStatistics>();
-			_repositoryFactory = repositoryFactory;
+			_relativityObjectManagerFactory = relativityObjectManagerFactory;
 		}
 
 		public long ForFolder(int workspaceArtifactId, int folderId, int viewId, bool includeSubFoldersTotals)
@@ -26,8 +26,8 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			try
 			{
 				var queryBuilder = new DocumentQueryBuilder();
-				Query<RDO> query = queryBuilder.AddFolderCondition(folderId, viewId, includeSubFoldersTotals).AddHasNativeCondition().NoFields().Build();
-				return ExecuteQuery(query, workspaceArtifactId).TotalCount;
+				QueryRequest query = queryBuilder.AddFolderCondition(folderId, viewId, includeSubFoldersTotals).AddHasNativeCondition().NoFields().Build();
+				return ExecuteQuery(query, workspaceArtifactId);
 			}
 			catch (Exception e)
 			{
@@ -41,8 +41,8 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			try
 			{
 				var queryBuilder = new ProductionInformationQueryBuilder();
-				Query<RDO> query = queryBuilder.AddProductionSetCondition(productionSetId).AddHasNativeCondition().NoFields().Build();
-				return ExecuteQuery(query, workspaceArtifactId).TotalCount;
+				QueryRequest query = queryBuilder.AddProductionSetCondition(productionSetId).AddHasNativeCondition().NoFields().Build();
+				return ExecuteQuery(query, workspaceArtifactId);
 			}
 			catch (Exception e)
 			{
@@ -56,8 +56,8 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			try
 			{
 				var queryBuilder = new DocumentQueryBuilder();
-				Query<RDO> query = queryBuilder.AddSavedSearchCondition(savedSearchId).AddHasNativeCondition().NoFields().Build();
-				return ExecuteQuery(query, workspaceArtifactId).TotalCount;
+				QueryRequest query = queryBuilder.AddSavedSearchCondition(savedSearchId).AddHasNativeCondition().NoFields().Build();
+				return ExecuteQuery(query, workspaceArtifactId);
 			}
 			catch (Exception e)
 			{
@@ -66,9 +66,9 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			}
 		}
 
-		private QueryResultSet<RDO> ExecuteQuery(Query<RDO> query, int workspaceArtifactId)
+		private long ExecuteQuery(QueryRequest query, int workspaceArtifactId)
 		{
-			return _repositoryFactory.GetRdoRepository(workspaceArtifactId).Query(query);
+			return _relativityObjectManagerFactory.CreateRelativityObjectManager(workspaceArtifactId).QueryTotalCount(query);
 		}
 	}
 }

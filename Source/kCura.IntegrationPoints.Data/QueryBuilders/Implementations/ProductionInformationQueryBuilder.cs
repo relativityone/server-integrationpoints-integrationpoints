@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.QueryBuilders.Implementations
 {
@@ -10,7 +9,7 @@ namespace kCura.IntegrationPoints.Data.QueryBuilders.Implementations
 	{
 		public ProductionInformationQueryBuilder AddProductionSetCondition(int productionSetId)
 		{
-			var productionSetCondition = new ObjectCondition("ProductionSet", ObjectConditionEnum.EqualTo, productionSetId);
+			string productionSetCondition = $"'ProductionSet' == OBJECT {productionSetId}";
 			Conditions.Add(productionSetCondition);
 
 			return this;
@@ -18,48 +17,43 @@ namespace kCura.IntegrationPoints.Data.QueryBuilders.Implementations
 
 		public ProductionInformationQueryBuilder AddHasNativeCondition()
 		{
-			var withNativesCondition = new BooleanCondition(ProductionConsts.WithNativesFieldGuid, BooleanConditionEnum.EqualTo, true);
-			Conditions.Add(withNativesCondition);
+			string condition = $"'{ProductionConsts.WithNativesFieldName}' == true";
+			Conditions.Add(condition);
 
 			return this;
 		}
 
-		public ProductionInformationQueryBuilder AllFields()
+		public override QueryRequest Build()
 		{
-			Fields = FieldValue.AllFields;
-
-			return this;
+			return new QueryRequest
+			{
+				ObjectType = new ObjectTypeRef
+				{
+					Guid = ProductionConsts.ProductionInformationTypeGuid
+				},
+				Fields = Fields,
+				Condition = BuildCondition()
+			};
 		}
 
 		public ProductionInformationQueryBuilder NoFields()
 		{
-			Fields = FieldValue.NoFields;
-
+			Fields = new List<FieldRef>();
 			return this;
 		}
 
 		public ProductionInformationQueryBuilder AddField(Guid fieldGuid)
 		{
-			Fields.Add(new FieldValue(fieldGuid));
+			Fields.Add(new FieldRef { Guid = fieldGuid });
 
 			return this;
 		}
 
 		public ProductionInformationQueryBuilder AddFields(List<Guid> fieldGuids)
 		{
-			Fields.AddRange(fieldGuids.Select(x => new FieldValue(x)));
+			Fields.AddRange(fieldGuids.Select(x => new FieldRef { Guid = x }));
 
 			return this;
-		}
-
-		public override Query<RDO> Build()
-		{
-			return new Query<RDO>
-			{
-				ArtifactTypeGuid = ProductionConsts.ProductionInformationTypeGuid,
-				Fields = Fields,
-				Condition = BuildCondition()
-			};
 		}
 	}
 }

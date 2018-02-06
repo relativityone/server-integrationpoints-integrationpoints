@@ -4,6 +4,7 @@ using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using NSubstitute;
 using NUnit.Framework;
 
@@ -12,17 +13,17 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 	[TestFixture]
 	public class DeleteIntegrationPointsTests : TestBase
 	{
-		private IGenericLibrary<Data.IntegrationPoint> _integrationPointLibrary;
 		private IIntegrationPointQuery _integrationPointQuery;
 		private IDeleteHistoryService _deleteHistoryService;
 		private IRSAPIService _rsapiService;
+		private IRelativityObjectManager _relativityObjectManager;
 
 		[SetUp]
 		public override void SetUp()
 		{
-			_integrationPointLibrary = Substitute.For<IGenericLibrary<Data.IntegrationPoint>>();
 			_rsapiService = Substitute.For<IRSAPIService>();
-			_rsapiService.IntegrationPointLibrary.Returns(_integrationPointLibrary);
+			_relativityObjectManager = Substitute.For<IRelativityObjectManager>();
+			_rsapiService.RelativityObjectManager.Returns(_relativityObjectManager);
 
 			_deleteHistoryService = Substitute.For<IDeleteHistoryService>();
 			_integrationPointQuery = Substitute.For<IIntegrationPointQuery>();
@@ -44,17 +45,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		{
 			// arrange
 			var deleteIntegrationPoints = new DeleteIntegrationPoints(_integrationPointQuery, null, _rsapiService);
-			var ids = new List<int> { 1, 2, 3 };
-
-			// act & assert
-			Assert.Throws<NullReferenceException>(() => deleteIntegrationPoints.DeleteIPsWithSourceProvider(ids));
-		}
-
-		[Test]
-		public void ItShouldThrowExceptionWhenRSAPIServiceIsNullTest()
-		{
-			// arrange
-			var deleteIntegrationPoints = new DeleteIntegrationPoints(_integrationPointQuery, _deleteHistoryService, null);
 			var ids = new List<int> { 1, 2, 3 };
 
 			// act & assert
@@ -105,8 +95,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			deleteIntegrationPoints.DeleteIPsWithSourceProvider(sourceProvider.ToList());
 
 			// assert
-			_integrationPointLibrary.Received(1)
-				.Delete(Arg.Is<IList<Data.IntegrationPoint>>(x => x.SequenceEqual(integrationPoints)));
+			foreach (var ip in integrationPoints)
+			{
+				_relativityObjectManager.Received(1)
+					.Delete<Data.IntegrationPoint>(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == ip.ArtifactId));
+			}
 		}
 
 		[Test]
@@ -130,8 +123,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			deleteIntegrationPoints.DeleteIPsWithSourceProvider(sourceProvider);
 
 			// assert
-			_integrationPointLibrary.Received(1).Delete(Arg.Is<IList<Data.IntegrationPoint>>(x => x.SequenceEqual(integrationPoints)));
-			_integrationPointLibrary.Received(1).Delete(Arg.Is<IList<Data.IntegrationPoint>>(x => x.SequenceEqual(secondintegrationPoints)));
+			foreach (var ip in integrationPoints)
+			{
+				_relativityObjectManager.Received(1).Delete<Data.IntegrationPoint>(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == ip.ArtifactId));
+			}
+			foreach (var ip in secondintegrationPoints)
+			{
+				_relativityObjectManager.Received(1).Delete<Data.IntegrationPoint>(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == ip.ArtifactId));
+			}
 		}
 
 		private IEnumerable<Data.IntegrationPoint> GetMockIntegrationsPoints(IEnumerable<int> artifactIds)

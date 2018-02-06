@@ -4,6 +4,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.EventHandlers.Commands.RestoreJobHistoryParser;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands
 {
@@ -20,20 +21,18 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 
 		public void Execute()
 		{
-			Query<RDO> query = new Query<RDO>
+			QueryRequest request = new QueryRequest()
 			{
-				Fields = FieldValue.AllFields,
-				Condition = new NotCondition(new TextCondition(new Guid(JobHistoryFieldGuids.DestinationInstance), TextConditionEnum.IsSet))
+				Condition = $"NOT '{JobHistoryFields.DestinationInstance}' ISSET"
 			};
-
-			List<JobHistory> jobHistories = _rsapiService.JobHistoryLibrary.Query(query);
+			List<JobHistory> jobHistories = _rsapiService.RelativityObjectManager.Query<JobHistory>(request);
 			foreach (var jobHistory in jobHistories)
 			{
 
 				DestinationWorkspaceElementsParsingResult result = _parser.Parse(jobHistory.DestinationWorkspace);
 				jobHistory.DestinationWorkspace = result.WorkspaceName;
 				jobHistory.DestinationInstance = result.InstanceName;
-				_rsapiService.JobHistoryLibrary.Update(jobHistory);
+				_rsapiService.RelativityObjectManager.Update(jobHistory);
 			}
 		}
 

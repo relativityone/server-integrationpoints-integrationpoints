@@ -1,26 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.QueryBuilders.Implementations;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Services.Repositories.Implementations;
-using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Services.Tests.Repositories
 {
 	public class IntegrationPointTypeRepositoryTests : TestBase
 	{
 		private IntegrationPointTypeRepository _integrationPointTypeRepository;
-		private IGenericLibrary<IntegrationPointType> _library;
+		private IRelativityObjectManager _objectManager;
 
 		public override void SetUp()
 		{
-			_library = Substitute.For<IGenericLibrary<IntegrationPointType>>();
+			_objectManager = Substitute.For<IRelativityObjectManager>();
 			var rsapiService = Substitute.For<IRSAPIService>();
-			rsapiService.IntegrationPointTypeLibrary.Returns(_library);
+			rsapiService.RelativityObjectManager.Returns(_objectManager);
 
 			_integrationPointTypeRepository = new IntegrationPointTypeRepository(rsapiService);
 		}
@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 
 			var expectedQuery = new AllIntegrationPointTypesQueryBuilder().Create();
 
-			_library.Query(Arg.Is<Query<RDO>>(x => x.IsEqualOnTypeAndNameAndFields(expectedQuery))).Returns(expectedResult);
+			_objectManager.Query<IntegrationPointType>(Arg.Any<QueryRequest>()).Returns(expectedResult);
 
 			var actualResult = _integrationPointTypeRepository.GetIntegrationPointTypes();
 

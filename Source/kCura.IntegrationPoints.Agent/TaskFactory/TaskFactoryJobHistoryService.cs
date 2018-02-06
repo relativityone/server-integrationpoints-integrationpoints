@@ -86,7 +86,7 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 			List<int> jobHistoryIds = _integrationPoint.JobHistory.ToList();
 			jobHistoryIds.Remove(jobHistory.ArtifactId);
 			_integrationPoint.JobHistory = jobHistoryIds.ToArray();
-			_caseServiceContext.RsapiService.IntegrationPointLibrary.Update(_integrationPoint);
+			_caseServiceContext.RsapiService.RelativityObjectManager.Update(_integrationPoint);
 
 			jobHistory.JobStatus = JobStatusChoices.JobHistoryStopped;
 			_jobHistoryService.UpdateRdo(jobHistory);

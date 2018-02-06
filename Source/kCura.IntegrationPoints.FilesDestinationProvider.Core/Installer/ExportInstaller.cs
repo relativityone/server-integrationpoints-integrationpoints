@@ -17,8 +17,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 	{
 		public void Install(IWindsorContainer container, IConfigurationStore store)
 		{
-			container.Register(Component.For<LoggingMediatorFactory>().ImplementedBy<LoggingMediatorFactory>());
-			container.Register(Component.For<ICompositeLoggingMediator>().UsingFactory((LoggingMediatorFactory f) => f.Create()));
+			container.Register(Component.For<LoggingMediatorFactory>().ImplementedBy<LoggingMediatorFactory>().LifestyleTransient());
+			container.Register(Component.For<ICompositeLoggingMediator>().UsingFactory((LoggingMediatorFactory f) => f.Create()).LifestyleTransient());
 			container.Register(Component.For<IUserMessageNotification, IUserNotification>().ImplementedBy<ExportUserNotification>());
 
 			container.Register(Component.For<IDelimitersBuilder>().ImplementedBy<DelimitersBuilder>());

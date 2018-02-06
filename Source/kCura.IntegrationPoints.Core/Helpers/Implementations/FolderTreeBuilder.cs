@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
                 Children = new List<JsTreeItemDTO>()
             };
 
-            foreach (Folder folderChild in folder.Children)
+            foreach (Folder folderChild in folder.Children??Enumerable.Empty<Folder>())
             {
                 var childDto = new JsTreeItemDTO()
                 {

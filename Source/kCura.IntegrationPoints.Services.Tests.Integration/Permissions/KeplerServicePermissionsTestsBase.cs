@@ -26,7 +26,11 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.Permissions
 		{
 			base.TestTeardown();
 			Group.DeleteGroup(GroupId);
-			User.DeleteUser(UserModel.ArtifactId);
+
+			if (UserModel != null)
+			{
+				User.DeleteUser(UserModel.ArtifactId);
+			}
 		}
 	}
 }

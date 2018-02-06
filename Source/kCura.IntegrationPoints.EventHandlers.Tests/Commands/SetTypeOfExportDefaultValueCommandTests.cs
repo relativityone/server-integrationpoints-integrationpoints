@@ -3,6 +3,7 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.EventHandlers.Commands;
 using NSubstitute;
 using NUnit.Framework;
@@ -15,13 +16,13 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
         private List<IntegrationPointProfile> _integrationPointProfiles;
         private IIntegrationPointService _integrationPointService;
         private IIntegrationPointProfileService _integrationPointProfileService;
-        private IGenericLibrary<Data.IntegrationPoint> _integrationPointLibrary;
-        private IGenericLibrary<IntegrationPointProfile> _integrationPointProfileLibrary;
+        private IRelativityObjectManager _objectManager;
         private ISourceConfigurationTypeOfExportUpdater _sourceConfigurationTypeOfExportUpdater;
 
         public override void SetUp()
         {
 	        _sourceConfigurationTypeOfExportUpdater = Substitute.For<ISourceConfigurationTypeOfExportUpdater>();
+	        _objectManager = Substitute.For<IRelativityObjectManager>();
             SetUpIntegrationPointsMock();
             SetUpIntegrationPointProfilesMock();
 		}
@@ -32,12 +33,12 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 		    _sourceConfigurationTypeOfExportUpdater
 			    .GetCorrectedSourceConfiguration(Arg.Any<int?>(), Arg.Any<int?>(), Arg.Any<string>()).Returns((string)null);
 		    var cmd = new SetTypeOfExportDefaultValueCommand(_integrationPointService, _integrationPointProfileService,
-			    _integrationPointLibrary, _integrationPointProfileLibrary, _sourceConfigurationTypeOfExportUpdater);
+			    _objectManager, _sourceConfigurationTypeOfExportUpdater);
 
 		    cmd.Execute();
 
-		    _integrationPointLibrary.DidNotReceive().Update(Arg.Any<Data.IntegrationPoint>());
-		    _integrationPointProfileLibrary.DidNotReceive().Update(Arg.Any<IntegrationPointProfile>());
+		    _objectManager.DidNotReceive().Update(Arg.Any<Data.IntegrationPoint>());
+		    _objectManager.DidNotReceive().Update(Arg.Any<IntegrationPointProfile>());
 		}
 
 	    [Test]
@@ -48,12 +49,12 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 		    _sourceConfigurationTypeOfExportUpdater
 			    .GetCorrectedSourceConfiguration(Arg.Any<int?>(), Arg.Any<int?>(), Arg.Any<string>()).Returns("Source config");
 		    var cmd = new SetTypeOfExportDefaultValueCommand(_integrationPointService, _integrationPointProfileService,
-			    _integrationPointLibrary, _integrationPointProfileLibrary, _sourceConfigurationTypeOfExportUpdater);
+			    _objectManager, _sourceConfigurationTypeOfExportUpdater);
 
 		    cmd.Execute();
 
-		    _integrationPointLibrary.DidNotReceive().Update(Arg.Any<Data.IntegrationPoint>());
-		    _integrationPointProfileLibrary.DidNotReceive().Update(Arg.Any<IntegrationPointProfile>());
+		    _objectManager.DidNotReceive().Update(Arg.Any<Data.IntegrationPoint>());
+		    _objectManager.DidNotReceive().Update(Arg.Any<IntegrationPointProfile>());
 	    }
 
 		[Test]
@@ -63,12 +64,12 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 				.GetCorrectedSourceConfiguration(Arg.Any<int?>(), Arg.Any<int?>(), Arg.Any<string>()).Returns("Source config");
 
 		    var cmd = new SetTypeOfExportDefaultValueCommand(_integrationPointService, _integrationPointProfileService,
-			    _integrationPointLibrary, _integrationPointProfileLibrary, _sourceConfigurationTypeOfExportUpdater);
+			    _objectManager, _sourceConfigurationTypeOfExportUpdater);
 
 		    cmd.Execute();
 
-		    _integrationPointLibrary.Received().Update(Arg.Any<Data.IntegrationPoint>());
-		    _integrationPointProfileLibrary.Received().Update(Arg.Any<IntegrationPointProfile>());
+		    _objectManager.Received().Update(Arg.Any<Data.IntegrationPoint>());
+		    _objectManager.Received().Update(Arg.Any<IntegrationPointProfile>());
 		}
 
         private void SetUpIntegrationPointProfilesMock()
@@ -77,7 +78,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 
             _integrationPointProfileService = Substitute.For<IIntegrationPointProfileService>();
             _integrationPointProfileService.GetAllRDOs().Returns(_integrationPointProfiles);
-            _integrationPointProfileLibrary = Substitute.For<IGenericLibrary<IntegrationPointProfile>>();
         }
 
         private void PopulateIntegrationPointProfilesList()
@@ -100,7 +100,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 
             _integrationPointService = Substitute.For<IIntegrationPointService>();
             _integrationPointService.GetAllRDOs().Returns(_integrationPoints);
-            _integrationPointLibrary = Substitute.For<IGenericLibrary<Data.IntegrationPoint>>();
         }
 
         private void PopulateIntegrationPointsList()

@@ -1,9 +1,9 @@
-﻿using kCura.Relativity.Client.DTOs;
+﻿using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.QueryBuilders
 {
 	public interface IDestinationProviderArtifactIdByGuidQueryBuilder
 	{
-		Query<RDO> Create(string guid);
+		QueryRequest Create(string guid);
 	}
 }

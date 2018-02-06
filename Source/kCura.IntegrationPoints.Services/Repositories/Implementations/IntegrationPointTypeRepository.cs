@@ -3,6 +3,7 @@ using System.Linq;
 using AutoMapper;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.QueryBuilders.Implementations;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 {
@@ -17,9 +18,9 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 
 		public IList<IntegrationPointTypeModel> GetIntegrationPointTypes()
 		{
-			var query = new AllIntegrationPointTypesQueryBuilder().Create();
-			var types = _rsapiService.IntegrationPointTypeLibrary.Query(query);
-			return Enumerable.ToList(types.Select(Mapper.Map<IntegrationPointTypeModel>));
+			QueryRequest query = new AllIntegrationPointTypesQueryBuilder().Create();
+			List<IntegrationPointType> types = _rsapiService.RelativityObjectManager.Query<IntegrationPointType>(query);
+			return types.Select(Mapper.Map<IntegrationPointTypeModel>).ToList();
 		}
 	}
 }

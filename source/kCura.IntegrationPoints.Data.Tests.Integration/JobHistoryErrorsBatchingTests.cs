@@ -23,6 +23,7 @@ using kCura.ScheduleQueue.Core;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Search;
+using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Data.Tests.Integration
 {
@@ -224,10 +225,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 
 			_batchStatus.OnJobStart(job);
 			DataTable completedTempTable = GetTempTable(completeTempTableName);
-			CompareJobHistoryErrorStatuses(expectedJobHistoryErrorArtifactIds, JobHistoryErrorDTO.Choices.ErrorStatus.Values.InProgress);
+			CompareJobHistoryErrorStatuses(expectedJobHistoryErrorArtifactIds, ErrorStatusChoices.JobHistoryErrorInProgress);
 
 			_batchStatus.OnJobComplete(job);
-			CompareJobHistoryErrorStatuses(expectedJobHistoryErrorArtifactIds, JobHistoryErrorDTO.Choices.ErrorStatus.Values.Retried);
+			CompareJobHistoryErrorStatuses(expectedJobHistoryErrorArtifactIds, ErrorStatusChoices.JobHistoryErrorRetried);
 
 			//Assert
 			VerifyTempTableCountAndEntries(startTempTable, startTempTableName, expectedJobHistoryErrorArtifactIds);
@@ -299,11 +300,11 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 
 			_batchStatus.OnJobStart(job);
 			DataTable completedTempTable = GetTempTable(completeTempTableName);
-			CompareJobHistoryErrorStatuses(expectedJobHistoryErrorsForRetry, JobHistoryErrorDTO.Choices.ErrorStatus.Values.InProgress);
-			CompareJobHistoryErrorStatuses(expectedJobHistoryErrorExpired, JobHistoryErrorDTO.Choices.ErrorStatus.Values.Expired);
+			CompareJobHistoryErrorStatuses(expectedJobHistoryErrorsForRetry, ErrorStatusChoices.JobHistoryErrorInProgress);
+			CompareJobHistoryErrorStatuses(expectedJobHistoryErrorExpired, ErrorStatusChoices.JobHistoryErrorExpired);
 
 			_batchStatus.OnJobComplete(job);
-			CompareJobHistoryErrorStatuses(expectedJobHistoryErrorsForRetry, JobHistoryErrorDTO.Choices.ErrorStatus.Values.Retried);
+			CompareJobHistoryErrorStatuses(expectedJobHistoryErrorsForRetry, ErrorStatusChoices.JobHistoryErrorRetried);
 
 			//Assert
 			VerifyTempTableCountAndEntries(startTempTable, startTempTableName, expectedJobHistoryErrorsForRetry);
@@ -420,11 +421,11 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 
 			_batchStatus.OnJobStart(job);
 			DataTable completedTempTable = GetTempTable(completeTempTableName);
-			CompareJobHistoryErrorStatuses(expectedJobHistoryErrorsForRetry, JobHistoryErrorDTO.Choices.ErrorStatus.Values.InProgress);
-			CompareJobHistoryErrorStatuses(expectedJobHistoryErrorExpired, JobHistoryErrorDTO.Choices.ErrorStatus.Values.Expired);
+			CompareJobHistoryErrorStatuses(expectedJobHistoryErrorsForRetry, ErrorStatusChoices.JobHistoryErrorInProgress);
+			CompareJobHistoryErrorStatuses(expectedJobHistoryErrorExpired, ErrorStatusChoices.JobHistoryErrorExpired);
 
 			_batchStatus.OnJobComplete(job);
-			CompareJobHistoryErrorStatuses(expectedJobHistoryErrorsForRetry, JobHistoryErrorDTO.Choices.ErrorStatus.Values.Retried);
+			CompareJobHistoryErrorStatuses(expectedJobHistoryErrorsForRetry, ErrorStatusChoices.JobHistoryErrorRetried);
 
 			//Assert
 			VerifyTempTableCountAndEntries(startTempTable, startTempTableName, expectedJobHistoryErrorsForRetry);
@@ -526,12 +527,12 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			}
 		}
 
-		private void CompareJobHistoryErrorStatuses(ICollection<int> jobHistoryErrorArtifactIds, JobHistoryErrorDTO.Choices.ErrorStatus.Values expectedErrorStatus)
+		private void CompareJobHistoryErrorStatuses(ICollection<int> jobHistoryErrorArtifactIds, Choice expectedErrorStatus)
 		{
-			IList<JobHistoryErrorDTO> jobHistoryErrors = _jobHistoryErrorRepository.Read(jobHistoryErrorArtifactIds);
-			foreach (JobHistoryErrorDTO jobHistoryError in jobHistoryErrors)
+			IList<JobHistoryError> jobHistoryErrors = _jobHistoryErrorRepository.Read(jobHistoryErrorArtifactIds);
+			foreach (JobHistoryError jobHistoryError in jobHistoryErrors)
 			{
-				if (jobHistoryError.ErrorStatus != expectedErrorStatus)
+				if (jobHistoryError.ErrorStatus.Guids.First() != expectedErrorStatus.Guids.First())
 				{
 					throw new Exception($"Error: JobHistoryError: {jobHistoryError.ArtifactId} has Error Status: { jobHistoryError.ErrorStatus}. Expected Error Status: { expectedErrorStatus }. ");
 				}
@@ -587,7 +588,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 
 		private JobHistory CreateJobHistoryOnIntegrationPoint(int integrationPointArtifactId, Guid batchInstance)
 		{
-			IntegrationPoint integrationPoint = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointArtifactId);
+			IntegrationPoint integrationPoint = CaseContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(integrationPointArtifactId);
 			JobHistory jobHistory = _jobHistoryService.CreateRdo(integrationPoint, batchInstance, JobTypeChoices.JobHistoryRun, DateTime.Now);
 			jobHistory.EndTimeUTC = DateTime.Now;
 			jobHistory.JobStatus = JobStatusChoices.JobHistoryCompletedWithErrors;

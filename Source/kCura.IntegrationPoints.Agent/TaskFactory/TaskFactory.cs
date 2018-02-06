@@ -100,7 +100,7 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 		private IntegrationPoint GetIntegrationPoint(Job job)
 		{
 			LogGetIntegrationPointStart(job);
-			IntegrationPoint integrationPoint = _caseServiceContext.RsapiService.IntegrationPointLibrary.Read(job.RelatedObjectArtifactID);
+			IntegrationPoint integrationPoint = _caseServiceContext.RsapiService.RelativityObjectManager.Read<IntegrationPoint>(job.RelatedObjectArtifactID);
 
 			if (integrationPoint == null)
 			{

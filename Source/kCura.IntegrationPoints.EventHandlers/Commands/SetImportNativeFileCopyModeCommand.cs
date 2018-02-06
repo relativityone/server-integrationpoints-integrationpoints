@@ -1,5 +1,6 @@
 ﻿using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands
 {
@@ -7,8 +8,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 	{
 		private readonly IIntegrationPointService _integrationPointService;
 		private readonly IIntegrationPointProfileService _integrationPointProfileService;
-		private readonly IGenericLibrary<IntegrationPoint> _integrationPointLibrary;
-		private readonly IGenericLibrary<IntegrationPointProfile> _integrationPointProfileLibrary;
+		private readonly IRelativityObjectManager _objectManager;
 		private readonly ImportNativeFileCopyModeUpdater _importNativeFileCopyModeUpdater;
 
 		public SetImportNativeFileCopyModeCommand(IIntegrationPointService integrationPointService,
@@ -19,8 +19,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 
 			_integrationPointService = integrationPointService;
 			_integrationPointProfileService = integrationPointProfileService;
-			_integrationPointLibrary = service.IntegrationPointLibrary;
-			_integrationPointProfileLibrary = service.IntegrationPointProfileLibrary;
+			_objectManager = service.RelativityObjectManager;
 			_importNativeFileCopyModeUpdater = importNativeFileCopyModeUpdater;
 		}
 
@@ -39,7 +38,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 				if (resultConf != null)
 				{
 					point.DestinationConfiguration = resultConf;
-					_integrationPointLibrary.Update(point);
+					_objectManager.Update(point);
 				}
 			}
 		}
@@ -53,7 +52,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 				if (resultConf != null)
 				{
 					profile.DestinationConfiguration = resultConf;
-					_integrationPointProfileLibrary.Update(profile);
+					_objectManager.Update(profile);
 				}
 			}
 		}

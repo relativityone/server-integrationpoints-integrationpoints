@@ -1,0 +1,9 @@
+CSharpGuidelineAnalyzer
+kCura.Relativity.Client
+NSubstitute
+NUnit
+Relativity
+Relativity.API
+Relativity.Productions.Services.Interfaces
+Relativity.Services.Interfaces.Private
+Newtonsoft.Json

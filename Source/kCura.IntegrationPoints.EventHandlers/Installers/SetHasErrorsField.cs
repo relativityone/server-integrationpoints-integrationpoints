@@ -149,7 +149,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 				}
 			}
 
-			_caseServiceContext.RsapiService.IntegrationPointLibrary.Update(integrationPoint);
+			_caseServiceContext.RsapiService.RelativityObjectManager.Update(integrationPoint);
 		}
 
 		internal IList<Data.IntegrationPoint> GetIntegrationPoints()

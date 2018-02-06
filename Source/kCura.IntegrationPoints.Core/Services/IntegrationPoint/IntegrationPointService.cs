@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 	{
 		private readonly IJobManager _jobService;
 		private readonly IJobHistoryService _jobHistoryService;
-	    private readonly IIntegrationPointExecutionValidator _executionValidator;
+		private readonly IIntegrationPointExecutionValidator _executionValidator;
 
 		protected override string UnableToSaveFormat
 			=> "Unable to save Integration Point:{0} cannot be changed once the Integration Point has been run";
@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		{
 			_jobService = jobService;
 			_jobHistoryService = jobHistoryService;
-		    _executionValidator = executionValidator;
+			_executionValidator = executionValidator;
 		}
 
 		protected override IntegrationPointModelBase GetModel(int artifactId)
@@ -63,8 +63,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 		public int SaveIntegration(IntegrationPointModel model)
 		{
-			Data.IntegrationPoint integrationPoint;
-			PeriodicScheduleRule rule;
 			try
 			{
 				if (model.ArtifactID > 0)
@@ -90,25 +88,23 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 				IList<Choice> choices =
 					ChoiceQuery.GetChoicesOnField(Guid.Parse(IntegrationPointFieldGuids.OverwriteFields));
 
-				rule = ConvertModelToScheduleRule(model);
-				integrationPoint = model.ToRdo(choices, rule);
-
-				var integrationPointModel = IntegrationPointModel.FromIntegrationPoint(integrationPoint);
+				PeriodicScheduleRule rule = ConvertModelToScheduleRule(model);
+				Data.IntegrationPoint integrationPoint = model.ToRdo(choices, rule);
 
 				SourceProvider sourceProvider = GetSourceProvider(integrationPoint.SourceProvider);
 				DestinationProvider destinationProvider = GetDestinationProvider(integrationPoint.DestinationProvider);
 				IntegrationPointType integrationPointType = GetIntegrationPointType(integrationPoint.Type);
 
-				RunValidation(integrationPointModel, sourceProvider, destinationProvider, integrationPointType, ObjectTypeGuids.IntegrationPoint);
+				RunValidation(model, sourceProvider, destinationProvider, integrationPointType, ObjectTypeGuids.IntegrationPoint);
 
 				//save RDO
 				if (integrationPoint.ArtifactId > 0)
 				{
-					Context.RsapiService.GetGenericLibrary<Data.IntegrationPoint>().Update(integrationPoint);
+					Context.RsapiService.RelativityObjectManager.Update(integrationPoint);
 				}
 				else
 				{
-					integrationPoint.ArtifactId = Context.RsapiService.GetGenericLibrary<Data.IntegrationPoint>().Create(integrationPoint);
+					integrationPoint.ArtifactId = Context.RsapiService.RelativityObjectManager.Create(integrationPoint);
 				}
 
 				TaskType task = GetJobTaskType(sourceProvider, destinationProvider);
@@ -125,6 +121,8 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 						_jobService.DeleteJob(job.JobId);
 					}
 				}
+
+				return integrationPoint.ArtifactId;
 			}
 			catch (PermissionException)
 			{
@@ -148,7 +146,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 				throw new Exception(Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_SAVE_INTEGRATION_POINT_USER_MESSAGE, exception);
 			}
-			return integrationPoint.ArtifactId;
 		}
 
 		public void RunIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, int userId)
@@ -173,9 +170,9 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			}
 
 			CheckPermissions(workspaceArtifactId, integrationPoint, sourceProvider, destinationProvider, userId);
-		    CheckExecutionConstraints(IntegrationPointModel.FromIntegrationPoint(integrationPoint));
+			CheckExecutionConstraints(IntegrationPointModel.FromIntegrationPoint(integrationPoint));
 
-            CreateJob(integrationPoint, sourceProvider, destinationProvider, JobTypeChoices.JobHistoryRun, workspaceArtifactId, userId);
+			CreateJob(integrationPoint, sourceProvider, destinationProvider, JobTypeChoices.JobHistoryRun, workspaceArtifactId, userId);
 		}
 
 		public void RetryIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, int userId)
@@ -205,9 +202,9 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			}
 
 			CheckPermissions(workspaceArtifactId, integrationPoint, sourceProvider, destinationProvider, userId);
-		    CheckExecutionConstraints(IntegrationPointModel.FromIntegrationPoint(integrationPoint));
+			CheckExecutionConstraints(IntegrationPointModel.FromIntegrationPoint(integrationPoint));
 
-            CheckPreviousJobHistoryStatusOnRetry(workspaceArtifactId, integrationPointArtifactId);
+			CheckPreviousJobHistoryStatusOnRetry(workspaceArtifactId, integrationPointArtifactId);
 
 			if (integrationPoint.HasErrors.HasValue == false || integrationPoint.HasErrors.Value == false)
 			{
@@ -224,7 +221,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			{
 				IJobHistoryManager jobHistoryManager = ManagerFactory.CreateJobHistoryManager(SourceContextContainer);
 				int lastJobHistoryArtifactId = jobHistoryManager.GetLastJobHistoryArtifactId(workspaceArtifactId, integrationPointArtifactId);
-				lastJobHistory = Context.RsapiService.JobHistoryLibrary.Read(lastJobHistoryArtifactId);
+				lastJobHistory = Context.RsapiService.RelativityObjectManager.Read<Data.JobHistory>(lastJobHistoryArtifactId);
 			}
 			catch (Exception exception)
 			{
@@ -363,25 +360,25 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			}
 		}
 
-	    private void CheckExecutionConstraints(IntegrationPointModel model)
-	    {
-	        if (_executionValidator == null)
-	            return;
+		private void CheckExecutionConstraints(IntegrationPointModel model)
+		{
+			if (_executionValidator == null)
+				return;
 
-	        var validationResult = _executionValidator.Validate(model);
-            
-
-	        if (!validationResult.IsValid)
-	        {
-	            var validationError = string.Join(System.Environment.NewLine, validationResult.Messages);
+			var validationResult = _executionValidator.Validate(model);
 
 
-                CreateRelativityError(
-	                Core.Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_RUN, validationError);
+			if (!validationResult.IsValid)
+			{
+				var validationError = string.Join(System.Environment.NewLine, validationResult.Messages);
 
-	            throw new InvalidConstraintException(validationError); 
-	        }
-        }
+
+				CreateRelativityError(
+					Core.Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_RUN, validationError);
+
+				throw new InvalidConstraintException(validationError);
+			}
+		}
 
 		private void CreateJob(Data.IntegrationPoint integrationPoint, SourceProvider sourceProvider, DestinationProvider destinationProvider, Choice jobType, int workspaceArtifactId, int userId)
 		{

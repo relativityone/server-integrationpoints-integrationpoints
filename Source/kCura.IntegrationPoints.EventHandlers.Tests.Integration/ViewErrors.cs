@@ -89,7 +89,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 
 			//IntegrationPointModel integrationPoint = JsonConvert.DeserializeObject<IntegrationPointModel>(response);
 			IntegrationPointModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
-			Data.IntegrationPoint integrationPointDto = _caseServiceContext.RsapiService.IntegrationPointLibrary.Read(integrationPointCreated.ArtifactID);
+			Data.IntegrationPoint integrationPointDto = _caseServiceContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(integrationPointCreated.ArtifactID);
 			_jobHistoryService.GetOrCreateScheduledRunHistoryRdo(integrationPointDto, Guid.NewGuid(), DateTime.Now);
 			//Act
 

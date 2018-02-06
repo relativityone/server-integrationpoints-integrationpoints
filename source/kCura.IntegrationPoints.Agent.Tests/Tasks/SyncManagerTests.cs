@@ -122,7 +122,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			_option = "option";
 			_data = "data";
-			_caseServiceContext.RsapiService.SourceProviderLibrary.Read(_integrationPoint.SourceProvider.Value).Returns(_sourceProvider);
+			_caseServiceContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider.Value).Returns(_sourceProvider);
 			_dataProviderFactory.GetDataProvider(
 					Arg.Is<Guid>(appGuid => appGuid == new Guid(_sourceProvider.ApplicationIdentifier)),
 					Arg.Is<Guid>(providerGuid => providerGuid == new Guid(_sourceProvider.Identifier)), _helper).Returns(_dataSourceProvider);
@@ -312,8 +312,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			// assert
 			_batchStatus.Received(1).OnJobComplete(_job);
 			Assert.IsNull(_integrationPoint.NextScheduledRuntimeUTC);
-			_caseServiceContext.RsapiService.IntegrationPointLibrary.Received(1).Update(_integrationPoint);
-			_caseServiceContext.RsapiService.JobHistoryLibrary.Received(1).Update(_jobHistory);
+			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1).Update(_integrationPoint);
+			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1).Update(_jobHistory);
 			_jobHistoryErrorService.Received().CommitErrors();
 		}
 
@@ -350,7 +350,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_jobStopManager.IsStopRequested().Returns(true);
 
 			_syncManagerEventHelper.RaisePreEvent(_job);
-			_caseServiceContext.RsapiService.IntegrationPointLibrary.Update(_integrationPoint).Throws(exception1);
+			_caseServiceContext.RsapiService.RelativityObjectManager.Update(_integrationPoint).Throws(exception1);
 			_jobService.When(obj => obj.UpdateStopState(Arg.Is<IList<long>>(lst => lst.SequenceEqual(new[] { _job.JobId })), StopState.None)).Do(info => { throw exception2; });
 			_batchStatus.When(obj => obj.OnJobComplete(_job)).Do(info => { throw exception3; });
 			_jobHistoryManager
@@ -359,7 +359,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				{
 					throw exception4;
 				});
-			_caseServiceContext.RsapiService.JobHistoryLibrary.Update(_jobHistory).Throws(exception5);
+			_caseServiceContext.RsapiService.RelativityObjectManager.Update(_jobHistory).Throws(exception5);
 			// act
 			_syncManagerEventHelper.RaisePostEvent(_job, _taskResult, 0);
 
@@ -485,8 +485,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_batchStatus.Received(1).OnJobComplete(_job);
 			_jobHistoryManager.Received(1).SetErrorStatusesToExpired(_caseServiceContext.WorkspaceID, _jobHistory.ArtifactId);
 			Assert.IsNotNull(_integrationPoint.NextScheduledRuntimeUTC);
-			_caseServiceContext.RsapiService.IntegrationPointLibrary.Received(1).Update(_integrationPoint);
-			_caseServiceContext.RsapiService.JobHistoryLibrary.Received(1).Update(_jobHistory);
+			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1).Update(_integrationPoint);
+			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1).Update(_jobHistory);
 			_jobHistoryErrorService.Received().CommitErrors();
 		}
 

@@ -1,25 +1,31 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.QueryBuilders.Implementations;
-using kCura.Relativity.Client.DTOs;
 using Relativity.API;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 {
 	public class ImageTotalStatistics : IImageTotalStatistics
 	{
-		private const string _FOR_PRODUCTION_ERROR = "Failed to retrieve total images count for production set: {productionSetId}.";
-		private const string _FOR_FOLDER_ERROR = "Failed to retrieve total images count for folder: {folderId} and view: {viewId}.";
-		private const string _FOR_SAVED_SEARCH_ERROR = "Failed to retrieve total images count for saved search id: {savedSearchId}.";
+		private const string _FOR_PRODUCTION_ERROR =
+			"Failed to retrieve total images count for production set: {productionSetId}.";
+
+		private const string _FOR_FOLDER_ERROR =
+			"Failed to retrieve total images count for folder: {folderId} and view: {viewId}.";
+
+		private const string _FOR_SAVED_SEARCH_ERROR =
+			"Failed to retrieve total images count for saved search id: {savedSearchId}.";
 
 		private readonly IAPILog _logger;
-		private readonly IRepositoryFactory _repositoryFactory;
+		private readonly IRelativityObjectManagerFactory _relativityObjectManagerFactory;
 
-		public ImageTotalStatistics(IHelper helper, IRepositoryFactory repositoryFactory)
+		public ImageTotalStatistics(IHelper helper, IRelativityObjectManagerFactory relativityObjectManagerFactory)
 		{
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ImageTotalStatistics>();
-			_repositoryFactory = repositoryFactory;
+			_relativityObjectManagerFactory = relativityObjectManagerFactory;
 		}
 
 		public long ForFolder(int workspaceArtifactId, int folderId, int viewId, bool includeSubFoldersTotals)
@@ -27,7 +33,8 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			try
 			{
 				var queryBuilder = new DocumentQueryBuilder();
-				var query = queryBuilder.AddFolderCondition(folderId, viewId, includeSubFoldersTotals).AddHasImagesCondition().AddField(DocumentFieldsConstants.RelativityImageCount).Build();
+				var query = queryBuilder.AddFolderCondition(folderId, viewId, includeSubFoldersTotals).AddHasImagesCondition()
+					.AddField(DocumentFieldsConstants.RelativityImageCount).Build();
 				var queryResult = ExecuteQuery(query, workspaceArtifactId);
 				return SumDocumentImages(queryResult);
 			}
@@ -43,7 +50,8 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			try
 			{
 				var queryBuilder = new ProductionInformationQueryBuilder();
-				var query = queryBuilder.AddProductionSetCondition(productionSetId).AddField(ProductionConsts.ImageCountFieldGuid).Build();
+				var query = queryBuilder.AddProductionSetCondition(productionSetId).AddField(ProductionConsts.ImageCountFieldGuid)
+					.Build();
 				var queryResult = ExecuteQuery(query, workspaceArtifactId);
 				return SumProductionImages(queryResult);
 			}
@@ -59,7 +67,8 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			try
 			{
 				var queryBuilder = new DocumentQueryBuilder();
-				var query = queryBuilder.AddSavedSearchCondition(savedSearchId).AddHasImagesCondition().AddField(DocumentFieldsConstants.RelativityImageCount).Build();
+				var query = queryBuilder.AddSavedSearchCondition(savedSearchId).AddHasImagesCondition()
+					.AddField(DocumentFieldsConstants.RelativityImageCount).Build();
 				var queryResult = ExecuteQuery(query, workspaceArtifactId);
 				return SumDocumentImages(queryResult);
 			}
@@ -70,19 +79,34 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			}
 		}
 
-		private QueryResultSet<RDO> ExecuteQuery(Query<RDO> query, int workspaceArtifactId)
+		private List<RelativityObject> ExecuteQuery(QueryRequest query, int workspaceArtifactId)
 		{
-			return _repositoryFactory.GetRdoRepository(workspaceArtifactId).Query(query);
+			return _relativityObjectManagerFactory.CreateRelativityObjectManager(workspaceArtifactId).Query(query);
 		}
 
-		private long SumDocumentImages(QueryResultSet<RDO> documents)
+		private long SumDocumentImages(List<RelativityObject> documents)
 		{
-			return documents.Results.Sum(x => x.Artifact[DocumentFieldsConstants.RelativityImageCount].ValueAsWholeNumber ?? 0L);
+			return SumFieldValues(documents, DocumentFieldsConstants.RelativityImageCount);
 		}
 
-		private long SumProductionImages(QueryResultSet<RDO> documents)
+		private long SumProductionImages(List<RelativityObject> documents)
 		{
-			return documents.Results.Sum(x => x.Artifact[ProductionConsts.ImageCountFieldGuid].ValueAsWholeNumber ?? 0L);
+			return SumFieldValues(documents, ProductionConsts.ImageCountFieldGuid);
+		}
+
+		private long SumFieldValues(List<RelativityObject> documents, Guid fieldGuid)
+		{
+			return documents.Select(GetFunctionForRetrieveFieldValue(fieldGuid)).Select(ConvertObjectToLong).Sum();
+		}
+
+		private Func<RelativityObject, object> GetFunctionForRetrieveFieldValue(Guid fieldGuid)
+		{
+			return relativityObject => relativityObject.FieldValues.FirstOrDefault(field => field.Field.Guids.Contains(fieldGuid))?.Value;
+		}
+
+		private long ConvertObjectToLong(object obj)
+		{
+			return Convert.ToInt64(obj ?? 0);
 		}
 	}
 }

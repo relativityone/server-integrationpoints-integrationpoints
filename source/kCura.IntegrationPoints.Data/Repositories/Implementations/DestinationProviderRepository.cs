@@ -3,65 +3,41 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Data.QueryBuilders;
 using kCura.IntegrationPoints.Data.QueryBuilders.Implementations;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
-using Relativity.API;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class DestinationProviderRepository : IDestinationProviderRepository
 	{
-		private readonly IHelper _helper;
-		private readonly int _workspaceArtifactId;
+		private readonly IRelativityObjectManager _relativityObjectManager;
 		private readonly IDestinationProviderArtifactIdByGuidQueryBuilder _artifactIdByGuid = new DestinationProviderArtifactIdByGuidQueryBuilder();
 
-		public DestinationProviderRepository(IHelper helper, int workspaceArtifactId)
+		public DestinationProviderRepository(IRelativityObjectManager relativityObjectManager)
 		{
-			_helper = helper;
-			_workspaceArtifactId = workspaceArtifactId;
+			_relativityObjectManager = relativityObjectManager;
 		}
 
 		public DestinationProviderDTO Read(int artifactId)
 		{
-			var query = new Query<RDO>
+			var nameFieldRef = new FieldRef { Name = SourceProviderFields.Name };
+			var identifierFieldRef = new FieldRef { Name = SourceProviderFields.Identifier };
+			var queryRequest = new QueryRequest
 			{
-				ArtifactTypeGuid = new Guid(ObjectTypeGuids.DestinationProvider),
-				Condition = new WholeNumberCondition(new Guid(Domain.Constants.DESTINATION_PROVIDER_ARTIFACTID_FIELD), NumericConditionEnum.EqualTo, artifactId),
-				Fields = new List<FieldValue>
-				{
-					new FieldValue(new Guid(DestinationProviderFieldGuids.Identifier)),
-					new FieldValue(new Guid(DestinationProviderFieldGuids.Name))
-				}
+				Condition = $"'{Domain.Constants.DESTINATION_PROVIDER_ARTIFACTID_FIELD_NAME}' == {artifactId}",
+				Fields = new List<FieldRef> { nameFieldRef, identifierFieldRef },
+				ObjectType = new ObjectTypeRef { Guid = new Guid(ObjectTypeGuids.DestinationProvider) }
 			};
-
-			using (IRSAPIClient client = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			List<DestinationProvider> queryResults;
+			try
 			{
-				client.APIOptions.WorkspaceID = _workspaceArtifactId;
-
-				try
-				{
-					QueryResultSet<RDO> resultSet = client.Repositories.RDO.Query(query, 1);
-					if (!resultSet.Success)
-					{
-						throw new Exception(resultSet.Message);
-					}
-
-					Result<RDO> result = resultSet.Results.First();
-
-					var provider = new DestinationProviderDTO
-					{
-						ArtifactId = result.Artifact.ArtifactID,
-						Identifier = new Guid(result.Artifact.Fields[0].ValueAsFixedLengthText),
-						Name = result.Artifact.Fields[1].ValueAsFixedLengthText
-					};
-
-					return provider;
-				}
-				catch (Exception ex)
-				{
-					throw new Exception($"Unable to retrieve Destination Provider: {ex.Message}", ex);
-				}
+				queryResults = _relativityObjectManager.Query<DestinationProvider>(queryRequest);
+				return CreateDestinationProviderDTO(queryResults.Single());
+			}
+			catch (Exception e)
+			{
+				throw new IntegrationPointsException($"Failed to retrieve Destination Provider for artifact Id: {artifactId}", e);
 			}
 		}
 
@@ -69,26 +45,28 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			var query = _artifactIdByGuid.Create(destinationProviderGuidIdentifier);
 
-			QueryResultSet<RDO> results = null;
-			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			List<RelativityObject> queryResults;
+			try
 			{
-				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
-				results = rsapiClient.Repositories.RDO.Query(query, 1);
+				queryResults = _relativityObjectManager.Query(query);
+				return queryResults.Single().ArtifactID;
 			}
-
-			if (!results.Success)
+			catch (Exception e)
 			{
-				throw new Exception($"Unable to retrieve Destination Provider: {results.Message}");
+				throw new IntegrationPointsException($"Failed to retrieve Destination Provider Artifact Id for guid: {destinationProviderGuidIdentifier}.", e);
 			}
-
-			var destinationProviderArtifactId = results.Results.Select(result => result.Artifact.ArtifactID).FirstOrDefault();
-
-			if (destinationProviderArtifactId == 0)
-			{
-				throw new Exception($"Unable to retrieve Destination Provider ({destinationProviderArtifactId}).");
-			}
-
-			return destinationProviderArtifactId;
 		}
+
+		private static DestinationProviderDTO CreateDestinationProviderDTO(DestinationProvider result)
+		{
+			return new DestinationProviderDTO
+			{
+				ArtifactId = result.ArtifactId,
+				Identifier = new Guid(result.Identifier),
+				Name = result.Name
+			};
+		}
+
 	}
+
 }

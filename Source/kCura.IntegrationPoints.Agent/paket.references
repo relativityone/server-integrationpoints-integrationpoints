@@ -1,0 +1,11 @@
+Castle.Windsor
+CSharpGuidelineAnalyzer
+kCura.Agent
+kCura.Apps.Common.Config
+kCura.Relativity.Client
+Relativity.Authentication
+Relativity.ImportExport
+Relativity.Telemetry.APM
+Relativity.Telemetry.MetricsCollection
+Relativity.Vfs.IO
+Relativity.Services.Interfaces

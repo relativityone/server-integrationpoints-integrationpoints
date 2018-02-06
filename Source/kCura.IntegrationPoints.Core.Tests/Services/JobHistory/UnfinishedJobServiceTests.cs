@@ -9,6 +9,7 @@ using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 {
@@ -37,21 +38,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			_instance.GetUnfinishedJobs(_WORKSPACE_ID);
 
 			// ASSERT
-			_rsapiService.JobHistoryLibrary.Received(1).Query(Arg.Is<Query<RDO>>(x => CheckCondition(x)));
+			_rsapiService.RelativityObjectManager.Received(1).Query<Data.JobHistory>(Arg.Is<QueryRequest>(x => CheckCondition(x)));
 		}
 
-		private bool CheckCondition(Query<RDO> query)
+		private bool CheckCondition(QueryRequest query)
 		{
-			var unfinishedChoicesNames = new List<Guid>
-			{
-				JobStatusChoices.JobHistoryPending.Guids.FirstOrDefault(),
-				JobStatusChoices.JobHistoryProcessing.Guids.FirstOrDefault(),
-				JobStatusChoices.JobHistoryStopping.Guids.FirstOrDefault()
-			};
-
-			var singleChoiceCondition = (SingleChoiceCondition) query.Condition;
-			var value = (IEnumerable<Guid>) singleChoiceCondition.Value;
-			return value.SequenceEqual(unfinishedChoicesNames);
+			return (query.Condition.Contains(JobStatusChoices.JobHistoryPending.Guids.FirstOrDefault().ToString()) &&
+			        query.Condition.Contains(JobStatusChoices.JobHistoryProcessing.Guids.FirstOrDefault().ToString()) &&
+			        query.Condition.Contains(JobStatusChoices.JobHistoryStopping.Guids.FirstOrDefault().ToString()));
 		}
 	}
 }

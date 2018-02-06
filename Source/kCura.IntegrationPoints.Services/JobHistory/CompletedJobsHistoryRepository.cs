@@ -1,29 +1,30 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.QueryBuilders;
 using kCura.Relativity.Client.DTOs;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Services.JobHistory
 {
 	public class CompletedJobsHistoryRepository : ICompletedJobsHistoryRepository
 	{
-		private readonly ILibraryFactory _libraryFactory;
+		private readonly ICaseServiceContext _caseServiceContext;
 		private readonly IIntegrationPointsCompletedJobsQueryBuilder _integrationPointsCompletedJobsQueryBuilder;
 
-		public CompletedJobsHistoryRepository(ILibraryFactory libraryFactory, IIntegrationPointsCompletedJobsQueryBuilder integrationPointsCompletedJobsQueryBuilder)
+		public CompletedJobsHistoryRepository(ICaseServiceContext caseServiceContext, IIntegrationPointsCompletedJobsQueryBuilder integrationPointsCompletedJobsQueryBuilder)
 		{
-			_libraryFactory = libraryFactory;
+			_caseServiceContext = caseServiceContext;
 			_integrationPointsCompletedJobsQueryBuilder = integrationPointsCompletedJobsQueryBuilder;
 		}
 
 		public IList<JobHistoryModel> RetrieveCompleteJobsForIntegrationPoints(JobHistoryRequest request, List<int> integrationPointIds)
 		{
 			bool sortDescending = (request.SortDescending != null) && request.SortDescending.Value;
-			Query<RDO> query = _integrationPointsCompletedJobsQueryBuilder.CreateQuery(request.SortColumnName, sortDescending, integrationPointIds);
+			QueryRequest queryRequest = _integrationPointsCompletedJobsQueryBuilder.CreateQuery(request.SortColumnName, sortDescending, integrationPointIds);
 
-			IGenericLibrary<Data.JobHistory> library = _libraryFactory.Create<Data.JobHistory>(request.WorkspaceArtifactId);
-			IList<Data.JobHistory> queryResult = library.Query(query);
+			IList<Data.JobHistory> queryResult = _caseServiceContext.RsapiService.RelativityObjectManager.Query<Data.JobHistory>(queryRequest);
 			
 			return queryResult.Select(x => new JobHistoryModel
 			{

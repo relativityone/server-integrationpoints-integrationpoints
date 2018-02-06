@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			{
 				return;
 			}
-			var sourceProvider = CaseServiceContext.RsapiService.SourceProviderLibrary.Read(integrationPoint.SourceProvider.Value);
+			var sourceProvider = CaseServiceContext.RsapiService.RelativityObjectManager.Read<Data.SourceProvider>(integrationPoint.SourceProvider.Value);
 			if (sourceProvider.Identifier == Constants.RELATIVITY_PROVIDER_GUID)
 			{
 				integrationPoint.Type = integrationPointTypes.First(x => x.Identifier == Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString()).ArtifactId;
@@ -70,7 +70,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			{
 				integrationPoint.Type = integrationPointTypes.First(x => x.Identifier == Core.Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid.ToString()).ArtifactId;
 			}
-			CaseServiceContext.RsapiService.IntegrationPointLibrary.Update(integrationPoint);
+			CaseServiceContext.RsapiService.RelativityObjectManager.Update(integrationPoint);
 		}
 
 		internal IList<IntegrationPoint> GetIntegrationPoints()

@@ -6,12 +6,12 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Statistics.Implementations;
-using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity;
 using Relativity.API;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Tests.Statistics
 {
@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 
 		private IAPILog _logger;
 		private IHelper _helper;
-		private IRdoRepository _rdoRepository;
+		private IRelativityObjectManager _relativityObjectManager;
 
 		private NativeFileSizeStatistics _instance;
 
@@ -32,13 +32,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 		{
 			_logger = Substitute.For<IAPILog>();
 			_helper = Substitute.For<IHelper>();
-			_rdoRepository = Substitute.For<IRdoRepository>();
+			_relativityObjectManager = Substitute.For<IRelativityObjectManager>();
 
-			var repositoryFactory = Substitute.For<IRepositoryFactory>();
-			repositoryFactory.GetRdoRepository(_WORKSPACE_ID).Returns(_rdoRepository);
+			var relativityObjectManagerFactory = Substitute.For<IRelativityObjectManagerFactory>();
+			relativityObjectManagerFactory.CreateRelativityObjectManager(_WORKSPACE_ID).Returns(_relativityObjectManager);
 			_helper.GetLoggerFactory().GetLogger().ForContext<NativeFileSizeStatistics>().Returns(_logger);
 
-			_instance = new NativeFileSizeStatistics(_helper, repositoryFactory);
+			_instance = new NativeFileSizeStatistics(_helper, relativityObjectManagerFactory);
 		}
 
 		[Test]
@@ -58,12 +58,12 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			};
 
 			var queryResult = MockQueryResult(artifactIds);
-			_rdoRepository.Query(Arg.Any<Query<RDO>>()).Returns(queryResult);
+			_relativityObjectManager.Query(Arg.Any<QueryRequest>()).Returns(queryResult);
 
 			_helper.GetDBContext(_WORKSPACE_ID).ExecuteSqlStatementAsScalar<int>(
 					_SQL_TEXT,
 					Arg.Is<SqlParameter>(x => x.ParameterName == "@ArtifactIds" && x.TypeName == "IDs"),
-					Arg.Is<SqlParameter>(x => x.ParameterName == "@FileType" && (FileType) x.Value == FileType.Native))
+					Arg.Is<SqlParameter>(x => x.ParameterName == "@FileType" && (FileType)x.Value == FileType.Native))
 				.Returns(expectedResult);
 
 			var actualResult = _instance.ForFolder(_WORKSPACE_ID, folderId, viewId, includeSubfolders);
@@ -86,7 +86,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			};
 
 			var queryResult = MockQueryResult(artifactIds);
-			_rdoRepository.Query(Arg.Any<Query<RDO>>()).Returns(queryResult);
+			_relativityObjectManager.Query(Arg.Any<QueryRequest>()).Returns(queryResult);
 
 			_helper.GetDBContext(_WORKSPACE_ID).ExecuteSqlStatementAsScalar<int>(
 					_SQL_TEXT,
@@ -114,7 +114,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			};
 
 			var queryResult = MockQueryResult(artifactIds, ProductionConsts.DocumentFieldGuid);
-			_rdoRepository.Query(Arg.Any<Query<RDO>>()).Returns(queryResult);
+			_relativityObjectManager.Query(Arg.Any<QueryRequest>()).Returns(queryResult);
 
 			_helper.GetDBContext(_WORKSPACE_ID).ExecuteSqlStatementAsScalar<int>(
 					_SQL_TEXT,
@@ -130,7 +130,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 		[Test]
 		public void ItShouldLogError()
 		{
-			_rdoRepository.Query(Arg.Any<Query<RDO>>()).Throws(new Exception());
+			_relativityObjectManager.Query(Arg.Any<QueryRequest>()).Throws(new Exception());
 
 			Assert.That(() => _instance.ForFolder(_WORKSPACE_ID, 670, 692, true), Throws.Exception);
 			Assert.That(() => _instance.ForProduction(_WORKSPACE_ID, 234), Throws.Exception);
@@ -139,35 +139,34 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			_logger.Received(3).LogError(Arg.Any<Exception>(), Arg.Any<string>(), Arg.Any<object[]>());
 		}
 
-		private static QueryResultSet<RDO> MockQueryResult(List<int> artifactIds, Guid? guid = null)
+		private static List<RelativityObject> MockQueryResult(List<int> artifactIds, Guid? guid = null)
 		{
 			if (guid.HasValue)
 			{
-				var queryResult = new QueryResultSet<RDO>
-				{
-					Results = new List<Result<RDO>>(artifactIds.Select(x =>
-					{
-						var rdo = new Result<RDO>
-						{
-							Artifact = new RDO(x)
-						};
-						rdo.Artifact.Fields.Add(new FieldValue(guid.Value, new RDO(x)));
-						return rdo;
-					}))
-				};
-				return queryResult;
+				return artifactIds.Select(x => new RelativityObject { ArtifactID = x, FieldValues = CreateFieldValues(guid.Value, x) }).ToList();
 			}
 			else
 			{
-				var queryResult = new QueryResultSet<RDO>
-				{
-					Results = new List<Result<RDO>>(artifactIds.Select(x => new Result<RDO>
-					{
-						Artifact = new RDO(x)
-					}))
-				};
-				return queryResult;
+				return artifactIds.Select(x => new RelativityObject { ArtifactID = x }).ToList();
 			}
+
+
 		}
+
+		private static List<FieldValuePair> CreateFieldValues(Guid fieldGuid, int value)
+		{
+			return new List<FieldValuePair>
+			{
+				new FieldValuePair
+				{
+					Field = new Field
+					{
+						Guids = new List<Guid> {fieldGuid }
+					},
+					Value = new RelativityObjectValue {ArtifactID = value}
+				}
+			};
+		}
+
 	}
 }

@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Statistics.Implementations;
-using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Tests.Statistics
 {
@@ -22,7 +19,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 
 		private IAPILog _logger;
 		private IHelper _helper;
-		private IRdoRepository _rdoRepository;
+		private IRelativityObjectManager _rdoRepository;
 
 		private ImageTotalStatistics _instance;
 
@@ -30,10 +27,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 		{
 			_logger = Substitute.For<IAPILog>();
 			_helper = Substitute.For<IHelper>();
-			_rdoRepository = Substitute.For<IRdoRepository>();
+			_rdoRepository = Substitute.For<IRelativityObjectManager>();
 
-			var repositoryFactory = Substitute.For<IRepositoryFactory>();
-			repositoryFactory.GetRdoRepository(_WORKSPACE_ID).Returns(_rdoRepository);
+			var repositoryFactory = Substitute.For<IRelativityObjectManagerFactory>();
+			repositoryFactory.CreateRelativityObjectManager(_WORKSPACE_ID).Returns(_rdoRepository);
 			_helper.GetLoggerFactory().GetLogger().ForContext<ImageTotalStatistics>().Returns(_logger);
 
 			_instance = new ImageTotalStatistics(_helper, repositoryFactory);
@@ -49,7 +46,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			bool includeSubfolders = true;
 
 			var queryResult = MockQueryResult(expectedResult, DocumentFieldsConstants.RelativityImageCount);
-			_rdoRepository.Query(Arg.Any<Query<RDO>>()).Returns(queryResult);
+			_rdoRepository.Query(Arg.Any<QueryRequest>()).Returns(queryResult);
 
 			var actualResult = _instance.ForFolder(_WORKSPACE_ID, folderId, viewId, includeSubfolders);
 
@@ -62,9 +59,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			int expectedResult = 879;
 
 			int savedSearchId = 768974;
-			
+
 			var queryResult = MockQueryResult(expectedResult, DocumentFieldsConstants.RelativityImageCount);
-			_rdoRepository.Query(Arg.Any<Query<RDO>>()).Returns(queryResult);
+			_rdoRepository.Query(Arg.Any<QueryRequest>()).Returns(queryResult);
 
 			var actualResult = _instance.ForSavedSearch(_WORKSPACE_ID, savedSearchId);
 
@@ -79,34 +76,38 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			int productionId = 998788;
 
 			var queryResult = MockQueryResult(expectedResult, ProductionConsts.ImageCountFieldGuid);
-			_rdoRepository.Query(Arg.Any<Query<RDO>>()).Returns(queryResult);
+			_rdoRepository.Query(Arg.Any<QueryRequest>()).Returns(queryResult);
 
 			var actualResult = _instance.ForProduction(_WORKSPACE_ID, productionId);
 
 			Assert.That(actualResult, Is.EqualTo(expectedResult));
 		}
 
-		private static QueryResultSet<RDO> MockQueryResult(int expectedResult, Guid fieldGuid)
+		private static List<RelativityObject> MockQueryResult(int expectedResult, Guid fieldGuid)
 		{
-			var artifact = new RDO();
-			artifact.Fields.Add(new FieldValue(fieldGuid, expectedResult));
-			var queryResult = new QueryResultSet<RDO>
+			return new List<RelativityObject>
 			{
-				Results = new List<Result<RDO>>
+				new RelativityObject
 				{
-					new Result<RDO>
+					FieldValues = new List<FieldValuePair>
 					{
-						Artifact = artifact
+						new FieldValuePair
+						{
+							Field = new Field
+							{
+								Guids = new List<Guid> { fieldGuid }
+							},
+							Value = expectedResult
+						}
 					}
 				}
 			};
-			return queryResult;
 		}
 
 		[Test]
 		public void ItShouldLogError()
 		{
-			_rdoRepository.Query(Arg.Any<Query<RDO>>()).Throws(new Exception());
+			_rdoRepository.Query(Arg.Any<QueryRequest>()).Throws(new Exception());
 
 			Assert.That(() => _instance.ForFolder(_WORKSPACE_ID, 157, 237, true), Throws.Exception);
 			Assert.That(() => _instance.ForProduction(_WORKSPACE_ID, 465), Throws.Exception);

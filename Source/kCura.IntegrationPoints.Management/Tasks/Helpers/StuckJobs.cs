@@ -5,9 +5,12 @@ using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Transformers;
 using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
 using Newtonsoft.Json;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Management.Tasks.Helpers
 {
@@ -16,13 +19,13 @@ namespace kCura.IntegrationPoints.Management.Tasks.Helpers
 		private const int _STUCK_TIME_IN_HOURS = 1;
 
 		private readonly IJobService _jobService;
-		private readonly IRunningJobService _runningJobService;
+		private readonly IRunningJobRepository _runningJobRepository;
 		private readonly IRSAPIServiceFactory _rsapiServiceFactory;
 
-		public StuckJobs(IJobService jobService, IRunningJobService runningJobService, IRSAPIServiceFactory rsapiServiceFactory)
+		public StuckJobs(IJobService jobService, IRunningJobRepository runningJobRepository, IRSAPIServiceFactory rsapiServiceFactory)
 		{
 			_jobService = jobService;
-			_runningJobService = runningJobService;
+			_runningJobRepository = runningJobRepository;
 			_rsapiServiceFactory = rsapiServiceFactory;
 		}
 
@@ -34,7 +37,7 @@ namespace kCura.IntegrationPoints.Management.Tasks.Helpers
 
 			foreach (var workspaceId in pickedUpJobs.Select(x => x.WorkspaceID).Distinct())
 			{
-				var jobsInProgress = _runningJobService.GetRunningJobs(workspaceId);
+				var jobsInProgress = _runningJobRepository.GetRunningJobs(workspaceId);
 
 				List<string> pickedUpJobsBatchInstances = pickedUpJobs.Where(x => x.WorkspaceID == workspaceId)
 					.Select(x => JsonConvert.DeserializeObject<TaskParameters>(x.JobDetails).BatchInstance.ToString()).ToList();
@@ -72,7 +75,12 @@ namespace kCura.IntegrationPoints.Management.Tasks.Helpers
 		private IList<JobHistory> GetStuckJobs(IList<int> stuckJobsIds, int workspaceId)
 		{
 			var rsapiService = _rsapiServiceFactory.Create(workspaceId);
-			return rsapiService.JobHistoryLibrary.Read(stuckJobsIds);
+			QueryRequest request = new QueryRequest()
+			{
+				Condition = $"'{ArtifactQueryFieldNames.ArtifactID} in [{string.Join(",", stuckJobsIds)}]",
+				Fields = new JobHistory().ToFieldList()
+			};
+			return rsapiService.RelativityObjectManager.Query<JobHistory>(request);
 		}
 	}
 }

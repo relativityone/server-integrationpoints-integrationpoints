@@ -107,7 +107,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 
 			_helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId, _CREDENTIALS).Returns(_targetHelper);
 
-			_caseServiceContext.RsapiService.IntegrationPointLibrary.Read(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
+			_caseServiceContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
 
 			_integrationPointService.When(
 				service => service.RunIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, 0))
@@ -147,7 +147,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 
 			_helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId, _CREDENTIALS).Returns(_targetHelper);
 
-			_caseServiceContext.RsapiService.IntegrationPointLibrary.Read(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
+			_caseServiceContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
 
 			_integrationPointService.When(
 				service => service.RunIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, _USERID))
@@ -173,7 +173,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			};
 
 			_helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId, _CREDENTIALS).Returns(_targetHelper);
-			_caseServiceContext.RsapiService.IntegrationPointLibrary.Read(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
+			_caseServiceContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
 			_instance.User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(0)));
 
 			// Act
@@ -201,7 +201,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			};
 
 			_helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId, _CREDENTIALS).Returns(_targetHelper);
-			_caseServiceContext.RsapiService.IntegrationPointLibrary.Read(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
+			_caseServiceContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
 			_instance.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
 
 			// Act
@@ -229,7 +229,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			};
 
 			_instance.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
-			_caseServiceContext.RsapiService.IntegrationPointLibrary.Read(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
+			_caseServiceContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
 			_helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId, integrationPoint.SecuredConfiguration).Returns(_targetHelper);
 
 			// Act
@@ -258,7 +258,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			var exception = new Exception(Core.Constants.IntegrationPoints.NO_USERID);
 			_integrationPointService.When(x => x.RetryIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, 0))
 				.Throw(exception);
-			_caseServiceContext.RsapiService.IntegrationPointLibrary.Read(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
+			_caseServiceContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
 			_helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId, integrationPoint.SecuredConfiguration).Returns(_targetHelper);
 
 			// Act

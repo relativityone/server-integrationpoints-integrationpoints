@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data
 {
@@ -17,56 +18,57 @@ namespace kCura.IntegrationPoints.Data
 
 		public IList<T> GetIntegrationPoints(List<int> sourceProviderIds)
 		{
-			var query = new Query<RDO>
+			var query = new QueryRequest
 			{
-				Fields = new List<FieldValue>
+				Fields = new List<FieldRef>
 				{
-					new FieldValue(IntegrationPointFields.Name)
+					new FieldRef { Name = IntegrationPointFields.Name }
 				},
-				Condition = new WholeNumberCondition(
-					IntegrationPointFields.SourceProvider, NumericConditionEnum.In, sourceProviderIds)
+				Condition = $"'{IntegrationPointFields.SourceProvider}' in [{string.Join(",", sourceProviderIds)}]"
 			};
 
-			IList<T> result = _context.GetGenericLibrary<T>().Query(query);
+			IList<T> result = _context.RelativityObjectManager.Query<T>(query);
 			return result;
 		}
 
 		public IList<T> GetAllIntegrationPoints()
 		{
-			var query = new Query<RDO>
+			var query = new QueryRequest()
 			{
-				Fields = GetFields().ToList()
+				Fields = GetFields()
 			};
 
-			IList<T> result = _context.GetGenericLibrary<T>().Query(query);
+			IList<T> result = _context.RelativityObjectManager.Query<T>(query);
 
 			return result;
 		}
 
 		public IList<T> GetAllIntegrationPointsProfileWithBasicColumns()
 		{
-			var query = new Query<RDO>
+			var query = new QueryRequest()
 			{
-				Fields = GetBasicProfileFields().ToList()
+				Fields = GetBasicProfileFields()
 			};
 
-			IList<T> result = _context.GetGenericLibrary<T>().Query(query);
+			IList<T> result = _context.RelativityObjectManager.Query<T>(query);
 
 			return result;
 		}
 
-		private IEnumerable<FieldValue> GetFields()
+		private IEnumerable<FieldRef> GetFields()
 		{
-			return BaseRdo.GetFieldMetadata(typeof(T)).Values.ToList().Select(field => new FieldValue(field.FieldGuid));
+			return BaseRdo.GetFieldMetadata(typeof(T)).Values.ToList().Select(field => new FieldRef { Guid = field.FieldGuid });
 		}
 
-		private IEnumerable<FieldValue> GetBasicProfileFields()
+		private IEnumerable<FieldRef> GetBasicProfileFields()
 		{
-			return BaseRdo.GetFieldMetadata(typeof(T)).Values.ToList().Select(field => new FieldValue(field.FieldGuid))
+			return BaseRdo.GetFieldMetadata(typeof(T)).Values.ToList()
+				.Select(field => new FieldValue(field.FieldGuid))
 				.Where(field => field.Guids.Contains(new Guid(IntegrationPointProfileFieldGuids.DestinationProvider)) ||
-				field.Guids.Contains(new Guid(IntegrationPointProfileFieldGuids.SourceProvider)) ||
-				field.Guids.Contains(new Guid(IntegrationPointProfileFieldGuids.Name)) ||
-				field.Guids.Contains(new Guid(IntegrationPointProfileFieldGuids.Type)));
+								field.Guids.Contains(new Guid(IntegrationPointProfileFieldGuids.SourceProvider)) ||
+								field.Guids.Contains(new Guid(IntegrationPointProfileFieldGuids.Name)) ||
+								field.Guids.Contains(new Guid(IntegrationPointProfileFieldGuids.Type)))
+					.Select(field => new FieldRef { Guid = field.Guids.First() });
 		}
 	}
 }

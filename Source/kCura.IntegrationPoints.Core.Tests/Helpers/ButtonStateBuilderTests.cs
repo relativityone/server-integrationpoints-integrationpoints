@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 			int sourceProviderArtifactId = 841;
 			int destinationProviderArtifactId = 273;
 			var importSettings = new ImportSettings {ImageImport = imageImport};
-			_rsapiService.IntegrationPointLibrary.Read(integrationPointArtifactId).Returns(new Data.IntegrationPoint
+			_rsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(integrationPointArtifactId).Returns(new Data.IntegrationPoint
 			{
 				HasErrors = hasErrors,
 				SourceProvider = sourceProviderArtifactId,

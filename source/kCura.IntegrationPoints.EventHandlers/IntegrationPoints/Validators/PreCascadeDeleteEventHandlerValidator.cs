@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Validators
 		{
 			if (_queueRepository.GetNumberOfJobsExecutingOrInQueue(workspaceId, integrationPointId) > 0)
 			{
-				IntegrationPoint integrationPoint = _rsapiServiceFactory.Create(workspaceId).IntegrationPointLibrary.Read(integrationPointId);
+				IntegrationPoint integrationPoint = _rsapiServiceFactory.Create(workspaceId).RelativityObjectManager.Read<IntegrationPoint>(integrationPointId);
 				throw new Exception($"Integration Point '{integrationPoint.Name}' can not be deleted as the associated agent job has been already started!");
 			}
 		}

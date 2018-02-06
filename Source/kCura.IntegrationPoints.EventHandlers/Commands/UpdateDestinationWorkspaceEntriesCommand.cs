@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands
 {
@@ -32,15 +33,13 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 
 		private IList<DestinationWorkspace> GetDestinationWorkspacesToUpdate()
 		{
-			var condition = new NotCondition(new TextCondition(new Guid(DestinationWorkspaceFieldGuids.DestinationInstanceName), TextConditionEnum.IsSet));
-			var query = new Query<RDO>
+			string condition = $"NOT '{DestinationWorkspaceFields.DestinationInstanceName}' ISSET";
+			var query = new QueryRequest
 			{
-				Fields = FieldValue.AllFields,
-				ArtifactTypeGuid = new Guid(ObjectTypeGuids.DestinationWorkspace),
 				Condition = condition
 			};
 
-			return _rsapiService.DestinationWorkspaceLibrary.Query(query);
+			return _rsapiService.RelativityObjectManager.Query<DestinationWorkspace>(query);
 		}
 	}
 }

@@ -8,9 +8,8 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
-using kCura.Relativity.Client.DTOs;
 using Relativity.API;
-using FieldValue = kCura.Relativity.Client.DTOs.FieldValue;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
@@ -40,7 +39,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			{
 				if (_integrationPointTypeInstaller == null)
 				{
-					var caseServiceContext = ServiceContextFactory.CreateCaseServiceContext(Helper, Helper.GetActiveCaseID());
+					ICaseServiceContext caseServiceContext = ServiceContextFactory.CreateCaseServiceContext(Helper, Helper.GetActiveCaseID());
 					var typeService = new IntegrationPointTypeService(Helper, caseServiceContext);
 					_integrationPointTypeInstaller = new IntegrationPointTypeInstaller(caseServiceContext, typeService, Logger);
 				}
@@ -63,13 +62,13 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 		private List<IntegrationPointType> GetExistingIntegrationPointTypes()
 		{
-			var query = new Query<RDO> {Fields = GetAllIntegrationPointTypeFields()};
-			return WorkspaceTemplateServiceContext.RsapiService.IntegrationPointTypeLibrary.Query(query);
+			var query = new QueryRequest { Fields = GetAllIntegrationPointTypeFields() };
+			return WorkspaceTemplateServiceContext.RsapiService.RelativityObjectManager.Query<IntegrationPointType>(query);
 		}
 
-		private List<FieldValue> GetAllIntegrationPointTypeFields()
+		private List<FieldRef> GetAllIntegrationPointTypeFields()
 		{
-			return BaseRdo.GetFieldMetadata(typeof(IntegrationPointType)).Select(pair => new FieldValue(pair.Value.FieldGuid)).ToList();
+			return BaseRdo.GetFieldMetadata(typeof(IntegrationPointType)).Select(pair => new FieldRef { Guid = pair.Value.FieldGuid }).ToList();
 		}
 	}
 }

@@ -10,5 +10,6 @@
 		public static readonly string LDAP = "Integration Points - LDAP Provider";
 		public static readonly string FTP = "Integration Points - FTP Provider";
 		public static readonly string RSAPI = "Integration Points - RsApi";
+		public static readonly string KEPLER = "Kepler/ObjectManager";
 	}
 }

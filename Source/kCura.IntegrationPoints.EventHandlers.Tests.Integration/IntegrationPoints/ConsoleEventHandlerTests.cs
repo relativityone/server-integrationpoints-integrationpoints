@@ -128,7 +128,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 
 			_helperClassFactory.CreateOnClickEventHelper(_managerFactory, _contextContainer).Returns(_onClickEventHelper);
 
-			_rsapiService.IntegrationPointLibrary.Read(_ARTIFACT_ID).Returns(integrationPoint);
+			_rsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(_ARTIFACT_ID).Returns(integrationPoint);
 			_providerTypeService.GetProviderType(integrationPoint.SourceProvider.Value, integrationPoint.DestinationProvider.Value).Returns(providerType);
 
 			StoppableJobCollection stoppableJobCollection = null;
@@ -306,7 +306,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 
 			_permissionRepository.UserHasArtifactTypePermission(Arg.Any<Guid>(), ArtifactPermission.Create).Returns(true);
 
-			_rsapiService.IntegrationPointLibrary.Read(_ARTIFACT_ID).Returns(integrationPoint);
+			_rsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(_ARTIFACT_ID).Returns(integrationPoint);
 			_providerTypeService.GetProviderType(integrationPoint.SourceProvider.Value, integrationPoint.DestinationProvider.Value).Returns(providerType);
 
 			_permissionValidator.ValidateViewErrors(_APPLICATION_ID).Returns(new ValidationResult());

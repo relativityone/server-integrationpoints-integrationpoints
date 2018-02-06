@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.SourceProviderInstaller;
 using kCura.IntegrationPoints.SourceProviderInstaller.Services;
 using kCura.Relativity.Client.DTOs;
 using Relativity.API;
+using Relativity.Services.Objects.DataContracts;
 using SourceProvider = kCura.IntegrationPoints.SourceProviderInstaller.SourceProvider;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
@@ -65,7 +66,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			Query<RDO> query = new Query<RDO>();
 			query.Fields = GetAllSourceProviderFields();
 
-			List<Data.SourceProvider> sourceProviderRdos = WorkspaceTemplateServiceContext.RsapiService.SourceProviderLibrary.Query(query);
+			List<Data.SourceProvider> sourceProviderRdos = WorkspaceTemplateServiceContext.RsapiService.RelativityObjectManager.Query<Data.SourceProvider>(new QueryRequest());
 
 			if (sourceProviderRdos == null || sourceProviderRdos.Count == 0)
 			{

@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Script
 		public ICommonScripts Create(EventHandlerBase eventHandlerBase)
 		{
 			int sourceProviderId = (int) eventHandlerBase.ActiveArtifact.Fields[_fieldsConstants.SourceProvider].Value.Value;
-			var sourceProviderArtifact = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(sourceProviderId);
+			var sourceProviderArtifact = _caseServiceContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(sourceProviderId);
 
 			if (sourceProviderArtifact.Name == Constants.IntegrationPoints.RELATIVITY_PROVIDER_NAME)
 			{

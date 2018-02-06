@@ -1,50 +1,49 @@
 ﻿using System;
 using System.Collections.Generic;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.QueryBuilders.Implementations
 {
 	public class IntegrationPointsCompletedJobsQueryBuilder : IIntegrationPointsCompletedJobsQueryBuilder
 	{
-		public Query<RDO> CreateQuery(string sortColumn, bool sortDescending, List<int> integrationPointArtifactIds)
+		public QueryRequest CreateQuery(string sortColumn, bool sortDescending, List<int> integrationPointArtifactIds)
 		{
-			return new Query<RDO>
+			return new QueryRequest
 			{
-				ArtifactTypeGuid = new Guid(ObjectTypeGuids.JobHistory),
-				Fields = FieldValue.AllFields,
 				Sorts = CreateSort(sortColumn, sortDescending),
 				Condition = CreateConditions(integrationPointArtifactIds)
 			};
 		}
 
-		private Condition CreateConditions(List<int> integrationPointArtifactIds)
+		private string CreateConditions(List<int> integrationPointArtifactIds)
 		{
 			var jobHistoryCompletedCondition = CreateJobHistoryCompletedCondition();
 			var integrationPointRelationCondition = CreateIntegrationPointRelationCondition(integrationPointArtifactIds);
 			var atLeastOneDocumentTransferedCondition = CreateAtLeastOneDocumentTransferedCondition();
 
-			var andConditions = new CompositeCondition(jobHistoryCompletedCondition, CompositeConditionEnum.And, integrationPointRelationCondition);
-			return new CompositeCondition(andConditions, CompositeConditionEnum.And, atLeastOneDocumentTransferedCondition);
+			string condition = $"{jobHistoryCompletedCondition} AND {integrationPointRelationCondition} AND {atLeastOneDocumentTransferedCondition}";
+
+			return condition;
 		}
 
-		private Condition CreateAtLeastOneDocumentTransferedCondition()
+		private string CreateAtLeastOneDocumentTransferedCondition()
 		{
-			return new WholeNumberCondition(new Guid(JobHistoryFieldGuids.ItemsTransferred), NumericConditionEnum.GreaterThan, 0);
+			return $"'{JobHistoryFields.ItemsTransferred}' > 0";
 		}
 
-		private Condition CreateIntegrationPointRelationCondition(List<int> integrationPointArtifactIds)
+		private string CreateIntegrationPointRelationCondition(List<int> integrationPointArtifactIds)
 		{
-			return new ObjectsCondition(new Guid(JobHistoryFieldGuids.IntegrationPoint), ObjectsConditionEnum.AnyOfThese, integrationPointArtifactIds);
+			return $"'{JobHistoryFields.IntegrationPoint}' INTERSECTS MULTIOBJECT [{string.Join(",", integrationPointArtifactIds)}]";
 		}
 
-		private Condition CreateJobHistoryCompletedCondition()
+		private string CreateJobHistoryCompletedCondition()
 		{
-			return new SingleChoiceCondition(new Guid(JobHistoryFieldGuids.JobStatus), SingleChoiceConditionEnum.AnyOfThese, new List<Guid>
+			List<Guid> choices = new List<Guid>
 			{
 				JobStatusChoices.JobHistoryCompleted.Guids[0],
 				JobStatusChoices.JobHistoryCompletedWithErrors.Guids[0]
-			});
+			};
+			return $"'{JobHistoryFields.JobStatus}' IN CHOICE [{string.Join(",", choices)}]";
 		}
 
 		private List<Sort> CreateSort(string sortColumn, bool sortDescending)
@@ -54,16 +53,19 @@ namespace kCura.IntegrationPoints.Data.QueryBuilders.Implementations
 				new Sort
 				{
 					Direction = sortDescending ? SortEnum.Descending : SortEnum.Ascending,
-					Field = GetSortColumn(sortColumn)
+					FieldIdentifier = GetSortColumn(sortColumn)
 				}
 			};
 		}
 
-		private string GetSortColumn(string sortColumnName)
+		private FieldRef GetSortColumn(string sortColumnName)
 		{
-			string sortColumn = string.IsNullOrWhiteSpace(sortColumnName)
-				? nameof(JobHistory.DestinationWorkspace)
-				: sortColumnName;
+			FieldRef sortColumn = new FieldRef()
+			{
+				Name = string.IsNullOrWhiteSpace(sortColumnName)
+					? nameof(JobHistory.DestinationWorkspace)
+					: sortColumnName
+			};
 
 			return sortColumn;
 		}

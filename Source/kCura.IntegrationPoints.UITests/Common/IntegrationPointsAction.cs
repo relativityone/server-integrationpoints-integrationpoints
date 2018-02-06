@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.UITests.Common
 		}
 
 
-		public ExportFirstPage SetupFirstIntegrationPointsPage(GeneralPage generalPage, ExportToLoadFileProviderModel model)
+		public ExportFirstPage SetupFirstIntegrationPointPage(GeneralPage generalPage, ExportToLoadFileProviderModel model)
 		{
 			IntegrationPointsPage ipPage = generalPage.GoToIntegrationPointsPage();
 			ExportFirstPage firstPage = ipPage.CreateNewIntegrationPoint();
@@ -47,12 +47,12 @@ namespace kCura.IntegrationPoints.UITests.Common
 			return thirdPage;
 		}
 
-		public IntegrationPointDetailsPage CreateNewExportToLoadfileIntegrationPointAction(ExportToLoadFileProviderModel model)
+		public IntegrationPointDetailsPage CreateNewExportToLoadfileIntegrationPoint(ExportToLoadFileProviderModel model)
 		{
 			var generalPage = new GeneralPage(_driver);
 			generalPage.ChooseWorkspace(_context.WorkspaceName);
 
-			ExportFirstPage firstPage = SetupFirstIntegrationPointsPage(generalPage, model);
+			ExportFirstPage firstPage = SetupFirstIntegrationPointPage(generalPage, model);
 
 			ExportToFileSecondPage secondPage = SetupExportToFileSecondPage(firstPage, model);
 

@@ -196,7 +196,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		    LogLoadInformationPointDtoStart(job);
 
             int integrationPointId = job.RelatedObjectArtifactID;
-			IntegrationPoint integrationPoint = CaseServiceContext.RsapiService.IntegrationPointLibrary.Read(integrationPointId);
+			IntegrationPoint integrationPoint = CaseServiceContext.RsapiService.RelativityObjectManager.Read<IntegrationPoint>(integrationPointId);
 			if (integrationPoint == null)
 			{
 				LogLoadingIntegrationPointDtoError(job);
@@ -226,7 +226,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					JobService.UpdateStopState(new List<long> {job.JobId}, StopState.None);
 					IntegrationPointDto.NextScheduledRuntimeUTC = JobService.GetJobNextUtcRunDateTime(job, ScheduleRuleFactory, Result);
 				}
-				CaseServiceContext.RsapiService.IntegrationPointLibrary.Update(IntegrationPointDto);
+				CaseServiceContext.RsapiService.RelativityObjectManager.Update(IntegrationPointDto);
 			    LogUpdateIntegrationPointRuntimesSuccesfulEnd(job);
             }
 			catch (Exception e)
@@ -296,7 +296,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private void LoadSourceProvider()
 		{
 		    LogLoadSourceProviderStart();
-		    SourceProvider = CaseServiceContext.RsapiService.SourceProviderLibrary.Read(IntegrationPointDto.SourceProvider.Value);
+		    SourceProvider = CaseServiceContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(IntegrationPointDto.SourceProvider.Value);
 		    LogLoadSourceProviderEnd();
 		}
 

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Data.Repositories
@@ -11,14 +10,6 @@ namespace kCura.IntegrationPoints.Data.Repositories
 	public interface IDocumentRepository
 	{
 		int WorkspaceArtifactId { get; set; }
-
-		/// <summary>
-		/// Retrieves a single document
-		/// </summary>
-		/// <param name="documentId">The artifact id of the document to retrieve</param>
-		/// <param name="fieldIds">The artifact Ids of the fields to retrieve</param>
-		/// <returns>An ArtifactDTO for the document</returns>
-		Task<ArtifactDTO> RetrieveDocumentAsync(int documentId, ICollection<int> fieldIds);
 
 		/// <summary>
 		/// Retrieves multiple documents
@@ -34,7 +25,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <param name="docIdentifierField">The field that is designated as the Document Identifier</param>
 		/// <param name="docIdentifierValues">The collection of values of the given identifier that represents the Documents we want to retrieve</param>
 		/// <returns>An array of ArtifactDTOs for the documents</returns>
-		Task<ArtifactDTO[]> RetrieveDocumentsAsync(string docIdentifierField, ICollection<string> docIdentifierValues);
+		Task<int[]> RetrieveDocumentsAsync(string docIdentifierField, ICollection<string> docIdentifierValues);
 
 		/// <summary>
 		/// Retrieves the artifact ids of documents containing the specified identifier prefix

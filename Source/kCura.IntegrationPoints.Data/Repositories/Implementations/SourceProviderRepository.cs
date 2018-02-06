@@ -1,97 +1,70 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.QueryBuilders;
 using kCura.IntegrationPoints.Data.QueryBuilders.Implementations;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
-using Relativity.API;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class SourceProviderRepository : ISourceProviderRepository
 	{
-		private readonly IHelper _helper;
-		private readonly int _workspaceArtifactId;
 		private readonly ISourceProviderArtifactIdByGuidQueryBuilder _artifactIdByGuid = new SourceProviderArtifactIdByGuidQueryBuilder();
+		private readonly IRelativityObjectManager _relativityObjectManager;
 
-		public SourceProviderRepository(IHelper helper, int workspaceArtifactId)
+		public SourceProviderRepository(IRelativityObjectManager relativityObjectManager)
 		{
-			_helper = helper;
-			_workspaceArtifactId = workspaceArtifactId;
+			_relativityObjectManager = relativityObjectManager;
 		}
 
 		public SourceProviderDTO Read(int artifactId)
 		{
-			var query = new Query<RDO>
+			var nameFieldRef = new FieldRef { Name = SourceProviderFields.Name };
+			var identifierFieldRef = new FieldRef { Name = SourceProviderFields.Identifier };
+			var queryRequest = new QueryRequest
 			{
-				ArtifactTypeGuid = new Guid(ObjectTypeGuids.SourceProvider),
-				Condition = new WholeNumberCondition(new Guid(Domain.Constants.SOURCEPROVIDER_ARTIFACTID_FIELD), NumericConditionEnum.EqualTo, artifactId),
-				Fields = new List<FieldValue>
-				{
-					new FieldValue(new Guid(SourceProviderFieldGuids.Name)),
-					new FieldValue(new Guid(SourceProviderFieldGuids.Identifier))
-				}
+				Condition = $"'{Domain.Constants.SOURCEPROVIDER_ARTIFACTID_FIELD_NAME}' == {artifactId}",
+				Fields = new List<FieldRef> { nameFieldRef, identifierFieldRef },
+				ObjectType = new ObjectTypeRef { Guid = new Guid(ObjectTypeGuids.SourceProvider) }
 			};
-
-			QueryResultSet<RDO> queryResultSet = null;
-			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			List<SourceProvider> queryResults;
+			try
 			{
-				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
-
-				try
-				{
-					queryResultSet = rsapiClient.Repositories.RDO.Query(query, 1);
-				}
-				catch (Exception e)
-				{
-					throw new Exception($"Unable to retrieve Source Provider: {e.Message}", e);
-				}
+				queryResults = _relativityObjectManager.Query<SourceProvider>(queryRequest);
+				return CreateSourceProviderDTO(queryResults.Single());
 			}
-
-			Result<RDO> result = queryResultSet.Results.FirstOrDefault();
-			if (!queryResultSet.Success || (result == null))
+			catch (Exception e)
 			{
-				throw new Exception($"Unable to retrieve Source Provider: {queryResultSet.Message}");
+				throw new IntegrationPointsException($"Failed to retrieve Source Provider for artifact Id: {artifactId}", e);
 			}
-
-			return CreateSourceProviderDTO(result);
 		}
 
 		public int GetArtifactIdFromSourceProviderTypeGuidIdentifier(string sourceProviderGuidIdentifier)
 		{
 			var query = _artifactIdByGuid.Create(sourceProviderGuidIdentifier);
 
-			QueryResultSet<RDO> results = null;
-			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			List<RelativityObject> queryResults;
+			try
 			{
-				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
-				results = rsapiClient.Repositories.RDO.Query(query, 1);
+				queryResults = _relativityObjectManager.Query(query);
+				return queryResults.Single().ArtifactID;
 			}
-
-			if (!results.Success)
+			catch (Exception e)
 			{
-				throw new Exception($"Unable to retrieve Source Provider: {results.Message}");
+				throw new IntegrationPointsException($"Failed to retrieve Source Provider Artifact Id for guid: {sourceProviderGuidIdentifier}", e);
 			}
-
-			var sourceProviderArtifactId = results.Results.Select(result => result.Artifact.ArtifactID).FirstOrDefault();
-
-			if (sourceProviderArtifactId == 0)
-			{
-				throw new Exception($"Unable to retrieve Source Provider ({sourceProviderGuidIdentifier}), query returned Artifact ID = 0");
-			}
-
-			return sourceProviderArtifactId;
 		}
 
-		private static SourceProviderDTO CreateSourceProviderDTO(Result<RDO> result)
+		private static SourceProviderDTO CreateSourceProviderDTO(SourceProvider result)
 		{
 			return new SourceProviderDTO
 			{
-				ArtifactId = result.Artifact.ArtifactID,
-				Name = result.Artifact.Fields[0].ValueAsFixedLengthText,
-				Identifier = new Guid(result.Artifact.Fields[1].ValueAsFixedLengthText)
+				ArtifactId = result.ArtifactId,
+				Name = result.Name,
+				Identifier = new Guid(result.Identifier)
 			};
 		}
 	}

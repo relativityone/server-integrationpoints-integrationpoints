@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.QueryBuilders.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.Relativity.Client.DTOs;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 {
@@ -27,13 +30,24 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 
 		public IList<ProviderModel> GetSourceProviders(int workspaceArtifactId)
 		{
-			var sourceProviders = _rsapiService.SourceProviderLibrary.Query(new AllSourceProvidersQueryBuilder().Create());
+			var sourceProviders = _rsapiService.RelativityObjectManager.Query<SourceProvider>(new QueryRequest()
+			{
+				Fields = new List<FieldRef>() {new FieldRef() { Guid = new Guid(SourceProviderFieldGuids.Name) },
+					new FieldRef() { Guid = new Guid(SourceProviderFieldGuids.Identifier) }
+				}
+			});
 			return sourceProviders.Select(Mapper.Map<ProviderModel>).ToList();
 		}
 
 		public IList<ProviderModel> GetDesinationProviders(int workspaceArtifactId)
 		{
-			var destinationProviders = _rsapiService.DestinationProviderLibrary.Query(new AllDestinationProvidersQueryBuilder().Create());
+			var destinationProviders = _rsapiService.RelativityObjectManager.Query<DestinationProvider>(new QueryRequest()
+			{
+				Fields = new List<FieldRef>() {
+					new FieldRef() { Guid = new Guid(DestinationProviderFieldGuids.Name) },
+					new FieldRef() { Guid = new Guid(DestinationProviderFieldGuids.Identifier)}
+				}
+			});
 			return destinationProviders.Select(Mapper.Map<ProviderModel>).ToList();
 		}
 

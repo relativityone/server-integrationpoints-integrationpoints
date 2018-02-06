@@ -71,11 +71,11 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 				//save RDO
 				if (profile.ArtifactId > 0)
 				{
-					Context.RsapiService.GetGenericLibrary<IntegrationPointProfile>().Update(profile);
+					Context.RsapiService.RelativityObjectManager.Update(profile);
 				}
 				else
 				{
-					profile.ArtifactId = Context.RsapiService.GetGenericLibrary<IntegrationPointProfile>().Create(profile);
+					profile.ArtifactId = Context.RsapiService.RelativityObjectManager.Create(profile);
 				}
 			}
 			catch (PermissionException)

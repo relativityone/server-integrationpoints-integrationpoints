@@ -4,9 +4,9 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
-using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Tests
 {
@@ -47,13 +47,13 @@ namespace kCura.IntegrationPoints.Core.Tests
 				}
 			};
 
-			_rsapiService.IntegrationPointLibrary.Query(Arg.Any<Query<RDO>>()).Returns(integrationPoint);
+			_rsapiService.RelativityObjectManager.Query<Data.IntegrationPoint>(Arg.Any<QueryRequest>()).Returns(integrationPoint);
 
 			//ACT
 			_instance.DeleteHistoriesAssociatedWithIPs(integrationPointsId, _rsapiService);
 
 			//ASSERT
-			_rsapiService.IntegrationPointLibrary.Received().Update(Arg.Is<IEnumerable<Data.IntegrationPoint>>(x => x.All(y => !y.JobHistory.Any())));
+			_rsapiService.RelativityObjectManager.Received(2).Update(Arg.Is<Data.IntegrationPoint>( x => !x.JobHistory.Any()));
 		}
 	}
 }

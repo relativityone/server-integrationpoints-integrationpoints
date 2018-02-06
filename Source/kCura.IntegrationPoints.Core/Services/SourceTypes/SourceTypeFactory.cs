@@ -5,6 +5,8 @@ using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Data.Transformers;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Services.SourceTypes
 {
@@ -28,7 +30,12 @@ namespace kCura.IntegrationPoints.Core.Services.SourceTypes
 
 		public virtual IEnumerable<SourceType> GetSourceTypes()
 		{
-			var types = _context.RsapiService.SourceProviderLibrary.ReadAll(Guid.Parse(SourceProviderFieldGuids.Name), Guid.Parse(Data.SourceProviderFieldGuids.Identifier), Guid.Parse(Data.SourceProviderFieldGuids.SourceConfigurationUrl), Guid.Parse(Data.SourceProviderFieldGuids.Configuration));
+			QueryRequest request = new QueryRequest()
+			{
+				Fields = new SourceProvider().ToFieldList()
+			};
+
+			var types = _context.RsapiService.RelativityObjectManager.Query<SourceProvider>(request);
 			return types.Select(x => new SourceType { Name = x.Name, ID = x.Identifier, SourceURL = x.SourceConfigurationUrl, ArtifactID = x.ArtifactId, Config = x.Config}).OrderBy(x => x.Name).ToList();
 		}
 	}

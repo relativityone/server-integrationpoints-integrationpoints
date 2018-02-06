@@ -4,18 +4,14 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Attributes;
 using Relativity.API;
-using Relativity.Services.DataContracts.DTOs.MetricsCollection;
 using Relativity.Telemetry.Services.Interface;
 using Relativity.Telemetry.Services.Metrics;
 
@@ -27,17 +23,17 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly IIntegrationPointService _integrationPointService;
 		private readonly IIntegrationPointProfileService _profileService;
 		private readonly IRelativityUrlHelper _urlHelper;
-		private readonly ICaseServiceContext _context;
+		private readonly IRelativityObjectManager _objectManager;
 		private readonly IIntegrationPointProviderValidator _integrationModelValidator;
 
 		public IntegrationPointProfilesAPIController(ICPHelper cpHelper, IIntegrationPointProfileService profileService, IIntegrationPointService integrationPointService,
-			IRelativityUrlHelper urlHelper, ICaseServiceContext context, IIntegrationPointProviderValidator integrationModelValidator)
+			IRelativityUrlHelper urlHelper, IRelativityObjectManager objectManager, IIntegrationPointProviderValidator integrationModelValidator)
 		{
 			_cpHelper = cpHelper;
 			_profileService = profileService;
 			_integrationPointService = integrationPointService;
 			_urlHelper = urlHelper;
-			_context = context;
+			_objectManager = objectManager;
 			_integrationModelValidator = integrationModelValidator;
 		}
 
@@ -54,7 +50,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		public HttpResponseMessage GetByType(int artifactId)
 		{
 			var models = _profileService.ReadIntegrationPointProfilesSimpleModel();
-			var profileModelsByType = models.Where(_=>_.Type==artifactId);
+			var profileModelsByType = models.Where(_ => _.Type == artifactId);
 			return Request.CreateResponse(HttpStatusCode.OK, profileModelsByType);
 		}
 
@@ -71,7 +67,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			{
 				model = new IntegrationPointProfileModel();
 			}
-			
+
 			return Request.CreateResponse(HttpStatusCode.OK, model);
 		}
 
@@ -81,14 +77,14 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			if (artifactId > 0)
 			{
 				IntegrationPointProfileModel model = _profileService.ReadIntegrationPointProfile(artifactId);
-				
-				SourceProvider sourceProvider = _context.RsapiService.SourceProviderLibrary.Read(model.SourceProvider);
-				DestinationProvider destinationProvider = _context.RsapiService.DestinationProviderLibrary.Read(model.DestinationProvider);
-				IntegrationPointType integrationPointType = _context.RsapiService.IntegrationPointTypeLibrary.Read(model.Type);
+
+				SourceProvider sourceProvider = _objectManager.Read<SourceProvider>(model.SourceProvider);
+				DestinationProvider destinationProvider = _objectManager.Read<DestinationProvider>(model.DestinationProvider);
+				IntegrationPointType integrationPointType = _objectManager.Read<IntegrationPointType>(model.Type);
 
 				ValidationResult validationResult = _integrationModelValidator.Validate(model, sourceProvider, destinationProvider, integrationPointType, ObjectTypeGuids.IntegrationPointProfile);
 
-				return Request.CreateResponse(HttpStatusCode.OK, new  { model,validationResult});
+				return Request.CreateResponse(HttpStatusCode.OK, new { model, validationResult });
 			}
 
 			return Request.CreateResponse(HttpStatusCode.NotAcceptable);
@@ -137,7 +133,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 						Name =
 							Core.Constants.IntegrationPoints.Telemetry
 								.BUCKET_INTEGRATION_POINT_PROFILE_SAVE_AS_PROFILE_DURATION_METRIC_COLLECTOR,
-						CustomData = new Dictionary<string, object> {{ Core.Constants.IntegrationPoints.Telemetry.CUSTOM_DATA_CORRELATIONID, profileName}}
+						CustomData = new Dictionary<string, object> { { Core.Constants.IntegrationPoints.Telemetry.CUSTOM_DATA_CORRELATIONID, profileName } }
 					};
 					using (apmManger.LogTimedOperation(apmMetricProperties))
 					{
@@ -152,8 +148,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 							return Request.CreateResponse(HttpStatusCode.OK, new { returnURL = result });
 						}
-						}
 					}
+				}
 			}
 		}
 	}

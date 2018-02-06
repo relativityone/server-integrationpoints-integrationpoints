@@ -36,22 +36,22 @@ namespace kCura.IntegrationPoints.Domain.Models
 		/// <summary>
 		/// The artifact id of the object.
 		/// </summary>
-		public int ArtifactId { get; private set; }
+		public int ArtifactId { get; }
 
 		/// <summary>
 		/// The artifact type id of the object.
 		/// </summary>
-		public int ArtifactTypeId { get; private set; }
+		public int ArtifactTypeId { get; }
 
 		/// <summary>
 		/// The text identifier of the object.
 		/// </summary>
-		public string TextIdentifier { get; private set; }
+		public string TextIdentifier { get; }
 
 		/// <summary>
 		/// The fields for the object.
 		/// </summary>
-		public IList<ArtifactFieldDTO> Fields { get; private set; }
+		public IList<ArtifactFieldDTO> Fields { get; }
 
 		/// <summary>
 		/// Retrieves the ArtifactFieldDTO for the given identifier.

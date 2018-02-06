@@ -75,7 +75,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 				JobContextProvider jobContextProvider = k.Resolve<JobContextProvider>();
 				return k.Resolve<IRsapiClientFactory>().CreateAdminClient(jobContextProvider.Job.WorkspaceID);
 
-			}));
+			}).LifestyleTransient());
 
 			//container.Register(Component.For<IServiceContextHelper>().ImplementedBy<ServiceContextHelperForAgent>().DependsOn(Dependency.OnValue<int>(_job.WorkspaceID)).LifestyleTransient());
 			container.Register(Component.For<IServiceContextHelper>().ImplementedBy<ServiceContextHelperForAgent>().DynamicParameters((k, d) =>
@@ -161,7 +161,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 					JobContextProvider jobContextProvider = k.Resolve<JobContextProvider>();
 					int integrationPointId = jobContextProvider.Job.RelatedObjectArtifactID;
 					ICaseServiceContext caseServiceContext = k.Resolve<ICaseServiceContext>();
-					IntegrationPoint integrationPoint = caseServiceContext.RsapiService.IntegrationPointLibrary.Read(integrationPointId);
+						IntegrationPoint integrationPoint = caseServiceContext.RsapiService.RelativityObjectManager.Read<IntegrationPoint>(integrationPointId);
 					if (integrationPoint == null)
 					{
 						throw new ArgumentException("Failed to retrieved corresponding Integration Point.");

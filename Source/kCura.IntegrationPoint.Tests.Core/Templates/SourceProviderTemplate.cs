@@ -24,6 +24,9 @@ using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Installers;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
+using kCura.IntegrationPoints.Data.SecretStore;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Web;
@@ -35,6 +38,7 @@ using Relativity.Core;
 using Relativity.Core.Authentication;
 using Relativity.Core.Service;
 using Relativity.Services.Agent;
+using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.ResourceServer;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
@@ -71,15 +75,20 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			{
 				Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
 				WorkspaceArtifactId = Workspace.CreateWorkspace(_workspaceName, _workspaceTemplate);
-				
+
 				Install();
 
 				Task.Run(async () => await SetupAsync()).Wait();
 
 				CaseContext = Container.Resolve<ICaseServiceContext>();
-				SourceProviders = CaseContext.RsapiService.SourceProviderLibrary.ReadAll(Guid.Parse(SourceProviderFieldGuids.Name), Guid.Parse(SourceProviderFieldGuids.Identifier));
-				DestinationProvider = CaseContext.RsapiService.DestinationProviderLibrary.ReadAll(new Guid(DestinationProviderFieldGuids.Identifier))
-					.First(x => x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID);
+				SourceProviders = CaseContext.RsapiService.RelativityObjectManager.Query<SourceProvider>(new QueryRequest());
+				DestinationProvider = CaseContext.RsapiService.RelativityObjectManager.Query<DestinationProvider>(new QueryRequest
+				{
+					Fields = new List<FieldRef>
+					{
+						new FieldRef { Guid = new Guid(DestinationProviderFieldGuids.Identifier) }
+					}
+				}).First(x => x.Identifier == IntegrationPoints.Core.Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID);
 			}
 			catch (Exception setupException)
 			{
@@ -143,7 +152,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			Container.Register(Component.For<IRSAPIService>().Instance(new RSAPIService(Container.Resolve<IHelper>(), WorkspaceArtifactId)).LifestyleTransient());
 			Container.Register(Component.For<IExporterFactory>().ImplementedBy<ExporterFactory>());
 			Container.Register(Component.For<IAuthTokenGenerator>().ImplementedBy<ClaimsTokenGenerator>().LifestyleTransient());
-
 #pragma warning disable 618
 			var dependencies = new IWindsorInstaller[] { new QueryInstallers(), new KeywordInstaller(), new ServicesInstaller(), new ValidationInstaller() };
 #pragma warning restore 618
@@ -202,7 +210,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		{
 			ICaseServiceContext caseServiceContext = Container.Resolve<ICaseServiceContext>();
 
-			var ip = caseServiceContext.RsapiService.IntegrationPointLibrary.Read(model.ArtifactID);
+			var ip = caseServiceContext.RsapiService.RelativityObjectManager.Read<IntegrationPoints.Data.IntegrationPoint>(model.ArtifactID);
 			return IntegrationPointModel.FromIntegrationPoint(ip);
 		}
 
@@ -225,8 +233,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			string updateQuery = "UPDATE [Agent] SET [Enabled] = @enabledFlag, [Updated] = 1 WHERE [AgentTypeArtifactID] = @agentTypeArtifactId";
 			string monitoringQuery = "SELECT Count(*) FROM [Agent] WHERE [AgentTypeArtifactID] = @agentTypeArtifactId AND [Updated] = 1";
 
-			var enabledFlag = new SqlParameter("@enabledFlag", SqlDbType.Bit) {Value = enable};
-			var agentTypeArtifactId = new SqlParameter("@agentTypeArtifactId", SqlDbType.Int) {Value = agentType.ArtifactID};
+			var enabledFlag = new SqlParameter("@enabledFlag", SqlDbType.Bit) { Value = enable };
+			var agentTypeArtifactId = new SqlParameter("@agentTypeArtifactId", SqlDbType.Int) { Value = agentType.ArtifactID };
 
 			IDBContext dbContext = Helper.GetDBContext(-1);
 
@@ -245,14 +253,14 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				Thread.Sleep(2000);
 				Console.WriteLine("Waiting for agent to update it's state...");
 			}
-			
+
 			Console.WriteLine("Agent state updated (Update flag = 0 again).");
 		}
 
 		protected JobHistory CreateJobHistoryOnIntegrationPoint(int integrationPointArtifactId, Guid batchInstance, Relativity.Client.DTOs.Choice jobTypeChoice, Relativity.Client.DTOs.Choice jobStatusChoice = null, bool jobEnded = false)
 		{
 			IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
-			IntegrationPoints.Data.IntegrationPoint integrationPoint = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointArtifactId);
+			IntegrationPoints.Data.IntegrationPoint integrationPoint = CaseContext.RsapiService.RelativityObjectManager.Read<IntegrationPoints.Data.IntegrationPoint>(integrationPointArtifactId);
 			JobHistory jobHistory = jobHistoryService.CreateRdo(integrationPoint, batchInstance, jobTypeChoice, DateTime.Now);
 
 			if (jobEnded)
@@ -346,7 +354,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		protected async Task SetupAsync()
 		{
 			await AddAgentServerToResourcePool();
-			
+
 			await Task.Run(() =>
 			{
 				if (SharedVariables.UseIpRapFile())
@@ -357,7 +365,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				RelativityApplicationManager.InstallApplicationFromLibrary(WorkspaceArtifactId);
 				RelativityApplicationManager.DeployIntegrationPointsCustomPage();
 			});
-			
+
 			if (CreateAgent)
 			{
 				Result agentCreatedResult = await Task.Run(() => Agent.CreateIntegrationPointAgent());
@@ -376,10 +384,10 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		{
 			try
 			{
-			    var loginManager = new LoginManager();
+				var loginManager = new LoginManager();
 				Identity identity = loginManager.GetLoginIdentity(9);
 				return new ServiceContext(identity, "<auditElement><RequestOrigination><IP /><Page /></RequestOrigination></auditElement>", workspaceId);
-            }
+			}
 			catch (Exception exception)
 			{
 				throw new Exception("Unable to initialize the user context.", exception);

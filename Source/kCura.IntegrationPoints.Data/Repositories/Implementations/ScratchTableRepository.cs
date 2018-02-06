@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using Castle.Core.Internal;
 using kCura.Data.RowDataGateway;
-using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity.API;
 
@@ -158,7 +154,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		public void DeleteTable()
 		{
 			string fullTableName = GetTempTableName();
-			string sql = String.Format(@"IF EXISTS (SELECT * FROM {1}.INFORMATION_SCHEMA.TABLES where TABLE_NAME = '{0}') DROP TABLE {2}.[{0}]", 
+			string sql = String.Format(@"IF EXISTS (SELECT * FROM {1}.INFORMATION_SCHEMA.TABLES where TABLE_NAME = '{0}') DROP TABLE {2}.[{0}]",
 				fullTableName, GetSchemalessResourceDataBasePrepend(), GetResourceDBPrepend());
 
 			_caseContext.ExecuteNonQuerySQLStatement(sql);
@@ -238,14 +234,17 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return fieldName;
 		}
 
-		internal List<int> QueryForDocumentArtifactId(ICollection<string> docIdentifiers)
+		internal int[] QueryForDocumentArtifactId(ICollection<string> docIdentifiers)
 		{
-			ArtifactDTO[] documents;
 			string queryFailureMessage = "Unable to retrieve Document Artifact ID. Object Query failed.";
+
+			int[] documents;
 			try
 			{
-				Task<ArtifactDTO[]> documentResult = _documentRepository.RetrieveDocumentsAsync(_docIdentifierFieldName, docIdentifiers);
-				documents = documentResult.ConfigureAwait(false).GetAwaiter().GetResult();
+				documents = _documentRepository.RetrieveDocumentsAsync(_docIdentifierFieldName, docIdentifiers)
+					.ConfigureAwait(false)
+					.GetAwaiter()
+					.GetResult();
 			}
 			catch (Exception ex)
 			{
@@ -257,7 +256,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				throw new Exception(queryFailureMessage);
 			}
 
-			return documents.Select(x => x.ArtifactId).ToList();
+			return documents;
 		}
 
 		internal static class Fields //MNG: similar to class used in DocumentTransferProvider, probably find a better way to reference these

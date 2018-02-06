@@ -46,14 +46,14 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		{
 			if (controllerType == IntegrationPointApiControllerNames.IntegrationPointApiControllerName)
 			{
-				IntegrationPoint integrationPoint = _context.RsapiService.IntegrationPointLibrary.Read(integrationPointId);
+				IntegrationPoint integrationPoint = _context.RsapiService.RelativityObjectManager.Read<IntegrationPoint>(integrationPointId);
 
 				return new Tuple<int, int>(integrationPoint.SourceProvider.Value, integrationPoint.DestinationProvider.Value);
 			}
 			else
 			{
 				IntegrationPointProfile integrationPointProfile =
-					_context.RsapiService.IntegrationPointProfileLibrary.Read(integrationPointId);
+					_context.RsapiService.RelativityObjectManager.Read<IntegrationPointProfile>(integrationPointId);
 
 				return new Tuple<int, int>(integrationPointProfile.SourceProvider.Value,
 					integrationPointProfile.DestinationProvider.Value);

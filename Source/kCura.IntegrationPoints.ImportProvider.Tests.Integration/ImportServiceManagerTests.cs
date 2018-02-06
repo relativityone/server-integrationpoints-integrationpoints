@@ -22,6 +22,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.ImportProvider.Tests.Integration.Abstract;
@@ -110,8 +111,9 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 
 			//Source library
 
-			IGenericLibrary<Data.SourceProvider> sourceLibrary = Substitute.For<IGenericLibrary<Data.SourceProvider>>();
-			rsapiServiceMock.SourceProviderLibrary.Returns(sourceLibrary);
+			IRelativityObjectManager _objectManager = Substitute.For<IRelativityObjectManager>();
+			rsapiServiceMock.RelativityObjectManager.Returns(_objectManager);
+
 
 			SourceProvider p = new SourceProvider();
 			p.Configuration = "{}";
@@ -119,18 +121,16 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 			p.Config.AlwaysImportNativeFileNames = true;
 			p.Config.OnlyMapIdentifierToIdentifier = true;
 
-			sourceLibrary.Read(Arg.Any<int>()).Returns(p);
+			_objectManager.Read<SourceProvider>(Arg.Any<int>()).Returns(p);
 
 			//IpLibrary
 
-			IGenericLibrary<Data.IntegrationPoint> ipLibrary = Substitute.For<IGenericLibrary<Data.IntegrationPoint>>();
-			rsapiServiceMock.IntegrationPointLibrary.Returns(ipLibrary);
 
 			_ip = new Data.IntegrationPoint();
 			_ip.SecuredConfiguration = "";
 			_ip.SourceProvider = -1;
 
-			ipLibrary.Read(Arg.Any<int>()).Returns(_ip);
+			_objectManager.Read<Data.IntegrationPoint>(Arg.Any<int>()).Returns(_ip);
 
 			//JobStopManager
 

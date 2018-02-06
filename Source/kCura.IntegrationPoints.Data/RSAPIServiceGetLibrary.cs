@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Data.SecretStore;
 using Relativity.API;
 
@@ -11,6 +13,8 @@ namespace kCura.IntegrationPoints.Data
 		protected ExecutionIdentity ExecutionIdentity;
 		private readonly IGenericLibraryFactory _genericLibraryFactory;
 		private readonly IDictionary<Type, object> _genericLibraries;
+		private readonly int _workspaceArtifactId;
+		private readonly IHelper _helper;
 
 		public IGenericLibrary<T> GetGenericLibrary<T>() where T : BaseRdo, new()
 		{
@@ -29,6 +33,8 @@ namespace kCura.IntegrationPoints.Data
 		public RSAPIService(IHelper helper, int workspaceArtifactId)
 			: this(new GenericLibraryFactory(helper, workspaceArtifactId, new DefaultSecretCatalogFactory(), new SecretManager(workspaceArtifactId)))
 		{
+			_helper = helper;
+			_workspaceArtifactId = workspaceArtifactId;
 		}
 
 		internal RSAPIService(IGenericLibraryFactory genericLibraryFactory)
@@ -36,6 +42,11 @@ namespace kCura.IntegrationPoints.Data
 			_genericLibraryFactory = genericLibraryFactory;
 			_genericLibraries = new ConcurrentDictionary<Type, object>();
 			ExecutionIdentity = ExecutionIdentity.CurrentUser;
+		}
+
+		public IRelativityObjectManager GetRelativityObjectManager()
+		{
+			return new RelativityObjectManager(_workspaceArtifactId, _helper, new DefaultSecretCatalogFactory(), new SecretManager(_workspaceArtifactId));
 		}
 	}
 }

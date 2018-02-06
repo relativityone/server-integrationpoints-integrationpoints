@@ -1,0 +1,10 @@
+CSharpGuidelineAnalyzer
+kCura.Apps.Common.Config
+kCura.LongPath
+kCura.Relativity.Client
+Relativity.API
+Relativity.ImportExport
+Relativity.OAuth2Client
+Relativity.Productions.Services.Interfaces
+Relativity.Telemetry.APM
+RelativityCore

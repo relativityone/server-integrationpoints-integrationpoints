@@ -4,9 +4,9 @@ SET filesToCopy=%3
 
 SET result=0
 
-ECHO robocopy %projectTargetDir% %solutionDir%..\lib %filesToCopy%.dll %filesToCopy%.pdb /NDL /NJH /NJS /NP /R:10 /W:10
+ECHO robocopy %projectTargetDir% %solutionDir%..\lib /ndl /njh /njs /np /r:10 /w:10 /mt:1 /if %filesToCopy%.dll %filesToCopy%.pdb
 
-robocopy %projectTargetDir% %solutionDir%..\lib %filesToCopy%.dll %filesToCopy%.pdb /NDL /NJH /NJS /NP /R:10 /W:10
+robocopy %projectTargetDir% %solutionDir%..\lib /ndl /njh /njs /np /r:10 /w:10 /mt:1 /if %filesToCopy%.dll %filesToCopy%.pdb
 
 REM ERRORLEVEL > 7 means error
 IF %ERRORLEVEL% GTR 7 SET result=%ERRORLEVEL%

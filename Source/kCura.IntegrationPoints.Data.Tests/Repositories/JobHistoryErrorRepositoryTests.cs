@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Contracts.RDO;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using kCura.IntegrationPoints.Data.Transformers;
-using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Services;
+using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Search;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories
@@ -18,32 +19,25 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 	{
 		private JobHistoryErrorRepository _instance;
 		private IHelper _helper;
-		private IObjectQueryManagerAdaptor _objectQueryAdaptorManager;
-		private IGenericLibrary<JobHistoryError> _jobHistoryErrorLibrary;
-		private IDtoTransformer<JobHistoryErrorDTO, JobHistoryError> _dtoTransformer;
+		private IRelativityObjectManager _objectManager;
 		private int _workspaceArtifactId;
 
 		[SetUp]
 		public override void SetUp()
 		{
 			_helper = NSubstitute.Substitute.For<IHelper>();
-			_objectQueryAdaptorManager = NSubstitute.Substitute.For<IObjectQueryManagerAdaptor>();
-			_jobHistoryErrorLibrary = NSubstitute.Substitute.For<IGenericLibrary<JobHistoryError>>();
-			_dtoTransformer = NSubstitute.Substitute.For<IDtoTransformer<JobHistoryErrorDTO, JobHistoryError>>();
+			_objectManager = NSubstitute.Substitute.For<IRelativityObjectManager>();
 			_workspaceArtifactId = 456;
-			_instance = new JobHistoryErrorRepository(_helper, 
-				_objectQueryAdaptorManager, 
-				_jobHistoryErrorLibrary,
-				_dtoTransformer,
-				_workspaceArtifactId);
+			var objectManagerFactory = Substitute.For<IRelativityObjectManagerFactory>();
+			objectManagerFactory.CreateRelativityObjectManager(Arg.Any<int>()).Returns(_objectManager);
+			_instance = new JobHistoryErrorRepository(_helper, objectManagerFactory, _workspaceArtifactId);
 		}
 
 		#region Read
 		private static IEnumerable<int>[] ReadSource = {
 			new List<int>(),
-			new List<int>() { 1 },
-			new List<int>() { 1 , 2, 3 , 4 } ,
-			null
+			new List<int> { 1 },
+			new List<int> { 1 , 2, 3 , 4 }
 		};
 
 		[Test, TestCaseSource(nameof(ReadSource))]
@@ -53,16 +47,16 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 			_instance.Read(artifactIds);
 
 			// assert
-			_jobHistoryErrorLibrary.Received(1).Read(artifactIds);
+			_objectManager.Received(1).Query<JobHistoryError>(Arg.Is<QueryRequest>( x => x.Condition == $"'{ArtifactQueryFieldNames.ArtifactID}' in [{string.Join(",", artifactIds)}]"));
 		}
 		#endregion
 
 		#region DeleteItemLevelErrorsSavedSearch
 		private static List<Task>[] DeleteItemLevelErrorsSavedSearch = {
-			new List<Task>() { CreateCompletedTask() },
-			new List<Task>() { CreateErrorTask(), CreateCompletedTask()},
-			new List<Task>() { CreateErrorTask(), CreateErrorTask(), CreateErrorTask() },
-			new List<Task>() { CreateErrorTask(), CreateErrorTask(), CreateCompletedTask() },
+			new List<Task> { CreateCompletedTask() },
+			new List<Task> { CreateErrorTask(), CreateCompletedTask()},
+			new List<Task> { CreateErrorTask(), CreateErrorTask(), CreateErrorTask() },
+			new List<Task> { CreateErrorTask(), CreateErrorTask(), CreateCompletedTask() },
 		};
 
 		private static Task CreateCompletedTask()

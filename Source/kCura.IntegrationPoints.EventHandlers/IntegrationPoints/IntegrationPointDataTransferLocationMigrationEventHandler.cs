@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		private IRepositoryFactory _repositoryFactory;
 		private IDataTransferLocationMigrationHelper _dataTransferLocationMigrationHelper;
 		private ICaseServiceContext _serviceContext;
-		private IGenericLibrary<Data.IntegrationPoint> _integrationPointLibrary;
+		private IRelativityObjectManager _integrationPointLibrary;
 		private IDataTransferLocationService _dataTransferLocationService;
 		private IResourcePoolManager _resourcePoolManager;
 		private IDataTransferLocationMigration _dataTransferLocationMigration;
@@ -102,13 +102,13 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			}
 		}
 
-		internal IGenericLibrary<Data.IntegrationPoint> IntegrationPointLibrary
+		internal IRelativityObjectManager IntegrationPointLibrary
 		{
 			get
 			{
 				if (_integrationPointLibrary == null)
 				{
-					_integrationPointLibrary = CaseServiceContext.RsapiService.GetGenericLibrary<Data.IntegrationPoint>();
+					_integrationPointLibrary = CaseServiceContext.RsapiService.RelativityObjectManager;
 				}
 
 				return _integrationPointLibrary;

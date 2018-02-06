@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Core.Helpers.Implementations
@@ -69,20 +71,20 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 			IArtifactGuidManager artifactGuidManager = _managerFactory.CreateArtifactGuidManager(_contextContainer);
 			IObjectTypeManager objectTypeManager = _managerFactory.CreateObjectTypeManager(_contextContainer);
 
-			var errorErrorStatusFieldGuid = new Guid(JobHistoryErrorDTO.FieldGuids.ErrorStatus);
-			var jobHistoryFieldGuid = new Guid(JobHistoryErrorDTO.FieldGuids.JobHistory);
+			var errorErrorStatusFieldGuid = new Guid(JobHistoryErrorFieldGuids.ErrorStatus);
+			var jobHistoryFieldGuid = new Guid(JobHistoryErrorFieldGuids.JobHistory);
 
 			Dictionary<Guid, int> guidsAndArtifactIds = artifactGuidManager.GetArtifactIdsForGuids(workspaceId, new[]
 			{
-				JobHistoryErrorDTO.Choices.ErrorStatus.Guids.New,
+				ErrorStatusChoices.JobHistoryErrorNew.Guids.Single(),
 				errorErrorStatusFieldGuid,
 				jobHistoryFieldGuid
 			});
 
 			int jobHistoryErrorStatusArtifactViewFieldId =
 				fieldManager.RetrieveArtifactViewFieldId(workspaceId, guidsAndArtifactIds[errorErrorStatusFieldGuid]).GetValueOrDefault();
-			int jobHistoryErrorStatusNewChoiceArtifactId = guidsAndArtifactIds[JobHistoryErrorDTO.Choices.ErrorStatus.Guids.New];
-			int jobHistoryErrorDescriptorArtifactTypeId = objectTypeManager.RetrieveObjectTypeDescriptorArtifactTypeId(workspaceId, new Guid(JobHistoryErrorDTO.ArtifactTypeGuid));
+			int jobHistoryErrorStatusNewChoiceArtifactId = guidsAndArtifactIds[ErrorStatusChoices.JobHistoryErrorNew.Guids.Single()];
+			int jobHistoryErrorDescriptorArtifactTypeId = objectTypeManager.RetrieveObjectTypeDescriptorArtifactTypeId(workspaceId, new Guid(ObjectTypeGuids.JobHistoryError));
 			int jobHistoryArtifactViewFieldId = fieldManager.RetrieveArtifactViewFieldId(workspaceId, guidsAndArtifactIds[jobHistoryFieldGuid]).GetValueOrDefault();
 			int jobHistoryInstanceArtifactId = jobHistoryManager.GetLastJobHistoryArtifactId(workspaceId, integrationPointId);
 

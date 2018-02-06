@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			AuditAction(payload, _RUN_AUDIT_MESSAGE);
 
-			var integrationPoint = _context.RsapiService.IntegrationPointLibrary.Read(Convert.ToInt32(payload.ArtifactId));
+			var integrationPoint = _context.RsapiService.RelativityObjectManager.Read<IntegrationPoint>(Convert.ToInt32(payload.ArtifactId));
 			DestinationConfiguration importSettings = JsonConvert.DeserializeObject<DestinationConfiguration>(integrationPoint.DestinationConfiguration);
 			IHelper targetHelper = _helperFactory.CreateTargetHelper(_helper, importSettings.FederatedInstanceArtifactId, integrationPoint.SecuredConfiguration);
 
@@ -75,7 +75,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			AuditAction(payload, _RETRY_AUDIT_MESSAGE);
 
-			IntegrationPoint integrationPoint = _context.RsapiService.IntegrationPointLibrary.Read(Convert.ToInt32(payload.ArtifactId));
+			IntegrationPoint integrationPoint = _context.RsapiService.RelativityObjectManager.Read<IntegrationPoint>(Convert.ToInt32(payload.ArtifactId));
 			DestinationConfiguration importSettings = JsonConvert.DeserializeObject<DestinationConfiguration>(integrationPoint.DestinationConfiguration);
 			IHelper targetHelper = _helperFactory.CreateTargetHelper(_helper, importSettings.FederatedInstanceArtifactId, integrationPoint.SecuredConfiguration);
 

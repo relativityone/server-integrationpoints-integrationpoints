@@ -48,13 +48,13 @@ namespace kCura.IntegrationPoint.Tests.Core
 			var rsapiService = container.Resolve<IRSAPIService>();
 
 			double timeWaitedInSeconds = 0.0;
-			IntegrationPoints.Data.IntegrationPoint integrationPoint = rsapiService.IntegrationPointLibrary.Read(integrationPointArtifactId);
+			IntegrationPoints.Data.IntegrationPoint integrationPoint = rsapiService.RelativityObjectManager.Read<IntegrationPoints.Data.IntegrationPoint>(integrationPointArtifactId);
 
 			while (integrationPoint.LastRuntimeUTC == null)
 			{
 				VerifyTimeout(timeWaitedInSeconds, timeoutInSeconds);
 				timeWaitedInSeconds = SleepAndUpdateTimeout(sleepIntervalInMilliseconds, timeWaitedInSeconds);
-				integrationPoint = rsapiService.IntegrationPointLibrary.Read(integrationPointArtifactId);
+				integrationPoint = rsapiService.RelativityObjectManager.Read<IntegrationPoints.Data.IntegrationPoint>(integrationPointArtifactId);
 			}
 		}
 
