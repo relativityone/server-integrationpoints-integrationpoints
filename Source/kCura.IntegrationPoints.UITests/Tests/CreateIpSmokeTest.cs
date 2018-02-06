@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 
 		private ExportToLoadFileProviderModel CreateExportToLoadFileProviderModel()
 		{
-			var model = new ExportToLoadFileProviderModel("Test IP");
+			var model = new ExportToLoadFileProviderModel("Test IP", "All Documents");
 
 			return model;
 		}
@@ -66,7 +66,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			detailsPage.RunIntegrationPoint();
 
 			// Assert
-			validator.ValidateSummaryPage(detailsPage, model);
+			validator.ValidateSummaryPage(detailsPage, model, false);
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
 		}
 	}

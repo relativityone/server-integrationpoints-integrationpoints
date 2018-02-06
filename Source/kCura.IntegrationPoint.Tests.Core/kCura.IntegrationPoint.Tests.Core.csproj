@@ -112,6 +112,7 @@
     <Compile Include="DocumentService.cs" />
     <Compile Include="DocumentTestDataBuilder.cs" />
     <Compile Include="EHHelper.cs" />
+    <Compile Include="Extensions\DefaultValueAttributeExtension.cs" />
     <Compile Include="Extensions\GenericPermissionListExtension.cs" />
     <Compile Include="Extensions\JobExtensions.cs" />
     <Compile Include="Extensions\ObjectPermissionListExtension.cs" />
@@ -125,7 +126,15 @@
     <Compile Include="Kepler.cs" />
     <Compile Include="Models\Audit.cs" />
     <Compile Include="Models\DocumentsTestData.cs" />
+    <Compile Include="Models\ExportToLoadFileDetailsModel.cs" />
     <Compile Include="Models\ExportToLoadFileProviderModel.cs" />
+    <Compile Include="Models\ExportToLoadFileSourceInformationModel.cs" />
+    <Compile Include="Models\ExportToLoadFileVolumeAndSubdirectoryModel.cs" />
+    <Compile Include="Models\ExportToLoadFileImageOptionsModel.cs" />
+    <Compile Include="Models\ExportToLoadFileLoadFileOptionsModel.cs" />
+    <Compile Include="Models\ExportToLoadFileNativeOptionsModel.cs" />
+    <Compile Include="Models\ExportToLoadFileOutputSettingsModel.cs" />
+    <Compile Include="Models\ExportToLoadFileTextOptionsModel.cs" />
     <Compile Include="Models\FolderWithDocuments.cs" />
     <Compile Include="Models\IntegrationPointGeneralModel.cs" />
     <Compile Include="Models\JobHistoryModel.cs" />

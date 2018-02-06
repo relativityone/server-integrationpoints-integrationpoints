@@ -83,6 +83,7 @@
     <Compile Include="Tests\UserOnLoginPageTest.cs" />
     <Compile Include="Validation\ExportToLoadFileProviderValidator.cs" />
     <Compile Include="Validation\BaseUiValidator.cs" />
+    <Compile Include="Validation\ProviderModelHtmlExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config">
