@@ -20,6 +20,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 			settings.ExportNatives = true;
 			settings.ExportImages = true;
 			settings.ProductionPrecedence = ExportSettings.ProductionPrecedenceType.Produced;
+			settings.ImageType = ExportSettings.ImageFileType.SinglePage;
 
 			return base.Prepare(settings);
 		}

@@ -19,6 +19,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 			settings.VolumePrefix = "test_volume_prefix";
 			settings.VolumeDigitPadding = 5;
 			settings.VolumeStartNumber = 3;
+			settings.ImageType = ExportSettings.ImageFileType.SinglePage;
 
 			return base.Prepare(settings);
 		}

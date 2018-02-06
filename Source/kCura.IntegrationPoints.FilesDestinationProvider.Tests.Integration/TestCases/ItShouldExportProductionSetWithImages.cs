@@ -27,6 +27,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 		{
 			settings.ProductionId = _configSettings.ProductionArtifactId;
 			settings.TypeOfExport = ExportSettings.ExportType.ProductionSet;
+			settings.ImageType = ExportSettings.ImageFileType.SinglePage;
 			settings.ExportNativesToFileNamedFrom = ExportSettings.NativeFilenameFromType.Identifier;
 
 			settings.OutputDataFileFormat = ExportSettings.DataFileFormat.Concordance;

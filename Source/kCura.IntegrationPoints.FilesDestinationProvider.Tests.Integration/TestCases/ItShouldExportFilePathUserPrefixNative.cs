@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 		public override void Verify(DirectoryInfo directory, DocumentsTestData documentsTestData)
 		{
 			var fileInfo = GetFileInfo(directory);
-			Assert.That(DataFileFormatHelper.LineNumberContains(2, @"þUSER1\0\NATIVES\1\AMEYERS_0000757.htmþ", fileInfo));
+			Assert.That(DataFileFormatHelper.LineNumberContains(2, @"þUSER1\1\NATIVES\1\AMEYERS_0000757.htmþ", fileInfo));
 		}
 	}
 }

@@ -1,15 +1,16 @@
 ﻿using System;
 using System.IO;
 using kCura.IntegrationPoint.Tests.Core.Models;
-using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases.Base;
 using NSubstitute;
+using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases
 {
+	[Ignore("This test fails due to missing validator in WinEDDS for StartNumber greater than zero REL-198503")]
 	internal class ItShouldLogJobErrorForNegativeVolumeStartNumber : ExportTestCaseBase
 	{
 		private readonly IJobHistoryErrorService _jobHistoryErrorService;

@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 		public override void Verify(DirectoryInfo directory, DocumentsTestData documentsTestData)
 		{
 			FileInfo fileInfo = GetFileInfo(directory);
-			Assert.That(DataFileFormatHelper.LineNumberContains(1, @"USER1\0\IMAGES\1\AMEYERS_0000757.tif", fileInfo));
+			Assert.That(DataFileFormatHelper.LineNumberContains(1, @"USER1\1\IMAGES\1\AMEYERS_0000757.tif", fileInfo));
 		}
 	}
 }
