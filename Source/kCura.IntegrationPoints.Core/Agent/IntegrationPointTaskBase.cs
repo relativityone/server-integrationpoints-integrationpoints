@@ -173,7 +173,7 @@ namespace kCura.IntegrationPoints.Core.Agent
 		{
 			Guid applicationGuid = new Guid(sourceProviderRdo.ApplicationIdentifier);
 			Guid providerGuid = new Guid(sourceProviderRdo.Identifier);
-			IDataSourceProvider sourceProvider = DataProviderFactory.GetDataProvider(applicationGuid, providerGuid, Helper);
+			IDataSourceProvider sourceProvider = DataProviderFactory.GetDataProvider(applicationGuid, providerGuid);
 			return sourceProvider;
 		}
 

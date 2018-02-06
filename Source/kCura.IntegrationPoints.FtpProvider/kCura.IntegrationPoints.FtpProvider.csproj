@@ -50,7 +50,7 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="FtpProvider.cs" />
-    <Compile Include="Installers\ServicesInstaller.cs" />
+    <Compile Include="Installers\FtpProviderInstaller.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

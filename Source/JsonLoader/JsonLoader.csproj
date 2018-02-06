@@ -58,6 +58,9 @@
     <Reference Include="kCura.IntegrationPoints.Contracts">
       <HintPath>..\..\lib\kCura.IntegrationPoints.Contracts.dll</HintPath>
     </Reference>
+    <Reference Include="kCura.IntegrationPoints.Domain">
+      <HintPath>..\..\lib\kCura.IntegrationPoints.Domain.dll</HintPath>
+    </Reference>
     <Reference Include="kCura.IntegrationPoints.SourceProviderInstaller">
       <HintPath>..\..\lib\kCura.IntegrationPoints.SourceProviderInstaller.dll</HintPath>
     </Reference>

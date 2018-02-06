@@ -65,8 +65,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             {
                 _fieldD, _fieldB, _fieldA, _fieldC
             });
-            _factory.GetDataProvider(_appIdentifier,
-                    _dataType, _helper)
+            _factory.GetDataProvider(_appIdentifier, _dataType)
                 .Returns(_dataSourceProvider);
             _sourceProviderIdentifier.Execute(Guid.Empty).ReturnsForAnyArgs(_providerRdo);
 
@@ -87,7 +86,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
             CollectionAssert.AreEqual(new List<FieldEntry>() { _fieldA, _fieldB, _fieldC, _fieldD }, (List<FieldEntry>)((System.Net.Http.ObjectContent<List<FieldEntry>>)response.Content).Value);
 
-            _factory.Received().GetDataProvider(_appIdentifier, _dataType, Arg.Any<IHelper>());
+            _factory.Received().GetDataProvider(_appIdentifier, _dataType);
             _dataSourceProvider.Received(1).GetFields(_options);
             _sourceProviderIdentifier.Received(1).Execute(_dataType);
 

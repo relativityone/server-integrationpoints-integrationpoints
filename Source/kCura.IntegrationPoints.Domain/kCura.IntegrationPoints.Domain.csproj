@@ -69,12 +69,16 @@
     <Compile Include="Extensions\ArtifactExtensions.cs" />
     <Compile Include="Extensions\IAPILogExtensions.cs" />
     <Compile Include="IAppDomainDataMarshaller.cs" />
+    <Compile Include="IDomainHelper.cs" />
+    <Compile Include="IDomainManager.cs" />
     <Compile Include="IEmailBodyData.cs" />
+    <Compile Include="InternalProviderFactory.cs" />
     <Compile Include="IPermissionValidator.cs" />
     <Compile Include="IPluginProvider.cs" />
     <Compile Include="ISynchronizerFactory.cs" />
     <Compile Include="ITokenProvider.cs" />
     <Compile Include="IValidator.cs" />
+    <Compile Include="IWindsorContainerSetup.cs" />
     <Compile Include="Logging\AgentCorrelationContext.cs" />
     <Compile Include="Logging\BaseCorrelationContext.cs" />
     <Compile Include="Logging\CorrelationContextCreationException.cs" />
@@ -120,6 +124,7 @@
     <Compile Include="Models\ViewDTO.cs" />
     <Compile Include="Models\WorkspaceDTO.cs" />
     <Compile Include="DomainManager.cs" />
+    <Compile Include="ProviderFactoryBase.cs" />
     <Compile Include="ProviderWrapper.cs" />
     <Compile Include="Readers\DataColumnWithValue.cs">
       <SubType>Component</SubType>
@@ -133,6 +138,7 @@
     <Compile Include="StackOfDisposables.cs" />
     <Compile Include="Synchronizer\IDataSynchronizer.cs" />
     <Compile Include="Utils.cs" />
+    <Compile Include="WindsorContainerSetup.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Queries;
 using kCura.IntegrationPoints.Core.Services.Provider;
@@ -53,7 +54,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			Data.SourceProvider providerRdo = _sourceProviderIdentifier.Execute(data.Type);
 			Guid applicationGuid = new Guid(providerRdo.ApplicationIdentifier);
-			var provider = _factory.GetDataProvider(applicationGuid, data.Type, _helper);
+			IDataSourceProvider provider = _factory.GetDataProvider(applicationGuid, data.Type);
 			List<FieldEntry> fields = provider.GetFields(data.Options.ToString()).OrderBy(x => x.DisplayName).ToList();
 			return Request.CreateResponse(HttpStatusCode.OK, fields, Configuration.Formatters.JsonFormatter);
 		}

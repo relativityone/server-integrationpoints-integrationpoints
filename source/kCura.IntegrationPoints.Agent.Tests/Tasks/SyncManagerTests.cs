@@ -125,7 +125,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_caseServiceContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider.Value).Returns(_sourceProvider);
 			_dataProviderFactory.GetDataProvider(
 					Arg.Is<Guid>(appGuid => appGuid == new Guid(_sourceProvider.ApplicationIdentifier)),
-					Arg.Is<Guid>(providerGuid => providerGuid == new Guid(_sourceProvider.Identifier)), _helper).Returns(_dataSourceProvider);
+					Arg.Is<Guid>(providerGuid => providerGuid == new Guid(_sourceProvider.Identifier))).Returns(_dataSourceProvider);
 			_integrationPointService.GetSourceOptions(_integrationPoint.ArtifactId).Returns(_option);
 			_dataSourceProvider.GetBatchableIds(Arg.Any<FieldEntry>(), _option).Returns(_dataReader);
 			_dataReader.Read().Returns(true, false);

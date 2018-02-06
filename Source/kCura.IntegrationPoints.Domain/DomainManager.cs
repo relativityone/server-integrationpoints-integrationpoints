@@ -1,15 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using Castle.MicroKernel;
-using Castle.MicroKernel.Registration;
-using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
-using Castle.Windsor.Installer;
 using kCura.IntegrationPoints.Contracts;
-using kCura.IntegrationPoints.Contracts.Provider;
-using kCura.IntegrationPoints.Domain.Authentication;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Domain
@@ -19,32 +12,31 @@ namespace kCura.IntegrationPoints.Domain
 	/// Internal use only:
 	/// This class should not be referenced by any consuming library
 	///  </summary>
-	public class DomainManager : MarshalByRefObject
+	public class DomainManager : MarshalByRefObject, IDomainManager
 	{
-		//AK: perhaps the filter should be a little more generic to cover all related binaries  kCura.IntegrationPoints.*
-		private static readonly HashSet<string> _allowedInstallerAssemblies = new HashSet<string>()
-		{
-			"kCura.IntegrationPoints.Contracts",
-			"kCura.IntegrationPoints.Core",
-			"kCura.IntegrationPoints.Data",
-			"kCura.IntegrationPoints.FilesDestinationProvider.Core",
-			"kCura.IntegrationPoints.FtpProvider",
-			"kCura.IntegrationPoints.ImportProvider.Parser",
-			"kCura.IntegrationPoints.LDAPProvider",
-			"kCura.IntegrationPoints.DocumentTransferProvider"
-		};
+		private IProviderFactory _customProviderFactory;
+		private readonly WindsorContainerSetup _windsorContainerSetup;
+		private readonly IHelper _helper;
 
-		private IProviderFactory _providerFactory;
-		private WindsorContainer _windsorContainer;
-
-		public DomainManager()
+		public DomainManager(IHelper helper)
 		{
+			_helper = helper;
+			_windsorContainerSetup = new WindsorContainerSetup();
 		}
 
 		/// <summary>
 		/// Called to initialized the provider's app domain and do any setup work needed
 		/// </summary>
 		public void Init()
+		{
+			CreateCustomProviderFactory();
+
+			// Get marshaled data
+			IAppDomainDataMarshaller dataMarshaller = new SecureAppDomainDataMarshaller();
+			this.SetUpConnectionString(dataMarshaller);
+		}
+
+		private void CreateCustomProviderFactory()
 		{
 			System.Reflection.Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
 			Type startupType = typeof(IStartUp);
@@ -64,6 +56,7 @@ namespace kCura.IntegrationPoints.Domain
 					else if (providerFactoryType.IsAssignableFrom(type)
 							&& type != typeof(DefaultProviderFactory)
 							&& type != typeof(ProviderFactoryBase)
+							&& type != typeof(InternalProviderFactory)
 							&& type != providerFactoryType)
 					{
 						if (customProviderFactoryType != null)
@@ -74,6 +67,7 @@ namespace kCura.IntegrationPoints.Domain
 						customProviderFactoryType = type;
 					}
 				}
+
 				startupTypes.AddRange(loadableTypes.Where(type => startupType.IsAssignableFrom(type) && type != startupType));
 			}
 
@@ -92,17 +86,13 @@ namespace kCura.IntegrationPoints.Domain
 				try
 				{
 					var customProviderFactory = Activator.CreateInstance(customProviderFactoryType) as IProviderFactory;
-					_providerFactory = customProviderFactory;
+					_customProviderFactory = customProviderFactory;
 				}
 				catch (Exception ex)
 				{
 					throw new Exception(Constants.IntegrationPoints.UNABLE_TO_INSTANTIATE_PROVIDER_FACTORY, ex);
 				}
 			}
-
-			// Get marshaled data
-			IAppDomainDataMarshaller dataMarshaller = new SecureAppDomainDataMarshaller();
-			this.SetUpConnectionString(dataMarshaller);
 		}
 
 		/// <summary>
@@ -119,54 +109,23 @@ namespace kCura.IntegrationPoints.Domain
 			}
 		}
 
-		private void SetUpCastleWindsor(IHelper helper)
+		public IProviderFactory CreateProviderFactory()
 		{
-			_windsorContainer = new WindsorContainer();
-			IKernel kernel = _windsorContainer.Kernel;
-			kernel.Resolver.AddSubResolver(new CollectionResolver(kernel, true));
-
-			_windsorContainer.Install(
-				FromAssembly.InDirectory(
-					new AssemblyFilter(AppDomain.CurrentDomain.BaseDirectory)
-					.FilterByName(this.FilterByAllowedAssemblyNames)));
-
-			_windsorContainer.Register(Component.For<IAuthTokenGenerator>().Instance(new ClaimsTokenGenerator()).LifestyleTransient());
-			_windsorContainer.Register(Component.For<IHelper>().UsingFactoryMethod(k => helper, true));
-		}
-
-		private bool FilterByAllowedAssemblyNames(AssemblyName assemblyName)
-		{
-			return _allowedInstallerAssemblies.Contains(assemblyName.Name);
-		}
-
-
-		/// <summary>
-		/// Gets the provider in the app domain from the specific identifier.
-		/// </summary>
-		/// <param name="identifier">The identifier that represents the provider</param>
-		/// <param name="helper">IHelper required in castle windsor initialization</param>
-		/// <returns>A Data source provider to retrieve data and pass along to the source.</returns>
-		public IDataSourceProvider GetProvider(Guid identifier, IHelper helper)
-		{
-			if (_windsorContainer == null)
-			{
-				this.SetUpCastleWindsor(helper);
-			}
-
-			if (_providerFactory == null)
+			IWindsorContainer container = _windsorContainerSetup.SetUpCastleWindsor(_helper);
+			IProviderFactory providerFactory = _customProviderFactory;
+			if (_customProviderFactory == null)
 			{
 				try
 				{
-					_providerFactory = _windsorContainer.Resolve<IProviderFactory>();
+					providerFactory = container.Resolve<IProviderFactory>();
 				}
 				catch
 				{
-					// Handle case (in event handlers) where IProviderFactory cannot be resolved...
-					_providerFactory = new DefaultProviderFactory(_windsorContainer, helper);
+					providerFactory = new DefaultProviderFactory(container, _helper);
 				}
 			}
-			IAPILog logger = helper.GetLoggerFactory().GetLogger();
-			return new ProviderWrapper(_providerFactory.CreateProvider(identifier), logger);
+
+			return providerFactory;
 		}
 	}
 }

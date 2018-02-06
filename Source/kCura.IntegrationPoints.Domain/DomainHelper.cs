@@ -1,17 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using kCura.IntegrationPoints.Contracts.Domain;
+using Relativity.API;
 using Relativity.APIHelper;
 
 namespace kCura.IntegrationPoints.Domain
 {
-	public class DomainHelper
+	public class DomainHelper : IDomainHelper
 	{
 		private AssemblyDomainLoader _appDomainLoader;
+		private readonly IPluginProvider _pluginProvider;
+		private readonly IHelper _helper;
+		private readonly RelativityFeaturePathService _relativityFeaturePathService;
+
+		public DomainHelper(IPluginProvider pluginProvider, IHelper helper, RelativityFeaturePathService relativityFeaturePathService)
+		{
+			_pluginProvider = pluginProvider;
+			_helper = helper;
+			_relativityFeaturePathService = relativityFeaturePathService;
+		}
 
 		public virtual void LoadRequiredAssemblies(AppDomain domain)
 		{
@@ -38,14 +50,14 @@ namespace kCura.IntegrationPoints.Domain
 			File.WriteAllBytes(dir, stream);
 
 			domain.Load(AssemblyName.GetAssemblyName(dir).Name);
-			_appDomainLoader = this.CreateInstance<AssemblyDomainLoader>(domain);
-			domain.AssemblyResolve += new ResolveEventHandler(_appDomainLoader.ResolveAssembly);
+			_appDomainLoader = CreateInstance<AssemblyDomainLoader>(domain);
+			domain.AssemblyResolve += _appDomainLoader.ResolveAssembly;
 		}
 
-		public virtual T CreateInstance<T>(AppDomain domain) where T : class
+		public virtual T CreateInstance<T>(AppDomain domain, params object[] constructorArgs) where T : class
 		{
-			var type = typeof(T);
-			var instance = domain.CreateInstanceAndUnwrap(type.Assembly.FullName, type.FullName) as T;
+			Type type = typeof(T);
+			var instance = domain.CreateInstanceAndUnwrap(type.Assembly.FullName, type.FullName, false, BindingFlags.Default, null, constructorArgs, null, null) as T;
 			if (instance == null)
 			{
 				throw new Exception(string.Format("Could not create an instance of {0} in app domain {1}.", type.Name,
@@ -56,7 +68,7 @@ namespace kCura.IntegrationPoints.Domain
 
 		private byte[] ReadFully(Stream stream)
 		{
-			byte[] buffer = new byte[16*1024];
+			byte[] buffer = new byte[16 * 1024];
 			using (MemoryStream ms = new MemoryStream())
 			{
 				int read;
@@ -69,10 +81,14 @@ namespace kCura.IntegrationPoints.Domain
 			}
 		}
 
-		public virtual void LoadClientLibraries(AppDomain domain, IPluginProvider provider, Guid applicationGuid)
+		public virtual void LoadClientLibraries(AppDomain domain, Guid applicationGuid)
 		{
+			if (_appDomainLoader == null)
+			{
+				_appDomainLoader = CreateInstance<AssemblyDomainLoader>(domain);
+			}
 			List<System.Reflection.Assembly> domainAssemblies = domain.GetAssemblies().ToList();
-			IDictionary<ApplicationBinary, Stream> assemblies = provider.GetPluginLibraries(applicationGuid);
+			IDictionary<ApplicationBinary, Stream> assemblies = _pluginProvider.GetPluginLibraries(applicationGuid);
 			List<string> files = new List<string>();
 			foreach (ApplicationBinary appBinary in assemblies.Keys)
 			{
@@ -136,7 +152,7 @@ namespace kCura.IntegrationPoints.Domain
 			}
 		}
 
-		public virtual AppDomain CreateNewDomain(RelativityFeaturePathService relativityFeaturePathService)
+		public virtual AppDomain CreateNewDomain()
 		{
 			AppDomainSetup domaininfo = new AppDomainSetup();
 			var domainPath = Path.Combine(Path.GetTempPath(), "RelativityIntegrationPoints");
@@ -148,21 +164,21 @@ namespace kCura.IntegrationPoints.Domain
 				Path.GetDirectoryName(new Uri(System.Reflection.Assembly.GetExecutingAssembly().CodeBase).LocalPath);
 			string domainName = Guid.NewGuid().ToString();
 			var newDomain = AppDomain.CreateDomain(domainName, null, domaininfo);
-			DeployLibraryFiles(domainPath, relativityFeaturePathService);
+			DeployLibraryFiles(domainPath);
 			return newDomain;
 		}
 
-		public virtual DomainManager SetupDomainAndCreateManager(AppDomain domain, IPluginProvider provider,
+		public virtual IDomainManager SetupDomainAndCreateManager(AppDomain domain,
 			Guid applicationGuid)
 		{
-			this.LoadRequiredAssemblies(domain);
-			this.LoadClientLibraries(domain, provider, applicationGuid);
-			DomainManager manager = this.CreateInstance<DomainManager>(domain);
+			LoadRequiredAssemblies(domain);
+			LoadClientLibraries(domain, applicationGuid);
+			DomainManager manager = CreateInstance<DomainManager>(domain, _helper);
 
 			IDictionary<string, byte[]> dataDictionary = new Dictionary<string, byte[]>();
 
 			// Get the connection string
-			string connectionString = kCura.Config.Config.ConnectionString;
+			string connectionString = Config.Config.ConnectionString;
 			byte[] connectionStringBytes = Encoding.ASCII.GetBytes(connectionString);
 			dataDictionary.Add(Constants.IntegrationPoints.APP_DOMAIN_DATA_CONNECTION_STRING, connectionStringBytes);
 
@@ -172,23 +188,23 @@ namespace kCura.IntegrationPoints.Domain
 			manager.Init();
 			Bootstrapper.InitAppDomain(Constants.IntegrationPoints.APP_DOMAIN_SUBSYSTEM_NAME,
 				Constants.IntegrationPoints.APPLICATION_GUID_STRING, domain);
-			
+
 			return manager;
 		}
 
-		private void DeployLibraryFiles(string finalDllPath, RelativityFeaturePathService relativityFeaturePathService)
+		private void DeployLibraryFiles(string finalDllPath)
 		{
 			string libDllPath = null;
 
-			libDllPath = relativityFeaturePathService.LibraryPath;
+			libDllPath = _relativityFeaturePathService.LibraryPath;
 			CopyDirectoryFiles(libDllPath, finalDllPath, true, true);
 
 			//kCura.Agent
-			libDllPath = relativityFeaturePathService.WebProcessingPath;
+			libDllPath = _relativityFeaturePathService.WebProcessingPath;
 			if (!string.IsNullOrWhiteSpace(libDllPath)) CopyFileWithWildcard(libDllPath, finalDllPath, "kCura.Agent*");
 
 			//FSharp.Core
-			libDllPath = relativityFeaturePathService.EddsPath;
+			libDllPath = _relativityFeaturePathService.EddsPath;
 			if (!string.IsNullOrWhiteSpace(libDllPath))
 				CopyFileWithWildcard(Path.Combine(libDllPath, "bin"), finalDllPath, "FSharp.Core*");
 		}

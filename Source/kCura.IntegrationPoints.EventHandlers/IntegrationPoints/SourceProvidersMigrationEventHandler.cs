@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 		protected override void Run()
 		{
-			List<SourceProviderInstaller.SourceProvider> sourceProviders = GetSourceProvidersToInstall();
+			List<SourceProvider> sourceProviders = GetSourceProvidersToInstall();
 			var migrationJob = new SourceProvidersMigration(sourceProviders, Helper, Importer);
 			migrationJob.Execute();
 		}
@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 		protected override string GetFailureMessage(Exception ex) => "Failed to migrate Source Provider.";
 
-		private List<SourceProviderInstaller.SourceProvider> GetSourceProvidersToInstall()
+		private List<SourceProvider> GetSourceProvidersToInstall()
 		{
 			List<Data.SourceProvider> sourceProviders = GetSourceProvidersFromPreviousWorkspace();
 

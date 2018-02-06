@@ -149,7 +149,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 				throw new IntegrationPointsException($"Provider does not implement the contract (Empty source provider list retrieved from {GetType().Name} class)");
 			}
 			OnRaisePostInstallPreExecuteEvent();
-			InstallSourceProvider(GetSourceProviders());
+			InstallSourceProvider(sourceProviders);
 		}
 
 		private void InstallSourceProvider(IDictionary<Guid, SourceProvider> providers)

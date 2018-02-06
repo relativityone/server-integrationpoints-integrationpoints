@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Core.Domain;
 using kCura.IntegrationPoints.Core.Queries;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.Domain;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.Queries;
@@ -18,7 +17,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 	{
 		private readonly ICaseServiceContext _caseContext;
 		private readonly IEddsServiceContext _eddsServiceContext;
-		private readonly DeleteIntegrationPoints _deleteintegrationPoint;
+		private readonly DeleteIntegrationPoints _deleteIntegrationPoint;
 		private readonly IHelper _helper;
 
 		public ImportService(
@@ -28,51 +27,69 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 			IHelper helper)
 		{
 			_caseContext = caseContext;
-			_deleteintegrationPoint = deleteIntegrationPoints;
-			_helper = helper;
 			_eddsServiceContext = eddsServiceContext;
+			_deleteIntegrationPoint = deleteIntegrationPoints;
+			_helper = helper;
 		}
 
-		public void InstallProviders(IEnumerable<SourceProviderInstaller.SourceProvider> providers)
+		public void InstallProviders(IList<SourceProvider> providers)
 		{
-			IList<SourceProvider> sourceProviders = providers as IList<SourceProvider> ?? providers.ToList();
-
-			// install one provider at a time
-			foreach (SourceProvider provider in sourceProviders)
+			IPluginProvider pluginProvider = new DefaultSourcePluginProvider(new GetApplicationBinaries(_eddsServiceContext.SqlContext));
+			var domainHelper = new DomainHelper(pluginProvider, _helper, new RelativityFeaturePathService());
+			var strategy = new AppDomainIsolatedFactoryLifecycleStrategy(domainHelper);
+			using (var vendor = new ProviderFactoryVendor(strategy))
 			{
-				// when we migrate providers, we should already know which app does the provider belong to.
-				if (provider.ApplicationGUID == Guid.Empty)
-				{
-					provider.ApplicationGUID = GetApplicationGuid(provider.ApplicationID);
-				}
+				var dataProviderBuilder = new DataProviderBuilder(vendor);
 
-				InstallSynchronizerForCoreOnly(provider.ApplicationGUID);
-				ValidateProvider(provider);
-
-				List<Data.SourceProvider> installedRdoProviders = new GetSourceProviderRdoByApplicationIdentifier(_caseContext).Execute(provider.ApplicationGUID);
-				Dictionary<string, Data.SourceProvider> installedRdoProviderDict = installedRdoProviders.ToDictionary(x => x.Identifier, x => x);
-
-				string identifier = provider.GUID.ToString();
-				if (installedRdoProviderDict.ContainsKey(identifier))
+				// install one provider at a time
+				foreach (SourceProvider provider in providers)
 				{
-					Data.SourceProvider providerToUpdate = installedRdoProviderDict[identifier];
-					UpdateExistingProviders(new List<Data.SourceProvider>() { providerToUpdate }, new []{ provider });
-				}
-				else
-				{
-					AddNewProviders(new[] { provider });
+					// when we migrate providers, we should already know which app does the provider belong to.
+					if (provider.ApplicationGUID == Guid.Empty)
+					{
+						provider.ApplicationGUID = GetApplicationGuid(provider.ApplicationID);
+					}
+
+					InstallSynchronizerForCoreOnly(provider.ApplicationGUID);
+					ValidateProvider(dataProviderBuilder, provider);
+
+					AddOrUpdateProvider(provider);
 				}
 			}
 		}
 
-		public void UninstallProvider(int applicationID)
+		private void AddOrUpdateProvider(SourceProvider provider)
+		{
+			Dictionary<Guid, Data.SourceProvider> installedRdoProviderDict = GetInstalledRdoProviders(provider);
+
+			if (installedRdoProviderDict.ContainsKey(provider.GUID))
+			{
+				Data.SourceProvider providerToUpdate = installedRdoProviderDict[provider.GUID];
+				UpdateExistingProvider(providerToUpdate, provider);
+			}
+			else
+			{
+				AddProvider(provider);
+			}
+		}
+
+		private Dictionary<Guid, Data.SourceProvider> GetInstalledRdoProviders(SourceProvider provider)
+		{
+			List<Data.SourceProvider> installedRdoProviders =
+				new GetSourceProviderRdoByApplicationIdentifier(_caseContext).Execute(provider.ApplicationGUID);
+			Dictionary<Guid, Data.SourceProvider> installedRdoProviderDict =
+				installedRdoProviders.ToDictionary(x => Guid.Parse(x.Identifier), x => x);
+			return installedRdoProviderDict;
+		}
+
+		public void UninstallProviders(int applicationID)
 		{
 			try
 			{
 				Guid applicationGuid = GetApplicationGuid(applicationID);
 				List<Data.SourceProvider> installedRdoProviders =
 					new GetSourceProviderRdoByApplicationIdentifier(_caseContext).Execute(applicationGuid);
-				_deleteintegrationPoint.DeleteIPsWithSourceProvider(installedRdoProviders.Select(x => x.ArtifactId).ToList());
+				_deleteIntegrationPoint.DeleteIPsWithSourceProvider(installedRdoProviders.Select(x => x.ArtifactId).ToList());
 				RemoveProviders(installedRdoProviders);
 			}
 			catch
@@ -99,60 +116,39 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 			}
 		}
 
-		private void UpdateExistingProviders(IEnumerable<Data.SourceProvider> providersToBeUpdated,
-			IEnumerable<SourceProviderInstaller.SourceProvider> providers)
+		private void UpdateExistingProvider(Data.SourceProvider existingProviderDto, SourceProvider provider)
 		{
-			var enumerated = providersToBeUpdated.ToList();
-			if (enumerated.Any())
-			{
-				enumerated.ForEach(x => x.Name = providers.Where(y => y.GUID.ToString().Equals(x.Identifier)).Select(y => y.Name).First());
-				enumerated.ForEach(x => x.SourceConfigurationUrl = providers.Where(y => y.GUID.ToString().Equals(x.Identifier)).Select(y => y.Url).First());
-				enumerated.ForEach(x => x.ViewConfigurationUrl = providers.Where(y => y.GUID.ToString().Equals(x.Identifier)).Select(y => y.ViewDataUrl).First());
-				enumerated.ForEach(x => x.Config = providers.Where(y => y.GUID.ToString().Equals(x.Identifier)).Select(y => y.Configuration).First());
-				enumerated.ForEach(
-					x => x.Configuration = providers.Where(y => y.GUID.ToString().Equals(x.Identifier))
-											.Select(y => JsonConvert.SerializeObject(y.Configuration)).First());
-				_caseContext.RsapiService.SourceProviderLibrary.Update(enumerated);
-			}
+			existingProviderDto.Name = provider.Name;
+			existingProviderDto.SourceConfigurationUrl = provider.Url;
+			existingProviderDto.ViewConfigurationUrl = provider.ViewDataUrl;
+			existingProviderDto.Config = provider.Configuration;
+			existingProviderDto.Configuration = JsonConvert.SerializeObject(provider.Configuration);
+
+			_caseContext.RsapiService.RelativityObjectManager.Update(existingProviderDto);
 		}
 
-		private void AddNewProviders(IEnumerable<SourceProviderInstaller.SourceProvider> providersToBeInstalled)
+		private void AddProvider(SourceProvider newProvider)
 		{
-			IList<SourceProvider> toBeInstalled = providersToBeInstalled as IList<SourceProvider> ?? providersToBeInstalled.ToList();
-			if (toBeInstalled.Any())
+			if (newProvider == null)
 			{
-				IEnumerable<Data.SourceProvider> newProviders =
-					from p in toBeInstalled
-					select new Data.SourceProvider()
-					{
-						Name = p.Name,
-						ApplicationIdentifier = p.ApplicationGUID.ToString(),
-						Identifier = p.GUID.ToString(),
-						SourceConfigurationUrl = p.Url,
-						ViewConfigurationUrl = p.ViewDataUrl,
-						Config = p.Configuration
-					};
-				AddNewProviders(newProviders);
+				return;
 			}
+
+			var providerDto = new Data.SourceProvider
+			{
+				Name = newProvider.Name,
+				ApplicationIdentifier = newProvider.ApplicationGUID.ToString(),
+				Identifier = newProvider.GUID.ToString(),
+				SourceConfigurationUrl = newProvider.Url,
+				ViewConfigurationUrl = newProvider.ViewDataUrl,
+				Config = newProvider.Configuration
+			};
+			_caseContext.RsapiService.RelativityObjectManager.Create(providerDto);
 		}
 
-		private void AddNewProviders(IEnumerable<Data.SourceProvider> newProviders)
+		private void ValidateProvider(DataProviderBuilder dataProviderBuilder, SourceProvider provider)
 		{
-			IList<Data.SourceProvider> sourceProviders = newProviders as IList<Data.SourceProvider> ?? newProviders.ToList();
-			if (sourceProviders.Any())
-			{
-				_caseContext.RsapiService.SourceProviderLibrary.Create(sourceProviders);
-			}
-		}
-
-		private void ValidateProvider(SourceProvider provider)
-		{
-			ISourcePluginProvider pluginProvider =
-				new DefaultSourcePluginProvider(new GetApplicationBinaries(_eddsServiceContext.SqlContext));
-			using (AppDomainFactory factory = new AppDomainFactory(new DomainHelper(), pluginProvider, new RelativityFeaturePathService()))
-			{
-				TryLoadingProvider(factory, provider);
-			}
+			TryLoadingProvider(dataProviderBuilder, provider);
 		}
 
 
@@ -176,15 +172,15 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 			return applicationGuid.Value;
 		}
 
-		private void TryLoadingProvider(AppDomainFactory factory, SourceProviderInstaller.SourceProvider provider)
+		private void TryLoadingProvider(DataProviderBuilder factory, SourceProvider provider)
 		{
 			try
 			{
-				factory.GetDataProvider(provider.ApplicationGUID, provider.GUID, _helper);
+				factory.GetDataProvider(provider.ApplicationGUID, provider.GUID);
 			}
 			catch (Exception ex)
 			{
-				throw new InvalidSourceProviderException(string.Format("Could not load {0} ({1}) provider.", provider.Name, provider.GUID), ex);
+				throw new InvalidSourceProviderException($"Error while loading '{provider.Name}' provider: {ex.Message}", ex);
 			}
 		}
 	}

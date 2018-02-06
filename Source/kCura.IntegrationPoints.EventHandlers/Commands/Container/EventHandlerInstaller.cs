@@ -50,15 +50,15 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 			}).LifestyleSingleton());
 			container.Register(Component.For<IWorkspaceDBContext>().UsingFactoryMethod(k =>
 			{
-				var context = container.Resolve<IEHContext>();
+				IEHContext context = k.Resolve<IEHContext>();
 				return new WorkspaceContext(context.Helper.GetDBContext(context.Helper.GetActiveCaseID()));
 			}).LifestyleTransient());
-			container.Register(Component.For<IIntegrationPointProviderValidator>()
-				.Instance(new IntegrationPointProviderValidator(Enumerable.Empty<IValidator>(),
-					container.Resolve<IIntegrationPointSerializer>())).LifestyleSingleton());
-			container.Register(Component.For<IIntegrationPointPermissionValidator>()
-				.Instance(new IntegrationPointPermissionValidator(Enumerable.Empty<IPermissionValidator>(),
-					container.Resolve<IIntegrationPointSerializer>())).LifestyleSingleton());
+			container.Register(Component.For<IIntegrationPointProviderValidator>().UsingFactoryMethod(k =>
+					new IntegrationPointProviderValidator(Enumerable.Empty<IValidator>(), k.Resolve<IIntegrationPointSerializer>()))
+				.LifestyleSingleton());
+			container.Register(Component.For<IIntegrationPointPermissionValidator>().UsingFactoryMethod(k =>
+				new IntegrationPointPermissionValidator(Enumerable.Empty<IPermissionValidator>(),
+					k.Resolve<IIntegrationPointSerializer>())).LifestyleSingleton());
 			container.Register(Component.For<IAuthTokenGenerator>().UsingFactoryMethod(kernel =>
 			{
 				IEHContext context = kernel.Resolve<IEHContext>();

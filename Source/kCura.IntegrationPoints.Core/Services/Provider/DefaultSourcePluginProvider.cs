@@ -4,10 +4,11 @@ using System.IO;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Domain;
 using kCura.IntegrationPoints.Data.Queries;
+using kCura.IntegrationPoints.Domain;
 
 namespace kCura.IntegrationPoints.Core.Services.Provider
 {
-	public class DefaultSourcePluginProvider : ISourcePluginProvider
+	public class DefaultSourcePluginProvider : IPluginProvider
 	{
 		private readonly GetApplicationBinaries _getApplicationBinaries;
 		public DefaultSourcePluginProvider(GetApplicationBinaries getApplicationBinaries)

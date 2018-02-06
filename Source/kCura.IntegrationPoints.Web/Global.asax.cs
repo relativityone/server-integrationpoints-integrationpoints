@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Net.Http.Formatting;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Dispatcher;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using Castle.MicroKernel;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
@@ -45,9 +47,9 @@ namespace kCura.IntegrationPoints.Web
 			RouteConfig.RegisterRoutes(RouteTable.Routes);
 			BundleConfig.RegisterBundles(BundleTable.Bundles);
 
-			var formatters = GlobalConfiguration.Configuration.Formatters;
-			var jsonFormatter = formatters.JsonFormatter;
-			var settings = jsonFormatter.SerializerSettings;
+			MediaTypeFormatterCollection formatters = GlobalConfiguration.Configuration.Formatters;
+			JsonMediaTypeFormatter jsonFormatter = formatters.JsonFormatter;
+			JsonSerializerSettings settings = jsonFormatter.SerializerSettings;
 			settings.Formatting = Formatting.Indented;
 			settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
 			GlobalConfiguration.Configuration.EnsureInitialized();
@@ -70,9 +72,10 @@ namespace kCura.IntegrationPoints.Web
 		private void CreateWindsorContainer()
 		{
 			_container = new WindsorContainer();
-			var kernel = _container.Kernel;
+			IKernel kernel = _container.Kernel;
 			kernel.Resolver.AddSubResolver(new CollectionResolver(kernel, true));
 
+			_container.Register(Component.For<IHelper>().Instance(ConnectionHelper.Helper()));
 			_container.Install(FromAssembly.InDirectory(new AssemblyFilter(HttpRuntime.BinDirectory, "kCura.IntegrationPoints*.dll"))); //<--- DO NOT CHANGE THIS LINE
 
 			ControllerBuilder.Current.SetControllerFactory(new WindsorControllerFactory(_container.Kernel));

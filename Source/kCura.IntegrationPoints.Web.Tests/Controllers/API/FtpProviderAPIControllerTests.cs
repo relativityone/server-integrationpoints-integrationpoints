@@ -110,7 +110,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 
 			var ftpProvider = Substitute.For<IDataSourceProvider>();
 			ftpProvider.GetFields(encryptedData).Returns(fields);
-			_providerFactory.GetDataProvider(Arg.Any<Guid>(), Arg.Any<Guid>(), _helper).Returns(ftpProvider);
+			_providerFactory.GetDataProvider(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(ftpProvider);
 
 			//Act
 			IHttpActionResult actualResult = _instance.GetColumnList(data);

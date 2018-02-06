@@ -157,7 +157,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 
 		private void UninstallSourceProvider()
 		{
-			ImportService.UninstallProvider(base.ApplicationArtifactId);
+			ImportService.UninstallProviders(base.ApplicationArtifactId);
 		}
 
 

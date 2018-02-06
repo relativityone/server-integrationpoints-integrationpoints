@@ -1,7 +1,6 @@
 ﻿using System;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
-using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Contracts.Provider;
 using Relativity.API;
 
@@ -10,7 +9,7 @@ namespace kCura.IntegrationPoints.Domain
 	/// <summary>
 	/// Represents a default provider used to create data source providers.
 	/// </summary>
-	internal class DefaultProviderFactory : ProviderFactoryBase
+	public class DefaultProviderFactory : ProviderFactoryBase
 	{
 		private readonly IWindsorContainer _windsorContainer;
 		private readonly IAPILog _logger;
@@ -53,8 +52,7 @@ namespace kCura.IntegrationPoints.Domain
 			    throw new Exception(message);
 			}
 
-			// TODO: check if provider can be null -- biedrzycki: Jan 25, 2016
-			return provider;
+			return new ProviderWrapper(provider, _logger);
 		}
 
 #region Logging

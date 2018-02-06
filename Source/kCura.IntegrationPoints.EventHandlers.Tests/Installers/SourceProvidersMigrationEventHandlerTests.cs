@@ -160,12 +160,12 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 		{
 			public IEnumerable<SourceProviderInstaller.SourceProvider> InstalledProviders;
 
-			public void InstallProviders(IEnumerable<SourceProviderInstaller.SourceProvider> providers)
+			public void InstallProviders(IList<SourceProviderInstaller.SourceProvider> providers)
 			{
 				InstalledProviders = providers;
 			}
 
-			public void UninstallProvider(int applicationID)
+			public void UninstallProviders(int applicationID)
 			{
 				throw new System.NotImplementedException();
 			}

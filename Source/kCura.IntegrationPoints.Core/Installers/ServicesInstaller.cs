@@ -7,7 +7,6 @@ using Castle.Windsor;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
-using kCura.IntegrationPoints.Core.Domain;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Helpers;
@@ -46,7 +45,9 @@ using Relativity.API;
 using SystemInterface.IO;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Core.Authentication;
+using kCura.IntegrationPoints.Core.Services.Domain;
 using kCura.IntegrationPoints.Core.Services.Exporter;
+using kCura.IntegrationPoints.Core.Toggles;
 using kCura.IntegrationPoints.Data.SecretStore;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.ScheduleQueue.Core.Data;
@@ -63,6 +64,8 @@ namespace kCura.IntegrationPoints.Core.Installers
 		{
 			var guid = Guid.Parse(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID);
 
+			IToggleProvider toggleProvider = CreateSqlServerToggleProvider(container.Resolve<IHelper>());
+
 			container.Register(Component.For<ISerializer>().ImplementedBy<JSONSerializer>().LifestyleSingleton());
 			container.Register(Component.For<IIntegrationPointSerializer>().ImplementedBy<IntegrationPointSerializer>().LifestyleSingleton());
 			container.Register(Component.For<IObjectTypeRepository>().ImplementedBy<RsapiObjectTypeRepository>().UsingFactoryMethod(x =>
@@ -74,9 +77,20 @@ namespace kCura.IntegrationPoints.Core.Installers
 
 			container.Register(Component.For<IContextContainerFactory>().ImplementedBy<ContextContainerFactory>().LifestyleTransient());
 			container.Register(Component.For<ObjectTypeService>().ImplementedBy<ObjectTypeService>().LifestyleTransient());
-			container.Register(Component.For<ISourcePluginProvider>().ImplementedBy<DefaultSourcePluginProvider>().LifestyleTransient());
-			container.Register(Component.For<IDataProviderFactory>().ImplementedBy<AppDomainFactory>().LifestyleTransient());
-			container.Register(Component.For<DomainHelper>().ImplementedBy<DomainHelper>().LifestyleSingleton());
+			container.Register(Component.For<IPluginProvider>().ImplementedBy<DefaultSourcePluginProvider>().LifestyleTransient());
+			container.Register(Component.For<IWindsorContainerSetup>().ImplementedBy<WindsorContainerSetup>().LifestyleSingleton());
+			container.Register(Component.For<IProviderFactoryLifecycleStrategy>().ImplementedBy<ProviderFactoryLifecycleStrategy>());
+			container.Register(Component.For<ProviderFactoryVendor>().ImplementedBy<ProviderFactoryVendor>().LifestyleSingleton());
+
+			if (toggleProvider.IsEnabled<UseOldProviderCreationLogic>())
+			{
+				container.Register(Component.For<IDataProviderFactory>().ImplementedBy<AppDomainFactory>().LifestyleTransient());
+			}
+			else
+			{
+				container.Register(Component.For<IDataProviderFactory>().ImplementedBy<DataProviderBuilder>().LifestyleSingleton());
+			}
+			container.Register(Component.For<IDomainHelper>().ImplementedBy<DomainHelper>().LifestyleSingleton());
 			container.Register(Component.For<IJobManager>().ImplementedBy<AgentJobManager>().LifestyleTransient());
 			container.Register(Component.For<IJobServiceDataProvider>().ImplementedBy<JobServiceDataProvider>().LifestyleTransient());
 			container.Register(Component.For<IJobService>().ImplementedBy<JobService>().LifestyleTransient());
@@ -170,23 +184,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<ISecretManagerFactory>().ImplementedBy<SecretManagerFactory>().LifestyleTransient());
 
 			// TODO: we need to make use of an async GetDBContextAsync (pending Dan Wells' patch) -- biedrzycki: Feb 5th, 2016
-			container.Register(Component.For<IToggleProvider>().Instance(new SqlServerToggleProvider(
-				() =>
-				{
-					SqlConnection connection = container.Resolve<IHelper>().GetDBContext(-1).GetConnection(true);
-
-					return connection;
-				},
-				async () =>
-				{
-					Task<SqlConnection> task = Task.Run(() =>
-					{
-						SqlConnection connection = container.Resolve<IHelper>().GetDBContext(-1).GetConnection(true);
-						return connection;
-					});
-
-					return await task;
-				})).LifestyleTransient());
+			container.Register(Component.For<IToggleProvider>().Instance(toggleProvider).LifestyleTransient());
 
 			container.Register(Component.For<IFederatedInstanceManager>().UsingFactoryMethod(k =>
 			{
@@ -227,6 +225,24 @@ namespace kCura.IntegrationPoints.Core.Installers
 
 			container.Register(Component.For<ITokenProviderFactoryFactory>().ImplementedBy<TokenProviderFactoryFactory>()
 				.LifestyleSingleton());
+		}
+
+		private SqlServerToggleProvider CreateSqlServerToggleProvider(IHelper helper)
+		{
+			return new SqlServerToggleProvider(() => ConnectionFactory(helper), () => AsyncConnectionFactory(helper));
+		}
+
+		private async Task<SqlConnection> AsyncConnectionFactory(IHelper helper)
+		{
+			Task<SqlConnection> task = Task.Run(() => ConnectionFactory(helper));
+			return await task;
+		}
+
+		private SqlConnection ConnectionFactory(IHelper helper)
+		{
+			SqlConnection connection = helper.GetDBContext(-1).GetConnection(true);
+
+			return connection;
 		}
 	}
 }

@@ -138,7 +138,12 @@
     <Compile Include="RelativitySourceRdo\RelativitySourceRdoHelpersFactory.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceRdoObjectType.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceWorkspaceRdoInitializer.cs" />
+    <Compile Include="Services\Domain\AppDomainFactory.cs" />
+    <Compile Include="Services\Domain\AppDomainIsolatedFactoryCreationStrategy.cs" />
     <Compile Include="Services\Domain\DataReaderWithLogContextDecorator.cs" />
+    <Compile Include="Services\Domain\IProviderFactoryLifecycleStrategy.cs" />
+    <Compile Include="Services\Domain\ProviderFactoryCreationStrategy.cs" />
+    <Compile Include="Services\Domain\ProviderFactoryVendor.cs" />
     <Compile Include="Services\Domain\ProviderWithLogContextDecorator.cs" />
     <Compile Include="Services\EhErrorService.cs" />
     <Compile Include="Services\ErrorServiceBase.cs" />
@@ -243,6 +248,7 @@
     <Compile Include="Services\JobHistory\IDestinationParser.cs" />
     <Compile Include="Services\ProviderTypeService.cs" />
     <Compile Include="Tagging\TagsCreator.cs" />
+    <Compile Include="Toggles\UseOldProviderCreationLogic.cs" />
     <Compile Include="Toggles\UseOldExportVolumeManagerToggle.cs" />
     <Compile Include="Toggles\UseStreamsForBigLongTextFieldsToggle.cs" />
     <Compile Include="Validation\Abstract\BaseIntegrationPointValidator.cs" />
@@ -282,7 +288,6 @@
     <Compile Include="Services\DeleteHistoryService.cs" />
     <Compile Include="Services\DeleteIntegrationPoints.cs" />
     <Compile Include="Services\DestinationTypes\DestinationTypeFactory.cs" />
-    <Compile Include="ISourcePluginProvider.cs" />
     <Compile Include="Properties\ErrorMessages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -335,7 +340,7 @@
     <Compile Include="Services\Marshaller\ISerializationHelper.cs" />
     <Compile Include="Services\Marshaller\SerializationHelper.cs" />
     <Compile Include="Services\Provider\DefaultSourcePluginProvider.cs" />
-    <Compile Include="Services\Domain\AppDomainFactory.cs" />
+    <Compile Include="Services\Domain\DataProviderBuilder.cs" />
     <Compile Include="Services\SavedSearchesTreeService.cs" />
     <Compile Include="Services\ServiceContext\ServiceContextHelperForEventHandlers.cs" />
     <Compile Include="Services\ServiceContext\IServiceContextHelper.cs" />

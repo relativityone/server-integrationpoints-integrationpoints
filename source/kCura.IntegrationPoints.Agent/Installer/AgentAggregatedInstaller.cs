@@ -22,12 +22,13 @@ namespace kCura.IntegrationPoints.Agent.Installer
 		{
 			try
 			{
+				container.Register(Component.For<IHelper>().Instance(_agentHelper));
 				InstallContainer(container);
 			}
 			catch (Exception e)
 			{
 				IAPILog logger = _agentHelper.GetLoggerFactory().GetLogger().ForContext<AgentAggregatedInstaller>();
-				logger.LogError(e, "Unable to install container using AgentAggreagteInstaller");
+				logger.LogError(e, "Unable to install container using AgentAggregateInstaller");
 				throw;
 			}
 		}

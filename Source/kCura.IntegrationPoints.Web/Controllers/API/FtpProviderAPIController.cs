@@ -59,7 +59,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		public IHttpActionResult GetColumnList([FromBody] object data)
         {
             string encryptedSettings = _securityManager.Encrypt(data.ToString());
-            IDataSourceProvider ftpProvider = _providerFactory.GetDataProvider(Guid.Parse(Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING), Guid.Parse(FtpProvider.Helpers.Constants.Guids.FtpProviderEventHandler), _helper);
+            IDataSourceProvider ftpProvider = _providerFactory.GetDataProvider(Guid.Parse(Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING), Guid.Parse(FtpProvider.Helpers.Constants.Guids.FtpProviderEventHandler));
             IEnumerable<FieldEntry> fields = ftpProvider.GetFields(encryptedSettings);
             return Ok(fields.ToList());
         }

@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 
-namespace kCura.IntegrationPoints.Core.Domain
+namespace kCura.IntegrationPoints.Core.Services.Domain
 {
 	public class SynchronizerWrapper : MarshalByRefObject, IDataSynchronizer
 	{

@@ -197,8 +197,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
 				.Returns(jobStopManager);
 
 			_dataProviderFactory.GetDataProvider(Arg.Is(new Guid(sourceProvider.ApplicationIdentifier)),
-				Arg.Is(new Guid(sourceProvider.Identifier)), Arg.Is(_helper))
-				.Returns(expectedDataSourceProvider);
+				Arg.Is(new Guid(sourceProvider.Identifier))).Returns(expectedDataSourceProvider);
 
 			// ACT
 			IDataSourceProvider result = _testInstance.GetSourceProvider(sourceProvider, job);
@@ -206,7 +205,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
 			// ASSERT
 			Assert.AreEqual(expectedDataSourceProvider, result);
 			_dataProviderFactory.Received(1).GetDataProvider(Arg.Is(new Guid(sourceProvider.ApplicationIdentifier)),
-				Arg.Is(new Guid(sourceProvider.Identifier)), Arg.Is(_helper));
+				Arg.Is(new Guid(sourceProvider.Identifier)));
 		}
 
 		[Test]

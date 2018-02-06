@@ -116,7 +116,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				.Returns(_jobStopManager);
 			_serializer.Deserialize<List<FieldMap>>(_integrationPoint.FieldMappings).Returns(_fieldsMap);
 			_dataProviderFactory.GetDataProvider(new Guid(_sourceProvider.ApplicationIdentifier),
-				new Guid(_sourceProvider.Identifier), _helper).Returns(_dataSourceProvider);
+				new Guid(_sourceProvider.Identifier)).Returns(_dataSourceProvider);
 			_dataSourceProvider.GetData(Arg.Any<List<FieldEntry>>(), (List<string>) _taskParams.BatchParameters,
 				_integrationPoint.SourceConfiguration).Returns(_sourceDataReader);
 			_appDomainRdoSynchronizerFactory.CreateSynchronizer(new Guid(_destinationProvider.Identifier),
