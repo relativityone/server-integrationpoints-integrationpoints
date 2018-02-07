@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using Relativity.API;
@@ -11,6 +12,7 @@ namespace kCura.IntegrationPoints.Data
 	public class RsapiClientLibrary<T> : IGenericLibrary<T> where T : BaseRdo, new()
 	{
 		private readonly IHelper _helper;
+		private readonly IAPILog _logger;
 		private readonly int _workspaceArtifactId;
 		private readonly ExecutionIdentity _executionIdentity;
 
@@ -21,100 +23,152 @@ namespace kCura.IntegrationPoints.Data
 		public RsapiClientLibrary(IHelper helper, int workspaceArtifactId, ExecutionIdentity executionIdentity)
 		{
 			_helper = helper;
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<RsapiClientLibrary<T>>();
 			_workspaceArtifactId = workspaceArtifactId;
 			_executionIdentity = executionIdentity;
 		}
 
-		private static void CheckResult<TResult>(ResultSet<TResult> result) where TResult : Artifact
-		{
-			result.CheckResult();
-		}
-
-		private static void CheckObject(T obj)
-		{
-			if (obj == null)
-			{
-				throw new ArgumentNullException(nameof(obj));
-			}
-		}
-
 		public virtual List<int> Create(IEnumerable<T> rdos)
 		{
-			List<T> localList = rdos.ToList();
+			List<T> localList = ConvertEnumerableToList(rdos);
 			if (!localList.Any())
 			{
 				return new List<int>();
 			}
 
 			WriteResultSet<RDO> result;
-			using (var rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(_executionIdentity))
+			try
 			{
-				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
-
-				result = rsapiClient.Repositories.RDO.Create(localList.Select(x => x.Rdo).ToList());
+				using (var rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(_executionIdentity))
+				{
+					rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
+					result = rsapiClient.Repositories.RDO.Create(localList.Select(x => x.Rdo).ToList());
+				}
+			}
+			catch (Exception e)
+			{
+				throw CreateRsapiClientException(e, "Create");
 			}
 
-			CheckResult(result);
-
-			return result.Results.Select(x => x.Artifact.ArtifactID).ToList();
+			try
+			{
+				CheckResult(result);
+				return result.Results.Select(x => x.Artifact.ArtifactID).ToList();
+			}
+			catch (Exception e)
+			{
+				throw CreateRsapiClientPostprocessingException(e, "Create");
+			}
 		}
 
-		public virtual bool Update(IEnumerable<T> objs)
+		public virtual bool Update(IEnumerable<T> rdos)
 		{
-			List<T> localList = objs.ToList();
+			List<T> localList = ConvertEnumerableToList(rdos);
 			if (!localList.Any())
 			{
 				return true;
 			}
 
 			WriteResultSet<RDO> result;
-			using (var rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(_executionIdentity))
+			try
 			{
-				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
-				result = rsapiClient.Repositories.RDO.Update(localList.Select(x => x.Rdo).ToList());
+				using (var rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(_executionIdentity))
+				{
+					rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
+					result = rsapiClient.Repositories.RDO.Update(localList.Select(x => x.Rdo).ToList());
+				}
+			}
+			catch (Exception e)
+			{
+				throw CreateRsapiClientException(e, "Update");
 			}
 
-			CheckResult(result);
-			return result.Success;
+			try
+			{
+				CheckResult(result);
+				return result.Success;
+			}
+			catch (Exception e)
+			{
+				throw CreateRsapiClientPostprocessingException(e, "Update");
+			}
 		}
 
 		public bool Delete(IEnumerable<int> artifactIds)
 		{
-			List<int> localList = artifactIds.ToList();
+			List<int> localList = ConvertEnumerableToList(artifactIds);
 			if (!localList.Any())
 			{
 				return true;
 			}
 
 			WriteResultSet<RDO> result;
-			using (var rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(_executionIdentity))
+			try
 			{
-				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
-				result = rsapiClient.Repositories.RDO.Delete(localList);
+				using (var rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(_executionIdentity))
+				{
+					rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
+					result = rsapiClient.Repositories.RDO.Delete(localList);
+				}
+			}
+			catch (Exception e)
+			{
+				throw CreateRsapiClientException(e, "Delete");
 			}
 
-			CheckResult(result);
-			return result.Success;
+			try
+			{
+				CheckResult(result);
+				return result.Success;
+			}
+			catch (Exception e)
+			{
+				throw CreateRsapiClientPostprocessingException(e, "Delete");
+			}
 		}
 
-		public bool Delete(IEnumerable<T> objs)
+		public bool Delete(IEnumerable<T> rdos)
 		{
-			return Delete(objs.Select(x => x.ArtifactId));
+			return Delete(rdos?.Select(x => x.ArtifactId));
 		}
 
-		public void MassDelete(IEnumerable<T> objs)
+		private static string RdoType => typeof(T).FullName;
+
+		private IntegrationPointsException CreateRsapiClientException(Exception e, string operationName)
 		{
-			throw new NotImplementedException();
+			_logger.LogError(e, "Cannot {operationName} objects using RsapiClientLibrary. Rdo type: {RdoType}. Workspace: {_workspaceArtifactId}. ExecutionIdentity: {_executionIdentity}",
+				operationName, RdoType, _workspaceArtifactId, _executionIdentity);
+			string message = $"Cannot {operationName} objects using RsapiClientLibrary. Rdo type: {RdoType}. Workspace: {_workspaceArtifactId}. ExecutionIdentity: {_executionIdentity}";
+			return CreateIntegrationPointExceptionForRsapi(e, message);
 		}
 
-		public MassCreateResult MassCreate(IEnumerable<T> objs)
+		private IntegrationPointsException CreateRsapiClientPostprocessingException(Exception e, string operationName)
 		{
-			throw new NotImplementedException();
+			string messageTemplate =
+				"Exception while processing results of IRSAPIClient request for {operationName} objects. Rdo type: {RdoType}. Workspace: {_workspaceArtifactId}. ExecutionIdentity: {_executionIdentity}";
+			_logger.LogError(e, messageTemplate, operationName, RdoType, _workspaceArtifactId, _executionIdentity);
+			string message = $"Exception while processing results of IRSAPIClient request for {operationName} objects."
+				+ $" Rdo type: {RdoType}. Workspace: {_workspaceArtifactId}. ExecutionIdentity: {_executionIdentity}";
+			return CreateIntegrationPointExceptionForRsapi(e, message);
 		}
 
-		public MassEditResult MassEdit(IEnumerable<T> objs)
+		private IntegrationPointsException CreateIntegrationPointExceptionForRsapi(Exception e, string message)
 		{
-			throw new NotImplementedException();
+			return new IntegrationPointsException(message, e)
+			{
+				ShouldAddToErrorsTab = true,
+				ExceptionSource = IntegrationPointsExceptionSource.RSAPI
+			};
+		}
+
+		private List<TEnum> ConvertEnumerableToList<TEnum>(IEnumerable<TEnum> enumerable)
+		{
+			return (enumerable ?? Enumerable.Empty<TEnum>()).ToList();
+		}
+
+		private static void CheckResult<TResult>(ResultSet<TResult> result) where TResult : Artifact
+		{
+			result.CheckResult();
 		}
 	}
 }

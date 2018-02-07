@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.Data
 		}
 
 		public RSAPIService(IHelper helper, int workspaceArtifactId)
-			: this(new GenericLibraryFactory(helper, workspaceArtifactId, new DefaultSecretCatalogFactory(), new SecretManager(workspaceArtifactId)))
+			: this(new GenericLibraryFactory(helper, workspaceArtifactId))
 		{
 			_helper = helper;
 			_workspaceArtifactId = workspaceArtifactId;
