@@ -11,6 +11,17 @@ namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class DocumentService
 	{
+		private static readonly string[] _defaultDocumentFields =
+		{
+			TestConstants.FieldNames.CONTROL_NUMBER,
+			TestConstants.FieldNames.EXTRACTED_TEXT,
+			TestConstants.FieldNames.EMAIL_SUBJECT,
+			TestConstants.FieldNames.GROUP_IDENTIFIER,
+			TestConstants.FieldNames.FOLDER_NAME,
+			TestConstants.FieldNames.CUSTODIAN,
+			TestConstants.FieldNames.ISSUE_DESIGNATION
+		};
+
 		private static ITestHelper _testHelper = null;
 		private static ITestHelper Helper
 		{
@@ -40,6 +51,12 @@ namespace kCura.IntegrationPoint.Tests.Core
 				result = proxy.Repositories.Document.Query(query, 0);
 				return result.Results;
 			}
+		}
+
+		public static List<Document> GetAllDocuments(int workspaceId)
+		{
+			return GetAllDocuments(workspaceId, _defaultDocumentFields).Where(result => result.Success)
+				.Select(result => result.Artifact).ToList();
 		}
 
 		public static void DeleteAllDocuments(int workspaceId)

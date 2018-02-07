@@ -9,6 +9,8 @@ using kCura.Relativity.Client.DTOs;
 
 namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.TestCases.Base
 {
+	using IntegrationPoint.Tests.Core.Validators;
+
 	public class ItShouldCreateDocumentFoldersFromMetadata : LoadFileTest
 	{
 		public override SettingsObjects Prepare(int workspaceId)
@@ -20,22 +22,20 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.TestCases.Bas
 
 		public override void Verify(int workspaceId)
 		{
-			int expectedDocs = 3;
-			List<Result<Document>> workspaceContents = DocumentService.GetAllDocuments(workspaceId, DocumentFields);
-			Assert.AreEqual(expectedDocs, workspaceContents.Count);
-
-			for (int i = 0; i < expectedDocs; i++)
+			const int expectedDocs = 3;
+			IEnumerable<Document> expectedDocuments = Enumerable.Range(1, expectedDocs).Select(i => new Document
 			{
-				Result<Document> docResult = workspaceContents[i];
-				Document doc = docResult.Artifact;
-				FieldValue controlNumber = docResult.Artifact.Fields.First(x => x.Name == TestConstants.FieldNames.CONTROL_NUMBER);
-				FieldValue groupIdentifier = docResult.Artifact.Fields.First(x => x.Name == TestConstants.FieldNames.GROUP_IDENTIFIER);
-
-				int docNum = i + 1;
-				Assert.AreEqual(docNum.ToString(), controlNumber.ValueAsLongText);
-				Assert.AreEqual($"Row-{docNum}-GroupIdentifier", groupIdentifier.ValueAsLongText);
-				Assert.AreEqual($"row{docNum}-v2", docResult.Artifact.FolderName);
+				FolderName = $"row{i}-v2",
+				[TestConstants.FieldNames.CONTROL_NUMBER] = new FieldValue(TestConstants.FieldNames.CONTROL_NUMBER, i.ToString()),
+				[TestConstants.FieldNames.GROUP_IDENTIFIER] = new FieldValue(TestConstants.FieldNames.GROUP_IDENTIFIER, $"Row-{i}-GroupIdentifier"),
 			}
+			);
+
+			IValidator validator = new LoadFileDocumentsValidator(expectedDocuments, workspaceId)
+				.ValidateWith(new DocumentFieldsValidator(TestConstants.FieldNames.GROUP_IDENTIFIER))
+				.ValidateWith(new DocumentFolderNameValidator());
+
+			validator.Validate();
 		}
 	}
 }

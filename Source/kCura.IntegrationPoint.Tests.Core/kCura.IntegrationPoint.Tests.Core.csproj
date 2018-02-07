@@ -186,6 +186,14 @@
     <Compile Include="TestHelpers\Utils.cs" />
     <Compile Include="User.cs" />
     <Compile Include="TestServiceContextHelper.cs" />
+    <Compile Include="Validators\DocumentFieldsValidator.cs" />
+    <Compile Include="Validators\DocumentFolderNameValidator.cs" />
+    <Compile Include="Validators\DocumentPropertyValidator.cs" />
+    <Compile Include="Validators\DocumentsValidator.cs" />
+    <Compile Include="Validators\IDocumentValidator.cs" />
+    <Compile Include="Validators\IValidator.cs" />
+    <Compile Include="Validators\LoadFileDocumentsValidator.cs" />
+    <Compile Include="Validators\PushDocumentsValidator.cs" />
     <Compile Include="View.cs" />
     <Compile Include="WebControllerTestBase.cs" />
     <Compile Include="Workspace.cs" />

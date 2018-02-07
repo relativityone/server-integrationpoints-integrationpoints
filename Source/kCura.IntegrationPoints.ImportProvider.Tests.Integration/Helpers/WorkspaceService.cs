@@ -14,6 +14,11 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
 
 		public static void DeleteWorkspace(int artifactId)
 		{
+			if (artifactId == 0)
+			{
+				return;
+			}
+
 			using (var rsApiClient = Rsapi.CreateRsapiClient(ExecutionIdentity.System))
 			{
 				rsApiClient.Repositories.Workspace.DeleteSingle(artifactId);
