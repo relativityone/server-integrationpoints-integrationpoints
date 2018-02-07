@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 	public class ImportService : IImportService, IBatchReporter
 	{
 		private const int _JOB_PROGRESS_TIMEOUT_MILLISECONDS = 5000;
-		private const string _IMPORT_API_ERROR_PREFIX = "IAPI"
+		private const string _IMPORT_API_ERROR_PREFIX = "IAPI";
 		private readonly BatchManager _batchManager;
 		private readonly IImportApiFactory _factory;
 		private readonly IImportJobFactory _jobFactory;
