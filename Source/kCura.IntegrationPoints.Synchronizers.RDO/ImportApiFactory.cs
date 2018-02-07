@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO.Model.Serializer;
 using kCura.IntegrationPoints.Synchronizers.RDO.Properties;
 using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Enumeration;
@@ -36,6 +37,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		public virtual IExtendedImportAPI GetImportAPI(ImportSettings settings)
 		{
+			LogImportSettings(settings);
 			IExtendedImportAPI importApi;
 			try
 			{
@@ -106,6 +108,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		}
 
 		#region Logging
+
+		private void LogImportSettings(ImportSettings importSettings)
+		{
+			var serializer = new ImportSettingsForLogSerializer();
+			var serializedSettings = serializer.Serialize(importSettings);
+			_logger.LogDebug("ImportSettings: {serializedSettings}", serializedSettings);
+		}
 
 		private void LogCreatingImportApiWithPassword(string url)
 		{

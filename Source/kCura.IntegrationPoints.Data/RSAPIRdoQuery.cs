@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 
@@ -45,7 +46,7 @@ namespace kCura.IntegrationPoints.Data
 			}
 			else
 			{
-				 
+
 				var condition1 = new WholeNumberCondition()
 				{
 					Field = ObjectTypeFieldNames.DescriptorArtifactTypeID,// Relativity.Client.DTOs.ObjectTypeFieldNames.DescriptorArtifactTypeID,
@@ -56,15 +57,20 @@ namespace kCura.IntegrationPoints.Data
 				{
 					Field = ObjectTypeFieldNames.DescriptorArtifactTypeID,
 					Operator = NumericConditionEnum.In,
-					Value = new List<int>() { 10}
+					Value = new List<int>() { 10 }
 				};
 
 				qry.Condition = new CompositeCondition(condition1, CompositeConditionEnum.Or, condition2);
-			
+
 			}
-			var result = _client.Repositories.ObjectType.Query(qry);
+
+			ResultSet<ObjectType> result;
+			using (new SerilogContextRestorer())
+			{
+				result = _client.Repositories.ObjectType.Query(qry);
+			}
 			RdoHelper.CheckResult(result);
-			
+
 			return result.Results.Select(x => x.Artifact).ToList();
 		}
 
@@ -84,16 +90,16 @@ namespace kCura.IntegrationPoints.Data
 				}
 			}
 			return results;
-		} 
+		}
 
 		public virtual ObjectType GetObjectType(int typeID)
 		{
-			return GetAllRdo(new List<int>{typeID}).First();
+			return GetAllRdo(new List<int> { typeID }).First();
 		}
-		
+
 		public virtual ObjectType GetType(int typeId)
 		{
-			return this.GetAllRdo(new List<int> {typeId}).FirstOrDefault();
+			return this.GetAllRdo(new List<int> { typeId }).FirstOrDefault();
 		}
 
 		public virtual int GetObjectTypeID(string objectTypeName)
