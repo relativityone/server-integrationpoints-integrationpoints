@@ -17,6 +17,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 	public class ImportService : IImportService, IBatchReporter
 	{
 		private const int _JOB_PROGRESS_TIMEOUT_MILLISECONDS = 5000;
+		private const string _IMPORT_API_ERROR_PREFIX = "IAPI"
 		private readonly BatchManager _batchManager;
 		private readonly IImportApiFactory _factory;
 		private readonly IImportJobFactory _jobFactory;
@@ -279,13 +280,24 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			OnJobError?.Invoke(fatalException);
 		}
 
+		private string PrependString(string prefix, string message)
+		{
+			string safePrefix = string.IsNullOrWhiteSpace(prefix)
+				? ""
+				: prefix;
+			string safeMessage = string.IsNullOrWhiteSpace(message)
+				? ""
+				: message;
+			return string.Format($"{safePrefix} {safeMessage}");
+		}
+
 		private void SaveDocumentsError(IList<JobReport.RowError> errors)
 		{
 			if (OnDocumentError != null)
 			{
 				foreach (JobReport.RowError error in errors)
 				{
-					OnDocumentError(error.Identifier, error.Message);
+					OnDocumentError(error.Identifier, PrependString(_IMPORT_API_ERROR_PREFIX, error.Message));
 				}
 			}
 		}
