@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Data.UtilityDTO;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.Relativity.Client;
 using Relativity.API;
+using Relativity.Kepler.Exceptions;
 using Relativity.SecretCatalog;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -83,6 +84,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					return artifactId;
 				}
 			}
+			catch (ServiceNotFoundException ex)
+			{
+				throw LogServiceNotFoundException("CREATE", ex);
+			}
 			catch (Exception ex)
 			{
 				throw LogObjectManagerException(rdo, "create", ex);
@@ -131,6 +136,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					return decryptSecuredConfiguration ? SetDecryptedSecuredConfiguration(rdo) : rdo;
 				}
 			}
+			catch (ServiceNotFoundException ex)
+			{
+				throw LogServiceNotFoundException("READ", ex);
+			}
 			catch (Exception ex)
 			{
 				throw LogObjectManagerException(new T(), "read", ex);
@@ -175,6 +184,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					return !result.EventHandlerStatuses.Any(x => !x.Success);
 				}
 			}
+			catch (ServiceNotFoundException ex)
+			{
+				throw LogServiceNotFoundException("UPDATE", ex);
+			}
 			catch (Exception ex)
 			{
 				throw LogObjectManagerException(rdo, "update", ex);
@@ -193,6 +206,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 						.GetResult();
 					return result.Report.DeletedItems.Any();
 				}
+			}
+			catch (ServiceNotFoundException ex)
+			{
+				throw LogServiceNotFoundException("DELETE", ex);
 			}
 			catch (Exception ex)
 			{
@@ -216,6 +233,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 						.GetResult();
 					return result.Report.DeletedItems.Any();
 				}
+			}
+			catch (ServiceNotFoundException ex)
+			{
+				throw LogServiceNotFoundException("DELETE", ex);
 			}
 			catch (Exception ex)
 			{
@@ -241,6 +262,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					};
 
 				}
+			}
+			catch (ServiceNotFoundException ex)
+			{
+				throw LogServiceNotFoundException("QUERY", ex);
 			}
 			catch (Exception ex)
 			{
@@ -290,6 +315,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					return result.Objects.Select(x => x.ToRDO<T>()).Select(SetDecryptedSecuredConfiguration).ToList();
 				}
 			}
+			catch (ServiceNotFoundException ex)
+			{
+				throw LogServiceNotFoundException("QUERY", ex);
+			}
 			catch (Exception ex)
 			{
 				throw LogObjectManagerException(new T(), q, ex);
@@ -332,6 +361,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					return result.Objects;
 				}
 			}
+			catch (ServiceNotFoundException ex)
+			{
+				throw LogServiceNotFoundException("QUERY", ex);
+			}
 			catch (Exception ex)
 			{
 				throw LogObjectManagerException(null, q, ex);
@@ -353,11 +386,26 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					return result.TotalCount;
 				}
 			}
+			catch (ServiceNotFoundException ex)
+			{
+				throw LogServiceNotFoundException("QUERY_TOTAL_COUNT", ex);
+			}
 			catch (Exception ex)
 			{
 				throw LogObjectManagerException(null, q, ex);
 			}
 
+		}
+
+		private IntegrationPointsException LogServiceNotFoundException(string operationName, ServiceNotFoundException ex)
+		{
+			string message = $"Error while connecting to object manager service. Cannot perform {operationName} operation.";
+			_logger.LogError("Error while connecting to object manager service. Cannot perform {operationName} operation.", operationName);
+			return new IntegrationPointsException(message, ex)
+			{
+				ShouldAddToErrorsTab = true,
+				Source = IntegrationPointsExceptionSource.KEPLER
+			};
 		}
 
 		private IntegrationPointsException LogObjectManagerException(BaseRdo rdo, string operationName, Exception ex)
