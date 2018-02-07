@@ -3,24 +3,25 @@ using System.Data;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
+using Newtonsoft.Json;
+using Relativity.API;
 
-namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
+namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 {
 	public class ImageJobImport : JobImport<ImageImportBulkArtifactJob>
 	{
+		private readonly IAPILog _logger;
 		private readonly IImportSettingsBaseBuilder<ImageSettings> _builder;
 		private readonly IDataReader _sourceData;
-		protected readonly ImportSettings ImportSettings;
-		protected readonly IExtendedImportAPI ImportApi;
 		public IDataTransferContext Context { get; set; }
 
-		public ImageJobImport(ImportSettings importSettings, IExtendedImportAPI importApi, IImportSettingsBaseBuilder<ImageSettings> builder, IDataTransferContext context)
+		public ImageJobImport(ImportSettings importSettings, IExtendedImportAPI importApi, IImportSettingsBaseBuilder<ImageSettings> builder, IDataTransferContext context, IHelper helper) :
+			base(importSettings, importApi, helper.GetLoggerFactory().GetLogger().ForContext<ImageJobImport>())
 		{
 			Context = context;
-			ImportSettings = importSettings;
-			ImportApi = importApi;
 			_builder = builder;
 			_sourceData = context.DataReader;
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ImageJobImport>();
 		}
 
 		public override void RegisterEventHandlers()
@@ -49,14 +50,31 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 
 		public override void Execute()
 		{
+			_logger.LogDebug("Start preparing Image Import API process");
+			PrepareJob();
+
+			_logger.LogInformation("Start Image Import API process");
+			ImportJob.Execute();
+			_logger.LogInformation("Image Import API process finished");
+
+			ExportErrorFile();
+		}
+
+		private void PrepareJob()
+		{
 			_builder.PopulateFrom(ImportSettings, ImportJob.Settings);
+			LogJobSettings();
+
 			ImportJob.SourceData.SourceData = ImageDataTableHelper.GetDataTable(_sourceData);
 			Context.UpdateTransferStatus();
-			ImportJob.Execute();
+		}
 
-			if (! string.IsNullOrEmpty(ImportSettings.ErrorFilePath))
+		private void LogJobSettings()
+		{
+			if (ImportJob.Settings != null)
 			{
-				ImportJob.ExportErrorFile(ImportSettings.ErrorFilePath);
+				string importApiSettings = JsonConvert.SerializeObject(ImportJob.Settings);
+				_logger.LogDebug("Import API image import settings: {importApiSettings}", importApiSettings);
 			}
 		}
 	}

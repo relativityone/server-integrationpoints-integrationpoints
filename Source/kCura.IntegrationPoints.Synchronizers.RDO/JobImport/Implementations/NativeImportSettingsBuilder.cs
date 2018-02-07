@@ -5,7 +5,7 @@ using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
 using ArtifactType = kCura.Relativity.Client.ArtifactType;
 
-namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
+namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 {
 	public class NativeImportSettingsBuilder : ImportSettingsBaseBuilder<Settings>
 	{

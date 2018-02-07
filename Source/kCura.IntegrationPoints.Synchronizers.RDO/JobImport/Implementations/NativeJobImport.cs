@@ -7,24 +7,19 @@ using kCura.Relativity.ImportAPI;
 using Newtonsoft.Json;
 using Relativity.API;
 
-namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
+namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 {
 	public class NativeJobImport : JobImport<ImportBulkArtifactJob>
 	{
-		private readonly ImportSettings _importSettings;
-		private readonly IExtendedImportAPI _importApi;
 		private readonly IImportSettingsBaseBuilder<Settings> _builder;
 		private readonly IDataReader _sourceData;
-		private readonly IDataTransferContext _context;
 		private readonly IAPILog _logger;
 
-		public NativeJobImport(ImportSettings importSettings, IExtendedImportAPI importApi, IImportSettingsBaseBuilder<Settings> builder, IDataTransferContext context, IHelper helper)
+		public NativeJobImport(ImportSettings importSettings, IExtendedImportAPI importApi, IImportSettingsBaseBuilder<Settings> builder, IDataTransferContext context, IHelper helper) :
+			base(importSettings, importApi, helper.GetLoggerFactory().GetLogger().ForContext<NativeJobImport>())
 		{
-			_importSettings = importSettings;
-			_importApi = importApi;
 			_builder = builder;
-			_context = context;
-			_logger = helper.GetLoggerFactory().GetLogger().ForContext<NativeJobImport>(); ;
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<NativeJobImport>();
 			_sourceData = context.DataReader;
 		}
 
@@ -49,39 +44,47 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 
 		protected internal override ImportBulkArtifactJob CreateJob()
 		{
-			if (_importSettings.ArtifactTypeId == (int) ArtifactType.Document)
+			int artifactTypeId = ImportSettings.ArtifactTypeId;
+			int? federatedInstanceArtifactId = ImportSettings.FederatedInstanceArtifactId;
+			_logger.LogInformation("Creating Import Job. ArtifactTypeId: {artifactTypeId}, FederatedInstanceArtifactId: {federatedInstanceArtifactId}", artifactTypeId, federatedInstanceArtifactId);
+
+			if (artifactTypeId == (int)ArtifactType.Document)
 			{
-				if (_importSettings.FederatedInstanceArtifactId == null)
-					return _importApi.NewNativeDocumentImportJob(_importSettings.OnBehalfOfUserToken);
-				return _importApi.NewNativeDocumentImportJob();
+				if (federatedInstanceArtifactId == null)
+				{
+					return ImportApi.NewNativeDocumentImportJob(ImportSettings.OnBehalfOfUserToken);
+				}
+				return ImportApi.NewNativeDocumentImportJob();
 			}
-			return _importApi.NewObjectImportJob(_importSettings.ArtifactTypeId);
+			return ImportApi.NewObjectImportJob(artifactTypeId);
 		}
 
 		public override void Execute()
 		{
-			_builder.PopulateFrom(_importSettings, ImportJob.Settings);
+			_logger.LogDebug("Start preparing Native Import API process");
+			PrepareImportJob();
 
+			_logger.LogInformation("Start Native Import API process");
+			ImportJob.Execute();
+			_logger.LogInformation("Native Import API process finished");
+
+			ExportErrorFile();
+		}
+
+		private void PrepareImportJob()
+		{
+			_builder.PopulateFrom(ImportSettings, ImportJob.Settings);
+			LogJobSettings();
+
+			ImportJob.SourceData.SourceData = _sourceData;
+		}
+
+		private void LogJobSettings()
+		{
 			if (ImportJob.Settings != null)
 			{
 				string importApiSettings = JsonConvert.SerializeObject(ImportJob.Settings);
-
-				_logger.LogDebug($"Import API settings: {importApiSettings}");
-			}
-
-			ImportJob.SourceData.SourceData = _sourceData;
-
-			_logger.LogInformation("Start Import API process");
-
-			ImportJob.Execute();
-
-			_logger.LogInformation("Import API process finished");
-			
-			if (! string.IsNullOrEmpty(_importSettings.ErrorFilePath))
-			{ // todo error tab
-				_logger.LogError("Import API process return errors");
-
-				ImportJob.ExportErrorFile(_importSettings.ErrorFilePath);
+				_logger.LogDebug("Import API native import settings: {importApiSettings}", importApiSettings);
 			}
 		}
 	}

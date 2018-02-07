@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Text;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
+using kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
 using NSubstitute;

@@ -1,11 +1,21 @@
 ﻿using System.Collections;
 using kCura.Relativity.DataReaderClient;
+using kCura.Relativity.ImportAPI;
+using Relativity.API;
 
-namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
+namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 {
-	public abstract class JobImport<TJob> : IJobImport where TJob : IImportNotifier, new()
+	public abstract class JobImport<TJob> : IJobImport where TJob : IImportNotifier, IImportBulkArtifactJob, new()
 	{
 		private TJob _job;
+		private readonly IAPILog _logger;
+
+		protected JobImport(ImportSettings importSettings, IExtendedImportAPI importApi, IAPILog logger)
+		{
+			ImportSettings = importSettings;
+			ImportApi = importApi;
+			_logger = logger;
+		}
 
 		public event IImportNotifier.OnCompleteEventHandler OnComplete
 		{
@@ -40,13 +50,28 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 			}
 		}
 
+		protected IExtendedImportAPI ImportApi { get; }
+
+		protected ImportSettings ImportSettings { get; }
+
 		public abstract void RegisterEventHandlers();
 
 		protected internal abstract TJob CreateJob();
 
 		public abstract void Execute();
 
-        protected virtual void OnOnError(IDictionary row)
+		protected void ExportErrorFile()
+		{
+			if (!string.IsNullOrEmpty(ImportSettings.ErrorFilePath))
+			{
+				string errorFilePath = ImportSettings.ErrorFilePath;
+				_logger.LogDebug("Exporting ImportJob Error file. Path: {errorFilePath}", errorFilePath);
+
+				ImportJob.ExportErrorFile(errorFilePath);
+			}
+		}
+
+		protected virtual void OnOnError(IDictionary row)
         {
             OnError?.Invoke(row);
         }

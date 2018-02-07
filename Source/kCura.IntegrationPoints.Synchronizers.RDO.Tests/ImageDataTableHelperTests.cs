@@ -1,10 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-
-using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
+﻿using System.Data;
 using kCura.IntegrationPoint.Tests.Core;
-
+using kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests

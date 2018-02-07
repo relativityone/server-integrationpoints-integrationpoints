@@ -1,6 +1,6 @@
 ﻿using System.Data;
 
-namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
+namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 {
 	public static class ImageDataTableHelper
 	{

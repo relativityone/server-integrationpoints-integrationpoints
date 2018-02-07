@@ -50,6 +50,7 @@ using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Toggles;
 using kCura.IntegrationPoints.Data.SecretStore;
 using kCura.IntegrationPoints.Domain.Authentication;
+using kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations;
 using kCura.ScheduleQueue.Core.Data;
 using Relativity.Telemetry.APM;
 using Relativity.Toggles;

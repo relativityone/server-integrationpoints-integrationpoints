@@ -1,18 +1,25 @@
 ﻿using kCura.IntegrationPoints.Domain.Readers;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
+using Relativity.API;
 
-namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
+namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 {
 	public class ProductionImageJobImport : ImageJobImport
 	{
-		public ProductionImageJobImport(ImportSettings importSettings, IExtendedImportAPI importApi, IImportSettingsBaseBuilder<ImageSettings> builder, IDataTransferContext context) : base(importSettings, importApi, builder, context)
+		private readonly IAPILog _logger;
+
+		public ProductionImageJobImport(ImportSettings importSettings, IExtendedImportAPI importApi, IImportSettingsBaseBuilder<ImageSettings> builder, IDataTransferContext context, IHelper helper) :
+			base(importSettings, importApi, builder, context, helper)
 		{
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ProductionImageJobImport>();
 		}
 
 		protected internal override ImageImportBulkArtifactJob CreateJob()
 		{
-			return ImportApi.NewProductionImportJob(ImportSettings.ProductionArtifactId);
+			int productionArtifactId = ImportSettings.ProductionArtifactId;
+			_logger.LogInformation("Creating Production Import Job. Production ArtifactTypeId: {productionArtifactId}", productionArtifactId);
+			return ImportApi.NewProductionImportJob(productionArtifactId);
 		}
 	}
 }

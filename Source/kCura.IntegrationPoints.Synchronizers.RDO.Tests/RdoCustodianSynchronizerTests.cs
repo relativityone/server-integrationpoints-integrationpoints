@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
+using kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations;
 using kCura.Relativity.Client;
 using Newtonsoft.Json;
 using NSubstitute;

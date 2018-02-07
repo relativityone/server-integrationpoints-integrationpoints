@@ -3,10 +3,8 @@ using kCura.IntegrationPoints.Domain.Readers;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
 using Relativity.API;
-using Relativity.Core.AgentJobManagement.ScriptAddins;
-using Relativity.Logging;
 
-namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
+namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 {
 	public class ImportJobFactory : IImportJobFactory
 	{
@@ -17,15 +15,15 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 			{
 				case JobContextType.RelativityToRelativityImagesProduction:
 					IImportSettingsBaseBuilder<ImageSettings> imageProductionRelativityToRelativityImportSettingsBuilder = new ImageRelativityToRelativityImportSettingsBuilder(importApi);
-					rv = new ProductionImageJobImport(settings, importApi, imageProductionRelativityToRelativityImportSettingsBuilder, context);
+					rv = new ProductionImageJobImport(settings, importApi, imageProductionRelativityToRelativityImportSettingsBuilder, context, helper);
 					break;
 				case JobContextType.RelativityToRelativityImages:
 					IImportSettingsBaseBuilder<ImageSettings> imageRelativityToRelativityImportSettingsBuilder = new ImageRelativityToRelativityImportSettingsBuilder(importApi);
-					rv = new ImageJobImport(settings, importApi, imageRelativityToRelativityImportSettingsBuilder, context);
+					rv = new ImageJobImport(settings, importApi, imageRelativityToRelativityImportSettingsBuilder, context, helper);
 					break;
 				case JobContextType.ImportImagesFromLoadFile:
 					IImportSettingsBaseBuilder<ImageSettings> imageImportSettingsBuilder = new ImageImportSettingsBuilder(importApi);
-					rv = new ImageJobImport(settings, importApi, imageImportSettingsBuilder, context);
+					rv = new ImageJobImport(settings, importApi, imageImportSettingsBuilder, context, helper);
 					break;
 				case JobContextType.Native:
 					IImportSettingsBaseBuilder<Settings> nativeImportSettingsBuilder = new NativeImportSettingsBuilder(importApi);
