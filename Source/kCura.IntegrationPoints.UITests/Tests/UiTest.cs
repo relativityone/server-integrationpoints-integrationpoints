@@ -32,15 +32,15 @@ namespace kCura.IntegrationPoints.UITests.Tests
 				.SetupConfiguration()
 				.LogConfiguration();
 
-//			Context = new TestContext()
-//				.CreateWorkspace()
-//				.ImportDocuments()
-//				.InstallIntegrationPoints();
+			Context = new TestContext()
+				.CreateWorkspace()
+				.ImportDocuments()
+				.InstallIntegrationPoints();
 
-			Context = new TestContext
-			{
-				WorkspaceName = "Smoke Workspace"
-			};
+			//Context = new TestContext
+			//{
+			//	WorkspaceName = "Smoke Workspace"
+			//};
 			
 			CreateDriver();
 		}

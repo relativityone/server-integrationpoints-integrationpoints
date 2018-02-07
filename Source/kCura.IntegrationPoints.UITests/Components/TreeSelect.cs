@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.UITests.Components
 
 			IWebElement selectListPopup = Parent.FindElement(By.XPath(@".//div[@id='jstree-holder-div']"));
 			Thread.Sleep(TimeSpan.FromMilliseconds(1000));
-			IWebElement rootElement = selectListPopup.FindElements(By.XPath(@".//a"))[1];
+			IWebElement rootElement = selectListPopup.FindElements(By.XPath(@".//a"))[0];
 			Thread.Sleep(TimeSpan.FromMilliseconds(1000));
 			rootElement.Click();
 			return this;
