@@ -12,4 +12,5 @@ Selenium.WebDriver.ChromeDriver
 Serilog
 Relativity.Services.Interfaces
 kCura.Relativity.Client
+Relativity.Telemetry.APM
 Polly
