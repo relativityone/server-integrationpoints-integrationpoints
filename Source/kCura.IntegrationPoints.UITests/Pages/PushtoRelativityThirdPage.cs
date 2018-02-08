@@ -56,23 +56,6 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			PageFactory.InitElements(driver, this);
 		}
 
-
-		public void SelectCopyNativeFiles(string mode)
-		{
-			if (mode == "Physical Files")
-			{
-				SelectCopyPhysicalFilesElement.Click();
-			}
-			else if (mode == "Links Only")
-			{
-				SelectCopyLinksOnlyElement.Click();
-			}
-			else if (mode == "No")
-			{
-				SelectCopyNoFilesElement.Click();
-			}
-		}
-
 		public void SelectCopyNativeFiles(RelativityProviderModel.CopyNativeFilesEnum? mode)
 		{
 			if (mode == RelativityProviderModel.CopyNativeFilesEnum.PhysicalFiles)
