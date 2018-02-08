@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using kCura.Injection.Behavior;
+using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.Data.QueryBuilders;
 using kCura.IntegrationPoints.UITests.Common;
 using TestContext = kCura.IntegrationPoints.UITests.Configuration.TestContext;
@@ -12,213 +13,121 @@ namespace kCura.IntegrationPoints.UITests.Tests
 {
 	[TestFixture]
 	[Category(TestCategory.SMOKE)]
-	public class RelativityProviderMetadataOnlyTest : UiTest
+	public class RelativityProviderTest : UiTest
 	{
-		private TestContext _context = null;
+		private TestContext _destinationContext = null;
+		private IntegrationPointsAction _integrationPointsAction;
 
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
 			EnsureGeneralPageIsOpened();
+			_integrationPointsAction = new IntegrationPointsAction(Driver, Context);
 		}
 
 
 		[SetUp]
 		public void SetUp()
 		{
-			_context = new TestContext()
-				.CreateWorkspace();
+			_destinationContext = new TestContext()
+			.CreateWorkspace(); 
 		}
 
 		[TearDown]
 		public void TearDown()
+		{ 
+			_destinationContext?.TearDown();
+		}
+
+		private RelativityProviderModel CreateRelativityProviderModel()
 		{
-			_context?.TearDown();
+			var model = new RelativityProviderModel(NUnit.Framework.TestContext.CurrentContext.Test.Name);
+			model.Source = "Saved Search";
+			model.RelativityInstance = "This Instance";
+			model.DestinationWorkspace = $"{_destinationContext.WorkspaceName} - {_destinationContext.WorkspaceId}";
+			model.CopyNativeFiles = RelativityProviderModel.CopyNativeFilesEnum.No;
+			return model;
 		}
 
 		[Test, Order(10)]
 		public void RelativityProvider_TC_RTR_MDO_1()
 		{
+			//Arrange
+			RelativityProviderModel model = CreateRelativityProviderModel();
+			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOnly;
+			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.No;
 
-			// Arrange
-			var generalPage = new GeneralPage(Driver);
-			generalPage.ChooseWorkspace(Context.WorkspaceName);
-
-			// Act
-			IntegrationPointsPage ipPage = generalPage.GoToIntegrationPointsPage();
-			ExportFirstPage first = ipPage.CreateNewIntegrationPoint();
-			first.Name = "Test Push IP TC_RTR_MDO_1";
-			first.Destination = "Relativity";
-
-			PushToRelativitySecondPage second = first.GoToNextPagePush();
-			second.SourceSelect = "Saved Search";
-			second.SelectAllDocuments();
-			second.RelativityInstance = "This Instance";
-			second.DestinationWorkspace = $"{_context.WorkspaceName} - {_context.WorkspaceId}";
-			second.SelectFolderLocation();
-			second.FolderLocationSelect.ChooseRootElement();
-
-			PushToRelativityThirdPage third = second.GoToNextPage();
-			third.MapAllFields();
-			third.SelectOverwrite = "Append Only";
-			third.SelectCopyNativeFiles("No");
-			third.SelectFolderPathInfo = "No";
-
-			IntegrationPointDetailsPage detailsPage = third.SaveIntegrationPoint();
+			//Act
+			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 
 			// Assert
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
-
 		}
 
-		[Test, Order(10)]
 		public void RelativityProvider_TC_RTR_MDO_2()
 		{
-
-			// Arrange
-
-			var generalPage = new GeneralPage(Driver);
-			generalPage.ChooseWorkspace(Context.WorkspaceName);
+			//Arrange
+			RelativityProviderModel model = CreateRelativityProviderModel();
+			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOnly;
+			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.ReadFromField;
 
 			// Act
-			IntegrationPointsPage ipPage = generalPage.GoToIntegrationPointsPage();
-			ExportFirstPage first = ipPage.CreateNewIntegrationPoint();
-			first.Name = "Test Push IP TC_RTR_MDO_2";
-			first.Destination = "Relativity";
-
-			PushToRelativitySecondPage second = first.GoToNextPagePush();
-			second.SourceSelect = "Saved Search";
-			second.SelectAllDocuments();
-			second.RelativityInstance = "This Instance";
-			second.DestinationWorkspace = $"{_context.WorkspaceName} - {_context.WorkspaceId}";
-			second.SelectFolderLocation();
-			second.FolderLocationSelect.ChooseRootElement();
-
-			PushToRelativityThirdPage third = second.GoToNextPage();
-			third.MapAllFields();
-			third.SelectOverwrite = "Append Only";
-			third.SelectCopyNativeFiles("No");
-			third.SelectFolderPathInfo = "Read From Field";
-			third.SelectReadFromField = "Document Folder Path";
-
-			IntegrationPointDetailsPage detailsPage = third.SaveIntegrationPoint();
+			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 
 			// Assert
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
 		}
 
-		[Test, Order(10)]
 		public void RelativityProvider_TC_RTR_MDO_3()
 		{
-
-			// Arrange
-
-			var generalPage = new GeneralPage(Driver);
-			generalPage.ChooseWorkspace(Context.WorkspaceName);
+			//Arrange
+			RelativityProviderModel model = CreateRelativityProviderModel();
+			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOnly;
+			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.ReadFromFolderTree;
 
 			// Act
-			IntegrationPointsPage ipPage = generalPage.GoToIntegrationPointsPage();
-			ExportFirstPage first = ipPage.CreateNewIntegrationPoint();
-			first.Name = "Test Push IP TC_RTR_MDO_3";
-			first.Destination = "Relativity";
-
-			PushToRelativitySecondPage second = first.GoToNextPagePush();
-			second.SourceSelect = "Saved Search";
-			second.SelectAllDocuments();
-			second.RelativityInstance = "This Instance";
-			second.DestinationWorkspace = $"{_context.WorkspaceName} - {_context.WorkspaceId}";
-			second.SelectFolderLocation();
-			second.FolderLocationSelect.ChooseRootElement();
-
-			PushToRelativityThirdPage third = second.GoToNextPage();
-			third.MapAllFields();
-			third.SelectOverwrite = "Append Only";
-			third.SelectCopyNativeFiles("No");
-			third.SelectFolderPathInfo = "Read From Folder Tree";
-
-
-			IntegrationPointDetailsPage detailsPage = third.SaveIntegrationPoint();
-			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
+			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewRelativityProviderIntegrationPoint(model);
+			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable(); 
 
 			// Assert
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
 		}
+
 
 		[Test, Order(10)]
 		public void RelativityProvider_TC_RTR_MDO_4()
 		{
-
 			// Arrange
+			_destinationContext.ImportDocuments();
 
-			_context.ImportDocuments();
-
-			var generalPage = new GeneralPage(Driver);
-			generalPage.ChooseWorkspace(Context.WorkspaceName);
+			RelativityProviderModel model = CreateRelativityProviderModel();
+			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
+			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.No;
 
 			// Act
-			IntegrationPointsPage ipPage = generalPage.GoToIntegrationPointsPage();
-			ExportFirstPage first = ipPage.CreateNewIntegrationPoint();
-			first.Name = "Test Push IP TC_RTR_MDO_1";
-			first.Destination = "Relativity";
-
-			PushToRelativitySecondPage second = first.GoToNextPagePush();
-			second.SourceSelect = "Saved Search";
-			second.SelectAllDocuments();
-			second.RelativityInstance = "This Instance";
-			second.DestinationWorkspace = $"{_context.WorkspaceName} - {_context.WorkspaceId}";
-			second.SelectFolderLocation();
-			second.FolderLocationSelect.ChooseRootElement();
-
-			PushToRelativityThirdPage third = second.GoToNextPage();
-			third.MapAllFields();
-			third.SelectOverwrite = "Overlay Only";
-			third.SelectCopyNativeFiles("No");
-			third.SelectFolderPathInfo = "No";
-
-			IntegrationPointDetailsPage detailsPage = third.SaveIntegrationPoint();
+			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 
 			// Assert
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
-
-
 		}
+
 		[Test, Order(10)]
 		public void RelativityProvider_TC_RTR_MDO_5()
 		{
 			// Arrange
+			_destinationContext.ImportDocuments();
 
-			_context.ImportDocuments();
-
-			var generalPage = new GeneralPage(Driver);
-			generalPage.ChooseWorkspace(Context.WorkspaceName);
+			RelativityProviderModel model = CreateRelativityProviderModel();
+			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
+			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.ReadFromField;
+			model.MoveExistingDocuments = false;
 
 			// Act
-			IntegrationPointsPage ipPage = generalPage.GoToIntegrationPointsPage();
-			ExportFirstPage first = ipPage.CreateNewIntegrationPoint();
-			first.Name = "Test Push IP TC_RTR_MDO_2";
-			first.Destination = "Relativity";
-
-			PushToRelativitySecondPage second = first.GoToNextPagePush();
-			second.SourceSelect = "Saved Search";
-			second.SelectAllDocuments();
-			second.RelativityInstance = "This Instance";
-			second.DestinationWorkspace = $"{_context.WorkspaceName} - {_context.WorkspaceId}";
-			second.SelectFolderLocation();
-			second.FolderLocationSelect.ChooseRootElement();
-
-			PushToRelativityThirdPage third = second.GoToNextPage();
-			third.MapAllFields();
-			third.SelectOverwrite = "Overlay Only";
-			third.SelectCopyNativeFiles("No");
-			third.SelectFolderPathInfo = "Read From Field";
-			third.SelectReadFromField = "Document Folder Path";
-			third.SelectMoveExitstinDocuments("No");
-
-			IntegrationPointDetailsPage detailsPage = third.SaveIntegrationPoint();
-			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
+			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewRelativityProviderIntegrationPoint(model);
+			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable(); 
 
 			// Assert
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
@@ -227,37 +136,17 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		[Test, Order(10)]
 		public void RelativityProvider_TC_RTR_MDO_6()
 		{
-
 			// Arrange
+			_destinationContext.ImportDocuments();
 
-			_context.ImportDocuments();
-
-			var generalPage = new GeneralPage(Driver);
-			generalPage.ChooseWorkspace(Context.WorkspaceName);
+			RelativityProviderModel model = CreateRelativityProviderModel();
+			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
+			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.ReadFromFolderTree;
+			model.MoveExistingDocuments = false;
 
 			// Act
-			IntegrationPointsPage ipPage = generalPage.GoToIntegrationPointsPage();
-			ExportFirstPage first = ipPage.CreateNewIntegrationPoint();
-			first.Name = "Test Push IP TC_RTR_MDO_3";
-			first.Destination = "Relativity";
-
-			PushToRelativitySecondPage second = first.GoToNextPagePush();
-			second.SourceSelect = "Saved Search";
-			second.SelectAllDocuments();
-			second.RelativityInstance = "This Instance";
-			second.DestinationWorkspace = $"{_context.WorkspaceName} - {_context.WorkspaceId}";
-			second.SelectFolderLocation();
-			second.FolderLocationSelect.ChooseRootElement();
-
-			PushToRelativityThirdPage third = second.GoToNextPage();
-			third.MapAllFields();
-			third.SelectOverwrite = "Overlay Only";
-			third.SelectCopyNativeFiles("No");
-			third.SelectFolderPathInfo = "Read From Folder Tree";
-			third.SelectMoveExitstinDocuments("No");
-
-			IntegrationPointDetailsPage detailsPage = third.SaveIntegrationPoint();
-			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
+			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewRelativityProviderIntegrationPoint(model);
+			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable(); 
 
 			// Assert
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
@@ -267,73 +156,34 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		public void RelativityProvider_TC_RTR_MDO_7()
 		{
 			// Arrange
+			_destinationContext.ImportDocuments();
 
-			_context.ImportDocuments();
-
-			var generalPage = new GeneralPage(Driver);
-			generalPage.ChooseWorkspace(Context.WorkspaceName);
+			RelativityProviderModel model = CreateRelativityProviderModel();
+			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
+			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.ReadFromField;
+			model.MoveExistingDocuments = true;
 
 			// Act
-			IntegrationPointsPage ipPage = generalPage.GoToIntegrationPointsPage();
-			ExportFirstPage first = ipPage.CreateNewIntegrationPoint();
-			first.Name = "Test Push IP TC_RTR_MDO_2";
-			first.Destination = "Relativity";
-
-			PushToRelativitySecondPage second = first.GoToNextPagePush();
-			second.SourceSelect = "Saved Search";
-			second.SelectAllDocuments();
-			second.RelativityInstance = "This Instance";
-			second.DestinationWorkspace = $"{_context.WorkspaceName} - {_context.WorkspaceId}";
-			second.SelectFolderLocation();
-			second.FolderLocationSelect.ChooseRootElement();
-
-			PushToRelativityThirdPage third = second.GoToNextPage();
-			third.MapAllFields();
-			third.SelectOverwrite = "Overlay Only";
-			third.SelectCopyNativeFiles("No");
-			third.SelectFolderPathInfo = "Read From Field";
-			third.SelectReadFromField = "Document Folder Path";
-			third.SelectMoveExitstinDocuments("Yes");
-
-			IntegrationPointDetailsPage detailsPage = third.SaveIntegrationPoint();
+			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 
 			// Assert
-			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
+			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]); 
 		}
 
 		[Test, Order(10)]
 		public void RelativityProvider_TC_RTR_MDO_8()
 		{
 			// Arrange
+			_destinationContext.ImportDocuments();
 
-			_context.ImportDocuments();
-
-			var generalPage = new GeneralPage(Driver);
-			generalPage.ChooseWorkspace(Context.WorkspaceName);
+			RelativityProviderModel model = CreateRelativityProviderModel();
+			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
+			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.ReadFromFolderTree;
+			model.MoveExistingDocuments = true;
 
 			// Act
-			IntegrationPointsPage ipPage = generalPage.GoToIntegrationPointsPage();
-			ExportFirstPage first = ipPage.CreateNewIntegrationPoint();
-			first.Name = "Test Push IP TC_RTR_MDO_3";
-			first.Destination = "Relativity";
-
-			PushToRelativitySecondPage second = first.GoToNextPagePush();
-			second.SourceSelect = "Saved Search";
-			second.SelectAllDocuments();
-			second.RelativityInstance = "This Instance";
-			second.DestinationWorkspace = $"{_context.WorkspaceName} - {_context.WorkspaceId}";
-			second.SelectFolderLocation();
-			second.FolderLocationSelect.ChooseRootElement();
-
-			PushToRelativityThirdPage third = second.GoToNextPage();
-			third.MapAllFields();
-			third.SelectOverwrite = "Overlay Only";
-			third.SelectCopyNativeFiles("No");
-			third.SelectFolderPathInfo = "Read From Folder Tree";
-			third.SelectMoveExitstinDocuments("Yes");
-
-			IntegrationPointDetailsPage detailsPage = third.SaveIntegrationPoint();
+			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 
 			// Assert
@@ -344,74 +194,34 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		public void RelativityProvider_TC_RTR_MDO_9()
 		{
 			// Arrange
+			_destinationContext.ImportDocuments();
 
-			_context.ImportDocuments();
-
-			var generalPage = new GeneralPage(Driver);
-			generalPage.ChooseWorkspace(Context.WorkspaceName);
+			RelativityProviderModel model = CreateRelativityProviderModel();
+			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
+			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.No;
 
 			// Act
-			IntegrationPointsPage ipPage = generalPage.GoToIntegrationPointsPage();
-			ExportFirstPage first = ipPage.CreateNewIntegrationPoint();
-			first.Name = "Test Push IP TC_RTR_MDO_1";
-			first.Destination = "Relativity";
-
-			PushToRelativitySecondPage second = first.GoToNextPagePush();
-			second.SourceSelect = "Saved Search";
-			second.SelectAllDocuments();
-			second.RelativityInstance = "This Instance";
-			second.DestinationWorkspace = $"{_context.WorkspaceName} - {_context.WorkspaceId}";
-			second.SelectFolderLocation();
-			second.FolderLocationSelect.ChooseRootElement();
-
-			PushToRelativityThirdPage third = second.GoToNextPage();
-			third.MapAllFields();
-			third.SelectOverwrite = "Append/Overlay";
-			third.SelectCopyNativeFiles("No");
-			third.SelectFolderPathInfo = "No";
-
-			IntegrationPointDetailsPage detailsPage = third.SaveIntegrationPoint();
+			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 
 			// Assert
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
-
-
 		}
+
 
 		[Test, Order(10)]
 		public void RelativityProvider_TC_RTR_MDO_10()
 		{
 			// Arrange
+			_destinationContext.ImportDocuments();
 
-			_context.ImportDocuments();
-
-			var generalPage = new GeneralPage(Driver);
-			generalPage.ChooseWorkspace(Context.WorkspaceName);
+			RelativityProviderModel model = CreateRelativityProviderModel();
+			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
+			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.ReadFromField;
+			model.MoveExistingDocuments = false;
 
 			// Act
-			IntegrationPointsPage ipPage = generalPage.GoToIntegrationPointsPage();
-			ExportFirstPage first = ipPage.CreateNewIntegrationPoint();
-			first.Name = "Test Push IP TC_RTR_MDO_2";
-			first.Destination = "Relativity";
-
-			PushToRelativitySecondPage second = first.GoToNextPagePush();
-			second.SourceSelect = "Saved Search";
-			second.SelectAllDocuments();
-			second.RelativityInstance = "This Instance";
-			second.DestinationWorkspace = $"{_context.WorkspaceName} - {_context.WorkspaceId}";
-			second.SelectFolderLocation();
-			second.FolderLocationSelect.ChooseRootElement();
-
-			PushToRelativityThirdPage third = second.GoToNextPage();
-			third.MapAllFields();
-			third.SelectOverwrite = "Append/Overlay";
-			third.SelectCopyNativeFiles("No");
-			third.SelectFolderPathInfo = "Read From Field";
-			third.SelectReadFromField = "Document Folder Path";
-			third.SelectMoveExitstinDocuments("No");
-
-			IntegrationPointDetailsPage detailsPage = third.SaveIntegrationPoint();
+			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 
 			// Assert
@@ -421,36 +231,16 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		[Test, Order(10)]
 		public void RelativityProvider_TC_RTR_MDO_11()
 		{
-
 			// Arrange
+			_destinationContext.ImportDocuments();
 
-			_context.ImportDocuments();
-
-			var generalPage = new GeneralPage(Driver);
-			generalPage.ChooseWorkspace(Context.WorkspaceName);
+			RelativityProviderModel model = CreateRelativityProviderModel();
+			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
+			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.ReadFromFolderTree;
+			model.MoveExistingDocuments = false;
 
 			// Act
-			IntegrationPointsPage ipPage = generalPage.GoToIntegrationPointsPage();
-			ExportFirstPage first = ipPage.CreateNewIntegrationPoint();
-			first.Name = "Test Push IP TC_RTR_MDO_3";
-			first.Destination = "Relativity";
-
-			PushToRelativitySecondPage second = first.GoToNextPagePush();
-			second.SourceSelect = "Saved Search";
-			second.SelectAllDocuments();
-			second.RelativityInstance = "This Instance";
-			second.DestinationWorkspace = $"{_context.WorkspaceName} - {_context.WorkspaceId}";
-			second.SelectFolderLocation();
-			second.FolderLocationSelect.ChooseRootElement();
-
-			PushToRelativityThirdPage third = second.GoToNextPage();
-			third.MapAllFields();
-			third.SelectOverwrite = "Append/Overlay";
-			third.SelectCopyNativeFiles("No");
-			third.SelectFolderPathInfo = "Read From Folder Tree";
-			third.SelectMoveExitstinDocuments("No");
-
-			IntegrationPointDetailsPage detailsPage = third.SaveIntegrationPoint();
+			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 
 			// Assert
@@ -460,80 +250,42 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		[Test, Order(10)]
 		public void RelativityProvider_TC_RTR_MDO_12()
 		{
-
 			// Arrange
+			_destinationContext.ImportDocuments();
 
-			_context.ImportDocuments();
-
-			var generalPage = new GeneralPage(Driver);
-			generalPage.ChooseWorkspace(Context.WorkspaceName);
+			RelativityProviderModel model = CreateRelativityProviderModel();
+			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
+			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.ReadFromField;
+			model.MoveExistingDocuments = true;
 
 			// Act
-			IntegrationPointsPage ipPage = generalPage.GoToIntegrationPointsPage();
-			ExportFirstPage first = ipPage.CreateNewIntegrationPoint();
-			first.Name = "Test Push IP TC_RTR_MDO_2";
-			first.Destination = "Relativity";
-
-			PushToRelativitySecondPage second = first.GoToNextPagePush();
-			second.SourceSelect = "Saved Search";
-			second.SelectAllDocuments();
-			second.RelativityInstance = "This Instance";
-			second.DestinationWorkspace = $"{_context.WorkspaceName} - {_context.WorkspaceId}";
-			second.SelectFolderLocation();
-			second.FolderLocationSelect.ChooseRootElement();
-
-			PushToRelativityThirdPage third = second.GoToNextPage();
-			third.MapAllFields();
-			third.SelectOverwrite = "Append/Overlay";
-			third.SelectCopyNativeFiles("No");
-			third.SelectFolderPathInfo = "Read From Field";
-			third.SelectReadFromField = "Document Folder Path";
-			third.SelectMoveExitstinDocuments("Yes");
-
-			IntegrationPointDetailsPage detailsPage = third.SaveIntegrationPoint();
+			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 
 			// Assert
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
 		}
+
 
 		[Test, Order(10)]
 		public void RelativityProvider_TC_RTR_MDO_13()
 		{
 			// Arrange
+			_destinationContext.ImportDocuments();
 
-			_context.ImportDocuments();
-
-			var generalPage = new GeneralPage(Driver);
-			generalPage.ChooseWorkspace(Context.WorkspaceName);
+			RelativityProviderModel model = CreateRelativityProviderModel();
+			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
+			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.ReadFromFolderTree;
+			model.MoveExistingDocuments = true; 
 
 			// Act
-			IntegrationPointsPage ipPage = generalPage.GoToIntegrationPointsPage();
-			ExportFirstPage first = ipPage.CreateNewIntegrationPoint();
-			first.Name = "Test Push IP TC_RTR_MDO_3";
-			first.Destination = "Relativity";
-
-			PushToRelativitySecondPage second = first.GoToNextPagePush();
-			second.SourceSelect = "Saved Search";
-			second.SelectAllDocuments();
-			second.RelativityInstance = "This Instance";
-			second.DestinationWorkspace = $"{_context.WorkspaceName} - {_context.WorkspaceId}";
-			second.SelectFolderLocation();
-			second.FolderLocationSelect.ChooseRootElement();
-
-			PushToRelativityThirdPage third = second.GoToNextPage();
-			third.MapAllFields();
-			third.SelectOverwrite = "Append/Overlay";
-			third.SelectCopyNativeFiles("No");
-			third.SelectFolderPathInfo = "Read From Folder Tree";
-			third.SelectMoveExitstinDocuments("Yes");
-
-			IntegrationPointDetailsPage detailsPage = third.SaveIntegrationPoint();
+			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 
 			// Assert
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
 		}
+
 	}
 
 }

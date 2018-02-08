@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 		private const int _ADMIN_USER_ID = 9;
 
-		private const string _TEMPALTE_WKSP_NAME = "Relativity Starter Template";
+		private const string _TEMPALTE_WKSP_NAME = "Smoke Workspace";
 
 		private readonly Lazy<ITestHelper> _helper;
 
@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 		public ITestHelper Helper => _helper.Value;
 		
-		public int? WorkspaceId { get; private set; }
+		public int? WorkspaceId { get; set; }
 
 		public string WorkspaceName { get; set; }
 

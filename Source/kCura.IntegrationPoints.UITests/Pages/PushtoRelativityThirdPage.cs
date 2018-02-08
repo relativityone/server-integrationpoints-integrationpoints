@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using kCura.IntegrationPoint.Tests.Core.Models;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Support.PageObjects;
@@ -72,6 +73,22 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			}
 		}
 
+		public void SelectCopyNativeFiles(RelativityProviderModel.CopyNativeFilesEnum? mode)
+		{
+			if (mode == RelativityProviderModel.CopyNativeFilesEnum.PhysicalFiles)
+			{
+				SelectCopyPhysicalFilesElement.Click();
+			}
+			else if (mode == RelativityProviderModel.CopyNativeFilesEnum.LinksOnly)
+			{
+				SelectCopyLinksOnlyElement.Click();
+			}
+			else if (mode == RelativityProviderModel.CopyNativeFilesEnum.No)
+			{
+				SelectCopyNoFilesElement.Click();
+			}
+		}
+
 		public PushToRelativityThirdPage MapAllFields()
 		{
 			MapAllFieldsElement.Click();
@@ -96,13 +113,18 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			set { SelectReadFromFieldElement.SelectByText(value); }
 		}
 
-		public void SelectMoveExitstinDocuments(string mode)
+		public void SelectMoveExitstingDocuments(bool? mode)
 		{
-			if (mode == "Yes")
+			if (!mode.HasValue)
+			{
+				return;
+			}
+
+			if (mode.Value)
 			{
 				SelectMoveExitstinDocumentsYesElement.Click();
 			}
-			else if (mode == "No")
+			else
 			{
 				SelectMoveExitstinDocumentsNoElement.Click();
 			}

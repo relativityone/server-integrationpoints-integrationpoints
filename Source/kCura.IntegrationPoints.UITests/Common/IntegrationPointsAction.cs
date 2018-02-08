@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.UITests.Common
 		}
 
 
-		public ExportFirstPage SetupFirstIntegrationPointPage(GeneralPage generalPage, ExportToLoadFileProviderModel model)
+		public ExportFirstPage SetupFirstIntegrationPointPage(GeneralPage generalPage, IntegrationPointGeneralModel model)
 		{
 			IntegrationPointsPage ipPage = generalPage.GoToIntegrationPointsPage();
 			ExportFirstPage firstPage = ipPage.CreateNewIntegrationPoint();
@@ -59,6 +59,74 @@ namespace kCura.IntegrationPoints.UITests.Common
 			ExportToFileThirdPage thirdPage = SetupExportToFileThirdPage(secondPage, model);
 
 			return thirdPage.SaveIntegrationPoint();
+		}
+
+		public IntegrationPointDetailsPage CreateNewRelativityProviderIntegrationPoint(RelativityProviderModel model)
+		{
+			var generalPage = new GeneralPage(_driver);
+			generalPage.ChooseWorkspace(_context.WorkspaceName);
+
+			ExportFirstPage firstPage = SetupFirstIntegrationPointPage(generalPage, model);
+
+			PushToRelativitySecondPage secondPage = SetupPushToRelativitySecondPage(firstPage, model);
+
+			PushToRelativityThirdPage thirdPage = SetupPushToRelativityThirdPage(secondPage, model);
+
+			return thirdPage.SaveIntegrationPoint();
+		}
+
+		public PushToRelativitySecondPage SetupPushToRelativitySecondPage(ExportFirstPage firstPage, RelativityProviderModel model)
+		{
+			PushToRelativitySecondPage secondPage = firstPage.GoToNextPagePush();
+			secondPage.SelectAllDocuments();
+
+			secondPage.SourceSelect = model.SourceProvider;
+			secondPage.RelativityInstance = model.RelativityInstance;
+			secondPage.DestinationWorkspace = model.DestinationWorkspace;
+
+			secondPage.SelectFolderLocation();
+			secondPage.FolderLocationSelect.ChooseRootElement();
+
+			return secondPage;
+		}
+
+		public PushToRelativityThirdPage SetupPushToRelativityThirdPage(PushToRelativitySecondPage secondPage, RelativityProviderModel model)
+		{
+			PushToRelativityThirdPage thirdPage = secondPage.GoToNextPage();
+			thirdPage.MapAllFields();
+			thirdPage.SelectCopyNativeFiles( model.CopyNativeFiles);
+
+			thirdPage.SelectMoveExitstingDocuments(model.MoveExistingDocuments);
+
+
+			if (model.UseFolderPathInformation == RelativityProviderModel.UseFolderPathInformationEnum.No)
+			{
+				thirdPage.SelectFolderPathInfo = "No";
+			}
+			else if (model.UseFolderPathInformation == RelativityProviderModel.UseFolderPathInformationEnum.ReadFromField)
+			{
+				thirdPage.SelectFolderPathInfo = "Read From Field";
+				thirdPage.SelectReadFromField = "Document Folder Path";
+			}
+			else if (model.UseFolderPathInformation == RelativityProviderModel.UseFolderPathInformationEnum.ReadFromFolderTree)
+			{
+				thirdPage.SelectFolderPathInfo = "Read From Folder Tree";
+			}
+
+			if (model.Overwrite == RelativityProviderModel.OverwriteModeEnum.AppendOnly)
+			{
+				thirdPage.SelectOverwrite = "Append Only";
+			}
+			else if (model.Overwrite == RelativityProviderModel.OverwriteModeEnum.OverlayOnly)
+			{
+				thirdPage.SelectOverwrite = "Overlay Only";
+			}
+			else if (model.Overwrite == RelativityProviderModel.OverwriteModeEnum.AppendOverlay)
+			{
+				thirdPage.SelectOverwrite = "Append/Overlay";
+			}
+
+			return thirdPage;
 		}
 	}
 }
