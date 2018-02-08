@@ -84,7 +84,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 			if (ImportJob.Settings != null)
 			{
 				string importApiSettings = JsonConvert.SerializeObject(ImportJob.Settings);
-				_logger.LogDebug("Import API native import settings: {importApiSettings}", importApiSettings);
+				_logger.LogInformation("Import API native import settings: {importApiSettings}", importApiSettings);
 			}
 		}
 	}

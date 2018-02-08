@@ -113,7 +113,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		{
 			var serializer = new ImportSettingsForLogSerializer();
 			var serializedSettings = serializer.Serialize(importSettings);
-			_logger.LogDebug("ImportSettings: {serializedSettings}", serializedSettings);
+			_logger.LogInformation("ImportSettings: {serializedSettings}", serializedSettings);
 		}
 
 		private void LogCreatingImportApiWithPassword(string url)
