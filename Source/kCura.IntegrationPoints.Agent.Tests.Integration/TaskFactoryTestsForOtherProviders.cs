@@ -137,7 +137,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 					EnableScheduler = true,
 					SelectedFrequency = ScheduleInterval.Daily.ToString(),
 					StartDate = FutureDate.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture),
-					ScheduledTime = DateTime.Now.TimeOfDay.ToString()
+					ScheduledTime = DateTime.Now.ToString("hh:mm")
 				};
 				IntegrationPointModel model = CreateDefaultLdapIntegrationModel("Ldap_MultipleJobs_AgentDropsJob_ScheduledJob", scheduler);
 				model = CreateOrUpdateIntegrationPoint(model); // create integration point
