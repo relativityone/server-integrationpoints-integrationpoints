@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -40,10 +41,15 @@ namespace kCura.IntegrationPoint.Tests.Core.Models
 
 		#region "Relativity Provider Settings"
 		
-		public OverwriteModeEnum Overwrite { get; set; }
+		
+		[DefaultValue(OverwriteModeEnum.AppendOnly)]
+		public OverwriteModeEnum? Overwrite { get; set; }
+		[DefaultValue(false)]
 		public bool? CopyImages;
+		[DefaultValue(CopyNativeFilesEnum.No)]
 		public CopyNativeFilesEnum? CopyNativeFiles;
 		public string MultiSelectFieldOverlay;
+		[DefaultValue(UseFolderPathInformationEnum.No)]
 		public UseFolderPathInformationEnum? UseFolderPathInformation;
 		public string FolderPathInformation;
 		public bool? MoveExistingDocuments;
