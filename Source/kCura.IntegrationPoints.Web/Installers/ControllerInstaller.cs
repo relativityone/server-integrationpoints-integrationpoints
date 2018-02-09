@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.Web.Installers
 			container.Register(Component.For<ISessionService>().UsingFactoryMethod(k => SessionService.Session).LifestylePerWebRequest());
 			container.Register(Component.For<WebClientFactory>().UsingFactoryMethod(kernel =>
 			{
-				var rsapiClientFactory = kernel.Resolve<IRsapiClientFactory>();
+				var rsapiClientFactory = kernel.Resolve<IRsapiClientWithWorkspaceFactory>();
 				IEnumerable<IWorkspaceService> services = kernel.ResolveAll<IWorkspaceService>();
 				return new WebClientFactory(ConnectionHelper.Helper(), rsapiClientFactory, services);
 			}).LifestyleSingleton());
@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.Web.Installers
 			container.Register(Component.For<IHtmlSanitizerManager>().ImplementedBy<HtmlSanitizerManager>().LifestyleSingleton());
 			container.Register(Component.For<SummaryPageSelector>().ImplementedBy<SummaryPageSelector>().LifestyleSingleton());
 			container.Register(Component.For<IAuthTokenGenerator>().ImplementedBy<ClaimsTokenGenerator>().LifestyleTransient());
-			container.Register(Component.For<IRsapiClientFactory>().ImplementedBy<RsapiClientFactory>().LifestyleTransient());
+			container.Register(Component.For<IRsapiClientWithWorkspaceFactory>().ImplementedBy<RsapiClientWithWorkspaceFactory>().LifestyleTransient());
 			container.Register(Component.For<ICacheHolder>().ImplementedBy<CacheHolder>().LifestyleSingleton());
 			container.Register(Component.For<IWebCorrelationContextProvider>().ImplementedBy<WebActionContextProvider>().LifestyleTransient());
 		}

@@ -1,24 +1,25 @@
 ﻿using System;
+using kCura.IntegrationPoints.Data.RSAPIClient;
 using kCura.Relativity.Client;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data
 {
-	public class RsapiClientFactory : IRsapiClientFactory
+	public class RsapiClientWithWorkspaceFactory : IRsapiClientWithWorkspaceFactory
 	{
 		protected readonly IHelper Helper;
 		private readonly IServicesMgr _servicesMgr;
 		private readonly IAPILog _logger;
 
 
-		public RsapiClientFactory(IHelper helper, IServicesMgr servicesMgr)
+		public RsapiClientWithWorkspaceFactory(IHelper helper, IServicesMgr servicesMgr)
 		{
 			Helper = helper;
 			_servicesMgr = servicesMgr;
-			_logger = helper.GetLoggerFactory().GetLogger().ForContext<RsapiClientFactory>();
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<RsapiClientWithWorkspaceFactory>();
 		}
 
-		public RsapiClientFactory(IHelper helper) : this(helper, helper.GetServicesManager())
+		public RsapiClientWithWorkspaceFactory(IHelper helper) : this(helper, helper.GetServicesManager())
 		{
 		}
 
@@ -41,18 +42,18 @@ namespace kCura.IntegrationPoints.Data
 			}
 			catch (NullReferenceException e)
 			{
-				LogCreatingRsapiClientError(e);
+				LogCreatingRsapiClientError(e, identity);
 				client = _servicesMgr.CreateProxy<IRSAPIClient>(ExecutionIdentity.System);
 			}
 			client.APIOptions.WorkspaceID = workspaceID;
-			return client;
+			return new RsapiClientWrapperWithLogging(client, _logger);
 		}
 
 		#region Logging
 
-		private void LogCreatingRsapiClientError(NullReferenceException e)
+		private void LogCreatingRsapiClientError(NullReferenceException e, ExecutionIdentity identity)
 		{
-			_logger.LogError(e, "Failed to create RSAPI Client with given identity. Attempting to create RSAPI Client using System identity.");
+			_logger.LogError(e, "Failed to create RSAPI Client with given identity: {identity}. Attempting to create RSAPI Client using System identity.", identity);
 		}
 
 		#endregion

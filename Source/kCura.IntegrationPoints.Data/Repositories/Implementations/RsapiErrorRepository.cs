@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Data.RSAPIClient;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
@@ -21,7 +22,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			Error[] errorArtifacts = errors.Select(ConvertErrorDto).ToArray();
 
-			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			var rsapiClientFactory = new RsapiClientFactory();
+			using (IRSAPIClient rsapiClient = rsapiClientFactory.CreateUserClient(_helper))
 			{
 				rsapiClient.APIOptions.WorkspaceID = _EDDS_WORKSPACE_ID;
 

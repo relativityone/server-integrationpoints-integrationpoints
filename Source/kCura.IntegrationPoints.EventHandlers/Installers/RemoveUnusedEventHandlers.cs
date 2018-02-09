@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Runtime.InteropServices;
 using kCura.EventHandler.CustomAttributes;
+using kCura.IntegrationPoints.Data.RSAPIClient;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.SourceProviderInstaller;
 using kCura.Relativity.Client;
@@ -20,7 +21,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 		private const string _PRE_LOAD_EVENT_HANDLER_GUID = "c77369d2-3f9a-4598-b7bc-229050b3bbe6";
 		private const string _PAGE_INTERACTION_EVENT_HANDLER_GUID = "eed5ad4a-3137-4a93-a2b6-3d96e3894cd2";
 
-		private const int _ARTIFACTTYPEID_EVENTHANDLER = (int) ArtifactType.EventHandler;
+		private const int _ARTIFACTTYPEID_EVENTHANDLER = (int)ArtifactType.EventHandler;
 
 		protected override IAPILog CreateLogger()
 		{
@@ -31,7 +32,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 
 		protected override string GetFailureMessage(Exception ex)
 		{
-			return  "Deletes/Removes old event handlers for Integration Point - PreLoad and PageInteraction failed.";
+			return "Deletes/Removes old event handlers for Integration Point - PreLoad and PageInteraction failed.";
 		}
 
 		protected override void Run()
@@ -69,7 +70,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 				SqlParameter applicationGuidParameter = new SqlParameter("@ApplicationGuid", Constants.IntegrationPoints.APPLICATION_GUID_STRING);
 
 				IDBContext context = Helper.GetDBContext(Helper.GetActiveCaseID());
-				context.ExecuteNonQuerySQLStatement(string.Format(sqlStatement, ids), new[] {applicationGuidParameter});
+				context.ExecuteNonQuerySQLStatement(string.Format(sqlStatement, ids), new[] { applicationGuidParameter });
 			}
 			catch (Exception e)
 			{
@@ -95,11 +96,12 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 
 		private ResultSet DeleteByArtifactIds(List<int> artifactIds)
 		{
-			using (IRSAPIClient client = Helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System))
+			var rsapiClientFactory = new RsapiClientFactory();
+			using (IRSAPIClient client = rsapiClientFactory.CreateAdminClient(Helper))
 			{
 				client.APIOptions.WorkspaceID = Helper.GetActiveCaseID();
 
-				MassDeleteOptions options = new MassDeleteOptions(_ARTIFACTTYPEID_EVENTHANDLER) {CascadeDelete = true};
+				MassDeleteOptions options = new MassDeleteOptions(_ARTIFACTTYPEID_EVENTHANDLER) { CascadeDelete = true };
 
 				ResultSet deleteResults = client.MassDelete(client.APIOptions, options, artifactIds);
 

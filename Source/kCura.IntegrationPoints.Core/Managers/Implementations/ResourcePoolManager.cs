@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.RSAPIClient;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
@@ -15,6 +16,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		#region Fields
 
 		private readonly IResourcePoolRepository _resourcePoolRepository;
+		private readonly IRsapiClientFactory _rsapiClientFactory;
 		private readonly IHelper _helper;
 		private readonly IAPILog _logger;
 
@@ -22,11 +24,12 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 		#region Constructors
 
-		public ResourcePoolManager(IRepositoryFactory repositoryFactory, IHelper helper)
+		public ResourcePoolManager(IRepositoryFactory repositoryFactory, IHelper helper, IRsapiClientFactory rsapiClientFactory)
 		{
 			_helper = helper;
 			_resourcePoolRepository = repositoryFactory.GetResourcePoolRepository();
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ResourcePoolManager>();
+			_rsapiClientFactory = rsapiClientFactory;
 		}
 
 		#endregion //Constructors
@@ -52,7 +55,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		/// </summary>
 		protected virtual Workspace GetWorkspace(int workspaceId)
 		{
-			using (IRSAPIClient rsApiClient =_helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System))
+			using (IRSAPIClient rsApiClient = _rsapiClientFactory.CreateAdminClient(_helper))
 			{
 				rsApiClient.APIOptions.WorkspaceID = -1;
 				return rsApiClient.Repositories.Workspace.Read(workspaceId).Results.FirstOrDefault()?.Artifact;

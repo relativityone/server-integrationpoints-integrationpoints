@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		protected IntegrationPointMigrationEventHandlerBase()
 		{
 			_errorService = new Lazy<IErrorService>(() =>
-				new EhErrorService(new CreateErrorRdoQuery(new RsapiClientFactory(Helper), Logger, new SystemEventLoggingService()), Logger));
+				new EhErrorService(new CreateErrorRdoQuery(new RsapiClientWithWorkspaceFactory(Helper), Logger, new SystemEventLoggingService()), Logger));
 		}
 
 		protected IntegrationPointMigrationEventHandlerBase(IErrorService errorService)

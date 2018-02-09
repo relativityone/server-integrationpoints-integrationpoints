@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Data.RSAPIClient;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using Relativity.API;
@@ -14,12 +15,14 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private readonly IAPILog _logger;
 		private readonly IServicesMgr _servicesMgr;
 		private readonly int _workspaceArtifactId;
+		private readonly IRsapiClientFactory _rsapiClientFactory;
 
 		public FieldRepository(IServicesMgr servicesMgr, IHelper helper, int workspaceArtifactId)
 		{
 			_servicesMgr = servicesMgr;
 			_workspaceArtifactId = workspaceArtifactId;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<FieldRepository>();
+			_rsapiClientFactory = new RsapiClientFactory();
 		}
 
 		public void UpdateFilterType(int artifactViewFieldId, string filterType)
@@ -42,8 +45,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public int CreateMultiObjectFieldOnDocument(string name, int associatedObjectTypeDescriptorId)
 		{
-			var documentObjectType = new ObjectType {DescriptorArtifactTypeID = 10};
-			var associatedObjectType = new ObjectType {DescriptorArtifactTypeID = associatedObjectTypeDescriptorId};
+			var documentObjectType = new ObjectType { DescriptorArtifactTypeID = 10 };
+			var associatedObjectType = new ObjectType { DescriptorArtifactTypeID = associatedObjectTypeDescriptorId };
 
 			var field = new Field
 			{
@@ -58,7 +61,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				Width = "100"
 			};
 
-			using (var rsapiClient = _servicesMgr.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			using (var rsapiClient = _rsapiClientFactory.CreateUserClient(_servicesMgr, _logger))
 			{
 				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 
@@ -76,7 +79,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public List<Field> CreateObjectTypeFields(List<Field> fields)
 		{
-			using (var proxy = _servicesMgr.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			using (var proxy = _rsapiClientFactory.CreateUserClient(_servicesMgr, _logger))
 			{
 				proxy.APIOptions.WorkspaceID = _workspaceArtifactId;
 
@@ -103,7 +106,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				foreach (var fieldResult in newFields)
 				{
 					var fieldGuid = fields.First(x => x.Name == fieldResult.Name).Guids[0];
-					fieldResult.Guids = new List<Guid> {fieldGuid};
+					fieldResult.Guids = new List<Guid> { fieldGuid };
 				}
 
 				return newFields;
@@ -112,7 +115,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public int CreateObjectTypeField(Field field)
 		{
-			using (var proxy = _servicesMgr.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			using (var proxy = _rsapiClientFactory.CreateUserClient(_servicesMgr, _logger))
 			{
 				proxy.APIOptions.WorkspaceID = _workspaceArtifactId;
 

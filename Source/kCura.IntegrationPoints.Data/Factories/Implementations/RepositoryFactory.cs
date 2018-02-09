@@ -133,7 +133,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		{
 			var objectTypeRepository = GetObjectTypeRepository(workspaceArtifactId);
 			var fieldRepository = GetFieldRepository(workspaceArtifactId);
-			IRsapiClientFactory rsapiClientFactory = new RsapiClientFactory(_helper, _servicesMgr);
+			IRsapiClientWithWorkspaceFactory rsapiClientFactory = new RsapiClientWithWorkspaceFactory(_helper, _servicesMgr);
 			IRdoRepository rdoRepository = new RsapiRdoRepository(_helper, workspaceArtifactId, rsapiClientFactory);
 			ISourceJobRepository repository = new SourceJobRepository(objectTypeRepository, fieldRepository, rdoRepository);
 
@@ -151,7 +151,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		{
 			var objectTypeRepository = GetObjectTypeRepository(workspaceArtifactId);
 			var fieldRepository = GetFieldRepository(workspaceArtifactId);
-			IRsapiClientFactory rsapiClientFactory = new RsapiClientFactory(_helper, _servicesMgr);
+			IRsapiClientWithWorkspaceFactory rsapiClientFactory = new RsapiClientWithWorkspaceFactory(_helper, _servicesMgr);
 			IRdoRepository rdoRepository = new RsapiRdoRepository(_helper, workspaceArtifactId, rsapiClientFactory);
 			ISourceWorkspaceRepository repository = new SourceWorkspaceRepository(objectTypeRepository, fieldRepository, rdoRepository);
 
@@ -160,7 +160,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public ITabRepository GetTabRepository(int workspaceArtifactId)
 		{
-			ITabRepository tabRepository = new RsapiTabRepository(_servicesMgr, workspaceArtifactId);
+			ITabRepository tabRepository = new RsapiTabRepository(_servicesMgr, _helper, workspaceArtifactId);
 
 			return tabRepository;
 		}
@@ -242,7 +242,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IRdoRepository GetRdoRepository(int workspaceArtifactId)
 		{
-			IRsapiClientFactory rsapiClientFactory = new RsapiClientFactory(_helper);
+			IRsapiClientWithWorkspaceFactory rsapiClientFactory = new RsapiClientWithWorkspaceFactory(_helper);
 			IRdoRepository rdoRepository = new RsapiRdoRepository(_helper, workspaceArtifactId, rsapiClientFactory);
 			return rdoRepository;
 		}

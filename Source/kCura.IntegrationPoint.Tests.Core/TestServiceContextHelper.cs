@@ -8,9 +8,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 	public class TestServiceContextHelper : IServiceContextHelper
 	{
 		private readonly IHelper _helper;
-		private readonly IRsapiClientFactory _rsapiClientFactory;
+		private readonly IRsapiClientWithWorkspaceFactory _rsapiClientFactory;
 
-		public TestServiceContextHelper(IHelper helper, int workspaceArtifactId, IRsapiClientFactory rsapiClientFactory)
+		public TestServiceContextHelper(IHelper helper, int workspaceArtifactId, IRsapiClientWithWorkspaceFactory rsapiClientFactory)
 		{
 			_helper = helper;
 			_rsapiClientFactory = rsapiClientFactory;

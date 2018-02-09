@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Data.RSAPIClient;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
@@ -15,6 +16,7 @@ namespace kCura.IntegrationPoints.Data
 		private readonly IAPILog _logger;
 		private readonly int _workspaceArtifactId;
 		private readonly ExecutionIdentity _executionIdentity;
+		private readonly IRsapiClientFactory _rsapiClientFactory;
 
 		public RsapiClientLibrary(IHelper helper, int workspaceArtifactId) : this(helper, workspaceArtifactId, ExecutionIdentity.CurrentUser)
 		{
@@ -26,6 +28,7 @@ namespace kCura.IntegrationPoints.Data
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<RsapiClientLibrary<T>>();
 			_workspaceArtifactId = workspaceArtifactId;
 			_executionIdentity = executionIdentity;
+			_rsapiClientFactory = new RsapiClientFactory();
 		}
 
 		public virtual List<int> Create(IEnumerable<T> rdos)
@@ -39,7 +42,7 @@ namespace kCura.IntegrationPoints.Data
 			WriteResultSet<RDO> result;
 			try
 			{
-				using (var rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(_executionIdentity))
+				using (var rsapiClient = _rsapiClientFactory.CreateClient(_helper, _executionIdentity))
 				{
 					rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 					result = rsapiClient.Repositories.RDO.Create(localList.Select(x => x.Rdo).ToList());
@@ -72,7 +75,7 @@ namespace kCura.IntegrationPoints.Data
 			WriteResultSet<RDO> result;
 			try
 			{
-				using (var rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(_executionIdentity))
+				using (var rsapiClient = _rsapiClientFactory.CreateClient(_helper, _executionIdentity))
 				{
 					rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 					result = rsapiClient.Repositories.RDO.Update(localList.Select(x => x.Rdo).ToList());
@@ -105,7 +108,7 @@ namespace kCura.IntegrationPoints.Data
 			WriteResultSet<RDO> result;
 			try
 			{
-				using (var rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(_executionIdentity))
+				using (var rsapiClient = _rsapiClientFactory.CreateClient(_helper, _executionIdentity))
 				{
 					rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 					result = rsapiClient.Repositories.RDO.Delete(localList);

@@ -115,7 +115,7 @@ namespace kCura.IntegrationPoints.Agent
 			return container;
 		}
 
-		private CreateErrorRdo ErrorService => _errorService ?? (_errorService = new CreateErrorRdo(new RsapiClientFactory(Helper), Helper, new SystemEventLoggingService()));
+		private CreateErrorRdo ErrorService => _errorService ?? (_errorService = new CreateErrorRdo(new RsapiClientWithWorkspaceFactory(Helper), Helper, new SystemEventLoggingService()));
 
 		public void Dispose()
 		{

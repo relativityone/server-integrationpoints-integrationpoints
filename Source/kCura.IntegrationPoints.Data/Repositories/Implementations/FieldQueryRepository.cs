@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Data.RSAPIClient;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
@@ -119,7 +120,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		public ResultSet<Field> Read(Field dto)
 		{
 			ResultSet<Field> resultSet = null;
-			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			var rsapiClientFactory = new RsapiClientFactory();
+			using (IRSAPIClient rsapiClient = rsapiClientFactory.CreateUserClient(_helper))
 			{
 				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 

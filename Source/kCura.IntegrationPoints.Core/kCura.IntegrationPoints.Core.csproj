@@ -72,7 +72,7 @@
     <Compile Include="ContextContainer.cs" />
     <Compile Include="Helpers\Logging\LogHelper.cs" />
     <Compile Include="Exceptions\PermissionException.cs" />
-    <Compile Include="ExtendedRsapiClientFactory.cs" />
+    <Compile Include="ExtendedRsapiClientWithWorkspaceFactory.cs" />
     <Compile Include="Factories\Implementations\ConfigFactory.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Factories\IArtifactServiceFactory.cs" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using kCura.IntegrationPoints.Data.RSAPIClient;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using Relativity.API;
@@ -11,12 +12,13 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private readonly IAPILog _logger;
 		private readonly IServicesMgr _servicesMgr;
 		private readonly int _workspaceArtifactId;
-
+		private readonly IRsapiClientFactory _rsapiClientFactory;
 		public RsapiObjectTypeRepository(int workspaceArtifactId, IServicesMgr servicesMgr, IHelper helper)
 		{
 			_workspaceArtifactId = workspaceArtifactId;
 			_servicesMgr = servicesMgr;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<RsapiObjectTypeRepository>();
+			_rsapiClientFactory = new RsapiClientFactory();
 		}
 
 		public int CreateObjectType(Guid objectTypeGuid, string objectTypeName, int parentArtifactTypeId)
@@ -33,7 +35,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				PersistentLists = false
 			};
 
-			using (IRSAPIClient rsapiClient = _servicesMgr.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			using (IRSAPIClient rsapiClient = _rsapiClientFactory.CreateUserClient(_servicesMgr, _logger))
 			{
 				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 
@@ -54,7 +56,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			int? descriptorArtifactTypeId = null;
 			try
 			{
-				using (var rsapiClient = _servicesMgr.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+				using (var rsapiClient = _rsapiClientFactory.CreateUserClient(_servicesMgr, _logger))
 				{
 					rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 					descriptorArtifactTypeId = rsapiClient.Repositories.ObjectType.ReadSingle(objectTypeGuid).DescriptorArtifactTypeID;
@@ -81,7 +83,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			QueryResultSet<ObjectType> queryResults;
 
-			using (IRSAPIClient rsapiClient = _servicesMgr.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			using (IRSAPIClient rsapiClient = _rsapiClientFactory.CreateUserClient(_servicesMgr, _logger))
 			{
 				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 				queryResults = rsapiClient.Repositories.ObjectType.Query(objectTypeQuery);

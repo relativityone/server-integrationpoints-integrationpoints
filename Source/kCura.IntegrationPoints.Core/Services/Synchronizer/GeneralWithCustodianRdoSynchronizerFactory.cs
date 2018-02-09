@@ -4,6 +4,7 @@ using Castle.Windsor;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.RSAPIClient;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -17,8 +18,11 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 	{
 		private readonly IWindsorContainer _container;
 		private readonly IRsapiRdoQuery _query;
-		public GeneralWithCustodianRdoSynchronizerFactory(IWindsorContainer container, IRsapiRdoQuery query)
+		private readonly IRsapiClientFactory _rsapiClientFactory;
+
+		public GeneralWithCustodianRdoSynchronizerFactory(IWindsorContainer container, IRsapiRdoQuery query, IRsapiClientFactory rsapiClientFactory)
 		{
+			_rsapiClientFactory = rsapiClientFactory;
 			_container = container;
 			_query = query;
 		}
@@ -40,7 +44,7 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 				{
 					IHelperFactory helperFactory = _container.Resolve<IHelperFactory>();
 					IHelper targetHelper = helperFactory.CreateTargetHelper(sourceInstanceHelper, json.FederatedInstanceArtifactId, credentials);
-					client = targetHelper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser);
+					client = _rsapiClientFactory.CreateUserClient(targetHelper);
 					client.APIOptions.WorkspaceID = json.CaseArtifactId;
 				}
 				else

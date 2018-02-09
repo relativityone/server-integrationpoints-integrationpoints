@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 	{
 		public static SetTypeOfExportDefaultValueCommand Create(IEHHelper helper, int workspaceArtifactId)
 		{
-			IRsapiClientFactory rsapiClientFactory = new RsapiClientFactory(helper);
+			IRsapiClientWithWorkspaceFactory rsapiClientFactory = new RsapiClientWithWorkspaceFactory(helper);
 			IServiceContextHelper serviceContextHelper = new ServiceContextHelperForEventHandlers(helper, helper.GetActiveCaseID(), rsapiClientFactory);
 			ICaseServiceContext caseServiceContext = new CaseServiceContext(serviceContextHelper);
 

@@ -13,10 +13,10 @@ namespace kCura.IntegrationPoints.Data.Queries
 		public const int MAX_SURCE_LEN = 255;
 
 		private readonly IAPILog _logger;
-		private readonly IRsapiClientFactory _rsapiClientFactory;
+		private readonly IRsapiClientWithWorkspaceFactory _rsapiClientFactory;
 		private readonly ISystemEventLoggingService _systemEventLoggingService;
 		
-		public CreateErrorRdoQuery(IRsapiClientFactory rsapiClientFactory, IAPILog logger, ISystemEventLoggingService systemEventLoggingService)
+		public CreateErrorRdoQuery(IRsapiClientWithWorkspaceFactory rsapiClientFactory, IAPILog logger, ISystemEventLoggingService systemEventLoggingService)
 		{
 			_rsapiClientFactory = rsapiClientFactory;
 			_logger = logger.ForContext<CreateErrorRdoQuery>();

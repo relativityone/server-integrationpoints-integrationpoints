@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Installers;
+using kCura.IntegrationPoints.Data.RSAPIClient;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Services.Helpers;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Helpers;
@@ -40,13 +41,13 @@ namespace kCura.IntegrationPoints.Services.Installers
 			container.Register(Component.For<IRSAPIService>().UsingFactoryMethod(k => new RSAPIService(k.Resolve<IHelper>(), workspaceId), true));
 
 			container.Register(Component.For<IUserInfo>().UsingFactoryMethod(k => k.Resolve<IServiceHelper>().GetAuthenticationManager().UserInfo, true));
-			container.Register(Component.For<IRsapiClientFactory>().ImplementedBy<RsapiClientFactory>());
+			container.Register(Component.For<IRsapiClientWithWorkspaceFactory>().ImplementedBy<RsapiClientWithWorkspaceFactory>());
 
 			container.Register(Component.For<IServiceContextHelper>()
 				.UsingFactoryMethod(k =>
 				{
 					IServiceHelper helper = k.Resolve<IServiceHelper>();
-					var rsapiClientFactory = k.Resolve<IRsapiClientFactory>();
+					var rsapiClientFactory = k.Resolve<IRsapiClientWithWorkspaceFactory>();
 					return new ServiceContextHelperForKeplerService(helper, workspaceId, rsapiClientFactory);
 				}));
 			container.Register(
@@ -59,9 +60,10 @@ namespace kCura.IntegrationPoints.Services.Installers
 				Component.For<IRSAPIClient>()
 					.UsingFactoryMethod(k =>
 					{
+						IAPILog logger = container.Resolve<IHelper>().GetLoggerFactory().GetLogger();
 						IRSAPIClient client = container.Resolve<IServiceHelper>().GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser);
 						client.APIOptions.WorkspaceID = workspaceId;
-						return client;
+						return new RsapiClientWrapperWithLogging(client, logger);
 					})
 					.LifeStyle.Transient);
 

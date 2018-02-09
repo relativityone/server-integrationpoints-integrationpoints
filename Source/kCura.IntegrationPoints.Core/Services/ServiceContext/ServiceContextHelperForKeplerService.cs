@@ -8,9 +8,9 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 	{
 		private readonly IServiceHelper _helper;
 		private int _workspaceArtifactId;
-		private readonly IRsapiClientFactory _rsapiClientFactory;
+		private readonly IRsapiClientWithWorkspaceFactory _rsapiClientFactory;
 
-		public ServiceContextHelperForKeplerService(IServiceHelper helper, int workspaceArtifactId, IRsapiClientFactory rsapiClientFactory)
+		public ServiceContextHelperForKeplerService(IServiceHelper helper, int workspaceArtifactId, IRsapiClientWithWorkspaceFactory rsapiClientFactory)
 		{
 			_helper = helper;
 			_workspaceArtifactId = workspaceArtifactId;

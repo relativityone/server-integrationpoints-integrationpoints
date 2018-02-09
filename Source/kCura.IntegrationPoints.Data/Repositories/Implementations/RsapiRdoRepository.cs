@@ -10,9 +10,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 	{
 		private readonly IAPILog _logger;
 		private readonly int _workspaceArtifactId;
-		private readonly IRsapiClientFactory _rsapiClientFactory;
+		private readonly IRsapiClientWithWorkspaceFactory _rsapiClientFactory;
 
-		public RsapiRdoRepository(IHelper helper, int workspaceArtifactId, IRsapiClientFactory rsapiClientFactory)
+		public RsapiRdoRepository(IHelper helper, int workspaceArtifactId, IRsapiClientWithWorkspaceFactory rsapiClientFactory)
 		{
 			_workspaceArtifactId = workspaceArtifactId;
 			_rsapiClientFactory = rsapiClientFactory;

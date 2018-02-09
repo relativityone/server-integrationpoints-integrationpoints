@@ -6,14 +6,14 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 {
 	public class ServiceContextHelperForAgent : IServiceContextHelper
 	{
-		public ServiceContextHelperForAgent(IAgentHelper helper, int workspaceId, IRsapiClientFactory factory)
+		public ServiceContextHelperForAgent(IAgentHelper helper, int workspaceId, IRsapiClientWithWorkspaceFactory factory)
 		{
 			this.helper = helper;
 			this.WorkspaceID = workspaceId;
 			this.factory = factory;
 		}
 
-		private IRsapiClientFactory factory { get; set; }
+		private IRsapiClientWithWorkspaceFactory factory { get; set; }
 		private IAgentHelper helper { get; set; }
 		public int WorkspaceID { get; set; }
 		public int GetEddsUserID() { return helper.GetAuthenticationManager().UserInfo.ArtifactID; }

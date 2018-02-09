@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.RSAPIClient;
 using kCura.IntegrationPoints.EventHandlers.Installers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
@@ -135,7 +136,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			{
 				if (_resourcePoolManager == null)
 				{
-					_resourcePoolManager = new ResourcePoolManager(RepositoryFactory, Helper);
+					var rsapiClientFactory = new RsapiClientFactory();
+					_resourcePoolManager = new ResourcePoolManager(RepositoryFactory, Helper, rsapiClientFactory);
 				}
 
 				return _resourcePoolManager;

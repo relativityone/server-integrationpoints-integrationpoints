@@ -73,7 +73,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Register(Component.For<IRSAPIClient>().UsingFactoryMethod(k =>
 			{
 				JobContextProvider jobContextProvider = k.Resolve<JobContextProvider>();
-				return k.Resolve<IRsapiClientFactory>().CreateAdminClient(jobContextProvider.Job.WorkspaceID);
+				return k.Resolve<IRsapiClientWithWorkspaceFactory>().CreateAdminClient(jobContextProvider.Job.WorkspaceID);
 
 			}).LifestyleTransient());
 
@@ -190,7 +190,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 						toggleProvider);
 				}).LifestyleTransient());
 
-			container.Register(Component.For<IRsapiClientFactory>().ImplementedBy<ExtendedRsapiClientFactory>().LifestyleTransient());
+			container.Register(Component.For<IRsapiClientWithWorkspaceFactory>().ImplementedBy<ExtendedRsapiClientWithWorkspaceFactory>().LifestyleTransient());
 		}
 	}
 }

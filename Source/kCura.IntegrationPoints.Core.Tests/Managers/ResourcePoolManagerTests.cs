@@ -4,6 +4,7 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.RSAPIClient;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 using NSubstitute;
@@ -18,8 +19,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 	{
 		private class ResourcePoolManagerTestImpl : ResourcePoolManager
 		{
-			public ResourcePoolManagerTestImpl(IRepositoryFactory repositoryFactory, IHelper helper) 
-				: base(repositoryFactory, helper)
+			public ResourcePoolManagerTestImpl(IRepositoryFactory repositoryFactory, IHelper helper, IRsapiClientFactory rsapiClientFactory)
+				: base(repositoryFactory, helper, rsapiClientFactory)
 			{
 			}
 
@@ -57,10 +58,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_rsApiClientMock = Substitute.For<IRSAPIClient>();
 			_resourcePoolRepositoryMock = Substitute.For<IResourcePoolRepository>();
 			var helper = Substitute.For<IHelper>();
-
+			var rsapiClientFactory = Substitute.For<IRsapiClientFactory>();
 			_repositoryFactoryMock.GetResourcePoolRepository().Returns(_resourcePoolRepositoryMock);
 
-			_subjectUnderTest = new ResourcePoolManagerTestImpl(_repositoryFactoryMock, helper);
+			_subjectUnderTest = new ResourcePoolManagerTestImpl(_repositoryFactoryMock, helper, rsapiClientFactory);
 		}
 
 		[Test]

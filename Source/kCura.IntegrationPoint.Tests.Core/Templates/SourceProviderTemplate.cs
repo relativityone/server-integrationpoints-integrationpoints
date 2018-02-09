@@ -123,12 +123,12 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		protected virtual void Install()
 		{
 			Container.Register(Component.For<IHelper>().UsingFactoryMethod(k => Helper, managedExternally: true));
-			Container.Register(Component.For<IRsapiClientFactory>().ImplementedBy<RsapiClientFactory>().LifestyleTransient());
+			Container.Register(Component.For<IRsapiClientWithWorkspaceFactory>().ImplementedBy<RsapiClientWithWorkspaceFactory>().LifestyleTransient());
 			Container.Register(Component.For<IServiceContextHelper>()
 				.UsingFactoryMethod(k =>
 				{
 					IHelper helper = k.Resolve<IHelper>();
-					var rsapiClientFactory = k.Resolve<IRsapiClientFactory>();
+					var rsapiClientFactory = k.Resolve<IRsapiClientWithWorkspaceFactory>();
 					return new TestServiceContextHelper(helper, WorkspaceArtifactId, rsapiClientFactory);
 				}));
 			Container.Register(

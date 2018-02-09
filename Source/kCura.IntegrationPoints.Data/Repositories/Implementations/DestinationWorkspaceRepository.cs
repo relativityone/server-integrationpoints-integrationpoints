@@ -6,6 +6,7 @@ using System.Security.Claims;
 using kCura.IntegrationPoints.Data.Commands.MassEdit;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Models;
+using kCura.IntegrationPoints.Data.RSAPIClient;
 using kCura.IntegrationPoints.Domain;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
@@ -119,7 +120,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			WriteResultSet<RDO> results;
 			try
 			{
-				using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+				var rsapiClientFactory = new RsapiClientFactory();
+				using (IRSAPIClient rsapiClient = rsapiClientFactory.CreateUserClient(_helper))
 				{
 					rsapiClient.APIOptions.WorkspaceID = _sourceWorkspaceArtifactId;
 

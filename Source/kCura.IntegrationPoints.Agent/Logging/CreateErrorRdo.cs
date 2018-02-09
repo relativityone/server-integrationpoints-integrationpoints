@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.Agent.Logging
 	{
 		private readonly CreateErrorRdoQuery _createErrorRdoQuery;
 
-		public CreateErrorRdo(IRsapiClientFactory rsapiClientFactory, IHelper helper, ISystemEventLoggingService systemEventLoggingService)
+		public CreateErrorRdo(IRsapiClientWithWorkspaceFactory rsapiClientFactory, IHelper helper, ISystemEventLoggingService systemEventLoggingService)
 		{
 			_createErrorRdoQuery = new CreateErrorRdoQuery(rsapiClientFactory, helper.GetLoggerFactory().GetLogger().ForContext<CreateErrorRdo>(), systemEventLoggingService);
 		}

@@ -66,7 +66,6 @@
     <Compile Include="Factories\IRSAPIServiceFactory.cs" />
     <Compile Include="Factories\Implementations\RSAPIServiceFactory.cs" />
     <Compile Include="GenericLibraryFactory.cs" />
-    <Compile Include="Helpers\ApiHelper.cs" />
     <Compile Include="IChoiceQuery.cs" />
     <Compile Include="IGenericLibraryFactory.cs" />
     <Compile Include="IIntegrationPointBaseFieldGuidsConstants.cs" />
@@ -76,7 +75,7 @@
     <Compile Include="IResourceDbProvider.cs" />
     <Compile Include="IResourcePoolContext.cs" />
     <Compile Include="IRSAPIRdoQuery.cs" />
-    <Compile Include="IRsapiClientFactory.cs" />
+    <Compile Include="IRsapiClientWithWorkspaceFactory.cs" />
     <Compile Include="Logging\ISystemEventLoggingService.cs" />
     <Compile Include="Migrations\Migration.cs" />
     <Compile Include="Queries\GetSavedSearchQuery.cs" />
@@ -110,10 +109,12 @@
     <Compile Include="Repositories\IRelativityObjectManager.cs" />
     <Compile Include="Repositories\IRunningJobRepository.cs" />
     <Compile Include="ResourcePoolContext.cs" />
+    <Compile Include="RSAPIClient\IRsapiClientFactory.cs" />
+    <Compile Include="RSAPIClient\RsapiClientFactory.cs" />
     <Compile Include="RSAPIClient\RsapiClientWrapperWithLogging.cs" />
     <Compile Include="SecretStore\ISecretManagerFactory.cs" />
     <Compile Include="SecretStore\SecretManagerFactory.cs" />
-    <Compile Include="RsapiClientFactory.cs" />
+    <Compile Include="RsapiClientWithWorkspaceFactory.cs" />
     <Compile Include="Statistics\IErrorFilesSizeStatistics.cs" />
     <Compile Include="Statistics\Implementations\DocumentTotalStatistics.cs" />
     <Compile Include="Statistics\IDocumentTotalStatistics.cs" />

@@ -18,10 +18,10 @@ namespace kCura.IntegrationPoints.Web
 		}
 
 		private readonly IHelper _helper;
-		private readonly IRsapiClientFactory _factory;
+		private readonly IRsapiClientWithWorkspaceFactory _factory;
 		private readonly IEnumerable<IWorkspaceService> _customPageServices;
 
-		public WebClientFactory(IHelper helper, IRsapiClientFactory factory, IEnumerable<IWorkspaceService> services)
+		public WebClientFactory(IHelper helper, IRsapiClientWithWorkspaceFactory factory, IEnumerable<IWorkspaceService> services)
 		{
 			_helper = helper;
 			_factory = factory;

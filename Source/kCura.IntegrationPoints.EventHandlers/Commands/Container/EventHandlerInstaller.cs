@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 
 		public void Install(IWindsorContainer container, IConfigurationStore store)
 		{
-			container.Register(Component.For<IRsapiClientFactory>().Instance(new RsapiClientFactory(_context.Helper)).LifestyleSingleton());
+			container.Register(Component.For<IRsapiClientWithWorkspaceFactory>().Instance(new RsapiClientWithWorkspaceFactory(_context.Helper)).LifestyleSingleton());
 			container.Register(Component.For<IEHContext>().Instance(_context).LifestyleSingleton());
 			container.Register(Component.For<IHelper>().Instance(_context.Helper).LifestyleSingleton());
 			container.Register(Component.For<IRSAPIService>().UsingFactoryMethod(k =>
@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 			container.Register(Component.For<IServiceContextHelper>().UsingFactoryMethod(k =>
 			{
 				IEHContext context = k.Resolve<IEHContext>();
-				IRsapiClientFactory clientFactory = k.Resolve<IRsapiClientFactory>();
+				IRsapiClientWithWorkspaceFactory clientFactory = k.Resolve<IRsapiClientWithWorkspaceFactory>();
 				return new ServiceContextHelperForEventHandlers(context.Helper, context.Helper.GetActiveCaseID(), clientFactory);
 			}).LifestyleSingleton());
 			container.Register(Component.For<IWorkspaceDBContext>().UsingFactoryMethod(k =>
@@ -71,7 +71,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 			container.Register(Component.For<IRSAPIClient>().UsingFactoryMethod(k =>
 			{
 				IEHContext context = k.Resolve<IEHContext>();
-				IRsapiClientFactory clientFactory = k.Resolve<IRsapiClientFactory>();
+				IRsapiClientWithWorkspaceFactory clientFactory = k.Resolve<IRsapiClientWithWorkspaceFactory>();
 				return clientFactory.CreateAdminClient(context.Helper.GetActiveCaseID());
 			}));
 			container.Register(Component.For<DeleteIntegrationPointCommand>().ImplementedBy<DeleteIntegrationPointCommand>().LifestyleTransient());

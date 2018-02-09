@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoints.Data.RSAPIClient;
 using kCura.Relativity.Client;
 using Relativity.API;
 using Artifact = kCura.EventHandler.Artifact;
@@ -28,7 +29,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 
 		protected virtual IRSAPIClient GetRsapiClient(int workspaceArtifactId)
 		{
-			IRSAPIClient rsapiClient = Helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser);
+			var rsapiClientFactory = new RsapiClientFactory();
+			IRSAPIClient rsapiClient = rsapiClientFactory.CreateUserClient(Helper);
 			rsapiClient.APIOptions.WorkspaceID = workspaceArtifactId;
 			return rsapiClient;
 		}

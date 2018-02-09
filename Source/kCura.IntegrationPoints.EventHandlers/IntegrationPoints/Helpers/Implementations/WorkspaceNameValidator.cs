@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using kCura.IntegrationPoints.Data.RSAPIClient;
 using kCura.Relativity.Client;
 using Newtonsoft.Json;
 using Relativity.API;
@@ -23,7 +24,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 
 			try
 			{
-				using (IRSAPIClient client = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+				var rsapiClientFactory = new RsapiClientFactory();
+				using (IRSAPIClient client = rsapiClientFactory.CreateUserClient(_helper))
 				{
 					string targetWorkspace = RetrieveWorkspaceName(client, sourceSettings.TargetWorkspaceArtifactId);
 					string sourceWorkspace = RetrieveWorkspaceName(client, sourceSettings.SourceWorkspaceArtifactId);

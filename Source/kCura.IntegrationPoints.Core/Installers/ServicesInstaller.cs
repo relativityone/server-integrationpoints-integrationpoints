@@ -48,6 +48,7 @@ using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Services.Domain;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Toggles;
+using kCura.IntegrationPoints.Data.RSAPIClient;
 using kCura.IntegrationPoints.Data.SecretStore;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations;
@@ -101,9 +102,9 @@ namespace kCura.IntegrationPoints.Core.Installers
 				{
 					IServiceContextHelper contextHelper = x.Resolve<IServiceContextHelper>();
 					IHelper helper = x.Resolve<IHelper>();
-					return new RelativityObjectManager(contextHelper.WorkspaceID, 
+					return new RelativityObjectManager(contextHelper.WorkspaceID,
 						helper,
-						new DefaultSecretCatalogFactory(), 
+						new DefaultSecretCatalogFactory(),
 						new SecretManager(contextHelper.WorkspaceID));
 				}).LifestyleTransient());
 			container.Register(Component.For<IRelativityObjectManagerFactory>().ImplementedBy<RelativityObjectManagerFactory>().LifestyleTransient());
@@ -122,8 +123,8 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<ISourceTypeFactory>().ImplementedBy<SourceTypeFactory>().LifestyleTransient());
 			container.Register(Component.For<IDestinationTypeFactory>().ImplementedBy<DestinationTypeFactory>().LifestyleTransient());
 			container.Register(Component.For<IResourceDbProvider>().ImplementedBy<ResourceDbProvider>().LifestyleTransient());
-		    container.Register(Component.For<IServicesMgr>().UsingFactoryMethod(k => k.Resolve<IHelper>().GetServicesManager(), true));
-            container.Register(Component.For<IRepositoryFactory>().ImplementedBy<RepositoryFactory>().LifestyleTransient());
+			container.Register(Component.For<IServicesMgr>().UsingFactoryMethod(k => k.Resolve<IHelper>().GetServicesManager(), true));
+			container.Register(Component.For<IRepositoryFactory>().ImplementedBy<RepositoryFactory>().LifestyleTransient());
 			container.Register(Component.For<IWorkspaceRepository>().ImplementedBy<KeplerWorkspaceRepository>().UsingFactoryMethod((k) => k.Resolve<IRepositoryFactory>().GetWorkspaceRepository()).LifestyleTransient());
 			container.Register(Component.For<IRdoFilter>().ImplementedBy<RdoFilter>().LifestyleTransient());
 			container.Register(Component.For<UserService>().ImplementedBy<UserService>().LifestyleTransient());
@@ -172,14 +173,15 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IImportTypeService>().ImplementedBy<ImportTypeService>().LifestyleTransient());
 			container.Register(Component.For<IArtifactService>().ImplementedBy<ArtifactService>().LifestyleTransient());
 			container.Register(Component.For<IProviderTypeService>().ImplementedBy<ProviderTypeService>().LifestyleTransient());
-		    container.Register(Component.For<IResourcePoolManager>().ImplementedBy<ResourcePoolManager>().LifestyleTransient());
-		    container.Register(Component.For<IResourcePoolContext>().ImplementedBy<ResourcePoolContext>().LifestyleTransient());
-            container.Register(Component.For<IProcessingSourceLocationService>().ImplementedBy<ProcessingSourceLocationService>().LifestyleTransient());
+			container.Register(Component.For<IResourcePoolManager>().ImplementedBy<ResourcePoolManager>().LifestyleTransient());
+			container.Register(Component.For<IResourcePoolContext>().ImplementedBy<ResourcePoolContext>().LifestyleTransient());
+			container.Register(Component.For<IProcessingSourceLocationService>().ImplementedBy<ProcessingSourceLocationService>().LifestyleTransient());
 			container.Register(Component.For<IDataTransferLocationService>().ImplementedBy<DataTransferLocationService>().LifestyleTransient());
 			container.Register(Component.For<IDataTransferLocationServiceFactory>().ImplementedBy<DataTransferLocationServiceFactory>().DependsOn(new { container = container }).LifestyleTransient());
 			container.Register(Component.For<IFolderPathReaderFactory>().ImplementedBy<FolderPathReaderFactory>().LifestyleTransient());
 			container.Register(Component.For<IUnfinishedJobService>().ImplementedBy<UnfinishedJobService>().LifestyleTransient());
 			container.Register(Component.For<IRSAPIServiceFactory>().ImplementedBy<RSAPIServiceFactory>().LifestyleTransient());
+			container.Register(Component.For<IRsapiClientFactory>().ImplementedBy<RsapiClientFactory>());
 			container.Register(Component.For<IRunningJobRepository>().ImplementedBy<RunningJobRepository>().LifestyleTransient());
 			container.Register(Component.For<ISecretCatalogFactory>().ImplementedBy<DefaultSecretCatalogFactory>().LifestyleTransient());
 			container.Register(Component.For<ISecretManagerFactory>().ImplementedBy<SecretManagerFactory>().LifestyleTransient());
@@ -204,7 +206,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IAPM>().UsingFactoryMethod(k => Client.APMClient, managedExternally: true).LifestyleTransient());
 			container.Register(Component.For<IAuthProvider>().ImplementedBy<AuthProvider>().LifestyleSingleton());
 			container.Register(Component.For<IOAuth2ClientFactory>().ImplementedBy<OAuth2ClientFactory>().LifestyleTransient());
-			
+
 			container.Register(Component.For<ICredentialProvider>().UsingFactoryMethod(kernel =>
 			{
 				var helper = kernel.Resolve<IHelper>();
@@ -219,7 +221,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 				{
 					var helper = kernel.Resolve<IHelper>();
 					var contextHelper = kernel.Resolve<IServiceContextHelper>();
-					var rsapiClientFactory = kernel.Resolve<IRsapiClientFactory>();
+					var rsapiClientFactory = kernel.Resolve<IRsapiClientWithWorkspaceFactory>();
 
 					return new RsapiRdoRepository(helper, contextHelper.WorkspaceID, rsapiClientFactory);
 				}).LifestyleTransient());
