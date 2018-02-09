@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			//{
 			//	WorkspaceName = "Smoke Workspace"
 			//};
-			
+
 			CreateDriver();
 		}
 		
