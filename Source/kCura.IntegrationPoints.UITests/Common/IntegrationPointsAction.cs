@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoint.Tests.Core.Models;
+﻿using System.Threading;
+using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.UITests.Configuration;
 using kCura.IntegrationPoints.UITests.Pages;
 using OpenQA.Selenium.Remote;
@@ -80,10 +81,10 @@ namespace kCura.IntegrationPoints.UITests.Common
 			PushToRelativitySecondPage secondPage = firstPage.GoToNextPagePush();
 			secondPage.SelectAllDocuments();
 
-			secondPage.SourceSelect = model.SourceProvider;
-			secondPage.RelativityInstance = model.RelativityInstance;
+			//secondPage.SourceSelect = model.SourceProvider;
+			//secondPage.RelativityInstance = model.RelativityInstance;
 			secondPage.DestinationWorkspace = model.DestinationWorkspace;
-
+			Thread.Sleep(500);
 			secondPage.SelectFolderLocation();
 			secondPage.FolderLocationSelect.ChooseRootElement();
 
@@ -95,9 +96,20 @@ namespace kCura.IntegrationPoints.UITests.Common
 			PushToRelativityThirdPage thirdPage = secondPage.GoToNextPage();
 			thirdPage.MapAllFields();
 			thirdPage.SelectCopyNativeFiles( model.CopyNativeFiles);
+			thirdPage.SelectCopyImages( model.CopyImages );
 
-			thirdPage.SelectMoveExitstingDocuments(model.MoveExistingDocuments);
-
+			if (model.Overwrite == RelativityProviderModel.OverwriteModeEnum.AppendOnly)
+			{
+				thirdPage.SelectOverwrite = "Append Only";
+			}
+			else if (model.Overwrite == RelativityProviderModel.OverwriteModeEnum.OverlayOnly)
+			{
+				thirdPage.SelectOverwrite = "Overlay Only";
+			}
+			else if (model.Overwrite == RelativityProviderModel.OverwriteModeEnum.AppendOverlay)
+			{
+				thirdPage.SelectOverwrite = "Append/Overlay";
+			}
 
 			if (model.UseFolderPathInformation == RelativityProviderModel.UseFolderPathInformationEnum.No)
 			{
@@ -113,18 +125,7 @@ namespace kCura.IntegrationPoints.UITests.Common
 				thirdPage.SelectFolderPathInfo = "Read From Folder Tree";
 			}
 
-			if (model.Overwrite == RelativityProviderModel.OverwriteModeEnum.AppendOnly)
-			{
-				thirdPage.SelectOverwrite = "Append Only";
-			}
-			else if (model.Overwrite == RelativityProviderModel.OverwriteModeEnum.OverlayOnly)
-			{
-				thirdPage.SelectOverwrite = "Overlay Only";
-			}
-			else if (model.Overwrite == RelativityProviderModel.OverwriteModeEnum.AppendOverlay)
-			{
-				thirdPage.SelectOverwrite = "Append/Overlay";
-			}
+			thirdPage.SelectMoveExitstingDocuments(model.MoveExistingDocuments);
 
 			return thirdPage;
 		}

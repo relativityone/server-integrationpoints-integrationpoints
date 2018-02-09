@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.UITests.Components;
 using OpenQA.Selenium;
@@ -56,6 +57,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public PropertiesTable SelectGeneralPropertiesTable()
 		{
+			Thread.Sleep(200);
 			var t = new PropertiesTable(Driver.FindElementById("summaryPage"), "General");
 			t.Select();
 			return t;

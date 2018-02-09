@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using OpenQA.Selenium;
@@ -26,11 +27,17 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		[FindsBy(How = How.Id, Using = "native-file-mode-radio-2")]
 		protected IWebElement SelectCopyNoFilesElement { get; set; }
 
+		[FindsBy(How = How.Id, Using = "exportImages-radio-0")]
+		protected IWebElement SelectCopyImagesYesElement { get; set; }
+
+		[FindsBy(How = How.Id, Using = "exportImages-radio-1")]
+		protected IWebElement SelectCopyImagesNoElement { get; set; }
+
 		[FindsBy(How = How.Id, Using = "move-documents-radio-0")]
-		protected IWebElement SelectMoveExitstinDocumentsYesElement { get; set; }
+		protected IWebElement SelectMoveExitstingDocumentsYesElement { get; set; }
 
 		[FindsBy(How = How.Id, Using = "move-documents-radio-1")]
-		protected IWebElement SelectMoveExitstinDocumentsNoElement { get; set; }
+		protected IWebElement SelectMoveExitstingDocumentsNoElement { get; set; }
 
 		[FindsBy(How = How.Id, Using = "mapFieldsBtn")]
 		protected IWebElement MapAllFieldsElement { get; set; }
@@ -72,6 +79,23 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			}
 		}
 
+		public void SelectCopyImages(bool? mode)
+		{
+			if (!mode.HasValue)
+			{
+				return;
+			}
+
+			if (mode.Value)
+			{
+				SelectCopyImagesYesElement.Click();
+			}
+			else
+			{
+				SelectCopyImagesNoElement.Click();
+			}
+		}
+
 		public PushToRelativityThirdPage MapAllFields()
 		{
 			MapAllFieldsElement.Click();
@@ -105,11 +129,11 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 			if (mode.Value)
 			{
-				SelectMoveExitstinDocumentsYesElement.Click();
+				SelectMoveExitstingDocumentsYesElement.Click();
 			}
 			else
 			{
-				SelectMoveExitstinDocumentsNoElement.Click();
+				SelectMoveExitstingDocumentsNoElement.Click();
 			}
 		}
 

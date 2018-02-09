@@ -1,19 +1,15 @@
-﻿using System;
-using System.Threading;
-using kCura.Injection.Behavior;
-using kCura.IntegrationPoint.Tests.Core.Models;
-using kCura.IntegrationPoints.Data.QueryBuilders;
+﻿using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.UITests.Common;
-using TestContext = kCura.IntegrationPoints.UITests.Configuration.TestContext;
 using kCura.IntegrationPoints.UITests.Components;
 using kCura.IntegrationPoints.UITests.Pages;
 using NUnit.Framework;
+using TestContext = kCura.IntegrationPoints.UITests.Configuration.TestContext;
 
-namespace kCura.IntegrationPoints.UITests.Tests
+namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 {
 	[TestFixture]
 	[Category(TestCategory.SMOKE)]
-	public class RelativityProviderTest : UiTest
+	public class NativesSavedSearchToFolderTest : UiTest
 	{
 		private TestContext _destinationContext = null;
 		private IntegrationPointsAction _integrationPointsAction;
@@ -39,21 +35,21 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			_destinationContext?.TearDown();
 		}
 
-		private RelativityProviderModel CreateRelativityProviderModel()
+		private RelativityProviderModel CreateRelativityProviderModelWithNatives()
 		{
 			var model = new RelativityProviderModel(NUnit.Framework.TestContext.CurrentContext.Test.Name);
 			model.Source = "Saved Search";
 			model.RelativityInstance = "This Instance";
 			model.DestinationWorkspace = $"{_destinationContext.WorkspaceName} - {_destinationContext.WorkspaceId}";
-			model.CopyNativeFiles = RelativityProviderModel.CopyNativeFilesEnum.No;
+			model.CopyNativeFiles = RelativityProviderModel.CopyNativeFilesEnum.PhysicalFiles;
 			return model;
 		}
 
 		[Test, Order(10)]
-		public void RelativityProvider_TC_RTR_MDO_1()
+		public void RelativityProvider_TC_RTR_NF_1()
 		{
 			//Arrange
-			RelativityProviderModel model = CreateRelativityProviderModel();
+			RelativityProviderModel model = CreateRelativityProviderModelWithNatives();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOnly;
 			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.No;
 
@@ -65,10 +61,10 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
 		}
 
-		public void RelativityProvider_TC_RTR_MDO_2()
+		public void RelativityProvider_TC_RTR_NF_2()
 		{
 			//Arrange
-			RelativityProviderModel model = CreateRelativityProviderModel();
+			RelativityProviderModel model = CreateRelativityProviderModelWithNatives();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOnly;
 			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.ReadFromField;
 
@@ -80,10 +76,10 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
 		}
 
-		public void RelativityProvider_TC_RTR_MDO_3()
+		public void RelativityProvider_TC_RTR_NF_3()
 		{
 			//Arrange
-			RelativityProviderModel model = CreateRelativityProviderModel();
+			RelativityProviderModel model = CreateRelativityProviderModelWithNatives();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOnly;
 			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.ReadFromFolderTree;
 
@@ -97,12 +93,12 @@ namespace kCura.IntegrationPoints.UITests.Tests
 
 
 		[Test, Order(10)]
-		public void RelativityProvider_TC_RTR_MDO_4()
+		public void RelativityProvider_TC_RTR_NF_4()
 		{
 			// Arrange
 			_destinationContext.ImportDocuments();
 
-			RelativityProviderModel model = CreateRelativityProviderModel();
+			RelativityProviderModel model = CreateRelativityProviderModelWithNatives();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
 			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.No;
 
@@ -115,12 +111,12 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		}
 
 		[Test, Order(10)]
-		public void RelativityProvider_TC_RTR_MDO_5()
+		public void RelativityProvider_TC_RTR_NF_5()
 		{
 			// Arrange
 			_destinationContext.ImportDocuments();
 
-			RelativityProviderModel model = CreateRelativityProviderModel();
+			RelativityProviderModel model = CreateRelativityProviderModelWithNatives();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
 			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.ReadFromField;
 			model.MoveExistingDocuments = false;
@@ -134,12 +130,12 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		}
 
 		[Test, Order(10)]
-		public void RelativityProvider_TC_RTR_MDO_6()
+		public void RelativityProvider_TC_RTR_NF_6()
 		{
 			// Arrange
 			_destinationContext.ImportDocuments();
 
-			RelativityProviderModel model = CreateRelativityProviderModel();
+			RelativityProviderModel model = CreateRelativityProviderModelWithNatives();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
 			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.ReadFromFolderTree;
 			model.MoveExistingDocuments = false;
@@ -153,12 +149,12 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		}
 
 		[Test, Order(10)]
-		public void RelativityProvider_TC_RTR_MDO_7()
+		public void RelativityProvider_TC_RTR_NF_7()
 		{
 			// Arrange
 			_destinationContext.ImportDocuments();
 
-			RelativityProviderModel model = CreateRelativityProviderModel();
+			RelativityProviderModel model = CreateRelativityProviderModelWithNatives();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
 			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.ReadFromField;
 			model.MoveExistingDocuments = true;
@@ -172,12 +168,12 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		}
 
 		[Test, Order(10)]
-		public void RelativityProvider_TC_RTR_MDO_8()
+		public void RelativityProvider_TC_RTR_NF_8()
 		{
 			// Arrange
 			_destinationContext.ImportDocuments();
 
-			RelativityProviderModel model = CreateRelativityProviderModel();
+			RelativityProviderModel model = CreateRelativityProviderModelWithNatives();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
 			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.ReadFromFolderTree;
 			model.MoveExistingDocuments = true;
@@ -191,12 +187,12 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		}
 
 		[Test, Order(10)]
-		public void RelativityProvider_TC_RTR_MDO_9()
+		public void RelativityProvider_TC_RTR_NF_9()
 		{
 			// Arrange
 			_destinationContext.ImportDocuments();
 
-			RelativityProviderModel model = CreateRelativityProviderModel();
+			RelativityProviderModel model = CreateRelativityProviderModelWithNatives();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
 			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.No;
 
@@ -210,12 +206,12 @@ namespace kCura.IntegrationPoints.UITests.Tests
 
 
 		[Test, Order(10)]
-		public void RelativityProvider_TC_RTR_MDO_10()
+		public void RelativityProvider_TC_RTR_NF_10()
 		{
 			// Arrange
 			_destinationContext.ImportDocuments();
 
-			RelativityProviderModel model = CreateRelativityProviderModel();
+			RelativityProviderModel model = CreateRelativityProviderModelWithNatives();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
 			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.ReadFromField;
 			model.MoveExistingDocuments = false;
@@ -229,12 +225,12 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		}
 
 		[Test, Order(10)]
-		public void RelativityProvider_TC_RTR_MDO_11()
+		public void RelativityProvider_TC_RTR_NF_11()
 		{
 			// Arrange
 			_destinationContext.ImportDocuments();
 
-			RelativityProviderModel model = CreateRelativityProviderModel();
+			RelativityProviderModel model = CreateRelativityProviderModelWithNatives();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
 			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.ReadFromFolderTree;
 			model.MoveExistingDocuments = false;
@@ -248,12 +244,12 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		}
 
 		[Test, Order(10)]
-		public void RelativityProvider_TC_RTR_MDO_12()
+		public void RelativityProvider_TC_RTR_NF_12()
 		{
 			// Arrange
 			_destinationContext.ImportDocuments();
 
-			RelativityProviderModel model = CreateRelativityProviderModel();
+			RelativityProviderModel model = CreateRelativityProviderModelWithNatives();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
 			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.ReadFromField;
 			model.MoveExistingDocuments = true;
@@ -268,12 +264,12 @@ namespace kCura.IntegrationPoints.UITests.Tests
 
 
 		[Test, Order(10)]
-		public void RelativityProvider_TC_RTR_MDO_13()
+		public void RelativityProvider_TC_RTR_NF_13()
 		{
 			// Arrange
 			_destinationContext.ImportDocuments();
 
-			RelativityProviderModel model = CreateRelativityProviderModel();
+			RelativityProviderModel model = CreateRelativityProviderModelWithNatives();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
 			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.ReadFromFolderTree;
 			model.MoveExistingDocuments = true; 

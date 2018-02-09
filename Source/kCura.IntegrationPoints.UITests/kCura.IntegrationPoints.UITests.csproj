@@ -76,7 +76,10 @@
     <Compile Include="Pages\PushtoRelativityThirdPage.cs" />
     <Compile Include="Tests\CreateIpSmokeTest.cs" />
     <Compile Include="Auxiliary\Grinder.cs" />
-    <Compile Include="Tests\RelativityProviderTest.cs" />
+    <Compile Include="Tests\RelativityProvider\ImagesSavedSearchToFolderTest.cs" />
+    <Compile Include="Tests\RelativityProvider\NativesSavedSearchToFolderTest.cs" />
+    <Compile Include="Tests\RelativityProvider\LinksSavedSearchToFolderTest.cs" />
+    <Compile Include="Tests\RelativityProvider\MetadataSavedSearchToFolderTest.cs" />
     <Compile Include="Tests\UiTest.cs" />
     <Compile Include="Common\PageException.cs" />
     <Compile Include="Tests\SelectWithSavedSearchTest.cs" />
