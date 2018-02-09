@@ -110,6 +110,7 @@
     <Compile Include="Repositories\IRelativityObjectManager.cs" />
     <Compile Include="Repositories\IRunningJobRepository.cs" />
     <Compile Include="ResourcePoolContext.cs" />
+    <Compile Include="RSAPIClient\RsapiClientWrapperWithLogging.cs" />
     <Compile Include="SecretStore\ISecretManagerFactory.cs" />
     <Compile Include="SecretStore\SecretManagerFactory.cs" />
     <Compile Include="RsapiClientFactory.cs" />
