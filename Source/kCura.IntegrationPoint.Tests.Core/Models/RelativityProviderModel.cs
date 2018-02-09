@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Models
         public RelativityProviderModel(string ripName) : base(ripName)
         {
             Scheduler = null;
+	        DestinationProvider = "Relativity";
         }
 		
         public SchedulerModel Scheduler { get; set; }
@@ -39,12 +41,18 @@ namespace kCura.IntegrationPoint.Tests.Core.Models
 
 		#region "Relativity Provider Settings"
 		
-		public string Overwrite { get; set; }
+		
+		[DefaultValue(OverwriteModeEnum.AppendOnly)]
+		public OverwriteModeEnum? Overwrite { get; set; }
+		[DefaultValue(false)]
 		public bool? CopyImages;
+		[DefaultValue(CopyNativeFilesEnum.No)]
 		public CopyNativeFilesEnum? CopyNativeFiles;
 		public string MultiSelectFieldOverlay;
-		public string UseFolderPathInformation;
+		[DefaultValue(UseFolderPathInformationEnum.No)]
+		public UseFolderPathInformationEnum? UseFolderPathInformation;
 		public string FolderPathInformation;
+		public bool? MoveExistingDocuments;
 
 
 		#endregion
@@ -61,6 +69,20 @@ namespace kCura.IntegrationPoint.Tests.Core.Models
 			PhysicalFiles,
 			LinksOnly,
 			No
+		}
+
+		public enum UseFolderPathInformationEnum
+		{
+			No,
+			ReadFromField,
+			ReadFromFolderTree
+		}
+
+		public enum OverwriteModeEnum
+		{
+			AppendOnly,
+			OverlayOnly,
+			AppendOverlay
 		}
 	}
 }
