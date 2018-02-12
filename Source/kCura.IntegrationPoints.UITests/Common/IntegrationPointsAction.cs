@@ -95,7 +95,6 @@ namespace kCura.IntegrationPoints.UITests.Common
 		{
 			PushToRelativityThirdPage thirdPage = secondPage.GoToNextPage();
 			thirdPage.MapAllFields();
-			thirdPage.SelectCopyNativeFiles( model.CopyNativeFiles);
 			thirdPage.SelectCopyImages( model.CopyImages );
 
 			if (model.Overwrite == RelativityProviderModel.OverwriteModeEnum.AppendOnly)
@@ -110,6 +109,19 @@ namespace kCura.IntegrationPoints.UITests.Common
 			{
 				thirdPage.SelectOverwrite = "Append/Overlay";
 			}
+
+			thirdPage.SelectCopyImages(model.CopyImages);
+
+			if (model.ImagePrecedence == RelativityProviderModel.ImagePrecedenceEnum.OriginalImages)
+			{
+				thirdPage.SelectImagePrecedence = "Original Images";
+			}
+			else if (model.ImagePrecedence == RelativityProviderModel.ImagePrecedenceEnum.ProducedImages)
+			{
+				thirdPage.SelectImagePrecedence = "Produced Images";
+			}
+
+			thirdPage.SelectCopyNativeFiles(model.CopyNativeFiles);
 
 			if (model.UseFolderPathInformation == RelativityProviderModel.UseFolderPathInformationEnum.No)
 			{
@@ -126,6 +138,9 @@ namespace kCura.IntegrationPoints.UITests.Common
 			}
 
 			thirdPage.SelectMoveExitstingDocuments(model.MoveExistingDocuments);
+
+
+			thirdPage.SelectCopyFilesToRepository(model.CopyFilesToRepository);
 
 			return thirdPage;
 		}

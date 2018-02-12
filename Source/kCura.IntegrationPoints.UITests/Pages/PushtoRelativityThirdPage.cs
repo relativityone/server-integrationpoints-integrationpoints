@@ -39,6 +39,12 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		[FindsBy(How = How.Id, Using = "move-documents-radio-1")]
 		protected IWebElement SelectMoveExitstingDocumentsNoElement { get; set; }
 
+		[FindsBy(How = How.Id, Using = "native-file-radio-0")]
+		protected IWebElement SelectCopyFilesToRepositoryYesElement { get; set; }
+
+		[FindsBy(How = How.Id, Using = "native-file-radio-1")]
+		protected IWebElement SelectCopyFilesToRepositoryNoElement { get; set; }
+
 		[FindsBy(How = How.Id, Using = "mapFieldsBtn")]
 		protected IWebElement MapAllFieldsElement { get; set; }
 
@@ -48,6 +54,9 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		[FindsBy(How = How.Id, Using = "folderPathInformationSelect")]
 		protected IWebElement UseFolderPathElement;
 
+		[FindsBy(How = How.Id, Using = "image-production-precedence")]
+		protected IWebElement ImagePrecedenceElement { get; set; }
+
 		[FindsBy(How = How.Id, Using = "folderPath")]
 		protected IWebElement ReadFromFieldElement { get; set; }
 
@@ -56,7 +65,9 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		protected SelectElement SelectUseFolderPathElement => new SelectElement(UseFolderPathElement);
 
 		protected SelectElement SelectReadFromFieldElement => new SelectElement(ReadFromFieldElement);
-		
+
+		protected SelectElement SelectImagePrecedenceElement => new SelectElement(ImagePrecedenceElement);
+
 		public PushToRelativityThirdPage(RemoteWebDriver driver) : base(driver)
 		{
 			WaitForPage();
@@ -94,6 +105,8 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			{
 				SelectCopyImagesNoElement.Click();
 			}
+
+			Thread.Sleep(200);
 		}
 
 		public PushToRelativityThirdPage MapAllFields()
@@ -120,6 +133,12 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			set { SelectReadFromFieldElement.SelectByText(value); }
 		}
 
+		public string SelectImagePrecedence
+		{
+			get { return SelectImagePrecedenceElement.SelectedOption.Text; }
+			set { SelectImagePrecedenceElement.SelectByText(value); }
+		}
+
 		public void SelectMoveExitstingDocuments(bool? mode)
 		{
 			if (!mode.HasValue)
@@ -134,6 +153,23 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			else
 			{
 				SelectMoveExitstingDocumentsNoElement.Click();
+			}
+		}
+
+		public void SelectCopyFilesToRepository(bool? mode)
+		{
+			if (!mode.HasValue)
+			{
+				return;
+			}
+
+			if (mode.Value)
+			{
+				SelectCopyFilesToRepositoryYesElement.Click();
+			}
+			else
+			{
+				SelectCopyFilesToRepositoryNoElement.Click();
 			}
 		}
 

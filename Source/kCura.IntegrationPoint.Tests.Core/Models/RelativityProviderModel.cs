@@ -46,13 +46,14 @@ namespace kCura.IntegrationPoint.Tests.Core.Models
 		public OverwriteModeEnum? Overwrite { get; set; }
 		[DefaultValue(false)]
 		public bool? CopyImages;
-		[DefaultValue(CopyNativeFilesEnum.No)]
-		public CopyNativeFilesEnum? CopyNativeFiles;
+		public ImagePrecedenceEnum? ImagePrecedence { get; set; }
+		public CopyNativeFilesEnum? CopyNativeFiles { get; set; }
 		public string MultiSelectFieldOverlay;
 		[DefaultValue(UseFolderPathInformationEnum.No)]
-		public UseFolderPathInformationEnum? UseFolderPathInformation;
+		public UseFolderPathInformationEnum? UseFolderPathInformation { get; set; }
 		public string FolderPathInformation;
 		public bool? MoveExistingDocuments;
+		public bool? CopyFilesToRepository;
 
 
 		#endregion
@@ -83,6 +84,12 @@ namespace kCura.IntegrationPoint.Tests.Core.Models
 			AppendOnly,
 			OverlayOnly,
 			AppendOverlay
+		}
+
+		public enum ImagePrecedenceEnum
+		{
+			OriginalImages,
+			ProducedImages
 		}
 	}
 }

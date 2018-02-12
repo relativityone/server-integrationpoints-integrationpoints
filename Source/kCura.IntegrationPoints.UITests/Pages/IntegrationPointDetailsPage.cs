@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public PropertiesTable SelectGeneralPropertiesTable()
 		{
-			Thread.Sleep(200);
+			Thread.Sleep(300);
 			var t = new PropertiesTable(Driver.FindElementById("summaryPage"), "General");
 			t.Select();
 			return t;
