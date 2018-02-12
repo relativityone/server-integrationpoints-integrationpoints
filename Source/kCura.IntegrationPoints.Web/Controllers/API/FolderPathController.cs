@@ -135,6 +135,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			var oldWorkspaceId = _client.APIOptions.WorkspaceID;
 			var workspaceId = _workspaceIdProvider.GetWorkspaceId();
 
+			// TODO remove after tests on prod
 			if (workspaceId != oldWorkspaceId)
 			{
 				LogGetFieldCategoryError(workspaceId, oldWorkspaceId);
@@ -152,6 +153,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			return textFields.Where(x => mappableArtifactIds.Contains(Convert.ToInt32(x.FieldIdentifier)));
 		}
 
+		// TODO remove after tests on prod
 		private IEnumerable<FieldEntry> GetOldTextMappableFields(IImportAPI importApi, int workspaceId, List<FieldEntry> textFields)
 		{
 			IEnumerable<Relativity.ImportAPI.Data.Field> oldWorkspaceFields = importApi.GetWorkspaceFields(workspaceId, Convert.ToInt32(ArtifactType.Document));
@@ -163,10 +165,12 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			var workspaceId = GetWorkspaceId();
 
+			// TODO remove after tests on prod
 			var oldTextMappableFields = GetOldTextMappableFields(importApi, workspaceId, textFields);
 
 			var textMappableFields = GetTextMappableFields(workspaceId, textFields);
 
+			// TODO remove after tests on prod
 			if (!AssertFieldsEquality(oldTextMappableFields, textMappableFields))
 			{
 				LogFieldsInequality(nameof(GetFieldCategory), oldTextMappableFields, textMappableFields);
@@ -186,6 +190,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			return new HashSet<int>(artifactIds);
 		}
 
+		// TODO remove after tests on prod
 		private List<FieldEntry> OldGetTextFields(int rdoTypeId, bool longTextFieldsOnly)
 		{
 			var rdoCondition = new ObjectCondition
