@@ -11,18 +11,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class DocumentService
 	{
-		private static readonly string[] _defaultDocumentFields =
-		{
-			TestConstants.FieldNames.CONTROL_NUMBER,
-			TestConstants.FieldNames.EXTRACTED_TEXT,
-			TestConstants.FieldNames.EMAIL_SUBJECT,
-			TestConstants.FieldNames.GROUP_IDENTIFIER,
-			TestConstants.FieldNames.FOLDER_NAME,
-			TestConstants.FieldNames.CUSTODIAN,
-			TestConstants.FieldNames.ISSUE_DESIGNATION
-		};
-
 		private static ITestHelper _testHelper = null;
+		private static readonly string[] _allFields = FieldValue.AllFields.Select(fv => fv.Name).ToArray();
+
 		private static ITestHelper Helper
 		{
 			get
@@ -55,7 +46,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static List<Document> GetAllDocuments(int workspaceId)
 		{
-			return GetAllDocuments(workspaceId, _defaultDocumentFields).Where(result => result.Success)
+			return GetAllDocuments(workspaceId, _allFields).Where(result => result.Success)
 				.Select(result => result.Artifact).ToList();
 		}
 

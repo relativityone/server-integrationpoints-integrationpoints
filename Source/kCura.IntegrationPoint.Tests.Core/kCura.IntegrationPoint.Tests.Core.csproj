@@ -188,6 +188,8 @@
     <Compile Include="TestServiceContextHelper.cs" />
     <Compile Include="Validators\DocumentFieldsValidator.cs" />
     <Compile Include="Validators\DocumentFolderNameValidator.cs" />
+    <Compile Include="Validators\DocumentNativesAndInRepositoryValidator.cs" />
+    <Compile Include="Validators\DocumentNativesValidator.cs" />
     <Compile Include="Validators\DocumentPropertyValidator.cs" />
     <Compile Include="Validators\DocumentsValidator.cs" />
     <Compile Include="Validators\IDocumentValidator.cs" />
