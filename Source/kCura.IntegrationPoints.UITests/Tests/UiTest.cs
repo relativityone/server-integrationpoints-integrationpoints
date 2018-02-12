@@ -5,6 +5,7 @@ using OpenQA.Selenium.Chrome;
 using NUnit.Framework;
 using System;
 using System.Reflection;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.UITests.Configuration;
 using kCura.IntegrationPoints.UITests.Logging;
 using NUnit.Framework.Interfaces;
@@ -32,17 +33,18 @@ namespace kCura.IntegrationPoints.UITests.Tests
 				.SetupConfiguration()
 				.LogConfiguration();
 
-			Context = new TestContext()
-				.CreateWorkspace()
-				.ImportDocuments()
-				.InstallIntegrationPoints();
+			Context = new TestContext();
+			Task workspaceCreationTask = Context.CreateWorkspaceAsync();
+			Task documentImportTask  = workspaceCreationTask.ContinueWith(async _ => await Context.ImportDocumentsAsync());
+			Task integrationPointsInstallationTask = workspaceCreationTask.ContinueWith(async _ => await Context.InstallIntegrationPointsAsync());
+			Task webDriverCreationTask = CreateDriverAsync();
 
-			//Context = new TestContext
-			//{
-			//	WorkspaceName = "Smoke Workspace"
-			//};
+			Task.WaitAll(documentImportTask, integrationPointsInstallationTask, webDriverCreationTask);
+		}
 
-			CreateDriver();
+		protected async Task CreateDriverAsync()
+		{
+			await Task.Run(() => CreateDriver()).ConfigureAwait(false);
 		}
 		
 		protected void CreateDriver()

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using Relativity.API;
@@ -23,7 +24,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				try
 				{
 					// Query for template workspace id
-					Relativity.Client.DTOs.Workspace workspace = FindWorkspaceByName(templateName);
+					Relativity.Client.DTOs.Workspace workspace = FindWorkspaceByName(proxy, templateName);
 					int templateWorkspaceId = workspace.ArtifactID;
 
 					ProcessOperationResult result = proxy.Repositories.Workspace.CreateAsync(templateWorkspaceId, workspaceDto);
@@ -45,14 +46,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return workspaceId;
 		}
 
-		public static int CreateWorkspace(string name)
+		public static async Task<int> CreateWorkspaceAsync(string workspaceName, string templateName)
 		{
-			var workspaceService = new WorkspaceService(new ImportHelper());
-			int workspaceId = workspaceService.CreateWorkspace(name);
-			var documentsTestData = DocumentTestDataBuilder.BuildTestData();
-			workspaceService.ImportData(workspaceId, documentsTestData);
-
-			return workspaceId;
+			return await Task.Run(() => CreateWorkspace(workspaceName, templateName)).ConfigureAwait(false);
 		}
 
 		public static void DeleteWorkspace(int workspaceArtifactId)
@@ -72,7 +68,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public static Relativity.Client.DTOs.Workspace FindWorkspaceByName(string workspaceName)
+		public static Relativity.Client.DTOs.Workspace FindWorkspaceByName(IRSAPIClient proxy, string workspaceName)
 		{
 			try
 			{
@@ -82,7 +78,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 					Condition = workspaceNameCondition
 				};
 				query.Fields.Add(new FieldValue(WorkspaceFieldNames.Name));
-				Relativity.Client.DTOs.Workspace workspace = QueryWorkspace(query, 0).Results[0].Artifact;
+				Relativity.Client.DTOs.Workspace workspace = QueryWorkspace(proxy, query, 0).Results[0].Artifact;
 				return workspace;
 			}
 			catch (Exception ex)
@@ -117,23 +113,20 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public static QueryResultSet<Relativity.Client.DTOs.Workspace> QueryWorkspace(Query<Relativity.Client.DTOs.Workspace> query, int results)
+		public static QueryResultSet<Relativity.Client.DTOs.Workspace> QueryWorkspace(IRSAPIClient proxy, Query<Relativity.Client.DTOs.Workspace> query, int results)
 		{
-			using (IRSAPIClient proxy = Rsapi.CreateRsapiClient(ExecutionIdentity.System))
+			try
 			{
-				try
+				QueryResultSet<Relativity.Client.DTOs.Workspace> resultSet = proxy.Repositories.Workspace.Query(query, results);
+				if (!resultSet.Success)
 				{
-					QueryResultSet<Relativity.Client.DTOs.Workspace> resultSet = proxy.Repositories.Workspace.Query(query, results);
-					if (!resultSet.Success)
-					{
-						throw new TestException($"Query failed for workspace using Query: {query}");
-					}
-					return resultSet;
+					throw new TestException($"Query failed for workspace using Query: {query}");
 				}
-				catch (Exception ex)
-				{
-					throw new TestException($"An error occurred attempting to query workspaces using query: {query}. Error Message: {ex.Message}", ex);
-				}
+				return resultSet;
+			}
+			catch (Exception ex)
+			{
+				throw new TestException($"An error occurred attempting to query workspaces using query: {query}. Error Message: {ex.Message}", ex);
 			}
 		}
 	}

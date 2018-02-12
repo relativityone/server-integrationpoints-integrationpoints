@@ -190,9 +190,14 @@
     <Compile Include="Validators\DocumentFolderNameValidator.cs" />
     <Compile Include="Validators\DocumentNativesAndInRepositoryValidator.cs" />
     <Compile Include="Validators\DocumentNativesValidator.cs" />
+    <Compile Include="Validators\DocumentPathValidator.cs" />
     <Compile Include="Validators\DocumentPropertyValidator.cs" />
     <Compile Include="Validators\DocumentsValidator.cs" />
+    <Compile Include="Validators\FolderPathFromFieldStrategy.cs" />
+    <Compile Include="Validators\FolderPathFromFolderTreeStrategy.cs" />
+    <Compile Include="Validators\FolderPathStrategyWithCache.cs" />
     <Compile Include="Validators\IDocumentValidator.cs" />
+    <Compile Include="Validators\IFolderPathStrategy.cs" />
     <Compile Include="Validators\IValidator.cs" />
     <Compile Include="Validators\LoadFileDocumentsValidator.cs" />
     <Compile Include="Validators\PushDocumentsValidator.cs" />

@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public void ImportApplicationToLibrary()
 		{
-			var libraryApplication = GetLibraryApplicationDTO(new Guid(IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING));
+			LibraryApplication libraryApplication = GetLibraryApplicationDTO(new Guid(IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING));
 			
 			if (libraryApplication != null && libraryApplication.IsVisible)
 			{
@@ -46,28 +46,15 @@ namespace kCura.IntegrationPoint.Tests.Core
 			string applicationFilePath = SharedVariables.UseLocalRap ? GetLocalRapPath() : GetBuildPackagesRapPath();
 
 			UpdateLibraryApplicationRap(applicationFilePath, libraryApplication);
-
 		}
 
 		public void InstallApplicationFromLibrary(int workspaceArtifactId)
 		{
-			var libraryApplication = GetLibraryApplicationDTO(new Guid(IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING));
-
 			using (var applicationInstallManager = _helper.CreateAdminProxy<IApplicationInstallManager>())
 			{
-				applicationInstallManager.InstallLibraryApplicationByGuid(workspaceArtifactId, libraryApplication.ApplicationGuid).Wait();
+				applicationInstallManager.InstallLibraryApplicationByGuid(workspaceArtifactId, new Guid(IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING)).Wait();
 			}
 		}
-
-	    public void InstallIntegrationPointFromAppLibraryToWorkspace(int workspaceArtifactId)
-	    {
-	        LibraryApplication libraryApplication = GetLibraryApplicationDTO(new Guid(IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING));
-
-	        using (var applicationInstallManager = _helper.CreateAdminProxy<IApplicationInstallManager>())
-	        {
-	            applicationInstallManager.InstallLibraryApplicationByGuid(workspaceArtifactId, libraryApplication.ApplicationGuid).Wait();
-	        }
-	    }
 
 		public bool IsGetApplicationInstalled(int workspaceArtifactId)
 		{

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.UITests.Logging;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
@@ -18,7 +19,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 		private const int _ADMIN_USER_ID = 9;
 
-		private const string _TEMPALTE_WKSP_NAME = "Smoke Workspace";
+		private const string _TEMPLATE_WKSP_NAME = "Smoke Workspace";
 
 		private readonly Lazy<ITestHelper> _helper;
 
@@ -44,19 +45,26 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 		public TestContext CreateWorkspace()
 		{
+			CreateWorkspaceAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+			return this;
+		}
+
+		public async Task CreateWorkspaceAsync()
+		{
 			WorkspaceName = $"Test Workspace {TimeStamp}";
-			Log.Information($"Attempting to create workspace '{WorkspaceName}' using template '{_TEMPALTE_WKSP_NAME}'.");
+			Log.Information($"Attempting to create workspace '{WorkspaceName}' using template '{_TEMPLATE_WKSP_NAME}'.");
 			try
 			{
-				WorkspaceId = Workspace.CreateWorkspace(WorkspaceName, _TEMPALTE_WKSP_NAME);
+				WorkspaceId = await Workspace.CreateWorkspaceAsync(WorkspaceName, _TEMPLATE_WKSP_NAME);
 			}
 			catch (Exception ex)
 			{
-				Log.Error(ex, @"Cannot create workspace '{WorkspaceName}' using template '{_TEMPALTE_WKSP_NAME}'. Check if Relativity works correctly (services, ...).");
+				Log.Error(ex,
+					@"Cannot create workspace '{WorkspaceName}' using template '{_TEMPLATE_WKSP_NAME}'. Check if Relativity works correctly (services, ...).");
 				throw;
 			}
-			Log.Information("Workspace '{WorkspaceName}' was successfully created using template '{_TEMPALTE_WKSP_NAME}.");
-			return this;
+
+			Log.Information("Workspace '{WorkspaceName}' was successfully created using template '{_TEMPLATE_WKSP_NAME}.");
 		}
 
 		public TestContext SetupUser()
@@ -88,7 +96,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 				bool isAppInstalled = ipAppManager.IsGetApplicationInstalled((int) WorkspaceId);
 				if (!isAppInstalled)
 				{
-					ipAppManager.InstallIntegrationPointFromAppLibraryToWorkspace((int) WorkspaceId);
+					ipAppManager.InstallApplicationFromLibrary((int) WorkspaceId);
 				}
 				Log.Information(@"Application is installed.");
 			}
@@ -104,6 +112,11 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			return this;
 		}
 
+		public async Task InstallIntegrationPointsAsync()
+		{
+			await Task.Run(() => InstallIntegrationPoints());
+		}
+
 		public TestContext ImportDocuments()
 		{
 			Log.Information(@"Importing documents...");
@@ -114,6 +127,11 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			workspaceService.ImportData(GetWorkspaceId(), data);
 			Log.Information(@"Documents imported.");
 			return this;
+		}
+
+		public async Task ImportDocumentsAsync()
+		{
+			await Task.Run(() => ImportDocuments());
 		}
 
 		public TestContext TearDown()

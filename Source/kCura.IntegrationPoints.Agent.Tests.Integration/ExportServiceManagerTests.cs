@@ -25,8 +25,10 @@ using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.Data.RowDataGateway;
+using kCura.IntegrationPoint.Tests.Core.Validators;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using Relativity.Services.Folder;
 using Constants = kCura.IntegrationPoint.Tests.Core.Constants;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration

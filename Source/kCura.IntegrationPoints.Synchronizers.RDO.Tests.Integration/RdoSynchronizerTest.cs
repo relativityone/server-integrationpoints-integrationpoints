@@ -82,6 +82,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 
 			//Act
 			rdoSynchronizer.SyncData(defaultData, sourceFields, settings);
+
 			List<Result<Document>> documents = GetAllDocuments(WorkspaceArtifactId);
 
 			//Assert
