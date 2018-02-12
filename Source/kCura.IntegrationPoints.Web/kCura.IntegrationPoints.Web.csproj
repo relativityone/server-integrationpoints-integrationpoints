@@ -145,6 +145,8 @@
     <Compile Include="Models\SourceTypeModel.cs" />
     <Compile Include="Models\SynchronizerSettings.cs" />
     <Compile Include="Models\WorkspaceModel.cs" />
+    <Compile Include="Providers\WorkspaceIdProvider.cs" />
+    <Compile Include="Providers\IWorkspaceIdProvider.cs" />
     <Compile Include="RelativityUrlHelper.cs" />
     <Compile Include="RequestExtensions.cs" />
     <Compile Include="ServiceContextHelperForWeb.cs" />

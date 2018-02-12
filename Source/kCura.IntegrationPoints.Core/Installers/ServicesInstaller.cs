@@ -228,6 +228,8 @@ namespace kCura.IntegrationPoints.Core.Installers
 
 			container.Register(Component.For<ITokenProviderFactoryFactory>().ImplementedBy<TokenProviderFactoryFactory>()
 				.LifestyleSingleton());
+
+			container.Register(Component.For<IFieldService>().ImplementedBy<FieldService>().LifestyleTransient());
 		}
 
 		private SqlServerToggleProvider CreateSqlServerToggleProvider(IHelper helper)

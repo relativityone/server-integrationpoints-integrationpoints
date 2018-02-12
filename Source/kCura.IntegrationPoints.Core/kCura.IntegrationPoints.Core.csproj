@@ -147,6 +147,8 @@
     <Compile Include="Services\Domain\ProviderWithLogContextDecorator.cs" />
     <Compile Include="Services\EhErrorService.cs" />
     <Compile Include="Services\ErrorServiceBase.cs" />
+    <Compile Include="Services\FieldService.cs" />
+    <Compile Include="Services\IFieldService.cs" />
     <Compile Include="Services\IDeleteHistoryService.cs" />
     <Compile Include="Services\IJobTracker.cs" />
     <Compile Include="Services\IProcessingSourceLocationService.cs" />

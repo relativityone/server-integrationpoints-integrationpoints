@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Data;
+﻿using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Web.Providers;
 using kCura.Relativity.Client;
 using Relativity.API;
 
@@ -9,28 +7,21 @@ namespace kCura.IntegrationPoints.Web
 {
 	public class WebClientFactory
 	{
-		public int WorkspaceId
-		{
-			get
-			{
-				return _customPageServices.First(x => x.GetWorkspaceID() != 0).GetWorkspaceID();
-			}
-		}
-
 		private readonly IHelper _helper;
 		private readonly IRsapiClientWithWorkspaceFactory _factory;
-		private readonly IEnumerable<IWorkspaceService> _customPageServices;
+		private readonly IWorkspaceIdProvider _workspaceIdProvider;
 
-		public WebClientFactory(IHelper helper, IRsapiClientWithWorkspaceFactory factory, IEnumerable<IWorkspaceService> services)
+		public WebClientFactory(IHelper helper, IRsapiClientWithWorkspaceFactory factory, IWorkspaceIdProvider workspaceIdProvider)
 		{
 			_helper = helper;
 			_factory = factory;
-			_customPageServices = services;
+			_workspaceIdProvider = workspaceIdProvider;
 		}
 
 		public IRSAPIClient CreateClient()
 		{
-			return _factory.CreateUserClient(WorkspaceId);
+			int workspaceId = _workspaceIdProvider.GetWorkspaceId();
+			return _factory.CreateUserClient(workspaceId);
 		}
 
 		public IRSAPIClient CreateEddsClient()
@@ -40,7 +31,8 @@ namespace kCura.IntegrationPoints.Web
 
 		public IDBContext CreateDbContext()
 		{
-			return _helper.GetDBContext(WorkspaceId);
+			int workspaceId = _workspaceIdProvider.GetWorkspaceId();
+			return _helper.GetDBContext(workspaceId);
 		}
 
 		public IServicesMgr CreateServicesMgr()

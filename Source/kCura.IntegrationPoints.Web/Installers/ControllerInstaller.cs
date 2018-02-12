@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Web.Http.Controllers;
+﻿using System.Web.Http.Controllers;
 using System.Web.Mvc;
 using Castle.Facilities.TypedFactory;
 using Castle.MicroKernel.Registration;
@@ -12,11 +11,11 @@ using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Helpers;
 using kCura.IntegrationPoints.Web.Logging;
+using kCura.IntegrationPoints.Web.Providers;
 using kCura.Relativity.Client;
 using Microsoft.AspNet.SignalR.Hubs;
 using Relativity.API;
@@ -39,19 +38,22 @@ namespace kCura.IntegrationPoints.Web.Installers
 			container.Register(Component.For<IWorkspaceService>().ImplementedBy<WebAPICustomPageService>().LifestyleTransient());
 			container.Register(Component.For<IConfig>().Instance(Config.Config.Instance).LifestyleSingleton());
 			container.Register(Component.For<ISessionService>().UsingFactoryMethod(k => SessionService.Session).LifestylePerWebRequest());
+			container.Register(Component.For<IHelper>().UsingFactoryMethod((k) => ConnectionHelper.Helper()).LifestyleTransient());
+			container.Register(Component.For<IWorkspaceIdProvider>().ImplementedBy<WorkspaceIdProvider>().LifestyleTransient());
 			container.Register(Component.For<WebClientFactory>().UsingFactoryMethod(kernel =>
 			{
+			  var helper = kernel.Resolve<IHelper>();
 				var rsapiClientFactory = kernel.Resolve<IRsapiClientWithWorkspaceFactory>();
-				IEnumerable<IWorkspaceService> services = kernel.ResolveAll<IWorkspaceService>();
-				return new WebClientFactory(ConnectionHelper.Helper(), rsapiClientFactory, services);
+				var workspaceIdProvider = kernel.Resolve<IWorkspaceIdProvider>();
+				return new WebClientFactory(helper, rsapiClientFactory, workspaceIdProvider);
 			}).LifestyleSingleton());
-			container.Register(Component.For<IHelper>().UsingFactoryMethod((k) => ConnectionHelper.Helper()).LifestyleTransient());
 			container.Register(Component.For<ICPHelper>().UsingFactoryMethod((k) => ConnectionHelper.Helper()).LifestyleTransient());
 			container.Register(Component.For<IFolderTreeBuilder>().ImplementedBy<FolderTreeBuilder>().LifestyleTransient());
 			container.Register(Component.For<IServiceContextHelper>().ImplementedBy<ServiceContextHelperForWeb>().LifestyleTransient());
 			container.Register(Component.For<IWorkspaceDBContext>().ImplementedBy<WorkspaceContext>().UsingFactoryMethod((k) => new WorkspaceContext(k.Resolve<WebClientFactory>().CreateDbContext())).LifestyleTransient());
 			container.Register(Component.For<IErrorService>().ImplementedBy<CustomPageErrorService>().LifestyleTransient());
 			container.Register(Component.For<WebAPIFilterException>().ImplementedBy<WebAPIFilterException>().LifestyleSingleton());
+			// TODO remove rsapi client dependency after regression tests - when it is no longer needed
 			container.Register(Component.For<IRSAPIClient>().UsingFactoryMethod((k) => k.Resolve<WebClientFactory>().CreateClient()).LifestyleTransient());
 			container.Register(Component.For<global::Relativity.API.IDBContext>().UsingFactoryMethod((k) => k.Resolve<WebClientFactory>().CreateDbContext()).LifestyleTransient());
 			container.Register(Component.For<GridModelFactory>().ImplementedBy<GridModelFactory>().LifestyleTransient());

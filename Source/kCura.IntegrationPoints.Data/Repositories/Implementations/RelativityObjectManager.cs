@@ -350,7 +350,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				using (var client = _helper.GetServicesManager().CreateProxy<IObjectManager>(executionIdentity))
 				{
-					var result = await client.QueryAsync(_workspaceArtifactId, q, 0, 0);
+					var result = await client.QueryAsync(_workspaceArtifactId, q, 0, 0).ConfigureAwait(false);
 
 					if (result.TotalCount > result.Objects.Count)
 					{

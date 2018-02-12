@@ -16,8 +16,10 @@ using NSubstitute;
 using NUnit.Framework;
 using System.Collections.Generic;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Data;
-using kCura.Relativity.ImportAPI.Enumeration;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Web.Providers;
+using Relativity.API;
 using Field = kCura.Relativity.ImportAPI.Data.Field;
 using Query = kCura.Relativity.Client.Query;
 
@@ -27,10 +29,13 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 	public class FolderPathControllerTests : TestBase
 	{
 		private IRSAPIClient _client;
+		private IFieldService _fieldService;
 		private IImportApiFactory _importApiFactory;
 		private IConfig _config;
-		private IRSAPIService _rsapiService;
 		private IChoiceService _choiceService;
+		private IWorkspaceIdProvider _workspaceIdProvider;
+		private IRepositoryFactory _repositoryFactory;
+		private ICPHelper _helper;
 
 		private HttpConfiguration _configuration;
 		private FolderPathController _instance;
@@ -39,18 +44,21 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 		public override void SetUp()
 		{
 			_client = Substitute.For<IRSAPIClient>();
+			_fieldService = Substitute.For<IFieldService>();
 			_importApiFactory = Substitute.For<IImportApiFactory>();
 			_config = Substitute.For<IConfig>();
-			_rsapiService = Substitute.For<IRSAPIService>();
 			_choiceService = Substitute.For<IChoiceService>();
+			_workspaceIdProvider = Substitute.For<IWorkspaceIdProvider>();
+			_repositoryFactory = Substitute.For<IRepositoryFactory>();
 			_configuration = Substitute.For<HttpConfiguration>();
+			_helper = Substitute.For<ICPHelper>();
 
 			var config = new HttpConfiguration();
 			var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Get");
 			IHttpRoute route = config.Routes.MapHttpRoute("DefaultApi", "api/{controller}/{id}");
 			var routeData = new HttpRouteData(route, new HttpRouteValueDictionary { { "controller", "GetFolderPathFieldsController" } });
 
-			_instance = new FolderPathController(_client, _importApiFactory, _config, _choiceService, _rsapiService)
+			_instance = new FolderPathController(_client, _fieldService, _importApiFactory, _config, _workspaceIdProvider, _repositoryFactory, _helper, _choiceService)
 			{
 				ControllerContext = new HttpControllerContext(config, routeData, request),
 				Request = request
