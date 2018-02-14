@@ -60,6 +60,18 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		[FindsBy(How = How.Id, Using = "folderPath")]
 		protected IWebElement ReadFromFieldElement { get; set; }
 
+		[FindsBy(How = How.Id, Using = "source-fields")]
+		protected IWebElement SourceFieldsElement { get; set; }
+
+		[FindsBy(How = How.Id, Using = "add-source-field")]
+		protected IWebElement AddSourceFieldElement { get; set; }
+
+		[FindsBy(How = How.Id, Using = "workspace-fields")]
+		protected IWebElement DestinationFieldsElement { get; set; }
+
+		[FindsBy(How = How.Id, Using = "add-workspace-field")]
+		protected IWebElement AddWorkspaceFieldElement { get; set; }
+
 		protected SelectElement SelectOverwriteElement => new SelectElement(OverwriteElement);
 
 		protected SelectElement SelectUseFolderPathElement => new SelectElement(UseFolderPathElement);
@@ -67,6 +79,10 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		protected SelectElement SelectReadFromFieldElement => new SelectElement(ReadFromFieldElement);
 
 		protected SelectElement SelectImagePrecedenceElement => new SelectElement(ImagePrecedenceElement);
+
+		protected SelectElement SelectSourceFieldsElement => new SelectElement(SourceFieldsElement);
+
+		protected SelectElement SelectDestinationFieldsElement => new SelectElement(DestinationFieldsElement);
 
 		public PushToRelativityThirdPage(RemoteWebDriver driver) : base(driver)
 		{
@@ -170,6 +186,39 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			else
 			{
 				SelectCopyFilesToRepositoryNoElement.Click();
+			}
+		}
+
+		public void SelectSourceField(string fieldName)
+		{
+			SelectField(SelectSourceFieldsElement, AddSourceFieldElement, fieldName);
+		}
+
+		public void SelectWorkspaceField(string fieldName)
+		{
+			SelectField(SelectDestinationFieldsElement, AddWorkspaceFieldElement, fieldName);
+		}
+
+		protected void SelectField(SelectElement selectElement, IWebElement addFieldElement, string fieldName)
+		{
+			if (string.IsNullOrEmpty(fieldName))
+			{
+				return;
+			}
+
+			string textToSearchFor = fieldName + " [";  //We are adding [ bracket to make sure whole filed name is taken into account
+
+			SelectOption(selectElement, textToSearchFor);
+
+			addFieldElement.Click();
+		}
+
+		private static void SelectOption(SelectElement selectElement, string textToSearchFor)
+		{
+			IWebElement option = selectElement.WrappedElement.FindElement(By.XPath($".//option[starts-with(normalize-space(.), \"{textToSearchFor}\")]"));
+			if (!option.Selected)
+			{
+				option.Click();
 			}
 		}
 

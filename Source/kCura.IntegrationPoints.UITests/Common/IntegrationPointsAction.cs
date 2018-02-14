@@ -6,6 +6,9 @@ using OpenQA.Selenium.Remote;
 
 namespace kCura.IntegrationPoints.UITests.Common
 {
+	using System;
+	using System.Collections.Generic;
+
 	public class IntegrationPointsAction
 	{
 		private readonly RemoteWebDriver _driver;
@@ -94,7 +97,9 @@ namespace kCura.IntegrationPoints.UITests.Common
 		public PushToRelativityThirdPage SetupPushToRelativityThirdPage(PushToRelativitySecondPage secondPage, RelativityProviderModel model)
 		{
 			PushToRelativityThirdPage thirdPage = secondPage.GoToNextPage();
-			thirdPage.MapAllFields();
+
+			MapWorkspaceFields(thirdPage, model.FieldMapping);
+
 			thirdPage.SelectCopyImages( model.CopyImages );
 
 			if (model.Overwrite == RelativityProviderModel.OverwriteModeEnum.AppendOnly)
@@ -143,6 +148,21 @@ namespace kCura.IntegrationPoints.UITests.Common
 			thirdPage.SelectCopyFilesToRepository(model.CopyFilesToRepository);
 
 			return thirdPage;
+		}
+
+		private void MapWorkspaceFields(PushToRelativityThirdPage thirdPage, List<Tuple<string, string>> fieldMapping)
+		{
+			if (fieldMapping == null)
+			{
+				thirdPage.MapAllFields();
+				return;
+			}
+
+			foreach (Tuple<string, string> tuple in fieldMapping)
+			{
+				thirdPage.SelectSourceField(tuple.Item1);
+				thirdPage.SelectWorkspaceField(tuple.Item2);
+			}
 		}
 	}
 }

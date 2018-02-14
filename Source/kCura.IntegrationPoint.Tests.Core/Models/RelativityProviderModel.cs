@@ -34,8 +34,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Models
 
 
 		#region "Field Mappings"
-		public List<string> SourceFields;
-		public List<string> DestinationFields;
+		public List<Tuple<string, string>> FieldMapping { get; set; }
 		#endregion
 
 

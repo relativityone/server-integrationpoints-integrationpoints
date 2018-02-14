@@ -13,6 +13,9 @@ using TestContext = kCura.IntegrationPoints.UITests.Configuration.TestContext;
 
 namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 {
+	using System;
+	using System.Collections.Generic;
+
 	[TestFixture]
 	[Category(TestCategory.SMOKE)]
 	public class MetadataSavedSearchToFolderTest: UiTest
@@ -52,6 +55,15 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.RelativityInstance = "This Instance";
 			model.DestinationWorkspace = $"{_destinationContext.WorkspaceName} - {_destinationContext.WorkspaceId}";
 			model.CopyNativeFiles = RelativityProviderModel.CopyNativeFilesEnum.No;
+
+			model.FieldMapping = new List<Tuple<string, string>>()
+			{
+				new Tuple<string, string>("Control Number", "Control Number"),
+				new Tuple<string, string>("Extracted Text", "Extracted Text"),
+				new Tuple<string, string>("Title", "Title"),
+				new Tuple<string, string>("Date Created", "Date Created")
+			};
+
 			return model;
 		}
 
@@ -321,6 +333,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			_destinationContext.ImportDocuments();
 
 			RelativityProviderModel model = CreateRelativityProviderModel();
+			
+
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
 			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.ReadFromFolderTree;
 			model.MoveExistingDocuments = true; 
