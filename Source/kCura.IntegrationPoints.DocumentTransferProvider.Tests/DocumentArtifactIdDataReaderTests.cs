@@ -3,6 +3,7 @@ using System.Data;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.DocumentTransferProvider.DataReaders;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
@@ -85,7 +86,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests
 			_savedSearchRepository.AllDocumentsRetrieved().Returns(true);
 
 			// Act & Assert
-			Assert.Throws<Exception>(() => _instance.Read());
+			Assert.Throws<IntegrationPointsException>(() => _instance.Read());
 		}
 
 		[Test]

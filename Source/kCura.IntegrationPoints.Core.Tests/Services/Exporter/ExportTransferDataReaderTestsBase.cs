@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
@@ -144,7 +145,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			_instance = CreateDataReaderTestInstance();
 
 			// Act & Assert
-			Assert.Throws<Exception>(() => _instance.Read());
+			Assert.Throws<IntegrationPointsException>(() => _instance.Read());
 		}
 
 		[Test]

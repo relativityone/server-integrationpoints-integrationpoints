@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
+using Relativity.DataGrid;
 
 namespace kCura.IntegrationPoints.Domain.Readers
 {
@@ -93,11 +95,10 @@ namespace kCura.IntegrationPoints.Domain.Readers
 					ReaderOpen = false; // TODO: handle errors?
 				}
 			}
-			catch (Exception ex)
+			catch (Exception e)
 			{
-				// TODO: Handle errors -- biedrzycki: Jan 13, 2016.
 				Dispose();
-				throw ex;
+				throw CreateFetchDataToReadException(e);
 			}
 		}
 
@@ -138,5 +139,22 @@ namespace kCura.IntegrationPoints.Domain.Readers
 		protected abstract ArtifactDTO[] FetchArtifactDTOs();
 
 		protected abstract bool AllArtifactsFetched();
+
+		private Exception CreateFetchDataToReadException(Exception exception)
+		{
+			bool isDataGridException = exception is DataGridException;
+			string exceptionMessage = isDataGridException ?
+				"Error occurred while fetching data from Data Grid" :
+				"Error occurred while fetching data";
+			string exceptionSource = isDataGridException
+				? IntegrationPointsExceptionSource.DATA_GRID
+				: IntegrationPointsExceptionSource.GENERIC;
+
+			return new IntegrationPointsException(exceptionMessage, exception)
+			{
+				ShouldAddToErrorsTab = isDataGridException,
+				ExceptionSource = exceptionSource
+			};
+		}
 	}
 }
