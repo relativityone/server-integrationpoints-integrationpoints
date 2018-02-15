@@ -24,7 +24,11 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		protected TestContext Context { get; set; }
 
 		protected RemoteWebDriver Driver { get; set; }
-		
+
+		protected virtual void ContextSetUp()
+		{
+		}
+
 		[OneTimeSetUp]
 		protected void SetupSuite()
 		{
@@ -37,9 +41,10 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			Task workspaceCreationTask = Context.CreateWorkspaceAsync();
 			Task documentImportTask  = workspaceCreationTask.ContinueWith(async _ => await Context.ImportDocumentsAsync());
 			Task integrationPointsInstallationTask = workspaceCreationTask.ContinueWith(async _ => await Context.InstallIntegrationPointsAsync());
+			Task contextSetUpTask = Task.Run(() => ContextSetUp());
 			Task webDriverCreationTask = CreateDriverAsync();
 
-			Task.WaitAll(documentImportTask, integrationPointsInstallationTask, webDriverCreationTask);
+			Task.WaitAll(documentImportTask, integrationPointsInstallationTask, contextSetUpTask, webDriverCreationTask);
 		}
 
 		protected async Task CreateDriverAsync()
