@@ -122,7 +122,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			Log.Information(@"Importing documents...");
 			string testDir = NUnit.Framework.TestContext.CurrentContext.TestDirectory.Replace("kCura.IntegrationPoints.UITests",
 				"kCura.IntegrationPoint.Tests.Core");
-			DocumentsTestData data = DocumentTestDataBuilder.BuildTestData(testDir);
+			DocumentsTestData data = DocumentTestDataBuilder.BuildTestData(testDir, true, testDataType);
 			var workspaceService = new WorkspaceService(new ImportHelper());
 			workspaceService.ImportData(GetWorkspaceId(), data);
 			Log.Information(@"Documents imported.");

@@ -14,3 +14,4 @@ Relativity.Services.Interfaces
 kCura.Relativity.Client
 Relativity.Telemetry.APM
 Polly
+Relativity.ImportExport
