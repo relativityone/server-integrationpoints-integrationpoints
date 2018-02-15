@@ -117,21 +117,21 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			await Task.Run(() => InstallIntegrationPoints());
 		}
 
-		public TestContext ImportDocuments()
+		public TestContext ImportDocuments(bool withNatives = true, DocumentTestDataBuilder.TestDataType testDataType = DocumentTestDataBuilder.TestDataType.ModerateWithFoldersStructure)
 		{
 			Log.Information(@"Importing documents...");
 			string testDir = NUnit.Framework.TestContext.CurrentContext.TestDirectory.Replace("kCura.IntegrationPoints.UITests",
 				"kCura.IntegrationPoint.Tests.Core");
-			DocumentsTestData data = DocumentTestDataBuilder.BuildTestData(testDir, true, testDataType);
+			DocumentsTestData data = DocumentTestDataBuilder.BuildTestData(testDir, withNatives, testDataType);
 			var workspaceService = new WorkspaceService(new ImportHelper());
 			workspaceService.ImportData(GetWorkspaceId(), data);
 			Log.Information(@"Documents imported.");
 			return this;
 		}
 
-		public async Task ImportDocumentsAsync()
+		public async Task ImportDocumentsAsync(bool withNatives = true, DocumentTestDataBuilder.TestDataType testDataType = DocumentTestDataBuilder.TestDataType.ModerateWithFoldersStructure)
 		{
-			await Task.Run(() => ImportDocuments());
+			await Task.Run(() => ImportDocuments(withNatives, testDataType));
 		}
 
 		public TestContext TearDown()
