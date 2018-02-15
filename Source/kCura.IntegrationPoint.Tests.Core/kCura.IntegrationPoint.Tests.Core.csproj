@@ -49,6 +49,7 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Services" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -178,8 +179,10 @@
     <Compile Include="TestHelpers\ExtendedIPermissionManager.cs" />
     <Compile Include="TestHelpers\ExtendedIRSAPIClient.cs" />
     <Compile Include="TestHelpers\ExtendedIWorkspaceManager.cs" />
+    <Compile Include="TestHelpers\INativesService.cs" />
     <Compile Include="TestHelpers\IntegrationPointProviderEmptyValidator.cs" />
     <Compile Include="TestHelpers\ITestHelper.cs" />
+    <Compile Include="TestHelpers\NativesService.cs" />
     <Compile Include="TestHelpers\TestConstants.cs" />
     <Compile Include="TestHelpers\TestHelper.cs" />
     <Compile Include="TestBase.cs" />

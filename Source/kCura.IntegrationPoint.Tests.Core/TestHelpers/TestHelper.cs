@@ -5,7 +5,6 @@ using kCura.Relativity.Client;
 using NSubstitute;
 using Relativity.API;
 using Relativity.Services.ArtifactGuid;
-using Relativity.Services.FieldManager;
 using Relativity.Services.InstanceSetting;
 using Relativity.Services.ObjectQuery;
 using Relativity.Services.Objects;
@@ -17,6 +16,10 @@ using Relativity.Services.Workspace;
 
 namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 {
+	using System.Net;
+	using WinEDDS.Service.Export;
+	using IFieldManager = global::Relativity.Services.FieldManager.IFieldManager;
+
 	public class TestHelper : ITestHelper
 	{
 		private string _relativityUserName;
@@ -80,6 +83,13 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			ServiceFactorySettings userSettings = new ServiceFactorySettings(SharedVariables.RsapiClientServiceUri, SharedVariables.RestClientServiceUri, userCredential);
 			ServiceFactory userServiceFactory = new ServiceFactory(userSettings);
 			return userServiceFactory.CreateProxy<T>();
+		}
+
+		public ISearchManager CreateSearchManager()
+		{
+			ICredentials credentials = new NetworkCredential(RelativityUserName, RelativityPassword);
+
+			return new WinEDDS.Service.SearchManager(credentials, new CookieContainer());
 		}
 
 		public void Dispose()
