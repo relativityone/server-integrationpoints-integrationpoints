@@ -93,8 +93,8 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 				ICoreContext coreContext = SourceProviderTemplate.GetBaseServiceContext(-1);
 
 				var ipAppManager = new RelativityApplicationManager(coreContext, Helper);
-				bool isAppInstalled = ipAppManager.IsGetApplicationInstalled((int) WorkspaceId);
-				if (!isAppInstalled)
+				bool isAppInstalledAndUpToDate = ipAppManager.IsApplicationInstalledAndUpToDate((int) WorkspaceId);
+				if (!isAppInstalledAndUpToDate)
 				{
 					ipAppManager.InstallApplicationFromLibrary((int) WorkspaceId);
 				}
