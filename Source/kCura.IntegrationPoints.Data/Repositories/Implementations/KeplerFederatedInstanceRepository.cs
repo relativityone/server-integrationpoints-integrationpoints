@@ -1,22 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity;
 using Relativity.API;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class KeplerFederatedInstanceRepository : KeplerServiceBase, IFederatedInstanceRepository
 	{
 		private readonly IAPILog _logger;
+		private readonly int _federatedInstanceArtifactTypeId;
 
-		public KeplerFederatedInstanceRepository(IHelper helper, IObjectQueryManagerAdaptor objectQueryManagerAdaptor)
-			: base(objectQueryManagerAdaptor)
+		public KeplerFederatedInstanceRepository(int federatedInstanceArtifactTypeId, IHelper helper, IRelativityObjectManager relativityObjectManager)
+			: base(relativityObjectManager)
 		{
+			_federatedInstanceArtifactTypeId = federatedInstanceArtifactTypeId;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<KeplerWorkspaceRepository>();
 		}
 
@@ -61,10 +62,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		private IEnumerable<FederatedInstanceDto> RetrieveFederatedInstanceByCondition(string condition)
 		{
-			var query = new global::Relativity.Services.ObjectQuery.Query()
+			var query = new QueryRequest()
 			{
+				ObjectType = new ObjectTypeRef { ArtifactTypeID = _federatedInstanceArtifactTypeId },
 				Condition = condition,
-				Fields = new[] { "Name", "Instance URL" },
+				Fields = new List<FieldRef>() { new FieldRef() { Name = "Name" }, new FieldRef() { Name = "Instance URL" } }
 			};
 
 			ArtifactDTO[] artifactDtos = null;

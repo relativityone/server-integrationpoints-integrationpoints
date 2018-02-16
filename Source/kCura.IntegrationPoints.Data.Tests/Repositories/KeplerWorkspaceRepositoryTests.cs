@@ -2,7 +2,7 @@
 using System.Linq;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.Contracts.RDO;
+using kCura.IntegrationPoints.Data.Repositories;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity;
@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 		private IHelper _helper;
 		private IServicesMgr _servicesMgr;
 		private IWorkspaceManager _workspaceManagerProxy;
-		private IObjectQueryManagerAdaptor _objectQueryManagerAdaptor;
+		private IRelativityObjectManager _relativityObjectManager;
 
 		[SetUp]
 		public void SetUp()
@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 			_helper = Substitute.For<IHelper>();
 			_servicesMgr = Substitute.For<IServicesMgr>();
 			_workspaceManagerProxy = Substitute.For<IWorkspaceManager>();
-			_objectQueryManagerAdaptor = Substitute.For<IObjectQueryManagerAdaptor>();
+			_relativityObjectManager = Substitute.For<IRelativityObjectManager>();
 		}
 
 		[Test]
@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 			workspaces.Add(new WorkspaceRef() { ArtifactID = workspaceId, Name = workspaceName });
 			_workspaceManagerProxy.RetrieveAllActive().Returns(workspaces);
 			_servicesMgr.CreateProxy<IWorkspaceManager>(ExecutionIdentity.CurrentUser).Returns(_workspaceManagerProxy);
-			var repository = new KeplerWorkspaceRepository(_helper, _servicesMgr, _objectQueryManagerAdaptor);
+			var repository = new KeplerWorkspaceRepository(_helper, _servicesMgr, _relativityObjectManager);
 
 			//Act
 			List<WorkspaceDTO> resultList = repository.RetrieveAllActive().ToList();

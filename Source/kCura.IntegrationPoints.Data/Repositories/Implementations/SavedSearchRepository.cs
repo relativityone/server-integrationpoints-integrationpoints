@@ -15,7 +15,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private int _documentsRetrieved = 0;
 		private int _totalDocumentsRetrieved = 0;
 		public bool StartedRetrieving = false;
-		private int currentPage = 0;
 
 		public SavedSearchRepository(
 			IRelativityObjectManager objectManager,
@@ -40,7 +39,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				Condition = $"'ArtifactId' IN SAVEDSEARCH {_savedSearchId}"
 			};
 
-			UtilityDTO.ResultSet<Document> resultSet = _objectManager.Query<Document>(request, currentPage * _pageSize, _pageSize);
+			UtilityDTO.ResultSet<Document> resultSet = _objectManager.Query<Document>(request, _documentsRetrieved, _pageSize);
 
 			if (resultSet != null && resultSet.Items.Any())
 			{

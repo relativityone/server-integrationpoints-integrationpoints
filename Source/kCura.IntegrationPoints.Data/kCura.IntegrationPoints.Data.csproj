@@ -96,10 +96,12 @@
     <Compile Include="Repositories\IApplicationRepository.cs" />
     <Compile Include="Repositories\IFileRepository.cs" />
     <Compile Include="Repositories\Implementations\FileRepository.cs" />
+    <Compile Include="Repositories\Implementations\ISecretStoreHelper.cs" />
     <Compile Include="Repositories\Implementations\ProductionRepository.cs" />
     <Compile Include="Repositories\Implementations\QueryFieldLookupRepository.cs" />
     <Compile Include="Repositories\Implementations\RelativityObjectManager.cs" />
     <Compile Include="Repositories\Implementations\RunningJobRepository.cs" />
+    <Compile Include="Repositories\Implementations\SecretStoreHelper.cs" />
     <Compile Include="Repositories\IProductionRepository.cs" />
     <Compile Include="Repositories\IKeywordSearchRepository.cs" />
     <Compile Include="Repositories\Implementations\KeplerKeywordSearchRepository.cs" />
@@ -170,9 +172,7 @@
     <Compile Include="Repositories\Implementations\JobHistoryRepository.cs" />
     <Compile Include="Repositories\Implementations\KeplerDocumentRepository.cs" />
     <Compile Include="Repositories\Implementations\FieldQueryRepository.cs" />
-    <Compile Include="Adaptors\Implementations\ObjectQueryManagerAdaptor.cs" />
     <Compile Include="Repositories\Implementations\SavedSearchRepository.cs" />
-    <Compile Include="Adaptors\IObjectQueryManagerAdaptor.cs" />
     <Compile Include="Repositories\Implementations\SourceWorkspaceRepository.cs" />
     <Compile Include="Repositories\Implementations\KeplerWorkspaceRepository.cs" />
     <Compile Include="Repositories\IDestinationWorkspaceRepository.cs" />

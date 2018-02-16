@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity;
 using Relativity.API;
 using Relativity.Services.ObjectQuery;
+using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Workspace;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
@@ -17,10 +16,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private readonly IAPILog _logger;
 		private readonly IServicesMgr _servicesMgr;
 
-		public KeplerWorkspaceRepository(IHelper helper, IServicesMgr servicesMgr, IObjectQueryManagerAdaptor objectQueryManagerAdaptor) 
-			: base(objectQueryManagerAdaptor)
+		public KeplerWorkspaceRepository(IHelper helper, IServicesMgr servicesMgr, IRelativityObjectManager relativityObjectManager) 
+			: base(relativityObjectManager)
 		{
-			this.ObjectQueryManagerAdaptor.ArtifactTypeId = (int) ArtifactType.Case;
+			
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<KeplerWorkspaceRepository>();
 			_servicesMgr = servicesMgr;
 		}
@@ -28,11 +27,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		public WorkspaceDTO Retrieve(int workspaceArtifactId)
 		{
 			ArtifactDTO[] workspaces = null;
-			var query = new Query()
+			var query = new QueryRequest()
 			{
-				Fields = new[] { "Name" },
+				ObjectType = new ObjectTypeRef() { ArtifactTypeID = (int)ArtifactType.Case },
+				Fields = new List<FieldRef>() { new FieldRef() { Name = "Name" } },
 				Condition = $"'ArtifactID' == {workspaceArtifactId}",
-				TruncateTextFields = false
 			};
 
 			try
@@ -50,9 +49,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public IEnumerable<WorkspaceDTO> RetrieveAll()
 		{
-			var query = new global::Relativity.Services.ObjectQuery.Query()
+			var query = new QueryRequest()
 			{
-				Fields = new[] { "Name" },
+				ObjectType = new ObjectTypeRef() { ArtifactTypeID = (int)ArtifactType.Case },
+				Fields = new List<FieldRef>() { new FieldRef() { Name = "Name" } }
 			};
 
 			ArtifactDTO[] artifactDtos = null;

@@ -46,7 +46,8 @@ namespace kCura.IntegrationPoints.Data
 
 		public IRelativityObjectManager GetRelativityObjectManager()
 		{
-			return new RelativityObjectManager(_workspaceArtifactId, _helper, new DefaultSecretCatalogFactory(), new SecretManager(_workspaceArtifactId));
+			return new RelativityObjectManager(_workspaceArtifactId, _helper, 
+				new SecretStoreHelper(_workspaceArtifactId, _helper, new SecretManager(_workspaceArtifactId), new DefaultSecretCatalogFactory()));
 		}
 	}
 }

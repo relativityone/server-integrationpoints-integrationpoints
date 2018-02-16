@@ -2,14 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Data.SecretStore;
 using kCura.IntegrationPoints.Data.Transformers;
 using kCura.IntegrationPoints.Data.UtilityDTO;
 using kCura.IntegrationPoints.Domain.Exceptions;
-using kCura.Relativity.Client;
 using Relativity.API;
 using Relativity.Kepler.Exceptions;
-using Relativity.SecretCatalog;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using FieldRef = Relativity.Services.Objects.DataContracts.FieldRef;
@@ -20,33 +17,18 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class RelativityObjectManager : IRelativityObjectManager
 	{
+		private const int BATCH_SIZE = 1000;
 		private IHelper _helper;
 		private readonly IAPILog _logger;
 		private int _workspaceArtifactId;
-		private ISecretCatalog _secretCatalog;
-		private readonly ISecretCatalogFactory _secretCatalogFactory;
-		private readonly ISecretManager _secretManager;
+		private readonly ISecretStoreHelper _secretStoreHelper;
 
-		public RelativityObjectManager(int workspaceArtifactId, IHelper helper, ISecretCatalogFactory secretCatalogFactory, ISecretManager secretManager)
+		public RelativityObjectManager(int workspaceArtifactId, IHelper helper, ISecretStoreHelper secretStoreHelper)
 		{
 			_workspaceArtifactId = workspaceArtifactId;
 			_helper = helper;
 			_logger = _helper.GetLoggerFactory().GetLogger().ForContext<RelativityObjectManager>();
-			_secretCatalogFactory = secretCatalogFactory;
-			_secretManager = secretManager;
-		}
-
-		private ISecretCatalog SecretCatalog
-		{
-			get
-			{
-				if (_secretCatalog != null)
-				{
-					return _secretCatalog;
-				}
-				_secretCatalog = _secretCatalogFactory.Create(_workspaceArtifactId);
-				return _secretCatalog;
-			}
+			_secretStoreHelper = secretStoreHelper;
 		}
 
 		private void SetParentArtifactId<T>(CreateRequest request, T rdo) where T : BaseRdo, new()
@@ -73,14 +55,13 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					};
 
 					SetParentArtifactId(createRequest, rdo);
-
-					SetEncryptedSecuredConfigurationForNewRdo(createRequest.FieldValues);
+					_secretStoreHelper.SetEncryptedSecuredConfigurationForNewRdo(createRequest.FieldValues);
 
 					int artifactId = client.CreateAsync(_workspaceArtifactId, createRequest)
-						.GetAwaiter()
-						.GetResult()
-						.Object
-						.ArtifactID;
+							.GetAwaiter()
+							.GetResult()
+							.Object
+							.ArtifactID;
 					return artifactId;
 				}
 			}
@@ -114,7 +95,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return SendReadRequest<T>(request, true, executionIdentity);
 		}
 
-		private T Read<T>(int artifactId, bool decryptSecuredConfiguration, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new(){
+		private T Read<T>(int artifactId, bool decryptSecuredConfiguration, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new()
+		{
 			ReadRequest request = new ReadRequest()
 			{
 				Object = new RelativityObjectRef { ArtifactID = artifactId },
@@ -153,7 +135,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				var secretId = rdo.GetField<string>(new Guid(IntegrationPointFieldGuids.SecuredConfiguration));
 				if (!String.IsNullOrWhiteSpace(secretId))
 				{
-					var decryptedSecret = DecryptSecuredConfiguration(secretId);
+					var decryptedSecret = _secretStoreHelper.DecryptSecuredConfiguration(secretId);
 					if (!String.IsNullOrWhiteSpace(decryptedSecret))
 					{
 						rdo.SetField<string>(new Guid(IntegrationPointFieldGuids.SecuredConfiguration), decryptedSecret);
@@ -175,9 +157,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 						Object = rdo.ToObjectRef(),
 						FieldValues = rdo.ToFieldValues().ToList()
 					};
-
-					SetEncryptedSecuredConfigurationForExistingRdo(rdo.ArtifactId, request.FieldValues);
-
+					if (rdo is IntegrationPoint)
+					{
+						var existingRdo = Read<IntegrationPoint>(rdo.ArtifactId, false, executionIdentity);
+						_secretStoreHelper.SetEncryptedSecuredConfigurationForExistingRdo(existingRdo, request.FieldValues);
+					}
 					var result = client.UpdateAsync(_workspaceArtifactId, request)
 						.GetAwaiter()
 						.GetResult();
@@ -245,7 +229,14 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		}
 
 
-		public ResultSet<T> Query<T>(QueryRequest q, int start, int length, bool noFields = false, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new()
+		public ResultSet<T> Query<T>(QueryRequest q, int start, int length, bool noFields = false,
+			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new()
+		{
+			return QueryAsync<T>(q, start, length, noFields, executionIdentity).GetAwaiter().GetResult();
+		}
+
+		public async Task<ResultSet<T>> QueryAsync<T>(QueryRequest q, int start, int length, bool noFields = false,
+			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new()
 		{
 			try
 			{
@@ -253,7 +244,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 				using (var client = _helper.GetServicesManager().CreateProxy<IObjectManager>(executionIdentity))
 				{
-					var queryResults = client.QueryAsync(_workspaceArtifactId, q, start, length).GetAwaiter().GetResult();
+					var queryResults = await client.QueryAsync(_workspaceArtifactId, q, start + 1, length).ConfigureAwait(false);
 					return new ResultSet<T>()
 					{
 						ResultCount = queryResults.ResultCount,
@@ -304,15 +295,27 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 				using (var client = _helper.GetServicesManager().CreateProxy<IObjectManager>(executionIdentity))
 				{
-					QueryResult result = await client.QueryAsync(_workspaceArtifactId, q, 0, 0).ConfigureAwait(false);
+					List<T> output = null;
+					int retrievedResults = 0;
+					int totalResults;
 
-					if (result.TotalCount > result.Objects.Count)
+					do
 					{
-						QueryResult missingResults = await client.QueryAsync(_workspaceArtifactId, q, result.TotalCount, result.TotalCount - result.Objects.Count).ConfigureAwait(false);
+						QueryResult partialResult = await client.QueryAsync(_workspaceArtifactId, q, retrievedResults + 1, BATCH_SIZE).ConfigureAwait(false);
 
-						return result.Objects.Concat(missingResults.Objects).Select(x => x.ToRDO<T>()).Select(SetDecryptedSecuredConfiguration).ToList();
-					}
-					return result.Objects.Select(x => x.ToRDO<T>()).Select(SetDecryptedSecuredConfiguration).ToList();
+						totalResults = partialResult.TotalCount;
+						if (output == null)
+						{
+							output = new List<T>(totalResults);
+						}
+
+						IEnumerable<T> partialResultsAsRdo = partialResult.Objects.Select(x => x.ToRDO<T>()).Select(SetDecryptedSecuredConfiguration);
+						output.AddRange(partialResultsAsRdo);
+
+						retrievedResults += partialResult.Objects.Count;
+					} while (retrievedResults < totalResults);
+
+					return output;
 				}
 			}
 			catch (ServiceNotFoundException ex)
@@ -350,20 +353,60 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				using (var client = _helper.GetServicesManager().CreateProxy<IObjectManager>(executionIdentity))
 				{
-					var result = await client.QueryAsync(_workspaceArtifactId, q, 0, 0).ConfigureAwait(false);
+					List<RelativityObject> output = null;
+					int retrievedResults = 0;
+					int totalResults;
 
-					if (result.TotalCount > result.Objects.Count)
+					do
 					{
-						QueryResult missingResults = await client.QueryAsync(_workspaceArtifactId, q, result.TotalCount, result.TotalCount - result.Objects.Count).ConfigureAwait(false);
+						QueryResult partialResult = await client.QueryAsync(_workspaceArtifactId, q, retrievedResults + 1, BATCH_SIZE).ConfigureAwait(false);
 
-						return result.Objects.Concat(missingResults.Objects).ToList();
-					}
-					return result.Objects;
+						totalResults = partialResult.TotalCount;
+						if (output == null)
+						{
+							output = new List<RelativityObject>(totalResults);
+						}
+
+						output.AddRange(partialResult.Objects);
+
+						retrievedResults += partialResult.Objects.Count;
+					} while (retrievedResults < totalResults);
+
+					return output;
 				}
 			}
 			catch (ServiceNotFoundException ex)
 			{
 				throw LogServiceNotFoundException("QUERY", ex);
+			}
+			catch (Exception ex)
+			{
+				throw LogObjectManagerException(null, q, ex);
+			}
+		}
+
+		public ResultSet<RelativityObject> Query(QueryRequest q, int start, int length, bool noFields = false,
+			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+		{
+			return QueryAsync(q, start, length, noFields, executionIdentity).GetAwaiter().GetResult();
+		}
+
+		public async Task<ResultSet<RelativityObject>> QueryAsync(QueryRequest q, int start, int length, bool noFields = false,
+			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+		{
+			try
+			{
+				using (var client = _helper.GetServicesManager().CreateProxy<IObjectManager>(executionIdentity))
+				{
+					var result = await client.QueryAsync(_workspaceArtifactId, q, start + 1, length).ConfigureAwait(false);
+
+					return new ResultSet<RelativityObject>()
+					{
+						ResultCount = result.ResultCount,
+						TotalCount = result.TotalCount,
+						Items = result.Objects.ToList()
+					};
+				}
 			}
 			catch (Exception ex)
 			{
@@ -382,7 +425,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				using (var client = _helper.GetServicesManager().CreateProxy<IObjectManager>(executionIdentity))
 				{
-					var result = await client.QueryAsync(_workspaceArtifactId, q, 0, 1).ConfigureAwait(false);
+					var result = await client.QueryAsync(_workspaceArtifactId, q, 1, 1).ConfigureAwait(false);
 					return result.TotalCount;
 				}
 			}
@@ -441,101 +484,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			var fieldsAsString = queryRequest?.Fields?.Select(x => $"({x.Name}: {x.Guid})");
 			return string.Join(", ", fieldsAsString);
-		}
-
-		private void SetEncryptedSecuredConfigurationForNewRdo(IEnumerable<FieldRefValuePair> fieldValues)
-		{
-			SetEncryptedSecuredConfiguration(fieldValues,
-				(securedConfiguration) =>
-				{
-					return EncryptSecuredConfigurationForNewRdo(securedConfiguration);
-				});
-		}
-
-		private void SetEncryptedSecuredConfigurationForExistingRdo(int artifactId, IEnumerable<FieldRefValuePair> fieldValues, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
-		{
-			SetEncryptedSecuredConfiguration(fieldValues,
-				(securedConfiguration) =>
-				{
-					return EncryptSecuredConfigurationForExistingRdo(artifactId, securedConfiguration, executionIdentity);
-				});
-		}
-
-		private void SetEncryptedSecuredConfiguration(IEnumerable<FieldRefValuePair> fieldValues, Func<string, string> encryptFunc)
-		{
-			var securedConfigurationField = fieldValues.FirstOrDefault(x =>
-				x.Field.Guid == new Guid(IntegrationPointFieldGuids.SecuredConfiguration));
-			if (securedConfigurationField != null)
-			{
-				securedConfigurationField.Value = encryptFunc(securedConfigurationField.Value as string);
-			}
-		}
-
-		private string EncryptSecuredConfigurationForNewRdo(string securedConfiguration)
-		{
-			return EncryptSecuredConfiguration(securedConfiguration,
-				(sc) =>
-				{
-					var secretData = _secretManager.CreateSecretData(sc);
-					var secretIdentifier = _secretManager.GenerateIdentifier();
-					SecretCatalog.WriteSecret(secretIdentifier, secretData);
-					return secretIdentifier.SecretID;
-				});
-		}
-
-		private string EncryptSecuredConfigurationForExistingRdo(int artifactId, string securedConfiguration, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
-		{
-			return EncryptSecuredConfiguration(securedConfiguration,
-				(sc) =>
-				{
-					var secretData = _secretManager.CreateSecretData(sc);
-					IntegrationPoint existingRdo = Read<IntegrationPoint>(artifactId, false, executionIdentity);
-					var secretIdentifier = _secretManager.RetrieveIdentifier(existingRdo);
-					SecretCatalog.WriteSecret(secretIdentifier, secretData);
-					return secretIdentifier.SecretID;
-				});
-		}
-
-		private string EncryptSecuredConfiguration(string securedConfiguration, Func<string, string> encryptionFunc)
-		{
-			if (securedConfiguration == null)
-			{
-				return null;
-			}
-			try
-			{
-				return encryptionFunc(securedConfiguration);
-			}
-			catch (FieldNotFoundException ex)
-			{
-				_logger.LogWarning(ex, "Can not write Secured Configuration for Integration Point record during encryption process (Secret config: {securedConfiguration} )", securedConfiguration);
-				//Ignore as Integration Point RDO doesn't always include SecuredConfiguration
-				//Any access to missing fieldGuid will throw FieldNotFoundException
-				return securedConfiguration;
-			}
-		}
-
-
-		private string DecryptSecuredConfiguration(string secretId)
-		{
-			try
-			{
-				if (string.IsNullOrWhiteSpace(secretId))
-				{
-					return null;
-				}
-				var secretIdentifier = _secretManager.RetrieveIdentifier(secretId);
-				var secretData = SecretCatalog.GetSecret(secretIdentifier);
-				return _secretManager.RetrieveValue(secretData);
-			}
-			catch (FieldNotFoundException ex)
-			{
-				//Ignore as Integration Point RDO doesn't always include SecuredConfiguration
-				//Any access to missing fieldGuid will throw FieldNotFoundException
-				_logger.LogWarning(ex, "Can not retrieve Secured Configuration for Integration Point record during decryption process (Secret Id: {secretId} )", secretId);
-
-				return secretId;
-			}
 		}
 	}
 }

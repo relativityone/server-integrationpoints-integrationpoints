@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Security.Claims;
-using kCura.IntegrationPoints.Contracts.RDO;
-using kCura.IntegrationPoints.Data.Adaptors.Implementations;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
@@ -38,8 +36,9 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public ICodeRepository GetCodeRepository(int workspaceArtifactId)
 		{
-			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(workspaceArtifactId, ArtifactType.Code);
-			ICodeRepository repository = new KeplerCodeRepository(objectQueryManagerAdaptor);
+			IRelativityObjectManager relativityObjectManager =
+				CreateRelativityObjectManager(workspaceArtifactId);
+			ICodeRepository repository = new KeplerCodeRepository(relativityObjectManager);
 			return repository;
 		}
 
@@ -67,8 +66,9 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IFieldQueryRepository GetFieldQueryRepository(int workspaceArtifactId)
 		{
-			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(workspaceArtifactId, ArtifactType.Field);
-			IFieldQueryRepository fieldQueryRepository = new FieldQueryRepository(_helper, _servicesMgr, objectQueryManagerAdaptor, workspaceArtifactId);
+			IRelativityObjectManager relativityObjectManager =
+				CreateRelativityObjectManager(workspaceArtifactId);
+			IFieldQueryRepository fieldQueryRepository = new FieldQueryRepository(_helper, _servicesMgr, relativityObjectManager, workspaceArtifactId);
 
 			return fieldQueryRepository;
 		}
@@ -97,8 +97,9 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IObjectRepository GetObjectRepository(int workspaceArtifactId, int rdoArtifactId)
 		{
-			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(workspaceArtifactId, rdoArtifactId);
-			IObjectRepository repository = new KeplerObjectRepository(objectQueryManagerAdaptor, rdoArtifactId);
+			IRelativityObjectManager relativityObjectManager =
+				CreateRelativityObjectManager(workspaceArtifactId);
+			IObjectRepository repository = new KeplerObjectRepository(relativityObjectManager, rdoArtifactId);
 			return repository;
 		}
 
@@ -167,16 +168,18 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IWorkspaceRepository GetWorkspaceRepository()
 		{
-			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(-1, ArtifactType.Case);
-			IWorkspaceRepository repository = new KeplerWorkspaceRepository(_helper, _servicesMgr, objectQueryManagerAdaptor);
+			IRelativityObjectManager relativityObjectManager =
+				CreateRelativityObjectManager(-1);
+			IWorkspaceRepository repository = new KeplerWorkspaceRepository(_helper, _servicesMgr, relativityObjectManager);
 
 			return repository;
 		}
 
 		public IWorkspaceRepository GetSourceWorkspaceRepository()
 		{
-			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = new ObjectQueryManagerAdaptor(_helper, _helper.GetServicesManager(), -1, (int)ArtifactType.Case);
-			IWorkspaceRepository repository = new KeplerWorkspaceRepository(_helper, _servicesMgr, objectQueryManagerAdaptor);
+			IRelativityObjectManager relativityObjectManager =
+				CreateRelativityObjectManager(-1);
+			IWorkspaceRepository repository = new KeplerWorkspaceRepository(_helper, _servicesMgr, relativityObjectManager);
 
 			return repository;
 		}
@@ -191,9 +194,10 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		public ISavedSearchRepository GetSavedSearchRepository(int workspaceArtifactId, int savedSearchArtifactId)
 		{
 			ISavedSearchRepository repository = new SavedSearchRepository(new RelativityObjectManager(workspaceArtifactId,
-					_helper,
-					new DefaultSecretCatalogFactory(),
-					new SecretManager(workspaceArtifactId)),
+					_helper, new SecretStoreHelper(workspaceArtifactId, 
+						_helper,
+						new SecretManager(workspaceArtifactId),
+						new DefaultSecretCatalogFactory())),
 					savedSearchArtifactId, 1000);
 			return repository;
 		}
@@ -206,8 +210,9 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public ISavedSearchQueryRepository GetSavedSearchQueryRepository(int workspaceArtifactId)
 		{
-			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(workspaceArtifactId, ArtifactType.Search);
-			ISavedSearchQueryRepository repository = new SavedSearchQueryRepository(objectQueryManagerAdaptor);
+			IRelativityObjectManager relativityObjectManager =
+				CreateRelativityObjectManager(workspaceArtifactId);
+			ISavedSearchQueryRepository repository = new SavedSearchQueryRepository(relativityObjectManager);
 
 			return repository;
 		}
@@ -225,9 +230,10 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IFederatedInstanceRepository GetFederatedInstanceRepository(int artifactTypeId)
 		{
-			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(-1, artifactTypeId);
+			IRelativityObjectManager relativityObjectManager =
+				CreateRelativityObjectManager(-1);
 
-			return new KeplerFederatedInstanceRepository(_helper, objectQueryManagerAdaptor);
+			return new KeplerFederatedInstanceRepository(artifactTypeId, _helper, relativityObjectManager);
 		}
 
 		public IServiceUrlRepository GetServiceUrlRepository()
@@ -273,20 +279,10 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		private RelativityObjectManager CreateRelativityObjectManager(int workspaceArtifactId)
 		{
 			return new RelativityObjectManager(workspaceArtifactId,
-				_helper,
-				new DefaultSecretCatalogFactory(),
-				new SecretManager(workspaceArtifactId));
-		}
-		private IObjectQueryManagerAdaptor CreateObjectQueryManagerAdaptor(int workspaceArtifactId, ArtifactType artifactType)
-		{
-			IObjectQueryManagerAdaptor adaptor = CreateObjectQueryManagerAdaptor(workspaceArtifactId, (int)artifactType);
-			return adaptor;
-		}
-
-		private IObjectQueryManagerAdaptor CreateObjectQueryManagerAdaptor(int workspaceArtifactId, int artifactType)
-		{
-			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = new ObjectQueryManagerAdaptor(_helper, _servicesMgr, workspaceArtifactId, artifactType);
-			return objectQueryManagerAdaptor;
+				_helper, new SecretStoreHelper(workspaceArtifactId,
+					_helper,
+					new SecretManager(workspaceArtifactId),
+					new DefaultSecretCatalogFactory()));
 		}
 
 		private BaseContext GetBaseContextForWorkspace(int workspaceArtifactId)
