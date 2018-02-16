@@ -37,10 +37,19 @@ namespace kCura.IntegrationPoint.Tests.Core.Validators
 
 			return new DocumentPathValidator(expectedFolderPathStrategy, actualFolderPathStrategy);
 		}
+
 		public static DocumentPathValidator CreateForFolderTree(int expectedDocsWorkspaceId, int actualDocsWorkspaceId, IFolderManager folderManager)
 		{
 			var actualFolderPathStrategy = new FolderPathFromFolderTreeStrategy(actualDocsWorkspaceId, folderManager);
 			var expectedFolderPathStrategy = new FolderPathFromFolderTreeStrategy(expectedDocsWorkspaceId, folderManager);
+
+			return new DocumentPathValidator(expectedFolderPathStrategy, actualFolderPathStrategy);
+		}
+
+		public static DocumentPathValidator CreateForRoot(int expectedDocsWorkspaceId, IFolderManager folderManager)
+		{
+			var actualFolderPathStrategy = new FolderPathFromFolderTreeStrategy(expectedDocsWorkspaceId, folderManager);
+			var expectedFolderPathStrategy = new FolderPathIsRootStrategy();
 
 			return new DocumentPathValidator(expectedFolderPathStrategy, actualFolderPathStrategy);
 		}

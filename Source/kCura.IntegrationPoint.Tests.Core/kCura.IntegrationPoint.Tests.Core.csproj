@@ -198,6 +198,7 @@
     <Compile Include="Validators\DocumentsValidator.cs" />
     <Compile Include="Validators\FolderPathFromFieldStrategy.cs" />
     <Compile Include="Validators\FolderPathFromFolderTreeStrategy.cs" />
+    <Compile Include="Validators\FolderPathIsRootStrategy.cs" />
     <Compile Include="Validators\FolderPathStrategyWithCache.cs" />
     <Compile Include="Validators\IDocumentValidator.cs" />
     <Compile Include="Validators\IFolderPathStrategy.cs" />

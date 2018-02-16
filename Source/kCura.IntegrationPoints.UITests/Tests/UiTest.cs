@@ -15,10 +15,27 @@ using TestContext = kCura.IntegrationPoints.UITests.Configuration.TestContext;
 
 namespace kCura.IntegrationPoints.UITests.Tests
 {
+	using System.Collections.Generic;
+	using Data;
+	using Validation;
+
 	public abstract class UiTest
 	{
 		protected static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(UiTest));
-		
+
+		protected static readonly List<Tuple<string, string>> DefaultFieldsMapping = new List<Tuple<string, string>>
+		{
+			new Tuple<string, string>("Control Number", "Control Number"),
+			new Tuple<string, string>("Extracted Text", "Extracted Text"),
+			new Tuple<string, string>("Title", "Title"),
+			new Tuple<string, string>("Date Created", "Date Created")
+		};
+
+		protected static readonly List<Tuple<string, string>> ControlNumberFieldsMapping = new List<Tuple<string, string>>
+		{
+			new Tuple<string, string>("Control Number", "Control Number"),
+		};
+
 		protected TestConfiguration Configuration { get; set; }
 
 		protected TestContext Context { get; set; }
@@ -122,5 +139,12 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			var remoteServerUri = remoteServerUriField.GetValue(internalExecutor) as Uri;
 			return remoteServerUri.ToString();
 		}
+
+		protected void WaitForJobToFinishAndValidateCompletedStatus(IntegrationPointDetailsPage detailsPage)
+		{
+			new BaseUiValidator().ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
+		}
+
+
 	}
 }
