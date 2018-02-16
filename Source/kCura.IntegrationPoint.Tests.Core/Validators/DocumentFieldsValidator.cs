@@ -13,19 +13,19 @@
 			_fieldsToValidate = fieldsToValidate;
 		}
 
-		public virtual void ValidateDocument(Document actualDocument, Document expectedDocument)
+		public virtual void ValidateDocument(Document destinationDocument, Document sourceDocument)
 		{
 			if (_fieldsToValidate == null)
 			{
 				return;
 			}
 
-			FieldValue documentControlNumber = actualDocument[TestConstants.FieldNames.CONTROL_NUMBER];
+			FieldValue documentControlNumber = destinationDocument[TestConstants.FieldNames.CONTROL_NUMBER];
 
 			foreach (string fieldName in _fieldsToValidate)
 			{
-				FieldValue actualFieldValue = actualDocument[fieldName];
-				FieldValue expectedFieldValue = expectedDocument[fieldName];
+				FieldValue actualFieldValue = destinationDocument[fieldName];
+				FieldValue expectedFieldValue = sourceDocument[fieldName];
 
 				Assert.That(actualFieldValue.Value, Is.EqualTo(expectedFieldValue.Value),
 					"Actual field value is different than expected. Field name {0}. Document control number {1}.", actualFieldValue.Name, documentControlNumber);

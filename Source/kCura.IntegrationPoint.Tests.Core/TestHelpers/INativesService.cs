@@ -4,6 +4,6 @@
 
 	public interface INativesService
 	{
-		File GetNativeFileInfo(int documentArtifactId);
+		File GetNativeFileInfo(int workspaceId, int documentArtifactId);
 	}
 }

@@ -171,7 +171,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		{
 			using (var client = Helper.CreateAdminProxy<IRSAPIClient>())
 			{
-				client.APIOptions.WorkspaceID = WorkspaceId.Value;
+				client.APIOptions.WorkspaceID = GetWorkspaceId();
 
 				var relativityScript = FindRelativityFolderPathScript(client);
 

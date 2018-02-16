@@ -6,8 +6,10 @@ using NUnit.Framework;
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.UITests.Configuration;
 using kCura.IntegrationPoints.UITests.Logging;
+using kCura.IntegrationPoints.UITests.Validation;
 using NUnit.Framework.Interfaces;
 using OpenQA.Selenium.Remote;
 using Serilog;
@@ -58,10 +60,10 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			Task workspaceCreationTask = Context.CreateWorkspaceAsync();
 			Task documentImportTask  = workspaceCreationTask.ContinueWith(async _ => await Context.ImportDocumentsAsync());
 			Task integrationPointsInstallationTask = workspaceCreationTask.ContinueWith(async _ => await Context.InstallIntegrationPointsAsync());
-			Task contextSetUpTask = Task.Run(() => ContextSetUp());
+			Task contextSetUpTask = documentImportTask.ContinueWith(_ => ContextSetUp());
 			Task webDriverCreationTask = CreateDriverAsync();
 
-			Task.WaitAll(documentImportTask, integrationPointsInstallationTask, contextSetUpTask, webDriverCreationTask);
+			Task.WaitAll(contextSetUpTask, integrationPointsInstallationTask, webDriverCreationTask);
 		}
 
 		protected async Task CreateDriverAsync()
@@ -144,7 +146,5 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		{
 			new BaseUiValidator().ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
 		}
-
-
 	}
 }

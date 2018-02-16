@@ -16,13 +16,13 @@ namespace kCura.IntegrationPoint.Tests.Core.Validators
 			_actualFolderPathStrategy = actualFolderPathStrategy;
 		}
 
-		public void ValidateDocument(Document actualDocument, Document expectedDocument)
+		public void ValidateDocument(Document destinationDocument, Document sourceDocument)
 		{
-			string expectedFolderPath = _expectedDocumentPathStrategy.GetFolderPath(expectedDocument);
-			string actualFolderPath = _actualFolderPathStrategy.GetFolderPath(actualDocument);
+			string expectedFolderPath = _expectedDocumentPathStrategy.GetFolderPath(sourceDocument);
+			string actualFolderPath = _actualFolderPathStrategy.GetFolderPath(destinationDocument);
 			Assert.That(expectedFolderPath == actualFolderPath,
 				"Document with Control Number {0} hass different path than expected. Expected {1}; Actual {2};",
-				GetControlNumber(expectedDocument), expectedFolderPath, actualFolderPath);
+				GetControlNumber(sourceDocument), expectedFolderPath, actualFolderPath);
 		}
 
 		private static FieldValue GetControlNumber(Document document)

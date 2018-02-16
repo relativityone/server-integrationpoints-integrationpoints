@@ -4,6 +4,6 @@
 
 	public interface IDocumentValidator
 	{
-		void ValidateDocument(Document actualDocument, Document expectedDocument);
+		void ValidateDocument(Document destinationDocument, Document sourceDocument);
 	}
 }

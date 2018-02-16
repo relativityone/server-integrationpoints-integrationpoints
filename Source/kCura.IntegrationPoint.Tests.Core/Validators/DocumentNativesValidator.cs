@@ -12,11 +12,11 @@
 			ExpectHasNatives = expectHasNatives;
 		}
 
-		public virtual void ValidateDocument(Document actualDocument, Document expectedDocument)
+		public virtual void ValidateDocument(Document destinationDocument, Document sourceDocument)
 		{
-			bool shouldExpectNatives = ShouldExpectNativesForDocument(expectedDocument);
+			bool shouldExpectNatives = ShouldExpectNativesForDocument(sourceDocument);
 
-			Assert.That(actualDocument.HasNative, Is.EqualTo(shouldExpectNatives));
+			Assert.That(destinationDocument.HasNative, Is.EqualTo(shouldExpectNatives));
 		}
 
 		protected  virtual bool ShouldExpectNativesForDocument(Document expectedDocument)

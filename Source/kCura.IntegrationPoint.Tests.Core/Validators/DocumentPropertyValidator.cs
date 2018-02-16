@@ -14,11 +14,11 @@
 			_documentProperty = documentProperty;
 		}
 
-		public virtual void ValidateDocument(Document actualDocument, Document expectedDocument)
+		public virtual void ValidateDocument(Document destinationDocument, Document sourceDocument)
 		{
-			FieldValue documentControlNumber = actualDocument[TestConstants.FieldNames.CONTROL_NUMBER];
+			FieldValue documentControlNumber = destinationDocument[TestConstants.FieldNames.CONTROL_NUMBER];
 
-			Assert.That(_documentProperty(actualDocument), Is.EqualTo(_documentProperty(expectedDocument)), "Actual field value is different than expected. Document control number: {0}", documentControlNumber);
+			Assert.That(_documentProperty(destinationDocument), Is.EqualTo(_documentProperty(sourceDocument)), "Actual field value is different than expected. Document control number: {0}", documentControlNumber);
 		}
 	}
 }
