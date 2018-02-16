@@ -29,6 +29,9 @@ nuget Relativity.Telemetry.MetricsCollection ~> 9.4.148 	//RelativityCore
 nuget Relativity.Vfs.IO ~> 1.0.22 							//RelativityCore
 nuget Relativity.Toggles ~> 1.0.0.84 						//RelativityCore
 nuget SystemWrapper.Wrappers ~> 0.19.0.115 					//RelativityCore
+nuget Relativity.Kepler ~> 1.0.1.409						
+nuget Relativity.Kepler.Client ~> 1.0.1.409
+nuget Castle.Windsor ~> 3.3.0						
 
 //Other packages
 nuget AutoMapper 4.2.1
@@ -45,3 +48,9 @@ nuget Selenium.WebDriver.ChromeDriver 2.34.0
 
 //Analyzers
 nuget CSharpGuidelineAnalyzer 1.0.3.0
+
+nuget BenchmarkDotNet 0.10.12
+
+group Newtonsoft8
+	source https://proget.kcura.corp/nuget/NuGet
+	nuget Newtonsoft.Json 8.0.1
