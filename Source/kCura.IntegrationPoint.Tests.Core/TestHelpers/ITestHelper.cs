@@ -4,6 +4,8 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 {
+	using WinEDDS.Service.Export;
+
 	public interface ITestHelper : IHelper
 	{
 		string RelativityUserName { get; set; }
@@ -17,5 +19,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 		T CreateAdminProxy<T>() where T : IDisposable;
 
 		T CreateUserProxy<T>(string username) where T : IDisposable;
+
+		ISearchManager CreateSearchManager();
 	}
 }

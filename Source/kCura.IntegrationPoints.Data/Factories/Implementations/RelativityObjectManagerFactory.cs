@@ -21,7 +21,8 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		public IRelativityObjectManager CreateRelativityObjectManager(int workspaceId)
 		{
 			var secretManager = _secretManagerFactory.Create(workspaceId);
-			return new RelativityObjectManager(workspaceId, _helper, _secretCatalogFactory, secretManager);
+			return new RelativityObjectManager(workspaceId, _helper,
+				new SecretStoreHelper(workspaceId, _helper, secretManager, _secretCatalogFactory));
 		}
 	}
 }

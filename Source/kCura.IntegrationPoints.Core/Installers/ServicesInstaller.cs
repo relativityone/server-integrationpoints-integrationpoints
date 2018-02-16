@@ -97,15 +97,19 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IJobServiceDataProvider>().ImplementedBy<JobServiceDataProvider>().LifestyleTransient());
 			container.Register(Component.For<IJobService>().ImplementedBy<JobService>().LifestyleTransient());
 			container.Register(Component.For<ICaseServiceContext>().ImplementedBy<CaseServiceContext>().LifestyleTransient());
+
 			container.Register(Component.For<IRelativityObjectManager>()
 				.UsingFactoryMethod(x =>
 				{
 					IServiceContextHelper contextHelper = x.Resolve<IServiceContextHelper>();
 					IHelper helper = x.Resolve<IHelper>();
-					return new RelativityObjectManager(contextHelper.WorkspaceID,
-						helper,
-						new DefaultSecretCatalogFactory(),
-						new SecretManager(contextHelper.WorkspaceID));
+					return new RelativityObjectManager(contextHelper.WorkspaceID, 
+						helper, 
+						new SecretStoreHelper(
+							contextHelper.WorkspaceID, 
+							helper, 
+							new SecretManager(contextHelper.WorkspaceID),
+							new DefaultSecretCatalogFactory()));
 				}).LifestyleTransient());
 			container.Register(Component.For<IRelativityObjectManagerFactory>().ImplementedBy<RelativityObjectManagerFactory>().LifestyleTransient());
 			container.Register(Component.For<IEddsServiceContext>().ImplementedBy<EddsServiceContext>().LifestyleTransient());

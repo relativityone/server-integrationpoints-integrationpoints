@@ -16,9 +16,10 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
 			return new IntegrationPointSecretDelete(secretManager, 
 				secretCatalog, 
 				new RelativityObjectManager(helper.GetActiveCaseID(), 
-				helper, 
-				new DefaultSecretCatalogFactory(),
-				new SecretManager(helper.GetActiveCaseID())));
+				helper, new SecretStoreHelper(helper.GetActiveCaseID(),
+						helper,
+						new SecretManager(helper.GetActiveCaseID()),
+						new DefaultSecretCatalogFactory())));
 		}
 	}
 }

@@ -91,11 +91,13 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 				PeriodicScheduleRule rule = ConvertModelToScheduleRule(model);
 				Data.IntegrationPoint integrationPoint = model.ToRdo(choices, rule);
 
+				IntegrationPointModel integrationPointModel = IntegrationPointModel.FromIntegrationPoint(integrationPoint);
+
 				SourceProvider sourceProvider = GetSourceProvider(integrationPoint.SourceProvider);
 				DestinationProvider destinationProvider = GetDestinationProvider(integrationPoint.DestinationProvider);
 				IntegrationPointType integrationPointType = GetIntegrationPointType(integrationPoint.Type);
 
-				RunValidation(model, sourceProvider, destinationProvider, integrationPointType, ObjectTypeGuids.IntegrationPoint);
+				RunValidation(integrationPointModel, sourceProvider, destinationProvider, integrationPointType, ObjectTypeGuids.IntegrationPoint);
 
 				//save RDO
 				if (integrationPoint.ArtifactId > 0)

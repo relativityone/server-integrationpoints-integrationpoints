@@ -14,13 +14,17 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		private TestContext _destinationContext = null;
 		private IntegrationPointsAction _integrationPointsAction;
 
+		protected override void ContextSetUp()
+		{
+			Context.ExecuteRelativityFolderPathScript();
+		}
+
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
 			EnsureGeneralPageIsOpened();
 			_integrationPointsAction = new IntegrationPointsAction(Driver, Context);
 		}
-
 
 		[SetUp]
 		public void SetUp()

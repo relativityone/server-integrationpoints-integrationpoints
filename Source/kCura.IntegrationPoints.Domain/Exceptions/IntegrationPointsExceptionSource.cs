@@ -7,6 +7,7 @@
 		public static readonly string CUSTOM_PAGE = "Integration Points Custom Page";
 		public static readonly string EVENT_HANDLER = "Integration Points Event Handler";
 		public static readonly string IAPI = "Integration Points - ImportAPI";
+		public static readonly string DATA_GRID = "Integration Points - Data Grid";
 		public static readonly string LDAP = "Integration Points - LDAP Provider";
 		public static readonly string FTP = "Integration Points - FTP Provider";
 		public static readonly string RSAPI = "Integration Points - RsApi";

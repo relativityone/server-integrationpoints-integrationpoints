@@ -9,6 +9,8 @@ using File = System.IO.File;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
+	using global::Relativity.Services.ApplicationInstallManager.Models;
+
 	public class RelativityApplicationManager
 	{
 		private readonly ITestHelper _helper;
@@ -56,13 +58,15 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public bool IsGetApplicationInstalled(int workspaceArtifactId)
+		public bool IsApplicationInstalledAndUpToDate(int workspaceArtifactId)
 		{
-			var caseApplicationManager = new CaseApplicationManager();
-			int appId = caseApplicationManager.FindCurrentApplicationInstallID(_baseServiceContext.ChicagoContext, workspaceArtifactId,
-					new Guid(IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING));
-			
-			return appId > 0;
+			using (var applicationInstallManager = _helper.CreateAdminProxy<IApplicationInstallManager>())
+			{
+				ApplicationInstallStatus installStatus = applicationInstallManager.GetApplicationInstallStatusAsync(workspaceArtifactId, 
+					new Guid(IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING)).Result;
+
+				return installStatus == ApplicationInstallStatus.Installed;
+			}
 		}
 
 		public void DeployIntegrationPointsCustomPage()
@@ -90,7 +94,5 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			return Path.Combine(SharedVariables.LatestRapLocationFromBuildPackages, SharedVariables.ApplicationPath, SharedVariables.ApplicationRapFileName);
 		}
-
-		
 	}
 }

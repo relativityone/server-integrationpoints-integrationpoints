@@ -1,29 +1,30 @@
-﻿using System.Threading.Tasks;
-using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Contracts.RDO;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.Domain.Models;
-using Relativity.Services.ObjectQuery;
+using Relativity.Services.Objects.DataContracts;
+using SearchProviderCondition = Relativity.Services.ObjectQuery.SearchProviderCondition;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class KeplerObjectRepository : KeplerServiceBase, IObjectRepository
 	{
-		public KeplerObjectRepository(IObjectQueryManagerAdaptor objectQueryManagerAdaptor, int objectTypeId)
-			: base(objectQueryManagerAdaptor)
+		private int ArtifactTypeId;
+
+		public KeplerObjectRepository(IRelativityObjectManager relativityObjectManager, int objectTypeId)
+			: base(relativityObjectManager)
 		{
-			ObjectQueryManagerAdaptor.ArtifactTypeId = objectTypeId;
+			ArtifactTypeId = objectTypeId;
 		}
 
 		public async Task<ArtifactDTO[]> GetFieldsFromObjects(string[] fields)
 		{
-			var query = new Query()
+			var query = new QueryRequest
 			{
-				Fields = fields,
-				IncludeIdWindow = false,
+				ObjectType = new ObjectTypeRef { ArtifactTypeID = ArtifactTypeId },
+				Fields = fields.Select(x => new FieldRef { Name = x }),
 				SampleParameters = null,
 				RelationalField = null,
-				SearchProviderCondition = null,
-				TruncateTextFields = false
+				SearchProviderCondition = null
 			};
 
 			return await RetrieveAllArtifactsAsync(query);

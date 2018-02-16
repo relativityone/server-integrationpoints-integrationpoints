@@ -39,7 +39,12 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 		{
 			base.SuiteSetup();
 
-			_objectManager = new RelativityObjectManager(SourceWorkspaceArtifactId, Helper, new DefaultSecretCatalogFactory(), new SecretManager(SourceWorkspaceArtifactId));
+			_objectManager = new RelativityObjectManager(SourceWorkspaceArtifactId, 
+				Helper, 
+				new SecretStoreHelper(SourceWorkspaceArtifactId,
+					Helper, 
+					new SecretManager(SourceWorkspaceArtifactId), 
+					new DefaultSecretCatalogFactory()));
 
 			_groupId = Group.CreateGroup($"group_{Utils.FormatedDateTimeNow}");
 			_user = User.CreateUser("firstname", "lastname", $"a_{Utils.FormatedDateTimeNow}@relativity.com", new List<int> {_groupId});
