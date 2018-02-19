@@ -75,7 +75,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
-			//TODO add root validation
+			ValidateDocumentsForRoot();
 		}
 
 		[Test]
@@ -140,7 +140,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
-			//TODO add root validation
+			ValidateDocumentsForRoot();
 		}
 
 		[Test]
@@ -259,7 +259,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
-			//TODO add root validation
+			ValidateDocumentsForRoot();
 		}
 
 
@@ -377,5 +377,15 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 			documentsValidator.Validate();
 		}
+
+		private void ValidateDocumentsForRoot()
+		{
+			DocumentsValidator documentsValidator = new PushDocumentsValidator(Context.GetWorkspaceId(), _destinationContext.GetWorkspaceId())
+				.ValidateWith(DocumentPathValidator.CreateForRoot(_destinationContext.GetWorkspaceId(), _folderManager))
+				.ValidateWith(new DocumentNativesAndInRepositoryValidator(_nativesService, Context.GetWorkspaceId(), _destinationContext.GetWorkspaceId(), true, true));
+
+			documentsValidator.Validate();
+		}
+
 	}
 }
