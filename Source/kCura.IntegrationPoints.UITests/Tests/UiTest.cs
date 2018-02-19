@@ -4,6 +4,7 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using NUnit.Framework;
 using System;
+using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data;
@@ -51,6 +52,9 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		[OneTimeSetUp]
 		protected void SetupSuite()
 		{
+			// enable TLS 1.2 for R1 regression environments
+			System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+
 			Configuration = new TestConfiguration()
 				.MergeCustomConfigWithAppSettings()
 				.SetupConfiguration()
