@@ -211,7 +211,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_instance = new ExportServiceManager(_helper, _helperFactory,
 				_caseContext, _contextContainerFactory,
 				_synchronizerFactory, _exporterFactory,
-				_claimPrincipleFactory, _repositoryFactory,
+				_claimPrincipleFactory, _repositoryFactory, null,
 				_managerFactory, _batchStatuses, _serializer, _jobService, _scheduleRuleFactory, _jobHistoryService,
 				_jobHistoryErrorService,
 				_jobStatisticsService);
@@ -424,7 +424,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			ExportServiceManager instance = new ExportServiceManager(_helper, _helperFactory,
 				_caseContext, _contextContainerFactory,
 				_synchronizerFactory, _exporterFactory,
-				_claimPrincipleFactory, _repositoryFactory,
+				_claimPrincipleFactory, _repositoryFactory, null,
 				_managerFactory, _batchStatuses, _serializer, _jobService, _scheduleRuleFactory, _jobHistoryService,
 				_jobHistoryErrorService,
 				_jobStatisticsService);

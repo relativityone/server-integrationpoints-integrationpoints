@@ -87,6 +87,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				exporterFactory,
 				onBehalfOfUserClaimsPrincipalFactory,
 				repositoryFactory,
+				null,
 				managerFactory,
 				new[] { jobHistoryUpdater },
 				serializer,
