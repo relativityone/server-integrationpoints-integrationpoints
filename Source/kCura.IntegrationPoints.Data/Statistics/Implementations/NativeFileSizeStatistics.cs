@@ -85,7 +85,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			return _repositoryFactory.GetRdoRepository(workspaceArtifactId).Query(query);
 		}
 
-		private int GetTotalFileSize(IList<int> artifactIds, int workspaceArtifactId)
+		private long GetTotalFileSize(IEnumerable<int> artifactIds, int workspaceArtifactId)
 		{
 			const string sqlText = "SELECT COALESCE(SUM([Size]),0) FROM [File] WHERE [Type] = @FileType AND [DocumentArtifactID] IN (SELECT * FROM @ArtifactIds)";
 			
@@ -101,7 +101,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			};
 
 			IDBContext dbContext = _helper.GetDBContext(workspaceArtifactId);
-			return dbContext.ExecuteSqlStatementAsScalar<int>(sqlText, artifactIdsParameter, fileTypeParameter);
+			return dbContext.ExecuteSqlStatementAsScalar<long>(sqlText, artifactIdsParameter, fileTypeParameter);
 		}
 		
 	}
