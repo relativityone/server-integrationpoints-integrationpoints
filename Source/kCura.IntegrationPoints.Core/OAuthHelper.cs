@@ -12,9 +12,11 @@ namespace kCura.IntegrationPoints.Core
 		private readonly Uri _keplerUri;
 		private readonly OAuthClientDto _oAuthClientDto;
 		private readonly ITokenProvider _tokenProvider;
+		private readonly IHelper _sourceHelper;
 
-		public OAuthHelper(Uri instanceUri, Uri rsapiUri, Uri keplerUri, OAuthClientDto oAuthClientDto, ITokenProvider tokenProvider)
+		public OAuthHelper(IHelper sourceHelper, Uri instanceUri, Uri rsapiUri, Uri keplerUri, OAuthClientDto oAuthClientDto, ITokenProvider tokenProvider)
 		{
+			_sourceHelper = sourceHelper;
 			_instanceUri = instanceUri;
 			_rsapiUri = rsapiUri;
 			_keplerUri = keplerUri;
@@ -46,7 +48,7 @@ namespace kCura.IntegrationPoints.Core
 
 		public ILogFactory GetLoggerFactory()
 		{
-			throw new System.NotImplementedException();
+			return _sourceHelper.GetLoggerFactory();
 		}
 
 		public string ResourceDBPrepend()
