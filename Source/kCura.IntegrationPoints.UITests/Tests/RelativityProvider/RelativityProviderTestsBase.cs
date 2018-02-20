@@ -45,7 +45,7 @@
 		protected DocumentsValidator CreateDocumentsForFieldValidator()
 		{
 			return new PushDocumentsValidator(Context.GetWorkspaceId(), DestinationContext.GetWorkspaceId())
-				.ValidateWith(DocumentPathValidator.CreateForField(Context.GetWorkspaceId(), FolderManager));
+				.ValidateWith(DocumentPathValidator.CreateForField(DestinationContext.GetWorkspaceId(), FolderManager));
 		}
 
 		protected DocumentsValidator CreateDocumentsForFolderTreeValidator()

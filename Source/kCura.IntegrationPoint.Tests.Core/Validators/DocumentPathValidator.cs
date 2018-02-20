@@ -30,9 +30,9 @@ namespace kCura.IntegrationPoint.Tests.Core.Validators
 			return document[TestConstants.FieldNames.CONTROL_NUMBER];
 		}
 
-		public static DocumentPathValidator CreateForField(int expectedDocsWorkspaceId, IFolderManager folderManager)
+		public static DocumentPathValidator CreateForField(int actualDocsWorkspaceId, IFolderManager folderManager)
 		{
-			var actualFolderPathStrategy = new FolderPathFromFolderTreeStrategy(expectedDocsWorkspaceId, folderManager);
+			var actualFolderPathStrategy = new FolderPathFromFolderTreeStrategy(actualDocsWorkspaceId, folderManager);
 			var expectedFolderPathStrategy = new FolderPathFromFieldStrategy("Document Folder Path");
 
 			return new DocumentPathValidator(expectedFolderPathStrategy, actualFolderPathStrategy);
