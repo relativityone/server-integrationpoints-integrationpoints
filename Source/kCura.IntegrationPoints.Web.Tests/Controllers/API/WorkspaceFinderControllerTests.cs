@@ -138,7 +138,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		{
 			// Arrange
 			_helperFactoryMock.CreateTargetHelper(_cpHelperMock, _FEDERATED_INSTANCE_ID, _CREDENTIALS).Returns(_helperMock);
-			_workspaceManagerMock.GetUserAvailableDestinationWorkspaces(_CURRENT_WORKSPACE_ARTIFACT_ID).Returns(_remoteWorkspacesDTOs );
+			_workspaceManagerMock.GetUserActiveWorkspaces().Returns(_remoteWorkspacesDTOs );
 
 			// Act
 			HttpResponseMessage httpResponseMessage =

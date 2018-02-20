@@ -6,7 +6,6 @@ using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Data.SecretStore;
 using Relativity.API;
 using Relativity.Core;
-using ArtifactType = kCura.Relativity.Client.ArtifactType;
 
 namespace kCura.IntegrationPoints.Data.Factories.Implementations
 {
@@ -67,7 +66,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		public IFieldQueryRepository GetFieldQueryRepository(int workspaceArtifactId)
 		{
 			IRelativityObjectManager relativityObjectManager =
-				CreateRelativityObjectManager(workspaceArtifactId);
+				CreateRelativityObjectManagerForFederatedInstance(workspaceArtifactId);
 			IFieldQueryRepository fieldQueryRepository = new FieldQueryRepository(_helper, _servicesMgr, relativityObjectManager, workspaceArtifactId);
 
 			return fieldQueryRepository;
@@ -169,7 +168,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		public IWorkspaceRepository GetWorkspaceRepository()
 		{
 			IRelativityObjectManager relativityObjectManager =
-				CreateRelativityObjectManager(-1);
+				CreateRelativityObjectManagerForFederatedInstance(-1);
 			IWorkspaceRepository repository = new KeplerWorkspaceRepository(_helper, _servicesMgr, relativityObjectManager);
 
 			return repository;
@@ -194,7 +193,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		public ISavedSearchRepository GetSavedSearchRepository(int workspaceArtifactId, int savedSearchArtifactId)
 		{
 			ISavedSearchRepository repository = new SavedSearchRepository(new RelativityObjectManager(workspaceArtifactId,
-					_helper, new SecretStoreHelper(workspaceArtifactId, 
+					_helper, new SecretStoreHelper(workspaceArtifactId,
 						_helper,
 						new SecretManager(workspaceArtifactId),
 						new DefaultSecretCatalogFactory())),
@@ -280,6 +279,15 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		{
 			return new RelativityObjectManager(workspaceArtifactId,
 				_helper, new SecretStoreHelper(workspaceArtifactId,
+					_helper,
+					new SecretManager(workspaceArtifactId),
+					new DefaultSecretCatalogFactory()));
+		}
+
+		private RelativityObjectManager CreateRelativityObjectManagerForFederatedInstance(int workspaceArtifactId)
+		{
+			return new RelativityObjectManager(workspaceArtifactId,
+				_servicesMgr, _helper.GetLoggerFactory().GetLogger(), new SecretStoreHelper(workspaceArtifactId,
 					_helper,
 					new SecretManager(workspaceArtifactId),
 					new DefaultSecretCatalogFactory()));

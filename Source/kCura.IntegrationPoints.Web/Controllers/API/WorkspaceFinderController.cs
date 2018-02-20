@@ -48,14 +48,26 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			var targetHelper = _helperFactory.CreateTargetHelper(_helper, federatedInstanceId, credentials.ToString());
 			IWorkspaceManager workspaceManager =
 				_managerFactory.CreateWorkspaceManager(_contextContainerFactory.CreateContextContainer(_helper, targetHelper.GetServicesManager()));
-			return GetWorkspaces(workspaceManager);
+			return GetWorkspacesFromFederatedInstance(workspaceManager);
 		}
 
 		private HttpResponseMessage GetWorkspaces(IWorkspaceManager workspaceManager)
 		{
-		    int currentWorkspaceId = _helper.GetActiveCaseID();
-		    IEnumerable<WorkspaceDTO> userWorkspaces = workspaceManager.GetUserAvailableDestinationWorkspaces(currentWorkspaceId);
-		    WorkspaceModel[] workspaceModels = userWorkspaces.Select(x =>
+			int currentWorkspaceId = _helper.GetActiveCaseID();
+			IEnumerable<WorkspaceDTO> userWorkspaces = workspaceManager.GetUserAvailableDestinationWorkspaces(currentWorkspaceId);
+			return CreateResponseFromWorkspaceDTOs(userWorkspaces);
+		}
+
+		private HttpResponseMessage GetWorkspacesFromFederatedInstance(IWorkspaceManager workspaceManager)
+		{
+			IEnumerable<WorkspaceDTO> userWorkspaces =
+				workspaceManager.GetUserActiveWorkspaces();
+			return CreateResponseFromWorkspaceDTOs(userWorkspaces);
+		}
+
+		private HttpResponseMessage CreateResponseFromWorkspaceDTOs(IEnumerable<WorkspaceDTO> userWorkspaces)
+		{
+			WorkspaceModel[] workspaceModels = userWorkspaces.Select(x =>
 				new WorkspaceModel
 				{
 					DisplayName = Utils.GetFormatForWorkspaceOrJobDisplay(
