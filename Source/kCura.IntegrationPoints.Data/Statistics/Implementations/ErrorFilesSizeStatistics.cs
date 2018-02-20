@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			_logger = _helper.GetLoggerFactory().GetLogger().ForContext<ErrorFilesSizeStatistics>();
 		}
 		
-		public int ForJobHistoryOmmitedFiles(int workspaceArtifactId, int jobHistoryArtifactId)
+		public long ForJobHistoryOmmitedFiles(int workspaceArtifactId, int jobHistoryArtifactId)
 		{
 			try
 			{
@@ -36,12 +36,12 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 				};
 
 				IDBContext dbContext = _helper.GetDBContext(workspaceArtifactId);
-				return dbContext.ExecuteSqlStatementAsScalar<int>(sqlText, fileTypeParameter);
+				return dbContext.ExecuteSqlStatementAsScalar<long>(sqlText, fileTypeParameter);
 			}
 			catch (Exception e)
 			{
 				_logger.LogError(e, _FOR_JOBHISTORY_ERROR, jobHistoryArtifactId);
-				return 0;
+				return 0L;
 			}
 		}
 	}

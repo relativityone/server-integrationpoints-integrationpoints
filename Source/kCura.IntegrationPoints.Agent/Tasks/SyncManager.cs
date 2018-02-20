@@ -245,7 +245,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 		}
 
-		private void JobPostExecute(Job job, TaskResult taskResult, int items)
+		private void JobPostExecute(Job job, TaskResult taskResult, long items)
 		{
 			try
 			{

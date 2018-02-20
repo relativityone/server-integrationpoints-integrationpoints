@@ -2,8 +2,8 @@
 {
 	public interface IDocumentStatistics
 	{
-		int ForFolder(int workspaceArtifactId, int folderId, int viewId, bool includeSubFoldersTotals);
-		int ForProduction(int workspaceArtifactId, int productionSetId);
-		int ForSavedSearch(int workspaceArtifactId, int savedSearchId);
+		long ForFolder(int workspaceArtifactId, int folderId, int viewId, bool includeSubFoldersTotals);
+		long ForProduction(int workspaceArtifactId, int productionSetId);
+		long ForSavedSearch(int workspaceArtifactId, int savedSearchId);
 	}
 }

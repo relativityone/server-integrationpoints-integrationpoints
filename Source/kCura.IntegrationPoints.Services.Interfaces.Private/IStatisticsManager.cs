@@ -8,23 +8,23 @@ namespace kCura.IntegrationPoints.Services
 	[ServiceAudience(Audience.Private)]
 	public interface IStatisticsManager : IKeplerService, IDisposable
 	{
-		Task<int> GetDocumentsTotalForSavedSearchAsync(int workspaceArtifactId, int savedSearchId);
-		Task<int> GetNativesTotalForSavedSearchAsync(int workspaceArtifactId, int savedSearchId);
-		Task<int> GetImagesTotalForSavedSearchAsync(int workspaceArtifactId, int savedSearchId);
-		Task<int> GetImagesFileSizeForSavedSearchAsync(int workspaceArtifactId, int savedSearchId);
-		Task<int> GetNativesFileSizeForSavedSearchAsync(int workspaceArtifactId, int savedSearchId);
+		Task<long> GetDocumentsTotalForSavedSearchAsync(int workspaceArtifactId, int savedSearchId);
+		Task<long> GetNativesTotalForSavedSearchAsync(int workspaceArtifactId, int savedSearchId);
+		Task<long> GetImagesTotalForSavedSearchAsync(int workspaceArtifactId, int savedSearchId);
+		Task<long> GetImagesFileSizeForSavedSearchAsync(int workspaceArtifactId, int savedSearchId);
+		Task<long> GetNativesFileSizeForSavedSearchAsync(int workspaceArtifactId, int savedSearchId);
 
-		Task<int> GetDocumentsTotalForProductionAsync(int workspaceArtifactId, int productionSetId);
-		Task<int> GetNativesTotalForProductionAsync(int workspaceArtifactId, int productionSetId);
-		Task<int> GetImagesTotalForProductionAsync(int workspaceArtifactId, int productionSetId);
-		Task<int> GetImagesFileSizeForProductionAsync(int workspaceArtifactId, int productionSetId);
-		Task<int> GetNativesFileSizeForProductionAsync(int workspaceArtifactId, int productionSetId);
+		Task<long> GetDocumentsTotalForProductionAsync(int workspaceArtifactId, int productionSetId);
+		Task<long> GetNativesTotalForProductionAsync(int workspaceArtifactId, int productionSetId);
+		Task<long> GetImagesTotalForProductionAsync(int workspaceArtifactId, int productionSetId);
+		Task<long> GetImagesFileSizeForProductionAsync(int workspaceArtifactId, int productionSetId);
+		Task<long> GetNativesFileSizeForProductionAsync(int workspaceArtifactId, int productionSetId);
 
 
-		Task<int> GetDocumentsTotalForFolderAsync(int workspaceArtifactId, int folderId, int viewId, bool includeSubFoldersTotals);
-		Task<int> GetNativesTotalForFolderAsync(int workspaceArtifactId, int folderId, int viewId, bool includeSubFoldersTotals);
-		Task<int> GetImagesTotalForFolderAsync(int workspaceArtifactId, int folderId, int viewId, bool includeSubFoldersTotals);
-		Task<int> GetImagesFileSizeForFolderAsync(int workspaceArtifactId, int folderId, int viewId, bool includeSubFoldersTotals);
-		Task<int> GetNativesFileSizeForFolderAsync(int workspaceArtifactId, int folderId, int viewId, bool includeSubFoldersTotals);
+		Task<long> GetDocumentsTotalForFolderAsync(int workspaceArtifactId, int folderId, int viewId, bool includeSubFoldersTotals);
+		Task<long> GetNativesTotalForFolderAsync(int workspaceArtifactId, int folderId, int viewId, bool includeSubFoldersTotals);
+		Task<long> GetImagesTotalForFolderAsync(int workspaceArtifactId, int folderId, int viewId, bool includeSubFoldersTotals);
+		Task<long> GetImagesFileSizeForFolderAsync(int workspaceArtifactId, int folderId, int viewId, bool includeSubFoldersTotals);
+		Task<long> GetNativesFileSizeForFolderAsync(int workspaceArtifactId, int folderId, int viewId, bool includeSubFoldersTotals);
 	}
 }

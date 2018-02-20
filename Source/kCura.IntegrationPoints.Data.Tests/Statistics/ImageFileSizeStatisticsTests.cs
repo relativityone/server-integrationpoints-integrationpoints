@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 		[Test]
 		public void ItShouldReturnResultForFolder()
 		{
-			int expectedResult = 214;
+			long expectedResult = 214;
 
 			int folderId = 767904;
 			int viewId = 913638;
@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			var queryResult = MockQueryResult(artifactIds);
 			_rdoRepository.Query(Arg.Any<Query<RDO>>()).Returns(queryResult);
 
-			_helper.GetDBContext(_WORKSPACE_ID).ExecuteSqlStatementAsScalar<int>(
+			_helper.GetDBContext(_WORKSPACE_ID).ExecuteSqlStatementAsScalar<long>(
 					_SQL_TEXT,
 					Arg.Is<SqlParameter>(x => x.ParameterName == "@ArtifactIds" && x.TypeName == "IDs"),
 					Arg.Is<SqlParameter>(x => x.ParameterName == "@FileType" && (FileType) x.Value == FileType.Tif))
@@ -75,7 +75,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 		[Test]
 		public void ItShouldReturnResultForSavedSearch()
 		{
-			int expectedResult = 656;
+			long expectedResult = 656;
 
 			int savedSearchId = 877574;
 
@@ -89,7 +89,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			var queryResult = MockQueryResult(artifactIds);
 			_rdoRepository.Query(Arg.Any<Query<RDO>>()).Returns(queryResult);
 
-			_helper.GetDBContext(_WORKSPACE_ID).ExecuteSqlStatementAsScalar<int>(
+			_helper.GetDBContext(_WORKSPACE_ID).ExecuteSqlStatementAsScalar<long>(
 					_SQL_TEXT,
 					Arg.Is<SqlParameter>(x => x.ParameterName == "@ArtifactIds" && x.TypeName == "IDs"),
 					Arg.Is<SqlParameter>(x => x.ParameterName == "@FileType" && (FileType) x.Value == FileType.Tif))
@@ -103,11 +103,11 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 		[Test]
 		public void ItShouldReturnResultForProduction()
 		{
-			int expectedResult = 657;
+			long expectedResult = 657;
 
 			int productionId = 330796;
 
-			_helper.GetDBContext(_WORKSPACE_ID).ExecuteSqlStatementAsScalar<int>(string.Format(_PRODUCTION_SQL, $"ProductionDocumentFile_{productionId}")).Returns(expectedResult);
+			_helper.GetDBContext(_WORKSPACE_ID).ExecuteSqlStatementAsScalar<long>(string.Format(_PRODUCTION_SQL, $"ProductionDocumentFile_{productionId}")).Returns(expectedResult);
 
 			var actualResult = _instance.ForProduction(_WORKSPACE_ID, productionId);
 

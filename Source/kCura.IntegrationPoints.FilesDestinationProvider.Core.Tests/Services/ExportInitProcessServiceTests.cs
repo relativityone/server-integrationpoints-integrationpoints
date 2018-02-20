@@ -68,7 +68,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 			_rdoStatistics.ForView(artifactTypeId, _VIEW_ID).Returns(_EXPECTED_DOC_COUNT);
 
 			// Act
-			int returnedValue = _subjectUnderTests.CalculateDocumentCountToTransfer(_exportSettings, artifactTypeId);
+			long returnedValue = _subjectUnderTests.CalculateDocumentCountToTransfer(_exportSettings, artifactTypeId);
 
 			// Assert
 			_rdoStatistics.Received().ForView(artifactTypeId, _VIEW_ID);
@@ -84,7 +84,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 			_documentTotalStatistics.ForSavedSearch(_WKSP_ID,_SAVED_SEARCH_ID).Returns(_EXPECTED_DOC_COUNT);
 
 			// Act
-			int returnedValue = _subjectUnderTests.CalculateDocumentCountToTransfer(_exportSettings, _DOC_ARTIFACT_TYPE_ID);
+			long returnedValue = _subjectUnderTests.CalculateDocumentCountToTransfer(_exportSettings, _DOC_ARTIFACT_TYPE_ID);
 
 			// Assert
 			_documentTotalStatistics.Received().ForSavedSearch(_WKSP_ID,_SAVED_SEARCH_ID);
@@ -100,7 +100,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 			_documentTotalStatistics.ForProduction(_WKSP_ID,_PROD_SET_ID).Returns(_EXPECTED_DOC_COUNT);
 
 			// Act
-			int returnedValue = _subjectUnderTests.CalculateDocumentCountToTransfer(_exportSettings, _DOC_ARTIFACT_TYPE_ID);
+			long returnedValue = _subjectUnderTests.CalculateDocumentCountToTransfer(_exportSettings, _DOC_ARTIFACT_TYPE_ID);
 
 			// Assert
 			_documentTotalStatistics.Received().ForProduction(_WKSP_ID,_PROD_SET_ID);
@@ -118,7 +118,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 			_documentTotalStatistics.ForFolder(_WKSP_ID,_FOLDER_ID, _VIEW_ID, includeSubFolders).Returns(_EXPECTED_DOC_COUNT);
 
 			// Act
-			int returnedValue = _subjectUnderTests.CalculateDocumentCountToTransfer(_exportSettings, _DOC_ARTIFACT_TYPE_ID);
+			long returnedValue = _subjectUnderTests.CalculateDocumentCountToTransfer(_exportSettings, _DOC_ARTIFACT_TYPE_ID);
 
 			// Assert
 			_documentTotalStatistics.Received().ForFolder(_WKSP_ID,_FOLDER_ID, _VIEW_ID, includeSubFolders);
@@ -139,7 +139,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 			_documentTotalStatistics.ForSavedSearch(_WKSP_ID, _SAVED_SEARCH_ID).Returns(_EXPECTED_DOC_COUNT);
 
 			// Act
-			int returnedValue = _subjectUnderTests.CalculateDocumentCountToTransfer(_exportSettings, _DOC_ARTIFACT_TYPE_ID);
+			long returnedValue = _subjectUnderTests.CalculateDocumentCountToTransfer(_exportSettings, _DOC_ARTIFACT_TYPE_ID);
 
 			// Assert
 			Assert.That(returnedValue, Is.EqualTo(expectedCount));

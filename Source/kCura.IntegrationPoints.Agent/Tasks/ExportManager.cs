@@ -86,7 +86,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		    yield break;
 		}
 
-        public override int BatchTask(Job job, IEnumerable<string> batchIDs)
+        public override long BatchTask(Job job, IEnumerable<string> batchIDs)
 		{
 		    LogBatchTaskStart(job, batchIDs);
             var integrationPoint = IntegrationPointService.GetRdo(job.RelatedObjectArtifactID);
@@ -100,7 +100,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			ExportUsingSavedSearchSettings sourceSettings = Serializer.Deserialize<ExportUsingSavedSearchSettings>(integrationPoint.SourceConfiguration);
 			DestinationConfiguration destinationConfiguration = JsonConvert.DeserializeObject<DestinationConfiguration>(integrationPoint.DestinationConfiguration);
 
-			int totalCount = GetTotalExportItemsCount(sourceSettings, destinationConfiguration, job);
+			long totalCount = GetTotalExportItemsCount(sourceSettings, destinationConfiguration, job);
 
 			if (totalCount > 0)
 			{
@@ -111,12 +111,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             return totalCount;
 		}
 
-	    private int GetTotalExportItemsCount(ExportUsingSavedSearchSettings settings, DestinationConfiguration destinationConfiguration, Job job)
+	    private long GetTotalExportItemsCount(ExportUsingSavedSearchSettings settings, DestinationConfiguration destinationConfiguration, Job job)
 		{
 			try
 			{
                 LogGetTotalExportItemsCountStart(job);
-                int count = _exportInitProcessService.CalculateDocumentCountToTransfer(settings, destinationConfiguration.ArtifactTypeId);
+                long count = _exportInitProcessService.CalculateDocumentCountToTransfer(settings, destinationConfiguration.ArtifactTypeId);
 			    LogGetTotalExportItemsCountSuccesfulEnd(job, count);
 			    return count;
 			}
@@ -152,7 +152,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 	            batchIDs);
 	    }
 
-	    private void LogBatchTaskSuccesfulEnd(Job job, int totalCount)
+	    private void LogBatchTaskSuccesfulEnd(Job job, long totalCount)
 	    {
 	        _logger.LogInformation("Finished batch task in Export Manager for job: {JobId}, totalCount: {totalCount}",
 	            job.JobId, totalCount);
@@ -163,7 +163,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 	        _logger.LogInformation("Trying to get total export items count for job: {JobId}", job.JobId);
 	    }
 
-	    private void LogGetTotalExportItemsCountSuccesfulEnd(Job job, int count)
+	    private void LogGetTotalExportItemsCountSuccesfulEnd(Job job, long count)
 	    {
 	        _logger.LogInformation("Retrieved total export items count for job: {JobId}, count: {count}", job.JobId, count);
 	    }

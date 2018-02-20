@@ -7,7 +7,7 @@ namespace kCura.ScheduleQueue.Core.BatchProcess
 {
 	public delegate void JobPreExecuteEvent(Job job);
 
-	public delegate void JobPostExecuteEvent(Job job, TaskResult taskResult, int items);
+	public delegate void JobPostExecuteEvent(Job job, TaskResult taskResult, long items);
 
 	public abstract class BatchManagerBase<T> : ITask
 	{
@@ -26,7 +26,7 @@ namespace kCura.ScheduleQueue.Core.BatchProcess
 		    LogExecuteStart(job);
 
             TaskResult taskResult = new TaskResult();
-			int items = 0;
+			long items = 0;
 			try
 			{
 				OnRaiseJobPreExecute(job);
@@ -68,7 +68,7 @@ namespace kCura.ScheduleQueue.Core.BatchProcess
 			}
 		}
 
-	    protected virtual void OnRaiseJobPostExecute(Job job, TaskResult taskResult, int items)
+	    protected virtual void OnRaiseJobPostExecute(Job job, TaskResult taskResult, long items)
 		{
 			if (RaiseJobPostExecute != null)
 			{
@@ -79,9 +79,9 @@ namespace kCura.ScheduleQueue.Core.BatchProcess
 
         public abstract IEnumerable<T> GetUnbatchedIDs(Job job);
 
-		public virtual int BatchTask(Job job, IEnumerable<T> batchIDs)
+		public virtual long BatchTask(Job job, IEnumerable<T> batchIDs)
 		{
-			int count = 0;
+			long count = 0;
 			var list = new List<T>();
 			foreach (var id in batchIDs)
 			{
@@ -147,7 +147,7 @@ namespace kCura.ScheduleQueue.Core.BatchProcess
 	        _logger.LogInformation("Batch Manager Base: Raising pre execute event for job: {JobId}", job.JobId);
 	    }
 
-	    private void LogMissingIdError(int count)
+	    private void LogMissingIdError(long count)
 	    {
 	        _logger.LogError("One of the items has invalid id and will not be processed. It will not be included in batch. Current count in the batch is {count}. Stepping over to next item.", count);
         }
