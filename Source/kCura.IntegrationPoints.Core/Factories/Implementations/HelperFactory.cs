@@ -1,5 +1,4 @@
 ﻿using System;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
@@ -34,7 +33,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				try
 				{
 					OAuthClientDto authClientDto = _serializer.Deserialize<OAuthClientDto>(credentials);
-					IHelper targetHelper = new OAuthHelper(new Uri(federatedInstance.InstanceUrl), new Uri(federatedInstance.RsapiUrl),
+					IHelper targetHelper = new OAuthHelper(sourceInstanceHelper, new Uri(federatedInstance.InstanceUrl), new Uri(federatedInstance.RsapiUrl),
 						new Uri(federatedInstance.KeplerUrl), authClientDto,
 						_tokenProvider);
 					return targetHelper;

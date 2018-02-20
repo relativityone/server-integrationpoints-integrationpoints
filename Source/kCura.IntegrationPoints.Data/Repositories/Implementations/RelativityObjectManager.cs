@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 	public class RelativityObjectManager : IRelativityObjectManager
 	{
 		private const int BATCH_SIZE = 1000;
-		private IHelper _helper;
+		private IServicesMgr _servicesMgr;
 		private readonly IAPILog _logger;
 		private int _workspaceArtifactId;
 		private readonly ISecretStoreHelper _secretStoreHelper;
@@ -26,8 +26,17 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		public RelativityObjectManager(int workspaceArtifactId, IHelper helper, ISecretStoreHelper secretStoreHelper)
 		{
 			_workspaceArtifactId = workspaceArtifactId;
-			_helper = helper;
-			_logger = _helper.GetLoggerFactory().GetLogger().ForContext<RelativityObjectManager>();
+			_servicesMgr = helper.GetServicesManager();
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<RelativityObjectManager>();
+			_secretStoreHelper = secretStoreHelper;
+		}
+
+		public RelativityObjectManager(int workspaceArtifactId, IServicesMgr servicesMgr, IAPILog logger,
+			ISecretStoreHelper secretStoreHelper)
+		{
+			_workspaceArtifactId = workspaceArtifactId;
+			_servicesMgr = servicesMgr;
+			_logger = logger.ForContext<RelativityObjectManager>();
 			_secretStoreHelper = secretStoreHelper;
 		}
 
@@ -46,7 +55,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			try
 			{
-				using (var client = _helper.GetServicesManager().CreateProxy<IObjectManager>(executionIdentity))
+				using (var client = _servicesMgr.CreateProxy<IObjectManager>(executionIdentity))
 				{
 					CreateRequest createRequest = new CreateRequest()
 					{
@@ -109,7 +118,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			try
 			{
-				using (var client = _helper.GetServicesManager().CreateProxy<IObjectManager>(executionIdentity))
+				using (var client = _servicesMgr.CreateProxy<IObjectManager>(executionIdentity))
 				{
 					var result = client.ReadAsync(_workspaceArtifactId, request)
 						.GetAwaiter()
@@ -150,7 +159,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			try
 			{
-				using (var client = _helper.GetServicesManager().CreateProxy<IObjectManager>(executionIdentity))
+				using (var client = _servicesMgr.CreateProxy<IObjectManager>(executionIdentity))
 				{
 					UpdateRequest request = new UpdateRequest()
 					{
@@ -182,7 +191,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			try
 			{
-				using (var client = _helper.GetServicesManager().CreateProxy<IObjectManager>(executionIdentity))
+				using (var client = _servicesMgr.CreateProxy<IObjectManager>(executionIdentity))
 				{
 					DeleteRequest request = new DeleteRequest() { Object = rdo.ToObjectRef() };
 					var result = client.DeleteAsync(_workspaceArtifactId, request)
@@ -205,7 +214,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			try
 			{
-				using (var client = _helper.GetServicesManager().CreateProxy<IObjectManager>(executionIdentity))
+				using (var client = _servicesMgr.CreateProxy<IObjectManager>(executionIdentity))
 				{
 					DeleteRequest request = new DeleteRequest()
 					{
@@ -242,7 +251,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				BootstrapQuery<T>(q, noFields);
 
-				using (var client = _helper.GetServicesManager().CreateProxy<IObjectManager>(executionIdentity))
+				using (var client = _servicesMgr.CreateProxy<IObjectManager>(executionIdentity))
 				{
 					var queryResults = await client.QueryAsync(_workspaceArtifactId, q, start + 1, length).ConfigureAwait(false);
 					return new ResultSet<T>()
@@ -293,7 +302,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				BootstrapQuery<T>(q, noFields);
 
-				using (var client = _helper.GetServicesManager().CreateProxy<IObjectManager>(executionIdentity))
+				using (var client = _servicesMgr.CreateProxy<IObjectManager>(executionIdentity))
 				{
 					List<T> output = null;
 					int retrievedResults = 0;
@@ -351,7 +360,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			try
 			{
-				using (var client = _helper.GetServicesManager().CreateProxy<IObjectManager>(executionIdentity))
+				using (var client = _servicesMgr.CreateProxy<IObjectManager>(executionIdentity))
 				{
 					List<RelativityObject> output = null;
 					int retrievedResults = 0;
@@ -396,7 +405,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			try
 			{
-				using (var client = _helper.GetServicesManager().CreateProxy<IObjectManager>(executionIdentity))
+				using (var client = _servicesMgr.CreateProxy<IObjectManager>(executionIdentity))
 				{
 					var result = await client.QueryAsync(_workspaceArtifactId, q, start + 1, length).ConfigureAwait(false);
 
@@ -423,7 +432,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			try
 			{
-				using (var client = _helper.GetServicesManager().CreateProxy<IObjectManager>(executionIdentity))
+				using (var client = _servicesMgr.CreateProxy<IObjectManager>(executionIdentity))
 				{
 					var result = await client.QueryAsync(_workspaceArtifactId, q, 1, 1).ConfigureAwait(false);
 					return result.TotalCount;
