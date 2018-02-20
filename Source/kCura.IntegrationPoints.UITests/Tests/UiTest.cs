@@ -7,10 +7,8 @@ using System;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.UITests.Configuration;
 using kCura.IntegrationPoints.UITests.Logging;
-using kCura.IntegrationPoints.UITests.Validation;
 using NUnit.Framework.Interfaces;
 using OpenQA.Selenium.Remote;
 using Serilog;
@@ -61,13 +59,22 @@ namespace kCura.IntegrationPoints.UITests.Tests
 				.LogConfiguration();
 
 			Context = new TestContext();
-			Task workspaceCreationTask = Context.CreateWorkspaceAsync();
-			Task documentImportTask  = workspaceCreationTask.ContinueWith(async _ => await Context.ImportDocumentsAsync());
-			Task integrationPointsInstallationTask = workspaceCreationTask.ContinueWith(async _ => await Context.InstallIntegrationPointsAsync());
-			Task contextSetUpTask = documentImportTask.ContinueWith(_ => ContextSetUp());
+			Task workspaceSetupTask = SetupWorkspaceAsync(); 
 			Task webDriverCreationTask = CreateDriverAsync();
 
-			Task.WaitAll(contextSetUpTask, integrationPointsInstallationTask, webDriverCreationTask);
+			Task.WaitAll(workspaceSetupTask, webDriverCreationTask);
+		}
+
+		private async Task SetupWorkspaceAsync()
+		{
+			await Context.CreateWorkspaceAsync();
+
+			Task installIntegrationPointsTask = Context.InstallIntegrationPointsAsync();
+
+			await Context.ImportDocumentsAsync();
+			ContextSetUp();
+
+			await installIntegrationPointsTask;
 		}
 
 		protected async Task CreateDriverAsync()

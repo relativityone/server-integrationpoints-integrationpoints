@@ -11,33 +11,39 @@ namespace kCura.IntegrationPoint.Tests.Core.Validators
 	public class FolderPathFromFolderTreeStrategy : FolderPathStrategyWithCache
 	{
 		private readonly IFolderManager _folderManager;
+		private readonly bool _includeWorkspaceFolderInPath;
 		private readonly int _workspaceId;
 
-		public FolderPathFromFolderTreeStrategy(int workspaceId, IFolderManager folderManager)
+		public FolderPathFromFolderTreeStrategy(int workspaceId, IFolderManager folderManager, bool includeWorkspaceFolderInPath = false)
 		{
 			_folderManager = folderManager;
+			_includeWorkspaceFolderInPath = includeWorkspaceFolderInPath;
 			_workspaceId = workspaceId;
 		}
 
 		protected override string GetFolderPathInternal(Document document)
 		{
-			Task<List<FolderPath>> folderLookup = GetFolderPathFromManager(document);
+			string folderPath = GetFullFolderPathFromManager(document);
 
-			string folderPath = StripWorkspaceNameFromFolderPath(folderLookup.Result.First().FullPath);
+			if (!_includeWorkspaceFolderInPath)
+			{
+				folderPath = StripWorkspaceNameFromFolderPath(folderPath);
+			}
+			
 			return folderPath;
 		}
 
-		private Task<List<FolderPath>> GetFolderPathFromManager(Document document)
+		private string GetFullFolderPathFromManager(Document document)
 		{
 			Task<List<FolderPath>> folderLookup = _folderManager.GetFullPathListAsync(_workspaceId, new List<int>() { document.ParentArtifact.ArtifactID });
 			folderLookup.Wait();
 			if (folderLookup.Result == null || folderLookup.Result.Count == 0)
 			{
-				throw new Exception(
-					$"Cannot find folder for document. Workspace id: {_workspaceId}. Document control number: {GetControlNumber(document)}. Document folder: {document.FolderName}");
+				throw new Exception($"Cannot find folder for document. Workspace id: {_workspaceId}. Document control number: {GetControlNumber(document)}. Document folder: {document.FolderName}");
 			}
 
-			return folderLookup;
+			string result = folderLookup.Result.First().FullPath;
+			return result.Replace(@" \ ", FOLDER_TREE_SEPARATOR);
 		}
 
 		private static FieldValue GetControlNumber(Document document)
@@ -47,13 +53,13 @@ namespace kCura.IntegrationPoint.Tests.Core.Validators
 
 		private string StripWorkspaceNameFromFolderPath(string folderPath)
 		{
-			int firstSparator = folderPath.IndexOf('/');
+			int firstSparator = folderPath.IndexOf(FOLDER_TREE_SEPARATOR, StringComparison.OrdinalIgnoreCase);
 			if (firstSparator == -1)
 			{
 				return string.Empty;
 			}
 
-			return folderPath.Substring(firstSparator + 1).TrimStart();
+			return folderPath.Substring(firstSparator + FOLDER_TREE_SEPARATOR.Length);
 		}
 	}
 }

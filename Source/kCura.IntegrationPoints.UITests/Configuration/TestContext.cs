@@ -174,6 +174,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 				client.APIOptions.WorkspaceID = GetWorkspaceId();
 
 				var relativityScript = FindRelativityFolderPathScript(client);
+				Assert.That(relativityScript, Is.Not.Null, "Cannot find Relativity Script to set folder paths");
 
 				if (relativityScript != null)
 				{

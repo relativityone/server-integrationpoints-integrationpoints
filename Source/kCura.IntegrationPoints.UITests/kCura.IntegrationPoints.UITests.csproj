@@ -80,6 +80,7 @@
     <Compile Include="Tests\RelativityProvider\NativesSavedSearchToFolderTest.cs" />
     <Compile Include="Tests\RelativityProvider\LinksSavedSearchToFolderTest.cs" />
     <Compile Include="Tests\RelativityProvider\MetadataSavedSearchToFolderTest.cs" />
+    <Compile Include="Tests\RelativityProvider\RelativityProviderTestsBase.cs" />
     <Compile Include="Tests\UiTest.cs" />
     <Compile Include="Common\PageException.cs" />
     <Compile Include="Tests\SelectWithSavedSearchTest.cs" />

@@ -5,12 +5,9 @@ namespace kCura.IntegrationPoint.Tests.Core.Validators
 {
 	public abstract class FolderPathStrategyWithCache: IFolderPathStrategy
 	{
-		private Dictionary<int, string> _folderCache;
+		private readonly Dictionary<int, string> _folderCache = new Dictionary<int, string>();
 
-		protected FolderPathStrategyWithCache()
-		{ 
-			_folderCache = new Dictionary<int, string>();
-		}
+		public const string FOLDER_TREE_SEPARATOR = @"\";
 
 		public string GetFolderPath(Document document)
 		{

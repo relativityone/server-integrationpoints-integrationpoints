@@ -1,58 +1,24 @@
 ﻿using kCura.IntegrationPoint.Tests.Core.Models;
-using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoint.Tests.Core.Validators;
 using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Components;
 using kCura.IntegrationPoints.UITests.Pages;
 using NUnit.Framework;
-using Relativity.Services.Folder;
-using TestContext = kCura.IntegrationPoints.UITests.Configuration.TestContext;
 
 namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 {
+	using IntegrationPoint.Tests.Core;
+
 	[TestFixture]
 	[Category(TestCategory.SMOKE)]
-	public class NativesSavedSearchToFolderTest : UiTest
+	public class NativesSavedSearchToFolderTest : RelativityProviderTestsBase
 	{
-		private TestContext _destinationContext = null;
-		private IntegrationPointsAction _integrationPointsAction;
-		private IFolderManager _folderManager;
-		private INativesService _nativesService;
-
-		protected override void ContextSetUp()
-		{
-			Context.ExecuteRelativityFolderPathScript();
-		}
-
-		[OneTimeSetUp]
-		public void OneTimeSetUp()
-		{
-			EnsureGeneralPageIsOpened();
-
-			_folderManager = Context.Helper.CreateAdminProxy<IFolderManager>();
-			_nativesService = new NativesService(Context.Helper);
-			_integrationPointsAction = new IntegrationPointsAction(Driver, Context);
-		}
-
-		[SetUp]
-		public void SetUp()
-		{
-			_destinationContext = new TestContext()
-			.CreateWorkspace(); 
-		}
-
-		[TearDown]
-		public void TearDown()
-		{ 
-			_destinationContext?.TearDown();
-		}
-
 		private RelativityProviderModel CreateRelativityProviderModelWithNatives()
 		{
 			var model = new RelativityProviderModel(NUnit.Framework.TestContext.CurrentContext.Test.Name);
 			model.Source = "Saved Search";
 			model.RelativityInstance = "This Instance";
-			model.DestinationWorkspace = $"{_destinationContext.WorkspaceName} - {_destinationContext.WorkspaceId}";
+			model.DestinationWorkspace = $"{DestinationContext.WorkspaceName} - {DestinationContext.WorkspaceId}";
 			model.CopyNativeFiles = RelativityProviderModel.CopyNativeFilesEnum.PhysicalFiles;
 			return model;
 		}
@@ -66,7 +32,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.No;
 
 			//Act
-			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewRelativityProviderIntegrationPoint(model);
+			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 			detailsPage.RunIntegrationPoint();
 
@@ -87,7 +53,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.ReadFromField;
 
 			// Act
-			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewRelativityProviderIntegrationPoint(model);
+			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 			detailsPage.RunIntegrationPoint();
 
@@ -108,7 +74,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.ReadFromFolderTree;
 
 			// Act
-			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewRelativityProviderIntegrationPoint(model);
+			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 			detailsPage.RunIntegrationPoint();
 
@@ -124,14 +90,14 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		public void RelativityProvider_TC_RTR_NF_04()
 		{
 			// Arrange
-			_destinationContext.ImportDocuments();
+			DestinationContext.ImportDocuments(testDataType: DocumentTestDataBuilder.TestDataType.ModerateWithoutFoldersStructure);
 
 			RelativityProviderModel model = CreateRelativityProviderModelWithNatives();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
 			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.No;
 
 			// Act
-			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewRelativityProviderIntegrationPoint(model);
+			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 			detailsPage.RunIntegrationPoint();
 
@@ -147,7 +113,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		public void RelativityProvider_TC_RTR_NF_05()
 		{
 			// Arrange
-			_destinationContext.ImportDocuments();
+			DestinationContext.ImportDocuments();
 
 			RelativityProviderModel model = CreateRelativityProviderModelWithNatives();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
@@ -155,7 +121,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.MoveExistingDocuments = false;
 
 			// Act
-			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewRelativityProviderIntegrationPoint(model);
+			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 			detailsPage.RunIntegrationPoint();
 
@@ -171,7 +137,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		public void RelativityProvider_TC_RTR_NF_06()
 		{
 			// Arrange
-			_destinationContext.ImportDocuments();
+			DestinationContext.ImportDocuments();
 
 			RelativityProviderModel model = CreateRelativityProviderModelWithNatives();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
@@ -179,7 +145,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.MoveExistingDocuments = false;
 
 			// Act
-			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewRelativityProviderIntegrationPoint(model);
+			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 			detailsPage.RunIntegrationPoint();
 
@@ -195,7 +161,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		public void RelativityProvider_TC_RTR_NF_07()
 		{
 			// Arrange
-			_destinationContext.ImportDocuments();
+			DestinationContext.ImportDocuments();
 
 			RelativityProviderModel model = CreateRelativityProviderModelWithNatives();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
@@ -203,7 +169,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.MoveExistingDocuments = true;
 
 			// Act
-			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewRelativityProviderIntegrationPoint(model);
+			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 			detailsPage.RunIntegrationPoint();
 
@@ -219,7 +185,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		public void RelativityProvider_TC_RTR_NF_08()
 		{
 			// Arrange
-			_destinationContext.ImportDocuments();
+			DestinationContext.ImportDocuments();
 
 			RelativityProviderModel model = CreateRelativityProviderModelWithNatives();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
@@ -227,7 +193,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.MoveExistingDocuments = true;
 
 			// Act
-			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewRelativityProviderIntegrationPoint(model);
+			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 			detailsPage.RunIntegrationPoint();
 
@@ -243,14 +209,14 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		public void RelativityProvider_TC_RTR_NF_09()
 		{
 			// Arrange
-			_destinationContext.ImportDocuments();
+			DestinationContext.ImportDocuments(testDataType: DocumentTestDataBuilder.TestDataType.ModerateWithoutFoldersStructure);
 
 			RelativityProviderModel model = CreateRelativityProviderModelWithNatives();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
 			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.No;
 
 			// Act
-			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewRelativityProviderIntegrationPoint(model);
+			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 			detailsPage.RunIntegrationPoint();
 
@@ -267,7 +233,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		public void RelativityProvider_TC_RTR_NF_10()
 		{
 			// Arrange
-			_destinationContext.ImportDocuments();
+			DestinationContext.ImportDocuments();
 
 			RelativityProviderModel model = CreateRelativityProviderModelWithNatives();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
@@ -275,7 +241,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.MoveExistingDocuments = false;
 
 			// Act
-			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewRelativityProviderIntegrationPoint(model);
+			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 			detailsPage.RunIntegrationPoint();
 
@@ -291,7 +257,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		public void RelativityProvider_TC_RTR_NF_11()
 		{
 			// Arrange
-			_destinationContext.ImportDocuments();
+			DestinationContext.ImportDocuments();
 
 			RelativityProviderModel model = CreateRelativityProviderModelWithNatives();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
@@ -299,7 +265,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.MoveExistingDocuments = false;
 
 			// Act
-			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewRelativityProviderIntegrationPoint(model);
+			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 			detailsPage.RunIntegrationPoint();
 
@@ -315,7 +281,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		public void RelativityProvider_TC_RTR_NF_12()
 		{
 			// Arrange
-			_destinationContext.ImportDocuments();
+			DestinationContext.ImportDocuments();
 
 			RelativityProviderModel model = CreateRelativityProviderModelWithNatives();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
@@ -323,7 +289,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.MoveExistingDocuments = true;
 
 			// Act
-			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewRelativityProviderIntegrationPoint(model);
+			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 			detailsPage.RunIntegrationPoint();
 
@@ -340,7 +306,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		public void RelativityProvider_TC_RTR_NF_13()
 		{
 			// Arrange
-			_destinationContext.ImportDocuments();
+			DestinationContext.ImportDocuments();
 
 			RelativityProviderModel model = CreateRelativityProviderModelWithNatives();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
@@ -348,7 +314,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.MoveExistingDocuments = true; 
 
 			// Act
-			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewRelativityProviderIntegrationPoint(model);
+			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 			detailsPage.RunIntegrationPoint();
 
@@ -362,30 +328,26 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 		private void ValidateDocumentsForField()
 		{
-			DocumentsValidator documentsValidator = new PushDocumentsValidator(Context.GetWorkspaceId(), _destinationContext.GetWorkspaceId())
-				.ValidateWith(DocumentPathValidator.CreateForField(Context.GetWorkspaceId(), _folderManager))
-				.ValidateWith(new DocumentNativesAndInRepositoryValidator(_nativesService, Context.GetWorkspaceId(), _destinationContext.GetWorkspaceId(), true, true));
+			DocumentsValidator documentsValidator = CreateDocumentsForFieldValidator()
+				.ValidateWith(new DocumentNativesAndInRepositoryValidator(NativesService, Context.GetWorkspaceId(), DestinationContext.GetWorkspaceId(), true, true));
 
 			documentsValidator.Validate();
 		}
 
 		private void ValidateDocumentsForFolderTree()
 		{
-			DocumentsValidator documentsValidator = new PushDocumentsValidator(Context.GetWorkspaceId(), _destinationContext.GetWorkspaceId())
-				.ValidateWith(DocumentPathValidator.CreateForFolderTree(Context.GetWorkspaceId(), _destinationContext.GetWorkspaceId(), _folderManager))
-				.ValidateWith(new DocumentNativesAndInRepositoryValidator(_nativesService, Context.GetWorkspaceId(), _destinationContext.GetWorkspaceId(), true, true));
+			DocumentsValidator documentsValidator = CreateDocumentsForFolderTreeValidator()
+				.ValidateWith(new DocumentNativesAndInRepositoryValidator(NativesService, Context.GetWorkspaceId(), DestinationContext.GetWorkspaceId(), true, true));
 
 			documentsValidator.Validate();
 		}
 
 		private void ValidateDocumentsForRoot()
 		{
-			DocumentsValidator documentsValidator = new PushDocumentsValidator(Context.GetWorkspaceId(), _destinationContext.GetWorkspaceId())
-				.ValidateWith(DocumentPathValidator.CreateForRoot(_destinationContext.GetWorkspaceId(), _folderManager))
-				.ValidateWith(new DocumentNativesAndInRepositoryValidator(_nativesService, Context.GetWorkspaceId(), _destinationContext.GetWorkspaceId(), true, true));
+			DocumentsValidator documentsValidator = CreateDocumentsForRootValidator()
+				.ValidateWith(new DocumentNativesAndInRepositoryValidator(NativesService, Context.GetWorkspaceId(), DestinationContext.GetWorkspaceId(), true, true));
 
 			documentsValidator.Validate();
 		}
-
 	}
 }
