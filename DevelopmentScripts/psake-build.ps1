@@ -59,14 +59,30 @@ task restore_nuget {
             & $nuget_exe @('restore', $o.FullName)
         } 
     }   
+} 
+
+task configure_paket {
+
+	if (Get-ChildItem ENV:PaketUserName -ErrorAction SilentlyContinue) {
+		exec {
+			
+			Write-Host 'Configuring credentials for ProGet server.'
+			
+			Remove-Item $paket_config_directory\*
+			
+			& $paket_exe config add-credentials $proget_server --username $ENV:PaketUserName --password $ENV:PaketPassword --authtype ntlm --log-file $paket_logfile --verbose
+		} 
+	} else {
+		Write-Host 'Configuring credentials for ProGet server will be skipped'
+	}
 }                                                                             
                                                                                 
-task build_projects -depends create_build_script, restore_nuget {  
+task build_projects -depends create_build_script, restore_nuget, configure_paket {  
     exec {     
         if ($build_type -eq 'DEV' -And $enable_injections) {
             $Injections = 'EnableInjections'
         }
-        
+        	
         Write-Host 'Based on' $build_type 'Injection is set to' $Injections
         
         &  $msbuild_exe @(($targetsfile),   

@@ -72,6 +72,12 @@ properties {
     $nuget_exe = [System.IO.Path]::Combine($nuget_exe_directory,'NuGet.exe')
     $proget_server = 'https://proget.kcura.corp/nuget/NuGet'
     $nuget_version = $version
+	
+	#paket variables
+	$paket_exe_directory = [System.IO.Path]::Combine($root, '.paket')
+	$paket_exe = [System.IO.Path]::Combine($paket_exe_directory,'paket.exe')
+	$paket_logfile = [System.IO.Path]::Combine($buildlogs_directory,'paket.log')
+	$paket_config_directory = [System.IO.Path]::Combine($ENV:APPDATA, 'Paket')
 
     #build tool variables    
     $buildhelper_exe = [System.IO.Path]::Combine($development_scripts_directory, 'kCura.BuildHelper.exe')

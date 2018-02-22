@@ -204,9 +204,12 @@ timestamps
 											url : 'ssh://git@git.kcura.com:7999/in/integrationpoints.git']]]
 									)
 								}
-								dir('W:/integrationpoints')
+								withCredentials([usernamePassword(credentialsId: 'talosci', passwordVariable: 'PaketPassword', usernameVariable: 'PaketUserName')])
 								{
-									bat 'powershell.exe "& {./build.ps1 release; exit $lastexitcode}"'
+									dir('W:/integrationpoints')
+									{
+										bat 'powershell.exe "& {./build.ps1 release; exit $lastexitcode}"'
+									}
 								}
 							}
 						}
