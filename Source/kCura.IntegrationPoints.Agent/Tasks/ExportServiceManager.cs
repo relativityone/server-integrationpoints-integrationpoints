@@ -252,7 +252,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			FieldMap longTextField = fieldMap.FirstOrDefault(fm => IsLongTextWithDgEnabled(sourceQueryFieldLookupRepository.GetFieldByArtifactId(int.Parse(fm.SourceField.FieldIdentifier))));
 
-			if (longTextField != null)
+			if (longTextField != null && IsSingleDataGridField(fieldMap, sourceQueryFieldLookupRepository))
 			{
 				ViewFieldInfo destinationField = destinationQueryFieldLookupRepository.GetFieldByArtifactId(int.Parse(longTextField.DestinationField.FieldIdentifier));
 				return !destinationField.EnableDataGrid;
@@ -264,6 +264,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private bool IsLongTextWithDgEnabled(ViewFieldInfo info)
 		{
 			return info.Category == FieldCategory.FullText && info.EnableDataGrid;
+		}
+
+		private bool IsSingleDataGridField(IEnumerable<FieldMap> fieldMap, IQueryFieldLookupRepository source)
+		{
+			return fieldMap.Count(field => source.GetFieldByArtifactId(int.Parse(field.SourceField.FieldIdentifier)).EnableDataGrid) == 1;
 		}
 
 		protected override void JobHistoryErrorManagerSetup(Job job)
