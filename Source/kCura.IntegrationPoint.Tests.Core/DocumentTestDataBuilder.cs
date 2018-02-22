@@ -13,7 +13,10 @@ namespace kCura.IntegrationPoint.Tests.Core
 {
 	public class DocumentTestDataBuilder
 	{
-		public static DocumentsTestData BuildTestData(string testDirectory = null, bool withNatives = true, TestDataType testDataType = TestDataType.Small)
+		private static readonly string TestDataNatives = @"TestData\NATIVES";
+		private static readonly string ExtendedTestDataNatives = @"TestDataExtended\NATIVES";
+
+		public static DocumentsTestData BuildTestData(string testDirectory = null, bool withNatives = true, TestDataType testDataType = TestDataType.SmallWithFoldersStructure)
 		{
 			if (string.IsNullOrEmpty(testDirectory))
 			{
@@ -25,18 +28,24 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			switch (testDataType)
 				{
-				case TestDataType.ModerateWithFoldersStructure:
-					foldersWithDocuments = GetFoldersWithDocumentsBasedOnDirectoryStructureOfNatives(testDirectory, withNatives);
-					images = GetImageDataTableForAllNativesInGivenFolder(testDirectory);
-					break;
-				case TestDataType.ModerateWithoutFoldersStructure:
-					foldersWithDocuments = GetDocumentsIntoRootFolder(testDirectory, withNatives);
-					images = GetImageDataTableForAllNativesInGivenFolder(testDirectory);
-					break;
-				default:
+				case TestDataType.SmallWithFoldersStructure:
 					foldersWithDocuments = GetFoldersWithDocuments(testDirectory, withNatives);
 					images = GetImageDataTable(testDirectory);
 					break;
+				case TestDataType.SmallWithoutFolderStructure:
+					foldersWithDocuments = GetDocumentsIntoRootFolder(Path.Combine(testDirectory, TestDataNatives), withNatives);
+					images = GetImageDataTableForAllNativesInGivenFolder(testDirectory);
+					break;
+				case TestDataType.ModerateWithFoldersStructure:
+					foldersWithDocuments = GetFoldersWithDocumentsBasedOnDirectoryStructureOfNatives(Path.Combine(testDirectory, ExtendedTestDataNatives), withNatives);
+					images = GetImageDataTableForAllNativesInGivenFolder(testDirectory);
+					break;
+				case TestDataType.ModerateWithoutFoldersStructure:
+					foldersWithDocuments = GetDocumentsIntoRootFolder(Path.Combine(testDirectory, ExtendedTestDataNatives), withNatives);
+					images = GetImageDataTableForAllNativesInGivenFolder(testDirectory);
+					break;
+				default:
+					throw new Exception("Unsupported TestDataType parameter");
 			}
 			return new DocumentsTestData(foldersWithDocuments, images);
 		}
@@ -77,9 +86,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return new[] { firstFolder, firstFolderChild, secondFolder };
 		}
 
-		private static IList<FolderWithDocuments> GetFoldersWithDocumentsBasedOnDirectoryStructureOfNatives(string testDirectory, bool withNatives = true)
+		private static IList<FolderWithDocuments> GetFoldersWithDocumentsBasedOnDirectoryStructureOfNatives(string nativesFolderPath, bool withNatives = true)
 		{
-			string nativesFolderPath = Path.Combine(testDirectory, @"TestDataExtended\NATIVES");
 			var foldersList = new List<FolderWithDocuments>();
 
 			foreach (string folderPath in Directory.GetDirectories(nativesFolderPath, "*", SearchOption.AllDirectories))
@@ -112,9 +120,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		private static IList<FolderWithDocuments> GetDocumentsIntoRootFolder(string testDirectory, bool withNatives = true)
+		private static IList<FolderWithDocuments> GetDocumentsIntoRootFolder(string nativesFolderPath, bool withNatives = true)
 		{
-			string nativesFolderPath = Path.Combine(testDirectory, @"TestData\NATIVES");
 			var foldersList = new List<FolderWithDocuments>();
 
 			var newFolder = new FolderWithDocuments(Path.GetFileName(nativesFolderPath), CreateDataTableForDocuments());
@@ -189,7 +196,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public enum TestDataType
 		{
-			Small, ModerateWithFoldersStructure, ModerateWithoutFoldersStructure
+			SmallWithFoldersStructure, SmallWithoutFolderStructure, ModerateWithFoldersStructure, ModerateWithoutFoldersStructure
 		}
 
 		#endregion

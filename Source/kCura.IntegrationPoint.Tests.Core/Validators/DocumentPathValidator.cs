@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Validators
 			string expectedFolderPath = _expectedDocumentPathStrategy.GetFolderPath(sourceDocument);
 			string actualFolderPath = _actualFolderPathStrategy.GetFolderPath(destinationDocument);
 			Assert.That(string.Equals(expectedFolderPath, actualFolderPath),
-				"Document with Control Number {0} hass different path than expected. Expected {1}; Actual {2};",
+				"Document with Control Number {0} has different path than expected. Expected {1}; Actual {2};",
 				GetControlNumber(sourceDocument), expectedFolderPath, actualFolderPath);
 		}
 
@@ -46,10 +46,10 @@ namespace kCura.IntegrationPoint.Tests.Core.Validators
 			return new DocumentPathValidator(expectedFolderPathStrategy, actualFolderPathStrategy);
 		}
 
-		public static DocumentPathValidator CreateForRoot(int expectedDocsWorkspaceId, IFolderManager folderManager)
+		public static DocumentPathValidator CreateForRoot(int expectedDocsWorkspaceId, IFolderManager folderManager, string folderName = "")
 		{
 			var actualFolderPathStrategy = new FolderPathFromFolderTreeStrategy(expectedDocsWorkspaceId, folderManager);
-			var expectedFolderPathStrategy = new FolderPathIsRootStrategy();
+			var expectedFolderPathStrategy = new FolderPathIsRootStrategy(folderName);
 
 			return new DocumentPathValidator(expectedFolderPathStrategy, actualFolderPathStrategy);
 		}

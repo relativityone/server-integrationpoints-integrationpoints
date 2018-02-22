@@ -4,10 +4,16 @@
 
 	public class FolderPathIsRootStrategy : FolderPathStrategyWithCache
 	{
-		protected override string GetFolderPathInternal(Document document)
+		private readonly string _folderName;
+
+		public FolderPathIsRootStrategy(string folderName = "")
 		{
-			return string.Empty;
+			_folderName = folderName;
 		}
 
+		protected override string GetFolderPathInternal(Document document)
+		{
+			return _folderName;
+		}
 	}
 }

@@ -90,7 +90,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		public void RelativityProvider_TC_RTR_LO_04()
 		{
 			// Arrange
-			DestinationContext.ImportDocuments();
+			DestinationContext.ImportDocumentsToRoot();
 
 			RelativityProviderModel model = CreateRelativityProviderModelWithLinks();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
@@ -106,14 +106,14 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
-			ValidateDocumentsForRoot();
+			ValidateDocumentsForRootWithFolderName();
 		}
 
 		[Test]
 		public void RelativityProvider_TC_RTR_LO_05()
 		{
 			// Arrange
-			DestinationContext.ImportDocuments();
+			DestinationContext.ImportDocumentsToRoot();
 
 			RelativityProviderModel model = CreateRelativityProviderModelWithLinks();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
@@ -130,14 +130,14 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
-			ValidateDocumentsForField();
+			ValidateDocumentsForRootWithFolderName();
 		}
 
 		[Test]
 		public void RelativityProvider_TC_RTR_LO_06()
 		{
 			// Arrange
-			DestinationContext.ImportDocuments();
+			DestinationContext.ImportDocumentsToRoot();
 
 			RelativityProviderModel model = CreateRelativityProviderModelWithLinks();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
@@ -154,7 +154,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
-			ValidateDocumentsForFolderTree();
+			ValidateDocumentsForRootWithFolderName();
 		}
 
 		[Test]
@@ -209,7 +209,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		public void RelativityProvider_TC_RTR_LO_09()
 		{
 			// Arrange
-			DestinationContext.ImportDocuments(testDataType: DocumentTestDataBuilder.TestDataType.ModerateWithoutFoldersStructure);
+			DestinationContext.ImportDocumentsToRoot();
 
 			RelativityProviderModel model = CreateRelativityProviderModelWithLinks();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
@@ -225,14 +225,14 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
-			ValidateDocumentsForRoot();
+			ValidateDocumentsForRootWithFolderName();
 		}
 
 		[Test]
 		public void RelativityProvider_TC_RTR_LO_10()
 		{
 			// Arrange
-			DestinationContext.ImportDocuments();
+			DestinationContext.ImportDocumentsToRoot();
 
 			RelativityProviderModel model = CreateRelativityProviderModelWithLinks();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
@@ -249,14 +249,14 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
-			ValidateDocumentsForField();
+			ValidateDocumentsForRootWithFolderName();
 		}
 
 		[Test]
 		public void RelativityProvider_TC_RTR_LO_11()
 		{
 			// Arrange
-			DestinationContext.ImportDocuments();
+			DestinationContext.ImportDocumentsToRoot();
 
 			RelativityProviderModel model = CreateRelativityProviderModelWithLinks();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
@@ -273,7 +273,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
-			ValidateDocumentsForFolderTree();
+			ValidateDocumentsForRootWithFolderName();
 		}
 
 		[Test]
@@ -335,6 +335,14 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		private void ValidateDocumentsForFolderTree()
 		{
 			DocumentsValidator documentsValidator = CreateDocumentsForFolderTreeValidator()
+				.ValidateWith(new DocumentNativesAndInRepositoryValidator(NativesService, Context.GetWorkspaceId(), DestinationContext.GetWorkspaceId(), true, false));
+
+			documentsValidator.Validate();
+		}
+
+		private void ValidateDocumentsForRootWithFolderName()
+		{
+			DocumentsValidator documentsValidator = CreateDocumentsForRootWithFolderNameValidator()
 				.ValidateWith(new DocumentNativesAndInRepositoryValidator(NativesService, Context.GetWorkspaceId(), DestinationContext.GetWorkspaceId(), true, false));
 
 			documentsValidator.Validate();

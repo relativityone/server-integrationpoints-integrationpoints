@@ -59,5 +59,11 @@
 			return new PushDocumentsValidator(Context.GetWorkspaceId(), DestinationContext.GetWorkspaceId())
 				.ValidateWith(DocumentPathValidator.CreateForRoot(DestinationContext.GetWorkspaceId(), FolderManager));
 		}
+
+		protected DocumentsValidator CreateDocumentsForRootWithFolderNameValidator()
+		{
+			return new PushDocumentsValidator(Context.GetWorkspaceId(), DestinationContext.GetWorkspaceId())
+				.ValidateWith(DocumentPathValidator.CreateForRoot(DestinationContext.GetWorkspaceId(), FolderManager, "NATIVES"));
+		}
 	}
 }

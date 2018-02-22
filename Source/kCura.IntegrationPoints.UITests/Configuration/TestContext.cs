@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 		public async Task CreateWorkspaceAsync()
 		{
-			WorkspaceName = $"Test Workspace {TimeStamp}";
+			WorkspaceName = $"1A Test Workspace {TimeStamp}";
 			Log.Information($"Attempting to create workspace '{WorkspaceName}' using template '{_TEMPLATE_WKSP_NAME}'.");
 			try
 			{
@@ -120,6 +120,24 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		public async Task InstallIntegrationPointsAsync()
 		{
 			await Task.Run(() => InstallIntegrationPoints());
+		}
+
+		public TestContext ImportDocumentsToRoot(DocumentTestDataBuilder.TestDataType testDataType = DocumentTestDataBuilder.TestDataType.ModerateWithoutFoldersStructure)
+		{
+			ImportDocuments(true, testDataType);
+			return this;
+		}
+
+		public TestContext ImportDocumentsToRootWithoutNatives(DocumentTestDataBuilder.TestDataType testDataType = DocumentTestDataBuilder.TestDataType.ModerateWithoutFoldersStructure)
+		{
+			ImportDocuments(false, testDataType);
+			return this;
+		}
+
+		public TestContext ImportDocumentsWithoutNatives(DocumentTestDataBuilder.TestDataType testDataType = DocumentTestDataBuilder.TestDataType.ModerateWithFoldersStructure)
+		{
+			ImportDocuments(false, testDataType);
+			return this;
 		}
 
 		public TestContext ImportDocuments(bool withNatives = true, DocumentTestDataBuilder.TestDataType testDataType = DocumentTestDataBuilder.TestDataType.ModerateWithFoldersStructure)

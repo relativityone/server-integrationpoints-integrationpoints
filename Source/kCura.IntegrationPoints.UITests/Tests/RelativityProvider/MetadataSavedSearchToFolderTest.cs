@@ -41,10 +41,11 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			detailsPage.RunIntegrationPoint();
 
 			// Assert
-			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
-			ValidateDocumentsForRoot();
-
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
+
+			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
+
+			ValidateDocumentsForRoot();
 		}
 
 		
@@ -61,11 +62,13 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 			detailsPage.RunIntegrationPoint();
-			
+
 			// Assert
-			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
-			ValidateDocumentsForField();
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
+
+			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
+
+			ValidateDocumentsForField();
 		}
 
 		
@@ -82,11 +85,13 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 			detailsPage.RunIntegrationPoint();
-			
+
 			// Assert
-			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
-			ValidateDocumentsForFolderTree();
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
+
+			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
+
+			ValidateDocumentsForFolderTree();
 		}
 
 
@@ -94,7 +99,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		public void RelativityProvider_TC_RTR_MDO_04()
 		{
 			// Arrange
-			DestinationContext.ImportDocuments(testDataType:DocumentTestDataBuilder.TestDataType.ModerateWithoutFoldersStructure);
+			DestinationContext.ImportDocumentsToRootWithoutNatives();
 
 			RelativityProviderModel model = CreateRelativityProviderModel();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
@@ -106,16 +111,18 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			detailsPage.RunIntegrationPoint();
 
 			// Assert
-			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
-			ValidateDocumentsForRoot();
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
+
+			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
+
+			ValidateDocumentsForRootWithFolderName();
 		}
 
 		[Test]
 		public void RelativityProvider_TC_RTR_MDO_05()
 		{
 			// Arrange
-			DestinationContext.ImportDocuments(testDataType: DocumentTestDataBuilder.TestDataType.ModerateWithoutFoldersStructure);
+			DestinationContext.ImportDocumentsToRootWithoutNatives();
 
 			RelativityProviderModel model = CreateRelativityProviderModel();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
@@ -128,16 +135,18 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			detailsPage.RunIntegrationPoint();
 
 			// Assert
-			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
-			ValidateDocumentsForRoot();
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
+
+			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
+
+			ValidateDocumentsForRootWithFolderName();
 		}
 
 		[Test]
 		public void RelativityProvider_TC_RTR_MDO_06()
 		{
 			// Arrange
-			DestinationContext.ImportDocuments(testDataType: DocumentTestDataBuilder.TestDataType.ModerateWithoutFoldersStructure);
+			DestinationContext.ImportDocumentsToRootWithoutNatives();
 
 			RelativityProviderModel model = CreateRelativityProviderModel();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
@@ -150,16 +159,18 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			detailsPage.RunIntegrationPoint();
 
 			// Assert
-			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
-			ValidateDocumentsForRoot();
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
+
+			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
+
+			ValidateDocumentsForRootWithFolderName();
 		}
 
 		[Test]
 		public void RelativityProvider_TC_RTR_MDO_07()
 		{
 			// Arrange
-			DestinationContext.ImportDocuments();
+			DestinationContext.ImportDocumentsWithoutNatives();
 
 			RelativityProviderModel model = CreateRelativityProviderModel();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
@@ -170,18 +181,20 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 			detailsPage.RunIntegrationPoint();
-			
+
 			// Assert
+			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
+
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
+
 			ValidateDocumentsForField();
-			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]); 
 		}
 
 		[Test]
 		public void RelativityProvider_TC_RTR_MDO_08()
 		{
 			// Arrange
-			DestinationContext.ImportDocuments();
+			DestinationContext.ImportDocumentsWithoutNatives();
 			
 			RelativityProviderModel model = CreateRelativityProviderModel();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
@@ -192,18 +205,20 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 			detailsPage.RunIntegrationPoint();
-			
+
 			// Assert
-			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
-			ValidateDocumentsForFolderTree();
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
+
+			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
+
+			ValidateDocumentsForFolderTree();
 		}
 
 		[Test]
 		public void RelativityProvider_TC_RTR_MDO_09()
 		{
 			// Arrange
-			DestinationContext.ImportDocuments(testDataType: DocumentTestDataBuilder.TestDataType.ModerateWithoutFoldersStructure);
+			DestinationContext.ImportDocumentsToRootWithoutNatives();
 
 			RelativityProviderModel model = CreateRelativityProviderModel();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
@@ -215,9 +230,11 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			detailsPage.RunIntegrationPoint();
 
 			// Assert
-			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
-			ValidateDocumentsForRoot();
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
+
+			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
+
+			ValidateDocumentsForRootWithFolderName();
 		}
 
 
@@ -225,7 +242,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		public void RelativityProvider_TC_RTR_MDO_10()
 		{
 			// Arrange
-			DestinationContext.ImportDocuments(testDataType: DocumentTestDataBuilder.TestDataType.ModerateWithoutFoldersStructure);
+			DestinationContext.ImportDocumentsToRootWithoutNatives();
 
 			RelativityProviderModel model = CreateRelativityProviderModel();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
@@ -238,16 +255,18 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			detailsPage.RunIntegrationPoint();
 
 			// Assert
-			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
-			ValidateDocumentsForRoot();
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
+
+			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
+
+			ValidateDocumentsForRootWithFolderName();
 		}
 
 		[Test]
 		public void RelativityProvider_TC_RTR_MDO_11()
 		{
 			// Arrange
-			DestinationContext.ImportDocuments(testDataType: DocumentTestDataBuilder.TestDataType.ModerateWithoutFoldersStructure);
+			DestinationContext.ImportDocumentsToRootWithoutNatives();
 
 			RelativityProviderModel model = CreateRelativityProviderModel();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
@@ -260,16 +279,18 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			detailsPage.RunIntegrationPoint();
 
 			// Assert
-			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
-			ValidateDocumentsForRoot();
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
+
+			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
+
+			ValidateDocumentsForRootWithFolderName();
 		}
 
 		[Test]
 		public void RelativityProvider_TC_RTR_MDO_12()
 		{
 			// Arrange
-			DestinationContext.ImportDocuments();
+			DestinationContext.ImportDocumentsWithoutNatives();
 
 			RelativityProviderModel model = CreateRelativityProviderModel();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
@@ -280,11 +301,13 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 			detailsPage.RunIntegrationPoint();
-			
+
 			// Assert
-			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
-			ValidateDocumentsForField();
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
+
+			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
+
+			ValidateDocumentsForField();
 		}
 
 
@@ -292,7 +315,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		public void RelativityProvider_TC_RTR_MDO_13()
 		{
 			// Arrange
-			DestinationContext.ImportDocuments();
+			DestinationContext.ImportDocumentsWithoutNatives();
 
 			RelativityProviderModel model = CreateRelativityProviderModel();
 
@@ -304,25 +327,19 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 			detailsPage.RunIntegrationPoint();
-			
+
 			// Assert
-			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
-			ValidateDocumentsForFolderTree();
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
-		}
 
-		private void ValidateDocumentsForRoot()
-		{
-			DocumentsValidator documentsValidator = CreateDocumentsForRootValidator()
-					.ValidateWith(new DocumentNativesValidator(false));
+			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
-			documentsValidator.Validate();
+			ValidateDocumentsForFolderTree();
 		}
 
 		private void ValidateDocumentsForField()
 		{
 			DocumentsValidator documentsValidator = CreateDocumentsForFieldValidator()
-					.ValidateWith(new DocumentNativesValidator(false));
+				.ValidateWith(new DocumentNativesValidator(false));
 
 			documentsValidator.Validate();
 		}
@@ -330,10 +347,25 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		private void ValidateDocumentsForFolderTree()
 		{
 			DocumentsValidator documentsValidator = CreateDocumentsForFolderTreeValidator()
-					.ValidateWith(new DocumentNativesValidator(false));
+				.ValidateWith(new DocumentNativesValidator(false));
+
+			documentsValidator.Validate();
+		}
+
+		private void ValidateDocumentsForRoot()
+		{
+			DocumentsValidator documentsValidator = CreateDocumentsForRootValidator()
+				.ValidateWith(new DocumentNativesValidator(false));
+
+			documentsValidator.Validate();
+		}
+
+		private void ValidateDocumentsForRootWithFolderName()
+		{
+			DocumentsValidator documentsValidator = CreateDocumentsForRootWithFolderNameValidator()
+				.ValidateWith(new DocumentNativesValidator(false));
 
 			documentsValidator.Validate();
 		}
 	}
-
 }
