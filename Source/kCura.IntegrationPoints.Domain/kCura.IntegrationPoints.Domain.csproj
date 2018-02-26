@@ -68,7 +68,6 @@
     <Compile Include="Extensions\ExceptionExtensions.cs" />
     <Compile Include="Extensions\ArtifactExtensions.cs" />
     <Compile Include="Extensions\IAPILogExtensions.cs" />
-    <Compile Include="IAppDomainDataMarshaller.cs" />
     <Compile Include="IDomainHelper.cs" />
     <Compile Include="IDomainManager.cs" />
     <Compile Include="IEmailBodyData.cs" />
@@ -134,7 +133,6 @@
     <Compile Include="Readers\IDataTransferContext.cs" />
     <Compile Include="Readers\RelativityReaderBase.cs" />
     <Compile Include="RelativityFeaturePathService.cs" />
-    <Compile Include="SecureAppDomainDataMarshaller.cs" />
     <Compile Include="StackOfDisposables.cs" />
     <Compile Include="Synchronizer\IDataSynchronizer.cs" />
     <Compile Include="Utils.cs" />

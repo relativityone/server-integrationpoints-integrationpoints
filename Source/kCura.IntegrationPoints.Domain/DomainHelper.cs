@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using kCura.IntegrationPoints.Contracts.Domain;
 using Relativity.API;
 using Relativity.APIHelper;
@@ -175,16 +173,6 @@ namespace kCura.IntegrationPoints.Domain
 			LoadClientLibraries(domain, applicationGuid);
 			DomainManager manager = CreateInstance<DomainManager>(domain, _helper);
 
-			IDictionary<string, byte[]> dataDictionary = new Dictionary<string, byte[]>();
-
-			// Get the connection string
-			string connectionString = Config.Config.ConnectionString;
-			byte[] connectionStringBytes = Encoding.ASCII.GetBytes(connectionString);
-			dataDictionary.Add(Constants.IntegrationPoints.APP_DOMAIN_DATA_CONNECTION_STRING, connectionStringBytes);
-
-			// Marshal the data
-			IAppDomainDataMarshaller dataMarshaller = new SecureAppDomainDataMarshaller();
-			dataMarshaller.MarshalDataToDomain(domain, dataDictionary);
 			manager.Init();
 			Bootstrapper.InitAppDomain(Constants.IntegrationPoints.APP_DOMAIN_SUBSYSTEM_NAME,
 				Constants.IntegrationPoints.APPLICATION_GUID_STRING, domain);

@@ -11,6 +11,8 @@ def skipUnitTests = env.skipUnitTests == "true"
 def skipProvisioning = env.skipProvisioning == "true"
 def skipITests = env.skipITests == "true"
 
+skipProvisioning = true
+
 def ripBranch = (env.ripBranch ?: env.BRANCH_NAME) ?: "develop"
 testsFilter = env.testsFilter ?: "cat == SmokeTest"
 

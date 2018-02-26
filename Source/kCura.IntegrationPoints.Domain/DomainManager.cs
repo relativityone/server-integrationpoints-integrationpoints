@@ -30,10 +30,6 @@ namespace kCura.IntegrationPoints.Domain
 		public void Init()
 		{
 			CreateCustomProviderFactory();
-
-			// Get marshaled data
-			IAppDomainDataMarshaller dataMarshaller = new SecureAppDomainDataMarshaller();
-			this.SetUpConnectionString(dataMarshaller);
 		}
 
 		private void CreateCustomProviderFactory()
@@ -92,20 +88,6 @@ namespace kCura.IntegrationPoints.Domain
 				{
 					throw new Exception(Constants.IntegrationPoints.UNABLE_TO_INSTANTIATE_PROVIDER_FACTORY, ex);
 				}
-			}
-		}
-
-		/// <summary>
-		/// Sets the connection string for the domain by retrieving the encrypted AppDomain data
-		/// </summary>
-		private void SetUpConnectionString(IAppDomainDataMarshaller dataMarshaller)
-		{
-			byte[] data = dataMarshaller.RetrieveMarshaledData(AppDomain.CurrentDomain, Constants.IntegrationPoints.APP_DOMAIN_DATA_CONNECTION_STRING);
-			if (data != null && data.Length > 0)
-			{
-				string connectionString = System.Text.Encoding.ASCII.GetString(data);
-
-				kCura.Config.Config.SetConnectionString(connectionString);
 			}
 		}
 
