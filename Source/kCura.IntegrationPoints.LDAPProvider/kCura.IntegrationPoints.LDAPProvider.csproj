@@ -63,7 +63,6 @@
     <Compile Include="LdapServiceFactory.cs" />
     <Compile Include="LDAPSettingsReader.cs" />
     <Compile Include="SearchScopeEnum.cs" />
-    <Compile Include="LDAPAdapters.cs" />
     <Compile Include="LDAPProvider.cs" />
     <Compile Include="LDAPService.cs" />
     <Compile Include="LDAPSettings.cs" />
