@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 {
@@ -25,6 +26,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 		private IJobHistoryErrorRepository _jobHistoryErrorRepository;
 		private IObjectTypeRepository _objectTypeRepository;
 		private IArtifactGuidRepository _artifactGuidRepository;
+		private IHelper _helper;
 		private readonly ClaimsPrincipal _claimsPrincipal = null;
 		private JobHistoryErrorDTO.UpdateStatusType _updateStatusType;
 		private const int _jobHistoryErrorTypeId = 6873784;
@@ -57,7 +59,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 			_onBehalfOfUserClaimsPrincipalFactory = Substitute.For<IOnBehalfOfUserClaimsPrincipalFactory>();
 			_updateStatusType = Substitute.For<JobHistoryErrorDTO.UpdateStatusType>();
 			_jobHistoryErrorManager = Substitute.For<IJobHistoryErrorManager>();
-			
+			_helper = Substitute.For<IHelper>();
 			_onBehalfOfUserClaimsPrincipalFactory.CreateClaimsPrincipal(_submittedBy).Returns(_claimsPrincipal);
 			_repositoryFactory.GetObjectTypeRepository(_sourceWorkspaceId).Returns(_objectTypeRepository);
 			_objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(_jobHistoryErrorGuid).Returns(_jobHistoryErrorTypeId);
@@ -72,7 +74,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 			_jobHistoryErrorManager.JobHistoryErrorJobStart.GetTempTableName().Returns(_SCRATCHTABLE_JOBSTART);
 			_jobHistoryErrorManager.JobHistoryErrorJobComplete.GetTempTableName().Returns(_SCRATCHTABLE_JOBCOMPLETE);
 
-			_testInstance = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, _jobStopManager,
+			_testInstance = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _helper, _repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, _jobStopManager,
 				_sourceWorkspaceId, _submittedBy, _updateStatusType);
 
 			_repositoryFactory.GetJobHistoryErrorRepository(_sourceWorkspaceId).Returns(_jobHistoryErrorRepository);

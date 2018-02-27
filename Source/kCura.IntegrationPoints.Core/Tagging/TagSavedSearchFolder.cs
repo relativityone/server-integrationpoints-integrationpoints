@@ -1,6 +1,9 @@
 ﻿using System;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using Relativity.API;
+using Relativity.Services.Search;
 
 namespace kCura.IntegrationPoints.Core.Tagging
 {
@@ -19,9 +22,9 @@ namespace kCura.IntegrationPoints.Core.Tagging
 		{
 			try
 			{
-				var keywordSearchRepository = _repositoryFactory.GetKeywordSearchRepository();
+				IKeywordSearchRepository keywordSearchRepository = _repositoryFactory.GetKeywordSearchRepository();
 
-				var existingFolder = keywordSearchRepository.QuerySearchContainer(workspaceArtifactId, Data.Constants.DESTINATION_WORKSPACE_SAVED_SEARCH_FOLDER_NAME);
+				SearchContainer existingFolder = keywordSearchRepository.QuerySearchContainer(workspaceArtifactId, Data.Constants.DESTINATION_WORKSPACE_SAVED_SEARCH_FOLDER_NAME);
 
 				if (existingFolder != null)
 				{
@@ -32,8 +35,8 @@ namespace kCura.IntegrationPoints.Core.Tagging
 			}
 			catch (Exception e)
 			{
-				_logger.LogError(e, "Failed to create Saved Search container in workspace {workspaceId}.", workspaceArtifactId);
-				throw;
+				_logger.LogError(e, "Failed to create Saved Search container in workspace {workspaceArtifactId}.", workspaceArtifactId);
+				throw new IntegrationPointsException($"Failed to create Saved Search container in workspace {workspaceArtifactId}.", e);
 			}
 		}
 	}

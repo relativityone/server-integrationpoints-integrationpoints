@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Core.Tagging
 		{
 			if (importSettings.CreateSavedSearchForTagging)
 			{
-				var folderId = _tagSavedSearchFolder.GetFolderId(destinationWorkspaceArtifactId);
+				int folderId = _tagSavedSearchFolder.GetFolderId(destinationWorkspaceArtifactId);
 				_tagSavedSearch.CreateTagSavedSearch(destinationWorkspaceArtifactId, tagsContainer, folderId);
 			}
 		}

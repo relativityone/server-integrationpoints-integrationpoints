@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
@@ -13,6 +14,9 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 {
 	public class SourceObjectBatchUpdateManager : IConsumeScratchTableBatchStatus
 	{
+		private int _destinationWorkspaceRdoId;
+		private bool _errorOccurDuringJobStart;
+
 		private readonly ClaimsPrincipal _claimsPrincipal;
 		private readonly int _destinationWorkspaceId;
 		private readonly IDestinationWorkspaceRepository _destinationWorkspaceRepository;
@@ -22,8 +26,6 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		private readonly int? _federatedInstanceId;
 		private readonly IWorkspaceRepository _workspaceRepository;
 		private readonly IFederatedInstanceManager _federatedInstanceManager;
-		private int _destinationWorkspaceRdoId;
-		private bool _errorOccurDuringJobStart;
 
 		public SourceObjectBatchUpdateManager(IRepositoryFactory sourceRepositoryFactory, IRepositoryFactory targetRepositoryFactory,
 			IOnBehalfOfUserClaimsPrincipalFactory userClaimsPrincipalFactory, IHelper helper, IFederatedInstanceManager federatedInstanceManager, SourceConfiguration sourceConfig,
@@ -67,9 +69,8 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			}
 			catch (Exception e)
 			{
-				LogErrorDuringJobStart(e);
 				_errorOccurDuringJobStart = true;
-				throw;
+				throw LogAndWrapExceptionFromJobStart(e);
 			}
 		}
 
@@ -86,8 +87,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			}
 			catch (Exception e)
 			{
-				LogErrorDuringJobComplete(e);
-				throw;
+				throw LogAndWrapExceptionFromJobComplete(e);
 			}
 			finally
 			{
@@ -97,14 +97,21 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 
 		#region Logging
 
-		private void LogErrorDuringJobStart(Exception e)
+		private IntegrationPointsException LogAndWrapExceptionFromJobStart(Exception e)
 		{
-			_logger.LogError(e, "Error occurred during job start in SourceObjectBatchUpdateManager.");
+			return LogAndWrapException(e,
+				"Error occurred during linking destination workspace to JobHistory in SourceObjectBatchUpdateManager.");
 		}
 
-		private void LogErrorDuringJobComplete(Exception e)
+		private IntegrationPointsException LogAndWrapExceptionFromJobComplete(Exception e)
 		{
-			_logger.LogError(e, "Error occurred during job completion in SourceObjectBatchUpdateManager");
+			return LogAndWrapException(e, "Error occurred during job completion in SourceObjectBatchUpdateManager");
+		}
+
+		private IntegrationPointsException LogAndWrapException(Exception e, string message)
+		{
+			_logger.LogError(e, message);
+			return new IntegrationPointsException(message, e);
 		}
 
 		#endregion

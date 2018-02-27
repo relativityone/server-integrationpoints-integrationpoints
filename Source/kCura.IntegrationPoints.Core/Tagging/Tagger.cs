@@ -3,6 +3,7 @@ using System.Data;
 using System.Linq;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Domain.Synchronizer;
@@ -32,19 +33,19 @@ namespace kCura.IntegrationPoints.Core.Tagging
 		{
 			try
 			{
-				FieldMap identifier = _fields.First(f => f.FieldMapType == FieldMapTypeEnum.Identifier);
+				FieldMap identifierField = GetIdentifierField();
 
 				DataColumn[] columns =
 				{
-					new DataColumn(identifier.SourceField.FieldIdentifier),
-					new DataColumnWithValue(IntegrationPoints.Domain.Constants.SPECIAL_SOURCEWORKSPACE_FIELD, tagsContainer.SourceWorkspaceDto.Name),
-					new DataColumnWithValue(IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD, tagsContainer.SourceJobDto.Name)
+					new DataColumn(identifierField.SourceField.FieldIdentifier),
+					new DataColumnWithValue(Domain.Constants.SPECIAL_SOURCEWORKSPACE_FIELD, tagsContainer.SourceWorkspaceDto.Name),
+					new DataColumnWithValue(Domain.Constants.SPECIAL_SOURCEJOB_FIELD, tagsContainer.SourceJobDto.Name)
 				};
 
-				int identifierFieldId = Convert.ToInt32(identifier.SourceField.FieldIdentifier);
-				using (TempTableReader reader = new TempTableReader(_documentRepository, scratchTableRepository, columns, identifierFieldId))
+				int identifierFieldId = Convert.ToInt32(identifierField.SourceField.FieldIdentifier);
+				using (var reader = new TempTableReader(_documentRepository, scratchTableRepository, columns, identifierFieldId))
 				{
-					FieldMap[] fieldsToPush = {identifier};
+					FieldMap[] fieldsToPush = { identifierField };
 					var documentTransferContext = new DefaultTransferContext(reader);
 					if (scratchTableRepository.Count > 0)
 					{
@@ -54,14 +55,20 @@ namespace kCura.IntegrationPoints.Core.Tagging
 			}
 			catch (Exception e)
 			{
-				LogErrorDuringTagging(e);
-				throw;
+				throw LogAndWrapException(e);
 			}
 		}
 
-		private void LogErrorDuringTagging(Exception e)
+		private FieldMap GetIdentifierField()
 		{
-			_logger.LogError(e, $"Error occurred during document tagging in {nameof(Tagger)}");
+			return _fields.First(f => f.FieldMapType == FieldMapTypeEnum.Identifier);
+		}
+
+		private IntegrationPointsException LogAndWrapException(Exception e)
+		{
+			string errorMessage = $"Error occurred during document tagging in {nameof(Tagger)}";
+			_logger.LogError(e, errorMessage);
+			throw new IntegrationPointsException(errorMessage, e);
 		}
 	}
 }

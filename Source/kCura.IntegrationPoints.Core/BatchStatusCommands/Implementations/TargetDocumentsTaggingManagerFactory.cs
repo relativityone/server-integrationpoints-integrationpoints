@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 
@@ -51,27 +52,15 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			_jobHistoryArtifactId = jobHistoryArtifactId;
 			_uniqueJobId = uniqueJobId;
 
-			// specify settings to tag
-			ImportSettings importSettings = serializer.Deserialize<ImportSettings>(destinationConfig);
-			importSettings.ImportOverwriteMode = ImportOverwriteModeEnum.OverlayOnly;
-			importSettings.FieldOverlayBehavior = ImportSettings.FIELDOVERLAYBEHAVIOR_MERGE;
-			importSettings.CopyFilesToDocumentRepository = false;
-			importSettings.FileNameColumn = null;
-			importSettings.NativeFilePathSourceFieldName = null;
-			importSettings.FolderPathSourceFieldName = null;
-			importSettings.Provider = string.Empty;
-			importSettings.ImportNativeFile = false;
-			_destinationConfig = _serializer.Serialize(importSettings);
+			_destinationConfig = CreateDestinationConfig(serializer, destinationConfig);
 		}
 
 		public IConsumeScratchTableBatchStatus BuildDocumentsTagger()
 		{
 			var settings = _serializer.Deserialize<SourceConfiguration>(_sourceConfig);
-			var importSettings = _serializer.Deserialize<ImportSettings>(_destinationConfig);
-			var synchronizer = _synchronizerFactory.CreateSynchronizer(Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, _destinationConfig);
-			var tagsSynchronizer = new TagsSynchronizer(synchronizer);
+			Tagger tagger = CreateTagger(settings);
 
-			var tagger = new Tagger(_documentRepository, tagsSynchronizer, _helper, _fields, _destinationConfig, settings.SourceWorkspaceArtifactId);
+			var importSettings = _serializer.Deserialize<ImportSettings>(_destinationConfig);
 
 			IConsumeScratchTableBatchStatus taggingManager = new TargetDocumentsTaggingManager(
 				_repositoryFactory,
@@ -87,6 +76,30 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 				_uniqueJobId);
 
 			return taggingManager;
+		}
+
+		private Tagger CreateTagger(SourceConfiguration settings)
+		{
+			IDataSynchronizer synchronizer = _synchronizerFactory.CreateSynchronizer(Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, _destinationConfig);
+			var tagsSynchronizer = new TagsSynchronizer(_helper, synchronizer);
+
+			var tagger = new Tagger(_documentRepository, tagsSynchronizer, _helper, _fields, _destinationConfig, settings.SourceWorkspaceArtifactId);
+			return tagger;
+		}
+
+		private string CreateDestinationConfig(ISerializer serializer, string destinationConfig)
+		{
+			// specify settings to tag
+			ImportSettings importSettings = serializer.Deserialize<ImportSettings>(destinationConfig);
+			importSettings.ImportOverwriteMode = ImportOverwriteModeEnum.OverlayOnly;
+			importSettings.FieldOverlayBehavior = ImportSettings.FIELDOVERLAYBEHAVIOR_MERGE;
+			importSettings.CopyFilesToDocumentRepository = false;
+			importSettings.FileNameColumn = null;
+			importSettings.NativeFilePathSourceFieldName = null;
+			importSettings.FolderPathSourceFieldName = null;
+			importSettings.Provider = string.Empty;
+			importSettings.ImportNativeFile = false;
+			return _serializer.Serialize(importSettings);
 		}
 	}
 }

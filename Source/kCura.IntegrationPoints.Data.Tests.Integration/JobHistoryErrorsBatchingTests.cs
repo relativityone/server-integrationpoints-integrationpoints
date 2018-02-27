@@ -221,7 +221,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			string startTempTableName = $"{ _JOB_START_TEMP_TABLE_PREFIX }_{ tempTableSuffix }";
 			string completeTempTableName = $"{ _JOB_COMPLETE_TEMP_TABLE_PREFIX }_{ tempTableSuffix }";
 			DataTable startTempTable = GetTempTable(startTempTableName);
-			_batchStatus = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, RepositoryFactory, new OnBehalfOfUserClaimsPrincipalFactory(), stopJobManager, SourceWorkspaceArtifactId, _ADMIN_USER_ID, new JobHistoryErrorDTO.UpdateStatusType());
+			_batchStatus = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, helper, RepositoryFactory, new OnBehalfOfUserClaimsPrincipalFactory(), stopJobManager, SourceWorkspaceArtifactId, _ADMIN_USER_ID, new JobHistoryErrorDTO.UpdateStatusType());
 
 			_batchStatus.OnJobStart(job);
 			DataTable completedTempTable = GetTempTable(completeTempTableName);
@@ -296,7 +296,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 				ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem
 			};
 
-			_batchStatus = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, RepositoryFactory, new OnBehalfOfUserClaimsPrincipalFactory(), stopJobManager, SourceWorkspaceArtifactId, _ADMIN_USER_ID, updateStatusType);
+			_batchStatus = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, helper, RepositoryFactory, new OnBehalfOfUserClaimsPrincipalFactory(), stopJobManager, SourceWorkspaceArtifactId, _ADMIN_USER_ID, updateStatusType);
 
 			_batchStatus.OnJobStart(job);
 			DataTable completedTempTable = GetTempTable(completeTempTableName);
@@ -417,7 +417,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			{
 				ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly
 			};
-			_batchStatus = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, RepositoryFactory, new OnBehalfOfUserClaimsPrincipalFactory(), stopJobManager, SourceWorkspaceArtifactId, _ADMIN_USER_ID, updateStatusType);
+			_batchStatus = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, helper, RepositoryFactory, new OnBehalfOfUserClaimsPrincipalFactory(), stopJobManager, SourceWorkspaceArtifactId, _ADMIN_USER_ID, updateStatusType);
 
 			_batchStatus.OnJobStart(job);
 			DataTable completedTempTable = GetTempTable(completeTempTableName);

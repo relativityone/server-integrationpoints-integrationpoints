@@ -4,6 +4,7 @@ using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity;
 using Relativity.API;
@@ -36,20 +37,19 @@ namespace kCura.IntegrationPoints.Core.Tagging
 			}
 			catch (Exception e)
 			{
-				_logger.LogError(e, "Failed to create Saved Search for promoted documents in destination workspace {workspaceId}.", workspaceArtifactId);
-				throw;
+				_logger.LogError(e, "Failed to create Saved Search for promoted documents in destination workspace {workspaceArtifactId}.", workspaceArtifactId);
+				throw new IntegrationPointsException($"Failed to create Saved Search for promoted documents in destination workspace {workspaceArtifactId}.", e);
 			}
 		}
 
 		private KeywordSearch CreateKeywordSearchForTagging(TagsContainer tagsContainer, int savedSearchFolderId)
 		{
-		    const int savedSearchNameMaxLength = 50;
-            var criteria = CreateWorkspaceAndJobCriteria(tagsContainer);
+			CriteriaCollection criteria = CreateWorkspaceAndJobCriteria(tagsContainer);
 
 			return new KeywordSearch
 			{
-				Name = LimitLength(tagsContainer.SourceJobDto.Name, savedSearchNameMaxLength),
-				ArtifactTypeID = (int) ArtifactType.Document,
+				Name = LimitLength(tagsContainer.SourceJobDto.Name),
+				ArtifactTypeID = (int)ArtifactType.Document,
 				SearchCriteria = criteria,
 				SearchContainer = new SearchContainerRef(savedSearchFolderId),
 				Fields = new List<FieldRef>
@@ -61,22 +61,22 @@ namespace kCura.IntegrationPoints.Core.Tagging
 			};
 		}
 
-	    private string LimitLength(string name, int maxLength)
-	    {
-	        return name.Length > maxLength
-	            ? name.Remove(maxLength / 2 - 3) + "..." + name.Substring(name.Length - maxLength / 2)
-	            : name;
-	    }
+		private string LimitLength(string name)
+		{
+			const int maxLength = 50;
+			return name.Length > maxLength
+				? name.Remove(maxLength / 2 - 3) + "..." + name.Substring(name.Length - maxLength / 2)
+				: name;
+		}
 
-	    private CriteriaCollection CreateWorkspaceAndJobCriteria(TagsContainer tagsContainer)
+		private CriteriaCollection CreateWorkspaceAndJobCriteria(TagsContainer tagsContainer)
 		{
 			var conditionCollection = new CriteriaCollection();
+			CriteriaBase sourceJobCriteria = _multiObjectSavedSearchCondition.CreateConditionForMultiObject(
+				SourceJobDTO.Fields.JobHistoryFieldOnDocumentGuid, CriteriaConditionEnum.AllOfThese, new List<int>{tagsContainer.SourceJobDto.ArtifactId});
 
-			var sourceJobCriteria = _multiObjectSavedSearchCondition.CreateConditionForMultiObject(
-				SourceJobDTO.Fields.JobHistoryFieldOnDocumentGuid, CriteriaConditionEnum.AllOfThese, new List<int> {tagsContainer.SourceJobDto.ArtifactId});
-
-			var sourceWorkspaceCriteria = _multiObjectSavedSearchCondition.CreateConditionForMultiObject(
-				SourceWorkspaceDTO.Fields.SourceWorkspaceFieldOnDocumentGuid, CriteriaConditionEnum.AllOfThese, new List<int> {tagsContainer.SourceWorkspaceDto.ArtifactId});
+			CriteriaBase sourceWorkspaceCriteria = _multiObjectSavedSearchCondition.CreateConditionForMultiObject(
+				SourceWorkspaceDTO.Fields.SourceWorkspaceFieldOnDocumentGuid, CriteriaConditionEnum.AllOfThese, new List<int> { tagsContainer.SourceWorkspaceDto.ArtifactId });
 
 			conditionCollection.Conditions.Add(sourceJobCriteria);
 			conditionCollection.Conditions.Add(sourceWorkspaceCriteria);

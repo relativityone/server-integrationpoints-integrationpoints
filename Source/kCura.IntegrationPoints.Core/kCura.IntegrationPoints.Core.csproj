@@ -147,6 +147,8 @@
     <Compile Include="Services\Domain\ProviderWithLogContextDecorator.cs" />
     <Compile Include="Services\EhErrorService.cs" />
     <Compile Include="Services\ErrorServiceBase.cs" />
+    <Compile Include="Services\Exporter\Validators\DestinationFieldsValidator.cs" />
+    <Compile Include="Services\Exporter\Validators\NestedAndMultiValuesFieldValidator.cs" />
     <Compile Include="Services\FieldService.cs" />
     <Compile Include="Services\IFieldService.cs" />
     <Compile Include="Services\IDeleteHistoryService.cs" />
@@ -380,7 +382,6 @@
     <Compile Include="Services\Tabs\RSAPITabService.cs" />
     <Compile Include="Services\TaskParameterHelper.cs" />
     <Compile Include="Services\UserService.cs" />
-    <Compile Include="Services\Domain\SynchronizerWrapper.cs" />
     <Compile Include="Agent\IntegrationPointTaskBase.cs" />
     <Compile Include="Telemetry\ExportTelemetryMetricProvider.cs" />
     <Compile Include="Telemetry\ITelemetryMetricProvider.cs" />

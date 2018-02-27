@@ -1,9 +1,7 @@
-using System;
 using System.Data;
-using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Domain.Readers;
 
-namespace kCura.IntegrationPoints.Core.Services.Exporter.TransferContext
+namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
 	public class ExporterTransferContext : IDataTransferContext
 	{
@@ -28,6 +26,4 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.TransferContext
 			}
 		}
 	}
-
-	
 }

@@ -1,16 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Data;
-using System.IO;
-
 using NUnit.Framework;
 using NSubstitute;
-
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.WinEDDS;
-using kCura.WinEDDS.Api;
-using NSubstitute.Core;
-using NSubstitute.ExceptionExtensions;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
@@ -29,7 +22,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 			_dataReaderFactory = Substitute.For<IDataReaderFactory>();
 			_dataReaderFactory.GetDataReader(Arg.Any<FieldMap[]>(), Arg.Any<string>()).Returns(_dataReader);
 
-			_instance = new ImportTransferDataContext(_dataReaderFactory, null, string.Empty, new List<FieldMap>());
+			_instance = new ImportTransferDataContext(_dataReaderFactory, string.Empty, new List<FieldMap>());
 		}
 
 		[Test]

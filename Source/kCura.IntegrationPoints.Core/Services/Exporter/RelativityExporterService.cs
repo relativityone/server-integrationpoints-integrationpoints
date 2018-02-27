@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Core.Services.Exporter.TransferContext;
+using kCura.IntegrationPoints.Core.Services.Exporter.Base;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Toggles;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using Relativity.API;
@@ -43,22 +44,22 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				transferConfiguration.ScratchRepositories, LongTextStreamFactory,
 				_toggleProvider,
 				transferConfiguration.ImportSettings.UseDynamicFolderPath);
-			var exporterTransferContext = new ExporterTransferContext(documentTransferDataReader, transferConfiguration) {TotalItemsFound = TotalRecordsFound};
+			var exporterTransferContext = new ExporterTransferContext(documentTransferDataReader, transferConfiguration) { TotalItemsFound = TotalRecordsFound };
 			return Context ?? (Context = exporterTransferContext);
 		}
 
 		public override ArtifactDTO[] RetrieveData(int size)
 		{
-			List<ArtifactDTO> result = new List<ArtifactDTO>(size);
+			var result = new List<ArtifactDTO>(size);
 			object[] retrievedData = Exporter.RetrieveResults(ExportJobInfo.RunId, AvfIds, size);
 			if (retrievedData != null)
 			{
 				int artifactType = (int)ArtifactType.Document;
 				foreach (object data in retrievedData)
 				{
-					List<ArtifactFieldDTO> fields = new List<ArtifactFieldDTO>(AvfIds.Length);
+					var fields = new List<ArtifactFieldDTO>(AvfIds.Length);
 
-					object[] fieldsValue = (object[]) data;
+					object[] fieldsValue = (object[])data;
 					int documentArtifactId = Convert.ToInt32(fieldsValue[AvfIds.Length]);
 
 					SetupBaseFields(documentArtifactId, fieldsValue, fields);
@@ -67,7 +68,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 					result.Add(new ArtifactDTO(documentArtifactId, artifactType, string.Empty, fields));
 				}
 			}
-			
+
 			_folderPathReader.SetFolderPaths(result);
 			RetrievedDataCount += result.Count;
 			return result.ToArray();
@@ -92,8 +93,18 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 					{
 						value = ExportApiDataHelper.SanitizeSingleChoiceField(value);
 					}
-					else if (!_toggleProvider.IsEnabled<UseStreamsForBigLongTextFieldsToggle>() && LongTextFieldArtifactIds.Contains(artifactId)
-																								&& global::Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN.Equals(value))
+				}
+				catch (Exception ex)
+				{
+					LogRetrievingDataError(ex);
+					exception = new IntegrationPointsException($"Error occured while sanitizing  field value in {nameof(RelativityExporterService)}", ex);
+				}
+
+				try
+				{
+					if (!_toggleProvider.IsEnabled<UseStreamsForBigLongTextFieldsToggle>() &&
+						LongTextFieldArtifactIds.Contains(artifactId)
+						&& global::Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN.Equals(value))
 					{
 						value = ExportApiDataHelper.RetrieveLongTextFieldAsync(LongTextStreamFactory, documentArtifactId, artifactId)
 							.GetResultsWithoutContextSync();
@@ -102,7 +113,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				catch (Exception ex)
 				{
 					LogRetrievingDataError(ex);
-					exception = ex;
+					exception = new IntegrationPointsException("Error occured while retrieving long text field value using stream", ex);
 				}
 
 				fields.Add(new LazyExceptArtifactFieldDto(exception)

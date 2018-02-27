@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -9,6 +8,7 @@ using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Domain.Synchronizer;
@@ -29,35 +29,21 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		private readonly IImportJobFactory _jobFactory;
 		private readonly IHelper _helper;
 		private readonly IAPILog _logger;
-
-		protected readonly IRelativityFieldQuery FieldQuery;
+		private IImportService _importService;
 		private IImportAPI _api;
 
+		protected readonly IRelativityFieldQuery FieldQuery;
+
 		private bool? _disableNativeLocationValidation;
-
 		private bool? _disableNativeValidation;
-
-		private HashSet<string> _ignoredList;
-
-		private IImportService _importService;
 		private bool _isJobComplete;
-		private List<KeyValuePair<string, string>> _rowErrors;
-
 		private string _webApiPath;
 
-		public RdoSynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory factory, IImportJobFactory jobFactory, IHelper helper)
-		{
-			FieldQuery = fieldQuery;
-			_factory = factory;
-			_jobFactory = jobFactory;
-			_helper = helper;
-			_logger = helper.GetLoggerFactory().GetLogger().ForContext<RdoSynchronizer>();
-		}
-
-		private ImportSettings ImportSettings { get; set; }
-		private NativeFileImportService NativeFileImportService { get; set; }
-
 		public SourceProvider SourceProvider { get; set; }
+		private ImportSettings ImportSettings { get; set; }
+		private HashSet<string> _ignoredList;
+		private List<KeyValuePair<string, string>> _rowErrors;
+		private NativeFileImportService NativeFileImportService { get; set; }
 
 		private HashSet<string> IgnoredList
 		{
@@ -80,19 +66,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 		}
 
-		public string WebAPIPath
-		{
-			get
-			{
-				if (string.IsNullOrEmpty(_webApiPath))
-				{
-					_webApiPath = Config.Config.Instance.WebApiPath;
-				}
-				return _webApiPath;
-			}
-			protected set { _webApiPath = value; }
-		}
-
 		public bool? DisableNativeLocationValidation
 		{
 			get
@@ -104,6 +77,19 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				return _disableNativeLocationValidation;
 			}
 			protected set { _disableNativeLocationValidation = value; }
+		}
+
+		public string WebAPIPath
+		{
+			get
+			{
+				if (string.IsNullOrEmpty(_webApiPath))
+				{
+					_webApiPath = Config.Config.Instance.WebApiPath;
+				}
+				return _webApiPath;
+			}
+			protected set { _webApiPath = value; }
 		}
 
 		public bool? DisableNativeValidation
@@ -131,15 +117,26 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		public event RowError OnDocumentError;
 
-	    protected void RaiseDocumentErrorEvent(string documentIdentifier, string errorMessage)
-	    {
-	        OnDocumentError?.Invoke(documentIdentifier, errorMessage);
-	    }
+		public RdoSynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory factory, IImportJobFactory jobFactory, IHelper helper)
+		{
+			FieldQuery = fieldQuery;
+			_factory = factory;
+			_jobFactory = jobFactory;
+			_helper = helper;
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<RdoSynchronizer>();
+		}
+
+		protected void RaiseDocumentErrorEvent(string documentIdentifier, string errorMessage)
+		{
+			OnDocumentError?.Invoke(documentIdentifier, errorMessage);
+		}
 
 		public virtual IEnumerable<FieldEntry> GetFields(string options)
 		{
-			LogRetrievingFields();
-			HashSet<string> ignoreFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+			try
+			{
+				LogRetrievingFields();
+				HashSet<string> ignoreFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
 			{
 				Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
 				Constants.SPECIAL_SOURCEJOB_FIELD_NAME,
@@ -147,75 +144,93 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				DocumentFields.JobHistory
 			};
 
-			FieldEntry[] fields = GetFieldsInternal(options).Where(f => !ignoreFields.Contains(f.ActualName)).Select(f => f).ToArray();
+				FieldEntry[] fields = GetFieldsInternal(options).Where(f => !ignoreFields.Contains(f.ActualName)).Select(f => f).ToArray();
 
-			foreach (var field in fields.Where(field => field.IsIdentifier))
-			{
-				field.IsRequired = true;
+				foreach (var field in fields.Where(field => field.IsIdentifier))
+				{
+					field.IsRequired = true;
+				}
+				return fields;
 			}
-			return fields;
+			catch (Exception ex)
+			{
+				throw LogAndCreateGetFieldsException(ex, options);
+			}
 		}
 
 		public void SyncData(IEnumerable<IDictionary<FieldEntry, object>> data, IEnumerable<FieldMap> fieldMap, string options)
 		{
-			LogSyncingData();
-
-			IntializeImportJob(fieldMap, options);
-
-			bool movedNext = true;
-			IEnumerator<IDictionary<FieldEntry, object>> enumerator = data.GetEnumerator();
-
-			do
+			try
 			{
-				try
+				LogSyncingData();
+
+				IntializeImportJob(fieldMap, options);
+
+				bool movedNext = true;
+				IEnumerator<IDictionary<FieldEntry, object>> enumerator = data.GetEnumerator();
+
+				do
 				{
-					movedNext = enumerator.MoveNext();
-					if (movedNext)
+					try
 					{
-						Dictionary<string, object> importRow = GenerateImportRow(enumerator.Current, fieldMap, ImportSettings);
-						if (importRow != null)
+						movedNext = enumerator.MoveNext();
+						if (movedNext)
 						{
-							_importService.AddRow(importRow);
+							Dictionary<string, object> importRow = GenerateImportRow(enumerator.Current, fieldMap, ImportSettings);
+							if (importRow != null)
+							{
+								_importService.AddRow(importRow);
+							}
 						}
 					}
-				}
-				catch (ProviderReadDataException exception)
-				{
-					LogSyncDataError(exception);
-					ItemError(exception.Identifier, exception.Message);
-				}
-				catch (Exception ex)
-				{
-					LogSyncDataError(ex);
-					ItemError(string.Empty, ex.Message);
-				}
-			} while (movedNext);
+					catch (ProviderReadDataException exception)
+					{
+						LogSyncDataError(exception);
+						ItemError(exception.Identifier, exception.Message);
+					}
+					catch (Exception ex)
+					{
+						LogSyncDataError(ex);
+						ItemError(string.Empty, ex.Message);
+					}
+				} while (movedNext);
 
-			_importService.PushBatchIfFull(true);
+				_importService.PushBatchIfFull(true);
 
-			WaitUntilTheJobIsDone();
-
-			FinalizeSyncData(data, fieldMap, ImportSettings);
+				WaitUntilTheJobIsDone();
+				FinalizeSyncData(data, fieldMap, ImportSettings);
+			}
+			catch (Exception ex)
+			{
+				throw LogAndCreateSyncDataException(ex, fieldMap, options);
+			}
 		}
 
 		public void SyncData(IDataTransferContext context, IEnumerable<FieldMap> fieldMap, string options)
 		{
-			LogSyncingData();
-
-			IntializeImportJob(fieldMap, options);
-
-			FieldMap[] fieldMaps = fieldMap as FieldMap[] ?? fieldMap.ToArray();
-			if (fieldMaps.Length > 0)
+			try
 			{
-				context.DataReader = new RelativityReaderDecorator(context.DataReader, fieldMaps);
-				_importService.KickOffImport(context);
+				LogSyncingData();
+
+				IntializeImportJob(fieldMap, options);
+
+				FieldMap[] fieldMaps = fieldMap as FieldMap[] ?? fieldMap.ToArray();
+				if (fieldMaps.Length > 0)
+				{
+					context.DataReader = new RelativityReaderDecorator(context.DataReader, fieldMaps);
+					_importService.KickOffImport(context);
+				}
+				else
+				{
+					_importService.KickOffImport(context);
+				}
+
+				WaitUntilTheJobIsDone();
 			}
-			else
+			catch (Exception ex)
 			{
-				_importService.KickOffImport(context);
+				throw LogAndCreateSyncDataException(ex, fieldMap, options);
 			}
-			
-			WaitUntilTheJobIsDone();
 		}
 
 		public string GetEmailBodyData(IEnumerable<FieldEntry> fields, string options)
@@ -261,7 +276,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			return ParseFields(fields);
 		}
 
-		protected IEnumerable<FieldEntry> ParseFields(List<Artifact> fields)
+		private IEnumerable<FieldEntry> ParseFields(List<Artifact> fields)
 		{
 			foreach (var result in fields)
 			{
@@ -297,6 +312,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 		}
 
+
 		private void IntializeImportJob(IEnumerable<FieldMap> fieldMap, string options)
 		{
 			LogInitializingImportJob();
@@ -322,7 +338,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			{
 				lock (_importService)
 				{
-					isJobDone = bool.Parse(_isJobComplete.ToString());
+					isJobDone = _isJobComplete;
 				}
 				Thread.Sleep(1000);
 			} while (!isJobDone);
@@ -370,72 +386,30 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		protected virtual ImportSettings GetSyncDataImportSettings(IEnumerable<FieldMap> fieldMap, string options, NativeFileImportService nativeFileImportService)
 		{
-			LogRetrievingImportSettings();
-
-			ImportSettings settings = GetSettings(options);
-			if (string.IsNullOrWhiteSpace(settings.ParentObjectIdSourceFieldName) &&
-				fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.Parent))
+			try
 			{
-				settings.ParentObjectIdSourceFieldName =
-					fieldMap.Where(x => x.FieldMapType == FieldMapTypeEnum.Parent).Select(x => x.SourceField.FieldIdentifier).First();
+				LogRetrievingImportSettings();
+
+				ImportSettings settings = GetSettings(options);
+
+				BootstrapParentObjectSettings(fieldMap, settings);
+				BootstrapIdentityFieldSettings(fieldMap, settings);
+				BootstrapImportNativesSettings(fieldMap, nativeFileImportService, settings);
+				BootstrapFolderSettings(fieldMap, settings);
+				BootstrapDestinationIdentityFieldSettings(fieldMap, settings);
+
+				_logger.LogDebug($"Rip Import Settings:\n {JsonConvert.SerializeObject(settings)}");
+				return settings;
+
 			}
-			if ((settings.IdentityFieldId < 1) && fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.Identifier))
+			catch (Exception ex)
 			{
-				settings.IdentityFieldId =
-					fieldMap.Where(x => x.FieldMapType == FieldMapTypeEnum.Identifier)
-						.Select(x => int.Parse(x.DestinationField.FieldIdentifier))
-						.First();
+				throw LogAndCreateGetImportSettignsException(ex, options, fieldMap);
 			}
+		}
 
-            if (settings.ImportNativeFile && settings.ImportNativeFileCopyMode == ImportNativeFileCopyModeEnum.CopyFiles)
-			{
-				nativeFileImportService.ImportNativeFiles = true;
-				FieldMap field = fieldMap.FirstOrDefault(x => x.FieldMapType == FieldMapTypeEnum.NativeFilePath);
-				nativeFileImportService.SourceFieldName = field != null ? field.SourceField.FieldIdentifier : Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD;
-				settings.NativeFilePathSourceFieldName = nativeFileImportService.DestinationFieldName;
-				settings.DisableNativeLocationValidation = DisableNativeLocationValidation;
-				settings.DisableNativeValidation = DisableNativeValidation;
-				settings.CopyFilesToDocumentRepository = true;
-
-                // NOTE :: So that the destination workspace file icons correctly display, we give the import API the file name of the document
-                settings.FileNameColumn = Constants.SPECIAL_FILE_NAME_FIELD_NAME;
-            }
-			else if (settings.ImportNativeFileCopyMode == ImportNativeFileCopyModeEnum.SetFileLinks)
-            {
-				nativeFileImportService.ImportNativeFiles = true;
-                FieldMap field = fieldMap.FirstOrDefault(x => x.FieldMapType == FieldMapTypeEnum.NativeFilePath);
-                nativeFileImportService.SourceFieldName = field != null ? field.SourceField.FieldIdentifier : Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD;
-                settings.NativeFilePathSourceFieldName = nativeFileImportService.DestinationFieldName;
-				settings.DisableNativeLocationValidation = DisableNativeLocationValidation;
-				settings.DisableNativeValidation = DisableNativeValidation;
-				settings.CopyFilesToDocumentRepository = false;
-
-                // NOTE :: So that the destination workspace file icons correctly display, we give the import API the file name of the document
-                settings.FileNameColumn = Constants.SPECIAL_FILE_NAME_FIELD_NAME;
-            }
-            else if (settings.ImportNativeFileCopyMode == ImportNativeFileCopyModeEnum.DoNotImportNativeFiles)
-		    {
-                nativeFileImportService.ImportNativeFiles = false;
-                settings.DisableNativeLocationValidation = null;
-                settings.DisableNativeValidation = null;
-                settings.CopyFilesToDocumentRepository = false;
-
-                // NOTE :: Determines if we want to upload/delete native files and update "Has Native", "Supported by viewer" and "Relativity Native Type" fields
-                settings.NativeFilePathSourceFieldName = string.Empty;
-            }
-
-
-		    if (fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.FolderPathInformation))
-			{
-				// NOTE :: If you expect to import the folder path, the import API will expect this field to be specified upon import. This is to avoid the field being both mapped and used as a folder path.
-				settings.FolderPathSourceFieldName = Constants.SPECIAL_FOLDERPATH_FIELD_NAME;
-			}
-
-			if (settings.UseDynamicFolderPath)
-			{
-				settings.FolderPathSourceFieldName = Constants.SPECIAL_FOLDERPATH_DYNAMIC_FIELD_NAME;
-			}
-
+		private void BootstrapDestinationIdentityFieldSettings(IEnumerable<FieldMap> fieldMap, ImportSettings settings)
+		{
 			if ((SourceProvider != null) && SourceProvider.Config.OnlyMapIdentifierToIdentifier)
 			{
 				FieldMap map = fieldMap.First(field => field.FieldMapType == FieldMapTypeEnum.Identifier);
@@ -446,9 +420,81 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				}
 				settings.DestinationIdentifierField = map.DestinationField.ActualName;
 			}
+		}
 
-			_logger.LogDebug($"Rip Import Settings:\n {JsonConvert.SerializeObject(settings)}");
-			return settings;
+		private void BootstrapIdentityFieldSettings(IEnumerable<FieldMap> fieldMap, ImportSettings settings)
+		{
+			if ((settings.IdentityFieldId < 1) && fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.Identifier))
+			{
+				settings.IdentityFieldId =
+					fieldMap.Where(x => x.FieldMapType == FieldMapTypeEnum.Identifier)
+						.Select(x => int.Parse(x.DestinationField.FieldIdentifier))
+						.First();
+			}
+		}
+
+		private void BootstrapParentObjectSettings(IEnumerable<FieldMap> fieldMap, ImportSettings settings)
+		{
+			if (string.IsNullOrWhiteSpace(settings.ParentObjectIdSourceFieldName) &&
+							fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.Parent))
+			{
+				settings.ParentObjectIdSourceFieldName =
+					fieldMap.Where(x => x.FieldMapType == FieldMapTypeEnum.Parent).Select(x => x.SourceField.FieldIdentifier).First();
+			}
+		}
+
+		private void BootstrapFolderSettings(IEnumerable<FieldMap> fieldMap, ImportSettings settings)
+		{
+			if (fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.FolderPathInformation))
+			{
+				// NOTE :: If you expect to import the folder path, the import API will expect this field to be specified upon import. This is to avoid the field being both mapped and used as a folder path.
+				settings.FolderPathSourceFieldName = Constants.SPECIAL_FOLDERPATH_FIELD_NAME;
+			}
+
+			if (settings.UseDynamicFolderPath)
+			{
+				settings.FolderPathSourceFieldName = Constants.SPECIAL_FOLDERPATH_DYNAMIC_FIELD_NAME;
+			}
+		}
+
+		private void BootstrapImportNativesSettings(IEnumerable<FieldMap> fieldMap, NativeFileImportService nativeFileImportService, ImportSettings settings)
+		{
+			if (settings.ImportNativeFile && settings.ImportNativeFileCopyMode == ImportNativeFileCopyModeEnum.CopyFiles)
+			{
+				nativeFileImportService.ImportNativeFiles = true;
+				FieldMap field = fieldMap.FirstOrDefault(x => x.FieldMapType == FieldMapTypeEnum.NativeFilePath);
+				nativeFileImportService.SourceFieldName = field != null ? field.SourceField.FieldIdentifier : Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD;
+				settings.NativeFilePathSourceFieldName = nativeFileImportService.DestinationFieldName;
+				settings.DisableNativeLocationValidation = DisableNativeLocationValidation;
+				settings.DisableNativeValidation = DisableNativeValidation;
+				settings.CopyFilesToDocumentRepository = true;
+
+				// NOTE :: So that the destination workspace file icons correctly display, we give the import API the file name of the document
+				settings.FileNameColumn = Constants.SPECIAL_FILE_NAME_FIELD_NAME;
+			}
+			else if (settings.ImportNativeFileCopyMode == ImportNativeFileCopyModeEnum.SetFileLinks)
+			{
+				nativeFileImportService.ImportNativeFiles = true;
+				FieldMap field = fieldMap.FirstOrDefault(x => x.FieldMapType == FieldMapTypeEnum.NativeFilePath);
+				nativeFileImportService.SourceFieldName = field != null ? field.SourceField.FieldIdentifier : Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD;
+				settings.NativeFilePathSourceFieldName = nativeFileImportService.DestinationFieldName;
+				settings.DisableNativeLocationValidation = DisableNativeLocationValidation;
+				settings.DisableNativeValidation = DisableNativeValidation;
+				settings.CopyFilesToDocumentRepository = false;
+
+				// NOTE :: So that the destination workspace file icons correctly display, we give the import API the file name of the document
+				settings.FileNameColumn = Constants.SPECIAL_FILE_NAME_FIELD_NAME;
+			}
+			else if (settings.ImportNativeFileCopyMode == ImportNativeFileCopyModeEnum.DoNotImportNativeFiles)
+			{
+				nativeFileImportService.ImportNativeFiles = false;
+				settings.DisableNativeLocationValidation = null;
+				settings.DisableNativeValidation = null;
+				settings.CopyFilesToDocumentRepository = false;
+
+				// NOTE :: Determines if we want to upload/delete native files and update "Has Native", "Supported by viewer" and "Relativity Native Type" fields
+				settings.NativeFilePathSourceFieldName = string.Empty;
+			}
 		}
 
 		protected virtual Dictionary<string, int> GetSyncDataImportFieldMap(IEnumerable<FieldMap> fieldMap, ImportSettings settings)
@@ -545,7 +591,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				Workspace workspace = GetImportApi(settings).Workspaces().FirstOrDefault(x => x.ArtifactID == settings.CaseArtifactId);
 				if (workspace != null)
 				{
-					workspaceRef = new WorkspaceRef {Id = workspace.ArtifactID, Name = workspace.Name};
+					workspaceRef = new WorkspaceRef { Id = workspace.ArtifactID, Name = workspace.Name };
 				}
 				return workspaceRef;
 			}
@@ -557,6 +603,27 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		}
 
 		#region Logging
+
+		private IntegrationPointsException LogAndCreateGetImportSettignsException(Exception exception, string options, IEnumerable<FieldMap> fieldMap)
+		{
+			string message = $"Error occured while preparing import settings.";
+			_logger.LogError("Error occured while preparing import settings\nOptions: {@options}\nFieldMap: {", options);
+			return new IntegrationPointsException(message, exception) { ShouldAddToErrorsTab = true };
+		}
+
+		private IntegrationPointsException LogAndCreateGetFieldsException(Exception exception, string options)
+		{
+			string message = $"Error occured while getting fields.";
+			_logger.LogError("Error getting fields. \nOptions: {@options}", options);
+			return new IntegrationPointsException(message, exception) { ShouldAddToErrorsTab = true };
+		}
+
+		private IntegrationPointsException LogAndCreateSyncDataException(Exception ex, IEnumerable<FieldMap> fieldMap, string options)
+		{
+			string message = $"Error occured while syncing rdo.";
+			_logger.LogError("Error occured while syncing rdo. \nOptions: {@options} \nFields: {@fieldMap}", options, fieldMap);
+			return new IntegrationPointsException(message, ex) { ShouldAddToErrorsTab = true };
+		}
 
 		private void LogRetrievingWorkspaceError(Exception e)
 		{

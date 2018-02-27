@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Data;
-using System.Linq;
-using System.Security.Claims;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter;
-using kCura.IntegrationPoints.Core.Services.Exporter.TransferContext;
+using kCura.IntegrationPoints.Core.Services.Exporter.Images;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;

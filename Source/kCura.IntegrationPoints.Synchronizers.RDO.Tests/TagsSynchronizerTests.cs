@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Domain.Synchronizer;
 using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 {
@@ -16,6 +17,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		private IEnumerable<IDictionary<FieldEntry, object>> _records;
 		private IDataTransferContext _data;
 		private IDataSynchronizer _dataSynchronizer;
+		private IHelper _helper;
 
 		private TagsSynchronizer _instance;
 
@@ -25,8 +27,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			_records = Substitute.For<IEnumerable<IDictionary<FieldEntry, object>>>();
 			_data = Substitute.For<IDataTransferContext>();
 			_dataSynchronizer = Substitute.For<IDataSynchronizer>();
+			_helper = Substitute.For<IHelper>();
 
-			_instance = new TagsSynchronizer(_dataSynchronizer);
+			_instance = new TagsSynchronizer(_helper,_dataSynchronizer);
 		}
 
 		[Test]

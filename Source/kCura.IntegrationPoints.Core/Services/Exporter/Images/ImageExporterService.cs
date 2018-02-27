@@ -4,7 +4,7 @@ using System.Data;
 using System.Linq;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Core.Services.Exporter.TransferContext;
+using kCura.IntegrationPoints.Core.Services.Exporter.Base;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -14,9 +14,10 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 using Relativity.Core.Api.Shared.Manager.Export;
 using ArtifactType = kCura.Relativity.Client.ArtifactType;
+using DataView = kCura.Data.DataView;
 using ExportSettings = kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportSettings;
 
-namespace kCura.IntegrationPoints.Core.Services.Exporter
+namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 {
 	public class ImageExporterService : ExporterServiceBase
 	{
@@ -62,38 +63,38 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 					}
 					else
 					{
-					    SetImagesBySavedSearch(documentArtifactId, fields, fieldsValue, artifactType, imagesResult);
+						SetImagesBySavedSearch(documentArtifactId, fields, fieldsValue, artifactType, imagesResult);
 					}
-					
+
 				}
 				RetrievedDataCount += retrievedData.Length;
 			}
-			
+
 			Context.TotalItemsFound = Context.TotalItemsFound.GetValueOrDefault() + imagesResult.Count;
 			return imagesResult.ToArray();
 		}
 
-	    private void SetImagesBySavedSearch(int documentArtifactId, List<ArtifactFieldDTO> fields, object[] fieldsValue, int artifactType,
-	        List<ArtifactDTO> imagesResult)
-	    {
-	        var productionPrecedenceType = GetProductionPrecedenceType();
-	        if (productionPrecedenceType == ExportSettings.ProductionPrecedenceType.Produced)
-	        {
-	            var producedImagesCount = SetProducedImagesByPrecedence(documentArtifactId, fields, fieldsValue, artifactType, imagesResult);
-	            if (_settings.IncludeOriginalImages && producedImagesCount == 0)
-	            {
-	                SetOriginalImages(documentArtifactId, fieldsValue, fields, artifactType, imagesResult);
-	            }
-	        }
-	        else
-	        {
-	            SetOriginalImages(documentArtifactId, fieldsValue, fields, artifactType, imagesResult);
-	        }
-	    }
-
-	    private void SetOriginalImages(int documentArtifactId, object[] fieldsValue, List<ArtifactFieldDTO> fields, int artifactType, List<ArtifactDTO> result)
+		private void SetImagesBySavedSearch(int documentArtifactId, List<ArtifactFieldDTO> fields, object[] fieldsValue, int artifactType,
+			List<ArtifactDTO> imagesResult)
 		{
-			kCura.Data.DataView imagesDataView = _fileRepository.RetrieveAllImagesForDocuments(documentArtifactId);
+			ExportSettings.ProductionPrecedenceType productionPrecedenceType = GetProductionPrecedenceType();
+			if (productionPrecedenceType == ExportSettings.ProductionPrecedenceType.Produced)
+			{
+				int producedImagesCount = SetProducedImagesByPrecedence(documentArtifactId, fields, fieldsValue, artifactType, imagesResult);
+				if (_settings.IncludeOriginalImages && producedImagesCount == 0)
+				{
+					SetOriginalImages(documentArtifactId, fieldsValue, fields, artifactType, imagesResult);
+				}
+			}
+			else
+			{
+				SetOriginalImages(documentArtifactId, fieldsValue, fields, artifactType, imagesResult);
+			}
+		}
+
+		private void SetOriginalImages(int documentArtifactId, object[] fieldsValue, List<ArtifactFieldDTO> fields, int artifactType, List<ArtifactDTO> result)
+		{
+			DataView imagesDataView = _fileRepository.RetrieveAllImagesForDocuments(documentArtifactId);
 			if (imagesDataView.Count > 0)
 			{
 				CreateImageArtifactDtos(imagesDataView, documentArtifactId, fields, fieldsValue, artifactType, result);
@@ -102,10 +103,10 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 		private int SetProducedImagesByPrecedence(int documentArtifactId, List<ArtifactFieldDTO> fields, object[] fieldsValue, int artifactType, List<ArtifactDTO> result)
 		{
-			foreach (var prod in _settings.ImagePrecedence)
+			foreach (ProductionDTO prod in _settings.ImagePrecedence)
 			{
-				var productionArtifactId = Convert.ToInt32(prod.ArtifactID);
-				var producedImagesCount = SetProducedImagesByProductionId(documentArtifactId, fields, fieldsValue, artifactType, result, productionArtifactId);
+				int productionArtifactId = Convert.ToInt32(prod.ArtifactID);
+				int producedImagesCount = SetProducedImagesByProductionId(documentArtifactId, fields, fieldsValue, artifactType, result, productionArtifactId);
 				if (producedImagesCount > 0)
 				{
 					return producedImagesCount;
@@ -117,7 +118,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private int SetProducedImagesByProductionId(int documentArtifactId, List<ArtifactFieldDTO> fields, object[] fieldsValue, int artifactType,
 			List<ArtifactDTO> result, int productionArtifactId)
 		{
-			var producedImages = _fileRepository.RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSet(productionArtifactId, documentArtifactId);
+			DataView producedImages = _fileRepository.RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSet(productionArtifactId, documentArtifactId);
 			if (producedImages.Count > 0)
 			{
 				CreateImageArtifactDtos(producedImages, documentArtifactId, fields, fieldsValue, artifactType, result);
@@ -134,23 +135,22 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			// the assumption is based on the following facts:
 			// - for images we only allow maping identifier field, so _avfIds has only one object, this is guarded by validation
 			// - Core Export API's RetrieveResults() method returns results based on _avfIds and in the same order (potentially adding additional columns at the end)
-			string documentIdentifier = fieldsValue[0].ToString(); 
+			string documentIdentifier = fieldsValue[0].ToString();
 
 			for (int index = 0; index < dataView.Table.Rows.Count; index++)
 			{
-				var artifactDto = CreateImageArtifactDto(dataView.Table.Rows[index], documentArtifactId,
-					documentIdentifier, fields, artifactType);
+				ArtifactDTO artifactDto = CreateImageArtifactDto(dataView.Table.Rows[index], documentArtifactId, documentIdentifier, fields, artifactType);
 				result.Add(artifactDto);
 			}
 		}
-		
+
 		private void SetupBaseFields(object[] fieldsValue, List<ArtifactFieldDTO> fields)
 		{
 			for (int index = 0; index < AvfIds.Length; index++)
 			{
 				int artifactId = FieldArtifactIds[index];
 				object value = fieldsValue[index];
-				
+
 				fields.Add(new ArtifactFieldDTO
 				{
 					Name = ExportJobInfo.ColumnNames[index],
@@ -164,26 +164,26 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private ArtifactDTO CreateImageArtifactDto(DataRow imageDataRow, int documentArtifactId, string documentIdentifier,
 			List<ArtifactFieldDTO> fields, int artifactType)
 		{
-			string fileLocation = (string) imageDataRow[ImageLocationColumn];
-			var artifactFieldDtos = AddImageFields(fields, fileLocation, documentIdentifier);
+			var fileLocation = (string)imageDataRow[ImageLocationColumn];
+			List<ArtifactFieldDTO> artifactFieldDtos = AddImageFields(fields, fileLocation, documentIdentifier);
 			var artifactDto = new ArtifactDTO(documentArtifactId, artifactType, string.Empty, artifactFieldDtos);
 			return artifactDto;
 		}
 
 		private List<ArtifactFieldDTO> AddImageFields(List<ArtifactFieldDTO> fields, string fileLocation, string documentIdentifier)
 		{
-			var fileLocationField = new ArtifactFieldDTO()
+			var fileLocationField = new ArtifactFieldDTO
 			{
 				Name = IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME,
 				Value = fileLocation
 			};
-			var nativeFileNameField = new ArtifactFieldDTO()
+			var nativeFileNameField = new ArtifactFieldDTO
 			{
 				Name = IntegrationPoints.Domain.Constants.SPECIAL_FILE_NAME_FIELD_NAME,
 				Value = documentIdentifier
 			};
 
-			var artifactFieldDtos = fields.ToList();
+			List<ArtifactFieldDTO> artifactFieldDtos = fields.ToList();
 			artifactFieldDtos.Add(fileLocationField);
 			artifactFieldDtos.Add(nativeFileNameField);
 			return artifactFieldDtos;
@@ -193,8 +193,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		{
 			try
 			{
-				var productionPrecedence = _settings.ProductionPrecedence;
-				if (String.IsNullOrEmpty(productionPrecedence))
+				string productionPrecedence = _settings.ProductionPrecedence;
+				if (string.IsNullOrEmpty(productionPrecedence))
 				{
 					return ExportSettings.ProductionPrecedenceType.Original;
 				}

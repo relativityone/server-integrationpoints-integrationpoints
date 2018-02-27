@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter;
+using kCura.IntegrationPoints.Core.Services.Exporter.Images;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data;
@@ -27,6 +28,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 {
 	public class ExporterFactory : IExporterFactory
 	{
+		private const int _ADMIN_USER_ID = 9;
 		private readonly IOnBehalfOfUserClaimsPrincipalFactory _claimsPrincipalFactory;
 		private readonly IRepositoryFactory _sourceRepositoryFactory;
 		private readonly IRepositoryFactory _targetRepositoryFactory;
@@ -67,16 +69,10 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			string uniqueJobId,
 			string userImportApiSettings)
 		{
-			IDocumentRepository documentRepository = _sourceRepositoryFactory.GetDocumentRepository(configuration.SourceWorkspaceArtifactId);
-
-			TargetDocumentsTaggingManagerFactory taggerFactory = new TargetDocumentsTaggingManagerFactory(_sourceRepositoryFactory, tagsCreator, tagSavedSearchManager, documentRepository,
-				synchronizerFactory, _helper, serializer, mappedFiles, integrationPoint.SourceConfiguration, userImportApiSettings, jobHistory.ArtifactId, uniqueJobId);
-
-			IConsumeScratchTableBatchStatus destinationFieldsTagger = taggerFactory.BuildDocumentsTagger();
-			IConsumeScratchTableBatchStatus sourceFieldsTagger = new SourceObjectBatchUpdateManager(_sourceRepositoryFactory, _targetRepositoryFactory, _claimsPrincipalFactory, _helper,
-				_federatedInstanceManager, configuration, jobHistory.ArtifactId, job.SubmittedBy, uniqueJobId);
-			IBatchStatus sourceJobHistoryErrorUpdater = new JobHistoryErrorBatchUpdateManager(jobHistoryErrorManager, _sourceRepositoryFactory, _claimsPrincipalFactory, jobStopManager,
-				configuration.SourceWorkspaceArtifactId, job.SubmittedBy, updateStatusType);
+			IConsumeScratchTableBatchStatus destinationFieldsTagger = CreateDestinationFieldsTagger(tagsCreator, tagSavedSearchManager, synchronizerFactory,
+				serializer, mappedFiles, configuration, integrationPoint, jobHistory, uniqueJobId, userImportApiSettings);
+			IConsumeScratchTableBatchStatus sourceFieldsTagger = CreateSourceFieldsTagger(job, configuration, jobHistory, uniqueJobId);
+			IBatchStatus sourceJobHistoryErrorUpdater = CreateJobHistoryErrorUpdater(job, jobHistoryErrorManager, jobStopManager, configuration, updateStatusType);
 
 			var batchStatusCommands = new List<IBatchStatus>
 			{
@@ -90,45 +86,84 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		public IExporterService BuildExporter(IJobStopManager jobStopManager, FieldMap[] mappedFiles, string config, int savedSearchArtifactId, int onBehalfOfUser,
 			string userImportApiSettings)
 		{
-			if (onBehalfOfUser == 0)
-			{
-				onBehalfOfUser = 9;
-			}
-			ClaimsPrincipal claimsPrincipal = _claimsPrincipalFactory.CreateClaimsPrincipal(onBehalfOfUser);
+			ClaimsPrincipal claimsPrincipal = GetClaimsPrincipal(onBehalfOfUser);
 			IBaseServiceContextProvider baseServiceContextProvider = new BaseServiceContextProvider(claimsPrincipal);
 
 			ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(userImportApiSettings);
 			SourceConfiguration sourceConfiguration = JsonConvert.DeserializeObject<SourceConfiguration>(config);
 			BaseServiceContext baseServiceContext = claimsPrincipal.GetUnversionContext(sourceConfiguration.SourceWorkspaceArtifactId);
-			IExporterService exporterService;
-			if (settings.ImageImport)
+
+			return settings.ImageImport ?
+				CreateImageExporterService(jobStopManager, mappedFiles, config, savedSearchArtifactId, baseServiceContextProvider, settings, sourceConfiguration, baseServiceContext) :
+				CreateRelativityExporterService(jobStopManager, mappedFiles, config, savedSearchArtifactId, claimsPrincipal, baseServiceContextProvider, settings, baseServiceContext);
+		}
+
+		private IConsumeScratchTableBatchStatus CreateDestinationFieldsTagger(ITagsCreator tagsCreator, ITagSavedSearchManager tagSavedSearchManager, 
+			ISynchronizerFactory synchronizerFactory, ISerializer serializer, FieldMap[] mappedFiles, SourceConfiguration configuration, 
+			IntegrationPoint integrationPoint, JobHistory jobHistory, string uniqueJobId, string userImportApiSettings)
+		{
+			IDocumentRepository documentRepository = _sourceRepositoryFactory.GetDocumentRepository(configuration.SourceWorkspaceArtifactId);
+
+			var taggerFactory = new TargetDocumentsTaggingManagerFactory(_sourceRepositoryFactory, tagsCreator, tagSavedSearchManager, documentRepository,
+				synchronizerFactory, _helper, serializer, mappedFiles, integrationPoint.SourceConfiguration, userImportApiSettings, jobHistory.ArtifactId, uniqueJobId);
+
+			IConsumeScratchTableBatchStatus destinationFieldsTagger = taggerFactory.BuildDocumentsTagger();
+			return destinationFieldsTagger;
+		}
+
+		private IConsumeScratchTableBatchStatus CreateSourceFieldsTagger(Job job, SourceConfiguration configuration, JobHistory jobHistory, string uniqueJobId)
+		{
+			return new SourceObjectBatchUpdateManager(_sourceRepositoryFactory, _targetRepositoryFactory, _claimsPrincipalFactory, _helper,
+				_federatedInstanceManager, configuration, jobHistory.ArtifactId, job.SubmittedBy, uniqueJobId);
+		}
+
+		private IBatchStatus CreateJobHistoryErrorUpdater(Job job, IJobHistoryErrorManager jobHistoryErrorManager, IJobStopManager jobStopManager, 
+			SourceConfiguration configuration, JobHistoryErrorDTO.UpdateStatusType updateStatusType)
+		{
+			return new JobHistoryErrorBatchUpdateManager(jobHistoryErrorManager, _helper, _sourceRepositoryFactory, _claimsPrincipalFactory, jobStopManager,
+				configuration.SourceWorkspaceArtifactId, job.SubmittedBy, updateStatusType);
+		}
+
+		private IExporterService CreateRelativityExporterService(IJobStopManager jobStopManager, FieldMap[] mappedFiles, string config, int savedSearchArtifactId,
+			ClaimsPrincipal claimsPrincipal, IBaseServiceContextProvider baseServiceContextProvider, ImportSettings settings, BaseServiceContext baseServiceContext)
+		{
+			IExporter exporter = BuildSavedSearchExporter(baseServiceContext, settings.LoadImportedFullTextFromServer);
+
+			IFolderPathReader folderPathReader = _folderPathReaderFactory.Create(claimsPrincipal, settings, config);
+			var exporterService = new RelativityExporterService(exporter, _sourceRepositoryFactory, _targetRepositoryFactory, jobStopManager, _helper,
+				folderPathReader, _toggleProvider, baseServiceContextProvider, mappedFiles, 0, config, savedSearchArtifactId);
+			return exporterService;
+		}
+
+		private IExporterService CreateImageExporterService(IJobStopManager jobStopManager, FieldMap[] mappedFiles, string config, int savedSearchArtifactId,
+			IBaseServiceContextProvider baseServiceContextProvider, ImportSettings settings, SourceConfiguration sourceConfiguration, BaseServiceContext baseServiceContext)
+		{
+			IExporter exporter;
+			int searchArtifactId;
+			if (sourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.SavedSearch)
 			{
-				IExporter exporter;
-				int searchArtifactId;
-				if (sourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.SavedSearch)
-				{
-					exporter = BuildSavedSearchExporter(baseServiceContext, settings.LoadImportedFullTextFromServer);
-					searchArtifactId = savedSearchArtifactId;
-				}
-				else
-				{
-					exporter = BuildProductionExporter(baseServiceContext, settings.LoadImportedFullTextFromServer);
-					searchArtifactId = sourceConfiguration.SourceProductionId;
-				}
-				
-				exporterService = new ImageExporterService(exporter, _sourceRepositoryFactory, _targetRepositoryFactory, jobStopManager, _helper,
-					baseServiceContextProvider, mappedFiles, 0, config, searchArtifactId, settings);
+				exporter = BuildSavedSearchExporter(baseServiceContext, settings.LoadImportedFullTextFromServer);
+				searchArtifactId = savedSearchArtifactId;
 			}
 			else
 			{
-				IExporter exporter = BuildSavedSearchExporter(baseServiceContext, settings.LoadImportedFullTextFromServer);
+				exporter = BuildProductionExporter(baseServiceContext, settings.LoadImportedFullTextFromServer);
+				searchArtifactId = sourceConfiguration.SourceProductionId;
+			}
 
-				IFolderPathReader folderPathReader = _folderPathReaderFactory.Create(claimsPrincipal, settings, config);
-                exporterService = new RelativityExporterService(exporter, _sourceRepositoryFactory, _targetRepositoryFactory, jobStopManager, _helper,
-                    folderPathReader, _toggleProvider, baseServiceContextProvider, mappedFiles, 0, config, savedSearchArtifactId);
-            }
-
+			var exporterService = new ImageExporterService(exporter, _sourceRepositoryFactory, _targetRepositoryFactory, jobStopManager, _helper,
+				baseServiceContextProvider, mappedFiles, 0, config, searchArtifactId, settings);
 			return exporterService;
+		}
+
+		private ClaimsPrincipal GetClaimsPrincipal(int onBehalfOfUser)
+		{
+			if (onBehalfOfUser == 0)
+			{
+				onBehalfOfUser = _ADMIN_USER_ID;
+			}
+			ClaimsPrincipal claimsPrincipal = _claimsPrincipalFactory.CreateClaimsPrincipal(onBehalfOfUser);
+			return claimsPrincipal;
 		}
 
 		private IExporter BuildSavedSearchExporter(BaseServiceContext baseService, bool shouldUseDgPaths)
@@ -138,8 +173,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				baseService,
 				new UserPermissionsMatrix(baseService),
 				global::Relativity.ArtifactType.Document,
-				IntegrationPoints.Domain.Constants.MULTI_VALUE_DELIMITER,
-				IntegrationPoints.Domain.Constants.NESTED_VALUE_DELIMITER,
+				Domain.Constants.MULTI_VALUE_DELIMITER,
+				Domain.Constants.NESTED_VALUE_DELIMITER,
 				global::Relativity.Core.Api.Settings.RSAPI.Config.DynamicallyLoadedDllPaths,
 				shouldUseDgPaths
 				);
@@ -152,8 +187,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				baseService,
 				new UserPermissionsMatrix(baseService),
 				global::Relativity.ArtifactType.Document,
-				IntegrationPoints.Domain.Constants.MULTI_VALUE_DELIMITER,
-				IntegrationPoints.Domain.Constants.NESTED_VALUE_DELIMITER,
+				Domain.Constants.MULTI_VALUE_DELIMITER,
+				Domain.Constants.NESTED_VALUE_DELIMITER,
 				global::Relativity.Core.Api.Settings.RSAPI.Config.DynamicallyLoadedDllPaths,
 				shouldUseDgPaths
 				);

@@ -1,6 +1,7 @@
 using System;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.RelativitySourceRdo;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tagging
@@ -42,9 +43,16 @@ namespace kCura.IntegrationPoints.Core.Tagging
 			}
 			catch (Exception e)
 			{
-				_logger.LogError(e, "Failed to create tags in destination workspace {workspaceId}.", destinationWorkspaceArtifactId);
-				throw;
+				throw LogAndWrapException(e, destinationWorkspaceArtifactId);
 			}
+		}
+
+		private IntegrationPointsException LogAndWrapException(Exception e, int destinationWorkspaceArtifactId)
+		{
+			string message = $"Failed to create tags in destination workspace {destinationWorkspaceArtifactId}.";
+			_logger.LogError(e, "Failed to create tags in destination workspace {workspaceId}.", destinationWorkspaceArtifactId);
+			return
+				new IntegrationPointsException(message, e);
 		}
 	}
 }

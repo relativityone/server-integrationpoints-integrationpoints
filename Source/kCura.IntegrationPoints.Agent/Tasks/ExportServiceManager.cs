@@ -39,14 +39,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 {
 	public class ExportServiceManager : ServiceManagerBase
 	{
+		private ExportJobErrorService _exportJobErrorService;
+		private List<IBatchStatus> _exportServiceJobObservers;
+		private int _savedSearchArtifactId;
+
 		private readonly IHelper _helper;
 		private readonly IHelperFactory _helperFactory;
 		private readonly IContextContainerFactory _contextContainerFactory;
 		private readonly IExporterFactory _exporterFactory;
 		private readonly IRepositoryFactory _repositoryFactory;
-		private ExportJobErrorService _exportJobErrorService;
-		private List<IBatchStatus> _exportServiceJobObservers;
-		private int _savedSearchArtifactId;
+
 		private IJobHistoryErrorManager JobHistoryErrorManager { get; set; }
 		private JobHistoryErrorDTO.UpdateStatusType UpdateStatusType { get; set; }
 
@@ -111,42 +113,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 					JobStopManager.ThrowIfStopRequested();
 
-					// Push documents
-					using (IExporterService exporter = _exporterFactory.BuildExporter(JobStopManager, MappedFields.ToArray(),
-						IntegrationPointDto.SourceConfiguration,
-						_savedSearchArtifactId,
-						job.SubmittedBy,
-						userImportApiSettings))
-					{
-						LogPushingDocumentsStart(job);
-						IScratchTableRepository[] scratchTables = _exportServiceJobObservers.OfType<IConsumeScratchTableBatchStatus>()
-							.Select(observer => observer.ScratchTableRepository).ToArray();
-
-						var exporterTransferConfiguration = new ExporterTransferConfiguration(scratchTables, JobHistoryService,
-							Identifier, Serializer.Deserialize<ImportSettings>(userImportApiSettings));
-
-						IDataTransferContext dataTransferContext = exporter.GetDataTransferContext(exporterTransferConfiguration);
-
-						lock (JobStopManager.SyncRoot)
-						{
-							JobHistory = JobHistoryService.GetRdo(Identifier);
-							dataTransferContext.UpdateTransferStatus();
-						}
-
-						if (exporter.TotalRecordsFound > 0)
-						{
-
-							using (APMClient.APMClient.TimedOperation(Constants.IntegrationPoints.Telemetry
-								.BUCKET_EXPORT_PUSH_KICK_OFF_IMPORT))
-							using (Client.MetricsClient.LogDuration(
-								Constants.IntegrationPoints.Telemetry.BUCKET_EXPORT_PUSH_KICK_OFF_IMPORT,
-								Guid.Empty))
-							{
-								synchronizer.SyncData(dataTransferContext, MappedFields, userImportApiSettings);
-							}
-						}
-						LogPushingDocumetsSuccessfulEnd(job);
-					}
+					PushDocuments(job, userImportApiSettings, synchronizer);
 				}
 				finally
 				{
@@ -165,15 +132,17 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				LogJobStoppedException(job, e);
 				// ignore error.
 			}
+			catch (IntegrationPointsException ipex)
+			{
+				Result.Status = TaskStatusEnum.Fail;
+				JobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, ipex);
+				throw;
+			}
 			catch (Exception ex)
 			{
 				LogExecutingTaskError(job, ex);
 				Result.Status = TaskStatusEnum.Fail;
 				JobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, ex);
-				if (ex is IntegrationPointsException) // we want to rethrow, so it can be added to error tab if necessary
-				{
-					throw;
-				}
 			}
 			finally
 			{
@@ -182,6 +151,45 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				FinalizeExportService(job);
 				FinalizeService(job);
 				LogExecuteEnd(job);
+			}
+		}
+
+		private void PushDocuments(Job job, string userImportApiSettings, IDataSynchronizer synchronizer)
+		{
+			using (IExporterService exporter = _exporterFactory.BuildExporter(JobStopManager, MappedFields.ToArray(),
+				IntegrationPointDto.SourceConfiguration,
+				_savedSearchArtifactId,
+				job.SubmittedBy,
+				userImportApiSettings))
+			{
+				LogPushingDocumentsStart(job);
+				IScratchTableRepository[] scratchTables = _exportServiceJobObservers.OfType<IConsumeScratchTableBatchStatus>()
+					.Select(observer => observer.ScratchTableRepository).ToArray();
+
+				var exporterTransferConfiguration = new ExporterTransferConfiguration(scratchTables, JobHistoryService,
+					Identifier, Serializer.Deserialize<ImportSettings>(userImportApiSettings));
+
+				IDataTransferContext dataTransferContext = exporter.GetDataTransferContext(exporterTransferConfiguration);
+
+				lock (JobStopManager.SyncRoot)
+				{
+					JobHistory = JobHistoryService.GetRdo(Identifier);
+					dataTransferContext.UpdateTransferStatus();
+				}
+
+				if (exporter.TotalRecordsFound > 0)
+				{
+
+					using (APMClient.APMClient.TimedOperation(Constants.IntegrationPoints.Telemetry
+						.BUCKET_EXPORT_PUSH_KICK_OFF_IMPORT))
+					using (Client.MetricsClient.LogDuration(
+						Constants.IntegrationPoints.Telemetry.BUCKET_EXPORT_PUSH_KICK_OFF_IMPORT,
+						Guid.Empty))
+					{
+						synchronizer.SyncData(dataTransferContext, MappedFields, userImportApiSettings);
+					}
+				}
+				LogPushingDocumetsSuccessfulEnd(job);
 			}
 		}
 
@@ -203,10 +211,25 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			LogGetImportApiSettingsForUserStart(job);
 
-			var importSettings = Serializer.Deserialize<ImportSettings>(originalImportApiSettings);
+			ImportSettings importSettings = Serializer.Deserialize<ImportSettings>(originalImportApiSettings);
+			AdjustImportApiSettings(job, importSettings);
+			string serializedSettings = Serializer.Serialize(importSettings);
+
+			GetImportApiSettingsForUserSuccessfulEnd(job, serializedSettings);
+			return serializedSettings;
+		}
+
+		private void AdjustImportApiSettings(Job job, ImportSettings importSettings)
+		{
 			importSettings.OnBehalfOfUserId = job.SubmittedBy;
 			importSettings.FederatedInstanceCredentials = IntegrationPointDto.SecuredConfiguration;
+			SetImportAuditLevel(importSettings);
+			SetAppendOverlayForRetryErrorsJob(importSettings);
+			importSettings.LoadImportedFullTextFromServer = ShouldUseDgPaths(importSettings, MappedFields, SourceConfiguration);
+		}
 
+		private void SetImportAuditLevel(ImportSettings importSettings)
+		{
 			if (importSettings.FederatedInstanceArtifactId.HasValue)
 			{
 				IHelper targetHelper = _helperFactory.CreateTargetHelper(_helper, importSettings.FederatedInstanceArtifactId,
@@ -219,18 +242,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					importSettings.ImportAuditLevel = ImportAuditLevelEnum.FullAudit;
 				}
 			}
+		}
 
+		private void SetAppendOverlayForRetryErrorsJob(ImportSettings importSettings)
+		{
 			//Switch to Append/Overlay for error retries where original setting was Append Only
-			if ((UpdateStatusType.JobType == JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors) &&
-				(importSettings.OverwriteMode == OverwriteModeEnum.Append))
+			if (UpdateStatusType.JobType == JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors &&
+				importSettings.OverwriteMode == OverwriteModeEnum.Append)
 			{
 				importSettings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
 			}
-
-			importSettings.LoadImportedFullTextFromServer = ShouldUseDgPaths(importSettings, MappedFields, SourceConfiguration);
-			string jsonString = Serializer.Serialize(importSettings);
-			GetImportApiSettingsForUserSuccessfulEnd(job, jsonString);
-			return jsonString;
 		}
 
 		private bool ShouldUseDgPaths(ImportSettings settings, IEnumerable<FieldMap> fieldMap, SourceConfiguration configuration)
@@ -248,10 +269,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			FieldMap longTextField = fieldMap.FirstOrDefault(fm => IsLongTextWithDgEnabled(sourceQueryFieldLookupRepository.GetFieldByArtifactId(int.Parse(fm.SourceField.FieldIdentifier))));
 
-			if (longTextField != null)
+			if (longTextField?.DestinationField?.FieldIdentifier != null)
 			{
 				ViewFieldInfo destinationField = destinationQueryFieldLookupRepository.GetFieldByArtifactId(int.Parse(longTextField.DestinationField.FieldIdentifier));
-				return !destinationField.EnableDataGrid;
+				return destinationField != null && !destinationField.EnableDataGrid;
 			}
 
 			return false;
@@ -274,17 +295,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			if (SourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.SavedSearch)
 			{
-				//Quick check to see if saved search is still available before using it for the job
-				ISavedSearchQueryRepository savedSearchRepository =
-					_repositoryFactory.GetSavedSearchQueryRepository(SourceConfiguration.SourceWorkspaceArtifactId);
-
-				SavedSearchDTO savedSearch = savedSearchRepository.RetrieveSavedSearch(SourceConfiguration.SavedSearchArtifactId);
-				if (savedSearch == null)
-				{
-					LogSavedSearchNotFound(job, SourceConfiguration);
-					throw new Exception(Constants.IntegrationPoints.PermissionErrors.SAVED_SEARCH_NO_ACCESS);
-				}
-				_savedSearchArtifactId = SourceConfiguration.SavedSearchArtifactId;
+				_savedSearchArtifactId = RetrieveSavedSearchArtifactId(job);
 
 				//Load saved search for just item-level error retries
 				if (UpdateStatusType.IsItemLevelErrorRetry())
@@ -295,6 +306,21 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				}
 			}
 			LogJobHistoryErrorManagerSetupSuccessfulEnd(job);
+		}
+
+		private int RetrieveSavedSearchArtifactId(Job job)
+		{
+			//Quick check to see if saved search is still available before using it for the job
+			ISavedSearchQueryRepository savedSearchRepository =
+				_repositoryFactory.GetSavedSearchQueryRepository(SourceConfiguration.SourceWorkspaceArtifactId);
+
+			SavedSearchDTO savedSearch = savedSearchRepository.RetrieveSavedSearch(SourceConfiguration.SavedSearchArtifactId);
+			if (savedSearch == null)
+			{
+				LogSavedSearchNotFound(job, SourceConfiguration);
+				throw new IntegrationPointsException(Constants.IntegrationPoints.PermissionErrors.SAVED_SEARCH_NO_ACCESS);
+			}
+			return SourceConfiguration.SavedSearchArtifactId;
 		}
 
 		private void FinalizeExportServiceObservers(Job job)
@@ -322,7 +348,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private void InitializeExportServiceObservers(Job job, string userImportApiSettings)
 		{
 			LogInitializeExportServiceObserversStart(job);
-			var settings = Serializer.Deserialize<SourceConfiguration>(IntegrationPointDto.SourceConfiguration);
+			SourceConfiguration settings = Serializer.Deserialize<SourceConfiguration>(IntegrationPointDto.SourceConfiguration);
 			IHelper targetHelper = _helperFactory.CreateTargetHelper(_helper, settings.FederatedInstanceArtifactId,
 				IntegrationPointDto.SecuredConfiguration);
 			IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(_helper,
@@ -377,7 +403,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			LogFinalizeExportServiceSuccessfulEnd(job);
 		}
 
-
 		private void FinalizeInProgressErrors(Job job)
 		{
 			// Finalize any In Progress Job History Errors
@@ -386,7 +411,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				LogFinalizeInProgressErrors(job);
 
 				var sourceJobHistoryErrorUpdater = new JobHistoryErrorBatchUpdateManager(
-					JobHistoryErrorManager, _repositoryFactory,
+					JobHistoryErrorManager, _helper, _repositoryFactory,
 					OnBehalfOfUserClaimsPrincipalFactory, JobStopManager, SourceConfiguration.SourceWorkspaceArtifactId,
 					job.SubmittedBy, UpdateStatusType);
 				sourceJobHistoryErrorUpdater.OnJobComplete(job);
