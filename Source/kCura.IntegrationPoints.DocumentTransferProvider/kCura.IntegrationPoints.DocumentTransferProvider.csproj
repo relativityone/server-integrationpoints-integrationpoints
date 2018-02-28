@@ -57,7 +57,9 @@
     <Compile Include="DestinationConfigurationModel.cs" />
     <Compile Include="DocumentTransferProvider.cs" />
     <Compile Include="DocumentTransferSettings.cs" />
+    <Compile Include="ExtendedImportApiFacade.cs" />
     <Compile Include="ExtendedImportApiFactory.cs" />
+    <Compile Include="IExtendedImportApiFacade.cs" />
     <Compile Include="IExtendedImportApiFactory.cs" />
     <Compile Include="Installers\DocumentTransferProviderInstaller.cs" />
   </ItemGroup>

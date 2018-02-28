@@ -71,6 +71,7 @@
     <Compile Include="RelativitySourceRdo\RelativitySourceRdoFieldsTests.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceRdoObjectTypeTests.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceWorkspaceRdoInitializerTests.cs" />
+    <Compile Include="Services\FieldServiceTests.cs" />
     <Compile Include="Services\ChoiceServiceTests.cs" />
     <Compile Include="Services\Domain\DataProviderBuilderTests.cs" />
     <Compile Include="Services\Domain\ProviderFactoryCreationStrategyTests.cs" />

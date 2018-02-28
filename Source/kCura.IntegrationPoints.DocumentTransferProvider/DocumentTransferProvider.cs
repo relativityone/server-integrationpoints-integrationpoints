@@ -19,13 +19,13 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 	[Contracts.DataSourceProvider(Domain.Constants.RELATIVITY_PROVIDER_GUID)]
 	public class DocumentTransferProvider : IDataSourceProvider, IEmailBodyData
 	{
-		private readonly IExtendedImportApiFactory _importApiFactory;
+		private readonly IExtendedImportApiFacade _extendedImportApiFacade;
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly IAPILog _logger;
 
-		public DocumentTransferProvider(IExtendedImportApiFactory importApiFactory, IRepositoryFactory repositoryFactory , IHelper helper)
+		public DocumentTransferProvider(IExtendedImportApiFacade extendedImportApiFacade, IRepositoryFactory repositoryFactory , IHelper helper)
 		{
-			_importApiFactory = importApiFactory;
+			_extendedImportApiFacade = extendedImportApiFacade;
 			_repositoryFactory = repositoryFactory;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<DocumentTransferProvider>();
 		}
@@ -63,10 +63,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 			};
 
 			_logger.LogDebug("Retriving fileds from Import API");
-			IEnumerable<Relativity.ImportAPI.Data.Field> properWorkspaceFields = _importApiFactory.Create()
-				.GetWorkspaceFields(sourceWorkspaceId, rdoTypeId)
-				.Where(f => !ignoreFields.Contains(f.Name));
-			var mappableArtifactIds = new HashSet<int>(properWorkspaceFields.Select(x => x.ArtifactID));
+			HashSet<int> mappableArtifactIds =
+				_extendedImportApiFacade.GetMappableArtifactIdsExcludeFields(sourceWorkspaceId, rdoTypeId, ignoreFields);
 
 			_logger.LogDebug("Retriving fileds from Filed Repository");
 			IFieldQueryRepository fieldQueryRepository = _repositoryFactory.GetFieldQueryRepository(sourceWorkspaceId);

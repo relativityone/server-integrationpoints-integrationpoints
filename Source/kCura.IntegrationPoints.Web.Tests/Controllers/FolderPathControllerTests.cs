@@ -16,8 +16,7 @@ using NSubstitute;
 using NUnit.Framework;
 using System.Collections.Generic;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.IntegrationPoints.Web.Providers;
 using Relativity.API;
 using Field = kCura.Relativity.ImportAPI.Data.Field;
@@ -34,7 +33,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 		private IConfig _config;
 		private IChoiceService _choiceService;
 		private IWorkspaceIdProvider _workspaceIdProvider;
-		private IRepositoryFactory _repositoryFactory;
+		private IImportApiFacade _importApiFacade;
 		private ICPHelper _helper;
 
 		private HttpConfiguration _configuration;
@@ -49,7 +48,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			_config = Substitute.For<IConfig>();
 			_choiceService = Substitute.For<IChoiceService>();
 			_workspaceIdProvider = Substitute.For<IWorkspaceIdProvider>();
-			_repositoryFactory = Substitute.For<IRepositoryFactory>();
+			_importApiFacade = Substitute.For<IImportApiFacade>();
 			_configuration = Substitute.For<HttpConfiguration>();
 			_helper = Substitute.For<ICPHelper>();
 
@@ -58,7 +57,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			IHttpRoute route = config.Routes.MapHttpRoute("DefaultApi", "api/{controller}/{id}");
 			var routeData = new HttpRouteData(route, new HttpRouteValueDictionary { { "controller", "GetFolderPathFieldsController" } });
 
-			_instance = new FolderPathController(_client, _fieldService, _importApiFactory, _config, _workspaceIdProvider, _repositoryFactory, _helper, _choiceService)
+			_instance = new FolderPathController(_client, _fieldService, _choiceService, _workspaceIdProvider, _importApiFacade, _helper)
 			{
 				ControllerContext = new HttpControllerContext(config, routeData, request),
 				Request = request
@@ -89,28 +88,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
         }
 
-        [Test]
-		public void GetFields_Exception()
-		{
-			//ARRANGE
-			var message = "This is an example failure";
-			var result = new QueryResult
-			{
-				Success = false,
-				Message = message
-			};
-
-			_client.Query(Arg.Any<APIOptions>(), Arg.Any<Query>())
-				.Returns(result);
-			
-			// ACT/ASSERT
-			Assert.That(() => _instance.GetFields(),
-				Throws.Exception
-					.TypeOf<Exception>()
-					.With.Property("Message")
-					.EqualTo(message));
-		}
-
 		[Test]
 		public void GetChoiceFields_Success()
 		{
@@ -130,7 +107,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 
             var result = new QueryResult { Success = true };
             var settings = new ImportSettings { WebServiceURL = webServiceUrl };
-			   _client.APIOptions = new APIOptions(workspaceId);
+			_client.APIOptions = new APIOptions(workspaceId);
 
 			var listOfFields = new List<FieldEntry> {new FieldEntry()};
 	        _choiceService.GetChoiceFields(Arg.Any<int>()).Returns(listOfFields);
@@ -145,6 +122,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			importApi.GetWorkspaceFields(workspaceId, documentArtifactTypeId).Returns(new List<Field> { new Field() });
 
 			_client.Query(Arg.Any<APIOptions>(), Arg.Any<Query>()).Returns(result);
+
+	        _workspaceIdProvider.GetWorkspaceId().Returns(workspaceId);
+
+	        _fieldService.GetTextFields(Arg.Any<int>(), Arg.Any<bool>()).Returns(new List<FieldEntry>());
         }
 		
 	}

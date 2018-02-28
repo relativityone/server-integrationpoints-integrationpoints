@@ -52,6 +52,8 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="ImportAPI\IImportApiFacade.cs" />
+    <Compile Include="ImportAPI\ImportApiFacade.cs" />
     <Compile Include="ImportAPI\RelativityReaderDecorator.cs" />
     <Compile Include="JobImport\IImportJobFactory.cs" />
     <Compile Include="JobImport\IImportSettingsBaseBuilder.cs" />

@@ -160,8 +160,9 @@ namespace kCura.IntegrationPoints.PerformanceTests.TestCases
 		public void Init()
 		{
 			SuiteSetup();
-			var om = Container.Resolve<IRelativityObjectManager>();
-			_fieldService = new FieldService(om);
+			var choiceService = Container.Resolve<IChoiceService>();
+			var client = Container.Resolve<IRSAPIClient>();
+			_fieldService = new FieldService(choiceService, client);
 		}
 
 		public void Execute(bool longTextFieldsOnly)

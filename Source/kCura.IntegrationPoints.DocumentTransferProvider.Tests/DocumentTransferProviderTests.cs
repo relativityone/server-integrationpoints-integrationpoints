@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests
 			repositoryFactory.GetWorkspaceRepository().Returns(workspaceRepository);
 			workspaceRepository.Retrieve(Arg.Any<int>()).Returns(workspace);
 
-			var mockDocumentTransferProvider = new DocumentTransferProvider(Substitute.For<IExtendedImportApiFactory>(), repositoryFactory, Substitute.For<IHelper>());
+			var mockDocumentTransferProvider = new DocumentTransferProvider(Substitute.For<IExtendedImportApiFacade>(), repositoryFactory, Substitute.For<IHelper>());
 
 			var settings = new DocumentTransferSettings { SourceWorkspaceArtifactId = _WORKSPACE_ARTIFACT_ID };
 			var options = JsonConvert.SerializeObject(settings);
@@ -69,7 +69,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests
 			repositoryFactory.GetWorkspaceRepository().Returns(workspaceRepository);
 			workspaceRepository.Retrieve(Arg.Any<int>()).Returns(workspace);
 
-			var mockDocumentTransferProvider = new DocumentTransferProvider(Substitute.For<IExtendedImportApiFactory>(), Substitute.For<IRepositoryFactory>(), Substitute.For<IHelper>());
+			var mockDocumentTransferProvider = new DocumentTransferProvider(Substitute.For<IExtendedImportApiFacade>(), Substitute.For<IRepositoryFactory>(), Substitute.For<IHelper>());
 			var settings = new DocumentTransferSettings { SourceWorkspaceArtifactId = _WORKSPACE_ARTIFACT_ID };
 			var options = JsonConvert.SerializeObject(settings);
 			
@@ -105,13 +105,14 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests
 			return repositoryFactory;
 		}
 
-		private IExtendedImportApiFactory GetImportApiMock()
+		private IExtendedImportApiFacade GetImportApiMock()
 		{
 			IExtendedImportAPI importApi = Substitute.For<IExtendedImportAPI>();
 			importApi.GetWorkspaceFields(_WORKSPACE_ARTIFACT_ID, (int) ArtifactType.Field).Returns(_getWorkspaceFieldsResult);
 			IExtendedImportApiFactory importApiFactory = Substitute.For<IExtendedImportApiFactory>();
 			importApiFactory.Create().Returns(importApi);
-			return importApiFactory;
+			IExtendedImportApiFacade importApiFacade = new ExtendedImportApiFacade(importApiFactory);
+			return importApiFacade;
 		}
 
 		private List<Relativity.ImportAPI.Data.Field> PrepareGetWorkspaceFieldsResult()

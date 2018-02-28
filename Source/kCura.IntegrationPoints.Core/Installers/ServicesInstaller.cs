@@ -51,6 +51,7 @@ using kCura.IntegrationPoints.Core.Toggles;
 using kCura.IntegrationPoints.Data.RSAPIClient;
 using kCura.IntegrationPoints.Data.SecretStore;
 using kCura.IntegrationPoints.Domain.Authentication;
+using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations;
 using kCura.ScheduleQueue.Core.Data;
 using Relativity.Telemetry.APM;
@@ -148,6 +149,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IJobTracker>().ImplementedBy<JobTracker>().LifestyleTransient());
 			container.Register(Component.For<TaskParameterHelper>().ImplementedBy<TaskParameterHelper>().LifestyleTransient());
 			container.Register(Component.For<IImportApiFactory>().ImplementedBy<ImportApiFactory>().LifestyleTransient());
+			container.Register(Component.For<IImportApiFacade>().ImplementedBy<ImportApiFacade>().LifestyleTransient());
 			container.Register(Component.For<IImportJobFactory>().ImplementedBy<ImportJobFactory>().LifestyleTransient());
 			container.Register(Component.For<RelativityFeaturePathService>().ImplementedBy<RelativityFeaturePathService>().LifestyleTransient());
 
