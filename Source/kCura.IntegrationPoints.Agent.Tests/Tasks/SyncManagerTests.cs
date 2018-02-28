@@ -54,7 +54,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private SourceProvider _sourceProvider;
 		private Data.IntegrationPoint _integrationPoint;
 		private IDataSourceProvider _dataSourceProvider;
-		private string _option;
 		private IDataReader _dataReader;
 		private string _data;
 		private IJobHistoryErrorService _jobHistoryErrorService;
@@ -100,7 +99,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			};
 			_integrationPoint = new Data.IntegrationPoint()
 			{
-				SourceProvider = 8502
+				SourceProvider = 8502,
+				SourceConfiguration = "sourceConfiguration",
+				SecuredConfiguration = "securedConfiguration",
+				FieldMappings = "fields"
 			};
 			_jobHistory = new JobHistory();
 			_taskResult = new TaskResult();
@@ -120,14 +122,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			   _jobHistoryErrorService, _scheduleRuleFactory, _managerFactory,
 			   _contextContainerFactory, _batchStatuses);
 
-			_option = "option";
 			_data = "data";
 			_caseServiceContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider.Value).Returns(_sourceProvider);
 			_dataProviderFactory.GetDataProvider(
 					Arg.Is<Guid>(appGuid => appGuid == new Guid(_sourceProvider.ApplicationIdentifier)),
 					Arg.Is<Guid>(providerGuid => providerGuid == new Guid(_sourceProvider.Identifier))).Returns(_dataSourceProvider);
-			_integrationPointService.GetSourceOptions(_integrationPoint.ArtifactId).Returns(_option);
-			_dataSourceProvider.GetBatchableIds(Arg.Any<FieldEntry>(), _option).Returns(_dataReader);
+			_dataSourceProvider.GetBatchableIds(Arg.Any<FieldEntry>(), Arg.Is<DataSourceProviderConfiguration>(
+				x => x.Configuration.Equals(_integrationPoint.SourceConfiguration) && x.SecuredConfiguration.Equals(_integrationPoint.SecuredConfiguration))).Returns(_dataReader);
 			_dataReader.Read().Returns(true, false);
 			_dataReader.GetString(0).Returns(_data);
 			_managerFactory.CreateJobStopManager(_jobService, _jobHistoryService, _batchInstance, _job.JobId, true)

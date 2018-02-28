@@ -42,6 +42,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         private readonly Guid _dataType = new Guid("FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF");
         private readonly Guid _appIdentifier = new Guid("00000000-0000-0000-0000-000000000000");
         private const string _options = "TestOptions";
+	    private const string _credentials = "Credentials";
 
         [SetUp]
         public override void SetUp()
@@ -61,7 +62,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             _fieldC = new FieldEntry() { FieldIdentifier = "CCC", DisplayName = "ccc" };
             _fieldD = new FieldEntry() { FieldIdentifier = "DDD", DisplayName = "ddd" };
 
-            _dataSourceProvider.GetFields(_options).Returns(new List<FieldEntry>
+            _dataSourceProvider.GetFields(Arg.Is<DataSourceProviderConfiguration>(x => x.Configuration.Equals(_options) && x.SecuredConfiguration.Equals(_credentials))).Returns(new List<FieldEntry>
             {
                 _fieldD, _fieldB, _fieldA, _fieldC
             });
@@ -81,15 +82,14 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         [TestCase]
         public void GetSourceFieldsGoldFlow()
         {
-            var response = _instance.Get(new SourceOptions() { Options  = _options, Type = _dataType });
+            var response = _instance.Get(new SourceOptions() { Options  = _options, Type = _dataType, Credentials = _credentials });
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
             CollectionAssert.AreEqual(new List<FieldEntry>() { _fieldA, _fieldB, _fieldC, _fieldD }, (List<FieldEntry>)((System.Net.Http.ObjectContent<List<FieldEntry>>)response.Content).Value);
 
             _factory.Received().GetDataProvider(_appIdentifier, _dataType);
-            _dataSourceProvider.Received(1).GetFields(_options);
+            _dataSourceProvider.Received(1).GetFields(Arg.Is<DataSourceProviderConfiguration>(x => x.Configuration.Equals(_options) && x.SecuredConfiguration.Equals(_credentials)));
             _sourceProviderIdentifier.Received(1).Execute(_dataType);
-
         }
     }
 }

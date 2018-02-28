@@ -21,9 +21,9 @@ namespace kCura.IntegrationPoints.ImportProvider
 			_serializer = serializer;
 		}
 
-		public IEnumerable<FieldEntry> GetFields(string options)
+		public IEnumerable<FieldEntry> GetFields(DataSourceProviderConfiguration providerConfiguration)
 		{
-			ImportProviderSettings settings = _serializer.Deserialize<ImportProviderSettings>(options);
+			ImportProviderSettings settings = _serializer.Deserialize<ImportProviderSettings>(providerConfiguration.Configuration);
 			IFieldParser parser = _fieldParserFactory.GetFieldParser(settings);
 			List<FieldEntry> result = new List<FieldEntry>();
 			int idx = 0;
@@ -41,12 +41,12 @@ namespace kCura.IntegrationPoints.ImportProvider
 			return result;
 		}
 
-		public IDataReader GetBatchableIds(FieldEntry identifier, string options)
+		public IDataReader GetBatchableIds(FieldEntry identifier, DataSourceProviderConfiguration providerConfiguration)
 		{
 			throw new NotImplementedException("GetBatchableIds should not be called on ImportProvider");
 		}
 
-		public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> sourceFileLines, string options)
+		public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> sourceFileLines, DataSourceProviderConfiguration providerConfiguration)
 		{
 			throw new NotImplementedException("GetData should not be called on ImportProvider");
 		}

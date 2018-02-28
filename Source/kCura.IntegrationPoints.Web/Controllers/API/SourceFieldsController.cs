@@ -19,6 +19,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 	{
 		public Guid Type { get; set; }
 		public object Options { get; set; }
+		public string Credentials { get; set; }
 	}
 
 	public class SourceFieldsController : ApiController
@@ -55,7 +56,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			Data.SourceProvider providerRdo = _sourceProviderIdentifier.Execute(data.Type);
 			Guid applicationGuid = new Guid(providerRdo.ApplicationIdentifier);
 			IDataSourceProvider provider = _factory.GetDataProvider(applicationGuid, data.Type);
-			List<FieldEntry> fields = provider.GetFields(data.Options.ToString()).OrderBy(x => x.DisplayName).ToList();
+			List<FieldEntry> fields = provider.GetFields(new DataSourceProviderConfiguration(data.Options.ToString(), data.Credentials)).OrderBy(x => x.DisplayName).ToList();
 			return Request.CreateResponse(HttpStatusCode.OK, fields, Configuration.Formatters.JsonFormatter);
 		}
 	}

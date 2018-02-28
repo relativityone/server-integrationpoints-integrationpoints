@@ -30,19 +30,19 @@ namespace kCura.IntegrationPoints.Domain
 			_logger = logger.ForContext<ProviderWrapper>();
 		}
 
-		public IEnumerable<FieldEntry> GetFields(string options)
+		public IEnumerable<FieldEntry> GetFields(DataSourceProviderConfiguration providerConfiguration)
 		{
-			return EnrichCallWithLogContext(() => _provider.GetFields(options).ToList());
+			return EnrichCallWithLogContext(() => _provider.GetFields(providerConfiguration).ToList());
 		}
 
-		public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, string options)
+		public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, DataSourceProviderConfiguration providerConfiguration)
 		{
-			return EnrichCallWithLogContext(() => new DataReaderWrapper(_provider.GetData(fields, entryIds, options)));
+			return EnrichCallWithLogContext(() => new DataReaderWrapper(_provider.GetData(fields, entryIds, providerConfiguration)));
 		}
 
-		public IDataReader GetBatchableIds(FieldEntry identifier, string options)
+		public IDataReader GetBatchableIds(FieldEntry identifier, DataSourceProviderConfiguration providerConfiguration)
 		{
-			return EnrichCallWithLogContext(() => new DataReaderWrapper(_provider.GetBatchableIds(identifier, options)));
+			return EnrichCallWithLogContext(() => new DataReaderWrapper(_provider.GetBatchableIds(identifier, providerConfiguration)));
 		}
 
 		public string GetEmailBodyData(IEnumerable<FieldEntry> fields, string options)

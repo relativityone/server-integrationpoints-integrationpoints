@@ -77,7 +77,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		{
             // Arrange
 		    _synchronizerFactoryMock.CreateSynchronizer( Guid.Empty, _synchronizerSettings.Settings, _synchronizerSettings.Credentials).Returns(_dataSynchronizerMock);
-		    _dataSynchronizerMock.GetFields(Arg.Any<string>()).Returns(_fields);
+		    _dataSynchronizerMock.GetFields(Arg.Any<DataSourceProviderConfiguration>()).Returns(_fields);
 
             // Act
             HttpResponseMessage httpResponseMessage = _subjectUnderTest
@@ -90,10 +90,11 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             Assert.That(httpResponseMessage.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             CollectionAssert.AreEquivalent(_fields, retValue);
 
-		    _dataSynchronizerMock.Received(1).GetFields(Arg.Is<string>(x =>
-		        (_serializer.Deserialize<ImportSettings>(x).ArtifactTypeId == _ARTIFACT_TYPE_ID) &&
-		        (_serializer.Deserialize<ImportSettings>(x).DestinationFolderArtifactId == _DESTINATION_FOLDER_ARTIFACT_ID) &&
-		        (_serializer.Deserialize<ImportSettings>(x).FederatedInstanceCredentials == _CREDENTIALS)));
+		    _dataSynchronizerMock.Received(1).GetFields(Arg.Is<DataSourceProviderConfiguration>(x =>
+			    (_serializer.Deserialize<ImportSettings>(x.Configuration).ArtifactTypeId == _ARTIFACT_TYPE_ID) &&
+			    (_serializer.Deserialize<ImportSettings>(x.Configuration).DestinationFolderArtifactId == _DESTINATION_FOLDER_ARTIFACT_ID) &&
+			    (_serializer.Deserialize<ImportSettings>(x.Configuration).FederatedInstanceCredentials == _CREDENTIALS) &&
+			    (x.SecuredConfiguration == _CREDENTIALS)));
 		}
 
 	}

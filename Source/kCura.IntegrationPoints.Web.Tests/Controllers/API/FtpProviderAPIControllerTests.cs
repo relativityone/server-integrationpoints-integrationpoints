@@ -109,7 +109,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			_securityManager.Encrypt(data.ToString()).Returns(encryptedData);
 
 			var ftpProvider = Substitute.For<IDataSourceProvider>();
-			ftpProvider.GetFields(encryptedData).Returns(fields);
+			ftpProvider.GetFields(Arg.Is<DataSourceProviderConfiguration>(x => x.Configuration.Equals(encryptedData))).Returns(fields);
 			_providerFactory.GetDataProvider(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(ftpProvider);
 
 			//Act

@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 			string settings = JsonConvert.SerializeObject(importSettings);
 
 			//Act
-			List<FieldEntry> fields = rdoSynchronizer.GetFields(settings).ToList();
+			List<FieldEntry> fields = rdoSynchronizer.GetFields(new DataSourceProviderConfiguration(settings)).ToList();
 
 			//Assert
 			Assert.NotNull(fields);
@@ -69,14 +69,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 			var rdoSynchronizer = new RdoSynchronizer(_fieldQuery, _factory, _jobFactory, _helper);
 			
 			ImportSettings importSettings = CreateDefaultImportSettings();
-			List<FieldEntry> destinationFields = rdoSynchronizer.GetFields(JsonConvert.SerializeObject(importSettings)).ToList();
+			List<FieldEntry> destinationFields = rdoSynchronizer.GetFields(new DataSourceProviderConfiguration(JsonConvert.SerializeObject(importSettings))).ToList();
 			FieldEntry fieldIdentifierEntry = destinationFields.FirstOrDefault(field => field.IsIdentifier);
 			importSettings.ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly;
 			if (fieldIdentifierEntry != null) { importSettings.IdentityFieldId = int.Parse(fieldIdentifierEntry.FieldIdentifier);}
 
 			string settings = JsonConvert.SerializeObject(importSettings);
 			
-			IEnumerable<FieldMap> sourceFields = CreateDefaultSourceFieldMap(rdoSynchronizer.GetFields(settings).ToList());
+			IEnumerable<FieldMap> sourceFields = CreateDefaultSourceFieldMap(rdoSynchronizer.GetFields(new DataSourceProviderConfiguration(settings)).ToList());
 
 			List<Dictionary<FieldEntry, object>> defaultData = CreateDefaultData();
 

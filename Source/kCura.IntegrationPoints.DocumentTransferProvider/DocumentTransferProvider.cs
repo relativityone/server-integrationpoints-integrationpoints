@@ -30,10 +30,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<DocumentTransferProvider>();
 		}
 
-		public IEnumerable<FieldEntry> GetFields(string options)
+		public IEnumerable<FieldEntry> GetFields(DataSourceProviderConfiguration providerConfiguration)
 		{
-			LogRetrievingFields(options);
-			var settings = JsonConvert.DeserializeObject<DocumentTransferSettings>(options);
+			LogRetrievingFields(providerConfiguration.Configuration);
+			var settings = JsonConvert.DeserializeObject<DocumentTransferSettings>(providerConfiguration.Configuration);
 			ArtifactDTO[] fields = GetRelativityFields(settings.SourceWorkspaceArtifactId, Convert.ToInt32(ArtifactType.Document));
 			IEnumerable<FieldEntry> fieldEntries = ParseFields(fields);
 
@@ -140,16 +140,16 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 				};
 			}
 		}
-		
+
 		/// <summary>
 		/// Gets all of the artifact ids that can be batched in reads
 		/// </summary>
 		/// <param name="identifier">The identifying field (Control Number)</param>
-		/// <param name="options">The artifactId of the saved search in string format</param>
+		/// <param name="providerConfiguration">Data source provider configuration</param>
 		/// <returns>An IDataReader containing all of the saved search's document artifact ids</returns>
-		public IDataReader GetBatchableIds(FieldEntry identifier, string options)
+		public IDataReader GetBatchableIds(FieldEntry identifier, DataSourceProviderConfiguration providerConfiguration)
 		{
-			LogRetrievingBatchableIdsErrorWithDetails(options, identifier, new NotImplementedException());
+			LogRetrievingBatchableIdsErrorWithDetails(providerConfiguration.Configuration, identifier, new NotImplementedException());
 			throw new NotImplementedException();
 		}
 
@@ -159,11 +159,11 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		/// </summary>
 		/// <param name="fields">The fieldArtifacts the user mapped</param>
 		/// <param name="entryIds">The artifact ids of the documents to copy (in string format)</param>
-		/// <param name="options">The saved search artifact id (unused in this method)</param>
+		/// <param name="providerConfiguration">Data source provider configuration</param>
 		/// <returns>An IDataReader that contains the Document RDO's for the entryIds</returns>
-		public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, string options)
+		public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, DataSourceProviderConfiguration providerConfiguration)
 		{
-			LogRetrievingDataErrorWithDetails(options, entryIds, fields, new NotImplementedException());
+			LogRetrievingDataErrorWithDetails(providerConfiguration.Configuration, entryIds, fields, new NotImplementedException());
 			throw new NotImplementedException();
 		}
 

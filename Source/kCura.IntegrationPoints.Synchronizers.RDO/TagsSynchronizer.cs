@@ -20,10 +20,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<TagsSynchronizer>();
 		}
 
-		public IEnumerable<FieldEntry> GetFields(string options)
+		public IEnumerable<FieldEntry> GetFields(DataSourceProviderConfiguration providerConfiguration)
 		{
-			var updatedOptions = UpdateImportSettingsForTagging(options);
-			return _rdoSynchronizer.GetFields(updatedOptions);
+			providerConfiguration.Configuration = UpdateImportSettingsForTagging(providerConfiguration.Configuration);
+			return _rdoSynchronizer.GetFields(providerConfiguration);
 		}
 
 		public void SyncData(IEnumerable<IDictionary<FieldEntry, object>> data, IEnumerable<FieldMap> fieldMap, string options)

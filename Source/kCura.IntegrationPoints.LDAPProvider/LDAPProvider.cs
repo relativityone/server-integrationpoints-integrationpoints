@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.DirectoryServices;
 using System.Linq;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using Relativity.API;
@@ -15,33 +17,36 @@ namespace kCura.IntegrationPoints.LDAPProvider
 	    private readonly ILDAPSettingsReader _reader;
 	    private readonly IHelper _helper;
 	    private readonly ILDAPServiceFactory _ldapServiceFactory;
+		private readonly ISerializer _serializer;
 
-
-	    public LDAPProvider(ILDAPSettingsReader reader, ILDAPServiceFactory ldapServiceFactory, IHelper helper)
+	    public LDAPProvider(ILDAPSettingsReader reader, ILDAPServiceFactory ldapServiceFactory, IHelper helper, ISerializer serializer)
 		{
 		    _reader = reader;
+			_ldapServiceFactory = ldapServiceFactory;
 		    _helper = helper;
-		    _ldapServiceFactory = ldapServiceFactory;
+			_serializer = serializer;
 		    _logger = helper.GetLoggerFactory().GetLogger().ForContext<LDAPProvider>();
 		}
 
-		public System.Data.IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds,
-			string options)
+		public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, DataSourceProviderConfiguration providerConfiguration)
 		{
 			LogRetrievingData(entryIds);
 
-			LDAPSettings settings = _reader.GetSettings(options);
+			LDAPSettings settings = _reader.GetSettings(providerConfiguration.Configuration);
 			List<string> fieldsToLoad = fields.Select(f => f.FieldIdentifier).ToList();
 			string identifier = fields.Where(f => f.IsIdentifier).Select(f => f.FieldIdentifier).First();
 
-			ILDAPService ldapService = _ldapServiceFactory.Create(_logger, settings, fieldsToLoad);
+			LDAPSecuredConfiguration securedConfiguration =
+				_serializer.Deserialize<LDAPSecuredConfiguration>(providerConfiguration.SecuredConfiguration);
+
+			ILDAPService ldapService = _ldapServiceFactory.Create(_logger, _serializer, settings, securedConfiguration, fieldsToLoad);
 			ldapService.InitializeConnection();
 			IEnumerable<SearchResult> items = ldapService.FetchItems();
 			return new LDAPServiceDataReader(ldapService, entryIds, identifier, fieldsToLoad,
 				new LDAPDataFormatterDefault(settings, _helper));
 		}
 
-		public System.Data.IDataReader GetBatchableIds(FieldEntry identifier, string options)
+		public IDataReader GetBatchableIds(FieldEntry identifier, DataSourceProviderConfiguration providerConfiguration)
 		{
 		    if (identifier == null)
 		    {
@@ -49,23 +54,29 @@ namespace kCura.IntegrationPoints.LDAPProvider
 		    }
 			LogRetrievingBatchableIds(identifier);
 
-			LDAPSettings settings = _reader.GetSettings(options);
+			LDAPSettings settings = _reader.GetSettings(providerConfiguration.Configuration);
 			var fieldsToLoad = new List<string> {identifier.FieldIdentifier};
 
-			ILDAPService ldapService = _ldapServiceFactory.Create(_logger, settings, fieldsToLoad);
+			LDAPSecuredConfiguration securedConfiguration =
+				_serializer.Deserialize<LDAPSecuredConfiguration>(providerConfiguration.SecuredConfiguration);
+
+			ILDAPService ldapService = _ldapServiceFactory.Create(_logger, _serializer, settings, securedConfiguration, fieldsToLoad);
 			ldapService.InitializeConnection();
 			IEnumerable<SearchResult> items = ldapService.FetchItems();
 			return new LDAPDataReader(items, fieldsToLoad, new LDAPDataFormatterForBatchableIDs(settings, _helper));
 		}
 
-		public IEnumerable<FieldEntry> GetFields(string options)
+		public IEnumerable<FieldEntry> GetFields(DataSourceProviderConfiguration providerConfiguration)
 		{
 			LogRetrievingFields();
 
-			LDAPSettings settings = _reader.GetSettings(options);
+			LDAPSettings settings = _reader.GetSettings(providerConfiguration.Configuration);
 			settings.PropertyNamesOnly = true;
 
-			ILDAPService ldapService = _ldapServiceFactory.Create(_logger, settings);
+			LDAPSecuredConfiguration securedConfiguration =
+				_serializer.Deserialize<LDAPSecuredConfiguration>(providerConfiguration.SecuredConfiguration);
+
+			ILDAPService ldapService = _ldapServiceFactory.Create(_logger, _serializer, settings, securedConfiguration);
 			ldapService.InitializeConnection();
 		    List<string> fields = ldapService.FetchAllProperties(settings.GetPropertiesItemSearchLimit);
 

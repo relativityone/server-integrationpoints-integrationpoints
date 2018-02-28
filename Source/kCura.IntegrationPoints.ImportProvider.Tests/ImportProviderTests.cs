@@ -50,7 +50,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests
 			_fieldParser.GetFields().Returns(testData);
 
 			ImportProvider ip = new ImportProvider(_fieldParserFactory, _serializer);
-			IEnumerable<FieldEntry> ipFields = ip.GetFields(string.Empty);
+			IEnumerable<FieldEntry> ipFields = ip.GetFields(new DataSourceProviderConfiguration(string.Empty));
 
 			Assert.AreEqual(testData.Count, ipFields.Count());
 
@@ -68,14 +68,14 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests
 		public void ImportProviderCannotGetBatchableIds()
 		{
 			ImportProvider ip = new ImportProvider(_fieldParserFactory, _serializer);
-			Assert.Throws<NotImplementedException>(() => ip.GetBatchableIds(null, string.Empty));
+			Assert.Throws<NotImplementedException>(() => ip.GetBatchableIds(null, new DataSourceProviderConfiguration(string.Empty)));
 		}
 
 		[Test]
 		public void ImportProviderCannotGetData()
 		{
 			ImportProvider ip = new ImportProvider(_fieldParserFactory, _serializer);
-			Assert.Throws<NotImplementedException>(() => ip.GetData(null, null, string.Empty));
+			Assert.Throws<NotImplementedException>(() => ip.GetData(null, null, new DataSourceProviderConfiguration(string.Empty)));
 		}
 
 		private List<string> TestHeaders(int fieldCount)

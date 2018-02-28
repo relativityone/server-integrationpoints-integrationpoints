@@ -540,6 +540,7 @@ ko.validation.insertValidationMessage = function (element) {
 			type: 'Post', url: root.utils.generateWebAPIURL('SourceFields'), data: JSON.stringify({
 				'options': model.sourceConfiguration,
 				'type': model.source.selectedType,
+				'credentials': self.SecuredConfiguration
 			})
 		}).fail(function (error) {
 			IP.message.error.raise("No attributes were returned from the source provider.");

@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Data;
 using System.DirectoryServices;
 using System.Linq;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Security;
+using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
@@ -19,6 +21,7 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
         private IEncryptionManager _encryptionManager;
         private ILDAPServiceFactory _serviceFactory;
         private IAPILog _logger;
+	    private ISerializer _serializer;
         private ILDAPService _ldapService;
         private IHelper _helper;
         private List<string> _fieldProperties;
@@ -26,12 +29,16 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
         private ILDAPSettingsReader _ldapSettingsReader;
         private List<string> _entryIds;
         private string _optionsString = "options are mocked anyway";
+	    private LDAPSecuredConfiguration _securedConfiguration;
+	    private string _securedConfigurationString = "secured options too";
 
         public override void SetUp()
         {
             _ldapService = Substitute.For<ILDAPService>();
             _serviceFactory = Substitute.For<ILDAPServiceFactory>();
-            _serviceFactory.Create(_logger, _fullyFilledSettings).ReturnsForAnyArgs(_ldapService);
+	        _serializer = Substitute.For<ISerializer>();
+
+			_serviceFactory.Create(_logger, _serializer, _fullyFilledSettings, _securedConfiguration).ReturnsForAnyArgs(_ldapService);
 
             _fullyFilledSettings = new LDAPSettings
             {
@@ -44,14 +51,19 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
                 ImportNested = true,
                 MultiValueDelimiter = '_',
                 PageSize = 432,
-                Password = "password",
                 PropertyNamesOnly = true,
                 ProviderExtendedDN = ExtendedDNEnum.HexString,
                 ProviderReferralChasing = ReferralChasingOption.External,
-                SizeLimit = 4231,
-                UserName = "username"
+                SizeLimit = 4231
             };
-            _fieldProperties = new List<string> { "1prop", "2prop", "3prop", "4prop", "5prop", };
+
+	        _securedConfiguration = new LDAPSecuredConfiguration()
+	        {
+		        UserName = "username",
+		        Password = "password"
+	        };
+
+			_fieldProperties = new List<string> { "1prop", "2prop", "3prop", "4prop", "5prop", };
             _fieldEntries = new List<FieldEntry>
             {
                 new FieldEntry(),
@@ -76,9 +88,9 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
         public void GetData_FieldsListHasIdentifierElement_CallsFetchItemsAndReturnsProperDataReader()
         {
             _fieldEntries[1].IsIdentifier = true;
-            var provider = new LDAPProvider(_ldapSettingsReader, _serviceFactory, _helper);
+            var provider = new LDAPProvider(_ldapSettingsReader, _serviceFactory, _helper, _serializer);
 
-            IDataReader reader = provider.GetData(_fieldEntries, _entryIds, _optionsString);
+            IDataReader reader = provider.GetData(_fieldEntries, _entryIds, new DataSourceProviderConfiguration(_optionsString, _securedConfigurationString));
 
             _ldapService.ReceivedWithAnyArgs().FetchItems();
             Assert.IsInstanceOf<LDAPServiceDataReader>(reader);
@@ -88,26 +100,26 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
         public void GetData_FieldsListDoesNotHaveIdentifierElement_Throws()
         {
 
-            var provider = new LDAPProvider(_ldapSettingsReader, _serviceFactory, _helper);
+            var provider = new LDAPProvider(_ldapSettingsReader, _serviceFactory, _helper, _serializer);
 
-            Assert.Catch(() => provider.GetData(_fieldEntries, _entryIds, _optionsString));
+            Assert.Catch(() => provider.GetData(_fieldEntries, _entryIds, new DataSourceProviderConfiguration(_optionsString, _securedConfigurationString)));
         }
 
         [Test]
         public void GetData_FieldsCollectionEmpty_Throws()
         {
-            var provider = new LDAPProvider(_ldapSettingsReader, _serviceFactory, _helper);
+            var provider = new LDAPProvider(_ldapSettingsReader, _serviceFactory, _helper, _serializer);
             var emptyFieldEntriesList = new List<FieldEntry>();
 
-            Assert.Catch(() => provider.GetData(emptyFieldEntriesList, _entryIds, _optionsString));
+            Assert.Catch(() => provider.GetData(emptyFieldEntriesList, _entryIds, new DataSourceProviderConfiguration(_optionsString, _securedConfigurationString)));
         }
 
         [Test]
         public void GetBatchableIds_CallsFetchItemsAndReturnsProperDataReader()
         {
-            var provider = new LDAPProvider(_ldapSettingsReader, _serviceFactory, _helper);
+            var provider = new LDAPProvider(_ldapSettingsReader, _serviceFactory, _helper, _serializer);
 
-            IDataReader reader = provider.GetBatchableIds(new FieldEntry(), _optionsString);
+            IDataReader reader = provider.GetBatchableIds(new FieldEntry(), new DataSourceProviderConfiguration(_optionsString, _securedConfigurationString));
 
             _ldapService.ReceivedWithAnyArgs().FetchItems();
             Assert.IsInstanceOf<LDAPDataReader>(reader);
@@ -116,18 +128,18 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
         [Test]
         public void GetBatchableIds_IdentifierIsNull_ThrowsArgumentNullException()
         {
-            var provider = new LDAPProvider(_ldapSettingsReader, _serviceFactory, _helper);
+            var provider = new LDAPProvider(_ldapSettingsReader, _serviceFactory, _helper, _serializer);
 
-            Assert.Throws<ArgumentNullException>(() => provider.GetBatchableIds(null, _optionsString));
+            Assert.Throws<ArgumentNullException>(() => provider.GetBatchableIds(null, new DataSourceProviderConfiguration(_optionsString, _securedConfigurationString)));
         }
 
         [Test]
         public void GetFields_LdapServiceReturnsEmptyList_ReturnsEmptyCollection()
         {
             _ldapService.FetchAllProperties(Arg.Any<int?>()).ReturnsForAnyArgs(new List<string>());
-            var provider = new LDAPProvider(_ldapSettingsReader, _serviceFactory, _helper);
+            var provider = new LDAPProvider(_ldapSettingsReader, _serviceFactory, _helper, _serializer);
 
-            IEnumerable<FieldEntry> result = provider.GetFields("");
+            IEnumerable<FieldEntry> result = provider.GetFields(new DataSourceProviderConfiguration("", _securedConfigurationString));
 
             Assert.AreEqual(result.Any(), false);
         }
@@ -136,9 +148,9 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
         public void GetFields_LdapServiceReturnsProperList_ReturnsCollectionWithProperCount()
         {
             _ldapService.FetchAllProperties(Arg.Any<int?>()).ReturnsForAnyArgs(_fieldProperties);
-            var provider = new LDAPProvider(_ldapSettingsReader, _serviceFactory, _helper);
+            var provider = new LDAPProvider(_ldapSettingsReader, _serviceFactory, _helper, _serializer);
 
-            IEnumerable<FieldEntry> result = provider.GetFields("");
+            IEnumerable<FieldEntry> result = provider.GetFields(new DataSourceProviderConfiguration("", _securedConfigurationString));
 
             Assert.AreEqual(result.Count(), _fieldProperties.Count);
         }
@@ -148,9 +160,9 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
         public void GetFields_LdapServiceReturnsOneElement_ReturnsProperElement(string testString)
         {
             _ldapService.FetchAllProperties(Arg.Any<int?>()).ReturnsForAnyArgs(new List<string> {testString});
-            var provider = new LDAPProvider(_ldapSettingsReader, _serviceFactory, _helper);
+            var provider = new LDAPProvider(_ldapSettingsReader, _serviceFactory, _helper, _serializer);
 
-            IEnumerable<FieldEntry> result = provider.GetFields("");
+            IEnumerable<FieldEntry> result = provider.GetFields(new DataSourceProviderConfiguration("", _securedConfigurationString));
             FieldEntry firstFromCollection = result.First();
 
             Assert.AreEqual(firstFromCollection.DisplayName, testString);

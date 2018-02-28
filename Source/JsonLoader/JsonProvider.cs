@@ -18,15 +18,15 @@ namespace JsonLoader
 			_helper = helper;
 		}
 
-		public IEnumerable<FieldEntry> GetFields(string options)
+		public IEnumerable<FieldEntry> GetFields(DataSourceProviderConfiguration providerConfiguration)
 		{
-			string fields = _helper.ReadFields(options);
+			string fields = _helper.ReadFields(providerConfiguration.Configuration);
 			return JsonConvert.DeserializeObject<List<FieldEntry>>(fields);
 		}
 
-		public IDataReader GetBatchableIds(FieldEntry identifier, string options)
+		public IDataReader GetBatchableIds(FieldEntry identifier, DataSourceProviderConfiguration providerConfiguration)
 		{
-			string file = _helper.ReadData(options);
+			string file = _helper.ReadData(providerConfiguration.Configuration);
 			List<DataObject> objects = JsonConvert.DeserializeObject<List<DataObject>>(file);
 			using (DataTable dataTable = objects.ToBatchableIds(identifier.FieldIdentifier))
 			{
@@ -34,9 +34,9 @@ namespace JsonLoader
 			}
 		}
 
-		public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, string options)
+		public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, DataSourceProviderConfiguration providerConfiguration)
 		{
-			string file = _helper.ReadData(options);
+			string file = _helper.ReadData(providerConfiguration.Configuration);
 
 			FieldEntry[] fieldEntries = fields as FieldEntry[] ?? fields.ToArray();
 			IEnumerable<string> fieldList = fieldEntries.Select(f => f.FieldIdentifier);

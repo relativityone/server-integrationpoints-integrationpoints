@@ -15,19 +15,15 @@ namespace kCura.IntegrationPoints.Web.Controllers
 {
 	public abstract class IntegrationPointBaseController : BaseController
 	{
-		private readonly IAPILog _apiLog;
 		private readonly IRsapiRdoQuery _rdoQuery;
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly ITabService _tabService;
-	    private readonly ILDAPServiceFactory _ldapServiceFactory;
 
 	    protected IntegrationPointBaseController(IRsapiRdoQuery rdoQuery, IRepositoryFactory repositoryFactory, ITabService tabService, ILDAPServiceFactory ldapServiceFactory)
 		{
 			_rdoQuery = rdoQuery;
 			_repositoryFactory = repositoryFactory;
 			_tabService = tabService;
-		    _ldapServiceFactory = ldapServiceFactory;
-			_apiLog = ConnectionHelper.Helper().GetLoggerFactory().GetLogger().ForContext<IntegrationPointBaseController>();
 		}
 
 		protected abstract string ObjectTypeGuid { get; }
@@ -111,15 +107,6 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		public ActionResult RelativityProviderConfiguration()
 		{
 			return View("~/Views/IntegrationPoints/RelativityProviderConfiguration.cshtml", "_StepLayout");
-		}
-
-		[HttpPost]
-		public ActionResult CheckLdap(LDAPSettings model)
-		{
-			var service = _ldapServiceFactory.Create(_apiLog, model);
-			service.InitializeConnection();
-			bool isAuthenticated = service.IsAuthenticated();
-			return isAuthenticated ? JsonNetResult(new object()) : JsonNetResult(new {}, HttpStatusCode.BadRequest);
 		}
 	}
 }

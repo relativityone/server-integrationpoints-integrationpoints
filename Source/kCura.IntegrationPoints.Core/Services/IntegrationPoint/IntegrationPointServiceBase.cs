@@ -110,7 +110,12 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		public FieldEntry GetIdentifierFieldEntry(int artifactId)
 		{
 			var model = GetModel(artifactId);
-			var fields = Serializer.Deserialize<List<FieldMap>>(model.Map);
+			return GetIdentifierFieldEntry(model.Map);
+		}
+
+		public FieldEntry GetIdentifierFieldEntry(string fieldMap)
+		{
+			var fields = Serializer.Deserialize<List<FieldMap>>(fieldMap);
 			return fields.FirstOrDefault(x => x.FieldMapType == FieldMapTypeEnum.Identifier)?.SourceField;
 		}
 

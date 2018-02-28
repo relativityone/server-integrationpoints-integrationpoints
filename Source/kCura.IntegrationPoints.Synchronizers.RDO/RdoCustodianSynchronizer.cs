@@ -49,11 +49,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			return _allRdoFields;
 		}
 
-		public override IEnumerable<FieldEntry> GetFields(string options)
+		public override IEnumerable<FieldEntry> GetFields(DataSourceProviderConfiguration providerConfiguration)
 		{
 			LogRetrievingFields();
-			var relativityFields = GetAllRdoFields(GetSettings(options));
-			var fields = base.GetFields(options);
+			var relativityFields = GetAllRdoFields(GetSettings(providerConfiguration.Configuration));
+			var fields = base.GetFields(providerConfiguration);
 			var fieldLookup = relativityFields.ToDictionary(x => x.ArtifactID.ToString(), x => x);
 
 			foreach (var fieldEntry in fields)

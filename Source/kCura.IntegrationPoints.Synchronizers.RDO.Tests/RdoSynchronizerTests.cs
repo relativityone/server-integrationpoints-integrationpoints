@@ -69,7 +69,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			//ACT
 			var rdoSynchronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RdoCustodianSynchronizerTests.GetMockAPI(fieldMock), jobFactory, Substitute.For<IHelper>()));
 			var str = JsonConvert.SerializeObject(options);
-			var numberOfFields = rdoSynchronizer.GetFields(str).Count();
+			var numberOfFields = rdoSynchronizer.GetFields(new DataSourceProviderConfiguration(str)).Count();
 			//ASSERT
 
 			Assert.AreEqual(3, numberOfFields);
@@ -110,7 +110,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			var str = JsonConvert.SerializeObject(options);
 			var rdoSynchronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RdoCustodianSynchronizerTests.GetMockAPI(fieldMock), jobFactory, Substitute.For<IHelper>()));
 
-			var listOfFieldEntry = rdoSynchronizer.GetFields(str).ToList();
+			var listOfFieldEntry = rdoSynchronizer.GetFields(new DataSourceProviderConfiguration(str)).ToList();
 
 			//ASSERT
 			Assert.AreEqual(expectedFieldEntry.Count, listOfFieldEntry.Count);
@@ -152,7 +152,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			var str = JsonConvert.SerializeObject(options);
 			var rdoSynchronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RdoCustodianSynchronizerTests.GetMockAPI(fieldMock), jobFactory, Substitute.For<IHelper>()));
 
-			var numberOfFields = rdoSynchronizer.GetFields(str).Count();
+			var numberOfFields = rdoSynchronizer.GetFields(new DataSourceProviderConfiguration(str)).Count();
 
 			//ASSERT
 			Assert.AreEqual(5, numberOfFields);
@@ -195,7 +195,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			var str = JsonConvert.SerializeObject(options);
 			var rdoSynchronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RdoCustodianSynchronizerTests.GetMockAPI(fieldMock), jobFactory, Substitute.For<IHelper>()));
 
-			var listOfFieldEntry = rdoSynchronizer.GetFields(str).ToList();
+			var listOfFieldEntry = rdoSynchronizer.GetFields(new DataSourceProviderConfiguration(str)).ToList();
 
 			//ASSERT
 			Assert.AreEqual(expectedFieldEntry.Count, listOfFieldEntry.Count);
@@ -561,7 +561,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 
 			importApi.GetWorkspaceFields(caseArtifactId, artifactTypeId).Returns(mappableFields);
 
-			IEnumerable<FieldEntry> results = rdoSynchronizerPush.GetFields(options);
+			IEnumerable<FieldEntry> results = rdoSynchronizerPush.GetFields(new DataSourceProviderConfiguration(options));
 
 			relativityFieldQuery
 				.Received(1)

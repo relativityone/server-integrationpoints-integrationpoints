@@ -1,44 +1,32 @@
 ﻿using System;
+using System.Net;
+using System.Net.Http;
 using System.Web.Http;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.LDAPProvider;
 using kCura.IntegrationPoints.Security;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Models;
+using Relativity.API;
+using Relativity.CustomPages;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
 	public class LdapController : ApiController
 	{
+		private ICPHelper _cpHelper;
 	    private readonly ILDAPSettingsReader _settingsReader;
-	    private readonly IEncryptionManager _manager;
 	    private readonly ISerializer _serializer;
+		private readonly ILDAPServiceFactory _ldapServiceFactory;
+		private readonly IAPILog _apiLog;
 
-		public LdapController(ILDAPSettingsReader settingsReader, IEncryptionManager manager, ISerializer serializer)
+		public LdapController(ICPHelper helper, ILDAPSettingsReader settingsReader, ISerializer serializer, ILDAPServiceFactory ldapServiceFactory)
 		{
-		    _settingsReader = settingsReader;
-		    _manager = manager;
+			_cpHelper = helper;
+			_settingsReader = settingsReader;
 		    _serializer = serializer;
-		}
-
-		[HttpPost]
-		[LogApiExceptionFilter(Message = "Unable to Encrypt message data.")]
-		public IHttpActionResult Encrypt([FromBody] object message)
-		{
-			var decryptedText = string.Empty;
-			if (message != null)
-			{
-				decryptedText = _manager.Encrypt(message.ToString());
-			}
-			return Ok(decryptedText);
-		}
-
-		[HttpPost]
-		[LogApiExceptionFilter(Message = "Unable to Decrypt message data.")]
-		public IHttpActionResult Decrypt([FromBody] string message)
-		{
-			string decryptedText = _settingsReader.DecryptSettings(message);
-			return Ok(decryptedText);
+			_ldapServiceFactory = ldapServiceFactory;
+			_apiLog = _cpHelper.GetLoggerFactory().GetLogger().ForContext<LdapController>();
 		}
 
 		[HttpPost]
@@ -52,5 +40,23 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			return Ok(serializedModel);
 		}
 
+		[HttpPost]
+		[LogApiExceptionFilter(Message = "Unable to validate LDAP connection.")]
+		public IHttpActionResult CheckLdap([FromBody] SynchronizerSettings synchronizerSettings)
+		{
+			LDAPSettings settings = _settingsReader.GetSettings(synchronizerSettings.Settings);
+
+			LDAPSecuredConfiguration securedConfiguration =
+				_serializer.Deserialize<LDAPSecuredConfiguration>(synchronizerSettings.Credentials);
+
+			var service = _ldapServiceFactory.Create(_apiLog, _serializer, settings, securedConfiguration);
+			service.InitializeConnection();
+			bool isAuthenticated = service.IsAuthenticated();
+			if (isAuthenticated)
+			{
+				return Ok();
+			}
+			return Unauthorized();
+		}
 	}
 }

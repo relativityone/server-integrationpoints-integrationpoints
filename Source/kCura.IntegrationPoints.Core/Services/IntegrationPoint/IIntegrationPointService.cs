@@ -35,6 +35,13 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		FieldEntry GetIdentifierFieldEntry(int artifactId);
 
 		/// <summary>
+		/// Retrieves the identifier field information for the field map.
+		/// </summary>
+		/// <param name="fieldMap">Field map.</param>
+		/// <returns>The field entry information for the source identifier field.</returns>
+		FieldEntry GetIdentifierFieldEntry(string fieldMap);
+
+		/// <summary>
 		/// Retrieves an integration model of the integration point given the integration point artifact id.
 		/// </summary>
 		/// <param name="artifactId">Artifact id of the integration point.</param>

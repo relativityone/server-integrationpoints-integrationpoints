@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         {
             string encryptedSettings = _securityManager.Encrypt(data.ToString());
             IDataSourceProvider ftpProvider = _providerFactory.GetDataProvider(Guid.Parse(Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING), Guid.Parse(FtpProvider.Helpers.Constants.Guids.FtpProviderEventHandler));
-            IEnumerable<FieldEntry> fields = ftpProvider.GetFields(encryptedSettings);
+            IEnumerable<FieldEntry> fields = ftpProvider.GetFields(new DataSourceProviderConfiguration(encryptedSettings));
             return Ok(fields.ToList());
         }
 

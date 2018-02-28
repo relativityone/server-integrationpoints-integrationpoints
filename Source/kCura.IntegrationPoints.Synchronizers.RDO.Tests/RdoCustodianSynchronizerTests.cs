@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Custodian;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Domain;
@@ -91,7 +92,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 
 			//ACT
 			var sync = RdoSynchronizerTests.ChangeWebAPIPath(new RdoCustodianSynchronizer(_fieldQuery, GetMockAPI(_fieldQuery), _importJobFactory, _helper));
-			var fields = sync.GetFields(_settings);
+			var fields = sync.GetFields(new DataSourceProviderConfiguration(_settings));
 
 
 			//ASSERT
@@ -123,7 +124,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 
 			//ACT
 			var sync = RdoSynchronizerTests.ChangeWebAPIPath(new RdoCustodianSynchronizer(_fieldQuery, GetMockAPI(_fieldQuery), _importJobFactory, _helper));
-			var fields = sync.GetFields(_settings);
+			var fields = sync.GetFields(new DataSourceProviderConfiguration(_settings));
 
 
 			//ASSERT
@@ -154,7 +155,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 
 			//ACT
 			var sync = RdoSynchronizerTests.ChangeWebAPIPath(new RdoCustodianSynchronizer(_fieldQuery, GetMockAPI(_fieldQuery), _importJobFactory, _helper));
-			var fields = sync.GetFields(_settings).ToList();
+			var fields = sync.GetFields(new DataSourceProviderConfiguration(_settings)).ToList();
 
 
 			//ASSERT

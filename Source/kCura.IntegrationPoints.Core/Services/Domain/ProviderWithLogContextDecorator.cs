@@ -13,31 +13,31 @@ namespace kCura.IntegrationPoints.Core.Services.Domain
 		{
 			_decoratedProvider = decoratedProvider;
 		}
-		public IDataReader GetBatchableIds(FieldEntry identifier, string options)
+		public IDataReader GetBatchableIds(FieldEntry identifier, DataSourceProviderConfiguration providerConfiguration)
 		{
 			IDataReader output;
 			using (new SerilogContextRestorer())
 			{
-				output = _decoratedProvider.GetBatchableIds(identifier, options);
+				output = _decoratedProvider.GetBatchableIds(identifier, providerConfiguration);
 			}
 			return new DataReaderWithLogContextDecorator(output);
 		}
 
-		public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, string options)
+		public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, DataSourceProviderConfiguration providerConfiguration)
 		{
 			IDataReader output;
 			using (new SerilogContextRestorer())
 			{
-				output = _decoratedProvider.GetData(fields, entryIds, options);
+				output = _decoratedProvider.GetData(fields, entryIds, providerConfiguration);
 			}
 			return new DataReaderWithLogContextDecorator(output);
 		}
 
-		public IEnumerable<FieldEntry> GetFields(string options)
+		public IEnumerable<FieldEntry> GetFields(DataSourceProviderConfiguration providerConfiguration)
 		{
 			using (new SerilogContextRestorer())
 			{
-				return _decoratedProvider.GetFields(options);
+				return _decoratedProvider.GetFields(providerConfiguration);
 			}
 		}
 	}

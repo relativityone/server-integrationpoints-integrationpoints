@@ -83,10 +83,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			};
 
 			// ACT
-			_instance.GetFields(JsonConvert.SerializeObject(importSettings));
+			_instance.GetFields(new DataSourceProviderConfiguration(JsonConvert.SerializeObject(importSettings)));
 
 			// ASSERT
-			_dataSynchronizer.Received(1).GetFields(Arg.Is<string>(x => AssertOptions(x)));
+			_dataSynchronizer.Received(1).GetFields(Arg.Is<DataSourceProviderConfiguration>(x => AssertOptions(x.Configuration)));
 		}
 
 		private bool AssertOptions(string s)

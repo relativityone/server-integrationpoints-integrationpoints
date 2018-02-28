@@ -38,13 +38,13 @@ namespace kCura.IntegrationPoints.FtpProvider
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<FtpProvider>();
 		}
 
-		public IEnumerable<FieldEntry> GetFields(string options)
+		public IEnumerable<FieldEntry> GetFields(DataSourceProviderConfiguration providerConfiguration)
 		{
 			LogRetrievingFields();
 			List<FieldEntry> retVal = new List<FieldEntry>();
 			string fileName = string.Empty;
 			string remoteLocation = string.Empty;
-			Settings settings = GetSettingsModel(options);
+			Settings settings = GetSettingsModel(providerConfiguration.Configuration);
 			try
 			{
 				var csvInput = AddFileExtension(settings.Filename_Prefix);
@@ -90,13 +90,13 @@ namespace kCura.IntegrationPoints.FtpProvider
 			return retVal;
 		}
 
-		public IDataReader GetBatchableIds(FieldEntry identifier, string options)
+		public IDataReader GetBatchableIds(FieldEntry identifier, DataSourceProviderConfiguration providerConfiguration)
 		{
 			LogRetrievingBatchableIds(identifier);
 			IDataReader retVal;
 			string fileName = string.Empty;
 			string remoteLocation = string.Empty;
-			Settings settings = GetSettingsModel(options);
+			Settings settings = GetSettingsModel(providerConfiguration.Configuration);
 			ParserOptions parserOptions = ParserOptions.GetDefaultParserOptions();
 			try
 			{
@@ -144,13 +144,13 @@ namespace kCura.IntegrationPoints.FtpProvider
 			return null;
 		}
 
-		public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, string options)
+		public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, DataSourceProviderConfiguration providerConfiguration)
 		{
 			LogRetrievingData(entryIds);
 			IDataReader retVal;
 			string fileName = string.Empty;
 			string remoteLocation = string.Empty;
-			Settings settings = GetSettingsModel(options);
+			Settings settings = GetSettingsModel(providerConfiguration.Configuration);
 			ParserOptions parserOptions = ParserOptions.GetDefaultParserOptions();
 			parserOptions.FirstLineContainsColumnNames = false;
 			try

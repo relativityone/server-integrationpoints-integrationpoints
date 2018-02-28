@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
         private string _faultySettingsString = "Not a proper settings string";
         private IHelper _helper;
 
-        public override void FixtureSetUp()
+		public override void FixtureSetUp()
         {
             base.FixtureSetUp();
             _helper = Substitute.For<IHelper>();
@@ -37,17 +37,14 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
                 ImportNested = true,
                 MultiValueDelimiter = '_',
                 PageSize = 432,
-                Password = "password",
                 PropertyNamesOnly = true,
                 ProviderExtendedDN = ExtendedDNEnum.HexString,
                 ProviderReferralChasing = ReferralChasingOption.External,
-                SizeLimit = 4231,
-                UserName = "username"
+                SizeLimit = 4231
             };
 
-            _encryptionManager = Substitute.For<IEncryptionManager>();
-            _encryptionManager.Decrypt(Arg.Any<string>()).Returns(info => info.Arg<string>());
-        }
+			_encryptionManager = Substitute.For<IEncryptionManager>();
+		}
 
         [TestCase(null)]
         [TestCase("")]
@@ -60,25 +57,6 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
         }
 
         [Test]
-        public void GetSettings_EncryptionManagerThrows_ThrowsLDAPProviderException()
-        {
-            string serializedSettings = JsonConvert.SerializeObject(_fullyFilledSettings);
-            _encryptionManager.Decrypt(Arg.Any<string>()).ThrowsForAnyArgs(new Exception("Inner Exception"));
-            var provider = new LDAPSettingsReader(_encryptionManager, _helper);
-
-            Assert.Throws<LDAPProviderException>(() => provider.GetSettings(serializedSettings));
-        }
-
-        [Test]
-        public void GetSettings_InputIsNotSettingsString_ThrowsLDAPProviderException()
-        {
-            _encryptionManager.Decrypt(Arg.Any<string>()).ThrowsForAnyArgs(new Exception("Inner Exception"));
-            var provider = new LDAPSettingsReader(_encryptionManager, _helper);
-
-            Assert.Throws<LDAPProviderException>(() => provider.GetSettings(_faultySettingsString));
-        }
-
-        [Test]
         public void GetSettings_InputNeedsUnwinding_ReturnsProperSettings()
         {
             string serializedSettings = JsonConvert.SerializeObject(_fullyFilledSettings);
@@ -86,8 +64,6 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
             var provider = new LDAPSettingsReader(_encryptionManager, _helper);
 
             LDAPSettings result = provider.GetSettings(woundSettings);
-
-            _encryptionManager.Received().Decrypt(Arg.Any<string>());
 
             Assert.AreEqual(result.ConnectionPath, _fullyFilledSettings.ConnectionPath);
         }
@@ -116,7 +92,6 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
 
             LDAPSettings result = provider.GetSettings(serializedSettings);
 
-            _encryptionManager.Received().Decrypt(Arg.Any<string>());
             Assert.AreEqual(result.Filter, LDAPSettings.FILTER_DEFAULT);
         }
 
@@ -130,7 +105,6 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
 
             LDAPSettings result = provider.GetSettings(serializedSettings);
 
-            _encryptionManager.Received().Decrypt(Arg.Any<string>());
             Assert.AreEqual(result.GetPropertiesItemSearchLimit, LDAPSettings.GETPROPERTIESITEMSEARCHLIMIT_DEFAULT);
         }
 
@@ -143,7 +117,6 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
 
             LDAPSettings result = provider.GetSettings(serializedSettings);
 
-            _encryptionManager.Received().Decrypt(Arg.Any<string>());
             Assert.AreEqual(result.MultiValueDelimiter, LDAPSettings.MULTIVALUEDELIMITER_DEFAULT);
         }
 
@@ -155,7 +128,6 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
 
             LDAPSettings result = provider.GetSettings(serializedSettings);
 
-            _encryptionManager.Received().Decrypt(Arg.Any<string>());
             Assert.AreEqual(result.AttributeScopeQuery, _fullyFilledSettings.AttributeScopeQuery);
             Assert.AreEqual(result.ConnectionAuthenticationType, _fullyFilledSettings.ConnectionAuthenticationType);
             Assert.AreEqual(result.ConnectionPath, _fullyFilledSettings.ConnectionPath);
@@ -165,48 +137,13 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
             Assert.AreEqual(result.ImportNested, _fullyFilledSettings.ImportNested);
             Assert.AreEqual(result.MultiValueDelimiter, _fullyFilledSettings.MultiValueDelimiter);
             Assert.AreEqual(result.PageSize, _fullyFilledSettings.PageSize);
-            Assert.AreEqual(result.Password, _fullyFilledSettings.Password);
             Assert.AreEqual(result.PropertyNamesOnly, _fullyFilledSettings.PropertyNamesOnly);
             Assert.AreEqual(result.ProviderExtendedDN, _fullyFilledSettings.ProviderExtendedDN);
             Assert.AreEqual(result.ProviderReferralChasing, _fullyFilledSettings.ProviderReferralChasing);
             Assert.AreEqual(result.SizeLimit, _fullyFilledSettings.SizeLimit);
-            Assert.AreEqual(result.UserName, _fullyFilledSettings.UserName);
             Assert.AreEqual(result.MultiValueDelimiter, _fullyFilledSettings.MultiValueDelimiter);
             Assert.AreEqual(result.MultiValueDelimiter, _fullyFilledSettings.MultiValueDelimiter);
             Assert.AreEqual(result.MultiValueDelimiter, _fullyFilledSettings.MultiValueDelimiter);
-        }
-
-        [Test]
-        public void DecryptSettings_ProperEncryptedSettingsWoundUp_ReturnsDecryptedString()
-        {
-            string serializedSettings = JsonConvert.SerializeObject(_fullyFilledSettings);
-            string woundUpSettings = JsonConvert.SerializeObject(serializedSettings);
-            var provider = new LDAPSettingsReader(_encryptionManager, _helper);
-
-            provider.DecryptSettings(woundUpSettings);
-
-            _encryptionManager.Received().Decrypt(serializedSettings);
-        }
-
-        [Test]
-        public void DecryptSettings_EncryptionManagerReturnsDecryptedString_ReturnsDecryptedString()
-        {
-            string serializedSettings = JsonConvert.SerializeObject(_fullyFilledSettings);
-            var provider = new LDAPSettingsReader(_encryptionManager, _helper);
-
-            provider.DecryptSettings(serializedSettings);
-
-            _encryptionManager.Received().Decrypt(serializedSettings);
-        }
-
-        [Test]
-        public void Decrypt_EncryptionManagerThrows_ThrowsLDAPProviderException()
-        {
-            string serializedSettings = JsonConvert.SerializeObject(_fullyFilledSettings);
-            _encryptionManager.Decrypt(Arg.Any<string>()).ThrowsForAnyArgs(new Exception("Inner Exception"));
-            var provider = new LDAPSettingsReader(_encryptionManager, _helper);
-
-            Assert.Throws<LDAPProviderException>(() => provider.DecryptSettings(serializedSettings));
         }
 
         [Test]
@@ -226,18 +163,16 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
             Assert.AreEqual(result.ImportNested, _fullyFilledSettings.ImportNested);
             Assert.AreEqual(result.MultiValueDelimiter, _fullyFilledSettings.MultiValueDelimiter);
             Assert.AreEqual(result.PageSize, _fullyFilledSettings.PageSize);
-            Assert.AreEqual(result.Password, _fullyFilledSettings.Password);
             Assert.AreEqual(result.PropertyNamesOnly, _fullyFilledSettings.PropertyNamesOnly);
             Assert.AreEqual(result.ProviderExtendedDN, _fullyFilledSettings.ProviderExtendedDN);
             Assert.AreEqual(result.ProviderReferralChasing, _fullyFilledSettings.ProviderReferralChasing);
             Assert.AreEqual(result.SizeLimit, _fullyFilledSettings.SizeLimit);
-            Assert.AreEqual(result.UserName, _fullyFilledSettings.UserName);
             Assert.AreEqual(result.MultiValueDelimiter, _fullyFilledSettings.MultiValueDelimiter);
             Assert.AreEqual(result.MultiValueDelimiter, _fullyFilledSettings.MultiValueDelimiter);
             Assert.AreEqual(result.MultiValueDelimiter, _fullyFilledSettings.MultiValueDelimiter);
-        }
+		}
 
-        [Test]
+		[Test]
         public void Deserialize_InputNotCorrect_ThrowsLDAPProviderException()
         {
             var provider = new LDAPSettingsReader(_encryptionManager, _helper);

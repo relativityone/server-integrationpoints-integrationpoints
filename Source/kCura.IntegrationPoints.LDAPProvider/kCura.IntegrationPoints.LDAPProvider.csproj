@@ -55,6 +55,7 @@
     <Compile Include="Installers\LdapProviderInstaller.cs" />
     <Compile Include="LDAPDataReader.cs" />
     <Compile Include="LDAPProviderException.cs" />
+    <Compile Include="LDAPSecuredConfiguration.cs" />
     <Compile Include="LDAPServiceDataReader.cs" />
     <Compile Include="LDAPDataFormatterForBatchableIDs.cs" />
     <Compile Include="ExtendedDNEnum.cs" />
@@ -145,6 +146,17 @@
       <ItemGroup>
         <Reference Include="kCura">
           <HintPath>..\..\packages\kCura\lib\net462\kCura.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="kCura.Apps.Common.Utils">
+          <HintPath>..\..\packages\kCura.Apps.Common.Utils\lib\net462\kCura.Apps.Common.Utils.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

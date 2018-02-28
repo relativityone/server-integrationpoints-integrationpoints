@@ -35,21 +35,15 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
-				name: "LDAPdecrypt",
-				routeTemplate: "{workspaceID}/api/ldap/d",
-				defaults: new {controller = "ldap", action = "Decrypt"}
-			);
-
-			config.Routes.MapHttpRoute(
-				name: "LDAPEncrypt",
-				routeTemplate: "{workspaceID}/api/ldap/e",
-				defaults: new {controller = "ldap", action = "Encrypt"}
-			);
-
-			config.Routes.MapHttpRoute(
 				name: "LDAPViewSettings",
 				routeTemplate: "{workspaceID}/api/ldap/view",
 				defaults: new {controller = "ldap", action = "GetViewFields"}
+			);
+
+			config.Routes.MapHttpRoute(
+				name: "LDAPCheckLdap",
+				routeTemplate: "{workspaceID}/api/ldap/checkLdap",
+				defaults: new { controller = "ldap", action = "CheckLdap" }
 			);
 
 			config.Routes.MapHttpRoute(

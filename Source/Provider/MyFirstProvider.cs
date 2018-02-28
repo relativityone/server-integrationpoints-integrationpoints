@@ -13,9 +13,9 @@ namespace Provider
     [kCura.IntegrationPoints.Contracts.DataSourceProvider(GlobalConstants.FIRST_PROVIDER_GUID)]
     public class MyFirstProvider : kCura.IntegrationPoints.Contracts.Provider.IDataSourceProvider
     {
-        public IEnumerable<FieldEntry> GetFields(string options)
-        {
-            string fileLocation = options;
+		public IEnumerable<FieldEntry> GetFields(DataSourceProviderConfiguration providerConfiguration)
+		{
+            string fileLocation = providerConfiguration.Configuration;
             XmlDocument doc = new XmlDocument();
             doc.Load(fileLocation);
             XmlNodeList nodes = doc.DocumentElement.SelectNodes("/root/columns/column");
@@ -29,9 +29,9 @@ namespace Provider
             return fieldEntries;
         }
 
-        public IDataReader GetBatchableIds(FieldEntry identifier, string options)
-        {
-            string fileLocation = options;
+		public IDataReader GetBatchableIds(FieldEntry identifier, DataSourceProviderConfiguration providerConfiguration)
+		{
+            string fileLocation = providerConfiguration.Configuration;
 
             DataTable dt = new DataTable();
             dt.Columns.Add(identifier.FieldIdentifier);
@@ -49,9 +49,9 @@ namespace Provider
             return dt.CreateDataReader();
         }
 
-        public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, string options)
-        {
-            string fileLocation = options;
+		public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, DataSourceProviderConfiguration providerConfiguration)
+		{
+            string fileLocation = providerConfiguration.Configuration;
             List<string> fieldList = fields.Select(f => f.FieldIdentifier).ToList();
             string keyFieldName = fields.FirstOrDefault(f => f.IsIdentifier).FieldIdentifier;
             return new XMLDataReader(entryIds, fieldList, keyFieldName, fileLocation);

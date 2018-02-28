@@ -37,9 +37,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			LDAPSettings ldapSettings = new LDAPSettings()
 			{
 				ConnectionPath = SharedVariables.LdapConnectionPath,
-				ConnectionAuthenticationType = AuthenticationTypesEnum.FastBind,
-				UserName = SharedVariables.LdapUsername,
-				Password = SharedVariables.LdapPassword
+				ConnectionAuthenticationType = AuthenticationTypesEnum.FastBind
 			};
 
 			return ldapSettings;
@@ -47,14 +45,12 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		private string CreateDefaultLdapSourceConfig()
 		{
-			IEncryptionManager encryptionManager = Container.Resolve<IEncryptionManager>();
 
 			LDAPSettings defaultLdapSettings = CreateDefaultLdapSettings();
 
 			string serializedLdapSettings = JsonConvert.SerializeObject(defaultLdapSettings);
-			string encryptedLdapSourceConfiguration = encryptionManager.Encrypt(serializedLdapSettings);
 
-			return encryptedLdapSourceConfiguration;
+			return serializedLdapSettings;
 		}
 
 		private string CreateDefaultLdapDestinationConfig(int artifactTypeId = (int)ArtifactType.Document, ImportOverwriteModeEnum overwriteMode = ImportOverwriteModeEnum.AppendOnly)

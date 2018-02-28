@@ -127,9 +127,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 				JobStopManager?.ThrowIfStopRequested();
 
-				FieldEntry idField = IntegrationPointService.GetIdentifierFieldEntry(IntegrationPoint.ArtifactId);
-				string options = IntegrationPointService.GetSourceOptions(IntegrationPoint.ArtifactId);
-				IDataReader idReader = provider.GetBatchableIds(idField, options);
+				FieldEntry idField = IntegrationPointService.GetIdentifierFieldEntry(IntegrationPoint.FieldMappings);
+				IDataReader idReader = provider.GetBatchableIds(idField, new DataSourceProviderConfiguration(IntegrationPoint.SourceConfiguration, IntegrationPoint.SecuredConfiguration));
 
 				JobStopManager?.ThrowIfStopRequested();
 				return new ReaderEnumerable(idReader, JobStopManager);

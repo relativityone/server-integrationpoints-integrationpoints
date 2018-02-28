@@ -39,16 +39,6 @@ namespace kCura.IntegrationPoints.LDAPProvider
 		public string ConnectionPath { get; set; }
 
 		/// <summary>
-		/// The user name to use when authenticating the client. 
-		/// </summary>
-		public string UserName { get; set; }
-
-		/// <summary>
-		/// The password to use when authenticating the client. 
-		/// </summary>
-		public string Password { get; set; }
-
-		/// <summary>
 		/// if true, will not check for presence of provider - "LDAP://" "WinNT://" "IIS://"
 		/// </summary>
 		public bool IgnorePathValidation { get; set; }

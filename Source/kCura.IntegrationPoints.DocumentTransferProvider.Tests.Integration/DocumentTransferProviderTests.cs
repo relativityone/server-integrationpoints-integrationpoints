@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration
 			string documentTransferSettings = $"{{\"SourceWorkspaceArtifactId\":{SourceWorkspaceArtifactId}}}";
 
 			//Act
-			IEnumerable<FieldEntry> documentFields = _documentTransferProvider.GetFields(documentTransferSettings);
+			IEnumerable<FieldEntry> documentFields = _documentTransferProvider.GetFields(new DataSourceProviderConfiguration(documentTransferSettings));
 
 			//Assert
 			Assert.That(() => documentFields.Any());

@@ -89,7 +89,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests
 
 			var documentTransferProvider = new DocumentTransferProvider(GetImportApiMock(), GetRepositoryFactoryMock(), Substitute.For<IHelper>());
 
-			IEnumerable<FieldEntry> documentFields = documentTransferProvider.GetFields(_documentTransferSettings).ToList();
+			IEnumerable<FieldEntry> documentFields = documentTransferProvider.GetFields(new DataSourceProviderConfiguration(_documentTransferSettings)).ToList();
 
 			Assert.IsTrue(documentFields.All(documentField => !_excludedFieldNames.Contains(documentField.DisplayName)));
 			Assert.IsTrue(documentFields.All(documentDield => _expectedArtifactIds.Any(id => id.ToString() == documentDield.FieldIdentifier)));

@@ -22,29 +22,36 @@ var ldapHelper = (function (data) {
 		
 		IP.frameMessaging().dFrame.IP.reverseMapFields = false;  // set the flag so that the fields can be reversed or not ;
 		return IP.data.ajax({
-			url: IP.utils.generateWebURL('IntegrationPoints', 'CheckLdap'),
-			data: JSON.stringify(localModel),
+			url: IP.utils.generateWebAPIURL('Ldap', 'CheckLdap'),
+			data: JSON.stringify({
+				settings: createSettingsModel(localModel),
+				credentials: createSecuredConfiguration(localModel)
+			}),
 			type: 'Post'
 		});
 	};
 
-	var _encrypt = function (model) {
-		return IP.data.ajax({
-			data: JSON.stringify(model),
-			url: IP.utils.generateWebAPIURL('ldap', 'e'),
-			type: 'post'
-		});
-
-	};
-
 	return {
-		checkLdap: _checkLdap,
-		encryptSettings: _encrypt
-
+		checkLdap: _checkLdap
 	}
 
 })(IP.data);
 
+function createSettingsModel(model) {
+	return JSON.stringify({
+		connectionPath: model.connectionPath,
+		filter: model.filter,
+		connectionAuthenticationType: model.connectionAuthenticationType,
+		importNested: model.importNested
+	});
+}
+
+function createSecuredConfiguration(model) {
+	return JSON.stringify({
+		UserName: model.userName,
+		Password: model.password
+	});
+}
 
 (function (helper) {
 	var message = IP.frameMessaging();
@@ -56,26 +63,25 @@ var ldapHelper = (function (data) {
 		});
 	}
 
-	function encrypt(localModel) {
-		return helper.encryptSettings(localModel);
-	}
-
 	message.subscribe('submit', function () {
 		var localModel = ko.toJS(pageModel);
-		this.publish("saveState", localModel); //save the model incase of error
+		var stringifiedModel = createSettingsModel(localModel);
+		this.publish("saveState", stringifiedModel); //save the model incase of error
 		var self = this;
 		if (pageModel.errors().length === 0) {
-			var p1 = checkLdap(localModel);
-			var p2 = encrypt(localModel);
-			IP.data.deferred().all(p1, p2).then(function () {
-				p2.then(function (message) {
-					self.publish('saveComplete', message);
-				});
+			checkLdap(localModel).then(function () {
+				self.publish('saveComplete', stringifiedModel);
 			});
-
 		} else {
 			pageModel.errors.showAllMessages();
 		}
+
+		var destinationJson = IP.frameMessaging().dFrame.IP.points.steps.steps[1].model.destination;
+		var destination = JSON.parse(destinationJson);
+		destination.SecuredConfiguration = createSecuredConfiguration(localModel);
+		destinationJson = JSON.stringify(destination);
+		IP.frameMessaging().dFrame.IP.points.steps.steps[1].model.destination = destinationJson;
+
 	});
 	var viewModel = function (model) {
 		var state = $.extend({}, {}, model);
@@ -88,7 +94,9 @@ var ldapHelper = (function (data) {
 			{ name: 'FastBind', id: 32 },
 			{ name: 'Secure Socket Layer', id: 2 }
 		]);
+
 		this.userName = ko.observable(state.userName);
+
 		this.password = ko.observable(state.password);
 
 		this.connectionAuthenticationType = ko.observable(state.connectionAuthenticationType).extend({
@@ -111,22 +119,15 @@ var ldapHelper = (function (data) {
 			ko.applyBindings(pageModel, document.getElementById('ldapConfiguration'));
 		};
 
-		if (typeof model === "object") {
-			model = JSON.stringify(model);
-		}
-		IP.data.ajax({ data: JSON.stringify(model), url: IP.utils.generateWebAPIURL('ldap', 'd'), type: 'post' }).then(function (result) {
-			var jsonResult = result;
-			if (typeof (jsonResult) === "string") {
-				try {
-					jsonResult = JSON.parse(jsonResult);
-				} catch (e) {
-					jsonResult = {};
-				}
+		if (typeof model === "string") {
+			try {
+				model = JSON.parse(model);
+			} catch (e) {
+				model = {};
 			}
-			_bind(jsonResult);
-		}, function () {
+			_bind(model);
+		} else {
 			_bind({});
-		});
-
+		}
 	});
 })(ldapHelper);

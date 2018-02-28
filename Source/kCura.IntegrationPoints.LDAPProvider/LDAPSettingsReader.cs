@@ -23,21 +23,56 @@ namespace kCura.IntegrationPoints.LDAPProvider
                 throw new ArgumentException($"Parameter named '{nameof(sourceConfiguration)}' cannot be empty");
             }
 
-            string decryptedSourceConfiguration =  DecryptSettings(sourceConfiguration);
+	        string unwoundSourceConfiguration = UnwindIfNecessary(sourceConfiguration);
 
-            LDAPSettings settings = Deserialize(decryptedSourceConfiguration);
+			LDAPSettings settings = Deserialize(unwoundSourceConfiguration);
             SetDefaultValues(settings);
 
             return settings;
         }
 
-        public string DecryptSettings(string sourceConfiguration)
-        {
-            string unwoundSourceConfiguration = UnwindIfNecessary(sourceConfiguration);
-            return Decrypt(unwoundSourceConfiguration);
-        }
+		//this method is for backward compatibility only
+	    public LDAPSettings GetAndDecryptSettings(string sourceConfiguration)
+	    {
+		    if (string.IsNullOrWhiteSpace(sourceConfiguration))
+		    {
+			    throw new ArgumentException($"Parameter named '{nameof(sourceConfiguration)}' cannot be empty");
+		    }
 
-        private string UnwindIfNecessary(string options)
+		    string unwoundSourceConfiguration = UnwindIfNecessary(sourceConfiguration);
+		    string decryptedSourceConfiguration = Decrypt(unwoundSourceConfiguration);
+
+			LDAPSettings settings = Deserialize(decryptedSourceConfiguration);
+		    SetDefaultValues(settings);
+
+		    return settings;
+	    }
+
+	    public LDAPSettings Deserialize(string sourceConfiguration)
+	    {
+		    try
+		    {
+			    return JsonConvert.DeserializeObject<LDAPSettings>(sourceConfiguration);
+		    }
+		    catch (Exception ex)
+		    {
+			    throw new LDAPProviderException("Could not deserialize LDAP settings.", ex);
+		    }
+	    }
+
+		private string Decrypt(string sourceConfiguration)
+	    {
+		    try
+		    {
+			    return _encryptionManager.Decrypt(sourceConfiguration);
+		    }
+		    catch (Exception ex)
+		    {
+			    throw new LDAPProviderException("Exception occurred while decrypting LDAP settings.", ex);
+		    }
+	    }
+
+		private string UnwindIfNecessary(string options)
         {
             try
             {
@@ -50,30 +85,6 @@ namespace kCura.IntegrationPoints.LDAPProvider
             }
 
             return options;
-        }
-
-        private string Decrypt(string sourceConfiguration)
-        {
-            try
-            {
-                return _encryptionManager.Decrypt(sourceConfiguration);
-            }
-            catch (Exception ex)
-            {
-                throw new LDAPProviderException("Exception occurred while decrypting LDAP settings.", ex);
-            }
-        }
-
-        public LDAPSettings Deserialize(string sourceConfiguration)
-        {
-            try
-            {
-                return JsonConvert.DeserializeObject<LDAPSettings>(sourceConfiguration);
-            }
-            catch (Exception ex)
-            {
-                throw new LDAPProviderException("Could not deserialize LDAP settings.", ex);
-            }
         }
 
         private void SetDefaultValues(LDAPSettings settings)

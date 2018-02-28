@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
@@ -86,13 +87,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			return sourceProvider;
 		}
 
-		protected override void ExecuteImport(IEnumerable<FieldMap> fieldMap, string sourceConfiguration,
-			string destinationConfiguration, List<string> entryIDs,
-			SourceProvider sourceProviderRdo, DestinationProvider destinationProvider, Job job)
+		protected override void ExecuteImport(IEnumerable<FieldMap> fieldMap, DataSourceProviderConfiguration configuration, string destinationConfiguration, List<string> entryIDs, SourceProvider sourceProviderRdo, DestinationProvider destinationProvider, Job job)
 		{
 		    LogExecuteImportStart(job);
 
-            var sourceSettings = DeserializeSourceSettings(sourceConfiguration, job);
+            var sourceSettings = DeserializeSourceSettings(configuration.Configuration, job);
 			var destinationSettings = DeserializeDestinationSettings(destinationConfiguration, job);
 
 			PrepareDestinationLocation(sourceSettings);

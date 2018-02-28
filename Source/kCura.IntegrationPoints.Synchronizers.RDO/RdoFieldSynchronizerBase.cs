@@ -63,10 +63,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			protected set { _webApiPath = value; }
 		}
 
-		public virtual IEnumerable<FieldEntry> GetFields(string options)
+		public virtual IEnumerable<FieldEntry> GetFields(DataSourceProviderConfiguration providerConfiguration)
 		{
 			LogRetrievingFields();
-			ImportSettings settings = GetSettings(options);
+			ImportSettings settings = GetSettings(providerConfiguration.Configuration);
 			var fields = GetRelativityFields(settings);
 			return ParseFields(fields);
 		}

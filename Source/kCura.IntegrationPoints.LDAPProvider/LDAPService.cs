@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.DirectoryServices;
 using System.Linq;
 using System.Runtime.InteropServices;
+using kCura.Apps.Common.Utils.Serializers;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.LDAPProvider
@@ -10,20 +11,24 @@ namespace kCura.IntegrationPoints.LDAPProvider
 	public class LDAPService : ILDAPService
 	{
 		private readonly LDAPSettings _settings;
+		private readonly LDAPSecuredConfiguration _securedConfiguration;
 		private DirectoryEntry _searchRoot;
 		private readonly List<string> _fieldsToLoad;
 		private readonly IAPILog _logger;
+		private ISerializer _serializer;
 
-		public LDAPService(IAPILog logger, LDAPSettings settings, List<string> fieldsToLoad = null)
+		public LDAPService(IAPILog logger, ISerializer serializer, LDAPSettings settings, LDAPSecuredConfiguration securedConfiguration, List<string> fieldsToLoad = null)
 		{
-			_settings = settings;
-			_fieldsToLoad = fieldsToLoad;
 			_logger = logger;
+			_serializer = serializer;
+			_settings = settings;
+			_securedConfiguration = securedConfiguration;
+			_fieldsToLoad = fieldsToLoad;
 		}
 
 		public void InitializeConnection()
 		{
-			_searchRoot = new DirectoryEntry(_settings.Path, _settings.UserName, _settings.Password, _settings.AuthenticationType);
+			_searchRoot = new DirectoryEntry(_settings.Path, _securedConfiguration.UserName, _securedConfiguration.Password, _settings.AuthenticationType);
 		}
 
 		public bool IsAuthenticated()

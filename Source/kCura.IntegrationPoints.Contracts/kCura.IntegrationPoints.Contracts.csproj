@@ -55,6 +55,7 @@
     <Compile Include="IProviderFactory.cs" />
     <Compile Include="IStartUp.cs" />
     <Compile Include="Models\FieldEntry.cs" />
+    <Compile Include="Models\DataSourceProviderConfiguration.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

@@ -131,7 +131,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			OnDocumentError?.Invoke(documentIdentifier, errorMessage);
 		}
 
-		public virtual IEnumerable<FieldEntry> GetFields(string options)
+		public virtual IEnumerable<FieldEntry> GetFields(DataSourceProviderConfiguration providerConfiguration)
 		{
 			try
 			{
@@ -144,7 +144,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				DocumentFields.JobHistory
 			};
 
-				FieldEntry[] fields = GetFieldsInternal(options).Where(f => !ignoreFields.Contains(f.ActualName)).Select(f => f).ToArray();
+			FieldEntry[] fields = GetFieldsInternal(providerConfiguration.Configuration).Where(f => !ignoreFields.Contains(f.ActualName)).Select(f => f).ToArray();
 
 				foreach (var field in fields.Where(field => field.IsIdentifier))
 				{
@@ -154,7 +154,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 			catch (Exception ex)
 			{
-				throw LogAndCreateGetFieldsException(ex, options);
+				throw LogAndCreateGetFieldsException(ex, providerConfiguration.Configuration);
 			}
 		}
 

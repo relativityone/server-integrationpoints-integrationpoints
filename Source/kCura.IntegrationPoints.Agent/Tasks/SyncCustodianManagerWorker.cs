@@ -258,8 +258,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private IEnumerable<IDictionary<string, object>> ReadManagersData(IDataSourceProvider sourceProvider,
 			List<FieldEntry> sourceFields, IList<string> managersLdapQueryStrings)
 		{
-			using (IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, managersLdapQueryStrings,
-				IntegrationPoint.SourceConfiguration))
+			using (IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, managersLdapQueryStrings, 
+				new DataSourceProviderConfiguration(IntegrationPoint.SourceConfiguration, IntegrationPoint.SecuredConfiguration)))
 			{
 				IEnumerable<IDictionary<FieldEntry, object>> sourceData = GetSourceData(sourceFields, sourceDataReader).ToList();
 				return sourceData.Select(x => x.ToDictionary(y => y.Key.FieldIdentifier, y => y.Value));

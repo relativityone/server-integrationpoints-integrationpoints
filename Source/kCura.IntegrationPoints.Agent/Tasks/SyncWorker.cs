@@ -127,9 +127,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             LogExecuteEnd(job);
 		}
 
-		protected virtual void ExecuteImport(IEnumerable<FieldMap> fieldMap,
-			string sourceConfiguration, string destinationConfiguration, List<string> entryIDs,
-			SourceProvider sourceProviderRdo, DestinationProvider destinationProvider, Job job)
+		protected virtual void ExecuteImport(IEnumerable<FieldMap> fieldMap, DataSourceProviderConfiguration configuration, string destinationConfiguration, List<string> entryIDs, SourceProvider sourceProviderRdo, DestinationProvider destinationProvider, Job job)
 		{
 		    LogExecuteImportStart(job);
 
@@ -157,7 +155,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			//Extract source fields from field map
 			List<FieldEntry> sourceFields = GetSourceFields(fieldMaps);
 
-			using (IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, entryIDs, sourceConfiguration))
+			using (IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, entryIDs, configuration))
 			{
 				SetupSubscriptions(dataSynchronizer, job);
 				IEnumerable<IDictionary<FieldEntry, object>> sourceData = GetSourceData(sourceFields, sourceDataReader);
@@ -201,8 +199,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 				JobStopManager?.ThrowIfStopRequested();
 
-				ExecuteImport(fieldMap, IntegrationPoint.SourceConfiguration, IntegrationPoint.DestinationConfiguration, entryIDs,
-					SourceProvider, DestinationProvider, job);
+				ExecuteImport(fieldMap, new DataSourceProviderConfiguration(IntegrationPoint.SourceConfiguration, IntegrationPoint.SecuredConfiguration), 
+					IntegrationPoint.DestinationConfiguration, entryIDs, SourceProvider, DestinationProvider, job);
 
 				InjectErrors();
 				LogExecuteTaskSuccesfulEnd(job);
