@@ -34,9 +34,11 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration
 			};
 
 			var webApiConfig = Substitute.For<IWebApiConfig>();
+			var logger = Substitute.For<IAPILog>();
 			webApiConfig.GetWebApiUrl.Returns(SharedVariables.RelativityWebApiUrl);
 			var importApiFactory = new ExtendedImportApiFactory(webApiConfig);
-			var importApiFacade = new ExtendedImportApiFacade(importApiFactory);
+
+			var importApiFacade = new ExtendedImportApiFacade(importApiFactory, logger);
 			_documentTransferProvider = new DocumentTransferProvider(importApiFacade, Container.Resolve<IRepositoryFactory>(), Container.Resolve<IHelper>());
 		}
 

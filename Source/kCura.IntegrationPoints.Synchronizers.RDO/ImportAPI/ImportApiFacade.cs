@@ -1,19 +1,28 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using kCura.IntegrationPoints.Config;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
 using kCura.Relativity.ImportAPI.Enumeration;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 {
 	public class ImportApiFacade : IImportApiFacade
 	{
-		private readonly IImportAPI _importApi;
+		private const string _IAPI_GET_WORKSPACE_FIELDS_EXC = "EC: 4.1 There was an error in Import API when fetching workspace fields.";
+		private const string _IAPI_GET_WORKSPACE_FIELDS_ERR = 
+			"EC: 4.1 There was an error in Import API when fetching workspace fields. workspaceArtifactId: {WorkspaceArtifactId}, artifactTypeID: {artifactTypeId}";
 
-		public ImportApiFacade(IImportApiFactory importApiFactory, IConfig config)
+		private readonly IImportAPI _importApi;
+		private readonly IAPILog _logger;
+
+		public ImportApiFacade(IImportApiFactory importApiFactory, IConfig config, IAPILog logger)
 		{
 			_importApi = importApiFactory.GetImportAPI(new ImportSettings {WebServiceURL = config.WebApiPath});
+			_logger = logger.ForContext<ImportApiFacade>();
 		}
 
 		public HashSet<int> GetMappableArtifactIdsWithNotIdentifierFieldCategory(int workspaceArtifactID, int artifactTypeID)
@@ -34,7 +43,19 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
 		private IEnumerable<Field> GetWorkspaceFields(int workspaceArtifactID, int artifactTypeID)
 		{
-			return _importApi.GetWorkspaceFields(workspaceArtifactID, artifactTypeID);
+			try
+			{
+				return _importApi.GetWorkspaceFields(workspaceArtifactID, artifactTypeID);
+			}
+			catch (Exception e)
+			{
+				var exc = new IntegrationPointsException(_IAPI_GET_WORKSPACE_FIELDS_EXC, e)
+				{
+					ShouldAddToErrorsTab = true
+				};
+				_logger.LogError(exc, _IAPI_GET_WORKSPACE_FIELDS_ERR, workspaceArtifactID, artifactTypeID);
+				throw exc;
+			}
 		}
 
 	}

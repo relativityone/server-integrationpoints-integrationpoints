@@ -111,7 +111,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests
 			importApi.GetWorkspaceFields(_WORKSPACE_ARTIFACT_ID, (int) ArtifactType.Field).Returns(_getWorkspaceFieldsResult);
 			IExtendedImportApiFactory importApiFactory = Substitute.For<IExtendedImportApiFactory>();
 			importApiFactory.Create().Returns(importApi);
-			IExtendedImportApiFacade importApiFacade = new ExtendedImportApiFacade(importApiFactory);
+			var logger = Substitute.For<IAPILog>();
+			IExtendedImportApiFacade importApiFacade = new ExtendedImportApiFacade(importApiFactory, logger);
 			return importApiFacade;
 		}
 
