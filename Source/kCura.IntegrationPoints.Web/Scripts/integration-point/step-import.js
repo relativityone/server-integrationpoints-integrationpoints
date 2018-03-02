@@ -65,6 +65,14 @@
 					}
 					else {
 						var state = stepCache[self.stepKey];
+
+						//Provider is initialized based only on that state, so we need to pass SecuredConfiguration in addition to the rest of the data
+						if (state) {
+							var stateObject = JSON.parse(state);
+							stateObject.SecuredConfiguration = self.model.SecuredConfiguration;
+							state = JSON.stringify(stateObject);
+						}
+
 						self.frameBus.publish('load', state);
 					}
 

@@ -161,7 +161,7 @@ var IP = IP || {};
 				self.CreateSavedSearchForTagging = destinationSettings.CreateSavedSearchForTagging;
 				self.IPDestinationSettings = destinationSettings;
 				self.destinationProvider = settings.destinationProvider;
-				self.SecuredConfiguration = settings.SecuredConfiguration;
+				self.SecuredConfiguration = settings.securedConfiguration;
 
 				self.type(settings.type);
 

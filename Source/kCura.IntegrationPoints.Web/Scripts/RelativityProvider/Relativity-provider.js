@@ -59,10 +59,10 @@
 		}
 
 		// Modify destination object to contain target workspaceId
-		var destinationJson = IP.frameMessaging().dFrame.IP.points.steps.steps[1].model.destination;
+	    var stepModel = IP.frameMessaging().dFrame.IP.points.steps.steps[1].model;
+        var destinationJson = stepModel.destination;
 		var destination = JSON.parse(destinationJson);
 		destination.FederatedInstanceArtifactId = viewModel.FederatedInstanceArtifactId();
-		destination.SecuredConfiguration = viewModel.SecuredConfiguration();
 		destination.CreateSavedSearchForTagging = viewModel.CreateSavedSearchForTagging();
 		destination.CaseArtifactId = viewModel.TargetWorkspaceArtifactId();
 		destination.DestinationFolderArtifactId = viewModel.FolderArtifactId();
@@ -70,8 +70,11 @@
 		destination.ProductionArtifactId = viewModel.ProductionArtifactId();
 		destination.Provider = "relativity";
 		destination.DoNotUseFieldsMapCache = viewModel.WorkspaceHasChanged;
+
 		destinationJson = JSON.stringify(destination);
-		IP.frameMessaging().dFrame.IP.points.steps.steps[1].model.destination = destinationJson;
+		stepModel.destination = destinationJson;
+
+		stepModel.SecuredConfiguration = viewModel.SecuredConfiguration();
 	});
 
 	//An event raised when a user clicks the Back button.
@@ -539,7 +542,6 @@
 				"ProductionImport": self.ProductionImport(),
 				"ProductionArtifactId": self.ProductionArtifactId(),
 				"SourceProductionId": self.SourceProductionId(),
-				"SecuredConfiguration": self.SecuredConfiguration(),
 				"SourceWorkspaceArtifactId": IP.utils.getParameterByName('AppID', window.top),
 				"TargetWorkspaceArtifactId": self.TargetWorkspaceArtifactId(),
 				"FolderArtifactId": self.FolderArtifactId()

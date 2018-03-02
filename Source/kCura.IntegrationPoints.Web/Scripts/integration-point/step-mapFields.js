@@ -177,7 +177,7 @@ ko.validation.insertValidationMessage = function (element) {
 		this.selectedUniqueId = ko.observable().extend({ required: true });
 		this.rdoIdentifier = ko.observable();
 		this.isAppendOverlay = ko.observable(true);
-		self.SecuredConfiguration = destinationModel.SecuredConfiguration;
+		self.SecuredConfiguration = model.SecuredConfiguration;
 		self.CreateSavedSearchForTagging = destinationModel.CreateSavedSearchForTagging;
 
 		this.mappedWorkspace = ko.observableArray([]).extend({
@@ -921,7 +921,7 @@ ko.validation.insertValidationMessage = function (element) {
 
 				setCache(model, this.key);
 			}
-			this.returnModel = $.extend(true, {}, model);
+            this.returnModel = $.extend(true, {}, model);
 
 			var c = stepCache[this.key];
 			for (var k in c) {
@@ -929,7 +929,7 @@ ko.validation.insertValidationMessage = function (element) {
 					this.returnModel[k] = c[k];
 				}
 			}
-			this.model = new viewModel(this.returnModel);
+            this.model = new viewModel(this.returnModel);
 			this.model.errors = ko.validation.group(this.model, { deep: true });
 		};
 
@@ -1123,7 +1123,7 @@ ko.validation.insertValidationMessage = function (element) {
 					_destination.ProductionPrecedence = this.model.ProductionPrecedence();
 					_destination.IncludeOriginalImages = this.model.IncludeOriginalImages();
 					_destination.IdentifierField = this.model.IdentifierField();
-					_destination.MoveExistingDocuments = this.model.MoveExistingDocuments();
+                    _destination.MoveExistingDocuments = this.model.MoveExistingDocuments();
 
 					// pushing extracted text location setting
 					_destination.ExtractedTextFieldContainsFilePath = this.model.ExtractedTextFieldContainsFilePath();
