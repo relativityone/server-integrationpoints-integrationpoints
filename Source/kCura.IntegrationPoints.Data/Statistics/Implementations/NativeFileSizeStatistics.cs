@@ -76,7 +76,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			catch (Exception e)
 			{
 				_logger.LogError(e, _FOR_SAVED_SEARCH_ERROR, savedSearchId);
-				throw;
+				return -1;
 			}
 		}
 

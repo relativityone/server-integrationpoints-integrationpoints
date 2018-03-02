@@ -204,10 +204,10 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			if (!(IntegrationPointImportSettings?.ImportNativeFile).GetValueOrDefault(false) ||
 				IntegrationPointSourceConfiguration == null)
 			{
-				return 0L;
+				return 0;
 			}
 
-			var filesSize = 0L;
+			long filesSize = 0;
 
 			switch (IntegrationPointSourceConfiguration.TypeOfExport)
 			{
