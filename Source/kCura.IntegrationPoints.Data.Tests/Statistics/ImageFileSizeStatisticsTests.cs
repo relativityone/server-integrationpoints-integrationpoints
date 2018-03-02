@@ -114,19 +114,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			Assert.That(actualResult, Is.EqualTo(expectedResult));
 		}
 
-		[Test]
-		public void ItShouldLogError()
-		{
-			_rdoRepository.Query(Arg.Any<Query<RDO>>()).Throws(new Exception());
-			_helper.GetDBContext(_WORKSPACE_ID).Throws(new Exception());
-
-			Assert.That(() => _instance.ForFolder(_WORKSPACE_ID, 407, 653, true), Throws.Exception);
-			Assert.That(() => _instance.ForProduction(_WORKSPACE_ID, 329), Throws.Exception);
-			Assert.That(() => _instance.ForSavedSearch(_WORKSPACE_ID, 698), Throws.Exception);
-
-			_logger.Received(3).LogError(Arg.Any<Exception>(), Arg.Any<string>(), Arg.Any<object[]>());
-		}
-
 		private static QueryResultSet<RDO> MockQueryResult(List<int> artifactIds)
 		{
 			var queryResult = new QueryResultSet<RDO>
