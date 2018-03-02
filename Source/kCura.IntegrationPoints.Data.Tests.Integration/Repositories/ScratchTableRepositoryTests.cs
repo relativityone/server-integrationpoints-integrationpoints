@@ -49,7 +49,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		public void CreateScratchTableAndVerifyEntries(int numberOfDocuments)
 		{
 			//ARRANGE
-			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable(1, numberOfDocuments));
+			if (numberOfDocuments > 0)
+			{
+				Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable(1, numberOfDocuments));
+			}
 			string tablePrefix = "RKO";
 			string tableSuffix = Guid.NewGuid().ToString();
 			Dictionary<int, string> controlNumbersByDocumentIds = GetDocumentIdToControlNumberMapping();
