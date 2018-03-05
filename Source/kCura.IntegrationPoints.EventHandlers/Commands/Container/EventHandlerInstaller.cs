@@ -80,6 +80,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 			container.Register(Component.For<RemoveAgentJobLogTableCommand>().ImplementedBy<RemoveAgentJobLogTableCommand>().LifestyleTransient());
 			container.Register(Component.For<ImportNativeFileCopyModeUpdater>().ImplementedBy<ImportNativeFileCopyModeUpdater>().LifestyleTransient());
 			container.Register(Component.For<SetImportNativeFileCopyModeCommand>().ImplementedBy<SetImportNativeFileCopyModeCommand>().LifestyleTransient());
+			container.Register(Component.For<UpdateLdapConfigurationCommand>().ImplementedBy<UpdateLdapConfigurationCommand>().LifestyleTransient());
 			container.Register(Component.For<IIntegrationPointSecretDelete>().UsingFactoryMethod(k => IntegrationPointSecretDeleteFactory.Create(k.Resolve<IEHContext>().Helper))
 				.LifestyleTransient());
 			container.Register(Component.For<ICorrespondingJobDelete>().ImplementedBy<CorrespondingJobDelete>().LifestyleTransient());
