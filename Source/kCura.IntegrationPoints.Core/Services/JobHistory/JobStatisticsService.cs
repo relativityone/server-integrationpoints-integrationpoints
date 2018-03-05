@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Data;
@@ -52,17 +53,20 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
 	public class JobStatisticsService
 	{
-		private readonly IWorkspaceDBContext _context;
-		private readonly TaskParameterHelper _helper;
-		private readonly JobStatisticsQuery _query;
-		private readonly IJobHistoryService _service;
-		private readonly IAPILog _logger;
-		private Job _job;
+
+		private Guid _guid = Guid.NewGuid();
 
 		private int _rowErrors;
-		private readonly INativeFileSizeStatistics _nativeFileSizeStatistics;
-		private readonly IImageFileSizeStatistics _imageFileSizeStatistics;
+		private Job _job;
+		private readonly IAPILog _logger;
 		private readonly IErrorFilesSizeStatistics _errorFilesSizeStatistics;
+		private readonly IImageFileSizeStatistics _imageFileSizeStatistics;
+		private readonly IJobHistoryService _service;
+		private readonly INativeFileSizeStatistics _nativeFileSizeStatistics;
+		private readonly IWorkspaceDBContext _context;
+		private readonly JobStatisticsQuery _query;
+		private readonly TaskParameterHelper _helper;
+		public IHelper Helper { get; }
 
 		public SourceConfiguration IntegrationPointSourceConfiguration { get; set; }
 		public ImportSettings IntegrationPointImportSettings { get; set; }
@@ -80,6 +84,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			IImageFileSizeStatistics imageFileSizeStatistics,
 			IErrorFilesSizeStatistics errorFilesSizeStatistics)
 		{
+			Helper = helper;
 			_query = query;
 			_helper = taskParameterHelper;
 			_service = service;
@@ -139,12 +144,18 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		/// </summary>
 		public void Update(Guid identifier, int transferredItem, int erroredCount)
 		{
+			_logger.LogWarning("[{guid}, {threadId}] Start updating {identifier}, {transferredIdem}, {errorCount}", _guid, Thread.CurrentThread.ManagedThreadId, identifier, transferredItem, erroredCount);
 			try
 			{
 				_context.BeginTransaction();
+				_logger.LogWarning("[{guid} {threadId}] After transaction", _guid, Thread.CurrentThread.ManagedThreadId);
 				EnableMutex(identifier);
+				_logger.LogWarning("[{guid} {threadId}] After mutex", _guid, Thread.CurrentThread.ManagedThreadId);
+
 
 				Data.JobHistory historyRdo = _service.GetRdo(_helper.GetBatchInstance(_job));
+				_logger.LogWarning("[{guid} {threadId}] After JobHistory.GetRdo {isRdoNull}", _guid, Thread.CurrentThread.ManagedThreadId, historyRdo == null);
+
 				if (transferredItem > 0)
 				{
 					historyRdo.ItemsTransferred += transferredItem;
@@ -152,14 +163,28 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
 				historyRdo.ItemsWithErrors += erroredCount;
 				_service.UpdateRdo(historyRdo);
+				_logger.LogWarning("[{guid} {threadId}] After Rdo Update", _guid, Thread.CurrentThread.ManagedThreadId);
 
 				_context.CommitTransaction();
+				_logger.LogWarning("[{guid} {threadId}] After transaction commit", _guid, Thread.CurrentThread.ManagedThreadId);
+
 			}
-			catch(Exception e)
+			catch (Exception e)
 			{
+				_logger.LogWarning("[{guid} {threadId}] Exception: {message}", _guid, Thread.CurrentThread.ManagedThreadId, e.Message);
+
 				LogUpdatingStatisticsError(e);
 				// The mutex will be removed when the transaction is finalized
-				_context.RollbackTransaction();
+				try
+				{
+					_context.RollbackTransaction();
+				}
+				catch (Exception ex)
+				{
+					_logger.LogWarning("[{guid} {threadId}] Rollback error: {message}.", _guid, Thread.CurrentThread.ManagedThreadId, ex.Message);
+
+					throw;
+				}
 			}
 		}
 
