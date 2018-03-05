@@ -96,6 +96,7 @@
     <Compile Include="Commands\SetTypeOfExportDefaultValueCommand.cs" />
     <Compile Include="Commands\SourceConfigurationTypeOfExportUpdater.cs" />
     <Compile Include="Commands\UpdateDestinationWorkspaceEntriesCommand.cs" />
+    <Compile Include="Commands\UpdateLdapConfigurationCommand.cs" />
     <Compile Include="Installers\CreateTenantIdForSecretStoreInstaller.cs" />
     <Compile Include="Commands\Factories\RestoreJobHistoryDestinationWorkspaceCommandFactory.cs" />
     <Compile Include="Installers\Helpers\Factories\SecretStoreCleanUpFactory.cs" />
@@ -119,6 +120,7 @@
     <Compile Include="Installers\SetTypeOfExportDefaultValue.cs" />
     <Compile Include="Installers\UpdateDestinationWorkspaceEntriesEventHandler.cs" />
     <Compile Include="Installers\UpdateJobHistoryDestinationWorkspace.cs" />
+    <Compile Include="Installers\UpdateLdapSecuredConfiguration.cs" />
     <Compile Include="IntegrationPoints\DataTransferLocationMigrationEventHandler.cs" />
     <Compile Include="IntegrationPoints\Helpers\Factories\CorrespondingJobDeleteFactory.cs" />
     <Compile Include="IntegrationPoints\Helpers\Factories\IntegrationPointSecretDeleteFactory.cs" />
@@ -202,6 +204,14 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
       <Project>{5D5B52B4-8769-431A-9743-B96F15FED5FD}</Project>
       <Name>kCura.IntegrationPoints.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.LDAPProvider\kCura.IntegrationPoints.LDAPProvider.csproj">
+      <Project>{8398B06F-3716-4834-9593-A017F2714261}</Project>
+      <Name>kCura.IntegrationPoints.LDAPProvider</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Security\kCura.IntegrationPoints.Security.csproj">
+      <Project>{E7D6A21D-ACC6-4140-9E18-C2E6BCA85449}</Project>
+      <Name>kCura.IntegrationPoints.Security</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.SourceProviderInstaller\kCura.IntegrationPoints.SourceProviderInstaller.csproj">
       <Project>{fcaf52cd-0f8f-4d71-ac61-b7591a181a08}</Project>
