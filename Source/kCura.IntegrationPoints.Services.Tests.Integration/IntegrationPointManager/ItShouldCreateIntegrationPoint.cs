@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
-			ExtensionPointServiceFinder.SecretStoreHelper = APIHelper_SecretStoreFactory.BuildSecretStore();
+			//ExtensionPointServiceFinder.SecretStoreHelper = APIHelper_SecretStoreFactory.BuildSecretStore();
 			_secretCatalog = SecretStoreFactory.GetSecretStore(BaseServiceContextHelper.Create().GetMasterRdgContext());
 			_secretManager = new SecretManager(WorkspaceArtifactId);
 

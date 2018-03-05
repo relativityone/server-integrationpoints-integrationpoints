@@ -142,6 +142,7 @@
     <Compile Include="Models\RelativityProviderModel.cs" />
     <Compile Include="Models\SchedulerModel.cs" />
     <Compile Include="ObjectType.cs" />
+    <Compile Include="TestDbContext.cs" />
     <Compile Include="TestException.cs" />
     <Compile Include="Permission.cs" />
     <Compile Include="Models\ImportOverwriteMode.cs" />

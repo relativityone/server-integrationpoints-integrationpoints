@@ -93,7 +93,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		private static IDBContext GetDbContext()
 		{
 			Context baseContext = new Context(SharedVariables.EddsConnectionString);
-			DBContext context = new DBContext(baseContext);
+			TestDbContext context = new TestDbContext(baseContext);
 			return context;
 		}
 

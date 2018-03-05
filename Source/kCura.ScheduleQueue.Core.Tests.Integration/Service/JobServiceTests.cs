@@ -30,7 +30,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 			
 			_helper = Substitute.For<IHelper>();
 			_agentService = new AgentService(_helper, Guid.Parse(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
-			_helper.GetDBContext(-1).Returns(new DBContext(new Context(SharedVariables.EddsConnectionString)));
+			_helper.GetDBContext(-1).Returns(new TestDbContext(new Context(SharedVariables.EddsConnectionString)));
 		    _jobServiceDataProvider = new JobServiceDataProvider(_agentService, _helper);
             _instance = new JobService(_agentService, _jobServiceDataProvider, _helper);
 		}

@@ -75,5 +75,10 @@ namespace kCura.IntegrationPoints.Core
 		{
 			throw new NotImplementedException();
 		}
+
+		public IInstanceSettingsBundle GetInstanceSettingBundle()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
