@@ -43,6 +43,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			var documentTransferDataReader = new DocumentTransferDataReader(this, MappedFields, BaseContext,
 				transferConfiguration.ScratchRepositories, LongTextStreamFactory,
 				_toggleProvider,
+				Logger,
 				transferConfiguration.ImportSettings.UseDynamicFolderPath);
 			var exporterTransferContext = new ExporterTransferContext(documentTransferDataReader, transferConfiguration) { TotalItemsFound = TotalRecordsFound };
 			return Context ?? (Context = exporterTransferContext);
@@ -50,10 +51,13 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 		public override ArtifactDTO[] RetrieveData(int size)
 		{
+			Logger.LogDebug("Start retriving data in RelativityExporterService. Size: {size}, export type: {typeOfExport}, AvfIds size: {avfIdsSize}",
+				size, SourceConfiguration?.TypeOfExport, AvfIds.Length);
 			var result = new List<ArtifactDTO>(size);
 			object[] retrievedData = Exporter.RetrieveResults(ExportJobInfo.RunId, AvfIds, size);
 			if (retrievedData != null)
 			{
+				Logger.LogDebug("Retrived {numberOfDocuments} documents in RelativityExporterService", retrievedData.Length);
 				int artifactType = (int)ArtifactType.Document;
 				foreach (object data in retrievedData)
 				{
@@ -69,7 +73,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				}
 			}
 
+			Logger.LogDebug("Before setting folder paths for documents");
 			_folderPathReader.SetFolderPaths(result);
+			Logger.LogDebug("After setting folder paths for documents");
 			RetrievedDataCount += result.Count;
 			return result.ToArray();
 		}

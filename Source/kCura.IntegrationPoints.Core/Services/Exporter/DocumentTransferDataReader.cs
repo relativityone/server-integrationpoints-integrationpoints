@@ -1,11 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using kCura.EDDS.DocumentCompareGateway;
 using kCura.IntegrationPoints.Core.Services.Exporter.Base;
 using kCura.IntegrationPoints.Core.Toggles;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity;
+using Relativity.API;
 using Relativity.Core;
 using Relativity.Toggles;
 using FileQuery = Relativity.Core.Service.FileQuery;
@@ -22,7 +25,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private readonly IILongTextStreamFactory _relativityLongTextStreamFactory;
 		private readonly IToggleProvider _toggleProvider;
 		private readonly List<ILongTextStream> _openedStreams;
-
+		private readonly IAPILog _logger;
 
 		private static readonly string _nativeDocumentArtifactIdColumn = "DocumentArtifactID";
 		private static readonly string _nativeFileNameColumn = "Filename";
@@ -35,74 +38,114 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			IScratchTableRepository[] scratchTableRepositories,
 			IILongTextStreamFactory longTextStreamFactory,
 			IToggleProvider toggleProvider,
+			IAPILog logger,
 			bool useDynamicFolderPath) :
-			base(relativityExportService, fieldMappings, context, scratchTableRepositories, useDynamicFolderPath)
+			base(relativityExportService, fieldMappings, context, scratchTableRepositories, logger, useDynamicFolderPath)
 		{
 			_nativeFileLocations = new Dictionary<int, string>();
 			_nativeFileNames = new Dictionary<int, string>();
 			_relativityLongTextStreamFactory = longTextStreamFactory;
 			_toggleProvider = toggleProvider;
 			_openedStreams = new List<ILongTextStream>();
+			_logger = logger.ForContext<DocumentTransferDataReader>();
 		}
 
 
 		public override object GetValue(int i)
 		{
-			string fieldIdentifier = GetName(i);
-
-			int fieldArtifactId;
-			bool isFieldIdentifierNumeric = int.TryParse(fieldIdentifier, out fieldArtifactId);
-			if (isFieldIdentifierNumeric)
+			bool isFieldIdentifierNumeric = false;
+			ArtifactFieldDTO retrievedField = null;
+			string fieldIdentifier = "";
+			int fieldArtifactId = 0;
+			object result = null;
+			try
 			{
-				ArtifactFieldDTO retrievedField = CurrentArtifact.GetFieldForIdentifier(fieldArtifactId);
-				if (ShouldUseLongTextStream(retrievedField))
+				fieldIdentifier = GetName(i);
+
+				isFieldIdentifierNumeric = int.TryParse(fieldIdentifier, out fieldArtifactId);
+				if (isFieldIdentifierNumeric)
 				{
-					ILongTextStream stream =
-						_relativityLongTextStreamFactory.CreateLongTextStream(CurrentArtifact.ArtifactId, fieldArtifactId);
-					_openedStreams.Add(stream);
-					return stream;
+					retrievedField = CurrentArtifact.GetFieldForIdentifier(fieldArtifactId);
+					if (ShouldUseLongTextStream(retrievedField))
+					{
+						ILongTextStream stream =
+							_relativityLongTextStreamFactory.CreateLongTextStream(CurrentArtifact.ArtifactId, fieldArtifactId);
+						_openedStreams.Add(stream);
+						return stream;
+					}
+
+					return retrievedField.Value;
 				}
 
-				return retrievedField.Value;
-			}
+				if (fieldIdentifier == IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_FIELD)
+				{
+					retrievedField = CurrentArtifact.GetFieldForIdentifier(FolderPathFieldSourceArtifactId);
+					return retrievedField.Value;
+				}
+				if (fieldIdentifier == IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_DYNAMIC_FIELD)
+				{
+					return CurrentArtifact.GetFieldByName(IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_DYNAMIC_FIELD_NAME)
+						.Value;
+				}
 
-			if (fieldIdentifier == IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_FIELD)
+
+				// we will have to go and get native file locations when the reader fetch a new collection of documents.
+				if (_readingArtifactIdsReference != ReadingArtifactIDs)
+				{
+					LoadNativeFilesLocationsAndNames();
+				}
+
+				switch (fieldIdentifier)
+				{
+					case IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD:
+						if (_nativeFileLocations.ContainsKey(CurrentArtifact.ArtifactId))
+						{
+							result = _nativeFileLocations[CurrentArtifact.ArtifactId];
+							_nativeFileLocations.Remove(CurrentArtifact.ArtifactId);
+						}
+						break;
+
+					case IntegrationPoints.Domain.Constants.SPECIAL_FILE_NAME_FIELD:
+						if (_nativeFileNames.ContainsKey(CurrentArtifact.ArtifactId))
+						{
+							result = _nativeFileNames[CurrentArtifact.ArtifactId];
+							_nativeFileNames.Remove(CurrentArtifact.ArtifactId);
+						}
+						break;
+				}
+				return result;
+			}
+			catch (Exception e)
 			{
-				ArtifactFieldDTO retrievedField = CurrentArtifact.GetFieldForIdentifier(FolderPathFieldSourceArtifactId);
-				return retrievedField.Value;
+				throw LogGetValueError(e, i, isFieldIdentifierNumeric, retrievedField, fieldIdentifier, fieldArtifactId, result);
 			}
-			if (fieldIdentifier == IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_DYNAMIC_FIELD)
-			{
-				return CurrentArtifact.GetFieldByName(IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_DYNAMIC_FIELD_NAME).Value;
-			}
+		}
 
-
-			// we will have to go and get native file locations when the reader fetch a new collection of documents.
-			if (_readingArtifactIdsReference != ReadingArtifactIDs)
-			{
-				LoadNativeFilesLocationsAndNames();
-			}
-
-			object result = null;
-			switch (fieldIdentifier)
-			{
-				case IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD:
-					if (_nativeFileLocations.ContainsKey(CurrentArtifact.ArtifactId))
-					{
-						result = _nativeFileLocations[CurrentArtifact.ArtifactId];
-						_nativeFileLocations.Remove(CurrentArtifact.ArtifactId);
-					}
-					break;
-
-				case IntegrationPoints.Domain.Constants.SPECIAL_FILE_NAME_FIELD:
-					if (_nativeFileNames.ContainsKey(CurrentArtifact.ArtifactId))
-					{
-						result = _nativeFileNames[CurrentArtifact.ArtifactId];
-						_nativeFileNames.Remove(CurrentArtifact.ArtifactId);
-					}
-					break;
-			}
-			return result;
+		private IntegrationPointsException LogGetValueError(
+			Exception e, 
+			int i, 
+			bool isFieldIdentifierNumeric,
+			ArtifactFieldDTO retrievedField,
+			string fieldIdentifier,
+			int fieldArtifactId,
+			object result
+			)
+		{
+			var message = $"Error ocurred when getting value for index {i}, " +
+			              $"isFieldIdentifierNumeric: {isFieldIdentifierNumeric}, " +
+			              $"retrievedField: {retrievedField}, " +
+			              $"fieldIdentifier: {fieldIdentifier}, " +
+			              $"fieldArtifactId: {fieldArtifactId}, " +
+			              $"result: {result}";
+			var template = "Error ocurred when getting value for index {i}, " +
+			              "isFieldIdentifierNumeric: {isFieldIdentifierNumeric}, " +
+			              "retrievedField: {@retrievedField}, " +
+			              "fieldIdentifier: {fieldIdentifier}, " +
+			              "fieldArtifactId: {fieldArtifactId}, " +
+			              "result: {@result}";
+			var exc = new IntegrationPointsException(message, e);
+			_logger.LogError(exc, template, i, isFieldIdentifierNumeric, retrievedField, fieldIdentifier, fieldArtifactId, result);
+			return exc;
 		}
 
 		private bool ShouldUseLongTextStream(ArtifactFieldDTO retrievedField)

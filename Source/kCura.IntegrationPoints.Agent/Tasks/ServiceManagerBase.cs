@@ -151,13 +151,28 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				factory.SourceProvider = SourceProvider;
 			}
-			IDataSynchronizer synchronizer = SynchronizerFactory.CreateSynchronizer(Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, configuration, IntegrationPointDto.SecuredConfiguration);
-			return synchronizer;
+			try
+			{
+				IDataSynchronizer synchronizer = SynchronizerFactory.CreateSynchronizer(
+					Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, configuration, IntegrationPointDto.SecuredConfiguration);
+				return synchronizer;
+			}
+			catch (Exception e)
+			{
+				throw LogCreateDestinationProviderError(e, configuration);
+			}
 		}
 
 		protected void UpdateJobStatus()
 		{
-			JobHistoryService.UpdateRdo(JobHistory);
+			try
+			{
+				JobHistoryService.UpdateRdo(JobHistory);
+			}
+			catch (Exception e)
+			{
+				throw LogUpdateJobStatus(e, JobHistory);
+			}
 		}
 
 		protected void ThrowNewExceptionIfAny(IEnumerable<Exception> exceptions)
@@ -446,6 +461,24 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private void LogConfigureBatchExceptionsStart(Job job)
 		{
 			Logger.LogInformation("Started configuring batch exceptions for job: {JobId}", job.JobId);
+		}
+
+		private IntegrationPointsException LogCreateDestinationProviderError(Exception e, string configuration)
+		{
+			var message = $"Error ocurred when creating destination provider for configuration: {configuration}";
+			var template = "Error ocurred when creating destination provider for configuration: {configuration}";
+			var exc = new IntegrationPointsException(message, e);
+			Logger.LogError(exc, template, configuration);
+			return exc;
+		}
+
+		private IntegrationPointsException LogUpdateJobStatus(Exception e, JobHistory jobHistory)
+		{
+			var message = "Error ocurred when updating job status";
+			var template = "Error ocurred when updating job status. jobHistory: {@jobHistory}"; 
+			var exc = new IntegrationPointsException(message, e);
+			Logger.LogError(exc, template, jobHistory);
+			return exc;
 		}
 
 		#endregion

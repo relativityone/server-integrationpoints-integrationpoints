@@ -4,18 +4,26 @@ using System.Data;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
+using Relativity.API;
 using Relativity.Core;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 {
 	public abstract class ExportTransferDataReaderBase : RelativityReaderBase
 	{
+		private readonly IAPILog _logger;
+
+		protected const string _FIELD_IDENTIFIER_PARSE_ERROR_MSG =
+			"Parsing field identifier ({@fieldId}) FAILED.";
+
 		protected readonly BaseServiceContext Context;
 		protected readonly IExporterService RelativityExporterService;
 		protected readonly int FolderPathFieldSourceArtifactId;
 		protected readonly IScratchTableRepository[] ScratchTableRepositories;
+
 		public const int FETCH_ARTIFACTDTOS_BATCH_SIZE = 200;
 
 		protected ExportTransferDataReaderBase(
@@ -23,9 +31,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 			FieldMap[] fieldMappings,
 			BaseServiceContext context,
 			IScratchTableRepository[] scratchTableRepositories,
+			IAPILog logger,
 			bool useDynamicFolderPath) :
 				base(GenerateDataColumnsFromFieldEntries(fieldMappings, useDynamicFolderPath))
 		{
+			_logger = logger.ForContext<ExportTransferDataReaderBase>();
 			Context = context;
 			ScratchTableRepositories = scratchTableRepositories;
 			RelativityExporterService = relativityExportService;
@@ -33,7 +43,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 			FieldMap folderPathInformationField = GetFolderPathInformationField(fieldMappings);
 			if (folderPathInformationField != null)
 			{
-				FolderPathFieldSourceArtifactId = int.Parse(folderPathInformationField.SourceField.FieldIdentifier);
+				bool result = int.TryParse(folderPathInformationField.SourceField.FieldIdentifier, out FolderPathFieldSourceArtifactId);
+				if (!result)
+				{
+					throw LogFieldIdentifierParseError(folderPathInformationField.SourceField.FieldIdentifier);
+				}
 			}
 		}
 
@@ -142,5 +156,12 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 				FieldType = FieldType.String
 			});
 		}
+
+		private IntegrationPointsException LogFieldIdentifierParseError(string fieldIdentifier)
+		{
+			_logger.LogError(_FIELD_IDENTIFIER_PARSE_ERROR_MSG, fieldIdentifier);
+			return new IntegrationPointsException($"Parsing field identifier ({fieldIdentifier}) FAILED.");
+		}
+
 	}
 }

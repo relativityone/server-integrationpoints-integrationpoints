@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.Core.Factories
 {
 	public interface IExporterFactory
 	{
-		IExporterService BuildExporter(IJobStopManager jobStopManager, FieldMap[] mappedFiles, string config, int savedSearchArtifactId, int onBehalfOfUser, string userImportApiSettings);
+		IExporterService BuildExporter(IJobStopManager jobStopManager, FieldMap[] mappedFields, string config, int savedSearchArtifactId, int onBehalfOfUser, string userImportApiSettings);
 
 		List<IBatchStatus> InitializeExportServiceJobObservers(Job job,
 			ITagsCreator tagsCreator,
@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Core.Factories
 			ISerializer serializer,
 			IJobHistoryErrorManager jobHistoryErrorManager,
 			IJobStopManager jobStopManager,
-			FieldMap[] mappedFiles,
+			FieldMap[] mappedFields,
 			SourceConfiguration configuration,
 			JobHistoryErrorDTO.UpdateStatusType updateStatusType,
 			IntegrationPoint integrationPoint,

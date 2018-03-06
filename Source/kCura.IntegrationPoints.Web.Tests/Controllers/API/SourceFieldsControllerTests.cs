@@ -1,25 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.Http;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
-using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Queries;
 using kCura.IntegrationPoints.Core.Services.Provider;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.FtpProvider.Connection.Interfaces;
-using kCura.IntegrationPoints.Security;
-using kCura.IntegrationPoints.Web.Controllers;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using NSubstitute;
 using NUnit.Framework;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
@@ -30,12 +21,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         private HttpConfiguration _configuration;
         private SourceProvider _providerRdo;
 
-        private IHelper _helper;
         private IDataSourceProvider _dataSourceProvider;
         private IDataProviderFactory _factory;
-        private IManagerFactory _managerFactory;
-        private IContextContainerFactory _contextContainerFactory;
-        private ICaseServiceContext _caseService;
         private IGetSourceProviderRdoByIdentifier _sourceProviderIdentifier;
 
         private FieldEntry _fieldA, _fieldB, _fieldC, _fieldD = null;
@@ -47,11 +34,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         [SetUp]
         public override void SetUp()
         {
-            _helper = Substitute.For<IHelper>();
             _factory = Substitute.For<IDataProviderFactory>();
-            _managerFactory = Substitute.For<IManagerFactory>();
-            _contextContainerFactory = Substitute.For<IContextContainerFactory>();
-            _caseService = Substitute.For<ICaseServiceContext>();
             _sourceProviderIdentifier = Substitute.For<IGetSourceProviderRdoByIdentifier>();
             _providerRdo = new Data.SourceProvider() { ApplicationIdentifier = _appIdentifier.ToString() };
             _dataSourceProvider = Substitute.For<IDataSourceProvider>();
@@ -70,7 +53,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
                 .Returns(_dataSourceProvider);
             _sourceProviderIdentifier.Execute(Guid.Empty).ReturnsForAnyArgs(_providerRdo);
 
-            _instance = new SourceFieldsController(_sourceProviderIdentifier, _caseService, _contextContainerFactory, _managerFactory, _factory, _helper)
+            _instance = new SourceFieldsController(_sourceProviderIdentifier, _factory)
             {
                 Configuration =  _configuration,
                 Request = new System.Net.Http.HttpRequestMessage()

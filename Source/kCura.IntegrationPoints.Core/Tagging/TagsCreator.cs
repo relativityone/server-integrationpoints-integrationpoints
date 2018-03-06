@@ -2,6 +2,7 @@ using System;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.RelativitySourceRdo;
 using kCura.IntegrationPoints.Domain.Exceptions;
+using kCura.IntegrationPoints.Domain.Models;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tagging
@@ -28,17 +29,19 @@ namespace kCura.IntegrationPoints.Core.Tagging
 		{
 			try
 			{
-				var sourceWorkspaceDescriptorArtifactTypeId =
+				int sourceWorkspaceDescriptorArtifactTypeId =
 					_sourceWorkspaceRdoInitializer.InitializeWorkspaceWithSourceWorkspaceRdo(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId);
 
-				var sourceWorkspaceDto = _sourceWorkspaceManager.CreateSourceWorkspaceDto(destinationWorkspaceArtifactId, sourceWorkspaceArtifactId, federatedInstanceArtifactId,
+				SourceWorkspaceDTO sourceWorkspaceDto = _sourceWorkspaceManager.CreateSourceWorkspaceDto(destinationWorkspaceArtifactId, sourceWorkspaceArtifactId, federatedInstanceArtifactId,
 					sourceWorkspaceDescriptorArtifactTypeId);
 
-				var sourceJobDescriptorArtifactTypeId = _sourceJobRdoInitializer.InitializeWorkspaceWithSourceJobRdo(destinationWorkspaceArtifactId, sourceWorkspaceDto.ArtifactTypeId);
+				int sourceJobDescriptorArtifactTypeId = _sourceJobRdoInitializer.InitializeWorkspaceWithSourceJobRdo(destinationWorkspaceArtifactId, sourceWorkspaceDto.ArtifactTypeId);
 
-				var sourceJobDto = _sourceJobManager.CreateSourceJobDto(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, jobHistoryArtifactId, sourceWorkspaceDto.ArtifactId,
+				SourceJobDTO sourceJobDto = _sourceJobManager.CreateSourceJobDto(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, jobHistoryArtifactId, sourceWorkspaceDto.ArtifactId,
 					sourceJobDescriptorArtifactTypeId);
 
+				_logger.LogDebug("Created TagsContainer for workspace {workspaceName} and job: {jobName}. Destination {destinationWorkspaceArtifactId}, instance: {federatedInstanceArtifactId}", 
+					sourceWorkspaceDto.Name, sourceJobDto.Name, destinationWorkspaceArtifactId, federatedInstanceArtifactId);
 				return new TagsContainer(sourceJobDto, sourceWorkspaceDto);
 			}
 			catch (Exception e)

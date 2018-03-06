@@ -91,6 +91,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 			try
 			{
 				ExportJobInfo = Exporter.InitializeExport(searchArtifactId, AvfIds, startAt);
+				Logger.LogInformation("Retrived ExportJobInfo in ExporterServiceBase. Run: {runId}, rows: {rowCount}", ExportJobInfo?.RunId, ExportJobInfo?.RowCount);
 			}
 			catch (Exception exception)
 			{
@@ -100,7 +101,20 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 				throw new IntegrationPointsException(Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_EXPORT, exception);
 			}
 
+			Logger.LogInformation("Creating LongTextStreamFactory. DataGridContext == null : {isDgContextNull}", DataGridContext == null);
 			LongTextStreamFactory = new ExportApiDataHelper.RelativityLongTextStreamFactory(BaseContext, DataGridContext, SourceConfiguration.SourceWorkspaceArtifactId);
+		}
+
+		protected ExporterServiceBase(FieldMap[] mappedFields, IJobStopManager jobStopManager, IHelper helper)
+		{
+			SingleChoiceFieldsArtifactIds = new HashSet<int>();
+			MultipleObjectFieldArtifactIds = new HashSet<int>();
+			LongTextFieldArtifactIds = new HashSet<int>();
+			RetrievedDataCount = 0;
+			MappedFields = mappedFields;
+			JobStopManager = jobStopManager;
+			Logger = helper.GetLoggerFactory().GetLogger().ForContext<RelativityExporterService>();
+			FieldArtifactIds = mappedFields.Select(field => int.Parse(field.SourceField.FieldIdentifier)).ToArray();
 		}
 
 		private Dictionary<int, int> InitializeSourceFields(IRepositoryFactory sourceRepositoryFactory, FieldMap[] mappedFields)
@@ -142,23 +156,12 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 
 				if (fieldInfo.EnableDataGrid && (DataGridContext == null))
 				{
+					Logger.LogInformation("DataGridContext was null - creating new instance.");
 					DataGridContext = new DataGridContext(BaseContext, true);
 				}
 			}
 
 			return fieldsReferences;
-		}
-
-		protected ExporterServiceBase(FieldMap[] mappedFields, IJobStopManager jobStopManager, IHelper helper)
-		{
-			SingleChoiceFieldsArtifactIds = new HashSet<int>();
-			MultipleObjectFieldArtifactIds = new HashSet<int>();
-			LongTextFieldArtifactIds = new HashSet<int>();
-			RetrievedDataCount = 0;
-			MappedFields = mappedFields;
-			JobStopManager = jobStopManager;
-			Logger = helper.GetLoggerFactory().GetLogger().ForContext<RelativityExporterService>();
-			FieldArtifactIds = mappedFields.Select(field => int.Parse(field.SourceField.FieldIdentifier)).ToArray();
 		}
 
 		public virtual bool HasDataToRetrieve => (TotalRecordsFound > RetrievedDataCount) && !JobStopManager.IsStopRequested();
