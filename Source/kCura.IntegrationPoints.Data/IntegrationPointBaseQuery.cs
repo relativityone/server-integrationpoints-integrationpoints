@@ -18,16 +18,22 @@ namespace kCura.IntegrationPoints.Data
 
 		public IList<T> GetIntegrationPoints(List<int> sourceProviderIds)
 		{
-			var query = new QueryRequest
+			var sourceProviderQuery = GetBasicSourceProviderQuery(sourceProviderIds);
+
+			sourceProviderQuery.Fields = new List<FieldRef>
 			{
-				Fields = new List<FieldRef>
-				{
-					new FieldRef { Name = IntegrationPointFields.Name }
-				},
-				Condition = $"'{IntegrationPointFields.SourceProvider}' in [{string.Join(",", sourceProviderIds)}]"
+				new FieldRef {Name = IntegrationPointFields.Name}
 			};
 
-			IList<T> result = _context.RelativityObjectManager.Query<T>(query);
+			IList<T> result = _context.RelativityObjectManager.Query<T>(sourceProviderQuery);
+			return result;
+		}
+
+		public IList<T> GetIntegrationPointsWithAllFields(List<int> sourceProviderIds)
+		{
+			var sourceProviderQuery = GetBasicSourceProviderQuery(sourceProviderIds);
+
+			IList<T> result = _context.RelativityObjectManager.Query<T>(sourceProviderQuery);
 			return result;
 		}
 
@@ -69,6 +75,14 @@ namespace kCura.IntegrationPoints.Data
 								field.Guids.Contains(new Guid(IntegrationPointProfileFieldGuids.Name)) ||
 								field.Guids.Contains(new Guid(IntegrationPointProfileFieldGuids.Type)))
 					.Select(field => new FieldRef { Guid = field.Guids.First() });
+		}
+
+		private QueryRequest GetBasicSourceProviderQuery(List<int> sourceProviderIds)
+		{
+			return new QueryRequest
+			{
+				Condition = $"'{IntegrationPointFields.SourceProvider}' in [{string.Join(",", sourceProviderIds)}]"
+			};
 		}
 	}
 }

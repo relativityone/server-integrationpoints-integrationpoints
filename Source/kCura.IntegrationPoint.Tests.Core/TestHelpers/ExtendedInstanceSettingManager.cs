@@ -72,5 +72,10 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
         {
             return await Manager.GetAllValueTypesAsync();
         }
+
+		public async Task EncryptInstanceSettingAsync(int instanceSettingArtifactID)
+		{
+			await Manager.EncryptInstanceSettingAsync(instanceSettingArtifactID);
+		}
     }
 }

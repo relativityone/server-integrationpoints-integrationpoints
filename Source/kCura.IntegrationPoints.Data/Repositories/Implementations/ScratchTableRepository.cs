@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using Castle.Core.Internal;
 using kCura.Data.RowDataGateway;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity.API;
 
@@ -10,6 +11,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class ScratchTableRepository : IScratchTableRepository
 	{
+		private const int _SCRATCH_TABLE_NAME_LENGTH_LIMIT = 128;
+
 		private readonly IDBContext _caseContext;
 		private readonly IDocumentRepository _documentRepository;
 		private readonly IFieldQueryRepository _fieldQueryRepository;
@@ -165,9 +168,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			if (_tempTableName == null)
 			{
 				_tempTableName = $"{_tablePrefix}_{_tableSuffix}";
-				if (_tempTableName.Length > 128)
+				if (_tempTableName.Length > _SCRATCH_TABLE_NAME_LENGTH_LIMIT)
 				{
-					throw new Exception($"Unable to create scratch table - {_tempTableName}. The name of the table is too long. Please contact the system administrator.");
+					throw new IntegrationPointsException($"Unable to create scratch table - {_tempTableName}. The name of the table is too long (limit: {_SCRATCH_TABLE_NAME_LENGTH_LIMIT}). Please contact the system administrator.");
 				}
 			}
 			return _tempTableName;

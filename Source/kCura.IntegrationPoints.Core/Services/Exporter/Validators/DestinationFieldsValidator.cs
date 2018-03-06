@@ -72,11 +72,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Validators
 		{
 			_logger.LogError("Job failed. Fields mapped may no longer be available or have been renamed. Please validate your field mapping settings. Missing Fields: {@missingFields}", missingFields);
 		}
-
-		private void LogFieldValidationError(Exception e)
-		{
-			_logger.LogError(e, "Error occurred during destination field validation.");
-		}
 		#endregion
 	}
 }

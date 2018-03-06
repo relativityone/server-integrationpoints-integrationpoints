@@ -625,9 +625,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			{
 				correctExceptionThrown = true;
 			}
-			catch
+			catch (Exception e)
 			{
-				// in case another exception is thrown
+				correctExceptionThrown = e is IntegrationPointsException && e.InnerException is NullReferenceException;
 			}
 
 			// Assert

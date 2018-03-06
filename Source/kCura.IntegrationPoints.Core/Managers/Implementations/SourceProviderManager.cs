@@ -22,5 +22,11 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 			return dto;
 		}
+
+		public int GetArtifactIdFromSourceProviderTypeGuidIdentifier(int workspaceArtifactId, string sourceProviderGuidIdentifier)
+		{
+			ISourceProviderRepository sourceProviderRepository = _repositoryFactory.GetSourceProviderRepository(workspaceArtifactId);
+			return sourceProviderRepository.GetArtifactIdFromSourceProviderTypeGuidIdentifier(sourceProviderGuidIdentifier);
+		}
 	}
 }

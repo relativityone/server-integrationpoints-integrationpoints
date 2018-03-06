@@ -55,10 +55,12 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 
 				if (destinationWorkspace == null)
 				{
+					LogCreatingDestinationWorkspace(destinationInstanceName);
 					destinationWorkspace = _destinationWorkspaceRepository.Create(_destinationWorkspaceId, destinationWorkspaceName, _federatedInstanceId, destinationInstanceName);
 				}
 				else if (destinationWorkspaceName != destinationWorkspace.DestinationWorkspaceName || destinationInstanceName != destinationWorkspace.DestinationInstanceName)
 				{
+					LogDestinationWorkspaceUpdate(destinationWorkspace, destinationWorkspaceName, destinationInstanceName);
 					destinationWorkspace.DestinationWorkspaceName = destinationWorkspaceName;
 					destinationWorkspace.DestinationInstanceName = destinationInstanceName;
 					_destinationWorkspaceRepository.Update(destinationWorkspace);
@@ -66,6 +68,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 
 				_destinationWorkspaceRdoId = destinationWorkspace.ArtifactId;
 				_destinationWorkspaceRepository.LinkDestinationWorkspaceToJobHistory(_destinationWorkspaceRdoId, _jobHistoryInstanceId);
+				LogDestinationWorkspaceLinkedToJobHistory();
 			}
 			catch (Exception e)
 			{
@@ -81,7 +84,9 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 				if (!_errorOccurDuringJobStart)
 				{
 					int documentCount = ScratchTableRepository.Count;
-					_destinationWorkspaceRepository.TagDocsWithDestinationWorkspaceAndJobHistory(_claimsPrincipal, documentCount, _destinationWorkspaceRdoId, _jobHistoryInstanceId,
+					LogTaggingDocumentsStarted(documentCount);
+					_destinationWorkspaceRepository.TagDocsWithDestinationWorkspaceAndJobHistory(_claimsPrincipal, documentCount,
+						_destinationWorkspaceRdoId, _jobHistoryInstanceId,
 						ScratchTableRepository.GetTempTableName(), _sourceWorkspaceId);
 				}
 			}
@@ -112,6 +117,29 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		{
 			_logger.LogError(e, message);
 			return new IntegrationPointsException(message, e);
+		}
+
+		private void LogDestinationWorkspaceUpdate(DestinationWorkspace destinationWorkspace, string destinationWorkspaceName, string destinationInstanceName)
+		{
+			_logger.LogInformation("Updating destination workspace. Old:{oldInstace},{oldWorkspace}; new: {newInstance}, {newWorkspace}",
+				destinationWorkspace.DestinationInstanceName, destinationWorkspace.DestinationWorkspaceName, destinationInstanceName, destinationWorkspaceName);
+		}
+
+		private void LogCreatingDestinationWorkspace(string destinationInstanceName)
+		{
+			_logger.LogInformation("Creating destination workspace: {destinationWorkspaceName}, {_destinationWorkspaceId}. Destination instance: {destinationInstanceName},{_federatedInstanceId}",
+				destinationInstanceName, _destinationWorkspaceId, destinationInstanceName, _federatedInstanceId);
+		}
+
+		private void LogDestinationWorkspaceLinkedToJobHistory()
+		{
+			_logger.LogInformation("Destination workspace {_destinationWorkspaceRdoId} linked  to job history {_jobHistoryInstanceId}.", _destinationWorkspaceRdoId, _jobHistoryInstanceId);
+		}
+
+		private void LogTaggingDocumentsStarted(int documentCount)
+		{
+			_logger.LogDebug("Tagging {documentCount} documents in destination workspace {workspaceId} for job {jobIInstanceId}.",
+				documentCount, _destinationWorkspaceId, _jobHistoryInstanceId);
 		}
 
 		#endregion

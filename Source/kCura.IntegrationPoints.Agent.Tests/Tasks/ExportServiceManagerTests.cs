@@ -429,7 +429,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				_managerFactory, _batchStatuses, _serializer, _jobService, _scheduleRuleFactory, _jobHistoryService,
 				_jobHistoryErrorService,
 				_jobStatisticsService);
-			instance.Execute(_job);
+			try
+			{
+				instance.Execute(_job);
+			}
+			catch (Exception)
+			{
+				// Ignore any errors - we want to check just the assertions below
+			}
 
 			// ASSERT
 			var factory = _synchronizerFactory as GeneralWithCustodianRdoSynchronizerFactory;

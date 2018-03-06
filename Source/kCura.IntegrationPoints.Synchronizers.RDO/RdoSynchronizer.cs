@@ -73,12 +73,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				if (!_disableNativeLocationValidation.HasValue)
 				{
 					_disableNativeLocationValidation = Config.Config.Instance.DisableNativeLocationValidation;
+					LogNewDisableNativeLocationValidationValue();
 				}
 				return _disableNativeLocationValidation;
 			}
 			protected set { _disableNativeLocationValidation = value; }
 		}
-
+		
 		public string WebAPIPath
 		{
 			get
@@ -86,6 +87,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				if (string.IsNullOrEmpty(_webApiPath))
 				{
 					_webApiPath = Config.Config.Instance.WebApiPath;
+					LogNewWebAPIPathValue();
 				}
 				return _webApiPath;
 			}
@@ -99,6 +101,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				if (!_disableNativeValidation.HasValue)
 				{
 					_disableNativeValidation = Config.Config.Instance.DisableNativeValidation;
+					LogNewDisableNativeValidationValue();
 				}
 				return _disableNativeValidation;
 			}
@@ -215,6 +218,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				IntializeImportJob(fieldMap, options);
 
 				FieldMap[] fieldMaps = fieldMap as FieldMap[] ?? fieldMap.ToArray();
+				LogFieldMapLength(fieldMaps);
 				if (fieldMaps.Length > 0)
 				{
 					context.DataReader = new RelativityReaderDecorator(context.DataReader, fieldMaps);
@@ -239,17 +243,23 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			ImportSettings settings = GetSettings(options);
 			WorkspaceRef destinationWorkspace = GetWorkspace(settings);
 
-			StringBuilder emailBody = new StringBuilder();
+			var emailBody = new StringBuilder();
 			if (destinationWorkspace != null)
 			{
 				emailBody.AppendLine("");
-				emailBody.AppendFormat("Destination Workspace: {0}", Utils.GetFormatForWorkspaceOrJobDisplay(destinationWorkspace.Name, destinationWorkspace.Id));
+				string destinationWorkspaceAsString = Utils.GetFormatForWorkspaceOrJobDisplay(destinationWorkspace.Name, destinationWorkspace.Id);
+				emailBody.AppendFormat("Destination Workspace: {0}", destinationWorkspaceAsString);
+				LogDestinationWorkspaceAppendedToEmailBody(destinationWorkspaceAsString);
 			}
 			return emailBody.ToString();
 		}
 
 		protected IImportAPI GetImportApi(ImportSettings settings)
 		{
+			if (_api == null)
+			{
+				LogCreatingImportApi();
+			}
 			return _api ?? (_api = _factory.GetImportAPI(settings));
 		}
 
@@ -258,9 +268,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			try
 			{
 				List<Artifact> fields = FieldQuery.GetFieldsForRdo(settings.ArtifactTypeId);
-				HashSet<int> mappableArtifactIds =
-					new HashSet<int>(GetImportApi(settings).GetWorkspaceFields(settings.CaseArtifactId, settings.ArtifactTypeId).Select(x => x.ArtifactID));
-				return fields.Where(x => mappableArtifactIds.Contains(x.ArtifactID)).ToList();
+				var mappableArtifactIds = new HashSet<int>(GetImportApi(settings).GetWorkspaceFields(settings.CaseArtifactId, settings.ArtifactTypeId).Select(x => x.ArtifactID));
+				List<Artifact> mappableFields = fields.Where(x => mappableArtifactIds.Contains(x.ArtifactID)).ToList();
+				LogNumbersOfFieldAndMappableFields(fields, mappableFields);
+				return mappableFields;
 			}
 			catch (Exception e)
 			{
@@ -290,6 +301,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 						if (isIdentifier)
 						{
 							result.Name += " [Object Identifier]";
+							LogIdentifierFields(result);
 						}
 					}
 
@@ -311,7 +323,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				}
 			}
 		}
-
 
 		private void IntializeImportJob(IEnumerable<FieldMap> fieldMap, string options)
 		{
@@ -340,6 +351,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				{
 					isJobDone = _isJobComplete;
 				}
+				_logger.LogInformation("Waiting until the job id done");
 				Thread.Sleep(1000);
 			} while (!isJobDone);
 		}
@@ -524,7 +536,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		protected ImportSettings GetSettings(string options)
 		{
-			var settings = DeserializeImportSettings(options);
+			ImportSettings settings = DeserializeImportSettings(options);
 
 			if (string.IsNullOrEmpty(settings.WebServiceURL))
 			{
@@ -564,20 +576,24 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		private void Finish(DateTime startTime, DateTime endTime, int totalRows, int errorRowCount)
 		{
+			LogLockingImportServiceInFinish();
 			lock (_importService)
 			{
+				LogSettingJobCompleteInFinish();
 				_isJobComplete = true;
 			}
 		}
 
 		private void JobError(Exception ex)
 		{
+			LogLockingImportServiceInJobError();
 			lock (_importService)
 			{
+				LogSettingJobCompleteInJobError();
 				_isJobComplete = true;
 			}
 		}
-
+		
 		private void ItemError(string documentIdentifier, string errorMessage)
 		{
 			_rowErrors.Add(new KeyValuePair<string, string>(documentIdentifier, errorMessage));
@@ -591,6 +607,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				Workspace workspace = GetImportApi(settings).Workspaces().FirstOrDefault(x => x.ArtifactID == settings.CaseArtifactId);
 				if (workspace != null)
 				{
+					LogNullWorkspaceReturnedByIAPI();
 					workspaceRef = new WorkspaceRef { Id = workspace.ArtifactID, Name = workspace.Name };
 				}
 				return workspaceRef;
@@ -692,6 +709,71 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		private void LogImportSettingsDeserializationError(Exception e)
 		{
 			_logger.LogError(e, "Failed to deserialize Import Settings.");
+		}
+
+		private void LogNewDisableNativeLocationValidationValue()
+		{
+			_logger.LogDebug("New value of DisableNativeLocationValidation retrieved from config: {value}", _disableNativeLocationValidation);
+		}
+
+		private void LogNewWebAPIPathValue()
+		{
+			_logger.LogDebug("New value of WebAPIPath retrieved from config: {value}", _webApiPath);
+		}
+
+		private void LogNewDisableNativeValidationValue()
+		{
+			_logger.LogDebug("New value of DisableNativeValidation retrieved from config: {value}", _disableNativeValidation);
+		}
+
+		private void LogFieldMapLength(FieldMap[] fieldMaps)
+		{
+			_logger.LogDebug("Number of items in fieldMap: {fieldMapLength}", fieldMaps.Length);
+		}
+
+		private void LogDestinationWorkspaceAppendedToEmailBody(string destinationWorkspaceAsString)
+		{
+			_logger.LogDebug("Adding destination workpsace to email body: {destinationWorkspace}", destinationWorkspaceAsString);
+		}
+
+		private void LogNumbersOfFieldAndMappableFields(List<Artifact> fields, List<Artifact> mappableFields)
+		{
+			_logger.LogDebug("Retrieved {numberOfFields} fields, {numberOfMappableFields} are mappable", fields.Count, mappableFields.Count);
+		}
+
+		private void LogCreatingImportApi()
+		{
+			_logger.LogDebug("ImportApi was null - new instance will be created using factory");
+		}
+
+		private void LogIdentifierFields(Artifact result)
+		{
+			_logger.LogDebug("Identifier field: {identifierFieldName}", result.Name);
+		}
+
+		private void LogNullWorkspaceReturnedByIAPI()
+		{
+			_logger.LogDebug("ImportApi returned null workspace - creating new WorkspaceRef in GetWorkspace method");
+		}
+
+		private void LogSettingJobCompleteInFinish()
+		{
+			_logger.LogDebug("_importService locked in Finish method of RdoSynchronizer. Job is complete");
+		}
+
+		private void LogLockingImportServiceInFinish()
+		{
+			_logger.LogDebug("Trying to lock _importService in Finish method of RdoSynchronizer");
+		}
+
+		private void LogSettingJobCompleteInJobError()
+		{
+			_logger.LogDebug("_importService locked in JobError method of RdoSynchronizer. Job is complete");
+		}
+
+		private void LogLockingImportServiceInJobError()
+		{
+			_logger.LogDebug("Trying to lock _importService in JobError method of RdoSynchronizer");
 		}
 
 		#endregion

@@ -76,13 +76,10 @@ function createSecuredConfiguration(model) {
 			pageModel.errors.showAllMessages();
 		}
 
-		var destinationJson = IP.frameMessaging().dFrame.IP.points.steps.steps[1].model.destination;
-		var destination = JSON.parse(destinationJson);
-		destination.SecuredConfiguration = createSecuredConfiguration(localModel);
-		destinationJson = JSON.stringify(destination);
-		IP.frameMessaging().dFrame.IP.points.steps.steps[1].model.destination = destinationJson;
-
+		var destinationModel = IP.frameMessaging().dFrame.IP.points.steps.steps[1].model;
+		destinationModel.SecuredConfiguration = createSecuredConfiguration(localModel);
 	});
+
 	var viewModel = function (model) {
 		var state = $.extend({}, {}, model);
 		this.connectionPath = ko.observable(state.connectionPath).extend({

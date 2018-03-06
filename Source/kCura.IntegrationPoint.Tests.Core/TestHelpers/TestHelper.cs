@@ -108,7 +108,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 				string connectionString = string.Format(SharedVariables.WorkspaceConnectionStringFormat, caseId);
 				baseContext = new Data.RowDataGateway.Context(connectionString);
 			}
-			DBContext context = new DBContext(baseContext);
+			TestDbContext context = new TestDbContext(baseContext);
 			return context;
 		}
 
@@ -143,6 +143,11 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 		}
 
 		public ISecretStore GetSecretStore()
+		{
+			throw new NotImplementedException();
+		}
+
+		public IInstanceSettingsBundle GetInstanceSettingBundle()
 		{
 			throw new NotImplementedException();
 		}

@@ -33,7 +33,8 @@ namespace kCura.IntegrationPoints.Core.Tagging
 				IKeywordSearchRepository keywordSearchRepository = _repositoryFactory.GetKeywordSearchRepository();
 
 				KeywordSearch searchDto = CreateKeywordSearchForTagging(tagsContainer, savedSearchFolderId);
-				keywordSearchRepository.CreateSavedSearch(workspaceArtifactId, searchDto);
+				int keywordSearchId = keywordSearchRepository.CreateSavedSearch(workspaceArtifactId, searchDto);
+				_logger.LogDebug("Created tagging keyword search: {keywordSearchId}", keywordSearchId);
 			}
 			catch (Exception e)
 			{

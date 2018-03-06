@@ -64,6 +64,11 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			throw new NotImplementedException();
 		}
 
+		public IInstanceSettingsBundle GetInstanceSettingBundle()
+		{
+			throw new NotImplementedException();
+		}
+
 		public IAuthenticationMgr GetAuthenticationManager()
 		{
 			throw new NotImplementedException();

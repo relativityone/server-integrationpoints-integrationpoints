@@ -38,17 +38,21 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 
 		public override IDataTransferContext GetDataTransferContext(IExporterTransferConfiguration transferConfiguration)
 		{
-			var imageTransferDataReader = new ImageTransferDataReader(this, MappedFields, BaseContext, transferConfiguration.ScratchRepositories);
+			var imageTransferDataReader = new ImageTransferDataReader(this, MappedFields, BaseContext, Logger, transferConfiguration.ScratchRepositories);
 			return Context ?? (Context = new ExporterTransferContext(imageTransferDataReader, transferConfiguration));
 		}
 
 		public override ArtifactDTO[] RetrieveData(int size)
 		{
+			Logger.LogDebug("Start retriving data in ImageExporterService. Size: {size}, export type: {typeOfExport}, AvfIds size: {avfIdsSize}",
+				size, SourceConfiguration.TypeOfExport, AvfIds.Length);
+
 			var imagesResult = new List<ArtifactDTO>();
 			object[] retrievedData = Exporter.RetrieveResults(ExportJobInfo.RunId, AvfIds, size);
 
 			if (retrievedData != null)
 			{
+				Logger.LogDebug("Retrived {numberOfDocuments} documents in ImageExporterService", retrievedData.Length);
 				int artifactType = (int)ArtifactType.Document;
 				foreach (object data in retrievedData)
 				{
@@ -70,6 +74,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 				RetrievedDataCount += retrievedData.Length;
 			}
 
+			Logger.LogDebug("Retrived {numberOfImages} images in ImageExporterService", imagesResult.Count);
 			Context.TotalItemsFound = Context.TotalItemsFound.GetValueOrDefault() + imagesResult.Count;
 			return imagesResult.ToArray();
 		}
@@ -83,6 +88,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 				int producedImagesCount = SetProducedImagesByPrecedence(documentArtifactId, fields, fieldsValue, artifactType, imagesResult);
 				if (_settings.IncludeOriginalImages && producedImagesCount == 0)
 				{
+					Logger.LogDebug("Producent images not available, originial image will be use. Document: {documentArtifactId}", documentArtifactId);
 					SetOriginalImages(documentArtifactId, fieldsValue, fields, artifactType, imagesResult);
 				}
 			}

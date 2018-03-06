@@ -4,6 +4,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Core;
 using Relativity.Toggles;
 
@@ -19,7 +20,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				_templateFieldEntries,
 				_context,
 				_scratchRepositories, 
-				_longTextStreamFactory, Substitute.For<IToggleProvider>(), false);
+				_longTextStreamFactory, 
+				Substitute.For<IToggleProvider>(), 
+				Substitute.For<IAPILog>(), 
+				false);
 		}
 
 		protected override ExportTransferDataReaderBase CreateDataReaderTestInstanceWithParameters(
@@ -33,7 +37,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				fieldMappings,
 				context,
 				scratchTableRepositories,
-				_longTextStreamFactory, Substitute.For<IToggleProvider>(), false);
+				_longTextStreamFactory, 
+				Substitute.For<IToggleProvider>(), 
+				Substitute.For<IAPILog>(), 
+				false);
 		}
 	}
 }

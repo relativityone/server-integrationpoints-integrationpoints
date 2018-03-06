@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data.SqlClient;
 using kCura.Data.RowDataGateway;
+using kCura.IntegrationPoint.Tests.Core;
 using Relativity.API;
 
 namespace kCura.ScheduleQueue.Core.Tests.Integration
@@ -15,7 +16,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration
 		public IDBContext GetDBContext(int workspaceId = -1)
 		{
 			string masterConnectionString = kCura.Data.RowDataGateway.Config.ConnectionString;
-			IDBContext eddsDBContext = new Relativity.API.DBContext(new Context(masterConnectionString));
+			IDBContext eddsDBContext = new TestDbContext(new Context(masterConnectionString));
 			IDBContext returnDBContext = eddsDBContext;
 			if (workspaceId > 0)
 			{
@@ -30,7 +31,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration
 				csb.InitialCatalog = "EDDS" + workspaceId.ToString();
 
 				string caseConnectionString = csb.ToString();
-				returnDBContext = new Relativity.API.DBContext(new Context(caseConnectionString));
+				returnDBContext = new TestDbContext(new Context(caseConnectionString));
 			}
 			return returnDBContext;
 		}

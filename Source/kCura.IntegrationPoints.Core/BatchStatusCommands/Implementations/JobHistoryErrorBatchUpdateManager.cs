@@ -45,6 +45,8 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		{
 			try
 			{
+				_logger.LogDebug("JobHistoryErrorBatchUpdateManager OnJobStart. Workspace: {workspaceId}, jobType: {jobType}, errorTypes: {errorType}",
+					_sourceWorkspaceArtifactId, _updateStatusType.JobType, _updateStatusType.ErrorTypes);
 				IJobHistoryErrorRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(_sourceWorkspaceArtifactId);
 
 				Injection.InjectionManager.Instance.Evaluate("A876A7F9-A9F8-445C-9A01-FCB0C7FD4E8B");
@@ -102,6 +104,8 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		{
 			try
 			{
+				_logger.LogDebug("JobHistoryErrorBatchUpdateManager OnJobComplete. Workspace: {workspaceId}, jobType: {jobType}, errorTypes: {errorType}",
+					_sourceWorkspaceArtifactId, _updateStatusType.JobType, _updateStatusType?.ErrorTypes);
 				IJobHistoryErrorRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(_sourceWorkspaceArtifactId);
 
 				if (_updateStatusType.JobType == JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors)
@@ -132,8 +136,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		}
 		private IntegrationPointsException LogJobCompleteSaveJobHistoryException(Job job, Exception exception)
 		{
-			string jobJson = JsonConvert.SerializeObject(job);
-			string message = $"Error while updating Job History after job completion. Cannot perform save history information on job";
+			string message = "Error while updating Job History after job completion. Cannot perform save history information on job";
 			_logger.LogError("Error while updating Job History after job completion. Cannot perform save history information on job: {@job}.", job);
 			return new IntegrationPointsException(message, exception);
 		}
@@ -141,9 +144,8 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 
 		private IntegrationPointsException LogJobStartSaveJobHistoryException(Job job, Exception exception)
 		{
-			string jobJson = JsonConvert.SerializeObject(job);
-			string message = $"Error while updating Job History before job start. Cannot perform save history information on job.";
-			_logger.LogError("Error while updating Job History before job start. Cannot perform save history information on job: {@job}.", jobJson);
+			string message = "Error while updating Job History before job start. Cannot perform save history information on job.";
+			_logger.LogError("Error while updating Job History before job start. Cannot perform save history information on job: {@job}.", job);
 			return new IntegrationPointsException(message, exception);
 		}
 

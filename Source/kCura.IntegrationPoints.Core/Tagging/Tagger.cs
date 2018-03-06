@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Core.Tagging
 			try
 			{
 				FieldMap identifierField = GetIdentifierField();
-
+				LogStartTaggingDocuments(identifierField);
 				DataColumn[] columns =
 				{
 					new DataColumn(identifierField.SourceField.FieldIdentifier),
@@ -57,6 +57,11 @@ namespace kCura.IntegrationPoints.Core.Tagging
 			{
 				throw LogAndWrapException(e);
 			}
+		}
+
+		private void LogStartTaggingDocuments(FieldMap identifierField)
+		{
+			_logger.LogDebug("Start tagging documents. Identifier {identifierFieldName}", identifierField.SourceField.DisplayName);
 		}
 
 		private FieldMap GetIdentifierField()

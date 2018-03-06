@@ -21,6 +21,13 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		IList<Data.IntegrationPoint> GetAllRDOs();
 
 		/// <summary>
+		/// Retrieves all the integration points for given source providers.
+		/// </summary>
+		/// <param name="sourceProviderIds">Artifact ids of source providers.</param>
+		/// /// <returns>A list of integration point objects.</returns>
+		IList<Data.IntegrationPoint> GetAllRDOsForSourceProvider(List<int> sourceProviderIds);
+
+		/// <summary>
 		/// Retrieves the source configuration information for the given integration point artifact id.
 		/// </summary>
 		/// <param name="artifactId">Artifact id of the integration point.</param>

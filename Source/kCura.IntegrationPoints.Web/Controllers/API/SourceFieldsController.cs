@@ -6,12 +6,9 @@ using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
-using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Queries;
 using kCura.IntegrationPoints.Core.Services.Provider;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Web.Attributes;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -25,27 +22,14 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 	public class SourceFieldsController : ApiController
 	{
 		private readonly IGetSourceProviderRdoByIdentifier _sourceProviderIdentifier;
-		private readonly ICaseServiceContext _caseService;
-		private readonly IContextContainerFactory _contextContainerFactory;
-		private readonly IManagerFactory _managerFactory;
 		private readonly IDataProviderFactory _factory;
-		private readonly IHelper _helper;
 
 		public SourceFieldsController(
 			IGetSourceProviderRdoByIdentifier sourceProviderIdentifier,
-			ICaseServiceContext caseService,
-			IContextContainerFactory contextContainerFactory,
-			IManagerFactory managerFactory,
-			IDataProviderFactory factory, 
-			IHelper helper)
+			IDataProviderFactory factory)
 		{
 			_sourceProviderIdentifier = sourceProviderIdentifier;
-			_caseService = caseService;
-			_contextContainerFactory = contextContainerFactory;
-			_managerFactory = managerFactory;
 			_factory = factory;
-			_helper = helper;
-
 		}
 
 		[HttpPost]
