@@ -48,7 +48,6 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="AgentConstractorTests.cs" />
     <Compile Include="ExportServiceManagerTests.cs" />
     <Compile Include="RelativityProvider_ImportNativeFileCopyModeTests.cs" />
     <Compile Include="SendEmailManagerTests.cs" />
