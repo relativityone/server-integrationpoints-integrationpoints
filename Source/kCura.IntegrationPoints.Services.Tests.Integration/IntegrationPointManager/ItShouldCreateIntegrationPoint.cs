@@ -31,7 +31,12 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
-			//ExtensionPointServiceFinder.SecretStoreHelper = APIHelper_SecretStoreFactory.BuildSecretStore();
+
+#pragma warning disable 414, CS0618
+			// Platform made currently BuildSecretStore method internal. The only option is for now use obsolute method. 
+			// When Platofrm team deliver final solution we should replace the code
+			ExtensionPointServiceFinder.SecretStoreHelper = APIHelper_SecretStoreFactory.SecretCatalog;
+#pragma warning restore
 			_secretCatalog = SecretStoreFactory.GetSecretStore(BaseServiceContextHelper.Create().GetMasterRdgContext());
 			_secretManager = new SecretManager(WorkspaceArtifactId);
 
