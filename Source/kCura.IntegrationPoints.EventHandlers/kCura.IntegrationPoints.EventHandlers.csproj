@@ -77,9 +77,11 @@
     <Compile Include="Commands\Context\IEHContext.cs" />
     <Compile Include="Commands\IEventHandler.cs" />
     <Compile Include="Commands\ImportNativeFileCopyModeUpdater.cs" />
+    <Compile Include="Commands\IRemoveSecuredConfigurationFromIntegrationPointService.cs" />
     <Compile Include="Commands\ISourceConfigurationTypeOfExportUpdater.cs" />
     <Compile Include="Commands\PreCascadeDeleteIntegrationPointCommand.cs" />
     <Compile Include="Commands\RemoveAgentJobLogTableCommand.cs" />
+    <Compile Include="Commands\RemoveSecuredConfigurationFromIntegrationPointService.cs" />
     <Compile Include="Commands\RestoreJobHistoryParser\CheckForInputNullPath.cs" />
     <Compile Include="Commands\RestoreJobHistoryParser\CheckIfHasLocalInstance.cs" />
     <Compile Include="Commands\RestoreJobHistoryParser\CheckSeparatorsAmount.cs" />
@@ -96,7 +98,9 @@
     <Compile Include="Commands\SetTypeOfExportDefaultValueCommand.cs" />
     <Compile Include="Commands\SourceConfigurationTypeOfExportUpdater.cs" />
     <Compile Include="Commands\UpdateDestinationWorkspaceEntriesCommand.cs" />
+    <Compile Include="Commands\UpdateIntegrationPointConfigurationCommandBase.cs" />
     <Compile Include="Commands\UpdateLdapConfigurationCommand.cs" />
+    <Compile Include="Commands\UpdateRelativityConfigurationCommand.cs" />
     <Compile Include="Installers\CreateTenantIdForSecretStoreInstaller.cs" />
     <Compile Include="Commands\Factories\RestoreJobHistoryDestinationWorkspaceCommandFactory.cs" />
     <Compile Include="Installers\Helpers\Factories\SecretStoreCleanUpFactory.cs" />
@@ -121,6 +125,7 @@
     <Compile Include="Installers\UpdateDestinationWorkspaceEntriesEventHandler.cs" />
     <Compile Include="Installers\UpdateJobHistoryDestinationWorkspace.cs" />
     <Compile Include="Installers\UpdateLdapSecuredConfiguration.cs" />
+    <Compile Include="Installers\UpdateRelativitySecuredConfiguration.cs" />
     <Compile Include="IntegrationPoints\DataTransferLocationMigrationEventHandler.cs" />
     <Compile Include="IntegrationPoints\Helpers\Factories\CorrespondingJobDeleteFactory.cs" />
     <Compile Include="IntegrationPoints\Helpers\Factories\IntegrationPointSecretDeleteFactory.cs" />

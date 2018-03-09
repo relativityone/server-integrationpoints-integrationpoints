@@ -70,6 +70,7 @@
     <Compile Include="BatchStatusCommands\Implementations\TempTableReader.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="ContextContainer.cs" />
+    <Compile Include="Helpers\JSONHelper.cs" />
     <Compile Include="Helpers\Logging\LogHelper.cs" />
     <Compile Include="Exceptions\PermissionException.cs" />
     <Compile Include="ExtendedRsapiClientWithWorkspaceFactory.cs" />
@@ -153,6 +154,7 @@
     <Compile Include="Services\IFieldService.cs" />
     <Compile Include="Services\IDeleteHistoryService.cs" />
     <Compile Include="Services\IJobTracker.cs" />
+    <Compile Include="Services\IntegrationPoint\IIntegrationPointForSourceService.cs" />
     <Compile Include="Services\IProcessingSourceLocationService.cs" />
     <Compile Include="Services\JobHistory\IUnlinkedJobHistoryService.cs" />
     <Compile Include="Services\JobHistory\IUnfinishedJobService.cs" />

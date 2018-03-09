@@ -2,8 +2,8 @@
 using System.Net;
 using System.Text;
 using System.Web.Mvc;
+using kCura.IntegrationPoints.Core.Helpers;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace kCura.IntegrationPoints.Web.Attributes
 {
@@ -18,10 +18,7 @@ namespace kCura.IntegrationPoints.Web.Attributes
 
 		public JsonNetResult()
 		{
-			SerializerSettings = new JsonSerializerSettings
-			{
-				ContractResolver = new CamelCasePropertyNamesContractResolver()
-			};
+			SerializerSettings = JSONHelper.GetDefaultSettings();
 		}
 
 		public JsonNetResult GetJsonNetResult(object data = null, int statusCode = (int)HttpStatusCode.OK, string contentType = null)

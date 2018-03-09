@@ -119,7 +119,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IDataSynchronizer>().ImplementedBy<RdoCustodianSynchronizer>().Named(typeof(RdoCustodianSynchronizer).AssemblyQualifiedName).LifestyleTransient());
 			container.Register(Component.For<IRdoSynchronizerProvider>().ImplementedBy<RdoSynchronizerProvider>().LifestyleTransient());
 			container.Register(Component.For<IRelativityFieldQuery>().ImplementedBy<RelativityFieldQuery>().LifestyleTransient());
-			container.Register(Component.For<IIntegrationPointService>().ImplementedBy<IntegrationPointService>().LifestyleTransient());
+			container.Register(Component.For<IIntegrationPointService, IIntegrationPointForSourceService>().ImplementedBy<IntegrationPointService>().LifestyleTransient());
 			container.Register(Component.For<IIntegrationPointProfileService>().ImplementedBy<IntegrationPointProfileService>().LifestyleTransient());
 			container.Register(Component.For<IIntegrationPointTypeService>().ImplementedBy<IntegrationPointTypeService>().LifestyleTransient());
 			container.Register(Component.For<IGetSourceProviderRdoByIdentifier>().ImplementedBy<GetSourceProviderRdoByIdentifier>().LifestyleTransient());

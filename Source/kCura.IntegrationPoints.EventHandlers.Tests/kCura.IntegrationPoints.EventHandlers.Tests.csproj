@@ -67,6 +67,8 @@
     <Compile Include="Commands\SourceConfigurationTypeOfExportUpdaterTests.cs" />
     <Compile Include="Commands\UpdateDestinationWorkspaceEntriesCommandTests.cs" />
     <Compile Include="Commands\Helpers\CreateTenantIdForSecretStoreTests.cs" />
+    <Compile Include="Commands\RemoveSecuredConfigurationFromIntegrationPointServiceTests.cs" />
+    <Compile Include="Commands\UpdateRelativityConfigurationCommandTests.cs" />
     <Compile Include="Installers\Helpers\SecretStoreCleanUpTests.cs" />
     <Compile Include="Installers\SecretStoreCleanUpEventHandlerWrapperTests.cs" />
     <Compile Include="Installers\SetHasErrorsFieldTests.cs" />

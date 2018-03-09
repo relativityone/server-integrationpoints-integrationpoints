@@ -1,23 +1,26 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using Relativity.API;
 using kCura.EventHandler.CustomAttributes;
 using kCura.IntegrationPoints.EventHandlers.Commands;
 using kCura.IntegrationPoints.EventHandlers.Commands.Context;
 using kCura.IntegrationPoints.SourceProviderInstaller;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.Installers
 {
-	[Description("Update LDAP Configuration to use Secret Store")]
+	/// <summary>
+	/// Removes Secured Configuration from source and destination fields.
+	/// </summary>
+	[Description("Update Relativity Configuration to use only Secret Store")]
 	[RunOnce(true)]
-	[Guid("C4B307AD-E34E-488E-A2DB-8AD12FED2348")]
-	public class UpdateLdapSecuredConfiguration : PostInstallEventHandlerBase, IEventHandler
+	[Guid("2DAD0486-E3E1-4A3C-956D-FA45AB5E4717")]
+	public class UpdateRelativitySecuredConfiguration : PostInstallEventHandlerBase, IEventHandler
 	{
-		protected override string SuccessMessage => "Updating LDAP Configuration completed";
+		protected override string SuccessMessage => "Updating Relativity Configuration completed";
 
 		protected override string GetFailureMessage(Exception ex)
 		{
-			return "Updating LDAP configuration failed";
+			return "Updating Relativity Configuration failed";
 		}
 
 		public IEHContext Context => new EHContext
@@ -25,11 +28,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			Helper = Helper
 		};
 
-		public Type CommandType => typeof(UpdateLdapConfigurationCommand);
+		public Type CommandType => typeof(UpdateRelativityConfigurationCommand);
 
 		protected override IAPILog CreateLogger()
 		{
-			return Helper.GetLoggerFactory().GetLogger().ForContext<UpdateLdapSecuredConfiguration>();
+			return Helper.GetLoggerFactory().GetLogger().ForContext<UpdateRelativitySecuredConfiguration>();
 		}
 
 		protected override void Run()

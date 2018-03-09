@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using kCura.IntegrationPoints.Core.Helpers;
 using kCura.ScheduleQueue.Core.Helpers;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace kCura.IntegrationPoints.Core.Models
 {
@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.Core.Models
 							{
 								SelectedDays = rule.DaysToRun.GetValueOrDefault(DaysOfWeek.Monday) == DaysOfWeek.Day ? new List<string> { DaysOfWeek.Day.ToString().ToLower() } : DaysOfWeekConverter.FromDaysOfWeek(rule.DaysToRun.GetValueOrDefault(DaysOfWeek.Monday)).Select(x => x.ToString()).ToList()
 
-							}, Formatting.None, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
+							}, Formatting.None, JSONHelper.GetDefaultSettings());
 						break;
 					case ScheduleInterval.Monthly:
 						var type = rule.OccuranceInMonth.HasValue ? MonthlyType.Month : MonthlyType.Days;
@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.Core.Models
 							SelectedDay = rule.DayOfMonth.GetValueOrDefault(1),
 							SelectedDayOfTheMonth = rule.DaysToRun.GetValueOrDefault(DaysOfWeek.Monday),
 							SelectedType = rule.OccuranceInMonth
-						}, Formatting.None, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
+						}, Formatting.None, JSONHelper.GetDefaultSettings());
 
 						break;
 				}

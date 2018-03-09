@@ -12,6 +12,7 @@ using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
 using Castle.Windsor.Installer;
 using kCura.Apps.Common.Data;
+using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
@@ -19,7 +20,6 @@ using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Web.Logging;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using Relativity.API;
 using Relativity.CustomPages;
 
@@ -50,8 +50,8 @@ namespace kCura.IntegrationPoints.Web
 			MediaTypeFormatterCollection formatters = GlobalConfiguration.Configuration.Formatters;
 			JsonMediaTypeFormatter jsonFormatter = formatters.JsonFormatter;
 			JsonSerializerSettings settings = jsonFormatter.SerializerSettings;
+			settings.SetupDefaults();
 			settings.Formatting = Formatting.Indented;
-			settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
 			GlobalConfiguration.Configuration.EnsureInitialized();
 		}
 

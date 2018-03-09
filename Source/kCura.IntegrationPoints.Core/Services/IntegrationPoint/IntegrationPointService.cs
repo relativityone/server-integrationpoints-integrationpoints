@@ -21,7 +21,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 {
-	public class IntegrationPointService : IntegrationPointServiceBase<Data.IntegrationPoint>, IIntegrationPointService
+	public class IntegrationPointService : IntegrationPointServiceBase<Data.IntegrationPoint>, IIntegrationPointService, IIntegrationPointForSourceService
 	{
 		private readonly IJobManager _jobService;
 		private readonly IJobHistoryService _jobHistoryService;
@@ -214,6 +214,13 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			}
 
 			CreateJob(integrationPoint, sourceProvider, destinationProvider, JobTypeChoices.JobHistoryRetryErrors, workspaceArtifactId, userId);
+		}
+
+		public IList<Data.IntegrationPoint> GetAllForSourceProvider(string sourceProviderGuid)
+		{
+			ISourceProviderManager sourceProviderManager = ManagerFactory.CreateSourceProviderManager(SourceContextContainer);
+			int relativityProviderArtifactId = sourceProviderManager.GetArtifactIdFromSourceProviderTypeGuidIdentifier(Context.WorkspaceID, sourceProviderGuid);
+			return this.GetAllRDOsForSourceProvider(new List<int> { relativityProviderArtifactId });
 		}
 
 		private void CheckPreviousJobHistoryStatusOnRetry(int workspaceArtifactId, int integrationPointArtifactId)
