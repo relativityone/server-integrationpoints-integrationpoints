@@ -65,6 +65,11 @@
     <Compile Include="Logging\LoggerFactory.cs" />
     <Compile Include="Logging\LoggerNameEnricher.cs" />
     <Compile Include="Pages\ExportToFileThirdPage.cs" />
+    <Compile Include="Pages\ExportToFileThirdPageExportDetails.cs" />
+    <Compile Include="Pages\ExportToFileThirdPageImageNativeTextOptions.cs" />
+    <Compile Include="Pages\ExportToFileThirdPageLoadFileOptions.cs" />
+    <Compile Include="Pages\ExportToFileThirdPagePanel.cs" />
+    <Compile Include="Pages\ExportToFileThirdPageVolumeSubdirectoryDetails.cs" />
     <Compile Include="Pages\IntegrationPointDetailsPage.cs" />
     <Compile Include="Pages\IntegrationPointsPage.cs" />
     <Compile Include="Pages\ExportToFileSecondPage.cs" />
@@ -76,6 +81,7 @@
     <Compile Include="Pages\PushtoRelativityThirdPage.cs" />
     <Compile Include="Tests\CreateIpSmokeTest.cs" />
     <Compile Include="Auxiliary\Grinder.cs" />
+    <Compile Include="Tests\ExportToLoadFile\DocumentExportToLoadFileTests.cs" />
     <Compile Include="Tests\RelativityProvider\ImagesSavedSearchToFolderTest.cs" />
     <Compile Include="Tests\RelativityProvider\NativesSavedSearchToFolderTest.cs" />
     <Compile Include="Tests\RelativityProvider\LinksSavedSearchToFolderTest.cs" />
@@ -168,6 +174,7 @@ xcopy "$(ProjectDir)..\kCura.IntegrationPoint.Tests.Core\oi\unmanaged" "$(Target
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>

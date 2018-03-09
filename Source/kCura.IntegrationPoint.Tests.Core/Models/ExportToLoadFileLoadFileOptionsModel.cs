@@ -1,4 +1,6 @@
-﻿namespace kCura.IntegrationPoint.Tests.Core.Models
+﻿using kCura.IntegrationPoint.Tests.Core.Extensions;
+
+namespace kCura.IntegrationPoint.Tests.Core.Models
 {
 	using System.ComponentModel;
 
@@ -20,7 +22,7 @@
 		public string UserPrefix { get; set; }
 
 		[DefaultValue(false)]
-		public bool? IncludeNativeTypes { get; set; }
+		public bool? IncludeNativeFilesPath { get; set; }
 
 		[DefaultValue(false)]
 		public bool? ExportMultiChoiceAsNested { get; set; }
@@ -30,5 +32,10 @@
 
 		[DefaultValue(false)]
 		public bool? AppendOriginalFileName { get; set; }
+
+		public ExportToLoadFileLoadFileOptionsModel()
+		{
+			this.InitializePropertyDefaultValues();
+		}
 	}
 }

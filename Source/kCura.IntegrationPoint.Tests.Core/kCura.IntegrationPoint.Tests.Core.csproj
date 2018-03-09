@@ -116,6 +116,7 @@
     <Compile Include="Extensions\DefaultValueAttributeExtension.cs" />
     <Compile Include="Extensions\GenericPermissionListExtension.cs" />
     <Compile Include="Extensions\JobExtensions.cs" />
+    <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\ObjectPermissionListExtension.cs" />
     <Compile Include="FieldMaps.cs" />
     <Compile Include="Fields.cs" />
@@ -126,6 +127,13 @@
     <Compile Include="InstanceSetting.cs" />
     <Compile Include="Kepler.cs" />
     <Compile Include="Models\Audit.cs" />
+    <Compile Include="Models\Constants\ExportToLoadFile\ExportToLoadFileFileEncodingConstants.cs" />
+    <Compile Include="Models\Constants\ExportToLoadFile\ExportToLoadFileDataFileFormatConstants.cs" />
+    <Compile Include="Models\Constants\ExportToLoadFile\ExportToLoadFileImageFileFormatConstants.cs" />
+    <Compile Include="Models\Constants\ExportToLoadFile\ExportToLoadFileImageFileTypeConstants.cs" />
+    <Compile Include="Models\Constants\ExportToLoadFile\ExportToLoadFileSourceConstants.cs" />
+    <Compile Include="Models\Constants\ExportToLoadFile\ExportToLoadFileNameOutputFilesAfterConstants.cs" />
+    <Compile Include="Models\Constants\ExportToLoadFile\ExportToLoadFileTransferredObjectConstants.cs" />
     <Compile Include="Models\DocumentsTestData.cs" />
     <Compile Include="Models\ExportToLoadFileDetailsModel.cs" />
     <Compile Include="Models\ExportToLoadFileProviderModel.cs" />
@@ -141,6 +149,7 @@
     <Compile Include="Models\JobHistoryModel.cs" />
     <Compile Include="Models\RelativityProviderModel.cs" />
     <Compile Include="Models\SchedulerModel.cs" />
+    <Compile Include="Models\Shared\SharedModelEnums.cs" />
     <Compile Include="ObjectType.cs" />
     <Compile Include="TestDbContext.cs" />
     <Compile Include="TestException.cs" />

@@ -35,10 +35,10 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			first.Destination = "Load File";
 
 			ExportToFileSecondPage second = first.GoToNextPage();
-			second.SelectAllDocuments();
+			second.SelectAllDocumentsSavedSearch();
 
 			ExportToFileThirdPage third = second.GoToNextPage();
-			third.DestinationFolder.ChooseRootElement();
+			third.ExportDetails.DestinationFolder.ChooseRootElement();
 
 			IntegrationPointDetailsPage detailsPage = third.SaveIntegrationPoint();
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();

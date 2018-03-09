@@ -1,4 +1,6 @@
-﻿namespace kCura.IntegrationPoint.Tests.Core.Models
+﻿using kCura.IntegrationPoint.Tests.Core.Extensions;
+
+namespace kCura.IntegrationPoint.Tests.Core.Models
 {
 	using System.ComponentModel;
 
@@ -24,5 +26,10 @@
 
 		[DefaultValue(500)]
 		public int? SubdirectoryMaxFiles { get; set; }
+
+		public ExportToLoadFileVolumeAndSubdirectoryModel()
+		{
+			this.InitializePropertyDefaultValues();
+		}
 	}
 }

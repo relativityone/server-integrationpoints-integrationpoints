@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using kCura.IntegrationPoint.Tests.Core.Models.Shared;
 
 namespace kCura.IntegrationPoint.Tests.Core.Models
 {
@@ -83,12 +84,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Models
 			AppendOnly,
 			OverlayOnly,
 			AppendOverlay
-		}
-
-		public enum ImagePrecedenceEnum
-		{
-			OriginalImages,
-			ProducedImages
 		}
 	}
 }

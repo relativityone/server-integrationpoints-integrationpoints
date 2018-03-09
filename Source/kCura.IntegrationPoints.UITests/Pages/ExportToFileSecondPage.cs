@@ -2,35 +2,81 @@
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Support.PageObjects;
+using OpenQA.Selenium.Support.UI;
 
 namespace kCura.IntegrationPoints.UITests.Pages
 {
 	public class ExportToFileSecondPage : GeneralPage
     {
-
         [FindsBy(How = How.Id, Using = "next")]
         protected IWebElement NextButton { get; set; }
 
 		[FindsBy(How = How.Id, Using = "saved-search-selection-button")]
         protected IWebElement SavedSearchSelectionButton { get; set; }
 
-		public Select SavedSearch { get; }
+	    [FindsBy(How = How.Id, Using = "available-fields")]
+	    protected IWebElement SourceFieldsElement { get; set; }
 
-        public ExportToFileSecondPage(RemoteWebDriver driver) : base(driver)
+	    [FindsBy(How = How.Id, Using = "add-field")]
+	    protected IWebElement AddSourceFieldElement { get; set; }
+
+	    [FindsBy(How = How.Id, Using = "add-all-fields")]
+	    protected IWebElement AddAllSourceFieldElements { get; set; }
+
+		public Select SavedSearch { get; }
+	    protected SelectElement SelectSourceFieldsElement => new SelectElement(SourceFieldsElement);
+
+		public ExportToFileSecondPage(RemoteWebDriver driver) : base(driver)
         {
             WaitForPage();
             PageFactory.InitElements(driver, this);
             SavedSearch = new Select(Driver.FindElementById("s2id_savedSearchSelector"));
         }
 
-        public ExportToFileSecondPage SelectAllDocuments()
-        {
-            SavedSearch.Choose("All Documents");
-            Sleep(200);
-            return this;
-        }
+	    public ExportToFileSecondPage SelectSavedSearch(string savedSearch)
+	    {
+		    SavedSearch.Choose(savedSearch);
+		    Sleep(200);
+		    return this;
+	    }
 
-        public ExportToFileThirdPage GoToNextPage()
+	    public ExportToFileSecondPage SelectAllDocumentsSavedSearch()
+	    {
+		    return SelectSavedSearch("All Documents");
+	    }
+
+	    public void SelectAllSourceFields()
+	    {
+			AddAllSourceFieldElements.Click();
+	    }
+
+	    public void SelectSourceField(string fieldName)
+	    {
+		    SelectField(SelectSourceFieldsElement, AddSourceFieldElement, fieldName);
+	    }
+
+	    protected void SelectField(SelectElement selectElement, IWebElement addFieldElement, string fieldName)
+	    {
+		    if (string.IsNullOrEmpty(fieldName))
+		    {
+			    return;
+		    }
+
+		    SelectOption(selectElement, fieldName);
+
+		    addFieldElement.Click();
+	    }
+
+	    private static void SelectOption(SelectElement selectElement, string textToSearchFor)
+	    {
+		    IWebElement option = selectElement.WrappedElement.FindElement(By.XPath($".//option[starts-with(normalize-space(.), \"{textToSearchFor}\")]"));
+		    if (!option.Selected)
+		    {
+			    option.Click();
+		    }
+	    }
+
+		public ExportToFileThirdPage GoToNextPage()
         {
 			WaitForPage();
             NextButton.Click();

@@ -1,4 +1,6 @@
-﻿namespace kCura.IntegrationPoint.Tests.Core.Models
+﻿using kCura.IntegrationPoint.Tests.Core.Extensions;
+
+namespace kCura.IntegrationPoint.Tests.Core.Models
 {
 	using System.ComponentModel;
 
@@ -14,14 +16,19 @@
 		public bool? ExportNatives { get; set; }
 
 		[DefaultValue(false)]
-		public bool? TextFieldsAsFiles { get; set; }
+		public bool? ExportTextFieldsAsFiles { get; set; }
 
-		public string DestinationFolder { get; set; }
+		public ExportToLoadFileProviderModel.DestinationFolderTypeEnum? DestinationFolder { get; set; }
 
 		[DefaultValue(true)]
 		public bool? CreateExportFolder { get; set; }
 
 		[DefaultValue(false)]
 		public bool? OverwriteFiles { get; set; }
+
+		public ExportToLoadFileDetailsModel()
+		{
+			this.InitializePropertyDefaultValues();
+		}
 	}
 }

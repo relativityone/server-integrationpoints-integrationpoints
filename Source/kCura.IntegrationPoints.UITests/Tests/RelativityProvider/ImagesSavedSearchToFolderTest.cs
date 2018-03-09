@@ -1,4 +1,5 @@
 ﻿using kCura.IntegrationPoint.Tests.Core.Models;
+using kCura.IntegrationPoint.Tests.Core.Models.Shared;
 using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Components;
 using kCura.IntegrationPoints.UITests.Pages;
@@ -51,7 +52,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			//Arrange
 			RelativityProviderModel model = CreateRelativityProviderModelWithImages();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOnly;
-			model.ImagePrecedence = RelativityProviderModel.ImagePrecedenceEnum.OriginalImages;
+			model.ImagePrecedence = ImagePrecedenceEnum.OriginalImages;
 			model.CopyFilesToRepository = false;
 
 			//Act
@@ -67,7 +68,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			//Arrange
 			RelativityProviderModel model = CreateRelativityProviderModelWithImages();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOnly;
-			model.ImagePrecedence = RelativityProviderModel.ImagePrecedenceEnum.OriginalImages;
+			model.ImagePrecedence = ImagePrecedenceEnum.OriginalImages;
 			model.CopyFilesToRepository = true;
 
 			// Act
@@ -83,7 +84,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			//Arrange
 			RelativityProviderModel model = CreateRelativityProviderModelWithImages();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
-			model.ImagePrecedence = RelativityProviderModel.ImagePrecedenceEnum.OriginalImages;
+			model.ImagePrecedence = ImagePrecedenceEnum.OriginalImages;
 			model.CopyFilesToRepository = false;
 
 			// Act
@@ -103,7 +104,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 			RelativityProviderModel model = CreateRelativityProviderModelWithImages();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
-			model.ImagePrecedence = RelativityProviderModel.ImagePrecedenceEnum.OriginalImages;
+			model.ImagePrecedence = ImagePrecedenceEnum.OriginalImages;
 			model.CopyFilesToRepository = true;
 
 			// Act
@@ -122,7 +123,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 			RelativityProviderModel model = CreateRelativityProviderModelWithImages();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
-			model.ImagePrecedence = RelativityProviderModel.ImagePrecedenceEnum.OriginalImages;
+			model.ImagePrecedence = ImagePrecedenceEnum.OriginalImages;
 			model.CopyFilesToRepository = false;
 
 			// Act
@@ -141,7 +142,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 			RelativityProviderModel model = CreateRelativityProviderModelWithImages();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
-			model.ImagePrecedence = RelativityProviderModel.ImagePrecedenceEnum.OriginalImages;
+			model.ImagePrecedence = ImagePrecedenceEnum.OriginalImages;
 			model.CopyFilesToRepository = true;
 
 			// Act

@@ -1,7 +1,5 @@
 ﻿namespace kCura.IntegrationPoint.Tests.Core.Models
 {
-	using System.ComponentModel;
-
 	public class ExportToLoadFileOutputSettingsModel
 	{
 		public ExportToLoadFileLoadFileOptionsModel LoadFileOptions { get; set; } = new ExportToLoadFileLoadFileOptionsModel();

@@ -1,4 +1,7 @@
-﻿namespace kCura.IntegrationPoint.Tests.Core.Models
+﻿using kCura.IntegrationPoint.Tests.Core.Extensions;
+using kCura.IntegrationPoint.Tests.Core.Models.Shared;
+
+namespace kCura.IntegrationPoint.Tests.Core.Models
 {
 	using System.ComponentModel;
 
@@ -11,5 +14,10 @@
 
 		[DefaultValue("TEXT")]
 		public string TextSubdirectoryPrefix { get; set; }
+
+		public ExportToLoadFileTextOptionsModel()
+		{
+			this.InitializePropertyDefaultValues();
+		}
 	}
 }

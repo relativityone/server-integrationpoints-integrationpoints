@@ -1,4 +1,6 @@
-﻿namespace kCura.IntegrationPoint.Tests.Core.Models
+﻿using kCura.IntegrationPoint.Tests.Core.Extensions;
+
+namespace kCura.IntegrationPoint.Tests.Core.Models
 {
 	using System.ComponentModel;
 
@@ -6,5 +8,10 @@
 	{
 		[DefaultValue("NATIVE")]
 		public string NativeSubdirectoryPrefix { get; set; }
+
+		public ExportToLoadFileNativeOptionsModel()
+		{
+			this.InitializePropertyDefaultValues();
+		}
 	}
 }

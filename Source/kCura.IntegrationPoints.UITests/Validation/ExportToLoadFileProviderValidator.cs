@@ -96,7 +96,7 @@ namespace kCura.IntegrationPoints.UITests.Validation
 
 		private static string GetExpectedFilePath(ExportToLoadFileLoadFileOptionsModel loadFileOptionsModel)
 		{
-			string includeNatives = loadFileOptionsModel.GetValueOrDefault(model => model.IncludeNativeTypes) ? "Include" : "Do not include";
+			string includeNatives = loadFileOptionsModel.GetValueOrDefault(model => model.IncludeNativeFilesPath) ? "Include" : "Do not include";
 			string filePathType = loadFileOptionsModel.GetValueOrDefault(model => model.FilePathType).ToString();//TODO: should support all options
 
 			return $"{includeNatives}; {filePathType}";
