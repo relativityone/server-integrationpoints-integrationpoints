@@ -116,9 +116,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				{
 					return null;
 				}
-				var secretIdentifier = _secretManager.RetrieveIdentifier(secretId);
-				var secretData = SecretCatalog.GetSecret(secretIdentifier);
-				return _secretManager.RetrieveValue(secretData);
+				SecretRef secretIdentifier = _secretManager.RetrieveIdentifier(secretId);
+				Dictionary<string, string> secretData = GetSecretFromCatalog(secretIdentifier);
+				return secretData != null ?_secretManager.RetrieveValue(secretData) : null;
 			}
 			catch (FieldNotFoundException ex)
 			{
@@ -127,6 +127,22 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				_logger.LogWarning(ex, "Can not retrieve Secured Configuration for Integration Point record during decryption process (Secret Id: {secretId} )", secretId);
 
 				return secretId;
+			}
+		}
+
+		private Dictionary<string, string> GetSecretFromCatalog(SecretRef secretIdentifier)
+		{
+			// this try-catch clause was introduced due to an issue with ARMed workspaces (REL-171985)
+			// so far, ARM is not capable of copying SQL Secret Catalog records for integration points in workspace database
+			// if a secret store entry associated with an integration point is missing, an exception is thrown here
+			try
+			{
+				return SecretCatalog.GetSecret(secretIdentifier);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogWarning(ex, "Can not retrieve Secured Configuration for Integration Point. This may be caused by RIP being restored from ARM backup.");
+				return null;
 			}
 		}
 	}

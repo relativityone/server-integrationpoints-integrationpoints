@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Web.Http;
+using Castle.Core.Internal;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Factories;
@@ -13,6 +14,7 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data.Models;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Attributes;
@@ -60,6 +62,18 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 			var integrationPoint = _context.RsapiService.RelativityObjectManager.Read<IntegrationPoint>(Convert.ToInt32(payload.ArtifactId));
 			DestinationConfiguration importSettings = JsonConvert.DeserializeObject<DestinationConfiguration>(integrationPoint.DestinationConfiguration);
+
+			// this validation was introduced due to an issue with ARMed workspaces (REL-171985)
+			// so far, ARM is not capable of copying SQL Secret Catalog records for integration points in workspace database
+			// if secret store entry is missing, SecuredConfiguration property contains bare guid instead of JSON - that's why we check if it can be parsed as guid
+			Guid parseResult;
+			if (Guid.TryParse(integrationPoint.SecuredConfiguration, out parseResult))
+			{
+				throw new IntegrationPointsException("Integration point secret store configuration is missing. " +
+				                                     "This may be caused by RIP being restored from ARM backup. " +
+				                                     "Please try to edit integration point configuration and reenter credentials.");
+			}
+
 			IHelper targetHelper = _helperFactory.CreateTargetHelper(_helper, importSettings.FederatedInstanceArtifactId, integrationPoint.SecuredConfiguration);
 
 			IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_helper, targetHelper);

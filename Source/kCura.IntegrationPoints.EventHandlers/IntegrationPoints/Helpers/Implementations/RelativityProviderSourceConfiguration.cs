@@ -42,11 +42,21 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 
 		public override void UpdateNames(IDictionary<string, object> settings, Artifact artifact)
 		{
-			var federatedInstanceModel = _federatedInstanceModelFactory.Create(settings, artifact);
-			SetLocationName(settings, federatedInstanceModel);
+			FederatedInstanceModel federatedInstanceModel = _federatedInstanceModelFactory.Create(settings, artifact);
+			string credentials = federatedInstanceModel.Credentials;
+
+			// this validation was introduced due to an issue with ARMed workspaces (REL-171985)
+			// so far, ARM is not capable of copying SQL Secret Catalog records for integration points in workspace database
+			// if secret store entry is missing, SecuredConfiguration property contains bare guid instead of JSON - that's why we check if it can be parsed as guid
+			Guid parseResult;
+			if (!Guid.TryParse(credentials, out parseResult))
+			{
+				SetLocationName(settings, federatedInstanceModel);
+				SetTargetWorkspaceName(settings, federatedInstanceModel);
+			}
+
 			SetInstanceFriendlyName(settings, _instanceSettingsManager);
 			SetSourceWorkspaceName(settings);
-			SetTargetWorkspaceName(settings, federatedInstanceModel);
 			SetSavedSearchName(settings);
 			SetSourceProductionName(settings);
 		}
