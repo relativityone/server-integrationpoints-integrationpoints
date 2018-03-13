@@ -1,6 +1,6 @@
 #!groovy
 
-@Library('PipelineTools@develop')
+@Library('PipelineTools@RipPipeline')
 
 def relativityBranch = env.relativityBranch ?: "develop"
 def relativityBuildType = env.relativityBuildType ?: "DEV"
@@ -10,8 +10,6 @@ def skipBuild = env.skipBuild == "true"
 def skipUnitTests = env.skipUnitTests == "true"
 def skipProvisioning = env.skipProvisioning == "true"
 def skipITests = env.skipITests == "true"
-
-skipProvisioning = true
 
 def ripBranch = (env.ripBranch ?: env.BRANCH_NAME) ?: "develop"
 testsFilter = env.testsFilter ?: "cat == SmokeTest"
@@ -41,8 +39,8 @@ def NUnit = new nunit()
 
 // Make changes here if necessary.
 def chef_attributes = 'fluidOn:1,cdonprem:1'
-def cookbook_versions = '"relativity:= 4.1.10,role-testvm:= 3.6.0,role-ci:= 1.2.0,analytics:= 4.0.0,invariant:= 4.1.2,datagrid:= 3.0.0,sql:= 2.2.4"'
-def python_packages = 'CSharpLibrary==0.1.0 curiosity==3.0.0 fabric-venv==0.0.4 jeeves==4.1.0 jemin==1.0.0 kipa==2.0.0 kWebDriver==0.5 phonograph==5.0.0 RequestsLibrary==0.1.0 robotframework==3.0 robotframework-selenium2library==1.8.0 selenium==3.0.1 vmware==0.3.2'
+def cookbook_versions = getCookbooks()
+def python_packages = 'CSharpLibrary==0.1.0 curiosity==3.0.0 fabric-venv==0.0.4 jeeves==4.1.0 jemin==1.0.0 kipa==2.0.0 kWebDriver==0.5 phonograph==4.0.0 RequestsLibrary==0.1.0 robotframework==3.0 robotframework-selenium2library==1.8.0 selenium==3.0.1 vmware==0.3.2'
 
 // Unused
 def analyticsbuildtype = "Unused"
@@ -86,6 +84,8 @@ def getNUnitPath()
 
 def modifyNUnitResultsForCuriosity(String session_id, String phase)
 {
+	// TODO = fix issue with nunit_curiosity_listener - check in Relativity repo how it can be done
+	/*
 	//To provide compatibility with 'nunit_curiosity_listener' script we need to remove 'Properties' node from TestCase
 	def commandString =  """Get-ChildItem .\\nunit-result.xml | %% {; 	[Xml]\$xml = Get-Content \$_.FullName;    \$xml | Select-Xml -XPath '//*[local-name() = ''properties'']' | ForEach-Object{\$_.Node.ParentNode.RemoveChild(\$_.Node)};    \$xml.OuterXml | Out-File .\\result.xml -encoding 'UTF8'; }"""
 	bat String.format('powershell.exe "%s"', commandString)
@@ -98,6 +98,7 @@ def modifyNUnitResultsForCuriosity(String session_id, String phase)
 	bat String.format('python C:\\Python27\\Talos\\bin\\listeners\\nunit_curiosity_listener.py --phase %2$s -p .\\result.xml --session_id %1$s', session_id, phase)
 	
 	bat 'powershell.exe Remove-Item .\\nunit-result.xml'
+	*/
 }
 
 def execute_nunit_tests(String test_dll, String session_id, String phase)
@@ -172,9 +173,9 @@ timestamps
 {
 	timeout(time: 3, unit: 'HOURS')
 	{
-		catchError
+		try
 		{
-			parallel (
+			parallel(
 				BuildAndUnitTests:
 				{
 					node('buildslave')
@@ -271,24 +272,24 @@ timestamps
 							}
 						}
 					}
-				},
+				},				
 				InstallRAID:
 				{	
 					timeout(time: 50, unit: 'MINUTES')
-					{
+					{					
 						stage('Install RAID')
-						{							
+						{				
 							if (skipProvisioning) return;
 							println("Getting server from pool, session_id: ${session_id}, Relativity branch: ${relativityBranch}, Relativity version: ${relativityVersion}, Relativity build type: ${relativityBuildType}, event hash: ${event_hash}")
 							tuple = getServerFromPool(this, session_id, relativityBranch, relativityVersion, relativityBuildType, event_hash)							
 							server_name = tuple[0]
 							domain = tuple[1]
-							ip = tuple[2]
+							ip = tuple[2]						
 							println("Acquired server: ${server_name}.${domain} (${ip})")
 
 							parallel (
 								Deploy:
-								{
+								{ 	
 									registerEvent(this, session_id, 'Talos_Provision_test_CD', 'PASS', '-c', "${server_name}.${domain}", profile, event_hash)
 									if(installing_relativity)
 									{
@@ -305,15 +306,15 @@ timestamps
 									{
 										invariantbuild = getBuildArtifactsPath(this, "Invariant", invariant_branch, invariantbuild, relativityBuildType, session_id)
 										sendVersionToElastic(this, "Invariant", invariant_branch, invariantbuild, relativityBuildType, session_id)
-									}
+									}																	
 									
-									uploadEnvironmentFile(this, server_name, relativityVersion, relativityBranch, relativityBuildType, invariantbuild, invariant_branch, cookbook_versions, chef_attributes, knife, analyticsversion, analyticsbuildtype, session_id, installing_relativity, installing_invariant, installing_analytics)
+									uploadEnvironmentFile(this, server_name, relativityVersion, relativityBranch, relativityBuildType, invariantbuild, invariant_branch, cookbook_versions, chef_attributes, knife, analyticsversion, analyticsbuildtype, session_id, installing_relativity, installing_invariant, installing_analytics)								
 									withCredentials([
 										usernamePassword(credentialsId: 'TestingAdministrator', passwordVariable: 'TAPassword', usernameVariable: 'TAUserName')])
 									{
 										addRunlist(this, session_id, server_name, domain, ip, run_list, knife, profile, event_hash, "testing\\$TAUserName", TAPassword)
 									}
-									checkTags(this, installing_relativity, installing_analytics, installing_invariant, installing_datagrid, server_name, knife, session_id, profile, event_hash)									
+									checkTags(this, installing_relativity, installing_analytics, installing_invariant, installing_datagrid, server_name, knife, session_id, profile, event_hash)										
 									checkWorkspaceUpgrade(this, server_name, session_id)
 								},
 								ProvisionNodes:
@@ -364,6 +365,10 @@ timestamps
 					}
 				}
 			}
+		} catch (Exception e)
+		{
+			println("DUBUG exception: " + e)
+			println("DEBUG exception: " + e.message);			 
 		}
 		
 		timeout(time: 5, unit: 'MINUTES')
