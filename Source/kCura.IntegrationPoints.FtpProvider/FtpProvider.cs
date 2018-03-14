@@ -44,13 +44,16 @@ namespace kCura.IntegrationPoints.FtpProvider
 			List<FieldEntry> retVal = new List<FieldEntry>();
 			string fileName = string.Empty;
 			string remoteLocation = string.Empty;
+			
 			Settings settings = GetSettingsModel(providerConfiguration.Configuration);
 			try
 			{
+				SecuredConfiguration securedConfiguration = _settingsManager.DeserializeCredentials(providerConfiguration.SecuredConfiguration);
+
 				var csvInput = AddFileExtension(settings.Filename_Prefix);
 				fileName = GetDynamicFileName(Path.GetFileName(csvInput), settings.Timezone_Offset);
 				remoteLocation = Path.GetDirectoryName(FormatPath(csvInput));
-				using (var client = _connectorFactory.GetConnector(settings.Protocol, settings.Host, settings.Port, settings.Username, settings.Password))
+				using (var client = _connectorFactory.GetConnector(settings.Protocol, settings.Host, settings.Port, securedConfiguration.Username, securedConfiguration.Password))
 				{
 					using (Stream stream = client.DownloadStream(remoteLocation, fileName, Constants.RetyCount))
 					{
@@ -100,10 +103,12 @@ namespace kCura.IntegrationPoints.FtpProvider
 			ParserOptions parserOptions = ParserOptions.GetDefaultParserOptions();
 			try
 			{
+				SecuredConfiguration securedConfiguration = _settingsManager.DeserializeCredentials(providerConfiguration.SecuredConfiguration);
+
 				string csvInput = AddFileExtension(settings.Filename_Prefix);
 				fileName = GetDynamicFileName(Path.GetFileName(csvInput), settings.Timezone_Offset);
 				remoteLocation = Path.GetDirectoryName(FormatPath(csvInput));
-				using (IFtpConnector client = _connectorFactory.GetConnector(settings.Protocol, settings.Host, settings.Port, settings.Username, settings.Password))
+				using (IFtpConnector client = _connectorFactory.GetConnector(settings.Protocol, settings.Host, settings.Port, securedConfiguration.Username, securedConfiguration.Password))
 				{
 					string fileLocation = Path.GetTempPath() + Guid.NewGuid() + ".csv";
 					client.DownloadFile(fileLocation, remoteLocation, fileName, Constants.RetyCount);
@@ -217,7 +222,7 @@ namespace kCura.IntegrationPoints.FtpProvider
 
 		public Settings GetSettingsModel(string options)
 		{
-			return _settingsManager.ConvertFromEncryptedString(options);
+			return _settingsManager.DeserializeSettings(options);
 		}
 
 		internal void ValidateColumns(string columns, Settings settings, ParserOptions parserOptions)

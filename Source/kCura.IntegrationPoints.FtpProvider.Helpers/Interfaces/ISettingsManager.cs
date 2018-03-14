@@ -4,7 +4,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Helpers.Interfaces
 {
     public interface ISettingsManager
     {
-        Settings ConvertFromString(string data);
-        Settings ConvertFromEncryptedString(string encryptedData);
-    }
+        Settings DeserializeSettings(string jsonString);
+	    SecuredConfiguration DeserializeCredentials(string jsonString);
+	}
 }

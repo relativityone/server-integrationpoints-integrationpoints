@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
@@ -9,26 +8,15 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
-using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.Provider;
-using kCura.IntegrationPoints.Core.Services.Synchronizer;
-using kCura.IntegrationPoints.Core.Validation;
-using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FtpProvider.Helpers.Interfaces;
 using kCura.IntegrationPoints.FtpProvider.Helpers.Models;
 using kCura.IntegrationPoints.Security;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using kCura.IntegrationPoints.Web.Models;
 using Newtonsoft.Json;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
-using Relativity.API;
-using Relativity.Telemetry.Services.Metrics;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
@@ -39,7 +27,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		private IEncryptionManager _securityManager;
 		private ISettingsManager _settingsManager;
 		private IDataProviderFactory _providerFactory;
-		private IHelper _helper;
 		private ISerializer _serializer;
 		
 		[SetUp]
@@ -49,71 +36,26 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			_settingsManager = Substitute.For<ISettingsManager>();
 			_providerFactory = Substitute.For<IDataProviderFactory>();
 			_serializer = Substitute.For<ISerializer>();
-			_helper = Substitute.For<IHelper>();
 
-			_instance =
-				new FtpProviderAPIController(_securityManager, _settingsManager, _providerFactory, _helper, _serializer)
-				{
-					Request = new HttpRequestMessage()
-				};
+			_instance = new FtpProviderAPIController(_settingsManager, _providerFactory, _serializer)
+			{
+				Request = new HttpRequestMessage()
+			};
 
 			_instance.Request.SetConfiguration(new HttpConfiguration());
 		}
-
-		[TestCase("test")]
-		[TestCase(123)]
-		public void ItShouldEncryptMessage(object message)
-		{
-			//Arrange
-			_securityManager.Encrypt(message.ToString()).Returns(message.ToString());
-
-			//Act
-			IHttpActionResult actualResult = _instance.Encrypt(message);
-
-			//Assert
-			Assert.AreEqual(typeof(OkNegotiatedContentResult<string>), actualResult.GetType());
-			Assert.AreEqual(message.ToString(), ((OkNegotiatedContentResult<string>)actualResult).Content);
-		}
-
-		[TestCase(null)]
-		public void ItShouldReturnEmptyStringInsteadOfEncryptedMessage(object message)
-		{
-			//Act
-			IHttpActionResult actualResult = _instance.Encrypt(message);
-
-			//Assert
-			Assert.AreEqual(typeof(OkNegotiatedContentResult<string>), actualResult.GetType());
-			Assert.AreEqual(string.Empty, ((OkNegotiatedContentResult<string>)actualResult).Content);
-		}
-
-		[TestCase("test")]
-		public void ItShouldDecryptMessage(string message)
-		{
-			//Arrange
-			_securityManager.Decrypt(message).Returns(message);
-
-			//Act
-			IHttpActionResult actualResult = _instance.Decrypt(message);
-
-			//Assert
-			Assert.AreEqual(typeof(OkNegotiatedContentResult<string>), actualResult.GetType());
-			Assert.AreEqual(message, ((OkNegotiatedContentResult<string>)actualResult).Content);
-		}
-
-		[TestCase("some data")]
-		public void ItShouldGetColumnList([FromBody] object data)
+		
+		[Test]
+		public void ItShouldGetColumnList()
 		{
 			//Arrange
 			var fields = new List<FieldEntry>() {new FieldEntry() {DisplayName = "A"}, new FieldEntry() {DisplayName = "B"}};
-			var encryptedData = "Encrypted";
-			_securityManager.Encrypt(data.ToString()).Returns(encryptedData);
-
-			var ftpProvider = Substitute.For<IDataSourceProvider>();
-			ftpProvider.GetFields(Arg.Is<DataSourceProviderConfiguration>(x => x.Configuration.Equals(encryptedData))).Returns(fields);
+			IDataSourceProvider ftpProvider = Substitute.For<IDataSourceProvider>();
+			ftpProvider.GetFields(Arg.Any<DataSourceProviderConfiguration>()).Returns(fields);
 			_providerFactory.GetDataProvider(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(ftpProvider);
 
 			//Act
-			IHttpActionResult actualResult = _instance.GetColumnList(data);
+			IHttpActionResult actualResult = _instance.GetColumnList(new SynchronizerSettings());
 
 			//Assert
 			Assert.AreEqual(typeof(OkNegotiatedContentResult<List<FieldEntry>>), actualResult.GetType());
@@ -124,8 +66,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		public void ItShouldGetViewFields([FromBody] object data)
 		{
 			//Arrange
-			var settings = new Settings() {_filename = "SettigsFileName", Host = "HostName"};
-			_settingsManager.ConvertFromEncryptedString(data.ToString()).Returns(settings);
+			var settings = new Settings() {Filename_Prefix = "SettigsFileName", Host = "HostName"};
+			_settingsManager.DeserializeSettings(data.ToString()).Returns(settings);
 			var expectedModel = new FtpProviderSummaryPageSettingsModel(settings);
 			string expectedSerializedModel = JsonConvert.SerializeObject(expectedModel);
 

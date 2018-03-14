@@ -1,43 +1,49 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Web.Http;
 using System.Web.Mvc;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.FtpProvider.Connection.Interfaces;
 using kCura.IntegrationPoints.FtpProvider.Helpers;
+using kCura.IntegrationPoints.FtpProvider.Helpers.Interfaces;
 using kCura.IntegrationPoints.FtpProvider.Helpers.Models;
-using kCura.IntegrationPoints.Security;
+using kCura.IntegrationPoints.Web.Models;
 
 namespace kCura.IntegrationPoints.Web.Controllers
 {
     public class FtpProviderController : BaseController
     {
-        internal IEncryptionManager _securityManager;
-        private IConnectorFactory _connectorFactory;
-        public FtpProviderController(IEncryptionManager securityManager, IConnectorFactory connectorFactory)
+        private readonly IConnectorFactory _connectorFactory;
+	    private readonly ISettingsManager _settingsManager;
+
+	    public FtpProviderController(IConnectorFactory connectorFactory, ISettingsManager settingsManager)
         {
-            _securityManager = securityManager;
             _connectorFactory = connectorFactory;
+	        _settingsManager = settingsManager;
         }
 
         public ActionResult GetDefaultFtpSettings()
         {
-            var default_settings = new FtpProvider.Helpers.Models.Settings()
+            var defaultSettings = new SettingsViewModel()
             {
                 Port = 21,
-                Protocol = FtpProvider.Helpers.ProtocolName.FTP,
+                Protocol = ProtocolName.FTP,
                 ColumnList = new List<FieldEntry>()
             };
-            return View(default_settings);
+            return View(defaultSettings);
         }
 
         [System.Web.Mvc.HttpPost]
-        public HttpStatusCodeResult ValidateHostConnection(Settings settings)
+        public HttpStatusCodeResult ValidateHostConnection([FromBody] SynchronizerSettings synchronizerSettings)
         {
-            var response = new HttpStatusCodeResult(HttpStatusCode.NotImplemented, "Nothing happened");
+			var response = new HttpStatusCodeResult(HttpStatusCode.NotImplemented, "Nothing happened");
 
-            //immediately end if host value is non-standard
-            if (settings.ValidateHost() == false)
+	        Settings settings = _settingsManager.DeserializeSettings(synchronizerSettings.Settings);
+	        SecuredConfiguration securedConfiguration = _settingsManager.DeserializeCredentials(synchronizerSettings.Credentials);
+
+			//immediately end if host value is non-standard
+			if (settings.ValidateHost() == false)
             {
                 response = new HttpStatusCodeResult(HttpStatusCode.BadRequest, ErrorMessage.INVALID_HOST_NAME);
                 return response;
@@ -48,10 +54,10 @@ namespace kCura.IntegrationPoints.Web.Controllers
                 response = new HttpStatusCodeResult(HttpStatusCode.BadRequest, ErrorMessage.MISSING_CSV_FILE_NAME);
                 return response;
             }
-            settings.ValidatePort();
+            settings.UpdatePort();
             try
             {
-                using (var client = _connectorFactory.GetConnector(settings.Protocol, settings.Host, settings.Port, settings.Username, settings.Password))
+                using (var client = _connectorFactory.GetConnector(settings.Protocol, settings.Host, settings.Port, securedConfiguration.Username, securedConfiguration.Password))
                 {
                     if (client.TestConnection())
                     {

@@ -14,8 +14,6 @@ var loadData = function (ko, dataContainer) {
 		this.host = dataContainer.sourceConfiguration.Host;
 		this.port = dataContainer.sourceConfiguration.Port;
 		this.protocol = dataContainer.sourceConfiguration.Protocol;
-		this.userName = dataContainer.sourceConfiguration.UserName;
-		this.password = dataContainer.sourceConfiguration.Password;
 		this.fileNamePrefix = dataContainer.sourceConfiguration.FileNamePrefix;
 		this.timezoneOffset = dataContainer.sourceConfiguration.TimezoneOffset;
 	};

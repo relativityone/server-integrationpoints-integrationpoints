@@ -48,6 +48,8 @@
     <Compile Include="Constants.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="Interfaces\ISettingsManager.cs" />
+    <Compile Include="Models\SecuredConfiguration.cs" />
+    <Compile Include="Models\SettingsViewModel.cs" />
     <Compile Include="Models\Settings.cs" />
     <Compile Include="Models\TextReplacement.cs" />
     <Compile Include="Models\ValidationResponse.cs" />

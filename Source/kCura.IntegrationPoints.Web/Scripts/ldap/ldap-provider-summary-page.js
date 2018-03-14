@@ -13,10 +13,7 @@ var loadData = function (ko, dataContainer) {
 		this.connectionPath = dataContainer.sourceConfiguration.ConnectionPath;
 		this.objectFilterString = dataContainer.sourceConfiguration.Filter;
 		this.authenticationMode = dataContainer.sourceConfiguration.ConnectionAuthenticationType;
-		this.userName = dataContainer.sourceConfiguration.UserName;
-		this.password = dataContainer.sourceConfiguration.Password;
 		this.importNestedItems = dataContainer.sourceConfiguration.ImportNested;
-
 	};
 
 	var viewModel = new Model(dataContainer);

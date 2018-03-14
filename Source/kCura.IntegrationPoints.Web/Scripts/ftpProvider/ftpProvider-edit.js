@@ -34,50 +34,50 @@ var ftpHelper = (function (data) {
 		});
 	};
 
-	var _encrypt = function (model) {
-		return IP.data.ajax({
-			cache: false,
-			data: JSON.stringify(model),
-			url: IP.utils.generateWebAPIURL('FtpProviderAPI', 'e'),
-			async: false,
-			type: 'post'
-		});
-
-	};
-
-	var _decrypt = function (model) {
-		return IP.data.ajax({
-			cache: false,
-			data: JSON.stringify(model),
-			url: IP.utils.generateWebAPIURL('FtpProviderAPI', 'd'),
-			async: false,
-			type: 'post'
-		});
-	};
-
-	var _getModel = function () {
+	var _getSettings = function () {
 		var model = {
 			host: $('#host').val(),
 			port: $('#port').val(),
 			protocol: $('#protocol').val(),
-			username: $('#username').val(),
-			password: $('#password').val(),
 			filename_prefix: $('#filename_prefix').val(),
 			timezone_offset: new Date().getTimezoneOffset()
 		};
 		return model;
-
 	}
 
-	var _setModel = function (model) {
+	var _getSerializedCredentials = function () {
+		var model = {
+			username: $('#username').val(),
+			password: $('#password').val(),
+		};
+		return JSON.stringify(model);
+	}
+
+	var _getSerializedModel = function () {
+		var settings = _getSettings();
+		var serializedCredentials = _getSerializedCredentials();
+
+		var model = {
+			settings: JSON.stringify(settings),
+			credentials: serializedCredentials
+		};
+
+		return model;
+	};
+
+	var _setSettings = function (model) {
 		$('#host').val(model.host);
 		$('#port').val(model.port);
 		$("#protocol").select2("val", model.protocol);
-		$('#username').val(model.username);
-		$('#password').val(model.password);
 		$('#filename_prefix').val(model.filename_prefix);
 		$('#timezone_offset').val(new Date().getTimezoneOffset());
 	}
+
+	var _setCredentials = function (model) {
+		$('#username').val(model.username);
+		$('#password').val(model.password);
+	}
+
 	var _getColumnList = function (model) {
 		return IP.data.ajax({
 			cache: false,
@@ -89,10 +89,11 @@ var ftpHelper = (function (data) {
 	}
 	return {
 		validateSettings: _validateSettings,
-		getSettingsModel: _getModel,
-		setSettingsModel: _setModel,
-		encryptSettings: _encrypt,
-		decryptSettings: _decrypt,
+		getSerializedModel: _getSerializedModel,
+		getSettings: _getSettings,
+		getSerializedCredentials: _getSerializedCredentials,
+		setSettings: _setSettings,
+		setCredentials: _setCredentials,
 		getColumnList: _getColumnList
 	}
 
@@ -113,52 +114,64 @@ var ftpHelper = (function (data) {
 	function validateSettings(model) {
 		return helper.validateSettings(model);
 	}
-	function retrieveValueFromServer(model) {
+	function getColumnList(model) {
 		return helper.getColumnList(model);
 	}
 
-	function getSettingsModel() {
-		return helper.getSettingsModel();
+	function getSerializedModel() {
+		return helper.getSerializedModel();
 	}
 
-	function setSettingsModel(model) {
-		return helper.setSettingsModel(model);
+	function getSettings() {
+		return helper.getSettings();
 	}
 
-	function encryptSettings(model) {
-		return helper.encryptSettings(model);
+	function getSerializedCredentials() {
+		return helper.getSerializedCredentials();
 	}
 
-	function decryptSettings(model) {
-		return helper.decryptSettings(model);
+	function setModel(model) {
+		helper.setSettings(model);
+
+		if (model.SecuredConfiguration) {
+			var securedConfiguration = JSON.parse(model.SecuredConfiguration);
+			helper.setCredentials(securedConfiguration);
+		}
 	}
 
 	//An event raised when the user has clicked the Next or Save button.
 	message.subscribe('submit', function () {
 		//Execute save logic that persists the state.
 
-		var localModel = getSettingsModel();
+		var serializedModel = getSerializedModel();
+		
 		var self = this;
 
 		//Validate that the input will connect to a valid FTP/SFTP server
 		//todo: how to do this: document.body.style.cursor = "progress";
 
-		var p1 = validateSettings(localModel);
+		var p1 = validateSettings(serializedModel);
 		p1.then(function () {
-			retrieveValueFromServer(localModel).then(function (columnList) {
+			getColumnList(serializedModel).then(function (columnList) {
+				var settings = getSettings();
 
-				localModel.columnlist = columnList;
+				settings.columnlist = columnList;
+
+				var serializedSettings = JSON.stringify(settings);
+
 				//update model with the value returned;
 				document.getElementById('validation_message').innerHTML = "";
-				self.publish("saveState", localModel);
-				//Encrypt Model for DB save
-				encryptSettings(localModel).then(function (encryptedModel) {
-					//Communicate to the host page to continue.
-					self.publish('saveComplete', encryptedModel);
-				});
+				self.publish("saveState", serializedSettings);
+				
+				//Communicate to the host page to continue.
+				self.publish('saveComplete', serializedSettings);
+
+				var stepModel = IP.frameMessaging().dFrame.IP.points.steps.steps[1].model;
+				stepModel.SecuredConfiguration = getSerializedCredentials();
+				
 			}, function (data) {
 
-				if (data.status == '400') {
+				if (data.status === '400') {
 					IP.frameMessaging().dFrame.IP.message.error.raise("File not found.");
 				} else {
 					IP.frameMessaging().dFrame.IP.message.error.raise(data.responseText);
@@ -172,23 +185,16 @@ var ftpHelper = (function (data) {
 	//An event raised when a user clicks the Back button.
 	message.subscribe('back', function () {
 		var model = getSettingsModel();
-		model.unencrypted = true;
 		this.publish('saveState', JSON.stringify(ko.toJS(model)));
 	});
 
 	//An event raised when the host page has loaded the current settings page.
 	message.subscribe('load', function (model) {
 		var temp = isJson(model);
-		if (temp && JSON.parse(model).unencrypted) {
-			setSettingsModel(JSON.parse(model));
+		if (temp) {
+			setModel(JSON.parse(model));
 		}
-		else {
-			decryptSettings(model).then(function (decryptedJsonModel) {
-				var decryptedModel = JSON.parse(decryptedJsonModel);
-				setSettingsModel(decryptedModel);
-			});
-		}
-
+		
 		function isJson(str) {
 			try {
 				JSON.parse(str);
@@ -199,31 +205,6 @@ var ftpHelper = (function (data) {
 		}
 	});
 })(ftpHelper);
-
-
-//validate the model by calling an action on the Controller
-function validate_model(model) {
-	var valid = false;
-
-	//set async to false so the next page does not load before validation returns
-	$.ajaxSetup({ async: false });
-
-	var path = "/Relativity/CustomPages/GUID/Provider/ValidateHostConnection".replace("GUID", ApplicationGuid);
-
-	var validation = $.post(path, { host: model.host, port: model.port, protocol: model.protocol, username: model.username, password: model.password, filename_prefix: model.filename_prefix }, function () {
-		//changes the cursor to a progress wheel during validation
-		document.body.style.cursor = "progress";
-	})
-		.done(function () {
-			document.getElementById('validation_message').innerHTML = "";
-			valid = true;
-		})
-		.fail(function (error) {
-			IP.frameMessaging().dFrame.IP.message.error.raise(error.statusText);
-		});
-
-	return valid;
-}
 
 //master toggle for protocol changes
 function protocol_onchange() {

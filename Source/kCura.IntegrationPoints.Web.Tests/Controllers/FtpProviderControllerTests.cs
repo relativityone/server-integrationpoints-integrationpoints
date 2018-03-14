@@ -1,9 +1,14 @@
 ﻿using System.Net;
+using System.Web.Mvc;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.FtpProvider.Connection.Interfaces;
 using kCura.IntegrationPoints.FtpProvider.Helpers;
-using kCura.IntegrationPoints.Security;
+using kCura.IntegrationPoints.FtpProvider.Helpers.Interfaces;
+using kCura.IntegrationPoints.FtpProvider.Helpers.Models;
 using kCura.IntegrationPoints.Web.Controllers;
+using kCura.IntegrationPoints.Web.Models;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using NSubstitute;
 
@@ -13,8 +18,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
     public class FtpProviderControllerTests : TestBase
     {
         private bool _testConnectionResult = false;
-        private IEncryptionManager _securityManager = null;
-        private IConnectorFactory _connectorFactory = null;
+	    private ISettingsManager _settingsManager;
+		private IConnectorFactory _connectorFactory = null;
         private IFtpConnector _ftpConnector = null;
         private FtpProviderController _instance;
 
@@ -22,11 +27,11 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
         {
             _ftpConnector = Substitute.For<IFtpConnector>();
             _ftpConnector.TestConnection().Returns(_testConnectionResult);
-            _securityManager = Substitute.For<IEncryptionManager>();
-            _connectorFactory = Substitute.For<IConnectorFactory>();
+	        _settingsManager = Substitute.For<ISettingsManager>();
+			_connectorFactory = Substitute.For<IConnectorFactory>();
             _connectorFactory.GetConnector("", "", 777, "", "").ReturnsForAnyArgs(_ftpConnector);
 
-            _instance = new FtpProviderController(_securityManager, _connectorFactory);
+            _instance = new FtpProviderController(_connectorFactory, _settingsManager);
         }
 
         [TestCase("", "test.host", "", "", "", 21, true, HttpStatusCode.BadRequest, ErrorMessage.MISSING_CSV_FILE_NAME)]
@@ -47,16 +52,32 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
             // NSubstitute result is passed by value so refreshing TestConnection mockup is needed
             _ftpConnector.TestConnection().Returns(_testConnectionResult);
 
-            var response =_instance.ValidateHostConnection(new FtpProvider.Helpers.Models.Settings()
-            {
-                Filename_Prefix = filename,
-                Host = host,
-                Password = password,
-                Protocol = protocol,
-                Username = username,
-                Port = port,
-                
-            });
+	        var settings = new Settings()
+	        {
+		        Filename_Prefix = filename,
+		        Host = host,
+		        Protocol = protocol,
+		        Port = port
+	        };
+
+			var credentials = new SecuredConfiguration()
+			{
+				Password = password,
+				Username = username,
+			};
+
+			JsonSerializerSettings jsonSettings = JSONHelper.GetDefaultSettings();
+
+	        SynchronizerSettings synchronizerSettings = new SynchronizerSettings()
+	        {
+		        Settings = JsonConvert.SerializeObject(settings, jsonSettings),
+		        Credentials = JsonConvert.SerializeObject(credentials, jsonSettings)
+	        };
+
+	        _settingsManager.DeserializeSettings(Arg.Is(synchronizerSettings.Settings)).Returns(settings);
+	        _settingsManager.DeserializeCredentials(Arg.Is(synchronizerSettings.Credentials)).Returns(credentials);
+
+			HttpStatusCodeResult response = _instance.ValidateHostConnection(synchronizerSettings);
 
             Assert.AreEqual((int)expectedStatus, response.StatusCode);
             Assert.AreEqual(expectedDescription, response.StatusDescription);

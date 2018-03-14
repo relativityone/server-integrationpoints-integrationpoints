@@ -2,66 +2,24 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 
 namespace kCura.IntegrationPoints.FtpProvider.Helpers.Models
 {
     public class Settings
     {
-        internal String _host;
-        internal String _protocol;
-        internal String _username;
-        internal String _password;
-        internal String _filename;
-        internal String _validationMessage;
+        public string Host { get; set; } = string.Empty;
 
-        [DisplayName("Host:")]
-        public String Host
-        {
-            get { return (_host ?? String.Empty); }
-            set { _host = value; }
-        }
+        public string Protocol { get; set; } = string.Empty;
 
-        [DisplayName("Protocol:")]
-        public String Protocol
-        {
-            get { return (_protocol ?? String.Empty); }
-            set { _protocol = value; }
-        }
-
-        [DisplayName("Port:")]
         [DefaultValue(21)]
-        public Int32 Port { get; set; }
+        public int Port { get; set; }
 
-        [DisplayName("Username:")]
-        public String Username
-        {
-            get { return (_username ?? String.Empty); }
-            set { _username = value; }
-        }
+        public string Filename_Prefix { get; set; } = string.Empty;
 
-        [DisplayName("Password:")]
-        public String Password
-        {
-            get { return (_password ?? String.Empty); }
-            set { _password = value; }
-        }
+		public string ValidationMessage { get; set; } = string.Empty;
 
-        [DisplayName("CSV Filepath:")]
-        public String Filename_Prefix
-        {
-            get { return (_filename ?? String.Empty); }
-            set { _filename = value; }
-        }
-
-        public String ValidationMessage
-        {
-            get { return (_validationMessage ?? String.Empty); }
-            set { _validationMessage = value; }
-        }
-
-        [DefaultValue(0)]
-        public Int32? Timezone_Offset { get; set; }
+		[DefaultValue(0)]
+        public int? Timezone_Offset { get; set; }
 
         public List<FieldEntry> ColumnList { get; set; }
 
@@ -69,24 +27,14 @@ namespace kCura.IntegrationPoints.FtpProvider.Helpers.Models
         /// <summary>
         /// Validates that the host value is correctly formatted
         /// </summary>
-        /// <param name="host"></param>
         /// <returns></returns>
-        public Boolean ValidateHost()
+        public bool ValidateHost()
         {
-            var valid = false;
-
-            if (Uri.CheckHostName(Host) != UriHostNameType.Unknown)
-            {
-                valid = true;
-            }
-
-            return valid;
+            return Uri.CheckHostName(Host) != UriHostNameType.Unknown;
         }
 
-        public Boolean ValidatePort()
+        public void UpdatePort()
         {
-            var valid = true;
-
             if (Port == 0)
             {
                 if (Protocol.Equals(ProtocolName.FTP))
@@ -98,12 +46,10 @@ namespace kCura.IntegrationPoints.FtpProvider.Helpers.Models
                     Port = 22;
                 }
             }
-
-            return valid;
         }
-        public Boolean ValidateCSVName()
+        public bool ValidateCSVName()
         {
-            return !string.IsNullOrWhiteSpace(this._filename);
+            return !string.IsNullOrWhiteSpace(this.Filename_Prefix);
         }
     }
 }
