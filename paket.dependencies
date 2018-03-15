@@ -23,7 +23,7 @@ nuget Relativity.Productions.Services.Interfaces 9.5.58
 nuget Relativity.Telemetry.APM 9.4.148
 
 //Relativity transient packages
-nuget kCura.OutsideIn.FI.Win32 ~> 2018.1.0 content: none 	//Relativity.ImportExport
+nuget kCura.OutsideIn.FI.Win32 ~> 2018.2.0 content: none 	//Relativity.ImportExport
 nuget Relativity.SecretCatalog.AzureKeyVault ~> 1.0.19 		//RelativityCore
 nuget Relativity.Telemetry.MetricsCollection ~> 9.4.148 	//RelativityCore
 nuget Relativity.Vfs.IO ~> 1.0.22 							//RelativityCore

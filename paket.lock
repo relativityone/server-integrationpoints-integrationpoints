@@ -56,7 +56,7 @@ NUGET
     kCura.HTMLSanitizer (1.0.2)
     kCura.Injection (9.6.59.29)
     kCura.LongPath (1.0.10)
-    kCura.OutsideIn.FI.Win32 (2018.1.1) - content: none
+    kCura.OutsideIn.FI.Win32 (2018.2.0) - content: none
     kCura.Relativity.Client (9.6.59.29)
     libsodium-net (0.8.0)
       Baseclass.Contrib.Nuget.Output

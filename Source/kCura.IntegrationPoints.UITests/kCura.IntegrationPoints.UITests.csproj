@@ -174,7 +174,6 @@ xcopy "$(ProjectDir)..\kCura.IntegrationPoint.Tests.Core\oi\unmanaged" "$(Target
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
-  <ItemGroup />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
