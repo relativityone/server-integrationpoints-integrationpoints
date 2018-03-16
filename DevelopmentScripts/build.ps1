@@ -88,7 +88,7 @@ Write-Host ""
 write-host "Use this script to peform a full build of all projects."
 write-host "This build is the same as the build that happens on the build server. "
 write-host ""
-write-host "usage: build [debug|release] [dev|alpha|beta|rc|gold] [-version VERSION] [-apps] [-noapps] [-test] [-nuget] [-package] [-deploy <workspaceId> <ip_address/localhost>] [help|?]"
+write-host "usage: build [debug|release] [dev|alpha|beta|rc|gold] [-version VERSION] [-apps] [-noapps] [-test] [-nuget] [-package] [-deploy <server>] [help|?]"
 write-host ""
 write-host "options:"
 write-host ""
@@ -165,7 +165,9 @@ if($PACKAGE -and $STATUS){
 }
 
 if($DEPLOY -ne "" -and $STATUS){
-    Invoke-Expression ([System.IO.Path]::Combine($root, 'DevelopmentScripts', 'deploy.bat') + " " + $DEPLOY)
+	
+    $deployScript = [System.IO.Path]::Combine($root, 'DevelopmentScripts', 'deploy.ps1').ToString()
+	& $deployScript
     if(-not $?) {$STATUS = $false}
 }
 
