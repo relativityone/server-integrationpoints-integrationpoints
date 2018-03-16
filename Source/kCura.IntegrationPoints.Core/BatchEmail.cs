@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Domain;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Core;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core

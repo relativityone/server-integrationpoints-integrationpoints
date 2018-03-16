@@ -21,6 +21,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Newtonsoft.Json;
 using NSubstitute;
@@ -1387,7 +1388,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		}
 
 		[Test]
-		public void SaveIntegration_MakeSureToCreateAJobWithNoBatchInstanceId()
+		public void SaveIntegration_MakeSureToCreateAJobWithBatchInstanceId()
 		{
 			// arrange
 			const int targetWorkspaceArtifactId = 9302;
@@ -1447,7 +1448,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			int ipArtifactId = _instance.SaveIntegration(model);
 
 			// Assert
-			_jobManager.Received(1).CreateJob<TaskParameters>(null, TaskType.ExportService, _caseServiceContext.WorkspaceID, ipArtifactId, Arg.Any<IScheduleRule>());
+			_jobManager.Received(1).CreateJob<TaskParameters>(Arg.Any<TaskParameters>(), TaskType.ExportService, _caseServiceContext.WorkspaceID, ipArtifactId, Arg.Any<IScheduleRule>());
 		}
 
 		[Test]

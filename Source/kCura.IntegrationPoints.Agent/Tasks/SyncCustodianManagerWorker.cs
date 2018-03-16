@@ -25,6 +25,7 @@ using kCura.IntegrationPoints.Injection;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Core;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Relativity.API;

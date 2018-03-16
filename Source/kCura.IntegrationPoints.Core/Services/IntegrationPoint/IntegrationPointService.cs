@@ -16,6 +16,7 @@ using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
 
@@ -113,7 +114,11 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 				if (integrationPoint.EnableScheduler.GetValueOrDefault(false))
 				{
-					_jobService.CreateJob<TaskParameters>(null, task, Context.WorkspaceID, integrationPoint.ArtifactId, rule);
+					var taskParameters = new TaskParameters()
+					{
+						BatchInstance = Guid.NewGuid()
+					};
+					_jobService.CreateJob(taskParameters, task, Context.WorkspaceID, integrationPoint.ArtifactId, rule);
 				}
 				else
 				{

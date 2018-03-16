@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Transformers;
 using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Core;
 using Newtonsoft.Json;
 using Relativity.Services.Objects.DataContracts;
 

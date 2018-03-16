@@ -109,7 +109,8 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 					JobStatus = JobStatusChoices.JobHistoryPending,
 					ItemsTransferred = 0,
 					ItemsWithErrors = 0,
-					Overwrite = integrationPoint.OverwriteFields.Name
+					Overwrite = integrationPoint.OverwriteFields.Name,
+					JobID = null
 				};
 
 				var importSettings = _serializer.Deserialize<ImportSettings>(integrationPoint.DestinationConfiguration);
@@ -121,7 +122,6 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
 				jobHistory.DestinationWorkspace = Utils.GetFormatForWorkspaceOrJobDisplay(workspaceDto.Name, importSettings.CaseArtifactId);
 				jobHistory.DestinationInstance = Utils.GetFormatForWorkspaceOrJobDisplay(federatedInstanceDto.Name, federatedInstanceDto.ArtifactId);
-
 				if (startTimeUtc.HasValue)
 				{
 					jobHistory.StartTimeUTC = startTimeUtc.Value;

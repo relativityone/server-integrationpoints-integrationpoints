@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
+using kCura.ScheduleQueue.Core.TimeMachine;
 using Relativity.API;
 
 namespace kCura.ScheduleQueue.Core.Services
@@ -84,15 +87,21 @@ namespace kCura.ScheduleQueue.Core.Services
 			DateTime? nextUtcRunDateTime = GetJobNextUtcRunDateTime(job, scheduleRuleFactory, taskResult);
 			if (nextUtcRunDateTime.HasValue)
 			{
-				DataProvider.UpdateScheduledJob(job.JobId, nextUtcRunDateTime.Value);
-				result.JobState = JobLogState.Modified;
-				result.Details = string.Format("Job is re-scheduled for {0}", nextUtcRunDateTime);
+				TaskParameters taskParameters = new TaskParameters()
+				{
+					BatchInstance = Guid.NewGuid()
+				};
+				string jobDeatils = new JSONSerializer().Serialize(taskParameters);
+				CreateNewAndDeleteOldScheduledJob(job.JobId, job.WorkspaceID, job.RelatedObjectArtifactID, job.TaskType, scheduleRuleFactory.Deserialize(job),
+					jobDeatils, job.SubmittedBy, job.RootJobId,
+					job.ParentJobId);
 			}
 			else
 			{
 				DeleteJob(job.JobId);
-				result.JobState = JobLogState.Deleted;
 			}
+
+			result.JobState = JobLogState.Deleted;
 			return result;
 		}
 
@@ -100,6 +109,35 @@ namespace kCura.ScheduleQueue.Core.Services
 		{
 			LogOnUnlockJobs(agentID);
 			DataProvider.UnlockScheduledJob(agentID);
+		}
+
+		public void CreateNewAndDeleteOldScheduledJob(long oldJobId, int workspaceID, int relatedObjectArtifactID, string taskType,
+			IScheduleRule scheduleRule, string jobDetails, int SubmittedBy, long? rootJobID, long? parentJobID)
+		{
+			LogOnCreateJob(workspaceID, relatedObjectArtifactID, taskType, jobDetails, SubmittedBy);
+
+			DateTime? nextRunTime = scheduleRule.GetNextUTCRunDateTime();
+			if (nextRunTime.HasValue)
+			{
+				DataProvider.CreateNewAndDeleteOldScheduledJob(
+					oldJobId,
+					workspaceID,
+					relatedObjectArtifactID,
+					taskType,
+					nextRunTime.Value,
+					AgentTypeInformation.AgentTypeID,
+					scheduleRule.GetType().AssemblyQualifiedName,
+					scheduleRule.ToSerializedString(),
+					jobDetails,
+					0,
+					SubmittedBy,
+					rootJobID,
+					parentJobID);
+			}
+			else
+			{
+				throw new IntegrationPointsException($"Try to create new sceduled job without any rule specified. Previous Job Id: {oldJobId}");
+			}
 		}
 
 		public Job CreateJob(int workspaceID, int relatedObjectArtifactID, string taskType,

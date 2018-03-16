@@ -54,7 +54,6 @@
     <Compile Include="Agent\ITaskJobSubmitter.cs" />
     <Compile Include="Configuration\DestinationConfiguration.cs" />
     <Compile Include="Configuration\SourceConfiguration.cs" />
-    <Compile Include="Agent\TaskParameters.cs" />
     <Compile Include="Custodian\CustodianConstants.cs" />
     <Compile Include="BatchReporter\IBatchReporter.cs" />
     <Compile Include="Helpers\TaskTypeHelper.cs" />

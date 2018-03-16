@@ -41,6 +41,31 @@ namespace kCura.ScheduleQueue.Core.Data
 			new UnlockScheduledJob(_context).Execute(agentId);
 		}
 
+		public void CreateNewAndDeleteOldScheduledJob(long oldScheduledJobId, int workspaceID, int relatedObjectArtifactID, string taskType,
+			DateTime nextRunTime, int agentTypeId, string scheduleRuleType, string serializedScheduleRule,
+			string jobDetails, int jobFlags, int submittedBy, long? rootJobID, long? parentJobID)
+		{
+			IDBContext dbContext = _context.EddsDBContext;
+			try
+			{
+				dbContext.BeginTransaction();
+
+				DeleteJob(oldScheduledJobId, _context.TableName, dbContext);
+
+				CreateScheduledJob(workspaceID, relatedObjectArtifactID, taskType,
+					nextRunTime, agentTypeId, scheduleRuleType, serializedScheduleRule,
+					jobDetails, jobFlags, submittedBy, rootJobID, parentJobID, _context.TableName, dbContext);
+
+				dbContext.CommitTransaction();
+			}
+			catch (Exception )
+			{
+				dbContext.RollbackTransaction();
+				throw;
+			}
+			
+		}
+
 		public DataRow CreateScheduledJob(int workspaceID, int relatedObjectArtifactID, string taskType,
 			DateTime nextRunTime, int agentTypeId, string scheduleRuleType, string serializedScheduleRule,
 			string jobDetails, int jobFlags, int submittedBy, long? rootJobID, long? parentJobID)
@@ -75,6 +100,11 @@ namespace kCura.ScheduleQueue.Core.Data
 			new DeleteJob(_context).Execute(jobId);
 		}
 
+		public void DeleteJob(long jobId, string tableName, IDBContext context)
+		{
+			new DeleteJob(context, tableName).Execute(jobId);
+		}
+
 		public DataRow GetJob(long jobId)
 		{
 			using (DataTable dataTable = new GetJob(_context).Execute(jobId))
@@ -106,6 +136,30 @@ namespace kCura.ScheduleQueue.Core.Data
 		public void CleanupJobQueueTable()
 		{
 			new CleanupJobQueueTable(_context).Execute();
+		}
+
+		private DataRow CreateScheduledJob(int workspaceID, int relatedObjectArtifactID, string taskType,
+			DateTime nextRunTime, int agentTypeId, string scheduleRuleType, string serializedScheduleRule,
+			string jobDetails, int jobFlags, int submittedBy, long? rootJobID, long? parentJobID, 
+			string tableName, IDBContext dbContext)
+		{
+			var query = new CreateScheduledJob(dbContext, tableName);
+			using (DataTable dataTable = query.Execute(
+				workspaceID,
+				relatedObjectArtifactID,
+				taskType,
+				nextRunTime,
+				agentTypeId,
+				scheduleRuleType,
+				serializedScheduleRule,
+				jobDetails,
+				jobFlags,
+				submittedBy,
+				rootJobID,
+				parentJobID))
+			{
+				return GetFirstRowOrDefault(dataTable);
+			}
 		}
 	}
 }

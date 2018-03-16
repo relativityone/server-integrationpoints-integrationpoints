@@ -10,6 +10,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Management.Tasks.Helpers;
 using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Core;
 using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
