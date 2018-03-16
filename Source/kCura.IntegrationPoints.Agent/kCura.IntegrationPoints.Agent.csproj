@@ -68,6 +68,7 @@
     <Compile Include="TaskFactory\JobSynchronizationChecker.cs" />
     <Compile Include="TaskFactory\TaskFactoryJobHistoryServiceFactory.cs" />
     <Compile Include="TaskFactory\TaskFactoryJobHistoryService.cs" />
+    <Compile Include="Tasks\TurnOnDgOptimizationToggle.cs" />
     <Compile Include="Tasks\ExportManager.cs" />
     <Compile Include="Tasks\ExportWorker.cs" />
     <Compile Include="RelativityConfigurationFactory.cs" />

@@ -84,7 +84,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				scheduleRuleFactory,
 				jobHistoryService,
 				jobHistoryErrorService,
-				jobStatisticsService
+				jobStatisticsService,
+				null
 			);
 
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
