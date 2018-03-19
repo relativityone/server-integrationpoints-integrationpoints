@@ -4,16 +4,16 @@ strategy: min
 source https://proget.kcura.corp/nuget/NuGet
 
 //Main Relativity packages
-nuget kCura.Agent 9.6.59.29
-nuget kCura.EventHandler 9.6.59.29
-nuget kCura.Relativity.Client 9.6.59.29
-nuget Relativity.Authentication 9.6.59.29
-nuget Relativity.Core 9.6.59.29
-nuget Relativity.CustomPages 9.6.59.29
-nuget Relativity.Data 9.6.59.29
-nuget Relativity.ImportExport 9.6.59.29
-nuget Relativity.Telemetry.Services.Interface 9.6.59.29
-nuget RelativityCore 9.6.59.29 
+nuget kCura.Agent 9.6.73.26 
+nuget kCura.EventHandler 9.6.73.26 
+nuget kCura.Relativity.Client 9.6.73.26 
+nuget Relativity.Authentication 9.6.73.26 
+nuget Relativity.Core 9.6.73.26 
+nuget Relativity.CustomPages 9.6.73.26 
+nuget Relativity.Data 9.6.73.26 
+nuget Relativity.ImportExport 9.6.73.26 
+nuget Relativity.Telemetry.Services.Interface 9.6.73.26 
+nuget RelativityCore 9.6.73.26  
 
 //Other Relativity packages
 nuget kCura.Apps.Common.Config 2.1.3
