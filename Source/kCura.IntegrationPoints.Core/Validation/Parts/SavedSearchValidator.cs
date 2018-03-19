@@ -1,16 +1,21 @@
-﻿using kCura.IntegrationPoints.Core.Validation.Abstract;
+﻿using System;
+using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Validation.Parts
 {
 	public class SavedSearchValidator : BasePartsValidator<int>
 	{
+		private readonly IAPILog _logger;
 		private readonly ISavedSearchQueryRepository _savedSearchQueryRepository;
 		private readonly int _savedSearchId;
 
-		public SavedSearchValidator(ISavedSearchQueryRepository savedSearchQueryRepository, int savedSearchId)
+		public SavedSearchValidator(IAPILog logger, ISavedSearchQueryRepository savedSearchQueryRepository, int savedSearchId)
 		{
+			_logger = logger.ForContext<SavedSearchValidator>();
 			_savedSearchQueryRepository = savedSearchQueryRepository;
 			_savedSearchId = savedSearchId;
 		}
@@ -19,7 +24,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 		{
 			var result = new ValidationResult();
 
-			SavedSearchDTO savedSearch = _savedSearchQueryRepository.RetrieveSavedSearch(_savedSearchId);
+			SavedSearchDTO savedSearch = RetrieveSavedSearch();
 
 			if (savedSearch == null)
 			{
@@ -38,6 +43,19 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 			}
 
 			return result;
+		}
+
+		private SavedSearchDTO RetrieveSavedSearch()
+		{
+			try
+			{
+				return _savedSearchQueryRepository.RetrieveSavedSearch(_savedSearchId);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError("An error occured retrieving saved search in {validator}", nameof(SavedSearchValidator));
+				throw new IntegrationPointsException($"An error occured retrieving saved search in {nameof(SavedSearchValidator)}", ex);
+			}
 		}
 	}
 }

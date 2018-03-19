@@ -104,7 +104,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			IWorkspaceDBContext workspaceDbContext = new WorkspaceContext(dbContext);
 			IJobResourceTracker jobResourceTracker = new JobResourceTracker(repositoryFactory, workspaceDbContext);
 			IJobTracker jobTracker = new JobTracker(jobResourceTracker);
-			IIntegrationPointSerializer integrationPointSerializer = new IntegrationPointSerializer();
+			IIntegrationPointSerializer integrationPointSerializer = new IntegrationPointSerializer(Logger);
 			IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, Helper, integrationPointSerializer, jobTracker);
 			IWorkspaceManager workspaceManager = new WorkspaceManager(repositoryFactory);
 			IFederatedInstanceManager federatedInstanceManager = new FederatedInstanceManager(repositoryFactory);

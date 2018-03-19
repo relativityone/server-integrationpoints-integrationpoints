@@ -6,13 +6,16 @@ using Castle.Core.Internal;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core.ScheduleRules;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Validation.Parts
 {
 	public class SchedulerValidator : IValidator
 	{
+		private readonly IAPILog _logger;
 		private readonly ISerializer _serializer;
 
 		public string Key => Constants.IntegrationPointProfiles.Validation.SCHEDULE;
@@ -20,9 +23,10 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 		public const int REOCCUR_MIN = 1, REOCCUR_MAX = 999;
 		public const int FIRST_DAY_OF_MONTH = 1, LAST_DAY_OF_MONTH = 31;
 
-		public SchedulerValidator(ISerializer serializer)
+		public SchedulerValidator(ISerializer serializer, IAPILog logger)
 		{
 			_serializer = serializer;
+			_logger = logger.ForContext<SchedulerValidator>();
 		}
 
 		public ValidationResult Validate(object value)
@@ -115,7 +119,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 		{
 			var result = new ValidationResult();
 
-			var weeklySendOn = _serializer.Deserialize<Weekly>(scheduler.SendOn);
+			Weekly weeklySendOn = _serializer.Deserialize<Weekly>(scheduler.SendOn);
 
 			if (weeklySendOn.SelectedDays.Count == 0)
 			{
@@ -136,7 +140,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 		{
 			var result = new ValidationResult();
 
-			var monthlySendOn = _serializer.Deserialize<Monthly>(scheduler.SendOn);
+			Monthly monthlySendOn = _serializer.Deserialize<Monthly>(scheduler.SendOn);
 			List<string> occurancesInMonth = Enum.GetNames(typeof(OccuranceInMonth)).ToList();
 
 			if (monthlySendOn.MonthChoice == MonthlyType.Days)

@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.Relativity.Client;
 using Relativity.API;
-using Relativity.Services.Exceptions;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
@@ -47,7 +46,10 @@ namespace kCura.IntegrationPoints.Core.Services
 			if (!result.Success)
 			{
 				LogQueryingArtifactError(artifactTypeName, result.Message);
-				throw new NotFoundException($"Artifact query failed: {result.Message}");
+				throw new IntegrationPointsException($"Artifact query failed: {result.Message}")
+				{
+					ExceptionSource = IntegrationPointsExceptionSource.KEPLER
+				};
 			}
 
 			return result.QueryArtifacts;

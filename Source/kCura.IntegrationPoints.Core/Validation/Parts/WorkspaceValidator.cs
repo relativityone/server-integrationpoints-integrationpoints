@@ -6,10 +6,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 {
 	public class WorkspaceValidator : BasePartsValidator<int>
 	{
-		private const string _WORKSPACE_INVALID_NAME_CHAR = ";";
-
 		private readonly IWorkspaceRepository _workspaceRepository;
-
 		private readonly string _prefix;
 
 		public WorkspaceValidator(IWorkspaceRepository workspaceRepository, string prefix)
@@ -24,7 +21,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 
 			try
 			{
-				WorkspaceDTO workspaceDto = _workspaceRepository.Retrieve(value);
+				_workspaceRepository.Retrieve(value);
 			}
 			catch
 			{

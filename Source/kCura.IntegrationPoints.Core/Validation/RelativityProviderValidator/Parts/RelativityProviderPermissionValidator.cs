@@ -1,12 +1,14 @@
-﻿using kCura.Apps.Common.Utils.Serializers;
+﻿using System;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity.API;
 
@@ -14,17 +16,17 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 {
 	public class RelativityProviderPermissionValidator : BasePermissionValidator
 	{
-		private readonly IRepositoryFactory _repositoryFactory;
+		private readonly IAPILog _logger;
 		private readonly IContextContainerFactory _contextContainerFactory;
 		private readonly IManagerFactory _managerFactory;
 		private readonly IHelperFactory _helperFactory;
 		private readonly IHelper _helper;
 
-		public RelativityProviderPermissionValidator(IRepositoryFactory repositoryFactoryFactory, ISerializer serializer, IServiceContextHelper contextHelper,
+		public RelativityProviderPermissionValidator(ISerializer serializer, IServiceContextHelper contextHelper,
 			IHelper helper, IHelperFactory helperFactory, IContextContainerFactory contextContainerFactory, IManagerFactory managerFactory)
 			: base(serializer, contextHelper)
 		{
-			_repositoryFactory = repositoryFactoryFactory;
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<RelativityProviderPermissionValidator>();
 			_helper = helper;
 			_helperFactory = helperFactory;
 			_contextContainerFactory = contextContainerFactory;
@@ -33,22 +35,17 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 
 		public override string Key
 			=>
-			IntegrationPointPermissionValidator.GetProviderValidatorKey(IntegrationPoints.Domain.Constants.RELATIVITY_PROVIDER_GUID,
+			IntegrationPointPermissionValidator.GetProviderValidatorKey(Domain.Constants.RELATIVITY_PROVIDER_GUID,
 				Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID.ToString());
 
 		public override ValidationResult Validate(IntegrationPointProviderValidationModel model)
 		{
 			var result = new ValidationResult();
-
 			SourceConfiguration sourceConfiguration = Serializer.Deserialize<SourceConfiguration>(model.SourceConfiguration);
 			DestinationConfiguration destinationConfiguration = Serializer.Deserialize<DestinationConfiguration>(model.DestinationConfiguration);
 
-			var sourceWorkspacePermissionManager =
-				_managerFactory.CreatePermissionManager(_contextContainerFactory.CreateContextContainer(_helper));
-
-			var targetHelper = _helperFactory.CreateTargetHelper(_helper, sourceConfiguration.FederatedInstanceArtifactId, model.SecuredConfiguration);
-			var destinationWorkspacePermissionManager = 
-				_managerFactory.CreatePermissionManager(_contextContainerFactory.CreateContextContainer(targetHelper));
+			IPermissionManager sourceWorkspacePermissionManager = CreatePermissionManager(_helper);
+			IPermissionManager destinationWorkspacePermissionManager = CreateDestinationPermissionManager(model, sourceConfiguration);
 
 			if (!sourceWorkspacePermissionManager.UserCanExport(ContextHelper.WorkspaceID))
 			{
@@ -66,7 +63,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			}
 
 			if (!destinationWorkspacePermissionManager.UserHasArtifactTypePermissions(sourceConfiguration.TargetWorkspaceArtifactId, destinationConfiguration.ArtifactTypeId,
-				new[] {ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Create}))
+				new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Create }))
 			{
 				result.Add(Constants.IntegrationPoints.PermissionErrors.MISSING_DESTINATION_RDO_PERMISSIONS);
 			}
@@ -77,6 +74,51 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			}
 
 			return result;
+		}
+
+		private IPermissionManager CreateDestinationPermissionManager(IntegrationPointProviderValidationModel model, SourceConfiguration sourceConfiguration)
+		{
+			IHelper targetHelper = CreateTargetHelper(model, sourceConfiguration);
+			IPermissionManager destinationWorkspacePermissionManager = CreatePermissionManager(targetHelper);
+			return destinationWorkspacePermissionManager;
+		}
+
+		private IHelper CreateTargetHelper(IntegrationPointProviderValidationModel model,
+			SourceConfiguration sourceConfiguration)
+		{
+			try
+			{
+				return _helperFactory.CreateTargetHelper(_helper, sourceConfiguration.FederatedInstanceArtifactId,
+					model.SecuredConfiguration);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError("An orror occured creating target helper. FederatedInstance: {instanceArtifactId}. Model: {modelArtifactId}", sourceConfiguration.FederatedInstanceArtifactId, model.ArtifactId);
+				string message = $"An orror occured creating target helper. FederatedInstance: {sourceConfiguration.FederatedInstanceArtifactId}. Model: {model.ArtifactId}";
+				throw new IntegrationPointsException(message, ex)
+				{
+					ExceptionSource = IntegrationPointsExceptionSource.VALIDATION,
+					ShouldAddToErrorsTab = false
+				};
+			}
+		}
+
+		private IPermissionManager CreatePermissionManager(IHelper helper)
+		{
+			try
+			{
+				return _managerFactory.CreatePermissionManager(_contextContainerFactory.CreateContextContainer(helper));
+			}
+			catch (Exception ex)
+			{
+				string message = "An error occured creating permission manager.";
+				_logger.LogError(message);
+				throw new IntegrationPointsException(message, ex)
+				{
+					ExceptionSource = IntegrationPointsExceptionSource.VALIDATION,
+					ShouldAddToErrorsTab = false
+				};
+			}
 		}
 	}
 }

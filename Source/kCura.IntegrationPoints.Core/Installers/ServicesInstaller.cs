@@ -44,6 +44,7 @@ using Relativity.API;
 using SystemInterface.IO;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Core.Authentication;
+using kCura.IntegrationPoints.Core.Serialization;
 using kCura.IntegrationPoints.Core.Services.Domain;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Toggles;
@@ -68,7 +69,13 @@ namespace kCura.IntegrationPoints.Core.Installers
 
 			IToggleProvider toggleProvider = CreateSqlServerToggleProvider(container.Resolve<IHelper>());
 
-			container.Register(Component.For<ISerializer>().ImplementedBy<JSONSerializer>().LifestyleSingleton());
+			container.Register(Component.For<ISerializer>().ImplementedBy<JSONSerializer>().UsingFactoryMethod(x =>
+			{
+				var serializer = new JSONSerializer();
+				IAPILog logger = container.Resolve<IHelper>().GetLoggerFactory().GetLogger();
+				return new SerializerWithLogging(serializer, logger);
+			}).LifestyleSingleton());
+
 			container.Register(Component.For<IIntegrationPointSerializer>().ImplementedBy<IntegrationPointSerializer>().LifestyleSingleton());
 			container.Register(Component.For<IObjectTypeRepository>().ImplementedBy<RsapiObjectTypeRepository>().UsingFactoryMethod(x =>
 			{

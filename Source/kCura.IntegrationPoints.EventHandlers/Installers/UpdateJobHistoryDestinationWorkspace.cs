@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			IRepositoryFactory repositoryFactory = new RepositoryFactory(Helper, Helper.GetServicesManager());
 			var federatedInstanceManager = new FederatedInstanceManager(repositoryFactory);
 			IWorkspaceManager workspaceManager = new WorkspaceManager(repositoryFactory);
-			IIntegrationPointSerializer serializer = new IntegrationPointSerializer();
+			IIntegrationPointSerializer serializer = new IntegrationPointSerializer(Logger);
 			return new JobHistoryService(caseContext, federatedInstanceManager, workspaceManager, Helper, serializer);
 		}
 	}

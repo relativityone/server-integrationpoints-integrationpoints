@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation
 {
@@ -40,7 +41,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		{
 			//Arrange
 			MockIpTypeId(ipType);
-			var validator = new IntegrationPointTypeValidator(_objectManager);
+			IAPILog logger = Substitute.For<IAPILog>();
+			var validator = new IntegrationPointTypeValidator(_objectManager, logger);
 			var ipModel = GetProviderValidationModelObject(sourceProviderId);
 
 			//Act
@@ -59,7 +61,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		{
 			//Arrange
 			MockIpTypeId(ipType);
-			var validator = new IntegrationPointTypeValidator(_objectManager);
+			IAPILog logger = Substitute.For<IAPILog>();
+			var validator = new IntegrationPointTypeValidator(_objectManager, logger);
 			var ipModel = GetProviderValidationModelObject(sourceProviderId);
 
 			//Act
@@ -75,7 +78,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			//Arrange
 			IntegrationPointType ipTypeObject = null;
 			_objectManager.Read<IntegrationPointType>(Arg.Any<int>()).Returns(ipTypeObject);
-			var validator = new IntegrationPointTypeValidator(_objectManager);
+			IAPILog logger = Substitute.For<IAPILog>();
+			var validator = new IntegrationPointTypeValidator(_objectManager, logger);
 			var ipModel = GetProviderValidationModelObject(IntegrationPoints.Domain.Constants.RELATIVITY_PROVIDER_GUID);
 
 			//Act

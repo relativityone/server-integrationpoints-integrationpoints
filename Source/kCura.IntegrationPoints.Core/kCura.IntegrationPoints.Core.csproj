@@ -119,6 +119,7 @@
     <Compile Include="Monitoring\HealthCheck.cs" />
     <Compile Include="Queries\IGetSourceProviderRdoByApplicationIdentifier.cs" />
     <Compile Include="Queries\IGetSourceProviderRdoByIdentifier.cs" />
+    <Compile Include="Serialization\SerializerWithLogging.cs" />
     <Compile Include="ServiceManagerProvider.cs" />
     <Compile Include="IContextContainer.cs" />
     <Compile Include="Factories\IContextContainerFactory.cs" />

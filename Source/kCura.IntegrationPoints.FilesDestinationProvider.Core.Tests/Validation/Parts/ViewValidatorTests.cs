@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation.Parts
 {
@@ -24,7 +25,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 			viewServiceMock.GetViewsByWorkspaceAndArtifactType(Arg.Any<int>(), Arg.Any<int>())
 				.Returns(new List<ViewDTO> { view });
 
-			var validator = new ViewValidator(viewServiceMock);
+			IAPILog logger = Substitute.For<IAPILog>();
+			var validator = new ViewValidator(logger, viewServiceMock);
 
 			var exportSettings = new ExportSettings { ViewId = viewId };
 
@@ -46,7 +48,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 			viewServiceMock.GetViewsByWorkspaceAndArtifactType(Arg.Any<int>(), Arg.Any<int>())
 				.Returns(new List<ViewDTO>());
 
-			var validator = new ViewValidator(viewServiceMock);
+			IAPILog logger = Substitute.For<IAPILog>();
+			var validator = new ViewValidator(logger, viewServiceMock);
 
 			var exportSettings = new ExportSettings { ProductionId = viewId };
 

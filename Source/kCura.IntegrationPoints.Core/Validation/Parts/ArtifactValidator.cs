@@ -1,7 +1,7 @@
-﻿using System.Linq;
-using kCura.IntegrationPoints.Core.Services;
+﻿using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.Relativity.Client;
 
 namespace kCura.IntegrationPoints.Core.Validation.Parts
 {
@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 		{
 			var result = new ValidationResult();
 
-			var artifact = _artifactService.GetArtifact(_workspaceArtifactId, _artifactTypeName, value);
+			Artifact artifact = _artifactService.GetArtifact(_workspaceArtifactId, _artifactTypeName, value);
 
 			if (artifact == null)
 			{

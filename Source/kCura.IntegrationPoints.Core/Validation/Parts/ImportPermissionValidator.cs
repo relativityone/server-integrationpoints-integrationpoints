@@ -1,11 +1,14 @@
-﻿using kCura.Apps.Common.Utils.Serializers;
+﻿using System;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Validation.Parts
 {
@@ -24,7 +27,6 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 		public override ValidationResult Validate(IntegrationPointProviderValidationModel model)
 		{
 			var result = new ValidationResult();
-
 			DestinationConfiguration destinationConfiguration = Serializer.Deserialize<DestinationConfiguration>(model.DestinationConfiguration);
 
 			var permissionRepository = _repositoryFactory.GetPermissionRepository(ContextHelper.WorkspaceID);
@@ -35,7 +37,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 			}
 
 			if (!permissionRepository.UserHasArtifactTypePermissions(destinationConfiguration.ArtifactTypeId,
-				new[] {ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Create}))
+				new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Create }))
 			{
 				result.Add(Constants.IntegrationPoints.PermissionErrors.MISSING_DESTINATION_RDO_PERMISSIONS);
 			}

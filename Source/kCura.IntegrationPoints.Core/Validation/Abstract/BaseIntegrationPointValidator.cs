@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
@@ -16,8 +12,8 @@ namespace kCura.IntegrationPoints.Core.Validation.Abstract
 	{
 		protected readonly ILookup<string, TValidator> _validatorsMap;
 		protected readonly IIntegrationPointSerializer _serializer;
-
-		public BaseIntegrationPointValidator(IEnumerable<TValidator> validators, IIntegrationPointSerializer serializer)
+		
+		protected BaseIntegrationPointValidator(IEnumerable<TValidator> validators, IIntegrationPointSerializer serializer)
 		{
 			_validatorsMap = validators.ToLookup(x => x.Key);
 			_serializer = serializer;
@@ -34,7 +30,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Abstract
 		public IntegrationPointProviderValidationModel CreateValidationModel(IntegrationPointModelBase model, SourceProvider sourceProvider,
 			DestinationProvider destinationProvider, IntegrationPointType integrationPointType, string objectTypeGuid)
 		{
-			var destinationConfiguration = _serializer.Deserialize<ImportSettings>(model.Destination);
+			ImportSettings destinationConfiguration = _serializer.Deserialize<ImportSettings>(model.Destination);
 
 			return new IntegrationPointProviderValidationModel(model)
 			{
@@ -53,7 +49,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Abstract
 				SecuredConfiguration = model.SecuredConfiguration
 			};
 		}
-			
+
 		public abstract ValidationResult Validate(IntegrationPointModelBase model, SourceProvider sourceProvider, DestinationProvider destinationProvider, IntegrationPointType integrationPointType, string objectTypeGuid);
 	}
 }

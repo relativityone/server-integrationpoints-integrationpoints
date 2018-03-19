@@ -6,24 +6,23 @@ using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
-using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.Relativity.Client;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts
 {
 	public class FieldsMappingValidator : BasePartsValidator<IntegrationPointProviderValidationModel>
 	{
+		private readonly IAPILog _logger;
 		private readonly ISerializer _serializer;
 		private readonly IFieldManager _sourcefieldManager;
 		private readonly IFieldManager _targetfieldManager;
 
-		private const string _OBJECT_IDENTIFIER_APPENDAGE_TEXT = " [Object Identifier]";
-
-		public FieldsMappingValidator(ISerializer serializer, IFieldManager sourcefieldManager, IFieldManager targetfieldManager)
+		public FieldsMappingValidator(IAPILog logger, ISerializer serializer, IFieldManager sourcefieldManager, IFieldManager targetfieldManager)
 		{
+			_logger = logger.ForContext<FieldsMappingValidator>();
 			_serializer = serializer;
 			_sourcefieldManager = sourcefieldManager;
 			_targetfieldManager = targetfieldManager;
@@ -230,15 +229,23 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 
 		private List<ArtifactDTO> RetrieveAllFields(IFieldManager fieldManager, int workspaceId)
 		{
-			ArtifactDTO[] fieldArtifacts = fieldManager.RetrieveFields(workspaceId,
-				new HashSet<string>(new[]
-				{
-					RelativityProviderValidationMessages.FIELD_MAP_FIELD_NAME,
-					RelativityProviderValidationMessages.FIELD_MAP_FIELD_IS_IDENTIFIER
-				})
-			);
+			try
+			{
+				ArtifactDTO[] fieldArtifacts = fieldManager.RetrieveFields(workspaceId,
+					new HashSet<string>(new[]
+					{
+						RelativityProviderValidationMessages.FIELD_MAP_FIELD_NAME,
+						RelativityProviderValidationMessages.FIELD_MAP_FIELD_IS_IDENTIFIER
+					})
+				);
 
-			return fieldArtifacts.ToList();
+				return fieldArtifacts.ToList();
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "An error occured retrieving fields in {validator}", nameof(FieldsMappingValidator));
+				throw new IntegrationPointsException($"An error occured retrieving fields in {nameof(FieldsMappingValidator)}", ex);
+			}
 		}
 	}
 }

@@ -2,23 +2,27 @@
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Validation.Parts
 {
 	public class IntegrationPointTypeValidator : IValidator
 	{
 		private readonly IRelativityObjectManager _objectManager;
+		private readonly IAPILog _logger;
 		public string Key => Constants.IntegrationPointProfiles.Validation.INTEGRATION_POINT_TYPE;
 
-		public IntegrationPointTypeValidator(IRelativityObjectManager objectManager)
+		public IntegrationPointTypeValidator(IRelativityObjectManager objectManager, IAPILog logger)
 		{
+			_logger = logger;
 			_objectManager = objectManager;
 		}
 
 		public ValidationResult Validate(object value)
 		{
-			var integrationModel = value as IntegrationPointProviderValidationModel;
+			IntegrationPointProviderValidationModel integrationModel = CastToValidationModel(value);
 			var result = new ValidationResult();
 
 			IntegrationPointType integrationPointType = _objectManager.Read<IntegrationPointType>(integrationModel.Type);
@@ -29,7 +33,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 				return result;
 			}
 
-			if (integrationModel.SourceProviderIdentifier.ToUpper() == IntegrationPoints.Domain.Constants.RELATIVITY_PROVIDER_GUID.ToUpper())
+			if (integrationModel.SourceProviderIdentifier.ToUpper() == Domain.Constants.RELATIVITY_PROVIDER_GUID.ToUpper())
 			{
 				if (integrationPointType.Identifier.ToUpper() !=
 					Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString().ToUpper())
@@ -47,6 +51,22 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 			}
 
 			return result;
+		}
+
+		private IntegrationPointProviderValidationModel CastToValidationModel(object value)
+		{
+			var validationModel = value as IntegrationPointProviderValidationModel;
+			if (validationModel != null)
+			{
+				return validationModel;
+			}
+
+			_logger.LogError("An error occure casting to validation model in {validator}. Actual type: {actualType}", nameof(IntegrationPointTypeValidator), value?.GetType());
+			throw new IntegrationPointsException($"An error occure casting to validation model in {nameof(IntegrationPointTypeValidator)}. Actual type: {value?.GetType()}")
+			{
+				ExceptionSource = IntegrationPointsExceptionSource.VALIDATION,
+				ShouldAddToErrorsTab = false
+			};
 		}
 	}
 }

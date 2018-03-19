@@ -12,6 +12,7 @@ using kCura.ScheduleQueue.Core.Core;
 using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Management.Tests.Tasks.Helpers
 {
@@ -30,8 +31,8 @@ namespace kCura.IntegrationPoints.Management.Tests.Tasks.Helpers
 		{
 			_unfinishedJobService = Substitute.For<IUnfinishedJobService>();
 			_jobService = Substitute.For<IJobService>();
-
-			_instance = new JobsWithInvalidStatus(_unfinishedJobService, new IntegrationPointSerializer(), _jobService);
+			IAPILog logger = Substitute.For<IAPILog>();
+			_instance = new JobsWithInvalidStatus(_unfinishedJobService, new IntegrationPointSerializer(logger), _jobService);
 		}
 
 		[Test]

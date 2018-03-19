@@ -7,7 +7,9 @@ using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core.ScheduleRules;
+using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 using Assert = NUnit.Framework.Assert;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation
@@ -24,7 +26,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		[SetUp]
 		public void Setup()
 		{
-			_instance = new SchedulerValidator(new JSONSerializer());
+			var logger = Substitute.For<IAPILog>();
+			_instance = new SchedulerValidator(new JSONSerializer(), logger);
 		}
 
 		[Test]

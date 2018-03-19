@@ -36,6 +36,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 
 	public class FileDestinationProviderValidatorsFactory : IFileDestinationProviderValidatorsFactory
 	{
+		private readonly IAPILog _logger;
 		private readonly ISerializer _serializer;
 		private readonly IExportSettingsBuilder _exportSettingsBuilder;
 		private readonly IExportInitProcessService _exportInitProcessService;
@@ -76,6 +77,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 			_exportFieldsService = exportFieldsService;
 			_artifactService = artifactService;
 			_nonValidCharactersValidator = nonValidCharactersValidator;
+
+			_logger = helper.GetLoggerFactory().GetLogger();
 		}
 
 		public ExportFileValidator CreateExportFileValidator()
@@ -95,12 +98,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 
 		public SavedSearchValidator CreateSavedSearchValidator(int workspaceArtifactId, int savedSearchArtifactId)
 		{
-			return new SavedSearchValidator(_repositoryFactory.GetSavedSearchQueryRepository(workspaceArtifactId), savedSearchArtifactId);
+			return new SavedSearchValidator(_logger, _repositoryFactory.GetSavedSearchQueryRepository(workspaceArtifactId), savedSearchArtifactId);
 		}
 
 		public ViewValidator CreateViewValidator()
 		{
-			return new ViewValidator(_viewService);
+			return new ViewValidator(_logger, _viewService);
 		}
 
 		public ExportProductionValidator CreateExportProductionValidator()
@@ -118,7 +121,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 
 		public FieldsMapValidator CreateFieldsMapValidator()
 		{
-			return new FieldsMapValidator(_serializer, _exportFieldsService);
+			return new FieldsMapValidator(_logger, _serializer, _exportFieldsService);
 		}
 
 		public BaseExportSettingsValidator CreateExportSettingsValidator(int artifactTypeId)

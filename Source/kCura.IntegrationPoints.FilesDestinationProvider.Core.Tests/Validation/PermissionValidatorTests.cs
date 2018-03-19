@@ -6,10 +6,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Relativity;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 {
@@ -27,8 +24,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 			};
 
 			_serializer.Deserialize<ExportUsingSavedSearchSettings>(_validationModel.SourceConfiguration).Returns(exportSettings);
-
-			var permissionValidator = new PermissionValidator(_repositoryFactory, _serializer, ServiceContextHelper);
+			IAPILog logger = Substitute.For<IAPILog>();
+			var permissionValidator = new PermissionValidator(_repositoryFactory, _serializer, ServiceContextHelper, logger);
 
 			// act
 			var validationResult = permissionValidator.Validate(_validationModel);
@@ -58,7 +55,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 
 			_serializer.Deserialize<ExportUsingSavedSearchSettings>(_validationModel.SourceConfiguration).Returns(exportSettings);
 
-			var permissionValidator = new PermissionValidator(_repositoryFactory, _serializer, ServiceContextHelper);
+			IAPILog logger = Substitute.For<IAPILog>();
+			var permissionValidator = new PermissionValidator(_repositoryFactory, _serializer, ServiceContextHelper, logger);
 
 			// act
 			var validationResult = permissionValidator.Validate(_validationModel);
@@ -86,7 +84,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 
 			_serializer.Deserialize<ExportUsingSavedSearchSettings>(_validationModel.SourceConfiguration).Returns(exportSettings);
 
-			var permissionValidator = new PermissionValidator(_repositoryFactory, _serializer, ServiceContextHelper);
+			IAPILog logger = Substitute.For<IAPILog>();
+			var permissionValidator = new PermissionValidator(_repositoryFactory, _serializer, ServiceContextHelper, logger);
 
 			// act
 			var validationResult = permissionValidator.Validate(_validationModel);

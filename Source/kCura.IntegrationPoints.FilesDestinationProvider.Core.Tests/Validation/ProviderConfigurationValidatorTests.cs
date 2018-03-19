@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
@@ -9,6 +8,7 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 {
@@ -33,8 +33,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 				.Returns(validatorMock);
 
 			var exportSettingsBuilderMock = Substitute.For<IExportSettingsBuilder>();
-
-			var validator = new FileDestinationProviderConfigurationValidator(serializerMock, validatorsFactoryMock, exportSettingsBuilderMock);
+			var logger = Substitute.For<IAPILog>();
+			var validator = new FileDestinationProviderConfigurationValidator(serializerMock, validatorsFactoryMock, exportSettingsBuilderMock, logger);
 
 			// act
 			var actual = validator.Prevalidate(new IntegrationPointProviderValidationModel());
@@ -42,46 +42,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 			// assert
 			Assert.IsTrue(actual.IsValid);
 			Assert.That(actual.Messages.Count(), Is.EqualTo(0));
-		}
-
-		[Test]
-		public void ItShouldValidateModel()
-		{
-			// arrange
-			var serializerMock = Substitute.For<ISerializer>();
-			var validatorsFactoryMock = Substitute.For<IFileDestinationProviderValidatorsFactory>();
-			var exportSettingsBuilderMock = Substitute.For<IExportSettingsBuilder>();
-
-			var validator = new FileDestinationProviderConfigurationValidator(serializerMock, validatorsFactoryMock, exportSettingsBuilderMock);
-
-			// TODO: update this test
-			//// act
-			//var actual = validator.Validate(new IntegrationPointProviderValidationModel());
-
-			//// assert
-			//Assert.IsTrue(actual.IsValid);
-			//Assert.That(actual.Messages.Count(), Is.EqualTo(0));
-		}
-
-		[Test]
-		public void ItShouldValidateBoxedModel()
-		{
-			// arrange
-			var serializerMock = Substitute.For<ISerializer>();
-			var validatorsFactoryMock = Substitute.For<IFileDestinationProviderValidatorsFactory>();
-			var exportSettingsBuilderMock = Substitute.For<IExportSettingsBuilder>();
-
-			var validator = new FileDestinationProviderConfigurationValidator(serializerMock, validatorsFactoryMock, exportSettingsBuilderMock);
-
-			object model = new IntegrationPointProviderValidationModel();
-
-			// TODO: update this test
-			//// act
-			//var actual = validator.Validate(model);
-
-			//// assert
-			//Assert.IsTrue(actual.IsValid);
-			//Assert.That(actual.Messages.Count(), Is.EqualTo(0));
 		}
 	}
 }

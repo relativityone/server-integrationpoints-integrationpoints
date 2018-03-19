@@ -6,18 +6,21 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Extensions;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 {
 	public class FieldsMapValidator : BasePartsValidator<IntegrationPointProviderValidationModel>
 	{
+		private readonly IAPILog _logger;
 		private readonly ISerializer _serializer;
 		private readonly IExportFieldsService _exportFieldsService;
 
-		public FieldsMapValidator(ISerializer serializer, IExportFieldsService exportFieldsService)
+		public FieldsMapValidator(IAPILog logger, ISerializer serializer, IExportFieldsService exportFieldsService)
 		{
+			_logger = logger.ForContext<FieldsMapValidator>();
 			_serializer = serializer;
 			_exportFieldsService = exportFieldsService;
 		}
@@ -26,7 +29,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 		{
 			var result = new ValidationResult();
 
-			if (String.IsNullOrWhiteSpace(value.FieldsMap))
+			if (string.IsNullOrWhiteSpace(value.FieldsMap))
 			{
 				result.Add(FileDestinationProviderValidationMessages.FIELD_MAP_NO_FIELDS);
 				return result;
@@ -42,10 +45,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 			{
 				var exportSettings = _serializer.Deserialize<ExportUsingSavedSearchSettings>(value.SourceConfiguration);
 
-				var exportableFields = _exportFieldsService.GetAllExportableFields(exportSettings.SourceWorkspaceArtifactId, value.ArtifactTypeId);
+				var exportableFields = RetrieveExportableFields(value, exportSettings);
 				var selectedFields = fieldMap.Select(x => x.SourceField);
 
-				var orphanedFields = selectedFields.Except(exportableFields, new FieldsMapValidator.FieldEntryEqualityComparer());
+				var orphanedFields = selectedFields.Except(exportableFields, new FieldEntryEqualityComparer());
 
 				foreach (var field in orphanedFields)
 				{
@@ -54,6 +57,20 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 			}
 
 			return result;
+		}
+
+		private FieldEntry[] RetrieveExportableFields(IntegrationPointProviderValidationModel value,
+			ExportUsingSavedSearchSettings exportSettings)
+		{
+			try
+			{
+				return _exportFieldsService.GetAllExportableFields(exportSettings.SourceWorkspaceArtifactId, value.ArtifactTypeId);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "An error occured while retriving exportable fields in {validator}", nameof(FieldsMapValidator));
+				throw new IntegrationPointsException($"An error occured while retriving exportable fields in {nameof(FieldsMapValidator)}", ex);
+			}
 		}
 
 		private class FieldEntryEqualityComparer : IEqualityComparer<FieldEntry>

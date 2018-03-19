@@ -11,6 +11,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NSubstitute;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation
 {

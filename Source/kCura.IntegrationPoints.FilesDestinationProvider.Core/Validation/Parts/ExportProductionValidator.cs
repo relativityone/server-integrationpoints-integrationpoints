@@ -1,7 +1,5 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Domain.Models;
 
@@ -20,7 +18,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 		{
 			var result = new ValidationResult();
 
-			var production = _productionManager.GetProductionsForExport(value.WorkspaceId)
+			ProductionDTO production = _productionManager.GetProductionsForExport(value.WorkspaceId)
 				.FirstOrDefault(x => x.ArtifactID.Equals(value.ProductionId.ToString()));
 
 			if (production == null)

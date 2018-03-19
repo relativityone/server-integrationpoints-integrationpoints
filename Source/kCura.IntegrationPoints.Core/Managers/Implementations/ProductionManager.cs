@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
-using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity.Productions.Services;
@@ -41,20 +39,40 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 		public IEnumerable<ProductionDTO> GetProductionsForExport(int workspaceArtifactId)
 		{
-			WinEDDS.Service.Export.IProductionManager productionManager = 
-				_serviceManagerProvider.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>();
-			DataTable dt = productionManager.RetrieveProducedByContextArtifactID(workspaceArtifactId).Tables[0];
+			try
+			{
+				WinEDDS.Service.Export.IProductionManager productionManager =
+					_serviceManagerProvider.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>();
+				DataTable dt = productionManager.RetrieveProducedByContextArtifactID(workspaceArtifactId).Tables[0];
 
-			return CreateProductionsCollection(dt);
+				return CreateProductionsCollection(dt);
+			}
+			catch (Exception ex)
+			{
+				throw new IntegrationPointsException("An error occured getting production for export", ex)
+				{
+					ExceptionSource = IntegrationPointsExceptionSource.WIN_EDDS
+				};
+			}
 		}
 
 		public IEnumerable<ProductionDTO> GetProductionsForImport(int workspaceArtifactId, int? federatedInstanceId = null, string federatedInstanceCredentials = null)
 		{
-			WinEDDS.Service.Export.IProductionManager productionManager = 
-				_serviceManagerProvider.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>(federatedInstanceId, federatedInstanceCredentials, _federatedInstanceManager);
-			DataTable dt = productionManager.RetrieveImportEligibleByContextArtifactID(workspaceArtifactId).Tables[0];
+			try
+			{
+				WinEDDS.Service.Export.IProductionManager productionManager =
+					_serviceManagerProvider.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>(federatedInstanceId, federatedInstanceCredentials, _federatedInstanceManager);
+				DataTable dt = productionManager.RetrieveImportEligibleByContextArtifactID(workspaceArtifactId).Tables[0];
 
-			return CreateProductionsCollection(dt);
+				return CreateProductionsCollection(dt);
+			}
+			catch (Exception ex)
+			{
+				throw new IntegrationPointsException("An error occured getting production for import", ex)
+				{
+					ExceptionSource = IntegrationPointsExceptionSource.WIN_EDDS
+				};
+			}
 		}
 
 		private static IEnumerable<ProductionDTO> CreateProductionsCollection(DataTable table)

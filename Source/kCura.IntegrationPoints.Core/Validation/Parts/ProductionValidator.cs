@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Core.Services;
+﻿using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Domain.Models;
 

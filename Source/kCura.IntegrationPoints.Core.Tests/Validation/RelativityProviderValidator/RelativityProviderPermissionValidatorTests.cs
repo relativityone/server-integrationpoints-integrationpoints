@@ -1,20 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Validation.Parts;
-using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts;
 using kCura.IntegrationPoints.Data;
 using NSubstitute;
-using NSubstitute.Core.Arguments;
 using NUnit.Framework;
 using Relativity.API;
 
@@ -83,7 +74,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 					FederatedInstanceArtifactId = federatedInstanceId
 				});
 
-			var relativityProviderPermissionValidator = new RelativityProviderPermissionValidator(_repositoryFactory, _serializer, ServiceContextHelper, 
+			var relativityProviderPermissionValidator = new RelativityProviderPermissionValidator(_serializer, ServiceContextHelper, 
 				_helper, _helperFactory, _contextContainerFactory, _managerFactory);
 
 			// act

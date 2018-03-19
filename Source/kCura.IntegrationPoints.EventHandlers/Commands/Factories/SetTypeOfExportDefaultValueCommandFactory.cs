@@ -40,7 +40,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 
 			IContextContainerFactory contextContainerFactory = new ContextContainerFactory();
 
-			IIntegrationPointSerializer integrationPointSerializer = new IntegrationPointSerializer();
+			IAPILog logger = helper.GetLoggerFactory().GetLogger();
+			IIntegrationPointSerializer integrationPointSerializer = new IntegrationPointSerializer(logger);
 
 			IRSAPIClient rsapiClient = rsapiClientFactory.CreateAdminClient(helper.GetActiveCaseID());
 			IChoiceQuery choiceQuery = new ChoiceQuery(rsapiClient);

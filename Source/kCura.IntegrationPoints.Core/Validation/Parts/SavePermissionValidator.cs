@@ -13,10 +13,10 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 	{
 		private readonly IRepositoryFactory _repositoryFactory;
 
-		public SavePermissionValidator(IRepositoryFactory repositoryFactoryFactory, ISerializer serializer, IServiceContextHelper contextHelper)
+		public SavePermissionValidator(IRepositoryFactory repositoryFactory, ISerializer serializer, IServiceContextHelper contextHelper)
 			: base(serializer, contextHelper)
 		{
-			_repositoryFactory = repositoryFactoryFactory;
+			_repositoryFactory = repositoryFactory;
 		}
 
 		public override string Key => Constants.IntegrationPoints.Validation.SAVE;

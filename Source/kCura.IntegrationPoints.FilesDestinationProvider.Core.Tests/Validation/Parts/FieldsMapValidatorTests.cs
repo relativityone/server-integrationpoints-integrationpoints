@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation.Parts
 {
@@ -27,8 +28,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 			IExportFieldsService exportFieldServiceMock = Substitute.For<IExportFieldsService>();
 			exportFieldServiceMock.GetAllExportableFields(Arg.Any<int>(), Arg.Any<int>())
 				.Returns(exportableFieldsArray);
-
-			var validator = new FieldsMapValidator(serializer, exportFieldServiceMock);
+			IAPILog logger = Substitute.For<IAPILog>();
+			var validator = new FieldsMapValidator(logger, serializer, exportFieldServiceMock);
 
 			var model = new IntegrationPointProviderValidationModel
 			{
@@ -58,8 +59,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 			IExportFieldsService exportFieldServiceMock = Substitute.For<IExportFieldsService>();
 			exportFieldServiceMock.GetAllExportableFields(Arg.Any<int>(), Arg.Any<int>())
 				.Returns(exportableFieldsArray);
-
-			var validator = new FieldsMapValidator(serializer, exportFieldServiceMock);
+			IAPILog logger = Substitute.For<IAPILog>();
+			var validator = new FieldsMapValidator(logger, serializer, exportFieldServiceMock);
 
 			var model = new IntegrationPointProviderValidationModel
 			{
@@ -87,8 +88,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 			IExportFieldsService exportFieldServiceMock = Substitute.For<IExportFieldsService>();
 			exportFieldServiceMock.GetAllExportableFields(Arg.Any<int>(), Arg.Any<int>())
 				.Returns(exportableFieldsArray);
-
-			var validator = new FieldsMapValidator(serializer, exportFieldServiceMock);
+			IAPILog logger = Substitute.For<IAPILog>();
+			var validator = new FieldsMapValidator(logger, serializer, exportFieldServiceMock);
 
 			var model = new IntegrationPointProviderValidationModel
 			{
@@ -117,7 +118,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 				.Returns(Enumerable.Empty<FieldEntry>());
 
 			var serializer = new JSONSerializer();
-			var validator = new FieldsMapValidator(serializer, exportFieldServiceMock);
+			IAPILog logger = Substitute.For<IAPILog>();
+			var validator = new FieldsMapValidator(logger, serializer, exportFieldServiceMock);
 
 			var model = new IntegrationPointProviderValidationModel
 			{

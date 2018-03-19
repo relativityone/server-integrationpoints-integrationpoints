@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation
 {
@@ -53,10 +54,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
         [SetUp]
 	    public void SetUp()
-	    {
+        {
+	        IAPILog logger = Substitute.For<IAPILog>();
 	        _serializer = new JSONSerializer();
 	        _validatorsFactoryMock = Substitute.For<IRelativityProviderValidatorsFactory>();
-	        _savedSearchValidatorMock = Substitute.For<SavedSearchValidator>( Substitute.For<ISavedSearchQueryRepository>(), _SAVED_SEARCH_ARTIFACT_ID );
+	        _savedSearchValidatorMock = Substitute.For<SavedSearchValidator>(logger, Substitute.For<ISavedSearchQueryRepository>(), _SAVED_SEARCH_ARTIFACT_ID );
 
             _subjectUnderTest = new IntegrationPointExecutionValidator( _serializer, _validatorsFactoryMock);
 

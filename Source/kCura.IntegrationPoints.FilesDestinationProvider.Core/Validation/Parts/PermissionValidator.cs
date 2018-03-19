@@ -6,18 +6,22 @@ using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity;
+using Relativity.API;
 using Constants = kCura.IntegrationPoints.Domain.Constants;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 {
 	public class PermissionValidator : BasePermissionValidator
 	{
+		private readonly IAPILog _logger;
 		private readonly IRepositoryFactory _repositoryFactory;
 
-		public PermissionValidator(IRepositoryFactory repositoryFactoryFactory, ISerializer serializer, IServiceContextHelper contextHelper) : base(serializer, contextHelper)
+		public PermissionValidator(IRepositoryFactory repositoryFactoryFactory, ISerializer serializer, IServiceContextHelper contextHelper, IAPILog logger) : base(serializer, contextHelper)
 		{
+			_logger = logger.ForContext<PermissionValidator>();
 			_repositoryFactory = repositoryFactoryFactory;
 		}
 
@@ -29,13 +33,17 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 		public override ValidationResult Validate(IntegrationPointProviderValidationModel model)
 		{
 			var result = new ValidationResult();
+			ExportUsingSavedSearchSettings exportSettings = Serializer.Deserialize<ExportUsingSavedSearchSettings>(model.SourceConfiguration);
 
-			var exportSettings = Serializer.Deserialize<ExportUsingSavedSearchSettings>(model.SourceConfiguration);
-			
 			ExportSettings.ExportType exportType;
 			if (!Enum.TryParse(exportSettings.ExportType, out exportType))
 			{
-				throw new ArgumentException("Failed to retrieve ExportType from export settings.");
+				_logger.LogError("Failed to retrieve ExportType from export settings. Export type value: {exportType}", exportSettings.ExportType);
+				throw new IntegrationPointsException("Failed to retrieve ExportType from export settings.")
+				{
+					ExceptionSource = IntegrationPointsExceptionSource.VALIDATION,
+					ShouldAddToErrorsTab = false
+				};
 			}
 
 			var permissionRepository = _repositoryFactory.GetPermissionRepository(ContextHelper.WorkspaceID);
@@ -44,7 +52,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 				|| (exportType == ExportSettings.ExportType.FolderAndSubfolders))
 			{
 				var hasFolderPermission = permissionRepository.UserHasArtifactInstancePermission(
-					(int) ArtifactType.Folder, exportSettings.FolderArtifactId, ArtifactPermission.View);
+					(int)ArtifactType.Folder, exportSettings.FolderArtifactId, ArtifactPermission.View);
 
 				if (!hasFolderPermission)
 				{
@@ -54,7 +62,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 			else if (exportType == ExportSettings.ExportType.ProductionSet)
 			{
 				var hasProductionPermission = permissionRepository.UserHasArtifactInstancePermission(
-					(int) ArtifactType.Production, exportSettings.ProductionId, ArtifactPermission.View);
+					(int)ArtifactType.Production, exportSettings.ProductionId, ArtifactPermission.View);
 				if (!hasProductionPermission)
 				{
 					result.Add(FileDestinationProviderValidationMessages.EXPORT_PRODUCTION_NO_VIEW);

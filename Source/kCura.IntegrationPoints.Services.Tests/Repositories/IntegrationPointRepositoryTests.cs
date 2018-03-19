@@ -105,8 +105,8 @@ namespace kCura.IntegrationPoints.Services.Tests.Repositories
 			{
 				FederatedInstanceArtifactId = federatedInstanceArtifactId
 			};
-
-			_serializedDestinationConfiguration = new IntegrationPointSerializer().Serialize(_destinationConfiguration);
+			IAPILog logger = Substitute.For<IAPILog>();
+			_serializedDestinationConfiguration = new IntegrationPointSerializer(logger).Serialize(_destinationConfiguration);
 
 			_serializer.Serialize(_destinationConfiguration).Returns(_serializedDestinationConfiguration);
 			_serializer.Deserialize<DestinationConfiguration>(_serializedDestinationConfiguration)

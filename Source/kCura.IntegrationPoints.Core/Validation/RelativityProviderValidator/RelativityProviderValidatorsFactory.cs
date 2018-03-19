@@ -10,6 +10,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 {
 	public class RelativityProviderValidatorsFactory : IRelativityProviderValidatorsFactory
 	{
+		private readonly IAPILog _logger;
 		private readonly IContextContainerFactory _contextContainerFactory;
 		private readonly IHelper _helper;
 		private readonly IHelperFactory _helperFactory;
@@ -28,6 +29,8 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			_contextContainerFactory = contextContainerFactory;
 			_managerFactory = managerFactory;
 			_artifactServiceFactory = artifactServiceFactory;
+
+			_logger = _helper.GetLoggerFactory().GetLogger();
 		}
 
 		public FieldsMappingValidator CreateFieldsMappingValidator(int? federatedInstanceArtifactId, string credentials)
@@ -37,7 +40,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			var targetHelper = _helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId, credentials);
 			IFieldManager targetFieldManager = _managerFactory.CreateFieldManager(_contextContainerFactory.CreateContextContainer(_helper, targetHelper.GetServicesManager()));
 
-			return new FieldsMappingValidator(_serializer, sourceFieldManager, targetFieldManager);
+			return new FieldsMappingValidator(_logger, _serializer, sourceFieldManager, targetFieldManager);
 		}
 
 		public ArtifactValidator CreateArtifactValidator(int workspaceArtifactId, string artifactTypeName, int? federatedInstanceArtifactId, string credentials)
@@ -50,7 +53,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 
 		public SavedSearchValidator CreateSavedSearchValidator(int workspaceArtifactId, int savedSearchArtifactId)
 		{
-			return new SavedSearchValidator(_repositoryFactory.GetSavedSearchQueryRepository(workspaceArtifactId), savedSearchArtifactId);
+			return new SavedSearchValidator(_logger, _repositoryFactory.GetSavedSearchQueryRepository(workspaceArtifactId), savedSearchArtifactId);
 		}
 
 		public ProductionValidator CreateProductionValidator(int workspaceArtifactId)

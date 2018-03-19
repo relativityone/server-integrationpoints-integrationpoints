@@ -1,8 +1,5 @@
-﻿using System;
-using System.Linq;
-using kCura.IntegrationPoints.Core.Managers;
+﻿using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts

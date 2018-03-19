@@ -1,18 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 {
 	public class FileDestinationProviderConfigurationValidator : IValidator, IIntegrationPointValidationService
 	{
+		private readonly IAPILog _logger;
 		private readonly ISerializer _serializer;
 		private readonly IFileDestinationProviderValidatorsFactory _validatorsFactory;
 		private readonly IExportSettingsBuilder _exportSettingsBuilder;
@@ -20,16 +24,18 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 		public FileDestinationProviderConfigurationValidator(
 			ISerializer serializer,
 			IFileDestinationProviderValidatorsFactory validatorsFactory,
-			IExportSettingsBuilder exportSettingsBuilder
+			IExportSettingsBuilder exportSettingsBuilder,
+			IAPILog logger
 		)
 		{
+			_logger = logger;
 			_serializer = serializer;
 			_validatorsFactory = validatorsFactory;
 			_exportSettingsBuilder = exportSettingsBuilder;
 		}
 
 		public string Key => IntegrationPointProviderValidator.GetProviderValidatorKey(
-			IntegrationPoints.Domain.Constants.RELATIVITY_PROVIDER_GUID,
+			Domain.Constants.RELATIVITY_PROVIDER_GUID,
 			IntegrationPoints.Core.Constants.IntegrationPoints.LOAD_FILE_DESTINATION_PROVIDER_GUID
 		);
 
@@ -51,9 +57,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 		public ValidationResult Validate(IntegrationPointProviderValidationModel model)
 		{
 			var result = new ValidationResult();
-
-			var sourceConfiguration = _serializer.Deserialize<ExportUsingSavedSearchSettings>(model.SourceConfiguration);
-			var fieldMap = _serializer.Deserialize<IEnumerable<FieldMap>>(model.FieldsMap);
+			ExportUsingSavedSearchSettings sourceConfiguration = _serializer.Deserialize<ExportUsingSavedSearchSettings>(model.SourceConfiguration);
+			IEnumerable<FieldMap> fieldMap = _serializer.Deserialize<IEnumerable<FieldMap>>(model.FieldsMap);
 
 			var exportSettings = _exportSettingsBuilder.Create(sourceConfiguration, fieldMap, model.ArtifactTypeId);
 

@@ -11,6 +11,7 @@ using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValidator
 {
@@ -32,7 +33,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 		{
 			_sourceFieldManager = Substitute.For<IFieldManager>();
 			_targetFieldManager = Substitute.For<IFieldManager>();
-			_instance = new FieldsMappingValidator(new JSONSerializer(), _sourceFieldManager, _targetFieldManager);
+			IAPILog logger = Substitute.For<IAPILog>();
+			_instance = new FieldsMappingValidator(logger, new JSONSerializer(), _sourceFieldManager, _targetFieldManager);
 		}
 
 		[TestCase("[{\"sourceField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"fieldMapType\":\"Identifier\"}]")]

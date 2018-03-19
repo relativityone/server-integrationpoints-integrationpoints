@@ -1,11 +1,10 @@
-﻿using System;
-using System.Linq;
-using kCura.IntegrationPoints.Core.Validation;
+﻿using System.Linq;
 using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValidator
 {
@@ -23,8 +22,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			var savedSearchRepositoryMock = Substitute.For<ISavedSearchQueryRepository>();
 			savedSearchRepositoryMock.RetrieveSavedSearch(_SAVED_SEARCH_ID)
 				.Returns(savedSearch);
-
-			var validator = new SavedSearchValidator(savedSearchRepositoryMock, _SAVED_SEARCH_ID);
+			IAPILog logger = Substitute.For<IAPILog>();
+			var validator = new SavedSearchValidator(logger, savedSearchRepositoryMock, _SAVED_SEARCH_ID);
 
 			// act
 			var actual = validator.Validate(0);
@@ -44,7 +43,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			savedSearchRepositoryMock.RetrieveSavedSearch(_SAVED_SEARCH_ID)
 				.Returns(savedSearch);
 
-			var validator = new SavedSearchValidator(savedSearchRepositoryMock, _SAVED_SEARCH_ID);
+			IAPILog logger = Substitute.For<IAPILog>();
+			var validator = new SavedSearchValidator(logger, savedSearchRepositoryMock, _SAVED_SEARCH_ID);
 
 			// act
 			var actual = validator.Validate(0);
@@ -64,7 +64,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			savedSearchRepositoryMock.RetrieveSavedSearch(_SAVED_SEARCH_ID)
 				.Returns(savedSearch);
 
-			var validator = new SavedSearchValidator(savedSearchRepositoryMock, _SAVED_SEARCH_ID);
+			IAPILog logger = Substitute.For<IAPILog>();
+			var validator = new SavedSearchValidator(logger, savedSearchRepositoryMock, _SAVED_SEARCH_ID);
 
 			// act
 			var actual = validator.Validate(0);

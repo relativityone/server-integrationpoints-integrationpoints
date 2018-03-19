@@ -47,20 +47,22 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 
 		public IntegrationPointDataHub() : this(new ContextContainer((IHelper)ConnectionHelper.Helper()), new HelperClassFactory())
 		{
-			ISqlServiceFactory sqlServiceFactory = new HelperConfigSqlServiceFactory((IHelper)ConnectionHelper.Helper());
+			IHelper helper = ConnectionHelper.Helper();
+			IAPILog logger = helper.GetLoggerFactory().GetLogger();
+			ISqlServiceFactory sqlServiceFactory = new HelperConfigSqlServiceFactory(helper);
 			IAuthProvider authProvider = new AuthProvider();
 			IAuthTokenGenerator authTokenGenerator = new ClaimsTokenGenerator();
-			ICredentialProvider credentialProvider = new TokenCredentialProvider(authProvider, authTokenGenerator, (IHelper)ConnectionHelper.Helper());
+			ICredentialProvider credentialProvider = new TokenCredentialProvider(authProvider, authTokenGenerator, helper);
 			IServiceManagerProvider serviceManagerProvider = new ServiceManagerProvider(new ConfigFactory(),
 				credentialProvider, new JSONSerializer(),
 				new RelativityCoreTokenProvider(), sqlServiceFactory);
-			
-			_managerFactory = new ManagerFactory((IHelper)ConnectionHelper.Helper(), serviceManagerProvider);
+
+			_managerFactory = new ManagerFactory(helper, serviceManagerProvider);
 			_queueManager = _managerFactory.CreateQueueManager(_contextContainer);
 			_jobHistoryManager = _managerFactory.CreateJobHistoryManager(_contextContainer);
 			_stateManager = _managerFactory.CreateStateManager();
-			IRepositoryFactory repositoryFactory = new RepositoryFactory((IHelper)ConnectionHelper.Helper(), ConnectionHelper.Helper().GetServicesManager());
-			_permissionValidator = new IntegrationPointPermissionValidator(new[] { new ViewErrorsPermissionValidator(repositoryFactory) }, new IntegrationPointSerializer());
+			IRepositoryFactory repositoryFactory = new RepositoryFactory(helper, helper.GetServicesManager());
+			_permissionValidator = new IntegrationPointPermissionValidator(new[] { new ViewErrorsPermissionValidator(repositoryFactory) }, new IntegrationPointSerializer(logger));
 		}
 
 		internal IntegrationPointDataHub(IContextContainer contextContainer, IHelperClassFactory helperClassFactory)

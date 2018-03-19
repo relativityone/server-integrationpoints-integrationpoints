@@ -3,6 +3,7 @@ using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Services;
 using kCura.Relativity.Client;
 using NSubstitute;
@@ -74,7 +75,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 
 			Assert.That(() => _artifactTreeService.GetArtifactTreeWithWorkspaceSet("type"),
 				Throws.Exception
-					.TypeOf<NotFoundException>());
+					.TypeOf<IntegrationPointsException>());
 		}
 
 		[Test]
@@ -83,13 +84,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 			var artifact1 = new Artifact
 			{
 				ArtifactID = 1,
-				ParentArtifactID = 2, 
+				ParentArtifactID = 2,
 				Name = "ZZ"
 			};
 			var artifact2 = new Artifact
 			{
 				ArtifactID = 2,
-				ParentArtifactID = 1, 
+				ParentArtifactID = 1,
 				Name = "AA"
 			};
 

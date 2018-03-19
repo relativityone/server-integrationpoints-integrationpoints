@@ -47,8 +47,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Factories
 				RsapiUrl = rsapiUrl,
 				KeplerUrl = keplerUrl
 			});
-
-			var testInstance = new HelperFactory(_managerFactory, _contextContainerFactory, _tokenProvider, new IntegrationPointSerializer());
+			IAPILog logger = Substitute.For<IAPILog>();
+			var testInstance = new HelperFactory(_managerFactory, _contextContainerFactory, _tokenProvider, new IntegrationPointSerializer(logger));
 
 			//act
 			IHelper helper = testInstance.CreateTargetHelper(_sourceInstanceHelper, 1000, "{}");
@@ -63,7 +63,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Factories
 		public void TestCreateTargetHelperIfFederatedInstanceIsNull()
 		{
 			//arrange
-			var testInstance = new HelperFactory(_managerFactory, _contextContainerFactory, _tokenProvider, new IntegrationPointSerializer());
+			IAPILog logger = Substitute.For<IAPILog>();
+			var testInstance = new HelperFactory(_managerFactory, _contextContainerFactory, _tokenProvider, new IntegrationPointSerializer(logger));
 
 			//act
 			IHelper helper = testInstance.CreateTargetHelper(_sourceInstanceHelper, null, string.Empty);

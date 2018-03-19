@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Managers;
@@ -8,11 +7,11 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts;
-using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValidator
 {
@@ -39,6 +38,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 		public void ItShouldValidateConfiguration(bool expectedValidationResult, int numberOfErrorMessages, string destinationConfiguration)
 		{
 			// arrange
+			var logger = Substitute.For<IAPILog>();
 			var serializerMock = new JSONSerializer();
 			var validatorsFactoryMock = Substitute.For<IRelativityProviderValidatorsFactory>();
 
@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 				.Returns(workspaceValidatorMock);
 
 			var savedSearchRepositoryMock = Substitute.For<ISavedSearchQueryRepository>();
-			var savedSearchValidatorMock = Substitute.For<SavedSearchValidator>(savedSearchRepositoryMock, _SAVED_SEARCH_ARTIFACT_ID);
+			var savedSearchValidatorMock = Substitute.For<SavedSearchValidator>(logger, savedSearchRepositoryMock, _SAVED_SEARCH_ARTIFACT_ID);
 			savedSearchValidatorMock.Validate(Arg.Any<int>())
 				.Returns(new ValidationResult());
 			validatorsFactoryMock.CreateSavedSearchValidator(Arg.Any<int>(), Arg.Any<int>())
@@ -67,7 +67,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 
 			var sourceFieldManager = Substitute.For<IFieldManager>();
 			var targetFieldManager = Substitute.For<IFieldManager>();
-			var fieldMappingValidatorMock = Substitute.For<FieldsMappingValidator>(serializerMock, sourceFieldManager, targetFieldManager);
+			
+			var fieldMappingValidatorMock = Substitute.For<FieldsMappingValidator>(logger, serializerMock, sourceFieldManager, targetFieldManager);
 			fieldMappingValidatorMock.Validate(Arg.Any<IntegrationPointProviderValidationModel>())
 				.Returns(new ValidationResult());
 			validatorsFactoryMock.CreateFieldsMappingValidator(Arg.Any<int?>(), Arg.Any<string>())
@@ -86,12 +87,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 		    validatorsFactoryMock.CreateImportProductionValidator(Arg.Any<int>(), Arg.Any<int?>(), Arg.Any<string>())
 		        .Returns(importProductionValidatorMock);
 
-            var validator = new RelativityProviderConfigurationValidator(serializerMock, validatorsFactoryMock);
+            var validator = new RelativityProviderConfigurationValidator(logger, serializerMock, validatorsFactoryMock);
 
 			var model = new IntegrationPointProviderValidationModel
 			{
 				FieldsMap = string.Empty,
-				SourceProviderIdentifier = IntegrationPoints.Domain.Constants.RELATIVITY_PROVIDER_GUID,
+				SourceProviderIdentifier = Domain.Constants.RELATIVITY_PROVIDER_GUID,
 				DestinationProviderIdentifier = Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID.ToString(),
 				SourceConfiguration = _sourceConfiguration,
 				DestinationConfiguration = destinationConfiguration
