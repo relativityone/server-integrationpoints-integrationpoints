@@ -1,10 +1,8 @@
 ﻿using System;
 using System.DirectoryServices;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Security;
 using Newtonsoft.Json;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
 
@@ -13,7 +11,6 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
     [TestFixture]
     public class LDAPSettingsReaderTests : TestBase
     {
-        private IEncryptionManager _encryptionManager;
         private LDAPSettings _fullyFilledSettings;
         private string _faultySettingsString = "Not a proper settings string";
         private IHelper _helper;
@@ -42,8 +39,6 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
                 ProviderReferralChasing = ReferralChasingOption.External,
                 SizeLimit = 4231
             };
-
-			_encryptionManager = Substitute.For<IEncryptionManager>();
 		}
 
         [TestCase(null)]
@@ -51,7 +46,7 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
         [TestCase("       ")]
         public void GetSettings_InputStringNullOrEmpty_ThrowsArgumentException(string settingsString)
         {
-            var provider = new LDAPSettingsReader(_encryptionManager, _helper);
+            var provider = new LDAPSettingsReader(_helper);
 
             Assert.Throws<ArgumentException>(() => provider.GetSettings(settingsString));
         }
@@ -61,7 +56,7 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
         {
             string serializedSettings = JsonConvert.SerializeObject(_fullyFilledSettings);
             string woundSettings = JsonConvert.SerializeObject(serializedSettings);
-            var provider = new LDAPSettingsReader(_encryptionManager, _helper);
+            var provider = new LDAPSettingsReader(_helper);
 
             LDAPSettings result = provider.GetSettings(woundSettings);
 
@@ -74,7 +69,7 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
         {
             _fullyFilledSettings.PageSize = pageSize;
             string serializedSettings = JsonConvert.SerializeObject(_fullyFilledSettings);
-            var provider = new LDAPSettingsReader(_encryptionManager, _helper);
+            var provider = new LDAPSettingsReader(_helper);
 
             LDAPSettings result = provider.GetSettings(serializedSettings);
 
@@ -88,7 +83,7 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
         {
             _fullyFilledSettings.Filter = filter;
             string serializedSettings = JsonConvert.SerializeObject(_fullyFilledSettings);
-            var provider = new LDAPSettingsReader(_encryptionManager, _helper);
+            var provider = new LDAPSettingsReader(_helper);
 
             LDAPSettings result = provider.GetSettings(serializedSettings);
 
@@ -101,7 +96,7 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
         {
             _fullyFilledSettings.GetPropertiesItemSearchLimit = getPropertiesItemSearchLimit;
             string serializedSettings = JsonConvert.SerializeObject(_fullyFilledSettings);
-            var provider = new LDAPSettingsReader(_encryptionManager, _helper);
+            var provider = new LDAPSettingsReader(_helper);
 
             LDAPSettings result = provider.GetSettings(serializedSettings);
 
@@ -113,7 +108,7 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
         {
             _fullyFilledSettings.MultiValueDelimiter = null;
             string serializedSettings = JsonConvert.SerializeObject(_fullyFilledSettings);
-            var provider = new LDAPSettingsReader(_encryptionManager, _helper);
+            var provider = new LDAPSettingsReader(_helper);
 
             LDAPSettings result = provider.GetSettings(serializedSettings);
 
@@ -124,7 +119,7 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
         public void GetSettings_InputsValidSettingsString_ReturnedSettingsAreEqual()
         {
             string serializedSettings = JsonConvert.SerializeObject(_fullyFilledSettings);
-            var provider = new LDAPSettingsReader(_encryptionManager, _helper);
+            var provider = new LDAPSettingsReader(_helper);
 
             LDAPSettings result = provider.GetSettings(serializedSettings);
 
@@ -150,7 +145,7 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
         public void Deserialize_InputIsCorrect_ReturnsDeserializedSettings()
         {
             string serializedSettings = JsonConvert.SerializeObject(_fullyFilledSettings);
-            var provider = new LDAPSettingsReader(_encryptionManager, _helper);
+            var provider = new LDAPSettingsReader(_helper);
 
             LDAPSettings result = provider.Deserialize(serializedSettings);
 
@@ -175,7 +170,7 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
 		[Test]
         public void Deserialize_InputNotCorrect_ThrowsLDAPProviderException()
         {
-            var provider = new LDAPSettingsReader(_encryptionManager, _helper);
+            var provider = new LDAPSettingsReader(_helper);
 
             Assert.Throws<LDAPProviderException>(() => provider.Deserialize(_faultySettingsString));
         }

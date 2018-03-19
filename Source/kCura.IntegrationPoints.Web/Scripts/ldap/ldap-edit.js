@@ -48,8 +48,8 @@ function createSettingsModel(model) {
 
 function createSecuredConfiguration(model) {
 	return JSON.stringify({
-		UserName: model.userName,
-		Password: model.password
+		userName: model.userName,
+		password: model.password
 	});
 }
 
@@ -92,10 +92,11 @@ function createSecuredConfiguration(model) {
 			{ name: 'Secure Socket Layer', id: 2 }
 		]);
 
-		this.userName = ko.observable(state.userName);
+		var securedConfiguration = JSON.parse(state.SecuredConfiguration || '{}');
 
-		this.password = ko.observable(state.password);
-
+		this.userName = ko.observable(securedConfiguration.userName);
+		this.password = ko.observable(securedConfiguration.password);
+		
 		this.connectionAuthenticationType = ko.observable(state.connectionAuthenticationType).extend({
 			required: true
 		});

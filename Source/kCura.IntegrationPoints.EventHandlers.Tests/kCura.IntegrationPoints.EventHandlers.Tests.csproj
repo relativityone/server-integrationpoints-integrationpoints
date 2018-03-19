@@ -65,10 +65,15 @@
     <Compile Include="Commands\SetPromoteEligibleFieldCommandTests.cs" />
     <Compile Include="Commands\SetTypeOfExportDefaultValueCommandTests.cs" />
     <Compile Include="Commands\SourceConfigurationTypeOfExportUpdaterTests.cs" />
+    <Compile Include="Commands\SplitJsonObjectServiceTests.cs" />
+    <Compile Include="Commands\UpdateConfigurationCommandTestsBase.cs" />
     <Compile Include="Commands\UpdateDestinationWorkspaceEntriesCommandTests.cs" />
     <Compile Include="Commands\Helpers\CreateTenantIdForSecretStoreTests.cs" />
     <Compile Include="Commands\RemoveSecuredConfigurationFromIntegrationPointServiceTests.cs" />
+    <Compile Include="Commands\UpdateFtpConfigurationCommandTests.cs" />
+    <Compile Include="Commands\UpdateLdapConfigurationCommandTests.cs" />
     <Compile Include="Commands\UpdateRelativityConfigurationCommandTests.cs" />
+    <Compile Include="EncryptionManager\DefaultEncryptionManagerTests.cs" />
     <Compile Include="Installers\Helpers\SecretStoreCleanUpTests.cs" />
     <Compile Include="Installers\SecretStoreCleanUpEventHandlerWrapperTests.cs" />
     <Compile Include="Installers\SetHasErrorsFieldTests.cs" />
@@ -111,6 +116,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.EventHandlers\kCura.IntegrationPoints.EventHandlers.csproj">
       <Project>{6571b092-1582-4fec-9101-f510e7e573bc}</Project>
       <Name>kCura.IntegrationPoints.EventHandlers</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.FtpProvider.Helpers\kCura.IntegrationPoints.FtpProvider.Helpers.csproj">
+      <Project>{3e33dd7e-266f-48f8-86a2-3cdb836f2947}</Project>
+      <Name>kCura.IntegrationPoints.FtpProvider.Helpers</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.SourceProviderInstaller\kCura.IntegrationPoints.SourceProviderInstaller.csproj">
       <Project>{fcaf52cd-0f8f-4d71-ac61-b7591a181a08}</Project>

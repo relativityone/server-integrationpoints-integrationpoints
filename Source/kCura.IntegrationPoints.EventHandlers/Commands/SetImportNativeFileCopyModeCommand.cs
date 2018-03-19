@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 
 		private void SetImportNativeFileCopyModeForIntegrationPoints()
 		{
-			foreach (IntegrationPoint point in _integrationPointService.GetAllRDOs())
+			foreach (IntegrationPoint point in _integrationPointService.GetAllRDOsWithAllFields())
 			{
 				string resultConf = _importNativeFileCopyModeUpdater.GetCorrectedConfiguration(point.SourceProvider,
 					point.DestinationProvider, point.DestinationConfiguration);
@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 
 		private void SetImportNativeFileCopyModeForIntegrationPointProfiles()
 		{
-			foreach (IntegrationPointProfile profile in _integrationPointProfileService.GetAllRDOs())
+			foreach (IntegrationPointProfile profile in _integrationPointProfileService.GetAllRDOsWithAllFields())
 			{
 				string resultConf = _importNativeFileCopyModeUpdater.GetCorrectedConfiguration(profile.SourceProvider,
 					profile.DestinationProvider, profile.SourceConfiguration);

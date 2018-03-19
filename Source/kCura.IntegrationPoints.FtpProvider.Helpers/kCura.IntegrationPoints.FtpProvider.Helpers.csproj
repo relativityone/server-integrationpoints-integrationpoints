@@ -63,10 +63,6 @@
       <Project>{0CEDB7AF-DB89-47DE-9587-8CCD58621F2F}</Project>
       <Name>kCura.IntegrationPoints.Contracts</Name>
     </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.Security\kCura.IntegrationPoints.Security.csproj">
-      <Project>{e7d6a21d-acc6-4140-9e18-c2e6bca85449}</Project>
-      <Name>kCura.IntegrationPoints.Security</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="paket.references" />

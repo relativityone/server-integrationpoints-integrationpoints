@@ -437,10 +437,6 @@
       <Project>{847816a0-e354-4176-83b1-7adb93e5742f}</Project>
       <Name>kCura.IntegrationPoints.Injection</Name>
     </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.Security\kCura.IntegrationPoints.Security.csproj">
-      <Project>{E7D6A21D-ACC6-4140-9E18-C2E6BCA85449}</Project>
-      <Name>kCura.IntegrationPoints.Security</Name>
-    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
       <Project>{b91cc4ed-abf3-4409-8df3-46a3c26eb4aa}</Project>
       <Name>kCura.IntegrationPoints.Synchronizers.RDO</Name>

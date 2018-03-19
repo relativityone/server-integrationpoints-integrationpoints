@@ -10,6 +10,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 	{
 		IntegrationPointProfile GetRdo(int artifactId);
 		IList<IntegrationPointProfile> GetAllRDOs();
+		IList<IntegrationPointProfile> GetAllRDOsWithAllFields();
 		string GetSourceOptions(int artifactId);
 		FieldEntry GetIdentifierFieldEntry(int artifactId);
 		IntegrationPointProfileModel ReadIntegrationPointProfile(int artifactId);

@@ -1,79 +1,40 @@
-﻿using System;
-using System.Collections.Generic;
-using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+﻿using System.Collections.Generic;
 using kCura.IntegrationPoints.EventHandlers.Commands;
-using kCura.IntegrationPoint.Tests.Core;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
-using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 {
-	public class UpdateRelativityConfigurationCommandTests : TestBase
+	public class UpdateRelativityConfigurationCommandTests : UpdateConfigurationCommandTestsBase
 	{
-		private UpdateRelativityConfigurationCommand _command;
-		private IIntegrationPointForSourceService _integrationPointForSourceService;
-		private IIntegrationPointService _integrationPointService;
 		private IRemoveSecuredConfigurationFromIntegrationPointService _removeSecuredConfigurationService;
-		private Data.IntegrationPoint _integrationPointWithConfiguration;
-		private Data.IntegrationPoint _integrationPointWithoutConfiguration;
+
+		protected override string ExpectedProviderType => Core.Constants.IntegrationPoints.SourceProviders.RELATIVITY;
 
 		public override void SetUp()
 		{
-			_integrationPointForSourceService = Substitute.For<IIntegrationPointForSourceService>();
-			_integrationPointService = Substitute.For<IIntegrationPointService>();
+			base.SetUp();
+
 			_removeSecuredConfigurationService = Substitute.For<IRemoveSecuredConfigurationFromIntegrationPointService>();
 
-			_command = new UpdateRelativityConfigurationCommand(_integrationPointForSourceService, _integrationPointService, _removeSecuredConfigurationService);
-			_integrationPointWithConfiguration =
-				new Data.IntegrationPoint
-			{
-				ArtifactId = 1,
-				Name = "Name",
-				OverwriteFields = new Choice(1) { Name = "Name" },
-				SourceConfiguration = "",
-				SourceProvider = 1,
-				Type = 1,
-				DestinationConfiguration = "",
-				FieldMappings = "",
-				EnableScheduler = false,
-				DestinationProvider = 1,
-				LogErrors = true,
-				HasErrors = false,
-				EmailNotificationRecipients = "",
-				LastRuntimeUTC = DateTime.UtcNow,
-				NextScheduledRuntimeUTC = DateTime.UtcNow,
-				SecuredConfiguration = "securedConfiguration",
-				PromoteEligible = true,
-				ScheduleRule = ""
-			};
-
-			_integrationPointWithoutConfiguration = new Data.IntegrationPoint { SecuredConfiguration = string.Empty };
+			Command = new UpdateRelativityConfigurationCommand(IntegrationPointForSourceService, IntegrationPointService, _removeSecuredConfigurationService);			
 		}
 
 		[Test]
-		public void ShouldThrowWhenRetrievingIntegrationPointsThrow()
+		public override void ShouldProcessAllValidIntegrationPoints()
 		{
-			_integrationPointForSourceService.GetAllForSourceProvider(Arg.Any<string>()).Throws<TimeoutException>();
+			_removeSecuredConfigurationService.RemoveSecuredConfiguration(null).ReturnsForAnyArgs(true);
 
-			Assert.Throws<TimeoutException>(_command.Execute);
-		}
-
-		[Test]
-		public void ShouldNotThrowWhenNoIntegrationPointsAreReturned()
-		{
-			_integrationPointForSourceService.GetAllForSourceProvider(Arg.Any<string>()).Returns(new List<Data.IntegrationPoint>());
-
-			_command.Execute();
+			ShouldProcessAllValidIntegrationPoints(2);
 		}
 
 		[Test]
 		public void ShouldNotRemoveSecuredConfigurationWhenSecureStoreIsNotUsed()
 		{
-			_integrationPointForSourceService.GetAllForSourceProvider(Arg.Any<string>()).Returns(new List<Data.IntegrationPoint> { _integrationPointWithoutConfiguration });
+			IntegrationPointForSourceService.GetAllForSourceProvider(Arg.Is(ExpectedProviderType))
+				.Returns(new List<Data.IntegrationPoint> { IntegrationPointWithoutSecuredConfiguration });
 
-			_command.Execute();
+			Command.Execute();
 
 			_removeSecuredConfigurationService.DidNotReceiveWithAnyArgs().RemoveSecuredConfiguration(null);
 		}
@@ -83,11 +44,12 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 		{
 			_removeSecuredConfigurationService.RemoveSecuredConfiguration(null).ReturnsForAnyArgs(false);
 
-			_integrationPointForSourceService.GetAllForSourceProvider(Arg.Any<string>()).Returns(new List<Data.IntegrationPoint> { _integrationPointWithConfiguration });
+			IntegrationPointForSourceService.GetAllForSourceProvider(Arg.Is(ExpectedProviderType))
+				.Returns(new List<Data.IntegrationPoint> { IntegrationPointWithSecuredConfiguration });
 
-			_command.Execute();
+			Command.Execute();
 
-			_integrationPointService.DidNotReceiveWithAnyArgs().SaveIntegration(null);
+			IntegrationPointService.DidNotReceiveWithAnyArgs().SaveIntegration(null);
 		}
 
 
@@ -96,30 +58,15 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 		{
 			_removeSecuredConfigurationService.RemoveSecuredConfiguration(null).ReturnsForAnyArgs(true);
 
-			_integrationPointForSourceService.GetAllForSourceProvider(Arg.Any<string>()).Returns(new List<Data.IntegrationPoint> { _integrationPointWithConfiguration });
+			IntegrationPointForSourceService.GetAllForSourceProvider(Arg.Is(ExpectedProviderType))
+				.Returns(new List<Data.IntegrationPoint> { IntegrationPointWithSecuredConfiguration });
 
-			_command.Execute();
+			Command.Execute();
 
-			_integrationPointService.ReceivedWithAnyArgs(1).SaveIntegration(null);
+			_removeSecuredConfigurationService.ReceivedWithAnyArgs(1).RemoveSecuredConfiguration(null);
+
+			IntegrationPointService.ReceivedWithAnyArgs(1).SaveIntegration(null);
 		}
-
-		[Test]
-		public void ShouldProcessAllValidIntegrationPoints()
-		{
-			_removeSecuredConfigurationService.RemoveSecuredConfiguration(null).ReturnsForAnyArgs(true);
-
-			_integrationPointForSourceService.GetAllForSourceProvider(Arg.Any<string>()).Returns(new List<Data.IntegrationPoint>()
-			{
-				_integrationPointWithConfiguration,
-				_integrationPointWithConfiguration,
-				_integrationPointWithoutConfiguration,
-				_integrationPointWithConfiguration,
-				_integrationPointWithoutConfiguration
-			});
-
-			_command.Execute();
-
-			_integrationPointService.ReceivedWithAnyArgs(3).SaveIntegration(null);
-		}
+		
 	}
 }

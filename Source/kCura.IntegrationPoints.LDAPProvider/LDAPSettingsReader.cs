@@ -1,5 +1,4 @@
 ﻿using System;
-using kCura.IntegrationPoints.Security;
 using Newtonsoft.Json;
 using Relativity.API;
 
@@ -7,12 +6,10 @@ namespace kCura.IntegrationPoints.LDAPProvider
 {
     public class LDAPSettingsReader : ILDAPSettingsReader
     {
-        private readonly IEncryptionManager _encryptionManager;
         private readonly IAPILog _logger;
 
-        public LDAPSettingsReader(IEncryptionManager encryptionManager, IHelper helper)
+        public LDAPSettingsReader(IHelper helper)
         {
-            _encryptionManager = encryptionManager;
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<LDAPSettingsReader>();
         }
 
@@ -31,24 +28,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
             return settings;
         }
 
-		//this method is for backward compatibility only
-	    public LDAPSettings GetAndDecryptSettings(string sourceConfiguration)
-	    {
-		    if (string.IsNullOrWhiteSpace(sourceConfiguration))
-		    {
-			    throw new ArgumentException($"Parameter named '{nameof(sourceConfiguration)}' cannot be empty");
-		    }
-
-		    string unwoundSourceConfiguration = UnwindIfNecessary(sourceConfiguration);
-		    string decryptedSourceConfiguration = Decrypt(unwoundSourceConfiguration);
-
-			LDAPSettings settings = Deserialize(decryptedSourceConfiguration);
-		    SetDefaultValues(settings);
-
-		    return settings;
-	    }
-
-	    public LDAPSettings Deserialize(string sourceConfiguration)
+		public LDAPSettings Deserialize(string sourceConfiguration)
 	    {
 		    try
 		    {
@@ -57,18 +37,6 @@ namespace kCura.IntegrationPoints.LDAPProvider
 		    catch (Exception ex)
 		    {
 			    throw new LDAPProviderException("Could not deserialize LDAP settings.", ex);
-		    }
-	    }
-
-		private string Decrypt(string sourceConfiguration)
-	    {
-		    try
-		    {
-			    return _encryptionManager.Decrypt(sourceConfiguration);
-		    }
-		    catch (Exception ex)
-		    {
-			    throw new LDAPProviderException("Exception occurred while decrypting LDAP settings.", ex);
 		    }
 	    }
 

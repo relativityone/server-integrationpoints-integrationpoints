@@ -6,8 +6,6 @@ using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Security;
-using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
@@ -18,7 +16,6 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
     public class LDAPProviderTests : TestBase
     {
         private LDAPSettings _fullyFilledSettings;
-        private IEncryptionManager _encryptionManager;
         private ILDAPServiceFactory _serviceFactory;
         private IAPILog _logger;
 	    private ISerializer _serializer;
@@ -80,9 +77,7 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
             _ldapSettingsReader.GetSettings(Arg.Any<string>()).ReturnsForAnyArgs(_fullyFilledSettings);
             _helper = Substitute.For<IHelper>();
             _logger = Substitute.For<IAPILog>();
-            _encryptionManager = Substitute.For<IEncryptionManager>();
-            _encryptionManager.Decrypt(Arg.Any<string>()).Returns(info => info.Arg<string>());
-        }
+       }
 
         [Test]
         public void GetData_FieldsListHasIdentifierElement_CallsFetchItemsAndReturnsProperDataReader()

@@ -1,13 +1,10 @@
-﻿using System;
-using System.Web.Http.Results;
+﻿using System.Web.Http.Results;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.LDAPProvider;
-using kCura.IntegrationPoints.Security;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using kCura.IntegrationPoints.Web.Models;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
 
@@ -20,7 +17,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 	    private const string _SERIALIZED_MODEL = "{ConnectionPath:'oiler.corp/OU=Employees,OU=Accounts,OU=oiler,DC=oiler,DC=oiler', ConnectionAuthenticationType:32}";
 	    private const string _CONNECTION_PATH = "oiler.corp/OU=Employees,OU=Accounts,OU=oiler,DC=oiler,DC=oiler";
 
-	    private IEncryptionManager _managerMock; 
 	    private ICPHelper _helperMock; 
 	    private ISerializer _serializerMock;
 	    private ILDAPSettingsReader _reader;
@@ -31,11 +27,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
         [SetUp]
 		public override void SetUp()
 		{
-            _managerMock = Substitute.For<IEncryptionManager>();
             _helperMock = Substitute.For<ICPHelper>();
 		    _serializerMock = Substitute.For<ISerializer>();
 			_ldapServiceFactory = Substitute.For<ILDAPServiceFactory>();
-            _reader = new LDAPSettingsReader(_managerMock, _helperMock);
+            _reader = new LDAPSettingsReader(_helperMock);
             _subjectUnderTest = new LdapController(_helperMock, _reader, _serializerMock, _ldapServiceFactory);
         }
 

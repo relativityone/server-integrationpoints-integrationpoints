@@ -154,7 +154,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 
 		internal IList<Data.IntegrationPoint> GetIntegrationPoints()
 		{
-			IList<Data.IntegrationPoint> integrationPoints = _integrationPointService.GetAllRDOs();
+			IList<Data.IntegrationPoint> integrationPoints = _integrationPointService.GetAllRDOsWithAllFields();
 			return integrationPoints;
 		}
 	}

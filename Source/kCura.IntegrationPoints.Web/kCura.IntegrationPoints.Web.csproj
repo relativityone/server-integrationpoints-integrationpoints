@@ -662,10 +662,6 @@
       <Project>{8398b06f-3716-4834-9593-a017f2714261}</Project>
       <Name>kCura.IntegrationPoints.LDAPProvider</Name>
     </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.Security\kCura.IntegrationPoints.Security.csproj">
-      <Project>{e7d6a21d-acc6-4140-9e18-c2e6bca85449}</Project>
-      <Name>kCura.IntegrationPoints.Security</Name>
-    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
       <Project>{B91CC4ED-ABF3-4409-8DF3-46A3C26EB4AA}</Project>
       <Name>kCura.IntegrationPoints.Synchronizers.RDO</Name>

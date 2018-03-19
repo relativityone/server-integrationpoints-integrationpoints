@@ -77,7 +77,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
             PopulateIntegrationPointProfilesList();
 
             _integrationPointProfileService = Substitute.For<IIntegrationPointProfileService>();
-            _integrationPointProfileService.GetAllRDOs().Returns(_integrationPointProfiles);
+            _integrationPointProfileService.GetAllRDOsWithAllFields().Returns(_integrationPointProfiles);
         }
 
         private void PopulateIntegrationPointProfilesList()
@@ -99,7 +99,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
             PopulateIntegrationPointsList();
 
             _integrationPointService = Substitute.For<IIntegrationPointService>();
-            _integrationPointService.GetAllRDOs().Returns(_integrationPoints);
+            _integrationPointService.GetAllRDOsWithAllFields().Returns(_integrationPoints);
         }
 
         private void PopulateIntegrationPointsList()

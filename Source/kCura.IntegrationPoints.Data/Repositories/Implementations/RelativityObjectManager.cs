@@ -139,7 +139,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		private T SetDecryptedSecuredConfiguration<T>(T rdo) where T : BaseRdo, new()
 		{
-			if (rdo is IntegrationPoint)
+			if (rdo is IntegrationPoint && rdo.HasField(new Guid(IntegrationPointFieldGuids.SecuredConfiguration)))
 			{
 				var secretId = rdo.GetField<string>(new Guid(IntegrationPointFieldGuids.SecuredConfiguration));
 				if (!String.IsNullOrWhiteSpace(secretId))

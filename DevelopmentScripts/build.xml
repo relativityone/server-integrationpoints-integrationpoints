@@ -177,11 +177,6 @@
             <Platform>x64</Platform>
           </Platforms>
         </Project>
-        <Project path="Source\kCura.IntegrationPoints.Security\kCura.IntegrationPoints.Security.csproj">
-          <Platforms>
-            <Platform>x64</Platform>
-          </Platforms>
-        </Project>
         <Project path="Source\kCura.IntegrationPoints.Services\kCura.IntegrationPoints.Services.csproj">
           <Platforms>
             <Platform>x64</Platform>
@@ -328,11 +323,6 @@
           </Platforms>
         </Project>
         <Project path="Source\kCura.IntegrationPoints.UITests\kCura.IntegrationPoints.UITests.csproj">
-          <Platforms>
-            <Platform>x64</Platform>
-          </Platforms>
-        </Project>
-        <Project path="Source\kCura.IntegrationPoints.Security.Tests\kCura.IntegrationPoints.Security.Tests.csproj">
           <Platforms>
             <Platform>x64</Platform>
           </Platforms>
@@ -503,7 +493,6 @@
           <Assembly>lib\kCura.IntegrationPoints.ImportProvider.Parser.dll</Assembly>
           <Assembly>lib\kCura.IntegrationPoints.Injection.dll</Assembly>
           <Assembly>lib\kCura.IntegrationPoints.LDAPProvider.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.Security.dll</Assembly>
           <Assembly>lib\kCura.IntegrationPoints.Services.dll</Assembly>
           <Assembly>lib\kCura.IntegrationPoints.Services.Interfaces.Private.dll</Assembly>
           <Assembly>lib\kCura.IntegrationPoints.SourceProviderInstaller.dll</Assembly>

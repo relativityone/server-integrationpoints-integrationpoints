@@ -16,7 +16,6 @@
     <file src="..\..\lib\kCura.IntegrationPoints.Core.Contracts.dll" target="lib" />
     <file src="..\..\lib\kCura.IntegrationPoints.Data.dll" target="lib" />
     <file src="..\..\lib\kCura.IntegrationPoints.Domain.dll" target="lib" />
-    <file src="..\..\lib\kCura.IntegrationPoints.Security.dll" target="lib" />
     <file src="..\..\lib\kCura.IntegrationPoints.Synchronizers.RDO.dll" target="lib" />
     <file src="..\..\lib\kCura.ScheduleQueue.Core.dll" target="lib" />
   </files>

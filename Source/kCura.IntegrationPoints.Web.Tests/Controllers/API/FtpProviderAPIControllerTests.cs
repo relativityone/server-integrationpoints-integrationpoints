@@ -11,7 +11,6 @@ using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.FtpProvider.Helpers.Interfaces;
 using kCura.IntegrationPoints.FtpProvider.Helpers.Models;
-using kCura.IntegrationPoints.Security;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using kCura.IntegrationPoints.Web.Models;
 using Newtonsoft.Json;
@@ -24,7 +23,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 	public class FtpProviderAPIControllerTests : TestBase
 	{
 		private FtpProviderAPIController _instance;
-		private IEncryptionManager _securityManager;
 		private ISettingsManager _settingsManager;
 		private IDataProviderFactory _providerFactory;
 		private ISerializer _serializer;
@@ -32,7 +30,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		[SetUp]
 		public override void SetUp()
 		{
-			_securityManager = Substitute.For<IEncryptionManager>();
 			_settingsManager = Substitute.For<ISettingsManager>();
 			_providerFactory = Substitute.For<IDataProviderFactory>();
 			_serializer = Substitute.For<ISerializer>();

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using Relativity.Services.Objects.DataContracts;
 
@@ -18,7 +17,7 @@ namespace kCura.IntegrationPoints.Data
 
 		public IList<T> GetIntegrationPoints(List<int> sourceProviderIds)
 		{
-			var sourceProviderQuery = GetBasicSourceProviderQuery(sourceProviderIds);
+			QueryRequest sourceProviderQuery = GetBasicSourceProviderQuery(sourceProviderIds);
 
 			sourceProviderQuery.Fields = new List<FieldRef>
 			{
@@ -31,10 +30,10 @@ namespace kCura.IntegrationPoints.Data
 
 		public IList<T> GetIntegrationPointsWithAllFields(List<int> sourceProviderIds)
 		{
-			var sourceProviderQuery = GetBasicSourceProviderQuery(sourceProviderIds);
+			IList<T> integrationPointsWithoutFields = GetIntegrationPointsWithoutFields(sourceProviderIds);
 
-			IList<T> result = _context.RelativityObjectManager.Query<T>(sourceProviderQuery);
-			return result;
+			return integrationPointsWithoutFields
+				.Select(integrationPoint => _context.RelativityObjectManager.Read<T>(integrationPoint.ArtifactId)).ToList();
 		}
 
 		public IList<T> GetAllIntegrationPoints()
@@ -49,6 +48,14 @@ namespace kCura.IntegrationPoints.Data
 			return result;
 		}
 
+		public IList<T> GetIntegrationPointsWithAllFields()
+		{
+			IList<T> integrationPointsWithoutFields = GetAllIntegrationPointsWithoutFields();
+
+			return integrationPointsWithoutFields
+				.Select(integrationPoint => _context.RelativityObjectManager.Read<T>(integrationPoint.ArtifactId)).ToList();
+		}
+
 		public IList<T> GetAllIntegrationPointsProfileWithBasicColumns()
 		{
 			var query = new QueryRequest()
@@ -57,6 +64,24 @@ namespace kCura.IntegrationPoints.Data
 			};
 
 			IList<T> result = _context.RelativityObjectManager.Query<T>(query);
+
+			return result;
+		}
+
+		private IList<T> GetAllIntegrationPointsWithoutFields()
+		{
+			var query = new QueryRequest();
+
+			IList<T> result = _context.RelativityObjectManager.Query<T>(query);
+
+			return result;
+		}
+
+		private IList<T> GetIntegrationPointsWithoutFields(List<int> sourceProviderIds)
+		{
+			QueryRequest sourceProviderQuery = GetBasicSourceProviderQuery(sourceProviderIds);
+
+			IList<T> result = _context.RelativityObjectManager.Query<T>(sourceProviderQuery);
 
 			return result;
 		}

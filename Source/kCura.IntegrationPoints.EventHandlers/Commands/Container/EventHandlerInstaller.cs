@@ -17,6 +17,7 @@ using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factories;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Validators;
+using kCura.IntegrationPoints.Security;
 using kCura.Relativity.Client;
 using Relativity.API;
 
@@ -74,6 +75,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 				IRsapiClientWithWorkspaceFactory clientFactory = k.Resolve<IRsapiClientWithWorkspaceFactory>();
 				return clientFactory.CreateAdminClient(context.Helper.GetActiveCaseID());
 			}));
+			container.Register(Component.For<IEncryptionManager>().ImplementedBy<DefaultEncryptionManager>().LifestyleSingleton());
 			container.Register(Component.For<DeleteIntegrationPointCommand>().ImplementedBy<DeleteIntegrationPointCommand>().LifestyleTransient());
 			container.Register(Component.For<PreCascadeDeleteIntegrationPointCommand>().ImplementedBy<PreCascadeDeleteIntegrationPointCommand>().LifestyleTransient());
 			container.Register(Component.For<CreateTenantIdForSecretStoreCommand>().ImplementedBy<CreateTenantIdForSecretStoreCommand>().LifestyleTransient());
@@ -82,7 +84,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 			container.Register(Component.For<SetImportNativeFileCopyModeCommand>().ImplementedBy<SetImportNativeFileCopyModeCommand>().LifestyleTransient());
 			container.Register(Component.For<UpdateLdapConfigurationCommand>().ImplementedBy<UpdateLdapConfigurationCommand>().LifestyleTransient());
 			container.Register(Component.For<IRemoveSecuredConfigurationFromIntegrationPointService>().ImplementedBy<RemoveSecuredConfigurationFromIntegrationPointService>().LifestyleSingleton());
+			container.Register(Component.For<ISplitJsonObjectService>().ImplementedBy<SplitJsonObjectService>().LifestyleSingleton());
 			container.Register(Component.For<UpdateRelativityConfigurationCommand>().ImplementedBy<UpdateRelativityConfigurationCommand>().LifestyleTransient());
+			container.Register(Component.For<UpdateFtpConfigurationCommand>().ImplementedBy<UpdateFtpConfigurationCommand>().LifestyleTransient());
 			container.Register(Component.For<IIntegrationPointSecretDelete>().UsingFactoryMethod(k => IntegrationPointSecretDeleteFactory.Create(k.Resolve<IEHContext>().Helper))
 				.LifestyleTransient());
 			container.Register(Component.For<ICorrespondingJobDelete>().ImplementedBy<CorrespondingJobDelete>().LifestyleTransient());

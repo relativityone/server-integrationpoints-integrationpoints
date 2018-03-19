@@ -1,14 +1,9 @@
-﻿using System;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
+﻿using System.Web.Http;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.LDAPProvider;
-using kCura.IntegrationPoints.Security;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Models;
 using Relativity.API;
-using Relativity.CustomPages;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
