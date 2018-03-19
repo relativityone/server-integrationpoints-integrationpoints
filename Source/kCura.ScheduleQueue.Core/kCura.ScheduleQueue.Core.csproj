@@ -57,6 +57,7 @@
     <Compile Include="BatchProcess\BatchableTaskBase.cs" />
     <Compile Include="Core\AgentTypeInformation.cs" />
     <Compile Include="Core\StopState.cs" />
+    <Compile Include="Core\TaskParameters.cs" />
     <Compile Include="Data\IJobServiceDataProvider.cs" />
     <Compile Include="Data\Interfaces\IQueueDBContext.cs" />
     <Compile Include="Data\JobServiceDataProvider.cs" />

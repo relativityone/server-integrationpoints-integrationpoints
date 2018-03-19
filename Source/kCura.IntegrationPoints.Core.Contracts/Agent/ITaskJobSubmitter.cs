@@ -1,5 +1,6 @@
 ﻿using System;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Core;
 
 namespace kCura.IntegrationPoints.Core.Contracts.Agent
 {

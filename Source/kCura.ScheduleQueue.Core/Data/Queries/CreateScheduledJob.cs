@@ -4,16 +4,25 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using kCura.ScheduleQueue.Core.Properties;
+using Relativity.API;
 
 namespace kCura.ScheduleQueue.Core.Data.Queries
 {
 	public class CreateScheduledJob
 	{
-		private IQueueDBContext qDBContext = null;
+		private readonly IDBContext _dbContext;
+		private readonly string _tableName;
 
 		public CreateScheduledJob(IQueueDBContext qDBContext)
 		{
-			this.qDBContext = qDBContext;
+			_dbContext = qDBContext.EddsDBContext;
+			_tableName = qDBContext.TableName;
+		}
+
+		public CreateScheduledJob(IDBContext dbContext, string tableName)
+		{
+			_dbContext = dbContext;
+			_tableName = tableName;
 		}
 
 		public DataTable Execute(int workspaceID,
@@ -29,7 +38,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 			long? rootJobID,
 			long? parentJobID = null)
 		{
-			string sql = string.Format(Resources.CreateScheduledJob, qDBContext.TableName);
+			string sql = string.Format(Resources.CreateScheduledJob, _tableName);
 
 			List<SqlParameter> sqlParams = new List<SqlParameter>();
 			sqlParams.Add(new SqlParameter("@WorkspaceID", workspaceID));
@@ -55,7 +64,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 				? new SqlParameter("@ParentJobID", DBNull.Value)
 				: new SqlParameter("@ParentJobID", parentJobID.Value));
 			
-			return qDBContext.EddsDBContext.ExecuteSqlStatementAsDataTable(sql, sqlParams);
+			return _dbContext.ExecuteSqlStatementAsDataTable(sql, sqlParams);
 		}
 	}
 }

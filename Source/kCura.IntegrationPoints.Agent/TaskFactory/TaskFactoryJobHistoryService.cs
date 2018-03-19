@@ -10,6 +10,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Core;
 using Relativity.API;
 using Relativity.Telemetry.APM;
 using Constants = kCura.IntegrationPoints.Core.Constants;

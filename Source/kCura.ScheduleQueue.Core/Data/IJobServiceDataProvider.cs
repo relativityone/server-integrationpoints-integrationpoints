@@ -11,7 +11,13 @@ namespace kCura.ScheduleQueue.Core.Data
         DataRow GetNextQueueJob(int agentId, int agentTypeId, int[] resurceGroupIdsArray);
         void UpdateScheduledJob(long jobId, DateTime nextUtcRunDateTime);
 
-        DataRow CreateScheduledJob(int workspaceID, int relatedObjectArtifactID, string taskType,
+	    void CreateNewAndDeleteOldScheduledJob(long oldScheduledJobId, int workspaceID, int relatedObjectArtifactID,
+		    string taskType,
+		    DateTime nextRunTime, int agentTypeId, string scheduleRuleType, string serializedScheduleRule,
+		    string jobDetails, int jobFlags, int submittedBy, long? rootJobID, long? parentJobID);
+
+
+		DataRow CreateScheduledJob(int workspaceID, int relatedObjectArtifactID, string taskType,
             DateTime nextRunTime, int agentTypeId, string scheduleRuleType, string serializedScheduleRule,
             string jobDetails, int jobFlags, int submittedBy, long? rootJobID, long? parentJobID);
 
