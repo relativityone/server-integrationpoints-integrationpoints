@@ -173,7 +173,7 @@ timestamps
 {
 	timeout(time: 3, unit: 'HOURS')
 	{
-		try
+		catchError
 		{
 			parallel(
 				BuildAndUnitTests:
@@ -365,10 +365,6 @@ timestamps
 					}
 				}
 			}
-		} catch (Exception e)
-		{
-			println("DUBUG exception: " + e)
-			println("DEBUG exception: " + e.message);			 
 		}
 		
 		timeout(time: 5, unit: 'MINUTES')
