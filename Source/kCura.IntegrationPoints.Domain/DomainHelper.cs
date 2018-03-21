@@ -175,7 +175,7 @@ namespace kCura.IntegrationPoints.Domain
 
 			manager.Init();
 			Bootstrapper.InitAppDomain(Constants.IntegrationPoints.APP_DOMAIN_SUBSYSTEM_NAME,
-				Constants.IntegrationPoints.APPLICATION_GUID_STRING, domain);
+				Constants.IntegrationPoints.APPLICATION_GUID_STRING, string.Empty, domain);
 
 			return manager;
 		}
