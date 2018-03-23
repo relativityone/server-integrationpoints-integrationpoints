@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using kCura.Apps.Common.Config;
 using kCura.IntegrationPoints.Domain;
 
 namespace kCura.IntegrationPoints.Config
@@ -19,10 +17,6 @@ namespace kCura.IntegrationPoints.Config
 		}
 
 		public static Config Instance => _instance.Value;
-
-		internal Config(IDictionary instanceSettings) : base(instanceSettings)
-		{
-		}
 
 		public string WebApiPath => GetValue(Constants.WEB_API_PATH, string.Empty);
 
