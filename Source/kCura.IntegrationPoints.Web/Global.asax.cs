@@ -11,7 +11,6 @@ using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
 using Castle.Windsor.Installer;
-using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
@@ -36,11 +35,11 @@ namespace kCura.IntegrationPoints.Web
 		{
 			AreaRegistration.RegisterAllAreas();
 
-			Apps.Common.Config.Manager.Settings.Factory = new HelperConfigSqlServiceFactory(ConnectionHelper.Helper());
+			Apps.Common.Config.Manager.Settings.Factory = new HelperConfigSqlServiceFactoryWrapper(ConnectionHelper.Helper);
 			CreateWindsorContainer();
 
 			WebApiConfig.Register(GlobalConfiguration.Configuration);
-			WebApiConfig.AddMessageHandlers(GlobalConfiguration.Configuration, ConnectionHelper.Helper(), 
+			WebApiConfig.AddMessageHandlers(GlobalConfiguration.Configuration, ConnectionHelper.Helper(),
 				_container.Kernel.Resolve<IWebCorrelationContextProvider>());
 			FilterConfig.RegisterWebAPIFilters(GlobalConfiguration.Configuration, _container);
 			FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);

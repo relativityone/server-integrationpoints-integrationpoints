@@ -124,6 +124,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="GridModelFactory.cs" />
+    <Compile Include="HelperConfigSqlServiceFactoryWrapper.cs" />
     <Compile Include="Helpers\CacheHolder.cs" />
     <Compile Include="Helpers\SummaryPageSelector.cs" />
     <Compile Include="Installers\ControllerInstaller.cs" />
