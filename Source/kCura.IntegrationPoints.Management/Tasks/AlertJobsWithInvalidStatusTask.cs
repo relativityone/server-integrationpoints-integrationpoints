@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
-using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Monitoring;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Management.Tasks.Helpers;
 using Relativity.Telemetry.APM;
+using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.Management.Tasks
 {
@@ -19,7 +20,9 @@ namespace kCura.IntegrationPoints.Management.Tasks
 
 		public void Run(IList<int> workspaceArtifactIds)
 		{
-			var invalidJobs = _jobsWithInvalidStatus.Find(workspaceArtifactIds);
+			// temporary solution to disable invalid status job alert (REL-205785)
+			IDictionary<int, IList<JobHistory>> invalidJobs = new Dictionary<int, IList<JobHistory>>();
+			// IDictionary<int, IList<JobHistory>> invalidJobs = _jobsWithInvalidStatus.Find(workspaceArtifactIds);
 
 			if (invalidJobs != null && invalidJobs.Keys.Count > 0)
 			{

@@ -2,10 +2,7 @@
 using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
-using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Management.Tasks.Helpers;
 using kCura.Relativity.Client.DTOs;
@@ -14,65 +11,66 @@ using kCura.ScheduleQueue.Core.Core;
 using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
-using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Management.Tests.Tasks.Helpers
 {
 	[TestFixture]
 	public class StuckJobsTests : TestBase
 	{
+		private IJobRepository _runningJobRepository;
+		private IJobService _jobService;
+		private StuckJobs _instance;
+
 		private const int _WORKSPACE_ID_A = 482698;
 		private const int _WORKSPACE_ID_B = 903924;
-
-		private StuckJobs _instance;
-		private IJobService _jobService;
-		private IRunningJobRepository _runningJobRepository;
-		private IRSAPIServiceFactory _rsapiServiceFactory;
 
 		public override void SetUp()
 		{
 			_jobService = Substitute.For<IJobService>();
-			_runningJobRepository = Substitute.For<IRunningJobRepository>();
-			_rsapiServiceFactory = Substitute.For<IRSAPIServiceFactory>();
-
-			_instance = new StuckJobs(_jobService, _runningJobRepository, _rsapiServiceFactory);
+			_runningJobRepository = Substitute.For<IJobRepository>();
+			_instance = new StuckJobs(_jobService, _runningJobRepository);
 		}
 
 		[Test]
 		public void ItShouldFindStuckJobs()
 		{
-			var now = DateTime.UtcNow;
+			// ARRANGE
+			DateTime now = DateTime.UtcNow;
 
-			var batchInstance2 = "EF1E654E-0164-46C0-9A76-1DFE32C557A9";
-			var batchInstance3 = "40B02845-FD6A-4A60-A0E2-7F53F4B89CA8";
+			const string batchInstance2 = "EF1E654E-0164-46C0-9A76-1DFE32C557A9";
+			const string batchInstance3 = "40B02845-FD6A-4A60-A0E2-7F53F4B89CA8";
 
 			var taskParameter2 = new TaskParameters
 			{
 				BatchInstance = new Guid(batchInstance2)
 			};
+
 			var taskParameter3 = new TaskParameters
 			{
 				BatchInstance = new Guid(batchInstance3)
 			};
 
-			var job1 = JobExtensions.CreateJob<Job>(_WORKSPACE_ID_A, 1, row =>
+			Job job1 = JobExtensions.CreateJob(_WORKSPACE_ID_A, 1, row =>
 			{
 				row["LockedByAgentID"] = 671;
 				return new Job(row);
 			});
-			var job2 = JobExtensions.CreateJob<Job>(_WORKSPACE_ID_B, 2, row =>
+
+			Job job2 = JobExtensions.CreateJob(_WORKSPACE_ID_B, 2, row =>
 			{
 				row["LockedByAgentID"] = 671;
 				return new Job(row);
 			});
+
 			job2.JobDetails = JsonConvert.SerializeObject(taskParameter2);
-			var job3 = JobExtensions.CreateJob<Job>(_WORKSPACE_ID_B, 3, row =>
+			Job job3 = JobExtensions.CreateJob(_WORKSPACE_ID_B, 3, row =>
 			{
 				row["LockedByAgentID"] = 671;
 				return new Job(row);
 			});
+
 			job3.JobDetails = JsonConvert.SerializeObject(taskParameter3);
-			var job4 = JobExtensions.CreateJob<Job>(_WORKSPACE_ID_B, 4, row => 
+			Job job4 = JobExtensions.CreateJob(_WORKSPACE_ID_B, 4, row => 
 			{
 				row["LockedByAgentID"] = DBNull.Value;
 				return new Job(row);
@@ -93,12 +91,10 @@ namespace kCura.IntegrationPoints.Management.Tests.Tasks.Helpers
 
 			_runningJobRepository.GetRunningJobs(_WORKSPACE_ID_A).Returns(new List<RDO>());
 			_runningJobRepository.GetRunningJobs(_WORKSPACE_ID_B).Returns(new List<RDO> {rdo2, rdo3});
-
-			_rsapiServiceFactory.Create(_WORKSPACE_ID_B).RelativityObjectManager.Query<JobHistory>(Arg.Any<QueryRequest>())
-				.Returns(new List<JobHistory> {new JobHistory {BatchInstance = batchInstance3} });
+			_runningJobRepository.GetStuckJobs(Arg.Any<IList<int>>(), _WORKSPACE_ID_B).Returns(new List<JobHistory> {new JobHistory {BatchInstance = batchInstance3}});
 
 			// ACT
-			var stuckJobs = _instance.FindStuckJobs(new List<int> {_WORKSPACE_ID_A, _WORKSPACE_ID_B});
+			IDictionary<int, IList<JobHistory>> stuckJobs = _instance.FindStuckJobs(new List<int> {_WORKSPACE_ID_A, _WORKSPACE_ID_B});
 
 			// ASSERT
 			Assert.That(stuckJobs.ContainsKey(_WORKSPACE_ID_B));

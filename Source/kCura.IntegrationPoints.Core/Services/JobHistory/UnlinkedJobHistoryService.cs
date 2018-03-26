@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
@@ -18,7 +17,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
 		public List<int> FindUnlinkedJobHistories(int workspaceArtifactId)
 		{
-			var rsapiService = _rsapiServiceFactory.Create(workspaceArtifactId);
+			IRSAPIService rsapiService = _rsapiServiceFactory.Create(workspaceArtifactId);
 
 			var request = new QueryRequest
 			{

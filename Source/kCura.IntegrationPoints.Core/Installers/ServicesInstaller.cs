@@ -1,5 +1,4 @@
-﻿using System;
-using System.Data.SqlClient;
+﻿using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
@@ -38,8 +37,6 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
-using kCura.ScheduleQueue.Core;
-using kCura.ScheduleQueue.Core.Services;
 using Relativity.API;
 using SystemInterface.IO;
 using kCura.Apps.Common.Data;
@@ -53,7 +50,6 @@ using kCura.IntegrationPoints.Data.SecretStore;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations;
-using kCura.ScheduleQueue.Core.Data;
 using Relativity.Telemetry.APM;
 using Relativity.Toggles;
 using Relativity.Toggles.Providers;
@@ -65,8 +61,6 @@ namespace kCura.IntegrationPoints.Core.Installers
 	{
 		public void Install(IWindsorContainer container, IConfigurationStore store)
 		{
-			var guid = Guid.Parse(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID);
-
 			IToggleProvider toggleProvider = CreateSqlServerToggleProvider(container.Resolve<IHelper>());
 
 			container.Register(Component.For<ISerializer>().ImplementedBy<JSONSerializer>().UsingFactoryMethod(x =>
@@ -76,7 +70,6 @@ namespace kCura.IntegrationPoints.Core.Installers
 				return new SerializerWithLogging(serializer, logger);
 			}).LifestyleSingleton());
 
-			container.Register(Component.For<IIntegrationPointSerializer>().ImplementedBy<IntegrationPointSerializer>().LifestyleSingleton());
 			container.Register(Component.For<IObjectTypeRepository>().ImplementedBy<RsapiObjectTypeRepository>().UsingFactoryMethod(x =>
 			{
 				IServiceContextHelper contextHelper = x.Resolve<IServiceContextHelper>();
@@ -101,8 +94,6 @@ namespace kCura.IntegrationPoints.Core.Installers
 			}
 			container.Register(Component.For<IDomainHelper>().ImplementedBy<DomainHelper>().LifestyleSingleton());
 			container.Register(Component.For<IJobManager>().ImplementedBy<AgentJobManager>().LifestyleTransient());
-			container.Register(Component.For<IJobServiceDataProvider>().ImplementedBy<JobServiceDataProvider>().LifestyleTransient());
-			container.Register(Component.For<IJobService>().ImplementedBy<JobService>().LifestyleTransient());
 			container.Register(Component.For<ICaseServiceContext>().ImplementedBy<CaseServiceContext>().LifestyleTransient());
 
 			container.Register(Component.For<IRelativityObjectManager>()
@@ -110,17 +101,16 @@ namespace kCura.IntegrationPoints.Core.Installers
 				{
 					IServiceContextHelper contextHelper = x.Resolve<IServiceContextHelper>();
 					IHelper helper = x.Resolve<IHelper>();
-					return new RelativityObjectManager(contextHelper.WorkspaceID, 
-						helper, 
+					return new RelativityObjectManager(contextHelper.WorkspaceID,
+						helper,
 						new SecretStoreHelper(
-							contextHelper.WorkspaceID, 
-							helper, 
+							contextHelper.WorkspaceID,
+							helper,
 							new SecretManager(contextHelper.WorkspaceID),
 							new DefaultSecretCatalogFactory()));
 				}).LifestyleTransient());
 			container.Register(Component.For<IRelativityObjectManagerFactory>().ImplementedBy<RelativityObjectManagerFactory>().LifestyleTransient());
 			container.Register(Component.For<IEddsServiceContext>().ImplementedBy<EddsServiceContext>().LifestyleTransient());
-			container.Register(Component.For<IAgentService>().ImplementedBy<AgentService>().DependsOn(Dependency.OnValue<Guid>(guid)).LifestyleTransient());
 			container.Register(Component.For<IDataSynchronizer>().ImplementedBy<RdoSynchronizer>().Named(typeof(RdoSynchronizer).AssemblyQualifiedName).LifestyleTransient());
 			container.Register(Component.For<IDataSynchronizer>().ImplementedBy<RdoCustodianSynchronizer>().Named(typeof(RdoCustodianSynchronizer).AssemblyQualifiedName).LifestyleTransient());
 			container.Register(Component.For<IRdoSynchronizerProvider>().ImplementedBy<RdoSynchronizerProvider>().LifestyleTransient());
@@ -147,8 +137,6 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IManagerQueueService>().ImplementedBy<ManagerQueueService>().LifestyleTransient());
 			container.Register(Component.For<IGuidService>().ImplementedBy<DefaultGuidService>().LifestyleSingleton());
 			container.Register(Component.For<IJobHistoryService>().ImplementedBy<JobHistoryService>().LifestyleTransient());
-			container.Register(Component.For<IUnlinkedJobHistoryService>().ImplementedBy<UnlinkedJobHistoryService>().LifestyleTransient());
-			container.Register(Component.For<IDeleteHistoryErrorService>().ImplementedBy<DeleteHistoryErrorService>().LifestyleTransient());
 			container.Register(Component.For<IDeleteHistoryService>().ImplementedBy<DeleteHistoryService>().LifestyleTransient());
 			container.Register(Component.For<IJobHistoryErrorService>().ImplementedBy<JobHistoryErrorService>().LifestyleTransient());
 			container.Register(Component.For<IJobStatusUpdater>().ImplementedBy<JobStatusUpdater>().LifestyleTransient());
@@ -190,10 +178,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IDataTransferLocationService>().ImplementedBy<DataTransferLocationService>().LifestyleTransient());
 			container.Register(Component.For<IDataTransferLocationServiceFactory>().ImplementedBy<DataTransferLocationServiceFactory>().DependsOn(new { container = container }).LifestyleTransient());
 			container.Register(Component.For<IFolderPathReaderFactory>().ImplementedBy<FolderPathReaderFactory>().LifestyleTransient());
-			container.Register(Component.For<IUnfinishedJobService>().ImplementedBy<UnfinishedJobService>().LifestyleTransient());
-			container.Register(Component.For<IRSAPIServiceFactory>().ImplementedBy<RSAPIServiceFactory>().LifestyleTransient());
 			container.Register(Component.For<IRsapiClientFactory>().ImplementedBy<RsapiClientFactory>());
-			container.Register(Component.For<IRunningJobRepository>().ImplementedBy<RunningJobRepository>().LifestyleTransient());
 			container.Register(Component.For<ISecretCatalogFactory>().ImplementedBy<DefaultSecretCatalogFactory>().LifestyleTransient());
 			container.Register(Component.For<ISecretManagerFactory>().ImplementedBy<SecretManagerFactory>().LifestyleTransient());
 

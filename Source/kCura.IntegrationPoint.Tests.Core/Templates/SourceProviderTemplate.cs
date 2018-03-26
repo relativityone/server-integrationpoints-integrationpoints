@@ -153,7 +153,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			Container.Register(Component.For<IExporterFactory>().ImplementedBy<ExporterFactory>());
 			Container.Register(Component.For<IAuthTokenGenerator>().ImplementedBy<ClaimsTokenGenerator>().LifestyleTransient());
 #pragma warning disable 618
-			var dependencies = new IWindsorInstaller[] { new QueryInstallers(), new KeywordInstaller(), new ServicesInstaller(), new ValidationInstaller() };
+			var dependencies = new IWindsorInstaller[] { new QueryInstallers(), new KeywordInstaller(), new SharedAgentInstaller(), new ServicesInstaller(), new ValidationInstaller() };
 #pragma warning restore 618
 
 			foreach (IWindsorInstaller dependency in dependencies)
