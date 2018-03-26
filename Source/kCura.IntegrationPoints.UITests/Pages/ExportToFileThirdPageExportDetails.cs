@@ -1,4 +1,5 @@
 ﻿using kCura.IntegrationPoints.UITests.Components;
+using kCura.IntegrationPoints.UITests.Driver;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Support.PageObjects;
@@ -31,7 +32,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public void SelectExportImages()
 		{
-			ImagesCheckbox.Click();
+			ImagesCheckbox.ClickWhenClickable(Driver);
 		}
 
 		public void SelectExportNatives()
