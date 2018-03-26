@@ -167,8 +167,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				DataTable dataTable = Import.GetImportTable("DocId", 5);
 				Import.ImportNewDocuments(SourceWorkspaceArtifactId, dataTable);
 
-				IntegrationPointModel model = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly,
-					"StopStateCannotBeUpdatedWhileFinalizingExportServiceObservers", "Append Only");
+				IntegrationPointModel model = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOverlay,
+					"StopStateCannotBeUpdatedWhileFinalizingExportServiceObservers", "Append/Overlay");
 				model = CreateOrUpdateIntegrationPoint(model); // create integration point
 
 				_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, model.ArtifactID, 9); // run now
