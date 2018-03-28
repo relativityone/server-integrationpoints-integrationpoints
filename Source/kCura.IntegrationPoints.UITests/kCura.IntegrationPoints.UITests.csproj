@@ -82,6 +82,7 @@
     <Compile Include="Tests\CreateIpSmokeTest.cs" />
     <Compile Include="Auxiliary\Grinder.cs" />
     <Compile Include="Tests\ExportToLoadFile\DocumentExportToLoadFileTests.cs" />
+    <Compile Include="Tests\Import\ImportFromFTPTest.cs" />
     <Compile Include="Tests\RelativityProvider\ImagesSavedSearchToFolderTest.cs" />
     <Compile Include="Tests\RelativityProvider\NativesSavedSearchToFolderTest.cs" />
     <Compile Include="Tests\RelativityProvider\LinksSavedSearchToFolderTest.cs" />
@@ -129,6 +130,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
       <Project>{AD3E5540-FA39-4983-8A23-FCC756D51A32}</Project>
       <Name>kCura.IntegrationPoint.Tests.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">
+      <Project>{a1ae667b-1b6e-4bb9-af1d-912620292283}</Project>
+      <Name>kCura.IntegrationPoints.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
       <Project>{599D771D-2AE7-4321-9BAC-BE06F827CE0A}</Project>

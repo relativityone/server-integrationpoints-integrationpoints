@@ -43,6 +43,8 @@ namespace kCura.IntegrationPoints.UITests.Tests
 
 		protected RemoteWebDriver Driver { get; set; }
 
+		protected virtual bool InstallLegalHoldApp => false;
+
 		protected virtual void ContextSetUp()
 		{
 		}
@@ -75,6 +77,12 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			ContextSetUp();
 
 			await installIntegrationPointsTask;
+
+			if (InstallLegalHoldApp)
+			{
+				Task installLegalHoldTask = Context.InstallLegalHoldAsync();
+				await installLegalHoldTask;
+			}
 		}
 
 		protected async Task CreateDriverAsync()

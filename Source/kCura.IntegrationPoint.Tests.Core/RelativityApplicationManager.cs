@@ -13,6 +13,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 	public class RelativityApplicationManager
 	{
+		private const string _RIP_GUID_STRING = IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING;
+
 		private readonly ITestHelper _helper;
 		private readonly LibraryApplicationManager _libraryManager;
 		private readonly ICoreContext _baseServiceContext;
@@ -36,9 +38,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 			_libraryManager.Update((BaseServiceContext)_baseServiceContext, libraryApplication);
 		}
 
-		public void ImportApplicationToLibrary()
+		public void ImportApplicationToLibrary(string appGuidString = _RIP_GUID_STRING)
 		{
-			LibraryApplication libraryApplication = GetLibraryApplicationDTO(new Guid(IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING));
+			LibraryApplication libraryApplication = GetLibraryApplicationDTO(new Guid(appGuidString));
 			
 			if (libraryApplication != null && libraryApplication.IsVisible)
 			{
@@ -50,20 +52,19 @@ namespace kCura.IntegrationPoint.Tests.Core
 			UpdateLibraryApplicationRap(applicationFilePath, libraryApplication);
 		}
 
-		public void InstallApplicationFromLibrary(int workspaceArtifactId)
+		public void InstallApplicationFromLibrary(int workspaceArtifactId, string appGuidString = _RIP_GUID_STRING)
 		{
 			using (var applicationInstallManager = _helper.CreateAdminProxy<IApplicationInstallManager>())
 			{
-				applicationInstallManager.InstallLibraryApplicationByGuid(workspaceArtifactId, new Guid(IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING)).Wait();
+				applicationInstallManager.InstallLibraryApplicationByGuid(workspaceArtifactId, new Guid(appGuidString)).Wait();
 			}
 		}
 
-		public bool IsApplicationInstalledAndUpToDate(int workspaceArtifactId)
+		public bool IsApplicationInstalledAndUpToDate(int workspaceArtifactId, string appGuidString = _RIP_GUID_STRING)
 		{
 			using (var applicationInstallManager = _helper.CreateAdminProxy<IApplicationInstallManager>())
 			{
-				ApplicationInstallStatus installStatus = applicationInstallManager.GetApplicationInstallStatusAsync(workspaceArtifactId, 
-					new Guid(IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING)).Result;
+				ApplicationInstallStatus installStatus = applicationInstallManager.GetApplicationInstallStatusAsync(workspaceArtifactId, new Guid(appGuidString)).Result;
 
 				return installStatus == ApplicationInstallStatus.Installed;
 			}
