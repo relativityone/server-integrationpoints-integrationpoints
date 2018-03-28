@@ -27,6 +27,7 @@ namespace kCura.IntegrationPoints.Services.Installers
 			{
 				new QueryInstallers(),
 				new KeywordInstaller(),
+				new SharedAgentInstaller(),
 				new ServicesInstaller(),
 				new ValidationInstaller()
 			};

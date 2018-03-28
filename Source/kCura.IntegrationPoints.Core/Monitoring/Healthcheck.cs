@@ -7,7 +7,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring
 {
 	public static class HealthCheck
 	{
-		public static readonly string StuckJobMessage = "Stuck jobs found.";
+		public static readonly string StuckJobMessage = "Integration Points Job Id {1} stuck in Workspace {0}.";
 		public static readonly string InvalidJobMessage = "Jobs with invalid status found.";
 
 		public static HealthCheckOperationResult CreateJobFailedMetric(JobHistory jobHistory, long workspaceId)
@@ -21,10 +21,18 @@ namespace kCura.IntegrationPoints.Core.Monitoring
 			return new HealthCheckOperationResult(false, InvalidJobMessage, null, customData);
 		}
 
-		public static HealthCheckOperationResult CreateStuckJobsMetric(IDictionary<int, IList<JobHistory>> jobHistories)
+		public static HealthCheckOperationResult CreateStuckJobsMetric(int workspaceId, IList<JobHistory> jobHistories)
 		{
-			Dictionary<string, object> customData = CreateJobHistoryCustomData(jobHistories);
-			return new HealthCheckOperationResult(false, StuckJobMessage, null, customData);
+			var jobHistoriesDictionary = new Dictionary<int, IList<JobHistory>> { { workspaceId, jobHistories } };
+			Dictionary<string, object> customData = CreateJobHistoryCustomData(jobHistoriesDictionary);
+			string jobIdsMessage = BuildJobIdsMessage(jobHistories);
+			string message = string.Format(StuckJobMessage, workspaceId, jobIdsMessage);
+			return new HealthCheckOperationResult(false, message, null, customData);
+		}
+
+		private static string BuildJobIdsMessage(IList<JobHistory> jobHistories)
+		{
+			return string.Join(", ", jobHistories.Select(jobHistory => jobHistory.JobID));
 		}
 
 		private static Dictionary<string, object> CreateJobHistoryCustomData(IDictionary<int, IList<JobHistory>> jobHistories)

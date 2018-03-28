@@ -37,6 +37,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 		{
 			container.Install(new Data.Installers.QueryInstallers());
 			container.Install(new Core.Installers.KeywordInstaller());
+			container.Install(new Core.Installers.SharedAgentInstaller());
 			container.Install(new Core.Installers.ServicesInstaller());
 			container.Install(new FilesDestinationProvider.Core.Installer.FileNamingInstaller());
 			container.Install(new FilesDestinationProvider.Core.Installer.ExportInstaller());

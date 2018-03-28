@@ -12,6 +12,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 			var container = new WindsorContainer();
 			container.Install(new EventHandlerInstaller(context));
 			container.Install(new QueryInstallers());
+			container.Install(new SharedAgentInstaller());
 			container.Install(new ServicesInstaller());
 			return container;
 		}
