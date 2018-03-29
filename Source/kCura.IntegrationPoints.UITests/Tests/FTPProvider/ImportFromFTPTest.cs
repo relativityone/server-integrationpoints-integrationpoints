@@ -8,7 +8,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FTPProvider
 	{
 		private IntegrationPointsAction _integrationPointsAction;
 
-//		protected override bool InstallLegalHoldApp => true;
+		//		protected override bool InstallLegalHoldApp => true;
 
 		[OneTimeSetUp]
 		public void OneTimeSetUp()

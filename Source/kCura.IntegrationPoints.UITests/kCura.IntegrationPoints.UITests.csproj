@@ -73,6 +73,7 @@
     <Compile Include="Pages\ExportToFileThirdPageVolumeSubdirectoryDetails.cs" />
     <Compile Include="Pages\FirstPage.cs" />
     <Compile Include="Pages\ImportFirstPage.cs" />
+    <Compile Include="Pages\ImportThirdPage.cs" />
     <Compile Include="Pages\IntegrationPointDetailsPage.cs" />
     <Compile Include="Pages\IntegrationPointsPage.cs" />
     <Compile Include="Pages\ExportToFileSecondPage.cs" />
@@ -85,7 +86,7 @@
     <Compile Include="Tests\CreateIpSmokeTest.cs" />
     <Compile Include="Auxiliary\Grinder.cs" />
     <Compile Include="Tests\ExportToLoadFile\DocumentExportToLoadFileTests.cs" />
-    <Compile Include="Tests\Import\ImportFromFTPTest.cs" />
+    <Compile Include="Tests\FTPProvider\ImportFromFTPTest.cs" />
     <Compile Include="Tests\LDAPProvider\ImportLdapProvider.cs" />
     <Compile Include="Tests\RelativityProvider\ImagesSavedSearchToFolderTest.cs" />
     <Compile Include="Tests\RelativityProvider\NativesSavedSearchToFolderTest.cs" />
