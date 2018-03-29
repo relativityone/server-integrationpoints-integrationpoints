@@ -11,6 +11,9 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		[FindsBy(How = How.Id, Using = "destinationProviderType")]
 		protected IWebElement DestinationSelectWebElement { get; set; }
 
+		[FindsBy(How = How.Id, Using = "destinationRdo")]
+		protected IWebElement TransferedObjectSelectWebElement { get; set; }
+
 		[FindsBy(How = How.Id, Using = "next")]
 		protected IWebElement NextButton { get; set; }
 
@@ -24,11 +27,18 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		}
 
 		protected SelectElement DestinationSelect => new SelectElement(DestinationSelectWebElement);
+		protected SelectElement TransferedObjectSelect => new SelectElement(TransferedObjectSelectWebElement);
 
 		public string Destination
 		{
 			get { return DestinationSelect.SelectedOption.Text; }
 			set { DestinationSelect.SelectByText(value); }
+		}
+
+		public string TransferedObject
+		{
+			get { return TransferedObjectSelect.SelectedOption.Text; }
+			set { TransferedObjectSelect.SelectByText(value); }
 		}
 
 		public ExportFirstPage(RemoteWebDriver driver) : base(driver)
@@ -48,6 +58,12 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		{
 			NextButton.Click();
 			return new PushToRelativitySecondPage(Driver);
+		}
+
+		public ExportCustodianToFileSecondPage GotoNextPageCustodian()
+		{
+			NextButton.Click();
+			return new ExportCustodianToFileSecondPage(Driver);
 		}
 	}
 }
