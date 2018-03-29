@@ -46,7 +46,7 @@ nuget Microsoft.Net.Http 2.2.29 strategy: max
 nuget NSubstitute 1.10.0.0
 nuget NUnit 3.4.1
 nuget Selenium.Support 3.8.0
-nuget Selenium.WebDriver.ChromeDriver 2.34.0
+nuget Selenium.WebDriver.ChromeDriver 2.37.0
 
 //Analyzers
 nuget CSharpGuidelineAnalyzer 1.0.3.0

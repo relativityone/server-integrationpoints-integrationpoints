@@ -62,6 +62,7 @@
     <Compile Include="Configuration\TestConfiguration.cs" />
     <Compile Include="Configuration\TestContext.cs" />
     <Compile Include="Auxiliary\ReuseRemoteWebDriver.cs" />
+    <Compile Include="Driver\DriverExtensions.cs" />
     <Compile Include="Logging\LoggerFactory.cs" />
     <Compile Include="Logging\LoggerNameEnricher.cs" />
     <Compile Include="Pages\ExportToFileThirdPage.cs" />
@@ -85,6 +86,7 @@
     <Compile Include="Auxiliary\Grinder.cs" />
     <Compile Include="Tests\ExportToLoadFile\DocumentExportToLoadFileTests.cs" />
     <Compile Include="Tests\Import\ImportFromFTPTest.cs" />
+    <Compile Include="Tests\LDAPProvider\ImportLdapProvider.cs" />
     <Compile Include="Tests\RelativityProvider\ImagesSavedSearchToFolderTest.cs" />
     <Compile Include="Tests\RelativityProvider\NativesSavedSearchToFolderTest.cs" />
     <Compile Include="Tests\RelativityProvider\LinksSavedSearchToFolderTest.cs" />

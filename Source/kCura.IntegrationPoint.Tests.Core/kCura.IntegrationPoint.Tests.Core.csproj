@@ -136,6 +136,9 @@
     <Compile Include="Models\Constants\ExportToLoadFile\ExportToLoadFileTransferredObjectConstants.cs" />
     <Compile Include="Models\DocumentsTestData.cs" />
     <Compile Include="Models\ExportToLoadFileDetailsModel.cs" />
+    <Compile Include="Models\Ldap\ImportFromLdapSettingsModel.cs" />
+    <Compile Include="Models\Ldap\ImportFromLdapSourceConnectionModel.cs" />
+    <Compile Include="Models\Ldap\ImportFromLdapModel.cs" />
     <Compile Include="Models\ExportToLoadFileProviderModel.cs" />
     <Compile Include="Models\ExportToLoadFileSourceInformationModel.cs" />
     <Compile Include="Models\ExportToLoadFileVolumeAndSubdirectoryModel.cs" />
@@ -148,6 +151,10 @@
     <Compile Include="Models\ImportFromFTPModel.cs" />
     <Compile Include="Models\IntegrationPointGeneralModel.cs" />
     <Compile Include="Models\JobHistoryModel.cs" />
+    <Compile Include="Models\Ldap\LdapAuthenticationType.cs" />
+    <Compile Include="Models\Shared\ImportCustodianSettingsModel.cs" />
+    <Compile Include="Models\Shared\ImportSettingsModel.cs" />
+    <Compile Include="Models\Shared\OverwriteType.cs" />
     <Compile Include="Models\RelativityProviderModel.cs" />
     <Compile Include="Models\SchedulerModel.cs" />
     <Compile Include="Models\Shared\SharedModelEnums.cs" />
