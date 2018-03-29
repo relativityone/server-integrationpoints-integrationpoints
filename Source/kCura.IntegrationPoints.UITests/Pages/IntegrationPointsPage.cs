@@ -17,11 +17,16 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			Driver.SwitchTo().Frame("externalPage");
 		}
 
-		public ExportFirstPage CreateNewIntegrationPoint()
+		public ExportFirstPage CreateNewExportIntegrationPoint()
 		{
 			NewIntegrationPointButton.Click();
 			return new ExportFirstPage(Driver);
 		}
 
+		public ImportFirstPage CreateNewImportIntegrationPoint()
+		{
+			NewIntegrationPointButton.Click();
+			return new ImportFirstPage(Driver);
+		}
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using kCura.IntegrationPoint.Tests.Core.Models;
+using kCura.IntegrationPoint.Tests.Core.Models.FTP;
 using kCura.IntegrationPoint.Tests.Core.Models.Shared;
 using kCura.IntegrationPoints.UITests.Configuration;
 using kCura.IntegrationPoints.UITests.Pages;
@@ -25,7 +26,7 @@ namespace kCura.IntegrationPoints.UITests.Common
         public ExportFirstPage SetupFirstIntegrationPointPage(GeneralPage generalPage, IntegrationPointGeneralModel model)
         {
             IntegrationPointsPage ipPage = generalPage.GoToIntegrationPointsPage();
-            ExportFirstPage firstPage = ipPage.CreateNewIntegrationPoint();
+            ExportFirstPage firstPage = ipPage.CreateNewExportIntegrationPoint();
             firstPage.Name = model.Name;
             firstPage.Destination = model.DestinationProvider;
 
@@ -232,7 +233,40 @@ namespace kCura.IntegrationPoints.UITests.Common
             return thirdPage.SaveIntegrationPoint();
         }
 
-        public PushToRelativitySecondPage SetupPushToRelativitySecondPage(ExportFirstPage firstPage, RelativityProviderModel model)
+	    public IntegrationPointDetailsPage CreateNewImportFromFTPIntegrationPoint(ImportFromFTPModel model)
+	    {
+			var generalPage = new GeneralPage(_driver);
+		    generalPage.ChooseWorkspace(_context.WorkspaceName);
+
+		    ImportFirstPage firstPage = SetupImportFromFTPFirstPage(generalPage, model);
+
+		    return null;
+	    }
+
+	    public ImportFirstPage SetupImportFromFTPFirstPage(GeneralPage generalPage, ImportFromFTPModel model)
+	    {
+		    IntegrationPointsPage ipPage = generalPage.GoToIntegrationPointsPage();
+		    ImportFirstPage firstPage = ipPage.CreateNewImportIntegrationPoint();
+		    firstPage.Name = model.General.Name;
+			firstPage.SelectImport();
+		    firstPage.Source = model.General.SourceProvider;
+		    firstPage.TransferredObject = model.General.TransferredObject;
+		    return firstPage;
+	    }
+
+	    public ImportWithFTPSecondPage SetupImportFromFTPSecondPage(ImportFirstPage firstPage, ImportFromFTPModel model)
+	    {
+		    ImportWithFTPSecondPage secondPage = firstPage.GoToNextPage();
+		    return secondPage;
+	    }
+
+	    public ImportThirdPage SetupImportFromFTPThirdPage(ImportWithFTPSecondPage secondPage, ImportFromFTPModel model)
+	    {
+		    ImportThirdPage thirdPage = secondPage.GoToNextPage();
+		    return thirdPage;
+	    }
+
+		public PushToRelativitySecondPage SetupPushToRelativitySecondPage(ExportFirstPage firstPage, RelativityProviderModel model)
         {
             PushToRelativitySecondPage secondPage = firstPage.GoToNextPagePush();
             secondPage.SelectAllDocuments();
