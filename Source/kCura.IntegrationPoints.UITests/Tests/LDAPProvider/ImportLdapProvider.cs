@@ -1,12 +1,18 @@
 ﻿
 
+using System;
+using System.Collections.Generic;
+using System.Security;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Models.Constants.ExportToLoadFile;
 using kCura.IntegrationPoint.Tests.Core.Models.Ldap;
+using kCura.IntegrationPoint.Tests.Core.Models.Shared;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoints.UITests.Validation;
+using kCura.Vendor.Castle.Core.Internal;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
@@ -16,56 +22,57 @@ namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 	public class ImportLdapProvider : UiTest
 
 	{
+		private IntegrationPointsAction _integrationPointsAction;
+
+		[OneTimeSetUp]
+		public void OneTimeSetUp()
+		{
+			EnsureGeneralPageIsOpened();
+			_integrationPointsAction = new IntegrationPointsAction(Driver, Context);
+		}
+
+
 		[Test, Order(1)]
-		public void DocumentExportToLoadFile_TC_ELF_DOC_1()
+		public void DocumentExportToLoadFile_TC_IMPORT_CUST_1()
 		{
 			// Arrange
-			//ImportFromLdapModel model = CreateExportToLoadFileProviderModel("TC_ELF_DOC_1");
 
-			//// Step 1
-			//model.Type = IntegrationPointGeneralModel.IntegrationPointTypeEnum.Export;
-			//model.DestinationProvider = IntegrationPointGeneralModel.INTEGRATION_POINT_PROVIDER_LOADFILE;
-			//model.TransferredObject = ExportToLoadFileTransferredObjectConstants.DOCUMENT;
+			ImportFromLdapModel model = new ImportFromLdapModel("Import Custodians");
 
-			//// Step 2
-			//model.SourceInformationModel.Source = ExportToLoadFileSourceConstants.SAVED_SEARCH;
-			//model.SourceInformationModel.StartAtRecord = 1;
-			//model.SourceInformationModel.SelectAllFields = true;
 
-			//// Step 3
-			//model.ExportDetails.LoadFile = true;
-			//model.ExportDetails.ExportImages = true;
-			//model.ExportDetails.ExportNatives = true;
-			//model.ExportDetails.ExportTextFieldsAsFiles = true;
-			//model.ExportDetails.DestinationFolder = ExportToLoadFileProviderModel.DestinationFolderTypeEnum.Root;
-			//model.ExportDetails.CreateExportFolder = true;
-			//model.ExportDetails.OverwriteFiles = true;
+			// Step 1
 
-			//model.OutputSettings.LoadFileOptions.ImageFileFormat = ExportToLoadFileImageFileFormatConstants.OPTICON;
-			//model.OutputSettings.LoadFileOptions.DataFileFormat = ExportToLoadFileDataFileFormatConstants.DAT;
-			//model.OutputSettings.LoadFileOptions.DataFileEncoding = ExportToLoadFileFileEncodingConstants.UTF_8;
-			//model.OutputSettings.LoadFileOptions.FilePathType = ExportToLoadFileProviderModel.FilePathTypeEnum.Relative;
-			//model.OutputSettings.LoadFileOptions.IncludeNativeFilesPath = true;
-			//model.OutputSettings.LoadFileOptions.ExportMultiChoiceAsNested = false;
-			//model.OutputSettings.LoadFileOptions.NameOutputFilesAfter = ExportToLoadFileNameOutputFilesAfterConstants.IDENTIFIER;
-			//model.OutputSettings.LoadFileOptions.AppendOriginalFileName = false;
+			model.General.Type = IntegrationPointGeneralModel.IntegrationPointTypeEnum.Export;
+			model.General.DestinationProvider = IntegrationPointGeneralModel.INTEGRATION_POINT_PROVIDER_LOADFILE;
+			model.General.TransferredObject = ExportToLoadFileTransferredObjectConstants.CUSTODIAN;
 
-			//model.OutputSettings.ImageOptions.ImageFileType = ExportToLoadFileImageFileTypeConstants.MULTI_PAGE_TIFF_JPEG;
-			//model.OutputSettings.ImageOptions.ImageSubdirectoryPrefix = "IMG";
 
-			//model.OutputSettings.NativeOptions.NativeSubdirectoryPrefix = "NATIVE";
+			// Step 2
 
-			//model.OutputSettings.TextOptions.TextFileEncoding = ExportToLoadFileFileEncodingConstants.UTF_8;
-			//model.OutputSettings.TextOptions.TextSubdirectoryPrefix = "TEXT";
+			model.Source.Authentication = LdapAuthenticationType.SecureSocketLayer;
+			model.Source.ConnectionPath = SharedVariables.LdapConnectionPath;
+			model.Source.ImportNestedItems = false;
+			model.Source.ObjectFilterString = "";
+			model.Source.Password = new SecureString();
+			SharedVariables.LdapPassword.ForEach(c => model.Source.Password.AppendChar(c));
 
-			//model.ToLoadFileVolumeAndSubdirectoryModel.VolumePrefix = "VOL";
-			//model.ToLoadFileVolumeAndSubdirectoryModel.VolumeStartNumber = 1;
-			//model.ToLoadFileVolumeAndSubdirectoryModel.VolumeNumberOfDigits = 4;
-			//model.ToLoadFileVolumeAndSubdirectoryModel.VolumeMaxSize = 4400;
+			model.Source.Username = new SecureString();
+			SharedVariables.LdapUsername.ForEach(c => model.Source.Username.AppendChar(c));
 
-			//model.ToLoadFileVolumeAndSubdirectoryModel.SubdirectoryStartNumber = 1;
-			//model.ToLoadFileVolumeAndSubdirectoryModel.SubdirectoryNumberOfDigits = 4;
-			//model.ToLoadFileVolumeAndSubdirectoryModel.SubdirectoryMaxFiles = 500;
+			// Step 3
+
+			model.ImportCustodianSettingsModel.UniqueIdentifier = "";
+			model.ImportCustodianSettingsModel.CustodianManagerContainsLink = true;
+
+			model.SharedImportSettings.Overwrite = OverwriteType.AppendOverlay;
+			model.SharedImportSettings.FieldMapping = new List<Tuple<string, string>>();
+			model.SharedImportSettings.FieldMapping.Add(new Tuple<string, string>("objectguid", "UniqueID"));
+			model.SharedImportSettings.FieldMapping.Add(new Tuple<string, string>("givenname", "First Name"));
+			model.SharedImportSettings.FieldMapping.Add(new Tuple<string, string>("sn", "Last Name"));
+			model.SharedImportSettings.FieldMapping.Add(new Tuple<string, string>("manager", "Manager"));
+
+			_integrationPointsAction.
+
 
 			//var validator = new ExportToLoadFileProviderValidator();
 

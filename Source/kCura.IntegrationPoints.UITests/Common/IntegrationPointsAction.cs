@@ -12,8 +12,8 @@ namespace kCura.IntegrationPoints.UITests.Common
 
     public class IntegrationPointsAction
     {
-        private readonly RemoteWebDriver _driver;
-        private readonly TestContext _context;
+        protected readonly RemoteWebDriver _driver;
+	    protected readonly TestContext _context;
 
         public IntegrationPointsAction(RemoteWebDriver driver, TestContext context)
         {
@@ -204,7 +204,8 @@ namespace kCura.IntegrationPoints.UITests.Common
             return thirdPage;
         }
 
-        public IntegrationPointDetailsPage CreateNewExportToLoadfileIntegrationPoint(ExportToLoadFileProviderModel model)
+	   
+		public IntegrationPointDetailsPage CreateNewExportToLoadfileIntegrationPoint(ExportToLoadFileProviderModel model)
         {
             var generalPage = new GeneralPage(_driver);
             generalPage.ChooseWorkspace(_context.WorkspaceName);
