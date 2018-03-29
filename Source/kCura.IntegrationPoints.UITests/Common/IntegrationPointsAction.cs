@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.UITests.Common
         public ExportFirstPage SetupFirstIntegrationPointPage(GeneralPage generalPage, IntegrationPointGeneralModel model)
         {
             IntegrationPointsPage ipPage = generalPage.GoToIntegrationPointsPage();
-            ExportFirstPage firstPage = ipPage.CreateNewIntegrationPoint();
+            ExportFirstPage firstPage = ipPage.CreateNewExportIntegrationPoint();
             firstPage.Name = model.Name;
             firstPage.Destination = model.DestinationProvider;
 
@@ -232,7 +232,29 @@ namespace kCura.IntegrationPoints.UITests.Common
             return thirdPage.SaveIntegrationPoint();
         }
 
-        public PushToRelativitySecondPage SetupPushToRelativitySecondPage(ExportFirstPage firstPage, RelativityProviderModel model)
+	    public IntegrationPointDetailsPage CreateNewImportFromFTPIntegrationPoint(ImportFromFTPModel model)
+	    {
+			var generalPage = new GeneralPage(_driver);
+		    generalPage.ChooseWorkspace(_context.WorkspaceName);
+
+		    ImportFirstPage firstPage = SetupImportFromFTPFirstPage(generalPage, model);
+
+		    return null;
+	    }
+
+	    public ImportFirstPage SetupImportFromFTPFirstPage(GeneralPage generalPage, ImportFromFTPModel model)
+	    {
+		    IntegrationPointsPage ipPage = generalPage.GoToIntegrationPointsPage();
+		    ImportFirstPage firstPage = ipPage.CreateNewImportIntegrationPoint();
+		    firstPage.Name = model.Name;
+			firstPage.SelectImport();
+		    firstPage.Source = model.SourceProvider;
+		    firstPage.TransferredObject = model.TransferredObject;
+		    return firstPage;
+	    }
+
+
+		public PushToRelativitySecondPage SetupPushToRelativitySecondPage(ExportFirstPage firstPage, RelativityProviderModel model)
         {
             PushToRelativitySecondPage secondPage = firstPage.GoToNextPagePush();
             secondPage.SelectAllDocuments();

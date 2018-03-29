@@ -5,23 +5,10 @@ using OpenQA.Selenium.Support.UI;
 
 namespace kCura.IntegrationPoints.UITests.Pages
 {
-	public class ExportFirstPage : GeneralPage
+	public class ExportFirstPage : FirstPage
 	{
-
 		[FindsBy(How = How.Id, Using = "destinationProviderType")]
 		protected IWebElement DestinationSelectWebElement { get; set; }
-
-		[FindsBy(How = How.Id, Using = "next")]
-		protected IWebElement NextButton { get; set; }
-
-		[FindsBy(How = How.Id, Using = "name")]
-		protected IWebElement NameInput { get; set; }
-
-		public string Name
-		{
-			get { return NameInput.Text; }
-			set { NameInput.SendKeys(value); }
-		}
 
 		protected SelectElement DestinationSelect => new SelectElement(DestinationSelectWebElement);
 

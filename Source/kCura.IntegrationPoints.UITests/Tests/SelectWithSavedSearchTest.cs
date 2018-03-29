@@ -24,8 +24,8 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			generalPage.ChooseWorkspace(Context.WorkspaceName);
 
 			// Act
-			IntegrationPointsPage ipPage = generalPage.GoToIntegrationPointsPage();
-			ExportFirstPage first = ipPage.CreateNewIntegrationPoint();
+			IntegrationPointsPage ipPage = generalPage.GoToIntegrationPointsExportPage();
+			ExportFirstPage first = ipPage.CreateNewExportIntegrationPoint();
 			first.Name = "Test IP";
 			first.Destination = "Load File";
 
