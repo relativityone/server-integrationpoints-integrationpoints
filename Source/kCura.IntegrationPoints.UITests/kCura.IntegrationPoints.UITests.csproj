@@ -89,6 +89,7 @@
     <Compile Include="Tests\ExportToLoadFile\DocumentExportToLoadFileTests.cs" />
     <Compile Include="Tests\FTPProvider\ImportFromFTPTest.cs" />
     <Compile Include="Tests\LDAPProvider\ImportLdapProvider.cs" />
+    <Compile Include="Tests\RelativityProvider\DataGridToSqlTest.cs" />
     <Compile Include="Tests\RelativityProvider\ImagesSavedSearchToFolderTest.cs" />
     <Compile Include="Tests\RelativityProvider\NativesSavedSearchToFolderTest.cs" />
     <Compile Include="Tests\RelativityProvider\LinksSavedSearchToFolderTest.cs" />
