@@ -1,3 +1,5 @@
+using kCura.IntegrationPoint.Tests.Core.Models.Shared;
+
 namespace kCura.IntegrationPoint.Tests.Core.Models.Ldap
 {
 	public class ImportFromLdapSettingsModel

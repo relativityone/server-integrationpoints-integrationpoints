@@ -151,7 +151,9 @@
     <Compile Include="Models\IntegrationPointGeneralModel.cs" />
     <Compile Include="Models\JobHistoryModel.cs" />
     <Compile Include="Models\Ldap\LdapAuthenticationType.cs" />
-    <Compile Include="Models\Ldap\OverwriteType.cs" />
+    <Compile Include="Models\Shared\ImportCustodianSettingsModel.cs" />
+    <Compile Include="Models\Shared\ImportSettingsModel.cs" />
+    <Compile Include="Models\Shared\OverwriteType.cs" />
     <Compile Include="Models\RelativityProviderModel.cs" />
     <Compile Include="Models\SchedulerModel.cs" />
     <Compile Include="Models\Shared\SharedModelEnums.cs" />

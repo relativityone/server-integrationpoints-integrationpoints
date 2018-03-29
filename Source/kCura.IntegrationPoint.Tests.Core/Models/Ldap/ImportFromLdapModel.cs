@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoint.Tests.Core.Models.Shared;
 using kCura.IntegrationPoints.Domain.Extensions;
 
 namespace kCura.IntegrationPoint.Tests.Core.Models.Ldap
@@ -10,9 +11,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Models.Ldap
 
 		public ImportFromLdapSourceConnectionModel Source { get; set; }
 
-		public List<Tuple<string, string>> FieldMapping { get; set; }
+		public ImportSettingsModel SharedSettings { get; set; }
 
-		public ImportFromLdapSettingsModel Settings { get; set; }
-		
+		public ImportCustodianSettingsModel ImportCustodianSettingsModel { get; set; }
 	}
 }

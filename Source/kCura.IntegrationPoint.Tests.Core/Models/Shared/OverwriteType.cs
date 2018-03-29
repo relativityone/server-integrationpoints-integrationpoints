@@ -1,6 +1,6 @@
 using System.ComponentModel;
 
-namespace kCura.IntegrationPoint.Tests.Core.Models.Ldap
+namespace kCura.IntegrationPoint.Tests.Core.Models.Shared
 {
 	public enum OverwriteType
 	{
