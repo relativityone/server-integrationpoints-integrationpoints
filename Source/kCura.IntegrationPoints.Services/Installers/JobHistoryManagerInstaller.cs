@@ -32,6 +32,7 @@ namespace kCura.IntegrationPoints.Services.Installers
 			_dependencies = new List<IWindsorInstaller>
 			{
                 new QueryInstallers(),
+				new SharedAgentInstaller(),
                 new ServicesInstaller()
             };
         }

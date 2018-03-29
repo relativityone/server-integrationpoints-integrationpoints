@@ -15,6 +15,10 @@ namespace kCura.IntegrationPoints.Management.Tests.Tasks
 	[TestFixture]
 	public class AlertStuckJobsTaskTests : TestBase
 	{
+		private const string _JOB_ID_1 = "1";
+		private const int _WORKSPACE_ID_1 = 843775;
+		private const int _WORKSPACE_ID_2 = 758413;
+
 		private AlertStuckJobsTask _instance;
 		private IStuckJobs _stuckJobs;
 		private IAPM _apm;
@@ -31,15 +35,15 @@ namespace kCura.IntegrationPoints.Management.Tests.Tasks
 		[Test]
 		public void ItShouldAlertStuckJobs()
 		{
-			var workspaceArtifactIds = new List<int> {843775, 758413};
+			var workspaceArtifactIds = new List<int> { _WORKSPACE_ID_1, _WORKSPACE_ID_2 };
 
 			var stuckJobs = new Dictionary<int, IList<JobHistory>>
 			{
 				{workspaceArtifactIds[0], new List<JobHistory>
 					{
-						new JobHistory()
+						new JobHistory
 						{
-							JobID = "1"
+							JobID = _JOB_ID_1
 						}
 					}
 				}
@@ -52,14 +56,16 @@ namespace kCura.IntegrationPoints.Management.Tests.Tasks
 
 			// ASSERT
 			_apm.Received(1).HealthCheckOperation(Constants.IntegrationPoints.Telemetry.APM_HEALTHCHECK,
-				Arg.Is<Func<HealthCheckOperationResult>>(x => ValidateHealthCheckResult(x(), stuckJobs)));
+				Arg.Is<Func<HealthCheckOperationResult>>(x => ValidateHealthCheckResult(x(), workspaceArtifactIds[0])));
 		}
 
-		private bool ValidateHealthCheckResult(HealthCheckOperationResult healthCheckOperationResult, Dictionary<int, IList<JobHistory>> invalidJobs)
+		private bool ValidateHealthCheckResult(HealthCheckOperationResult healthCheckOperationResult, int workspaceId)
 		{
-			return !healthCheckOperationResult.IsHealthy
-					&& healthCheckOperationResult.CustomData.Keys.SequenceEqual(invalidJobs.Keys.Select(x => $"Workspace {x}"))
-					&& healthCheckOperationResult.Message == "Stuck jobs found.";
+			bool notHealthy = !healthCheckOperationResult.IsHealthy;
+			bool sequenceMatching = healthCheckOperationResult.CustomData.Keys.SequenceEqual(new List<string> { $"Workspace {workspaceId}" });
+			bool messageMatching = healthCheckOperationResult.Message == $"Integration Points Job Id {_JOB_ID_1} stuck in Workspace {_WORKSPACE_ID_1}.";
+
+			return notHealthy && sequenceMatching && messageMatching;
 		}
 
 		[Test]

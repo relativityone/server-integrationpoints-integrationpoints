@@ -13,6 +13,7 @@
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <PlatformTarget>x64</PlatformTarget>
@@ -100,7 +101,7 @@
     <Compile Include="Repositories\Implementations\ProductionRepository.cs" />
     <Compile Include="Repositories\Implementations\QueryFieldLookupRepository.cs" />
     <Compile Include="Repositories\Implementations\RelativityObjectManager.cs" />
-    <Compile Include="Repositories\Implementations\RunningJobRepository.cs" />
+    <Compile Include="Repositories\Implementations\JobRepository.cs" />
     <Compile Include="Repositories\Implementations\SecretStoreHelper.cs" />
     <Compile Include="Repositories\IProductionRepository.cs" />
     <Compile Include="Repositories\IKeywordSearchRepository.cs" />
@@ -109,7 +110,7 @@
     <Compile Include="Repositories\IFieldRepository.cs" />
     <Compile Include="Repositories\IQueryFieldLookupRepository.cs" />
     <Compile Include="Repositories\IRelativityObjectManager.cs" />
-    <Compile Include="Repositories\IRunningJobRepository.cs" />
+    <Compile Include="Repositories\IJobRepository.cs" />
     <Compile Include="ResourcePoolContext.cs" />
     <Compile Include="RSAPIClient\IRsapiClientFactory.cs" />
     <Compile Include="RSAPIClient\RsapiClientFactory.cs" />

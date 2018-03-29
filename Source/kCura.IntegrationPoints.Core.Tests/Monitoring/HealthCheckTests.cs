@@ -42,10 +42,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring
 			// Arrange
 
 			// Act
-			HealthCheckOperationResult results = HealthCheck.CreateStuckJobsMetric(_wkspToJobHistoryRecs);
+			HealthCheckOperationResult results = HealthCheck.CreateStuckJobsMetric(_WKSP_ID, _wkspToJobHistoryRecs[_WKSP_ID]);
 
 			// Assert
-			ValidateHealthCheck(results, HealthCheck.StuckJobMessage);
+			string jobsMessagePart = $"{_JOB_ID_1}, {_JOB_ID_2}";
+			string message = string.Format(HealthCheck.StuckJobMessage, _WKSP_ID, jobsMessagePart);
+			ValidateHealthCheck(results, message);
 		}
 
 		[Test]
