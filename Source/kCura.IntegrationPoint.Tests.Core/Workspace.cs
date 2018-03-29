@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
+using kCura.Relativity.Client.Repositories;
 using Relativity.API;
 using Relativity.Services.ApplicationInstallManager;
 
@@ -17,7 +18,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 
 			//Create workspace DTO
-			Relativity.Client.DTOs.Workspace workspaceDto = new Relativity.Client.DTOs.Workspace { Name = workspaceName };
+			Relativity.Client.DTOs.Workspace workspaceDto = new Relativity.Client.DTOs.Workspace { Name = workspaceName};
 			int workspaceId;
 			using (IRSAPIClient proxy = Rsapi.CreateRsapiClient(ExecutionIdentity.System))
 			{
@@ -44,6 +45,27 @@ namespace kCura.IntegrationPoint.Tests.Core
 				}
 			}
 			return workspaceId;
+		}
+
+		public static void EnableDataGrid(int workspaceId)
+		{
+			using (IRSAPIClient proxy = Rsapi.CreateRsapiClient(ExecutionIdentity.System))
+			{
+				try
+				{
+					WorkspaceRepository workspaceRepository = proxy.Repositories.Workspace;
+
+					Relativity.Client.DTOs.Workspace workspaceDTO = workspaceRepository.ReadSingle(workspaceId);
+
+					workspaceDTO.EnableDataGrid = true;
+
+					workspaceRepository.UpdateSingle(workspaceDTO);
+				}
+				catch (Exception ex)
+				{
+					throw new Exception($"An error occurred while updating workspace {workspaceId}. Error Message: {ex.Message}, error type: {ex.GetType()}", ex);
+				}
+			}
 		}
 
 		public static async Task<int> CreateWorkspaceAsync(string workspaceName, string templateName)

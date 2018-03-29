@@ -13,8 +13,15 @@ namespace kCura.IntegrationPoint.Tests.Core
 {
 	public class DocumentTestDataBuilder
 	{
-		private static readonly string TestDataNatives = @"TestData\NATIVES";
-		private static readonly string ExtendedTestDataNatives = @"TestDataExtended\NATIVES";
+
+		private static readonly string TestDataPath = @"TestData";
+		private static readonly string TestDataNativesPath = $@"{TestDataPath}\NATIVES";
+
+		private static readonly string TestDataExtendedPath = @"TestDataExtended";
+		private static readonly string TestDataExtendedNativesPath = $@"{TestDataExtendedPath}\NATIVES";
+
+		private static readonly string TestDataTextPath = @"TestDataText";
+		private static readonly string TestDataTextNativesPath = $@"{TestDataTextPath}\NATIVES";
 
 		public static DocumentsTestData BuildTestData(string testDirectory = null, bool withNatives = true, TestDataType testDataType = TestDataType.SmallWithFoldersStructure)
 		{
@@ -33,16 +40,20 @@ namespace kCura.IntegrationPoint.Tests.Core
 					images = GetImageDataTable(testDirectory);
 					break;
 				case TestDataType.SmallWithoutFolderStructure:
-					foldersWithDocuments = GetDocumentsIntoRootFolder(Path.Combine(testDirectory, TestDataNatives), withNatives);
-					images = GetImageDataTableForAllNativesInGivenFolder(testDirectory);
+					foldersWithDocuments = GetDocumentsIntoRootFolder(Path.Combine(testDirectory, TestDataNativesPath), withNatives);
+					images = GetImageDataTableForAllNativesInGivenFolder(testDirectory, TestDataPath);
 					break;
 				case TestDataType.ModerateWithFoldersStructure:
-					foldersWithDocuments = GetFoldersWithDocumentsBasedOnDirectoryStructureOfNatives(Path.Combine(testDirectory, ExtendedTestDataNatives), withNatives);
-					images = GetImageDataTableForAllNativesInGivenFolder(testDirectory);
+					foldersWithDocuments = GetFoldersWithDocumentsBasedOnDirectoryStructureOfNatives(Path.Combine(testDirectory, TestDataExtendedNativesPath), withNatives);
+					images = GetImageDataTableForAllNativesInGivenFolder(testDirectory, TestDataExtendedPath);
 					break;
 				case TestDataType.ModerateWithoutFoldersStructure:
-					foldersWithDocuments = GetDocumentsIntoRootFolder(Path.Combine(testDirectory, ExtendedTestDataNatives), withNatives);
-					images = GetImageDataTableForAllNativesInGivenFolder(testDirectory);
+					foldersWithDocuments = GetDocumentsIntoRootFolder(Path.Combine(testDirectory, TestDataExtendedNativesPath), withNatives);
+					images = GetImageDataTableForAllNativesInGivenFolder(testDirectory, TestDataExtendedPath);
+					break;
+				case TestDataType.TextWithoutFolderStructure:
+					foldersWithDocuments = GetDocumentsIntoRootFolder(Path.Combine(testDirectory, TestDataTextNativesPath), withNatives);
+					images = GetImageDataTableForAllNativesInGivenFolder(testDirectory, TestDataTextPath);
 					break;
 				default:
 					throw new Exception("Unsupported TestDataType parameter");
@@ -162,10 +173,11 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return table;
 		}
 
-		private static DataTable GetImageDataTableForAllNativesInGivenFolder(string testDirectory)
+		private static DataTable GetImageDataTableForAllNativesInGivenFolder(string testDirectory, string testDataPath)
 		{
-			string nativesFolderPath = Path.Combine(testDirectory, @"TestDataExtended\NATIVES");
-			string imagesFolderPath = Path.Combine(testDirectory, @"TestDataExtended\IMAGES");
+			string nativesFolderPath = Path.Combine(testDirectory, $@"{testDataPath}\NATIVES");
+			string imagesFolderPath = Path.Combine(testDirectory, $@"{testDataPath}\IMAGES");
+
 			DataTable tableOfImages = CreateDataTableForImages();
 
 			foreach (string nativeFileName in Directory.GetFiles(nativesFolderPath, "*", SearchOption.AllDirectories).Select(Path.GetFileNameWithoutExtension))
@@ -196,7 +208,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public enum TestDataType
 		{
-			SmallWithFoldersStructure, SmallWithoutFolderStructure, ModerateWithFoldersStructure, ModerateWithoutFoldersStructure
+			SmallWithFoldersStructure, SmallWithoutFolderStructure, ModerateWithFoldersStructure, ModerateWithoutFoldersStructure, TextWithoutFolderStructure
 		}
 
 		#endregion
