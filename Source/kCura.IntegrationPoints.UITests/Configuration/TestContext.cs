@@ -23,8 +23,9 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 	{
 
 		private const int _ADMIN_USER_ID = 9;
-
 		private const string _TEMPLATE_WKSP_NAME = "Smoke Workspace";
+		private const string _RIP_GUID_STRING = Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING;
+		private const string _LEGAL_HOLD_GUID_STRING = "98F31698-90A0-4EAD-87E3-DAC723FED2A6";
 
 		private readonly Lazy<ITestHelper> _helper;
 
@@ -90,6 +91,16 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 		public TestContext InstallIntegrationPoints()
 		{
+			return InstallApplication(_RIP_GUID_STRING);
+		}
+
+		public TestContext InstallLegalHold()
+		{
+			return InstallApplication(_LEGAL_HOLD_GUID_STRING);
+		}
+
+		public TestContext InstallApplication(string guid)
+		{
 			Assert.NotNull(WorkspaceId, $"{nameof(WorkspaceId)} is null. Workspace wasn't created.");
 
 			Stopwatch stopwatch = Stopwatch.StartNew();
@@ -98,21 +109,21 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 				ICoreContext coreContext = SourceProviderTemplate.GetBaseServiceContext(-1);
 
 				var ipAppManager = new RelativityApplicationManager(coreContext, Helper);
-				bool isAppInstalledAndUpToDate = ipAppManager.IsApplicationInstalledAndUpToDate((int) WorkspaceId);
+				bool isAppInstalledAndUpToDate = ipAppManager.IsApplicationInstalledAndUpToDate((int)WorkspaceId, guid);
 				if (!isAppInstalledAndUpToDate)
 				{
-					ipAppManager.InstallApplicationFromLibrary((int) WorkspaceId);
+					ipAppManager.InstallApplicationFromLibrary((int)WorkspaceId, guid);
 				}
 				Log.Information(@"Application is installed.");
 			}
 			catch (Exception ex)
 			{
-				Log.Error(ex, @"Unexpected error when detecting or installing Integration Points application in the workspace.");
+				Log.Error(ex, $"Unexpected error when detecting or installing application in the workspace. Application guid: {guid}");
 				throw;
 			}
 			finally
 			{
-				Log.Information($"Installation of Integration Points in workspace took {stopwatch.Elapsed.Seconds} seconds.");
+				Log.Information($"Installation of application with guid {guid} in workspace took {stopwatch.Elapsed.Seconds} seconds.");
 			}
 			return this;
 		}
@@ -120,6 +131,11 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		public async Task InstallIntegrationPointsAsync()
 		{
 			await Task.Run(() => InstallIntegrationPoints());
+		}
+
+		public async Task InstallLegalHoldAsync()
+		{
+			await Task.Run(() => InstallLegalHold());
 		}
 
 		public TestContext ImportDocumentsToRoot(DocumentTestDataBuilder.TestDataType testDataType = DocumentTestDataBuilder.TestDataType.ModerateWithoutFoldersStructure)
