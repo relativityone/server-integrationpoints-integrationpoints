@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using kCura.IntegrationPoint.Tests.Core.Models;
+﻿using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.UITests.Common;
 using NUnit.Framework;
 
-namespace kCura.IntegrationPoints.UITests.Tests.Import
+namespace kCura.IntegrationPoints.UITests.Tests.FTPProvider
 {
 	public class ImportFromFTPTest : UiTest
 	{
