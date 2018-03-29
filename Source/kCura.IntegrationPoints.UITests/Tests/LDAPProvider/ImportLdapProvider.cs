@@ -71,7 +71,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 			model.SharedImportSettings.FieldMapping.Add(new Tuple<string, string>("sn", "Last Name"));
 			model.SharedImportSettings.FieldMapping.Add(new Tuple<string, string>("manager", "Manager"));
 
-			_integrationPointsAction.
+			//_integrationPointsAction.
 
 
 			//var validator = new ExportToLoadFileProviderValidator();

@@ -6,7 +6,7 @@ using OpenQA.Selenium.Support.UI;
 
 namespace kCura.IntegrationPoints.UITests.Pages
 {
-	public class ImportFirstPage : FirstPage
+	public abstract class ImportFirstPage<TSecondPage, TModel> : FirstPage where TSecondPage : ImportSecondBasePage<TModel>
 	{
 		[FindsBy(How = How.Id, Using = "isExportType")]
 		protected IWebElement ImportExportRadio { get; set; }
@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		protected SelectElement TransferredObjectSelect => new SelectElement(TransferredObjectWebElement);
 
-		public ImportFirstPage(RemoteWebDriver driver) : base(driver)
+		protected ImportFirstPage(RemoteWebDriver driver) : base(driver)
 		{
 			PageFactory.InitElements(driver, this);
 			Driver.SwitchTo().Frame("externalPage");
@@ -45,11 +45,18 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			set { TransferredObjectSelect.SelectByText(value); }
 		}
 
-		public ExportToFileSecondPage GoToNextPage()
+		public TSecondPage GoToNextPage() 
 		{
+			InitSecondPage();
+			return Create(Driver);
+		}
+
+		protected abstract TSecondPage Create(RemoteWebDriver driver);
+
+		private void InitSecondPage()
+		{
+			WaitForPage();
 			NextButton.Click();
-			//			return new ExportToFileSecondPage(Driver); // TODO
-			return null;
 		}
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using kCura.IntegrationPoint.Tests.Core.Models;
+using kCura.IntegrationPoint.Tests.Core.Models.FTP;
 using kCura.IntegrationPoints.UITests.Common;
 using NUnit.Framework;
 
@@ -8,7 +9,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FTPProvider
 	{
 		private IntegrationPointsAction _integrationPointsAction;
 
-		//		protected override bool InstallLegalHoldApp => true;
+//		protected override bool InstallLegalHoldApp => true;
 
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
@@ -20,9 +21,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FTPProvider
 		[Test, Order(1)]
 		public void Test()
 		{
-			var model = new ImportFromFTPModel("TC_IFTP_CUS_1");
-			model.TransferredObject = "Dashboard";
-
+			var model = new ImportFromFTPModel("TC_IFTP_CUS_1", "Dashboard");
 			_integrationPointsAction.CreateNewImportFromFTPIntegrationPoint(model);
 		}
 	}
