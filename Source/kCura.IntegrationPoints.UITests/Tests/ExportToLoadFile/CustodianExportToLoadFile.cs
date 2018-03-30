@@ -4,9 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.Models;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Pages;
 using NUnit.Framework;
+using Relativity.API;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 {
@@ -16,13 +19,18 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
     public class CustodianExportToLoadFile : UiTest
     {
         private IntegrationPointsAction _integrationPointsAction;
+        private IRSAPIService _service;
 
         [OneTimeSetUp]
         public void OneTimeSetup()
         {
             EnsureGeneralPageIsOpened();
             Context.InstallLegalHold();
-            
+            Install(Context.WorkspaceId.Value);
+            _service = Container.Resolve<IRSAPIService>();
+
+            SetupCustodians();
+
             _integrationPointsAction = new IntegrationPointsAction(Driver, Context);
 
         }
@@ -51,7 +59,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
                 },
                 TextOptions = new ExportToLoadFileTextOptionsModel
                 {
-                    TextFileEncoding =  "Unicode (UTF-8)",
+                    TextFileEncoding = "Unicode (UTF-8)",
                     TextPrecedence = "Notes",
                     TextSubdirectoryPrefix = "TEXT",
                 },
@@ -71,5 +79,25 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
             detailsPage.RunIntegrationPoint();
         }
 
+        private void SetupCustodians()
+        {
+            _service.RelativityObjectManager.Create(new ObjectTypeRef()
+            {
+                Guid = Guid.Parse(@"d216472d-a1aa-4965-8b36-367d43d4e64c")
+            },
+                new List<FieldRefValuePair>()
+                {
+                    new FieldRefValuePair()
+                    {
+                        Field = new FieldRef {Guid = Guid.Parse(@"34ee9d29-44bd-4fc5-8ff1-4335a826a07d")},
+                        Value = "First name"
+                    },
+                    new FieldRefValuePair()
+                    {
+                        Field = new FieldRef {Guid = Guid.Parse(@"0b846e7a-6e05-4544-b5a8-ad78c49d0257")},
+                        Value = "Last name"
+                    }
+                });
+        }
     }
 }

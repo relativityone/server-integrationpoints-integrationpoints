@@ -84,7 +84,39 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		public T Read<T>(int artifactId, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new()
+	    public int Create(ObjectTypeRef objectType, List<FieldRefValuePair> fieldValues, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+	    {
+	        try
+	        {
+	            using (var client = _servicesMgr.CreateProxy<IObjectManager>(executionIdentity))
+	            {
+	                CreateRequest createRequest = new CreateRequest()
+	                {
+	                    ObjectType = objectType,
+
+	                    FieldValues = fieldValues
+	                };
+
+	                _secretStoreHelper.SetEncryptedSecuredConfigurationForNewRdo(createRequest.FieldValues);
+
+	                int artifactId = client.CreateAsync(_workspaceArtifactId, createRequest)
+	                    .GetAwaiter()
+	                    .GetResult()
+	                    .Object
+	                    .ArtifactID;
+	                return artifactId;
+	            }
+	        }
+	        catch (ServiceNotFoundException ex)
+	        {
+	            throw LogServiceNotFoundException("CREATE", ex);
+	        }
+	        catch (Exception ex)
+	        {
+	            throw LogObjectManagerException("create", "[RelativityObject]", ex);
+	        }
+	    }
+	    public T Read<T>(int artifactId, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new()
 		{
 			ReadRequest request = new ReadRequest()
 			{
@@ -233,7 +265,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 			catch (Exception ex)
 			{
-				throw LogObjectManagerException(null, "delete", ex);
+				throw LogObjectManagerException("delete", null, ex);
 			}
 		}
 
@@ -460,16 +492,23 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			};
 		}
 
-		private IntegrationPointsException LogObjectManagerException(BaseRdo rdo, string operationName, Exception ex)
+	    private IntegrationPointsException LogObjectManagerException(string operationName, string typeName, Exception ex)
+	    {
+	        string message = $"Cannot {operationName} object of type {typeName} with ObjectManager (Workspace: {_workspaceArtifactId})";
+	        _logger.LogError(ex, "Cannot {operationName} object of type {rdoType} with ObjectManager (Workspace: {_workspaceArtifactId})", operationName, typeName, _workspaceArtifactId);
+	        return new IntegrationPointsException(message, ex)
+	        {
+	            ShouldAddToErrorsTab = true,
+	            ExceptionSource = IntegrationPointsExceptionSource.KEPLER
+	        };
+        }
+
+
+        private IntegrationPointsException LogObjectManagerException(BaseRdo rdo, string operationName, Exception ex)
 		{
 			string rdoType = rdo?.GetType().Name ?? "[UnknownObjectType]";
-			string message = $"Cannot {operationName} object of type {rdoType} with ObjectManager (Workspace: {_workspaceArtifactId})";
-			_logger.LogError(ex, "Cannot {operationName} object of type {rdoType} with ObjectManager (Workspace: {_workspaceArtifactId})", operationName, rdoType, _workspaceArtifactId);
-			return new IntegrationPointsException(message, ex)
-			{
-				ShouldAddToErrorsTab = true,
-				ExceptionSource = IntegrationPointsExceptionSource.KEPLER
-			};
+
+		    return LogObjectManagerException(operationName, rdoType, ex);
 		}
 
 		private IntegrationPointsException LogObjectManagerException(BaseRdo rdo, QueryRequest q, Exception ex)
