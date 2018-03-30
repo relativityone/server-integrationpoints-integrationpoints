@@ -11,11 +11,21 @@ namespace kCura.IntegrationPoints.UITests.Validation
 {
 	public class BaseUiValidator
 	{
+		private readonly int _jobExecutionTimeoutInMinutes;
+
+		public BaseUiValidator()
+		{
+			_jobExecutionTimeoutInMinutes = 5;
+		}
+
+		public BaseUiValidator(int jobExecutionTimeoutInMinutes)
+		{
+			_jobExecutionTimeoutInMinutes = jobExecutionTimeoutInMinutes;
+		}
+
 		public void ValidateJobStatus(IntegrationPointDetailsPage integrationPointDetailsPage, Choice expectedJobStatus)
 		{
-			const int jobExecutionTimeoutInMinutes = 5; //TODO Make it configurable per validator
-
-			string actualJobStatusAfterExecuted = WaitUntilJobFinishedAndThenGetStatus(integrationPointDetailsPage, jobExecutionTimeoutInMinutes);
+			string actualJobStatusAfterExecuted = WaitUntilJobFinishedAndThenGetStatus(integrationPointDetailsPage, _jobExecutionTimeoutInMinutes);
 
 			Assert.That(actualJobStatusAfterExecuted, Is.EqualTo(expectedJobStatus.Name));
 		}

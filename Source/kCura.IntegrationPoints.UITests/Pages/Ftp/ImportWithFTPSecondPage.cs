@@ -32,6 +32,7 @@ namespace kCura.IntegrationPoints.UITests.Pages.FTP
 
 		public ImportWithFTPSecondPage(RemoteWebDriver driver) : base(driver)
 		{
+			PageFactory.InitElements(driver, this);
 		}
 
 		public string Host

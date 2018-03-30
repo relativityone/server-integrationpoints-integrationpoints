@@ -12,6 +12,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public ImportSecondBasePage(RemoteWebDriver driver) : base(driver)
 		{
+			PageFactory.InitElements(driver, this);
 		}
 
 		public abstract void SetupModel(TModel model);

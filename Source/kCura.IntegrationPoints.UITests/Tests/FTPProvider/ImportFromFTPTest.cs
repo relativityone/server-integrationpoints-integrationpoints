@@ -2,17 +2,19 @@
 using kCura.IntegrationPoint.Tests.Core.Models.Constants.ExportToLoadFile;
 using kCura.IntegrationPoint.Tests.Core.Models.FTP;
 using kCura.IntegrationPoint.Tests.Core.Models.Shared;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.UITests.Actions;
+using kCura.IntegrationPoints.UITests.Pages;
+using kCura.IntegrationPoints.UITests.Validation;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.UITests.Tests.FTPProvider
 {
 	public class ImportFromFTPTest : UiTest
 	{
+		private IntegrationPointsImportFTPAction _integrationPointsAction;
 		private const string _CSV_FILEPATH = "TestFtpCustodianImport.csv";
 		private const string _UNIQUE_ID = "UniqueID";
-
-		private IntegrationPointsImportFTPAction _integrationPointsAction;
 
 		protected override bool InstallLegalHoldApp => true;
 
@@ -43,9 +45,14 @@ namespace kCura.IntegrationPoints.UITests.Tests.FTPProvider
 			model.ImportCustodianSettings.UniqueIdentifier = _UNIQUE_ID;
 			model.ImportCustodianSettings.CustodianManagerContainsLink = true;
 
+			var validator = new ImportFromFTPValidator();
 
+			// Act
+			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewImportFromFTPIntegrationPoint(model);
+			detailsPage.RunIntegrationPoint();
 
-			_integrationPointsAction.CreateNewImportFromFTPIntegrationPoint(model);
+			// Assert
+			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
 		}
 	}
 }

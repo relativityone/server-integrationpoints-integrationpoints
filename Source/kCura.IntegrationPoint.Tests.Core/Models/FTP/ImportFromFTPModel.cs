@@ -13,6 +13,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Models.FTP
 				TransferredObject = transferredObject
 			};
 			SharedImportSettings = new ImportSettingsModel();
+			ImportCustodianSettings = new ImportCustodianSettingsModel();
+			ConnectionAndFileInfo = new ImportFromFTPConnectionAndFileInfoModel();
 		}
 
 		public IntegrationPointGeneralModel General { get; set; }
