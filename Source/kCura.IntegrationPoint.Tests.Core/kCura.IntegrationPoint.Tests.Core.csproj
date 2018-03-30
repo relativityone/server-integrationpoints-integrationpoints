@@ -137,6 +137,7 @@
     <Compile Include="Models\Constants\ExportToLoadFile\ExportToLoadFileTransferredObjectConstants.cs" />
     <Compile Include="Models\DocumentsTestData.cs" />
     <Compile Include="Models\ExportToLoadFileDetailsModel.cs" />
+    <Compile Include="Models\FTP\FTPProtocolType.cs" />
     <Compile Include="Models\FTP\ImportFromFTPConnectionAndFileInfoModel.cs" />
     <Compile Include="Models\FTP\ImportFromFTPModel.cs" />
     <Compile Include="Models\Ldap\ImportFromLdapSettingsModel.cs" />

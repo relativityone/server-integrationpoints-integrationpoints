@@ -1,9 +1,7 @@
-﻿
-
-using kCura.IntegrationPoint.Tests.Core.Models.FTP;
+﻿using kCura.IntegrationPoint.Tests.Core.Models.FTP;
 using OpenQA.Selenium.Remote;
 
-namespace kCura.IntegrationPoints.UITests.Pages
+namespace kCura.IntegrationPoints.UITests.Pages.FTP
 {
 	public class ImportWithFTPFirstPage : ImportFirstPage<ImportWithFTPSecondPage, ImportFromFTPModel>
 	{
@@ -11,10 +9,9 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		{
 		}
 
-
-		protected override ImportWithFTPSecondPage Create(RemoteWebDriver Driver)
+		protected override ImportWithFTPSecondPage Create(RemoteWebDriver driver)
 		{
-			return new ImportWithFTPSecondPage(Driver);
+			return new ImportWithFTPSecondPage(driver);
 		}
 	}
 }

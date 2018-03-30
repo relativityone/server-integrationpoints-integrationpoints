@@ -1,7 +1,7 @@
 ﻿using kCura.IntegrationPoint.Tests.Core.Models.FTP;
-using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Configuration;
 using kCura.IntegrationPoints.UITests.Pages;
+using kCura.IntegrationPoints.UITests.Pages.FTP;
 using OpenQA.Selenium.Remote;
 
 namespace kCura.IntegrationPoints.UITests.Actions
@@ -19,6 +19,14 @@ namespace kCura.IntegrationPoints.UITests.Actions
 
 			ImportWithFTPFirstPage firstPage = SetupImportFirstPage<ImportWithFTPFirstPage, ImportWithFTPSecondPage, ImportFromFTPModel>(generalPage, model.General,
 				() => new ImportWithFTPFirstPage(Driver));
+
+			ImportWithFTPSecondPage secondPage =
+				SetupImportSecondPage(firstPage, model);
+
+			ImportThirdPage<ImportFromFTPModel> thirdPage =
+				SetupImportThirdPage(secondPage, model, () => new ImportWithFTPThirdPage(Driver));
+
+
 
 			return null;
 		}
