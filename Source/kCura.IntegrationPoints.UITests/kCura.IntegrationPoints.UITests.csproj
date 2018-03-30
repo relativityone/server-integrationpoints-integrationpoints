@@ -51,6 +51,7 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Actions\IntegrationPointsImportAction.cs" />
     <Compile Include="Actions\IntegrationPointsImportLdapAction.cs" />
     <Compile Include="Common\IntegrationPointsAction.cs" />
     <Compile Include="Common\TestCategory.cs" />
