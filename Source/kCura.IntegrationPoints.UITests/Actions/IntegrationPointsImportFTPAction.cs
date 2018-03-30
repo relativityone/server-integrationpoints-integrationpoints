@@ -17,8 +17,8 @@ namespace kCura.IntegrationPoints.UITests.Actions
 			var generalPage = new GeneralPage(Driver);
 			generalPage.ChooseWorkspace(Context.WorkspaceName);
 
-			ImportWithFtpFirstPage firstPage = SetupImportFirstPage<ImportWithFtpFirstPage, ImportWithFTPSecondPage, ImportFromFTPModel>(generalPage, model.General,
-				() => new ImportWithFtpFirstPage(Driver));
+			ImportWithFTPFirstPage firstPage = SetupImportFirstPage<ImportWithFTPFirstPage, ImportWithFTPSecondPage, ImportFromFTPModel>(generalPage, model.General,
+				() => new ImportWithFTPFirstPage(Driver));
 
 			return null;
 		}
