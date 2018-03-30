@@ -3,5 +3,6 @@
 	public static class ExportToLoadFileTransferredObjectConstants
     {
 		public static string DOCUMENT = "Document";
+		public static string CUSTODIAN = "Custodian";
 	}
 }

@@ -13,20 +13,20 @@ namespace kCura.IntegrationPoints.UITests.Common
 
 	public class IntegrationPointsAction
 	{
-		private readonly RemoteWebDriver _driver;
-		private readonly TestContext _context;
+		protected readonly RemoteWebDriver Driver;
+		protected readonly TestContext Context;
 
 		public IntegrationPointsAction(RemoteWebDriver driver, TestContext context)
 		{
-			_driver = driver;
-			_context = context;
+			Driver = driver;
+			Context = context;
 		}
 
 
 		public ExportFirstPage SetupFirstIntegrationPointPage(GeneralPage generalPage, IntegrationPointGeneralModel model)
 		{
 			IntegrationPointsPage ipPage = generalPage.GoToIntegrationPointsPage();
-			ExportFirstPage firstPage = ipPage.CreateNewIntegrationPoint();
+			ExportFirstPage firstPage = ipPage.CreateNewExportIntegrationPoint();
 			firstPage.Name = model.Name;
 			firstPage.Destination = model.DestinationProvider;
 
@@ -213,10 +213,11 @@ namespace kCura.IntegrationPoints.UITests.Common
 			return thirdPage;
 		}
 
+
 		public IntegrationPointDetailsPage CreateNewExportToLoadfileIntegrationPoint(ExportToLoadFileProviderModel model)
 		{
-			var generalPage = new GeneralPage(_driver);
-			generalPage.ChooseWorkspace(_context.WorkspaceName);
+			var generalPage = new GeneralPage(Driver);
+			generalPage.ChooseWorkspace(Context.WorkspaceName);
 
 			ExportFirstPage firstPage = SetupFirstIntegrationPointPage(generalPage, model);
 
@@ -229,8 +230,8 @@ namespace kCura.IntegrationPoints.UITests.Common
 
 		public IntegrationPointDetailsPage CreateNewRelativityProviderIntegrationPoint(RelativityProviderModel model)
 		{
-			var generalPage = new GeneralPage(_driver);
-			generalPage.ChooseWorkspace(_context.WorkspaceName);
+			var generalPage = new GeneralPage(Driver);
+			generalPage.ChooseWorkspace(Context.WorkspaceName);
 
 			ExportFirstPage firstPage = SetupFirstIntegrationPointPage(generalPage, model);
 
@@ -240,6 +241,8 @@ namespace kCura.IntegrationPoints.UITests.Common
 
 			return thirdPage.SaveIntegrationPoint();
 		}
+
+		
 
 		public PushToRelativitySecondPage SetupPushToRelativitySecondPage(ExportFirstPage firstPage, RelativityProviderModel model)
 		{

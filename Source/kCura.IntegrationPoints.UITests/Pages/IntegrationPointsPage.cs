@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using System;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Support.PageObjects;
 
@@ -17,11 +18,19 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			Driver.SwitchTo().Frame("externalPage");
 		}
 
-		public ExportFirstPage CreateNewIntegrationPoint()
+		public ExportFirstPage CreateNewExportIntegrationPoint()
 		{
 			NewIntegrationPointButton.Click();
 			return new ExportFirstPage(Driver);
 		}
 
+		public TImportFirstPage CreateNewImportIntegrationPoint<TImportFirstPage, TSecondPage, TModel>(Func<TImportFirstPage> funcFirstPageCreator)
+			where TImportFirstPage : ImportFirstPage<TSecondPage, TModel>
+			where TSecondPage : ImportSecondBasePage<TModel>
+			
+		{
+			NewIntegrationPointButton.Click();
+			return funcFirstPageCreator();
+		}
 	}
 }
