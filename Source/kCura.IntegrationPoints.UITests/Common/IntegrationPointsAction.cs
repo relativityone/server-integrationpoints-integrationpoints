@@ -234,17 +234,6 @@ namespace kCura.IntegrationPoints.UITests.Common
 			return thirdPage.SaveIntegrationPoint();
 		}
 
-		public IntegrationPointDetailsPage CreateNewImportFromFTPIntegrationPoint(ImportFromFTPModel model)
-		{
-			var generalPage = new GeneralPage(Driver);
-			generalPage.ChooseWorkspace(Context.WorkspaceName);
-
-			ImportWithFtpFirstPage firstPage = SetupImportFirstPage<ImportWithFtpFirstPage, ImportWithFTPSecondPage, ImportFromFTPModel>(generalPage, model.General,
-				() => new ImportWithFtpFirstPage(Driver));
-
-			return null;
-		}
-
 		protected TImportFirstPage SetupImportFirstPage<TImportFirstPage, TImportSecondPage, TModel>(GeneralPage generalPage, IntegrationPointGeneralModel model,
 			Func<TImportFirstPage> funcFirstPageCreator)
 			where TImportSecondPage : ImportSecondBasePage<TModel>
