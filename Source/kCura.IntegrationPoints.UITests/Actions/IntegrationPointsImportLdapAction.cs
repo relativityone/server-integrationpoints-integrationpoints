@@ -18,14 +18,18 @@ namespace kCura.IntegrationPoints.UITests.Actions
 
 		public IntegrationPointDetailsPage CreateNewImportLdapIntegrationPoint(ImportFromLdapModel model)
 		{
-			var generalPage = new GeneralPage(_driver);
-			generalPage.ChooseWorkspace(_context.WorkspaceName);
+			var generalPage = new GeneralPage(Driver);
+			generalPage.ChooseWorkspace(Context.WorkspaceName);
 
 			ImportWithLdapFirstPage firstPage = SetupImportFirstPage<ImportWithLdapFirstPage, ImportWithLdapSecondPage, ImportFromLdapModel>(generalPage, model.General,
-				() => new ImportWithLdapFirstPage(_driver));
+				() => new ImportWithLdapFirstPage(Driver));
 
 
 			ImportWithLdapSecondPage secondPage = SetupImportSecondPage(firstPage, model);
+
+			ImportThirdPage<ImportFromLdapModel> thirdPage = secondPage.GoToNextPage(() => new ImportLdapThirdPage(Driver));
+
+			thirdPage.SaveIntegrationPoint();
 
 			//PushToRelativityThirdPage thirdPage = SetupPushToRelativityThirdPage(secondPage);
 			//ImportFirstPage firstPage = SetupImportFromFTPFirstPage(generalPage, model);

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using kCura.IntegrationPoint.Tests.Core.Models.Shared;
-using kCura.IntegrationPoints.Domain.Extensions;
+﻿using kCura.IntegrationPoint.Tests.Core.Models.Shared;
 
 namespace kCura.IntegrationPoint.Tests.Core.Models.Ldap
 {

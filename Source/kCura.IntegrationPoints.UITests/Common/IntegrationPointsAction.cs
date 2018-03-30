@@ -13,13 +13,13 @@ namespace kCura.IntegrationPoints.UITests.Common
 
 	public class IntegrationPointsAction
 	{
-		protected readonly RemoteWebDriver _driver;
-		protected readonly TestContext _context;
+		protected readonly RemoteWebDriver Driver;
+		protected readonly TestContext Context;
 
 		public IntegrationPointsAction(RemoteWebDriver driver, TestContext context)
 		{
-			_driver = driver;
-			_context = context;
+			Driver = driver;
+			Context = context;
 		}
 
 
@@ -208,8 +208,8 @@ namespace kCura.IntegrationPoints.UITests.Common
 
 		public IntegrationPointDetailsPage CreateNewExportToLoadfileIntegrationPoint(ExportToLoadFileProviderModel model)
 		{
-			var generalPage = new GeneralPage(_driver);
-			generalPage.ChooseWorkspace(_context.WorkspaceName);
+			var generalPage = new GeneralPage(Driver);
+			generalPage.ChooseWorkspace(Context.WorkspaceName);
 
 			ExportFirstPage firstPage = SetupFirstIntegrationPointPage(generalPage, model);
 
@@ -222,8 +222,8 @@ namespace kCura.IntegrationPoints.UITests.Common
 
 		public IntegrationPointDetailsPage CreateNewRelativityProviderIntegrationPoint(RelativityProviderModel model)
 		{
-			var generalPage = new GeneralPage(_driver);
-			generalPage.ChooseWorkspace(_context.WorkspaceName);
+			var generalPage = new GeneralPage(Driver);
+			generalPage.ChooseWorkspace(Context.WorkspaceName);
 
 			ExportFirstPage firstPage = SetupFirstIntegrationPointPage(generalPage, model);
 
@@ -236,11 +236,11 @@ namespace kCura.IntegrationPoints.UITests.Common
 
 		public IntegrationPointDetailsPage CreateNewImportFromFTPIntegrationPoint(ImportFromFTPModel model)
 		{
-			var generalPage = new GeneralPage(_driver);
-			generalPage.ChooseWorkspace(_context.WorkspaceName);
+			var generalPage = new GeneralPage(Driver);
+			generalPage.ChooseWorkspace(Context.WorkspaceName);
 
 			ImportWithFtpFirstPage firstPage = SetupImportFirstPage<ImportWithFtpFirstPage, ImportWithFTPSecondPage, ImportFromFTPModel>(generalPage, model.General,
-				() => new ImportWithFtpFirstPage(_driver));
+				() => new ImportWithFtpFirstPage(Driver));
 
 			return null;
 		}
@@ -267,9 +267,9 @@ namespace kCura.IntegrationPoints.UITests.Common
 			return secondPage;
 		}
 
-		protected ImportThirdPage SetupImportThirdPage<TModel>(ImportSecondBasePage<TModel> secondPage, TModel model)
+		protected ImportThirdPage<TModel> SetupImportThirdPage<TModel>(ImportSecondBasePage<TModel> secondPage, TModel model, Func<ImportThirdPage<TModel>> funcThridPageCreator)
 		{
-			ImportThirdPage thirdPage = secondPage.GoToNextPage();
+			ImportThirdPage<TModel> thirdPage = secondPage.GoToNextPage(funcThridPageCreator);
 			return thirdPage;
 		}
 

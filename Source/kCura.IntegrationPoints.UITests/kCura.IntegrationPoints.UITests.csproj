@@ -82,6 +82,7 @@
     <Compile Include="Pages\IntegrationPointsPage.cs" />
     <Compile Include="Pages\ExportToFileSecondPage.cs" />
     <Compile Include="Pages\ExportFirstPage.cs" />
+    <Compile Include="Pages\Ldap\ImportLdapThirdPage.cs" />
     <Compile Include="Pages\Ldap\ImportWithLdapFirstPage.cs" />
     <Compile Include="Pages\Ldap\ImportWithLdapSecondPage.cs" />
     <Compile Include="Pages\Page.cs" />

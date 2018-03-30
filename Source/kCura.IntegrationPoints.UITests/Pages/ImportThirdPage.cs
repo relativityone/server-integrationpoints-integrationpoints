@@ -1,11 +1,12 @@
-﻿using OpenQA.Selenium;
+﻿using kCura.IntegrationPoint.Tests.Core.Models.Shared;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Support.PageObjects;
 using OpenQA.Selenium.Support.UI;
 
 namespace kCura.IntegrationPoints.UITests.Pages
 {
-	public class ImportThirdPage : GeneralPage
+	public abstract class ImportThirdPage<TModel> : GeneralPage
 	{
 		[FindsBy(How = How.Id, Using = "source-fields")]
 		protected IWebElement SourceFieldsElement { get; set; }
@@ -110,6 +111,24 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			input.Click();
 		}
 
+		public void SaveIntegrationPoint()
+		{
+			// TODO
+		}
+
+		protected void SetUpSharedSettingsModel(ImportSettingsModel model)
+		{
+			// TODO
+		}
+
+		protected void SetUpCustodianSettingsModel(ImportCustodianSettingsModel model)
+		{
+			// TODO
+		}
+
+		
+		protected abstract void SetUpModel(TModel model);
+
 		private void SelectField(SelectElement selectElement, IWebElement addFieldElement, string fieldName)
 		{
 			if (string.IsNullOrEmpty(fieldName))
@@ -130,6 +149,8 @@ namespace kCura.IntegrationPoints.UITests.Pages
 				option.Click();
 			}
 		}
+
+		
 
 	}
 }

@@ -24,11 +24,11 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			element.SendKeys(text);
 		}
 
-		public ImportThirdPage GoToNextPage()
+		public ImportThirdPage<TModel> GoToNextPage(Func<ImportThirdPage<TModel>> funcThridPageCreator)
 		{
 			WaitForPage();
 			NextButton.Click();
-			return new ImportThirdPage(Driver);
+			return funcThridPageCreator();
 		}
 	}
 }
