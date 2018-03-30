@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using kCura.IntegrationPoint.Tests.Core;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Support.PageObjects;
-using OpenQA.Selenium.Support.UI;
 
 namespace kCura.IntegrationPoints.UITests.Pages
 {
@@ -66,6 +65,8 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		{
 			IWebDriver externalPage = Driver.SwitchTo().Frame("externalPage");
 			IWebElement nameSearchFilter = FindFilterTextboxInColumn("Name", externalPage);
+			nameSearchFilter.SendKeys(Keys.Control + "a");
+			Thread.Sleep(500);
 			nameSearchFilter.SendKeys(workspaceName);
 			nameSearchFilter.SendKeys(Keys.Return);
 			WaitForPage();

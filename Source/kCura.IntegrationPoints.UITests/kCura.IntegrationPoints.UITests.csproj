@@ -96,6 +96,7 @@
     <Compile Include="Tests\FTPProvider\ImportFromFTPTest.cs" />
     <Compile Include="Tests\LDAPProvider\ImportLdapProvider.cs" />
     <Compile Include="Tests\RelativityProvider\DataGridToSqlTest.cs" />
+    <Compile Include="Tests\ExportToLoadFile\ProductionExportToLoadFileTests.cs" />
     <Compile Include="Tests\RelativityProvider\ImagesSavedSearchToFolderTest.cs" />
     <Compile Include="Tests\RelativityProvider\NativesSavedSearchToFolderTest.cs" />
     <Compile Include="Tests\RelativityProvider\LinksSavedSearchToFolderTest.cs" />
@@ -115,6 +116,9 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="paket.references" />
+    <None Include="UiTestsConfig\testvm.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="UiTestsConfig\PL1.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

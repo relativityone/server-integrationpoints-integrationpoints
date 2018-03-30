@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoint.Tests.Core.Models;
+﻿using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Models.Constants.ExportToLoadFile;
 using kCura.IntegrationPoint.Tests.Core.Models.Shared;
 using kCura.IntegrationPoints.Data;
@@ -66,7 +67,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 
 			model.ToLoadFileVolumeAndSubdirectoryModel.VolumePrefix = "VOL";
 			model.ToLoadFileVolumeAndSubdirectoryModel.VolumeStartNumber = 1;
-			model.ToLoadFileVolumeAndSubdirectoryModel.VolumeNumberOfDigits= 4;
+			model.ToLoadFileVolumeAndSubdirectoryModel.VolumeNumberOfDigits = 4;
 			model.ToLoadFileVolumeAndSubdirectoryModel.VolumeMaxSize = 4400;
 
 			model.ToLoadFileVolumeAndSubdirectoryModel.SubdirectoryStartNumber = 1;
@@ -82,70 +83,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			// Assert
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
 		}
-
-
-
-	    [Test]
-	    public void DocumentExportToLoadFile_TC_ELF_DOC_2()
-	    {
-	        // Arrange
-	        ExportToLoadFileProviderModel model = CreateExportToLoadFileProviderModel("TC_ELF_DOC_2");
-
-	        // Step 1
-	        //default
-	        model.SourceInformationModel.StartAtRecord = 100;
-	        model.SourceInformationModel.Source = "Saved Search";
-	        model.SourceInformationModel.SavedSearch = "All Documents";
-
-	        // Step 2
-	        model.ExportDetails.LoadFile = true;
-	        model.ExportDetails.ExportImages = true;
-	        model.ExportDetails.ExportNatives = true;
-	        model.ExportDetails.ExportTextFieldsAsFiles = true;
-	        model.ExportDetails.DestinationFolder = ExportToLoadFileProviderModel.DestinationFolderTypeEnum.Root;
-	        model.ExportDetails.CreateExportFolder = false;
-	        model.ExportDetails.OverwriteFiles = true;
-
-	        // Step 3
-	        model.OutputSettings.LoadFileOptions.ImageFileFormat = ExportToLoadFileImageFileFormatConstants.IPRO;
-	        model.OutputSettings.LoadFileOptions.DataFileFormat = ExportToLoadFileDataFileFormatConstants.CSV;
-	        model.OutputSettings.LoadFileOptions.DataFileEncoding = ExportToLoadFileFileEncodingConstants.WESTERN_EUROPEAN_WINDOWS;
-	        model.OutputSettings.LoadFileOptions.FilePathType = ExportToLoadFileProviderModel.FilePathTypeEnum.Relative;
-	        model.OutputSettings.LoadFileOptions.IncludeNativeFilesPath = false;
-	        model.OutputSettings.LoadFileOptions.ExportMultiChoiceAsNested = true;
-
-	        model.OutputSettings.LoadFileOptions.NameOutputFilesAfter = "Identifier";
-	        model.OutputSettings.LoadFileOptions.AppendOriginalFileName = true;
-
-	        model.OutputSettings.ImageOptions.ImageFileType = ExportToLoadFileImageFileTypeConstants.PDF;
-	        model.OutputSettings.ImageOptions.ImagePrecedence = ImagePrecedenceEnum.OriginalImages;
-	        model.OutputSettings.ImageOptions.ImageSubdirectoryPrefix = "IMAGE_FILES";
-
-	        model.OutputSettings.NativeOptions.NativeSubdirectoryPrefix = "NATIVE_FILES";
-
-	        model.OutputSettings.TextOptions.TextFileEncoding = ExportToLoadFileFileEncodingConstants.UNICODE;
-	        model.OutputSettings.TextOptions.TextPrecedence = "Extracted Text";
-
-	        model.ToLoadFileVolumeAndSubdirectoryModel.VolumePrefix = "VOLUME";
-	        model.ToLoadFileVolumeAndSubdirectoryModel.VolumeStartNumber = 1;
-	        model.ToLoadFileVolumeAndSubdirectoryModel.VolumeNumberOfDigits = 4;
-	        model.ToLoadFileVolumeAndSubdirectoryModel.VolumeMaxSize = 4400;
-
-	        model.ToLoadFileVolumeAndSubdirectoryModel.SubdirectoryStartNumber = 1;
-	        model.ToLoadFileVolumeAndSubdirectoryModel.SubdirectoryNumberOfDigits = 4;
-	        model.ToLoadFileVolumeAndSubdirectoryModel.SubdirectoryMaxFiles = 500;
-
-            var validator = new ExportToLoadFileProviderValidator();
-
-	        // Act
-	        IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewExportToLoadfileIntegrationPoint(model);
-	        detailsPage.RunIntegrationPoint();
-
-	        // Assert
-	        validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
-	    }
-
-		[Test]
+		
+		[Test, Order(2)]
 		public void DocumentExportToLoadFile_TC_ELF_DOC_3()
 		{
 			// Arrange
@@ -189,10 +128,114 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
 		}
 
+		[Test, Order(3)]
+		public void DocumentExportToLoadFile_TC_ELF_DOC_5()
+		{
+			// Arrange
+			ExportToLoadFileProviderModel model = CreateExportToLoadFileProviderModel("TC_ELF_DOC_5");
+
+			// Step 1
+			//default
+
+			// Step 2
+			model.ExportDetails.LoadFile = true;
+			model.ExportDetails.ExportImages = true;
+			model.ExportDetails.ExportNatives = true;
+			model.ExportDetails.ExportTextFieldsAsFiles = true;
+			model.ExportDetails.DestinationFolder = ExportToLoadFileProviderModel.DestinationFolderTypeEnum.SubfolderOfRoot;
+			model.ExportDetails.CreateExportFolder = false;
+			model.ExportDetails.OverwriteFiles = true;
+
+			// Step 3
+			model.OutputSettings.LoadFileOptions.ImageFileFormat = ExportToLoadFileImageFileFormatConstants.IPRO_FULL_TEXT;
+			model.OutputSettings.LoadFileOptions.DataFileFormat = ExportToLoadFileDataFileFormatConstants.CSV;
+			model.OutputSettings.LoadFileOptions.DataFileEncoding = ExportToLoadFileFileEncodingConstants.WESTERN_EUROPEAN_WINDOWS;
+			model.OutputSettings.LoadFileOptions.IncludeNativeFilesPath = true;
+			model.OutputSettings.LoadFileOptions.ExportMultiChoiceAsNested = true;
+			model.OutputSettings.LoadFileOptions.AppendOriginalFileName = true;
+
+			model.OutputSettings.ImageOptions.ImageFileType = ExportToLoadFileImageFileTypeConstants.PDF;
+			model.OutputSettings.TextOptions.TextFileEncoding = ExportToLoadFileFileEncodingConstants.WESTERN_EUROPEAN_WINDOWS;
+
+			model.ToLoadFileVolumeAndSubdirectoryModel.VolumeNumberOfDigits = 4;
+			model.ToLoadFileVolumeAndSubdirectoryModel.SubdirectoryNumberOfDigits = 4;
+
+			var validator = new ExportToLoadFileProviderValidator();
+
+			// Act
+			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewExportToLoadfileIntegrationPoint(model);
+			detailsPage.RunIntegrationPoint();
+
+			// Assert
+			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
+		}
+
 		[Test, Order(4)]
+		public void DocumentExportToLoadFile_TC_ELF_DOC_2()
+		{
+			// Arrange
+			Context.ImportDocuments(true, DocumentTestDataBuilder.TestDataType.SaltPepperWithFolderStructure);
+			ExportToLoadFileProviderModel model = CreateExportToLoadFileProviderModel("TC_ELF_DOC_2");
+
+			// Step 1
+			//default
+			model.SourceInformationModel.StartAtRecord = 100;
+			model.SourceInformationModel.Source = "Saved Search";
+			model.SourceInformationModel.SavedSearch = "All Documents";
+
+			// Step 2
+			model.ExportDetails.LoadFile = true;
+			model.ExportDetails.ExportImages = true;
+			model.ExportDetails.ExportNatives = true;
+			model.ExportDetails.ExportTextFieldsAsFiles = true;
+			model.ExportDetails.DestinationFolder = ExportToLoadFileProviderModel.DestinationFolderTypeEnum.Root;
+			model.ExportDetails.CreateExportFolder = false;
+			model.ExportDetails.OverwriteFiles = true;
+
+			// Step 3
+			model.OutputSettings.LoadFileOptions.ImageFileFormat = ExportToLoadFileImageFileFormatConstants.IPRO;
+			model.OutputSettings.LoadFileOptions.DataFileFormat = ExportToLoadFileDataFileFormatConstants.CSV;
+			model.OutputSettings.LoadFileOptions.DataFileEncoding = ExportToLoadFileFileEncodingConstants.WESTERN_EUROPEAN_WINDOWS;
+			model.OutputSettings.LoadFileOptions.FilePathType = ExportToLoadFileProviderModel.FilePathTypeEnum.Relative;
+			model.OutputSettings.LoadFileOptions.IncludeNativeFilesPath = false;
+			model.OutputSettings.LoadFileOptions.ExportMultiChoiceAsNested = true;
+
+			model.OutputSettings.LoadFileOptions.NameOutputFilesAfter = "Identifier";
+			model.OutputSettings.LoadFileOptions.AppendOriginalFileName = true;
+
+			model.OutputSettings.ImageOptions.ImageFileType = ExportToLoadFileImageFileTypeConstants.PDF;
+			model.OutputSettings.ImageOptions.ImagePrecedence = ImagePrecedenceEnum.OriginalImages;
+			model.OutputSettings.ImageOptions.ImageSubdirectoryPrefix = "IMAGE_FILES";
+
+			model.OutputSettings.NativeOptions.NativeSubdirectoryPrefix = "NATIVE_FILES";
+
+			model.OutputSettings.TextOptions.TextFileEncoding = ExportToLoadFileFileEncodingConstants.UNICODE;
+			model.OutputSettings.TextOptions.TextPrecedence = "Extracted Text";
+
+			model.ToLoadFileVolumeAndSubdirectoryModel.VolumePrefix = "VOLUME";
+			model.ToLoadFileVolumeAndSubdirectoryModel.VolumeStartNumber = 1;
+			model.ToLoadFileVolumeAndSubdirectoryModel.VolumeNumberOfDigits = 4;
+			model.ToLoadFileVolumeAndSubdirectoryModel.VolumeMaxSize = 4400;
+
+			model.ToLoadFileVolumeAndSubdirectoryModel.SubdirectoryStartNumber = 1;
+			model.ToLoadFileVolumeAndSubdirectoryModel.SubdirectoryNumberOfDigits = 4;
+			model.ToLoadFileVolumeAndSubdirectoryModel.SubdirectoryMaxFiles = 500;
+
+			var validator = new ExportToLoadFileProviderValidator();
+
+			// Act
+			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewExportToLoadfileIntegrationPoint(model);
+			detailsPage.RunIntegrationPoint();
+
+			// Assert
+			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
+		}
+
+		[Test, Order(5)]
 		public void DocumentExportToLoadFile_TC_ELF_DOC_4()
 		{
 			// Arrange
+			// Data is imported in DocumentExportToLoadFile_TC_ELF_DOC_2
 			ExportToLoadFileProviderModel model = CreateExportToLoadFileProviderModel("TC_ELF_DOC_4");
 
 			// Step 1
@@ -238,48 +281,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			model.ToLoadFileVolumeAndSubdirectoryModel.SubdirectoryStartNumber = 1;
 			model.ToLoadFileVolumeAndSubdirectoryModel.SubdirectoryNumberOfDigits = 4;
 			model.ToLoadFileVolumeAndSubdirectoryModel.SubdirectoryMaxFiles = 500;
-
-			var validator = new ExportToLoadFileProviderValidator();
-
-			// Act
-			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewExportToLoadfileIntegrationPoint(model);
-			detailsPage.RunIntegrationPoint();
-
-			// Assert
-			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
-		}
-
-		[Test]
-		public void DocumentExportToLoadFile_TC_ELF_DOC_5()
-		{
-			// Arrange
-			ExportToLoadFileProviderModel model = CreateExportToLoadFileProviderModel("TC_ELF_DOC_5");
-
-			// Step 1
-			//default
-
-			// Step 2
-			model.ExportDetails.LoadFile = true;
-			model.ExportDetails.ExportImages = true;
-			model.ExportDetails.ExportNatives = true;
-			model.ExportDetails.ExportTextFieldsAsFiles = true;
-			model.ExportDetails.DestinationFolder = ExportToLoadFileProviderModel.DestinationFolderTypeEnum.SubfolderOfRoot;
-			model.ExportDetails.CreateExportFolder = false;
-			model.ExportDetails.OverwriteFiles = true;
-
-			// Step 3
-			model.OutputSettings.LoadFileOptions.ImageFileFormat = ExportToLoadFileImageFileFormatConstants.IPRO_FULL_TEXT;
-			model.OutputSettings.LoadFileOptions.DataFileFormat = ExportToLoadFileDataFileFormatConstants.CSV;
-			model.OutputSettings.LoadFileOptions.DataFileEncoding = ExportToLoadFileFileEncodingConstants.WESTERN_EUROPEAN_WINDOWS;
-			model.OutputSettings.LoadFileOptions.IncludeNativeFilesPath = true;
-			model.OutputSettings.LoadFileOptions.ExportMultiChoiceAsNested = true;
-			model.OutputSettings.LoadFileOptions.AppendOriginalFileName = true;
-
-			model.OutputSettings.ImageOptions.ImageFileType = ExportToLoadFileImageFileTypeConstants.PDF;
-			model.OutputSettings.TextOptions.TextFileEncoding = ExportToLoadFileFileEncodingConstants.WESTERN_EUROPEAN_WINDOWS;
-
-			model.ToLoadFileVolumeAndSubdirectoryModel.VolumeNumberOfDigits = 4;
-			model.ToLoadFileVolumeAndSubdirectoryModel.SubdirectoryNumberOfDigits = 4;
 
 			var validator = new ExportToLoadFileProviderValidator();
 

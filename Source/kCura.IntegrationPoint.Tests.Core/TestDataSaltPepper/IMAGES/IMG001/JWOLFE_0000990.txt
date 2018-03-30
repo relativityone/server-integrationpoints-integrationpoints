@@ -1,0 +1,56 @@
+﻿NomLogic Simulation  
+Pipeline(s): See attached list  
+ 
+Counterparty(s): Enron North America & Dynegy Energy Resources Limited Partnership  
+ 
+Enron Trader  
+ 
+Login to the SITARA Stage environment. Enter SITARA deals for the counterparties and pipeline(s) listed above. Enter multiple deals based on the following parameters:  
+ 
+Location Assignments:  
+    ➢ Without a meter (pipeline/zone location only)  
+    ➢ With ONE or MANY meters assigned at the SITARA Deal Volume level  
+    ➢ With ONE or MANY meters assigned at the SITARA BAV Volume level  
+ 
+Counterparty Names:  
+    ➢ Enter 3rd party deals using the counterparty names listed above  
+    ➢ Enter desk-to-desk deals on the pipelines listed above  
+ 
+Deal Edits:  
+    ➢ Mid-simulation, make changes to a selection of deals entered  
+    ➢ Change various items (price, volumes, locations, etc.)  
+    ➢ Kill at least one deal during the simulation  
+ 
+Enron Scheduler  
+ 
+Login:  
+    ➢ Login to SITARA Stage-Start: Programs: Training Apps: SITARA Training stage: SITARA Launchpad: userid-cslagle, password-cslagle  
+    ➢ Login to UNIFY Stage- Start: Programs: Development Apps: Test Applications: UNIFY: UNIFY Gas Power-Test: userid-cslagle, password-0454  
+    ➢ Set-up desktop as normal for pipelines listed above  
+    ➢ Login to NomLogic: stage.commoditylogic.com; userid-CL692031: password: carrie0454  
+ 
+Monitor new deals/changed deals:  
+    ➢ Monitor SITARA Deal Ticker  
+    ➢ Monitor NomLogic Deal List  
+ 
+Communicate with customers:  
+    ➢ Edit deals via NomLogic Deal Dialog/Deal Edits window  
+    ➢ Complete the communication/nomination process for all deals entered during simulation  
+ 
+Third Party Scheduler  
+ 
+Login:  
+    ➢ Login to SITARA Stage-Start: Programs: Training Apps: SITARA Training stage: SITARA Launchpad: userid-cslagle, password-cslagle  
+    ➢ Set-up desktop as normal for pipelines listed above  
+    ➢ Login to NomLogic: stage.commoditylogic.com; userid-CL692031: password: carrie0454  
+ 
+Monitor new deals/changed deals:  
+    ➢ Monitor SITARA Deal Ticker  
+    ➢ Monitor NomLogic Deal List  
+ 
+Communicate with Enron scheduler:  
+    ➢ Edit deals via NomLogic Deal Dialog/Deal Edits window  
+    ➢ Split deals with ONE or MANY meters, if possible  
+    ➢ Split deals with ONE or MANY psnas  
+    ➢ Complete the communication/nomination process for all deals entered during simulation  
+ 

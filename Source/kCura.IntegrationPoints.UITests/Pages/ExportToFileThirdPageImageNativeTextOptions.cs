@@ -84,7 +84,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			get { return TextFileEncodingSelectElement.SelectedOption.Text; }
 			set
 			{
-				if (value != null)
+				if (value != null && value != TextFileEncoding)
 				{
 					TextFileEncodingSelectElement.SelectByText(value);
 				}
