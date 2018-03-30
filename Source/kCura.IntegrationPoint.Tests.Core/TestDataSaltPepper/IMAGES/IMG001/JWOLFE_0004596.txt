@@ -1,0 +1,34 @@
+﻿From:  Dugger  Tony <Tony.Dugger@ENRON.com>
+Sent:  Tuesday, June 5, 2001 8:00 PM
+To:  Dugger  Tony <Tony.Dugger@ENRON.com>; Ward  Georgia <Georgia.Ward@ENRON.com>
+Cc:  Ripley  Brian <Brian.Ripley@ENRON.com>; Hopson  Jill <Jill.Hopson@ENRON.com>
+Subject:  Unify Functionality Testing
+
+The Unify2k Gas Production database will be available for one last round of functionality testing from 11:00 a.m. to 3:00 p.m. on Wednesday 6/6/01.  This is not a scripted test.  Please feel free to test ANY and all functionality that will give you a greater comfort level with the new system.  The Sitara Bridge and Bridgeback will be available during this time.
+
+Please use the following environment for this testing:
+
+Menu Option: 	Unify2k (Gas)
+Server: 		Unify2k Gas Production
+Data: 		May 29, 2001
+Gas Day:    	May 29, 2001
+	
+
+If you have any questions, of find issues please contact one of the following individuals:
+
+Logistics & Vol. Mgmt 	-	Hina Patel		x5-4875
+Settlements	-		Tommy Simpson	x5-8229
+General Questions	-	Tony Dugger		x5-4371
+				Jill Hopson		x5-4839
+
+
+Thank you,
+
+TD
+
+
+
+
+***********
+
+***********

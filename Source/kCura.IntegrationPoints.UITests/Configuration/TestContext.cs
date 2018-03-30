@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.UITests.Logging;
@@ -8,10 +9,12 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using NUnit.Framework;
 using Relativity.Core;
+using Relativity.Services.Objects.DataContracts;
 using Serilog;
 using Field = kCura.Relativity.Client.DTOs.Field;
 using Group = kCura.IntegrationPoint.Tests.Core.Group;
@@ -169,6 +172,15 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			var workspaceService = new WorkspaceService(new ImportHelper());
 			workspaceService.ImportData(GetWorkspaceId(), data);
 			Log.Information(@"Documents imported.");
+			return this;
+		}
+
+		public TestContext CreateProduction(string savedSearchName, string productionName)
+		{
+			var workspaceService = new WorkspaceService(new ImportHelper());
+			int savedSearchId = RetrieveSavedSearchId(savedSearchName);
+			workspaceService.CreateProduction(WorkspaceId.Value, savedSearchId, productionName);
+
 			return this;
 		}
 
@@ -332,6 +344,19 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		{
 			Assert.NotNull(UserId, $"{nameof(UserId)} is null. User wasn't created.");
 			return UserId.Value;
+		}
+
+		private int RetrieveSavedSearchId(string savedSearchName)
+		{
+			var objectManager = new RelativityObjectManager(WorkspaceId.Value, Helper, null); // we don't need secret store helper to read saved search
+			var savedSearchRequest = new QueryRequest
+			{
+				ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Search },
+				Condition = $"'Name' == '{savedSearchName}'",
+				Fields = new FieldRef[0]
+			};
+			RelativityObject savedSearch = objectManager.Query(savedSearchRequest).First();
+			return savedSearch.ArtifactID;
 		}
 	}
 

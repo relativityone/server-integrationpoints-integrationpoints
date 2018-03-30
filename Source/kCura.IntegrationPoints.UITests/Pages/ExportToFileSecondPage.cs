@@ -7,87 +7,107 @@ using OpenQA.Selenium.Support.UI;
 namespace kCura.IntegrationPoints.UITests.Pages
 {
 	public class ExportToFileSecondPage : GeneralPage
-    {
-        [FindsBy(How = How.Id, Using = "next")]
-        protected IWebElement NextButton { get; set; }
+	{
+		[FindsBy(How = How.Id, Using = "next")]
+		protected IWebElement NextButton { get; set; }
 
 		[FindsBy(How = How.Id, Using = "saved-search-selection-button")]
-        protected IWebElement SavedSearchSelectionButton { get; set; }
+		protected IWebElement SavedSearchSelectionButton { get; set; }
 
-	    [FindsBy(How = How.Id, Using = "available-fields")]
-	    protected IWebElement SourceFieldsElement { get; set; }
+		[FindsBy(How = How.Id, Using = "available-fields")]
+		protected IWebElement SourceFieldsElement { get; set; }
 
-	    [FindsBy(How = How.Id, Using = "add-field")]
-	    protected IWebElement AddSourceFieldElement { get; set; }
+		[FindsBy(How = How.Id, Using = "add-field")]
+		protected IWebElement AddSourceFieldElement { get; set; }
 
-	    [FindsBy(How = How.Id, Using = "add-all-fields")]
-	    protected IWebElement AddAllSourceFieldElements { get; set; }
+		[FindsBy(How = How.Id, Using = "add-all-fields")]
+		protected IWebElement AddAllSourceFieldElements { get; set; }
+
+		[FindsBy(How = How.Id, Using = "sourceSelector")]
+		protected IWebElement SourceSelectWebElement { get; set; }
+
+		[FindsBy(How = How.Id, Using = "productionSetsSelector")]
+		protected IWebElement ProductionSetSelectWebElement { get; set; }
 
 		public Select SavedSearch { get; }
-	    protected SelectElement SelectSourceFieldsElement => new SelectElement(SourceFieldsElement);
+		protected SelectElement SelectSourceFieldsElement => new SelectElement(SourceFieldsElement);
+		protected SelectElement SourceSelect => new SelectElement(SourceSelectWebElement);
+		protected SelectElement ProductionSetSelect => new SelectElement(ProductionSetSelectWebElement);
 
 		public ExportToFileSecondPage(RemoteWebDriver driver) : base(driver)
-        {
-            WaitForPage();
-            PageFactory.InitElements(driver, this);
-            SavedSearch = new Select(Driver.FindElementById("s2id_savedSearchSelector"));
-        }
+		{
+			WaitForPage();
+			PageFactory.InitElements(driver, this);
+			SavedSearch = new Select(Driver.FindElementById("s2id_savedSearchSelector"));
+		}
 
-	    public ExportToFileSecondPage SelectSavedSearch(string savedSearch)
-	    {
-		    SavedSearch.Choose(savedSearch);
-		    Sleep(200);
-		    return this;
-	    }
+		public string Source
+		{
+			get { return SourceSelect.SelectedOption.Text; }
+			set { SourceSelect.SelectByText(value); }
+		}
 
-	    public ExportToFileSecondPage SelectAllDocumentsSavedSearch()
-	    {
-		    return SelectSavedSearch("All Documents");
-	    }
+		public string ProductionSet
+		{
+			get { return ProductionSetSelect.SelectedOption.Text; }
+			set { ProductionSetSelect.SelectByText(value); }
+		}
 
-	    public void SelectAllSourceFields()
-	    {
+		public ExportToFileSecondPage SelectSavedSearch(string savedSearch)
+		{
+			SavedSearch.Choose(savedSearch);
+			Sleep(200);
+			return this;
+		}
+
+		public ExportToFileSecondPage SelectAllDocumentsSavedSearch()
+		{
+			return SelectSavedSearch("All Documents");
+		}
+
+		public void SelectAllSourceFields()
+		{
 			AddAllSourceFieldElements.Click();
-	    }
+		}
 
-	    public void SelectSourceField(string fieldName)
-	    {
-		    SelectField(SelectSourceFieldsElement, AddSourceFieldElement, fieldName);
-	    }
+		public void SelectSourceField(string fieldName)
+		{
+			SelectField(SelectSourceFieldsElement, AddSourceFieldElement, fieldName);
+		}
 
-	    protected void SelectField(SelectElement selectElement, IWebElement addFieldElement, string fieldName)
-	    {
-		    if (string.IsNullOrEmpty(fieldName))
-		    {
-			    return;
-		    }
+		protected void SelectField(SelectElement selectElement, IWebElement addFieldElement, string fieldName)
+		{
+			if (string.IsNullOrEmpty(fieldName))
+			{
+				return;
+			}
 
-		    SelectOption(selectElement, fieldName);
+			SelectOption(selectElement, fieldName);
 
-		    addFieldElement.Click();
-	    }
+			addFieldElement.Click();
+		}
 
-	    private static void SelectOption(SelectElement selectElement, string textToSearchFor)
-	    {
-		    IWebElement option = selectElement.WrappedElement.FindElement(By.XPath($".//option[starts-with(normalize-space(.), \"{textToSearchFor}\")]"));
-		    if (!option.Selected)
-		    {
-			    option.Click();
-		    }
-	    }
+		private static void SelectOption(SelectElement selectElement, string textToSearchFor)
+		{
+			IWebElement option = selectElement.WrappedElement.FindElement(By.XPath($".//option[starts-with(normalize-space(.), \"{textToSearchFor}\")]"));
+			if (!option.Selected)
+			{
+				option.Click();
+			}
+		}
 
 		public ExportToFileThirdPage GoToNextPage()
-        {
+		{
 			WaitForPage();
-            NextButton.Click();
-            return new ExportToFileThirdPage(Driver);
-        }
+			NextButton.Click();
+			return new ExportToFileThirdPage(Driver);
+		}
 
-        public SavedSearchDialog OpenSavedSearchSelectionDialog()
-        {
-            SavedSearchSelectionButton.Click();
-            return new SavedSearchDialog(Driver.FindElementByXPath("/*"));
-        }
+		public SavedSearchDialog OpenSavedSearchSelectionDialog()
+		{
+			SavedSearchSelectionButton.Click();
+			return new SavedSearchDialog(Driver.FindElementByXPath("/*"));
+		}
 
-    }
+	}
 }

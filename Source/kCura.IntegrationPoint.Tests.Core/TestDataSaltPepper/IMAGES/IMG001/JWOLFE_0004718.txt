@@ -1,0 +1,13 @@
+﻿Sheet1   	  	  	  	  	  	  	  	
+NomLogic Simulation Teams								
+East	  	  	West	  	  	Central	  	
+Robert	TRCO	  	Jan	SCAL	  	Mark	ANR	
+Meredith	TRCO	  	Jason	SCAL	  	Kirk	ANR	
+Tracy	TRCO, CNG	  	Hillary	PGEN	  	Tammy	TRKL, PEPL	
+Joann	TRCO, CNG	  	Daniel	PGEN	  	West	TRKL, PEPL	
+Shanna	TETC	  	  	  	  	  	  	
+Chris	TETC	  	  	  	  	  	  	
+Victor	Trader	  	Patti	Trader	  	Lisa	Trader	
+Sheet2 
+Sheet3 
+

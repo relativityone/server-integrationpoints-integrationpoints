@@ -1,0 +1,24 @@
+﻿Sheet1   	  	  	  	  	  	  	  	  	
+  	  	  	SCS OPTION DATA						
+  	TICKER	STRIKE	STR BID	STR ASK	B VOL	A VOL	M STD/DAY	WHEN 	
+  	NG Z1	 260	 8	 12	 115.3	 133	 21.07	 37222	
+  	NG F2	 290	 59	 62	 91	 95.6	 17.01	 37222	
+  	NG G2	 295	 81	 84	 84.5	 87.6	 15.96	 37222	
+  	NG H2	 290	 85	 87	 75.1	 76.9	 13.86	 37222	
+  	NG J2	 285	 78	 82	 61.4	 64.6	 11.29	 37222	
+  	NG K2	 285	 78	 83	 54.9	 58.4	 10.15	 37222	
+  	NG M2	 290	 88	 92	 55.4	 57.9	 10.33	 37222	
+  	NG N2	  	  	  	  	  	  	 37222	
+  	NG Q2	  	  	  	  	  	  	 37222	
+  	NG U2	  	  	  	  	  	  	 37222	
+  	NG V2	  	  	  	  	  	  	 37222	
+  	NG X2	  	  	  	  	  	  	 37222	
+  	NG Z2	  	  	  	  	  	  	 37222	
+  	NG H3	  	  	  	  	  	  	 37215	
+  	NG M3	  	  	  	  	  	  	 37151	
+  	NG U3	  	  	  	  	  	  	 37151	
+  	NG Z3	  	  	  	  	  	  	 37151	
+  	NG H4	  	  	  	  	  	  	 37151	
+Sheet2 
+Sheet3 
+
