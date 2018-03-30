@@ -3,5 +3,6 @@
 	public static class ExportToLoadFileSourceConstants
 	{
 		public static string SAVED_SEARCH = "Saved Search";
+		public static string PRODUCTION = "Production";
 	}
 }

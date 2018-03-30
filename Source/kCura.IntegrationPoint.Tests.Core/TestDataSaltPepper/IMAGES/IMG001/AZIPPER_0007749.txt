@@ -1,0 +1,711 @@
+﻿ &14EnronOnline WTI Trading&10    	
+ 36893	
+ 36894	
+ 36895	
+ 36896	
+ 36897	
+ 36898	
+ 36899	
+ 36900	
+ 36901	
+ 36902	
+ 36903	
+ 36904	
+ 36905	
+ 36906	
+ 36907	
+ 36908	
+ 36909	
+ 36910	
+ 36911	
+ 36912	
+ 36913	
+ 36914	
+ 36915	
+ 36916	
+ 36917	
+ 36918	
+ 36919	
+ 36920	
+ 36921	
+ 36922	
+ 36923	
+ 36924	
+ 36925	
+ 36926	
+ 36927	
+ 36928	
+ 36929	
+ 36930	
+ 36931	
+ 36932	
+ 36933	
+ 36934	
+ 36935	
+ 36936	
+ 36937	
+ 36938	
+ 36939	
+ 36940	
+ 36941	
+ 36942	
+ 36943	
+ 36944	
+ 36945	
+ 36946	
+ 36947	
+ 36948	
+ 36949	
+ 36950	
+ 36951	
+ 36952	
+ 36953	
+ 36954	
+ 36955	
+ 36956	
+ 36957	
+ 36958	
+ 36959	
+ 36960	
+ 36961	
+ 36962	
+ 36963	
+ 36964	
+ 36965	
+ 36966	
+ 36967	
+ 36968	
+ 36969	
+ 36970	
+ 36971	
+ 36972	
+ 36973	
+ 36974	
+ 36975	
+ 36976	
+ 36977	
+ 36978	
+ 36979	
+ 36980	
+ 36981	
+ 36982	
+ 36983	
+ 36984	
+ 36985	
+ 36986	
+ 36987	
+ 36988	
+ 36989	
+ 36990	
+ 36991	
+ 36992	
+ 36993	
+ 36994	
+ 36995	
+ 36996	
+ 36997	
+ 36998	
+ 36999	
+ 37000	
+ 37001	
+ 37002	
+ 37003	
+ 37004	
+ 37005	
+ 37006	
+ 37007	
+ 37008	
+ 37009	
+ 37010	
+ 37011	
+ 37012	
+ 37013	
+ 37014	
+ 37015	
+ 37016	
+ 37017	
+ 37018	
+ 37019	
+ 37020	
+ 37021	
+ 37022	
+ 37023	
+ 37024	
+ 37025	
+ 37026	
+ 37027	
+ 37028	
+ 37029	
+ 37030	
+ 37031	
+ 37032	
+ 37033	
+ 37034	
+ 37035	
+ 37036	
+ 37037	
+ 37038	
+ 37039	
+ 37040	
+ 4795000	
+ 4975000	
+ 6340000	
+ 5169000	
+ 50000	
+ 400000	
+ 4655000	
+ 6125000	
+ 6525000	
+ 6445000	
+ 2740000	
+ 0	
+ 0	
+ 300000	
+ 5050000	
+ 5465000	
+ 3725000	
+ 4400000	
+ 0	
+ 50000	
+ 4642000	
+ 5525000	
+ 6975000	
+ 6550000	
+ 4325000	
+ 0	
+ 50000	
+ 6840000	
+ 5625000	
+ 6375000	
+ 6395000	
+ 7585000	
+ 0	
+ 175000	
+ 6485000	
+ 6130000	
+ 7025000	
+ 6790000	
+ 4530000	
+ 0	
+ 75000	
+ 4275000	
+ 5480000	
+ 7385000	
+ 7905000	
+ 3040000	
+ 0	
+ 0	
+ 450000	
+ 5565000	
+ 5965000	
+ 8460000	
+ 5675000	
+ 0	
+ 125000	
+ 6080000	
+ 8280000	
+ 5470000	
+ 6760000	
+ 6210000	
+ 0	
+ 100000	
+ 3260000	
+ 4925000	
+ 6830000	
+ 7670000	
+ 5125000	
+ 0	
+ 50000	
+ 4910000	
+ 3850000	
+ 6975000	
+ 5765000	
+ 6400000	
+ 25000	
+ 275000	
+ 3815000	
+ 10030000	
+ 7890000	
+ 8830000	
+ 7790000	
+ 0	
+ 110000	
+ 4800000	
+ 6396000	
+ 9950000	
+ 10505000	
+ 7920000	
+ 0	
+ 100000	
+ 7960000	
+ 8320000	
+ 7265000	
+ 8635000	
+ 6165000	
+ 0	
+ 150000	
+ 5580000	
+ 8520000	
+ 5130000	
+ 6625000	
+ 0	
+ 0	
+ 25000	
+ 5230000	
+ 6010000	
+ 9205000	
+ 6960000	
+ 4465000	
+ 0	
+ 0	
+ 3880000	
+ 5435000	
+ 5675000	
+ 8615000	
+ 4265000	
+ 0	
+ 45000	
+ 6990000	
+ 7745000	
+ 6735000	
+ 11865000	
+ 6970000	
+ 0	
+ 0	
+ 5255000	
+ 6125000	
+ 6540000	
+ 10240000	
+ 6955000	
+ 0	
+ 200000	
+ 6335000	
+ 8560000	
+ 9395000	
+ 8030000	
+ 10485000	
+ 0	
+ 635000	
+ 10295000	
+ 9235000	
+ 9735000	
+ 15915000	
+ 10245000	
+ 0	
+ 0	
+ 55000	
+ 12715000	Summary 
+  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	
+Date	 2001/01/01	 2001/01/02	 2001/01/03	 2001/01/04	 2001/01/05	 2001/01/06	 2001/01/07	 2001/01/08	 2001/01/09	 2001/01/10	 2001/01/11	 2001/01/12	 2001/01/13	 2001/01/14	 2001/01/15	 2001/01/16	 2001/01/17	 2001/01/18	 2001/01/19	 2001/01/20	 2001/01/21	 2001/01/22	 2001/01/23	 2001/01/24	 2001/01/25	 2001/01/26	 2001/01/27	 2001/01/28	 2001/01/29	 2001/01/30	 2001/01/31	 2001/02/01	 2001/02/02	 2001/02/03	 2001/02/04	 2001/02/05	 2001/02/06	 2001/02/07	 2001/02/08	 2001/02/09	 2001/02/10	 2001/02/11	 2001/02/12	 2001/02/13	 2001/02/14	 2001/02/15	 2001/02/16	 2001/02/17	 2001/02/18	 2001/02/19	 2001/02/20	 2001/02/21	 2001/02/22	 2001/02/23	 2001/02/24	 2001/02/25	 2001/02/26	 2001/02/27	 2001/02/28	 2001/03/01	 2001/03/02	 2001/03/03	 2001/03/04	 2001/03/05	 2001/03/06	 2001/03/07	 2001/03/08	 2001/03/09	 2001/03/10	 2001/03/11	 2001/03/12	 2001/03/13	 2001/03/14	 2001/03/15	 2001/03/16	 2001/03/17	 2001/03/18	 2001/03/19	 2001/03/20	 2001/03/21	 2001/03/22	 2001/03/23	 2001/03/24	 2001/03/25	 2001/03/26	 2001/03/27	 2001/03/28	 2001/03/29	 2001/03/30	 2001/03/31	 2001/04/01	 2001/04/02	 2001/04/03	 2001/04/04	 2001/04/05	 2001/04/06	 2001/04/07	 2001/04/08	 2001/04/09	 2001/04/10	 2001/04/11	 2001/04/12	 2001/04/13	 2001/04/14	 2001/04/15	 2001/04/16	 2001/04/17	 2001/04/18	 2001/04/19	 2001/04/20	 2001/04/21	 2001/04/22	 2001/04/23	 2001/04/24	 2001/04/25	 2001/04/26	 2001/04/27	 2001/04/28	 2001/04/29	 2001/04/30	 2001/05/01	 2001/05/02	 2001/05/03	 2001/05/04	 2001/05/05	 2001/05/06	 2001/05/07	 2001/05/08	 2001/05/09	 2001/05/10	 2001/05/11	 2001/05/12	 2001/05/13	 2001/05/14	 2001/05/15	 2001/05/16	 2001/05/17	 2001/05/18	 2001/05/19	 2001/05/20	 2001/05/21	 2001/05/22	 2001/05/23	 2001/05/24	 2001/05/25	 2001/05/26	 2001/05/27	 2001/05/28	 2001/05/29	
+Bank of America, National Association	 1	  	  	  	 1	  	  	  	  	  	 1	  	  	  	  	 1	 1	 1	 4	  	  	  	  	  	 1	  	  	  	  	 3	 1	  	 1	  	  	 4	 1	 1	 1	  	  	  	 2	  	  	  	 1	  	  	  	  	 3	  	 1	  	 1	  	  	  	 1	 1	  	  	  	  	  	 2	  	 1	  	  	  	  	 1	  	 37																																																																										
+Bank of Montreal	 6	 1	  	  	  	  	  	  	 1	  	  	 1	  	  	 4	  	 1	  	 2	  	  	  	  	  	  	  	  	  	 1	 1	  	  	  	  	  	  	  	  	  	 1	  	  	  	  	  	  	  	  	  	  	 2	 2	  	 1	  	 1	  	  	  	  	  	  	  	 25																																																																																						
+BNP Paribas	  	 1	  	 1	  	 2	 1	 1	  	  	 4	  	 3	  	  	  	  	  	  	  	  	 1	  	 1	  	 4	  	  	 1	 1	  	  	  	  	 20																																																																																																																			
+BP Exploration & Oil Inc.	 1	 2	  	  	 2	  	  	  	  	 3																																																																																																																																												
+BP Oil Supply Company	 1	 3	 1	  	 5																																																																																																																																																	
+Citibank, N.A.	 2	  	 1	  	 2	  	 5																																																																																																																																															
+ConAgra Energy Services, Inc.	 6	 19	  	  	 16	 30	 11	 22	 13	  	  	  	 26	 14	 15	 11	  	  	 3	 7	 17	 48	 19	  	  	 23	 27	 15	 9	 12	  	 3	 17	 9	 29	 8	 1	  	 1	 4	 5	 11	 18	 6	  	  	  	 9	 4	 19	 8	  	  	 4	 9	 1	 5	 19	  	  	 2	 3	 16	 15	 10	  	  	 9	 13	 12	 10	 19	  	  	  	  	 1	 5	 12	  	  	 5	 9	 12	 13	 6	  	  	  	  	  	 6	 5	  	 1	 7	 11	  	 6	  	  	  	  	 6	 2	 5	 2	  	  	 1	  	  	 4	 3	  	  	 4	 11	 6	 6	 2	  	  	  	  	  	  	 4	  	 1	 3	 7	 4	 9	 16	  	  	 1	 7	 4	 4	 3	  	  	  	 5	 876			
+Conectiv Energy Supply, Inc.	 1	 2	 5	 4	  	  	 1	 1	 7	 12	 5	  	  	 2	 3	 2	 8	 9	  	  	  	 1	 7	 4	 2	  	  	  	 6	 1	 1	 1	  	  	 4	  	 4	 1	  	  	  	  	  	 1	  	  	  	  	 1	  	 1	  	 4	  	 2	 3	  	 3	 1	  	  	  	 3	  	 2	 1	  	  	  	  	 4	 116																																																																														
+Coral Energy Holding L.P.	 2	  	 5	  	  	  	 8	 5	  	  	 1	  	  	  	 4	 4	 1	 2	  	  	 1	  	 4	 5	  	  	 1	 1	  	 4	 10	 2	  	  	 8	 5	 3	 10	 9	  	  	 3	 2	 4	 8	 3	  	  	  	 1	 9	 14	 1	  	  	 1	 8	 3	 6	 3	  	  	  	 1	 3	 1	 2	  	  	 7	  	 6	 4	 4	  	  	 1	 2	  	 1	 1	  	  	  	 2	  	 2	  	  	  	  	  	 1	 4	 5	  	 1	 3	 1	  	 3	  	  	  	 2	  	 4	 5	 1	  	  	  	 1	 1	 3	 2	  	  	 2	 6	 5	 6	 2	  	  	 3	 7	 1	 9	  	  	 1	  	  	  	 1	  	  	  	  	 4	  	 2	 2	  	  	  	 2	 284	
+Duke Energy NGL Services, LLC	 2	  	  	  	 2	  	  	  	  	  	 1	 1	  	  	  	  	  	  	 1	  	 2	 2	  	 1	  	 12																																																																																																																												
+Duke Energy Trading and Marketing, L.L.C.	 4	 3	  	 1	  	  	 1	 8	  	  	 1	  	  	 2	 1	 1	 4	 6	  	  	  	 7	 7	  	  	  	  	 2	  	 7	 2	 7	  	  	 1	  	  	 4	  	  	  	 5	  	  	  	  	  	  	 4	  	  	  	  	  	  	  	  	 4	 3	 7	  	  	  	  	  	 9	  	  	  	  	  	  	 6	  	 4	 2	  	 113																																																																								
+Elf Trading SA	 1	  	  	  	 2	 1	 1	 1	  	 1	  	  	  	  	  	  	 1	  	  	  	 1	 7																																																																																																																																
+Glencore Commodities Limited	 1	  	 1	  	  	 1	  	 1	 17	 15	  	  	  	 8	 36																																																																																																																																							
+Hess Energy Trading Company LLC	 15	 69	 79	 85	 84	 2	 16	 95	 86	 68	 100	 44	  	  	 9	 63	 96	 52	 80	  	  	 97	 106	 88	 120	 58	  	  	 133	 117	 138	 115	 187	  	 2	 110	 107	 109	 119	 73	  	  	 74	 100	 93	 94	 47	  	  	 8	 91	 94	 101	 61	  	 5	 87	 99	 72	 86	 88	  	 3	 46	 66	 74	 103	 85	  	 2	 77	 66	 96	 88	 93	  	 11	 63	 120	 71	 107	 82	  	  	 57	 67	 92	 101	 92	  	  	  	  	 67	 77	 52	  	 2	 59	 73	 50	 68	  	  	  	 61	 52	 104	 69	 80	  	  	 74	 60	 61	 68	 34	  	  	 58	 68	 49	 104	 72	  	  	 61	 77	 75	 107	 81	  	  	 80	 97	 97	 79	 125	  	 10	 107	 77	 110	 121	 56	  	  	 1	 100	 8406	
+Hess Energy Trading Company UK Limited as agents for Hess Energy Trading Company LLC	 2	  	 2	  	  	  	  	  	 4																																																																																																																																														
+Koch Petroleum Group, L.P.	 3	  	  	  	  	  	  	  	 2	  	  	  	 1	 1	  	 4	  	 11																																																																																																																																					
+J. Aron & Company	 1	  	 3	  	  	  	  	  	  	 2	 2	 6	  	  	  	 5	  	  	  	  	  	  	  	  	 2	 2	 6	  	  	  	 7	 11	 20	 15	  	  	 21	 4	 14	 15	 6	  	  	 9	 3	 1	  	 2	  	  	  	  	 4	 7	 4	  	  	  	  	  	 11	 9	  	  	 9	 15	 2	 1	  	  	  	 1	 6	 13	  	 6	  	  	 11	 11	 6	 16	 16	  	  	 20	 9	 9	 27	 10	  	  	 5	 16	 10	  	 2	  	  	 5	 4	 2	 1	 4	  	 2	 12	 16	 29	 31	 26	  	  	  	 12	 545																																			
+Louis Dreyfus Corporation	 2	 3	 2	  	  	 2	  	  	  	 1	  	 1	  	 2	  	 1	  	 14																																																																																																																																					
+Morgan Stanley Capital Group, Inc.	 3	 3	 10	  	  	 3	 1	  	 5	  	  	  	  	 3	 4	 10	 5	  	  	 6	 3	  	 1	 7	  	  	  	  	 2	  	 2	  	  	  	  	  	  	 1	  	  	  	  	 1	  	 2	  	  	 1	 1	 4	 2	  	  	  	  	  	 1	 4	 1	  	  	  	 2	  	  	  	  	  	 5	 4	 1	 1	  	  	  	  	  	  	 3	 4	  	  	 1	  	  	 9	 3	  	  	 1	  	 5	 2	 1	  	 3	  	 10	 1	 4	 2	  	  	 6	 7	 2	 3	 1	  	  	  	 5	 167																																						
+Nexen Marketing	 1	  	 1	  	 1																																																																																																																																																		
+Phibro Inc.	  	 23	 36	 67	 19	  	  	  	 33	 145																																																																																																																																													
+Reliant Energy Services, Inc.	 2	  	  	  	 5	  	 2	 4	  	  	 4	 1	  	 1	 1	  	  	  	 3	  	 1	 1	  	 25																																																																																																																															
+Sempra Energy Europe Ltd	 2	  	 2																																																																																																																																																				
+Sempra Energy Trading Corp.	 5	 117	 104	 144	 97	  	  	 55	 104	 174	 127	 47	  	  	  	 87	 103	 76	 78	  	 2	 71	 94	 152	 89	 82	  	  	 107	 73	 88	 112	 96	  	  	 119	 121	 136	 122	 85	  	  	 77	 100	 188	 190	 57	  	  	  	 102	 97	 190	 141	  	  	 78	 203	 126	 161	 110	  	 3	 76	 110	 166	 144	 82	  	  	 78	 68	 142	 109	 131	 1	  	 80	 131	 88	 66	 58	  	  	 39	 53	 93	 92	 59	  	  	  	  	 79	 86	 57	  	  	 34	 73	 53	 62	  	  	 1	 47	 55	 72	 60	 36	  	  	 72	 56	 50	 80	 31	  	 3	 61	 56	 74	 92	 68	  	  	 29	 30	 41	 96	 58	  	  	 44	 57	 83	 77	 77	  	 3	 83	 63	 90	 117	 87	  	  	  	 106	 8949	
+Societe Generale	 1	  	 1	  	  	  	  	 1																																																																																																																																															
+Statoil Marketing & Trading (US) Inc.	 2	  	  	  	  	  	  	 6	  	  	  	  	 1	  	  	  	  	  	  	  	 3	  	 1	  	 2	  	 15																																																																																																																												
+The Chase Manhattan Bank	 1	  	 1																																																																																																																																																				
+Tractebel Energy Marketing, Inc.	 5	 5	 6	  	  	 5	 12	 9	 6	 3	  	  	 1	 7	 1	  	  	  	  	 12	 7	 14	 12	 12	  	 1	 13	 6	 7	 8	 8	  	  	 4	 2	 6	 10	 2	  	 2	 9	 7	 3	 7	 5	  	  	 2	 4	  	 4	 6	  	  	 2	 6	 2	 2	  	  	  	 2	 4	 4	 12	 3	  	  	 3	 3	  	  	  	  	  	  	  	 1	 4	 3	  	  	 1	 1	  	  	  	  	  	  	  	 4	 2	  	  	  	 3	 2	  	  	  	  	  	 2	 2	  	  	  	  	  	  	  	 2	 6	 1	  	  	  	 4	 5	 5	 2	  	  	 5	 3	 7	 1	  	  	  	 2	 5	 5	 2	 4	  	  	 1	  	  	  	  	  	  	  	  	 361			
+Valero Marketing and Supply Company	 6	 9	  	  	  	  	  	  	 2	  	  	  	  	 13	  	 1	  	  	  	 1	  	 3	 4	 2	  	  	 1	 5	  	  	 2	  	  	 3	 3	  	 2	  	  	  	  	 2	  	 3	  	  	  	  	 5	 2	 3	 2	  	  	 2	  	  	  	 3	  	  	  	  	  	  	  	  	  	 2	  	  	  	  	  	  	  	  	  	 3	  	  	  	  	 1	  	  	 1	  	  	  	  	 3	  	 2	 3	  	 2	  	  	  	  	  	  	  	  	  	  	 1	  	  	  	 2	  	  	 3	  	 1	  	  	  	  	  	  	  	 1	  	  	  	 1	  	 2	  	  	  	  	  	 2	 107													
+Total WTI Transactions	 20	 192	 197	 254	 207	 2	 16	 187	 246	 262	 257	 109	 0	 0	 12	 202	 219	 149	 178	 0	 2	 190	 221	 286	 278	 174	 0	 2	 280	 228	 259	 262	 314	 0	 7	 266	 253	 288	 285	 188	 0	 3	 175	 222	 302	 332	 126	 0	 0	 19	 226	 218	 349	 235	 0	 5	 195	 333	 222	 280	 250	 0	 6	 130	 198	 278	 314	 211	 0	 2	 197	 155	 282	 236	 262	 1	 11	 153	 266	 166	 187	 161	 0	 0	 108	 137	 211	 219	 163	 0	 0	 0	 0	 157	 190	 129	 0	 4	 116	 182	 109	 141	 0	 0	 1	 122	 132	 197	 142	 126	 0	 0	 160	 128	 121	 180	 92	 0	 3	 148	 164	 149	 253	 165	 0	 0	 107	 133	 140	 215	 146	 0	 5	 134	 180	 195	 175	 230	 0	 15	 220	 200	 276	 366	 214	 0	 0	 2	 278	 20293	
+Total Counterparties	 2	 4	 5	 6	 5	 1	 1	 8	 7	 4	 5	 6	 0	 0	 3	 8	 6	 6	 6	 0	 1	 8	 5	 8	 6	 6	 0	 2	 7	 5	 6	 9	 7	 0	 3	 9	 9	 8	 10	 9	 0	 2	 7	 11	 7	 9	 9	 0	 0	 4	 11	 10	 10	 12	 0	 1	 13	 11	 11	 11	 11	 0	 2	 6	 9	 8	 9	 11	 0	 1	 7	 6	 8	 7	 10	 1	 1	 4	 7	 8	 7	 8	 0	 1	 7	 9	 7	 8	 6	 0	 1	 6	 9	 8	 7	 6	 0	 3	 7	 9	 6	 6	 0	 0	 1	 9	 8	 7	 7	 6	 0	 0	 5	 4	 6	 7	 8	 0	 1	 8	 10	 7	 10	 10	 0	 0	 7	 5	 7	 5	 5	 0	 3	 5	 6	 7	 9	 8	 0	 3	 11	 9	 9	 11	 12	 0	 0	 2	 11		
+Total Volume	 4795000	 4975000	 6340000	 5169000	 50000	 400000	 4655000	 6125000	 6525000	 6445000	 2740000	 0	 0	 300000	 5050000	 5465000	 3725000	 4400000	 0	 50000	 4642000	 5525000	 6975000	 6550000	 4325000	 0	 50000	 6840000	 5625000	 6375000	 6395000	 7585000	 0	 175000	 6485000	 6130000	 7025000	 6790000	 4530000	 0	 75000	 4275000	 5480000	 7385000	 7905000	 3040000	 0	 0	 450000	 5565000	 5965000	 8460000	 5675000	 0	 125000	 6080000	 8280000	 5470000	 6760000	 6210000	 0	 100000	 3260000	 4925000	 6830000	 7670000	 5125000	 0	 50000	 4910000	 3850000	 6975000	 5,765,000	 6,400,000	 25,000	 275,000	 3,815,000	 10,030,000	 7,890,000	 8,830,000	 7,790,000	 0	 110,000	 4,800,000	 6,396,000	 9,950,000	 10,505,000	 7,920,000	 0	 100,000	 7,960,000	 8,320,000	 7,265,000	 8,635,000	 6,165,000	 0	 150,000	 5,580,000	 8,520,000	 5,130,000	 6,625,000	 0	 0	 25,000	 5,230,000	 6,010,000	 9,205,000	 6,960,000	 4,465,000	 0	 0	 3,880,000	 5,435,000	 5,675,000	 8,615,000	 4,265,000	 0	 45,000	 6,990,000	 7,745,000	 6,735,000	 11,865,000	 6,970,000	 0	 0	 5,255,000	 6,125,000	 6,540,000	 10,240,000	 6,955,000	 0	 200,000	 6,335,000	 8,560,000	 9,395,000	 8,030,000	 10,485,000	 0	 635,000	 10,295,000	 9,235,000	 9,735,000	 15,915,000	 10,245,000	 0	 0	 55,000	 12,715,000	
+Sheet1 
+  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	
+EnronOnline	  	  	  	  	  	  	  	  	  	  	  	  	  	  	
+  	Transaction Summary Report														
+Transaction ID	Transaction Time	Counterparty Name	Product Type	Buy Volume	Sell Volume	Units	Currency	Price	External User ID	Trader ID	Risk Book	  	  	  	
+ 1292939	 37035.47535	BNP Paribas	US Crude WTI Fin Swap 	 25000	Barrel per month	United States Dollar	 28.68	JOHNRED01	GWHALLE	WTI-GW-NXC2	  	Count of Transaction Time			
+ 1294582	 37035.62911	ConAgra Energy Services, Inc.	US Crude WTI Fin Swap 	 25000	  	Barrel per month	United States Dollar	 28.35	JALTILIO	GWHALLE	WTI-GW-NXC2	  	Counterparty Name	Total	
+ 1290113	 37035.36464	ConAgra Energy Services, Inc.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.64	JALTILIO	GWHALLE	WTI-GW-NXC2	  	BNP Paribas	 1	
+ 1290388	 37035.36986	ConAgra Energy Services, Inc.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.58	JALTILIO	GWHALLE	WTI-GW-NXC2	  	ConAgra Energy Services, Inc.	 4		
+ 1291621	 37035.40023	ConAgra Energy Services, Inc.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.1	JALTILIO	GWHALLE	WTI-GW-NXC2	  	Conectiv Energy Supply, Inc.	 1		
+ 1291245	 37035.38909	Conectiv Energy Supply, Inc.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.28	bradhoese2	GWHALLE	WTI-GW-NXC1	  	Elf Trading SA	 2	
+ 1288216	 37035.18417	Elf Trading SA	US Crude WTI Fin Swap 	 30000	  	Barrel per month	United States Dollar	 29.64	4matheron	GWHALLE	WTI-GW-NXC1	  	Glencore Commodities Limited	 17	
+ 1288196	 37035.17502	Elf Trading SA	US Crude WTI Fin Swap 	 40000	Barrel per month	United States Dollar	 29.56	4matheron	GWHALLE	WTI-GW-NXC2	  	Hess Energy Trading Company LLC	 121		
+ 1288271	 37035.24206	Glencore Commodities Limited	US Crude WTI Fin Swap 	 5000	  	Barrel per month	United States Dollar	 29.6	tlavin3242	GWHALLE	WTI-GW-NXC2	  	Hess Energy Trading Company UK Limited as agents for Hess Energy Trading Company LLC	 2	
+ 1290742	 37035.37788	Glencore Commodities Limited	US Crude WTI Fin Swap 	 25000	  	Barrel per month	United States Dollar	 29.54	tlavin3242	GWHALLE	WTI-GW-NXC2	  	J. Aron & Company	 31	
+ 1290836	 37035.37981	Glencore Commodities Limited	US Crude WTI Fin Swap 	 25000	  	Barrel per month	United States Dollar	 29.48	tlavin3242	GWHALLE	WTI-GW-NXC2	  	Morgan Stanley Capital Group, Inc.	 3	
+ 1291025	 37035.38422	Glencore Commodities Limited	US Crude WTI Fin Swap 	 25000	  	Barrel per month	United States Dollar	 29.38	tlavin3242	GWHALLE	WTI-GW-NXC2	  	Phibro Inc.	 67	
+ 1292559	 37035.44741	Glencore Commodities Limited	US Crude WTI Fin Swap 	 25000	  	Barrel per month	United States Dollar	 28.86	tlavin3242	GWHALLE	WTI-GW-NXC2	  	Sempra Energy Trading Corp.	 117	
+ 1288231	 37035.19843	Glencore Commodities Limited	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.6	tlavin3242	GWHALLE	WTI-GW-NXC1	  	Grand Total	 366	
+ 1291400	 37035.39343	Glencore Commodities Limited	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.1	tlavin3242	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1292200	 37035.42388	Glencore Commodities Limited	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.12	tlavin3242	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1292272	 37035.42752	Glencore Commodities Limited	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.04	tlavin3242	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1293398	 37035.50795	Glencore Commodities Limited	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.57	tlavin3242	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1293435	 37035.51059	Glencore Commodities Limited	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.41	tlavin3242	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1288069	 37035.11837	Glencore Commodities Limited	US Crude WTI Fin Swap 	 10000	Barrel per month	United States Dollar	 29.56	nsaperia	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1288264	 37035.24025	Glencore Commodities Limited	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.62	tlavin3242	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1292609	 37035.45076	Glencore Commodities Limited	US Crude WTI Fin Swap 	 25000	Barrel per month	United States Dollar	 28.78	tlavin3242	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1292786	 37035.46199	Glencore Commodities Limited	US Crude WTI Fin Swap 	 20000	Barrel per month	United States Dollar	 28.64	tlavin3242	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1293018	 37035.48443	Glencore Commodities Limited	US Crude WTI Fin Swap 	 25000	Barrel per month	United States Dollar	 28.66	tlavin3242	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1293166	 37035.49188	Glencore Commodities Limited	US Crude WTI Fin Swap 	 25000	Barrel per month	United States Dollar	 28.66	tlavin3242	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1291153	 37035.38706	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 5000	  	Barrel per month	United States Dollar	 29.4	N587JK00	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1290263	 37035.36794	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 10000	  	Barrel per month	United States Dollar	 29.58	JTREADWAY	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1293640	 37035.52552	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 10000	  	Barrel per month	United States Dollar	 28.41	N587JK00	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1294579	 37035.628	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 10000	  	Barrel per month	United States Dollar	 28.41	JTREADWAY	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1289686	 37035.35589	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 20000	  	Barrel per month	United States Dollar	 29.64	N587JK00	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1291157	 37035.38713	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 20000	  	Barrel per month	United States Dollar	 29.4	rsrsrsrs	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1293409	 37035.50917	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 20000	  	Barrel per month	United States Dollar	 28.55	JTREADWAY	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1290608	 37035.37475	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 25000	  	Barrel per month	United States Dollar	 29.56	MICGUIDO	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1291440	 37035.3945	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 25000	  	Barrel per month	United States Dollar	 29.12	rsrsrsrs	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1292788	 37035.46237	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 25000	  	Barrel per month	United States Dollar	 28.62	rsrsrsrs	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1292839	 37035.46653	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 25000	  	Barrel per month	United States Dollar	 28.7	JTREADWAY	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1293324	 37035.502	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 25000	  	Barrel per month	United States Dollar	 28.66	JTREADWAY	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1291983	 37035.41218	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 30000	  	Barrel per month	United States Dollar	 29.18	rsrsrsrs	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1293407	 37035.50911	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 30000	  	Barrel per month	United States Dollar	 28.55	MICGUIDO	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1293641	 37035.52557	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 40000	  	Barrel per month	United States Dollar	 28.41	JTREADWAY	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1294578	 37035.62703	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 40000	  	Barrel per month	United States Dollar	 28.41	MICGUIDO	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1290125	 37035.36488	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.6	rsrsrsrs	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1290215	 37035.36684	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.62	rsrsrsrs	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1290255	 37035.36772	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.6	rsrsrsrs	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1290298	 37035.36839	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.54	N587JK00	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1290600	 37035.37448	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.58	rsrsrsrs	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1290760	 37035.37821	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.52	rsrsrsrs	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1290807	 37035.37927	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.5	rsrsrsrs	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1290957	 37035.38222	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.46	rsrsrsrs	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1290959	 37035.38228	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.44	rsrsrsrs	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1291008	 37035.38377	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.42	rsrsrsrs	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1291120	 37035.38615	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.38	JTREADWAY	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1291209	 37035.38839	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.34	JTREADWAY	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1291253	 37035.38925	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.26	N587JK00	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1291268	 37035.38971	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.26	N587JK00	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1291325	 37035.39134	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.2	rsrsrsrs	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1291385	 37035.39311	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.12	rsrsrsrs	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1291456	 37035.39507	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.14	rsrsrsrs	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1291576	 37035.39904	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.1	rsrsrsrs	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1291614	 37035.39998	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.08	rsrsrsrs	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1291645	 37035.40098	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.1	rsrsrsrs	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1291679	 37035.40185	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.14	rsrsrsrs	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1291709	 37035.4027	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.14	MICWHITE	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1291781	 37035.4052	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.1	JTREADWAY	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1291821	 37035.4072	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.1	rsrsrsrs	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1292105	 37035.41778	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.16	N587JK00	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1292155	 37035.42148	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.12	rsrsrsrs	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1292260	 37035.42705	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.08	rsrsrsrs	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1292400	 37035.43448	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.86	rsrsrsrs	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1292533	 37035.44459	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.94	JTREADWAY	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1292545	 37035.44605	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.9	N587JK00	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1292747	 37035.45928	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.64	crudebuyer	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1293376	 37035.50578	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.63	rsrsrsrs	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1293388	 37035.50672	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.61	rsrsrsrs	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1293454	 37035.51162	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.41	crudebuyer	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1293508	 37035.51624	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.27	crudebuyer	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1293879	 37035.55878	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.45	N587JK00	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1293967	 37035.57022	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.33	rsrsrsrs	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1293978	 37035.57047	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.33	JTREADWAY	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1294007	 37035.57155	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.33	MICGUIDO	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1294046	 37035.57304	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.39	JTREADWAY	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1294093	 37035.5748	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.39	N587JK00	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1294104	 37035.57536	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.39	rsrsrsrs	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1294112	 37035.57591	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.37	JTREADWAY	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1294177	 37035.58194	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.41	N587JK00	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1294245	 37035.58598	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.35	crudebuyer	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1294503	 37035.60167	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.37	rsrsrsrs	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1294580	 37035.62817	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.39	JTREADWAY	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1288698	 37035.31444	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.64	rsrsrsrs	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1290203	 37035.36672	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.62	JTREADWAY	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1290329	 37035.36909	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.54	rsrsrsrs	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1290654	 37035.37564	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.56	JTREADWAY	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1290980	 37035.38274	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.42	N587JK00	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1290994	 37035.38313	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 25000	Barrel per month	United States Dollar	 29.44	JTREADWAY	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1291143	 37035.38662	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.4	rsrsrsrs	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1291434	 37035.39431	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 20000	Barrel per month	United States Dollar	 29.16	MICGUIDO	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1291568	 37035.39876	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 25000	Barrel per month	United States Dollar	 29.12	rsrsrsrs	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1291588	 37035.39954	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.1	MICWHITE	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1291662	 37035.40133	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.14	rsrsrsrs	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1291691	 37035.40226	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.16	JTREADWAY	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1291736	 37035.40374	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.12	rsrsrsrs	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1291791	 37035.40566	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.12	rsrsrsrs	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1291795	 37035.40582	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.14	rsrsrsrs	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1291834	 37035.40749	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.1	rsrsrsrs	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1291934	 37035.41029	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 15000	Barrel per month	United States Dollar	 29.14	MICGUIDO	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1291937	 37035.4103	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 25000	Barrel per month	United States Dollar	 29.14	N587JK00	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1291945	 37035.41061	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.16	JTREADWAY	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1292074	 37035.41647	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.16	rsrsrsrs	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1292083	 37035.41672	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 10000	Barrel per month	United States Dollar	 29.18	MICGUIDO	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1292084	 37035.41674	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 40000	Barrel per month	United States Dollar	 29.18	rsrsrsrs	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1292431	 37035.43664	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.88	rsrsrsrs	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1292501	 37035.44126	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.92	JTREADWAY	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1292515	 37035.44291	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.96	MICWHITE	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1292549	 37035.44675	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.88	MICWHITE	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1292597	 37035.45006	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.72	MICWHITE	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1292655	 37035.45375	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.74	N587JK00	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1292683	 37035.45554	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.68	N587JK00	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1292767	 37035.46051	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.6	MICWHITE	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1292815	 37035.46424	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 25000	Barrel per month	United States Dollar	 28.62	N587JK00	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1292836	 37035.46626	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 25000	Barrel per month	United States Dollar	 28.72	JTREADWAY	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1292936	 37035.47501	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 25000	Barrel per month	United States Dollar	 28.66	JTREADWAY	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1293013	 37035.48372	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 25000	Barrel per month	United States Dollar	 28.64	rsrsrsrs	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1293135	 37035.49012	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 25000	Barrel per month	United States Dollar	 28.64	rsrsrsrs	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1293189	 37035.49347	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 25000	Barrel per month	United States Dollar	 28.7	rsrsrsrs	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1293193	 37035.49359	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 25000	Barrel per month	United States Dollar	 28.72	JTREADWAY	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1293432	 37035.51045	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.43	JTREADWAY	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1293436	 37035.51064	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.43	JTREADWAY	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1293442	 37035.51095	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.43	JTREADWAY	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1293460	 37035.51188	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 45000	Barrel per month	United States Dollar	 28.35	N587JK00	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1293485	 37035.51429	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 5000	Barrel per month	United States Dollar	 28.29	N587JK00	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1293486	 37035.51431	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 45000	Barrel per month	United States Dollar	 28.29	rsrsrsrs	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1293495	 37035.51532	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.29	rsrsrsrs	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1293521	 37035.51726	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.23	N587JK00	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1293628	 37035.52413	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.39	crudebuyer	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1293635	 37035.52501	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.43	JTREADWAY	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1293656	 37035.52757	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.39	rsrsrsrs	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1293693	 37035.53231	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.43	JTREADWAY	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1293725	 37035.5367	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.39	rsrsrsrs	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1293791	 37035.54363	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.41	rsrsrsrs	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1293803	 37035.54584	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 30000	Barrel per month	United States Dollar	 28.45	MICGUIDO	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1293886	 37035.55984	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.41	JTREADWAY	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1294169	 37035.58109	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.43	N587JK00	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1294212	 37035.58458	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.33	crudebuyer	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1294255	 37035.58631	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.35	JTREADWAY	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1294292	 37035.58782	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.39	rsrsrsrs	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1294322	 37035.58865	Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.43	JTREADWAY	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1294555	 37035.62198	Hess Energy Trading Company UK Limited as agents for Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.37	jdockery	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1294556	 37035.62205	Hess Energy Trading Company UK Limited as agents for Hess Energy Trading Company LLC	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.39	jdockery	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1288217	 37035.18442	J. Aron & Company	US Crude WTI Fin Swap 	 20000	  	Barrel per month	United States Dollar	 29.64	tukechar	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1288214	 37035.18359	J. Aron & Company	US Crude WTI Fin Swap 	 25000	  	Barrel per month	United States Dollar	 29.66	doncastur	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1290746	 37035.37793	J. Aron & Company	US Crude WTI Fin Swap 	 25000	  	Barrel per month	United States Dollar	 29.54	eriksaaa	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1292765	 37035.46045	J. Aron & Company	US Crude WTI Fin Swap 	 25000	  	Barrel per month	United States Dollar	 28.58	eriksaaa	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1292884	 37035.47057	J. Aron & Company	US Crude WTI Fin Swap 	 25000	  	Barrel per month	United States Dollar	 28.62	eriksaaa	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1288220	 37035.18559	J. Aron & Company	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.62	tukechar	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1290116	 37035.36469	J. Aron & Company	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.62	scottduff	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1290626	 37035.37517	J. Aron & Company	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.54	eriksaaa	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1290767	 37035.37831	J. Aron & Company	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.5	eriksaaa	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1290969	 37035.38253	J. Aron & Company	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.42	eriksaaa	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1290974	 37035.38264	J. Aron & Company	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.4	eriksaaa	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1291472	 37035.39563	J. Aron & Company	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.1	eriksaaa	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1292268	 37035.42736	J. Aron & Company	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.06	eriksaaa	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1292573	 37035.44826	J. Aron & Company	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.76	eriksaaa	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1293456	 37035.51171	J. Aron & Company	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.37	eriksaaa	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1293833	 37035.55389	J. Aron & Company	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.43	eriksaaa	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1293887	 37035.5599	J. Aron & Company	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.39	eriksaaa	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1288203	 37035.17821	J. Aron & Company	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.58	doncastur	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1288205	 37035.1786	J. Aron & Company	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.6	doncastur	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1288206	 37035.17936	J. Aron & Company	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.62	doncastur	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1288207	 37035.17946	J. Aron & Company	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.64	doncastur	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1288211	 37035.18133	J. Aron & Company	US Crude WTI Fin Swap 	 25000	Barrel per month	United States Dollar	 29.66	doncastur	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1293588	 37035.52172	J. Aron & Company	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.35	eriksaaa	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1293594	 37035.522	J. Aron & Company	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.39	eriksaaa	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1293743	 37035.53913	J. Aron & Company	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.39	bernbroph	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1293782	 37035.54274	J. Aron & Company	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.39	bernbroph	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1293792	 37035.54372	J. Aron & Company	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.43	bernbroph	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1293809	 37035.5469	J. Aron & Company	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.45	eriksaaa	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1294039	 37035.57273	J. Aron & Company	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.41	eriksaaa	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1294047	 37035.57311	J. Aron & Company	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.41	eriksaaa	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1294427	 37035.5936	J. Aron & Company	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.39	scottduff	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1288047	 37035.10285	Morgan Stanley Capital Group, Inc.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.54	alfsalti	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1294566	 37035.62399	Morgan Stanley Capital Group, Inc.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.41	borislibma	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1294574	 37035.62641	Morgan Stanley Capital Group, Inc.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.43	borislibma	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1293000	 37035.48208	Phibro Inc.	US Crude WTI Fin Swap 	 25000	  	Barrel per month	United States Dollar	 28.64	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1293098	 37035.48778	Phibro Inc.	US Crude WTI Fin Swap 	 25000	  	Barrel per month	United States Dollar	 28.64	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1293105	 37035.48807	Phibro Inc.	US Crude WTI Fin Swap 	 25000	  	Barrel per month	United States Dollar	 28.62	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1292729	 37035.45815	Phibro Inc.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.68	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1293390	 37035.50705	Phibro Inc.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.59	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1293411	 37035.50924	Phibro Inc.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.55	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1293415	 37035.5098	Phibro Inc.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.49	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1293421	 37035.50984	Phibro Inc.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.47	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1293428	 37035.51017	Phibro Inc.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.41	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1293441	 37035.51079	Phibro Inc.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.41	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1293458	 37035.51181	Phibro Inc.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.33	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1293472	 37035.51334	Phibro Inc.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.33	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1293490	 37035.51456	Phibro Inc.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.27	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1293523	 37035.51763	Phibro Inc.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.21	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1293551	 37035.51942	Phibro Inc.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.27	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1293624	 37035.524	Phibro Inc.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.37	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1293643	 37035.52579	Phibro Inc.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.37	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1293685	 37035.53119	Phibro Inc.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.45	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1293689	 37035.53182	Phibro Inc.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.41	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1293698	 37035.53358	Phibro Inc.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.41	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1293709	 37035.53537	Phibro Inc.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.41	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1293722	 37035.53655	Phibro Inc.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.37	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1293734	 37035.53806	Phibro Inc.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.37	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1293760	 37035.54088	Phibro Inc.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.37	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1293805	 37035.54597	Phibro Inc.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.43	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1293881	 37035.55885	Phibro Inc.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.43	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1293883	 37035.55946	Phibro Inc.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.39	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1294191	 37035.58269	Phibro Inc.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.37	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1294198	 37035.58333	Phibro Inc.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.31	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1294241	 37035.58571	Phibro Inc.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.37	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1294251	 37035.58616	Phibro Inc.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.33	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1294274	 37035.58712	Phibro Inc.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.37	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1294527	 37035.60944	Phibro Inc.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.35	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1294667	 37035.65895	Phibro Inc.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.33	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1290209	 37035.36678	Phibro Inc.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.64	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1290351	 37035.3694	Phibro Inc.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.56	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1290678	 37035.37626	Phibro Inc.	US Crude WTI Fin Swap 	 25000	Barrel per month	United States Dollar	 29.58	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1290793	 37035.37898	Phibro Inc.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.52	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1290916	 37035.38146	Phibro Inc.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.48	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1291050	 37035.38461	Phibro Inc.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.38	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1291235	 37035.38892	Phibro Inc.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.3	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1291323	 37035.39118	Phibro Inc.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.22	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1291641	 37035.40087	Phibro Inc.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.12	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1291653	 37035.40119	Phibro Inc.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.12	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1291948	 37035.41072	Phibro Inc.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.18	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1292166	 37035.4222	Phibro Inc.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.14	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1292770	 37035.46064	Phibro Inc.	US Crude WTI Fin Swap 	 25000	Barrel per month	United States Dollar	 28.62	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1293178	 37035.4928	Phibro Inc.	US Crude WTI Fin Swap 	 25000	Barrel per month	United States Dollar	 28.68	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1293663	 37035.52817	Phibro Inc.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.43	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1293676	 37035.52993	Phibro Inc.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.47	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1293678	 37035.53015	Phibro Inc.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.47	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1293918	 37035.56612	Phibro Inc.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.35	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1293922	 37035.56684	Phibro Inc.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.35	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1293926	 37035.56703	Phibro Inc.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.35	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1293966	 37035.57016	Phibro Inc.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.35	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1293974	 37035.57043	Phibro Inc.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.35	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1294006	 37035.57149	Phibro Inc.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.35	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1294012	 37035.57183	Phibro Inc.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.35	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1294118	 37035.57662	Phibro Inc.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.37	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1294149	 37035.57951	Phibro Inc.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.39	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1294323	 37035.58873	Phibro Inc.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.45	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1294327	 37035.58891	Phibro Inc.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.47	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1294334	 37035.58905	Phibro Inc.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.49	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1294748	 37035.67512	Phibro Inc.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.39	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1294751	 37035.67546	Phibro Inc.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.41	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1294753	 37035.6761	Phibro Inc.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.43	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1294757	 37035.67976	Phibro Inc.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.45	SPENCERV	GWHALLE	WTI-GW-NXC1	  	  	  		
+ 1291990	 37035.41233	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 20000	  	Barrel per month	United States Dollar	 29.18	DOMESTIC2	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1290610	 37035.3748	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 25000	  	Barrel per month	United States Dollar	 29.56	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1290838	 37035.37986	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 25000	  	Barrel per month	United States Dollar	 29.48	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1291029	 37035.38428	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 25000	  	Barrel per month	United States Dollar	 29.38	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1291162	 37035.38728	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 25000	  	Barrel per month	United States Dollar	 29.4	DOMESTIC2	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1292560	 37035.44747	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 25000	  	Barrel per month	United States Dollar	 28.86	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1292753	 37035.45957	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 25000	  	Barrel per month	United States Dollar	 28.62	DOMESTIC1	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1292867	 37035.46896	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 25000	  	Barrel per month	United States Dollar	 28.66	DOMESTIC1	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1292873	 37035.46991	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 25000	  	Barrel per month	United States Dollar	 28.64	DOMESTIC1	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1292897	 37035.47164	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 25000	  	Barrel per month	United States Dollar	 28.62	DOMESTIC2	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1292972	 37035.47898	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 25000	  	Barrel per month	United States Dollar	 28.66	DOMESTIC1	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1293003	 37035.48253	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 25000	  	Barrel per month	United States Dollar	 28.62	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1293231	 37035.4967	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 25000	  	Barrel per month	United States Dollar	 28.7	semprakuo	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1290294	 37035.36834	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.56	DOMESTIC1	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1290723	 37035.3775	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.56	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1290884	 37035.38071	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.48	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1290894	 37035.38091	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.48	DOMESTIC1	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1291013	 37035.38391	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.4	semprakuo	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1291032	 37035.38432	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.36	semprakuo	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1291181	 37035.38779	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.38	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1291196	 37035.38803	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.36	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1291217	 37035.38858	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.32	DOMESTIC2	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1291223	 37035.38865	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.3	DOMESTIC1	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1291228	 37035.38875	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.28	semprakuo	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1291269	 37035.38975	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.24	semprakuo	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1291279	 37035.38995	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.2	DOMESTIC1	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1291295	 37035.39034	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.18	oilderiv	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1291344	 37035.39192	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.14	semprakuo	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1291378	 37035.39293	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.14	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1291471	 37035.39557	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.12	DOMESTIC2	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1291476	 37035.39581	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.08	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1291555	 37035.39839	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.12	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1291559	 37035.39861	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.1	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1291585	 37035.39938	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.08	DOMESTIC1	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1291723	 37035.4031	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.12	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1291733	 37035.40368	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.1	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1291811	 37035.40674	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.12	DOMESTIC1	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1291825	 37035.40727	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.08	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1292010	 37035.41309	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.16	DOMESTIC2	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1292145	 37035.4209	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.14	DOMESTIC2	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1292220	 37035.42505	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.1	DOMESTIC1	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1292280	 37035.42789	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29.02	semprakuo	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1292281	 37035.42792	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 29	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1292338	 37035.43067	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.92	DOMESTIC2	GWHALLE	WTI-GW-NXC1	  	  	  	
+ 1292550	 37035.44688	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.86	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1292564	 37035.44778	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.82	DOMESTIC1	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1292631	 37035.45206	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.76	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1292672	 37035.45515	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.7	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1293410	 37035.50922	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.57	semprakuo	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1293471	 37035.51315	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.37	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1293517	 37035.51672	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.21	DOMESTIC1	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1293677	 37035.52999	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.45	DOMESTIC1	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1293680	 37035.53043	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.45	DOMESTIC2	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1293905	 37035.56367	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.33	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1293959	 37035.56991	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.33	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1294075	 37035.57416	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.39	DOMESTIC1	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1294117	 37035.57646	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.35	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1294129	 37035.57787	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.35	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1294335	 37035.5891	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.47	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1294338	 37035.5892	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.45	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1294344	 37035.58931	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.43	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1294354	 37035.58964	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.41	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1294357	 37035.58971	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.39	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1294369	 37035.59014	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	  	Barrel per month	United States Dollar	 28.37	DOMESTIC1	GWHALLE	WTI-GW-NXC2	  	  	  	
+ 1290478	 37035.37133	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.6	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1290853	 37035.38001	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 25000	Barrel per month	United States Dollar	 29.5	DOMESTIC1	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1290983	 37035.38282	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 25000	Barrel per month	United States Dollar	 29.44	DOMESTIC1	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1291146	 37035.38686	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.42	DOMESTIC1	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1291363	 37035.39242	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.16	semprakuo	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1291410	 37035.3936	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.12	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1291448	 37035.39477	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 30000	Barrel per month	United States Dollar	 29.14	oilderiv	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1291545	 37035.39811	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.14	DOMESTIC1	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1291669	 37035.40157	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.16	DOMESTIC1	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1291875	 37035.40878	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.12	DOMESTIC1	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1292073	 37035.41641	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 29.14	DOMESTIC2	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1292348	 37035.43141	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.88	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1292403	 37035.43515	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.84	DOMESTIC1	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1292553	 37035.44713	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.88	DOMESTIC2	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1292612	 37035.45088	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 25000	Barrel per month	United States Dollar	 28.78	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1292718	 37035.45788	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.7	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1292777	 37035.46163	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 25000	Barrel per month	United States Dollar	 28.62	DOMESTIC1	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1292797	 37035.46308	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 25000	Barrel per month	United States Dollar	 28.62	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1292799	 37035.46322	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 25000	Barrel per month	United States Dollar	 28.62	DOMESTIC1	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1292816	 37035.46426	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 25000	Barrel per month	United States Dollar	 28.64	DOMESTIC2	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1292817	 37035.46444	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 25000	Barrel per month	United States Dollar	 28.66	DOMESTIC1	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1292820	 37035.4649	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 25000	Barrel per month	United States Dollar	 28.68	DOMESTIC2	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1292821	 37035.46501	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 25000	Barrel per month	United States Dollar	 28.7	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1292823	 37035.46509	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 25000	Barrel per month	United States Dollar	 28.7	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1292833	 37035.46616	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 25000	Barrel per month	United States Dollar	 28.72	DOMESTIC1	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1292848	 37035.46738	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 25000	Barrel per month	United States Dollar	 28.68	DOMESTIC2	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1292890	 37035.47115	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 25000	Barrel per month	United States Dollar	 28.64	DOMESTIC2	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1292906	 37035.47208	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 25000	Barrel per month	United States Dollar	 28.64	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1293196	 37035.49394	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 25000	Barrel per month	United States Dollar	 28.74	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1293466	 37035.51296	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.39	DOMESTIC1	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1293477	 37035.51356	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.29	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1293479	 37035.5138	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.29	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1293535	 37035.51834	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.23	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1293541	 37035.51884	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.29	semprakuo	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1293559	 37035.52016	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.29	DOMESTIC1	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1293682	 37035.53066	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.47	DOMESTIC2	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1293701	 37035.53426	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.43	DOMESTIC1	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1293804	 37035.54589	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 20000	Barrel per month	United States Dollar	 28.45	semprakuo	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1293842	 37035.55512	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.47	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1293845	 37035.55579	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.49	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1294092	 37035.57475	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.41	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1294100	 37035.57525	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.39	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1294148	 37035.57944	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.37	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1294153	 37035.57999	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.41	DOMESTIC1	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1294171	 37035.58127	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.45	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1294217	 37035.58476	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.37	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1294239	 37035.58565	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.39	DOMESTIC1	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1294266	 37035.58672	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.37	DOMESTIC1	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1294269	 37035.58688	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.39	DOMESTIC1	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1294312	 37035.58839	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.41	DOMESTIC	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1294693	 37035.66622	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 30000	Barrel per month	United States Dollar	 28.35	semprakuo	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1294707	 37035.66759	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 20000	Barrel per month	United States Dollar	 28.35	semprakuo	GWHALLE	WTI-GW-NXC2	  	  	  		
+ 1294712	 37035.669	Sempra Energy Trading Corp.	US Crude WTI Fin Swap 	 50000	Barrel per month	United States Dollar	 28.37	semprakuo	GWHALLE	WTI-GW-NXC2	  	  	  		
+  	  	  	  	 8485000	 7430000	  	  	  	  	  	  	  	  	  	
+  	  	  	  	 15915000	
+
+EnronOnline Crude Volume
+ Total WTI Transactions
+ EnronOnline Total WTI Transactions
+ Total Counterparties
+ EnronOnline Crude Trading Counterparties
+ EnronOnline Crude Volume

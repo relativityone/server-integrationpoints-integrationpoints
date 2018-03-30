@@ -6,7 +6,7 @@ using OpenQA.Selenium.Remote;
 
 namespace kCura.IntegrationPoints.UITests.Actions
 {
-	public class IntegrationPointsImportFTPAction : IntegrationPointsAction
+	public class IntegrationPointsImportFTPAction : IntegrationPointsImportAction
 	{
 		public IntegrationPointsImportFTPAction(RemoteWebDriver driver, TestContext context) : base(driver, context)
 		{

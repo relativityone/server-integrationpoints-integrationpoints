@@ -1,6 +1,4 @@
 ﻿
-using kCura.IntegrationPoint.Tests.Core.Models;
-using kCura.IntegrationPoint.Tests.Core.Models.FTP;
 using kCura.IntegrationPoint.Tests.Core.Models.Ldap;
 using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Configuration;
@@ -10,7 +8,7 @@ using OpenQA.Selenium.Remote;
 
 namespace kCura.IntegrationPoints.UITests.Actions
 {
-	public class IntegrationPointsImportLdapAction : IntegrationPointsAction
+	public class IntegrationPointsImportLdapAction : IntegrationPointsImportAction
 	{
 		public IntegrationPointsImportLdapAction(RemoteWebDriver driver, TestContext context) : base(driver, context)
 		{
