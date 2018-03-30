@@ -75,11 +75,12 @@
     <Compile Include="Pages\ExportToFileThirdPagePanel.cs" />
     <Compile Include="Pages\ExportToFileThirdPageVolumeSubdirectoryDetails.cs" />
     <Compile Include="Pages\FirstPage.cs" />
-    <Compile Include="Pages\Ftp\ImportWithFtpFirstPage.cs" />
+    <Compile Include="Pages\FTP\ImportWithFTPFirstPage.cs" />
+    <Compile Include="Pages\FTP\ImportWithFTPThirdPage.cs" />
     <Compile Include="Pages\ImportFirstPage.cs" />
     <Compile Include="Pages\ImportSecondBasePage.cs" />
     <Compile Include="Pages\ImportThirdPage.cs" />
-    <Compile Include="Pages\Ftp\ImportWithFTPSecondPage.cs" />
+    <Compile Include="Pages\FTP\ImportWithFTPSecondPage.cs" />
     <Compile Include="Pages\IntegrationPointDetailsPage.cs" />
     <Compile Include="Pages\IntegrationPointsPage.cs" />
     <Compile Include="Pages\ExportToFileSecondPage.cs" />
@@ -110,6 +111,8 @@
     <Compile Include="Tests\UserOnLoginPageTest.cs" />
     <Compile Include="Validation\ExportToLoadFileProviderValidator.cs" />
     <Compile Include="Validation\BaseUiValidator.cs" />
+    <Compile Include="Validation\ImportFromFTPValidator.cs" />
+    <Compile Include="Validation\ImportValidator.cs" />
     <Compile Include="Validation\ProviderModelHtmlExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

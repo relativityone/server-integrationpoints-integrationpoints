@@ -1,10 +1,11 @@
 ﻿using kCura.IntegrationPoint.Tests.Core.Models.FTP;
+using kCura.Utility;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Support.PageObjects;
 using OpenQA.Selenium.Support.UI;
 
-namespace kCura.IntegrationPoints.UITests.Pages
+namespace kCura.IntegrationPoints.UITests.Pages.FTP
 {
 	public class ImportWithFTPSecondPage : ImportSecondBasePage<ImportFromFTPModel>
 	{
@@ -75,10 +76,14 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			set { SetInputText(CSVFilepathInput, value); }
 		}
 
-
 		public override void SetupModel(ImportFromFTPModel model)
 		{
-			throw new System.NotImplementedException();
+			Host = model.ConnectionAndFileInfo.Host;
+			Protocol = model.ConnectionAndFileInfo.Protocol.GetDescription();
+			Port = model.ConnectionAndFileInfo.Port;
+			Username = model.ConnectionAndFileInfo.Username;
+			Password = model.ConnectionAndFileInfo.Password;
+			CSVFilepath = model.ConnectionAndFileInfo.CSVFilepath;
 		}
 	}
 }
