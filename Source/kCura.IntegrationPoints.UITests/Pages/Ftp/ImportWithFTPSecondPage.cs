@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoint.Tests.Core.Models.FTP;
+﻿using kCura.IntegrationPoint.Tests.Core.Extensions;
+using kCura.IntegrationPoint.Tests.Core.Models.FTP;
 using kCura.Utility;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
@@ -82,8 +83,8 @@ namespace kCura.IntegrationPoints.UITests.Pages.FTP
 			Host = model.ConnectionAndFileInfo.Host;
 			Protocol = model.ConnectionAndFileInfo.Protocol.GetDescription();
 			Port = model.ConnectionAndFileInfo.Port;
-			Username = model.ConnectionAndFileInfo.Username.ToString();
-			Password = model.ConnectionAndFileInfo.Password.ToString();
+			Username = model.ConnectionAndFileInfo.Username.ToPlainString();
+			Password = model.ConnectionAndFileInfo.Password.ToPlainString();
 			CSVFilepath = model.ConnectionAndFileInfo.CSVFilepath;
 		}
 	}
