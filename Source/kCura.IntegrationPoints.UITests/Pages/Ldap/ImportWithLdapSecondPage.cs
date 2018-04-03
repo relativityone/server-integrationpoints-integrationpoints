@@ -10,10 +10,10 @@ namespace kCura.IntegrationPoints.UITests.Pages
 	public class ImportWithLdapSecondPage : ImportSecondBasePage<ImportFromLdapModel>
 	{
 		
-		[FindsBy(How = How.Id, Using = "connection-path")]
+		[FindsBy(How = How.Id, Using = "connectionPath")]
 		protected IWebElement ConnectionPathInput { get; set; }
 
-		[FindsBy(How = How.Id, Using = "connection-filter")]
+		[FindsBy(How = How.Id, Using = "connectionFilter")]
 		protected IWebElement ConnectionFilterInput { get; set; }
 
 		[FindsBy(How = How.Id, Using = "connectionUsername")]
@@ -89,16 +89,22 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public ImportWithLdapSecondPage(RemoteWebDriver driver) : base(driver)
 		{
+			driver.SwitchTo().Frame("configurationFrame");
+			WaitForPage();
+			PageFactory.InitElements(driver, this);
 		}
 
 		public override void SetupModel(ImportFromLdapModel model)
 		{
-			ConnectionPath = model.Source.ConnectionPath;
+			
+
 			ConnectionFilter = model.Source.ObjectFilterString;
+			ConnectionPath = model.Source.ConnectionPath;
+			AuthenticationMode = model.Source.Authentication.ToString();
 			Password = model.Source.Password.ToString();
 			UserName = model.Source.Username.ToString();
 
-			AuthenticationMode = model.Source.Authentication.ToString();
+			
 		}
 	}
 }

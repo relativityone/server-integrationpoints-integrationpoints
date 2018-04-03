@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 {
 	[TestFixture]
 	[Category(TestCategory.SMOKE)]
-	public class ImportLdapProvider : UiTest
+	public class ImportLdapProviderTest : UiTest
 
 	{
 		private IntegrationPointsImportLdapAction _integrationPointsAction;
