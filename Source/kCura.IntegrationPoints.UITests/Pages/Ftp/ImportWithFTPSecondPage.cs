@@ -82,8 +82,8 @@ namespace kCura.IntegrationPoints.UITests.Pages.FTP
 			Host = model.ConnectionAndFileInfo.Host;
 			Protocol = model.ConnectionAndFileInfo.Protocol.GetDescription();
 			Port = model.ConnectionAndFileInfo.Port;
-			Username = model.ConnectionAndFileInfo.Username;
-			Password = model.ConnectionAndFileInfo.Password;
+			Username = model.ConnectionAndFileInfo.Username.ToString();
+			Password = model.ConnectionAndFileInfo.Password.ToString();
 			CSVFilepath = model.ConnectionAndFileInfo.CSVFilepath;
 		}
 	}
