@@ -312,17 +312,6 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="Relativity.Vfs">
-          <HintPath>..\..\packages\Relativity.Vfs\lib\net462\Relativity.Vfs.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
         <Reference Include="Microsoft.ServiceBus">
           <HintPath>..\..\packages\ServiceBus.v1_1\lib\net40-full\Microsoft.ServiceBus.dll</HintPath>
           <Private>True</Private>
