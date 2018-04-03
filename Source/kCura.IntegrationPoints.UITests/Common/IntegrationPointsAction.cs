@@ -242,6 +242,8 @@ namespace kCura.IntegrationPoints.UITests.Common
 			return thirdPage.SaveIntegrationPoint();
 		}
 
+		
+
 		public PushToRelativitySecondPage SetupPushToRelativitySecondPage(ExportFirstPage firstPage, RelativityProviderModel model)
 		{
 			PushToRelativitySecondPage secondPage = firstPage.GoToNextPagePush();
