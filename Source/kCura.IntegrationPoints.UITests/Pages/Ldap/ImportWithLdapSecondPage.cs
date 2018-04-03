@@ -1,4 +1,6 @@
-﻿using kCura.IntegrationPoint.Tests.Core.Models.Ldap;
+﻿using kCura.IntegrationPoint.Tests.Core.Extensions;
+using kCura.IntegrationPoint.Tests.Core.Models.Ldap;
+using kCura.Utility;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Support.PageObjects;
@@ -21,7 +23,7 @@ namespace kCura.IntegrationPoints.UITests.Pages.Ldap
 		[FindsBy(How = How.Id, Using = "connectionPassword")]
 		protected IWebElement PasswordInput { get; set; }
 
-		[FindsBy(How = How.Id, Using = "s2id_authentication")]
+		[FindsBy(How = How.Id, Using = "authentication")]
 		protected IWebElement AuthenticationSelectWebElement { get; set; }
 		
 		protected SelectElement AuthenticationModeSelectElement => new SelectElement(AuthenticationSelectWebElement);
@@ -94,15 +96,11 @@ namespace kCura.IntegrationPoints.UITests.Pages.Ldap
 
 		public override void SetupModel(ImportFromLdapModel model)
 		{
-			
-
 			ConnectionFilter = model.Source.ObjectFilterString;
 			ConnectionPath = model.Source.ConnectionPath;
-			AuthenticationMode = model.Source.Authentication.ToString();
-			Password = model.Source.Password.ToString();
-			UserName = model.Source.Username.ToString();
-
-			
+			AuthenticationMode = model.Source.Authentication.GetDescription();
+			Password = model.Source.Password.ToPlainString();
+			UserName = model.Source.Username.ToPlainString();
 		}
 	}
 }
