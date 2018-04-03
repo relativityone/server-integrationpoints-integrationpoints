@@ -38,6 +38,7 @@ namespace kCura.IntegrationPoints.UITests.Actions
 		protected ImportThirdPage<TModel> SetupImportThirdPage<TModel>(ImportSecondBasePage<TModel> secondPage, TModel model, Func<ImportThirdPage<TModel>> funcThridPageCreator)
 		{
 			ImportThirdPage<TModel> thirdPage = secondPage.GoToNextPage(funcThridPageCreator);
+			thirdPage.SetupModel(model);
 			return thirdPage;
 		}
 	}

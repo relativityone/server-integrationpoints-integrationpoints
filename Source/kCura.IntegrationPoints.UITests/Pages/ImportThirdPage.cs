@@ -37,12 +37,12 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		[FindsBy(How = How.Id, Using = "mapFieldsBtn")]
 		protected IWebElement MapFieldsElement { get; set; }
 
-		[FindsBy(How = How.Id, Using = "s2id_overwrite")]
+		[FindsBy(How = How.Id, Using = "overwrite")]
 		protected IWebElement OverwriteSelectWebElement { get; set; }
 
 		protected SelectElement OverwriteSelectElement => new SelectElement(OverwriteSelectWebElement);
 
-		[FindsBy(How = How.Id, Using = "s2id_overwrite")]
+		[FindsBy(How = How.Id, Using = "overlay-identifier")]
 		protected IWebElement UniqueIdentifierSelectWebElement { get; set; }
 
 		protected SelectElement UniqueIdentifierSelectElement => new SelectElement(UniqueIdentifierSelectWebElement);
@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		{
 			WaitForPage();
 			PageFactory.InitElements(driver, this);
-			CustodianManagerContainsLinkRowElement = SettingsDivElement.FindElements(By.ClassName("field-row"))[7];
+			CustodianManagerContainsLinkRowElement = SettingsDivElement.FindElements(By.ClassName("field-row"))[11];
 		}
 
 		public void SelectSourceField(string fieldName)
@@ -131,6 +131,11 @@ namespace kCura.IntegrationPoints.UITests.Pages
 				SelectDestinationField(destinationField);
 			}
 
+			if (model.MapFieldsAutomatically)
+			{
+				MapFields();
+			}
+
 			Overwrite = model.Overwrite.GetDescription();
 		}
 
@@ -141,7 +146,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		}
 
 		
-		protected abstract void SetUpModel(TModel model);
+		public abstract void SetupModel(TModel model);
 
 		private void SelectField(SelectElement selectElement, IWebElement addFieldElement, string fieldName)
 		{

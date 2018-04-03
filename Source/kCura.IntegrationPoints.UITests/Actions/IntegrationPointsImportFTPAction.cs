@@ -26,9 +26,7 @@ namespace kCura.IntegrationPoints.UITests.Actions
 			ImportThirdPage<ImportFromFTPModel> thirdPage =
 				SetupImportThirdPage(secondPage, model, () => new ImportWithFTPThirdPage(Driver));
 
-
-
-			return null;
+			return thirdPage.SaveIntegrationPoint();
 		}
 	}
 }

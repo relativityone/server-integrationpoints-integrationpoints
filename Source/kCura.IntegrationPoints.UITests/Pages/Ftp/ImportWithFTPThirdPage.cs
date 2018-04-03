@@ -9,7 +9,7 @@ namespace kCura.IntegrationPoints.UITests.Pages.FTP
 		{
 		}
 
-		protected override void SetUpModel(ImportFromFTPModel model)
+		public override void SetupModel(ImportFromFTPModel model)
 		{
 			SetUpCustodianSettingsModel(model.ImportCustodianSettings);
 			SetUpSharedSettingsModel(model.SharedImportSettings);

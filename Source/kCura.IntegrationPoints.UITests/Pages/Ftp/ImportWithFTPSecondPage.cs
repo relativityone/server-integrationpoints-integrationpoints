@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.UITests.Pages.FTP
 		[FindsBy(How = How.Id, Using = "host")]
 		protected IWebElement HostInput { get; set; }
 
-		[FindsBy(How = How.Id, Using = "s2id_protocol")]
+		[FindsBy(How = How.Id, Using = "protocol")]
 		protected IWebElement ProtocolSelectWebElement { get; set; }
 
 		protected SelectElement ProtocolSelectElement => new SelectElement(ProtocolSelectWebElement);
