@@ -9,6 +9,7 @@ using kCura.IntegrationPoint.Tests.Core.Models.Constants.ExportToLoadFile;
 using kCura.IntegrationPoint.Tests.Core.Models.Ldap;
 using kCura.IntegrationPoint.Tests.Core.Models.Shared;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.UITests.Actions;
 using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoints.UITests.Validation;
@@ -19,16 +20,16 @@ namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 {
 	[TestFixture]
 	[Category(TestCategory.SMOKE)]
-	public class ImportLdapProvider : UiTest
+	public class ImportLdapProviderTest : UiTest
 
 	{
-		private IntegrationPointsAction _integrationPointsAction;
+		private IntegrationPointsImportLdapAction _integrationPointsAction;
 
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
 			EnsureGeneralPageIsOpened();
-			_integrationPointsAction = new IntegrationPointsAction(Driver, Context);
+			_integrationPointsAction = new IntegrationPointsImportLdapAction(Driver, Context);
 		}
 
 
@@ -37,13 +38,10 @@ namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 		{
 			// Arrange
 
-			ImportFromLdapModel model = new ImportFromLdapModel("Import Custodians");
-
+			var model = new ImportFromLdapModel("Import Custodians", ExportToLoadFileTransferredObjectConstants.CUSTODIAN);
 
 			// Step 1
 
-			model.General.Type = IntegrationPointGeneralModel.IntegrationPointTypeEnum.Export;
-			model.General.DestinationProvider = IntegrationPointGeneralModel.INTEGRATION_POINT_PROVIDER_LOADFILE;
 			model.General.TransferredObject = ExportToLoadFileTransferredObjectConstants.CUSTODIAN;
 
 
@@ -61,7 +59,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 
 			// Step 3
 
-			model.ImportCustodianSettingsModel.UniqueIdentifier = "";
+			model.ImportCustodianSettingsModel.UniqueIdentifier = "UniqueID";
 			model.ImportCustodianSettingsModel.CustodianManagerContainsLink = true;
 
 			model.SharedImportSettings.Overwrite = OverwriteType.AppendOverlay;
@@ -77,7 +75,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 			//var validator = new ExportToLoadFileProviderValidator();
 
 			//// Act
-			//IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewExportToLoadfileIntegrationPoint(model);
+			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewImportLdapIntegrationPoint(model);
+			detailsPage.RunIntegrationPoint();
 			//detailsPage.RunIntegrationPoint();
 
 			//// Assert

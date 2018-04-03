@@ -10,7 +10,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		[FindsBy(How = How.Id, Using = "next")]
 		protected IWebElement NextButton { get; set; }
 
-		public ImportSecondBasePage(RemoteWebDriver driver) : base(driver)
+		protected ImportSecondBasePage(RemoteWebDriver driver) : base(driver)
 		{
 			PageFactory.InitElements(driver, this);
 		}
