@@ -12,6 +12,8 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		protected ImportSecondBasePage(RemoteWebDriver driver) : base(driver)
 		{
+			driver.SwitchTo().Frame("configurationFrame");
+			WaitForPage();
 			PageFactory.InitElements(driver, this);
 		}
 

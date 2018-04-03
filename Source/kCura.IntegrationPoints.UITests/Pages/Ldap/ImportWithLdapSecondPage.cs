@@ -1,11 +1,10 @@
-﻿
-using kCura.IntegrationPoint.Tests.Core.Models.Ldap;
+﻿using kCura.IntegrationPoint.Tests.Core.Models.Ldap;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Support.PageObjects;
 using OpenQA.Selenium.Support.UI;
 
-namespace kCura.IntegrationPoints.UITests.Pages
+namespace kCura.IntegrationPoints.UITests.Pages.Ldap
 {
 	public class ImportWithLdapSecondPage : ImportSecondBasePage<ImportFromLdapModel>
 	{
@@ -89,7 +88,6 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public ImportWithLdapSecondPage(RemoteWebDriver driver) : base(driver)
 		{
-			driver.SwitchTo().Frame("configurationFrame");
 			WaitForPage();
 			PageFactory.InitElements(driver, this);
 		}

@@ -21,9 +21,10 @@ namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 	[TestFixture]
 	[Category(TestCategory.SMOKE)]
 	public class ImportLdapProviderTest : UiTest
-
 	{
 		private IntegrationPointsImportLdapAction _integrationPointsAction;
+
+		protected override bool InstallLegalHoldApp => true;
 
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
