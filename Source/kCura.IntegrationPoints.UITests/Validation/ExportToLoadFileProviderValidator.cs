@@ -11,7 +11,7 @@ namespace kCura.IntegrationPoints.UITests.Validation
 
 	public class ExportToLoadFileProviderValidator : BaseUiValidator
 	{
-		public void ValidateSummaryPage(IntegrationPointDetailsPage integrationPointDetailsPage, ExportToLoadFileProviderModel integrationPointModel, bool expectHasErrors)
+		public void ValidateSummaryPage(IntegrationPointDetailsPage integrationPointDetailsPage, ExportToLoadFileProviderModel integrationPointModel, bool expectHasErrors, int? transferedItems = null)
 		{
 			Dictionary<string, string> generalPropertiesTable = integrationPointDetailsPage.SelectGeneralPropertiesTable().Properties;
 
@@ -19,8 +19,8 @@ namespace kCura.IntegrationPoints.UITests.Validation
 
 			ValidateGeneralModel(generalPropertiesTable, integrationPointModel);
 		}
-
-		private static void ValidateHasErrorsProperty(Dictionary<string, string> generalPropertiesTable, bool expectHasErrors)
+        
+	    private static void ValidateHasErrorsProperty(Dictionary<string, string> generalPropertiesTable, bool expectHasErrors)
 		{
 			Assert.AreEqual(expectHasErrors.AsHtmlString(), generalPropertiesTable["Has Errors:"]);
 		}
@@ -102,5 +102,11 @@ namespace kCura.IntegrationPoints.UITests.Validation
 			return $"{includeNatives}; {filePathType}";
 		}
 
+	    public void ValidateTransferedItems(IntegrationPointDetailsPage detailsPage, int transferedItems)
+	    {
+	        var history = detailsPage.GetLatestJobHistoryFromJobStatusTable();
+	        Assert.AreEqual(transferedItems, history.ItemsTransferred);
+	        Assert.AreEqual(0, history.ItemsWithErrors);
+	    }
 	}
 }

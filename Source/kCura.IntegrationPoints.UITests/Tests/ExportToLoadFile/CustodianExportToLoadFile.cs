@@ -7,6 +7,7 @@ using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Pages;
+using kCura.IntegrationPoints.UITests.Validation;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
@@ -74,9 +75,13 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
                     SubdirectoryMaxFiles = 500
                 }
             };
+            var validator = new ExportToLoadFileProviderValidator();
 
             IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewExportCustodianToLoadfileIntegrationPoint(model);
             detailsPage.RunIntegrationPoint();
+
+            validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
+            validator.ValidateTransferedItems(detailsPage, 1);
         }
 
         private void SetupCustodians()

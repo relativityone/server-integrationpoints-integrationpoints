@@ -39,5 +39,27 @@ namespace kCura.IntegrationPoints.UITests.Components
 			By latestJobStatus = By.XPath("//table[@class='itemTable']//tbody/tr[@class='itemListRowAlt']/td");
 			return  Parent.FindElements(latestJobStatus)[jobStatusColumnNumber].Text;
 		}
-	}
+
+	    public int GetTotalItems()
+	    {
+	        const int jobStatusColumnNumber = 11;
+	        By latestJobStatus = By.XPath("//table[@class='itemTable']//tbody/tr[@class='itemListRowAlt']/td");
+	        return int.Parse(Parent.FindElements(latestJobStatus)[jobStatusColumnNumber].Text);
+	    }
+
+        public int GetItemsTransfered()
+	    {
+	        const int jobStatusColumnNumber = 10;
+	        By latestJobStatus = By.XPath("//table[@class='itemTable']//tbody/tr[@class='itemListRowAlt']/td");
+	        return int.Parse(Parent.FindElements(latestJobStatus)[jobStatusColumnNumber].Text);
+	    }
+
+	    public int GetItemsWithErrors()
+	    {
+	        const int jobStatusColumnNumber = 12;
+	        By latestJobStatus = By.XPath("//table[@class='itemTable']//tbody/tr[@class='itemListRowAlt']/td");
+	        return int.Parse(Parent.FindElements(latestJobStatus)[jobStatusColumnNumber].Text);
+	    }
+
+    }
 }
