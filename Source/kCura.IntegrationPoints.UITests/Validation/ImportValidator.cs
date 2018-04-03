@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.UITests.Validation
 {
-	public abstract class ImportValidator : BaseUiValidator
+	public class ImportValidator : BaseUiValidator
 	{
 	}
 }

@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FTPProvider
 			model.ImportCustodianSettings.UniqueIdentifier = _UNIQUE_ID;
 			model.ImportCustodianSettings.CustodianManagerContainsLink = true;
 
-			var validator = new ImportFromFTPValidator();
+			var validator = new ImportValidator();
 
 			// Act
 			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewImportFromFTPIntegrationPoint(model);
