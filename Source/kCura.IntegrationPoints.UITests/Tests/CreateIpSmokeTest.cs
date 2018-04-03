@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 
 			// Act
 			IntegrationPointsPage ipPage = generalPage.GoToIntegrationPointsPage();
-			ExportFirstPage first = ipPage.CreateNewIntegrationPoint();
+			ExportFirstPage first = ipPage.CreateNewExportIntegrationPoint();
 			first.Name = "Test IP";
 			first.Destination = "Load File";
 

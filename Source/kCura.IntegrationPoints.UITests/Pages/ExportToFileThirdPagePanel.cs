@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		protected void SetInputText(IWebElement element, string text)
 		{
-			element.Clear();
+			element.SendKeys(Keys.Control+"a");
 			element.SendKeys(text);
 		}
 	}

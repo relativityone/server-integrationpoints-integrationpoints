@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.UITests.Logging;
@@ -8,11 +9,14 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using NUnit.Framework;
 using Relativity.Core;
+using Relativity.Services.Objects.DataContracts;
 using Serilog;
+using Field = kCura.Relativity.Client.DTOs.Field;
 using Group = kCura.IntegrationPoint.Tests.Core.Group;
 using User = kCura.IntegrationPoint.Tests.Core.User;
 using Workspace = kCura.IntegrationPoint.Tests.Core.Workspace;
@@ -68,9 +72,17 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 				Log.Error(ex,
 					@"Cannot create workspace '{WorkspaceName}' using template '{_TEMPLATE_WKSP_NAME}'. Check if Relativity works correctly (services, ...).");
 				throw;
-			}
+			}			
 
 			Log.Information("Workspace '{WorkspaceName}' was successfully created using template '{_TEMPLATE_WKSP_NAME}.");
+		}
+
+		public void EnableDataGrid(params string[] fieldNames)
+		{			
+			Workspace.EnableDataGrid(GetWorkspaceId());
+
+			//TODO change implementation to IFieldManager Kepler service
+			//ChangeFieldToDataGrid(fieldNames);
 		}
 
 		public TestContext SetupUser()
@@ -156,6 +168,17 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			return this;
 		}
 
+		public TestContext ImportDocumentsWithLargeText(DocumentTestDataBuilder.TestDataType testDataType = DocumentTestDataBuilder.TestDataType.TextWithoutFolderStructure)
+		{
+			ImportDocuments(false, testDataType);
+			return this;
+		}
+
+		public async Task ImportDocumentsWithLargeTextAsync(DocumentTestDataBuilder.TestDataType testDataType = DocumentTestDataBuilder.TestDataType.TextWithoutFolderStructure)
+		{
+			await ImportDocumentsAsync(false, testDataType);
+		}
+
 		public TestContext ImportDocuments(bool withNatives = true, DocumentTestDataBuilder.TestDataType testDataType = DocumentTestDataBuilder.TestDataType.ModerateWithFoldersStructure)
 		{
 			Log.Information(@"Importing documents...");
@@ -165,6 +188,15 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			var workspaceService = new WorkspaceService(new ImportHelper());
 			workspaceService.ImportData(GetWorkspaceId(), data);
 			Log.Information(@"Documents imported.");
+			return this;
+		}
+
+		public TestContext CreateProduction(string savedSearchName, string productionName)
+		{
+			var workspaceService = new WorkspaceService(new ImportHelper());
+			int savedSearchId = RetrieveSavedSearchId(savedSearchName);
+			workspaceService.CreateProduction(WorkspaceId.Value, savedSearchId, productionName);
+
 			return this;
 		}
 
@@ -234,6 +266,65 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			return true;
 		}
 
+		public bool ChangeFieldToDataGrid(params string[] fieldNames)
+		{
+			using (var client = Helper.CreateAdminProxy<IRSAPIClient>())
+			{
+				client.APIOptions.WorkspaceID = WorkspaceId.GetValueOrDefault();
+
+				foreach (string fieldName in fieldNames)
+				{
+					if (!EnableDataGridOnField(fieldName, client))
+					{
+						return false;
+					}
+				}
+			
+			}
+			return true;
+		}
+
+		private static bool EnableDataGridOnField(string fieldName, IRSAPIClient client)
+		{
+			TextCondition nameCondition = new TextCondition(FieldFieldNames.Name, TextConditionEnum.EqualTo, fieldName);
+
+			Query<Field> fieldQuery = new Query<Field>()
+			{
+				Condition = nameCondition,
+				Fields = FieldValue.AllFields
+			};
+
+			try
+			{
+				var queryResult = client.Repositories.Field.Query(fieldQuery);
+
+				if (!queryResult.Success)
+				{
+					Log.Error(@"Unable to query Relativity field: {0}", queryResult.Message);
+					return false;
+				}
+
+				Field field = queryResult.Results[0].Artifact;
+
+				field.EnableDataGrid = true;
+
+				var updateResult = client.Repositories.Field.Update(new List<Field> {field});
+
+				if (!updateResult.Success)
+				{
+					Log.Error(@"Unable to update Relativity field: {0}", updateResult.Message);
+					return false;
+				}
+			}
+			catch (Exception ex)
+			{
+				Log.Error(ex, @"An error occurred during querying or updating Relativity field: {0}", ex.Message);
+				return false;
+			}
+
+			return true;
+		}
+
 		public TestContext TearDown()
 		{
 			if (WorkspaceId.HasValue)
@@ -269,6 +360,19 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		{
 			Assert.NotNull(UserId, $"{nameof(UserId)} is null. User wasn't created.");
 			return UserId.Value;
+		}
+
+		private int RetrieveSavedSearchId(string savedSearchName)
+		{
+			var objectManager = new RelativityObjectManager(WorkspaceId.Value, Helper, null); // we don't need secret store helper to read saved search
+			var savedSearchRequest = new QueryRequest
+			{
+				ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Search },
+				Condition = $"'Name' == '{savedSearchName}'",
+				Fields = new FieldRef[0]
+			};
+			RelativityObject savedSearch = objectManager.Query(savedSearchRequest).First();
+			return savedSearch.ArtifactID;
 		}
 	}
 

@@ -10,6 +10,7 @@
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <OutputPath>..\bin\$(Configuration)\</OutputPath>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -512,17 +513,6 @@
       <ItemGroup>
         <Reference Include="Relativity.Toggles">
           <HintPath>..\..\packages\Relativity.Toggles\lib\net462\Relativity.Toggles.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.Vfs">
-          <HintPath>..\..\packages\Relativity.Vfs\lib\net462\Relativity.Vfs.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

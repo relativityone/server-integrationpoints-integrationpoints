@@ -1,0 +1,24 @@
+﻿ Registry Update
+ FAQs
+ What does it do?
+ The file will update two user settings in the Windows registry. These settings are MaxConnectionsPerServer 
+ and MaxConnectionsPer1_0Server. The values for these settings will be updated to 80 in each case. This is the 
+ recommended setting for Internet Explorer v5. Some users who have used previous versions of IE may lack 
+ these settings or have lower values for these settings. 
+ Why do it?
+ Commodity Logic uses multiple server connections to achieve real time updates of data to the NomLogic 
+ screens. If these settings are too low, users may experience poor performance in the NomLogic application.
+ Who needs to do it?
+ NomLogic users who experience poor performance in the applicaiton.
+ Will every new user have to do this?
+ Many users will already have sufficient settings and will not encounter a problem. This is provided as a 
+ temporary fix during the Beta period. Commodity Logic is preparing a change to the application to make this 
+ seamless to users in the future.
+ What if these instructions don't work for me?
+ Some users in corporate settings may lack sufficient administrative rights to update their registry. In such 
+ cases, the user will have to seek assistance from their IT department to update the registry settings.
+ 1. Click on the file CommodityLogicUpdate.reg
+ 2. Windows will display a dialog box asking if you want to update your registry. *
+ Press 'Yes' 
+ 3. If the update is succcessful, you will see a confirmation.
+

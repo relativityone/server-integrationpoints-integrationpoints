@@ -52,6 +52,8 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Actions\IntegrationPointsImportAction.cs" />
+    <Compile Include="Actions\IntegrationPointsImportLdapAction.cs" />
     <Compile Include="Common\IntegrationPointsAction.cs" />
     <Compile Include="Common\TestCategory.cs" />
     <Compile Include="Components\Component.cs" />
@@ -63,6 +65,7 @@
     <Compile Include="Configuration\TestConfiguration.cs" />
     <Compile Include="Configuration\TestContext.cs" />
     <Compile Include="Auxiliary\ReuseRemoteWebDriver.cs" />
+    <Compile Include="Driver\DriverExtensions.cs" />
     <Compile Include="Logging\LoggerFactory.cs" />
     <Compile Include="Logging\LoggerNameEnricher.cs" />
     <Compile Include="Pages\ExportCustodianToFileSecondPage.cs" />
@@ -72,10 +75,19 @@
     <Compile Include="Pages\ExportToFileThirdPageLoadFileOptions.cs" />
     <Compile Include="Pages\ExportToFileThirdPagePanel.cs" />
     <Compile Include="Pages\ExportToFileThirdPageVolumeSubdirectoryDetails.cs" />
+    <Compile Include="Pages\FirstPage.cs" />
+    <Compile Include="Pages\Ftp\ImportWithFtpFirstPage.cs" />
+    <Compile Include="Pages\ImportFirstPage.cs" />
+    <Compile Include="Pages\ImportSecondBasePage.cs" />
+    <Compile Include="Pages\ImportThirdPage.cs" />
+    <Compile Include="Pages\Ftp\ImportWithFTPSecondPage.cs" />
     <Compile Include="Pages\IntegrationPointDetailsPage.cs" />
     <Compile Include="Pages\IntegrationPointsPage.cs" />
     <Compile Include="Pages\ExportToFileSecondPage.cs" />
     <Compile Include="Pages\ExportFirstPage.cs" />
+    <Compile Include="Pages\Ldap\ImportLdapThirdPage.cs" />
+    <Compile Include="Pages\Ldap\ImportWithLdapFirstPage.cs" />
+    <Compile Include="Pages\Ldap\ImportWithLdapSecondPage.cs" />
     <Compile Include="Pages\Page.cs" />
     <Compile Include="Pages\GeneralPage.cs" />
     <Compile Include="Pages\LoginPage.cs" />
@@ -86,6 +98,10 @@
     <Compile Include="Tests\ExportToLoadFile\CustodianExportToLoadFile.cs" />
     <Compile Include="Tests\ExportToLoadFile\DocumentExportToLoadFileTests.cs" />
     <Compile Include="Tests\Import\ImportFromFTPTest.cs" />
+    <Compile Include="Tests\FTPProvider\ImportFromFTPTest.cs" />
+    <Compile Include="Tests\LDAPProvider\ImportLdapProvider.cs" />
+    <Compile Include="Tests\RelativityProvider\DataGridToSqlTest.cs" />
+    <Compile Include="Tests\ExportToLoadFile\ProductionExportToLoadFileTests.cs" />
     <Compile Include="Tests\RelativityProvider\ImagesSavedSearchToFolderTest.cs" />
     <Compile Include="Tests\RelativityProvider\NativesSavedSearchToFolderTest.cs" />
     <Compile Include="Tests\RelativityProvider\LinksSavedSearchToFolderTest.cs" />
@@ -105,6 +121,9 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="paket.references" />
+    <None Include="UiTestsConfig\testvm.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="UiTestsConfig\PL1.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

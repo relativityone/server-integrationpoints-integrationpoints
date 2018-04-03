@@ -168,6 +168,16 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		#endregion RAP File Settings
 
+		#region FTP Configuration Settings
+
+		public static string FTPConnectionPath => AppSettingString("ftpConnectionPath");
+
+		public static string FTPUsername => AppSettingString("ftpUsername");
+
+		public static string FTPPassword => AppSettingString("ftpPassword");
+
+		#endregion
+
 		#region LDAP Configuration Settings
 
 		public static string LdapConnectionPath => AppSettingString("ldapConnectionPath");

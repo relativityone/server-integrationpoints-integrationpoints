@@ -19,6 +19,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Models
 
 		public string SavedSearch { get; set; }
 
+		public string ProductionSet { get; set; }
+
 		[DefaultValue(1)]
 		public int StartAtRecord { get; set; }
 

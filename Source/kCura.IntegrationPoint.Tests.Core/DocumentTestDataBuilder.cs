@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.DirectoryServices.ActiveDirectory;
 using System.IO;
 using System.Linq;
-using Castle.Components.DictionaryAdapter;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using NUnit.Framework;
 
@@ -13,8 +10,14 @@ namespace kCura.IntegrationPoint.Tests.Core
 {
 	public class DocumentTestDataBuilder
 	{
-		private static readonly string TestDataNatives = @"TestData\NATIVES";
-		private static readonly string ExtendedTestDataNatives = @"TestDataExtended\NATIVES";
+		private static readonly string TestDataPath = @"TestData";
+		private static readonly string TestDataNativesPath = $@"{TestDataPath}\NATIVES";
+		private static readonly string TestDataExtendedPath = @"TestDataExtended";
+		private static readonly string TestDataExtendedNativesPath = $@"{TestDataExtendedPath}\NATIVES";
+		private static readonly string TestDataTextPath = @"TestDataText";
+		private static readonly string TestDataTextNativesPath = $@"{TestDataTextPath}\NATIVES";
+		private static readonly string SaltPepperTestDataPath = @"TestDataSaltPepper";
+		private static readonly string SaltPepperTestDataNativesPath = $@"{SaltPepperTestDataPath}\NATIVES";
 
 		public static DocumentsTestData BuildTestData(string testDirectory = null, bool withNatives = true, TestDataType testDataType = TestDataType.SmallWithFoldersStructure)
 		{
@@ -27,22 +30,30 @@ namespace kCura.IntegrationPoint.Tests.Core
 			DataTable images;
 
 			switch (testDataType)
-				{
+			{
 				case TestDataType.SmallWithFoldersStructure:
 					foldersWithDocuments = GetFoldersWithDocuments(testDirectory, withNatives);
 					images = GetImageDataTable(testDirectory);
 					break;
 				case TestDataType.SmallWithoutFolderStructure:
-					foldersWithDocuments = GetDocumentsIntoRootFolder(Path.Combine(testDirectory, TestDataNatives), withNatives);
-					images = GetImageDataTableForAllNativesInGivenFolder(testDirectory);
+					foldersWithDocuments = GetDocumentsIntoRootFolder(Path.Combine(testDirectory, TestDataNativesPath), withNatives);
+					images = GetImageDataTableForAllNativesInGivenFolder(testDirectory, TestDataExtendedPath);
 					break;
 				case TestDataType.ModerateWithFoldersStructure:
-					foldersWithDocuments = GetFoldersWithDocumentsBasedOnDirectoryStructureOfNatives(Path.Combine(testDirectory, ExtendedTestDataNatives), withNatives);
-					images = GetImageDataTableForAllNativesInGivenFolder(testDirectory);
+					foldersWithDocuments = GetFoldersWithDocumentsBasedOnDirectoryStructureOfNatives(Path.Combine(testDirectory, TestDataExtendedNativesPath), withNatives);
+					images = GetImageDataTableForAllNativesInGivenFolder(testDirectory, TestDataExtendedPath);
 					break;
 				case TestDataType.ModerateWithoutFoldersStructure:
-					foldersWithDocuments = GetDocumentsIntoRootFolder(Path.Combine(testDirectory, ExtendedTestDataNatives), withNatives);
-					images = GetImageDataTableForAllNativesInGivenFolder(testDirectory);
+					foldersWithDocuments = GetDocumentsIntoRootFolder(Path.Combine(testDirectory, TestDataExtendedNativesPath), withNatives);
+					images = GetImageDataTableForAllNativesInGivenFolder(testDirectory, TestDataExtendedPath);
+					break;
+				case TestDataType.TextWithoutFolderStructure:
+					foldersWithDocuments = GetDocumentsIntoRootFolder(Path.Combine(testDirectory, TestDataTextNativesPath), withNatives);
+					images = GetImageDataTableForAllNativesInGivenFolder(testDirectory, TestDataTextPath);
+					break;
+				case TestDataType.SaltPepperWithFolderStructure:
+					foldersWithDocuments = GetDocumentsIntoRootFolder(Path.Combine(testDirectory, SaltPepperTestDataNativesPath), withNatives);
+					images = GetImageDataTableForAllNativesInGivenFolder(testDirectory, SaltPepperTestDataPath);
 					break;
 				default:
 					throw new Exception("Unsupported TestDataType parameter");
@@ -95,7 +106,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				var newFolder = new FolderWithDocuments(Path.GetFileName(folderPath), CreateDataTableForDocuments());
 
 				FillFolderWithFiles(newFolder, folderPath, withNatives);
-				
+
 				//Link "Child folder" with "Parent folder"
 				DirectoryInfo parentFolderInfo = Directory.GetParent(folderPath);
 				if (parentFolderInfo.FullName != nativesFolderPath && foldersList.Any(n => n.FolderName == parentFolderInfo.Name))
@@ -125,7 +136,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			var foldersList = new List<FolderWithDocuments>();
 
 			var newFolder = new FolderWithDocuments(Path.GetFileName(nativesFolderPath), CreateDataTableForDocuments());
-			
+
 			foreach (string filePath in Directory.GetFiles(nativesFolderPath, "*", SearchOption.AllDirectories))
 			{
 				newFolder.Documents.Rows.Add(Path.GetFileNameWithoutExtension(filePath), Path.GetFileName(filePath), withNatives ? filePath : string.Empty, "Level1\\Level2", false);
@@ -162,10 +173,10 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return table;
 		}
 
-		private static DataTable GetImageDataTableForAllNativesInGivenFolder(string testDirectory)
+		private static DataTable GetImageDataTableForAllNativesInGivenFolder(string testDirectory, string testDataDirectory)
 		{
-			string nativesFolderPath = Path.Combine(testDirectory, @"TestDataExtended\NATIVES");
-			string imagesFolderPath = Path.Combine(testDirectory, @"TestDataExtended\IMAGES");
+			string nativesFolderPath = Path.Combine(testDirectory, testDataDirectory, "NATIVES");
+			string imagesFolderPath = Path.Combine(testDirectory, testDataDirectory, "IMAGES");
 			DataTable tableOfImages = CreateDataTableForImages();
 
 			foreach (string nativeFileName in Directory.GetFiles(nativesFolderPath, "*", SearchOption.AllDirectories).Select(Path.GetFileNameWithoutExtension))
@@ -178,7 +189,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			return tableOfImages;
 		}
-		
+
 		private static IEnumerable<string> GetListOfImagesForGivenNativeFile(string nativeFileName, string imagesFolderPath)
 		{
 			return Directory.GetFiles(imagesFolderPath, $"{nativeFileName}*.tif", SearchOption.AllDirectories);
@@ -196,7 +207,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public enum TestDataType
 		{
-			SmallWithFoldersStructure, SmallWithoutFolderStructure, ModerateWithFoldersStructure, ModerateWithoutFoldersStructure
+			SmallWithFoldersStructure, SmallWithoutFolderStructure, ModerateWithFoldersStructure, ModerateWithoutFoldersStructure, TextWithoutFolderStructure, SaltPepperWithFolderStructure
 		}
 
 		#endregion

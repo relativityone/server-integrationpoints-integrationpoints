@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.UITests.Pages;
@@ -28,6 +29,7 @@ namespace kCura.IntegrationPoints.UITests.Validation
 			while (GetUntilJobFinishedConditionAndExecutionTimeout(jobHistoryModel, sw, jobExecutionTimeoutInMinutes))
 			{
 				jobHistoryModel = integrationPointDetailsPage.GetLatestJobHistoryFromJobStatusTable();
+				Thread.Sleep(1000);
 			}
 
 			return jobHistoryModel?.JobStatus;
@@ -36,8 +38,8 @@ namespace kCura.IntegrationPoints.UITests.Validation
 		private static bool GetUntilJobFinishedConditionAndExecutionTimeout(JobHistoryModel jobHistoryModel, Stopwatch sw, int timeoutInMinutes)
 		{
 			bool jobInProcessingOrPendingStatus = jobHistoryModel == null ||
-			                              jobHistoryModel.JobStatus == JobStatusChoices.JobHistoryProcessing.Name ||
-			                              jobHistoryModel.JobStatus == JobStatusChoices.JobHistoryPending.Name;
+										  jobHistoryModel.JobStatus == JobStatusChoices.JobHistoryProcessing.Name ||
+										  jobHistoryModel.JobStatus == JobStatusChoices.JobHistoryPending.Name;
 
 			bool timeoutExceeded = sw.Elapsed > TimeSpan.FromMinutes(timeoutInMinutes);
 

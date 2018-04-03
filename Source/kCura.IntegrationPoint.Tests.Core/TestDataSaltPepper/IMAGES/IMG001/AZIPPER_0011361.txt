@@ -1,0 +1,383 @@
+﻿AEP   	  	  	  	  	  	  	  	  	
+AEP	  	  	  	  	  	  	  	  	
+  	  	 2001/10/15	 2001/10/16	 2001/10/17	 2001/10/18	 2001/10/19	 2001/10/22	 2001/10/23	
+US Gas Swap Nymex Apr-Oct02 USD/MM	 (342,500)	 (380,500)	 (387,000)	 (397,000)	 (310,500)	 (289,500)	 (258,000)		
+US Gas Swap Nymex Dec01 USD/MM	 562,500 	 582,500 	 615,000 	 552,500 	 595,000 	 620,000 	 600,000 		
+US Gas Swap Nymex Dec01 USD/MM-L	 600 	 400 	 700 	 700 	 600 	 600 	 600 		
+US Gas Swap Nymex Feb02 USD/MM	 10,000 	 10,000 	 (15,000)	 60,000 	 70,000 	 85,000 	 85,000 		
+US Gas Swap Nymex Jan-Dec02 USD/MM	 (101,000)	 (101,000)	 (103,500)	 (114,500)	 (107,000)	 (92,500)	 (105,000)		
+US Gas Swap Nymex Jan-Dec03 USD/MM	 87,000 	 88,000 	 83,500 	 94,500 	 69,500 	 82,000 	 92,000 		
+US Gas Swap Nymex Jan02 USD/MM	 47,500 	 45,000 	 50,000 	 (62,500)	 (62,500)	 (107,500)	 (160,000)		
+US Gas Swap Nymex Jan02 USD/MM-L	 (250)	 (250)	 (250)	 (250)	 (250)	 (350)	 (350)		
+US Gas Swap Nymex Nov01 USD/MM	 582,500 	 662,500 	 672,500 	 557,500 	 502,500 	 712,500 	 285,000 		
+US Gas Swap Nymex Nov01 USD/MM-L	 (600)	 (400)	 (700)	 (700)	 (600)	 (500)	 (500)		
+US Gas Swap Nymex Nov01-Mar02 USD/MM	 835,000 	 840,000 	 855,000 	 817,500 	 827,500 	 837,500 	 817,500 		
+Net Change	  	  	  	  	  	  	  	  	
+US Gas Swap Nymex Apr-Oct02 USD/MM	 (38,000)	 (6,500)	 (10,000)	 86,500 	 21,000 	 31,500 			
+US Gas Swap Nymex Dec01 USD/MM	 20,000 	 32,500 	 (62,500)	 42,500 	 25,000 	 (20,000)			
+US Gas Swap Nymex Dec01 USD/MM-L	 (200)	 300 	 0 	 (100)	 0 	 0 			
+US Gas Swap Nymex Feb02 USD/MM	 0 	 (25,000)	 75,000 	 10,000 	 15,000 	 0 			
+US Gas Swap Nymex Jan-Dec02 USD/MM	 0 	 (2,500)	 (11,000)	 7,500 	 14,500 	 (12,500)			
+US Gas Swap Nymex Jan-Dec03 USD/MM	 1,000 	 (4,500)	 11,000 	 (25,000)	 12,500 	 10,000 			
+US Gas Swap Nymex Jan02 USD/MM	 (2,500)	 5,000 	 (112,500)	 0 	 (45,000)	 (52,500)			
+US Gas Swap Nymex Jan02 USD/MM-L	 0 	 0 	 0 	 0 	 (100)	 0 			
+US Gas Swap Nymex Nov01 USD/MM	 80,000 	 10,000 	 (115,000)	 (55,000)	 210,000 	 (427,500)			
+US Gas Swap Nymex Nov01 USD/MM-L	 200 	 (300)	 0 	 100 	 100 	 0 			
+US Gas Swap Nymex Nov01-Mar02 USD/MM	 5,000 	 15,000 	 (37,500)	 10,000 	 10,000 	 (20,000)			
+% Change	  	  	  	  	  	  	  	  	
+US Gas Swap Nymex Apr-Oct02 USD/MM	-10.0%	-1.7%	-2.5%	 27.9%	 7.3%	 12.2%			
+US Gas Swap Nymex Dec01 USD/MM	 3.4%	 5.3%	-11.3%	 7.1%	 4.0%	-3.3%			
+US Gas Swap Nymex Dec01 USD/MM-L	-50.0%	 42.9%	 0.0%	-16.7%	 0.0%	 0.0%			
+US Gas Swap Nymex Feb02 USD/MM	 0.0%	-166.7%	 125.0%	 14.3%	 17.6%	 0.0%			
+US Gas Swap Nymex Jan-Dec02 USD/MM	 0.0%	-2.4%	-9.6%	 7.0%	 15.7%	-11.9%			
+US Gas Swap Nymex Jan-Dec03 USD/MM	 1.1%	-5.4%	 11.6%	-36.0%	 15.2%	 10.9%			
+US Gas Swap Nymex Jan02 USD/MM	-5.6%	 10.0%	-180.0%	 0.0%	-41.9%	-32.8%			
+US Gas Swap Nymex Jan02 USD/MM-L	 0.0%	 0.0%	 0.0%	 0.0%	-28.6%	 0.0%			
+US Gas Swap Nymex Nov01 USD/MM	 12.1%	 1.5%	-20.6%	-10.9%	 29.5%	-150.0%			
+US Gas Swap Nymex Nov01 USD/MM-L	 50.0%	-42.9%	 0.0%	 16.7%	 20.0%	 0.0%			
+US Gas Swap Nymex Nov01-Mar02 USD/MM	 0.6%	 1.8%	-4.6%	 1.2%	 1.2%	-2.4%	
+Aquila 
+  	  	  	  	  	  	  	  	  	
+Aquila	  	  	  	  	  	  	  	  	
+  	  	 2001/10/15	 2001/10/16	 2001/10/17	 2001/10/18	 2001/10/19	 2001/10/22	 2001/10/23	
+US Gas Swap Nymex Apr-Oct02 USD/MM	 (123,000)	 (123,000)	 (133,000)	 (142,500)	 (140,500)	 (131,500)	 (161,500)		
+US Gas Swap Nymex Dec01 USD/MM	 675,000 	 707,500 	 787,500 	 817,500 	 925,000 	 925,000 	 882,500 		
+US Gas Swap Nymex Dec01 USD/MM-L	 (530)	 120 	 320 	 920 	 1,020 	 620 	 520 		
+US Gas Swap Nymex Feb02 USD/MM	 (72,500)	 (65,000)	 (52,500)	 (52,500)	 (52,500)	 (42,500)	 (42,500)		
+US Gas Swap Nymex Jan-Dec02 USD/MM	 10,000 	 5,000 	 5,000 	 2,500 	 2,500 	 2,500 	 2,500 		
+US Gas Swap Nymex Jan-Dec03 USD/MM	 5,000 	 2,500 	 2,500 	 2,500 	 2,500 	 2,500 	 2,500 		
+US Gas Swap Nymex Jan02 USD/MM	 (187,500)	 (187,500)	 (267,500)	 (217,500)	 (197,500)	 (235,000)	 (222,500)		
+US Gas Swap Nymex Jan02 USD/MM-L	 30 	 (470)	 (470)	 (570)	 (570)	 (470)	 (470)		
+US Gas Swap Nymex Nov01 USD/MM	 382,500 	 357,500 	 480,000 	 682,500 	 880,000 	 910,000 	 705,000 		
+US Gas Swap Nymex Nov01 USD/MM-L	 (1,400)	 (1,550)	 (1,750)	 (2,250)	 (2,350)	 (2,050)	 (1,950)		
+US Gas Swap Nymex Nov01-Mar02 USD/MM	 67,500 	 67,500 	 72,500 	 72,500 	 80,000 	 80,000 	 70,000 		
+US Gas Swap Nymex Lot-Volume Nov01 USD/MM-L	 (15)	 (11)	 (10)	 (22)	 94 	 227 	 242 		
+US Gas Swap Nymex Apr-Oct02 USD/MM	 0 	 (10,000)	 (9,500)	 2,000 	 9,000 	 (30,000)			
+US Gas Swap Nymex Dec01 USD/MM	 32,500 	 80,000 	 30,000 	 107,500 	 0 	 (42,500)			
+US Gas Swap Nymex Dec01 USD/MM-L	 650 	 200 	 600 	 100 	 (400)	 (100)			
+US Gas Swap Nymex Feb02 USD/MM	 7,500 	 12,500 	 0 	 0 	 10,000 	 0 			
+US Gas Swap Nymex Jan-Dec02 USD/MM	 (5,000)	 0 	 (2,500)	 0 	 0 	 0 			
+US Gas Swap Nymex Jan-Dec03 USD/MM	 (2,500)	 0 	 0 	 0 	 0 	 0 			
+US Gas Swap Nymex Jan02 USD/MM	 0 	 (80,000)	 50,000 	 20,000 	 (37,500)	 12,500 			
+US Gas Swap Nymex Jan02 USD/MM-L	 (500)	 0 	 (100)	 0 	 100 	 0 			
+US Gas Swap Nymex Nov01 USD/MM	 (25,000)	 122,500 	 202,500 	 197,500 	 30,000 	 (205,000)			
+US Gas Swap Nymex Nov01 USD/MM-L	 (150)	 (200)	 (500)	 (100)	 300 	 100 			
+US Gas Swap Nymex Nov01-Mar02 USD/MM	 0 	 5,000 	 0 	 7,500 	 0 	 (10,000)			
+US Gas Swap Nymex Lot-Volume Nov01 USD/MM-L	 4 	 1 	 (12)	 116 	 133 	 15 			
+US Gas Swap Nymex Apr-Oct02 USD/MM	 0.0%	-8.1%	-7.1%	 1.4%	 6.4%	-22.8%			
+US Gas Swap Nymex Dec01 USD/MM	 4.8%	 11.3%	 3.8%	 13.1%	 0.0%	-4.6%			
+US Gas Swap Nymex Dec01 USD/MM-L	 122.6%	 166.7%	 187.5%	 10.9%	-39.2%	-16.1%			
+US Gas Swap Nymex Feb02 USD/MM	 10.3%	 19.2%	 0.0%	 0.0%	 19.0%	 0.0%			
+US Gas Swap Nymex Jan-Dec02 USD/MM	-50.0%	 0.0%	-50.0%	 0.0%	 0.0%	 0.0%			
+US Gas Swap Nymex Jan-Dec03 USD/MM	-50.0%	 0.0%	 0.0%	 0.0%	 0.0%	 0.0%			
+US Gas Swap Nymex Jan02 USD/MM	 0.0%	-42.7%	 18.7%	 9.2%	-19.0%	 5.3%			
+US Gas Swap Nymex Jan02 USD/MM-L	-1666.7%	 0.0%	-21.3%	 0.0%	 17.5%	 0.0%			
+US Gas Swap Nymex Nov01 USD/MM	-6.5%	 34.3%	 42.2%	 28.9%	 3.4%	-22.5%			
+US Gas Swap Nymex Nov01 USD/MM-L	-10.7%	-12.9%	-28.6%	-4.4%	 12.8%	 4.9%			
+US Gas Swap Nymex Nov01-Mar02 USD/MM	 0.0%	 7.4%	 0.0%	 10.3%	 0.0%	-12.5%			
+US Gas Swap Nymex Lot-Volume Nov01 USD/MM-L	 26.7%	 9.1%	-120.0%	 527.3%	 141.5%	 6.6%	
+Duke 
+  	  	  	  	  	  	  	  	  	
+Duke	  	  	  	  	  	  	  	  	
+  	  	 2001/10/15	 2001/10/16	 2001/10/17	 2001/10/18	 2001/10/19	 2001/10/22	 2001/10/23	
+US Gas Swap Nymex Apr-Oct02 USD/MM	 54,500 	 49,500 	 49,500 	 49,500 	 52,000 	 49,500 	 49,500 		
+US Gas Swap Nymex Dec01 USD/MM	 187,500 	 205,000 	 175,000 	 172,500 	 202,500 	 217,500 	 217,500 		
+US Gas Swap Nymex Dec01 USD/MM-L	 250 	 250 	 350 	 450 	 450 	 350 	 350 		
+US Gas Swap Nymex Feb02 USD/MM	 (47,500)	 (47,500)	 (47,500)	 (47,500)	 (47,500)	 (47,500)	 (47,500)		
+US Gas Swap Nymex Jan-Dec02 USD/MM	 348,500 	 338,500 	 343,500 	 351,000 	 368,500 	 361,000 	 366,000 		
+US Gas Swap Nymex Jan-Dec03 USD/MM	 20,000 	 20,000 	 20,000 	 25,000 	 30,000 	 20,000 	 20,000 		
+US Gas Swap Nymex Jan02 USD/MM	 92,500 	 92,500 	 92,500 	 92,500 	 92,500 	 92,500 	 92,500 		
+US Gas Swap Nymex Jan02 USD/MM-L	 (150)	 (150)	 (150)	 (150)	 (150)	 (150)	 (150)		
+US Gas Swap Nymex Nov01 USD/MM	 (62,500)	 52,500 	 (182,500)	 (320,000)	 (60,500)	 (115,500)	 (68,000)		
+US Gas Swap Nymex Nov01 USD/MM-L	 120 	 120 	 20 	 (80)	 (80)	 20 	 20 		
+US Gas Swap Nymex Nov01-Mar02 USD/MM	 57,500 	 80,000 	 80,000 	 80,000 	 67,500 	 62,500 	 27,500 		
+US Gas Swap Nymex Lot-Volume Nov01 USD/MM-L	 18 	 18 	 18 	 18 	 18 	 18 	 18 		
+US Gas Swap Nymex Apr-Oct02 USD/MM	 (5,000)	 0 	 0 	 2,500 	 (2,500)	 0 			
+US Gas Swap Nymex Dec01 USD/MM	 17,500 	 (30,000)	 (2,500)	 30,000 	 15,000 	 0 			
+US Gas Swap Nymex Dec01 USD/MM-L	 0 	 100 	 100 	 0 	 (100)	 0 			
+US Gas Swap Nymex Feb02 USD/MM	 0 	 0 	 0 	 0 	 0 	 0 			
+US Gas Swap Nymex Jan-Dec02 USD/MM	 (10,000)	 5,000 	 7,500 	 17,500 	 (7,500)	 5,000 			
+US Gas Swap Nymex Jan-Dec03 USD/MM	 0 	 0 	 5,000 	 5,000 	 (10,000)	 0 			
+US Gas Swap Nymex Jan02 USD/MM	 0 	 0 	 0 	 0 	 0 	 0 			
+US Gas Swap Nymex Jan02 USD/MM-L	 0 	 0 	 0 	 0 	 0 	 0 			
+US Gas Swap Nymex Nov01 USD/MM	 115,000 	 (235,000)	 (137,500)	 259,500 	 (55,000)	 47,500 			
+US Gas Swap Nymex Nov01 USD/MM-L	 0 	 (100)	 (100)	 0 	 100 	 0 			
+US Gas Swap Nymex Nov01-Mar02 USD/MM	 22,500 	 0 	 0 	 (12,500)	 (5,000)	 (35,000)			
+US Gas Swap Nymex Lot-Volume Nov01 USD/MM-L	 0 	 0 	 0 	 0 	 0 	 0 			
+US Gas Swap Nymex Apr-Oct02 USD/MM	-9.2%	 0.0%	 0.0%	 5.1%	-4.8%	 0.0%			
+US Gas Swap Nymex Dec01 USD/MM	 9.3%	-14.6%	-1.4%	 17.4%	 7.4%	 0.0%			
+US Gas Swap Nymex Dec01 USD/MM-L	 0.0%	 40.0%	 28.6%	 0.0%	-22.2%	 0.0%			
+US Gas Swap Nymex Feb02 USD/MM	 0.0%	 0.0%	 0.0%	 0.0%	 0.0%	 0.0%			
+US Gas Swap Nymex Jan-Dec02 USD/MM	-2.9%	 1.5%	 2.2%	 5.0%	-2.0%	 1.4%			
+US Gas Swap Nymex Jan-Dec03 USD/MM	 0.0%	 0.0%	 25.0%	 20.0%	-33.3%	 0.0%			
+US Gas Swap Nymex Jan02 USD/MM	 0.0%	 0.0%	 0.0%	 0.0%	 0.0%	 0.0%			
+US Gas Swap Nymex Jan02 USD/MM-L	 0.0%	 0.0%	 0.0%	 0.0%	 0.0%	 0.0%			
+US Gas Swap Nymex Nov01 USD/MM	 184.0%	-447.6%	-75.3%	 81.1%	-90.9%	 41.1%			
+US Gas Swap Nymex Nov01 USD/MM-L	 0.0%	-83.3%	-500.0%	 0.0%	 125.0%	 0.0%			
+US Gas Swap Nymex Nov01-Mar02 USD/MM	 39.1%	 0.0%	 0.0%	-15.6%	-7.4%	-56.0%			
+US Gas Swap Nymex Lot-Volume Nov01 USD/MM-L	 0.0%	 0.0%	 0.0%	 0.0%	 0.0%	 0.0%	
+Dynegy 
+  	  	  	  	  	  	  	  	  	
+Dynegy	  	  	  	  	  	  	  	  	
+  	  	 2001/10/15	 2001/10/16	 2001/10/17	 2001/10/18	 2001/10/19	 2001/10/22	 2001/10/23	
+US Gas Daily Nymex Lot-Volume Nov01-Mar02 USD/MM-L	 6 	 9 							
+US Gas Swap Nymex Apr-Oct02 USD/MM	 14,500 	 28,000 	 30,500 	 37,000 	 39,500 	 34,500 	 51,500 		
+US Gas Swap Nymex Dec01 USD/MM	 60,000 	 70,000 	 80,000 	 107,500 	 117,500 	 120,000 	 122,500 		
+US Gas Swap Nymex Feb02 USD/MM	 50,000 	 47,500 	 52,500 	 52,500 	 32,500 	 30,000 	 67,500 		
+US Gas Swap Nymex Jan-Dec02 USD/MM	 35,000 	 25,000 	 25,000 	 25,000 	 12,500 	 13,500 	 16,000 		
+US Gas Swap Nymex Jan-Dec03 USD/MM	 7,000 	 7,000 	 6,000 	 3,000 	 3,000 	 3,000 	 8,000 		
+US Gas Swap Nymex Jan02 USD/MM	 17,500 	 17,500 	 17,500 	 27,500 	 22,500 	 22,500 	 107,500 		
+US Gas Swap Nymex Nov01 USD/MM	 312,500 	 267,500 	 187,500 	 12,500 	 47,500 	 27,500 	 60,000 		
+US Gas Swap Nymex Nov01 USD/MM-L	 (400)	 (400)	 (400)	 (400)	 (400)	 (400)	 (400)		
+US Gas Swap Nymex Nov01-Mar02 USD/MM	 115,000 	 107,500 	 90,000 	 67,500 	 82,500 	 77,500 	 65,000 		
+US Gas Swap Nymex Lot-Volume Nov01 USD/MM-L	 (10)	 (15)	 (18)	 (18)	 (18)				
+US Gas Daily Nymex Lot-Volume Nov01-Mar02 USD/MM-L	 0 	 0 	 0 	 0 	 6 	 3 			
+US Gas Swap Nymex Apr-Oct02 USD/MM	 13,500 	 2,500 	 6,500 	 2,500 	 (5,000)	 17,000 			
+US Gas Swap Nymex Dec01 USD/MM	 10,000 	 10,000 	 27,500 	 10,000 	 2,500 	 2,500 			
+US Gas Swap Nymex Feb02 USD/MM	 (2,500)	 5,000 	 0 	 (20,000)	 (2,500)	 37,500 			
+US Gas Swap Nymex Jan-Dec02 USD/MM	 (10,000)	 0 	 0 	 (12,500)	 1,000 	 2,500 			
+US Gas Swap Nymex Jan-Dec03 USD/MM	 0 	 (1,000)	 (3,000)	 0 	 0 	 5,000 			
+US Gas Swap Nymex Jan02 USD/MM	 0 	 0 	 10,000 	 (5,000)	 0 	 85,000 			
+US Gas Swap Nymex Nov01 USD/MM	 (45,000)	 (80,000)	 (175,000)	 35,000 	 (20,000)	 32,500 			
+US Gas Swap Nymex Nov01 USD/MM-L	 0 	 0 	 0 	 0 	 0 	 0 			
+US Gas Swap Nymex Nov01-Mar02 USD/MM	 (7,500)	 (17,500)	 (22,500)	 15,000 	 (5,000)	 (12,500)			
+US Gas Swap Nymex Lot-Volume Nov01 USD/MM-L	 0 	 (10)	 (5)	 (3)	 0 	 0 			
+  	  	  	 0 	 0 	 0 	 0 	 0 	 0 	
+US Gas Daily Nymex Lot-Volume Nov01-Mar02 USD/MM-L	 50.0%								
+US Gas Swap Nymex Apr-Oct02 USD/MM	 93.1%	 8.9%	 21.3%	 6.8%	-12.7%	 49.3%			
+US Gas Swap Nymex Dec01 USD/MM	 16.7%	 14.3%	 34.4%	 9.3%	 2.1%	 2.1%			
+US Gas Swap Nymex Feb02 USD/MM	-5.0%	 10.5%	 0.0%	-38.1%	-7.7%	 125.0%			
+US Gas Swap Nymex Jan-Dec02 USD/MM	-28.6%	 0.0%	 0.0%	-50.0%	 8.0%	 18.5%			
+US Gas Swap Nymex Jan-Dec03 USD/MM	 0.0%	-14.3%	-50.0%	 0.0%	 0.0%	 166.7%			
+US Gas Swap Nymex Jan02 USD/MM	 0.0%	 0.0%	 57.1%	-18.2%	 0.0%	 377.8%			
+US Gas Swap Nymex Nov01 USD/MM	-14.4%	-29.9%	-93.3%	 280.0%	-42.1%	 118.2%			
+US Gas Swap Nymex Nov01 USD/MM-L	 0.0%	 0.0%	 0.0%	 0.0%	 0.0%	 0.0%			
+US Gas Swap Nymex Nov01-Mar02 USD/MM	-6.5%	-16.3%	-25.0%	 22.2%	-6.1%	-16.1%			
+US Gas Swap Nymex Lot-Volume Nov01 USD/MM-L	-50.0%	-20.0%	 0.0%	 0.0%	
+ElPaso 
+  	  	  	  	  	  	  	  	  	
+El Paso	  	  	  	  	  	  	  	  	
+  	  	 2001/10/15	 2001/10/16	 2001/10/17	 2001/10/18	 2001/10/19	 2001/10/22	 2001/10/23	
+US Gas Swap Nymex Apr-Oct02 USD/MM	 (167,500)	 (167,500)	 (167,500)	 (167,500)	 (167,500)	 (167,500)	 (167,500)		
+US Gas Swap Nymex Dec01 USD/MM	 (87,500)	 (87,500)	 (97,500)	 0 	 0 	 0 	 20,000 		
+US Gas Swap Nymex Dec01 USD/MM-L	 0 	 (300)	 (300)	 (300)	 (300)	 (450)	 (450)		
+US Gas Swap Nymex Jan-Dec02 USD/MM	 21,000 	 11,000 	 (19,000)	 (44,000)	 (44,000)	 (44,000)	 (71,000)		
+US Gas Swap Nymex Jan-Dec03 USD/MM	 18,000 	 25,500 	 40,500 	 168,500 	 225,000 	 225,000 	 230,000 		
+US Gas Swap Nymex Jan02 USD/MM	 50,000 	 50,000 	 50,000 	 70,000 	 70,000 	 70,000 	 70,000 		
+US Gas Swap Nymex Jan02 USD/MM-L	 100 	 200 	 200 	 200 	 200 	 200 	 200 		
+US Gas Swap Nymex Nov01 USD/MM	 (142,500)	 (87,500)	 (240,000)	 (285,000)	 (640,000)	 (712,500)	 (900,000)		
+US Gas Swap Nymex Nov01 USD/MM-L	 950 	 1,150 	 1,150 	 1,150 	 1,150 	 1,300 	 1,300 		
+US Gas Swap Nymex Nov01-Mar02 USD/MM	 232,500 	 220,000 	 220,000 	 220,000 	 220,000 	 220,000 	 220,000 		
+US Gas Swap Nymex Apr-Oct02 USD/MM	 0 	 0 	 0 	 0 	 0 	 0 			
+US Gas Swap Nymex Dec01 USD/MM	 0 	 (10,000)	 97,500 	 0 	 0 	 20,000 			
+US Gas Swap Nymex Dec01 USD/MM-L	 (300)	 0 	 0 	 0 	 (150)	 0 			
+US Gas Swap Nymex Jan-Dec02 USD/MM	 (10,000)	 (30,000)	 (25,000)	 0 	 0 	 (27,000)			
+US Gas Swap Nymex Jan-Dec03 USD/MM	 7,500 	 15,000 	 128,000 	 56,500 	 0 	 5,000 			
+US Gas Swap Nymex Jan02 USD/MM	 0 	 0 	 20,000 	 0 	 0 	 0 			
+US Gas Swap Nymex Jan02 USD/MM-L	 100 	 0 	 0 	 0 	 0 	 0 			
+US Gas Swap Nymex Nov01 USD/MM	 55,000 	 (152,500)	 (45,000)	 (355,000)	 (72,500)	 (187,500)			
+US Gas Swap Nymex Nov01 USD/MM-L	 200 	 0 	 0 	 0 	 150 	 0 			
+US Gas Swap Nymex Nov01-Mar02 USD/MM	 (12,500)	 0 	 0 	 0 	 0 	 0 			
+  	  	  	 0 	 0 	 0 	 0 	 0 	 0 	
+  	  	  	 0 	 0 	 0 	 0 	 0 	 0 	
+US Gas Swap Nymex Apr-Oct02 USD/MM	 0.0%	 0.0%	 0.0%	 0.0%	 0.0%	 0.0%			
+US Gas Swap Nymex Dec01 USD/MM	 0.0%	-11.4%	 100.0%	ERR	ERR	ERR			
+US Gas Swap Nymex Dec01 USD/MM-L	 0.0%	 0.0%	 0.0%	-50.0%	 0.0%				
+US Gas Swap Nymex Jan-Dec02 USD/MM	-47.6%	-272.7%	-131.6%	 0.0%	 0.0%	-61.4%			
+US Gas Swap Nymex Jan-Dec03 USD/MM	 41.7%	 58.8%	 316.0%	 33.5%	 0.0%	 2.2%			
+US Gas Swap Nymex Jan02 USD/MM	 0.0%	 0.0%	 40.0%	 0.0%	 0.0%	 0.0%			
+US Gas Swap Nymex Jan02 USD/MM-L	 100.0%	 0.0%	 0.0%	 0.0%	 0.0%	 0.0%			
+US Gas Swap Nymex Nov01 USD/MM	 38.6%	-174.3%	-18.8%	-124.6%	-11.3%	-26.3%			
+US Gas Swap Nymex Nov01 USD/MM-L	 21.1%	 0.0%	 0.0%	 0.0%	 13.0%	 0.0%			
+US Gas Swap Nymex Nov01-Mar02 USD/MM	-5.4%	 0.0%	 0.0%	 0.0%	 0.0%	 0.0%	
+Entergy Koch 
+  	  	  	  	  	  	  	  	  	
+Entergy Koch									
+  	  	 2001/10/15	 2001/10/16	 2001/10/17	 2001/10/18	 2001/10/19	 2001/10/22	 2001/10/23	
+US Gas Swap Nymex Apr-Oct02 USD/MM	 42,000 	 32,000 	 25,000 	 25,000 	 20,500 	 10,500 	 13,000 		
+US Gas Swap Nymex Dec01 USD/MM	 (7,500)	 (7,500)	 (7,500)	 (27,500)	 (37,500)	 (42,500)	 (62,500)		
+US Gas Swap Nymex Dec01 USD/MM-L	 (410)	 (530)	 (260)	 (390)	 (290)	 (190)	 (290)		
+US Gas Swap Nymex Feb02 USD/MM	 17,500 	 17,500 	 12,500 	 0 	 5,000 	 5,000 	 15,000 		
+US Gas Swap Nymex Jan-Dec02 USD/MM	 (38,500)	 (41,000)	 (41,000)	 (41,000)	 (48,500)	 (53,500)	 (53,500)		
+US Gas Swap Nymex Jan-Dec03 USD/MM	 3,000 	 3,000 	 3,000 	 3,000 	 (55,500)	 (55,500)	 (55,500)		
+US Gas Swap Nymex Jan02 USD/MM	 182,500 	 167,500 	 167,500 	 172,500 	 187,500 	 187,500 	 187,500 		
+US Gas Swap Nymex Jan02 USD/MM-L	 (520)	 (520)	 (720)	 (720)	 (720)	 (820)	 (720)		
+US Gas Swap Nymex Nov01 USD/MM	 (185,000)	 17,500 	 (210,000)	 (185,000)	 (225,000)	 (247,500)	 (187,500)		
+US Gas Swap Nymex Nov01 USD/MM-L	 1,230 	 1,350 	 1,280 	 1,410 	 1,310 	 1,310 	 1,310 		
+US Gas Swap Nymex Nov01-Mar02 USD/MM	 (112,500)	 (112,500)	 (115,000)	 (112,500)	 (107,500)	 (107,500)	 (102,500)		
+US Gas Swap Nymex Lot-Volume Nov01 USD/MM-L	 (35)	 (35)							
+US Gas Swap Nymex Apr-Oct02 USD/MM	 (10,000)	 (7,000)	 0 	 (4,500)	 (10,000)	 2,500 			
+US Gas Swap Nymex Dec01 USD/MM	 0 	 0 	 (20,000)	 (10,000)	 (5,000)	 (20,000)			
+US Gas Swap Nymex Dec01 USD/MM-L	 (120)	 270 	 (130)	 100 	 100 	 (100)			
+US Gas Swap Nymex Feb02 USD/MM	 0 	 (5,000)	 (12,500)	 5,000 	 0 	 10,000 			
+US Gas Swap Nymex Jan-Dec02 USD/MM	 (2,500)	 0 	 0 	 (7,500)	 (5,000)	 0 			
+US Gas Swap Nymex Jan-Dec03 USD/MM	 0 	 0 	 0 	 (58,500)	 0 	 0 			
+US Gas Swap Nymex Jan02 USD/MM	 (15,000)	 0 	 5,000 	 15,000 	 0 	 0 			
+US Gas Swap Nymex Jan02 USD/MM-L	 0 	 (200)	 0 	 0 	 (100)	 100 			
+US Gas Swap Nymex Nov01 USD/MM	 202,500 	 (227,500)	 25,000 	 (40,000)	 (22,500)	 60,000 			
+US Gas Swap Nymex Nov01 USD/MM-L	 120 	 (70)	 130 	 (100)	 0 	 0 			
+US Gas Swap Nymex Nov01-Mar02 USD/MM	 0 	 (2,500)	 2,500 	 5,000 	 0 	 5,000 			
+US Gas Swap Nymex Lot-Volume Nov01 USD/MM-L	 0 	 0 	 0 	 0 	 (35)	 0 			
+US Gas Swap Nymex Apr-Oct02 USD/MM	-23.8%	-21.9%	 0.0%	-18.0%	-48.8%	 23.8%			
+US Gas Swap Nymex Dec01 USD/MM	 0.0%	 0.0%	-266.7%	-36.4%	-13.3%	-47.1%			
+US Gas Swap Nymex Dec01 USD/MM-L	-29.3%	 50.9%	-50.0%	 25.6%	 34.5%	-52.6%			
+US Gas Swap Nymex Feb02 USD/MM	 0.0%	-28.6%	-100.0%	ERR	 0.0%	 200.0%			
+US Gas Swap Nymex Jan-Dec02 USD/MM	-6.5%	 0.0%	 0.0%	-18.3%	-10.3%	 0.0%			
+US Gas Swap Nymex Jan-Dec03 USD/MM	 0.0%	 0.0%	 0.0%	-1950.0%	 0.0%	 0.0%			
+US Gas Swap Nymex Jan02 USD/MM	-8.2%	 0.0%	 3.0%	 8.7%	 0.0%	 0.0%			
+US Gas Swap Nymex Jan02 USD/MM-L	 0.0%	-38.5%	 0.0%	 0.0%	-13.9%	 12.2%			
+US Gas Swap Nymex Nov01 USD/MM	 109.5%	-1300.0%	 11.9%	-21.6%	-10.0%	 24.2%			
+US Gas Swap Nymex Nov01 USD/MM-L	 9.8%	-5.2%	 10.2%	-7.1%	 0.0%	 0.0%			
+US Gas Swap Nymex Nov01-Mar02 USD/MM	 0.0%	-2.2%	 2.2%	 4.4%	 0.0%	 4.7%			
+US Gas Swap Nymex Lot-Volume Nov01 USD/MM-L	ERR	ERR	ERR	ERR	ERR	 0.0%	
+Mirant 
+  	  	  	  	  	  	  	  	  	
+Mirant	  	  	  	  	  	  	  	  	
+  	  	 2001/10/15	 2001/10/16	 2001/10/17	 2001/10/18	 2001/10/19	 2001/10/22	 2001/10/23	
+US Gas Swap Nymex Apr-Oct02 USD/MM	 5,000 	 5,000 	 5,000 	 5,000 	 5,000 	 5,000 	 10,000 		
+US Gas Swap Nymex Dec01 USD/MM	 147,500 	 160,000 	 160,000 	 155,000 	 158,500 	 163,500 	 153,500 		
+US Gas Swap Nymex Dec01 USD/MM-L	 (410)	 (410)	 (410)	 (410)	 (280)	 (280)	 (280)		
+US Gas Swap Nymex Feb02 USD/MM	 (37,500)	 (50,000)	 (60,000)	 (60,000)	 (60,000)	 (60,000)	 (60,000)		
+US Gas Swap Nymex Jan-Dec02 USD/MM	 11,500 	 9,000 	 4,000 	 4,000 	 4,000 	 4,000 	 4,000 		
+US Gas Swap Nymex Jan-Dec03 USD/MM	 20,000 	 20,000 	 20,000 	 20,000 	 20,000 	 20,000 	 20,000 		
+US Gas Swap Nymex Jan02 USD/MM	 (5,000)	 (20,000)	 (25,000)	 (25,000)	 (25,000)	 (25,000)	 (25,000)		
+US Gas Swap Nymex Jan02 USD/MM-L	 (300)	 (300)	 (300)	 (300)	 (300)	 (300)	 (300)		
+US Gas Swap Nymex Nov01 USD/MM	 90,000 	 80,000 	 105,000 	 (60,000)	 (12,500)	 47,500 	 27,500 		
+US Gas Swap Nymex Nov01 USD/MM-L	 730 	 730 	 730 	 730 	 600 	 600 	 600 		
+US Gas Swap Nymex Nov01-Mar02 USD/MM	 (7,500)	 (7,500)	 (7,500)	 (7,500)	 (7,500)	 (2,500)	 (2,500)		
+US Gas Swap Nymex Lot-Volume Nov01 USD/MM-L	 10 	 10 							
+US Gas Swap Nymex Apr-Oct02 USD/MM	 0 	 0 	 0 	 0 	 0 	 5,000 			
+US Gas Swap Nymex Dec01 USD/MM	 12,500 	 0 	 (5,000)	 3,500 	 5,000 	 (10,000)			
+US Gas Swap Nymex Dec01 USD/MM-L	 0 	 0 	 0 	 130 	 0 	 0 			
+US Gas Swap Nymex Feb02 USD/MM	 (12,500)	 (10,000)	 0 	 0 	 0 	 0 			
+US Gas Swap Nymex Jan-Dec02 USD/MM	 (2,500)	 (5,000)	 0 	 0 	 0 	 0 			
+US Gas Swap Nymex Jan-Dec03 USD/MM	 0 	 0 	 0 	 0 	 0 	 0 			
+US Gas Swap Nymex Jan02 USD/MM	 (15,000)	 (5,000)	 0 	 0 	 0 	 0 			
+US Gas Swap Nymex Jan02 USD/MM-L	 0 	 0 	 0 	 0 	 0 	 0 			
+US Gas Swap Nymex Nov01 USD/MM	 (10,000)	 25,000 	 (165,000)	 47,500 	 60,000 	 (20,000)			
+US Gas Swap Nymex Nov01 USD/MM-L	 0 	 0 	 0 	 (130)	 0 	 0 			
+US Gas Swap Nymex Nov01-Mar02 USD/MM	 0 	 0 	 0 	 0 	 5,000 	 0 			
+US Gas Swap Nymex Lot-Volume Nov01 USD/MM-L	 0 	 0 	 0 	 0 	 10 	 0 			
+US Gas Swap Nymex Apr-Oct02 USD/MM	 0.0%	 0.0%	 0.0%	 0.0%	 0.0%	 100.0%			
+US Gas Swap Nymex Dec01 USD/MM	 8.5%	 0.0%	-3.1%	 2.3%	 3.2%	-6.1%			
+US Gas Swap Nymex Dec01 USD/MM-L	 0.0%	 0.0%	 0.0%	 31.7%	 0.0%	 0.0%			
+US Gas Swap Nymex Feb02 USD/MM	-33.3%	-20.0%	 0.0%	 0.0%	 0.0%	 0.0%			
+US Gas Swap Nymex Jan-Dec02 USD/MM	-21.7%	-55.6%	 0.0%	 0.0%	 0.0%	 0.0%			
+US Gas Swap Nymex Jan-Dec03 USD/MM	 0.0%	 0.0%	 0.0%	 0.0%	 0.0%	 0.0%			
+US Gas Swap Nymex Jan02 USD/MM	-300.0%	-25.0%	 0.0%	 0.0%	 0.0%	 0.0%			
+US Gas Swap Nymex Jan02 USD/MM-L	 0.0%	 0.0%	 0.0%	 0.0%	 0.0%	 0.0%			
+US Gas Swap Nymex Nov01 USD/MM	-11.1%	 31.3%	-157.1%	 79.2%	 480.0%	-42.1%			
+US Gas Swap Nymex Nov01 USD/MM-L	 0.0%	 0.0%	 0.0%	-17.8%	 0.0%	 0.0%			
+US Gas Swap Nymex Nov01-Mar02 USD/MM	 0.0%	 0.0%	 0.0%	 0.0%	 66.7%	 0.0%			
+US Gas Swap Nymex Lot-Volume Nov01 USD/MM-L	ERR	ERR	ERR	ERR	ERR	 0.0%	
+Reliant 
+  	  	  	  	  	  	  	  	  	
+Reliant	  	  	  	  	  	  	  	  	
+  	  	 2001/10/15	 2001/10/16	 2001/10/17	 2001/10/18	 2001/10/19	 2001/10/22	 2001/10/23	
+US Gas Swap Nymex Apr-Oct02 USD/MM	 12,500 	 22,500 	 27,500 	 32,500 	 37,500 	 49,000 	 44,000 		
+US Gas Swap Nymex Dec01 USD/MM	 58,030 	 73,030 	 73,030 	 55,530 	 55,530 	 55,530 	 55,530 		
+US Gas Swap Nymex Dec01 USD/MM-L	 (100)	 (100)	 (100)	 (100)	 (100)	 (100)	 (100)		
+US Gas Swap Nymex Jan-Dec02 USD/MM	 49,000 	 34,000 	 34,000 	 34,000 	 31,500 	 29,000 	 19,000 		
+US Gas Swap Nymex Jan-Dec03 USD/MM	 0 	 0 	 5,000 	 0 	 0 	 0 	 (7,500)		
+US Gas Swap Nymex Jan02 USD/MM	 25,000 	 5,000 	 15,000 	 35,000 	 35,000 	 35,000 	 35,000 		
+US Gas Swap Nymex Nov01 USD/MM	 (92,500)	 (75,000)	 (102,500)	 (102,500)	 (92,500)	 65,000 	 97,500 		
+US Gas Swap Nymex Nov01 USD/MM-L	 0 	 0 	 0 	 0 	 0 	 0 	 0 		
+US Gas Swap Nymex Nov01-Mar02 USD/MM	 12,500 	 12,500 	 27,500 	 37,500 	 57,500 	 60,000 	 57,500 		
+US Gas Swap Nymex Apr-Oct02 USD/MM	 10,000 	 5,000 	 5,000 	 5,000 	 11,500 	 (5,000)			
+US Gas Swap Nymex Dec01 USD/MM	 15,000 	 0 	 (17,500)	 0 	 0 	 0 			
+US Gas Swap Nymex Dec01 USD/MM-L	 0 	 0 	 0 	 0 	 0 	 0 			
+US Gas Swap Nymex Jan-Dec02 USD/MM	 (15,000)	 0 	 0 	 (2,500)	 (2,500)	 (10,000)			
+US Gas Swap Nymex Jan-Dec03 USD/MM	 0 	 5,000 	 (5,000)	 0 	 0 	 (7,500)			
+US Gas Swap Nymex Jan02 USD/MM	 (20,000)	 10,000 	 20,000 	 0 	 0 	 0 			
+US Gas Swap Nymex Nov01 USD/MM	 17,500 	 (27,500)	 0 	 10,000 	 157,500 	 32,500 			
+US Gas Swap Nymex Nov01 USD/MM-L	 0 	 0 	 0 	 0 	 0 	 0 			
+US Gas Swap Nymex Nov01-Mar02 USD/MM	 0 	 15,000 	 10,000 	 20,000 	 2,500 	 (2,500)			
+US Gas Swap Nymex Apr-Oct02 USD/MM	 80.0%	 22.2%	 18.2%	 15.4%	 30.7%	-10.2%			
+US Gas Swap Nymex Dec01 USD/MM	 25.8%	 0.0%	-24.0%	 0.0%	 0.0%	 0.0%			
+US Gas Swap Nymex Dec01 USD/MM-L	 0.0%	 0.0%	 0.0%	 0.0%	 0.0%	 0.0%			
+US Gas Swap Nymex Jan-Dec02 USD/MM	-30.6%	 0.0%	 0.0%	-7.4%	-7.9%	-34.5%			
+US Gas Swap Nymex Jan-Dec03 USD/MM									
+US Gas Swap Nymex Jan02 USD/MM	-80.0%	 200.0%	 133.3%	 0.0%	 0.0%	 0.0%			
+US Gas Swap Nymex Nov01 USD/MM	 18.9%	-36.7%	 0.0%	 9.8%	 170.3%	 50.0%			
+US Gas Swap Nymex Nov01 USD/MM-L									
+US Gas Swap Nymex Nov01-Mar02 USD/MM	 0.0%	 120.0%	 36.4%	 53.3%	 4.3%	-4.2%	
+Sempra 
+  	  	  	  	  	  	  	  	  	
+Sempra	  	  	  	  	  	  	  	  	
+  	  	 2001/10/15	 2001/10/16	 2001/10/17	 2001/10/18	 2001/10/19	 2001/10/22	 2001/10/23	
+US Gas Swap Nymex Apr-Oct02 USD/MM	 (33,000)	 (26,000)	 (26,000)	 (33,500)	 9,000 	 9,000 	 (8,500)		
+US Gas Swap Nymex Dec01 USD/MM	 372,500 	 387,500 	 402,500 	 422,500 	 365,000 	 330,000 	 350,000 		
+US Gas Swap Nymex Dec01 USD/MM-L	 330 	 330 	 430 	 430 	 430 	 330 	 330 		
+US Gas Swap Nymex Feb02 USD/MM	 (27,500)	 (75,000)	 (50,000)	 (60,000)	 (70,000)	 (65,000)	 72,500 		
+US Gas Swap Nymex Jan-Dec02 USD/MM	 17,500 	 22,500 	 7,500 	 15,000 	 5,000 	 0 	 (35,500)		
+US Gas Swap Nymex Jan-Dec03 USD/MM	 16,000 	 21,000 	 28,500 	 37,500 	 30,000 	 15,500 	 15,500 		
+US Gas Swap Nymex Jan02 USD/MM	 52,500 	 27,500 	 90,000 	 77,500 	 57,500 	 65,000 	 85,000 		
+US Gas Swap Nymex Jan02 USD/MM-L	 270 	 270 	 370 	 370 	 370 	 470 	 470 		
+US Gas Swap Nymex Nov01 USD/MM	 (63,000)	 (115,500)	 (243,000)	 (473,000)	 (208,500)	 (373,500)	 (361,000)		
+US Gas Swap Nymex Nov01 USD/MM-L	 1,100 	 1,100 	 900 	 900 	 900 	 900 	 1,050 		
+US Gas Swap Nymex Nov01-Mar02 USD/MM	 85,000 	 110,000 	 102,500 	 112,500 	 120,000 	 92,500 	 50,000 		
+US Gas Swap Nymex Lot-Volume Nov01 USD/MM-L	 (8)	 (8)	 (8)	 (8)	 (8)	 (8)			
+US Gas Swap Nymex PEN Nov01 USD/MM-L	 (150)								
+US Gas Swap Nymex Apr-Oct02 USD/MM	 7,000 	 0 	 (7,500)	 42,500 	 0 	 (17,500)			
+US Gas Swap Nymex Dec01 USD/MM	 15,000 	 15,000 	 20,000 	 (57,500)	 (35,000)	 20,000 			
+US Gas Swap Nymex Dec01 USD/MM-L	 0 	 100 	 0 	 0 	 (100)	 0 			
+US Gas Swap Nymex Feb02 USD/MM	 (47,500)	 25,000 	 (10,000)	 (10,000)	 5,000 	 137,500 			
+US Gas Swap Nymex Jan-Dec02 USD/MM	 5,000 	 (15,000)	 7,500 	 (10,000)	 (5,000)	 (35,500)			
+US Gas Swap Nymex Jan-Dec03 USD/MM	 5,000 	 7,500 	 9,000 	 (7,500)	 (14,500)	 0 			
+US Gas Swap Nymex Jan02 USD/MM	 (25,000)	 62,500 	 (12,500)	 (20,000)	 7,500 	 20,000 			
+US Gas Swap Nymex Jan02 USD/MM-L	 0 	 100 	 0 	 0 	 100 	 0 			
+US Gas Swap Nymex Nov01 USD/MM	 (52,500)	 (127,500)	 (230,000)	 264,500 	 (165,000)	 12,500 			
+US Gas Swap Nymex Nov01 USD/MM-L	 0 	 (200)	 0 	 0 	 0 	 150 			
+US Gas Swap Nymex Nov01-Mar02 USD/MM	 25,000 	 (7,500)	 10,000 	 7,500 	 (27,500)	 (42,500)			
+US Gas Swap Nymex Lot-Volume Nov01 USD/MM-L	 (8)	 0 	 0 	 0 	 0 	 0 			
+US Gas Swap Nymex PEN Nov01 USD/MM-L									
+US Gas Swap Nymex Apr-Oct02 USD/MM	 21.2%	 0.0%	-28.8%	 126.9%	 0.0%	-194.4%			
+US Gas Swap Nymex Dec01 USD/MM	 4.0%	 3.9%	 5.0%	-13.6%	-9.6%	 6.1%			
+US Gas Swap Nymex Dec01 USD/MM-L	 0.0%	 30.3%	 0.0%	 0.0%	-23.3%	 0.0%			
+US Gas Swap Nymex Feb02 USD/MM	-172.7%	 33.3%	-20.0%	-16.7%	 7.1%	 211.5%			
+US Gas Swap Nymex Jan-Dec02 USD/MM	 28.6%	-66.7%	 100.0%	-66.7%	-100.0%	ERR			
+US Gas Swap Nymex Jan-Dec03 USD/MM	 31.3%	 35.7%	 31.6%	-20.0%	-48.3%	 0.0%			
+US Gas Swap Nymex Jan02 USD/MM	-47.6%	 227.3%	-13.9%	-25.8%	 13.0%	 30.8%			
+US Gas Swap Nymex Jan02 USD/MM-L	 0.0%	 37.0%	 0.0%	 0.0%	 27.0%	 0.0%			
+US Gas Swap Nymex Nov01 USD/MM	-83.3%	-110.4%	-94.7%	 55.9%	-79.1%	 3.3%			
+US Gas Swap Nymex Nov01 USD/MM-L	 0.0%	-18.2%	 0.0%	 0.0%	 0.0%	 16.7%			
+US Gas Swap Nymex Nov01-Mar02 USD/MM	 29.4%	-6.8%	 9.8%	 6.7%	-22.9%	-45.9%			
+US Gas Swap Nymex Lot-Volume Nov01 USD/MM-L	ERR	 0.0%	 0.0%	 0.0%	 0.0%	 0.0%			
+US Gas Swap Nymex PEN Nov01 USD/MM-L	
+Williams 
+  	  	  	  	  	  	  	  	  	
+Williams	  	  	  	  	  	  	  	  	
+  	  	 2001/10/15	 2001/10/16	 2001/10/17	 2001/10/18	 2001/10/19	 2001/10/22	 2001/10/23	
+US Gas Swap Nymex Apr-Oct02 USD/MM	 22,500 	 42,500 	 42,500 	 32,500 	 32,500 	 32,500 	 32,500 		
+US Gas Swap Nymex Dec01 USD/MM	 85,000 	 85,000 	 (25,000)	 (25,000)	 (25,000)	 (25,000)	 (25,000)		
+US Gas Swap Nymex Dec01 USD/MM-L	 400 	 400 	 400 	 400 	 400 	 400 	 400 		
+US Gas Swap Nymex Feb02 USD/MM	 10,000 	 10,000 	 10,000 	 10,000 	 10,000 	 10,000 	 10,000 		
+US Gas Swap Nymex Jan-Dec02 USD/MM	 65,500 	 70,500 	 70,500 	 70,500 	 70,500 	 70,500 	 70,500 		
+US Gas Swap Nymex Jan-Dec03 USD/MM	 (48,000)	 (48,000)	 (48,000)	 (28,000)	 (28,000)	 (28,000)	 (18,000)		
+US Gas Swap Nymex Jan02 USD/MM	 (15,000)	 (15,000)	 (15,000)	 (15,000)	 (15,000)	 (15,000)	 (15,000)		
+US Gas Swap Nymex Jan02 USD/MM-L	 (400)	 (400)	 (400)	 (400)	 (400)	 (400)	 (400)		
+US Gas Swap Nymex Nov01 USD/MM	 290,000 	 287,500 	 257,500 	 257,500 	 257,500 	 287,500 	 247,500 		
+US Gas Swap Nymex Nov01-Mar02 USD/MM	 (47,500)	 (42,500)	 (57,500)	 (57,500)	 (57,500)	 (57,500)	 (47,500)		
+US Gas Swap Nymex Apr-Oct02 USD/MM	 20,000 	 0 	 (10,000)	 0 	 0 	 0 			
+US Gas Swap Nymex Dec01 USD/MM	 0 	 (110,000)	 0 	 0 	 0 	 0 			
+US Gas Swap Nymex Dec01 USD/MM-L	 0 	 0 	 0 	 0 	 0 	 0 			
+US Gas Swap Nymex Feb02 USD/MM	 0 	 0 	 0 	 0 	 0 	 0 			
+US Gas Swap Nymex Jan-Dec02 USD/MM	 5,000 	 0 	 0 	 0 	 0 	 0 			
+US Gas Swap Nymex Jan-Dec03 USD/MM	 0 	 0 	 20,000 	 0 	 0 	 10,000 			
+US Gas Swap Nymex Jan02 USD/MM	 0 	 0 	 0 	 0 	 0 	 0 			
+US Gas Swap Nymex Jan02 USD/MM-L	 0 	 0 	 0 	 0 	 0 	 0 			
+US Gas Swap Nymex Nov01 USD/MM	 (2,500)	 (30,000)	 0 	 0 	 30,000 	 (40,000)			
+US Gas Swap Nymex Nov01-Mar02 USD/MM	 5,000 	 (15,000)	 0 	 0 	 0 	 10,000 			
+  	  	  	 0 	 0 	 0 	 0 	 0 	 0 	
+  	  	  	 0 	 0 	 0 	 0 	 0 	 0 	
+US Gas Swap Nymex Apr-Oct02 USD/MM	 88.9%	 0.0%	-23.5%	 0.0%	 0.0%	 0.0%			
+US Gas Swap Nymex Dec01 USD/MM	 0.0%	-129.4%	 0.0%	 0.0%	 0.0%	 0.0%			
+US Gas Swap Nymex Dec01 USD/MM-L	 0.0%	 0.0%	 0.0%	 0.0%	 0.0%	 0.0%			
+US Gas Swap Nymex Feb02 USD/MM	 0.0%	 0.0%	 0.0%	 0.0%	 0.0%	 0.0%			
+US Gas Swap Nymex Jan-Dec02 USD/MM	 7.6%	 0.0%	 0.0%	 0.0%	 0.0%	 0.0%			
+US Gas Swap Nymex Jan-Dec03 USD/MM	 0.0%	 0.0%	 41.7%	 0.0%	 0.0%	 35.7%			
+US Gas Swap Nymex Jan02 USD/MM	 0.0%	 0.0%	 0.0%	 0.0%	 0.0%	 0.0%			
+US Gas Swap Nymex Jan02 USD/MM-L	 0.0%	 0.0%	 0.0%	 0.0%	 0.0%	 0.0%			
+US Gas Swap Nymex Nov01 USD/MM	-0.9%	-10.4%	 0.0%	 0.0%	 11.7%	-13.9%			
+US Gas Swap Nymex Nov01-Mar02 USD/MM	 10.5%	-35.3%	 0.0%	 0.0%	 0.0%	 17.4%	
+

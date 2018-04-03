@@ -92,11 +92,12 @@ namespace kCura.IntegrationPoints.UITests.Tests
 
 		private async Task SetupWorkspaceAsync()
 		{
-			await Context.CreateWorkspaceAsync();
+			await CreateWorkspaceAsync();
 
 			Task installIntegrationPointsTask = Context.InstallIntegrationPointsAsync();
 
-			await Context.ImportDocumentsAsync();
+			await ImportDocumentsAsync();
+
 			ContextSetUp();
 
 			await installIntegrationPointsTask;
@@ -106,6 +107,16 @@ namespace kCura.IntegrationPoints.UITests.Tests
 				Task installLegalHoldTask = Context.InstallLegalHoldAsync();
 				await installLegalHoldTask;
 			}
+		}
+
+		protected virtual async Task CreateWorkspaceAsync()
+		{
+			await Context.CreateWorkspaceAsync();
+		}
+
+		protected virtual async Task ImportDocumentsAsync()
+		{
+			await Context.ImportDocumentsAsync();
 		}
 
 		protected async Task CreateDriverAsync()
