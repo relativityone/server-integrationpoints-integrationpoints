@@ -1,7 +1,5 @@
 using System;
-using System.Diagnostics;
-using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoint.Tests.Core.Models;
+using System.Linq;
 using kCura.IntegrationPoints.UITests.Logging;
 using OpenQA.Selenium;
 using Polly;
@@ -25,14 +23,13 @@ namespace kCura.IntegrationPoints.UITests.Components
 		{
 			string jobStatus = string.Empty;
 			const int findUiElementTimeoutInMinutes = 5;
+			const int numberOfRepeatsAfterStaleException = 10;
 			
-			Policy retry = Policy.Handle<StaleElementReferenceException>().Retry();
+			Policy retry = Policy.Handle<StaleElementReferenceException>()
+				.WaitAndRetry(Enumerable.Repeat(TimeSpan.FromSeconds(1), numberOfRepeatsAfterStaleException));
 			Policy tryFindStatusUpToTimeout = Policy.Timeout(TimeSpan.FromMinutes(findUiElementTimeoutInMinutes)).Wrap(retry);
 
-			tryFindStatusUpToTimeout.Execute(() =>
-			{
-				jobStatus = ReadJobExecutionStatus();
-			});
+			tryFindStatusUpToTimeout.Execute(() => jobStatus = ReadJobExecutionStatus());
 			
 			return jobStatus;
 		}

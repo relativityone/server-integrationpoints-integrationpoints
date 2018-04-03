@@ -5,7 +5,7 @@ using kCura.IntegrationPoints.UITests.Logging;
 using kCura.IntegrationPoint.Tests.Core;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
-using OpenQA.Selenium.Support.UI;
+using SeleniumExtras.WaitHelpers;
 using Serilog;
 
 namespace kCura.IntegrationPoints.UITests.Pages
@@ -57,6 +57,25 @@ namespace kCura.IntegrationPoints.UITests.Pages
 				try
 				{
 					if (ExpectedConditions.ElementIsVisible(by)(Driver) != null)
+					{
+						return true;
+					}
+				}
+				catch (NoSuchElementException ex)
+				{
+					Log.Verbose(ex, "Exception occured while checking elements' visibility.");
+				}
+			}
+			return false;
+		}
+
+		public bool IsAnyElementVisible(ISearchContext parent, params By[] bys)
+		{
+			foreach (By by in bys)
+			{
+				try
+				{
+					if (parent.FindElement(by).Displayed)
 					{
 						return true;
 					}

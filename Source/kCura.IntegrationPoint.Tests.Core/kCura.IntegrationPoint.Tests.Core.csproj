@@ -185,7 +185,6 @@
     <Compile Include="Rest.cs" />
     <Compile Include="Rsapi.cs" />
     <Compile Include="SavedSearch.cs" />
-    <Compile Include="Selenium.cs" />
     <Compile Include="SharedVariables.cs" />
     <Compile Include="Status.cs" />
     <Compile Include="Group.cs" />

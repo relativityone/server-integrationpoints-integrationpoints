@@ -2,7 +2,7 @@
 using System.Linq;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
-using OpenQA.Selenium.Support.PageObjects;
+using SeleniumExtras.PageObjects;
 using OpenQA.Selenium.Support.UI;
 
 namespace kCura.IntegrationPoints.UITests.Pages
@@ -93,8 +93,12 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public void SelectTextPrecedenceField(string fieldName)
 		{
-			TextPrecedenceButton.Click();
-			Sleep(500);
+			do
+			{
+				TextPrecedenceButton.Click();
+				Sleep(500);
+			}
+			while (!IsAnyElementVisible(TextPrecedencePickerElement, By.Id("ok-button")));
 			SelectOption(TextPrecedencePickerElement, fieldName ?? "Extracted Text");
 			ClickButton(TextPrecedencePickerElement, "select-single-item");
 			ClickButton(TextPrecedencePickerElement, "ok-button");

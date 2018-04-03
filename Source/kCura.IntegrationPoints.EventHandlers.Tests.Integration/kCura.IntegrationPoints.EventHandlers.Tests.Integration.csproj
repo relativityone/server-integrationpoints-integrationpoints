@@ -57,7 +57,6 @@
     <Compile Include="IntegrationPoints\ConsoleEventHandlerTests.cs" />
     <Compile Include="IntegrationPoints\DataTransferMigrationTests.cs" />
     <Compile Include="IntegrationPoints\DeleteIntegrationPointsTests.cs" />
-    <Compile Include="ViewErrors.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />

@@ -56,10 +56,6 @@
     <Compile Include="Services\AgentJobManagerTests.cs" />
     <Compile Include="Services\IntegrationPointServiceTests.cs" />
     <Compile Include="Services\IntegrationPointServiceTestsForOtherProviders.cs" />
-    <Compile Include="UI\ConsoleButtons.cs" />
-    <Compile Include="UI\ConsoleButtonTestsForOtherProviders.cs" />
-    <Compile Include="UI\PermissionErrorMessageTest.cs" />
-    <Compile Include="UI\SchedulerUiTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">

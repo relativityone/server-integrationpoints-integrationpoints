@@ -2,9 +2,10 @@
 using System.Linq;
 using System.Threading;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.UITests.Driver;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
-using OpenQA.Selenium.Support.PageObjects;
+using SeleniumExtras.PageObjects;
 
 namespace kCura.IntegrationPoints.UITests.Pages
 {
@@ -49,7 +50,8 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public GeneralPage ChooseWorkspace(string name)
 		{
-			NavigateHome.Click();
+			Driver.SwitchTo().DefaultContent();
+			NavigateHome.ClickWhenClickable();
 			MainMenu.FindElement(By.LinkText("Workspaces")).Click();
 			IWebElement workspaceLink = GetWorkspaceLink(name);
 

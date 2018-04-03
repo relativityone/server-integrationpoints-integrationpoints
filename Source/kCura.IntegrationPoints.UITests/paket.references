@@ -7,6 +7,8 @@ Relativity.Core
 Relativity.Data
 Relativity.Kepler.Client
 Relativity.Logging
+DotNetSeleniumExtras.PageObjects
+DotNetSeleniumExtras.WaitHelpers
 Selenium.Support
 Selenium.WebDriver.ChromeDriver
 Serilog
