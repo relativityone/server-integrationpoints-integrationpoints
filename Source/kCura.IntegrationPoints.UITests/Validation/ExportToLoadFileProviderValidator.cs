@@ -20,12 +20,6 @@ namespace kCura.IntegrationPoints.UITests.Validation
 			ValidateGeneralModel(generalPropertiesTable, integrationPointModel);
 		}
         
-	    private static void ValidateHasErrorsProperty(Dictionary<string, string> generalPropertiesTable, bool expectHasErrors)
-		{
-			Assert.AreEqual(expectHasErrors.AsHtmlString(), generalPropertiesTable["Has Errors:"]);
-		}
-
-        
 		private static void ValidateGeneralModel(Dictionary<string, string> generalPropertiesTable, ExportToLoadFileProviderModel integrationPointModel)
 		{
 			Assert.AreEqual(integrationPointModel.GetValueOrDefault(model => model.Name), generalPropertiesTable["Name:"]);
