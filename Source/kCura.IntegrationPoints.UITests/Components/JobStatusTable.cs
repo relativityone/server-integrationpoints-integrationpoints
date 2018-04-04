@@ -11,7 +11,11 @@ namespace kCura.IntegrationPoints.UITests.Components
 {
 	public class JobStatusTable : Component
 	{
-		protected static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(JobStatusTable));
+	    const int jobTotalItems = 11;
+	    const int jobItemsWithErrors = 12;
+	    const int jobItemsTransfered = 10;
+
+        protected static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(JobStatusTable));
 
 		public JobStatusTable(IWebElement parent) : base(parent)
 		{
@@ -39,5 +43,30 @@ namespace kCura.IntegrationPoints.UITests.Components
 			By latestJobStatus = By.XPath("//table[@class='itemTable']//tbody/tr[@class='itemListRowAlt']/td");
 			return  Parent.FindElements(latestJobStatus)[jobStatusColumnNumber].Text;
 		}
-	}
+
+	    public int GetTotalItems()
+        {
+            return GetNumberFromDetailsTable(jobTotalItems);
+        }
+
+        private int GetNumberFromDetailsTable(int columnNumber)
+        {
+            By latestJobStatus = By.XPath("//table[@class='itemTable']//tbody/tr[@class='itemListRowAlt']/td");
+            int totalItems = -1;
+            int.TryParse(Parent.FindElements(latestJobStatus)[columnNumber].Text, out totalItems);
+            return totalItems;
+        }
+
+        public int GetItemsTransfered()
+	    {
+	        return GetNumberFromDetailsTable(jobItemsTransfered);
+
+        }
+
+        public int GetItemsWithErrors()
+	    {
+	        return GetNumberFromDetailsTable(jobItemsWithErrors);
+        }
+
+    }
 }

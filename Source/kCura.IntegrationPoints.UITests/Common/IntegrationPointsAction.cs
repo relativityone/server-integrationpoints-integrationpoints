@@ -24,15 +24,18 @@ namespace kCura.IntegrationPoints.UITests.Common
 		}
 
 
-		public ExportFirstPage SetupFirstIntegrationPointPage(GeneralPage generalPage, IntegrationPointGeneralModel model)
-		{
-			IntegrationPointsPage ipPage = generalPage.GoToIntegrationPointsPage();
-			ExportFirstPage firstPage = ipPage.CreateNewExportIntegrationPoint();
-			firstPage.Name = model.Name;
-			firstPage.Destination = model.DestinationProvider;
-
-			return firstPage;
-		}
+        public ExportFirstPage SetupFirstIntegrationPointPage(GeneralPage generalPage, IntegrationPointGeneralModel model)
+        {
+            IntegrationPointsPage ipPage = generalPage.GoToIntegrationPointsPage();
+            ExportFirstPage firstPage = ipPage.CreateNewExportIntegrationPoint();
+            firstPage.Name = model.Name;
+            firstPage.Destination = model.DestinationProvider;
+            if (!string.IsNullOrEmpty(model.TransferredObject))
+            {
+                firstPage.TransferedObject = model.TransferredObject;
+            }
+            return firstPage;
+        }
 
 		public ExportToFileSecondPage SetupExportToFileSecondPage(ExportFirstPage firstPage,
 			ExportToLoadFileProviderModel model)
@@ -76,10 +79,10 @@ namespace kCura.IntegrationPoints.UITests.Common
 				thirdPageExportDetails.SelectExportNatives();
 			}
 
-			if (exportDetails.ExportTextFieldsAsFiles.HasValue && exportDetails.ExportImages.Value)
-			{
-				thirdPageExportDetails.SelectExportTextFieldsAsFiles();
-			}
+            if (exportDetails.ExportTextFieldsAsFiles.HasValue && exportDetails.ExportTextFieldsAsFiles.Value)
+            {
+                thirdPageExportDetails.SelectExportTextFieldsAsFiles();
+            }
 
 			if (exportDetails.DestinationFolder == ExportToLoadFileProviderModel.DestinationFolderTypeEnum.Root)
 			{
@@ -214,11 +217,79 @@ namespace kCura.IntegrationPoints.UITests.Common
 			return thirdPage;
 		}
 
+        public ExportToFileThirdPage SetupExportToFileThirdPage(ExportCustodianToFileSecondPage secondPage, CustodianExportToLoadFileModel model)
+        {
+            ExportToFileThirdPage thirdPage = secondPage.GoToNextPage();
 
-		public IntegrationPointDetailsPage CreateNewExportToLoadfileIntegrationPoint(ExportToLoadFileProviderModel model)
-		{
-			var generalPage = new GeneralPage(Driver);
-			generalPage.ChooseWorkspace(Context.WorkspaceName);
+            ExportToLoadFileDetailsModel exportDetails = model.ExportDetails;
+            SetupExportToFileThirdPageExportDetails(thirdPage.ExportDetails, exportDetails);
+
+            bool exportImages = exportDetails.ExportImages.GetValueOrDefault(false);
+            bool exportNatives = exportDetails.ExportNatives.GetValueOrDefault(false);
+            bool exportTextFieldsAsFiles = exportDetails.ExportTextFieldsAsFiles.GetValueOrDefault(false);
+            bool volumeAndSubdirectoryDetailsVisible = exportImages || exportNatives || exportTextFieldsAsFiles;
+
+            ExportToLoadFileLoadFileOptionsModel loadFileOptions = model.OutputSettings.LoadFileOptions;
+            SetupExportToFileThirdPageLoadFileOptions(thirdPage.LoadFileOptions, loadFileOptions, exportNatives);
+
+            if (exportImages)
+            {
+                ExportToLoadFileImageOptionsModel imageOptions = model.OutputSettings.ImageOptions;
+                SetupExportToFileThirdPageImageOptions(thirdPage.ImageNativeTextOptions, imageOptions);
+            }
+
+            if (exportNatives)
+            {
+                ExportToLoadFileNativeOptionsModel nativeOptions = model.OutputSettings.NativeOptions;
+                SetupExportToFileThirdPageNativeOptions(thirdPage.ImageNativeTextOptions, nativeOptions);
+            }
+
+            if (exportTextFieldsAsFiles)
+            {
+                ExportToLoadFileTextOptionsModel textOptions = model.OutputSettings.TextOptions;
+                SetupExportToFileThirdPageTextOptions(thirdPage.ImageNativeTextOptions, textOptions);
+            }
+
+            if (volumeAndSubdirectoryDetailsVisible)
+            {
+                ExportToLoadFileVolumeAndSubdirectoryModel volumeSubdirectoryDetails = model.OutputSettings.VolumeAndSubdirectoryOptions;
+                SetupExportToFileThirdPageVolumeSubdirectoryDetails(thirdPage.VolumeSubdirectoryDetails, volumeSubdirectoryDetails);
+            }
+
+            return thirdPage;
+        }
+
+        public IntegrationPointDetailsPage CreateNewExportCustodianToLoadfileIntegrationPoint(CustodianExportToLoadFileModel model)
+        {
+            var generalPage = new GeneralPage(Driver);
+            generalPage.ChooseWorkspace(Context.WorkspaceName);
+
+            ExportFirstPage firstPage = SetupFirstIntegrationPointPage(generalPage, model);
+
+            ExportCustodianToFileSecondPage secondPage = SetupCustodianExportToFileSecondPage(firstPage, model);
+
+            ExportToFileThirdPage thirdPage = SetupExportToFileThirdPage(secondPage, model);
+
+            return thirdPage.SaveIntegrationPoint();
+        }
+        
+        public ExportCustodianToFileSecondPage SetupCustodianExportToFileSecondPage(ExportFirstPage firstPage,
+            CustodianExportToLoadFileModel model)
+        {
+            ExportCustodianToFileSecondPage secondPage = firstPage.GotoNextPageCustodian();
+            secondPage.View = model.ExportDetails.View;
+            Thread.Sleep(500);
+            if (model.ExportDetails.SelectAllFields)
+            {
+                secondPage.SelectAllFields();
+            }
+            return secondPage;
+        }
+
+        public IntegrationPointDetailsPage CreateNewExportToLoadfileIntegrationPoint(ExportToLoadFileProviderModel model)
+        {
+            var generalPage = new GeneralPage(Driver);
+            generalPage.ChooseWorkspace(Context.WorkspaceName);
 
 			ExportFirstPage firstPage = SetupFirstIntegrationPointPage(generalPage, model);
 

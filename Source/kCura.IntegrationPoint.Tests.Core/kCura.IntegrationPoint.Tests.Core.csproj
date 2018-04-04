@@ -135,6 +135,8 @@
     <Compile Include="Models\Constants\ExportToLoadFile\ExportToLoadFileSourceConstants.cs" />
     <Compile Include="Models\Constants\ExportToLoadFile\ExportToLoadFileNameOutputFilesAfterConstants.cs" />
     <Compile Include="Models\Constants\ExportToLoadFile\ExportToLoadFileTransferredObjectConstants.cs" />
+    <Compile Include="Models\CustodianExportToLoadFileDetails.cs" />
+    <Compile Include="Models\CustodianExportToLoadFileModel.cs" />
     <Compile Include="Models\DocumentsTestData.cs" />
     <Compile Include="Models\ExportToLoadFileDetailsModel.cs" />
     <Compile Include="Models\FTP\ImportFromFTPConnectionAndFileInfoModel.cs" />
