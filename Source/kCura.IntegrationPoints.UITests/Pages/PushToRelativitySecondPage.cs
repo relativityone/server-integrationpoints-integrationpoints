@@ -31,10 +31,15 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		[FindsBy(How = How.Id, Using = "saved-search-selection-button")]
 		protected IWebElement SavedSearchSelectionButton { get; set; }
 
-		[FindsBy(How = How.CssSelector, Using = "#s2id_savedSearchSelector a")]
+		[FindsBy(How = How.Id, Using = "s2id_savedSearchSelector")]
 		protected IWebElement SavedSearchSelectWebElement { get; set; }
 
-		protected Select SavedSearchSelect { get; set; }
+		[FindsBy(How = How.Id, Using = "s2id_sourceProductionSetsSelector")]
+		protected IWebElement ProductionSelectWebElement { get; set; }
+
+		protected Select SavedSearchSelect => new Select(SavedSearchSelectWebElement);
+
+		protected Select ProductionSelect => new Select(ProductionSelectWebElement);
 
 		protected Select DestinationWorkspaceSelect { get; set; }
 
@@ -71,19 +76,26 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			driver.SwitchTo().Frame("configurationFrame");
 			WaitForPage();
 			PageFactory.InitElements(driver, this);
-			SavedSearchSelect = new Select(Driver.FindElementById("s2id_savedSearchSelector"));
 			FolderLocationSelect = new TreeSelect(driver.FindElement(By.XPath(@"//div[@id='location-select']/..")));
 		}
 
-		public PushToRelativitySecondPage SelectAllDocuments()
+		public PushToRelativitySecondPage SelectSavedSearch()
 		{
 			SavedSearchSelect.Choose("All Documents");
 			Sleep(200);
 			return this;
 		}
 
+		public PushToRelativitySecondPage SelectProduction(string productionName)
+		{
+			ProductionSelect.Choose(productionName);
+			Sleep(200);
+			return this;
+		}
+
 		public PushToRelativitySecondPage SelectFolderLocation()
 		{
+			WaitForPage();
 			FolderLocation.Click();
 			return this;
 		}

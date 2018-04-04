@@ -4,14 +4,14 @@
 	using NUnit.Framework;
 	using TestHelpers;
 
-	public class DocumentNativesAndInRepositoryValidator : DocumentNativesValidator
+	public class DocumentHasNativesAndInRepositoryValidator : DocumentHasNativesValidator
 	{
 		private readonly INativesService _nativesService;
 		private readonly bool _expectInRepository;
-		private int _sourceWorkspaceId;
-		private int _destinationWorkspaceId;
+		private readonly int _sourceWorkspaceId;
+		private readonly int _destinationWorkspaceId;
 
-		public DocumentNativesAndInRepositoryValidator(INativesService nativesService, int sourceWorkspaceId, int destinationWorkspaceId, bool expectHasNatives, bool expectInRepository) : base(expectHasNatives)
+		public DocumentHasNativesAndInRepositoryValidator(INativesService nativesService, int sourceWorkspaceId, int destinationWorkspaceId, bool expectHasNatives, bool expectInRepository) : base(expectHasNatives)
 		{
 			_destinationWorkspaceId = destinationWorkspaceId;
 			_sourceWorkspaceId = sourceWorkspaceId;

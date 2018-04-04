@@ -41,6 +41,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Services" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -99,10 +100,12 @@
     <Compile Include="Auxiliary\Grinder.cs" />
     <Compile Include="Tests\ExportToLoadFile\CustodianExportToLoadFile.cs" />
     <Compile Include="Tests\ExportToLoadFile\DocumentExportToLoadFileTests.cs" />
+    <Compile Include="Tests\Import\ImportFromFTPTest.cs" />
     <Compile Include="Tests\FTPProvider\ImportFromFTPTest.cs" />
     <Compile Include="Tests\LDAPProvider\ImportLdapProviderTest.cs" />
     <Compile Include="Tests\RelativityProvider\DataGridToSqlTest.cs" />
     <Compile Include="Tests\ExportToLoadFile\ProductionExportToLoadFileTests.cs" />
+    <Compile Include="Tests\RelativityProvider\ProductionToFolderTest.cs" />
     <Compile Include="Tests\RelativityProvider\ImagesSavedSearchToFolderTest.cs" />
     <Compile Include="Tests\RelativityProvider\NativesSavedSearchToFolderTest.cs" />
     <Compile Include="Tests\RelativityProvider\LinksSavedSearchToFolderTest.cs" />
@@ -116,6 +119,9 @@
     <Compile Include="Validation\BaseUiValidator.cs" />
     <Compile Include="Validation\ImportValidator.cs" />
     <Compile Include="Validation\ProviderModelHtmlExtensions.cs" />
+    <Compile Include="Validation\RelativityProviderValidation\LinksSavedSearchToFolderValidator.cs" />
+    <Compile Include="Validation\RelativityProviderValidation\RelativityProviderValidatorBase.cs" />
+    <Compile Include="Validation\RelativityProviderValidation\ImagesSavedSearchToFolderValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config">
@@ -162,6 +168,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">
       <Project>{a1ae667b-1b6e-4bb9-af1d-912620292283}</Project>
       <Name>kCura.IntegrationPoints.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
+      <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
+      <Name>kCura.IntegrationPoints.Contracts</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
       <Project>{599D771D-2AE7-4321-9BAC-BE06F827CE0A}</Project>

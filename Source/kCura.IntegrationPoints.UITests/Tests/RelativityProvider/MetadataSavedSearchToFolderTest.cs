@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		{
 			var model = new RelativityProviderModel(NUnit.Framework.TestContext.CurrentContext.Test.Name)
 			{
-				Source = "Saved Search",
+				Source = RelativityProviderModel.SourceTypeEnum.SavedSearch,
 				RelativityInstance = "This Instance",
 				DestinationWorkspace = $"{DestinationContext.WorkspaceName} - {DestinationContext.WorkspaceId}",
 				CopyNativeFiles = RelativityProviderModel.CopyNativeFilesEnum.No,
@@ -339,7 +339,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		private void ValidateDocumentsForField()
 		{
 			DocumentsValidator documentsValidator = CreateDocumentsForFieldValidator()
-				.ValidateWith(new DocumentNativesValidator(false));
+				.ValidateWith(new DocumentHasNativesValidator(false));
 
 			documentsValidator.Validate();
 		}
@@ -347,7 +347,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		private void ValidateDocumentsForFolderTree()
 		{
 			DocumentsValidator documentsValidator = CreateDocumentsForFolderTreeValidator()
-				.ValidateWith(new DocumentNativesValidator(false));
+				.ValidateWith(new DocumentHasNativesValidator(false));
 
 			documentsValidator.Validate();
 		}
@@ -355,7 +355,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		private void ValidateDocumentsForRoot()
 		{
 			DocumentsValidator documentsValidator = CreateDocumentsForRootValidator()
-				.ValidateWith(new DocumentNativesValidator(false));
+				.ValidateWith(new DocumentHasNativesValidator(false));
 
 			documentsValidator.Validate();
 		}
@@ -363,7 +363,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		private void ValidateDocumentsForRootWithFolderName()
 		{
 			DocumentsValidator documentsValidator = CreateDocumentsForRootWithFolderNameValidator()
-				.ValidateWith(new DocumentNativesValidator(false));
+				.ValidateWith(new DocumentHasNativesValidator(false));
 
 			documentsValidator.Validate();
 		}

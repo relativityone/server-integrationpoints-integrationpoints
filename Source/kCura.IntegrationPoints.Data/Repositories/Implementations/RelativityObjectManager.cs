@@ -53,49 +53,36 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public int Create<T>(T rdo, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new()
 		{
-			try
+			CreateRequest createRequest = new CreateRequest()
 			{
-				using (var client = _servicesMgr.CreateProxy<IObjectManager>(executionIdentity))
-				{
-					CreateRequest createRequest = new CreateRequest()
-					{
-						ObjectType = rdo.ToObjectType(),
-						FieldValues = rdo.ToFieldValues().ToList()
-					};
+				ObjectType = rdo.ToObjectType(),
+				FieldValues = rdo.ToFieldValues().ToList()
+			};
 
-					SetParentArtifactId(createRequest, rdo);
-					_secretStoreHelper.SetEncryptedSecuredConfigurationForNewRdo(createRequest.FieldValues);
+			return Create(createRequest, executionIdentity);
+        }
 
-					int artifactId = client.CreateAsync(_workspaceArtifactId, createRequest)
-							.GetAwaiter()
-							.GetResult()
-							.Object
-							.ArtifactID;
-					return artifactId;
-				}
-			}
-			catch (ServiceNotFoundException ex)
-			{
-				throw LogServiceNotFoundException("CREATE", ex);
-			}
-			catch (Exception ex)
-			{
-				throw LogObjectManagerException(rdo, "create", ex);
-			}
-		}
 
-	    public int Create(ObjectTypeRef objectType, List<FieldRefValuePair> fieldValues, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+        public int Create(ObjectTypeRef objectType, List<FieldRefValuePair> fieldValues, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+	    {
+
+	        CreateRequest createRequest = new CreateRequest()
+	        {
+	            ObjectType = objectType,
+
+	            FieldValues = fieldValues
+	        };
+	        return Create(createRequest, executionIdentity);
+
+	    }
+
+	    private int Create(CreateRequest createRequest, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
 	    {
 	        try
 	        {
 	            using (var client = _servicesMgr.CreateProxy<IObjectManager>(executionIdentity))
 	            {
-	                CreateRequest createRequest = new CreateRequest()
-	                {
-	                    ObjectType = objectType,
-
-	                    FieldValues = fieldValues
-	                };
+	                
 
 	                _secretStoreHelper.SetEncryptedSecuredConfigurationForNewRdo(createRequest.FieldValues);
 
@@ -116,7 +103,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 	            throw LogObjectManagerException("create", "[RelativityObject]", ex);
 	        }
 	    }
-	    public T Read<T>(int artifactId, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new()
+
+    public T Read<T>(int artifactId, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new()
 		{
 			ReadRequest request = new ReadRequest()
 			{

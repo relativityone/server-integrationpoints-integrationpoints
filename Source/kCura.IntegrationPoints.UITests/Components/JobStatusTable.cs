@@ -11,7 +11,11 @@ namespace kCura.IntegrationPoints.UITests.Components
 {
 	public class JobStatusTable : Component
 	{
-		protected static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(JobStatusTable));
+	    const int jobTotalItems = 11;
+	    const int jobItemsWithErrors = 12;
+	    const int jobItemsTransfered = 10;
+
+        protected static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(JobStatusTable));
 
 		public JobStatusTable(IWebElement parent) : base(parent)
 		{
@@ -41,25 +45,28 @@ namespace kCura.IntegrationPoints.UITests.Components
 		}
 
 	    public int GetTotalItems()
-	    {
-	        const int jobStatusColumnNumber = 11;
-	        By latestJobStatus = By.XPath("//table[@class='itemTable']//tbody/tr[@class='itemListRowAlt']/td");
-	        return int.Parse(Parent.FindElements(latestJobStatus)[jobStatusColumnNumber].Text);
-	    }
+        {
+            return GetNumberFromDetailsTable(jobTotalItems);
+        }
+
+        private int GetNumberFromDetailsTable(int columnNumber)
+        {
+            By latestJobStatus = By.XPath("//table[@class='itemTable']//tbody/tr[@class='itemListRowAlt']/td");
+            int totalItems = -1;
+            int.TryParse(Parent.FindElements(latestJobStatus)[columnNumber].Text, out totalItems);
+            return totalItems;
+        }
 
         public int GetItemsTransfered()
 	    {
-	        const int jobStatusColumnNumber = 10;
-	        By latestJobStatus = By.XPath("//table[@class='itemTable']//tbody/tr[@class='itemListRowAlt']/td");
-	        return int.Parse(Parent.FindElements(latestJobStatus)[jobStatusColumnNumber].Text);
-	    }
+	        return GetNumberFromDetailsTable(jobItemsTransfered);
 
-	    public int GetItemsWithErrors()
+        }
+
+        public int GetItemsWithErrors()
 	    {
-	        const int jobStatusColumnNumber = 12;
-	        By latestJobStatus = By.XPath("//table[@class='itemTable']//tbody/tr[@class='itemListRowAlt']/td");
-	        return int.Parse(Parent.FindElements(latestJobStatus)[jobStatusColumnNumber].Text);
-	    }
+	        return GetNumberFromDetailsTable(jobItemsWithErrors);
+        }
 
     }
 }

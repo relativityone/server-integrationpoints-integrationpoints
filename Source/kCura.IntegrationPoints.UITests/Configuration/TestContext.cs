@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -16,6 +17,7 @@ using NUnit.Framework;
 using Relativity.Core;
 using Relativity.Services.Objects.DataContracts;
 using Serilog;
+using ArtifactType = Relativity.ArtifactType;
 using Field = kCura.Relativity.Client.DTOs.Field;
 using Group = kCura.IntegrationPoint.Tests.Core.Group;
 using User = kCura.IntegrationPoint.Tests.Core.User;
@@ -46,6 +48,8 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		public int? GroupId { get; private set; }
 
 		public int? UserId { get; private set; }
+
+		public int? ProductionId { get; private set; }
 
 		public TestContext()
 		{
@@ -98,6 +102,20 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 			UserModel userModel = User.CreateUser("UI", $"Test_User_{TimeStamp}", $"UI_Test_User_{TimeStamp}@relativity.com", new List<int> { GetGroupId() });
 			UserId = userModel.ArtifactId;
+			return this;
+		}
+
+		public TestContext CreateProduction(string productionName)
+		{
+			var workspaceService = new WorkspaceService(new ImportHelper());
+			int savedSearchId = workspaceService.CreateSavedSearch(new string[] {"Control Number"}, GetWorkspaceId(), $"ForProduction_{productionName}");
+
+			string placeHolderFilePath = Path.Combine(NUnit.Framework.TestContext.CurrentContext.TestDirectory, @"TestData\DefaultPlaceholder.tif");
+
+			int productionId = workspaceService.CreateProduction(GetWorkspaceId(), savedSearchId, productionName, placeHolderFilePath);
+
+			ProductionId = productionId;
+
 			return this;
 		}
 
@@ -373,7 +391,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			};
 			RelativityObject savedSearch = objectManager.Query(savedSearchRequest).First();
 			return savedSearch.ArtifactID;
-		}
+	}
 	}
 
 }
