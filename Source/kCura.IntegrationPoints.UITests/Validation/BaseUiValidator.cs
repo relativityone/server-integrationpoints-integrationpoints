@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using kCura.IntegrationPoint.Tests.Core.Models;
@@ -18,6 +19,11 @@ namespace kCura.IntegrationPoints.UITests.Validation
 			string actualJobStatusAfterExecuted = WaitUntilJobFinishedAndThenGetStatus(integrationPointDetailsPage, jobExecutionTimeoutInMinutes);
 
 			Assert.That(actualJobStatusAfterExecuted, Is.EqualTo(expectedJobStatus.Name));
+		}
+
+		protected static void ValidateHasErrorsProperty(Dictionary<string, string> generalPropertiesTable, bool expectHasErrors)
+		{
+			Assert.AreEqual(expectHasErrors.AsHtmlString(), generalPropertiesTable["Has Errors:"]);
 		}
 
 		private string WaitUntilJobFinishedAndThenGetStatus(IntegrationPointDetailsPage integrationPointDetailsPage, int jobExecutionTimeoutInMinutes)

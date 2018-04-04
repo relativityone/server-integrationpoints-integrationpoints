@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
@@ -13,7 +9,6 @@ using OpenQA.Selenium.Support.UI;
 namespace kCura.IntegrationPoints.UITests.Pages
 {
 	public class PushToRelativityThirdPage : GeneralPage
-
 	{
 		[FindsBy(How = How.Id, Using = "save")]
 		protected IWebElement SaveButton { get; set; }
@@ -51,6 +46,9 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		[FindsBy(How = How.Id, Using = "overwrite")]
 		protected IWebElement OverwriteElement { get; set; }
 
+		[FindsBy(How = How.Id, Using = "overlay-field-behavior")]
+		protected IWebElement MultiSelectFieldOverlayBehaviorElement { get; set; }
+
 		[FindsBy(How = How.Id, Using = "folderPathInformationSelect")]
 		protected IWebElement UseFolderPathElement;
 
@@ -72,7 +70,21 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		[FindsBy(How = How.Id, Using = "add-workspace-field")]
 		protected IWebElement AddWorkspaceFieldElement { get; set; }
 
+		[FindsBy(How = How.Id, Using = "image-production-precedence-button")]
+		protected IWebElement ChooseProductionPrecedenceBtn { get; set; }
+
+		[FindsBy(How = How.Id, Using = "image-include-original-images-checkbox")]
+		protected IWebElement IncludeOriginalImagesIfNotProducedElement { get; set; }
+
+		[FindsBy(How = How.Id, Using = "popup-list-available")]
+		protected IWebElement AvailableProductionsSelectElement { get; set; }
+
+		[FindsBy(How = How.Id, Using = "ok-button")]
+		protected IWebElement AvailableProductionOkBtn { get; set; }
+
 		protected SelectElement SelectOverwriteElement => new SelectElement(OverwriteElement);
+
+		protected SelectElement SelectMultiSelectFieldOverlayBehaviorElement => new SelectElement(MultiSelectFieldOverlayBehaviorElement);
 
 		protected SelectElement SelectUseFolderPathElement => new SelectElement(UseFolderPathElement);
 
@@ -83,6 +95,8 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		protected SelectElement SelectSourceFieldsElement => new SelectElement(SourceFieldsElement);
 
 		protected SelectElement SelectDestinationFieldsElement => new SelectElement(DestinationFieldsElement);
+
+		protected SelectElement SelectAvailableProductions => new SelectElement(AvailableProductionsSelectElement);
 
 		public PushToRelativityThirdPage(RemoteWebDriver driver) : base(driver)
 		{
@@ -137,6 +151,12 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			set { SelectOverwriteElement.SelectByText(value); }
 		}
 
+		public string SelectMultiSelectFieldOverlayBehavior
+		{
+			get { return SelectMultiSelectFieldOverlayBehaviorElement.SelectedOption.Text; }
+			set { SelectMultiSelectFieldOverlayBehaviorElement.SelectByText(value); }
+		}
+
 		public string SelectFolderPathInfo
 		{
 			get { return SelectUseFolderPathElement.SelectedOption.Text; }
@@ -186,6 +206,28 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			else
 			{
 				SelectCopyFilesToRepositoryNoElement.Click();
+			}
+		}
+
+		public void SelectProductionPrecedence(string productionName)
+		{
+			ChooseProductionPrecedenceBtn.Click();
+			IWebElement productionOption = SelectAvailableProductions.Options.Single(x => x.Text.Equals(productionName));
+			var action = new OpenQA.Selenium.Interactions.Actions(Driver);
+			action.DoubleClick(productionOption).Perform();
+			AvailableProductionOkBtn.Click();
+		}
+
+		public void SelectIncludeOriginalImagesIfNotProduced(bool? mode)
+		{
+			if (!mode.HasValue)
+			{
+				return;
+			}
+
+			if (mode.Value)
+			{
+				IncludeOriginalImagesIfNotProducedElement.Click();
 			}
 		}
 

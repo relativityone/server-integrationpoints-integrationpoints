@@ -199,6 +199,9 @@
     <Compile Include="TestHelpers\ExtendedIPermissionManager.cs" />
     <Compile Include="TestHelpers\ExtendedIRSAPIClient.cs" />
     <Compile Include="TestHelpers\ExtendedIWorkspaceManager.cs" />
+    <Compile Include="TestHelpers\FileServiceBase.cs" />
+    <Compile Include="TestHelpers\IImagesService.cs" />
+    <Compile Include="TestHelpers\ImagesService.cs" />
     <Compile Include="TestHelpers\INativesService.cs" />
     <Compile Include="TestHelpers\IntegrationPointProviderEmptyValidator.cs" />
     <Compile Include="TestHelpers\ITestHelper.cs" />
@@ -211,8 +214,10 @@
     <Compile Include="TestServiceContextHelper.cs" />
     <Compile Include="Validators\DocumentFieldsValidator.cs" />
     <Compile Include="Validators\DocumentFolderNameValidator.cs" />
-    <Compile Include="Validators\DocumentNativesAndInRepositoryValidator.cs" />
-    <Compile Include="Validators\DocumentNativesValidator.cs" />
+    <Compile Include="Validators\DocumentHasImagesValidator.cs" />
+    <Compile Include="Validators\DocumentImagesValidator.cs" />
+    <Compile Include="Validators\DocumentHasNativesAndInRepositoryValidator.cs" />
+    <Compile Include="Validators\DocumentHasNativesValidator.cs" />
     <Compile Include="Validators\DocumentPathValidator.cs" />
     <Compile Include="Validators\DocumentPropertyValidator.cs" />
     <Compile Include="Validators\DocumentsValidator.cs" />
@@ -225,6 +230,7 @@
     <Compile Include="Validators\IValidator.cs" />
     <Compile Include="Validators\LoadFileDocumentsValidator.cs" />
     <Compile Include="Validators\PushDocumentsValidator.cs" />
+    <Compile Include="Validators\PushOnlyWithImagesValidator.cs" />
     <Compile Include="View.cs" />
     <Compile Include="WebControllerTestBase.cs" />
     <Compile Include="Workspace.cs" />

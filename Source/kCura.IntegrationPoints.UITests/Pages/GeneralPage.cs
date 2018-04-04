@@ -64,6 +64,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		private IWebElement GetWorkspaceLink(string workspaceName)
 		{
 			IWebDriver externalPage = Driver.SwitchTo().Frame("externalPage");
+			WaitForPage();
 			IWebElement nameSearchFilter = FindFilterTextboxInColumn("Name", externalPage);
 			nameSearchFilter.SendKeys(Keys.Control + "a");
 			Thread.Sleep(500);

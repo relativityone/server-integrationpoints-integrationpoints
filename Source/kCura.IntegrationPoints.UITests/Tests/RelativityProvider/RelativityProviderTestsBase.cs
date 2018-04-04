@@ -13,6 +13,7 @@
 		protected IntegrationPointsAction PointsAction { get; set; }
 		protected IFolderManager FolderManager { get; set; }
 		protected INativesService NativesService { get; set; }
+		protected IImagesService ImageService { get; set; }
 
 		protected override void ContextSetUp()
 		{
@@ -20,26 +21,37 @@
 		}
 
 		[OneTimeSetUp]
-		public void OneTimeSetUp()
+		public virtual void OneTimeSetUp()
 		{
 			EnsureGeneralPageIsOpened();
 
 			FolderManager = Context.Helper.CreateAdminProxy<IFolderManager>();
 			NativesService = new NativesService(Context.Helper);
+			ImageService = new ImagesService(Context.Helper);
 			PointsAction = new IntegrationPointsAction(Driver, Context);
 		}
 
 		[SetUp]
-		public void SetUp()
+		public virtual void SetUp()
 		{
 			DestinationContext = new TestContext()
 				.CreateWorkspace();
 		}
 
 		[TearDown]
-		public void TearDown()
+		public virtual void TearDown()
 		{
 			DestinationContext?.TearDown();
+		}
+
+		protected DocumentsValidator CreateDocumentsEmptyValidator()
+		{
+			return new PushDocumentsValidator(Context.GetWorkspaceId(), DestinationContext.GetWorkspaceId());
+		}
+
+		protected DocumentsValidator CreateOnlyDocumentsWithImagesValidator()
+		{
+			return new PushOnlyWithImagesValidator(Context.GetWorkspaceId(), DestinationContext.GetWorkspaceId());
 		}
 
 		protected DocumentsValidator CreateDocumentsForFieldValidator()
