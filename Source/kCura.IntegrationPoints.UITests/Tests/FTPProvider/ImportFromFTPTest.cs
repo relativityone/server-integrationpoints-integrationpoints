@@ -1,4 +1,5 @@
-﻿using System.Security;
+﻿using System.Collections.Generic;
+using System.Security;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models.Constants.ExportToLoadFile;
 using kCura.IntegrationPoint.Tests.Core.Models.FTP;
@@ -14,6 +15,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FTPProvider
 {
 	public class ImportFromFTPTest : UiTest
 	{
+		private IRSAPIService _service;
 		private IntegrationPointsImportFTPAction _integrationPointsAction;
 		private const string _CSV_FILEPATH = "TestFtpCustodianImport.csv";
 		private const string _UNIQUE_ID = "UniqueID";
@@ -25,6 +27,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.FTPProvider
 		{
 			EnsureGeneralPageIsOpened();
 			_integrationPointsAction = new IntegrationPointsImportFTPAction(Driver, Context);
+			Install(Context.WorkspaceId.Value);
+			_service = Container.Resolve<IRSAPIService>();
 		}
 
 		[Test, Order(1)]
@@ -52,7 +56,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FTPProvider
 			model.ImportCustodianSettings.UniqueIdentifier = _UNIQUE_ID;
 			model.ImportCustodianSettings.CustodianManagerContainsLink = true;
 
-			var validator = new ImportValidator();
+			var validator = new ImportValidator(_service);
 
 			// Act
 			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewImportFromFTPIntegrationPoint(model);
@@ -60,6 +64,12 @@ namespace kCura.IntegrationPoints.UITests.Tests.FTPProvider
 
 			// Assert
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
+			var dict = new Dictionary<string, bool>
+			{
+				{"john.doe@test.com", true},
+				{"jane.kane@test.com", false}
+			};
+			validator.ValidateCustodians(dict);
 		}
 	}
 }

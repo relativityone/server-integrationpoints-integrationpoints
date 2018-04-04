@@ -19,6 +19,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 	[Category(TestCategory.SMOKE)]
 	public class ImportLdapProviderTest : UiTest
 	{
+		private IRSAPIService _service;
 		private IntegrationPointsImportLdapAction _integrationPointsAction;
 
 		protected override bool InstallLegalHoldApp => true;
@@ -28,6 +29,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 		{
 			EnsureGeneralPageIsOpened();
 			_integrationPointsAction = new IntegrationPointsImportLdapAction(Driver, Context);
+			Install(Context.WorkspaceId.Value);
+			_service = Container.Resolve<IRSAPIService>();
 		}
 
 
@@ -63,7 +66,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 			model.SharedImportSettings.FieldMapping.Add(new Tuple<string, string>("sn", "Last Name"));
 			model.SharedImportSettings.FieldMapping.Add(new Tuple<string, string>("manager", "Manager"));
 
-			var validator = new ImportValidator();
+			var validator = new ImportValidator(_service);
 
 			// Act
 			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewImportLdapIntegrationPoint(model);
