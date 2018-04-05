@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Core.Serialization
 			}
 			catch (Exception e)
 			{
-				_logger?.LogError(e, "An error occurred serializing  object. Type: {objectType}", @object?.GetType());
+				_logger?.LogError(e, "An error occurred serializing object. Type: {objectType}", @object?.GetType());
 				throw new IntegrationPointsException(IntegrationPointsExceptionMessages.ERROR_OCCURED_CONTACT_ADMINISTRATOR, e);
 			}
 		}
