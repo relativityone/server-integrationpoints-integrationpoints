@@ -64,12 +64,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.FTPProvider
 
 			// Assert
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
-			var dict = new Dictionary<string, bool>
-			{
-				{"john.doe@test.com", true},
-				{"jane.kane@test.com", false}
-			};
-			validator.ValidateCustodians(dict);
 		}
 	}
 }

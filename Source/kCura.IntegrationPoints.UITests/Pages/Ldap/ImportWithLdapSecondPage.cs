@@ -10,7 +10,6 @@ namespace kCura.IntegrationPoints.UITests.Pages.Ldap
 {
 	public class ImportWithLdapSecondPage : ImportSecondBasePage<ImportFromLdapModel>
 	{
-		
 		[FindsBy(How = How.Id, Using = "connectionPath")]
 		protected IWebElement ConnectionPathInput { get; set; }
 

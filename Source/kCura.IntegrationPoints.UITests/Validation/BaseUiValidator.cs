@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.UITests.Pages;
 using kCura.Relativity.Client.DTOs;
 using NUnit.Framework;
+using OpenQA.Selenium;
 
 namespace kCura.IntegrationPoints.UITests.Validation
 {
@@ -44,7 +45,14 @@ namespace kCura.IntegrationPoints.UITests.Validation
 			sw.Start();
 			while (GetUntilJobFinishedConditionAndExecutionTimeout(jobHistoryModel, sw, jobExecutionTimeoutInMinutes))
 			{
-				jobHistoryModel = integrationPointDetailsPage.GetLatestJobHistoryFromJobStatusTable();
+				try
+				{
+					jobHistoryModel = integrationPointDetailsPage.GetLatestJobHistoryFromJobStatusTable();
+				}
+				catch (StaleElementReferenceException)
+				{
+					jobHistoryModel = null;
+				}
 				Thread.Sleep(1000);
 			}
 

@@ -10,7 +10,7 @@ namespace kCura.IntegrationPoints.UITests.Validation
 {
 	public class ImportValidator : BaseUiValidator
 	{
-		private List<RelativityObject> _custodians;
+		private IList<RelativityObject> _custodians;
 		private readonly IRSAPIService _service;
 
 		public ImportValidator(IRSAPIService service)
@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.UITests.Validation
 			_service = service;
 		}
 
-		public void ValidateCustodians(Dictionary<string, bool> expectedCustodians)
+		public void ValidateCustodians(Dictionary<string, string> expectedCustodians)
 		{
 			LoadCustodians();
 			CompareCustodians(expectedCustodians);
@@ -34,20 +34,24 @@ namespace kCura.IntegrationPoints.UITests.Validation
 				},
 				Fields = new[]
 				{
-					new FieldRef { Name = "Email" },
+					new FieldRef { Name = "FullName" },
 					new FieldRef { Name = "Manager" }
 				},
 			};
 			_custodians = _service.RelativityObjectManager.Query(request);
 		}
 
-		private void CompareCustodians(Dictionary<string, bool> expectedCustodians)
+		private void CompareCustodians(Dictionary<string, string> expectedCustodians)
 		{
-			foreach (var custodian in _custodians)
+			foreach (var expectedCustodian in expectedCustodians)
 			{
-				string email = (string) custodian["email"].Value;
-				Assert.IsTrue(expectedCustodians.ContainsKey(email));
-				bool shouldHaveManager = expectedCustodians[email];
+				string fullName = expectedCustodian.Key;
+				string expectedManagerName = expectedCustodian.Value;
+				RelativityObject custodian = _custodians.FirstOrDefault(c => fullName.Equals(c["FullName"].Value));
+				Assert.IsNotNull(custodian);
+				var actualManager = custodian["manager"].Value as RelativityObjectValue;
+				Assert.IsNotNull(actualManager);
+				Assert.AreEqual(expectedManagerName, actualManager.Name);
 			}
 		}
 	}

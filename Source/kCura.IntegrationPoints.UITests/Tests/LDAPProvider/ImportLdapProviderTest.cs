@@ -33,7 +33,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 			_service = Container.Resolve<IRSAPIService>();
 		}
 
-
 		[Test, Order(1)]
 		public void DocumentExportToLoadFile_TC_IMPORT_CUST_1()
 		{
@@ -46,8 +45,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 			// Step 2
 			model.Source.Authentication = LdapAuthenticationType.SecureSocketLayer;
 			model.Source.ConnectionPath = SharedVariables.LdapConnectionPath;
+			model.Source.ObjectFilterString = "(objectClass=organizationalPerson)";
 			model.Source.ImportNestedItems = false;
-			model.Source.ObjectFilterString = "";
 
 			model.Source.Password = new SecureString();
 			SharedVariables.LdapPassword.ForEach(c => model.Source.Password.AppendChar(c));
@@ -73,7 +72,13 @@ namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 			detailsPage.RunIntegrationPoint();
 
 			// Assert
+			var expectedCustodians = new Dictionary<string, string>
+			{
+				{"Szmigielski, Piotr", "Lorenz, Andrzej"}
+			};
+
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
+			validator.ValidateCustodians(expectedCustodians);
 		}
 	}
 }
