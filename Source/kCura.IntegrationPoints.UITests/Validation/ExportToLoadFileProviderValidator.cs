@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.UITests.Validation
 
 			ValidateGeneralModel(generalPropertiesTable, integrationPointModel);
 		}
-        
+
 		private static void ValidateGeneralModel(Dictionary<string, string> generalPropertiesTable, ExportToLoadFileProviderModel integrationPointModel)
 		{
 			Assert.AreEqual(integrationPointModel.GetValueOrDefault(model => model.Name), generalPropertiesTable["Name:"]);
@@ -103,6 +103,6 @@ namespace kCura.IntegrationPoints.UITests.Validation
             Assert.AreEqual(history.ItemsTransferred, history.TotalItems);
 	        Assert.AreEqual(transferedItems, history.ItemsTransferred);
 	        Assert.AreEqual(0, history.ItemsWithErrors);
-	    }
+	}
 	}
 }

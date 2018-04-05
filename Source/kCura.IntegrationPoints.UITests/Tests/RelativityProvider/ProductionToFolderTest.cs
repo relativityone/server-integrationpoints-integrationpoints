@@ -1,6 +1,7 @@
 ﻿using System;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Validators;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Pages;
 using NUnit.Framework;
@@ -48,7 +49,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			// Assert
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
-			ValidateProductionImagesAndDocumentSource(false);
+			ValidateProductionImagesAndDocumentSource(false, model);
 		}
 
 		[Test]
@@ -68,12 +69,15 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			// Assert
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
-			ValidateProductionImagesAndDocumentSource(true);
+			ValidateProductionImagesAndDocumentSource(true, model);
 		}
 
 		[Test]
 		public void RelativityProvider_TC_RTR_PTF_3()
 		{
+			//Not all documents have images, so production would add missing ones
+			DestinationContext.ImportDocuments();
+
 			//Arrange
 			RelativityProviderModel model = CreateRelativityProviderModelWithProduction();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
@@ -89,12 +93,15 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			// Assert
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
-			ValidateProductionImagesAndDocumentSource(false);
+			ValidateProductionImagesAndDocumentSource(false, model);
 		}
 
 		[Test]
 		public void RelativityProvider_TC_RTR_PTF_4()
 		{
+			//Not all documents have images, so production would add missing ones
+			DestinationContext.ImportDocuments();
+
 			//Arrange
 			RelativityProviderModel model = CreateRelativityProviderModelWithProduction();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
@@ -110,7 +117,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			// Assert
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
-			ValidateProductionImagesAndDocumentSource(true);
+			ValidateProductionImagesAndDocumentSource(true, model);
 		}
 
 		[Test]
@@ -131,7 +138,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			// Assert
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
-			ValidateProductionImagesAndDocumentSource(false);
+			ValidateProductionImagesAndDocumentSource(false, model);
 		}
 
 		[Test]
@@ -152,14 +159,18 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			// Assert
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
-			ValidateProductionImagesAndDocumentSource(true);
+			ValidateProductionImagesAndDocumentSource(true, model);
 		}
 
-		private void ValidateProductionImagesAndDocumentSource(bool expectInRepository)
+		private void ValidateProductionImagesAndDocumentSource(bool expectInRepository, RelativityProviderModel model)
 		{
+			IRelativityObjectManager objectManager = ObjectManagerFactory.CreateRelativityObjectManager(DestinationContext.GetWorkspaceId());
+
 			DocumentsValidator validator = CreateDocumentsEmptyValidator()
+				.ValidateWith(new DocumentFieldsValidator())
 				.ValidateWith(new DocumentHasImagesValidator(true))
-				.ValidateWith(new DocumentImagesValidator(ImageService, DestinationContext.GetWorkspaceId(), expectInRepository));
+				.ValidateWith(new DocumentImagesValidator(ImageService, DestinationContext.GetWorkspaceId(), expectInRepository))
+				.ValidateWith(new DocumentSourceJobNameValidator(objectManager, model.Name));
 
 			validator.Validate();
 		}
