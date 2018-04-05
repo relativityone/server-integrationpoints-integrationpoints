@@ -51,6 +51,8 @@ namespace kCura.IntegrationPoints.UITests.Common
 			{
 				secondPage.ProductionSet = model.SourceInformationModel.ProductionSet;
 			}
+
+			secondPage.StartExportAtRecord = model.SourceInformationModel.StartAtRecord;
 			Thread.Sleep(200);
 			if (model.SourceInformationModel.SelectAllFields)
 			{
@@ -93,7 +95,7 @@ namespace kCura.IntegrationPoints.UITests.Common
 				thirdPageExportDetails.DestinationFolder.ChooseFirstChildElement();
 			}
 
-			if (!exportDetails.CreateExportFolder.HasValue && exportDetails.CreateExportFolder.Value)
+			if (!exportDetails.CreateExportFolder.HasValue || !exportDetails.CreateExportFolder.Value)
 			{
 				thirdPageExportDetails.DeselectDoNotCreateExportFolder();
 			}

@@ -17,6 +17,9 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		[FindsBy(How = How.Id, Using = "available-fields")]
 		protected IWebElement SourceFieldsElement { get; set; }
 
+		[FindsBy(How = How.Id, Using = "start-export-at-record")]
+		protected IWebElement StartExportAtRecordElement { get; set; }
+
 		[FindsBy(How = How.Id, Using = "add-field")]
 		protected IWebElement AddSourceFieldElement { get; set; }
 
@@ -58,6 +61,12 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			SavedSearch.Choose(savedSearch);
 			Sleep(200);
 			return this;
+		}
+
+		public int StartExportAtRecord
+		{
+			get { return int.Parse(StartExportAtRecordElement.Text); }
+			set { SetInputText(StartExportAtRecordElement, value.ToString()); }
 		}
 
 		public ExportToFileSecondPage SelectAllDocumentsSavedSearch()

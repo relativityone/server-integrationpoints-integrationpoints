@@ -17,13 +17,6 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public abstract void SetupModel(TModel model);
 		
-
-		protected void SetInputText(IWebElement element, string text)
-		{
-			element.Clear();
-			element.SendKeys(text);
-		}
-
 		public ImportThirdPage<TModel> GoToNextPage(Func<ImportThirdPage<TModel>> funcThridPageCreator)
 		{
 			WaitForPage();
