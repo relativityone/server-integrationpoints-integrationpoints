@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Security;
+﻿using System.Security;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models.Constants.ExportToLoadFile;
 using kCura.IntegrationPoint.Tests.Core.Models.FTP;
