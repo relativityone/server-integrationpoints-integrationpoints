@@ -69,7 +69,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "An error occurred while retriving exportable fields in {validator}", nameof(FieldsMapValidator));
-				throw new IntegrationPointsException("An error occurred while retrieving exportable fields. Please retry or contact administrator", ex);
+				string message =
+					IntegrationPointsExceptionMessages.CreateErrorMessageRetryOrContactAdministrator(
+						"while retrieving exportable fields");
+				throw new IntegrationPointsException(message, ex);
 			}
 		}
 

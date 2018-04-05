@@ -244,7 +244,9 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "An error occurred retrieving fields in {validator}", nameof(FieldsMappingValidator));
-				throw new IntegrationPointsException("An error occurred retrieving fields. Please retry or contact administrator", ex);
+				string message =
+					IntegrationPointsExceptionMessages.CreateErrorMessageRetryOrContactAdministrator("retrieving fields");
+				throw new IntegrationPointsException(message, ex);
 			}
 		}
 	}

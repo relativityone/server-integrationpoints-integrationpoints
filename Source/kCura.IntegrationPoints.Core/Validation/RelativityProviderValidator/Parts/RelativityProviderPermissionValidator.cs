@@ -94,7 +94,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "An error occurred creating target helper. FederatedInstance: {instanceArtifactId}. Model: {modelArtifactId}", sourceConfiguration.FederatedInstanceArtifactId, model.ArtifactId);
-				throw new IntegrationPointsException("An error occurred. Please contact administrator", ex)
+				throw new IntegrationPointsException(IntegrationPointsExceptionMessages.ERROR_OCCURED_CONTACT_ADMINISTRATOR, ex)
 				{
 					ExceptionSource = IntegrationPointsExceptionSource.VALIDATION,
 					ShouldAddToErrorsTab = false
@@ -111,7 +111,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "An error occurred creating permission manager.");
-				throw new IntegrationPointsException("An error occurred. Please contact administrator.", ex)
+				throw new IntegrationPointsException(IntegrationPointsExceptionMessages.ERROR_OCCURED_CONTACT_ADMINISTRATOR, ex)
 				{
 					ExceptionSource = IntegrationPointsExceptionSource.VALIDATION,
 					ShouldAddToErrorsTab = false

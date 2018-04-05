@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Core.Serialization
 			catch (Exception e)
 			{
 				_logger?.LogError(e, "An error occurred serializing  object. Type: {objectType}", @object?.GetType());
-				throw new IntegrationPointsException("An error occurred. Please contact administrator", e);
+				throw new IntegrationPointsException(IntegrationPointsExceptionMessages.ERROR_OCCURED_CONTACT_ADMINISTRATOR, e);
 			}
 		}
 
@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.Core.Serialization
 			catch (Exception e)
 			{
 				_logger?.LogError(e, "An error occurred deserializing object. Type: {objectType}", objectType);
-				throw new IntegrationPointsException("An error occurred. Please contact administrator", e);
+				throw new IntegrationPointsException(IntegrationPointsExceptionMessages.ERROR_OCCURED_CONTACT_ADMINISTRATOR, e);
 			}
 		}
 
@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.Core.Serialization
 			catch (Exception e)
 			{
 				_logger?.LogError(e, "An error occurred deserializing object. Type: {objectType}", typeof(T));
-				throw new IntegrationPointsException("An error occurred. Please contact administrator", e);
+				throw new IntegrationPointsException(IntegrationPointsExceptionMessages.ERROR_OCCURED_CONTACT_ADMINISTRATOR, e);
 			}
 		}
 	}

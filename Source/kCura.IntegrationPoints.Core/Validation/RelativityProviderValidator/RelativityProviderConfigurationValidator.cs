@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "An error occurred in {validator}", nameof(RelativityProviderConfigurationValidator));
-				throw new IntegrationPointsException("An error occurred. Please contact administrator", ex)
+				throw new IntegrationPointsException(IntegrationPointsExceptionMessages.ERROR_OCCURED_CONTACT_ADMINISTRATOR, ex)
 				{
 					ExceptionSource = IntegrationPointsExceptionSource.VALIDATION,
 					ShouldAddToErrorsTab = false
@@ -121,7 +121,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			}
 
 			_logger.LogError("Converstion to {validationModel} failed. Actual type: {type}", nameof(IntegrationPointProviderValidationModel), value?.GetType());
-			throw new IntegrationPointsException("An error occurred. Please contact administrator")
+			throw new IntegrationPointsException(IntegrationPointsExceptionMessages.ERROR_OCCURED_CONTACT_ADMINISTRATOR)
 			{
 				ExceptionSource = IntegrationPointsExceptionSource.VALIDATION,
 				ShouldAddToErrorsTab = false

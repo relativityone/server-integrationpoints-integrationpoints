@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 			}
 
 			_logger.LogError("An error occure casting to validation model in {validator}. Actual type: {actualType}", nameof(IntegrationPointTypeValidator), value?.GetType());
-			throw new IntegrationPointsException("An error occurred. Please contact administrator")
+			throw new IntegrationPointsException(IntegrationPointsExceptionMessages.ERROR_OCCURED_CONTACT_ADMINISTRATOR)
 			{
 				ExceptionSource = IntegrationPointsExceptionSource.VALIDATION,
 				ShouldAddToErrorsTab = false

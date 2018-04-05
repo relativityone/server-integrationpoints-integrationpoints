@@ -42,7 +42,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "An error occurred while retrieving view in {validator}", nameof(ViewValidator));
-				throw new IntegrationPointsException("An error occurred while retrieving View. Please retry or contact administrator.", ex);
+				string message =
+					IntegrationPointsExceptionMessages.CreateErrorMessageRetryOrContactAdministrator("while retrieving View");
+				throw new IntegrationPointsException(message, ex);
 			}
 		}
 	}

@@ -49,7 +49,8 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			}
 			catch (Exception ex)
 			{
-				throw new IntegrationPointsException("An error occurred getting production for export. Please retry or contact administrator", ex)
+				string message = IntegrationPointsExceptionMessages.CreateErrorMessageRetryOrContactAdministrator("getting production for export");
+				throw new IntegrationPointsException(message, ex)
 				{
 					ExceptionSource = IntegrationPointsExceptionSource.WIN_EDDS
 				};
@@ -68,7 +69,8 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			}
 			catch (Exception ex)
 			{
-				throw new IntegrationPointsException("An error occurred getting production for import. Please retry or contact administrator.", ex)
+				string message = IntegrationPointsExceptionMessages.CreateErrorMessageRetryOrContactAdministrator("getting production for import");
+				throw new IntegrationPointsException(message, ex)
 				{
 					ExceptionSource = IntegrationPointsExceptionSource.WIN_EDDS
 				};

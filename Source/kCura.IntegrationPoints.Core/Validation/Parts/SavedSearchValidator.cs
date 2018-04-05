@@ -54,7 +54,8 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "An error occurred retrieving saved search in {validator}", nameof(SavedSearchValidator));
-				throw new IntegrationPointsException("An error occurred retrieving saved search. Please retry or contact administrator", ex);
+				string message = IntegrationPointsExceptionMessages.CreateErrorMessageRetryOrContactAdministrator("retrieving saved search");
+				throw new IntegrationPointsException(message, ex);
 			}
 		}
 	}
