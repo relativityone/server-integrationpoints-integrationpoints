@@ -9,8 +9,6 @@
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="GeneratorHelper" #>
 using System;
-using System.Collections.Generic;  
-using System.Text;
 using kCura.Relativity.Client.DTOs;
 using kCura.IntegrationPoints.Data.Attributes;
 
@@ -40,16 +38,22 @@ if (!(string.IsNullOrEmpty(field.MaxLength)))
 <#
 	}
 #>
+<# 
+	var fieldType = FieldTypeHelper.CSType(field.FieldTypeId);
+	if(objType.Name.ToPascalCase() == "JobHistory" && field.DisplayName.ToPascalCase() == "TotalItems"){
+		fieldType = "long?";
+	}
+#>
 		[DynamicField(<#=objType.Name.ToPascalCase()#>Fields.<#=field.DisplayName.ToPascalCase()#>, <#=objType.Name.ToPascalCase()#>FieldGuids.<#=field.DisplayName.ToPascalCase()#>, FieldTypes.<#=((FieldTypeHelper.RSFieldType)field.FieldTypeId).ToString()#><#=lengthStr#>)]
-		public <#=FieldTypeHelper.CSType(field.FieldTypeId)#> <#=field.DisplayName.ToPascalCase()#>
+		public <#=fieldType#> <#=field.DisplayName.ToPascalCase()#>
 		{
 			get
 			{
-				return GetField<<#=FieldTypeHelper.CSType(field.FieldTypeId)#>>(new System.Guid(<#=objType.Name.ToPascalCase()#>FieldGuids.<#=field.DisplayName.ToPascalCase()#>));
+				return GetField<<#=fieldType#>>(new System.Guid(<#=objType.Name.ToPascalCase()#>FieldGuids.<#=field.DisplayName.ToPascalCase()#>));
 			}
 			set
 			{
-				SetField<<#=FieldTypeHelper.CSType(field.FieldTypeId)#>>(new System.Guid(<#=objType.Name.ToPascalCase()#>FieldGuids.<#=field.DisplayName.ToPascalCase()#>), value);
+				SetField<<#=fieldType#>>(new System.Guid(<#=objType.Name.ToPascalCase()#>FieldGuids.<#=field.DisplayName.ToPascalCase()#>), value);
 			}
 		}
 <#
