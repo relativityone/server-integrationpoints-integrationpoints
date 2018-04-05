@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 				DestinationWorkspace = $"{DestinationContext.WorkspaceName} - {DestinationContext.WorkspaceId}",
 				CreateSavedSearch = false,
 				CopyImages = true,
-				ProductionName = $"Prod_{DateTime.Now:yyyy-MM-dd_HH:mm:ss}"
+				SourceProductionName = $"Prod_{DateTime.Now:yyyy-MM-dd_HH:mm:ss}"
 			};
 
 			return model;
@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOnly;
 			model.CopyFilesToRepository = false;
 
-			Context.CreateProduction(model.ProductionName);
+			Context.CreateAndRunProduction(model.SourceProductionName);
 
 			//Act
 			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOnly;
 			model.CopyFilesToRepository = true;
 
-			Context.CreateProduction(model.ProductionName);
+			Context.CreateAndRunProduction(model.SourceProductionName);
 
 			//Act
 			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
@@ -84,7 +84,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.MultiSelectFieldOverlay = RelativityProviderModel.MultiSelectFieldOverlayBehaviorEnum.UseFieldSettings;
 			model.CopyFilesToRepository = false;
 
-			Context.CreateProduction(model.ProductionName);
+			Context.CreateAndRunProduction(model.SourceProductionName);
 
 			//Act
 			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
@@ -108,7 +108,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.MultiSelectFieldOverlay = RelativityProviderModel.MultiSelectFieldOverlayBehaviorEnum.UseFieldSettings;
 			model.CopyFilesToRepository = true;
 
-			Context.CreateProduction(model.ProductionName);
+			Context.CreateAndRunProduction(model.SourceProductionName);
 
 			//Act
 			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
@@ -129,7 +129,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.MultiSelectFieldOverlay = RelativityProviderModel.MultiSelectFieldOverlayBehaviorEnum.UseFieldSettings;
 			model.CopyFilesToRepository = false;
 
-			Context.CreateProduction(model.ProductionName);
+			Context.CreateAndRunProduction(model.SourceProductionName);
 
 			//Act
 			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
@@ -150,7 +150,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.MultiSelectFieldOverlay = RelativityProviderModel.MultiSelectFieldOverlayBehaviorEnum.UseFieldSettings;
 			model.CopyFilesToRepository = true;
 
-			Context.CreateProduction(model.ProductionName);
+			Context.CreateAndRunProduction(model.SourceProductionName);
 
 			//Act
 			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);

@@ -105,14 +105,21 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			return this;
 		}
 
-		public TestContext CreateProduction(string productionName)
+		public TestContext CreateProductionSet(string productionName)
+		{
+			var workspaceService = new WorkspaceService(new ImportHelper());
+			workspaceService.CreateProductionSet(GetWorkspaceId(), productionName);
+			return this;
+		}
+
+		public TestContext CreateAndRunProduction(string productionName)
 		{
 			var workspaceService = new WorkspaceService(new ImportHelper());
 			int savedSearchId = workspaceService.CreateSavedSearch(new string[] {"Control Number"}, GetWorkspaceId(), $"ForProduction_{productionName}");
 
 			string placeHolderFilePath = Path.Combine(NUnit.Framework.TestContext.CurrentContext.TestDirectory, @"TestData\DefaultPlaceholder.tif");
 
-			int productionId = workspaceService.CreateProduction(GetWorkspaceId(), savedSearchId, productionName, placeHolderFilePath);
+			int productionId = workspaceService.CreateAndRunProduction(GetWorkspaceId(), savedSearchId, productionName, placeHolderFilePath);
 
 			ProductionId = productionId;
 
@@ -209,11 +216,11 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			return this;
 		}
 
-		public TestContext CreateProduction(string savedSearchName, string productionName)
+		public TestContext CreateAndRunProduction(string savedSearchName, string productionName)
 		{
 			var workspaceService = new WorkspaceService(new ImportHelper());
 			int savedSearchId = RetrieveSavedSearchId(savedSearchName);
-			workspaceService.CreateProduction(WorkspaceId.Value, savedSearchId, productionName);
+			workspaceService.CreateAndRunProduction(WorkspaceId.Value, savedSearchId, productionName);
 
 			return this;
 		}

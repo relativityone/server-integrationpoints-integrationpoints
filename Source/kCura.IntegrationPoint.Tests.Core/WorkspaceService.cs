@@ -103,18 +103,23 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return CreateSavedSearch(defaultFields, additionalFields, workspaceId, _SAVED_SEARCH_NAME);
 		}
 
-		public int CreateProduction(int workspaceArtifactId, int savedSearchId, string productionName)
+		public int CreateProductionSet(int workspaceArtifactId, string productionSetName)
+		{
+			return Production.Create(workspaceArtifactId, productionSetName);
+		}
+
+		public int CreateAndRunProduction(int workspaceArtifactId, int savedSearchId, string productionName)
 		{
 			var placeHolderFilePath = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\DefaultPlaceholder.tif");
 
-			return CreateProduction(workspaceArtifactId, savedSearchId, productionName, placeHolderFilePath);
+			return CreateAndRunProduction(workspaceArtifactId, savedSearchId, productionName, placeHolderFilePath);
 		}
 
-		public int CreateProduction(int workspaceArtifactId, int savedSearchId, string productionName, string placeHolderFilePath)
+		public int CreateAndRunProduction(int workspaceArtifactId, int savedSearchId, string productionName, string placeHolderFilePath)
 		{
 			var placeHolderFileData = FileToBase64Converter.Convert(placeHolderFilePath);
 
-			var productionId = Production.Create(workspaceArtifactId, productionName);
+			var productionId = CreateProductionSet(workspaceArtifactId, productionName);
 
 			var placeholderId = Placeholder.Create(workspaceArtifactId, placeHolderFileData);
 			ProductionDataSource.CreateDataSourceWithPlaceholder(workspaceArtifactId, productionId, savedSearchId,

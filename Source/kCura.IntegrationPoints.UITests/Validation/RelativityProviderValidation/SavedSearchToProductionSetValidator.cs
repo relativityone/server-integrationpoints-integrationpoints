@@ -6,14 +6,14 @@ using TestContext = kCura.IntegrationPoints.UITests.Configuration.TestContext;
 
 namespace kCura.IntegrationPoints.UITests.Validation.RelativityProviderValidation
 {
-	public class LinksSavedSearchToFolderValidator :RelativityProviderValidatorBase
+	public class SavedSearchToProductionSetValidator : RelativityProviderValidatorBase
 	{
 		protected override void ValidateGeneralModel(Dictionary<string, string> propertiesTableDictionary, RelativityProviderModel model,
 			TestContext sourceContext, TestContext destinationContext)
 		{
 			base.ValidateGeneralModel(propertiesTableDictionary, model, sourceContext, destinationContext);
-			Assert.AreEqual(model.GetValueOrDefault(x => x.MoveExistingDocuments).AsHtmlString(), propertiesTableDictionary["Move Existing Docs:"]);
-			Assert.AreEqual(destinationContext.WorkspaceName, propertiesTableDictionary["Destination Folder:"]); // test selects root item in destination folder dropdown, which is equal to workspace name
+			Assert.AreEqual(ImagePrecedenceEnumToString(model.GetValueOrDefault(x => x.ImagePrecedence)), propertiesTableDictionary["Image Precedence:"]);
+			Assert.AreEqual(model.GetValueOrDefault(x => x.DestinationProductionName), propertiesTableDictionary["Destination Production Set:"]);
 		}
 	}
 }

@@ -35,11 +35,16 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		protected IWebElement SavedSearchSelectWebElement { get; set; }
 
 		[FindsBy(How = How.Id, Using = "s2id_sourceProductionSetsSelector")]
-		protected IWebElement ProductionSelectWebElement { get; set; }
+		protected IWebElement SourceProductionSelectWebElement { get; set; }
+
+		[FindsBy(How = How.Id, Using = "s2id_productionSetsSelector")]
+		protected IWebElement ProductionLocationSelectWebElement { get; set; }
 
 		protected Select SavedSearchSelect => new Select(SavedSearchSelectWebElement);
 
-		protected Select ProductionSelect => new Select(ProductionSelectWebElement);
+		protected Select SourceProductionSelect => new Select(SourceProductionSelectWebElement);
+
+		protected Select ProductionLocationSelect => new Select(ProductionLocationSelectWebElement);
 
 		protected Select DestinationWorkspaceSelect { get; set; }
 
@@ -86,10 +91,10 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			return this;
 		}
 
-		public PushToRelativitySecondPage SelectProduction(string productionName)
+		public PushToRelativitySecondPage SelectSourceProduction(string productionName)
 		{
-			ProductionSelect.Choose(productionName);
-			Sleep(200);
+			SourceProductionSelect.Choose(productionName);
+			WaitForPage();
 			return this;
 		}
 
@@ -100,9 +105,11 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			return this;
 		}
 
-		public PushToRelativitySecondPage SelectProductionLocation()
+		public PushToRelativitySecondPage SelectProductionLocation(string productionName)
 		{
 			ProductionLocation.Click();
+			WaitForPage();
+			ProductionLocationSelect.Choose(productionName);
 			return this;
 		}
 

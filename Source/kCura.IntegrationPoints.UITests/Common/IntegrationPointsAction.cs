@@ -327,10 +327,7 @@ namespace kCura.IntegrationPoints.UITests.Common
 			//secondPage.RelativityInstance = model.RelativityInstance;
 
 			secondPage.DestinationWorkspace = model.DestinationWorkspace;
-			Thread.Sleep(500);
-			secondPage.SelectFolderLocation();
-			secondPage.FolderLocationSelect.ChooseRootElement();
-
+			SelectDestination(secondPage, model);
 			return secondPage;
 		}
 
@@ -351,10 +348,27 @@ namespace kCura.IntegrationPoints.UITests.Common
 					secondPage.SelectSavedSearch();
 					break;
 				case RelativityProviderModel.SourceTypeEnum.Production:
-					secondPage.SelectProduction(model.ProductionName);
+					secondPage.SelectSourceProduction(model.SourceProductionName);
 					break;
 				default:
 					throw new ArgumentOutOfRangeException();
+			}
+		}
+
+		private static void SelectDestination(PushToRelativitySecondPage secondPage, RelativityProviderModel model)
+		{
+			RelativityProviderModel.LocationEnum location = model.GetValueOrDefault(m => m.Location);
+
+			switch (location)
+			{
+				case RelativityProviderModel.LocationEnum.Folder:
+					secondPage.SelectFolderLocation();
+					secondPage.WaitForPage();
+					secondPage.FolderLocationSelect.ChooseRootElement();
+					break;
+				case RelativityProviderModel.LocationEnum.ProductionSet:
+					secondPage.SelectProductionLocation(model.DestinationProductionName);
+					break;
 			}
 		}
 
@@ -362,7 +376,8 @@ namespace kCura.IntegrationPoints.UITests.Common
 		{
 			PushToRelativityThirdPage thirdPage = secondPage.GoToNextPage();
 
-			if (model.GetValueOrDefault(m => m.Source) != RelativityProviderModel.SourceTypeEnum.Production)
+			if (model.GetValueOrDefault(m => m.Source) != RelativityProviderModel.SourceTypeEnum.Production &&
+			    model.GetValueOrDefault(m => m.Location) != RelativityProviderModel.LocationEnum.ProductionSet)
 			{
 				MapWorkspaceFields(thirdPage, model.FieldMapping);
 				thirdPage.SelectCopyImages(model.CopyImages);
@@ -404,14 +419,7 @@ namespace kCura.IntegrationPoints.UITests.Common
 			else if (model.ImagePrecedence == ImagePrecedenceEnum.ProducedImages)
 			{
 				thirdPage.SelectImagePrecedence = "Produced Images";
-				thirdPage.SelectProductionPrecedence(model.ProductionName);
-				thirdPage.SelectIncludeOriginalImagesIfNotProduced(model.IncludeOriginalImagesIfNotProduced);
-			}
-
-			if (model.GetValueOrDefault(m => m.Source) == RelativityProviderModel.SourceTypeEnum.SavedSearch &&
-			    model.GetValueOrDefault(m => m.Location) == RelativityProviderModel.LocationEnum.ProductionSet)
-			{
-				thirdPage.SelectProductionPrecedence(model.ProductionName);
+				thirdPage.SelectProductionPrecedence(model.SourceProductionName);
 				thirdPage.SelectIncludeOriginalImagesIfNotProduced(model.IncludeOriginalImagesIfNotProduced);
 			}
 
@@ -432,7 +440,7 @@ namespace kCura.IntegrationPoints.UITests.Common
 			}
 
 			thirdPage.SelectMoveExitstingDocuments(model.MoveExistingDocuments);
-
+			
 
 			thirdPage.SelectCopyFilesToRepository(model.CopyFilesToRepository);
 
