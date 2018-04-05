@@ -126,8 +126,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			IIntegrationPointProviderValidator ipValidator = new IntegrationPointProviderValidator(Enumerable.Empty<IValidator>(), integrationPointSerializer);
 			IIntegrationPointPermissionValidator permissionValidator = new IntegrationPointPermissionValidator(Enumerable.Empty<IPermissionValidator>(), integrationPointSerializer);
 
+			IJobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(caseServiceContext, Helper);
+
 			_integrationPointService = new IntegrationPointService(Helper, caseServiceContext, contextContainerFactory, integrationPointSerializer,
-				choiceQuery, jobManager, _jobHistoryService, managerFactory, ipValidator, permissionValidator);
+				choiceQuery, jobManager, _jobHistoryService, jobHistoryErrorService, managerFactory, ipValidator, permissionValidator);
 		}
 
 		internal void UpdateIntegrationPointHasErrorsField(Data.IntegrationPoint integrationPoint)

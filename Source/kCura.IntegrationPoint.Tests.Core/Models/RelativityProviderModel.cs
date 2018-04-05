@@ -59,7 +59,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Models
 
 		#endregion
 		public bool? CreateSavedSearch { get; set; }
-		public string ProductionName { get; set; }
+		public string SourceProductionName { get; set; }
+		public string DestinationProductionName { get; set; }
 
 		public enum LocationEnum
 		{

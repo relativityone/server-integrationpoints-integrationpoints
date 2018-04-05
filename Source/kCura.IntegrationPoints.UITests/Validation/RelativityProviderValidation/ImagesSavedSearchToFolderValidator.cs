@@ -14,6 +14,7 @@ namespace kCura.IntegrationPoints.UITests.Validation.RelativityProviderValidatio
 			base.ValidateGeneralModel(propertiesTableDictionary, model, sourceContext, destinationContext);
 			Assert.AreEqual(ImagePrecedenceEnumToString(model.GetValueOrDefault(x => x.ImagePrecedence)), propertiesTableDictionary["Image Precedence:"]);
 			Assert.AreEqual(model.GetValueOrDefault(x => x.CopyFilesToRepository).AsHtmlString(), propertiesTableDictionary["Copy Files to Repository:"]);
+			Assert.AreEqual(destinationContext.WorkspaceName, propertiesTableDictionary["Destination Folder:"]); // test selects root item in destination folder dropdown, which is equal to workspace name
 		}
 	}
 }

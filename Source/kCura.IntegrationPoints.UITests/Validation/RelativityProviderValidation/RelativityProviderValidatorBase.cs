@@ -27,7 +27,6 @@ namespace kCura.IntegrationPoints.UITests.Validation.RelativityProviderValidatio
 			Assert.AreEqual(sourceContext.WorkspaceName, propertiesTableDictionary["Source Workspace:"]);
 			StringAssert.AreEqualIgnoringCase(model.GetValueOrDefault(x => x.TransferredObject), propertiesTableDictionary["Transfered Object:"]);
 			Assert.AreEqual(destinationContext.WorkspaceName, propertiesTableDictionary["Destination Workspace:"]);
-			Assert.AreEqual(destinationContext.WorkspaceName, propertiesTableDictionary["Destination Folder:"]); // test selects root item in destination folder dropdown, which is equal to workspace name
 			Assert.AreEqual(OverwriteModeEnumToString(model.GetValueOrDefault(x => x.Overwrite)), propertiesTableDictionary["Overwrite:"]);
 			Assert.AreEqual(MultiSelectFieldOverlayBehaviorEnumToString(model.GetValueOrDefault(x => x.MultiSelectFieldOverlay)), propertiesTableDictionary["Multi-Select Overlay:"]);
 			Assert.AreEqual(UseFolderPathInformationEnumToString(model.GetValueOrDefault(x => x.UseFolderPathInformation)), propertiesTableDictionary["Use Folder Path Info:"]);

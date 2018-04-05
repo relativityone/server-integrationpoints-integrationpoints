@@ -72,11 +72,11 @@ namespace kCura.IntegrationPoints.Data
 
 	public partial class DocumentFieldGuids 
 	{
-		public const string MarkupSetPrimary = @"b9b8964b-92f9-4d34-bd8a-69e303821db5";
+		public const string MarkupSetPrimary = @"14292546-9c9c-4210-998b-4b5ff4d89e58";
 		public const string Batch = @"d7a9d9fd-68fc-4c85-ad44-ba524a0ca872";
-		public const string BatchBatchSet = @"de165970-de80-4c1e-90e3-8dd330b8138a";
-		public const string BatchAssignedTo = @"81c45cf6-71e8-443c-ab82-877651aa5be4";
-		public const string BatchStatus = @"478d3913-f243-4e43-93ad-c95935e71657";
+		public const string BatchBatchSet = @"705dad6c-843d-4131-b470-f65874366fa7";
+		public const string BatchAssignedTo = @"e8de43da-fbdf-4319-8ee6-e865dbf70bdb";
+		public const string BatchStatus = @"2d8b37df-02ac-4a66-834a-3bfc2de78486";
 		public const string RelativityDestinationCase = @"8980c2fa-0d33-4686-9a97-ea9d6f0b4196";
 		public const string JobHistory = @"97bc12fa-509b-4c75-8413-6889387d8ef6";
 		public const string ControlNumber = @"2a3f1212-c8ca-4fa9-ad6b-f76c97f05438";
@@ -329,6 +329,7 @@ namespace kCura.IntegrationPoints.Data
 
 	public partial class JobStatusChoices
 	{
+		public static Choice JobHistoryValidationFailed = new Choice(Guid.Parse("d0b43a57-bdc8-4c14-b2f0-2928ae4f750a")) {Name=@"Validation Failed"};
 		public static Choice JobHistoryPending = new Choice(Guid.Parse("24512aba-b8aa-4858-9324-5799033d7e96")) {Name=@"Pending"};
 		public static Choice JobHistoryProcessing = new Choice(Guid.Parse("bb170e53-2264-4708-9b00-86156187ed54")) {Name=@"Processing"};
 		public static Choice JobHistoryCompleted = new Choice(Guid.Parse("c7d1eb34-166e-48d0-bce7-0be0df43511c")) {Name=@"Completed"};

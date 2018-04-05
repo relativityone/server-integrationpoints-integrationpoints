@@ -1,4 +1,8 @@
-﻿namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
+﻿using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Factories.Implementations;
+using kCura.IntegrationPoints.Data.SecretStore;
+
+namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 {
 	using Common;
 	using global::Relativity.Services.Folder;
@@ -14,6 +18,7 @@
 		protected IFolderManager FolderManager { get; set; }
 		protected INativesService NativesService { get; set; }
 		protected IImagesService ImageService { get; set; }
+		protected IRelativityObjectManagerFactory ObjectManagerFactory { get; set; }
 
 		protected override void ContextSetUp()
 		{
@@ -29,6 +34,9 @@
 			NativesService = new NativesService(Context.Helper);
 			ImageService = new ImagesService(Context.Helper);
 			PointsAction = new IntegrationPointsAction(Driver, Context);
+			ObjectManagerFactory = new RelativityObjectManagerFactory(Context.Helper,
+				new DefaultSecretCatalogFactory(),
+				new SecretManagerFactory());
 		}
 
 		[SetUp]
