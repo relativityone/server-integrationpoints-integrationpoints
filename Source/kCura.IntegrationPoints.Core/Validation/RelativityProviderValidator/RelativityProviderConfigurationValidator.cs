@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 		{
 			try
 			{
-				return ValidateIntenal(value);
+				return ValidateInternal(value);
 			}
 			catch (IntegrationPointsException)
 			{
@@ -39,8 +39,8 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, "An error occured in {validator}", nameof(RelativityProviderConfigurationValidator));
-				throw new IntegrationPointsException($"An error occured in {nameof(RelativityProviderConfigurationValidator)}", ex)
+				_logger.LogError(ex, "An error occurred in {validator}", nameof(RelativityProviderConfigurationValidator));
+				throw new IntegrationPointsException("An error occurred. Please contact administrator", ex)
 				{
 					ExceptionSource = IntegrationPointsExceptionSource.VALIDATION,
 					ShouldAddToErrorsTab = false
@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			}
 		}
 
-		private ValidationResult ValidateIntenal(object value)
+		private ValidationResult ValidateInternal(object value)
 		{
 			IntegrationPointProviderValidationModel integrationModel = CastToValidationModel(value);
 
@@ -121,8 +121,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			}
 
 			_logger.LogError("Converstion to {validationModel} failed. Actual type: {type}", nameof(IntegrationPointProviderValidationModel), value?.GetType());
-			throw new IntegrationPointsException(
-				$"Converstion to {nameof(IntegrationPointProviderValidationModel)} failed. Actual type: {value?.GetType()}")
+			throw new IntegrationPointsException("An error occurred. Please contact administrator")
 			{
 				ExceptionSource = IntegrationPointsExceptionSource.VALIDATION,
 				ShouldAddToErrorsTab = false

@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 			if (!Enum.TryParse(exportSettings.ExportType, out exportType))
 			{
 				_logger.LogError("Failed to retrieve ExportType from export settings. Export type value: {exportType}", exportSettings.ExportType);
-				throw new IntegrationPointsException("Failed to retrieve ExportType from export settings.")
+				throw new IntegrationPointsException("An error occurred. Please contact administrator.")
 				{
 					ExceptionSource = IntegrationPointsExceptionSource.VALIDATION,
 					ShouldAddToErrorsTab = false

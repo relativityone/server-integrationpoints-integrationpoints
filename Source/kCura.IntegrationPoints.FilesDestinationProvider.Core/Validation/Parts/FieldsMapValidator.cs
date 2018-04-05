@@ -68,8 +68,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, "An error occured while retriving exportable fields in {validator}", nameof(FieldsMapValidator));
-				throw new IntegrationPointsException($"An error occured while retriving exportable fields in {nameof(FieldsMapValidator)}", ex);
+				_logger.LogError(ex, "An error occurred while retriving exportable fields in {validator}", nameof(FieldsMapValidator));
+				throw new IntegrationPointsException("An error occurred while retrieving exportable fields. Please retry or contact administrator", ex);
 			}
 		}
 
