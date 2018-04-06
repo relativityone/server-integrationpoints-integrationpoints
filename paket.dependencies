@@ -11,6 +11,7 @@ nuget Relativity.Authentication 9.6.87.9
 nuget Relativity.Core 9.6.87.9 
 nuget Relativity.CustomPages 9.6.87.9 
 nuget Relativity.Data 9.6.87.9 
+nuget Relativity.DataTransfer.MessageService
 nuget Relativity.ImportExport 9.6.87.9 
 nuget Relativity.Telemetry.Services.Interface 9.6.87.9 
 nuget RelativityCore 9.6.87.9  

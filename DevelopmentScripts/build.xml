@@ -503,6 +503,7 @@
           <Assembly>lib\kCura.WinEDDS.dll</Assembly>
           <Assembly>lib\kCura.WinEDDS.TApi.dll</Assembly>
           <Assembly>lib\kCura.WinEDDS.Core.dll</Assembly>
+          <Assembly>lib\Relativity.DataTransfer.MessageService.dll</Assembly>
           <Assembly>lib\Relativity.Transfer.Client.Aspera.dll</Assembly>
           <Assembly>lib\Relativity.Transfer.Client.dll</Assembly>
           <Assembly>lib\Relativity.Transfer.Client.Core.dll</Assembly>
