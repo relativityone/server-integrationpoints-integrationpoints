@@ -2,6 +2,7 @@
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
@@ -10,12 +11,15 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private readonly IObjectTypeRepository _objectTypeRepository;
 		private readonly IFieldRepository _fieldRepository;
 		private readonly IRdoRepository _rdoRepository;
+		private readonly IAPILog _logger;
 
-		public SourceWorkspaceRepository(IObjectTypeRepository objectTypeRepository, IFieldRepository fieldRepository, IRdoRepository rdoRepository)
+		public SourceWorkspaceRepository(IHelper helper, IObjectTypeRepository objectTypeRepository, IFieldRepository fieldRepository, IRdoRepository rdoRepository)
 		{
 			_objectTypeRepository = objectTypeRepository;
 			_fieldRepository = fieldRepository;
 			_rdoRepository = rdoRepository;
+
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<SourceWorkspaceRepository>();
 		}
 
 		public int CreateObjectType(int parentArtifactTypeId)
@@ -70,9 +74,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				rdo = _rdoRepository.QuerySingle(query);
 			}
-			catch
+			catch(Exception ex)
 			{
-				return null;
+				_logger.LogError(string.Format(RSAPIErrors.QUERY_SOURCE_WORKSPACE_ERROR, sourceWorkspaceArtifactId), ex);
+				throw;
 			}
 
 			return new SourceWorkspaceDTO(rdo.ArtifactID, rdo.Fields);

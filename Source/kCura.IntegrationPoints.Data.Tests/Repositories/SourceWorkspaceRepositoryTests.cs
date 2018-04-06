@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories
 {
@@ -14,6 +15,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 		private IObjectTypeRepository _objectTypeRepository;
 		private IFieldRepository _fieldRepository;
 		private IRdoRepository _rdoRepository;
+		private IHelper _helper;
 
 		private SourceWorkspaceRepository _instance;
 
@@ -22,7 +24,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 			_objectTypeRepository = Substitute.For<IObjectTypeRepository>();
 			_fieldRepository = Substitute.For<IFieldRepository>();
 			_rdoRepository = Substitute.For<IRdoRepository>();
-			_instance = new SourceWorkspaceRepository(_objectTypeRepository, _fieldRepository, _rdoRepository);
+			_helper = Substitute.For<IHelper>();
+			_instance = new SourceWorkspaceRepository(_helper, _objectTypeRepository, _fieldRepository, _rdoRepository);
 		}
 
 		[Test]

@@ -58,6 +58,7 @@ namespace kCura.IntegrationPoints.Data
 		public const string UPDATE_DEST_WORKSPACE_ERROR = "Unable to update instance of Destination Workspace object";
 		public const string CREATE_DEST_WORKSPACE_ERROR = "Unable to create a new instance of Destination Workspace object";
 		public const string QUERY_DEST_WORKSPACE_ERROR = "Unable to query Destination Workspace instance";
+		public const string QUERY_SOURCE_WORKSPACE_ERROR = "Unable to query Source Workspace (Source Case Id {0}) ";
 		public const string LINK_OBJECT_INSTANCE_ERROR = "Unable to link Destination Workspace object to Job History object";
 	}
 

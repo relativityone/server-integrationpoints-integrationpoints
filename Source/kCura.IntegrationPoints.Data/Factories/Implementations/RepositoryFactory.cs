@@ -153,7 +153,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			var fieldRepository = GetFieldRepository(workspaceArtifactId);
 			IRsapiClientWithWorkspaceFactory rsapiClientFactory = new RsapiClientWithWorkspaceFactory(_helper, _servicesMgr);
 			IRdoRepository rdoRepository = new RsapiRdoRepository(_helper, workspaceArtifactId, rsapiClientFactory);
-			ISourceWorkspaceRepository repository = new SourceWorkspaceRepository(objectTypeRepository, fieldRepository, rdoRepository);
+			ISourceWorkspaceRepository repository = new SourceWorkspaceRepository(_helper, objectTypeRepository, fieldRepository, rdoRepository);
 
 			return repository;
 		}
