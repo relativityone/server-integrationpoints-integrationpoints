@@ -12,9 +12,14 @@ namespace kCura.IntegrationPoint.Tests.Core.Models.Ldap
 
 		public ImportCustodianSettingsModel ImportCustodianSettingsModel { get; set; }
 
-		public ImportFromLdapModel(string name)
+		public ImportFromLdapModel(string name, string transferredObject)
 		{
-			General = new IntegrationPointGeneralModel(name);
+			General = new IntegrationPointGeneralModel(name)
+			{
+				Type = IntegrationPointGeneralModel.IntegrationPointTypeEnum.Import,
+				SourceProvider = IntegrationPointGeneralModel.INTEGRATION_POINT_SOURCE_PROVIDER_LDAP,
+				TransferredObject = transferredObject
+			};
 			Source = new ImportFromLdapSourceConnectionModel();
 			SharedImportSettings = new ImportSettingsModel();
 			ImportCustodianSettingsModel = new ImportCustodianSettingsModel();

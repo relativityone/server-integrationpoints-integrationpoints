@@ -7,16 +7,27 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.UITests.Pages;
 using kCura.Relativity.Client.DTOs;
 using NUnit.Framework;
+using OpenQA.Selenium;
 
 namespace kCura.IntegrationPoints.UITests.Validation
 {
 	public class BaseUiValidator
 	{
+		private readonly int _jobExecutionTimeoutInMinutes;
+
+		public BaseUiValidator()
+		{
+			_jobExecutionTimeoutInMinutes = 5;
+		}
+
+		public BaseUiValidator(int jobExecutionTimeoutInMinutes)
+		{
+			_jobExecutionTimeoutInMinutes = jobExecutionTimeoutInMinutes;
+		}
+
 		public void ValidateJobStatus(IntegrationPointDetailsPage integrationPointDetailsPage, Choice expectedJobStatus)
 		{
-			const int jobExecutionTimeoutInMinutes = 5; //TODO Make it configurable per validator
-
-			string actualJobStatusAfterExecuted = WaitUntilJobFinishedAndThenGetStatus(integrationPointDetailsPage, jobExecutionTimeoutInMinutes);
+			string actualJobStatusAfterExecuted = WaitUntilJobFinishedAndThenGetStatus(integrationPointDetailsPage, _jobExecutionTimeoutInMinutes);
 
 			Assert.That(actualJobStatusAfterExecuted, Is.EqualTo(expectedJobStatus.Name));
 		}
@@ -34,7 +45,14 @@ namespace kCura.IntegrationPoints.UITests.Validation
 			sw.Start();
 			while (GetUntilJobFinishedConditionAndExecutionTimeout(jobHistoryModel, sw, jobExecutionTimeoutInMinutes))
 			{
-				jobHistoryModel = integrationPointDetailsPage.GetLatestJobHistoryFromJobStatusTable();
+				try
+				{
+					jobHistoryModel = integrationPointDetailsPage.GetLatestJobHistoryFromJobStatusTable();
+				}
+				catch (StaleElementReferenceException)
+				{
+					jobHistoryModel = null;
+				}
 				Thread.Sleep(1000);
 			}
 

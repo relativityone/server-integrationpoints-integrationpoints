@@ -53,6 +53,7 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Actions\IntegrationPointsImportFTPAction.cs" />
     <Compile Include="Actions\IntegrationPointsImportAction.cs" />
     <Compile Include="Actions\IntegrationPointsImportLdapAction.cs" />
     <Compile Include="Common\IntegrationPointsAction.cs" />
@@ -77,11 +78,12 @@
     <Compile Include="Pages\ExportToFileThirdPagePanel.cs" />
     <Compile Include="Pages\ExportToFileThirdPageVolumeSubdirectoryDetails.cs" />
     <Compile Include="Pages\FirstPage.cs" />
-    <Compile Include="Pages\Ftp\ImportWithFtpFirstPage.cs" />
+    <Compile Include="Pages\FTP\ImportWithFTPFirstPage.cs" />
+    <Compile Include="Pages\FTP\ImportWithFTPThirdPage.cs" />
     <Compile Include="Pages\ImportFirstPage.cs" />
     <Compile Include="Pages\ImportSecondBasePage.cs" />
     <Compile Include="Pages\ImportThirdPage.cs" />
-    <Compile Include="Pages\Ftp\ImportWithFTPSecondPage.cs" />
+    <Compile Include="Pages\FTP\ImportWithFTPSecondPage.cs" />
     <Compile Include="Pages\IntegrationPointDetailsPage.cs" />
     <Compile Include="Pages\IntegrationPointsPage.cs" />
     <Compile Include="Pages\ExportToFileSecondPage.cs" />
@@ -98,9 +100,8 @@
     <Compile Include="Auxiliary\Grinder.cs" />
     <Compile Include="Tests\ExportToLoadFile\CustodianExportToLoadFile.cs" />
     <Compile Include="Tests\ExportToLoadFile\DocumentExportToLoadFileTests.cs" />
-    <Compile Include="Tests\Import\ImportFromFTPTest.cs" />
     <Compile Include="Tests\FTPProvider\ImportFromFTPTest.cs" />
-    <Compile Include="Tests\LDAPProvider\ImportLdapProvider.cs" />
+    <Compile Include="Tests\LDAPProvider\ImportLdapProviderTest.cs" />
     <Compile Include="Tests\RelativityProvider\DataGridToSqlTest.cs" />
     <Compile Include="Tests\ExportToLoadFile\ProductionExportToLoadFileTests.cs" />
     <Compile Include="Tests\RelativityProvider\ProductionToFolderTest.cs" />
@@ -116,6 +117,7 @@
     <Compile Include="Tests\UserOnLoginPageTest.cs" />
     <Compile Include="Validation\ExportToLoadFileProviderValidator.cs" />
     <Compile Include="Validation\BaseUiValidator.cs" />
+    <Compile Include="Validation\ImportValidator.cs" />
     <Compile Include="Validation\ProviderModelHtmlExtensions.cs" />
     <Compile Include="Validation\RelativityProviderValidation\LinksSavedSearchToFolderValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidation\RelativityProviderValidatorBase.cs" />
@@ -160,6 +162,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
       <Project>{AD3E5540-FA39-4983-8A23-FCC756D51A32}</Project>
       <Name>kCura.IntegrationPoint.Tests.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Core.Contracts\kCura.IntegrationPoints.Core.Contracts.csproj">
+      <Project>{30503682-e18d-49df-a308-fe7996c4108e}</Project>
+      <Name>kCura.IntegrationPoints.Core.Contracts</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">
       <Project>{a1ae667b-1b6e-4bb9-af1d-912620292283}</Project>

@@ -119,6 +119,7 @@
     <Compile Include="Extensions\JobExtensions.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\ObjectPermissionListExtension.cs" />
+    <Compile Include="Extensions\SecureStringExtension.cs" />
     <Compile Include="FieldMaps.cs" />
     <Compile Include="Fields.cs" />
     <Compile Include="FileToBase64Converter.cs" />
@@ -139,6 +140,7 @@
     <Compile Include="Models\CustodianExportToLoadFileModel.cs" />
     <Compile Include="Models\DocumentsTestData.cs" />
     <Compile Include="Models\ExportToLoadFileDetailsModel.cs" />
+    <Compile Include="Models\FTP\FTPProtocolType.cs" />
     <Compile Include="Models\FTP\ImportFromFTPConnectionAndFileInfoModel.cs" />
     <Compile Include="Models\FTP\ImportFromFTPModel.cs" />
     <Compile Include="Models\Ldap\ImportFromLdapSettingsModel.cs" />
