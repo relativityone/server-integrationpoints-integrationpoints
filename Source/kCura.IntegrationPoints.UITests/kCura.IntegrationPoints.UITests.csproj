@@ -100,6 +100,7 @@
     <Compile Include="Auxiliary\Grinder.cs" />
     <Compile Include="Tests\ExportToLoadFile\CustodianExportToLoadFile.cs" />
     <Compile Include="Tests\ExportToLoadFile\DocumentExportToLoadFileTests.cs" />
+    <Compile Include="Tests\ExportToLoadFile\FolderExportToLoadFileTests.cs" />
     <Compile Include="Tests\FTPProvider\ImportFromFTPTest.cs" />
     <Compile Include="Tests\LDAPProvider\ImportLdapProviderTest.cs" />
     <Compile Include="Tests\RelativityProvider\DataGridToSqlTest.cs" />

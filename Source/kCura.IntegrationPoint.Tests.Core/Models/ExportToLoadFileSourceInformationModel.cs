@@ -21,6 +21,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Models
 
 		public string ProductionSet { get; set; }
 
+		public string Folder { get; set; }
+
 		[DefaultValue(1)]
 		public int StartAtRecord { get; set; }
 
