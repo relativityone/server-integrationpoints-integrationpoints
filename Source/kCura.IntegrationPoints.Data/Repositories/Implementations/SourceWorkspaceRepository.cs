@@ -73,6 +73,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			try
 			{
 				rdo = _rdoRepository.QuerySingle(query);
+				if (rdo == null)
+				{
+					return null;
+				}
 			}
 			catch(Exception ex)
 			{

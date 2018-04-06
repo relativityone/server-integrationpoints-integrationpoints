@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			var queryResult = Query(query).Results;
 			if (queryResult.Count == 0)
 			{
-				throw new Exception("Unable to retrieve RDO.");
+				return null;
 			}
 			return queryResult[0].Artifact;
 		}
