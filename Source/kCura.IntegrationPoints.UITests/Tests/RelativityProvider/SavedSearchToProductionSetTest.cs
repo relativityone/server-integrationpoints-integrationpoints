@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
-		public void RelativityProvider_TC_RTR_IPS_1()
+		public void RelativityProvider_TC_RTR_IPS_01()
 		{
 			//Arrange
 			var validator = new SavedSearchToProductionSetValidator();
@@ -59,7 +59,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
-		public void RelativityProvider_TC_RTR_IPS_2()
+		public void RelativityProvider_TC_RTR_IPS_02()
 		{
 			//Arrange
 			var validator = new SavedSearchToProductionSetValidator();
@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
-		public void RelativityProvider_TC_RTR_IPS_3()
+		public void RelativityProvider_TC_RTR_IPS_03()
 		{
 			//Arrange
 			DestinationContext.ImportDocuments();
@@ -103,7 +103,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
-		public void RelativityProvider_TC_RTR_IPS_4()
+		public void RelativityProvider_TC_RTR_IPS_04()
 		{
 			//Arrange
 			DestinationContext.ImportDocuments();
@@ -127,7 +127,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
-		public void RelativityProvider_TC_RTR_IPS_5()
+		public void RelativityProvider_TC_RTR_IPS_05()
 		{
 			//Arrange
 			var validator = new SavedSearchToProductionSetValidator();
@@ -149,7 +149,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
-		public void RelativityProvider_TC_RTR_IPS_6()
+		public void RelativityProvider_TC_RTR_IPS_06()
 		{
 			//Arrange
 			var validator = new SavedSearchToProductionSetValidator();
@@ -171,7 +171,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
-		public void RelativityProvider_TC_RTR_IPS_7()
+		public void RelativityProvider_TC_RTR_IPS_07()
 		{
 			//Arrange
 			var validator = new SavedSearchToProductionSetValidator();
@@ -195,7 +195,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
-		public void RelativityProvider_TC_RTR_IPS_8()
+		public void RelativityProvider_TC_RTR_IPS_08()
 		{
 			//Arrange
 			var validator = new SavedSearchToProductionSetValidator();
@@ -219,7 +219,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
-		public void RelativityProvider_TC_RTR_IPS_9()
+		public void RelativityProvider_TC_RTR_IPS_09()
 		{
 			//Arrange
 			DestinationContext.ImportDocuments();

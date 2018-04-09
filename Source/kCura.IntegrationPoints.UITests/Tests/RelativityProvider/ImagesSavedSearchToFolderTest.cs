@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
-		public void RelativityProvider_TC_RTR_IMG_1()
+		public void RelativityProvider_TC_RTR_IMG_01()
 		{
 			//Arrange
 			ImagesSavedSearchToFolderValidator validator = new ImagesSavedSearchToFolderValidator();
@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
-		public void RelativityProvider_TC_RTR_IMG_2()
+		public void RelativityProvider_TC_RTR_IMG_02()
 		{
 			//Arrange
 			ImagesSavedSearchToFolderValidator validator = new ImagesSavedSearchToFolderValidator();
@@ -81,7 +81,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
-		public void RelativityProvider_TC_RTR_IMG_3()
+		public void RelativityProvider_TC_RTR_IMG_03()
 		{
 			//Arrange
 			DestinationContext.ImportDocuments();
@@ -105,7 +105,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 
 		[Test]
-		public void RelativityProvider_TC_RTR_IMG_4()
+		public void RelativityProvider_TC_RTR_IMG_04()
 		{
 			// Arrange
 			DestinationContext.ImportDocuments();
@@ -128,7 +128,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
-		public void RelativityProvider_TC_RTR_IMG_5()
+		public void RelativityProvider_TC_RTR_IMG_05()
 		{
 			// Arrange
 			ImagesSavedSearchToFolderValidator validator = new ImagesSavedSearchToFolderValidator();
@@ -149,7 +149,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
-		public void RelativityProvider_TC_RTR_IMG_6()
+		public void RelativityProvider_TC_RTR_IMG_06()
 		{
 			// Arrange
 			ImagesSavedSearchToFolderValidator validator = new ImagesSavedSearchToFolderValidator();
@@ -170,7 +170,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
-		public void RelativityProvider_TC_RTR_IMG_7()
+		public void RelativityProvider_TC_RTR_IMG_07()
 		{
 			// Arrange
 			ImagesSavedSearchToFolderValidator validator = new ImagesSavedSearchToFolderValidator();
@@ -195,7 +195,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
-		public void RelativityProvider_TC_RTR_IMG_8()
+		public void RelativityProvider_TC_RTR_IMG_08()
 		{
 			// Arrange
 
@@ -221,7 +221,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
-		public void RelativityProvider_TC_RTR_IMG_9()
+		public void RelativityProvider_TC_RTR_IMG_09()
 		{
 			// Arrange
 			DestinationContext.ImportDocuments();

@@ -96,13 +96,15 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		private static void WaitForProductionStatus(int workspaceId, int productionId, string expectedStatus)
 		{
-			for (int i = 0; i < _MAX_RETRIES_COUNT; i++)
+			string status = string.Empty;
+
+			for (var i = 0; i < _MAX_RETRIES_COUNT; i++)
 			{
-				var status = GetProductionStatus(workspaceId, productionId);
+				status = GetProductionStatus(workspaceId, productionId);
 
 				if (status == expectedStatus)
 				{
-					break;
+					return;
 				}
 
 				if (status.Contains("Error"))
@@ -112,6 +114,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 				Thread.Sleep(1000);
 			}
+
+			throw new Exception($"ProductionOperation finished with different status than expected. Received {status} expected {expectedStatus}");
 		}
 
 		private static string GetProductionStatus(int workspaceId, int productionId)
