@@ -12,9 +12,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 {
 	[TestFixture]
 	[Category(TestCategory.SMOKE)]
-	public class ProductionExportToLoadFileTests : UiTest
+	public class ProductionExportToLoadFileTests : ExportToLoadFileTests
 	{
-		private string SAVED_SEARCH_NAME = "All Documents";
 		private string PRODUCTION_NAME_SMALL = "Small Production under tests";
 		private string PRODUCTION_NAME_BIG = "Big Production under tests";
 		private IntegrationPointsAction _integrationPointsAction;
@@ -300,12 +299,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 
 			// Assert
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
-		}
-
-		private ExportToLoadFileProviderModel CreateExportToLoadFileProviderModel(string name)
-		{
-			var model = new ExportToLoadFileProviderModel(name, SAVED_SEARCH_NAME);
-			return model;
 		}
 	}
 }
