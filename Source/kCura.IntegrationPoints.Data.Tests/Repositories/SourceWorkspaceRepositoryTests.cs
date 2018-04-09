@@ -1,11 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client.DTOs;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories
 {
@@ -14,6 +17,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 		private IObjectTypeRepository _objectTypeRepository;
 		private IFieldRepository _fieldRepository;
 		private IRdoRepository _rdoRepository;
+		private IHelper _helper;
+
+		private IAPILog _logApi;
 
 		private SourceWorkspaceRepository _instance;
 
@@ -22,7 +28,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 			_objectTypeRepository = Substitute.For<IObjectTypeRepository>();
 			_fieldRepository = Substitute.For<IFieldRepository>();
 			_rdoRepository = Substitute.For<IRdoRepository>();
-			_instance = new SourceWorkspaceRepository(_objectTypeRepository, _fieldRepository, _rdoRepository);
+			_helper = Substitute.For<IHelper>();
+			_logApi = Substitute.For<IAPILog>();
+
+			_instance = new SourceWorkspaceRepository(_helper, _objectTypeRepository, _fieldRepository, _rdoRepository);
 		}
 
 		[Test]
@@ -121,6 +130,19 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 						x.ArtifactTypeGuid == SourceWorkspaceDTO.ObjectTypeGuid
 						&& x.Fields[0].Name == "*"
 					));
+		}
+
+		[Test]
+		public void ItShouldThrowExceptionWhenRetrieveForSourceWorkspaceId()
+		{
+			_rdoRepository.QuerySingle(Arg.Any<Query<RDO>>()).Throws(new Exception());
+
+			// ACT
+			Assert.Throws<Exception>(() => _instance.RetrieveForSourceWorkspaceId(156272, "fed_name_503", 541));
+
+			// ASSERT
+
+			_logApi.LogError(Arg.Any<string>(), Arg.Any<string>());
 		}
 	}
 }

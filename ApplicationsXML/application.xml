@@ -667,11 +667,6 @@
       <ColumnName>Documents</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
-      <ArtifactViewFieldId>1001895</ArtifactViewFieldId>
-      <ArtifactTypeId>1000054</ArtifactTypeId>
-      <ColumnName>DocumentsRelativityImageCount</ColumnName>
-    </ArtifactViewField>
-    <ArtifactViewField>
       <ArtifactViewFieldId>1001775</ArtifactViewFieldId>
       <ArtifactTypeId>1000054</ArtifactTypeId>
       <ColumnName>Edit</ColumnName>
@@ -865,11 +860,6 @@
       <ArtifactViewFieldId>1001812</ArtifactViewFieldId>
       <ArtifactTypeId>1000056</ArtifactTypeId>
       <ColumnName>Documents</ColumnName>
-    </ArtifactViewField>
-    <ArtifactViewField>
-      <ArtifactViewFieldId>1001894</ArtifactViewFieldId>
-      <ArtifactTypeId>1000056</ArtifactTypeId>
-      <ColumnName>DocumentsRelativityImageCount</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
       <ArtifactViewFieldId>1001792</ArtifactViewFieldId>
@@ -1354,6 +1344,12 @@
       <ArtifactId>1017440</ArtifactId>
       <Keywords />
       <Name>Castle.Core.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>1196241</ArtifactId>
+      <Keywords />
+      <Name>Relativity.DataTransfer.MessageService.dll</Name>
       <Notes />
     </Assembly>
   </Assemblies>
@@ -2533,7 +2529,7 @@
           <IsAdditionalFileField>false</IsAdditionalFileField>
           <IsArtifactBaseField>false</IsArtifactBaseField>
           <IsAvailableInChoiceTree>false</IsAvailableInChoiceTree>
-          <IsAvailableToAssociativeObjects>true</IsAvailableToAssociativeObjects>
+          <IsAvailableToAssociativeObjects>false</IsAvailableToAssociativeObjects>
           <IsEditable>false</IsEditable>
           <IsGroupByEnabled>false</IsGroupByEnabled>
           <IsIndexEnabled>false</IsIndexEnabled>
