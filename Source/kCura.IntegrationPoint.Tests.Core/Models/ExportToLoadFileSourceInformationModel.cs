@@ -23,6 +23,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Models
 
 		public string Folder { get; set; }
 
+		public string View { get; set; }
+
 		[DefaultValue(1)]
 		public int StartAtRecord { get; set; }
 

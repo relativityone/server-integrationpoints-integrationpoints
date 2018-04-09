@@ -1,19 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using kCura.IntegrationPoint.Tests.Core.Models;
+﻿using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Models.Constants.ExportToLoadFile;
+using kCura.IntegrationPoint.Tests.Core.Models.Shared;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Pages;
+using kCura.IntegrationPoints.UITests.Validation;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 {
 	[TestFixture]
 	[Category(TestCategory.SMOKE)]
-	public class FolderExportToLoadFileTests : UiTest
+	public class FolderExportToLoadFileTests : ExportToLoadFileTests
 	{
 		private IntegrationPointsAction _integrationPointsAction;
 
@@ -38,14 +36,55 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			// Step 2
 			model.SourceInformationModel.Source = ExportToLoadFileSourceConstants.FOLDER;
 			model.SourceInformationModel.Folder = "One";
+			model.SourceInformationModel.View = "Documents";
+			model.SourceInformationModel.StartAtRecord = 1;
+			model.SourceInformationModel.SelectAllFields = true;
+			
+			// Step 3
+			model.ExportDetails.LoadFile = true;
+			model.ExportDetails.ExportImages = true;
+			model.ExportDetails.ExportNatives = true;
+			model.ExportDetails.ExportTextFieldsAsFiles = true;
+			model.ExportDetails.DestinationFolder = ExportToLoadFileProviderModel.DestinationFolderTypeEnum.Root;
+			model.ExportDetails.CreateExportFolder = true;
+			model.ExportDetails.OverwriteFiles = true;
 
+			model.OutputSettings.LoadFileOptions.ImageFileFormat = ExportToLoadFileImageFileFormatConstants.OPTICON;
+			model.OutputSettings.LoadFileOptions.DataFileFormat = ExportToLoadFileDataFileFormatConstants.DAT;
+			model.OutputSettings.LoadFileOptions.DataFileEncoding = ExportToLoadFileFileEncodingConstants.UTF_8;
+			model.OutputSettings.LoadFileOptions.FilePathType = ExportToLoadFileProviderModel.FilePathTypeEnum.Relative;
+			model.OutputSettings.LoadFileOptions.IncludeNativeFilesPath = true;
+			model.OutputSettings.LoadFileOptions.ExportMultiChoiceAsNested = false;
+			model.OutputSettings.LoadFileOptions.NameOutputFilesAfter = ExportToLoadFileNameOutputFilesAfterConstants.IDENTIFIER;
+			model.OutputSettings.LoadFileOptions.AppendOriginalFileName = false;
+
+			model.OutputSettings.ImageOptions.ImageFileType = ExportToLoadFileImageFileTypeConstants.SINGLE_PAGE_TIFF_JPEG;
+			model.OutputSettings.ImageOptions.ImagePrecedence = ImagePrecedenceEnum.OriginalImages;
+			model.OutputSettings.ImageOptions.ImageSubdirectoryPrefix = "IMG";
+
+			model.OutputSettings.NativeOptions.NativeSubdirectoryPrefix = "NATIVE";
+
+			model.OutputSettings.TextOptions.TextFileEncoding = ExportToLoadFileFileEncodingConstants.UTF_8;
+			model.OutputSettings.TextOptions.TextPrecedence = "Extracted Text";
+			model.OutputSettings.TextOptions.TextSubdirectoryPrefix = "TEXT";
+
+			model.OutputSettings.VolumeAndSubdirectoryOptions.VolumePrefix = "VOL";
+			model.OutputSettings.VolumeAndSubdirectoryOptions.VolumeStartNumber = 1;
+			model.OutputSettings.VolumeAndSubdirectoryOptions.VolumeNumberOfDigits = 4;
+			model.OutputSettings.VolumeAndSubdirectoryOptions.VolumeMaxSize = 4400;
+
+			model.OutputSettings.VolumeAndSubdirectoryOptions.SubdirectoryStartNumber = 1;
+			model.OutputSettings.VolumeAndSubdirectoryOptions.SubdirectoryNumberOfDigits = 4;
+			model.OutputSettings.VolumeAndSubdirectoryOptions.SubdirectoryMaxFiles = 500;
+
+			var validator = new ExportToLoadFileProviderValidator();
+
+			// Act
 			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewExportToLoadfileIntegrationPoint(model);
-		}
+			detailsPage.RunIntegrationPoint();
 
-		private ExportToLoadFileProviderModel CreateExportToLoadFileProviderModel(string name)
-		{
-			var model = new ExportToLoadFileProviderModel(name, "All Documents");
-			return model;
+			// Assert
+			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
 		}
 	}
 }

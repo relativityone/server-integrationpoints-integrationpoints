@@ -54,6 +54,7 @@ namespace kCura.IntegrationPoints.UITests.Common
 			else if (ExportToLoadFileSourceConstants.IsFolder(model.SourceInformationModel.Source))
 			{
 				secondPage.Folder = model.SourceInformationModel.Folder;
+				secondPage.View = model.SourceInformationModel.View;
 			}
 
 			secondPage.StartExportAtRecord = model.SourceInformationModel.StartAtRecord;

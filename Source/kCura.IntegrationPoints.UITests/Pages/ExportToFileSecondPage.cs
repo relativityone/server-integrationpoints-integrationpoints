@@ -35,11 +35,15 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		[FindsBy(How = How.Id, Using = "location-select")]
 		protected IWebElement FolderLocationTreeWebElement { get; set; }
 
+		[FindsBy(How = How.Id, Using = "viewSelector")]
+		protected IWebElement ViewSelectWebElement { get; set; }
+
 		public Select SavedSearch { get; }
 		protected SelectElement SelectSourceFieldsElement => new SelectElement(SourceFieldsElement);
 		protected SelectElement SourceSelect => new SelectElement(SourceSelectWebElement);
 		protected SelectElement ProductionSetSelect => new SelectElement(ProductionSetSelectWebElement);
-		protected TreeSelect FolderLocationTree => new TreeSelect(FolderLocationTreeWebElement);
+		protected TreeSelect FolderLocationTree => new TreeSelect(FolderLocationTreeWebElement.FindElement(By.XPath("..")));
+		protected SelectElement ViewSelect => new SelectElement(ViewSelectWebElement);
 
 		public ExportToFileSecondPage(RemoteWebDriver driver) : base(driver)
 		{
@@ -63,6 +67,12 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		public string Folder
 		{
 			set { FolderLocationTree.ChooseChildElement(value); }
+		}
+
+		public string View
+		{
+			get { return ViewSelect.SelectedOption.Text; }
+			set { ViewSelect.SelectByText(value); }
 		}
 
 		public ExportToFileSecondPage SelectSavedSearch(string savedSearch)
