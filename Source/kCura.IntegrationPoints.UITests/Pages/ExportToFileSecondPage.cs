@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		[FindsBy(How = How.Id, Using = "productionSetsSelector")]
 		protected IWebElement ProductionSetSelectWebElement { get; set; }
 
-		[FindsBy(How = How.Id, Using = "location-select")]
+		[FindsBy(How = How.XPath, Using = "//*[@id='location-select']/..")]
 		protected IWebElement FolderLocationTreeWebElement { get; set; }
 
 		[FindsBy(How = How.Id, Using = "viewSelector")]
@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		protected SelectElement SelectSourceFieldsElement => new SelectElement(SourceFieldsElement);
 		protected SelectElement SourceSelect => new SelectElement(SourceSelectWebElement);
 		protected SelectElement ProductionSetSelect => new SelectElement(ProductionSetSelectWebElement);
-		protected TreeSelect FolderLocationTree => new TreeSelect(FolderLocationTreeWebElement.FindElement(By.XPath("..")));
+		protected TreeSelect FolderLocationTree => new TreeSelect(FolderLocationTreeWebElement);
 		protected SelectElement ViewSelect => new SelectElement(ViewSelectWebElement);
 
 		public ExportToFileSecondPage(RemoteWebDriver driver) : base(driver)
