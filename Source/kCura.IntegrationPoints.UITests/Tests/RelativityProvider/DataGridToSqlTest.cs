@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		private RelativityProviderModel CreateRelativityProviderModelWithNatives()
 		{
 			var model = new RelativityProviderModel(NUnit.Framework.TestContext.CurrentContext.Test.Name);
-			model.Source = "Saved Search";
+			model.Source = RelativityProviderModel.SourceTypeEnum.SavedSearch;
 			model.RelativityInstance = "This Instance";
 			model.DestinationWorkspace = $"{DestinationContext.WorkspaceName} - {DestinationContext.WorkspaceId}";
 			model.CopyNativeFiles = RelativityProviderModel.CopyNativeFilesEnum.PhysicalFiles;

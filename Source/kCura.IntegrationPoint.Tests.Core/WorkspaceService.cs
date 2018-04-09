@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.Contracts.Models;
@@ -70,20 +71,31 @@ namespace kCura.IntegrationPoint.Tests.Core
 				.Concat(additionalFields.Select(x => new FieldRef(x.DisplayName)))
 				.ToList();
 
+			return CreateSavedSearch(fields, workspaceId, savedSearchName);
+		}
+
+		public int CreateSavedSearch(IEnumerable<string> fields, int workspaceId, string savedSearchName)
+		{
+			return CreateSavedSearch(fields.Select(displayName => new FieldRef(displayName)).ToList(), workspaceId,
+				savedSearchName);
+		}
+
+		public int CreateSavedSearch(List<FieldRef> fields, int workspaceId, string savedSearchName)
+		{
 			var folder = new SearchContainer
 			{
 				Name = _SAVED_SEARCH_FOLDER
 			};
-			var folderArtifactId = SavedSearch.CreateSearchFolder(workspaceId, folder);
+			var folderArtifactId = Core.SavedSearch.CreateSearchFolder(workspaceId, folder);
 
 			var search = new KeywordSearch
 			{
 				Name = savedSearchName,
-				ArtifactTypeID = (int)ArtifactType.Document,
+				ArtifactTypeID = (int) ArtifactType.Document,
 				SearchContainer = new SearchContainerRef(folderArtifactId),
 				Fields = fields
 			};
-			return SavedSearch.Create(workspaceId, search);
+			return Core.SavedSearch.Create(workspaceId, search);
 		}
 
 		public int CreateSavedSearch(FieldEntry[] defaultFields, FieldEntry[] additionalFields, int workspaceId)
@@ -91,17 +103,27 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return CreateSavedSearch(defaultFields, additionalFields, workspaceId, _SAVED_SEARCH_NAME);
 		}
 
-		public int CreateProduction(int workspaceArtifactId, int savedSearchId, string productionName)
+		public int CreateProductionSet(int workspaceArtifactId, string productionSetName)
 		{
-			var placeHolderFilePath = Path.Combine(TestContext.CurrentContext.TestDirectory,
-				@"TestData\DefaultPlaceholder.tif");
+			return Production.Create(workspaceArtifactId, productionSetName);
+		}
 
+		public int CreateAndRunProduction(int workspaceArtifactId, int savedSearchId, string productionName)
+		{
+			var placeHolderFilePath = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\DefaultPlaceholder.tif");
+
+			return CreateAndRunProduction(workspaceArtifactId, savedSearchId, productionName, placeHolderFilePath);
+		}
+
+		public int CreateAndRunProduction(int workspaceArtifactId, int savedSearchId, string productionName, string placeHolderFilePath)
+		{
 			var placeHolderFileData = FileToBase64Converter.Convert(placeHolderFilePath);
 
-			var productionId = Production.Create(workspaceArtifactId, productionName);
+			var productionId = CreateProductionSet(workspaceArtifactId, productionName);
 
 			var placeholderId = Placeholder.Create(workspaceArtifactId, placeHolderFileData);
-			ProductionDataSource.CreateDataSourceWithPlaceholder(workspaceArtifactId, productionId, savedSearchId, "WhenNoImageExists", placeholderId);
+			ProductionDataSource.CreateDataSourceWithPlaceholder(workspaceArtifactId, productionId, savedSearchId,
+				"WhenNoImageExists", placeholderId);
 
 			Production.StageAndWaitForCompletion(workspaceArtifactId, productionId);
 			Production.RunAndWaitForCompletion(workspaceArtifactId, productionId);

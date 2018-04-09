@@ -50,6 +50,8 @@ using kCura.IntegrationPoints.Data.SecretStore;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations;
+using kCura.ScheduleQueue.Core.Data;
+using Relativity.DataTransfer.MessageService;
 using Relativity.Telemetry.APM;
 using Relativity.Toggles;
 using Relativity.Toggles.Providers;
@@ -226,6 +228,9 @@ namespace kCura.IntegrationPoints.Core.Installers
 				.LifestyleSingleton());
 
 			container.Register(Component.For<IFieldService>().ImplementedBy<FieldService>().LifestyleTransient());
+			container.Register(Component.For<IMessageService>().ImplementedBy<MessageService>().LifestyleTransient());
+			container.Register(Component.For<IMetricsManagerFactory>().ImplementedBy<MetricsManagerFactory>()
+				.LifestyleSingleton());
 		}
 
 		private SqlServerToggleProvider CreateSqlServerToggleProvider(IHelper helper)

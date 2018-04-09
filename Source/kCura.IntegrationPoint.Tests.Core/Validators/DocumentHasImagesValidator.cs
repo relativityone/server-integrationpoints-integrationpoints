@@ -1,0 +1,32 @@
+﻿using System;
+using kCura.Relativity.Client.DTOs;
+using NUnit.Framework;
+
+namespace kCura.IntegrationPoint.Tests.Core.Validators
+{
+	public class DocumentHasImagesValidator : IDocumentValidator
+	{
+		protected bool? ExpectHasImages { get; }
+
+		public DocumentHasImagesValidator(bool? expectHasImages)
+		{
+			ExpectHasImages = expectHasImages;
+		}
+
+		public virtual void ValidateDocument(Document destinationDocument, Document sourceDocument)
+		{
+			bool destinationDocumentHasImages = DestinationDocumentHasImagesValue(destinationDocument);
+
+			Assert.That(destinationDocumentHasImages, Is.EqualTo(ExpectHasImages));
+		}
+
+		protected virtual bool DestinationDocumentHasImagesValue(Document destinationDocument)
+		{
+			string hasImagesChoiceValue = destinationDocument.HasImages.Name;
+
+			return !string.IsNullOrEmpty(hasImagesChoiceValue) &&
+			       (string.Equals(hasImagesChoiceValue, "Yes", StringComparison.OrdinalIgnoreCase) ||
+			        string.Equals(hasImagesChoiceValue, "True", StringComparison.OrdinalIgnoreCase));
+		}
+	}
+}

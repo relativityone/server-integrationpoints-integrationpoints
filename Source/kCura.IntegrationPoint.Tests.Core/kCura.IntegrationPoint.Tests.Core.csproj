@@ -119,6 +119,7 @@
     <Compile Include="Extensions\JobExtensions.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\ObjectPermissionListExtension.cs" />
+    <Compile Include="Extensions\SecureStringExtension.cs" />
     <Compile Include="FieldMaps.cs" />
     <Compile Include="Fields.cs" />
     <Compile Include="FileToBase64Converter.cs" />
@@ -135,8 +136,11 @@
     <Compile Include="Models\Constants\ExportToLoadFile\ExportToLoadFileSourceConstants.cs" />
     <Compile Include="Models\Constants\ExportToLoadFile\ExportToLoadFileNameOutputFilesAfterConstants.cs" />
     <Compile Include="Models\Constants\ExportToLoadFile\ExportToLoadFileTransferredObjectConstants.cs" />
+    <Compile Include="Models\CustodianExportToLoadFileDetails.cs" />
+    <Compile Include="Models\CustodianExportToLoadFileModel.cs" />
     <Compile Include="Models\DocumentsTestData.cs" />
     <Compile Include="Models\ExportToLoadFileDetailsModel.cs" />
+    <Compile Include="Models\FTP\FTPProtocolType.cs" />
     <Compile Include="Models\FTP\ImportFromFTPConnectionAndFileInfoModel.cs" />
     <Compile Include="Models\FTP\ImportFromFTPModel.cs" />
     <Compile Include="Models\Ldap\ImportFromLdapSettingsModel.cs" />
@@ -199,6 +203,9 @@
     <Compile Include="TestHelpers\ExtendedIPermissionManager.cs" />
     <Compile Include="TestHelpers\ExtendedIRSAPIClient.cs" />
     <Compile Include="TestHelpers\ExtendedIWorkspaceManager.cs" />
+    <Compile Include="TestHelpers\FileServiceBase.cs" />
+    <Compile Include="TestHelpers\IImagesService.cs" />
+    <Compile Include="TestHelpers\ImagesService.cs" />
     <Compile Include="TestHelpers\INativesService.cs" />
     <Compile Include="TestHelpers\IntegrationPointProviderEmptyValidator.cs" />
     <Compile Include="TestHelpers\ITestHelper.cs" />
@@ -211,10 +218,13 @@
     <Compile Include="TestServiceContextHelper.cs" />
     <Compile Include="Validators\DocumentFieldsValidator.cs" />
     <Compile Include="Validators\DocumentFolderNameValidator.cs" />
-    <Compile Include="Validators\DocumentNativesAndInRepositoryValidator.cs" />
-    <Compile Include="Validators\DocumentNativesValidator.cs" />
+    <Compile Include="Validators\DocumentHasImagesValidator.cs" />
+    <Compile Include="Validators\DocumentImagesValidator.cs" />
+    <Compile Include="Validators\DocumentHasNativesAndInRepositoryValidator.cs" />
+    <Compile Include="Validators\DocumentHasNativesValidator.cs" />
     <Compile Include="Validators\DocumentPathValidator.cs" />
     <Compile Include="Validators\DocumentPropertyValidator.cs" />
+    <Compile Include="Validators\DocumentSourceJobNameValidator.cs" />
     <Compile Include="Validators\DocumentsValidator.cs" />
     <Compile Include="Validators\FolderPathFromFieldStrategy.cs" />
     <Compile Include="Validators\FolderPathFromFolderTreeStrategy.cs" />
@@ -225,6 +235,7 @@
     <Compile Include="Validators\IValidator.cs" />
     <Compile Include="Validators\LoadFileDocumentsValidator.cs" />
     <Compile Include="Validators\PushDocumentsValidator.cs" />
+    <Compile Include="Validators\PushOnlyWithImagesValidator.cs" />
     <Compile Include="View.cs" />
     <Compile Include="WebControllerTestBase.cs" />
     <Compile Include="Workspace.cs" />

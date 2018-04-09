@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;  
-using System.Text;
 using kCura.Relativity.Client.DTOs;
 using kCura.IntegrationPoints.Data.Attributes;
 

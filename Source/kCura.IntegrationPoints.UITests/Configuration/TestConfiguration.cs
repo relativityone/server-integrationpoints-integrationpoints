@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		public TestConfiguration()
 		{
 			//ConfigName = Environment.GetEnvironmentVariable(_ENVIRONMENT_VARIABLE_CONFIG_NAME);
-			ConfigName = "TestVM.config";
+			ConfigName = "testvm.config";
 
 			if (ConfigName == null)
 			{

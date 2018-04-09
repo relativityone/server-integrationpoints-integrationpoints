@@ -1,293 +1,372 @@
-﻿using kCura.IntegrationPoint.Tests.Core.Models;
+﻿using System;
+using System.Net;
+using kCura.IntegrationPoint.Tests.Core.Extensions;
+using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Models.Shared;
+using kCura.IntegrationPoint.Tests.Core.Validators;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Components;
 using kCura.IntegrationPoints.UITests.Pages;
+using kCura.IntegrationPoints.UITests.Validation;
+using kCura.IntegrationPoints.UITests.Validation.RelativityProviderValidation;
 using NUnit.Framework;
-using TestContext = kCura.IntegrationPoints.UITests.Configuration.TestContext;
 
 namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 {
 	[TestFixture]
 	[Category(TestCategory.SMOKE)]
-	public class ImagesSavedSearchToFolderTest : UiTest
+	public class ImagesSavedSearchToFolderTest : RelativityProviderTestsBase
 	{
-		private TestContext _destinationContext = null;
-		private IntegrationPointsAction _integrationPointsAction;
-
-		[OneTimeSetUp]
-		public void OneTimeSetUp()
-		{
-			EnsureGeneralPageIsOpened();
-			_integrationPointsAction = new IntegrationPointsAction(Driver, Context);
-		}
-
-
-		[SetUp]
-		public void SetUp()
-		{
-			_destinationContext = new TestContext()
-			.CreateWorkspace(); 
-		}
-
-		[TearDown]
-		public void TearDown()
-		{ 
-			_destinationContext?.TearDown();
-		}
-
 		private RelativityProviderModel CreateRelativityProviderModelWithImages()
 		{
-			var model = new RelativityProviderModel(NUnit.Framework.TestContext.CurrentContext.Test.Name);
-			model.Source = "Saved Search";
-			model.RelativityInstance = "This Instance";
-			model.DestinationWorkspace = $"{_destinationContext.WorkspaceName} - {_destinationContext.WorkspaceId}";
-			model.CopyImages = true;
+			var model = new RelativityProviderModel(TestContext.CurrentContext.Test.Name)
+			{
+				Source = RelativityProviderModel.SourceTypeEnum.SavedSearch,
+				RelativityInstance = "This Instance",
+				DestinationWorkspace = $"{DestinationContext.WorkspaceName} - {DestinationContext.WorkspaceId}",
+				CopyImages = true,
+				CreateSavedSearch = false
+			};
 			return model;
 		}
 
-		[Test, Order(10)]
+		private RelativityProviderModel CreateRelativityProviderModelWithProduction()
+		{
+			var model = CreateRelativityProviderModelWithImages();
+			model.SourceProductionName = $"Production {DateTime.Now.ToString("yyyy-MM-dd_HH:mm:ss")}";
+			return model;
+		}
+
+		[Test]
 		public void RelativityProvider_TC_RTR_IMG_1()
 		{
 			//Arrange
+			ImagesSavedSearchToFolderValidator validator = new ImagesSavedSearchToFolderValidator();
 			RelativityProviderModel model = CreateRelativityProviderModelWithImages();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOnly;
 			model.ImagePrecedence = ImagePrecedenceEnum.OriginalImages;
 			model.CopyFilesToRepository = false;
 
 			//Act
-			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewRelativityProviderIntegrationPoint(model);
+			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
+			detailsPage.RunIntegrationPoint();
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 
 			// Assert
-			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
+			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
+			validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
+			ValidateOriginalImages(model.GetValueOrDefault(x => x.CopyFilesToRepository));
 		}
 
+		[Test]
 		public void RelativityProvider_TC_RTR_IMG_2()
 		{
 			//Arrange
+			ImagesSavedSearchToFolderValidator validator = new ImagesSavedSearchToFolderValidator();
 			RelativityProviderModel model = CreateRelativityProviderModelWithImages();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOnly;
 			model.ImagePrecedence = ImagePrecedenceEnum.OriginalImages;
 			model.CopyFilesToRepository = true;
 
 			// Act
-			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewRelativityProviderIntegrationPoint(model);
+			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
+			detailsPage.RunIntegrationPoint();
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 
 			// Assert
-			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
+			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
+			validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
+			ValidateOriginalImages(model.GetValueOrDefault(x => x.CopyFilesToRepository));
 		}
 
+		[Test]
 		public void RelativityProvider_TC_RTR_IMG_3()
 		{
 			//Arrange
+			DestinationContext.ImportDocuments();
+
+			ImagesSavedSearchToFolderValidator validator = new ImagesSavedSearchToFolderValidator();
 			RelativityProviderModel model = CreateRelativityProviderModelWithImages();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
 			model.ImagePrecedence = ImagePrecedenceEnum.OriginalImages;
 			model.CopyFilesToRepository = false;
 
 			// Act
-			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewRelativityProviderIntegrationPoint(model);
-			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable(); 
+			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
+			detailsPage.RunIntegrationPoint();
+			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 
 			// Assert
-			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
+			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
+			validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
+			ValidateOriginalImages(model.GetValueOrDefault(x => x.CopyFilesToRepository));
 		}
 
 
-		[Test, Order(10)]
+		[Test]
 		public void RelativityProvider_TC_RTR_IMG_4()
 		{
 			// Arrange
-			_destinationContext.ImportDocuments();
+			DestinationContext.ImportDocuments();
 
+			ImagesSavedSearchToFolderValidator validator = new ImagesSavedSearchToFolderValidator();
 			RelativityProviderModel model = CreateRelativityProviderModelWithImages();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
 			model.ImagePrecedence = ImagePrecedenceEnum.OriginalImages;
 			model.CopyFilesToRepository = true;
 
 			// Act
-			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewRelativityProviderIntegrationPoint(model);
+			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
+			detailsPage.RunIntegrationPoint();
+			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
+
+			// Assert
+			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
+			validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
+			ValidateOriginalImages(model.GetValueOrDefault(x => x.CopyFilesToRepository));
+		}
+
+		[Test]
+		public void RelativityProvider_TC_RTR_IMG_5()
+		{
+			// Arrange
+			ImagesSavedSearchToFolderValidator validator = new ImagesSavedSearchToFolderValidator();
+			RelativityProviderModel model = CreateRelativityProviderModelWithImages();
+			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
+			model.ImagePrecedence = ImagePrecedenceEnum.OriginalImages;
+			model.CopyFilesToRepository = false;
+
+			// Act
+			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
+			detailsPage.RunIntegrationPoint();
+			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
+
+			// Assert
+			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
+			validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
+			ValidateOriginalImages(model.GetValueOrDefault(x => x.CopyFilesToRepository));
+		}
+
+		[Test]
+		public void RelativityProvider_TC_RTR_IMG_6()
+		{
+			// Arrange
+			ImagesSavedSearchToFolderValidator validator = new ImagesSavedSearchToFolderValidator();
+			RelativityProviderModel model = CreateRelativityProviderModelWithImages();
+			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
+			model.ImagePrecedence = ImagePrecedenceEnum.OriginalImages;
+			model.CopyFilesToRepository = true;
+
+			// Act
+			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
+			detailsPage.RunIntegrationPoint();
+			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
+
+			// Assert
+			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
+			validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
+			ValidateOriginalImages(model.GetValueOrDefault(x => x.CopyFilesToRepository));
+		}
+
+		[Test]
+		public void RelativityProvider_TC_RTR_IMG_7()
+		{
+			// Arrange
+			ImagesSavedSearchToFolderValidator validator = new ImagesSavedSearchToFolderValidator();
+			RelativityProviderModel model = CreateRelativityProviderModelWithProduction();
+			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOnly;
+			model.ImagePrecedence = ImagePrecedenceEnum.ProducedImages;
+			model.IncludeOriginalImagesIfNotProduced = false;
+			model.CopyFilesToRepository = false;
+
+			Context.CreateAndRunProduction(model.SourceProductionName);
+
+			// Act
+			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
+			detailsPage.RunIntegrationPoint();
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 
 			// Assert
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
+			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
+
+			ValidateProductionImages(false);
 		}
 
-		[Test, Order(10)]
-		public void RelativityProvider_TC_RTR_IMG_5()
+		[Test]
+		public void RelativityProvider_TC_RTR_IMG_8()
 		{
 			// Arrange
-			_destinationContext.ImportDocuments();
 
-			RelativityProviderModel model = CreateRelativityProviderModelWithImages();
-			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
-			model.ImagePrecedence = ImagePrecedenceEnum.OriginalImages;
-			model.CopyFilesToRepository = false;
-
-			// Act
-			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewRelativityProviderIntegrationPoint(model);
-			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable(); 
-
-			// Assert
-			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
-		}
-
-		[Test, Order(10)]
-		public void RelativityProvider_TC_RTR_IMG_6()
-		{
-			// Arrange
-			_destinationContext.ImportDocuments();
-
-			RelativityProviderModel model = CreateRelativityProviderModelWithImages();
-			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
-			model.ImagePrecedence = ImagePrecedenceEnum.OriginalImages;
+			ImagesSavedSearchToFolderValidator validator = new ImagesSavedSearchToFolderValidator();
+			RelativityProviderModel model = CreateRelativityProviderModelWithProduction();
+			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOnly;
+			model.ImagePrecedence = ImagePrecedenceEnum.ProducedImages;
+			model.IncludeOriginalImagesIfNotProduced = false;
 			model.CopyFilesToRepository = true;
 
+			Context.CreateAndRunProduction(model.SourceProductionName);
+
 			// Act
-			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewRelativityProviderIntegrationPoint(model);
-			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable(); 
+			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
+			detailsPage.RunIntegrationPoint();
+			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 
 			// Assert
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
+			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
+
+			ValidateProductionImages(true);
 		}
 
-		//ToDo: We need to have production prepared before running those tests to fill in production precedence
-		//[Test, Order(10)]
-		//public void RelativityProvider_TC_RTR_IMG_7()
-		//{
-		//	// Arrange
-		//	_destinationContext.ImportDocuments();
+		[Test]
+		public void RelativityProvider_TC_RTR_IMG_9()
+		{
+			// Arrange
+			DestinationContext.ImportDocuments();
 
-		//	RelativityProviderModel model = CreateRelativityProviderModelWithImages();
-		//	model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOnly;
-		//	model.ImagePrecedence = RelativityProviderModel.ImagePrecedenceEnum.ProducedImages;
-		//	model.CopyFilesToRepository = false;
+			ImagesSavedSearchToFolderValidator validator = new ImagesSavedSearchToFolderValidator();
+			RelativityProviderModel model = CreateRelativityProviderModelWithProduction();
+			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
+			model.MultiSelectFieldOverlay = RelativityProviderModel.MultiSelectFieldOverlayBehaviorEnum.UseFieldSettings;
+			model.ImagePrecedence = ImagePrecedenceEnum.ProducedImages;
+			model.IncludeOriginalImagesIfNotProduced = false;
+			model.CopyFilesToRepository = false;
 
-		//	// Act
-		//	IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewRelativityProviderIntegrationPoint(model);
-		//	PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
+			Context.CreateAndRunProduction(model.SourceProductionName);
+			DestinationContext.CreateAndRunProduction(model.SourceProductionName);
 
-		//	// Assert
-		//	Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]); 
-		//}
+			// Act
+			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
+			detailsPage.RunIntegrationPoint();
+			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 
-		//[Test, Order(10)]
-		//public void RelativityProvider_TC_RTR_IMG_8()
-		//{
-		//	// Arrange
-		//	_destinationContext.ImportDocuments();
-
-		//	RelativityProviderModel model = CreateRelativityProviderModelWithImages();
-		//	model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOnly;
-		//	model.ImagePrecedence = RelativityProviderModel.ImagePrecedenceEnum.ProducedImages;
-		//	model.CopyFilesToRepository = true;
-
-		//	// Act
-		//	IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewRelativityProviderIntegrationPoint(model);
-		//	PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
-
-		//	// Assert
-		//	Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
-		//}
-
-		//[Test, Order(10)]
-		//public void RelativityProvider_TC_RTR_IMG_9()
-		//{
-		//	// Arrange
-		//	_destinationContext.ImportDocuments();
-
-		//	RelativityProviderModel model = CreateRelativityProviderModelWithImages();
-		//	model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
-		//	model.ImagePrecedence = RelativityProviderModel.ImagePrecedenceEnum.ProducedImages;
-		//	model.CopyFilesToRepository = false;
-
-		//	// Act
-		//	IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewRelativityProviderIntegrationPoint(model);
-		//	PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
-
-		//	// Assert
-		//	Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
-		//}
+			// Assert
+			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
+			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
+			ValidateProductionImages(false);
+		}
 
 
-		//[Test, Order(10)]
-		//public void RelativityProvider_TC_RTR_IMG_10()
-		//{
-		//	// Arrange
-		//	_destinationContext.ImportDocuments();
+		[Test]
+		public void RelativityProvider_TC_RTR_IMG_10()
+		{
+			// Arrange
+			DestinationContext.ImportDocuments();
 
-		//	RelativityProviderModel model = CreateRelativityProviderModelWithImages();
-		//	model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
-		//	model.ImagePrecedence = RelativityProviderModel.ImagePrecedenceEnum.ProducedImages;
-		//	model.CopyFilesToRepository = true;
+			ImagesSavedSearchToFolderValidator validator = new ImagesSavedSearchToFolderValidator();
+			RelativityProviderModel model = CreateRelativityProviderModelWithProduction();
+			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
+			model.MultiSelectFieldOverlay = RelativityProviderModel.MultiSelectFieldOverlayBehaviorEnum.UseFieldSettings;
+			model.ImagePrecedence = ImagePrecedenceEnum.ProducedImages;
+			model.IncludeOriginalImagesIfNotProduced = false;
+			model.CopyFilesToRepository = true;
 
-		//	// Act
-		//	IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewRelativityProviderIntegrationPoint(model);
-		//	PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
+			Context.CreateAndRunProduction(model.SourceProductionName);
+			DestinationContext.CreateAndRunProduction(model.SourceProductionName);
 
-		//	// Assert
-		//	Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
-		//}
+			// Act
+			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
+			detailsPage.RunIntegrationPoint();
+			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 
-		//[Test, Order(10)]
-		//public void RelativityProvider_TC_RTR_IMG_11()
-		//{
-		//	// Arrange
-		//	_destinationContext.ImportDocuments();
+			// Assert
+			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
+			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
+			ValidateProductionImages(true);
+		}
 
-		//	RelativityProviderModel model = CreateRelativityProviderModelWithImages();
-		//	model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
-		//	model.ImagePrecedence = RelativityProviderModel.ImagePrecedenceEnum.ProducedImages;
-		//	model.CopyFilesToRepository = false;
-		//	// Act
-		//	IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewRelativityProviderIntegrationPoint(model);
-		//	PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
+		[Test]
+		public void RelativityProvider_TC_RTR_IMG_11()
+		{
+			// Arrange
+			ImagesSavedSearchToFolderValidator validator = new ImagesSavedSearchToFolderValidator();
+			RelativityProviderModel model = CreateRelativityProviderModelWithProduction();
+			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
+			model.MultiSelectFieldOverlay = RelativityProviderModel.MultiSelectFieldOverlayBehaviorEnum.UseFieldSettings;
+			model.ImagePrecedence = ImagePrecedenceEnum.ProducedImages;
+			model.IncludeOriginalImagesIfNotProduced = false;
+			model.CopyFilesToRepository = false;
 
-		//	// Assert
-		//	Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
-		//}
+			Context.CreateAndRunProduction(model.SourceProductionName);
+			// Act
+			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
+			detailsPage.RunIntegrationPoint();
+			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 
-		//[Test, Order(10)]
-		//public void RelativityProvider_TC_RTR_IMG_12()
-		//{
-		//	// Arrange
-		//	_destinationContext.ImportDocuments();
+			// Assert
+			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
+			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
+			ValidateProductionImages(false);
+		}
 
-		//	RelativityProviderModel model = CreateRelativityProviderModelWithImages();
-		//	model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
-		//	model.ImagePrecedence = RelativityProviderModel.ImagePrecedenceEnum.ProducedImages;
-		//	model.CopyFilesToRepository = true;
+		[Test]
+		public void RelativityProvider_TC_RTR_IMG_12()
+		{
+			// Arrange
+			ImagesSavedSearchToFolderValidator validator = new ImagesSavedSearchToFolderValidator();
+			RelativityProviderModel model = CreateRelativityProviderModelWithProduction();
+			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
+			model.MultiSelectFieldOverlay = RelativityProviderModel.MultiSelectFieldOverlayBehaviorEnum.UseFieldSettings;
+			model.ImagePrecedence = ImagePrecedenceEnum.ProducedImages;
+			model.IncludeOriginalImagesIfNotProduced = false;
+			model.CopyFilesToRepository = true;
 
-		//	// Act
-		//	IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewRelativityProviderIntegrationPoint(model);
-		//	PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
+			Context.CreateAndRunProduction(model.SourceProductionName);
 
-		//	// Assert
-		//	Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
-		//}
+			// Act
+			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
+			detailsPage.RunIntegrationPoint();
+			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
+
+			// Assert
+			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
+			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
+			ValidateProductionImages(true);
+		}
 
 
-		//[Test, Order(10)]
-		//public void RelativityProvider_TC_RTR_IMG_13()
-		//{
-		//	// Arrange
-		//	_destinationContext.ImportDocuments();
+		[Test]
+		public void RelativityProvider_TC_RTR_IMG_13()
+		{
+			// Arrange
+			ImagesSavedSearchToFolderValidator validator = new ImagesSavedSearchToFolderValidator();
+			RelativityProviderModel model = CreateRelativityProviderModelWithProduction();
+			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
+			model.MultiSelectFieldOverlay = RelativityProviderModel.MultiSelectFieldOverlayBehaviorEnum.UseFieldSettings;
+			model.ImagePrecedence = ImagePrecedenceEnum.ProducedImages;
+			model.IncludeOriginalImagesIfNotProduced = true;
+			model.CopyFilesToRepository = true;
 
-		//	RelativityProviderModel model = CreateRelativityProviderModelWithImages();
-		//	model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
-		//	model.ImagePrecedence = RelativityProviderModel.ImagePrecedenceEnum.ProducedImages;
-		//	model.CopyFilesToRepository = true;
+			Context.CreateAndRunProduction(model.SourceProductionName);
 
-		//	// Act
-		//	IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewRelativityProviderIntegrationPoint(model);
-		//	PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
+			// Act
+			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
+			detailsPage.RunIntegrationPoint();
+			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 
-		//	// Assert
-		//	Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
-		//}
+			// Assert
+			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
+			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
+			ValidateProductionImages(true);
+		}
 
+		private void ValidateOriginalImages(bool expectInRepository)
+		{
+			DocumentsValidator documentsValidator = CreateOnlyDocumentsWithImagesValidator()
+				.ValidateWith(new DocumentImagesValidator(ImageService, DestinationContext.GetWorkspaceId(), expectInRepository));
+
+			documentsValidator.Validate();
+		}
+
+		private void ValidateProductionImages(bool expectInRepository)
+		{
+			DocumentsValidator documentsValidator = CreateDocumentsEmptyValidator()
+				.ValidateWith(new DocumentImagesValidator(ImageService, DestinationContext.GetWorkspaceId(), expectInRepository));
+
+			documentsValidator.Validate();
+		}
 	}
 
 }

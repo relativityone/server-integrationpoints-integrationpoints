@@ -79,7 +79,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 			_configSettings.ViewId = _workspaceService.GetView(_configSettings.WorkspaceId, _configSettings.ViewName);
 
-			_configSettings.ProductionArtifactId = _workspaceService.CreateProduction(_configSettings.WorkspaceId, _configSettings.ExportedObjArtifactId,
+			_configSettings.ProductionArtifactId = _workspaceService.CreateAndRunProduction(_configSettings.WorkspaceId, _configSettings.ExportedObjArtifactId,
 				_configSettings.ProductionArtifactName);
 
 			CreateOutputFolder(_configSettings.DestinationPath); // root folder for all tests

@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		private RelativityProviderModel CreateRelativityProviderModelWithNatives()
 		{
 			var model = new RelativityProviderModel(NUnit.Framework.TestContext.CurrentContext.Test.Name);
-			model.Source = "Saved Search";
+			model.Source = RelativityProviderModel.SourceTypeEnum.SavedSearch;
 			model.RelativityInstance = "This Instance";
 			model.DestinationWorkspace = $"{DestinationContext.WorkspaceName} - {DestinationContext.WorkspaceId}";
 			model.CopyNativeFiles = RelativityProviderModel.CopyNativeFilesEnum.PhysicalFiles;
@@ -330,7 +330,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		private void ValidateDocumentsForField()
 		{
 			DocumentsValidator documentsValidator = CreateDocumentsForFieldValidator()
-				.ValidateWith(new DocumentNativesAndInRepositoryValidator(NativesService, Context.GetWorkspaceId(), DestinationContext.GetWorkspaceId(), true, true));
+				.ValidateWith(new DocumentHasNativesAndInRepositoryValidator(NativesService, Context.GetWorkspaceId(), DestinationContext.GetWorkspaceId(), true, true));
 
 			documentsValidator.Validate();
 		}
@@ -338,7 +338,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		private void ValidateDocumentsForFolderTree()
 		{
 			DocumentsValidator documentsValidator = CreateDocumentsForFolderTreeValidator()
-				.ValidateWith(new DocumentNativesAndInRepositoryValidator(NativesService, Context.GetWorkspaceId(), DestinationContext.GetWorkspaceId(), true, true));
+				.ValidateWith(new DocumentHasNativesAndInRepositoryValidator(NativesService, Context.GetWorkspaceId(), DestinationContext.GetWorkspaceId(), true, true));
 
 			documentsValidator.Validate();
 		}
@@ -346,7 +346,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		private void ValidateDocumentsForRootWithFolderName()
 		{
 			DocumentsValidator documentsValidator = CreateDocumentsForRootWithFolderNameValidator()
-				.ValidateWith(new DocumentNativesAndInRepositoryValidator(NativesService, Context.GetWorkspaceId(), DestinationContext.GetWorkspaceId(), true, true));
+				.ValidateWith(new DocumentHasNativesAndInRepositoryValidator(NativesService, Context.GetWorkspaceId(), DestinationContext.GetWorkspaceId(), true, true));
 
 			documentsValidator.Validate();
 		}
@@ -354,7 +354,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		private void ValidateDocumentsForRoot()
 		{
 			DocumentsValidator documentsValidator = CreateDocumentsForRootValidator()
-				.ValidateWith(new DocumentNativesAndInRepositoryValidator(NativesService, Context.GetWorkspaceId(), DestinationContext.GetWorkspaceId(), true, true));
+				.ValidateWith(new DocumentHasNativesAndInRepositoryValidator(NativesService, Context.GetWorkspaceId(), DestinationContext.GetWorkspaceId(), true, true));
 
 			documentsValidator.Validate();
 		}

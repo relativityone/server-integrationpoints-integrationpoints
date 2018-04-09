@@ -74,5 +74,10 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			Thread.Sleep(milliseconds);
 		}
 
+		protected void SetInputText(IWebElement element, string text)
+		{
+			element.SendKeys(Keys.Control + "a");
+			element.SendKeys(text);
+		}
 	}
 }

@@ -98,12 +98,17 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		protected string CreateSourceConfigWithTargetWorkspace(int targetWorkspaceId)
 		{
+			return CreateSourceConfigWithCustomParameters(targetWorkspaceId, SavedSearchArtifactId, SourceWorkspaceArtifactId,
+				SourceConfiguration.ExportType.SavedSearch);
+		}
+		protected string CreateSourceConfigWithCustomParameters(int targetWorkspaceId, int savedSearchArtifactId, int sourceWorkspaceArtifactId, SourceConfiguration.ExportType exportType)
+		{
 			var sourceConfiguration = new SourceConfiguration()
 			{
-				SavedSearchArtifactId = SavedSearchArtifactId,
-				SourceWorkspaceArtifactId = SourceWorkspaceArtifactId,
+				SavedSearchArtifactId = savedSearchArtifactId,
+				SourceWorkspaceArtifactId = sourceWorkspaceArtifactId,
 				TargetWorkspaceArtifactId = targetWorkspaceId,
-				TypeOfExport = SourceConfiguration.ExportType.SavedSearch
+				TypeOfExport = exportType
 			};
 			return Container.Resolve<ISerializer>().Serialize(sourceConfiguration);
 		}

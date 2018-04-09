@@ -22,9 +22,9 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
-			Context.CreateProduction(SAVED_SEARCH_NAME, PRODUCTION_NAME_SMALL);
+			Context.CreateAndRunProduction(SAVED_SEARCH_NAME, PRODUCTION_NAME_SMALL);
 			Context.ImportDocuments(true, DocumentTestDataBuilder.TestDataType.SaltPepperWithFolderStructure);
-			Context.CreateProduction(SAVED_SEARCH_NAME, PRODUCTION_NAME_BIG);
+			Context.CreateAndRunProduction(SAVED_SEARCH_NAME, PRODUCTION_NAME_BIG);
 
 			EnsureGeneralPageIsOpened();
 			_integrationPointsAction = new IntegrationPointsAction(Driver, Context);

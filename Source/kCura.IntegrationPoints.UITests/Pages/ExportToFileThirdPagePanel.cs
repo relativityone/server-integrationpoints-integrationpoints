@@ -10,11 +10,5 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		{
 			PageFactory.InitElements(driver, this);
 		}
-
-		protected void SetInputText(IWebElement element, string text)
-		{
-			element.SendKeys(Keys.Control+"a");
-			element.SendKeys(text);
-		}
 	}
 }

@@ -3,11 +3,11 @@
 	using NUnit.Framework;
 	using Relativity.Client.DTOs;
 
-	public class DocumentNativesValidator : IDocumentValidator
+	public class DocumentHasNativesValidator : IDocumentValidator
 	{
 		protected bool? ExpectHasNatives { get; }
 
-		public DocumentNativesValidator(bool? expectHasNatives)
+		public DocumentHasNativesValidator(bool? expectHasNatives)
 		{
 			ExpectHasNatives = expectHasNatives;
 		}

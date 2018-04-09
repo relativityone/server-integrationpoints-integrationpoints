@@ -20,10 +20,10 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		private readonly IManagerFactory _managerFactory;
 		private readonly IIntegrationPointProviderValidator _ipValidator;
 		private readonly IIntegrationPointPermissionValidator _permissionValidator;
-	    private readonly IIntegrationPointExecutionValidator _integrationPointExecutionValidator;
+		private readonly IIntegrationPointExecutionValidator _integrationPointExecutionValidator;
 
 
-        public ServiceFactory(ICaseServiceContext caseServiceContext, IContextContainerFactory contextContainerFactory,
+		public ServiceFactory(ICaseServiceContext caseServiceContext, IContextContainerFactory contextContainerFactory,
 			IIntegrationPointSerializer serializer, IChoiceQuery choiceQuery,
 			IJobManager jobService, IManagerFactory managerFactory, IIntegrationPointProviderValidator ipValidator,
 			IIntegrationPointPermissionValidator permissionValidator, IIntegrationPointExecutionValidator integrationPointExecutionValidator)
@@ -36,25 +36,26 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			_serializer = serializer;
 			_contextContainerFactory = contextContainerFactory;
 			_caseServiceContext = caseServiceContext;
-		    _integrationPointExecutionValidator = integrationPointExecutionValidator;
+			_integrationPointExecutionValidator = integrationPointExecutionValidator;
 		}
 
 		public IIntegrationPointService CreateIntegrationPointService(IHelper helper, IHelper targetHelper)
 		{
 			IJobHistoryService jobHistoryService = CreateJobHistoryService(helper, targetHelper);
-
+			IJobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(_caseServiceContext, helper);
 			return new IntegrationPointService(
 				helper,
-				_caseServiceContext, 
-				_contextContainerFactory, 
-				_serializer, 
-				_choiceQuery, 
-				_jobService, 
-				jobHistoryService, 
+				_caseServiceContext,
+				_contextContainerFactory,
+				_serializer,
+				_choiceQuery,
+				_jobService,
+				jobHistoryService,
+				jobHistoryErrorService,
 				_managerFactory,
 				_ipValidator,
 				_permissionValidator,
-                _integrationPointExecutionValidator);
+				_integrationPointExecutionValidator);
 		}
 
 		public IFieldCatalogService CreateFieldCatalogService(IHelper targetHelper)

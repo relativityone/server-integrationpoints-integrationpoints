@@ -1,10 +1,12 @@
-﻿using kCura.IntegrationPoint.Tests.Core.Models.FTP;
+﻿using kCura.IntegrationPoint.Tests.Core.Extensions;
+using kCura.IntegrationPoint.Tests.Core.Models.FTP;
+using kCura.Utility;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Support.PageObjects;
 using OpenQA.Selenium.Support.UI;
 
-namespace kCura.IntegrationPoints.UITests.Pages
+namespace kCura.IntegrationPoints.UITests.Pages.FTP
 {
 	public class ImportWithFTPSecondPage : ImportSecondBasePage<ImportFromFTPModel>
 	{
@@ -12,7 +14,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		[FindsBy(How = How.Id, Using = "host")]
 		protected IWebElement HostInput { get; set; }
 
-		[FindsBy(How = How.Id, Using = "s2id_protocol")]
+		[FindsBy(How = How.Id, Using = "protocol")]
 		protected IWebElement ProtocolSelectWebElement { get; set; }
 
 		protected SelectElement ProtocolSelectElement => new SelectElement(ProtocolSelectWebElement);
@@ -31,6 +33,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public ImportWithFTPSecondPage(RemoteWebDriver driver) : base(driver)
 		{
+			PageFactory.InitElements(driver, this);
 		}
 
 		public string Host
@@ -75,10 +78,14 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			set { SetInputText(CSVFilepathInput, value); }
 		}
 
-
 		public override void SetupModel(ImportFromFTPModel model)
 		{
-			throw new System.NotImplementedException();
+			Host = model.ConnectionAndFileInfo.Host;
+			Protocol = model.ConnectionAndFileInfo.Protocol.GetDescription();
+			Port = model.ConnectionAndFileInfo.Port;
+			Username = model.ConnectionAndFileInfo.Username.ToPlainString();
+			Password = model.ConnectionAndFileInfo.Password.ToPlainString();
+			CSVFilepath = model.ConnectionAndFileInfo.CSVFilepath;
 		}
 	}
 }

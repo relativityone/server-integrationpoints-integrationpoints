@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.Models.Shared;
 
 namespace kCura.IntegrationPoint.Tests.Core.Models
@@ -20,7 +17,9 @@ namespace kCura.IntegrationPoint.Tests.Core.Models
 
 		#region "Source Details"
 
-		public string Source { get; set; }
+		[DefaultValue(SourceTypeEnum.SavedSearch)]
+		public SourceTypeEnum? Source { get; set; }
+		[DefaultValue("All documents")]
 		public string SavedSearch { get; set; }
 		public string ProductionSet { get; set; }
 
@@ -48,16 +47,20 @@ namespace kCura.IntegrationPoint.Tests.Core.Models
 		public bool? CopyImages;
 		public ImagePrecedenceEnum? ImagePrecedence { get; set; }
 		public CopyNativeFilesEnum? CopyNativeFiles { get; set; }
-		public string MultiSelectFieldOverlay;
+		[DefaultValue(MultiSelectFieldOverlayBehaviorEnum.UseFieldSettings)]
+		public MultiSelectFieldOverlayBehaviorEnum? MultiSelectFieldOverlay;
 		[DefaultValue(UseFolderPathInformationEnum.No)]
 		public UseFolderPathInformationEnum? UseFolderPathInformation { get; set; }
 		public string FolderPathInformation;
 		public bool? MoveExistingDocuments;
 		public bool? CopyFilesToRepository;
+		public bool? IncludeOriginalImagesIfNotProduced;
 
 
 		#endregion
 		public bool? CreateSavedSearch { get; set; }
+		public string SourceProductionName { get; set; }
+		public string DestinationProductionName { get; set; }
 
 		public enum LocationEnum
 		{
@@ -84,6 +87,19 @@ namespace kCura.IntegrationPoint.Tests.Core.Models
 			AppendOnly,
 			OverlayOnly,
 			AppendOverlay
+		}
+
+		public enum MultiSelectFieldOverlayBehaviorEnum
+		{
+			MergeValues,
+			ReplaceValues,
+			UseFieldSettings
+		}
+
+		public enum SourceTypeEnum
+		{
+			SavedSearch,
+			Production
 		}
 	}
 }

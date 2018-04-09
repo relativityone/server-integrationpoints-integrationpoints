@@ -64,6 +64,7 @@
     <Compile Include="DefaultProviderFactory.cs" />
     <Compile Include="DomainHelper.cs" />
     <Compile Include="Exceptions\IntegrationPointsException.cs" />
+    <Compile Include="Exceptions\IntegrationPointsExceptionMessages.cs" />
     <Compile Include="Exceptions\IntegrationPointsExceptionSource.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="Extensions\ExceptionExtensions.cs" />

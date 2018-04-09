@@ -1,4 +1,8 @@
-﻿namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
+﻿using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Factories.Implementations;
+using kCura.IntegrationPoints.Data.SecretStore;
+
+namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 {
 	using Common;
 	using global::Relativity.Services.Folder;
@@ -13,6 +17,8 @@
 		protected IntegrationPointsAction PointsAction { get; set; }
 		protected IFolderManager FolderManager { get; set; }
 		protected INativesService NativesService { get; set; }
+		protected IImagesService ImageService { get; set; }
+		protected IRelativityObjectManagerFactory ObjectManagerFactory { get; set; }
 
 		protected override void ContextSetUp()
 		{
@@ -20,26 +26,40 @@
 		}
 
 		[OneTimeSetUp]
-		public void OneTimeSetUp()
+		public virtual void OneTimeSetUp()
 		{
 			EnsureGeneralPageIsOpened();
 
 			FolderManager = Context.Helper.CreateAdminProxy<IFolderManager>();
 			NativesService = new NativesService(Context.Helper);
+			ImageService = new ImagesService(Context.Helper);
 			PointsAction = new IntegrationPointsAction(Driver, Context);
+			ObjectManagerFactory = new RelativityObjectManagerFactory(Context.Helper,
+				new DefaultSecretCatalogFactory(),
+				new SecretManagerFactory());
 		}
 
 		[SetUp]
-		public void SetUp()
+		public virtual void SetUp()
 		{
 			DestinationContext = new TestContext()
 				.CreateWorkspace();
 		}
 
 		[TearDown]
-		public void TearDown()
+		public virtual void TearDown()
 		{
 			DestinationContext?.TearDown();
+		}
+
+		protected DocumentsValidator CreateDocumentsEmptyValidator()
+		{
+			return new PushDocumentsValidator(Context.GetWorkspaceId(), DestinationContext.GetWorkspaceId());
+		}
+
+		protected DocumentsValidator CreateOnlyDocumentsWithImagesValidator()
+		{
+			return new PushOnlyWithImagesValidator(Context.GetWorkspaceId(), DestinationContext.GetWorkspaceId());
 		}
 
 		protected DocumentsValidator CreateDocumentsForFieldValidator()

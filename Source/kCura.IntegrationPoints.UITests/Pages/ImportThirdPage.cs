@@ -1,4 +1,5 @@
 ﻿using kCura.IntegrationPoint.Tests.Core.Models.Shared;
+using kCura.Utility;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Support.PageObjects;
@@ -8,6 +9,9 @@ namespace kCura.IntegrationPoints.UITests.Pages
 {
 	public abstract class ImportThirdPage<TModel> : GeneralPage
 	{
+		[FindsBy(How = How.Id, Using = "save")]
+		protected IWebElement SaveButton { get; set; }
+
 		[FindsBy(How = How.Id, Using = "source-fields")]
 		protected IWebElement SourceFieldsElement { get; set; }
 
@@ -33,12 +37,12 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		[FindsBy(How = How.Id, Using = "mapFieldsBtn")]
 		protected IWebElement MapFieldsElement { get; set; }
 
-		[FindsBy(How = How.Id, Using = "s2id_overwrite")]
+		[FindsBy(How = How.Id, Using = "overwrite")]
 		protected IWebElement OverwriteSelectWebElement { get; set; }
 
 		protected SelectElement OverwriteSelectElement => new SelectElement(OverwriteSelectWebElement);
 
-		[FindsBy(How = How.Id, Using = "s2id_overwrite")]
+		[FindsBy(How = How.Id, Using = "overlay-identifier")]
 		protected IWebElement UniqueIdentifierSelectWebElement { get; set; }
 
 		protected SelectElement UniqueIdentifierSelectElement => new SelectElement(UniqueIdentifierSelectWebElement);
@@ -52,7 +56,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		{
 			WaitForPage();
 			PageFactory.InitElements(driver, this);
-			CustodianManagerContainsLinkRowElement = SettingsDivElement.FindElements(By.ClassName("field-row"))[7];
+			CustodianManagerContainsLinkRowElement = SettingsDivElement.FindElements(By.ClassName("field-row"))[11];
 		}
 
 		public void SelectSourceField(string fieldName)
@@ -111,23 +115,38 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			input.Click();
 		}
 
-		public void SaveIntegrationPoint()
+		public IntegrationPointDetailsPage SaveIntegrationPoint()
 		{
-			// TODO
+			SaveButton.Click();
+			return new IntegrationPointDetailsPage(Driver);
 		}
 
 		protected void SetUpSharedSettingsModel(ImportSettingsModel model)
 		{
-			// TODO
+			foreach (var tuple in model.FieldMapping)
+			{
+				string sourceField = tuple.Item1;
+				string destinationField = tuple.Item2;
+				SelectSourceField(sourceField);
+				SelectDestinationField(destinationField);
+			}
+
+			if (model.MapFieldsAutomatically)
+			{
+				MapFields();
+			}
+
+			Overwrite = model.Overwrite.GetDescription();
 		}
 
 		protected void SetUpCustodianSettingsModel(ImportCustodianSettingsModel model)
 		{
-			// TODO
+			UniqueIdentifier = model.UniqueIdentifier;
+			SetCustodianManagerContainsLink(model.CustodianManagerContainsLink);
 		}
 
 		
-		protected abstract void SetUpModel(TModel model);
+		public abstract void SetupModel(TModel model);
 
 		private void SelectField(SelectElement selectElement, IWebElement addFieldElement, string fieldName)
 		{

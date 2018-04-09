@@ -53,8 +53,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
         private const string _SOURCE_PRODUCTION_NAME = "SourceProductionName";
 	    private const string _SOURCE_PRODUCTION_ID = "SourceProductionId";
 
-        [TestCase("NewSourceWorkspaceName", "NewTargetWorkspaceName", "NewSavedSearchName", "NewFolderName", _FOLDER_ARTIFACT_ID, "FriendlyName", "ProductionName")]
-		[TestCase("NewSourceWorkspaceName", "NewTargetWorkspaceName", "NewSavedSearchName", _ERROR_FOLDER_NOT_FOUND, -1, "FriendlyName", "ProductionName")]
+        [TestCase("NewSourceWorkspaceName", "NewTargetWorkspaceName", "NewSavedSearchName", "NewFolderName", _FOLDER_ARTIFACT_ID, "FriendlyName", "SourceProductionName")]
+		[TestCase("NewSourceWorkspaceName", "NewTargetWorkspaceName", "NewSavedSearchName", _ERROR_FOLDER_NOT_FOUND, -1, "FriendlyName", "SourceProductionName")]
 		public void ItShouldUpdateNames(string sourceWorkspaceName, string targetWorkspaceName, string savedSearchName, string folderName, int folderArtifactId, 
             string instanceFriendlyName, string productionName)
 		{

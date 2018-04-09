@@ -1,6 +1,4 @@
-﻿
-using kCura.IntegrationPoint.Tests.Core.Models.Ldap;
-using kCura.IntegrationPoints.UITests.Common;
+﻿using kCura.IntegrationPoint.Tests.Core.Models.Ldap;
 using kCura.IntegrationPoints.UITests.Configuration;
 using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoints.UITests.Pages.Ldap;
@@ -19,27 +17,17 @@ namespace kCura.IntegrationPoints.UITests.Actions
 			var generalPage = new GeneralPage(Driver);
 			generalPage.ChooseWorkspace(Context.WorkspaceName);
 
-			ImportWithLdapFirstPage firstPage = SetupImportFirstPage<ImportWithLdapFirstPage, ImportWithLdapSecondPage, ImportFromLdapModel>(generalPage, model.General,
+			ImportWithLdapFirstPage firstPage = 
+				SetupImportFirstPage<ImportWithLdapFirstPage, ImportWithLdapSecondPage, ImportFromLdapModel>(generalPage, model.General,
 				() => new ImportWithLdapFirstPage(Driver));
 
+			ImportWithLdapSecondPage secondPage = 
+				SetupImportSecondPage(firstPage, model);
 
-			ImportWithLdapSecondPage secondPage = SetupImportSecondPage(firstPage, model);
+			ImportThirdPage<ImportFromLdapModel> thirdPage = 
+				SetupImportThirdPage(secondPage, model, () => new ImportLdapThirdPage(Driver));
 
-			ImportThirdPage<ImportFromLdapModel> thirdPage = secondPage.GoToNextPage(() => new ImportLdapThirdPage(Driver));
-
-			thirdPage.SaveIntegrationPoint();
-
-			//PushToRelativityThirdPage thirdPage = SetupPushToRelativityThirdPage(secondPage);
-			//ImportFirstPage firstPage = SetupImportFromFTPFirstPage(generalPage, model);
-
-			//ExportToFileSecondPage secondPage = SetupExportToFileSecondPage(firstPage, model);
-
-			//ExportToFileThirdPage thirdPage = SetupExportToFileThirdPage(secondPage, model);
-
-			return null;//thirdPage.SaveIntegrationPoint();
+			return thirdPage.SaveIntegrationPoint();
 		}
-
-		
-
 	}
 }

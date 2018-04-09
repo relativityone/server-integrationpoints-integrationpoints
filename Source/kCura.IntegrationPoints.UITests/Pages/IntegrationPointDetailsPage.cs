@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public PropertiesTable SelectGeneralPropertiesTable()
 		{
-			Thread.Sleep(300);
+			WaitForPage();
 			var t = new PropertiesTable(Driver.FindElementById("summaryPage"), "General");
 			t.Select();
 			return t;
@@ -78,22 +78,25 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		private static JobHistoryModel BuildLatestJobHistory(JobStatusTable jobStatusTable)
 		{
-			//TODO implement remaining methods and assing JobHistoryModel remaining properties
-			return new JobHistoryModel
-			{
-				//JobId = int.Parse(Parent.FindElement(By.ClassName("itemTable")).FindElements(By.XPath("tbody/tr/td"))[1].Text),
-				//StartTime = DateTime.Parse(Parent.FindElement(By.ClassName("itemTable")).FindElements(By.XPath("tbody/tr/td"))[2].Text, CultureInfo.GetCultureInfo(1033)),
-				//ArtifactId = int.Parse(Parent.FindElement(By.ClassName("itemTable")).FindElements(By.XPath("tbody/tr/td"))[3].Text),
-				//Name = Parent.FindElement(By.ClassName("itemTable")).FindElements(By.XPath("tbody/tr/td"))[4].Text,
-				//IntegrationPoint = Parent.FindElement(By.ClassName("itemTable")).FindElements(By.XPath("tbody/tr/td"))[5].Text,
-				//JobType = Parent.FindElement(By.ClassName("itemTable")).FindElements(By.XPath("tbody/tr/td"))[6].Text,
-				JobStatus = jobStatusTable.GetLatestJobStatus(),
-				//DestinationWorkspace = Parent.FindElement(By.ClassName("itemTable")).FindElements(By.XPath("tbody/tr/td"))[8].Text,
-				//DestinationInstance = Parent.FindElement(By.ClassName("itemTable")).FindElements(By.XPath("tbody/tr/td"))[9].Text,
-				//ItemsTransferred = int.Parse(Parent.FindElement(By.ClassName("itemTable")).FindElements(By.XPath("tbody/tr/td"))[10].Text),
-				//TotalItems = int.Parse(Parent.FindElement(By.ClassName("itemTable")).FindElements(By.XPath("tbody/tr/td"))[11].Text),
-				//ItemsWithErrors = int.Parse(Parent.FindElement(By.ClassName("itemTable")).FindElements(By.XPath("tbody/tr/td"))[12].Text)
-			};
+		    //TODO implement remaining methods and assing JobHistoryModel remaining properties
+		    var jobHistoryModel = new JobHistoryModel
+		    {
+                //JobId = int.Parse(Parent.FindElement(By.ClassName("itemTable")).FindElements(By.XPath("tbody/tr/td"))[1].Text),
+                //StartTime = DateTime.Parse(Parent.FindElement(By.ClassName("itemTable")).FindElements(By.XPath("tbody/tr/td"))[2].Text, CultureInfo.GetCultureInfo(1033)),
+                //ArtifactId = int.Parse(Parent.FindElement(By.ClassName("itemTable")).FindElements(By.XPath("tbody/tr/td"))[3].Text),
+                //Name = Parent.FindElement(By.ClassName("itemTable")).FindElements(By.XPath("tbody/tr/td"))[4].Text,
+                //IntegrationPoint = Parent.FindElement(By.ClassName("itemTable")).FindElements(By.XPath("tbody/tr/td"))[5].Text,
+                //JobType = Parent.FindElement(By.ClassName("itemTable")).FindElements(By.XPath("tbody/tr/td"))[6].Text,
+		        //DestinationWorkspace = Parent.FindElement(By.ClassName("itemTable")).FindElements(By.XPath("tbody/tr/td"))[8].Text,
+		        //DestinationInstance = Parent.FindElement(By.ClassName("itemTable")).FindElements(By.XPath("tbody/tr/td"))[9].Text,
+		        JobStatus = jobStatusTable.GetLatestJobStatus(),
+		        ItemsWithErrors = jobStatusTable.GetItemsWithErrors(),
+		        ItemsTransferred = jobStatusTable.GetItemsTransfered(),
+		        TotalItems = jobStatusTable.GetTotalItems()
+		    };
+
+
+		    return jobHistoryModel;
 		}
 	}
 }

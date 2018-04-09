@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Globalization;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
@@ -41,6 +42,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		private IRepositoryFactory _repositoryFactory;
 		private IJobHistoryService _jobHistoryService;
 		private IJobService _jobService;
+		private ISavedSearchQueryRepository _savedSearchRepository;
 
 		public IntegrationPointServiceTests() : base("IntegrationPointService Source", null)
 		{
@@ -51,13 +53,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			base.SuiteSetup();
 			QueryRequest request = new QueryRequest()
 			{
-				 Fields = new DestinationProvider().ToFieldList(),
+				Fields = new DestinationProvider().ToFieldList(),
 			};
 			_destinationProvider = CaseContext.RsapiService.RelativityObjectManager.Query<DestinationProvider>(request).First();
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();
 			_jobService = Container.Resolve<IJobService>();
+			_savedSearchRepository = _repositoryFactory.GetSavedSearchQueryRepository(SourceWorkspaceArtifactId);
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, Import.GetImportTable("IPTestDocument", 3));
 		}
 
@@ -459,8 +462,56 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.IsNull(integrationPointModel.Scheduler.EndDate);
 		}
 
+		[Test]
+		public void RunJobWithFailingValidation_ExpectError_SaveJobHistory()
+		{
+			// Arrange 
+
+			int TemporarySavedSearchId = CreateTemporarySavedSearch();
+			IntegrationPointModel integrationModel = new IntegrationPointModel
+			{
+				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.OverlayOnly),
+				DestinationProvider = DestinationProvider.ArtifactId,
+				SourceProvider = RelativityProvider.ArtifactId,
+				SourceConfiguration = CreateSourceConfigWithCustomParameters(TargetWorkspaceArtifactId, TemporarySavedSearchId, SourceWorkspaceArtifactId, SourceConfiguration.ExportType.SavedSearch),
+				LogErrors = true,
+				Name = $"IntegrationPointServiceTest{DateTime.Now:yy-MM-dd HH-mm-ss}",
+				SelectedOverwrite = "Overlay Only",
+				Map = CreateDefaultFieldMap(),
+				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId,
+				Scheduler = new Scheduler()
+				{
+					EnableScheduler = false
+				}
+			};
+
+			IntegrationPointModel integrationPointModel = CreateOrUpdateIntegrationPoint(integrationModel);
+			DeleteSavedSearch(SourceWorkspaceArtifactId, TemporarySavedSearchId);
+
+			// Act
+			Assert.Throws<InvalidConstraintException>(() => _integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPointModel.ArtifactID, _ADMIN_USER_ID));
+
+			// Assert
+			Data.IntegrationPoint ip = _integrationPointService.GetRdo(integrationPointModel.ArtifactID);
+			var jobHistory = _jobHistoryService.GetJobHistory(ip.JobHistory);
+			Assert.NotNull(ip.JobHistory);
+			Assert.AreEqual(JobStatusChoices.JobHistoryValidationFailed.Name, jobHistory[0].JobStatus.Name);
+		}
 
 		#region "Helpers"
+
+		private void DeleteSavedSearch(int workspaceArtifactId, int savedSearchId)
+		{
+			SavedSearch.Delete(workspaceArtifactId, savedSearchId);
+			while (_savedSearchRepository.RetrieveSavedSearch(savedSearchId) != null)
+			{
+			}
+		}
+
+		private int CreateTemporarySavedSearch()
+		{
+			return SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactId, "NewSavedSearch");
+		}
 
 		private void CleanScheduleAgentQueueFromAllRipJobs(int integrationPointArtifactId)
 		{

@@ -35,11 +35,13 @@
     </StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Castle.Windsor, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc" />
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Services" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -51,6 +53,7 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Actions\IntegrationPointsImportFTPAction.cs" />
     <Compile Include="Actions\IntegrationPointsImportAction.cs" />
     <Compile Include="Actions\IntegrationPointsImportLdapAction.cs" />
     <Compile Include="Common\IntegrationPointsAction.cs" />
@@ -67,6 +70,7 @@
     <Compile Include="Driver\DriverExtensions.cs" />
     <Compile Include="Logging\LoggerFactory.cs" />
     <Compile Include="Logging\LoggerNameEnricher.cs" />
+    <Compile Include="Pages\ExportCustodianToFileSecondPage.cs" />
     <Compile Include="Pages\ExportToFileThirdPage.cs" />
     <Compile Include="Pages\ExportToFileThirdPageExportDetails.cs" />
     <Compile Include="Pages\ExportToFileThirdPageImageNativeTextOptions.cs" />
@@ -74,11 +78,12 @@
     <Compile Include="Pages\ExportToFileThirdPagePanel.cs" />
     <Compile Include="Pages\ExportToFileThirdPageVolumeSubdirectoryDetails.cs" />
     <Compile Include="Pages\FirstPage.cs" />
-    <Compile Include="Pages\Ftp\ImportWithFtpFirstPage.cs" />
+    <Compile Include="Pages\FTP\ImportWithFTPFirstPage.cs" />
+    <Compile Include="Pages\FTP\ImportWithFTPThirdPage.cs" />
     <Compile Include="Pages\ImportFirstPage.cs" />
     <Compile Include="Pages\ImportSecondBasePage.cs" />
     <Compile Include="Pages\ImportThirdPage.cs" />
-    <Compile Include="Pages\Ftp\ImportWithFTPSecondPage.cs" />
+    <Compile Include="Pages\FTP\ImportWithFTPSecondPage.cs" />
     <Compile Include="Pages\IntegrationPointDetailsPage.cs" />
     <Compile Include="Pages\IntegrationPointsPage.cs" />
     <Compile Include="Pages\ExportToFileSecondPage.cs" />
@@ -93,23 +98,31 @@
     <Compile Include="Pages\PushtoRelativityThirdPage.cs" />
     <Compile Include="Tests\CreateIpSmokeTest.cs" />
     <Compile Include="Auxiliary\Grinder.cs" />
+    <Compile Include="Tests\ExportToLoadFile\CustodianExportToLoadFile.cs" />
     <Compile Include="Tests\ExportToLoadFile\DocumentExportToLoadFileTests.cs" />
     <Compile Include="Tests\FTPProvider\ImportFromFTPTest.cs" />
-    <Compile Include="Tests\LDAPProvider\ImportLdapProvider.cs" />
+    <Compile Include="Tests\LDAPProvider\ImportLdapProviderTest.cs" />
     <Compile Include="Tests\RelativityProvider\DataGridToSqlTest.cs" />
     <Compile Include="Tests\ExportToLoadFile\ProductionExportToLoadFileTests.cs" />
+    <Compile Include="Tests\RelativityProvider\ProductionToFolderTest.cs" />
     <Compile Include="Tests\RelativityProvider\ImagesSavedSearchToFolderTest.cs" />
     <Compile Include="Tests\RelativityProvider\NativesSavedSearchToFolderTest.cs" />
     <Compile Include="Tests\RelativityProvider\LinksSavedSearchToFolderTest.cs" />
     <Compile Include="Tests\RelativityProvider\MetadataSavedSearchToFolderTest.cs" />
     <Compile Include="Tests\RelativityProvider\RelativityProviderTestsBase.cs" />
+    <Compile Include="Tests\RelativityProvider\SavedSearchToProductionSetTest.cs" />
     <Compile Include="Tests\UiTest.cs" />
     <Compile Include="Common\PageException.cs" />
     <Compile Include="Tests\SelectWithSavedSearchTest.cs" />
     <Compile Include="Tests\UserOnLoginPageTest.cs" />
     <Compile Include="Validation\ExportToLoadFileProviderValidator.cs" />
     <Compile Include="Validation\BaseUiValidator.cs" />
+    <Compile Include="Validation\ImportValidator.cs" />
     <Compile Include="Validation\ProviderModelHtmlExtensions.cs" />
+    <Compile Include="Validation\RelativityProviderValidation\LinksSavedSearchToFolderValidator.cs" />
+    <Compile Include="Validation\RelativityProviderValidation\RelativityProviderValidatorBase.cs" />
+    <Compile Include="Validation\RelativityProviderValidation\ImagesSavedSearchToFolderValidator.cs" />
+    <Compile Include="Validation\RelativityProviderValidation\SavedSearchToProductionSetValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config">
@@ -119,6 +132,7 @@
     <None Include="paket.references" />
     <None Include="UiTestsConfig\testvm.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </None>
     <None Include="UiTestsConfig\PL1.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -149,9 +163,17 @@
       <Project>{AD3E5540-FA39-4983-8A23-FCC756D51A32}</Project>
       <Name>kCura.IntegrationPoint.Tests.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Core.Contracts\kCura.IntegrationPoints.Core.Contracts.csproj">
+      <Project>{30503682-e18d-49df-a308-fe7996c4108e}</Project>
+      <Name>kCura.IntegrationPoints.Core.Contracts</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">
       <Project>{a1ae667b-1b6e-4bb9-af1d-912620292283}</Project>
       <Name>kCura.IntegrationPoints.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
+      <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
+      <Name>kCura.IntegrationPoints.Contracts</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
       <Project>{599D771D-2AE7-4321-9BAC-BE06F827CE0A}</Project>
