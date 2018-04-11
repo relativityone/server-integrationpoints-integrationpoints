@@ -50,7 +50,13 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				var rdos = _rsapiService.RelativityObjectManager.Query<DestinationWorkspace>(new QueryRequest()
 				{
-					Condition = $"'{DestinationWorkspaceFields.DestinationWorkspaceArtifactID}' == {targetWorkspaceArtifactId} AND {instanceCondition}"
+					Condition = $"'{DestinationWorkspaceFields.DestinationWorkspaceArtifactID}' == {targetWorkspaceArtifactId} AND {instanceCondition}",
+					Fields = new List<FieldRef>
+					{
+						new FieldRef { Name = "ArtifactId" },
+						new FieldRef { Guid = new Guid(DestinationWorkspaceFieldGuids.DestinationWorkspaceName)},
+						new FieldRef { Guid = new Guid(DestinationWorkspaceFieldGuids.DestinationInstanceName) }
+					}
 				});
 
 				if (rdos.Count == 0)
