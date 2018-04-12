@@ -13,7 +13,8 @@ nuget Relativity.CustomPages 9.6.94.2
 nuget Relativity.Data 9.6.94.2 
 nuget Relativity.ImportExport 9.6.94.2 
 nuget Relativity.Telemetry.Services.Interface 9.6.94.2 
-nuget RelativityCore 9.6.94.2  
+nuget RelativityCore 9.6.94.2
+nuget Relativity.Services.Interfaces 9.6.94.2
 
 //Other Relativity packages
 nuget Relativity.DataTransfer.MessageService

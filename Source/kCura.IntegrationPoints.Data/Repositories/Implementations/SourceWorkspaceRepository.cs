@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Linq;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
 using Relativity.API;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
@@ -10,14 +10,14 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 	{
 		private readonly IObjectTypeRepository _objectTypeRepository;
 		private readonly IFieldRepository _fieldRepository;
-		private readonly IRdoRepository _rdoRepository;
+		private readonly IRelativityObjectManager _objectManager;
 		private readonly IAPILog _logger;
 
-		public SourceWorkspaceRepository(IHelper helper, IObjectTypeRepository objectTypeRepository, IFieldRepository fieldRepository, IRdoRepository rdoRepository)
+		public SourceWorkspaceRepository(IHelper helper, IObjectTypeRepository objectTypeRepository, IFieldRepository fieldRepository, IRelativityObjectManager objectManager)
 		{
 			_objectTypeRepository = objectTypeRepository;
 			_fieldRepository = fieldRepository;
-			_rdoRepository = rdoRepository;
+			_objectManager = objectManager;
 
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<SourceWorkspaceRepository>();
 		}
@@ -48,50 +48,32 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public SourceWorkspaceDTO RetrieveForSourceWorkspaceId(int sourceWorkspaceArtifactId, string federatedInstanceName, int? federatedInstanceArtifactId)
 		{
-			var sourceWorkspaceCondition = new WholeNumberCondition(Domain.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME, NumericConditionEnum.EqualTo, sourceWorkspaceArtifactId);
-			Condition federatedInstanceCondition;
-			if (federatedInstanceArtifactId.HasValue)
-			{
-				federatedInstanceCondition = new TextCondition(Domain.Constants.SOURCEWORKSPACE_INSTANCENAME_FIELD_NAME, TextConditionEnum.EqualTo, federatedInstanceName);
-			}
-			else
-			{
-				var instanceNameCondition = new TextCondition(Domain.Constants.SOURCEWORKSPACE_INSTANCENAME_FIELD_NAME, TextConditionEnum.EqualTo, federatedInstanceName);
-				var instanceNameIsNotSetCondition = new NotCondition(new TextCondition(Domain.Constants.SOURCEWORKSPACE_INSTANCENAME_FIELD_NAME, TextConditionEnum.IsSet));
-				federatedInstanceCondition = new CompositeCondition(instanceNameCondition, CompositeConditionEnum.Or, instanceNameIsNotSetCondition);
-			}
+			QueryRequest queryRequest = CreateQueryRequestForRetrieveSourceWorkspace(sourceWorkspaceArtifactId, federatedInstanceName, federatedInstanceArtifactId);
 
-
-			var query = new Query<RDO>
-			{
-				ArtifactTypeGuid = SourceWorkspaceDTO.ObjectTypeGuid,
-				Fields = FieldValue.AllFields,
-				Condition = new CompositeCondition(sourceWorkspaceCondition, CompositeConditionEnum.And, federatedInstanceCondition)
-			};
-
-			RDO rdo;
+			RelativityObject relativityObject;
 			try
 			{
-				rdo = _rdoRepository.QuerySingle(query);
-				if (rdo == null)
-				{
-					return null;
-				}
+				relativityObject = _objectManager.Query(queryRequest)?.FirstOrDefault();
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				_logger.LogError(string.Format(RSAPIErrors.QUERY_SOURCE_WORKSPACE_ERROR, sourceWorkspaceArtifactId), ex);
 				throw;
 			}
 
-			return new SourceWorkspaceDTO(rdo.ArtifactID, rdo.Fields);
+			if (relativityObject == null)
+			{
+				return null;
+			}
+
+			return new SourceWorkspaceDTO(relativityObject.ArtifactID, relativityObject.FieldValues);
 		}
 
 		public int Create(SourceWorkspaceDTO sourceWorkspaceDto)
 		{
 			try
 			{
-				return _rdoRepository.Create(sourceWorkspaceDto.ToRdo());
+				return _objectManager.Create(sourceWorkspaceDto.ObjectTypeRef, sourceWorkspaceDto.FieldRefValuePairs);
 			}
 			catch (Exception e)
 			{
@@ -103,12 +85,53 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			try
 			{
-				_rdoRepository.Update(sourceWorkspaceDto.ToRdo());
+				_objectManager.Update(sourceWorkspaceDto.ArtifactId, sourceWorkspaceDto.FieldRefValuePairs);
 			}
 			catch (Exception e)
 			{
 				throw new Exception("Unable to update Source Workspace instance", e);
 			}
+		}
+		
+		private static QueryRequest CreateQueryRequestForRetrieveSourceWorkspace(int sourceWorkspaceArtifactId, string federatedInstanceName, int? federatedInstanceArtifactId)
+		{
+			string condition = CreateConditionForRetrieveSourceWorkspace(sourceWorkspaceArtifactId, federatedInstanceName, federatedInstanceArtifactId);
+
+			return new QueryRequest
+			{
+				ObjectType = new ObjectTypeRef
+				{
+					Guid = SourceWorkspaceDTO.ObjectTypeGuid
+				},
+				Fields = new[]
+				{
+					new FieldRef { Name = Domain.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME },
+					new FieldRef { Name = Domain.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME },
+					new FieldRef { Name = Domain.Constants.SOURCEWORKSPACE_NAME_FIELD_NAME },
+					new FieldRef { Name = Domain.Constants.SOURCEWORKSPACE_INSTANCENAME_FIELD_NAME }
+				},
+				Condition = condition
+			};
+		}
+
+		private static string CreateConditionForRetrieveSourceWorkspace(int sourceWorkspaceArtifactId, string federatedInstanceName, int? federatedInstanceArtifactId)
+		{
+			string sourceWorkspaceCondition = $"'{Domain.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME}' == {sourceWorkspaceArtifactId}";
+
+			string instanceCondition;
+			if (federatedInstanceArtifactId.HasValue)
+			{
+				instanceCondition = $"'Domain.Constants.SOURCEWORKSPACE_INSTANCENAME_FIELD_NAME' == '{federatedInstanceName}'";
+			}
+			else
+			{
+				string instanceNameCondition = $"'{Domain.Constants.SOURCEWORKSPACE_INSTANCENAME_FIELD_NAME}' == '{federatedInstanceName}'";
+				string instanceNameIsNotSetCondition = $"NOT '{Domain.Constants.SOURCEWORKSPACE_INSTANCENAME_FIELD_NAME}' ISSET";
+				instanceCondition = $"({instanceNameCondition}) OR ({instanceNameIsNotSetCondition})";
+			}
+
+			string condition = $"({sourceWorkspaceCondition}) AND ({instanceCondition})";
+			return condition;
 		}
 	}
 }

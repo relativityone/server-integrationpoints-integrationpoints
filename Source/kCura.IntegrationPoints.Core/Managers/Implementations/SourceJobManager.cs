@@ -2,7 +2,6 @@
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client.DTOs;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
@@ -22,22 +21,29 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			int sourceJobDescriptorArtifactTypeId)
 		{
 			ISourceJobRepository sourceJobRepository = _repositoryFactory.GetSourceJobRepository(destinationWorkspaceArtifactId);
-			IRdoRepository rdoRepository = _repositoryFactory.GetRdoRepository(sourceWorkspaceArtifactId);
 
-			RDO jobHistoryRdo = rdoRepository.ReadSingle(jobHistoryArtifactId);
+			string jobHistoryName = GetJobHistoryName(sourceWorkspaceArtifactId, jobHistoryArtifactId);
 			var jobHistoryDto = new SourceJobDTO
 			{
 				ArtifactTypeId = sourceJobDescriptorArtifactTypeId,
-				Name = GenerateSourceJobName(jobHistoryRdo.TextIdentifier, jobHistoryArtifactId),
+				Name = GenerateSourceJobName(jobHistoryName, jobHistoryArtifactId),
 				SourceWorkspaceArtifactId = sourceWorkspaceRdoInstanceArtifactId,
 				JobHistoryArtifactId = jobHistoryArtifactId,
-				JobHistoryName = jobHistoryRdo.TextIdentifier
+				JobHistoryName = jobHistoryName
 			};
 
 			int artifactId = sourceJobRepository.Create(jobHistoryDto);
 			jobHistoryDto.ArtifactId = artifactId;
 
 			return jobHistoryDto;
+		}
+
+		private string GetJobHistoryName(int sourceWorkspaceArtifactId, int jobHistoryArtifactId)
+		{
+			IJobHistoryRepository jobHistoryRepository = _repositoryFactory.GetJobHistoryRepository(sourceWorkspaceArtifactId);
+
+			string jobHistoryName = jobHistoryRepository.GetJobHistoryName(jobHistoryArtifactId);
+			return jobHistoryName;
 		}
 
 		private string GenerateSourceJobName(string jobHistoryName, int jobHistoryArtifactId)

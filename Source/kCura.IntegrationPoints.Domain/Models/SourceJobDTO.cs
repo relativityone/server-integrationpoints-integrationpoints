@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
-using Artifact = kCura.Relativity.Client.DTOs.Artifact;
+using Relativity.Services.Objects.DataContracts;
 using Field = kCura.Relativity.Client.DTOs.Field;
+using FieldType = kCura.Relativity.Client.FieldType;
+using ObjectType = kCura.Relativity.Client.DTOs.ObjectType;
 
 namespace kCura.IntegrationPoints.Domain.Models
 {
@@ -17,20 +17,37 @@ namespace kCura.IntegrationPoints.Domain.Models
 		public int JobHistoryArtifactId { get; set; }
 		public string JobHistoryName { get; set; }
 
-		public RDO ToRdo()
-		{
-			var fields = new List<FieldValue>
-			{
-				new FieldValue(Constants.SOURCEJOB_NAME_FIELD_NAME, Name),
-				new FieldValue(Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME, JobHistoryArtifactId),
-				new FieldValue(Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME, JobHistoryName)
-			};
+		public List<FieldRefValuePair> FieldRefValuePairs => CreateFieldRefValuePairs();
 
-			return new RDO
+		public ObjectTypeRef ObjectTypeRef => new ObjectTypeRef
+		{
+			ArtifactTypeID = ArtifactTypeId
+		};
+
+		public RelativityObjectRef ParentObject => new RelativityObjectRef
+		{
+			ArtifactID = SourceWorkspaceArtifactId
+		};
+
+		private List<FieldRefValuePair> CreateFieldRefValuePairs()
+		{
+			return new List<FieldRefValuePair>
 			{
-				ParentArtifact = new Artifact(SourceWorkspaceArtifactId),
-				ArtifactTypeID = ArtifactTypeId,
-				Fields = fields
+				new FieldRefValuePair
+				{
+					Field = new FieldRef {Name = Constants.SOURCEJOB_NAME_FIELD_NAME},
+					Value = Name
+				},
+				new FieldRefValuePair
+				{
+					Field = new FieldRef {Name = Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME},
+					Value = JobHistoryArtifactId
+				},
+				new FieldRefValuePair
+				{
+					Field = new FieldRef {Name = Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME},
+					Value = JobHistoryName
+				}
 			};
 		}
 

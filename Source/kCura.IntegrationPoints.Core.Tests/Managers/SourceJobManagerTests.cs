@@ -4,7 +4,6 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
@@ -18,19 +17,19 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		private const int _DESTINATION_WORKSPACE_ID = 326325;
 
 		private ISourceJobRepository _sourceJobRepository;
-		private IRdoRepository _sourceRdoRepository;
+		private IJobHistoryRepository _jobHistoryRepository;
 
 		private SourceJobManager _instance;
 
 		public override void SetUp()
 		{
 			_sourceJobRepository = Substitute.For<ISourceJobRepository>();
-			_sourceRdoRepository = Substitute.For<IRdoRepository>();
+			_jobHistoryRepository = Substitute.For<IJobHistoryRepository>();
 
 			IHelper helper = Substitute.For<IHelper>();
 			IRepositoryFactory repositoryFactory = Substitute.For<IRepositoryFactory>();
 
-			repositoryFactory.GetRdoRepository(_SOURCE_WORKSPACE_ID).Returns(_sourceRdoRepository);
+			repositoryFactory.GetJobHistoryRepository(_SOURCE_WORKSPACE_ID).Returns(_jobHistoryRepository);
 			repositoryFactory.GetSourceJobRepository(_DESTINATION_WORKSPACE_ID).Returns(_sourceJobRepository);
 
 			_instance = new SourceJobManager(repositoryFactory, helper);
@@ -43,13 +42,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			int sourceWorkspaceRdoInstanceArtifactId = 966631;
 			int sourceJobDescriptorArtifactTypeId = 577930;
 
-			RDO jobHistoryRdo = new RDO
-			{
-				TextIdentifier = "job_history_name_956"
-			};
+			string jobHistoryName = "job_history_name_956";
 			var sourceJobId = 713321;
 
-			_sourceRdoRepository.ReadSingle(jobHistoryArtifactId).Returns(jobHistoryRdo);
+			_jobHistoryRepository.GetJobHistoryName(jobHistoryArtifactId).Returns(jobHistoryName);
 			_sourceJobRepository.Create(Arg.Any<SourceJobDTO>()).Returns(sourceJobId);
 
 			//ACT
@@ -57,7 +53,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 				sourceJobDescriptorArtifactTypeId);
 
 			// ASSERT
-			ValidateSourceJob(sourceJobDto, sourceJobId, jobHistoryRdo.TextIdentifier, jobHistoryArtifactId, sourceWorkspaceRdoInstanceArtifactId);
+			ValidateSourceJob(sourceJobDto, sourceJobId, jobHistoryName, jobHistoryArtifactId, sourceWorkspaceRdoInstanceArtifactId);
 		}
 
 		[Test]
@@ -67,15 +63,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			int sourceWorkspaceRdoInstanceArtifactId = 320154;
 			int sourceJobDescriptorArtifactTypeId = 846788;
 
-			RDO jobHistoryRdo = new RDO
-			{
-				TextIdentifier = new string('x', 300)
-			};
+			string jobHistoryName = new string('x', 300);
 			var sourceJobId = 713321;
 
-			string expectedName = jobHistoryRdo.TextIdentifier.Substring(0, 255 - $" - {jobHistoryArtifactId}".Length) + $" - {jobHistoryArtifactId}";
+			string expectedName = jobHistoryName.Substring(0, 255 - $" - {jobHistoryArtifactId}".Length) + $" - {jobHistoryArtifactId}";
 
-			_sourceRdoRepository.ReadSingle(jobHistoryArtifactId).Returns(jobHistoryRdo);
+			_jobHistoryRepository.GetJobHistoryName(jobHistoryArtifactId).Returns(jobHistoryName);
 			_sourceJobRepository.Create(Arg.Any<SourceJobDTO>()).Returns(sourceJobId);
 
 			//ACT
