@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using kCura.IntegrationPoints.UITests.Driver;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 using SeleniumExtras.PageObjects;
 
@@ -31,7 +32,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public IntegrationPointDetailsPage SaveIntegrationPoint()
         {
-            SaveButton.Click();
+            SaveButton.ClickWhenClickable();
             return new IntegrationPointDetailsPage(Driver);
         }
 

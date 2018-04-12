@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using kCura.IntegrationPoints.UITests.Driver;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 using SeleniumExtras.PageObjects;
 
@@ -15,7 +16,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		public string Name
 		{
 			get { return NameInput.Text; }
-			set { NameInput.SendKeys(value); }
+			set { NameInput.SetText(value); }
 		}
 
 		protected FirstPage(RemoteWebDriver driver) : base(driver)

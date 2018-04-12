@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using kCura.IntegrationPoints.UITests.Driver;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 using SeleniumExtras.PageObjects;
@@ -56,7 +57,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		private void InitSecondPage()
 		{
 			WaitForPage();
-			NextButton.Click();
+			NextButton.ClickWhenClickable();
 		}
 	}
 }

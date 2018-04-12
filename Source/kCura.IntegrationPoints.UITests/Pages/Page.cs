@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Threading;
 using kCura.IntegrationPoints.UITests.Logging;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.UITests.Driver;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 using SeleniumExtras.WaitHelpers;
@@ -96,7 +97,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		protected void SetInputText(IWebElement element, string text)
 		{
 			element.SendKeys(Keys.Control + "a");
-			element.SendKeys(text);
+			element.SetText(text);
 		}
 	}
 }

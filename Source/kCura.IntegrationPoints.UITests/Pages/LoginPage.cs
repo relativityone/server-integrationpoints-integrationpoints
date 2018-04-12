@@ -1,4 +1,5 @@
 ﻿using kCura.IntegrationPoints.UITests.Common;
+using kCura.IntegrationPoints.UITests.Driver;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 using SeleniumExtras.PageObjects;
@@ -42,10 +43,10 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
         public GeneralPage Login(string username, string password)
         {
-            Username.SendKeys(username);
-            ContinueButton.Click();
-            Password.SendKeys(password);
-            LoginButton.Click();
+            Username.SetText(username);
+            ContinueButton.ClickWhenClickable();
+            Password.SetText(password);
+            LoginButton.ClickWhenClickable();
             return new GeneralPage(Driver);
         }
 

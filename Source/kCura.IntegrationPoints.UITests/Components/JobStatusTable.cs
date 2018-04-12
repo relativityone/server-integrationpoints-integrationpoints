@@ -25,7 +25,9 @@ namespace kCura.IntegrationPoints.UITests.Components
 			const int findUiElementTimeoutInMinutes = 5;
 			const int numberOfRepeatsAfterStaleException = 10;
 			
-			Policy retry = Policy.Handle<StaleElementReferenceException>()
+			Policy retry = Policy
+				.Handle<StaleElementReferenceException>()
+				.Or<IndexOutOfRangeException>()
 				.WaitAndRetry(Enumerable.Repeat(TimeSpan.FromSeconds(1), numberOfRepeatsAfterStaleException));
 			Policy tryFindStatusUpToTimeout = Policy.Timeout(TimeSpan.FromMinutes(findUiElementTimeoutInMinutes)).Wrap(retry);
 

@@ -96,7 +96,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public void SelectAllSourceFields()
 		{
-			AddAllSourceFieldElements.Click();
+			AddAllSourceFieldElements.ClickWhenClickable();
 		}
 
 		public void SelectSourceField(string fieldName)
@@ -113,7 +113,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 			SelectOption(selectElement, fieldName);
 
-			addFieldElement.Click();
+			addFieldElement.ClickWhenClickable();
 		}
 
 		private static void SelectOption(SelectElement selectElement, string textToSearchFor)
@@ -121,20 +121,20 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			IWebElement option = selectElement.WrappedElement.FindElement(By.XPath($".//option[starts-with(normalize-space(.), \"{textToSearchFor}\")]"));
 			if (!option.Selected)
 			{
-				option.Click();
+				option.ClickWhenClickable();
 			}
 		}
 
 		public ExportToFileThirdPage GoToNextPage()
 		{
 			WaitForPage();
-			NextButton.Click();
+			NextButton.ClickWhenClickable();
 			return new ExportToFileThirdPage(Driver);
 		}
 
 		public SavedSearchDialog OpenSavedSearchSelectionDialog()
 		{
-			SavedSearchSelectionButton.Click();
+			SavedSearchSelectionButton.ClickWhenClickable();
 			return new SavedSearchDialog(Driver.FindElementByXPath("/*"));
 		}
 

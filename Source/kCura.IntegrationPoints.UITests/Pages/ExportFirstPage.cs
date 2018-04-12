@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using kCura.IntegrationPoints.UITests.Driver;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 using SeleniumExtras.PageObjects;
 using OpenQA.Selenium.Support.UI;
@@ -37,19 +38,19 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public ExportToFileSecondPage GoToNextPage()
 		{
-			NextButton.Click();
+			NextButton.ClickWhenClickable();
 			return new ExportToFileSecondPage(Driver);
 		}
 
 		public PushToRelativitySecondPage GoToNextPagePush()
 		{
-			NextButton.Click();
+			NextButton.ClickWhenClickable();
 			return new PushToRelativitySecondPage(Driver);
 		}
 
 		public ExportCustodianToFileSecondPage GotoNextPageCustodian()
 		{
-			NextButton.Click();
+			NextButton.ClickWhenClickable();
 			return new ExportCustodianToFileSecondPage(Driver);
 		}
 	}

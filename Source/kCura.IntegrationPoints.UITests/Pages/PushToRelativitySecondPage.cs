@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using kCura.IntegrationPoints.UITests.Components;
+using kCura.IntegrationPoints.UITests.Driver;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 using SeleniumExtras.PageObjects;
@@ -101,13 +102,13 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		public PushToRelativitySecondPage SelectFolderLocation()
 		{
 			WaitForPage();
-			FolderLocation.Click();
+			FolderLocation.ClickWhenClickable();
 			return this;
 		}
 
 		public PushToRelativitySecondPage SelectProductionLocation(string productionName)
 		{
-			ProductionLocation.Click();
+			ProductionLocation.ClickWhenClickable();
 			WaitForPage();
 			ProductionLocationSelect.Choose(productionName);
 			return this;
@@ -122,7 +123,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			Driver.SwitchTo().Frame("externalPage");
 
 			Thread.Sleep(TimeSpan.FromMilliseconds(200));
-			NextButton.Click();
+			NextButton.ClickWhenClickable();
 			return new PushToRelativityThirdPage(Driver);
 		}
 	}

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.UITests.Driver;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 using SeleniumExtras.PageObjects;
@@ -95,7 +96,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		{
 			do
 			{
-				TextPrecedenceButton.Click();
+				TextPrecedenceButton.ClickWhenClickable();
 				Sleep(500);
 			}
 			while (!IsAnyElementVisible(TextPrecedencePickerElement, By.Id("ok-button")));
@@ -111,14 +112,14 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 			if (!optionToSelect.Selected)
 			{
-				optionToSelect.Click();
+				optionToSelect.ClickWhenClickable();
 			}
 		}
 
 		private void ClickButton(IWebElement parentElement, string id)
 		{
 			IWebElement okButton = parentElement.FindElement(By.Id(id));
-			okButton.Click();
+			okButton.ClickWhenClickable();
 		}
 
 		public string TextSubdirectoryPrefix
