@@ -56,6 +56,7 @@
     <Compile Include="Actions\IntegrationPointsImportFTPAction.cs" />
     <Compile Include="Actions\IntegrationPointsImportAction.cs" />
     <Compile Include="Actions\IntegrationPointsImportLdapAction.cs" />
+    <Compile Include="Auxiliary\FileHelper.cs" />
     <Compile Include="Common\IntegrationPointsAction.cs" />
     <Compile Include="Common\TestCategory.cs" />
     <Compile Include="Components\Component.cs" />
@@ -104,6 +105,7 @@
     <Compile Include="Tests\ExportToLoadFile\ExportToLoadFileTests.cs" />
     <Compile Include="Tests\ExportToLoadFile\FolderExportToLoadFileTests.cs" />
     <Compile Include="Tests\FTPProvider\ImportFromFTPTest.cs" />
+    <Compile Include="Tests\ImportFromLoadFile\ImportFromLoadFileTest.cs" />
     <Compile Include="Tests\LDAPProvider\ImportLdapProviderTest.cs" />
     <Compile Include="Tests\RelativityProvider\DataGridToSqlTest.cs" />
     <Compile Include="Tests\ExportToLoadFile\ProductionExportToLoadFileTests.cs" />
