@@ -47,6 +47,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				ObjectType = rdo.ToObjectType(),
 				FieldValues = rdo.ToFieldValues().ToList()
 			};
+			SetParentArtifactId(createRequest, rdo);
 
 			return Create(createRequest, executionIdentity);
 		}
@@ -487,6 +488,17 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				}
 			}
 			return rdo;
+		}
+
+		private void SetParentArtifactId<T>(CreateRequest request, T rdo) where T : BaseRdo, new()
+		{
+			if (rdo.ParentArtifactId.HasValue)
+			{
+				request.ParentObject = new RelativityObjectRef
+				{
+					ArtifactID = rdo.ParentArtifactId.Value
+				};
+			}
 		}
 
 		private IntegrationPointsException LogServiceNotFoundException(string operationName, ServiceNotFoundException ex)
