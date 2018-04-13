@@ -142,6 +142,7 @@
     <Compile Include="Models\FTP\FTPProtocolType.cs" />
     <Compile Include="Models\FTP\ImportFromFTPConnectionAndFileInfoModel.cs" />
     <Compile Include="Models\FTP\ImportFromFTPModel.cs" />
+    <Compile Include="Models\ImportFromLoadFile\ImportFromLoadFileModel.cs" />
     <Compile Include="Models\Ldap\ImportFromLdapSettingsModel.cs" />
     <Compile Include="Models\Ldap\ImportFromLdapSourceConnectionModel.cs" />
     <Compile Include="Models\Ldap\ImportFromLdapModel.cs" />
@@ -1267,6 +1268,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="TestDataExtended\NATIVES\NATIVE001\Three\JGRIFFITH_0000021.msg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestDataImportFromLoadFile\ExampleFolder\ExampleLoadFile.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="TestDataSaltPepper\NATIVES\NATIVE001\AZIPPER\AZIPPER_0007747.dat">

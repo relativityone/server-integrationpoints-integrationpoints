@@ -197,6 +197,12 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		#endregion LDAP Configuration Settings
 
+		#region Fileshare Configuration Settings
+
+		public static string FileshareLocation => AppSettingString("fileshareLocation");
+
+		#endregion
+
 		private static string GetLatestVersion()
 		{
 			var buildPackagesBranchDirectory = new DirectoryInfo(BuildPackagesBranchPath);

@@ -53,10 +53,11 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Actions\IntegrationPointsImportFromLoadFileAction.cs" />
     <Compile Include="Actions\IntegrationPointsImportFTPAction.cs" />
     <Compile Include="Actions\IntegrationPointsImportAction.cs" />
     <Compile Include="Actions\IntegrationPointsImportLdapAction.cs" />
-    <Compile Include="Auxiliary\FileHelper.cs" />
+    <Compile Include="Auxiliary\FileCopyHelper.cs" />
     <Compile Include="Common\IntegrationPointsAction.cs" />
     <Compile Include="Common\TestCategory.cs" />
     <Compile Include="Components\Component.cs" />

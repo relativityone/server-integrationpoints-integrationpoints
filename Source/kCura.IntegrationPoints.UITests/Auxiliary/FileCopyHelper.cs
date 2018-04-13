@@ -2,7 +2,7 @@
 
 namespace kCura.IntegrationPoints.UITests.Auxiliary
 {
-	public class FileHelper
+	public class FileCopyHelper
 	{
 		public static void CopyDirectory(string originalPath, string destinationPath)
 		{
@@ -22,8 +22,8 @@ namespace kCura.IntegrationPoints.UITests.Auxiliary
 			foreach (var file in files)
 			{
 				string fileName = file.Name;
-				string originalFilePath = $"{originalPath}\\{fileName}";
-				string destinationFilePath = $"{destinationPath}\\{fileName}";
+				string originalFilePath = Path.Combine(originalPath, fileName);
+				string destinationFilePath = Path.Combine(destinationPath, fileName);
 				CopyFile(originalFilePath, destinationFilePath);
 			}
 
@@ -31,15 +31,15 @@ namespace kCura.IntegrationPoints.UITests.Auxiliary
 			foreach (var subdirectory in subdirectories)
 			{
 				string subdirectoryName = subdirectory.Name;
-				string originalSubdirectoryPath = $"{originalPath}\\{subdirectoryName}";
-				string destinationSubdirectoryPath = $"{destinationPath}\\{subdirectoryName}";
+				string originalSubdirectoryPath = Path.Combine(originalPath, subdirectoryName);
+				string destinationSubdirectoryPath = Path.Combine(destinationPath, subdirectoryName);
 				CopyFilesInDirectory(originalSubdirectoryPath, destinationSubdirectoryPath);
 			}
 		}
 
-		public static void CopyFile(string originalLocation, string destinationLocation)
+		public static void CopyFile(string originalPath, string destinationPath)
 		{
-			File.Copy(originalLocation, destinationLocation, true);
+			File.Copy(originalPath, destinationPath, true);
 		}
 	}
 }
