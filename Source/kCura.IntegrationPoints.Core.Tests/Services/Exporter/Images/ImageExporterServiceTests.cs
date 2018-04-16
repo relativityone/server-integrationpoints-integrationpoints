@@ -175,6 +175,43 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 			Assert.That(actual[0].GetFieldByName(IntegrationPoints.Domain.Constants.SPECIAL_FILE_NAME_FIELD_NAME).Value, Is.EqualTo("AZIPPER_0007293"));
 		}
 
+		[Test]
+		public void ItShouldReturnEmptyImageLocationWhenProductionImageLocationIsDbNull()
+		{
+			// Arrange
+			const int productionArtifactId = 10010;
+			const int documentArtifactId = 10000;
+			const string imageIdentifier = "AZIPPER_0007293";
+
+			string config = GetConfig(SourceConfiguration.ExportType.ProductionSet, productionArtifactId);
+
+			ImportSettings settings = new ImportSettings()
+			{
+				ProductionPrecedence = ExportSettings.ProductionPrecedenceType.Produced.ToString(),
+				ImagePrecedence = new[] { new ProductionDTO() { ArtifactID = productionArtifactId.ToString() } },
+			};		
+
+			_exporter.RetrieveResults(Arg.Any<Guid>(), Arg.Any<int[]>(), Arg.Any<int>()).Returns(PrepareRetrievedData(documentArtifactId));
+			
+			_fileRepository.RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSet(productionArtifactId, documentArtifactId).Returns(info => {
+				DataView dataView = CreateDocumentImageDataView(SourceConfiguration.ExportType.ProductionSet, imageIdentifier);
+				dataView.Table.Rows[0]["Location"] = null;
+				return dataView;
+			});
+
+			_instance = new ImageExporterService(_exporter, _sourceRepositoryFactory, _targetRepositoryFactory,
+				_jobStopManager, _helper, _baseServiceContextProvider, _mappedFields, _START_AT, config, _SEARCH_ARTIFACT_ID, settings);
+
+			_instance.GetDataTransferContext(Substitute.For<IExporterTransferConfiguration>());
+
+			// Act
+			ArtifactDTO[] actual = _instance.RetrieveData(0);
+
+			// Assert
+			Assert.That(actual.Length, Is.EqualTo(1));
+			Assert.That(actual[0].GetFieldByName(IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME).Value, Is.EqualTo(string.Empty));
+		}
+
 		#endregion
 
 		#region "Helpers"
