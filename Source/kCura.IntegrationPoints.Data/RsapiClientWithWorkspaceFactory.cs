@@ -1,5 +1,6 @@
 ﻿using System;
 using kCura.IntegrationPoints.Data.RSAPIClient;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.Relativity.Client;
 using Relativity.API;
 
@@ -43,19 +44,38 @@ namespace kCura.IntegrationPoints.Data
 			catch (NullReferenceException e)
 			{
 				LogCreatingRsapiClientError(e, identity);
-				client = _servicesMgr.CreateProxy<IRSAPIClient>(ExecutionIdentity.System);
+				if (identity == ExecutionIdentity.System)
+				{
+					throw CreateRsapiClientCreationException(e, identity);
+				}
+				LogRetryWithSystemIdentity();
+				return CreateClientForWorkspace(workspaceID, ExecutionIdentity.System);
+			}
+			catch (Exception e)
+			{
+				LogCreatingRsapiClientError(e, identity);
+				throw CreateRsapiClientCreationException(e, identity);
 			}
 			client.APIOptions.WorkspaceID = workspaceID;
 			return new RsapiClientWrapperWithLogging(client, _logger);
 		}
 
-		#region Logging
-
-		private void LogCreatingRsapiClientError(NullReferenceException e, ExecutionIdentity identity)
+		private IntegrationPointsException CreateRsapiClientCreationException(Exception e, ExecutionIdentity identity)
 		{
-			_logger.LogError(e, "Failed to create RSAPI Client with given identity: {identity}. Attempting to create RSAPI Client using System identity.", identity);
+			throw new IntegrationPointsException($"An error occured creating RSAPI Client with given identity: {identity}", e)
+			{
+				ExceptionSource = IntegrationPointsExceptionSource.RSAPI
+			};
 		}
 
-		#endregion
+		private void LogCreatingRsapiClientError(Exception e, ExecutionIdentity identity)
+		{
+			_logger.LogError(e, "Failed to create RSAPI Client with given identity: {identity}. ", identity);
+		}
+
+		private void LogRetryWithSystemIdentity()
+		{
+			_logger.LogWarning("Attempting to create RSAPI Client using System identity.");
+		}
 	}
 }
