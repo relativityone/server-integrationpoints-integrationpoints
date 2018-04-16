@@ -84,7 +84,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			var validator = new ExportToLoadFileProviderValidator();
 
 			// Act
-			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewExportToLoadfileIntegrationPoint(model);
+			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewExportToLoadFileIntegrationPoint(model);
 			detailsPage.RunIntegrationPoint();
 
 			// Assert
@@ -130,7 +130,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			var validator = new ExportToLoadFileProviderValidator();
 
 			// Act
-			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewExportToLoadfileIntegrationPoint(model);
+			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewExportToLoadFileIntegrationPoint(model);
 			detailsPage.RunIntegrationPoint();
 
 			// Assert
@@ -175,7 +175,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			var validator = new ExportToLoadFileProviderValidator();
 
 			// Act
-			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewExportToLoadfileIntegrationPoint(model);
+			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewExportToLoadFileIntegrationPoint(model);
 			detailsPage.RunIntegrationPoint();
 
 			// Assert
@@ -232,7 +232,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			var validator = new ExportToLoadFileProviderValidator();
 
 			// Act
-			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewExportToLoadfileIntegrationPoint(model);
+			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewExportToLoadFileIntegrationPoint(model);
 			detailsPage.RunIntegrationPoint();
 
 			// Assert
@@ -294,7 +294,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			var validator = new ExportToLoadFileProviderValidator();
 
 			// Act
-			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewExportToLoadfileIntegrationPoint(model);
+			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewExportToLoadFileIntegrationPoint(model);
 			detailsPage.RunIntegrationPoint();
 
 			// Assert

@@ -143,6 +143,8 @@
     <Compile Include="Models\FTP\ImportFromFTPConnectionAndFileInfoModel.cs" />
     <Compile Include="Models\FTP\ImportFromFTPModel.cs" />
     <Compile Include="Models\ImportFromLoadFile\ImportFromLoadFileModel.cs" />
+    <Compile Include="Models\ImportFromLoadFile\ImportLoadFileSettingsModel.cs" />
+    <Compile Include="Models\ImportFromLoadFile\ImportType.cs" />
     <Compile Include="Models\Ldap\ImportFromLdapSettingsModel.cs" />
     <Compile Include="Models\Ldap\ImportFromLdapSourceConnectionModel.cs" />
     <Compile Include="Models\Ldap\ImportFromLdapModel.cs" />

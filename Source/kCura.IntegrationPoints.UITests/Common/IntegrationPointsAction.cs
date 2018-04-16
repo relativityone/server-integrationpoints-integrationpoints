@@ -293,7 +293,7 @@ namespace kCura.IntegrationPoints.UITests.Common
             return secondPage;
         }
 
-        public IntegrationPointDetailsPage CreateNewExportToLoadfileIntegrationPoint(ExportToLoadFileProviderModel model)
+        public IntegrationPointDetailsPage CreateNewExportToLoadFileIntegrationPoint(ExportToLoadFileProviderModel model)
         {
             var generalPage = new GeneralPage(Driver);
             generalPage.ChooseWorkspace(Context.WorkspaceName);

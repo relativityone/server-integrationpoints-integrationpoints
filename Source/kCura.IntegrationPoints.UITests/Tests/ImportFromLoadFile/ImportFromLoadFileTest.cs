@@ -1,5 +1,7 @@
 ﻿using System.IO;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.Models.Constants.ExportToLoadFile;
+using kCura.IntegrationPoint.Tests.Core.Models.ImportFromLoadFile;
 using kCura.IntegrationPoints.UITests.Actions;
 using kCura.IntegrationPoints.UITests.Auxiliary;
 using NUnit.Framework;
@@ -35,7 +37,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 		[Test, Order(1)]
 		public void DocumentImportFromLoadFile_TC_ILF_DOC_1()
 		{
-			// TODO
+			// Arrange
+			var model = new ImportFromLoadFileModel("TC_ILF_DOC_1", ExportToLoadFileTransferredObjectConstants.DOCUMENT);
 		}
 	}
 }
