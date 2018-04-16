@@ -2,10 +2,12 @@
 using System.Threading;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.UITests.Components;
+using kCura.IntegrationPoints.UITests.Driver;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
-using OpenQA.Selenium.Support.PageObjects;
 using OpenQA.Selenium.Support.UI;
+using SeleniumExtras.PageObjects;
+using ExpectedConditions = SeleniumExtras.WaitHelpers.ExpectedConditions;
 
 namespace kCura.IntegrationPoints.UITests.Pages
 {
@@ -44,13 +46,13 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public IntegrationPointDetailsPage RunIntegrationPoint()
 		{
-			RunButton.Click();
+			RunButton.ClickWhenClickable();
 
 			const int timeoutForWarningBoxSeconds = 5;
 			By okButtonLocator = By.XPath("//span[text()='OK']");
 			var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(timeoutForWarningBoxSeconds));
 			IWebElement okButton = wait.Until(ExpectedConditions.ElementIsVisible(okButtonLocator));
-			okButton.Click();
+			okButton.ClickWhenClickable();
 
 			return this;
 		}

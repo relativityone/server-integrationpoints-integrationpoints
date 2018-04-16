@@ -56,10 +56,6 @@
     <Compile Include="Services\AgentJobManagerTests.cs" />
     <Compile Include="Services\IntegrationPointServiceTests.cs" />
     <Compile Include="Services\IntegrationPointServiceTestsForOtherProviders.cs" />
-    <Compile Include="UI\ConsoleButtons.cs" />
-    <Compile Include="UI\ConsoleButtonTestsForOtherProviders.cs" />
-    <Compile Include="UI\PermissionErrorMessageTest.cs" />
-    <Compile Include="UI\SchedulerUiTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
@@ -836,16 +832,6 @@ xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y</PostBuildEvent>
         </Reference>
         <Reference Include="Relativity.Infrastructure">
           <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Infrastructure.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.Logging">
-          <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Logging.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.Logging.Interfaces">
-          <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

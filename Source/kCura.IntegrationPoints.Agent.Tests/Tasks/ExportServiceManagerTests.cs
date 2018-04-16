@@ -417,10 +417,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		{
 			// ARRANGE
 			IWindsorContainer windsorContainer = Substitute.For<IWindsorContainer>();
-			IRSAPIClient rsapiClient = Substitute.For<IRSAPIClient>();
-			RSAPIRdoQuery rdoQuery = new RSAPIRdoQuery(rsapiClient);
+			IObjectTypeRepository objectTypeRepository = Substitute.For<IObjectTypeRepository>();
 			IRsapiClientFactory rsapiClientFactory = Substitute.For<IRsapiClientFactory>();
-			_synchronizerFactory = Substitute.For<GeneralWithCustodianRdoSynchronizerFactory>(windsorContainer, rdoQuery, rsapiClientFactory);
+			_synchronizerFactory = Substitute.For<GeneralWithCustodianRdoSynchronizerFactory>(windsorContainer, objectTypeRepository, rsapiClientFactory);
 
 			// ACT
 			ExportServiceManager instance = new ExportServiceManager(_helper, _helperFactory,

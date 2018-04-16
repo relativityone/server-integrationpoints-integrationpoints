@@ -75,7 +75,6 @@
     <Compile Include="IntegrationPointBaseQuery.cs" />
     <Compile Include="IResourceDbProvider.cs" />
     <Compile Include="IResourcePoolContext.cs" />
-    <Compile Include="IRSAPIRdoQuery.cs" />
     <Compile Include="IRsapiClientWithWorkspaceFactory.cs" />
     <Compile Include="Logging\ISystemEventLoggingService.cs" />
     <Compile Include="Migrations\Migration.cs" />
@@ -159,12 +158,11 @@
     <Compile Include="Repositories\Implementations\QueueRepository.cs" />
     <Compile Include="Repositories\Implementations\RelativityAuditRepository.cs" />
     <Compile Include="Repositories\Implementations\RsapiErrorRepository.cs" />
-    <Compile Include="Repositories\Implementations\RsapiRdoRepository.cs" />
     <Compile Include="Repositories\Implementations\SourceProviderRepository.cs" />
     <Compile Include="Repositories\Implementations\SqlArtifactTypeRepository.cs" />
     <Compile Include="Repositories\IObjectRepository.cs" />
     <Compile Include="Repositories\Implementations\KeplerCodeRepository.cs" />
-    <Compile Include="Repositories\Implementations\RsapiObjectTypeRepository.cs" />
+    <Compile Include="Repositories\Implementations\ObjectTypeRepository.cs" />
     <Compile Include="Repositories\Implementations\RsapiTabRepository.cs" />
     <Compile Include="FileInfo.cs" />
     <Compile Include="Repositories\IDocumentRepository.cs" />
@@ -183,7 +181,6 @@
     <Compile Include="Repositories\IPermissionRepository.cs" />
     <Compile Include="Repositories\IRelativityAuditRepository.cs" />
     <Compile Include="Repositories\IRelativityProviderObjectRepository.cs" />
-    <Compile Include="Repositories\IRdoRepository.cs" />
     <Compile Include="Repositories\IScratchTableRepository.cs" />
     <Compile Include="Repositories\IServiceUrlRepository.cs" />
     <Compile Include="Repositories\ISourceProviderRepository.cs" />
@@ -225,9 +222,7 @@
     <Compile Include="Queries\GetApplicationGuid.cs" />
     <Compile Include="Queries\JobHistoryErrorQuery.cs" />
     <Compile Include="Queries\JobStatisticsQuery.cs" />
-    <Compile Include="RdoGetter.cs" />
     <Compile Include="RdoHelper.cs" />
-    <Compile Include="RSAPIRdoQuery.cs" />
     <Compile Include="Repositories\ISourceWorkspaceRepository.cs" />
     <Compile Include="Repositories\IWorkspaceRepository.cs" />
     <Compile Include="ResourceDbProvider.cs" />

@@ -50,7 +50,6 @@ using kCura.IntegrationPoints.Data.SecretStore;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations;
-using kCura.ScheduleQueue.Core.Data;
 using Relativity.DataTransfer.MessageService;
 using Relativity.Telemetry.APM;
 using Relativity.Toggles;
@@ -72,11 +71,12 @@ namespace kCura.IntegrationPoints.Core.Installers
 				return new SerializerWithLogging(serializer, logger);
 			}).LifestyleSingleton());
 
-			container.Register(Component.For<IObjectTypeRepository>().ImplementedBy<RsapiObjectTypeRepository>().UsingFactoryMethod(x =>
+			container.Register(Component.For<IObjectTypeRepository>().ImplementedBy<ObjectTypeRepository>().UsingFactoryMethod(x =>
 			{
 				IServiceContextHelper contextHelper = x.Resolve<IServiceContextHelper>();
 				IHelper helper = x.Resolve<IHelper>();
-				return new RsapiObjectTypeRepository(contextHelper.WorkspaceID, helper.GetServicesManager(), helper);
+				IRelativityObjectManager objectManager = x.Resolve<IRelativityObjectManager>();
+				return new ObjectTypeRepository(contextHelper.WorkspaceID, helper.GetServicesManager(), helper, objectManager);
 			}).LifestyleTransient());
 
 			container.Register(Component.For<IContextContainerFactory>().ImplementedBy<ContextContainerFactory>().LifestyleTransient());
@@ -213,16 +213,6 @@ namespace kCura.IntegrationPoints.Core.Installers
 
 				return new TokenCredentialProvider(authProvider, tokenGenerator, helper);
 			}).LifestyleTransient());
-
-			container.Register(Component.For<IRdoRepository>().ImplementedBy<RsapiRdoRepository>().UsingFactoryMethod(
-				kernel =>
-				{
-					var helper = kernel.Resolve<IHelper>();
-					var contextHelper = kernel.Resolve<IServiceContextHelper>();
-					var rsapiClientFactory = kernel.Resolve<IRsapiClientWithWorkspaceFactory>();
-
-					return new RsapiRdoRepository(helper, contextHelper.WorkspaceID, rsapiClientFactory);
-				}).LifestyleTransient());
 
 			container.Register(Component.For<ITokenProviderFactoryFactory>().ImplementedBy<TokenProviderFactoryFactory>()
 				.LifestyleSingleton());

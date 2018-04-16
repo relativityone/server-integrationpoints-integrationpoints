@@ -4,3 +4,4 @@ NSubstitute
 NUnit
 Relativity.API
 Relativity.Logging
+Relativity.Services.Interfaces

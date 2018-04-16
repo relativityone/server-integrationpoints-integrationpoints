@@ -4,16 +4,17 @@ strategy: min
 source https://proget.kcura.corp/nuget/NuGet
 
 //Main Relativity packages
-nuget kCura.Agent 9.6.94.2 
-nuget kCura.EventHandler 9.6.94.2 
-nuget kCura.Relativity.Client 9.6.94.2 
-nuget Relativity.Authentication 9.6.94.2 
-nuget Relativity.Core 9.6.94.2 
-nuget Relativity.CustomPages 9.6.94.2 
-nuget Relativity.Data 9.6.94.2 
-nuget Relativity.ImportExport 9.6.94.2 
-nuget Relativity.Telemetry.Services.Interface 9.6.94.2 
-nuget RelativityCore 9.6.94.2  
+nuget kCura.Agent 9.6.101.8 
+nuget kCura.EventHandler 9.6.101.8 
+nuget kCura.Relativity.Client 9.6.101.8 
+nuget Relativity.Authentication 9.6.101.8 
+nuget Relativity.Core 9.6.101.8 
+nuget Relativity.CustomPages 9.6.101.8 
+nuget Relativity.Data 9.6.101.8 
+nuget Relativity.ImportExport 9.6.101.8 
+nuget Relativity.Telemetry.Services.Interface 9.6.101.8 
+nuget RelativityCore 9.6.101.8
+nuget Relativity.Services.Interfaces 9.6.101.8
 
 //Other Relativity packages
 nuget Relativity.DataTransfer.MessageService
@@ -46,7 +47,9 @@ nuget Microsoft.AspNet.WebApi 5.2.3
 nuget Microsoft.Net.Http 2.2.29 strategy: max
 nuget NSubstitute 1.10.0.0
 nuget NUnit 3.4.1
-nuget Selenium.Support 3.8.0
+nuget Selenium.Support 3.11.0
+nuget DotNetSeleniumExtras.PageObjects 3.11.0
+nuget DotNetSeleniumExtras.WaitHelpers 3.11.0
 nuget Selenium.WebDriver.ChromeDriver 2.37.0
 
 //Analyzers

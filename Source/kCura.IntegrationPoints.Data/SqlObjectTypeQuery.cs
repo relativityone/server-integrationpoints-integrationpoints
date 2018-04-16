@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using kCura.Relativity.Client.DTOs;
+using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Data
 {
@@ -15,34 +15,34 @@ namespace kCura.IntegrationPoints.Data
 			_context = context;
 		}
 
-		public List<ObjectType> GetAllTypes(int userId)
+		public List<ObjectTypeDTO> GetAllTypes(int userId)
 		{
 			var sql = Resources.Resource.GetObjectTypes;
 			var param = new SqlParameter("@userID", userId);
 			var result = _context.ExecuteSqlStatementAsDataTable(sql, new List<SqlParameter> { param });
 			if (result != null && result.Rows != null)
 			{
-				return result.Rows.Cast<DataRow>().Select(x => new ObjectType
+				return result.Rows.Cast<DataRow>().Select(x => new ObjectTypeDTO
 				{
 					Name = x.Field<string>("Name"),
-					DescriptorArtifactTypeID = x.Field<int>("DescriptorArtifactTypeID")
+					DescriptorArtifactTypeId = x.Field<int>("DescriptorArtifactTypeID")
 				}).ToList();
 			}
-			return new List<ObjectType>();
+			return new List<ObjectTypeDTO>();
 		}
 
 		public Dictionary<Guid, int> GetRdoGuidToArtifactIdMap(int userId)
 		{
 			Dictionary<Guid, int> results = new Dictionary<Guid, int>();
-			List<ObjectType> types = GetAllTypes(userId);
+			List<ObjectTypeDTO> types = GetAllTypes(userId);
 
 			foreach (var type in types)
 			{
-				if (type.DescriptorArtifactTypeID.HasValue)
+				if (type.DescriptorArtifactTypeId.HasValue)
 				{
 					foreach (var guid in type.Guids)
 					{
-						results[guid] = type.DescriptorArtifactTypeID.Value;
+						results[guid] = type.DescriptorArtifactTypeId.Value;
 					}
 				}
 			}

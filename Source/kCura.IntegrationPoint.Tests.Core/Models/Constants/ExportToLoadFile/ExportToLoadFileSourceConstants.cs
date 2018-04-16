@@ -2,7 +2,14 @@
 {
 	public static class ExportToLoadFileSourceConstants
 	{
-		public static string SAVED_SEARCH = "Saved Search";
-		public static string PRODUCTION = "Production";
+		public const string SAVED_SEARCH = "Saved Search";
+		public const string PRODUCTION = "Production";
+		public const string FOLDER = "Folder";
+		public const string FOLDER_AND_SUBFOLDERS = "Folder + Subfolders";
+
+		public static bool IsFolder(string source)
+		{
+			return source.Equals(FOLDER) || source.Equals(FOLDER_AND_SUBFOLDERS);
+		}
 	}
 }

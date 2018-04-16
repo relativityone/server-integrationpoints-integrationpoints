@@ -100,10 +100,13 @@
     <Compile Include="Auxiliary\Grinder.cs" />
     <Compile Include="Tests\ExportToLoadFile\CustodianExportToLoadFile.cs" />
     <Compile Include="Tests\ExportToLoadFile\DocumentExportToLoadFileTests.cs" />
+    <Compile Include="Tests\ExportToLoadFile\ExportToLoadFileTests.cs" />
+    <Compile Include="Tests\ExportToLoadFile\FolderExportToLoadFileTests.cs" />
     <Compile Include="Tests\FTPProvider\ImportFromFTPTest.cs" />
     <Compile Include="Tests\LDAPProvider\ImportLdapProviderTest.cs" />
     <Compile Include="Tests\RelativityProvider\DataGridToSqlTest.cs" />
     <Compile Include="Tests\ExportToLoadFile\ProductionExportToLoadFileTests.cs" />
+    <Compile Include="Tests\RelativityProvider\ImagesProductionToProductionSetTests.cs" />
     <Compile Include="Tests\RelativityProvider\ProductionToFolderTest.cs" />
     <Compile Include="Tests\RelativityProvider\ImagesSavedSearchToFolderTest.cs" />
     <Compile Include="Tests\RelativityProvider\NativesSavedSearchToFolderTest.cs" />
@@ -119,6 +122,7 @@
     <Compile Include="Validation\BaseUiValidator.cs" />
     <Compile Include="Validation\ImportValidator.cs" />
     <Compile Include="Validation\ProviderModelHtmlExtensions.cs" />
+    <Compile Include="Validation\RelativityProviderValidation\ImagesProductionToProductionSetValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidation\LinksSavedSearchToFolderValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidation\RelativityProviderValidatorBase.cs" />
     <Compile Include="Validation\RelativityProviderValidation\ImagesSavedSearchToFolderValidator.cs" />
@@ -219,6 +223,28 @@ xcopy "$(ProjectDir)..\kCura.IntegrationPoint.Tests.Core\oi\unmanaged" "$(Target
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="SeleniumExtras.PageObjects">
+          <HintPath>..\..\packages\DotNetSeleniumExtras.PageObjects\lib\net45\SeleniumExtras.PageObjects.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="SeleniumExtras.WaitHelpers">
+          <HintPath>..\..\packages\DotNetSeleniumExtras.WaitHelpers\lib\net45\SeleniumExtras.WaitHelpers.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>

@@ -2,7 +2,7 @@
 using System.Linq;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
-using kCura.Relativity.Client.DTOs;
+using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Core.Models
 {
@@ -23,11 +23,11 @@ namespace kCura.IntegrationPoints.Core.Models
 				return new List<string>
 				{
 					"History","Event Handler","Install Event Handler","Source Provider","Integration Point", "Relativity Source Case", "Destination Workspace", "Relativity Source Job"
-                };
+				};
 			}
 		}
 
-		public IEnumerable<ObjectType> GetAllViewableRdos()
+		public IEnumerable<ObjectTypeDTO> GetAllViewableRdos()
 		{
 			var list = _rdoQuery.GetAllTypes(_serviceContext.WorkspaceUserID);
 			return list.Where(ot => !systemRdo.Contains(ot.Name));

@@ -1,5 +1,4 @@
 ﻿using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Statistics;
 
 namespace kCura.IntegrationPoints.Data.Factories
 {
@@ -193,12 +192,6 @@ namespace kCura.IntegrationPoints.Data.Factories
 		/// </summary>
 		/// <returns>A class implementing the IResourcePoolRepository interface.</returns>
 		IResourcePoolRepository GetResourcePoolRepository();
-
-		/// <summary>
-		/// Returns a class implementing the IRdoRepository interface.
-		/// </summary>
-		/// <returns>A class implementing the IRdoRepository interface.</returns>
-		IRdoRepository GetRdoRepository(int workspaceArtifactId);
 		
 		/// <summary>
 		/// Returns a class implementing the IFederatedInstanceRepository interface.

@@ -185,7 +185,6 @@
     <Compile Include="Rest.cs" />
     <Compile Include="Rsapi.cs" />
     <Compile Include="SavedSearch.cs" />
-    <Compile Include="Selenium.cs" />
     <Compile Include="SharedVariables.cs" />
     <Compile Include="Status.cs" />
     <Compile Include="Group.cs" />
@@ -8552,16 +8551,6 @@ xcopy "$(ProjectDir)oi\unmanaged" "$(ProjectDir)..\..\lib\UnitTests\oi"  /E /Y /
         </Reference>
         <Reference Include="Relativity.Infrastructure">
           <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Infrastructure.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.Logging">
-          <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Logging.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.Logging.Interfaces">
-          <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

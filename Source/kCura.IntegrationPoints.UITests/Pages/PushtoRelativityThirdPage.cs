@@ -1,9 +1,10 @@
 ﻿using System.Linq;
 using System.Threading;
 using kCura.IntegrationPoint.Tests.Core.Models;
+using kCura.IntegrationPoints.UITests.Driver;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
-using OpenQA.Selenium.Support.PageObjects;
+using SeleniumExtras.PageObjects;
 using OpenQA.Selenium.Support.UI;
 
 namespace kCura.IntegrationPoints.UITests.Pages
@@ -108,15 +109,15 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		{
 			if (mode == RelativityProviderModel.CopyNativeFilesEnum.PhysicalFiles)
 			{
-				SelectCopyPhysicalFilesElement.Click();
+				SelectCopyPhysicalFilesElement.ClickWhenClickable();
 			}
 			else if (mode == RelativityProviderModel.CopyNativeFilesEnum.LinksOnly)
 			{
-				SelectCopyLinksOnlyElement.Click();
+				SelectCopyLinksOnlyElement.ClickWhenClickable();
 			}
 			else if (mode == RelativityProviderModel.CopyNativeFilesEnum.No)
 			{
-				SelectCopyNoFilesElement.Click();
+				SelectCopyNoFilesElement.ClickWhenClickable();
 			}
 		}
 
@@ -129,11 +130,11 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 			if (mode.Value)
 			{
-				SelectCopyImagesYesElement.Click();
+				SelectCopyImagesYesElement.ClickWhenClickable();
 			}
 			else
 			{
-				SelectCopyImagesNoElement.Click();
+				SelectCopyImagesNoElement.ClickWhenClickable();
 			}
 
 			Thread.Sleep(200);
@@ -141,7 +142,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public PushToRelativityThirdPage MapAllFields()
 		{
-			MapAllFieldsElement.Click();
+			MapAllFieldsElement.ClickWhenClickable();
 			return this;
 		}
 
@@ -184,11 +185,11 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 			if (mode.Value)
 			{
-				SelectMoveExitstingDocumentsYesElement.Click();
+				SelectMoveExitstingDocumentsYesElement.ClickWhenClickable();
 			}
 			else
 			{
-				SelectMoveExitstingDocumentsNoElement.Click();
+				SelectMoveExitstingDocumentsNoElement.ClickWhenClickable();
 			}
 		}
 
@@ -201,21 +202,21 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 			if (mode.Value)
 			{
-				SelectCopyFilesToRepositoryYesElement.Click();
+				SelectCopyFilesToRepositoryYesElement.ClickWhenClickable();
 			}
 			else
 			{
-				SelectCopyFilesToRepositoryNoElement.Click();
+				SelectCopyFilesToRepositoryNoElement.ClickWhenClickable();
 			}
 		}
 
 		public void SelectProductionPrecedence(string productionName)
 		{
-			ChooseProductionPrecedenceBtn.Click();
+			ChooseProductionPrecedenceBtn.ClickWhenClickable();
 			IWebElement productionOption = SelectAvailableProductions.Options.Single(x => x.Text.Equals(productionName));
 			var action = new OpenQA.Selenium.Interactions.Actions(Driver);
 			action.DoubleClick(productionOption).Perform();
-			AvailableProductionOkBtn.Click();
+			AvailableProductionOkBtn.ClickWhenClickable();
 		}
 
 		public void SelectIncludeOriginalImagesIfNotProduced(bool? mode)
@@ -227,7 +228,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 			if (mode.Value)
 			{
-				IncludeOriginalImagesIfNotProducedElement.Click();
+				IncludeOriginalImagesIfNotProducedElement.ClickWhenClickable();
 			}
 		}
 
@@ -252,7 +253,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 			SelectOption(selectElement, textToSearchFor);
 
-			addFieldElement.Click();
+			addFieldElement.ClickWhenClickable();
 		}
 
 		private static void SelectOption(SelectElement selectElement, string textToSearchFor)
@@ -260,13 +261,13 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			IWebElement option = selectElement.WrappedElement.FindElement(By.XPath($".//option[starts-with(normalize-space(.), \"{textToSearchFor}\")]"));
 			if (!option.Selected)
 			{
-				option.Click();
+				option.ClickWhenClickable();
 			}
 		}
 
 		public IntegrationPointDetailsPage SaveIntegrationPoint()
 		{
-			SaveButton.Click();
+			SaveButton.ClickWhenClickable();
 			return new IntegrationPointDetailsPage(Driver);
 		}
 

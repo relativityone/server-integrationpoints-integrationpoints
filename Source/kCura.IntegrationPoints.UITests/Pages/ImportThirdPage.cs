@@ -1,8 +1,9 @@
 ﻿using kCura.IntegrationPoint.Tests.Core.Models.Shared;
+using kCura.IntegrationPoints.UITests.Driver;
 using kCura.Utility;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
-using OpenQA.Selenium.Support.PageObjects;
+using SeleniumExtras.PageObjects;
 using OpenQA.Selenium.Support.UI;
 
 namespace kCura.IntegrationPoints.UITests.Pages
@@ -66,7 +67,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public void SelectAllSourceFields()
 		{
-			AddAllSourceFieldsElement.Click();
+			AddAllSourceFieldsElement.ClickWhenClickable();
 		}
 
 		public void SelectDestinationField(string fieldName)
@@ -76,12 +77,12 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public void SelectAllDestinationFields()
 		{
-			AddAllDestinationFieldsElement.Click();
+			AddAllDestinationFieldsElement.ClickWhenClickable();
 		}
 
 		public void MapFields()
 		{
-			MapFieldsElement.Click();
+			MapFieldsElement.ClickWhenClickable();
 		}
 
 		public string Overwrite
@@ -112,12 +113,12 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		{
 			int checkboxNumber = value ? 0 : 1;
 			IWebElement input = CustodianManagerContainsLinkRowElement.FindElements(By.TagName("input"))[checkboxNumber];
-			input.Click();
+			input.ClickWhenClickable();
 		}
 
 		public IntegrationPointDetailsPage SaveIntegrationPoint()
 		{
-			SaveButton.Click();
+			SaveButton.ClickWhenClickable();
 			return new IntegrationPointDetailsPage(Driver);
 		}
 
@@ -157,7 +158,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 			SelectOption(selectElement, fieldName);
 
-			addFieldElement.Click();
+			addFieldElement.ClickWhenClickable();
 		}
 
 		private static void SelectOption(SelectElement selectElement, string textToSearchFor)
@@ -165,11 +166,8 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			IWebElement option = selectElement.WrappedElement.FindElement(By.XPath($".//option[starts-with(normalize-space(.), \"{textToSearchFor}\")]"));
 			if (!option.Selected)
 			{
-				option.Click();
+				option.ClickWhenClickable();
 			}
 		}
-
-		
-
 	}
 }

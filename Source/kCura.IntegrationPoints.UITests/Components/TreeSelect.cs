@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using OpenQA.Selenium;
 
@@ -40,6 +42,39 @@ namespace kCura.IntegrationPoints.UITests.Components
 			Thread.Sleep(TimeSpan.FromMilliseconds(1000));
 			rootElement.Click();
 			return this;
+		}
+
+		public TreeSelect ChooseChildElement(string name)
+		{
+			Expand();
+
+			IWebElement tree = Parent.FindElement(By.XPath(@".//div[@id='jstree-holder-div']"));
+			OpenAllNodes(tree);
+
+			Thread.Sleep(TimeSpan.FromMilliseconds(1000));
+
+			IWebElement folderIcon = tree.FindElements(By.ClassName("jstree-anchor")).First(el => el.Text == name);
+			folderIcon.Click();
+
+			return this;
+		}
+
+		private void OpenAllNodes(IWebElement tree)
+		{
+			while (true)
+			{
+				Thread.Sleep(TimeSpan.FromMilliseconds(1000));
+				ICollection<IWebElement> closedNodes = tree.FindElements(By.ClassName("jstree-closed"));
+				if (closedNodes.Count == 0)
+				{
+					break;
+				}
+				foreach (var closedNode in closedNodes)
+				{
+					IWebElement button = closedNode.FindElement(By.TagName("i"));
+					button.Click();
+				}
+			}
 		}
 	}
 }

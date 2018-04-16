@@ -4,6 +4,7 @@ using Castle.Windsor;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.RSAPIClient;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Synchronizer;
@@ -17,14 +18,14 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 	public class GeneralWithCustodianRdoSynchronizerFactory : ISynchronizerFactory
 	{
 		private readonly IWindsorContainer _container;
-		private readonly IRsapiRdoQuery _query;
+		private readonly IObjectTypeRepository _objectTypeRepository;
 		private readonly IRsapiClientFactory _rsapiClientFactory;
 
-		public GeneralWithCustodianRdoSynchronizerFactory(IWindsorContainer container, IRsapiRdoQuery query, IRsapiClientFactory rsapiClientFactory)
+		public GeneralWithCustodianRdoSynchronizerFactory(IWindsorContainer container, IObjectTypeRepository objectTypeRepository, IRsapiClientFactory rsapiClientFactory)
 		{
 			_rsapiClientFactory = rsapiClientFactory;
 			_container = container;
-			_query = query;
+			_objectTypeRepository = objectTypeRepository;
 		}
 
 		public ITaskJobSubmitter TaskJobSubmitter { get; set; }
@@ -34,7 +35,7 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 		public IDataSynchronizer CreateSynchronizer(Guid identifier, string options, string credentials)
 		{
 			var json = JsonConvert.DeserializeObject<ImportSettings>(options);
-			var rdoObjectType = _query.GetObjectType(json.ArtifactTypeId);
+			var rdoObjectType = _objectTypeRepository.GetObjectType(json.ArtifactTypeId);
 
 			if (json.Provider != null && json.Provider.ToLower() == "relativity")
 			{

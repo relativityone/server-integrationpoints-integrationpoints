@@ -326,7 +326,7 @@
     <Content Include="Scripts\Import\import-init.js" />
     <Content Include="Scripts\Import\import-model.js" />
     <Content Include="Scripts\Import\import-preview-options-btn.js" />
-    <Content Include="Scripts\integration-point\statistics.js" />
+    <Content Include="Scripts\integration-point\summary-page-statistics.js" />
     <Content Include="Scripts\modals\create-production-set-modal-vm.js" />
     <Content Include="Scripts\modals\authenticate-modal-vm.js" />
     <Content Include="Scripts\integration-point\tooltip-view-model.js" />
@@ -1682,16 +1682,6 @@
         </Reference>
         <Reference Include="Relativity.Infrastructure">
           <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Infrastructure.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.Logging">
-          <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Logging.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.Logging.Interfaces">
-          <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

@@ -57,7 +57,6 @@
     <Compile Include="IntegrationPoints\ConsoleEventHandlerTests.cs" />
     <Compile Include="IntegrationPoints\DataTransferMigrationTests.cs" />
     <Compile Include="IntegrationPoints\DeleteIntegrationPointsTests.cs" />
-    <Compile Include="ViewErrors.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />
@@ -838,11 +837,6 @@ xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y</PostBuildEvent>
         </Reference>
         <Reference Include="Relativity.Logging">
           <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Logging.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.Logging.Interfaces">
-          <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

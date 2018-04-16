@@ -74,7 +74,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 
 			//Assert
 			Assert.AreEqual(_destinationWorkspaceDto.ArtifactId, queriedDestinationWorkspaceDto.ArtifactId);
-			Assert.AreEqual(_destinationWorkspaceDto.DestinationWorkspaceArtifactID, queriedDestinationWorkspaceDto.DestinationWorkspaceArtifactID);
 			Assert.AreEqual(_destinationWorkspaceDto.DestinationWorkspaceName, queriedDestinationWorkspaceDto.DestinationWorkspaceName);
 		}
 
@@ -108,7 +107,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 
 			//Assert
 			Assert.AreEqual(_destinationWorkspaceDto.ArtifactId, updatedDestinationWorkspaceDto.ArtifactId);
-			Assert.AreEqual(_destinationWorkspaceDto.DestinationWorkspaceArtifactID, updatedDestinationWorkspaceDto.DestinationWorkspaceArtifactID);
 			Assert.AreEqual(expectedWorkspaceName, updatedDestinationWorkspaceDto.DestinationWorkspaceName);
 		}
 

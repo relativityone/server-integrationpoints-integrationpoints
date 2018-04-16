@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
+using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
@@ -143,18 +144,30 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		private void ProcessJob(Job nextJob)
 		{
-			string agentMessage = string.Format(START_PROCESSING_JOB_MESSAGE_TEMPLATE, nextJob.JobId, nextJob.WorkspaceID,
-				nextJob.TaskType);
-			NotifyAgentTab(1, LogCategory.Info, agentMessage);
-			LogOnStartJobProcessing(agentMessage, nextJob.JobId, nextJob.WorkspaceID, nextJob.TaskType);
+			var correlationContext = new AgentCorrelationContext
+			{
+				JobId = nextJob.JobId,
+				RootJobId = nextJob.RootJobId,
+				WorkspaceId = nextJob.WorkspaceID,
+				UserId = nextJob.SubmittedBy
+			};
 
-			TaskResult taskResult = ExecuteTask(nextJob);
+			using (Logger.LogContextPushProperties(correlationContext))
+			{
+				string agentMessage = string.Format(START_PROCESSING_JOB_MESSAGE_TEMPLATE, nextJob.JobId, nextJob.WorkspaceID,
+					nextJob.TaskType);
+				NotifyAgentTab(1, LogCategory.Info, agentMessage);
+				LogOnStartJobProcessing(agentMessage, nextJob.JobId, nextJob.WorkspaceID, nextJob.TaskType);
 
-			FinalizeJob(nextJob, taskResult);
+				TaskResult taskResult = ExecuteTask(nextJob, correlationContext);
+
+				FinalizeJob(nextJob, taskResult);
+			}
 		}
 
-		private TaskResult ExecuteTask(Job job)
+		private TaskResult ExecuteTask(Job job, AgentCorrelationContext correlationContext)
 		{
+			IDisposable correlationContextDisposable = null;
 			TaskResult result = new TaskResult() { Status = TaskStatusEnum.Success, Exceptions = null };
 			ITask task = null;
 			try
@@ -167,21 +180,30 @@ namespace kCura.ScheduleQueue.AgentBase
 					throw new Exception("Could not find corresponding Task. ");
 				}
 
-				StartTask(job, task);
+				correlationContext.ActionName = task.GetType().Name;
 
-				LogJobState(job, JobLogState.Finished);
-				string msg = string.Format(FINISHED_PROCESSING_JOB_MESSAGE_TEMPLATE, job.JobId, job.WorkspaceID, job.TaskType);
-				NotifyAgentTab(1, LogCategory.Info, msg);
-				LogFinishingExecuteTask(job);
+
+				using (LogContextHelper.CreateAgentLogContext(correlationContext))
+				{
+					correlationContextDisposable = Logger.LogContextPushProperties(correlationContext);
+
+					StartTask(job, task);
+
+					LogJobState(job, JobLogState.Finished);
+					string msg = string.Format(FINISHED_PROCESSING_JOB_MESSAGE_TEMPLATE, job.JobId, job.WorkspaceID, job.TaskType);
+					NotifyAgentTab(1, LogCategory.Info, msg);
+					LogFinishingExecuteTask(job);
+				}
 			}
 			catch (Exception ex)
 			{
 				result.Status = TaskStatusEnum.Fail;
 				result.Exceptions = new List<Exception>() { ex };
-				RaiseJobExecutionErrorEvent(job,task,ex);
+				RaiseJobExecutionErrorEvent(job, task, ex);
 			}
 			finally
 			{
+				correlationContextDisposable?.Dispose();
 				ReleaseTask(task);
 			}
 			return result;
@@ -189,22 +211,9 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		private void StartTask(Job job, ITask task)
 		{
-			var context = new AgentCorrelationContext
-			{
-				JobId = job.JobId,
-				RootJobId = job.RootJobId,
-				WorkspaceId = job.WorkspaceID,
-				UserId = job.SubmittedBy,
-				ActionName = task.GetType().Name
-			};
-
-			using (LogContextHelper.CreateAgentLogContext(context))
-			using (Logger.LogContextPushProperties(context))
-			{
-				Logger.LogInformation("StartTask - Before Execute");
-				task.Execute(job);
-				Logger.LogInformation("StartTask - After Execute");
-			}
+			Logger.LogInformation("StartTask - Before Execute");
+			task.Execute(job);
+			Logger.LogInformation("StartTask - After Execute");
 		}
 
 		private void FinalizeJob(Job job, TaskResult taskResult)
@@ -253,7 +262,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		protected void RaiseJobExecutionErrorEvent(Job job, ITask task, Exception exception)
 		{
-			JobExecutionError?.Invoke(job,task,exception);
+			JobExecutionError?.Invoke(job, task, exception);
 		}
 
 		protected abstract void LogJobState(Job job, JobLogState state, Exception exception = null,

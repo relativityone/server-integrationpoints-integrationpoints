@@ -170,7 +170,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 		private ArtifactDTO CreateImageArtifactDto(DataRow imageDataRow, int documentArtifactId, string documentIdentifier,
 			List<ArtifactFieldDTO> fields, int artifactType)
 		{
-			var fileLocation = (string)imageDataRow[ImageLocationColumn];
+			string fileLocation = imageDataRow[ImageLocationColumn].ToString();
 			List<ArtifactFieldDTO> artifactFieldDtos = AddImageFields(fields, fileLocation, documentIdentifier);
 			var artifactDto = new ArtifactDTO(documentArtifactId, artifactType, string.Empty, artifactFieldDtos);
 			return artifactDto;

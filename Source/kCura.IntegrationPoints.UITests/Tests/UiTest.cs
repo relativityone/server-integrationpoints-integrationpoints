@@ -175,9 +175,10 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			}
 			Screenshot screenshot = ((ITakesScreenshot) Driver).GetScreenshot();
 			string testDir = NUnit.Framework.TestContext.CurrentContext.TestDirectory;
-			string testName = NUnit.Framework.TestContext.CurrentContext.Test.FullName;
+			string className = NUnit.Framework.TestContext.CurrentContext.Test.FullName;
+			string methodName = NUnit.Framework.TestContext.CurrentContext.Test.MethodName;
 			string timeStamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss-ffff");
-			screenshot.SaveAsFile($@"{testDir}\{timeStamp}_{testName}.png", ScreenshotImageFormat.Png);
+			screenshot.SaveAsFile($@"{testDir}\{timeStamp}_{className}.{methodName}.png", ScreenshotImageFormat.Png);
 		}
 
 		protected string GetExecutorUrl()

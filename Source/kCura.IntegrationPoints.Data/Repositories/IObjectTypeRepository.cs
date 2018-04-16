@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Data.Repositories
 {
@@ -22,5 +24,9 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <param name="objectTypeName">The name of the object type to find.</param>
 		/// <returns>The Artifact ID for the object type, <code>NULL</code> if not found.</returns>
 		int? RetrieveObjectTypeArtifactId(string objectTypeName);
+
+		ObjectTypeDTO GetObjectType(int typeId);
+		int GetObjectTypeID(string objectTypeName);
+		Dictionary<Guid, int> GetRdoGuidToArtifactIdMap(int userId);
 	}
 }

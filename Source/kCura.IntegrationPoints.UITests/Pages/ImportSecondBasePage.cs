@@ -1,7 +1,8 @@
 ﻿using System;
+using kCura.IntegrationPoints.UITests.Driver;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
-using OpenQA.Selenium.Support.PageObjects;
+using SeleniumExtras.PageObjects;
 
 namespace kCura.IntegrationPoints.UITests.Pages
 {
@@ -29,7 +30,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			Driver.SwitchTo().ParentFrame();
 			Driver.SwitchTo().Frame("externalPage");
 
-			NextButton.Click();
+			NextButton.ClickWhenClickable();
 			return funcThridPageCreator();
 		}
 	}

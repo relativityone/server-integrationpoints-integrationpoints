@@ -104,14 +104,18 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IObjectTypeRepository GetObjectTypeRepository(int workspaceArtifactId)
 		{
-			IObjectTypeRepository repository = new RsapiObjectTypeRepository(workspaceArtifactId, _servicesMgr, _helper);
+			IRelativityObjectManager relativityObjectManager =
+				CreateRelativityObjectManager(workspaceArtifactId);
+			IObjectTypeRepository repository = new ObjectTypeRepository(workspaceArtifactId, _servicesMgr, _helper, relativityObjectManager);
 
 			return repository;
 		}
 
 		public IObjectTypeRepository GetDestinationObjectTypeRepository(int workspaceArtifactId)
 		{
-			return new RsapiObjectTypeRepository(workspaceArtifactId, _servicesMgr, _helper);
+			IRelativityObjectManager relativityObjectManager =
+				CreateRelativityObjectManager(workspaceArtifactId);
+			return new ObjectTypeRepository(workspaceArtifactId, _servicesMgr, _helper, relativityObjectManager);
 		}
 
 		public IPermissionRepository GetPermissionRepository(int workspaceArtifactId)
@@ -133,9 +137,8 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		{
 			var objectTypeRepository = GetObjectTypeRepository(workspaceArtifactId);
 			var fieldRepository = GetFieldRepository(workspaceArtifactId);
-			IRsapiClientWithWorkspaceFactory rsapiClientFactory = new RsapiClientWithWorkspaceFactory(_helper, _servicesMgr);
-			IRdoRepository rdoRepository = new RsapiRdoRepository(_helper, workspaceArtifactId, rsapiClientFactory);
-			ISourceJobRepository repository = new SourceJobRepository(objectTypeRepository, fieldRepository, rdoRepository);
+			IRelativityObjectManager objectManager = CreateRelativityObjectManager(workspaceArtifactId);
+			ISourceJobRepository repository = new SourceJobRepository(objectTypeRepository, fieldRepository, objectManager);
 
 			return repository;
 		}
@@ -149,11 +152,10 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public ISourceWorkspaceRepository GetSourceWorkspaceRepository(int workspaceArtifactId)
 		{
-			var objectTypeRepository = GetObjectTypeRepository(workspaceArtifactId);
-			var fieldRepository = GetFieldRepository(workspaceArtifactId);
-			IRsapiClientWithWorkspaceFactory rsapiClientFactory = new RsapiClientWithWorkspaceFactory(_helper, _servicesMgr);
-			IRdoRepository rdoRepository = new RsapiRdoRepository(_helper, workspaceArtifactId, rsapiClientFactory);
-			ISourceWorkspaceRepository repository = new SourceWorkspaceRepository(_helper, objectTypeRepository, fieldRepository, rdoRepository);
+			IObjectTypeRepository objectTypeRepository = GetObjectTypeRepository(workspaceArtifactId);
+			IFieldRepository fieldRepository = GetFieldRepository(workspaceArtifactId);
+			IRelativityObjectManager objectManager = CreateRelativityObjectManager(workspaceArtifactId);
+			ISourceWorkspaceRepository repository = new SourceWorkspaceRepository(_helper, objectTypeRepository, fieldRepository, objectManager);
 
 			return repository;
 		}
@@ -243,13 +245,6 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		public IResourcePoolRepository GetResourcePoolRepository()
 		{
 			return new ResourcePoolRepository(_helper);
-		}
-
-		public IRdoRepository GetRdoRepository(int workspaceArtifactId)
-		{
-			IRsapiClientWithWorkspaceFactory rsapiClientFactory = new RsapiClientWithWorkspaceFactory(_helper);
-			IRdoRepository rdoRepository = new RsapiRdoRepository(_helper, workspaceArtifactId, rsapiClientFactory);
-			return rdoRepository;
 		}
 
 		public IQueryFieldLookupRepository GetQueryFieldLookupRepository(int workspaceArtifactId)

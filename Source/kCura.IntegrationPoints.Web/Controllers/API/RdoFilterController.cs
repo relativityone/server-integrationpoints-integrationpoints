@@ -2,7 +2,7 @@
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.Relativity.Client;
 
@@ -11,12 +11,12 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 	public class RdoFilterController : ApiController
 	{
 		private readonly Core.Models.IRdoFilter _rdoFilter;
-		private readonly IRsapiRdoQuery _query;
+		private readonly IObjectTypeRepository _objectTypeRepository;
 
-		public RdoFilterController(Core.Models.IRdoFilter rdoFilter, IRsapiRdoQuery query)
+		public RdoFilterController(Core.Models.IRdoFilter rdoFilter, IObjectTypeRepository objectTypeRepository)
 		{
 			_rdoFilter = rdoFilter;
-			_query = query;
+			_objectTypeRepository = objectTypeRepository;
 		}
 
 		// GET api/<controller>
@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[LogApiExceptionFilter(Message = "Unable to retrieve accessible RDO list.")]
 		public HttpResponseMessage GetAllViewableRdos()
 		{
-			var list = _rdoFilter.GetAllViewableRdos().Select(x => new { name = x.Name, value = x.DescriptorArtifactTypeID }).ToList();
+			var list = _rdoFilter.GetAllViewableRdos().Select(x => new { name = x.Name, value = x.DescriptorArtifactTypeId }).ToList();
 			return Request.CreateResponse(HttpStatusCode.OK, list);
 		}
 
@@ -32,8 +32,9 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[LogApiExceptionFilter(Message = "Unable to object type.")]
 		public HttpResponseMessage Get(int id)
 		{
-			var list = _query.GetObjectType(id);
-			return Request.CreateResponse(HttpStatusCode.OK, new {name = list.Name, value = list.DescriptorArtifactTypeID});
+			var list = _objectTypeRepository.GetObjectType(id);
+			
+			return Request.CreateResponse(HttpStatusCode.OK, new {name = list.Name, value = list.DescriptorArtifactTypeId });
 		}
 
 		[HttpGet]

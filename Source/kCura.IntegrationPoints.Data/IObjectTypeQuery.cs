@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using kCura.Relativity.Client.DTOs;
+using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Data
 {
 	public interface IObjectTypeQuery
 	{
-		List<ObjectType> GetAllTypes(int userId);
+		List<ObjectTypeDTO> GetAllTypes(int userId);
 
 		Dictionary<Guid, int> GetRdoGuidToArtifactIdMap(int userId);
 	}

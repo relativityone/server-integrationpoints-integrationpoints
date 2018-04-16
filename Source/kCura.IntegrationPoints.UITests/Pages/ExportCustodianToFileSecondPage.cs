@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using kCura.IntegrationPoints.UITests.Driver;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
-using OpenQA.Selenium.Support.PageObjects;
 using OpenQA.Selenium.Support.UI;
+using SeleniumExtras.PageObjects;
+using ExpectedConditions = SeleniumExtras.WaitHelpers.ExpectedConditions;
 
 namespace kCura.IntegrationPoints.UITests.Pages
 {
@@ -35,7 +33,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
         public ExportToFileThirdPage GoToNextPage()
         {
-            NextButton.Click();
+            NextButton.ClickWhenClickable();
             return new ExportToFileThirdPage(Driver);
 
         }

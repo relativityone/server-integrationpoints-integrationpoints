@@ -12,9 +12,8 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.SourceTypes;
-using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Web.Controllers.API;
-using kCura.Relativity.Client;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
@@ -28,7 +27,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 		private IWindsorContainer _windsorContainer;
 		private ISourceTypeFactory _sourceTypeFactory;
 		private ICaseServiceContext _iCaseServiceContext;
-		private IRsapiRdoQuery _objTypeQuery;
+		private IObjectTypeRepository _objTypeQuery;
 		private Guid _documentObjectGuid;
 		private Guid _randomRdoGuid;
 
@@ -37,7 +36,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			_windsorContainer.Register(Component.For<ISourceTypeFactory>().Instance(_sourceTypeFactory).LifestyleTransient());
 			_windsorContainer.Register(Component.For<SourceTypeController>());
 			_windsorContainer.Register(Component.For<ICaseServiceContext>().Instance(_iCaseServiceContext).LifestyleTransient());
-			_windsorContainer.Register(Component.For<IRsapiRdoQuery>().Instance(_objTypeQuery).LifestyleTransient());
+			_windsorContainer.Register(Component.For<IObjectTypeRepository>().Instance(_objTypeQuery).LifestyleTransient());
 			_windsorContainer.Register(Component.For<ICPHelper>().UsingFactoryMethod((k) => Helper).LifestyleTransient());
 		}
 
@@ -57,8 +56,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 				{_documentObjectGuid, 10},
 				{_randomRdoGuid, 789456 }
 			};
-			_objTypeQuery = new RSAPIRdoQueryTest(null, guidToTypeId);
 
+			_objTypeQuery = Substitute.For<IObjectTypeRepository>();
+			_objTypeQuery.GetRdoGuidToArtifactIdMap(Arg.Any<int>()).Returns(guidToTypeId);
 			var config = new HttpConfiguration();
 			var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Get");
 			var route = config.Routes.MapHttpRoute("DefaultApi", "api/{controller}/{id}");
@@ -249,20 +249,4 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 				response.Content.ReadAsStringAsync().Result);
 		}
 	}
-
-	public class RSAPIRdoQueryTest : RSAPIRdoQuery
-	{
-		private readonly Dictionary<Guid, int> _rdosToTypeArtifactIdMap;
-		public RSAPIRdoQueryTest(IRSAPIClient client, Dictionary<Guid, int> RdosToTypeArtifactIdMap)
-			: base(client)
-		{
-			_rdosToTypeArtifactIdMap = RdosToTypeArtifactIdMap;
-		}
-
-		public override Dictionary<Guid, int> GetRdoGuidToArtifactIdMap(int userId)
-		{
-			return _rdosToTypeArtifactIdMap;
-		}
-	}
-
 }

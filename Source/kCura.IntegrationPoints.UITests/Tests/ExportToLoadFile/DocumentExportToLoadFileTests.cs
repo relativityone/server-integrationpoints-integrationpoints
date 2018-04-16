@@ -12,7 +12,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 {
 	[TestFixture]
 	[Category(TestCategory.SMOKE)]
-	public class DocumentExportToLoadFileTests : UiTest
+	public class DocumentExportToLoadFileTests : ExportToLoadFileTests
 	{
 		private IntegrationPointsAction _integrationPointsAction;
 
@@ -290,12 +290,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 
 			// Assert
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
-		}
-		
-		private ExportToLoadFileProviderModel CreateExportToLoadFileProviderModel(string name)
-		{
-			var model = new ExportToLoadFileProviderModel(name, "All Documents");
-			return model;
 		}
 	}
 }

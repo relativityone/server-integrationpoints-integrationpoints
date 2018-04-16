@@ -1,7 +1,8 @@
 ﻿using kCura.IntegrationPoint.Tests.Core.Models;
+using kCura.IntegrationPoints.UITests.Driver;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
-using OpenQA.Selenium.Support.PageObjects;
+using SeleniumExtras.PageObjects;
 using OpenQA.Selenium.Support.UI;
 
 namespace kCura.IntegrationPoints.UITests.Pages
@@ -92,13 +93,13 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			switch (filePath)
 			{
 				case ExportToLoadFileProviderModel.FilePathTypeEnum.Absolute:
-					AbsoluteFilePathRadio.Click();
+					AbsoluteFilePathRadio.ClickWhenClickable();
 					break;
 				case ExportToLoadFileProviderModel.FilePathTypeEnum.Relative:
-					RelativeFilePathRadio.Click();
+					RelativeFilePathRadio.ClickWhenClickable();
 					break;
 				case ExportToLoadFileProviderModel.FilePathTypeEnum.UserPrefix:
-					UserPrefixFilePathRadio.Click();
+					UserPrefixFilePathRadio.ClickWhenClickable();
 					break;
 			}
 		}
@@ -111,12 +112,12 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public void IncludeNativeFilesPath()
 		{
-			IncludeNativeFilesPathCheckbox.Click();
+			IncludeNativeFilesPathCheckbox.ClickWhenClickable();
 		}
 
 		public void ExportMultipleChoiceFieldsAsNested()
 		{
-			ExportMultipleChoiceFieldsAsNestedCheckbox.Click();
+			ExportMultipleChoiceFieldsAsNestedCheckbox.ClickWhenClickable();
 		}
 
 		protected SelectElement NameOutputFilesAfterSelectElement => new SelectElement(NameOutputFilesAfterSelectWebElement);
@@ -135,7 +136,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public void AppendOriginalFileName()
 		{
-			AppendOriginalFileNameCheckbox.Click();
+			AppendOriginalFileNameCheckbox.ClickWhenClickable();
 		}
 	}
 }

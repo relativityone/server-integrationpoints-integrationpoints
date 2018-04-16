@@ -3,7 +3,7 @@ using kCura.IntegrationPoint.Tests.Core.Models.FTP;
 using kCura.Utility;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
-using OpenQA.Selenium.Support.PageObjects;
+using SeleniumExtras.PageObjects;
 using OpenQA.Selenium.Support.UI;
 
 namespace kCura.IntegrationPoints.UITests.Pages.FTP

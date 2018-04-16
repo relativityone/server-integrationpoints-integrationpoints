@@ -3,9 +3,10 @@ using System.Diagnostics;
 using System.Threading;
 using kCura.IntegrationPoints.UITests.Logging;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.UITests.Driver;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
-using OpenQA.Selenium.Support.UI;
+using SeleniumExtras.WaitHelpers;
 using Serilog;
 
 namespace kCura.IntegrationPoints.UITests.Pages
@@ -69,6 +70,25 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			return false;
 		}
 
+		public bool IsAnyElementVisible(ISearchContext parent, params By[] bys)
+		{
+			foreach (By by in bys)
+			{
+				try
+				{
+					if (parent.FindElement(by).Displayed)
+					{
+						return true;
+					}
+				}
+				catch (NoSuchElementException ex)
+				{
+					Log.Verbose(ex, "Exception occured while checking elements' visibility.");
+				}
+			}
+			return false;
+		}
+
 		public void Sleep(int milliseconds)
 		{
 			Thread.Sleep(milliseconds);
@@ -77,7 +97,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		protected void SetInputText(IWebElement element, string text)
 		{
 			element.SendKeys(Keys.Control + "a");
-			element.SendKeys(text);
+			element.SetText(text);
 		}
 	}
 }

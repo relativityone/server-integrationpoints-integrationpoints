@@ -12,6 +12,7 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Services.DestinationTypes;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using NSubstitute;
 using NUnit.Framework;
@@ -25,7 +26,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 		private IWindsorContainer _windsorContainer;
 		private IDestinationTypeFactory _destinationTypeFactory;
 		private ICaseServiceContext _iCaseServiceContext;
-		private IRsapiRdoQuery _objTypeQuery;
+		private IObjectTypeRepository _objTypeQuery;
 		private Guid _documentObjectGuid;
 		private Guid _randomRdoGuid;
 
@@ -34,7 +35,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			_windsorContainer.Register(Component.For<IDestinationTypeFactory>().Instance(_destinationTypeFactory).LifestyleTransient());
 			_windsorContainer.Register(Component.For<DestinationTypeController>());
 			_windsorContainer.Register(Component.For<ICaseServiceContext>().Instance(_iCaseServiceContext).LifestyleTransient());
-			_windsorContainer.Register(Component.For<IRsapiRdoQuery>().Instance(_objTypeQuery).LifestyleTransient());
+			_windsorContainer.Register(Component.For<IObjectTypeRepository>().Instance(_objTypeQuery).LifestyleTransient());
 		}
 
 		[SetUp]
@@ -52,7 +53,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 				{_documentObjectGuid, 10},
 				{_randomRdoGuid, 789456 }
 			};
-			_objTypeQuery = new RSAPIRdoQueryTest(null, guidToTypeId);
+			_objTypeQuery = Substitute.For<IObjectTypeRepository>();
+			_objTypeQuery.GetRdoGuidToArtifactIdMap(Arg.Any<int>()).Returns(guidToTypeId);
 
 			var config = new HttpConfiguration();
 			var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Get");
