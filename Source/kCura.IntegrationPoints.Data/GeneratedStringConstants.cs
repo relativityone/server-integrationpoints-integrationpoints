@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using kCura.Relativity.Client.DTOs;
+using Relativity.Services.Objects.DataContracts;
+using Choice = kCura.Relativity.Client.DTOs.Choice;
+
 namespace kCura.IntegrationPoints.Data
 {
  

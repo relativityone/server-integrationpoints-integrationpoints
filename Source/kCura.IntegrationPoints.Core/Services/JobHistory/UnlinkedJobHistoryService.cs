@@ -21,7 +21,8 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
 			var request = new QueryRequest
 			{
-				Condition = $"NOT '{JobHistoryFields.IntegrationPoint}' ISSET"
+				Condition = $"NOT '{JobHistoryFields.IntegrationPoint}' ISSET",
+				Fields = JobHistoryFields.SlimFieldList
 			};
 			return rsapiService.RelativityObjectManager.Query<Data.JobHistory>(request).Select(x => x.ArtifactId).ToList();
 		}

@@ -37,7 +37,8 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		{
 			var request = new QueryRequest
 			{
-				Condition = $"'{JobHistoryFields.BatchInstance}' == '{batchInstance}'"
+				Condition = $"'{JobHistoryFields.BatchInstance}' == '{batchInstance}'",
+				Fields = JobHistoryFields.SlimFieldList
 			};
 			List<Data.JobHistory> jobHistories = _caseServiceContext.RsapiService.RelativityObjectManager.Query<Data.JobHistory>(request);
 			if (jobHistories.Count > 1)
@@ -54,7 +55,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			var request = new QueryRequest
 			{
 				Condition = $"'{ArtifactQueryFieldNames.ArtifactID}' in [{string.Join(",", jobHistoryArtifactIds.ToList())}]",
-				Fields = new Data.JobHistory().ToFieldList()
+				Fields = JobHistoryFields.SlimFieldList
 			};
 
 			IList<Data.JobHistory> jobHistories = _caseServiceContext.RsapiService.RelativityObjectManager.Query<Data.JobHistory>(request);
@@ -148,7 +149,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		{
 			return _caseServiceContext.RsapiService.RelativityObjectManager.Query<Data.JobHistory>(new QueryRequest()
 			{
-				Fields = new Data.JobHistory().ToFieldList()
+				Fields = JobHistoryFields.SlimFieldList
 			});
 		}
 

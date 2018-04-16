@@ -11,7 +11,8 @@ namespace kCura.IntegrationPoints.Data.QueryBuilders.Implementations
 			return new QueryRequest
 			{
 				Sorts = CreateSort(sortColumn, sortDescending),
-				Condition = CreateConditions(integrationPointArtifactIds)
+				Condition = CreateConditions(integrationPointArtifactIds),
+				Fields = JobHistoryFields.SlimFieldList
 			};
 		}
 
