@@ -1,10 +1,11 @@
-﻿using kCura.IntegrationPoint.Tests.Core;
+﻿using System.Collections.Generic;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories
 {
@@ -12,7 +13,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 	{
 		private IObjectTypeRepository _objectTypeRepository;
 		private IFieldRepository _fieldRepository;
-		private IRdoRepository _rdoRepository;
+		private IRelativityObjectManager _objectManager;
 
 		private SourceJobRepository _instance;
 
@@ -20,8 +21,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 		{
 			_objectTypeRepository = Substitute.For<IObjectTypeRepository>();
 			_fieldRepository = Substitute.For<IFieldRepository>();
-			_rdoRepository = Substitute.For<IRdoRepository>();
-			_instance = new SourceJobRepository(_objectTypeRepository, _fieldRepository, _rdoRepository);
+			_objectManager = Substitute.For<IRelativityObjectManager>();
+			_instance = new SourceJobRepository(_objectTypeRepository, _fieldRepository, _objectManager);
 		}
 
 		[Test]
@@ -51,14 +52,14 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 				ArtifactTypeId = 880951
 			};
 
-			_rdoRepository.Create(Arg.Any<RDO>()).Returns(expectedResult);
+			_objectManager.Create(Arg.Any<ObjectTypeRef>(), Arg.Any<RelativityObjectRef>(), Arg.Any<List<FieldRefValuePair>>()).Returns(expectedResult);
 
 			// ACT
 			var actualResult = _instance.Create(sourceJobDto);
 
 			// ASSERT
 			Assert.That(actualResult, Is.EqualTo(expectedResult));
-			_rdoRepository.Received(1).Create(Arg.Is<RDO>(x => x.ArtifactID == 0 && x.ArtifactTypeID == sourceJobDto.ArtifactTypeId));
+			_objectManager.Received(1).Create(Arg.Is<ObjectTypeRef>(x => x.ArtifactID == 0 && x.ArtifactTypeID == sourceJobDto.ArtifactTypeId), Arg.Any<RelativityObjectRef>(), Arg.Any<List<FieldRefValuePair>>());
 		}
 
 		[Test]

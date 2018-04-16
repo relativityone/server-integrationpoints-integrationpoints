@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
+using Relativity.Services.Objects.DataContracts;
 using Field = kCura.Relativity.Client.DTOs.Field;
+using FieldType = kCura.Relativity.Client.FieldType;
+using ObjectType = kCura.Relativity.Client.DTOs.ObjectType;
 
 namespace kCura.IntegrationPoints.Domain.Models
 {
@@ -20,50 +21,66 @@ namespace kCura.IntegrationPoints.Domain.Models
 		{
 		}
 
-		public SourceWorkspaceDTO(int artifactId, List<FieldValue> fieldValues) : this(fieldValues)
+		public SourceWorkspaceDTO(int artifactId, List<FieldValuePair> fieldValues) : this(fieldValues)
 		{
 			ArtifactId = artifactId;
 		}
 
-		public SourceWorkspaceDTO(List<FieldValue> fieldValues)
+		public SourceWorkspaceDTO(List<FieldValuePair> fieldValues)
 		{
-			foreach (FieldValue fieldValue in fieldValues)
+			foreach (FieldValuePair fieldValue in fieldValues)
 			{
-				if (fieldValue.Name == Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME)
+				if (fieldValue.Field.Name == Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME && fieldValue.Value != null)
 				{
-					SourceCaseArtifactId = fieldValue.ValueAsWholeNumber.Value;
+					SourceCaseArtifactId = Convert.ToInt32(fieldValue.Value);
 				}
-				else if (fieldValue.Name == Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME)
+				else if (fieldValue.Field.Name == Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME)
 				{
-					SourceCaseName = fieldValue.ValueAsFixedLengthText;
+					SourceCaseName = fieldValue.Value as string;
 				}
-				else if (fieldValue.Name == Constants.SOURCEWORKSPACE_NAME_FIELD_NAME)
+				else if (fieldValue.Field.Name == Constants.SOURCEWORKSPACE_NAME_FIELD_NAME)
 				{
-					Name = fieldValue.ValueAsFixedLengthText;
+					Name = fieldValue.Value as string;
 				}
-				else if (fieldValue.Name == Constants.SOURCEWORKSPACE_INSTANCENAME_FIELD_NAME)
+				else if (fieldValue.Field.Name == Constants.SOURCEWORKSPACE_INSTANCENAME_FIELD_NAME)
 				{
-					SourceInstanceName = fieldValue.ValueAsFixedLengthText;
+					SourceInstanceName = fieldValue.Value as string;
 				}
 			}
 		}
 
-		public RDO ToRdo()
-		{
-			var fields = new List<FieldValue>
-			{
-				new FieldValue(Constants.SOURCEWORKSPACE_NAME_FIELD_NAME, Name),
-				new FieldValue(Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME, SourceCaseArtifactId),
-				new FieldValue(Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME, SourceCaseName),
-				new FieldValue(Constants.SOURCEWORKSPACE_INSTANCENAME_FIELD_NAME, SourceInstanceName)
-			};
-			var rdo = new RDO(ArtifactId)
-			{
-				ArtifactTypeID = ArtifactTypeId,
-				Fields = fields
-			};
+		public List<FieldRefValuePair> FieldRefValuePairs => CreateFieldRefValuePairs();
 
-			return rdo;
+		public ObjectTypeRef ObjectTypeRef => new ObjectTypeRef
+		{
+			ArtifactTypeID = ArtifactTypeId
+		};
+
+		private List<FieldRefValuePair> CreateFieldRefValuePairs()
+		{
+			return new List<FieldRefValuePair>
+			{
+				new FieldRefValuePair
+				{
+					Field = new FieldRef { Name = Constants.SOURCEWORKSPACE_NAME_FIELD_NAME},
+					Value = Name
+				},
+				new FieldRefValuePair
+				{
+					Field = new FieldRef { Name = Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME},
+					Value = SourceCaseArtifactId
+				},
+				new FieldRefValuePair
+				{
+					Field = new FieldRef { Name = Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME},
+					Value = SourceCaseName
+				},
+				new FieldRefValuePair
+				{
+					Field = new FieldRef { Name = Constants.SOURCEWORKSPACE_INSTANCENAME_FIELD_NAME},
+					Value = SourceInstanceName
+				}
+			};
 		}
 
 		public static class Fields

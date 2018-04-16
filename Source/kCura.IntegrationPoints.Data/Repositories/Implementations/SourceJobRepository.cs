@@ -7,13 +7,13 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 	{
 		private readonly IObjectTypeRepository _objectTypeRepository;
 		private readonly IFieldRepository _fieldRepository;
-		private readonly IRdoRepository _rdoRepository;
+		private readonly IRelativityObjectManager _objectManager;
 
-		public SourceJobRepository(IObjectTypeRepository objectTypeRepository, IFieldRepository fieldRepository, IRdoRepository rdoRepository)
+		public SourceJobRepository(IObjectTypeRepository objectTypeRepository, IFieldRepository fieldRepository, IRelativityObjectManager objectManager)
 		{
 			_objectTypeRepository = objectTypeRepository;
 			_fieldRepository = fieldRepository;
-			_rdoRepository = rdoRepository;
+			_objectManager = objectManager;
 		}
 
 		public int CreateObjectType(int parentArtifactTypeId)
@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			try
 			{
-				return _rdoRepository.Create(sourceJobDto.ToRdo());
+				return _objectManager.Create(sourceJobDto.ObjectTypeRef, sourceJobDto.ParentObject, sourceJobDto.FieldRefValuePairs);
 			}
 			catch (Exception e)
 			{

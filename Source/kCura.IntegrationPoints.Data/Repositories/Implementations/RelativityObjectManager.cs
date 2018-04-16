@@ -40,48 +40,40 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_secretStoreHelper = secretStoreHelper;
 		}
 
-		private void SetParentArtifactId<T>(CreateRequest request, T rdo) where T : BaseRdo, new()
-		{
-			if (rdo.ParentArtifactId.HasValue)
-			{
-				request.ParentObject = new RelativityObjectRef
-				{
-					ArtifactID = rdo.ParentArtifactId.Value
-				};
-			}
-		}
-
 		public int Create<T>(T rdo, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new()
 		{
-			try
+			CreateRequest createRequest = new CreateRequest
 			{
-				using (var client = _servicesMgr.CreateProxy<IObjectManager>(executionIdentity))
-				{
-					CreateRequest createRequest = new CreateRequest()
-					{
-						ObjectType = rdo.ToObjectType(),
-						FieldValues = rdo.ToFieldValues().ToList()
-					};
+				ObjectType = rdo.ToObjectType(),
+				FieldValues = rdo.ToFieldValues().ToList()
+			};
 
-					SetParentArtifactId(createRequest, rdo);
-					_secretStoreHelper.SetEncryptedSecuredConfigurationForNewRdo(createRequest.FieldValues);
+			SetParentArtifactId(createRequest, rdo);
 
-					int artifactId = client.CreateAsync(_workspaceArtifactId, createRequest)
-							.GetAwaiter()
-							.GetResult()
-							.Object
-							.ArtifactID;
-					return artifactId;
-				}
-			}
-			catch (ServiceNotFoundException ex)
+			return Create(createRequest, executionIdentity);
+		}
+
+
+		public int Create(ObjectTypeRef objectType, List<FieldRefValuePair> fieldValues, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+		{
+			CreateRequest createRequest = new CreateRequest
 			{
-				throw LogServiceNotFoundException("CREATE", ex);
-			}
-			catch (Exception ex)
+				ObjectType = objectType,
+				FieldValues = fieldValues
+			};
+			return Create(createRequest, executionIdentity);
+		}
+
+		public int Create(ObjectTypeRef objectType, RelativityObjectRef parentObject, List<FieldRefValuePair> fieldValues, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+		{
+			CreateRequest createRequest = new CreateRequest
 			{
-				throw LogObjectManagerException(rdo, "create", ex);
-			}
+				ObjectType = objectType,
+				ParentObject = parentObject,
+				FieldValues = fieldValues
+			};
+			return Create(createRequest, executionIdentity);
+
 		}
 
 		public T Read<T>(int artifactId, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new()
@@ -104,87 +96,30 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return SendReadRequest<T>(request, true, executionIdentity);
 		}
 
-		private T Read<T>(int artifactId, bool decryptSecuredConfiguration, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new()
+		public bool Update(int artifactId, List<FieldRefValuePair> fieldsValues,
+			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
 		{
-			ReadRequest request = new ReadRequest()
+			var request = new UpdateRequest
 			{
 				Object = new RelativityObjectRef { ArtifactID = artifactId },
-				Fields = new T().ToFieldList()
+				FieldValues = fieldsValues
 			};
-			return SendReadRequest<T>(request, decryptSecuredConfiguration, executionIdentity);
-		}
 
-		private T SendReadRequest<T>(ReadRequest request, bool decryptSecuredConfiguration, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new()
-		{
-			try
-			{
-				using (var client = _servicesMgr.CreateProxy<IObjectManager>(executionIdentity))
-				{
-					var result = client.ReadAsync(_workspaceArtifactId, request)
-						.GetAwaiter()
-						.GetResult();
-					var rdo = result.Object.ToRDO<T>();
-					return decryptSecuredConfiguration ? SetDecryptedSecuredConfiguration(rdo) : rdo;
-				}
-			}
-			catch (ServiceNotFoundException ex)
-			{
-				throw LogServiceNotFoundException("READ", ex);
-			}
-			catch (Exception ex)
-			{
-				throw LogObjectManagerException(new T(), "read", ex);
-			}
-		}
-
-		private T SetDecryptedSecuredConfiguration<T>(T rdo) where T : BaseRdo, new()
-		{
-			if (rdo is IntegrationPoint && rdo.HasField(new Guid(IntegrationPointFieldGuids.SecuredConfiguration)))
-			{
-				var secretId = rdo.GetField<string>(new Guid(IntegrationPointFieldGuids.SecuredConfiguration));
-				if (!String.IsNullOrWhiteSpace(secretId))
-				{
-					var decryptedSecret = _secretStoreHelper.DecryptSecuredConfiguration(secretId);
-					if (!String.IsNullOrWhiteSpace(decryptedSecret))
-					{
-						rdo.SetField<string>(new Guid(IntegrationPointFieldGuids.SecuredConfiguration), decryptedSecret);
-						return rdo;
-					}
-				}
-			}
-			return rdo;
+			string rdoType = GetRdoType(null);
+			return SendUpdateRequest(executionIdentity, request, rdoType);
 		}
 
 		public bool Update<T>(T rdo, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new()
 		{
-			try
+			var request = new UpdateRequest
 			{
-				using (var client = _servicesMgr.CreateProxy<IObjectManager>(executionIdentity))
-				{
-					UpdateRequest request = new UpdateRequest()
-					{
-						Object = rdo.ToObjectRef(),
-						FieldValues = rdo.ToFieldValues().ToList()
-					};
-					if (rdo is IntegrationPoint)
-					{
-						var existingRdo = Read<IntegrationPoint>(rdo.ArtifactId, false, executionIdentity);
-						_secretStoreHelper.SetEncryptedSecuredConfigurationForExistingRdo(existingRdo, request.FieldValues);
-					}
-					var result = client.UpdateAsync(_workspaceArtifactId, request)
-						.GetAwaiter()
-						.GetResult();
-					return !result.EventHandlerStatuses.Any(x => !x.Success);
-				}
-			}
-			catch (ServiceNotFoundException ex)
-			{
-				throw LogServiceNotFoundException("UPDATE", ex);
-			}
-			catch (Exception ex)
-			{
-				throw LogObjectManagerException(rdo, "update", ex);
-			}
+				Object = rdo.ToObjectRef(),
+				FieldValues = rdo.ToFieldValues().ToList()
+			};
+			SetEncryptedConfigurationForUpdate(rdo, executionIdentity, request);
+
+			string rdoType = GetRdoType(rdo);
+			return SendUpdateRequest(executionIdentity, request, rdoType);
 		}
 
 		public bool Delete<T>(T rdo, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new()
@@ -233,7 +168,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 			catch (Exception ex)
 			{
-				throw LogObjectManagerException(null, "delete", ex);
+				throw LogObjectManagerException((BaseRdo)null, "delete", ex);
 			}
 		}
 
@@ -270,24 +205,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			catch (Exception ex)
 			{
 				throw LogObjectManagerException(new T(), q, ex);
-			}
-		}
-
-		private static void BootstrapQuery<T>(QueryRequest q, bool noFields) where T : BaseRdo, new()
-		{
-			T rdo = new T();
-			q.ObjectType = rdo.ToObjectType();
-			if (noFields)
-			{
-				if (q.Fields.Any())
-				{
-					throw new IntegrationPointsException("Fields list not empty while trying to execute query with noFields.");
-				}
-				q.Fields = new FieldRef[0];
-			}
-			else if (!q.Fields.Any())
-			{
-				q.Fields = rdo.ToFieldList();
 			}
 		}
 
@@ -446,7 +363,143 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				throw LogObjectManagerException(null, q, ex);
 			}
+		}
 
+		private static void BootstrapQuery<T>(QueryRequest q, bool noFields) where T : BaseRdo, new()
+		{
+			T rdo = new T();
+			q.ObjectType = rdo.ToObjectType();
+			if (noFields)
+			{
+				if (q.Fields.Any())
+				{
+					throw new IntegrationPointsException("Fields list not empty while trying to execute query with noFields.");
+				}
+				q.Fields = new FieldRef[0];
+			}
+			else if (!q.Fields.Any())
+			{
+				q.Fields = rdo.ToFieldList();
+			}
+		}
+
+		private int Create(CreateRequest createRequest, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+		{
+			try
+			{
+				using (var client = _servicesMgr.CreateProxy<IObjectManager>(executionIdentity))
+				{
+					_secretStoreHelper.SetEncryptedSecuredConfigurationForNewRdo(createRequest.FieldValues);
+
+					int artifactId = client.CreateAsync(_workspaceArtifactId, createRequest)
+						.GetAwaiter()
+						.GetResult()
+						.Object
+						.ArtifactID;
+					return artifactId;
+				}
+			}
+			catch (ServiceNotFoundException ex)
+			{
+				throw LogServiceNotFoundException("CREATE", ex);
+			}
+			catch (Exception ex)
+			{
+				throw LogObjectManagerException("create", "[RelativityObject]", ex);
+			}
+		}
+
+		private void SetParentArtifactId<T>(CreateRequest request, T rdo) where T : BaseRdo, new()
+		{
+			if (rdo.ParentArtifactId.HasValue)
+			{
+				request.ParentObject = new RelativityObjectRef
+				{
+					ArtifactID = rdo.ParentArtifactId.Value
+				};
+			}
+		}
+
+		private T Read<T>(int artifactId, bool decryptSecuredConfiguration, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new()
+		{
+			ReadRequest request = new ReadRequest()
+			{
+				Object = new RelativityObjectRef { ArtifactID = artifactId },
+				Fields = new T().ToFieldList()
+			};
+			return SendReadRequest<T>(request, decryptSecuredConfiguration, executionIdentity);
+		}
+
+		private T SendReadRequest<T>(ReadRequest request, bool decryptSecuredConfiguration, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new()
+		{
+			try
+			{
+				using (var client = _servicesMgr.CreateProxy<IObjectManager>(executionIdentity))
+				{
+					ReadResult result = client.ReadAsync(_workspaceArtifactId, request)
+						.GetAwaiter()
+						.GetResult();
+					var rdo = result.Object.ToRDO<T>();
+					return decryptSecuredConfiguration ? SetDecryptedSecuredConfiguration(rdo) : rdo;
+				}
+			}
+			catch (ServiceNotFoundException ex)
+			{
+				throw LogServiceNotFoundException("READ", ex);
+			}
+			catch (Exception ex)
+			{
+				throw LogObjectManagerException(new T(), "read", ex);
+			}
+		}
+
+		private bool SendUpdateRequest(ExecutionIdentity executionIdentity, UpdateRequest request, string rdoType)
+		{
+			try
+			{
+				using (var client = _servicesMgr.CreateProxy<IObjectManager>(executionIdentity))
+				{
+					var result = client.UpdateAsync(_workspaceArtifactId, request)
+						.GetAwaiter()
+						.GetResult();
+					return !result.EventHandlerStatuses.Any(x => !x.Success);
+				}
+			}
+			catch (ServiceNotFoundException ex)
+			{
+				throw LogServiceNotFoundException("UPDATE", ex);
+			}
+			catch (Exception ex)
+			{
+				throw LogObjectManagerException("UPDATE", rdoType, ex);
+			}
+		}
+
+		private void SetEncryptedConfigurationForUpdate<T>(T rdo, ExecutionIdentity executionIdentity, UpdateRequest request) where T : BaseRdo, new()
+		{
+			if (rdo is IntegrationPoint)
+			{
+				var existingRdo = Read<IntegrationPoint>(rdo.ArtifactId, false, executionIdentity);
+				_secretStoreHelper.SetEncryptedSecuredConfigurationForExistingRdo(existingRdo, request.FieldValues);
+			}
+		}
+
+		private T SetDecryptedSecuredConfiguration<T>(T rdo) where T : BaseRdo, new()
+		{
+			if (rdo is IntegrationPoint && rdo.HasField(new Guid(IntegrationPointFieldGuids.SecuredConfiguration)))
+			{
+				var secretId = rdo.GetField<string>(new Guid(IntegrationPointFieldGuids.SecuredConfiguration));
+				if (!String.IsNullOrWhiteSpace(secretId))
+				{
+					var decryptedSecret = _secretStoreHelper.DecryptSecuredConfiguration(secretId);
+					if (!String.IsNullOrWhiteSpace(decryptedSecret))
+					{
+						rdo.SetField<string>(new Guid(IntegrationPointFieldGuids.SecuredConfiguration), decryptedSecret);
+						return rdo;
+					}
+				}
+			}
+			return rdo;
 		}
 
 		private IntegrationPointsException LogServiceNotFoundException(string operationName, ServiceNotFoundException ex)
@@ -460,16 +513,22 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			};
 		}
 
-		private IntegrationPointsException LogObjectManagerException(BaseRdo rdo, string operationName, Exception ex)
+		private IntegrationPointsException LogObjectManagerException(string operationName, string typeName, Exception ex)
 		{
-			string rdoType = rdo?.GetType().Name ?? "[UnknownObjectType]";
-			string message = $"Cannot {operationName} object of type {rdoType} with ObjectManager (Workspace: {_workspaceArtifactId})";
-			_logger.LogError(ex, "Cannot {operationName} object of type {rdoType} with ObjectManager (Workspace: {_workspaceArtifactId})", operationName, rdoType, _workspaceArtifactId);
+			string message = $"Cannot {operationName} object of type {typeName} with ObjectManager (Workspace: {_workspaceArtifactId})";
+			_logger.LogError(ex, "Cannot {operationName} object of type {rdoType} with ObjectManager (Workspace: {_workspaceArtifactId})", operationName, typeName, _workspaceArtifactId);
 			return new IntegrationPointsException(message, ex)
 			{
 				ShouldAddToErrorsTab = true,
 				ExceptionSource = IntegrationPointsExceptionSource.KEPLER
 			};
+		}
+
+
+		private IntegrationPointsException LogObjectManagerException(BaseRdo rdo, string operationName, Exception ex)
+		{
+			string rdoType = GetRdoType(rdo);
+			return LogObjectManagerException(operationName, rdoType, ex);
 		}
 
 		private IntegrationPointsException LogObjectManagerException(BaseRdo rdo, QueryRequest q, Exception ex)
@@ -493,6 +552,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			var fieldsAsString = queryRequest?.Fields?.Select(x => $"({x.Name}: {x.Guid})");
 			return string.Join(", ", fieldsAsString);
+		}
+
+		private string GetRdoType(BaseRdo rdo)
+		{
+			return rdo?.GetType().Name ?? "[UnknownObjectType]";
 		}
 	}
 }

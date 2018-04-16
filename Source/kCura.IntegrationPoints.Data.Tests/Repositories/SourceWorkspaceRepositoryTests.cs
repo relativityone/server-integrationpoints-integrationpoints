@@ -4,11 +4,11 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories
 {
@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 	{
 		private IObjectTypeRepository _objectTypeRepository;
 		private IFieldRepository _fieldRepository;
-		private IRdoRepository _rdoRepository;
+		private IRelativityObjectManager _relativityObjectManager;
 		private IHelper _helper;
 
 		private IAPILog _logApi;
@@ -27,11 +27,11 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 		{
 			_objectTypeRepository = Substitute.For<IObjectTypeRepository>();
 			_fieldRepository = Substitute.For<IFieldRepository>();
-			_rdoRepository = Substitute.For<IRdoRepository>();
+			_relativityObjectManager = Substitute.For<IRelativityObjectManager>();
 			_helper = Substitute.For<IHelper>();
 			_logApi = Substitute.For<IAPILog>();
 
-			_instance = new SourceWorkspaceRepository(_helper, _objectTypeRepository, _fieldRepository, _rdoRepository);
+			_instance = new SourceWorkspaceRepository(_helper, _objectTypeRepository, _fieldRepository, _relativityObjectManager);
 		}
 
 		[Test]
@@ -61,14 +61,14 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 				ArtifactTypeId = 339125
 			};
 
-			_rdoRepository.Create(Arg.Any<RDO>()).Returns(expectedResult);
+			_relativityObjectManager.Create(Arg.Any<ObjectTypeRef>(), Arg.Any<List<FieldRefValuePair>>()).Returns(expectedResult);
 
 			// ACT
 			var actualResult = _instance.Create(sourceWorkspaceDto);
 
 			// ASSERT
 			Assert.That(actualResult, Is.EqualTo(expectedResult));
-			_rdoRepository.Received(1).Create(Arg.Is<RDO>(x => x.ArtifactID == 0 && x.ArtifactTypeID == sourceWorkspaceDto.ArtifactTypeId));
+			_relativityObjectManager.Received(1).Create(Arg.Is<ObjectTypeRef>(x => x.ArtifactID == 0 && x.ArtifactTypeID == sourceWorkspaceDto.ArtifactTypeId), Arg.Any<List<FieldRefValuePair>>());
 		}
 
 		[Test]
@@ -84,7 +84,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 			_instance.Update(sourceWorkspaceDto);
 
 			// ASSERT
-			_rdoRepository.Received(1).Update(Arg.Is<RDO>(x => x.ArtifactID == sourceWorkspaceDto.ArtifactId && x.ArtifactTypeID == sourceWorkspaceDto.ArtifactTypeId));
+			_relativityObjectManager.Received(1).Update(sourceWorkspaceDto.ArtifactId, Arg.Any<List<FieldRefValuePair>>());
 		}
 
 		[Test]
@@ -107,9 +107,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 		[Test]
 		public void ItShouldRetrieveForSourceWorkspaceId()
 		{
-			var rdo = new RDO(348296)
+			var rdo = new RelativityObject
 			{
-				Fields = new List<FieldValue>()
+				ArtifactID = 348296,
+				FieldValues = new List<FieldValuePair>()
 			};
 
 			var expectedResult = new SourceWorkspaceDTO
@@ -117,25 +118,36 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 				ArtifactId = rdo.ArtifactID
 			};
 
-			_rdoRepository.QuerySingle(Arg.Any<Query<RDO>>()).Returns(rdo);
+			_relativityObjectManager.Query(Arg.Any<QueryRequest>()).Returns(new List<RelativityObject> { rdo });
 
 			// ACT
 			var actualResult = _instance.RetrieveForSourceWorkspaceId(156272, "fed_name_503", 541);
 
 			// ASSERT
 			Assert.That(actualResult.ArtifactId, Is.EqualTo(expectedResult.ArtifactId));
-			_rdoRepository.Received(1)
-				.QuerySingle(
-					Arg.Is<Query<RDO>>(x =>
-						x.ArtifactTypeGuid == SourceWorkspaceDTO.ObjectTypeGuid
-						&& x.Fields[0].Name == "*"
+			_relativityObjectManager.Received(1)
+				.Query(
+					Arg.Is<QueryRequest>(x =>
+						x.ObjectType.Guid == SourceWorkspaceDTO.ObjectTypeGuid
 					));
+		}
+
+		[Test]
+		public void ItShouldReturnNull_WhenObjectManager_ReturnedNull()
+		{
+			_relativityObjectManager.Query(Arg.Any<QueryRequest>()).Returns((List < RelativityObject > )null);
+
+			// ACT
+			var actualResult = _instance.RetrieveForSourceWorkspaceId(156272, "fed_name_503", 541);
+
+			// ASSERT
+			Assert.IsNull(actualResult);
 		}
 
 		[Test]
 		public void ItShouldThrowExceptionWhenRetrieveForSourceWorkspaceId()
 		{
-			_rdoRepository.QuerySingle(Arg.Any<Query<RDO>>()).Throws(new Exception());
+			_relativityObjectManager.Query(Arg.Any<QueryRequest>()).Throws(new Exception());
 
 			// ACT
 			Assert.Throws<Exception>(() => _instance.RetrieveForSourceWorkspaceId(156272, "fed_name_503", 541));

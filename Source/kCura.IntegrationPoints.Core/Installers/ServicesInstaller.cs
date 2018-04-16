@@ -212,16 +212,6 @@ namespace kCura.IntegrationPoints.Core.Installers
 				return new TokenCredentialProvider(authProvider, tokenGenerator, helper);
 			}).LifestyleTransient());
 
-			container.Register(Component.For<IRdoRepository>().ImplementedBy<RsapiRdoRepository>().UsingFactoryMethod(
-				kernel =>
-				{
-					var helper = kernel.Resolve<IHelper>();
-					var contextHelper = kernel.Resolve<IServiceContextHelper>();
-					var rsapiClientFactory = kernel.Resolve<IRsapiClientWithWorkspaceFactory>();
-
-					return new RsapiRdoRepository(helper, contextHelper.WorkspaceID, rsapiClientFactory);
-				}).LifestyleTransient());
-
 			container.Register(Component.For<ITokenProviderFactoryFactory>().ImplementedBy<TokenProviderFactoryFactory>()
 				.LifestyleSingleton());
 

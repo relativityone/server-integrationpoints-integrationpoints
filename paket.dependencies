@@ -13,7 +13,8 @@ nuget Relativity.CustomPages 9.6.75.174
 nuget Relativity.Data 9.6.75.174 
 nuget Relativity.ImportExport 9.6.75.174 
 nuget Relativity.Telemetry.Services.Interface 9.6.75.174 
-nuget RelativityCore 9.6.75.174  
+nuget RelativityCore 9.6.75.174
+nuget Relativity.Services.Interfaces 9.6.75.174
 
 //Other Relativity packages
 nuget kCura.Apps.Common.Config 2.1.3

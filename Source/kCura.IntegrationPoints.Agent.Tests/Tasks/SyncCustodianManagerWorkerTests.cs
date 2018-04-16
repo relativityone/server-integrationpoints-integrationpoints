@@ -72,7 +72,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 		private ISerializer _jsonSerializer;
 		private int _workspaceArtifactId;
-		private IRdoRepository _rdoRepository;
 		private IFieldQueryRepository _fieldQueryRepository;
 
 		[OneTimeSetUp]
@@ -103,7 +102,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_jobStopManager = Substitute.For<IJobStopManager>();
 			_dataSynchronizer = Substitute.For<IDataSynchronizer>();
 
-			_rdoRepository = Substitute.For<IRdoRepository>();
 			_fieldQueryRepository = Substitute.For<IFieldQueryRepository>();
 
 			var helperFactory = Substitute.For<IHelperFactory>();

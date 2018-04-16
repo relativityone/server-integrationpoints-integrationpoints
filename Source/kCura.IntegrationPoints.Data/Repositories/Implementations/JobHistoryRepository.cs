@@ -68,6 +68,13 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			};
 		}
 
+		public string GetJobHistoryName(int jobHistoryArtifactId)
+		{
+			IEnumerable<Guid> fieldsToRetrieve = new[] { Guid.Parse(JobHistoryFieldGuids.Name) };
+			JobHistory jobHistory = _relativityObjectManager.Read<JobHistory>(jobHistoryArtifactId, fieldsToRetrieve);
+			return jobHistory.Name;
+		}
+
 		private List<JobHistory> GetStoppableJobHistoriesForIntegrationPoint(int integrationPointArtifactId)
 		{
 			string integrationPointCondition = CreateIntegrationPointCondition(integrationPointArtifactId);
