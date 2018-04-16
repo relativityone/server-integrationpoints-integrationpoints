@@ -1,20 +1,21 @@
 ﻿using System;
 using System.Linq;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
 	public class CustodianService
 	{
-		private readonly IRsapiRdoQuery _rdoQuery;
-		public CustodianService(IRsapiRdoQuery rdoQuery)
+		private readonly IObjectTypeRepository _objectTypeRepository;
+		public CustodianService(IObjectTypeRepository objectTypeRepository)
 		{
-			_rdoQuery = rdoQuery;
+			_objectTypeRepository = objectTypeRepository;
 		}
 
 		public bool IsCustodian(int id)
 		{
-			var guids = _rdoQuery.GetObjectType(id).Guids;
+			var guids = _objectTypeRepository.GetObjectType(id).Guids;
 			return guids.Any(x => x.Equals(Guid.Parse(GlobalConst.Custodian)));
 		}
 	}

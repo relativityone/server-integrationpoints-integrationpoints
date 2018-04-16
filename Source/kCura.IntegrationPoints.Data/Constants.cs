@@ -32,6 +32,7 @@ namespace kCura.IntegrationPoints.Data
 
 	public class Constants
 	{
+		public const int NON_SYSTEM_FIELD_START_ID = 1000000;
 		public const string OBJECT_IDENTIFIER_APPENDAGE_TEXT = " [Object Identifier]";
 		public const string TEMPORARY_DOC_TABLE_SOURCE_OBJECTS = "IntegrationPoint_Relativity_DestinationWorkspace_JobHistory";
 		public const string TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_START = "IntegrationPoint_Relativity_JobHistoryErrors_JobStart";

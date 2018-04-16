@@ -51,8 +51,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			return Create(createRequest, executionIdentity);
 		}
-
-
+		
 		public int Create(ObjectTypeRef objectType, List<FieldRefValuePair> fieldValues, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
 		{
 			CreateRequest createRequest = new CreateRequest

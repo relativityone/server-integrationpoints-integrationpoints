@@ -7,6 +7,7 @@ using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
@@ -19,7 +20,6 @@ using Relativity.API;
 using Artifact = kCura.Relativity.Client.Artifact;
 using Assert = NUnit.Framework.Assert;
 using Constants = kCura.IntegrationPoints.Domain.Constants;
-using ObjectType = kCura.Relativity.Client.DTOs.ObjectType;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 {
@@ -43,15 +43,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		public void GetRightCountOfFieldsWithSystemAndArtifactFeildsRemoved()
 		{
 			//ARRANGE
-			var client = NSubstitute.Substitute.For<IRSAPIClient>();
+			var client = Substitute.For<IRSAPIClient>();
 			var helper = Substitute.For<IHelper>();
-			var fieldMock = NSubstitute.Substitute.For<RelativityFieldQuery>(client, helper);
-			var rdoQuery = NSubstitute.Substitute.For<RSAPIRdoQuery>(client);
-			var jobFactory = NSubstitute.Substitute.For<IImportJobFactory>();
-			rdoQuery.GetObjectType(Arg.Any<int>()).Returns(new ObjectType
+			var fieldMock = Substitute.For<RelativityFieldQuery>(client, helper);
+			var rdoQuery = Substitute.For<IObjectTypeRepository>();
+			var jobFactory = Substitute.For<IImportJobFactory>();
+			rdoQuery.GetObjectType(Arg.Any<int>()).Returns(new ObjectTypeDTO
 			{
-				ArtifactTypeID = 1,
-				DescriptorArtifactTypeID = 1,
+				DescriptorArtifactTypeId = 1,
 				Name = "Document"
 			});
 			//
@@ -79,15 +78,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		public void GetRightDataInFieldsWithSystemAndArtifactFeildsRemoved()
 		{
 			//ARRANGE
-			var client = NSubstitute.Substitute.For<IRSAPIClient>();
+			var client = Substitute.For<IRSAPIClient>();
 			var helper = Substitute.For<IHelper>();
-			var fieldMock = NSubstitute.Substitute.For<RelativityFieldQuery>(client, helper);
-			var rdoQuery = NSubstitute.Substitute.For<RSAPIRdoQuery>(client);
-			var jobFactory = NSubstitute.Substitute.For<IImportJobFactory>();
-			rdoQuery.GetObjectType(Arg.Any<int>()).Returns(new ObjectType
+			var fieldMock = Substitute.For<RelativityFieldQuery>(client, helper);
+			var rdoQuery = Substitute.For<IObjectTypeRepository>();
+			var jobFactory = Substitute.For<IImportJobFactory>();
+			rdoQuery.GetObjectType(Arg.Any<int>()).Returns(new ObjectTypeDTO
 			{
-				ArtifactTypeID = 1,
-				DescriptorArtifactTypeID = 1,
+				DescriptorArtifactTypeId = 1,
 				Name = "Document"
 			});
 			var options = new ImportSettings { ArtifactTypeId = 1268820 };
@@ -125,16 +123,15 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		public void GetRightCountOfFields()
 		{
 			//ARRANGE
-			var client = NSubstitute.Substitute.For<IRSAPIClient>();
+			var client = Substitute.For<IRSAPIClient>();
 			var helper = Substitute.For<IHelper>();
-			var fieldMock = NSubstitute.Substitute.For<RelativityFieldQuery>(client, helper);
-			var jobFactory = NSubstitute.Substitute.For<IImportJobFactory>();
+			var fieldMock = Substitute.For<RelativityFieldQuery>(client, helper);
+			var jobFactory = Substitute.For<IImportJobFactory>();
 			//
-			var rdoQuery = NSubstitute.Substitute.For<RSAPIRdoQuery>(client);
-			rdoQuery.GetObjectType(Arg.Any<int>()).Returns(new ObjectType
+			var rdoQuery = Substitute.For<IObjectTypeRepository>();
+			rdoQuery.GetObjectType(Arg.Any<int>()).Returns(new ObjectTypeDTO
 			{
-				ArtifactTypeID = 1,
-				DescriptorArtifactTypeID = 1,
+				DescriptorArtifactTypeId = 1,
 				Name = "Document"
 			});
 			var options = new ImportSettings();
@@ -162,15 +159,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		public void GetRightDataInFields()
 		{
 			//ARRANGEk
-			var client = NSubstitute.Substitute.For<IRSAPIClient>();
+			var client = Substitute.For<IRSAPIClient>();
 			var helper = Substitute.For<IHelper>();
-			var fieldMock = NSubstitute.Substitute.For<RelativityFieldQuery>(client, helper);
-			var rdoQuery = NSubstitute.Substitute.For<RSAPIRdoQuery>(client);
-			var jobFactory = NSubstitute.Substitute.For<IImportJobFactory>();
-			rdoQuery.GetObjectType(Arg.Any<int>()).Returns(new ObjectType
+			var fieldMock = Substitute.For<RelativityFieldQuery>(client, helper);
+			var rdoQuery = Substitute.For<IObjectTypeRepository>();
+			var jobFactory = Substitute.For<IImportJobFactory>();
+			rdoQuery.GetObjectType(Arg.Any<int>()).Returns(new ObjectTypeDTO
 			{
-				ArtifactTypeID = 1,
-				DescriptorArtifactTypeID = 1,
+				DescriptorArtifactTypeId = 1,
 				Name = "Document"
 			});
 			var options = new ImportSettings { ArtifactTypeId = 1268820 };

@@ -4,10 +4,9 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
-using kCura.Relativity.Client;
+using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NUnit.Framework;
-using ObjectType = kCura.Relativity.Client.DTOs.ObjectType;
 
 namespace kCura.IntegrationPoints.Core.Tests
 {
@@ -17,54 +16,54 @@ namespace kCura.IntegrationPoints.Core.Tests
 		[SetUp]
 		public override void SetUp()
 		{
-			
 		}
 
 		[Test]
 		public void rdoFilterRemovesAllHistoryAndEvents()
 		{
-			//ARRANGEk
-			var client = NSubstitute.Substitute.For<IRSAPIClient>();
-			var rdoMock = NSubstitute.Substitute.For<RSAPIRdoQuery>(client);
-			var context = NSubstitute.Substitute.For<ICaseServiceContext>();
+			//ARRANGE
+			var rdoMock = Substitute.For<IObjectTypeQuery>();
+			var context = Substitute.For<ICaseServiceContext>();
 			context.WorkspaceUserID = 3;
 			var rdoFilter = new RdoFilter(rdoMock, context);
-			rdoMock.GetAllRdo().Returns(new List<ObjectType>
+			rdoMock.GetAllTypes(Arg.Any<int>()).Returns(new List<ObjectTypeDTO>
 			{
-				 new ObjectType
+				new ObjectTypeDTO
 				{
 					Name = "History"
 				},
-				 new ObjectType
+				new ObjectTypeDTO
 				{
 					Name = "Document"
 				},
-				 new ObjectType
+				new ObjectTypeDTO
 				{
 					Name = "Event Handler"
 				},
-			new ObjectType
+				new ObjectTypeDTO
 				{
 				  Name =  "Event Viewer"
 				},
-				
+
 			});
-			// act 
-			var expected = new List<ObjectType>
+
+			var expected = new List<ObjectTypeDTO>
 			{
-				new ObjectType
+				new ObjectTypeDTO
 				{
 					Name = "Document"
 				},
-				new ObjectType
+				new ObjectTypeDTO
 				{
 					Name = "Event Viewer"
 				}
 			};
 
+			// act 
 			var actual = rdoFilter.GetAllViewableRdos().ToList();
 
-			Assert.AreEqual(expected.Count, actual.Count());
+			// assert 
+			Assert.AreEqual(expected.Count, actual.Count);
 			for (int i = 0; i < expected.Count; i++)
 			{
 				if (expected[i].Name != actual[i].Name)
@@ -72,9 +71,6 @@ namespace kCura.IntegrationPoints.Core.Tests
 					Assert.Fail("Values not same");
 				}
 			}
-
-			// assert 
-
 		}
 	}
 }

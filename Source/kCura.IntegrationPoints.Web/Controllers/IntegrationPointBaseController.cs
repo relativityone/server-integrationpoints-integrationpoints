@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net;
 using System.Web.Mvc;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.Tabs;
@@ -8,20 +7,18 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.LDAPProvider;
 using kCura.IntegrationPoints.Web.Models;
-using Relativity.API;
-using Relativity.CustomPages;
 
 namespace kCura.IntegrationPoints.Web.Controllers
 {
 	public abstract class IntegrationPointBaseController : BaseController
 	{
-		private readonly IRsapiRdoQuery _rdoQuery;
+		private readonly IObjectTypeRepository _objectTypeRepository;
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly ITabService _tabService;
 
-	    protected IntegrationPointBaseController(IRsapiRdoQuery rdoQuery, IRepositoryFactory repositoryFactory, ITabService tabService, ILDAPServiceFactory ldapServiceFactory)
+		protected IntegrationPointBaseController(IObjectTypeRepository objectTypeRepository, IRepositoryFactory repositoryFactory, ITabService tabService, ILDAPServiceFactory ldapServiceFactory)
 		{
-			_rdoQuery = rdoQuery;
+			_objectTypeRepository = objectTypeRepository;
 			_repositoryFactory = repositoryFactory;
 			_tabService = tabService;
 		}
@@ -32,9 +29,9 @@ namespace kCura.IntegrationPoints.Web.Controllers
 
 		public ActionResult Edit(int? artifactId)
 		{
-			var objectTypeId = _rdoQuery.GetObjectTypeID(ObjectType);
+			var objectTypeId = _objectTypeRepository.GetObjectTypeID(ObjectType);
 			var tabID = _tabService.GetTabId(objectTypeId);
-			var objectID = _rdoQuery.GetObjectType(objectTypeId).ParentArtifact.ArtifactID;
+			var objectID = _objectTypeRepository.GetObjectType(objectTypeId).ParentArtifactId;
 			var previousURL = "List.aspx?AppID=" + SessionService.WorkspaceID + "&ArtifactID=" + objectID + "&ArtifactTypeID=" + objectTypeId + "&SelectedTab=" + tabID;
 			if (HasPermissions(artifactId))
 			{

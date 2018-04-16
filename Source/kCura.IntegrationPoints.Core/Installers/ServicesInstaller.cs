@@ -71,11 +71,12 @@ namespace kCura.IntegrationPoints.Core.Installers
 				return new SerializerWithLogging(serializer, logger);
 			}).LifestyleSingleton());
 
-			container.Register(Component.For<IObjectTypeRepository>().ImplementedBy<RsapiObjectTypeRepository>().UsingFactoryMethod(x =>
+			container.Register(Component.For<IObjectTypeRepository>().ImplementedBy<ObjectTypeRepository>().UsingFactoryMethod(x =>
 			{
 				IServiceContextHelper contextHelper = x.Resolve<IServiceContextHelper>();
 				IHelper helper = x.Resolve<IHelper>();
-				return new RsapiObjectTypeRepository(contextHelper.WorkspaceID, helper.GetServicesManager(), helper);
+				IRelativityObjectManager objectManager = x.Resolve<IRelativityObjectManager>();
+				return new ObjectTypeRepository(contextHelper.WorkspaceID, helper.GetServicesManager(), helper, objectManager);
 			}).LifestyleTransient());
 
 			container.Register(Component.For<IContextContainerFactory>().ImplementedBy<ContextContainerFactory>().LifestyleTransient());

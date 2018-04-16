@@ -104,14 +104,18 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IObjectTypeRepository GetObjectTypeRepository(int workspaceArtifactId)
 		{
-			IObjectTypeRepository repository = new RsapiObjectTypeRepository(workspaceArtifactId, _servicesMgr, _helper);
+			IRelativityObjectManager relativityObjectManager =
+				CreateRelativityObjectManager(workspaceArtifactId);
+			IObjectTypeRepository repository = new ObjectTypeRepository(workspaceArtifactId, _servicesMgr, _helper, relativityObjectManager);
 
 			return repository;
 		}
 
 		public IObjectTypeRepository GetDestinationObjectTypeRepository(int workspaceArtifactId)
 		{
-			return new RsapiObjectTypeRepository(workspaceArtifactId, _servicesMgr, _helper);
+			IRelativityObjectManager relativityObjectManager =
+				CreateRelativityObjectManager(workspaceArtifactId);
+			return new ObjectTypeRepository(workspaceArtifactId, _servicesMgr, _helper, relativityObjectManager);
 		}
 
 		public IPermissionRepository GetPermissionRepository(int workspaceArtifactId)

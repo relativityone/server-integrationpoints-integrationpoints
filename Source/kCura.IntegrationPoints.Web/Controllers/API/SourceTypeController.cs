@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.SourceTypes;
-using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Models;
 using Relativity.API;
@@ -17,16 +17,16 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 	{
 		private readonly ISourceTypeFactory _factory;
 		private readonly ICaseServiceContext _serviceContext;
-		private readonly IRsapiRdoQuery _rdoQuery;
+		private readonly IObjectTypeRepository _objectTypeRepository;
 		private readonly IAPILog _apiLog;
 
 		public SourceTypeController(ISourceTypeFactory factory,
 			ICaseServiceContext serviceContext,
-			IRsapiRdoQuery objectTypeQuery,
+			IObjectTypeRepository objectTypeRepository,
 			ICPHelper helper)
 		{
 			_factory = factory;
-			_rdoQuery = objectTypeQuery;
+			_objectTypeRepository = objectTypeRepository;
 			_serviceContext = serviceContext;
 			_apiLog = helper.GetLoggerFactory().GetLogger();
 		}
@@ -36,8 +36,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		public HttpResponseMessage Get()
 		{
 			_apiLog.LogDebug("Retriving Source Provider Types...");
-			Dictionary<Guid, int> rdoTypesCache = _rdoQuery.GetRdoGuidToArtifactIdMap(_serviceContext.WorkspaceUserID);
-			List<SourceTypeModel> list = _factory.GetSourceTypes().Select(x => new SourceTypeModel()
+			Dictionary<Guid, int> rdoTypesCache = _objectTypeRepository.GetRdoGuidToArtifactIdMap(_serviceContext.WorkspaceUserID);
+			List<SourceTypeModel> list = _factory.GetSourceTypes().Select(x => new SourceTypeModel
 			{
 				name = x.Name,
 				id = x.ArtifactID,

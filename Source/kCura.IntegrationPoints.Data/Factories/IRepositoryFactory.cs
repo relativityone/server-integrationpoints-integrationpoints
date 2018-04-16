@@ -1,5 +1,4 @@
 ﻿using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Statistics;
 
 namespace kCura.IntegrationPoints.Data.Factories
 {

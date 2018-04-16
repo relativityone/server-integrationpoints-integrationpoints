@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
 				RelativityProviderSourceConfigurationFactory.Create(helper, federatedInstanceModelFactory, instanceSettingsManager);
 
 			IRelativityProviderConfiguration relativityProviderDestinationConfiguration =
-				new RelativityProviderDestinationConfiguration(helper, federatedInstanceManager);
+				new RelativityProviderDestinationConfiguration(helper, federatedInstanceManager, repositoryFactory);
 
 			return new IntegrationPointViewPreLoad(
 				caseServiceContext,

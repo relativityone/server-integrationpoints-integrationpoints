@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Reflection;
 using System.Web.Http;
 using System.Web.Http.Hosting;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using kCura.Relativity.Client;
 using NSubstitute;
 using NUnit.Framework;
-using Relativity.Core.Process;
-using ObjectType = kCura.Relativity.Client.DTOs.ObjectType;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
@@ -22,15 +19,15 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 	{
 		private RdoFilterController _instance;
 		private IRdoFilter _rdoFilter;
-		private IRsapiRdoQuery _query;
+		private IObjectTypeRepository _objectTypeRepository;
 
 		[SetUp]
 		public override void SetUp()
 		{
 			_rdoFilter = Substitute.For<IRdoFilter>();
-			_query = Substitute.For<IRsapiRdoQuery>();
+			_objectTypeRepository = Substitute.For<IObjectTypeRepository>();
 
-			_instance = new RdoFilterController(_rdoFilter, _query)
+			_instance = new RdoFilterController(_rdoFilter, _objectTypeRepository)
 			{
 				Request = new HttpRequestMessage()
 			};
@@ -43,19 +40,19 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		public void ItShouldReturnAllViewableRdos(int numOfViewableRdos)
 		{
 			//Arrange 
-			List<ObjectType> expectedViewableRdos = GenerateDefaultViewableRdosList(numOfViewableRdos);
+			List<ObjectTypeDTO> expectedViewableRdos = GenerateDefaultViewableRdosList(numOfViewableRdos);
 			_rdoFilter.GetAllViewableRdos().Returns(expectedViewableRdos);
 
 			//Act
 			HttpResponseMessage response = _instance.GetAllViewableRdos();
-			List<ObjectType> actualViewableRdos = ExtractViewableRdosListFromResponse(response);
+			List<ObjectTypeDTO> actualViewableRdos = ExtractViewableRdosListFromResponse(response);
 
 			//Assert
 			Assert.AreEqual(expectedViewableRdos.Count, actualViewableRdos.Count);
 			for (var i = 0; i < numOfViewableRdos; i++)
 			{
 				Assert.AreEqual(expectedViewableRdos[i].Name, actualViewableRdos[i].Name);
-				Assert.AreEqual(expectedViewableRdos[i].DescriptorArtifactTypeID, actualViewableRdos[i].DescriptorArtifactTypeID);
+				Assert.AreEqual(expectedViewableRdos[i].DescriptorArtifactTypeId, actualViewableRdos[i].DescriptorArtifactTypeId);
 			}
 		}
 
@@ -64,21 +61,21 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		{
 			//Arrange
 			const int id = 1234;
-			var expectedObject = new ObjectType()
+			var expectedObject = new ObjectTypeDTO
 			{
-				DescriptorArtifactTypeID = 7987,
+				DescriptorArtifactTypeId = 7987,
 				Name = "ObjectTypeName"
 			};
-			_query.GetObjectType(id).Returns(expectedObject);
+			_objectTypeRepository.GetObjectType(id).Returns(expectedObject);
 
 			//Act
 			HttpResponseMessage response = _instance.Get(id);
-			ObjectType actualResult = ExtractObjectTypeFromResponse(response);
+			ObjectTypeDTO actualResult = ExtractObjectTypeFromResponse(response);
 
 			//Assert
 			Assert.NotNull(actualResult);
 			Assert.AreEqual(expectedObject.Name, actualResult.Name);
-			Assert.AreEqual(expectedObject.DescriptorArtifactTypeID, actualResult.DescriptorArtifactTypeID);
+			Assert.AreEqual(expectedObject.DescriptorArtifactTypeId, actualResult.DescriptorArtifactTypeId);
 		}
 
 		[Test]
@@ -97,10 +94,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 
 		#region "Helpers"
 
-		private static List<ObjectType> ExtractViewableRdosListFromResponse(HttpResponseMessage response)
+		private static List<ObjectTypeDTO> ExtractViewableRdosListFromResponse(HttpResponseMessage response)
 		{
 
-			var result = new List<ObjectType>();
+			var result = new List<ObjectTypeDTO>();
 			var objectContent = response.Content as ObjectContent;
 			if (objectContent?.Value == null)
 			{
@@ -111,17 +108,17 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			{
 				string name = tmp.name;
 				var descriptorArtifactTypeId = (int)tmp.value;
-				result.Add(new ObjectType()
+				result.Add(new ObjectTypeDTO
 				{
 					Name = name,
-					DescriptorArtifactTypeID = descriptorArtifactTypeId
+					DescriptorArtifactTypeId = descriptorArtifactTypeId
 				});
 			}
 
 			return result;
 		}
 
-		private static ObjectType ExtractObjectTypeFromResponse(HttpResponseMessage response)
+		private static ObjectTypeDTO ExtractObjectTypeFromResponse(HttpResponseMessage response)
 		{
 			var objectContent = response.Content as ObjectContent;
 			dynamic value = objectContent?.Value;
@@ -129,22 +126,22 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			string name = value.name;
 			var descriptorArtifactTypeId = (int)value.value;
 
-			return new ObjectType()
+			return new ObjectTypeDTO
 			{
 				Name = name,
-				DescriptorArtifactTypeID = descriptorArtifactTypeId
+				DescriptorArtifactTypeId = descriptorArtifactTypeId
 			};
 		}
 
-		private static List<ObjectType> GenerateDefaultViewableRdosList(int numOfViewableRdos)
+		private static List<ObjectTypeDTO> GenerateDefaultViewableRdosList(int numOfViewableRdos)
 		{
-			var viewableRdos = new List<ObjectType>();
+			var viewableRdos = new List<ObjectTypeDTO>();
 
 			for (var i = 0; i < numOfViewableRdos; i++)
 			{
-				viewableRdos.Add(new ObjectType() {
+				viewableRdos.Add(new ObjectTypeDTO {
 					Name = i.ToString(),
-					DescriptorArtifactTypeID = i
+					DescriptorArtifactTypeId = i
 				});
 			}
 
