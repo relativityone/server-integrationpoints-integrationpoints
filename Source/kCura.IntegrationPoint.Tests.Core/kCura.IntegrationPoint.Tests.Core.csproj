@@ -128,7 +128,7 @@
     <Compile Include="InstanceSetting.cs" />
     <Compile Include="Kepler.cs" />
     <Compile Include="Models\Audit.cs" />
-    <Compile Include="Models\Constants\ExportToLoadFile\ExportToLoadFileFileEncodingConstants.cs" />
+    <Compile Include="Models\Constants\Shared\LoadFileEncodingConstants.cs" />
     <Compile Include="Models\Constants\ExportToLoadFile\ExportToLoadFileDataFileFormatConstants.cs" />
     <Compile Include="Models\Constants\ExportToLoadFile\ExportToLoadFileImageFileFormatConstants.cs" />
     <Compile Include="Models\Constants\ExportToLoadFile\ExportToLoadFileImageFileTypeConstants.cs" />
@@ -143,8 +143,11 @@
     <Compile Include="Models\FTP\ImportFromFTPConnectionAndFileInfoModel.cs" />
     <Compile Include="Models\FTP\ImportFromFTPModel.cs" />
     <Compile Include="Models\ImportFromLoadFile\ImportFromLoadFileModel.cs" />
+    <Compile Include="Models\ImportFromLoadFile\ImportLoadFileEncodingModel.cs" />
+    <Compile Include="Models\ImportFromLoadFile\ImportLoadFileImageProductionSettingsModel.cs" />
     <Compile Include="Models\ImportFromLoadFile\ImportLoadFileSettingsModel.cs" />
     <Compile Include="Models\ImportFromLoadFile\ImportType.cs" />
+    <Compile Include="Models\ImportFromLoadFile\Numbering.cs" />
     <Compile Include="Models\Ldap\ImportFromLdapSettingsModel.cs" />
     <Compile Include="Models\Ldap\ImportFromLdapSourceConnectionModel.cs" />
     <Compile Include="Models\Ldap\ImportFromLdapModel.cs" />
@@ -160,12 +163,14 @@
     <Compile Include="Models\IntegrationPointGeneralModel.cs" />
     <Compile Include="Models\JobHistoryModel.cs" />
     <Compile Include="Models\Ldap\LdapAuthenticationType.cs" />
+    <Compile Include="Models\Shared\CopyNativeFiles.cs" />
     <Compile Include="Models\Shared\ImportCustodianSettingsModel.cs" />
+    <Compile Include="Models\Shared\ImportDocumentSettingsModel.cs" />
     <Compile Include="Models\Shared\ImportSettingsModel.cs" />
     <Compile Include="Models\Shared\OverwriteType.cs" />
     <Compile Include="Models\RelativityProviderModel.cs" />
     <Compile Include="Models\SchedulerModel.cs" />
-    <Compile Include="Models\Shared\SharedModelEnums.cs" />
+    <Compile Include="Models\Shared\ImagePrecedence.cs" />    
     <Compile Include="TestDbContext.cs" />
     <Compile Include="TestException.cs" />
     <Compile Include="Permission.cs" />

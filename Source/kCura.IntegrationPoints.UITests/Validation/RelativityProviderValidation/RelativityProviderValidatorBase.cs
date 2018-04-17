@@ -104,13 +104,13 @@ namespace kCura.IntegrationPoints.UITests.Validation.RelativityProviderValidatio
 			}
 		}
 
-		protected static string ImagePrecedenceEnumToString(ImagePrecedenceEnum? value)
+		protected static string ImagePrecedenceEnumToString(ImagePrecedence? value)
 		{
 			switch (value)
 			{
-				case ImagePrecedenceEnum.OriginalImages:
+				case ImagePrecedence.OriginalImages:
 					return "Original";
-				case ImagePrecedenceEnum.ProducedImages:
+				case ImagePrecedence.ProducedImages:
 					return "Produced";
 				default:
 					return "";

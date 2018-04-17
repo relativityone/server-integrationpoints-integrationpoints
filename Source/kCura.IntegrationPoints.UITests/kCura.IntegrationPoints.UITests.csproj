@@ -84,10 +84,13 @@
     <Compile Include="Pages\FTP\ImportWithFTPFirstPage.cs" />
     <Compile Include="Pages\FTP\ImportWithFTPThirdPage.cs" />
     <Compile Include="Pages\ImportFirstPage.cs" />
+    <Compile Include="Pages\ImportFromLoadFile\ImportFromLoadFileSecondPageEncodingSettings.cs" />
     <Compile Include="Pages\ImportFromLoadFile\ImportFromLoadFileFirstPage.cs" />
+    <Compile Include="Pages\ImportFromLoadFile\ImportFromLoadFileSecondPageImportSettings.cs" />
     <Compile Include="Pages\ImportFromLoadFile\ImportFromLoadFileSecondPage.cs" />
     <Compile Include="Pages\ImportFromLoadFile\ImportFromLoadFileSecondPageLoadFileSettings.cs" />
     <Compile Include="Pages\ImportFromLoadFile\ImportFromLoadFileSecondPagePanel.cs" />
+    <Compile Include="Pages\ImportFromLoadFile\ImportFromLoadFileThirdPage.cs" />
     <Compile Include="Pages\ImportSecondBasePage.cs" />
     <Compile Include="Pages\ImportThirdPage.cs" />
     <Compile Include="Pages\FTP\ImportWithFTPSecondPage.cs" />

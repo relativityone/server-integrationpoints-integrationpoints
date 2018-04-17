@@ -8,14 +8,19 @@ namespace kCura.IntegrationPoints.UITests.Components
 {
 	public class TreeSelect : Component
 	{
-		public TreeSelect(IWebElement parent) : base(parent)
+		private readonly string _selectDivId;
+		private readonly string _treeDivId;
+
+		public TreeSelect(IWebElement parent, string selectDivId, string treeDivId) : base(parent)
 		{
+			_selectDivId = selectDivId;
+			_treeDivId = treeDivId;
 		}
 
 		public TreeSelect Expand()
 		{
-			IWebElement select = Parent.FindElement(By.XPath(@".//div[@id='location-select']"));
-			Thread.Sleep(TimeSpan.FromMilliseconds(200));
+			IWebElement select = Parent.FindElement(By.XPath($@".//div[@id='{_selectDivId}']"));
+			Thread.Sleep(TimeSpan.FromMilliseconds(1000));
 			select.Click();
 			return this;
 		}
@@ -24,7 +29,7 @@ namespace kCura.IntegrationPoints.UITests.Components
 		{
 			Expand();
 
-			IWebElement selectListPopup = Parent.FindElement(By.XPath(@".//div[@id='jstree-holder-div']"));
+			IWebElement selectListPopup = Parent.FindElement(By.XPath($@".//div[@id='{_treeDivId}']"));
 			Thread.Sleep(TimeSpan.FromMilliseconds(1000));
 			IWebElement rootElement = selectListPopup.FindElements(By.XPath(@".//a"))[0];
 			Thread.Sleep(TimeSpan.FromMilliseconds(1000));
@@ -36,7 +41,7 @@ namespace kCura.IntegrationPoints.UITests.Components
 		{
 			Expand();
 
-			IWebElement selectListPopup = Parent.FindElement(By.XPath(@".//div[@id='jstree-holder-div']"));
+			IWebElement selectListPopup = Parent.FindElement(By.XPath($@".//div[@id='{_treeDivId}']"));
 			Thread.Sleep(TimeSpan.FromMilliseconds(1000));
 			IWebElement rootElement = selectListPopup.FindElements(By.XPath(@".//a"))[1];
 			Thread.Sleep(TimeSpan.FromMilliseconds(1000));
@@ -48,7 +53,7 @@ namespace kCura.IntegrationPoints.UITests.Components
 		{
 			Expand();
 
-			IWebElement tree = Parent.FindElement(By.XPath(@".//div[@id='jstree-holder-div']"));
+			IWebElement tree = Parent.FindElement(By.XPath($@".//div[@id='{_treeDivId}']"));
 			OpenAllNodes(tree);
 
 			Thread.Sleep(TimeSpan.FromMilliseconds(1000));

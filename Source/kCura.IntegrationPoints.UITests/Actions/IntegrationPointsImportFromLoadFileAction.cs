@@ -26,9 +26,15 @@ namespace kCura.IntegrationPoints.UITests.Actions
 			ImportFromLoadFileSecondPage secondPage =
 				SetupImportSecondPage(firstPage, model);
 
-			// TODO
+			if (model.LoadFileSettings.ImportType != ImportType.DocumentLoadFile)
+			{
+				return secondPage.SaveIntegrationPoint();
+			}
 
-			return null;
+			ImportThirdPage<ImportFromLoadFileModel> thirdPage =
+				SetupImportThirdPage(secondPage, model, () => new ImportFromLoadFileThirdPage(Driver));
+
+			return thirdPage.SaveIntegrationPoint();
 		}
 	}
 }

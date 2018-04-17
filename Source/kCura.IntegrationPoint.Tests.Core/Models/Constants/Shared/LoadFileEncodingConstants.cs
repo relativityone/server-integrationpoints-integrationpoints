@@ -1,6 +1,6 @@
-﻿namespace kCura.IntegrationPoint.Tests.Core.Models.Constants.ExportToLoadFile
+﻿namespace kCura.IntegrationPoint.Tests.Core.Models.Constants.Shared
 {
-	public static class ExportToLoadFileFileEncodingConstants
+	public static class LoadFileEncodingConstants
 	{
 		public const string UNICODE = "Unicode";
 		public const string UTF_8 = "Unicode (UTF-8)";

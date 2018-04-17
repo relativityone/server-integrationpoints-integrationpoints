@@ -1,6 +1,7 @@
 ﻿using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Models.Constants.ExportToLoadFile;
+using kCura.IntegrationPoint.Tests.Core.Models.Constants.Shared;
 using kCura.IntegrationPoint.Tests.Core.Models.Shared;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.UITests.Common;
@@ -50,7 +51,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 
 			model.OutputSettings.LoadFileOptions.ImageFileFormat = ExportToLoadFileImageFileFormatConstants.OPTICON;
 			model.OutputSettings.LoadFileOptions.DataFileFormat = ExportToLoadFileDataFileFormatConstants.DAT;
-			model.OutputSettings.LoadFileOptions.DataFileEncoding = ExportToLoadFileFileEncodingConstants.UTF_8;
+			model.OutputSettings.LoadFileOptions.DataFileEncoding = LoadFileEncodingConstants.UTF_8;
 			model.OutputSettings.LoadFileOptions.FilePathType = ExportToLoadFileProviderModel.FilePathTypeEnum.Relative;
 			model.OutputSettings.LoadFileOptions.IncludeNativeFilesPath = true;
 			model.OutputSettings.LoadFileOptions.ExportMultiChoiceAsNested = false;
@@ -62,7 +63,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 
 			model.OutputSettings.NativeOptions.NativeSubdirectoryPrefix = "NATIVE";
 
-			model.OutputSettings.TextOptions.TextFileEncoding = ExportToLoadFileFileEncodingConstants.UTF_8;
+			model.OutputSettings.TextOptions.TextFileEncoding = LoadFileEncodingConstants.UTF_8;
 			model.OutputSettings.TextOptions.TextSubdirectoryPrefix = "TEXT";
 
 			model.ToLoadFileVolumeAndSubdirectoryModel.VolumePrefix = "VOL";
@@ -111,7 +112,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 
 			model.OutputSettings.LoadFileOptions.ImageFileFormat = ExportToLoadFileImageFileFormatConstants.NO_IMAGE_LOAD_FILE;
 			model.OutputSettings.LoadFileOptions.DataFileFormat = ExportToLoadFileDataFileFormatConstants.CUSTOM;
-			model.OutputSettings.LoadFileOptions.DataFileEncoding = ExportToLoadFileFileEncodingConstants.UNICODE;
+			model.OutputSettings.LoadFileOptions.DataFileEncoding = LoadFileEncodingConstants.UNICODE;
 			model.OutputSettings.LoadFileOptions.FilePathType = ExportToLoadFileProviderModel.FilePathTypeEnum.Absolute;
 			model.OutputSettings.LoadFileOptions.IncludeNativeFilesPath = false;
 			model.OutputSettings.LoadFileOptions.ExportMultiChoiceAsNested = true;
@@ -149,13 +150,13 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			// Step 3
 			model.OutputSettings.LoadFileOptions.ImageFileFormat = ExportToLoadFileImageFileFormatConstants.IPRO_FULL_TEXT;
 			model.OutputSettings.LoadFileOptions.DataFileFormat = ExportToLoadFileDataFileFormatConstants.CSV;
-			model.OutputSettings.LoadFileOptions.DataFileEncoding = ExportToLoadFileFileEncodingConstants.WESTERN_EUROPEAN_WINDOWS;
+			model.OutputSettings.LoadFileOptions.DataFileEncoding = LoadFileEncodingConstants.WESTERN_EUROPEAN_WINDOWS;
 			model.OutputSettings.LoadFileOptions.IncludeNativeFilesPath = true;
 			model.OutputSettings.LoadFileOptions.ExportMultiChoiceAsNested = true;
 			model.OutputSettings.LoadFileOptions.AppendOriginalFileName = true;
 
 			model.OutputSettings.ImageOptions.ImageFileType = ExportToLoadFileImageFileTypeConstants.PDF;
-			model.OutputSettings.TextOptions.TextFileEncoding = ExportToLoadFileFileEncodingConstants.WESTERN_EUROPEAN_WINDOWS;
+			model.OutputSettings.TextOptions.TextFileEncoding = LoadFileEncodingConstants.WESTERN_EUROPEAN_WINDOWS;
 
 			model.ToLoadFileVolumeAndSubdirectoryModel.VolumeNumberOfDigits = 4;
 			model.ToLoadFileVolumeAndSubdirectoryModel.SubdirectoryNumberOfDigits = 4;
@@ -195,7 +196,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			// Step 3
 			model.OutputSettings.LoadFileOptions.ImageFileFormat = ExportToLoadFileImageFileFormatConstants.IPRO;
 			model.OutputSettings.LoadFileOptions.DataFileFormat = ExportToLoadFileDataFileFormatConstants.CSV;
-			model.OutputSettings.LoadFileOptions.DataFileEncoding = ExportToLoadFileFileEncodingConstants.WESTERN_EUROPEAN_WINDOWS;
+			model.OutputSettings.LoadFileOptions.DataFileEncoding = LoadFileEncodingConstants.WESTERN_EUROPEAN_WINDOWS;
 			model.OutputSettings.LoadFileOptions.FilePathType = ExportToLoadFileProviderModel.FilePathTypeEnum.Relative;
 			model.OutputSettings.LoadFileOptions.IncludeNativeFilesPath = false;
 			model.OutputSettings.LoadFileOptions.ExportMultiChoiceAsNested = true;
@@ -204,12 +205,12 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			model.OutputSettings.LoadFileOptions.AppendOriginalFileName = true;
 
 			model.OutputSettings.ImageOptions.ImageFileType = ExportToLoadFileImageFileTypeConstants.PDF;
-			model.OutputSettings.ImageOptions.ImagePrecedence = ImagePrecedenceEnum.OriginalImages;
+			model.OutputSettings.ImageOptions.ImagePrecedence = ImagePrecedence.OriginalImages;
 			model.OutputSettings.ImageOptions.ImageSubdirectoryPrefix = "IMAGE_FILES";
 
 			model.OutputSettings.NativeOptions.NativeSubdirectoryPrefix = "NATIVE_FILES";
 
-			model.OutputSettings.TextOptions.TextFileEncoding = ExportToLoadFileFileEncodingConstants.UNICODE;
+			model.OutputSettings.TextOptions.TextFileEncoding = LoadFileEncodingConstants.UNICODE;
 			model.OutputSettings.TextOptions.TextPrecedence = "Extracted Text";
 
 			model.ToLoadFileVolumeAndSubdirectoryModel.VolumePrefix = "VOLUME";
@@ -264,7 +265,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 
 			model.OutputSettings.LoadFileOptions.ImageFileFormat = ExportToLoadFileImageFileFormatConstants.NO_IMAGE_LOAD_FILE;
 			model.OutputSettings.LoadFileOptions.DataFileFormat = ExportToLoadFileDataFileFormatConstants.DAT;
-			model.OutputSettings.LoadFileOptions.DataFileEncoding = ExportToLoadFileFileEncodingConstants.UTF_8;
+			model.OutputSettings.LoadFileOptions.DataFileEncoding = LoadFileEncodingConstants.UTF_8;
 			model.OutputSettings.LoadFileOptions.FilePathType = ExportToLoadFileProviderModel.FilePathTypeEnum.Relative;
 			model.OutputSettings.LoadFileOptions.IncludeNativeFilesPath = true;
 			model.OutputSettings.LoadFileOptions.ExportMultiChoiceAsNested = false;

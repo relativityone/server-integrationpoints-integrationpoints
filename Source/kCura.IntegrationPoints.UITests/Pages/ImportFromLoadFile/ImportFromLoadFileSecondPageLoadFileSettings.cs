@@ -40,14 +40,16 @@ namespace kCura.IntegrationPoints.UITests.Pages.ImportFromLoadFile
 			}
 		}
 
-		protected TreeSelect WorkspaceDestinationTree => new TreeSelect(WorkspaceDestinationTreeWebElement);
+		protected TreeSelect WorkspaceDestinationTree => new TreeSelect(WorkspaceDestinationTreeWebElement,
+			"destination-location-select", "destination-jstree-holder-div");
 
 		public string WorkspaceDestination
 		{
 			set { WorkspaceDestinationTree.ChooseChildElement(value); }
 		}
 
-		protected TreeSelect ImportSourceTree => new TreeSelect(ImportSourceTreeWebElement);
+		protected TreeSelect ImportSourceTree =>
+			new TreeSelect(ImportSourceTreeWebElement, "location-select", "jstree-holder-div");
 
 		public string ImportSource
 		{
