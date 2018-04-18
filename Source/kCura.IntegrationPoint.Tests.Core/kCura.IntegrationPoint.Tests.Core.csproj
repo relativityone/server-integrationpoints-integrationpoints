@@ -205,10 +205,8 @@
     <Compile Include="TestHelpers\ImagesService.cs" />
     <Compile Include="TestHelpers\INativesService.cs" />
     <Compile Include="TestHelpers\IntegrationPointProviderEmptyValidator.cs" />
-    <Compile Include="TestHelpers\IProductionImagesService.cs" />
     <Compile Include="TestHelpers\ITestHelper.cs" />
     <Compile Include="TestHelpers\NativesService.cs" />
-    <Compile Include="TestHelpers\ProductionImagesService.cs" />
     <Compile Include="TestHelpers\TestConstants.cs" />
     <Compile Include="TestHelpers\TestHelper.cs" />
     <Compile Include="TestBase.cs" />
@@ -222,7 +220,6 @@
     <Compile Include="Validators\DocumentHasNativesAndInRepositoryValidator.cs" />
     <Compile Include="Validators\DocumentHasNativesValidator.cs" />
     <Compile Include="Validators\DocumentPathValidator.cs" />
-    <Compile Include="Validators\DocumentProductionImagesValidator.cs" />
     <Compile Include="Validators\DocumentPropertyValidator.cs" />
     <Compile Include="Validators\DocumentSourceJobNameValidator.cs" />
     <Compile Include="Validators\DocumentsValidator.cs" />
@@ -8552,16 +8549,6 @@ xcopy "$(ProjectDir)oi\unmanaged" "$(ProjectDir)..\..\lib\UnitTests\oi"  /E /Y /
         </Reference>
         <Reference Include="Relativity.Infrastructure">
           <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Infrastructure.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.Logging">
-          <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Logging.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.Logging.Interfaces">
-          <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

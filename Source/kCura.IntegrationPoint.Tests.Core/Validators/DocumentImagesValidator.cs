@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using NUnit.Framework;
 using Relativity.Core.DTO;
@@ -22,8 +21,14 @@ namespace kCura.IntegrationPoint.Tests.Core.Validators
 
 		public void ValidateDocument(Document destinationDocument, Document sourceDocument)
 		{
-			int expectedNumberOfImages = Math.Max(sourceDocument.RelativityImageCount.GetValueOrDefault(), 1);
-			Assert.That(destinationDocument.RelativityImageCount, Is.EqualTo(expectedNumberOfImages), $"Number of images is different than expected for document {destinationDocument.ArtifactID}");
+			if (sourceDocument.RelativityImageCount.GetValueOrDefault() > 0)
+			{
+				Assert.AreEqual(sourceDocument.RelativityImageCount, destinationDocument.RelativityImageCount);
+			}
+			else
+			{
+				Assert.AreEqual(1, destinationDocument.RelativityImageCount);
+			}
 
 			IList<File> destinationImages = _imagesService.GetImagesFileInfo(_destinationWorkspaceId, destinationDocument.ArtifactID);
 

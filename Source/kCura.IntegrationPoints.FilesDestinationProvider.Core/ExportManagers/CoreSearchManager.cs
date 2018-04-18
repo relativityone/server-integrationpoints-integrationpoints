@@ -44,11 +44,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 			return FileQuery.RetrieveAllImagesForDocuments(_baseServiceContext, documentArtifactIDs).ToDataSet();
 		}
 
-		public DataSet RetrieveProducedImagesForDocument(int caseContextArtifactID, int documentArtifactID)
-		{
-			return FileQuery.RetrieveAllByDocumentArtifactIdAndType(_baseServiceContext, documentArtifactID, 3).ToDataSet(); // TODO 3 -> Type enum
-		}
-
 		public DataSet RetrieveImagesByProductionIDsAndDocumentIDsForExport(int caseContextArtifactID, int[] productionArtifactIDs, int[] documentArtifactIDs)
 		{
 			return FileQuery.RetrieveByProductionIDsAndDocumentIDsForExport(_baseServiceContext, productionArtifactIDs, documentArtifactIDs).ToDataSet();
