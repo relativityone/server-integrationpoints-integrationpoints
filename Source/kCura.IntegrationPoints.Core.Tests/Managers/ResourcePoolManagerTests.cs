@@ -6,7 +6,6 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.RSAPIClient;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
@@ -38,7 +37,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		private ResourcePoolManagerTestImpl _subjectUnderTest;
 
 		private IRepositoryFactory _repositoryFactoryMock;
-		private IRSAPIClient _rsApiClientMock;
 		private IResourcePoolRepository _resourcePoolRepositoryMock;
 
 		private const int _RESOURCE_POOL_ID = 1234;
@@ -55,7 +53,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		public override void SetUp()
 		{
 			_repositoryFactoryMock = Substitute.For<IRepositoryFactory>();
-			_rsApiClientMock = Substitute.For<IRSAPIClient>();
 			_resourcePoolRepositoryMock = Substitute.For<IResourcePoolRepository>();
 			var helper = Substitute.For<IHelper>();
 			var rsapiClientFactory = Substitute.For<IRsapiClientFactory>();

@@ -24,20 +24,10 @@ namespace kCura.IntegrationPoints.Web
 			return _factory.CreateUserClient(workspaceId);
 		}
 
-		public IRSAPIClient CreateEddsClient()
-		{
-			return _factory.CreateUserClient(-1);
-		}
-
 		public IDBContext CreateDbContext()
 		{
 			int workspaceId = _workspaceIdProvider.GetWorkspaceId();
 			return _helper.GetDBContext(workspaceId);
-		}
-
-		public IServicesMgr CreateServicesMgr()
-		{
-			return _helper.GetServicesManager();
 		}
 	}
 }

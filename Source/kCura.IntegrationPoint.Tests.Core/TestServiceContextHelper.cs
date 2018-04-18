@@ -1,6 +1,5 @@
 ﻿using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
-using kCura.Relativity.Client;
 using Relativity.API;
 
 namespace kCura.IntegrationPoint.Tests.Core
@@ -8,12 +7,10 @@ namespace kCura.IntegrationPoint.Tests.Core
 	public class TestServiceContextHelper : IServiceContextHelper
 	{
 		private readonly IHelper _helper;
-		private readonly IRsapiClientWithWorkspaceFactory _rsapiClientFactory;
 
-		public TestServiceContextHelper(IHelper helper, int workspaceArtifactId, IRsapiClientWithWorkspaceFactory rsapiClientFactory)
+		public TestServiceContextHelper(IHelper helper, int workspaceArtifactId)
 		{
 			_helper = helper;
-			_rsapiClientFactory = rsapiClientFactory;
 			WorkspaceID = workspaceArtifactId;
 		}
 
@@ -37,11 +34,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 		public IRSAPIService GetRsapiService()
 		{
 			return ServiceContextFactory.CreateRSAPIService(_helper, WorkspaceID);
-		}
-
-		public IRSAPIClient GetRsapiClient()
-		{
-			return _rsapiClientFactory.CreateUserClient(WorkspaceID);
 		}
 	}
 }

@@ -5,7 +5,6 @@ using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.Relativity.Client;
 using NUnit.Framework;
-using Relativity.API;
 using Relativity.Services.Field;
 using Relativity.Services.Search;
 
@@ -58,7 +57,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public void DeleteWorkspace(int artifactId)
 		{
-			using (var rsApiClient = Rsapi.CreateRsapiClient(ExecutionIdentity.System))
+			using (var rsApiClient = Rsapi.CreateRsapiClient())
 			{
 				rsApiClient.Repositories.Workspace.DeleteSingle(artifactId);
 			}

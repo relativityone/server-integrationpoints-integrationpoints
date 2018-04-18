@@ -192,7 +192,6 @@
     <Compile Include="Repositories\IQueueRepository.cs" />
     <Compile Include="Repositories\IObjectTypeRepository.cs" />
     <Compile Include="Repositories\ISavedSearchRepository.cs" />
-    <Compile Include="Queries\GetSavedSearchesQuery.cs" />
     <Compile Include="RelativityVersion.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="EddsDbContext.cs" />

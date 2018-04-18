@@ -91,7 +91,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 		private void CreateServices()
 		{
 			IRsapiClientWithWorkspaceFactory rsapiClientFactory = new RsapiClientWithWorkspaceFactory(Helper);
-			IServiceContextHelper serviceContextHelper = new ServiceContextHelperForEventHandlers(Helper, Helper.GetActiveCaseID(), rsapiClientFactory);
+			IServiceContextHelper serviceContextHelper = new ServiceContextHelperForEventHandlers(Helper, Helper.GetActiveCaseID());
 			ICaseServiceContext caseServiceContext = new CaseServiceContext(serviceContextHelper);
 			IRepositoryFactory repositoryFactory = new RepositoryFactory(Helper, Helper.GetServicesManager());
 			IRSAPIClient rsapiClient = rsapiClientFactory.CreateAdminClient(Helper.GetActiveCaseID());

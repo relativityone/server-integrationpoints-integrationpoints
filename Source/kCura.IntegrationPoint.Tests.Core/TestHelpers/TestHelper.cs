@@ -1,6 +1,5 @@
 ﻿using System;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.Relativity.Client;
 using NSubstitute;
 using Relativity.API;
@@ -46,8 +45,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			PermissionManager = Substitute.For<IPermissionRepository>();
 			_serviceManager = Substitute.For<IServicesMgr>();
 			_logFactory = Substitute.For<ILogFactory>();
-			_serviceManager.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser).Returns(new ExtendedIRSAPIClient(this, ExecutionIdentity.CurrentUser));
-			_serviceManager.CreateProxy<IRSAPIClient>(ExecutionIdentity.System).Returns(new ExtendedIRSAPIClient(this, ExecutionIdentity.System));
+			_serviceManager.CreateProxy<IRSAPIClient>(Arg.Any<ExecutionIdentity>()).Returns(new ExtendedIRSAPIClient());
 			_serviceManager.CreateProxy<IPermissionManager>(ExecutionIdentity.CurrentUser).Returns(new ExtendedIPermissionManager(this, ExecutionIdentity.CurrentUser));
 			_serviceManager.CreateProxy<IPermissionManager>(ExecutionIdentity.System).Returns(new ExtendedIPermissionManager(this, ExecutionIdentity.System));
 			_serviceManager.CreateProxy<IObjectQueryManager>(ExecutionIdentity.System).Returns(new ExtendedIObjectQueryManager(this, ExecutionIdentity.System));

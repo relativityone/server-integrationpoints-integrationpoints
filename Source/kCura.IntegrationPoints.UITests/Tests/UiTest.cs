@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
-using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Core.Factories.Implementations;
-using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Data.Installers;
 using kCura.Relativity.Client;
 using NUnit.Framework;
 using Relativity.API;
@@ -33,14 +29,14 @@ namespace kCura.IntegrationPoints.UITests.Tests
 
 	public abstract class UiTest
 	{
-	    protected IWindsorContainer Container;
+		protected IWindsorContainer Container;
 		protected static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(UiTest));
-	    protected IConfigurationStore ConfigurationStore;
+		protected IConfigurationStore ConfigurationStore;
 
-        public ITestHelper Helper => _help.Value;
-	    private readonly Lazy<ITestHelper> _help;
+		public ITestHelper Helper => _help.Value;
+		private readonly Lazy<ITestHelper> _help;
 
-        protected static readonly List<Tuple<string, string>> DefaultFieldsMapping = new List<Tuple<string, string>>
+		protected static readonly List<Tuple<string, string>> DefaultFieldsMapping = new List<Tuple<string, string>>
 		{
 			new Tuple<string, string>("Control Number", "Control Number"),
 			new Tuple<string, string>("Extracted Text", "Extracted Text"),
@@ -59,13 +55,13 @@ namespace kCura.IntegrationPoints.UITests.Tests
 
 		protected RemoteWebDriver Driver { get; set; }
 
-	    public UiTest()
-	    {
-	        Container = new WindsorContainer();
-	        ConfigurationStore = new DefaultConfigurationStore();
-	        _help = new Lazy<ITestHelper>(() => new TestHelper());
-	    }
-        protected virtual bool InstallLegalHoldApp => false;
+		public UiTest()
+		{
+			Container = new WindsorContainer();
+			ConfigurationStore = new DefaultConfigurationStore();
+			_help = new Lazy<ITestHelper>(() => new TestHelper());
+		}
+		protected virtual bool InstallLegalHoldApp => false;
 
 		protected virtual void ContextSetUp()
 		{
@@ -74,9 +70,9 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		[OneTimeSetUp]
 		protected void SetupSuite()
 		{
-		    Container = new WindsorContainer();
+			Container = new WindsorContainer();
 			// enable TLS 1.2 for R1 regression environments
-            System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+			System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 
 			Configuration = new TestConfiguration()
 				.MergeCustomConfigWithAppSettings()
@@ -84,7 +80,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 				.LogConfiguration();
 
 			Context = new TestContext();
-			Task workspaceSetupTask = SetupWorkspaceAsync(); 
+			Task workspaceSetupTask = SetupWorkspaceAsync();
 			Task webDriverCreationTask = CreateDriverAsync();
 
 			Task.WaitAll(workspaceSetupTask, webDriverCreationTask);
@@ -123,7 +119,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		{
 			await Task.Run(() => CreateDriver()).ConfigureAwait(false);
 		}
-		
+
 		protected void CreateDriver()
 		{
 			ChromeDriverService driverService = ChromeDriverService.CreateDefaultService();
@@ -143,7 +139,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			Driver.Manage().Window.Maximize();
 			Driver.Url = SharedVariables.ProtocolVersion + "://" + SharedVariables.TargetHost + "/Relativity";
 		}
-		
+
 		[OneTimeTearDown]
 		protected void CloseAndQuitDriver()
 		{
@@ -173,7 +169,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			{
 				return;
 			}
-			Screenshot screenshot = ((ITakesScreenshot) Driver).GetScreenshot();
+			Screenshot screenshot = ((ITakesScreenshot)Driver).GetScreenshot();
 			string testDir = NUnit.Framework.TestContext.CurrentContext.TestDirectory;
 			string className = NUnit.Framework.TestContext.CurrentContext.Test.FullName;
 			string methodName = NUnit.Framework.TestContext.CurrentContext.Test.MethodName;
@@ -201,33 +197,32 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			new BaseUiValidator().ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
 		}
 
-	    protected void Install(int workspaceArtifactId)
-	    {
-	        Container.Register(Component.For<IHelper>().UsingFactoryMethod(k => Helper, managedExternally: true));
-	        Container.Register(Component.For<IRsapiClientWithWorkspaceFactory>().ImplementedBy<RsapiClientWithWorkspaceFactory>().LifestyleTransient());
-	        Container.Register(Component.For<IServiceContextHelper>()
-	            .UsingFactoryMethod(k =>
-	            {
-	                IHelper helper = k.Resolve<IHelper>();
-	                var rsapiClientFactory = k.Resolve<IRsapiClientWithWorkspaceFactory>();
-	                return new TestServiceContextHelper(helper, workspaceArtifactId, rsapiClientFactory);
-	            }));
-	        Container.Register(
-	            Component.For<IWorkspaceDBContext>()
-	                .ImplementedBy<WorkspaceContext>()
-	                .UsingFactoryMethod(k => new WorkspaceContext(k.Resolve<IHelper>().GetDBContext(workspaceArtifactId)))
-	                .LifeStyle.Transient);
-	        Container.Register(
-	            Component.For<IRSAPIClient>()
-	                .UsingFactoryMethod(k =>
-	                {
-	                    IRSAPIClient client = Rsapi.CreateRsapiClient();
-	                    client.APIOptions.WorkspaceID = workspaceArtifactId;
-	                    return client;
-	                })
-	                .LifeStyle.Transient);
-            
-	        Container.Register(Component.For<IRSAPIService>().Instance(new RSAPIService(Container.Resolve<IHelper>(), workspaceArtifactId)).LifestyleTransient());
-	    }
-    }
+		protected void Install(int workspaceArtifactId)
+		{
+			Container.Register(Component.For<IHelper>().UsingFactoryMethod(k => Helper, managedExternally: true));
+			Container.Register(Component.For<IRsapiClientWithWorkspaceFactory>().ImplementedBy<RsapiClientWithWorkspaceFactory>().LifestyleTransient());
+			Container.Register(Component.For<IServiceContextHelper>()
+				.UsingFactoryMethod(k =>
+				{
+					IHelper helper = k.Resolve<IHelper>();
+					return new TestServiceContextHelper(helper, workspaceArtifactId);
+				}));
+			Container.Register(
+				Component.For<IWorkspaceDBContext>()
+					.ImplementedBy<WorkspaceContext>()
+					.UsingFactoryMethod(k => new WorkspaceContext(k.Resolve<IHelper>().GetDBContext(workspaceArtifactId)))
+					.LifeStyle.Transient);
+			Container.Register(
+				Component.For<IRSAPIClient>()
+					.UsingFactoryMethod(k =>
+					{
+						IRSAPIClient client = Rsapi.CreateRsapiClient();
+						client.APIOptions.WorkspaceID = workspaceArtifactId;
+						return client;
+					})
+					.LifeStyle.Transient);
+
+			Container.Register(Component.For<IRSAPIService>().Instance(new RSAPIService(Container.Resolve<IHelper>(), workspaceArtifactId)).LifestyleTransient());
+		}
+	}
 }

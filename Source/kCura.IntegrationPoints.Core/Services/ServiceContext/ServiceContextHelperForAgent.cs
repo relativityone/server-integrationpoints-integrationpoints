@@ -1,19 +1,16 @@
 ﻿using kCura.IntegrationPoints.Data;
-using kCura.Relativity.Client;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 {
 	public class ServiceContextHelperForAgent : IServiceContextHelper
 	{
-		public ServiceContextHelperForAgent(IAgentHelper helper, int workspaceId, IRsapiClientWithWorkspaceFactory factory)
+		public ServiceContextHelperForAgent(IAgentHelper helper, int workspaceId)
 		{
 			this.helper = helper;
 			this.WorkspaceID = workspaceId;
-			this.factory = factory;
 		}
-
-		private IRsapiClientWithWorkspaceFactory factory { get; set; }
+		
 		private IAgentHelper helper { get; set; }
 		public int WorkspaceID { get; set; }
 		public int GetEddsUserID() { return helper.GetAuthenticationManager().UserInfo.ArtifactID; }
@@ -26,14 +23,7 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 			else
 				return null;
 		}
-		public IRSAPIClient GetRsapiClient()
-		{
-			if (this.WorkspaceID > 0)
-				return factory.CreateUserClient(this.WorkspaceID);
-			else
-				return null;
-		}
 
-	    public IDBContext GetDBContext(int workspaceID = -1) { return helper.GetDBContext(workspaceID); }
+		public IDBContext GetDBContext(int workspaceID = -1) { return helper.GetDBContext(workspaceID); }
 	}
 }

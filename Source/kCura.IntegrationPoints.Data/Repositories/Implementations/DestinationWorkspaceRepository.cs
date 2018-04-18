@@ -1,20 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Security.Claims;
 using kCura.IntegrationPoints.Data.Commands.MassEdit;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Models;
-using kCura.IntegrationPoints.Data.RSAPIClient;
 using kCura.IntegrationPoints.Domain;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
-using Relativity.API;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using Relativity.Core;
 using Relativity.Data;
 using Relativity.Services.Objects.DataContracts;
-using Artifact = kCura.Relativity.Client.DTOs.Artifact;
 using ArtifactType = Relativity.Query.ArtifactType;
 using Field = Relativity.Core.DTO.Field;
 
@@ -23,14 +18,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 	public class DestinationWorkspaceRepository : RelativityMassEditBase, IDestinationWorkspaceRepository
 	{
 		private readonly IRSAPIService _rsapiService;
-		private readonly IHelper _helper;
-		private readonly int _sourceWorkspaceArtifactId;
-		private const string _DESTINATION_WORKSPACE_JOB_HISTORY_LINK = "20A24C4E-55E8-4FC2-ABBE-F75C07FAD91B";
 
-		public DestinationWorkspaceRepository(IHelper helper, int sourceWorkspaceArtifactId, IRSAPIService rsapiService)
+		public DestinationWorkspaceRepository(IRSAPIService rsapiService)
 		{
-			_helper = helper;
-			_sourceWorkspaceArtifactId = sourceWorkspaceArtifactId;
 			_rsapiService = rsapiService;
 		}
 
@@ -87,11 +77,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			try
 			{
-				int artifactId = (_rsapiService.DestinationWorkspaceLibrary.Create(new[] {destinationWorkspace}) ?? new List<int>()).FirstOrDefault();
+				int artifactId = _rsapiService.RelativityObjectManager.Create(destinationWorkspace);
 				destinationWorkspace.ArtifactId = artifactId;
 				return destinationWorkspace;
 			}
-			catch (Exception e)
+			catch (Exception e) when (!(e is IntegrationPointsException))
 			{
 				throw new Exception(RSAPIErrors.CREATE_DEST_WORKSPACE_ERROR, e);
 			}
@@ -116,30 +106,33 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public void LinkDestinationWorkspaceToJobHistory(int destinationWorkspaceInstanceId, int jobHistoryInstanceId)
 		{
-			RDO jobHistoryObject = new RDO(jobHistoryInstanceId);
-			jobHistoryObject.ArtifactTypeGuids.Add(new Guid(ObjectTypeGuids.JobHistory));
+			var destinationWorkspaceObjectValue = new RelativityObjectValue
+			{
+				ArtifactID = destinationWorkspaceInstanceId
+			};
+			var fieldsToUpdate = new List<FieldRefValuePair>
+			{
+				new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = new Guid(JobHistoryFieldGuids.DestinationWorkspaceInformation)
+					},
+					Value = new [] { destinationWorkspaceObjectValue }
+				}
+			};
 
-			FieldValueList<Artifact> objectToLink = new FieldValueList<Artifact>();
-			objectToLink.Add(new Artifact(destinationWorkspaceInstanceId));
-			jobHistoryObject.Fields.Add(new FieldValue(new Guid(_DESTINATION_WORKSPACE_JOB_HISTORY_LINK), objectToLink));
-
-			WriteResultSet<RDO> results;
+			bool isUpdated;
 			try
 			{
-				var rsapiClientFactory = new RsapiClientFactory();
-				using (IRSAPIClient rsapiClient = rsapiClientFactory.CreateUserClient(_helper))
-				{
-					rsapiClient.APIOptions.WorkspaceID = _sourceWorkspaceArtifactId;
-
-					results = rsapiClient.Repositories.RDO.Update(jobHistoryObject);
-				}
+				isUpdated = _rsapiService.RelativityObjectManager.Update(jobHistoryInstanceId, fieldsToUpdate);
 			}
 			catch (Exception e)
 			{
-				throw new Exception(RSAPIErrors.LINK_OBJECT_INSTANCE_ERROR, e);
+				throw new IntegrationPointsException(RSAPIErrors.LINK_OBJECT_INSTANCE_ERROR, e);
 			}
 
-			if (!results.Success)
+			if (!isUpdated)
 			{
 				throw new Exception(RSAPIErrors.LINK_OBJECT_INSTANCE_ERROR);
 			}

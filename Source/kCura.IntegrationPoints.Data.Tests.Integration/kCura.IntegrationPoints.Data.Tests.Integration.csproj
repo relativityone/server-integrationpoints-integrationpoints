@@ -55,7 +55,6 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="JobHistoryErrorsBatchingTests.cs" />
-    <Compile Include="Queries\GetSavedSearchesQueryTests..cs" />
     <Compile Include="Repositories\DestinationWorkspaceRepositoryTests.cs" />
     <Compile Include="Repositories\JobHistoryErrorRepositoryTests.cs" />
     <Compile Include="Repositories\KeplerWorkspaceRepositoryTests.cs" />

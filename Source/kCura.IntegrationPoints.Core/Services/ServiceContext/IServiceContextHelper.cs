@@ -1,5 +1,4 @@
 ﻿using kCura.IntegrationPoints.Data;
-using kCura.Relativity.Client;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services.ServiceContext
@@ -11,6 +10,5 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 		int GetWorkspaceUserID();
 		IDBContext GetDBContext(int workspaceID = -1);
 		IRSAPIService GetRsapiService();
-		IRSAPIClient GetRsapiClient();
 	}
 }

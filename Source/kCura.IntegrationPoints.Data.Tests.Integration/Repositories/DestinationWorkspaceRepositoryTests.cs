@@ -191,7 +191,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		public void Create_DestinationWorkspaceDTOWithInvalidWorkspaceId_EmptyArtifactId()
 		{
 			//Arrange
-			IDestinationWorkspaceRepository destinationWorkspaceRepository = new DestinationWorkspaceRepository(Helper, -1, Substitute.For<IRSAPIService>());
+			IDestinationWorkspaceRepository destinationWorkspaceRepository = new DestinationWorkspaceRepository(Substitute.For<IRSAPIService>());
 
 			//Act
 			var destinationWorkspace = destinationWorkspaceRepository.Create(-999, "Invalid Workspace", -1, "This Instance");

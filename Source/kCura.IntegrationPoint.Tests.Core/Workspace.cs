@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using kCura.Relativity.Client.Repositories;
-using Relativity.API;
-using Relativity.Services.ApplicationInstallManager;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -20,7 +17,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			//Create workspace DTO
 			Relativity.Client.DTOs.Workspace workspaceDto = new Relativity.Client.DTOs.Workspace { Name = workspaceName};
 			int workspaceId;
-			using (IRSAPIClient proxy = Rsapi.CreateRsapiClient(ExecutionIdentity.System))
+			using (IRSAPIClient proxy = Rsapi.CreateRsapiClient())
 			{
 				try
 				{
@@ -49,7 +46,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static void EnableDataGrid(int workspaceId)
 		{
-			using (IRSAPIClient proxy = Rsapi.CreateRsapiClient(ExecutionIdentity.System))
+			using (IRSAPIClient proxy = Rsapi.CreateRsapiClient())
 			{
 				try
 				{

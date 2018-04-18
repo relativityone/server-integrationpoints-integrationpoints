@@ -39,15 +39,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 				throw new NotImplementedException();
 			}
 
-			public IRSAPIClient GetRsapiClient()
+			public bool IsCloudInstance()
 			{
 				throw new NotImplementedException();
 			}
-
-		    public bool IsCloudInstance()
-		    {
-		        throw new NotImplementedException();
-		    }
 		}
 
 		[Test]

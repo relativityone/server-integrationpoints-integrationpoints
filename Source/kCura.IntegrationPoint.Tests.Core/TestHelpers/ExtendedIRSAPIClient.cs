@@ -3,22 +3,17 @@ using System.Collections.Generic;
 using System.IO;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.Repositories;
-using Relativity.API;
 
 namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 {
 	public class ExtendedIRSAPIClient : IRSAPIClient
 	{
-		private readonly ITestHelper _helper;
-		private readonly ExecutionIdentity _identity;
 		private Lazy<IRSAPIClient> _clientWrapper;
 		private IRSAPIClient Client => _clientWrapper.Value;
 
-		public ExtendedIRSAPIClient(ITestHelper helper, ExecutionIdentity identity)
+		public ExtendedIRSAPIClient()
 		{
-			_helper = helper;
-			_identity = identity;
-			_clientWrapper = new Lazy<IRSAPIClient>(() => Rsapi.CreateRsapiClient(identity));
+			_clientWrapper = new Lazy<IRSAPIClient>(() => Rsapi.CreateRsapiClient());
 		}
 
 		public string Login()
@@ -244,7 +239,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			lock (_obj)
 			{
 				Client.Dispose();
-				_clientWrapper = new Lazy<IRSAPIClient>(() => Rsapi.CreateRsapiClient(_identity));
+				_clientWrapper = new Lazy<IRSAPIClient>(() => Rsapi.CreateRsapiClient());
 			}
 		}
 

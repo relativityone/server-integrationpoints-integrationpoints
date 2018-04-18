@@ -63,8 +63,7 @@ namespace kCura.IntegrationPoints.Services.Installers
 				.UsingFactoryMethod(k =>
 				{
 					IServiceHelper helper = k.Resolve<IServiceHelper>();
-					var rsapiClientFactory = k.Resolve<IRsapiClientWithWorkspaceFactory>();
-					return new ServiceContextHelperForKeplerService(helper, workspaceId, rsapiClientFactory);
+					return new ServiceContextHelperForKeplerService(helper, workspaceId);
 				}));
 		}
 	}

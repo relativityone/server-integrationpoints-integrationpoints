@@ -128,8 +128,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				.UsingFactoryMethod(k =>
 				{
 					IHelper helper = k.Resolve<IHelper>();
-					var rsapiClientFactory = k.Resolve<IRsapiClientWithWorkspaceFactory>();
-					return new TestServiceContextHelper(helper, WorkspaceArtifactId, rsapiClientFactory);
+					return new TestServiceContextHelper(helper, WorkspaceArtifactId);
 				}));
 			Container.Register(
 				Component.For<IWorkspaceDBContext>()

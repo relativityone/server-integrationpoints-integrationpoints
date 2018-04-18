@@ -1,7 +1,6 @@
 ﻿using System;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
-using kCura.Relativity.Client;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core
@@ -36,12 +35,7 @@ namespace kCura.IntegrationPoints.Core
 			throw new NotImplementedException();
 		}
 
-		public IRSAPIClient GetRsapiClient()
-		{
-			throw new NotImplementedException();
-		}
-
-	    public IRSAPIService GetRsapiService()
+		public IRSAPIService GetRsapiService()
 		{
 			throw new NotImplementedException();
 		}

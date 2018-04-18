@@ -46,8 +46,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 			container.Register(Component.For<IServiceContextHelper>().UsingFactoryMethod(k =>
 			{
 				IEHContext context = k.Resolve<IEHContext>();
-				IRsapiClientWithWorkspaceFactory clientFactory = k.Resolve<IRsapiClientWithWorkspaceFactory>();
-				return new ServiceContextHelperForEventHandlers(context.Helper, context.Helper.GetActiveCaseID(), clientFactory);
+				return new ServiceContextHelperForEventHandlers(context.Helper, context.Helper.GetActiveCaseID());
 			}).LifestyleSingleton());
 			container.Register(Component.For<IWorkspaceDBContext>().UsingFactoryMethod(k =>
 			{

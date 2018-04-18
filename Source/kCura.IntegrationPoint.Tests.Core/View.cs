@@ -1,6 +1,5 @@
 ﻿using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
-using Relativity.API;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -8,7 +7,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 	{
 		public static int QueryView(int workspaceId, string viewName)
 		{
-			using (var rsApiClient = Rsapi.CreateRsapiClient(ExecutionIdentity.System))
+			using (var rsApiClient = Rsapi.CreateRsapiClient())
 			{
 				rsApiClient.APIOptions.WorkspaceID = workspaceId;
 				var viewQuery = new Query<Relativity.Client.DTOs.View>

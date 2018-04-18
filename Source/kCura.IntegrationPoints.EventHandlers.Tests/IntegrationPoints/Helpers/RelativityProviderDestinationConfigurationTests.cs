@@ -5,12 +5,9 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
-using kCura.Relativity.Client;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
-using Artifact = kCura.Relativity.Client.Artifact;
-using Field = kCura.Relativity.Client.Field;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 {
@@ -43,7 +40,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		{
 			// arrange
 			var settings = GetSettings();
-			MockArtifactTypeNameQuery(_ARTIFACT_TYPE_ID);
 			MockFederatedInstanceManager(_FEDERATED_INSTANCE_ID, instanceName);
 
 			// act
@@ -52,26 +48,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			//assert
 			Assert.AreEqual("RDO", settings[_ARTIFACT_TYPE_NAME]);
 			Assert.AreEqual(instanceName, settings[_DESTINATION_RELATIVITY_INSTANCE]);
-		}
-
-		private void MockArtifactTypeNameQuery(int transferredObjArtifactTypeId)
-		{
-			var field = new Field
-			{
-				Name = "Text Identifier",
-				Value = transferredObjArtifactTypeId
-			};
-			var artifact = new Artifact { Fields = new List<Field>() { field } };
-			var queryResult = new QueryResult()
-			{
-				Success = true
-			};
-			queryResult.QueryArtifacts.Add(artifact);
-
-			var rsapiClient = Substitute.For<IRSAPIClient>();
-			rsapiClient.APIOptions = new APIOptions();
-			rsapiClient.Query(Arg.Any<APIOptions>(), Arg.Any<kCura.Relativity.Client.Query>()).Returns(queryResult);
-			_helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser).Returns(rsapiClient);
 		}
 	
 		private void MockFederatedInstanceManager(int instanceId,string federatedInstanceName)

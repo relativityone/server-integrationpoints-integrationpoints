@@ -1,5 +1,4 @@
 ﻿using kCura.IntegrationPoints.Data;
-using kCura.Relativity.Client;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services.ServiceContext
@@ -8,13 +7,11 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 	{
 		private readonly IServiceHelper _helper;
 		private int _workspaceArtifactId;
-		private readonly IRsapiClientWithWorkspaceFactory _rsapiClientFactory;
 
-		public ServiceContextHelperForKeplerService(IServiceHelper helper, int workspaceArtifactId, IRsapiClientWithWorkspaceFactory rsapiClientFactory)
+		public ServiceContextHelperForKeplerService(IServiceHelper helper, int workspaceArtifactId)
 		{
 			_helper = helper;
 			_workspaceArtifactId = workspaceArtifactId;
-			_rsapiClientFactory = rsapiClientFactory;
 		}
 
 		public int WorkspaceID {
@@ -40,12 +37,6 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 		public IRSAPIService GetRsapiService()
 		{
 			return ServiceContextFactory.CreateRSAPIService(_helper, WorkspaceID);
-		}
-
-		public IRSAPIClient GetRsapiClient()
-		{
-			IRSAPIClient client = _rsapiClientFactory.CreateUserClient(_workspaceArtifactId);
-			return client;
 		}
 	}
 }

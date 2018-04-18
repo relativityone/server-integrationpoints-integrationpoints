@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
 				return;
 			}
 
-			using (var rsApiClient = Rsapi.CreateRsapiClient(ExecutionIdentity.System))
+			using (var rsApiClient = Rsapi.CreateRsapiClient())
 			{
 				rsApiClient.Repositories.Workspace.DeleteSingle(artifactId);
 			}

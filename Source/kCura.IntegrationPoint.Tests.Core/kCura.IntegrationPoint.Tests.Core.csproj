@@ -108,7 +108,6 @@
     <Compile Include="Agent.cs" />
     <Compile Include="AgentTypeInformationHelper.cs" />
     <Compile Include="AuditHelper.cs" />
-    <Compile Include="Choice.cs" />
     <Compile Include="ClaimsPrincipalFactory.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="DocumentService.cs" />
@@ -164,7 +163,6 @@
     <Compile Include="Models\RelativityProviderModel.cs" />
     <Compile Include="Models\SchedulerModel.cs" />
     <Compile Include="Models\Shared\SharedModelEnums.cs" />
-    <Compile Include="ObjectType.cs" />
     <Compile Include="TestDbContext.cs" />
     <Compile Include="TestException.cs" />
     <Compile Include="Permission.cs" />

@@ -7,12 +7,12 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 	{
 		public static ICaseServiceContext CreateCaseServiceContext(IEHHelper helper, int workspaceID)
 		{
-			return new CaseServiceContext(new ServiceContextHelperForEventHandlers(helper, workspaceID, new RsapiClientWithWorkspaceFactory(helper)));
+			return new CaseServiceContext(new ServiceContextHelperForEventHandlers(helper, workspaceID));
 		}
 
 		public static IEddsServiceContext CreateEddsServiceContext(IEHHelper helper)
 		{
-			return new EddsServiceContext(new ServiceContextHelperForEventHandlers(helper, -1, new RsapiClientWithWorkspaceFactory(helper)));
+			return new EddsServiceContext(new ServiceContextHelperForEventHandlers(helper, -1));
 		}
 
 		public static IRSAPIService CreateRSAPIService(IHelper helper, int workspaceArtifactId)
