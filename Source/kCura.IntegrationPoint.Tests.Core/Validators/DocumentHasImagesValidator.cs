@@ -15,18 +15,21 @@ namespace kCura.IntegrationPoint.Tests.Core.Validators
 
 		public virtual void ValidateDocument(Document destinationDocument, Document sourceDocument)
 		{
-			bool destinationDocumentHasImages = DestinationDocumentHasImagesValue(destinationDocument);
+			bool? destinationDocumentHasImages = DestinationDocumentHasImagesValue(destinationDocument);
 
 			Assert.That(destinationDocumentHasImages, Is.EqualTo(ExpectHasImages), $"Invalid document '{destinationDocument[IntegrationPoints.Data.DocumentFields.ControlNumber]}' HasImage field value");
 		}
 
-		protected virtual bool DestinationDocumentHasImagesValue(Document destinationDocument)
+		protected virtual bool? DestinationDocumentHasImagesValue(Document destinationDocument)
 		{
 			string hasImagesChoiceValue = destinationDocument.HasImages?.Name;
 
-			return !string.IsNullOrEmpty(hasImagesChoiceValue) &&
-			       (string.Equals(hasImagesChoiceValue, "Yes", StringComparison.OrdinalIgnoreCase) ||
-			        string.Equals(hasImagesChoiceValue, "True", StringComparison.OrdinalIgnoreCase));
+			if (string.IsNullOrEmpty(hasImagesChoiceValue))
+			{
+				return null;
+			}
+
+			return string.Equals(hasImagesChoiceValue, "Yes", StringComparison.OrdinalIgnoreCase) || string.Equals(hasImagesChoiceValue, "True", StringComparison.OrdinalIgnoreCase);
 		}
 	}
 }

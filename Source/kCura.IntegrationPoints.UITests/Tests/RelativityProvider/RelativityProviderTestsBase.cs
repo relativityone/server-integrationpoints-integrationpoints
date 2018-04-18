@@ -18,6 +18,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		protected IFolderManager FolderManager { get; set; }
 		protected INativesService NativesService { get; set; }
 		protected IImagesService ImageService { get; set; }
+		protected IProductionImagesService ProductionImageService { get; set; }
 		protected IRelativityObjectManagerFactory ObjectManagerFactory { get; set; }
 
 		protected override void ContextSetUp()
@@ -33,6 +34,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			FolderManager = Context.Helper.CreateAdminProxy<IFolderManager>();
 			NativesService = new NativesService(Context.Helper);
 			ImageService = new ImagesService(Context.Helper);
+			ProductionImageService = new ProductionImagesService(Context.Helper);
 			PointsAction = new IntegrationPointsAction(Driver, Context);
 			ObjectManagerFactory = new RelativityObjectManagerFactory(Context.Helper,
 				new DefaultSecretCatalogFactory(),

@@ -94,7 +94,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			// Assert
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
-			ValidateProductionImages(model.GetValueOrDefault(x => x.CopyFilesToRepository), model);
+			ValidateOverlayProductionImages(model.GetValueOrDefault(x => x.CopyFilesToRepository), model);
 		}
 
 		[Test]
@@ -117,7 +117,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			// Assert
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 
-			ValidateProductionImages(model.GetValueOrDefault(x => x.CopyFilesToRepository), model);
+			ValidateOverlayProductionImages(model.GetValueOrDefault(x => x.CopyFilesToRepository), model);
 		}
 
 		[Test]
@@ -164,15 +164,27 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 		private void ValidateProductionImages(bool expectInRepository, RelativityProviderModel model)
 		{
-			Validate(CreateDocumentsEmptyValidator(), expectInRepository, model);
+			ValidateIncludingHasImages(CreateDocumentsEmptyValidator(), expectInRepository, model);
 		}
 
-		private void Validate(DocumentsValidator documentsValidator, bool expectInRepository, RelativityProviderModel model)
+		private void ValidateOverlayProductionImages(bool expectInRepository, RelativityProviderModel model)
+		{
+			ValidateWithoutHasImages(CreateDocumentsEmptyValidator(), expectInRepository, model);
+		}
+
+		private void ValidateIncludingHasImages(DocumentsValidator documentsValidator, bool expectInRepository, RelativityProviderModel model)
 		{
 			documentsValidator
-				.ValidateWith(new DocumentFieldsValidator())
-				.ValidateWith(new DocumentHasImagesValidator(true))
-				.ValidateWith(new DocumentImagesValidator(ImageService, DestinationContext.GetWorkspaceId(), expectInRepository))
+				.ValidateWith(new DocumentHasImagesValidator(null))
+				.ValidateWith(new DocumentProductionImagesValidator(ProductionImageService, DestinationContext.GetWorkspaceId(), expectInRepository))
+				.ValidateWith(CreateDocumentSourceJobNameValidator(model))
+				.Validate();
+		}
+
+		private void ValidateWithoutHasImages(DocumentsValidator documentsValidator, bool expectInRepository, RelativityProviderModel model)
+		{
+			documentsValidator
+				.ValidateWith(new DocumentProductionImagesValidator(ProductionImageService, DestinationContext.GetWorkspaceId(), expectInRepository))
 				.ValidateWith(CreateDocumentSourceJobNameValidator(model))
 				.Validate();
 		}
