@@ -170,7 +170,11 @@
     <Compile Include="Models\Shared\OverwriteType.cs" />
     <Compile Include="Models\RelativityProviderModel.cs" />
     <Compile Include="Models\SchedulerModel.cs" />
+<<<<<<< HEAD
     <Compile Include="Models\Shared\ImagePrecedence.cs" />    
+=======
+    <Compile Include="Models\Shared\ImagePrecedence.cs" />
+>>>>>>> 
     <Compile Include="TestDbContext.cs" />
     <Compile Include="TestException.cs" />
     <Compile Include="Permission.cs" />
