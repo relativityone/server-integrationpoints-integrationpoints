@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			catch (Exception e)
 			{
 				_logger.LogError(e, _FOR_FOLDER_ERROR, folderId, viewId);
-				throw;
+			    return 0;
 			}
 		}
 
@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			catch (Exception e)
 			{
 				_logger.LogError(e, _FOR_PRODUCTION_ERROR, productionSetId);
-				throw;
+			    return 0;
 			}
 		}
 
@@ -83,7 +83,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			catch (Exception e)
 			{
 				_logger.LogError(e, _FOR_SAVED_SEARCH_ERROR, savedSearchId);
-				throw;
+			    return 0;
 			}
 		}
 
