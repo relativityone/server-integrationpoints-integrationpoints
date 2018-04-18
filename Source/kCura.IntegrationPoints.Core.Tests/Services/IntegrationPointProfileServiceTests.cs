@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -30,7 +31,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		private readonly int _destinationProviderId = 424;
 
 		private IHelper _helper;
-		private IHelper _targetHelper;
 		private ICaseServiceContext _caseServiceContext;
 		private IContextContainer _contextContainer;
 		private IContextContainerFactory _contextContainerFactory;
@@ -42,12 +42,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		private IIntegrationPointPermissionValidator _permissionValidator;
 		private IntegrationPointProfileService _instance;
 		private IChoiceQuery _choiceQuery;
+		private IValidationExecutor _validationExecutor;
 
 		[SetUp]
 		public override void SetUp()
 		{
 			_helper = Substitute.For<IHelper>();
-			_targetHelper = Substitute.For<IHelper>();
 			_caseServiceContext = Substitute.For<ICaseServiceContext>();
 			_contextContainer = Substitute.For<IContextContainer>();
 			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
@@ -60,6 +60,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			_integrationModelValidator.Validate(Arg.Any<IntegrationPointModelBase>(), Arg.Any<SourceProvider>(), Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<string>()).Returns(new ValidationResult());
 
+			_validationExecutor = Substitute.For<IValidationExecutor>();
+
 			_instance = Substitute.ForPartsOf<IntegrationPointProfileService>(
 				_helper,
 				_caseServiceContext,
@@ -67,8 +69,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				_serializer,
 				_choiceQuery,
 				_managerFactory,
-				_integrationModelValidator,
-				_permissionValidator
+				_validationExecutor
 			);
 
 			_caseServiceContext.RsapiService = Substitute.For<IRSAPIService>();

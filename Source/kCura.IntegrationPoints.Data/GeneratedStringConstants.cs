@@ -329,6 +329,7 @@ namespace kCura.IntegrationPoints.Data
 
 	public partial class JobStatusChoices
 	{
+		public static Choice JobHistoryValidating = new Choice(Guid.Parse("6a2dcef5-5826-4f61-9bac-59fef879ebc2")) {Name=@"Validating"};
 		public static Choice JobHistoryValidationFailed = new Choice(Guid.Parse("d0b43a57-bdc8-4c14-b2f0-2928ae4f750a")) {Name=@"Validation Failed"};
 		public static Choice JobHistoryPending = new Choice(Guid.Parse("24512aba-b8aa-4858-9324-5799033d7e96")) {Name=@"Pending"};
 		public static Choice JobHistoryProcessing = new Choice(Guid.Parse("bb170e53-2264-4708-9b00-86156187ed54")) {Name=@"Processing"};

@@ -29,8 +29,8 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 		protected IChoiceQuery ChoiceQuery;
 		protected IManagerFactory ManagerFactory;
-		protected IIntegrationPointProviderValidator IntegrationModelValidator;
-		protected IIntegrationPointPermissionValidator _permissionValidator;
+		protected IValidationExecutor _validationExecutor;
+
 		protected IHelper _helper;
 
 		protected static readonly object Lock = new object();
@@ -44,17 +44,15 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			IIntegrationPointSerializer serializer,
 			IManagerFactory managerFactory,
 			IContextContainerFactory contextContainerFactory,
-			IIntegrationPointBaseFieldGuidsConstants guidsConstants,
-			IIntegrationPointProviderValidator integrationModelValidator,
-			IIntegrationPointPermissionValidator permissionValidator)
+			IValidationExecutor validationExecutor,
+			IIntegrationPointBaseFieldGuidsConstants guidsConstants)
 		{
 			Serializer = serializer;
 			Context = context;
 			ChoiceQuery = choiceQuery;
 			ManagerFactory = managerFactory;
+			_validationExecutor = validationExecutor;
 			_guidsConstants = guidsConstants;
-			IntegrationModelValidator = integrationModelValidator;
-			_permissionValidator = permissionValidator;
 			_helper = helper;
 			SourceContextContainer = contextContainerFactory.CreateContextContainer(helper);
 		}
@@ -314,30 +312,20 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			errorManager.Create(new[] { error });
 		}
 
-		protected void RunValidation(IntegrationPointModelBase model, SourceProvider sourceProvider, DestinationProvider destinationProvider, IntegrationPointType integrationPointType, string objectTypeGuid)
+		protected void RunValidation(IntegrationPointModelBase model, SourceProvider sourceProvider, DestinationProvider destinationProvider, IntegrationPointType integrationPointType, 
+			string objectTypeGuid)
 		{
-			ValidationResult validationResult = IntegrationModelValidator.Validate(model, sourceProvider, destinationProvider, integrationPointType, objectTypeGuid);
-
-			if (!validationResult.IsValid)
+			var context = new ValidationContext
 			{
-				throw new IntegrationPointProviderValidationException(validationResult);
-			}
+				DestinationProvider = destinationProvider,
+				IntegrationPointType = integrationPointType,
+				Model = model,
+				ObjectTypeGuid = objectTypeGuid,
+				SourceProvider = sourceProvider,
+				UserId = Context.EddsUserID
+			};
 
-			var permissionCheck = _permissionValidator.ValidateSave(model, sourceProvider, destinationProvider, integrationPointType, objectTypeGuid);
-
-			if (Context.EddsUserID == 0)
-			{
-				permissionCheck.Add(Constants.IntegrationPoints.NO_USERID);
-			}
-
-			if (!permissionCheck.IsValid)
-			{
-				CreateRelativityError(
-					Core.Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_MESSAGE,
-					$"{Core.Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_FULLTEXT_PREFIX}{Environment.NewLine}{String.Join(Environment.NewLine, permissionCheck.Messages)}");
-
-				throw new PermissionException(Core.Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_USER_MESSAGE);
-			}
+			_validationExecutor.ValidateOnSave(context);
 		}
 	}
 }

@@ -59,6 +59,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 			container.Register(Component.For<IIntegrationPointPermissionValidator>().UsingFactoryMethod(k =>
 				new IntegrationPointPermissionValidator(Enumerable.Empty<IPermissionValidator>(),
 					k.Resolve<IIntegrationPointSerializer>())).LifestyleSingleton());
+
+			container.Register(Component.For<IValidationExecutor>().ImplementedBy<ValidationExecutor>().LifestyleSingleton());
+
 			container.Register(Component.For<IAuthTokenGenerator>().UsingFactoryMethod(kernel =>
 			{
 				IEHContext context = kernel.Resolve<IEHContext>();

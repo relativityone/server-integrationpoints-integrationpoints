@@ -159,6 +159,7 @@
     <Compile Include="Validation\EmailValidatorTest.cs" />
     <Compile Include="Validation\RelativityProviderValidator\WorkspaceValidatorTests.cs" />
     <Compile Include="Validation\StopJobPermissionValidatorTests.cs" />
+    <Compile Include="Validation\ValidationExecutorTests.cs" />
     <Compile Include="Validation\ViewErrorsPermissionValidatorTests.cs" />
   </ItemGroup>
   <ItemGroup>

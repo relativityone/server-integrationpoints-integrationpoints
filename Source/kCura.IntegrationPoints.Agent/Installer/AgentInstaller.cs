@@ -136,6 +136,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Register(Component.For<IIntegrationPointProviderValidator>().ImplementedBy<IntegrationPointProviderEmptyValidator>().LifestyleSingleton());
 			container.Register(Component.For<IIntegrationPointPermissionValidator>().ImplementedBy<IntegrationPointPermissionEmptyValidator>().LifestyleSingleton());
 			container.Register(Component.For<IIntegrationPointExecutionValidator>().ImplementedBy<IntegrationPointExecutionEmptyValidator>().LifestyleSingleton());
+			container.Register(Component.For<IValidationExecutor>().ImplementedBy<ValidationExecutor>().LifestyleSingleton());
 
 			container.Register(Component.For<IJobSynchronizationChecker>().ImplementedBy<JobSynchronizationChecker>().LifestyleTransient());
 			container.Register(Component.For<ITaskFactoryJobHistoryServiceFactory>().ImplementedBy<TaskFactoryJobHistoryServiceFactory>().LifestyleTransient());

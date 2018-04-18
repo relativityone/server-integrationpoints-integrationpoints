@@ -75,14 +75,15 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 
 			IIntegrationPointPermissionValidator permissionValidator = new IntegrationPointPermissionValidator(Enumerable.Empty<IPermissionValidator>(), integrationPointSerializer);
 
+			IValidationExecutor validationExecutor = new ValidationExecutor(ipValidator, permissionValidator);
+
 			IJobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(caseServiceContext, helper);
 			IIntegrationPointService integrationPointService = new IntegrationPointService(helper, caseServiceContext,
 				contextContainerFactory, integrationPointSerializer, choiceQuery, jobManager, jobHistoryService,
-				jobHistoryErrorService, managerFactory, ipValidator, permissionValidator);
+				jobHistoryErrorService, managerFactory, validationExecutor);
 
 			IIntegrationPointProfileService integrationPointProfileService = new IntegrationPointProfileService(helper,
-				caseServiceContext, contextContainerFactory, integrationPointSerializer, choiceQuery, managerFactory,
-				ipValidator, permissionValidator);
+				caseServiceContext, contextContainerFactory, integrationPointSerializer, choiceQuery, managerFactory, validationExecutor);
 
 			IRSAPIService rsapiService = new RSAPIService(helper, workspaceArtifactId);
 			IProviderTypeService providerTypeService = new ProviderTypeService(rsapiService);

@@ -1,5 +1,4 @@
-﻿using System;
-using kCura.Apps.Common.Utils.Serializers;
+﻿using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Validation.Parts;
@@ -29,7 +28,6 @@ namespace kCura.IntegrationPoints.Core.Validation
             {
                 sourceConfiguration =
                     _serializer.Deserialize<SourceConfiguration>(integrationModel.SourceConfiguration);
-
             }
             catch (JsonReaderException) //handle case of encrypted sourceConfiguration
             {

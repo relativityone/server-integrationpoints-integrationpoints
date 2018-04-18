@@ -270,10 +270,13 @@
     <Compile Include="Validation\Abstract\IIntegrationPointValidator.cs" />
     <Compile Include="Validation\Helpers\INonValidCharactersValidator.cs" />
     <Compile Include="Validation\Helpers\NonValidCharactersValidator.cs" />
+    <Compile Include="Validation\Abstract\IValidationExecutor.cs" />
     <Compile Include="Validation\IntegrationPointPermissionValidator.cs" />
     <Compile Include="Validation\IntegrationPointProviderValidationException.cs" />
     <Compile Include="Validation\IntegrationPointProviderValidationMessages.cs" />
     <Compile Include="Validation\Abstract\BasePermissionValidator.cs" />
+    <Compile Include="Validation\ValidationContext.cs" />
+    <Compile Include="Validation\ValidationExecutor.cs" />
     <Compile Include="Validation\Parts\ImportProductionValidator.cs" />
     <Compile Include="Validation\Parts\ImportPermissionValidator.cs" />
     <Compile Include="Validation\Parts\ArtifactValidator.cs" />

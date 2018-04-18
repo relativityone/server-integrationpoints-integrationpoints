@@ -18,6 +18,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		private readonly IChoiceQuery _choiceQuery;
 		private readonly IJobManager _jobService;
 		private readonly IManagerFactory _managerFactory;
+		private readonly IValidationExecutor _validationExecutor;
 		private readonly IIntegrationPointProviderValidator _ipValidator;
 		private readonly IIntegrationPointPermissionValidator _permissionValidator;
 		private readonly IIntegrationPointExecutionValidator _integrationPointExecutionValidator;
@@ -25,12 +26,14 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 
 		public ServiceFactory(ICaseServiceContext caseServiceContext, IContextContainerFactory contextContainerFactory,
 			IIntegrationPointSerializer serializer, IChoiceQuery choiceQuery,
-			IJobManager jobService, IManagerFactory managerFactory, IIntegrationPointProviderValidator ipValidator,
+			IJobManager jobService, IManagerFactory managerFactory,
+			IValidationExecutor validationExecutor, IIntegrationPointProviderValidator ipValidator,
 			IIntegrationPointPermissionValidator permissionValidator, IIntegrationPointExecutionValidator integrationPointExecutionValidator)
 		{
 			_permissionValidator = permissionValidator;
 			_ipValidator = ipValidator;
 			_managerFactory = managerFactory;
+			_validationExecutor = validationExecutor;
 			_jobService = jobService;
 			_choiceQuery = choiceQuery;
 			_serializer = serializer;
@@ -53,9 +56,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				jobHistoryService,
 				jobHistoryErrorService,
 				_managerFactory,
-				_ipValidator,
-				_permissionValidator,
-				_integrationPointExecutionValidator);
+				_validationExecutor);
 		}
 
 		public IFieldCatalogService CreateFieldCatalogService(IHelper targetHelper)
