@@ -4,7 +4,6 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
-using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using Relativity.API;
 
@@ -19,19 +18,13 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		private readonly IJobManager _jobService;
 		private readonly IManagerFactory _managerFactory;
 		private readonly IValidationExecutor _validationExecutor;
-		private readonly IIntegrationPointProviderValidator _ipValidator;
-		private readonly IIntegrationPointPermissionValidator _permissionValidator;
-		private readonly IIntegrationPointExecutionValidator _integrationPointExecutionValidator;
 
 
 		public ServiceFactory(ICaseServiceContext caseServiceContext, IContextContainerFactory contextContainerFactory,
 			IIntegrationPointSerializer serializer, IChoiceQuery choiceQuery,
 			IJobManager jobService, IManagerFactory managerFactory,
-			IValidationExecutor validationExecutor, IIntegrationPointProviderValidator ipValidator,
-			IIntegrationPointPermissionValidator permissionValidator, IIntegrationPointExecutionValidator integrationPointExecutionValidator)
+			IValidationExecutor validationExecutor)
 		{
-			_permissionValidator = permissionValidator;
-			_ipValidator = ipValidator;
 			_managerFactory = managerFactory;
 			_validationExecutor = validationExecutor;
 			_jobService = jobService;
@@ -39,7 +32,6 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			_serializer = serializer;
 			_contextContainerFactory = contextContainerFactory;
 			_caseServiceContext = caseServiceContext;
-			_integrationPointExecutionValidator = integrationPointExecutionValidator;
 		}
 
 		public IIntegrationPointService CreateIntegrationPointService(IHelper helper, IHelper targetHelper)

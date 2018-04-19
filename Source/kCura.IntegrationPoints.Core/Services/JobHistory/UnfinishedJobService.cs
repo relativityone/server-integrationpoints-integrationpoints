@@ -21,6 +21,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		{
 			Guid[] unfinishedChoicesNames = {
 				JobStatusChoices.JobHistoryPending.Guids.FirstOrDefault(),
+				JobStatusChoices.JobHistoryValidating.Guids.FirstOrDefault(),
 				JobStatusChoices.JobHistoryProcessing.Guids.FirstOrDefault(),
 				JobStatusChoices.JobHistoryStopping.Guids.FirstOrDefault()
 			};

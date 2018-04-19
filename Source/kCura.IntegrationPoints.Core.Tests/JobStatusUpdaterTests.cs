@@ -127,5 +127,18 @@ namespace kCura.IntegrationPoints.Core.Tests
 			//ASSERT
 			Assert.IsTrue(choice.EqualsToChoice(JobStatusChoices.JobHistoryStopped));
 		}
+
+		[Test]
+		public void GenerateStatus_JobHistoryJobError_ReturnsValidationFailed()
+		{
+			//ARRANGE
+			_service.GetJobErrorFailedStatus(Arg.Any<int>()).Returns(new JobHistoryError { ErrorType = ErrorTypeChoices.JobHistoryErrorJob });
+
+			//ACT
+			var choice = _instance.GenerateStatus(new JobHistory { JobStatus = JobStatusChoices.JobHistoryValidationFailed, ItemsWithErrors = 0 }, _JOB_ID);
+
+			//ASSERT
+			Assert.IsTrue(choice.EqualsToChoice(JobStatusChoices.JobHistoryValidationFailed));
+		}
 	}
 }

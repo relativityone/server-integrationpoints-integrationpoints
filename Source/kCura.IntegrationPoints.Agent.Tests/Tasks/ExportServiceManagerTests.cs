@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using Castle.Windsor;
@@ -7,10 +8,11 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Agent.Tasks;
+using kCura.IntegrationPoints.Agent.Validation;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
+using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter;
@@ -30,11 +32,9 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
-using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
@@ -43,7 +43,7 @@ using Choice = kCura.Relativity.Client.DTOs.Choice;
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {
 	[TestFixture]
-	[Description("IMPORTANT" +
+	[NUnit.Framework.Description("IMPORTANT" +
 				 "These existing tests will show that they cover majority of the code. " +
 				 "But the tests below are only consist of the stopping scenarios and regular gold flow." +
 				 "A lot more tests must be added !")]
@@ -77,7 +77,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private ISavedSearchQueryRepository _savedSearchQueryRepository;
 		private IJobStopManager _jobStopManager;
 		private IDocumentRepository _documentRepository;
-		private IDestinationWorkspaceRepository _destinationWorkspaceRepository;
 		private IWorkspaceRepository _workspaceRepository;
 		private IExporterService _exporterService;
 
@@ -97,6 +96,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IBatchStatus _sendingEmailNotification;
 		private IDataSynchronizer _synchornizer;
 		private IJobHistoryManager _historyManager;
+		private IAgentValidator _agentValidator;
 
 		[SetUp]
 		public override void SetUp()
@@ -136,7 +136,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_savedSearchQueryRepository = Substitute.For<ISavedSearchQueryRepository>();
 			_jobStopManager = Substitute.For<IJobStopManager>();
 			_documentRepository = Substitute.For<IDocumentRepository>();
-			_destinationWorkspaceRepository = Substitute.For<IDestinationWorkspaceRepository>();
 			_workspaceRepository = Substitute.For<IWorkspaceRepository>();
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
 			_exporterService = Substitute.For<IExporterService>();
@@ -145,7 +144,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_exportServiceObserver = Substitute.For<IBatchStatus>();
 			_synchornizer = Substitute.For<IDataSynchronizer>();
 			_historyManager = Substitute.For<IJobHistoryManager>();
-
+			_agentValidator = Substitute.For<IAgentValidator>();
 			_jobStatisticsService = Substitute.For<JobStatisticsService>();
 
 			_exporterFactory.InitializeExportServiceJobObservers(Arg.Any<Job>(), _tagsCreator, _tagSavedSearchManager,
@@ -215,8 +214,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				_claimPrincipleFactory, _repositoryFactory,
 				_managerFactory, _batchStatuses, _serializer, _jobService, _scheduleRuleFactory, _jobHistoryService,
 				_jobHistoryErrorService,
+				_jobStatisticsService,
 				null,
-				_jobStatisticsService);
+				_agentValidator);
 			_managerFactory.CreateJobHistoryManager(_contextContainer).Returns(_historyManager);
 		}
 
@@ -273,7 +273,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		}
 
 		[Test]
-		[Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
+		[NUnit.Framework.Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
 		public void Execute_StopAtTheVeryBeginningOfTheJob()
 		{
 			// ARRANGE
@@ -289,7 +289,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		}
 
 		[Test]
-		[Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
+		[NUnit.Framework.Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
 		public void Execute_StopAfterAcquiringTheSynchronizer()
 		{
 			// ARRANGE
@@ -306,7 +306,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		}
 
 		[Test]
-		[Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
+		[NUnit.Framework.Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
 		public void Execute_StopBeforeExecutePushingData()
 		{
 			// ARRANGE
@@ -327,7 +327,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		}
 
 		[Test]
-		[Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
+		[NUnit.Framework.Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
 		public void Execute_NoStopRequested()
 		{
 			// ACT
@@ -412,7 +412,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		}
 
 		[Test]
-		[Description("This happens when GeneralWithCustodianRdoSynchronizerFactory is passed in.")]
+		[NUnit.Framework.Description("This happens when GeneralWithCustodianRdoSynchronizerFactory is passed in.")]
 		public void Execute_CreateDestinationProvider_MakeSureToSetSourceProvider()
 		{
 			// ARRANGE
@@ -428,8 +428,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				_claimPrincipleFactory, _repositoryFactory,
 				_managerFactory, _batchStatuses, _serializer, _jobService, _scheduleRuleFactory, _jobHistoryService,
 				_jobHistoryErrorService,
+				_jobStatisticsService,
 				null,
-				_jobStatisticsService);
+				_agentValidator);
 			try
 			{
 				instance.Execute(_job);
@@ -446,7 +447,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		}
 
 		[Test]
-		[Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
+		[NUnit.Framework.Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
 		public void Execute_FailToSetJobStateAsUnstoppable_OnFinalizeExportServiceObservers()
 		{
 			// ARRANGE
@@ -509,7 +510,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		}
 
 		[Test]
-		[Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
+		[NUnit.Framework.Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
 		public void Execute_EnsureToMarkErrorStatusAsExpiredIfTheJobIsStopped()
 		{
 			// ARRAGE
@@ -524,7 +525,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		}
 
 		[Test]
-		[Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
+		[NUnit.Framework.Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
 		public void Execute_FailMarkErrorStatusAsExpiredIfTheJobIsStopped_ExpectNoException()
 		{
 			// ARRAGE
@@ -539,7 +540,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		}
 
 		[Test]
-		[Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
+		[NUnit.Framework.Category(IntegrationPoint.Tests.Core.Constants.STOPJOB_FEATURE)]
 		public void Execute_MakeSureToUpdateJobStopStateToNoneOnScheduledJob()
 		{
 			// ARRANGE
@@ -584,6 +585,43 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			// ASSERT
 			Assert.AreEqual(newConfig, _job.JobDetails);
+		}
+
+		[Test]
+		public void Execute_EnsureToValidateJob()
+		{
+			// ARRANGE
+
+
+			// ACT
+			_instance.Execute(_job);
+
+			// ASSERT
+			_agentValidator.Received(1).Validate(_integrationPoint, _job.SubmittedBy);
+
+
+			_jobHistoryService.Received(1).UpdateRdo(Arg.Is<JobHistory>(x => x == _jobHistory));
+		}
+
+		[Test]
+		public void Execute_EnsureToHandleValidationErrorJob()
+		{
+			// ARRANGE
+			_agentValidator.When(x => x.Validate(_integrationPoint, _job.SubmittedBy)).Do(x =>
+				{
+					throw new PermissionException();
+				}
+			);
+
+			// ACT
+			Assert.Throws<PermissionException>(() => _instance.Execute(_job));
+
+			// ASSERT
+			_agentValidator.Received(1).Validate(_integrationPoint, _job.SubmittedBy);
+
+
+			// we expect to first change state to Validating and then Validation Failed
+			_jobHistoryService.Received(2).UpdateRdo(Arg.Is<JobHistory>(x => x == _jobHistory));
 		}
 
 		private void AssertFinalizedJob(Job job)

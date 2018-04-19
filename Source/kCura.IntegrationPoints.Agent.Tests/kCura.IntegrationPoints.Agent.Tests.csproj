@@ -61,6 +61,7 @@
     <Compile Include="Tasks\SyncCustodianManagerWorkerTests.cs" />
     <Compile Include="Tasks\SyncManagerTests.cs" />
     <Compile Include="Tasks\SyncWorkerTests.cs" />
+    <Compile Include="Validation\AgentValidatorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />

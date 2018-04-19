@@ -7,6 +7,7 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Agent.Tasks;
+using kCura.IntegrationPoints.Agent.Validation;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
@@ -95,6 +96,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		//not sure
 		private IBatchStatus _updateJobHistoryStatus;
 		private IBatchStatus _sendingEmailNotification;
+		private IAgentValidator _agentValidator;
 
 		[SetUp]
 		public override void SetUp()
@@ -135,6 +137,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_importFileLocationService = Substitute.For<IImportFileLocationService>();
 			_loadFileReader = Substitute.For<IDataReader, IArtifactReader>();
 			_opticonFileReader = Substitute.For<IDataReader, IOpticonDataReader>();
+			_agentValidator = Substitute.For<IAgentValidator>();
 			((IArtifactReader)_loadFileReader).CountRecords().Returns(_RECORD_COUNT);
 			((IOpticonDataReader)_opticonFileReader).CountRecords().Returns(_RECORD_COUNT);
 
@@ -202,7 +205,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				_synchronizerFactory,
 				_claimPrincipleFactory,	_managerFactory, _batchStatuses, _serializer, _jobService, _scheduleRuleFactory, _jobHistoryService,
 				_jobHistoryErrorService, _jobStatisticsService,
-				_dataReaderFactory, _importFileLocationService);
+				_dataReaderFactory, _importFileLocationService, _agentValidator);
 		}
 
 

@@ -14,6 +14,7 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Agent.Tasks;
+using kCura.IntegrationPoints.Agent.Validation;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
@@ -65,6 +66,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 		private IJobHistoryErrorService _jobHistoryErrorService;
 		private IDataReaderFactory _dataReaderFactory;
 		private IImportFileLocationService _importFileLocationService;
+		private IAgentValidator _agentValidator;
 
 		[OneTimeSetUp]
 		public void Init()
@@ -87,6 +89,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 			_jobHistoryService = Substitute.For<IJobHistoryService>();
 			_jobHistoryErrorService = Substitute.For<IJobHistoryErrorService>();
 			_importFileLocationService = Substitute.For<IImportFileLocationService>();
+			_agentValidator = Substitute.For<IAgentValidator>();
 
 			//Data Transfer Location
 
@@ -174,7 +177,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 				_jobHistoryErrorService,
 				null,
 				_dataReaderFactory,
-				_importFileLocationService);
+				_importFileLocationService,
+				_agentValidator);
 		}
 
 		[OneTimeTearDown]

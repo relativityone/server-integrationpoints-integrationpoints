@@ -24,7 +24,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			var unfinishedJobsStatusesGuids = new List<Guid>
 			{
-				JobStatusChoices.JobHistoryProcessing.Guids.FirstOrDefault()
+				JobStatusChoices.JobHistoryProcessing.Guids.FirstOrDefault(),
+				JobStatusChoices.JobHistoryValidating.Guids.FirstOrDefault()
 			};
 
 			var request = new QueryRequest

@@ -25,10 +25,9 @@ using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.Data.RowDataGateway;
-using kCura.IntegrationPoint.Tests.Core.Validators;
+using kCura.IntegrationPoints.Agent.Validation;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using Relativity.Services.Folder;
 using Constants = kCura.IntegrationPoint.Tests.Core.Constants;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
@@ -77,10 +76,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			var jobHistoryService = Container.Resolve<IJobHistoryService>();
 			var jobHistoryErrorService = Container.Resolve<IJobHistoryErrorService>();
 			var jobStatisticsService = Container.Resolve<JobStatisticsService>();
-
+			var agentValidator = Container.Resolve<IAgentValidator>();
 			var jobStatusUpdater = Container.Resolve<IJobStatusUpdater>();
 			var jobHistoryUpdater = new JobHistoryBatchUpdateStatus(jobStatusUpdater, jobHistoryService, _jobService, serializer);
 			
+
 			_exportManager = new ExportServiceManager(Helper, helperFactory,
 				_caseContext, contextContainerFactory,
 				synchronizerFactory,
@@ -94,8 +94,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				scheduleRuleFactory,
 				jobHistoryService,
 				jobHistoryErrorService,
+				jobStatisticsService,
 				null,
-				jobStatisticsService
+				agentValidator
 				);
 
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();

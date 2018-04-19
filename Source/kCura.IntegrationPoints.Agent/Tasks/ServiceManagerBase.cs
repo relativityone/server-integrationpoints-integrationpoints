@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.Attributes;
+using kCura.IntegrationPoints.Agent.Validation;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
+using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
+using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Domain;
@@ -18,6 +21,7 @@ using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -43,6 +47,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		protected JobStatisticsService StatisticsService { get; }
 		protected ISynchronizerFactory SynchronizerFactory { get; }
 		protected IJobStopManager JobStopManager { get; set; }
+		private IAgentValidator _agentValidator;
 		protected SourceConfiguration SourceConfiguration { get; set; }
 		protected ImportSettings ImportSettings { get; set; }
 		protected Guid Identifier { get; set; }
@@ -60,9 +65,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			ICaseServiceContext caseServiceContext,
 			IOnBehalfOfUserClaimsPrincipalFactory onBehalfOfUserClaimsPrincipalFactory,
 			JobStatisticsService statisticsService,
-			ISynchronizerFactory synchronizerFactory
+			ISynchronizerFactory synchronizerFactory,
+			IAgentValidator agentValidator
 			)
 		{
+			_agentValidator = agentValidator;
 			Logger = helper.GetLoggerFactory().GetLogger().ForContext<ServiceManagerBase>();
 			JobService = jobService;
 			Serializer = serializer;
@@ -99,7 +106,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			ConfigureJobStatistics();
 			ConfigureJobHistory();
 			LoadSourceProvider();
-			UpdateJobStatus();
+			RunValidation(job);
 			SanitizeMappedFields();
 			JobHistoryErrorManagerSetup(job);
 			ConfigureJobStopManager(job);
@@ -163,16 +170,22 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 		}
 
-		protected void UpdateJobStatus()
+		protected void UpdateJobStatus(JobHistory jobHistory)
 		{
 			try
 			{
-				JobHistoryService.UpdateRdo(JobHistory);
+				JobHistoryService.UpdateRdo(jobHistory);
 			}
 			catch (Exception e)
 			{
-				throw LogUpdateJobStatus(e, JobHistory);
+				throw LogUpdateJobStatus(e, jobHistory);
 			}
+		}
+
+		protected void UpdateJobStatus(Choice state)
+		{
+			JobHistory.JobStatus = state;
+			UpdateJobStatus(JobHistory);
 		}
 
 		protected void ThrowNewExceptionIfAny(IEnumerable<Exception> exceptions)
@@ -345,6 +358,23 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			LogBatchExceptions(job, exceptions);
 			ThrowNewExceptionIfAny(exceptions);
 			LogConfigureBatchExceptionsSuccesfulEnd(job);
+		}
+
+		protected void HandleGenericException(Exception ex, Job job)
+		{
+			LogExecutingTaskError(job, ex);
+			Result.Status = TaskStatusEnum.Fail;
+			JobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, ex);
+			if (ex is PermissionException || ex is IntegrationPointProviderValidationException)
+			{
+				UpdateJobStatus(JobStatusChoices.JobHistoryValidationFailed);
+			}
+		}
+
+		private void RunValidation(Job job)
+		{
+			UpdateJobStatus(JobStatusChoices.JobHistoryValidating);
+			_agentValidator.Validate(IntegrationPointDto, job.SubmittedBy);
 		}
 
 		#region Logging

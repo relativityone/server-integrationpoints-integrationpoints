@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Data;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Agent.Validation;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
+using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Domain;
@@ -42,7 +45,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IJobHistoryErrorService jobHistoryErrorService,
 			JobStatisticsService statisticsService,
 			IDataReaderFactory dataReaderFactory,
-			IImportFileLocationService importFileLocationService)
+			IImportFileLocationService importFileLocationService,
+			IAgentValidator agentValidator)
 			: base(helper,
 				  jobService,
 				  serializer,
@@ -55,7 +59,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				  caseServiceContext,
 				  onBehalfOfUserClaimsPrincipalFactory,
 				  statisticsService,
-				  synchronizerFactory)
+				  synchronizerFactory,
+				agentValidator)
 		{
 			Logger = helper.GetLoggerFactory().GetLogger().ForContext<ImportServiceManager>();
 			_dataReaderFactory = dataReaderFactory;
@@ -98,10 +103,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 			catch (Exception ex)
 			{
-				LogExecutingTaskError(job, ex);
-				Result.Status = TaskStatusEnum.Fail;
-				JobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, ex);
-				if (ex is IntegrationPointsException) // we want to rethrow, so it can be added to error tab if necessary
+				HandleGenericException(ex, job);
+				if (ex is PermissionException || ex is IntegrationPointProviderValidationException || ex is IntegrationPointsException)
 				{
 					throw;
 				}
@@ -166,7 +169,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				{
 					JobHistory = JobHistoryService.GetRdo(Identifier);
 					JobHistory.TotalItems = recordCount;
-					UpdateJobStatus();
+					UpdateJobStatus(JobHistory);
 				}
 
 				LogUpdateSourceRecordSuccesfulEnd();

@@ -2,6 +2,7 @@
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Core.Installers;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
 
@@ -42,6 +43,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Install(new FilesDestinationProvider.Core.Installer.FileNamingInstaller());
 			container.Install(new FilesDestinationProvider.Core.Installer.ExportInstaller());
 			container.Install(new ImportProvider.Parser.ServicesInstaller());
+			container.Install(new ValidationInstaller());
 			container.Install(new AgentInstaller(_agentHelper, _scheduleRuleFactory));
 		}
 	}

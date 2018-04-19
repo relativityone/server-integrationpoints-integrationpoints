@@ -289,7 +289,6 @@
     <Compile Include="Validation\Parts\ViewErrorsPermissionValidator.cs" />
     <Compile Include="Validation\Parts\WorkspaceValidator.cs" />
     <Compile Include="Validation\Parts\SavedSearchValidator.cs" />
-    <Compile Include="Validation\IIntegrationPointExecutionValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidator\IRelativityProviderValidatorsFactory.cs" />
     <Compile Include="Validation\RelativityProviderValidator\Parts\RelativityProviderWorkspaceValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidator\Parts\TransferredObjectValidator.cs" />
@@ -406,7 +405,6 @@
     <Compile Include="Validation\IntegrationPointProviderValidator.cs" />
     <Compile Include="Validation\Parts\SchedulerValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidator\Parts\RelativityProviderPermissionValidator.cs" />
-    <Compile Include="Validation\IntegrationPointExecutionValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidator\RelativityProviderValidationMessages.cs" />
     <Compile Include="Validation\RelativityProviderValidator\RelativityProviderValidatorsFactory.cs" />
   </ItemGroup>

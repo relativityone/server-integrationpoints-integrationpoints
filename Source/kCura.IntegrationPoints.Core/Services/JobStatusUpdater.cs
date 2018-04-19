@@ -49,7 +49,8 @@ namespace kCura.IntegrationPoints.Core.Services
 						() => HealthCheck.CreateJobFailedMetric(jobHistory, wkspId));
 					healthcheck.Write();
 
-					return Data.JobStatusChoices.JobHistoryErrorJobFailed;
+					return jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryValidationFailed)
+						? JobStatusChoices.JobHistoryValidationFailed : JobStatusChoices.JobHistoryErrorJobFailed;
 				}
 			}
 			else

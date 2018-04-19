@@ -4,6 +4,7 @@ using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Agent.Tasks;
+using kCura.IntegrationPoints.Agent.Validation;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
@@ -67,7 +68,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			var jobHistoryService = Container.Resolve<IJobHistoryService>();
 			var jobHistoryErrorService = Container.Resolve<IJobHistoryErrorService>();
 			var jobStatisticsService = Container.Resolve<JobStatisticsService>();
-
+			var agentValidator = Container.Resolve<IAgentValidator>();
 			var jobStatusUpdater = Container.Resolve<IJobStatusUpdater>();
 			var jobHistoryUpdater = new JobHistoryBatchUpdateStatus(jobStatusUpdater, jobHistoryService, _jobService, serializer);
 
@@ -84,8 +85,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				scheduleRuleFactory,
 				jobHistoryService,
 				jobHistoryErrorService,
+				jobStatisticsService,
 				null,
-				jobStatisticsService
+				agentValidator
 			);
 
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();

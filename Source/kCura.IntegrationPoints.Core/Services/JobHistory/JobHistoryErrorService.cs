@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Injection;
@@ -66,7 +67,7 @@ namespace kCura.IntegrationPoints.Core.Services
 						_context.RsapiService.JobHistoryErrorLibrary.Create(_jobHistoryErrorList);
 					}
 
-					if (IntegrationPoint!=null && !_errorOccurredDuringJob || (JobStopManager?.IsStopRequested() == true))
+					if (IntegrationPoint!=null && !_errorOccurredDuringJob || (JobStopManager?.IsStopRequested() == true) )
 					{
 						IntegrationPoint.HasErrors = false;
 					}
@@ -96,7 +97,15 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public void AddError(Choice errorType, Exception ex)
 		{
-			AddError(errorType, string.Empty, ex.Message, ex.FlattenErrorMessages());
+			string message = ex.FlattenErrorMessages();
+
+			if (ex is IntegrationPointProviderValidationException)
+			{
+				var ipException = ex as IntegrationPointProviderValidationException;
+				message = String.Join(Environment.NewLine, ipException.Result.Messages);
+			}
+
+			AddError(errorType, string.Empty, ex.Message, message);
 		}
 
 		public void AddError(Choice errorType, string documentIdentifier, string errorMessage, string stackTrace)
