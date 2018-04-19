@@ -1281,24 +1281,60 @@
     <Content Include="TestDataExtended\NATIVES\NATIVE001\Three\JGRIFFITH_0000021.msg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="TestDataImportFromLoadFile\Small Salt\VOL0001\IMAGES\IMG0001\AZIPPER_0007291.TIF" />
-    <Content Include="TestDataImportFromLoadFile\Small Salt\VOL0001\IMAGES\IMG0001\AZIPPER_0007293.TIF" />
-    <Content Include="TestDataImportFromLoadFile\Small Salt\VOL0001\IMAGES\IMG0001\JWOLFE_0004716.TIF" />
-    <Content Include="TestDataImportFromLoadFile\Small Salt\VOL0001\IMAGES\IMG0001\JWOLFE_0004717.TIF" />
-    <Content Include="TestDataImportFromLoadFile\Small Salt\VOL0001\IMAGES\IMG0001\JWOLFE_0004718.TIF" />
-    <Content Include="TestDataImportFromLoadFile\Small Salt\VOL0001\NATIVES\NATIVE0001\AZIPPER_0007291.htm" />
-    <Content Include="TestDataImportFromLoadFile\Small Salt\VOL0001\NATIVES\NATIVE0001\AZIPPER_0007293.htm" />
-    <Content Include="TestDataImportFromLoadFile\Small Salt\VOL0001\NATIVES\NATIVE0001\JWOLFE_0004716.htm" />
-    <Content Include="TestDataImportFromLoadFile\Small Salt\VOL0001\PRODUCTIONS\PROD0001\PROD0001.TIF" />
-    <Content Include="TestDataImportFromLoadFile\Small Salt\VOL0001\PRODUCTIONS\PROD0001\PROD0002.TIF" />
-    <Content Include="TestDataImportFromLoadFile\Small Salt\VOL0001\PRODUCTIONS\PROD0001\PROD0003.TIF" />
-    <Content Include="TestDataImportFromLoadFile\Small Salt\VOL0001\PRODUCTIONS\PROD0001\PROD0004.TIF" />
-    <Content Include="TestDataImportFromLoadFile\Small Salt\VOL0001\PRODUCTIONS\PROD0001\PROD0005.TIF" />
-    <Content Include="TestDataImportFromLoadFile\Small Salt\VOL0001\TEXT\TEXT0001\AZIPPER_0007291.txt" />
-    <Content Include="TestDataImportFromLoadFile\Small Salt\VOL0001\TEXT\TEXT0001\AZIPPER_0007293.txt" />
-    <Content Include="TestDataImportFromLoadFile\Small Salt\VOL0001\TEXT\TEXT0001\JWOLFE_0004716.txt" />
-    <Content Include="TestDataImportFromLoadFile\Small Salt\VOL0001\TEXT\TEXT0001\JWOLFE_0004717.txt" />
-    <Content Include="TestDataImportFromLoadFile\Small Salt\VOL0001\TEXT\TEXT0001\JWOLFE_0004718.txt" />
+    <Content Include="TestDataImportFromLoadFile\Small Salt\VOL0001\IMAGES\IMG0001\AZIPPER_0007291.TIF">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestDataImportFromLoadFile\Small Salt\VOL0001\IMAGES\IMG0001\AZIPPER_0007293.TIF">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestDataImportFromLoadFile\Small Salt\VOL0001\IMAGES\IMG0001\JWOLFE_0004716.TIF">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestDataImportFromLoadFile\Small Salt\VOL0001\IMAGES\IMG0001\JWOLFE_0004717.TIF">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestDataImportFromLoadFile\Small Salt\VOL0001\IMAGES\IMG0001\JWOLFE_0004718.TIF">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestDataImportFromLoadFile\Small Salt\VOL0001\NATIVES\NATIVE0001\AZIPPER_0007291.htm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestDataImportFromLoadFile\Small Salt\VOL0001\NATIVES\NATIVE0001\AZIPPER_0007293.htm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestDataImportFromLoadFile\Small Salt\VOL0001\NATIVES\NATIVE0001\JWOLFE_0004716.htm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestDataImportFromLoadFile\Small Salt\VOL0001\PRODUCTIONS\PROD0001\PROD0001.TIF">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestDataImportFromLoadFile\Small Salt\VOL0001\PRODUCTIONS\PROD0001\PROD0002.TIF">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestDataImportFromLoadFile\Small Salt\VOL0001\PRODUCTIONS\PROD0001\PROD0003.TIF">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestDataImportFromLoadFile\Small Salt\VOL0001\PRODUCTIONS\PROD0001\PROD0004.TIF">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestDataImportFromLoadFile\Small Salt\VOL0001\PRODUCTIONS\PROD0001\PROD0005.TIF">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestDataImportFromLoadFile\Small Salt\VOL0001\TEXT\TEXT0001\AZIPPER_0007291.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestDataImportFromLoadFile\Small Salt\VOL0001\TEXT\TEXT0001\AZIPPER_0007293.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestDataImportFromLoadFile\Small Salt\VOL0001\TEXT\TEXT0001\JWOLFE_0004716.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestDataImportFromLoadFile\Small Salt\VOL0001\TEXT\TEXT0001\JWOLFE_0004717.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestDataImportFromLoadFile\Small Salt\VOL0001\TEXT\TEXT0001\JWOLFE_0004718.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="TestDataSaltPepper\NATIVES\NATIVE001\AZIPPER\AZIPPER_0007747.dat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -3378,11 +3414,21 @@
     <Content Include="TestDataText\NATIVES\REL0000000833.0001.XLS">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="TestDataImportFromLoadFile\Small Salt\Small Salt Images.opt" />
-    <None Include="TestDataImportFromLoadFile\Small Salt\Small Salt Productions.opt" />
-    <None Include="TestDataImportFromLoadFile\Small Salt\Small Salt.dat" />
-    <None Include="TestDataImportFromLoadFile\Small Salt\VOL0001\NATIVES\NATIVE0001\JWOLFE_0004717.doc" />
-    <None Include="TestDataImportFromLoadFile\Small Salt\VOL0001\NATIVES\NATIVE0001\JWOLFE_0004718.xls" />
+    <None Include="TestDataImportFromLoadFile\Small Salt\Small Salt Images.opt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestDataImportFromLoadFile\Small Salt\Small Salt Productions.opt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestDataImportFromLoadFile\Small Salt\Small Salt.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestDataImportFromLoadFile\Small Salt\VOL0001\NATIVES\NATIVE0001\JWOLFE_0004717.doc">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestDataImportFromLoadFile\Small Salt\VOL0001\NATIVES\NATIVE0001\JWOLFE_0004718.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="LICENSE.txt">
