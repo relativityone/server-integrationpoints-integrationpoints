@@ -207,7 +207,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 				return 0L;
 			}
 
-			var filesSize = 0L;
+			long filesSize = 0;
 
 			switch (IntegrationPointSourceConfiguration.TypeOfExport)
 			{

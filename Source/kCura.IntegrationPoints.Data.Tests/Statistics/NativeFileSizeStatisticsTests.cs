@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			var queryResult = MockQueryResult(artifactIds);
 			_relativityObjectManager.Query(Arg.Any<QueryRequest>()).Returns(queryResult);
 
-			_helper.GetDBContext(_WORKSPACE_ID).ExecuteSqlStatementAsScalar<int>(
+			_helper.GetDBContext(_WORKSPACE_ID).ExecuteSqlStatementAsScalar<long>(
 					_SQL_TEXT,
 					Arg.Is<SqlParameter>(x => x.ParameterName == "@ArtifactIds" && x.TypeName == "IDs"),
 					Arg.Is<SqlParameter>(x => x.ParameterName == "@FileType" && (FileType)x.Value == FileType.Native))
@@ -88,7 +88,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			var queryResult = MockQueryResult(artifactIds);
 			_relativityObjectManager.Query(Arg.Any<QueryRequest>()).Returns(queryResult);
 
-			_helper.GetDBContext(_WORKSPACE_ID).ExecuteSqlStatementAsScalar<int>(
+			_helper.GetDBContext(_WORKSPACE_ID).ExecuteSqlStatementAsScalar<long>(
 					_SQL_TEXT,
 					Arg.Is<SqlParameter>(x => x.ParameterName == "@ArtifactIds" && x.TypeName == "IDs"),
 					Arg.Is<SqlParameter>(x => x.ParameterName == "@FileType" && (FileType)x.Value == FileType.Native))
@@ -116,7 +116,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			var queryResult = MockQueryResult(artifactIds, ProductionConsts.DocumentFieldGuid);
 			_relativityObjectManager.Query(Arg.Any<QueryRequest>()).Returns(queryResult);
 
-			_helper.GetDBContext(_WORKSPACE_ID).ExecuteSqlStatementAsScalar<int>(
+			_helper.GetDBContext(_WORKSPACE_ID).ExecuteSqlStatementAsScalar<long>(
 					_SQL_TEXT,
 					Arg.Is<SqlParameter>(x => x.ParameterName == "@ArtifactIds" && x.TypeName == "IDs"),
 					Arg.Is<SqlParameter>(x => x.ParameterName == "@FileType" && (FileType)x.Value == FileType.Native))
@@ -125,18 +125,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			var actualResult = _instance.ForProduction(_WORKSPACE_ID, productionId);
 
 			Assert.That(actualResult, Is.EqualTo(expectedResult));
-		}
-
-		[Test]
-		public void ItShouldLogError()
-		{
-			_relativityObjectManager.Query(Arg.Any<QueryRequest>()).Throws(new Exception());
-
-			Assert.That(() => _instance.ForFolder(_WORKSPACE_ID, 670, 692, true), Throws.Exception);
-			Assert.That(() => _instance.ForProduction(_WORKSPACE_ID, 234), Throws.Exception);
-			Assert.That(() => _instance.ForSavedSearch(_WORKSPACE_ID, 498), Throws.Exception);
-
-			_logger.Received(3).LogError(Arg.Any<Exception>(), Arg.Any<string>(), Arg.Any<object[]>());
 		}
 
 		private static List<RelativityObject> MockQueryResult(List<int> artifactIds, Guid? guid = null)
