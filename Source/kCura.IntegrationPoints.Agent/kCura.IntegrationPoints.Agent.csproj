@@ -69,7 +69,6 @@
     <Compile Include="TaskFactory\JobSynchronizationChecker.cs" />
     <Compile Include="TaskFactory\TaskFactoryJobHistoryServiceFactory.cs" />
     <Compile Include="TaskFactory\TaskFactoryJobHistoryService.cs" />
-    <Compile Include="Tasks\TurnOnDgOptimizationToggle.cs" />
     <Compile Include="Tasks\ExportManager.cs" />
     <Compile Include="Tasks\ExportWorker.cs" />
     <Compile Include="RelativityConfigurationFactory.cs" />
@@ -88,6 +87,7 @@
     <Compile Include="Tasks\SyncManager.cs" />
     <Compile Include="Tasks\SyncWorker.cs" />
     <Compile Include="TaskFactory\TaskFactory.cs" />
+    <Compile Include="Tasks\TurnOnDgOptimizationToggle.cs" />
     <Compile Include="Validation\IntegrationPointExecutionEmptyValidator.cs" />
     <Compile Include="Validation\IntegrationPointPermissionEmptyValidator.cs" />
     <Compile Include="Validation\IntegrationPointProviderEmptyValidator.cs" />

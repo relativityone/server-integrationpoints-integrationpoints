@@ -41,16 +41,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 	public class ExportServiceManager : ServiceManagerBase
 	{
 		private ExportJobErrorService _exportJobErrorService;
-		private List<IBatchStatus> _exportServiceJobObservers;
 		private int _savedSearchArtifactId;
-
-		private readonly IHelper _helper;
-		private readonly IHelperFactory _helperFactory;
+		private List<IBatchStatus> _exportServiceJobObservers;
 		private readonly IContextContainerFactory _contextContainerFactory;
 		private readonly IExporterFactory _exporterFactory;
+		private readonly IHelper _helper;
+		private readonly IHelperFactory _helperFactory;
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly IToggleProvider _toggleProvider;
-
 		private IJobHistoryErrorManager JobHistoryErrorManager { get; set; }
 		private JobHistoryErrorDTO.UpdateStatusType UpdateStatusType { get; set; }
 
@@ -69,7 +67,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IScheduleRuleFactory scheduleRuleFactory,
 			IJobHistoryService jobHistoryService,
 			IJobHistoryErrorService jobHistoryErrorService,
-			JobStatisticsService statisticsService, IToggleProvider toggleProvider)
+			IToggleProvider toggleProvider,
+			JobStatisticsService statisticsService)
 			: base(helper,
 				jobService,
 				serializer,
@@ -274,7 +273,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				_repositoryFactory.GetQueryFieldLookupRepository(configuration.SourceWorkspaceArtifactId);
 			IQueryFieldLookupRepository destinationQueryFieldLookupRepository =
 				_repositoryFactory.GetQueryFieldLookupRepository(configuration.TargetWorkspaceArtifactId);
-
 
 			FieldMap longTextField = fieldMap.FirstOrDefault(fm => IsLongTextWithDgEnabled(sourceQueryFieldLookupRepository.GetFieldByArtifactId(int.Parse(fm.SourceField.FieldIdentifier))));
 

@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			catch (Exception e)
 			{
 				_logger.LogError(e, _FOR_FOLDER_ERROR, folderId, viewId);
-			    return 0;
+				return 0;
 			}
 		}
 
@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			catch (Exception e)
 			{
 				_logger.LogError(e, _FOR_PRODUCTION_ERROR, productionSetId);
-			    return 0;
+				return 0;
 			}
 		}
 
@@ -83,7 +83,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			catch (Exception e)
 			{
 				_logger.LogError(e, _FOR_SAVED_SEARCH_ERROR, savedSearchId);
-			    return 0;
+				return 0;
 			}
 		}
 
@@ -97,7 +97,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 
 		private int GetArtifactId(RelativityObject relativityObject) => relativityObject.ArtifactID;
 
-		private int GetTotalFileSize(IEnumerable<int> artifactIds, int workspaceArtifactId)
+		private long GetTotalFileSize(IEnumerable<int> artifactIds, int workspaceArtifactId)
 		{
 			const string sqlText = "SELECT COALESCE(SUM([Size]),0) FROM [File] WHERE [Type] = @FileType AND [DocumentArtifactID] IN (SELECT * FROM @ArtifactIds)";
 
@@ -113,7 +113,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			};
 
 			IDBContext dbContext = _helper.GetDBContext(workspaceArtifactId);
-			return dbContext.ExecuteSqlStatementAsScalar<int>(sqlText, artifactIdsParameter, fileTypeParameter);
+			return dbContext.ExecuteSqlStatementAsScalar<long>(sqlText, artifactIdsParameter, fileTypeParameter);
 		}
 
 	}
