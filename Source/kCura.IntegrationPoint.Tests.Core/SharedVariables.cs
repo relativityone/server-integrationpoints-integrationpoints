@@ -15,18 +15,28 @@ namespace kCura.IntegrationPoint.Tests.Core
 		static SharedVariables()
 		{
 			const string configFileName = "app.jeeves-ci.config";
-			string assemblyDir = Path.GetDirectoryName(System.Reflection.Assembly.GetCallingAssembly().CodeBase);
-			string jeevesConfigPath = Path.Combine(assemblyDir, configFileName);
-			if (File.Exists(jeevesConfigPath.Replace(@"file:\", "")))
-			{
-				Console.WriteLine(@"Jeeves config found: " + jeevesConfigPath);
-				MergeConfigurationWithAppConfig(configFileName);
-			}
-			else
-			{
-				Console.WriteLine(@"Jeeves config not found: " + jeevesConfigPath);
-				Console.WriteLine(DumpToString());
-			}
+		    try
+		    {
+		        string assemblyDir = Path.GetDirectoryName(System.Reflection.Assembly.GetCallingAssembly().CodeBase);
+		        string jeevesConfigPath = Path.Combine(assemblyDir, configFileName);
+		        if (File.Exists(jeevesConfigPath.Replace(@"file:\", "")))
+		        {
+		            Console.WriteLine(@"Jeeves config found: " + jeevesConfigPath);
+		            MergeConfigurationWithAppConfig(configFileName);
+		        }
+		        else
+		        {
+		            Console.WriteLine(@"Jeeves config not found: " + jeevesConfigPath);
+		        }
+		    }
+		    catch (ArgumentException ex)
+		    {
+		        Console.WriteLine(@"Error occured while checking jeeves file path: " + ex);
+		    }
+		    finally
+		    {
+		        Console.WriteLine(DumpToString());
+            }
 		}
 
 		public static string DumpToString()
@@ -80,7 +90,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 			CustomConfig = c;
 
 			Console.WriteLine(@"Configuration merged with " + configFileFullPath);
-			Console.WriteLine(DumpToString());
 		}
 
 		#region User Settings

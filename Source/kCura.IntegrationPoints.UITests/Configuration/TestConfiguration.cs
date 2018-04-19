@@ -80,6 +80,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 				string path = $@"UiTestsConfig\{ConfigName}";
 				Log.Information("Merging {Path}...", path);
 				SharedVariables.MergeConfigurationWithAppConfig(path);
+                Console.WriteLine(SharedVariables.DumpToString());
 			}
 			return this;
 		}
