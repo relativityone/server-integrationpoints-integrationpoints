@@ -121,7 +121,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			string instanceCondition;
 			if (federatedInstanceArtifactId.HasValue)
 			{
-				instanceCondition = $"'Domain.Constants.SOURCEWORKSPACE_INSTANCENAME_FIELD_NAME' == '{federatedInstanceName}'";
+				instanceCondition = $"'{Domain.Constants.SOURCEWORKSPACE_INSTANCENAME_FIELD_NAME}' == '{federatedInstanceName}'";
 			}
 			else
 			{
