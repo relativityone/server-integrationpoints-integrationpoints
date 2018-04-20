@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Services.Credential;
+using Relativity.Services.ResourceServer;
 using Relativity.Services.Workspace;
 
 namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
@@ -61,5 +62,15 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 	    {
 	        return Manager.WorkspaceExists(workspace);
 	    }
+
+		public async Task<List<SQLServer>> GetAssociatedSQLServersAsync(WorkspaceRef workspace)
+		{
+			return await Manager.GetAssociatedSQLServersAsync(workspace);
+		}
+
+		public async Task<List<FileShareResourceServer>> GetAssociatedFileShareResourceServersAsync(WorkspaceRef workspace)
+		{
+			return await Manager.GetAssociatedFileShareResourceServersAsync(workspace);
+		}
 	}
 }

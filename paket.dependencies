@@ -4,17 +4,17 @@ strategy: min
 source https://proget.kcura.corp/nuget/NuGet
 
 //Main Relativity packages
-nuget kCura.Agent 9.6.103.146 
-nuget kCura.EventHandler 9.6.103.146 
-nuget kCura.Relativity.Client 9.6.103.146 
-nuget Relativity.Authentication 9.6.103.146 
-nuget Relativity.Core 9.6.103.146 
-nuget Relativity.CustomPages 9.6.103.146 
-nuget Relativity.Data 9.6.103.146 
-nuget Relativity.ImportExport 9.6.103.146 
-nuget Relativity.Telemetry.Services.Interface 9.6.103.146 
-nuget RelativityCore 9.6.103.146
-nuget Relativity.Services.Interfaces 9.6.103.146
+nuget kCura.Agent 9.6.106.3 
+nuget kCura.EventHandler 9.6.106.3 
+nuget kCura.Relativity.Client 9.6.106.3 
+nuget Relativity.Authentication 9.6.106.3 
+nuget Relativity.Core 9.6.106.3 
+nuget Relativity.CustomPages 9.6.106.3 
+nuget Relativity.Data 9.6.106.3 
+nuget Relativity.ImportExport 9.6.106.3 
+nuget Relativity.Telemetry.Services.Interface 9.6.106.3 
+nuget RelativityCore 9.6.106.3
+nuget Relativity.Services.Interfaces 9.6.106.3
 
 //Other Relativity packages
 nuget Relativity.DataTransfer.MessageService
@@ -31,8 +31,8 @@ nuget Relativity.Telemetry.MetricsCollection ~> 9.4.148 	//RelativityCore
 nuget Relativity.Vfs.IO ~> 1.0.22 							//RelativityCore
 nuget Relativity.Toggles ~> 1.0.0.84 						//RelativityCore
 nuget SystemWrapper.Wrappers ~> 0.19.0.115 					//RelativityCore
-nuget Relativity.Logging 9.4.310 							//RelativityCore
-nuget Relativity.Logging.Interfaces 9.4.310
+nuget Relativity.Logging ~> 9.4.311							//RelativityCore
+nuget Relativity.Logging.Interfaces ~> 9.4.311
 nuget Relativity.Kepler ~> 1.0.1.409						
 nuget Relativity.Kepler.Client ~> 1.0.1.409
 nuget Castle.Windsor ~> 3.3.0						

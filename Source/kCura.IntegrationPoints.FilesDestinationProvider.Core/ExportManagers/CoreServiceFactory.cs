@@ -29,8 +29,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 		public IExportFileDownloader CreateExportFileDownloader()
 		{
 			var destinationFolderPath = $"{_exportFile.CaseInfo.DocumentPath}\\EDDS{_exportFile.CaseInfo.ArtifactID}";
-			return new FileDownloader(_exportFile.Credential, destinationFolderPath, _exportFile.CaseInfo.DownloadHandlerURL, _exportFile.CookieContainer,
-				Settings.AuthenticationToken);
+			return new FileDownloader(_exportFile.Credential, destinationFolderPath, _exportFile.CaseInfo.DownloadHandlerURL, _exportFile.CookieContainer);
 		}
 
 		public IExportManager CreateExportManager()

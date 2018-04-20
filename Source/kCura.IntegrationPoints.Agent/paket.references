@@ -9,3 +9,4 @@ Relativity.Telemetry.APM
 Relativity.Telemetry.MetricsCollection
 Relativity.Vfs.IO
 Relativity.Services.Interfaces
+Relativity.DataTransfer.MessageService
