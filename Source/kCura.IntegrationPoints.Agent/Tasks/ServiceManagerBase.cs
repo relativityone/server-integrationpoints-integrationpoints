@@ -362,13 +362,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		protected void HandleGenericException(Exception ex, Job job)
 		{
-			LogExecutingTaskError(job, ex);
-			Result.Status = TaskStatusEnum.Fail;
-			JobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, ex);
-			if (ex is PermissionException || ex is IntegrationPointProviderValidationException)
-			{
-				UpdateJobStatus(JobStatusChoices.JobHistoryValidationFailed);
-			}
+			AgentExceptionHelper.HandleException(JobHistoryErrorService, JobHistoryService, Logger, ex, job, Result, JobHistory);
 		}
 
 		private void RunValidation(Job job)
@@ -390,11 +384,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		protected virtual void LogJobStoppedException(Job job, OperationCanceledException e)
 		{
 			Logger.LogInformation(e, "Job {JobId} has been stopped.", job.JobId);
-		}
-
-		protected virtual void LogExecutingTaskError(Job job, Exception ex)
-		{
-			Logger.LogError(ex, "Failed to execute task for job {JobId}.", job.JobId);
 		}
 
 		protected virtual void LogSettingJobAsUnstoppableError(Job job, Exception e)

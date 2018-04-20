@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Globalization;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
@@ -14,7 +13,6 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Transformers;
@@ -489,7 +487,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			DeleteSavedSearch(SourceWorkspaceArtifactId, TemporarySavedSearchId);
 
 			// Act
-			Assert.Throws<InvalidConstraintException>(() => _integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPointModel.ArtifactID, _ADMIN_USER_ID));
+			Assert.Throws<IntegrationPointProviderValidationException>(() => _integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPointModel.ArtifactID, _ADMIN_USER_ID));
 
 			// Assert
 			Data.IntegrationPoint ip = _integrationPointService.GetRdo(integrationPointModel.ArtifactID);

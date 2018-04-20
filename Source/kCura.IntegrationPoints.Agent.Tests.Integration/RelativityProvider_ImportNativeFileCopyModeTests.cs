@@ -1,4 +1,5 @@
-﻿using kCura.Apps.Common.Utils.Serializers;
+﻿using Castle.MicroKernel.Registration;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
@@ -44,6 +45,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		{
 			base.SuiteSetup();
 			ControlIntegrationPointAgents(false);
+		}
+
+		protected override void Install()
+		{
+			base.Install();
+			Container.Register(Component.For<IAgentValidator>().ImplementedBy<AgentValidator>().LifestyleTransient());
 		}
 
 		public override void SuiteTeardown()

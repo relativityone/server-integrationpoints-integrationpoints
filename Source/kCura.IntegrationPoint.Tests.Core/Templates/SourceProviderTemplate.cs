@@ -153,23 +153,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			Container.Register(Component.For<IRSAPIService>().Instance(new RSAPIService(Container.Resolve<IHelper>(), WorkspaceArtifactId)).LifestyleTransient());
 			Container.Register(Component.For<IExporterFactory>().ImplementedBy<ExporterFactory>());
 			Container.Register(Component.For<IAuthTokenGenerator>().ImplementedBy<ClaimsTokenGenerator>().LifestyleTransient());
-			Container.Register(Component.For<IToggleProvider>().Instance(new SqlServerToggleProvider(
-				() =>
-				{
-					SqlConnection connection = Container.Resolve<IHelper>().GetDBContext(-1).GetConnection(true);
-
-					return connection;
-				},
-				async () =>
-				{
-					Task<SqlConnection> task = Task.Run(() =>
-					{
-						SqlConnection connection = Container.Resolve<IHelper>().GetDBContext(-1).GetConnection(true);
-						return connection;
-					});
-
-					return await task;
-				})).LifestyleTransient());
 #pragma warning disable 618
 			var dependencies = new IWindsorInstaller[] { new QueryInstallers(), new KeywordInstaller(), new SharedAgentInstaller(), new ServicesInstaller(), new ValidationInstaller() };
 #pragma warning restore 618

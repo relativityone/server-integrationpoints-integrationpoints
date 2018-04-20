@@ -5,7 +5,7 @@ using Relativity.API;
 
 namespace kCura.ScheduleQueue.Core.BatchProcess
 {
-	public delegate void JobPreExecuteEvent(Job job);
+	public delegate void JobPreExecuteEvent(Job job, TaskResult taskResult);
 
 	public delegate void JobPostExecuteEvent(Job job, TaskResult taskResult, long items);
 
@@ -29,7 +29,7 @@ namespace kCura.ScheduleQueue.Core.BatchProcess
 			long items = 0;
 			try
 			{
-				OnRaiseJobPreExecute(job);
+				OnRaiseJobPreExecute(job, taskResult);
 				items = BatchTask(job, GetUnbatchedIDs(job));
 				taskResult.Status = TaskStatusEnum.Success;
 			    LogExecuteSuccesfulEnd(job);
@@ -57,12 +57,12 @@ namespace kCura.ScheduleQueue.Core.BatchProcess
 		public event JobPreExecuteEvent RaiseJobPreExecute;
 		public event JobPostExecuteEvent RaiseJobPostExecute;
 
-		protected virtual void OnRaiseJobPreExecute(Job job)
+		protected virtual void OnRaiseJobPreExecute(Job job, TaskResult taskResult)
 		{
 			if (RaiseJobPreExecute != null)
 			{
 			    LogRaisePreExecute(job);
-			    RaiseJobPreExecute(job);
+			    RaiseJobPreExecute(job, taskResult);
 			}
 		}
 

@@ -4,10 +4,10 @@ using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Agent.Tasks;
+using kCura.IntegrationPoints.Agent.Validation;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -38,6 +38,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private ISerializer _serializerMock;
 		private IExportInitProcessService _exportInitProcessService;
 		private IIntegrationPointService _integrationPointService;
+		private IAgentValidator _agentValidator;
 
 		private readonly Job _job = JobHelper.GetJob(1, 2, 3, 4, 5, 6, 7, TaskType.ExportWorker,
 				DateTime.MinValue, DateTime.MinValue, null, 1, DateTime.MinValue, 2, "", null);
@@ -54,7 +55,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_managerFactoryMock = Substitute.For<IManagerFactory>();
 			_serializerMock = Substitute.For<ISerializer>();
 			_exportInitProcessService = Substitute.For<IExportInitProcessService>();
-
+			_agentValidator = Substitute.For<IAgentValidator>();
 			_integrationPointService = Substitute.For<IIntegrationPointService>();
 
 			_instanceToTest = new ExportManager(Substitute.For<ICaseServiceContext>(),
@@ -71,7 +72,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				_managerFactoryMock,
 				_contextContainerFactoryMock,
 				new List<IBatchStatus>(),
-				_exportInitProcessService);
+				_exportInitProcessService,
+				_agentValidator);
 		}
 
 		[TestCase(10)]

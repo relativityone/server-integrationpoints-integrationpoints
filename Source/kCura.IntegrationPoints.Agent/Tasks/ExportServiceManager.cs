@@ -140,12 +140,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				LogJobStoppedException(job, e);
 				// ignore error.
 			}
-			catch (IntegrationPointsException ipex)
-			{
-				Result.Status = TaskStatusEnum.Fail;
-				JobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, ipex);
-				throw;
-			}
 			catch (Exception ex)
 			{
 				HandleGenericException(ex, job);
@@ -484,11 +478,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				Logger.LogError(ex, "There was a problem while finalizing export service observers {JobId}.", job.JobId);
 			}
-		}
-
-		protected override void LogExecutingTaskError(Job job, Exception ex)
-		{
-			Logger.LogError(ex, "Failed to execute ExportServiceManager task for job {JobId}.", job.JobId);
 		}
 
 		private void LogSavedSearchNotFound(Job job, SourceConfiguration sourceConfiguration)

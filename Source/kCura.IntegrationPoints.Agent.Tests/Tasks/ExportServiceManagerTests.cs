@@ -613,12 +613,21 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				}
 			);
 
+			bool jobValidationFailedUpdated = false;
+			_jobHistoryService.When(x => x.UpdateRdo(Arg.Is<JobHistory>(jh => jh.JobStatus.Guids.First() == JobStatusChoices.JobHistoryValidationFailed.Guids.First()))).Do(item =>
+				{
+					jobValidationFailedUpdated = true;
+				}
+
+			);
 			// ACT
 			Assert.Throws<PermissionException>(() => _instance.Execute(_job));
 
 			// ASSERT
 			_agentValidator.Received(1).Validate(_integrationPoint, _job.SubmittedBy);
 
+			// job status should be changed
+			Assert.That(jobValidationFailedUpdated);
 
 			// we expect to first change state to Validating and then Validation Failed
 			_jobHistoryService.Received(2).UpdateRdo(Arg.Is<JobHistory>(x => x == _jobHistory));

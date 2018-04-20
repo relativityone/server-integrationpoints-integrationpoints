@@ -89,6 +89,7 @@
     <Compile Include="TaskFactory\TaskFactory.cs" />
     <Compile Include="Validation\AgentValidator.cs" />
     <Compile Include="Tasks\TurnOnDgOptimizationToggle.cs" />
+    <Compile Include="Tasks\AgentExceptionHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

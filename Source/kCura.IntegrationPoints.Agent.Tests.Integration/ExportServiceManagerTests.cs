@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using Castle.MicroKernel.Registration;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
@@ -52,6 +53,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 			ControlIntegrationPointAgents(false);
 			_queueContext = new QueueDBContext(Helper, GlobalConst.SCHEDULE_AGENT_QUEUE_TABLE_NAME);
+		}
+
+		protected override void Install()
+		{
+			base.Install();
+			Container.Register(Component.For<IAgentValidator>().ImplementedBy<AgentValidator>().LifestyleTransient());
 		}
 
 		public override void SuiteTeardown()
