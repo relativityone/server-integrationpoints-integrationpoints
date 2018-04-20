@@ -114,7 +114,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		public IObjectTypeRepository GetDestinationObjectTypeRepository(int workspaceArtifactId)
 		{
 			IRelativityObjectManager relativityObjectManager =
-				CreateRelativityObjectManager(workspaceArtifactId);
+				CreateRelativityObjectManagerForFederatedInstance(workspaceArtifactId);
 			return new ObjectTypeRepository(workspaceArtifactId, _servicesMgr, _helper, relativityObjectManager);
 		}
 
