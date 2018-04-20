@@ -114,7 +114,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		public IObjectTypeRepository GetDestinationObjectTypeRepository(int workspaceArtifactId)
 		{
 			IRelativityObjectManager relativityObjectManager =
-				CreateRelativityObjectManager(workspaceArtifactId);
+				CreateRelativityObjectManagerForFederatedInstance(workspaceArtifactId);
 			return new ObjectTypeRepository(workspaceArtifactId, _servicesMgr, _helper, relativityObjectManager);
 		}
 
@@ -137,7 +137,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		{
 			var objectTypeRepository = GetObjectTypeRepository(workspaceArtifactId);
 			var fieldRepository = GetFieldRepository(workspaceArtifactId);
-			IRelativityObjectManager objectManager = CreateRelativityObjectManager(workspaceArtifactId);
+			IRelativityObjectManager objectManager = CreateRelativityObjectManagerForFederatedInstance(workspaceArtifactId);
 			ISourceJobRepository repository = new SourceJobRepository(objectTypeRepository, fieldRepository, objectManager);
 
 			return repository;
@@ -154,9 +154,9 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		{
 			IObjectTypeRepository objectTypeRepository = GetObjectTypeRepository(workspaceArtifactId);
 			IFieldRepository fieldRepository = GetFieldRepository(workspaceArtifactId);
-			IRelativityObjectManager objectManager = CreateRelativityObjectManager(workspaceArtifactId);
+			IRelativityObjectManager objectManager = CreateRelativityObjectManagerForFederatedInstance(workspaceArtifactId);
 			ISourceWorkspaceRepository repository = new SourceWorkspaceRepository(_helper, objectTypeRepository, fieldRepository, objectManager);
-
+			
 			return repository;
 		}
 
@@ -181,7 +181,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			IRelativityObjectManager relativityObjectManager =
 				CreateRelativityObjectManager(-1);
 			IWorkspaceRepository repository = new KeplerWorkspaceRepository(_helper, _servicesMgr, relativityObjectManager);
-
+			
 			return repository;
 		}
 
@@ -270,6 +270,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 				new DefaultSecretCatalogFactory(),
 				new SecretManagerFactory());
 		}
+
 		private RelativityObjectManager CreateRelativityObjectManager(int workspaceArtifactId)
 		{
 			return new RelativityObjectManager(workspaceArtifactId,
