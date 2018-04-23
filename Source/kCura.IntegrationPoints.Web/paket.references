@@ -12,3 +12,4 @@ Relativity.ImportExport
 Relativity.Productions.Services.Interfaces
 Relativity.Telemetry.Services.Interface
 RelativityCore
+Relativity.DataTransfer.MessageService
