@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using kCura.IntegrationPoints.UITests.Driver;
+using kCura.IntegrationPoints.UITests.Logging;
 using OpenQA.Selenium;
+using Serilog;
 
 namespace kCura.IntegrationPoints.UITests.Components
 {
@@ -10,6 +13,8 @@ namespace kCura.IntegrationPoints.UITests.Components
 	{
 		private readonly string _selectDivId;
 		private readonly string _treeDivId;
+
+		protected static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(TreeSelect));
 
 		public TreeSelect(IWebElement parent, string selectDivId, string treeDivId) : base(parent)
 		{
@@ -21,7 +26,7 @@ namespace kCura.IntegrationPoints.UITests.Components
 		{
 			IWebElement select = Parent.FindElement(By.XPath($@".//div[@id='{_selectDivId}']"));
 			Thread.Sleep(TimeSpan.FromMilliseconds(1000));
-			select.Click();
+			select.ClickWhenClickable();
 			return this;
 		}
 
@@ -56,9 +61,11 @@ namespace kCura.IntegrationPoints.UITests.Components
 			IWebElement tree = Parent.FindElement(By.XPath($@".//div[@id='{_treeDivId}']"));
 			OpenAllNodes(tree);
 
-			Thread.Sleep(TimeSpan.FromMilliseconds(1000));
+			Thread.Sleep(TimeSpan.FromMilliseconds(2000));
 
-			IWebElement folderIcon = tree.FindElements(By.ClassName("jstree-anchor")).First(el => el.Text == name);
+			IWebElement folderIcon = tree.FindElements(By.CssSelector(".jstree-anchor")).First(el => el.Text == name);
+			folderIcon.ScrollIntoView();
+			Thread.Sleep(TimeSpan.FromSeconds(1));
 			folderIcon.Click();
 
 			return this;
@@ -69,7 +76,7 @@ namespace kCura.IntegrationPoints.UITests.Components
 			while (true)
 			{
 				Thread.Sleep(TimeSpan.FromMilliseconds(1000));
-				ICollection<IWebElement> closedNodes = tree.FindElements(By.ClassName("jstree-closed"));
+				ICollection<IWebElement> closedNodes = tree.FindElements(By.CssSelector(".jstree-closed"));
 				if (closedNodes.Count == 0)
 				{
 					break;
@@ -77,9 +84,11 @@ namespace kCura.IntegrationPoints.UITests.Components
 				foreach (var closedNode in closedNodes)
 				{
 					IWebElement button = closedNode.FindElement(By.TagName("i"));
-					button.Click();
+					button.ScrollIntoView();
+					button.ClickWhenClickable();
 				}
 			}
 		}
+
 	}
 }

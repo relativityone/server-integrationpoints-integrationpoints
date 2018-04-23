@@ -139,18 +139,26 @@
     <Compile Include="Models\CustodianExportToLoadFileModel.cs" />
     <Compile Include="Models\DocumentsTestData.cs" />
     <Compile Include="Models\ExportToLoadFileDetailsModel.cs" />
-    <Compile Include="Models\FTP\FTPProtocolType.cs" />
-    <Compile Include="Models\FTP\ImportFromFTPConnectionAndFileInfoModel.cs" />
-    <Compile Include="Models\FTP\ImportFromFTPModel.cs" />
-    <Compile Include="Models\ImportFromLoadFile\ImportFromLoadFileModel.cs" />
-    <Compile Include="Models\ImportFromLoadFile\ImportLoadFileEncodingModel.cs" />
-    <Compile Include="Models\ImportFromLoadFile\ImportLoadFileImageProductionSettingsModel.cs" />
-    <Compile Include="Models\ImportFromLoadFile\ImportLoadFileSettingsModel.cs" />
-    <Compile Include="Models\ImportFromLoadFile\ImportType.cs" />
-    <Compile Include="Models\ImportFromLoadFile\Numbering.cs" />
-    <Compile Include="Models\Ldap\ImportFromLdapSettingsModel.cs" />
-    <Compile Include="Models\Ldap\ImportFromLdapSourceConnectionModel.cs" />
-    <Compile Include="Models\Ldap\ImportFromLdapModel.cs" />
+    <Compile Include="Models\Import\FTP\FtpProtocolType.cs" />
+    <Compile Include="Models\Import\FTP\ConnectionAndFileInfoModel.cs" />
+    <Compile Include="Models\Import\FTP\ImportFromFtpModel.cs" />
+    <Compile Include="Models\Import\FieldsMappingModel.cs" />
+    <Compile Include="Models\Import\LoadFile\Documents\ImportDocumentsModel.cs" />
+    <Compile Include="Models\Import\SettingsModel.cs" />
+    <Compile Include="Models\Import\LoadFile\Documents\ImportDocumentsFromLoadFileModel.cs" />
+    <Compile Include="Models\Import\LoadFile\Documents\FileEncodingModel.cs" />
+    <Compile Include="Models\Import\LoadFile\ImagesAndProductions\ImportLoadFileImageProductionSettingsModel.cs" />
+    <Compile Include="Models\Import\LoadFile\ImagesAndProductions\Images\ImportImagesFromLoadFileModel.cs" />
+    <Compile Include="Models\Import\LoadFile\LoadFileSettingsModel.cs" />
+    <Compile Include="Models\Import\LoadFile\ImagesAndProductions\Productions\ImportProductionsFromLoadFileModel.cs" />
+    <Compile Include="Models\Import\LoadFile\ImportType.cs" />
+    <Compile Include="Models\Import\LoadFile\ImagesAndProductions\Images\ImportSettingsModel.cs" />
+    <Compile Include="Models\Import\LoadFile\ImagesAndProductions\Productions\ImportSettingsModel.cs" />
+    <Compile Include="Models\Import\LoadFile\ImagesAndProductions\Numbering.cs" />
+    <Compile Include="Models\IntegrationPointType.cs" />
+    <Compile Include="Models\Import\Ldap\ImportFromLdapSettingsModel.cs" />
+    <Compile Include="Models\Import\Ldap\ImportFromLdapSourceConnectionModel.cs" />
+    <Compile Include="Models\Import\Ldap\ImportFromLdapModel.cs" />
     <Compile Include="Models\ExportToLoadFileProviderModel.cs" />
     <Compile Include="Models\ExportToLoadFileSourceInformationModel.cs" />
     <Compile Include="Models\ExportToLoadFileVolumeAndSubdirectoryModel.cs" />
@@ -162,24 +170,19 @@
     <Compile Include="Models\FolderWithDocuments.cs" />
     <Compile Include="Models\IntegrationPointGeneralModel.cs" />
     <Compile Include="Models\JobHistoryModel.cs" />
-    <Compile Include="Models\Ldap\LdapAuthenticationType.cs" />
-    <Compile Include="Models\Shared\CopyNativeFiles.cs" />
-    <Compile Include="Models\Shared\ImportCustodianSettingsModel.cs" />
-    <Compile Include="Models\Shared\ImportDocumentSettingsModel.cs" />
+    <Compile Include="Models\Import\Ldap\LdapAuthenticationType.cs" />
+    <Compile Include="Models\Import\CopyNativeFiles.cs" />
+    <Compile Include="Models\Import\ImportCustodianSettingsModel.cs" />
+    <Compile Include="Models\Import\ImportDocumentSettingsModel.cs" />
     <Compile Include="Models\Shared\ImportSettingsModel.cs" />
+    <Compile Include="Models\Import\LoadFile\MultiSelectFieldOverlayBehavior.cs" />
     <Compile Include="Models\Shared\OverwriteType.cs" />
     <Compile Include="Models\RelativityProviderModel.cs" />
     <Compile Include="Models\SchedulerModel.cs" />
-<<<<<<< HEAD
-    <Compile Include="Models\Shared\ImagePrecedence.cs" />    
-=======
     <Compile Include="Models\Shared\ImagePrecedence.cs" />
->>>>>>> 
     <Compile Include="TestDbContext.cs" />
     <Compile Include="TestException.cs" />
     <Compile Include="Permission.cs" />
-    <Compile Include="Models\ImportOverwriteMode.cs" />
-    <Compile Include="Models\FieldOverlayBehavior.cs" />
     <Compile Include="Import.cs" />
     <Compile Include="IntegrationTestBase.cs" />
     <Compile Include="Models\BaseField.cs" />
@@ -3414,6 +3417,7 @@
     <Content Include="TestDataText\NATIVES\REL0000000833.0001.XLS">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="TestDataImportFromFtp\TestFtpCustodianImport.csv" />
     <None Include="TestDataImportFromLoadFile\Small Salt\Small Salt Images.opt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

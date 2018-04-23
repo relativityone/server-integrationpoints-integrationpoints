@@ -1,75 +1,152 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models.Constants.ExportToLoadFile;
 using kCura.IntegrationPoint.Tests.Core.Models.Constants.Shared;
-using kCura.IntegrationPoint.Tests.Core.Models.ImportFromLoadFile;
+using kCura.IntegrationPoint.Tests.Core.Models.Import;
+using kCura.IntegrationPoint.Tests.Core.Models.Import.LoadFile;
+using kCura.IntegrationPoint.Tests.Core.Models.Import.LoadFile.Documents;
+using kCura.IntegrationPoint.Tests.Core.Models.Import.LoadFile.ImagesAndProductions;
+using kCura.IntegrationPoint.Tests.Core.Models.Import.LoadFile.ImagesAndProductions.Images;
+using kCura.IntegrationPoint.Tests.Core.Models.Import.LoadFile.ImagesAndProductions.Productions;
 using kCura.IntegrationPoint.Tests.Core.Models.Shared;
-using kCura.IntegrationPoints.UITests.Actions;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.UITests.Auxiliary;
+using kCura.IntegrationPoints.UITests.BrandNew.Import.LoadFile.Documents;
+using kCura.IntegrationPoints.UITests.BrandNew.Import.LoadFile.Images;
+using kCura.IntegrationPoints.UITests.BrandNew.Import.LoadFile.Productions;
 using kCura.IntegrationPoints.UITests.Pages;
+using kCura.IntegrationPoints.UITests.Validation;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 {
 	public class ImportFromLoadFileTest : UiTest
 	{
-		private int _workspaceId;
-		private IntegrationPointsImportFromLoadFileAction _integrationPointsAction;
-
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
 			EnsureGeneralPageIsOpened();
-			_workspaceId = Context.GetWorkspaceId();
-			_integrationPointsAction = new IntegrationPointsImportFromLoadFileAction(Driver, Context);
-			Install(_workspaceId);
+			Install(Context.GetWorkspaceId());
 			CopyFilesToFileshare();
 		}
 
 		private void CopyFilesToFileshare()
 		{
-			string fileshareLocation = SharedVariables.FileshareLocation;
-			string workspaceFolderName = $"EDDS{_workspaceId}";
+			string workspaceFolderName = $"EDDS{Context.GetWorkspaceId()}";
 			string sourceLocation = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestDataImportFromLoadFile");
-			string destinationLocation = Path.Combine(fileshareLocation, workspaceFolderName, "DataTransfer", "Import");
+			string destinationLocation = Path.Combine(SharedVariables.FileshareLocation, workspaceFolderName, "DataTransfer", "Import");
 			FileCopyHelper.CopyDirectory(sourceLocation, destinationLocation);
 		}
-
-		[Test, Order(1)]
-		public void DocumentImportFromLoadFile_TC_ILF_DOC_1()
+		
+		[Test, Order(10)]
+		public void ImportDocumentsFromLoadFile()
 		{
 			// Arrange
-			var model = new ImportFromLoadFileModel("TC_ILF_DOC_1", ExportToLoadFileTransferredObjectConstants.DOCUMENT);
+			var model = new ImportDocumentsFromLoadFileModel($"Import Documents from load file ({Now})", ExportToLoadFileTransferredObjectConstants.DOCUMENT)
+			{
+				LoadFileSettings =
+				{
+					ImportType = ImportType.DocumentLoadFile,
+					WorkspaceDestinationFolder = Context.WorkspaceName,
+					ImportSource = @"Small Salt.dat",
+					StartLine = 0
+				},
+				FileEncoding = FileEncodingModel.CreateDefault(),
+				FieldsMapping = new FieldsMappingModel(
+					"Control Number", "Control Number [Object Identifier]",
+					"Extracted Text", "Extracted Text [Long Text]"
+				),
+				Settings = new SettingsModel
+				{
+					Overwrite = OverwriteType.AppendOverlay,
+					MultiSelectFieldOverlayBehavior = MultiSelectFieldOverlayBehavior.UseFieldSettings,
+					CopyNativeFiles = CopyNativeFiles.PhysicalFiles,
+					NativeFilePath = "FILE_PATH",
+					UseFolderPathInformation = true,
+					FolderPathInformation = "Folder Path",
+					MoveExistingDocuments = false,
+					CellContainsFileLocation = true,
+					CellContainingFileLocation = "Extracted Text",
+					EncodingForUndetectableFiles = LoadFileEncodingConstants.UTF_8,
+				}
+			};
 
-			model.LoadFileSettings.ImportType = ImportType.DocumentLoadFile;
-			model.LoadFileSettings.WorkspaceDestinationFolder = "Three";
-			model.LoadFileSettings.ImportSource = "ExampleLoadFile.txt";
-			model.LoadFileSettings.StartLine = 0;
+			// Act
+			new ImportDocumentsFromLoadFileActions(Driver, Context, model).Setup();
 
-			model.FileEncoding.FileEncoding = LoadFileEncodingConstants.UNICODE;
-			model.FileEncoding.Column = 12;
-			model.FileEncoding.Quote = 13;
-			model.FileEncoding.Newline = 14;
-			model.FileEncoding.MultiValue = 15;
-			model.FileEncoding.NestedValue = 16;
-
-			model.SharedImportSettings.FieldMapping.Add(new Tuple<string, string>("test", "Control Number"));
-			model.SharedImportSettings.MapFieldsAutomatically = false;
-			model.SharedImportSettings.Overwrite = OverwriteType.AppendOverlay;
-
-			model.ImportDocumentSettings.CopyNativeFiles = CopyNativeFiles.LinksOnly;
-			model.ImportDocumentSettings.NativeFilePath = "test";
-			model.ImportDocumentSettings.UseFolderPathInformation = true;
-			model.ImportDocumentSettings.FolderPathInformation = "test";
-			model.ImportDocumentSettings.CellContainsFileLocation = true;
-			model.ImportDocumentSettings.FileLocationCell = "Select...";
-			model.ImportDocumentSettings.EncodingForUndetectableFiles = LoadFileEncodingConstants.UTF_8;
-
-			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewImportFromLoadFileIntegrationPoint(model);
+			var detailsPage = new IntegrationPointDetailsPage(Driver);
 			detailsPage.RunIntegrationPoint();
 
-			// TODO this is only an example test to validate page objects
+			// Assert
+			new BaseUiValidator().ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
 		}
+		
+		[Test, Order(20)]
+		public void ImportImagesFromLoadFile()
+		{
+			// Arrange
+			var model = new ImportImagesFromLoadFileModel($"Import Images from load file ({Now})", ExportToLoadFileTransferredObjectConstants.DOCUMENT)
+			{
+				LoadFileSettings =
+				{
+					ImportType = ImportType.ImageLoadFile,
+					WorkspaceDestinationFolder = Context.WorkspaceName,
+					ImportSource = @"Small Salt Images.opt",
+					StartLine = 0
+				},
+				ImportSettings =
+				{
+					Numbering = Numbering.AutoNumberPages,
+					ImportMode = OverwriteType.AppendOverlay,
+					CopyFilesToDocumentRepository = true,
+					LoadExtractedText = false
+				}
+			};
+
+			// Act
+			new ImportImagesFromLoadFileActions(Driver, Context, model).Setup();
+
+			var detailsPage = new IntegrationPointDetailsPage(Driver);
+			detailsPage.RunIntegrationPoint();
+
+			// Assert
+			new BaseUiValidator().ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
+		}
+
+		[Test, Order(30)]
+		public void ImportProductionsFromLoadFile()
+		{
+			// Arrange
+			string productionSetName = $"Production set {Now}";
+			Context.CreateProductionSet(productionSetName);
+
+			var model = new ImportProductionsFromLoadFileModel($"Import Productions from load file ({Now})", ExportToLoadFileTransferredObjectConstants.DOCUMENT)
+			{
+				LoadFileSettings =
+				{
+					ImportType = ImportType.ProductionLoadFile,
+					WorkspaceDestinationFolder = Context.WorkspaceName,
+					ImportSource = @"Small Salt Productions.opt",
+					StartLine = 0
+				},
+				ImportSettings =
+				{
+					Numbering = Numbering.AutoNumberPages,
+					ImportMode = OverwriteType.AppendOverlay,
+					CopyFilesToDocumentRepository = true,
+					Production = productionSetName
+				}
+			};
+
+			// Act
+			new ImportProductionsFromLoadFileActions(Driver, Context, model).Setup();
+
+			var detailsPage = new IntegrationPointDetailsPage(Driver);
+			detailsPage.RunIntegrationPoint();
+
+			// Assert
+			new BaseUiValidator().ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
+		}
+
 	}
 }

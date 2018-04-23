@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Security;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models.Constants.ExportToLoadFile;
-using kCura.IntegrationPoint.Tests.Core.Models.Ldap;
+using kCura.IntegrationPoint.Tests.Core.Models.Import.Ldap;
 using kCura.IntegrationPoint.Tests.Core.Models.Shared;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.UITests.Actions;

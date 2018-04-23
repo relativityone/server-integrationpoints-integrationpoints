@@ -1,8 +1,13 @@
-﻿namespace kCura.IntegrationPoint.Tests.Core.Models.Shared
+﻿using System.ComponentModel;
+
+namespace kCura.IntegrationPoint.Tests.Core.Models.Shared
 {
     public enum ImagePrecedence
     {
+		[Description("")]
         OriginalImages,
-        ProducedImages
+
+	    [Description("")]
+		ProducedImages
     }
 }

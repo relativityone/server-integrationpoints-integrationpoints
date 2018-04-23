@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using kCura.IntegrationPoint.Tests.Core.Models.Import;
 using kCura.IntegrationPoint.Tests.Core.Models.Shared;
 using kCura.IntegrationPoints.UITests.Driver;
 using kCura.Utility;
@@ -211,6 +212,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		{
 			set
 			{
+				FileLocationCellSelectElement.ScrollIntoView();
 				FileLocationCellSelectElement.SelectByText(value);
 			}
 		}
@@ -228,6 +230,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public IntegrationPointDetailsPage SaveIntegrationPoint()
 		{
+			SaveButton.ScrollIntoView(Driver);
 			SaveButton.ClickWhenClickable();
 			return new IntegrationPointDetailsPage(Driver);
 		}

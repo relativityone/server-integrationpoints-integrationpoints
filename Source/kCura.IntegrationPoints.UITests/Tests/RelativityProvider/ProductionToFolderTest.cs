@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Validators;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -14,7 +15,14 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 	{
 		public override void TearDown()
 		{
-			DestinationContext?.TearDown();
+			if (DestinationContext != null)
+			{
+				if (string.IsNullOrEmpty(SharedVariables.UiUseThisExistingWorkspace))
+				{
+					Workspace.DeleteWorkspace(DestinationContext.GetWorkspaceId());
+				}
+				DestinationContext.TearDown();
+			}
 		}
 
 		private RelativityProviderModel CreateRelativityProviderModelWithProduction()

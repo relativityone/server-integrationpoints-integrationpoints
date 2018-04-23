@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoints.UITests.Validation;
 using NUnit.Framework;
+using IntegrationPointType = kCura.IntegrationPoint.Tests.Core.Models.IntegrationPointType;
 
 namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 {
@@ -30,7 +31,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			ExportToLoadFileProviderModel model = CreateExportToLoadFileProviderModel("TC_ELF_DIR_1");
 
 			// Step 1
-			model.Type = IntegrationPointGeneralModel.IntegrationPointTypeEnum.Export;
+			model.Type = IntegrationPointType.Export;
 			model.DestinationProvider = IntegrationPointGeneralModel.INTEGRATION_POINT_PROVIDER_LOADFILE;
 			model.TransferredObject = ExportToLoadFileTransferredObjectConstants.DOCUMENT;
 
@@ -95,7 +96,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			ExportToLoadFileProviderModel model = CreateExportToLoadFileProviderModel("TC_ELF_DIR_2");
 
 			// Step 1
-			model.Type = IntegrationPointGeneralModel.IntegrationPointTypeEnum.Export;
+			model.Type = IntegrationPointType.Export;
 			model.DestinationProvider = IntegrationPointGeneralModel.INTEGRATION_POINT_PROVIDER_LOADFILE;
 			model.TransferredObject = ExportToLoadFileTransferredObjectConstants.DOCUMENT;
 

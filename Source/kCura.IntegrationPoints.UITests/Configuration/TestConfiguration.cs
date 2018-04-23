@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 	
 		public TestConfiguration()
 		{
-			//ConfigName = Environment.GetEnvironmentVariable(_ENVIRONMENT_VARIABLE_CONFIG_NAME);
+			ConfigName = Environment.GetEnvironmentVariable(_ENVIRONMENT_VARIABLE_CONFIG_NAME);
 			ConfigName = "testvm.config";
 
 			if (ConfigName == null)
@@ -80,7 +80,6 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 				string path = $@"UiTestsConfig\{ConfigName}";
 				Log.Information("Merging {Path}...", path);
 				SharedVariables.MergeConfigurationWithAppConfig(path);
-                Console.WriteLine(SharedVariables.DumpToString());
 			}
 			return this;
 		}
