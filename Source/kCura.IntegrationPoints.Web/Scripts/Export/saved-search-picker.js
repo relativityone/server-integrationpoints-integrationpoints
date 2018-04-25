@@ -1,27 +1,36 @@
-﻿var SavedSearchPickerViewModel = function (okCallback, validateCallback) {
+﻿var SavedSearchPickerViewModel = function (okCallback, retrieveDataCallback) {
 	var self = this;
 
 	self.PopupTitle = ko.observable("Select a Saved Search");
 
 	self.okCallback = okCallback;
-	self.validateCallback = validateCallback;
+	self.isSavedSearchNode = function (node) {
+		return !!node && (node.icon === "jstree-search" || node.icon === "jstree-search-personal");
+	};
 	self.data = {};
 
 	self.view = null;
+
+	self.retrieveData = function (node, callback) {
+		var nodeId = null;
+		if (node.id !== '#') {
+			nodeId = node.id;
+		}
+		retrieveDataCallback(nodeId, callback);
+	};
 
 	this.construct = function (view) {
 		self.view = view;
 	}
 
-	this.open = function (available, selected) {
+	this.open = function (selected) {
 		var $tree = $("#saved-search-picker-browser-tree");
 
 		$tree.jstree("destroy");
 
-		var _d = $.extend({ icon: "jstree-root-folder" }, available)
 		$tree.jstree({
 			core: {
-				data: _d
+				data: self.retrieveData
 			}
 		});
 
@@ -32,19 +41,21 @@
 		});
 
 		$(".jstree").on("loaded.jstree", function () {
-
-			$('#saved-search-picker-browser-tree').jstree(true).select_node(self.selected);
+			if (self.selected == undefined) {
+				$('#saved-search-picker-browser-tree').jstree('open_node', 'ul > li:first'); // open root node
+			} else {
+				$('#saved-search-picker-browser-tree').jstree(true).select_node(self.selected); // open selected node
+			}
 		});
-
-
+		
 		self.view.dialog('open');
 	}
 
 	this.ok = function () {
 		var canClose = true;
 
-		if (typeof self.validateCallback === 'function') {
-			canClose = self.validateCallback(self.selected);
+		if (typeof self.isSavedSearchNode === 'function') {
+			canClose = self.isSavedSearchNode(self.selected);
 		}
 
 		if (canClose) {

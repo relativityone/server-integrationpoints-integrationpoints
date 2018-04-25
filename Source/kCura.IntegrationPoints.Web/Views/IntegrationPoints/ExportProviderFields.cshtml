@@ -29,7 +29,7 @@
 		<div class="field-row" data-bind="visible: exportSource.IsSavedSearchSelected()">
 			<div class="field-label required">Saved Search:</div>
 			<div class="field-value">
-				<select id="savedSearchSelector" data-bind="options: exportSource.SavedSearches, optionsText: 'displayName', optionsValue: 'value', optionsCaption: 'Select...', value: exportSource.SavedSearchArtifactId,  select2searchable: {}"></select>
+				<input type="hidden" id="savedSearchSelector" data-bind="value: exportSource.SavedSearchArtifactId, select2lazySearchable: {}, optionsUrl: exportSource.SavedSearchUrl, textPropertyName: 'displayName', valuePropertyName: 'value', itemDetailsIdParameterName: 'savedSearchId', optionsCaption: 'Select...'" />
 				<button id="saved-search-selection-button" data-bind="click: exportSource.OpenSavedSearchPicker" class="actionButtonSmall">...</button>
 			</div>
 		</div>

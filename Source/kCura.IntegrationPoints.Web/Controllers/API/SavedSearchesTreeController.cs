@@ -1,8 +1,9 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Attributes;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
@@ -18,9 +19,9 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		[HttpGet]
 		[LogApiExceptionFilter(Message = "Unable to retrieve saved searches list.")]
-		public HttpResponseMessage Get(int workspaceArtifactId)
-        {	
-			var tree = _savedSearchesService.GetSavedSearchesTree(workspaceArtifactId);
+		public async Task<HttpResponseMessage> Get(int workspaceArtifactId, int? savedSearchContainerId = null, int? savedSearchId = null)
+		{
+			JsTreeItemDTO tree = await _savedSearchesService.GetSavedSearchesTreeAsync(workspaceArtifactId, savedSearchContainerId, savedSearchId);
 			return Request.CreateResponse(HttpStatusCode.OK, tree);
 		}
 	}

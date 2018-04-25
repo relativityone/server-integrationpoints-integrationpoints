@@ -1,6 +1,8 @@
 ﻿$(function (root) {
 	//Create a new communication object that talks to the host page.
 	var message = IP.frameMessaging(); // handle into the global Integration point framework
+	var savedSearchService = new SavedSearchService();
+
 	ko.validation.configure({
 		registerExtenders: true,
 		messagesOnModified: true,
@@ -32,17 +34,20 @@
 		message: 'The target workspace is no longer accessible. Please verify your settings or create a new Integration Point.'
 	};
 	ko.validation.rules['checkSavedSearch'] = {
-		validator: function (value, params) {
-			var isArtifactIdInList = doesArtifactIdExistInObjectList(params.savedSearches(), value);
-			if (!isArtifactIdInList) {
-				return false;
-			}
-			return true;
+		async: true,
+		validator: function (value, params, callback) {
+			var okCallback = function(result) {
+				callback(!!result);
+			};
+			var errorCallback = function() {
+				callback({ isValid: false, message: 'Unable to validate if the saved search is accessible. Please try again.' });
+			};
+			savedSearchService.RetrieveSavedSearch(value, okCallback, errorCallback);
 		},
 		message: 'The saved search is no longer accessible. Please verify your settings or create a new Integration Point.'
 	};
 	ko.validation.registerExtenders();
-
+	
 	var viewModel;
 
 	message.dFrame.IP.reverseMapFields = true; // set the flag so that the fields can be reversed;
@@ -59,8 +64,8 @@
 		}
 
 		// Modify destination object to contain target workspaceId
-	    var stepModel = IP.frameMessaging().dFrame.IP.points.steps.steps[1].model;
-        var destinationJson = stepModel.destination;
+		var stepModel = IP.frameMessaging().dFrame.IP.points.steps.steps[1].model;
+		var destinationJson = stepModel.destination;
 		var destination = JSON.parse(destinationJson);
 		destination.FederatedInstanceArtifactId = viewModel.FederatedInstanceArtifactId();
 		destination.CreateSavedSearchForTagging = viewModel.CreateSavedSearchForTagging();
@@ -106,10 +111,10 @@
 	var Model = function (m) {
 		var state = $.extend({}, {}, m);
 		var self = this;
+		self.SavedSearchService = new SavedSearchService();
 
 		self.federatedInstances = ko.observableArray(state.federatedInstances);
 		self.workspaces = ko.observableArray(state.workspaces);
-		self.savedSearches = ko.observableArray(state.savedSearches);
 		self.FederatedInstanceArtifactId = ko.observable(state.FederatedInstanceArtifactId);
 		self.TargetWorkspaceArtifactId = ko.observable(state.TargetWorkspaceArtifactId);
 		self.DestinationFolder = ko.observable(state.DestinationFolder);
@@ -121,7 +126,6 @@
 		self.EnableLocationRadio = ko.observable(state.EnableLocationRadio || false);
 		self.LocationFolderChecked = ko.observable(state.LocationFolderChecked || "true");
 		self.DestinationProductionSets = ko.observableArray();
-		self.SavedSearchesTree = ko.observable();
 		self.ProductionArtifactId = ko.observable().extend({
 			required: {
 				onlyIf: function () {
@@ -144,6 +148,7 @@
 		self.IsProductionSelected = function () {
 			return self.TypeOfExport() === ExportEnums.SourceOptionsEnum.Production;
 		};
+		
 		self.SavedSearchArtifactId = ko.observable(state.SavedSearchArtifactId).extend({
 			required: {
 				onlyIf: function () {
@@ -289,17 +294,17 @@
 
 		self.getFolderPath = function (destinationWorkspaceId, folderArtifactId) {
 			IP.data.ajax({
-					contentType: "application/json",
-					dataType: "json",
-					headers: { "X-CSRF-Header": "-" },
-					type: "POST",
-					url: IP.utils.generateWebAPIURL("SearchFolder/GetFullPathList",
-						destinationWorkspaceId,
-						folderArtifactId,
-						self.FederatedInstanceArtifactId() ? self.FederatedInstanceArtifactId() : 0),
-					async: true,
-					data: self.SecuredConfiguration()
-				})
+				contentType: "application/json",
+				dataType: "json",
+				headers: { "X-CSRF-Header": "-" },
+				type: "POST",
+				url: IP.utils.generateWebAPIURL("SearchFolder/GetFullPathList",
+					destinationWorkspaceId,
+					folderArtifactId,
+					self.FederatedInstanceArtifactId() ? self.FederatedInstanceArtifactId() : 0),
+				async: true,
+				data: self.SecuredConfiguration()
+			})
 				.then(function (result) {
 					if (result[0]) {
 						self.TargetFolder(result[0].fullPath);
@@ -324,23 +329,7 @@
 			self.locationSelector.toggle(self.TargetWorkspaceArtifactId.isValid());
 		};
 
-		// load the data first before preceding this could cause problems below when we try to do validation on fields
-		if (self.savedSearches.length === 0) {
-			IP.data.ajax({
-				type: 'GET',
-				url: IP.utils.generateWebAPIURL('SavedSearchesTree', IP.utils.getParameterByName("AppID", window.top)),
-				async: true,
-				success: function (result) {
-					self.SavedSearchesTree(result);
-					self.savedSearches(FlatSavedSearches(result));
-					self.SavedSearchArtifactId(state.SavedSearchArtifactId);
-				},
-				error: function () {
-					IP.frameMessaging().dFrame.IP.message.error.raise("Unable to retrieve the saved searches. Please contact your system administrator.");
-					self.savedSearches([]);
-				}
-			});
-		}
+		self.SavedSearchUrl = IP.utils.generateWebAPIURL('SavedSearchFinder', IP.utils.getParameterByName("AppID", window.top));
 
 		self.updateWorkspaces = function () {
 			IP.data.ajax({
@@ -380,15 +369,20 @@
 			});
 		}
 
+		self.RetrieveSavedSearchTree = function(nodeId, callback) {
+			var selectedSavedSearchId = self.SavedSearchArtifactId();
+			self.SavedSearchService.RetrieveSavedSearchTree(nodeId, selectedSavedSearchId, callback);
+		};
+
 		var savedSearchPickerViewModel = new SavedSearchPickerViewModel(function (value) {
 			self.SavedSearchArtifactId(value.id);
-		}, IsSavedSearchTreeNode);
+		}, self.RetrieveSavedSearchTree);
 
 		Picker.create("Fileshare", "savedSearchPicker", "SavedSearchPicker", savedSearchPickerViewModel);
 
 
 		self.OpenSavedSearchPicker = function () {
-			savedSearchPickerViewModel.open(self.SavedSearchesTree(), self.SavedSearchArtifactId());
+			savedSearchPickerViewModel.open(self.SavedSearchArtifactId());
 		};
 
 		self.updateSecuredConfiguration = function (clientId, clientSecret) {
@@ -527,9 +521,8 @@
 		this.SavedSearchArtifactId.extend({
 			checkSavedSearch: {
 				onlyIf: function () {
-					return (typeof self.savedSearches()) !== "undefined" && self.IsSavedSearchSelected();
-				},
-				params: { savedSearches: self.savedSearches }
+					return (self.IsSavedSearchSelected());
+				}
 			}
 		});
 

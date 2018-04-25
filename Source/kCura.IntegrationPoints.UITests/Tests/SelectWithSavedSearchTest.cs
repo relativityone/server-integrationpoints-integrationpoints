@@ -35,8 +35,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 
 			// Assert
 			Thread.Sleep(_MILLISECONDSTIMEOUT);
-			Assert.AreEqual("All Documents", second.SavedSearch.Value);
+			Assert.AreEqual("All Documents", second.GetSelectedSavedSearch());
 		}
-
 	}
 }

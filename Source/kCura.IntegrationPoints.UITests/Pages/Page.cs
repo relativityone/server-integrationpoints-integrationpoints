@@ -91,7 +91,12 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public void Sleep(int milliseconds)
 		{
-			Thread.Sleep(milliseconds);
+			Sleep(TimeSpan.FromMilliseconds(milliseconds));
+		}
+
+		public void Sleep(TimeSpan timeSpan)
+		{
+			Thread.Sleep(timeSpan);
 		}
 
 		protected void SetInputText(IWebElement element, string text)

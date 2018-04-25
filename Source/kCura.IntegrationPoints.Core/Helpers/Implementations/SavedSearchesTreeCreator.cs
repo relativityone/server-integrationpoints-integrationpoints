@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
@@ -8,96 +7,135 @@ using Relativity.Services.Search;
 
 namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 {
-    public class SavedSearchesTreeCreator : ISavedSearchesTreeCreator
-    {
-        private const string SanitizedSavedSearchDefaultName = "Sanitized Search Name";
-        private readonly IHtmlSanitizerManager _htmlSanitizerManager;
+	public class SavedSearchesTreeCreator : ISavedSearchesTreeCreator
+	{
+		private const string SanitizedSavedSearchDefaultName = "Sanitized Search Name";
+		private readonly IHtmlSanitizerManager _htmlSanitizerManager;
 
-        public SavedSearchesTreeCreator(IHtmlSanitizerManager htmlSanitizerManager)
-        {
-            _htmlSanitizerManager = htmlSanitizerManager;
-        }
+		public SavedSearchesTreeCreator(IHtmlSanitizerManager htmlSanitizerManager)
+		{
+			_htmlSanitizerManager = htmlSanitizerManager;
+		}
 
-        public JsTreeItemDTO Create(IEnumerable<SearchContainerItem> nodes)
-        {
-            return CreateWithChildrenImpl(nodes, Enumerable.Empty<SavedSearchContainerItem>());
-        }
+		public JsTreeItemDTO Create(IEnumerable<SearchContainerItem> nodes)
+		{
+			return CreateWithChildrenImpl(nodes, Enumerable.Empty<SavedSearchContainerItem>());
+		}
 
-        public JsTreeItemDTO Create(IEnumerable<SearchContainerItem> nodes, IEnumerable<SavedSearchContainerItem> children)
-        {
-            return CreateWithChildrenImpl(nodes, children);
-        }
+		public JsTreeItemDTO Create(IEnumerable<SearchContainerItem> nodes, IEnumerable<SavedSearchContainerItem> children)
+		{
+			return CreateWithChildrenImpl(nodes, children);
+		}
 
-        private string GetSanitizedText(string text)
-        {
-            SanitizeResult sanitizedResult = _htmlSanitizerManager.Sanitize(text);
-            return sanitizedResult.HasErrors || string.IsNullOrWhiteSpace(sanitizedResult.CleanHTML)
-                ? SanitizedSavedSearchDefaultName
-                : sanitizedResult.CleanHTML;
-        }
+		public JsTreeItemDTO CreateTreeForNodeAndDirectChildren(SearchContainer searchContainer, IEnumerable<SearchContainerItem> directories, IEnumerable<SavedSearchContainerItem> items)
+		{
+			var output = new JsTreeItemDTO
+			{
+				Id = searchContainer.ArtifactID.ToString(),
+				Text = GetSanitizedText(searchContainer.Name),
+				Icon = JsTreeItemIconEnum.SavedSearchFolder.GetDescription(),
+				IsDirectory = true,
+				Children = new List<JsTreeItemDTO>()
+			};
 
-        private JsTreeItemDTO CreateWithChildrenImpl(IEnumerable<SearchContainerItem> nodes, IEnumerable<SavedSearchContainerItem> children)
-        {
-            // map folders to dictonary
-            Dictionary<string, JsTreeItemWithParentIdDTO> folderLookup = nodes.Select(x =>
-            {
-                return new JsTreeItemWithParentIdDTO
-                {
-                    Id = x.SearchContainer.ArtifactID.ToString(),
-                    ParentId = x.ParentContainer.ArtifactID.ToString(),
-                    Text = GetSanitizedText(x.SearchContainer.Name),
-                    Icon = JsTreeItemIconEnum.SavedSearchFolder.GetDescription()
-                };
-            }).OrderBy(v => v.Text).ToDictionary(x => x.Id);
+			foreach (SearchContainerItem directory in directories)
+			{
+				var searchFolderDto = new JsTreeItemDTO
+				{
+					Id = directory.SearchContainer.ArtifactID.ToString(),
+					Text = GetSanitizedText(directory.SearchContainer.Name),
+					Icon = JsTreeItemIconEnum.SavedSearchFolder.GetDescription(),
+					IsDirectory = true
+				};
+				output.Children.Add(searchFolderDto);
+			}
 
-            // map searches to dictonary
-            Dictionary<string, JsTreeItemWithParentIdDTO[]> childrenLookup = children.Select(x =>
-            {
-                return new JsTreeItemWithParentIdDTO
-                {
-                    Id = x.SavedSearch.ArtifactID.ToString(),
-                    ParentId = x.ParentContainer.ArtifactID.ToString(),
-                    Text = GetSanitizedText(x.SavedSearch.Name),
-                    Icon = (x.Personal ? JsTreeItemIconEnum.SavedSearchPersonal : JsTreeItemIconEnum.SavedSearch).GetDescription()
-                };
-            }).GroupBy(x => x.ParentId).ToDictionary(x => x.Key, x => x.OrderBy(v => v.Text).ToArray());
+			foreach (SavedSearchContainerItem savedSearchContainerItem in items)
+			{
+				var savedSearchDto = new JsTreeItemDTO
+				{
+					Id = savedSearchContainerItem.SavedSearch.ArtifactID.ToString(),
+					Text = GetSanitizedText(savedSearchContainerItem.SavedSearch.Name),
+					IsDirectory = false,
+					Icon = (savedSearchContainerItem.Personal ? JsTreeItemIconEnum.SavedSearchPersonal : JsTreeItemIconEnum.SavedSearch).GetDescription()
+				};
+				output.Children.Add(savedSearchDto);
+			}
 
-            // hook up children with parents
-            JsTreeItemWithParentIdDTO[] child;
-            JsTreeItemWithParentIdDTO parent;
-            foreach (JsTreeItemWithParentIdDTO item in folderLookup.Values)
-            {
-                if (childrenLookup.TryGetValue(item.Id, out child))
-                {
-                    item.Children.AddRange(child);
-                }
+			return output;
+		}
 
-                if (folderLookup.TryGetValue(item.ParentId, out parent))
-                {
-                    parent.Children.Add(item);
-                    parent.Children.Sort((x, y) =>
-                    {
-                        int sort = x.Icon.GetValue<JsTreeItemIconEnum>().CompareTo(y.Icon.GetValue<JsTreeItemIconEnum>());
-                        if (sort == 0)
-                        {
-                            sort = x.Text.CompareTo(y.Text);
-                        }
+		private string GetSanitizedText(string text)
+		{
+			SanitizeResult sanitizedResult = _htmlSanitizerManager.Sanitize(text);
+			return sanitizedResult.HasErrors || string.IsNullOrWhiteSpace(sanitizedResult.CleanHTML)
+				? SanitizedSavedSearchDefaultName
+				: sanitizedResult.CleanHTML;
+		}
 
-                        return sort;
-                    });
-                }
-            }
+		private JsTreeItemDTO CreateWithChildrenImpl(IEnumerable<SearchContainerItem> nodes, IEnumerable<SavedSearchContainerItem> children)
+		{
+			// map folders to dictonary
+			Dictionary<string, JsTreeItemWithParentIdDTO> folderLookup = nodes.Select(x =>
+			{
+				return new JsTreeItemWithParentIdDTO
+				{
+					Id = x.SearchContainer.ArtifactID.ToString(),
+					ParentId = x.ParentContainer.ArtifactID.ToString(),
+					Text = GetSanitizedText(x.SearchContainer.Name),
+					Icon = JsTreeItemIconEnum.SavedSearchFolder.GetDescription(),
+					IsDirectory = true
+				};
+			}).OrderBy(v => v.Text).ToDictionary(x => x.Id);
 
-            // root node has a parent but one not referenced by other containers
-            int rootParentId = nodes.Select(x => x.ParentContainer.ArtifactID)
-                .Except(nodes.Select(x => x.SearchContainer.ArtifactID))
-                .Single();
+			// map searches to dictonary
+			Dictionary<string, JsTreeItemWithParentIdDTO[]> childrenLookup = children.Select(x =>
+			{
+				return new JsTreeItemWithParentIdDTO
+				{
+					Id = x.SavedSearch.ArtifactID.ToString(),
+					ParentId = x.ParentContainer.ArtifactID.ToString(),
+					Text = GetSanitizedText(x.SavedSearch.Name),
+					Icon = (x.Personal ? JsTreeItemIconEnum.SavedSearchPersonal : JsTreeItemIconEnum.SavedSearch).GetDescription()
+				};
+			}).GroupBy(x => x.ParentId).ToDictionary(x => x.Key, x => x.OrderBy(v => v.Text).ToArray());
 
-            // the one and only
-            JsTreeItemWithParentIdDTO root = folderLookup.Values.Where(x => x.ParentId == rootParentId.ToString()).Single();
-            root.Icon = JsTreeItemIconEnum.Root.GetDescription();
+			// hook up children with parents
+			JsTreeItemWithParentIdDTO[] child;
+			JsTreeItemWithParentIdDTO parent;
+			foreach (JsTreeItemWithParentIdDTO item in folderLookup.Values)
+			{
+				if (childrenLookup.TryGetValue(item.Id, out child))
+				{
+					item.Children.AddRange(child);
+				}
 
-            return root;
-        }
-    }
+				if (folderLookup.TryGetValue(item.ParentId, out parent))
+				{
+					parent.Children.Add(item);
+					parent.Children.Sort((x, y) =>
+					{
+						int sort = x.Icon.GetValue<JsTreeItemIconEnum>().CompareTo(y.Icon.GetValue<JsTreeItemIconEnum>());
+						if (sort == 0)
+						{
+							sort = x.Text.CompareTo(y.Text);
+						}
+
+						return sort;
+					});
+				}
+			}
+
+			// root node has a parent but one not referenced by other containers
+			int rootParentId = nodes.Select(x => x.ParentContainer.ArtifactID)
+				.Except(nodes.Select(x => x.SearchContainer.ArtifactID))
+				.Single();
+
+			// the one and only
+			JsTreeItemWithParentIdDTO root = folderLookup.Values.Where(x => x.ParentId == rootParentId.ToString()).Single();
+			root.Icon = JsTreeItemIconEnum.Root.GetDescription();
+
+			return root;
+		}
+	}
 }

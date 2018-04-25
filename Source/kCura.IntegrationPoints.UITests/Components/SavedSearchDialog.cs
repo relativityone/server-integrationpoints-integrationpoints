@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -59,7 +60,7 @@ namespace kCura.IntegrationPoints.UITests.Components
 					if (IsClosed(node))
 					{
 						Log.Verbose("Opening node");
-						ToggleNode(node);
+						node = ToggleNode(node);
 					}
 					AddChildrenToStack(node, nodes);
 				}
@@ -75,10 +76,29 @@ namespace kCura.IntegrationPoints.UITests.Components
 			}
 		}
 
-		public void ToggleNode(IWebElement node)
+		public IWebElement ToggleNode(IWebElement node)
 		{
+			string nodeId = node.GetAttribute("id");
+
 			IWebElement icon = node.FindElement(By.CssSelector("i"));
 			icon.Click();
+
+			return SelectNode(nodeId);
+		}
+
+		private IWebElement SelectNode(string nodeId)
+		{
+			IWebElement newNode;
+			int i = 0;
+			int numberOfRetries = 10;
+			do
+			{
+				i++;
+				Thread.Sleep(TimeSpan.FromMilliseconds(250));
+				newNode = Parent.FindElement(By.Id(nodeId));
+			}
+			while (newNode == null && i < numberOfRetries);
+			return newNode;
 		}
 
 		public string Text(IWebElement li)

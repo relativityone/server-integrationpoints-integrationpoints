@@ -8,13 +8,13 @@ ko.bindingHandlers.select2 = {
 		var allBindings = allBindingsAccessor(),
 			select2 = ko.utils.unwrapObservable(allBindings.select2),
 			$element = $(el);
-	
+
 		$element.select2(
 			$.extend({
 				dropdownAutoWidth: false,
 				dropdownCssClass: "filter-select",
 				containerCssClass: "filter-container",
-				minimumResultsForSearch: Infinity			
+				minimumResultsForSearch: Infinity
 			}, valueAccessor())
 		);
 
@@ -104,6 +104,97 @@ ko.bindingHandlers.select2searchable = {
 				converted.push({ id: value, text: textAccessor(value) });
 			});
 			$(el).select2("data", converted);
+		}
+	}
+};
+
+ko.bindingHandlers.select2lazySearchable = {
+	init: function (el, valueAccessor, allBindingsAccessor, viewModel) {
+		ko.utils.domNodeDisposal.addDisposeCallback(el, function () {
+			$(el).select2('destroy');
+		});
+
+		var allBindings = allBindingsAccessor(),
+			select2 = ko.utils.unwrapObservable(allBindings.select2lazySearchable),
+			$element = $(el);
+
+		var optionsUrl = allBindings.optionsUrl;
+		var itemDetailsIdParameterName = allBindings.itemDetailsIdParameterName;
+
+		var optionsPlaceholder = 'Select ...';
+		if (!!allBindings.optionsCaption) {
+			optionsPlaceholder = allBindings.optionsCaption;
+		}
+
+
+		var valuePropertyName = allBindings.valuePropertyName;
+		var textPropertyName = allBindings.textPropertyName;
+		var mapItemData = function(item) {
+			if (!!valuePropertyName) {
+				item.id = item[valuePropertyName];
+			}
+			if (!!textPropertyName) {
+				item.text = item[textPropertyName];
+			}
+			return item;
+		};
+
+		$element.select2(
+			$.extend({
+				placeholder: optionsPlaceholder,
+				dropdownAutoWidth: false,
+				dropdownCssClass: "filter-select",
+				containerCssClass: "filter-container",
+				ajax: {
+					url: optionsUrl,
+					dataType: 'json',
+					quietMillis: 150,
+					cache: true,
+					data: function (term, page) {
+						return {
+							search: term,
+							page: page || 1
+						}
+					},
+					results: function (data) {
+						var select2Data = $.map(data.results, mapItemData);
+						return {
+							results: select2Data,
+							more: data.hasMoreResults
+						};
+					}
+				},
+				initSelection: function (element, callback) {
+					var id = $(element).val();
+					if (id !== "") {
+						var dataRequest = {};
+						dataRequest[itemDetailsIdParameterName] = id;
+
+						$.ajax({
+							url: optionsUrl,
+							dataType: "json",
+							data: dataRequest
+						}).done(function(data) {
+							callback(mapItemData(data));
+						});
+					}
+				},
+			}, valueAccessor())
+		);
+
+		if (viewModel.disable) {
+			$element.select2('disable');
+		}
+
+		$element.parent().find('.filter-container span.select2-arrow').removeClass("select2-arrow").addClass("icon legal-hold icon-chevron-down");
+	},
+	update: function (el, valueAccessor, allBindingsAccessor, viewModel) {
+		var allBindings = allBindingsAccessor();
+		if ("value" in allBindings) {
+			var value = allBindings.value();
+			if (value) {
+				$(el).val(value).trigger('change');
+			}
 		}
 	}
 };

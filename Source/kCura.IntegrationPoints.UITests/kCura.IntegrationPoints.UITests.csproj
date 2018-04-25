@@ -60,6 +60,7 @@
     <Compile Include="Common\TestCategory.cs" />
     <Compile Include="Components\Component.cs" />
     <Compile Include="Components\JobStatusTable.cs" />
+    <Compile Include="Components\SavedSearchSelector.cs" />
     <Compile Include="Components\Select.cs" />
     <Compile Include="Components\PropertiesTable.cs" />
     <Compile Include="Components\SavedSearchDialog.cs" />

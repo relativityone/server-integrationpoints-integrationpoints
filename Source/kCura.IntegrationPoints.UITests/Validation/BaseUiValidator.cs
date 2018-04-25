@@ -61,13 +61,14 @@ namespace kCura.IntegrationPoints.UITests.Validation
 
 		private static bool GetUntilJobFinishedConditionAndExecutionTimeout(JobHistoryModel jobHistoryModel, Stopwatch sw, int timeoutInMinutes)
 		{
-			bool jobInProcessingOrPendingStatus = jobHistoryModel == null ||
-										  jobHistoryModel.JobStatus == JobStatusChoices.JobHistoryProcessing.Name ||
-										  jobHistoryModel.JobStatus == JobStatusChoices.JobHistoryPending.Name;
+			bool isIntermediateStatus = jobHistoryModel == null ||
+										jobHistoryModel.JobStatus == JobStatusChoices.JobHistoryValidating.Name ||
+										jobHistoryModel.JobStatus == JobStatusChoices.JobHistoryProcessing.Name ||
+										jobHistoryModel.JobStatus == JobStatusChoices.JobHistoryPending.Name;
 
 			bool timeoutExceeded = sw.Elapsed > TimeSpan.FromMinutes(timeoutInMinutes);
 
-			return jobInProcessingOrPendingStatus && !timeoutExceeded;
+			return isIntermediateStatus && !timeoutExceeded;
 		}
 	}
 }

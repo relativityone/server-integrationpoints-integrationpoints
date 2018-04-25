@@ -5,8 +5,8 @@
 		var self = this;
 
 		self.fields = new FieldMappingViewModel(false);
-
-		self.exportSource = new ExportSourceViewModel(state);
+		var savedSearchService = new SavedSearchService();
+		self.exportSource = new ExportSourceViewModel(state, savedSearchService);
 		self.exportSource.Reload();
 
 		self.startExportAtRecord = ko.observable(state.sourceConfiguration.StartExportAtRecord || 1).extend({
@@ -231,9 +231,7 @@
 				break;
 
 			case ExportEnums.SourceOptionsEnum.SavedSearch:
-				var selectedSavedSearch = self.model.exportSource.GetSelectedSavedSearch(self.model.exportSource.SavedSearchArtifactId());
-				self.ipModel.sourceConfiguration.SavedSearchArtifactId = selectedSavedSearch.value;
-				self.ipModel.sourceConfiguration.SavedSearch = selectedSavedSearch.displayName;
+				self.ipModel.sourceConfiguration.SavedSearchArtifactId = self.model.exportSource.SavedSearchArtifactId();
 				break;
 			}
 			self.ipModel.map = self.model.fields.getMappedFields();

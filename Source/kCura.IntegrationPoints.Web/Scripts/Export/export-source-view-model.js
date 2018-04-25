@@ -1,5 +1,6 @@
-var ExportSourceViewModel = function (state) {
+var ExportSourceViewModel = function (state, savedSearchService) {
 	var self = this;
+	self.SavedSearchService = savedSearchService;
 	var sourceConfiguration = state.sourceConfiguration || {};
 
 	self.ArtifactTypeID = state.artifactTypeID;
@@ -27,8 +28,7 @@ var ExportSourceViewModel = function (state) {
 	}
 
 	// saved searches
-
-	self.SavedSearches = ko.observableArray();
+	self.SavedSearchUrl = IP.utils.generateWebAPIURL('SavedSearchFinder', IP.utils.getParameterByName("AppID", window.top));
 
 	self.IsSavedSearchSelected = function () {
 		return self.TypeOfExport() === ExportEnums.SourceOptionsEnum.SavedSearch;
@@ -42,43 +42,19 @@ var ExportSourceViewModel = function (state) {
 		}
 	});
 
-	self.SavedSearchesTree = ko.observable();
-
-	self.GetSelectedSavedSearch = function (artifactId) {
-		var selectedSavedSearch = ko.utils.arrayFirst(self.SavedSearches(), function (item) {
-			if (item.value === artifactId) {
-				return item;
-			}
-		});
-
-		return selectedSavedSearch;
+	self.RetrieveSavedSearchTree = function (nodeId, callback) {
+		var selectedSavedSearchId = self.SavedSearchArtifactId();
+		self.SavedSearchService.RetrieveSavedSearchTree(nodeId, selectedSavedSearchId, callback);
 	};
-
 
 	var savedSearchPickerViewModel = new SavedSearchPickerViewModel(function (value) {
 		self.SavedSearchArtifactId(value.id);
-	}, IsSavedSearchTreeNode);
+	}, self.RetrieveSavedSearchTree);
 
 	Picker.create("Fileshare", "savedSearchPicker", "SavedSearchPicker", savedSearchPickerViewModel);
 
 	self.OpenSavedSearchPicker = function () {
-		savedSearchPickerViewModel.open(self.SavedSearchesTree(), self.SavedSearchArtifactId());
-	};
-
-	self.UpdateSelectedSavedSearch = function (artifactId) {
-		var selectedSearch = self.GetSelectedSavedSearch(artifactId);
-
-		if (!!selectedSearch) {
-			self.SavedSearchArtifactId(selectedSearch.value);
-		} else {
-			self.SavedSearchArtifactId(undefined);
-		}
-	};
-
-	self.UpdateSavedSearches = function (artifactId) {
-		self.SavedSearchesTree(self.Cache.SavedSearchesResult);
-		self.SavedSearches(FlatSavedSearches(self.Cache.SavedSearchesResult));
-		self.UpdateSelectedSavedSearch(artifactId || self.SavedSearchArtifactId());
+		savedSearchPickerViewModel.open(self.SavedSearchArtifactId());
 	};
 
 	// folders and subfolders
@@ -337,26 +313,6 @@ var ExportSourceViewModel = function (state) {
 				});
 			} else {
 				self.UpdateProductions();
-			}
-			break;
-
-		case ExportEnums.SourceOptionsEnum.SavedSearch:
-			if (typeof (self.Cache.SavedSearchesResult) === 'undefined') {
-				var savedSearchesTreePromise = IP.data.ajax({
-					type: 'get',
-					url: IP.utils.generateWebAPIURL('SavedSearchesTree', IP.utils.getParameterByName("AppID", window.top))
-				}).fail(function (error) {
-					IP.message.error.raise(error);
-				});
-
-				var currentSavedSearchArtifactId = self.SavedSearchArtifactId();
-
-				IP.data.deferred().all(savedSearchesTreePromise).then(function (result) {
-					self.Cache.SavedSearchesResult = result;
-					self.UpdateSavedSearches(currentSavedSearchArtifactId);
-				});
-			} else {
-				self.UpdateSavedSearches();
 			}
 			break;
 		}

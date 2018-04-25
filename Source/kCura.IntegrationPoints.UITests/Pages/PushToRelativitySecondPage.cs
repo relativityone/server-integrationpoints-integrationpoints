@@ -29,19 +29,11 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		[FindsBy(How = How.Id, Using = "location-1")]
 		protected IWebElement ProductionLocation;
 
-		[FindsBy(How = How.Id, Using = "saved-search-selection-button")]
-		protected IWebElement SavedSearchSelectionButton { get; set; }
-
-		[FindsBy(How = How.Id, Using = "s2id_savedSearchSelector")]
-		protected IWebElement SavedSearchSelectWebElement { get; set; }
-
 		[FindsBy(How = How.Id, Using = "s2id_sourceProductionSetsSelector")]
 		protected IWebElement SourceProductionSelectWebElement { get; set; }
 
 		[FindsBy(How = How.Id, Using = "s2id_productionSetsSelector")]
 		protected IWebElement ProductionLocationSelectWebElement { get; set; }
-
-		protected Select SavedSearchSelect => new Select(SavedSearchSelectWebElement);
 
 		protected Select SourceProductionSelect => new Select(SourceProductionSelectWebElement);
 
@@ -52,6 +44,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		protected Select RelativityInstanceSelect { get; set; }
 
 		protected SelectElement SourceSelectElement => new SelectElement(SourceSelectWebElement);
+		protected SavedSearchSelector SavedSearchSelector { get; }
 
 		public string SourceSelect
 		{
@@ -83,12 +76,12 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			WaitForPage();
 			PageFactory.InitElements(driver, this);
 			FolderLocationSelect = new TreeSelect(driver.FindElement(By.XPath(@"//div[@id='location-select']/..")));
+			SavedSearchSelector = new SavedSearchSelector(Driver);
 		}
 
 		public PushToRelativitySecondPage SelectSavedSearch()
 		{
-			SavedSearchSelect.Choose("All Documents");
-			Sleep(200);
+			SavedSearchSelector.SelectSavedSearch("All Documents");
 			return this;
 		}
 

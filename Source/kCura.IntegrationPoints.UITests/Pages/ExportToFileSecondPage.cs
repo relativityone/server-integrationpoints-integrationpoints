@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.UITests.Components;
+﻿using System;
+using kCura.IntegrationPoints.UITests.Components;
 using kCura.IntegrationPoints.UITests.Driver;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
@@ -38,19 +39,19 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		[FindsBy(How = How.Id, Using = "viewSelector")]
 		protected IWebElement ViewSelectWebElement { get; set; }
-
-		public Select SavedSearch { get; }
 		protected SelectElement SelectSourceFieldsElement => new SelectElement(SourceFieldsElement);
 		protected SelectElement SourceSelect => new SelectElement(SourceSelectWebElement);
 		protected SelectElement ProductionSetSelect => new SelectElement(ProductionSetSelectWebElement);
 		protected TreeSelect FolderLocationTree => new TreeSelect(FolderLocationTreeWebElement);
 		protected SelectElement ViewSelect => new SelectElement(ViewSelectWebElement);
 
+		protected SavedSearchSelector SavedSearchSelector { get; }
+
 		public ExportToFileSecondPage(RemoteWebDriver driver) : base(driver)
 		{
 			WaitForPage();
 			PageFactory.InitElements(driver, this);
-			SavedSearch = new Select(Driver.FindElementById("s2id_savedSearchSelector"));
+			SavedSearchSelector = new SavedSearchSelector(Driver);
 		}
 
 		public string Source
@@ -78,9 +79,13 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public ExportToFileSecondPage SelectSavedSearch(string savedSearch)
 		{
-			SavedSearch.Choose(savedSearch);
-			Sleep(200);
+			SavedSearchSelector.SelectSavedSearch(savedSearch);
 			return this;
+		}
+
+		public string GetSelectedSavedSearch()
+		{
+			return SavedSearchSelector.GetSelectedSavedSearch();
 		}
 
 		public int StartExportAtRecord

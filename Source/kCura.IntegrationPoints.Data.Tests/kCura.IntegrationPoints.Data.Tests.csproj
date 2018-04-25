@@ -115,6 +115,7 @@
     <Compile Include="Repositories\KeplerInstanceSettingRepositoryTests.cs" />
     <Compile Include="Repositories\ProductionRepositoryTests.cs" />
     <Compile Include="Repositories\KeplerKeywordSearchRepositoryTests.cs" />
+    <Compile Include="Repositories\SavedSearchQueryRepositoryTests.cs" />
     <Compile Include="Repositories\SourceJobRepositoryTests.cs" />
     <Compile Include="Repositories\SourceWorkspaceRepositoryTests.cs" />
     <Compile Include="RSAPIClient\RsapiClientWrapperWithLoggingTests.cs" />

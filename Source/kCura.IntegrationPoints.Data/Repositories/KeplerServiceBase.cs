@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Domain.Models;
-using Relativity.Services.ObjectQuery;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Repositories
@@ -29,20 +28,25 @@ namespace kCura.IntegrationPoints.Data.Repositories
 			{
 				var resultSet = await _relativityObjectManager.QueryAsync(query, count, batchSize).ConfigureAwait(false);
 				totalResult = resultSet.TotalCount;
-				ArtifactDTO[] batchResult = resultSet.Items.Select(x => new ArtifactDTO(x.ArtifactID, 0, x.Name,
-					x.FieldValues.Select(y =>
-						new ArtifactFieldDTO()
-						{
-							Name = y.Field.Name,
-							ArtifactId = y.Field.ArtifactID,
-							FieldType = y.Field.FieldType.ToString(),
-							Value = y.Value
-						}))).ToArray();
+				ArtifactDTO[] batchResult = resultSet.Items.Select(MapRelativityObjectToArtifactDTO).ToArray();
 				results.AddRange(batchResult);
 				count += batchResult.Length;
 			} while (count < totalResult);
 
 			return results.ToArray();
+		}
+
+		private static ArtifactDTO MapRelativityObjectToArtifactDTO(RelativityObject x)
+		{
+			return new ArtifactDTO(x.ArtifactID, 0, x.Name,
+								x.FieldValues.Select(y =>
+									new ArtifactFieldDTO
+									{
+										Name = y.Field.Name,
+										ArtifactId = y.Field.ArtifactID,
+										FieldType = y.Field.FieldType.ToString(),
+										Value = y.Value
+									}));
 		}
 
 		protected string EscapeSingleQuote(string s)

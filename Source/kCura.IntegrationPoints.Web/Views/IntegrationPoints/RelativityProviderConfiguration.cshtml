@@ -25,8 +25,8 @@
 						<div class="field-row" data-bind="visible: IsSavedSearchSelected()">
 							<div class="field-label required">Saved Search:</div>
 							<div class="field-value">
-								<select id="savedSearchSelector" data-bind="options: savedSearches, optionsText: 'displayName', optionsValue: 'value', value: SavedSearchArtifactId,  optionsCaption: 'Select...', select2searchable: {}"></select>
-							    <button id="saved-search-selection-button" data-bind="click: OpenSavedSearchPicker" class="actionButtonSmall">...</button>
+								<input type="hidden" id="savedSearchSelector" data-bind="value: SavedSearchArtifactId, select2lazySearchable: {}, optionsUrl: SavedSearchUrl, textPropertyName: 'displayName', valuePropertyName: 'value', itemDetailsIdParameterName: 'savedSearchId', optionsCaption: 'Select...'" />
+								<button id="saved-search-selection-button" data-bind="click: OpenSavedSearchPicker" class="actionButtonSmall">...</button>
 							</div>
 						</div>
 					</td>
@@ -44,8 +44,8 @@
 			</table>
 		</div>
 		<div class="card">
-		    <span class="label">Destination</span>
-		    <img data-bind="click: openRelativityProviderDetailsTooltip" class="tooltip-img" id="contextualHelp" style="padding-left: 5px;" />
+			<span class="label">Destination</span>
+			<img data-bind="click: openRelativityProviderDetailsTooltip" class="tooltip-img" id="contextualHelp" style="padding-left: 5px;" />
 			<table style="width: 100%;">
 				<tr data-bind="visible: ShowRelativityInstance()">
 					<td style="width: 48%;">
@@ -79,23 +79,23 @@
 								Location:
 							</div>
 							<div class="field-value select2-double-width">
-							    <ul>
-                                    <li>
-                                        <label><input id="location-0" type="radio" name="location_radio" value="true" data-bind="checked: LocationFolderChecked, enable: EnableLocationRadio">Folder</label>
-                                        <div id="location-select" class="select2-container fluid-mock-select filter-container" style="width: 87%;">
-                                            <input id="location-input" type="text" readonly='readonly' placeholder="Select..." data-bind="value: TargetFolder, enable: LocationFolderChecked() == 'true'" />
-                                            <span id="location-span" class="icon legal-hold icon-chevron-down" role="presentation"></span>
-                                        </div>
-                                        <div id="jstree-holder-div" class="jstree-holder browse" hidden="hidden" style="margin-left: 56px;">
-                                            <div id="browser-tree" tabindex="0"></div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <label><input id="location-1" type="radio" name="location_radio" value="false" data-bind="checked: LocationFolderChecked, enable: EnableLocationRadio">Production Set</label>
-	                                    <select id="productionSetsSelector" data-bind="options: DestinationProductionSets, optionsText: 'displayName', optionsValue: 'artifactID', optionsCaption: 'Select...', value: ProductionArtifactId, enable: EnableLocationRadio && LocationFolderChecked() == 'false',  select2searchable: {}"></select>
+								<ul>
+									<li>
+										<label><input id="location-0" type="radio" name="location_radio" value="true" data-bind="checked: LocationFolderChecked, enable: EnableLocationRadio">Folder</label>
+										<div id="location-select" class="select2-container fluid-mock-select filter-container" style="width: 87%;">
+											<input id="location-input" type="text" readonly='readonly' placeholder="Select..." data-bind="value: TargetFolder, enable: LocationFolderChecked() == 'true'" />
+											<span id="location-span" class="icon legal-hold icon-chevron-down" role="presentation"></span>
+										</div>
+										<div id="jstree-holder-div" class="jstree-holder browse" hidden="hidden" style="margin-left: 56px;">
+											<div id="browser-tree" tabindex="0"></div>
+										</div>
+									</li>
+									<li>
+										<label><input id="location-1" type="radio" name="location_radio" value="false" data-bind="checked: LocationFolderChecked, enable: EnableLocationRadio">Production Set</label>
+										<select id="productionSetsSelector" data-bind="options: DestinationProductionSets, optionsText: 'displayName', optionsValue: 'artifactID', optionsCaption: 'Select...', value: ProductionArtifactId, enable: EnableLocationRadio && LocationFolderChecked() == 'false',  select2searchable: {}"></select>
 										<button id="add-production-set-selection-button" data-bind="click: openCreateProductionSetModal, enable: EnableLocationRadio && LocationFolderChecked() == 'false'" class="addProductionSet-controlButtons" style="height:24px;width:27px;font-weight: 300">+</button>
-                                    </li>
-                                </ul>
+									</li>
+								</ul>
 							</div>
 						</div>
 					</td>
@@ -131,10 +131,10 @@
 	<script src="~/Scripts/jstree.min.js"></script>
 	<script src="~/Scripts/export/location-jstree-selector.js"></script>
 	<script src="~/Scripts/integration-point/binding.js"></script>
-    <script src="~/Scripts/integration-point/picker.js"></script>
-    <script src="~/Scripts/integration-point/tooltip-definitions.js"></script>
-    <script src="~/Scripts/integration-point/tooltip-view-model.js"></script>
-	<script src="~/Scripts/export/saved-search-flat.js"></script>
+	<script src="~/Scripts/integration-point/picker.js"></script>
+	<script src="~/Scripts/integration-point/tooltip-definitions.js"></script>
+	<script src="~/Scripts/integration-point/tooltip-view-model.js"></script>
+	<script src="~/Scripts/export/saved-search-service.js"></script>
 	<script src="~/Scripts/export/saved-search-picker.js"></script>
 	<script src="~/Scripts/export/export-enums.js"></script>
 	<script src="~/Scripts/RelativityProvider/Relativity-provider.js"></script>

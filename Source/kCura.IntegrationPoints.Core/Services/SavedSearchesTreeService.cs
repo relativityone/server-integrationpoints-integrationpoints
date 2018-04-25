@@ -1,18 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity.API;
-using Relativity.Core.Service;
-using Relativity.Services;
-using Relativity.Services.Field;
 using Relativity.Services.Search;
-using Relativity.Services.User;
-using SearchProviderCondition = Relativity.Services.Search.SearchProviderCondition;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
@@ -29,15 +24,76 @@ namespace kCura.IntegrationPoints.Core.Services
 			_repositoryFactory = repositoryFactory;
 		}
 
-		public JsTreeItemDTO GetSavedSearchesTree(int workspaceArtifactId)
+		public async Task<JsTreeItemDTO> GetSavedSearchesTreeAsync(int workspaceArtifactId, int? nodeId = null, int? savedSearchId = null)
 		{
-		    List<Result<SearchContainer>> folders = _searchContainerManager.QueryAsync(workspaceArtifactId, new Query( )).ConfigureAwait(false).GetAwaiter().GetResult().Results;
-            List<int> searchContainersArtifactIds = folders.Select(x => x.Artifact.ArtifactID).ToList();
-
-			SearchContainerItemCollection searchContainterCollection = 
-                _searchContainerManager.GetSearchContainerTreeAsync(workspaceArtifactId, searchContainersArtifactIds).ConfigureAwait(false).GetAwaiter().GetResult();
-			return _treeCreator.Create(searchContainterCollection.SearchContainerItems, searchContainterCollection.SavedSearchContainerItems.Where(i=> i.Secured == false));
+			if (!nodeId.HasValue && !savedSearchId.HasValue)
+			{
+				return await GetSavedSearchesTreeForRootAndDirectChildren(workspaceArtifactId);
+			}
+			if (!nodeId.HasValue)
+			{
+				return await GetSavedSearchesTreeWithVisibleSavedSearch(workspaceArtifactId, savedSearchId.Value);
+			}
+			return await GetSavedSearchesTreeForDirectChildrenOfNode(workspaceArtifactId, nodeId.Value);
 		}
 
+		private async Task<JsTreeItemDTO> GetSavedSearchesTreeForRootAndDirectChildren(int workspaceArtifactId)
+		{
+			SearchContainerItemCollection searchContainterCollection = await _searchContainerManager.GetSearchContainerTreeAsync(workspaceArtifactId, Enumerable.Empty<int>().ToList());
+			return _treeCreator.Create(searchContainterCollection.SearchContainerItems,
+				FilterAvailableSavedSearches(searchContainterCollection.SavedSearchContainerItems));
+		}
+
+		private async Task<JsTreeItemDTO> GetSavedSearchesTreeWithVisibleSavedSearch(int workspaceArtifactId, int savedSearchId)
+		{
+			List<int> allAncestors = await GetAllAncestorIdsForSavedSearch(workspaceArtifactId, savedSearchId);
+			SearchContainerItemCollection searchContainterCollection = await _searchContainerManager.GetSearchContainerTreeAsync(workspaceArtifactId, allAncestors);
+
+			return _treeCreator.Create(searchContainterCollection.SearchContainerItems,
+				FilterAvailableSavedSearches(searchContainterCollection.SavedSearchContainerItems));
+		}
+
+		private async Task<JsTreeItemDTO> GetSavedSearchesTreeForDirectChildrenOfNode(int workspaceArtifactId, int nodeId)
+		{
+			var rootContainerReference = new SearchContainerRef(nodeId);
+			Task<SearchContainerItemCollection> childItemsTask = _searchContainerManager.GetSearchContainerItemsAsync(workspaceArtifactId, rootContainerReference);
+			SearchContainer rootContainer = await _searchContainerManager.ReadSingleAsync(workspaceArtifactId, rootContainerReference.ArtifactID);
+			SearchContainerItemCollection childItems = await childItemsTask;
+
+			return _treeCreator.CreateTreeForNodeAndDirectChildren(rootContainer, childItems.SearchContainerItems,
+				FilterAvailableSavedSearches(childItems.SavedSearchContainerItems));
+		}
+
+		private async Task<List<int>> GetAllAncestorIdsForSavedSearch(int workspaceArtifactId, int savedSearchId)
+		{
+			ISavedSearchQueryRepository savedSearchQueryRepository = _repositoryFactory.GetSavedSearchQueryRepository(workspaceArtifactId);
+			int nodeId = savedSearchQueryRepository.RetrieveSavedSearch(savedSearchId).ParentContainerId;
+
+			var allAncestors = new List<int>();
+			SearchContainer currentNode = await _searchContainerManager.ReadSingleAsync(workspaceArtifactId, nodeId);
+			while (currentNode != null)
+			{
+				allAncestors.Add(currentNode.ArtifactID);
+
+				SearchContainer parentNode;
+				try
+				{
+					parentNode = await _searchContainerManager.ReadSingleAsync(workspaceArtifactId, currentNode.ParentSearchContainer.ArtifactID);
+				}
+				catch (Exception)
+				{
+					parentNode = null; // current node is root - no parent
+				}
+				currentNode = parentNode;
+			}
+
+			return allAncestors;
+		}
+
+		private IEnumerable<SavedSearchContainerItem> FilterAvailableSavedSearches(
+			IEnumerable<SavedSearchContainerItem> savedSearches)
+		{
+			return savedSearches.Where(i => i.Secured == false);
+		}
 	}
 }

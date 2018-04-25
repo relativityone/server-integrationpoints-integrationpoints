@@ -56,6 +56,8 @@
     <Compile Include="ChoiceQuery.cs" />
     <Compile Include="Contexts\IOnBehalfOfUserClaimsPrincipalFactory.cs" />
     <Compile Include="Contexts\OnBehalfOfUserClaimsPrincipalFactory.cs" />
+    <Compile Include="DTO\SavedSearchQueryRequest.cs" />
+    <Compile Include="DTO\SavedSearchQueryResult.cs" />
     <Compile Include="Extensions\ClaimsPrincipalExtension.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\FieldExtensions.cs" />

@@ -1,6 +1,5 @@
-﻿
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Data.Repositories
@@ -18,5 +17,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// </summary>
 		/// <returns>Returns the current SavedSearchDTO.</returns>
 		IEnumerable<SavedSearchDTO> RetrievePublicSavedSearches();
+
+		SavedSearchQueryResult RetrievePublicSavedSearches(SavedSearchQueryRequest request);
 	}
 }

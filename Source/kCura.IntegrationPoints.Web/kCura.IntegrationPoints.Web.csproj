@@ -142,6 +142,7 @@
     <Compile Include="ISessionService.cs" />
     <Compile Include="Models\LdapProviderSummaryPageSettingsModel.cs" />
     <Compile Include="Models\SavedSearchModel.cs" />
+    <Compile Include="Models\SavedSearchResultsModel.cs" />
     <Compile Include="Models\ScheduleModel.cs" />
     <Compile Include="Models\SourceTypeModel.cs" />
     <Compile Include="Models\SynchronizerSettings.cs" />
@@ -321,7 +322,7 @@
     <Content Include="Scripts\Export\export-provider-file-name-vm.js" />
     <Content Include="Scripts\Export\export-source-view-model.js" />
     <Content Include="Scripts\Export\export-summary-page.js" />
-    <Content Include="Scripts\Export\saved-search-flat.js" />
+    <Content Include="Scripts\Export\saved-search-service.js" />
     <Content Include="Scripts\ftpProvider\ftp-provider-summary-page.js" />
     <Content Include="Scripts\Import\import-init.js" />
     <Content Include="Scripts\Import\import-model.js" />
