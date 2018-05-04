@@ -353,10 +353,10 @@
         <Project path="Source\prototypes\GeneratorHelper\GeneratorHelper.vbproj" />
         <Project path="Source\prototypes\kCura.LDAPSync.prototype.dataSources\kCura.LDAPSync.prototype.dataSources\kCura.LDAPSync.prototype.dataSources.csproj" />
         <Project path="Source\Utilities\BuildPropertiesScrubber\BuildPropertiesScrubber\BuildPropertiesScrubber\BuildPropertiesScrubber.csproj" />
-        <Project path="documentation\examples\JsonLoader\JsonLoader\JsonLoader.csproj" />
-        <Project path="documentation\examples\JsonLoader\JsonWeb\JsonWeb.csproj" />
-        <Project path="documentation\examples\MyFirstProvider\Provider\Provider.csproj" />
-        <Project path="documentation\examples\MyFirstProvider\Web\Web.csproj" />
+        <Project path="documentation\sdk\examples\JsonLoader\JsonLoader\JsonLoader.csproj" />
+        <Project path="documentation\sdk\examples\JsonLoader\JsonWeb\JsonWeb.csproj" />
+        <Project path="documentation\sdk\examples\MyFirstProvider\Provider\Provider.csproj" />
+        <Project path="documentation\sdk\examples\MyFirstProvider\Web\Web.csproj" />
       </Ignore>
     </Projects>
     <References>
@@ -527,9 +527,20 @@
         <Destination>Applications\MyFirstProvider.rap</Destination>
         <ApplicationSchema>ApplicationsXML\myFirstProviderApplication.xml</ApplicationSchema>
         <Assemblies>
+          <Assembly>lib\kCura.Apps.Common.Config.dll</Assembly>
+          <Assembly>lib\kCura.Apps.Common.Data.dll</Assembly>
+          <Assembly>lib\kCura.Apps.Common.Utils.dll</Assembly>
+          <Assembly>lib\kCura.IntegrationPoints.Config.dll</Assembly>
           <Assembly>lib\kCura.IntegrationPoints.Contracts.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
+          <Assembly>lib\kCura.IntegrationPoints.Core.dll</Assembly>
+          <Assembly>lib\kCura.IntegrationPoints.Core.Contracts.dll</Assembly>
+          <Assembly>lib\kCura.IntegrationPoints.Data.dll</Assembly>
           <Assembly>lib\kCura.IntegrationPoints.Domain.dll</Assembly>
+          <Assembly>lib\kCura.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
+          <Assembly>lib\kCura.IntegrationPoints.Synchronizers.RDO.dll</Assembly>
+          <Assembly>lib\kCura.ScheduleQueue.Core.dll</Assembly>
+          <Assembly>lib\Relativity.DataTransfer.MessageService.dll</Assembly>
+          <Assembly>lib\SystemInterface.dll</Assembly>
           <Assembly>Source\Provider\bin\Provider.dll</Assembly>
         </Assemblies>
         <ResourceFiles />
@@ -541,9 +552,20 @@
         <Destination>Applications\JsonLoader.rap</Destination>
         <ApplicationSchema>ApplicationsXML\jsonLoaderApplication.xml</ApplicationSchema>
         <Assemblies>
+          <Assembly>lib\kCura.Apps.Common.Config.dll</Assembly>
+          <Assembly>lib\kCura.Apps.Common.Data.dll</Assembly>
+          <Assembly>lib\kCura.Apps.Common.Utils.dll</Assembly>
+          <Assembly>lib\kCura.IntegrationPoints.Config.dll</Assembly>
           <Assembly>lib\kCura.IntegrationPoints.Contracts.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
+          <Assembly>lib\kCura.IntegrationPoints.Core.dll</Assembly>
+          <Assembly>lib\kCura.IntegrationPoints.Core.Contracts.dll</Assembly>
+          <Assembly>lib\kCura.IntegrationPoints.Data.dll</Assembly>
           <Assembly>lib\kCura.IntegrationPoints.Domain.dll</Assembly>
+          <Assembly>lib\kCura.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
+          <Assembly>lib\kCura.IntegrationPoints.Synchronizers.RDO.dll</Assembly>
+          <Assembly>lib\kCura.ScheduleQueue.Core.dll</Assembly>
+          <Assembly>lib\Relativity.DataTransfer.MessageService.dll</Assembly>
+          <Assembly>lib\SystemInterface.dll</Assembly>
           <Assembly>Source\JsonLoader\bin\JsonLoader.dll</Assembly>
           <Assembly>Source\JsonLoader\bin\Newtonsoft.Json.dll</Assembly>
         </Assemblies>

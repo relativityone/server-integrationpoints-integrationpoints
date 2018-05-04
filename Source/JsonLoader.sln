@@ -1,13 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2020
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{31AFAD24-A487-4980-8A90-CD3A48081B38}"
-	ProjectSection(SolutionItems) = preProject
-		..\paket.dependencies = ..\paket.dependencies
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonLoader", "JsonLoader\JsonLoader.csproj", "{DDB2C180-567F-4BE7-A0FC-E85560A16B11}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonWeb", "JsonWeb\JsonWeb.csproj", "{284B3D17-44FE-4AFD-8083-51CE18F9FD4B}"
@@ -39,5 +34,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {80F8647B-73B9-408F-8901-6F7F2ECCCAB3}
 	EndGlobalSection
 EndGlobal
