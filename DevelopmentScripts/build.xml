@@ -353,14 +353,10 @@
         <Project path="Source\prototypes\GeneratorHelper\GeneratorHelper.vbproj" />
         <Project path="Source\prototypes\kCura.LDAPSync.prototype.dataSources\kCura.LDAPSync.prototype.dataSources\kCura.LDAPSync.prototype.dataSources.csproj" />
         <Project path="Source\Utilities\BuildPropertiesScrubber\BuildPropertiesScrubber\BuildPropertiesScrubber\BuildPropertiesScrubber.csproj" />
-        <Project path="documentation\examples\JsonLoader\JsonLoader\JsonLoader.csproj" />
-        <Project path="documentation\examples\JsonLoader\JsonWeb\JsonWeb.csproj" />
-        <Project path="documentation\examples\MyFirstProvider\Provider\Provider.csproj" />
-        <Project path="documentation\examples\MyFirstProvider\Web\Web.csproj" />
-        <Project path="documentation\sdk\Examples\JsonLoader\JsonLoader\JsonLoader.csproj" />
-        <Project path="documentation\sdk\Examples\JsonLoader\JsonWeb\JsonWeb.csproj" />
-        <Project path="documentation\sdk\Examples\MyFirstProvider\Provider\Provider.csproj" />
-        <Project path="documentation\sdk\Examples\MyFirstProvider\Web\Web.csproj" />
+        <Project path="documentation\sdk\examples\JsonLoader\JsonLoader\JsonLoader.csproj" />
+        <Project path="documentation\sdk\examples\JsonLoader\JsonWeb\JsonWeb.csproj" />
+        <Project path="documentation\sdk\examples\MyFirstProvider\Provider\Provider.csproj" />
+        <Project path="documentation\sdk\examples\MyFirstProvider\Web\Web.csproj" />
       </Ignore>
     </Projects>
     <References>

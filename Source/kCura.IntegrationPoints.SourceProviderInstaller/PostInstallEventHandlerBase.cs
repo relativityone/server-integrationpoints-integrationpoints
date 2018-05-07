@@ -16,6 +16,9 @@ using Relativity.API;
 namespace kCura.IntegrationPoints.SourceProviderInstaller
 {
 #pragma warning disable 1591
+	/// <summary>
+	/// Represents the base class for Post Install event handlers.
+	/// </summary>
 	public abstract class PostInstallEventHandlerBase : PostInstallEventHandler
 	{
 		private const string _ACTION_NAME = "Install";
@@ -44,6 +47,10 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 
 		protected abstract void Run();
 
+		/// <summary>
+		/// Executes method that is called after an application is installed.
+		/// </summary>
+		/// <returns></returns>
 		public sealed override Response Execute()
 		{
 			var response = new Response
