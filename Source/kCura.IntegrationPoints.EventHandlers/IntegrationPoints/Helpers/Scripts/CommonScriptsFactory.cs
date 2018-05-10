@@ -39,7 +39,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Script
 		private ICommonScripts CreateForExportProviders(EventHandlerBase eventHandler)
 		{
 			return new RelativityProviderScripts(new ScriptsHelper(eventHandler, _caseServiceContext, _fieldsConstants, _apiControllerName), _guidsConstants,
-				new WorkspaceNameValidator(eventHandler.Helper),
 				new FolderPathInformation(eventHandler.Helper.GetDBContext(eventHandler.Helper.GetActiveCaseID())));
 		}
 

@@ -8,6 +8,7 @@ namespace kCura.IntegrationPoints.Core.Managers
 		IEnumerable<WorkspaceDTO> GetUserWorkspaces();
 		IEnumerable<WorkspaceDTO> GetUserActiveWorkspaces();
 		WorkspaceDTO RetrieveWorkspace(int workspaceArtifactId);
-	    IEnumerable<WorkspaceDTO> GetUserAvailableDestinationWorkspaces(int sourceWorkspaceId);
+		bool WorkspaceExists(int workspaceArtifactId);
+		IEnumerable<WorkspaceDTO> GetUserAvailableDestinationWorkspaces(int sourceWorkspaceId);
 	}
 }

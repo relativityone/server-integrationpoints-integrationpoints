@@ -41,20 +41,48 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 		public override ValidationResult Validate(IntegrationPointProviderValidationModel model)
 		{
 			var result = new ValidationResult();
-			SourceConfiguration sourceConfiguration = Serializer.Deserialize<SourceConfiguration>(model.SourceConfiguration);
-			DestinationConfiguration destinationConfiguration = Serializer.Deserialize<DestinationConfiguration>(model.DestinationConfiguration);
+			result.Add(ValidateSourceWorkspacePermission());
+			result.Add(ValidateDestinationWorkspacePermission(model));
+			return result;
+		}
 
+		private ValidationResult ValidateSourceWorkspacePermission()
+		{
+			var result = new ValidationResult();
 			IPermissionManager sourceWorkspacePermissionManager = CreatePermissionManager(_helper);
-			IPermissionManager destinationWorkspacePermissionManager = CreateDestinationPermissionManager(model, sourceConfiguration);
 
 			if (!sourceWorkspacePermissionManager.UserCanExport(ContextHelper.WorkspaceID))
 			{
 				result.Add(Constants.IntegrationPoints.PermissionErrors.SOURCE_WORKSPACE_NO_EXPORT);
 			}
 
+			if (!sourceWorkspacePermissionManager.UserCanEditDocuments(ContextHelper.WorkspaceID))
+			{
+				result.Add(Constants.IntegrationPoints.NO_PERMISSION_TO_EDIT_DOCUMENTS);
+			}
+			return result;
+		}
+
+		private ValidationResult ValidateDestinationWorkspacePermission(IntegrationPointProviderValidationModel model)
+		{
+			var result = new ValidationResult();
+
+			SourceConfiguration sourceConfiguration = Serializer.Deserialize<SourceConfiguration>(model.SourceConfiguration);
+			IPermissionManager destinationWorkspacePermissionManager = CreateDestinationPermissionManager(model, sourceConfiguration);
+			IWorkspaceManager destinationWorkspaceManager = CreateDestinationWorkspaceManager(model, sourceConfiguration);
+
+			if (!destinationWorkspaceManager.WorkspaceExists(sourceConfiguration.TargetWorkspaceArtifactId))
+			{
+				_logger.LogError(Constants.IntegrationPoints.ValidationErrors.DESTINATION_WORKSPACE_NOT_AVAILABLE);
+				result.Add(Constants.IntegrationPoints.ValidationErrors.DESTINATION_WORKSPACE_NOT_AVAILABLE);
+				return result; // destination workspace doesnt exist
+			}
+
 			if (!destinationWorkspacePermissionManager.UserHasPermissionToAccessWorkspace(sourceConfiguration.TargetWorkspaceArtifactId))
 			{
+				_logger.LogError(Constants.IntegrationPoints.PermissionErrors.DESTINATION_WORKSPACE_NO_ACCESS);
 				result.Add(Constants.IntegrationPoints.PermissionErrors.DESTINATION_WORKSPACE_NO_ACCESS);
+				return result; // it doesnt make sense to validate other destination workspace permissions
 			}
 
 			if (!destinationWorkspacePermissionManager.UserCanImport(sourceConfiguration.TargetWorkspaceArtifactId))
@@ -62,15 +90,11 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 				result.Add(Constants.IntegrationPoints.PermissionErrors.DESTINATION_WORKSPACE_NO_IMPORT);
 			}
 
+			DestinationConfiguration destinationConfiguration = Serializer.Deserialize<DestinationConfiguration>(model.DestinationConfiguration);
 			if (!destinationWorkspacePermissionManager.UserHasArtifactTypePermissions(sourceConfiguration.TargetWorkspaceArtifactId, destinationConfiguration.ArtifactTypeId,
 				new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Create }))
 			{
 				result.Add(Constants.IntegrationPoints.PermissionErrors.MISSING_DESTINATION_RDO_PERMISSIONS);
-			}
-
-			if (!sourceWorkspacePermissionManager.UserCanEditDocuments(ContextHelper.WorkspaceID))
-			{
-				result.Add(Constants.IntegrationPoints.NO_PERMISSION_TO_EDIT_DOCUMENTS);
 			}
 
 			return result;
@@ -81,6 +105,13 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			IHelper targetHelper = CreateTargetHelper(model, sourceConfiguration);
 			IPermissionManager destinationWorkspacePermissionManager = CreatePermissionManager(targetHelper);
 			return destinationWorkspacePermissionManager;
+		}
+
+		private IWorkspaceManager CreateDestinationWorkspaceManager(IntegrationPointProviderValidationModel model, SourceConfiguration sourceConfiguration)
+		{
+			IHelper targetHelper = CreateTargetHelper(model, sourceConfiguration);
+			IWorkspaceManager workspaceManager = CreateWorkspaceManager(targetHelper);
+			return workspaceManager;
 		}
 
 		private IHelper CreateTargetHelper(IntegrationPointProviderValidationModel model,
@@ -111,6 +142,23 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "An error occurred creating permission manager.");
+				throw new IntegrationPointsException(IntegrationPointsExceptionMessages.ERROR_OCCURED_CONTACT_ADMINISTRATOR, ex)
+				{
+					ExceptionSource = IntegrationPointsExceptionSource.VALIDATION,
+					ShouldAddToErrorsTab = false
+				};
+			}
+		}
+
+		private IWorkspaceManager CreateWorkspaceManager(IHelper helper)
+		{
+			try
+			{
+				return _managerFactory.CreateWorkspaceManager(_contextContainerFactory.CreateContextContainer(helper));
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "An error occurred creating workspace manager.");
 				throw new IntegrationPointsException(IntegrationPointsExceptionMessages.ERROR_OCCURED_CONTACT_ADMINISTRATOR, ex)
 				{
 					ExceptionSource = IntegrationPointsExceptionSource.VALIDATION,

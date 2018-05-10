@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Domain.Models;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.Repositories
 {
@@ -13,8 +13,9 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// Retrieves a workspace for the given workspace artifact id
 		/// </summary>
 		/// <param name="workspaceArtifactId">The artifact id of the workspace to retrieve</param>
+		/// <param name="executionIdentity">Execution identify</param>
 		/// <returns>A WorkspaceDTO object</returns>
-		WorkspaceDTO Retrieve(int workspaceArtifactId);
+		WorkspaceDTO Retrieve(int workspaceArtifactId, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser);
 
 		/// <summary>
 		/// Retrieves all workspaces

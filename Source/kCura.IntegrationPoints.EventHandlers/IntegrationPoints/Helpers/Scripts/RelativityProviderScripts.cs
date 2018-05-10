@@ -6,13 +6,10 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Script
 	public class RelativityProviderScripts : CommonScripts
 	{
 		private readonly IFolderPathInformation _folderPathInformation;
-		private readonly IWorkspaceNameValidator _workspaceNameValidator;
 
-		public RelativityProviderScripts(ScriptsHelper scriptsHelper, IIntegrationPointBaseFieldGuidsConstants guidsConstants, IWorkspaceNameValidator workspaceNameValidator,
-			IFolderPathInformation folderPathInformation)
+		public RelativityProviderScripts(ScriptsHelper scriptsHelper, IIntegrationPointBaseFieldGuidsConstants guidsConstants, IFolderPathInformation folderPathInformation)
 			: base(scriptsHelper, guidsConstants)
 		{
-			_workspaceNameValidator = workspaceNameValidator;
 			_folderPathInformation = folderPathInformation;
 		}
 
@@ -28,11 +25,9 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Script
 		{
 			var result = base.ScriptBlocks();
 
-			string errorMessage = _workspaceNameValidator.Validate(ScriptsHelper.GetSourceConfiguration());
 			string folderPathInformation = _folderPathInformation.RetrieveName(ScriptsHelper.GetDestinationConfiguration());
 
 			string block = "<script>" +
-							$"IP.errorMessage = '{errorMessage}';" +
 							$"IP.fieldName = '{folderPathInformation}';" +
 							"</script>";
 

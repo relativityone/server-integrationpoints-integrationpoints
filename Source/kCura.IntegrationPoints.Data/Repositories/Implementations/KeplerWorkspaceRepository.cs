@@ -5,7 +5,6 @@ using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity;
 using Relativity.API;
-using Relativity.Services.ObjectQuery;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Workspace;
 
@@ -16,15 +15,15 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private readonly IAPILog _logger;
 		private readonly IServicesMgr _servicesMgr;
 
-		public KeplerWorkspaceRepository(IHelper helper, IServicesMgr servicesMgr, IRelativityObjectManager relativityObjectManager) 
+		public KeplerWorkspaceRepository(IHelper helper, IServicesMgr servicesMgr, IRelativityObjectManager relativityObjectManager)
 			: base(relativityObjectManager)
 		{
-			
+
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<KeplerWorkspaceRepository>();
 			_servicesMgr = servicesMgr;
 		}
 
-		public WorkspaceDTO Retrieve(int workspaceArtifactId)
+		public WorkspaceDTO Retrieve(int workspaceArtifactId, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
 		{
 			ArtifactDTO[] workspaces = null;
 			var query = new QueryRequest()
@@ -36,7 +35,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			try
 			{
-				 workspaces = this.RetrieveAllArtifactsAsync(query).GetResultsWithoutContextSync();
+				workspaces = RetrieveAllArtifactsAsync(query, executionIdentity).GetResultsWithoutContextSync();
 			}
 			catch (Exception e)
 			{
@@ -55,10 +54,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				Fields = new List<FieldRef>() { new FieldRef() { Name = "Name" } }
 			};
 
-			ArtifactDTO[] artifactDtos = null;
+			ArtifactDTO[] artifactDtos;
 			try
 			{
-				artifactDtos = this.RetrieveAllArtifactsAsync(query).GetResultsWithoutContextSync();
+				artifactDtos = RetrieveAllArtifactsAsync(query).GetResultsWithoutContextSync();
 			}
 			catch (Exception e)
 			{
