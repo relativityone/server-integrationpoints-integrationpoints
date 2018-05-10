@@ -41,6 +41,7 @@ using Relativity.API;
 using SystemInterface.IO;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Core.Authentication;
+using kCura.IntegrationPoints.Core.Monitoring;
 using kCura.IntegrationPoints.Core.Serialization;
 using kCura.IntegrationPoints.Core.Services.Domain;
 using kCura.IntegrationPoints.Core.Services.Exporter;
@@ -123,6 +124,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IGetSourceProviderRdoByIdentifier>().ImplementedBy<GetSourceProviderRdoByIdentifier>().LifestyleTransient());
 			container.Register(Component.For<IBatchStatus>().ImplementedBy<BatchEmail>().LifestyleTransient());
 			container.Register(Component.For<IBatchStatus>().ImplementedBy<JobHistoryBatchUpdateStatus>().LifestyleTransient());
+			container.Register(Component.For<IBatchStatus>().ImplementedBy<JobLifetimeMetricBatchStatus>().LifestyleTransient());
 			container.Register(Component.For<ISourceTypeFactory>().ImplementedBy<SourceTypeFactory>().LifestyleTransient());
 			container.Register(Component.For<IDestinationTypeFactory>().ImplementedBy<DestinationTypeFactory>().LifestyleTransient());
 			container.Register(Component.For<IResourceDbProvider>().ImplementedBy<ResourceDbProvider>().LifestyleTransient());
@@ -218,9 +220,8 @@ namespace kCura.IntegrationPoints.Core.Installers
 				.LifestyleSingleton());
 
 			container.Register(Component.For<IFieldService>().ImplementedBy<FieldService>().LifestyleTransient());
-			container.Register(Component.For<IMessageService>().ImplementedBy<MessageService>().LifestyleTransient());
-			container.Register(Component.For<IMetricsManagerFactory>().ImplementedBy<MetricsManagerFactory>()
-				.LifestyleSingleton());
+		    container.Register(Component.For<IMetricsManagerFactory>().ImplementedBy<MetricsManagerFactory>().LifestyleSingleton());
+			container.Register(Component.For<IMessageService>().ImplementedBy<IntegrationPointsMessageService>().LifestyleSingleton());
 		}
 
 		private SqlServerToggleProvider CreateSqlServerToggleProvider(IHelper helper)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.Validation;
 using kCura.IntegrationPoints.Core;
@@ -85,7 +86,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		    //Currently Export Shared library (kCura.WinEDDS) is making usage of batching internalLy
 			//so for now we need to create only one worker job
 		    LogGettingUnbatchedIDs(job);
-		    yield break;
+			return Enumerable.Empty<string>(); // not using "yield break" to prevent lazy evaluation of IEnumerable
 		}
 
         public override long BatchTask(Job job, IEnumerable<string> batchIDs)

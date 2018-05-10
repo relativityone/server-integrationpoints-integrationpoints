@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.Attributes;
 using kCura.IntegrationPoints.Agent.Validation;
@@ -13,6 +14,7 @@ using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Monitoring;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -119,10 +121,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					};
 					job.JobDetails = Serializer.Serialize(details);
 				}
-				foreach (var batchStatus in BatchStatus)
-				{
-					batchStatus.OnJobStart(job);
-				}
 
 				JobStopManager?.ThrowIfStopRequested();
 
@@ -189,8 +187,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				LogJobPreExecuteStart(job);
 				InjectionManager.Instance.Evaluate("B50CD1DD-6FEC-439E-A730-B84B730C9D44");
+				OnJobStart(job);
 				SetupJob(job);
-				ValidateJob(job, JobHistory);
+				ValidateJob(job);
 				LogJobPreExecuteSuccesfulEnd(job);
 			}
 			catch (OperationCanceledException e)
@@ -212,6 +211,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				_jobHistoryErrorService.CommitErrors();
 				LogJobPreExecuteFinalize(job);
+			}
+		}
+
+		protected void OnJobStart(Job job)
+		{
+			foreach (var batchStatus in BatchStatus)
+			{
+				batchStatus.OnJobStart(job);
 			}
 		}
 
@@ -248,7 +255,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 		}
 
-		private void ValidateJob(Job job, JobHistory jobHistory)
+		private void ValidateJob(Job job)
 		{
 			JobHistory.JobStatus = JobStatusChoices.JobHistoryValidating;
 			_jobHistoryService.UpdateRdo(JobHistory);

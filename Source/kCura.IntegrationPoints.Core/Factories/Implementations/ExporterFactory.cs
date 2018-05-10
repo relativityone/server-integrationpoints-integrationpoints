@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		private readonly IFederatedInstanceManager _federatedInstanceManager;
 		private readonly IFolderPathReaderFactory _folderPathReaderFactory;
 		private readonly IToggleProvider _toggleProvider;
-        private readonly IAPILog _logger;
+		private readonly IAPILog _logger;
 
 		public ExporterFactory(
 			IOnBehalfOfUserClaimsPrincipalFactory claimsPrincipalFactory,
@@ -44,7 +44,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			IRepositoryFactory targetRepositoryFactory,
 			IHelper helper, IFederatedInstanceManager federatedInstanceManager,
 			IFolderPathReaderFactory folderPathReaderFactory,
-			IToggleProvider toggleProvider)
+			IToggleProvider toggleProvider
+			)
 		{
 			_claimsPrincipalFactory = claimsPrincipalFactory;
 			_sourceRepositoryFactory = sourceRepositoryFactory;
@@ -53,7 +54,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			_federatedInstanceManager = federatedInstanceManager;
 			_folderPathReaderFactory = folderPathReaderFactory;
 			_toggleProvider = toggleProvider;
-		    _logger = _helper.GetLoggerFactory().GetLogger().ForContext<ExporterFactory>();
+			_logger = _helper.GetLoggerFactory().GetLogger().ForContext<ExporterFactory>();
 		}
 
 		public List<IBatchStatus> InitializeExportServiceJobObservers(Job job,

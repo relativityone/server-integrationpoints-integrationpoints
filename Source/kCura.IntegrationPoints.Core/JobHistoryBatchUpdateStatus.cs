@@ -1,6 +1,5 @@
 ﻿using System;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
@@ -16,15 +15,16 @@ namespace kCura.IntegrationPoints.Core
 		private readonly IJobService _jobService;
 		private readonly ISerializer _serializer;
 
-		public JobHistoryBatchUpdateStatus(IJobStatusUpdater jobStatusUpdater, IJobHistoryService jobHistoryService, IJobService jobService, ISerializer serializer)
-		{
-			_updater = jobStatusUpdater;
-			_jobHistoryService = jobHistoryService;
-			_jobService = jobService;
-			_serializer = serializer;
-		}
+	    public JobHistoryBatchUpdateStatus(IJobStatusUpdater jobStatusUpdater, IJobHistoryService jobHistoryService,
+	        IJobService jobService, ISerializer serializer)
+	    {
+	        _updater = jobStatusUpdater;
+	        _jobHistoryService = jobHistoryService;
+	        _jobService = jobService;
+	        _serializer = serializer;
+	    }
 
-		public void OnJobStart(Job job)
+	    public void OnJobStart(Job job)
 		{
 			Job updatedJob = _jobService.GetJob(job.JobId);
 			if (updatedJob.StopState != StopState.Stopping)
