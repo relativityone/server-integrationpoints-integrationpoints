@@ -1,11 +1,9 @@
 ﻿using System;
+using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Agent.Tasks;
-using kCura.IntegrationPoints.Data;
-using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
 using NSubstitute;
 using NUnit.Framework;
-using NUnit.Framework.Internal;
 
 namespace kCura.IntegrationPoints.Agent.Tests
 {
@@ -14,7 +12,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 	{
 		private TaskExceptionMediator _subjectUnderTest;
 		private ITaskExceptionService _taskExceptionServiceMock;
-		private ScheduleQueueAgentBase _agentMock;
+		private Agent _agentMock;
 
 		[SetUp]
 		public void SetUp()
@@ -24,17 +22,33 @@ namespace kCura.IntegrationPoints.Agent.Tests
 		}
 
 		[Test]
+		public void ItShould_TriggerOnTaskExecutionError()
+		{
+			//Arrange
+			_subjectUnderTest = new TaskExceptionMediator(_taskExceptionServiceMock);
+			_subjectUnderTest.RegisterEvent(_agentMock);
+			ITask task = Substitute.For<ITask>();
+
+			//Act
+			_agentMock.JobExecutionError += Raise.Event<ExceptionEventHandler>(null, task, new Exception());
+
+			//Assert
+			_taskExceptionServiceMock.Received(1).EndTaskWithError( Arg.Any<ITask>(), Arg.Any<Exception>());
+		}
+
+		[Test]
 		public void ItShould_TriggerOnJobExecutionError()
 		{
 			//Arrange
 			_subjectUnderTest = new TaskExceptionMediator(_taskExceptionServiceMock);
 			_subjectUnderTest.RegisterEvent(_agentMock);
+			Job job = JobExtensions.CreateJob();
 
 			//Act
-			_agentMock.JobExecutionError += Raise.Event<ExceptionEventHandler>(null,null,new Exception());
+			_agentMock.JobExecutionError += Raise.Event<ExceptionEventHandler>(job, null, new Exception());
 
 			//Assert
-			_taskExceptionServiceMock.Received(1).EndTaskWithError( Arg.Any<ITask>(), Arg.Any<Exception>());
+			_taskExceptionServiceMock.Received(1).EndJobWithError(Arg.Any<Job>(), Arg.Any<Exception>());
 		}
 
 		[Test]

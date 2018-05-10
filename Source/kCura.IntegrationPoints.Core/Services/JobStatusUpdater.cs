@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.Core.Services
 				return JobStatusChoices.JobHistoryStopped;
 			}
 
-			var recent = _service.GetJobErrorFailedStatus(jobHistory.ArtifactId);
+			JobHistoryError recent = _service.GetJobErrorFailedStatus(jobHistory.ArtifactId);
 			if (recent != null)
 			{
 				if (recent.ErrorType.EqualsToChoice(Data.ErrorTypeChoices.JobHistoryErrorItem))
@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.Core.Services
 				}
 				if (recent.ErrorType.EqualsToChoice(Data.ErrorTypeChoices.JobHistoryErrorJob))
 				{
-					var healthcheck = Client.APMClient.HealthCheckOperation(Constants.IntegrationPoints.Telemetry.APM_HEALTHCHECK, 
+					IHealthMeasure healthcheck = Client.APMClient.HealthCheckOperation(Constants.IntegrationPoints.Telemetry.APM_HEALTHCHECK, 
 						() => HealthCheck.CreateJobFailedMetric(jobHistory, wkspId));
 					healthcheck.Write();
 

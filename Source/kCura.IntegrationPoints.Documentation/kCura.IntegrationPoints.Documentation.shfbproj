@@ -49,12 +49,13 @@
     </PlugInConfigurations>
     <DocumentationSources>
       <DocumentationSource sourceFile="..\kCura.IntegrationPoints.Contracts\bin\x64\kCura.IntegrationPoints.Contracts.XML" />
-<DocumentationSource sourceFile="..\kCura.IntegrationPoints.Contracts\bin\x64\kCura.IntegrationPoints.Contracts.dll" />
-<DocumentationSource sourceFile="..\kCura.IntegrationPoints.SourceProviderInstaller\bin\x64\kCura.IntegrationPoints.SourceProviderInstaller.dll" />
-<DocumentationSource sourceFile="..\kCura.IntegrationPoints.SourceProviderInstaller\bin\x64\kCura.IntegrationPoints.SourceProviderInstaller.xml" /></DocumentationSources>
+      <DocumentationSource sourceFile="..\kCura.IntegrationPoints.Contracts\bin\x64\kCura.IntegrationPoints.Contracts.dll" />
+      <DocumentationSource sourceFile="..\kCura.IntegrationPoints.SourceProviderInstaller\bin\x64\kCura.IntegrationPoints.SourceProviderInstaller.dll" />
+      <DocumentationSource sourceFile="..\kCura.IntegrationPoints.SourceProviderInstaller\bin\x64\kCura.IntegrationPoints.SourceProviderInstaller.xml" />
+    </DocumentationSources>
     <FeedbackEMailLinkText>Relativity documentation</FeedbackEMailLinkText>
     <FeedbackEMailAddress>documentation%40relativity.com</FeedbackEMailAddress>
-    <CopyrightText>2018 Relativity ODA LLC</CopyrightText>
+    <CopyrightText>{%40BuildDate:yyyy} Relativity ODA LLC</CopyrightText>
     <CopyrightHref>http://www.relativity.com</CopyrightHref>
     <ProjectSummary>The kCura.IntegrationPoints.Contracts namespace contains all base functionality used for creating source providers for integrating data into a Relativity object.</ProjectSummary>
     <VisibleItems>InheritedMembers, InheritedFrameworkMembers, ProtectedInternalAsProtected, EditorBrowsableNever, NonBrowsable</VisibleItems>

@@ -22,6 +22,8 @@ namespace kCura.IntegrationPoints.Core.Tests
 		private IJobService _jobService;
 		private ISerializer _serializer;
 		private JobHistoryBatchUpdateStatus _instance;
+		private int _workspaceID = 100001;
+		private long _jobID = 10;
 
 		[SetUp]
 		public override void SetUp()
@@ -38,7 +40,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 		public void OnJobStart_DoNotUpdateOnStoppingJob()
 		{
 			// ARRANGE
-			Job job = JobExtensions.CreateJob();
+			Job job = JobExtensions.CreateJob(_workspaceID, _jobID);
 			_jobService.GetJob(job.JobId).Returns(job.CopyJobWithStopState(StopState.Stopping));
 
 			// ACT
@@ -53,7 +55,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 		public void OnJobStart_DoNotUpdateOnNonStoppingJob(StopState state)
 		{
 			// ARRANGE
-			Job job = JobExtensions.CreateJob();
+			Job job = JobExtensions.CreateJob(_workspaceID, _jobID);
 			TaskParameters parameters = new TaskParameters() {BatchInstance = Guid.NewGuid()};
 			_jobService.GetJob(job.JobId).Returns(job.CopyJobWithStopState(state));
 			_serializer.Deserialize<TaskParameters>(job.JobDetails).Returns(parameters);
@@ -71,14 +73,14 @@ namespace kCura.IntegrationPoints.Core.Tests
 		public void OnJobComplete_UpdateTheJobStatus()
 		{
 			// ARRANGE
-			Job job = JobExtensions.CreateJob();
+			Job job = JobExtensions.CreateJob(_workspaceID, _jobID);
 			JobHistory history = new JobHistory();
 			var expectedStatus = JobStatusChoices.JobHistoryCompleted;
 			TaskParameters parameters = new TaskParameters() { BatchInstance = Guid.NewGuid() };
 			_jobService.GetJob(job.JobId).Returns(job.CopyJobWithStopState(StopState.None));
 			_serializer.Deserialize<TaskParameters>(job.JobDetails).Returns(parameters);
 			_jobHistoryService.GetRdo(parameters.BatchInstance).Returns(history);
-			_updater.GenerateStatus(history, job.JobId).Returns(expectedStatus);
+			_updater.GenerateStatus(history, job.WorkspaceID).Returns(expectedStatus);
 
 			// ACT
 			_instance.OnJobComplete(job);

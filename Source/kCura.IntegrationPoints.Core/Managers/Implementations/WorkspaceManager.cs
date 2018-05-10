@@ -3,10 +3,11 @@ using System.Linq;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
-	public class WorkspaceManager: IWorkspaceManager
+	public class WorkspaceManager : IWorkspaceManager
 	{
 		private readonly IRepositoryFactory _repositoryFactory;
 
@@ -36,12 +37,19 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			return workspace;
 		}
 
-	    public IEnumerable<WorkspaceDTO> GetUserAvailableDestinationWorkspaces(int sourceWorkspaceId)
-	    {
-	        return GetUserActiveWorkspaces().Where(w => w.ArtifactId != sourceWorkspaceId);
-	    }
+		public bool WorkspaceExists(int workspaceArtifactId)
+		{
+			IWorkspaceRepository workspaceRepository = _repositoryFactory.GetWorkspaceRepository();
+			WorkspaceDTO workspace = workspaceRepository.Retrieve(workspaceArtifactId, ExecutionIdentity.System);
+			return workspace != null;
+		}
 
-	    private IEnumerable<WorkspaceDTO> RetrieveAllActiveWorkspaces()
+		public IEnumerable<WorkspaceDTO> GetUserAvailableDestinationWorkspaces(int sourceWorkspaceId)
+		{
+			return GetUserActiveWorkspaces().Where(w => w.ArtifactId != sourceWorkspaceId);
+		}
+
+		private IEnumerable<WorkspaceDTO> RetrieveAllActiveWorkspaces()
 		{
 			IWorkspaceRepository repository = _repositoryFactory.GetWorkspaceRepository();
 			return repository.RetrieveAllActive();

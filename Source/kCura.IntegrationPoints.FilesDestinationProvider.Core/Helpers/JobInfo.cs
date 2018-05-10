@@ -24,18 +24,18 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers
 
 		public DateTime GetStartTimeUtc()
 		{
-			JobHistory jobHistoryRdo = GetJobHistorRdo();
+			JobHistory jobHistoryRdo = GetJobHistoryRdo();
 
 			return jobHistoryRdo.StartTimeUTC ?? DateTime.UtcNow;
 		}
 
 		public string GetName()
 		{
-			JobHistory jobHistoryRdo = GetJobHistorRdo();
+			JobHistory jobHistoryRdo = GetJobHistoryRdo();
 			return jobHistoryRdo.Name;
 		}
 
-		private JobHistory GetJobHistorRdo()
+		private JobHistory GetJobHistoryRdo()
 		{
 			var taskParameters = _serializer.Deserialize<TaskParameters>(_job.JobDetails);
 			JobHistory jobHistoryRdo = _jobHistoryService.GetRdo(taskParameters.BatchInstance);

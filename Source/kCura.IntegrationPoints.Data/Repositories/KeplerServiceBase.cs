@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Domain.Models;
+using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Repositories
@@ -17,7 +18,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
 			_relativityObjectManager = relativityObjectManager;
 		}
 
-		protected async Task<ArtifactDTO[]> RetrieveAllArtifactsAsync(QueryRequest query)
+		protected async Task<ArtifactDTO[]> RetrieveAllArtifactsAsync(QueryRequest query, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
 		{
 			List<ArtifactDTO> results = new List<ArtifactDTO>();
 			int count = 0;
@@ -26,7 +27,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
 
 			do
 			{
-				var resultSet = await _relativityObjectManager.QueryAsync(query, count, batchSize).ConfigureAwait(false);
+				var resultSet = await _relativityObjectManager.QueryAsync(query, count, batchSize, false, executionIdentity).ConfigureAwait(false);
 				totalResult = resultSet.TotalCount;
 				ArtifactDTO[] batchResult = resultSet.Items.Select(MapRelativityObjectToArtifactDTO).ToArray();
 				results.AddRange(batchResult);

@@ -7,31 +7,31 @@ using System.Threading.Tasks;
 namespace kCura.IntegrationPoints.Contracts.Models
 {
 	/// <summary>
-	/// Object holding source provider configuration and secured configuration
+	/// Represents general and secured source provider configurations set by a user.
 	/// </summary>
 	public class DataSourceProviderConfiguration
 	{
 		/// <summary>
-		/// Initializes new instance of DataSourceProviderConfiguration
+		/// Initializes an instance of the DataSourceProviderConfiguration class.
 		/// </summary>
 		public DataSourceProviderConfiguration()
 		{
 		}
 
 		/// <summary>
-		/// Initializes new instance of DataSourceProviderConfiguration
+		/// Initializes an instance of the DataSourceProviderConfiguration class with a string for a general configuration.
 		/// </summary>
-		/// <param name="configuration">Source provider configuration</param>
+		/// <param name="configuration">A group of configuration settings that the control source provider behavior.</param>
 		public DataSourceProviderConfiguration(string configuration)
 		{
 			Configuration = configuration;
 		}
 
 		/// <summary>
-		/// Initializes new instance of DataSourceProviderConfiguration
+		/// Initializes an instance of the DataSourceProviderConfiguration class with a string for a general configuration and a string for a secured configuration.
 		/// </summary>
-		/// <param name="configuration">Source provider configuration</param>
-		/// <param name="securedConfiguration">Secured configuration</param>
+		/// <param name="configuration">A group of configuration settings that the control source provider behavior.</param>
+		/// <param name="securedConfiguration">A group of secured configuration settings that the control source provider behavior.</param>
 		public DataSourceProviderConfiguration(string configuration, string securedConfiguration)
 		{
 			Configuration = configuration;
@@ -39,12 +39,12 @@ namespace kCura.IntegrationPoints.Contracts.Models
 		}
 
 		/// <summary>
-		/// Options on a source provider that a user has set.
+		/// Gets or sets options that the user set on a source provider. 
 		/// </summary>
 		public string Configuration { get; set; }
 
 		/// <summary>
-		/// Secured options that a user has set, in case source provider supports it.
+		/// Gets or sets any supported secured options that the user set on a source provider. 
 		/// </summary>
 		public string SecuredConfiguration { get; set; }
 	}

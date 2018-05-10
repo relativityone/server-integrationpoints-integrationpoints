@@ -12,7 +12,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 {
 	public static class JobExtensions
 	{
-		public static T CreateJob<T>(long workspaceArtifactId, int jobId, Func<DataRow, T> creator)
+		public static T CreateJob<T>(int workspaceArtifactId, long jobId, Func<DataRow, T> creator)
 		{
 			DataRow jobData = CreateDefaultJobData();
 			jobData["JobID"] = jobId;
@@ -21,7 +21,15 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 			return creator(jobData);
 		}
 
-		public static Job CreateJob(long workspaceArtifactId, long integrationPointArtifactId, int submittedByArtifactId, int jobId)
+		public static Job CreateJob(int workspaceArtifactId, long jobId)
+		{
+			DataRow jobData = CreateDefaultJobData();
+			jobData["JobID"] = jobId;
+			jobData["WorkspaceID"] = workspaceArtifactId;
+			return new Job(jobData);
+		}
+
+		public static Job CreateJob(int workspaceArtifactId, long integrationPointArtifactId, int submittedByArtifactId, long jobId)
 		{
 			DataRow jobData = CreateDefaultJobData();
 			jobData["JobID"] = jobId;
@@ -32,7 +40,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 			return new Job(jobData);
 		}
 
-		public static Job CreateJob(long workspaceArtifactId, long integrationPointArtifactId, int submittedByArtifactId)
+		public static Job CreateJob(int workspaceArtifactId, long integrationPointArtifactId, int submittedByArtifactId)
 		{
 			DataRow jobData = CreateDefaultJobData();
 			jobData["RelatedObjectArtifactID"] = integrationPointArtifactId;
@@ -42,7 +50,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 			return new Job(jobData);
 		}
 
-		public static Job CreateJob(long workspaceArtifactId, long integrationPointArtifactId, int submittedByArtifactId, int jobId, int rootJobId)
+		public static Job CreateJob(int workspaceArtifactId, long integrationPointArtifactId, int submittedByArtifactId, long jobId, long rootJobId)
 		{
 			DataRow jobData = CreateDefaultJobData();
 			jobData["JobID"] = jobId;
@@ -50,6 +58,24 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 			jobData["SubmittedBy"] = submittedByArtifactId;
 			jobData["WorkspaceID"] = workspaceArtifactId;
 			jobData["RootJobId"] = rootJobId;
+			return new Job(jobData);
+		}
+
+		public static Job CreateJob(long? rootJobId)
+		{
+			DataRow jobData = CreateDefaultJobData();
+			jobData["JobID"] = 0;
+			jobData["RelatedObjectArtifactID"] = 0;
+			jobData["SubmittedBy"] = 0;
+			jobData["WorkspaceID"] = 0;
+			if (rootJobId.HasValue)
+			{
+				jobData["RootJobId"] = rootJobId;
+			}
+			else
+			{
+				jobData["RootJobId"] = DBNull.Value;
+			}
 			return new Job(jobData);
 		}
 
@@ -63,7 +89,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 			return new Job(jobData);
 		}
 
-		public static Job CreateJobAgentTypeId(long workspaceArtifactId, long integrationPointArtifactId, int jobId, int agentTypeId, int rootJobId, DateTime dateTime)
+		public static Job CreateJobAgentTypeId(int workspaceArtifactId, long integrationPointArtifactId, long jobId, int agentTypeId, long rootJobId, DateTime dateTime)
 		{
 			DataRow jobData = CreateDefaultJobData();
 			jobData["JobID"] = jobId;
@@ -83,10 +109,10 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 			return new Job(row);
 		}
 
-		public static Job CopyJobWithJobId(this Job job, int id)
+		public static Job CopyJobWithJobId(this Job job, long jobId)
 		{
 			DataRow row = ConvertToDataRow(job);
-			row["JobID"] = id;
+			row["JobID"] = jobId;
 			return new Job(row);
 		}
 

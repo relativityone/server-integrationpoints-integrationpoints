@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
 
@@ -29,7 +25,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void OnJobExecutionError(Job job, ITask task, Exception exception)
 		{
-			_taskExceptionService.EndTaskWithError(task, exception);
+			if (task != null)
+			{
+				_taskExceptionService.EndTaskWithError(task, exception);
+			}
+			else if (job != null)
+			{
+				_taskExceptionService.EndJobWithError(job, exception);
+			}
 		}
 
 		public void Dispose()

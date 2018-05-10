@@ -164,7 +164,6 @@
     <Compile Include="IntegrationPoints\Helpers\IWorkspaceNameValidator.cs" />
     <Compile Include="IntegrationPoints\Helpers\IRelativityProviderConfiguration.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\RelativityProviderSourceConfiguration.cs" />
-    <Compile Include="IntegrationPoints\Helpers\Implementations\WorkspaceNameValidator.cs" />
     <Compile Include="IntegrationPoints\Helpers\Models\FederatedInstanceModel.cs" />
     <Compile Include="IntegrationPoints\Helpers\Scripts\CommonScripts.cs" />
     <Compile Include="IntegrationPoints\Helpers\Scripts\CommonScriptsFactory.cs" />

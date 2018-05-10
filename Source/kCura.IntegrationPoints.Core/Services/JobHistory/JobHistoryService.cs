@@ -113,15 +113,20 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 					JobID = null
 				};
 
-				var importSettings = _serializer.Deserialize<ImportSettings>(integrationPoint.DestinationConfiguration);
+				ImportSettings importSettings = _serializer.Deserialize<ImportSettings>(integrationPoint.DestinationConfiguration);
 
 				WorkspaceDTO workspaceDto = _workspaceManager.RetrieveWorkspace(importSettings.CaseArtifactId);
+				if (workspaceDto != null)
+				{
+					jobHistory.DestinationWorkspace = Utils.GetFormatForWorkspaceOrJobDisplay(workspaceDto.Name, importSettings.CaseArtifactId);
+				}
 
-				FederatedInstanceDto federatedInstanceDto =
-					_federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(importSettings.FederatedInstanceArtifactId);
+				FederatedInstanceDto federatedInstanceDto = _federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(importSettings.FederatedInstanceArtifactId);
+				if (federatedInstanceDto != null)
+				{
+					jobHistory.DestinationInstance = Utils.GetFormatForWorkspaceOrJobDisplay(federatedInstanceDto.Name, federatedInstanceDto.ArtifactId);
+				}
 
-				jobHistory.DestinationWorkspace = Utils.GetFormatForWorkspaceOrJobDisplay(workspaceDto.Name, importSettings.CaseArtifactId);
-				jobHistory.DestinationInstance = Utils.GetFormatForWorkspaceOrJobDisplay(federatedInstanceDto.Name, federatedInstanceDto.ArtifactId);
 				if (startTimeUtc.HasValue)
 				{
 					jobHistory.StartTimeUTC = startTimeUtc.Value;

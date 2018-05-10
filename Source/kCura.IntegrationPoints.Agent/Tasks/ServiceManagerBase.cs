@@ -5,19 +5,17 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.Attributes;
 using kCura.IntegrationPoints.Agent.Validation;
 using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
-using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
-using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -367,8 +365,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void RunValidation(Job job)
 		{
-			UpdateJobStatus(JobStatusChoices.JobHistoryValidating);
-			_agentValidator.Validate(IntegrationPointDto, job.SubmittedBy);
+			using (new SerilogContextRestorer()) // job context would be lost without it
+			{
+				UpdateJobStatus(JobStatusChoices.JobHistoryValidating);
+				_agentValidator.Validate(IntegrationPointDto, job.SubmittedBy);
+			}
 		}
 
 		#region Logging
@@ -494,7 +495,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private IntegrationPointsException LogUpdateJobStatus(Exception e, JobHistory jobHistory)
 		{
 			var message = "Error ocurred when updating job status";
-			var template = "Error ocurred when updating job status. jobHistory: {@jobHistory}"; 
+			var template = "Error ocurred when updating job status. jobHistory: {@jobHistory}";
 			var exc = new IntegrationPointsException(message, e);
 			Logger.LogError(exc, template, jobHistory);
 			return exc;

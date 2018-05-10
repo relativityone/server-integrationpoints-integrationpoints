@@ -11,7 +11,7 @@ namespace kCura.IntegrationPoints.Contracts.Provider
 		/// <summary>
 		/// Retrieves the type of a field.
 		/// </summary>
-		/// <param name="providerConfiguration">Data source provider configuration</param>
+		/// <param name="providerConfiguration">A group of configuration settings that the control source provider behavior.</param>
 		/// <returns>Returns fields from a data source.</returns>
 		IEnumerable<FieldEntry> GetFields(DataSourceProviderConfiguration providerConfiguration);
 	}

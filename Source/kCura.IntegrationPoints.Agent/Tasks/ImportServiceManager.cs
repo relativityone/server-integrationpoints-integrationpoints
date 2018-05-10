@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Monitoring;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
@@ -28,8 +29,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 {
 	public class ImportServiceManager : ServiceManagerBase
 	{
-		IDataReaderFactory _dataReaderFactory;
-		IImportFileLocationService _importFileLocationService;
+		private readonly IDataReaderFactory _dataReaderFactory;
+		private readonly IImportFileLocationService _importFileLocationService;
 
 		public ImportServiceManager(IHelper helper,
 			ICaseServiceContext caseServiceContext,

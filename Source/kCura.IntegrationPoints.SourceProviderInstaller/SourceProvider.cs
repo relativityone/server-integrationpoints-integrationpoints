@@ -9,6 +9,13 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 	public class SourceProvider
 	{
 		/// <summary>
+		/// Initializes an instance of the SourceProvider class.
+		/// </summary>
+		public SourceProvider()
+		{
+		}
+
+		/// <summary>
 		/// Gets or sets the GUID identifying the data source provider.
 		/// </summary>
 		internal Guid GUID { get; set; }

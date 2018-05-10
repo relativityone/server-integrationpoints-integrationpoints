@@ -84,7 +84,6 @@
     <Compile Include="Helpers\QueueTableHelper.cs" />
     <Compile Include="Interfaces\IAgentService.cs" />
     <Compile Include="Interfaces\FinalizeJobResult.cs" />
-    <Compile Include="Interfaces\ITaskFactory.cs" />
     <Compile Include="Interfaces\IJobService.cs" />
     <Compile Include="Interfaces\ITask.cs" />
     <Compile Include="Core\Job.cs" />

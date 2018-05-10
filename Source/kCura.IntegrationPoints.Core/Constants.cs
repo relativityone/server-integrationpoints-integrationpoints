@@ -67,6 +67,11 @@ namespace kCura.IntegrationPoints.Core
 				public static string ExportName = @"Export";
 			}
 
+			public static class ValidationErrors
+			{
+				public const string DESTINATION_WORKSPACE_NOT_AVAILABLE = "2.2.2.3.1. Destination workspace is not available.";
+			}
+
 			public static class PermissionErrors
 			{
 				public const string UNABLE_TO_SAVE_INTEGRATION_POINT_USER_MESSAGE = "Unable to save the Integration Point. Please contact your system administrator.";
@@ -82,7 +87,7 @@ namespace kCura.IntegrationPoints.Core
 				public const string INTEGRATION_POINT_TYPE_NO_CREATE = "User does not have permission to create Integration Points.";
 				public const string JOB_HISTORY_TYPE_NO_ADD = "User does not have permission to add Job History RDOs.";
 				public const string MISSING_DESTINATION_RDO_PERMISSIONS = "User does not have all required destination RDO permissions. Please make sure the user has view, edit, and add permissions for the destination RDO.";
-				public const string DESTINATION_WORKSPACE_NO_ACCESS = "User does not have permission to access the destination workspace.";
+				public const string DESTINATION_WORKSPACE_NO_ACCESS = "2.2.2.2.1. User do not have sufficient permissions to access destination workspace. Contact your system administrator.";
 				public const string DESTINATION_WORKSPACE_NO_IMPORT = "User does not have permission to import in the destination workspace.";
 				public const string SOURCE_WORKSPACE_NO_EXPORT = "User does not have permission to export in the source workspace.";
 				public const string SAVED_SEARCH_NO_ACCESS = "The saved search is no longer available or the user does not have access.";
@@ -104,6 +109,7 @@ namespace kCura.IntegrationPoints.Core
 			{
 				public const string TELEMETRY_CATEGORY = "Integration Points";
 
+				public const string BUCKET_INTEGRATION_POINTS = "IntegrationPoints.*";
 				public const string BUCKET_SYNC_WORKER_EXEC_DURATION_METRIC_COLLECTOR = "IntegrationPoints.Agent.Tasks.SyncWorker.Execute.Duration";
 				public const string BUCKET_SYNC_MANAGER_EXEC_DURATION_METRIC_COLLECTOR = "IntegrationPoints.Agent.Tasks.SyncManager.Execute.Duration";
 				public const string BUCKET_INTEGRATION_POINT_REC_SAVE_DURATION_METRIC_COLLECTOR = "IntegrationPoints.Web.Controllers.API.Update.Duration";
@@ -115,6 +121,7 @@ namespace kCura.IntegrationPoints.Core
 				public const string BUCKET_EXPORT_LIB_EXEC_DURATION_METRIC_COLLECTOR = "IntegrationPoints.SharedLibrary.Export.Duration";
 				public const string BUCKET_EXPORT_PUSH_KICK_OFF_IMPORT = "IntegrationPoints.ExportServiceManager.SyncData.Duration";
 				public const string BUCKET_EXPORT_PUSH_TARGET_DOCUMENTS_TAGGING_IMPORT = "IntegrationPoints.ExportServiceManager.FinalizeExportServiceObservers.Duration";
+
 
 				#endregion //Export
 

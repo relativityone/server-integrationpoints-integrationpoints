@@ -27,6 +27,13 @@ namespace kCura.IntegrationPoints.Contracts.Models
 		private string _actualName;
 
 		/// <summary>
+		/// Initializes new instance of FieldEntry.
+		/// </summary>
+		public FieldEntry()
+		{
+		}
+
+		/// <summary>
 		/// Gets or sets a user-friendly name for display in the Relativity UI.
 		/// </summary>
 		public string DisplayName { get; set; }
@@ -37,7 +44,7 @@ namespace kCura.IntegrationPoints.Contracts.Models
 		public string FieldIdentifier { get; set; }
 
 		/// <summary>
-		/// Represents the name used for the field in the source code.
+		/// Gets or sets the name of the field used in the source code.
 		/// </summary>
 		/// <remarks>The value for this property is frequently the display name for a field without spaces.</remarks>
 		public string ActualName
