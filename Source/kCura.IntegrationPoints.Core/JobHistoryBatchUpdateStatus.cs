@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.Core
 		public void OnJobComplete(Job job)
 		{
 			JobHistory result = GetHistory(job);
-			result.JobStatus = _updater.GenerateStatus(result, job.JobId);
+			result.JobStatus = _updater.GenerateStatus(result, job.WorkspaceID);
 			result.EndTimeUTC = DateTime.UtcNow;
 			_jobHistoryService.UpdateRdo(result);
 		}
