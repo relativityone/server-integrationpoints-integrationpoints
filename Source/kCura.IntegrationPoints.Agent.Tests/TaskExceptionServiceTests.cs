@@ -1,13 +1,12 @@
-﻿using System;
-using kCura.IntegrationPoints.Agent.Tasks;
+﻿using kCura.IntegrationPoints.Agent.Tasks;
+using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Exceptions;
-using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
 using NSubstitute;
 using NUnit.Framework;
-using NUnit.Framework.Internal;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tests
 {
@@ -21,13 +20,15 @@ namespace kCura.IntegrationPoints.Agent.Tests
 		private JobHistory _jobHistoryDto;
 
 		[SetUp]
-		public void SetUp()
-		{
+		public void SetUp(){
+
 			_jobHistoryErrorServiceMock = Substitute.For<IJobHistoryErrorService>();
 			_jobHistoryServiceMock = Substitute.For<IJobHistoryService>();
 			_jobServiceMock = Substitute.For<IJobService>();
+			IIntegrationPointSerializer serializer = Substitute.For<IIntegrationPointSerializer>();
+			IAPILog logger = Substitute.For<IAPILog>();
 			_jobHistoryDto = new JobHistory();
-			_subjectUnderTest = new TaskExceptionService(_jobHistoryErrorServiceMock,_jobHistoryServiceMock,_jobServiceMock);
+			_subjectUnderTest = new TaskExceptionService(logger, _jobHistoryErrorServiceMock, _jobHistoryServiceMock,_jobServiceMock, serializer);
 		}
 
 		[Test]

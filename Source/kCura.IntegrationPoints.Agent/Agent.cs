@@ -6,6 +6,7 @@ using kCura.Agent.CustomAttributes;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Agent.Context;
 using kCura.IntegrationPoints.Agent.Installer;
+using kCura.IntegrationPoints.Agent.Interfaces;
 using kCura.IntegrationPoints.Agent.Logging;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Logging;
@@ -21,19 +22,20 @@ namespace kCura.IntegrationPoints.Agent
 	[Name(_AGENT_NAME)]
 	[Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID)]
 	[Description("An agent that manages Integration Point jobs.")]
-	public class Agent : ScheduleQueueAgentBase, IDisposable
+	public class Agent : ScheduleQueueAgentBase, ITaskProvider, IAgentNotifier, IDisposable
 	{
 		private CreateErrorRdo _errorService;
 		private IAgentHelper _helper;
 		private IAPILog _logger;
-		private Lazy<IWindsorContainer> _agentLevelContainer;
 		private JobContextProvider _jobContextProvider;
-		private IDisposable _jobContext;
+		private IJobExecutor _jobExecutor;
 		private const string _AGENT_NAME = "Integration Points Agent";
+		private readonly Lazy<IWindsorContainer> _agentLevelContainer;
+
+		public virtual event ExceptionEventHandler JobExecutionError;
 
 		public Agent() : base(Guid.Parse(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID))
 		{
-			JobExecutionError += OnJobExecutionError;
 			Apps.Common.Config.Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
 
 			_agentLevelContainer = new Lazy<IWindsorContainer>(CreateAgentLevelContainer);
@@ -59,23 +61,38 @@ namespace kCura.IntegrationPoints.Agent
 		{
 			base.Initialize();
 			_logger = Helper.GetLoggerFactory().GetLogger().ForContext<Agent>();
+			_jobExecutor = new JobExecutor(this, this, _logger);
+			_jobExecutor.JobExecutionError += OnJobExecutionError;
 		}
 
-		public override ITask GetTask(Job job)
+		protected override TaskResult ProcessJob(Job job)
+		{
+			using (JobContextProvider.StartJobContext(job))
+			{
+				return _jobExecutor.ProcessJob(job);
+			}
+		}
+		
+		public ITask GetTask(Job job)
 		{
 			IWindsorContainer container = _agentLevelContainer.Value;
-			_jobContext = _jobContextProvider.StartJobContext(job);
-
 			ITaskFactory taskFactory = container.Resolve<ITaskFactory>();
 			ITask task = taskFactory.CreateTask(job, this);
 			container.Release(taskFactory);
 			return task;
 		}
 
-		protected override void ReleaseTask(ITask task)
+		public void ReleaseTask(ITask task)
 		{
-			_jobContext?.Dispose();
-			_agentLevelContainer.Value?.Release(task);
+			if (task != null)
+			{
+				_agentLevelContainer.Value?.Release(task);
+			}
+		}
+
+		public void NotifyAgent(int level, LogCategory category, string message)
+		{
+			NotifyAgentTab(level, category, message);
 		}
 
 		protected override void LogJobState(Job job, JobLogState state, Exception exception = null, string details = null)
@@ -88,7 +105,7 @@ namespace kCura.IntegrationPoints.Agent
 			}
 
 			_logger.LogInformation("Integration Points job status update: {@JobLogInformation}",
-				new JobLogInformation() { Job = job, State = state, Details = details });
+				new JobLogInformation { Job = job, State = state, Details = details });
 		}
 
 		protected void OnJobExecutionError(Job job, ITask task, Exception exception)
@@ -104,14 +121,25 @@ namespace kCura.IntegrationPoints.Agent
 			{
 				ErrorService.Execute(job, exception, _AGENT_NAME);
 			}
+			JobExecutionError?.Invoke(job, task, exception);
+		}
+
+		private JobContextProvider JobContextProvider
+		{
+			get
+			{
+				if (_jobContextProvider == null)
+				{
+					_jobContextProvider = _agentLevelContainer.Value.Resolve<JobContextProvider>();
+				}
+				return _jobContextProvider;
+			}
 		}
 
 		private IWindsorContainer CreateAgentLevelContainer()
 		{
 			var container = new WindsorContainer();
 			container.Install(new AgentAggregatedInstaller(Helper, ScheduleRuleFactory));
-
-			_jobContextProvider = container.Resolve<JobContextProvider>();
 			return container;
 		}
 

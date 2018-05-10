@@ -34,6 +34,7 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 		public ITask CreateTask(Job job, ScheduleQueueAgentBase agentBase)
 		{
 			LogCreatingTaskInformation(job);
+			_taskExceptionMediator.RegisterEvent(agentBase);
 
 			if (_container == null)
 			{
@@ -49,8 +50,6 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 				TaskType taskType;
 				Enum.TryParse(job.TaskType, true, out taskType);
 				LogCreateTaskSyncCheck(job, taskType);
-
-				_taskExceptionMediator.RegisterEvent(agentBase);
 
 				switch (taskType)
 				{

@@ -2,50 +2,34 @@
 using System.Collections.Generic;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
-using kCura.IntegrationPoints.Domain;
-using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Services;
 using Relativity.API;
-using kCura.IntegrationPoints.Domain.Logging;
 
 namespace kCura.ScheduleQueue.AgentBase
 {
-	public delegate void AgentLoggingEventHandler(LogCategory category, string message, string detailmessage);
-
-	public delegate void JobLoggingEventHandler(Job job, JobLogState state, string details = null);
-
-	public delegate void ExceptionEventHandler(Job job, ITask task, Exception exception);
-
-	public abstract class ScheduleQueueAgentBase : Agent.AgentBase, ITaskFactory
+	public abstract class ScheduleQueueAgentBase : Agent.AgentBase
 	{
-		public virtual event ExceptionEventHandler JobExecutionError;
-
-		private readonly Guid agentGuid;
-		private IJobService jobService;
+		private IJobService _jobService;
+		private const int _MAX_MESSAGE_LENGTH = 10000;
+		private readonly Guid _agentGuid;
 
 		protected IAPILog Logger { get; set; }
-
-		#region Constants
-
-		private const string PROCESSING_JOB_MESSAGE_TEMPLATE = "Processing Job ID : {0} : Workspace ID {1} : Job Type {2}";
-		private const string START_PROCESSING_JOB_MESSAGE_TEMPLATE = "Started : " + PROCESSING_JOB_MESSAGE_TEMPLATE;
-		private const string FINISHED_PROCESSING_JOB_MESSAGE_TEMPLATE = "Finished : " + PROCESSING_JOB_MESSAGE_TEMPLATE;
-		private const int MAX_MESSAGE_LENGTH = 10000;
-
-		#endregion
 
 		public ScheduleQueueAgentBase(Guid agentGuid,
 			IAgentService agentService = null, IJobService jobService = null,
 			IScheduleRuleFactory scheduleRuleFactory = null)
 		{
-			this.agentGuid = agentGuid;
-			this.AgentService = agentService;
-			this.jobService = jobService;
-			this.ScheduleRuleFactory = scheduleRuleFactory ?? new DefaultScheduleRuleFactory();
+			_agentGuid = agentGuid;
+			AgentService = agentService;
+			_jobService = jobService;
+			ScheduleRuleFactory = scheduleRuleFactory ?? new DefaultScheduleRuleFactory();
 		}
+
+		public IAgentService AgentService { get; private set; }
+		public IScheduleRuleFactory ScheduleRuleFactory { get; private set; }
 
 		protected virtual void Initialize()
 		{
@@ -54,53 +38,59 @@ namespace kCura.ScheduleQueue.AgentBase
 
 			NotifyAgentTab(20, LogCategory.Debug, "Initialize Agent core services");
 
-			if (this.AgentService == null)
+			if (AgentService == null)
 			{
-				this.AgentService = new AgentService(base.Helper, agentGuid);
+				AgentService = new AgentService(Helper, _agentGuid);
 			}
 
-			if (this.jobService == null)
+			if (_jobService == null)
 			{
-				this.jobService = new JobService(AgentService, new JobServiceDataProvider(AgentService, Helper), Helper);
+				_jobService = new JobService(AgentService, new JobServiceDataProvider(AgentService, Helper), Helper);
 			}
 		}
-
-		public IAgentService AgentService { get; private set; }
-		public IScheduleRuleFactory ScheduleRuleFactory { get; private set; }
-
-		public abstract ITask GetTask(Job job);
 
 		public sealed override void Execute()
 		{
 			NotifyAgentTab(10, LogCategory.Info, "Started.");
 
+			bool isPreExecuteSuccessful = PreExecute();
+			if (isPreExecuteSuccessful)
+			{
+				ProcessQueueJobs();
+				CleanupQueueJobs();
+			}
+
+			CompleteExecution();
+		}
+		
+		private bool PreExecute()
+		{
 			try
 			{
 				Initialize();
 				InitializeManagerConfigSettingsFactory();
 				CheckQueueTable();
-				ProcessQueueJobs();
-				CleanupQueueJobs();
 			}
 			catch (Exception ex)
 			{
 				NotifyAgentTab(20, LogCategory.Warn, $"{ex.Message} {ex.StackTrace}");
 				LogExecuteError(ex);
+				return false;
 			}
-
-			NotifyAgentTab(10, LogCategory.Info, "Completed.");
-			LogExecuteComplete();
+			return true;
 		}
 
-		protected virtual void ReleaseTask(ITask task)
+		private void CompleteExecution()
 		{
+			NotifyAgentTab(10, LogCategory.Info, "Completed.");
+			LogExecuteComplete();
 		}
 
 		private void InitializeManagerConfigSettingsFactory()
 		{
 			NotifyAgentTab(20, LogCategory.Info, "Initialize Config Settings factory");
 			LogOnInitializeManagerConfigSettingsFactory();
-			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(base.Helper);
+			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
 		}
 
 		private void CheckQueueTable()
@@ -117,117 +107,65 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		public void ProcessQueueJobs()
 		{
-			if (!Enabled)
-			{
-				NotifyAgentTab(20, LogCategory.Info, "Agent was disabled. Terminating job processing task.");
-				return;
-			}
-			NotifyAgentTab(20, LogCategory.Info, "Checking for active jobs in Schedule Agent Queue table");
-
-			Job nextJob = jobService.GetNextQueueJob(GetListOfResourceGroupIDs(), base.AgentID);
-
-			if (nextJob == null)
-			{
-				Logger.LogDebug("No active job found in Schedule Agent Queue table");
-			}
-			while (nextJob != null)
-			{
-				ProcessJob(nextJob);
-
-				nextJob = jobService.GetNextQueueJob(GetListOfResourceGroupIDs(), base.AgentID);
-			}
-			if (base.ToBeRemoved)
-			{
-				jobService.UnlockJobs(base.AgentID);
-			}
-		}
-
-		private void ProcessJob(Job nextJob)
-		{
-			var correlationContext = new AgentCorrelationContext
-			{
-				JobId = nextJob.JobId,
-				RootJobId = nextJob.RootJobId,
-				WorkspaceId = nextJob.WorkspaceID,
-				UserId = nextJob.SubmittedBy
-			};
-
-			using (Logger.LogContextPushProperties(correlationContext))
-			{
-				string agentMessage = string.Format(START_PROCESSING_JOB_MESSAGE_TEMPLATE, nextJob.JobId, nextJob.WorkspaceID,
-					nextJob.TaskType);
-				NotifyAgentTab(1, LogCategory.Info, agentMessage);
-				LogOnStartJobProcessing(agentMessage, nextJob.JobId, nextJob.WorkspaceID, nextJob.TaskType);
-
-				TaskResult taskResult = ExecuteTask(nextJob, correlationContext);
-
-				FinalizeJob(nextJob, taskResult);
-			}
-		}
-
-		private TaskResult ExecuteTask(Job job, AgentCorrelationContext correlationContext)
-		{
-			IDisposable correlationContextDisposable = null;
-			TaskResult result = new TaskResult() { Status = TaskStatusEnum.Success, Exceptions = null };
-			ITask task = null;
 			try
 			{
-				LogJobState(job, JobLogState.Started);
-				LogStartingExecuteTask(job);
-				task = GetTask(job);
-				if (task == null)
+				Job nextJob = GetNextQueueJob();
+				if (nextJob == null)
 				{
-					throw new Exception("Could not find corresponding Task. ");
+					Logger.LogDebug("No active job found in Schedule Agent Queue table");
+				}
+				while (nextJob != null)
+				{
+					TaskResult jobResult = ProcessJob(nextJob);
+					FinalizeJobExecution(nextJob, jobResult);
+					nextJob = GetNextQueueJob(); // assumptions: it will not throws exception
 				}
 
-				correlationContext.ActionName = task.GetType().Name;
-
-
-				using (LogContextHelper.CreateAgentLogContext(correlationContext))
+				if (ToBeRemoved)
 				{
-					correlationContextDisposable = Logger.LogContextPushProperties(correlationContext);
-
-					StartTask(job, task);
-
-					LogJobState(job, JobLogState.Finished);
-					string msg = string.Format(FINISHED_PROCESSING_JOB_MESSAGE_TEMPLATE, job.JobId, job.WorkspaceID, job.TaskType);
-					NotifyAgentTab(1, LogCategory.Info, msg);
-					LogFinishingExecuteTask(job);
+					_jobService.UnlockJobs(AgentID); // what if exception
 				}
 			}
 			catch (Exception ex)
 			{
-				result.Status = TaskStatusEnum.Fail;
-				result.Exceptions = new List<Exception>() { ex };
-				RaiseJobExecutionErrorEvent(job, task, ex);
+				Logger.LogError(ex, "Unhandled exception occured while processing queue jobs.");
 			}
-			finally
-			{
-				correlationContextDisposable?.Dispose();
-				ReleaseTask(task);
-			}
-			return result;
 		}
 
-		private void StartTask(Job job, ITask task)
-		{
-			Logger.LogInformation("StartTask - Before Execute");
-			task.Execute(job);
-			Logger.LogInformation("StartTask - After Execute");
-		}
+		protected abstract TaskResult ProcessJob(Job job);
 
-		private void FinalizeJob(Job job, TaskResult taskResult)
+		private void FinalizeJobExecution(Job job, TaskResult taskResult)
 		{
 			try
 			{
-				FinalizeJobResult result = jobService.FinalizeJob(job, this.ScheduleRuleFactory, taskResult);
+				FinalizeJobResult result = _jobService.FinalizeJob(job, ScheduleRuleFactory, taskResult);
 				LogJobState(job, result.JobState, null, result.Details);
 				LogFinalizeJob(job, result);
 			}
 			catch (Exception ex)
 			{
-				RaiseJobExecutionErrorEvent(job, null, ex);
 				LogFinalizeJobError(job, ex);
+			}
+		}
+
+		private Job GetNextQueueJob()
+		{
+			if (!Enabled)
+			{
+				NotifyAgentTab(20, LogCategory.Info, "Agent was disabled. Terminating job processing task.");
+				return null;
+			}
+			NotifyAgentTab(20, LogCategory.Info, "Checking for active jobs in Schedule Agent Queue table");
+
+			try
+			{
+				return _jobService.GetNextQueueJob(GetListOfResourceGroupIDs(), AgentID);
+			}
+			catch (Exception ex)
+			{
+				LogGetNextQueueJobException(ex);
+				NotifyAgentTab(20, LogCategory.Exception, "Exception while getting next job from queue.");
+				return null;
 			}
 		}
 
@@ -236,33 +174,36 @@ namespace kCura.ScheduleQueue.AgentBase
 			NotifyAgentTab(20, LogCategory.Info, "Cleanup jobs");
 			LogOnCleanupJobs();
 
-			jobService.CleanupJobQueueTable();
+			try
+			{
+				_jobService.CleanupJobQueueTable();
+			}
+			catch (Exception ex)
+			{
+				NotifyAgentTab(20, LogCategory.Warn, $"An error occured cleaning jobs queue. {ex.Message} {ex.StackTrace}");
+				LogCleanupError(ex);
+			}
 		}
 
 		protected void NotifyAgentTab(int level, LogCategory category, string message,
 			string detailmessage = null)
 		{
-			string msg = message.Substring(0, Math.Min(message.Length, MAX_MESSAGE_LENGTH));
+			string msg = message.Substring(0, Math.Min(message.Length, _MAX_MESSAGE_LENGTH));
 			switch (category)
 			{
 				case LogCategory.Info:
 				case LogCategory.Debug:
-					base.RaiseMessage(msg, level);
+					RaiseMessage(msg, level);
 					break;
 				case LogCategory.Exception:
-					base.RaiseError(msg, detailmessage);
+					RaiseError(msg, detailmessage);
 					break;
 				case LogCategory.Warn:
-					base.RaiseWarning(msg);
+					RaiseWarning(msg);
 					break;
 				default:
 					throw new ArgumentOutOfRangeException("category");
 			}
-		}
-
-		protected void RaiseJobExecutionErrorEvent(Job job, ITask task, Exception exception)
-		{
-			JobExecutionError?.Invoke(job, task, exception);
 		}
 
 		protected abstract void LogJobState(Job job, JobLogState state, Exception exception = null,
@@ -291,30 +232,21 @@ namespace kCura.ScheduleQueue.AgentBase
 			Logger.LogError(ex, "An error occured during executing scheduled jobs in {TypeName}", nameof(ScheduleQueueAgentBase));
 		}
 
-		private void LogOnStartJobProcessing(string agentMessage, long nextJobJobId, int nextJobWorkspaceId,
-			string nextJobTaskType)
+		private void LogCleanupError(Exception ex)
 		{
-			Logger.LogInformation(agentMessage, nextJobJobId, nextJobWorkspaceId, nextJobTaskType);
+			Logger.LogError(ex, "An error occured during cleaning schedule queue table in {TypeName}", nameof(ScheduleQueueAgentBase));
 		}
 
-		private void LogStartingExecuteTask(Job job)
+		private void LogGetNextQueueJobException(Exception ex)
 		{
-			Logger.LogInformation("Attempting to execute Job with ID: {JobID} in {TypeName}", job.JobId,
-				nameof(ScheduleQueueAgentBase));
+			Logger.LogError(ex, "An error occured during getting next queue job");
 		}
-
-		private void LogFinishingExecuteTask(Job job)
-		{
-			Logger.LogInformation("Finished execution of Job with ID: {JobID} in {TypeName}", job.JobId,
-				nameof(ScheduleQueueAgentBase));
-		}
-
 
 		private void LogFinalizeJob(Job job, FinalizeJobResult result)
 		{
 			string message = $"Finished Finalization of Job with ID: {job.JobId} in {nameof(ScheduleQueueAgentBase)}." +
-							$"{Environment.NewLine}Job result: {result.JobState}," +
-							$"{Environment.NewLine} Details: {result.Details}";
+							 $"{Environment.NewLine}Job result: {result.JobState}," +
+							 $"{Environment.NewLine} Details: {result.Details}";
 
 			Logger.LogInformation(message);
 		}
@@ -324,7 +256,6 @@ namespace kCura.ScheduleQueue.AgentBase
 			Logger.LogError(exception, "An error occured during finalization of Job with ID: {JobID} in {TypeName}", job.JobId,
 				nameof(ScheduleQueueAgentBase));
 		}
-
 		#endregion
 	}
 }

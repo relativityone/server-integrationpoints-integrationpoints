@@ -49,6 +49,7 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="JobExecutorTests.cs" />
     <Compile Include="SendEmailManagerUnitTests.cs" />
     <Compile Include="TaskExceptionServiceTests.cs" />
     <Compile Include="TaskExceptionMediatorTests.cs" />

@@ -60,8 +60,12 @@
     <Compile Include="Installer\AgentAggregatedInstaller.cs" />
     <Compile Include="Installer\AgentInstaller.cs" />
     <Compile Include="Context\JobContextProvider.cs" />
+    <Compile Include="Interfaces\IAgentNotifier.cs" />
+    <Compile Include="Interfaces\IJobExecutor.cs" />
+    <Compile Include="Interfaces\ITaskProvider.cs" />
     <Compile Include="IRelativityConfigurationFactory.cs" />
-    <Compile Include="JobLogInformation.cs" />
+    <Compile Include="JobExecutor.cs" />
+    <Compile Include="Logging\JobLogInformation.cs" />
     <Compile Include="Logging\CreateErrorRdo.cs" />
     <Compile Include="TaskFactory\IJobSynchronizationChecker.cs" />
     <Compile Include="TaskFactory\ITaskFactoryJobHistoryServiceFactory.cs" />
