@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using Relativity.API;
+using Relativity.DataTransfer.MessageService;
 
 namespace kCura.IntegrationPoints.Core.Factories.Implementations
 {
@@ -18,15 +19,18 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		private readonly IJobManager _jobService;
 		private readonly IManagerFactory _managerFactory;
 		private readonly IValidationExecutor _validationExecutor;
-
-
+		private readonly IProviderTypeService _providerTypeService;
+		private readonly IMessageService _messageService;
+		
 		public ServiceFactory(ICaseServiceContext caseServiceContext, IContextContainerFactory contextContainerFactory,
 			IIntegrationPointSerializer serializer, IChoiceQuery choiceQuery,
 			IJobManager jobService, IManagerFactory managerFactory,
-			IValidationExecutor validationExecutor)
+			IValidationExecutor validationExecutor, IProviderTypeService providerTypeService, IMessageService messageService)
 		{
 			_managerFactory = managerFactory;
 			_validationExecutor = validationExecutor;
+			_providerTypeService = providerTypeService;
+			_messageService = messageService;
 			_jobService = jobService;
 			_choiceQuery = choiceQuery;
 			_serializer = serializer;
@@ -48,7 +52,9 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				jobHistoryService,
 				jobHistoryErrorService,
 				_managerFactory,
-				_validationExecutor);
+				_validationExecutor,
+				_providerTypeService,
+				_messageService);
 		}
 
 		public IFieldCatalogService CreateFieldCatalogService(IHelper targetHelper)
@@ -62,7 +68,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			IContextContainer targetContextContainer = _contextContainerFactory.CreateContextContainer(helper, targetHelper.GetServicesManager());
 
 			IJobHistoryService jobHistoryService = new JobHistoryService(_caseServiceContext, _managerFactory.CreateFederatedInstanceManager(sourceContextContainer),
-				_managerFactory.CreateWorkspaceManager(targetContextContainer), helper, _serializer);
+				_managerFactory.CreateWorkspaceManager(targetContextContainer), helper, _serializer, _providerTypeService, _messageService);
 
 			return jobHistoryService;
 		}

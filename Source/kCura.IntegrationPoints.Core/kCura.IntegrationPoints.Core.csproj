@@ -169,6 +169,7 @@
     <Compile Include="Services\IDeleteHistoryService.cs" />
     <Compile Include="Services\IJobTracker.cs" />
     <Compile Include="Services\IntegrationPoint\IIntegrationPointForSourceService.cs" />
+    <Compile Include="Services\IntegrationPoint\IntegrationPointExtensions.cs" />
     <Compile Include="Services\IProcessingSourceLocationService.cs" />
     <Compile Include="Services\JobHistory\IUnlinkedJobHistoryService.cs" />
     <Compile Include="Services\JobHistory\IUnfinishedJobService.cs" />

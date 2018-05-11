@@ -20,8 +20,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring
 		private readonly IJobStatusUpdater _updater;
 		private readonly IJobHistoryService _jobHistoryService;
 		private readonly ISerializer _serializer;
-
-
+		
 		public JobLifetimeMetricBatchStatus(IMessageService messageService, IIntegrationPointService integrationPointService,
 			IProviderTypeService providerTypeService, IJobStatusUpdater updater, IJobHistoryService jobHistoryService, ISerializer serializer)
 		{
@@ -35,11 +34,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring
 
 		public void OnJobStart(Job job)
 		{
-			if (job.RootJobId == null)
-			{
-				ProviderType providerType = GetProviderType(job);
-				_messageService.Send(new JobStartedMessage { Provider = providerType.ToString() });
-			}
+			
 		}
 
 		public void OnJobComplete(Job job)
@@ -74,9 +69,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring
 		private ProviderType GetProviderType(Job job)
 		{
 			IntegrationPoint integrationPoint = _integrationPointService.GetRdo(job.RelatedObjectArtifactID);
-			ProviderType providerType = _providerTypeService.GetProviderType(
-				integrationPoint.SourceProvider.GetValueOrDefault(),
-				integrationPoint.DestinationProvider.GetValueOrDefault());
+			ProviderType providerType = integrationPoint.GetProviderType(_providerTypeService);
 			return providerType;
 		}
 	}
