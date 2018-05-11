@@ -3,5 +3,6 @@ FluentAssertions
 NSubstitute
 NUnit
 Relativity.API
-Relativity.Logging
 Relativity.Services.Interfaces
+Relativity.Logging.Interfaces
+Relativity.Logging

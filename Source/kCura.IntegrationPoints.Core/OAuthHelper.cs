@@ -2,6 +2,7 @@
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity.API;
+using Relativity.APIHelper;
 
 namespace kCura.IntegrationPoints.Core
 {
@@ -36,7 +37,7 @@ namespace kCura.IntegrationPoints.Core
 
 		public IServicesMgr GetServicesManager()
 		{
-			IServicesMgr servicesMgr = new OAuthServicesManager(_instanceUri, _rsapiUri, _keplerUri, _oAuthClientDto, _tokenProvider);
+			IServicesMgr servicesMgr = new ServicesManagerBase(_rsapiUri, _keplerUri);
 
 			return servicesMgr;
 		}

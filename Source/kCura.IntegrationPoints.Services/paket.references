@@ -7,3 +7,4 @@ Relativity.API
 Relativity.Kepler
 Relativity.Services.Interfaces
 Relativity.Toggles
+Relativity.Logging.Interfaces
