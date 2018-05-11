@@ -192,7 +192,6 @@
     <Compile Include="Managers\IPermissionManager.cs" />
     <Compile Include="Managers\IProductionManager.cs" />
     <Compile Include="OAuthHelper.cs" />
-    <Compile Include="OAuthServicesManager.cs" />
     <Compile Include="Managers\Implementations\AuditManager.cs" />
     <Compile Include="Managers\IArtifactGuidManager.cs" />
     <Compile Include="Managers\IJobStopManager.cs" />
@@ -842,17 +841,6 @@
       <ItemGroup>
         <Reference Include="Relativity.API">
           <HintPath>..\..\packages\Relativity.API\lib\net462\Relativity.API.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.Authentication.Interfaces">
-          <HintPath>..\..\packages\Relativity.Authentication.Interfaces\lib\net462\Relativity.Authentication.Interfaces.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

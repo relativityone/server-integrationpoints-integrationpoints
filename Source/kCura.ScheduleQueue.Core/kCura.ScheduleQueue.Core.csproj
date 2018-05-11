@@ -113,6 +113,9 @@
     <Compile Include="TimeMachine\AgentTimeMachineProvider.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="LICENSE.txt">
+      <Paket>True</Paket>
+    </Content>
     <Content Include="Data\Resources\CleanupJobQueueTable.sql" />
     <Content Include="Data\Resources\AddStopStateColumnToQueueTable.sql" />
     <Content Include="Data\Resources\GetAllJobs.sql" />
@@ -128,9 +131,6 @@
     <Content Include="Data\Resources\GetAgentTypeInformation.sql" />
     <Content Include="Data\Resources\CreateQueueTable.sql" />
     <Content Include="Data\Resources\GetNextJob.sql" />
-    <Content Include="LICENSE.txt">
-      <Paket>True</Paket>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -267,28 +267,6 @@
       <ItemGroup>
         <Reference Include="Relativity.API">
           <HintPath>..\..\packages\Relativity.API\lib\net462\Relativity.API.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.Authentication.Interfaces">
-          <HintPath>..\..\packages\Relativity.Authentication.Interfaces\lib\net462\Relativity.Authentication.Interfaces.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.Logging.Interfaces">
-          <HintPath>..\..\packages\Relativity.Logging.Interfaces\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

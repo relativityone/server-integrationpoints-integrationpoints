@@ -30,36 +30,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Factories
 		}
 
 		[Test]
-		public void TestCreateOAuthClientHelper()
-		{
-			//arrange
-			IContextContainer sourceContextContainer = Substitute.For<IContextContainer>();
-			_contextContainerFactory.CreateContextContainer(_sourceInstanceHelper).Returns(sourceContextContainer);
-			_managerFactory.CreateFederatedInstanceManager(sourceContextContainer).Returns(_federatedInstanceManager);
-
-			string instanceUrl = "http://hostname/";
-			string rsapiUrl = "http://hostname/Relativity.Services";
-			string keplerUrl = "http://hostname/Relativity.REST/api/";
-
-			_federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(Arg.Any<int>()).Returns(new FederatedInstanceDto()
-			{
-				InstanceUrl = instanceUrl,
-				RsapiUrl = rsapiUrl,
-				KeplerUrl = keplerUrl
-			});
-			IAPILog logger = Substitute.For<IAPILog>();
-			var testInstance = new HelperFactory(_managerFactory, _contextContainerFactory, _tokenProvider, new IntegrationPointSerializer(logger));
-
-			//act
-			IHelper helper = testInstance.CreateTargetHelper(_sourceInstanceHelper, 1000, "{}");
-
-			//assert
-			Assert.That(helper.GetServicesManager(), Is.Not.Null);
-			Assert.That(helper.GetServicesManager().GetServicesURL().AbsoluteUri, Is.EqualTo(rsapiUrl));
-			Assert.That(helper.GetServicesManager().GetRESTServiceUrl().AbsoluteUri, Is.EqualTo(keplerUrl));
-		}
-
-		[Test]
 		public void TestCreateTargetHelperIfFederatedInstanceIsNull()
 		{
 			//arrange
