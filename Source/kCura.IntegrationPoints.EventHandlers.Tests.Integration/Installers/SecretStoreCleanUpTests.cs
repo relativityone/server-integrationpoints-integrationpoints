@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Threading;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Data.SecretStore;
@@ -36,12 +35,14 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 		[Test]
 		public void ItShouldRemoveSecretAndTenantId()
 		{
-			_secretStoreCleanUp.CleanUpSecretStore();
-			
-			var sqlStatement = $"SELECT COUNT(*) FROM [SQLSecretStore] WHERE [TenantID] = '{_secretManager.GetTenantID()}'";
-			var secretCount = Helper.GetDBContext(-1).ExecuteSqlStatementAsScalar<int>(sqlStatement);
+			string tenantId = _secretManager.GetTenantID();
+			int secretsInitialCount = _secretCatalog.GetTenantSecrets(tenantId).Count;
 
-			Assert.That(secretCount, Is.EqualTo(0));
+			_secretStoreCleanUp.CleanUpSecretStore();
+
+			int secretsCount = _secretCatalog.GetTenantSecrets(tenantId).Count;
+			Assert.That(secretsInitialCount, Is.Not.EqualTo(0));
+			Assert.That(secretsCount, Is.EqualTo(0));
 		}
 	}
 }
