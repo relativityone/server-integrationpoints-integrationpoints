@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Monitoring;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
@@ -15,6 +17,7 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.DataTransfer.MessageService;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
@@ -26,6 +29,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		private IWorkspaceManager _workspaceManager;
 		private IFederatedInstanceManager _federatedInstanceManager;
 		private IHelper _helper;
+		private IProviderTypeService _providerTypeService;
+		private IMessageService _messageService;
 
 		private JobHistoryService _instance;
 		private IIntegrationPointSerializer _serializer;
@@ -43,6 +48,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			_federatedInstanceManager = Substitute.For<IFederatedInstanceManager>();
 			_helper = Substitute.For<IHelper>();
 			_serializer = Substitute.For<IIntegrationPointSerializer>();
+			_providerTypeService = Substitute.For<IProviderTypeService>();
+			_messageService = Substitute.For<IMessageService>();
 
 			_integrationPoint = new Data.IntegrationPoint()
 			{
@@ -50,7 +57,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 				Name = "RIP RIP",
 				DestinationConfiguration = "dest config",
 				OverwriteFields = OverwriteFieldsChoices.IntegrationPointAppendOnly,
-				JobHistory = new[] { 4543, 443 }
+				JobHistory = new[] { 4543, 443 },
+				SourceProvider = 0,
+				DestinationProvider = 0
 			};
 			_settings = new ImportSettings()
 			{
@@ -62,7 +71,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			};
 			_batchGuid = Guid.NewGuid();
 			_jobHistoryArtifactId = 987465;
-			_instance = new JobHistoryService(_caseServiceContext, _federatedInstanceManager, _workspaceManager, _helper, _serializer);
+			_instance = new JobHistoryService(_caseServiceContext, _federatedInstanceManager, _workspaceManager, _helper, _serializer, _providerTypeService, _messageService);
 		}
 
 		[Test]
@@ -152,6 +161,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 
 			// ASSERT
 			ValidateJobHistory(jobHistory, JobTypeChoices.JobHistoryRun);
+			_messageService.Received().Send(Arg.Any<JobStartedMessage>());
 		}
 
 		[Test]
@@ -203,6 +213,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 
 			// ASSERT
 			ValidateJobHistory(returnedJobHistory, JobTypeChoices.JobHistoryScheduledRun);
+			_messageService.Received().Send(Arg.Any<JobStartedMessage>());
 		}
 
 

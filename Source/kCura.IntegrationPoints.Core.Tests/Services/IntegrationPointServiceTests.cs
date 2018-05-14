@@ -9,6 +9,8 @@ using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Monitoring;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -26,6 +28,7 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.DataTransfer.MessageService;
 using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services
@@ -70,6 +73,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		private Data.JobHistory _previousJobHistory;
 		private IntegrationPointModelBase _integrationPointModel;
 		private IValidationExecutor _validationExecutor;
+		private IProviderTypeService _providerTypeService;
+		private IMessageService _messageService;
 
 		[SetUp]
 		public override void SetUp()
@@ -92,8 +97,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_errorManager = Substitute.For<IErrorManager>();
 			_jobHistoryManager = Substitute.For<IJobHistoryManager>();
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
+			_providerTypeService = Substitute.For<IProviderTypeService>();
+			_messageService = Substitute.For<IMessageService>();
 
-			
 
 			_validationExecutor = Substitute.For<IValidationExecutor>();
 
@@ -107,7 +113,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				_jobHistoryService,
 				_jobHistoryErrorService,
 				_managerFactory,
-				_validationExecutor
+				_validationExecutor,
+				_providerTypeService,
+				_messageService
 			);
 
 			_caseServiceContext.RsapiService = Substitute.For<IRSAPIService>();

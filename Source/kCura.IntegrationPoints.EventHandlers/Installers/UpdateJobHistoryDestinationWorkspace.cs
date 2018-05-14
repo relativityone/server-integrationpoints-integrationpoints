@@ -5,12 +5,15 @@ using kCura.EventHandler.CustomAttributes;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.SourceProviderInstaller;
 using Relativity.API;
+using Relativity.DataTransfer.MessageService;
 
 namespace kCura.IntegrationPoints.EventHandlers.Installers
 {
@@ -81,7 +84,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			var federatedInstanceManager = new FederatedInstanceManager(repositoryFactory);
 			IWorkspaceManager workspaceManager = new WorkspaceManager(repositoryFactory);
 			IIntegrationPointSerializer serializer = new IntegrationPointSerializer(Logger);
-			return new JobHistoryService(caseContext, federatedInstanceManager, workspaceManager, Helper, serializer);
+			IRSAPIService rsapiService = new RSAPIService(Helper, Helper.GetActiveCaseID());
+			IProviderTypeService providerTypeService = new ProviderTypeService(rsapiService);
+			IMessageService messageService = new MessageService();
+			return new JobHistoryService(caseContext, federatedInstanceManager, workspaceManager, Helper, serializer, providerTypeService, messageService);
 		}
 	}
 }

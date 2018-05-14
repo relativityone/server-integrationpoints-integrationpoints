@@ -63,13 +63,13 @@ namespace kCura.IntegrationPoints.Core.Tests
 		public void OnJobStart_SendJobStartedMessage()
 		{
 			// ARRANGE
-			Job job = JobExtensions.CreateJob(null);
+			Job job = JobExtensions.CreateJob();
 
 			// ACT
 			_instance.OnJobStart(job);
 
 			// ASSERT
-			_messageService.Received().Send(Arg.Any<JobStartedMessage>());
+			_messageService.DidNotReceive().Send(Arg.Any<JobStartedMessage>());
 		}
 
 		[Test]
