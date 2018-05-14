@@ -124,7 +124,7 @@ namespace kCura.IntegrationPoints.Agent
 			JobExecutionError?.Invoke(job, task, exception);
 		}
 
-		private JobContextProvider JobContextProvider
+		protected JobContextProvider JobContextProvider
 		{
 			get
 			{
