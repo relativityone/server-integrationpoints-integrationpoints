@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.UITests.BrandNew.Import.LoadFile
 
 		public string ImportType
 		{
-			get => new SelectElement(ImportTypeSelect).SelectedOption.Text;
+			get { return new SelectElement(ImportTypeSelect).SelectedOption.Text; }
 			set
 			{
 				if (value != null)
@@ -40,18 +40,18 @@ namespace kCura.IntegrationPoints.UITests.BrandNew.Import.LoadFile
 
 		public string WorkspaceDestination
 		{
-			set => WorkspaceDestinationTree.ChooseChildElement(value);
+			set { WorkspaceDestinationTree.ChooseChildElement(value); }
 		}
 
 		public string ImportSource
 		{
-			set => ImportSourceTree.ChooseChildElement(value);
+			set { ImportSourceTree.ChooseChildElement(value); }
 		}
 
 		public int StartLine
 		{
-			get => int.Parse(StartLineInput.Text);
-			set => StartLineInput.SetText(value.ToString());
+			get { return int.Parse(StartLineInput.Text); }
+			set { StartLineInput.SetText(value.ToString()); }
 		}
 	}
 }

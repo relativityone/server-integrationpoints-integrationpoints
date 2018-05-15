@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.UITests.BrandNew.Import.LoadFile.Documents
 
 		public string FileEncoding
 		{
-			get => FileEncodingSelect.SelectedOption.Text;
+			get { return FileEncodingSelect.SelectedOption.Text; }
 			set
 			{
 				if (value != null)
@@ -38,27 +38,27 @@ namespace kCura.IntegrationPoints.UITests.BrandNew.Import.LoadFile.Documents
 
 		public int Column
 		{
-			set => ColumnSelect.SelectByIndex(value - 1);
+			set { ColumnSelect.SelectByIndex(value - 1); }
 		}
 
 		public int Quote
 		{
-			set => QuoteSelect.SelectByIndex(value - 1);
+			set { QuoteSelect.SelectByIndex(value - 1); }
 		}
 
 		public int Newline
 		{
-			set => NewlineSelect.SelectByIndex(value - 1);
+			set { NewlineSelect.SelectByIndex(value - 1); }
 		}
 
 		public int MultiValue
 		{
-			set => MultiValueSelect.SelectByIndex(value - 1);
+			set { MultiValueSelect.SelectByIndex(value - 1); }
 		}
 
 		public int NestedValue
 		{
-			set => NestedValueSelect.SelectByIndex(value - 1);
+			set { NestedValueSelect.SelectByIndex(value - 1); }
 		}
 	}
 }
