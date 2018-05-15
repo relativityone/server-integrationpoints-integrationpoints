@@ -24,8 +24,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		public TestConfiguration()
 		{
 			ConfigName = Environment.GetEnvironmentVariable(_ENVIRONMENT_VARIABLE_CONFIG_NAME);
-			ConfigName = "testvm.config";
-
+			
 			if (ConfigName == null)
 			{
 				Log.Information("Custom config is not set by ENV:{ConfigName}. Only App.config defaults will be used.",
@@ -80,6 +79,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 				string path = $@"UiTestsConfig\{ConfigName}";
 				Log.Information("Merging {Path}...", path);
 				SharedVariables.MergeConfigurationWithAppConfig(path);
+				Console.WriteLine(SharedVariables.DumpToString());
 			}
 			return this;
 		}
