@@ -6,9 +6,9 @@ namespace kCura.IntegrationPoint.Tests.Core.Models.Import.FTP
 {
 	public class ConnectionAndFileInfoModel
 	{
-		private SecureString _secureUsername = new SecureString();
+		private readonly SecureString _secureUsername = new SecureString();
 
-		private SecureString _securePassword = new SecureString();
+		private readonly SecureString _securePassword = new SecureString();
 
 		public string Host { get; set; }
 
@@ -18,20 +18,26 @@ namespace kCura.IntegrationPoint.Tests.Core.Models.Import.FTP
 
 		public string Username
 		{
-			get => _secureUsername.ToPlainString();
+			get
+			{
+				return _secureUsername.ToPlainString();
+			}
 			set
 			{
-				_secureUsername = new SecureString();
+				_secureUsername.Clear();
 				value.ForEach(c => _secureUsername.AppendChar(c));
 			}
 		}
 
 		public string Password
 		{
-			get => _securePassword.ToPlainString();
+			get
+			{
+				return _secureUsername.ToPlainString();
+			}
 			set
 			{
-				_securePassword = new SecureString();
+				_securePassword.Clear();
 				value.ForEach(c => _securePassword.AppendChar(c));
 			}
 		}
