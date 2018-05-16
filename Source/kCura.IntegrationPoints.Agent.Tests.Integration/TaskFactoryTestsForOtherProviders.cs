@@ -21,8 +21,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 	{
 		private IJobService _jobService;
 		private IQueueDBContext _queueContext;
-		private Agent _agent;
+		private TestingAgent _agent;
 		private IJobHistoryService _jobHistoryService;
+
 
 		public TaskFactoryTestsForOtherProviders() : base("TaskFactoryTestsForOtherProviders")
 		{
@@ -45,7 +46,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		{
 			_jobService = Container.Resolve<IJobService>();
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();
-			_agent = new Agent
+			_agent = new TestingAgent
 			{
 				Helper = new ExtendedIAgentHelper(Helper)
 			};

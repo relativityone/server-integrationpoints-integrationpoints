@@ -57,6 +57,7 @@
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -142,6 +143,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\packages\kCura.FreeImage\lib\net45\FreeImage.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="TestDataForImport\CsvWithMetadata.csv">
@@ -290,6 +296,22 @@ xcopy "$(ProjectDir)TestDataForImport" "$(ProjectDir)..\..\lib\UnitTests\TestDat
       <ItemGroup>
         <Reference Include="kCura.Apps.Common.Utils">
           <HintPath>..\..\packages\kCura.Apps.Common.Utils\lib\net462\kCura.Apps.Common.Utils.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="FreeImage">
+          <HintPath>..\..\packages\kCura.FreeImage\lib\net45\FreeImage.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="FreeImageNET">
+          <HintPath>..\..\packages\kCura.FreeImage\lib\net45\FreeImageNET.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

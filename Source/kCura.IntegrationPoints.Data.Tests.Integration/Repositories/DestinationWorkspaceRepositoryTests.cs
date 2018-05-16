@@ -11,6 +11,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -205,7 +206,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		{
 			//Act & Assert
 			Assert.NotNull(_destinationWorkspaceDto.DestinationWorkspaceArtifactID);
-			Assert.Throws<Exception>(() => _destinationWorkspaceRepository.LinkDestinationWorkspaceToJobHistory(_destinationWorkspaceDto.DestinationWorkspaceArtifactID.Value, -1), "Unable to link Destination Workspace object to Job History object");
+			Assert.Throws<IntegrationPointsException>(() => _destinationWorkspaceRepository.LinkDestinationWorkspaceToJobHistory(_destinationWorkspaceDto.DestinationWorkspaceArtifactID.Value, -1), "Unable to link Destination Workspace object to Job History object");
 		}
 
 		[Test]

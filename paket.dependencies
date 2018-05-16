@@ -7,6 +7,7 @@ source https://proget.kcura.corp/nuget/NuGet
 nuget kCura 9.6.126.2-DEV
 nuget kCura.Agent 9.6.126.2-DEV
 nuget kCura.EventHandler 9.6.126.2-DEV 
+nuget kCura.FreeImage 3.15.1.1
 nuget kCura.Relativity.Client 9.6.126.2-DEV 
 nuget Relativity.Authentication 9.6.126.2-DEV 
 nuget Relativity.Core 9.6.126.2-DEV 
