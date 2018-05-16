@@ -1,8 +1,5 @@
 ﻿using kCura.WinEDDS;
 using kCura.WinEDDS.Api;
-
-using kCura.IntegrationPoints.Domain.Models;
-
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using System;
 

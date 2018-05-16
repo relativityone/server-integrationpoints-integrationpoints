@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.WinEDDS.Credentials;
-using Newtonsoft.Json;
 using Relativity.API;
 using Relativity.OAuth2Client.Interfaces;
 using Relativity.Services.Security.Models;
@@ -15,7 +13,6 @@ namespace kCura.IntegrationPoints.Core.Authentication
 {
 	public class OAuth2TokenGenerator : IAuthTokenGenerator
 	{
-		private readonly IHelper _helper;
 		private readonly IAPILog _logger;
 		private readonly IOAuth2ClientFactory _oAuth2ClientFactory;
 		private readonly ITokenProviderFactoryFactory _tokenProviderFactory;
@@ -24,11 +21,10 @@ namespace kCura.IntegrationPoints.Core.Authentication
 
 		public OAuth2TokenGenerator(IHelper helper, IOAuth2ClientFactory oAuth2ClientFactory, ITokenProviderFactoryFactory tokenProviderFactory, CurrentUser contextUser)
 		{
-			_helper = helper;
 			_oAuth2ClientFactory = oAuth2ClientFactory;
 			_contextUser = contextUser;
 			_tokenProviderFactory = tokenProviderFactory;
-			_logger = _helper.GetLoggerFactory().GetLogger().ForContext<OAuth2TokenGenerator>();
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<OAuth2TokenGenerator>();
 			_cancellationTokenSource = new CancellationTokenSource();
 		}
 

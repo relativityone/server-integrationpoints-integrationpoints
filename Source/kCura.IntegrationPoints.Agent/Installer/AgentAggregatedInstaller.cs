@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Install(new Core.Installers.ServicesInstaller());
 			container.Install(new FilesDestinationProvider.Core.Installer.FileNamingInstaller());
 			container.Install(new FilesDestinationProvider.Core.Installer.ExportInstaller());
-			container.Install(new ImportProvider.Parser.ServicesInstaller());
+			container.Install(new ImportProvider.Parser.Installers.ServicesInstaller());
 			container.Install(new ValidationInstaller());
 			container.Install(new AgentInstaller(_agentHelper, _scheduleRuleFactory));
 		}

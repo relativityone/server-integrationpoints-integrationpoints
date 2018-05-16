@@ -7,13 +7,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 {
 	internal class UserPasswordCredentialProvider : ICredentialProvider
 	{
-		private readonly ConfigSettings _configSettings;
-
-		public UserPasswordCredentialProvider(ConfigSettings configSettings)
-		{
-			_configSettings = configSettings;
-		}
-
 		public NetworkCredential Authenticate(CookieContainer cookieContainer)
 		{
 			return LoginHelper.LoginUsernamePassword(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, cookieContainer);
