@@ -397,34 +397,48 @@ timestamps
 
 		timeout(time: 90, unit: 'MINUTES')
 		{
-			stage("Cleanup")
-			{
-				if (skipProvisioning) return;
-				
-				SaveVMs = false
-				if (!currentBuild.result || currentBuild.result == "FAILURE")
+			parallel(
+				CleanupVMs:
 				{
-					try
-					{
-						timeout(time: 30, unit: 'MINUTES')
+					stage('Cleanup VMs'){
+						if (skipProvisioning) return;
+						
+						SaveVMs = false
+						if (!currentBuild.result || currentBuild.result == "FAILURE")
 						{
-							input(message: 'Save the VMs?', ok: 'Save', submitter: 'JNK-Basic')
+							try
+							{
+								timeout(time: 30, unit: 'MINUTES')
+								{
+									input(message: 'Save the VMs?', ok: 'Save', submitter: 'JNK-Basic')
+								}
+								SaveVMs = true
+								saveVMs(this, session_id)
+							}
+							catch(err)
+							{
+								println("VMs won't be saved.")
+							}
 						}
-						SaveVMs = true
-						saveVMs(this, session_id)
-					}
-					catch(err)
-					{
-						println("VMs won't be saved.")
-					}
-				}
 
-				if (!SaveVMs)
+						if (!SaveVMs)
+						{
+							deleteVMs(this, session_id)
+						}
+						deleteNodes(this, session_id)			
+					}
+						
+				},
+				CleanupBuildslave:
 				{
-					deleteVMs(this, session_id)
+					stage('Cleanup buildslave'){
+						node('buildslave')
+						{
+							deleteDir()
+						}
+					}
 				}
-				deleteNodes(this, session_id)
-			}
+			)
 		}
 	}
 }
