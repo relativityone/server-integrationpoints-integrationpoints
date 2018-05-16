@@ -431,7 +431,7 @@ timestamps
 				},
 				CleanupBuildslave:
 				{
-					stage('Cleanup buildslabe'){
+					stage('Cleanup buildslave'){
 						node('buildslave')
 						{
 							deleteDir()
