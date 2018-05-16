@@ -1,102 +1,96 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Data;
-using kCura.WinEDDS;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.ImportProvider.Parser.Services.Interfaces;
 using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Services
 {
-    public class ImportPreviewService : IImportPreviewService
-    {
-        private Dictionary<int, IPreviewJob> _loadFilePreviewers;
-        IPreviewJobFactory _previewJobFactory;
-        public ImportPreviewService(IPreviewJobFactory previewJobFactory)
-        {
-            _previewJobFactory = previewJobFactory;
-            _loadFilePreviewers = new Dictionary<int, IPreviewJob>();
-        }
-        
-        public int CreatePreviewJob(ImportPreviewSettings settings)
-        {
-            int jobId = _loadFilePreviewers.Count + 1;
-            _loadFilePreviewers.Add(jobId, _previewJobFactory.GetPreviewJob(settings));
+	public class ImportPreviewService : IImportPreviewService
+	{
+		private readonly Dictionary<int, IPreviewJob> _loadFilePreviewers;
+		private readonly IPreviewJobFactory _previewJobFactory;
+		public ImportPreviewService(IPreviewJobFactory previewJobFactory)
+		{
+			_previewJobFactory = previewJobFactory;
+			_loadFilePreviewers = new Dictionary<int, IPreviewJob>();
+		}
 
-            return jobId;
-        }
+		public int CreatePreviewJob(ImportPreviewSettings settings)
+		{
+			int jobId = _loadFilePreviewers.Count + 1;
+			_loadFilePreviewers.Add(jobId, _previewJobFactory.GetPreviewJob(settings));
 
-        public void StartPreviewJob(int jobId)
-        {
-            if (!_loadFilePreviewers.ContainsKey(jobId))
-            {
-                throw new KeyNotFoundException(string.Format("There is no current Preview Job of jobId {0}",jobId));
-            }
+			return jobId;
+		}
 
-            Task.Run(()=>
-            {
-                _loadFilePreviewers[jobId].StartRead();
-            });
-        }
+		public void StartPreviewJob(int jobId)
+		{
+			if (!_loadFilePreviewers.ContainsKey(jobId))
+			{
+				throw new KeyNotFoundException(string.Format("There is no current Preview Job of jobId {0}", jobId));
+			}
 
-        public ImportPreviewStatus CheckProgress(int jobId)
-        {
-            if (!_loadFilePreviewers.ContainsKey(jobId))
-            {
-                throw new KeyNotFoundException(string.Format("There is no current Preview Job of jobId {0}", jobId));
-            }
+			Task.Run(() =>
+			{
+				_loadFilePreviewers[jobId].StartRead();
+			});
+		}
 
-            ImportPreviewStatus status = new ImportPreviewStatus
-            {
-                TotalBytes = _loadFilePreviewers[jobId].TotalBytes,
-                BytesRead = _loadFilePreviewers[jobId].BytesRead,
-                IsComplete = _loadFilePreviewers[jobId].IsComplete,
-                StepSize = _loadFilePreviewers[jobId].StepSize,
-                IsFailed = _loadFilePreviewers[jobId].IsFailed,
-                ErrorMessage = _loadFilePreviewers[jobId].ErrorMessage
-            };
+		public ImportPreviewStatus CheckProgress(int jobId)
+		{
+			if (!_loadFilePreviewers.ContainsKey(jobId))
+			{
+				throw new KeyNotFoundException(string.Format("There is no current Preview Job of jobId {0}", jobId));
+			}
 
-            if (status.IsFailed)
-            {
-                //Dispose here if job has failed
-                _loadFilePreviewers[jobId].DisposePreviewJob();
-                _loadFilePreviewers.Remove(jobId);
-            }
+			ImportPreviewStatus status = new ImportPreviewStatus
+			{
+				TotalBytes = _loadFilePreviewers[jobId].TotalBytes,
+				BytesRead = _loadFilePreviewers[jobId].BytesRead,
+				IsComplete = _loadFilePreviewers[jobId].IsComplete,
+				StepSize = _loadFilePreviewers[jobId].StepSize,
+				IsFailed = _loadFilePreviewers[jobId].IsFailed,
+				ErrorMessage = _loadFilePreviewers[jobId].ErrorMessage
+			};
 
-            return status;
-        }
+			if (status.IsFailed)
+			{
+				//Dispose here if job has failed
+				_loadFilePreviewers[jobId].DisposePreviewJob();
+				_loadFilePreviewers.Remove(jobId);
+			}
 
-        public bool IsJobComplete(int jobId)
-        {
-            if (!_loadFilePreviewers.ContainsKey(jobId))
-            {
-                throw new KeyNotFoundException(string.Format("There is no current Preview Job of jobId {0}", jobId));
-            }
+			return status;
+		}
 
-            return _loadFilePreviewers[jobId].IsComplete;
-        }
+		public bool IsJobComplete(int jobId)
+		{
+			if (!_loadFilePreviewers.ContainsKey(jobId))
+			{
+				throw new KeyNotFoundException(string.Format("There is no current Preview Job of jobId {0}", jobId));
+			}
 
-        public ImportPreviewTable RetrievePreviewTable(int jobId)
-        {
-            if (!_loadFilePreviewers.ContainsKey(jobId))
-            {
-                throw new KeyNotFoundException(string.Format("There is no current Preview Job of jobId {0}", jobId));
-            }
+			return _loadFilePreviewers[jobId].IsComplete;
+		}
 
-            ImportPreviewTable table = _loadFilePreviewers[jobId].PreviewTable;
-            if (table != null || IsJobComplete(jobId))
-            {
-                //Dispose here if job is complete
-                _loadFilePreviewers[jobId].DisposePreviewJob();
-                _loadFilePreviewers.Remove(jobId);
-            }
+		public ImportPreviewTable RetrievePreviewTable(int jobId)
+		{
+			if (!_loadFilePreviewers.ContainsKey(jobId))
+			{
+				throw new KeyNotFoundException(string.Format("There is no current Preview Job of jobId {0}", jobId));
+			}
 
-            return table;
-        }
+			ImportPreviewTable table = _loadFilePreviewers[jobId].PreviewTable;
+			if (table != null || IsJobComplete(jobId))
+			{
+				//Dispose here if job is complete
+				_loadFilePreviewers[jobId].DisposePreviewJob();
+				_loadFilePreviewers.Remove(jobId);
+			}
 
-    }    
+			return table;
+		}
+
+	}
 }

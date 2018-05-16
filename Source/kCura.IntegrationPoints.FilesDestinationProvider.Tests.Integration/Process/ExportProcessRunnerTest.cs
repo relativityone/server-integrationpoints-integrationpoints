@@ -100,7 +100,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				loggingMediator,
 				exportUserNotification,
 				userNotification,
-				new UserPasswordCredentialProvider(_configSettings),
+				new UserPasswordCredentialProvider(),
 				_windsorContainer.Resolve<IExtendedExporterFactory>(),
 				new ExportFileBuilder(new DelimitersBuilder(), new VolumeInfoBuilder(),
 					new ExportedObjectBuilder(new ExportedArtifactNameRepository(_windsorContainer.Resolve<IRSAPIClient>(), _windsorContainer.Resolve<IServiceManagerProvider>()))
