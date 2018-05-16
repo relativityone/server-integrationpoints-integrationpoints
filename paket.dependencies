@@ -7,7 +7,6 @@ source https://proget.kcura.corp/nuget/NuGet
 nuget kCura 9.6.126.2-DEV
 nuget kCura.Agent 9.6.126.2-DEV
 nuget kCura.EventHandler 9.6.126.2-DEV 
-nuget kCura.FreeImage 3.15.1.1
 nuget kCura.Relativity.Client 9.6.126.2-DEV 
 nuget Relativity.Authentication 9.6.126.2-DEV 
 nuget Relativity.Core 9.6.126.2-DEV 
@@ -25,6 +24,7 @@ nuget kCura.LongPath 1.0.10
 nuget Relativity.OAuth2Client 1.0.23
 nuget Relativity.Productions.Services.Interfaces 9.5.58
 nuget Relativity.Telemetry.APM 9.4.148
+nuget kCura.FreeImage 3.15.1.1
 
 //Relativity transient packages
 nuget kCura.OutsideIn.FI.Win32 ~> 2018.3.0 content: none 	//Relativity.ImportExport
