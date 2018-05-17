@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Castle.Windsor;
+﻿using Castle.Windsor;
 using Castle.MicroKernel.Registration;
-using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
-using kCura.IntegrationPoints.Data;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Factories.Implementations
@@ -27,15 +20,16 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			IDataTransferLocationService dtService;
 
 			//if the IServiceContextHelper has not been registered, create a mostly empty one that just has the workspaceID
-			if (!_container.Kernel.HasComponent(typeof(IServiceContextHelper))){
+			if (!_container.Kernel.HasComponent(typeof(IServiceContextHelper)))
+			{
 				_container.Register(Component.For<IServiceContextHelper>().UsingFactoryMethod(
 				k =>
 					new ServiceContextHelperForLoadFileReader(workspaceId)));
 			}
 			dtService = new DataTransferLocationService(
-                _container.Resolve<IHelper>(),
-                _container.Resolve<IIntegrationPointTypeService>(),
-                _container.Resolve<SystemInterface.IO.IDirectory>());
+				_container.Resolve<IHelper>(),
+				_container.Resolve<IIntegrationPointTypeService>(),
+				_container.Resolve<SystemInterface.IO.IDirectory>());
 			return dtService;
 		}
 	}
