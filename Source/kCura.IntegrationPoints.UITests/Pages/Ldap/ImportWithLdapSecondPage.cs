@@ -1,5 +1,5 @@
 ﻿using kCura.IntegrationPoint.Tests.Core.Extensions;
-using kCura.IntegrationPoint.Tests.Core.Models.Ldap;
+using kCura.IntegrationPoint.Tests.Core.Models.Import.Ldap;
 using kCura.Utility;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;

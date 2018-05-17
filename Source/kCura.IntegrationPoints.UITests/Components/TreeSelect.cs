@@ -2,21 +2,31 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using kCura.IntegrationPoints.UITests.Driver;
+using kCura.IntegrationPoints.UITests.Logging;
 using OpenQA.Selenium;
+using Serilog;
 
 namespace kCura.IntegrationPoints.UITests.Components
 {
 	public class TreeSelect : Component
 	{
-		public TreeSelect(IWebElement parent) : base(parent)
+		private readonly string _selectDivId;
+		private readonly string _treeDivId;
+
+		protected static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(TreeSelect));
+
+		public TreeSelect(IWebElement parent, string selectDivId, string treeDivId) : base(parent)
 		{
+			_selectDivId = selectDivId;
+			_treeDivId = treeDivId;
 		}
 
 		public TreeSelect Expand()
 		{
-			IWebElement select = Parent.FindElement(By.XPath(@".//div[@id='location-select']"));
-			Thread.Sleep(TimeSpan.FromMilliseconds(200));
-			select.Click();
+			IWebElement select = Parent.FindElement(By.XPath($@".//div[@id='{_selectDivId}']"));
+			Thread.Sleep(TimeSpan.FromMilliseconds(1000));
+			select.ClickWhenClickable();
 			return this;
 		}
 
@@ -24,7 +34,7 @@ namespace kCura.IntegrationPoints.UITests.Components
 		{
 			Expand();
 
-			IWebElement selectListPopup = Parent.FindElement(By.XPath(@".//div[@id='jstree-holder-div']"));
+			IWebElement selectListPopup = Parent.FindElement(By.XPath($@".//div[@id='{_treeDivId}']"));
 			Thread.Sleep(TimeSpan.FromMilliseconds(1000));
 			IWebElement rootElement = selectListPopup.FindElements(By.XPath(@".//a"))[0];
 			Thread.Sleep(TimeSpan.FromMilliseconds(1000));
@@ -36,7 +46,7 @@ namespace kCura.IntegrationPoints.UITests.Components
 		{
 			Expand();
 
-			IWebElement selectListPopup = Parent.FindElement(By.XPath(@".//div[@id='jstree-holder-div']"));
+			IWebElement selectListPopup = Parent.FindElement(By.XPath($@".//div[@id='{_treeDivId}']"));
 			Thread.Sleep(TimeSpan.FromMilliseconds(1000));
 			IWebElement rootElement = selectListPopup.FindElements(By.XPath(@".//a"))[1];
 			Thread.Sleep(TimeSpan.FromMilliseconds(1000));
@@ -48,12 +58,14 @@ namespace kCura.IntegrationPoints.UITests.Components
 		{
 			Expand();
 
-			IWebElement tree = Parent.FindElement(By.XPath(@".//div[@id='jstree-holder-div']"));
+			IWebElement tree = Parent.FindElement(By.XPath($@".//div[@id='{_treeDivId}']"));
 			OpenAllNodes(tree);
 
-			Thread.Sleep(TimeSpan.FromMilliseconds(1000));
+			Thread.Sleep(TimeSpan.FromMilliseconds(2000));
 
-			IWebElement folderIcon = tree.FindElements(By.ClassName("jstree-anchor")).First(el => el.Text == name);
+			IWebElement folderIcon = tree.FindElements(By.CssSelector(".jstree-anchor")).First(el => el.Text == name);
+			folderIcon.ScrollIntoView();
+			Thread.Sleep(TimeSpan.FromSeconds(1));
 			folderIcon.Click();
 
 			return this;
@@ -64,7 +76,7 @@ namespace kCura.IntegrationPoints.UITests.Components
 			while (true)
 			{
 				Thread.Sleep(TimeSpan.FromMilliseconds(1000));
-				ICollection<IWebElement> closedNodes = tree.FindElements(By.ClassName("jstree-closed"));
+				ICollection<IWebElement> closedNodes = tree.FindElements(By.CssSelector(".jstree-closed"));
 				if (closedNodes.Count == 0)
 				{
 					break;
@@ -72,9 +84,11 @@ namespace kCura.IntegrationPoints.UITests.Components
 				foreach (var closedNode in closedNodes)
 				{
 					IWebElement button = closedNode.FindElement(By.TagName("i"));
-					button.Click();
+					button.ScrollIntoView();
+					button.ClickWhenClickable();
 				}
 			}
 		}
+
 	}
 }

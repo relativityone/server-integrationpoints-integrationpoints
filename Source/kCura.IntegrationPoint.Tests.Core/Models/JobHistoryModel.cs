@@ -1,7 +1,7 @@
-﻿namespace kCura.IntegrationPoint.Tests.Core.Models
-{
-	using System;
+﻿using System;
 
+namespace kCura.IntegrationPoint.Tests.Core.Models
+{
 	public class JobHistoryModel
 	{
 		public int JobId { get; set; }

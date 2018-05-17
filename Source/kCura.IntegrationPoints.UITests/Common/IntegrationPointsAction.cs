@@ -146,10 +146,10 @@ namespace kCura.IntegrationPoints.UITests.Common
 			thirdPageImageNativeTextOptions.FileType = imageOptions.ImageFileType;
 			switch (imageOptions.ImagePrecedence)
 			{
-				case ImagePrecedenceEnum.OriginalImages:
+				case ImagePrecedence.OriginalImages:
 					thirdPageImageNativeTextOptions.ImagePrecedence = "Original Images";
 					break;
-				case ImagePrecedenceEnum.ProducedImages:
+				case ImagePrecedence.ProducedImages:
 					thirdPageImageNativeTextOptions.ImagePrecedence = "Produced Images";
 					break;
 				default:
@@ -293,7 +293,7 @@ namespace kCura.IntegrationPoints.UITests.Common
             return secondPage;
         }
 
-        public IntegrationPointDetailsPage CreateNewExportToLoadfileIntegrationPoint(ExportToLoadFileProviderModel model)
+        public IntegrationPointDetailsPage CreateNewExportToLoadFileIntegrationPoint(ExportToLoadFileProviderModel model)
         {
             var generalPage = new GeneralPage(Driver);
             generalPage.ChooseWorkspace(Context.WorkspaceName);
@@ -417,11 +417,11 @@ namespace kCura.IntegrationPoints.UITests.Common
 				thirdPage.SelectMultiSelectFieldOverlayBehavior = "Use Field Settings";
 			}
 
-			if (model.ImagePrecedence == ImagePrecedenceEnum.OriginalImages)
+			if (model.ImagePrecedence == ImagePrecedence.OriginalImages)
 			{
 				thirdPage.SelectImagePrecedence = "Original Images";
 			}
-			else if (model.ImagePrecedence == ImagePrecedenceEnum.ProducedImages)
+			else if (model.ImagePrecedence == ImagePrecedence.ProducedImages)
 			{
 				thirdPage.SelectImagePrecedence = "Produced Images";
 				thirdPage.SelectProductionPrecedence(model.SourceProductionName);

@@ -57,12 +57,6 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			TimeStamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
 		}
 
-		public TestContext CreateWorkspace()
-		{
-			CreateWorkspaceAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-			return this;
-		}
-
 		public async Task CreateWorkspaceAsync()
 		{
 			WorkspaceName = $"1A Test Workspace {TimeStamp}";
@@ -74,11 +68,11 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			catch (Exception ex)
 			{
 				Log.Error(ex,
-					@"Cannot create workspace '{WorkspaceName}' using template '{_TEMPLATE_WKSP_NAME}'. Check if Relativity works correctly (services, ...).");
+					$"Cannot create workspace '{WorkspaceName}' using template '{_TEMPLATE_WKSP_NAME}'. Check if Relativity works correctly (services, ...).");
 				throw;
-			}			
+			}
 
-			Log.Information("Workspace '{WorkspaceName}' was successfully created using template '{_TEMPLATE_WKSP_NAME}.");
+			Log.Information($"Workspace '{WorkspaceName}' was successfully created using template '{_TEMPLATE_WKSP_NAME}.");
 		}
 
 		public void EnableDataGrid(params string[] fieldNames)
@@ -115,7 +109,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		public TestContext CreateAndRunProduction(string productionName)
 		{
 			var workspaceService = new WorkspaceService(new ImportHelper());
-			int savedSearchId = workspaceService.CreateSavedSearch(new string[] {"Control Number"}, GetWorkspaceId(), $"ForProduction_{productionName}");
+			int savedSearchId = workspaceService.CreateSavedSearch(new[] {"Control Number"}, GetWorkspaceId(), $"ForProduction_{productionName}");
 
 			string placeHolderFilePath = Path.Combine(NUnit.Framework.TestContext.CurrentContext.TestDirectory, @"TestData\DefaultPlaceholder.tif");
 
@@ -352,11 +346,6 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 		public TestContext TearDown()
 		{
-			if (WorkspaceId.HasValue)
-			{
-				Workspace.DeleteWorkspace(GetWorkspaceId());
-			}
-
 			if (GroupId.HasValue)
 			{
 				Group.DeleteGroup(GetGroupId());

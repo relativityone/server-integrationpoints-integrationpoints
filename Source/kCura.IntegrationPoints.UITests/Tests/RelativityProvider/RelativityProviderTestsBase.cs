@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Data.Factories;
+﻿using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.SecretStore;
 
@@ -44,14 +45,21 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		[SetUp]
 		public virtual void SetUp()
 		{
-			DestinationContext = new TestContext()
-				.CreateWorkspace();
+			DestinationContext = new TestContext();
+			DestinationContext.CreateWorkspaceAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
 		[TearDown]
 		public virtual void TearDown()
 		{
-			DestinationContext?.TearDown();
+			if (DestinationContext != null)
+			{
+				if (string.IsNullOrEmpty(SharedVariables.UiUseThisExistingWorkspace))
+				{
+					Workspace.DeleteWorkspace(DestinationContext.GetWorkspaceId());
+				}
+				DestinationContext.TearDown();
+			}
 		}
 
 		protected DocumentsValidator CreateDocumentsEmptyValidator()

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.UITests.Driver;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;

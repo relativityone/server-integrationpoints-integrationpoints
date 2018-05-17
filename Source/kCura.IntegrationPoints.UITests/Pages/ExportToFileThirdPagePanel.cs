@@ -1,5 +1,4 @@
-﻿using OpenQA.Selenium;
-using OpenQA.Selenium.Remote;
+﻿using OpenQA.Selenium.Remote;
 using SeleniumExtras.PageObjects;
 
 namespace kCura.IntegrationPoints.UITests.Pages

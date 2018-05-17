@@ -1,4 +1,4 @@
-﻿using kCura.IntegrationPoint.Tests.Core.Models.Ldap;
+﻿using kCura.IntegrationPoint.Tests.Core.Models.Import.Ldap;
 using kCura.IntegrationPoints.UITests.Configuration;
 using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoints.UITests.Pages.Ldap;

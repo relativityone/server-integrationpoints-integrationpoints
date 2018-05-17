@@ -27,7 +27,10 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public ExportToFileThirdPageExportDetails(RemoteWebDriver driver) : base(driver)
 		{
-			DestinationFolder = new TreeSelect(driver.FindElementByXPath(@"//div[@class='field-row']/div[contains(text(), 'Destination Folder:')]/.."));
+			DestinationFolder =
+				new TreeSelect(
+					driver.FindElementByXPath(@"//div[@class='field-row']/div[contains(text(), 'Destination Folder:')]/.."),
+					"location-select", "jstree-holder-div");
 		}
 
 		public void SelectExportImages()

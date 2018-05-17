@@ -26,9 +26,11 @@ namespace kCura.IntegrationPoints.UITests.Tests
 	using System.Collections.Generic;
 	using Data;
 	using Validation;
-
+	
 	public abstract class UiTest
 	{
+		public static string Now => DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
+
 		protected IWindsorContainer Container;
 		protected static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(UiTest));
 		protected IConfigurationStore ConfigurationStore;
@@ -88,20 +90,35 @@ namespace kCura.IntegrationPoints.UITests.Tests
 
 		private async Task SetupWorkspaceAsync()
 		{
-			await CreateWorkspaceAsync();
-
-			Task installIntegrationPointsTask = Context.InstallIntegrationPointsAsync();
-
-			await ImportDocumentsAsync();
-
-			ContextSetUp();
-
-			await installIntegrationPointsTask;
-
-			if (InstallLegalHoldApp)
+			if (string.IsNullOrEmpty(SharedVariables.UiUseThisExistingWorkspace))
 			{
-				Task installLegalHoldTask = Context.InstallLegalHoldAsync();
-				await installLegalHoldTask;
+				await CreateWorkspaceAsync();
+
+				Task installIntegrationPointsTask = Context.InstallIntegrationPointsAsync();
+
+				await ImportDocumentsAsync();
+
+				ContextSetUp(); // TODO del such things
+
+				await installIntegrationPointsTask;
+
+				if (InstallLegalHoldApp)
+				{
+					Task installLegalHoldTask = Context.InstallLegalHoldAsync();
+					await installLegalHoldTask;
+				}
+			}
+			else
+			{
+				Log.Information("Going to use existing workspace '{WorkspaceName}'.", SharedVariables.UiUseThisExistingWorkspace);
+				using (IRSAPIClient proxy = Rsapi.CreateRsapiClient())
+				{
+					Relativity.Client.DTOs.Workspace workspace =
+						Workspace.FindWorkspaceByName(proxy, SharedVariables.UiUseThisExistingWorkspace);
+					Context.WorkspaceId = workspace.ArtifactID;
+				}
+				Context.WorkspaceName = SharedVariables.UiUseThisExistingWorkspace;
+				Log.Information("ID of workspace '{WorkspaceName}': {WorkspaceId}.", Context.WorkspaceName, Context.WorkspaceId);
 			}
 		}
 
@@ -148,6 +165,10 @@ namespace kCura.IntegrationPoints.UITests.Tests
 				SaveScreenshot();
 			}
 
+			if (string.IsNullOrEmpty(SharedVariables.UiUseThisExistingWorkspace))
+			{
+				Workspace.DeleteWorkspace(Context.GetWorkspaceId());
+			}
 			Context.TearDown();
 
 			Driver?.Quit();
