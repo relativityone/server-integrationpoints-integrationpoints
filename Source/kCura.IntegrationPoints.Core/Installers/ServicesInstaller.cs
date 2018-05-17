@@ -42,6 +42,7 @@ using SystemInterface.IO;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Monitoring;
+using kCura.IntegrationPoints.Core.Monitoring.JobLifetime;
 using kCura.IntegrationPoints.Core.Serialization;
 using kCura.IntegrationPoints.Core.Services.Domain;
 using kCura.IntegrationPoints.Core.Services.Exporter;

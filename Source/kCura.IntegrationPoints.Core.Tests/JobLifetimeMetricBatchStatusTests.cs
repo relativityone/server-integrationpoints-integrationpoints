@@ -6,6 +6,8 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Monitoring;
+using kCura.IntegrationPoints.Core.Monitoring.JobLifetime;
+using kCura.IntegrationPoints.Core.Monitoring.JobLifetimeMessages;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -43,6 +45,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 			_providerTypeService.GetProviderType(Arg.Any<int>(), Arg.Any<int>()).Returns(ProviderType.FTP);
 			_updater = Substitute.For<IJobStatusUpdater>();
 			_jobHistoryService = Substitute.For<IJobHistoryService>();
+			_jobHistoryService.GetRdo(Arg.Any<Guid>()).Returns(new JobHistory(){ItemsTransferred = 0, TotalItems = 0});
 			_serializer = Substitute.For<ISerializer>();
 
 			_integrationPoint = Substitute.For<Data.IntegrationPoint>();

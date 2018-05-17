@@ -181,9 +181,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					dataTransferContext.UpdateTransferStatus();
 				}
 
-				if (exporter.TotalRecordsFound > 0)
+				int totalRecords = exporter.TotalRecordsFound;
+				if (totalRecords > 0)
 				{
-					Logger.LogInformation("Start pushing documents. Number of records found: {numberOfRecordsFound}", exporter.TotalRecordsFound);
+					Logger.LogInformation("Start pushing documents. Number of records found: {numberOfRecordsFound}", totalRecords);
 					using (APMClient.APMClient.TimedOperation(Constants.IntegrationPoints.Telemetry
 						.BUCKET_EXPORT_PUSH_KICK_OFF_IMPORT))
 					using (Client.MetricsClient.LogDuration(
@@ -199,15 +200,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		protected override void SetupSubscriptions(IDataSynchronizer synchronizer, Job job)
 		{
+			base.SetupSubscriptions(synchronizer, job);
 			IScratchTableRepository[] scratchTableToMonitorItemLevelError =
 				_exportServiceJobObservers.OfType<IConsumeScratchTableBatchStatus>()
 					.Where(observer => observer.ScratchTableRepository.IgnoreErrorDocuments == false)
 					.Select(observer => observer.ScratchTableRepository).ToArray();
 
 			_exportJobErrorService = new ExportJobErrorService(scratchTableToMonitorItemLevelError, _repositoryFactory);
-
-			StatisticsService?.Subscribe(synchronizer as IBatchReporter, job);
-			JobHistoryErrorService.SubscribeToBatchReporterEvents(synchronizer);
 			_exportJobErrorService.SubscribeToBatchReporterEvents(synchronizer);
 		}
 

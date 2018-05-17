@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
 
@@ -21,7 +22,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 		public void StartWith(ExportSettings settings, Job job)
 		{
 			LogStartingExport();
-			var exporter = _exportProcessBuilder.Create(settings, job);
+			IExporter exporter = _exportProcessBuilder.Create(settings, job);
 			exporter.ExportSearch();
 			LogFinishingExport();
 		}

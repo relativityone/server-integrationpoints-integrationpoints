@@ -1,5 +1,7 @@
 ﻿using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Monitoring.JobLifetimeMessages;
+using kCura.IntegrationPoints.Core.Monitoring.NumberOfRecordsMessages;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -10,7 +12,7 @@ using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using Relativity.DataTransfer.MessageService;
 
-namespace kCura.IntegrationPoints.Core.Monitoring
+namespace kCura.IntegrationPoints.Core.Monitoring.JobLifetime
 {
 	public class JobLifetimeMetricBatchStatus : IBatchStatus
 	{
@@ -43,20 +45,34 @@ namespace kCura.IntegrationPoints.Core.Monitoring
 			JobHistory jobHistory = GetHistory(job);
 			Choice status = _updater.GenerateStatus(jobHistory, job.JobId);
 
+			SendLifetimeMessage(status, providerType);
+			SendRecordsMessage(providerType, jobHistory);
+		}
+
+		private void SendRecordsMessage(ProviderType providerType, JobHistory jobHistory)
+		{
+			long? totalRecords = jobHistory.TotalItems;
+			int? completedRecords = jobHistory.ItemsTransferred;
+			_messageService.Send(new JobTotalRecordsCountMessage { Provider = providerType.ToString(), TotalRecordsCount = totalRecords ?? 0 });
+			_messageService.Send(new JobCompletedRecordsCountMessage { Provider = providerType.ToString(), CompletedRecordsCount = completedRecords ?? 0 });
+		}
+
+		private void SendLifetimeMessage(Choice status, ProviderType providerType)
+		{
 			if (status.EqualsToChoice(JobStatusChoices.JobHistoryErrorJobFailed))
 			{
-				_messageService.Send(new JobFailedMessage { Provider = providerType.ToString() });
+				_messageService.Send(new JobFailedMessage {Provider = providerType.ToString()});
 			}
 			else if (status.EqualsToChoice(JobStatusChoices.JobHistoryValidationFailed))
 			{
-				_messageService.Send(new JobValidationFailedMessage { Provider = providerType.ToString() });
+				_messageService.Send(new JobValidationFailedMessage {Provider = providerType.ToString()});
 			}
 			else if (
 				status.EqualsToChoice(JobStatusChoices.JobHistoryCompleted) ||
 				status.EqualsToChoice(JobStatusChoices.JobHistoryCompletedWithErrors) ||
 				status.EqualsToChoice(JobStatusChoices.JobHistoryStopped))
 			{
-				_messageService.Send(new JobCompletedMessage { Provider = providerType.ToString() });
+				_messageService.Send(new JobCompletedMessage {Provider = providerType.ToString()});
 			}
 		}
 

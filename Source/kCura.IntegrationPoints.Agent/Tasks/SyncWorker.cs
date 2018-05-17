@@ -35,10 +35,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 {
 	public class SyncWorker : IntegrationPointTaskBase, ITaskWithJobHistory
 	{
+		private IEnumerable<IBatchStatus> _batchStatus;
 		private readonly bool _isStoppable;
 		private readonly IAPILog _logger;
 		private readonly JobStatisticsService _statisticsService;
-		private IEnumerable<IBatchStatus> _batchStatus;
 
 		public SyncWorker(
 			ICaseServiceContext caseServiceContext,
@@ -66,7 +66,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				statisticsService,
 				managerFactory,
 				contextContainerFactory,
-				jobService, true)
+				jobService, 
+				true)
 		{
 		}
 
@@ -83,7 +84,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			JobStatisticsService statisticsService,
 			IManagerFactory managerFactory,
 			IContextContainerFactory contextContainerFactory,
-			IJobService jobService, bool isStoppable) :
+			IJobService jobService, 
+			bool isStoppable) :
 			base(caseServiceContext,
 				helper,
 				dataProviderFactory,
@@ -256,58 +258,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			    LogPostExecuteStart(job);
                 JobStopManager?.Dispose();
 				JobHistoryErrorService.CommitErrors();
-
+				
 				bool isJobComplete = JobManager.CheckBatchOnJobComplete(job, BatchInstance.ToString());
-
 				if (isJobComplete)
 				{
-					try
-					{
-						if (JobStopManager?.IsStopRequested() == true)
-						{
-							IList<Job> jobs = JobManager.GetJobsByBatchInstanceId(IntegrationPoint.ArtifactId, BatchInstance);
-							if (jobs.Any())
-							{
-                                List<long> ids = jobs.Select(agentJob => agentJob.JobId).ToList();
-
-                                LogUpdateStopStateToUnstoppable(ids);
-                                JobService.UpdateStopState(jobs.Select(agentJob => agentJob.JobId).ToList(), StopState.Unstoppable);
-							}
-						}
-					}
-					catch (Exception e)
-					{
-						LogStatusUpdateError(job, e);
-						// IGNORE ERROR. It is possible that the user stop the job in between disposing job history manager and the updating the stop state.
-					}
-
-					SetErrorStatusesToExpiredIfStopped(job);
-
-					foreach (IBatchStatus completedItem in BatchStatus)
-					{
-						try
-						{
-							completedItem.OnJobComplete(job);
-						}
-						catch (Exception e)
-						{
-							LogCompletingJobError(job, e, completedItem);
-							JobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, e);
-							if (e is IntegrationPointsException) // we want to rethrow, so it can be added to error tab if necessary
-							{
-								throw;
-							}
-						}
-					}
-
-					IList<Job> jobsToUpdate = JobManager.GetJobsByBatchInstanceId(IntegrationPoint.ArtifactId, BatchInstance);
-					if (jobsToUpdate.Any())
-					{
-					    List<long> ids = jobsToUpdate.Select(agentJob => agentJob.JobId).ToList();
-
-                        LogUpdateStopStateToNone(ids);
-                        JobService.UpdateStopState( ids, StopState.None);
-					}
+					OnJobComplete(job);
 				}
 			}
 			catch (Exception e)
@@ -326,7 +281,58 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 		}
 
-	    protected void SetupJobHistoryErrorSubscriptions(IDataSynchronizer synchronizer)
+		private void OnJobComplete(Job job)
+		{
+			try
+			{
+				if (JobStopManager?.IsStopRequested() == true)
+				{
+					IList<Job> jobs = JobManager.GetJobsByBatchInstanceId(IntegrationPoint.ArtifactId, BatchInstance);
+					if (jobs.Any())
+					{
+						List<long> ids = jobs.Select(agentJob => agentJob.JobId).ToList();
+
+						LogUpdateStopStateToUnstoppable(ids);
+						JobService.UpdateStopState(jobs.Select(agentJob => agentJob.JobId).ToList(), StopState.Unstoppable);
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				LogStatusUpdateError(job, e);
+				// IGNORE ERROR. It is possible that the user stop the job in between disposing job history manager and the updating the stop state.
+			}
+
+			SetErrorStatusesToExpiredIfStopped(job);
+
+			foreach (IBatchStatus completedItem in BatchStatus)
+			{
+				try
+				{
+					completedItem.OnJobComplete(job);
+				}
+				catch (Exception e)
+				{
+					LogCompletingJobError(job, e, completedItem);
+					JobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, e);
+					if (e is IntegrationPointsException) // we want to rethrow, so it can be added to error tab if necessary
+					{
+						throw;
+					}
+				}
+			}
+
+			IList<Job> jobsToUpdate = JobManager.GetJobsByBatchInstanceId(IntegrationPoint.ArtifactId, BatchInstance);
+			if (jobsToUpdate.Any())
+			{
+				List<long> ids = jobsToUpdate.Select(agentJob => agentJob.JobId).ToList();
+
+				LogUpdateStopStateToNone(ids);
+				JobService.UpdateStopState(ids, StopState.None);
+			}
+		}
+
+		protected void SetupJobHistoryErrorSubscriptions(IDataSynchronizer synchronizer)
 		{
 			JobHistoryErrorService.SubscribeToBatchReporterEvents(synchronizer);
 		}

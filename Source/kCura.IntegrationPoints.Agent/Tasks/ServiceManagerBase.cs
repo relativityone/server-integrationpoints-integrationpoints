@@ -5,7 +5,9 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.Attributes;
 using kCura.IntegrationPoints.Agent.Validation;
 using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
+using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -30,6 +32,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 	[SynchronizedTask]
 	public abstract class ServiceManagerBase : ITaskWithJobHistory
 	{
+		private readonly IAgentValidator _agentValidator;
+
 		protected IAPILog Logger { get; set; }
 		protected IJobService JobService { get; }
 		protected ISerializer Serializer { get; }
@@ -45,7 +49,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		protected JobStatisticsService StatisticsService { get; }
 		protected ISynchronizerFactory SynchronizerFactory { get; }
 		protected IJobStopManager JobStopManager { get; set; }
-		private IAgentValidator _agentValidator;
 		protected SourceConfiguration SourceConfiguration { get; set; }
 		protected ImportSettings ImportSettings { get; set; }
 		protected Guid Identifier { get; set; }
@@ -92,8 +95,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		public abstract void Execute(Job job);
 
-		protected abstract void SetupSubscriptions(IDataSynchronizer synchronizer, Job job);
-
 		protected virtual void JobHistoryErrorManagerSetup(Job job) { } //No-op for ImportServiceManager, Overridden in ExportServiceManager
 
 		protected void InitializeService(Job job)
@@ -110,6 +111,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			ConfigureJobStopManager(job);
 			ConfigureBatchExceptions(job);
 			LogInitializeServiceEnd(job);
+		}
+
+		protected virtual void SetupSubscriptions(IDataSynchronizer synchronizer, Job job)
+		{
+			StatisticsService?.Subscribe(synchronizer as IBatchReporter, job);
+			JobHistoryErrorService.SubscribeToBatchReporterEvents(synchronizer);
 		}
 
 		protected void FinalizeService(Job job)
@@ -137,7 +144,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					JobHistoryErrorService.CommitErrors();
 				}
 			}
-
+			
 			if (JobStopManager?.IsStopRequested() == true)
 			{
 				SetErrorStatusesToExpired(job);
@@ -160,6 +167,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				IDataSynchronizer synchronizer = SynchronizerFactory.CreateSynchronizer(
 					Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, configuration, IntegrationPointDto.SecuredConfiguration);
+				
 				return synchronizer;
 			}
 			catch (Exception e)

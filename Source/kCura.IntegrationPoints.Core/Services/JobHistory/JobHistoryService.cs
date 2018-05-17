@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Monitoring;
+using kCura.IntegrationPoints.Core.Monitoring.JobLifetimeMessages;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
@@ -13,7 +12,6 @@ using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client.DTOs;
-using kCura.ScheduleQueue.Core;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 using Relativity.Services.Objects.DataContracts;
@@ -31,7 +29,8 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		private readonly IProviderTypeService _providerTypeService;
 		private readonly IMessageService _messageService;
 
-		public JobHistoryService(ICaseServiceContext caseServiceContext, IFederatedInstanceManager federatedInstanceManager, IWorkspaceManager workspaceManager, IHelper helper, IIntegrationPointSerializer serializer, IProviderTypeService providerTypeService, IMessageService messageService)
+		public JobHistoryService(ICaseServiceContext caseServiceContext, IFederatedInstanceManager federatedInstanceManager, IWorkspaceManager workspaceManager, 
+			IHelper helper, IIntegrationPointSerializer serializer, IProviderTypeService providerTypeService, IMessageService messageService)
 		{
 			_caseServiceContext = caseServiceContext;
 			_federatedInstanceManager = federatedInstanceManager;

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
-
 using Microsoft.VisualBasic.Devices;
 
 using Castle.MicroKernel.Registration;
