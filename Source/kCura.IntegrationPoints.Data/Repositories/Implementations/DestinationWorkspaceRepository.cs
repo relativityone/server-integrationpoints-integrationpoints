@@ -55,10 +55,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					{
 						new FieldRef { Name = "ArtifactId" },
 						new FieldRef { Guid = new Guid(DestinationWorkspaceFieldGuids.DestinationWorkspaceName)},
-						new FieldRef { Guid = new Guid(DestinationWorkspaceFieldGuids.DestinationInstanceName) },
-						new FieldRef { Guid = new Guid(DestinationWorkspaceFieldGuids.DestinationWorkspaceArtifactID) },
-						new FieldRef { Guid = new Guid(DestinationWorkspaceFieldGuids.DestinationInstanceArtifactID) },
-						new FieldRef { Guid = new Guid(DestinationWorkspaceFieldGuids.Name) }
+						new FieldRef { Guid = new Guid(DestinationWorkspaceFieldGuids.DestinationInstanceName) }
 					}
 				});
 
@@ -103,7 +100,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		public void Update(DestinationWorkspace destinationWorkspace)
 		{
 			string instanceName = Utils.GetFormatForWorkspaceOrJobDisplay(destinationWorkspace.DestinationInstanceName, destinationWorkspace.DestinationWorkspaceName,
-				destinationWorkspace.DestinationWorkspaceArtifactID);
+				destinationWorkspace.DestinationWorkspaceArtifactID.Value);
 			destinationWorkspace.Name = instanceName;
 
 			try
