@@ -101,7 +101,7 @@
 			selectedMessage = "The retry job will run in Append/Overlay mode. Document metadata with the same identifier will be overwritten in the target workspace. Would you still like to proceed?";
 		}
 
-		if (root.errorMessage.length !== 0) {
+		if (!!root.errorMessage && root.errorMessage.length !== 0) {
 			IP.message.error.raise(root.errorMessage, $(".cardContainer"));
 			return;
 		}
