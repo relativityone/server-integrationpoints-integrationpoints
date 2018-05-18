@@ -12,13 +12,13 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 	{
 		public void Install(IWindsorContainer container, IConfigurationStore store)
 		{
-			container.Register(Component.For<IFieldParserFactory>().ImplementedBy<FieldParserFactory>().LifestyleSingleton().OnlyNewServices());
-			container.Register(Component.For<IWinEddsLoadFileFactory>().ImplementedBy<WinEddsLoadFileFactory>().LifestyleSingleton().OnlyNewServices());
+			container.Register(Component.For<IFieldParserFactory>().ImplementedBy<FieldParserFactory>().LifestyleTransient().OnlyNewServices());
+			container.Register(Component.For<IWinEddsLoadFileFactory>().ImplementedBy<WinEddsLoadFileFactory>().LifestyleTransient().OnlyNewServices());
 			container.Register(Component.For<IWinEddsFileReaderFactory>().ImplementedBy<WinEddsFileReaderFactory>().LifestyleSingleton().OnlyNewServices());
-			container.Register(Component.For<IDataReaderFactory>().ImplementedBy<DataReaderFactory>().LifestyleSingleton().OnlyNewServices());
-			container.Register(Component.For<IImportPreviewService>().ImplementedBy<ImportPreviewService>().LifestyleSingleton());
-			container.Register(Component.For<IPreviewJobFactory>().ImplementedBy<PreviewJobFactory>().LifestyleSingleton());
-			container.Register(Component.For<IImportFileLocationService>().ImplementedBy<ImportFileLocationService>().LifestyleSingleton());
+			container.Register(Component.For<IDataReaderFactory>().ImplementedBy<DataReaderFactory>().LifestyleTransient().OnlyNewServices());
+			container.Register(Component.For<IImportPreviewService>().ImplementedBy<ImportPreviewService>().LifestyleTransient());
+			container.Register(Component.For<IPreviewJobFactory>().ImplementedBy<PreviewJobFactory>().LifestyleTransient());
+			container.Register(Component.For<IImportFileLocationService>().ImplementedBy<ImportFileLocationService>().LifestyleTransient());
 			container.Register(Component.For<IWebApiConfig>().ImplementedBy<WebApiConfig>().LifestyleSingleton());
 		}
 	}

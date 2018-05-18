@@ -112,10 +112,10 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
 
 		private static void RegisterParserClasses(WindsorContainer windsorContainer)
 		{
-			windsorContainer.Register(Component.For<IFieldParserFactory>().ImplementedBy<FieldParserFactory>());
-			windsorContainer.Register(Component.For<IWinEddsLoadFileFactory>().ImplementedBy<WinEddsLoadFileFactory>());
+			windsorContainer.Register(Component.For<IFieldParserFactory>().ImplementedBy<FieldParserFactory>().LifestyleTransient());
+			windsorContainer.Register(Component.For<IWinEddsLoadFileFactory>().ImplementedBy<WinEddsLoadFileFactory>().LifestyleTransient());
 			windsorContainer.Register(Component.For<IWinEddsFileReaderFactory>().ImplementedBy<WinEddsFileReaderFactory>());
-			windsorContainer.Register(Component.For<IDataReaderFactory>().ImplementedBy<DataReaderFactory>());
+			windsorContainer.Register(Component.For<IDataReaderFactory>().ImplementedBy<DataReaderFactory>().LifestyleTransient());
 		}
 
 		private static void RegisterDomainClasses(WindsorContainer windsorContainer)
