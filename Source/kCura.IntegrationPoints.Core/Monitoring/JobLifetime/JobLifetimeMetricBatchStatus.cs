@@ -1,4 +1,5 @@
-﻿using kCura.Apps.Common.Utils.Serializers;
+﻿using System;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Monitoring.JobLifetimeMessages;
 using kCura.IntegrationPoints.Core.Monitoring.NumberOfRecordsMessages;
@@ -22,9 +23,11 @@ namespace kCura.IntegrationPoints.Core.Monitoring.JobLifetime
 		private readonly IJobStatusUpdater _updater;
 		private readonly IJobHistoryService _jobHistoryService;
 		private readonly ISerializer _serializer;
-		
+		private readonly IDateTimeHelper _dateTimeHelper;
+
 		public JobLifetimeMetricBatchStatus(IMessageService messageService, IIntegrationPointService integrationPointService,
-			IProviderTypeService providerTypeService, IJobStatusUpdater updater, IJobHistoryService jobHistoryService, ISerializer serializer)
+			IProviderTypeService providerTypeService, IJobStatusUpdater updater, IJobHistoryService jobHistoryService, ISerializer serializer, 
+			IDateTimeHelper dateTimeHelper)
 		{
 			_messageService = messageService;
 			_integrationPointService = integrationPointService;
@@ -32,11 +35,12 @@ namespace kCura.IntegrationPoints.Core.Monitoring.JobLifetime
 			_updater = updater;
 			_jobHistoryService = jobHistoryService;
 			_serializer = serializer;
+			_dateTimeHelper = dateTimeHelper;
 		}
 
 		public void OnJobStart(Job job)
 		{
-			
+
 		}
 
 		public void OnJobComplete(Job job)
@@ -47,6 +51,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.JobLifetime
 
 			SendLifetimeMessage(status, providerType);
 			SendRecordsMessage(providerType, jobHistory);
+			SendThroughputMessage(providerType, jobHistory);
 		}
 
 		private void SendRecordsMessage(ProviderType providerType, JobHistory jobHistory)
@@ -61,18 +66,30 @@ namespace kCura.IntegrationPoints.Core.Monitoring.JobLifetime
 		{
 			if (status.EqualsToChoice(JobStatusChoices.JobHistoryErrorJobFailed))
 			{
-				_messageService.Send(new JobFailedMessage {Provider = providerType.ToString()});
+				_messageService.Send(new JobFailedMessage { Provider = providerType.ToString() });
 			}
 			else if (status.EqualsToChoice(JobStatusChoices.JobHistoryValidationFailed))
 			{
-				_messageService.Send(new JobValidationFailedMessage {Provider = providerType.ToString()});
+				_messageService.Send(new JobValidationFailedMessage { Provider = providerType.ToString() });
 			}
 			else if (
 				status.EqualsToChoice(JobStatusChoices.JobHistoryCompleted) ||
 				status.EqualsToChoice(JobStatusChoices.JobHistoryCompletedWithErrors) ||
 				status.EqualsToChoice(JobStatusChoices.JobHistoryStopped))
 			{
-				_messageService.Send(new JobCompletedMessage {Provider = providerType.ToString()});
+				_messageService.Send(new JobCompletedMessage { Provider = providerType.ToString() });
+			}
+		}
+
+		private void SendThroughputMessage(ProviderType providerType, JobHistory jobHistory)
+		{
+			int? completedRecords = jobHistory.ItemsTransferred;
+			TimeSpan? duration = (jobHistory.EndTimeUTC ?? _dateTimeHelper.Now()) - jobHistory.StartTimeUTC;
+
+			if (completedRecords > 0 && duration.HasValue)
+			{
+				double throughput = completedRecords.Value / duration.Value.TotalSeconds;
+				_messageService.Send(new JobThroughputMessage {Provider = providerType.ToString(), Throughput = throughput});
 			}
 		}
 

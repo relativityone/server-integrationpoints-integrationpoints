@@ -99,6 +99,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IDomainHelper>().ImplementedBy<DomainHelper>().LifestyleSingleton());
 			container.Register(Component.For<IJobManager>().ImplementedBy<AgentJobManager>().LifestyleTransient());
 			container.Register(Component.For<ICaseServiceContext>().ImplementedBy<CaseServiceContext>().LifestyleTransient());
+			container.Register(Component.For<IDateTimeHelper>().ImplementedBy<DateTimeUtcHelper>());
 
 			container.Register(Component.For<IRelativityObjectManager>()
 				.UsingFactoryMethod(x =>

@@ -18,6 +18,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring
 			Subscribe<JobValidationFailedMessage>(OnJobValidationFailedMessage);
 			Subscribe<JobTotalRecordsCountMessage>(OnTotalRecordsMessage);
 			Subscribe<JobCompletedRecordsCountMessage>(OnCompletedRecordsMessage);
+			Subscribe<JobThroughputMessage>(OnJobThroughputMessage);
 		}
 
 		private void OnJobStartedMessage(JobStartedMessage message)
@@ -54,6 +55,12 @@ namespace kCura.IntegrationPoints.Core.Monitoring
 		{
 			IMetricsManager metricsManager = MetricsManagerFactory.CreateSUMManager();
 			metricsManager.LogLong($"IntegrationPoints.Usage.CompletedRecords.{message.Provider}", message.CompletedRecordsCount);
+		}
+
+		private void OnJobThroughputMessage(JobThroughputMessage message)
+		{
+			IMetricsManager metricsManager = MetricsManagerFactory.CreateSUMManager();
+			metricsManager.LogDouble($"IntegrationPoints.Performance.Throughput.{message.Provider}", message.Throughput);
 		}
 	}
 }

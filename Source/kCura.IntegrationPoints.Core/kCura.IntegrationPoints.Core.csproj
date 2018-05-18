@@ -71,6 +71,7 @@
     <Compile Include="BatchStatusCommands\Implementations\TempTableReader.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="ContextContainer.cs" />
+    <Compile Include="Helpers\Implementations\DateTimeUtcHelper.cs" />
     <Compile Include="Helpers\JSONHelper.cs" />
     <Compile Include="Helpers\Logging\LogHelper.cs" />
     <Compile Include="Exceptions\PermissionException.cs" />
@@ -130,6 +131,7 @@
     <Compile Include="Monitoring\MetricNameBuilder.cs" />
     <Compile Include="Monitoring\MetricsRepository.cs" />
     <Compile Include="Monitoring\NumberOfRecords\Messages\JobCompletedRecordsCountMessage.cs" />
+    <Compile Include="Monitoring\NumberOfRecords\Messages\JobThroughputMessage.cs" />
     <Compile Include="Monitoring\NumberOfRecords\Messages\JobTotalRecordsCountMessage.cs" />
     <Compile Include="Monitoring\TotalItemsMessage.cs" />
     <Compile Include="Queries\IGetSourceProviderRdoByApplicationIdentifier.cs" />
