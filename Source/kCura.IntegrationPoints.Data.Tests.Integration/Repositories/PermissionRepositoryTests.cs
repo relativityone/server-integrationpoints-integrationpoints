@@ -7,7 +7,6 @@ using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
-using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -27,6 +26,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		private UserModel _user;
 		private GroupPermissions _groupPermission;
 		private IObjectTypeRepository _typeRepo;
+		private string _originalHelperUsername;
+		private string _originalHelperPassword;
 		private readonly Random _rand;
 
 		public PermissionRepositoryTests() : base("PermissionRepositoryTests", null)
@@ -47,6 +48,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			_groupId = Group.CreateGroup("krowten");
 			_user = User.CreateUser("Gerron", "BadMan", $"gbadman{_rand.Next(int.MaxValue)}@relativity.com", new[] { _groupId });
 
+			_originalHelperUsername = Helper.RelativityUserName;
+			_originalHelperPassword = Helper.RelativityPassword;
+
 			Helper.RelativityUserName = _user.EmailAddress;
 			Helper.RelativityPassword = _user.Password;
 
@@ -58,6 +62,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		{
 			User.DeleteUser(_user.ArtifactId);
 			Group.DeleteGroup(_groupId);
+
+			Helper.RelativityUserName = _originalHelperUsername;
+			Helper.RelativityPassword = _originalHelperPassword;
 		}
 
 		[TestCase(true, true, true)]
