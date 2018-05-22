@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 
 		public ExtendedExporter Create(ExtendedExportFile exportFile, Controller processController, ILoadFileHeaderFormatterFactory loadFileFormatterFactory)
 		{
-			return new ExtendedExporter(exportFile, processController, loadFileFormatterFactory);
+			return new ExtendedExporter(exportFile, processController, new WebApiServiceFactory(exportFile), loadFileFormatterFactory, new ExportConfig());
 		}
 
 		private ExtendedExporter Create(ExtendedExportFile exportFile, ExporterFactoryConfig config)

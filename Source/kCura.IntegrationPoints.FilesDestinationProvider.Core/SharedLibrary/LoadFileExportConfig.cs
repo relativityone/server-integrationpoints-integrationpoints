@@ -14,14 +14,18 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 		private const int _EXPORT_LOADFILE_IO_ERROR_RETRIES_NUMBER = 2;
 
 		private const int _EXPORT_LOADFILE_IO_ERROR_WAIT_TIME = 20;
-		
-        private const string _EXPORT_BATCH_SIZE_SETTING_NAME = "ExportBatchSize";
+
+		private const int _EXPORT_LOADFILE_MAX_NUMBER_OF_FILE_EXPORT_TASKS = 2;
+
+		private const string _EXPORT_BATCH_SIZE_SETTING_NAME = "ExportBatchSize";
 		private const string _EXPORT_LOADFILE_ERROR_RETRIES_NUMBER_NAME = "Export.LoadFile.ErrorNumberOfRetries";
 		private const string _EXPORT_LOADFILE_ERROR_WAIT_TIME_NAME = "Export.LoadFile.ErrorWaitTime";
 		private const string _EXPORT_LOADFILE_IO_ERROR_RETRIES_NUMBER_NAME = "Export.LoadFile.IOErrorNumberOfRetries";
 
 		private const string _EXPORT_LOADFILE_IO_ERROR_WAIT_TIME_NAME = "Export.LoadFile.IOErrorWaitTime";
 		private const string _EXPORT_THREAD_COUNT_SETTING_NAME = "ExportThreadCount";
+
+		private const string _EXPORT_LOADFILE_MAX_NUMBER_OF_FILE_EXPORT_TASKS_NAME = "Export.LoadFile.MaxNumberOfFileExportTasks";
 
 		private readonly IToggleProvider _toggleProvider;
         
@@ -38,6 +42,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 		public int ExportErrorNumberOfRetries => GetValue(_EXPORT_LOADFILE_ERROR_RETRIES_NUMBER_NAME, _EXPORT_LOADFILE_ERROR_RETRIES_NUMBER);
 
 		public int ExportErrorWaitTime => GetValue(_EXPORT_LOADFILE_ERROR_WAIT_TIME_NAME, _EXPORT_LOADFILE_ERROR_WAIT_TIME);
+
+		public int MaxNumberOfFileExportTasks => GetValue(_EXPORT_LOADFILE_MAX_NUMBER_OF_FILE_EXPORT_TASKS_NAME, _EXPORT_LOADFILE_MAX_NUMBER_OF_FILE_EXPORT_TASKS);
 
 
 		public LoadFileExportConfig(IToggleProvider toggleProvider)
