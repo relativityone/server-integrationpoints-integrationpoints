@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		protected SelectElement SelectSourceFieldsElement => new SelectElement(SourceFieldsElement);
 		protected SelectElement SourceSelect => new SelectElement(SourceSelectWebElement);
 		protected SelectElement ProductionSetSelect => new SelectElement(ProductionSetSelectWebElement);
-		protected TreeSelect FolderLocationTree => new TreeSelect(FolderLocationTreeWebElement);
+		protected TreeSelect FolderLocationTree => new TreeSelect(FolderLocationTreeWebElement, "location-select", "jstree-holder-div");
 		protected SelectElement ViewSelect => new SelectElement(ViewSelectWebElement);
 
 		protected SavedSearchSelector SavedSearchSelector { get; }

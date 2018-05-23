@@ -105,13 +105,19 @@ namespace kCura.IntegrationPoint.Tests.Core
 		public static string UserFullName => $"{RelativityUserLastName}, {RelativityUserFirstName}";
 
 		#endregion User Settings
-		
+
 		#region UI Tests Settings
+
 		public static int UiImplicitWaitInSec => AppSettingInt("ui.implicitWaitInSec");
+
 		public static int UiWaitForAjaxCallsInSec => AppSettingInt("ui.waitForAjaxCallsInSec");
+
 		public static int UiWaitForPageInSec => AppSettingInt("ui.waitForPageInSec");
+
+		public static string UiUseThisExistingWorkspace => AppSettingString("UI.UseThisExistingWorkspace");
+
 		#endregion UI Tests Settings
-		
+
 		#region Relativity Settings
 
 		public static string ProtocolVersion {
@@ -196,6 +202,12 @@ namespace kCura.IntegrationPoint.Tests.Core
 		public static string LdapPassword => AppSettingString("ldapPassword");
 
 		#endregion LDAP Configuration Settings
+
+		#region Fileshare Configuration Settings
+
+		public static string FileshareLocation => AppSettingString("fileshareLocation");
+
+		#endregion
 
 		private static string GetLatestVersion()
 		{

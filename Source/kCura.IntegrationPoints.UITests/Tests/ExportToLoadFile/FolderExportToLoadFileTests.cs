@@ -1,11 +1,13 @@
 ﻿using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Models.Constants.ExportToLoadFile;
+using kCura.IntegrationPoint.Tests.Core.Models.Constants.Shared;
 using kCura.IntegrationPoint.Tests.Core.Models.Shared;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoints.UITests.Validation;
 using NUnit.Framework;
+using IntegrationPointType = kCura.IntegrationPoint.Tests.Core.Models.IntegrationPointType;
 
 namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 {
@@ -29,7 +31,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			ExportToLoadFileProviderModel model = CreateExportToLoadFileProviderModel("TC_ELF_DIR_1");
 
 			// Step 1
-			model.Type = IntegrationPointGeneralModel.IntegrationPointTypeEnum.Export;
+			model.Type = IntegrationPointType.Export;
 			model.DestinationProvider = IntegrationPointGeneralModel.INTEGRATION_POINT_PROVIDER_LOADFILE;
 			model.TransferredObject = ExportToLoadFileTransferredObjectConstants.DOCUMENT;
 
@@ -51,7 +53,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 
 			model.OutputSettings.LoadFileOptions.ImageFileFormat = ExportToLoadFileImageFileFormatConstants.OPTICON;
 			model.OutputSettings.LoadFileOptions.DataFileFormat = ExportToLoadFileDataFileFormatConstants.DAT;
-			model.OutputSettings.LoadFileOptions.DataFileEncoding = ExportToLoadFileFileEncodingConstants.UTF_8;
+			model.OutputSettings.LoadFileOptions.DataFileEncoding = LoadFileEncodingConstants.UTF_8;
 			model.OutputSettings.LoadFileOptions.FilePathType = ExportToLoadFileProviderModel.FilePathTypeEnum.Relative;
 			model.OutputSettings.LoadFileOptions.IncludeNativeFilesPath = true;
 			model.OutputSettings.LoadFileOptions.ExportMultiChoiceAsNested = false;
@@ -59,12 +61,12 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			model.OutputSettings.LoadFileOptions.AppendOriginalFileName = false;
 
 			model.OutputSettings.ImageOptions.ImageFileType = ExportToLoadFileImageFileTypeConstants.SINGLE_PAGE_TIFF_JPEG;
-			model.OutputSettings.ImageOptions.ImagePrecedence = ImagePrecedenceEnum.OriginalImages;
+			model.OutputSettings.ImageOptions.ImagePrecedence = ImagePrecedence.OriginalImages;
 			model.OutputSettings.ImageOptions.ImageSubdirectoryPrefix = "IMG";
 
 			model.OutputSettings.NativeOptions.NativeSubdirectoryPrefix = "NATIVE";
 
-			model.OutputSettings.TextOptions.TextFileEncoding = ExportToLoadFileFileEncodingConstants.UTF_8;
+			model.OutputSettings.TextOptions.TextFileEncoding = LoadFileEncodingConstants.UTF_8;
 			model.OutputSettings.TextOptions.TextPrecedence = "Extracted Text";
 			model.OutputSettings.TextOptions.TextSubdirectoryPrefix = "TEXT";
 
@@ -80,7 +82,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			var validator = new ExportToLoadFileProviderValidator();
 
 			// Act
-			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewExportToLoadfileIntegrationPoint(model);
+			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewExportToLoadFileIntegrationPoint(model);
 			detailsPage.RunIntegrationPoint();
 
 			// Assert
@@ -94,7 +96,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			ExportToLoadFileProviderModel model = CreateExportToLoadFileProviderModel("TC_ELF_DIR_2");
 
 			// Step 1
-			model.Type = IntegrationPointGeneralModel.IntegrationPointTypeEnum.Export;
+			model.Type = IntegrationPointType.Export;
 			model.DestinationProvider = IntegrationPointGeneralModel.INTEGRATION_POINT_PROVIDER_LOADFILE;
 			model.TransferredObject = ExportToLoadFileTransferredObjectConstants.DOCUMENT;
 
@@ -116,7 +118,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 
 			model.OutputSettings.LoadFileOptions.ImageFileFormat = ExportToLoadFileImageFileFormatConstants.OPTICON;
 			model.OutputSettings.LoadFileOptions.DataFileFormat = ExportToLoadFileDataFileFormatConstants.DAT;
-			model.OutputSettings.LoadFileOptions.DataFileEncoding = ExportToLoadFileFileEncodingConstants.UTF_8;
+			model.OutputSettings.LoadFileOptions.DataFileEncoding = LoadFileEncodingConstants.UTF_8;
 			model.OutputSettings.LoadFileOptions.FilePathType = ExportToLoadFileProviderModel.FilePathTypeEnum.Relative;
 			model.OutputSettings.LoadFileOptions.IncludeNativeFilesPath = true;
 			model.OutputSettings.LoadFileOptions.ExportMultiChoiceAsNested = false;
@@ -124,12 +126,12 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			model.OutputSettings.LoadFileOptions.AppendOriginalFileName = false;
 
 			model.OutputSettings.ImageOptions.ImageFileType = ExportToLoadFileImageFileTypeConstants.SINGLE_PAGE_TIFF_JPEG;
-			model.OutputSettings.ImageOptions.ImagePrecedence = ImagePrecedenceEnum.OriginalImages;
+			model.OutputSettings.ImageOptions.ImagePrecedence = ImagePrecedence.OriginalImages;
 			model.OutputSettings.ImageOptions.ImageSubdirectoryPrefix = "IMAGE_FILES";
 
 			model.OutputSettings.NativeOptions.NativeSubdirectoryPrefix = "NATIVE_FILES";
 
-			model.OutputSettings.TextOptions.TextFileEncoding = ExportToLoadFileFileEncodingConstants.UTF_8;
+			model.OutputSettings.TextOptions.TextFileEncoding = LoadFileEncodingConstants.UTF_8;
 			model.OutputSettings.TextOptions.TextPrecedence = "Extracted Text";
 			model.OutputSettings.TextOptions.TextSubdirectoryPrefix = "TEXT_FILES";
 
@@ -145,7 +147,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			var validator = new ExportToLoadFileProviderValidator();
 
 			// Act
-			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewExportToLoadfileIntegrationPoint(model);
+			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewExportToLoadFileIntegrationPoint(model);
 			detailsPage.RunIntegrationPoint();
 
 			// Assert

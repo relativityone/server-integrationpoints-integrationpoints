@@ -42,6 +42,7 @@ using SystemInterface.IO;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Monitoring;
+using kCura.IntegrationPoints.Core.Monitoring.JobLifetime;
 using kCura.IntegrationPoints.Core.Serialization;
 using kCura.IntegrationPoints.Core.Services.Domain;
 using kCura.IntegrationPoints.Core.Services.Exporter;
@@ -98,6 +99,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IDomainHelper>().ImplementedBy<DomainHelper>().LifestyleSingleton());
 			container.Register(Component.For<IJobManager>().ImplementedBy<AgentJobManager>().LifestyleTransient());
 			container.Register(Component.For<ICaseServiceContext>().ImplementedBy<CaseServiceContext>().LifestyleTransient());
+			container.Register(Component.For<IDateTimeHelper>().ImplementedBy<DateTimeUtcHelper>());
 
 			container.Register(Component.For<IRelativityObjectManager>()
 				.UsingFactoryMethod(x =>

@@ -75,7 +75,9 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			driver.SwitchTo().Frame("configurationFrame");
 			WaitForPage();
 			PageFactory.InitElements(driver, this);
-			FolderLocationSelect = new TreeSelect(driver.FindElement(By.XPath(@"//div[@id='location-select']/..")));
+
+			FolderLocationSelect = new TreeSelect(driver.FindElement(By.XPath(@"//div[@id='location-select']/..")),
+				"location-select", "jstree-holder-div");
 			SavedSearchSelector = new SavedSearchSelector(Driver);
 		}
 

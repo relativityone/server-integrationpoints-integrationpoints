@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			var validator = new SavedSearchToProductionSetValidator();
 			var model = CreateModel();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOnly;
-			model.ImagePrecedence = ImagePrecedenceEnum.OriginalImages;
+			model.ImagePrecedence = ImagePrecedence.OriginalImages;
 			model.CopyFilesToRepository = false;
 
 			DestinationContext.CreateProductionSet(model.DestinationProductionName);
@@ -65,7 +65,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			var validator = new SavedSearchToProductionSetValidator();
 			var model = CreateModel();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOnly;
-			model.ImagePrecedence = ImagePrecedenceEnum.OriginalImages;
+			model.ImagePrecedence = ImagePrecedence.OriginalImages;
 			model.CopyFilesToRepository = true;
 
 			DestinationContext.CreateProductionSet(model.DestinationProductionName);
@@ -88,7 +88,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			var validator = new SavedSearchToProductionSetValidator();
 			var model = CreateModel();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
-			model.ImagePrecedence = ImagePrecedenceEnum.OriginalImages;
+			model.ImagePrecedence = ImagePrecedence.OriginalImages;
 			model.CopyFilesToRepository = false;
 
 			DestinationContext.CreateProductionSet(model.DestinationProductionName);
@@ -112,7 +112,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			var model = CreateModel();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
 			model.MultiSelectFieldOverlay = RelativityProviderModel.MultiSelectFieldOverlayBehaviorEnum.UseFieldSettings;
-			model.ImagePrecedence = ImagePrecedenceEnum.OriginalImages;
+			model.ImagePrecedence = ImagePrecedence.OriginalImages;
 			model.CopyFilesToRepository = true;
 
 			DestinationContext.CreateProductionSet(model.DestinationProductionName);
@@ -134,7 +134,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			var model = CreateModel();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
 			model.MultiSelectFieldOverlay = RelativityProviderModel.MultiSelectFieldOverlayBehaviorEnum.UseFieldSettings;
-			model.ImagePrecedence = ImagePrecedenceEnum.OriginalImages;
+			model.ImagePrecedence = ImagePrecedence.OriginalImages;
 			model.CopyFilesToRepository = false;
 
 			DestinationContext.CreateProductionSet(model.DestinationProductionName);
@@ -156,7 +156,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			var model = CreateModel();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
 			model.MultiSelectFieldOverlay = RelativityProviderModel.MultiSelectFieldOverlayBehaviorEnum.UseFieldSettings;
-			model.ImagePrecedence = ImagePrecedenceEnum.OriginalImages;
+			model.ImagePrecedence = ImagePrecedence.OriginalImages;
 			model.CopyFilesToRepository = true;
 
 			DestinationContext.CreateProductionSet(model.DestinationProductionName);
@@ -178,7 +178,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			var model = CreateModel();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOnly;
 			model.MultiSelectFieldOverlay = RelativityProviderModel.MultiSelectFieldOverlayBehaviorEnum.UseFieldSettings;
-			model.ImagePrecedence = ImagePrecedenceEnum.ProducedImages;
+			model.ImagePrecedence = ImagePrecedence.ProducedImages;
 			model.IncludeOriginalImagesIfNotProduced = false;
 			model.CopyFilesToRepository = false;
 
@@ -202,7 +202,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			var model = CreateModel();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOnly;
 			model.MultiSelectFieldOverlay = RelativityProviderModel.MultiSelectFieldOverlayBehaviorEnum.UseFieldSettings;
-			model.ImagePrecedence = ImagePrecedenceEnum.ProducedImages;
+			model.ImagePrecedence = ImagePrecedence.ProducedImages;
 			model.IncludeOriginalImagesIfNotProduced = false;
 			model.CopyFilesToRepository = true;
 
@@ -226,7 +226,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			var validator = new SavedSearchToProductionSetValidator();
 			var model = CreateModel();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
-			model.ImagePrecedence = ImagePrecedenceEnum.ProducedImages;
+			model.ImagePrecedence = ImagePrecedence.ProducedImages;
 			model.IncludeOriginalImagesIfNotProduced = false;
 			model.CopyFilesToRepository = false;
 
@@ -252,7 +252,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			var model = CreateModel();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
 			model.MultiSelectFieldOverlay = RelativityProviderModel.MultiSelectFieldOverlayBehaviorEnum.UseFieldSettings;
-			model.ImagePrecedence = ImagePrecedenceEnum.ProducedImages;
+			model.ImagePrecedence = ImagePrecedence.ProducedImages;
 			model.IncludeOriginalImagesIfNotProduced = false;
 			model.CopyFilesToRepository = true;
 
@@ -277,7 +277,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			var model = CreateModel();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
 			model.MultiSelectFieldOverlay = RelativityProviderModel.MultiSelectFieldOverlayBehaviorEnum.UseFieldSettings;
-			model.ImagePrecedence = ImagePrecedenceEnum.ProducedImages;
+			model.ImagePrecedence = ImagePrecedence.ProducedImages;
 			model.IncludeOriginalImagesIfNotProduced = false;
 			model.CopyFilesToRepository = false;
 
@@ -301,7 +301,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			var model = CreateModel();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
 			model.MultiSelectFieldOverlay = RelativityProviderModel.MultiSelectFieldOverlayBehaviorEnum.UseFieldSettings;
-			model.ImagePrecedence = ImagePrecedenceEnum.ProducedImages;
+			model.ImagePrecedence = ImagePrecedence.ProducedImages;
 			model.IncludeOriginalImagesIfNotProduced = false;
 			model.CopyFilesToRepository = true;
 
@@ -325,7 +325,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			var model = CreateModel();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
 			model.MultiSelectFieldOverlay = RelativityProviderModel.MultiSelectFieldOverlayBehaviorEnum.UseFieldSettings;
-			model.ImagePrecedence = ImagePrecedenceEnum.ProducedImages;
+			model.ImagePrecedence = ImagePrecedence.ProducedImages;
 			model.IncludeOriginalImagesIfNotProduced = true;
 			model.CopyFilesToRepository = true;
 

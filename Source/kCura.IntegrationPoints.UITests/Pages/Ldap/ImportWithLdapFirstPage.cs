@@ -1,6 +1,4 @@
-﻿
-
-using kCura.IntegrationPoint.Tests.Core.Models.Ldap;
+﻿using kCura.IntegrationPoint.Tests.Core.Models.Import.Ldap;
 using OpenQA.Selenium.Remote;
 
 namespace kCura.IntegrationPoints.UITests.Pages.Ldap

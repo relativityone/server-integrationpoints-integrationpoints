@@ -19,6 +19,7 @@
     <DebugType>full</DebugType>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <PlatformTarget>x64</PlatformTarget>
@@ -53,14 +54,45 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Actions\IntegrationPointsImportFTPAction.cs" />
+    <Compile Include="BrandNew\ImportActions.cs" />
+    <Compile Include="BrandNew\FieldMappingPanelActions.cs" />
+    <Compile Include="BrandNew\Import\FTP\ImportDocumentsFromFtpActions.cs" />
+    <Compile Include="BrandNew\Import\FTP\ConnectionAndFileInfoPanelActions.cs" />
+    <Compile Include="BrandNew\Import\LoadFile\Documents\ImportDocumentsFromLoadFileActions.cs" />
     <Compile Include="Actions\IntegrationPointsImportAction.cs" />
     <Compile Include="Actions\IntegrationPointsImportLdapAction.cs" />
+    <Compile Include="Auxiliary\FileCopyHelper.cs" />
+    <Compile Include="BrandNew\GeneralPanelActions.cs" />
+    <Compile Include="BrandNew\CreateIntegrationPointPage.cs" />
+    <Compile Include="BrandNew\FirstPage.cs" />
+    <Compile Include="BrandNew\Import\FTP\ConnectionAndFileInfoPanel.cs" />
+    <Compile Include="BrandNew\Import\LoadFile\Documents\FileEncodingPanelActions.cs" />
+    <Compile Include="BrandNew\Import\LoadFile\Images\ImportSettingsPanelActions.cs" />
+    <Compile Include="BrandNew\Import\LoadFile\Images\ImportImagesFromLoadFileActions.cs" />
+    <Compile Include="BrandNew\Import\LoadFile\Productions\ImportProductionsFromLoadFileActions.cs" />
+    <Compile Include="BrandNew\Import\LoadFile\Productions\ImportSettingsPanelActions.cs" />
+    <Compile Include="BrandNew\Import\LoadFile\SettingsPanelActions.cs" />
+    <Compile Include="BrandNew\Import\LoadFile\LoadFileSettingsPanelActions.cs" />
+    <Compile Include="BrandNew\Import\ThirdPage.cs" />
+    <Compile Include="BrandNew\Import\LoadFile\Documents\FileEncodingPanel.cs" />
+    <Compile Include="BrandNew\Import\LoadFile\Documents\SecondPage.cs" />
+    <Compile Include="BrandNew\Import\LoadFile\Images\ImportSettingsPanel.cs" />
+    <Compile Include="BrandNew\Import\LoadFile\Images\SecondPage.cs" />
+    <Compile Include="BrandNew\Import\LoadFile\Productions\ImportSettingsPanel.cs" />
+    <Compile Include="BrandNew\Import\LoadFile\Productions\SecondPage.cs" />
+    <Compile Include="BrandNew\Import\LoadFile\SettingsPanel.cs" />
+    <Compile Include="BrandNew\Import\LoadFile\LoadFileSettingsPanel.cs" />
+    <Compile Include="BrandNew\IntegrationPointsPage.cs" />
+    <Compile Include="BrandNew\GeneralPanel.cs" />
     <Compile Include="Common\IntegrationPointsAction.cs" />
     <Compile Include="Common\TestCategory.cs" />
     <Compile Include="Components\Component.cs" />
     <Compile Include="Components\JobStatusTable.cs" />
     <Compile Include="Components\SavedSearchSelector.cs" />
+    <Compile Include="Components\SimpleSelectField.cs" />
+    <Compile Include="Components\RadioField.cs" />
+    <Compile Include="BrandNew\FieldMappingPanel.cs" />
+    <Compile Include="Components\WizardPanel.cs" />
     <Compile Include="Components\Select.cs" />
     <Compile Include="Components\PropertiesTable.cs" />
     <Compile Include="Components\SavedSearchDialog.cs" />
@@ -79,12 +111,10 @@
     <Compile Include="Pages\ExportToFileThirdPagePanel.cs" />
     <Compile Include="Pages\ExportToFileThirdPageVolumeSubdirectoryDetails.cs" />
     <Compile Include="Pages\FirstPage.cs" />
-    <Compile Include="Pages\FTP\ImportWithFTPFirstPage.cs" />
-    <Compile Include="Pages\FTP\ImportWithFTPThirdPage.cs" />
     <Compile Include="Pages\ImportFirstPage.cs" />
     <Compile Include="Pages\ImportSecondBasePage.cs" />
     <Compile Include="Pages\ImportThirdPage.cs" />
-    <Compile Include="Pages\FTP\ImportWithFTPSecondPage.cs" />
+    <Compile Include="BrandNew\Import\FTP\SecondPage.cs" />
     <Compile Include="Pages\IntegrationPointDetailsPage.cs" />
     <Compile Include="Pages\IntegrationPointsPage.cs" />
     <Compile Include="Pages\ExportToFileSecondPage.cs" />
@@ -103,7 +133,8 @@
     <Compile Include="Tests\ExportToLoadFile\DocumentExportToLoadFileTests.cs" />
     <Compile Include="Tests\ExportToLoadFile\ExportToLoadFileTests.cs" />
     <Compile Include="Tests\ExportToLoadFile\FolderExportToLoadFileTests.cs" />
-    <Compile Include="Tests\FTPProvider\ImportFromFTPTest.cs" />
+    <Compile Include="Tests\FTPProvider\ImportFromFtpTest.cs" />
+    <Compile Include="Tests\ImportFromLoadFile\ImportFromLoadFileTest.cs" />
     <Compile Include="Tests\LDAPProvider\ImportLdapProviderTest.cs" />
     <Compile Include="Tests\RelativityProvider\DataGridToSqlTest.cs" />
     <Compile Include="Tests\ExportToLoadFile\ProductionExportToLoadFileTests.cs" />
@@ -224,6 +255,7 @@ xcopy "$(ProjectDir)..\kCura.IntegrationPoint.Tests.Core\oi\unmanaged" "$(Target
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>

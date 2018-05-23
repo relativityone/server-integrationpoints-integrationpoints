@@ -88,7 +88,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 				ImportSettings settings = GetImportApiSettingsObjectForUser(job);
 				string providerSettings = UpdatedProviderSettingsLoadFile();
-				if (UpdateSourceRecordCount(settings) > 0)
+				int sourceRecordCount = UpdateSourceRecordCount(settings);
+				if (sourceRecordCount > 0)
 				{
 					using (var context = new ImportTransferDataContext(_dataReaderFactory, providerSettings, MappedFields))
 					{
@@ -117,12 +118,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				FinalizeService(job);
 				LogExecuteFinalize(job);
 			}
-		}
-
-		protected override void SetupSubscriptions(IDataSynchronizer synchronizer, Job job)
-		{
-			StatisticsService?.Subscribe(synchronizer as IBatchReporter, job);
-			JobHistoryErrorService.SubscribeToBatchReporterEvents(synchronizer);
 		}
 
 		private ImportSettings GetImportApiSettingsObjectForUser(Job job)

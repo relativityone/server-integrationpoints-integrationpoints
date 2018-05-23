@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			var validator = new ExportToLoadFileProviderValidator();
 
 			// Act
-			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewExportToLoadfileIntegrationPoint(model);
+			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewExportToLoadFileIntegrationPoint(model);
 			detailsPage.RunIntegrationPoint();
 
 			// Assert

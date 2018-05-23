@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IContextContainerFactory contextContainerFactory,
 			IJobService jobService,
 			IDataTransferLocationService dataTransferLocationService,
-            IProcessingSourceLocationService processingSourceLocationService
+			IProcessingSourceLocationService processingSourceLocationService
 		) : base(
 			caseServiceContext,
 			helper,
@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_exportProcessRunner = exportProcessRunner;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ExportWorker>();
 			_dataTransferLocationService = dataTransferLocationService;
-		    _processingSourceLocationService = processingSourceLocationService;
+			_processingSourceLocationService = processingSourceLocationService;
 		}
 
 		#endregion //Constructor
@@ -89,19 +89,18 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		protected override void ExecuteImport(IEnumerable<FieldMap> fieldMap, DataSourceProviderConfiguration configuration, string destinationConfiguration, List<string> entryIDs, SourceProvider sourceProviderRdo, DestinationProvider destinationProvider, Job job)
 		{
-		    LogExecuteImportStart(job);
+			LogExecuteImportStart(job);
 
-            var sourceSettings = DeserializeSourceSettings(configuration.Configuration, job);
+			var sourceSettings = DeserializeSourceSettings(configuration.Configuration, job);
 			var destinationSettings = DeserializeDestinationSettings(destinationConfiguration, job);
 
 			PrepareDestinationLocation(sourceSettings);
 
 			_exportProcessRunner.StartWith(sourceSettings, fieldMap, destinationSettings.ArtifactTypeId, job);
-		    LogExecuteImportSuccesfulEnd(job);
-
+			LogExecuteImportSuccesfulEnd(job);
 		}
 
-	    private ExportUsingSavedSearchSettings DeserializeSourceSettings(string sourceConfiguration, Job job)
+		private ExportUsingSavedSearchSettings DeserializeSourceSettings(string sourceConfiguration, Job job)
 		{
 			try
 			{
@@ -131,14 +130,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			try
 			{
-			    if (PathIsProcessingSourceLocation(settings))
-			    {
-			        return;
-			    }
+				if (PathIsProcessingSourceLocation(settings))
+				{
+					return;
+				}
 
-			    settings.Fileshare = _dataTransferLocationService.VerifyAndPrepare(CaseServiceContext.WorkspaceID,
-			        settings.Fileshare,
-			        Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid);
+				settings.Fileshare = _dataTransferLocationService.VerifyAndPrepare(CaseServiceContext.WorkspaceID,
+					settings.Fileshare,
+					Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid);
 			}
 			catch (Exception e)
 			{
@@ -147,14 +146,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 		}
 
-	    private bool PathIsProcessingSourceLocation(ExportUsingSavedSearchSettings settings)
-	    {
-	        return _processingSourceLocationService.IsEnabled() &&
-	               _processingSourceLocationService.IsProcessingSourceLocation(settings.Fileshare,
-	                   CaseServiceContext.WorkspaceID);
-	    }
+		private bool PathIsProcessingSourceLocation(ExportUsingSavedSearchSettings settings)
+		{
+			return _processingSourceLocationService.IsEnabled() &&
+				   _processingSourceLocationService.IsProcessingSourceLocation(settings.Fileshare,
+					   CaseServiceContext.WorkspaceID);
+		}
 
-	    #endregion //Methods
+		#endregion //Methods
 
 		#region Logging
 
@@ -173,16 +172,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_logger.LogError(e, "Failed to create transfer location'sdirectory structure", path);
 		}
 
-	    private void LogExecuteImportSuccesfulEnd(Job job)
-	    {
-	        _logger.LogInformation("Succesfully finished execution of import in Export Worker for: {JobId}.", job.JobId);
-	    }
+		private void LogExecuteImportSuccesfulEnd(Job job)
+		{
+			_logger.LogInformation("Succesfully finished execution of import in Export Worker for: {JobId}.", job.JobId);
+		}
 
-	    private void LogExecuteImportStart(Job job)
-	    {
-	        _logger.LogInformation("Starting execution of import in Export Worker for: {JobId}.", job.JobId);
-	    }
+		private void LogExecuteImportStart(Job job)
+		{
+			_logger.LogInformation("Starting execution of import in Export Worker for: {JobId}.", job.JobId);
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

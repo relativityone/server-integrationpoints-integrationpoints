@@ -61,12 +61,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
             _dataSource.Clear();
         }
 
-        /// <summary>
-        /// Convert a list of data rows to data table
-        /// </summary>
-        /// <param name="columnNames"></param>
-        /// <returns></returns>
-        public DataTable ConfigureTable(IEnumerable<string> columnNames, List<IDictionary<string, object>> dataSource)
+	    /// <summary>
+	    /// Convert a list of data rows to data table
+	    /// </summary>
+	    /// <param name="columnNames"></param>
+	    /// <param name="dataSource"></param>
+	    /// <returns></returns>
+	    public DataTable ConfigureTable(IEnumerable<string> columnNames, List<IDictionary<string, object>> dataSource)
         {
             DataTable finalDt = new DataTable();
             foreach (var column in columnNames)
