@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
 
 			ILDAPService ldapService = _ldapServiceFactory.Create(_logger, _serializer, settings, securedConfiguration, fieldsToLoad);
 			ldapService.InitializeConnection();
-			IEnumerable<SearchResult> items = ldapService.FetchItems();
+			ldapService.FetchItems();
 			return new LDAPServiceDataReader(ldapService, entryIds, identifier, fieldsToLoad,
 				new LDAPDataFormatterDefault(settings, _helper));
 		}

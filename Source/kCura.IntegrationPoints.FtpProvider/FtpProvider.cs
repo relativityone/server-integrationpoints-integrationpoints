@@ -7,6 +7,7 @@ using System.Net;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.FtpProvider.Connection.Interfaces;
 using kCura.IntegrationPoints.FtpProvider.Helpers;
 using kCura.IntegrationPoints.FtpProvider.Helpers.Interfaces;
@@ -132,21 +133,14 @@ namespace kCura.IntegrationPoints.FtpProvider
 					LogRetrievingBatchableIdsErrorWithDetails(identifier, ex, message);
 					throw new Exception(message);
 				}
-				else if ((ex is WebException && (ex.ToString().Contains("The underlying connection was closed")) ||
-						ex.ToString().Contains("The remote server returned an error")))
+				
+				LogRetrievingBatchableIdsError(identifier, ex);
+				throw new IntegrationPointsException(
+					"Failed to extract batch IDs when downloading file from FTP/SFTP server", ex)
 				{
-					//TODO: There is a problem with disposing FtpConnector object that needs to be further investigated and fixed.
-					//This is to hide the issue because data is corretly parsed
-					LogRetrievingBatchableIdsWarning(ex, ex.Message);
-				}
-				else
-				{
-					LogRetrievingBatchableIdsError(identifier, ex);
-					throw new Exception(ex.ToString());
-				}
+					ShouldAddToErrorsTab = true
+				};
 			}
-
-			return null;
 		}
 
 		public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, DataSourceProviderConfiguration providerConfiguration)
