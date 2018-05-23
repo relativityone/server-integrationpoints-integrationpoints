@@ -33,6 +33,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 		}
 
 		[Test]
+		[Ignore("Known Issue in secret store: whole paths from secret catalog are returned instead of keys in dictionary. Details: https://jira.kcura.com/browse/STVD-12542")]
 		public void ItShouldRemoveSecretAndTenantId()
 		{
 			string tenantId = _secretManager.GetTenantID();
