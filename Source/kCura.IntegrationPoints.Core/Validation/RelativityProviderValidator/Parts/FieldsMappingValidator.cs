@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
@@ -41,11 +42,19 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 
 			bool mappedIdentifier = false;
 
+			var sourceFieldsMissing = new List<string>();
+			var destinationFieldsMissing = new List<string>();
+
 			foreach (FieldMap fieldMap in fieldsMap)
 			{
 				result.Add(ValidateFieldMapped(fieldMap));
 				result.Add(ValidateFieldIdentifierMappedWithAnotherIdentifier(fieldMap));
-				result.Add(ValidateMappedFieldExist(fieldMap, sourceWorkpaceFields, destinationWorkpaceFields));
+
+				if (fieldMap.SourceField?.FieldIdentifier != null && fieldMap.DestinationField?.FieldIdentifier != null)
+				{
+					CheckIfMappedFieldExists(fieldMap.SourceField, sourceWorkpaceFields, sourceFieldsMissing);
+					CheckIfMappedFieldExists(fieldMap.DestinationField, destinationWorkpaceFields, destinationFieldsMissing);
+				}
 
 				if ((fieldMap.FieldMapType == FieldMapTypeEnum.Identifier) && 
 					(fieldMap.SourceField != null) &&
@@ -55,11 +64,44 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 				}
 			}
 
+			result.Add(ValidateMissingSourceFields(sourceFieldsMissing));
+			result.Add(ValidateMissingDestinationFields(destinationFieldsMissing));
+
 			result.Add(ValidateUseDynamicFolderPathSettings(destinationConfiguration));
 			result.Add(ValidateUniqueIdentifierIsMapped(mappedIdentifier));
 			result.Add(ValidateSettingsFieldOverlayBehavior(destinationConfiguration));
 			result.Add(ValidateSettingsFolderPathInformation(sourceWorkpaceFields, destinationConfiguration));
 			result.Add(ValidateImageSettings(destinationConfiguration, fieldsMap));
+			return result;
+		}
+
+		private ValidationResult ValidateMissingSourceFields(ICollection<string> sourceFieldsMissing)
+		{
+			ValidationResult result = new ValidationResult();
+
+			if (sourceFieldsMissing.Count > 0)
+			{
+				var validationMessage = new ValidationMessage(RelativityProviderValidationMessages.FIELD_MAP_FIELD_NOT_EXIST_IN_SOURCE_WORKSPACE);
+				result.Add(validationMessage);
+			}
+
+			return result;
+		}
+
+		private ValidationResult ValidateMissingDestinationFields(ICollection<string> destinationFieldsMissing)
+		{
+			ValidationResult result = new ValidationResult();
+
+			if (destinationFieldsMissing.Count > 0)
+			{
+				IEnumerable<string> missingFieldStrings = destinationFieldsMissing.Select(f => $"'{f}'");
+				string missingFields = string.Join(", ", missingFieldStrings);
+				string errorCode = RelativityProviderValidationErrorCodes.FIELD_MAP_FIELD_NOT_EXIST_IN_DESTINATION_WORKSPACE;
+				string shortMessageText = string.Format(RelativityProviderValidationMessages.FIELD_MAP_FIELD_NOT_EXIST_IN_DESTINATION_WORKSPACE, missingFields);
+				var validationMessage = new ValidationMessage(errorCode, shortMessageText);
+				result.Add(validationMessage);
+			}
+
 			return result;
 		}
 
@@ -112,40 +154,19 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			return result;
 		}
 
-		private ValidationResult ValidateMappedFieldExist(FieldMap fieldMap, List<ArtifactDTO> sourceFields, List<ArtifactDTO> destinationFields)
+		private void CheckIfMappedFieldExists(FieldEntry field, List<ArtifactDTO> workspaceFields, List<string> missingFields)
 		{
-			var result = new ValidationResult();
-
-			if (fieldMap.SourceField?.FieldIdentifier == null || fieldMap.DestinationField?.FieldIdentifier == null)
+			int fieldIdentifier = int.Parse(field.FieldIdentifier);
+			bool exists = CheckIfFieldExists(fieldIdentifier, workspaceFields);
+			if (!exists)
 			{
-				return result;
+				missingFields.Add(field.DisplayName);
 			}
-
-			int sourceFieldIdentifier = int.Parse(fieldMap.SourceField.FieldIdentifier);
-			int destinationFieldIdentifier = int.Parse(fieldMap.DestinationField.FieldIdentifier);
-		    string destinationFieldName = fieldMap.DestinationField.DisplayName;
-			
-			result.Add(ValidateFieldExists(sourceFieldIdentifier, sourceFields, RelativityProviderValidationMessages.FIELD_MAP_FIELD_NOT_EXIST_IN_SOURCE_WORKSPACE));
-
-            string destinationFieldMissingMessage = string.Format(RelativityProviderValidationMessages.FIELD_MAP_FIELD_NOT_EXIST_IN_DESTINATION_WORKSPACE, destinationFieldName);
-            string destinationFieldMissingErrorCode = RelativityProviderValidationErrorCodes.FIELD_MAP_FIELD_NOT_EXIST_IN_DESTINATION_WORKSPACE;
-            result.Add(ValidateFieldExists(destinationFieldIdentifier, destinationFields, destinationFieldMissingMessage, destinationFieldMissingErrorCode));
-			
-			return result;
 		}
 
-		private ValidationResult ValidateFieldExists(int fieldArtifactId, List<ArtifactDTO> fields, string validationMessage, string errorCode = "")
+		private bool CheckIfFieldExists(int fieldArtifactId, IEnumerable<ArtifactDTO> fields)
 		{
-			var result = new ValidationResult();
-
-			if (fields.All(x => x.ArtifactId != fieldArtifactId))
-			{
-                var message = new ValidationMessage(errorCode, validationMessage);
-                _logger.LogError(message.ToString());
-                result.Add(message);
-			}
-
-			return result;
+			return fields.Any(x => x.ArtifactId == fieldArtifactId);
 		}
 
 		private ValidationResult ValidateUniqueIdentifierIsMapped(bool isMapped)
@@ -198,8 +219,11 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			{
 				if (destinationConfig.UseFolderPathInformation)
 				{
-					result.Add(ValidateFieldExists(destinationConfig.FolderPathSourceField, sourceWorkpaceFields,
-						RelativityProviderValidationMessages.FIELD_MAP_FIELD_NOT_EXIST_IN_SOURCE_WORKSPACE));
+					bool fieldExists = CheckIfFieldExists(destinationConfig.FolderPathSourceField, sourceWorkpaceFields);
+					if (!fieldExists)
+					{
+						result.Add(RelativityProviderValidationMessages.FIELD_MAP_FIELD_NOT_EXIST_IN_SOURCE_WORKSPACE);
+					}
 				}
 			}
 

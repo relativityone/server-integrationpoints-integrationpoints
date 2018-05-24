@@ -263,7 +263,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 
 			// Assert
 			string expectedErrorCode = RelativityProviderValidationErrorCodes.FIELD_MAP_FIELD_NOT_EXIST_IN_DESTINATION_WORKSPACE;
-			string expectedMessageText = string.Format(RelativityProviderValidationMessages.FIELD_MAP_FIELD_NOT_EXIST_IN_DESTINATION_WORKSPACE, emailToFieldName);
+			string expectedMessageText = string.Format(RelativityProviderValidationMessages.FIELD_MAP_FIELD_NOT_EXIST_IN_DESTINATION_WORKSPACE, $"'{emailToFieldName}'");
 
 			Assert.AreEqual(1, validationResult.Messages.Count());
 			ValidationMessage message = validationResult.Messages.First();
