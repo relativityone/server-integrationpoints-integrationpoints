@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
 			// assert
 			Assert.IsTrue(actual.IsValid);
-			Assert.That(actual.Messages.Count(), Is.EqualTo(0));
+			Assert.That(actual.MessageTexts.Count(), Is.EqualTo(0));
 		}
 
 		[TestCase(null)]
@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
 			// assert
 			Assert.IsFalse(actual.IsValid);
-			Assert.IsTrue(actual.Messages.Contains(IntegrationPointProviderValidationMessages.ERROR_INTEGRATION_POINT_NAME_EMPTY));
+			Assert.IsTrue(actual.MessageTexts.Contains(IntegrationPointProviderValidationMessages.ERROR_INTEGRATION_POINT_NAME_EMPTY));
 		}
 
 		[TestCase("first:second")]
@@ -87,7 +87,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			Assert.AreEqual(isValid, actual.IsValid);
 			if (errorMessage != null)
 			{
-				Assert.IsTrue(actual.Messages.Contains(errorMessage));
+				Assert.IsTrue(actual.MessageTexts.Contains(errorMessage));
 			}
 		}
 

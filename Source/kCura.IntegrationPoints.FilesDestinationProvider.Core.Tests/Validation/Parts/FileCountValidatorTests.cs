@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 
 			// assert
 			Assert.IsFalse(actual.IsValid);
-			Assert.That(actual.Messages.FirstOrDefault(), Is.Not.Null.Or.Empty);
+			Assert.That(actual.MessageTexts.FirstOrDefault(), Is.Not.Null.Or.Empty);
 		}
 
 		[TestCase(42)]
@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 
 			// assert
 			Assert.IsTrue(actual.IsValid);
-			Assert.That(actual.Messages.FirstOrDefault(), Is.Null);
+			Assert.That(actual.MessageTexts.FirstOrDefault(), Is.Null);
 		}
 	}
 }

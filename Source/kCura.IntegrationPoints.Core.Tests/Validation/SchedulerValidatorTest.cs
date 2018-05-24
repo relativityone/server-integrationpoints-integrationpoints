@@ -55,7 +55,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
 			// Assert
 			Assert.IsTrue(result.IsValid);
-			Assert.IsNull(result.Messages.FirstOrDefault());
+			Assert.IsNull(result.MessageTexts.FirstOrDefault());
 		}
 
 		[Test]
@@ -85,7 +85,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
 			// Assert
 			Assert.IsFalse(result.IsValid);
-			Assert.IsTrue(result.Messages.Contains(resultMessage));
+			Assert.IsTrue(result.MessageTexts.Contains(resultMessage));
 		}
 
 		[Test]
@@ -115,7 +115,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
 			// Assert
 			Assert.IsFalse(result.IsValid);
-			Assert.IsTrue(result.Messages.Contains(resultMessage));
+			Assert.IsTrue(result.MessageTexts.Contains(resultMessage));
 		}
 
 		[Test]
@@ -137,7 +137,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
 			// Assert
 			Assert.IsFalse(result.IsValid);
-			Assert.IsTrue(result.Messages.Contains(IntegrationPointProviderValidationMessages.ERROR_SCHEDULER_END_DATE_BEFORE_START_DATE));
+			Assert.IsTrue(result.MessageTexts.Contains(IntegrationPointProviderValidationMessages.ERROR_SCHEDULER_END_DATE_BEFORE_START_DATE));
 		}
 
 		[Test]
@@ -160,7 +160,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
 			// Assert
 			Assert.IsFalse(result.IsValid);
-			Assert.IsTrue(result.Messages.Any(x => x.Contains(message)));
+			Assert.IsTrue(result.MessageTexts.Any(x => x.Contains(message)));
 		}
 
 		[Test]
@@ -185,7 +185,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
 			// Assert
 			Assert.IsTrue(result.IsValid);
-			Assert.IsNull(result.Messages.FirstOrDefault());
+			Assert.IsNull(result.MessageTexts.FirstOrDefault());
 		}
 
 		[Test]
@@ -209,7 +209,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
 			// Assert
 			Assert.IsFalse(result.IsValid);
-			Assert.IsTrue(result.Messages.Any(x => x.Contains(IntegrationPointProviderValidationMessages.ERROR_SCHEDULER_NOT_IN_RANGE)));
+			Assert.IsTrue(result.MessageTexts.Any(x => x.Contains(IntegrationPointProviderValidationMessages.ERROR_SCHEDULER_NOT_IN_RANGE)));
 		}
 
 		[Test]
@@ -240,7 +240,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
 			// Assert
 			Assert.IsTrue(result.IsValid);
-			Assert.IsNull(result.Messages.FirstOrDefault());
+			Assert.IsNull(result.MessageTexts.FirstOrDefault());
 		}
 
 		[Test]
@@ -268,7 +268,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
 			// Assert
 			Assert.IsFalse(result.IsValid);
-			Assert.IsTrue(result.Messages.Any(x => x.Contains(message)));
+			Assert.IsTrue(result.MessageTexts.Any(x => x.Contains(message)));
 		}
 
 		[Test]
@@ -292,7 +292,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
 			// Assert
 			Assert.IsTrue(result.IsValid);
-			Assert.IsNull(result.Messages.FirstOrDefault());
+			Assert.IsNull(result.MessageTexts.FirstOrDefault());
 		}
 	}
 }

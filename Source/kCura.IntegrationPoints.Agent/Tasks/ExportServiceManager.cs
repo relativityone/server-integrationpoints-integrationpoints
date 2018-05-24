@@ -143,7 +143,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			catch (Exception ex)
 			{
 				HandleGenericException(ex, job);
-				if (ex is PermissionException || ex is IntegrationPointProviderValidationException || ex is IntegrationPointsException)
+				if (ex is PermissionException || ex is IntegrationPointValidationException || ex is IntegrationPointsException)
 				{
 					throw;
 				}

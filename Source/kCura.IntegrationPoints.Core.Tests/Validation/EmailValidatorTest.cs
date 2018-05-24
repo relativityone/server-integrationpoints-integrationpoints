@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
 			//Assert
 			Assert.IsTrue(result.IsValid);
-			Assert.IsNull(result.Messages.FirstOrDefault());
+			Assert.IsNull(result.MessageTexts.FirstOrDefault());
 		}
 
 		[Test]
@@ -88,7 +88,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
 			//Assert
 			Assert.IsFalse(result.IsValid);
-			Assert.That(result.Messages.Contains(validationMessage));
+			Assert.That(result.MessageTexts.Contains(validationMessage));
 		}
 
 		[Test]
@@ -107,7 +107,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
 			//Assert
 			Assert.IsFalse(result.IsValid);
-			Assert.That(result.Messages.Contains(IntegrationPointProviderValidationMessages.ERROR_MISSING_EMAIL));
+			Assert.That(result.MessageTexts.Contains(IntegrationPointProviderValidationMessages.ERROR_MISSING_EMAIL));
 		}
 
 		[Test]
@@ -137,7 +137,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			Assert.IsFalse(result.IsValid);
 			foreach (string invalidEmail in invalidEmailList)
 			{
-				Assert.That(result.Messages.Contains(invalidEmail), "ValidationResult message does not contain invalid email: " + invalidEmail);
+				Assert.That(result.MessageTexts.Contains(invalidEmail), "ValidationResult message does not contain invalid email: " + invalidEmail);
 			}
 		}
 	}

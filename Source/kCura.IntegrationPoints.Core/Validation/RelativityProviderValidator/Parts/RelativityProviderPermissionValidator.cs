@@ -73,16 +73,24 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 
 			if (!destinationWorkspaceManager.WorkspaceExists(sourceConfiguration.TargetWorkspaceArtifactId))
 			{
-				_logger.LogError(Constants.IntegrationPoints.ValidationErrors.DESTINATION_WORKSPACE_NOT_AVAILABLE);
-				result.Add(Constants.IntegrationPoints.ValidationErrors.DESTINATION_WORKSPACE_NOT_AVAILABLE);
-				return result; // destination workspace doesnt exist
+                var message = new ValidationMessage(
+                    Constants.IntegrationPoints.ValidationErrorCodes.DESTINATION_WORKSPACE_NOT_AVAILABLE,
+                    Constants.IntegrationPoints.ValidationErrors.DESTINATION_WORKSPACE_NOT_AVAILABLE
+                );
+				_logger.LogError(message.ToString());
+                result.Add(message);
+				return result; // destination workspace does not exist
 			}
 
 			if (!destinationWorkspacePermissionManager.UserHasPermissionToAccessWorkspace(sourceConfiguration.TargetWorkspaceArtifactId))
 			{
-				_logger.LogError(Constants.IntegrationPoints.PermissionErrors.DESTINATION_WORKSPACE_NO_ACCESS);
-				result.Add(Constants.IntegrationPoints.PermissionErrors.DESTINATION_WORKSPACE_NO_ACCESS);
-				return result; // it doesnt make sense to validate other destination workspace permissions
+                var message = new ValidationMessage(
+                    Constants.IntegrationPoints.PermissionErrorCodes.DESTINATION_WORKSPACE_NO_ACCESS, 
+                    Constants.IntegrationPoints.PermissionErrors.DESTINATION_WORKSPACE_NO_ACCESS
+                );
+				_logger.LogError(message.ToString());
+				result.Add(message);
+				return result; // it does not make sense to validate other destination workspace permissions
 			}
 
 			if (!destinationWorkspacePermissionManager.UserCanImport(sourceConfiguration.TargetWorkspaceArtifactId))

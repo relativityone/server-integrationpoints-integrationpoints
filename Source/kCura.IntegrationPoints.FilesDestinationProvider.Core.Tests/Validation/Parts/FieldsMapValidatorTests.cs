@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 
 			// assert
 			Assert.IsTrue(actual.IsValid);
-			Assert.That(actual.Messages.Count(), Is.EqualTo(0));
+			Assert.That(actual.MessageTexts.Count(), Is.EqualTo(0));
 		}
 
 		[TestCase(null, _EXPORTABLE_FIELDS)]
@@ -74,7 +74,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 
 			// assert
 			Assert.IsFalse(actual.IsValid);
-			Assert.IsTrue(actual.Messages.First().Contains(FileDestinationProviderValidationMessages.FIELD_MAP_NO_FIELDS));
+			Assert.IsTrue(actual.MessageTexts.First().Contains(FileDestinationProviderValidationMessages.FIELD_MAP_NO_FIELDS));
 		}
 
 		[TestCase("[{\"sourceField\":{\"displayName\":\"\",\"isIdentifier\":false,\"fieldIdentifier\":\"\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"\",\"isIdentifier\":false,\"fieldIdentifier\":\"\",\"isRequired\":false},\"fieldMapType\":\"None\"},{\"sourceField\":{\"displayName\":\"\",\"isIdentifier\":false,\"fieldIdentifier\":\"\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"\",\"isIdentifier\":false,\"fieldIdentifier\":\"\",\"isRequired\":false},\"fieldMapType\":\"None\"}]", _EXPORTABLE_FIELDS)]
@@ -103,7 +103,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 
 			// assert
 			Assert.IsFalse(actual.IsValid);
-			Assert.IsTrue(actual.Messages.First().Contains(FileDestinationProviderValidationMessages.FIELD_MAP_UNKNOWN_FIELD));
+			Assert.IsTrue(actual.MessageTexts.First().Contains(FileDestinationProviderValidationMessages.FIELD_MAP_UNKNOWN_FIELD));
 		}
 
 		[Test]
@@ -133,7 +133,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 
 			// assert
 			Assert.IsFalse(actual.IsValid);
-			Assert.IsTrue(actual.Messages.First().Contains(fieldName));
+			Assert.IsTrue(actual.MessageTexts.First().Contains(fieldName));
 		}
 	}
 }

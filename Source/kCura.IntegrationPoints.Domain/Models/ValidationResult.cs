@@ -9,7 +9,9 @@ namespace kCura.IntegrationPoints.Domain.Models
 	/// </summary>
 	public class ValidationResult
 	{
-		private readonly List<string> _messages = new List<string>();
+	    private const string _MESSAGE_PREFIX = "Integration Point validation failed.";
+
+        private readonly List<ValidationMessage> _messages = new List<ValidationMessage>();
 
 		/// <summary>
 		/// Default constructor which sets validation result as true
@@ -37,9 +39,9 @@ namespace kCura.IntegrationPoints.Domain.Models
 		{
 			IsValid = result;
 
-			if (!String.IsNullOrWhiteSpace(message))
+			if (!string.IsNullOrWhiteSpace(message))
 			{
-				_messages.Add(message);
+				_messages.Add(new ValidationMessage(message));
 			}
 		}
 
@@ -60,7 +62,9 @@ namespace kCura.IntegrationPoints.Domain.Models
 		/// <summary>
 		/// Collection of validation messages
 		/// </summary>
-		public IEnumerable<string> Messages => _messages;
+		public IEnumerable<ValidationMessage> Messages => _messages;
+
+	    public IEnumerable<string> MessageTexts => _messages.Select(m => m.ToString());
 
 		/// <summary>
 		/// Adds validation result to itself and aggregates non-empty messages
@@ -79,21 +83,43 @@ namespace kCura.IntegrationPoints.Domain.Models
 			AddRange(validationResult.Messages);
 		}
 
+	    /// <summary>
+	    /// Adds validation message to internal collection
+	    /// </summary>
+	    /// <param name="validationMessage">Message to add</param>
+	    /// <remarks>Only non-empty messages will be added and change validation state to false</remarks>
+        public void Add(ValidationMessage validationMessage)
+	    {
+	        IsValid = false;
+            _messages.Add(validationMessage);
+	    }
+
+	    /// <summary>
+	    /// Adds validation message to internal collection
+	    /// </summary>
+	    /// <param name="shortMessage">Message short text</param>
+	    /// <remarks>Only non-empty messages will be added and change validation state to false</remarks>
+        public void Add(string shortMessage)
+	    {
+            Add(string.Empty, shortMessage);
+	    }
+
 		/// <summary>
 		/// Adds validation message to internal collection
 		/// </summary>
-		/// <param name="message">Message to add</param>
+		/// <param name="errorCode">Message error code</param>
+		/// <param name="shortMessage">Message short text</param>
 		/// <remarks>Only non-empty messages will be added and change validation state to false</remarks>
-		public void Add(string message)
+		public void Add(string errorCode, string shortMessage)
 		{
-			if (String.IsNullOrWhiteSpace(message))
+			if (string.IsNullOrWhiteSpace(shortMessage))
 			{
 				return;
 			}
 
 			IsValid = false;
 
-			_messages.Add(message);
+			_messages.Add(new ValidationMessage(errorCode, shortMessage));
 		}
 
 		private void AddRange(IEnumerable<string> messages)
@@ -106,5 +132,23 @@ namespace kCura.IntegrationPoints.Domain.Models
 				}
 			}			
 		}
-	}
+
+	    private void AddRange(IEnumerable<ValidationMessage> messages)
+	    {
+	        if (messages != null)
+	        {
+	            foreach (var message in messages)
+	            {
+	                Add(message);
+	            }
+	        }
+        }
+
+	    public override string ToString()
+	    {
+	        IEnumerable<string> messageStrings = _messages.Select(m => m.ToString());
+	        string resultMessage = string.Join(Environment.NewLine, messageStrings);
+	        return $"{_MESSAGE_PREFIX}{Environment.NewLine}{resultMessage}";
+	    }
+    }
 }

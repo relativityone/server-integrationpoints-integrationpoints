@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 
 			// assert
 			Assert.IsTrue(actual.IsValid);
-			Assert.That(actual.Messages.FirstOrDefault(), Is.Null);
+			Assert.That(actual.MessageTexts.FirstOrDefault(), Is.Null);
 		}
 
 		[TestCase(null)]
@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 
 			// assert
 			Assert.IsFalse(actual.IsValid);
-			Assert.IsTrue(actual.Messages.Any(x => x.Contains(FileDestinationProviderValidationMessages.SETTINGS_UNKNOWN_LOCATION)));
+			Assert.IsTrue(actual.MessageTexts.Any(x => x.Contains(FileDestinationProviderValidationMessages.SETTINGS_UNKNOWN_LOCATION)));
 		}
 
 		[Test]
@@ -73,7 +73,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 
 			// assert
 			Assert.IsTrue(actual.IsValid);
-			Assert.That(actual.Messages.FirstOrDefault(), Is.Null);
+			Assert.That(actual.MessageTexts.FirstOrDefault(), Is.Null);
 		}
 
 		[Test]
@@ -90,7 +90,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 
 			// assert
 			Assert.IsFalse(actual.IsValid);
-			Assert.IsTrue(actual.Messages.First().Contains(FileDestinationProviderValidationMessages.SETTINGS_LOADFILE_UNKNOWN_ENCODING));
+			Assert.IsTrue(actual.MessageTexts.First().Contains(FileDestinationProviderValidationMessages.SETTINGS_LOADFILE_UNKNOWN_ENCODING));
 		}
 
 		[Test]
@@ -110,7 +110,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 
 			// assert
 			Assert.IsTrue(actual.IsValid);
-			Assert.That(actual.Messages.FirstOrDefault(), Is.Null);
+			Assert.That(actual.MessageTexts.FirstOrDefault(), Is.Null);
 		}
 
 		[TestCase(null)]
@@ -131,7 +131,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 
 			// assert
 			Assert.IsFalse(actual.IsValid);
-			Assert.IsTrue(actual.Messages.First().Contains(FileDestinationProviderValidationMessages.SETTINGS_NATIVES_UNKNOWN_SUBDIR_PREFIX));
+			Assert.IsTrue(actual.MessageTexts.First().Contains(FileDestinationProviderValidationMessages.SETTINGS_NATIVES_UNKNOWN_SUBDIR_PREFIX));
 		}
 
 		[Test]
@@ -154,7 +154,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 
 			// assert
 			Assert.IsTrue(actual.IsValid);
-			Assert.That(actual.Messages.FirstOrDefault(), Is.Null);
+			Assert.That(actual.MessageTexts.FirstOrDefault(), Is.Null);
 		}
 
 		[Test]
@@ -174,9 +174,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 
 			// assert
 			Assert.IsFalse(actual.IsValid);
-			Assert.IsTrue(actual.Messages.Any(x => x.Contains(FileDestinationProviderValidationMessages.SETTINGS_TEXTFILES_UNKNOWN_ENCODING)));
-			Assert.IsTrue(actual.Messages.Any(x => x.Contains(FileDestinationProviderValidationMessages.SETTINGS_TEXTFILES_UNKNOWN_PRECEDENCE)));
-			Assert.IsTrue(actual.Messages.Any(x => x.Contains(FileDestinationProviderValidationMessages.SETTINGS_TEXTFILES_UNKNOWN_SUBDIR_PREFIX)));
+			Assert.IsTrue(actual.MessageTexts.Any(x => x.Contains(FileDestinationProviderValidationMessages.SETTINGS_TEXTFILES_UNKNOWN_ENCODING)));
+			Assert.IsTrue(actual.MessageTexts.Any(x => x.Contains(FileDestinationProviderValidationMessages.SETTINGS_TEXTFILES_UNKNOWN_PRECEDENCE)));
+			Assert.IsTrue(actual.MessageTexts.Any(x => x.Contains(FileDestinationProviderValidationMessages.SETTINGS_TEXTFILES_UNKNOWN_SUBDIR_PREFIX)));
 		}
 
 		[Test]
@@ -196,7 +196,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 
 			// assert
 			Assert.IsTrue(actual.IsValid);
-			Assert.That(actual.Messages.FirstOrDefault(), Is.Null);
+			Assert.That(actual.MessageTexts.FirstOrDefault(), Is.Null);
 		}
 
 		[TestCase("VOL<")]
@@ -246,7 +246,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 			Assert.AreEqual(isValid, actual.IsValid);
 			if (errorMessage != null)
 			{
-				Assert.IsTrue(actual.Messages.Contains(errorMessage));
+				Assert.IsTrue(actual.MessageTexts.Contains(errorMessage));
 			}
 		}
 	}

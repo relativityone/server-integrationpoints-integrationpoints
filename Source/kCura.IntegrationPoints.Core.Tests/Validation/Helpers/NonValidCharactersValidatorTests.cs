@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.Helpers
 			ValidationResult validationResult = _validator.Validate(name, _ERROR_MESSAGE);
 
 			Assert.IsTrue(validationResult.IsValid);
-			Assert.IsEmpty(validationResult.Messages);
+			Assert.IsEmpty(validationResult.MessageTexts);
 		}
 
 		[Test]
@@ -80,8 +80,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.Helpers
 			const string name = "InvalidName\\";
 			ValidationResult validationResult = _validator.Validate(name, errorMessage);
 
-			Assert.AreEqual(1, validationResult.Messages.Count());
-			string actualMessage = validationResult.Messages.First();
+			Assert.AreEqual(1, validationResult.MessageTexts.Count());
+			string actualMessage = validationResult.MessageTexts.First();
 			Assert.AreEqual(errorMessage, actualMessage);
 		}
 

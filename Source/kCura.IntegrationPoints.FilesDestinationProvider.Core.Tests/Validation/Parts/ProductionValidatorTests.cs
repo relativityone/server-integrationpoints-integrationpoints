@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 
 			// assert
 			Assert.IsTrue(actual.IsValid);
-			Assert.That(actual.Messages.Count(), Is.EqualTo(0));
+			Assert.That(actual.MessageTexts.Count(), Is.EqualTo(0));
 		}
 
 		[Test]
@@ -55,7 +55,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 
 			// assert
 			Assert.IsFalse(actual.IsValid);
-			Assert.IsTrue(actual.Messages.First().Contains(FileDestinationProviderValidationMessages.PRODUCTION_NOT_EXIST));
+			Assert.IsTrue(actual.MessageTexts.First().Contains(FileDestinationProviderValidationMessages.PRODUCTION_NOT_EXIST));
 		}
 	}
 }

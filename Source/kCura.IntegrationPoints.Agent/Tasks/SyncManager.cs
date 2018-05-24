@@ -200,7 +200,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			catch (Exception ex)
 			{
 				AgentExceptionHelper.HandleException(_jobHistoryErrorService, _jobHistoryService, _logger, ex, job, taskResult, JobHistory);
-				if (ex is IntegrationPointsException || ex is IntegrationPointProviderValidationException || ex is PermissionException) // we want to rethrow, so it can be added to error tab if necessary
+				if (ex is IntegrationPointsException || ex is IntegrationPointValidationException || ex is PermissionException) // we want to rethrow, so it can be added to error tab if necessary
 				{
 					throw;
 				}

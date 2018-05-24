@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 
 			// assert
 			Assert.IsTrue(result.IsValid);
-			Assert.That(result.Messages.Count(), Is.EqualTo(0));
+			Assert.That(result.MessageTexts.Count(), Is.EqualTo(0));
 		}
 
 		[Test]
@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 
 			// assert
 			Assert.IsFalse(result.IsValid);
-			Assert.That(result.Messages.Any(x => x.Contains(RelativityProviderValidationMessages.TRANSFERRED_OBJECT_INVALIDA_TYPE)));
+			Assert.That(result.MessageTexts.Any(x => x.Contains(RelativityProviderValidationMessages.TRANSFERRED_OBJECT_INVALIDA_TYPE)));
 		}
 	}
 }

@@ -93,9 +93,9 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 							{
 								createdId = integrationPointService.SaveIntegration(model);
 							}
-							catch (IntegrationPointProviderValidationException ex)
+							catch (IntegrationPointValidationException ex)
 							{
-								return Request.CreateResponse(HttpStatusCode.NotAcceptable, String.Join("<br />", ex.Result.Messages));
+								return Request.CreateResponse(HttpStatusCode.NotAcceptable, string.Join("<br />", ex.ValidationResult.MessageTexts));
 							}
 
 							string result = _urlHelper.GetRelativityViewUrl(workspaceID, createdId, Data.ObjectTypes.IntegrationPoint);

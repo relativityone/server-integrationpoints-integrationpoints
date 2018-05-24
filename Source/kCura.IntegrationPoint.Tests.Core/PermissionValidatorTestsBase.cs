@@ -22,11 +22,11 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			if (expected)
 			{
-				Assert.That(result.Messages.Count, Is.Zero);
+				Assert.That(result.MessageTexts.Count, Is.Zero);
 			}
 			else
 			{
-				Assert.That(result.Messages.Count, Is.Positive);
+				Assert.That(result.MessageTexts.Count, Is.Positive);
 			}
 		}
 	}

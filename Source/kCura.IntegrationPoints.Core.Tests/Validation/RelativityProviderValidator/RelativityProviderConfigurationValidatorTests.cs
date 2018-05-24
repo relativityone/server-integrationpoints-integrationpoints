@@ -103,7 +103,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 
 			// assert
 			Assert.That(actual.IsValid, Is.EqualTo(expectedValidationResult));
-			Assert.That(actual.Messages.Count(), Is.EqualTo(numberOfErrorMessages));
+			Assert.That(actual.MessageTexts.Count(), Is.EqualTo(numberOfErrorMessages));
 		}
     }
 }

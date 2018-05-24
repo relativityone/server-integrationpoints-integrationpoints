@@ -50,7 +50,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 
 			// Assert
 			Assert.IsTrue(result.IsValid);
-			Assert.IsNull(result.Messages.FirstOrDefault());
+			Assert.IsNull(result.MessageTexts.FirstOrDefault());
 		}
 
 		[Test]
@@ -68,7 +68,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 
 			// Assert
 			Assert.IsFalse(result.IsValid);
-			Assert.IsTrue(result.Messages.Any(x => x.Contains(errorMessage)));
+			Assert.IsTrue(result.MessageTexts.Any(x => x.Contains(errorMessage)));
 		}
 
 		[Test]
@@ -86,7 +86,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 
 			// Assert
 			Assert.IsFalse(result.IsValid);
-			Assert.IsTrue(result.Messages.Any(x => x.Contains(errorMessage)));
+			Assert.IsTrue(result.MessageTexts.Any(x => x.Contains(errorMessage)));
 		}
 
 		[Test]
@@ -104,7 +104,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 
 			// Assert
 			Assert.IsFalse(result.IsValid);
-			Assert.IsTrue(result.Messages.Any(x => x.Contains(errorMessage)));
+			Assert.IsTrue(result.MessageTexts.Any(x => x.Contains(errorMessage)));
 		}
 
 		[TestCase("[{\"sourceField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Control Number\",\"isIdentifier\":false,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"fieldMapType\":\"Identifier\"}]")]
@@ -119,7 +119,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 
 			// Assert
 			Assert.IsFalse(result.IsValid);
-			Assert.IsTrue(result.Messages.Contains(RelativityProviderValidationMessages.FIELD_MAP_IDENTIFIERS_NOT_MATCHED));
+			Assert.IsTrue(result.MessageTexts.Contains(RelativityProviderValidationMessages.FIELD_MAP_IDENTIFIERS_NOT_MATCHED));
 		}
 
 		[TestCase("[{\"sourceField\":{\"displayName\":\"Control Number [Object Identifier]\",\"isIdentifier\":true,\"fieldIdentifier\":\"1003667\",\"isRequired\":true},\"destinationField\":{\"displayName\":\"Control Number [Object Identifier]\",\"isIdentifier\":true,\"fieldIdentifier\":\"1003667\",\"isRequired\":true},\"fieldMapType\":\"Identifier\"},{\"sourceField\":{\"displayName\":\"Email To\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035368\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Email To\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035368\",\"isRequired\":false},\"fieldMapType\":\"None\"},{\"sourceField\":{\"displayName\":\"Alert\",\"isIdentifier\":false,\"fieldIdentifier\":\"1038073\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Visualization\",\"isIdentifier\":false,\"fieldIdentifier\":\"1038074\",\"isRequired\":false},\"fieldMapType\":\"None\"},{\"sourceField\":{\"displayName\":\"Lists\",\"isIdentifier\":false,\"fieldIdentifier\":\"1038389\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Title\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035395\",\"isRequired\":false},\"fieldMapType\":\"None\"}]", new[] { "Control Number" })]
@@ -135,7 +135,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 
 			// Assert
 			Assert.IsTrue(result.IsValid);
-			Assert.IsNull(result.Messages.FirstOrDefault());
+			Assert.IsNull(result.MessageTexts.FirstOrDefault());
 		}
 
 		[TestCase("{\"ImportOverwriteMode\":\"AppendOnly\",\"UseFolderPathInformation\":\"false\",\"FieldOverlayBehavior\":\"Use Field Settings\"}")]
@@ -160,7 +160,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 
 			// Assert
 			Assert.IsTrue(result.IsValid);
-			Assert.IsNull(result.Messages.FirstOrDefault());
+			Assert.IsNull(result.MessageTexts.FirstOrDefault());
 		}
 
 		[TestCase("{\"ImportOverwriteMode\":\"AppendOnly\",\"UseFolderPathInformation\":\"false\",\"FieldOverlayBehavior\":\"Replace Values\"}")]
@@ -178,7 +178,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 
 			// Assert
 			Assert.IsFalse(result.IsValid);
-			Assert.IsTrue(result.Messages.Contains(RelativityProviderValidationMessages.FIELD_MAP_APPEND_ONLY_INVALID_OVERLAY_BEHAVIOR));
+			Assert.IsTrue(result.MessageTexts.Contains(RelativityProviderValidationMessages.FIELD_MAP_APPEND_ONLY_INVALID_OVERLAY_BEHAVIOR));
 		}
 
 		[TestCase("{\"ImportOverwriteMode\":\"OverlayOnly\",\"UseFolderPathInformation\":\"false\",\"FieldOverlayBehavior\":\"INVALID_FieldOverlayBehavior\"}")]
@@ -196,7 +196,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 
 			// Assert
 			Assert.IsFalse(result.IsValid);
-			Assert.IsTrue(result.Messages.Any(x => x.Contains(RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_INVALID)));
+			Assert.IsTrue(result.MessageTexts.Any(x => x.Contains(RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_INVALID)));
 		}
 
 		[TestCase("{\"ImportOverwriteMode\":\"OverlayOnly\",\"UseFolderPathInformation\":\"true\",\"FieldOverlayBehavior\":\"Use Field Settings\",\"FolderPathSourceField\":\"1000186\"}")]
@@ -230,7 +230,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 
 			// Assert
 			Assert.IsFalse(result.IsValid);
-			Assert.IsTrue(result.Messages.Any(x => x.Contains(RelativityProviderValidationMessages.FIELD_MAP_FIELD_NOT_EXIST_IN_SOURCE_WORKSPACE)));
+			Assert.IsTrue(result.MessageTexts.Any(x => x.Contains(RelativityProviderValidationMessages.FIELD_MAP_FIELD_NOT_EXIST_IN_SOURCE_WORKSPACE)));
 		}
 
 		[Test]
@@ -245,7 +245,30 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			var result = _instance.Validate(validationModel);
 
 			Assert.That(result.IsValid, Is.False);
-			Assert.That(result.Messages.Any(x => x.Contains(RelativityProviderValidationMessages.FIELD_MAP_DYNAMIC_FOLDER_PATH_AND_FOLDER_PATH_INFORMATION_CONFLICT)));
+			Assert.That(result.MessageTexts.Any(x => x.Contains(RelativityProviderValidationMessages.FIELD_MAP_DYNAMIC_FOLDER_PATH_AND_FOLDER_PATH_INFORMATION_CONFLICT)));
+		}
+
+		[TestCase("[{\"sourceField\":{\"displayName\":\"Control Number [Object Identifier]\",\"isIdentifier\":true,\"fieldIdentifier\":\"1003667\",\"isRequired\":true},\"destinationField\":{\"displayName\":\"Control Number [Object Identifier]\",\"isIdentifier\":true,\"fieldIdentifier\":\"1003667\",\"isRequired\":true},\"fieldMapType\":\"Identifier\"},{\"sourceField\":{\"displayName\":\"Email To\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035368\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Email To\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035368\",\"isRequired\":false},\"fieldMapType\":\"None\"}]", new[] {"Control Number"})]
+		public void ItShouldReturnProperError_WhenDestinationFieldDoesNotExist(string fieldMap, string[] requiredFields)
+		{
+			const string emailToFieldName = "Email To";
+			const int emailToFieldArtifactId = 1035368;
+
+			// Arrange
+			IntegrationPointProviderValidationModel integrationPointProviderValidationModel = GetFieldMapValidationObject(fieldMap);
+			MockFieldRepositoryWithMissingDestinationField(requiredFields.ToList(), emailToFieldArtifactId);
+
+			// Act
+			ValidationResult validationResult = _instance.Validate(integrationPointProviderValidationModel);
+
+			// Assert
+			string expectedErrorCode = RelativityProviderValidationErrorCodes.FIELD_MAP_FIELD_NOT_EXIST_IN_DESTINATION_WORKSPACE;
+			string expectedMessageText = string.Format(RelativityProviderValidationMessages.FIELD_MAP_FIELD_NOT_EXIST_IN_DESTINATION_WORKSPACE, emailToFieldName);
+
+			Assert.AreEqual(1, validationResult.Messages.Count());
+			ValidationMessage message = validationResult.Messages.First();
+			Assert.AreEqual(expectedErrorCode, message.ErrorCode);
+			Assert.AreEqual(expectedMessageText, message.ShortMessage);
 		}
 
 		private IntegrationPointProviderValidationModel GetFieldMapValidationObject(string fieldsMap)
@@ -261,6 +284,23 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 		}
 
 		private void MockFieldRepository(List<string> requiredFields = null)
+		{
+			List<ArtifactDTO> fieldArtifacts = GetFieldArtifacts(requiredFields);
+
+			SetReturnValue(_sourceFieldManager, _SOURCE_WORKSPACE_ARTIFACT_ID, fieldArtifacts);
+			SetReturnValue(_targetFieldManager, _TARGET_WORKSPACE_ARTIFACT_ID, fieldArtifacts);
+		}
+
+		private void MockFieldRepositoryWithMissingDestinationField(List<string> requiredFields, int missingDestinationField)
+		{
+			List<ArtifactDTO> fieldArtifacts = GetFieldArtifacts(requiredFields);
+			SetReturnValue(_sourceFieldManager, _SOURCE_WORKSPACE_ARTIFACT_ID, fieldArtifacts);
+
+			List<ArtifactDTO> filteredFieldArtifacts = fieldArtifacts.Where(a => !a.ArtifactId.Equals(missingDestinationField)).ToList();
+			SetReturnValue(_targetFieldManager, _TARGET_WORKSPACE_ARTIFACT_ID, filteredFieldArtifacts);
+		}
+
+		private List<ArtifactDTO> GetFieldArtifacts(List<string> requiredFields)
 		{
 			List<ArtifactDTO> fieldArtifacts = new List<ArtifactDTO>();
 
@@ -282,8 +322,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 				fieldArtifacts.Add(new ArtifactDTO(artifactId, 0, "", new List<ArtifactFieldDTO>()));
 			}
 
-			SetReturnValue(_sourceFieldManager, _SOURCE_WORKSPACE_ARTIFACT_ID, fieldArtifacts);
-			SetReturnValue(_targetFieldManager, _TARGET_WORKSPACE_ARTIFACT_ID, fieldArtifacts);
+			return fieldArtifacts;
 		}
 
 		private void SetReturnValue(IFieldManager fieldManager, int workspaceId, List<ArtifactDTO> fieldArtifacts)

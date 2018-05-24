@@ -99,13 +99,13 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			string message = ex.FlattenErrorMessages();
 
-			if (ex is IntegrationPointProviderValidationException)
+			if (ex is IntegrationPointValidationException)
 			{
-				var ipException = ex as IntegrationPointProviderValidationException;
-				message = String.Join(Environment.NewLine, ipException.Result.Messages);
+			    var ipException = ex as IntegrationPointValidationException;
+			    message = string.Join(Environment.NewLine, ipException.ValidationResult.MessageTexts);
 			}
 
-			AddError(errorType, string.Empty, ex.Message, message);
+		    AddError(errorType, string.Empty, ex.Message, message);
 		}
 
 		public void AddError(Choice errorType, string documentIdentifier, string errorMessage, string stackTrace)

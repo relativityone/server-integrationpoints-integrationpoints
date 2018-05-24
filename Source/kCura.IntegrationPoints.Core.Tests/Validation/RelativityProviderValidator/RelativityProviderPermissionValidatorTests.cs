@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
@@ -48,7 +49,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 		}
 
 		[Test, Combinatorial]
-		public void ItShouldValidatePermissions_WhenDestinationWorkspaceExists(
+		public void ItShouldValidateDestinationWorkspacePermissions_WhenDestinationWorkspaceExists(
 			[Values(true, false)] bool exportPermission,
 			[Values(true, false)] bool destinationWorkspacePermission,
 			[Values(true, false)] bool destinationImportPermission,
@@ -109,7 +110,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 		}
 
 		[Test]
-		public void ItShouldNotValidateDestinationWorkspacePermissionWhenWorkspaceDoesNotExist()
+		public void ItShouldNotValidateDestinationWorkspacePermissions_WhenDestinationWorkspaceDoesNotExist()
 		{
 			bool destinationWorkspaceExists = false;
 			bool exportPermission = true;
@@ -144,5 +145,91 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			_sourceWorkspacePermissionManager.Received(1).UserCanExport(_SOURCE_WORKSPACE_ID);
 			_sourceWorkspacePermissionManager.Received(1).UserCanEditDocuments(_SOURCE_WORKSPACE_ID);
 		}
-	}
+
+	    [Test]
+	    public void ItShouldReturnProperError_WhenDestinationWorkspaceDoesNotExist()
+	    {
+	        bool destinationWorkspaceExists = false;
+	        bool exportPermission = true;
+	        bool sourceDocumentEditPermissions = true;
+            int federatedInstanceId = 1000;
+
+            // arrange
+	        _destinationWorkspaceManager.WorkspaceExists(_DESTINATION_WORKSPACE_ID).Returns(destinationWorkspaceExists);
+	        _sourceWorkspacePermissionManager.UserCanExport(_SOURCE_WORKSPACE_ID).Returns(exportPermission);
+	        _sourceWorkspacePermissionManager.UserCanEditDocuments(_SOURCE_WORKSPACE_ID).Returns(sourceDocumentEditPermissions);
+
+            _serializer.Deserialize<SourceConfiguration>(_validationModel.SourceConfiguration)
+	            .Returns(new SourceConfiguration
+	            {
+	                SavedSearchArtifactId = _SAVED_SEARCH_ID,
+	                SourceWorkspaceArtifactId = _SOURCE_WORKSPACE_ID,
+	                TargetWorkspaceArtifactId = _DESTINATION_WORKSPACE_ID,
+	                FederatedInstanceArtifactId = federatedInstanceId
+	            });
+
+	        var relativityProviderPermissionValidator = new RelativityProviderPermissionValidator(_serializer, ServiceContextHelper,
+	            _helper, _helperFactory, _contextContainerFactory, _managerFactory);
+
+            // act
+            ValidationResult validationResult = relativityProviderPermissionValidator.Validate(_validationModel);
+
+            // assert
+            string expectedErrorCode = Constants.IntegrationPoints.ValidationErrorCodes.DESTINATION_WORKSPACE_NOT_AVAILABLE;
+            string expectedMessageText = Constants.IntegrationPoints.ValidationErrors.DESTINATION_WORKSPACE_NOT_AVAILABLE;
+
+	        Assert.AreEqual(1, validationResult.Messages.Count());
+	        ValidationMessage message = validationResult.Messages.First();
+            Assert.AreEqual(expectedErrorCode, message.ErrorCode);
+            Assert.AreEqual(expectedMessageText, message.ShortMessage);
+	    }
+
+	    [Test]
+	    public void ItShouldReturnProperError_WhenUserHasNoAccessToDestinationWorkspace()
+	    {
+	        bool exportPermission = true;
+	        bool destinationWorkspacePermission = false;
+            bool destinationImportPermission = true;
+            bool destinationRdoPermissions = true;
+            bool sourceDocumentEditPermissions = true;
+	        int federatedInstanceId = 1000;
+
+            // arrange
+	        _destinationWorkspaceManager.WorkspaceExists(_DESTINATION_WORKSPACE_ID).Returns(true);
+	        _sourceWorkspacePermissionManager.UserCanExport(_SOURCE_WORKSPACE_ID).Returns(exportPermission);
+	        _targetWorkspacePermissionManager.UserHasPermissionToAccessWorkspace(_DESTINATION_WORKSPACE_ID).Returns(destinationWorkspacePermission);
+	        _targetWorkspacePermissionManager.UserCanImport(_DESTINATION_WORKSPACE_ID).Returns(destinationImportPermission);
+	        _targetWorkspacePermissionManager.UserHasArtifactTypePermissions(
+	                _DESTINATION_WORKSPACE_ID,
+	                _ARTIFACT_TYPE_ID,
+	                Arg.Is<ArtifactPermission[]>(
+	                    x => x.SequenceEqual(new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Create })))
+	            .Returns(destinationRdoPermissions);
+	        _sourceWorkspacePermissionManager.UserCanEditDocuments(_SOURCE_WORKSPACE_ID).Returns(sourceDocumentEditPermissions);
+
+	        _serializer.Deserialize<SourceConfiguration>(_validationModel.SourceConfiguration)
+	            .Returns(new SourceConfiguration()
+	            {
+	                SavedSearchArtifactId = _SAVED_SEARCH_ID,
+	                SourceWorkspaceArtifactId = _SOURCE_WORKSPACE_ID,
+	                TargetWorkspaceArtifactId = _DESTINATION_WORKSPACE_ID,
+	                FederatedInstanceArtifactId = federatedInstanceId
+	            });
+
+	        var relativityProviderPermissionValidator = new RelativityProviderPermissionValidator(_serializer, ServiceContextHelper,
+	            _helper, _helperFactory, _contextContainerFactory, _managerFactory);
+
+            // act
+	        ValidationResult validationResult = relativityProviderPermissionValidator.Validate(_validationModel);
+
+            // assert
+	        string expectedErrorCode = Constants.IntegrationPoints.PermissionErrorCodes.DESTINATION_WORKSPACE_NO_ACCESS;
+	        string expectedMessageText = Constants.IntegrationPoints.PermissionErrors.DESTINATION_WORKSPACE_NO_ACCESS;
+
+	        Assert.AreEqual(1, validationResult.Messages.Count());
+	        ValidationMessage message = validationResult.Messages.First();
+	        Assert.AreEqual(expectedErrorCode, message.ErrorCode);
+	        Assert.AreEqual(expectedMessageText, message.ShortMessage);
+        }
+    }
 }

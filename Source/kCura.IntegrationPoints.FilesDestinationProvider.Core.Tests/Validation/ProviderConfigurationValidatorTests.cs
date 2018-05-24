@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 
 			// assert
 			Assert.IsTrue(actual.IsValid);
-			Assert.That(actual.Messages.Count(), Is.EqualTo(0));
+			Assert.That(actual.MessageTexts.Count(), Is.EqualTo(0));
 		}
 	}
 }

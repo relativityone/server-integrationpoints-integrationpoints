@@ -50,7 +50,7 @@ namespace kCura.IntegrationPoints.Core.Validation
 
 			if (!validationResult.IsValid)
 			{
-				throw new IntegrationPointProviderValidationException(validationResult);
+				throw new IntegrationPointValidationException(validationResult);
 			}
 		}
 
@@ -65,7 +65,7 @@ namespace kCura.IntegrationPoints.Core.Validation
 
 			if (!permissionCheck.IsValid)
 			{
-				throw new PermissionException(string.Join(Environment.NewLine, permissionCheck.Messages));
+				throw new IntegrationPointValidationException(permissionCheck);
 			}
 		}
 

@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			result.Status = TaskStatusEnum.Fail;
 			jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, ex);
-			if (ex is PermissionException || ex is IntegrationPointProviderValidationException)
+			if (ex is PermissionException || ex is IntegrationPointValidationException)
 			{
 				jobHistory.JobStatus = JobStatusChoices.JobHistoryValidationFailed;
 				jobHistoryService.UpdateRdo(jobHistory);
@@ -25,3 +25,4 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		}
 	}
 }
+

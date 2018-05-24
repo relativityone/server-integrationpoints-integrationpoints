@@ -50,7 +50,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
 			//Assert
 			Assert.IsTrue(result.IsValid);
-			Assert.IsNull(result.Messages.FirstOrDefault());
+			Assert.IsNull(result.MessageTexts.FirstOrDefault());
 		}
 
 		[TestCase(IntegrationPoints.Domain.Constants.RELATIVITY_PROVIDER_GUID, IpType.Import)]
@@ -70,7 +70,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
 			//Assert
 			Assert.IsFalse(result.IsValid);
-			Assert.That(result.Messages.Contains(IntegrationPointProviderValidationMessages.ERROR_INTEGRATION_POINT_TYPE_INVALID));
+			Assert.That(result.MessageTexts.Contains(IntegrationPointProviderValidationMessages.ERROR_INTEGRATION_POINT_TYPE_INVALID));
 		}
 
 		public void ValidateIntegrationPointTypeMissing()
@@ -87,7 +87,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
 			//Assert
 			Assert.IsFalse(result.IsValid);
-			Assert.That(result.Messages.Contains(IntegrationPointProviderValidationMessages.ERROR_INTEGRATION_POINT_TYPE_INVALID));
+			Assert.That(result.MessageTexts.Contains(IntegrationPointProviderValidationMessages.ERROR_INTEGRATION_POINT_TYPE_INVALID));
 		}
 
 		private IntegrationPointProviderValidationModel GetProviderValidationModelObject(string sourceProviderId)

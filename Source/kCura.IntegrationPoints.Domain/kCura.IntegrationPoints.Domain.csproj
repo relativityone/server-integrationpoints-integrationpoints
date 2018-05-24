@@ -107,6 +107,7 @@
     <Compile Include="Models\FederatedInstanceDto.cs" />
     <Compile Include="Models\OpticonInfo.cs" />
     <Compile Include="Models\ProcessingSourceLocationDTO.cs" />
+    <Compile Include="Models\ValidationMessage.cs" />
     <Compile Include="Models\ValidationResult.cs" />
     <Compile Include="Models\FieldMap.cs" />
     <Compile Include="Models\FieldMapTypeEnum.cs" />

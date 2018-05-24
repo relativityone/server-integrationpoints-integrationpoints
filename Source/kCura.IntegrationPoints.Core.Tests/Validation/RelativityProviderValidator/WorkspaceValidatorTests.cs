@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 
 			// assert
 			Assert.IsTrue(actual.IsValid);
-			Assert.That(actual.Messages.Count(), Is.EqualTo(0));
+			Assert.That(actual.MessageTexts.Count(), Is.EqualTo(0));
 		}
 
 		[Test]
@@ -60,8 +60,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 
 			// assert
 			Assert.IsFalse(actual.IsValid);
-			Assert.IsTrue(actual.Messages.First().Contains(IntegrationPointProviderValidationMessages.WORKSPACE_NOT_EXIST));
-			Assert.IsTrue(actual.Messages.First().Contains(workspacePrefix));
+			Assert.IsTrue(actual.MessageTexts.First().Contains(IntegrationPointProviderValidationMessages.WORKSPACE_NOT_EXIST));
+			Assert.IsTrue(actual.MessageTexts.First().Contains(workspacePrefix));
 		}
 
 		[TestCase(";")]
@@ -89,8 +89,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 
 			// assert
 			Assert.IsFalse(actual.IsValid);
-			Assert.IsTrue(actual.Messages.First().Contains(RelativityProviderValidationMessages.WORKSPACE_INVALID_NAME));
-			Assert.IsTrue(actual.Messages.First().Contains(workspacePrefix));
+			Assert.IsTrue(actual.MessageTexts.First().Contains(RelativityProviderValidationMessages.WORKSPACE_INVALID_NAME));
+			Assert.IsTrue(actual.MessageTexts.First().Contains(workspacePrefix));
 		}
 	}
 }

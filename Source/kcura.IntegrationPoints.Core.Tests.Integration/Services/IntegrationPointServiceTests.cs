@@ -412,7 +412,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			};
 
 			//Act & Assert
-			Assert.Throws<IntegrationPointProviderValidationException>(() => CreateOrUpdateIntegrationPoint(integrationModel),
+			Assert.Throws<IntegrationPointValidationException>(() => CreateOrUpdateIntegrationPoint(integrationModel),
 				_INTEGRATION_POINT_PROVIDER_VALIDATION_EXCEPTION_MESSAGE);
 		}
 
@@ -487,7 +487,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			DeleteSavedSearch(SourceWorkspaceArtifactId, TemporarySavedSearchId);
 
 			// Act
-			Assert.Throws<IntegrationPointProviderValidationException>(() => _integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPointModel.ArtifactID, _ADMIN_USER_ID));
+			Assert.Throws<IntegrationPointValidationException>(() => _integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPointModel.ArtifactID, _ADMIN_USER_ID));
 
 			// Assert
 			Data.IntegrationPoint ip = _integrationPointService.GetRdo(integrationPointModel.ArtifactID);

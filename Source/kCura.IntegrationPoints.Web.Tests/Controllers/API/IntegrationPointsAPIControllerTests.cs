@@ -111,7 +111,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 				SecuredConfiguration = _CREDENTIALS
 			};
 			var validationResult = new ValidationResult(false, "That's a damn shame.");
-			Exception expectException = new IntegrationPointProviderValidationException(validationResult);
+			Exception expectException = new IntegrationPointValidationException(validationResult);
 
 			_helperFactory.CreateTargetHelper(_cpHelper, federatedInstanceArtifactId, _CREDENTIALS).Returns(_targetHelper);
 
@@ -125,7 +125,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			Assert.IsNotNull(response);
 			String actual = response.Content.ReadAsStringAsync().Result;
 			_relativityUrlHelper.DidNotReceive().GetRelativityViewUrl(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<String>());
-			Assert.AreEqual($"\"{validationResult.Messages.First()}\"", actual);
+			Assert.AreEqual($"\"{validationResult.MessageTexts.First()}\"", actual);
 			Assert.AreEqual(HttpStatusCode.NotAcceptable, response.StatusCode);
 		}
 	}

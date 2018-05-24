@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
             // assert
             Assert.IsTrue(actual.IsValid);
-            Assert.That(actual.Messages.Count(), Is.EqualTo(0));
+            Assert.That(actual.MessageTexts.Count(), Is.EqualTo(0));
         }
 
         [Test]
@@ -50,7 +50,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
             // assert
             Assert.IsFalse(actual.IsValid);
-            Assert.IsTrue(actual.Messages.Contains(Constants.IntegrationPoints.PermissionErrors.PRODUCTION_NO_ACCESS));
+            Assert.IsTrue(actual.MessageTexts.Contains(Constants.IntegrationPoints.PermissionErrors.PRODUCTION_NO_ACCESS));
         }
 
         [Test]
@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
             // assert
             Assert.IsFalse(actual.IsValid);
-            Assert.IsTrue(actual.Messages.Contains(Constants.IntegrationPoints.PermissionErrors.PRODUCTION_NO_ACCESS));
+            Assert.IsTrue(actual.MessageTexts.Contains(Constants.IntegrationPoints.PermissionErrors.PRODUCTION_NO_ACCESS));
         }
     }
 }

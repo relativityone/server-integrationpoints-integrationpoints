@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 
 			// assert
 			Assert.IsTrue(actual.IsValid);
-			Assert.That(actual.Messages.FirstOrDefault(), Is.Null);
+			Assert.That(actual.MessageTexts.FirstOrDefault(), Is.Null);
 		}
 
 		[Test]
@@ -50,8 +50,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 
 			// assert
 			Assert.IsFalse(actual.IsValid);
-			Assert.IsTrue(actual.Messages.Any(x => x.Contains(FileDestinationProviderValidationMessages.SETTINGS_IMAGES_UNKNOWN_FORMAT)));
-			Assert.IsTrue(actual.Messages.Any(x => x.Contains(FileDestinationProviderValidationMessages.SETTINGS_IMAGES_UNKNOWN_SUBDIR_PREFIX)));
+			Assert.IsTrue(actual.MessageTexts.Any(x => x.Contains(FileDestinationProviderValidationMessages.SETTINGS_IMAGES_UNKNOWN_FORMAT)));
+			Assert.IsTrue(actual.MessageTexts.Any(x => x.Contains(FileDestinationProviderValidationMessages.SETTINGS_IMAGES_UNKNOWN_SUBDIR_PREFIX)));
 		}
 	}
 }

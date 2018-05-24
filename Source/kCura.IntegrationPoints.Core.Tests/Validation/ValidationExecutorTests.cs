@@ -83,11 +83,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
 			// ACT
 
-			var onRunException = Assert.Throws<PermissionException>(() => _subjectUnderTest.ValidateOnRun(_validationContex));
+			var onRunException = Assert.Throws<IntegrationPointValidationException>(() => _subjectUnderTest.ValidateOnRun(_validationContex));
 
-			var onSaveException = Assert.Throws<PermissionException>(() => _subjectUnderTest.ValidateOnSave(_validationContex));
+			var onSaveException = Assert.Throws<IntegrationPointValidationException>(() => _subjectUnderTest.ValidateOnSave(_validationContex));
 
-			var onStopException = Assert.Throws<PermissionException>(() => _subjectUnderTest.ValidateOnStop(_validationContex));
+			var onStopException = Assert.Throws<IntegrationPointValidationException>(() => _subjectUnderTest.ValidateOnStop(_validationContex));
 
 			// ASSERT
 
@@ -142,7 +142,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
 			// ACT
 
-			var permissionException = Assert.Throws<PermissionException>(() => _subjectUnderTest.ValidateOnRun(_validationContex));
+			var permissionException = Assert.Throws<IntegrationPointValidationException>(() => _subjectUnderTest.ValidateOnRun(_validationContex));
 
 			// ASSERT
 
@@ -175,11 +175,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
 			// ACT
 
-			var permissionException = Assert.Throws<IntegrationPointProviderValidationException>(() => _subjectUnderTest.ValidateOnRun(_validationContex));
+			var permissionException = Assert.Throws<IntegrationPointValidationException>(() => _subjectUnderTest.ValidateOnRun(_validationContex));
 
 			// ASSERT
 
-			Assert.That(permissionException.Result.Messages.Any(msg => msg.Contains(expectedMessage)));
+			Assert.That(permissionException.ValidationResult.MessageTexts.Any(msg => msg.Contains(expectedMessage)));
 
 			// we expect permission will be checked 
 			_providerValidatorMock.Received(1).Validate(_model, _sourceProvider,
@@ -240,7 +240,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
 			// ACT
 
-			var permissionException = Assert.Throws<PermissionException>(() => _subjectUnderTest.ValidateOnSave(_validationContex));
+			var permissionException = Assert.Throws<IntegrationPointValidationException>(() => _subjectUnderTest.ValidateOnSave(_validationContex));
 
 			// ASSERT
 
@@ -273,11 +273,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
 			// ACT
 
-			var providerValidationException = Assert.Throws<IntegrationPointProviderValidationException>(() => _subjectUnderTest.ValidateOnSave(_validationContex));
+			var providerValidationException = Assert.Throws<IntegrationPointValidationException>(() => _subjectUnderTest.ValidateOnSave(_validationContex));
 
 			// ASSERT
 
-			Assert.That(providerValidationException.Result.Messages.Any(msg => msg.Contains(expectedMessage)));
+			Assert.That(providerValidationException.ValidationResult.MessageTexts.Any(msg => msg.Contains(expectedMessage)));
 
 			// we expect permission will be checked 
 			_providerValidatorMock.Received(1).Validate(_model, _sourceProvider,
@@ -338,7 +338,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
 			// ACT
 
-			var permissionException = Assert.Throws<PermissionException>(() => _subjectUnderTest.ValidateOnStop(_validationContex));
+			var permissionException = Assert.Throws<IntegrationPointValidationException>(() => _subjectUnderTest.ValidateOnStop(_validationContex));
 
 			// ASSERT
 

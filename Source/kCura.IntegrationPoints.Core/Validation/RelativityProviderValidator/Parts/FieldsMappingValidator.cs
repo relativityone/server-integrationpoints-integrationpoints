@@ -123,20 +123,26 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 
 			int sourceFieldIdentifier = int.Parse(fieldMap.SourceField.FieldIdentifier);
 			int destinationFieldIdentifier = int.Parse(fieldMap.DestinationField.FieldIdentifier);
+		    string destinationFieldName = fieldMap.DestinationField.DisplayName;
 			
 			result.Add(ValidateFieldExists(sourceFieldIdentifier, sourceFields, RelativityProviderValidationMessages.FIELD_MAP_FIELD_NOT_EXIST_IN_SOURCE_WORKSPACE));
-			result.Add(ValidateFieldExists(destinationFieldIdentifier, destinationFields, RelativityProviderValidationMessages.FIELD_MAP_FIELD_NOT_EXIST_IN_DESTINATION_WORKSPACE));
+
+            string destinationFieldMissingMessage = string.Format(RelativityProviderValidationMessages.FIELD_MAP_FIELD_NOT_EXIST_IN_DESTINATION_WORKSPACE, destinationFieldName);
+            string destinationFieldMissingErrorCode = RelativityProviderValidationErrorCodes.FIELD_MAP_FIELD_NOT_EXIST_IN_DESTINATION_WORKSPACE;
+            result.Add(ValidateFieldExists(destinationFieldIdentifier, destinationFields, destinationFieldMissingMessage, destinationFieldMissingErrorCode));
 			
 			return result;
 		}
 
-		private ValidationResult ValidateFieldExists(int fieldArtifactId, List<ArtifactDTO> fields, string validationMessage)
+		private ValidationResult ValidateFieldExists(int fieldArtifactId, List<ArtifactDTO> fields, string validationMessage, string errorCode = "")
 		{
 			var result = new ValidationResult();
 
 			if (fields.All(x => x.ArtifactId != fieldArtifactId))
 			{
-				result.Add($"{validationMessage} {fieldArtifactId}");
+                var message = new ValidationMessage(errorCode, validationMessage);
+                _logger.LogError(message.ToString());
+                result.Add(message);
 			}
 
 			return result;

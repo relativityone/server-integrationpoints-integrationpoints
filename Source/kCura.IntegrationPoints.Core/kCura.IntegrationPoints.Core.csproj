@@ -283,9 +283,10 @@
     <Compile Include="Validation\Helpers\NonValidCharactersValidator.cs" />
     <Compile Include="Validation\Abstract\IValidationExecutor.cs" />
     <Compile Include="Validation\IntegrationPointPermissionValidator.cs" />
-    <Compile Include="Validation\IntegrationPointProviderValidationException.cs" />
     <Compile Include="Validation\IntegrationPointProviderValidationMessages.cs" />
     <Compile Include="Validation\Abstract\BasePermissionValidator.cs" />
+    <Compile Include="Validation\IntegrationPointValidationException.cs" />
+    <Compile Include="Validation\RelativityProviderValidator\RelativityProviderValidationErrorCodes.cs" />
     <Compile Include="Validation\ValidationContext.cs" />
     <Compile Include="Validation\ValidationExecutor.cs" />
     <Compile Include="Validation\Parts\ImportProductionValidator.cs" />

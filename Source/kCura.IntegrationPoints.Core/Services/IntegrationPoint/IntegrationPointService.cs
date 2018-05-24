@@ -147,13 +147,12 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 					$"{Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_FULLTEXT_PREFIX}{Environment.NewLine}{ex.Message}");
 				throw;
 			}
-			catch (IntegrationPointProviderValidationException validationException)
+			catch (IntegrationPointValidationException validationException)
 			{
-				CreateRelativityError(
-					Constants.IntegrationPoints.UNABLE_TO_SAVE_INTEGRATION_POINT_VALIDATION_FAILED,
-					String.Join(Environment.NewLine, validationException.Result.Messages)
-				);
-
+			    CreateRelativityError(
+			        Constants.IntegrationPoints.UNABLE_TO_SAVE_INTEGRATION_POINT_VALIDATION_FAILED,
+			        string.Join(Environment.NewLine, validationException.ValidationResult.MessageTexts)
+			    );
 				throw;
 			}
 			catch (Exception exception)
