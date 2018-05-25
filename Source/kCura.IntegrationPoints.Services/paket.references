@@ -8,3 +8,4 @@ Relativity.Kepler
 Relativity.Services.Interfaces
 Relativity.Toggles
 Relativity.Logging.Interfaces
+Relativity.Telemetry.APM

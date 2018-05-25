@@ -8,3 +8,4 @@ Relativity.Kepler
 Newtonsoft.Json
 Relativity.Services.Interfaces
 Relativity.Logging.Interfaces
+Relativity.Telemetry.APM

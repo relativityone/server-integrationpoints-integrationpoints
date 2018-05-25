@@ -54,6 +54,7 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="HealthCheck\IntegrationPointHealthCheckManagerTests.cs" />
     <Compile Include="Helpers\ChoicesHelper.cs" />
     <Compile Include="Helpers\IntegrationPointBaseHelper.cs" />
     <Compile Include="Helpers\PermissionsHelper.cs" />

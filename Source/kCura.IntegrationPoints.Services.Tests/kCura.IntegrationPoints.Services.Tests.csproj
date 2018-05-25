@@ -44,6 +44,7 @@
     <Compile Include="JobHistory\JobHistoryAccessTests.cs" />
     <Compile Include="JobHistory\JobHistorySummaryModelBuilderTests.cs" />
     <Compile Include="Managers\DocumentManagerTests.cs" />
+    <Compile Include="Managers\IntegrationPointHealthCheckManagerTests.cs" />
     <Compile Include="Managers\IntegrationPointManagerTests.cs" />
     <Compile Include="Managers\IntegrationPointProfileManagerTests.cs" />
     <Compile Include="Managers\IntegrationPointTypeManagerTests.cs" />
@@ -230,6 +231,17 @@
       <ItemGroup>
         <Reference Include="Relativity.Services.Interfaces">
           <HintPath>..\..\packages\Relativity.Services.Interfaces\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Telemetry.APM">
+          <HintPath>..\..\packages\Relativity.Telemetry.APM\lib\net462\Relativity.Telemetry.APM.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

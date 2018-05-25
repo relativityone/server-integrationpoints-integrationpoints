@@ -49,6 +49,7 @@
     <Compile Include="Helpers\IIntegrationPointRuntimeServiceFactory.cs" />
     <Compile Include="Helpers\IPermissionRepositoryFactory.cs" />
     <Compile Include="IDocumentManager.cs" />
+    <Compile Include="IIntegrationPointHealthCheckManager.cs" />
     <Compile Include="IIntegrationPointManager.cs" />
     <Compile Include="IIntegrationPointProfileManager.cs" />
     <Compile Include="IIntegrationPointTypeManager.cs" />
@@ -143,6 +144,17 @@
       <ItemGroup>
         <Reference Include="Relativity.Kepler">
           <HintPath>..\..\packages\Relativity.Kepler\lib\net462\Relativity.Kepler.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Telemetry.APM">
+          <HintPath>..\..\packages\Relativity.Telemetry.APM\lib\net462\Relativity.Telemetry.APM.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

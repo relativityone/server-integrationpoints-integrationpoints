@@ -4,8 +4,7 @@
 	/// This class contains constants used throughout the Relativity Integration Points application.
 	/// </summary>
     public static class Constants
-    {
-
+	{
         public const string SPECIAL_NATIVE_FILE_LOCATION_FIELD = "fb83020a-1853-4a14-8e92-accb6dbd2ef1";
         public const string SPECIAL_FOLDERPATH_FIELD = "d1d9ccdd-9773-428f-8465-4a03909192e4";
         public const string SPECIAL_FOLDERPATH_DYNAMIC_FIELD = "6BE9DD56-C517-4261-AD62-AD5E8511CE69";
