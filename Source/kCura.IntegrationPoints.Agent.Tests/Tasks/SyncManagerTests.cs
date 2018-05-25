@@ -247,6 +247,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			IEnumerable<String> ids = _instance.GetUnbatchedIDs(_job);
 
 			// ASSERT
+			_batchStatus.Received(1).OnJobStart(_job);
 			_jobHistoryErrorService.Received(1).CommitErrors();
 			Assert.IsNotNull(ids);
 			Assert.IsTrue(ids.SequenceEqual(new[] { _data }));
@@ -282,8 +283,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			Assert.AreEqual(_batchInstance, _syncManagerEventHelper.BatchInstance);
 			Assert.AreSame(_integrationPoint, _syncManagerEventHelper.IntegrationPoint);
 			Assert.AreSame(_jobHistory, _syncManagerEventHelper.JobHistory);
-
-			_batchStatus.Received(1).OnJobStart(_job);
 
 			_jobHistoryErrorService.Received(1).IntegrationPoint = _integrationPoint;
 			_jobHistoryErrorService.Received(1).JobHistory = _jobHistory;

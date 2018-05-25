@@ -119,6 +119,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					};
 					job.JobDetails = Serializer.Serialize(details);
 				}
+				
+				OnJobStart(job);
 
 				JobStopManager?.ThrowIfStopRequested();
 
@@ -185,7 +187,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				LogJobPreExecuteStart(job);
 				InjectionManager.Instance.Evaluate("B50CD1DD-6FEC-439E-A730-B84B730C9D44");
-				OnJobStart(job);
 				SetupJob(job);
 				ValidateJob(job);
 				LogJobPreExecuteSuccesfulEnd(job);
