@@ -1,8 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Net;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.WinEDDS.Api;
 using Relativity.API;
 using Relativity.APIHelper;
+using Relativity.APIHelper.ServiceManagers.ProxyHandlers;
+using Relativity.Services.Pipeline;
 
 namespace kCura.IntegrationPoints.Core
 {
@@ -14,6 +19,7 @@ namespace kCura.IntegrationPoints.Core
 		private readonly OAuthClientDto _oAuthClientDto;
 		private readonly ITokenProvider _tokenProvider;
 		private readonly IHelper _sourceHelper;
+		
 
 		public OAuthHelper(IHelper sourceHelper, Uri instanceUri, Uri rsapiUri, Uri keplerUri, OAuthClientDto oAuthClientDto, ITokenProvider tokenProvider)
 		{
@@ -37,7 +43,11 @@ namespace kCura.IntegrationPoints.Core
 
 		public IServicesMgr GetServicesManager()
 		{
-			IServicesMgr servicesMgr = new ServicesManagerBase(_rsapiUri, _keplerUri);
+			IServicesMgr servicesMgr = new ServicesManagerBase(_rsapiUri, _keplerUri, WireProtocolVersion.V2, new IProxyHandler[]
+			{
+				new FederatedInstanceKeplerHandler(_instanceUri, _oAuthClientDto, _tokenProvider),
+				new FederatedInstanceRsapiHandler(_instanceUri, _oAuthClientDto, _tokenProvider)
+			});
 
 			return servicesMgr;
 		}

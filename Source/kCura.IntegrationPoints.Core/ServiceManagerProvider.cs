@@ -69,7 +69,6 @@ namespace kCura.IntegrationPoints.Core
 					new Uri(federatedInstanceDto.InstanceUrl));
 				
 				NetworkCredential credentials = LoginHelper.LoginUsernamePassword(_RELATIVITY_BEARER_USERNAME, token, cookieContainer, federatedInstanceDto.WebApiUrl); //TODO Use instead _credentialProvider.Authenticate
-				
 				serviceManagerProvider = (new TFactory()).Create(credentials, cookieContainer, federatedInstanceDto.WebApiUrl);
 			}
 			else

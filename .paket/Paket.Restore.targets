@@ -80,9 +80,11 @@
     <!-- Step 2 Detect project specific changes -->
     <ItemGroup>
       <MyTargetFrameworks Condition="'$(TargetFramework)' != '' " Include="$(TargetFramework)"></MyTargetFrameworks>
-      <MyTargetFrameworks Condition="'@(TargetFrameworks)' != '' " Include="$(TargetFrameworks)"></MyTargetFrameworks>
+      <!-- Don't include all frameworks when msbuild explicitly asks for a single one -->
+      <MyTargetFrameworks Condition="'$(TargetFrameworks)' != '' AND '$(TargetFramework)' == '' " Include="$(TargetFrameworks)"></MyTargetFrameworks>
       <PaketResolvedFilePaths Include="@(MyTargetFrameworks -> '$(MSBuildProjectDirectory)\obj\$(MSBuildProjectFile).%(Identity).paket.resolved')"></PaketResolvedFilePaths>
     </ItemGroup>
+    <Message Importance="low" Text="MyTargetFrameworks=@(MyTargetFrameworks) PaketResolvedFilePaths=@(PaketResolvedFilePaths)" />
     <PropertyGroup>
       <PaketReferencesCachedFilePath>$(MSBuildProjectDirectory)\obj\$(MSBuildProjectFile).paket.references.cached</PaketReferencesCachedFilePath>
       <!-- MyProject.fsproj.paket.references has the highest precedence -->
@@ -92,7 +94,6 @@
       <!-- paket.references -->
       <PaketOriginalReferencesFilePath Condition=" !Exists('$(PaketOriginalReferencesFilePath)')">$(MSBuildProjectDirectory)\paket.references</PaketOriginalReferencesFilePath>
       
-      <PaketResolvedFilePath>$(MSBuildProjectDirectory)\obj\$(MSBuildProjectFile).$(TargetFramework).paket.resolved</PaketResolvedFilePath>
       <DoAllResolvedFilesExist>false</DoAllResolvedFilesExist>
       <DoAllResolvedFilesExist Condition="Exists(%(PaketResolvedFilePaths.Identity))">true</DoAllResolvedFilesExist>
       <PaketRestoreRequired>true</PaketRestoreRequired>

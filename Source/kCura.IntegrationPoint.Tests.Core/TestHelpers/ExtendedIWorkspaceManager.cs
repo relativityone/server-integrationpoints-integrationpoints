@@ -72,5 +72,10 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 		{
 			return await Manager.GetAssociatedFileShareResourceServersAsync(workspace);
 		}
+
+		public async Task<FileShareResourceServer> GetDefaultWorkspaceFileShareResourceServerAsync(WorkspaceRef workspace)
+		{
+			return await Manager.GetDefaultWorkspaceFileShareResourceServerAsync(workspace);
+		}
 	}
 }
