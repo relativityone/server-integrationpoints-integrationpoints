@@ -68,16 +68,39 @@
 			return result;
 		}
 
+		function getFormattedMessage(errors) {
+			var joinedErrors = errors
+				.map(function(error) { return formatError(error) })
+				.join(". ");
+			return "Failed to apply the profile. " + joinedErrors;
+		}
+
+		function formatError(error) {
+			if (!!error.code) {
+				return error.code + ". " + error.message;
+			} else {
+				return error.message;
+			}
+		}
+
 		//change to constants
 		var settings = {
 			SHOW_ANIMATION: 'fade'
 		};
 
+		message.errorFormatted = (function () {
+			return errorInternal(getFormattedMessage);
+		})();
+
 		message.error = (function () {
+			return errorInternal(getMessage);
+		})();
+
+		function errorInternal(getMessageFunction) {
 			function raiseError(messageBody, $container) {
-				messageBody = getMessage(messageBody);
+				messageBody = getMessageFunction(messageBody);
 				var $el = getElement($container, $main),
-						$error = $('<div class="page-message page-error"/>').append('<span class="legal-hold icon-error"></span>').append($('<div/>').append(messageBody)).hide();
+					$error = $('<div class="page-message page-error"/>').append('<span class="legal-hold icon-error"></span>').append($('<div/>').append(messageBody)).hide();
 
 				clearError($el);
 				message.info.clear($container);
@@ -99,7 +122,7 @@
 				raise: raiseError,
 				clear: clearError
 			};
-		})();
+		};
 
 		message.info = (function () {
 			function raiseInfo(messageBody, $container) {
@@ -127,7 +150,7 @@
 		message.notify = function (message, $container) {
 			root.message.info.raise(message, $container);
 			setTimeout(function () { root.message.info.clear($container); }, 3000);
-		} 
+		}
 
 		message.displayUnresolvedError = function (e, $container) {
 			//needs to be able to handle $container, webAPI fail, Web controller fail and maybe just a fail message as well!

@@ -1,41 +1,41 @@
-﻿using System;
-using kCura.IntegrationPoints.Core.Exceptions;
-using kCura.IntegrationPoints.Core.Validation.Abstract;
+﻿using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Domain.Models;
-
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Validation
 {
 	public class ValidationExecutor : IValidationExecutor
 	{
+		private readonly IAPILog _logger;
 		private readonly IIntegrationPointPermissionValidator _permissionValidator;
-
 		private readonly IIntegrationPointProviderValidator _integrationModelValidator;
 
 		private enum OperationType
 		{
 			Run,
 			Save,
-			Stop
+			Stop,
+			LoadProfile
 		}
 
 		public ValidationExecutor(IIntegrationPointProviderValidator integrationModelValidator,
-			IIntegrationPointPermissionValidator permissionValidator)
+			IIntegrationPointPermissionValidator permissionValidator, IHelper helper)
 		{
 			_integrationModelValidator = integrationModelValidator;
 			_permissionValidator = permissionValidator;
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ValidationExecutor>();
 		}
 
 		public void ValidateOnRun(ValidationContext validationContext)
 		{
 			CheckPermissions(validationContext, OperationType.Run);
-			CheckExecutionConstraints(validationContext); 
+			CheckExecutionConstraints(validationContext, OperationType.Run);
 		}
 
 		public void ValidateOnSave(ValidationContext validationContext)
 		{
 			CheckPermissions(validationContext, OperationType.Save);
-			CheckExecutionConstraints(validationContext);
+			CheckExecutionConstraints(validationContext, OperationType.Save);
 		}
 
 		public void ValidateOnStop(ValidationContext validationContext)
@@ -43,20 +43,32 @@ namespace kCura.IntegrationPoints.Core.Validation
 			CheckPermissions(validationContext, OperationType.Stop);
 		}
 
-		private void CheckExecutionConstraints(ValidationContext validationContext)
+		public ValidationResult ValidateOnProfile(ValidationContext validationContext)
 		{
-			ValidationResult validationResult = _integrationModelValidator.Validate(validationContext.Model, validationContext.SourceProvider, validationContext.DestinationProvider, 
-				validationContext.IntegrationPointType, validationContext.ObjectTypeGuid);
+			return ValidateExecutionConstraints(validationContext, OperationType.LoadProfile);
+		}
 
+		private void CheckExecutionConstraints(ValidationContext validationContext, OperationType operationType)
+		{
+			ValidationResult validationResult = ValidateExecutionConstraints(validationContext, operationType);
 			if (!validationResult.IsValid)
 			{
 				throw new IntegrationPointValidationException(validationResult);
 			}
 		}
 
+		private ValidationResult ValidateExecutionConstraints(ValidationContext validationContext, OperationType operationType)
+		{
+			ValidationResult validationResult = _integrationModelValidator.Validate(validationContext.Model, validationContext.SourceProvider, validationContext.DestinationProvider,
+				validationContext.IntegrationPointType, validationContext.ObjectTypeGuid);
+
+			LogValidationErrors(operationType, validationResult);
+			return validationResult;
+		}
+
 		private void CheckPermissions(ValidationContext validationContext, OperationType operationType)
 		{
-			ValidationResult permissionCheck = Validate(validationContext, operationType);
+			ValidationResult permissionCheck = ValidatePermission(validationContext, operationType);
 
 			if (validationContext.UserId == 0)
 			{
@@ -69,19 +81,40 @@ namespace kCura.IntegrationPoints.Core.Validation
 			}
 		}
 
-		private ValidationResult Validate(ValidationContext validationContext, OperationType operationType)
+		private ValidationResult ValidatePermission(ValidationContext validationContext, OperationType operationType)
 		{
+			ValidationResult validationResult;
 			switch (operationType)
 			{
 				case OperationType.Stop:
-					return _permissionValidator.ValidateStop(validationContext.Model, validationContext.SourceProvider,
+					validationResult = _permissionValidator.ValidateStop(validationContext.Model, validationContext.SourceProvider,
 						validationContext.DestinationProvider, validationContext.IntegrationPointType, validationContext.ObjectTypeGuid);
+					break;
 				case OperationType.Save:
-					return _permissionValidator.ValidateSave(validationContext.Model, validationContext.SourceProvider,
+					validationResult = _permissionValidator.ValidateSave(validationContext.Model, validationContext.SourceProvider,
 						validationContext.DestinationProvider, validationContext.IntegrationPointType, validationContext.ObjectTypeGuid);
+					break;
 				default:
-					return _permissionValidator.Validate(validationContext.Model, validationContext.SourceProvider,
+					validationResult = _permissionValidator.Validate(validationContext.Model, validationContext.SourceProvider,
 						validationContext.DestinationProvider, validationContext.IntegrationPointType, validationContext.ObjectTypeGuid);
+					break;
+			}
+
+			LogValidationErrors(operationType, validationResult);
+			return validationResult;
+		}
+
+		private void LogValidationErrors(OperationType operationType, ValidationResult validationResult)
+		{
+			if (validationResult.Messages == null)
+			{
+				return;
+			}
+
+			foreach (ValidationMessage validationMessage in validationResult.Messages)
+			{
+				_logger.LogError("Integration Point validation failed. Operation: {operationType}, ErrorCode: {errorCode}, ShortMessage: {shortMessage}",
+					operationType, validationMessage.ErrorCode, validationMessage.ShortMessage);
 			}
 		}
 	}

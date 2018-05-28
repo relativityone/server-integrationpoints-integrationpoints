@@ -82,7 +82,7 @@
 		if (isValid) {
 			IP.message.notify("Profile has been successfully loaded. Click Next to modify or Save to complete the set up.");
 		} else {
-			IP.message.notify("Profile has been loaded but requires modification. Click Next to modify the set up.");
+			IP.message.errorFormatted.raise(result.validationResult.errors);
 		}
 	};
 

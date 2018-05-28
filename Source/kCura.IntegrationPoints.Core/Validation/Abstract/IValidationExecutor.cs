@@ -1,4 +1,4 @@
-﻿
+﻿using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Core.Validation
 {
@@ -9,5 +9,7 @@ namespace kCura.IntegrationPoints.Core.Validation
 		void ValidateOnSave(ValidationContext validationContext);
 
 		void ValidateOnStop(ValidationContext validationContext);
+
+		ValidationResult ValidateOnProfile(ValidationContext validationContext);
 	}
 }

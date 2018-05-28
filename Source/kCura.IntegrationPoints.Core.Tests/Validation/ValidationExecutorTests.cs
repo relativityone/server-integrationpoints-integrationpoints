@@ -1,8 +1,6 @@
-﻿
-using System;
+﻿using System;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
@@ -10,6 +8,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation
 {
@@ -40,7 +39,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			_providerValidatorMock = Substitute.For<IIntegrationPointProviderValidator>();
 			_permissionValidatorMock = Substitute.For<IIntegrationPointPermissionValidator>();
 
-			_subjectUnderTest = new ValidationExecutor(_providerValidatorMock, _permissionValidatorMock);
+			IHelper helper = Substitute.For<IHelper>();
+
+			_subjectUnderTest = new ValidationExecutor(_providerValidatorMock, _permissionValidatorMock, helper);
 
 			_destinationProvider = new DestinationProvider();
 			_sourceProvider = new SourceProvider();

@@ -1,9 +1,12 @@
-﻿using kCura.Apps.Common.Utils.Serializers;
+﻿using System;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts;
+using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts.Interfaces;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
@@ -63,26 +66,62 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			return new ProductionValidator(workspaceArtifactId, productionManager);
 		}
 
-	    public ImportProductionValidator CreateImportProductionValidator(int workspaceArtifactId, int? federatedInstanceArtifactId, string credentials)
-	    {
-	        IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(_helper);
-	        IProductionManager importProductionManager = _managerFactory.CreateProductionManager(contextContainer);
-
-            return new ImportProductionValidator(workspaceArtifactId, importProductionManager, federatedInstanceArtifactId, credentials);
-	    }
-
-	    public RelativityProviderWorkspaceValidator CreateWorkspaceValidator(string prefix)
+		public ImportProductionValidator CreateImportProductionValidator(int workspaceArtifactId, int? federatedInstanceArtifactId, string credentials)
 		{
-			IWorkspaceManager workspaceManager = _managerFactory.CreateWorkspaceManager(_contextContainerFactory.CreateContextContainer(_helper, _helper.GetServicesManager()));
-			return new RelativityProviderWorkspaceValidator(workspaceManager, prefix);
+			IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(_helper);
+			IProductionManager importProductionManager = _managerFactory.CreateProductionManager(contextContainer);
+
+			return new ImportProductionValidator(workspaceArtifactId, importProductionManager, federatedInstanceArtifactId, credentials);
 		}
 
-		public RelativityProviderWorkspaceValidator CreateWorkspaceValidator(string prefix, int? federatedInstanceArtifactId, string credentials)
+		public IRelativityProviderDestinationWorkspaceExistenceValidator CreateDestinationWorkspaceExistenceValidator(int? federatedInstanceArtifactId, string credentials)
 		{
-			var targetHelper = _helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId, credentials);
-			IWorkspaceManager workspaceManager =
-				_managerFactory.CreateWorkspaceManager(_contextContainerFactory.CreateContextContainer(_helper, targetHelper.GetServicesManager()));
-			return new RelativityProviderWorkspaceValidator(workspaceManager, prefix);
+			IHelper targetHelper = _helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId, credentials);
+			IWorkspaceManager workspaceManager = _managerFactory.CreateWorkspaceManager(_contextContainerFactory.CreateContextContainer(_helper, targetHelper.GetServicesManager()));
+			return new RelativityProviderDestinationWorkspaceExistenceValidator(workspaceManager);
+		}
+
+		public IRelativityProviderDestinationWorkspacePermissionValidator CreateDestinationWorkspacePermissionValidator(int? federatedInstanceArtifactId, string credentials)
+		{
+			IHelper targetHelper = _helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId, credentials);
+			IPermissionManager destinationWorkspacePermissionManager = CreatePermissionManager(targetHelper);
+			return new RelativityProviderDestinationWorkspacePermissionValidator(destinationWorkspacePermissionManager);
+		}
+
+		public IRelativityProviderSourceWorkspacePermissionValidator CreateSourceWorkspacePermissionValidator()
+		{
+			IPermissionManager sourceWorkspacePermissionManager = CreatePermissionManager(_helper);
+			return new RelativityProviderSourceWorkspacePermissionValidator(sourceWorkspacePermissionManager);
+		}
+
+		private IPermissionManager CreatePermissionManager(IHelper helper)
+		{
+			try
+			{
+				return _managerFactory.CreatePermissionManager(_contextContainerFactory.CreateContextContainer(helper));
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "An error occurred creating permission manager.");
+				throw new IntegrationPointsException(IntegrationPointsExceptionMessages.ERROR_OCCURED_CONTACT_ADMINISTRATOR, ex)
+				{
+					ExceptionSource = IntegrationPointsExceptionSource.VALIDATION,
+					ShouldAddToErrorsTab = false
+				};
+			}
+		}
+
+		public RelativityProviderWorkspaceNameValidator CreateWorkspaceNameValidator(string prefix)
+		{
+			IWorkspaceManager workspaceManager = _managerFactory.CreateWorkspaceManager(_contextContainerFactory.CreateContextContainer(_helper, _helper.GetServicesManager()));
+			return new RelativityProviderWorkspaceNameValidator(workspaceManager, prefix);
+		}
+
+		public RelativityProviderWorkspaceNameValidator CreateWorkspaceNameValidator(string prefix, int? federatedInstanceArtifactId, string credentials)
+		{
+			IHelper targetHelper = _helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId, credentials);
+			IWorkspaceManager workspaceManager = _managerFactory.CreateWorkspaceManager(_contextContainerFactory.CreateContextContainer(_helper, targetHelper.GetServicesManager()));
+			return new RelativityProviderWorkspaceNameValidator(workspaceManager, prefix);
 		}
 
 		public TransferredObjectValidator CreateTransferredObjectValidator()

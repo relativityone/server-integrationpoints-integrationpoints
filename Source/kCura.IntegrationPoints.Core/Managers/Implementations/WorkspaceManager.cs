@@ -29,10 +29,10 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			return activeWorkspaces.Intersect(userWorkspaces);
 		}
 
-		public WorkspaceDTO RetrieveWorkspace(int workspaceArtifactId)
+		public WorkspaceDTO RetrieveWorkspace(int workspaceArtifactId, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
 		{
 			IWorkspaceRepository workspaceRepository = _repositoryFactory.GetWorkspaceRepository();
-			WorkspaceDTO workspace = workspaceRepository.Retrieve(workspaceArtifactId);
+			WorkspaceDTO workspace = workspaceRepository.Retrieve(workspaceArtifactId, executionIdentity);
 
 			return workspace;
 		}

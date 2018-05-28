@@ -1,36 +1,22 @@
-﻿using System;
-using kCura.Apps.Common.Utils.Serializers;
+﻿using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
-using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
-using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Domain.Exceptions;
+using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts.Interfaces;
 using kCura.IntegrationPoints.Domain.Models;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts
 {
 	public class RelativityProviderPermissionValidator : BasePermissionValidator
 	{
-		private readonly IAPILog _logger;
-		private readonly IContextContainerFactory _contextContainerFactory;
-		private readonly IManagerFactory _managerFactory;
-		private readonly IHelperFactory _helperFactory;
-		private readonly IHelper _helper;
+		private readonly IRelativityProviderValidatorsFactory _validatorsFactory;
 
-		public RelativityProviderPermissionValidator(ISerializer serializer, IServiceContextHelper contextHelper,
-			IHelper helper, IHelperFactory helperFactory, IContextContainerFactory contextContainerFactory, IManagerFactory managerFactory)
+		public RelativityProviderPermissionValidator(ISerializer serializer, IServiceContextHelper contextHelper, IRelativityProviderValidatorsFactory validatorsFactory)
 			: base(serializer, contextHelper)
 		{
-			_logger = helper.GetLoggerFactory().GetLogger().ForContext<RelativityProviderPermissionValidator>();
-			_helper = helper;
-			_helperFactory = helperFactory;
-			_contextContainerFactory = contextContainerFactory;
-			_managerFactory = managerFactory;
+			_validatorsFactory = validatorsFactory;
 		}
 
 		public override string Key
@@ -48,131 +34,30 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 
 		private ValidationResult ValidateSourceWorkspacePermission()
 		{
-			var result = new ValidationResult();
-			IPermissionManager sourceWorkspacePermissionManager = CreatePermissionManager(_helper);
-
-			if (!sourceWorkspacePermissionManager.UserCanExport(ContextHelper.WorkspaceID))
-			{
-				result.Add(Constants.IntegrationPoints.PermissionErrors.SOURCE_WORKSPACE_NO_EXPORT);
-			}
-
-			if (!sourceWorkspacePermissionManager.UserCanEditDocuments(ContextHelper.WorkspaceID))
-			{
-				result.Add(Constants.IntegrationPoints.NO_PERMISSION_TO_EDIT_DOCUMENTS);
-			}
-			return result;
+			IRelativityProviderSourceWorkspacePermissionValidator sourceWorkspacePermissionValidator = _validatorsFactory.CreateSourceWorkspacePermissionValidator();
+			return sourceWorkspacePermissionValidator.Validate(ContextHelper.WorkspaceID);
 		}
 
 		private ValidationResult ValidateDestinationWorkspacePermission(IntegrationPointProviderValidationModel model)
 		{
+			SourceConfiguration sourceConfiguration = Serializer.Deserialize<SourceConfiguration>(model.SourceConfiguration);
+			DestinationConfiguration destinationConfiguration = Serializer.Deserialize<DestinationConfiguration>(model.DestinationConfiguration);
+
 			var result = new ValidationResult();
 
-			SourceConfiguration sourceConfiguration = Serializer.Deserialize<SourceConfiguration>(model.SourceConfiguration);
-			IPermissionManager destinationWorkspacePermissionManager = CreateDestinationPermissionManager(model, sourceConfiguration);
-			IWorkspaceManager destinationWorkspaceManager = CreateDestinationWorkspaceManager(model, sourceConfiguration);
-
-			if (!destinationWorkspaceManager.WorkspaceExists(sourceConfiguration.TargetWorkspaceArtifactId))
+			IRelativityProviderDestinationWorkspaceExistenceValidator destinationWorkspaceExistenceValidator = _validatorsFactory.CreateDestinationWorkspaceExistenceValidator(
+				sourceConfiguration.FederatedInstanceArtifactId, model.SecuredConfiguration);
+			result.Add(destinationWorkspaceExistenceValidator.Validate(sourceConfiguration.TargetWorkspaceArtifactId));
+			if (!result.IsValid)
 			{
-                var message = new ValidationMessage(
-                    Constants.IntegrationPoints.ValidationErrorCodes.DESTINATION_WORKSPACE_NOT_AVAILABLE,
-                    Constants.IntegrationPoints.ValidationErrors.DESTINATION_WORKSPACE_NOT_AVAILABLE
-                );
-				_logger.LogError(message.ToString());
-                result.Add(message);
-				return result; // destination workspace does not exist
+				return result; // destination workspace doesnt exist
 			}
 
-			if (!destinationWorkspacePermissionManager.UserHasPermissionToAccessWorkspace(sourceConfiguration.TargetWorkspaceArtifactId))
-			{
-                var message = new ValidationMessage(
-                    Constants.IntegrationPoints.PermissionErrorCodes.DESTINATION_WORKSPACE_NO_ACCESS, 
-                    Constants.IntegrationPoints.PermissionErrors.DESTINATION_WORKSPACE_NO_ACCESS
-                );
-				_logger.LogError(message.ToString());
-				result.Add(message);
-				return result; // it does not make sense to validate other destination workspace permissions
-			}
-
-			if (!destinationWorkspacePermissionManager.UserCanImport(sourceConfiguration.TargetWorkspaceArtifactId))
-			{
-				result.Add(Constants.IntegrationPoints.PermissionErrors.DESTINATION_WORKSPACE_NO_IMPORT);
-			}
-
-			DestinationConfiguration destinationConfiguration = Serializer.Deserialize<DestinationConfiguration>(model.DestinationConfiguration);
-			if (!destinationWorkspacePermissionManager.UserHasArtifactTypePermissions(sourceConfiguration.TargetWorkspaceArtifactId, destinationConfiguration.ArtifactTypeId,
-				new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Create }))
-			{
-				result.Add(Constants.IntegrationPoints.PermissionErrors.MISSING_DESTINATION_RDO_PERMISSIONS);
-			}
+			IRelativityProviderDestinationWorkspacePermissionValidator destinationWorkspacePermissionValidator = _validatorsFactory.CreateDestinationWorkspacePermissionValidator(
+				sourceConfiguration.FederatedInstanceArtifactId, model.SecuredConfiguration);
+			result.Add(destinationWorkspacePermissionValidator.Validate(sourceConfiguration.TargetWorkspaceArtifactId, destinationConfiguration.ArtifactTypeId));
 
 			return result;
-		}
-
-		private IPermissionManager CreateDestinationPermissionManager(IntegrationPointProviderValidationModel model, SourceConfiguration sourceConfiguration)
-		{
-			IHelper targetHelper = CreateTargetHelper(model, sourceConfiguration);
-			IPermissionManager destinationWorkspacePermissionManager = CreatePermissionManager(targetHelper);
-			return destinationWorkspacePermissionManager;
-		}
-
-		private IWorkspaceManager CreateDestinationWorkspaceManager(IntegrationPointProviderValidationModel model, SourceConfiguration sourceConfiguration)
-		{
-			IHelper targetHelper = CreateTargetHelper(model, sourceConfiguration);
-			IWorkspaceManager workspaceManager = CreateWorkspaceManager(targetHelper);
-			return workspaceManager;
-		}
-
-		private IHelper CreateTargetHelper(IntegrationPointProviderValidationModel model,
-			SourceConfiguration sourceConfiguration)
-		{
-			try
-			{
-				return _helperFactory.CreateTargetHelper(_helper, sourceConfiguration.FederatedInstanceArtifactId,
-					model.SecuredConfiguration);
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "An error occurred creating target helper. FederatedInstance: {instanceArtifactId}. Model: {modelArtifactId}", sourceConfiguration.FederatedInstanceArtifactId, model.ArtifactId);
-				throw new IntegrationPointsException(IntegrationPointsExceptionMessages.ERROR_OCCURED_CONTACT_ADMINISTRATOR, ex)
-				{
-					ExceptionSource = IntegrationPointsExceptionSource.VALIDATION,
-					ShouldAddToErrorsTab = false
-				};
-			}
-		}
-
-		private IPermissionManager CreatePermissionManager(IHelper helper)
-		{
-			try
-			{
-				return _managerFactory.CreatePermissionManager(_contextContainerFactory.CreateContextContainer(helper));
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "An error occurred creating permission manager.");
-				throw new IntegrationPointsException(IntegrationPointsExceptionMessages.ERROR_OCCURED_CONTACT_ADMINISTRATOR, ex)
-				{
-					ExceptionSource = IntegrationPointsExceptionSource.VALIDATION,
-					ShouldAddToErrorsTab = false
-				};
-			}
-		}
-
-		private IWorkspaceManager CreateWorkspaceManager(IHelper helper)
-		{
-			try
-			{
-				return _managerFactory.CreateWorkspaceManager(_contextContainerFactory.CreateContextContainer(helper));
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "An error occurred creating workspace manager.");
-				throw new IntegrationPointsException(IntegrationPointsExceptionMessages.ERROR_OCCURED_CONTACT_ADMINISTRATOR, ex)
-				{
-					ExceptionSource = IntegrationPointsExceptionSource.VALIDATION,
-					ShouldAddToErrorsTab = false
-				};
-			}
 		}
 	}
 }

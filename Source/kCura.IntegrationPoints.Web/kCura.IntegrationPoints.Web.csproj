@@ -146,6 +146,11 @@
     <Compile Include="Models\ScheduleModel.cs" />
     <Compile Include="Models\SourceTypeModel.cs" />
     <Compile Include="Models\SynchronizerSettings.cs" />
+    <Compile Include="Models\ValidatedProfileDTO.cs" />
+    <Compile Include="Models\Validation\IValidationResultMapper.cs" />
+    <Compile Include="Models\Validation\ValidationErrorDTO.cs" />
+    <Compile Include="Models\Validation\ValidationResultDTO.cs" />
+    <Compile Include="Models\Validation\ValidationResultMapper.cs" />
     <Compile Include="Models\WorkspaceModel.cs" />
     <Compile Include="Providers\WorkspaceIdProvider.cs" />
     <Compile Include="Providers\IWorkspaceIdProvider.cs" />

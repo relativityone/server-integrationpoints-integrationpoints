@@ -1,8 +1,11 @@
 ﻿using System;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Validation.Parts;
+using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts;
+using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts.Interfaces;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
@@ -31,7 +34,8 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 		{
 			try
 			{
-				return ValidateInternal(value);
+				IntegrationPointProviderValidationModel integrationModel = CastToValidationModel(value);
+				return Validate(integrationModel);
 			}
 			catch (IntegrationPointsException)
 			{
@@ -48,38 +52,66 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			}
 		}
 
-		private ValidationResult ValidateInternal(object value)
+		private ValidationResult Validate(IntegrationPointProviderValidationModel integrationModel)
 		{
-			IntegrationPointProviderValidationModel integrationModel = CastToValidationModel(value);
+			SourceConfiguration sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(integrationModel.SourceConfiguration);
+			
+			var result = new ValidationResult();
+			result.Add(ValidateSourceWorkspace(sourceConfiguration));
+			result.Add(ValidateDestinationWorkspace(integrationModel, sourceConfiguration));
+			return result;
+		}
 
+		private ValidationResult ValidateSourceWorkspace(SourceConfiguration sourceConfiguration)
+		{
 			var result = new ValidationResult();
 
-			SourceConfiguration sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(integrationModel.SourceConfiguration);
-			ImportSettings destinationConfiguration = _serializer.Deserialize<ImportSettings>(integrationModel.DestinationConfiguration);
-
-			var sourceWorkspaceValidator = _validatorsFactory.CreateWorkspaceValidator("Source");
+			RelativityProviderWorkspaceNameValidator sourceWorkspaceValidator = _validatorsFactory.CreateWorkspaceNameValidator("Source");
 			result.Add(sourceWorkspaceValidator.Validate(sourceConfiguration.SourceWorkspaceArtifactId));
 
 			if (!result.IsValid)
+			{
 				return result;
+			}
 
 			if (sourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.SavedSearch)
 			{
-				var savedSearchValidator =
-					_validatorsFactory.CreateSavedSearchValidator(sourceConfiguration.SourceWorkspaceArtifactId,
-						sourceConfiguration.SavedSearchArtifactId);
+				SavedSearchValidator savedSearchValidator = _validatorsFactory.CreateSavedSearchValidator(sourceConfiguration.SourceWorkspaceArtifactId, sourceConfiguration.SavedSearchArtifactId);
 				result.Add(savedSearchValidator.Validate(sourceConfiguration.SavedSearchArtifactId));
 			}
 			else
 			{
-				var productionValidator =
-					_validatorsFactory.CreateProductionValidator(sourceConfiguration.SourceWorkspaceArtifactId);
+				ProductionValidator productionValidator = _validatorsFactory.CreateProductionValidator(sourceConfiguration.SourceWorkspaceArtifactId);
 				result.Add(productionValidator.Validate(sourceConfiguration.SourceProductionId));
 			}
 
-			var destinationWorkspaceValidator = _validatorsFactory.CreateWorkspaceValidator("Destination", sourceConfiguration.FederatedInstanceArtifactId,
-				integrationModel.SecuredConfiguration);
-			result.Add(destinationWorkspaceValidator.Validate(sourceConfiguration.TargetWorkspaceArtifactId));
+			return result;
+		}
+
+		private ValidationResult ValidateDestinationWorkspace(IntegrationPointProviderValidationModel integrationModel, SourceConfiguration sourceConfiguration)
+		{
+			var result = new ValidationResult();
+			IRelativityProviderDestinationWorkspaceExistenceValidator destinationWorkspaceExistenceValidator =
+				_validatorsFactory.CreateDestinationWorkspaceExistenceValidator(sourceConfiguration.FederatedInstanceArtifactId, integrationModel.SecuredConfiguration);
+			result.Add(destinationWorkspaceExistenceValidator.Validate(sourceConfiguration.TargetWorkspaceArtifactId));
+			if (!result.IsValid)
+			{
+				return result;
+			}
+
+			RelativityProviderWorkspaceNameValidator destinationWorkspaceNameValidator = _validatorsFactory.CreateWorkspaceNameValidator("Destination",
+				sourceConfiguration.FederatedInstanceArtifactId, integrationModel.SecuredConfiguration);
+			result.Add(destinationWorkspaceNameValidator.Validate(sourceConfiguration.TargetWorkspaceArtifactId));
+
+			ImportSettings destinationConfiguration = _serializer.Deserialize<ImportSettings>(integrationModel.DestinationConfiguration);
+
+			IRelativityProviderDestinationWorkspacePermissionValidator destinationWorkspacePermissionValidator =
+				_validatorsFactory.CreateDestinationWorkspacePermissionValidator(sourceConfiguration.FederatedInstanceArtifactId, integrationModel.SecuredConfiguration);
+			result.Add(destinationWorkspacePermissionValidator.Validate(sourceConfiguration.TargetWorkspaceArtifactId, destinationConfiguration.ArtifactTypeId));
+			if (!result.IsValid)
+			{
+				return result;
+			}
 
 			if (destinationConfiguration.DestinationFolderArtifactId > 0 && destinationConfiguration.ProductionArtifactId == 0)
 			{

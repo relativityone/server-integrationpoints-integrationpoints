@@ -79,7 +79,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 
 			IIntegrationPointPermissionValidator permissionValidator = new IntegrationPointPermissionValidator(Enumerable.Empty<IPermissionValidator>(), integrationPointSerializer);
 
-			IValidationExecutor validationExecutor = new ValidationExecutor(ipValidator, permissionValidator);
+			IValidationExecutor validationExecutor = new ValidationExecutor(ipValidator, permissionValidator, helper);
 
 			IJobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(caseServiceContext, helper);
 			IIntegrationPointService integrationPointService = new IntegrationPointService(helper, caseServiceContext,

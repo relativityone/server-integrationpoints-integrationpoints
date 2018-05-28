@@ -43,12 +43,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			var validatorsFactoryMock = Substitute.For<IRelativityProviderValidatorsFactory>();
 
 			var workspaceManagerMock = Substitute.For<IWorkspaceManager>();
-			var workspaceValidatorMock = Substitute.For<RelativityProviderWorkspaceValidator>(workspaceManagerMock, string.Empty);
+			var workspaceValidatorMock = Substitute.For<RelativityProviderWorkspaceNameValidator>(workspaceManagerMock, string.Empty);
 			workspaceValidatorMock.Validate(Arg.Any<int>())
 				.Returns(new ValidationResult());
-			validatorsFactoryMock.CreateWorkspaceValidator(Arg.Any<string>(), Arg.Any<int?>(), Arg.Any<string>())
+			validatorsFactoryMock.CreateWorkspaceNameValidator(Arg.Any<string>(), Arg.Any<int?>(), Arg.Any<string>())
 				.Returns(workspaceValidatorMock);
-			validatorsFactoryMock.CreateWorkspaceValidator(Arg.Any<string>())
+			validatorsFactoryMock.CreateWorkspaceNameValidator(Arg.Any<string>())
 				.Returns(workspaceValidatorMock);
 
 			var savedSearchRepositoryMock = Substitute.For<ISavedSearchQueryRepository>();

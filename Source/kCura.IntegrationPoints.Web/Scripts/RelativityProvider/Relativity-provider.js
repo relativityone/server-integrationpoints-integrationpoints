@@ -36,10 +36,10 @@
 	ko.validation.rules['checkSavedSearch'] = {
 		async: true,
 		validator: function (value, params, callback) {
-			var okCallback = function(result) {
+			var okCallback = function (result) {
 				callback(!!result);
 			};
-			var errorCallback = function() {
+			var errorCallback = function () {
 				callback({ isValid: false, message: 'Unable to validate if the saved search is accessible. Please try again.' });
 			};
 			savedSearchService.RetrieveSavedSearch(value, okCallback, errorCallback);
@@ -47,7 +47,7 @@
 		message: 'The saved search is no longer accessible. Please verify your settings or create a new Integration Point.'
 	};
 	ko.validation.registerExtenders();
-	
+
 	var viewModel;
 
 	message.dFrame.IP.reverseMapFields = true; // set the flag so that the fields can be reversed;
@@ -148,7 +148,7 @@
 		self.IsProductionSelected = function () {
 			return self.TypeOfExport() === ExportEnums.SourceOptionsEnum.Production;
 		};
-		
+
 		self.SavedSearchArtifactId = ko.observable(state.SavedSearchArtifactId).extend({
 			required: {
 				onlyIf: function () {
@@ -280,14 +280,17 @@
 		self.LocationFolderChecked.subscribe(function (value) {
 			if (value === "true") {
 				self.ProductionArtifactId(null);
-				self.getFolderAndSubFolders(self.TargetWorkspaceArtifactId());
+				if (self.TargetWorkspaceArtifactId() && self.TargetWorkspaceArtifactId.isValid()) {
+					self.getFolderAndSubFolders(self.TargetWorkspaceArtifactId());
+				}
 				self.locationSelector.toggle(self.TargetWorkspaceArtifactId.isValid());
 			} else {
 				self.TargetFolder("");
 				self.TargetFolder.isModified(false);
 				self.locationSelector.toggle(false);
-
-				self.getDestinationProductionSets(self.TargetWorkspaceArtifactId());
+				if (self.TargetWorkspaceArtifactId() && self.TargetWorkspaceArtifactId.isValid()) {
+					self.getDestinationProductionSets(self.TargetWorkspaceArtifactId());
+				}
 				self.ProductionArtifactId.isModified(false);
 			}
 		});
@@ -322,54 +325,61 @@
 				}
 			});
 
-			if (self.FolderArtifactId() && self.TargetWorkspaceArtifactId()) {
-				self.getFolderAndSubFolders(self.TargetWorkspaceArtifactId(), self.FolderArtifactId());
-			}
-
-			self.locationSelector.toggle(self.TargetWorkspaceArtifactId.isValid());
+			var workspacesUpgradedPromise = self.updateWorkspaces();
+			workspacesUpgradedPromise.then(function () {
+				if (self.FolderArtifactId() && self.TargetWorkspaceArtifactId() && self.TargetWorkspaceArtifactId.isValid()) {
+					self.getFolderAndSubFolders(self.TargetWorkspaceArtifactId(), self.FolderArtifactId());
+				}
+				self.locationSelector.toggle(self.TargetWorkspaceArtifactId.isValid());
+			});
 		};
 
 		self.SavedSearchUrl = IP.utils.generateWebAPIURL('SavedSearchFinder', IP.utils.getParameterByName("AppID", window.top));
 
 		self.updateWorkspaces = function () {
-			IP.data.ajax({
+			var stateLocal = state;
+
+			var retrieveWorkspacesPromise = IP.data.ajax({
 				type: 'POST',
 				url: IP.utils.generateWebAPIURL('WorkspaceFinder', self.FederatedInstanceArtifactId()),
 				data: self.SecuredConfiguration(),
-				async: true,
-				success: function (result) {
-					ko.utils.arrayForEach(result, function (item) {
+				async: true
+			}).fail(function () {
+				IP.frameMessaging().dFrame.IP.message.error.raise("Unable to retrieve the workspace information. Please contact your system administrator.");
+				self.workspaces([]);
+			});
+
+			var workspacesUpgradedPromise = retrieveWorkspacesPromise.then(function (result) {
+				ko.utils.arrayForEach(result,
+					function (item) {
 						item.displayName = IP.utils.decode(item.displayName);
 					});
-					self.workspaces(result);
-					self.TargetWorkspaceArtifactId(state.TargetWorkspaceArtifactId);
-					self.getDestinationProductionSets(self.TargetWorkspaceArtifactId());
-					self.TargetWorkspaceArtifactId.subscribe(function (value) {
-						if (value) {
-							self.EnableLocationRadio(true);
-							self.TargetFolder("");
-							self.TargetFolder.isModified(false);
-						} else {
-							self.EnableLocationRadio(false);
-							state.ProductionArtifactId = null;
-							self.ProductionArtifactId(null);
-						}
-						if (self.TargetWorkspaceArtifactId() !== value) {
+				self.workspaces(result);
+				self.TargetWorkspaceArtifactId(stateLocal.TargetWorkspaceArtifactId);
+				self.getDestinationProductionSets(self.TargetWorkspaceArtifactId());
+				self.TargetWorkspaceArtifactId.subscribe(function (value) {
+					if (value) {
+						self.EnableLocationRadio(true);
+						self.TargetFolder("");
+						self.TargetFolder.isModified(false);
+					} else {
+						self.EnableLocationRadio(false);
+						stateLocal.ProductionArtifactId = null;
+						self.ProductionArtifactId(null);
+					}
+					if (self.TargetWorkspaceArtifactId() !== value) {
 
-							self.getDestinationProductionSets(self.TargetWorkspaceArtifactId());
-							self.TargetWorkspaceArtifactId.isModified(false);
-							self.WorkspaceHasChanged = true;
-						}
-					});
-				},
-				error: function () {
-					IP.frameMessaging().dFrame.IP.message.error.raise("Unable to retrieve the workspace information. Please contact your system administrator.");
-					self.workspaces([]);
-				}
+						self.getDestinationProductionSets(self.TargetWorkspaceArtifactId());
+						self.TargetWorkspaceArtifactId.isModified(false);
+						self.WorkspaceHasChanged = true;
+					}
+				});
 			});
+
+			return workspacesUpgradedPromise;
 		}
 
-		self.RetrieveSavedSearchTree = function(nodeId, callback) {
+		self.RetrieveSavedSearchTree = function (nodeId, callback) {
 			var selectedSavedSearchId = self.SavedSearchArtifactId();
 			self.SavedSearchService.RetrieveSavedSearchTree(nodeId, selectedSavedSearchId, callback);
 		};
@@ -503,7 +513,9 @@
 
 		self.TargetWorkspaceArtifactId.subscribe(function (value) {
 			if (value) {
-				self.getFolderAndSubFolders(value);
+				if (self.TargetWorkspaceArtifactId() && self.TargetWorkspaceArtifactId.isValid()) {
+					self.getFolderAndSubFolders(value);
+				}
 				self.EnableLocationRadio(true);
 				self.LocationFolderChecked((state.ProductionArtifactId != undefined && state.ProductionArtifactId > 0) ? 'false' : 'true');
 			} else {

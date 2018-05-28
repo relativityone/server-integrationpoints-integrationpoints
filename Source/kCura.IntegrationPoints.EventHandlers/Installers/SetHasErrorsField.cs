@@ -129,7 +129,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			_caseServiceContext = caseServiceContext;
 			IIntegrationPointProviderValidator ipValidator = new IntegrationPointProviderValidator(Enumerable.Empty<IValidator>(), integrationPointSerializer);
 			IIntegrationPointPermissionValidator permissionValidator = new IntegrationPointPermissionValidator(Enumerable.Empty<IPermissionValidator>(), integrationPointSerializer);
-			IValidationExecutor validationExecutor = new ValidationExecutor(ipValidator, permissionValidator);
+			IValidationExecutor validationExecutor = new ValidationExecutor(ipValidator, permissionValidator, Helper);
 
 			IJobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(caseServiceContext, Helper);
 

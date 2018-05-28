@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValidator
 {
@@ -29,10 +30,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			};
 
 			var workspaceManagerMock = Substitute.For<IWorkspaceManager>();
-			workspaceManagerMock.RetrieveWorkspace(Arg.Any<int>())
+			workspaceManagerMock.RetrieveWorkspace(Arg.Any<int>(), ExecutionIdentity.System)
 				.Returns(workspaceDTO);
 
-			var validator = new RelativityProviderWorkspaceValidator(workspaceManagerMock, workspacePrefix);
+			var validator = new RelativityProviderWorkspaceNameValidator(workspaceManagerMock, workspacePrefix);
 
 			// act
 			ValidationResult actual = validator.Validate(workspaceArtifactId);
@@ -53,7 +54,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			workspaceManagerMock.RetrieveWorkspace(Arg.Any<int>())
 				.Returns(x => { throw new Exception("Thou shall not pass!"); });
 
-			var validator = new RelativityProviderWorkspaceValidator(workspaceManagerMock, workspacePrefix);
+			var validator = new RelativityProviderWorkspaceNameValidator(workspaceManagerMock, workspacePrefix);
 
 			// act
 			ValidationResult actual = validator.Validate(workspaceArtifactId);
@@ -79,10 +80,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			};
 
 			var workspaceManagerMock = Substitute.For<IWorkspaceManager>();
-			workspaceManagerMock.RetrieveWorkspace(Arg.Any<int>())
+			workspaceManagerMock.RetrieveWorkspace(Arg.Any<int>(), ExecutionIdentity.System)
 				.Returns(workspaceDTO);
 
-			var validator = new RelativityProviderWorkspaceValidator(workspaceManagerMock, workspacePrefix);
+			var validator = new RelativityProviderWorkspaceNameValidator(workspaceManagerMock, workspacePrefix);
 
 			// act
 			ValidationResult actual = validator.Validate(workspaceArtifactId);

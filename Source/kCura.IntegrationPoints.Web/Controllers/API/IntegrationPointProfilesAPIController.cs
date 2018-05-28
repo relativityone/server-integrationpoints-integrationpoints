@@ -6,11 +6,14 @@ using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Attributes;
+using kCura.IntegrationPoints.Web.Models;
+using kCura.IntegrationPoints.Web.Models.Validation;
 using Relativity.API;
 using Relativity.Telemetry.Services.Interface;
 using Relativity.Telemetry.Services.Metrics;
@@ -24,17 +27,17 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly IIntegrationPointProfileService _profileService;
 		private readonly IRelativityUrlHelper _urlHelper;
 		private readonly IRelativityObjectManager _objectManager;
-		private readonly IIntegrationPointProviderValidator _integrationModelValidator;
+		private readonly IValidationExecutor _validationExecutor;
 
 		public IntegrationPointProfilesAPIController(ICPHelper cpHelper, IIntegrationPointProfileService profileService, IIntegrationPointService integrationPointService,
-			IRelativityUrlHelper urlHelper, IRelativityObjectManager objectManager, IIntegrationPointProviderValidator integrationModelValidator)
+			IRelativityUrlHelper urlHelper, IRelativityObjectManager objectManager, IValidationExecutor validationExecutor)
 		{
 			_cpHelper = cpHelper;
 			_profileService = profileService;
 			_integrationPointService = integrationPointService;
 			_urlHelper = urlHelper;
 			_objectManager = objectManager;
-			_integrationModelValidator = integrationModelValidator;
+			_validationExecutor = validationExecutor;
 		}
 
 		[HttpGet]
@@ -77,19 +80,15 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			if (artifactId > 0)
 			{
 				IntegrationPointProfileModel model = _profileService.ReadIntegrationPointProfile(artifactId);
-
-				SourceProvider sourceProvider = _objectManager.Read<SourceProvider>(model.SourceProvider);
-				DestinationProvider destinationProvider = _objectManager.Read<DestinationProvider>(model.DestinationProvider);
-				IntegrationPointType integrationPointType = _objectManager.Read<IntegrationPointType>(model.Type);
-
-				ValidationResult validationResult = _integrationModelValidator.Validate(model, sourceProvider, destinationProvider, integrationPointType, ObjectTypeGuids.IntegrationPointProfile);
-
-				return Request.CreateResponse(HttpStatusCode.OK, new { model, validationResult });
+				ValidationResultDTO validationResult = ValidateIntegrationPointProfile(model);
+				
+				var output = new ValidatedProfileDTO(model, validationResult);
+				return Request.CreateResponse(HttpStatusCode.OK, output);
 			}
 
 			return Request.CreateResponse(HttpStatusCode.NotAcceptable);
 		}
-
+		
 		[HttpPost]
 		[LogApiExceptionFilter(Message = "Unable to save or update integration point profile.")]
 		public HttpResponseMessage Save(int workspaceID, IntegrationPointProfileModel model)
@@ -151,6 +150,32 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 					}
 				}
 			}
+		}
+
+		private ValidationResultDTO ValidateIntegrationPointProfile(IntegrationPointProfileModel model)
+		{
+			SourceProvider sourceProvider = _objectManager.Read<SourceProvider>(model.SourceProvider);
+			DestinationProvider destinationProvider = _objectManager.Read<DestinationProvider>(model.DestinationProvider);
+			IntegrationPointType integrationPointType = _objectManager.Read<IntegrationPointType>(model.Type);
+
+			ValidationContext validationContext = new ValidationContext
+			{
+				DestinationProvider = destinationProvider,
+				IntegrationPointType = integrationPointType,
+				Model = model,
+				SourceProvider = sourceProvider,
+				ObjectTypeGuid = ObjectTypeGuids.IntegrationPointProfile
+			};
+
+			ValidationResult validationResult = _validationExecutor.ValidateOnProfile(validationContext);
+
+			return MapToValidationResultOutputModel(validationResult);
+		}
+
+		private ValidationResultDTO MapToValidationResultOutputModel(ValidationResult validationResult)
+		{
+			var mapper = new ValidationResultMapper();
+			return mapper.Map(validationResult);
 		}
 	}
 }

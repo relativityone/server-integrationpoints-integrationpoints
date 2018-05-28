@@ -74,7 +74,7 @@ namespace kCura.IntegrationPoints.Core
 
 		    public static class ValidationErrorCodes
 		    {
-		        public const string DESTINATION_WORKSPACE_NOT_AVAILABLE = "2.2.2.3.1.";
+		        public const string DESTINATION_WORKSPACE_NOT_AVAILABLE = "20.002";
             }
 
 			public static class PermissionErrors
@@ -112,7 +112,7 @@ namespace kCura.IntegrationPoints.Core
 
 		    public static class PermissionErrorCodes
 		    {
-		        public const string DESTINATION_WORKSPACE_NO_ACCESS = "2.2.2.2.1.";
+		        public const string DESTINATION_WORKSPACE_NO_ACCESS = "20.001";
             }
 
 			public class Telemetry

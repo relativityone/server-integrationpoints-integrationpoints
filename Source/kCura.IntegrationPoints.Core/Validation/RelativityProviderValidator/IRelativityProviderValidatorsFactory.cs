@@ -1,5 +1,6 @@
 ﻿using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts;
+using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts.Interfaces;
 
 namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 {
@@ -13,12 +14,18 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 
 		ProductionValidator CreateProductionValidator(int workspaceArtifactId);
 
-		RelativityProviderWorkspaceValidator CreateWorkspaceValidator(string prefix);
+		IRelativityProviderDestinationWorkspaceExistenceValidator CreateDestinationWorkspaceExistenceValidator(int? federatedInstanceArtifactId, string credentials);
 
-		RelativityProviderWorkspaceValidator CreateWorkspaceValidator(string prefix, int? federatedInstanceArtifactId, string credentials);
+		IRelativityProviderDestinationWorkspacePermissionValidator CreateDestinationWorkspacePermissionValidator(int? federatedInstanceArtifactId, string credentials);
+
+		IRelativityProviderSourceWorkspacePermissionValidator CreateSourceWorkspacePermissionValidator();
+
+		RelativityProviderWorkspaceNameValidator CreateWorkspaceNameValidator(string prefix);
+
+		RelativityProviderWorkspaceNameValidator CreateWorkspaceNameValidator(string prefix, int? federatedInstanceArtifactId, string credentials);
 
 		TransferredObjectValidator CreateTransferredObjectValidator();
-        
-	    ImportProductionValidator CreateImportProductionValidator(int workspaceArtifactId, int? federatedInstanceArtifactId, string credentials);
+
+		ImportProductionValidator CreateImportProductionValidator(int workspaceArtifactId, int? federatedInstanceArtifactId, string credentials);
 	}
 }
