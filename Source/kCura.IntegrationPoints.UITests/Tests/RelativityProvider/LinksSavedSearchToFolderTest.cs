@@ -3,7 +3,6 @@ using kCura.IntegrationPoint.Tests.Core.Validators;
 using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Components;
 using kCura.IntegrationPoints.UITests.Pages;
-using kCura.IntegrationPoints.UITests.Validation;
 using kCura.IntegrationPoints.UITests.Validation.RelativityProviderValidation;
 using NUnit.Framework;
 
@@ -12,7 +11,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 	using IntegrationPoint.Tests.Core;
 
 	[TestFixture]
-	[Category(TestCategory.SMOKE)]
 	public class LinksSavedSearchToFolderTest: RelativityProviderTestsBase
 	{
 		private RelativityProviderModel CreateRelativityProviderModelWithLinks()
@@ -26,6 +24,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
+		[Category(TestCategory.SMOKE)]
 		public void RelativityProvider_TC_RTR_LO_01()
 		{
 			//Arrange

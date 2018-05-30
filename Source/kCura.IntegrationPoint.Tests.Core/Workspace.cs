@@ -10,12 +10,13 @@ namespace kCura.IntegrationPoint.Tests.Core
 	{
 		public static int CreateWorkspace(string workspaceName, string templateName)
 		{
-			if (string.IsNullOrEmpty(workspaceName)) {
+			if (string.IsNullOrEmpty(workspaceName))
+			{
 				return 0; // TODO throw
 			}
 
 			//Create workspace DTO
-			Relativity.Client.DTOs.Workspace workspaceDto = new Relativity.Client.DTOs.Workspace { Name = workspaceName};
+			Relativity.Client.DTOs.Workspace workspaceDto = new Relativity.Client.DTOs.Workspace { Name = workspaceName };
 			int workspaceId;
 			using (IRSAPIClient proxy = Rsapi.CreateRsapiClient())
 			{
@@ -83,6 +84,27 @@ namespace kCura.IntegrationPoint.Tests.Core
 				catch (Exception ex)
 				{
 					throw new TestException($"An error occurred while deleting workspace [{workspaceArtifactId}]. Error Message: {ex.Message}");
+				}
+			}
+		}
+
+		public static bool IsWorkspacePresent(string workspaceName)
+		{
+			using (IRSAPIClient proxy = Rsapi.CreateRsapiClient())
+			{
+				try
+				{
+					var workspaceNameCondition = new TextCondition(WorkspaceFieldNames.Name, TextConditionEnum.EqualTo, workspaceName);
+					var query = new Query<Relativity.Client.DTOs.Workspace>
+					{
+						Condition = workspaceNameCondition
+					};
+					var result = QueryWorkspace(proxy, query, 0);
+					return result.TotalCount > 0;
+				}
+				catch (Exception ex)
+				{
+					throw new TestException($"An error occurred while retrieving workspace [{workspaceName}]. Error Message: {ex.Message}");
 				}
 			}
 		}

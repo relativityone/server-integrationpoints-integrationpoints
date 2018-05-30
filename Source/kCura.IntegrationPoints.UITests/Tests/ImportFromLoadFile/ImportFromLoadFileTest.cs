@@ -20,6 +20,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 {
+	[TestFixture]
 	public class ImportFromLoadFileTest : UiTest
 	{
 		[OneTimeSetUp]

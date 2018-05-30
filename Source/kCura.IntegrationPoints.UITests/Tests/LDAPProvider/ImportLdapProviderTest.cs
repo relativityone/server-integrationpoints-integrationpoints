@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 {
 	[TestFixture]
-	[Category(TestCategory.SMOKE)]
 	public class ImportLdapProviderTest : UiTest
 	{
 		private IRSAPIService _service;
@@ -34,6 +33,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 		}
 
 		[Test, Order(1)]
+		[Category(TestCategory.SMOKE)]
 		public void DocumentExportToLoadFile_TC_IMPORT_CUST_1()
 		{
 			// Arrange

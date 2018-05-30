@@ -13,9 +13,10 @@ properties {
     $buildlogs_directory = [System.IO.Path]::Combine($root, 'BuildLogs')
     $pdb_directory = [System.IO.Path]::Combine($root, 'PDBs')
     $doc_directory = [System.IO.Path]::Combine($root, 'Documentation')
-    $nuget_packages_directory = [System.IO.Path]::Combine($source_directory, 'packages')
+    $nuget_packages_directory = [System.IO.Path]::Combine($root, 'packages')
     $lib_directory = [System.IO.Path]::Combine($root, 'lib')
-
+	$tests_directory = [System.IO.Path]::Combine($lib_directory, 'UnitTests')
+	
     #build variables
     $version = '1.0.0.0'
     $server_type = 'teambranch'
@@ -87,6 +88,8 @@ properties {
 
     #package variable
     $package_root_directory = [System.IO.Path]::Combine($root, 'Packages')
+	#chromedriver
+	$chromedriver_path = [System.IO.Path]::Combine($nuget_packages_directory, 'Selenium.WebDriver.ChromeDriver', 'driver', 'win32', 'chromedriver.exe')
 
     function validateVersions
     {

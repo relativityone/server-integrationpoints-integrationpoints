@@ -12,6 +12,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.UITests.Tests.FTPProvider
 {
+	[TestFixture]
 	public class ImportFromFtpTest : UiTest
 	{
 		private IRSAPIService _service;

@@ -4,7 +4,7 @@
 task default -depends build
 
 
-task build -depends build_initalize, build_projects, build_rip_documentation {
+task build -depends build_initalize, build_projects, build_rip_documentation, copy_chrome_driver {
  
 }
 
@@ -105,5 +105,9 @@ task build_projects -depends create_build_script, restore_nuget, configure_paket
 
 task build_rip_documentation {
     & nant package_documentation -buildfile:$root\DevelopmentScripts\build.build "-D:root=$root" "-D:buildconfig=$BUILDCONFIG" "-D:action=package_documentation" "-D:buildType=$BUILDTYPE"
+}
+
+task copy_chrome_driver -depends build_projects{
+	Copy-Item -path $chromedriver_path -Destination $tests_directory
 }
 

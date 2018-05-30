@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -26,7 +27,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 	using System.Collections.Generic;
 	using Data;
 	using Validation;
-	
+
 	public abstract class UiTest
 	{
 		public static string Now => DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
@@ -82,10 +83,16 @@ namespace kCura.IntegrationPoints.UITests.Tests
 				.LogConfiguration();
 
 			Context = new TestContext();
+			Task agentSetupTask = SetupAgentAsync();
 			Task workspaceSetupTask = SetupWorkspaceAsync();
 			Task webDriverCreationTask = CreateDriverAsync();
 
-			Task.WaitAll(workspaceSetupTask, webDriverCreationTask);
+			Task.WaitAll(agentSetupTask, workspaceSetupTask, webDriverCreationTask);
+		}
+
+		private async Task SetupAgentAsync()
+		{
+			await Task.Run(() => Agent.CreateIntegrationPointAgentIfNotExists());
 		}
 
 		private async Task SetupWorkspaceAsync()
@@ -124,7 +131,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 
 		protected virtual async Task CreateWorkspaceAsync()
 		{
-			await Context.CreateWorkspaceAsync();
+			await Context.CreateTestWorkspaceAsync();
 		}
 
 		protected virtual async Task ImportDocumentsAsync()
@@ -142,18 +149,30 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			ChromeDriverService driverService = ChromeDriverService.CreateDefaultService();
 			// Otherwise console window appears for chromedriver process
 			driverService.HideCommandPromptWindow = true;
-			var options = new ChromeOptions();
+			driverService.LogPath = "chromeLog.txt"; // TODO
+			var options = new ChromeOptions
+			{
+				AcceptInsecureCertificates = true
+			};
 
 			// Disables "Save password" popup
 			options.AddUserProfilePreference("credentials_enable_service", false);
 			options.AddUserProfilePreference("profile.password_manager_enabled", false);
 			// Disables "Chrome is being controlled by automated test software." bar
 			options.AddArguments("disable-infobars");
+			options.AddArguments("headless");
+			options.AddArguments("ignore-certificate-errors");
+			options.AddAdditionalCapability(CapabilityType.AcceptSslCertificates, true, true);
+			options.AddAdditionalCapability(CapabilityType.AcceptInsecureCertificates, true, true);
 
 			Driver = new ChromeDriver(driverService, options);
 			// Long implicit wait as Relativity uses IFrames and is usually quite slow
 			Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(SharedVariables.UiImplicitWaitInSec);
-			Driver.Manage().Window.Maximize();
+			Driver.Manage().Window.Size = new Size(1920, 1200);
+
+			Size browseSize = Driver.Manage().Window.Size;
+			Log.Information("Browser size: Width: {width}, Height: {height}", browseSize.Width, browseSize.Height);
+
 			Driver.Url = SharedVariables.ProtocolVersion + "://" + SharedVariables.TargetHost + "/Relativity";
 		}
 

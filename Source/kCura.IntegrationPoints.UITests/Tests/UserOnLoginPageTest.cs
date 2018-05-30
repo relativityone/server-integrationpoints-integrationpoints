@@ -1,10 +1,12 @@
 ﻿using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.UITests.Common;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.UITests.Tests
 {
 	[TestFixture]
+	[Category(TestCategory.SMOKE)]
 	public class UserOnLoginPageTest : UiTest
 	{
 		[OneTimeSetUp]
@@ -34,7 +36,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			var generalPage = new GeneralPage(Driver);
 
 			// Act / Assert
-			generalPage.ChooseWorkspace("Smoke Workspace");
+			generalPage.ChooseWorkspace("Smoke TestCase");
 		}
 	}
 }

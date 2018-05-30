@@ -29,10 +29,10 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 	{
 
 		private const int _ADMIN_USER_ID = 9;
-		private const string _TEMPLATE_WKSP_NAME = "Smoke Workspace";
+		private const string _TEMPLATE_WKSP_NAME = "Smoke TestCase";
 		private const string _RIP_GUID_STRING = Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING;
 		private const string _LEGAL_HOLD_GUID_STRING = "98F31698-90A0-4EAD-87E3-DAC723FED2A6";
-
+		private const string _RELATIVITY_STARTER_TEMPLATE = "Relativity Starter Template";
 		private readonly Lazy<ITestHelper> _helper;
 
 		private static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(TestContext));
@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		public readonly string TimeStamp;
 
 		public ITestHelper Helper => _helper.Value;
-		
+
 		public int? WorkspaceId { get; set; }
 
 		public string WorkspaceName { get; set; }
@@ -57,8 +57,19 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			TimeStamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
 		}
 
-		public async Task CreateWorkspaceAsync()
+		public TestContext CreateTestWorkspace()
 		{
+			CreateTestWorkspaceAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+			return this;
+		}
+
+		public async Task CreateTestWorkspaceAsync()
+		{
+			if (!Workspace.IsWorkspacePresent(_TEMPLATE_WKSP_NAME))
+			{
+				await Workspace.CreateWorkspaceAsync(_TEMPLATE_WKSP_NAME, _RELATIVITY_STARTER_TEMPLATE);
+			}
+
 			WorkspaceName = $"1A Test Workspace {TimeStamp}";
 			Log.Information($"Attempting to create workspace '{WorkspaceName}' using template '{_TEMPLATE_WKSP_NAME}'.");
 			try
@@ -76,7 +87,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		}
 
 		public void EnableDataGrid(params string[] fieldNames)
-		{			
+		{
 			Workspace.EnableDataGrid(GetWorkspaceId());
 
 			//TODO change implementation to IFieldManager Kepler service
@@ -109,7 +120,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		public TestContext CreateAndRunProduction(string productionName)
 		{
 			var workspaceService = new WorkspaceService(new ImportHelper());
-			int savedSearchId = workspaceService.CreateSavedSearch(new[] {"Control Number"}, GetWorkspaceId(), $"ForProduction_{productionName}");
+			int savedSearchId = workspaceService.CreateSavedSearch(new string[] { "Control Number" }, GetWorkspaceId(), $"ForProduction_{productionName}");
 
 			string placeHolderFilePath = Path.Combine(NUnit.Framework.TestContext.CurrentContext.TestDirectory, @"TestData\DefaultPlaceholder.tif");
 
@@ -267,7 +278,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 					try
 					{
-						var scriptResult = client.Repositories.RelativityScript.ExecuteRelativityScript(relativityScript, new List<RelativityScriptInput>() { inputParameter }); 
+						var scriptResult = client.Repositories.RelativityScript.ExecuteRelativityScript(relativityScript, new List<RelativityScriptInput>() { inputParameter });
 
 						if (!scriptResult.Success)
 						{
@@ -298,7 +309,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 						return false;
 					}
 				}
-			
+
 			}
 			return true;
 		}
@@ -327,7 +338,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 				field.EnableDataGrid = true;
 
-				var updateResult = client.Repositories.Field.Update(new List<Field> {field});
+				var updateResult = client.Repositories.Field.Update(new List<Field> { field });
 
 				if (!updateResult.Success)
 				{
@@ -387,7 +398,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			};
 			RelativityObject savedSearch = objectManager.Query(savedSearchRequest).First();
 			return savedSearch.ArtifactID;
-	}
+		}
 	}
 
 }

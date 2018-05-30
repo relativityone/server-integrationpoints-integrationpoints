@@ -45,8 +45,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		[SetUp]
 		public virtual void SetUp()
 		{
-			DestinationContext = new TestContext();
-			DestinationContext.CreateWorkspaceAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+			DestinationContext = new TestContext().CreateTestWorkspace();
 		}
 
 		[TearDown]

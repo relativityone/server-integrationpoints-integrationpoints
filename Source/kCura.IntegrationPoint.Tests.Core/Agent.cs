@@ -14,38 +14,58 @@ namespace kCura.IntegrationPoint.Tests.Core
 	{
 		private const string _INTEGRATION_POINT_AGENT_TYPE_NAME = "Integration Points Agent";
 		private const int _MAX_NUMBER_OF_AGENTS_TO_CREATE = 4;
-
+		
 		public static Result CreateIntegrationPointAgent()
 		{
-			Result agentCreatedResult;
+			global::Relativity.Services.Agent.Agent[] agents = GetIntegrationPointsAgents();
 
-			AgentTypeRef agentTypeRef = GetAgentTypeByName(_INTEGRATION_POINT_AGENT_TYPE_NAME);
-
-			if (agentTypeRef == null)
+			if (agents.Length >= _MAX_NUMBER_OF_AGENTS_TO_CREATE)
 			{
-				throw new Exception($"Agent with type name {_INTEGRATION_POINT_AGENT_TYPE_NAME} cannot be found");
+				return new Result
+				{
+					ArtifactID = agents[0].ArtifactID,
+					Success = false
+				};
 			}
 
+			return CreateIntegrationPointAgentInternal();
+		}
+
+		public static Result CreateIntegrationPointAgentIfNotExists()
+		{
+			global::Relativity.Services.Agent.Agent[] agents = GetIntegrationPointsAgents();
+
+			if (agents.Any())
+			{
+				return new Result
+				{
+					ArtifactID = agents[0].ArtifactID,
+					Success = false
+				};
+			}
+
+			return CreateIntegrationPointAgentInternal();
+		}
+
+		private static global::Relativity.Services.Agent.Agent[] GetIntegrationPointsAgents()
+		{
+			AgentTypeRef agentTypeRef = GetAgentTypeByName(_INTEGRATION_POINT_AGENT_TYPE_NAME);
 			Query query = new Query
 			{
 				Condition = $"'AgentTypeArtifactID' == {agentTypeRef.ArtifactID}"
 			};
 			AgentQueryResultSet resultSet = QueryAgents(query);
-			global::Relativity.Services.Agent.Agent[] agents = resultSet.Results.Where(agent => agent.Success).Select(result => result.Artifact).ToArray();
+			return resultSet.Results
+				.Where(agent => agent.Success)
+				.Select(result => result.Artifact)
+				.ToArray();
+		}
 
-			if (agents.Length >= _MAX_NUMBER_OF_AGENTS_TO_CREATE)
-			{
-				agentCreatedResult = new Result
-				{
-					ArtifactID = agents[0].ArtifactID,
-					Success = false
-				};
-				return agentCreatedResult;
-			}
-
+		private static Result CreateIntegrationPointAgentInternal()
+		{
 			List<ResourceServer> resourceServers = GetAgentServers();
 
-			if (resourceServers.Count == 0)
+			if (!resourceServers.Any())
 			{
 				throw new Exception("Error: No Agent servers available for agent creation.");
 			}
@@ -57,7 +77,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			global::Relativity.Services.Agent.Agent agentDto = new global::Relativity.Services.Agent.Agent
 			{
-				AgentType = agentTypeRef,
+				AgentType = GetAgentTypeByName(_INTEGRATION_POINT_AGENT_TYPE_NAME),
 				Enabled = true,
 				Interval = 5,
 				LoggingLevel = global::Relativity.Services.Agent.Agent.LoggingLevelEnum.Critical,
@@ -71,12 +91,11 @@ namespace kCura.IntegrationPoint.Tests.Core
 				{
 					int artifactId = proxy.CreateSingleAsync(agentDto).ConfigureAwait(false).GetAwaiter().GetResult();
 
-					agentCreatedResult = new Result
+					return new Result
 					{
 						ArtifactID = artifactId,
 						Success = true
 					};
-					return agentCreatedResult;
 				}
 			}
 			catch (Exception ex)

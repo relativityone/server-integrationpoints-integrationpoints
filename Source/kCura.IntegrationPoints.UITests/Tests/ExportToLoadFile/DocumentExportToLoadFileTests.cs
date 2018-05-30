@@ -13,7 +13,6 @@ using IntegrationPointType = kCura.IntegrationPoint.Tests.Core.Models.Integratio
 namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 {
 	[TestFixture]
-	[Category(TestCategory.SMOKE)]
 	public class DocumentExportToLoadFileTests : ExportToLoadFileTests
 	{
 		private IntegrationPointsAction _integrationPointsAction;
@@ -26,6 +25,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 		}
 
 		[Test, Order(1)]
+		[Category(TestCategory.SMOKE)]
 		public void DocumentExportToLoadFile_TC_ELF_DOC_1()
 		{
 			// Arrange

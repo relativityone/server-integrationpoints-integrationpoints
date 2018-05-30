@@ -10,6 +10,8 @@ def skipBuild = env.skipBuild == "true"
 def skipUnitTests = env.skipUnitTests == "true"
 def skipProvisioning = env.skipProvisioning == "true"
 def skipITests = env.skipITests == "true"
+def skipUItests = env.skipUITests == "true"
+def skipStash = skipITests && skipUITests
 
 def ripBranch = (env.ripBranch ?: env.BRANCH_NAME) ?: "develop"
 testsFilter = env.testsFilter ?: "cat == SmokeTest"
@@ -56,7 +58,10 @@ RIP branch: ${ripBranch}
 Skip build: ${skipBuild}
 Skip unit tests: ${skipUnitTests}
 Skip VM provisioning: ${skipProvisioning}
+Skip stash test assemblies: ${skipStash}
 Skip integration tests: ${skipITests}
+Skip UI tests: ${skipUItests}
+
 
 Relativity branch: ${relativityBranch}
 Relativity build type: ${relativityBuildType}
@@ -169,9 +174,17 @@ def build_tests(String server_name, String domain, String session_id, String rel
 	}
 }
 
+def build_UI_tests(String server_name, String domain, String session_id, String relativityBranch, Boolean installing_invariant, Boolean installing_datagrid) {
+	execute_nunit_tests_2("kCura.IntegrationPoints.UITests.dll", session_id, "production")
+
+	if (has_errors) {
+		error("Tests failed.")
+	}
+}
+
 timestamps
 {
-	timeout(time: 3, unit: 'HOURS')
+	timeout(time: 5, unit: 'HOURS')
 	{
 		catchError
 		{
@@ -253,14 +266,16 @@ timestamps
 						{
 							stage("Stash integration tests assemblies")
 							{
-								if (skipITests) return;
+								if (skipStash) return;
 
 								dir('W:/integrationpoints')
 								{
 									stash includes: 'lib/UnitTests/*', name: 'testdlls'
-									stash includes: 'lib/UnitTests/TestData/*', name: 'testdata'
-									stash includes: 'lib/UnitTests/TestData/IMAGES/*', name: 'testdata_images'
-									stash includes: 'lib/UnitTests/TestData/NATIVES/*', name: 'testdata_natives'
+									stash includes: 'lib/UnitTests/TestData/**', name: 'testdata'
+									stash includes: 'lib/UnitTests/TestDataExtended/**', name: 'testdata_extended'
+									stash includes: 'lib/UnitTests/TestDataSaltPepper/**', name: 'testdata_saltpepper'
+									stash includes: 'lib/UnitTests/TestDataImportFromLoadFile/**', name: 'testdata_importloadfile'
+									stash includes: 'lib/UnitTests/TestDataText/**', name: 'testdata_text'									
 									stash includes: 'lib/UnitTests/oi/*', name: 'outside_in'
 									stash includes: 'lib/UnitTests/TestDataForImport/*', name: 'testdataforimport'
 									stash includes: 'lib/UnitTests/TestDataForImport/et-files/*', name: 'testdataforimport_et'
@@ -330,9 +345,9 @@ timestamps
 				}
 			)
 			
-			stage("Unstash integration tests assemblies")
-			{
-				if (skipITests) return;
+			stage("Unstash integration and UI tests assemblies")
+			{				
+				if (skipStash) return;
 			
 				timeout(time: 5, unit: 'MINUTES')
 				{
@@ -340,8 +355,10 @@ timestamps
 					{						
 						unstash 'testdlls'
 						unstash 'testdata'
-						unstash 'testdata_images'
-						unstash 'testdata_natives'
+						unstash 'testdata_extended'
+						unstash 'testdata_saltpepper'	
+						unstash 'testdata_importloadfile'	
+						unstash 'testdata_text'					
 						unstash 'integrationPointsRap'
 						unstash 'outside_in'
 						unstash 'testdataforimport'
@@ -362,6 +379,19 @@ timestamps
 					node("$session_id && dependencies")
 					{					
 						build_tests(server_name, domain, session_id, relativityBranch, installing_invariant, installing_datagrid)
+					}
+				}
+			}
+
+			stage('UI Tests')
+			{				
+				if (skipUItests) return;
+
+				timeout(time: 180, unit: 'MINUTES')
+				{
+					node("$session_id && dependencies")
+					{			
+						build_UI_tests(server_name, domain, session_id, relativityBranch, installing_invariant, installing_datagrid)
 					}
 				}
 			}

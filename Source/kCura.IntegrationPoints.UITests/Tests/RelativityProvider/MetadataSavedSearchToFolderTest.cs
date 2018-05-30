@@ -10,7 +10,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 	using IntegrationPoint.Tests.Core;
 
 	[TestFixture]
-	[Category(TestCategory.SMOKE)]
 	public class MetadataSavedSearchToFolderTest: RelativityProviderTestsBase
 	{
 		private RelativityProviderModel CreateRelativityProviderModel()
@@ -28,6 +27,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
+		[Category(TestCategory.SMOKE)]
 		public void RelativityProvider_TC_RTR_MDO_01()
 		{
 			//Arrange

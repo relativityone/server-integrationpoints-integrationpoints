@@ -2,6 +2,6 @@
 {
 	public class TestCategory
 	{
-		public const string SMOKE = "Smoke";
+		public const string SMOKE = IntegrationPoint.Tests.Core.Constants.SMOKE_TEST;
 	}
 }
