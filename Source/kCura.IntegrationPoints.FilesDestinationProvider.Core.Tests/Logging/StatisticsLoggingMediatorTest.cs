@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 			int registeredImportedCount = -1, registeredErrorCount = -1;
 
 			ExportEventArgs reisedEventArgs = new ExportEventArgs(exportedRecordCount, totalRecordCount, "", EventType.Progress,
-				null);
+				null, null);
 
 
 			_subjectUnderTest.OnStatusUpdate += (importedCount, errorCount) =>
@@ -92,7 +92,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 			int expectedValue = -1;
 			int registeredImportedCount = expectedValue, registeredErrorCount = expectedValue;
 
-			ExportEventArgs reisedEventArgs = new ExportEventArgs(exportedRecordCount, totalRecordCount, "", eventType, null);
+			ExportEventArgs reisedEventArgs = new ExportEventArgs(exportedRecordCount, totalRecordCount, "", eventType, null, null);
 
 			_subjectUnderTest.OnStatusUpdate += (importedCount, errorCount) =>
 			{
@@ -114,7 +114,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 			string expectedMessage = "Some message";
 			string registeredDocumentIdentifier = "", registeredErrorMessage = "";
 
-			ExportEventArgs reisedEventArgs = new ExportEventArgs(exportedRecordCount, totalRecordCount, expectedMessage, EventType.Error, null);
+			ExportEventArgs reisedEventArgs = new ExportEventArgs(exportedRecordCount, totalRecordCount, expectedMessage, EventType.Error, null, null);
 
 			_subjectUnderTest.OnDocumentError += (documentIdentifier, errorMessage) =>
 			{
@@ -141,7 +141,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 			const int totalRecordCount = 12345, exportedRecordCount = 2000;
 			string expectedMessage = "Some message";
 
-			ExportEventArgs reisedEventArgs = new ExportEventArgs(exportedRecordCount, totalRecordCount, expectedMessage, eventType, null);
+			ExportEventArgs reisedEventArgs = new ExportEventArgs(exportedRecordCount, totalRecordCount, expectedMessage, eventType, null, null);
 
 			_subjectUnderTest.OnDocumentError += (documentIdentifier, errorMessage) =>
 			{

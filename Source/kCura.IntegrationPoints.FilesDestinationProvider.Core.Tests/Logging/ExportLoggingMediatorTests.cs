@@ -158,7 +158,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 			{
 				{"info", "additional_info"}
 			};
-			return new ExportEventArgs(0, 0, expectedMessage, eventType, additionalInfo);
+			return new ExportEventArgs(0, 0, expectedMessage, eventType, additionalInfo, new Statistics());
 		}
 	}
 }

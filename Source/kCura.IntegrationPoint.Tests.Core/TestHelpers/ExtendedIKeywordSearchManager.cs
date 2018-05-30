@@ -141,5 +141,10 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 		{
 			return Manager.GetAccessStatusAsync(workspaceArtifactID, artifactID, ancestorArtifactIDs);
 		}
+
+		public Task<SearchAccessStatus> GetAccessStatusAsync(int workspaceArtifactID, int artifactID)
+		{
+			return Manager.GetAccessStatusAsync(workspaceArtifactID, artifactID);
+		}
 	}
 }

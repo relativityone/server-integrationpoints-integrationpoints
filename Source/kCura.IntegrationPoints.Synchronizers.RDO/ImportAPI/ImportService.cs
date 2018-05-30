@@ -133,26 +133,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			//Assign events
 			importJob.OnComplete += ImportJob_OnComplete;
 			importJob.OnFatalException += ImportJob_OnComplete;
-			// DO NOT MOVE THIS INTO A METHOD
-			// ILmerge on our build server will fail - SAMO 6/1/2016
-			importJob.OnError += row =>
-			{
-				_itemsTransferred--;
-				_itemsErrored++;
-				if (Environment.TickCount - _lastJobErrorUpdate > _JOB_PROGRESS_TIMEOUT_MILLISECONDS)
-				{
-					_lastJobErrorUpdate = Environment.TickCount;
-					if (OnStatusUpdate != null)
-					{
-						OnStatusUpdate(_itemsTransferred, _itemsErrored);
-						_itemsErrored = 0;
-						_itemsTransferred = 0;
-					}
-				}
-			};
-
+			importJob.OnError += ImportJob_OnError;
 			importJob.OnMessage += ImportJob_OnMessage;
 			importJob.OnProgress += ImportJob_OnProgress;
+			importJob.OnProcessProgress += ImportJob_OnProcessProgress;
 			ImportService_OnBatchSubmit(_batchManager.CurrentSize, _batchManager.MinimumBatchSize);
 
 			LogImportJobStarted();
@@ -261,10 +245,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
 			if (jobReport.FatalException != null)
 			{
-				ImportJob_OnError(jobReport.FatalException);
+				Exception fatalException = jobReport.FatalException;
+
+				LogOnErrorEvent(fatalException);
+				OnJobError?.Invoke(fatalException);
+
 				CompleteBatch(jobReport.StartTime, jobReport.EndTime, 0, 0);
 
-				throw new IntegrationPointsException("Fatal Exception in Import API", jobReport.FatalException)
+				throw new IntegrationPointsException("Fatal Exception in Import API", fatalException)
 				{
 					ShouldAddToErrorsTab = true,
 					ExceptionSource = IntegrationPointsExceptionSource.IAPI
@@ -274,10 +262,20 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			CompleteBatch(jobReport.StartTime, jobReport.EndTime, jobReport.TotalRows, jobReport.ErrorRowCount);
 		}
 
-		private void ImportJob_OnError(Exception fatalException)
+		private void ImportJob_OnError(System.Collections.IDictionary row)
 		{
-			LogOnErrorEvent(fatalException);
-			OnJobError?.Invoke(fatalException);
+			_itemsTransferred--;
+			_itemsErrored++;
+			if (Environment.TickCount - _lastJobErrorUpdate > _JOB_PROGRESS_TIMEOUT_MILLISECONDS)
+			{
+				_lastJobErrorUpdate = Environment.TickCount;
+				if (OnStatusUpdate != null)
+				{
+					OnStatusUpdate(_itemsTransferred, _itemsErrored);
+					_itemsErrored = 0;
+					_itemsTransferred = 0;
+				}
+			}
 		}
 
 		private string PrependString(string prefix, string message)
@@ -328,6 +326,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 					_itemsTransferred = 0;
 				}
 			}
+		}
+
+		private void ImportJob_OnProcessProgress(FullStatus processStatus)
+		{
 		}
 
 		#region Logging
