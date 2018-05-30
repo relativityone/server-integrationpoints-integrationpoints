@@ -1154,6 +1154,13 @@ ko.validation.insertValidationMessage = function (element) {
 					}
 				}
 
+			    window.Dragon.dialogs.showConfirm({
+			        message: "Test1",
+			        title: "Test2",
+			        okText: "Test3",
+			        showCancel: true,
+			    });
+
 				this.returnModel.map = JSON.stringify(map);
 				this.returnModel.identifer = this.model.selectedUniqueId();
 				this.returnModel.parentIdentifier = this.model.selectedIdentifier();
@@ -1163,7 +1170,7 @@ ko.validation.insertValidationMessage = function (element) {
 				this.returnModel.destination = JSON.stringify(_destination);
 				this.returnModel.SecuredConfiguration = this.model.SecuredConfiguration;
 				this.returnModel.CreateSavedSearchForTagging = this.model.CreateSavedSearchForTagging;
-				d.resolve(this.returnModel);
+//				d.resolve(this.returnModel);
 			} else {
 				this.model.errors.showAllMessages();
 				d.reject();

@@ -91,7 +91,8 @@ namespace kCura.IntegrationPoints.Web
 			bundles.Add(new ScriptBundle("~/bundles/dragon").Include(
 				"~/Scripts/dragon/dragon-core.js",
 				"~/Scripts/dragon/dragon-utils.js",
-				"~/Scripts/dragon/dragon-schedule.js"
+				"~/Scripts/dragon/dragon-schedule.js",
+				"~/Scripts/dragon/dragon-dialogs.js"
 			));
 
 
