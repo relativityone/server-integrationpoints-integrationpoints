@@ -1179,6 +1179,8 @@ ko.validation.insertValidationMessage = function (element) {
 							d.resolve(this.returnModel);
 						}.bind(this)
 					});
+				} else {
+					d.resolve(this.returnModel);
 				}
 			} else {
 				this.model.errors.showAllMessages();
