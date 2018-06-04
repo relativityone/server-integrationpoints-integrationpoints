@@ -1154,13 +1154,6 @@ ko.validation.insertValidationMessage = function (element) {
 					}
 				}
 
-			    window.Dragon.dialogs.showConfirm({
-			        message: "Test1",
-			        title: "Test2",
-			        okText: "Test3",
-			        showCancel: true,
-			    });
-
 				this.returnModel.map = JSON.stringify(map);
 				this.returnModel.identifer = this.model.selectedUniqueId();
 				this.returnModel.parentIdentifier = this.model.selectedIdentifier();
@@ -1170,7 +1163,23 @@ ko.validation.insertValidationMessage = function (element) {
 				this.returnModel.destination = JSON.stringify(_destination);
 				this.returnModel.SecuredConfiguration = this.model.SecuredConfiguration;
 				this.returnModel.CreateSavedSearchForTagging = this.model.CreateSavedSearchForTagging;
-//				d.resolve(this.returnModel);
+
+				var mismatchedMappings = validateMappedFieldTypes(mapping);
+
+				if (mismatchedMappings.length > 0) {
+					var mismatchedMappingsMessage = buildMismatchedFieldTypesMessage(mismatchedMappings);
+					window.Dragon.dialogs.showConfirm({
+						message: mismatchedMappingsMessage,
+						title: "Integration Point Validation",
+						width: 450,
+						showCancel: true,
+						messageAsHtml: true,
+						success: function (calls) {
+							calls.close();
+							d.resolve(this.returnModel);
+						}.bind(this)
+					});
+				}
 			} else {
 				this.model.errors.showAllMessages();
 				d.reject();
@@ -1178,6 +1187,38 @@ ko.validation.insertValidationMessage = function (element) {
 			return d.promise;
 		};
 	};
+
+	this.validateMappedFieldTypes = function (mapping) {
+    	var sourceMappedFields = mapping.sourceMapped;
+    	var destinationMappedFields = mapping.mappedWorkspace;
+    	var mismatchedMappings = [];
+
+    	var length = sourceMappedFields.length;
+    	for (var i = 0; i < length; i++) {
+    		var sourceField = sourceMappedFields[i];
+    		var destinationField = destinationMappedFields[i];
+			if (sourceField.type !== destinationField.type) {
+				var mappingEntry = {
+					source: sourceField.displayName,
+					destination: destinationField.displayName
+				}
+				mismatchedMappings.push(mappingEntry);
+			}
+    	}
+
+		return mismatchedMappings;
+	}
+
+	this.buildMismatchedFieldTypesMessage = function(mismatchedMappings) {
+		var message = "Data type mismatch for the following mapped field(s):<br />";
+		for (var i = 0; i < mismatchedMappings.length; ++i) {
+			var messagePart = " - " + mismatchedMappings[i].source + " : " + mismatchedMappings[i].destination + "<br />";
+			message += messagePart;
+		}
+		var messageSuffix = "Continue with this mapping?";
+		message += messageSuffix;
+		return message;
+	}
 
 	var AddFolderPathInfoToMapping = function (map) {
 		if (step.model.UseFolderPathInformation() == "true") {
