@@ -654,3 +654,7 @@ select option {
 #add-production-set-selection-button {
 	background: url(Images/plus-icon.png);
 }
+
+.pull-left-col-2 {
+	margin-left: 305px; /* fixed-column + buttons = 250px + 55px */
+}
