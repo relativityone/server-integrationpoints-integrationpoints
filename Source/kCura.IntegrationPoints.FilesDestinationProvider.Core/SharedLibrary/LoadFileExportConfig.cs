@@ -12,6 +12,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 		private const int _EXPORT_LOADFILE_ERROR_RETRIES_NUMBER = 2;
 		private const int _EXPORT_LOADFILE_ERROR_WAIT_TIME = 10;
 		private const int _EXPORT_LOADFILE_IO_ERROR_RETRIES_NUMBER = 2;
+		private const int _EXPORT_MAX_NUMBER_OF_TASKS = 2;
 
 		private const int _EXPORT_LOADFILE_IO_ERROR_WAIT_TIME = 20;
 		
@@ -22,6 +23,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 
 		private const string _EXPORT_LOADFILE_IO_ERROR_WAIT_TIME_NAME = "Export.LoadFile.IOErrorWaitTime";
 		private const string _EXPORT_THREAD_COUNT_SETTING_NAME = "ExportThreadCount";
+		private const string _EXPORT_MAX_NUMBER_OF_TASKS_SETTING_NAME = "MaxNumberOfFileExportTasks";
 
 		private readonly IToggleProvider _toggleProvider;
         
@@ -39,6 +41,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 
 		public int ExportErrorWaitTime => GetValue(_EXPORT_LOADFILE_ERROR_WAIT_TIME_NAME, _EXPORT_LOADFILE_ERROR_WAIT_TIME);
 
+		public int MaxNumberOfFileExportTasks => GetValue(_EXPORT_MAX_NUMBER_OF_TASKS_SETTING_NAME, _EXPORT_MAX_NUMBER_OF_TASKS);
 
 		public LoadFileExportConfig(IToggleProvider toggleProvider)
 		{
