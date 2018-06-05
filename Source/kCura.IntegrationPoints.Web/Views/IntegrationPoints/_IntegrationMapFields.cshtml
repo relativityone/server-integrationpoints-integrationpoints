@@ -8,7 +8,7 @@
             <button class="button generic positive map-field-btn" id="mapFieldsBtn" data-bind="click: autoFieldMap">Map Fields</button>
             <label class="list-title rightSide-field">Destination</label>
         </div>
-        <div data-bind="validationMessage: sourceMapped" class="icon-error legal-hold field-validation-error"></div>
+        <div data-bind="validationMessage: sourceMapped" class="icon-error legal-hold field-validation-error pull-left-col-2"></div>
         <div class="table" id="mapFields">
             <div class="cell fixedColumn">
                 <select class="list-box" id="source-fields" multiple="multiple" data-bind="options: sourceField, selectedOptions: selectedSourceField, optionsText: 'displayName', doubleClick: addToMappedSource, optionsAfterRender: setTitle"></select>

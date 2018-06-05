@@ -14,7 +14,7 @@ ko.validation.rules['mustEqualMapped'] = {
 	validator: function (value, params) {
 		return value.length === params().length;
 	},
-	message: 'All selected items have not been mapped.'
+	message: 'Some selected items have not been mapped.'
 };
 
 ko.validation.rules['identifierMustMappedWithAnotherIdentifier'] = {

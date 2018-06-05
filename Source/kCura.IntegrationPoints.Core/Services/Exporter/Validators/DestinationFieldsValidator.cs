@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Validators
 			if (missingFields.Any())
 			{
 				LogInvalidFieldMappingError(missingFields);
-				throw new IntegrationPointsException("Job failed. Destination fields mapped may no longer be available or have been renamed. Please validate your field mapping settings.");
+				throw new IntegrationPointsException("Job failed. Destination fields mapped may no longer be available. Please validate your field mapping settings.");
 			}
 		}
 
@@ -70,7 +70,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Validators
 		#region Logging
 		protected virtual void LogInvalidFieldMappingError(IEnumerable<string> missingFields)
 		{
-			_logger.LogError("Job failed. Fields mapped may no longer be available or have been renamed. Please validate your field mapping settings. Missing Fields: {@missingFields}", missingFields);
+			_logger.LogError("Job failed. Fields mapped may no longer be available. Please validate your field mapping settings. Missing Fields: {@missingFields}", missingFields);
 		}
 		#endregion
 	}

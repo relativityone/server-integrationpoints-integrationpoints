@@ -3,6 +3,7 @@
 	"use strict";
 	(function (message) {
 		var $main = $('#bodyContainer');
+		var PROFILE_ERR_PREFIX = 'Issue(s) occured while loading the profile.'
 
 		function getElement($el, $default) {
 			if (root.utils.isDefined($el) || !($el instanceof $)) {
@@ -72,7 +73,7 @@
 			var joinedErrors = errors
 				.map(function(error) { return formatError(error) })
 				.join(". ");
-			return "Failed to apply the profile. " + joinedErrors;
+			return PROFILE_ERR_PREFIX + ' ' + joinedErrors;
 		}
 
 		function formatError(error) {
