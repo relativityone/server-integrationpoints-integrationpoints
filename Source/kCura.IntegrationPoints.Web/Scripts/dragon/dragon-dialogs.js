@@ -42,18 +42,25 @@
 				width: 'auto',
 				height: 'auto',
 				showOk: true,
-				showCancel: true
+				showCancel: true,
+				messageAsHtml: false
 			};
 
 			function confirm(options) {
 				var p = deferred.defer(),
-		settings,
-		$dialog = getDialog(),
-		enable,
-		buttons = [];
+				settings,
+				$dialog = getDialog(),
+				enable,
+				buttons = [];
 
 				settings = $.extend(true, {}, confirmDefaults, options);
-				$dialog.html($('<label/>').text(settings.message));
+				$dialog.html($('<label/>'));
+
+				if (settings.messageAsHtml === true) {
+					$dialog.html(settings.message);
+				} else {
+					$dialog.text(settings.message);
+				}
 
 				close = function () { $dialog.dialog('close'); };
 

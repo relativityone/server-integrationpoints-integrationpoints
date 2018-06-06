@@ -1,0 +1,45 @@
+﻿.ui-widget {
+	font-family: 'Trebuchet MS', Verdana, Arial, Helvetica, Geneva, Swiss, SunSans-Regular;
+	font-size: 1.1333em !important;
+}
+
+.ui-widget-header {
+	border-width: 0;
+}
+
+.ui-dialog {
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+.ui-dialog .ui-dialog-title {
+	font-size: 1.6em !important;
+	word-break: break-all;
+}
+
+.ui-dialog-titlebar-close {
+	display: none;
+}
+
+.ui-dialog-content label {
+	color: #000;
+	font-size: 1.1333em !important;
+}
+
+.ui-dialog .ui-dialog-buttonpane button {
+	border: 0 !important;
+	padding: 0 1em;
+}
+
+.ui-dialog .ui-dialog-buttonpane button .ui-button-text {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 8pt !important;
+	font-weight: normal;
+	line-height: 18px !important;
+	padding: 2px 8px !important;
+	width: 100px;
+}
+
+.ui-widget-overlay {
+	background: #666666 url(images/ui-bg_flat_100_666666_40x100.png) 50% 50% repeat-x;
+	opacity: .50;
+}

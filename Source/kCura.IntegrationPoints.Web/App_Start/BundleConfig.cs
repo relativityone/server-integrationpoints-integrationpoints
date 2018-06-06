@@ -46,6 +46,7 @@ namespace kCura.IntegrationPoints.Web
 				"~/Scripts/integration-point/picker.js",
 				"~/Scripts/export/export-enums.js",
 				"~/Scripts/export/image-production-picker.js",
+				"~/Scripts/integration-point/step-mapFields-type-validator.js",
 				"~/Scripts/integration-point/step-mapFields.js",
 				"~/Scripts/integration-point/tooltip-definitions.js",
 				"~/Scripts/integration-point/tooltip-view-model.js",
@@ -91,7 +92,8 @@ namespace kCura.IntegrationPoints.Web
 			bundles.Add(new ScriptBundle("~/bundles/dragon").Include(
 				"~/Scripts/dragon/dragon-core.js",
 				"~/Scripts/dragon/dragon-utils.js",
-				"~/Scripts/dragon/dragon-schedule.js"
+				"~/Scripts/dragon/dragon-schedule.js",
+				"~/Scripts/dragon/dragon-dialogs.js"
 			));
 
 

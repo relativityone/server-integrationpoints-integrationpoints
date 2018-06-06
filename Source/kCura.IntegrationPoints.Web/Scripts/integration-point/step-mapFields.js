@@ -1163,7 +1163,17 @@ ko.validation.insertValidationMessage = function (element) {
 				this.returnModel.destination = JSON.stringify(_destination);
 				this.returnModel.SecuredConfiguration = this.model.SecuredConfiguration;
 				this.returnModel.CreateSavedSearchForTagging = this.model.CreateSavedSearchForTagging;
-				d.resolve(this.returnModel);
+
+				var mismatchedMappings = StepMapFieldsTypeValidator.validateMappedFieldTypes(mapping);
+
+				if (mismatchedMappings.length > 0) {
+					var successCallback = function() {
+						d.resolve(this.returnModel);
+					}.bind(this);
+					StepMapFieldsTypeValidator.showWarningPopup(mismatchedMappings, successCallback);
+				} else {
+					d.resolve(this.returnModel);
+				}
 			} else {
 				this.model.errors.showAllMessages();
 				d.reject();

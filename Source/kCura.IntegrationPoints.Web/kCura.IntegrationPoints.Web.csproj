@@ -230,6 +230,7 @@
       <DependentUpon>step-progress-bar.scss</DependentUpon>
     </Content>
     <Content Include="Content\Styles.min.css" />
+    <Content Include="Content\map_step_popup.css" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
@@ -332,6 +333,7 @@
     <Content Include="Scripts\Import\import-init.js" />
     <Content Include="Scripts\Import\import-model.js" />
     <Content Include="Scripts\Import\import-preview-options-btn.js" />
+    <Content Include="Scripts\integration-point\step-mapFields-type-validator.js" />
     <Content Include="Scripts\integration-point\summary-page-statistics.js" />
     <Content Include="Scripts\modals\create-production-set-modal-vm.js" />
     <Content Include="Scripts\modals\authenticate-modal-vm.js" />
