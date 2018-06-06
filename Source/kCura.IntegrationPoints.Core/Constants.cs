@@ -95,7 +95,7 @@ namespace kCura.IntegrationPoints.Core
 				public const string DESTINATION_WORKSPACE_NO_ACCESS = "User does not have sufficient permissions to access destination workspace. Contact your system administrator.";
 				public const string DESTINATION_WORKSPACE_NO_IMPORT = "User does not have permission to import in the destination workspace.";
 				public const string SOURCE_WORKSPACE_NO_EXPORT = "User does not have permission to export in the source workspace.";
-				public const string SAVED_SEARCH_NO_ACCESS = "The saved search is no longer available or the user does not have access.";
+				public const string SAVED_SEARCH_NO_ACCESS = "Saved search is not available or has been secured from this user. Contact your system administrator.";
 				public const string SAVED_SEARCH_NOT_PUBLIC = "The saved search must be public.";
 				public const string PRODUCTION_NO_ACCESS = "The production is no longer available or the user does not have access.";
 				public const string UNABLE_TO_EXPORT = "Job failed. Please ensure that you have valid permissions and a valid saved search.";
@@ -110,10 +110,11 @@ namespace kCura.IntegrationPoints.Core
 				public const string INTEGRATION_POINT_SAVE_FAILURE_USER_MESSAGE = "You do not have all required permissions to save this Integration Point. Please contact your system administrator.";
 			}
 
-		    public static class PermissionErrorCodes
-		    {
-		        public const string DESTINATION_WORKSPACE_NO_ACCESS = "20.001";
-            }
+			public static class PermissionErrorCodes
+			{
+				public const string DESTINATION_WORKSPACE_NO_ACCESS = "20.001";
+				public const string SAVED_SEARCH_NO_ACCESS = "20.004";
+			}
 
 			public class Telemetry
 			{

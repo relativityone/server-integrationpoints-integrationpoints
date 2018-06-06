@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 				// Important Note: If the saved search is null, that means it either doesn't exist or the current user does not have permissions to it.
 				// Make sure to never give information the user is not privy to
 				// (i.e. if they don't have access to the saved search, don't tell them that it is also not public
-				result.Add(Constants.IntegrationPoints.PermissionErrors.SAVED_SEARCH_NO_ACCESS);
+				result.Add(Constants.IntegrationPoints.PermissionErrorCodes.SAVED_SEARCH_NO_ACCESS, Constants.IntegrationPoints.PermissionErrors.SAVED_SEARCH_NO_ACCESS);
 			}
 			else
 			{

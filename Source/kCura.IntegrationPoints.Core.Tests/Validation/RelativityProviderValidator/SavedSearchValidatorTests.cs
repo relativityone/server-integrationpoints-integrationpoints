@@ -51,7 +51,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 
 			// assert
 			Assert.IsFalse(actual.IsValid);
-			Assert.IsTrue(actual.MessageTexts.Contains(Constants.IntegrationPoints.PermissionErrors.SAVED_SEARCH_NO_ACCESS));
+			Assert.AreEqual(1, actual.Messages.Count());
+			Assert.AreEqual(Constants.IntegrationPoints.PermissionErrorCodes.SAVED_SEARCH_NO_ACCESS, actual.Messages.First().ErrorCode);
+			Assert.AreEqual(Constants.IntegrationPoints.PermissionErrors.SAVED_SEARCH_NO_ACCESS, actual.Messages.First().ShortMessage);
 		}
 
 		[Test]
