@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Monitoring;
 using kCura.IntegrationPoints.Core.Monitoring.JobLifetimeMessages;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
-using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
@@ -26,12 +23,14 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 {
 	public class IntegrationPointService : IntegrationPointServiceBase<Data.IntegrationPoint>, IIntegrationPointService, IIntegrationPointForSourceService
 	{
+		private const string _VALIDATION_FAILED = "Failed to submit integration job. Integration Point validation failed.";
+
 		private readonly IAPILog _logger;
-		private readonly IJobManager _jobService;
-		private readonly IJobHistoryService _jobHistoryService;
 		private readonly IJobHistoryErrorService _jobHistoryErrorService;
-		private readonly IProviderTypeService _providerTypeService;
+		private readonly IJobHistoryService _jobHistoryService;
+		private readonly IJobManager _jobService;
 		private readonly IMessageService _messageService;
+		private readonly IProviderTypeService _providerTypeService;
 
 		protected override string UnableToSaveFormat
 			=> "Unable to save Integration Point:{0} cannot be changed once the Integration Point has been run";
@@ -431,6 +430,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		private void HandleValidationError(Data.JobHistory jobHistory, int integrationPointArtifactId, Data.IntegrationPoint integrationPoint, Exception ex)
 		{
 			AddValidationErrorToJobHistory(jobHistory, ex);
+			AddValidationErrorToErrorTab(ex);
 			SetJobHistoryStatus(jobHistory, JobStatusChoices.JobHistoryValidationFailed);
 			SetHasErrorOnIntegrationPoint(integrationPointArtifactId);
 			SendValidationFailedMessage(integrationPoint);
@@ -449,7 +449,12 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, string.Empty, errorMessage, string.Empty);
 			_jobHistoryErrorService.CommitErrors();
 		}
-		
+
+		private void AddValidationErrorToErrorTab(Exception ex)
+		{
+			CreateRelativityError(_VALIDATION_FAILED, ex.Message);
+		}
+
 		private void SetHasErrorOnIntegrationPoint(int integrationPointArtifactId)
 		{
 			Data.IntegrationPoint integrationPoint = GetRdo(integrationPointArtifactId);
