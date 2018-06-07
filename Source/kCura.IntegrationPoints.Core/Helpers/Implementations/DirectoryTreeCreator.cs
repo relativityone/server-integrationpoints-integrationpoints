@@ -10,50 +10,50 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 {
 	public class DirectoryTreeCreator<TTreeItem> : IDirectoryTreeCreator<TTreeItem> where TTreeItem : JsTreeItemDTO, new()
 	{
-		#region Constructors
-
+		private readonly IAPILog _logger;
+		private readonly IDirectory _directory;
+		
 		public DirectoryTreeCreator(IDirectory directory, IHelper helper)
 		{
 			_directory = directory;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<DirectoryTreeCreator<TTreeItem>>();
 		}
-
-		#endregion Constructors
-
+		
 		public virtual List<TTreeItem> GetChildren(string path, bool isRoot, bool includeFiles = false)
 		{
 			if (!CanAccessFolder(path, isRoot))
 			{
 				return new List<TTreeItem>();
 			}
-			var subItems = GetSubItems(path);
-            if (includeFiles)
-            {
-                subItems.AddRange(GetSubItemsFiles(path));
-            }
+
+			List<TTreeItem> subItems = GetSubItems(path);
+			if (includeFiles)
+			{
+				subItems.AddRange(GetSubItemsFiles(path));
+			}
 			return isRoot ? GetRoot(path, subItems) : subItems;
 		}
 
 		public TTreeItem TraverseTree(string root, bool includeFiles = false)
 		{
-			ValidateFolder(root, true);
+			CreateDirectoryIfNotExists(root, true);
 
-			Stack<TTreeItem> directoryItemsToProcessed = new Stack<TTreeItem>();
+			var directoryItemsToProcessed = new Stack<TTreeItem>();
 
-			TTreeItem rootDirectoryItem = new TTreeItem
+			var rootDirectoryItem = new TTreeItem
 			{
 				Id = root,
 				Text = root,
-                Icon = JsTreeItemIconEnum.Root.GetDescription(),
-                IsDirectory = true
+				Icon = JsTreeItemIconEnum.Root.GetDescription(),
+				IsDirectory = true
 			};
 
 			TTreeItem currDirectoryItem = rootDirectoryItem;
 			directoryItemsToProcessed.Push(currDirectoryItem);
 
-            while (directoryItemsToProcessed.Count > 0)
-            {
-                currDirectoryItem = directoryItemsToProcessed.Pop();
+			while (directoryItemsToProcessed.Count > 0)
+			{
+				currDirectoryItem = directoryItemsToProcessed.Pop();
 
 				List<TTreeItem> subItems = GetSubItems(currDirectoryItem);
 
@@ -61,14 +61,14 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
 				// Push the subdirectories onto the stack for traversal.
 				subItems.ForEach(item => directoryItemsToProcessed.Push(item));
-                
-                if (includeFiles)
-                {
-                    List<TTreeItem> subItemsFiles = GetSubItemsFiles(currDirectoryItem);
 
-                    currDirectoryItem.Children.AddRange(subItemsFiles);
-                }
-            }
+				if (includeFiles)
+				{
+					List<TTreeItem> subItemsFiles = GetSubItemsFiles(currDirectoryItem);
+
+					currDirectoryItem.Children.AddRange(subItemsFiles);
+				}
+			}
 			return rootDirectoryItem;
 		}
 
@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 				Text = path,
 				Id = path,
 				Icon = jstreeRootFolder,
-                IsDirectory = true,
+				IsDirectory = true,
 				Children = new List<JsTreeItemDTO>(subItems)
 			};
 			return new List<TTreeItem> {root};
@@ -88,24 +88,27 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
 		protected virtual bool CanAccessFolder(string path, bool isRoot)
 		{
-			ValidateFolder(path, isRoot);
+			CreateDirectoryIfNotExists(path, isRoot);
 			return true;
 		}
 
-		protected virtual void ValidateFolder(string path, bool isRoot)
+		protected virtual void CreateDirectoryIfNotExists(string path, bool isRoot)
 		{
-			if (isRoot)
+			if (!isRoot)
 			{
-				if (string.IsNullOrEmpty(path))
-				{
-					LogMissingPathArgument();
-					throw new ArgumentException($"Argumenent '{nameof(path)}' should not be empty!");
-				}
-				if (!_directory.Exists(path))
-				{
-					LogFolderDoesntExists();
-					throw new ArgumentException($"{path} folder does not exist!");
-				}
+				return;
+			}
+
+			if (string.IsNullOrEmpty(path))
+			{
+				LogMissingPathArgument();
+				throw new ArgumentException($"Argumenent '{nameof(path)}' should not be empty!");
+			}
+
+			if (!_directory.Exists(path))
+			{
+				LogMissingDirectoryCreation(path);
+				_directory.CreateDirectory(path);
 			}
 		}
 
@@ -116,7 +119,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
 		protected virtual List<TTreeItem> GetSubItems(string path)
 		{
-			string[] subDirs = new string[0];
+			var subDirs = new string[0];
 			try
 			{
 				subDirs = _directory.GetDirectories(path);
@@ -137,55 +140,48 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 				{
 					Text = subDir.Substring(subDir.LastIndexOf('\\') + 1),
 					Id = subDir,
-                    IsDirectory = true
+					IsDirectory = true
 				}).ToList();
 		}
 
-        private List<TTreeItem> GetSubItemsFiles(TTreeItem dirItem)
-        {
-            return GetSubItemsFiles(dirItem.Id);
-        }
+		private List<TTreeItem> GetSubItemsFiles(TTreeItem dirItem)
+		{
+			return GetSubItemsFiles(dirItem.Id);
+		}
 
-        protected virtual List<TTreeItem> GetSubItemsFiles(string path)
-        {
-            string[] subFiles = new string[0];
-            try
-            {
-                subFiles = _directory.GetFiles(path);
-            }
-            // An UnauthorizedAccessException exception will be thrown if we do not have
-            // discovery permission on a folder.
-            catch (UnauthorizedAccessException e)
-            {
-                LogUnauthorizedAccess(path, e);
-            }
-            return CreateSubItemsFiles(subFiles);
-        }
+		protected virtual List<TTreeItem> GetSubItemsFiles(string path)
+		{
+			var subFiles = new string[0];
+			try
+			{
+				subFiles = _directory.GetFiles(path);
+			}
+			// An UnauthorizedAccessException exception will be thrown if we do not have
+			// discovery permission on a folder.
+			catch (UnauthorizedAccessException e)
+			{
+				LogUnauthorizedAccess(path, e);
+			}
 
-        protected virtual List<TTreeItem> CreateSubItemsFiles(string[] subDirs)
-        {
-            return subDirs.Select(subDir =>
-                new TTreeItem
-                {
-                    Text = subDir.Substring(subDir.LastIndexOf('\\') + 1),
-                    Id = subDir,
-                    IsDirectory = false,
-                    Icon = "jstree-file"
-                }).ToList();
-        }
+			return CreateSubItemsFiles(subFiles);
+		}
 
-		#region Fields
-
-		private readonly IDirectory _directory;
-		private readonly IAPILog _logger;
-
-		#endregion //Fields
+		protected virtual List<TTreeItem> CreateSubItemsFiles(string[] subDirs)
+		{
+			return subDirs.Select(subDir =>
+				new TTreeItem
+				{
+					Text = subDir.Substring(subDir.LastIndexOf('\\') + 1),
+					Id = subDir,
+					IsDirectory = false,
+					Icon = "jstree-file"
+				}).ToList();
+		}
 
 		#region Logging
-
-		private void LogFolderDoesntExists()
+		private void LogMissingDirectoryCreation(string path)
 		{
-			_logger.LogError("Specified folder does not exist.");
+			_logger.LogWarning("Specified folder ({path}) does not exist. Re-creating missing directory.", path);
 		}
 
 		private void LogMissingPathArgument()
@@ -197,7 +193,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 		{
 			_logger.LogWarning(e, "Unauthorized access to folder ({Path}) during directory discovery.", path);
 		}
-
+		
 		#endregion
 	}
 }

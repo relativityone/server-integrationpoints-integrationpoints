@@ -131,19 +131,20 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 		}
 
 		[Test]
-		public void ItShouldThrowExceptionWhenRootNotExists()
+		public void ItShouldThrowExceptionWhenRootFolderPathIsEmpty()
 		{
 			//Arrange
-			_directoryMock.Exists(_ROOT_FOLDER).Returns(false);
+			const string emptyPath = "";
+			_directoryMock.Exists(emptyPath).Returns(false);
 
 			//Act & Assert
-			Assert.That(() => _subjectUnderTest.GetChildren(_ROOT_FOLDER, true),
+			Assert.That(() => _subjectUnderTest.GetChildren(emptyPath, true),
 				Throws.Exception
 				.TypeOf<ArgumentException>());
 		}
-
+		
 		[Test]
-		public void ItShouldSkippedNotAccessibleFolders()
+		public void ItShouldSkipNotAccessibleFolders()
 		{
 			//Arrange
 			MockDirHierarchy();
@@ -220,3 +221,4 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 
 	}
 }
+
