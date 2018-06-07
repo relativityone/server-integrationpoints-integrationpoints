@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Data.RSAPIClient;
 using kCura.IntegrationPoints.Domain.Models;
@@ -45,7 +46,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				Message = errorToConvert.Message,
 				FullError = errorToConvert.FullText,
 				Source = errorToConvert.Source,
-				Workspace = new Workspace(errorToConvert.WorkspaceId)
+				Workspace = new Workspace(errorToConvert.WorkspaceId),
+				Server = Environment.MachineName
 			};
 
 			return convertedError;
