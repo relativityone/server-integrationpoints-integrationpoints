@@ -36,6 +36,12 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			return permissionRepository.UserCanEditDocuments();
 		}
 
+		public bool UserHasArtifactTypePermission(int workspaceArtifactId, int artifactTypeId, ArtifactPermission artifactPermission)
+		{
+			var permissionRepository = _repositoryFactory.GetPermissionRepository(workspaceArtifactId);
+			return permissionRepository.UserHasArtifactTypePermission(artifactTypeId, artifactPermission);
+		}
+
 		public bool UserHasArtifactTypePermission(int workspaceArtifactId, Guid artifactTypeGuid, ArtifactPermission artifactPermission)
 		{
 			var permissionRepository = _repositoryFactory.GetPermissionRepository(workspaceArtifactId);

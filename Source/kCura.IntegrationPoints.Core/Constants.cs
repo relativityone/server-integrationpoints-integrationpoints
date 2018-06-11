@@ -75,7 +75,7 @@ namespace kCura.IntegrationPoints.Core
 		    public static class ValidationErrorCodes
 		    {
 		        public const string DESTINATION_WORKSPACE_NOT_AVAILABLE = "20.002";
-            }
+		    }
 
 			public static class PermissionErrors
 			{
@@ -108,12 +108,14 @@ namespace kCura.IntegrationPoints.Core
 				public const string INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_MESSAGE = "User does not have permissions to save an Integration Point.";
 				public const string INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_FULLTEXT_PREFIX = "User does not have the following permissions required to save an Integration Point:";
 				public const string INTEGRATION_POINT_SAVE_FAILURE_USER_MESSAGE = "You do not have all required permissions to save this Integration Point. Please contact your system administrator.";
+				public const string MISSING_DESTINATION_SAVED_SEARCH_ADD_PERMISSION = "Verify if the user still has permission to create saved search on destination workspace.";
 			}
 
 			public static class PermissionErrorCodes
 			{
 				public const string DESTINATION_WORKSPACE_NO_ACCESS = "20.001";
 				public const string SAVED_SEARCH_NO_ACCESS = "20.004";
+				public const string MISSING_DESTINATION_SAVED_SEARCH_ADD_PERMISSION = "20.008";
 			}
 
 			public class Telemetry

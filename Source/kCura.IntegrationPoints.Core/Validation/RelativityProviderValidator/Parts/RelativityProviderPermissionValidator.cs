@@ -55,7 +55,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 
 			IRelativityProviderDestinationWorkspacePermissionValidator destinationWorkspacePermissionValidator = _validatorsFactory.CreateDestinationWorkspacePermissionValidator(
 				sourceConfiguration.FederatedInstanceArtifactId, model.SecuredConfiguration);
-			result.Add(destinationWorkspacePermissionValidator.Validate(sourceConfiguration.TargetWorkspaceArtifactId, destinationConfiguration.ArtifactTypeId));
+			result.Add(destinationWorkspacePermissionValidator.Validate(sourceConfiguration.TargetWorkspaceArtifactId, destinationConfiguration.ArtifactTypeId, model.CreateSavedSearch));
 
 			return result;
 		}

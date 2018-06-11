@@ -64,7 +64,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			relativityProviderPermissionValidator.Validate(_validationModel);
 
 			// assert
-			_destinationWorkspacePermissionValidator.Received().Validate(_DESTINATION_WORKSPACE_ID, _ARTIFACT_TYPE_ID);
+			_destinationWorkspacePermissionValidator.Received().Validate(_DESTINATION_WORKSPACE_ID, _ARTIFACT_TYPE_ID, Arg.Any<bool>());
 		}
 
 		[Test]
@@ -93,7 +93,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			relativityProviderPermissionValidator.Validate(_validationModel);
 
 			// assert
-			_destinationWorkspacePermissionValidator.DidNotReceiveWithAnyArgs().Validate(Arg.Any<int>(), Arg.Any<int>());
+			_destinationWorkspacePermissionValidator.DidNotReceiveWithAnyArgs().Validate(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<bool>());
 		}
 
 		private static ValidationResult CreateValidationMessage(bool success)

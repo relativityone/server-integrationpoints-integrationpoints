@@ -2,6 +2,7 @@
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts.Interfaces;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.Relativity.Client;
 
 namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts
 {
@@ -15,7 +16,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			_permissionManager = permissionManager;
 		}
 
-		public ValidationResult Validate(int destinationWorkspaceId, int destinationTypeId)
+		public ValidationResult Validate(int destinationWorkspaceId, int destinationTypeId, bool createSavedSearch)
 		{
 			var result = new ValidationResult();
 
@@ -38,6 +39,16 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			{
 				result.Add(Constants.IntegrationPoints.PermissionErrors.MISSING_DESTINATION_RDO_PERMISSIONS);
 			}
+
+			if (createSavedSearch)
+			{
+				if (!_permissionManager.UserHasArtifactTypePermission(destinationWorkspaceId, (int)ArtifactType.Search, ArtifactPermission.Create))
+				{
+					result.Add(Constants.IntegrationPoints.PermissionErrorCodes.MISSING_DESTINATION_SAVED_SEARCH_ADD_PERMISSION, 
+						Constants.IntegrationPoints.PermissionErrors.MISSING_DESTINATION_SAVED_SEARCH_ADD_PERMISSION);
+				}
+			}
+
 			return result;
 		}
 	}

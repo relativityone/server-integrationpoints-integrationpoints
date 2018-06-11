@@ -46,7 +46,8 @@ namespace kCura.IntegrationPoints.Core.Validation.Abstract
 				Type = model.Type,
 				IntegrationPointTypeIdentifier = integrationPointType.Identifier,
 				ObjectTypeGuid = objectTypeGuid,
-				SecuredConfiguration = model.SecuredConfiguration
+				SecuredConfiguration = model.SecuredConfiguration,
+				CreateSavedSearch = destinationConfiguration.CreateSavedSearchForTagging
 			};
 		}
 

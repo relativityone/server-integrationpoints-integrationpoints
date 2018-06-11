@@ -15,6 +15,8 @@ namespace kCura.IntegrationPoints.Core.Managers
 
 		bool UserCanEditDocuments(int workspaceArtifactId);
 
+		bool UserHasArtifactTypePermission(int workspaceArtifactId, int artifactTypeId, ArtifactPermission artifactPermission);
+
 		bool UserHasArtifactTypePermission(int workspaceArtifactId, Guid artifactTypeGuid, ArtifactPermission artifactPermission);
 
 		bool UserHasArtifactInstancePermission(int workspaceArtifactId, Guid artifactTypeGuid, int artifactId, ArtifactPermission artifactPermission);

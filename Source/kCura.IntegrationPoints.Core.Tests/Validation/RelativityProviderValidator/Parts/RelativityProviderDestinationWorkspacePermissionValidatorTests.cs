@@ -4,6 +4,7 @@ using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.Relativity.Client;
 using NSubstitute;
 using NUnit.Framework;
 
@@ -35,7 +36,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			var sut = new RelativityProviderDestinationWorkspacePermissionValidator(_permissionManager);
 
 			// act
-			ValidationResult result = sut.Validate(_WORKSPACE_ID, _OBJECT_TYPE_ID);
+			ValidationResult result = sut.Validate(_WORKSPACE_ID, _OBJECT_TYPE_ID, false);
 
 			// assert
 			_permissionManager.Received().UserHasPermissionToAccessWorkspace(_WORKSPACE_ID);
@@ -51,22 +52,23 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			var sut = new RelativityProviderDestinationWorkspacePermissionValidator(_permissionManager);
 
 			// act
-			ValidationResult result = sut.Validate(_WORKSPACE_ID, _OBJECT_TYPE_ID);
+			ValidationResult result = sut.Validate(_WORKSPACE_ID, _OBJECT_TYPE_ID, false);
 
 			// assert
 			_permissionManager.Received().UserCanImport(_WORKSPACE_ID);
 			Assert.AreEqual(canImport, result.IsValid);
 		}
 
-		[Test]
-		public void ItShouldNotValidateImportPermission_WhenDestinationWorkspaceIsInaccessible()
+		[TestCase(true)]
+		[TestCase(false)]
+		public void ItShouldNotValidateImportPermission_WhenDestinationWorkspaceIsInaccessible(bool createSavedSearch)
 		{
 			_permissionManager.UserHasPermissionToAccessWorkspace(_WORKSPACE_ID).Returns(false);
 
 			var sut = new RelativityProviderDestinationWorkspacePermissionValidator(_permissionManager);
 
 			// act
-			sut.Validate(_WORKSPACE_ID, _OBJECT_TYPE_ID);
+			sut.Validate(_WORKSPACE_ID, _OBJECT_TYPE_ID, createSavedSearch);
 
 			// assert
 			_permissionManager.DidNotReceiveWithAnyArgs().UserCanImport(_WORKSPACE_ID);
@@ -81,7 +83,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			var sut = new RelativityProviderDestinationWorkspacePermissionValidator(_permissionManager);
 
 			// act
-			ValidationResult result = sut.Validate(_WORKSPACE_ID, _OBJECT_TYPE_ID);
+			ValidationResult result = sut.Validate(_WORKSPACE_ID, _OBJECT_TYPE_ID, false);
 
 			// assert
 			ArtifactPermission[] expectedPermissions = {ArtifactPermission.View, ArtifactPermission.Create, ArtifactPermission.Edit};
@@ -93,18 +95,51 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			Assert.AreEqual(accessToArtifactType, result.IsValid);
 		}
 
-		[Test]
-		public void ItShouldNotValidateArtifactTypePermission_WhenDestinationWorkspaceIsInaccessible()
+		[TestCase(false)]
+		[TestCase(true)]
+		public void ItShouldNotValidateArtifactTypePermission_WhenDestinationWorkspaceIsInaccessible(bool createSavedSearch)
 		{
 			_permissionManager.UserHasPermissionToAccessWorkspace(_WORKSPACE_ID).Returns(false);
 
 			var sut = new RelativityProviderDestinationWorkspacePermissionValidator(_permissionManager);
 
 			// act
-			sut.Validate(_WORKSPACE_ID, _OBJECT_TYPE_ID);
+			sut.Validate(_WORKSPACE_ID, _OBJECT_TYPE_ID, createSavedSearch);
 
 			// assert
 			_permissionManager.DidNotReceiveWithAnyArgs().UserHasArtifactTypePermissions(_WORKSPACE_ID, _OBJECT_TYPE_ID, Arg.Any<ArtifactPermission[]>());
+		}
+
+		[TestCase(false)]
+		[TestCase(true)]
+		public void ItShouldNotValidateSavedSearchPermission_WhenDestinationWorkspaceIsInaccessible(bool createSavedSearch)
+		{
+			_permissionManager.UserHasPermissionToAccessWorkspace(_WORKSPACE_ID).Returns(false);
+
+			var validator = new RelativityProviderDestinationWorkspacePermissionValidator(_permissionManager);
+
+			// act
+			validator.Validate(_WORKSPACE_ID, _OBJECT_TYPE_ID, createSavedSearch);
+
+			// assert
+			_permissionManager.DidNotReceiveWithAnyArgs().UserHasArtifactTypePermission(_WORKSPACE_ID, (int) ArtifactType.Search, ArtifactPermission.Create);
+		}
+
+		[Test]
+		public void ItShouldValidateSavedSearchPermission_WhenDestinationWorkspaceIsAccessible(
+			[Values(true, false)] bool createSavedSearch, 
+			[Values(true, false)] bool canCreateSavedSearch)
+		{
+			_permissionManager.UserHasArtifactTypePermission(_WORKSPACE_ID, (int)ArtifactType.Search, ArtifactPermission.Create).Returns(canCreateSavedSearch);
+
+			var validator = new RelativityProviderDestinationWorkspacePermissionValidator(_permissionManager);
+
+			// act
+			ValidationResult result = validator.Validate(_WORKSPACE_ID, _OBJECT_TYPE_ID, createSavedSearch);
+
+			// assert
+			_permissionManager.Received(createSavedSearch ? 1 : 0).UserHasArtifactTypePermission(_WORKSPACE_ID, (int)ArtifactType.Search, ArtifactPermission.Create);
+			Assert.AreEqual(!(createSavedSearch && !canCreateSavedSearch), result.IsValid);
 		}
 	}
 }

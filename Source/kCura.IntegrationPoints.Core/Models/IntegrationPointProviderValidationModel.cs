@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-namespace kCura.IntegrationPoints.Core.Models
+﻿namespace kCura.IntegrationPoints.Core.Models
 {
 	public class IntegrationPointProviderValidationModel
 	{
@@ -44,5 +41,7 @@ namespace kCura.IntegrationPoints.Core.Models
 		public string ObjectTypeGuid { get; set; }
 
 		public string SecuredConfiguration { get; set; }
+
+		public bool CreateSavedSearch { get; set; } = false;
 	}
 }
