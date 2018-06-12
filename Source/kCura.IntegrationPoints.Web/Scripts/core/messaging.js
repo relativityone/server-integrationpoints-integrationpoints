@@ -76,6 +76,8 @@
 			return PROFILE_ERR_PREFIX + ' ' + joinedErrors;
 		}
 
+		message.getFormattedErrorMessage = getFormattedMessage;
+
 		function formatError(error) {
 			if (!!error.code) {
 				return error.code + ". " + error.message;

@@ -1093,7 +1093,7 @@
 				data: JSON.stringify(model)
 			}).then(function (result) {
 				if (!result.isValid) {
-					var formattedMessage = result.messages.join('\r?\n').replace(new RegExp('\r?\n', 'g'), '.<br />');
+					var formattedMessage = IP.message.getFormattedErrorMessage(result.errors);
 					window.Dragon.dialogs.showConfirmWithCancelHandler({
 						message: formattedMessage,
 						title: 'Integration Point Validation',
