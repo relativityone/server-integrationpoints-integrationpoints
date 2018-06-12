@@ -22,11 +22,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 
 			if (!_permissionManager.UserHasPermissionToAccessWorkspace(destinationWorkspaceId))
 			{
-				var message = new ValidationMessage(
-					Constants.IntegrationPoints.PermissionErrorCodes.DESTINATION_WORKSPACE_NO_ACCESS,
-					Constants.IntegrationPoints.PermissionErrors.DESTINATION_WORKSPACE_NO_ACCESS
-				);
-				result.Add(message);
+				result.Add(ValidationMessages.DestinationWorkspaceNoAccess);
 				return result; // it does not make sense to validate other destination workspace permissions
 			}
 
@@ -34,7 +30,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			{
 				result.Add(Constants.IntegrationPoints.PermissionErrors.DESTINATION_WORKSPACE_NO_IMPORT);
 			}
-			
+
 			if (!_permissionManager.UserHasArtifactTypePermissions(destinationWorkspaceId, destinationTypeId, _expectedArtifactPermissions))
 			{
 				result.Add(Constants.IntegrationPoints.PermissionErrors.MISSING_DESTINATION_RDO_PERMISSIONS);
@@ -44,8 +40,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			{
 				if (!_permissionManager.UserHasArtifactTypePermission(destinationWorkspaceId, (int)ArtifactType.Search, ArtifactPermission.Create))
 				{
-					result.Add(Constants.IntegrationPoints.PermissionErrorCodes.MISSING_DESTINATION_SAVED_SEARCH_ADD_PERMISSION, 
-						Constants.IntegrationPoints.PermissionErrors.MISSING_DESTINATION_SAVED_SEARCH_ADD_PERMISSION);
+					result.Add(ValidationMessages.MissingDestinationSavedSearchAddPermission);
 				}
 			}
 

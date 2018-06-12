@@ -294,7 +294,6 @@
     <Compile Include="Validation\IntegrationPointValidationException.cs" />
     <Compile Include="Validation\RelativityProviderValidator\Parts\RelativityProviderDestinationWorkspacePermissionValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidator\Parts\RelativityProviderSourceWorkspacePermissionValidator.cs" />
-    <Compile Include="Validation\RelativityProviderValidator\RelativityProviderValidationErrorCodes.cs" />
     <Compile Include="Validation\ValidationContext.cs" />
     <Compile Include="Validation\ValidationExecutor.cs" />
     <Compile Include="Validation\Parts\ImportProductionValidator.cs" />
@@ -427,6 +426,7 @@
     <Compile Include="Validation\RelativityProviderValidator\Parts\RelativityProviderPermissionValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidator\RelativityProviderValidationMessages.cs" />
     <Compile Include="Validation\RelativityProviderValidator\RelativityProviderValidatorsFactory.cs" />
+    <Compile Include="Validation\ValidationMessages.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="LICENSE.txt">

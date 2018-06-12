@@ -96,9 +96,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			{
 				IEnumerable<string> missingFieldStrings = destinationFieldsMissing.Select(f => $"'{f}'");
 				string missingFields = string.Join(", ", missingFieldStrings);
-				string errorCode = RelativityProviderValidationErrorCodes.FIELD_MAP_FIELD_NOT_EXIST_IN_DESTINATION_WORKSPACE;
-				string shortMessageText = string.Format(RelativityProviderValidationMessages.FIELD_MAP_FIELD_NOT_EXIST_IN_DESTINATION_WORKSPACE, missingFields);
-				var validationMessage = new ValidationMessage(errorCode, shortMessageText);
+				ValidationMessage validationMessage = ValidationMessages.FieldMapFieldNotExistInDestinationWorkspace(missingFields);
 				result.Add(validationMessage);
 			}
 

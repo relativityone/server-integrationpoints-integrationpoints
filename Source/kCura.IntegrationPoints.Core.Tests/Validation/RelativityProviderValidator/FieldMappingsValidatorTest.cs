@@ -3,6 +3,7 @@ using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts;
 using kCura.IntegrationPoints.Data.Factories;
@@ -248,7 +249,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			Assert.That(result.MessageTexts.Any(x => x.Contains(RelativityProviderValidationMessages.FIELD_MAP_DYNAMIC_FOLDER_PATH_AND_FOLDER_PATH_INFORMATION_CONFLICT)));
 		}
 
-		[TestCase("[{\"sourceField\":{\"displayName\":\"Control Number [Object Identifier]\",\"isIdentifier\":true,\"fieldIdentifier\":\"1003667\",\"isRequired\":true},\"destinationField\":{\"displayName\":\"Control Number [Object Identifier]\",\"isIdentifier\":true,\"fieldIdentifier\":\"1003667\",\"isRequired\":true},\"fieldMapType\":\"Identifier\"},{\"sourceField\":{\"displayName\":\"Email To\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035368\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Email To\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035368\",\"isRequired\":false},\"fieldMapType\":\"None\"}]", new[] {"Control Number"})]
+		[TestCase("[{\"sourceField\":{\"displayName\":\"Control Number [Object Identifier]\",\"isIdentifier\":true,\"fieldIdentifier\":\"1003667\",\"isRequired\":true},\"destinationField\":{\"displayName\":\"Control Number [Object Identifier]\",\"isIdentifier\":true,\"fieldIdentifier\":\"1003667\",\"isRequired\":true},\"fieldMapType\":\"Identifier\"},{\"sourceField\":{\"displayName\":\"Email To\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035368\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Email To\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035368\",\"isRequired\":false},\"fieldMapType\":\"None\"}]", new[] { "Control Number" })]
 		public void ItShouldReturnProperError_WhenDestinationFieldDoesNotExist(string fieldMap, string[] requiredFields)
 		{
 			const string emailToFieldName = "Email To";
@@ -262,13 +263,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			ValidationResult validationResult = _instance.Validate(integrationPointProviderValidationModel);
 
 			// Assert
-			string expectedErrorCode = RelativityProviderValidationErrorCodes.FIELD_MAP_FIELD_NOT_EXIST_IN_DESTINATION_WORKSPACE;
-			string expectedMessageText = string.Format(RelativityProviderValidationMessages.FIELD_MAP_FIELD_NOT_EXIST_IN_DESTINATION_WORKSPACE, $"'{emailToFieldName}'");
+			ValidationMessage expectedMessage = ValidationMessages.FieldMapFieldNotExistInDestinationWorkspace($"'{emailToFieldName}'");
 
 			Assert.AreEqual(1, validationResult.Messages.Count());
 			ValidationMessage message = validationResult.Messages.First();
-			Assert.AreEqual(expectedErrorCode, message.ErrorCode);
-			Assert.AreEqual(expectedMessageText, message.ShortMessage);
+			Assert.AreEqual(expectedMessage, message);
 		}
 
 		private IntegrationPointProviderValidationModel GetFieldMapValidationObject(string fieldsMap)

@@ -18,12 +18,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 
 			if (!_workspaceManager.WorkspaceExists(workspaceId))
 			{
-				var message = new ValidationMessage(
-					Constants.IntegrationPoints.ValidationErrorCodes.DESTINATION_WORKSPACE_NOT_AVAILABLE,
-					Constants.IntegrationPoints.ValidationErrors.DESTINATION_WORKSPACE_NOT_AVAILABLE
-				); // TODO move to separe class
-
-				result.Add(message);
+				result.Add(ValidationMessages.DestinationWorkspaceNotAvailable);
 			}
 			return result;
 		}

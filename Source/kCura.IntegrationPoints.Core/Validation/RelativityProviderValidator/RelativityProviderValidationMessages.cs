@@ -7,8 +7,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 		public static readonly string FIELD_MAP_FIELD_IS_IDENTIFIER = "Is Identifier";
 		public static readonly string FIELD_MAP_FIELD_MUST_BE_MAPPED = "must be mapped.";
 		public static readonly string FIELD_MAP_FIELD_NAME = "Name";
-		public static readonly string FIELD_MAP_FIELD_NOT_EXIST_IN_DESTINATION_WORKSPACE = "Destination field(s) mapped may no longer be available or have been renamed. Please review mapping for listed field(s): {0}.";
-        public static readonly string FIELD_MAP_FIELD_NOT_EXIST_IN_SOURCE_WORKSPACE = "Field does not exist in source workspace.";
+		public static readonly string FIELD_MAP_FIELD_NOT_EXIST_IN_SOURCE_WORKSPACE = "Field does not exist in source workspace.";
 		public static readonly string FIELD_MAP_IDENTIFIERS_NOT_MATCHED = "Identifier must be mapped with another identifier.";
 		public static readonly string FIELD_MAP_SOURCE_AND_DESTINATION_FIELDS_NOT_MAPPED = "All selected fields must be mapped. Destination and Source fields not mapped.";
 		public static readonly string FIELD_MAP_SOURCE_FIELD_NOT_MAPPED = "All selected fields must be mapped. Source field not mapped to Destination: ";

@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
@@ -52,8 +53,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			// assert
 			Assert.IsFalse(actual.IsValid);
 			Assert.AreEqual(1, actual.Messages.Count());
-			Assert.AreEqual(Constants.IntegrationPoints.PermissionErrorCodes.SAVED_SEARCH_NO_ACCESS, actual.Messages.First().ErrorCode);
-			Assert.AreEqual(Constants.IntegrationPoints.PermissionErrors.SAVED_SEARCH_NO_ACCESS, actual.Messages.First().ShortMessage);
+			Assert.AreEqual(ValidationMessages.SavedSearchNoAccess, actual.Messages.First());
 		}
 
 		[Test]
