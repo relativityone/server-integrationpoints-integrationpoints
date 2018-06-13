@@ -67,7 +67,12 @@ namespace kCura.IntegrationPoints.Core
 				public static string ExportName = @"Export";
 			}
 
-			public static class PermissionErrors
+			public static class ValidationErrors
+			{
+				public const string DESTINATION_WORKSPACE_NOT_AVAILABLE = "Destination workspace is not available.";
+            }
+
+            public static class PermissionErrors
 			{
 				public const string UNABLE_TO_SAVE_INTEGRATION_POINT_USER_MESSAGE = "Unable to save the Integration Point. Please contact your system administrator.";
 				public const string UNABLE_TO_SAVE_INTEGRATION_POINT_ADMIN_MESSAGE = "Unable to save Integration Point.";

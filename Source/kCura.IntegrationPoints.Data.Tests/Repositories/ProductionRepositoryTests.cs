@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 			_productionManager = Substitute.For<IProductionManager>();
 
 			_servicesMgr = Substitute.For<IServicesMgr>();
-			_servicesMgr.CreateProxy<IProductionManager>(ExecutionIdentity.System).Returns(_productionManager);
+			_servicesMgr.CreateProxy<IProductionManager>(ExecutionIdentity.CurrentUser).Returns(_productionManager);
 
 			_instance = new ProductionRepository(_servicesMgr);
 		}

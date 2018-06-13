@@ -6,16 +6,12 @@ using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Managers;
-using kCura.IntegrationPoints.Domain.Models;
+
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Models;
 using kCura.Relativity.Client;
 using Relativity.API;
-using Relativity.Core.Service;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {

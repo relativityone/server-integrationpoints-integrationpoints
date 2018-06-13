@@ -14,11 +14,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 	public class RelativityProviderPermissionValidatorTests : PermissionValidatorTestsBase
 	{
 		private const int _FEDERATED_INSTANCE_ID = 5;
+	    private const int _SOURCE_PRODUCTION_ID = 7;
 
 		private IRelativityProviderValidatorsFactory _validatorsFactory;
 		private IRelativityProviderDestinationWorkspaceExistenceValidator _destinationWorkspaceExistenceValidator;
 		private IRelativityProviderDestinationWorkspacePermissionValidator _destinationWorkspacePermissionValidator;
 		private IRelativityProviderSourceWorkspacePermissionValidator _sourceWorkspacePermissionValidator;
+	    private IRelativityProviderSourceProductionPermissionValidator _sourceWorkspaceSourceProductionPermissionValidator;
 
 		[SetUp]
 		public override void SetUp()
@@ -29,7 +31,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			_destinationWorkspaceExistenceValidator = Substitute.For<IRelativityProviderDestinationWorkspaceExistenceValidator>();
 			_destinationWorkspacePermissionValidator = Substitute.For<IRelativityProviderDestinationWorkspacePermissionValidator>();
 			_sourceWorkspacePermissionValidator = Substitute.For<IRelativityProviderSourceWorkspacePermissionValidator>();
-
+		    _sourceWorkspaceSourceProductionPermissionValidator = Substitute.For<IRelativityProviderSourceProductionPermissionValidator>();
+            
 			_validatorsFactory.CreateDestinationWorkspaceExistenceValidator(Arg.Any<int?>(), Arg.Any<string>())
 				.Returns(_destinationWorkspaceExistenceValidator);
 
@@ -37,6 +40,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 				.Returns(_destinationWorkspacePermissionValidator);
 
 			_validatorsFactory.CreateSourceWorkspacePermissionValidator().Returns(_sourceWorkspacePermissionValidator);
+		    _validatorsFactory.CreateSourceProductionPermissionValidator(Arg.Any<int>())
+		        .Returns(_sourceWorkspaceSourceProductionPermissionValidator);
 		}
 
 		[Test]
@@ -96,7 +101,35 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			_destinationWorkspacePermissionValidator.DidNotReceiveWithAnyArgs().Validate(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<bool>());
 		}
 
-		private static ValidationResult CreateValidationMessage(bool success)
+	    [Test]
+	    public void ItShouldValidateSourceProductionPermissions()
+	    {
+	        _serializer.Deserialize<SourceConfiguration>(_validationModel.SourceConfiguration)
+	            .Returns(new SourceConfiguration
+	            {
+	                SavedSearchArtifactId = _SAVED_SEARCH_ID,
+	                SourceWorkspaceArtifactId = _SOURCE_WORKSPACE_ID,
+	                TargetWorkspaceArtifactId = _DESTINATION_WORKSPACE_ID,
+                    SourceProductionId = _SOURCE_PRODUCTION_ID
+	            });
+
+	        _serializer.Deserialize<DestinationConfiguration>(_validationModel.SourceConfiguration)
+	            .Returns(new DestinationConfiguration
+	            {
+	                ArtifactTypeId = _ARTIFACT_TYPE_ID
+	            });
+
+
+	        var relativityProviderPermissionValidator = new RelativityProviderPermissionValidator(_serializer, ServiceContextHelper, _validatorsFactory);
+
+	        // act
+	        relativityProviderPermissionValidator.Validate(_validationModel);
+
+	        // assert
+	        _sourceWorkspaceSourceProductionPermissionValidator.Received().Validate(_SOURCE_WORKSPACE_ID, _SOURCE_PRODUCTION_ID);
+	    }
+
+        private static ValidationResult CreateValidationMessage(bool success)
 		{
 			var failedValidationResult = new ValidationResult();
 			if (!success)

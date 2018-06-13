@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts.Interfaces;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using Relativity.API;
 
@@ -92,6 +93,13 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 		{
 			IPermissionManager sourceWorkspacePermissionManager = CreatePermissionManager(_helper);
 			return new RelativityProviderSourceWorkspacePermissionValidator(sourceWorkspacePermissionManager);
+		}
+
+		public IRelativityProviderSourceProductionPermissionValidator CreateSourceProductionPermissionValidator(int workspaceArtifactId)
+		{
+		    IProductionRepository productionRepository = _repositoryFactory.GetProductionRepository(workspaceArtifactId);
+
+			return new RelativityProviderSourceProductionPermissionValidator(productionRepository, _logger);
 		}
 
 		private IPermissionManager CreatePermissionManager(IHelper helper)

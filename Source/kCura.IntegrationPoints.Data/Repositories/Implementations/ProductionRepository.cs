@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		public ProductionDTO RetrieveProduction(int workspaceArtifactId, int productionArtifactId)
 		{
 			ProductionDTO productionDto;
-			using (var productionManager = _servicesMgr.CreateProxy<IProductionManager>(ExecutionIdentity.System))
+			using (var productionManager = _servicesMgr.CreateProxy<IProductionManager>(ExecutionIdentity.CurrentUser))
 			{
 				try { 
 					Production production = productionManager.ReadSingleAsync(workspaceArtifactId, productionArtifactId).Result;
@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		public int CreateSingle(int workspaceArtifactId, Production production)
 		{
 			int result;
-			using (var productionManager = _servicesMgr.CreateProxy<IProductionManager>(ExecutionIdentity.System))
+			using (var productionManager = _servicesMgr.CreateProxy<IProductionManager>(ExecutionIdentity.CurrentUser))
 			{
 				try
 				{

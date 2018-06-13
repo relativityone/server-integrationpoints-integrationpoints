@@ -29,6 +29,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			var result = new ValidationResult();
 			result.Add(ValidateSourceWorkspacePermission());
 			result.Add(ValidateDestinationWorkspacePermission(model));
+			result.Add(ValidateSourceWorkspaceProductionPermission(model));
 			return result;
 		}
 
@@ -57,6 +58,19 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 				sourceConfiguration.FederatedInstanceArtifactId, model.SecuredConfiguration);
 			result.Add(destinationWorkspacePermissionValidator.Validate(sourceConfiguration.TargetWorkspaceArtifactId, destinationConfiguration.ArtifactTypeId, model.CreateSavedSearch));
 
+			return result;
+		}
+
+		private ValidationResult ValidateSourceWorkspaceProductionPermission(IntegrationPointProviderValidationModel model)
+		{
+			SourceConfiguration sourceConfiguration = Serializer.Deserialize<SourceConfiguration>(model.SourceConfiguration);
+
+			var result = new ValidationResult();
+			if (sourceConfiguration.SourceProductionId > 0)
+			{
+				var validator = _validatorsFactory.CreateSourceProductionPermissionValidator(sourceConfiguration.SourceWorkspaceArtifactId);
+			    return validator.Validate(sourceConfiguration.SourceWorkspaceArtifactId, sourceConfiguration.SourceProductionId);
+			}
 			return result;
 		}
 	}

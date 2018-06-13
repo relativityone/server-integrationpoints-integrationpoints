@@ -153,6 +153,7 @@
     <Compile Include="Validation\RelativityProviderValidator\Parts\RelativityProviderDestinationWorkspacePermissionValidatorTests.cs" />
     <Compile Include="Validation\RelativityProviderValidator\RelativityProviderConfigurationValidatorTests.cs" />
     <Compile Include="Validation\RelativityProviderValidator\RelativityProviderPermissionValidatorTests.cs" />
+    <Compile Include="Validation\RelativityProviderValidator\RelativityProviderSourceProductionPermissionValidatorTests.cs" />
     <Compile Include="Validation\RelativityProviderValidator\SavedSearchValidatorTests.cs" />
     <Compile Include="Validation\RelativityProviderValidator\TransferredObjectValidatorTests.cs" />
     <Compile Include="Validation\SavePermissionValidatorTests.cs" />

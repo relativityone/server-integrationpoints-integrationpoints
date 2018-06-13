@@ -20,6 +20,8 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 
 		IRelativityProviderSourceWorkspacePermissionValidator CreateSourceWorkspacePermissionValidator();
 
+		IRelativityProviderSourceProductionPermissionValidator CreateSourceProductionPermissionValidator(int workspaceArtifactId);
+
 		RelativityProviderWorkspaceNameValidator CreateWorkspaceNameValidator(string prefix);
 
 		RelativityProviderWorkspaceNameValidator CreateWorkspaceNameValidator(string prefix, int? federatedInstanceArtifactId, string credentials);

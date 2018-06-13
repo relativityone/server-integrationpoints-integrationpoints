@@ -17,8 +17,6 @@ using kCura.IntegrationPoints.Web.Attributes;
 using kCura.Relativity.Client.DTOs;
 using kCura.Relativity.Client.Repositories;
 using Relativity.API;
-using Relativity.Core.Service;
-using Relativity.Services.Exceptions;
 using Relativity.Services.Folder;
 using Folder = Relativity.Services.Folder.Folder;
 
