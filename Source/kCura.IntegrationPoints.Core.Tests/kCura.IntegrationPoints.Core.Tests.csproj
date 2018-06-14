@@ -150,6 +150,7 @@
     <Compile Include="Validation\NameValidatorTests.cs" />
     <Compile Include="Validation\ProductionValidatorTests.cs" />
     <Compile Include="Validation\RelativityProviderValidator\FieldMappingsValidatorTest.cs" />
+    <Compile Include="Validation\RelativityProviderValidator\Parts\RelativityProviderDestinationFolderPermissionValidatorTests.cs" />
     <Compile Include="Validation\RelativityProviderValidator\Parts\RelativityProviderDestinationWorkspacePermissionValidatorTests.cs" />
     <Compile Include="Validation\RelativityProviderValidator\RelativityProviderConfigurationValidatorTests.cs" />
     <Compile Include="Validation\RelativityProviderValidator\RelativityProviderPermissionValidatorTests.cs" />

@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -73,7 +74,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			};
 
 			_serializer.Deserialize<SourceConfiguration>(_validationModel.SourceConfiguration)
-				.Returns(new SourceConfiguration()
+				.Returns(new SourceConfiguration
 				{
 					SavedSearchArtifactId = _SAVED_SEARCH_ID,
 					SourceWorkspaceArtifactId = _SOURCE_WORKSPACE_ID,
@@ -81,7 +82,10 @@ namespace kCura.IntegrationPoint.Tests.Core
 				});
 
 			_serializer.Deserialize<DestinationConfiguration>(_validationModel.DestinationConfiguration)
-				.Returns(new DestinationConfiguration() { ArtifactTypeId = _ARTIFACT_TYPE_ID });
+				.Returns(new DestinationConfiguration { ArtifactTypeId = _ARTIFACT_TYPE_ID });
+
+			_serializer.Deserialize<DestinationConfigurationPermissionValidationModel>(_validationModel.DestinationConfiguration)
+				.Returns(new DestinationConfigurationPermissionValidationModel { ArtifactTypeId = _ARTIFACT_TYPE_ID });
 		}
 	}
 }

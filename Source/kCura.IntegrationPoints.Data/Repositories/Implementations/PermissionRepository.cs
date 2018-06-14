@@ -198,6 +198,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					return PermissionType.Edit;
 				case ArtifactPermission.Create:
 					return PermissionType.Add;
+				case ArtifactPermission.Delete:
+					return PermissionType.Delete;
 				default:
 					throw new System.Exception("Invalid ArtifactPermission");
 			}

@@ -89,6 +89,13 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			return new RelativityProviderDestinationWorkspacePermissionValidator(destinationWorkspacePermissionManager);
 		}
 
+		public IRelativityProviderDestinationFolderPermissionValidator CreateDestinationFolderPermissionValidator(int workspaceArtifactId, int? federatedInstanceArtifactId, string credentials)
+		{
+			IHelper targetHelper = _helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId, credentials);
+			IPermissionManager destinationWorkspacePermissionManager = CreatePermissionManager(targetHelper);
+			return new RelativityProviderDestinationFolderPermissionValidator(workspaceArtifactId, destinationWorkspacePermissionManager);
+		}
+
 		public IRelativityProviderSourceWorkspacePermissionValidator CreateSourceWorkspacePermissionValidator()
 		{
 			IPermissionManager sourceWorkspacePermissionManager = CreatePermissionManager(_helper);

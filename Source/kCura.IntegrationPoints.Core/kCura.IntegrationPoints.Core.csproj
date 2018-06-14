@@ -287,6 +287,8 @@
     <Compile Include="Validation\IntegrationPointPermissionValidator.cs" />
     <Compile Include="Validation\IntegrationPointProviderValidationMessages.cs" />
     <Compile Include="Validation\Abstract\BasePermissionValidator.cs" />
+    <Compile Include="Validation\RelativityProviderValidator\DestinationConfigurationPermissionValidationModel.cs" />
+    <Compile Include="Validation\RelativityProviderValidator\Parts\Interfaces\IRelativityProviderDestinationFolderPermissionValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidator\Parts\Interfaces\IRelativityProviderDestinationWorkspaceExistenceValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidator\Parts\Interfaces\IRelativityProviderDestinationWorkspacePermissionValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidator\Parts\Interfaces\IRelativityProviderSourceProductionPermissionValidator.cs" />
@@ -296,6 +298,7 @@
     <Compile Include="Validation\RelativityProviderValidator\Parts\RelativityProviderDestinationWorkspacePermissionValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidator\Parts\RelativityProviderSourceProductionPermissionValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidator\Parts\RelativityProviderSourceWorkspacePermissionValidator.cs" />
+    <Compile Include="Validation\RelativityProviderValidator\Parts\RelativityProviderDestinationFolderPermissionValidator.cs" />
     <Compile Include="Validation\ValidationContext.cs" />
     <Compile Include="Validation\ValidationExecutor.cs" />
     <Compile Include="Validation\Parts\ImportProductionValidator.cs" />

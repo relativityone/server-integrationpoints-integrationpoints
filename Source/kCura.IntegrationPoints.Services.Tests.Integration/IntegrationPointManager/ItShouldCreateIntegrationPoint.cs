@@ -49,12 +49,6 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 			_client.Dispose();
 		}
 
-		private string ReadSecret(string secretId)
-		{
-			var secret = _secretManager.RetrieveIdentifier(secretId);
-			return _secretManager.RetrieveValue(_secretCatalog.GetSecret(secret));
-		}
-
 		private class Credentials
 		{
 			public string Username { get; set; }
@@ -65,7 +59,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 		{
 			var overwriteFieldsModel = _client.GetOverwriteFieldsChoicesAsync(SourceWorkspaceArtifactId).Result.First(x => x.Name == "Append/Overlay");
 
-			var sourceConfiguration = new LoadFileExportSourceConfiguration
+			var sourceConfiguration = new RelativityProviderSourceConfiguration
 			{
 				SourceWorkspaceArtifactId = SourceWorkspaceArtifactId,
 				SavedSearchArtifactId = SavedSearchArtifactId

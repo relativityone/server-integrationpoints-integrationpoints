@@ -55,7 +55,6 @@
     </Compile>
     <Compile Include="Constants.cs" />
     <Compile Include="DataReaders\DocumentArtifactIdDataReader.cs" />
-    <Compile Include="DestinationConfigurationModel.cs" />
     <Compile Include="DocumentTransferProvider.cs" />
     <Compile Include="DocumentTransferSettings.cs" />
     <Compile Include="ExtendedImportApiFacade.cs" />

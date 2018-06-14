@@ -6,7 +6,8 @@ namespace kCura.IntegrationPoints.Data
 	{
 		View,
 		Edit,
-		Create	
+		Create,
+		Delete
 	}
 
 	public static class GlobalConst

@@ -89,8 +89,6 @@
     <Compile Include="JobHistory\JobHistorySummaryModelBuilder.cs" />
     <Compile Include="JobHistory\RelativityIntegrationPointsRepositoryAdminAccess.cs" />
     <Compile Include="KeplerServiceBase.cs" />
-    <Compile Include="Models\LoadFileExportDestinationConfigurationBackwardCompatibility.cs" />
-    <Compile Include="Models\LoadFileExportSourceConfigurationBackwardCompatibility.cs" />
     <Compile Include="Models\RelativityProviderDestinationConfigurationBackwardCompatibility.cs" />
     <Compile Include="Models\RelativityProviderSourceConfigurationBackwardCompatibility.cs" />
     <Compile Include="Models\TotalItemsCountSearchDto.cs" />

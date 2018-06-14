@@ -1,5 +1,4 @@
 ﻿using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -42,7 +41,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 		private ValidationResult ValidateDestinationWorkspacePermission(IntegrationPointProviderValidationModel model)
 		{
 			SourceConfiguration sourceConfiguration = Serializer.Deserialize<SourceConfiguration>(model.SourceConfiguration);
-			DestinationConfiguration destinationConfiguration = Serializer.Deserialize<DestinationConfiguration>(model.DestinationConfiguration);
+			DestinationConfigurationPermissionValidationModel destinationConfiguration = Serializer.Deserialize<DestinationConfigurationPermissionValidationModel>(model.DestinationConfiguration);
 
 			var result = new ValidationResult();
 
@@ -57,6 +56,25 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			IRelativityProviderDestinationWorkspacePermissionValidator destinationWorkspacePermissionValidator = _validatorsFactory.CreateDestinationWorkspacePermissionValidator(
 				sourceConfiguration.FederatedInstanceArtifactId, model.SecuredConfiguration);
 			result.Add(destinationWorkspacePermissionValidator.Validate(sourceConfiguration.TargetWorkspaceArtifactId, destinationConfiguration.ArtifactTypeId, model.CreateSavedSearch));
+			if (!result.IsValid)
+			{
+				return result; // no permission to destination workspace
+			}
+
+			result.Add(ValidateDestinationFolderPermissions(model, sourceConfiguration, destinationConfiguration));
+
+			return result;
+		}
+
+		private ValidationResult ValidateDestinationFolderPermissions(IntegrationPointProviderValidationModel model, SourceConfiguration sourceConfiguration, DestinationConfigurationPermissionValidationModel destinationConfiguration)
+		{
+			ValidationResult result = new ValidationResult();
+			if (destinationConfiguration.DestinationFolderArtifactId > 0)
+			{
+				IRelativityProviderDestinationFolderPermissionValidator destinationFolderPermissionValidator =
+					_validatorsFactory.CreateDestinationFolderPermissionValidator(destinationConfiguration.CaseArtifactId, sourceConfiguration.FederatedInstanceArtifactId, model.SecuredConfiguration);
+				result.Add(destinationFolderPermissionValidator.Validate(destinationConfiguration.DestinationFolderArtifactId, destinationConfiguration.UseFolderPath, destinationConfiguration.MoveExistingDocuments));
+			}
 
 			return result;
 		}
@@ -69,7 +87,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			if (sourceConfiguration.SourceProductionId > 0)
 			{
 				var validator = _validatorsFactory.CreateSourceProductionPermissionValidator(sourceConfiguration.SourceWorkspaceArtifactId);
-			    return validator.Validate(sourceConfiguration.SourceWorkspaceArtifactId, sourceConfiguration.SourceProductionId);
+				return validator.Validate(sourceConfiguration.SourceWorkspaceArtifactId, sourceConfiguration.SourceProductionId);
 			}
 			return result;
 		}
