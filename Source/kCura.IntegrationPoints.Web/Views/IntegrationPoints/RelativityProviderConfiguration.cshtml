@@ -93,7 +93,7 @@
 									<li>
 										<label><input id="location-1" type="radio" name="location_radio" value="false" data-bind="checked: LocationFolderChecked, enable: EnableLocationRadio">Production Set</label>
 										<select id="productionSetsSelector" data-bind="options: DestinationProductionSets, optionsText: 'displayName', optionsValue: 'artifactID', optionsCaption: 'Select...', value: ProductionArtifactId, enable: EnableLocationRadio && LocationFolderChecked() == 'false',  select2searchable: {}"></select>
-										<button id="add-production-set-selection-button" data-bind="click: openCreateProductionSetModal, enable: EnableLocationRadio && LocationFolderChecked() == 'false'" class="addProductionSet-controlButtons" style="height:24px;width:27px;font-weight: 300">+</button>
+										<button id="add-production-set-selection-button" data-bind="click: openCreateProductionSetModal, enable: EnableLocationRadio && LocationFolderChecked() == 'false', visible: ShowProductionAddButton" class="addProductionSet-controlButtons" style="height:24px;width:27px;font-weight: 300">+</button>
 									</li>
 								</ul>
 							</div>

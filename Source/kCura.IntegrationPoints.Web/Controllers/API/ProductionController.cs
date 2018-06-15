@@ -5,8 +5,13 @@ using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Attributes;
+using kCura.Relativity.Client;
 using Relativity.API;
 using PageLevelNumbering = Relativity.Productions.Services.PageLevelNumbering;
 using Production = Relativity.Productions.Services.Production;
@@ -18,9 +23,9 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly IManagerFactory _managerFactory;
 		private readonly IContextContainerFactory _contextContainerFactory;
 		private readonly ICPHelper _helper;
-        private readonly IHelperFactory _helperFactory;
+		private readonly IHelperFactory _helperFactory;
 
-        public ProductionController(IContextContainerFactory contextContainerFactory, IManagerFactory managerFactory,
+		public ProductionController(IContextContainerFactory contextContainerFactory, IManagerFactory managerFactory,
 			ICPHelper helper, IHelperFactory helperFactory)
 		{
 			_contextContainerFactory = contextContainerFactory;
@@ -77,5 +82,16 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 	        return Request.CreateResponse(HttpStatusCode.OK, productionArtifactId);
 	    }
+
+		[HttpPost]
+		[LogApiExceptionFilter(Message = "Unable to retrieve production permissions.")]
+		public HttpResponseMessage CheckProductionAddPermission([FromBody] object credentials, int workspaceArtifactId, int? federatedInstanceId = null)
+		{
+			IHelper targetHelper = _helperFactory.CreateTargetHelper(_helper, federatedInstanceId, credentials?.ToString());
+			IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(targetHelper, targetHelper.GetServicesManager());
+			IPermissionManager permissionManager = _managerFactory.CreatePermissionManager(contextContainer);
+			bool hasPermission = permissionManager.UserHasArtifactTypePermission(workspaceArtifactId, (int)ArtifactType.Production, ArtifactPermission.Create);
+			return Request.CreateResponse(HttpStatusCode.OK, hasPermission);
+		}
     }
 }

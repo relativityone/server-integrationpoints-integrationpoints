@@ -349,6 +349,13 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
+				name: "CheckProductionAddPermission",
+				routeTemplate: "{workspaceID}/api/Production/CheckProductionAddPermission/{workspaceArtifactId}/{federatedInstanceId}",
+				defaults:
+				new {controller = "Production", action = "CheckProductionAddPermission", federatedInstanceId = RouteParameter.Optional}
+			);
+
+			config.Routes.MapHttpRoute(
 				name: "GetCurrentInstanceWorkspaces",
 				routeTemplate: "{workspaceID}/api/WorkspaceFinder",
 				defaults: new {controller = "WorkspaceFinder", action = "GetCurrentInstanceWorkspaces"}

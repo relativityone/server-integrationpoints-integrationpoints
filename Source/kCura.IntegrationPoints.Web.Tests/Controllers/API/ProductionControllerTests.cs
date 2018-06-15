@@ -5,9 +5,11 @@ using System.Web.Http.Hosting;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Controllers.API;
+using kCura.Relativity.Client;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
@@ -132,6 +134,24 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 
 			// Assert
 			CollectionAssert.AreEqual(expectedResult, actualResult);
+		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public void ItShouldCheckProductionAddPermission(bool hasPermission)
+		{
+			// Arrange
+			IPermissionManager permissionManager = Substitute.For<IPermissionManager>();
+			permissionManager.UserHasArtifactTypePermission(Arg.Any<int>(), (int)ArtifactType.Production, ArtifactPermission.Create).Returns(hasPermission);
+			_managerFactory.CreatePermissionManager(Arg.Any<IContextContainer>()).Returns(permissionManager);
+
+			// Act
+			HttpResponseMessage responseMessage = _controller.CheckProductionAddPermission(null, 0);
+			var objectContent = responseMessage.Content as ObjectContent<bool>;
+			bool? actualResult = objectContent?.Value as bool?;
+
+			// Assert
+			Assert.AreEqual(hasPermission, actualResult);
 		}
 
 		private IEnumerable<ProductionDTO> ExtractResponse(HttpResponseMessage response)

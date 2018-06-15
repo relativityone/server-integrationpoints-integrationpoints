@@ -124,6 +124,7 @@
 		self.ProductionImport = ko.observable(state.ProductionImport || false);//Import into production in destination workspace
 		self.SourceProductionSets = ko.observableArray();
 		self.EnableLocationRadio = ko.observable(state.EnableLocationRadio || false);
+		self.ShowProductionAddButton = ko.observable(state.ShowProductionAddButton);
 		self.LocationFolderChecked = ko.observable(state.LocationFolderChecked || "true");
 		self.DestinationProductionSets = ko.observableArray();
 		self.ProductionArtifactId = ko.observable().extend({
@@ -249,6 +250,21 @@
 					IP.frameMessaging().dFrame.IP.message.error.raise("Unable to retrieve Relativity instances. Please contact your system administrator.");
 					self.federatedInstances([]);
 				}
+			});
+		}
+
+		self.validateProductionAddPermissions = function(destinationWorkspaceId) {
+			IP.data.ajax({
+				type: "POST",
+				url: IP.utils.generateWebAPIURL("Production/CheckProductionAddPermission",
+					destinationWorkspaceId,
+					self.FederatedInstanceArtifactId() ? self.FederatedInstanceArtifactId() : 0),
+				data: self.SecuredConfiguration()
+			}).then(function(result) {
+				self.ShowProductionAddButton(result);
+			}).fail(function(error) {
+				onFail(error);
+				IP.frameMessaging().dFrame.IP.message.error.raise(error);
 			});
 		}
 
@@ -514,11 +530,15 @@
 		self.TargetWorkspaceArtifactId.subscribe(function (value) {
 			if (value) {
 				if (self.TargetWorkspaceArtifactId() && self.TargetWorkspaceArtifactId.isValid()) {
+					self.validateProductionAddPermissions(self.TargetWorkspaceArtifactId());
 					self.getFolderAndSubFolders(value);
+				} else {
+					self.ShowProductionAddButton(false);
 				}
 				self.EnableLocationRadio(true);
 				self.LocationFolderChecked((state.ProductionArtifactId != undefined && state.ProductionArtifactId > 0) ? 'false' : 'true');
 			} else {
+				self.ShowProductionAddButton(false);
 				self.EnableLocationRadio(false);
 				self.ProductionArtifactId(null);
 				self.ProductionArtifactId.isModified(false);
