@@ -156,7 +156,6 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			IFieldRepository fieldRepository = GetFieldRepository(workspaceArtifactId);
 			IRelativityObjectManager objectManager = CreateRelativityObjectManagerForFederatedInstance(workspaceArtifactId);
 			ISourceWorkspaceRepository repository = new SourceWorkspaceRepository(_helper, objectTypeRepository, fieldRepository, objectManager);
-			
 			return repository;
 		}
 
@@ -181,7 +180,6 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			IRelativityObjectManager relativityObjectManager =
 				CreateRelativityObjectManager(-1);
 			IWorkspaceRepository repository = new KeplerWorkspaceRepository(_helper, _servicesMgr, relativityObjectManager);
-			
 			return repository;
 		}
 

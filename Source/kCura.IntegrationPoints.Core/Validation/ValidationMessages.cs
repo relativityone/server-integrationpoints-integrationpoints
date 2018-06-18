@@ -33,6 +33,9 @@ namespace kCura.IntegrationPoints.Core.Validation
 		public static ValidationMessage MissingDestinationFolderItemLevelPermissions => new ValidationMessage(
 			errorCode: "20.009",
 			shortMessage: "Verify if a folder in destination workspace selected in the Integration Point exists or if a user has a proper permission to access it.");
+		public static ValidationMessage MissingDestinationProductionPermissions => new ValidationMessage(
+			errorCode: "20.010",
+			shortMessage: "Verify if a Production Set used as the location in destination workspace exists or if a user has a proper permission to access it.");
 		#endregion
 	}
 }

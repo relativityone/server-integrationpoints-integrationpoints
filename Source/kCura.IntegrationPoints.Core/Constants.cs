@@ -8,19 +8,12 @@ namespace kCura.IntegrationPoints.Core
 		public static class IntegrationPoints
 		{
 			public const string APPLICATION_NAME = "Integration Points";
-			public const string APP_DOMAIN_DATA_CONNECTION_STRING = kCura.IntegrationPoints.Domain.Constants.IntegrationPoints.APP_DOMAIN_DATA_CONNECTION_STRING;
-			public const string APP_DOMAIN_DATA_SYSTEM_TOKEN_PROVIDER = "SystemToken";
-			public const string APP_DOMAIN_SUBSYSTEM_NAME = kCura.IntegrationPoints.Domain.Constants.IntegrationPoints.APP_DOMAIN_SUBSYSTEM_NAME;
 			public const string INTEGRATION_POINT_OBJECT_TYPE_NAME = "IntegrationPoint";
 			public const string APPLICATION_GUID_STRING = kCura.IntegrationPoints.Domain.Constants.IntegrationPoints.APPLICATION_GUID_STRING;
-			public const string DOC_OBJ_GUID = "15C36703-74EA-4FF8-9DFB-AD30ECE7530D";
-			public const string INVALID_PARAMETERS = "Invalid parameters";
 			public const string JOBS_ALREADY_RUNNING = "There are other jobs currently running or awaiting execution.";
-			public const string NO_PERMISSION_TO_ACCESS_SAVEDSEARCH = "The saved search is no longer accessible. Please verify your settings or create a new Integration Point.";
 			public const string NO_PERMISSION_TO_EDIT_DOCUMENTS = "User does not have permission to edit documents in this workspace.";
 			public const string NO_PERMISSION_TO_EDIT_INTEGRATIONPOINT = "User does not have permission to edit the integration point.";
 			public const string NO_PERMISSION_TO_IMPORT_CURRENTWORKSPACE = "User does not have permission to import in this workspace.";
-			public const string NO_PERMISSION_TO_IMPORT_TARGETWORKSPACE = "User does not have permission to import in the target workspace.";
 			public const string NO_SOURCE_PROVIDER_SPECIFIED = "A source provider was not specified for the integration point. Please create a new integration point.";
 			public const string NO_DESTINATION_PROVIDER_SPECIFIED = "A destination provider was not specified for the integration point. Please create a new integration point.";
 			public const string NO_INTEGRATION_POINT_TYPE_SPECIFIED = "Integration point type was not specified. Please create a new integration point.";
@@ -31,8 +24,6 @@ namespace kCura.IntegrationPoints.Core
 			public const string RELATIVITY_PROVIDER_NAME = "Relativity";
 			public const string RELATIVITY_DESTINATION_PROVIDER_GUID = DestinationProviders.RELATIVITY;
 			public const string LOAD_FILE_DESTINATION_PROVIDER_GUID = DestinationProviders.LOADFILE;
-			public const string FILESHARE_PROVIDER_NAME = "Load File";
-			public const string RELATIVITY_PROVIDER_VIEW = "RelativityProvider";
 			public const string RETRY_IS_NOT_RELATIVITY_PROVIDER = "Retries are only available for the Relativity provider.";
 			public const string RETRY_ON_STOPPED_JOB = "The transfer cannot be retried because it has been stopped.";
 			public const string FAILED_TO_RETRIEVE_JOB_HISTORY = "Unable to retrieve the previous job history.";
@@ -53,11 +44,6 @@ namespace kCura.IntegrationPoints.Core
 			public const string API_CONTROLLER_NAME = "IntegrationPointsAPI";
 			public const string OAUTH2_CLIENT_NAME_PREFIX = "F6B8C2B4B3E8465CA00775F699375D3C";
 			public const string RELATIVITY_AUTH_ENDPOINT = "Identity/connect/token";
-			
-			public static class IntegrationPoint
-			{
-				public static Guid ObjectTypeGuid = new Guid("03D4F67E-22C9-488C-BEE6-411F05C52E01");
-			}
 
 			public static class IntegrationPointTypes
 			{
@@ -67,19 +53,13 @@ namespace kCura.IntegrationPoints.Core
 				public static string ExportName = @"Export";
 			}
 
-			public static class ValidationErrors
-			{
-				public const string DESTINATION_WORKSPACE_NOT_AVAILABLE = "Destination workspace is not available.";
-            }
-
-            public static class PermissionErrors
+			public static class PermissionErrors
 			{
 				public const string UNABLE_TO_SAVE_INTEGRATION_POINT_USER_MESSAGE = "Unable to save the Integration Point. Please contact your system administrator.";
 				public const string UNABLE_TO_SAVE_INTEGRATION_POINT_ADMIN_MESSAGE = "Unable to save Integration Point.";
 				public const string INSUFFICIENT_PERMISSIONS = "You do not have sufficient permissions. Please contact your system administrator.";
 				public const string INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE = "User does not have sufficient Integration Point permissions.";
-			    public const string UNABLE_TO_RUN = "Unable to run Integration Point. Execution contraints are invalid.";
-                public const string CURRENT_WORKSPACE_NO_ACCESS = "User does not have permission to access this workspace.";
+				public const string CURRENT_WORKSPACE_NO_ACCESS = "User does not have permission to access this workspace.";
 				public const string INTEGRATION_POINT_TYPE_NO_VIEW = "User does not have permission to view Integration Points.";
 				public const string INTEGRATION_POINT_INSTANCE_NO_VIEW = "User does not have permission to view the Integration Point.";
 				public const string INTEGRATION_POINT_TYPE_NO_EDIT = "User does not have permission to edit Integration Points.";
@@ -176,7 +156,7 @@ namespace kCura.IntegrationPoints.Core
 
 			public class Validation
 			{
-				public const string EMAIL = "B69D1072-63EF-4C31-9857-BCE13D1B7379";				
+				public const string EMAIL = "B69D1072-63EF-4C31-9857-BCE13D1B7379";
 				public const string SCHEDULE = "D036003D-32FF-4297-84D5-2C9009C559BA";
 				public const string NAME = "285F3C4A-1606-4D5A-A720-E65CE70742DD";
 				public const string INTEGRATION_POINT_TYPE = "CAAE365F-2CE7-4C6E-8C68-1BAF8037D717";
@@ -190,23 +170,16 @@ namespace kCura.IntegrationPoints.Core
 			internal static string Choices = "Choices";
 			internal static string ObjectTypeArtifactTypeId = "Object Type Artifact Type ID";
 			internal static string FieldType = "Field Type";
-			internal static string FieldTypeId = "Field Type ID";
 			internal static string FieldTypeName = "Field Type Name";
 			internal static string IsIdentifier = "Is Identifier";
 			internal static string MultipleChoice = "Multiple Choice";
 		}
 
-		public enum SourceProvider
+		public static class ObjectTypeArtifactTypesGuid
 		{
-			Other = 0,
-			Relativity = 1
-		}
-
-		public enum DestinationProvider
-		{
-			Other = 0,
-			Relativity = 1,
-			LoadFile = 2
+			public static Guid IntegrationPoint => new Guid("03D4F67E-22C9-488C-BEE6-411F05C52E01");
+			public static Guid Document => new Guid("15C36703-74EA-4FF8-9DFB-AD30ECE7530D");
+			public static Guid ProductionDataSource => new Guid("7528C416-3706-4909-8805-EDDDCF75542D");
 		}
 
 		public static class Export

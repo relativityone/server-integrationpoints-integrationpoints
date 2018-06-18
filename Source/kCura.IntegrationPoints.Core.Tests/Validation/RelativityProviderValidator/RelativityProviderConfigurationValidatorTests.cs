@@ -81,7 +81,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 				.Returns(transferredObjectValidatorMock);
             
 		    var productionManagerMock = Substitute.For<IProductionManager>();
-		    var importProductionValidatorMock = Substitute.For<ImportProductionValidator>(Arg.Any<int>(), productionManagerMock, Arg.Any<int?>(), Arg.Any<string>());
+			var permissionManager = Substitute.For<IPermissionManager>();
+		    var importProductionValidatorMock = Substitute.For<ImportProductionValidator>(Arg.Any<int>(), productionManagerMock, permissionManager, Arg.Any<int?>(), Arg.Any<string>());
 		    importProductionValidatorMock.Validate(Arg.Any<int>())
 		        .Returns(new ValidationResult());
 		    validatorsFactoryMock.CreateImportProductionValidator(Arg.Any<int>(), Arg.Any<int?>(), Arg.Any<string>())

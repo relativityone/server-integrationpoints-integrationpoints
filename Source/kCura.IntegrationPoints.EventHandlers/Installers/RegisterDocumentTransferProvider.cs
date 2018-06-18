@@ -30,11 +30,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 						{
 							AlwaysImportNativeFiles = true,
 							AlwaysImportNativeFileNames = true,
-							CompatibleRdoTypes = new List<Guid>()
+							CompatibleRdoTypes = new List<Guid>
 							{
-								new Guid(Core.Constants.IntegrationPoints.DOC_OBJ_GUID)
+								Core.Constants.ObjectTypeArtifactTypesGuid.Document
 							},
-							AvailableImportSettings = new ImportSettingVisibility()
+							AvailableImportSettings = new ImportSettingVisibility
 							{
 								AllowUserToMapNativeFileField = false
 							},

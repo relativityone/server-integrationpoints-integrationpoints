@@ -258,7 +258,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 				Helper.RelativityUserName = _user.EmailAddress;
 				Helper.RelativityPassword = _user.Password;
 			}
-			Assert.AreEqual(useAdmin, _permissionRepo.UserHasArtifactInstancePermission(Core.Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, model.ArtifactID, ArtifactPermission.View));
+			Assert.AreEqual(useAdmin, _permissionRepo.UserHasArtifactInstancePermission(Core.Constants.ObjectTypeArtifactTypesGuid.IntegrationPoint, model.ArtifactID, ArtifactPermission.View));
 		}
 	}
 }

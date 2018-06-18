@@ -71,8 +71,9 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 		{
 			IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(_helper);
 			IProductionManager importProductionManager = _managerFactory.CreateProductionManager(contextContainer);
+			IPermissionManager destinationPermissionManager = CreateDestinationPermissionManager(federatedInstanceArtifactId, credentials);
 
-			return new ImportProductionValidator(workspaceArtifactId, importProductionManager, federatedInstanceArtifactId, credentials);
+			return new ImportProductionValidator(workspaceArtifactId, importProductionManager, destinationPermissionManager, federatedInstanceArtifactId, credentials);
 		}
 
 		public IRelativityProviderDestinationWorkspaceExistenceValidator CreateDestinationWorkspaceExistenceValidator(int? federatedInstanceArtifactId, string credentials)
@@ -84,15 +85,13 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 
 		public IRelativityProviderDestinationWorkspacePermissionValidator CreateDestinationWorkspacePermissionValidator(int? federatedInstanceArtifactId, string credentials)
 		{
-			IHelper targetHelper = _helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId, credentials);
-			IPermissionManager destinationWorkspacePermissionManager = CreatePermissionManager(targetHelper);
+			IPermissionManager destinationWorkspacePermissionManager = CreateDestinationPermissionManager(federatedInstanceArtifactId, credentials);
 			return new RelativityProviderDestinationWorkspacePermissionValidator(destinationWorkspacePermissionManager);
 		}
 
 		public IRelativityProviderDestinationFolderPermissionValidator CreateDestinationFolderPermissionValidator(int workspaceArtifactId, int? federatedInstanceArtifactId, string credentials)
 		{
-			IHelper targetHelper = _helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId, credentials);
-			IPermissionManager destinationWorkspacePermissionManager = CreatePermissionManager(targetHelper);
+			IPermissionManager destinationWorkspacePermissionManager = CreateDestinationPermissionManager(federatedInstanceArtifactId, credentials);
 			return new RelativityProviderDestinationFolderPermissionValidator(workspaceArtifactId, destinationWorkspacePermissionManager);
 		}
 
@@ -104,9 +103,14 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 
 		public IRelativityProviderSourceProductionPermissionValidator CreateSourceProductionPermissionValidator(int workspaceArtifactId)
 		{
-		    IProductionRepository productionRepository = _repositoryFactory.GetProductionRepository(workspaceArtifactId);
-
+			IProductionRepository productionRepository = _repositoryFactory.GetProductionRepository(workspaceArtifactId);
 			return new RelativityProviderSourceProductionPermissionValidator(productionRepository, _logger);
+		}
+
+		private IPermissionManager CreateDestinationPermissionManager(int? federatedInstanceArtifactId, string credentials)
+		{
+			IHelper targetHelper = _helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId, credentials);
+			return CreatePermissionManager(targetHelper);
 		}
 
 		private IPermissionManager CreatePermissionManager(IHelper helper)
