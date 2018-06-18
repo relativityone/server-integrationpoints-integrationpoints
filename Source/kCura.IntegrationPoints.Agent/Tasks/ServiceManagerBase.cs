@@ -102,7 +102,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			LogInitializeServiceStart(job);
 			LoadIntegrationPointData(job);
 			ConfigureBatchInstance(job);
-			ConfigureJobStatistics();
+			StatisticsService?.SetIntegrationPointConfiguration(ImportSettings, SourceConfiguration);
 			ConfigureJobHistory();
 			LoadSourceProvider();
 			RunValidation(job);
@@ -305,14 +305,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
 				Identifier = taskParameters.BatchInstance;
-			}
-		}
-		private void ConfigureJobStatistics()
-		{
-			if (StatisticsService != null)
-			{
-				StatisticsService.IntegrationPointSourceConfiguration = SourceConfiguration;
-				StatisticsService.IntegrationPointImportSettings = ImportSettings;
 			}
 		}
 

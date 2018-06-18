@@ -11,6 +11,7 @@ using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
 using Relativity.API;
+using Relativity.DataTransfer.MessageService;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 {
@@ -60,6 +61,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		public event BatchCompleted OnBatchComplete;
 		public event BatchSubmitted OnBatchSubmit;
 		public event BatchCreated OnBatchCreate;
+		public event StatisticsUpdate OnStatisticsUpdate;
 		public event JobError OnJobError;
 		public event RowError OnDocumentError;
 
@@ -330,6 +332,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
 		private void ImportJob_OnProcessProgress(FullStatus processStatus)
 		{
+			if (OnStatisticsUpdate != null)
+			{
+				OnStatisticsUpdate(processStatus.MetadataThroughput, processStatus.FilesThroughput);
+			}
 		}
 
 		#region Logging

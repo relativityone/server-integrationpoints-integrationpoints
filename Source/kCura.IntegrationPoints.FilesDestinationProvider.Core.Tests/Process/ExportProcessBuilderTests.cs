@@ -33,6 +33,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 
 		private class BatchReporterMock : IBatchReporter, ILoggingMediator
 		{
+			public event StatisticsUpdate OnStatisticsUpdate { add { } remove { } }
 			public event BatchCompleted OnBatchComplete { add { } remove { } }
 			public event BatchSubmitted OnBatchSubmit { add { } remove { } }
 			public event BatchCreated OnBatchCreate { add { } remove { } }

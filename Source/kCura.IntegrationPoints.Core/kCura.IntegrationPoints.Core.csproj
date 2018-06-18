@@ -22,6 +22,7 @@
     <DebugType>full</DebugType>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <PlatformTarget>x64</PlatformTarget>
@@ -132,9 +133,11 @@
     <Compile Include="Monitoring\IntegrationPointsMessageService.cs" />
     <Compile Include="Monitoring\MetricNameBuilder.cs" />
     <Compile Include="Monitoring\MetricsRepository.cs" />
+    <Compile Include="Monitoring\NumberOfRecords\Messages\JobApmThroughputMessage.cs" />
     <Compile Include="Monitoring\NumberOfRecords\Messages\JobCompletedRecordsCountMessage.cs" />
     <Compile Include="Monitoring\NumberOfRecords\Messages\JobThroughputMessage.cs" />
     <Compile Include="Monitoring\NumberOfRecords\Messages\JobTotalRecordsCountMessage.cs" />
+    <Compile Include="Monitoring\NumberOfRecords\Messages\MetricMetadataExtensions.cs" />
     <Compile Include="Monitoring\TotalItemsMessage.cs" />
     <Compile Include="Queries\IGetSourceProviderRdoByApplicationIdentifier.cs" />
     <Compile Include="Queries\IGetSourceProviderRdoByIdentifier.cs" />

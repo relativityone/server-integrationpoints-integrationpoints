@@ -301,6 +301,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			public event BatchSubmitted OnBatchSubmit { add { } remove { } }
 			public event BatchCreated OnBatchCreate { add { } remove { } }
 			public event StatusUpdate OnStatusUpdate { add { } remove { } }
+			public event StatisticsUpdate OnStatisticsUpdate { add { } remove { } }
 			public event JobError OnJobError;
 			public event RowError OnDocumentError;
 

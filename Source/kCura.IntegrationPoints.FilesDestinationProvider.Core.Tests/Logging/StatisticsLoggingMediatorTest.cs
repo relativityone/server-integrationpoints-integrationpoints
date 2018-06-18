@@ -1,12 +1,16 @@
 ﻿using System;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
+using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.Windows.Process;
 using kCura.WinEDDS;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.DataTransfer.MessageService;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 {
@@ -19,7 +23,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 		[SetUp]
 		public override void SetUp()
 		{
-			_subjectUnderTest = new StatisticsLoggingMediator();
+			_subjectUnderTest = new StatisticsLoggingMediator(Substitute.For<IMessageService>(), Substitute.For<IProviderTypeService>(), Substitute.For<IJobHistoryErrorService>(), Substitute.For<ICaseServiceContext>());
 
 			_exporterStatusNotificationMock = Substitute.For<ICoreExporterStatusNotification>();
 

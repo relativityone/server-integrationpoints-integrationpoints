@@ -10,6 +10,7 @@ using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
+using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -178,6 +179,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				InjectionManager.Instance.Evaluate("640E9695-AB99-4763-ADC5-03E1252277F7");
 
 				SetIntegrationPoint(job);
+				
+				SourceConfiguration sourceConfiguration = Serializer.Deserialize<SourceConfiguration>(IntegrationPoint.SourceConfiguration);
+				ImportSettings importSettings = Serializer.Deserialize<ImportSettings>(IntegrationPoint.DestinationConfiguration);
+
+				_statisticsService?.SetIntegrationPointConfiguration(importSettings, sourceConfiguration);
 				List<string> entryIDs = GetEntryIDs(job);
 				SetJobHistory();
 

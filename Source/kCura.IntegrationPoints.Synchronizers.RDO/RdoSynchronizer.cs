@@ -116,6 +116,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		public event StatusUpdate OnStatusUpdate;
 
+		public event StatisticsUpdate OnStatisticsUpdate;
+
 		public event JobError OnJobError;
 
 		public event RowError OnDocumentError;
@@ -380,6 +382,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			if (OnStatusUpdate != null)
 			{
 				importService.OnStatusUpdate += OnStatusUpdate;
+			}
+			if (OnStatisticsUpdate != null)
+			{
+				importService.OnStatisticsUpdate += OnStatisticsUpdate;
 			}
 			if (OnJobError != null)
 			{
