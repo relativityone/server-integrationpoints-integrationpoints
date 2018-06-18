@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Core.Validation
 			shortMessage: "Verify if the user still has permission to create saved search on destination workspace.");
 		public static ValidationMessage MissingDestinationFolderItemLevelPermissions => new ValidationMessage(
 			errorCode: "20.009",
-			shortMessage: "Verify if the folder used in Integration Point in destination workspace exist or if user have proper permission for it.");
+			shortMessage: "Verify if a folder in destination workspace selected in the Integration Point exists or if a user has a proper permission to access it.");
 		#endregion
 	}
 }
