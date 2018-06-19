@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 					FederatedInstanceArtifactId = _FEDERATED_INSTANCE_ID
 				});
 
-			_destinationWorkspaceExistenceValidator.Validate(_DESTINATION_WORKSPACE_ID).Returns(CreateValidationMessage(false));
+			_destinationWorkspaceExistenceValidator.Validate(_DESTINATION_WORKSPACE_ID, Arg.Any<bool>()).Returns(CreateValidationMessage(false));
 
 			var relativityProviderPermissionValidator = new RelativityProviderPermissionValidator(_serializer, ServiceContextHelper, _validatorsFactory);
 
@@ -116,11 +116,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 		public void ItShouldValidateDestinationFolderPermission_WhenDestinationWorkspaceIsValid_AndDestinationFolderIsSet()
 		{
 			// arrange
-			bool useFolderPath = true;
-			bool moveExistingDocuments = false;
+			const bool useFolderPath = true;
+			const bool moveExistingDocuments = false;
 
 			var validValidationResult = new ValidationResult(true);
-			_destinationWorkspaceExistenceValidator.Validate(Arg.Any<int>()).Returns(validValidationResult);
+			_destinationWorkspaceExistenceValidator.Validate(Arg.Any<int>(), Arg.Any<bool>()).Returns(validValidationResult);
 			_destinationWorkspacePermissionValidator.Validate(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<bool>()).Returns(validValidationResult);
 
 			_serializer.Deserialize<DestinationConfigurationPermissionValidationModel>(_validationModel.DestinationConfiguration)
@@ -149,7 +149,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			bool moveExistingDocuments = false;
 
 			var validValidationResult = new ValidationResult(true);
-			_destinationWorkspaceExistenceValidator.Validate(Arg.Any<int>()).Returns(validValidationResult);
+			_destinationWorkspaceExistenceValidator.Validate(Arg.Any<int>(), Arg.Any<bool>()).Returns(validValidationResult);
 			_destinationWorkspacePermissionValidator.Validate(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<bool>()).Returns(validValidationResult);
 
 			_serializer.Deserialize<DestinationConfigurationPermissionValidationModel>(_validationModel.DestinationConfiguration)
@@ -178,7 +178,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 
 			var validValidationResult = new ValidationResult(true);
 			var invalidValidationResult = new ValidationResult(false);
-			_destinationWorkspaceExistenceValidator.Validate(Arg.Any<int>()).Returns(validValidationResult);
+			_destinationWorkspaceExistenceValidator.Validate(Arg.Any<int>(), Arg.Any<bool>()).Returns(validValidationResult);
 			_destinationWorkspacePermissionValidator.Validate(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<bool>()).Returns(invalidValidationResult);
 
 			_serializer.Deserialize<DestinationConfigurationPermissionValidationModel>(_validationModel.DestinationConfiguration)

@@ -4,6 +4,6 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 {
 	public interface IRelativityProviderDestinationWorkspaceExistenceValidator
 	{
-		ValidationResult Validate(int workspaceId);
+		ValidationResult Validate(int workspaceId, bool isFederatedInstance);
 	}
 }

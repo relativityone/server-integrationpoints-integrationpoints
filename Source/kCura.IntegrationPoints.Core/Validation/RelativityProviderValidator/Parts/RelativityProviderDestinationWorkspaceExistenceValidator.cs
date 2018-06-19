@@ -12,13 +12,16 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 		{
 			_workspaceManager = workspaceManager;
 		}
-		public ValidationResult Validate(int workspaceId)
+		public ValidationResult Validate(int workspaceId, bool isFederatedInstance)
 		{
 			var result = new ValidationResult();
 
 			if (!_workspaceManager.WorkspaceExists(workspaceId))
 			{
-				result.Add(ValidationMessages.DestinationWorkspaceNotAvailable);
+				ValidationMessage message = isFederatedInstance
+					? ValidationMessages.FederatedInstanceDestinationWorkspaceNotAvailable
+					: ValidationMessages.DestinationWorkspaceNotAvailable;
+				result.Add(message);
 			}
 			return result;
 		}

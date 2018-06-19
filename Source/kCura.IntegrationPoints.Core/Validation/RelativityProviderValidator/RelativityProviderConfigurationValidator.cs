@@ -93,7 +93,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			var result = new ValidationResult();
 			IRelativityProviderDestinationWorkspaceExistenceValidator destinationWorkspaceExistenceValidator =
 				_validatorsFactory.CreateDestinationWorkspaceExistenceValidator(sourceConfiguration.FederatedInstanceArtifactId, integrationModel.SecuredConfiguration);
-			result.Add(destinationWorkspaceExistenceValidator.Validate(sourceConfiguration.TargetWorkspaceArtifactId));
+			result.Add(destinationWorkspaceExistenceValidator.Validate(sourceConfiguration.TargetWorkspaceArtifactId, sourceConfiguration.FederatedInstanceArtifactId != null));
 			if (!result.IsValid)
 			{
 				return result;
