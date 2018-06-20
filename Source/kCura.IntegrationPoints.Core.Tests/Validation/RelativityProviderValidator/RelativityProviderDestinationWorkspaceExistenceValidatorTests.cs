@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts;
@@ -15,6 +16,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 		private IWorkspaceManager _workspaceManager;
 
 		private const int _DESTINATION_WORKSPACE_ID = 349234;
+		private const int _FEDERATED_INSTANCE_ID = 432943;
 
 		[SetUp]
 		public override void SetUp()
@@ -28,11 +30,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			[Values(true, false)] bool isFederatedInstance)
 		{
 			// arrange
+			SourceConfiguration sourceConfiguration = new SourceConfiguration
+			{
+				TargetWorkspaceArtifactId = _DESTINATION_WORKSPACE_ID,
+				FederatedInstanceArtifactId = isFederatedInstance ? (int?) _FEDERATED_INSTANCE_ID : null
+			};
 			_workspaceManager.WorkspaceExists(_DESTINATION_WORKSPACE_ID).Returns(workspaceExists);
 			var destinationWorkspaceExistenceValidator = new RelativityProviderDestinationWorkspaceExistenceValidator(_workspaceManager);
 
 			// act
-			ValidationResult validationResult = destinationWorkspaceExistenceValidator.Validate(_DESTINATION_WORKSPACE_ID, isFederatedInstance);
+			ValidationResult validationResult = destinationWorkspaceExistenceValidator.Validate(sourceConfiguration);
 
 			// assert
 			_workspaceManager.Received(1).WorkspaceExists(_DESTINATION_WORKSPACE_ID);

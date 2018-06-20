@@ -91,13 +91,6 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 		private ValidationResult ValidateDestinationWorkspace(IntegrationPointProviderValidationModel integrationModel, SourceConfiguration sourceConfiguration)
 		{
 			var result = new ValidationResult();
-			IRelativityProviderDestinationWorkspaceExistenceValidator destinationWorkspaceExistenceValidator =
-				_validatorsFactory.CreateDestinationWorkspaceExistenceValidator(sourceConfiguration.FederatedInstanceArtifactId, integrationModel.SecuredConfiguration);
-			result.Add(destinationWorkspaceExistenceValidator.Validate(sourceConfiguration.TargetWorkspaceArtifactId, sourceConfiguration.FederatedInstanceArtifactId != null));
-			if (!result.IsValid)
-			{
-				return result;
-			}
 
 			RelativityProviderWorkspaceNameValidator destinationWorkspaceNameValidator = _validatorsFactory.CreateWorkspaceNameValidator("Destination",
 				sourceConfiguration.FederatedInstanceArtifactId, integrationModel.SecuredConfiguration);
