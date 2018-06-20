@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 
 			IRelativityProviderDestinationWorkspaceExistenceValidator destinationWorkspaceExistenceValidator = _validatorsFactory.CreateDestinationWorkspaceExistenceValidator(
 				sourceConfiguration.FederatedInstanceArtifactId, model.SecuredConfiguration);
-			result.Add(destinationWorkspaceExistenceValidator.Validate(sourceConfiguration.TargetWorkspaceArtifactId));
+			result.Add(destinationWorkspaceExistenceValidator.Validate(sourceConfiguration));
 			if (!result.IsValid)
 			{
 				return result; // destination workspace doesnt exist
