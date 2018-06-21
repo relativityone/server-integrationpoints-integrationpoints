@@ -38,5 +38,11 @@ namespace kCura.IntegrationPoints.Core.Managers
 		/// <param name="federatedInstanceCredentials">Federated Instance Credentials</param>
 		/// <returns>Productions eligible for import</returns>
 		IEnumerable<ProductionDTO> GetProductionsForImport(int workspaceArtifactId, int? federatedInstanceId = null, string federatedInstanceCredentials = null);
+
+		bool IsProductionInDestinationWorkspaceAvailable(int workspaceArtifactId, int productionId,
+			int? federatedInstanceId = null, string federatedInstanceCredentials = null);
+
+		bool IsProductionEligibleForImport(int workspaceArtifactId, int productionId,
+			int? federatedInstanceId = null, string federatedInstanceCredentials = null);
 	}
 }

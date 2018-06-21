@@ -25,15 +25,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		{
 			_productionManager = Substitute.For<IProductionManager>();
 			_permissionManager = Substitute.For<IPermissionManager>();
-			SwitchArtifactInstancePermissionValue(true);
 		}
 
 		[Test]
 		public void ItShouldValidateProduction()
 		{
 			// arrange
-			var production = new ProductionDTO() { ArtifactID = _PRODUCTION_ARTIFACT_ID.ToString() };
-			_productionManager.GetProductionsForImport(_WORKSPACE_ARTIFACT_ID, _FEDERATED_INSTANCE_ID, _CREDENTIALS).Returns(new[] { production });
+			SwitchIsProductionInDestinationWorkspaceAvailable(true);
+			SwitchIsProductionEligibleForImport(true);
+			SwitchArtifactInstancePermissionValue(true);
 
 			var validator = new ImportProductionValidator(_WORKSPACE_ARTIFACT_ID, _productionManager, _permissionManager, _FEDERATED_INSTANCE_ID, _CREDENTIALS);
 
@@ -46,10 +46,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		}
 
 		[Test]
-		public void ItShouldFailForNotFoundProduction()
+		public void ItShouldFail_WhenProductionDoesNotExist()
 		{
 			// arrange
-			_productionManager.GetProductionsForImport(_WORKSPACE_ARTIFACT_ID, _FEDERATED_INSTANCE_ID, _CREDENTIALS).Returns(Enumerable.Empty<ProductionDTO>());
+			SwitchIsProductionInDestinationWorkspaceAvailable(false);
+			SwitchIsProductionEligibleForImport(true);
+			SwitchArtifactInstancePermissionValue(true);
 
 			var validator = new ImportProductionValidator(_WORKSPACE_ARTIFACT_ID, _productionManager, _permissionManager, _FEDERATED_INSTANCE_ID, _CREDENTIALS);
 
@@ -62,10 +64,30 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		}
 
 		[Test]
-		public void ItShouldFailForEmptyProduction()
+		public void ItShouldFail_WhenProductionNotEligibleForImport()
 		{
 			// arrange
-			_productionManager.GetProductionsForImport(_WORKSPACE_ARTIFACT_ID, _FEDERATED_INSTANCE_ID, _CREDENTIALS).Returns(new[] { (ProductionDTO)null });
+			SwitchIsProductionInDestinationWorkspaceAvailable(true);
+			SwitchIsProductionEligibleForImport(false);
+			SwitchArtifactInstancePermissionValue(true);
+
+			var validator = new ImportProductionValidator(_WORKSPACE_ARTIFACT_ID, _productionManager, _permissionManager, _FEDERATED_INSTANCE_ID, _CREDENTIALS);
+
+			// act
+			ValidationResult actual = validator.Validate(_PRODUCTION_ARTIFACT_ID);
+
+			// assert
+			Assert.IsFalse(actual.IsValid);
+			Assert.IsTrue(actual.Messages.Any(m => m.Equals(ValidationMessages.DestinationProductionNotEligibleForImport)));
+		}
+		
+		[Test]
+		public void ItShouldNotValidate_ProductionDataSource_WhenNoAccessToProduction()
+		{
+			// arrange
+			SwitchIsProductionInDestinationWorkspaceAvailable(false);
+			SwitchIsProductionEligibleForImport(true);
+			SwitchArtifactInstancePermissionValue(true);
 
 			var validator = new ImportProductionValidator(_PRODUCTION_ARTIFACT_ID, _productionManager, _permissionManager, _FEDERATED_INSTANCE_ID, _CREDENTIALS);
 
@@ -73,16 +95,17 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			ValidationResult actual = validator.Validate(_PRODUCTION_ARTIFACT_ID);
 
 			// assert
-			Assert.IsFalse(actual.IsValid);
-			Assert.IsTrue(actual.Messages.Any(m => m.Equals(ValidationMessages.MissingDestinationProductionPermissions)));
+			_permissionManager.DidNotReceiveWithAnyArgs()
+				.UserHasArtifactInstancePermission(Arg.Any<int>(), Arg.Any<Guid>(), Arg.Any<int>(), Arg.Any<ArtifactPermission>());
 		}
-		
+
 		[Test]
-		public void ItShouldNotValidate_ProductionDataSource_WhenNoAccessToProduction()
+		public void ItShouldNotValidate_ProductionDataSource_WhenProductionInWrongState()
 		{
 			// arrange
-			_productionManager.GetProductionsForImport(_WORKSPACE_ARTIFACT_ID, _FEDERATED_INSTANCE_ID, _CREDENTIALS).Returns(new[] { (ProductionDTO)null });
-
+			SwitchIsProductionInDestinationWorkspaceAvailable(true);
+			SwitchIsProductionEligibleForImport(false);
+			SwitchArtifactInstancePermissionValue(true);
 			var validator = new ImportProductionValidator(_PRODUCTION_ARTIFACT_ID, _productionManager, _permissionManager, _FEDERATED_INSTANCE_ID, _CREDENTIALS);
 
 			// act
@@ -95,12 +118,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
 		[TestCase(true)]
 		[TestCase(false)]
-		public void ItShouldValidate_ProductionDataSource_WhenProductionAvailable(bool hasAccessToCreate)
+		public void ItShouldValidate_ProductionDataSource_WhenProductionAvailable_AndInProperState(bool hasAccessToCreate)
 		{
 			// arrange
+			SwitchIsProductionInDestinationWorkspaceAvailable(true);
+			SwitchIsProductionEligibleForImport(true);
 			SwitchArtifactInstancePermissionValue(hasAccessToCreate);
-			var production = new ProductionDTO() { ArtifactID = _PRODUCTION_ARTIFACT_ID.ToString() };
-			_productionManager.GetProductionsForImport(_WORKSPACE_ARTIFACT_ID, _FEDERATED_INSTANCE_ID, _CREDENTIALS).Returns(new[] { production });
 
 			var validator = new ImportProductionValidator(_WORKSPACE_ARTIFACT_ID, _productionManager, _permissionManager, _FEDERATED_INSTANCE_ID, _CREDENTIALS);
 
@@ -112,11 +135,23 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			Assert.AreEqual(hasAccessToCreate, actual.IsValid);
 		}
 
-		private void SwitchArtifactInstancePermissionValue(bool value)
+		private void SwitchArtifactInstancePermissionValue(bool hasPermission)
 		{
 			_permissionManager
 				.UserHasArtifactInstancePermission(Arg.Any<int>(), Arg.Any<Guid>(), Arg.Any<int>(), Arg.Any<ArtifactPermission>())
-				.Returns(value);
+				.Returns(hasPermission);
+		}
+
+		private void SwitchIsProductionInDestinationWorkspaceAvailable(bool isAvailable)
+		{
+			_productionManager.IsProductionInDestinationWorkspaceAvailable(Arg.Any<int>(), Arg.Any<int>(),
+				Arg.Any<int?>(), Arg.Any<string>()).Returns(isAvailable);
+		}
+
+		private void SwitchIsProductionEligibleForImport(bool isInProperState)
+		{
+			_productionManager.IsProductionEligibleForImport(Arg.Any<int>(), Arg.Any<int>(),
+				Arg.Any<int?>(), Arg.Any<string>()).Returns(isInProperState);
 		}
 	}
 }

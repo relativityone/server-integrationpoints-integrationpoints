@@ -44,6 +44,9 @@ namespace kCura.IntegrationPoints.Core.Validation
 			errorCode: "20.012",
 			shortMessage: "Destination workspace on federated instance is not available. Check if destination workspace still exists or if a user has a proper permission to access it."
 		);
+		public static ValidationMessage DestinationProductionNotEligibleForImport => new ValidationMessage(
+			errorCode: "20.013",
+			shortMessage: "Verify if a Production Set used as the location in destination workspace is in New status.");
 		#endregion
 	}
 }

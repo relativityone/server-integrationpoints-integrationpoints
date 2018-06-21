@@ -2,29 +2,32 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using kCura.EDDS.WebAPI.ProductionManagerBase;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
-using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Productions.Services;
 using IProductionManager = kCura.IntegrationPoints.Core.Managers.IProductionManager;
+using ProductionManager = kCura.IntegrationPoints.Core.Managers.Implementations.ProductionManager;
 
 namespace kCura.IntegrationPoints.Core.Tests.Managers
 {
 	[TestFixture]
 	public class ProductionManagerTests
 	{
-		private const int _WORKSPACE_ARTIFACT_ID = 101810;
-		private const int _PRODUCTION_ARTIFACT_ID = 987654;
 		private IRepositoryFactory _repositoryFactory;
 		private IProductionRepository _productionRepository;
 		private IProductionManager _instance;
 		private IServiceManagerProvider _serviceManagerProvider;
 		private WinEDDS.Service.Export.IProductionManager _productionManagerService;
+
+		private const int _WORKSPACE_ARTIFACT_ID = 101810;
+		private const int _PRODUCTION_ARTIFACT_ID = 987654;
 
 		[SetUp]
 		public void SetUp()
@@ -33,8 +36,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_productionRepository = Substitute.For<IProductionRepository>();
 			_productionManagerService = Substitute.For<WinEDDS.Service.Export.IProductionManager>();
 			_serviceManagerProvider = Substitute.For<IServiceManagerProvider>();
-			
-			_instance = new ProductionManager(_repositoryFactory, _serviceManagerProvider, Substitute.For<IntegrationPoints.Domain.Managers.IFederatedInstanceManager>());
+			IAPILog logger = Substitute.For<IAPILog>();
+
+			_instance = new ProductionManager(logger, _repositoryFactory, _serviceManagerProvider, Substitute.For<Domain.Managers.IFederatedInstanceManager>());
 		}
 
 		[Test]
@@ -143,6 +147,127 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			Assert.That(actualProductionDto.First().DisplayName, Is.EqualTo(expectedDisplayName));
 		}
 
+		[Test]
+		public void IsProductionInDestinationWorkspaceAvailable_ShouldReturnTrue_WhenProductionManagerReturnsNonNullObject()
+		{
+			// arrange
+			var productionInfo = new ProductionInfo();
+			_productionManagerService.Read(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID).Returns(productionInfo);
+			_serviceManagerProvider
+				.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>(Arg.Any<int?>(), Arg.Any<string>(), Arg.Any<Domain.Managers.IFederatedInstanceManager>())
+				.Returns(_productionManagerService);
+
+			// act
+			bool result = _instance.IsProductionInDestinationWorkspaceAvailable(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
+
+			// assert
+			Assert.IsTrue(result);
+		}
+
+		[Test]
+		public void IsProductionInDestinationWorkspaceAvailable_ShouldReturnFalse_WhenProductionManagerReturnsNonNullObject()
+		{
+			// arrange
+			ProductionInfo productionInfo = null;
+			_productionManagerService.Read(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID).Returns(productionInfo);
+			_serviceManagerProvider
+				.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>(Arg.Any<int?>(), Arg.Any<string>(), Arg.Any<Domain.Managers.IFederatedInstanceManager>())
+				.Returns(_productionManagerService);
+
+			// act
+			bool result = _instance.IsProductionInDestinationWorkspaceAvailable(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
+
+			// assert
+			Assert.IsFalse(result);
+		}
+
+		[Test]
+		public void IsProductionInDestinationWorkspaceAvailable_ShouldReturnFalse_WhenProductionManagerThrowsException()
+		{
+			_productionManagerService.Read(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID).Throws<Exception>();
+			_serviceManagerProvider
+				.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>(Arg.Any<int?>(), Arg.Any<string>(), Arg.Any<Domain.Managers.IFederatedInstanceManager>())
+				.Returns(_productionManagerService);
+
+			// act
+			bool result = _instance.IsProductionInDestinationWorkspaceAvailable(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
+
+			// assert
+			Assert.IsFalse(result);
+		}
+
+		[Test]
+		public void IsProductionEligibleForImport_ShouldReturnTrue_WhenProductionManagerReturnsThisProduction()
+		{
+			// Arrange
+			DataSet expectedResult = CreateNewProductionDataTable(_PRODUCTION_ARTIFACT_ID);
+			_productionManagerService.RetrieveImportEligibleByContextArtifactID(_WORKSPACE_ARTIFACT_ID).Returns(expectedResult);
+			_serviceManagerProvider
+				.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>(Arg.Any<int?>(), Arg.Any<string>(), Arg.Any<IntegrationPoints.Domain.Managers.IFederatedInstanceManager>())
+				.Returns(_productionManagerService);
+
+			// Act
+			bool result = _instance.IsProductionEligibleForImport(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
+
+			// Assert
+			Assert.IsTrue(result);
+		}
+
+		[Test]
+		public void IsProductionEligibleForImport_ShouldReturnFalse_WhenProductionManagerReturnsEmptyList()
+		{
+			// Arrange
+			DataSet expectedResult = CreateEmptyProductionDataSet();
+			_productionManagerService.RetrieveImportEligibleByContextArtifactID(_WORKSPACE_ARTIFACT_ID).Returns(expectedResult);
+			_serviceManagerProvider
+				.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>(Arg.Any<int?>(), Arg.Any<string>(), Arg.Any<IntegrationPoints.Domain.Managers.IFederatedInstanceManager>())
+				.Returns(_productionManagerService);
+
+			// Act
+			bool result = _instance.IsProductionEligibleForImport(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
+
+			// Assert
+			Assert.IsFalse(result);
+		}
+
+		[Test]
+		public void IsProductionEligibleForImport_ShouldReturnFalse_WhenProductionManagerReturnsListWithoutThisProduction()
+		{
+			// Arrange
+			DataSet expectedResult = CreateNewProductionDataTable(_PRODUCTION_ARTIFACT_ID + 1);
+			_productionManagerService.RetrieveImportEligibleByContextArtifactID(_WORKSPACE_ARTIFACT_ID).Returns(expectedResult);
+			_serviceManagerProvider
+				.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>(Arg.Any<int?>(), Arg.Any<string>(), Arg.Any<IntegrationPoints.Domain.Managers.IFederatedInstanceManager>())
+				.Returns(_productionManagerService);
+
+			// Act
+			bool result = _instance.IsProductionEligibleForImport(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
+
+			// Assert
+			Assert.IsFalse(result);
+		}
+
+		[Test]
+		public void IsProductionEligibleForImport_ShouldReturnFalse_WhenProductionManagerThrowsException()
+		{
+			_productionManagerService.RetrieveImportEligibleByContextArtifactID(_WORKSPACE_ARTIFACT_ID)
+				.Throws<Exception>();
+			_serviceManagerProvider
+				.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>(Arg.Any<int?>(), Arg.Any<string>(), Arg.Any<IntegrationPoints.Domain.Managers.IFederatedInstanceManager>())
+				.Returns(_productionManagerService);
+
+			// Act
+			bool result = _instance.IsProductionEligibleForImport(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
+
+			// Assert
+			Assert.IsFalse(result);
+		}
+
+		private DataSet CreateNewProductionDataTable(int expectedArtifactId, string expectedDisplayName = null)
+		{
+			return CreateNewProductionDataTable(expectedArtifactId.ToString(), expectedDisplayName ?? string.Empty);
+		}
+
 		private DataSet CreateNewProductionDataTable(string expectedArtifactId, string expectedDisplayName)
 		{
 			var dataTable = new DataTable();
@@ -152,6 +277,17 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			row["ArtifactID"] = expectedArtifactId;
 			row["Name"] = expectedDisplayName;
 			dataTable.Rows.Add(row);
+			var dataSet = new DataSet();
+			dataSet.Tables.Add(dataTable);
+
+			return dataSet;
+		}
+
+		private DataSet CreateEmptyProductionDataSet()
+		{
+			var dataTable = new DataTable();
+			dataTable.Columns.Add("ArtifactID", typeof(string));
+			dataTable.Columns.Add("Name", typeof(string));
 			var dataSet = new DataSet();
 			dataSet.Tables.Add(dataTable);
 

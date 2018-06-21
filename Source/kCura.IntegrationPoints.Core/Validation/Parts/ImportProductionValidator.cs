@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using kCura.IntegrationPoints.Core.Managers;
+﻿using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Models;
@@ -14,6 +12,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 		private readonly int _workspaceArtifactId;
 		private readonly int? _federatedInstanceArtifactId;
 		private readonly string _federatedInstanceCredentials;
+
 		public ImportProductionValidator(int workspaceArtifactId, IProductionManager productionManager, IPermissionManager permissionManager, int? federatedInstanceArtifactId, string credentials)
 		{
 			_federatedInstanceArtifactId = federatedInstanceArtifactId;
@@ -29,6 +28,10 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 			result.Add(ValidateViewPermissionForProduction(productionId));
 			if (result.IsValid)
 			{
+				result.Add(ValidateProductionState(productionId));
+			}
+			if (result.IsValid)
+			{
 				result.Add(ValidateCreatePermissionForProductionSource(productionId));
 			}
 			return result;
@@ -36,23 +39,20 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 
 		private ValidationResult ValidateViewPermissionForProduction(int productionId)
 		{
-			var result = new ValidationResult();
-			try
-			{
-				ProductionDTO production = _productionManager.GetProductionsForImport(_workspaceArtifactId, _federatedInstanceArtifactId, _federatedInstanceCredentials)
-					.FirstOrDefault(x => x.ArtifactID.Equals(productionId.ToString()));
+			bool isProductionAvailable = _productionManager.IsProductionInDestinationWorkspaceAvailable(_workspaceArtifactId, productionId, _federatedInstanceArtifactId, _federatedInstanceCredentials);
 
-				if (production == null)
-				{
-					result.Add(ValidationMessages.MissingDestinationProductionPermissions);
-				}
-			}
-			catch
-			{
-				result.Add(ValidationMessages.MissingDestinationProductionPermissions);
-			}
+			return isProductionAvailable ?
+				new ValidationResult() :
+				new ValidationResult(ValidationMessages.MissingDestinationProductionPermissions);
+		}
 
-			return result;
+		private ValidationResult ValidateProductionState(int productionId)
+		{
+			bool isProductionInProperState = _productionManager.IsProductionEligibleForImport(_workspaceArtifactId, productionId, _federatedInstanceArtifactId, _federatedInstanceCredentials);
+
+			return isProductionInProperState ?
+				new ValidationResult() :
+				new ValidationResult(ValidationMessages.DestinationProductionNotEligibleForImport);
 		}
 
 		private ValidationResult ValidateCreatePermissionForProductionSource(int productionId)

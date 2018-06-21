@@ -1,6 +1,4 @@
 ﻿using System;
-using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
@@ -10,7 +8,6 @@ using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
@@ -134,8 +131,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		{
 			IRepositoryFactory repositoryFactory = CreateRepositoryFactory(contextContainer);
 			IFederatedInstanceManager federatedInstanceManager = CreateFederatedInstanceManager(contextContainer);
-
-			return new ProductionManager(repositoryFactory, _serviceManagerProvider, federatedInstanceManager);
+			IAPILog logger = _helper.GetLoggerFactory().GetLogger();
+			return new ProductionManager(logger, repositoryFactory, _serviceManagerProvider, federatedInstanceManager);
 		}
 
 		public ITagSavedSearchManager CreateTaggingSavedSearchManager(IContextContainer contextContainer)
