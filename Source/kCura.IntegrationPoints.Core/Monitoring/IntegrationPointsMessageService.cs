@@ -69,7 +69,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring
 		private void OnJobApmThroughputMessage(JobApmThroughputMessage message)
 		{
 			IMetricsManager metricsManager = MetricsManagerFactory.CreateAPMManager();
-			metricsManager.LogDouble($"IntegrationPoints.Performance.ThroughputBytes", 1, message);
+			metricsManager.LogDouble($"IntegrationPoints.Performance.Progress", 1, message);
 		}
 	}
 }
