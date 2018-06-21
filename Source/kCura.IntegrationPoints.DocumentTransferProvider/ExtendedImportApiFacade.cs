@@ -11,15 +11,15 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 	public class ExtendedImportApiFacade : IExtendedImportApiFacade
 	{
 		private const string _IAPI_GET_WORKSPACE_FIELDS_EXC = "EC: 4.2 There was an error in Extended Import API when fetching workspace fields.";
-		private const string _IAPI_GET_WORKSPACE_FIELDS_ERR = 
+		private const string _IAPI_GET_WORKSPACE_FIELDS_ERR =
 			"EC: 4.2 There was an error in Extended Import API when fetching workspace fields. workspaceArtifactId: {WorkspaceArtifactId}, artifactTypeID: {artifactTypeId}";
 
-		private readonly IExtendedImportAPI _extendedImportApi;
+		private readonly Lazy<IExtendedImportAPI> _extendedImportApi;
 		private readonly IAPILog _logger;
 
 		public ExtendedImportApiFacade(IExtendedImportApiFactory extendedImportApiFactory, IAPILog logger)
 		{
-			_extendedImportApi = extendedImportApiFactory.Create();
+			_extendedImportApi = new Lazy<IExtendedImportAPI>(extendedImportApiFactory.Create);
 			_logger = logger.ForContext<ExtendedImportApiFacade>();
 		}
 
@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		{
 			try
 			{
-				return _extendedImportApi.GetWorkspaceFields(workspaceArtifactID, artifactTypeID);
+				return _extendedImportApi.Value.GetWorkspaceFields(workspaceArtifactID, artifactTypeID);
 			}
 			catch (Exception e)
 			{
@@ -47,6 +47,5 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 				throw exc;
 			}
 		}
-
 	}
 }
