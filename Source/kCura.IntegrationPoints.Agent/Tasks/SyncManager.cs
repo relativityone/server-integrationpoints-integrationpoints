@@ -119,7 +119,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					};
 					job.JobDetails = Serializer.Serialize(details);
 				}
-				
+
 				OnJobStart(job);
 
 				JobStopManager?.ThrowIfStopRequested();
@@ -294,12 +294,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 					try
 					{
-						JobHistory.TotalItems = items;
-						_caseServiceContext.RsapiService.RelativityObjectManager.Update(JobHistory);
+						UpdateJobHistoryTotalItems(job, items);
 					}
 					catch (Exception exception)
 					{
-						LogUpdatingJobHistoryError(job, exception);
 						exceptions.Add(exception);
 					}
 				}
@@ -323,6 +321,22 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				_jobHistoryErrorService.CommitErrors();
 				LogJobPostExecuteFinalize(job);
+			}
+		}
+
+		private void UpdateJobHistoryTotalItems(Job job, long items)
+		{
+			// TODO we should not update JobHistory here, it is not SyncManager responsibility
+			try
+			{
+				JobHistory jobHistory = _jobHistoryService.GetRdo(BatchInstance);
+				jobHistory.TotalItems = items;
+				_jobHistoryService.UpdateRdo(jobHistory);
+			}
+			catch (Exception exception)
+			{
+				LogUpdatingJobHistoryError(job, exception);
+				throw;
 			}
 		}
 

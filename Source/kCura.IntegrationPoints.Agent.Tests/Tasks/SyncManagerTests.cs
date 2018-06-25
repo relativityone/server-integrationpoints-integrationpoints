@@ -319,6 +319,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			PreJobExecutionGoldFlowSetup();
 			_syncManagerEventHelper.RaisePreEvent(_job, _taskResult);
 			_integrationPoint.NextScheduledRuntimeUTC = null;
+			_jobHistoryService.GetRdo(Arg.Any<Guid>()).Returns(_jobHistory);
 			// act
 			_syncManagerEventHelper.RaisePostEvent(_job, _taskResult, itemCount);
 
@@ -326,7 +327,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_batchStatus.Received(1).OnJobComplete(_job);
 			Assert.IsNull(_integrationPoint.NextScheduledRuntimeUTC);
 			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1).Update(_integrationPoint);
-			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1).Update(_jobHistory);
+			_jobHistoryService.Received().UpdateRdo(_jobHistory);
 			_jobHistoryErrorService.Received().CommitErrors();
 		}
 
@@ -341,6 +342,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_syncManagerEventHelper.BatchJobCount = 0;
 			_integrationPoint.NextScheduledRuntimeUTC = null;
 			_jobStopManager.IsStopRequested().Returns(true);
+			_jobHistoryService.GetRdo(Arg.Any<Guid>()).Returns(_jobHistory);
 
 			// act
 			_syncManagerEventHelper.RaisePostEvent(_job, _taskResult, itemCount);
@@ -372,7 +374,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				{
 					throw exception4;
 				});
-			_caseServiceContext.RsapiService.RelativityObjectManager.Update(_jobHistory).Throws(exception5);
+			_jobHistoryService.When(x => x.UpdateRdo(_jobHistory)).Do(x => { throw exception5;});
+			_jobHistoryService.GetRdo(Arg.Any<Guid>()).Returns(_jobHistory);
+
 			// act
 			_syncManagerEventHelper.RaisePostEvent(_job, _taskResult, 0);
 
@@ -529,7 +533,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_jobHistoryManager.Received(1).SetErrorStatusesToExpired(_caseServiceContext.WorkspaceID, _jobHistory.ArtifactId);
 			Assert.IsNotNull(_integrationPoint.NextScheduledRuntimeUTC);
 			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1).Update(_integrationPoint);
-			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1).Update(_jobHistory);
+			_jobHistoryService.Received().UpdateRdo(_jobHistory);
 			_jobHistoryErrorService.Received().CommitErrors();
 		}
 
