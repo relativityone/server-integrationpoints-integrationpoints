@@ -1,10 +1,10 @@
 ﻿using System;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity.APIHelper.ServiceManagers.ProxyHandlers;
 using kCura.Relativity.Client;
 using Relativity.API;
-using Relativity.APIHelper.ServiceManagers;
 
 namespace kCura.IntegrationPoints.Core
 {
@@ -27,9 +27,16 @@ namespace kCura.IntegrationPoints.Core
 		protected override AuthenticationType GetAuthenticationType(ExecutionIdentity identity)
 		{
 			string token = _tokenProvider.GetExternalSystemToken(_oAuthClientDto.ClientId, _oAuthClientDto.ClientSecret, _instanceUri);
-			AuthenticationType authenticationType = new kCura.Relativity.Client.BearerTokenCredentials(token);
+		    if (string.IsNullOrEmpty(token))
+		    {
+                throw new IntegrationPointsException("Unable to connect to federataed instance RSAPI");
+		    }
+		    else
+		    {
+		        AuthenticationType authenticationType = new kCura.Relativity.Client.BearerTokenCredentials(token);
 
-			return authenticationType;
+		        return authenticationType;
+		    }
 		}
 	}
 }

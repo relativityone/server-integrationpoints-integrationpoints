@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity.API;
 using Relativity.APIHelper.Handlers;
@@ -28,13 +29,20 @@ namespace kCura.IntegrationPoints.Core
 			_oAuthClientDto = oAuthClientDto;
 			_tokenProvider = tokenProvider;
 		}
-		
+
 		protected override Credentials GetKeplerCredentials(ExecutionIdentity ident)
 		{
 			string token = _tokenProvider.GetExternalSystemToken(_oAuthClientDto.ClientId, _oAuthClientDto.ClientSecret, _instanceUri);
-			Credentials credentials = new global::Relativity.Services.ServiceProxy.BearerTokenCredentials(token);
+		    if (string.IsNullOrEmpty(token))
+		    {
+                throw new IntegrationPointsException("Unable to connect to federated instance Kepler");
+		    }
+		    else
+		    {
+		        Credentials credentials = new global::Relativity.Services.ServiceProxy.BearerTokenCredentials(token);
 
-			return credentials;
+		        return credentials;
+		    }
 		}
 	}
 }

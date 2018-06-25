@@ -291,6 +291,8 @@
     <Compile Include="Validation\IntegrationPointProviderValidationMessages.cs" />
     <Compile Include="Validation\Abstract\BasePermissionValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidator\DestinationConfigurationPermissionValidationModel.cs" />
+    <Compile Include="Validation\RelativityProviderValidator\Parts\FederatedInstanceConnectionValidator.cs" />
+    <Compile Include="Validation\RelativityProviderValidator\Parts\Interfaces\IFederatedInstanceConnectionValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidator\Parts\Interfaces\IRelativityProviderDestinationFolderPermissionValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidator\Parts\Interfaces\IRelativityProviderDestinationWorkspaceExistenceValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidator\Parts\Interfaces\IRelativityProviderDestinationWorkspacePermissionValidator.cs" />

@@ -56,6 +56,8 @@
     <Compile Include="Authentication\OAuth2TokenGeneratorTests.cs" />
     <Compile Include="Authentication\TokenCredentialProviderTests.cs" />
     <Compile Include="Factories\HelperFactoryTests.cs" />
+    <Compile Include="FederatedInstanceRsapiHandlerTests.cs" />
+    <Compile Include="FederatedInstanceKeplerHandlerTests.cs" />
     <Compile Include="Helpers\ButtonStateBuilderTests.cs" />
     <Compile Include="Helpers\MatchHelper.cs" />
     <Compile Include="Helpers\RelativePathDirectoryTreeProviderTests.cs" />
@@ -150,6 +152,7 @@
     <Compile Include="Validation\NameValidatorTests.cs" />
     <Compile Include="Validation\ProductionValidatorTests.cs" />
     <Compile Include="Validation\RelativityProviderValidator\FieldMappingsValidatorTest.cs" />
+    <Compile Include="Validation\RelativityProviderValidator\Parts\FederatedInstanceConnectionValidatorTests.cs" />
     <Compile Include="Validation\RelativityProviderValidator\Parts\RelativityProviderDestinationFolderPermissionValidatorTests.cs" />
     <Compile Include="Validation\RelativityProviderValidator\Parts\RelativityProviderDestinationWorkspacePermissionValidatorTests.cs" />
     <Compile Include="Validation\RelativityProviderValidator\RelativityProviderConfigurationValidatorTests.cs" />

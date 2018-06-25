@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Net;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.WinEDDS.Api;
 using Relativity.API;
 using Relativity.APIHelper;
 using Relativity.APIHelper.ServiceManagers.ProxyHandlers;
@@ -48,8 +45,8 @@ namespace kCura.IntegrationPoints.Core
 				new FederatedInstanceKeplerHandler(_instanceUri, _oAuthClientDto, _tokenProvider),
 				new FederatedInstanceRsapiHandler(_instanceUri, _oAuthClientDto, _tokenProvider)
 			});
-
-			return servicesMgr;
+            
+		    return servicesMgr;
 		}
 
 		public IUrlHelper GetUrlHelper()

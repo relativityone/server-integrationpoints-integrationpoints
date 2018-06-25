@@ -125,11 +125,19 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
 				ImportSettings importSettings = _serializer.Deserialize<ImportSettings>(integrationPoint.DestinationConfiguration);
 
-				WorkspaceDTO workspaceDto = _workspaceManager.RetrieveWorkspace(importSettings.CaseArtifactId);
-				if (workspaceDto != null)
-				{
-					jobHistory.DestinationWorkspace = Utils.GetFormatForWorkspaceOrJobDisplay(workspaceDto.Name, importSettings.CaseArtifactId);
-				}
+                try
+                {
+                    WorkspaceDTO workspaceDto = _workspaceManager.RetrieveWorkspace(importSettings.CaseArtifactId);
+                    if (workspaceDto != null)
+                    {
+                        jobHistory.DestinationWorkspace = Utils.GetFormatForWorkspaceOrJobDisplay(workspaceDto.Name, importSettings.CaseArtifactId);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    jobHistory.DestinationWorkspace = "[Unable to retrieve workspace name]";
+                    LogGettingWorkspaceNamerError(ex);
+                }
 
 				FederatedInstanceDto federatedInstanceDto = _federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(importSettings.FederatedInstanceArtifactId);
 				if (federatedInstanceDto != null)
@@ -151,17 +159,17 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			return jobHistory;
 		}
 
-		public void UpdateRdo(Data.JobHistory jobHistory)
+	    public void UpdateRdo(Data.JobHistory jobHistory)
 		{
 			_caseServiceContext.RsapiService.RelativityObjectManager.Update(jobHistory);
 		}
 
-		public void DeleteRdo(int jobHistoryId)
+	    public void DeleteRdo(int jobHistoryId)
 		{
 			_caseServiceContext.RsapiService.RelativityObjectManager.Delete(jobHistoryId);
 		}
 
-		public IList<Data.JobHistory> GetAll()
+	    public IList<Data.JobHistory> GetAll()
 		{
 			return _caseServiceContext.RsapiService.RelativityObjectManager.Query<Data.JobHistory>(new QueryRequest()
 			{
@@ -169,30 +177,35 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			});
 		}
 
-		protected List<FieldValue> GetFields<T>()
+	    protected List<FieldValue> GetFields<T>()
 		{
 			return (from field in BaseRdo.GetFieldMetadata(typeof(Data.JobHistory)).Values.ToList()
 					select new FieldValue(field.FieldGuid)).ToList();
 		}
 
-		private void OnJobStart(Data.IntegrationPoint integrationPoint)
+	    private void OnJobStart(Data.IntegrationPoint integrationPoint)
 		{
 			_messageService.Send(new JobStartedMessage { Provider = integrationPoint.GetProviderType(_providerTypeService).ToString() });
 		}
 
-		#region Logging
+	    #region Logging
 
-		private void LogMoreThanOneHistoryInstanceWarning(Guid batchInstance)
+	    private void LogGettingWorkspaceNamerError(Exception exception)
+	    {
+	        _logger.LogError(exception, "Unable to get workspace name from destination workspace");
+	    }
+
+        private void LogMoreThanOneHistoryInstanceWarning(Guid batchInstance)
 		{
 			_logger.LogWarning("More than one job history instance found for {BatchInstance}.", batchInstance.ToString());
 		}
 
-		private void LogHistoryNotFoundError(Data.IntegrationPoint integrationPoint, Exception e)
+	    private void LogHistoryNotFoundError(Data.IntegrationPoint integrationPoint, Exception e)
 		{
 			_logger.LogError(e, "Job history for Integration Point {IntegrationPointId} not found.", integrationPoint.ArtifactId);
 		}
 
-		private void LogCreatingHistoryRdoError(Exception e)
+	    private void LogCreatingHistoryRdoError(Exception e)
 		{
 			_logger.LogError(e, "Failed to create History RDO.");
 		}
