@@ -131,6 +131,7 @@
     <Compile Include="Monitoring\JobLifetime\Messages\JobStartedMessage.cs" />
     <Compile Include="Monitoring\JobLifetime\Messages\JobValidationFailedMessage.cs" />
     <Compile Include="Monitoring\IntegrationPointsMessageService.cs" />
+    <Compile Include="Monitoring\LiveApmMetricSink.cs" />
     <Compile Include="Monitoring\MetricNameBuilder.cs" />
     <Compile Include="Monitoring\MetricsRepository.cs" />
     <Compile Include="Monitoring\NumberOfRecords\Messages\JobApmThroughputMessage.cs" />
@@ -138,6 +139,7 @@
     <Compile Include="Monitoring\NumberOfRecords\Messages\JobThroughputMessage.cs" />
     <Compile Include="Monitoring\NumberOfRecords\Messages\JobTotalRecordsCountMessage.cs" />
     <Compile Include="Monitoring\NumberOfRecords\Messages\MetricMetadataExtensions.cs" />
+    <Compile Include="Monitoring\SumMetricSink.cs" />
     <Compile Include="Monitoring\TotalItemsMessage.cs" />
     <Compile Include="Queries\IGetSourceProviderRdoByApplicationIdentifier.cs" />
     <Compile Include="Queries\IGetSourceProviderRdoByIdentifier.cs" />

@@ -40,6 +40,7 @@ using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using Relativity.API;
 using SystemInterface.IO;
 using kCura.Apps.Common.Data;
+using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Monitoring;
 using kCura.IntegrationPoints.Core.Monitoring.JobLifetime;
@@ -223,7 +224,8 @@ namespace kCura.IntegrationPoints.Core.Installers
 
 			container.Register(Component.For<IFieldService>().ImplementedBy<FieldService>().LifestyleTransient());
 		    container.Register(Component.For<IMetricsManagerFactory>().ImplementedBy<MetricsManagerFactory>().LifestyleSingleton());
-			container.Register(Component.For<IMessageService>().ImplementedBy<IntegrationPointsMessageService>().LifestyleSingleton());
+		    container.Register(Component.For<IConfig>().Instance(Config.Config.Instance).LifestyleSingleton());
+            container.Register(Component.For<IMessageService>().ImplementedBy<IntegrationPointsMessageService>().LifestyleSingleton());
 		}
 
 		private SqlServerToggleProvider CreateSqlServerToggleProvider(IHelper helper)
