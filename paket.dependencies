@@ -4,18 +4,18 @@ strategy: min
 source https://proget.kcura.corp/nuget/NuGet
 
 //Main Relativity packages
-nuget kCura 9.7.7.116-DEV 
-nuget kCura.Agent 9.7.7.116-DEV 
-nuget kCura.EventHandler 9.7.7.116-DEV  
-nuget kCura.Relativity.Client 9.7.7.116-DEV  
-nuget Relativity.Authentication 9.7.7.116-DEV  
-nuget Relativity.Core 9.7.7.116-DEV  
-nuget Relativity.CustomPages 9.7.7.116-DEV  
-nuget Relativity.Data 9.7.7.116-DEV  
-nuget Relativity.ImportExport 9.7.7.116-DEV  
-nuget Relativity.Telemetry.Services.Interface 9.7.7.116-DEV  
-nuget RelativityCore 9.7.7.116-DEV 
-nuget Relativity.Services.Interfaces 9.7.7.116-DEV 
+nuget kCura 9.7.11.4-DEV 
+nuget kCura.Agent 9.7.11.4-DEV 
+nuget kCura.EventHandler 9.7.11.4-DEV  
+nuget kCura.Relativity.Client 9.7.11.4-DEV  
+nuget Relativity.Authentication 9.7.11.4-DEV  
+nuget Relativity.Core 9.7.11.4-DEV  
+nuget Relativity.CustomPages 9.7.11.4-DEV  
+nuget Relativity.Data 9.7.11.4-DEV  
+nuget Relativity.ImportExport 9.7.11.4-DEV  
+nuget Relativity.Telemetry.Services.Interface 9.7.11.4-DEV  
+nuget RelativityCore 9.7.11.4-DEV 
+nuget Relativity.Services.Interfaces 9.7.11.4-DEV 
 
 //Other Relativity packages
 nuget Relativity.DataTransfer.MessageService ~> 1.0.8
@@ -27,14 +27,14 @@ nuget Relativity.Telemetry.APM 9.4.148
 nuget kCura.FreeImage 3.15.1.1
 
 //Relativity transient packages
-nuget kCura.OutsideIn.FI.Win32 ~> 2018.4.1 content: none 	//Relativity.ImportExport
+nuget kCura.OutsideIn.FI.Win32 ~> 2018.5.0 content: none 	//Relativity.ImportExport
 nuget Relativity.SecretCatalog.AzureKeyVault ~> 1.0.19 		//RelativityCore
 nuget Relativity.Telemetry.MetricsCollection ~> 9.4.148 	//RelativityCore
 nuget Relativity.Vfs.IO ~> 1.0.22 							//RelativityCore
 nuget Relativity.Toggles ~> 1.0.0.84 						//RelativityCore
 nuget SystemWrapper.Wrappers ~> 0.19.0.115 					//RelativityCore
-nuget Relativity.Logging ~> 9.4.314	 						//RelativityCore
-nuget Relativity.Logging.Interfaces ~> 9.4.314
+nuget Relativity.Logging ~> 9.4.315	 						//RelativityCore
+nuget Relativity.Logging.Interfaces ~> 9.4.315
 nuget Relativity.Kepler ~> 1.0.1.409						
 nuget Relativity.Kepler.Client ~> 1.0.1.409
 nuget Castle.Windsor ~> 3.3.0						
