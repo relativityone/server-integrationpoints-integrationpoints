@@ -1,6 +1,6 @@
 properties {
     #directories
-    $root = git rev-parse --show-toplevel
+    $root = (Get-Item $PSScriptRoot).parent.FullName
 
     $source_directory = [System.IO.Path]::Combine($root, 'Source')
     $application_directory = [System.IO.Path]::Combine($root, 'Applications')
@@ -21,7 +21,14 @@ properties {
     $version = '1.0.0.0'
     $server_type = 'teambranch'
     $build_type = 'DEV'
-    $branch = git rev-parse --abbrev-ref HEAD
+
+    $git = Test-Path -Path ([System.IO.Path]::Combine($root, '.git'))
+    if ($git) {
+        $branch = git rev-parse --abbrev-ref HEAD
+    }
+    else {
+        $branch = "unknown"
+    }
     $build_config = "Debug"
     $Injections = 'DisableInjections'
 
@@ -62,7 +69,7 @@ properties {
     $logfile = [System.IO.Path]::Combine($buildlogs_directory, 'build.log')
     $logfilewarn = [System.IO.Path]::Combine($buildlogs_directory, 'buildwarnings.log')
     $logfileerror = [System.IO.Path]::Combine($buildlogs_directory, 'builderrors.log')
-    $diagnostic ="false"
+    $diagnostic = "false"
 
     #signing variables
     $signscript = [System.IO.Path]::Combine($development_scripts_directory, 'sign.ps1')
@@ -89,7 +96,10 @@ properties {
     #package variable
     $package_root_directory = [System.IO.Path]::Combine($root, 'Packages')
 	#chromedriver
-	$chromedriver_path = [System.IO.Path]::Combine($nuget_packages_directory, 'Selenium.WebDriver.ChromeDriver', 'driver', 'win32', 'chromedriver.exe')
+    $chromedriver_path = [System.IO.Path]::Combine($nuget_packages_directory, 'Selenium.WebDriver.ChromeDriver', 'driver', 'win32', 'chromedriver.exe')
+    
+    #test variables
+    $tests_project_file = [System.IO.Path]::Combine($development_scripts_directory, 'IntegrationPointsTests.nunit')
 
     function validateVersions
     {
@@ -127,5 +137,8 @@ properties {
         $psake.build_success = $true
     }
 
-    validateVersions
+    # if Git is not present - we are on a test node on CI server
+    if ($GIT) {
+        validateVersions
+    }
 }

@@ -27,6 +27,7 @@ using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.ImportProvider.Tests.Integration.Abstract;
 using kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers;
+using kCura.IntegrationPoints.ImportProvider.Tests.Integration.TestCases;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
@@ -196,6 +197,11 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 		[Category(kCura.IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
 		public void RunTestCase(IImportTestCase testCase)
 		{
+			// https://jira.kcura.com/browse/REL-225244 TODO: Broken test needs to be fixed! Ignore tests until verification mechanism will be fixed. DocumentService.GetNativeMD5String(workspaceId, docResult) needs to be reimplemented.", Until = "2018-07-09")]
+			if (testCase is ItShouldLoadNativesFromPaths && DateTime.UtcNow < new DateTime(2018, 7, 9))
+			{
+				Assert.Ignore(@"https://jira.kcura.com/browse/REL-225244 TODO: Broken test needs to be fixed! Ignore tests until verification mechanism will be fixed. DocumentService.GetNativeMD5String(workspaceId, docResult) needs to be reimplemented.");
+			}
 			SettingsObjects settingsObjects = testCase.Prepare(_workspaceId);
 
 			settingsObjects.ImportSettings.RelativityUsername = SharedVariables.RelativityUserName;

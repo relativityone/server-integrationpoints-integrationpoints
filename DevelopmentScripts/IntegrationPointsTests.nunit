@@ -1,0 +1,27 @@
+<NUnitProject>
+  <Settings activeconfig="IntegrationTests"
+            appbase=".." 
+            processModel="Single" />
+  <Config name="IntegrationTests"
+          appbase="lib/UnitTests/"
+          binpath="lib/UnitTests/" 
+          processModel="Single">
+    <assembly path="kCura.IntegrationPoints.Agent.Tests.Integration.dll"/>
+    <assembly path="kCura.IntegrationPoints.Core.Tests.Integration.dll"/>
+    <assembly path="kCura.IntegrationPoints.Data.Tests.Integration.dll"/>
+    <assembly path="kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration.dll"/>
+    <assembly path="kCura.IntegrationPoints.EventHandlers.Tests.Integration.dll"/>
+    <assembly path="kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.dll"/>
+    <assembly path="kCura.IntegrationPoints.ImportProvider.Tests.Integration.dll"/>
+    <assembly path="kCura.IntegrationPoints.Services.Tests.Integration.dll"/>
+    <assembly path="kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration.dll"/>
+    <assembly path="kCura.IntegrationPoints.Web.Tests.Integration.dll"/>
+    <assembly path="kCura.ScheduleQueue.Core.Tests.Integration.dll"/>
+  </Config>
+  <Config name="UITests"
+          appbase="lib/UnitTests/"
+          binpath="lib/UnitTests/" 
+          processModel="Single">
+    <assembly path="kCura.IntegrationPoints.UITests.dll"/>
+  </Config>
+</NUnitProject>

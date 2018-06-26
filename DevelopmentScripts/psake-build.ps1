@@ -43,7 +43,7 @@ task create_build_script -depends get_buildhelper {
                              ('/output:' + $targetsfile), 
                              ('/graph:' + $dependencygraph), 
                              ('/dllout:' + $internaldlls), 
-                             ('/vs:11.0'), 
+                             ('/vs:14.0'), 
                              ('/sign:' + ($build_type -ne 'DEV' -and $server_type -ne 'local')), 
                              ('/signscript:' + $signScript))
     }                                                                      
@@ -84,6 +84,8 @@ task build_projects -depends create_build_script, restore_nuget, configure_paket
         }
         	
         Write-Host 'Based on' $build_type 'Injection is set to' $Injections
+
+        Write-Host 'Using MSBuild' $msbuild_exe 'with targets file' $targetsfile
         
         &  $msbuild_exe @(($targetsfile),   
                          ('/property:SourceRoot=' + $root),
@@ -104,7 +106,8 @@ task build_projects -depends create_build_script, restore_nuget, configure_paket
 }
 
 task build_rip_documentation {
-    & nant package_documentation -buildfile:$root\DevelopmentScripts\build.build "-D:root=$root" "-D:buildconfig=$BUILDCONFIG" "-D:action=package_documentation" "-D:buildType=$BUILDTYPE"
+    # & nant package_documentation -buildfile:$root\DevelopmentScripts\build.build "-D:root=$root" "-D:buildconfig=$BUILDCONFIG" "-D:action=package_documentation" "-D:buildType=$BUILDTYPE"
+    Write-Warning "Ignoring nant command (documentation build step). Please add nant to nuget packages and rewrite this task if needed."
 }
 
 task copy_chrome_driver -depends build_projects{

@@ -1,10 +1,16 @@
 . .\psake-common.ps1
 
+properties {
+    $in_where_expr = $integration_tests_filter
+    $ui_where_expr = $ui_tests_filter
+}
 
 task default -depends test
 
 
 task test_initalize {
+
+    Write-Host "test task initialize " $integration_tests_filter
 
     If([System.IO.Directory]::Exists($testlog_directory)) {
         [System.IO.Directory]::Delete($testlog_directory, $true)
@@ -35,4 +41,46 @@ task test -depends get_testrunner, get_nunit, test_initalize {
                             ('/timeout:' + 5),
                             ('/timeoutWarning:' + 3))
     }
+}
+
+task run_integration_tests {
+    if (-not [string]::IsNullOrEmpty($in_where_expr)) {
+        $in_where_expr = '--where=' + $in_where_expr
+    }
+    Write-Host "Integration tests where expression: " $in_where_expr
+    exec {
+        & $NUnit3 @($tests_project_file,
+                    '--config="IntegrationTests"',
+                    '--inprocess',
+                    $in_where_expr,
+                    '--result="IntegrationTestsResults.xml"')
+    }
+}
+
+task generate_integration_tests_report {
+    exec {
+        & $nuget_exe @('install', 'ReportUnit', '-Version', '1.2.1', '-ExcludeVersion')
+        & ./ReportUnit/tools/reportunit "IntegrationTestsResults.xml" "IntegrationTestsResults.html"
+    } 
+}
+
+task run_ui_tests {
+    if (-not [string]::IsNullOrEmpty($ui_where_expr)) {
+        $ui_where_expr = '--where=' + $ui_where_expr
+    }
+    Write-Host "UI tests where expression: " $ui_where_expr
+    exec {
+        & $NUnit3 @($tests_project_file,
+                    '--config="UITests"',
+                    '--inprocess',
+                    $ui_where_expr,
+                    '--result="UITestsResults.xml"')
+    }
+}
+
+task generate_ui_tests_report {
+    exec {
+        & $nuget_exe @('install', 'ReportUnit', '-Version', '1.2.1', '-ExcludeVersion')
+        & ./ReportUnit/tools/reportunit "UITestsResults.xml" "UITestsResults.html"
+    } 
 }

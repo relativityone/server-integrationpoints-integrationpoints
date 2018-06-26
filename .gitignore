@@ -77,3 +77,12 @@ documentation/diagrams/Stop/images
 documentation/diagrams/images
 documentation/diagrams/Stop/images
 packages/
+IntegrationTestsResults.xml
+IntegrationTestsResults.html
+UITestsResults.xml
+UITestsResults.html
+DevelopmentScripts/IntegrationPointsTests.config
+DevelopmentScripts/IntegrationTestsResults.xml
+DevelopmentScripts/IntegrationTestsResults.html
+DevelopmentScripts/UITestsResults.xml
+DevelopmentScripts/UITestsResults.html

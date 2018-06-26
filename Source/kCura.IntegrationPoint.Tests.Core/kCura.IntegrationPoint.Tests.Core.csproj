@@ -7741,14 +7741,16 @@
   </Choose>
   <PropertyGroup>
     <PostBuildEvent>
-		mkdir "$(ProjectDir)..\..\lib\UnitTests"
-		xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y
+    mkdir "$(ProjectDir)..\..\lib\UnitTests"
+    xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y
 		xcopy "$(ProjectDir)TestData" "$(ProjectDir)..\..\lib\UnitTests\TestData" /E /Y /I /R
 		xcopy "$(ProjectDir)TestDataExtended" "$(ProjectDir)..\..\lib\UnitTests\TestDataExtended" /E /Y /I /R
 		xcopy "$(ProjectDir)TestDataSaltPepper" "$(ProjectDir)..\..\lib\UnitTests\TestDataSaltPepper" /E /Y /I /R
 		xcopy "$(ProjectDir)TestDataImportFromLoadFile" "$(ProjectDir)..\..\lib\UnitTests\TestDataImportFromLoadFile" /E /Y /I /R
 		xcopy "$(ProjectDir)TestDataText" "$(ProjectDir)..\..\lib\UnitTests\TestDataText" /E /Y /I /R
-		xcopy "$(ProjectDir)oi\unmanaged" "$(ProjectDir)..\..\lib\UnitTests\oi"  /E /Y /I /R</PostBuildEvent>
+		xcopy "$(ProjectDir)oi\unmanaged" "$(ProjectDir)..\..\lib\UnitTests\oi"  /E /Y /I /R
+    copy "$(ProjectDir)app.config" "$(ProjectDir)..\..\DevelopmentScripts\IntegrationPointsTests.config" /Y
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
