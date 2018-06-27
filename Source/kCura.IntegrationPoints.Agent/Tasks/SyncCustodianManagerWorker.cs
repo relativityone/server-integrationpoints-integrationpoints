@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Custodian;
 using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Conversion;
 using kCura.IntegrationPoints.Core.Services.CustodianManager;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -58,11 +59,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IJobHistoryService jobHistoryService, IJobHistoryErrorService jobHistoryErrorService, IJobManager jobManager,
 			IManagerQueueService managerQueueService, JobStatisticsService statisticsService, IManagerFactory managerFactory,
 			IContextContainerFactory contextContainerFactory,
-			IJobService jobService, IRepositoryFactory repositoryFactory, IHelperFactory helperFactory, IRelativityObjectManager relativityObjectManager)
+			IJobService jobService, IRepositoryFactory repositoryFactory, IHelperFactory helperFactory, IRelativityObjectManager relativityObjectManager,
+			IProviderTypeService providerTypeService)
 			: base(caseServiceContext, helper, dataProviderFactory, serializer,
 				appDomainRdoSynchronizerFactoryFactory, jobHistoryService, jobHistoryErrorService,
 				jobManager, null, statisticsService, managerFactory,
-				contextContainerFactory, jobService)
+				contextContainerFactory, jobService, providerTypeService)
 		{
 			_managerQueueService = managerQueueService;
 			_repositoryFactory = repositoryFactory;

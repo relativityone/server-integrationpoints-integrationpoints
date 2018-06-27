@@ -8,6 +8,7 @@ using kCura.Relativity.ImportAPI;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.DataTransfer.MessageService;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport
 {
@@ -51,7 +52,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport
 				ImageImport = true,
 				Provider = "relativity",
 			};
-			var factory = new ImportJobFactory();
+			var factory = new ImportJobFactory(Substitute.For<IMessageService>());
 
 			IJobImport result = factory.Create(_importApi, settings, _transferContext, _helperMock);
 
@@ -67,7 +68,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport
 				ImageImport = true,
 				Provider = "relativity",
 			};
-			var factory = new ImportJobFactory();
+			var factory = new ImportJobFactory(Substitute.For<IMessageService>());
 
 			IJobImport result = factory.Create(_importApi, settings, _transferContext, _helperMock);
 
@@ -87,7 +88,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport
 				ProductionImport = productionImportFlag,
 				Provider = provider,
 			};
-			var factory = new ImportJobFactory();
+			var factory = new ImportJobFactory(Substitute.For<IMessageService>());
 
 			IJobImport result = factory.Create(_importApi, settings, _transferContext, _helperMock);
 
@@ -107,7 +108,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport
 				ProductionImport = productionImportFlag,
 				Provider = provider,
 			};
-			var factory = new ImportJobFactory();
+			var factory = new ImportJobFactory(Substitute.For<IMessageService>());
 
 			IJobImport result = factory.Create(_importApi, settings, _transferContext, _helperMock);
 			Assert.IsInstanceOf<NativeJobImport>(result);

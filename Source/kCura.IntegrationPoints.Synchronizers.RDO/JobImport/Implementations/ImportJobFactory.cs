@@ -3,11 +3,19 @@ using kCura.IntegrationPoints.Domain.Readers;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
 using Relativity.API;
+using Relativity.DataTransfer.MessageService;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 {
 	public class ImportJobFactory : IImportJobFactory
 	{
+		private readonly IMessageService _messageService;
+
+		public ImportJobFactory(IMessageService messageService)
+		{
+			_messageService = messageService;
+		}
+
 		public IJobImport Create(IExtendedImportAPI importApi, ImportSettings settings, IDataTransferContext context, IHelper helper)
 		{
 			IJobImport rv;
@@ -33,7 +41,22 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 					throw new ArgumentOutOfRangeException();
 			}
 			rv.RegisterEventHandlers();
+			rv.OnComplete += report => OnJobComplete(report, settings.CaseArtifactId, settings.CorrelationId, settings.Provider, settings.JobID);
 			return rv;
+		}
+
+		private void OnJobComplete(JobReport jobReport, int workspaceId, Guid correlationId, string provider, long? jobID)
+		{
+			_messageService.Send(new ImportJobStatisticsMessage()
+			{
+				Provider = provider,
+				JobID = jobID?.ToString() ?? "",
+				FileBytes = jobReport.FileBytes,
+				MetaBytes = jobReport.MetadataBytes,
+				CorellationID = correlationId.ToString(),
+				WorkspaceID = workspaceId,
+				UnitOfMeasure = "Bytes(s)"
+			});
 		}
 
 		internal enum JobContextType

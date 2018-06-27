@@ -3,7 +3,9 @@ using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Monitoring.JobLifetimeMessages;
 using kCura.IntegrationPoints.Core.Monitoring.NumberOfRecords.Messages;
 using kCura.IntegrationPoints.Core.Monitoring.NumberOfRecordsMessages;
+using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using Relativity.DataTransfer.MessageService;
+using Relativity.DataTransfer.MessageService.MetricsManager.APM;
 using Relativity.DataTransfer.MessageService.Tools;
 
 namespace kCura.IntegrationPoints.Core.Monitoring
@@ -25,6 +27,11 @@ namespace kCura.IntegrationPoints.Core.Monitoring
 			var liveApmMetricSink = new LiveApmMetricSink(metricsManagerFactory);
 
 			this.AddSink(new ToggledMessageSink<JobApmThroughputMessage>(new ThrottledMessageSink<JobApmThroughputMessage>(liveApmMetricSink, () => config.MetricsThrottling), () => config.SendLiveApmMetrics));
+
+			var endApmMetricSink = new EndApmMetricSink(metricsManagerFactory);
+
+			this.AddSink(new ToggledMessageSink<ImportJobStatisticsMessage>(endApmMetricSink, () => config.SendSummaryMetrics));
+			this.AddSink(new ToggledMessageSink<ExportJobStatisticsMessage>(endApmMetricSink, () => config.SendSummaryMetrics));
 		}
 	}
 }

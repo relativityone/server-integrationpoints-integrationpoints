@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.CustodianManager;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
@@ -63,6 +64,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IJobStopManager _jobStopManager;
 		private IDataSynchronizer _dataSynchronizer;
 		private IRelativityObjectManager _relativityObjectManager;
+		private IProviderTypeService _providerTypeService;
 
 		private string jsonParam1 =
 			"{\"BatchInstance\":\"2b7bda1b-11c9-4349-b446-ae5c8ca2c408\",\"BatchParameters\":{\"CustodianManagerMap\":{\"9E6D57BEE28D8D4CA9A64765AE9510FB\":\"CN=Middle Manager,OU=Nested,OU=Testing - Users,DC=testing,DC=corp\",\"779561316F4CE44191B150453DE9A745\":\"CN=Top Manager,OU=Testing - Users,DC=testing,DC=corp\",\"2845DA5813991740BA2D6CC6C9765799\":\"CN=Bottom Manager,OU=NestedAgain,OU=Nested,OU=Testing - Users,DC=testing,DC=corp\"},\"CustodianManagerFieldMap\":[{\"SourceField\":{\"DisplayName\":\"CustodianIdentifier\",\"FieldIdentifier\":\"objectguid\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"DestinationField\":{\"DisplayName\":\"ManagerIdentidier\",\"FieldIdentifier\":\"distinguishedname\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"FieldMapType\":1}],\"ManagerFieldIdIsBinary\":false,\"ManagerFieldMap\":[{\"SourceField\":{\"DisplayName\":\"mail\",\"FieldIdentifier\":\"mail\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"DestinationField\":{\"DisplayName\":\"Email\",\"FieldIdentifier\":\"1040539\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"FieldMapType\":0},{\"SourceField\":{\"DisplayName\":\"givenname\",\"FieldIdentifier\":\"givenname\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"DestinationField\":{\"DisplayName\":\"First Name\",\"FieldIdentifier\":\"1040546\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":true},\"FieldMapType\":0},{\"SourceField\":{\"DisplayName\":\"sn\",\"FieldIdentifier\":\"sn\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"DestinationField\":{\"DisplayName\":\"Last Name\",\"FieldIdentifier\":\"1040547\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":true},\"FieldMapType\":0},{\"SourceField\":{\"DisplayName\":\"manager\",\"FieldIdentifier\":\"manager\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"DestinationField\":{\"DisplayName\":\"Manager\",\"FieldIdentifier\":\"1040548\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"FieldMapType\":0},{\"SourceField\":{\"DisplayName\":\"objectguid\",\"FieldIdentifier\":\"objectguid\",\"FieldType\":0,\"IsIdentifier\":true,\"IsRequired\":false},\"DestinationField\":{\"DisplayName\":\"UniqueID\",\"FieldIdentifier\":\"1040555\",\"FieldType\":0,\"IsIdentifier\":true,\"IsRequired\":false},\"FieldMapType\":1}]}}";
@@ -98,6 +100,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_managerFactory = Substitute.For<IManagerFactory>();
 			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			_jobService = Substitute.For<IJobService>();
+			_providerTypeService = Substitute.For<IProviderTypeService>();
 
 			_jobStopManager = Substitute.For<IJobStopManager>();
 			_dataSynchronizer = Substitute.For<IDataSynchronizer>();
@@ -124,7 +127,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				_jobService,
 				_repositoryFactory,
 				helperFactory,
-				_relativityObjectManager
+				_relativityObjectManager,
+				_providerTypeService
 				);
 
 			_job = JobHelper.GetJob(
@@ -303,7 +307,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			//ARRANGE
 			Job job = GetJob(jsonParam1);
 			SyncCustodianManagerWorker task =
-				new SyncCustodianManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null, null);
+				new SyncCustodianManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null, null, null);
 
 			//ACT
 			MethodInfo dynMethod = task.GetType().GetMethod("GetParameters",
@@ -336,7 +340,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		{
 			//ARRANGE
 			SyncCustodianManagerWorker task =
-				new SyncCustodianManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null, null);
+				new SyncCustodianManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null, null, null);
 			_integrationPoint.DestinationConfiguration = jsonParam2;
 			task.GetType().GetProperty("IntegrationPoint", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).SetValue(task, _integrationPoint);
 			

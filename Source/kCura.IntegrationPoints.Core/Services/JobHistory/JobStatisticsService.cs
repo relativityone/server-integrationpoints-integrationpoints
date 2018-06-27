@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
@@ -140,7 +141,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			_messageService.Send(message);
 		}
 
-		public void RowError(string documentIdentifier, string errorMessage)
+		private void RowError(string documentIdentifier, string errorMessage)
 		{
 			_rowErrors++;
 		}
