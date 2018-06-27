@@ -354,7 +354,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			//Act
 
 			//Create Errors by using Append Only
-			Status.WaitForScheduledJobToComplete(Container, SourceWorkspaceArtifactId, integrationPointPreJobExecution.ArtifactID);
+			Status.WaitForScheduledJobToComplete(Container, SourceWorkspaceArtifactId, integrationPointPreJobExecution.ArtifactID, timeoutInSeconds: 600);
 			IntegrationPointModel integrationPointPostRun = _integrationPointService.ReadIntegrationPoint(integrationPointPreJobExecution.ArtifactID);
 
 			//Assert
