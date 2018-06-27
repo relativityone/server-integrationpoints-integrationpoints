@@ -69,6 +69,7 @@
     <Compile Include="JobImport\Implementations\NativeImportSettingsBuilder.cs" />
     <Compile Include="JobImport\Implementations\NativeJobImport.cs" />
     <Compile Include="JobImport\Implementations\ProductionImageJobImport.cs" />
+    <Compile Include="JobImport\ImportJobStatisticsMessage.cs" />
     <Compile Include="Model\Serializer\ImportSettingsForLogSerializer.cs" />
     <Compile Include="Model\Serializer\SerializeContractResolverWithIgnoredProperties.cs" />
     <Compile Include="RdoFieldSynchronizerBase.cs" />

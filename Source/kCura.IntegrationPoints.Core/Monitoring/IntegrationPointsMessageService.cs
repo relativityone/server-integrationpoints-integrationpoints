@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Core.Monitoring.NumberOfRecordsMessages;
 using kCura.IntegrationPoints.Core.Monitoring.Sinks.Aggregated;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
+using Relativity.DataTransfer.MessageService.MetricsManager.APM;
 using Relativity.DataTransfer.MessageService.Tools;
 
 namespace kCura.IntegrationPoints.Core.Monitoring
@@ -26,6 +27,11 @@ namespace kCura.IntegrationPoints.Core.Monitoring
 			this.AddSink(new ToggledMessageSink<ExportJobThroughputBytesMessage>(aggregatedJobSink, () => config.SendSumMetrics));
 			this.AddSink(new ToggledMessageSink<ExportJobStatisticsMessage>(aggregatedJobSink, () => config.SendSummaryMetrics));
 			this.AddSink(new ToggledMessageSink<JobProgressMessage>(new ThrottledMessageSink<JobProgressMessage>(aggregatedJobSink, () => config.MetricsThrottling), () => config.SendLiveApmMetrics));
+
+			var endApmMetricSink = new EndApmMetricSink(metricsManagerFactory);
+
+			this.AddSink(new ToggledMessageSink<ImportJobStatisticsMessage>(endApmMetricSink, () => config.SendSummaryMetrics));
+			this.AddSink(new ToggledMessageSink<ExportJobStatisticsMessage>(endApmMetricSink, () => config.SendSummaryMetrics));
 		}
 	}
 }

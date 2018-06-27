@@ -1,8 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Monitoring;
 using kCura.IntegrationPoints.Core.Monitoring.NumberOfRecords.Messages;
+using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
@@ -93,45 +94,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 
 		private void SendLiveStatistics(ExportEventArgs e)
 		{
-			var message = new JobProgressMessage();
+			var message = new JobApmThroughputMessage();
 			BuildJobApmMessageBase(message);
 			message.FileThroughput = e.Statistics.FileThroughput;
 			message.MetadataThroughput = e.Statistics.MetadataThroughput;
 			_messageService.Send(message);
 		}
-
-		private void SendEndStatistics(ExportEventArgs e)
-		{
-			long jobSizeInBytes = e.Statistics.FileBytes + e.Statistics.MetadataBytes;
-			TimeSpan duration = _dateTimeHelper.Now() - _startTime;
-			double bytesPerSecond = duration.TotalSeconds > 0 ? jobSizeInBytes / duration.TotalSeconds : 0;
-
-			SendJobStatisticsMessage(e.Statistics.FileBytes, e.Statistics.MetadataBytes);
-			SendJobThroughputBytesMessage(bytesPerSecond);
-		}
-		
-		private void SendJobStatisticsMessage(long fileBytes, long metaBytes)
-		{
-			var jobStatisticsMessage = new ExportJobStatisticsMessage();
-			BuildJobApmMessageBase(jobStatisticsMessage);
-			jobStatisticsMessage.FileBytes = fileBytes;
-			jobStatisticsMessage.MetaBytes = metaBytes;
-			jobStatisticsMessage.JobSizeInBytes = fileBytes + metaBytes;
-			_messageService.Send(jobStatisticsMessage);
-		}
-
-		private void SendJobThroughputBytesMessage(double bytesPerSecond)
-		{
-			string providerName = GetProviderName();
-			var jobThroughputBytesMessage = new ExportJobThroughputBytesMessage()
-			{
-				Provider = providerName,
-				CorrelationID = _historyErrorService.JobHistory.BatchInstance,
-				UnitOfMeasure = "Byte(s)",
-				WorkspaceID = _caseServiceContext.WorkspaceID,
-				JobID = _historyErrorService.JobHistory.JobID,
-				BytesPerSecond = bytesPerSecond
-			};
 			_messageService.Send(jobThroughputBytesMessage);
 		}
 		
@@ -145,9 +113,29 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 			m.WorkspaceID = _caseServiceContext.WorkspaceID;
 		}
 
+		private void SendEndStatistics(ExportEventArgs e)
+		{
+			var message = new ExportJobStatisticsMessage();
+			BuildJobApmMessageBase(message);
+			message.FileBytes = e.Statistics.FileBytes;
+			message.MetaBytes = e.Statistics.MetadataBytes;
+			_messageService.Send(message);
+		}
+
+		private void BuildJobApmMessageBase(JobApmMessageBase m)
+		{
+			string provider = GetProviderName();
+			m.Provider = provider;
+			m.CorellationID = _historyErrorService.JobHistory.BatchInstance;
+			m.UnitOfMeasure = "Byte(s)";
+			m.JobID = _historyErrorService.JobHistory.JobID;
+			m.WorkspaceID = _caseServiceContext.WorkspaceID;
+			m.CustomData["Provider"] = provider;
+		}
+
 		private string GetProviderName()
 		{
-			return _integrationPointProviderTypeService.GetProviderType(_historyErrorService.IntegrationPoint).ToString();	
+			return _historyErrorService.IntegrationPoint.GetProviderType(_providerTypeService).ToString();
 		}
 
 		private bool CanUpdateJobStatus(ExportEventArgs exportArgs)

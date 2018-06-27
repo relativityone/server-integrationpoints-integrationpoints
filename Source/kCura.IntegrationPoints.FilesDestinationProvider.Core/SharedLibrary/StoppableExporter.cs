@@ -36,7 +36,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 		}
 
 		public event IExporterStatusNotification.StatusMessageEventHandler StatusMessage
-
 		{
 			add { _exporter.StatusMessage += value; }
 			remove { _exporter.StatusMessage -= value; }

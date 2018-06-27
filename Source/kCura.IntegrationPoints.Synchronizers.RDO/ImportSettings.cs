@@ -86,6 +86,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		public int IdentityFieldId { get; set; }
 		public ImportAuditLevelEnum ImportAuditLevel { get; set; }
 
+		public Guid CorrelationId { get; set; }
+		public long? JobID { get; set; }
+
 		/// <summary>
 		/// Indicates user preferences of importing native files.
 		/// </summary>
@@ -129,6 +132,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		public int OnBehalfOfUserId { get; set; }
 		public string ParentObjectIdSourceFieldName { get; set; }
 		public string Provider { get; set; }
+
 		public string RelativityPassword { get; set; }
 
 		public string RelativityUsername { get; set; }

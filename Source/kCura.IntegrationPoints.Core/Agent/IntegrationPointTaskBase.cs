@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.Core.Agent
 		protected readonly IHelper Helper;
 
 		private DestinationProvider _destinationProvider;
-		private SourceProvider _sourceProvider;
+		protected SourceProvider _sourceProvider;
 		protected ISynchronizerFactory AppDomainRdoSynchronizerFactoryFactory;
 		protected ICaseServiceContext CaseServiceContext;
 		protected IContextContainerFactory ContextContainerFactory;

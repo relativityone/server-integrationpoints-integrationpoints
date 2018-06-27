@@ -120,7 +120,11 @@
     <Compile Include="Installers\SharedAgentInstaller.cs" />
     <Compile Include="IServiceManagerProvider.cs" />
     <Compile Include="Models\IRdoFilter.cs" />
+    <Compile Include="Monitoring\ApmMessageBase.cs" />
+    <Compile Include="Monitoring\EndApmMetricSink.cs" />
+    <Compile Include="Monitoring\ExportJobStatisticsMessage.cs" />
     <Compile Include="Monitoring\HealthCheck.cs" />
+    <Compile Include="Monitoring\JobApmMessageBase.cs" />
     <Compile Include="Monitoring\JobLifetime\Messages\JobCompletedMessage.cs" />
     <Compile Include="Monitoring\JobLifetime\Messages\JobFailedMessage.cs" />
     <Compile Include="Monitoring\JobLifetimeMetricBatchStatus.cs" />
