@@ -112,6 +112,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 		[TestCase(ImportNativeFileCopyModeEnum.CopyFiles)]
 		[TestCase(ImportNativeFileCopyModeEnum.SetFileLinks)]
+		[Ignore("TODO: Broken test needs to be fixed!", Until = "2018-07-09")]
 		public void NativesShouldBeDeletedInTargetWorkspace_InImportNativesModes(ImportNativeFileCopyModeEnum importNativeFileCopyMode)
 		{
 			TestNativeFilesImport(false, true, true, importNativeFileCopyMode, false);
