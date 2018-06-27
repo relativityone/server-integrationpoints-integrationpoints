@@ -1,5 +1,6 @@
 ﻿using kCura.IntegrationPoints.Core.Monitoring.JobLifetimeMessages;
 using kCura.IntegrationPoints.Core.Monitoring.NumberOfRecordsMessages;
+using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using Relativity.DataTransfer.MessageService;
 using Relativity.DataTransfer.MessageService.Tools;
 
@@ -7,7 +8,8 @@ namespace kCura.IntegrationPoints.Core.Monitoring
 {
 	public class SumMetricSink : IMessageSink<JobStartedMessage>, IMessageSink<JobCompletedMessage>,
 		IMessageSink<JobFailedMessage>, IMessageSink<JobValidationFailedMessage>, IMessageSink<JobTotalRecordsCountMessage>,
-		IMessageSink<JobCompletedRecordsCountMessage>, IMessageSink<JobThroughputMessage>
+		IMessageSink<JobCompletedRecordsCountMessage>, IMessageSink<JobThroughputMessage>,
+		IMessageSink<ImportJobStatisticsMessage>, IMessageSink<ExportJobStatisticsMessage>
 	{
 		private readonly IMetricsManagerFactory _metricsManagerFactory;
 
@@ -51,6 +53,21 @@ namespace kCura.IntegrationPoints.Core.Monitoring
 			LogDouble($"IntegrationPoints.Performance.Throughput.{message.Provider}", message.Throughput);
 		}
 
+		public void OnMessage(ImportJobStatisticsMessage message)
+		{
+			LogJobSize(message.Provider, message.FileBytes + message.MetaBytes);
+		}
+
+		public void OnMessage(ExportJobStatisticsMessage message)
+		{
+			LogJobSize(message.Provider, message.FileBytes + message.MetaBytes);
+		}
+
+		private void LogJobSize(string provider, long jobSize)
+		{
+			LogLong($"IntegrationPoints.Performance.JobSize.{provider}", jobSize);
+		}
+
 		private void LogCount(string bucketName)
 		{
 			_metricsManagerFactory.CreateSUMManager().LogCount(bucketName, 1);
@@ -65,5 +82,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring
 		{
 			_metricsManagerFactory.CreateSUMManager().LogDouble(bucketName, number);
 		}
+
+
 	}
 }
