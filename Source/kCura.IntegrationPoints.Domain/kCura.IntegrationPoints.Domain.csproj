@@ -85,7 +85,6 @@
     <Compile Include="Logging\CorrelationContextCreationException.cs" />
     <Compile Include="Logging\EhCorrelationContext.cs" />
     <Compile Include="Logging\LogContextHelper.cs" />
-    <Compile Include="Logging\SerilogContextRestorer.cs" />
     <Compile Include="Logging\WebCorrelationContext.cs" />
     <Compile Include="Managers\IFederatedInstanceManager.cs" />
     <Compile Include="Managers\IInstanceSettingsManager.cs" />

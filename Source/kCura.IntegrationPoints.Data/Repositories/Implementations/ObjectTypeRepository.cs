@@ -41,7 +41,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				PersistentLists = false
 			};
 
-			using (new SerilogContextRestorer())
 			using (Relativity.Client.IRSAPIClient rsapiClient = _rsapiClientFactory.CreateUserClient(_servicesMgr, _logger))
 			{
 				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
@@ -63,7 +62,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			int? descriptorArtifactTypeId = null;
 			try
 			{
-				using (new SerilogContextRestorer())
 				using (var rsapiClient = _rsapiClientFactory.CreateUserClient(_servicesMgr, _logger))
 				{
 					rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
