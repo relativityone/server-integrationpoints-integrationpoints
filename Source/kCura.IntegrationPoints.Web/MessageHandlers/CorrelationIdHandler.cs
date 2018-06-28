@@ -38,7 +38,6 @@ namespace kCura.IntegrationPoints.Web.MessageHandlers
 				CorrelationId = actionContext.ActionGuid
 			};
 
-			using (LogContextHelper.CreateWebLogContext(correlationContext))
 			using (_apiLogLocal.Value.LogContextPushProperties(correlationContext))
 			{
 				request.Headers.Add(WebCorrelationIdName, correlationContext.CorrelationId?.ToString());

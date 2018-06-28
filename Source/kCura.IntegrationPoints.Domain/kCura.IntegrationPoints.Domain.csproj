@@ -84,7 +84,6 @@
     <Compile Include="Logging\BaseCorrelationContext.cs" />
     <Compile Include="Logging\CorrelationContextCreationException.cs" />
     <Compile Include="Logging\EhCorrelationContext.cs" />
-    <Compile Include="Logging\LogContextHelper.cs" />
     <Compile Include="Logging\WebCorrelationContext.cs" />
     <Compile Include="Managers\IFederatedInstanceManager.cs" />
     <Compile Include="Managers\IInstanceSettingsManager.cs" />
@@ -135,7 +134,7 @@
     <Compile Include="Readers\IDataTransferContext.cs" />
     <Compile Include="Readers\RelativityReaderBase.cs" />
     <Compile Include="RelativityFeaturePathService.cs" />
-    <Compile Include="StackOfDisposables.cs" />
+	<Compile Include="StackOfDisposables.cs" />
     <Compile Include="Synchronizer\IDataSynchronizer.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="WindsorContainerSetup.cs" />

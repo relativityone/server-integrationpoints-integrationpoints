@@ -110,7 +110,6 @@ namespace kCura.IntegrationPoints.Agent
 
 		private TaskResult ExecuteTask(ITask task, Job job, AgentCorrelationContext correlationContext)
 		{
-			using (LogContextHelper.CreateAgentLogContext(correlationContext))
 			using (_logger.LogContextPushProperties(correlationContext))
 			{
 				try
