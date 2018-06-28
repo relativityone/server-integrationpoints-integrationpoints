@@ -21,6 +21,7 @@ using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations;
 using kCura.Relativity.Client;
 using Relativity.API;
+using Relativity.DataTransfer.MessageService;
 
 namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
 {
@@ -122,6 +123,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
 		{
 			windsorContainer.Register(Component.For<ITokenProvider>().Instance(Substitute.For<ITokenProvider>()));
 			windsorContainer.Register(Component.For<IFederatedInstanceManager>().Instance(Substitute.For<IFederatedInstanceManager>()));
+			windsorContainer.Register(Component.For<IMessageService>().Instance(Substitute.For<IMessageService>()));
 		}
 	}
 }
