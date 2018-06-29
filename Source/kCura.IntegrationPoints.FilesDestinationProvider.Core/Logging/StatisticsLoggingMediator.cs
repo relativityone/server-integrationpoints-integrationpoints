@@ -100,6 +100,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 			BuildJobApmMessageBase(message);
 			message.FileBytes = e.Statistics.FileBytes;
 			message.MetaBytes = e.Statistics.MetadataBytes;
+			message.JobSizeInBytes = e.Statistics.FileBytes + e.Statistics.MetadataBytes;
 			_messageService.Send(message);
 		}
 

@@ -55,12 +55,12 @@ namespace kCura.IntegrationPoints.Core.Monitoring
 
 		public void OnMessage(ImportJobStatisticsMessage message)
 		{
-			LogJobSize(message.Provider, message.FileBytes + message.MetaBytes);
+			LogJobSize(message.Provider, message.JobSizeInBytes);
 		}
 
 		public void OnMessage(ExportJobStatisticsMessage message)
 		{
-			LogJobSize(message.Provider, message.FileBytes + message.MetaBytes);
+			LogJobSize(message.Provider, message.JobSizeInBytes);
 		}
 
 		private void LogJobSize(string provider, long jobSize)
