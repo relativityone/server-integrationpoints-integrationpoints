@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Runtime.InteropServices;
 using kCura.EventHandler;
-using kCura.IntegrationPoints.Core.Extensions;
 using kCura.IntegrationPoints.Core.Helpers.Logging;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;

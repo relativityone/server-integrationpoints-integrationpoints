@@ -7,7 +7,6 @@ using kCura.IntegrationPoints.Agent.Validation;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
-using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -17,7 +16,6 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
-using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -144,7 +142,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					JobHistoryErrorService.CommitErrors();
 				}
 			}
-			
+
 			if (JobStopManager?.IsStopRequested() == true)
 			{
 				SetErrorStatusesToExpired(job);
@@ -167,7 +165,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				IDataSynchronizer synchronizer = SynchronizerFactory.CreateSynchronizer(
 					Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, configuration, IntegrationPointDto.SecuredConfiguration);
-				
+
 				return synchronizer;
 			}
 			catch (Exception e)
@@ -367,11 +365,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void RunValidation(Job job)
 		{
-			using (new SerilogContextRestorer()) // job context would be lost without it
-			{
-				UpdateJobStatus(JobStatusChoices.JobHistoryValidating);
-				_agentValidator.Validate(IntegrationPointDto, job.SubmittedBy);
-			}
+			UpdateJobStatus(JobStatusChoices.JobHistoryValidating);
+			_agentValidator.Validate(IntegrationPointDto, job.SubmittedBy);
 		}
 
 		#region Logging
@@ -402,11 +397,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		protected virtual void LogCompletingJobError(Job job, Exception exception, IBatchStatus batchStatus)
 		{
 			Logger.LogError(exception, "Failed to complete job {JobId}. Error occured in BatchStatus {BatchStatusType}.", job.JobId, batchStatus.GetType());
-		}
-
-		protected virtual void LogDisposingObserverError(Job job, Exception e)
-		{
-			Logger.LogError(e, "Failed to dispose observer for job {JobId}.", job.JobId);
 		}
 
 		protected virtual void LogUpdatingIntegrationPointRuntimesError(Job job, Exception e)

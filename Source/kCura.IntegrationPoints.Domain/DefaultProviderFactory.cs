@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Domain
 			    throw new Exception(message);
 			}
 
-			return new ProviderWrapper(provider, _logger);
+			return new ProviderWrapper(provider);
 		}
 
 #region Logging

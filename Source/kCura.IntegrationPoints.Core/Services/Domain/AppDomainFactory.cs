@@ -3,7 +3,6 @@ using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Domain;
-using kCura.IntegrationPoints.Domain.Logging;
 
 namespace kCura.IntegrationPoints.Core.Services.Domain
 {
@@ -19,15 +18,10 @@ namespace kCura.IntegrationPoints.Core.Services.Domain
 
 		public IDataSourceProvider GetDataProvider(Guid applicationGuid, Guid providerGuid)
 		{
-			using (new SerilogContextRestorer())
-			{
-				_newDomain = _domainHelper.CreateNewDomain();
-				IDomainManager domainManager = _domainHelper.SetupDomainAndCreateManager(_newDomain, applicationGuid);
-
-				IProviderFactory providerFactory = domainManager.CreateProviderFactory();
-				
-				return new ProviderWithLogContextDecorator(providerFactory.CreateProvider(providerGuid));
-			}
+			_newDomain = _domainHelper.CreateNewDomain();
+			IDomainManager domainManager = _domainHelper.SetupDomainAndCreateManager(_newDomain, applicationGuid);
+			IProviderFactory providerFactory = domainManager.CreateProviderFactory();
+			return providerFactory.CreateProvider(providerGuid);
 		}
 
 		public void Dispose()

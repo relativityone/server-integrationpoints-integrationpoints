@@ -171,11 +171,9 @@
     <Compile Include="RelativitySourceRdo\RelativitySourceWorkspaceRdoInitializer.cs" />
     <Compile Include="Services\Domain\AppDomainFactory.cs" />
     <Compile Include="Services\Domain\AppDomainIsolatedFactoryCreationStrategy.cs" />
-    <Compile Include="Services\Domain\DataReaderWithLogContextDecorator.cs" />
     <Compile Include="Services\Domain\IProviderFactoryLifecycleStrategy.cs" />
     <Compile Include="Services\Domain\ProviderFactoryCreationStrategy.cs" />
     <Compile Include="Services\Domain\ProviderFactoryVendor.cs" />
-    <Compile Include="Services\Domain\ProviderWithLogContextDecorator.cs" />
     <Compile Include="Services\EhErrorService.cs" />
     <Compile Include="Services\ErrorServiceBase.cs" />
     <Compile Include="Services\Exporter\Validators\DestinationFieldsValidator.cs" />

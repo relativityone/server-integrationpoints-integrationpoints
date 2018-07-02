@@ -57,8 +57,6 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Extensions\IAPILogExtensionsTests.cs" />
-    <Compile Include="Logging\LogContextHelperTests.cs" />
-    <Compile Include="Logging\RelativityLoggingTests.cs" />
     <Compile Include="Models\SourceJobDTOTests.cs" />
     <Compile Include="Models\SourceWorkspaceDTOTests.cs" />
     <Compile Include="StackOfDisposablesTests.cs" />
