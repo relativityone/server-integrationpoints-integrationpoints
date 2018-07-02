@@ -140,6 +140,7 @@
     <Compile Include="Monitoring\MetricsRepository.cs" />
     <Compile Include="Monitoring\NumberOfRecords\Messages\JobApmThroughputMessage.cs" />
     <Compile Include="Monitoring\NumberOfRecords\Messages\JobCompletedRecordsCountMessage.cs" />
+    <Compile Include="Monitoring\NumberOfRecords\Messages\ExportJobThroughputBytesMessage.cs" />
     <Compile Include="Monitoring\NumberOfRecords\Messages\JobThroughputMessage.cs" />
     <Compile Include="Monitoring\NumberOfRecords\Messages\JobTotalRecordsCountMessage.cs" />
     <Compile Include="Monitoring\NumberOfRecords\Messages\MetricMetadataExtensions.cs" />

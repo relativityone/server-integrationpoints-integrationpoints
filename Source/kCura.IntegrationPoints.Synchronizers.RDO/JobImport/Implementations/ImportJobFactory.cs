@@ -47,16 +47,37 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 
 		private void OnJobComplete(JobReport jobReport, int workspaceId, Guid correlationId, string provider, long? jobID)
 		{
+			if (!IsValidProviderName(provider)) // filter out jobs without provider name (for example, Tagger that is being run within push job)
+			{
+				return;
+			}
+
+			long jobSizeInBytes = jobReport.FileBytes + jobReport.MetadataBytes;
+			TimeSpan jobDuration = jobReport.EndTime - jobReport.StartTime;
+			double bytesPerSecond = jobDuration.TotalSeconds > 0 ? jobSizeInBytes / jobDuration.TotalSeconds : 0;
+
 			_messageService.Send(new ImportJobStatisticsMessage()
 			{
 				Provider = provider,
 				JobID = jobID?.ToString() ?? "",
 				FileBytes = jobReport.FileBytes,
 				MetaBytes = jobReport.MetadataBytes,
+				JobSizeInBytes = jobSizeInBytes,
 				CorellationID = correlationId.ToString(),
 				WorkspaceID = workspaceId,
 				UnitOfMeasure = "Bytes(s)"
 			});
+
+			_messageService.Send(new ImportJobThroughputBytesMessage()
+			{
+				Provider = provider,
+				BytesPerSecond = bytesPerSecond
+			});
+		}
+
+		private bool IsValidProviderName(string provider)
+		{
+			return !string.IsNullOrWhiteSpace(provider);
 		}
 
 		internal enum JobContextType

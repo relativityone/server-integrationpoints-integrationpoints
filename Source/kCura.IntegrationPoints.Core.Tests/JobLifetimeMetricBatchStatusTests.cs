@@ -145,7 +145,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 
 			// ASSERT
 			double expectedThroughput = records / durationInSeconds;
-			_messageService.Received().Send(Arg.Is<JobThroughputMessage>(msg => msg.Throughput == expectedThroughput));
+			_messageService.Received().Send(Arg.Is<JobThroughputMessage>(msg => msg.RecordsPerSecond == expectedThroughput));
 		}
 
 		[Test]
@@ -200,7 +200,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 
 			// ASSERT
 			double expectedThroughput = (double) itemsTransfered / seconds;
-			_messageService.Received().Send(Arg.Is<JobThroughputMessage>(msg => msg.Throughput == expectedThroughput));
+			_messageService.Received().Send(Arg.Is<JobThroughputMessage>(msg => msg.RecordsPerSecond == expectedThroughput));
 		}
 
 		private static IEnumerable<Choice> JobCompletedStatusChoices()

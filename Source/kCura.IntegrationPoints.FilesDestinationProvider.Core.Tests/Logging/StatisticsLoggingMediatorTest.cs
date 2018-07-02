@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 
 			IProviderTypeService providerTypeService = Substitute.For<IProviderTypeService>();
 
-			_subjectUnderTest = new StatisticsLoggingMediator(Substitute.For<IMessageService>(), providerTypeService, jobHistoryErrorService, Substitute.For<ICaseServiceContext>());
+			_subjectUnderTest = new StatisticsLoggingMediator(Substitute.For<IMessageService>(), providerTypeService, jobHistoryErrorService, Substitute.For<ICaseServiceContext>(), Substitute.For<IDateTimeHelper>());
 
 			_exporterStatusNotificationMock = Substitute.For<ICoreExporterStatusNotification>();
 

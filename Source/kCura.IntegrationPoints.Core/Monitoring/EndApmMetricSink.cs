@@ -16,12 +16,12 @@ namespace kCura.IntegrationPoints.Core.Monitoring
 
 		public void OnMessage(ImportJobStatisticsMessage message)
 		{
-			LogJobStatistics(message.FileBytes + message.MetaBytes, message);
+			LogJobStatistics(message.JobSizeInBytes, message);
 		}
 
 		public void OnMessage(ExportJobStatisticsMessage message)
 		{
-			LogJobStatistics(message.FileBytes + message.MetaBytes, message);
+			LogJobStatistics(message.JobSizeInBytes, message);
 		}
 
 		private void LogJobStatistics(double totalSize, IMetricMetadata metricMetadata)
