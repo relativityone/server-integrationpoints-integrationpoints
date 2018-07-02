@@ -51,17 +51,27 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 			{
 				return;
 			}
-			
+
+			long jobSizeInBytes = jobReport.FileBytes + jobReport.MetadataBytes;
+			TimeSpan jobDuration = jobReport.EndTime - jobReport.StartTime;
+			double bytesPerSecond = jobDuration.TotalSeconds > 0 ? jobSizeInBytes / jobDuration.TotalSeconds : 0;
+
 			_messageService.Send(new ImportJobStatisticsMessage()
 			{
 				Provider = provider,
 				JobID = jobID?.ToString() ?? "",
 				FileBytes = jobReport.FileBytes,
 				MetaBytes = jobReport.MetadataBytes,
-				JobSizeInBytes = jobReport.FileBytes + jobReport.MetadataBytes,
+				JobSizeInBytes = jobSizeInBytes,
 				CorellationID = correlationId.ToString(),
 				WorkspaceID = workspaceId,
 				UnitOfMeasure = "Bytes(s)"
+			});
+
+			_messageService.Send(new ImportJobThroughputBytesMessage()
+			{
+				Provider = provider,
+				BytesPerSecond = bytesPerSecond
 			});
 		}
 

@@ -85,11 +85,11 @@ namespace kCura.IntegrationPoints.Core.Monitoring.JobLifetime
 		{
 			int? completedRecords = jobHistory.ItemsTransferred;
 			TimeSpan? duration = (jobHistory.EndTimeUTC ?? _dateTimeHelper.Now()) - jobHistory.StartTimeUTC;
-
+		
 			if (completedRecords > 0 && duration.HasValue)
 			{
 				double throughput = completedRecords.Value / duration.Value.TotalSeconds;
-				_messageService.Send(new JobThroughputMessage {Provider = providerType.ToString(), Throughput = throughput});
+				_messageService.Send(new JobThroughputMessage {Provider = providerType.ToString(), RecordsPerSecond = throughput});
 			}
 		}
 

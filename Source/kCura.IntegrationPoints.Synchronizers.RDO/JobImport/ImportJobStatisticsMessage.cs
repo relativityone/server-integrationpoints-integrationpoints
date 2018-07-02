@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Relativity.DataTransfer.MessageService;
 using Relativity.DataTransfer.MessageService.MetricsManager.APM;
 

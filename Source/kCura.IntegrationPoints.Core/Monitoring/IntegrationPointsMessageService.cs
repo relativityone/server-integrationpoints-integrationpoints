@@ -23,6 +23,8 @@ namespace kCura.IntegrationPoints.Core.Monitoring
 			this.AddSink(new ToggledMessageSink<JobTotalRecordsCountMessage>(sumMetricSink, () => config.SendSumMetrics));
 			this.AddSink(new ToggledMessageSink<JobCompletedRecordsCountMessage>(sumMetricSink, () => config.SendSumMetrics));
 			this.AddSink(new ToggledMessageSink<JobThroughputMessage>(sumMetricSink, () => config.SendSumMetrics));
+			this.AddSink(new ToggledMessageSink<ExportJobThroughputBytesMessage>(sumMetricSink, () => config.SendSumMetrics));
+			this.AddSink(new ToggledMessageSink<ImportJobThroughputBytesMessage>(sumMetricSink, () => config.SendSumMetrics));
 			this.AddSink(new ToggledMessageSink<ImportJobStatisticsMessage>(sumMetricSink, () => config.SendSumMetrics));
 			this.AddSink(new ToggledMessageSink<ExportJobStatisticsMessage>(sumMetricSink, () => config.SendSumMetrics));
 

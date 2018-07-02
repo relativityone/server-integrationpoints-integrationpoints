@@ -2,6 +2,6 @@
 {
 	public class JobThroughputMessage : JobMessageBase
 	{
-		public double Throughput { get; set; }
+		public double RecordsPerSecond { get; set; }
 	}
 }

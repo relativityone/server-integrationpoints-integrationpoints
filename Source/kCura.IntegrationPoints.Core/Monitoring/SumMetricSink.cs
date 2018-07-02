@@ -1,4 +1,5 @@
 ﻿using kCura.IntegrationPoints.Core.Monitoring.JobLifetimeMessages;
+using kCura.IntegrationPoints.Core.Monitoring.NumberOfRecords.Messages;
 using kCura.IntegrationPoints.Core.Monitoring.NumberOfRecordsMessages;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using Relativity.DataTransfer.MessageService;
@@ -8,7 +9,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring
 {
 	public class SumMetricSink : IMessageSink<JobStartedMessage>, IMessageSink<JobCompletedMessage>,
 		IMessageSink<JobFailedMessage>, IMessageSink<JobValidationFailedMessage>, IMessageSink<JobTotalRecordsCountMessage>,
-		IMessageSink<JobCompletedRecordsCountMessage>, IMessageSink<JobThroughputMessage>,
+		IMessageSink<JobCompletedRecordsCountMessage>, IMessageSink<JobThroughputMessage>, IMessageSink<ExportJobThroughputBytesMessage>, IMessageSink<ImportJobThroughputBytesMessage>,
 		IMessageSink<ImportJobStatisticsMessage>, IMessageSink<ExportJobStatisticsMessage>
 	{
 		private readonly IMetricsManagerFactory _metricsManagerFactory;
@@ -50,7 +51,22 @@ namespace kCura.IntegrationPoints.Core.Monitoring
 
 		public void OnMessage(JobThroughputMessage message)
 		{
-			LogDouble($"IntegrationPoints.Performance.Throughput.{message.Provider}", message.Throughput);
+			LogDouble($"IntegrationPoints.Performance.Throughput.{message.Provider}", message.RecordsPerSecond);
+		}
+
+		public void OnMessage(ExportJobThroughputBytesMessage message)
+		{
+			LogThroughputBytes(message.Provider, message.BytesPerSecond);
+		}
+
+		public void OnMessage(ImportJobThroughputBytesMessage message)
+		{
+			LogThroughputBytes(message.Provider, message.BytesPerSecond);
+		}
+
+		private void LogThroughputBytes(string provider, double throughputBytes)
+		{
+			LogDouble($"IntegrationPoints.Performance.ThroughputBytes.{provider}", throughputBytes);
 		}
 
 		public void OnMessage(ImportJobStatisticsMessage message)

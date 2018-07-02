@@ -23,6 +23,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 		private readonly IProviderTypeService _providerTypeService;
 		private readonly IJobHistoryErrorService _historyErrorService;
 		private readonly ICaseServiceContext _caseServiceContext;
+		private readonly IDateTimeHelper _dateTimeHelper;
+		private readonly DateTime _startTime;
 
 		#endregion //Fields
 
@@ -40,12 +42,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 
 		#region Methods
 
-		public StatisticsLoggingMediator(IMessageService messageService, IProviderTypeService providerTypeService, IJobHistoryErrorService historyErrorService, ICaseServiceContext caseServiceContext)
+		public StatisticsLoggingMediator(IMessageService messageService, IProviderTypeService providerTypeService, IJobHistoryErrorService historyErrorService, ICaseServiceContext caseServiceContext, IDateTimeHelper dateTimeHelper)
 		{
 			_messageService = messageService;
 			_providerTypeService = providerTypeService;
 			_historyErrorService = historyErrorService;
 			_caseServiceContext = caseServiceContext;
+			_dateTimeHelper = dateTimeHelper;
+			_startTime = _dateTimeHelper.Now();
 		}
 
 		public void RegisterEventHandlers(IUserMessageNotification userMessageNotification,
@@ -67,6 +71,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 
 		private void OnStatusMessageChanged(ExportEventArgs exportArgs)
 		{
+
 			// RDC firse many events even exported items count has not been chnaged. We need to filter it out
 			if (CanUpdateJobStatus(exportArgs))
 			{
@@ -96,12 +101,32 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 
 		private void SendEndStatistics(ExportEventArgs e)
 		{
-			var message = new ExportJobStatisticsMessage();
-			BuildJobApmMessageBase(message);
-			message.FileBytes = e.Statistics.FileBytes;
-			message.MetaBytes = e.Statistics.MetadataBytes;
-			message.JobSizeInBytes = e.Statistics.FileBytes + e.Statistics.MetadataBytes;
-			_messageService.Send(message);
+			long jobSizeInBytes = e.Statistics.FileBytes + e.Statistics.MetadataBytes;
+			TimeSpan duration = _dateTimeHelper.Now() - _startTime;
+			double bytesPerSecond = duration.TotalSeconds > 0 ? jobSizeInBytes / duration.TotalSeconds : 0;
+
+			SendJobStatisticsMessage(e.Statistics.FileBytes, e.Statistics.MetadataBytes);
+			SendJobThroughputBytesMessage(bytesPerSecond);
+		}
+
+		private void SendJobStatisticsMessage(long fileBytes, long metaBytes)
+		{
+			var jobStatisticsMessage = new ExportJobStatisticsMessage();
+			BuildJobApmMessageBase(jobStatisticsMessage);
+			jobStatisticsMessage.FileBytes = fileBytes;
+			jobStatisticsMessage.MetaBytes = metaBytes;
+			jobStatisticsMessage.JobSizeInBytes = fileBytes + metaBytes;
+			_messageService.Send(jobStatisticsMessage);
+		}
+
+		private void SendJobThroughputBytesMessage(double bytesPerSecond)
+		{
+			var jobThroughputBytesMessage = new ExportJobThroughputBytesMessage()
+			{
+				Provider = GetProviderName(),
+				BytesPerSecond = bytesPerSecond
+			};
+			_messageService.Send(jobThroughputBytesMessage);
 		}
 
 		private void BuildJobApmMessageBase(JobApmMessageBase m)
