@@ -1,6 +1,7 @@
 ﻿using System;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts.Interfaces;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using Relativity.API;
 using Relativity.Services.Workspace;
@@ -11,10 +12,11 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
     {
         private readonly IServicesMgr _servicesMgr;
         private readonly IAPILog _logger;
-
-        public FederatedInstanceConnectionValidator(IServicesMgr manager, IAPILog logger)
+        private readonly Managers.IWorkspaceManager _keplerWorkspaceManager;
+        public FederatedInstanceConnectionValidator(IServicesMgr servicesMgr, Managers.IWorkspaceManager workspaceManager, IAPILog logger)
         {
-            _servicesMgr = manager;
+            _servicesMgr = servicesMgr;
+            _keplerWorkspaceManager = workspaceManager;
             _logger = logger.ForContext<RelativityProviderSourceProductionPermissionValidator>();
         }
 
@@ -26,6 +28,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
             {
                 var workspaceManager = _servicesMgr.CreateProxy<IWorkspaceManager>(ExecutionIdentity.System);
                 workspaceManager.RetrieveAllActive();
+                _keplerWorkspaceManager.GetUserWorkspaces();
             }
             catch (Exception e)
             {
