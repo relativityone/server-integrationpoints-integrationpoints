@@ -5,6 +5,8 @@ properties {
     $ui_where_expr = $ui_tests_filter
 }
 
+$reportUnitVersion = '1.2.1'
+
 task default -depends test
 
 
@@ -59,7 +61,7 @@ task run_integration_tests {
 
 task generate_integration_tests_report {
     exec {
-        & $nuget_exe @('install', 'ReportUnit', '-Version', '1.2.1', '-ExcludeVersion')
+        & $nuget_exe @('install', 'ReportUnit', '-Version', $reportUnitVersion, '-ExcludeVersion')
         & ./ReportUnit/tools/reportunit "IntegrationTestsResults.xml" "IntegrationTestsResults.html"
     } 
 }
@@ -80,7 +82,7 @@ task run_ui_tests {
 
 task generate_ui_tests_report {
     exec {
-        & $nuget_exe @('install', 'ReportUnit', '-Version', '1.2.1', '-ExcludeVersion')
+        & $nuget_exe @('install', 'ReportUnit', '-Version', $reportUnitVersion, '-ExcludeVersion')
         & ./ReportUnit/tools/reportunit "UITestsResults.xml" "UITestsResults.html"
     } 
 }
