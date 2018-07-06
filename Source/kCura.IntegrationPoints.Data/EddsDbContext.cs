@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
 using Relativity.API;
+using Relativity.API.Context;
 
 namespace kCura.IntegrationPoints.Data
 {
@@ -213,6 +214,11 @@ namespace kCura.IntegrationPoints.Data
 		public DataSet ExecuteSqlStatementAsDataSet(string sqlStatement, IEnumerable<SqlParameter> parameters, int timeoutValue)
 		{
 			return _context.ExecuteSqlStatementAsDataSet(sqlStatement, parameters, timeoutValue);
+		}
+
+		public void ExecuteSqlBulkCopy(IDataReader dataReader, ISqlBulkCopyParameters bulkCopyParameters)
+		{
+			_context.ExecuteSqlBulkCopy(dataReader, bulkCopyParameters);
 		}
 
 		public string Database { get { return _context.Database; } }

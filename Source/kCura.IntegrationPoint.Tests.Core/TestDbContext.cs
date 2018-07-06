@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using Relativity.API;
+using Relativity.API.Context;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -498,5 +500,11 @@ namespace kCura.IntegrationPoint.Tests.Core
 		}
 		#endregion
 		#endregion
+
+		public void ExecuteSqlBulkCopy(IDataReader dataReader, ISqlBulkCopyParameters bulkCopyParameters)
+		{
+			throw new NotImplementedException();
+		}
+
 	}
 }

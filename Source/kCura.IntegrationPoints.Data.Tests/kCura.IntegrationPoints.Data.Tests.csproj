@@ -128,7 +128,6 @@
     <Compile Include="Statistics\NativeTotalStatisticsTests.cs" />
     <Compile Include="Statistics\RdoStatisticsTests.cs" />
     <Compile Include="BaseRdoTests.cs" />
-    <Compile Include="MockDBContext.cs" />
     <Compile Include="PermissionServiceTest.cs" />
     <Compile Include="RelativityReaderBaseTests.cs" />
     <Compile Include="Repositories\JobHistoryErrorRepositoryTests.cs" />
