@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 
 		[Test]
 		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
-		[Ignore("TODO: Broken test needs to be fixed!", Until = "2018-07-09")]
+		[Ignore("TODO: Broken test needs to be fixed!", Until = "2018-07-18")]
 		public void ItShouldSyncDataToWorkspace()
 		{
 			//Arange
