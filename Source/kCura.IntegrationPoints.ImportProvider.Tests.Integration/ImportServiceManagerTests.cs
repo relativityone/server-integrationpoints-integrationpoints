@@ -198,7 +198,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 		public void RunTestCase(IImportTestCase testCase)
 		{
 			// https://jira.kcura.com/browse/REL-225244 TODO: Broken test needs to be fixed! Ignore tests until verification mechanism will be fixed. DocumentService.GetNativeMD5String(workspaceId, docResult) needs to be reimplemented.", Until = "2018-07-18")]
-			if (testCase is ItShouldLoadNativesFromPaths && DateTime.UtcNow < new DateTime(2018, 7, 9))
+			if (testCase is ItShouldLoadNativesFromPaths && DateTime.UtcNow < new DateTime(2018, 7, 18))
 			{
 				Assert.Ignore(@"https://jira.kcura.com/browse/REL-225244 TODO: Broken test needs to be fixed! Ignore tests until verification mechanism will be fixed. DocumentService.GetNativeMD5String(workspaceId, docResult) needs to be reimplemented.");
 			}
