@@ -1,6 +1,6 @@
-﻿namespace kCura.IntegrationPoints.Domain
+namespace kCura.IntegrationPoints.Domain.Utils
 {
-	public static class Utils
+	public static class WorkspaceAndJobNameUtils
 	{
 		public static string GetFormatForWorkspaceOrJobDisplay(string name, int? id)
 		{

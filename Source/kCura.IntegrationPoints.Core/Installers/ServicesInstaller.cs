@@ -173,6 +173,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IFile>().ImplementedBy<LongPathFile>().LifestyleTransient());
 			container.Register(Component.For<IStreamFactory>().ImplementedBy<StreamFactory>().LifestyleTransient());
 			container.Register(Component.For<JobStatisticsService>().ImplementedBy<JobStatisticsService>().LifestyleTransient());
+			container.Register(Component.For<IFileSizesStatisticsService>().ImplementedBy<FileSizesStatisticsService>().LifestyleTransient());
 			container.Register(Component.For<KeywordConverter>().ImplementedBy<KeywordConverter>().LifestyleTransient());
 			container.Register(Component.For<KeywordFactory>().ImplementedBy<KeywordFactory>().LifestyleTransient());
 			container.Register(Component.For<IFieldCatalogService>().ImplementedBy<FieldCatalogService>().LifestyleTransient());
@@ -223,9 +224,9 @@ namespace kCura.IntegrationPoints.Core.Installers
 				.LifestyleSingleton());
 
 			container.Register(Component.For<IFieldService>().ImplementedBy<FieldService>().LifestyleTransient());
-		    container.Register(Component.For<IMetricsManagerFactory>().ImplementedBy<MetricsManagerFactory>().LifestyleSingleton());
-		    container.Register(Component.For<IConfig>().Instance(Config.Config.Instance).LifestyleSingleton());
-            container.Register(Component.For<IMessageService>().ImplementedBy<IntegrationPointsMessageService>().LifestyleSingleton());
+			container.Register(Component.For<IMetricsManagerFactory>().ImplementedBy<MetricsManagerFactory>().LifestyleSingleton());
+			container.Register(Component.For<IConfig>().Instance(Config.Config.Instance).LifestyleSingleton());
+			container.Register(Component.For<IMessageService>().ImplementedBy<IntegrationPointsMessageService>().LifestyleSingleton());
 		}
 
 		private SqlServerToggleProvider CreateSqlServerToggleProvider(IHelper helper)

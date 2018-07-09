@@ -7,9 +7,9 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Transformers;
-using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Domain.Utils;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client.DTOs;
 using Relativity.API;
@@ -130,7 +130,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
                     WorkspaceDTO workspaceDto = _workspaceManager.RetrieveWorkspace(importSettings.CaseArtifactId);
                     if (workspaceDto != null)
                     {
-                        jobHistory.DestinationWorkspace = Utils.GetFormatForWorkspaceOrJobDisplay(workspaceDto.Name, importSettings.CaseArtifactId);
+                        jobHistory.DestinationWorkspace = WorkspaceAndJobNameUtils.GetFormatForWorkspaceOrJobDisplay(workspaceDto.Name, importSettings.CaseArtifactId);
                     }
                 }
                 catch (Exception ex)
@@ -142,7 +142,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 				FederatedInstanceDto federatedInstanceDto = _federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(importSettings.FederatedInstanceArtifactId);
 				if (federatedInstanceDto != null)
 				{
-					jobHistory.DestinationInstance = Utils.GetFormatForWorkspaceOrJobDisplay(federatedInstanceDto.Name, federatedInstanceDto.ArtifactId);
+					jobHistory.DestinationInstance = WorkspaceAndJobNameUtils.GetFormatForWorkspaceOrJobDisplay(federatedInstanceDto.Name, federatedInstanceDto.ArtifactId);
 				}
 
 				if (startTimeUtc.HasValue)

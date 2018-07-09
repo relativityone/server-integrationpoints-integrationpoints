@@ -1,7 +1,7 @@
 ﻿using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Domain.Utils;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
@@ -44,14 +44,14 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 		private string GenerateSourceWorkspaceName(string instanceName, string workspaceName, int workspaceArtifactId)
 		{
-			var name = Utils.GetFormatForWorkspaceOrJobDisplay(instanceName, workspaceName, workspaceArtifactId);
+			var name = WorkspaceAndJobNameUtils.GetFormatForWorkspaceOrJobDisplay(instanceName, workspaceName, workspaceArtifactId);
 			if (name.Length > Data.Constants.DEFAULT_NAME_FIELD_LENGTH)
 			{
 				_logger.LogWarning("Relativity Source Case Name exceeded max length and has been shortened. Full name {name}.", name);
 
 				int overflow = name.Length - Data.Constants.DEFAULT_NAME_FIELD_LENGTH;
 				var trimmedInstanceName = instanceName.Substring(0, instanceName.Length - overflow);
-				name = Utils.GetFormatForWorkspaceOrJobDisplay(trimmedInstanceName, workspaceName, workspaceArtifactId);
+				name = WorkspaceAndJobNameUtils.GetFormatForWorkspaceOrJobDisplay(trimmedInstanceName, workspaceName, workspaceArtifactId);
 			}
 			return name;
 		}

@@ -10,6 +10,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Domain.Utils;
 using kCura.Relativity.Client;
 using Newtonsoft.Json;
 using Relativity.API;
@@ -179,7 +180,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 			{
 				emailBody.AppendLine(string.Empty);
 				emailBody.Append(
-					$"Source Workspace: {Utils.GetFormatForWorkspaceOrJobDisplay(sourceWorkspace.Name, sourceWorkspace.ArtifactId)}");
+					$"Source Workspace: {WorkspaceAndJobNameUtils.GetFormatForWorkspaceOrJobDisplay(sourceWorkspace.Name, sourceWorkspace.ArtifactId)}");
 			}
 			return emailBody.ToString();
 		}
