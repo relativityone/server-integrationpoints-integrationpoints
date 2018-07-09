@@ -10,6 +10,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 		event IImportNotifier.OnCompleteEventHandler OnComplete;
 		event IImportNotifier.OnFatalExceptionEventHandler OnFatalException;
 		event IImportNotifier.OnProgressEventHandler OnProgress;
+		event IImportNotifier.OnProcessProgressEventHandler OnProcessProgress;
 
 		event OnErrorEventHandler OnError;
 		event OnMessageEventHandler OnMessage;

@@ -27,6 +27,7 @@ using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.Services;
 using Relativity.API;
+using Relativity.DataTransfer.MessageService;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 {
@@ -58,8 +59,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 			IFederatedInstanceManager federatedInstanceManager = new FederatedInstanceManager(repositoryFactory);
 			IWorkspaceManager workspaceManager = new WorkspaceManager(repositoryFactory);
 			IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, helper, integrationPointSerializer, jobTracker);
+			IRSAPIService rsapiService = new RSAPIService(helper, workspaceArtifactId);
+			IProviderTypeService providerTypeService = new ProviderTypeService(rsapiService);
+			IMessageService messageService = new MessageService();
 
-			IJobHistoryService jobHistoryService = new JobHistoryService(caseServiceContext, federatedInstanceManager, workspaceManager, helper, integrationPointSerializer);
+			IJobHistoryService jobHistoryService = new JobHistoryService(caseServiceContext, federatedInstanceManager, workspaceManager, helper, integrationPointSerializer, providerTypeService, messageService);
 
 			IConfigFactory configFactory = new ConfigFactory();
 			IAuthProvider authProvider = new AuthProvider();
@@ -78,14 +82,12 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 			IJobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(caseServiceContext, helper);
 			IIntegrationPointService integrationPointService = new IntegrationPointService(helper, caseServiceContext,
 				contextContainerFactory, integrationPointSerializer, choiceQuery, jobManager, jobHistoryService,
-				jobHistoryErrorService, managerFactory, ipValidator, permissionValidator);
+				jobHistoryErrorService, managerFactory, providerTypeService, messageService, ipValidator, permissionValidator);
 
 			IIntegrationPointProfileService integrationPointProfileService = new IntegrationPointProfileService(helper,
 				caseServiceContext, contextContainerFactory, integrationPointSerializer, choiceQuery, managerFactory,
 				ipValidator, permissionValidator);
 
-			IRSAPIService rsapiService = new RSAPIService(helper, workspaceArtifactId);
-			IProviderTypeService providerTypeService = new ProviderTypeService(rsapiService);
 			ISourceConfigurationTypeOfExportUpdater sourceConfigurationTypeOfExpertUpdater = new SourceConfigurationTypeOfExportUpdater(providerTypeService);
 
 			return new SetTypeOfExportDefaultValueCommand(integrationPointService, integrationPointProfileService,

@@ -68,6 +68,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 
 					exportJobStats.EndTime = DateTime.UtcNow;
 					exportJobStats.ExportedItemsCount = _exporter.DocumentsExported;
+					DocumentsExported = _exporter.DocumentsExported;
 
 					CompleteExportJob(exportJobStats);
 					_jobStopManager.ThrowIfStopRequested();

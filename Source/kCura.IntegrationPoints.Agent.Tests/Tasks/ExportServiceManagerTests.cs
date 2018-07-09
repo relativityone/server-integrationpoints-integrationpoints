@@ -264,7 +264,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_savedSearchQueryRepository.RetrieveSavedSearch(_configuration.SavedSearchArtifactId).Returns((SavedSearchDTO)null);
 
 			// ACT
-			Assert.Throws<IntegrationPointsException>(() => _instance.Execute(_job));
+			Assert.DoesNotThrow(() => _instance.Execute(_job));
 
 			// ASSERT
 			_jobHistoryErrorService.Received(1).AddError(Arg.Is<Choice>(choice => choice.EqualsToChoice(ErrorTypeChoices.JobHistoryErrorJob)), Arg.Is<Exception>(ex => ex.Message == Core.Constants.IntegrationPoints.PermissionErrors.SAVED_SEARCH_NO_ACCESS));

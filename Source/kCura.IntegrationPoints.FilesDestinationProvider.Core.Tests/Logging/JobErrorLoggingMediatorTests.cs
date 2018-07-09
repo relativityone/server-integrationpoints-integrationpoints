@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 		[Test]
 		public void ItShouldAddErrorOnStatusMessageWithError()
 		{
-			var exportEventArgs = new ExportEventArgs(0, 0, "status_message", EventType.Error, null);
+			var exportEventArgs = new ExportEventArgs(0, 0, "status_message", EventType.Error, null, null);
 			_exporterStatusNotification.StatusMessage +=
 				Raise.Event<IExporterStatusNotification.StatusMessageEventHandler>(exportEventArgs);
 
@@ -78,7 +78,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 		[TestCase(EventType.Status)]
 		public void ItShouldSkipLoggingOnStatusMessageWithoutError(EventType eventType)
 		{
-			var exportEventArgs = new ExportEventArgs(0, 0, "status_message", eventType, null);
+			var exportEventArgs = new ExportEventArgs(0, 0, "status_message", eventType, null, null);
 			_exporterStatusNotification.StatusMessage +=
 				Raise.Event<IExporterStatusNotification.StatusMessageEventHandler>(exportEventArgs);
 

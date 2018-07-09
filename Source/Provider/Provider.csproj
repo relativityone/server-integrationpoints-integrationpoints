@@ -59,11 +59,11 @@
     <Compile Include="XMLDataReader.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="data.xml">
-      <SubType>Designer</SubType>
-    </Content>
     <Content Include="LICENSE.txt">
       <Paket>True</Paket>
+    </Content>
+    <Content Include="data.xml">
+      <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
   <ItemGroup>

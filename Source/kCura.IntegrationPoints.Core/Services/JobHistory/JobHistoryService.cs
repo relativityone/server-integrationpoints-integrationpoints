@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Monitoring.JobLifetimeMessages;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Transformers;
@@ -11,6 +14,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client.DTOs;
 using Relativity.API;
+using Relativity.DataTransfer.MessageService;
 using Relativity.Services.Objects.DataContracts;
 using Choice = kCura.Relativity.Client.DTOs.Choice;
 
@@ -18,19 +22,25 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 {
 	public class JobHistoryService : IJobHistoryService
 	{
+		private static readonly ConcurrentStack<Guid> StartedJobs = new ConcurrentStack<Guid>();
 		private readonly ICaseServiceContext _caseServiceContext;
 		private readonly IFederatedInstanceManager _federatedInstanceManager;
 		private readonly IWorkspaceManager _workspaceManager;
 		private readonly IAPILog _logger;
 		private readonly IIntegrationPointSerializer _serializer;
+		private readonly IProviderTypeService _providerTypeService;
+		private readonly IMessageService _messageService;
 
-		public JobHistoryService(ICaseServiceContext caseServiceContext, IFederatedInstanceManager federatedInstanceManager, IWorkspaceManager workspaceManager, IHelper helper, IIntegrationPointSerializer serializer)
+		public JobHistoryService(ICaseServiceContext caseServiceContext, IFederatedInstanceManager federatedInstanceManager, IWorkspaceManager workspaceManager, 
+			IHelper helper, IIntegrationPointSerializer serializer, IProviderTypeService providerTypeService, IMessageService messageService)
 		{
 			_caseServiceContext = caseServiceContext;
 			_federatedInstanceManager = federatedInstanceManager;
 			_workspaceManager = workspaceManager;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<JobHistoryService>();
 			_serializer = serializer;
+			_providerTypeService = providerTypeService;
+			_messageService = messageService;
 		}
 
 		public Data.JobHistory GetRdo(Guid batchInstance)
@@ -80,6 +90,8 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 				jobHistory = CreateRdo(integrationPoint, batchInstance, JobTypeChoices.JobHistoryScheduledRun, startTimeUtc);
 
 				integrationPoint.JobHistory = integrationPoint?.JobHistory.Concat(new[] { jobHistory.ArtifactId }).ToArray();
+
+				OnJobStart(integrationPoint, batchInstance);
 			}
 			return jobHistory;
 		}
@@ -130,6 +142,8 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 				int artifactId = _caseServiceContext.RsapiService.RelativityObjectManager.Create(jobHistory);
 				jobHistory.ArtifactId = artifactId;
 			}
+			
+			OnJobStart(integrationPoint, batchInstance);
 
 			return jobHistory;
 		}
@@ -156,6 +170,21 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		{
 			return (from field in BaseRdo.GetFieldMetadata(typeof(Data.JobHistory)).Values.ToList()
 					select new FieldValue(field.FieldGuid)).ToList();
+		}
+
+		private void OnJobStart(Data.IntegrationPoint integrationPoint, Guid batchInstanceId)
+		{
+			if (StartedJobs.Contains(batchInstanceId))
+			{
+				return;
+			}
+
+			_messageService.Send(new JobStartedMessage
+			{
+				Provider = integrationPoint.GetProviderType(_providerTypeService).ToString(),
+				CorrelationID = batchInstanceId.ToString()
+			});
+			StartedJobs.Push(batchInstanceId);
 		}
 
 		#region Logging

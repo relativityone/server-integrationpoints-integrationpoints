@@ -35,6 +35,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 			remove { ImportJob.OnProgress -= value; }
 		}
 
+		public event IImportNotifier.OnProcessProgressEventHandler OnProcessProgress
+		{
+			add { ImportJob.OnProcessProgress += value; }
+			remove { ImportJob.OnProcessProgress -= value; }
+		}
+
 		public virtual event OnErrorEventHandler OnError;
 		public virtual event OnMessageEventHandler OnMessage;
 

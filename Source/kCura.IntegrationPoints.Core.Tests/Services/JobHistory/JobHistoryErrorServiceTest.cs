@@ -303,6 +303,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			public event StatusUpdate OnStatusUpdate { add { } remove { } }
 			public event JobError OnJobError;
 			public event RowError OnDocumentError;
+			public event StatisticsUpdate OnStatisticsUpdate;
 
 			public void RaiseDocumentError(string identifier, string msg)
 			{
@@ -318,6 +319,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 				{
 					OnJobError(ex);
 				}
+			}
+
+			private void Fake()
+			{
+				OnStatisticsUpdate?.Invoke(0, 0);
 			}
 		}
 	}

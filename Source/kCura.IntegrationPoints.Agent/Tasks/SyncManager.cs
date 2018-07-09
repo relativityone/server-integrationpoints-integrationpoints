@@ -5,10 +5,12 @@ using System.Data;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.Attributes;
+using kCura.IntegrationPoints.Agent.Validation;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
@@ -16,6 +18,7 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Injection;
@@ -113,10 +116,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					};
 					job.JobDetails = Serializer.Serialize(details);
 				}
-				foreach (var batchStatus in BatchStatus)
-				{
-					batchStatus.OnJobStart(job);
-				}
+				
+				OnJobStart(job);
 
 				JobStopManager?.ThrowIfStopRequested();
 
@@ -183,34 +184,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				LogJobPreExecuteStart(job);
 				InjectionManager.Instance.Evaluate("B50CD1DD-6FEC-439E-A730-B84B730C9D44");
-
-				BatchInstance = GetBatchInstance(job);
-				if (job.RelatedObjectArtifactID < 1)
-				{
-					LogMissingJobRelatedObject(job);
-					throw new ArgumentNullException("Job must have a Related Object ArtifactID");
-				}
-
-				IntegrationPoint = IntegrationPointService.GetRdo(job.RelatedObjectArtifactID);
-				if (IntegrationPoint.SourceProvider == 0)
-				{
-					LogUnknownSourceProvider(job);
-					throw new Exception("Cannot import source provider with unknown id.");
-				}
-				JobHistory = _jobHistoryService.GetOrCreateScheduledRunHistoryRdo(IntegrationPoint, BatchInstance, DateTime.UtcNow);
-				_jobHistoryErrorService.JobHistory = JobHistory;
-				_jobHistoryErrorService.IntegrationPoint = IntegrationPoint;
-				InjectionManager.Instance.Evaluate("0F8D9778-5228-4D7A-A911-F731292F9CF0");
-
-				JobStopManager = ManagerFactory.CreateJobStopManager(_jobService, _jobHistoryService, BatchInstance, job.JobId, true);
-				JobStopManager.ThrowIfStopRequested();
-
-				if (!JobHistory.StartTimeUTC.HasValue)
-				{
-					JobHistory.StartTimeUTC = DateTime.UtcNow;
-					//TODO: jobHistory.Status = "";
-					_jobHistoryService.UpdateRdo(JobHistory);
-				}
+				SetupJob(job);
 				LogJobPreExecuteSuccesfulEnd(job);
 			}
 			catch (OperationCanceledException e)
@@ -236,6 +210,47 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 		}
 
+		protected void OnJobStart(Job job)
+		{
+			foreach (var batchStatus in BatchStatus)
+			{
+				batchStatus.OnJobStart(job);
+			}
+		}
+
+		private void SetupJob(Job job)
+		{
+			BatchInstance = GetBatchInstance(job);
+			if (job.RelatedObjectArtifactID < 1)
+			{
+				LogMissingJobRelatedObject(job);
+				throw new ArgumentNullException("Job must have a Related Object ArtifactID");
+			}
+
+			IntegrationPoint = IntegrationPointService.GetRdo(job.RelatedObjectArtifactID);
+			if (IntegrationPoint.SourceProvider == 0)
+			{
+				LogUnknownSourceProvider(job);
+				throw new Exception("Cannot import source provider with unknown id.");
+			}
+
+			JobHistory = _jobHistoryService.GetOrCreateScheduledRunHistoryRdo(IntegrationPoint, BatchInstance, DateTime.UtcNow);
+			_jobHistoryErrorService.JobHistory = JobHistory;
+			_jobHistoryErrorService.IntegrationPoint = IntegrationPoint;
+
+			InjectionManager.Instance.Evaluate("0F8D9778-5228-4D7A-A911-F731292F9CF0");
+
+			JobStopManager = ManagerFactory.CreateJobStopManager(_jobService, _jobHistoryService, BatchInstance, job.JobId, true);
+			JobStopManager.ThrowIfStopRequested();
+
+			if (!JobHistory.StartTimeUTC.HasValue)
+			{
+				JobHistory.StartTimeUTC = DateTime.UtcNow;
+				//TODO: jobHistory.Status = "";
+				_jobHistoryService.UpdateRdo(JobHistory);
+			}
+		}
+		
 		private void JobPostExecute(Job job, TaskResult taskResult, long items)
 		{
 			try

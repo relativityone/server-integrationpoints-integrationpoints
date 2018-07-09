@@ -67,9 +67,17 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 				case EventType.End:
 					LogDebug(exportEventArgs);
 					return;
+				case EventType.Statistics:
+					LogStatitstics(exportEventArgs);
+					return;
 				default:
 					throw new InvalidEnumArgumentException($"Unknown EventType ({exportEventArgs.EventType})");
 			}
+		}
+
+		private void LogStatitstics(ExportEventArgs exportEventArgs)
+		{
+			_apiLog.LogVerbose("Statistics update: {message}. Additional info: {@additionalInfo}.", exportEventArgs.Message, exportEventArgs.AdditionalInfo);
 		}
 
 		private void LogStatus(ExportEventArgs exportEventArgs)

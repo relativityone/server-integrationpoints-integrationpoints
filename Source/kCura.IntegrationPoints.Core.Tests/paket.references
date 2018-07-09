@@ -4,6 +4,7 @@ kCura.Relativity.Client
 NSubstitute
 NUnit
 Relativity.API
+Relativity.DataTransfer.MessageService
 Relativity.ImportExport
 Relativity.OAuth2Client.Interfaces
 Relativity.Productions.Services.Interfaces

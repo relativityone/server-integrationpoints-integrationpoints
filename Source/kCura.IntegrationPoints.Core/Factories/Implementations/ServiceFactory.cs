@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using Relativity.API;
+using Relativity.DataTransfer.MessageService;
 
 namespace kCura.IntegrationPoints.Core.Factories.Implementations
 {
@@ -21,16 +22,21 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		private readonly IIntegrationPointProviderValidator _ipValidator;
 		private readonly IIntegrationPointPermissionValidator _permissionValidator;
 		private readonly IIntegrationPointExecutionValidator _integrationPointExecutionValidator;
-
+		private readonly IProviderTypeService _providerTypeService;
+		private readonly IMessageService _messageService;
 
 		public ServiceFactory(ICaseServiceContext caseServiceContext, IContextContainerFactory contextContainerFactory,
 			IIntegrationPointSerializer serializer, IChoiceQuery choiceQuery,
-			IJobManager jobService, IManagerFactory managerFactory, IIntegrationPointProviderValidator ipValidator,
-			IIntegrationPointPermissionValidator permissionValidator, IIntegrationPointExecutionValidator integrationPointExecutionValidator)
+			IJobManager jobService, IManagerFactory managerFactory,
+			IIntegrationPointProviderValidator ipValidator,
+			IIntegrationPointPermissionValidator permissionValidator, IIntegrationPointExecutionValidator integrationPointExecutionValidator, 
+			IProviderTypeService providerTypeService, IMessageService messageService)
 		{
+			_managerFactory = managerFactory;
 			_permissionValidator = permissionValidator;
 			_ipValidator = ipValidator;
-			_managerFactory = managerFactory;
+			_providerTypeService = providerTypeService;
+			_messageService = messageService;
 			_jobService = jobService;
 			_choiceQuery = choiceQuery;
 			_serializer = serializer;
@@ -53,6 +59,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				jobHistoryService,
 				jobHistoryErrorService,
 				_managerFactory,
+				_providerTypeService,
+				_messageService,
 				_ipValidator,
 				_permissionValidator,
 				_integrationPointExecutionValidator);
@@ -69,7 +77,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			IContextContainer targetContextContainer = _contextContainerFactory.CreateContextContainer(helper, targetHelper.GetServicesManager());
 
 			IJobHistoryService jobHistoryService = new JobHistoryService(_caseServiceContext, _managerFactory.CreateFederatedInstanceManager(sourceContextContainer),
-				_managerFactory.CreateWorkspaceManager(targetContextContainer), helper, _serializer);
+				_managerFactory.CreateWorkspaceManager(targetContextContainer), helper, _serializer, _providerTypeService, _messageService);
 
 			return jobHistoryService;
 		}

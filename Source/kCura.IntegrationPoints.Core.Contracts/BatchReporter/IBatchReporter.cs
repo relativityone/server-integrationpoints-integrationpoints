@@ -8,6 +8,7 @@ namespace kCura.IntegrationPoints.Core.Contracts.BatchReporter
 	public delegate void BatchSubmitted(int size, int batchSize);
 	public delegate void BatchCreated(int batchSize);
 	public delegate void StatusUpdate(int importedCount, int errorCount);
+	public delegate void StatisticsUpdate(double metadataThroughput, double fileThroughput);
 
 	public interface IBatchReporter
 	{
@@ -15,6 +16,7 @@ namespace kCura.IntegrationPoints.Core.Contracts.BatchReporter
 		event BatchSubmitted OnBatchSubmit;
 		event BatchCreated OnBatchCreate;
 		event StatusUpdate OnStatusUpdate;
+		event StatisticsUpdate OnStatisticsUpdate;
 		event JobError OnJobError;
 		event RowError OnDocumentError;
 	}

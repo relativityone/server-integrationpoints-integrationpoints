@@ -5,6 +5,7 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Monitoring;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
@@ -25,8 +26,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 {
 	public class ImportServiceManager : ServiceManagerBase
 	{
-		IDataReaderFactory _dataReaderFactory;
-		IImportFileLocationService _importFileLocationService;
+		private readonly IDataReaderFactory _dataReaderFactory;
+		private readonly IImportFileLocationService _importFileLocationService;
 
 		public ImportServiceManager(IHelper helper,
 			ICaseServiceContext caseServiceContext,
@@ -82,7 +83,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 				ImportSettings settings = GetImportApiSettingsObjectForUser(job);
 				string providerSettings = UpdatedProviderSettingsLoadFile();
-				if (UpdateSourceRecordCount(settings) > 0)
+				int sourceRecordCount = UpdateSourceRecordCount(settings);
+				if (sourceRecordCount > 0)
 				{
 					using (var context = new ImportTransferDataContext(_dataReaderFactory, providerSettings, MappedFields))
 					{
@@ -113,12 +115,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				FinalizeService(job);
 				LogExecuteFinalize(job);
 			}
-		}
-
-		protected override void SetupSubscriptions(IDataSynchronizer synchronizer, Job job)
-		{
-			StatisticsService?.Subscribe(synchronizer as IBatchReporter, job);
-			JobHistoryErrorService.SubscribeToBatchReporterEvents(synchronizer);
 		}
 
 		private ImportSettings GetImportApiSettingsObjectForUser(Job job)

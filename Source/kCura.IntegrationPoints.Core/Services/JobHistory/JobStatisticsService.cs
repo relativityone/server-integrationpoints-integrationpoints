@@ -1,18 +1,27 @@
 ﻿using System;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
+using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Monitoring.NumberOfRecords.Messages;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Statistics;
-using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
+using Relativity.DataTransfer.MessageService;
 
 namespace kCura.IntegrationPoints.Core.Services.JobHistory
 {
 	public class NullReporter : IBatchReporter
 	{
+		public event StatisticsUpdate OnStatisticsUpdate
+		{
+			add { }
+			remove { }
+		}
+
 		public event BatchCompleted OnBatchComplete
 		{
 			add { }
@@ -52,6 +61,9 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
 	public class JobStatisticsService
 	{
+		private readonly IMessageService _messageService;
+		private readonly IIntegrationPointService _integrationPointService;
+		private readonly IProviderTypeService _providerTypeService;
 		private readonly IWorkspaceDBContext _context;
 		private readonly TaskParameterHelper _helper;
 		private readonly JobStatisticsQuery _query;
@@ -75,10 +87,11 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			TaskParameterHelper taskParameterHelper,
 			IJobHistoryService service,
 			IWorkspaceDBContext context,
-			IHelper helper, 
-			INativeFileSizeStatistics nativeFileSizeStatistics, 
+			IHelper helper,
+			INativeFileSizeStatistics nativeFileSizeStatistics,
 			IImageFileSizeStatistics imageFileSizeStatistics,
-			IErrorFilesSizeStatistics errorFilesSizeStatistics)
+			IErrorFilesSizeStatistics errorFilesSizeStatistics,
+			IMessageService messageService, IIntegrationPointService integrationPointService, IProviderTypeService providerTypeService)
 		{
 			_query = query;
 			_helper = taskParameterHelper;
@@ -87,6 +100,9 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			_nativeFileSizeStatistics = nativeFileSizeStatistics;
 			_imageFileSizeStatistics = imageFileSizeStatistics;
 			_errorFilesSizeStatistics = errorFilesSizeStatistics;
+			_messageService = messageService;
+			_integrationPointService = integrationPointService;
+			_providerTypeService = providerTypeService;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<JobStatisticsService>();
 		}
 
@@ -98,13 +114,41 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			}
 			_job = job;
 			reporter.OnStatusUpdate += StatusUpdate;
+			reporter.OnStatisticsUpdate += OnStatisticsUpdate;
 			reporter.OnBatchComplete += OnJobComplete;
 			reporter.OnDocumentError += RowError;
+		}
+
+		private void OnStatisticsUpdate(double metadataThroughput, double fileThroughput)
+		{
+			string provider = GetProviderType(_job).ToString();
+
+			var message = new JobApmThroughputMessage
+			{
+				Provider = provider,
+				CorrelationID = _helper.GetBatchInstance(_job).ToString(),
+				UnitOfMeasure = "Byte(s)",
+				JobID = _job.JobId.ToString(),
+				WorkspaceID = ((IntegrationPointSourceConfiguration?.SourceWorkspaceArtifactId == 0)
+			        ? IntegrationPointImportSettings?.CaseArtifactId
+			        : IntegrationPointSourceConfiguration?.SourceWorkspaceArtifactId).GetValueOrDefault(),
+				MetadataThroughput = metadataThroughput,
+				FileThroughput = fileThroughput,
+				CustomData = {["Provider"] = provider}
+			};
+
+			_messageService.Send(message);
 		}
 
 		public void RowError(string documentIdentifier, string errorMessage)
 		{
 			_rowErrors++;
+		}
+
+		public void SetIntegrationPointConfiguration(ImportSettings importSettings, SourceConfiguration sourceConfiguration)
+		{
+			IntegrationPointSourceConfiguration = sourceConfiguration;
+			IntegrationPointImportSettings = importSettings;
 		}
 
 		private void OnJobComplete(DateTime start, DateTime end, int total, int errorCount)
@@ -155,7 +199,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
 				_context.CommitTransaction();
 			}
-			catch(Exception e)
+			catch (Exception e)
 			{
 				LogUpdatingStatisticsError(e);
 				// The mutex will be removed when the transaction is finalized
@@ -228,10 +272,17 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
 			long errorsFileSize =
 				_errorFilesSizeStatistics.ForJobHistoryOmmitedFiles(IntegrationPointSourceConfiguration.SourceWorkspaceArtifactId,
-					(int) _job.JobId);
+					(int)_job.JobId);
 			long copiedFilesFileSize = filesSize - errorsFileSize;
 
 			return copiedFilesFileSize;
+		}
+
+		private ProviderType GetProviderType(Job job)
+		{
+			Data.IntegrationPoint integrationPoint = _integrationPointService.GetRdo(job.RelatedObjectArtifactID);
+			ProviderType providerType = integrationPoint.GetProviderType(_providerTypeService);
+			return providerType;
 		}
 
 		#region Logging

@@ -7,6 +7,8 @@ using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Monitoring;
+using kCura.IntegrationPoints.Core.Monitoring.JobLifetimeMessages;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
@@ -19,6 +21,7 @@ using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
+using Relativity.DataTransfer.MessageService;
 
 namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 {
@@ -28,6 +31,8 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		private readonly IJobManager _jobService;
 		private readonly IJobHistoryService _jobHistoryService;
 		private readonly IJobHistoryErrorService _jobHistoryErrorService;
+		private readonly IProviderTypeService _providerTypeService;
+		private readonly IMessageService _messageService;
 		private readonly IIntegrationPointExecutionValidator _executionValidator;
 
 		protected override string UnableToSaveFormat
@@ -42,16 +47,20 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			IJobHistoryService jobHistoryService,
 			IJobHistoryErrorService jobHistoryErrorService,
 			IManagerFactory managerFactory,
+			IProviderTypeService providerTypeService,
+			IMessageService messageService,
 			IIntegrationPointProviderValidator integrationModelValidator,
 			IIntegrationPointPermissionValidator permissionValidator,
 			IIntegrationPointExecutionValidator executionValidator = null)
 			: base(helper, context, choiceQuery, serializer, managerFactory, contextContainerFactory, new IntegrationPointFieldGuidsConstants(),
-				  integrationModelValidator, permissionValidator)
+				integrationModelValidator, permissionValidator)
 		{
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<IntegrationPointService>();
 			_jobService = jobService;
 			_jobHistoryService = jobHistoryService;
 			_jobHistoryErrorService = jobHistoryErrorService;
+			_providerTypeService = providerTypeService;
+			_messageService = messageService;
 			_executionValidator = executionValidator;
 		}
 
@@ -459,6 +468,11 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			AddValidationErrorToJobHistory(jobHistory, ex);
 			SetJobHistoryStatus(jobHistory, JobStatusChoices.JobHistoryValidationFailed);
 			SetHasErrorOnIntegrationPoint(integrationPointArtifactId);
+		}
+
+		private void SendValidationFailedMessage(Data.IntegrationPoint integrationPoint)
+		{
+			_messageService.Send(new JobValidationFailedMessage { Provider = integrationPoint.GetProviderType(_providerTypeService).ToString() });
 		}
 
 		private void AddValidationErrorToJobHistory(Data.JobHistory jobHistory, Exception ex)

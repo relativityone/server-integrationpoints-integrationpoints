@@ -50,6 +50,9 @@
     </When>
   </Choose>
   <ItemGroup>
+    <Content Include="LICENSE.txt">
+      <Paket>True</Paket>
+    </Content>
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
@@ -73,11 +76,6 @@
       <Project>{42F2E23D-2412-4A1B-897E-6C931BD09B29}</Project>
       <Name>kCura.IntegrationPoints.ImportProvider.Tests.Integration</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="LICENSE.txt">
-      <Paket>True</Paket>
-    </Content>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

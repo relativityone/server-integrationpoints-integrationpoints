@@ -24,6 +24,11 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			_managerWrapper = new Lazy<IKeywordSearchManager>(helper.CreateUserProxy<IKeywordSearchManager>);
 		}
 
+		public Task<SearchAccessStatus> GetAccessStatusAsync(int workspaceArtifactID, int artifactID)
+		{
+			throw new NotImplementedException();
+		}
+
 		private readonly object _obj = new object();
 
 		public void Dispose()

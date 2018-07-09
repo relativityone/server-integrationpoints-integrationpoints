@@ -30,6 +30,7 @@ using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.Services;
 using Relativity.API;
+using Relativity.DataTransfer.MessageService;
 using IFederatedInstanceManager = kCura.IntegrationPoints.Domain.Managers.IFederatedInstanceManager;
 
 namespace kCura.IntegrationPoints.EventHandlers.Installers
@@ -108,8 +109,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, Helper, integrationPointSerializer, jobTracker);
 			IWorkspaceManager workspaceManager = new WorkspaceManager(repositoryFactory);
 			IFederatedInstanceManager federatedInstanceManager = new FederatedInstanceManager(repositoryFactory);
+			IRSAPIService rsapiService = new RSAPIService(Helper, caseServiceContext.WorkspaceID);
+			IProviderTypeService providerTypeService = new ProviderTypeService(rsapiService);
+			IMessageService messageService = new MessageService();
 
-			_jobHistoryService = new JobHistoryService(caseServiceContext, federatedInstanceManager, workspaceManager, Helper, integrationPointSerializer);
+			_jobHistoryService = new JobHistoryService(caseServiceContext, federatedInstanceManager, workspaceManager, Helper, integrationPointSerializer, providerTypeService, messageService);
 			IContextContainerFactory contextContainerFactory = new ContextContainerFactory();
 
 			IConfigFactory configFactory = new ConfigFactory();
@@ -129,7 +133,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			IJobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(caseServiceContext, Helper);
 
 			_integrationPointService = new IntegrationPointService(Helper, caseServiceContext, contextContainerFactory, integrationPointSerializer,
-				choiceQuery, jobManager, _jobHistoryService, jobHistoryErrorService, managerFactory, ipValidator, permissionValidator);
+				choiceQuery, jobManager, _jobHistoryService, jobHistoryErrorService, managerFactory, providerTypeService, messageService, ipValidator, permissionValidator);
 		}
 
 		internal void UpdateIntegrationPointHasErrorsField(Data.IntegrationPoint integrationPoint)
