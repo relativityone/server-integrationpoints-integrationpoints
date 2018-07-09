@@ -11,7 +11,6 @@ using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
 using Relativity.API;
-using Relativity.DataTransfer.MessageService;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 {
@@ -27,10 +26,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
 		private Dictionary<int, Field> _idToFieldDictionary;
 		private IExtendedImportAPI _importApi;
-		private int _itemsErrored;
-		private int _itemsTransferred;
-		private int _lastJobErrorUpdate;
-		private int _lastJobProgressUpdate;
+		private readonly JobProgressInfo _jobProgressInfo = new JobProgressInfo();
+		private int _lastJobStatusUpdate;
 		private int _totalRowsImported;
 		private int _totalRowsWithErrors;
 		private IHelper _helper;
@@ -264,22 +261,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			CompleteBatch(jobReport.StartTime, jobReport.EndTime, jobReport.TotalRows, jobReport.ErrorRowCount);
 		}
 
-		private void ImportJob_OnError(System.Collections.IDictionary row)
-		{
-			_itemsTransferred--;
-			_itemsErrored++;
-			if (Environment.TickCount - _lastJobErrorUpdate > _JOB_PROGRESS_TIMEOUT_MILLISECONDS)
-			{
-				_lastJobErrorUpdate = Environment.TickCount;
-				if (OnStatusUpdate != null)
-				{
-					OnStatusUpdate(_itemsTransferred, _itemsErrored);
-					_itemsErrored = 0;
-					_itemsTransferred = 0;
-				}
-			}
-		}
-
 		private string PrependString(string prefix, string message)
 		{
 			string safePrefix = string.IsNullOrWhiteSpace(prefix)
@@ -315,27 +296,42 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			LogOnMessageEvent(status);
 		}
 
+		private void ImportJob_OnError(System.Collections.IDictionary row)
+		{
+			_jobProgressInfo.ItemErrored();
+			UpdateStatus();
+		}
+
 		private void ImportJob_OnProgress(long item)
 		{
 			LogOnProgressEvent();
-			_itemsTransferred++;
-			if (Environment.TickCount - _lastJobProgressUpdate > _JOB_PROGRESS_TIMEOUT_MILLISECONDS)
+			_jobProgressInfo.ItemTransferred();
+			UpdateStatus();
+		}
+
+		private void UpdateStatus()
+		{
+			if (!_jobProgressInfo.IsValid())
 			{
-				_lastJobProgressUpdate = Environment.TickCount;
-				if (OnStatusUpdate != null)
-				{
-					OnStatusUpdate(_itemsTransferred, 0);
-					_itemsTransferred = 0;
-				}
+				return;
+			}
+			if (OnStatusUpdate == null)
+			{
+				return;
+			}
+
+			if (Environment.TickCount - _lastJobStatusUpdate > _JOB_PROGRESS_TIMEOUT_MILLISECONDS)
+			{
+				OnStatusUpdate(_jobProgressInfo.NumberOfItemsTransferred, _jobProgressInfo.NumberOfItemsErrored);
+
+				_lastJobStatusUpdate = Environment.TickCount;
+				_jobProgressInfo.Reset();
 			}
 		}
 
 		private void ImportJob_OnProcessProgress(FullStatus processStatus)
 		{
-			if (OnStatisticsUpdate != null)
-			{
-				OnStatisticsUpdate(processStatus.MetadataThroughput, processStatus.FilesThroughput);
-			}
+			OnStatisticsUpdate?.Invoke(processStatus.MetadataThroughput, processStatus.FilesThroughput);
 		}
 
 		#region Logging

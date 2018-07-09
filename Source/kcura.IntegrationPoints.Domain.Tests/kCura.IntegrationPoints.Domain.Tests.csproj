@@ -60,7 +60,7 @@
     <Compile Include="Models\SourceJobDTOTests.cs" />
     <Compile Include="Models\SourceWorkspaceDTOTests.cs" />
     <Compile Include="StackOfDisposablesTests.cs" />
-    <Compile Include="UtilsTests.cs" />
+    <Compile Include="Utils\WorkspaceAndJobNameUtilsTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

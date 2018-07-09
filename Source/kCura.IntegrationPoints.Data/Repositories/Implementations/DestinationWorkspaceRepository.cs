@@ -5,8 +5,8 @@ using System.Security.Claims;
 using kCura.IntegrationPoints.Data.Commands.MassEdit;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Models;
-using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
+using kCura.IntegrationPoints.Domain.Utils;
 using Relativity.Core;
 using Relativity.Data;
 using Relativity.Services.Objects.DataContracts;
@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public DestinationWorkspace Create(int targetWorkspaceArtifactId, string targetWorkspaceName, int? federatedInstanceArtifactId, string federatedInstanceName)
 		{
-			string instanceName = Utils.GetFormatForWorkspaceOrJobDisplay(federatedInstanceName, targetWorkspaceName, targetWorkspaceArtifactId);
+			string instanceName = WorkspaceAndJobNameUtils.GetFormatForWorkspaceOrJobDisplay(federatedInstanceName, targetWorkspaceName, targetWorkspaceArtifactId);
 
 			var destinationWorkspace = new DestinationWorkspace
 			{
@@ -92,7 +92,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public void Update(DestinationWorkspace destinationWorkspace)
 		{
-			string instanceName = Utils.GetFormatForWorkspaceOrJobDisplay(destinationWorkspace.DestinationInstanceName, destinationWorkspace.DestinationWorkspaceName,
+			string instanceName = WorkspaceAndJobNameUtils.GetFormatForWorkspaceOrJobDisplay(destinationWorkspace.DestinationInstanceName, destinationWorkspace.DestinationWorkspaceName,
 				destinationWorkspace.DestinationWorkspaceArtifactID);
 			destinationWorkspace.Name = instanceName;
 

@@ -2,8 +2,8 @@
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Domain.Utils;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
@@ -83,7 +83,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		private void ValidateSourceJob(SourceJobDTO sourceJob, int sourceJobArtifactId, string jobHistoryName, int jobHistoryId, int sourceWorkspaceRdoInstanceArtifactId)
 		{
 			Assert.IsNotNull(sourceJob);
-			string expectedName = Utils.GetFormatForWorkspaceOrJobDisplay(jobHistoryName, jobHistoryId);
+			string expectedName = WorkspaceAndJobNameUtils.GetFormatForWorkspaceOrJobDisplay(jobHistoryName, jobHistoryId);
 			Assert.AreEqual(expectedName, sourceJob.Name);
 			Assert.AreEqual(sourceWorkspaceRdoInstanceArtifactId, sourceJob.SourceWorkspaceArtifactId);
 			Assert.AreEqual(jobHistoryId, sourceJob.JobHistoryArtifactId);

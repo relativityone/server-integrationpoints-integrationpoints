@@ -134,9 +134,9 @@
     <Compile Include="Readers\IDataTransferContext.cs" />
     <Compile Include="Readers\RelativityReaderBase.cs" />
     <Compile Include="RelativityFeaturePathService.cs" />
-	<Compile Include="StackOfDisposables.cs" />
+    <Compile Include="StackOfDisposables.cs" />
     <Compile Include="Synchronizer\IDataSynchronizer.cs" />
-    <Compile Include="Utils.cs" />
+    <Compile Include="Utils\WorkspaceAndJobNameUtils.cs" />
     <Compile Include="WindsorContainerSetup.cs" />
   </ItemGroup>
   <ItemGroup>

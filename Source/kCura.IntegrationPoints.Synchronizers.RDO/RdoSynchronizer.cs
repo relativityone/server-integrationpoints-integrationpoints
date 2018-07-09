@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Domain.Synchronizer;
+using kCura.IntegrationPoints.Domain.Utils;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.Relativity.ImportAPI;
@@ -249,7 +250,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			if (destinationWorkspace != null)
 			{
 				emailBody.AppendLine("");
-				string destinationWorkspaceAsString = Utils.GetFormatForWorkspaceOrJobDisplay(destinationWorkspace.Name, destinationWorkspace.Id);
+				string destinationWorkspaceAsString = WorkspaceAndJobNameUtils.GetFormatForWorkspaceOrJobDisplay(destinationWorkspace.Name, destinationWorkspace.Id);
 				emailBody.AppendFormat("Destination Workspace: {0}", destinationWorkspaceAsString);
 				LogDestinationWorkspaceAppendedToEmailBody(destinationWorkspaceAsString);
 			}

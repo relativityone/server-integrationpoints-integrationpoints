@@ -5,8 +5,8 @@ using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Domain.Utils;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Models;
 using Relativity.API;
@@ -70,7 +70,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			WorkspaceModel[] workspaceModels = userWorkspaces.Select(x =>
 				new WorkspaceModel
 				{
-					DisplayName = Utils.GetFormatForWorkspaceOrJobDisplay(
+					DisplayName = WorkspaceAndJobNameUtils.GetFormatForWorkspaceOrJobDisplay(
 						_htmlSanitizerManager.Sanitize(x.Name).CleanHTML,
 						x.ArtifactId
 					),

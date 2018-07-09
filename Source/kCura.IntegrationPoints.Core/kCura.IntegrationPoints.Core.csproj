@@ -185,8 +185,11 @@
     <Compile Include="Services\IntegrationPoint\IIntegrationPointForSourceService.cs" />
     <Compile Include="Services\IntegrationPoint\IntegrationPointExtensions.cs" />
     <Compile Include="Services\IProcessingSourceLocationService.cs" />
+    <Compile Include="Services\JobHistory\FileSizesStatisticsService.cs" />
+    <Compile Include="Services\JobHistory\IFileSizesStatisticsService.cs" />
     <Compile Include="Services\JobHistory\IUnlinkedJobHistoryService.cs" />
     <Compile Include="Services\JobHistory\IUnfinishedJobService.cs" />
+    <Compile Include="Services\JobHistory\JobHistoryMutex.cs" />
     <Compile Include="Services\JobHistory\UnfinishedJobService.cs" />
     <Compile Include="Services\JobHistory\UnlinkedJobHistoryService.cs" />
     <Compile Include="Services\ProcessingSourceLocationService.cs" />
@@ -285,6 +288,7 @@
     <Compile Include="Toggles\UseOldProviderCreationLogic.cs" />
     <Compile Include="Toggles\UseOldExportVolumeManagerToggle.cs" />
     <Compile Include="Toggles\UseStreamsForBigLongTextFieldsToggle.cs" />
+    <Compile Include="Utils\FileSizeUtils.cs" />
     <Compile Include="Validation\Abstract\BaseIntegrationPointValidator.cs" />
     <Compile Include="Validation\Abstract\BasePartsValidator.cs" />
     <Compile Include="Validation\Abstract\IIntegrationPointPermissionValidator.cs" />

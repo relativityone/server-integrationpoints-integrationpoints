@@ -1,5 +1,5 @@
 using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Utils;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands.RestoreJobHistoryParser
 {
@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.RestoreJobHistoryParser
 			{
 				return ParserStateEnum.NeedsWorkspaceIdParsing;
 			}
-			string destinationWorkspace = Utils.GetFormatForWorkspaceOrJobDisplay(GetWorkspaceName(), _workspaceId);
+			string destinationWorkspace = WorkspaceAndJobNameUtils.GetFormatForWorkspaceOrJobDisplay(GetWorkspaceName(), _workspaceId);
 			state.Result = new DestinationWorkspaceElementsParsingResult(destinationWorkspace, _thisInstanceName);
 			return ParserStateEnum.Ended;
 		}

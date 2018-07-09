@@ -2,8 +2,8 @@
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Domain.Utils;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
@@ -178,7 +178,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 					SourceCaseArtifactId = _SOURCE_WORKSPACE_ID,
 					SourceCaseName = workspaceName,
 					SourceInstanceName = FederatedInstanceManager.LocalInstance.Name,
-					Name = Utils.GetFormatForWorkspaceOrJobDisplay(FederatedInstanceManager.LocalInstance.Name, workspaceName, _SOURCE_WORKSPACE_ID),
+					Name = WorkspaceAndJobNameUtils.GetFormatForWorkspaceOrJobDisplay(FederatedInstanceManager.LocalInstance.Name, workspaceName, _SOURCE_WORKSPACE_ID),
 					ArtifactTypeId = sourceWorkspaceDescriptorArtifactTypeId
 				});
 
@@ -232,7 +232,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		private void ValidateSourceWorkspace(SourceWorkspaceDTO sourceWorkspaceDTO, int artifactId, int artifactTypeId, string workspaceName, string instanceName)
 		{
 			Assert.IsNotNull(sourceWorkspaceDTO);
-			string expectedName = Utils.GetFormatForWorkspaceOrJobDisplay(instanceName, workspaceName, _SOURCE_WORKSPACE_ID);
+			string expectedName = WorkspaceAndJobNameUtils.GetFormatForWorkspaceOrJobDisplay(instanceName, workspaceName, _SOURCE_WORKSPACE_ID);
 			Assert.AreEqual(expectedName, sourceWorkspaceDTO.Name);
 			Assert.AreEqual(artifactTypeId, sourceWorkspaceDTO.ArtifactTypeId);
 			Assert.AreEqual(artifactId, sourceWorkspaceDTO.ArtifactId);
