@@ -1,7 +1,14 @@
 {
-  "suites": ["tests/unit/time-utils.test.js"],
+  "suites": [
+    "tests/unit/time-utils.test.js",
+    "tests/unit/save-as-profile-modal-vm.test.js"
+  ],
   "plugins": [
+    "../knockout-3.4.0.js",
+    "../knockout.validation.js",
     "../moment.min.js",
-    "../integration-point/time-utils.js"
+    "../integration-point/time-utils.js",
+    "../Export/export-validation.js",
+    "../integration-point/save-as-profile-modal-vm.js"
   ]
 }

@@ -1,4 +1,4 @@
-const { suite, test } = intern.getInterface('tdd');
+var { suite, test } = intern.getInterface('tdd');
 var { assert } = intern.getPlugin('chai');
 
 suite('time-utils.js', () => {
