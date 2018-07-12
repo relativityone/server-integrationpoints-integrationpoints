@@ -362,6 +362,9 @@
     <Content Include="Scripts\moment.js" />
     <Content Include="Scripts\moment.min.js" />
     <Content Include="Scripts\RelativityProvider\relativity-provider-summary-page.js" />
+    <None Include="Scripts\tests\.gitignore" />
+    <None Include="Scripts\tests\static-server.js" />
+    <None Include="Scripts\tests\tests\unit\time-utils.test.js" />
     <Content Include="Scripts\ThirdPartyProviders\third-party-provider-summary-page.js" />
     <Content Include="Scripts\unsaved-changes-handler.js" />
     <Content Include="Scripts\EventHandlers\relativity-provider-view.js" />
@@ -604,6 +607,10 @@
     <Content Include="Views\Modals\ExportFileNamingOptionView.cshtml" />
     <Content Include="Views\Modals\CreateProductionSetModalView.cshtml" />
     <Content Include="Views\Modals\CreatingProductionSetModalView.cshtml" />
+    <None Include="Scripts\tests\README.md" />
+    <None Include="Scripts\tests\intern.json" />
+    <None Include="Scripts\tests\package-lock.json" />
+    <None Include="Scripts\tests\package.json" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
