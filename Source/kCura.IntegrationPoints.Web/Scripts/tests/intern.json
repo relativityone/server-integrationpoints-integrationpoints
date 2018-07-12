@@ -1,0 +1,7 @@
+{
+  "suites": ["tests/unit/time-utils.test.js"],
+  "plugins": [
+    "../moment.min.js",
+    "../integration-point/time-utils.js"
+  ]
+}
