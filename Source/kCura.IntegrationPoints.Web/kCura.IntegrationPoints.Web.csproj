@@ -365,6 +365,7 @@
     <None Include="Scripts\tests\.gitignore" />
     <None Include="Scripts\tests\static-server.js" />
     <None Include="Scripts\tests\tests\unit\time-utils.test.js" />
+    <None Include="Scripts\tests\tests\unit\save-as-profile-modal-vm.test.js" />
     <Content Include="Scripts\ThirdPartyProviders\third-party-provider-summary-page.js" />
     <Content Include="Scripts\unsaved-changes-handler.js" />
     <Content Include="Scripts\EventHandlers\relativity-provider-view.js" />
