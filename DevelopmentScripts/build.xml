@@ -511,6 +511,7 @@
           <Assembly>lib\Renci.SshNet.dll</Assembly>
           <Assembly>lib\SystemInterface.dll</Assembly>
           <Assembly>lib\ZetaLongPaths.dll</Assembly>
+          <Assembly>lib\Relativity.Productions.Services.Interfaces.dll</Assembly>
         </Assemblies>
         <ResourceFiles />
         <CustomPages>
