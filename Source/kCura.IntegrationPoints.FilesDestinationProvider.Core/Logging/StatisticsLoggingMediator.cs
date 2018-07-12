@@ -87,7 +87,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 			var message = new JobApmThroughputMessage()
 			{
 				Provider = provider,
-				CorellationID = _historyErrorService.JobHistory.BatchInstance,
+				CorrelationID = _historyErrorService.JobHistory.BatchInstance,
 				UnitOfMeasure = "Byte(s)",
 				WorkspaceID = _caseServiceContext.WorkspaceID,
 				JobID = _historyErrorService.JobHistory.JobID,

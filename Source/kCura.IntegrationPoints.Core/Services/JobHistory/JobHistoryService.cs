@@ -89,7 +89,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
 				integrationPoint.JobHistory = integrationPoint?.JobHistory.Concat(new[] { jobHistory.ArtifactId }).ToArray();
 
-				OnJobStart(integrationPoint);
+				OnJobStart(integrationPoint, batchInstance);
 			}
 			return jobHistory;
 		}
@@ -153,7 +153,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 				int artifactId = _caseServiceContext.RsapiService.RelativityObjectManager.Create(jobHistory);
 				jobHistory.ArtifactId = artifactId;
 
-				OnJobStart(integrationPoint);
+				OnJobStart(integrationPoint, batchInstance);
 			}
 
 			return jobHistory;
@@ -183,9 +183,13 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 					select new FieldValue(field.FieldGuid)).ToList();
 		}
 
-	    private void OnJobStart(Data.IntegrationPoint integrationPoint)
+	    private void OnJobStart(Data.IntegrationPoint integrationPoint, Guid batchInstanceId)
 		{
-			_messageService.Send(new JobStartedMessage { Provider = integrationPoint.GetProviderType(_providerTypeService).ToString() });
+			_messageService.Send(new JobStartedMessage
+			{
+				Provider = integrationPoint.GetProviderType(_providerTypeService).ToString(),
+				CorrelationID = batchInstanceId.ToString()
+			});
 		}
 
 	    #region Logging

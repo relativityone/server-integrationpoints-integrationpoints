@@ -48,40 +48,64 @@ namespace kCura.IntegrationPoints.Core.Monitoring.JobLifetime
 			ProviderType providerType = GetProviderType(job);
 			JobHistory jobHistory = GetHistory(job);
 			Choice status = _updater.GenerateStatus(jobHistory, job.JobId);
+			TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
+			string correlationId = taskParameters.BatchInstance.ToString();
 
-			SendLifetimeMessage(status, providerType);
-			SendRecordsMessage(providerType, jobHistory);
-			SendThroughputMessage(providerType, jobHistory);
+			SendLifetimeMessage(status, providerType, correlationId);
+			SendRecordsMessage(providerType, jobHistory, correlationId);
+			SendThroughputMessage(providerType, jobHistory, correlationId);
 		}
 
-		private void SendRecordsMessage(ProviderType providerType, JobHistory jobHistory)
+		private void SendRecordsMessage(ProviderType providerType, JobHistory jobHistory, string correlationId)
 		{
 			long? totalRecords = jobHistory.TotalItems;
 			int? completedRecords = jobHistory.ItemsTransferred;
-			_messageService.Send(new JobTotalRecordsCountMessage { Provider = providerType.ToString(), TotalRecordsCount = totalRecords ?? 0 });
-			_messageService.Send(new JobCompletedRecordsCountMessage { Provider = providerType.ToString(), CompletedRecordsCount = completedRecords ?? 0 });
+			_messageService.Send(new JobTotalRecordsCountMessage
+			{
+				Provider = providerType.ToString(),
+				CorrelationID = correlationId,
+				TotalRecordsCount = totalRecords ?? 0
+			});
+			_messageService.Send(new JobCompletedRecordsCountMessage
+			{
+				Provider = providerType.ToString(),
+				CorrelationID = correlationId,
+				CompletedRecordsCount = completedRecords ?? 0
+			});
 		}
 
-		private void SendLifetimeMessage(Choice status, ProviderType providerType)
+		private void SendLifetimeMessage(Choice status, ProviderType providerType, string correlationId)
 		{
 			if (status.EqualsToChoice(JobStatusChoices.JobHistoryErrorJobFailed))
 			{
-				_messageService.Send(new JobFailedMessage { Provider = providerType.ToString() });
+				_messageService.Send(new JobFailedMessage
+				{
+					Provider = providerType.ToString(),
+					CorrelationID = correlationId
+				});
 			}
 			else if (status.EqualsToChoice(JobStatusChoices.JobHistoryValidationFailed))
 			{
-				_messageService.Send(new JobValidationFailedMessage { Provider = providerType.ToString() });
+				_messageService.Send(new JobValidationFailedMessage
+				{
+					Provider = providerType.ToString(),
+					CorrelationID = correlationId
+				});
 			}
 			else if (
 				status.EqualsToChoice(JobStatusChoices.JobHistoryCompleted) ||
 				status.EqualsToChoice(JobStatusChoices.JobHistoryCompletedWithErrors) ||
 				status.EqualsToChoice(JobStatusChoices.JobHistoryStopped))
 			{
-				_messageService.Send(new JobCompletedMessage { Provider = providerType.ToString() });
+				_messageService.Send(new JobCompletedMessage
+				{
+					Provider = providerType.ToString(),
+					CorrelationID = correlationId
+				});
 			}
 		}
 
-		private void SendThroughputMessage(ProviderType providerType, JobHistory jobHistory)
+		private void SendThroughputMessage(ProviderType providerType, JobHistory jobHistory, string correlationId)
 		{
 			int? completedRecords = jobHistory.ItemsTransferred;
 			TimeSpan? duration = (jobHistory.EndTimeUTC ?? _dateTimeHelper.Now()) - jobHistory.StartTimeUTC;
@@ -89,7 +113,12 @@ namespace kCura.IntegrationPoints.Core.Monitoring.JobLifetime
 			if (completedRecords > 0 && duration.HasValue)
 			{
 				double throughput = completedRecords.Value / duration.Value.TotalSeconds;
-				_messageService.Send(new JobThroughputMessage {Provider = providerType.ToString(), Throughput = throughput});
+				_messageService.Send(new JobThroughputMessage
+				{
+					Provider = providerType.ToString(),
+					CorrelationID = correlationId,
+					Throughput = throughput
+				});
 			}
 		}
 

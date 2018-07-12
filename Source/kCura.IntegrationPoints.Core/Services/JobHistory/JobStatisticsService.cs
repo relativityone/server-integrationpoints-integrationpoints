@@ -126,7 +126,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			var message = new JobApmThroughputMessage
 			{
 				Provider = provider,
-				CorellationID = _helper.GetBatchInstance(_job).ToString(),
+				CorrelationID = _helper.GetBatchInstance(_job).ToString(),
 				UnitOfMeasure = "Byte(s)",
 				JobID = _job.JobId.ToString(),
 				WorkspaceID = ((IntegrationPointSourceConfiguration?.SourceWorkspaceArtifactId == 0)
