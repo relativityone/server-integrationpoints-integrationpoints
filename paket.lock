@@ -232,7 +232,7 @@ NUGET
       Newtonsoft.Json (>= 6.0.8)
       Relativity.OAuth2Client.Interfaces (>= 1.0.23)
     Relativity.OAuth2Client.Interfaces (1.0.23)
-    Relativity.Productions.Services.Interfaces (9.5.58)
+    Relativity.Productions.Services.Interfaces (9.7.4)
     Relativity.SecretCatalog (1.0.19)
     Relativity.SecretCatalog.AzureKeyVault (1.0.19)
       Relativity.SecretCatalog (>= 1.0.19)
