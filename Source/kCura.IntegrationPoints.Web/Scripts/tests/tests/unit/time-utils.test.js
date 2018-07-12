@@ -1,5 +1,7 @@
-var { suite, test } = intern.getInterface('tdd');
-var { assert } = intern.getPlugin('chai');
+(function () {
+const { suite, test } = intern.getInterface('tdd');
+const { assert } = intern.getPlugin('chai');
+
 
 suite('time-utils.js', () => {
     suite('isValidMilitaryTime', () => {
@@ -33,22 +35,25 @@ suite('time-utils.js', () => {
     });
 
     suite('isTodayOrInTheFuture', () => {
-        var curDate = new Date();
-        var day = curDate.getDate();
-        var month = curDate.getMonth()+1;
-        var year = curDate.getFullYear();
+        const curDate = new Date();
+        const day = curDate.getDate();
+        const month = curDate.getMonth()+1;
+        const year = curDate.getFullYear();
+        function formatDateString(amount) {
+            return month + '/' + day + '/' + (year + amount);
+        }
 
         test('today', () => { 
-            var dateString = month + '/' + day + '/' + year;
+            const dateString = formatDateString(0);
             assert.strictEqual(IP.timeUtil.isTodayOrInTheFuture(dateString, 'MM/DD/YYYY'), true , 'should be true because this date is today');
         });
         test('future', () => { 
-            var dateString = month + '/' + day + '/' + (year+20);
+            const dateString = formatDateString(20);
             assert.strictEqual(IP.timeUtil.isTodayOrInTheFuture(dateString, 'MM/DD/YYYY'), true , 'should be true because this date is in the future');
         });
         test('past', () => { 
-            var dateString = month + '/' + day + '/' + (year-10);
-            assert.strictEqual(IP.timeUtil.isTodayOrInTheFuture(dateString, 'MM/DD/YYYY'), false , 'should be true because this date is ten years ago');
+            const dateString = formatDateString(-10);
+            assert.strictEqual(IP.timeUtil.isTodayOrInTheFuture(dateString, 'MM/DD/YYYY'), false , 'should be false because this date is ten years ago');
         });
     });
 
@@ -94,3 +99,4 @@ suite('time-utils.js', () => {
         });
     });
 })
+})()
