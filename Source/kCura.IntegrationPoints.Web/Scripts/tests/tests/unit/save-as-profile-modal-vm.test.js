@@ -1,5 +1,6 @@
-var { suite, test } = intern.getInterface('tdd');
-var { assert } = intern.getPlugin('chai');
+(function () {
+const { suite, test } = intern.getInterface('tdd');
+const { assert } = intern.getPlugin('chai');
 
 suite('save-as-profile-modal-vm.js', () => {
     var callbackResult = '';
@@ -63,4 +64,5 @@ suite('save-as-profile-modal-vm.js', () => {
         assert.strictEqual(dialogResult, "close");
     });
 
-})
+});
+})()
