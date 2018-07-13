@@ -1352,10 +1352,16 @@
       <Name>Relativity.DataTransfer.MessageService.dll</Name>
       <Notes />
     </Assembly>
+    <Assembly>
+      <ArtifactId>2907080</ArtifactId>
+      <Keywords />
+      <Name>Relativity.Productions.Services.Interfaces.dll</Name>
+      <Notes />
+    </Assembly>
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2018-04-17T11:21:56.2439259Z</ExtractionDate>
+  <ExtractionDate>2018-07-12T10:46:22.7467694Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -11346,8 +11352,8 @@
     </Object>
   </Objects>
   <ParentTabs />
-  <RelativityVersion>9.7.6.21</RelativityVersion>
-  <Version>9.7.0.0</Version>
+	<RelativityVersion>9.7.6.21</RelativityVersion>
+	<Version>9.7.0.0</Version>
   <TabDisplay>true</TabDisplay>
   <OriginSignature>5e8b02a8-6e33-4426-a0f0-3594d83725d0</OriginSignature>
   <MasterScripts />
