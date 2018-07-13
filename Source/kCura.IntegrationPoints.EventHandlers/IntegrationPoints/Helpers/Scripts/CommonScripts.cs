@@ -47,6 +47,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Script
 				"/Scripts/core/utils.js",
 				"/Scripts/integration-point/time-utils.js",
 				"/Scripts/integration-point/picker.js",
+                "/Scripts/Export/export-validation.js",
 				"/Scripts/integration-point/save-as-profile-modal-vm.js",
 				"/Scripts/jquery.signalR-2.2.0.js",
 				"/signalr/hubs",
