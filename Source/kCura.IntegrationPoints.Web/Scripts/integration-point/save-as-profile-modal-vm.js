@@ -1,63 +1,59 @@
 ﻿//formats the error message under the input box
 ko.validation.insertValidationMessage = function (element) {
-	var errorContainer = document.createElement('div');
-	var iconSpan = document.createElement('span');
-	iconSpan.className = 'icon-error legal-hold field-validation-error';
+    var errorContainer = document.createElement('div');
+    var iconSpan = document.createElement('span');
+    iconSpan.className = 'icon-error legal-hold field-validation-error';
 
-	errorContainer.appendChild(iconSpan);
+    errorContainer.appendChild(iconSpan);
 
-	$(element).parents('.field-value').eq(0).append(errorContainer);
+    $(element).parents('.field-value').eq(0).append(errorContainer);
 
-	return iconSpan;
+    return iconSpan;
 };
 
 var SaveAsProfileModalViewModel = function (okCallback) {
-	var self = this;
+    var self = this;
 
-	self.profileName = ko.observable().extend({
-			required: true,
-			textFieldWithoutSpecialCharacters: {}
-		});
+    self.profileName = ko.observable().extend({
+        required: true,
+        textFieldWithoutSpecialCharacters: {}
+    });
 
-	self.okCallback = okCallback;
-	self.data = {};
-	
-	self.view = null;
+    self.okCallback = okCallback;
+    self.data = {};
 
-	this.construct = function (view) {
-		self.view = view;
-	}
-	
-	this.validate = function(){
-		this.validationModel  = ko.validatedObservable({
-			profileName: this.profileName
-		});
+    self.view = null;
 
-		return this.validationModel.isValid();
-	}
+    this.construct = function (view) {
+        self.view = view;
+    }
 
-	this.open = function (name) {
-		self.profileName(name);
-		self.view.dialog("open");
-		self.view.keypress(function (e) {
-			if (e.which === 13) {
-				self.ok();
-			}
-		});
-	}
+    this.validate = function () {
+        this.validationModel = ko.validatedObservable({
+            profileName: this.profileName
+        });
 
-	this.ok = function () {
-		if(this.validate()){
-			var canClose = !!self.profileName() && self.profileName().length > 0;
+        return this.validationModel.isValid();
+    }
 
-			if (canClose) {
-				self.okCallback(self.profileName());
-				self.view.dialog("close");
-			}
-		}
-	}
+    this.open = function (name) {
+        self.profileName(name);
+        self.view.dialog("open");
+        self.view.keypress(function (e) {
+            if (e.which === 13) {
+                self.ok();
+            }
+        });
+    }
 
-	this.cancel = function () {
-		self.view.dialog("close");
-	}
+    this.ok = function () {
+        if (this.validate()) {
+            self.okCallback(self.profileName());
+            self.view.dialog("close");
+        }
+    }
+
+    this.cancel = function () {
+        self.view.dialog("close");
+    }
 }
