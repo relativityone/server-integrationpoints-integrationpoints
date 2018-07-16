@@ -45,7 +45,7 @@ task test -depends get_testrunner, get_nunit, test_initalize {
     }
 }
 
-task run_integration_tests {
+task run_integration_tests -depends get_nunit {
     if (-not [string]::IsNullOrEmpty($in_where_expr)) {
         $in_where_expr = '--where=' + $in_where_expr
     }
@@ -66,7 +66,7 @@ task generate_integration_tests_report {
     } 
 }
 
-task run_ui_tests {
+task run_ui_tests -depends get_nunit {
     if (-not [string]::IsNullOrEmpty($ui_where_expr)) {
         $ui_where_expr = '--where=' + $ui_where_expr
     }
