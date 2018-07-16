@@ -12,7 +12,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 		private const string _METADATA_KEY_NAME = "MetadataBytes";
 		private const string _JOBSIZE_IN_BYTES_KEY_NAME = "JobSizeInBytes";
 
-		public string CorellationID { get; set; }
+		public string CorrelationID { get; set; }
 		public Dictionary<string, object> CustomData { get; set; } = new Dictionary<string, object>();
 		public int WorkspaceID { get; set; }
 		public string UnitOfMeasure { get; set; }

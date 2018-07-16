@@ -4,7 +4,7 @@
 	{
 		private const string _METADATA_THROUGHPUT_KEY_NAME = "MetadataThroughput";
 		private const string _FILE_THROUGHPUT = "FileThroughput";
-		
+
 		public double MetadataThroughput
 		{
 			get { return this.GetValueOrDefault<double>(_METADATA_THROUGHPUT_KEY_NAME); }

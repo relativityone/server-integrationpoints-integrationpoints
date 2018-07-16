@@ -8,11 +8,6 @@ namespace kCura.IntegrationPoints.Core.Monitoring
 	{
 		private const string _JOB_ID_KEY_NAME = "JobID";
 
-		public string CorellationID { get; set; }
-		public Dictionary<string, object> CustomData { get; set; } = new Dictionary<string, object>();
-		public int WorkspaceID { get; set; }
-		public string UnitOfMeasure { get; set; }
-
 		// ReSharper disable once InconsistentNaming
 		public string JobID
 		{

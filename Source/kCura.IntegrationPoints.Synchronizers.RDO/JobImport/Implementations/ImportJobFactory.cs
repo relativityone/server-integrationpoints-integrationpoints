@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 				FileBytes = jobReport.FileBytes,
 				MetaBytes = jobReport.MetadataBytes,
 				JobSizeInBytes = jobSizeInBytes,
-				CorellationID = correlationId.ToString(),
+				CorrelationID = correlationId.ToString(),
 				WorkspaceID = workspaceId,
 				UnitOfMeasure = "Bytes(s)"
 			});
@@ -71,6 +71,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 			_messageService.Send(new ImportJobThroughputBytesMessage()
 			{
 				Provider = provider,
+				CorrelationID = correlationId.ToString(),
 				BytesPerSecond = bytesPerSecond
 			});
 		}

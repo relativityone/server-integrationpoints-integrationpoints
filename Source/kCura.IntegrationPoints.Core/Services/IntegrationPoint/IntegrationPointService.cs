@@ -433,12 +433,16 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			AddValidationErrorToErrorTab(ex);
 			SetJobHistoryStatus(jobHistory, JobStatusChoices.JobHistoryValidationFailed);
 			SetHasErrorOnIntegrationPoint(integrationPointArtifactId);
-			SendValidationFailedMessage(integrationPoint);
+			SendValidationFailedMessage(integrationPoint, jobHistory.BatchInstance);
 		}
 
-		private void SendValidationFailedMessage(Data.IntegrationPoint integrationPoint)
+		private void SendValidationFailedMessage(Data.IntegrationPoint integrationPoint, string batchInstance)
 		{
-			_messageService.Send(new JobValidationFailedMessage { Provider = integrationPoint.GetProviderType(_providerTypeService).ToString() });
+			_messageService.Send(new JobValidationFailedMessage
+			{
+				Provider = integrationPoint.GetProviderType(_providerTypeService).ToString(),
+				CorrelationID = batchInstance
+			});
 		}
 
 		private void AddValidationErrorToJobHistory(Data.JobHistory jobHistory, Exception ex)

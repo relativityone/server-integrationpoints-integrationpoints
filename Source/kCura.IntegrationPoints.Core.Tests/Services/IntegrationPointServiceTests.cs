@@ -194,7 +194,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_instance.RunIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId);
 
 			// assert
-			_validationExecutor.Received(1).ValidateOnRun(Arg.Is<ValidationContext>(x => 
+			_validationExecutor.Received(1).ValidateOnRun(Arg.Is<ValidationContext>(x =>
 				x.IntegrationPointType == _integrationPointType &&
 				x.SourceProvider == _sourceProvider &&
 				x.UserId == _userId &&
@@ -605,7 +605,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 					Arg.Any<Data.IntegrationPoint>(),
 					Arg.Any<Guid>(), Arg.Any<Choice>(),
 					Arg.Any<DateTime?>())
-				.Returns(new Data.JobHistory());
+				.Returns(new Data.JobHistory() { BatchInstance = string.Empty });
 
 			_sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
 			_destinationProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID;
@@ -618,7 +618,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 					x.DestinationProvider == _destinationProvider &&
 					MatchHelper.Matches(_integrationPointModel, x.Model) &&
 					x.ObjectTypeGuid == _objectTypeGuid)))
-				.Do(x => { throw new Exception(Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT_CURRENTWORKSPACE); } );
+				.Do(x => { throw new Exception(Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT_CURRENTWORKSPACE); });
 
 			// act
 			Assert.Throws<Exception>(() => _instance.RunIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId));
@@ -721,7 +721,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 							Arg.Any<Data.IntegrationPoint>(),
 							Arg.Any<Guid>(), Arg.Any<Choice>(),
 							Arg.Any<DateTime?>())
-						.Returns(new Data.JobHistory());
+						.Returns(new Data.JobHistory() { BatchInstance = string.Empty });
 
 			_validationExecutor
 				.When(mock => mock.ValidateOnRun(Arg.Is<ValidationContext>(x =>
@@ -1033,9 +1033,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 					x.SourceProvider == sourceProvider &&
 					x.UserId == _userId &&
 					x.DestinationProvider == destinationProvider &&
-					x.Model.ArtifactID ==  model.ArtifactID  &&
+					x.Model.ArtifactID == model.ArtifactID &&
 					x.ObjectTypeGuid == _objectTypeGuid
-						
+
 						)))
 				.Do(x => { throw new PermissionException(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_MESSAGE); });
 

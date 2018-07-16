@@ -121,9 +121,15 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 
 		private void SendJobThroughputBytesMessage(double bytesPerSecond)
 		{
+			string providerName = GetProviderName();
 			var jobThroughputBytesMessage = new ExportJobThroughputBytesMessage()
 			{
-				Provider = GetProviderName(),
+				Provider = providerName,
+				CorrelationID = _historyErrorService.JobHistory.BatchInstance,
+				UnitOfMeasure = "Byte(s)",
+				WorkspaceID = _caseServiceContext.WorkspaceID,
+				JobID = _historyErrorService.JobHistory.JobID,
+				CustomData = { ["Provider"] = providerName },
 				BytesPerSecond = bytesPerSecond
 			};
 			_messageService.Send(jobThroughputBytesMessage);
@@ -133,7 +139,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 		{
 			string provider = GetProviderName();
 			m.Provider = provider;
-			m.CorellationID = _historyErrorService.JobHistory.BatchInstance;
+			m.CorrelationID = _historyErrorService.JobHistory.BatchInstance;
 			m.UnitOfMeasure = "Byte(s)";
 			m.JobID = _historyErrorService.JobHistory.JobID;
 			m.WorkspaceID = _caseServiceContext.WorkspaceID;
