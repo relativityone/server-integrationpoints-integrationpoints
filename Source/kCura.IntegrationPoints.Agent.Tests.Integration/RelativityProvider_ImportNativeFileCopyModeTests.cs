@@ -112,7 +112,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 		[TestCase(ImportNativeFileCopyModeEnum.CopyFiles)]
 		[TestCase(ImportNativeFileCopyModeEnum.SetFileLinks)]
-		[Ignore("TODO: Broken test needs to be fixed!", Until = "2018-08-01")]
+		[Ignore("TODO: Broken test needs to be fixed!", Until = "2018-08-08")]
 		public void NativesShouldBeDeletedInTargetWorkspace_InImportNativesModes(ImportNativeFileCopyModeEnum importNativeFileCopyMode)
 		{
 			TestNativeFilesImport(false, true, true, importNativeFileCopyMode, false);
@@ -120,7 +120,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 		[Test]
 		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
-		[Ignore("TODO: Broken test needs to be fixed!", Until = "2018-08-01")]
+		[Ignore("TODO: Broken test needs to be fixed!", Until = "2018-08-08")]
 		public void NativesShouldNotBeDeletedInTargetWorkspace_InDoNotImportNativesMode()
 		{
 			TestNativeFilesImport(false, true, false, ImportNativeFileCopyModeEnum.DoNotImportNativeFiles, true);

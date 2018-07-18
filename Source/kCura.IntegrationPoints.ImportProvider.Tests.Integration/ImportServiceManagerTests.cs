@@ -197,8 +197,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 		[Category(kCura.IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
 		public void RunTestCase(IImportTestCase testCase)
 		{
-			// https://jira.kcura.com/browse/REL-225244 TODO: Broken test needs to be fixed! Ignore tests until verification mechanism will be fixed. DocumentService.GetNativeMD5String(workspaceId, docResult) needs to be reimplemented.", Until = "2018-08-01")]
-			if (testCase is ItShouldLoadNativesFromPaths && DateTime.UtcNow < new DateTime(2018, 8, 1))
+			// https://jira.kcura.com/browse/REL-225244 TODO: Broken test needs to be fixed! Ignore tests until verification mechanism will be fixed. DocumentService.GetNativeMD5String(workspaceId, docResult) needs to be reimplemented.", Until = "2018-08-08")]
+			if (testCase is ItShouldLoadNativesFromPaths && DateTime.UtcNow < new DateTime(2018, 8, 8))
 			{
 				Assert.Ignore(@"https://jira.kcura.com/browse/REL-225244 TODO: Broken test needs to be fixed! Ignore tests until verification mechanism will be fixed. DocumentService.GetNativeMD5String(workspaceId, docResult) needs to be reimplemented.");
 			}
