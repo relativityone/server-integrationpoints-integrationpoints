@@ -3,7 +3,6 @@
 	"use strict";
 	(function (message) {
 		var $main = $('#bodyContainer');
-		var PROFILE_ERR_PREFIX = 'Issue(s) occured while loading the profile.'
 
 		function getElement($el, $default) {
 			if (root.utils.isDefined($el) || !($el instanceof $)) {
@@ -31,12 +30,13 @@
 						if (_isJson(error.responseText)) {
 							result = JSON.parse(error.responseText);
 							var props = ['ExceptionMessage', 'exceptionMessage', "Message", "message"];
-							$.each(props, function () {
-								if (result.hasOwnProperty(this)) {
-									result = result[this];
-									return false;
-								}
-							});
+							$.each(props,
+								function () {
+									if (result.hasOwnProperty(this)) {
+										result = result[this];
+										return false;
+									}
+								});
 						} else {
 							result = error.responseText;
 						}
@@ -69,21 +69,26 @@
 			return result;
 		}
 
-		function getFormattedMessage(errors) {
+		function getFormattedMessage(errors, errPrefix) {
 			var joinedErrors = errors
-				.map(function(error) { return formatError(error) })
-				.join(". ");
-			return PROFILE_ERR_PREFIX + ' ' + joinedErrors;
+				.map(function (error) { return formatError(error) })
+				.join("");
+			return errPrefix + ' ' + "<ul class=\"error-list\">" + joinedErrors + "</ul>";
 		}
 
 		message.getFormattedErrorMessage = getFormattedMessage;
 
 		function formatError(error) {
+			var message = "<li>";
 			if (!!error.code) {
-				return error.code + ". " + error.message;
-			} else {
-				return error.message;
+				message += error.code + " ";
 			}
+			var helpUrl = "<a class=\"error-help-url\" href=\"" +
+				error.helpUrl +
+				"\" target=\"_blank\">Click here for more information.</a>";
+			message += (error.message + " " + helpUrl + "</li>");
+
+			return message;
 		}
 
 		//change to constants
@@ -100,10 +105,12 @@
 		})();
 
 		function errorInternal(getMessageFunction) {
-			function raiseError(messageBody, $container) {
-				messageBody = getMessageFunction(messageBody);
+			function raiseError(messageBody, $container, errPrefix) {
+				messageBody = getMessageFunction(messageBody, errPrefix);
 				var $el = getElement($container, $main),
-					$error = $('<div class="page-message page-error"/>').append('<span class="legal-hold icon-error"></span>').append($('<div/>').append(messageBody)).hide();
+					$error = $('<div class="page-message page-error"/>')
+						.append('<span class="legal-hold icon-error icon-error-on-list"></span>')
+						.append($('<div/>').append(messageBody)).hide();
 
 				clearError($el);
 				message.info.clear($container);
@@ -117,20 +124,45 @@
 					});
 				}
 			};
+
 			function clearError($container) {
 				var $el = getElement($container, $main);
 				$el.find('div.page-error').remove();
 			};
+
 			return {
 				raise: raiseError,
 				clear: clearError
 			};
 		};
 
+		message.errorDialog = (function () {
+			function showDialog(errTitle, errPrefix, responseText) {
+				var msg = '';
+				try {
+					const validationResultDto = JSON.parse(responseText);
+					msg = getFormattedMessage(validationResultDto.errors, errPrefix);
+				} catch{
+					msg = errPrefix + " " + responseText;
+				};
+
+				window.Dragon.dialogs.showConfirm({
+					message: msg,
+					title: errTitle,
+					okText: 'Ok',
+					showCancel: false,
+					width: 450,
+					messageAsHtml: true
+				});
+			};
+			return {
+				show: showDialog
+			}
+		})();
 		message.info = (function () {
 			function raiseInfo(messageBody, $container) {
 				var $el = getElement($container, $main),
-						$error = $('<div class="page-message page-info"/>').append('<span class="legal-hold icon-step-complete"></span>').append($('<div/>').append(messageBody)).hide();
+					$error = $('<div class="page-message page-info"/>').append('<span class="legal-hold icon-step-complete"></span>').append($('<div/>').append(messageBody)).hide();
 
 				clearInfo($el);
 				message.error.clear($container);

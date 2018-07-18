@@ -6,6 +6,9 @@ namespace kCura.IntegrationPoints.Web.Models.Validation
 {
 	internal class ValidationResultMapper : IValidationResultMapper
 	{
+		private const string HELP_PAGE_URL =
+			"https://help.relativity.com/RelativityOne/Content/Relativity/ECA_and_Investigation/Promoting_data_with_Integration_Points.htm";
+
 		public ValidationResultDTO Map(ValidationResult validationResult)
 		{
 			List<ValidationErrorDTO> errors = validationResult.Messages.Select(MapValidationError).ToList();
@@ -14,7 +17,7 @@ namespace kCura.IntegrationPoints.Web.Models.Validation
 
 		private ValidationErrorDTO MapValidationError(ValidationMessage message)
 		{
-			return new ValidationErrorDTO(message.ErrorCode, message.ShortMessage, "");
+			return new ValidationErrorDTO(message.ErrorCode, message.ShortMessage, HELP_PAGE_URL);
 		}
 	}
 }

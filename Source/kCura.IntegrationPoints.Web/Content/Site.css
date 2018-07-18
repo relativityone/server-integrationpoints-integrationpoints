@@ -71,22 +71,13 @@ h1
 
 #save i
 {
-    padding: 0px;
+	padding: 0px;
 }
 
 
 #progressButtons button
 {
 	padding: 0 10px;
-}
-
-#pointBody
-{
-	position: absolute;
-	top: 160px;
-	bottom: 0;
-	left: 0;
-	right: 0;
 }
 
 #headerContainer button{
@@ -192,14 +183,24 @@ ul li .day-select
 	z-index: 1;
 	font-size: 12px;
 	font-weight: 400;
-	padding: 4px 4px 0;
+	padding: 8px 16px 0;
 }
 
 	.page-message.page-error > div, .page-message.page-info > div
 	{
 		display: inline-block;
 	}
+.page-error .error-list
+{
+	padding-left: 16px;
+	margin-top: 4px;
+}
 
+.page-error .error-list .error-help-url
+{
+	color: white;
+	text-decoration: underline !important;
+}
 .page-info .icon-step-complete
 {
 	display: inline-block;
@@ -244,10 +245,16 @@ ul li .day-select
 	padding: 4px 4px 0;
 }
 
-	.icon-error::before
-	{
-		padding-right: 5px;
-	}
+.icon-error::before
+{
+	padding-right: 5px;
+}
+
+.icon-error-on-list
+{
+	float:  left;
+	display: inline-block;
+}
 
 #configurationFrame
 {
@@ -295,15 +302,15 @@ ul li .day-select
 
 .map-field-title
 {
-    padding-top: 20px;
-    display: flex;
-    width: 1200px;
+	padding-top: 20px;
+	display: flex;
+	width: 1200px;
 }
 
 .map-field-btn
 {
-    margin-left: 44.398%;
-    min-width: 76px;
+	margin-left: 44.398%;
+	min-width: 76px;
 	outline: none !important;
 }
 
@@ -498,23 +505,23 @@ select option.hover
 	text-decoration: underline;
 }
 #host {
-    width: 450px;
+	width: 450px;
 	height: 26px;
 }
 #port {
-    width: 50px;
-    height: 26px;
+	width: 50px;
+	height: 26px;
 }
 #username {
-    width: 200px;
-    height: 26px;
+	width: 200px;
+	height: 26px;
 }
 #password {
   width: 200px;
-    height: 26px;
+	height: 26px;
 }
 #filename_prefix {
-    width: 450px;
+	width: 450px;
 	height: 26px;
 }
 
@@ -558,9 +565,9 @@ select option {
 
 .extracted-label {
 	color: #333333;
-    text-transform: uppercase;
-    font-weight: 400;
-    text-indent: 15px;
+	text-transform: uppercase;
+	font-weight: 400;
+	text-indent: 15px;
 }
 
 .margin-top-8px {
@@ -573,16 +580,16 @@ select option {
 
 .precedence-selection{
 	min-width: 210px !important;
-   	height: 22px;
-   	word-wrap: break-word;
-   	vertical-align: text-bottom;
-   	max-width: 210px;
-   	display: inline-block;
-  	overflow: hidden;
+	height: 22px;
+	word-wrap: break-word;
+	vertical-align: text-bottom;
+	max-width: 210px;
+	display: inline-block;
+	overflow: hidden;
 	text-overflow: ellipsis;
-   	white-space: nowrap;
-   	border-bottom: 1px solid #c1c1c1 !important;
-   	margin-right: 5px;
+	white-space: nowrap;
+	border-bottom: 1px solid #c1c1c1 !important;
+	margin-right: 5px;
 }
 
 .fileNamingType_field {

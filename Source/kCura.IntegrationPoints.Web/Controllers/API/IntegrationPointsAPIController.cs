@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Attributes;
+using kCura.IntegrationPoints.Web.Models.Validation;
 using Newtonsoft.Json;
 using Relativity.API;
 using Relativity.Telemetry.Services.Interface;
@@ -95,7 +96,9 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 							}
 							catch (IntegrationPointValidationException ex)
 							{
-								return Request.CreateResponse(HttpStatusCode.NotAcceptable, string.Join("<br />", ex.ValidationResult.MessageTexts));
+								var validationResultMapper = new ValidationResultMapper();
+								ValidationResultDTO validationResultDto = validationResultMapper.Map(ex.ValidationResult);
+								return Request.CreateResponse(HttpStatusCode.NotAcceptable, validationResultDto);
 							}
 
 							string result = _urlHelper.GetRelativityViewUrl(workspaceID, createdId, Data.ObjectTypes.IntegrationPoint);
