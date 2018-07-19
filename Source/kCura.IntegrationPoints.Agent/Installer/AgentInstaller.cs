@@ -168,15 +168,15 @@ namespace kCura.IntegrationPoints.Agent.Installer
 
 					IRepositoryFactory targetRepositoryFactory = null;
 					IHelper sourceHelper = k.Resolve<IHelper>();
-					if (importSettings.FederatedInstanceArtifactId == null)
-					{
-						targetRepositoryFactory = sourceRepositoryFactory;
-					}
-					else
+					if (importSettings.IsFederatedInstance())
 					{
 						IHelperFactory helperFactory = k.Resolve<IHelperFactory>();
 						IHelper targetHelper = helperFactory.CreateTargetHelper(sourceHelper, importSettings.FederatedInstanceArtifactId, integrationPoint.SecuredConfiguration);
 						targetRepositoryFactory = new RepositoryFactory(sourceHelper, targetHelper.GetServicesManager());
+					}
+					else
+					{
+						targetRepositoryFactory = sourceRepositoryFactory;
 					}
 					IFederatedInstanceManager federatedInstanceManager = k.Resolve<IFederatedInstanceManager>();
 					IFolderPathReaderFactory folderPathReaderFactory = k.Resolve<IFolderPathReaderFactory>();

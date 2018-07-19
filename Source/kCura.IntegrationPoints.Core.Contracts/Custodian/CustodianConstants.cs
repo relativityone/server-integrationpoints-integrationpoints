@@ -1,8 +1,10 @@
-﻿namespace kCura.IntegrationPoints.Core.Contracts.Custodian
+﻿using System;
+
+namespace kCura.IntegrationPoints.Core.Contracts.Custodian
 {
 	public partial class ObjectTypeGuids
 	{
-		public const string Custodian = @"d216472d-a1aa-4965-8b36-367d43d4e64c";
+		public static Guid Custodian => Guid.Parse(@"d216472d-a1aa-4965-8b36-367d43d4e64c");
 	}
 
 	public static class CustodianFieldGuids
