@@ -10,6 +10,8 @@
 	this.profileTypes = ko.observableArray();
 	this.profiles = [];
 
+	const PROFILE_ERR_PREFIX = 'Issue(s) occured while loading the profile.';
+
 	this.getSelectedProfilePromise = function (artifactId) {
 		var validatedProfileModelPromise = IP.data.ajax({
 			url: IP.utils.generateWebAPIURL('IntegrationPointProfilesAPI/GetValidatedProfileModel', artifactId),
@@ -82,7 +84,7 @@
 		if (isValid) {
 			IP.message.notify("Profile has been successfully loaded. Click Next to modify or Save to complete the set up.");
 		} else {
-			IP.message.errorFormatted.raise(result.validationResult.errors);
+			IP.message.errorFormatted.raise(result.validationResult.errors, null, PROFILE_ERR_PREFIX);
 		}
 	};
 

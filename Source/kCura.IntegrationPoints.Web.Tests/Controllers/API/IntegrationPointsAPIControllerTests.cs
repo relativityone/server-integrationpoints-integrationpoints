@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Controllers.API;
+using kCura.IntegrationPoints.Web.Models.Validation;
 using Newtonsoft.Json;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
@@ -125,7 +126,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			Assert.IsNotNull(response);
 			String actual = response.Content.ReadAsStringAsync().Result;
 			_relativityUrlHelper.DidNotReceive().GetRelativityViewUrl(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<String>());
-			Assert.AreEqual($"\"{validationResult.MessageTexts.First()}\"", actual);
+			ValidationResultDTO actualResult =
+				JsonConvert.DeserializeObject<ValidationResultDTO>(actual);
+
+			Assert.AreEqual(validationResult.MessageTexts.First(), actualResult.Errors.Single().Message);
 			Assert.AreEqual(HttpStatusCode.NotAcceptable, response.StatusCode);
 		}
 	}

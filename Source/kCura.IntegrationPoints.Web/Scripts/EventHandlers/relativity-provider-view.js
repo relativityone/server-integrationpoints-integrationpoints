@@ -9,6 +9,7 @@
 		var proceedWarningMessage = " Would you still like to proceed?";
 		var overwriteOption = $("[fafriendlyname=\"Overwrite Fields\"]").closest("tr").find(".dynamicViewFieldValue").text();
 
+		const RUN_ERR_PREFIX = "Failed to submit integration job.";
 		var selectedMessage = "";
 		if (overwriteOption === "Append Only") {
 			if (!!IP.fieldName && IP.fieldName.length !== 0) {
@@ -50,7 +51,12 @@
 					})
 				});
 				ajax.fail(function (value) {
-					IP.message.error.raise("Failed to submit integration job. " + value.responseText, $(".cardContainer"));
+					try{
+						const validationResultDto = JSON.parse(value.responseText);
+						IP.message.errorFormatted.raise(validationResultDto.errors, $(".cardContainer"), RUN_ERR_PREFIX);
+					}catch{
+					    IP.message.error.raise(RUN_ERR_PREFIX + " " + value.responseText, $(".cardContainer"));
+					}
 				});
 				ajax.done(function () {
 					IP.message.info.raise("Job started", $(".cardContainer"));
@@ -80,13 +86,9 @@
 					})
 				});
 				ajax.fail(function (value) {
-					window.Dragon.dialogs.showConfirm({
-						message: "Failed to stop the job. " + value.responseText,
-						title: "Unable to Stop the Transfer",
-						okText: 'Ok',
-						showCancel: false,
-						width: 450,
-					});
+					const prefix = "Failed to stop the job.";
+					const errTitle = "Unable to Stop the Transfer";
+					IP.message.errorDialog.show(errTitle, prefix, value.responseText);
 				});
 			}
 		});
@@ -122,13 +124,9 @@
 					})
 				});
 				ajax.fail(function (value) {
-					window.Dragon.dialogs.showConfirm({
-						message: "Failed to submit the retry job. " + value.responseText,
-						title: "Unable to Retry Errors",
-						okText: 'Ok',
-						showCancel: false,
-						width: 450
-					});
+					const prefix = "Failed to submit the retry job.";
+					const errTitle = "Unable to Retry Errors";
+					IP.message.errorDialog.show(errTitle, prefix, value.responseText);
 				});
 				ajax.done(function () {
 					IP.message.info.raise("Retry job started", $(".cardContainer"));

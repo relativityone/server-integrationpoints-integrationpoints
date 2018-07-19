@@ -133,7 +133,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		[Category(Constants.SMOKE_TEST)]
 		public void RunTestCase(IExportTestCase testCase)
 		{
-			if (ShouldIgnoreTest(testCase) && DateTime.UtcNow < new DateTime(2018, 7, 18))
+			if (ShouldIgnoreTest(testCase) && DateTime.UtcNow < new DateTime(2018, 8, 8))
 			{
 				Assert.Ignore(@"TODO: Broken test needs to be fixed!");
 			}

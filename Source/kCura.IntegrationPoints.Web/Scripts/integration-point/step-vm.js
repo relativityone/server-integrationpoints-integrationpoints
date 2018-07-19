@@ -193,7 +193,13 @@
 				var prefix = window.top.location.protocol + "//" + window.top.location.host;
 				window.top.location = prefix + result.returnURL;
 			}, function (error) {
-				IP.message.error.raise(error);
+				try{
+					const errPrefix = "Failed to save Integration Point.";
+					const validationResultDto = JSON.parse(error.responseText);
+					IP.message.errorFormatted.raise(validationResultDto.errors, null, errPrefix);
+				}catch{
+					IP.message.error.raise(error);
+				}
 			});
 		});
 

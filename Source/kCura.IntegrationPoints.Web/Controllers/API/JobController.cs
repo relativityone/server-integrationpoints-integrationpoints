@@ -5,7 +5,6 @@ using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Web.Http;
-using Castle.Core.Internal;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Factories;
@@ -13,11 +12,13 @@ using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data.Models;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Attributes;
+using kCura.IntegrationPoints.Web.Models.Validation;
 using Newtonsoft.Json;
 using Relativity.API;
 
@@ -70,8 +71,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			if (Guid.TryParse(integrationPoint.SecuredConfiguration, out parseResult))
 			{
 				throw new IntegrationPointsException("Integration point secret store configuration is missing. " +
-				                                     "This may be caused by RIP being restored from ARM backup. " +
-				                                     "Please try to edit integration point configuration and reenter credentials.");
+													 "This may be caused by RIP being restored from ARM backup. " +
+													 "Please try to edit integration point configuration and reenter credentials.");
 			}
 
 			IHelper targetHelper = _helperFactory.CreateTargetHelper(_helper, importSettings.FederatedInstanceArtifactId, integrationPoint.SecuredConfiguration);
@@ -122,6 +123,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				httpStatusCode = HttpStatusCode.BadRequest;
 				CreateRelativityError(errorMessage, exception.FlattenErrorMessages(), payload.AppId);
 			}
+			catch (IntegrationPointValidationException exception)
+			{
+				return CreateResponseForFailedValidation(exception);
+			}
 			catch (Exception exception)
 			{
 				errorMessage = exception.Message;
@@ -153,6 +158,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				errorMessage = $"{exception.Message} : {String.Join(",", innerExceptions)}";
 				httpStatusCode = HttpStatusCode.BadRequest;
 			}
+			catch (IntegrationPointValidationException exception)
+			{
+				return CreateResponseForFailedValidation(exception);
+			}
 			catch (Exception exception)
 			{
 				errorMessage = exception.Message;
@@ -163,6 +172,13 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			response.Content = new StringContent(errorMessage, System.Text.Encoding.UTF8, "text/plain");
 
 			return response;
+		}
+
+		private HttpResponseMessage CreateResponseForFailedValidation(IntegrationPointValidationException exception)
+		{
+			var validationResultMapper = new ValidationResultMapper();
+			ValidationResultDTO validationResultDto = validationResultMapper.Map(exception.ValidationResult);
+			return Request.CreateResponse(HttpStatusCode.BadRequest, validationResultDto);
 		}
 
 		private void AuditAction(Payload payload, string auditMessage)
