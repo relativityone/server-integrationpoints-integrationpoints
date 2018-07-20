@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Data;
 using NUnit.Framework;
@@ -30,7 +29,7 @@ namespace kCura.IntegrationPoints.UITests.Validation
 			{
 				ObjectType = new ObjectTypeRef
 				{
-					Guid = Guid.Parse(ObjectTypeGuids.Custodian)
+					Guid = ObjectTypeGuids.Custodian
 				},
 				Fields = new[]
 				{

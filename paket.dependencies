@@ -47,6 +47,7 @@ nuget Microsoft.AspNet.SignalR.Core 2.2.0
 nuget Microsoft.AspNet.Web.Optimization 1.1.3 strategy: max
 nuget Microsoft.AspNet.WebApi 5.2.3
 nuget Microsoft.Net.Http 2.2.29 strategy: max
+nuget Moq 4.5.3
 nuget NSubstitute 1.10.0.0
 nuget NUnit 3.4.1
 nuget Selenium.Support 3.12.0

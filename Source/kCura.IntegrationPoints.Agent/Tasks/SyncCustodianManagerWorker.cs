@@ -313,7 +313,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				ObjectType = new ObjectTypeRef
 				{
-					Guid = Guid.Parse(ObjectTypeGuids.Custodian)
+					Guid = ObjectTypeGuids.Custodian
 				},
 				Fields = new[]
 				{
@@ -373,7 +373,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			importSettings.CustodianManagerFieldContainsLink = false;
 			importSettings.FederatedInstanceCredentials = IntegrationPoint.SecuredConfiguration;
 
-			if (importSettings.FederatedInstanceArtifactId.HasValue)
+			if (importSettings.IsFederatedInstance())
 			{
 				var targetHelper = _helperFactory.CreateTargetHelper(Helper, importSettings.FederatedInstanceArtifactId, importSettings.FederatedInstanceCredentials);
 				var contextContainer = ContextContainerFactory.CreateContextContainer(targetHelper);

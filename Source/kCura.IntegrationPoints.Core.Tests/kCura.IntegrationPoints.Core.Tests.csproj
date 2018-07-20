@@ -91,6 +91,7 @@
     <Compile Include="Services\JobHistory\DestinationParserTests.cs" />
     <Compile Include="Services\JobHistory\UnfinishedJobServiceTests.cs" />
     <Compile Include="Services\JobTrackerTests.cs" />
+    <Compile Include="Services\Synchronizer\ImportProviderRdoSynchronizerFactoryTests.cs" />
     <Compile Include="SetupAndTeardown.cs" />
     <Compile Include="JobHelper.cs" />
     <Compile Include="Services\SavedSearchesTreeServiceTests.cs" />
@@ -508,6 +509,17 @@ xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y</PostBuildEvent>
       <ItemGroup>
         <Reference Include="Microsoft.WindowsAzure.Configuration">
           <HintPath>..\..\packages\Microsoft.WindowsAzure.ConfigurationManager\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Moq">
+          <HintPath>..\..\packages\Moq\lib\net45\Moq.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
