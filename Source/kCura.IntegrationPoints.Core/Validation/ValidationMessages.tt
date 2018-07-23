@@ -1,0 +1,64 @@
+﻿<#@ template debug="true" hostspecific="true" language="C#" #>
+<#@ assembly name="System.Core.dll" #>
+<#@ assembly name="System.Xml.dll" #>
+<#@ assembly name="System.Xml.Linq.dll" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Xml" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Xml.Linq" #>
+<#@ output extension=".cs" #>
+using kCura.IntegrationPoints.Domain.Models;
+
+namespace kCura.IntegrationPoints.Core.Validation
+{
+    internal static class ValidationMessages
+    {
+        #region Sync
+
+<#
+var templateFile = Path.GetDirectoryName(Host.TemplateFile);
+var schemaFile = @".\Validation\validationMessages.xml"; 
+var fullPathSchemaFile = Path.Combine(Path.GetDirectoryName(templateFile), schemaFile);
+
+XDocument doc = XDocument.Load(fullPathSchemaFile);
+foreach  (XElement el in doc.Root.Elements())
+{
+
+        this.ClearIndent();
+
+#>
+        public static ValidationMessage <#=el.Attribute("Name").Value #> => new ValidationMessage(
+<#
+
+    this.PushIndent("            ");
+    string[] namesToIncludeInClass = { "errorCode", "shortMessage"};
+    foreach (XElement element in el.Elements())
+    {
+        if (namesToIncludeInClass.Contains(element.Name.ToString()))
+        {
+            string currentElementData = element.Name + ": ";
+
+            if (el.Attribute("paramteric") != null && element.Name == "shortMessage")
+                currentElementData += '$';
+
+            currentElementData += "\"" + element.Value + "\"";
+
+            if (element.Name == "errorCode")
+                currentElementData += ",";
+
+            this.WriteLine(currentElementData);
+        }
+    }
+
+    this.ClearIndent();
+    this.PushIndent("        ");
+    this.WriteLine(");");
+}
+
+this.ClearIndent();
+
+#>
+        #endregion
+    }
+}

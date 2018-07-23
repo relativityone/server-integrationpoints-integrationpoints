@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href=".\validationMessages.xsl"?>
+<ValidationMessages>
+  <Message Name="DestinationWorkspaceNoAccess">    
+    <errorCode>20.001</errorCode>
+    <shortMessage>User does not have sufficient permissions to access destination workspace. Contact your system administrator.</shortMessage>
+    <troubleshooting>Validate if user still has access to the destination workspace. It is also required that a System Admin account is present (used by RIP agent) and has access to the Destination workspace.</troubleshooting>
+  </Message>
+
+  <Message Name="DestinationWorkspaceNotAvailable"> 
+    <errorCode>20.002</errorCode>
+    <shortMessage>Destination workspace is not available.</shortMessage>
+    <troubleshooting>Verify if destination workspace exists.</troubleshooting>
+  </Message>
+  
+  <Message Name="SavedSearchNoAccess">
+    <errorCode>20.004</errorCode>
+    <shortMessage>Saved search is not available or has been secured from this user. Contact your system administrator.</shortMessage>
+    <troubleshooting>Verify if a user has required permissions for the saved search or if the saved search has been deleted. Contact your system administrator to verify saved search configuration. </troubleshooting>
+  </Message>
+
+    <Message Name="FieldMapFieldNotExistInDestinationWorkspace(string fieldNames)" paramteric="true"> 
+    <errorCode>20.005</errorCode>
+    <shortMessage>Destination field(s) mapped may no longer be available or has been renamed. Review the mapping for the following field(s): {fieldNames}.</shortMessage>
+    <troubleshooting>User should review if the failing field still exist on the destination workspace. Also the failing field might be deleted, and created again. That will cause the same error. Correct the mapping saved in the Integration Point job and run job again.</troubleshooting>
+  </Message>
+
+   <Message Name="SourceProductionNoAccess">
+    <errorCode>20.007</errorCode>
+    <shortMessage>Verify if production, which is the data source of this Integration Point, still exist or if user has required permissions for it.</shortMessage>
+    <troubleshooting>Check if production, which is the data source of this Integration Point, still exist. Also verify if a user has required permissions for a production which is used as the data source for this Integrated Point job. Contact your system administrator to verify production permissions.</troubleshooting>
+  </Message>
+
+   <Message Name="MissingDestinationSavedSearchAddPermission">
+    <errorCode>20.008</errorCode>
+    <shortMessage>Verify if the user still has permission to create saved search on destination workspace.</shortMessage>
+    <troubleshooting>Verify if a user has required permissions for creating a saved search in destination workspace for this Integrated Point job. Contact your system administrator to verify production permissions. One of missing permissions can be "Search" in Object Security and "Advanced and Saved Searches" in Other Settings. Those permissions are set in group permission on destination workspace.</troubleshooting>
+  </Message>
+
+   <Message Name="MissingDestinationFolderItemLevelPermissions">
+    <errorCode>20.009</errorCode>
+    <shortMessage>Verify if a folder in destination workspace selected in the Integration Point exists or if a user has a proper permission to access it.</shortMessage>
+    <troubleshooting>Verify if a folder, that was used in an Integration Point still exist. Also check permission setting for folders on destination workspace. It may be secured for users group.</troubleshooting>
+  </Message>
+
+   <Message Name="MissingDestinationProductionPermissions">
+    <errorCode>20.010</errorCode>
+    <shortMessage>Verify if a Production Set used as the location in destination workspace exists or if a user has a proper permission to access it.</shortMessage>
+    <troubleshooting>Verify if a Production Set that was used as the location on destination workspace still exist. Also check permission setting for used production on destination workspace. It may be secured for users group.</troubleshooting>
+  </Message>
+
+   <Message Name="FederatedInstanceNotAccessible">
+    <errorCode>20.011</errorCode>
+    <shortMessage>Unable to connect to federated instance. Check if destination instance still exists or if a user has a proper permission to access it.</shortMessage>
+    <troubleshooting>There is problem while trying to connect to federated instance. Verify if this instance is still available or if authorization token didn't expire.</troubleshooting>
+  </Message>
+
+   <Message Name="FederatedInstanceDestinationWorkspaceNotAvailable">
+    <errorCode>20.012</errorCode>
+    <shortMessage>Destination workspace on federated instance is not available. Check if destination workspace still exists or if a user has a proper permission to access it.</shortMessage>
+    <troubleshooting>Validate if user still has access to the destination workspace on federated instance. It is also required that a System Admin account is present (used by RIP agent) and has access to the destination workspace.</troubleshooting>
+  </Message>
+
+     <Message Name="DestinationProductionNotEligibleForImport">
+    <errorCode>20.013</errorCode>
+    <shortMessage>Verify if a Production Set used as the location in destination workspace is in New status.</shortMessage>
+    <troubleshooting>Verify if a Production Set that was used as the location on destination workspace is sill in New status. There is a possibility that used Production was staged or ran. Only Production with New status can be used as a Production Set in Integration Points.</troubleshooting>
+  </Message>
+</ValidationMessages>

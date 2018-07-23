@@ -81,6 +81,8 @@ timeout(time: 3, unit: 'HOURS')
                         timeout(time: 5, unit: 'MINUTES')
                         {
                             powershell "./build.ps1 release"
+                            archiveArtifacts artifacts: "./*.html", fingerprint: true
+
                         }
                     }
                 }
