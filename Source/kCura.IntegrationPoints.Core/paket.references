@@ -1,7 +1,9 @@
+Clarius.TransformOnBuild
 CSharpGuidelineAnalyzer
 kCura.Apps.Common.Config
 kCura.LongPath
 kCura.Relativity.Client
+Mono.TextTransform
 Relativity.API
 Relativity.ImportExport
 Relativity.OAuth2Client
