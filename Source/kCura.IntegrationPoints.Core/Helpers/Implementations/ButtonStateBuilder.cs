@@ -1,5 +1,4 @@
 ﻿using System;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
@@ -44,9 +43,8 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
 			var settings = JsonConvert.DeserializeObject<ImportSettings>(integrationPoint.DestinationConfiguration);
 
-			bool isFederatedInstance = settings.FederatedInstanceArtifactId.HasValue;
 			bool hasAddProfilePermission = _permissionRepository.UserHasArtifactTypePermission(Guid.Parse(ObjectTypeGuids.IntegrationPointProfile),
-				ArtifactPermission.Create) && !isFederatedInstance;
+				ArtifactPermission.Create) && !settings.IsFederatedInstance();
 
 			bool canViewErrors = jobHistoryErrorViewPermissionCheck.IsValid;
 			bool hasJobsExecutingOrInQueue = HasJobsExecutingOrInQueue(applicationArtifactId, integrationPointArtifactId);

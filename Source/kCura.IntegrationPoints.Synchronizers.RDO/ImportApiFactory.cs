@@ -55,7 +55,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 						string webServiceUrl;
 						string token;
 
-						if (settings.FederatedInstanceArtifactId != null)
+						if (settings.IsFederatedInstance())
 						{
 							OAuthClientDto oAuthClientDto = _serializer.Deserialize<OAuthClientDto>(settings.FederatedInstanceCredentials);
 							FederatedInstanceDto federatedInstance =

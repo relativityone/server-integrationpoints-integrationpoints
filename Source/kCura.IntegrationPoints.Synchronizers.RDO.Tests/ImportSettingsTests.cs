@@ -88,6 +88,33 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			Assert.That(() => setting.ImportOverlayBehavior, Throws.TypeOf<Exception>());
 		}
 
+		[TestCase("Relativity")]
+		[TestCase("relativity")]
+		[TestCase("RELATIVITY")]
+		[TestCase("relativitY")]
+		public void IsRelativityProvider_ShouldReturnTrue_WhenProviderNameIsRelativity(string providerName)
+		{
+			var importSettings = new ImportSettings();
+			importSettings.Provider = providerName;
+
+			var isRelativityProvider = importSettings.IsRelativityProvider();
+
+			Assert.IsTrue(isRelativityProvider);
+		}
+
+		[TestCase("export")]
+		[TestCase("ldap")]
+		[TestCase("relativity!")]
+		public void IsRelativityProvider_ShouldReturnFalse_WhenProviderNameIsNotRelativity(string providerName)
+		{
+			var importSettings = new ImportSettings();
+			importSettings.Provider = providerName;
+
+			var isRelativityProvider = importSettings.IsRelativityProvider();
+
+			Assert.IsFalse(isRelativityProvider);
+		}
+
 		private object GetPropertyValue(object o, string propertyName)
 		{
 			BindingFlags bindFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;

@@ -190,6 +190,8 @@
     <Compile Include="Services\ProcessingSourceLocationService.cs" />
     <Compile Include="Services\ServiceContext\BaseServiceContextProvider.cs" />
     <Compile Include="Services\ServiceContext\IBaseServiceContextProvider.cs" />
+    <Compile Include="Services\Synchronizer\ImportProviderRdoSynchronizerFactory.cs" />
+    <Compile Include="Services\Synchronizer\RelativityRdoSynchronizerFactory.cs" />
     <Compile Include="Tagging\ITagSavedSearch.cs" />
     <Compile Include="Tagging\ITagSavedSearchFolder.cs" />
     <Compile Include="Tagging\ITagSavedSearchManager.cs" />

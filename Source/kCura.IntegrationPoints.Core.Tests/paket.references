@@ -1,6 +1,7 @@
 CSharpGuidelineAnalyzer
 kCura.Apps.Common.Utils
 kCura.Relativity.Client
+Moq
 NSubstitute
 NUnit
 Relativity.API

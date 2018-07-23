@@ -91,12 +91,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 
 		internal static JobContextType GetJobContextType(ImportSettings settings)
 		{
-			const string relativity = "relativity";
-			if (relativity == settings.Provider && settings.ProductionImport && settings.ImageImport)
+			if (settings.IsRelativityProvider() && settings.ProductionImport && settings.ImageImport)
 			{
 				return JobContextType.RelativityToRelativityImagesProduction;
 			}
-			else if (relativity == settings.Provider && settings.ImageImport)
+			else if (settings.IsRelativityProvider() && settings.ImageImport)
 			{
 				return JobContextType.RelativityToRelativityImages;
 			}
