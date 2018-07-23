@@ -598,7 +598,9 @@ ko.validation.insertValidationMessage = function (element) {
 					var fieldFound = fields.length > 0;
 					return {
 						exist: fieldFound,
-						type: fieldFound ? fields[0].type : null
+						type: fieldFound ? fields[0].type : null,
+						actualName: fieldFound ? fields[0].actualName : null,
+						displayName: fieldFound ? fields[0].displayName : null
 					};
 				}
 				var sourceMapped = [];
@@ -611,10 +613,14 @@ ko.validation.insertValidationMessage = function (element) {
 					var destinationField = findField(destinationFields, destination);
 					if (sourceField.exist) {
 						source[type] = sourceField.type;
+						source.actualName = sourceField.actualName;
+						source.displayName = sourceField.displayName;
 						sourceMapped.push(source);
 					}
 					if (destinationField.exist) {
 						destination[type] = destinationField.type;
+						destination.actualName = destinationField.actualName;
+						destination.displayName = destinationField.displayName;
 						destinationMapped.push(destination);
 					}
 				});
