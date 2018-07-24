@@ -555,6 +555,16 @@ ko.validation.insertValidationMessage = function (element) {
 
 		// TODO
 		// Put here mapHelper methods which should be tested
+		self.findField = function(array, field) {
+			const fields = $.grep(array, function (value, _index) { return value.fieldIdentifier === field.fieldIdentifier; });
+			const fieldFound = fields.length > 0;
+			return {
+				exist: fieldFound,
+				type: fieldFound ? fields[0].type : null,
+				actualName: fieldFound ? fields[0].actualName : null,
+				displayName: fieldFound ? fields[0].displayName : null
+			};
+		};
 
 		var mappedSourcePromise;
 		if (destination.DoNotUseFieldsMapCache) {
@@ -596,24 +606,14 @@ ko.validation.insertValidationMessage = function (element) {
 				return find(fields, fieldMapping, key, function (r) { return !r });
 			}
 			function getMapped(sourceFields, destinationFields, fieldMapping, sourceKey, destinationKey) {
-				function findField(array, field) {
-					var fields = $.grep(array, function (value, index) { return value.fieldIdentifier === field.fieldIdentifier; });
-					var fieldFound = fields.length > 0;
-					return {
-						exist: fieldFound,
-						type: fieldFound ? fields[0].type : null,
-						actualName: fieldFound ? fields[0].actualName : null,
-						displayName: fieldFound ? fields[0].displayName : null
-					};
-				}
 				var sourceMapped = [];
 				var destinationMapped = [];
 				var type = "type";
 				$.each(fieldMapping, function (item) {
 					var source = this[sourceKey];
 					var destination = this[destinationKey];
-					var sourceField = findField(sourceFields, source);
-					var destinationField = findField(destinationFields, destination);
+					var sourceField = self.findField(sourceFields, source);
+					var destinationField = self.findField(destinationFields, destination);
 					if (sourceField.exist) {
 						source[type] = sourceField.type;
 						source.actualName = sourceField.actualName;

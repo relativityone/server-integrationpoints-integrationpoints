@@ -3,6 +3,7 @@ IP.utils = IP.utils || {};
 IP.utils.generateWebURL = IP.utils.generateWebURL || function () { return '' };
 IP.utils.generateWebAPIURL = IP.utils.generateWebAPIURL || function () { return '' };
 IP.utils.getParameterByName = IP.utils.getParameterByName || function () { return '9' };
+let IPdataDeferredCallback;
 IP.data = IP.data || {
     ajax: function () {
         return {
@@ -13,7 +14,12 @@ IP.data = IP.data || {
     deferred: function () {
         return {
             all: function () {
-                return { then: function () { return { fail: function() {} } } }
+                return { 
+                    then: function (callback) { 
+                        IPdataDeferredCallback = callback;
+                        return { fail: function() {} };
+                    } 
+                };
             }
         };
     }
