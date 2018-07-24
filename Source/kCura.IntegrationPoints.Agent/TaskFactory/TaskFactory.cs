@@ -57,8 +57,8 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 						return CheckForSynchronizationAndResolve<SyncManager>(job, integrationPointDto, agentBase);
 					case TaskType.SyncWorker:
 						return CheckForSynchronizationAndResolve<SyncWorker>(job, integrationPointDto, agentBase);
-					case TaskType.SyncCustodianManagerWorker:
-						return CheckForSynchronizationAndResolve<SyncCustodianManagerWorker>(job, integrationPointDto, agentBase);
+					case TaskType.SyncEntityManagerWorker:
+						return CheckForSynchronizationAndResolve<SyncEntityManagerWorker>(job, integrationPointDto, agentBase);
 					case TaskType.SendEmailManager:
 						return CheckForSynchronizationAndResolve<SendEmailManager>(job, integrationPointDto, agentBase);
 					case TaskType.SendEmailWorker:

@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		[FindsBy(How = How.ClassName, Using = "identifier")]
 		protected IWebElement SettingsDivElement { get; set; }
 
-		protected IWebElement CustodianManagerContainsLinkRowElement { get; set; }
+		protected IWebElement EntityManagerContainsLinkRowElement { get; set; }
 
 		[FindsBy(How = How.Id, Using = "native-file-mode-radio-0")]
 		protected IWebElement CopyNativeFilesPhysicalFilesElement { get; set; }
@@ -81,7 +81,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		{
 			WaitForPage();
 			PageFactory.InitElements(driver, this);
-			CustodianManagerContainsLinkRowElement = SettingsDivElement.FindElements(By.ClassName("field-row"))[11];
+			EntityManagerContainsLinkRowElement = SettingsDivElement.FindElements(By.ClassName("field-row"))[11];
 		}
 
 		protected SelectElement SelectSourceFieldsElement => new SelectElement(SourceFieldsElement);
@@ -141,10 +141,10 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			}
 		}
 
-		public void SetCustodianManagerContainsLink(bool value)
+		public void SetEntityManagerContainsLink(bool value)
 		{
 			int checkboxNumber = value ? 0 : 1;
-			IWebElement input = CustodianManagerContainsLinkRowElement.FindElements(By.TagName("input"))[checkboxNumber];
+			IWebElement input = EntityManagerContainsLinkRowElement.FindElements(By.TagName("input"))[checkboxNumber];
 			input.ClickWhenClickable();
 		}
 
@@ -253,10 +253,10 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			Overwrite = model.Overwrite.GetDescription();
 		}
 
-		protected void SetUpCustodianSettingsModel(ImportCustodianSettingsModel model)
+		protected void SetUpEntitySettingsModel(ImportEntitySettingsModel model)
 		{
 			UniqueIdentifier = model.UniqueIdentifier;
-			SetCustodianManagerContainsLink(model.CustodianManagerContainsLink);
+			SetEntityManagerContainsLink(model.EntityManagerContainsLink);
 		}
 
 		protected void SetUpDocumentSettingsModel(ImportDocumentSettingsModel model)

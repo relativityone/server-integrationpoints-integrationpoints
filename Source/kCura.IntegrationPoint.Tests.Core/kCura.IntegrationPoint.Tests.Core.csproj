@@ -136,8 +136,8 @@
     <Compile Include="Models\Constants\ExportToLoadFile\ExportToLoadFileSourceConstants.cs" />
     <Compile Include="Models\Constants\ExportToLoadFile\ExportToLoadFileNameOutputFilesAfterConstants.cs" />
     <Compile Include="Models\Constants\ExportToLoadFile\ExportToLoadFileTransferredObjectConstants.cs" />
-    <Compile Include="Models\CustodianExportToLoadFileDetails.cs" />
-    <Compile Include="Models\CustodianExportToLoadFileModel.cs" />
+    <Compile Include="Models\EntityExportToLoadFileDetails.cs" />
+    <Compile Include="Models\EntityExportToLoadFileModel.cs" />
     <Compile Include="Models\DocumentsTestData.cs" />
     <Compile Include="Models\ExportToLoadFileDetailsModel.cs" />
     <Compile Include="Models\Import\FTP\FtpProtocolType.cs" />
@@ -157,7 +157,6 @@
     <Compile Include="Models\Import\LoadFile\ImagesAndProductions\Productions\ImportSettingsModel.cs" />
     <Compile Include="Models\Import\LoadFile\ImagesAndProductions\Numbering.cs" />
     <Compile Include="Models\IntegrationPointType.cs" />
-    <Compile Include="Models\Import\Ldap\ImportFromLdapSettingsModel.cs" />
     <Compile Include="Models\Import\Ldap\ImportFromLdapSourceConnectionModel.cs" />
     <Compile Include="Models\Import\Ldap\ImportFromLdapModel.cs" />
     <Compile Include="Models\ExportToLoadFileProviderModel.cs" />
@@ -173,7 +172,7 @@
     <Compile Include="Models\JobHistoryModel.cs" />
     <Compile Include="Models\Import\Ldap\LdapAuthenticationType.cs" />
     <Compile Include="Models\Import\CopyNativeFiles.cs" />
-    <Compile Include="Models\Import\ImportCustodianSettingsModel.cs" />
+    <Compile Include="Models\Import\ImportEntitySettingsModel.cs" />
     <Compile Include="Models\Import\ImportDocumentSettingsModel.cs" />
     <Compile Include="Models\Shared\ImportSettingsModel.cs" />
     <Compile Include="Models\Import\LoadFile\MultiSelectFieldOverlayBehavior.cs" />

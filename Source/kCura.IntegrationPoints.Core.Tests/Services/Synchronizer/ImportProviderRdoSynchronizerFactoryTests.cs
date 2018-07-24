@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Synchronizer
 		private Mock<IObjectTypeRepository> _objectTypeRepository;
 
 		private const int _ARTIFACT_TYPE_ID = 3242;
-		private readonly string _rdoEntitySynchronizerAssemblyName = typeof(RdoCustodianSynchronizer).AssemblyQualifiedName;
+		private readonly string _rdoEntitySynchronizerAssemblyName = typeof(RdoEntitySynchronizer).AssemblyQualifiedName;
 		private readonly string _rdoSynchronizerAssemblyName = typeof(RdoSynchronizer).AssemblyQualifiedName;
 
 		[SetUp]
@@ -59,7 +59,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Synchronizer
 		{
 			// arrange
 			SwitchObjectTypeToEntity();
-			RdoCustodianSynchronizer synchronizer = SwitchResolvedSynchronizerToEntitySynchronizer();
+			RdoEntitySynchronizer synchronizer = SwitchResolvedSynchronizerToEntitySynchronizer();
 			Mock<ITaskJobSubmitter> taskSubmitter = new Mock<ITaskJobSubmitter>();
 
 			// act
@@ -84,14 +84,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Synchronizer
 			_kernel.Verify(x => x.Resolve<IDataSynchronizer>(_rdoSynchronizerAssemblyName));
 		}
 
-		private RdoCustodianSynchronizer SwitchResolvedSynchronizerToEntitySynchronizer()
+		private RdoEntitySynchronizer SwitchResolvedSynchronizerToEntitySynchronizer()
 		{
 			var logger = new Mock<IAPILog>();
 			var logFactory = new Mock<ILogFactory>();
 			logFactory.Setup(x => x.GetLogger()).Returns(logger.Object);
 			var helper = new Mock<IHelper>();
 			helper.Setup(x => x.GetLoggerFactory()).Returns(logFactory.Object);
-			var dataSynchronizer = new RdoCustodianSynchronizer(null, null, null, helper.Object);
+			var dataSynchronizer = new RdoEntitySynchronizer(null, null, null, helper.Object);
 			_kernel.Setup(x => x.Resolve<IDataSynchronizer>(_rdoEntitySynchronizerAssemblyName)).Returns(dataSynchronizer);
 
 			return dataSynchronizer;
@@ -104,7 +104,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Synchronizer
 
 		private void SwitchObjectTypeToEntity(string objectTypeName = "Entity")
 		{
-			Guid entityTypeGuid = ObjectTypeGuids.Custodian;
+			Guid entityTypeGuid = ObjectTypeGuids.Entity;
 			SwitchObjectType(objectTypeName, entityTypeGuid);
 		}
 

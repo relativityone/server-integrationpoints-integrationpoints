@@ -21,7 +21,7 @@ using Artifact = kCura.Relativity.Client.Artifact;
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 {
 	[TestFixture]
-	public class RdoCustodianSynchronizerTests : TestBase
+	public class RdoEntitySynchronizerTests : TestBase
 	{
 
 		#region GetFields
@@ -85,14 +85,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			artifacts.Add(new Artifact
 			{
 				ArtifactID = 2,
-				ArtifactGuids = new List<Guid> { Guid.Parse(CustodianFieldGuids.FirstName) },
+				ArtifactGuids = new List<Guid> { Guid.Parse(EntityFieldGuids.FirstName) },
 				Name = "Test1"
 			});
 
 			_fieldQuery.GetFieldsForRdo(Arg.Any<int>()).Returns(artifacts);
 
 			//ACT
-			var sync = RdoSynchronizerTests.ChangeWebAPIPath(new RdoCustodianSynchronizer(_fieldQuery, GetMockAPI(_fieldQuery), _importJobFactory, _helper));
+			var sync = RdoSynchronizerTests.ChangeWebAPIPath(new RdoEntitySynchronizer(_fieldQuery, GetMockAPI(_fieldQuery), _importJobFactory, _helper));
 			var fields = sync.GetFields(new DataSourceProviderConfiguration(_settings));
 
 
@@ -117,14 +117,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			artifacts.Add(new Artifact
 			{
 				ArtifactID = 2,
-				ArtifactGuids = new List<Guid> { Guid.Parse(CustodianFieldGuids.LastName) },
+				ArtifactGuids = new List<Guid> { Guid.Parse(EntityFieldGuids.LastName) },
 				Name = "Test1"
 			});
 
 			_fieldQuery.GetFieldsForRdo(Arg.Any<int>()).Returns(artifacts);
 
 			//ACT
-			var sync = RdoSynchronizerTests.ChangeWebAPIPath(new RdoCustodianSynchronizer(_fieldQuery, GetMockAPI(_fieldQuery), _importJobFactory, _helper));
+			var sync = RdoSynchronizerTests.ChangeWebAPIPath(new RdoEntitySynchronizer(_fieldQuery, GetMockAPI(_fieldQuery), _importJobFactory, _helper));
 			var fields = sync.GetFields(new DataSourceProviderConfiguration(_settings));
 
 
@@ -148,14 +148,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			artifacts.Add(new Artifact
 			{
 				ArtifactID = 2,
-				ArtifactGuids = new List<Guid> { Guid.Parse(CustodianFieldGuids.UniqueID) },
+				ArtifactGuids = new List<Guid> { Guid.Parse(EntityFieldGuids.UniqueID) },
 				Name = "Test1"
 			});
 
 			_fieldQuery.GetFieldsForRdo(Arg.Any<int>()).Returns(artifacts);
 
 			//ACT
-			var sync = RdoSynchronizerTests.ChangeWebAPIPath(new RdoCustodianSynchronizer(_fieldQuery, GetMockAPI(_fieldQuery), _importJobFactory, _helper));
+			var sync = RdoSynchronizerTests.ChangeWebAPIPath(new RdoEntitySynchronizer(_fieldQuery, GetMockAPI(_fieldQuery), _importJobFactory, _helper));
 			var fields = sync.GetFields(new DataSourceProviderConfiguration(_settings)).ToList();
 
 

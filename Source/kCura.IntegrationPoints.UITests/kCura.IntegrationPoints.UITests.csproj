@@ -103,7 +103,7 @@
     <Compile Include="Driver\DriverExtensions.cs" />
     <Compile Include="Logging\LoggerFactory.cs" />
     <Compile Include="Logging\LoggerNameEnricher.cs" />
-    <Compile Include="Pages\ExportCustodianToFileSecondPage.cs" />
+    <Compile Include="Pages\ExportEntityToFileSecondPage.cs" />
     <Compile Include="Pages\ExportToFileThirdPage.cs" />
     <Compile Include="Pages\ExportToFileThirdPageExportDetails.cs" />
     <Compile Include="Pages\ExportToFileThirdPageImageNativeTextOptions.cs" />
@@ -129,7 +129,7 @@
     <Compile Include="Pages\PushtoRelativityThirdPage.cs" />
     <Compile Include="Tests\CreateIpSmokeTest.cs" />
     <Compile Include="Auxiliary\Grinder.cs" />
-    <Compile Include="Tests\ExportToLoadFile\CustodianExportToLoadFile.cs" />
+    <Compile Include="Tests\ExportToLoadFile\EntityExportToLoadFile.cs" />
     <Compile Include="Tests\ExportToLoadFile\DocumentExportToLoadFileTests.cs" />
     <Compile Include="Tests\ExportToLoadFile\ExportToLoadFileTests.cs" />
     <Compile Include="Tests\ExportToLoadFile\FolderExportToLoadFileTests.cs" />

@@ -10,9 +10,8 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 {
-
 	[TestFixture]
-	public class CustodianExportToLoadFile : UiTest
+	public class EntityExportToLoadFile : UiTest
 	{
 		private IntegrationPointsAction _integrationPointsAction;
 		private IRSAPIService _service;
@@ -25,18 +24,18 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			Install(Context.WorkspaceId.Value);
 			_service = Container.Resolve<IRSAPIService>();
 
-			SetupCustodians();
+			SetupEntities();
 
 			_integrationPointsAction = new IntegrationPointsAction(Driver, Context);
 
 		}
 
 		[Test]
-		public void CustodianExportToLoadFile_TC_ELF_CUST_1()
+		public void EntityExportToLoadFile_TC_ELF_CUST_1()
 		{
-			CustodianExportToLoadFileModel model = new CustodianExportToLoadFileModel("TC-ELF-CUST-1");
+			EntityExportToLoadFileModel model = new EntityExportToLoadFileModel("TC-ELF-CUST-1");
 			model.TransferredObject = "Custodian";
-			model.ExportDetails = new CustodianExportToLoadFileDetails
+			model.ExportDetails = new EntityExportToLoadFileDetails
 			{
 				View = "Custodians - Legal Hold View"
 			};
@@ -72,14 +71,14 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			};
 			var validator = new ExportToLoadFileProviderValidator();
 
-			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewExportCustodianToLoadfileIntegrationPoint(model);
+			IntegrationPointDetailsPage detailsPage = _integrationPointsAction.CreateNewExportEntityToLoadfileIntegrationPoint(model);
 			detailsPage.RunIntegrationPoint();
 
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
 			validator.ValidateTransferedItems(detailsPage, 1);
 		}
 
-		private void SetupCustodians()
+		private void SetupEntities()
 		{
 			_service.RelativityObjectManager.Create(new ObjectTypeRef()
 			{

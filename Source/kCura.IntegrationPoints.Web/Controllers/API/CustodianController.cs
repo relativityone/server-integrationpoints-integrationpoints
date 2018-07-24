@@ -6,9 +6,9 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 {
 	public class CustodianController : ApiController
 	{
-		private readonly CustodianService _custodianService;
+		private readonly EntityService _custodianService;
 		
-		public CustodianController(CustodianService custodianService)
+		public CustodianController(EntityService custodianService)
 		{
 			_custodianService = custodianService;
 		}
@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[LogApiExceptionFilter(Message = "Unable to retrieve about custodian.")]
 		public bool Post(int id)
 		{
-			return _custodianService.IsCustodian(id);
+			return _custodianService.IsEntity(id);
 		}
 	}
 }

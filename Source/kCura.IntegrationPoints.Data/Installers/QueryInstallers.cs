@@ -17,11 +17,11 @@ namespace kCura.IntegrationPoints.Data.Installers
 	{
 		public void Install(IWindsorContainer container, IConfigurationStore store)
 		{
-			container.Register(Component.For<CreateCustodianManagerResourceTable>().ImplementedBy<CreateCustodianManagerResourceTable>().LifestyleTransient());
+			container.Register(Component.For<CreateEntityManagerResourceTable>().ImplementedBy<CreateEntityManagerResourceTable>().LifestyleTransient());
 			container.Register(Component.For<CreateErrorRdoQuery>().ImplementedBy<CreateErrorRdoQuery>().LifestyleTransient());
 			container.Register(Component.For<IAPILog>().UsingFactoryMethod(x => x.Resolve<IHelper>().GetLoggerFactory().GetLogger()));
 			container.Register(Component.For<GetApplicationGuid>().ImplementedBy<GetApplicationGuid>().LifestyleTransient());
-			container.Register(Component.For<GetJobCustodianManagerLinks>().ImplementedBy<GetJobCustodianManagerLinks>().LifestyleTransient());
+			container.Register(Component.For<GetJobEntityManagerLinks>().ImplementedBy<GetJobEntityManagerLinks>().LifestyleTransient());
 			container.Register(Component.For<GetJobsCount>().ImplementedBy<GetJobsCount>().LifestyleTransient());
 			container.Register(Component.For<IJobResourceTracker>().ImplementedBy<JobResourceTracker>().LifestyleTransient());
 			container.Register(Component.For<JobStatistics>().ImplementedBy<JobStatistics>().LifestyleTransient());

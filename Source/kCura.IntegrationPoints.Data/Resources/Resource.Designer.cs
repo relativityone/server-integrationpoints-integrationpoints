@@ -73,16 +73,13 @@ namespace kCura.IntegrationPoints.Data.Resources {
         /// <summary>
         ///   Looks up a localized string similar to IF NOT EXISTS (SELECT * FROM [eddsdbo].[Configuration] WHERE [Section] = &apos;kCura.IntegrationPoints&apos; AND [Name] = &apos;WebAPIPath&apos;)
         ///BEGIN
-        ///	insert into [eddsdbo].[Configuration] ([Section], [Name], [Value],  [MachineName], [Description])
-        ///	SELECT TOP 1 
-        ///		&apos;kCura.IntegrationPoints&apos; as [Section],
-        ///		&apos;WebAPIPath&apos; as [Name],
-        ///		value as [Value],
-        ///		&apos;&apos; as [MachineName],
-        ///		&apos;Relativity WebAPI URL for Relativity Integration Points&apos; as [Description]
-        ///	FROM	[eddsdbo].[Configuration]
-        ///	WHERE 
-        ///				[Section] = &apos;kCura.EDDS [rest of string was truncated]&quot;;.
+        ///	INSERT INTO [eddsdbo].[Configuration] VALUES (&apos;kCura.IntegrationPoints&apos;, &apos;WebAPIPath&apos;, &apos;http://localhost/RelativityWebAPI/&apos;, &apos;&apos;, &apos;Relativity WebAPI URL for Relativity Integration Points&apos;)
+        ///END
+        ///ELSE
+        ///BEGIN
+        ///	UPDATE	[eddsdbo].[Configuration] 
+        ///	SET			[Description] = &apos;Relativity WebAPI URL for Relativity Integration Points&apos;
+        ///	WHERE		[Section] = &apos;kCura.IntegrationPoints&apos; AND [N [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string AddWebApiConfig {
             get {
@@ -104,14 +101,15 @@ namespace kCura.IntegrationPoints.Data.Resources {
         ///		INNER JOIN {1}.[sys].[schemas] AS s 
         ///		ON t.[schema_id] = s.[schema_id] 
         ///		WHERE DATEDIFF(HOUR,t.create_date,GETUTCDATE())&gt;72
-        ///		AND t.name LIKE &apos;RIP_CustodianManager_%&apos;
+        ///		AND t.name LIKE &apos;RIP_EntityManager_%&apos;
         ///
         ///OPEN tableCursor 
-        ///FETCH next FROM tableCursor INTO @table [rest of string was truncated]&quot;;.
+        ///FETCH next FROM tableCursor INTO @table 
+        /// [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string CreateCustodianManagerResourceTable {
+        internal static string CreateEntityManagerResourceTable {
             get {
-                return ResourceManager.GetString("CreateCustodianManagerResourceTable", resourceCulture);
+                return ResourceManager.GetString("CreateEntityManagerResourceTable", resourceCulture);
             }
         }
         
@@ -122,6 +120,7 @@ namespace kCura.IntegrationPoints.Data.Resources {
         ///	([JobID] bigint,
         ///	[TotalRecords] int,
         ///	[ErrorRecords] int,
+        ///	[ImportApiErrors] int,
         ///	[Completed] bit,
         ///	CONSTRAINT [PK_{1}] PRIMARY KEY CLUSTERED 
         ///	(
@@ -132,7 +131,7 @@ namespace kCura.IntegrationPoints.Data.Resources {
         ///
         ///IF (NOT EXISTS (SELECT * FROM {0}.[{1}] WHERE JobID = @jobID))
         ///BEGIN
-        ///	insert into {0}.[{1}] ([JobID],[Completed]) values (@jobID,  [rest of string was truncated]&quot;;.
+        ///	insert into {0}.[{1}] ([JobID],[Com [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string CreateJobTrackingEntry {
             get {
@@ -196,7 +195,7 @@ namespace kCura.IntegrationPoints.Data.Resources {
         ///				(
         ///					SELECT * FROM {0}.[{1}] WHERE NOT [LockedByJobID] IS NULL
         ///				) t2
-        ///	ON		t1.[CustodianID] = t2.[CustodianID] AND t1.[ManagerID] = t2.[ManagerID] 
+        ///	ON		t1.[EntityID] = t2.[EntityID] AND t1.[ManagerID] = t2.[ManagerID] 
         ///WHERE
         ///				t1.[LockedByJobID] IS NULL
         ///				
@@ -206,16 +205,17 @@ namespace kCura.IntegrationPoints.Data.Resources {
         ///SET
         ///				[LockedByJobID]	= @JobID
         ///OUTPUT 
-        ///				INSERTED.[CustodianID],
+        ///				INSERTED.[EntityID],
         ///				INSERTED.[ManagerID]
         ///FROM 
         ///				{0}.[{1}] t1
         ///WHERE
-        ///				t1.[LockedByJobID] IS N [rest of string was truncated]&quot;;.
+        ///				t1.[LockedByJobID] IS NULL
+        ///.
         /// </summary>
-        internal static string GetJobCustodianManagerLinks {
+        internal static string GetJobEntityManagerLinks {
             get {
-                return ResourceManager.GetString("GetJobCustodianManagerLinks", resourceCulture);
+                return ResourceManager.GetString("GetJobEntityManagerLinks", resourceCulture);
             }
         }
         
@@ -300,13 +300,15 @@ namespace kCura.IntegrationPoints.Data.Resources {
         ///   Looks up a localized string similar to UPDATE {0}.[{1}]
         ///	SET
         ///		[TotalRecords] = @total,
-        ///		[ErrorRecords] = @errored
+        ///		[ErrorRecords] = @errored,
+        ///		[ImportApiErrors] = @importApiErrors
         ///	WHERE
         ///		[JobId] = @jobID
         ///
         ///SELECT
         ///	SUM(COALESCE([TotalRecords],0)) as [TotalRecords],
-        ///	SUM(COALESCE([ErrorRecords],0)) as [ErrorRecords]
+        ///	SUM(COALESCE([ErrorRecords],0)) as [ErrorRecords],
+        ///	SUM(COALESCE([ImportApiErrors],0)) as [ImportApiErrors]
         ///FROM {0}.[{1}]
         ///.
         /// </summary>

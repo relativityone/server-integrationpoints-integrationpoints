@@ -86,7 +86,7 @@
     <Compile Include="Tasks\SendEmailManager.cs" />
     <Compile Include="Tasks\SendEmailWorker.cs" />
     <Compile Include="Tasks\ServiceManagerBase.cs" />
-    <Compile Include="Tasks\SyncCustodianManagerWorker.cs" />
+    <Compile Include="Tasks\SyncEntityManagerWorker.cs" />
     <Compile Include="TaskFactory\ITaskFactory.cs" />
     <Compile Include="Tasks\SyncManager.cs" />
     <Compile Include="Tasks\SyncWorker.cs" />

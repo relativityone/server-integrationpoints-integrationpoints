@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		[FindsBy(How = How.Id, Using = "destinationRdo")]
 		protected IWebElement TransferedObjectSelectWebElement { get; set; }
-        
+
 		protected SelectElement DestinationSelect => new SelectElement(DestinationSelectWebElement);
 		protected SelectElement TransferedObjectSelect => new SelectElement(TransferedObjectSelectWebElement);
 
@@ -48,10 +48,10 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			return new PushToRelativitySecondPage(Driver);
 		}
 
-		public ExportCustodianToFileSecondPage GotoNextPageCustodian()
+		public ExportEntityToFileSecondPage GotoNextPageEntity()
 		{
 			NextButton.ClickWhenClickable();
-			return new ExportCustodianToFileSecondPage(Driver);
+			return new ExportEntityToFileSecondPage(Driver);
 		}
 	}
 }

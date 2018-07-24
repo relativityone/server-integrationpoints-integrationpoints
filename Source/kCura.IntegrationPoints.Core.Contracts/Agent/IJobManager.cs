@@ -11,7 +11,7 @@ namespace kCura.IntegrationPoints.Core.Contracts.Agent
 		None,
 		SyncManager,
 		SyncWorker,
-		SyncCustodianManagerWorker,
+		SyncEntityManagerWorker,
 		SendEmailManager,
 		SendEmailWorker,
 		ExportService,

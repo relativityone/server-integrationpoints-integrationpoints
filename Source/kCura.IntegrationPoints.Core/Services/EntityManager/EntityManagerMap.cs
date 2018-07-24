@@ -1,8 +1,8 @@
-﻿namespace kCura.IntegrationPoints.CustodianManager
+﻿namespace kCura.IntegrationPoints.Core.Services.EntityManager
 {
-	public class CustodianManagerMap
+	public class EntityManagerMap
 	{
-		public string CustodianID { get; set; }
+		public string EntityID { get; set; }
 		public string OldManagerID { get; set; }
 		public string NewManagerID { get; set; }
 		public int ManagerArtifactID { get; set; }

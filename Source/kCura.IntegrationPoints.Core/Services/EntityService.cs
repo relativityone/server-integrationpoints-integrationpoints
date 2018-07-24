@@ -5,15 +5,15 @@ using kCura.IntegrationPoints.Data.Repositories;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
-	public class CustodianService
+	public class EntityService
 	{
 		private readonly IObjectTypeRepository _objectTypeRepository;
-		public CustodianService(IObjectTypeRepository objectTypeRepository)
+		public EntityService(IObjectTypeRepository objectTypeRepository)
 		{
 			_objectTypeRepository = objectTypeRepository;
 		}
 
-		public bool IsCustodian(int id)
+		public bool IsEntity(int id)
 		{
 			var guids = _objectTypeRepository.GetObjectType(id).Guids;
 			return guids.Any(x => x.Equals(Guid.Parse(GlobalConst.Custodian)));

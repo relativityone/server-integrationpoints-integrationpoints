@@ -59,7 +59,7 @@
     <Compile Include="Tasks\ExportServiceManagerTests.cs" />
     <Compile Include="Tasks\ImportServiceManagerTests.cs" />
     <Compile Include="TaskFactory\TaskFactoryTests.cs" />
-    <Compile Include="Tasks\SyncCustodianManagerWorkerTests.cs" />
+    <Compile Include="Tasks\SyncEntityManagerWorkerTests.cs" />
     <Compile Include="Tasks\SyncManagerTests.cs" />
     <Compile Include="Tasks\SyncWorkerTests.cs" />
     <Compile Include="Validation\AgentValidatorTests.cs" />

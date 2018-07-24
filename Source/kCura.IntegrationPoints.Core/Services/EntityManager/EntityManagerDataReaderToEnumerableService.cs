@@ -3,14 +3,14 @@ using System.Data;
 using System.Linq;
 using kCura.IntegrationPoints.Core.Services.Conversion;
 
-namespace kCura.IntegrationPoints.CustodianManager
+namespace kCura.IntegrationPoints.Core.Services.EntityManager
 {
-	public class CustodianManagerDataReaderToEnumerableService
+	public class EntityManagerDataReaderToEnumerableService
 	{
 		private IObjectBuilder _objectBuilder;
 		private string _oldKeyFieldID;
 		private string _newKeyFieldID;
-		public CustodianManagerDataReaderToEnumerableService(IObjectBuilder objectBuilder, string oldKeyFieldID, string newKeyFieldID)
+		public EntityManagerDataReaderToEnumerableService(IObjectBuilder objectBuilder, string oldKeyFieldID, string newKeyFieldID)
 		{
 			_objectBuilder = objectBuilder;
 			_oldKeyFieldID = oldKeyFieldID;

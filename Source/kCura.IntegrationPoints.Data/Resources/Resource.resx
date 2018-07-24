@@ -124,8 +124,8 @@
   <data name="AddWebApiConfig" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>addwebapiconfig.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
-  <data name="CreateCustodianManagerResourceTable" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>createcustodianmanagerresourcetable.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  <data name="CreateEntityManagerResourceTable" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>createentitymanagerresourcetable.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
   <data name="CreateJobTrackingEntry" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>createjobtrackingentry.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
@@ -139,8 +139,8 @@
   <data name="GetArtifactIDByGuid" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>getartifactidbyguid.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
-  <data name="GetJobCustodianManagerLinks" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>getjobcustodianmanagerlinks.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  <data name="GetJobEntityManagerLinks" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>getjobentitymanagerlinks.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
   <data name="GetJobsCount" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>getjobscount.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
