@@ -1,8 +1,18 @@
 (function () {
-    const { suite, test, before } = intern.getInterface('tdd');
+    const { suite, test, before, after } = intern.getInterface('tdd');
     const { assert } = intern.getPlugin('chai');
 
     suite('step-mapFields.js', () => {
+
+        const ajax = $.ajax;
+
+        before(() => {
+            $.ajax = function() {};
+        });
+
+        after(() => {
+            $.ajax = ajax;
+        });
 
         suite('Step.viewModel', () => {
 
