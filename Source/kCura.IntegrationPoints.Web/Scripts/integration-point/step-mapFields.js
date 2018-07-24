@@ -553,6 +553,9 @@ ko.validation.insertValidationMessage = function (element) {
 
 		this.destinationCaseArtifactID = destination.CaseArtifactId;
 
+		// TODO
+		// Put here mapHelper methods which should be tested
+
 		var mappedSourcePromise;
 		if (destination.DoNotUseFieldsMapCache) {
 			mappedSourcePromise = [];
