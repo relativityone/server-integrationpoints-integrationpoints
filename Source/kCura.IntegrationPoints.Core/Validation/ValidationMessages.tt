@@ -2,9 +2,7 @@
 <#@ assembly name="System.Core.dll" #>
 <#@ assembly name="System.Xml.dll" #>
 <#@ assembly name="System.Xml.Linq.dll" #>
-<#@ import namespace="System" #>
 <#@ import namespace="System.IO" #>
-<#@ import namespace="System.Xml" #>
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Xml.Linq" #>
 <#@ output extension=".cs" #>
@@ -12,9 +10,9 @@ using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Core.Validation
 {
-    internal static class ValidationMessages
-    {
-        #region Sync
+	internal static class ValidationMessages
+	{
+		#region Sync
 
 <#
 var templateFile = Path.GetDirectoryName(Host.TemplateFile);
@@ -25,40 +23,34 @@ XDocument doc = XDocument.Load(fullPathSchemaFile);
 foreach  (XElement el in doc.Root.Elements())
 {
 
-        this.ClearIndent();
+	this.ClearIndent();
 
 #>
-        public static ValidationMessage <#=el.Attribute("Name").Value #> => new ValidationMessage(
+		public static ValidationMessage <#=el.Attribute("Name").Value #> => new ValidationMessage(
 <#
 
-    this.PushIndent("            ");
-    string[] namesToIncludeInClass = { "errorCode", "shortMessage"};
-    foreach (XElement element in el.Elements())
-    {
-        if (namesToIncludeInClass.Contains(element.Name.ToString()))
-        {
-            string currentElementData = element.Name + ": ";
+	this.PushIndent("			");
+	string[] namesToIncludeInClass = { "errorCode", "shortMessage"};
+	foreach (XElement element in el.Elements())
+	{
+		if (namesToIncludeInClass.Contains(element.Name.ToString()))
+		{
+			string currentElementData = element.Name + ": $\"" + element.Value + '"';
 
-            if (el.Attribute("paramteric") != null && element.Name == "shortMessage")
-                currentElementData += '$';
+			if (element.Name == "errorCode")
+				currentElementData += ",";
 
-            currentElementData += "\"" + element.Value + "\"";
+			this.WriteLine(currentElementData);
+		}
+	}
 
-            if (element.Name == "errorCode")
-                currentElementData += ",";
-
-            this.WriteLine(currentElementData);
-        }
-    }
-
-    this.ClearIndent();
-    this.PushIndent("        ");
-    this.WriteLine(");");
+	this.ClearIndent();
+	this.PushIndent("		");
+	this.WriteLine(");");
 }
 
 this.ClearIndent();
-
 #>
-        #endregion
-    }
+		#endregion
+	}
 }
