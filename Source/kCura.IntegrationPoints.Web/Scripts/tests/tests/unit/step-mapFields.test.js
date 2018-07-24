@@ -40,6 +40,12 @@
 
                 const field = { fieldIdentifier: 7, type: 'String', actualName: 'fieldX', displayName: 'fieldX' };
                 const nonExistentField = { exist: false, type: null, actualName: null, displayName: null };
+                const fields = [ 
+                    { fieldIdentifier: 1, type: 'Number', actualName: 'num', displayName: 'num' },
+                    { fieldIdentifier: 2, type: 'Single Choice', actualName: 'cho', displayName: 'cho' },
+                    { fieldIdentifier: 7, type: 'String', actualName: 'fieldX', displayName: 'fieldX' },
+                    { fieldIdentifier: 3 }
+                ];
 
                 test('Given valid field, When the fields array is empty, Then proper object is returned', () => {
                     const arr = [];
@@ -48,23 +54,13 @@
                 });
 
                 test('Given valid field, When the fields array does not contain the field, Then proper object is returned', () => {
-                    const arr = [ 
-                        { fieldIdentifier: 1, type: 'Number', actualName: 'num', displayName: 'num' },
-                        { fieldIdentifier: 2, type: 'Single Choice', actualName: 'cho', displayName: 'cho' },
-                        { fieldIdentifier: 3 }
-                    ];
+                    const arr = fields.filter(x => x.fieldIdentifier !== field.fieldIdentifier);
                     const actual = model.findField(arr, field);
                     assert.deepEqual(actual, nonExistentField, 'Wrong return value');
                 });
 
                 test('Given valid field, When the fields array does contain the field, Then proper object is returned', () => {
-                    const arr = [ 
-                        { fieldIdentifier: 1, type: 'Number', actualName: 'num', displayName: 'num' },
-                        { fieldIdentifier: 2, type: 'Single Choice', actualName: 'cho', displayName: 'cho' },
-                        { fieldIdentifier: 7, type: 'String', actualName: 'fieldX', displayName: 'fieldX' },
-                        { fieldIdentifier: 3 }
-                    ];
-                    const actual = model.findField(arr, field);
+                    const actual = model.findField(fields, field);
                     const expected = 
                         { exist: true, type: 'String', actualName: 'fieldX', displayName: 'fieldX' };
                     assert.deepEqual(actual, expected, 'Wrong return value');
