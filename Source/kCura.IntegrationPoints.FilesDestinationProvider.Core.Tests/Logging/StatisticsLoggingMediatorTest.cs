@@ -1,7 +1,6 @@
 ﻿using System;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
-using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
@@ -23,7 +22,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 		[SetUp]
 		public override void SetUp()
 		{
-			_subjectUnderTest = new StatisticsLoggingMediator(Substitute.For<IMessageService>(), Substitute.For<IProviderTypeService>(), Substitute.For<IJobHistoryErrorService>(), Substitute.For<ICaseServiceContext>());
+			IIntegrationPointProviderTypeService integrationPointProviderTypeService = Substitute.For<IIntegrationPointProviderTypeService>();
+
+			_subjectUnderTest = new StatisticsLoggingMediator(Substitute.For<IMessageService>(), Substitute.For<IJobHistoryErrorService>(),
+				Substitute.For<ICaseServiceContext>(),
+				integrationPointProviderTypeService);
 
 			_exporterStatusNotificationMock = Substitute.For<ICoreExporterStatusNotification>();
 

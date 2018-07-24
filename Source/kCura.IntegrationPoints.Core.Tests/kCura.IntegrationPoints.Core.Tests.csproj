@@ -81,6 +81,7 @@
     <Compile Include="Services\Domain\AppDomainIsolatedFactoryCreationStrategyTests.cs" />
     <Compile Include="Services\Domain\ProviderFactoryVendorTests.cs" />
     <Compile Include="Services\Exporter\Images\ImageExporterServiceTests.cs" />
+    <Compile Include="Services\JobHistory\CachedIntegrationPointProviderTypeServiceTests.cs" />
     <Compile Include="Services\ProcessingSourceLocationTests.cs" />
     <Compile Include="Services\DataTransferLocationServiceTests.cs" />
     <Compile Include="Services\DeleteIntegrationPointsTests.cs" />
