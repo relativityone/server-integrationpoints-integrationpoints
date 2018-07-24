@@ -26,7 +26,7 @@
                 model = IP.points.steps[0].model;
             });
 
-            suite('findField', () => {
+            suite('findField(array, field)', () => {
 
                 const field = { fieldIdentifier: 7, type: 'String', actualName: 'fieldX', displayName: 'fieldX' };
                 const nonExistentField = { exist: false, type: null, actualName: null, displayName: null };
@@ -58,6 +58,34 @@
                     const expected = 
                         { exist: true, type: 'String', actualName: 'fieldX', displayName: 'fieldX' };
                     assert.deepEqual(actual, expected, 'Wrong return value');
+                });
+
+            });
+
+            suite('updateFieldFromMapping(mappedField, fields)', () => {
+
+                const mappedField = { fieldIdentifier: 7, type: 'String', actualName: 'fieldX', displayName: 'fieldX' };
+                const fields = [ 
+                    { fieldIdentifier: 1, type: 'Number', actualName: 'num', displayName: 'num' },
+                    { fieldIdentifier: 2, type: 'Single Choice', actualName: 'cho', displayName: 'cho' },
+                    { fieldIdentifier: 7, type: 'String', actualName: 'realX', displayName: 'realX' },
+                    { fieldIdentifier: 3 }
+                ];
+
+                test('Given a field and empty array, When fn is called, Then null is returned', () => {
+                    const actual = model.updateFieldFromMapping(mappedField, []);
+                    assert.isNull(actual, 'Null should be returned');
+                });
+
+                test('Given a field and fields array, When array does not contain the field, Then null is returned', () => {
+                    const differentFields = fields.filter (x => x.fieldIdentifier !== mappedField.fieldIdentifier);
+                    const actual = model.updateFieldFromMapping(mappedField, differentFields);
+                    assert.isNull(actual, 'Null should be returned');
+                });
+
+                test('Given a field and fields array, When array contains the field, Then the field is returned', () => {
+                    const actual = model.updateFieldFromMapping(mappedField, fields);
+                    assert.deepEqual(actual, fields[2], 'Mapped field should contain updated properties');
                 });
 
             });
