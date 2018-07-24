@@ -141,9 +141,9 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
 				int artifactId = _caseServiceContext.RsapiService.RelativityObjectManager.Create(jobHistory);
 				jobHistory.ArtifactId = artifactId;
+
+				OnJobStart(integrationPoint, batchInstance);
 			}
-			
-			OnJobStart(integrationPoint, batchInstance);
 
 			return jobHistory;
 		}

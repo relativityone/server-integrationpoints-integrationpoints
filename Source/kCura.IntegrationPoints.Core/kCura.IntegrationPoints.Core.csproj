@@ -180,6 +180,8 @@
     <Compile Include="Services\IntegrationPoint\IIntegrationPointForSourceService.cs" />
     <Compile Include="Services\IntegrationPoint\IntegrationPointExtensions.cs" />
     <Compile Include="Services\IProcessingSourceLocationService.cs" />
+    <Compile Include="Services\JobHistory\CachedIntegrationPointProviderTypeService.cs" />
+    <Compile Include="Services\JobHistory\IIntegrationPointProviderTypeService.cs" />
     <Compile Include="Services\JobHistory\IUnlinkedJobHistoryService.cs" />
     <Compile Include="Services\JobHistory\IUnfinishedJobService.cs" />
     <Compile Include="Services\JobHistory\UnfinishedJobService.cs" />

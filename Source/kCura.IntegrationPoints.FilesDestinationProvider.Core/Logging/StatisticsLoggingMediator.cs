@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Monitoring.NumberOfRecords.Messages;
-using kCura.IntegrationPoints.Core.Monitoring.NumberOfRecordsMessages;
-using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -21,9 +19,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 		private int _currentExportedItemChunkCount;
 		private const int _EXPORTED_ITEMS_UPDATE_THRESHOLD = 1000;
 		private readonly IMessageService _messageService;
-		private readonly IProviderTypeService _providerTypeService;
 		private readonly IJobHistoryErrorService _historyErrorService;
 		private readonly ICaseServiceContext _caseServiceContext;
+		private readonly IIntegrationPointProviderTypeService _integrationPointProviderTypeService;
 
 		#endregion //Fields
 
@@ -41,12 +39,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 
 		#region Methods
 
-		public StatisticsLoggingMediator(IMessageService messageService, IProviderTypeService providerTypeService, IJobHistoryErrorService historyErrorService, ICaseServiceContext caseServiceContext)
+		public StatisticsLoggingMediator(IMessageService messageService, IJobHistoryErrorService historyErrorService,
+			ICaseServiceContext caseServiceContext,
+			IIntegrationPointProviderTypeService integrationPointProviderTypeService)
 		{
 			_messageService = messageService;
-			_providerTypeService = providerTypeService;
 			_historyErrorService = historyErrorService;
 			_caseServiceContext = caseServiceContext;
+			_integrationPointProviderTypeService = integrationPointProviderTypeService;
 		}
 
 		public void RegisterEventHandlers(IUserMessageNotification userMessageNotification,
@@ -83,7 +83,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 
 		private void SendStatistics(ExportEventArgs exportArgs)
 		{
-			string provider = _historyErrorService.IntegrationPoint.GetProviderType(_providerTypeService).ToString();
+			string provider = GetProviderName();
 			var message = new JobApmThroughputMessage()
 			{
 				Provider = provider,
@@ -97,6 +97,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 			};
 
 			_messageService.Send(message);
+		}
+
+		private string GetProviderName()
+		{
+			return _integrationPointProviderTypeService.GetProviderType(_historyErrorService.IntegrationPoint).ToString();	
 		}
 
 		private bool CanUpdateJobStatus(ExportEventArgs exportArgs)

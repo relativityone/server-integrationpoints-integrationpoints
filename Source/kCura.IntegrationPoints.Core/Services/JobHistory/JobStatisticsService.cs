@@ -3,7 +3,6 @@ using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Monitoring.NumberOfRecords.Messages;
-using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Statistics;
@@ -62,8 +61,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 	public class JobStatisticsService
 	{
 		private readonly IMessageService _messageService;
-		private readonly IIntegrationPointService _integrationPointService;
-		private readonly IProviderTypeService _providerTypeService;
+		private readonly IIntegrationPointProviderTypeService _integrationPointProviderTypeService;
 		private readonly IWorkspaceDBContext _context;
 		private readonly TaskParameterHelper _helper;
 		private readonly JobStatisticsQuery _query;
@@ -91,7 +89,8 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			INativeFileSizeStatistics nativeFileSizeStatistics,
 			IImageFileSizeStatistics imageFileSizeStatistics,
 			IErrorFilesSizeStatistics errorFilesSizeStatistics,
-			IMessageService messageService, IIntegrationPointService integrationPointService, IProviderTypeService providerTypeService)
+			IMessageService messageService,
+			IIntegrationPointProviderTypeService integrationPointProviderTypeService)
 		{
 			_query = query;
 			_helper = taskParameterHelper;
@@ -101,8 +100,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			_imageFileSizeStatistics = imageFileSizeStatistics;
 			_errorFilesSizeStatistics = errorFilesSizeStatistics;
 			_messageService = messageService;
-			_integrationPointService = integrationPointService;
-			_providerTypeService = providerTypeService;
+			_integrationPointProviderTypeService = integrationPointProviderTypeService;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<JobStatisticsService>();
 		}
 
@@ -280,9 +278,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
 		private ProviderType GetProviderType(Job job)
 		{
-			Data.IntegrationPoint integrationPoint = _integrationPointService.GetRdo(job.RelatedObjectArtifactID);
-			ProviderType providerType = integrationPoint.GetProviderType(_providerTypeService);
-			return providerType;
+			return _integrationPointProviderTypeService.GetProviderType(job.RelatedObjectArtifactID);
 		}
 
 		#region Logging

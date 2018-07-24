@@ -23,7 +23,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 		[SetUp]
 		public override void SetUp()
 		{
-			_subjectUnderTest = new StatisticsLoggingMediator(Substitute.For<IMessageService>(), Substitute.For<IProviderTypeService>(), Substitute.For<IJobHistoryErrorService>(), Substitute.For<ICaseServiceContext>());
+			IIntegrationPointProviderTypeService integrationPointProviderTypeService = Substitute.For<IIntegrationPointProviderTypeService>();
+
+			_subjectUnderTest = new StatisticsLoggingMediator(Substitute.For<IMessageService>(), Substitute.For<IJobHistoryErrorService>(),
+				Substitute.For<ICaseServiceContext>(),
+				integrationPointProviderTypeService);
 
 			_exporterStatusNotificationMock = Substitute.For<ICoreExporterStatusNotification>();
 
