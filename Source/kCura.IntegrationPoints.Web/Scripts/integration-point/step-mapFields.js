@@ -553,8 +553,6 @@ ko.validation.insertValidationMessage = function (element) {
 
 		this.destinationCaseArtifactID = destination.CaseArtifactId;
 
-		// TODO
-		// Put here mapHelper methods which should be tested
 		self.findField = function(array, field) {
 			const fields = $.grep(array, function (value, _index) { return value.fieldIdentifier === field.fieldIdentifier; });
 			const fieldFound = fields.length > 0;
@@ -564,6 +562,17 @@ ko.validation.insertValidationMessage = function (element) {
 				actualName: fieldFound ? fields[0].actualName : null,
 				displayName: fieldFound ? fields[0].displayName : null
 			};
+		};
+
+		self.updateFieldFromMapping = function(mappedField, fields) {
+			var field = self.findField(fields, mappedField);
+			if (field.exist) {
+				mappedField.type = field.type;
+				mappedField.actualName = field.actualName;
+				mappedField.displayName = field.displayName;
+				return mappedField;
+			}
+			return null;
 		};
 
 		var mappedSourcePromise;
@@ -608,23 +617,14 @@ ko.validation.insertValidationMessage = function (element) {
 			function getMapped(sourceFields, destinationFields, fieldMapping, sourceKey, destinationKey) {
 				var sourceMapped = [];
 				var destinationMapped = [];
-				var type = "type";
-				$.each(fieldMapping, function (item) {
-					var source = this[sourceKey];
-					var destination = this[destinationKey];
-					var sourceField = self.findField(sourceFields, source);
-					var destinationField = self.findField(destinationFields, destination);
-					if (sourceField.exist) {
-						source[type] = sourceField.type;
-						source.actualName = sourceField.actualName;
-						source.displayName = sourceField.displayName;
-						sourceMapped.push(source);
+				$.each(fieldMapping, function (_index, mapping) {
+					var sourceField = self.updateFieldFromMapping(mapping[sourceKey], sourceFields)
+					if (!!sourceField) {
+						sourceMapped.push(sourceField);
 					}
-					if (destinationField.exist) {
-						destination[type] = destinationField.type;
-						destination.actualName = destinationField.actualName;
-						destination.displayName = destinationField.displayName;
-						destinationMapped.push(destination);
+					var destinationField = self.updateFieldFromMapping(mapping[destinationKey], destinationFields);
+					if (!!destinationField) {
+						destinationMapped.push(destinationField);
 					}
 				});
 				return [destinationMapped, sourceMapped];
