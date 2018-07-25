@@ -73,22 +73,34 @@
 			var joinedErrors = errors
 				.map(function (error) { return formatError(error) })
 				.join("");
-			return errPrefix + ' ' + "<ul class=\"error-list\">" + joinedErrors + "</ul>";
+			return errPrefix + ' ' + '<ul class="error-list">' + joinedErrors + "</ul>";
 		}
 
 		message.getFormattedErrorMessage = getFormattedMessage;
 
-		function formatError(error) {
-			var message = "<li>";
-			if (!!error.code) {
-				message += error.code + " ";
-			}
-			var helpUrl = "<a class=\"error-help-url\" href=\"" +
-				error.helpUrl +
-				"\" target=\"_blank\">Click here for more information.</a>";
-			message += (error.message + " " + helpUrl + "</li>");
+		function addErrorCode(error){
+			return !!error.code ? error.code + " " : "";
+		}
 
-			return message;
+		function addErrorBody(error){
+			return error.message + " ";
+		}
+
+		function addErrorHelpUrl(error){
+			const helpUrl = '<a class="error-help-url" href="' + error.helpUrl + '" target="_blank">Click here for more information.</a>';
+			return !!error.code ? helpUrl + " " : "";
+		}
+
+		function wrapErrorMsg(message){
+			return '<li>' + message + '</li>';
+		}
+
+		function formatError(error){
+			var message = "";
+			message += addErrorCode(error);
+			message += addErrorBody(error);
+			message += addErrorHelpUrl(error);
+			return wrapErrorMsg(message);
 		}
 
 		//change to constants
