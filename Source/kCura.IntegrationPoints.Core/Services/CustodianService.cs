@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
+using ObjectTypeGuids = kCura.IntegrationPoints.Core.Contracts.Custodian.ObjectTypeGuids;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
@@ -15,8 +16,8 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public bool IsCustodian(int id)
 		{
-			var guids = _objectTypeRepository.GetObjectType(id).Guids;
-			return guids.Any(x => x.Equals(Guid.Parse(GlobalConst.Custodian)));
+			IEnumerable<Guid> guids = _objectTypeRepository.GetObjectType(id).Guids;
+			return guids.Any(x => x.Equals(ObjectTypeGuids.Custodian));
 		}
 	}
 }

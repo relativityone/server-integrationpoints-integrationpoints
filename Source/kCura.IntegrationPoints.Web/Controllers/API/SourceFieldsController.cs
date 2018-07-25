@@ -33,7 +33,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		}
 
 		[HttpPost]
-		[Route("{workspaceID}/api/SourceFields/")]
 		[LogApiExceptionFilter(Message = "Unable to retrieve source fields.")]
 		public HttpResponseMessage Get(SourceOptions data)
 		{

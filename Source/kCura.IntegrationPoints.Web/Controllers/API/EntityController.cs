@@ -4,19 +4,18 @@ using kCura.IntegrationPoints.Web.Attributes;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
-	public class CustodianController : ApiController
+	public class EntityController : ApiController
 	{
 		private readonly CustodianService _custodianService;
 		
-		public CustodianController(CustodianService custodianService)
+		public EntityController(CustodianService custodianService)
 		{
 			_custodianService = custodianService;
 		}
 
-		[HttpPost]
-		[Route("{workspaceID}/api/custodian/{id}")]
-		[LogApiExceptionFilter(Message = "Unable to retrieve about custodian.")]
-		public bool Post(int id)
+		[HttpGet]
+		[LogApiExceptionFilter(Message = "Unable to determine if object is of Entity type.")]
+		public bool Get(int id)
 		{
 			return _custodianService.IsCustodian(id);
 		}

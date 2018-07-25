@@ -522,7 +522,7 @@ ko.validation.insertValidationMessage = function (element) {
 		this.showManager = ko.observable(false);
 		this.cacheMapped = ko.observableArray([]);
 		root.data.ajax({
-			type: 'POST', url: root.utils.generateWebAPIURL('Custodian/' + artifactTypeId)
+			type: 'GET', url: root.utils.generateWebAPIURL('Entity/' + artifactTypeId)
 		}).then(function (result) {
 			self.showManager(result);
 		});
