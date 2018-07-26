@@ -442,12 +442,20 @@
     <Compile Include="Validation\RelativityProviderValidator\Parts\RelativityProviderPermissionValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidator\RelativityProviderValidationMessages.cs" />
     <Compile Include="Validation\RelativityProviderValidator\RelativityProviderValidatorsFactory.cs" />
-    <Compile Include="Validation\ValidationMessages.cs" />
+    <Compile Include="Validation\ValidationMessages.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ValidationMessages.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="LICENSE.txt">
       <Paket>True</Paket>
     </Content>
+    <None Include="Validation\ValidationMessages.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ValidationMessages.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">
@@ -548,10 +556,16 @@
     </When>
   </Choose>
   <Import Project="..\..\packages\Baseclass.Contrib.Nuget.Output\build\$(__paket__Baseclass_Contrib_Nuget_Output_targets).targets" Condition="Exists('..\..\packages\Baseclass.Contrib.Nuget.Output\build\$(__paket__Baseclass_Contrib_Nuget_Output_targets).targets')" Label="Paket" />
-  <ItemGroup>
+  <Import Project="..\..\packages\Clarius.TransformOnBuild\build\Clarius.TransformOnBuild.targets" Condition="Exists('..\..\packages\Clarius.TransformOnBuild\build\Clarius.TransformOnBuild.targets')" Label="Paket" />
+  <PropertyGroup>
+    <TextTransformPath>packages\Mono.TextTransform\tools\TextTransform.exe</TextTransformPath>
+  </PropertyGroup><ItemGroup>
     <Analyzer Include="..\..\packages\CSharpGuidelineAnalyzer\analyzers\dotnet\cs\CSharpGuidelineAnalyzer.dll">
       <Paket>True</Paket>
     </Analyzer>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
