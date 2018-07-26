@@ -17,8 +17,7 @@ namespace kCura.IntegrationPoints.Core.Utils
 			
 			oldProperty.Replace(new JProperty(newPropertyName, oldProperty.Value));
 
-			string newJson = JsonConvert.SerializeObject(sourceObject, Formatting.None);
-			return newJson;
+			return JsonConvert.SerializeObject(sourceObject, Formatting.None);
 		}
 	}
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace kCura.IntegrationPoints.Core.Contracts.Custodian
+namespace kCura.IntegrationPoints.Core.Contracts.Entity
 {
 	public partial class ObjectTypeGuids
 	{

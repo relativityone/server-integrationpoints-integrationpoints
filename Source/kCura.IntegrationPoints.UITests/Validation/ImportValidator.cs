@@ -3,7 +3,7 @@ using System.Linq;
 using kCura.IntegrationPoints.Data;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
-using ObjectTypeGuids = kCura.IntegrationPoints.Core.Contracts.Custodian.ObjectTypeGuids;
+using ObjectTypeGuids = kCura.IntegrationPoints.Core.Contracts.Entity.ObjectTypeGuids;
 
 namespace kCura.IntegrationPoints.UITests.Validation
 {

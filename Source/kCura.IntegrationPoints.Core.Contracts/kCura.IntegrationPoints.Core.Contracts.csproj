@@ -56,7 +56,7 @@
     <Compile Include="BatchReporter\NullBatchReporter.cs" />
     <Compile Include="Configuration\DestinationConfiguration.cs" />
     <Compile Include="Configuration\SourceConfiguration.cs" />
-    <Compile Include="Custodian\EntityConstants.cs" />
+    <Compile Include="Entity\EntityConstants.cs" />
     <Compile Include="BatchReporter\IBatchReporter.cs" />
     <Compile Include="Helpers\TaskTypeHelper.cs" />
   </ItemGroup>
