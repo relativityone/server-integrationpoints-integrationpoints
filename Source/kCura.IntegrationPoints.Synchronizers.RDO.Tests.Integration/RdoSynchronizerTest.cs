@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
@@ -27,8 +26,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 		private IImportJobFactory _jobFactory;
 		private IHelper _helper;
 
-		public RdoSynchronizerTest() 
-			: base($"RdoSynchronizerTest_{Utils.FormatedDateTimeNow}")
+		private const string _INPUT_DATA_CONTROL_NUMBER = "guid";
+		private const string _INPUT_DATA_EXTRACTED_TEXT = "extractedtext";
+		private const string _INPUT_DATA_GROUP_ID = "groupid";
+		private const string _WORKSPACE_CONTROL_NUMBER = "Control Number";
+		private const string _WORKSPACE_EXTRACTED_TEXT = "Extracted Text";
+		private const string _WORKSPACE_GROUP_ID = "Group Identifier";
+
+		public RdoSynchronizerTest() : base($"RdoSynchronizerTest_{Utils.FormatedDateTimeNow}")
 		{
 		}
 
@@ -62,33 +67,31 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 
 		[Test]
 		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
-		[Ignore("TODO: Broken test needs to be fixed!", Until = "2018-08-08")]
 		public void ItShouldSyncDataToWorkspace()
 		{
 			//Arange
-			const int numberOfDocuments = 3;
 			var rdoSynchronizer = new RdoSynchronizer(_fieldQuery, _factory, _jobFactory, _helper);
-			
+
 			ImportSettings importSettings = CreateDefaultImportSettings();
 			List<FieldEntry> destinationFields = rdoSynchronizer.GetFields(new DataSourceProviderConfiguration(JsonConvert.SerializeObject(importSettings))).ToList();
 			FieldEntry fieldIdentifierEntry = destinationFields.FirstOrDefault(field => field.IsIdentifier);
 			importSettings.ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly;
-			if (fieldIdentifierEntry != null) { importSettings.IdentityFieldId = int.Parse(fieldIdentifierEntry.FieldIdentifier);}
-
+			if (fieldIdentifierEntry != null)
+			{
+				importSettings.IdentityFieldId = int.Parse(fieldIdentifierEntry.FieldIdentifier);
+			}
 			string settings = JsonConvert.SerializeObject(importSettings);
-			
 			IEnumerable<FieldMap> sourceFields = CreateDefaultSourceFieldMap(rdoSynchronizer.GetFields(new DataSourceProviderConfiguration(settings)).ToList());
 
-			List<Dictionary<FieldEntry, object>> defaultData = CreateDefaultData();
+			List<Dictionary<FieldEntry, object>> importData = CreateImportData();
 
 			//Act
-			rdoSynchronizer.SyncData(defaultData, sourceFields, settings);
-
-			List<Result<Document>> documents = GetAllDocuments(WorkspaceArtifactId);
+			rdoSynchronizer.SyncData(importData, sourceFields, settings);
 
 			//Assert
-			Assert.AreEqual(numberOfDocuments, documents.Count);
-			VerifyDocumentsWithDefaultData(defaultData, documents);
+			List<Result<Document>> documents = GetAllDocuments(WorkspaceArtifactId);
+			Assert.AreEqual(importData.Count, documents.Count);
+			VerifyDocumentsWithDefaultData(importData, documents);
 		}
 
 		#region "Helpers"
@@ -97,22 +100,26 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 		{
 			foreach (Dictionary<FieldEntry, object> data in dataList)
 			{
-				object expectedControlNumber = data.Values.ElementAt(0);
-				object expectedExtractedText = data.Values.ElementAt(2);
+				FieldEntry controlNumberKey = data.Keys.Single(x => x.ActualName == _INPUT_DATA_CONTROL_NUMBER);
+				object expectedControlNumber = data[controlNumberKey];
+
+				FieldEntry extractedTextKey = data.Keys.Single(x => x.ActualName == _INPUT_DATA_EXTRACTED_TEXT);
+				object expectedExtractedText = data[extractedTextKey];
+
 				Result<Document> docResult = documents.FirstOrDefault(x => x.Artifact.TextIdentifier == expectedControlNumber.ToString());
 				Assert.NotNull(docResult);
-				FieldValue docExtractedText = docResult.Artifact.Fields.First(x => x.Name == "Extracted Text");
+				FieldValue docExtractedText = docResult.Artifact.Fields.First(x => x.Name == _WORKSPACE_EXTRACTED_TEXT);
 				Assert.AreEqual(expectedExtractedText.ToString(), docExtractedText.Value.ToString());
 			}
 		}
-		
+
 		public List<Result<Document>> GetAllDocuments(int workspaceId)
 		{
 			using (var proxy = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System))
 			{
 				proxy.APIOptions.WorkspaceID = workspaceId;
 
-				var requestedFields = new[] {"Control Number", "Extracted Text", "Group Identifier"};
+				var requestedFields = new[] { _WORKSPACE_CONTROL_NUMBER, _WORKSPACE_EXTRACTED_TEXT, _WORKSPACE_GROUP_ID };
 				List<FieldValue> fields = requestedFields.Select(x => new FieldValue(x)).ToList();
 				var query = new Query<Document>
 				{
@@ -132,65 +139,64 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 				return null;
 			}
 			int fieldIdUniqueId = int.Parse(destinationFields.FirstOrDefault(field => field.IsIdentifier).FieldIdentifier);
-			int fieldIdFullName = int.Parse(destinationFields.Where(field => !field.IsIdentifier).ElementAt(0).FieldIdentifier);
-			int fieldIdDepartment = int.Parse(destinationFields.Where(field => !field.IsIdentifier).ElementAt(1).FieldIdentifier);
+			int fieldIdExtractedText = int.Parse(destinationFields.Single(field => field.ActualName == _WORKSPACE_EXTRACTED_TEXT).FieldIdentifier);
+			int fieldIdGroupIdentifier = int.Parse(destinationFields.Single(field => field.ActualName == _WORKSPACE_GROUP_ID).FieldIdentifier);
 
 			return new List<FieldMap>()
 			{
 				new FieldMap()
 				{
-					SourceField = new FieldEntry(){DisplayName = "myname",FieldIdentifier = "myname",FieldType = FieldType.String},
-					DestinationField    = new FieldEntry(){DisplayName = "",FieldIdentifier = fieldIdFullName.ToString(),FieldType = FieldType.String},
+					SourceField = new FieldEntry(){DisplayName = _INPUT_DATA_EXTRACTED_TEXT,FieldIdentifier = _INPUT_DATA_EXTRACTED_TEXT,FieldType = FieldType.String},
+					DestinationField    = new FieldEntry(){DisplayName = "",FieldIdentifier = fieldIdExtractedText.ToString(),FieldType = FieldType.String},
 					FieldMapType = FieldMapTypeEnum.None
 				},
 				new FieldMap()
 				{
-					SourceField = new FieldEntry(){DisplayName = "dept",FieldIdentifier = "dept",FieldType = FieldType.String},
-					DestinationField    = new FieldEntry(){DisplayName = "",FieldIdentifier = fieldIdDepartment.ToString(),FieldType = FieldType.String},
+					SourceField = new FieldEntry(){DisplayName = _INPUT_DATA_GROUP_ID,FieldIdentifier = _INPUT_DATA_GROUP_ID,FieldType = FieldType.String},
+					DestinationField    = new FieldEntry(){DisplayName = "",FieldIdentifier = fieldIdGroupIdentifier.ToString(),FieldType = FieldType.String},
 					FieldMapType = FieldMapTypeEnum.None
 				},
 				new FieldMap()
 				{
-					SourceField = new FieldEntry(){DisplayName = "guid",FieldIdentifier = "guid",FieldType = FieldType.String},
+					SourceField = new FieldEntry(){DisplayName = _INPUT_DATA_CONTROL_NUMBER,FieldIdentifier = _INPUT_DATA_CONTROL_NUMBER,FieldType = FieldType.String},
 					DestinationField    = new FieldEntry(){DisplayName = "",FieldIdentifier = fieldIdUniqueId.ToString(),FieldType = FieldType.String},
 					FieldMapType = FieldMapTypeEnum.Identifier
 				}
 			};
 		}
 
-		private static List<Dictionary<FieldEntry, object>> CreateDefaultData()
+		private static List<Dictionary<FieldEntry, object>> CreateImportData()
 		{
 			var sourceFields = new List<Dictionary<FieldEntry, object>>
 			{
 				new Dictionary<FieldEntry, object>()
 				{
 					{
-						new FieldEntry() {DisplayName = "guid", FieldIdentifier = "guid", FieldType = FieldType.String},
+						new FieldEntry() {DisplayName = _INPUT_DATA_CONTROL_NUMBER, FieldIdentifier = _INPUT_DATA_CONTROL_NUMBER, FieldType = FieldType.String},
 						Guid.Parse("6703F851-C653-40E0-B249-AB4A7C879E6B")
 					},
-					{new FieldEntry() {DisplayName = "myname", FieldIdentifier = "myname", FieldType = FieldType.String}, "Art"},
-					{new FieldEntry() {DisplayName = "dept", FieldIdentifier = "dept", FieldType = FieldType.String}, "DEV"}
+					{new FieldEntry() {DisplayName = _INPUT_DATA_EXTRACTED_TEXT, FieldIdentifier = _INPUT_DATA_EXTRACTED_TEXT, FieldType = FieldType.String}, "Art"},
+					{new FieldEntry() {DisplayName = _INPUT_DATA_GROUP_ID, FieldIdentifier = _INPUT_DATA_GROUP_ID, FieldType = FieldType.String}, "DEV"}
 				},
 				new Dictionary<FieldEntry, object>()
 				{
 					{
-						new FieldEntry() {DisplayName = "guid", FieldIdentifier = "guid", FieldType = FieldType.String},
+						new FieldEntry() {DisplayName = _INPUT_DATA_CONTROL_NUMBER, FieldIdentifier = _INPUT_DATA_CONTROL_NUMBER, FieldType = FieldType.String},
 						Guid.Parse("7703F851-C653-40E0-B249-AB4A7C879E6B")
 					},
-					{new FieldEntry() {DisplayName = "myname", FieldIdentifier = "myname", FieldType = FieldType.String}, "Chad"},
-					{new FieldEntry() {DisplayName = "dept", FieldIdentifier = "dept", FieldType = FieldType.String}, "IT"}
+					{new FieldEntry() {DisplayName = _INPUT_DATA_EXTRACTED_TEXT, FieldIdentifier = _INPUT_DATA_EXTRACTED_TEXT, FieldType = FieldType.String}, "Chad"},
+					{new FieldEntry() {DisplayName = _INPUT_DATA_GROUP_ID, FieldIdentifier = _INPUT_DATA_GROUP_ID, FieldType = FieldType.String}, "IT"}
 				},
 				new Dictionary<FieldEntry, object>()
 				{
 					{
-						new FieldEntry() {DisplayName = "guid", FieldIdentifier = "guid", FieldType = FieldType.String},
+						new FieldEntry() {DisplayName = _INPUT_DATA_CONTROL_NUMBER, FieldIdentifier = _INPUT_DATA_CONTROL_NUMBER, FieldType = FieldType.String},
 						Guid.Parse("8703F851-C653-40E0-B249-AB4A7C879E6B")
 					},
-					{new FieldEntry() {DisplayName = "myname", FieldIdentifier = "myname", FieldType = FieldType.String}, "New"},
-					{new FieldEntry() {DisplayName = "dept", FieldIdentifier = "dept", FieldType = FieldType.String}, "HR"}
+					{new FieldEntry() {DisplayName = _INPUT_DATA_EXTRACTED_TEXT, FieldIdentifier = _INPUT_DATA_EXTRACTED_TEXT, FieldType = FieldType.String}, "New"},
+					{new FieldEntry() {DisplayName = _INPUT_DATA_GROUP_ID, FieldIdentifier = _INPUT_DATA_GROUP_ID, FieldType = FieldType.String}, "HR"}
 				}
 			};
-
 
 			return sourceFields;
 		}
