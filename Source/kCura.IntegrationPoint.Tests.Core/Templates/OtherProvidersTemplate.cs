@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				ImportOverwriteMode = overwriteMode,
 				ImportNativeFile = false,
 				ExtractedTextFieldContainsFilePath = false,
-				CustodianManagerFieldContainsLink = true,
+				EntityManagerFieldContainsLink = true,
 				FieldOverlayBehavior = "Use Field Settings"
 			};
 			return Container.Resolve<ISerializer>().Serialize(destinationConfig);

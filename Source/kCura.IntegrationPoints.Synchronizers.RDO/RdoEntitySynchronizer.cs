@@ -150,7 +150,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 				_logger.LogDebug($"Destination workspace entity rdo 'Manager' field artifact id: {managerFieldId} mapped to source provider field identifier: '{ManagerSourceFieldId}'");
 
-				if (settings.CustodianManagerFieldContainsLink)
+				if (settings.EntityManagerFieldContainsLink)
 				{
 					_logger.LogDebug("Identified entity manager link setting...");
 					HandleManagerLink = true;

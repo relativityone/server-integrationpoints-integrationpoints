@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoints.Services.Models
 		/// <summary>
 		///     Hardcoded true as long as we cannot export Custodian RDO
 		/// </summary>
-		public bool CustodianManagerFieldContainsLink { get; set; }
+		public bool EntityManagerFieldContainsLink { get; set; }
 
 		public string FieldOverlayBehavior { get; set; }
 
@@ -76,7 +76,7 @@ namespace kCura.IntegrationPoints.Services.Models
 			FolderPathSourceField = destinationConfiguration.FolderPathSourceField;
 			ExtractedTextFieldContainsFilePath = false;
 			ExtractedTextFileEncoding = "utf-16";
-			CustodianManagerFieldContainsLink = true;
+			EntityManagerFieldContainsLink = true;
 			FieldOverlayBehavior = destinationConfiguration.FieldOverlayBehavior;
 			UseDynamicFolderPath = sourceConfiguration.UseDynamicFolderPath;
 		}

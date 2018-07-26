@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Moq">
+      <HintPath>..\..\packages\Moq\lib\net45\Moq.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.IdentityModel" />
@@ -81,6 +84,8 @@
     <Compile Include="Commands\PreCascadeDeleteIntegrationPointCommand.cs" />
     <Compile Include="Commands\RemoveAgentJobLogTableCommand.cs" />
     <Compile Include="Commands\RemoveSecuredConfigurationFromIntegrationPointService.cs" />
+    <Compile Include="Commands\RenameCustodianToEntity\RenameCustodianToEntityInIntegrationPointConfigurationCommand.cs" />
+    <Compile Include="Commands\RenameCustodianToEntity\RenameCustodianToEntityForSourceProviderCommand.cs" />
     <Compile Include="Commands\RestoreJobHistoryParser\CheckForInputNullPath.cs" />
     <Compile Include="Commands\RestoreJobHistoryParser\CheckIfHasLocalInstance.cs" />
     <Compile Include="Commands\RestoreJobHistoryParser\CheckSeparatorsAmount.cs" />
@@ -119,6 +124,7 @@
     <Compile Include="Installers\RegisterIntegrationPointTypeInstaller.cs" />
     <Compile Include="Installers\RemoveAgentJobLogTableEventHandler.cs" />
     <Compile Include="Installers\RemoveUnusedEventHandlers.cs" />
+    <Compile Include="Installers\RenameCustodianToEntityInIntegrationPointConfigurationEventHandler.cs" />
     <Compile Include="Installers\RestoreJobHistoryDestinationWorkspaceEventHandler.cs" />
     <Compile Include="Installers\SecretStorePostWorkspaceCreateEventHandler.cs" />
     <Compile Include="Installers\SecretStorePreWorkspaceDeleteEventHandler.cs" />

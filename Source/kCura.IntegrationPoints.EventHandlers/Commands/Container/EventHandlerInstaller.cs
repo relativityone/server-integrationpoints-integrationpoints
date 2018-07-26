@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.EventHandlers.Commands.Context;
 using kCura.IntegrationPoints.EventHandlers.Commands.Helpers;
+using kCura.IntegrationPoints.EventHandlers.Commands.RenameCustodianToEntity;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factories;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
@@ -67,7 +68,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 				IEHContext context = kernel.Resolve<IEHContext>();
 				IOAuth2ClientFactory oauth2ClientFactory = kernel.Resolve<IOAuth2ClientFactory>();
 				ITokenProviderFactoryFactory tokenProviderFactory = kernel.Resolve<ITokenProviderFactoryFactory>();
-				CurrentUser contextUser = new CurrentUser {ID = context.Helper.GetAuthenticationManager().UserInfo.ArtifactID};
+				CurrentUser contextUser = new CurrentUser { ID = context.Helper.GetAuthenticationManager().UserInfo.ArtifactID };
 
 				return new OAuth2TokenGenerator(context.Helper, oauth2ClientFactory, tokenProviderFactory, contextUser);
 			}).LifestyleTransient());
@@ -96,6 +97,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 			container.Register(Component.For<IArtifactsToDelete>().ImplementedBy<ArtifactsToDelete>().LifestyleTransient());
 			container.Register(Component.For<ICreateTenantIdForSecretStore>().ImplementedBy<CreateTenantIdForSecretStore>().LifestyleTransient());
 			container.Register(Component.For<ITenantForSecretStoreCreationValidator>().ImplementedBy<TenantForSecretStoreCreationValidator>().LifestyleTransient());
+			container.Register(Component.For<RenameCustodianToEntityInIntegrationPointConfigurationCommand>().ImplementedBy<RenameCustodianToEntityInIntegrationPointConfigurationCommand>().LifestyleTransient());
 		}
 	}
 }

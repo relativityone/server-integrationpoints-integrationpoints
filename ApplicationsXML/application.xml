@@ -1361,7 +1361,7 @@
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2018-07-12T10:46:22.7467694Z</ExtractionDate>
+  <ExtractionDate>2018-07-25T07:00:01.8077131Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -11352,8 +11352,8 @@
     </Object>
   </Objects>
   <ParentTabs />
-	<RelativityVersion>9.7.6.21</RelativityVersion>
-	<Version>9.7.0.0</Version>
+  <RelativityVersion>9.7.6.21</RelativityVersion>
+  <Version>9.7.0.0</Version>
   <TabDisplay>true</TabDisplay>
   <OriginSignature>5e8b02a8-6e33-4426-a0f0-3594d83725d0</OriginSignature>
   <MasterScripts />
@@ -11737,6 +11737,18 @@
       <Order>190</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
       <ApplicationVersion>9.7.0.0</ApplicationVersion>
+      <RunTarget>0</RunTarget>
+    </InstallEventHandler>
+    <InstallEventHandler>
+      <ArtifactId>1041330</ArtifactId>
+      <AssemblyArtifactId>1016759</AssemblyArtifactId>
+      <Name>kCura.IntegrationPoints.EventHandlers.Installers.RenameCustodianToEntityInIntegrationPointConfigurationEventHandler</Name>
+      <Guid>f21845a5-f061-4bea-b653-85bca1f33286</Guid>
+      <Guids>18f3de14-9bf4-4dcd-97d6-bdb37431f2f0</Guids>
+      <ExecutionType>10</ExecutionType>
+      <Order>200</Order>
+      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
+      <ApplicationVersion>9.7.0.4</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
   </InstallEventHandlers>

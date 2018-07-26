@@ -369,7 +369,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			ImportSettings importSettings = JsonConvert.DeserializeObject<ImportSettings>(IntegrationPoint.DestinationConfiguration);
 			importSettings.ObjectFieldIdListContainsArtifactId = new[] { entityManagerFieldArtifactID };
 			importSettings.ImportOverwriteMode = ImportOverwriteModeEnum.OverlayOnly;
-			importSettings.CustodianManagerFieldContainsLink = false;
+			importSettings.EntityManagerFieldContainsLink = false;
 			importSettings.FederatedInstanceCredentials = IntegrationPoint.SecuredConfiguration;
 
 			if (importSettings.IsFederatedInstance())

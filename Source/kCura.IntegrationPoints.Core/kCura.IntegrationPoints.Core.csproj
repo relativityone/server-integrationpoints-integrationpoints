@@ -286,6 +286,7 @@
     <Compile Include="Toggles\UseOldExportVolumeManagerToggle.cs" />
     <Compile Include="Toggles\UseStreamsForBigLongTextFieldsToggle.cs" />
     <Compile Include="Utils\FileSizeUtils.cs" />
+    <Compile Include="Utils\JsonUtils.cs" />
     <Compile Include="Validation\Abstract\BaseIntegrationPointValidator.cs" />
     <Compile Include="Validation\Abstract\BasePartsValidator.cs" />
     <Compile Include="Validation\Abstract\IIntegrationPointPermissionValidator.cs" />
