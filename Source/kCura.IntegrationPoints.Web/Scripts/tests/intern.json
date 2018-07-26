@@ -1,14 +1,18 @@
 {
   "suites": [
     "tests/unit/time-utils.test.js",
-    "tests/unit/save-as-profile-modal-vm.test.js"
+    "tests/unit/save-as-profile-modal-vm.test.js",
+    "tests/unit/step-mapFields.test.js"
   ],
   "plugins": [
+    "../jquery-1.9.1.min.js",
     "../knockout-3.4.0.js",
     "../knockout.validation.js",
     "../moment.min.js",
+    "mocks/ip.mock.js",
     "../integration-point/time-utils.js",
     "../Export/export-validation.js",
-    "../integration-point/save-as-profile-modal-vm.js"
+    "../integration-point/save-as-profile-modal-vm.js",
+    "../integration-point/step-mapFields.js"
   ]
 }

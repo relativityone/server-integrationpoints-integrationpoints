@@ -553,6 +553,28 @@ ko.validation.insertValidationMessage = function (element) {
 
 		this.destinationCaseArtifactID = destination.CaseArtifactId;
 
+		self.findField = function(array, field) {
+			const fields = $.grep(array, function (value, _index) { return value.fieldIdentifier === field.fieldIdentifier; });
+			const fieldFound = fields.length > 0;
+			return {
+				exist: fieldFound,
+				type: fieldFound ? fields[0].type : null,
+				actualName: fieldFound ? fields[0].actualName : null,
+				displayName: fieldFound ? fields[0].displayName : null
+			};
+		};
+
+		self.updateFieldFromMapping = function(mappedField, fields) {
+			var field = self.findField(fields, mappedField);
+			if (field.exist) {
+				mappedField.type = field.type;
+				mappedField.actualName = field.actualName;
+				mappedField.displayName = field.displayName;
+				return mappedField;
+			}
+			return null;
+		};
+
 		var mappedSourcePromise;
 		if (destination.DoNotUseFieldsMapCache) {
 			mappedSourcePromise = [];
@@ -593,29 +615,16 @@ ko.validation.insertValidationMessage = function (element) {
 				return find(fields, fieldMapping, key, function (r) { return !r });
 			}
 			function getMapped(sourceFields, destinationFields, fieldMapping, sourceKey, destinationKey) {
-				function findField(array, field) {
-					var fields = $.grep(array, function (value, index) { return value.fieldIdentifier === field.fieldIdentifier; });
-					var fieldFound = fields.length > 0;
-					return {
-						exist: fieldFound,
-						type: fieldFound ? fields[0].type : null
-					};
-				}
 				var sourceMapped = [];
 				var destinationMapped = [];
-				var type = "type";
-				$.each(fieldMapping, function (item) {
-					var source = this[sourceKey];
-					var destination = this[destinationKey];
-					var sourceField = findField(sourceFields, source);
-					var destinationField = findField(destinationFields, destination);
-					if (sourceField.exist) {
-						source[type] = sourceField.type;
-						sourceMapped.push(source);
+				$.each(fieldMapping, function (_index, mapping) {
+					var sourceField = self.updateFieldFromMapping(mapping[sourceKey], sourceFields)
+					if (!!sourceField) {
+						sourceMapped.push(sourceField);
 					}
-					if (destinationField.exist) {
-						destination[type] = destinationField.type;
-						destinationMapped.push(destination);
+					var destinationField = self.updateFieldFromMapping(mapping[destinationKey], destinationFields);
+					if (!!destinationField) {
+						destinationMapped.push(destinationField);
 					}
 				});
 				return [destinationMapped, sourceMapped];
