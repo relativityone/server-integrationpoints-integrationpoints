@@ -28,7 +28,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		}
 
 		[HttpPost]
-		[Route("{workspaceID}/api/WorkspaceField/")]
 		[LogApiExceptionFilter(Message = "Unable to retrieve workspace fields.")]
 		public HttpResponseMessage Post([FromBody] SynchronizerSettings settings)
 		{

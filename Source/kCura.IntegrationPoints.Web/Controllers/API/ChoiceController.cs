@@ -16,7 +16,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		}
 
 		[HttpGet]
-		[Route("{workspaceID}/Choice/{fieldGuid}")]
 		[LogApiExceptionFilter(Message = "Unable to retrieve choice on field.")]
 		public HttpResponseMessage Get(int workspaceID, string fieldGuid)
 		{
