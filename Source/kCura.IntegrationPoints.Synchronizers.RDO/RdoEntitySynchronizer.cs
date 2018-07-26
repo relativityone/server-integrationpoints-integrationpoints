@@ -245,7 +245,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 			_logger.LogDebug("Creating new Job for Manager reference import");
 
-			var jobParameters = new // TODO we should use already existing class - this is blocked unitil new Common project is merged into develop
+			var jobParameters = new
 			{
 				EntityManagerMap = _entityManagerMap,
 				EntityManagerFieldMap = new List<FieldMap>
@@ -255,7 +255,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 						SourceField =
 							new FieldEntry
 							{
-								DisplayName = "CustodianIdentifier", // TODO verify
+								DisplayName = "CustodianIdentifier",
 								FieldIdentifier = fieldMap.Where(x => x.FieldMapType.Equals(FieldMapTypeEnum.Identifier)).Select(x => x.SourceField.FieldIdentifier).First()
 							},
 						DestinationField = new FieldEntry {DisplayName = "ManagerIdentidier", FieldIdentifier = "distinguishedname"},
