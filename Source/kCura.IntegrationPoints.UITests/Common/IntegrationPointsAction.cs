@@ -268,8 +268,9 @@ namespace kCura.IntegrationPoints.UITests.Common
 
         public IntegrationPointDetailsPage CreateNewExportCustodianToLoadfileIntegrationPoint(CustodianExportToLoadFileModel model)
         {
-            var generalPage = new GeneralPage(Driver);
-            generalPage.ChooseWorkspace(Context.WorkspaceName);
+            GeneralPage generalPage = new GeneralPage(Driver)
+	            .PassWelcomeScreen()
+				.ChooseWorkspace(Context.WorkspaceName);
 
             ExportFirstPage firstPage = SetupFirstIntegrationPointPage(generalPage, model);
 
@@ -295,8 +296,9 @@ namespace kCura.IntegrationPoints.UITests.Common
 
         public IntegrationPointDetailsPage CreateNewExportToLoadFileIntegrationPoint(ExportToLoadFileProviderModel model)
         {
-            var generalPage = new GeneralPage(Driver);
-            generalPage.ChooseWorkspace(Context.WorkspaceName);
+            GeneralPage generalPage = new GeneralPage(Driver)
+				.PassWelcomeScreen()
+				.ChooseWorkspace(Context.WorkspaceName);
 
 			ExportFirstPage firstPage = SetupFirstIntegrationPointPage(generalPage, model);
 
@@ -309,7 +311,7 @@ namespace kCura.IntegrationPoints.UITests.Common
 
 		public IntegrationPointDetailsPage CreateNewRelativityProviderIntegrationPoint(RelativityProviderModel model)
 		{
-			var generalPage = new GeneralPage(Driver);
+			GeneralPage generalPage = new GeneralPage(Driver).PassWelcomeScreen();
 			generalPage.ChooseWorkspace(Context.WorkspaceName);
 
 			ExportFirstPage firstPage = SetupFirstIntegrationPointPage(generalPage, model);

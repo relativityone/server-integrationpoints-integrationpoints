@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		public TestConfiguration()
 		{
 			ConfigName = Environment.GetEnvironmentVariable(_ENVIRONMENT_VARIABLE_CONFIG_NAME);
-			
+
 			if (ConfigName == null)
 			{
 				Log.Information("Custom config is not set by ENV:{ConfigName}. Only App.config defaults will be used.",

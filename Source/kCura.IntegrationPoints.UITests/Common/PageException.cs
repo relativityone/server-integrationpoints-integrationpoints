@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace kCura.IntegrationPoints.UITests.Common
 {
 	[Serializable]
-	public class PageException : Exception
+	public class PageException : UiTestException
 	{
 		public PageException()
 		{

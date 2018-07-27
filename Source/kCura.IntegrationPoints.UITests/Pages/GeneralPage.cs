@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.UITests.Driver;
@@ -41,6 +43,24 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			PageFactory.InitElements(driver, this);
 		}
 
+		public GeneralPage PassWelcomeScreen()
+		{
+			Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(7);
+			try
+			{
+				ReadOnlyCollection<IWebElement> buttons = Driver.FindElements(By.Id("_continue_button"));
+				if (buttons.Any())
+				{
+					buttons[0].ClickWhenClickable();
+				}
+			}
+			finally
+			{
+				Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(SharedVariables.UiImplicitWaitInSec);
+			}
+			return this;
+		}
+
 		public LoginPage LogOut()
 		{
 			UserDropdownMenu.Click();
@@ -54,7 +74,14 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			Driver.SwitchTo().DefaultContent();
 			IWebElement workspaceLink = GetWorkspaceLink(name);
 			workspaceLink.ClickWhenClickable();
+			AcceptLeavingPage();
 			return this;
+		}
+
+		private void AcceptLeavingPage()
+		{
+			IAlert alert = ExpectedConditions.AlertIsPresent().Invoke(Driver);
+			alert?.Accept();
 		}
 
 		private IWebElement GetWorkspaceLink(string workspaceName)

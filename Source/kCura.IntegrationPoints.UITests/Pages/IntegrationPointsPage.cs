@@ -8,9 +8,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 {
 	public class IntegrationPointsPage : GeneralPage
 	{
-
-		[FindsBy(How = How.XPath, Using = "//button[.='New Integration Point']")]
-		protected IWebElement NewIntegrationPointButton;
+		private IWebElement NewIntegrationPointButton => Driver.FindElementByXPath("//button[.='New Integration Point']");
 
 		public IntegrationPointsPage(RemoteWebDriver driver) : base(driver)
 		{

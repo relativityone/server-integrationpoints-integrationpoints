@@ -30,27 +30,25 @@ namespace kCura.IntegrationPoints.UITests.Tests
 
 	public abstract class UiTest
 	{
-		public static string Now => DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
 
-		protected IWindsorContainer Container;
-		protected static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(UiTest));
+		private readonly Lazy<ITestHelper> _help;
+
 		protected IConfigurationStore ConfigurationStore;
 
-		public ITestHelper Helper => _help.Value;
-		private readonly Lazy<ITestHelper> _help;
+		protected IWindsorContainer Container;
+
+		protected static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(UiTest));
 
 		protected static readonly List<Tuple<string, string>> DefaultFieldsMapping = new List<Tuple<string, string>>
 		{
 			new Tuple<string, string>("Control Number", "Control Number"),
 			new Tuple<string, string>("Extracted Text", "Extracted Text"),
-			new Tuple<string, string>("Title", "Title"),
-			new Tuple<string, string>("Date Created", "Date Created")
+			new Tuple<string, string>("Title", "Title")
 		};
 
-		protected static readonly List<Tuple<string, string>> ControlNumberFieldsMapping = new List<Tuple<string, string>>
-		{
-			new Tuple<string, string>("Control Number", "Control Number"),
-		};
+		public static string Now => DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
+
+		public ITestHelper Helper => _help.Value;
 
 		protected TestConfiguration Configuration { get; set; }
 
@@ -179,18 +177,47 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		[OneTimeTearDown]
 		protected void CloseAndQuitDriver()
 		{
-			if (!NUnit.Framework.TestContext.CurrentContext.Result.Outcome.Equals(ResultState.Success))
+			try
 			{
-				SaveScreenshot();
+				if (!NUnit.Framework.TestContext.CurrentContext.Result.Outcome.Equals(ResultState.Success))
+				{
+					SaveScreenshot();
+				}
+			}
+			catch (Exception ex)
+			{
+				Log.Error(ex, "Error during saving screenshot.");
 			}
 
-			if (string.IsNullOrEmpty(SharedVariables.UiUseThisExistingWorkspace))
+			try
 			{
-				Workspace.DeleteWorkspace(Context.GetWorkspaceId());
+				if (string.IsNullOrEmpty(SharedVariables.UiUseThisExistingWorkspace) && Context.WorkspaceId != null)
+				{
+					Workspace.DeleteWorkspace(Context.GetWorkspaceId());
+				}
 			}
-			Context.TearDown();
+			catch (Exception ex)
+			{
+				Log.Error(ex, "Error during deleting workspace.");
+			}
 
-			Driver?.Quit();
+			try
+			{
+				Context.TearDown();
+			}
+			catch (Exception ex)
+			{
+				Log.Error(ex, "Error in Context TearDown.");
+			}
+
+			try
+			{
+				Driver?.Quit();
+			}
+			catch (Exception ex)
+			{
+				Log.Error(ex, "Quiting Driver failed.");
+			}
 		}
 
 		protected GeneralPage EnsureGeneralPageIsOpened()
@@ -200,7 +227,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			{
 				return loginPage.Login(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword);
 			}
-			return new GeneralPage(Driver);
+			return new GeneralPage(Driver).PassWelcomeScreen();
 		}
 
 		protected void SaveScreenshot()

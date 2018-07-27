@@ -50,9 +50,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return Workspace.CreateWorkspace(name, templateName);
 		}
 
-		public void ImportData(int workspaceArtifactId, DocumentsTestData documentsTestData)
+		public bool ImportData(int workspaceArtifactId, DocumentsTestData documentsTestData)
 		{
-			_importHelper.ImportData(workspaceArtifactId, documentsTestData);
+			return _importHelper.ImportData(workspaceArtifactId, documentsTestData);
 		}
 
 		public void DeleteWorkspace(int artifactId)

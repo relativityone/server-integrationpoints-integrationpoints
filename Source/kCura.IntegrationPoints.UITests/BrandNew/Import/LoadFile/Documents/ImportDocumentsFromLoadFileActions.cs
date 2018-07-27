@@ -17,6 +17,7 @@ namespace kCura.IntegrationPoints.UITests.BrandNew.Import.LoadFile.Documents
 		public void Setup()
 		{			
 			new GeneralPage(Driver)
+				.PassWelcomeScreen()
 				.ChooseWorkspace(Context.WorkspaceName)
 				.GoToIntegrationPointsPage();
 			new IntegrationPointsPage(Driver).CreateNewIntegrationPoint();

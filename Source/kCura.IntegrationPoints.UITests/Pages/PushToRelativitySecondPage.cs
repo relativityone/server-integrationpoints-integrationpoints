@@ -89,6 +89,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public PushToRelativitySecondPage SelectSourceProduction(string productionName)
 		{
+			WaitForPage();
 			SourceProductionSelect.Choose(productionName);
 			WaitForPage();
 			return this;
@@ -97,7 +98,8 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		public PushToRelativitySecondPage SelectFolderLocation()
 		{
 			WaitForPage();
-			FolderLocation.ClickWhenClickable();
+			const int timeoutInSeconds = 40;
+			FolderLocation.ClickWhenClickable(TimeSpan.FromSeconds(timeoutInSeconds));
 			return this;
 		}
 

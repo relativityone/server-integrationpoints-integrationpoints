@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.UITests.Validation
 
 		public BaseUiValidator()
 		{
-			_jobExecutionTimeoutInMinutes = 5;
+			_jobExecutionTimeoutInMinutes = 10;
 		}
 
 		public BaseUiValidator(int jobExecutionTimeoutInMinutes)

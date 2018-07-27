@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.UITests.Driver
 			}
 			finally
 			{
-				Log.Debug("ClickWhenClickable() took {Seconds} sec.", stopwatch.Elapsed.Seconds);
+				Log.Verbose("ClickWhenClickable() took {Seconds} sec.", stopwatch.Elapsed.Seconds);
 			}
 		}
 

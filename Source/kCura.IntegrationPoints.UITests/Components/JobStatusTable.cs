@@ -23,11 +23,12 @@ namespace kCura.IntegrationPoints.UITests.Components
 		{
 			string jobStatus = string.Empty;
 			const int findUiElementTimeoutInMinutes = 5;
-			const int numberOfRepeatsAfterStaleException = 10;
+			const int numberOfRepeatsAfterStaleException = 20;
 			
 			Policy retry = Policy
 				.Handle<StaleElementReferenceException>()
 				.Or<IndexOutOfRangeException>()
+				.Or<ArgumentOutOfRangeException>()
 				.WaitAndRetry(Enumerable.Repeat(TimeSpan.FromSeconds(1), numberOfRepeatsAfterStaleException));
 			Policy tryFindStatusUpToTimeout = Policy.Timeout(TimeSpan.FromMinutes(findUiElementTimeoutInMinutes)).Wrap(retry);
 
@@ -40,7 +41,7 @@ namespace kCura.IntegrationPoints.UITests.Components
 		{
 			const int jobStatusColumnNumber = 7;
 			By latestJobStatus = By.XPath("//table[@class='itemTable']//tbody/tr[@class='itemListRowAlt']/td");
-			return  Parent.FindElements(latestJobStatus)[jobStatusColumnNumber].Text;
+			return Parent.FindElements(latestJobStatus)[jobStatusColumnNumber].Text;
 		}
 
 	    public int GetTotalItems()

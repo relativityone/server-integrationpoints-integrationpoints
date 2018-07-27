@@ -3,12 +3,13 @@ using System.Threading.Tasks;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using kCura.Relativity.Client.Repositories;
+using Serilog;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class Workspace
 	{
-		public static int CreateWorkspace(string workspaceName, string templateName)
+		public static int CreateWorkspace(string workspaceName, string templateName, ILogger log = null)
 		{
 			if (string.IsNullOrEmpty(workspaceName))
 			{
@@ -33,7 +34,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 						throw new Exception($"Failed creating workspace {workspaceName}. Result Message: {result.Message} [{Environment.CurrentDirectory}]");
 					}
 
-					Status.WaitForProcessToComplete(proxy, result.ProcessID);
+					Status.WaitForProcessToComplete(proxy, result.ProcessID, log: log);
 					ProcessInformation processInfo = proxy.GetProcessState(proxy.APIOptions, result.ProcessID);
 					workspaceId = processInfo.OperationArtifactIDs[0].GetValueOrDefault();
 				}
@@ -66,9 +67,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public static async Task<int> CreateWorkspaceAsync(string workspaceName, string templateName)
+		public static async Task<int> CreateWorkspaceAsync(string workspaceName, string templateName, ILogger log = null)
 		{
-			return await Task.Run(() => CreateWorkspace(workspaceName, templateName)).ConfigureAwait(false);
+			return await Task.Run(() => CreateWorkspace(workspaceName, templateName, log)).ConfigureAwait(false);
 		}
 
 		public static void DeleteWorkspace(int workspaceArtifactId)

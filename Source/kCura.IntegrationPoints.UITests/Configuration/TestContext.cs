@@ -11,12 +11,14 @@ using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
+using kCura.IntegrationPoints.UITests.Common;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using NUnit.Framework;
 using Relativity.Core;
 using Relativity.Services.Objects.DataContracts;
 using Serilog;
+using Serilog.Events;
 using ArtifactType = Relativity.ArtifactType;
 using Field = kCura.Relativity.Client.DTOs.Field;
 using Group = kCura.IntegrationPoint.Tests.Core.Group;
@@ -29,10 +31,11 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 	{
 
 		private const int _ADMIN_USER_ID = 9;
-		private const string _TEMPLATE_WKSP_NAME = "Smoke TestCase";
+		
 		private const string _RIP_GUID_STRING = Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING;
+
 		private const string _LEGAL_HOLD_GUID_STRING = "98F31698-90A0-4EAD-87E3-DAC723FED2A6";
-		private const string _RELATIVITY_STARTER_TEMPLATE = "Relativity Starter Template";
+		
 		private readonly Lazy<ITestHelper> _helper;
 
 		private static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(TestContext));
@@ -54,7 +57,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		public TestContext()
 		{
 			_helper = new Lazy<ITestHelper>(() => new TestHelper());
-			TimeStamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
+			TimeStamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss.ffff");
 		}
 
 		public TestContext CreateTestWorkspace()
@@ -65,25 +68,21 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 		public async Task CreateTestWorkspaceAsync()
 		{
-			if (!Workspace.IsWorkspacePresent(_TEMPLATE_WKSP_NAME))
-			{
-				await Workspace.CreateWorkspaceAsync(_TEMPLATE_WKSP_NAME, _RELATIVITY_STARTER_TEMPLATE);
-			}
-
-			WorkspaceName = $"1A Test Workspace {TimeStamp}";
-			Log.Information($"Attempting to create workspace '{WorkspaceName}' using template '{_TEMPLATE_WKSP_NAME}'.");
+			WorkspaceName = $"RIP Test Workspace {TimeStamp}";
+			string templateWorkspaceName = SharedVariables.UiTemplateWorkspace;
+			Log.Information($"Attempting to create workspace '{WorkspaceName}' using template '{templateWorkspaceName}'.");
 			try
 			{
-				WorkspaceId = await Workspace.CreateWorkspaceAsync(WorkspaceName, _TEMPLATE_WKSP_NAME);
+				WorkspaceId = await Workspace.CreateWorkspaceAsync(WorkspaceName, templateWorkspaceName, Log).ConfigureAwait(false);
 			}
 			catch (Exception ex)
 			{
 				Log.Error(ex,
-					$"Cannot create workspace '{WorkspaceName}' using template '{_TEMPLATE_WKSP_NAME}'. Check if Relativity works correctly (services, ...).");
+					$"Cannot create workspace '{WorkspaceName}' using template '{templateWorkspaceName}'. Check if Relativity works correctly (services, ...).");
 				throw;
 			}
 
-			Log.Information($"Workspace '{WorkspaceName}' was successfully created using template '{_TEMPLATE_WKSP_NAME}.");
+			Log.Information($"Workspace '{WorkspaceName}' was successfully created using template '{templateWorkspaceName}'. WorkspaceId={WorkspaceId}");
 		}
 
 		public void EnableDataGrid(params string[] fieldNames)
@@ -120,7 +119,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		public TestContext CreateAndRunProduction(string productionName)
 		{
 			var workspaceService = new WorkspaceService(new ImportHelper());
-			int savedSearchId = workspaceService.CreateSavedSearch(new string[] { "Control Number" }, GetWorkspaceId(), $"ForProduction_{productionName}");
+			int savedSearchId = workspaceService.CreateSavedSearch(new[] { "Control Number" }, GetWorkspaceId(), $"ForProduction_{productionName}");
 
 			string placeHolderFilePath = Path.Combine(NUnit.Framework.TestContext.CurrentContext.TestDirectory, @"TestData\DefaultPlaceholder.tif");
 
@@ -143,8 +142,9 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 		public TestContext InstallApplication(string guid)
 		{
-			Assert.NotNull(WorkspaceId, $"{nameof(WorkspaceId)} is null. Workspace wasn't created.");
+			Assert.NotNull(WorkspaceId, $"{nameof(WorkspaceId)} is null. Was workspace created correctly?.");
 
+			Log.Information("Checking application '{AppGUID}' in workspace with ID '{WorkspaceId}'.", guid, WorkspaceId);
 			Stopwatch stopwatch = Stopwatch.StartNew();
 			try
 			{
@@ -154,18 +154,19 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 				bool isAppInstalledAndUpToDate = ipAppManager.IsApplicationInstalledAndUpToDate((int)WorkspaceId, guid);
 				if (!isAppInstalledAndUpToDate)
 				{
+					Log.Information("Installing application '{AppGUID}' in workspace with ID '{WorkspaceId}'.", guid, WorkspaceId);
 					ipAppManager.InstallApplicationFromLibrary((int)WorkspaceId, guid);
+					Log.Information("Application '{AppGUID}' has been installed in workspace with ID '{WorkspaceId}' after {AppInstallTime} seconds.", guid, WorkspaceId, stopwatch.Elapsed.Seconds);
 				}
-				Log.Information(@"Application is installed.");
+				else
+				{
+					Log.Information("Application '{AppGUID}' is already installed in workspace with ID '{WorkspaceId}'.", guid, WorkspaceId);
+				}
 			}
 			catch (Exception ex)
 			{
-				Log.Error(ex, $"Unexpected error when detecting or installing application in the workspace. Application guid: {guid}");
+				Log.Error(ex, $"Detecting or installing application in the workspace failed. Application GUID: {guid}");
 				throw;
-			}
-			finally
-			{
-				Log.Information($"Installation of application with guid {guid} in workspace took {stopwatch.Elapsed.Seconds} seconds.");
 			}
 			return this;
 		}
@@ -180,6 +181,8 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			await Task.Run(() => InstallLegalHold());
 		}
 
+
+		// TODO fold
 		public TestContext ImportDocumentsToRoot(DocumentTestDataBuilder.TestDataType testDataType = DocumentTestDataBuilder.TestDataType.ModerateWithoutFoldersStructure)
 		{
 			ImportDocuments(true, testDataType);
@@ -208,16 +211,30 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		{
 			await ImportDocumentsAsync(false, testDataType);
 		}
-
+		
 		public TestContext ImportDocuments(bool withNatives = true, DocumentTestDataBuilder.TestDataType testDataType = DocumentTestDataBuilder.TestDataType.ModerateWithFoldersStructure)
 		{
 			Log.Information(@"Importing documents...");
 			string testDir = NUnit.Framework.TestContext.CurrentContext.TestDirectory.Replace("kCura.IntegrationPoints.UITests",
 				"kCura.IntegrationPoint.Tests.Core");
 			DocumentsTestData data = DocumentTestDataBuilder.BuildTestData(testDir, withNatives, testDataType);
-			var workspaceService = new WorkspaceService(new ImportHelper());
-			workspaceService.ImportData(GetWorkspaceId(), data);
-			Log.Information(@"Documents imported.");
+			var importHelper = new ImportHelper();
+			var workspaceService = new WorkspaceService(importHelper);
+			bool importSucceded = workspaceService.ImportData(GetWorkspaceId(), data);
+			if (importSucceded)
+			{
+				if (Log.IsEnabled(LogEventLevel.Information))
+				{
+					string suffix = importHelper.Messages.Any() ? " Messages: " + string.Join("; ", importHelper.Messages) : " No messages.";
+					Log.Information(@"Documents imported." + suffix);
+				}
+			}
+			else
+			{
+				string suffix = importHelper.ErrorMessages.Any() ? " Error messages: " + string.Join("; ", importHelper.ErrorMessages) : " No error messages.";
+				throw new UiTestException("Import of documents failed." + suffix);
+			}
+
 			return this;
 		}
 
@@ -225,7 +242,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		{
 			var workspaceService = new WorkspaceService(new ImportHelper());
 			int savedSearchId = RetrieveSavedSearchId(savedSearchName);
-			workspaceService.CreateAndRunProduction(WorkspaceId.Value, savedSearchId, productionName);
+			workspaceService.CreateAndRunProduction(GetWorkspaceId(), savedSearchId, productionName);
 
 			return this;
 		}
@@ -248,7 +265,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 			try
 			{
-				var relScriptQueryResults = proxy.Repositories.RelativityScript.Query(relScriptQuery);
+				QueryResultSet<RelativityScript> relScriptQueryResults = proxy.Repositories.RelativityScript.Query(relScriptQuery);
 
 				if (!relScriptQueryResults.Success)
 				{
@@ -269,28 +286,25 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			{
 				client.APIOptions.WorkspaceID = GetWorkspaceId();
 
-				var relativityScript = FindRelativityFolderPathScript(client);
+				RelativityScript relativityScript = FindRelativityFolderPathScript(client);
 				Assert.That(relativityScript, Is.Not.Null, "Cannot find Relativity Script to set folder paths");
+				
+				var inputParameter = new RelativityScriptInput("FolderPath", "DocumentFolderPath");
 
-				if (relativityScript != null)
+				try
 				{
-					var inputParameter = new RelativityScriptInput("FolderPath", "DocumentFolderPath");
+					RelativityScriptResult scriptResult = client.Repositories.RelativityScript.ExecuteRelativityScript(relativityScript, new List<RelativityScriptInput>() { inputParameter });
 
-					try
+					if (!scriptResult.Success)
 					{
-						var scriptResult = client.Repositories.RelativityScript.ExecuteRelativityScript(relativityScript, new List<RelativityScriptInput>() { inputParameter });
-
-						if (!scriptResult.Success)
-						{
-							Log.Error(@"Execution of Relativity Script failed: {0}", scriptResult.Message);
-							return false;
-						}
-					}
-					catch (Exception ex)
-					{
-						Log.Error(ex, @"An error occurred during executing Relativity Script: {0}", ex.Message);
+						Log.Error(@"Execution of Relativity Script failed: {0}", scriptResult.Message);
 						return false;
 					}
+				}
+				catch (Exception ex)
+				{
+					Log.Error(ex, @"An error occurred during executing Relativity Script: {0}", ex.Message);
+					return false;
 				}
 			}
 			return true;
@@ -378,6 +392,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		public int GetWorkspaceId()
 		{
 			Assert.NotNull(WorkspaceId, $"{nameof(WorkspaceId)} is null. Workspace wasn't created.");
+			Assert.AreNotEqual(0, WorkspaceId, $"{nameof(WorkspaceId)} is 0. Workspace wasn't created correctly.");
 			return WorkspaceId.Value;
 		}
 

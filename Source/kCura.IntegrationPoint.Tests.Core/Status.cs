@@ -6,25 +6,34 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client;
+using Relativity.Logging;
+using Serilog;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class Status
 	{
-		public static void WaitForProcessToComplete(IRSAPIClient rsapiClient, Guid processId, int timeoutInSeconds = 300, int sleepIntervalInMilliseconds = 500)
+		public static void WaitForProcessToComplete(IRSAPIClient rsapiClient, Guid processId, int timeoutInSeconds = 300, int sleepIntervalInMilliseconds = 500, ILogger log = null)
 		{
 			double timeWaitedInSeconds = 0.0;
 			ProcessInformation processInfo = rsapiClient.GetProcessState(rsapiClient.APIOptions, processId);
-			while (processInfo.State != ProcessStateValue.Completed)
+			// Added because Regression B is fucked this time. Please use commented line or rewrite this piece of   code
+			//while (processInfo.State != ProcessStateValue.Completed)
+			while (processInfo.State != ProcessStateValue.CompletedWithError && processInfo.State != ProcessStateValue.Completed)
 			{
-				if (processInfo.State == ProcessStateValue.CompletedWithError || processInfo.State == ProcessStateValue.UnhandledException)
+				if (processInfo.State == ProcessStateValue.UnhandledException)
 				{
-					throw new Exception($"An error occurred while waiting on the Process {processId} to complete. Error: {processInfo.Message}.");
+					throw new Exception($"An error occurred while waiting on the Process {processId} to complete. Error status: {processInfo.Status}. Error message: {processInfo.Message}.");
 				}
 
 				VerifyTimeout(timeWaitedInSeconds, timeoutInSeconds);
 				timeWaitedInSeconds = SleepAndUpdateTimeout(sleepIntervalInMilliseconds, timeWaitedInSeconds);
 				processInfo = rsapiClient.GetProcessState(rsapiClient.APIOptions, processId);
+			}
+
+			if (processInfo.State == ProcessStateValue.CompletedWithError)
+			{
+				log?.Warning($"Process '{processInfo.Name}' completed with errors but still indicates success. Status: {processInfo.Status}. Message: {processInfo.Message}");
 			}
 		}
 

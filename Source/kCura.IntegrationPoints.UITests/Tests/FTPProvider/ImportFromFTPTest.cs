@@ -16,9 +16,9 @@ namespace kCura.IntegrationPoints.UITests.Tests.FTPProvider
 	public class ImportFromFtpTest : UiTest
 	{
 		private IRSAPIService _service;
-		
+
 		private const string _CSV_FILEPATH = "TestFtpCustodianImport.csv";
-		
+
 		protected override bool InstallLegalHoldApp => true;
 
 		[OneTimeSetUp]
@@ -33,7 +33,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.FTPProvider
 		public void ImportDocumentsFromFtp()
 		{
 			// Arrange
-			var model = new ImportFromFtpModel($"Import Documents from FTP ({Now})", ExportToLoadFileTransferredObjectConstants.DOCUMENT)
+			var model = new ImportFromFtpModel($"Import Documents from FTP ({Now})",
+				ExportToLoadFileTransferredObjectConstants.DOCUMENT)
 			{
 				ConnectionAndFileInfo =
 				{
