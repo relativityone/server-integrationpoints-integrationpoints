@@ -1,4 +1,6 @@
 ﻿using System.Linq;
+using kCura.IntegrationPoint.Tests.Core.Models.Constants.ExportToLoadFile;
+using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Driver;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
@@ -51,6 +53,9 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			InitSecondPage();
 			return Create(Driver);
 		}
+
+		public bool IsEntityTransferredObjectOptionAvailable() =>
+			CustodianToEntityUtils.IsEntityOptionAvailable(TransferredObjectSelect);
 
 		protected abstract TSecondPage Create(RemoteWebDriver driver);
 

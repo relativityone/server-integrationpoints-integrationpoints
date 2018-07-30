@@ -32,7 +32,8 @@ namespace kCura.IntegrationPoints.UITests.Common
             firstPage.Destination = model.DestinationProvider;
             if (!string.IsNullOrEmpty(model.TransferredObject))
             {
-                firstPage.TransferedObject = model.TransferredObject;
+	            firstPage.TransferedObject =
+		            CustodianToEntityUtils.GetValidTransferredObjectName(firstPage.IsEntityTransferredObjectOptionAvailable, model);
             }
             return firstPage;
         }
@@ -73,6 +74,14 @@ namespace kCura.IntegrationPoints.UITests.Common
 
 			return secondPage;
 		}
+
+		private string GetValidTransferredObjectName(Func<bool> isEntityTransferredObjectOptionAvailable, IntegrationPointGeneralModel model)
+		{
+			return model.TransferredObject == ExportToLoadFileTransferredObjectConstants.CUSTODIAN && isEntityTransferredObjectOptionAvailable()
+				? ExportToLoadFileTransferredObjectConstants.ENTITY
+				: model.TransferredObject;
+		}
+
 
 		private void SetupExportToFileThirdPageExportDetails(ExportToFileThirdPageExportDetails thirdPageExportDetails, ExportToLoadFileDetailsModel exportDetails)
 		{
