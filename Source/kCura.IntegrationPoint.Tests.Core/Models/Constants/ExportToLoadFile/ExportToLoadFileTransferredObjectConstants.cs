@@ -2,8 +2,8 @@
 {
 	public static class ExportToLoadFileTransferredObjectConstants
     {
-		public static string DOCUMENT = "Document";
-		public static string CUSTODIAN = "Custodian";
+		public const string DOCUMENT = "Document";
+		public const string CUSTODIAN = "Custodian";
 		public const string ENTITY = "Entity";
 	}
 }
