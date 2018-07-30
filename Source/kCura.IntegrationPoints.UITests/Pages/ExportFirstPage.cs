@@ -1,8 +1,11 @@
-﻿using kCura.IntegrationPoints.UITests.Driver;
+﻿using kCura.IntegrationPoint.Tests.Core.Models.Constants.ExportToLoadFile;
+using kCura.IntegrationPoints.UITests.Driver;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 using SeleniumExtras.PageObjects;
 using OpenQA.Selenium.Support.UI;
+using System.Linq;
+using kCura.IntegrationPoints.UITests.Common;
 
 namespace kCura.IntegrationPoints.UITests.Pages
 {
@@ -35,6 +38,9 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			Driver.SwitchTo().Frame("externalPage");
 			WaitForPage();
 		}
+
+		public bool IsEntityTransferredObjectOptionAvailable() =>
+			CustodianToEntityUtils.IsEntityOptionAvailable(TransferedObjectSelect);
 
 		public ExportToFileSecondPage GoToNextPage()
 		{
