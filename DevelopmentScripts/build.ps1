@@ -16,6 +16,7 @@ $PACKAGE = $false
 $DEPLOY = ""
 $ENABLEINJECTIONS = $false
 $GIT = Test-Path -Path ([System.IO.Path]::Combine($root, '.git'))
+$RUN_SONARQUBE = $false
 
 $ALERT = [environment]::GetEnvironmentVariable("alertOnBuildCompletion","User")
 
@@ -69,6 +70,7 @@ for ($i = 0; $i -lt $args.count; $i++){
         "help" {$SHOWHELP = $true}
 
         "^[/-]e" {$EDITOR = $true} 
+        "^[/-][Ss]onar[Qq]ube$" {$RUN_SONARQUBE = $true}
     }
 }
 
@@ -84,6 +86,7 @@ write-host "ui tests          step is set to" $UI_TESTS
 write-host "nuget             step is set to" $NUGET
 write-host "package           step is set to" $PACKAGE
 write-host "deploy            step is set to" ($DEPLOY -eq "")
+write-host "sonarQube step is set to" $RUN_SONARQUBE
 
 
 if($ALERT) {
@@ -119,6 +122,7 @@ write-host "    -p[ackage]                      runs the package step"
 write-host "    -de[ploy] WORKSPACEID IPADDRESS uploads Integration Point binaries to a given Relativity Instance"
 write-host ""
 write-host "    -al[ert]                        Sshow alert popup when build completes"
+write-host "    -sonarqube                      runs sonarqube analysis and send results to server"
 write-host ""
 
 exit
@@ -146,7 +150,8 @@ if($BUILD -and $STATUS){
                                                                         'server_type'='local';
                                                                         'build_config'=$BUILDCONFIG;
                                                                         'build_type'=$BUILDTYPE;
-                                                                        'enable_injections'=$ENABLEINJECTIONS;}
+                                                                        'enable_injections'=$ENABLEINJECTIONS;
+                                                                        'run_sonarqube'=$RUN_SONARQUBE}
     if ($psake.build_success -eq $false) { $STATUS = $false }
 }
 
@@ -158,7 +163,7 @@ if($APPS -and $STATUS){
     if ($psake.build_success -eq $false) { $STATUS = $false }
 }
 
-if($TEST -and $STATUS){
+if($TEST -and $STATUS -and ($RUN_SONARQUBE -eq $false)){
     Invoke-psake $root\DevelopmentScripts\psake-test.ps1
     if ($psake.build_success -eq $false) { $STATUS = $false }
 }

@@ -53,7 +53,6 @@ def event_hash = java.security.MessageDigest.getInstance("MD5").digest(env.JOB_N
 // Make changes here if necessary.
 def python_packages = 'jeeves==4.1.0 phonograph==5.2.0 selenium==3.0.1'
 
-
 // Pipeline
 timeout(time: 3, unit: 'HOURS')
 {
@@ -80,7 +79,11 @@ timeout(time: 3, unit: 'HOURS')
                     {
                         timeout(time: 5, unit: 'MINUTES')
                         {
-                            powershell "./build.ps1 release"
+                            def sonarParameter = ""
+                            if(env.BRANCH_NAME == "develop"){
+                                sonarParameter = "-sonarqube"
+                            }
+                            powershell "./build.ps1 release ${sonarParameter}"
                             archiveArtifacts artifacts: "DevelopmentScripts/*.html", fingerprint: true
                         }
                     }

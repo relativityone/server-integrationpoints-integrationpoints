@@ -88,3 +88,6 @@ DevelopmentScripts/IntegrationTestsResults.html
 DevelopmentScripts/UITestsResults.xml
 DevelopmentScripts/UITestsResults.html
 /DevelopmentScripts/ValidationMessages.html
+/DevelopmentScripts/.sonarqube
+/.sonarqube
+/DevelopmentScripts/MSBuild.SonarQube.Runner.Tool/tools
