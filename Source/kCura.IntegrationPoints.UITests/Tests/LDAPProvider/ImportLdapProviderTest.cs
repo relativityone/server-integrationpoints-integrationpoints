@@ -37,10 +37,10 @@ namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 		public void DocumentExportToLoadFile_TC_IMPORT_CUST_1()
 		{
 			// Arrange
-			var model = new ImportFromLdapModel("Import Custodians", ExportToLoadFileTransferredObjectConstants.CUSTODIAN);
+			var model = new ImportFromLdapModel("Import Entities", ExportToLoadFileTransferredObjectConstants.ENTITY);
 
 			// Step 1
-			model.General.TransferredObject = ExportToLoadFileTransferredObjectConstants.CUSTODIAN;
+			model.General.TransferredObject = ExportToLoadFileTransferredObjectConstants.ENTITY;
 
 			// Step 2
 			model.Source.Authentication = LdapAuthenticationType.SecureSocketLayer;

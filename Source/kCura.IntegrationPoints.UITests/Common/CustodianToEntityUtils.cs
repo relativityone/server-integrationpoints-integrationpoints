@@ -15,8 +15,8 @@ namespace kCura.IntegrationPoints.UITests.Common
 
 		public static string GetValidTransferredObjectName(Func<bool> isEntityTransferredObjectOptionAvailable, IntegrationPointGeneralModel model)
 		{
-			return model.TransferredObject == ExportToLoadFileTransferredObjectConstants.CUSTODIAN && isEntityTransferredObjectOptionAvailable()
-				? ExportToLoadFileTransferredObjectConstants.ENTITY
+			return model.TransferredObject == ExportToLoadFileTransferredObjectConstants.ENTITY && !isEntityTransferredObjectOptionAvailable()
+				? ExportToLoadFileTransferredObjectConstants.CUSTODIAN
 				: model.TransferredObject;
 		}
 	}

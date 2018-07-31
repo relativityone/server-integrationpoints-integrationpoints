@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core.Models;
+using kCura.IntegrationPoint.Tests.Core.Models.Constants.ExportToLoadFile;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Pages;
@@ -36,7 +37,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 		public void CustodianExportToLoadFile_TC_ELF_CUST_1()
 		{
 			CustodianExportToLoadFileModel model = new CustodianExportToLoadFileModel("TC-ELF-CUST-1");
-			model.TransferredObject = "Custodian";
+			model.TransferredObject = ExportToLoadFileTransferredObjectConstants.ENTITY;
 			model.ExportDetails = new CustodianExportToLoadFileDetails
 			{
 				View = "Custodians - Legal Hold View"
