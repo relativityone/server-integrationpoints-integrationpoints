@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			// Step 1
 			model.Type = IntegrationPointType.Export;
 			model.DestinationProvider = IntegrationPointGeneralModel.INTEGRATION_POINT_PROVIDER_LOADFILE;
-			model.TransferredObject = ExportToLoadFileTransferredObjectConstants.DOCUMENT;
+			model.TransferredObject = TransferredObjectConstants.DOCUMENT;
 
 			// Step 2
 			model.SourceInformationModel.Source = ExportToLoadFileSourceConstants.FOLDER;
@@ -97,7 +97,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			// Step 1
 			model.Type = IntegrationPointType.Export;
 			model.DestinationProvider = IntegrationPointGeneralModel.INTEGRATION_POINT_PROVIDER_LOADFILE;
-			model.TransferredObject = ExportToLoadFileTransferredObjectConstants.DOCUMENT;
+			model.TransferredObject = TransferredObjectConstants.DOCUMENT;
 
 			// Step 2
 			model.SourceInformationModel.Source = ExportToLoadFileSourceConstants.FOLDER_AND_SUBFOLDERS;

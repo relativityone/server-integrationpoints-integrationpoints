@@ -1,6 +1,5 @@
 ﻿using System;
 using kCura.IntegrationPoint.Tests.Core.Models;
-using kCura.IntegrationPoint.Tests.Core.Models.Constants.ExportToLoadFile;
 using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Configuration;
 using kCura.IntegrationPoints.UITests.Pages;

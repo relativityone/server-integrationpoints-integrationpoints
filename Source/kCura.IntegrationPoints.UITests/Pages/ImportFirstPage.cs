@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using kCura.IntegrationPoint.Tests.Core.Models.Constants.ExportToLoadFile;
 using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Driver;
 using OpenQA.Selenium;
