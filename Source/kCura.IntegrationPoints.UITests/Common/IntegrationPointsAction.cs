@@ -75,14 +75,6 @@ namespace kCura.IntegrationPoints.UITests.Common
 			return secondPage;
 		}
 
-		private string GetValidTransferredObjectName(Func<bool> isEntityTransferredObjectOptionAvailable, IntegrationPointGeneralModel model)
-		{
-			return model.TransferredObject == ExportToLoadFileTransferredObjectConstants.CUSTODIAN && isEntityTransferredObjectOptionAvailable()
-				? ExportToLoadFileTransferredObjectConstants.ENTITY
-				: model.TransferredObject;
-		}
-
-
 		private void SetupExportToFileThirdPageExportDetails(ExportToFileThirdPageExportDetails thirdPageExportDetails, ExportToLoadFileDetailsModel exportDetails)
 		{
 			if (exportDetails.ExportImages.HasValue && exportDetails.ExportImages.Value)
