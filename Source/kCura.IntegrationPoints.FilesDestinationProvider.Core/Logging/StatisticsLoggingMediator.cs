@@ -2,8 +2,6 @@
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Monitoring;
 using kCura.IntegrationPoints.Core.Monitoring.NumberOfRecords.Messages;
-using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
@@ -20,9 +18,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 		private int _currentExportedItemChunkCount;
 		private const int _EXPORTED_ITEMS_UPDATE_THRESHOLD = 1000;
 		private readonly IMessageService _messageService;
-		private readonly IProviderTypeService _providerTypeService;
 		private readonly IJobHistoryErrorService _historyErrorService;
 		private readonly ICaseServiceContext _caseServiceContext;
+		private readonly IIntegrationPointProviderTypeService _integrationPointProviderTypeService;
 		private readonly IDateTimeHelper _dateTimeHelper;
 		private readonly DateTime _startTime;
 
@@ -42,12 +40,15 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 
 		#region Methods
 
-		public StatisticsLoggingMediator(IMessageService messageService, IProviderTypeService providerTypeService, IJobHistoryErrorService historyErrorService, ICaseServiceContext caseServiceContext, IDateTimeHelper dateTimeHelper)
+		public StatisticsLoggingMediator(IMessageService messageService, IJobHistoryErrorService historyErrorService,
+			ICaseServiceContext caseServiceContext,
+			IIntegrationPointProviderTypeService integrationPointProviderTypeService,
+			IDateTimeHelper dateTimeHelper)
 		{
 			_messageService = messageService;
-			_providerTypeService = providerTypeService;
 			_historyErrorService = historyErrorService;
 			_caseServiceContext = caseServiceContext;
+			_integrationPointProviderTypeService = integrationPointProviderTypeService;
 			_dateTimeHelper = dateTimeHelper;
 			_startTime = _dateTimeHelper.Now();
 		}
@@ -148,7 +149,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 
 		private string GetProviderName()
 		{
-			return _historyErrorService.IntegrationPoint.GetProviderType(_providerTypeService).ToString();
+			return _integrationPointProviderTypeService.GetProviderType(_historyErrorService.IntegrationPoint).ToString();	
 		}
 
 		private bool CanUpdateJobStatus(ExportEventArgs exportArgs)

@@ -3,7 +3,6 @@ using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Monitoring.NumberOfRecords.Messages;
-using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Utils;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Queries;
@@ -20,8 +19,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		private int _rowErrors;
 
 		private readonly IMessageService _messageService;
-		private readonly IIntegrationPointService _integrationPointService;
-		private readonly IProviderTypeService _providerTypeService;
+		private readonly IIntegrationPointProviderTypeService _integrationPointProviderTypeService;
 		private readonly IWorkspaceDBContext _context;
 		private readonly TaskParameterHelper _helper;
 		private readonly JobStatisticsQuery _query;
@@ -39,15 +37,15 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			IWorkspaceDBContext context,
 			IHelper helper,
 			IFileSizesStatisticsService fileSizesStatisticsStatisticsService,
-			IMessageService messageService, IIntegrationPointService integrationPointService, IProviderTypeService providerTypeService)
+			IMessageService messageService,
+			IIntegrationPointProviderTypeService integrationPointProviderTypeService)
 		{
 			_query = query;
 			_helper = taskParameterHelper;
 			_jobHistoryService = jobHistoryService;
 			_context = context;
 			_messageService = messageService;
-			_integrationPointService = integrationPointService;
-			_providerTypeService = providerTypeService;
+			_integrationPointProviderTypeService = integrationPointProviderTypeService;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<JobStatisticsService>();
 
 			_fileSizeStatisticsService = fileSizesStatisticsStatisticsService;
@@ -168,9 +166,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
 		private ProviderType GetProviderType(Job job)
 		{
-			Data.IntegrationPoint integrationPoint = _integrationPointService.GetRdo(job.RelatedObjectArtifactID);
-			ProviderType providerType = integrationPoint.GetProviderType(_providerTypeService);
-			return providerType;
+			return _integrationPointProviderTypeService.GetProviderType(job.RelatedObjectArtifactID);
 		}
 
 		#region Logging
