@@ -2,6 +2,7 @@
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Monitoring;
 using kCura.IntegrationPoints.Core.Monitoring.NumberOfRecords.Messages;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Queries;
@@ -121,7 +122,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		{
 			string provider = GetProviderType(_job).ToString();
 
-			var message = new JobApmThroughputMessage
+			var message = new JobProgressMessage
 			{
 				Provider = provider,
 				CorrelationID = _helper.GetBatchInstance(_job).ToString(),

@@ -117,7 +117,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.JobLifetime
 				{
 					Provider = providerType.ToString(),
 					CorrelationID = correlationId,
-					Throughput = throughput
+					RecordsPerSecond = throughput
 				});
 			}
 		}
