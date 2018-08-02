@@ -45,6 +45,7 @@ using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Monitoring;
 using kCura.IntegrationPoints.Core.Monitoring.JobLifetime;
+using kCura.IntegrationPoints.Core.Monitoring.Sinks.Aggregated;
 using kCura.IntegrationPoints.Core.Serialization;
 using kCura.IntegrationPoints.Core.Services.Domain;
 using kCura.IntegrationPoints.Core.Services.Exporter;

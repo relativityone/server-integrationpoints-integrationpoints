@@ -1,4 +1,4 @@
-﻿namespace kCura.IntegrationPoints.Core.Monitoring.NumberOfRecordsMessages
+﻿namespace kCura.IntegrationPoints.Common.Monitoring.Messages
 {
 	public class JobTotalRecordsCountMessage : JobMessageBase
 	{

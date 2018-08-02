@@ -1,9 +1,6 @@
-﻿using System;
-using kCura.IntegrationPoints.Core.Monitoring.NumberOfRecords.Messages;
-
-namespace kCura.IntegrationPoints.Core.Monitoring
+﻿namespace kCura.IntegrationPoints.Common.Monitoring.Messages
 {
-	public class ExportJobStatisticsMessage : JobApmMessageBase
+	public class JobStatisticsMessage : JobMessageBase
 	{
 		private const string _FILE_BYTES_KEY_NAME = "FileBytes";
 		private const string _METADATA_KEY_NAME = "MetadataBytes";

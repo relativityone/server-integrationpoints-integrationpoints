@@ -1,237 +1,73 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{81CAAB75-DFDA-4EFB-980C-9FEE0D9F359A}</ProjectGuid>
+    <ProjectGuid>{32BCB03B-4980-4434-9392-F72334E6E348}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>kCura.IntegrationPoints.Core.Tests</RootNamespace>
-    <AssemblyName>kCura.IntegrationPoints.Core.Tests</AssemblyName>
+    <RootNamespace>kCura.IntegrationPoints.Common</RootNamespace>
+    <AssemblyName>kCura.IntegrationPoints.Common</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
-    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
-    <IsCodedUITest>False</IsCodedUITest>
-    <TestProjectType>UnitTest</TestProjectType>
     <TargetFrameworkProfile />
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <PlatformTarget>x64</PlatformTarget>
     <OutputPath>bin\x64\</OutputPath>
+    <DefineConstants>DEVENV,$(Injections)</DefineConstants>
     <DebugType>full</DebugType>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <PlatformTarget>x64</PlatformTarget>
+    <DefineConstants>$(Injections)</DefineConstants>
     <OutputPath>bin\x64\</OutputPath>
+    <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <DefineConstants>
+    </DefineConstants>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.IdentityModel" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Net.Http.WebRequest" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.ServiceModel" />
-    <Reference Include="System.Web.Extensions" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Serialization" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\..\Version\AssemblyInfo.cs">
-      <Link>AssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="Authentication\OAuth2ClientFactoryTests.cs" />
-    <Compile Include="Authentication\OAuth2TokenGeneratorTests.cs" />
-    <Compile Include="Authentication\TokenCredentialProviderTests.cs" />
-    <Compile Include="Factories\HelperFactoryTests.cs" />
-    <Compile Include="FederatedInstanceRsapiHandlerTests.cs" />
-    <Compile Include="FederatedInstanceKeplerHandlerTests.cs" />
-    <Compile Include="Helpers\ButtonStateBuilderTests.cs" />
-    <Compile Include="Helpers\MatchHelper.cs" />
-    <Compile Include="Helpers\RelativePathDirectoryTreeProviderTests.cs" />
-    <Compile Include="Helpers\SavedSearchesTreeTestHelper.cs" />
-    <Compile Include="JobLifetimeMetricBatchStatusTests.cs" />
-    <Compile Include="Managers\InstanceSettingsManagerTests.cs" />
-    <Compile Include="Managers\FederatedInstanceManagerTests.cs" />
-    <Compile Include="Managers\ProductionManagerTests.cs" />
-    <Compile Include="Managers\ResourcePoolManagerTests.cs" />
-    <Compile Include="Managers\WorkspaceManagerTests.cs" />
-    <Compile Include="Monitoring\AggregatedJobSinkTests.cs" />
-    <Compile Include="Monitoring\HealthCheckTests.cs" />
-    <Compile Include="RelativitySourceRdo\RelativitySourceJobRdoInitializerTests.cs" />
-    <Compile Include="RelativitySourceRdo\RelativitySourceRdoDocumentFieldTests.cs" />
-    <Compile Include="RelativitySourceRdo\RelativitySourceRdoFieldsTests.cs" />
-    <Compile Include="RelativitySourceRdo\RelativitySourceRdoObjectTypeTests.cs" />
-    <Compile Include="RelativitySourceRdo\RelativitySourceWorkspaceRdoInitializerTests.cs" />
-    <Compile Include="Services\FieldServiceTests.cs" />
-    <Compile Include="Services\ChoiceServiceTests.cs" />
-    <Compile Include="Services\Domain\DataProviderBuilderTests.cs" />
-    <Compile Include="Services\Domain\ProviderFactoryCreationStrategyTests.cs" />
-    <Compile Include="Services\Domain\AppDomainIsolatedFactoryCreationStrategyTests.cs" />
-    <Compile Include="Services\Domain\ProviderFactoryVendorTests.cs" />
-    <Compile Include="Services\Exporter\Images\ImageExporterServiceTests.cs" />
-    <Compile Include="Services\JobHistory\CachedIntegrationPointProviderTypeServiceTests.cs" />
-    <Compile Include="Services\ProcessingSourceLocationTests.cs" />
-    <Compile Include="Services\DataTransferLocationServiceTests.cs" />
-    <Compile Include="Services\DeleteIntegrationPointsTests.cs" />
-    <Compile Include="Services\Exporter\DynamicFolderPathReaderTests.cs" />
-    <Compile Include="Services\Exporter\ExportTransferDataReaderTestsBase.cs" />
-    <Compile Include="Services\Exporter\ImageTransferDataReaderTests.cs" />
-    <Compile Include="Services\IntegrationPointProfileServiceTests.cs" />
-    <Compile Include="Services\JobHistory\DestinationParserTests.cs" />
-    <Compile Include="Services\JobHistory\UnfinishedJobServiceTests.cs" />
-    <Compile Include="Services\JobTrackerTests.cs" />
-    <Compile Include="Services\Synchronizer\ImportProviderRdoSynchronizerFactoryTests.cs" />
-    <Compile Include="SetupAndTeardown.cs" />
-    <Compile Include="JobHelper.cs" />
-    <Compile Include="Services\SavedSearchesTreeServiceTests.cs" />
-    <Compile Include="Helpers\ArtifactTreeCreatorTests.cs" />
-    <Compile Include="Helpers\SavedSearchesTreeCreatorTests.cs" />
-    <Compile Include="AgentJobManagerTest.cs" />
-    <Compile Include="Agent\IntegrationPointTaskBaseTests.cs" />
-    <Compile Include="BatchEmailTests.cs" />
-    <Compile Include="BatchStatusCommands\SourceObjectBatchUpdateManagerTest.cs" />
-    <Compile Include="BatchStatusCommands\TargetDocumentsTaggingManagerFactoryTests.cs" />
-    <Compile Include="BatchStatusCommands\TargetDocumentsTaggingManagerTests.cs" />
-    <Compile Include="BatchStatusCommands\TempTableReaderTests.cs" />
-    <Compile Include="DeleteHistoryServiceTest.cs" />
-    <Compile Include="BatchStatusCommands\JobHistoryErrorBatchUpdateManagerTest.cs" />
-    <Compile Include="Helpers\DirectoryTreeCreatorTest.cs" />
-    <Compile Include="Helpers\OnClickEventConstructorTests.cs" />
-    <Compile Include="JobHistoryBatchUpdateStatusTests.cs" />
-    <Compile Include="JobStatusUpdaterTests.cs" />
-    <Compile Include="Managers\ArtifactGuidManagerTests.cs" />
-    <Compile Include="Managers\ErrorManagerTests.cs" />
-    <Compile Include="Managers\JobStopManagerTests.cs" />
-    <Compile Include="Managers\FieldManagerTests.cs" />
-    <Compile Include="Keywords\KeywordConverterTests.cs" />
-    <Compile Include="Managers\JobHistoryErrorManagerTests.cs" />
-    <Compile Include="Managers\JobHistoryManagerTests.cs" />
-    <Compile Include="Managers\NullableStopJobManagerTests.cs" />
-    <Compile Include="Managers\ObjectTypeManagerTests.cs" />
-    <Compile Include="Managers\QueueManagerTests.cs" />
-    <Compile Include="Managers\SourceJobManagerTests.cs" />
-    <Compile Include="Managers\SourceWorkspaceManagerTests.cs" />
-    <Compile Include="Managers\StateManagerTests.cs" />
-    <Compile Include="Models\StoppableJobCollectionTests.cs" />
-    <Compile Include="RdoFilterTest.cs" />
-    <Compile Include="Services\Domain\RelativityFeaturePathServiceTests.cs" />
-    <Compile Include="Services\Exporter\ArgumentMatcher.cs" />
-    <Compile Include="Services\Exporter\DocumentTransferDataReaderTests.cs" />
-    <Compile Include="Services\Exporter\ExportApiHelperTests.cs" />
-    <Compile Include="Services\Exporter\ExportJobErrorServiceTest.cs" />
-    <Compile Include="Services\Exporter\InMemoryILongTextStream.cs" />
-    <Compile Include="Services\Exporter\LazyExceptArtifactFieldDtoTests.cs" />
-    <Compile Include="Services\Exporter\RelativityExporterServiceTests.cs" />
-    <Compile Include="Services\IntegrationPointServiceTests.cs" />
-    <Compile Include="Services\JobHistory\JobHistoryErrorServiceTest.cs" />
-    <Compile Include="Services\JobHistory\JobHistoryServiceTest.cs" />
-    <Compile Include="Tagging\TaggerTests.cs" />
-    <Compile Include="Tagging\TagSavedSearchFolderTests.cs" />
-    <Compile Include="Tagging\TagSavedSearchManagerTests.cs" />
-    <Compile Include="Tagging\TagSavedSearchTests.cs" />
-    <Compile Include="Tagging\TagsCreatorTests.cs" />
-    <Compile Include="Telemetry\ExportTelemetryMetricProviderTest.cs" />
-    <Compile Include="Telemetry\TelemetryMangerTest.cs" />
-    <Compile Include="Validation\ArtifactValidatorTests.cs" />
-    <Compile Include="Validation\Helpers\NonValidCharactersValidatorTests.cs" />
-    <Compile Include="Validation\ImportProductionValidatorTests.cs" />
-    <Compile Include="Validation\IntegrationPointTypeValidatorTests.cs" />
-    <Compile Include="Validation\ImportPermissionValidatorTests.cs" />
-    <Compile Include="Validation\IntegrationPointPermissionValidatorTests.cs" />
-    <Compile Include="Validation\PermissionValidatorTests.cs" />
-    <Compile Include="Validation\NameValidatorTests.cs" />
-    <Compile Include="Validation\ProductionValidatorTests.cs" />
-    <Compile Include="Validation\RelativityProviderValidator\FieldMappingsValidatorTest.cs" />
-    <Compile Include="Validation\RelativityProviderValidator\Parts\FederatedInstanceConnectionValidatorTests.cs" />
-    <Compile Include="Validation\RelativityProviderValidator\Parts\RelativityProviderDestinationFolderPermissionValidatorTests.cs" />
-    <Compile Include="Validation\RelativityProviderValidator\Parts\RelativityProviderDestinationWorkspacePermissionValidatorTests.cs" />
-    <Compile Include="Validation\RelativityProviderValidator\RelativityProviderConfigurationValidatorTests.cs" />
-    <Compile Include="Validation\RelativityProviderValidator\RelativityProviderDestinationWorkspaceExistenceValidatorTests.cs" />
-    <Compile Include="Validation\RelativityProviderValidator\RelativityProviderPermissionValidatorTests.cs" />
-    <Compile Include="Validation\RelativityProviderValidator\RelativityProviderSourceProductionPermissionValidatorTests.cs" />
-    <Compile Include="Validation\RelativityProviderValidator\SavedSearchValidatorTests.cs" />
-    <Compile Include="Validation\RelativityProviderValidator\TransferredObjectValidatorTests.cs" />
-    <Compile Include="Validation\SavePermissionValidatorTests.cs" />
-    <Compile Include="Validation\SchedulerValidatorTest.cs" />
-    <Compile Include="Validation\EmailValidatorTest.cs" />
-    <Compile Include="Validation\RelativityProviderValidator\WorkspaceValidatorTests.cs" />
-    <Compile Include="Validation\StopJobPermissionValidatorTests.cs" />
-    <Compile Include="Validation\ValidationExecutorTests.cs" />
-    <Compile Include="Validation\ViewErrorsPermissionValidatorTests.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
-      <Project>{AD3E5540-FA39-4983-8A23-FCC756D51A32}</Project>
-      <Name>kCura.IntegrationPoint.Tests.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.Common\kCura.IntegrationPoints.Common.csproj">
-      <Project>{32bcb03b-4980-4434-9392-f72334e6e348}</Project>
-      <Name>kCura.IntegrationPoints.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
-      <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
-      <Name>kCura.IntegrationPoints.Contracts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.Core.Contracts\kCura.IntegrationPoints.Core.Contracts.csproj">
-      <Project>{30503682-e18d-49df-a308-fe7996c4108e}</Project>
-      <Name>kCura.IntegrationPoints.Core.Contracts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">
-      <Project>{a1ae667b-1b6e-4bb9-af1d-912620292283}</Project>
-      <Name>kCura.IntegrationPoints.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
-      <Project>{599d771d-2ae7-4321-9bac-be06f827ce0a}</Project>
-      <Name>kCura.IntegrationPoints.Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.DocumentTransferProvider\kCura.IntegrationPoints.DocumentTransferProvider.csproj">
-      <Project>{CA3D5B8B-B99C-4BA5-BB8B-44A0BA9AA0F7}</Project>
-      <Name>kCura.IntegrationPoints.DocumentTransferProvider</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
-      <Project>{5d5b52b4-8769-431a-9743-b96f15fed5fd}</Project>
-      <Name>kCura.IntegrationPoints.Domain</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.Injection\kCura.IntegrationPoints.Injection.csproj">
-      <Project>{847816a0-e354-4176-83b1-7adb93e5742f}</Project>
-      <Name>kCura.IntegrationPoints.Injection</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
-      <Project>{B91CC4ED-ABF3-4409-8DF3-46A3C26EB4AA}</Project>
-      <Name>kCura.IntegrationPoints.Synchronizers.RDO</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj">
-      <Project>{c831c856-e74f-48b4-aebc-1cf15576e082}</Project>
-      <Name>kCura.ScheduleQueue.Core</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="LICENSE.txt">
       <Paket>True</Paket>
     </Content>
+    <Compile Include="..\..\Version\AssemblyInfo.cs">
+      <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Monitoring\Messages\JobStatisticsMessage.cs" />
+    <Compile Include="Monitoring\Messages\JobLifetime\JobCompletedMessage.cs" />
+    <Compile Include="Monitoring\Messages\JobLifetime\JobFailedMessage.cs" />
+    <Compile Include="Monitoring\Messages\JobLifetime\JobStartedMessage.cs" />
+    <Compile Include="Monitoring\Messages\JobLifetime\JobValidationFailedMessage.cs" />
+    <Compile Include="Monitoring\Messages\JobMessageBase.cs" />
+    <Compile Include="Monitoring\Messages\JobThroughputBytesMessage.cs" />
+    <Compile Include="Monitoring\Messages\JobCompletedRecordsCountMessage.cs" />
+    <Compile Include="Monitoring\Messages\JobProgressMessage.cs" />
+    <Compile Include="Monitoring\Messages\JobThroughputMessage.cs" />
+    <Compile Include="Monitoring\Messages\JobTotalRecordsCountMessage.cs" />
+    <Compile Include="Monitoring\Messages\MetricMetadataExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="paket.references">
-    </None>
+    <None Include="paket.references" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Choose>
@@ -241,11 +77,6 @@
       </PropertyGroup>
     </When>
   </Choose>
-  <PropertyGroup>
-    <PostBuildEvent>mkdir "$(ProjectDir)..\..\lib\UnitTests"
-xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y</PostBuildEvent>
-  </PropertyGroup>
-  <Import Project="..\..\.paket\paket.targets" />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
@@ -279,7 +110,7 @@ xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y</PostBuildEvent>
       </ItemGroup>
     </When>
   </Choose>
-  <Import Project="..\..\packages\Baseclass.Contrib.Nuget.Output\build\$(__paket__Baseclass_Contrib_Nuget_Output_targets).targets" Condition="Exists('..\..\packages\Baseclass.Contrib.Nuget.Output\build\$(__paket__Baseclass_Contrib_Nuget_Output_targets).targets')" Label="Paket" />
+  <Import Project="..\..\.paket\paket.targets" />
   <ItemGroup>
     <Analyzer Include="..\..\packages\CSharpGuidelineAnalyzer\analyzers\dotnet\cs\CSharpGuidelineAnalyzer.dll">
       <Paket>True</Paket>
@@ -289,7 +120,7 @@ xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y</PostBuildEvent>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="Elasticsearch.Net">
-          <HintPath>..\..\packages\Elasticsearch.Net\lib\net46\Elasticsearch.Net.dll</HintPath>
+          <HintPath>..\..\packages\Elasticsearch.Net\lib\net45\Elasticsearch.Net.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -312,6 +143,28 @@ xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y</PostBuildEvent>
       <ItemGroup>
         <Reference Include="kCura">
           <HintPath>..\..\packages\kCura\lib\net462\kCura.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="kCura.Apps.Common.Config">
+          <HintPath>..\..\packages\kCura.Apps.Common.Config\lib\net462\kCura.Apps.Common.Config.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="kCura.Apps.Common.Data">
+          <HintPath>..\..\packages\kCura.Apps.Common.Data\lib\net462\kCura.Apps.Common.Data.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -350,17 +203,6 @@ xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y</PostBuildEvent>
       <ItemGroup>
         <Reference Include="kCura.Injection">
           <HintPath>..\..\packages\kCura.Injection\lib\net462\kCura.Injection.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="oi">
-          <HintPath>..\..\packages\kCura.OutsideIn.FI.Win32\lib\net40\oi.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -480,6 +322,15 @@ xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y</PostBuildEvent>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="System.IdentityModel">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Net.Http.WebRequest">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Runtime.Serialization">
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="Microsoft.Owin.Security.OpenIdConnect">
           <HintPath>..\..\packages\Microsoft.Owin.Security.OpenIdConnect\lib\net45\Microsoft.Owin.Security.OpenIdConnect.dll</HintPath>
           <Private>True</Private>
@@ -524,17 +375,6 @@ xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y</PostBuildEvent>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="Moq">
-          <HintPath>..\..\packages\Moq\lib\net45\Moq.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
         <Reference Include="Nest">
           <HintPath>..\..\packages\NEST\lib\net45\Nest.dll</HintPath>
           <Private>True</Private>
@@ -557,41 +397,8 @@ xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y</PostBuildEvent>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="NSubstitute">
-          <HintPath>..\..\packages\NSubstitute\lib\net45\NSubstitute.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="nunit.framework">
-          <HintPath>..\..\packages\NUnit\lib\net45\nunit.framework.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
         <Reference Include="Owin">
           <HintPath>..\..\packages\Owin\lib\net40\Owin.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Polly">
-          <HintPath>..\..\packages\Polly\lib\net45\Polly.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -634,98 +441,6 @@ xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y</PostBuildEvent>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="FaspManager">
-          <HintPath>..\..\packages\relativity.faspmanager\lib\net40\FaspManager.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="FreeImageNET">
-          <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\FreeImageNET.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Ionic.Zip">
-          <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\Ionic.Zip.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity">
-          <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\Relativity.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="kCura">
-          <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\kCura.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="kCura.ImageValidator">
-          <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\kCura.ImageValidator.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="kCura.OI.FileID">
-          <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\kCura.OI.FileID.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="kCura.Relativity.DataReaderClient">
-          <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\kCura.Relativity.DataReaderClient.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="kCura.Relativity.ImportAPI">
-          <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\kCura.Relativity.ImportAPI.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="kCura.Relativity.ImportAPI.Extension">
-          <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\kCura.Relativity.ImportAPI.Extension.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="kCura.WinEDDS">
-          <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\kCura.WinEDDS.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="kCura.WinEDDS.Core">
-          <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\kCura.WinEDDS.Core.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="kCura.WinEDDS.ImportExtension">
-          <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\kCura.WinEDDS.ImportExtension.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="kCura.WinEDDS.TApi">
-          <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\kCura.WinEDDS.TApi.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="kCura.Windows.Forms">
-          <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\kCura.Windows.Forms.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="kCura.Windows.Process">
-          <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\kCura.Windows.Process.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
         <Reference Include="Relativity.Kepler">
           <HintPath>..\..\packages\Relativity.Kepler\lib\net462\Relativity.Kepler.dll</HintPath>
           <Private>True</Private>
@@ -739,44 +454,6 @@ xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y</PostBuildEvent>
       <ItemGroup>
         <Reference Include="Relativity.Services.ServiceProxy">
           <HintPath>..\..\packages\Relativity.Kepler.Client\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.Logging">
-          <HintPath>..\..\packages\Relativity.Logging\lib\net462\Relativity.Logging.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.Logging.Interfaces">
-          <HintPath>..\..\packages\Relativity.Logging.Interfaces\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.OAuth2Client.IdentityModel.Interfaces">
-          <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces\lib\net462\Relativity.OAuth2Client.IdentityModel.Interfaces.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.OAuth2Client.Interfaces">
-          <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -919,37 +596,6 @@ xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y</PostBuildEvent>
       <ItemGroup>
         <Reference Include="Relativity.Toggles">
           <HintPath>..\..\packages\Relativity.Toggles\lib\net462\Relativity.Toggles.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.Transfer.Client">
-          <HintPath>..\..\packages\relativity.transfer.client\lib\net462\Relativity.Transfer.Client.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.Transfer.Client.Aspera">
-          <HintPath>..\..\packages\relativity.transfer.client\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.Transfer.Client.Core">
-          <HintPath>..\..\packages\relativity.transfer.client\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.Transfer.Client.FileShare">
-          <HintPath>..\..\packages\relativity.transfer.client\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.Transfer.Client.Http">
-          <HintPath>..\..\packages\relativity.transfer.client\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -1246,11 +892,13 @@ xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y</PostBuildEvent>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="Microsoft.CSharp">
+        <Reference Include="Serilog">
+          <HintPath>..\..\packages\Serilog\lib\net45\Serilog.dll</HintPath>
+          <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
-        <Reference Include="Serilog">
-          <HintPath>..\..\packages\Serilog\lib\net46\Serilog.dll</HintPath>
+        <Reference Include="Serilog.FullNetFx">
+          <HintPath>..\..\packages\Serilog\lib\net45\Serilog.FullNetFx.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -1261,18 +909,7 @@ xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y</PostBuildEvent>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="Serilog.Sinks.Elasticsearch">
-          <HintPath>..\..\packages\Serilog.Sinks.ElasticSearch\lib\net45\Serilog.Sinks.Elasticsearch.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Serilog.Sinks.File">
-          <HintPath>..\..\packages\Serilog.Sinks.File\lib\net45\Serilog.Sinks.File.dll</HintPath>
+          <HintPath>..\..\packages\Serilog.Sinks.Elasticsearch\lib\net45\Serilog.Sinks.Elasticsearch.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -1293,41 +930,11 @@ xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y</PostBuildEvent>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="Serilog.Sinks.PeriodicBatching">
-          <HintPath>..\..\packages\Serilog.Sinks.PeriodicBatching\lib\net45\Serilog.Sinks.PeriodicBatching.dll</HintPath>
-          <Private>True</Private>
+        <Reference Include="System.ServiceModel">
           <Paket>True</Paket>
         </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Serilog.Sinks.RollingFile">
-          <HintPath>..\..\packages\Serilog.Sinks.RollingFile\lib\net45\Serilog.Sinks.RollingFile.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
         <Reference Include="Microsoft.ServiceBus">
           <HintPath>..\..\packages\ServiceBus.v1_1\lib\net40-full\Microsoft.ServiceBus.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Renci.SshNet">
-          <HintPath>..\..\packages\SSH.NET\lib\net40\Renci.SshNet.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -1389,19 +996,9 @@ xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y</PostBuildEvent>
       </ItemGroup>
     </When>
   </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="ZetaLongPaths">
-          <HintPath>..\..\packages\ZetaLongPaths\lib\net40-full\ZetaLongPaths.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
   <Import Project="..\..\packages\kCura\build\kCura.targets" Condition="Exists('..\..\packages\kCura\build\kCura.targets')" Label="Paket" />
-  <Import Project="..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets')" Label="Paket" />
-  <Import Project="..\..\packages\Relativity.ImportExport\build\Relativity.ImportExport.targets" Condition="Exists('..\..\packages\Relativity.ImportExport\build\Relativity.ImportExport.targets')" Label="Paket" />
   <Import Project="..\..\packages\RelativityCore\build\RelativityCore.targets" Condition="Exists('..\..\packages\RelativityCore\build\RelativityCore.targets')" Label="Paket" />
+  <PropertyGroup>
+    <PostBuildEvent>$(ProjectDir)..\..\DevelopmentScripts\copyProjectFilesToLib.cmd $(ProjectDir)..\ $(TargetDir) $(TargetName)</PostBuildEvent>
+  </PropertyGroup>
 </Project>

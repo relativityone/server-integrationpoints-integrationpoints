@@ -1,6 +1,6 @@
-﻿namespace kCura.IntegrationPoints.Core.Monitoring.NumberOfRecords.Messages
+﻿namespace kCura.IntegrationPoints.Common.Monitoring.Messages
 {
-	public class JobApmThroughputMessage : JobApmMessageBase
+	public class JobProgressMessage : JobMessageBase
 	{
 		private const string _METADATA_THROUGHPUT_KEY_NAME = "MetadataThroughput";
 		private const string _FILE_THROUGHPUT = "FileThroughput";

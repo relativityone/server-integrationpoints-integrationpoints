@@ -1,8 +1,8 @@
 ﻿using System;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Common.Monitoring.Messages;
+using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
 using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Monitoring.JobLifetimeMessages;
-using kCura.IntegrationPoints.Core.Monitoring.NumberOfRecordsMessages;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -51,9 +51,9 @@ namespace kCura.IntegrationPoints.Core.Monitoring.JobLifetime
 			TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
 			string correlationId = taskParameters.BatchInstance.ToString();
 
-			SendLifetimeMessage(status, providerType, correlationId);
 			SendRecordsMessage(providerType, jobHistory, correlationId);
 			SendThroughputMessage(providerType, jobHistory, correlationId);
+			SendLifetimeMessage(status, providerType, correlationId);
 		}
 
 		private void SendRecordsMessage(ProviderType providerType, JobHistory jobHistory, string correlationId)

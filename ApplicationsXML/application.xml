@@ -1358,6 +1358,12 @@
       <Name>Relativity.Productions.Services.Interfaces.dll</Name>
       <Notes />
     </Assembly>
+    <Assembly>
+      <ArtifactId>3100668</ArtifactId>
+      <Keywords />
+      <Name>kCura.IntegrationPoints.Common.dll</Name>
+      <Notes />
+    </Assembly>
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />

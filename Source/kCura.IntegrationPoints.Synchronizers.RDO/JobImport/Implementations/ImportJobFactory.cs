@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.IntegrationPoints.Common.Monitoring.Messages;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
@@ -41,11 +42,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 					throw new ArgumentOutOfRangeException();
 			}
 			rv.RegisterEventHandlers();
-			rv.OnComplete += report => OnJobComplete(report, settings.CaseArtifactId, settings.CorrelationId, settings.Provider, settings.JobID);
+			rv.OnComplete += report => OnBatchComplete(report, settings.CaseArtifactId, settings.CorrelationId, settings.Provider, settings.JobID);
 			return rv;
 		}
 
-		private void OnJobComplete(JobReport jobReport, int workspaceId, Guid correlationId, string provider, long? jobID)
+		private void OnBatchComplete(JobReport jobReport, int workspaceId, Guid correlationId, string provider, long? jobID)
 		{
 			if (!IsValidProviderName(provider)) // filter out jobs without provider name (for example, Tagger that is being run within push job)
 			{
@@ -56,7 +57,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 			TimeSpan jobDuration = jobReport.EndTime - jobReport.StartTime;
 			double bytesPerSecond = jobDuration.TotalSeconds > 0 ? jobSizeInBytes / jobDuration.TotalSeconds : 0;
 
-			_messageService.Send(new ImportJobStatisticsMessage()
+			_messageService.Send(new JobStatisticsMessage()
 			{
 				Provider = provider,
 				JobID = jobID?.ToString() ?? "",
@@ -68,7 +69,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 				UnitOfMeasure = "Bytes(s)"
 			});
 
-			_messageService.Send(new ImportJobThroughputBytesMessage()
+			_messageService.Send(new JobThroughputBytesMessage()
 			{
 				Provider = provider,
 				CorrelationID = correlationId.ToString(),

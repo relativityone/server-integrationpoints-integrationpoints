@@ -1,4 +1,4 @@
-﻿namespace kCura.IntegrationPoints.Core.Monitoring.JobLifetimeMessages
+﻿namespace kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime
 {
     public class JobStartedMessage : JobMessageBase
     {

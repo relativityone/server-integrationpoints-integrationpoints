@@ -1,6 +1,6 @@
 ﻿using Relativity.DataTransfer.MessageService.MetricsManager.APM;
 
-namespace kCura.IntegrationPoints.Core.Monitoring.NumberOfRecords.Messages
+namespace kCura.IntegrationPoints.Common.Monitoring.Messages
 {
 	public static class MetricMetadataExtensions
 	{

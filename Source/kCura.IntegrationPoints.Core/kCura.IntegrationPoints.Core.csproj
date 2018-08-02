@@ -122,25 +122,12 @@
     <Compile Include="Installers\SharedAgentInstaller.cs" />
     <Compile Include="IServiceManagerProvider.cs" />
     <Compile Include="Models\IRdoFilter.cs" />
-    <Compile Include="Monitoring\EndApmMetricSink.cs" />
-    <Compile Include="Monitoring\ExportJobStatisticsMessage.cs" />
     <Compile Include="Monitoring\HealthCheck.cs" />
-    <Compile Include="Monitoring\JobApmMessageBase.cs" />
-    <Compile Include="Monitoring\JobLifetime\Messages\JobCompletedMessage.cs" />
-    <Compile Include="Monitoring\JobLifetime\Messages\JobFailedMessage.cs" />
-    <Compile Include="Monitoring\JobLifetime\JobLifetimeMetricBatchStatus.cs" />
-    <Compile Include="Monitoring\JobMessageBase.cs" />
-    <Compile Include="Monitoring\JobLifetime\Messages\JobStartedMessage.cs" />
-    <Compile Include="Monitoring\JobLifetime\Messages\JobValidationFailedMessage.cs" />
     <Compile Include="Monitoring\IntegrationPointsMessageService.cs" />
-    <Compile Include="Monitoring\LiveApmMetricSink.cs" />
-    <Compile Include="Monitoring\NumberOfRecords\Messages\JobApmThroughputMessage.cs" />
-    <Compile Include="Monitoring\NumberOfRecords\Messages\JobCompletedRecordsCountMessage.cs" />
-    <Compile Include="Monitoring\NumberOfRecords\Messages\ExportJobThroughputBytesMessage.cs" />
-    <Compile Include="Monitoring\NumberOfRecords\Messages\JobThroughputMessage.cs" />
-    <Compile Include="Monitoring\NumberOfRecords\Messages\JobTotalRecordsCountMessage.cs" />
-    <Compile Include="Monitoring\NumberOfRecords\Messages\MetricMetadataExtensions.cs" />
-    <Compile Include="Monitoring\SumMetricSink.cs" />
+    <Compile Include="Monitoring\JobLifetimeMetricBatchStatus.cs" />
+    <Compile Include="Monitoring\MessageSink\Aggregated\AggregatedJobSink.cs" />
+    <Compile Include="Monitoring\MessageSink\Aggregated\JobStatistics.cs" />
+    <Compile Include="Monitoring\MessageSink\Aggregated\JobStatus.cs" />
     <Compile Include="Queries\IGetSourceProviderRdoByApplicationIdentifier.cs" />
     <Compile Include="Queries\IGetSourceProviderRdoByIdentifier.cs" />
     <Compile Include="Serialization\SerializerWithLogging.cs" />
@@ -467,6 +454,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Common\kCura.IntegrationPoints.Common.csproj">
+      <Project>{32bcb03b-4980-4434-9392-f72334e6e348}</Project>
+      <Name>kCura.IntegrationPoints.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Config\kCura.IntegrationPoints.Config.csproj">
       <Project>{DEF928B5-37CE-4BF3-B663-F0B8912C9C3F}</Project>
       <Name>kCura.IntegrationPoints.Config</Name>
