@@ -4,6 +4,7 @@ using kCura.IntegrationPoints.Core.Monitoring.JobLifetimeMessages;
 using kCura.IntegrationPoints.Core.Monitoring.NumberOfRecords.Messages;
 using kCura.IntegrationPoints.Core.Monitoring.NumberOfRecordsMessages;
 using kCura.IntegrationPoints.Core.Monitoring.Sinks.Aggregated;
+using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 using Relativity.DataTransfer.MessageService.MetricsManager.APM;
@@ -26,12 +27,9 @@ namespace kCura.IntegrationPoints.Core.Monitoring
 			this.AddSink(new ToggledMessageSink<JobThroughputMessage>(aggregatedJobSink, () => config.SendSumMetrics));
 			this.AddSink(new ToggledMessageSink<ExportJobThroughputBytesMessage>(aggregatedJobSink, () => config.SendSumMetrics));
 			this.AddSink(new ToggledMessageSink<ExportJobStatisticsMessage>(aggregatedJobSink, () => config.SendSummaryMetrics));
+			this.AddSink(new ToggledMessageSink<ImportJobThroughputBytesMessage>(aggregatedJobSink, () => config.SendSumMetrics));
+			this.AddSink(new ToggledMessageSink<ImportJobStatisticsMessage>(aggregatedJobSink, () => config.SendSummaryMetrics));
 			this.AddSink(new ToggledMessageSink<JobProgressMessage>(new ThrottledMessageSink<JobProgressMessage>(aggregatedJobSink, () => config.MetricsThrottling), () => config.SendLiveApmMetrics));
-
-			var endApmMetricSink = new EndApmMetricSink(metricsManagerFactory);
-
-			this.AddSink(new ToggledMessageSink<ImportJobStatisticsMessage>(endApmMetricSink, () => config.SendSummaryMetrics));
-			this.AddSink(new ToggledMessageSink<ExportJobStatisticsMessage>(endApmMetricSink, () => config.SendSummaryMetrics));
 		}
 	}
 }

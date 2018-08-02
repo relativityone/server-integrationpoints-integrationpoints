@@ -41,22 +41,44 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 					throw new ArgumentOutOfRangeException();
 			}
 			rv.RegisterEventHandlers();
-			rv.OnComplete += report => OnJobComplete(report, settings.CaseArtifactId, settings.CorrelationId, settings.Provider, settings.JobID);
+			rv.OnComplete += report => OnBatchComplete(report, settings.CaseArtifactId, settings.CorrelationId, settings.Provider, settings.JobID);
 			return rv;
 		}
 
-		private void OnJobComplete(JobReport jobReport, int workspaceId, Guid correlationId, string provider, long? jobID)
+		private void OnBatchComplete(JobReport jobReport, int workspaceId, Guid correlationId, string provider, long? jobID)
 		{
+			if (!IsValidProviderName(provider)) // filter out jobs without provider name (for example, Tagger that is being run within push job)
+			{
+				return;
+			}
+
+			long jobSizeInBytes = jobReport.FileBytes + jobReport.MetadataBytes;
+			TimeSpan jobDuration = jobReport.EndTime - jobReport.StartTime;
+			double bytesPerSecond = jobDuration.TotalSeconds > 0 ? jobSizeInBytes / jobDuration.TotalSeconds : 0;
+
 			_messageService.Send(new ImportJobStatisticsMessage()
 			{
 				Provider = provider,
 				JobID = jobID?.ToString() ?? "",
 				FileBytes = jobReport.FileBytes,
 				MetaBytes = jobReport.MetadataBytes,
-				CorellationID = correlationId.ToString(),
+				JobSizeInBytes = jobSizeInBytes,
+				CorrelationID = correlationId.ToString(),
 				WorkspaceID = workspaceId,
 				UnitOfMeasure = "Bytes(s)"
 			});
+
+			_messageService.Send(new ImportJobThroughputBytesMessage()
+			{
+				Provider = provider,
+				CorrelationID = correlationId.ToString(),
+				BytesPerSecond = bytesPerSecond
+			});
+		}
+
+		private bool IsValidProviderName(string provider)
+		{
+			return !string.IsNullOrWhiteSpace(provider);
 		}
 
 		internal enum JobContextType

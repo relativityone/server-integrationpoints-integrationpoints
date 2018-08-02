@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using kCura.IntegrationPoints.Core.Monitoring.JobLifetimeMessages;
 using kCura.IntegrationPoints.Core.Monitoring.NumberOfRecords.Messages;
 using kCura.IntegrationPoints.Core.Monitoring.NumberOfRecordsMessages;
+using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 using Relativity.DataTransfer.MessageService.Tools;
@@ -14,7 +15,10 @@ namespace kCura.IntegrationPoints.Core.Monitoring.Sinks.Aggregated
 		IMessageSink<JobFailedMessage>, IMessageSink<JobValidationFailedMessage>, IMessageSink<JobTotalRecordsCountMessage>,
 		IMessageSink<JobCompletedRecordsCountMessage>, IMessageSink<JobThroughputMessage>,
 		IMessageSink<ExportJobThroughputBytesMessage>,
-		IMessageSink<ExportJobStatisticsMessage>, IMessageSink<JobProgressMessage>
+		IMessageSink<ExportJobStatisticsMessage>, 
+		IMessageSink<ImportJobThroughputBytesMessage>,
+		IMessageSink<ImportJobStatisticsMessage>,
+		IMessageSink<JobProgressMessage>
 	{
 		private readonly IMetricsManagerFactory _metricsManagerFactory;
 		private readonly IAPILog _logger;
@@ -84,6 +88,26 @@ namespace kCura.IntegrationPoints.Core.Monitoring.Sinks.Aggregated
 		public void OnMessage(ExportJobStatisticsMessage message)
 		{
 			UpdateJobStatistics(message,
+				jobStatistics =>
+				{
+					jobStatistics.FileBytes += message.FileBytes;
+					jobStatistics.MetaBytes += message.MetaBytes;
+					jobStatistics.JobSizeInBytes = message.JobSizeInBytes;
+					jobStatistics.JobID = message.JobID;
+					jobStatistics.WorkspaceID = message.WorkspaceID;
+					jobStatistics.UnitOfMeasure = message.UnitOfMeasure;
+					jobStatistics.ReceivedJobstatistics = true;
+				});
+		}
+
+		public void OnMessage(ImportJobThroughputBytesMessage message)
+		{
+			UpdateJobStatistics(CreateJobMessageBase(message), jobStatistics => { jobStatistics.BytesPerSecond = message.BytesPerSecond; });
+		}
+
+		public void OnMessage(ImportJobStatisticsMessage message)
+		{
+			UpdateJobStatistics(CreateJobMessageBase(message),
 				jobStatistics =>
 				{
 					jobStatistics.FileBytes += message.FileBytes;
@@ -177,6 +201,19 @@ namespace kCura.IntegrationPoints.Core.Monitoring.Sinks.Aggregated
 			}
 
 			return true;
+		}
+
+		private JobMessageBase CreateJobMessageBase(ImportJobMessageBase msg)
+		{
+			return new JobMessageBase()
+			{
+				CorrelationID = msg.CorrelationID,
+				CustomData = new Dictionary<string, object>(msg.CustomData),
+				JobID = msg.JobID,
+				Provider = msg.Provider,
+				UnitOfMeasure = msg.UnitOfMeasure,
+				WorkspaceID = msg.WorkspaceID
+			};
 		}
 
 		#region Logging

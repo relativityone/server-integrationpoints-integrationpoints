@@ -1,9 +1,6 @@
-﻿using System;
-using kCura.IntegrationPoints.Core.Monitoring.NumberOfRecords.Messages;
-
-namespace kCura.IntegrationPoints.Core.Monitoring
+﻿namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
 {
-	public class ExportJobStatisticsMessage : JobMessageBase
+	public class ImportJobStatisticsMessage : ImportJobMessageBase
 	{
 		private const string _FILE_BYTES_KEY_NAME = "FileBytes";
 		private const string _METADATA_KEY_NAME = "MetadataBytes";
