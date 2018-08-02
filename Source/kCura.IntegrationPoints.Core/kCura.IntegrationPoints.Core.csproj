@@ -122,25 +122,12 @@
     <Compile Include="Installers\SharedAgentInstaller.cs" />
     <Compile Include="IServiceManagerProvider.cs" />
     <Compile Include="Models\IRdoFilter.cs" />
-    <Compile Include="Monitoring\EndApmMetricSink.cs" />
-    <Compile Include="Monitoring\ExportJobStatisticsMessage.cs" />
     <Compile Include="Monitoring\HealthCheck.cs" />
-    <Compile Include="Monitoring\JobApmMessageBase.cs" />
-    <Compile Include="Monitoring\JobLifetime\Messages\JobCompletedMessage.cs" />
-    <Compile Include="Monitoring\JobLifetime\Messages\JobFailedMessage.cs" />
-    <Compile Include="Monitoring\JobLifetime\JobLifetimeMetricBatchStatus.cs" />
-    <Compile Include="Monitoring\JobMessageBase.cs" />
-    <Compile Include="Monitoring\JobLifetime\Messages\JobStartedMessage.cs" />
-    <Compile Include="Monitoring\JobLifetime\Messages\JobValidationFailedMessage.cs" />
     <Compile Include="Monitoring\IntegrationPointsMessageService.cs" />
-    <Compile Include="Monitoring\LiveApmMetricSink.cs" />
-    <Compile Include="Monitoring\NumberOfRecords\Messages\JobApmThroughputMessage.cs" />
-    <Compile Include="Monitoring\NumberOfRecords\Messages\JobCompletedRecordsCountMessage.cs" />
-    <Compile Include="Monitoring\NumberOfRecords\Messages\ExportJobThroughputBytesMessage.cs" />
-    <Compile Include="Monitoring\NumberOfRecords\Messages\JobThroughputMessage.cs" />
-    <Compile Include="Monitoring\NumberOfRecords\Messages\JobTotalRecordsCountMessage.cs" />
-    <Compile Include="Monitoring\NumberOfRecords\Messages\MetricMetadataExtensions.cs" />
-    <Compile Include="Monitoring\SumMetricSink.cs" />
+    <Compile Include="Monitoring\JobLifetimeMetricBatchStatus.cs" />
+    <Compile Include="Monitoring\MessageSink\Aggregated\AggregatedJobSink.cs" />
+    <Compile Include="Monitoring\MessageSink\Aggregated\JobStatistics.cs" />
+    <Compile Include="Monitoring\MessageSink\Aggregated\JobStatus.cs" />
     <Compile Include="Queries\IGetSourceProviderRdoByApplicationIdentifier.cs" />
     <Compile Include="Queries\IGetSourceProviderRdoByIdentifier.cs" />
     <Compile Include="Serialization\SerializerWithLogging.cs" />
@@ -180,6 +167,8 @@
     <Compile Include="Services\IntegrationPoint\IIntegrationPointForSourceService.cs" />
     <Compile Include="Services\IntegrationPoint\IntegrationPointExtensions.cs" />
     <Compile Include="Services\IProcessingSourceLocationService.cs" />
+    <Compile Include="Services\JobHistory\CachedIntegrationPointProviderTypeService.cs" />
+    <Compile Include="Services\JobHistory\IIntegrationPointProviderTypeService.cs" />
     <Compile Include="Services\JobHistory\FileSizesStatisticsService.cs" />
     <Compile Include="Services\JobHistory\IFileSizesStatisticsService.cs" />
     <Compile Include="Services\JobHistory\IUnlinkedJobHistoryService.cs" />
@@ -443,12 +432,20 @@
     <Compile Include="Validation\RelativityProviderValidator\Parts\RelativityProviderPermissionValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidator\RelativityProviderValidationMessages.cs" />
     <Compile Include="Validation\RelativityProviderValidator\RelativityProviderValidatorsFactory.cs" />
-    <Compile Include="Validation\ValidationMessages.cs" />
+    <Compile Include="Validation\ValidationMessages.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ValidationMessages.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="LICENSE.txt">
       <Paket>True</Paket>
     </Content>
+    <None Include="Validation\ValidationMessages.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ValidationMessages.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">
@@ -458,6 +455,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Common\kCura.IntegrationPoints.Common.csproj">
+      <Project>{32bcb03b-4980-4434-9392-f72334e6e348}</Project>
+      <Name>kCura.IntegrationPoints.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Config\kCura.IntegrationPoints.Config.csproj">
       <Project>{DEF928B5-37CE-4BF3-B663-F0B8912C9C3F}</Project>
       <Name>kCura.IntegrationPoints.Config</Name>
@@ -549,16 +550,22 @@
     </When>
   </Choose>
   <Import Project="..\..\packages\Baseclass.Contrib.Nuget.Output\build\$(__paket__Baseclass_Contrib_Nuget_Output_targets).targets" Condition="Exists('..\..\packages\Baseclass.Contrib.Nuget.Output\build\$(__paket__Baseclass_Contrib_Nuget_Output_targets).targets')" Label="Paket" />
-  <ItemGroup>
+  <Import Project="..\..\packages\Clarius.TransformOnBuild\build\Clarius.TransformOnBuild.targets" Condition="Exists('..\..\packages\Clarius.TransformOnBuild\build\Clarius.TransformOnBuild.targets')" Label="Paket" />
+  <PropertyGroup>
+    <TextTransformPath>packages\Mono.TextTransform\tools\TextTransform.exe</TextTransformPath>
+  </PropertyGroup><ItemGroup>
     <Analyzer Include="..\..\packages\CSharpGuidelineAnalyzer\analyzers\dotnet\cs\CSharpGuidelineAnalyzer.dll">
       <Paket>True</Paket>
     </Analyzer>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="Elasticsearch.Net">
-          <HintPath>..\..\packages\Elasticsearch.Net\lib\net45\Elasticsearch.Net.dll</HintPath>
+          <HintPath>..\..\packages\Elasticsearch.Net\lib\net46\Elasticsearch.Net.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -1532,12 +1539,7 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="Serilog">
-          <HintPath>..\..\packages\Serilog\lib\net45\Serilog.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Serilog.FullNetFx">
-          <HintPath>..\..\packages\Serilog\lib\net45\Serilog.FullNetFx.dll</HintPath>
+          <HintPath>..\..\packages\Serilog\lib\net46\Serilog.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -1548,7 +1550,18 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="Serilog.Sinks.Elasticsearch">
-          <HintPath>..\..\packages\Serilog.Sinks.Elasticsearch\lib\net45\Serilog.Sinks.Elasticsearch.dll</HintPath>
+          <HintPath>..\..\packages\Serilog.Sinks.ElasticSearch\lib\net45\Serilog.Sinks.Elasticsearch.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Serilog.Sinks.File">
+          <HintPath>..\..\packages\Serilog.Sinks.File\lib\net45\Serilog.Sinks.File.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -1560,6 +1573,28 @@
       <ItemGroup>
         <Reference Include="Serilog.Sinks.MSSqlServer">
           <HintPath>..\..\packages\Serilog.Sinks.MSSqlServer\lib\net45\Serilog.Sinks.MSSqlServer.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Serilog.Sinks.PeriodicBatching">
+          <HintPath>..\..\packages\Serilog.Sinks.PeriodicBatching\lib\net45\Serilog.Sinks.PeriodicBatching.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Serilog.Sinks.RollingFile">
+          <HintPath>..\..\packages\Serilog.Sinks.RollingFile\lib\net45\Serilog.Sinks.RollingFile.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

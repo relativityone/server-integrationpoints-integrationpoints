@@ -92,6 +92,12 @@
       <Name>Relativity.DataTransfer.MessageService.dll</Name>
       <Notes />
     </Assembly>
+    <Assembly>
+      <ArtifactId>3100668</ArtifactId>
+      <Keywords />
+      <Name>kCura.IntegrationPoints.Common.dll</Name>
+      <Notes />
+    </Assembly>
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />

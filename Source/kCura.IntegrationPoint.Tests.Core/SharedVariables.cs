@@ -116,6 +116,10 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static string UiUseThisExistingWorkspace => AppSettingString("UI.UseThisExistingWorkspace");
 
+		public static string UiTemplateWorkspace => AppSettingString("UI.TemplateWorkspace");
+
+		public static bool UiUseTapiForFileCopy => AppSettingBool("UI.UseTapiForFileCopy");
+
 		#endregion UI Tests Settings
 
 		#region Relativity Settings
@@ -150,6 +154,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 		#region ConnectionString Settings
 
 		public static string TargetHost => AppSettingString("RelativityInstanceAddress");
+
+		public static string RelativityWebAddress => AppSettingString("RelativityWebAddress");
+
 		public static string TargetDbHost => GetTargetDbHost();
 		public static string SqlServerAddress => AppSettingString("SQLServerAddress");
 

@@ -1,24 +1,16 @@
 . .\psake-common.ps1
 
 
-task default -depends build_doc
+task default -depends build_validation_message_table
 
-task build_doc  -precondition { $build_type -ne 'DEV' }{  
-    exec {
-        &  $msbuild_exe @(($targetsfile),   
-                         ('/property:SourceRoot=' + $root),
-                         ('/property:Configuration=' + $build_config),
-                         ('/property:BuildProjectReferences=false'),
-                         ('/target:BuildDoc'),
-                         ('/verbosity:' + $verbosity),
-                         ('/nologo'),
-                         ('/maxcpucount'), 
-                         ('/dfl'),
-                         ('/flp:LogFile=' + $logfile),
-                         ('/flp2:warningsonly;LogFile=' + $logfilewarn),
-                         ('/flp3:errorsonly;LogFile=' + $logfileerror))     
-    } 
+task build_validation_message_table {
+    $valDir = $source_directory + ".\kCura.IntegrationPoints.Core\Validation\"
+    $xml = $valDir + "\ValidationMessages.xml"
+    $xsl = $valDir + "\ValidationMessages.xsl"
+    $output = $development_scripts_directory + "\ValidationMessages.html"
+    $xslt = New-Object System.Xml.Xsl.XslCompiledTransform;
+    $xslt.Load($xsl);
+    $xslt.Transform($xml, $output);
+
+    Write-Host "generated" +  $output;
 }
-
-
-

@@ -54,6 +54,7 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Auxiliary\WorkspaceRemover.cs" />
     <Compile Include="BrandNew\ImportActions.cs" />
     <Compile Include="BrandNew\FieldMappingPanelActions.cs" />
     <Compile Include="BrandNew\Import\FTP\ImportDocumentsFromFtpActions.cs" />
@@ -61,7 +62,7 @@
     <Compile Include="BrandNew\Import\LoadFile\Documents\ImportDocumentsFromLoadFileActions.cs" />
     <Compile Include="Actions\IntegrationPointsImportAction.cs" />
     <Compile Include="Actions\IntegrationPointsImportLdapAction.cs" />
-    <Compile Include="Auxiliary\FileCopyHelper.cs" />
+    <Compile Include="Common\FileCopier.cs" />
     <Compile Include="BrandNew\GeneralPanelActions.cs" />
     <Compile Include="BrandNew\CreateIntegrationPointPage.cs" />
     <Compile Include="BrandNew\FirstPage.cs" />
@@ -85,6 +86,7 @@
     <Compile Include="BrandNew\IntegrationPointsPage.cs" />
     <Compile Include="BrandNew\GeneralPanel.cs" />
     <Compile Include="Common\IntegrationPointsAction.cs" />
+    <Compile Include="Common\UiTestException.cs" />
     <Compile Include="Common\TestCategory.cs" />
     <Compile Include="Components\Component.cs" />
     <Compile Include="Components\JobStatusTable.cs" />
@@ -166,30 +168,23 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="paket.references" />
+    <None Include="UiTestsConfig\Reg-Prod.config">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="UiTestsConfig\Reg-B.config">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="UiTestsConfig\testvm.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <SubType>Designer</SubType>
-    </None>
-    <None Include="UiTestsConfig\PL1.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="UiTestsConfig\PL4.config">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="UiTestsConfig\Reg-A.config">
-      <SubType>Designer</SubType>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="UiTestsConfig\PL6.config">
-      <SubType>Designer</SubType>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="UiTestsConfig\PL5.config">
-      <SubType>Designer</SubType>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="UiTestsConfig\PL3.config">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -657,12 +652,62 @@ xcopy "$(ProjectDir)..\kCura.IntegrationPoint.Tests.Core\oi\unmanaged" "$(Target
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="Serilog">
-          <HintPath>..\..\packages\Serilog\lib\net45\Serilog.dll</HintPath>
+          <HintPath>..\..\packages\Serilog\lib\net46\Serilog.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
-        <Reference Include="Serilog.FullNetFx">
-          <HintPath>..\..\packages\Serilog\lib\net45\Serilog.FullNetFx.dll</HintPath>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Serilog.Formatting.Compact">
+          <HintPath>..\..\packages\Serilog.Formatting.Compact\lib\net45\Serilog.Formatting.Compact.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Serilog.Sinks.Console">
+          <HintPath>..\..\packages\Serilog.Sinks.Console\lib\net45\Serilog.Sinks.Console.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Serilog.Sinks.File">
+          <HintPath>..\..\packages\Serilog.Sinks.File\lib\net45\Serilog.Sinks.File.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Serilog.Sinks.PeriodicBatching">
+          <HintPath>..\..\packages\Serilog.Sinks.PeriodicBatching\lib\net45\Serilog.Sinks.PeriodicBatching.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Serilog.Sinks.Seq">
+          <HintPath>..\..\packages\Serilog.Sinks.Seq\lib\net45\Serilog.Sinks.Seq.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

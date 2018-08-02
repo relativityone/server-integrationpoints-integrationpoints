@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
 using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Core.Monitoring.JobLifetimeMessages;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
@@ -89,7 +89,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
 				integrationPoint.JobHistory = integrationPoint?.JobHistory.Concat(new[] { jobHistory.ArtifactId }).ToArray();
 
-				OnJobStart(integrationPoint, batchInstance);
+				OnBatchStart(integrationPoint, batchInstance);
 			}
 			return jobHistory;
 		}
@@ -153,7 +153,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 				int artifactId = _caseServiceContext.RsapiService.RelativityObjectManager.Create(jobHistory);
 				jobHistory.ArtifactId = artifactId;
 
-				OnJobStart(integrationPoint, batchInstance);
+				OnBatchStart(integrationPoint, batchInstance);
 			}
 
 			return jobHistory;
@@ -183,7 +183,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 					select new FieldValue(field.FieldGuid)).ToList();
 		}
 
-	    private void OnJobStart(Data.IntegrationPoint integrationPoint, Guid batchInstanceId)
+	    private void OnBatchStart(Data.IntegrationPoint integrationPoint, Guid batchInstanceId)
 		{
 			_messageService.Send(new JobStartedMessage
 			{

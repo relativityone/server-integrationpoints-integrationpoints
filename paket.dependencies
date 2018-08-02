@@ -41,19 +41,26 @@ nuget Castle.Windsor ~> 3.3.0
 
 //Other packages
 nuget AutoMapper 4.2.1
+nuget Clarius.TransformOnBuild 1.21.0
 nuget FluentAssertions 4.19.2
 nuget Microsoft.AspNet.Mvc 5.2.3
 nuget Microsoft.AspNet.SignalR.Core 2.2.0
 nuget Microsoft.AspNet.Web.Optimization 1.1.3 strategy: max
 nuget Microsoft.AspNet.WebApi 5.2.3
 nuget Microsoft.Net.Http 2.2.29 strategy: max
+nuget Mono.TextTransform 1.0.0
 nuget Moq 4.5.3
 nuget NSubstitute 1.10.0.0
 nuget NUnit 3.4.1
-nuget Selenium.Support 3.12.0
+nuget Selenium.Support 3.13.1
 nuget DotNetSeleniumExtras.PageObjects 3.11.0
 nuget DotNetSeleniumExtras.WaitHelpers 3.11.0
-nuget Selenium.WebDriver.ChromeDriver 2.38.0.1
+nuget Selenium.WebDriver.ChromeDriver 2.40
+
+// For tests
+nuget Serilog 2.7.1
+nuget Serilog.Sinks.Console 3.1.1
+nuget Serilog.Sinks.Seq 4.0.0
 
 //Analyzers
 nuget CSharpGuidelineAnalyzer 1.0.3.0

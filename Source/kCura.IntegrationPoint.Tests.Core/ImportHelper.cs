@@ -12,17 +12,27 @@ namespace kCura.IntegrationPoint.Tests.Core
 	public class ImportHelper
 	{
 		private const int _CONTROL_NUMBER_FIELD_ARTIFACT_ID = 1003667;
+
 		private readonly bool _withNatives;
+
+		public List<string> Messages { get; } = new List<string>();
+
+		public List<string> ErrorMessages { get; } = new List<string>();
 
 		public ImportHelper(bool withNatives = true)
 		{
 			_withNatives = withNatives;
 		}
-
-		public void ImportData(int workspaceArtifactId, DocumentsTestData documentsTestData)
+		public bool HasErrors => ErrorMessages.Any();
+		
+		public bool ImportData(int workspaceArtifactId, DocumentsTestData documentsTestData)
 		{
-			CreateFolders(workspaceArtifactId, documentsTestData);
+			Messages.Clear();
+			ErrorMessages.Clear();
 
+			CreateFolders(workspaceArtifactId, documentsTestData);
+			WinEDDS.Config.ConfigSettings[nameof(WinEDDS.Config.TapiForceHttpClient)] = true.ToString();
+			WinEDDS.Config.ConfigSettings[nameof(WinEDDS.Config.TapiForceBcpHttpClient)] = true.ToString();
 			var importApi = new ImportAPI(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword,
 				SharedVariables.RelativityWebApiUrl);
 
@@ -33,6 +43,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 
 			ImportImagesAndExtractedText(workspaceArtifactId, documentsTestData.Images, importApi, _CONTROL_NUMBER_FIELD_ARTIFACT_ID);
+
+			return !HasErrors;
 		}
 
 		private void CreateFolders(int workspaceArtifactId, DocumentsTestData documentsTestData)
@@ -41,7 +53,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			while (queue.Count > 0)
 			{
-				var folderWithDocuments = queue.Dequeue();
+				FolderWithDocuments folderWithDocuments = queue.Dequeue();
 				if ((folderWithDocuments.ParentFolderWithDocuments != null) && !folderWithDocuments.ParentFolderWithDocuments.FolderId.HasValue)
 				{
 					queue.Enqueue(folderWithDocuments);
@@ -52,7 +64,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		private void ImportNativeFiles(int workspaceArtifactId, IDataReader dataReader, ImportAPI importApi, int identifyFieldArtifactId, int? folderId)
 		{
-			var importJob = importApi.NewNativeDocumentImportJob();
+			ImportBulkArtifactJob importJob = importApi.NewNativeDocumentImportJob();
 			importJob.OnMessage += ImportJobOnMessage;
 			importJob.OnComplete += ImportJobOnComplete;
 			importJob.OnFatalException += ImportJobOnFatalException;
@@ -79,15 +91,15 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			importJob.SourceData.SourceData = dataReader;
 
-			Console.WriteLine("Executing import native files...");
+			Console.WriteLine(@"Executing import native files...");
 
 			importJob.Execute();
 		}
 
-		private static void ImportImagesAndExtractedText(int workspaceArtifactId, DataTable dataTable,
+		private void ImportImagesAndExtractedText(int workspaceArtifactId, DataTable dataTable,
 			ImportAPI importApi, int identifyFieldArtifactId)
 		{
-			var importJob = importApi.NewImageImportJob();
+			ImageImportBulkArtifactJob importJob = importApi.NewImageImportJob();
 
 			importJob.OnMessage += ImportJobOnMessage;
 			importJob.OnComplete += ImportJobOnComplete;
@@ -112,30 +124,35 @@ namespace kCura.IntegrationPoint.Tests.Core
 			importJob.Settings.OverwriteMode = OverwriteModeEnum.Overlay;
 			importJob.SourceData.SourceData = dataTable;
 
-			Console.WriteLine("Executing native import...");
+			Console.WriteLine(@"Executing native import...");
 
 			importJob.Execute();
 		}
 
-		private static void ImportJobOnFatalException(JobReport jobreport)
+		private void ImportJobOnFatalException(JobReport jobreport)
 		{
 			if (jobreport.ErrorRows.Any())
 			{
-				jobreport.ErrorRows.ToList().ForEach(error => Console.WriteLine((string) error.Message));
+				jobreport.ErrorRows.ToList().ForEach(error =>
+				{
+					Console.WriteLine(error.Message);
+					ErrorMessages.Add(error.Message);
+				});
 			}
 		}
 
-		private static void ImportJobOnComplete(JobReport jobreport)
+		private void ImportJobOnComplete(JobReport jobreport)
 		{
 			if (jobreport.ErrorRows.Any())
 			{
-				jobreport.ErrorRows.ToList().ForEach(error => Console.WriteLine((string) error.Message));
+				jobreport.ErrorRows.ToList().ForEach(error => Console.WriteLine(error.Message));
 			}
 		}
 
-		private static void ImportJobOnMessage(Relativity.DataReaderClient.Status status)
+		private void ImportJobOnMessage(Relativity.DataReaderClient.Status status)
 		{
-			Console.WriteLine((string) status.Message);
+			Console.WriteLine(status.Message);
+			Messages.Add(status.Message);
 		}
 	}
 }

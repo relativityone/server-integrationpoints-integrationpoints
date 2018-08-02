@@ -11,9 +11,12 @@ DotNetSeleniumExtras.PageObjects
 DotNetSeleniumExtras.WaitHelpers
 Selenium.Support
 Selenium.WebDriver.ChromeDriver
-Serilog
 Relativity.Services.Interfaces
 kCura.Relativity.Client
 Relativity.Telemetry.APM
 Polly
 Relativity.ImportExport
+
+Serilog
+Serilog.Sinks.Console
+Serilog.Sinks.Seq

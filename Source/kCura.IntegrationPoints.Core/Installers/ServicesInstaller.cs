@@ -1,4 +1,5 @@
-﻿using System.Data.SqlClient;
+﻿using System;
+using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
@@ -42,6 +43,7 @@ using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Monitoring;
 using kCura.IntegrationPoints.Core.Monitoring.JobLifetime;
+using kCura.IntegrationPoints.Core.Monitoring.Sinks.Aggregated;
 using kCura.IntegrationPoints.Core.Serialization;
 using kCura.IntegrationPoints.Core.Services.Domain;
 using kCura.IntegrationPoints.Core.Services.EntityManager;
@@ -188,6 +190,10 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IRsapiClientFactory>().ImplementedBy<RsapiClientFactory>());
 			container.Register(Component.For<ISecretCatalogFactory>().ImplementedBy<DefaultSecretCatalogFactory>().LifestyleTransient());
 			container.Register(Component.For<ISecretManagerFactory>().ImplementedBy<SecretManagerFactory>().LifestyleTransient());
+
+			container.Register(Component.For<IIntegrationPointProviderTypeService>()
+				.ImplementedBy<CachedIntegrationPointProviderTypeService>()
+				.DependsOn(Dependency.OnValue<TimeSpan>(TimeSpan.FromMinutes(2))).LifestyleTransient());
 
 			// TODO: we need to make use of an async GetDBContextAsync (pending Dan Wells' patch) -- biedrzycki: Feb 5th, 2016
 			container.Register(Component.For<IToggleProvider>().Instance(toggleProvider).LifestyleTransient());

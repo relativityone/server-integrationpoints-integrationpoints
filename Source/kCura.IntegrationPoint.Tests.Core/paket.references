@@ -15,6 +15,5 @@ Relativity.Kepler.Client
 Relativity.Services.Interfaces.Private
 Relativity.Telemetry.APM
 Relativity.Toggles
-Selenium.Support
 RelativityCore
 Relativity.OAuth2Client

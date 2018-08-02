@@ -15,19 +15,22 @@ properties {
     $doc_directory = [System.IO.Path]::Combine($root, 'Documentation')
     $nuget_packages_directory = [System.IO.Path]::Combine($root, 'packages')
     $lib_directory = [System.IO.Path]::Combine($root, 'lib')
-	$tests_directory = [System.IO.Path]::Combine($lib_directory, 'UnitTests')
-	
+    $tests_directory = [System.IO.Path]::Combine($lib_directory, 'UnitTests')
+    
     #build variables
     $version = '1.0.0.0'
     $server_type = 'teambranch'
     $build_type = 'DEV'
+    $run_sonarQube = $false
 
     $git = Test-Path -Path ([System.IO.Path]::Combine($root, '.git'))
     if ($git) {
         $branch = git rev-parse --abbrev-ref HEAD
+        $branch_hash = git rev-parse --short HEAD
     }
     else {
         $branch = "unknown"
+        $branch_hash = "unknown"
     }
     $build_config = "Debug"
     $Injections = 'DisableInjections'
@@ -95,7 +98,15 @@ properties {
 
     #package variable
     $package_root_directory = [System.IO.Path]::Combine($root, 'Packages')
-	#chromedriver
+
+    #sonarqube variables
+    $sonarqube_exe = [System.IO.Path]::Combine($development_scripts_directory, 'MSBuild.SonarQube.Runner.Tool', 'tools', 'sonar-scanner-msbuild-4.3.1.1372-net46', 'SonarScanner.MSBuild.exe')
+    $sonarqube_version = "4.3.1"
+    $sonarqube_project_key = "kCura.IntegrationPoints"
+    $sonarqube_project_name = "IntegrationPoints"
+    $sonarqube_properties = [System.IO.Path]::Combine($development_scripts_directory, "sonarqube", "SonarQube.Analysis.xml")
+
+    #chromedriver
     $chromedriver_path = [System.IO.Path]::Combine($nuget_packages_directory, 'Selenium.WebDriver.ChromeDriver', 'driver', 'win32', 'chromedriver.exe')
     
     #test variables

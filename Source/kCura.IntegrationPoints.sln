@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2011
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{A7EC186E-BC93-4A69-92F7-778E2206D33F}"
 	ProjectSection(SolutionItems) = preProject
@@ -202,6 +202,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.PerformanceTests", "kCura.IntegrationPoints.PerformanceTests\kCura.IntegrationPoints.PerformanceTests.csproj", "{3C77F57D-048F-4B50-BC2B-814E818F6086}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Performance", "Performance", "{7B03AA8D-3CFE-42C2-AFC0-7C2115B6AC47}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Common", "kCura.IntegrationPoints.Common\kCura.IntegrationPoints.Common.csproj", "{32BCB03B-4980-4434-9392-F72334E6E348}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -637,6 +639,13 @@ Global
 		{3C77F57D-048F-4B50-BC2B-814E818F6086}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3C77F57D-048F-4B50-BC2B-814E818F6086}.Release|x64.ActiveCfg = Release|x64
 		{3C77F57D-048F-4B50-BC2B-814E818F6086}.Release|x64.Build.0 = Release|x64
+		{32BCB03B-4980-4434-9392-F72334E6E348}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{32BCB03B-4980-4434-9392-F72334E6E348}.Debug|Any CPU.Build.0 = Debug|x64
+		{32BCB03B-4980-4434-9392-F72334E6E348}.Debug|x64.ActiveCfg = Debug|x64
+		{32BCB03B-4980-4434-9392-F72334E6E348}.Debug|x64.Build.0 = Debug|x64
+		{32BCB03B-4980-4434-9392-F72334E6E348}.Release|Any CPU.ActiveCfg = Release|x64
+		{32BCB03B-4980-4434-9392-F72334E6E348}.Release|x64.ActiveCfg = Release|x64
+		{32BCB03B-4980-4434-9392-F72334E6E348}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

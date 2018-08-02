@@ -10,10 +10,10 @@ using kCura.IntegrationPoint.Tests.Core.Models.Import.LoadFile.ImagesAndProducti
 using kCura.IntegrationPoint.Tests.Core.Models.Import.LoadFile.ImagesAndProductions.Productions;
 using kCura.IntegrationPoint.Tests.Core.Models.Shared;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.UITests.Auxiliary;
 using kCura.IntegrationPoints.UITests.BrandNew.Import.LoadFile.Documents;
 using kCura.IntegrationPoints.UITests.BrandNew.Import.LoadFile.Images;
 using kCura.IntegrationPoints.UITests.BrandNew.Import.LoadFile.Productions;
+using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoints.UITests.Validation;
 using NUnit.Framework;
@@ -33,10 +33,25 @@ namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 
 		private void CopyFilesToFileshare()
 		{
-			string workspaceFolderName = $"EDDS{Context.GetWorkspaceId()}";
 			string sourceLocation = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestDataImportFromLoadFile");
-			string destinationLocation = Path.Combine(SharedVariables.FileshareLocation, workspaceFolderName, "DataTransfer", "Import");
-			FileCopyHelper.CopyDirectory(sourceLocation, destinationLocation);
+
+			if (SharedVariables.UiUseTapiForFileCopy)
+			{
+				const int tapiTimeoutInSeconds = 60 * 3;
+				FileCopier.UploadToImportDirectory(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestDataImportFromLoadFile"),
+					SharedVariables.ProtocolVersion + "://" + SharedVariables.RelativityWebAddress,
+					Context.GetWorkspaceId(),
+					SharedVariables.RelativityUserName,
+					SharedVariables.RelativityPassword,
+					tapiTimeoutInSeconds);
+			}
+			else
+			{
+				string workspaceFolderName = $"EDDS{Context.GetWorkspaceId()}";
+				string destinationLocation =
+					Path.Combine(SharedVariables.FileshareLocation, workspaceFolderName, "DataTransfer", "Import");
+				FileCopier.CopyDirectory(sourceLocation, destinationLocation);
+			}
 		}
 		
 		[Test, Order(10)]

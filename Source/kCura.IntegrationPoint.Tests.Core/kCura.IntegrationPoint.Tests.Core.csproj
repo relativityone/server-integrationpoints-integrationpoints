@@ -55,6 +55,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ExternalDependencies\TransferConsole\LogConfig.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ExternalDependencies\TransferConsole\Relativity.Transfer.Console.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="oi\unmanaged\cmmap000.bin">
       <Paket>True</Paket>
     </Content>
@@ -307,6 +313,9 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ExternalDependencies\TransferConsole\Relativity.Transfer.Console.exe.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="oi\unmanaged\cmmap000.bin" />
     <None Include="paket.references">
     </None>
@@ -7739,17 +7748,17 @@
     </When>
   </Choose>
   <PropertyGroup>
-    <PostBuildEvent>
-    mkdir "$(ProjectDir)..\..\lib\UnitTests"
-    xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y
-		xcopy "$(ProjectDir)TestData" "$(ProjectDir)..\..\lib\UnitTests\TestData" /E /Y /I /R
-		xcopy "$(ProjectDir)TestDataExtended" "$(ProjectDir)..\..\lib\UnitTests\TestDataExtended" /E /Y /I /R
-		xcopy "$(ProjectDir)TestDataSaltPepper" "$(ProjectDir)..\..\lib\UnitTests\TestDataSaltPepper" /E /Y /I /R
-		xcopy "$(ProjectDir)TestDataImportFromLoadFile" "$(ProjectDir)..\..\lib\UnitTests\TestDataImportFromLoadFile" /E /Y /I /R
-		xcopy "$(ProjectDir)TestDataText" "$(ProjectDir)..\..\lib\UnitTests\TestDataText" /E /Y /I /R
-		xcopy "$(ProjectDir)oi\unmanaged" "$(ProjectDir)..\..\lib\UnitTests\oi"  /E /Y /I /R
-    copy "$(ProjectDir)app.config" "$(ProjectDir)..\..\DevelopmentScripts\IntegrationPointsTests.config" /Y
-    </PostBuildEvent>
+    <PostBuildEvent>mkdir "$(ProjectDir)..\..\lib\UnitTests"
+xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y
+xcopy "$(ProjectDir)ExternalDependencies" "$(ProjectDir)..\..\lib\UnitTests\ExternalDependencies" /E /Y /I /R
+xcopy "$(ProjectDir)TestData" "$(ProjectDir)..\..\lib\UnitTests\TestData" /E /Y /I /R
+xcopy "$(ProjectDir)TestDataExtended" "$(ProjectDir)..\..\lib\UnitTests\TestDataExtended" /E /Y /I /R
+xcopy "$(ProjectDir)TestDataSaltPepper" "$(ProjectDir)..\..\lib\UnitTests\TestDataSaltPepper" /E /Y /I /R
+xcopy "$(ProjectDir)TestDataImportFromLoadFile" "$(ProjectDir)..\..\lib\UnitTests\TestDataImportFromLoadFile" /E /Y /I /R
+xcopy "$(ProjectDir)TestDataText" "$(ProjectDir)..\..\lib\UnitTests\TestDataText" /E /Y /I /R
+xcopy "$(ProjectDir)oi\unmanaged" "$(ProjectDir)..\..\lib\UnitTests\oi"  /E /Y /I /R
+copy "$(ProjectDir)app.config" "$(ProjectDir)..\..\DevelopmentScripts\IntegrationPointsTests.config" /Y
+</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -7816,7 +7825,7 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="Elasticsearch.Net">
-          <HintPath>..\..\packages\Elasticsearch.Net\lib\net45\Elasticsearch.Net.dll</HintPath>
+          <HintPath>..\..\packages\Elasticsearch.Net\lib\net46\Elasticsearch.Net.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -8806,35 +8815,8 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="WebDriver.Support">
-          <HintPath>..\..\packages\Selenium.Support\lib\net45\WebDriver.Support.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="WebDriver">
-          <HintPath>..\..\packages\Selenium.WebDriver\lib\net45\WebDriver.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
         <Reference Include="Serilog">
-          <HintPath>..\..\packages\Serilog\lib\net45\Serilog.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Serilog.FullNetFx">
-          <HintPath>..\..\packages\Serilog\lib\net45\Serilog.FullNetFx.dll</HintPath>
+          <HintPath>..\..\packages\Serilog\lib\net46\Serilog.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -8845,7 +8827,18 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="Serilog.Sinks.Elasticsearch">
-          <HintPath>..\..\packages\Serilog.Sinks.Elasticsearch\lib\net45\Serilog.Sinks.Elasticsearch.dll</HintPath>
+          <HintPath>..\..\packages\Serilog.Sinks.ElasticSearch\lib\net45\Serilog.Sinks.Elasticsearch.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Serilog.Sinks.File">
+          <HintPath>..\..\packages\Serilog.Sinks.File\lib\net45\Serilog.Sinks.File.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -8857,6 +8850,28 @@
       <ItemGroup>
         <Reference Include="Serilog.Sinks.MSSqlServer">
           <HintPath>..\..\packages\Serilog.Sinks.MSSqlServer\lib\net45\Serilog.Sinks.MSSqlServer.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Serilog.Sinks.PeriodicBatching">
+          <HintPath>..\..\packages\Serilog.Sinks.PeriodicBatching\lib\net45\Serilog.Sinks.PeriodicBatching.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Serilog.Sinks.RollingFile">
+          <HintPath>..\..\packages\Serilog.Sinks.RollingFile\lib\net45\Serilog.Sinks.RollingFile.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

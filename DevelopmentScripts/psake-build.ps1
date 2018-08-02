@@ -4,7 +4,7 @@
 task default -depends build
 
 
-task build -depends build_initalize, build_projects, build_rip_documentation, copy_chrome_driver {
+task build -depends build_initalize, start_sonar, build_projects, build_rip_documentation, copy_chrome_driver, stop_sonar {
  
 }
 
@@ -18,6 +18,7 @@ task build_initalize {
     'branch       = ' + $branch 
     'build config = ' + $build_config
     'enable_injections = ' + $enable_injections
+    'run_sonarqube = ' + $run_sonarqube
     ''
 
     'Time: ' + (Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
@@ -28,7 +29,11 @@ task build_initalize {
     [System.IO.Directory]::CreateDirectory($buildlogs_directory)
 }
 
-
+task get_sonarqube -precondition { (-not [System.IO.File]::Exists($sonarCube_exe)) } {
+    exec {
+        & $nuget_exe @('install', 'MSBuild.SonarQube.Runner.Tool', '-ExcludeVersion', '-Version', $sonarqube_version)
+    }
+}
 task get_buildhelper -precondition { (-not [System.IO.File]::Exists($buildhelper_exe)) } {
     exec {
         & $nuget_exe @('install', 'kCura.BuildHelper', '-ExcludeVersion')
@@ -77,7 +82,7 @@ task configure_paket {
 	}
 }                                                                             
                                                                                 
-task build_projects -depends create_build_script, restore_nuget, configure_paket {  
+task build_projects -depends create_build_script, restore_nuget, configure_paket{  
     exec {     
         if ($build_type -eq 'DEV' -And $enable_injections) {
             $Injections = 'EnableInjections'
@@ -114,3 +119,19 @@ task copy_chrome_driver -depends build_projects{
 	Copy-Item -path $chromedriver_path -Destination $tests_directory
 }
 
+task start_sonar -depends get_sonarqube -precondition { return $RUN_SONARQUBE } {  
+    $args = @(
+        'begin',
+        ("/k:$sonarqube_project_key"),
+        ("/n:$sonarqube_project_name"),
+        ("/v:$branch_hash"),
+        ("/s:$sonarqube_properties"))
+    & $sonarqube_exe $args
+}
+
+task stop_sonar -precondition { return $RUN_SONARQUBE }{
+    $args = @(
+        'end')
+
+    & $sonarqube_exe $args
+}

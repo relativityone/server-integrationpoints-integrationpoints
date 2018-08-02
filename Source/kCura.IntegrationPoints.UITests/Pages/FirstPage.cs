@@ -7,10 +7,12 @@ namespace kCura.IntegrationPoints.UITests.Pages
 {
 	public abstract class FirstPage : GeneralPage
 	{
+		private const string _NAME_INPUT_ID = "name";
+
 		[FindsBy(How = How.Id, Using = "next")]
 		protected IWebElement NextButton { get; set; }
 
-		[FindsBy(How = How.Id, Using = "name")]
+		[FindsBy(How = How.Id, Using = _NAME_INPUT_ID)]
 		protected IWebElement NameInput { get; set; }
 
 		public string Name
@@ -22,6 +24,11 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		protected FirstPage(RemoteWebDriver driver) : base(driver)
 		{
 			PageFactory.InitElements(driver, this);
+		}
+
+		public bool ValidatePage()
+		{
+			return IsAnyElementVisible(By.Id(_NAME_INPUT_ID));
 		}
 	}
 }
