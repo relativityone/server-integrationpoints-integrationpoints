@@ -11,7 +11,7 @@ DECLARE tableCursor CURSOR FOR
 		INNER JOIN {1}.[sys].[schemas] AS s 
 		ON t.[schema_id] = s.[schema_id] 
 		WHERE DATEDIFF(HOUR,t.create_date,GETUTCDATE())>72
-		AND t.name LIKE 'RIP_CustodianManager_%'
+		AND t.name LIKE 'RIP_EntityManager_%'
 
 OPEN tableCursor 
 FETCH next FROM tableCursor INTO @table 
@@ -32,7 +32,7 @@ IF OBJECT_ID(N'{0}.[{2}]',N'U') IS NULL
 BEGIN
 	CREATE TABLE {0}.[{2}](
 		[ID] [bigint] IDENTITY(1,1) NOT NULL,
-		[CustodianID] [nvarchar](1000) NOT NULL,
+		[EntityID] [nvarchar](1000) NOT NULL,
 		[ManagerID] [nvarchar](1000) NOT NULL,
 		[LockedByJobID] [bigint] NULL,
 		[CreatedOn] [datetime] NOT NULL,

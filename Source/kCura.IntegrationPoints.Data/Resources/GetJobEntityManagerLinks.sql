@@ -8,7 +8,7 @@ JOIN
 				(
 					SELECT * FROM {0}.[{1}] WHERE NOT [LockedByJobID] IS NULL
 				) t2
-	ON		t1.[CustodianID] = t2.[CustodianID] AND t1.[ManagerID] = t2.[ManagerID] 
+	ON		t1.[EntityID] = t2.[EntityID] AND t1.[ManagerID] = t2.[ManagerID] 
 WHERE
 				t1.[LockedByJobID] IS NULL
 				
@@ -18,7 +18,7 @@ UPDATE			{0}.[{1}]
 SET
 				[LockedByJobID]	= @JobID
 OUTPUT 
-				INSERTED.[CustodianID],
+				INSERTED.[EntityID],
 				INSERTED.[ManagerID]
 FROM 
 				{0}.[{1}] t1

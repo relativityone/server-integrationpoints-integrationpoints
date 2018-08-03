@@ -114,21 +114,21 @@ namespace kCura.IntegrationPoints.Core.Agent
 
 		protected virtual IDataSynchronizer GetDestinationProvider(DestinationProvider destinationProviderRdo, string configuration, Job job)
 		{
-		    LogGetDestinationProviderStart(job);
-            Guid providerGuid = new Guid(destinationProviderRdo.Identifier);
-			var factory = AppDomainRdoSynchronizerFactoryFactory as GeneralWithCustodianRdoSynchronizerFactory;
+			LogGetDestinationProviderStart(job);
+			Guid providerGuid = new Guid(destinationProviderRdo.Identifier);
+			var factory = AppDomainRdoSynchronizerFactoryFactory as GeneralWithEntityRdoSynchronizerFactory;
 			if (factory != null)
 			{
-				factory.TaskJobSubmitter = new TaskJobSubmitter(JobManager, job, TaskType.SyncCustodianManagerWorker, BatchInstance);
+				factory.TaskJobSubmitter = new TaskJobSubmitter(JobManager, job, TaskType.SyncEntityManagerWorker, BatchInstance);
 				factory.SourceProvider = SourceProvider;
 			}
 			var integrationPoint = CaseServiceContext.RsapiService.RelativityObjectManager.Read<IntegrationPoint>(job.RelatedObjectArtifactID);
 			IDataSynchronizer sourceProvider = AppDomainRdoSynchronizerFactoryFactory.CreateSynchronizer(providerGuid, configuration, integrationPoint.SecuredConfiguration);
-		    LogGetDestinationProviderSuccesfulEnd(job, sourceProvider);
-            return sourceProvider;
+			LogGetDestinationProviderSuccesfulEnd(job, sourceProvider);
+			return sourceProvider;
 		}
 
-	    protected virtual IEnumerable<FieldMap> GetFieldMap(string serializedFieldMappings)
+		protected virtual IEnumerable<FieldMap> GetFieldMap(string serializedFieldMappings)
 		{
 			IEnumerable<FieldMap> fieldMap = Serializer.Deserialize<List<FieldMap>>(serializedFieldMappings);
 			fieldMap.ForEach(f => f.SourceField.IsIdentifier = f.FieldMapType == FieldMapTypeEnum.Identifier);
@@ -228,17 +228,17 @@ namespace kCura.IntegrationPoints.Core.Agent
 			_logger.LogError("Failed to retrieve corresponding Integration Point Rdo for Job {JobId}.", job.JobId);
 		}
 
-	    private void LogGetDestinationProviderSuccesfulEnd(Job job, IDataSynchronizer sourceProvider)
-	    {
-	        _logger.LogInformation("Integration Point Task Base: Succesfully retrieved destination provider for job: {JobId}. ", job.JobId);
-	        _logger.LogDebug("Retrieved source provider: {sourceProvider}", sourceProvider.ToString());
-	    }
+		private void LogGetDestinationProviderSuccesfulEnd(Job job, IDataSynchronizer sourceProvider)
+		{
+			_logger.LogInformation("Integration Point Task Base: Succesfully retrieved destination provider for job: {JobId}. ", job.JobId);
+			_logger.LogDebug("Retrieved source provider: {sourceProvider}", sourceProvider.ToString());
+		}
 
-	    private void LogGetDestinationProviderStart(Job job)
-	    {
-	        _logger.LogInformation("Integration Point Task Base: Getting destination provider for job: {JobId}. ", job.JobId);
-	    }
+		private void LogGetDestinationProviderStart(Job job)
+		{
+			_logger.LogInformation("Integration Point Task Base: Getting destination provider for job: {JobId}. ", job.JobId);
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

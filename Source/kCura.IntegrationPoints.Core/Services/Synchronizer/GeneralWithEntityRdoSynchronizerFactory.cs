@@ -11,12 +11,12 @@ using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 {
-	public class GeneralWithCustodianRdoSynchronizerFactory : ISynchronizerFactory
+	public class GeneralWithEntityRdoSynchronizerFactory : ISynchronizerFactory
 	{
 		private readonly RelativityRdoSynchronizerFactory _relativityRdoSynchronizerFactory;
 		private readonly ImportProviderRdoSynchronizerFactory _importProviderRdoSynchronizerFactory;
 
-		public GeneralWithCustodianRdoSynchronizerFactory(IWindsorContainer container, IObjectTypeRepository objectTypeRepository, IRsapiClientFactory rsapiClientFactory)
+		public GeneralWithEntityRdoSynchronizerFactory(IWindsorContainer container, IObjectTypeRepository objectTypeRepository, IRsapiClientFactory rsapiClientFactory)
 		{
 			_relativityRdoSynchronizerFactory = new RelativityRdoSynchronizerFactory(container, rsapiClientFactory);
 			_importProviderRdoSynchronizerFactory = new ImportProviderRdoSynchronizerFactory(container, objectTypeRepository);

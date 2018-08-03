@@ -206,11 +206,11 @@ ko.validation.insertValidationMessage = function (element) {
 				}
 			});
 
-		if (typeof model.CustodianManagerFieldContainsLink === "undefined") {
-			model.CustodianManagerFieldContainsLink = "true";
+		if (typeof model.EntityManagerFieldContainsLink === "undefined") {
+			model.EntityManagerFieldContainsLink = "true";
 		}
 
-		this.CustodianManagerFieldContainsLink = ko.observable(model.CustodianManagerFieldContainsLink || "false");
+		this.EntityManagerFieldContainsLink = ko.observable(model.EntityManagerFieldContainsLink || "false");
 		this.sourceField = ko.observableArray([]);
 		this.workspaceFieldSelected = ko.observableArray([]);
 		this.selectedMappedWorkspace = ko.observableArray([]);
@@ -522,7 +522,7 @@ ko.validation.insertValidationMessage = function (element) {
 		this.showManager = ko.observable(false);
 		this.cacheMapped = ko.observableArray([]);
 		root.data.ajax({
-			type: 'POST', url: root.utils.generateWebAPIURL('Custodian/' + artifactTypeId)
+			type: 'GET', url: root.utils.generateWebAPIURL('Entity/' + artifactTypeId)
 		}).then(function (result) {
 			self.showManager(result);
 		});
@@ -900,7 +900,7 @@ ko.validation.insertValidationMessage = function (element) {
 				map: model.map,
 				parentIdentifier: model.parentIdentifier,
 				identifer: model.identifer,
-				CustodianManagerFieldContainsLink: model.CustodianManagerFieldContainsLink,
+				EntityManagerFieldContainsLink: model.EntityManagerFieldContainsLink,
 				importNativeFile: model.importNativeFile,
 				importNativeFileCopyMode: model.importNativeFileCopyMode,
 				nativeFilePathValue: model.nativeFilePathValue,
@@ -1035,7 +1035,7 @@ ko.validation.insertValidationMessage = function (element) {
 			}
 
 			this.returnModel.map = JSON.stringify(map);
-			this.returnModel.CustodianManagerFieldContainsLink = this.model.CustodianManagerFieldContainsLink();
+			this.returnModel.EntityManagerFieldContainsLink = this.model.EntityManagerFieldContainsLink();
 			setCache(this.returnModel, self.key);
 			d.resolve(this.returnModel);
 			return d.promise;
@@ -1167,7 +1167,7 @@ ko.validation.insertValidationMessage = function (element) {
 				this.returnModel.identifer = this.model.selectedUniqueId();
 				this.returnModel.parentIdentifier = this.model.selectedIdentifier();
 				this.returnModel.SelectedOverwrite = this.model.SelectedOverwrite();
-				_destination.CustodianManagerFieldContainsLink = this.model.CustodianManagerFieldContainsLink();
+				_destination.EntityManagerFieldContainsLink = this.model.EntityManagerFieldContainsLink();
 				_destination.FieldOverlayBehavior = this.model.FieldOverlayBehavior();
 				this.returnModel.destination = JSON.stringify(_destination);
 				this.returnModel.SecuredConfiguration = this.model.SecuredConfiguration;

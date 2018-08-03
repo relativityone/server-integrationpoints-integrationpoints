@@ -10,7 +10,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Models.Import.Ldap
 
 		public ImportSettingsModel SharedImportSettings { get; set; }
 
-		public ImportCustodianSettingsModel ImportCustodianSettingsModel { get; set; }
+		public ImportEntitySettingsModel ImportEntitySettingsModel { get; set; }
 
 		public ImportFromLdapModel(string name, string transferredObject)
 		{
@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Models.Import.Ldap
 			};
 			Source = new ImportFromLdapSourceConnectionModel();
 			SharedImportSettings = new ImportSettingsModel();
-			ImportCustodianSettingsModel = new ImportCustodianSettingsModel();
+			ImportEntitySettingsModel = new ImportEntitySettingsModel();
 		}
 	}
 }

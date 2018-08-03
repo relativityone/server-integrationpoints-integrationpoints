@@ -14,7 +14,6 @@ namespace kCura.IntegrationPoints.Data
 	{
 		public const string RELATIVITY_INTEGRATION_POINTS_AGENT_GUID = "08C0CE2D-8191-4E8F-B037-899CEAEE493D";
 		public const string SCHEDULE_AGENT_QUEUE_TABLE_NAME = "ScheduleAgentQueue_08C0CE2D-8191-4E8F-B037-899CEAEE493D";
-		public const string Custodian = @"d216472d-a1aa-4965-8b36-367d43d4e64c";
 	}
 
 	public partial class OverwriteFieldsChoiceGuids

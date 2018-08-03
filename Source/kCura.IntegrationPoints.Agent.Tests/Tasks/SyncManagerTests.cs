@@ -550,7 +550,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 		private Job GetJob(string jobDetails)
 		{
-			return JobHelper.GetJob(1, null, null, 1, 1, 111, 222, TaskType.SyncCustodianManagerWorker, new DateTime(), null, jobDetails,
+			return JobHelper.GetJob(1, null, null, 1, 1, 111, 222, TaskType.SyncEntityManagerWorker, new DateTime(), null, jobDetails,
 				0, new DateTime(), 1, null, null);
 		}
 

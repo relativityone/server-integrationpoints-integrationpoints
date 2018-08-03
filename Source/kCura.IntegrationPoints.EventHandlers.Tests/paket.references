@@ -2,6 +2,7 @@ CSharpGuidelineAnalyzer
 kCura.Apps.Common.Utils
 kCura.EventHandler
 kCura.Relativity.Client
+Moq
 NSubstitute
 NUnit
 Relativity.Kepler

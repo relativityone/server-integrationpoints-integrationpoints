@@ -156,7 +156,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			// if you want to create add another synchronizer aka exporter, you may add it here.
 			// RDO synchronizer
-			var factory = SynchronizerFactory as GeneralWithCustodianRdoSynchronizerFactory;
+			var factory = SynchronizerFactory as GeneralWithEntityRdoSynchronizerFactory;
 			if (factory != null)
 			{
 				factory.SourceProvider = SourceProvider;

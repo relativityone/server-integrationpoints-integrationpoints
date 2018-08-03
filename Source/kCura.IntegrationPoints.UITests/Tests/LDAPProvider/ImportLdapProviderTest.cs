@@ -55,8 +55,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 			SharedVariables.LdapUsername.ForEach(c => model.Source.Username.AppendChar(c));
 
 			// Step 3
-			model.ImportCustodianSettingsModel.UniqueIdentifier = "UniqueID";
-			model.ImportCustodianSettingsModel.CustodianManagerContainsLink = true;
+			model.ImportEntitySettingsModel.UniqueIdentifier = "UniqueID";
+			model.ImportEntitySettingsModel.EntityManagerContainsLink = true;
 
 			model.SharedImportSettings.Overwrite = OverwriteType.AppendOverlay;
 			model.SharedImportSettings.FieldMapping = new List<Tuple<string, string>>();
@@ -72,13 +72,13 @@ namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 			detailsPage.RunIntegrationPoint();
 
 			// Assert
-			var expectedCustodians = new Dictionary<string, string>
+			var expectedEntities = new Dictionary<string, string>
 			{
 				{"Szmigielski, Piotr", "Lorenz, Andrzej"}
 			};
 
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
-			validator.ValidateCustodians(expectedCustodians);
+			validator.ValidateEntities(expectedEntities);
 		}
 	}
 }

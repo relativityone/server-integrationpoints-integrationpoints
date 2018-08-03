@@ -6,15 +6,14 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
-using kCura.IntegrationPoints.Core.Contracts.Custodian;
+using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Conversion;
-using kCura.IntegrationPoints.Core.Services.CustodianManager;
+using kCura.IntegrationPoints.Core.Services.EntityManager;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.CustodianManager;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -33,20 +32,20 @@ using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
 using Constants = kCura.IntegrationPoints.Core.Constants;
 using Field = kCura.Relativity.Client.DTOs.Field;
-using ObjectTypeGuids = kCura.IntegrationPoints.Core.Contracts.Custodian.ObjectTypeGuids;
+using ObjectTypeGuids = kCura.IntegrationPoints.Core.Contracts.Entity.ObjectTypeGuids;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
-	public class SyncCustodianManagerWorker : SyncWorker
+	public class SyncEntityManagerWorker : SyncWorker
 	{
 		private readonly IAPILog _logger;
 		private readonly IManagerQueueService _managerQueueService;
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly IHelperFactory _helperFactory;
 		private readonly IRelativityObjectManager _relativityObjectManager;
-		private CustodianManagerDataReaderToEnumerableService _convertDataService;
-		private IEnumerable<FieldMap> _custodianManagerFieldMap;
-		private List<CustodianManagerMap> _custodianManagerMap;
+		private EntityManagerDataReaderToEnumerableService _convertDataService;
+		private IEnumerable<FieldMap> _entityManagerFieldMap;
+		private List<EntityManagerMap> _entityManagerMap;
 		private bool _managerFieldIdIsBinary;
 		private IEnumerable<FieldMap> _managerFieldMap;
 		private string _newKeyManagerFieldID;
@@ -54,7 +53,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private int _workspaceArtifactId;
 
-		public SyncCustodianManagerWorker(ICaseServiceContext caseServiceContext, IDataProviderFactory dataProviderFactory,
+		public SyncEntityManagerWorker(ICaseServiceContext caseServiceContext, IDataProviderFactory dataProviderFactory,
 			IHelper helper, ISerializer serializer, ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
 			IJobHistoryService jobHistoryService, IJobHistoryErrorService jobHistoryErrorService, IJobManager jobManager,
 			IManagerQueueService managerQueueService, JobStatisticsService statisticsService, IManagerFactory managerFactory,
@@ -70,7 +69,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_repositoryFactory = repositoryFactory;
 			_helperFactory = helperFactory;
 			_relativityObjectManager = relativityObjectManager;
-			_logger = helper.GetLoggerFactory().GetLogger().ForContext<SyncCustodianManagerWorker>();
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<SyncEntityManagerWorker>();
 		}
 
 		protected override void ExecuteTask(Job job)
@@ -82,7 +81,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				InjectionManager.Instance.Evaluate("640E9695-AB99-4763-ADC5-03E1252277F7");
 
 				//get all job parameters
-				CustodianManagerJobParameters jobParameters = GetParameters(job);
+				EntityManagerJobParameters jobParameters = GetParameters(job);
 				SetIntegrationPoint(job);
 				SetJobHistory();
 				_workspaceArtifactId = job.WorkspaceID;
@@ -90,10 +89,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				InjectionManager.Instance.Evaluate("CB070ADB-8912-4B61-99B0-3321C0670FC6");
 
 				//check if all tasks are done for this batch yet
-				bool IsPrimaryBatchWorkComplete = _managerQueueService.AreAllTasksOfTheBatchDone(job, new[] { TaskType.SyncCustodianManagerWorker.ToString() });
+				bool IsPrimaryBatchWorkComplete = _managerQueueService.AreAllTasksOfTheBatchDone(job, new[] { TaskType.SyncEntityManagerWorker.ToString() });
 				if (!IsPrimaryBatchWorkComplete)
 				{
-					new TaskJobSubmitter(JobManager, job, TaskType.SyncCustodianManagerWorker, BatchInstance).SubmitJob(jobParameters);
+					new TaskJobSubmitter(JobManager, job, TaskType.SyncEntityManagerWorker, BatchInstance).SubmitJob(jobParameters);
 					return;
 				}
 
@@ -102,12 +101,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 				if (SourceProvider.Identifier.Equals(Constants.IntegrationPoints.SourceProviders.LDAP, StringComparison.InvariantCultureIgnoreCase))
 				{
-					//update common queue for this job using passed Custodian/Manager links and get the next unprocessed links
-					_custodianManagerMap = _managerQueueService.GetCustodianManagerLinksToProcess(job, BatchInstance,
-						_custodianManagerMap);
+					//update common queue for this job using passed Entity/Manager links and get the next unprocessed links
+					_entityManagerMap = _managerQueueService.GetEntityManagerLinksToProcess(job, BatchInstance,
+						_entityManagerMap);
 
 					//if no links to process - exit
-					if (!_custodianManagerMap.Any())
+					if (!_entityManagerMap.Any())
 					{
 						return;
 					}
@@ -123,42 +122,42 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					string managerIdentifiedFieldName = GetDestinationFieldIdentifierName(jobParameters);
 
 					managersLookup = CreateManagersLookup(managersData, managerIdentifiedFieldName, identifierFieldName);
-					_custodianManagerMap.ForEach(x => x.NewManagerID = managersLookup[x.OldManagerID]);
+					_entityManagerMap.ForEach(x => x.NewManagerID = managersLookup[x.OldManagerID]);
 				}
 				else
 				{
 					//if no links to process - exit
-					if (!_custodianManagerMap.Any())
+					if (!_entityManagerMap.Any())
 					{
 						return;
 					}
 
-					_custodianManagerMap.ForEach(x => x.NewManagerID = x.OldManagerID);
+					_entityManagerMap.ForEach(x => x.NewManagerID = x.OldManagerID);
 				}
 
-				var managerUniqueIDs = _custodianManagerMap.Where(x => x.NewManagerID != null).Select(x => x.NewManagerID).Distinct().ToArray();
+				var managerUniqueIDs = _entityManagerMap.Where(x => x.NewManagerID != null).Select(x => x.NewManagerID).Distinct().ToArray();
 				IDictionary<string, int> managerArtifactIDs = GetImportedManagerArtifactIDs(destinationManagerUniqueIdFieldDisplayName, managerUniqueIDs);
-				_custodianManagerMap.ForEach(x => x.ManagerArtifactID =
+				_entityManagerMap.ForEach(x => x.ManagerArtifactID =
 							x.NewManagerID != null && managerArtifactIDs.ContainsKey(x.NewManagerID) ? managerArtifactIDs[x.NewManagerID] : 0);
 
-				//change import api settings to be able to overlay and set Custodian/Manager links
-				int custodianManagerFieldArtifactID = GetCustodianManagerFieldArtifactID();
-				var newDestinationConfiguration = ReconfigureImportAPISettings(custodianManagerFieldArtifactID);
+				//change import api settings to be able to overlay and set Entity/Manager links
+				int entityManagerFieldArtifactID = GetEntityManagerFieldArtifactID();
+				var newDestinationConfiguration = ReconfigureImportAPISettings(entityManagerFieldArtifactID);
 
-				//run import api to link corresponding Managers to Custodians
-				FieldEntry fieldEntryCustodianIdentifier = _managerFieldMap.First(x => x.FieldMapType.Equals(FieldMapTypeEnum.Identifier)).SourceField;
+				//run import api to link corresponding Managers to Entity
+				FieldEntry fieldEntryEntityIdentifier = _managerFieldMap.First(x => x.FieldMapType.Equals(FieldMapTypeEnum.Identifier)).SourceField;
 				FieldEntry fieldEntryManagerIdentifier = _managerFieldMap.First(
-					x => x.DestinationField.FieldIdentifier.Equals(custodianManagerFieldArtifactID.ToString())).SourceField;
+					x => x.DestinationField.FieldIdentifier.Equals(entityManagerFieldArtifactID.ToString())).SourceField;
 
-				IEnumerable<IDictionary<FieldEntry, object>> sourceData = _custodianManagerMap.Where(x => x.ManagerArtifactID != 0)
+				IEnumerable<IDictionary<FieldEntry, object>> sourceData = _entityManagerMap.Where(x => x.ManagerArtifactID != 0)
 					.Select(x => new Dictionary<FieldEntry, object>
 					{
-						{fieldEntryCustodianIdentifier, x.CustodianID},
+						{fieldEntryEntityIdentifier, x.EntityID},
 						{fieldEntryManagerIdentifier, x.ManagerArtifactID}
 					});
 
 				var managerLinkMap = _managerFieldMap.Where(x =>
-					x.SourceField.FieldIdentifier.Equals(fieldEntryCustodianIdentifier.FieldIdentifier) ||
+					x.SourceField.FieldIdentifier.Equals(fieldEntryEntityIdentifier.FieldIdentifier) ||
 					x.SourceField.FieldIdentifier.Equals(fieldEntryManagerIdentifier.FieldIdentifier));
 
 				LinkManagers(job, newDestinationConfiguration, sourceData, managerLinkMap);
@@ -185,34 +184,34 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		}
 
 
-		private CustodianManagerJobParameters GetParameters(Job job)
+		private EntityManagerJobParameters GetParameters(Job job)
 		{
 			TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
 			BatchInstance = taskParameters.BatchInstance;
-			CustodianManagerJobParameters jobParameters;
+			EntityManagerJobParameters jobParameters;
 			if (taskParameters.BatchParameters is JObject)
 			{
-				jobParameters = ((JObject)taskParameters.BatchParameters).ToObject<CustodianManagerJobParameters>();
+				jobParameters = ((JObject)taskParameters.BatchParameters).ToObject<EntityManagerJobParameters>();
 			}
 			else
 			{
-				jobParameters = (CustodianManagerJobParameters)taskParameters.BatchParameters;
+				jobParameters = (EntityManagerJobParameters)taskParameters.BatchParameters;
 			}
-			_custodianManagerMap = jobParameters.CustodianManagerMap.Select(
-				x => new CustodianManagerMap { CustodianID = x.Key, OldManagerID = x.Value }).ToList();
+			_entityManagerMap = jobParameters.EntityManagerMap.Select(
+				x => new EntityManagerMap { EntityID = x.Key, OldManagerID = x.Value }).ToList();
 
-			_custodianManagerFieldMap = jobParameters.CustodianManagerFieldMap;
+			_entityManagerFieldMap = jobParameters.EntityManagerFieldMap;
 			_managerFieldMap = jobParameters.ManagerFieldMap;
 			_managerFieldIdIsBinary = jobParameters.ManagerFieldIdIsBinary;
 
-			SetManagerFieldIDs(_custodianManagerFieldMap, _managerFieldMap);
+			SetManagerFieldIDs(_entityManagerFieldMap, _managerFieldMap);
 
 			return jobParameters;
 		}
 
-		private void SetManagerFieldIDs(IEnumerable<FieldMap> custodianManagerFieldMap, IEnumerable<FieldMap> managerFieldMap)
+		private void SetManagerFieldIDs(IEnumerable<FieldMap> entityManagerFieldMap, IEnumerable<FieldMap> managerFieldMap)
 		{
-			_oldKeyManagerFieldID = custodianManagerFieldMap.Where(x => x.FieldMapType.Equals(FieldMapTypeEnum.Identifier))
+			_oldKeyManagerFieldID = entityManagerFieldMap.Where(x => x.FieldMapType.Equals(FieldMapTypeEnum.Identifier))
 					.Select(x => x.DestinationField.FieldIdentifier)
 					.First();
 			_newKeyManagerFieldID = managerFieldMap.Where(x => x.FieldMapType.Equals(FieldMapTypeEnum.Identifier))
@@ -240,7 +239,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private List<string> GetManagersLdapQueryStrings()
 		{
-			return _custodianManagerMap.Select(x => ConvertObjectGuid(x.OldManagerID)).Distinct().ToList();
+			return _entityManagerMap.Select(x => ConvertObjectGuid(x.OldManagerID)).Distinct().ToList();
 		}
 
 		private string ConvertObjectGuid(string originalID)
@@ -272,16 +271,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		protected override IEnumerable<IDictionary<FieldEntry, object>> GetSourceData(List<FieldEntry> sourceFields,
 			IDataReader sourceDataReader)
 		{
-			_convertDataService = GetCustodianManagerDataReaderToEnumerableService(sourceFields);
+			_convertDataService = GetEntityManagerDataReaderToEnumerableService(sourceFields);
 			return _convertDataService.GetData<IDictionary<FieldEntry, object>>(sourceDataReader);
 		}
 
-		private CustodianManagerDataReaderToEnumerableService GetCustodianManagerDataReaderToEnumerableService(
+		private EntityManagerDataReaderToEnumerableService GetEntityManagerDataReaderToEnumerableService(
 			List<FieldEntry> sourceFields)
 		{
 			var objectBuilder = new SynchronizerObjectBuilder(sourceFields);
-			CustodianManagerDataReaderToEnumerableService convertDataService =
-				new CustodianManagerDataReaderToEnumerableService(objectBuilder, _oldKeyManagerFieldID, _newKeyManagerFieldID);
+			EntityManagerDataReaderToEnumerableService convertDataService =
+				new EntityManagerDataReaderToEnumerableService(objectBuilder, _oldKeyManagerFieldID, _newKeyManagerFieldID);
 			return convertDataService;
 		}
 
@@ -290,9 +289,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			return fieldMap.Where(x => x.FieldMapType == FieldMapTypeEnum.Identifier).Select(x => x.SourceField.ActualName).First();
 		}
 
-		private string GetDestinationFieldIdentifierName(CustodianManagerJobParameters jobParameters)
+		private string GetDestinationFieldIdentifierName(EntityManagerJobParameters jobParameters)
 		{
-			return jobParameters.CustodianManagerFieldMap.Where(x => x.FieldMapType == FieldMapTypeEnum.Identifier)
+			return jobParameters.EntityManagerFieldMap.Where(x => x.FieldMapType == FieldMapTypeEnum.Identifier)
 				.Select(x => x.DestinationField.FieldIdentifier)
 				.First();
 		}
@@ -313,7 +312,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				ObjectType = new ObjectTypeRef
 				{
-					Guid = ObjectTypeGuids.Custodian
+					Guid = ObjectTypeGuids.Entity
 				},
 				Fields = new[]
 				{
@@ -343,34 +342,34 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		}
 
 
-		private int GetCustodianManagerFieldArtifactID()
+		private int GetEntityManagerFieldArtifactID()
 		{
-			LogGetCustodianManagerFieldArtifactIdStart();
+			LogGetEntityManagerFieldArtifactIdStart();
 			IFieldQueryRepository fieldQueryRepository = _repositoryFactory.GetFieldQueryRepository(_workspaceArtifactId);
-			Field dto = new Field(new Guid(CustodianFieldGuids.Manager));
+			Field dto = new Field(new Guid(EntityFieldGuids.Manager));
 
 			ResultSet<Field> resultSet = fieldQueryRepository.Read(dto);
 			if (!resultSet.Success)
 			{
 				var messages = resultSet.Results.Where(x => !x.Success).Select(x => x.Message);
-				LogRetrievingCustodianManagersIdsError(messages);
+				LogRetrievingEntityManagersIdsError(messages);
 				var e = new AggregateException(resultSet.Message, messages.Select(x => new Exception(x)));
 				throw e;
 			}
 
 			int artifactID = resultSet.Results[0].Artifact.ArtifactID;
-			LogGetCustodianManagerFieldArtifactIdSuccesfulEnd(artifactID);
+			LogGetEntityManagerFieldArtifactIdSuccesfulEnd(artifactID);
 			return artifactID;
 		}
 
 
-		private string ReconfigureImportAPISettings(int custodianManagerFieldArtifactID)
+		private string ReconfigureImportAPISettings(int entityManagerFieldArtifactID)
 		{
-			LogReconfigureImportApiSettingsStart(custodianManagerFieldArtifactID);
+			LogReconfigureImportApiSettingsStart(entityManagerFieldArtifactID);
 			ImportSettings importSettings = JsonConvert.DeserializeObject<ImportSettings>(IntegrationPoint.DestinationConfiguration);
-			importSettings.ObjectFieldIdListContainsArtifactId = new[] { custodianManagerFieldArtifactID };
+			importSettings.ObjectFieldIdListContainsArtifactId = new[] { entityManagerFieldArtifactID };
 			importSettings.ImportOverwriteMode = ImportOverwriteModeEnum.OverlayOnly;
-			importSettings.CustodianManagerFieldContainsLink = false;
+			importSettings.EntityManagerFieldContainsLink = false;
 			importSettings.FederatedInstanceCredentials = IntegrationPoint.SecuredConfiguration;
 
 			if (importSettings.IsFederatedInstance())
@@ -386,7 +385,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 
 			string newDestinationConfiguration = JsonConvert.SerializeObject(importSettings);
-			LogReconfigureImportApiSettingsSuccesfulEnd(custodianManagerFieldArtifactID, newDestinationConfiguration);
+			LogReconfigureImportApiSettingsSuccesfulEnd(entityManagerFieldArtifactID, newDestinationConfiguration);
 			return newDestinationConfiguration;
 		}
 
@@ -423,12 +422,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				foreach (var manager in missingManagers)
 				{
-					IList<string> custodianIdsWithMissingManager =
-						_custodianManagerMap.Where(x => x.OldManagerID == manager.Key).Select(x => x.CustodianID).ToList();
-					string custodianIdsWithMissingManagerString = string.Join(", ", custodianIdsWithMissingManager);
+					IList<string> entityIdsWithMissingManager =
+						_entityManagerMap.Where(x => x.OldManagerID == manager.Key).Select(x => x.EntityID).ToList();
+					string entityIdsWithMissingManagerString = string.Join(", ", entityIdsWithMissingManager);
 
 					JobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorItem, manager.Value,
-						$"Could not retrieve information and link the following Manager: {manager.Key} with the following custodian IDs: {custodianIdsWithMissingManagerString}",
+						$"Could not retrieve information and link the following Manager: {manager.Key} with the following entity IDs: {entityIdsWithMissingManagerString}",
 						string.Empty);
 				}
 			}
@@ -438,7 +437,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void LogExecutingTaskError(Job job, Exception ex)
 		{
-			_logger.LogError(ex, "Failed to execute SyncCustodianManagerWorker task for job {JobId}.", job.JobId);
+			_logger.LogError(ex, "Failed to execute SyncEntityManagerWorker task for job {JobId}.", job.JobId);
 		}
 
 		private void LogRetrievingManagerArtifactIds(IEnumerable<string> messages)
@@ -446,25 +445,25 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_logger.LogError("Failed to get managers artifact ids with messages: {Message}.", string.Join(", ", messages));
 		}
 
-		private void LogRetrievingCustodianManagersIdsError(IEnumerable<string> messages)
+		private void LogRetrievingEntityManagersIdsError(IEnumerable<string> messages)
 		{
-			_logger.LogError("Failed to retrieve custodian manager field artifact id with messages: {Message}.",
+			_logger.LogError("Failed to retrieve entity manager field artifact id with messages: {Message}.",
 				string.Join(", ", messages));
 		}
 
 		private void LogExecuteTaskFinalize(Job job)
 		{
-			_logger.LogInformation("Finalized execution of task in Sync Custodian Manager Worker. job: {JobId}", job.JobId);
+			_logger.LogInformation("Finalized execution of task in SyncEntityManagerWorker. job: {JobId}", job.JobId);
 		}
 
 		private void LogExecuteTaskSuccesfulEnd(Job job)
 		{
-			_logger.LogInformation("Succesfully executed task in Sync Custodian Manager Worker. job: {JobId}", job.JobId);
+			_logger.LogInformation("Succesfully executed task in SyncEntityManagerWorker. job: {JobId}", job.JobId);
 		}
 
 		private void LogExecuteTaskStart(Job job)
 		{
-			_logger.LogInformation("Starting execution of task in Sync Custodian Manager Worker. job: {JobId}", job.JobId);
+			_logger.LogInformation("Starting execution of task in SyncEntityManagerWorker. job: {JobId}", job.JobId);
 		}
 
 		private void LogGetImportedManagerArtifactIDsStart(string uniqueFieldName)
@@ -478,27 +477,27 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_logger.LogDebug("Retrieved manager artifactIDs for uniqueFieldName: {uniqueFieldName}, ids: {managerIDs}", uniqueFieldName, managerIDs.Values);
 		}
 
-		private void LogGetCustodianManagerFieldArtifactIdSuccesfulEnd(int artifactID)
+		private void LogGetEntityManagerFieldArtifactIdSuccesfulEnd(int artifactID)
 		{
-			_logger.LogInformation("Succesfully retrieved custodian manager field artifactID: {artifactID}", artifactID);
+			_logger.LogInformation("Succesfully retrieved entity manager field artifactID: {artifactID}", artifactID);
 		}
 
-		private void LogGetCustodianManagerFieldArtifactIdStart()
+		private void LogGetEntityManagerFieldArtifactIdStart()
 		{
-			_logger.LogInformation("Getting custodian manager field artifactID.");
+			_logger.LogInformation("Getting entity manager field artifactID.");
 		}
-		private void LogReconfigureImportApiSettingsSuccesfulEnd(int custodianManagerFieldArtifactID, string newDestinationConfiguration)
+		private void LogReconfigureImportApiSettingsSuccesfulEnd(int entityManagerFieldArtifactID, string newDestinationConfiguration)
 		{
-			_logger.LogInformation("Succesfully reconfigured import API settings for: {custodianManagerFieldArtifactID}",
-				custodianManagerFieldArtifactID);
+			_logger.LogInformation("Succesfully reconfigured import API settings for: {entityManagerFieldArtifactID}",
+				entityManagerFieldArtifactID);
 			_logger.LogDebug(
-				"Reconfigured import API settings for: {custodianManagerFieldArtifactID}, new destination configuration: {newDestinationCOnfiguration}",
-				custodianManagerFieldArtifactID, newDestinationConfiguration);
+				"Reconfigured import API settings for: {entityManagerFieldArtifactID}, new destination configuration: {newDestinationCOnfiguration}",
+				entityManagerFieldArtifactID, newDestinationConfiguration);
 		}
 
-		private void LogReconfigureImportApiSettingsStart(int custodianManagerFieldArtifactID)
+		private void LogReconfigureImportApiSettingsStart(int entityManagerFieldArtifactID)
 		{
-			_logger.LogInformation("Start reconfiguring import API settings for: {custodianManagerFieldArtifactID}", custodianManagerFieldArtifactID);
+			_logger.LogInformation("Start reconfiguring import API settings for: {entityManagerFieldArtifactID}", entityManagerFieldArtifactID);
 		}
 
 		#endregion

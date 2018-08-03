@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Linq;
 using Castle.Windsor;
 using kCura.Apps.Common.Utils.Serializers;
@@ -412,14 +410,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		}
 
 		[Test]
-		[NUnit.Framework.Description("This happens when GeneralWithCustodianRdoSynchronizerFactory is passed in.")]
+		[NUnit.Framework.Description("This happens when GeneralWithEntityRdoSynchronizerFactory is passed in.")]
 		public void Execute_CreateDestinationProvider_MakeSureToSetSourceProvider()
 		{
 			// ARRANGE
 			IWindsorContainer windsorContainer = Substitute.For<IWindsorContainer>();
 			IObjectTypeRepository objectTypeRepository = Substitute.For<IObjectTypeRepository>();
 			IRsapiClientFactory rsapiClientFactory = Substitute.For<IRsapiClientFactory>();
-			_synchronizerFactory = Substitute.For<GeneralWithCustodianRdoSynchronizerFactory>(windsorContainer, objectTypeRepository, rsapiClientFactory);
+			_synchronizerFactory = Substitute.For<GeneralWithEntityRdoSynchronizerFactory>(windsorContainer, objectTypeRepository, rsapiClientFactory);
 
 			// ACT
 			ExportServiceManager instance = new ExportServiceManager(_helper, _helperFactory,
@@ -441,7 +439,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			}
 
 			// ASSERT
-			var factory = _synchronizerFactory as GeneralWithCustodianRdoSynchronizerFactory;
+			var factory = _synchronizerFactory as GeneralWithEntityRdoSynchronizerFactory;
 			Assert.IsNotNull(factory);
 			Assert.AreSame(factory.SourceProvider, _sourceProvider);
 		}

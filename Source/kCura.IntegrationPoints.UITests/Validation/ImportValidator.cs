@@ -3,13 +3,13 @@ using System.Linq;
 using kCura.IntegrationPoints.Data;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
-using ObjectTypeGuids = kCura.IntegrationPoints.Core.Contracts.Custodian.ObjectTypeGuids;
+using ObjectTypeGuids = kCura.IntegrationPoints.Core.Contracts.Entity.ObjectTypeGuids;
 
 namespace kCura.IntegrationPoints.UITests.Validation
 {
 	public class ImportValidator : BaseUiValidator
 	{
-		private IList<RelativityObject> _custodians;
+		private IList<RelativityObject> _entities;
 		private readonly IRSAPIService _service;
 
 		public ImportValidator(IRSAPIService service)
@@ -17,19 +17,19 @@ namespace kCura.IntegrationPoints.UITests.Validation
 			_service = service;
 		}
 
-		public void ValidateCustodians(Dictionary<string, string> expectedCustodians)
+		public void ValidateEntities(Dictionary<string, string> expectedEntities)
 		{
-			LoadCustodians();
-			CompareCustodians(expectedCustodians);
+			LoadEntities();
+			CompareEntities(expectedEntities);
 		}
 
-		private void LoadCustodians()
+		private void LoadEntities()
 		{
 			var request = new QueryRequest
 			{
 				ObjectType = new ObjectTypeRef
 				{
-					Guid = ObjectTypeGuids.Custodian
+					Guid = ObjectTypeGuids.Entity
 				},
 				Fields = new[]
 				{
@@ -37,18 +37,18 @@ namespace kCura.IntegrationPoints.UITests.Validation
 					new FieldRef { Name = "Manager" }
 				},
 			};
-			_custodians = _service.RelativityObjectManager.Query(request);
+			_entities = _service.RelativityObjectManager.Query(request);
 		}
 
-		private void CompareCustodians(Dictionary<string, string> expectedCustodians)
+		private void CompareEntities(Dictionary<string, string> expectedEntities)
 		{
-			foreach (var expectedCustodian in expectedCustodians)
+			foreach (var expectedEntity in expectedEntities)
 			{
-				string fullName = expectedCustodian.Key;
-				string expectedManagerName = expectedCustodian.Value;
-				RelativityObject custodian = _custodians.FirstOrDefault(c => fullName.Equals(c["FullName"].Value));
-				Assert.IsNotNull(custodian);
-				var actualManager = custodian["manager"].Value as RelativityObjectValue;
+				string fullName = expectedEntity.Key;
+				string expectedManagerName = expectedEntity.Value;
+				RelativityObject entity = _entities.FirstOrDefault(c => fullName.Equals(c["FullName"].Value));
+				Assert.IsNotNull(entity);
+				var actualManager = entity["manager"].Value as RelativityObjectValue;
 				Assert.IsNotNull(actualManager);
 				Assert.AreEqual(expectedManagerName, actualManager.Name);
 			}

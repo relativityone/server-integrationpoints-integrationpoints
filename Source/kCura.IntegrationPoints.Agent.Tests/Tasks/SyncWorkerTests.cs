@@ -87,7 +87,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				_appDomainRdoSynchronizerFactory, _jobHistoryService, _jobHistoryErrorService, _jobManager, new IBatchStatus[] { _batchStatus },
 				null, _managerFactory, _contextContainerFactory, _jobService, _providerTypeService);
 
-			_job = JobHelper.GetJob(1, null, null, 1, 1, 111, 222, TaskType.SyncCustodianManagerWorker, new DateTime(), null, "detail",
+			_job = JobHelper.GetJob(1, null, null, 1, 1, 111, 222, TaskType.SyncEntityManagerWorker, new DateTime(), null, "detail",
 				0, new DateTime(), 1, null, null);
 			_integrationPoint = new Data.IntegrationPoint()
 			{

@@ -147,7 +147,7 @@ var IP = IP || {};
 				var destinationSettings = JSON.parse(settings.destination || "{}");
 				self.SelectedOverwrite = settings.selectedOverwrite;
 				self.FieldOverlayBehavior = destinationSettings.FieldOverlayBehavior;
-				self.CustodianManagerFieldContainsLink = destinationSettings.CustodianManagerFieldContainsLink;
+				self.EntityManagerFieldContainsLink = destinationSettings.EntityManagerFieldContainsLink;
 				self.UseFolderPathInformation = destinationSettings.UseFolderPathInformation;
 				self.UseDynamicFolderPath = destinationSettings.UseDynamicFolderPath;
 				self.FolderPathSourceField = destinationSettings.FolderPathSourceField;
@@ -348,7 +348,7 @@ var IP = IP || {};
 				var destination = {
 					artifactTypeID: ko.toJS(this.model.destination).artifactTypeID,
 					destinationProviderType: ko.toJS(guid),
-					CustodianManagerFieldContainsLink: ko.toJS(this.model.CustodianManagerFieldContainsLink),
+					EntityManagerFieldContainsLink: ko.toJS(this.model.EntityManagerFieldContainsLink),
 					CreateSavedSearchForTagging: ko.toJS(this.model.destination).settings.CreateSavedSearchForTagging
 				};
 				if (this.model.destination.profile) {

@@ -11,7 +11,7 @@ namespace kCura.IntegrationPoints.UITests.Pages.Ldap
 
 		public override void SetupModel(ImportFromLdapModel model)
 		{
-			SetUpCustodianSettingsModel(model.ImportCustodianSettingsModel);
+			SetUpEntitySettingsModel(model.ImportEntitySettingsModel);
 			SetUpSharedSettingsModel(model.SharedImportSettings);
 		}
 	}

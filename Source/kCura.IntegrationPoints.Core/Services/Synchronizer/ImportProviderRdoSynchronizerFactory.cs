@@ -1,6 +1,6 @@
 ﻿using Castle.Windsor;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
-using kCura.IntegrationPoints.Core.Contracts.Custodian;
+using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 		private bool IsEntityObjectImport(ImportSettings importSettings)
 		{
 			ObjectTypeDTO rdoObjectType = _objectTypeRepository.GetObjectType(importSettings.ArtifactTypeId);
-			return rdoObjectType.Guids.Contains(ObjectTypeGuids.Custodian);
+			return rdoObjectType.Guids.Contains(ObjectTypeGuids.Entity);
 		}
 
 		private IDataSynchronizer CreateGeneralRdoImportSynchronizer()
@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 
 		private IDataSynchronizer CreateEntityImportSynchronizer(ITaskJobSubmitter taskJobSubmitter)
 		{
-			var s = (RdoCustodianSynchronizer)_container.Kernel.Resolve<IDataSynchronizer>(typeof(RdoCustodianSynchronizer).AssemblyQualifiedName);
+			var s = (RdoEntitySynchronizer)_container.Kernel.Resolve<IDataSynchronizer>(typeof(RdoEntitySynchronizer).AssemblyQualifiedName);
 			s.TaskJobSubmitter = taskJobSubmitter;
 			return s;
 		}

@@ -265,7 +265,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 
 		private Job GetJob(long jobID, long? rootJobID)
         {
-            return JobHelper.GetJob(jobID, rootJobID, null, 1, 1, 111, 222, TaskType.SyncCustodianManagerWorker, new DateTime(), null, "",
+            return JobHelper.GetJob(jobID, rootJobID, null, 1, 1, 111, 222, TaskType.SyncEntityManagerWorker, new DateTime(), null, "",
                 0, new DateTime(), 1, null, null);
         }
 

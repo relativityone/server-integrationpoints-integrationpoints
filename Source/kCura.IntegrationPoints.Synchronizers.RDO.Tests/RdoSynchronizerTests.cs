@@ -66,7 +66,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			});
 
 			//ACT
-			var rdoSynchronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RdoCustodianSynchronizerTests.GetMockAPI(fieldMock), jobFactory, Substitute.For<IHelper>()));
+			var rdoSynchronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RdoEntitySynchronizerTests.GetMockAPI(fieldMock), jobFactory, Substitute.For<IHelper>()));
 			var str = JsonConvert.SerializeObject(options);
 			var numberOfFields = rdoSynchronizer.GetFields(new DataSourceProviderConfiguration(str)).Count();
 			//ASSERT
@@ -106,7 +106,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 
 			//ACT
 			var str = JsonConvert.SerializeObject(options);
-			var rdoSynchronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RdoCustodianSynchronizerTests.GetMockAPI(fieldMock), jobFactory, Substitute.For<IHelper>()));
+			var rdoSynchronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RdoEntitySynchronizerTests.GetMockAPI(fieldMock), jobFactory, Substitute.For<IHelper>()));
 
 			var listOfFieldEntry = rdoSynchronizer.GetFields(new DataSourceProviderConfiguration(str)).ToList();
 
@@ -147,7 +147,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 
 			//ACT
 			var str = JsonConvert.SerializeObject(options);
-			var rdoSynchronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RdoCustodianSynchronizerTests.GetMockAPI(fieldMock), jobFactory, Substitute.For<IHelper>()));
+			var rdoSynchronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RdoEntitySynchronizerTests.GetMockAPI(fieldMock), jobFactory, Substitute.For<IHelper>()));
 
 			var numberOfFields = rdoSynchronizer.GetFields(new DataSourceProviderConfiguration(str)).Count();
 
@@ -189,7 +189,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 
 			//ACT
 			var str = JsonConvert.SerializeObject(options);
-			var rdoSynchronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RdoCustodianSynchronizerTests.GetMockAPI(fieldMock), jobFactory, Substitute.For<IHelper>()));
+			var rdoSynchronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RdoEntitySynchronizerTests.GetMockAPI(fieldMock), jobFactory, Substitute.For<IHelper>()));
 
 			var listOfFieldEntry = rdoSynchronizer.GetFields(new DataSourceProviderConfiguration(str)).ToList();
 

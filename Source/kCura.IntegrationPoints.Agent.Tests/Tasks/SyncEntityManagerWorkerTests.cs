@@ -10,12 +10,11 @@ using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Core.Services.CustodianManager;
+using kCura.IntegrationPoints.Core.Services.EntityManager;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Tests;
-using kCura.IntegrationPoints.CustodianManager;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -36,7 +35,7 @@ using Field = kCura.Relativity.Client.DTOs.Field;
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {
 	[TestFixture]
-	public class SyncCustodianManagerWorkerTests : TestBase
+	public class SyncEntityManagerWorkerTests : TestBase
 	{
 		private IRepositoryFactory _repositoryFactory;
 		private ICaseServiceContext _caseServiceContext;
@@ -52,7 +51,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IContextContainerFactory _contextContainerFactory;
 		private IJobService _jobService;
 		private IJobManager _jobManager;
-		private SyncCustodianManagerWorker _instance;
+		private SyncEntityManagerWorker _instance;
 		private Job _job;
 		private Data.IntegrationPoint _integrationPoint;
 		private SourceProvider _sourceProvider;
@@ -67,10 +66,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IProviderTypeService _providerTypeService;
 
 		private string jsonParam1 =
-			"{\"BatchInstance\":\"2b7bda1b-11c9-4349-b446-ae5c8ca2c408\",\"BatchParameters\":{\"CustodianManagerMap\":{\"9E6D57BEE28D8D4CA9A64765AE9510FB\":\"CN=Middle Manager,OU=Nested,OU=Testing - Users,DC=testing,DC=corp\",\"779561316F4CE44191B150453DE9A745\":\"CN=Top Manager,OU=Testing - Users,DC=testing,DC=corp\",\"2845DA5813991740BA2D6CC6C9765799\":\"CN=Bottom Manager,OU=NestedAgain,OU=Nested,OU=Testing - Users,DC=testing,DC=corp\"},\"CustodianManagerFieldMap\":[{\"SourceField\":{\"DisplayName\":\"CustodianIdentifier\",\"FieldIdentifier\":\"objectguid\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"DestinationField\":{\"DisplayName\":\"ManagerIdentidier\",\"FieldIdentifier\":\"distinguishedname\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"FieldMapType\":1}],\"ManagerFieldIdIsBinary\":false,\"ManagerFieldMap\":[{\"SourceField\":{\"DisplayName\":\"mail\",\"FieldIdentifier\":\"mail\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"DestinationField\":{\"DisplayName\":\"Email\",\"FieldIdentifier\":\"1040539\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"FieldMapType\":0},{\"SourceField\":{\"DisplayName\":\"givenname\",\"FieldIdentifier\":\"givenname\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"DestinationField\":{\"DisplayName\":\"First Name\",\"FieldIdentifier\":\"1040546\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":true},\"FieldMapType\":0},{\"SourceField\":{\"DisplayName\":\"sn\",\"FieldIdentifier\":\"sn\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"DestinationField\":{\"DisplayName\":\"Last Name\",\"FieldIdentifier\":\"1040547\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":true},\"FieldMapType\":0},{\"SourceField\":{\"DisplayName\":\"manager\",\"FieldIdentifier\":\"manager\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"DestinationField\":{\"DisplayName\":\"Manager\",\"FieldIdentifier\":\"1040548\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"FieldMapType\":0},{\"SourceField\":{\"DisplayName\":\"objectguid\",\"FieldIdentifier\":\"objectguid\",\"FieldType\":0,\"IsIdentifier\":true,\"IsRequired\":false},\"DestinationField\":{\"DisplayName\":\"UniqueID\",\"FieldIdentifier\":\"1040555\",\"FieldType\":0,\"IsIdentifier\":true,\"IsRequired\":false},\"FieldMapType\":1}]}}";
+			"{\"BatchInstance\":\"2b7bda1b-11c9-4349-b446-ae5c8ca2c408\",\"BatchParameters\":{\"EntityManagerMap\":{\"9E6D57BEE28D8D4CA9A64765AE9510FB\":\"CN=Middle Manager,OU=Nested,OU=Testing - Users,DC=testing,DC=corp\",\"779561316F4CE44191B150453DE9A745\":\"CN=Top Manager,OU=Testing - Users,DC=testing,DC=corp\",\"2845DA5813991740BA2D6CC6C9765799\":\"CN=Bottom Manager,OU=NestedAgain,OU=Nested,OU=Testing - Users,DC=testing,DC=corp\"},\"EntityManagerFieldMap\":[{\"SourceField\":{\"DisplayName\":\"CustodianIdentifier\",\"FieldIdentifier\":\"objectguid\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"DestinationField\":{\"DisplayName\":\"ManagerIdentidier\",\"FieldIdentifier\":\"distinguishedname\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"FieldMapType\":1}],\"ManagerFieldIdIsBinary\":false,\"ManagerFieldMap\":[{\"SourceField\":{\"DisplayName\":\"mail\",\"FieldIdentifier\":\"mail\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"DestinationField\":{\"DisplayName\":\"Email\",\"FieldIdentifier\":\"1040539\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"FieldMapType\":0},{\"SourceField\":{\"DisplayName\":\"givenname\",\"FieldIdentifier\":\"givenname\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"DestinationField\":{\"DisplayName\":\"First Name\",\"FieldIdentifier\":\"1040546\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":true},\"FieldMapType\":0},{\"SourceField\":{\"DisplayName\":\"sn\",\"FieldIdentifier\":\"sn\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"DestinationField\":{\"DisplayName\":\"Last Name\",\"FieldIdentifier\":\"1040547\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":true},\"FieldMapType\":0},{\"SourceField\":{\"DisplayName\":\"manager\",\"FieldIdentifier\":\"manager\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"DestinationField\":{\"DisplayName\":\"Manager\",\"FieldIdentifier\":\"1040548\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"FieldMapType\":0},{\"SourceField\":{\"DisplayName\":\"objectguid\",\"FieldIdentifier\":\"objectguid\",\"FieldType\":0,\"IsIdentifier\":true,\"IsRequired\":false},\"DestinationField\":{\"DisplayName\":\"UniqueID\",\"FieldIdentifier\":\"1040555\",\"FieldType\":0,\"IsIdentifier\":true,\"IsRequired\":false},\"FieldMapType\":1}]}}";
 
 		private string jsonParam2 =
-			"{\"artifactTypeID\":1000051,\"ImportOverwriteMode\":\"AppendOverlay\",\"CaseArtifactId\":1019127,\"CustodianManagerFieldContainsLink\":\"true\"}";
+			"{\"artifactTypeID\":1000051,\"ImportOverwriteMode\":\"AppendOverlay\",\"CaseArtifactId\":1019127,\"EntityManagerFieldContainsLink\":\"true\"}";
 
 		private ISerializer _jsonSerializer;
 		private int _workspaceArtifactId;
@@ -112,7 +111,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			_workspaceArtifactId = 12345;
 
-			_instance = new SyncCustodianManagerWorker(_caseServiceContext,
+			_instance = new SyncEntityManagerWorker(_caseServiceContext,
 				_dataProviderFactory,
 				_helper,
 				_serializer,
@@ -139,7 +138,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				1,
 				_workspaceArtifactId,
 				222,
-				TaskType.SyncCustodianManagerWorker,
+				TaskType.SyncEntityManagerWorker,
 				new DateTime(),
 				null,
 				"detail",
@@ -173,14 +172,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_taskParams = new TaskParameters
 			{
 				BatchInstance = Guid.NewGuid(),
-				BatchParameters = new CustodianManagerJobParameters
+				BatchParameters = new EntityManagerJobParameters
 				{
-					CustodianManagerMap = new Dictionary<string, string>
+					EntityManagerMap = new Dictionary<string, string>
 					{
 						{ "hello", "world" },
 						{ "merhaba", "dunya"}
 					},
-					CustodianManagerFieldMap = new[]
+					EntityManagerFieldMap = new[]
 					{
 						new FieldMap
 						{
@@ -218,11 +217,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				}
 			};
 
-			List<CustodianManagerMap> custodianManagerMaps = new List<CustodianManagerMap>
+			List<EntityManagerMap> custodianManagerMaps = new List<EntityManagerMap>
 			{
-				new CustodianManagerMap
+				new EntityManagerMap
 				{
-					CustodianID = "213",
+					EntityID = "213",
 					ManagerArtifactID = 3423,
 					NewManagerID = "453",
 					OldManagerID = "67"
@@ -250,7 +249,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_jobHistoryService.CreateRdo(_integrationPoint, _taskParams.BatchInstance,
 				JobTypeChoices.JobHistoryRun, Arg.Any<DateTime>()).Returns(_jobHistory);
 			_managerQueueService.AreAllTasksOfTheBatchDone(_job, Arg.Any<string[]>()).Returns(true);
-			_managerQueueService.GetCustodianManagerLinksToProcess(_job, Arg.Any<Guid>(), Arg.Any<List<CustodianManagerMap>>())
+			_managerQueueService.GetEntityManagerLinksToProcess(_job, Arg.Any<Guid>(), Arg.Any<List<EntityManagerMap>>())
 				.Returns(custodianManagerMaps);
 			_managerFactory.CreateJobStopManager(_jobService, _jobHistoryService, _taskParams.BatchInstance, _job.JobId, true)
 				.Returns(_jobStopManager);
@@ -306,8 +305,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		{
 			//ARRANGE
 			Job job = GetJob(jsonParam1);
-			SyncCustodianManagerWorker task =
-				new SyncCustodianManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null, null, null);
+			SyncEntityManagerWorker task =
+				new SyncEntityManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null, null, null);
 
 			//ACT
 			MethodInfo dynMethod = task.GetType().GetMethod("GetParameters",
@@ -317,12 +316,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			//ASSERT
 			Assert.AreEqual(new Guid("2b7bda1b-11c9-4349-b446-ae5c8ca2c408"), task.GetType().GetProperty("BatchInstance", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).GetValue(task));
 
-			List<CustodianManagerMap> _custodianManagerMap = (List<CustodianManagerMap>)task.GetType().GetField("_custodianManagerMap", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).GetValue(task);
+			List<EntityManagerMap> _custodianManagerMap = (List<EntityManagerMap>)task.GetType().GetField("_entityManagerMap", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).GetValue(task);
 			Assert.AreEqual(3, _custodianManagerMap.Count);
-			Assert.AreEqual("779561316F4CE44191B150453DE9A745", _custodianManagerMap[1].CustodianID);
+			Assert.AreEqual("779561316F4CE44191B150453DE9A745", _custodianManagerMap[1].EntityID);
 			Assert.AreEqual("CN=Bottom Manager,OU=NestedAgain,OU=Nested,OU=Testing - Users,DC=testing,DC=corp", _custodianManagerMap[2].OldManagerID);
 
-			List<FieldMap> _custodianManagerFieldMap = (List<FieldMap>)task.GetType().GetField("_custodianManagerFieldMap", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).GetValue(task);
+			List<FieldMap> _custodianManagerFieldMap = (List<FieldMap>)task.GetType().GetField("_entityManagerFieldMap", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).GetValue(task);
 			Assert.AreEqual(1, _custodianManagerFieldMap.Count);
 			Assert.AreEqual(FieldMapTypeEnum.Identifier, _custodianManagerFieldMap[0].FieldMapType);
 			Assert.AreEqual("objectguid", _custodianManagerFieldMap[0].SourceField.FieldIdentifier);
@@ -339,8 +338,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		public void ReconfigureDestinationSettings_Param2_CorrectValues()
 		{
 			//ARRANGE
-			SyncCustodianManagerWorker task =
-				new SyncCustodianManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null, null, null);
+			SyncEntityManagerWorker task =
+				new SyncEntityManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null, null, null);
 			_integrationPoint.DestinationConfiguration = jsonParam2;
 			task.GetType().GetProperty("IntegrationPoint", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).SetValue(task, _integrationPoint);
 			
@@ -354,14 +353,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			//ASSERT
 			Assert.AreEqual(1014321, importSettings.ObjectFieldIdListContainsArtifactId[0]);
 			Assert.AreEqual(ImportOverwriteModeEnum.OverlayOnly, importSettings.ImportOverwriteMode);
-			Assert.AreEqual(false, importSettings.CustodianManagerFieldContainsLink);
+			Assert.AreEqual(false, importSettings.EntityManagerFieldContainsLink);
 			Assert.AreEqual(1000051, importSettings.ArtifactTypeId);
 			Assert.AreEqual(1019127, importSettings.CaseArtifactId);
 		}
 
 		private Job GetJob(string jobDetails)
 		{
-			return JobHelper.GetJob(1, null, null, 1, 1, 111, 222, TaskType.SyncCustodianManagerWorker, new DateTime(), null, jobDetails,
+			return JobHelper.GetJob(1, null, null, 1, 1, 111, 222, TaskType.SyncEntityManagerWorker, new DateTime(), null, jobDetails,
 				0, new DateTime(), 1, null, null);
 		}
 

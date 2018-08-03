@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		public int? FederatedInstanceArtifactId { get; set; }
 		public string FederatedInstanceCredentials { get; set; }
 		public bool CopyFilesToDocumentRepository { get; set; }
-		public bool CustodianManagerFieldContainsLink { get; set; }
+		public bool EntityManagerFieldContainsLink { get; set; }
 		public int DestinationFolderArtifactId { get; set; }
 		public bool DisableControlNumberCompatibilityMode { get; set; }
 		public bool? DisableExtractedTextEncodingCheck { get; set; }
