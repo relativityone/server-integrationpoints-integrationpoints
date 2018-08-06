@@ -43,6 +43,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly IHelperFactory _helperFactory;
 		private readonly IRelativityObjectManager _relativityObjectManager;
+		private IEnumerable<FieldMap> _entityManagerFieldMap;
 		private List<EntityManagerMap> _entityManagerMap;
 		private bool _managerFieldIdIsBinary;
 		private IEnumerable<FieldMap> _managerFieldMap;
@@ -198,10 +199,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_entityManagerMap = jobParameters.EntityManagerMap.Select(
 				x => new EntityManagerMap { EntityID = x.Key, OldManagerID = x.Value }).ToList();
 
+			_entityManagerFieldMap = jobParameters.EntityManagerFieldMap;
 			_managerFieldMap = jobParameters.ManagerFieldMap;
 			_managerFieldIdIsBinary = jobParameters.ManagerFieldIdIsBinary;
 
-			SetManagerFieldIDs(jobParameters.EntityManagerFieldMap, _managerFieldMap);
+			SetManagerFieldIDs(_entityManagerFieldMap, _managerFieldMap);
 
 			return jobParameters;
 		}
