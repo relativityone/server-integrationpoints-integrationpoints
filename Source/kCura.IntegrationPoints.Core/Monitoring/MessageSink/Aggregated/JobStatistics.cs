@@ -8,7 +8,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.Sinks.Aggregated
 		public const string _METADATA_KEY_NAME = "MetadataBytes";
 		public const string _JOBSIZE_IN_BYTES_KEY_NAME = "JobSizeInBytes";
 		public const string _THROUGHPUT_BYTES_KEY_NAME = "ThroughputBytes";
-		public const string _THROUGHPUT_KEY_NAME = "RecordsPerSecond";
+		public const string _THROUGHPUT_KEY_NAME = "Throughput";
 		public const string _COMPLETED_RECORDS_KEY_NAME = "CompletedRecords";
 		public const string _TOTAL_RECORDS_KEY_NAME = "TotalRecords";
 

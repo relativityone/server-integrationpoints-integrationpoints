@@ -75,7 +75,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.Sinks.Aggregated
 
 		public void OnMessage(JobThroughputMessage message)
 		{
-			_metricsManagerFactory.CreateSUMManager().LogDouble($"IntegrationPoints.Performance.RecordsPerSecond.{message.Provider}", message.RecordsPerSecond, message);
+			_metricsManagerFactory.CreateSUMManager().LogDouble($"IntegrationPoints.Performance.Throughput.{message.Provider}", message.RecordsPerSecond, message);
 
 			UpdateJobStatistics(message, jobStatistics => { jobStatistics.RecordsPerSecond = message.RecordsPerSecond; });
 		}
@@ -140,19 +140,22 @@ namespace kCura.IntegrationPoints.Core.Monitoring.Sinks.Aggregated
 		private void HandleJobEnd(string correlationId)
 		{
 			JobStatistics jobStatistics;
-			if (_jobs.TryRemove(correlationId, out jobStatistics) && CanSendJobStatistics(jobStatistics))
+			if (_jobs.TryRemove(correlationId, out jobStatistics))
 			{
 				long jobSize = jobStatistics.FileBytes + jobStatistics.MetaBytes;
 				IMetricsManager sum = _metricsManagerFactory.CreateSUMManager();
 				sum.LogLong($"IntegrationPoints.Performance.JobSize.{jobStatistics.Provider}", jobSize, jobStatistics);
 				sum.LogDouble($"IntegrationPoints.Performance.ThroughputBytes.{jobStatistics.Provider}", jobStatistics.BytesPerSecond, jobStatistics);
-				_metricsManagerFactory.CreateAPMManager().LogDouble($"IntegrationPoints.Performance.JobStatistics", jobSize, jobStatistics);
+				if (CanSendJobStatistics(jobStatistics))
+				{
+					_metricsManagerFactory.CreateAPMManager().LogDouble($"IntegrationPoints.Performance.JobStatistics", jobSize, jobStatistics);
+				}
 			}
 		}
 
 		private bool CanSendJobStatistics(JobStatistics statistics)
 		{
-			return statistics.ReceivedJobstatistics && statistics.JobStatus != JobStatus.ValidationFailed;
+			return statistics.ReceivedJobstatistics;
 		}
 
 		private void UpdateJobStatistics(JobMessageBase baseMessage, Action<JobStatistics> updateAction)
