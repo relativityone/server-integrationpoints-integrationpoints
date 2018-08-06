@@ -20,6 +20,9 @@ namespace kCura.IntegrationPoints.Core.Monitoring.Sinks.Aggregated
 		IMessageSink<ImportJobStatisticsMessage>,
 		IMessageSink<JobProgressMessage>
 	{
+		private const string _PERFORMANCE_PREFIX = "IntegrationPoints.Performance.";
+		private const string _USAGE_PREFIX = "IntegrationPoints.Usage.";
+
 		private readonly IMetricsManagerFactory _metricsManagerFactory;
 		private readonly IAPILog _logger;
 
@@ -36,46 +39,46 @@ namespace kCura.IntegrationPoints.Core.Monitoring.Sinks.Aggregated
 		{
 			if (!_jobs.ContainsKey(message.CorrelationID))
 			{
-				_metricsManagerFactory.CreateSUMManager().LogCount($"IntegrationPoints.Performance.JobStartedCount.{message.Provider}", 1, message);
+				_metricsManagerFactory.CreateSUMManager().LogCount($"{_PERFORMANCE_PREFIX}JobStartedCount.{message.Provider}", 1, message);
 				UpdateJobStatistics(message, statistics => { statistics.JobStatus = JobStatus.Started; });
 			}
 		}
 
 		public void OnMessage(JobCompletedMessage message)
 		{
-			_metricsManagerFactory.CreateSUMManager().LogCount($"IntegrationPoints.Performance.JobCompletedCount.{message.Provider}", 1, message);
+			_metricsManagerFactory.CreateSUMManager().LogCount($"{_PERFORMANCE_PREFIX}JobCompletedCount.{message.Provider}", 1, message);
 			OnJobEnd(message, JobStatus.Completed);
 		}
 
 		public void OnMessage(JobFailedMessage message)
 		{
-			_metricsManagerFactory.CreateSUMManager().LogCount($"IntegrationPoints.Performance.JobFailedCount.{message.Provider}", 1, message);
+			_metricsManagerFactory.CreateSUMManager().LogCount($"{_PERFORMANCE_PREFIX}JobFailedCount.{message.Provider}", 1, message);
 			OnJobEnd(message, JobStatus.Failed);
 		}
 
 		public void OnMessage(JobValidationFailedMessage message)
 		{
-			_metricsManagerFactory.CreateSUMManager().LogCount($"IntegrationPoints.Performance.JobValidationFailedCount.{message.Provider}", 1, message);
+			_metricsManagerFactory.CreateSUMManager().LogCount($"{_PERFORMANCE_PREFIX}JobValidationFailedCount.{message.Provider}", 1, message);
 			OnJobEnd(message, JobStatus.ValidationFailed);
 		}
 
 		public void OnMessage(JobTotalRecordsCountMessage message)
 		{
-			_metricsManagerFactory.CreateSUMManager().LogLong($"IntegrationPoints.Usage.TotalRecords.{message.Provider}", message.TotalRecordsCount, message);
+			_metricsManagerFactory.CreateSUMManager().LogLong($"{_USAGE_PREFIX}TotalRecords.{message.Provider}", message.TotalRecordsCount, message);
 
 			UpdateJobStatistics(message, jobStatistics => { jobStatistics.TotalRecordsCount = message.TotalRecordsCount; });
 		}
 
 		public void OnMessage(JobCompletedRecordsCountMessage message)
 		{
-			_metricsManagerFactory.CreateSUMManager().LogLong($"IntegrationPoints.Usage.CompletedRecords.{message.Provider}", message.CompletedRecordsCount, message);
+			_metricsManagerFactory.CreateSUMManager().LogLong($"{_USAGE_PREFIX}CompletedRecords.{message.Provider}", message.CompletedRecordsCount, message);
 
 			UpdateJobStatistics(message, jobStatistics => { jobStatistics.CompletedRecordsCount = message.CompletedRecordsCount; });
 		}
 
 		public void OnMessage(JobThroughputMessage message)
 		{
-			_metricsManagerFactory.CreateSUMManager().LogDouble($"IntegrationPoints.Performance.Throughput.{message.Provider}", message.RecordsPerSecond, message);
+			_metricsManagerFactory.CreateSUMManager().LogDouble($"{_PERFORMANCE_PREFIX}Throughput.{message.Provider}", message.RecordsPerSecond, message);
 
 			UpdateJobStatistics(message, jobStatistics => { jobStatistics.RecordsPerSecond = message.RecordsPerSecond; });
 		}
@@ -122,7 +125,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.Sinks.Aggregated
 
 		public void OnMessage(JobProgressMessage message)
 		{
-			_metricsManagerFactory.CreateAPMManager().LogDouble("IntegrationPoints.Performance.Progress", 1, message);
+			_metricsManagerFactory.CreateAPMManager().LogDouble($"{_PERFORMANCE_PREFIX}Progress", 1, message);
 		}
 
 		private void OnJobEnd(JobMessageBase message, JobStatus jobStatus)
@@ -144,11 +147,11 @@ namespace kCura.IntegrationPoints.Core.Monitoring.Sinks.Aggregated
 			{
 				long jobSize = jobStatistics.FileBytes + jobStatistics.MetaBytes;
 				IMetricsManager sum = _metricsManagerFactory.CreateSUMManager();
-				sum.LogLong($"IntegrationPoints.Performance.JobSize.{jobStatistics.Provider}", jobSize, jobStatistics);
-				sum.LogDouble($"IntegrationPoints.Performance.ThroughputBytes.{jobStatistics.Provider}", jobStatistics.BytesPerSecond, jobStatistics);
+				sum.LogLong($"{_PERFORMANCE_PREFIX}JobSize.{jobStatistics.Provider}", jobSize, jobStatistics);
+				sum.LogDouble($"{_PERFORMANCE_PREFIX}ThroughputBytes.{jobStatistics.Provider}", jobStatistics.BytesPerSecond, jobStatistics);
 				if (CanSendJobStatistics(jobStatistics))
 				{
-					_metricsManagerFactory.CreateAPMManager().LogDouble($"IntegrationPoints.Performance.JobStatistics", jobSize, jobStatistics);
+					_metricsManagerFactory.CreateAPMManager().LogDouble($"{_PERFORMANCE_PREFIX}JobStatistics", jobSize, jobStatistics);
 				}
 			}
 		}

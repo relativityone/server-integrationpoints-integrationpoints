@@ -2,8 +2,6 @@
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Monitoring;
 using kCura.IntegrationPoints.Core.Monitoring.NumberOfRecords.Messages;
-using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
@@ -16,6 +14,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 	public class StatisticsLoggingMediator : ILoggingMediator, IBatchReporter
 	{
 		#region Fields
+
+		const string _UNIT_OF_MEASURE = "Byte(s)";
 
 		private int _currentExportedItemChunkCount;
 		private const int _EXPORTED_ITEMS_UPDATE_THRESHOLD = 1000;
@@ -128,7 +128,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 			{
 				Provider = providerName,
 				CorrelationID = _historyErrorService.JobHistory.BatchInstance,
-				UnitOfMeasure = "Byte(s)",
+				UnitOfMeasure = _UNIT_OF_MEASURE,
 				WorkspaceID = _caseServiceContext.WorkspaceID,
 				JobID = _historyErrorService.JobHistory.JobID,
 				BytesPerSecond = bytesPerSecond
@@ -141,7 +141,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 			string provider = GetProviderName();
 			m.Provider = provider;
 			m.CorrelationID = _historyErrorService.JobHistory.BatchInstance;
-			m.UnitOfMeasure = "Byte(s)";
+			m.UnitOfMeasure = _UNIT_OF_MEASURE;
 			m.JobID = _historyErrorService.JobHistory.JobID;
 			m.WorkspaceID = _caseServiceContext.WorkspaceID;
 		}
