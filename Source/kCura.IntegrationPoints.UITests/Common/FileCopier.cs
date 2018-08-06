@@ -7,7 +7,7 @@ using Serilog;
 
 namespace kCura.IntegrationPoints.UITests.Common
 {
-	public class FileCopier
+	public static class FileCopier
 	{
 		private static readonly ILogger Log = LoggerFactory.CreateLogger(nameof(FileCopier));
 

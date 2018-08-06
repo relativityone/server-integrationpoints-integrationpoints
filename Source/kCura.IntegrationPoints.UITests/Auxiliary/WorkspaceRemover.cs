@@ -40,40 +40,45 @@ namespace kCura.IntegrationPoints.UITests.Auxiliary
 			{
 				foreach (string beginningOfName in new[] {"RIP Test Workspace"})
 				{
-					try
+					DeleteTestWorkspace(proxy, beginningOfName);
+				}
+			}
+		}
+
+		private static void DeleteTestWorkspace(IRSAPIClient proxy, string beginningOfName)
+		{
+			try
+			{
+				var workspaceNameCondition =
+					new TextCondition(WorkspaceFieldNames.Name, TextConditionEnum.StartsWith, beginningOfName);
+				var query = new Query<Relativity.Client.DTOs.Workspace>
+				{
+					Condition = workspaceNameCondition
+				};
+
+				const int resultMaxLength = 10000;
+				QueryResultSet<Relativity.Client.DTOs.Workspace> resultSet = proxy.Repositories.Workspace.Query(query, resultMaxLength);
+				if (!resultSet.Success)
+				{
+					throw new TestException($"Query failed for workspace using Query: {query}, {resultSet.Message}");
+				}
+
+				Console.WriteLine($@"Found {resultSet.TotalCount}");
+
+				foreach (Result<Relativity.Client.DTOs.Workspace> res in resultSet.Results)
+				{
+					Relativity.Client.DTOs.Workspace ws = res.Artifact;
+					Console.WriteLine(@"ws: " + ws.Name + @" " + ws.ArtifactID + @" by " + ws.SystemCreatedBy);
+					WriteResultSet<Relativity.Client.DTOs.Workspace> rs = proxy.Repositories.Workspace.Delete(ws.ArtifactID);
+					if (!rs.Success)
 					{
-						var workspaceNameCondition =
-							new TextCondition(WorkspaceFieldNames.Name, TextConditionEnum.StartsWith, beginningOfName);
-						var query = new Query<Relativity.Client.DTOs.Workspace>
-						{
-							Condition = workspaceNameCondition
-						};
-
-						const int resultMaxLength = 10000;
-						QueryResultSet<Relativity.Client.DTOs.Workspace> resultSet = proxy.Repositories.Workspace.Query(query, resultMaxLength);
-						if (!resultSet.Success)
-						{
-							throw new TestException($"Query failed for workspace using Query: {query}, {resultSet.Message}");
-						}
-
-						Console.WriteLine($@"Found {resultSet.TotalCount}");
-
-						foreach (Result<Relativity.Client.DTOs.Workspace> res in resultSet.Results)
-						{
-							Relativity.Client.DTOs.Workspace ws = res.Artifact;
-							Console.WriteLine(@"ws: " + ws.Name + @" " + ws.ArtifactID + @" by " + ws.SystemCreatedBy);
-							WriteResultSet<Relativity.Client.DTOs.Workspace> rs = proxy.Repositories.Workspace.Delete(ws.ArtifactID);
-							if (!rs.Success)
-							{
-								Console.WriteLine($@"Error while deleting ws: {rs.Message}");
-							}
-						}
-					}
-					catch (Exception ex)
-					{
-						throw new TestException($@"An error occurred. Error Message: {ex.Message}");
+						Console.WriteLine($@"Error while deleting ws: {rs.Message}");
 					}
 				}
+			}
+			catch (Exception ex)
+			{
+				throw new TestException($@"An error occurred. Error Message: {ex.Message}");
 			}
 		}
 	}

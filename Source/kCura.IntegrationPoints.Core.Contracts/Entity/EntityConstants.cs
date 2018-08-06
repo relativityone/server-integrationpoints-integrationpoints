@@ -2,7 +2,7 @@
 
 namespace kCura.IntegrationPoints.Core.Contracts.Entity
 {
-	public partial class ObjectTypeGuids
+	public static class ObjectTypeGuids
 	{
 		public static Guid Entity => Guid.Parse(@"d216472d-a1aa-4965-8b36-367d43d4e64c");
 	}

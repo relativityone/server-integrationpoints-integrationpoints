@@ -43,8 +43,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly IHelperFactory _helperFactory;
 		private readonly IRelativityObjectManager _relativityObjectManager;
-		private EntityManagerDataReaderToEnumerableService _convertDataService;
-		private IEnumerable<FieldMap> _entityManagerFieldMap;
 		private List<EntityManagerMap> _entityManagerMap;
 		private bool _managerFieldIdIsBinary;
 		private IEnumerable<FieldMap> _managerFieldMap;
@@ -200,11 +198,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_entityManagerMap = jobParameters.EntityManagerMap.Select(
 				x => new EntityManagerMap { EntityID = x.Key, OldManagerID = x.Value }).ToList();
 
-			_entityManagerFieldMap = jobParameters.EntityManagerFieldMap;
 			_managerFieldMap = jobParameters.ManagerFieldMap;
 			_managerFieldIdIsBinary = jobParameters.ManagerFieldIdIsBinary;
 
-			SetManagerFieldIDs(_entityManagerFieldMap, _managerFieldMap);
+			SetManagerFieldIDs(jobParameters.EntityManagerFieldMap, _managerFieldMap);
 
 			return jobParameters;
 		}
@@ -271,8 +268,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		protected override IEnumerable<IDictionary<FieldEntry, object>> GetSourceData(List<FieldEntry> sourceFields,
 			IDataReader sourceDataReader)
 		{
-			_convertDataService = GetEntityManagerDataReaderToEnumerableService(sourceFields);
-			return _convertDataService.GetData<IDictionary<FieldEntry, object>>(sourceDataReader);
+			return GetEntityManagerDataReaderToEnumerableService(sourceFields).GetData<IDictionary<FieldEntry, object>>(sourceDataReader);
 		}
 
 		private EntityManagerDataReaderToEnumerableService GetEntityManagerDataReaderToEnumerableService(
