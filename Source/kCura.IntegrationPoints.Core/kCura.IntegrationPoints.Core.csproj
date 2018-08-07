@@ -72,6 +72,8 @@
     <Compile Include="BatchStatusCommands\Implementations\TempTableReader.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="ContextContainer.cs" />
+    <Compile Include="FederatedInstanceKeplerHandler.cs" />
+    <Compile Include="FederatedInstanceRsapiHandler.cs" />
     <Compile Include="Helpers\Implementations\DateTimeUtcHelper.cs" />
     <Compile Include="Helpers\JSONHelper.cs" />
     <Compile Include="Helpers\Logging\LogHelper.cs" />
@@ -122,9 +124,9 @@
     <Compile Include="Models\IRdoFilter.cs" />
     <Compile Include="Monitoring\ExportJobStatisticsMessage.cs" />
     <Compile Include="Monitoring\HealthCheck.cs" />
+    <Compile Include="Monitoring\JobLifetimeMetricBatchStatus.cs" />
     <Compile Include="Monitoring\JobLifetime\Messages\JobCompletedMessage.cs" />
     <Compile Include="Monitoring\JobLifetime\Messages\JobFailedMessage.cs" />
-    <Compile Include="Monitoring\JobLifetimeMetricBatchStatus.cs" />
     <Compile Include="Monitoring\JobMessageBase.cs" />
     <Compile Include="Monitoring\JobLifetime\Messages\JobStartedMessage.cs" />
     <Compile Include="Monitoring\JobLifetime\Messages\JobValidationFailedMessage.cs" />
@@ -203,7 +205,6 @@
     <Compile Include="Managers\IPermissionManager.cs" />
     <Compile Include="Managers\IProductionManager.cs" />
     <Compile Include="OAuthHelper.cs" />
-    <Compile Include="OAuthServicesManager.cs" />
     <Compile Include="Managers\Implementations\AuditManager.cs" />
     <Compile Include="Managers\IArtifactGuidManager.cs" />
     <Compile Include="Managers\IJobStopManager.cs" />
@@ -288,10 +289,26 @@
     <Compile Include="Validation\Abstract\IIntegrationPointValidator.cs" />
     <Compile Include="Validation\Helpers\INonValidCharactersValidator.cs" />
     <Compile Include="Validation\Helpers\NonValidCharactersValidator.cs" />
+    <Compile Include="Validation\Abstract\IValidationExecutor.cs" />
     <Compile Include="Validation\IntegrationPointPermissionValidator.cs" />
-    <Compile Include="Validation\IntegrationPointProviderValidationException.cs" />
     <Compile Include="Validation\IntegrationPointProviderValidationMessages.cs" />
     <Compile Include="Validation\Abstract\BasePermissionValidator.cs" />
+    <Compile Include="Validation\RelativityProviderValidator\DestinationConfigurationPermissionValidationModel.cs" />
+    <Compile Include="Validation\RelativityProviderValidator\Parts\FederatedInstanceConnectionValidator.cs" />
+    <Compile Include="Validation\RelativityProviderValidator\Parts\Interfaces\IFederatedInstanceConnectionValidator.cs" />
+    <Compile Include="Validation\RelativityProviderValidator\Parts\Interfaces\IRelativityProviderDestinationFolderPermissionValidator.cs" />
+    <Compile Include="Validation\RelativityProviderValidator\Parts\Interfaces\IRelativityProviderDestinationWorkspaceExistenceValidator.cs" />
+    <Compile Include="Validation\RelativityProviderValidator\Parts\Interfaces\IRelativityProviderDestinationWorkspacePermissionValidator.cs" />
+    <Compile Include="Validation\RelativityProviderValidator\Parts\Interfaces\IRelativityProviderSourceProductionPermissionValidator.cs" />
+    <Compile Include="Validation\RelativityProviderValidator\Parts\Interfaces\IRelativityProviderSourceWorkspacePermissionValidator.cs" />
+    <Compile Include="Validation\RelativityProviderValidator\Parts\RelativityProviderDestinationWorkspaceExistenceValidator.cs" />
+    <Compile Include="Validation\IntegrationPointValidationException.cs" />
+    <Compile Include="Validation\RelativityProviderValidator\Parts\RelativityProviderDestinationWorkspacePermissionValidator.cs" />
+    <Compile Include="Validation\RelativityProviderValidator\Parts\RelativityProviderSourceProductionPermissionValidator.cs" />
+    <Compile Include="Validation\RelativityProviderValidator\Parts\RelativityProviderSourceWorkspacePermissionValidator.cs" />
+    <Compile Include="Validation\RelativityProviderValidator\Parts\RelativityProviderDestinationFolderPermissionValidator.cs" />
+    <Compile Include="Validation\ValidationContext.cs" />
+    <Compile Include="Validation\ValidationExecutor.cs" />
     <Compile Include="Validation\Parts\ImportProductionValidator.cs" />
     <Compile Include="Validation\Parts\ImportPermissionValidator.cs" />
     <Compile Include="Validation\Parts\ArtifactValidator.cs" />
@@ -304,9 +321,8 @@
     <Compile Include="Validation\Parts\ViewErrorsPermissionValidator.cs" />
     <Compile Include="Validation\Parts\WorkspaceValidator.cs" />
     <Compile Include="Validation\Parts\SavedSearchValidator.cs" />
-    <Compile Include="Validation\IIntegrationPointExecutionValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidator\IRelativityProviderValidatorsFactory.cs" />
-    <Compile Include="Validation\RelativityProviderValidator\Parts\RelativityProviderWorkspaceValidator.cs" />
+    <Compile Include="Validation\RelativityProviderValidator\Parts\RelativityProviderWorkspaceNameValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidator\Parts\TransferredObjectValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidator\RelativityProviderConfigurationValidator.cs" />
     <Compile Include="Services\CustodianManager\IManagerQueueService.cs" />
@@ -421,9 +437,9 @@
     <Compile Include="Validation\IntegrationPointProviderValidator.cs" />
     <Compile Include="Validation\Parts\SchedulerValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidator\Parts\RelativityProviderPermissionValidator.cs" />
-    <Compile Include="Validation\IntegrationPointExecutionValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidator\RelativityProviderValidationMessages.cs" />
     <Compile Include="Validation\RelativityProviderValidator\RelativityProviderValidatorsFactory.cs" />
+    <Compile Include="Validation\ValidationMessages.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="LICENSE.txt">
@@ -850,8 +866,8 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="Relativity.API">
-          <HintPath>..\..\packages\Relativity.API\lib\net462\Relativity.API.dll</HintPath>
+        <Reference Include="Relativity">
+          <HintPath>..\..\packages\Relativity\lib\net462\Relativity.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -861,8 +877,8 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="Relativity.Authentication.Interfaces">
-          <HintPath>..\..\packages\Relativity.Authentication.Interfaces\lib\net462\Relativity.Authentication.Interfaces.dll</HintPath>
+        <Reference Include="Relativity.API">
+          <HintPath>..\..\packages\Relativity.API\lib\net462\Relativity.API.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
