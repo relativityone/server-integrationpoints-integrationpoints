@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoint.Tests.Core.Models.Constants.ExportToLoadFile;
 using kCura.IntegrationPoint.Tests.Core.Models.Constants.Shared;
 using kCura.IntegrationPoint.Tests.Core.Models.Import;
 using kCura.IntegrationPoint.Tests.Core.Models.Import.LoadFile;
@@ -58,7 +57,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 		public void ImportDocumentsFromLoadFile()
 		{
 			// Arrange
-			var model = new ImportDocumentsFromLoadFileModel($"Import Documents from load file ({Now})", ExportToLoadFileTransferredObjectConstants.DOCUMENT)
+			var model = new ImportDocumentsFromLoadFileModel($"Import Documents from load file ({Now})", TransferredObjectConstants.DOCUMENT)
 			{
 				LoadFileSettings =
 				{
@@ -101,7 +100,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 		public void ImportImagesFromLoadFile()
 		{
 			// Arrange
-			var model = new ImportImagesFromLoadFileModel($"Import Images from load file ({Now})", ExportToLoadFileTransferredObjectConstants.DOCUMENT)
+			var model = new ImportImagesFromLoadFileModel($"Import Images from load file ({Now})", TransferredObjectConstants.DOCUMENT)
 			{
 				LoadFileSettings =
 				{
@@ -136,7 +135,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 			string productionSetName = $"Production set {Now}";
 			Context.CreateProductionSet(productionSetName);
 
-			var model = new ImportProductionsFromLoadFileModel($"Import Productions from load file ({Now})", ExportToLoadFileTransferredObjectConstants.DOCUMENT)
+			var model = new ImportProductionsFromLoadFileModel($"Import Productions from load file ({Now})", TransferredObjectConstants.DOCUMENT)
 			{
 				LoadFileSettings =
 				{

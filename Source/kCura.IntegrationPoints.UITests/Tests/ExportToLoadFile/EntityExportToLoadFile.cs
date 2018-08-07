@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core.Models;
+using kCura.IntegrationPoint.Tests.Core.Models.Constants.Shared;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoints.UITests.Validation;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
+using kCura.IntegrationPoints.Core.Contracts.Custodian;
 
 namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 {
@@ -33,8 +35,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 		[Test]
 		public void EntityExportToLoadFile_TC_ELF_CUST_1()
 		{
-			EntityExportToLoadFileModel model = new EntityExportToLoadFileModel("TC-ELF-CUST-1");
-			model.TransferredObject = "Custodian";
+			CustodianExportToLoadFileModel model = new EntityExportToLoadFileModel("TC-ELF-CUST-1");
+			model.TransferredObject = TransferredObjectConstants.ENTITY;
 			model.ExportDetails = new EntityExportToLoadFileDetails
 			{
 				View = "Custodians - Legal Hold View"
@@ -82,18 +84,18 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 		{
 			_service.RelativityObjectManager.Create(new ObjectTypeRef()
 			{
-				Guid = Guid.Parse(@"d216472d-a1aa-4965-8b36-367d43d4e64c")
+				Guid = Core.Contracts.Custodian.ObjectTypeGuids.Custodian
 			},
 				new List<FieldRefValuePair>()
 				{
 					new FieldRefValuePair()
 					{
-						Field = new FieldRef {Guid = Guid.Parse(@"34ee9d29-44bd-4fc5-8ff1-4335a826a07d")},
+						Field = new FieldRef {Guid = Guid.Parse(CustodianFieldGuids.FirstName)},
 						Value = "First name"
 					},
 					new FieldRefValuePair()
 					{
-						Field = new FieldRef {Guid = Guid.Parse(@"0b846e7a-6e05-4544-b5a8-ad78c49d0257")},
+						Field = new FieldRef {Guid = Guid.Parse(CustodianFieldGuids.LastName)},
 						Value = "Last name"
 					}
 				});

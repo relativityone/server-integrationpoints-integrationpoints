@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Security;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoint.Tests.Core.Models.Constants.ExportToLoadFile;
+using kCura.IntegrationPoint.Tests.Core.Models.Constants.Shared;
 using kCura.IntegrationPoint.Tests.Core.Models.Import.Ldap;
 using kCura.IntegrationPoint.Tests.Core.Models.Shared;
 using kCura.IntegrationPoints.Data;
@@ -37,10 +37,10 @@ namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 		public void DocumentExportToLoadFile_TC_IMPORT_CUST_1()
 		{
 			// Arrange
-			var model = new ImportFromLdapModel("Import Custodians", ExportToLoadFileTransferredObjectConstants.CUSTODIAN);
+			var model = new ImportFromLdapModel("Import Entities", TransferredObjectConstants.ENTITY);
 
 			// Step 1
-			model.General.TransferredObject = ExportToLoadFileTransferredObjectConstants.CUSTODIAN;
+			model.General.TransferredObject = TransferredObjectConstants.ENTITY;
 
 			// Step 2
 			model.Source.Authentication = LdapAuthenticationType.SecureSocketLayer;

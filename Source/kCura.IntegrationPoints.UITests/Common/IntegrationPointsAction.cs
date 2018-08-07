@@ -24,18 +24,19 @@ namespace kCura.IntegrationPoints.UITests.Common
 		}
 
 
-		public ExportFirstPage SetupFirstIntegrationPointPage(GeneralPage generalPage, IntegrationPointGeneralModel model)
-		{
-			IntegrationPointsPage ipPage = generalPage.GoToIntegrationPointsPage();
-			ExportFirstPage firstPage = ipPage.CreateNewExportIntegrationPoint();
-			firstPage.Name = model.Name;
-			firstPage.Destination = model.DestinationProvider;
-			if (!string.IsNullOrEmpty(model.TransferredObject))
-			{
-				firstPage.TransferedObject = model.TransferredObject;
-			}
-			return firstPage;
-		}
+        public ExportFirstPage SetupFirstIntegrationPointPage(GeneralPage generalPage, IntegrationPointGeneralModel model)
+        {
+            IntegrationPointsPage ipPage = generalPage.GoToIntegrationPointsPage();
+            ExportFirstPage firstPage = ipPage.CreateNewExportIntegrationPoint();
+            firstPage.Name = model.Name;
+            firstPage.Destination = model.DestinationProvider;
+            if (!string.IsNullOrEmpty(model.TransferredObject))
+            {
+	            firstPage.TransferedObject =
+		            CustodianToEntityUtils.GetValidTransferredObjectName(firstPage.IsEntityTransferredObjectOptionAvailable, model);
+            }
+            return firstPage;
+        }
 
 		public ExportToFileSecondPage SetupExportToFileSecondPage(ExportFirstPage firstPage,
 			ExportToLoadFileProviderModel model)
