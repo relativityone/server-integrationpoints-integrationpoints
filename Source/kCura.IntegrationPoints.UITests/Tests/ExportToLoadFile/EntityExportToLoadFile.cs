@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Models.Constants.Shared;
+using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoints.UITests.Validation;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
-using kCura.IntegrationPoints.Core.Contracts.Custodian;
 
 namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 {
@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 		[Test]
 		public void EntityExportToLoadFile_TC_ELF_CUST_1()
 		{
-			CustodianExportToLoadFileModel model = new EntityExportToLoadFileModel("TC-ELF-CUST-1");
+			EntityExportToLoadFileModel model = new EntityExportToLoadFileModel("TC-ELF-CUST-1");
 			model.TransferredObject = TransferredObjectConstants.ENTITY;
 			model.ExportDetails = new EntityExportToLoadFileDetails
 			{
@@ -84,18 +84,18 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 		{
 			_service.RelativityObjectManager.Create(new ObjectTypeRef()
 			{
-				Guid = Core.Contracts.Custodian.ObjectTypeGuids.Custodian
+				Guid = Core.Contracts.Entity.ObjectTypeGuids.Entity
 			},
 				new List<FieldRefValuePair>()
 				{
 					new FieldRefValuePair()
 					{
-						Field = new FieldRef {Guid = Guid.Parse(CustodianFieldGuids.FirstName)},
+						Field = new FieldRef {Guid = Guid.Parse(EntityFieldGuids.FirstName)},
 						Value = "First name"
 					},
 					new FieldRefValuePair()
 					{
-						Field = new FieldRef {Guid = Guid.Parse(CustodianFieldGuids.LastName)},
+						Field = new FieldRef {Guid = Guid.Parse(EntityFieldGuids.LastName)},
 						Value = "Last name"
 					}
 				});
