@@ -516,6 +516,12 @@
     <PostBuildEvent>$(ProjectDir)..\..\DevelopmentScripts\copyProjectFilesToLib.cmd $(ProjectDir)..\ $(TargetDir) $(TargetName)</PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\..\.paket\paket.targets" />
+  <PropertyGroup>
+    <TextTransformPath>packages\Mono.TextTransform\tools\TextTransform.exe</TextTransformPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
@@ -551,15 +557,10 @@
   </Choose>
   <Import Project="..\..\packages\Baseclass.Contrib.Nuget.Output\build\$(__paket__Baseclass_Contrib_Nuget_Output_targets).targets" Condition="Exists('..\..\packages\Baseclass.Contrib.Nuget.Output\build\$(__paket__Baseclass_Contrib_Nuget_Output_targets).targets')" Label="Paket" />
   <Import Project="..\..\packages\Clarius.TransformOnBuild\build\Clarius.TransformOnBuild.targets" Condition="Exists('..\..\packages\Clarius.TransformOnBuild\build\Clarius.TransformOnBuild.targets')" Label="Paket" />
-  <PropertyGroup>
-    <TextTransformPath>packages\Mono.TextTransform\tools\TextTransform.exe</TextTransformPath>
-  </PropertyGroup><ItemGroup>
+  <ItemGroup>
     <Analyzer Include="..\..\packages\CSharpGuidelineAnalyzer\analyzers\dotnet\cs\CSharpGuidelineAnalyzer.dll">
       <Paket>True</Paket>
     </Analyzer>
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
@@ -1550,7 +1551,7 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="Serilog.Sinks.Elasticsearch">
-          <HintPath>..\..\packages\Serilog.Sinks.ElasticSearch\lib\net45\Serilog.Sinks.Elasticsearch.dll</HintPath>
+          <HintPath>..\..\packages\Serilog.Sinks.Elasticsearch\lib\net45\Serilog.Sinks.Elasticsearch.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

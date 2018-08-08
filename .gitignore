@@ -91,3 +91,4 @@ DevelopmentScripts/UITestsResults.html
 /DevelopmentScripts/.sonarqube
 /.sonarqube
 /DevelopmentScripts/MSBuild.SonarQube.Runner.Tool/tools
+/DevelopmentScripts/chromeLog.txt

@@ -77,6 +77,10 @@
       </PropertyGroup>
     </When>
   </Choose>
+  <Import Project="..\..\.paket\paket.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>$(ProjectDir)..\..\DevelopmentScripts\copyProjectFilesToLib.cmd $(ProjectDir)..\ $(TargetDir) $(TargetName)</PostBuildEvent>
+  </PropertyGroup>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
@@ -110,7 +114,7 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Import Project="..\..\.paket\paket.targets" />
+  <Import Project="..\..\packages\Baseclass.Contrib.Nuget.Output\build\$(__paket__Baseclass_Contrib_Nuget_Output_targets).targets" Condition="Exists('..\..\packages\Baseclass.Contrib.Nuget.Output\build\$(__paket__Baseclass_Contrib_Nuget_Output_targets).targets')" Label="Paket" />
   <ItemGroup>
     <Analyzer Include="..\..\packages\CSharpGuidelineAnalyzer\analyzers\dotnet\cs\CSharpGuidelineAnalyzer.dll">
       <Paket>True</Paket>
@@ -120,7 +124,7 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="Elasticsearch.Net">
-          <HintPath>..\..\packages\Elasticsearch.Net\lib\net45\Elasticsearch.Net.dll</HintPath>
+          <HintPath>..\..\packages\Elasticsearch.Net\lib\net46\Elasticsearch.Net.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -893,12 +897,7 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="Serilog">
-          <HintPath>..\..\packages\Serilog\lib\net45\Serilog.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Serilog.FullNetFx">
-          <HintPath>..\..\packages\Serilog\lib\net45\Serilog.FullNetFx.dll</HintPath>
+          <HintPath>..\..\packages\Serilog\lib\net46\Serilog.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -919,8 +918,41 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Serilog.Sinks.File">
+          <HintPath>..\..\packages\Serilog.Sinks.File\lib\net45\Serilog.Sinks.File.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Serilog.Sinks.MSSqlServer">
           <HintPath>..\..\packages\Serilog.Sinks.MSSqlServer\lib\net45\Serilog.Sinks.MSSqlServer.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Serilog.Sinks.PeriodicBatching">
+          <HintPath>..\..\packages\Serilog.Sinks.PeriodicBatching\lib\net45\Serilog.Sinks.PeriodicBatching.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Serilog.Sinks.RollingFile">
+          <HintPath>..\..\packages\Serilog.Sinks.RollingFile\lib\net45\Serilog.Sinks.RollingFile.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -998,7 +1030,4 @@
   </Choose>
   <Import Project="..\..\packages\kCura\build\kCura.targets" Condition="Exists('..\..\packages\kCura\build\kCura.targets')" Label="Paket" />
   <Import Project="..\..\packages\RelativityCore\build\RelativityCore.targets" Condition="Exists('..\..\packages\RelativityCore\build\RelativityCore.targets')" Label="Paket" />
-  <PropertyGroup>
-    <PostBuildEvent>$(ProjectDir)..\..\DevelopmentScripts\copyProjectFilesToLib.cmd $(ProjectDir)..\ $(TargetDir) $(TargetName)</PostBuildEvent>
-  </PropertyGroup>
 </Project>

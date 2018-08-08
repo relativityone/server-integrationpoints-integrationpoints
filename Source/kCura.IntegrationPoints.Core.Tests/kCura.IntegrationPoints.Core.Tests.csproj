@@ -1262,7 +1262,7 @@ xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y</PostBuildEvent>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="Serilog.Sinks.Elasticsearch">
-          <HintPath>..\..\packages\Serilog.Sinks.ElasticSearch\lib\net45\Serilog.Sinks.Elasticsearch.dll</HintPath>
+          <HintPath>..\..\packages\Serilog.Sinks.Elasticsearch\lib\net45\Serilog.Sinks.Elasticsearch.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
