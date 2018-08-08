@@ -77,7 +77,7 @@ timeout(time: 3, unit: 'HOURS')
                 {
                     retry(3)
                     {
-                        timeout(time: 5, unit: 'MINUTES')
+                        timeout(time: 10, unit: 'MINUTES')
                         {
                             def sonarParameter = ""
                             if(env.BRANCH_NAME == "develop"){
