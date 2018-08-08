@@ -62,6 +62,7 @@
     <Compile Include="BrandNew\Import\LoadFile\Documents\ImportDocumentsFromLoadFileActions.cs" />
     <Compile Include="Actions\IntegrationPointsImportAction.cs" />
     <Compile Include="Actions\IntegrationPointsImportLdapAction.cs" />
+    <Compile Include="Common\CustodianToEntityUtils.cs" />
     <Compile Include="Common\FileCopier.cs" />
     <Compile Include="BrandNew\GeneralPanelActions.cs" />
     <Compile Include="BrandNew\CreateIntegrationPointPage.cs" />

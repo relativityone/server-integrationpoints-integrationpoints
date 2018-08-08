@@ -1,5 +1,5 @@
 ﻿using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoint.Tests.Core.Models.Constants.ExportToLoadFile;
+using kCura.IntegrationPoint.Tests.Core.Models.Constants.Shared;
 using kCura.IntegrationPoint.Tests.Core.Models.Import;
 using kCura.IntegrationPoint.Tests.Core.Models.Import.FTP;
 using kCura.IntegrationPoint.Tests.Core.Models.Import.LoadFile;
@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FTPProvider
 		{
 			// Arrange
 			var model = new ImportFromFtpModel($"Import Documents from FTP ({Now})",
-				ExportToLoadFileTransferredObjectConstants.DOCUMENT)
+				TransferredObjectConstants.DOCUMENT)
 			{
 				ConnectionAndFileInfo =
 				{

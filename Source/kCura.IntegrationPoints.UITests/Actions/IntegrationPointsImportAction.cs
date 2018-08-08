@@ -23,7 +23,8 @@ namespace kCura.IntegrationPoints.UITests.Actions
 			firstPage.Name = model.Name;
 			firstPage.SelectImport();
 			firstPage.Source = model.SourceProvider;
-			firstPage.TransferredObject = model.TransferredObject;
+			firstPage.TransferredObject =
+				CustodianToEntityUtils.GetValidTransferredObjectName(firstPage.IsEntityTransferredObjectOptionAvailable, model);
 			return firstPage;
 		}
 
@@ -41,5 +42,7 @@ namespace kCura.IntegrationPoints.UITests.Actions
 			thirdPage.SetupModel(model);
 			return thirdPage;
 		}
+
+
 	}
 }

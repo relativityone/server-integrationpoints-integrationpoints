@@ -141,7 +141,7 @@
     <Compile Include="Models\Constants\ExportToLoadFile\ExportToLoadFileImageFileTypeConstants.cs" />
     <Compile Include="Models\Constants\ExportToLoadFile\ExportToLoadFileSourceConstants.cs" />
     <Compile Include="Models\Constants\ExportToLoadFile\ExportToLoadFileNameOutputFilesAfterConstants.cs" />
-    <Compile Include="Models\Constants\ExportToLoadFile\ExportToLoadFileTransferredObjectConstants.cs" />
+    <Compile Include="Models\Constants\Shared\TransferredObjectConstants.cs" />
     <Compile Include="Models\EntityExportToLoadFileDetails.cs" />
     <Compile Include="Models\EntityExportToLoadFileModel.cs" />
     <Compile Include="Models\DocumentsTestData.cs" />
@@ -8827,7 +8827,7 @@ copy "$(ProjectDir)app.config" "$(ProjectDir)..\..\DevelopmentScripts\Integratio
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="Serilog.Sinks.Elasticsearch">
-          <HintPath>..\..\packages\Serilog.Sinks.ElasticSearch\lib\net45\Serilog.Sinks.Elasticsearch.dll</HintPath>
+          <HintPath>..\..\packages\Serilog.Sinks.Elasticsearch\lib\net45\Serilog.Sinks.Elasticsearch.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
