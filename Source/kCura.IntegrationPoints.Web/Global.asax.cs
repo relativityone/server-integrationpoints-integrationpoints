@@ -83,7 +83,7 @@ namespace kCura.IntegrationPoints.Web
 
 		protected void Application_End()
 		{
-			_container.Dispose();
+			_container?.Dispose();
 		}
 
 	}
