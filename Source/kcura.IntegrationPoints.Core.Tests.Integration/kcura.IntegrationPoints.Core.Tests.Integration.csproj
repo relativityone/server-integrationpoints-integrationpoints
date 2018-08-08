@@ -45,9 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\Version\AssemblyInfo.cs">
@@ -244,17 +242,6 @@ xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y</PostBuildEvent>
       <ItemGroup>
         <Reference Include="kCura.Injection">
           <HintPath>..\..\packages\kCura.Injection\lib\net462\kCura.Injection.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="oi">
-          <HintPath>..\..\packages\kCura.OutsideIn.FI.Win32\lib\net40\oi.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -587,11 +574,6 @@ xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y</PostBuildEvent>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
-        <Reference Include="Relativity.ServiceBus.Contracts">
-          <HintPath>..\..\packages\Relativity.ServiceBus\lib\net462\Relativity.ServiceBus.Contracts.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
         <Reference Include="Relativity.ServiceBus.Providers.Configuration">
           <HintPath>..\..\packages\Relativity.ServiceBus\lib\net462\Relativity.ServiceBus.Providers.Configuration.dll</HintPath>
           <Private>True</Private>
@@ -748,6 +730,11 @@ xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y</PostBuildEvent>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Analytics.Core.Jobs">
+          <HintPath>..\..\packages\RelativityCore\lib\net462\Analytics.Core.Jobs.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="Application.Utility">
           <HintPath>..\..\packages\RelativityCore\lib\net462\Application.Utility.dll</HintPath>
           <Private>True</Private>
@@ -1148,6 +1135,5 @@ xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y</PostBuildEvent>
     </When>
   </Choose>
   <Import Project="..\..\packages\kCura\build\kCura.targets" Condition="Exists('..\..\packages\kCura\build\kCura.targets')" Label="Paket" />
-  <Import Project="..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets')" Label="Paket" />
   <Import Project="..\..\packages\RelativityCore\build\RelativityCore.targets" Condition="Exists('..\..\packages\RelativityCore\build\RelativityCore.targets')" Label="Paket" />
 </Project>
