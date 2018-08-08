@@ -75,7 +75,6 @@
     <Compile Include="RdoFieldSynchronizerBase.cs" />
     <Compile Include="IImportApiFactory.cs" />
     <Compile Include="IRelativityFieldQuery.cs" />
-    <Compile Include="EmbeddedAssembly.cs" />
     <Compile Include="ImportApiFactory.cs" />
     <Compile Include="ImportOverlayBehaviorEnum.cs" />
     <Compile Include="ImportAuditLevelEnum.cs" />
