@@ -128,7 +128,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 				Provider = provider,
 				CorrelationID = _helper.GetBatchInstance(_job).ToString(),
 				UnitOfMeasure = "Byte(s)",
-				JobID = _job.JobId.ToString(),
+				JobID = _job.RootJobId?.ToString() ?? _job.JobId.ToString(),
 				WorkspaceID = ((IntegrationPointSourceConfiguration?.SourceWorkspaceArtifactId == 0)
 			        ? IntegrationPointImportSettings?.CaseArtifactId
 			        : IntegrationPointSourceConfiguration?.SourceWorkspaceArtifactId).GetValueOrDefault(),
