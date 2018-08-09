@@ -194,8 +194,6 @@ if($PACKAGE -and $STATUS){
     if ($psake.build_success -eq $false) { $STATUS = $false }
 }
 
-Invoke-psake $root\DevelopmentScripts\psake-builddoc.ps1
-
 if($DEPLOY -ne "" -and $STATUS){
 	
     $deployScript = [System.IO.Path]::Combine($root, 'DevelopmentScripts', 'deploy.ps1').ToString()

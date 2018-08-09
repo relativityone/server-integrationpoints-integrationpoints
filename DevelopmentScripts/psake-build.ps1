@@ -4,7 +4,7 @@
 task default -depends build
 
 
-task build -depends build_initalize, start_sonar, build_projects, build_rip_documentation, copy_chrome_driver, stop_sonar {
+task build -depends build_initalize, start_sonar, build_projects, build_rip_documentation, copy_chrome_driver, stop_sonar, generate_validation_message_table {
  
 }
 
@@ -134,4 +134,16 @@ task stop_sonar -precondition { return $RUN_SONARQUBE }{
         'end')
 
     & $sonarqube_exe $args
+}
+
+task generate_validation_message_table{
+    $valDir = $source_directory + ".\kCura.IntegrationPoints.Core\Validation\"
+    $xml = $valDir + "\ValidationMessages.xml"
+    $xsl = $valDir + "\ValidationMessages.xsl"
+    $output = $development_scripts_directory + "\ValidationMessages.html"
+    $xslt = New-Object System.Xml.Xsl.XslCompiledTransform;
+    $xslt.Load($xsl);
+    $xslt.Transform($xml, $output);
+
+    Write-Host "generated" +  $output;
 }
