@@ -36,7 +36,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			IImportApiFactory factory, IImportJobFactory jobFactory, IHelper helper)
 		{
 			_helper = helper;
-			AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
 			Settings = settings;
 			_batchManager = batchManager;
 			_inputMappings = fieldMappings;
@@ -140,11 +139,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
 			LogImportJobStarted();
 			importJob.Execute();
-		}
-
-		private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
-		{
-			return EmbeddedAssembly.Get(args.Name);
 		}
 
 		internal void Connect(ImportSettings settings)
