@@ -11,6 +11,7 @@ using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -210,6 +211,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			LogGetImportApiSettingsForUserStart(job);
 
 			ImportSettings importSettings = Serializer.Deserialize<ImportSettings>(originalImportApiSettings);
+			importSettings.CorrelationId = ImportSettings.CorrelationId;
+			importSettings.JobID = ImportSettings.JobID;
+			importSettings.Provider = nameof(ProviderType.Relativity);
 			AdjustImportApiSettings(job, importSettings);
 			string serializedSettings = Serializer.Serialize(importSettings);
 

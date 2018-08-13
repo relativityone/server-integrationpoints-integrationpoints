@@ -4,6 +4,7 @@ using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.Windows.Process;
@@ -23,11 +24,19 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 		[SetUp]
 		public override void SetUp()
 		{
+			IJobHistoryErrorService jobHistoryErrorService = Substitute.For<IJobHistoryErrorService>();
+			jobHistoryErrorService.IntegrationPoint = new Data.IntegrationPoint()
+			{
+				SourceProvider = 0,
+				DestinationProvider = 0
+			};
+			jobHistoryErrorService.JobHistory = Substitute.For<JobHistory>();
+
 			IIntegrationPointProviderTypeService integrationPointProviderTypeService = Substitute.For<IIntegrationPointProviderTypeService>();
 
-			_subjectUnderTest = new StatisticsLoggingMediator(Substitute.For<IMessageService>(), Substitute.For<IJobHistoryErrorService>(),
-				Substitute.For<ICaseServiceContext>(),
-				integrationPointProviderTypeService);
+			_subjectUnderTest = new StatisticsLoggingMediator(Substitute.For<IMessageService>(),
+				jobHistoryErrorService, Substitute.For<ICaseServiceContext>(),
+				integrationPointProviderTypeService, Substitute.For<IDateTimeHelper>());
 
 			_exporterStatusNotificationMock = Substitute.For<ICoreExporterStatusNotification>();
 
@@ -100,7 +109,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 			int expectedValue = -1;
 			int registeredImportedCount = expectedValue, registeredErrorCount = expectedValue;
 
-			ExportEventArgs reisedEventArgs = new ExportEventArgs(exportedRecordCount, totalRecordCount, "", eventType, null, null);
+			ExportEventArgs reisedEventArgs = new ExportEventArgs(exportedRecordCount, totalRecordCount, "", eventType, new object(), new Statistics());
 
 			_subjectUnderTest.OnStatusUpdate += (importedCount, errorCount) =>
 			{
@@ -122,7 +131,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 			string expectedMessage = "Some message";
 			string registeredDocumentIdentifier = "", registeredErrorMessage = "";
 
-			ExportEventArgs reisedEventArgs = new ExportEventArgs(exportedRecordCount, totalRecordCount, expectedMessage, EventType.Error, null, null);
+			ExportEventArgs reisedEventArgs = new ExportEventArgs(exportedRecordCount, totalRecordCount, expectedMessage, EventType.Error, new object(), new Statistics());
 
 			_subjectUnderTest.OnDocumentError += (documentIdentifier, errorMessage) =>
 			{
@@ -149,7 +158,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 			const int totalRecordCount = 12345, exportedRecordCount = 2000;
 			string expectedMessage = "Some message";
 
-			ExportEventArgs reisedEventArgs = new ExportEventArgs(exportedRecordCount, totalRecordCount, expectedMessage, eventType, null, null);
+			ExportEventArgs reisedEventArgs = new ExportEventArgs(exportedRecordCount, totalRecordCount, expectedMessage, eventType, new object(), new Statistics());
 
 			_subjectUnderTest.OnDocumentError += (documentIdentifier, errorMessage) =>
 			{

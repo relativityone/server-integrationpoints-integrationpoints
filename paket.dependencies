@@ -4,30 +4,30 @@ strategy: min
 source https://proget.kcura.corp/nuget/NuGet
 
 //Main Relativity packages
-nuget kCura == 9.6.186.26
-nuget kCura.Agent == 9.6.186.26 
-nuget kCura.EventHandler == 9.6.186.26 
-nuget kCura.Injection == 9.6.186.26
-nuget kCura.Relativity.Client == 9.6.186.26 
-nuget Relativity == 9.6.186.26
-nuget Relativity.API == 9.6.186.26
-nuget Relativity.Authentication == 9.6.186.26
-nuget Relativity.Authentication.Interfaces == 9.6.186.26
-nuget Relativity.Core == 9.6.186.26 
-nuget Relativity.CustomPages == 9.6.186.26 
-nuget Relativity.Data == 9.6.186.26 
-nuget Relativity.ImportExport == 9.6.186.26 
-nuget Relativity.Telemetry.Services.Interface == 9.6.186.26 
-nuget RelativityCore == 9.6.186.26
-nuget Relativity.Services.DataContracts == 9.6.186.26
-nuget Relativity.Services.Interfaces == 9.6.186.26
-nuget Relativity.Services.Interfaces.Private == 9.6.186.26
-nuget Relativity.ServiceBus.Utilities == 9.6.186.26
-nuget Relativity.ServiceBus.PriorityQueue == 9.6.186.26
+nuget kCura 9.6.218.13
+nuget kCura.Agent 9.6.218.13 
+nuget kCura.EventHandler 9.6.218.13 
+nuget kCura.Injection 9.6.218.13
+nuget kCura.Relativity.Client 9.6.218.13 
+nuget Relativity 9.6.218.13
+nuget Relativity.API 9.6.218.13
+nuget Relativity.Authentication 9.6.218.13
+nuget Relativity.Authentication.Interfaces 9.6.218.13
+nuget Relativity.Core 9.6.218.13 
+nuget Relativity.CustomPages 9.6.218.13 
+nuget Relativity.Data 9.6.218.13 
+nuget Relativity.ImportExport 9.6.218.13 
+nuget Relativity.Telemetry.Services.Interface 9.6.218.13 
+nuget RelativityCore 9.6.218.13
+nuget Relativity.Services.DataContracts 9.6.218.13
+nuget Relativity.Services.Interfaces 9.6.218.13
+nuget Relativity.Services.Interfaces.Private 9.6.218.13
+nuget Relativity.ServiceBus.Utilities 9.6.218.13
+nuget Relativity.ServiceBus.PriorityQueue 9.6.218.13
 
 
 //Other Relativity packages
-nuget Relativity.DataTransfer.MessageService ~> 1.0.16
+nuget Relativity.DataTransfer.MessageService ~> 1.0.20
 nuget kCura.Apps.Common.Config 2.1.3
 nuget kCura.LongPath 1.0.10
 nuget Relativity.OAuth2Client 1.0.23

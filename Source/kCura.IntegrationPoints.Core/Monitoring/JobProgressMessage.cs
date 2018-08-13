@@ -1,17 +1,11 @@
-﻿namespace kCura.IntegrationPoints.Core.Monitoring.NumberOfRecords.Messages
+﻿using kCura.IntegrationPoints.Core.Monitoring.NumberOfRecords.Messages;
+
+namespace kCura.IntegrationPoints.Core.Monitoring
 {
-	public class JobApmThroughputMessage : JobMessageBase
+	public class JobProgressMessage : JobMessageBase
 	{
-		private const string _JOB_ID_KEY_NAME = "JobID";
 		private const string _METADATA_THROUGHPUT_KEY_NAME = "MetadataThroughput";
 		private const string _FILE_THROUGHPUT = "FileThroughput";
-
-		// ReSharper disable once InconsistentNaming
-		public string JobID
-		{
-			get { return this.GetValueOrDefault<string>(_JOB_ID_KEY_NAME) ?? string.Empty; }
-			set { CustomData[_JOB_ID_KEY_NAME] = value; }
-		}
 
 		public double MetadataThroughput
 		{

@@ -5,6 +5,7 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Monitoring;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -122,7 +123,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			LogGetImportApiSettingsObjectForUserStart(job);
 			ImportProviderSettings providerSettings = Serializer.Deserialize<ImportProviderSettings>(IntegrationPointDto.SourceConfiguration);
 			ImportSettings importSettings = Serializer.Deserialize<ImportSettings>(IntegrationPointDto.DestinationConfiguration);
-
+			importSettings.CorrelationId = ImportSettings.CorrelationId;
+			importSettings.JobID = ImportSettings.JobID;
+			importSettings.Provider = nameof(ProviderType.ImportLoadFile);
 			importSettings.OnBehalfOfUserId = job.SubmittedBy;
 			importSettings.ErrorFilePath = _importFileLocationService.ErrorFilePath(IntegrationPointDto.ArtifactId);
 

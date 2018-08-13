@@ -15,6 +15,7 @@ using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.DataTransfer.MessageService;
 using Artifact = kCura.Relativity.Client.Artifact;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
@@ -58,7 +59,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			base.FixtureSetUp();
 
 			_settings = JsonConvert.SerializeObject(new ImportSettings());
-			_importJobFactory = new ImportJobFactory();
+			_importJobFactory = new ImportJobFactory(Substitute.For<IMessageService>());
 		}
 
 		[SetUp]

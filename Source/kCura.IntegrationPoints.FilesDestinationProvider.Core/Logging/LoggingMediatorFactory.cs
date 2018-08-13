@@ -13,9 +13,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 		private readonly IJobHistoryErrorService _historyErrorService;
 		private readonly ICaseServiceContext _caseServiceContext;
 		private readonly IIntegrationPointProviderTypeService _integrationPointProviderTypeService;
+		private readonly IDateTimeHelper _dateTimeHelper;
 
 		public LoggingMediatorFactory(JobHistoryErrorServiceProvider jobHistoryErrorServiceProvider, IHelper helper,
-			IMessageService messageService, ICaseServiceContext caseServiceContext,
+			IMessageService messageService, ICaseServiceContext caseServiceContext, IDateTimeHelper dateTimeHelper,
 			IIntegrationPointProviderTypeService integrationPointProviderTypeService)
 		{
 			_historyErrorService = jobHistoryErrorServiceProvider.JobHistoryErrorService;
@@ -23,6 +24,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 			_messageService = messageService;
 			_caseServiceContext = caseServiceContext;
 			_integrationPointProviderTypeService = integrationPointProviderTypeService;
+			_dateTimeHelper = dateTimeHelper;
 		}
 
 		public ICompositeLoggingMediator Create()
@@ -34,7 +36,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 			
 			compositeLoggingMediator.AddLoggingMediator(exportLoggingMediator);
 			compositeLoggingMediator.AddLoggingMediator(jobErrorLoggingMediator);
-			compositeLoggingMediator.AddLoggingMediator(new StatisticsLoggingMediator(_messageService, _historyErrorService, _caseServiceContext, _integrationPointProviderTypeService));
+			compositeLoggingMediator.AddLoggingMediator(new StatisticsLoggingMediator(_messageService, _historyErrorService, _caseServiceContext, _integrationPointProviderTypeService, _dateTimeHelper));
 
 			return compositeLoggingMediator;
 		}

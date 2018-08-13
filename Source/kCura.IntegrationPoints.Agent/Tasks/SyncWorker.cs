@@ -13,6 +13,9 @@ using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -36,6 +39,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 {
 	public class SyncWorker : IntegrationPointTaskBase, ITaskWithJobHistory
 	{
+		private readonly IProviderTypeService _providerTypeService;
 		private IEnumerable<IBatchStatus> _batchStatus;
 		private readonly bool _isStoppable;
 		private readonly IAPILog _logger;
@@ -54,7 +58,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			JobStatisticsService statisticsService,
 			IManagerFactory managerFactory,
 			IContextContainerFactory contextContainerFactory,
-			IJobService jobService) :
+			IJobService jobService, 
+			IProviderTypeService providerTypeService) :
 			this(caseServiceContext,
 				helper,
 				dataProviderFactory,
@@ -70,6 +75,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				jobService, 
 				true)
 		{
+			_providerTypeService = providerTypeService;
 		}
 
 		protected SyncWorker(
@@ -152,6 +158,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			if (dataSynchronizer is RdoSynchronizer)
 			{
 				destinationSettings.OnBehalfOfUserId = job.SubmittedBy;
+				destinationSettings.CorrelationId = BatchInstance;
+				destinationSettings.JobID = job.RootJobId;
+				destinationSettings.Provider = IntegrationPoint.GetProviderType(_providerTypeService).ToString();
 				destinationConfiguration = Serializer.Serialize(destinationSettings);
 			}
 
@@ -168,7 +177,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		    LogExecuteImportSuccesfulEnd(job);
         }
-
 
 	    protected virtual void ExecuteTask(Job job)
 		{

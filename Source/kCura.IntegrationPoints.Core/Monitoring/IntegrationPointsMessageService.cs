@@ -2,28 +2,33 @@
 using kCura.IntegrationPoints.Core.Monitoring.JobLifetimeMessages;
 using kCura.IntegrationPoints.Core.Monitoring.NumberOfRecords.Messages;
 using kCura.IntegrationPoints.Core.Monitoring.NumberOfRecordsMessages;
+using kCura.IntegrationPoints.Core.Monitoring.Sinks.Aggregated;
+using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
+using Relativity.API;
 using Relativity.DataTransfer.MessageService;
+using Relativity.DataTransfer.MessageService.MetricsManager.APM;
 using Relativity.DataTransfer.MessageService.Tools;
 
 namespace kCura.IntegrationPoints.Core.Monitoring
 {
 	public class IntegrationPointsMessageService : MessageService
 	{
-		public IntegrationPointsMessageService(IMetricsManagerFactory metricsManagerFactory, IConfig config)
+		public IntegrationPointsMessageService(IMetricsManagerFactory metricsManagerFactory, IConfig config, IHelper helper)
 		{
-			var sumMetricSink = new SumMetricSink(metricsManagerFactory); 
-			
-			this.AddSink(new ToggledMessageSink<JobStartedMessage>(sumMetricSink,  () => config.SendSumMetrics));
-			this.AddSink(new ToggledMessageSink<JobCompletedMessage>(sumMetricSink, () => config.SendSumMetrics));
-			this.AddSink(new ToggledMessageSink<JobFailedMessage>(sumMetricSink, () => config.SendSumMetrics));
-			this.AddSink(new ToggledMessageSink<JobValidationFailedMessage>(sumMetricSink, () => config.SendSumMetrics));
-			this.AddSink(new ToggledMessageSink<JobTotalRecordsCountMessage>(sumMetricSink, () => config.SendSumMetrics));
-			this.AddSink(new ToggledMessageSink<JobCompletedRecordsCountMessage>(sumMetricSink, () => config.SendSumMetrics));
-			this.AddSink(new ToggledMessageSink<JobThroughputMessage>(sumMetricSink, () => config.SendSumMetrics));
+			var aggregatedJobSink = new AggregatedJobSink(helper, metricsManagerFactory);
 
-			var liveApmMetricSink = new LiveApmMetricSink(metricsManagerFactory);
-
-			this.AddSink(new ToggledMessageSink<JobApmThroughputMessage>(new ThrottledMessageSink<JobApmThroughputMessage>(liveApmMetricSink, () => config.MetricsThrottling), () => config.SendLiveApmMetrics));
+			this.AddSink(new ToggledMessageSink<JobStartedMessage>(aggregatedJobSink, () => config.SendSumMetrics));
+			this.AddSink(new ToggledMessageSink<JobCompletedMessage>(aggregatedJobSink, () => config.SendSumMetrics));
+			this.AddSink(new ToggledMessageSink<JobFailedMessage>(aggregatedJobSink, () => config.SendSumMetrics));
+			this.AddSink(new ToggledMessageSink<JobValidationFailedMessage>(aggregatedJobSink, () => config.SendSumMetrics));
+			this.AddSink(new ToggledMessageSink<JobTotalRecordsCountMessage>(aggregatedJobSink, () => config.SendSumMetrics));
+			this.AddSink(new ToggledMessageSink<JobCompletedRecordsCountMessage>(aggregatedJobSink, () => config.SendSumMetrics));
+			this.AddSink(new ToggledMessageSink<JobThroughputMessage>(aggregatedJobSink, () => config.SendSumMetrics));
+			this.AddSink(new ToggledMessageSink<ExportJobThroughputBytesMessage>(aggregatedJobSink, () => config.SendSumMetrics));
+			this.AddSink(new ToggledMessageSink<ExportJobStatisticsMessage>(aggregatedJobSink, () => config.SendSummaryMetrics));
+			this.AddSink(new ToggledMessageSink<ImportJobThroughputBytesMessage>(aggregatedJobSink, () => config.SendSumMetrics));
+			this.AddSink(new ToggledMessageSink<ImportJobStatisticsMessage>(aggregatedJobSink, () => config.SendSummaryMetrics));
+			this.AddSink(new ToggledMessageSink<JobProgressMessage>(new ThrottledMessageSink<JobProgressMessage>(aggregatedJobSink, () => config.MetricsThrottling), () => config.SendLiveApmMetrics));
 		}
 	}
 }

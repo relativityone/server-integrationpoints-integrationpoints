@@ -65,6 +65,7 @@
     <Compile Include="Managers\ProductionManagerTests.cs" />
     <Compile Include="Managers\ResourcePoolManagerTests.cs" />
     <Compile Include="Managers\WorkspaceManagerTests.cs" />
+    <Compile Include="Monitoring\AggregatedJobSinkTests.cs" />
     <Compile Include="Monitoring\HealthCheckTests.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceJobRdoInitializerTests.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceRdoDocumentFieldTests.cs" />
