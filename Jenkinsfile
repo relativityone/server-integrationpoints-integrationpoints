@@ -43,6 +43,8 @@ def installing_invariant = false
 def installing_analytics = false
 def installing_datagrid = false
 
+def agentsPool = "SCVMM-AGENTS-POOL"
+
 // Do not modify.
 def run_list = createRunList(installing_relativity, installing_invariant, installing_analytics, installing_datagrid)
 def profile = createProfile(installing_relativity, installing_invariant, installing_analytics, installing_datagrid)
@@ -117,7 +119,7 @@ timeout(time: 3, unit: 'HOURS')
             }
             stage('Install RAID')
             {
-                node ('SCVMM-AGENTS-POOL')
+                node (agentsPool)
                 {
                     timeout(time: 45, unit: 'MINUTES')
                     {
@@ -231,7 +233,7 @@ timeout(time: 3, unit: 'HOURS')
             try
             {
                 echo "Build result: $currentBuild.result"
-                node(session_id)
+                node(agentsPool)
                 {
                     timeout(time: 3, unit: 'MINUTES')
                     {
