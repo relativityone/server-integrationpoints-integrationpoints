@@ -12,6 +12,7 @@ using kCura.Relativity.Client;
 using Newtonsoft.Json;
 using NSubstitute;
 using Relativity.API;
+using Relativity.DataTransfer.MessageService;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -26,7 +27,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			var serializer = Substitute.For<ISerializer>();
 
 			ImportApiFactory factory = new ImportApiFactory(tokenProvider, federatedInstanceManager, helper, systemEventLoggingService, serializer);
-			ImportJobFactory jobFactory = new ImportJobFactory();
+			ImportJobFactory jobFactory = new ImportJobFactory(Substitute.For<IMessageService>());
 			ImportSettings setting = new ImportSettings()
 			{
 				ArtifactTypeId = (int)ArtifactType.Document,

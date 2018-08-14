@@ -51,9 +51,9 @@ namespace kCura.IntegrationPoints.Core.Monitoring.JobLifetime
 			TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
 			string correlationId = taskParameters.BatchInstance.ToString();
 
-			SendLifetimeMessage(status, providerType, correlationId);
 			SendRecordsMessage(providerType, jobHistory, correlationId);
 			SendThroughputMessage(providerType, jobHistory, correlationId);
+			SendLifetimeMessage(status, providerType, correlationId);
 		}
 
 		private void SendRecordsMessage(ProviderType providerType, JobHistory jobHistory, string correlationId)
@@ -117,7 +117,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.JobLifetime
 				{
 					Provider = providerType.ToString(),
 					CorrelationID = correlationId,
-					Throughput = throughput
+					RecordsPerSecond = throughput
 				});
 			}
 		}

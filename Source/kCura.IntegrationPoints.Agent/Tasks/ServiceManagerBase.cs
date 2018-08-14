@@ -294,11 +294,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			if (string.IsNullOrWhiteSpace(job.JobDetails))
 			{
+				Identifier = Guid.NewGuid();
 				var taskParameters = new TaskParameters
 				{
-					BatchInstance = Guid.NewGuid()
+					BatchInstance = Identifier
 				};
-				Identifier = taskParameters.BatchInstance;
 				job.JobDetails = Serializer.Serialize(taskParameters);
 			}
 			else
@@ -306,6 +306,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
 				Identifier = taskParameters.BatchInstance;
 			}
+			ImportSettings.CorrelationId = Identifier;
+			ImportSettings.JobID = job.RootJobId ?? job.JobId;
 		}
 
 		private void ConfigureJobHistory()

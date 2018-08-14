@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
+using kCura.IntegrationPoints.Core.Monitoring;
 using kCura.IntegrationPoints.Core.Monitoring.NumberOfRecords.Messages;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -15,12 +15,16 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 	{
 		#region Fields
 
+		const string _UNIT_OF_MEASURE = "Byte(s)";
+
 		private int _currentExportedItemChunkCount;
 		private const int _EXPORTED_ITEMS_UPDATE_THRESHOLD = 1000;
 		private readonly IMessageService _messageService;
 		private readonly IJobHistoryErrorService _historyErrorService;
 		private readonly ICaseServiceContext _caseServiceContext;
 		private readonly IIntegrationPointProviderTypeService _integrationPointProviderTypeService;
+		private readonly IDateTimeHelper _dateTimeHelper;
+		private readonly DateTime _startTime;
 
 		#endregion //Fields
 
@@ -40,12 +44,15 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 
 		public StatisticsLoggingMediator(IMessageService messageService, IJobHistoryErrorService historyErrorService,
 			ICaseServiceContext caseServiceContext,
-			IIntegrationPointProviderTypeService integrationPointProviderTypeService)
+			IIntegrationPointProviderTypeService integrationPointProviderTypeService, 
+			IDateTimeHelper dateTimeHelper)
 		{
 			_messageService = messageService;
 			_historyErrorService = historyErrorService;
 			_caseServiceContext = caseServiceContext;
 			_integrationPointProviderTypeService = integrationPointProviderTypeService;
+			_dateTimeHelper = dateTimeHelper;
+			_startTime = _dateTimeHelper.Now();
 		}
 
 		public void RegisterEventHandlers(IUserMessageNotification userMessageNotification,
@@ -74,33 +81,74 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 				OnStatusUpdate?.Invoke(_EXPORTED_ITEMS_UPDATE_THRESHOLD, 0);
 			}
 
-			if (CanSendStatistics(exportArgs))
+			if (CanSendLiveStatistics(exportArgs))
 			{
-				SendStatistics(exportArgs);
+				SendLiveStatistics(exportArgs);
+			}
+
+			if (CanSendEndStatistics(exportArgs))
+			{
+				SendEndStatistics(exportArgs);
 			}
 		}
 
-		private void SendStatistics(ExportEventArgs exportArgs)
+		private void SendLiveStatistics(ExportEventArgs e)
 		{
-			string provider = GetProviderName();
-			var message = new JobApmThroughputMessage()
+			var message = new JobProgressMessage();
+			BuildJobApmMessageBase(message);
+			message.FileThroughput = e.Statistics.FileThroughput;
+			message.MetadataThroughput = e.Statistics.MetadataThroughput;
+			_messageService.Send(message);
+		}
+
+		private void SendEndStatistics(ExportEventArgs e)
+		{
+			long jobSizeInBytes = e.Statistics.FileBytes + e.Statistics.MetadataBytes;
+			TimeSpan duration = _dateTimeHelper.Now() - _startTime;
+			double bytesPerSecond = duration.TotalSeconds > 0 ? jobSizeInBytes / duration.TotalSeconds : 0;
+
+			SendJobStatisticsMessage(e.Statistics.FileBytes, e.Statistics.MetadataBytes);
+			SendJobThroughputBytesMessage(bytesPerSecond);
+		}
+
+		private void SendJobStatisticsMessage(long fileBytes, long metaBytes)
+		{
+			var jobStatisticsMessage = new ExportJobStatisticsMessage();
+			BuildJobApmMessageBase(jobStatisticsMessage);
+			jobStatisticsMessage.FileBytes = fileBytes;
+			jobStatisticsMessage.MetaBytes = metaBytes;
+			jobStatisticsMessage.JobSizeInBytes = fileBytes + metaBytes;
+			_messageService.Send(jobStatisticsMessage);
+		}
+
+		private void SendJobThroughputBytesMessage(double bytesPerSecond)
+		{
+			string providerName = GetProviderName();
+			var jobThroughputBytesMessage = new ExportJobThroughputBytesMessage()
 			{
-				Provider = provider,
+				Provider = providerName,
 				CorrelationID = _historyErrorService.JobHistory.BatchInstance,
-				UnitOfMeasure = "Byte(s)",
+				UnitOfMeasure = _UNIT_OF_MEASURE,
 				WorkspaceID = _caseServiceContext.WorkspaceID,
 				JobID = _historyErrorService.JobHistory.JobID,
-				MetadataThroughput = exportArgs.Statistics.MetadataThroughput,
-				FileThroughput = exportArgs.Statistics.FileThroughput,
-				CustomData = { ["Provider"] = provider }
+				BytesPerSecond = bytesPerSecond
 			};
+			_messageService.Send(jobThroughputBytesMessage);
+		}
 
-			_messageService.Send(message);
+		private void BuildJobApmMessageBase(JobMessageBase m)
+		{
+			string provider = GetProviderName();
+			m.Provider = provider;
+			m.CorrelationID = _historyErrorService.JobHistory.BatchInstance;
+			m.UnitOfMeasure = _UNIT_OF_MEASURE;
+			m.JobID = _historyErrorService.JobHistory.JobID;
+			m.WorkspaceID = _caseServiceContext.WorkspaceID;
 		}
 
 		private string GetProviderName()
 		{
-			return _integrationPointProviderTypeService.GetProviderType(_historyErrorService.IntegrationPoint).ToString();	
+			return _integrationPointProviderTypeService.GetProviderType(_historyErrorService.IntegrationPoint).ToString();
 		}
 
 		private bool CanUpdateJobStatus(ExportEventArgs exportArgs)
@@ -110,9 +158,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 				&& exportArgs.DocumentsExported != _currentExportedItemChunkCount;
 		}
 
-		private bool CanSendStatistics(ExportEventArgs e)
+		private bool CanSendLiveStatistics(ExportEventArgs e)
 		{
 			return e.EventType == EventType.Statistics;
+		}
+
+		private bool CanSendEndStatistics(ExportEventArgs e)
+		{
+			return e.EventType == EventType.End;
 		}
 
 		private void OnOnBatchCompleteChanged(DateTime startTime, DateTime endTime, int totalRows, int errorRowCount)
