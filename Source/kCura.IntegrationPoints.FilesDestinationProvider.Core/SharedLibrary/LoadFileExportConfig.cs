@@ -12,6 +12,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 		private const int _EXPORT_LOADFILE_ERROR_RETRIES_NUMBER = 2;
 		private const int _EXPORT_LOADFILE_ERROR_WAIT_TIME = 10;
 		private const int _EXPORT_LOADFILE_IO_ERROR_RETRIES_NUMBER = 2;
+		private const bool _DEF_FORCE_PARALLELISM_IN_NEW_EXPORT = false;
 
 		private const int _EXPORT_LOADFILE_IO_ERROR_WAIT_TIME = 20;
 
@@ -26,6 +27,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 		private const string _EXPORT_THREAD_COUNT_SETTING_NAME = "ExportThreadCount";
 
 		private const string _EXPORT_LOADFILE_MAX_NUMBER_OF_FILE_EXPORT_TASKS_NAME = "Export.LoadFile.MaxNumberOfFileExportTasks";
+		private const string _FORCE_PARALLELISM_IN_NEW_EXPORT = "Export.ForceParallelismInNewExport";
 
 		private readonly IToggleProvider _toggleProvider;
         
@@ -45,6 +47,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 
 		public int MaxNumberOfFileExportTasks => GetValue(_EXPORT_LOADFILE_MAX_NUMBER_OF_FILE_EXPORT_TASKS_NAME, _EXPORT_LOADFILE_MAX_NUMBER_OF_FILE_EXPORT_TASKS);
 
+		public bool ForceParallelismInNewExport => GetValue(_FORCE_PARALLELISM_IN_NEW_EXPORT, _DEF_FORCE_PARALLELISM_IN_NEW_EXPORT);
 
 		public LoadFileExportConfig(IToggleProvider toggleProvider)
 		{
