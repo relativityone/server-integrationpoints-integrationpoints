@@ -79,11 +79,11 @@ timeout(time: 3, unit: 'HOURS')
                     {
                         timeout(time: 10, unit: 'MINUTES')
                         {
-                            def sonarParameter = ""
-                            if(env.BRANCH_NAME == "develop"){
-                                sonarParameter = "-sonarqube"
-                            }
-                            powershell "./build.ps1 release ${sonarParameter}"
+                            def sonarParameter = 
+                                (env.BRANCH_NAME == "develop")
+                                ? "-sonarqube"
+                                : ""
+                            powershell "./build.ps1 release $sonarParameter"
                             archiveArtifacts artifacts: "DevelopmentScripts/*.html", fingerprint: true
                         }
                     }
