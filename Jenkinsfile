@@ -294,7 +294,7 @@ timeout(time: 3, unit: 'HOURS')
                         }
                         withCredentials([usernamePassword(credentialsId: 'TeamCityUser', passwordVariable: 'TEAMCITYPASSWORD', usernameVariable: 'TEAMCITYUSERNAME')])
                         {
-                            sendCDSlackNotification(this, env.BUILD_URL, (server_name ?: ""), relativity_build, env.BRANCH_NAME, params.relativityBuildType, getSlackChannelName(nightlyJobName).toString(), numberOfFailedTests as Integer, numberOfPassedTests as Integer, numberOfSkippedTests as Integer, TEAMCITYUSERNAME, TEAMCITYPASSWORD, currentBuild.result.toString()) 
+                            sendCDSlackNotification(this, env.BUILD_URL, (server_name ?: ""), (relativity_build ?: "0.0.0.0"), env.BRANCH_NAME, params.relativityBuildType, getSlackChannelName(nightlyJobName).toString(), numberOfFailedTests as Integer, numberOfPassedTests as Integer, numberOfSkippedTests as Integer, TEAMCITYUSERNAME, TEAMCITYPASSWORD, currentBuild.result.toString()) 
                         }
                     }
                 }
