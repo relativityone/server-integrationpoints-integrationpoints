@@ -96,6 +96,7 @@ timeout(time: 3, unit: 'HOURS')
                     {
                         powershell "./build.ps1 release -sk -t"
                         archiveArtifacts artifacts: "TestLogs/*", fingerprint: true
+                        currentBuild.result = 'SUCCESS'
                     }
                 }
                 stage ('Stash Tests Artifacts')
@@ -117,13 +118,13 @@ timeout(time: 3, unit: 'HOURS')
                     deleteDir()
                 }
             }
-            stage('Install RAID')
+            if (testingVMsAreRequired())
             {
-                node (agentsPool)
+                stage('Install RAID')
                 {
-                    timeout(time: 45, unit: 'MINUTES')
+                    node (agentsPool)
                     {
-                        if (!params.skipIntegrationTests || !params.skipUITests)
+                        timeout(time: 45, unit: 'MINUTES')
                         {
                             // Pipelines can't do tuples, so I guess we'll do this the dumb way.https://issues.jenkins-ci.org/browse/JENKINS-45575
                             withCredentials([
@@ -186,46 +187,92 @@ timeout(time: 3, unit: 'HOURS')
                         }
                     }
                 }
-            }
-            node ("$session_id && dependencies")
-            {
-                stage ('Unstash Tests Artifacts')
+                node ("$session_id && dependencies")
                 {
-                    unstash 'testdlls'
-                    unstash 'dynamicallyLoadedDLLs'
-                    unstash 'integrationPointsRap'
-                    unstash 'nunitProjectFiles'
-                    unstash 'nunitConsoleRunner'
-                    unstash 'nunitProjectLoader'
-                    unstash 'buildps1'
-                    unstash 'buildScripts'
-                    unstash 'psake'
-                    unstash 'nuget'
-                    unstash 'version'
-                }
-                catchError
-                {
-                    stage ('Integration Tests')
+                    stage ('Unstash Tests Artifacts')
                     {
-                        timeout(time: 180, unit: 'MINUTES')
+                        unstash 'testdlls'
+                        unstash 'dynamicallyLoadedDLLs'
+                        unstash 'integrationPointsRap'
+                        unstash 'nunitProjectFiles'
+                        unstash 'nunitConsoleRunner'
+                        unstash 'nunitProjectLoader'
+                        unstash 'buildps1'
+                        unstash 'buildScripts'
+                        unstash 'psake'
+                        unstash 'nuget'
+                        unstash 'version'
+                    }
+                    catchError
+                    {
+                        stage ('Integration Tests')
                         {
-                            runTests(params.skipIntegrationTests, "-in", "Integration", nightlyJobName)
+                            timeout(time: 180, unit: 'MINUTES')
+                            {
+                                runTests(params.skipIntegrationTests, "-in", "Integration", nightlyJobName)
+                            }
+                        }
+                        stage ('UI Tests')
+                        {
+                            timeout(time: 180, unit: 'MINUTES')
+                            {
+                                runTests(params.skipUITests, "-ui", "UI", nightlyJobName)
+                            }
+                        }
+                        currentBuild.result = 'SUCCESS'
+                    }
+                    archiveTestsArtifacts(params.skipIntegrationTests, integration_tests_results_file_path, integration_tests_html_report, integration_tests_report_task)
+                    numberOfFailedTests = getTestsStatistic(integration_tests_results_file_path, 'failed')
+                    numberOfPassedTests = getTestsStatistic(integration_tests_results_file_path, 'passed')
+                    numberOfSkippedTests = getTestsStatistic(integration_tests_results_file_path, 'skipped')
+                    archiveTestsArtifacts(params.skipUITests, ui_tests_results_file_path, ui_tests_html_report, ui_tests_report_task)
+                }
+                stage('Cleanup VMs')
+                {
+                    try
+                    {
+                        timeout(time: 10, unit: 'MINUTES')
+                        {
+                            SaveVMs = false
+                            // If we don't have a result, we didn't get to a test because somthing failed out earlier.
+                            // If the result is FAILURE, a test failed.
+                            if (!currentBuild.result || currentBuild.result == "FAILURE")
+                            {
+                                try
+                                {
+                                    timeout(time: 5, unit: 'MINUTES')
+                                    {
+                                        input(message: 'Save the VMs?', ok: 'Save', submitter: 'JNK-Basic')
+                                    }
+                                    SaveVMs = true
+                                }
+                                // This throws an error if you click abort or let it time out /shrug
+                                catch(err)
+                                {
+                                    echo "VMs won't be saved."
+                                }
+                            }
+                            withCredentials([
+                                usernamePassword(credentialsId: 'proget_ci', passwordVariable: 'PROGETPASSWORD', usernameVariable: 'PROGETUSERNAME'),
+                                usernamePassword(credentialsId: 'SCVMM', passwordVariable: 'SCVMMPASSWORD', usernameVariable: 'SCVMMUSERNAME')])
+                            {
+                                if (SaveVMs)
+                                {
+                                    saveVMs(this, session_id, PROGETUSERNAME, PROGETPASSWORD, SCVMMUSERNAME, SCVMMPASSWORD)
+                                }
+                                else
+                                {
+                                    deleteVMs(this, session_id, PROGETUSERNAME, PROGETPASSWORD, SCVMMUSERNAME, SCVMMPASSWORD)
+                                }
+                            }
+                            deleteNodes(this, session_id)
                         }
                     }
-                    stage ('UI Tests')
+                    catch (err)
                     {
-                        timeout(time: 180, unit: 'MINUTES')
-                        {
-                            runTests(params.skipUITests, "-ui", "UI", nightlyJobName)
-                        }
+                        echo "Cleanup VMs FAILED."
                     }
-                    currentBuild.result = 'SUCCESS'
                 }
-                archiveTestsArtifacts(params.skipIntegrationTests, integration_tests_results_file_path, integration_tests_html_report, integration_tests_report_task)
-                numberOfFailedTests = getTestsStatistic(integration_tests_results_file_path, 'failed')
-                numberOfPassedTests = getTestsStatistic(integration_tests_results_file_path, 'passed')
-                numberOfSkippedTests = getTestsStatistic(integration_tests_results_file_path, 'skipped')
-                archiveTestsArtifacts(params.skipUITests, ui_tests_results_file_path, ui_tests_html_report, ui_tests_report_task)
             }
         }
         stage('Reporting')
@@ -251,52 +298,7 @@ timeout(time: 3, unit: 'HOURS')
                 echo "Reporting failed: $err"
             }
         }
-        stage('Cleanup VMs')
-        {
-            try
-            {
-                timeout(time: 20, unit: 'MINUTES')
-                {
-                    SaveVMs = false
-                    // If we don't have a result, we didn't get to a test because somthing failed out earlier.
-                    // If the result is FAILURE, a test failed.
-                    if (!currentBuild.result || currentBuild.result == "FAILURE")
-                    {
-                        try
-                        {
-                            timeout(time: 15, unit: 'MINUTES')
-                            {
-                                input(message: 'Save the VMs?', ok: 'Save', submitter: 'JNK-Basic')
-                            }
-                            SaveVMs = true
-                        }
-                        // This throws an error if you click abort or let it time out /shrug
-                        catch(err)
-                        {
-                            echo "VMs won't be saved."
-                        }
-                    }
-                    withCredentials([
-                        usernamePassword(credentialsId: 'proget_ci', passwordVariable: 'PROGETPASSWORD', usernameVariable: 'PROGETUSERNAME'),
-                        usernamePassword(credentialsId: 'SCVMM', passwordVariable: 'SCVMMPASSWORD', usernameVariable: 'SCVMMUSERNAME')])
-                    {
-                        if (SaveVMs)
-                        {
-                            saveVMs(this, session_id, PROGETUSERNAME, PROGETPASSWORD, SCVMMUSERNAME, SCVMMPASSWORD)
-                        }
-                        else
-                        {
-                            deleteVMs(this, session_id, PROGETUSERNAME, PROGETPASSWORD, SCVMMUSERNAME, SCVMMPASSWORD)
-                        }
-                    }
-                    deleteNodes(this, session_id)
-                }
-            }
-            catch (err)
-            {
-                echo "Cleanup VMs FAILED."
-            }
-        }
+        
     }
 }
 
@@ -398,4 +400,9 @@ def archiveTestsArtifacts(Boolean skipTests, String resultsFilePath, String repo
     {
         echo "archiveTestsArtifacts failed with error: $err"
     }
+}
+
+def testingVMsAreRequired()
+{
+    return !params.skipIntegrationTests || !params.skipUITests
 }
