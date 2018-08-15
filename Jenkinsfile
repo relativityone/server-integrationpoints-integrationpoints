@@ -288,7 +288,10 @@ timeout(time: 3, unit: 'HOURS')
                     timeout(time: 3, unit: 'MINUTES')
                     {
                         step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
-                        registerEvent(this, session_id, 'Pipeline_Status', currentBuild.result, '-ps', "$server_name.$domain", profile, event_hash, env.BUILD_URL)
+                        if (server_name && domain)
+                        {
+                            registerEvent(this, session_id, 'Pipeline_Status', currentBuild.result, '-ps', "$server_name.$domain", profile, event_hash, env.BUILD_URL)
+                        }
                         withCredentials([usernamePassword(credentialsId: 'TeamCityUser', passwordVariable: 'TEAMCITYPASSWORD', usernameVariable: 'TEAMCITYUSERNAME')])
                         {
                             sendCDSlackNotification(this, env.BUILD_URL, (server_name ?: ""), relativity_build, env.BRANCH_NAME, params.relativityBuildType, getSlackChannelName(nightlyJobName).toString(), numberOfFailedTests as Integer, numberOfPassedTests as Integer, numberOfSkippedTests as Integer, TEAMCITYUSERNAME, TEAMCITYPASSWORD, currentBuild.result.toString()) 
