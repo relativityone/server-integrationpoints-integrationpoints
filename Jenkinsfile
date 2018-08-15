@@ -33,7 +33,9 @@ def integration_tests_report_task = "generate_integration_tests_report"
 def ui_tests_results_file_path = "DevelopmentScripts/UITestsResults.xml"
 def ui_tests_html_report = "UITestsResults.html"
 def ui_tests_report_task = "generate_ui_tests_report"
+
 def server_name = ""
+def domain = ""
 
 def numberOfFailedTests = -1
 def numberOfPassedTests = -1
