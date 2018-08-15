@@ -33,6 +33,7 @@ def integration_tests_report_task = "generate_integration_tests_report"
 def ui_tests_results_file_path = "DevelopmentScripts/UITestsResults.xml"
 def ui_tests_html_report = "UITestsResults.html"
 def ui_tests_report_task = "generate_ui_tests_report"
+def server_name = ""
 
 def numberOfFailedTests = -1
 def numberOfPassedTests = -1
@@ -288,7 +289,7 @@ timeout(time: 3, unit: 'HOURS')
                         registerEvent(this, session_id, 'Pipeline_Status', currentBuild.result, '-ps', "$server_name.$domain", profile, event_hash, env.BUILD_URL)
                         withCredentials([usernamePassword(credentialsId: 'TeamCityUser', passwordVariable: 'TEAMCITYPASSWORD', usernameVariable: 'TEAMCITYUSERNAME')])
                         {
-                            sendCDSlackNotification(this, env.BUILD_URL, server_name, relativity_build, env.BRANCH_NAME, params.relativityBuildType, getSlackChannelName(nightlyJobName).toString(), numberOfFailedTests as Integer, numberOfPassedTests as Integer, numberOfSkippedTests as Integer, TEAMCITYUSERNAME, TEAMCITYPASSWORD, currentBuild.result.toString()) 
+                            sendCDSlackNotification(this, env.BUILD_URL, (server_name ?: ""), relativity_build, env.BRANCH_NAME, params.relativityBuildType, getSlackChannelName(nightlyJobName).toString(), numberOfFailedTests as Integer, numberOfPassedTests as Integer, numberOfSkippedTests as Integer, TEAMCITYUSERNAME, TEAMCITYPASSWORD, currentBuild.result.toString()) 
                         }
                     }
                 }
