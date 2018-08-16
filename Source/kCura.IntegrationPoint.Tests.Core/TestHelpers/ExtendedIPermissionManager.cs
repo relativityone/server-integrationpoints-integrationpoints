@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Relativity.API;
+using Relativity.Services.Group;
 using Relativity.Services.Permission;
+using Relativity.Services.User;
 
 namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 {
@@ -79,6 +81,11 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 		public async Task<GroupSelector> GetItemGroupSelectorAsync(int workspaceArtifactId, int artifactId)
 		{
 			return await Manager.GetItemGroupSelectorAsync(workspaceArtifactId, artifactId).ConfigureAwait(false);
+		}
+
+		public async Task<bool> IsUserInWorkspaceGroupAsync(int workspaceArtifactID, UserRef user, GroupRef group)
+		{
+			return await Manager.IsUserInWorkspaceGroupAsync(workspaceArtifactID, user, group);
 		}
 
 		public async Task<List<global::Relativity.Services.User.UserRef>> GetItemGroupUsersAsync(int workspaceArtifactId, int artifactId, global::Relativity.Services.Group.GroupRef group)
