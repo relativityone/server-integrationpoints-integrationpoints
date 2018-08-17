@@ -4,9 +4,13 @@
 // Set PipelineTools label to the same as here: https://git.kcura.com/projects/REL/repos/relativity/browse/Junkinsfile
 
 @Library([ 'PipelineTools@RelativityCD-6.3.0'
+         , 'SCVMMHelpers@2.0.0'
          , 'GitHelpers@1.0.0'
          , 'SlackHelpers@1.0.0'
          ])_
+
+import Pipelinetools.ScvmmHelpers.Scvmm
+import Pipelinetools.ScvmmHelpers.VirtualMachine
 
 properties([
     [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '30', artifactNumToKeepStr: '', daysToKeepStr: '30', numToKeepStr: '']],
@@ -21,6 +25,7 @@ properties([
     ])
 ])
 
+VirtualMachine sut = null
 def nightlyJobName = "IntegrationPointsNightly"
 def relativity_build = ""
 // When RAID stage fails, verify if newer versions of cookboos exist
@@ -49,6 +54,7 @@ def profile = createProfile(installing_relativity, installing_invariant, install
 def knife = 'C:\\Python27\\Lib\\site-packages\\jeeves\\knife.rb'
 def session_id = System.currentTimeMillis().toString()
 def event_hash = java.security.MessageDigest.getInstance("MD5").digest(env.JOB_NAME.bytes).encodeHex().toString()
+def scvmm = new Scvmm(this, session_id)
 
 // Make changes here if necessary.
 def python_packages = 'jeeves==4.1.0 phonograph==5.2.0 selenium==3.0.1'
@@ -123,18 +129,12 @@ timeout(time: 3, unit: 'HOURS')
                     {
                         if (!params.skipIntegrationTests || !params.skipUITests)
                         {
-                            // Pipelines can't do tuples, so I guess we'll do this the dumb way.https://issues.jenkins-ci.org/browse/JENKINS-45575
-                            withCredentials([
-                                usernamePassword(credentialsId: 'proget_ci', passwordVariable: 'PROGETPASSWORD', usernameVariable: 'PROGETUSERNAME'),
-                                usernamePassword(credentialsId: 'SCVMM', passwordVariable: 'SCVMMPASSWORD', usernameVariable: 'SCVMMUSERNAME')])
-                            {
-                                echo "Getting server from pool, session_id: $session_id, Relativity branch: $params.relativityBranch, Relativity version: $params.relativityBuildVersion, Relativity build type: $params.relativityBuildType, event hash: $event_hash"
-                                tuple = getServerFromPool(this, session_id, PROGETUSERNAME, PROGETPASSWORD, SCVMMUSERNAME, SCVMMPASSWORD)
-                                server_name = tuple[0]
-                                domain = tuple[1]
-                                ip = tuple[2]
-                                echo "Acquired server: $server_name.$domain ($ip)"
-                            }
+                            echo "Getting server from pool, session_id: $session_id, Relativity branch: $params.relativityBranch, Relativity version: $params.relativityBuildVersion, Relativity build type: $params.relativityBuildType, event hash: $event_hash"
+                            sut = scvmm.getServerFromPool()
+                            server_name = sut.name
+                            domain = sut.domain
+                            ip = sut.ip
+                            echo "Acquired server: $server_name.$domain ($ip)"
 
                             parallel (
                                 Deploy:
@@ -168,15 +168,11 @@ timeout(time: 3, unit: 'HOURS')
                                 },
                                 ProvisionNodes:
                                 {
+                                    def numberOfSlaves = 2
+                                    scvmm.createNodes(numberOfSlaves)
                                     withCredentials([
-                                        usernamePassword(credentialsId: 'proget_ci', passwordVariable: 'PROGETPASSWORD', usernameVariable: 'PROGETUSERNAME'),
-                                        usernamePassword(credentialsId: 'SCVMM', passwordVariable: 'SCVMMPASSWORD', usernameVariable: 'SCVMMUSERNAME'),
-                                        usernamePassword(credentialsId: 'cd_node_svc', passwordVariable: 'CDPASSWORD', usernameVariable: 'CDUSERNAME'),
-                                        usernamePassword(credentialsId: 'Jenkins_sa', passwordVariable: 'JENKINSPASSWORD', usernameVariable: 'JENKINSUSERNAME'),
                                         usernamePassword(credentialsId: 'JenkinsSDLC', passwordVariable: 'SDLCPASSWORD', usernameVariable: 'SDLCUSERNAME')])
                                     {
-                                        def numberOfSlaves = 2
-                                        createNodes(this, session_id, numberOfSlaves, PROGETUSERNAME, PROGETPASSWORD, SCVMMUSERNAME, SCVMMPASSWORD, CDUSERNAME, CDPASSWORD, JENKINSUSERNAME, JENKINSPASSWORD)
                                         bootstrapDependencies(this, python_packages, params.relativityBranch, relativity_build, params.relativityBuildType, session_id, SDLCUSERNAME, SDLCPASSWORD)
                                     }
                                 }
@@ -253,7 +249,8 @@ timeout(time: 3, unit: 'HOURS')
         {
             try
             {
-                timeout(time: 20, unit: 'MINUTES')
+                //If a server under test (sut.name) is created, we can save or delete it
+                if(sut?.name)
                 {
                     SaveVMs = false
                     // If we don't have a result, we didn't get to a test because somthing failed out earlier.
@@ -264,9 +261,11 @@ timeout(time: 3, unit: 'HOURS')
                         {
                             timeout(time: 15, unit: 'MINUTES')
                             {
-                                input(message: 'Save the VMs?', ok: 'Save', submitter: 'JNK-Basic')
+                                //it returns username who submitted the request to save vms
+                                user = input(message: 'Save the VMs?', ok: 'Save', submitter: 'JNK-Basic', submitterParameter: 'submitter')
                             }
                             SaveVMs = true
+                            scvmm.saveVMs(user)
                         }
                         // This throws an error if you click abort or let it time out /shrug
                         catch(err)
@@ -274,18 +273,9 @@ timeout(time: 3, unit: 'HOURS')
                             echo "VMs won't be saved."
                         }
                     }
-                    withCredentials([
-                        usernamePassword(credentialsId: 'proget_ci', passwordVariable: 'PROGETPASSWORD', usernameVariable: 'PROGETUSERNAME'),
-                        usernamePassword(credentialsId: 'SCVMM', passwordVariable: 'SCVMMPASSWORD', usernameVariable: 'SCVMMUSERNAME')])
+                    if (!SaveVMs)
                     {
-                        if (SaveVMs)
-                        {
-                            saveVMs(this, session_id, PROGETUSERNAME, PROGETPASSWORD, SCVMMUSERNAME, SCVMMPASSWORD)
-                        }
-                        else
-                        {
-                            deleteVMs(this, session_id, PROGETUSERNAME, PROGETPASSWORD, SCVMMUSERNAME, SCVMMPASSWORD)
-                        }
+                        scvmm.deleteVMs()
                     }
                     deleteNodes(this, session_id)
                 }
