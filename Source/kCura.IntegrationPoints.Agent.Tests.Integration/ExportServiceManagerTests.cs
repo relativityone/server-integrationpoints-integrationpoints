@@ -112,7 +112,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 		[Test]
 		[Category(Constants.SMOKE_TEST)]
-		[Ignore("TODO: Broken test needs to be fixed!")]
 		public void RunRelativityProviderAlone()
 		{
 			// arrange
@@ -168,7 +167,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 		[Test]
 		[Category(Constants.SMOKE_TEST)]
-		[Ignore("TODO: Broken test needs to be fixed!")]
 		public void StopStateCannotBeUpdatedWhileExportServiceObservers()
 		{
 			Job job = null;

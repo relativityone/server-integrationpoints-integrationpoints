@@ -214,18 +214,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static void DisableAllAgents()
 		{
-			AgentTypeRef agentTypeRef = GetAgentTypeByName(_INTEGRATION_POINT_AGENT_TYPE_NAME);
-
-			if (agentTypeRef == null)
-			{
-				throw new Exception($"Agent with type name {_INTEGRATION_POINT_AGENT_TYPE_NAME} cannot be found");
-			}
-
-			Query query = new Query
-			{
-				Condition = $"'AgentTypeArtifactID' == {agentTypeRef.ArtifactID}"
-			};
-
+			Query query = GetAllIntegrationPointAgentsQuery();
 			DisableAgents(query);
 		}
 
@@ -238,6 +227,12 @@ namespace kCura.IntegrationPoint.Tests.Core
 				result.Artifact.Enabled = true;
 				UpdateAgent(result.Artifact);
 			}
+		}
+
+		public static void EnableAllAgents()
+		{
+			Query query = GetAllIntegrationPointAgentsQuery();
+			EnableAgents(query);
 		}
 
 		public static AgentTypeRef GetAgentTypeByName(string agentTypeName)
@@ -258,6 +253,22 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 
 			throw new Exception($"Error: Did not find any matching AgentTypes with the name: {agentTypeName}.");
+		}
+
+		private static Query GetAllIntegrationPointAgentsQuery()
+		{
+			AgentTypeRef agentTypeRef = GetAgentTypeByName(_INTEGRATION_POINT_AGENT_TYPE_NAME);
+
+			if (agentTypeRef == null)
+			{
+				throw new Exception($"Agent with type name {_INTEGRATION_POINT_AGENT_TYPE_NAME} cannot be found");
+			}
+
+			Query query = new Query
+			{
+				Condition = $"'AgentTypeArtifactID' == {agentTypeRef.ArtifactID}"
+			};
+			return query;
 		}
 	}
 }

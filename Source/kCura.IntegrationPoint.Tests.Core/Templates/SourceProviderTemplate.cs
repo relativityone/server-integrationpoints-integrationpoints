@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Castle.MicroKernel.Registration;
 using kCura.Apps.Common.Config;
@@ -27,9 +26,9 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.Core;
 using Relativity.Core.Service;
-using Relativity.Services.Agent;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.ResourceServer;
+using Component = Castle.MicroKernel.Registration.Component;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
 {
@@ -211,39 +210,18 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			SqlParameter jobIdParam = new SqlParameter("@JobId", SqlDbType.BigInt) { Value = jobId };
 
 			Helper.GetDBContext(-1).ExecuteNonQuerySQLStatement(query, new[] { agentIdParam, jobIdParam });
-
-
 		}
 
 		protected void ControlIntegrationPointAgents(bool enable)
 		{
-			AgentTypeRef agentType = Agent.GetAgentTypeByName("Integration Points Agent");
-
-			string updateQuery = "UPDATE [Agent] SET [Enabled] = @enabledFlag, [Updated] = 1 WHERE [AgentTypeArtifactID] = @agentTypeArtifactId";
-			string monitoringQuery = "SELECT Count(*) FROM [Agent] WHERE [AgentTypeArtifactID] = @agentTypeArtifactId AND [Updated] = 1";
-
-			var enabledFlag = new SqlParameter("@enabledFlag", SqlDbType.Bit) { Value = enable };
-			var agentTypeArtifactId = new SqlParameter("@agentTypeArtifactId", SqlDbType.Int) { Value = agentType.ArtifactID };
-
-			IDBContext dbContext = Helper.GetDBContext(-1);
-
-			Console.WriteLine($"Updating Integration Point agent state. Setting Enabled = '{enable}'");
-
-			dbContext.ExecuteNonQuerySQLStatement(updateQuery, new[] { enabledFlag, agentTypeArtifactId });
-
-			int attempts = 0;
-			while (dbContext.ExecuteSqlStatementAsScalar<int>(monitoringQuery, agentTypeArtifactId) > 0)
+			if (enable)
 			{
-				if (attempts == 5)
-				{
-					throw new Exception("[INTEGRATION TESTS] Could not change state of Integration Point agent.");
-				}
-				attempts++;
-				Thread.Sleep(2000);
-				Console.WriteLine("Waiting for agent to update it's state...");
+				Agent.DisableAllAgents();
 			}
-
-			Console.WriteLine("Agent state updated (Update flag = 0 again).");
+			else
+			{
+				Agent.EnableAllAgents();
+			}
 		}
 
 		protected JobHistory CreateJobHistoryOnIntegrationPoint(int integrationPointArtifactId, Guid batchInstance, Relativity.Client.DTOs.Choice jobTypeChoice, Relativity.Client.DTOs.Choice jobStatusChoice = null, bool jobEnded = false)

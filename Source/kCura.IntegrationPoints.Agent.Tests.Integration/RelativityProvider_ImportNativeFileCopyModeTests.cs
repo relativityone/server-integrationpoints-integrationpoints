@@ -120,7 +120,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 		[Test]
 		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
-		[Ignore("TODO: Broken test needs to be fixed!")]
 		public void NativesShouldNotBeDeletedInTargetWorkspace_InDoNotImportNativesMode()
 		{
 			TestNativeFilesImport(false, true, false, ImportNativeFileCopyModeEnum.DoNotImportNativeFiles, true);
