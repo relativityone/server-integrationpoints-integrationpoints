@@ -169,7 +169,8 @@ timeout(time: 3, unit: 'HOURS')
                                 ProvisionNodes:
                                 {
                                     def numberOfSlaves = 2
-                                    scvmm.createNodes(numberOfSlaves)
+                                    def numberOfExecutors = '1'
+                                    scvmm.createNodes(numberOfSlaves, 60, numberOfExecutors)
                                     withCredentials([
                                         usernamePassword(credentialsId: 'JenkinsSDLC', passwordVariable: 'SDLCPASSWORD', usernameVariable: 'SDLCUSERNAME')])
                                     {
