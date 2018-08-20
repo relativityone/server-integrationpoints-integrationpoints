@@ -510,6 +510,11 @@
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
+        <Reference Include="Relativity.ServiceBus.Contracts">
+          <HintPath>..\..\packages\Relativity.ServiceBus\lib\net462\Relativity.ServiceBus.Contracts.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="Relativity.ServiceBus.Providers.Configuration">
           <HintPath>..\..\packages\Relativity.ServiceBus\lib\net462\Relativity.ServiceBus.Providers.Configuration.dll</HintPath>
           <Private>True</Private>
@@ -646,11 +651,6 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="Analytics.Core.Jobs">
-          <HintPath>..\..\packages\RelativityCore\lib\net462\Analytics.Core.Jobs.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
         <Reference Include="Application.Utility">
           <HintPath>..\..\packages\RelativityCore\lib\net462\Application.Utility.dll</HintPath>
           <Private>True</Private>
