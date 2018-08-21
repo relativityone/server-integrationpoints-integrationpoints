@@ -215,5 +215,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			MoveExistingDocuments && !String.IsNullOrEmpty(FolderPathSourceFieldName);
 
 		#endregion "Internal Properties"
+
+		#region Public Methods
+
+		public bool IsRelativityProvider()
+		{
+			return Provider != null && Provider.ToLower() == "relativity";
+		}
+
+		#endregion
 	}
 }
