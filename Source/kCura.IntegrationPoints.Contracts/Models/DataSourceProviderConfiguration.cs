@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.Contracts.Models
 {
 	/// <summary>
 	/// Object holding source provider configuration and secured configuration
 	/// </summary>
+	[Serializable]
 	public class DataSourceProviderConfiguration
 	{
 		/// <summary>
