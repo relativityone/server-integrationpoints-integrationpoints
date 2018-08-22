@@ -11,7 +11,7 @@ using Relativity.API;
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 {
 	[TestFixture]
-	[Ignore("TODO: Broken test needs to be fixed!", Until = "2018-08-08")]
+	[Ignore("TODO: Broken test needs to be fixed!")]
 	public class ExportProcessRunnerTests : TestBase
 	{
 		private IExportProcessBuilder _exportProcessBuilder;

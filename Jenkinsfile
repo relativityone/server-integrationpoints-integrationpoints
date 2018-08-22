@@ -4,9 +4,13 @@
 // Set PipelineTools label to the same as here: https://git.kcura.com/projects/REL/repos/relativity/browse/Junkinsfile
 
 @Library([ 'PipelineTools@RelativityCD-6.3.0'
+         , 'SCVMMHelpers@2.0.0'
          , 'GitHelpers@1.0.0'
          , 'SlackHelpers@1.0.0'
          ])_
+
+import Pipelinetools.ScvmmHelpers.Scvmm
+import Pipelinetools.ScvmmHelpers.VirtualMachine
 
 properties([
     [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '30', artifactNumToKeepStr: '', daysToKeepStr: '30', numToKeepStr: '']],
@@ -21,6 +25,8 @@ properties([
     ])
 ])
 
+VirtualMachine sut = null
+
 def nightlyJobName = "IntegrationPointsNightly"
 def relativity_build = ""
 // When RAID stage fails, verify if newer versions of cookboos exist
@@ -33,9 +39,6 @@ def integration_tests_report_task = "generate_integration_tests_report"
 def ui_tests_results_file_path = "DevelopmentScripts/UITestsResults.xml"
 def ui_tests_html_report = "UITestsResults.html"
 def ui_tests_report_task = "generate_ui_tests_report"
-
-server_name = ""
-domain = ""
 
 def numberOfFailedTests = -1
 def numberOfPassedTests = -1
@@ -54,6 +57,7 @@ def profile = createProfile(installing_relativity, installing_invariant, install
 def knife = 'C:\\Python27\\Lib\\site-packages\\jeeves\\knife.rb'
 def session_id = System.currentTimeMillis().toString()
 def event_hash = java.security.MessageDigest.getInstance("MD5").digest(env.JOB_NAME.bytes).encodeHex().toString()
+def scvmm = new Scvmm(this, session_id)
 
 // Make changes here if necessary.
 def python_packages = 'jeeves==4.1.0 phonograph==5.2.0 selenium==3.0.1'
@@ -123,23 +127,14 @@ timestamps
 				{
 					timeout(time: 45, unit: 'MINUTES')
 					{
-						// Pipelines can't do tuples, so I guess we'll do this the dumb way.https://issues.jenkins-ci.org/browse/JENKINS-45575
-						withCredentials([
-							usernamePassword(credentialsId: 'proget_ci', passwordVariable: 'PROGETPASSWORD', usernameVariable: 'PROGETUSERNAME'),
-							usernamePassword(credentialsId: 'SCVMM', passwordVariable: 'SCVMMPASSWORD', usernameVariable: 'SCVMMUSERNAME')])
-						{
-							echo "Getting server from pool, session_id: $session_id, Relativity branch: $params.relativityBranch, Relativity version: $params.relativityBuildVersion, Relativity build type: $params.relativityBuildType, event hash: $event_hash"
-							tuple = getServerFromPool(this, session_id, PROGETUSERNAME, PROGETPASSWORD, SCVMMUSERNAME, SCVMMPASSWORD)
-							server_name = tuple[0]
-							domain = tuple[1]
-							ip = tuple[2]
-							echo "Acquired server: $server_name.$domain ($ip)"
-						}
+						echo "Getting server from pool, session_id: $session_id, Relativity branch: $params.relativityBranch, Relativity version: $params.relativityBuildVersion, Relativity build type: $params.relativityBuildType, event hash: $event_hash"
+						sut = scvmm.getServerFromPool()						
+						echo "Acquired server: ${sut.name} @ ${sut.domain} (${sut.ip})"
 
 						parallel (
 							Deploy:
 							{
-								registerEvent(this, session_id, 'Talos_Provision_test_CD', 'PASS', '-c', "$server_name.$domain", profile, event_hash)
+								registerEvent(this, session_id, 'Talos_Provision_test_CD', 'PASS', '-c', "${sut.name}.${sut.domain}", profile, event_hash)
 								if (installing_relativity)
 								{
 									if (!params.relativityBuildVersion)
@@ -158,25 +153,22 @@ timestamps
 								{
 									deployments = [['product' : 'rel', 'build' : relativity_build, 'branch' : params.relativityBranch, 'type' : params.relativityBuildType]]
 									attributeValues = makeAttributeValues(deployments, SUTUSERNAME, SUTPASSWORD, EDDSDBOPASSWORD)
-									uploadEnvironmentFile(this, server_name, ripCookbooks, attributeValues, knife, session_id, PROGETUSERNAME, PROGETPASSWORD)
-									addRunlist(this, session_id, server_name, ip, run_list, knife, SUTUSERNAME, SUTPASSWORD)
+									uploadEnvironmentFile(this, sut.name, ripCookbooks, attributeValues, knife, session_id, PROGETUSERNAME, PROGETPASSWORD)
+									addRunlist(this, session_id, sut.name, ip, run_list, knife, SUTUSERNAME, SUTPASSWORD)
 								}
 
-								tags = getTags(this, server_name, knife, session_id)
+								tags = getTags(this, sut.name, knife, session_id)
 								checkTags(deployments, tags)
-								checkWorkspaceUpgrade(this, server_name, session_id)
+								checkWorkspaceUpgrade(this, sut.name, session_id)
 							},
 							ProvisionNodes:
 							{
+								def numberOfSlaves = 1
+								def numberOfExecutors = '1'
+								scvmm.createNodes(numberOfSlaves, 60 * 8, numberOfExecutors)
 								withCredentials([
-									usernamePassword(credentialsId: 'proget_ci', passwordVariable: 'PROGETPASSWORD', usernameVariable: 'PROGETUSERNAME'),
-									usernamePassword(credentialsId: 'SCVMM', passwordVariable: 'SCVMMPASSWORD', usernameVariable: 'SCVMMUSERNAME'),
-									usernamePassword(credentialsId: 'cd_node_svc', passwordVariable: 'CDPASSWORD', usernameVariable: 'CDUSERNAME'),
-									usernamePassword(credentialsId: 'Jenkins_sa', passwordVariable: 'JENKINSPASSWORD', usernameVariable: 'JENKINSUSERNAME'),
 									usernamePassword(credentialsId: 'JenkinsSDLC', passwordVariable: 'SDLCPASSWORD', usernameVariable: 'SDLCUSERNAME')])
 								{
-									def numberOfSlaves = 1
-									createNodes(this, session_id, numberOfSlaves, PROGETUSERNAME, PROGETPASSWORD, SCVMMUSERNAME, SCVMMPASSWORD, CDUSERNAME, CDPASSWORD, JENKINSUSERNAME, JENKINSPASSWORD)
 									bootstrapDependencies(this, python_packages, params.relativityBranch, relativity_build, params.relativityBuildType, session_id, SDLCUSERNAME, SDLCPASSWORD)
 								}
 							}
@@ -237,40 +229,31 @@ timestamps
 			{
 				try
 				{
-					timeout(time: 10, unit: 'MINUTES')
+					timeout(time: 20, unit: 'MINUTES')
 					{
-						SaveVMs = false
-						// If we don't have a result, we didn't get to a test because somthing failed out earlier.
-						// If the result is FAILURE, a test failed.
-						if (!currentBuild.result || currentBuild.result == "FAILURE")
+						if(sut?.name)
 						{
-							try
+							// If we don't have a result, we didn't get to a test because somthing failed out earlier.
+							// If the result is FAILURE, a test failed.
+							if (!currentBuild.result || currentBuild.result == "FAILURE")
 							{
-								timeout(time: 5, unit: 'MINUTES')
+								try
 								{
-									input(message: 'Save the VMs?', ok: 'Save', submitter: 'JNK-Basic')
+									timeout(time: 5, unit: 'MINUTES')
+									{
+										//it returns username who submitted the request to save vms
+										user = input(message: 'Save the VMs?', ok: 'Save', submitter: 'JNK-Basic', submitterParameter: 'submitter')
+									}
+									scvmm.saveVMs(user)
 								}
-								SaveVMs = true
+								// Exception is thrown if you click abort or let it time out
+								catch(err)
+								{
+									echo "Deleting VMs..."
+									scvmm.deleteVMs()
+								}
 							}
-							// This throws an error if you click abort or let it time out /shrug
-							catch(err)
-							{
-								echo "VMs won't be saved."
-							}
-						}
-						withCredentials([
-							usernamePassword(credentialsId: 'proget_ci', passwordVariable: 'PROGETPASSWORD', usernameVariable: 'PROGETUSERNAME'),
-							usernamePassword(credentialsId: 'SCVMM', passwordVariable: 'SCVMMPASSWORD', usernameVariable: 'SCVMMUSERNAME')])
-						{
-							if (SaveVMs)
-							{
-								saveVMs(this, session_id, PROGETUSERNAME, PROGETPASSWORD, SCVMMUSERNAME, SCVMMPASSWORD)
-							}
-							else
-							{
-								deleteVMs(this, session_id, PROGETUSERNAME, PROGETPASSWORD, SCVMMUSERNAME, SCVMMPASSWORD)
-							}
-						}
+						}			
 						deleteNodes(this, session_id)
 					}
 				}
@@ -291,13 +274,13 @@ timestamps
 				timeout(time: 3, unit: 'MINUTES')
 				{
 					step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
-					if (server_name && domain)
+					if (sut?.name)
 					{
-						registerEvent(this, session_id, 'Pipeline_Status', currentBuild.result, '-ps', "$server_name.$domain", profile, event_hash, env.BUILD_URL)
+						registerEvent(this, session_id, 'Pipeline_Status', currentBuild.result, '-ps', "${sut.name}.${sut.domain}", profile, event_hash, env.BUILD_URL)
 					}
 					withCredentials([usernamePassword(credentialsId: 'TeamCityUser', passwordVariable: 'TEAMCITYPASSWORD', usernameVariable: 'TEAMCITYUSERNAME')])
 					{
-						sendCDSlackNotification(this, env.BUILD_URL, (server_name ?: ""), (relativity_build ?: "0.0.0.0"), env.BRANCH_NAME, params.relativityBuildType, getSlackChannelName(nightlyJobName).toString(), numberOfFailedTests as Integer, numberOfPassedTests as Integer, numberOfSkippedTests as Integer, TEAMCITYUSERNAME, TEAMCITYPASSWORD, currentBuild.result.toString()) 
+						sendCDSlackNotification(this, env.BUILD_URL, (sut?.name ?: ""), (relativity_build ?: "0.0.0.0"), env.BRANCH_NAME, params.relativityBuildType, getSlackChannelName(nightlyJobName).toString(), numberOfFailedTests as Integer, numberOfPassedTests as Integer, numberOfSkippedTests as Integer, TEAMCITYUSERNAME, TEAMCITYPASSWORD, currentBuild.result.toString()) 
 					}
 				}
 			}
@@ -316,10 +299,9 @@ def configureNunitTests()
 {
     withCredentials([usernamePassword(credentialsId: 'eddsdbo', passwordVariable: 'eddsdboPassword', usernameVariable: 'eddsdboUsername')])
     {
-        def configuration_command = """python -m jeeves.create_config -t nunit -n "app.jeeves-ci" --dbuser "${eddsdboUsername}" --dbpass "${eddsdboPassword}" -s "${server_name}.kcura.corp" -db "${server_name}\\EDDSINSTANCE001" -o .\\lib\\UnitTests\\"""
+        def configuration_command = """python -m jeeves.create_config -t nunit -n "app.jeeves-ci" --dbuser "${eddsdboUsername}" --dbpass "${eddsdboPassword}" -s "${sut.name}.${sut.domain}" -db "${sut.name}\\EDDSINSTANCE001" -o .\\lib\\UnitTests\\"""
         bat script: configuration_command
     }
- 
 }
 
 def isNightly(String nightlyJobName)

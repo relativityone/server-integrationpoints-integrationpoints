@@ -672,6 +672,11 @@ xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y</PostBuildEvent>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
+        <Reference Include="Relativity.ServiceBus.Contracts">
+          <HintPath>..\..\packages\Relativity.ServiceBus\lib\net462\Relativity.ServiceBus.Contracts.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="Relativity.ServiceBus.Providers.Configuration">
           <HintPath>..\..\packages\Relativity.ServiceBus\lib\net462\Relativity.ServiceBus.Providers.Configuration.dll</HintPath>
           <Private>True</Private>
