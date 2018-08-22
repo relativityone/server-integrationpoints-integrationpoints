@@ -207,7 +207,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 		[Test]
 		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
-		[Ignore("We will fix it in REL-235859")]
 		public void CreateAndRunIntegrationPoint_GoldFlow()
 		{
 			//Arrange
