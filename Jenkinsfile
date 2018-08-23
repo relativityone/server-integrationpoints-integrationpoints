@@ -11,6 +11,8 @@
 
 import Pipelinetools.ScvmmHelpers.Scvmm
 import Pipelinetools.ScvmmHelpers.VirtualMachine
+import groovy.transform.Field
+
 
 properties([
     [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '30', artifactNumToKeepStr: '', daysToKeepStr: '30', numToKeepStr: '']],
@@ -25,6 +27,7 @@ properties([
     ])
 ])
 
+@Field
 VirtualMachine sut = null
 
 def nightlyJobName = "IntegrationPointsNightly"
@@ -154,7 +157,7 @@ timestamps
 									deployments = [['product' : 'rel', 'build' : relativity_build, 'branch' : params.relativityBranch, 'type' : params.relativityBuildType]]
 									attributeValues = makeAttributeValues(deployments, SUTUSERNAME, SUTPASSWORD, EDDSDBOPASSWORD)
 									uploadEnvironmentFile(this, sut.name, ripCookbooks, attributeValues, knife, session_id, PROGETUSERNAME, PROGETPASSWORD)
-									addRunlist(this, session_id, sut.name, ip, run_list, knife, SUTUSERNAME, SUTPASSWORD)
+									addRunlist(this, session_id, sut.name, sut.ip, run_list, knife, SUTUSERNAME, SUTPASSWORD)
 								}
 
 								tags = getTags(this, sut.name, knife, session_id)
@@ -294,7 +297,6 @@ timestamps
 }
 
 
-// Helper functions
 def configureNunitTests()
 {
     withCredentials([usernamePassword(credentialsId: 'eddsdbo', passwordVariable: 'eddsdboPassword', usernameVariable: 'eddsdboUsername')])
