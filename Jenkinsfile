@@ -11,6 +11,8 @@
 
 import Pipelinetools.ScvmmHelpers.Scvmm
 import Pipelinetools.ScvmmHelpers.VirtualMachine
+import groovy.transform.Field
+
 
 properties([
     [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '30', artifactNumToKeepStr: '', daysToKeepStr: '30', numToKeepStr: '']],
@@ -25,7 +27,9 @@ properties([
     ])
 ])
 
+@Field
 VirtualMachine sut = null
+
 def nightlyJobName = "IntegrationPointsNightly"
 def relativity_build = ""
 // When RAID stage fails, verify if newer versions of cookboos exist
@@ -48,6 +52,8 @@ def installing_invariant = false
 def installing_analytics = false
 def installing_datagrid = false
 
+def agentsPool = "SCVMM-AGENTS-POOL"
+
 // Do not modify.
 def run_list = createRunList(installing_relativity, installing_invariant, installing_analytics, installing_datagrid)
 def profile = createProfile(installing_relativity, installing_invariant, installing_analytics, installing_datagrid)
@@ -59,245 +65,245 @@ def scvmm = new Scvmm(this, session_id)
 // Make changes here if necessary.
 def python_packages = 'jeeves==4.1.0 phonograph==5.2.0 selenium==3.0.1'
 
-// Pipeline
-timeout(time: 3, unit: 'HOURS')
+
+timestamps 
 {
-    timestamps 
-    {
-        catchError
-        {
-            node ('PolandBuild')
-            {
-                stage ('Checkout')
-                {
-                    retry(3)
-                    {
-                        timeout(time: 3, unit: 'MINUTES')
-                        {
-                            checkout scm
-                            step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
-                        }
-                    }
-                }
-                stage ('Build')
-                {
-                    retry(3)
-                    {
-                        timeout(time: 10, unit: 'MINUTES')
-                        {
-                            def sonarParameter = ""
-                            if(env.BRANCH_NAME == "develop"){
-                                sonarParameter = "-sonarqube"
-                            }
-                            powershell "./build.ps1 release ${sonarParameter}"
-                            archiveArtifacts artifacts: "DevelopmentScripts/*.html", fingerprint: true
-                        }
-                    }
-                }
-                stage ('Unit Tests')
-                {
-                    timeout(time: 2, unit: 'MINUTES')
-                    {
-                        powershell "./build.ps1 release -sk -t"
-                        archiveArtifacts artifacts: "TestLogs/*", fingerprint: true
-                    }
-                }
-                stage ('Stash Tests Artifacts')
-                {
-                    stash includes: 'lib/UnitTests/**', name: 'testdlls'
-                    stash includes: 'DynamicallyLoadedDLLs/Search-Standard/*', name: 'dynamicallyLoadedDLLs'
-                    stash includes: 'Applications/RelativityIntegrationPoints.Auto.rap', name: 'integrationPointsRap'
-                    stash includes: 'DevelopmentScripts/IntegrationPointsTests.*', name: 'nunitProjectFiles'
-                    stash includes: 'DevelopmentScripts/NUnit.ConsoleRunner/tools/*', name: 'nunitConsoleRunner'
-                    stash includes: 'DevelopmentScripts/NUnit.Extension.NUnitProjectLoader/tools/*', name: 'nunitProjectLoader'
-                    stash includes: 'DevelopmentScripts/*.ps1', name: 'buildScripts'
-                    stash includes: 'build.ps1', name: 'buildps1'
-                    stash includes: 'Vendor/psake/tools/*', name: 'psake'
-                    stash includes: 'Vendor/NuGet/NuGet.exe', name: 'nuget'
-                    stash includes: 'Version/version.txt', name: 'version'
-                }
-                stage ('Cleanup Build Server')
-                {
-                    deleteDir()
-                }
-            }
-            stage('Install RAID')
-            {
-                node ('SCVMM-AGENTS-POOL')
-                {
-                    timeout(time: 45, unit: 'MINUTES')
-                    {
-                        if (!params.skipIntegrationTests || !params.skipUITests)
-                        {
-                            echo "Getting server from pool, session_id: $session_id, Relativity branch: $params.relativityBranch, Relativity version: $params.relativityBuildVersion, Relativity build type: $params.relativityBuildType, event hash: $event_hash"
-                            sut = scvmm.getServerFromPool()
-                            server_name = sut.name
-                            domain = sut.domain
-                            ip = sut.ip
-                            echo "Acquired server: $server_name.$domain ($ip)"
+	catchError
+	{
+		node ('PolandBuild')
+		{
+			stage ('Checkout')
+			{
+				timeout(time: 3, unit: 'MINUTES')
+				{
+					checkout scm
+					step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
+				}
 
-                            parallel (
-                                Deploy:
-                                {
-                                    registerEvent(this, session_id, 'Talos_Provision_test_CD', 'PASS', '-c', "$server_name.$domain", profile, event_hash)
-                                    if (installing_relativity)
-                                    {
-                                        if (!params.relativityBuildVersion)
-                                        {
-                                            relativity_build = getBuildArtifactsPath(this, "Relativity", params.relativityBranch, params.relativityBuildVersion, params.relativityBuildType, session_id)
-                                            echo "Relativity version found: $relativity_build"
-                                        }
-                                        echo "Installed Relativity, branch: $params.relativityBranch, version: $relativity_build, type: $params.relativityBuildType"
-                                        sendVersionToElastic(this, "Relativity", params.relativityBranch, relativity_build, params.relativityBuildType, session_id)
-                                    }
+			}
+			stage ('Build')
+			{
+				timeout(time: 10, unit: 'MINUTES')
+				{
+					def sonarParameter = 
+						(env.BRANCH_NAME == "develop")
+						? "-sonarqube"
+						: ""
+					powershell "./build.ps1 release $sonarParameter"
+					archiveArtifacts artifacts: "DevelopmentScripts/*.html", fingerprint: true
+				}
+			}
+			stage ('Unit Tests')
+			{
+				timeout(time: 3, unit: 'MINUTES')
+				{
+					powershell "./build.ps1 release -sk -t"
+					archiveArtifacts artifacts: "TestLogs/*", fingerprint: true
+					currentBuild.result = 'SUCCESS'
+				}
+			}
+			timeout(time: 3, unit: 'MINUTES')
+			{
+				stage ('Stash Tests Artifacts')
+				{
+					stash includes: 'lib/UnitTests/**', name: 'testdlls'
+					stash includes: 'DynamicallyLoadedDLLs/Search-Standard/*', name: 'dynamicallyLoadedDLLs'
+					stash includes: 'Applications/RelativityIntegrationPoints.Auto.rap', name: 'integrationPointsRap'
+					stash includes: 'DevelopmentScripts/IntegrationPointsTests.*', name: 'nunitProjectFiles'
+					stash includes: 'DevelopmentScripts/NUnit.ConsoleRunner/tools/*', name: 'nunitConsoleRunner'
+					stash includes: 'DevelopmentScripts/NUnit.Extension.NUnitProjectLoader/tools/*', name: 'nunitProjectLoader'
+					stash includes: 'DevelopmentScripts/*.ps1', name: 'buildScripts'
+					stash includes: 'build.ps1', name: 'buildps1'
+					stash includes: 'Vendor/psake/tools/*', name: 'psake'
+					stash includes: 'Vendor/NuGet/NuGet.exe', name: 'nuget'
+					stash includes: 'Version/version.txt', name: 'version'
 
-                                    withCredentials([
-                                        usernamePassword(credentialsId: 'proget_ci', passwordVariable: 'PROGETPASSWORD', usernameVariable: 'PROGETUSERNAME'),
-                                        usernamePassword(credentialsId: 'cd_sut_svc', passwordVariable: 'SUTPASSWORD', usernameVariable: 'SUTUSERNAME'),
-                                        usernamePassword(credentialsId: 'eddsdbo', passwordVariable: 'EDDSDBOPASSWORD', usernameVariable: 'EDDSDBOUSERNAME')])
-                                    {
-                                        deployments = [['product' : 'rel', 'build' : relativity_build, 'branch' : params.relativityBranch, 'type' : params.relativityBuildType]]
-                                        attributeValues = makeAttributeValues(deployments, SUTUSERNAME, SUTPASSWORD, EDDSDBOPASSWORD)
-                                        uploadEnvironmentFile(this, server_name, ripCookbooks, attributeValues, knife, session_id, PROGETUSERNAME, PROGETPASSWORD)
-                                        addRunlist(this, session_id, server_name, ip, run_list, knife, SUTUSERNAME, SUTPASSWORD)
-                                    }
+					deleteDir()
+				}
+			}
+		}
+		if (testingVMsAreRequired())
+		{
+			stage('Install RAID')
+			{
+				node (agentsPool)
+				{
+					timeout(time: 45, unit: 'MINUTES')
+					{
+						echo "Getting server from pool, session_id: $session_id, Relativity branch: $params.relativityBranch, Relativity version: $params.relativityBuildVersion, Relativity build type: $params.relativityBuildType, event hash: $event_hash"
+						sut = scvmm.getServerFromPool()						
+						echo "Acquired server: ${sut.name} @ ${sut.domain} (${sut.ip})"
 
-                                    tags = getTags(this, server_name, knife, session_id)
-                                    checkTags(deployments, tags)
-                                    checkWorkspaceUpgrade(this, server_name, session_id)
-                                },
-                                ProvisionNodes:
-                                {
-                                    def numberOfSlaves = 2
-                                    def numberOfExecutors = '1'
-                                    scvmm.createNodes(numberOfSlaves, 60, numberOfExecutors)
-                                    withCredentials([
-                                        usernamePassword(credentialsId: 'JenkinsSDLC', passwordVariable: 'SDLCPASSWORD', usernameVariable: 'SDLCUSERNAME')])
-                                    {
-                                        bootstrapDependencies(this, python_packages, params.relativityBranch, relativity_build, params.relativityBuildType, session_id, SDLCUSERNAME, SDLCPASSWORD)
-                                    }
-                                }
-                            )
-                        }
-                    }
-                }
-            }
-            node ("$session_id && dependencies")
-            {
-                stage ('Unstash Tests Artifacts')
-                {
-                    unstash 'testdlls'
-                    unstash 'dynamicallyLoadedDLLs'
-                    unstash 'integrationPointsRap'
-                    unstash 'nunitProjectFiles'
-                    unstash 'nunitConsoleRunner'
-                    unstash 'nunitProjectLoader'
-                    unstash 'buildps1'
-                    unstash 'buildScripts'
-                    unstash 'psake'
-                    unstash 'nuget'
-                    unstash 'version'
-                }
-                catchError
-                {
-                    stage ('Integration Tests')
-                    {
-                        timeout(time: 180, unit: 'MINUTES')
-                        {
-                            runTests(params.skipIntegrationTests, "-in", "Integration", nightlyJobName)
-                        }
-                    }
-                    stage ('UI Tests')
-                    {
-                        timeout(time: 180, unit: 'MINUTES')
-                        {
-                            runTests(params.skipUITests, "-ui", "UI", nightlyJobName)
-                        }
-                    }
-                    currentBuild.result = 'SUCCESS'
-                }
-                archiveTestsArtifacts(params.skipIntegrationTests, integration_tests_results_file_path, integration_tests_html_report, integration_tests_report_task)
-                numberOfFailedTests = getTestsStatistic(integration_tests_results_file_path, 'failed')
-                numberOfPassedTests = getTestsStatistic(integration_tests_results_file_path, 'passed')
-                numberOfSkippedTests = getTestsStatistic(integration_tests_results_file_path, 'skipped')
-                archiveTestsArtifacts(params.skipUITests, ui_tests_results_file_path, ui_tests_html_report, ui_tests_report_task)
-            }
-        }
-        stage('Reporting')
-        {
-            try
-            {
-                echo "Build result: $currentBuild.result"
-                node(session_id)
-                {
-                    timeout(time: 3, unit: 'MINUTES')
-                    {
-                        step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
-                        registerEvent(this, session_id, 'Pipeline_Status', currentBuild.result, '-ps', "$server_name.$domain", profile, event_hash, env.BUILD_URL)
-                        withCredentials([usernamePassword(credentialsId: 'TeamCityUser', passwordVariable: 'TEAMCITYPASSWORD', usernameVariable: 'TEAMCITYUSERNAME')])
-                        {
-                            sendCDSlackNotification(this, env.BUILD_URL, server_name, relativity_build, env.BRANCH_NAME, params.relativityBuildType, getSlackChannelName(nightlyJobName).toString(), numberOfFailedTests as Integer, numberOfPassedTests as Integer, numberOfSkippedTests as Integer, TEAMCITYUSERNAME, TEAMCITYPASSWORD, currentBuild.result.toString()) 
-                        }
-                    }
-                }
-            }
-            catch (err)  // Just catch everything here, if reporting/cleanup is the only thing that failed, let's not fail out the pipeline.
-            {
-                echo "Reporting failed: $err"
-            }
-        }
-        stage('Cleanup VMs')
-        {
-            try
-            {
-                //If a server under test (sut.name) is created, we can save or delete it
-                if(sut?.name)
-                {
-                    SaveVMs = false
-                    // If we don't have a result, we didn't get to a test because somthing failed out earlier.
-                    // If the result is FAILURE, a test failed.
-                    if (!currentBuild.result || currentBuild.result == "FAILURE")
-                    {
-                        try
-                        {
-                            timeout(time: 15, unit: 'MINUTES')
-                            {
-                                //it returns username who submitted the request to save vms
-                                user = input(message: 'Save the VMs?', ok: 'Save', submitter: 'JNK-Basic', submitterParameter: 'submitter')
-                            }
-                            SaveVMs = true
-                            scvmm.saveVMs(user)
-                        }
-                        // This throws an error if you click abort or let it time out /shrug
-                        catch(err)
-                        {
-                            echo "VMs won't be saved."
-                        }
-                    }
-                    if (!SaveVMs)
-                    {
-                        scvmm.deleteVMs()
-                    }
-                    deleteNodes(this, session_id)
-                }
-            }
-            catch (err)
-            {
-                echo "Cleanup VMs FAILED."
-            }
-        }
-    }
+						parallel (
+							Deploy:
+							{
+								registerEvent(this, session_id, 'Talos_Provision_test_CD', 'PASS', '-c', "${sut.name}.${sut.domain}", profile, event_hash)
+								if (installing_relativity)
+								{
+									if (!params.relativityBuildVersion)
+									{
+										relativity_build = getBuildArtifactsPath(this, "Relativity", params.relativityBranch, params.relativityBuildVersion, params.relativityBuildType, session_id)
+										echo "Relativity version found: $relativity_build"
+									}
+									echo "Installed Relativity, branch: $params.relativityBranch, version: $relativity_build, type: $params.relativityBuildType"
+									sendVersionToElastic(this, "Relativity", params.relativityBranch, relativity_build, params.relativityBuildType, session_id)
+								}
+
+								withCredentials([
+									usernamePassword(credentialsId: 'proget_ci', passwordVariable: 'PROGETPASSWORD', usernameVariable: 'PROGETUSERNAME'),
+									usernamePassword(credentialsId: 'cd_sut_svc', passwordVariable: 'SUTPASSWORD', usernameVariable: 'SUTUSERNAME'),
+									usernamePassword(credentialsId: 'eddsdbo', passwordVariable: 'EDDSDBOPASSWORD', usernameVariable: 'EDDSDBOUSERNAME')])
+								{
+									deployments = [['product' : 'rel', 'build' : relativity_build, 'branch' : params.relativityBranch, 'type' : params.relativityBuildType]]
+									attributeValues = makeAttributeValues(deployments, SUTUSERNAME, SUTPASSWORD, EDDSDBOPASSWORD)
+									uploadEnvironmentFile(this, sut.name, ripCookbooks, attributeValues, knife, session_id, PROGETUSERNAME, PROGETPASSWORD)
+									addRunlist(this, session_id, sut.name, sut.ip, run_list, knife, SUTUSERNAME, SUTPASSWORD)
+								}
+
+								tags = getTags(this, sut.name, knife, session_id)
+								checkTags(deployments, tags)
+								checkWorkspaceUpgrade(this, sut.name, session_id)
+							},
+							ProvisionNodes:
+							{
+								def numberOfSlaves = 1
+								def numberOfExecutors = '1'
+								scvmm.createNodes(numberOfSlaves, 60 * 8, numberOfExecutors)
+								withCredentials([
+									usernamePassword(credentialsId: 'JenkinsSDLC', passwordVariable: 'SDLCPASSWORD', usernameVariable: 'SDLCUSERNAME')])
+								{
+									bootstrapDependencies(this, python_packages, params.relativityBranch, relativity_build, params.relativityBuildType, session_id, SDLCUSERNAME, SDLCPASSWORD)
+								}
+							}
+						)
+					}
+				}
+			}
+			node ("$session_id && dependencies")
+			{
+				timeout(time: 3, unit: 'MINUTES')
+				{
+					stage ('Unstash Tests Artifacts')
+					{
+						unstash 'testdlls'
+						unstash 'dynamicallyLoadedDLLs'
+						unstash 'integrationPointsRap'
+						unstash 'nunitProjectFiles'
+						unstash 'nunitConsoleRunner'
+						unstash 'nunitProjectLoader'
+						unstash 'buildps1'
+						unstash 'buildScripts'
+						unstash 'psake'
+						unstash 'nuget'
+						unstash 'version'
+					}
+				}
+				catchError
+				{
+					stage ('Integration Tests')
+					{
+						timeout(time: 180, unit: 'MINUTES')
+						{
+							runTests(params.skipIntegrationTests, "-in", "Integration", nightlyJobName)
+						}
+					}
+					stage ('UI Tests')
+					{
+						timeout(time: 8, unit: 'HOURS')
+						{
+							runTests(params.skipUITests, "-ui", "UI", nightlyJobName)
+						}
+					}
+					currentBuild.result = 'SUCCESS'
+				}
+				stage ('Gathering test stats')
+				{
+					timeout(time: 5, unit: 'MINUTES')
+					{				
+						archiveTestsArtifacts(params.skipIntegrationTests, integration_tests_results_file_path, integration_tests_html_report, integration_tests_report_task)
+						numberOfFailedTests = getTestsStatistic(integration_tests_results_file_path, 'failed')
+						numberOfPassedTests = getTestsStatistic(integration_tests_results_file_path, 'passed')
+						numberOfSkippedTests = getTestsStatistic(integration_tests_results_file_path, 'skipped')
+						archiveTestsArtifacts(params.skipUITests, ui_tests_results_file_path, ui_tests_html_report, ui_tests_report_task)
+					}
+				}
+			}
+			stage('Cleanup VMs')
+			{
+				try
+				{
+					timeout(time: 20, unit: 'MINUTES')
+					{
+						if(sut?.name)
+						{
+							// If we don't have a result, we didn't get to a test because somthing failed out earlier.
+							// If the result is FAILURE, a test failed.
+							if (!currentBuild.result || currentBuild.result == "FAILURE")
+							{
+								try
+								{
+									timeout(time: 5, unit: 'MINUTES')
+									{
+										//it returns username who submitted the request to save vms
+										user = input(message: 'Save the VMs?', ok: 'Save', submitter: 'JNK-Basic', submitterParameter: 'submitter')
+									}
+									scvmm.saveVMs(user)
+								}
+								// Exception is thrown if you click abort or let it time out
+								catch(err)
+								{
+									echo "Deleting VMs..."
+									scvmm.deleteVMs()
+								}
+							}
+						}			
+						deleteNodes(this, session_id)
+					}
+				}
+				catch (err)
+				{
+					echo "Cleanup VMs FAILED."
+				}
+			}
+		}
+	}
+	stage('Reporting')
+	{
+		try
+		{
+			echo "Build result: $currentBuild.result"
+			node(agentsPool)
+			{
+				timeout(time: 3, unit: 'MINUTES')
+				{
+					step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
+					if (sut?.name)
+					{
+						registerEvent(this, session_id, 'Pipeline_Status', currentBuild.result, '-ps', "${sut.name}.${sut.domain}", profile, event_hash, env.BUILD_URL)
+					}
+					withCredentials([usernamePassword(credentialsId: 'TeamCityUser', passwordVariable: 'TEAMCITYPASSWORD', usernameVariable: 'TEAMCITYUSERNAME')])
+					{
+						sendCDSlackNotification(this, env.BUILD_URL, (sut?.name ?: ""), (relativity_build ?: "0.0.0.0"), env.BRANCH_NAME, params.relativityBuildType, getSlackChannelName(nightlyJobName).toString(), numberOfFailedTests as Integer, numberOfPassedTests as Integer, numberOfSkippedTests as Integer, TEAMCITYUSERNAME, TEAMCITYPASSWORD, currentBuild.result.toString()) 
+					}
+				}
+			}
+		}
+		catch (err)  // Just catch everything here, if reporting/cleanup is the only thing that failed, let's not fail out the pipeline.
+		{
+			echo "Reporting failed: $err"
+		}
+	}
+	
 }
 
-// Helper functions
+
 def configureNunitTests()
 {
     withCredentials([usernamePassword(credentialsId: 'eddsdbo', passwordVariable: 'eddsdboPassword', usernameVariable: 'eddsdboUsername')])
     {
-        def configuration_command = """python -m jeeves.create_config -t nunit -n "app.jeeves-ci" --dbuser "${eddsdboUsername}" --dbpass "${eddsdboPassword}" -s "${server_name}.kcura.corp" -db "${server_name}\\EDDSINSTANCE001" -o .\\lib\\UnitTests\\"""
+        def configuration_command = """python -m jeeves.create_config -t nunit -n "app.jeeves-ci" --dbuser "${eddsdboUsername}" --dbpass "${eddsdboPassword}" -s "${sut.name}.${sut.domain}" -db "${sut.name}\\EDDSINSTANCE001" -o .\\lib\\UnitTests\\"""
         bat script: configuration_command
     }
- 
 }
 
 def isNightly(String nightlyJobName)
@@ -340,7 +346,7 @@ def runTests(Boolean skipTests, String cmdOption, String name, String nightlyJob
     }
     else
     {
-        echo "Skip $name Tests"
+        echo "$name Tests are going to be skipped."
     }
 }
 
@@ -387,4 +393,9 @@ def archiveTestsArtifacts(Boolean skipTests, String resultsFilePath, String repo
     {
         echo "archiveTestsArtifacts failed with error: $err"
     }
+}
+
+def testingVMsAreRequired()
+{
+    return !params.skipIntegrationTests || !params.skipUITests
 }
