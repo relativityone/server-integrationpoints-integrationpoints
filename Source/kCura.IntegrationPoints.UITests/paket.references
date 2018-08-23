@@ -17,6 +17,7 @@ Relativity.Telemetry.APM
 Polly
 Relativity.ImportExport
 
-Serilog
-Serilog.Sinks.Console
-Serilog.Sinks.Seq
+group TestPackages
+	Serilog
+	Serilog.Sinks.Console
+	Serilog.Sinks.Seq

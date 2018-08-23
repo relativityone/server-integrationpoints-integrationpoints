@@ -4,5 +4,6 @@ Relativity.Kepler.Client
 Relativity.Telemetry.APM
 Castle.Windsor
 BenchmarkDotNet
-group Newtonsoft8
-Newtonsoft.Json
+
+group TestPackages
+	Newtonsoft.Json
