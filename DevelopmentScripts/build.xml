@@ -531,6 +531,17 @@
           <Assembly>lib\kCura.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
           <Assembly>lib\kCura.IntegrationPoints.Domain.dll</Assembly>
           <Assembly>Source\Provider\bin\Provider.dll</Assembly>
+          <Assembly>lib\kCura.Apps.Common.Config.dll</Assembly>
+          <Assembly>lib\kCura.Apps.Common.Data.dll</Assembly>
+          <Assembly>lib\kCura.Apps.Common.Utils.dll</Assembly>
+          <Assembly>lib\kCura.IntegrationPoints.Config.dll</Assembly>
+          <Assembly>lib\kCura.IntegrationPoints.Core.dll</Assembly>
+          <Assembly>lib\kCura.IntegrationPoints.Core.Contracts.dll</Assembly>
+          <Assembly>lib\kCura.IntegrationPoints.Data.dll</Assembly>
+          <Assembly>lib\kCura.IntegrationPoints.Synchronizers.RDO.dll</Assembly>
+          <Assembly>lib\kCura.ScheduleQueue.Core.dll</Assembly>
+          <Assembly>lib\Relativity.DataTransfer.MessageService.dll</Assembly>
+          <Assembly>lib\SystemInterface.dll</Assembly>
         </Assemblies>
         <ResourceFiles />
         <CustomPages>
