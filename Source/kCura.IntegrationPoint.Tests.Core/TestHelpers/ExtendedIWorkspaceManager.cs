@@ -10,9 +10,11 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 {
 	public class ExtendedIWorkspaceManager : IWorkspaceManager
 	{
-		private readonly ITestHelper _helper;
-		private readonly ExecutionIdentity _identity;
 		private Lazy<IWorkspaceManager> _managerWrapper;
+		private readonly ExecutionIdentity _identity;
+		private readonly ITestHelper _helper;
+
+		private readonly object _lock = new object();
 		private IWorkspaceManager Manager => _managerWrapper.Value;
 
 		public ExtendedIWorkspaceManager(ITestHelper helper, ExecutionIdentity identity)
@@ -21,8 +23,6 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			_identity = identity;
 			_managerWrapper = new Lazy<IWorkspaceManager>(helper.CreateUserProxy<IWorkspaceManager>);
 		}
-
-		private readonly object _lock = new object();
 
 		public void Dispose()
 		{
@@ -36,6 +36,16 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 		public async Task AddCredentialsAsync(WorkspaceRef workspace, List<CredentialRef> credentials)
 		{
 			await Manager.AddCredentialsAsync(workspace, credentials);
+		}
+
+		public async Task<WorkspaceRef> CreateWorkspaceAsync(WorkspaceSetttings workspace)
+		{
+			return await Manager.CreateWorkspaceAsync(workspace);
+		}
+
+		public async Task DeleteAsync(WorkspaceRef workspace)
+		{
+			await Manager.DeleteAsync(workspace);
 		}
 
 		public async Task RemoveCredentialsAsync(WorkspaceRef workspace, List<CredentialRef> credentials)

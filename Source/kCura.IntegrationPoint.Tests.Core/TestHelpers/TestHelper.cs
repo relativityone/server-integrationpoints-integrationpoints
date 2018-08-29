@@ -150,6 +150,11 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			throw new NotImplementedException();
 		}
 
+		public IStringSanitizer GetStringSanitizer(int workspaceID)
+		{
+			throw new NotImplementedException();
+		}
+
 		public IServicesMgr GetServicesManager()
 		{
 			return _serviceManager;

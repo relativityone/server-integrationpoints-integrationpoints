@@ -473,6 +473,16 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Relativity.ServiceBus.AzureProvider">
+          <HintPath>..\..\packages\Relativity.ServiceBus.Provider.Azure\lib\net462\Relativity.ServiceBus.AzureProvider.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.ServiceBus.LegacyAzureProvider">
+          <HintPath>..\..\packages\Relativity.ServiceBus.Provider.Azure\lib\net462\Relativity.ServiceBus.LegacyAzureProvider.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="Relativity.ServiceBus.Provider.Azure">
           <HintPath>..\..\packages\Relativity.ServiceBus.Provider.Azure\lib\net462\Relativity.ServiceBus.Provider.Azure.dll</HintPath>
           <Private>True</Private>
@@ -484,8 +494,18 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Relativity.ServiceBus.LegacyWindowsProvider">
+          <HintPath>..\..\packages\Relativity.ServiceBus.Provider.Windows1_1\lib\net462\Relativity.ServiceBus.LegacyWindowsProvider.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="Relativity.ServiceBus.Provider.Windows1_1">
           <HintPath>..\..\packages\Relativity.ServiceBus.Provider.Windows1_1\lib\net462\Relativity.ServiceBus.Provider.Windows1_1.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.ServiceBus.WindowsProvider">
+          <HintPath>..\..\packages\Relativity.ServiceBus.Provider.Windows1_1\lib\net462\Relativity.ServiceBus.WindowsProvider.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
