@@ -19,5 +19,4 @@ Relativity.ImportExport
 
 group TestPackages
 	Serilog
-	Serilog.Sinks.Console
 	Serilog.Sinks.Seq

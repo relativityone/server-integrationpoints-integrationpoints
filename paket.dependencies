@@ -68,6 +68,5 @@ group TestPackages
 	strategy: min
 	source https://proget.kcura.corp/nuget/NuGet
 	nuget Newtonsoft.Json 8.0.1
-	nuget Serilog 2.7.1
-	nuget Serilog.Sinks.Console 3.1.1
-	nuget Serilog.Sinks.Seq 4.0.0
+	nuget Serilog 1.5.14	
+	nuget Serilog.Sinks.Seq 1.5.36
