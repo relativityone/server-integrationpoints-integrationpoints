@@ -31,7 +31,8 @@ namespace kCura.IntegrationPoints.Domain
 		IDataSourceProvider IProviderFactory.CreateProvider(Guid identifier)
 		{
 			Type t = GetType(identifier);
-			return CreateInstance(t);
+			IDataSourceProvider provider = CreateInstance(t);
+			return new ProviderWrapper(provider);
 		}
 
 		/// <summary>
