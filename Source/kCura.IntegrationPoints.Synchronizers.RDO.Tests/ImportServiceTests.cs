@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			ImportService importService = new ImportService(null, null, null, null, null, null, _helper);
 
 			//ACT
-			Dictionary<string, object> data = importService.GenerateImportFields(sourceFields, mapping, null);
+			Dictionary<string, object> data = importService.GenerateImportFields(sourceFields, mapping);
 
 			//ASSERT
 			Assert.AreEqual(5, data.Count);
@@ -190,11 +190,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			};
 			NativeFileImportService nativeFileImportService = null;
 
-			ImportService importService = new ImportService(null, null, null, null, null, null, _helper);
+			ImportService importService = new ImportService(null, null, null, nativeFileImportService, null, null, _helper);
 
 
 			//ACT
-			Dictionary<string, object> result = importService.GenerateImportFields(fieldMapping, mapping, nativeFileImportService);
+			Dictionary<string, object> result = importService.GenerateImportFields(fieldMapping, mapping);
 
 
 			Assert.AreEqual(3, result.Count);
@@ -224,11 +224,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 				ImportNativeFiles = false
 			};
 
-			ImportService importService = new ImportService(null, null, null, null, null, null, _helper);
+			ImportService importService = new ImportService(null, null, null, nativeFileImportService, null, null, _helper);
 
 
 			//ACT
-			Dictionary<string, object> result = importService.GenerateImportFields(fieldMapping, mapping, nativeFileImportService);
+			Dictionary<string, object> result = importService.GenerateImportFields(fieldMapping, mapping);
 
 
 			Assert.AreEqual(3, result.Count);
@@ -259,11 +259,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 				SourceFieldName = "MyPath"
 			};
 
-			ImportService importService = new ImportService(null, null, null, null, null, null, _helper);
+			ImportService importService = new ImportService(null, null, null, nativeFileImportService, null, null, _helper);
 
 
 			//ACT
-			Dictionary<string, object> result = importService.GenerateImportFields(fieldMapping, mapping, nativeFileImportService);
+			Dictionary<string, object> result = importService.GenerateImportFields(fieldMapping, mapping);
 
 
 			Assert.AreEqual(4, result.Count);
@@ -271,6 +271,35 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			Assert.AreEqual(123, result["F2"]);
 			Assert.AreEqual(true, result["F4"]);
 			Assert.AreEqual("\\\\Server1\\path1\\file1", result[nativeFileImportService.DestinationFieldName]);
+		}
+
+		[TestCase("prefix", "message")]
+		[TestCase("Prefix", "Message")]
+		[TestCase("    Prefix", "    Message")]
+		[TestCase("", "    Message")]
+		[TestCase(null, "    Message")]
+		[TestCase("{0}{1}{2}", "{3}{4}{5}{6}")]
+		public void PrependString_NonEmptyOrWhitespaceMessage_ReturnsConcatenatedStrings(string prefix, string message)
+		{
+			ImportService importService = new ImportService(null, null, null, null, null, null, _helper);
+
+			string result = importService.PrependString(prefix, message);
+
+			Assert.That(string.Equals(result, $"{prefix} {message}", StringComparison.InvariantCulture));
+		}
+
+		[TestCase("")]
+		[TestCase("				     ")]
+		[TestCase(null)]
+		public void PrependString_MessageIsNullOrWhitespace_ReturnsGenericMessageWithPrefix(string message)
+		{
+			string prefix = "Test Prefix";
+
+			ImportService importService = new ImportService(null, null, null, null, null, null, _helper);
+
+			string result = importService.PrependString(prefix, message);
+
+			Assert.That(string.Equals(result, $"{prefix} [Unknown message]", StringComparison.InvariantCulture));
 		}
 
 		#endregion
