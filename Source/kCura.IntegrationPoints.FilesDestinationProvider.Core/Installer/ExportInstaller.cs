@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 			container.Register(Component.For<ICaseManagerFactory>().ImplementedBy<CaseManagerFactory>());
 
 			container.Register(Component.For<IFactoryConfigBuilder>().ImplementedBy<FactoryConfigBuilder>().LifestyleTransient());
-			container.Register(Component.For<IExtendedExporterFactory>().ImplementedBy<ExtendedExporterFactory>());
+			container.Register(Component.For<IExtendedExporterFactory>().ImplementedBy<ExtendedExporterFactory>().LifestyleTransient());
 
 			container.Register(Component.For<IExportFieldsService>().ImplementedBy<ExportFieldsService>().LifestyleTransient());
 			container.Register(Component.For<IViewService>().ImplementedBy<ViewService>().LifestyleTransient());
