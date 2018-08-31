@@ -18,7 +18,7 @@ nuget RelativityCore 10.0.52.12-DEV
 nuget Relativity.Services.Interfaces 10.0.52.12-DEV 
 
 //Other Relativity packages
-nuget Relativity.DataTransfer.MessageService ~> 10.0.0
+nuget Relativity.DataTransfer.MessageService ~> 10.0.1
 nuget kCura.Apps.Common.Config 2.1.8
 nuget kCura.LongPath 1.0.13
 nuget Relativity.OAuth2Client 1.0.27
