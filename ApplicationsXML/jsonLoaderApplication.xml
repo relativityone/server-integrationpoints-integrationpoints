@@ -78,6 +78,72 @@
       <Name>kCura.IntegrationPoints.Domain.dll</Name>
       <Notes />
     </Assembly>
+	<Assembly>
+      <ArtifactId>1748166</ArtifactId>
+      <Keywords />
+      <Name>kCura.IntegrationPoints.Core.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>1748167</ArtifactId>
+      <Keywords />
+      <Name>kCura.IntegrationPoints.Data.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>1748168</ArtifactId>
+      <Keywords />
+      <Name>kCura.IntegrationPoints.Core.Contracts.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>1748169</ArtifactId>
+      <Keywords />
+      <Name>kCura.ScheduleQueue.Core.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>1748170</ArtifactId>
+      <Keywords />
+      <Name>SystemInterface.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>1748171</ArtifactId>
+      <Keywords />
+      <Name>kCura.Apps.Common.Config.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>1748172</ArtifactId>
+      <Keywords />
+      <Name>kCura.Apps.Common.Data.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>1748173</ArtifactId>
+      <Keywords />
+      <Name>kCura.Apps.Common.Utils.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>1748174</ArtifactId>
+      <Keywords />
+      <Name>kCura.IntegrationPoints.Synchronizers.RDO.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>1748175</ArtifactId>
+      <Keywords />
+      <Name>kCura.IntegrationPoints.Config.dll</Name>
+      <Notes />
+    </Assembly>
+	<Assembly>
+      <ArtifactId>1748179</ArtifactId>
+      <Keywords />
+      <Name>Relativity.DataTransfer.MessageService.dll</Name>
+      <Notes />
+    </Assembly>
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
