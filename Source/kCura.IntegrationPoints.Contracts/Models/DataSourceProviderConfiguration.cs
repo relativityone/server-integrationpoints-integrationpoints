@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.Contracts.Models
 {
 	/// <summary>
 	/// Represents general and secured source provider configurations set by a user.
 	/// </summary>
+	[Serializable]
 	public class DataSourceProviderConfiguration
 	{
 		/// <summary>

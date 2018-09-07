@@ -15,19 +15,24 @@ namespace kCura.IntegrationPoints.Domain
 	{
 		private readonly IDataSourceProvider _provider;
 		private readonly IAPILog _logger;
-		internal ProviderWrapper(IDataSourceProvider provider, IAPILog logger)
+		internal ProviderWrapper(IDataSourceProvider provider, IAPILog logger) : this(provider)
 		{
-			if (provider == null)
-			{
-				throw new ArgumentNullException(nameof(provider));
-			}
 			if (logger == null)
 			{
 				throw new ArgumentNullException(nameof(logger));
 			}
 
-			_provider = provider;
 			_logger = logger.ForContext<ProviderWrapper>();
+		}
+
+		internal ProviderWrapper(IDataSourceProvider provider)
+		{
+			if (provider == null)
+			{
+				throw new ArgumentNullException(nameof(provider));
+			}
+
+			_provider = provider;
 		}
 
 		public IEnumerable<FieldEntry> GetFields(DataSourceProviderConfiguration providerConfiguration)
@@ -59,6 +64,11 @@ namespace kCura.IntegrationPoints.Domain
 
 		private T EnrichCallWithLogContext<T>(Func<T> function)
 		{
+			if (_logger == null)
+			{
+				return function();
+			}
+
 			object correlationContext = GetCorrelationContext();
 			using (_logger.LogContextPushProperties(correlationContext))
 			{
