@@ -4,7 +4,7 @@
 // Set PipelineTools label to the same as here: https://git.kcura.com/projects/REL/repos/relativity/browse/Junkinsfile
 
 @Library([ 'PipelineTools@RelativityCD-6.3.0'
-         , 'SCVMMHelpers@2.0.0'
+         , 'SCVMMHelpers@3.1.1'
          , 'GitHelpers@1.0.0'
          , 'SlackHelpers@1.0.0'
          ])_
@@ -60,7 +60,8 @@ def profile = createProfile(installing_relativity, installing_invariant, install
 def knife = 'C:\\Python27\\Lib\\site-packages\\jeeves\\knife.rb'
 def session_id = System.currentTimeMillis().toString()
 def event_hash = java.security.MessageDigest.getInstance("MD5").digest(env.JOB_NAME.bytes).encodeHex().toString()
-def scvmm = new Scvmm(this, session_id)
+def scvmm = scvmm(this, session_id)
+scvmm.setHoursToLive("12")
 
 // Make changes here if necessary.
 def python_packages = 'jeeves==4.1.0 phonograph==5.2.0 selenium==3.0.1'
@@ -168,7 +169,7 @@ timestamps
 							{
 								def numberOfSlaves = 1
 								def numberOfExecutors = '1'
-								scvmm.createNodes(numberOfSlaves, 60 * 8, numberOfExecutors)
+								scvmm.createNodes(numberOfSlaves, 60, numberOfExecutors)								
 								withCredentials([
 									usernamePassword(credentialsId: 'JenkinsSDLC', passwordVariable: 'SDLCPASSWORD', usernameVariable: 'SDLCUSERNAME')])
 								{
