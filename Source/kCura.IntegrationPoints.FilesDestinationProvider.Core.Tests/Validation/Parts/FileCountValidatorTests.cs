@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation;
 using NUnit.Framework;
 
@@ -9,7 +10,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 	{
 		[TestCase(-1)]
 		[TestCase(0)]
-		public void ItShouldFailValidationForInvalidCount(int count)
+		public void ItShouldFailValidationForInvalidCount(long count)
 		{
 			// arrange
 			var validator = new FileCountValidator();
@@ -23,7 +24,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 		}
 
 		[TestCase(42)]
-		public void ItShouldPassForValidCount(int count)
+		public void ItShouldPassForValidCount(long count)
 		{
 			// arrange
 			var validator = new FileCountValidator();

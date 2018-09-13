@@ -18,9 +18,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 
 		protected override ValidationResult PerformValidation(ExportFile exportFile)
 		{
-			var result = new ValidationResult();
+			ValidationResult result = new ValidationResult();
 
-			var totalDocCount = _exportInitProcessService.CalculateDocumentCountToTransfer(ExportSettingsEx, DestinationSettingsEx.ArtifactTypeId);
+			long totalDocCount = _exportInitProcessService.CalculateDocumentCountToTransfer(ExportSettingsEx, DestinationSettingsEx.ArtifactTypeId);
 
 			var fileCountValidator = new FileCountValidator();
 			result.Add(fileCountValidator.Validate(totalDocCount));
