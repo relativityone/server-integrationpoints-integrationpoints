@@ -20,10 +20,9 @@
 						autoOpen: false,
 						height: 'auto',
 						width: 'auto',
-						position: 'center',
 						resizable: false,
 						draggable: false,
-						dialogClass: 'transparent no-shadow'
+						dialogClass: 'transparent no-shadow no-border'
 					});
 				}
 
