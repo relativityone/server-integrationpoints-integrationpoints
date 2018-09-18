@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public LibraryApplication GetLibraryApplicationDTO(Guid applicationGuid)
 		{
-			LibraryApplication libraryApplicationDto = _libraryManager.Read(_baseServiceContext, applicationGuid);
+			LibraryApplication libraryApplicationDto = _libraryManager.ReadWithFileData(_baseServiceContext, applicationGuid);
 			return libraryApplicationDto;
 		}
 
