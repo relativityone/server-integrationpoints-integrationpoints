@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text;
 using kCura.EDDS.WebAPI.ExportManagerBase;
 using kCura.Relativity.Client;
@@ -26,16 +26,34 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 		public object[] RetrieveResultsBlock(int appID, Guid runId, int artifactTypeId, int[] avfIds, int chunkSize, bool displayMulticodesAsNested, char multiValueDelimiter,
 			char nestedValueDelimiter, int[] textPrecedenceAvfIds)
 		{
-			var export = CreateExport(appID, artifactTypeId, textPrecedenceAvfIds);
+			Export export = CreateExport(appID, artifactTypeId, textPrecedenceAvfIds);
 			return export.RetrieveResultsBlock(_baseServiceContext, runId, avfIds, chunkSize, displayMulticodesAsNested, multiValueDelimiter, nestedValueDelimiter);
+		}
+
+		public object[] RetrieveResultsBlockStartingFromIndex(int appID, Guid runId, int artifactTypeID, int[] avfIds, int chunkSize,
+			bool displayMulticodesAsNested, char multiValueDelimiter, char nestedValueDelimiter, int[] textPrecedenceAvfIds,
+			int index)
+		{
+			Export export = CreateExport(appID, artifactTypeID, textPrecedenceAvfIds);
+			return export.RetrieveResultsBlockStartingFromIndex(_baseServiceContext, runId, avfIds, chunkSize, displayMulticodesAsNested, multiValueDelimiter, nestedValueDelimiter, index);
 		}
 
 		public object[] RetrieveResultsBlockForProduction(int appID, Guid runId, int artifactTypeId, int[] avfIds, int chunkSize, bool displayMulticodesAsNested,
 			char multiValueDelimiter, char nestedValueDelimiter, int[] textPrecedenceAvfIds, int productionId)
 		{
-			var export = CreateExport(appID, artifactTypeId, textPrecedenceAvfIds);
-			var result = export.RetrieveResultsBlockForProduction(_baseServiceContext, runId, avfIds, chunkSize, displayMulticodesAsNested, multiValueDelimiter,
+			Export export = CreateExport(appID, artifactTypeId, textPrecedenceAvfIds);
+			object[] result = export.RetrieveResultsBlockForProduction(_baseServiceContext, runId, avfIds, chunkSize, displayMulticodesAsNested, multiValueDelimiter,
 				nestedValueDelimiter, productionId);
+			return RehydrateStringsIfNeeded(result);
+		}
+
+		public object[] RetrieveResultsBlockForProductionStartingFromIndex(int appID, Guid runId, int artifactTypeID, int[] avfIds,
+			int chunkSize, bool displayMulticodesAsNested, char multiValueDelimiter, char nestedValueDelimiter,
+			int[] textPrecedenceAvfIds, int productionId, int index)
+		{
+			Export export = CreateExport(appID, artifactTypeID, textPrecedenceAvfIds);
+			object[] result = export.RetrieveResultsBlockForProductionStartingFromIndex(_baseServiceContext, runId, avfIds, chunkSize, displayMulticodesAsNested, multiValueDelimiter,
+				nestedValueDelimiter, productionId, index);
 			return RehydrateStringsIfNeeded(result);
 		}
 
