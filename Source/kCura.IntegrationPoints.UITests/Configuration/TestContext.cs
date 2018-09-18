@@ -132,19 +132,19 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 		public TestContext InstallIntegrationPoints()
 		{
-			return InstallApplication(_RIP_GUID_STRING);
+			return InstallApplication(_RIP_GUID_STRING, "Integration Points");
 		}
 
 		public TestContext InstallLegalHold()
 		{
-			return InstallApplication(_LEGAL_HOLD_GUID_STRING);
+			return InstallApplication(_LEGAL_HOLD_GUID_STRING, "Legal Hold");
 		}
 
-		public TestContext InstallApplication(string guid)
+		public TestContext InstallApplication(string guid, string name)
 		{
 			Assert.NotNull(WorkspaceId, $"{nameof(WorkspaceId)} is null. Was workspace created correctly?.");
 
-			Log.Information("Checking application '{AppGUID}' in workspace with ID '{WorkspaceId}'.", guid, WorkspaceId);
+			Log.Information("Checking application '{AppName}' ({AppGUID}) in workspace '{WorkspaceName}' ({WorkspaceId}).", name, guid, WorkspaceName, WorkspaceId);
 			Stopwatch stopwatch = Stopwatch.StartNew();
 			try
 			{
@@ -154,18 +154,18 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 				bool isAppInstalledAndUpToDate = ipAppManager.IsApplicationInstalledAndUpToDate((int)WorkspaceId, guid);
 				if (!isAppInstalledAndUpToDate)
 				{
-					Log.Information("Installing application '{AppGUID}' in workspace with ID '{WorkspaceId}'.", guid, WorkspaceId);
+					Log.Information("Installing application '{AppName}' ({AppGUID}) in workspace '{WorkspaceName}' ({WorkspaceId}).", name, guid, WorkspaceName, WorkspaceId);
 					ipAppManager.InstallApplicationFromLibrary((int)WorkspaceId, guid);
-					Log.Information("Application '{AppGUID}' has been installed in workspace with ID '{WorkspaceId}' after {AppInstallTime} seconds.", guid, WorkspaceId, stopwatch.Elapsed.Seconds);
+					Log.Information("Application '{AppName}' ({AppGUID}) has been installed in workspace '{WorkspaceName}' ({WorkspaceId}) after {AppInstallTime} seconds.", name, guid, WorkspaceName, WorkspaceId, stopwatch.Elapsed.Seconds);
 				}
 				else
 				{
-					Log.Information("Application '{AppGUID}' is already installed in workspace with ID '{WorkspaceId}'.", guid, WorkspaceId);
+					Log.Information("Application '{AppName}' ({AppGUID}) is already installed in workspace '{WorkspaceName}' ({WorkspaceId}).", name, guid, WorkspaceName, WorkspaceId);
 				}
 			}
 			catch (Exception ex)
 			{
-				Log.Error(ex, $"Detecting or installing application in the workspace failed. Application GUID: {guid}");
+				Log.Error(ex, "Detecting or installing application '{AppName}' ({AppGUID}) in the workspace '{WorkspaceName}' ({WorkspaceId}) failed.", name, guid, WorkspaceName, WorkspaceId);
 				throw;
 			}
 			return this;

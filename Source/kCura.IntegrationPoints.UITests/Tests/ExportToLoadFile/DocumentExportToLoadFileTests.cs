@@ -176,12 +176,11 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 		public void DocumentExportToLoadFile_TC_ELF_DOC_2()
 		{
 			// Arrange
-			Context.ImportDocuments(true, DocumentTestDataBuilder.TestDataType.SaltPepperWithFolderStructure);
 			ExportToLoadFileProviderModel model = CreateExportToLoadFileProviderModel("TC_ELF_DOC_2");
 
 			// Step 1
 			//default
-			model.SourceInformationModel.StartAtRecord = 100;
+			model.SourceInformationModel.StartAtRecord = 10;
 			model.SourceInformationModel.Source = "Saved Search";
 			model.SourceInformationModel.SavedSearch = "All Documents";
 
@@ -237,7 +236,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 		public void DocumentExportToLoadFile_TC_ELF_DOC_4()
 		{
 			// Arrange
-			// Data is imported in DocumentExportToLoadFile_TC_ELF_DOC_2
 			ExportToLoadFileProviderModel model = CreateExportToLoadFileProviderModel("TC_ELF_DOC_4");
 
 			// Step 1

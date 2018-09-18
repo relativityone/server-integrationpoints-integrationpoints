@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.UITests.BrandNew
 
 		public void SelectAllSourceFields()
 		{
-			AddAllSourceFieldsButton.ClickWhenClickable();
+			AddAllSourceFieldsButton.ClickEx();
 		}
 
 		public void SelectDestinationField(string fieldName)
@@ -43,12 +43,12 @@ namespace kCura.IntegrationPoints.UITests.BrandNew
 
 		public void SelectAllDestinationFields()
 		{
-			AddAllDestinationFieldsButton.ClickWhenClickable();
+			AddAllDestinationFieldsButton.ClickEx();
 		}
 
 		public void MapFields()
 		{
-			MapFieldsButton.ClickWhenClickable();
+			MapFieldsButton.ClickEx();
 		}
 
 		public FieldMappingPanel MapFields(IDictionary<string, string> mappings)
@@ -71,7 +71,7 @@ namespace kCura.IntegrationPoints.UITests.BrandNew
 
 			SelectOption(selectElement, fieldName);
 
-			addFieldElement.ClickWhenClickable();
+			addFieldElement.ClickEx();
 		}
 
 		private static void SelectOption(SelectElement selectElement, string textToSearchFor)
@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.UITests.BrandNew
 				By.XPath($".//option[starts-with(normalize-space(.), \"{textToSearchFor}\")]"));
 			if (!option.Selected)
 			{
-				option.ClickWhenClickable();
+				option.ClickEx();
 			}
 		}
 	}

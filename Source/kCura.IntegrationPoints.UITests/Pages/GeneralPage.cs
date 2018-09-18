@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 				ReadOnlyCollection<IWebElement> buttons = Driver.FindElements(By.Id("_continue_button"));
 				if (buttons.Any())
 				{
-					buttons[0].ClickWhenClickable();
+					buttons[0].ClickEx();
 				}
 			}
 			finally
@@ -63,9 +63,9 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public LoginPage LogOut()
 		{
-			UserDropdownMenu.Click();
+			UserDropdownMenu.ClickEx();
 			IWebElement logOutLink = Driver.FindElement(By.LinkText("Logout"));
-			logOutLink.ClickWhenClickable();
+			logOutLink.ClickEx();
 			return new LoginPage(Driver);
 		}
 
@@ -73,7 +73,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		{
 			Driver.SwitchTo().DefaultContent();
 			IWebElement workspaceLink = GetWorkspaceLink(name);
-			workspaceLink.ClickWhenClickable();
+			workspaceLink.ClickEx();
 			AcceptLeavingPage();
 			return this;
 		}
@@ -100,11 +100,11 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		public IntegrationPointsPage GoToIntegrationPointsPage()
 		{
 			WaitForPage();
-			QuickNavigation.Click();
+			QuickNavigation.ClickEx();
 			QuickNavigationInput.SendKeys("Integration Points" + Keys.Enter);
 			Sleep(300);
 			QuickNavigationInput.SendKeys(Keys.Enter);
-			//QuickNavigationResult.Click();
+			//QuickNavigationResult.ClickEx();
 			return new IntegrationPointsPage(Driver);
 		}
 

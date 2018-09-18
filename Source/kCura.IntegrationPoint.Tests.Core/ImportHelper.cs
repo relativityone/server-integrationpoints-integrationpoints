@@ -74,7 +74,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			// Indicates file path for the native file.
 			importJob.Settings.NativeFilePathSourceFieldName = "Native File";
 			importJob.Settings.NativeFileCopyMode = _withNatives ? NativeFileCopyModeEnum.CopyFiles : NativeFileCopyModeEnum.DoNotImportNativeFiles;
-			importJob.Settings.OverwriteMode = OverwriteModeEnum.Append;
+			importJob.Settings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
 			importJob.Settings.FileNameColumn = "File Name";
 			importJob.Settings.CopyFilesToDocumentRepository = _withNatives;
 			importJob.Settings.DestinationFolderArtifactID = folderId.Value;
