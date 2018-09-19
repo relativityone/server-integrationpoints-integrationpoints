@@ -61,7 +61,7 @@ var loadData = function (ko, dataContainer) {
 		this.showTargetProductionSet = dataContainer.sourceConfiguration.targetProductionSet !== undefined;
 		this.sourceWorkspace = dataContainer.sourceConfiguration.SourceWorkspace;
 		this.targetWorkspace = dataContainer.sourceConfiguration.TargetWorkspace;
-		if (dataContainer.sourceConfiguration.SourceProductionId) {
+		if (dataContainer.sourceConfiguration.SourceProductionId >= 0) {
 			this.sourceDetails = "Production Set: " + dataContainer.sourceConfiguration.SourceProductionName;
 		} else {
 			this.sourceDetails = "Saved Search: " + dataContainer.sourceConfiguration.SavedSearch;
