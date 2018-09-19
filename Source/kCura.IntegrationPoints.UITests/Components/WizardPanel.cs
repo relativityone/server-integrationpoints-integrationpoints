@@ -15,10 +15,10 @@ namespace kCura.IntegrationPoints.UITests.Components
 		{
 		}
 		
-		public void GoBack() => BackButton.ClickWhenClickable();
+		public void GoBack() => BackButton.ClickEx();
 
-		public void GoNext() => NextButton.ClickWhenClickable();
+		public void GoNext() => NextButton.ClickEx();
 
-		public void Save() => SaveButton.ClickWhenClickable();
+		public void Save() => SaveButton.ClickEx();
 	}
 }

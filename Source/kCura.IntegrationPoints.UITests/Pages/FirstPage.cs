@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.UITests.Driver;
+﻿using System;
+using kCura.IntegrationPoints.UITests.Driver;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 using SeleniumExtras.PageObjects;
@@ -11,9 +12,8 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		[FindsBy(How = How.Id, Using = "next")]
 		protected IWebElement NextButton { get; set; }
-
-		[FindsBy(How = How.Id, Using = _NAME_INPUT_ID)]
-		protected IWebElement NameInput { get; set; }
+		
+		protected IWebElement NameInput => Driver.FindElementEx(By.Id(_NAME_INPUT_ID), TimeSpan.FromMinutes(1));
 
 		public string Name
 		{

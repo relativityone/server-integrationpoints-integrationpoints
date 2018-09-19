@@ -40,13 +40,6 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		public TestConfiguration LogConfiguration()
 		{
 			Log.Information("Relativity user: " + SharedVariables.RelativityUserName);
-			Log.Information("Relativity password: " + SharedVariables.RelativityPassword);
-			Log.Information("TargetDbHost: " + SharedVariables.TargetDbHost);
-			Log.Information("EddsConnectionString: " + SharedVariables.EddsConnectionString);
-			Log.Information("WorkspaceConnectionStringFormat: " + SharedVariables.WorkspaceConnectionStringFormat);
-			Log.Information("DatabaseUserId: " + SharedVariables.DatabaseUserId);
-			Log.Information("DatabasePassword: " + SharedVariables.DatabasePassword);
-
 			return this;
 		}
 

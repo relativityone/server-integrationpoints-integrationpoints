@@ -35,27 +35,27 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public void SelectExportImages()
 		{
-			ImagesCheckbox.ClickWhenClickable();
+			ImagesCheckbox.ClickEx();
 		}
 
 		public void SelectExportNatives()
 		{
-			NativesCheckbox.ClickWhenClickable();
+			NativesCheckbox.ClickEx();
 		}
 
 		public void SelectExportTextFieldsAsFiles()
 		{
-			TextFieldsAsFilesCheckbox.ClickWhenClickable();
+			TextFieldsAsFilesCheckbox.ClickEx();
 		}
 
 		public void DeselectDoNotCreateExportFolder()
 		{
-			CreateExportFolderCheckbox.ClickWhenClickable();
+			CreateExportFolderCheckbox.ClickEx();
 		}
 
 		public void SelectOverwriteFiles()
 		{
-			OverwriteFilesCheckbox.ClickWhenClickable();
+			OverwriteFilesCheckbox.ClickEx();
 		}
 	}
 }

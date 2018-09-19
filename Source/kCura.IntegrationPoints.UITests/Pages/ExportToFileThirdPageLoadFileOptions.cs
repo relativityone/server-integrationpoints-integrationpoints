@@ -93,13 +93,13 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			switch (filePath)
 			{
 				case ExportToLoadFileProviderModel.FilePathTypeEnum.Absolute:
-					AbsoluteFilePathRadio.ClickWhenClickable();
+					AbsoluteFilePathRadio.ClickEx();
 					break;
 				case ExportToLoadFileProviderModel.FilePathTypeEnum.Relative:
-					RelativeFilePathRadio.ClickWhenClickable();
+					RelativeFilePathRadio.ClickEx();
 					break;
 				case ExportToLoadFileProviderModel.FilePathTypeEnum.UserPrefix:
-					UserPrefixFilePathRadio.ClickWhenClickable();
+					UserPrefixFilePathRadio.ClickEx();
 					break;
 			}
 		}
@@ -112,12 +112,12 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public void IncludeNativeFilesPath()
 		{
-			IncludeNativeFilesPathCheckbox.ClickWhenClickable();
+			IncludeNativeFilesPathCheckbox.ClickEx();
 		}
 
 		public void ExportMultipleChoiceFieldsAsNested()
 		{
-			ExportMultipleChoiceFieldsAsNestedCheckbox.ClickWhenClickable();
+			ExportMultipleChoiceFieldsAsNestedCheckbox.ClickEx();
 		}
 
 		protected SelectElement NameOutputFilesAfterSelectElement => new SelectElement(NameOutputFilesAfterSelectWebElement);
@@ -136,7 +136,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public void AppendOriginalFileName()
 		{
-			AppendOriginalFileNameCheckbox.ClickWhenClickable();
+			AppendOriginalFileNameCheckbox.ClickEx();
 		}
 	}
 }

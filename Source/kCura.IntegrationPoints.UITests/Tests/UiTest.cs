@@ -98,20 +98,6 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			if (string.IsNullOrEmpty(SharedVariables.UiUseThisExistingWorkspace))
 			{
 				await CreateWorkspaceAsync();
-
-				Task installIntegrationPointsTask = Context.InstallIntegrationPointsAsync();
-
-				await ImportDocumentsAsync();
-
-				ContextSetUp(); // TODO del such things
-
-				await installIntegrationPointsTask;
-
-				if (InstallLegalHoldApp)
-				{
-					Task installLegalHoldTask = Context.InstallLegalHoldAsync();
-					await installLegalHoldTask;
-				}
 			}
 			else
 			{
@@ -124,6 +110,23 @@ namespace kCura.IntegrationPoints.UITests.Tests
 				}
 				Context.WorkspaceName = SharedVariables.UiUseThisExistingWorkspace;
 				Log.Information("ID of workspace '{WorkspaceName}': {WorkspaceId}.", Context.WorkspaceName, Context.WorkspaceId);
+			}
+
+			Task installIntegrationPointsTask = Context.InstallIntegrationPointsAsync();
+
+			if (!SharedVariables.UiSkipDocumentImport)
+			{
+				await ImportDocumentsAsync();
+			}
+
+			ContextSetUp(); // TODO del such things
+
+			await installIntegrationPointsTask;
+
+			if (InstallLegalHoldApp)
+			{
+				Task installLegalHoldTask = Context.InstallLegalHoldAsync();
+				await installLegalHoldTask;
 			}
 		}
 
@@ -166,7 +169,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			Driver = new ChromeDriver(driverService, options);
 			// Long implicit wait as Relativity uses IFrames and is usually quite slow
 			Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(SharedVariables.UiImplicitWaitInSec);
-			Driver.Manage().Window.Size = new Size(1920, 1200);
+			Driver.Manage().Window.Size = new Size(1920, 1400);
 
 			Size browseSize = Driver.Manage().Window.Size;
 			Log.Information("Browser size: Width: {width}, Height: {height}", browseSize.Width, browseSize.Height);

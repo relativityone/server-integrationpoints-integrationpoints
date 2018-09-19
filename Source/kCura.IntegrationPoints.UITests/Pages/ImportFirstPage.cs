@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public void SelectImport()
 		{
-			ImportExportRadio.FindElements(By.TagName("label")).First(e => e.Text == "Import").Click();
+			ImportExportRadio.FindElements(By.TagName("label")).First(e => e.Text == "Import").ClickEx();
 		}
 
 		public string Source
@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		private void InitSecondPage()
 		{
 			WaitForPage();
-			NextButton.ClickWhenClickable();
+			NextButton.ClickEx();
 		}
 	}
 }

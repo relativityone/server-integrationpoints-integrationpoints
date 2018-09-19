@@ -96,7 +96,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		{
 			do
 			{
-				TextPrecedenceButton.ClickWhenClickable();
+				TextPrecedenceButton.ClickEx();
 				Sleep(500);
 			}
 			while (!IsAnyElementVisible(TextPrecedencePickerElement, By.Id("ok-button")));
@@ -112,14 +112,14 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 			if (!optionToSelect.Selected)
 			{
-				optionToSelect.ClickWhenClickable();
+				optionToSelect.ClickEx();
 			}
 		}
 
 		private void ClickButton(IWebElement parentElement, string id)
 		{
 			IWebElement okButton = parentElement.FindElement(By.Id(id));
-			okButton.ClickWhenClickable();
+			okButton.ClickEx();
 		}
 
 		public string TextSubdirectoryPrefix

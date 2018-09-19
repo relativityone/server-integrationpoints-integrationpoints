@@ -44,9 +44,9 @@ namespace kCura.IntegrationPoints.UITests.Pages
         public GeneralPage Login(string username, string password)
         {
             Username.SetText(username);
-            ContinueButton.ClickWhenClickable();
+            ContinueButton.ClickEx();
             Password.SetText(password);
-            LoginButton.ClickWhenClickable();
+            LoginButton.ClickEx();
             return new GeneralPage(Driver);
         }
 

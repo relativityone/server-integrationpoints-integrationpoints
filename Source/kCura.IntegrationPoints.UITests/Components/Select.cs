@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using kCura.IntegrationPoints.UITests.Driver;
+using OpenQA.Selenium;
 
 namespace kCura.IntegrationPoints.UITests.Components
 {
@@ -23,7 +24,7 @@ namespace kCura.IntegrationPoints.UITests.Components
 
 		protected Select Toggle()
 		{
-			SelectLink.Click();
+			SelectLink.ClickEx();
 			return this;
 		}
 
