@@ -4,26 +4,26 @@ strategy: min
 source https://proget.kcura.corp/nuget/NuGet
 
 //Main Relativity packages
-nuget kCura 9.6.245.1
-nuget kCura.Agent 9.6.245.1 
-nuget kCura.EventHandler 9.6.245.1 
-nuget kCura.Injection 9.6.245.1
-nuget kCura.Relativity.Client 9.6.245.1 
-nuget Relativity 9.6.245.1
-nuget Relativity.API 9.6.245.1
-nuget Relativity.Authentication 9.6.245.1
-nuget Relativity.Authentication.Interfaces 9.6.245.1
-nuget Relativity.Core 9.6.245.1 
-nuget Relativity.CustomPages 9.6.245.1 
-nuget Relativity.Data 9.6.245.1 
-nuget Relativity.ImportExport 9.6.245.1 
-nuget Relativity.Telemetry.Services.Interface 9.6.245.1 
-nuget RelativityCore 9.6.245.1
-nuget Relativity.Services.DataContracts 9.6.245.1
-nuget Relativity.Services.Interfaces 9.6.245.1
-nuget Relativity.Services.Interfaces.Private 9.6.245.1
-nuget Relativity.ServiceBus.Utilities 9.6.245.1
-nuget Relativity.ServiceBus.PriorityQueue 9.6.245.1
+nuget kCura 9.6.252.1
+nuget kCura.Agent 9.6.252.1 
+nuget kCura.EventHandler 9.6.252.1 
+nuget kCura.Injection 9.6.252.1
+nuget kCura.Relativity.Client 9.6.252.1 
+nuget Relativity 9.6.252.1
+nuget Relativity.API 9.6.252.1
+nuget Relativity.Authentication 9.6.252.1
+nuget Relativity.Authentication.Interfaces 9.6.252.1
+nuget Relativity.Core 9.6.252.1 
+nuget Relativity.CustomPages 9.6.252.1 
+nuget Relativity.Data 9.6.252.1 
+nuget Relativity.ImportExport 9.6.252.1 
+nuget Relativity.Telemetry.Services.Interface 9.6.252.1 
+nuget RelativityCore 9.6.252.1
+nuget Relativity.Services.DataContracts 9.6.252.1
+nuget Relativity.Services.Interfaces 9.6.252.1
+nuget Relativity.Services.Interfaces.Private 9.6.252.1
+nuget Relativity.ServiceBus.Utilities 9.6.252.1
+nuget Relativity.ServiceBus.PriorityQueue 9.6.252.1
 
 
 //Other Relativity packages
