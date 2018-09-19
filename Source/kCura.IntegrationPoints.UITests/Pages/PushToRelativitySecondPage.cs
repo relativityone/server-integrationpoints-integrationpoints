@@ -99,13 +99,13 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		{
 			WaitForPage();
 			const int timeoutInSeconds = 40;
-			FolderLocation.ClickWhenClickable(TimeSpan.FromSeconds(timeoutInSeconds));
+			FolderLocation.ClickEx(TimeSpan.FromSeconds(timeoutInSeconds));
 			return this;
 		}
 
 		public PushToRelativitySecondPage SelectProductionLocation(string productionName)
 		{
-			ProductionLocation.ClickWhenClickable();
+			ProductionLocation.ClickEx();
 			WaitForPage();
 			ProductionLocationSelect.Choose(productionName);
 			return this;
@@ -120,7 +120,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			Driver.SwitchTo().Frame("externalPage");
 
 			Thread.Sleep(TimeSpan.FromMilliseconds(200));
-			NextButton.ClickWhenClickable();
+			NextButton.ClickEx();
 			return new PushToRelativityThirdPage(Driver);
 		}
 	}

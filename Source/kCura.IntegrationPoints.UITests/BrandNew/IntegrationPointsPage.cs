@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.UITests.BrandNew
 
 		public void CreateNewIntegrationPoint()
 		{
-			NewIntegrationPointButton.ClickWhenClickable();
+			NewIntegrationPointButton.ClickEx();
 		}
 	}
 }

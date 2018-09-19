@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.UITests.Components
 
 		public void SelectSavedSearch(string savedSearchName)
 		{
-			SavedSearch.ClickWhenClickable(TimeSpan.FromSeconds(1));
+			SavedSearch.ClickEx(TimeSpan.FromSeconds(1));
 
 			string selectFullId = ReadSelectFullId();
 			IWebElement input = GetSelectInputElement(selectFullId);

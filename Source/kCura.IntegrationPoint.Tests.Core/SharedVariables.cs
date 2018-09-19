@@ -64,9 +64,14 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return int.Parse(AppSettingString(name));
 		}
 
+		public static double AppSettingDouble(string name)
+		{
+			return double.Parse(AppSettingString(name));
+		}
+
 		public static bool AppSettingBool(string name)
 		{
-			return bool.Parse(AppSettingString(name));
+			return AppSettingString(name) != null && bool.Parse(AppSettingString(name));
 		}
 
 		/// <summary>
@@ -116,9 +121,13 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static string UiUseThisExistingWorkspace => AppSettingString("UI.UseThisExistingWorkspace");
 
+		public static bool UiSkipDocumentImport => AppSettingBool("UI.SkipDocumentImport");
+
 		public static string UiTemplateWorkspace => AppSettingString("UI.TemplateWorkspace");
 
 		public static bool UiUseTapiForFileCopy => AppSettingBool("UI.UseTapiForFileCopy");
+
+		public static double UiTimeoutMultiplier => AppSettingDouble("UI.TimeoutMultiplier");
 
 		#endregion UI Tests Settings
 

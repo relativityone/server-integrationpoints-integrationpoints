@@ -27,14 +27,14 @@ namespace kCura.IntegrationPoints.UITests.Components
 		{
 			IWebElement radioInput =
 				Parent.FindElement(By.XPath($".//text()[contains(., '{label}')]/preceding-sibling::input[1]"));
-			radioInput.ClickWhenClickable();
+			radioInput.ClickEx();
 		}
 
 		private void CheckRadioWithTextInLabelElement(string label)
 		{
 			IWebElement radioRow = Parent.FindElement(By.XPath($".//label[contains(text(), '{label}')]"));
 			radioRow.FindElement(By.XPath("./..//input"))
-				.ClickWhenClickable();
+				.ClickEx();
 		}
 
 		public RadioField Check(bool yesNo)

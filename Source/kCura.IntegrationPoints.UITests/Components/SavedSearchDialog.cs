@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using kCura.IntegrationPoints.UITests.Common;
+using kCura.IntegrationPoints.UITests.Driver;
 using kCura.IntegrationPoints.UITests.Logging;
 using OpenQA.Selenium;
 using Serilog;
@@ -27,9 +28,9 @@ namespace kCura.IntegrationPoints.UITests.Components
 			{
 				throw new PageException($"Cannot find Saved Search element named {name}.");
 			}
-			element.Click();
+			element.ClickEx();
 			IWebElement ok = Parent.FindElement(By.Id("saved-search-picker-ok-button"));
-			ok.Click();
+			ok.ClickEx();
 		}
 
 		public IWebElement FindSavedSearchElement(string name)
@@ -81,7 +82,7 @@ namespace kCura.IntegrationPoints.UITests.Components
 			string nodeId = node.GetAttribute("id");
 
 			IWebElement icon = node.FindElement(By.CssSelector("i"));
-			icon.Click();
+			icon.ClickEx();
 
 			return SelectNode(nodeId);
 		}

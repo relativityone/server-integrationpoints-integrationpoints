@@ -23,7 +23,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 		public void OneTimeSetUp()
 		{
 			Context.CreateAndRunProduction(SAVED_SEARCH_NAME, PRODUCTION_NAME_SMALL);
-			Context.ImportDocuments(true, DocumentTestDataBuilder.TestDataType.SaltPepperWithFolderStructure);
 			Context.CreateAndRunProduction(SAVED_SEARCH_NAME, PRODUCTION_NAME_BIG);
 
 			EnsureGeneralPageIsOpened();
@@ -106,7 +105,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			// Step 2
 			model.SourceInformationModel.Source = ExportToLoadFileSourceConstants.PRODUCTION;
 			model.SourceInformationModel.ProductionSet = PRODUCTION_NAME_BIG;
-			model.SourceInformationModel.StartAtRecord = 100;
+			model.SourceInformationModel.StartAtRecord = 10;
 			model.SourceInformationModel.SelectAllFields = false;
 			// Production::Begin Bates, Production::End Bates are selected by default
 

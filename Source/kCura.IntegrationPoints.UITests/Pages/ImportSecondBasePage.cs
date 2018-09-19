@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			Driver.SwitchTo().ParentFrame();
 			Driver.SwitchTo().Frame("externalPage");
 
-			NextButton.ClickWhenClickable();
+			NextButton.ClickEx();
 			return funcThridPageCreator();
 		}
 	}

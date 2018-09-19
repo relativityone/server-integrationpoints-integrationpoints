@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public ExportToFileThirdPage GoToNextPage()
 		{
-			NextButton.ClickWhenClickable();
+			NextButton.ClickEx();
 			return new ExportToFileThirdPage(Driver);
 
 		}
@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		{
 			var wait = new WebDriverWait(Driver, TimeSpan.FromMilliseconds(500));
 			wait.Until(ExpectedConditions.ElementToBeClickable(AddAllFieldsButton));
-			AddAllFieldsButton.Click();
+			AddAllFieldsButton.ClickEx();
 		}
 	}
 }
