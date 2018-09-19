@@ -1,4 +1,4 @@
-﻿$(function (root) {
+﻿(function (window) {
 	//Create a new communication object that talks to the host page.
 	var message = IP.frameMessaging(); // handle into the global Integration point framework
 	var savedSearchService = new SavedSearchService();
@@ -253,16 +253,16 @@
 			});
 		}
 
-		self.validateProductionAddPermissions = function(destinationWorkspaceId) {
+		self.validateProductionAddPermissions = function (destinationWorkspaceId) {
 			IP.data.ajax({
 				type: "POST",
 				url: IP.utils.generateWebAPIURL("Production/CheckProductionAddPermission",
 					destinationWorkspaceId,
 					self.FederatedInstanceArtifactId() ? self.FederatedInstanceArtifactId() : 0),
 				data: self.SecuredConfiguration()
-			}).then(function(result) {
+			}).then(function (result) {
 				self.ShowProductionAddButton(result);
-			}).fail(function(error) {
+			}).fail(function (error) {
 				onFail(error);
 				IP.frameMessaging().dFrame.IP.message.error.raise(error);
 			});
@@ -594,4 +594,4 @@
 		}
 		return false;
 	}
-});
+})(window);
