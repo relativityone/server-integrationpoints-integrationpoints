@@ -53,7 +53,7 @@
 				self.template(self.settings.templateID);
 				self.hasTemplate = true;
 				var $frame = $('#' + frameName).attr('src', self.source);
-				$frame.iFrameResize({ heightCalculationMethod: 'max' }).load(function () {
+				$frame.iFrameResize({ heightCalculationMethod: 'max' }).on('load', function () {
 					self.frameBus = IP.frameMessaging({ destination: window[frameName].contentWindow || window[frameName].frameElement.contentWindow });
 
 					//for ImportProvider, pass along full model to our second step
