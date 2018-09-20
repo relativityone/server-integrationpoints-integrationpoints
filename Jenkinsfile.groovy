@@ -42,7 +42,7 @@ def NUnit = new nunit()
 // Make changes here if necessary.
 def chef_attributes = 'fluidOn:1,cdonprem:1'
 def cookbook_versions = getCookbooks()
-def python_packages = 'CSharpLibrary==0.1.0 curiosity==4.0.0 fabric-venv==0.0.4 jeeves==4.1.0 jemin==1.0.0 kipa==2.0.0 kWebDriver==0.5 phonograph==5.1.0 RequestsLibrary==0.1.0 robotframework==3.0 robotframework-selenium2library==1.8.0 selenium==3.0.1 vmware==0.3.2'
+def python_packages = 'CSharpLibrary==0.1.0 curiosity==4.1.0 fabric-venv==0.0.4 jeeves==4.1.0 jemin==1.0.0 kipa==2.0.0 kWebDriver==0.5 phonograph==5.1.0 RequestsLibrary==0.1.0 robotframework==3.0 robotframework-selenium2library==1.8.0 selenium==3.0.1 vmware==0.3.2'
 
 // Unused
 def analyticsbuildtype = "Unused"
