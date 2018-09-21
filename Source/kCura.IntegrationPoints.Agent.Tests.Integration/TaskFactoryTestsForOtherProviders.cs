@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			};
 		}
 
-		[Test]
+		//[Test]
 		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
 		public void Ldap_MultipleJobs_AgentDropsJob_RunJob()
 		{
@@ -188,7 +188,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			}
 		}
 
-		[Test]
+		//[Test]
 		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
 		public void ItShouldSetJobIdOnJobHistory()
 		{
