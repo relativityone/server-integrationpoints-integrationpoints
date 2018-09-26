@@ -125,7 +125,7 @@
     <Content Include="Global.asax" />
     <Content Include="Scripts\first-provider.js" />
     <Content Include="Scripts\frame-messaging.js" />
-    <Content Include="Scripts\jquery-1.8.2.js" />
+    <Content Include="Scripts\jquery-3.3.1.js" />
     <Content Include="Scripts\jquery-postMessage.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -165,7 +165,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>0</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:59435/</IISUrl>
+          <IISUrl>http://localhost:63975/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
