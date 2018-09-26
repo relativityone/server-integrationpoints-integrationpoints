@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 			_instance = new IntegrationPoints.Agent.TaskFactory.TaskFactory(_helper, _caseServiceContext, _taskExceptionMediator, _jobSynchronizationChecker, _jobHistoryServiceFactory, container);
 		}
 
-		[Test]
+		//[Test]
 		public void ItShouldSetJobIdOnJobHistory()
 		{
 			int jobId = 342343;
