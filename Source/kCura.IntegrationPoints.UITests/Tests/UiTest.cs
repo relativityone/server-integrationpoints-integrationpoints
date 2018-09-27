@@ -161,7 +161,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			options.AddUserProfilePreference("profile.password_manager_enabled", false);
 			// Disables "Chrome is being controlled by automated test software." bar
 			options.AddArguments("disable-infobars");
-			options.AddArguments("headless");
+//			options.AddArguments("headless");
 			options.AddArguments("ignore-certificate-errors");
 			options.AddAdditionalCapability(CapabilityType.AcceptSslCertificates, true, true);
 			options.AddAdditionalCapability(CapabilityType.AcceptInsecureCertificates, true, true);

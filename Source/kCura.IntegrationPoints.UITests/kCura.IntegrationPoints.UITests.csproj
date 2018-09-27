@@ -169,11 +169,19 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="paket.references" />
+    <None Include="UiTestsConfig\cop001.config">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="UiTestsConfig\Reg-Zero.config">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="UiTestsConfig\Reg-Prod.config">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="UiTestsConfig\Reg-B.config">
+    <None Include="UiTestsConfig\Regression-B.config">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

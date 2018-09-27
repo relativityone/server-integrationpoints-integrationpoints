@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			RunButton.ClickEx();
 
 			const int timeoutForWarningBoxSeconds = 5;
-			By okButtonLocator = By.XPath("//span[text()='OK']");
+			By okButtonLocator = By.XPath("//button[text()='OK']");
 			var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(timeoutForWarningBoxSeconds));
 			IWebElement okButton = wait.Until(ExpectedConditions.ElementIsVisible(okButtonLocator));
 			okButton.ClickEx();
