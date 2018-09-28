@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Script
 			{
 				"/Content/jquery.jqGrid/ui.jqgrid.css",
 				"/Content/legal-hold-fonts.css",
-				"/Content/themes/base/jquery.ui.dialog.css",
+				"/Content/themes/base/dialog.css",
 				"/Content/integration-points-view.css",
 				"/Content/Site.css",
 				"/Content/controls.grid.css",
@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Script
 				"/Scripts/integration-point/picker.js",
                 "/Scripts/Export/export-validation.js",
 				"/Scripts/integration-point/save-as-profile-modal-vm.js",
-				"/Scripts/jquery.signalR-2.2.0.js",
+				"/Scripts/jquery.signalR-2.3.0.js",
 				"/signalr/hubs",
 				"/Scripts/hubs/integrationPointHub.js",
 				"/Scripts/EventHandlers/integration-points-view-destination.js",

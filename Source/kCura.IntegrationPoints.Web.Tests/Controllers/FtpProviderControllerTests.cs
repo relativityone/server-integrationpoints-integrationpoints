@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 
         [TestCase("", "test.host", "", "", "", 21, true, HttpStatusCode.BadRequest, ErrorMessage.MISSING_CSV_FILE_NAME)]
         [TestCase("AnyFileName", "test.h!@#$%^&*()__+=[]\',./<>?:;ost", "", "", "", 21, true, HttpStatusCode.BadRequest, ErrorMessage.INVALID_HOST_NAME)]
-        [TestCase("AnyFileName", "test.host", "", "", "", 88888, true, HttpStatusCode.OK, null)]
+        [TestCase("AnyFileName", "test.host", "", "", "", 88888, true, HttpStatusCode.NoContent, null)]
         [TestCase("AnyFileName", "test.host", "", "", "", 88888, false, HttpStatusCode.NotImplemented, "Nothing happened")]
         public void ShouldValidateSettingsCorrectness(
             string filename, 
