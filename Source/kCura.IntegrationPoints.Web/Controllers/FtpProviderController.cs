@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
                 {
                     if (client.TestConnection())
                     {
-                        response = new HttpStatusCodeResult(HttpStatusCode.OK);
+                        response = new HttpStatusCodeResult(HttpStatusCode.NoContent);
                     }
                 }
             }
