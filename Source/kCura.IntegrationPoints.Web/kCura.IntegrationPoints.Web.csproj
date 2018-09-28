@@ -357,6 +357,8 @@
     <Content Include="Scripts\jquery-migrate-3.0.1.min.js" />
     <Content Include="Scripts\jquery-ui-1.12.1.js" />
     <Content Include="Scripts\jquery-ui-1.12.1.min.js" />
+    <Content Include="Scripts\jquery.signalR-2.3.0.js" />
+    <Content Include="Scripts\jquery.signalR-2.3.0.min.js" />
     <Content Include="Scripts\modals\create-production-set-modal-vm.js" />
     <Content Include="Scripts\modals\authenticate-modal-vm.js" />
     <Content Include="Scripts\integration-point\tooltip-view-model.js" />
@@ -383,6 +385,7 @@
     <Content Include="Scripts\moment-with-locales.min.js" />
     <Content Include="Scripts\moment.js" />
     <Content Include="Scripts\moment.min.js" />
+    <Content Include="Scripts\q.js" />
     <Content Include="Scripts\RelativityProvider\relativity-provider-summary-page.js" />
     <Content Include="Scripts\ThirdPartyProviders\third-party-provider-summary-page.js" />
     <Content Include="Scripts\unsaved-changes-handler.js" />
@@ -404,8 +407,6 @@
     <Content Include="Scripts\Import\import-provider-settings-step.js" />
     <Content Include="Scripts\Import\import-setup.js" />
     <Content Include="Scripts\integration-point\step-definition-provider.js" />
-    <Content Include="Scripts\jquery.signalR-2.2.0.js" />
-    <Content Include="Scripts\jquery.signalR-2.2.0.min.js" />
     <Content Include="Scripts\jstree.js" />
     <Content Include="Scripts\jstree.min.js" />
     <Content Include="Scripts\knockout-3.4.0.debug.js" />
@@ -507,7 +508,6 @@
     <Content Include="Scripts\postal\lodash.js" />
     <Content Include="Scripts\postal\postal.min.js" />
     <Content Include="Scripts\postal\postal.js" />
-    <Content Include="Scripts\q.js" />
     <Content Include="Scripts\q.min.js" />
     <Content Include="Scripts\iframeResizer.contentWindow.min.js" />
     <Content Include="Scripts\route.js" />
@@ -586,9 +586,6 @@
     </Content>
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js.map">
       <DependentUpon>jquery.validate.unobtrusive.js</DependentUpon>
-    </Content>
-    <Content Include="Scripts\q.min.js.map">
-      <DependentUpon>q.js</DependentUpon>
     </Content>
     <Content Include="Scripts\select2.min.js.map">
       <DependentUpon>select2.js</DependentUpon>
