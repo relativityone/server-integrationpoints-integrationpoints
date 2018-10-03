@@ -141,9 +141,9 @@ timestamps
 								registerEvent(this, session_id, 'Talos_Provision_test_CD', 'PASS', '-c', "${sut.name}.${sut.domain}", profile, event_hash)
 								if (installing_relativity)
 								{
+									relativity_build = getBuildArtifactsPath(this, "Relativity", params.relativityBranch, params.relativityBuildVersion, params.relativityBuildType, session_id)
 									if (!params.relativityBuildVersion)
-									{
-										relativity_build = getBuildArtifactsPath(this, "Relativity", params.relativityBranch, params.relativityBuildVersion, params.relativityBuildType, session_id)
+									{										
 										echo "Relativity version found: $relativity_build"
 									}
 									echo "Installed Relativity, branch: $params.relativityBranch, version: $relativity_build, type: $params.relativityBuildType"

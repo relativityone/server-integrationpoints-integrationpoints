@@ -106,8 +106,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			AuditAction(payload, _STOP_AUDIT_MESSAGE);
 
-			string errorMessage = String.Empty;
-			HttpStatusCode httpStatusCode = HttpStatusCode.OK;
+			string errorMessage = null;
+			HttpStatusCode httpStatusCode = HttpStatusCode.NoContent;
 
 			IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_helper, _helper);
 
@@ -145,8 +145,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		private HttpResponseMessage RunInternal(int workspaceId, int relatedObjectArtifactId, Action<int, int, int> integrationPointServiceMethod)
 		{
-			string errorMessage = String.Empty;
-			HttpStatusCode httpStatusCode = HttpStatusCode.OK;
+			string errorMessage = null;
+			HttpStatusCode httpStatusCode = HttpStatusCode.NoContent;
 			try
 			{
 				int userId = GetUserIdIfExists();
@@ -169,7 +169,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			}
 
 			HttpResponseMessage response = Request.CreateResponse(httpStatusCode);
-			response.Content = new StringContent(errorMessage, System.Text.Encoding.UTF8, "text/plain");
+			if (!String.IsNullOrEmpty(errorMessage))
+			{
+				response.Content = new StringContent(errorMessage, System.Text.Encoding.UTF8, "text/plain");
+			}
 
 			return response;
 		}
