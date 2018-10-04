@@ -124,7 +124,7 @@ timestamps
 			{
 				node (agentsPool)
 				{
-					timeout(time: 45, unit: 'MINUTES')
+					timeout(time: 90, unit: 'MINUTES')
 					{
 						echo "Getting server from pool, session_id: $session_id, Relativity branch: $params.relativityBranch, Relativity version: $params.relativityBuildVersion, Relativity build type: $params.relativityBuildType, event hash: $event_hash"
 						sut = Scvmm.getServerFromPool()
