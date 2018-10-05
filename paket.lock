@@ -1,0 +1,12 @@
+RESTRICTION: == net462
+NUGET
+  remote: https://proget.kcura.corp/nuget/NuGet
+    Microsoft.CodeAnalysis.FxCopAnalyzers (2.6.2)
+      Microsoft.CodeQuality.Analyzers (2.6.2)
+      Microsoft.NetCore.Analyzers (2.6.2)
+      Microsoft.NetFramework.Analyzers (2.6.2)
+      Text.Analyzers (2.6.2)
+    Microsoft.CodeQuality.Analyzers (2.6.2)
+    Microsoft.NetCore.Analyzers (2.6.2)
+    Microsoft.NetFramework.Analyzers (2.6.2)
+    Text.Analyzers (2.6.2)
