@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 		private JobHistory _jobHistory;
 		private JobHistoryError _jobHistoryError;
 
-		public DeleteIntegrationPointsTests() : base($"DeleteIP{Utils.FormatedDateTimeNow}", $"Destination{Utils.FormatedDateTimeNow}")
+		public DeleteIntegrationPointsTests() : base($"DeleteIP{Utils.FormattedDateTimeNow}", $"Destination{Utils.FormattedDateTimeNow}")
 		{
 		}
 
@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 		{
 			base.TestSetup();
 
-			var integrationPointModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, $"IP{Utils.FormatedDateTimeNow}", "Append Only");
+			var integrationPointModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, $"IP{Utils.FormattedDateTimeNow}", "Append Only");
 			integrationPointModel = CreateOrUpdateIntegrationPoint(integrationPointModel);
 			_integrationPoint = CaseContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(integrationPointModel.ArtifactID);
 
@@ -70,7 +70,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 		[Test]
 		public void ItShouldDeleteIntegrationPointWithoutJobHistory()
 		{
-			var integrationPointModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, $"IP{Utils.FormatedDateTimeNow}", "Append Only");
+			var integrationPointModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, $"IP{Utils.FormattedDateTimeNow}", "Append Only");
 			integrationPointModel = CreateOrUpdateIntegrationPoint(integrationPointModel);
 
 			// ACT

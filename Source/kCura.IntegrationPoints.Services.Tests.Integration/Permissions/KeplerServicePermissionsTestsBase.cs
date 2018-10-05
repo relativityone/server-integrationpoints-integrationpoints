@@ -11,15 +11,15 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.Permissions
 		protected UserModel UserModel;
 		protected int GroupId;
 
-		protected KeplerServicePermissionsTestsBase() : base($"permissions_{Utils.FormatedDateTimeNow}")
+		protected KeplerServicePermissionsTestsBase() : base($"permissions_{Utils.FormattedDateTimeNow}")
 		{
 		}
 
 		public override void TestSetup()
 		{
 			base.TestSetup();
-			GroupId = Group.CreateGroup($"group_{Utils.FormatedDateTimeNow}");
-			UserModel = User.CreateUser("firstname", "lastname", $"test_{Utils.FormatedDateTimeNow}@relativity.com", new List<int> {GroupId});
+			GroupId = Group.CreateGroup($"group_{Utils.FormattedDateTimeNow}");
+			UserModel = User.CreateUser("firstname", "lastname", $"test_{Utils.FormattedDateTimeNow}@relativity.com", new List<int> {GroupId});
 		}
 
 		public override void TestTeardown()

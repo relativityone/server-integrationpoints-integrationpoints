@@ -4,28 +4,28 @@ namespace kCura.IntegrationPoints.FtpProvider.Helpers
 {
     public class Exceptions
     {
-        public class DuplicateColumnsExistExcepetion : Exception
+        public class DuplicateColumnsExistException : Exception
         {
-            public DuplicateColumnsExistExcepetion()
+            public DuplicateColumnsExistException()
                 : base("Duplicate columns exist in file, please fix and reload.")
             { }
-            public DuplicateColumnsExistExcepetion(string message)
+            public DuplicateColumnsExistException(string message)
                 : base(message)
             { }
-            public DuplicateColumnsExistExcepetion(string message, Exception inner)
+            public DuplicateColumnsExistException(string message, Exception inner)
                 : base(message, inner)
             { }
         }
 
-        public class BlankColumnExcepetion : Exception
+        public class BlankColumnException : Exception
         {
-            public BlankColumnExcepetion()
+            public BlankColumnException()
                 : base("There is a blank column in your header row, please enter a name for the column and reload.")
             { }
-            public BlankColumnExcepetion(string message)
+            public BlankColumnException(string message)
                 : base(message)
             { }
-            public BlankColumnExcepetion(string message, Exception inner)
+            public BlankColumnException(string message, Exception inner)
                 : base(message, inner)
             { }
         }
@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Helpers
         public class NumberOfColumnsNotEqualToNumberOfDataValuesException : Exception
         {
             public NumberOfColumnsNotEqualToNumberOfDataValuesException(Int32 lineNumber)
-                : base(String.Format("The are a different number of data columns than column heading in line number {0}.", lineNumber))
+                : base($"The are a different number of data columns than column heading in line number {lineNumber}.")
             { }
             public NumberOfColumnsNotEqualToNumberOfDataValuesException(string message)
                 : base(message)
@@ -43,28 +43,28 @@ namespace kCura.IntegrationPoints.FtpProvider.Helpers
             { }
         }
 
-        public class NoColumnsExcepetion : Exception
+        public class NoColumnsException : Exception
         {
-            public NoColumnsExcepetion()
+            public NoColumnsException()
                 : base("No columns are present in load file.")
             { }
-            public NoColumnsExcepetion(string message)
+            public NoColumnsException(string message)
                 : base(message)
             { }
-            public NoColumnsExcepetion(string message, Exception inner)
+            public NoColumnsException(string message, Exception inner)
                 : base(message, inner)
             { }
         }
 
-        public class ColumnsMissmatchExcepetion : Exception
+        public class ColumnsMissmatchException : Exception
         {
-            public ColumnsMissmatchExcepetion()
+            public ColumnsMissmatchException()
                 : base("File contains different set or order of columns then original format.")
             { }
-            public ColumnsMissmatchExcepetion(string message)
+            public ColumnsMissmatchException(string message)
                 : base(message)
             { }
-            public ColumnsMissmatchExcepetion(string message, Exception inner)
+            public ColumnsMissmatchException(string message, Exception inner)
                 : base(message, inner)
             { }
         }

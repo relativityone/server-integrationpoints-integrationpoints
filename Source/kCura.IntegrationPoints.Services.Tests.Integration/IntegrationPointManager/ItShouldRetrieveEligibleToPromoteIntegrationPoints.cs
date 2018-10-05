@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 	public class ItShouldRetrieveEligibleToPromoteIntegrationPoints : RelativityProviderTemplate
 	{
 		public ItShouldRetrieveEligibleToPromoteIntegrationPoints()
-			: base($"KeplerService_{Utils.FormatedDateTimeNow}", $"KeplerService_Target_{Utils.FormatedDateTimeNow}")
+			: base($"KeplerService_{Utils.FormattedDateTimeNow}", $"KeplerService_Target_{Utils.FormattedDateTimeNow}")
 		{
 		}
 

@@ -11,7 +11,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointTyp
 	[TestFixture]
 	public class IntegrationPointTypeManagerTests : SourceProviderTemplate
 	{
-		public IntegrationPointTypeManagerTests() : base($"IPType_{Utils.FormatedDateTimeNow}")
+		public IntegrationPointTypeManagerTests() : base($"IPType_{Utils.FormattedDateTimeNow}")
 		{
 		}
 
