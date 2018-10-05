@@ -10,7 +10,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 {
 	public class CreateTenantIdForSecretStoreInstallerTests : SourceProviderTemplate
 	{
-		public CreateTenantIdForSecretStoreInstallerTests() : base($"TenantID_{Utils.FormatedDateTimeNow}")
+		public CreateTenantIdForSecretStoreInstallerTests() : base($"TenantID_{Utils.FormattedDateTimeNow}")
 		{
 		}
 

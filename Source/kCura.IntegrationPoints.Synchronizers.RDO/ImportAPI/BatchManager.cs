@@ -10,9 +10,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 {
     public class BatchManager
     {
-        internal List<IDictionary<string, object>> _dataSource;
-        private HashSet<string> _columnNames;
-        private readonly int _minBatchSize;
+	    private readonly int _minBatchSize;
+		internal List<IDictionary<string, object>> _dataSource;
 
         public event BatchCreated OnBatchCreate;
 
@@ -22,21 +21,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
             _minBatchSize = minBatchSize;
         }
 
-        public int MinimumBatchSize { get { return _minBatchSize; } }
-        public int CurrentSize { get { return _dataSource.Count; } }
+        public int MinimumBatchSize => _minBatchSize;
+	    public int CurrentSize => _dataSource.Count;
 
-        public HashSet<string> ColumnNames
-        {
-            get { return _columnNames; }
-            set { _columnNames = value; }
-        }
+	    public HashSet<string> ColumnNames { get; set; }
 
-        public void Add(IDictionary<string, object> fileData)
+	    public void Add(IDictionary<string, object> fileData)
         {
             _dataSource.Add(fileData);
-            if (_dataSource.Count == 1 && OnBatchCreate != null)
+            if (_dataSource.Count == 1)
             {
-                OnBatchCreate(_minBatchSize);
+                OnBatchCreate?.Invoke(_minBatchSize);
             }
         }
 

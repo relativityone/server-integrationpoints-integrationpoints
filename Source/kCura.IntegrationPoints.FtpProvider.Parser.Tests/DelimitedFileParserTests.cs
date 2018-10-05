@@ -142,7 +142,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
 			using (var parser = new DelimitedFileParser(streamInput, new ParserOptions() {Delimiters = new[] {","}}))
 			{
 				//Assert
-				Assert.Throws<Exceptions.NoColumnsExcepetion>(() => parser.ParseColumns());
+				Assert.Throws<Exceptions.NoColumnsException>(() => parser.ParseColumns());
 			}
 		}
 
@@ -170,7 +170,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
 			{
 				string[] columns = {"Column1", "", "COlumn2"};
 
-				Assert.Throws<Exceptions.BlankColumnExcepetion>(() => parser.ValidateColumns(columns));
+				Assert.Throws<Exceptions.BlankColumnException>(() => parser.ValidateColumns(columns));
 			}
 		}
 
@@ -183,7 +183,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
 			{
 				string[] columns = {"Column1", "Column1", "Column2"};
 
-				Assert.Throws<Exceptions.DuplicateColumnsExistExcepetion>(() => parser.ValidateColumns(columns));
+				Assert.Throws<Exceptions.DuplicateColumnsExistException>(() => parser.ValidateColumns(columns));
 			}
 		}
 

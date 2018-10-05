@@ -187,7 +187,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			if (missingFields.Count > 0)
 			{
 				string missingFieldFormatted = string.Join(", ", missingFields);
-				var message = string.Format("Missing mapped field IDs: {0}", missingFieldFormatted);
+				var message = $"Missing mapped field IDs: {missingFieldFormatted}";
 				LogFieldInWorkspaceValidationError(message);
 				throw new Exception(message);
 			}

@@ -16,12 +16,9 @@ namespace kCura.IntegrationPoints.Core.Services.Conversion
 		public T BuildObject<T>(System.Data.IDataRecord row, IEnumerable<string> columns)
 		{
 			IDictionary<FieldEntry, object> returnValue = new Dictionary<FieldEntry, object>();
-			var colList = columns.ToList();
+			List<string> colList = columns.ToList();
 			for (int i = 0; i < row.FieldCount; i++)
 			{
-				//I made this firstOrDefault and checked for null because the dataset could contain columns not expected
-				//I noticed this threw errors if the data set didn't exactly match so I figured we'd skip them
-				//if the dev decided to be lazy.
 				var fieldName = _fields.FirstOrDefault(x => x.FieldIdentifier == colList[i]);
 				if (fieldName != null)
 				{
