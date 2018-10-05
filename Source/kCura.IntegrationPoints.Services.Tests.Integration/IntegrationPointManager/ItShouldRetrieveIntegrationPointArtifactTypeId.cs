@@ -8,7 +8,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 	[TestFixture]
 	public class ItShouldRetrieveIntegrationPointArtifactTypeId : SourceProviderTemplate
 	{
-		public ItShouldRetrieveIntegrationPointArtifactTypeId() : base($"KeplerService_{Utils.FormatedDateTimeNow}")
+		public ItShouldRetrieveIntegrationPointArtifactTypeId() : base($"KeplerService_{Utils.FormattedDateTimeNow}")
 		{
 		}
 

@@ -17,14 +17,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 {
 	public class ImportService : IImportService, IBatchReporter
 	{
-		private const int _JOB_PROGRESS_TIMEOUT_MILLISECONDS = 5000;
-		private const string _IMPORT_API_ERROR_PREFIX = "IAPI";
-		private readonly BatchManager _batchManager;
-		private readonly IImportApiFactory _factory;
-		private readonly IImportJobFactory _jobFactory;
-		private readonly Dictionary<string, int> _inputMappings;
-		private readonly IAPILog _logger;
-
 		private Dictionary<int, Field> _idToFieldDictionary;
 		private IExtendedImportAPI _importApi;
 		private int _itemsErrored;
@@ -33,7 +25,16 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		private int _lastJobProgressUpdate;
 		private int _totalRowsImported;
 		private int _totalRowsWithErrors;
-		private IHelper _helper;
+
+		private const int _JOB_PROGRESS_TIMEOUT_MILLISECONDS = 5000;
+		private const string _IMPORT_API_ERROR_PREFIX = "IAPI";
+
+		private readonly IHelper _helper;
+		private readonly BatchManager _batchManager;
+		private readonly Dictionary<string, int> _inputMappings;
+		private readonly IAPILog _logger;
+		private readonly IImportApiFactory _factory;
+		private readonly IImportJobFactory _jobFactory;
 
 		public ImportService(ImportSettings settings, Dictionary<string, int> fieldMappings, BatchManager batchManager, NativeFileImportService nativeFileImportService,
 			IImportApiFactory factory, IImportJobFactory jobFactory, IHelper helper)
@@ -198,7 +199,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			if (missingFields.Count > 0)
 			{
 				string missingFieldFormatted = string.Join(", ", missingFields);
-				var message = string.Format("Missing mapped field IDs: {0}", missingFieldFormatted);
+				var message = $"Missing mapped field IDs: {missingFieldFormatted}";
 				LogFieldInWorkspaceValidationError(message);
 				throw new Exception(message);
 			}

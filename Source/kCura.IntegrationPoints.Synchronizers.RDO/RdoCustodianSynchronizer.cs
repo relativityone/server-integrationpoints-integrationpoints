@@ -16,14 +16,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
 	public class RdoCustodianSynchronizer : RdoSynchronizer
 	{
-		private const string LDAPMapFullNameFieldName = "CustomFullName";
-
-		private readonly IAPILog _logger;
-		private List<Artifact> _allRdoFields;
-
-		private int _artifactTypeId;
-
 		private IDictionary<string, string> _custodianManagerMap;
+		private int _artifactTypeId;
+		private List<Artifact> _allRdoFields;
+		private const string LDAPMapFullNameFieldName = "CustomFullName";
+		private readonly IAPILog _logger;
+
 		public RdoCustodianSynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory factory, IImportJobFactory jobFactory, IHelper helper)
 			: base(fieldQuery, factory, jobFactory, helper)
 		{

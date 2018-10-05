@@ -136,7 +136,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             LogExecuteEnd(job);
 		}
 
-		protected virtual void ExecuteImport(IEnumerable<FieldMap> fieldMap, DataSourceProviderConfiguration configuration, string destinationConfiguration, List<string> entryIDs, SourceProvider sourceProviderRdo, DestinationProvider destinationProvider, Job job)
+		protected virtual void ExecuteImport(IEnumerable<FieldMap> fieldMap, DataSourceProviderConfiguration configuration,
+			string destinationConfiguration, List<string> entryIDs, SourceProvider sourceProviderRdo,
+			DestinationProvider destinationProvider, Job job)
 		{
 		    LogExecuteImportStart(job);
 

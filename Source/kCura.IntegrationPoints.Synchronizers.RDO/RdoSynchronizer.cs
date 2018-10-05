@@ -20,51 +20,40 @@ using Newtonsoft.Json;
 using Relativity.API;
 using Artifact = kCura.Relativity.Client.Artifact;
 using Constants = kCura.IntegrationPoints.Domain.Constants;
+using Field = kCura.Relativity.Client.Field;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
 	public class RdoSynchronizer : IDataSynchronizer, IBatchReporter, IEmailBodyData
 	{
+		private bool _isJobComplete;
+		private bool? _disableNativeLocationValidation;
+		private bool? _disableNativeValidation;
+		private HashSet<string> _ignoredList;
+		private IImportAPI _api;
+		private IImportService _importService;
+		private string _webApiPath;
+		private readonly IAPILog _logger;
+		private readonly IHelper _helper;
 		private readonly IImportApiFactory _factory;
 		private readonly IImportJobFactory _jobFactory;
-		private readonly IHelper _helper;
-		private readonly IAPILog _logger;
-		private IImportService _importService;
-		private IImportAPI _api;
 
 		protected readonly IRelativityFieldQuery FieldQuery;
 
-		private bool? _disableNativeLocationValidation;
-		private bool? _disableNativeValidation;
-		private bool _isJobComplete;
-		private string _webApiPath;
-
 		public SourceProvider SourceProvider { get; set; }
 		private ImportSettings ImportSettings { get; set; }
-		private HashSet<string> _ignoredList;
-		private List<KeyValuePair<string, string>> _rowErrors;
+
 		private NativeFileImportService NativeFileImportService { get; set; }
 
-		private HashSet<string> IgnoredList
-		{
-			get
+		private HashSet<string> IgnoredList => _ignoredList ?? (_ignoredList = new HashSet<string>
 			{
-				// fields don't have any space in between words
-				if (_ignoredList == null)
-				{
-					_ignoredList = new HashSet<string>
-					{
-						"Is System Artifact",
-						"System Created By",
-						"System Created On",
-						"System Last Modified By",
-						"System Last Modified On",
-						"Artifact ID"
-					};
-				}
-				return _ignoredList;
-			}
-		}
+				"Is System Artifact",
+				"System Created By",
+				"System Created On",
+				"System Last Modified By",
+				"System Last Modified On",
+				"Artifact ID"
+			});
 
 		public bool? DisableNativeLocationValidation
 		{
@@ -136,20 +125,25 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			OnDocumentError?.Invoke(documentIdentifier, errorMessage);
 		}
 
+		private void RaiseJobErrorEvent(Exception exception)
+		{
+			OnJobError?.Invoke(exception);
+		}
+
 		public virtual IEnumerable<FieldEntry> GetFields(DataSourceProviderConfiguration providerConfiguration)
 		{
 			try
 			{
 				LogRetrievingFields();
 				HashSet<string> ignoreFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-			{
-				Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
-				Constants.SPECIAL_SOURCEJOB_FIELD_NAME,
-				DocumentFields.RelativityDestinationCase,
-				DocumentFields.JobHistory
-			};
+				{
+					Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
+					Constants.SPECIAL_SOURCEJOB_FIELD_NAME,
+					DocumentFields.RelativityDestinationCase,
+					DocumentFields.JobHistory
+				};
 
-			FieldEntry[] fields = GetFieldsInternal(providerConfiguration.Configuration).Where(f => !ignoreFields.Contains(f.ActualName)).Select(f => f).ToArray();
+				FieldEntry[] fields = GetFieldsInternal(providerConfiguration.Configuration).Where(f => !ignoreFields.Contains(f.ActualName)).Select(f => f).ToArray();
 
 				foreach (var field in fields.Where(field => field.IsIdentifier))
 				{
@@ -169,24 +163,16 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			{
 				LogSyncingData();
 
-				IntializeImportJob(fieldMap, options);
+				InitializeImportJob(fieldMap, options);
 
-				bool movedNext = true;
+				bool rowProcessed = false;
 				IEnumerator<IDictionary<FieldEntry, object>> enumerator = data.GetEnumerator();
 
 				do
 				{
 					try
 					{
-						movedNext = enumerator.MoveNext();
-						if (movedNext)
-						{
-							Dictionary<string, object> importRow = GenerateImportRow(enumerator.Current, fieldMap, ImportSettings);
-							if (importRow != null)
-							{
-								_importService.AddRow(importRow);
-							}
-						}
+						rowProcessed = ProcessRowForImport(fieldMap, enumerator);
 					}
 					catch (ProviderReadDataException exception)
 					{
@@ -198,7 +184,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 						LogSyncDataError(ex);
 						ItemError(string.Empty, ex.Message);
 					}
-				} while (movedNext);
+				} while (rowProcessed);
 
 				_importService.PushBatchIfFull(true);
 
@@ -211,13 +197,31 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 		}
 
+		internal bool ProcessRowForImport(IEnumerable<FieldMap> fieldMap, IEnumerator<IDictionary<FieldEntry, object>> enumerator)
+		{
+			bool rowProcessed = enumerator.MoveNext();
+
+			if (!rowProcessed)
+			{
+				return false;
+			}
+
+			Dictionary<string, object> importRow = GenerateImportRow(enumerator.Current, fieldMap, ImportSettings);
+			if (importRow != null)
+			{
+				_importService.AddRow(importRow);
+			}
+
+			return true;
+		}
+
 		public void SyncData(IDataTransferContext context, IEnumerable<FieldMap> fieldMap, string options)
 		{
 			try
 			{
 				LogSyncingData();
 
-				IntializeImportJob(fieldMap, options);
+				InitializeImportJob(fieldMap, options);
 
 				FieldMap[] fieldMaps = fieldMap as FieldMap[] ?? fieldMap.ToArray();
 				LogFieldMapLength(fieldMaps);
@@ -293,40 +297,35 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		{
 			foreach (var result in fields)
 			{
-				if (!IgnoredList.Contains(result.Name))
+				if (IgnoredList.Contains(result.Name))
 				{
-					var idField = result.Fields.FirstOrDefault(x => x.Name.Equals("Is Identifier"));
-					bool isIdentifier = false;
-					if (idField != null)
-					{
-						isIdentifier = Convert.ToInt32(idField.Value) == 1;
-						if (isIdentifier)
-						{
-							result.Name += " [Object Identifier]";
-							LogIdentifierFields(result);
-						}
-					}
-
-					var fieldType = result.Fields.FirstOrDefault(x => x.Name.Equals("Field Type"));
-					string type = string.Empty;
-					if (fieldType != null)
-					{
-						type = Convert.ToString(fieldType.Value);
-					}
-
-					yield return new FieldEntry
-					{
-						DisplayName = result.Name,
-						Type = type,
-						FieldIdentifier = result.ArtifactID.ToString(),
-						IsIdentifier = isIdentifier,
-						IsRequired = false
-					};
+					continue;
 				}
+
+				Field idField = result.Fields.FirstOrDefault(x => x.Name.Equals("Is Identifier"));
+				bool isIdentifier = Convert.ToInt32(idField?.Value) == 1;
+
+				if (isIdentifier)
+				{
+					result.Name += " [Object Identifier]";
+					LogIdentifierFields(result);
+				}
+
+				Field fieldType = result.Fields.FirstOrDefault(x => x.Name.Equals("Field Type"));
+				string type = fieldType == null ? string.Empty : Convert.ToString(fieldType.Value);
+
+				yield return new FieldEntry
+				{
+					DisplayName = result.Name,
+					Type = type,
+					FieldIdentifier = result.ArtifactID.ToString(),
+					IsIdentifier = isIdentifier,
+					IsRequired = false
+				};
 			}
 		}
 
-		private void IntializeImportJob(IEnumerable<FieldMap> fieldMap, string options)
+		private void InitializeImportJob(IEnumerable<FieldMap> fieldMap, string options)
 		{
 			LogInitializingImportJob();
 
@@ -334,18 +333,19 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 			ImportSettings = GetSyncDataImportSettings(fieldMap, options, NativeFileImportService);
 
-			var importFieldMap = GetSyncDataImportFieldMap(fieldMap, ImportSettings);
+			Dictionary<string, int> importFieldMap = GetSyncDataImportFieldMap(fieldMap, ImportSettings);
 
 			_importService = InitializeImportService(ImportSettings, importFieldMap, NativeFileImportService);
 
 			_isJobComplete = false;
-			_rowErrors = new List<KeyValuePair<string, string>>();
 
 			_logger.LogDebug("Initializing Import Job completed.");
 		}
 
 		private void WaitUntilTheJobIsDone()
 		{
+			const int waitDuration = 1000;
+
 			bool isJobDone;
 			do
 			{
@@ -354,8 +354,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 					isJobDone = _isJobComplete;
 				}
 				_logger.LogInformation("Waiting until the job id done");
-				Thread.Sleep(1000);
-			} while (!isJobDone);
+				Thread.Sleep(waitDuration);
+			}
+			while (!isJobDone);
 		}
 
 		protected virtual ImportService InitializeImportService(ImportSettings settings, Dictionary<string, int> importFieldMap, NativeFileImportService nativeFileImportService)
@@ -364,7 +365,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 			ImportService importService = new ImportService(settings, importFieldMap, new BatchManager(), nativeFileImportService, _factory, _jobFactory, _helper);
 			importService.OnBatchComplete += Finish;
-			importService.OnDocumentError += ItemError;
 			importService.OnJobError += JobError;
 
 			if (OnBatchComplete != null)
@@ -571,12 +571,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		protected bool IncludeFieldInImport(FieldMap fieldMap)
 		{
-			bool toInclude = (fieldMap.FieldMapType != FieldMapTypeEnum.Parent) &&
-							(fieldMap.FieldMapType != FieldMapTypeEnum.NativeFilePath);
-			if (toInclude && (fieldMap.FieldMapType == FieldMapTypeEnum.FolderPathInformation))
+			bool toInclude = fieldMap.FieldMapType != FieldMapTypeEnum.Parent &&
+			                 fieldMap.FieldMapType != FieldMapTypeEnum.NativeFilePath;
+
+			if (toInclude && fieldMap.FieldMapType == FieldMapTypeEnum.FolderPathInformation)
 			{
-				toInclude = (fieldMap.DestinationField != null) && (fieldMap.DestinationField.FieldIdentifier != null);
+				toInclude = fieldMap.DestinationField?.FieldIdentifier != null;
 			}
+
 			return toInclude;
 		}
 
@@ -598,11 +600,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				LogSettingJobCompleteInJobError();
 				_isJobComplete = true;
 			}
+			RaiseJobErrorEvent(ex);
 		}
-		
+
 		private void ItemError(string documentIdentifier, string errorMessage)
 		{
-			_rowErrors.Add(new KeyValuePair<string, string>(documentIdentifier, errorMessage));
+			RaiseDocumentErrorEvent(documentIdentifier, errorMessage);
 		}
 
 		protected virtual WorkspaceRef GetWorkspace(ImportSettings settings)
@@ -630,7 +633,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		private IntegrationPointsException LogAndCreateGetImportSettignsException(Exception exception, string options, IEnumerable<FieldMap> fieldMap)
 		{
 			string message = $"Error occured while preparing import settings.";
-			_logger.LogError("Error occured while preparing import settings\nOptions: {@options}\nFieldMap: {", options);
+			_logger.LogError("Error occured while preparing import settings\nOptions: {@options}\nFields: {@fieldMap}", options, fieldMap);
 			return new IntegrationPointsException(message, exception) { ShouldAddToErrorsTab = true };
 		}
 

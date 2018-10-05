@@ -11,7 +11,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.ProviderManager
 	[TestFixture]
 	public class ProviderManagerTests : SourceProviderTemplate
 	{
-		public ProviderManagerTests() : base($"KeplerService_{Utils.FormatedDateTimeNow}")
+		public ProviderManagerTests() : base($"KeplerService_{Utils.FormattedDateTimeNow}")
 		{
 		}
 

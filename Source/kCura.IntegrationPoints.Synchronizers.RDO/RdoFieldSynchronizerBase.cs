@@ -123,16 +123,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			{
 				if (!IgnoredList.Contains(result.Name))
 				{
-					var idField = result.Fields.FirstOrDefault(x => x.Name.Equals("Is Identifier"));
-					bool isIdentifier = false;
-					if (idField != null)
+					Field idField = result.Fields.FirstOrDefault(x => x.Name.Equals("Is Identifier"));
+					bool isIdentifier = Convert.ToInt32(idField?.Value) == 1;
+				
+					if (isIdentifier)
 					{
-						isIdentifier = Convert.ToInt32(idField.Value) == 1;
-						if (isIdentifier)
-						{
-							result.Name += " [Object Identifier]";
-						}
+						result.Name += " [Object Identifier]";
 					}
+				
 					yield return new FieldEntry {DisplayName = result.Name, FieldIdentifier = result.ArtifactID.ToString(), IsIdentifier = isIdentifier, IsRequired = false};
 				}
 			}

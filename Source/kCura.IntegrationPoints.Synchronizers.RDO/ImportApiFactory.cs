@@ -51,25 +51,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 					else
 					{
 						LogCreatingImportApiWithToken(settings.WebServiceURL);
-						string username = _RELATIVITY_BEARER_USERNAME;
-						string webServiceUrl;
-						string token;
-
-						if (settings.FederatedInstanceArtifactId != null)
-						{
-							OAuthClientDto oAuthClientDto = _serializer.Deserialize<OAuthClientDto>(settings.FederatedInstanceCredentials);
-							FederatedInstanceDto federatedInstance =
-								_federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(settings.FederatedInstanceArtifactId.Value);
-
-							token = _tokenProvider.GetExternalSystemToken(oAuthClientDto.ClientId, oAuthClientDto.ClientSecret,
-								new Uri(federatedInstance.InstanceUrl));
-							webServiceUrl = federatedInstance.WebApiUrl;
-						}
-						else
-						{
-							token = System.Security.Claims.ClaimsPrincipal.Current.Claims.Single(x => x.Type.Equals("access_token")).Value;
-							webServiceUrl = settings.WebServiceURL;
-						}
+						const string username = _RELATIVITY_BEARER_USERNAME;
+						string webServiceUrl = GetWebServiceUrl(settings);
+						string token = GetToken(settings);
+						
 						importApi = new ExtendedImportAPI(username, token, webServiceUrl);
 					}
 					// ExtendedImportAPI extends ImportAPI so the following cast is acceptable
@@ -93,6 +78,34 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 			LogImportApiCreated();
 			return importApi;
+		}
+
+		private string GetToken(ImportSettings settings)
+		{
+			if (settings.FederatedInstanceArtifactId == null)
+			{
+				return System.Security.Claims.ClaimsPrincipal.Current.Claims.Single(x => x.Type.Equals("access_token")).Value;
+			}
+
+			OAuthClientDto oAuthClientDto = _serializer.Deserialize<OAuthClientDto>(settings.FederatedInstanceCredentials);
+			FederatedInstanceDto federatedInstance =
+				_federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(settings.FederatedInstanceArtifactId.Value);
+
+			return _tokenProvider.GetExternalSystemToken(oAuthClientDto.ClientId, oAuthClientDto.ClientSecret,
+				new Uri(federatedInstance.InstanceUrl));
+		}
+
+		private string GetWebServiceUrl(ImportSettings settings)
+		{
+			if (settings.FederatedInstanceArtifactId == null)
+			{
+				return settings.WebServiceURL;
+			}
+
+			FederatedInstanceDto federatedInstance =
+				_federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(settings.FederatedInstanceArtifactId.Value);
+
+			return federatedInstance.WebApiUrl;
 		}
 
 		private void ThrowAuthenticationException(ImportSettings settings, Exception ex)

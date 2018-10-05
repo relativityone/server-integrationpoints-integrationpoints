@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 		private IHelper _helper;
 
 		public RdoSynchronizerTest() 
-			: base($"RdoSynchronizerTest_{Utils.FormatedDateTimeNow}")
+			: base($"RdoSynchronizerTest_{Utils.FormattedDateTimeNow}")
 		{
 		}
 
@@ -64,7 +64,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
 		public void ItShouldSyncDataToWorkspace()
 		{
-			//Arange
+			//Arrange
 			const int numberOfDocuments = 3;
 			var rdoSynchronizer = new RdoSynchronizer(_fieldQuery, _factory, _jobFactory, _helper);
 			
@@ -72,7 +72,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 			List<FieldEntry> destinationFields = rdoSynchronizer.GetFields(new DataSourceProviderConfiguration(JsonConvert.SerializeObject(importSettings))).ToList();
 			FieldEntry fieldIdentifierEntry = destinationFields.FirstOrDefault(field => field.IsIdentifier);
 			importSettings.ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly;
-			if (fieldIdentifierEntry != null) { importSettings.IdentityFieldId = int.Parse(fieldIdentifierEntry.FieldIdentifier);}
+		    if (fieldIdentifierEntry != null)
+		    {
+		        importSettings.IdentityFieldId = int.Parse(fieldIdentifierEntry.FieldIdentifier);
+		    }
 
 			string settings = JsonConvert.SerializeObject(importSettings);
 			
