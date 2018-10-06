@@ -16,7 +16,12 @@ namespace kCura.IntegrationPoints.Data.Extensions
 		/// <exception cref="Exception">throws exception when given result set is failed to retrieve data</exception>
 		public static ArtifactDTO[] GetResultsAsArtifactDto(this ObjectQueryResultSet resultSet)
 		{
-			if (resultSet != null && resultSet.Success)
+			if (resultSet == null)
+			{
+				throw new ArgumentNullException(nameof(resultSet));
+			}
+
+			if (resultSet.Success)
 			{
 				ArtifactDTO[] results = resultSet.Data.DataResults.Select(
 					x => new ArtifactDTO(
@@ -29,6 +34,7 @@ namespace kCura.IntegrationPoints.Data.Extensions
 
 				return results;
 			}
+
 			throw new Exception(resultSet.Message);
 		}
 	}

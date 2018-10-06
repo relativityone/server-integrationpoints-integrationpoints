@@ -917,8 +917,6 @@
 		Picker.create("Modals", "file-naming-option-modal", "ExportFileNamingOptionView", self.exportFileNameViewModel,
 			{
 				autoOpen: false,
-				modal: false,
-				width: "800px",
 				modal: true,
 				"min-width": "1000px",
 				height: "auto",
