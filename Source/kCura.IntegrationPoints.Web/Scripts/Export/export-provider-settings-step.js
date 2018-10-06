@@ -911,7 +911,7 @@
 		});
 
 		self.FileNameSelection = ko.pureComputed(function () {
-			return getFileNameSelectionRepresentation(self.FileNameParts()) + ".{File Extension}";
+			return getFileNameSelectionRepresentation() + ".{File Extension}";
 		});
 
 		Picker.create("Modals", "file-naming-option-modal", "ExportFileNamingOptionView", self.exportFileNameViewModel,
