@@ -80,7 +80,6 @@
 			});
 		};
 		this.bus.subscribe("saveState", function (state) {
-			var key = $('#' + frameName).data(FRAME_KEY);
 			//get key from IFrame
 			//save sate in local cache
 			stepCache[self.stepKey] = state;

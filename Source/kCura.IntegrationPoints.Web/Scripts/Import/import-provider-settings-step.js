@@ -3,7 +3,6 @@
 	//Create a new communication object that talks to the host page.
 	var message = IP.frameMessaging();
 	var ImportTypeEnum = windowObj.RelativityImport.ImportTypeEnum;
-	var currentImportType = windowObj.RelativityImport.koModel.selectedImportType();
 	// used for all models
 	var currentLoadFileSettings = function () {
 		var model = {
