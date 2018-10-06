@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
 			{
 				return returnValue;
 			}
-			var dictionary = _factory.GetKeywords().ToDictionary(x => x.KeywordName.ToUpper());
+			var dictionary = _factory.GetKeywords().ToDictionary(x => x.KeywordName.ToUpperInvariant());
 			var matchPattern = string.Join("|", dictionary.Keys);
 			var expression = new Regex(matchPattern, RegexOptions.IgnoreCase);
 			var matches = expression.Matches(textToConvert);
@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
 			foreach (Match match in matches)
 			{
 				IKeyword keyword;
-				if (!dictionary.TryGetValue(@"\" + match.Value.ToUpper(), out keyword))
+				if (!dictionary.TryGetValue(@"\" + match.Value.ToUpperInvariant(), out keyword))
 				{
 					continue;
 				}

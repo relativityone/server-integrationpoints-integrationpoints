@@ -14,7 +14,7 @@ namespace kCura.ScheduleQueue.Core.Services
 		public AgentService(IHelper dbHelper, Guid agentGuid)
 		{
 			AgentGuid = agentGuid;
-			QueueTable = string.Format("ScheduleAgentQueue_{0}", agentGuid.ToString().ToUpper());
+			QueueTable = $"ScheduleAgentQueue_{agentGuid.ToString().ToUpperInvariant()}";
 			DBHelper = dbHelper;
 			QDBContext = new QueueDBContext(dbHelper, QueueTable);
 			_logger = dbHelper.GetLoggerFactory().GetLogger().ForContext<AgentService>();

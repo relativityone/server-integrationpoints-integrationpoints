@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
@@ -118,7 +119,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 						int sort = x.Icon.GetValue<JsTreeItemIconEnum>().CompareTo(y.Icon.GetValue<JsTreeItemIconEnum>());
 						if (sort == 0)
 						{
-							sort = x.Text.CompareTo(y.Text);
+							sort = String.Compare(x.Text, y.Text, StringComparison.Ordinal);
 						}
 
 						return sort;

@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Helpers.Tests
 		{
 			var dateObj = Convert.ToDateTime(date);
 			var result = FilenameFormatter.FormatFilename(filename, wildCard, dateObj);
-			Assert.IsTrue(result.CompareTo(expected) == 0);
+			Assert.IsTrue(String.Compare(result, expected, StringComparison.Ordinal) == 0);
 		}
 
 		[Test, System.ComponentModel.Description("Finds all indexes of wildcards")]

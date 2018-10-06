@@ -207,7 +207,7 @@ namespace kCura.IntegrationPoints.FtpProvider
 		internal string AddFileExtension(string input)
 		{
 			var retVal = input.Trim();
-			if ((retVal.Length < 4) || (string.Compare(retVal.Substring(retVal.Length - 4).ToLower(), ".csv") != 0))
+			if ((retVal.Length < 4) || (String.CompareOrdinal(retVal.Substring(retVal.Length - 4).ToLowerInvariant(), ".csv") != 0))
 			{
 				retVal = retVal + ".csv";
 			}
