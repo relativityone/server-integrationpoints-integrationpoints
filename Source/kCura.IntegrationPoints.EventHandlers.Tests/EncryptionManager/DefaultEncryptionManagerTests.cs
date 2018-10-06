@@ -13,9 +13,9 @@ namespace kCura.IntegrationPoints.Security.Tests
 	{
 		private DefaultEncryptionManager _defaultEncryptionManager;
 
-		private string decryptedText = "Test";
+		private string _decryptedText = "Test";
 
-		private string encryptedText = "mkb6vlTjbvQ=";
+		private string _encryptedText = "mCMGX9kxeBtYTLfhZjBZ9g==";
 
 		[SetUp]
 		public void Setup()
@@ -26,17 +26,17 @@ namespace kCura.IntegrationPoints.Security.Tests
 		[Test]
 		public void ItShouldEncryptText()
 		{
-			var result = this._defaultEncryptionManager.Encrypt(this.decryptedText);
+			string result = this._defaultEncryptionManager.Encrypt(this._decryptedText);
 
-			Assert.AreEqual(this.encryptedText,result);
+			Assert.AreEqual(this._encryptedText,result);
 		}
 
 		[Test]
 		public void ItShouldDecryptText()
 		{
-			var result = this._defaultEncryptionManager.Decrypt(this.encryptedText);
+			string result = this._defaultEncryptionManager.Decrypt(this._encryptedText);
 
-			Assert.AreEqual(this.decryptedText, result);
+			Assert.AreEqual(this._decryptedText, result);
 		}
 	}
 }
