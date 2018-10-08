@@ -126,7 +126,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			string errorFilePath = _importFileLocationService.ErrorFilePath(artifactId);
 			if (_fileIo.Exists(errorFilePath))
 			{
-				return Ok();
+				return StatusCode(HttpStatusCode.NoContent);
 			}
 			else
 			{
