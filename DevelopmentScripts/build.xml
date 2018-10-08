@@ -71,6 +71,11 @@
           <Platforms>
             <Platform>x64</Platform>
           </Platforms>
+        </Project> 
+		<Project path="Source\kCura.IntegrationPoints.PerformanceTestingFramework\kCura.IntegrationPoints.PerformanceTestingFramework.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
         </Project>
         <Project path="Source\kCura.IntegrationPoints.Data.Tests.Integration\kCura.IntegrationPoints.Data.Tests.Integration.csproj">
           <Platforms>

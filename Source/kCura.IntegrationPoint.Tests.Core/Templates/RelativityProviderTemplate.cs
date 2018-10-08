@@ -47,35 +47,27 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			_targetWorkspaceTemplate = targetWorkspaceTemplate;
 		}
 
+		protected RelativityProviderTemplate(int sourceWorkspaceArtifactId, string targetWorkspaceName, string targetWorkspaceTemplate = WorkspaceTemplates.NEW_CASE_TEMPLATE)
+			: base(sourceWorkspaceArtifactId)
+		{
+			_targetWorkspaceName = targetWorkspaceName;
+			_targetWorkspaceTemplate = targetWorkspaceTemplate;
+		}
+
 		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
-			try
-			{
-				SourceWorkspaceArtifactId = WorkspaceArtifactId;
+			
+			SourceWorkspaceArtifactId = WorkspaceArtifactId;
 
-				Task.Run(async () => await SetupAsync()).Wait();
+			Task.Run(async () => await SetupAsync()).Wait();
 
-				RelativityProvider = SourceProviders.First(provider => provider.Name == "Relativity");
-				LdapProvider = SourceProviders.First(provider => provider.Name == "LDAP");
-			}
-			catch (Exception setupException)
-			{
-				try
-				{
-					SuiteTeardown();
-				}
-				catch (Exception teardownException)
-				{
-					Exception[] exceptions = new[] { setupException, teardownException };
-					throw new AggregateException(exceptions);
-				}
-				throw;
-			}
+			RelativityProvider = SourceProviders.First(provider => provider.Name == "Relativity");
+			LdapProvider = SourceProviders.First(provider => provider.Name == "LDAP");
+			
 			RepositoryFactory = Container.Resolve<IRepositoryFactory>();
 
 			IToggleProvider toggleProviderMock = Substitute.For<IToggleProvider>();
-			//toggleProviderMock.IsEnabled<AOAGToggle>().Returns(true); TODO Remove or replace
 			ToggleProvider.Current = toggleProviderMock;
 		}
 
