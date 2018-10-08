@@ -22,5 +22,13 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <param name="runTime">The run time of the Job attempting to be run.</param>
 		/// <returns>The number of jobs actively running.</returns>
 		int GetNumberOfJobsExecuting(int workspaceId, int integrationPointId, long jobId, DateTime runTime);
+
+		/// <summary>
+		/// Queries the ScheduleAgentQueue table for the number of jobs that belong to the same workspace and Integration Point that are currently in the queue. 
+		/// </summary>
+		/// <param name="workspaceId">The Artifact ID of the workspace that the job is run from.</param>
+		/// <param name="integrationPointId">The Artifact ID of the Integration Point the job belongs to.</param>
+		/// <returns>The number of jobs that are queued up to run.</returns>
+		int GetNumberOfPendingJobs(int workspaceId, int integrationPointId);
 	}
 }
