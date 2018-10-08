@@ -14,7 +14,6 @@
 							value = JSON.parse(value);
 						} catch (exp) {
 							//this is actually a string!!
-							value = value;
 						}
 					}
 					return value;

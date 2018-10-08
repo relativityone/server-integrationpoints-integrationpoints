@@ -11,7 +11,7 @@ using ITokenProvider = Relativity.OAuth2Client.Interfaces.ITokenProvider;
 
 namespace kCura.IntegrationPoints.Core.Authentication
 {
-	public class OAuth2TokenGenerator : IAuthTokenGenerator
+	public class OAuth2TokenGenerator : IAuthTokenGenerator, IDisposable
 	{
 		private readonly IAPILog _logger;
 		private readonly IOAuth2ClientFactory _oAuth2ClientFactory;
@@ -72,6 +72,11 @@ namespace kCura.IntegrationPoints.Core.Authentication
 		{
 			_logger.LogError(exception,
 				$"Failed to get Authentication Token for user with ID: {_contextUser}. Details: {exception.Message}");
+		}
+
+		public void Dispose()
+		{
+			_cancellationTokenSource.Dispose();
 		}
 	}
 }

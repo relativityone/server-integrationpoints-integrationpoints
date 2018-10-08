@@ -1108,17 +1108,6 @@ ko.validation.insertValidationMessage = function (element) {
 
 					AddFolderPathInfoToMapping(map);
 
-					if (this.model.ExtractedTextFieldContainsFilePath() == 'true') {
-						var longTextField = "";
-						var longTextFields = this.model.MappedLongTextFields();
-						for (var j = 0; j < longTextFields.length; j++) {
-							if (longTextFields[j].displayName === this.model.LongTextColumnThatContainsPathToFullText()) {
-								longTextField = longTextFields[j];
-								break;
-							}
-						}
-					}
-
 					_destination.ImportOverwriteMode = ko.toJS(this.model.SelectedOverwrite).replace('/', '').replace(' ', '');
 					_destination.importNativeFile = this.model.importNativeFile();
 				    _destination.importNativeFileCopyMode = this.model.importNativeFileCopyMode();

@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 					throw new Exception($"An error occurred while waiting on the Process {processId} to complete. Error status: {processInfo.Status}. Error message: {processInfo.Message}.");
 				}
 
-				VerifyTimeout(timeWaitedInSeconds, timeoutInSeconds);
+				VerifyTimeout(timeWaitedInSeconds, timeoutInSeconds, nameof(WaitForProcessToComplete));
 				timeWaitedInSeconds = SleepAndUpdateTimeout(sleepIntervalInMilliseconds, timeWaitedInSeconds);
 				processInfo = rsapiClient.GetProcessState(rsapiClient.APIOptions, processId);
 			}
@@ -46,9 +46,24 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			while (numberOfJobsQueuedOrInProgress > 0)
 			{
-				VerifyTimeout(timeWaitedInSeconds, timeoutInSeconds);
+				VerifyTimeout(timeWaitedInSeconds, timeoutInSeconds, nameof(WaitForIntegrationPointJobToComplete));
 				timeWaitedInSeconds = SleepAndUpdateTimeout(sleepIntervalInMilliseconds, timeWaitedInSeconds);
 				numberOfJobsQueuedOrInProgress = queueRepository.GetNumberOfJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId);
+			}
+		}
+
+		public static void WaitForIntegrationPointToLeavePendingState(IWindsorContainer container, int workspaceArtifactId, int integrationPointArtifactId, int timeoutInSeconds = 300, int sleepIntervalInMilliseconds = 500)
+		{
+			IQueueRepository queueRepository = container.Resolve<IQueueRepository>();
+
+			var timeWaitedInSeconds = 0.0;
+			int numberOfPendingJobs = queueRepository.GetNumberOfPendingJobs(workspaceArtifactId, integrationPointArtifactId);
+
+			while (numberOfPendingJobs > 0)
+			{
+				VerifyTimeout(timeWaitedInSeconds, timeoutInSeconds, nameof(WaitForIntegrationPointToLeavePendingState));
+				timeWaitedInSeconds = SleepAndUpdateTimeout(sleepIntervalInMilliseconds, timeWaitedInSeconds);
+				numberOfPendingJobs = queueRepository.GetNumberOfPendingJobs(workspaceArtifactId, integrationPointArtifactId);
 			}
 		}
 
@@ -61,17 +76,17 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			while (integrationPoint.LastRuntimeUTC == null)
 			{
-				VerifyTimeout(timeWaitedInSeconds, timeoutInSeconds);
+				VerifyTimeout(timeWaitedInSeconds, timeoutInSeconds, nameof(WaitForScheduledJobToComplete));
 				timeWaitedInSeconds = SleepAndUpdateTimeout(sleepIntervalInMilliseconds, timeWaitedInSeconds);
 				integrationPoint = rsapiService.RelativityObjectManager.Read<IntegrationPoints.Data.IntegrationPoint>(integrationPointArtifactId);
 			}
 		}
 
-		private static void VerifyTimeout(double timeWaitedInSeconds, int timeoutInSeconds)
+		private static void VerifyTimeout(double timeWaitedInSeconds, int timeoutInSeconds, string operationName)
 		{
 			if (timeWaitedInSeconds >= timeoutInSeconds)
 			{
-				throw new Exception($"Timed out waiting for operation to complete. Waited { timeWaitedInSeconds } seconds when timeout was { timeoutInSeconds }.");
+				throw new Exception($"Timed out waiting for {operationName} to complete. Waited { timeWaitedInSeconds } seconds when timeout was { timeoutInSeconds }.");
 			}
 		}
 

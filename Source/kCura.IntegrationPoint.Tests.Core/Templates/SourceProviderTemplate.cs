@@ -37,6 +37,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 	public abstract class SourceProviderTemplate : IntegrationTestBase
 	{
 		protected bool CreateAgent { get; set; } = true;
+		protected bool CreateWorkspace { get; set; } = true;
 
 		private readonly string _workspaceName;
 		private readonly string _workspaceTemplate;
@@ -58,46 +59,53 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			RelativityApplicationManager = new RelativityApplicationManager(CoreContext, Helper);
 		}
 
+		/// <summary>
+		/// Use this constructor if you want to run tests versus existing workspace.
+		/// </summary>
+		/// <param name="workspaceId">Artifact ID of existing workspace.</param>
+		protected SourceProviderTemplate(int workspaceId)
+		{
+			WorkspaceArtifactId = workspaceId;
+
+			CreateWorkspace = false;
+			CoreContext = GetBaseServiceContext(-1);
+			RelativityApplicationManager = new RelativityApplicationManager(CoreContext, Helper);
+		}
+
 		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
-			try
+			
+			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
+
+			if (CreateWorkspace)
 			{
-				Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
 				WorkspaceArtifactId = Workspace.CreateWorkspace(_workspaceName, _workspaceTemplate);
-
-				Install();
-
-				Task.Run(async () => await SetupAsync()).Wait();
-
-				CaseContext = Container.Resolve<ICaseServiceContext>();
-				SourceProviders = CaseContext.RsapiService.RelativityObjectManager.Query<SourceProvider>(new QueryRequest());
-				DestinationProvider = CaseContext.RsapiService.RelativityObjectManager.Query<DestinationProvider>(new QueryRequest
-				{
-					Fields = new List<FieldRef>
-					{
-						new FieldRef { Guid = new Guid(DestinationProviderFieldGuids.Identifier) }
-					}
-				}).First(x => x.Identifier == IntegrationPoints.Core.Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID);
 			}
-			catch (Exception setupException)
+
+			Install();
+
+			Task.Run(async () => await SetupAsync()).Wait();
+
+			CaseContext = Container.Resolve<ICaseServiceContext>();
+			SourceProviders = CaseContext.RsapiService.RelativityObjectManager.Query<SourceProvider>(new QueryRequest());
+			DestinationProvider = CaseContext.RsapiService.RelativityObjectManager.Query<DestinationProvider>(new QueryRequest
 			{
-				try
+				Fields = new List<FieldRef>
 				{
-					SuiteTeardown();
+					new FieldRef { Guid = new Guid(DestinationProviderFieldGuids.Identifier) }
 				}
-				catch (Exception teardownException)
-				{
-					Exception[] exceptions = new[] { setupException, teardownException };
-					throw new AggregateException(exceptions);
-				}
-				throw;
-			}
+			}).First(x => x.Identifier == IntegrationPoints.Core.Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID);
+		
 		}
 
 		public override void SuiteTeardown()
 		{
-			Workspace.DeleteWorkspace(WorkspaceArtifactId);
+			if (CreateWorkspace && WorkspaceArtifactId != 0)
+			{
+				Workspace.DeleteWorkspace(WorkspaceArtifactId);
+			}
+
 			if (_deleteAgentInTeardown)
 			{
 				Agent.DeleteAgent(AgentArtifactId);

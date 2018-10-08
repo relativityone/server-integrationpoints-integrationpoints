@@ -19,7 +19,6 @@
 
 	var workspaceId = ("/" + windowObj.RelativityImport.WorkspaceId);
 	var windowPar = windowObj.parent;
-	var windowTop = windowObj.top;
 	var baseUrlCache = root.utils.getBaseURL();
 
 	var idSelector = function (name) { return '#' + name; }

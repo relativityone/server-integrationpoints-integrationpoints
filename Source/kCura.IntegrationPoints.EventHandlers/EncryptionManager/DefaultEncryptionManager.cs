@@ -53,7 +53,8 @@ namespace kCura.IntegrationPoints.Security
 			}
 
 			byte[][] vectors = GenerateVectors();
-			var crypto = new TripleDESCryptoServiceProvider();
+			//Do not change TripleDESCryptoServiceProvider as it is required for migration of old IntegrationPoints into SecretStore (when upgrading form old Relativity versions) 
+			var crypto = new TripleDESCryptoServiceProvider();// NOSONAR
 			ICryptoTransform decryptor = crypto.CreateDecryptor(vectors[0], vectors[1]);
 
 			byte[] cipher = Convert.FromBase64String(encryptedText);
@@ -77,7 +78,8 @@ namespace kCura.IntegrationPoints.Security
 			}
 
 			byte[][] vectors = GenerateVectors();
-			var crypto = new TripleDESCryptoServiceProvider();
+			//Do not change TripleDESCryptoServiceProvider as it is required for migration of old IntegrationPoints into SecretStore (when upgrading form old Relativity versions) 
+			var crypto = new TripleDESCryptoServiceProvider();// NOSONAR
 			ICryptoTransform encryptor = crypto.CreateEncryptor(vectors[0], vectors[1]);
 			MemoryStream memoryStream = new MemoryStream();
 			CryptoStream CryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write);
