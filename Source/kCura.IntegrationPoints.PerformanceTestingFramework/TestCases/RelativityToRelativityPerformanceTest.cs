@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.PerformanceTestingFramework
 
 		private readonly string _fieldMappingsJson;
 
-		public RelativityToRelativityPerformanceTest() : base(Convert.ToInt32(TestContext.Parameters["SourceWorkspaceArtifactID"]), $"JobHistoryErrorsSource{DateTime.Now:yy-MM-dd HH-mm-ss}")
+		public RelativityToRelativityPerformanceTest() : base(Convert.ToInt32(TestContext.Parameters["SourceWorkspaceArtifactID"]), $"RelativityToRelativityPerformanceTest{DateTime.Now:yy-MM-dd HH-mm-ss}")
 		{
 			_fieldMappingsJson = TestContext.Parameters["FieldMappingsJSON"];
 
