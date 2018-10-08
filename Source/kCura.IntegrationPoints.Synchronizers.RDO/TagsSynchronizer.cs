@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 	public class TagsSynchronizer : IDataSynchronizer
 	{
 		private readonly IDataSynchronizer _rdoSynchronizer;
-		private IAPILog _logger;
+		private readonly IAPILog _logger;
 		public TagsSynchronizer(IHelper helper, IDataSynchronizer rdoSynchronizer)
 		{
 			_rdoSynchronizer = rdoSynchronizer;
@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		{
 			try
 			{
-				var updatedOptions = UpdateImportSettingsForTagging(options);
+				string updatedOptions = UpdateImportSettingsForTagging(options);
 				_rdoSynchronizer.SyncData(data, fieldMap, updatedOptions);
 			}
 			catch (System.Exception ex)
@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		public void SyncData(IDataTransferContext data, IEnumerable<FieldMap> fieldMap, string options)
 		{
 			try { 
-				var updatedOptions = UpdateImportSettingsForTagging(options);
+				string updatedOptions = UpdateImportSettingsForTagging(options);
 				_rdoSynchronizer.SyncData(data, fieldMap, updatedOptions);
 			}
 			catch (System.Exception ex)

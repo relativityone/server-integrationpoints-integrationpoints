@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 		private const string _WORKSPACE_EXTRACTED_TEXT = "Extracted Text";
 		private const string _WORKSPACE_GROUP_ID = "Group Identifier";
 
-		public RdoSynchronizerTest() : base($"RdoSynchronizerTest_{Utils.FormatedDateTimeNow}")
+		public RdoSynchronizerTest() : base($"RdoSynchronizerTest_{Utils.FormattedDateTimeNow}")
 		{
 		}
 
@@ -69,7 +69,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
 		public void ItShouldSyncDataToWorkspace()
 		{
-			//Arange
+			//Arrange
 			var rdoSynchronizer = new RdoSynchronizer(_fieldQuery, _factory, _jobFactory, _helper);
 
 			ImportSettings importSettings = CreateDefaultImportSettings();
@@ -79,7 +79,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 			if (fieldIdentifierEntry != null)
 			{
 				importSettings.IdentityFieldId = int.Parse(fieldIdentifierEntry.FieldIdentifier);
-			}
+		    }
+			
 			string settings = JsonConvert.SerializeObject(importSettings);
 			IEnumerable<FieldMap> sourceFields = CreateDefaultSourceFieldMap(rdoSynchronizer.GetFields(new DataSourceProviderConfiguration(settings)).ToList());
 

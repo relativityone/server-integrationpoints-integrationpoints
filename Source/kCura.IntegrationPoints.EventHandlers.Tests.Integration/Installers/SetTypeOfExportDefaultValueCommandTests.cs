@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
         private IntegrationPointProfileModel _defaultIntegrationPointProfileModel;
         private SetTypeOfExportDefaultValueCommand _setTypeOfExportCommand;
 
-        public SetTypeOfExportDefaultValueCommandTests() : base($"TypeOfExport_Source_{Utils.FormatedDateTimeNow}", $"TypeOfExport_Dest_{Utils.FormatedDateTimeNow}")
+        public SetTypeOfExportDefaultValueCommandTests() : base($"TypeOfExport_Source_{Utils.FormattedDateTimeNow}", $"TypeOfExport_Dest_{Utils.FormattedDateTimeNow}")
         {
         }
 

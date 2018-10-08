@@ -11,7 +11,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.StatisticsManager
 {
 	public class StatisticsManagerTests : SourceProviderTemplate
 	{
-		public StatisticsManagerTests() : base($"Statistics_{Utils.FormatedDateTimeNow}")
+		public StatisticsManagerTests() : base($"Statistics_{Utils.FormattedDateTimeNow}")
 		{
 		}
 

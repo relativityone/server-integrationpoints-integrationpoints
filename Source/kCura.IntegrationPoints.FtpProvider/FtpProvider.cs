@@ -87,7 +87,7 @@ namespace kCura.IntegrationPoints.FtpProvider
 				else
 				{
 					LogRetrievingFieldsError(ex);
-					throw new Exception(ex.ToString());
+					throw;
 				}
 			}
 
@@ -179,7 +179,7 @@ namespace kCura.IntegrationPoints.FtpProvider
 				else
 				{
 					LogRetrievingDataError(entryIds, ex);
-					throw new Exception(ex.ToString());
+					throw;
 				}
 			}
 
@@ -229,7 +229,7 @@ namespace kCura.IntegrationPoints.FtpProvider
 			if (!expectedColumns.Equals(fixedColumns, StringComparison.InvariantCultureIgnoreCase))
 			{
 				LogValidatingColumnsError(columns, expectedColumns);
-				throw new Exceptions.ColumnsMissmatchExcepetion();
+				throw new Exceptions.ColumnsMissmatchException();
 			}
 		}
 

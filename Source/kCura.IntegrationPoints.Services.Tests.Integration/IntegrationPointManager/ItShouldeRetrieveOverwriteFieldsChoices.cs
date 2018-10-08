@@ -10,7 +10,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 {
 	public class ItShouldeRetrieveOverwriteFieldsChoices : SourceProviderTemplate
 	{
-		public ItShouldeRetrieveOverwriteFieldsChoices() : base($"choices_{Utils.FormatedDateTimeNow}")
+		public ItShouldeRetrieveOverwriteFieldsChoices() : base($"choices_{Utils.FormattedDateTimeNow}")
 		{
 		}
 
