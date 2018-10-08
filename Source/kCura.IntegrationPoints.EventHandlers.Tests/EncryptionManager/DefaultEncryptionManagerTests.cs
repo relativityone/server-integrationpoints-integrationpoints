@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.Security.Tests
 
 		private string _decryptedText = "Test";
 
-		private string _encryptedText = "mCMGX9kxeBtYTLfhZjBZ9g==";
+		private string _encryptedText = "mkb6vlTjbvQ=";
 
 		[SetUp]
 		public void Setup()
