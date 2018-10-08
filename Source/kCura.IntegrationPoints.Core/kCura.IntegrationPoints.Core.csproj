@@ -388,7 +388,7 @@
     <Compile Include="Services\ServiceContext\EddsServiceContext.cs" />
     <Compile Include="Services\ServiceContext\IEddsServiceContext.cs" />
     <Compile Include="Services\ServiceContext\ServiceContextFactory.cs" />
-    <Compile Include="Services\Conversion\DataReaderEnumerable.cs" />
+    <Compile Include="Services\Conversion\DataReaderToEnumerableService.cs" />
     <Compile Include="ExternalTabs.cs" />
     <Compile Include="Installers\ServicesInstaller.cs" />
     <Compile Include="Services\ServiceContext\ICaseServiceContext.cs" />

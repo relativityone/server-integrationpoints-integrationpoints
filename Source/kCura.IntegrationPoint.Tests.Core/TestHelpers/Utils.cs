@@ -4,6 +4,6 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 {
 	public class Utils
 	{
-		public static string FormatedDateTimeNow => $"{DateTime.Now:yyyyMMddHHmmss}";
+		public static string FormattedDateTimeNow => $"{DateTime.Now:yyyyMMddHHmmss}";
 	}
 }

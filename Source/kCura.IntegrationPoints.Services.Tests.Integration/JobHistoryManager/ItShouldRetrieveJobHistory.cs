@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 	[TestFixture]
 	public class ItShouldRetrieveJobHistory : RelativityProviderTemplate
 	{
-		public ItShouldRetrieveJobHistory() : base($"SourceWorkspace_{Utils.FormatedDateTimeNow}", $"TargetWorkspace_{Utils.FormatedDateTimeNow}")
+		public ItShouldRetrieveJobHistory() : base($"SourceWorkspace_{Utils.FormattedDateTimeNow}", $"TargetWorkspace_{Utils.FormattedDateTimeNow}")
 		{
 		}
 
@@ -46,8 +46,8 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 					new SecretManager(SourceWorkspaceArtifactId), 
 					new DefaultSecretCatalogFactory()));
 
-			_groupId = Group.CreateGroup($"group_{Utils.FormatedDateTimeNow}");
-			_user = User.CreateUser("firstname", "lastname", $"a_{Utils.FormatedDateTimeNow}@relativity.com", new List<int> {_groupId});
+			_groupId = Group.CreateGroup($"group_{Utils.FormattedDateTimeNow}");
+			_user = User.CreateUser("firstname", "lastname", $"a_{Utils.FormattedDateTimeNow}@relativity.com", new List<int> {_groupId});
 
 			Group.AddGroupToWorkspace(SourceWorkspaceArtifactId, _groupId);
 
@@ -244,10 +244,10 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 
 			public static IList<TestData> Create(int sourceWorkspaceId)
 			{
-				var workspaceName = $"target_1_{Utils.FormatedDateTimeNow}";
+				var workspaceName = $"target_1_{Utils.FormattedDateTimeNow}";
 				var workspaceId = Workspace.CreateWorkspace(workspaceName, WorkspaceTemplates.NEW_CASE_TEMPLATE);
 
-				var workspaceNoAccessName = $"target_2_{Utils.FormatedDateTimeNow}";
+				var workspaceNoAccessName = $"target_2_{Utils.FormattedDateTimeNow}";
 				var workspaceNoAccessId = Workspace.CreateWorkspace(workspaceNoAccessName, WorkspaceTemplates.NEW_CASE_TEMPLATE);
 
 				var testCase1 = new TestData

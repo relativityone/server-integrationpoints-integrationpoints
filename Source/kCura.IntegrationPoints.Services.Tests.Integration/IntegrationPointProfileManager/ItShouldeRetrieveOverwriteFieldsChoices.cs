@@ -11,7 +11,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointPro
 	[TestFixture]
 	public class ItShouldeRetrieveOverwriteFieldsChoices : SourceProviderTemplate
 	{
-		public ItShouldeRetrieveOverwriteFieldsChoices() : base($"choices_{Utils.FormatedDateTimeNow}")
+		public ItShouldeRetrieveOverwriteFieldsChoices() : base($"choices_{Utils.FormattedDateTimeNow}")
 		{
 		}
 

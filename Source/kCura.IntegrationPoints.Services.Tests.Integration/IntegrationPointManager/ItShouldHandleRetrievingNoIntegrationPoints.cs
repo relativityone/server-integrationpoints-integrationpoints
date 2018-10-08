@@ -9,7 +9,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 	[TestFixture]
 	public class ItShouldHandleRetrievingNoIntegrationPoints : RelativityProviderTemplate
 	{
-		public ItShouldHandleRetrievingNoIntegrationPoints() : base($"KeplerService_{Utils.FormatedDateTimeNow}", $"KeplerService_Target_{Utils.FormatedDateTimeNow}")
+		public ItShouldHandleRetrievingNoIntegrationPoints() : base($"KeplerService_{Utils.FormattedDateTimeNow}", $"KeplerService_Target_{Utils.FormattedDateTimeNow}")
 		{
 		}
 
