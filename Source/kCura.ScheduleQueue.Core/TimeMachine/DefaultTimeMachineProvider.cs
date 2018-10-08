@@ -50,7 +50,7 @@ namespace kCura.ScheduleQueue.Core.TimeMachine
 
 		private void SetKey(Guid agentGuid)
 		{
-			agentKey = string.Format("TimeMachineAgent_{0}", agentGuid.ToString().ToUpper());
+			agentKey = string.Format("TimeMachineAgent_{0}", agentGuid.ToString().ToUpperInvariant());
 		}
 
 

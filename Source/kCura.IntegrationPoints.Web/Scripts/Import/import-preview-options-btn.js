@@ -12,7 +12,6 @@
 	var SHOWN = 'shown';
 	var SELECT = 'select';
 
-	var windowPar = windowObj.parent;
 	var baseUrlCache = root.utils.getBaseURL();
 
 	windowObj.RelativityImport.PreviewOptions.UI.Elements = {
@@ -141,7 +140,6 @@
 		var trident = ua.indexOf('Trident/');
 		if (trident > 0) {
 			// IE 11 => return version number
-			var rv = ua.indexOf('rv:');
 			return true;
 		}
 
