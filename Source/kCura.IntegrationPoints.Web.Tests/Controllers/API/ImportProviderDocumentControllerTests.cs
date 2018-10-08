@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Results;
@@ -136,14 +137,16 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		}
 
 		[Test]
-		public void ItShouldReturnOkResultIfErrorFileExists()
+		public void ItShouldReturnNoContentResultIfErrorFileExists()
 		{
 			_importLocationService.ErrorFilePath(Arg.Any<int>()).Returns(string.Empty);
 			_fileIo.Exists(Arg.Any<string>()).Returns(true);
 
 			IHttpActionResult result = _controller.CheckErrorFile(-1, -1);
 
-			Assert.IsInstanceOf(typeof(OkResult), result);
+			Assert.IsInstanceOf(typeof(StatusCodeResult), result);
+			StatusCodeResult statusCodeResult = result as StatusCodeResult;
+			Assert.AreEqual(HttpStatusCode.NoContent, statusCodeResult?.StatusCode);
 		}
 
 		[Test]
