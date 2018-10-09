@@ -14,12 +14,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
 	public class ImportSettings
 	{
+		private BaseServiceContext _context;
+		private readonly IAuditSpoofTokenGenerator _generator;
+
+		public const string FIELDOVERLAYBEHAVIOR_DEFAULT = "Use Field Settings";
 		public const string FIELDOVERLAYBEHAVIOR_MERGE = "Merge Values";
 		public const string FIELDOVERLAYBEHAVIOR_REPLACE = "Replace Values";
-		public const string FIELDOVERLAYBEHAVIOR_DEFAULT = "Use Field Settings";
-
-		private readonly IAuditSpoofTokenGenerator _generator;
-		private BaseServiceContext _context;
 
 		private BaseServiceContext Context => _context ?? (_context = ClaimsPrincipal.Current.GetUnversionContext(CaseArtifactId));
 
@@ -220,7 +220,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		public bool IsRelativityProvider()
 		{
-			return Provider != null && Provider.ToLower() == "relativity";
+			return Provider != null && Provider.ToLowerInvariant() == "relativity";
 		}
 
 		public bool IsFederatedInstance()

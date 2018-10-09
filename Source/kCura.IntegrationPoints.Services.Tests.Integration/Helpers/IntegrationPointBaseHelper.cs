@@ -84,7 +84,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.Helpers
 				ArtifactId = 0,
 				EmailNotificationRecipients = emailNotificationRecipients,
 				LogErrors = logErrors,
-				Name = $"relativity_{Utils.FormatedDateTimeNow}",
+				Name = $"relativity_{Utils.FormattedDateTimeNow}",
 				SourceProvider = GetSourceProviderArtifactId(Constants.IntegrationPoints.SourceProviders.RELATIVITY, workspaceArtifactId, helper),
 				DestinationProvider = GetDestinationProviderArtifactId(Constants.IntegrationPoints.DestinationProviders.RELATIVITY, workspaceArtifactId, helper),
 				DestinationConfiguration = expectedDestinationConfiguration,

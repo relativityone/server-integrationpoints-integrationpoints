@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using kCura.Apps.Common.Data;
+﻿using kCura.Apps.Common.Data;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Contracts;
@@ -10,13 +7,18 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.Relativity.Client;
 using kCura.Relativity.ImportAPI;
 using Newtonsoft.Json;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Artifact = kCura.Relativity.Client.Artifact;
 using Assert = NUnit.Framework.Assert;
 using Constants = kCura.IntegrationPoints.Domain.Constants;
@@ -40,7 +42,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		}
 
 		[Test]
-		public void GetRightCountOfFieldsWithSystemAndArtifactFeildsRemoved()
+		public void GetRightCountOfFieldsWithSystemAndArtifactFieldsRemoved()
 		{
 			//ARRANGE
 			var client = Substitute.For<IRSAPIClient>();
@@ -75,7 +77,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		}
 
 		[Test]
-		public void GetRightDataInFieldsWithSystemAndArtifactFeildsRemoved()
+		public void GetRightDataInFieldsWithSystemAndArtifactFieldsRemoved()
 		{
 			//ARRANGE
 			var client = Substitute.For<IRSAPIClient>();
@@ -97,7 +99,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 				new Artifact {Name = "User", ArtifactID = 4},
 				new Artifact {Name = "Artifact ID", ArtifactID = 5}
 			});
-					var expectedFieldEntry = new List<FieldEntry>
+			var expectedFieldEntry = new List<FieldEntry>
 			{
 				new FieldEntry {DisplayName = "Name", FieldIdentifier = "1"},
 				new FieldEntry {DisplayName = "Date Modified On", FieldIdentifier = "3"},
@@ -214,7 +216,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			};
 
 			NativeFileImportService nativeFileImportService = new NativeFileImportService();
-			string options = JsonConvert.SerializeObject(new ImportSettings { ArtifactTypeId = 1111111, CaseArtifactId = 2222222, ImportNativeFile = false, ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.DoNotImportNativeFiles});
+			string options = JsonConvert.SerializeObject(new ImportSettings { ArtifactTypeId = 1111111, CaseArtifactId = 2222222, ImportNativeFile = false, ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.DoNotImportNativeFiles });
 			TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
 
 			//ACT
@@ -246,8 +248,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			};
 
 			NativeFileImportService nativeFileImportService = new NativeFileImportService();
-		    var importSettings = new ImportSettings { ArtifactTypeId = 1111111, CaseArtifactId = 2222222, ImportNativeFile = false, ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.SetFileLinks };
-		    string options = JsonConvert.SerializeObject(importSettings);
+			var importSettings = new ImportSettings { ArtifactTypeId = 1111111, CaseArtifactId = 2222222, ImportNativeFile = false, ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.SetFileLinks };
+			string options = JsonConvert.SerializeObject(importSettings);
 			TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
 			rdoSynchronizer.SourceProvider = new SourceProvider()
 			{
@@ -259,7 +261,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 
 			//ACT
 			ImportSettings result = rdoSynchronizer.GetSyncDataImportSettings(fieldMap, options, nativeFileImportService);
-			
+
 			Assert.AreEqual(1111111, result.ArtifactTypeId);
 			Assert.AreEqual(2222222, result.CaseArtifactId);
 			Assert.AreEqual(4000001, result.IdentityFieldId);
@@ -287,19 +289,19 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			};
 
 			var nativeFileImportService = new NativeFileImportService();
-		    var importSettings = new ImportSettings
-		    {
-		        ArtifactTypeId = 1111111,
-		        CaseArtifactId = 2222222,
-		        ImportNativeFile = true,
-		        ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.CopyFiles
-		    };
-		    string options = JsonConvert.SerializeObject(importSettings);
+			var importSettings = new ImportSettings
+			{
+				ArtifactTypeId = 1111111,
+				CaseArtifactId = 2222222,
+				ImportNativeFile = true,
+				ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.CopyFiles
+			};
+			string options = JsonConvert.SerializeObject(importSettings);
 			TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
 
 			//ACT
 			ImportSettings result = rdoSynchronizer.GetSyncDataImportSettings(fieldMap, options, nativeFileImportService);
-			
+
 			//ASSERT
 			Assert.AreEqual(1111111, result.ArtifactTypeId);
 			Assert.AreEqual(2222222, result.CaseArtifactId);
@@ -496,12 +498,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		}
 
 		[Test]
-		public void GetEmailBodyData_HasWorkspace_CorrectlyFormatedOutput()
+		public void GetEmailBodyData_HasWorkspace_CorrectlyFormattedOutput()
 		{
 			//ARRANGE
 			int workspaceId = 1111111;
 			WorkspaceRef workspaceRef = new WorkspaceRef() { Id = workspaceId, Name = "My Test workspace" };
-			IEmailBodyData rdoSynchronizer = new mockSynchronizer(workspaceRef);
+			IEmailBodyData rdoSynchronizer = new MockSynchronizer(workspaceRef);
 			var settings = new ImportSettings { CaseArtifactId = workspaceId };
 			var options = JsonConvert.SerializeObject(settings);
 
@@ -513,12 +515,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		}
 
 		[Test]
-		public void GetEmailBodyData_NoWorkspace_CorrectlyFormatedOutput()
+		public void GetEmailBodyData_NoWorkspace_CorrectlyFormattedOutput()
 		{
 			//ARRANGE
 			int workspaceId = 1111111;
 			WorkspaceRef workspaceRef = null;
-			IEmailBodyData rdoSynchronizer = new mockSynchronizer(workspaceRef);
+			IEmailBodyData rdoSynchronizer = new MockSynchronizer(workspaceRef);
 			var settings = new ImportSettings { CaseArtifactId = workspaceId };
 			var options = JsonConvert.SerializeObject(settings);
 
@@ -528,10 +530,55 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			//ASSERT
 			Assert.AreEqual("", returnedString);
 		}
-		
+
+		[Test]
+		public void SyncData_RowErrors_ShouldRaiseRowErrorEventOnException()
+		{
+			//ARRANGE
+			IEnumerable<FieldMap> fieldMap = new List<FieldMap>()
+			{
+				new FieldMap()
+				{
+					DestinationField = new FieldEntry() {FieldIdentifier = "4000001"},
+					FieldMapType = FieldMapTypeEnum.Identifier,
+					SourceField = new FieldEntry() {FieldIdentifier = "Any"}
+				},
+			};
+
+			//ARRANGE - RDO Synchronizer
+			IRelativityFieldQuery relativityFieldQuery = Substitute.For<IRelativityFieldQuery>();
+			IImportApiFactory importApiFactory = Substitute.For<IImportApiFactory>();
+			IImportJobFactory jobFactory = Substitute.For<IImportJobFactory>();
+			IHelper helper = Substitute.For<IHelper>();
+			IImportService importService = Substitute.For<IImportService>();
+			RdoSynchronizer rdoSynchronizer = Substitute.For<RdoSynchronizer>(relativityFieldQuery, importApiFactory, jobFactory, helper);
+			rdoSynchronizer.InitializeImportService(Arg.Any<ImportSettings>(), Arg.Any<Dictionary<string, int>>(), Arg.Any<NativeFileImportService>()).Returns(importService);
+
+			//ARRANGE - Next row enumerator
+			IEnumerable<IDictionary<FieldEntry, object>> data = Substitute.For<IEnumerable<IDictionary<FieldEntry, object>>>();
+			IEnumerator<IDictionary<FieldEntry, object>> enumerator = Substitute.For<IEnumerator<IDictionary<FieldEntry, object>>>();
+			enumerator.MoveNext().Throws(new Exception("error"));
+			data.GetEnumerator().Returns(enumerator);
+
+			//ARRANGE - Events endpoint
+			List<string> receivedEvents = new List<string>();
+			rdoSynchronizer.OnDocumentError += (documentIdentifier, stringError) =>
+			{
+				receivedEvents.Add(stringError);
+			};
+
+			//ACT
+			rdoSynchronizer.SyncData(data, fieldMap, null);
+
+			//ASSERT
+			Assert.AreEqual(1, receivedEvents.Count);
+			Assert.AreEqual("error", receivedEvents.First());
+
+		}
+
 		/// <summary>
-		 /// Test whether options are parsed correctly when getting the mappable fields
-		 /// </summary>
+		/// Test whether options are parsed correctly when getting the mappable fields
+		/// </summary>
 		[Test]
 		public void GetFields_CorrectOptionsPassed()
 		{
@@ -592,10 +639,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		}
 	}
 
-	public class mockSynchronizer : RdoSynchronizer
+	public class MockSynchronizer : RdoSynchronizer
 	{
 		private WorkspaceRef _workspaceRef;
-		public mockSynchronizer(WorkspaceRef workspaceRef)
+		public MockSynchronizer(WorkspaceRef workspaceRef)
 		  : base(null, null, Substitute.For<IImportJobFactory>(), Substitute.For<IHelper>())
 		{
 			WebAPIPath = "WebAPIPath";

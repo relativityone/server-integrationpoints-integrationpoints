@@ -181,7 +181,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 
 			// Assert
 			_integrationPointService.Received(1).RunIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, 0);
-			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+			Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode);
 		}
 
 		[TestCase(null)]
@@ -209,7 +209,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 
 			// Assert
 			_integrationPointService.Received(1).RunIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, _USERID);
-			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+			Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode);
 		}
 
 		[TestCase(null)]
@@ -240,7 +240,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 							.CreateAuditRecord(_payload.ArtifactId,
 							Arg.Is<AuditElement>(audit => audit.AuditMessage == _RETRY_AUDIT_MESSAGE));
 			_integrationPointService.Received(1).RetryIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, _USERID);
-			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+			Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode);
 		}
 
 		[TestCase(null)]
@@ -290,7 +290,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 				.Received(1)
 				.MarkIntegrationPointToStopJobs(_payload.AppId, _payload.ArtifactId);
 
-			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode, "The HTTPStatusCode should be OK");
+			Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode, "The HTTPStatusCode should be OK");
 			Assert.IsNull(response.Content, "The response's Content should be null");
 		}
 

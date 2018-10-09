@@ -14,11 +14,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 	/// </summary>
 	public class RelativityReaderDecorator : IDataReader, IArtifactReader
 	{
-		protected IDataReader _source;
-
-		private readonly Dictionary<string, string> _targetNameToSourceIdentifier;
 		private readonly Dictionary<string, string> _sourceIdentifierToTargetName; 
+		private readonly Dictionary<string, string> _targetNameToSourceIdentifier;
 		private readonly HashSet<string> _identifiers; 
+
+		protected IDataReader _source;
 
 		public RelativityReaderDecorator(IDataReader sourceReader, FieldMap[] mappingFields)
 		{
@@ -86,15 +86,15 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		{
 			get
 			{
-				if (_targetNameToSourceIdentifier.ContainsKey(name) == false)
+				if (!_targetNameToSourceIdentifier.ContainsKey(name))
 				{
-					throw new IndexOutOfRangeException(String.Format("{0} does not exist in the data table", name));
+					throw new IndexOutOfRangeException($"{name} does not exist in the data table");
 				}
 				string sourceName = _targetNameToSourceIdentifier[name];
 				object result = _source[sourceName];
 				if ((result == null || result == DBNull.Value) && _identifiers.Contains(name))
 				{
-					throw new IndexOutOfRangeException(String.Format("Identifier[{0}] must have a value.", name));
+					throw new IndexOutOfRangeException($"Identifier[{name}] must have a value.");
 				}
 				return result;
 			}
@@ -109,25 +109,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			}
 		}
 
-		public int Depth
-		{
-			get { return _source.Depth; }
-		}
+		public int Depth => _source.Depth;
 
-		public int FieldCount
-		{
-			get { return _source.FieldCount; }
-		}
+		public int FieldCount => _source.FieldCount;
 
-		public bool IsClosed
-		{
-			get { return _source.IsClosed; }
-		}
+		public bool IsClosed => _source.IsClosed;
 
-		public int RecordsAffected
-		{
-			get { return _source.RecordsAffected; }
-		}
+		public int RecordsAffected => _source.RecordsAffected;
 
 		public void Close()
 		{
@@ -223,7 +211,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		{
 			if (FieldCount <= i)
 			{
-				throw new IndexOutOfRangeException(String.Format("Ordinal [{0}] does not exist in the data table", i));
+				throw new IndexOutOfRangeException($"Ordinal [{i}] does not exist in the data table");
 			}
 
 			string sourceName =  _source.GetName(i);
@@ -238,7 +226,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 				string sourceIdentifier = _targetNameToSourceIdentifier[name];
 				return _source.GetOrdinal(sourceIdentifier);
 			}
-			throw new IndexOutOfRangeException(String.Format("{0} does not exist in the data table", name));
+			throw new IndexOutOfRangeException($"{name} does not exist in the data table");
 		}
 
 		public DataTable GetSchemaTable()

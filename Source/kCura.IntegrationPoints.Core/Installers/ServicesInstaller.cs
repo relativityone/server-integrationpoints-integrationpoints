@@ -89,15 +89,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IWindsorContainerSetup>().ImplementedBy<WindsorContainerSetup>().LifestyleSingleton());
 			container.Register(Component.For<IProviderFactoryLifecycleStrategy>().ImplementedBy<ProviderFactoryLifecycleStrategy>());
 			container.Register(Component.For<ProviderFactoryVendor>().ImplementedBy<ProviderFactoryVendor>().LifestyleSingleton());
-
-			if (toggleProvider.IsEnabled<UseOldProviderCreationLogic>())
-			{
-				container.Register(Component.For<IDataProviderFactory>().ImplementedBy<AppDomainFactory>().LifestyleTransient());
-			}
-			else
-			{
-				container.Register(Component.For<IDataProviderFactory>().ImplementedBy<DataProviderBuilder>().LifestyleSingleton());
-			}
+			container.Register(Component.For<IDataProviderFactory>().ImplementedBy<DataProviderBuilder>().LifestyleSingleton());
 			container.Register(Component.For<IDomainHelper>().ImplementedBy<DomainHelper>().LifestyleSingleton());
 			container.Register(Component.For<IJobManager>().ImplementedBy<AgentJobManager>().LifestyleTransient());
 			container.Register(Component.For<ICaseServiceContext>().ImplementedBy<CaseServiceContext>().LifestyleTransient());
@@ -236,7 +228,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 
 		private SqlServerToggleProvider CreateSqlServerToggleProvider(IHelper helper)
 		{
-			return new SqlServerToggleProvider(() => ConnectionFactory(helper), () => AsyncConnectionFactory(helper));
+			return new SqlServerToggleProvider(() => ConnectionFactory(helper), () => AsyncConnectionFactory(helper)){CacheEnabled = true};
 		}
 
 		private async Task<SqlConnection> AsyncConnectionFactory(IHelper helper)

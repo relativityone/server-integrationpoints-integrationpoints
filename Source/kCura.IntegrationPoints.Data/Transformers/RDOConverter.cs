@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.Data.Transformers
 
 				if (fieldName == ArtifactFieldNames.TextIdentifier)
 				{
-					rdo.Rdo.TextIdentifier = item.Value as string;
+					rdo.Rdo.TextIdentifier = item?.Value as string;
 					continue;
 				}
 
@@ -119,7 +119,11 @@ namespace kCura.IntegrationPoints.Data.Transformers
 			foreach (var property in rdoType.GetProperties())
 			{
 				string fieldName = property?.GetCustomAttribute<DynamicFieldAttribute>()?.FieldName;
-				output[property.Name] = property;
+				if (property != null)
+				{
+					output[property.Name] = property;
+				}
+
 				if (!string.IsNullOrEmpty(fieldName))
 				{
 					output[fieldName] = property;

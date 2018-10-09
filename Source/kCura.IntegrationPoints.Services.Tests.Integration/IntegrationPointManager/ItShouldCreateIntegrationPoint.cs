@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 	[TestFixture]
 	public class ItShouldCreateIntegrationPoint : RelativityProviderTemplate
 	{
-		public ItShouldCreateIntegrationPoint() : base($"create_s_{Utils.FormatedDateTimeNow}", $"create_d_{Utils.FormatedDateTimeNow}")
+		public ItShouldCreateIntegrationPoint() : base($"create_s_{Utils.FormattedDateTimeNow}", $"create_d_{Utils.FormattedDateTimeNow}")
 		{
 		}
 

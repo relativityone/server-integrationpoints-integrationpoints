@@ -110,15 +110,15 @@
 
 })(IP);
 
-$(window).load(function () {
+$(function() {
 	$(".consoleContainer .consoleButtonDisabled").attr("title", "You do not have permission to run this job.");
 });
 
-$(window).unload(function () {
+$(window).on('unload', (function () {
 
 	if (IP.isEdit === "Edit") {
 		IP.redirect.reset(true);
 	} else {
 		IP.redirect.reset(false);
 	}
-});
+}));

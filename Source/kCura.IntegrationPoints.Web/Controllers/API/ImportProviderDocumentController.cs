@@ -90,7 +90,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			{
 				isCloudInstance = "false";
 			}
-			return Json(isCloudInstance.ToLower());
+			return Json(isCloudInstance.ToLowerInvariant());
 		}
 
 		[HttpPost]
@@ -126,7 +126,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			string errorFilePath = _importFileLocationService.ErrorFilePath(artifactId);
 			if (_fileIo.Exists(errorFilePath))
 			{
-				return Ok();
+				return StatusCode(HttpStatusCode.NoContent);
 			}
 			else
 			{

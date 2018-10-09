@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace kCura.IntegrationPoints.Contracts.Domain
 {
@@ -14,9 +15,9 @@ namespace kCura.IntegrationPoints.Contracts.Domain
             {
                 return x.ArtifactID.CompareTo(y.ArtifactID);
             }
-            else if (x.Name.CompareTo(y.Name) != 0)
+            else if (String.Compare(x.Name, y.Name, StringComparison.Ordinal) != 0)
             {
-                return x.Name.CompareTo(y.Name);
+                return String.Compare(x.Name, y.Name, StringComparison.Ordinal);
             }
             else
             {

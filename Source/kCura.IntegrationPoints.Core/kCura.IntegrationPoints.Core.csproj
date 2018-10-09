@@ -271,9 +271,7 @@
     <Compile Include="Services\JobHistory\IDestinationParser.cs" />
     <Compile Include="Services\ProviderTypeService.cs" />
     <Compile Include="Tagging\TagsCreator.cs" />
-    <Compile Include="Toggles\UseOldProviderCreationLogic.cs" />
     <Compile Include="Toggles\UseOldExportVolumeManagerToggle.cs" />
-    <Compile Include="Toggles\UseStreamsForBigLongTextFieldsToggle.cs" />
     <Compile Include="Utils\FileSizeUtils.cs" />
     <Compile Include="Utils\JsonUtils.cs" />
     <Compile Include="Validation\Abstract\BaseIntegrationPointValidator.cs" />
@@ -388,7 +386,7 @@
     <Compile Include="Services\ServiceContext\EddsServiceContext.cs" />
     <Compile Include="Services\ServiceContext\IEddsServiceContext.cs" />
     <Compile Include="Services\ServiceContext\ServiceContextFactory.cs" />
-    <Compile Include="Services\Conversion\DataReaderEnumerable.cs" />
+    <Compile Include="Services\Conversion\DataReaderToEnumerableService.cs" />
     <Compile Include="ExternalTabs.cs" />
     <Compile Include="Installers\ServicesInstaller.cs" />
     <Compile Include="Services\ServiceContext\ICaseServiceContext.cs" />

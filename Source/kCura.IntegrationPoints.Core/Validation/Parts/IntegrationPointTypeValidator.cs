@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Core.Models;
+﻿using System;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
@@ -33,18 +34,16 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 				return result;
 			}
 
-			if (integrationModel.SourceProviderIdentifier.ToUpper() == Domain.Constants.RELATIVITY_PROVIDER_GUID.ToUpper())
+			if (String.Equals(integrationModel.SourceProviderIdentifier, Domain.Constants.RELATIVITY_PROVIDER_GUID, StringComparison.InvariantCultureIgnoreCase))
 			{
-				if (integrationPointType.Identifier.ToUpper() !=
-					Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString().ToUpper())
+				if (!String.Equals(integrationPointType.Identifier, Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString(), StringComparison.InvariantCultureIgnoreCase))
 				{
 					result.Add(IntegrationPointProviderValidationMessages.ERROR_INTEGRATION_POINT_TYPE_INVALID);
 				}
 			}
 			else
 			{
-				if (integrationPointType.Identifier.ToUpper() !=
-					Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid.ToString().ToUpper())
+				if (!String.Equals(integrationPointType.Identifier, Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid.ToString(), StringComparison.InvariantCultureIgnoreCase))
 				{
 					result.Add(IntegrationPointProviderValidationMessages.ERROR_INTEGRATION_POINT_TYPE_INVALID);
 				}

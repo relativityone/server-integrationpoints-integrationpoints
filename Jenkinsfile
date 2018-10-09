@@ -3,16 +3,12 @@
 // Based on https://git.kcura.com/projects/RAID/repos/rmtjobs/browse/Template.jenkinsfile
 // Set PipelineTools label to the same as here: https://git.kcura.com/projects/REL/repos/relativity/browse/Junkinsfile
 
-@Library([ 'PipelineTools@RelativityCD-6.3.0'
-         , 'SCVMMHelpers@3.1.1'
-         , 'GitHelpers@1.0.0'
-         , 'SlackHelpers@1.0.0'
-         ])_
+library 'PipelineTools@RelativityCD-6.3.0'
+library 'SCVMMHelpers@3.2.0'
+library 'GitHelpers@1.0.0'
+library 'SlackHelpers@1.0.0'
 
-import Pipelinetools.ScvmmHelpers.Scvmm
-import Pipelinetools.ScvmmHelpers.VirtualMachine
 import groovy.transform.Field
-
 
 properties([
     [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '30', artifactNumToKeepStr: '', daysToKeepStr: '30', numToKeepStr: '']],
@@ -28,7 +24,7 @@ properties([
 ])
 
 @Field
-VirtualMachine sut = null
+def sut = null
 
 def nightlyJobName = "IntegrationPointsNightly"
 def relativity_build = ""
@@ -60,12 +56,11 @@ def profile = createProfile(installing_relativity, installing_invariant, install
 def knife = 'C:\\Python27\\Lib\\site-packages\\jeeves\\knife.rb'
 def session_id = System.currentTimeMillis().toString()
 def event_hash = java.security.MessageDigest.getInstance("MD5").digest(env.JOB_NAME.bytes).encodeHex().toString()
-def scvmm = scvmm(this, session_id)
-scvmm.setHoursToLive("12")
+def Scvmm = scvmm(this, session_id)
+Scvmm.setHoursToLive("12")
 
 // Make changes here if necessary.
 def python_packages = 'jeeves==4.1.0 phonograph==5.2.0 selenium==3.0.1'
-
 
 timestamps 
 {
@@ -129,10 +124,10 @@ timestamps
 			{
 				node (agentsPool)
 				{
-					timeout(time: 45, unit: 'MINUTES')
+					timeout(time: 90, unit: 'MINUTES')
 					{
 						echo "Getting server from pool, session_id: $session_id, Relativity branch: $params.relativityBranch, Relativity version: $params.relativityBuildVersion, Relativity build type: $params.relativityBuildType, event hash: $event_hash"
-						sut = scvmm.getServerFromPool()						
+						sut = Scvmm.getServerFromPool()
 						echo "Acquired server: ${sut.name} @ ${sut.domain} (${sut.ip})"
 
 						parallel (
@@ -141,9 +136,9 @@ timestamps
 								registerEvent(this, session_id, 'Talos_Provision_test_CD', 'PASS', '-c', "${sut.name}.${sut.domain}", profile, event_hash)
 								if (installing_relativity)
 								{
+									relativity_build = getBuildArtifactsPath(this, "Relativity", params.relativityBranch, params.relativityBuildVersion, params.relativityBuildType, session_id)
 									if (!params.relativityBuildVersion)
 									{
-										relativity_build = getBuildArtifactsPath(this, "Relativity", params.relativityBranch, params.relativityBuildVersion, params.relativityBuildType, session_id)
 										echo "Relativity version found: $relativity_build"
 									}
 									echo "Installed Relativity, branch: $params.relativityBranch, version: $relativity_build, type: $params.relativityBuildType"
@@ -169,7 +164,7 @@ timestamps
 							{
 								def numberOfSlaves = 1
 								def numberOfExecutors = '1'
-								scvmm.createNodes(numberOfSlaves, 60, numberOfExecutors)								
+								Scvmm.createNodes(numberOfSlaves, 60, numberOfExecutors)
 								withCredentials([
 									usernamePassword(credentialsId: 'JenkinsSDLC', passwordVariable: 'SDLCPASSWORD', usernameVariable: 'SDLCUSERNAME')])
 								{
@@ -248,16 +243,16 @@ timestamps
 										//it returns username who submitted the request to save vms
 										user = input(message: 'Save the VMs?', ok: 'Save', submitter: 'JNK-Basic', submitterParameter: 'submitter')
 									}
-									scvmm.saveVMs(user)
+									Scvmm.saveVMs(user)
 								}
 								// Exception is thrown if you click abort or let it time out
 								catch(err)
 								{
 									echo "Deleting VMs..."
-									scvmm.deleteVMs()
+									Scvmm.deleteVMs()
 								}
 							}
-						}			
+						}
 						deleteNodes(this, session_id)
 					}
 				}

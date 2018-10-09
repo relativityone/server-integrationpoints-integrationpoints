@@ -150,8 +150,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 		private bool ShouldUseLongTextStream(ArtifactFieldDTO retrievedField)
 		{
-			return _toggleProvider.IsEnabled<UseStreamsForBigLongTextFieldsToggle>() && IsLongTextField(retrievedField) &&
-				retrievedField.Value?.ToString() == global::Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
+			return IsLongTextField(retrievedField) && retrievedField.Value?.ToString() == global::Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
 		}
 
 		private void LoadNativeFilesLocationsAndNames()
