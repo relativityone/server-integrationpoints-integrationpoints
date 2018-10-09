@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.PerformanceTestingFramework
 
 		private readonly string _fieldMappingsJson;
 
-		public RelativityToRelativityPerformanceTest() : base(Convert.ToInt32(TestContext.Parameters["SourceWorkspaceArtifactID"]), $"RelativityToRelativityPerformanceTest{DateTime.Now:yy-MM-dd HH-mm-ss}")
+		public RelativityToRelativityPerformanceTest() : base(Convert.ToInt32(TestContext.Parameters["SourceWorkspaceArtifactID"]), $"RipPushPerfTest {DateTime.Now:yyyy-MM-dd HH:mm}")
 		{
 			_fieldMappingsJson = TestContext.Parameters["FieldMappingsJSON"];
 
@@ -59,8 +59,8 @@ namespace kCura.IntegrationPoints.PerformanceTestingFramework
 		public void PerformanceTest()
 		{
 			//Arrange
-			_sourceConfigurationJson = _sourceConfigurationJson.Replace(_TARGET_WORKSPACE_TOKEN, SourceWorkspaceArtifactId.ToString());
-			_destinationConfigurationJson = _destinationConfigurationJson.Replace(_TARGET_WORKSPACE_TOKEN, SourceWorkspaceArtifactId.ToString());
+			_sourceConfigurationJson = _sourceConfigurationJson.Replace(_TARGET_WORKSPACE_TOKEN, TargetWorkspaceArtifactId.ToString());
+			_destinationConfigurationJson = _destinationConfigurationJson.Replace(_TARGET_WORKSPACE_TOKEN, TargetWorkspaceArtifactId.ToString());
 
 			IntegrationPointModel integrationPointModel = PrepareIntegrationPointsModel();
 			IntegrationPointModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationPointModel);
