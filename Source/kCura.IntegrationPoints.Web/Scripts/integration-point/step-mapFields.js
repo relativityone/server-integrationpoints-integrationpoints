@@ -912,7 +912,7 @@ ko.validation.insertValidationMessage = function (element) {
 				LongTextColumnThatContainsPathToFullText: model.LongTextColumnThatContainsPathToFullText,
 				ExtractedTextFieldContainsFilePath: model.ExtractedTextFieldContainsFilePath,
 				ExtractedTextFileEncoding: model.ExtractedTextFileEncoding
-			} || '';
+			};
 		}
 
 		var stepCache = {};

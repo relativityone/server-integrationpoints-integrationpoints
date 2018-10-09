@@ -9,29 +9,26 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 	[Serializable]
 	public abstract class ScheduleRuleBase : IScheduleRule
 	{
+
+		[NonSerialized()]
+		private ITimeService _timeService = null;
+
+		[NonSerialized()]
+		private static Dictionary<DaysOfWeek, DayOfWeek> _daysOfWeekMap = null;
+
+		[NonSerialized()]
+		private static ISerializer _serializer;
 		//Required by Serializable
 		protected ScheduleRuleBase()
 		{
 		}
 
-		[NonSerialized()]
-		private static ISerializer _serializer;
-
 		[XmlIgnore]
 		public static ISerializer Serializer
 		{
-			set { _serializer = value; }
-			get
-			{
-				if (_serializer == null)
-					_serializer = new XMLSerializerFactory();
-
-				return _serializer;
-			}
+			set => _serializer = value;
+			get => _serializer ?? (_serializer = new XMLSerializerFactory());
 		}
-
-		[NonSerialized()]
-		private ITimeService _timeService = null;
 
 		[XmlIgnore]
 		public ITimeService TimeService
@@ -40,30 +37,20 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 			get { return _timeService ?? (_timeService = new DefaultTimeService()); }
 		}
 
-		[NonSerialized()]
-		private static Dictionary<DaysOfWeek, DayOfWeek> _daysOfWeekMap = null;
-
 		[XmlIgnore]
 		public static Dictionary<DaysOfWeek, DayOfWeek> DaysOfWeekMap
 		{
-			set { _daysOfWeekMap = value; }
-			get
+			set => _daysOfWeekMap = value;
+			get => _daysOfWeekMap ?? (_daysOfWeekMap = new Dictionary<DaysOfWeek, DayOfWeek>()
 			{
-				if (_daysOfWeekMap == null)
-				{
-					_daysOfWeekMap = new Dictionary<DaysOfWeek, DayOfWeek>()
-					{
-						{DaysOfWeek.Monday,DayOfWeek.Monday},
-						{DaysOfWeek.Tuesday,DayOfWeek.Tuesday},
-						{DaysOfWeek.Wednesday,DayOfWeek.Wednesday},
-						{DaysOfWeek.Thursday,DayOfWeek.Thursday},
-						{DaysOfWeek.Friday,DayOfWeek.Friday},
-						{DaysOfWeek.Saturday,DayOfWeek.Saturday},
-						{DaysOfWeek.Sunday,DayOfWeek.Sunday},
-					};
-				}
-				return _daysOfWeekMap;
-			}
+				{DaysOfWeek.Monday, DayOfWeek.Monday},
+				{DaysOfWeek.Tuesday, DayOfWeek.Tuesday},
+				{DaysOfWeek.Wednesday, DayOfWeek.Wednesday},
+				{DaysOfWeek.Thursday, DayOfWeek.Thursday},
+				{DaysOfWeek.Friday, DayOfWeek.Friday},
+				{DaysOfWeek.Saturday, DayOfWeek.Saturday},
+				{DaysOfWeek.Sunday, DayOfWeek.Sunday},
+			});
 		}
 
 		public abstract DateTime? GetNextUTCRunDateTime();
@@ -150,17 +137,27 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 			bool endOfTheWeekReached = false;
 			DaysOfWeek localNowDayOfWeek = DaysOfWeekMap.Where(x => x.Value == localNow.DayOfWeek).ToList()[0].Key;
 			DaysOfWeek nextDayOfWeek = DaysOfWeekMap.Where(x => x.Value == nextRunTimeDate.DayOfWeek).ToList()[0].Key;
-			if (localNowDayOfWeek.CompareTo(nextDayOfWeek) == 1) endOfTheWeekReached = true;
+			if (localNowDayOfWeek.CompareTo(nextDayOfWeek) == 1)
+			{
+				endOfTheWeekReached = true;
+			}
+
 			int i;
 			for (i = 0; i < 8; i++)
 			{
-				if ((scheduleDayOfWeek & nextDayOfWeek) == nextDayOfWeek) break;
-				nextDayOfWeek = (DaysOfWeek)((byte)nextDayOfWeek << 1);
-				if ((nextDayOfWeek & DaysOfWeek.All) == DaysOfWeek.None)
+				if ((scheduleDayOfWeek & nextDayOfWeek) == nextDayOfWeek)
 				{
-					nextDayOfWeek = (DaysOfWeek)1;
-					endOfTheWeekReached = true;
+					break;
 				}
+
+				nextDayOfWeek = (DaysOfWeek)((byte)nextDayOfWeek << 1);
+				if ((nextDayOfWeek & DaysOfWeek.All) != DaysOfWeek.None)
+				{
+					continue;
+				}
+
+				nextDayOfWeek = (DaysOfWeek)1;
+				endOfTheWeekReached = true;
 			}
 			if (endOfTheWeekReached && reoccur.HasValue && reoccur.Value > 1)
 			{
@@ -169,7 +166,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 			return nextRunTimeDate.AddDays(i);
 		}
 
-		public DateTime GetNextScheduledMonthDayByDay(DateTime nextRunTimeDate, DateTime startDate, long localTimeOfDayTicks, bool? setLastDayOfMonth, int? DayOfMonth, DateTime localNow, int? reoccur)
+		public DateTime GetNextScheduledMonthDayByDay(DateTime nextRunTimeDate, DateTime startDate, long localTimeOfDayTicks,bool? setLastDayOfMonth, int? DayOfMonth, DateTime localNow, int? reoccur)
 		{
 			int year = nextRunTimeDate.Year;
 			int month = nextRunTimeDate.Month;
@@ -184,19 +181,28 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 			{
 				dayOfMonth = numberOfDaysInTheMonth < DayOfMonth.Value ? numberOfDaysInTheMonth : DayOfMonth.Value;
 			}
+
 			nextRunTimeDate = new DateTime(year, month, dayOfMonth, nextRunTimeDate.Hour, nextRunTimeDate.Minute, nextRunTimeDate.Second);
 			if (nextRunTimeDate < localNow || nextRunTimeDate < startDate.AddTicks(localTimeOfDayTicks))
 			{
 				int monthReoccurance = 1;
-				if (reoccur.HasValue) monthReoccurance = reoccur.Value;
+				if (reoccur.HasValue)
+				{
+					monthReoccurance = reoccur.Value;
+				}
+
 				nextRunTimeDate = nextRunTimeDate.AddMonths(monthReoccurance);
 				year = nextRunTimeDate.Year;
 				month = nextRunTimeDate.Month;
 				numberOfDaysInTheMonth = DateTime.DaysInMonth(year, month);
 				if (setLastDayOfMonth.HasValue && setLastDayOfMonth.Value)
-				{ dayOfMonth = numberOfDaysInTheMonth; }
+				{
+					dayOfMonth = numberOfDaysInTheMonth;
+				}
 				else
-				{ dayOfMonth = numberOfDaysInTheMonth < DayOfMonth.Value ? numberOfDaysInTheMonth : DayOfMonth.Value; }
+				{
+					dayOfMonth = !DayOfMonth.HasValue || numberOfDaysInTheMonth < DayOfMonth.Value ? numberOfDaysInTheMonth : DayOfMonth.Value;
+				}
 				nextRunTimeDate = new DateTime(year, month, dayOfMonth, nextRunTimeDate.Hour, nextRunTimeDate.Minute, nextRunTimeDate.Second);
 			}
 			return nextRunTimeDate;
@@ -287,17 +293,22 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 			}
 		}
 
-		public DateTime GetNextScheduledMonthDayByWeek(DateTime nextRunTimeDate, DateTime startDate, long localTimeOfDayTicks, DateTime localNow, DaysOfWeek? daysToRun, int? reoccur, OccuranceInMonth? occuranceInMonth)
+		public DateTime GetNextScheduledMonthDayByWeek(
+			DateTime nextRunTimeDate, DateTime startDate, long localTimeOfDayTicks, DateTime localNow, DaysOfWeek? daysToRun, int? reoccur, OccuranceInMonth? occuranceInMonth)
 		{
 			int reoccurance = 1;
-			if (reoccur.HasValue && reoccur.Value > 1) reoccurance = reoccur.Value;
+			if (reoccur.HasValue && reoccur.Value > 1)
+			{
+				reoccurance = reoccur.Value;
+			}
+
 			bool continueSearch = false;
 			DayOfWeek dayOfWeekToRun = DaysOfWeekMap[daysToRun.Value];
 
 			do
 			{
 				continueSearch = false;
-				if (occuranceInMonth.Value == OccuranceInMonth.Last)
+				if (occuranceInMonth.GetValueOrDefault() == OccuranceInMonth.Last)
 				{
 					DateTime dt = SearchMonthForLastOccuranceOfDay(nextRunTimeDate.Year, nextRunTimeDate.Month, dayOfWeekToRun);
 					nextRunTimeDate = new DateTime(dt.Year, dt.Month, dt.Day, nextRunTimeDate.Hour, nextRunTimeDate.Minute, nextRunTimeDate.Second);
@@ -309,7 +320,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 				}
 				if (nextRunTimeDate < localNow || nextRunTimeDate.Date < startDate.Date)
 				{
-					//need to move to future month
+					//it has to be moved to next month
 					nextRunTimeDate = nextRunTimeDate.AddMonths(reoccurance);
 					continueSearch = true;
 				}
@@ -328,7 +339,11 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 				nextDayOfWeek = (DaysOfWeek)((byte)nextDayOfWeek << 1);
 				if ((nextDayOfWeek & DaysOfWeek.All) == DaysOfWeek.None) break;
 			}
-			if (!string.IsNullOrEmpty(weekDays)) weekDays = weekDays.Substring(0, weekDays.Length - 2);
+			if (!string.IsNullOrEmpty(weekDays))
+			{
+				weekDays = weekDays.Substring(0, weekDays.Length - 2);
+			}
+
 			return weekDays;
 		}
 
@@ -375,13 +390,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 			public LocalEndDate(ITimeService timeService) : base(timeService)
 			{ }
 
-			public override DateTime Time
-			{
-				get
-				{
-					return _timeService.LocalTime;
-				}
-			}
+			public override DateTime Time => _timeService.LocalTime;
 
 			/// <summary>
 			/// Determine whether the end date has passed
@@ -404,13 +413,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 			{
 			}
 
-			public override DateTime Time
-			{
-				get
-				{
-					return _timeService.UtcNow;
-				}
-			}
+			public override DateTime Time => _timeService.UtcNow;
 
 			/// <summary>
 			/// Determine whether the end date has passed
