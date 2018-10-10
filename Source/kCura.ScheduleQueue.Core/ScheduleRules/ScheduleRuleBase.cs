@@ -26,8 +26,8 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 		[XmlIgnore]
 		public static ISerializer Serializer
 		{
-			set => _serializer = value;
-			get => _serializer ?? (_serializer = new XMLSerializerFactory());
+			set { _serializer = value; }
+			get { return _serializer ?? (_serializer = new XMLSerializerFactory()); }
 		}
 
 		[XmlIgnore]
@@ -40,17 +40,20 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 		[XmlIgnore]
 		public static Dictionary<DaysOfWeek, DayOfWeek> DaysOfWeekMap
 		{
-			set => _daysOfWeekMap = value;
-			get => _daysOfWeekMap ?? (_daysOfWeekMap = new Dictionary<DaysOfWeek, DayOfWeek>()
+			set { _daysOfWeekMap = value; }
+			get
 			{
-				{DaysOfWeek.Monday, DayOfWeek.Monday},
-				{DaysOfWeek.Tuesday, DayOfWeek.Tuesday},
-				{DaysOfWeek.Wednesday, DayOfWeek.Wednesday},
-				{DaysOfWeek.Thursday, DayOfWeek.Thursday},
-				{DaysOfWeek.Friday, DayOfWeek.Friday},
-				{DaysOfWeek.Saturday, DayOfWeek.Saturday},
-				{DaysOfWeek.Sunday, DayOfWeek.Sunday},
-			});
+				return _daysOfWeekMap ?? (_daysOfWeekMap = new Dictionary<DaysOfWeek, DayOfWeek>()
+				{
+					{DaysOfWeek.Monday, DayOfWeek.Monday},
+					{DaysOfWeek.Tuesday, DayOfWeek.Tuesday},
+					{DaysOfWeek.Wednesday, DayOfWeek.Wednesday},
+					{DaysOfWeek.Thursday, DayOfWeek.Thursday},
+					{DaysOfWeek.Friday, DayOfWeek.Friday},
+					{DaysOfWeek.Saturday, DayOfWeek.Saturday},
+					{DaysOfWeek.Sunday, DayOfWeek.Sunday},
+				});
+			}
 		}
 
 		public abstract DateTime? GetNextUTCRunDateTime();

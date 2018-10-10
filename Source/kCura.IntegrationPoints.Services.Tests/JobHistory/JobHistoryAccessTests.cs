@@ -36,9 +36,9 @@ namespace kCura.IntegrationPoints.Services.Tests.JobHistory
 
 		public class TestData
 		{
-			public IList<JobHistoryModel> JobHistories;
-			public IList<JobHistoryModel> ExpectedJobHistories;
-			public IList<int> Workspaces;
+			public IList<JobHistoryModel> JobHistories { get; private set; }
+			public IList<JobHistoryModel> ExpectedJobHistories { get; private set; }
+			public IList<int> Workspaces { get; private set; }
 
 			public static TestData EmptyJobHistoriesList()
 			{
