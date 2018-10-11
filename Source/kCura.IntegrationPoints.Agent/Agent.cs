@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Agent
 		private const string _AGENT_NAME = "Integration Points Agent";
 		private readonly Lazy<IWindsorContainer> _agentLevelContainer;
 
-		public event ExceptionEventHandler JobExecutionError;
+		public virtual event ExceptionEventHandler JobExecutionError;
 
 		public Agent() : base(Guid.Parse(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID))
 		{
