@@ -13,7 +13,8 @@ using IntegrationPointType = kCura.IntegrationPoint.Tests.Core.Models.Integratio
 namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 {
 	[TestFixture]
-	public class DocumentExportToLoadFileTests : ExportToLoadFileTests
+	[Category(TestCategory.EXPORT_TO_LOAD_FILE)]
+    public class DocumentExportToLoadFileTests : ExportToLoadFileTests
 	{
 		private IntegrationPointsAction _integrationPointsAction;
 
