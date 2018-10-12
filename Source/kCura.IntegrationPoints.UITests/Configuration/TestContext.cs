@@ -38,10 +38,11 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		
 		private readonly Lazy<ITestHelper> _helper;
 
+		private readonly string _timeStamp;
+
 		private static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(TestContext));
 
-		public readonly string TimeStamp;
-
+		
 		public ITestHelper Helper => _helper.Value;
 
 		public int? WorkspaceId { get; set; }
@@ -57,7 +58,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		public TestContext()
 		{
 			_helper = new Lazy<ITestHelper>(() => new TestHelper());
-			TimeStamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss.ffff");
+			_timeStamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss.ffff");
 		}
 
 		public TestContext CreateTestWorkspace()
@@ -68,7 +69,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 		public async Task CreateTestWorkspaceAsync()
 		{
-			WorkspaceName = $"RIP Test Workspace {TimeStamp}";
+			WorkspaceName = $"RIP Test Workspace {_timeStamp}";
 			string templateWorkspaceName = SharedVariables.UiTemplateWorkspace;
 			Log.Information($"Attempting to create workspace '{WorkspaceName}' using template '{templateWorkspaceName}'.");
 			try
@@ -95,7 +96,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 		public TestContext SetupUser()
 		{
-			GroupId = Group.CreateGroup($"TestGroup_{TimeStamp}");
+			GroupId = Group.CreateGroup($"TestGroup_{_timeStamp}");
 			Group.AddGroupToWorkspace(GetWorkspaceId(), GetGroupId());
 
 			ClaimsPrincipal.ClaimsPrincipalSelector += () =>
@@ -104,7 +105,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 				return factory.CreateClaimsPrincipal2(_ADMIN_USER_ID, Helper);
 			};
 
-			UserModel userModel = User.CreateUser("UI", $"Test_User_{TimeStamp}", $"UI_Test_User_{TimeStamp}@relativity.com", new List<int> { GetGroupId() });
+			UserModel userModel = User.CreateUser("UI", $"Test_User_{_timeStamp}", $"UI_Test_User_{_timeStamp}@relativity.com", new List<int> { GetGroupId() });
 			UserId = userModel.ArtifactId;
 			return this;
 		}
