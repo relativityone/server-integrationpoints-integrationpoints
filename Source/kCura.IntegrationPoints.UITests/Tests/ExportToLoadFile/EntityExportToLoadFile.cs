@@ -13,7 +13,8 @@ using Relativity.Services.Objects.DataContracts;
 namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 {
 	[TestFixture]
-	public class EntityExportToLoadFile : UiTest
+	[Category(TestCategory.EXPORT_TO_LOAD_FILE)]
+    public class EntityExportToLoadFile : UiTest
 	{
 		private IntegrationPointsAction _integrationPointsAction;
 		private IRSAPIService _service;

@@ -6,8 +6,8 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.UITests.Tests
 {
 	[TestFixture]
-	[Category(TestCategory.SMOKE)]
-	public class UserOnLoginPageTest : UiTest
+	[Category(TestCategory.MISCELLANEOUS)]
+    public class UserOnLoginPageTest : UiTest
 	{
 		[OneTimeSetUp]
 		public void OneTimeSetUp()

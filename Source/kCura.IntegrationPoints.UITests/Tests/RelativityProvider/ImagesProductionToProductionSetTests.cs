@@ -3,13 +3,15 @@ using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Validators;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Pages;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 {
 	[TestFixture]
-	public class ImagesProductionToProductionSetTests : RelativityProviderTestsBase
+	[Category(TestCategory.EXPORT_TO_RELATIVITY)]
+    public class ImagesProductionToProductionSetTests : RelativityProviderTestsBase
 	{
 
 		private RelativityProviderModel CreateModel()
