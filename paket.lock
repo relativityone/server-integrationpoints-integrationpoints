@@ -431,6 +431,7 @@ STRATEGY: MIN
 RESTRICTION: == net462
 NUGET
   remote: https://proget.kcura.corp/nuget/NuGet
+    CSharpGuidelineAnalyzer (2.3.0.0)
     Newtonsoft.Json (8.0.1)
     Serilog (1.5.14)
     Serilog.Sinks.Seq (1.5.36)

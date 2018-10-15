@@ -24,7 +24,6 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		public TestConfiguration()
 		{
 			ConfigName = Environment.GetEnvironmentVariable(_ENVIRONMENT_VARIABLE_CONFIG_NAME);
-			//ConfigName = "Regression-B.config";
 
 			if (ConfigName == null)
 			{

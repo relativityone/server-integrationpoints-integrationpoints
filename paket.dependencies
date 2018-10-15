@@ -70,3 +70,4 @@ group TestPackages
 	nuget Newtonsoft.Json 8.0.1
 	nuget Serilog 1.5.14	
 	nuget Serilog.Sinks.Seq 1.5.36
+	nuget CSharpGuidelineAnalyzer 2.3.0.0

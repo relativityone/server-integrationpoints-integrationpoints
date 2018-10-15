@@ -22,7 +22,7 @@ using Serilog.Events;
 using ArtifactType = Relativity.ArtifactType;
 using Field = kCura.Relativity.Client.DTOs.Field;
 using Group = kCura.IntegrationPoint.Tests.Core.Group;
-using User = kCura.IntegrationPoint.Tests.Core.User;
+using UserService = kCura.IntegrationPoint.Tests.Core.User;
 using Workspace = kCura.IntegrationPoint.Tests.Core.Workspace;
 
 namespace kCura.IntegrationPoints.UITests.Configuration
@@ -50,7 +50,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 		public int? GroupId { get; private set; }
 
-		public int? UserId { get; private set; }
+		public UserModel User { get; private set; }
 
 		public int? ProductionId { get; private set; }
 
@@ -93,10 +93,10 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			//ChangeFieldToDataGrid(fieldNames);
 		}
 
-		public TestContext SetupUser()
+		public TestContext CreateUser()
 		{
-			GroupId = Group.CreateGroup($"TestGroup_{TimeStamp}");
-			Group.AddGroupToWorkspace(GetWorkspaceId(), GetGroupId());
+			//GroupId = Group.CreateGroup($"TestGroup_{TimeStamp}");
+			//Group.AddGroupToWorkspace(GetWorkspaceId(), GetGroupId());
 
 			ClaimsPrincipal.ClaimsPrincipalSelector += () =>
 			{
@@ -104,8 +104,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 				return factory.CreateClaimsPrincipal2(_ADMIN_USER_ID, Helper);
 			};
 
-			UserModel userModel = User.CreateUser("UI", $"Test_User_{TimeStamp}", $"UI_Test_User_{TimeStamp}@relativity.com", new List<int> { GetGroupId() });
-			UserId = userModel.ArtifactId;
+			User = UserService.CreateUser("RIP", $"Test_User_{TimeStamp}", $"RIP_Test_User_{TimeStamp}@relativity.com");
 			return this;
 		}
 
@@ -376,9 +375,9 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 				Group.DeleteGroup(GetGroupId());
 			}
 
-			if (UserId.HasValue)
+			if (User != null)
 			{
-				User.DeleteUser(GetUserId());
+				UserService.DeleteUser(User.ArtifactId);
 			}
 			return this;
 		}
@@ -394,12 +393,6 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			Assert.NotNull(WorkspaceId, $"{nameof(WorkspaceId)} is null. Workspace wasn't created.");
 			Assert.AreNotEqual(0, WorkspaceId, $"{nameof(WorkspaceId)} is 0. Workspace wasn't created correctly.");
 			return WorkspaceId.Value;
-		}
-
-		public int GetUserId()
-		{
-			Assert.NotNull(UserId, $"{nameof(UserId)} is null. User wasn't created.");
-			return UserId.Value;
 		}
 
 		private int RetrieveSavedSearchId(string savedSearchName)

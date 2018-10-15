@@ -104,6 +104,7 @@
     <Compile Include="Configuration\TestContext.cs" />
     <Compile Include="Auxiliary\ReuseRemoteWebDriver.cs" />
     <Compile Include="Driver\DriverExtensions.cs" />
+    <Compile Include="Driver\DriverFactory.cs" />
     <Compile Include="Logging\LoggerFactory.cs" />
     <Compile Include="Logging\LoggerNameEnricher.cs" />
     <Compile Include="Pages\ExportEntityToFileSecondPage.cs" />
