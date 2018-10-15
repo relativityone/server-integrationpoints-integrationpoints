@@ -13,7 +13,8 @@ using IntegrationPointType = kCura.IntegrationPoint.Tests.Core.Models.Integratio
 namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 {
 	[TestFixture]
-	public class ProductionExportToLoadFileTests : ExportToLoadFileTests
+	[Category(TestCategory.EXPORT_TO_LOAD_FILE)]
+    public class ProductionExportToLoadFileTests : ExportToLoadFileTests
 	{
 		private string PRODUCTION_NAME_SMALL = "Small Production under tests";
 		private string PRODUCTION_NAME_BIG = "Big Production under tests";

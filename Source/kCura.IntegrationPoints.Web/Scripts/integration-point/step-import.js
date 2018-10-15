@@ -34,9 +34,7 @@
 			})[0].href;
 		};
 
-
-		var FRAME_KEY = 'syncType';
-		var stepCache = {};
+        var stepCache = {};
 
 		this.getTemplate = function () {
 			IP.data.ajax({ dataType: 'html', cache: true, type: 'get', url: self.settings.url }).then(function (result) {

@@ -1,4 +1,5 @@
 ﻿using System.Threading;
+using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Components;
 using kCura.IntegrationPoints.UITests.Pages;
 using NUnit.Framework;
@@ -6,7 +7,8 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.UITests.Tests
 {
 	[TestFixture]
-	public class SelectWithSavedSearchTest : UiTest
+	[Category(TestCategory.MISCELLANEOUS)]
+    public class SelectWithSavedSearchTest : UiTest
 	{
 		private const int _MILLISECONDSTIMEOUT = 1000;
 

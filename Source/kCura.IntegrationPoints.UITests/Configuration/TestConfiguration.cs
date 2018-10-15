@@ -17,23 +17,23 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 		private const string _NULL_CONFIG_NAME = "<NOT SET>";
 
+		private readonly string _configName;
+
 		private static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(TestConfiguration));
 		
-		public readonly string ConfigName;
-	
 		public TestConfiguration()
 		{
-			ConfigName = Environment.GetEnvironmentVariable(_ENVIRONMENT_VARIABLE_CONFIG_NAME);
+			_configName = Environment.GetEnvironmentVariable(_ENVIRONMENT_VARIABLE_CONFIG_NAME);
 
-			if (ConfigName == null)
+			if (_configName == null)
 			{
 				Log.Information("Custom config is not set by ENV:{ConfigName}. Only App.config defaults will be used.",
 					_ENVIRONMENT_VARIABLE_CONFIG_NAME);
-				ConfigName = _NULL_CONFIG_NAME;
+				_configName = _NULL_CONFIG_NAME;
 			}
 			else
 			{
-				Log.Information("Custom config set to {ConfigName}", ConfigName);
+				Log.Information("Custom config set to {ConfigName}", _configName);
 			}
 		}
 
@@ -63,13 +63,13 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 		public TestConfiguration MergeCustomConfigWithAppSettings()
 		{
-			if (ConfigName == _NULL_CONFIG_NAME)
+			if (_configName == _NULL_CONFIG_NAME)
 			{
 				Log.Information("Custom config was not set, skipping merging.");
 			}
 			else
 			{
-				string path = $@"UiTestsConfig\{ConfigName}";
+				string path = $@"UiTestsConfig\{_configName}";
 				Log.Information("Merging {Path}...", path);
 				SharedVariables.MergeConfigurationWithAppConfig(path);
 				Console.WriteLine(SharedVariables.DumpToString());
