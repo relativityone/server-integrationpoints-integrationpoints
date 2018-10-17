@@ -115,7 +115,7 @@ TooltipDefs.RelativityProviderSettingsDetails = [
     },
     {
         name: "Copy Images",
-        description: "determines whether Integration Points copies images while syncing data between the source and destination workspaces. When you select Yes, only images are transferred by the integration point and no documents. When you additionally select Yes for the Copy Files to Repository setting, integration point transfers physical image files to the fileshare of the destination workspace.",
+        description: "determines whether images are copied while syncing data between the source and destination workspaces. When set to Yes, only image links are transferred to the destination case file table. Physical image files are only copied to the destination case's fileshare when the Copy Files to Repository setting is also set to Yes.",
         subsection: []
     }, {
         name: "Image Precedence",
