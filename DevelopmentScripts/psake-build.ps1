@@ -116,6 +116,10 @@ task build_rip_documentation {
 }
 
 task copy_chrome_driver -depends build_projects{
+    If(!(test-path $tests_directory))
+    {
+        New-Item -Path $tests_directory -ItemType "directory"
+    }
 	Copy-Item -path $chromedriver_path -Destination $tests_directory
 }
 
