@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 		public int? GroupId { get; private set; }
 
-		public UserModel User { get; private set; }
+		public RelativityUser User { get; private set; }
 
 		public int? ProductionId { get; private set; }
 
@@ -94,18 +94,26 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			//ChangeFieldToDataGrid(fieldNames);
 		}
 
-		public TestContext CreateUser()
+		public TestContext InitUser()
 		{
-			//GroupId = Group.CreateGroup($"TestGroup_{TimeStamp}");
-			//Group.AddGroupToWorkspace(GetWorkspaceId(), GetGroupId());
-
-			ClaimsPrincipal.ClaimsPrincipalSelector += () =>
+			if (SharedVariables.UiSkipUserCreation)
 			{
-				var factory = new ClaimsPrincipalFactory();
-				return factory.CreateClaimsPrincipal2(_ADMIN_USER_ID, Helper);
-			};
+				User = new RelativityUser(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword);
+			}
+			else
+			{
+				//GroupId = Group.CreateGroup($"TestGroup_{TimeStamp}");
+				//Group.AddGroupToWorkspace(GetWorkspaceId(), GetGroupId());
 
-			User = UserService.CreateUser("RIP", $"Test_User_{_timeStamp}", $"RIP_Test_User_{_timeStamp}@relativity.com");
+				ClaimsPrincipal.ClaimsPrincipalSelector += () =>
+				{
+					var factory = new ClaimsPrincipalFactory();
+					return factory.CreateClaimsPrincipal2(_ADMIN_USER_ID, Helper);
+				};
+
+				UserModel userModel = UserService.CreateUser("RIP", $"Test_User_{_timeStamp}", $"RIP_Test_User_{_timeStamp}@relativity.com");
+				User = new RelativityUser(userModel.ArtifactId, userModel.EmailAddress, userModel.Password);
+			}
 			return this;
 		}
 
@@ -376,7 +384,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 				Group.DeleteGroup(GetGroupId());
 			}
 
-			if (User != null)
+			if (User != null && User.CreatedInTest)
 			{
 				UserService.DeleteUser(User.ArtifactId);
 			}
