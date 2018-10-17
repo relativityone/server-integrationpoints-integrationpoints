@@ -79,7 +79,7 @@
   </Choose>
   <Import Project="..\..\.paket\paket.targets" />
   <PropertyGroup>
-    <PostBuildEvent>$(ProjectDir)..\..\DevelopmentScripts\copyProjectFilesToLib.cmd $(ProjectDir)..\ $(TargetDir) $(TargetName)</PostBuildEvent>
+    
   </PropertyGroup>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">

@@ -511,7 +511,7 @@
     </When>
   </Choose>
   <PropertyGroup>
-    <PostBuildEvent>$(ProjectDir)..\..\DevelopmentScripts\copyProjectFilesToLib.cmd $(ProjectDir)..\ $(TargetDir) $(TargetName)</PostBuildEvent>
+    
   </PropertyGroup>
   <Import Project="..\..\.paket\paket.targets" />
   <PropertyGroup>
