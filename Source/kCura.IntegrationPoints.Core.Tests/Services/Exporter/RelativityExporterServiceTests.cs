@@ -97,7 +97,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		}
 
 		[Test]
-		public void HasDataToRetrieve_RetunsFalseOnJobThatDoesNotHaveAnythingToRead()
+		public void HasDataToRetrieve_ReturnsFalseOnJobThatDoesNotHaveAnythingToRead()
 		{
 			// arrange
 			_exportApiResult.RowCount = 0;
@@ -114,13 +114,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 
 
 		[Test]
-		public void HasDataToRetrieve_RetunsFalseOnFinishedJob()
+		public void HasDataToRetrieve_ReturnsFalseOnFinishedJob()
 		{
 			// arrange
 			_exportApiResult.RowCount = 1;
 			
 			_exporter.RetrieveResults(_exportApiResult.RunId, _avfIds, 1).Returns(_goldFlowRetrievableData);
 			_queryFieldLookupRepository.GetFieldByArtifactId(Arg.Any<int>()).Returns(new ViewFieldInfo(string.Empty, string.Empty, FieldTypeHelper.FieldType.Empty));
+			_queryFieldLookupRepository.GetFieldTypeByArtifactId(Arg.Any<int>()).Returns(FieldTypeHelper.FieldType.Empty.ToString());
 			_jobStopManager.IsStopRequested().Returns(false);
 
 			// act
@@ -135,7 +136,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 
 
 		[Test]
-		public void HasDataToRetrieve_RetunsTrueOnRunningJob_WithIntMaxData()
+		public void HasDataToRetrieve_ReturnsTrueOnRunningJob_WithIntMaxData()
 		{
 			// arrange
 			_exportApiResult.RowCount = Int32.MaxValue;
@@ -150,7 +151,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		}
 
 		[Test]
-		public void HasDataToRetrieve_RetunsFalseOnRunningJob_WithLongMaxData()
+		public void HasDataToRetrieve_ReturnsFalseOnRunningJob_WithLongMaxData()
 		{
 			// arrange
 			_exportApiResult.RowCount = Int64.MaxValue;
@@ -165,7 +166,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		}
 
 		[Test]
-		public void HasDataToRetrieve_RetunsFalseOnStoppedJob()
+		public void HasDataToRetrieve_ReturnsFalseOnStoppedJob()
 		{
 			// arrange
 			_exportApiResult.RowCount = Int64.MaxValue;
@@ -208,6 +209,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 
 			// Act
 			_queryFieldLookupRepository.GetFieldByArtifactId(Arg.Any<int>()).Returns(new ViewFieldInfo(string.Empty, string.Empty, FieldTypeHelper.FieldType.Empty));
+			_queryFieldLookupRepository.GetFieldTypeByArtifactId(Arg.Any<int>()).Returns(FieldTypeHelper.FieldType.Empty.ToString());
 			ArtifactDTO[] data = _instance.RetrieveData(1);
 
 
@@ -254,7 +256,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		private void ValidateArtifact(ArtifactDTO expect, ArtifactDTO actual)
 		{
 			Assert.AreEqual(expect.ArtifactId, actual.ArtifactId);
-			Assert.AreEqual(expect.ArtifactTypeId, expect.ArtifactTypeId);
+			Assert.AreEqual(expect.ArtifactTypeId, actual.ArtifactTypeId);
 			for (int i = 0; i < expect.Fields.Count; i++)
 			{
 				ArtifactFieldDTO expectedField = expect.Fields[i];
