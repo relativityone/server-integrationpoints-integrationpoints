@@ -73,18 +73,18 @@ timestamps
 	{
 		node ('PolandBuild')
 		{
-			stage ('Checkout')
+			try
 			{
-				timeout(time: 3, unit: 'MINUTES')
+				stage ('Checkout')
 				{
-					checkout scm
-					step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
-				}
+					timeout(time: 3, unit: 'MINUTES')
+					{
+						checkout scm
+						step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
+					}
 
-			}
-			stage ('Build')
-			{
-				timeout(time: 10, unit: 'MINUTES')
+				}
+				stage ('Build')
 				{
 					def sonarParameter = 
 						(env.BRANCH_NAME == "develop")
@@ -93,34 +93,36 @@ timestamps
 					powershell "./build.ps1 release $sonarParameter"
 					archiveArtifacts artifacts: "DevelopmentScripts/*.html", fingerprint: true
 				}
-			}
-			stage ('Unit Tests')
-			{
+				stage ('Unit Tests')
+				{
+					timeout(time: 3, unit: 'MINUTES')
+					{
+						powershell "./build.ps1 release -sk -t"
+						archiveArtifacts artifacts: "TestLogs/*", fingerprint: true
+						currentBuild.result = 'SUCCESS'
+					}
+				}
 				timeout(time: 3, unit: 'MINUTES')
 				{
-					powershell "./build.ps1 release -sk -t"
-					archiveArtifacts artifacts: "TestLogs/*", fingerprint: true
-					currentBuild.result = 'SUCCESS'
+					stage ('Stash Tests Artifacts')
+					{
+						stash includes: 'lib/UnitTests/**', name: 'testdlls'
+						stash includes: 'DynamicallyLoadedDLLs/Search-Standard/*', name: 'dynamicallyLoadedDLLs'
+						stash includes: 'Applications/RelativityIntegrationPoints.Auto.rap', name: 'integrationPointsRap'
+						stash includes: 'DevelopmentScripts/IntegrationPointsTests.*', name: 'nunitProjectFiles'
+						stash includes: 'DevelopmentScripts/NUnit.ConsoleRunner/tools/*', name: 'nunitConsoleRunner'
+						stash includes: 'DevelopmentScripts/NUnit.Extension.NUnitProjectLoader/tools/*', name: 'nunitProjectLoader'
+						stash includes: 'DevelopmentScripts/*.ps1', name: 'buildScripts'
+						stash includes: 'build.ps1', name: 'buildps1'
+						stash includes: 'Vendor/psake/tools/*', name: 'psake'
+						stash includes: 'Vendor/NuGet/NuGet.exe', name: 'nuget'
+						stash includes: 'Version/version.txt', name: 'version'
+					}
 				}
 			}
-			timeout(time: 3, unit: 'MINUTES')
+			finally
 			{
-				stage ('Stash Tests Artifacts')
-				{
-					stash includes: 'lib/UnitTests/**', name: 'testdlls'
-					stash includes: 'DynamicallyLoadedDLLs/Search-Standard/*', name: 'dynamicallyLoadedDLLs'
-					stash includes: 'Applications/RelativityIntegrationPoints.Auto.rap', name: 'integrationPointsRap'
-					stash includes: 'DevelopmentScripts/IntegrationPointsTests.*', name: 'nunitProjectFiles'
-					stash includes: 'DevelopmentScripts/NUnit.ConsoleRunner/tools/*', name: 'nunitConsoleRunner'
-					stash includes: 'DevelopmentScripts/NUnit.Extension.NUnitProjectLoader/tools/*', name: 'nunitProjectLoader'
-					stash includes: 'DevelopmentScripts/*.ps1', name: 'buildScripts'
-					stash includes: 'build.ps1', name: 'buildps1'
-					stash includes: 'Vendor/psake/tools/*', name: 'psake'
-					stash includes: 'Vendor/NuGet/NuGet.exe', name: 'nuget'
-					stash includes: 'Version/version.txt', name: 'version'
-
-					deleteDir()
-				}
+				deleteDir()
 			}
 		}
 		if (testingVMsAreRequired())
@@ -141,12 +143,12 @@ timestamps
 								registerEvent(this, session_id, 'Talos_Provision_test_CD', 'PASS', '-c', "${sut.name}.${sut.domain}", profile, event_hash)
 								if (installing_relativity)
 								{
-									if (!params.relativityBuildVersion)
+									relativity_build = getBuildArtifactsPath(this, "Relativity", params.relativityBranch, params.relativityBuildVersion, params.relativityBuildType, session_id)
+									if (params.relativityBuildVersion && !relativity_build)
 									{
-										relativity_build = getBuildArtifactsPath(this, "Relativity", params.relativityBranch, params.relativityBuildVersion, params.relativityBuildType, session_id)
-										echo "Relativity version found: $relativity_build"
+										relativity_build = params.relativityBuildVersion
 									}
-									echo "Installed Relativity, branch: $params.relativityBranch, version: $relativity_build, type: $params.relativityBuildType"
+									echo "Installing Relativity, branch: $params.relativityBranch, version: $relativity_build, type: $params.relativityBuildType"
 									sendVersionToElastic(this, "Relativity", params.relativityBranch, relativity_build, params.relativityBuildType, session_id)
 								}
 
