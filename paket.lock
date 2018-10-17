@@ -23,7 +23,6 @@ NUGET
     Castle.Core (3.3.0)
     Castle.Windsor (3.3.0)
       Castle.Core (>= 3.3)
-    Clarius.TransformOnBuild (1.21.0)
     CSharpGuidelineAnalyzer (1.0.3.0)
     DotNetSeleniumExtras.PageObjects (3.11.0)
       Selenium.WebDriver (>= 3.10)
