@@ -120,13 +120,11 @@ task build_rip_documentation {
 }
 
 task create_lib_dir {
-    If(!(test-path $tests_directory))
+    If (Test-Path $tests_directory)
     {
-        New-Item -Path $tests_directory -ItemType "directory"
-    }
-    Else {
         Remove-Item -Recurse -Force $tests_directory
     }
+    New-Item -Path $tests_directory -ItemType "directory"
 }
 
 task copy_dlls_to_lib_dir -depends create_lib_dir {
