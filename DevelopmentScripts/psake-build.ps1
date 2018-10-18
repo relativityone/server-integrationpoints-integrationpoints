@@ -193,8 +193,7 @@ task copy_dlls_to_lib_dir -depends create_lib_dir {
             "Source\kCura.IntegrationPoint.Tests.Core\TestDataExtended",
             "Source\kCura.IntegrationPoint.Tests.Core\TestDataImportFromLoadFile",
             "Source\kCura.IntegrationPoint.Tests.Core\TestDataSaltPepper",
-            "Source\kCura.IntegrationPoint.Tests.Core\TestDataText",
-            "DevelopmentScripts\IntegrationPointsTests.config"
+            "Source\kCura.IntegrationPoint.Tests.Core\TestDataText"
 
     foreach ($file in $files)
     {
