@@ -91,6 +91,11 @@ task build_projects -depends create_build_script, restore_nuget, configure_paket
         Write-Host 'Based on' $build_type 'Injection is set to' $Injections
 
         Write-Host 'Using MSBuild' $msbuild_exe 'with targets file' $targetsfile
+
+        If(!(test-path $buildlogs_directory))
+        {
+            New-Item -Path $buildlogs_directory -ItemType Directory -Force
+        }
         
         &  $msbuild_exe @(($targetsfile),   
                          ('/property:SourceRoot=' + $root),
@@ -118,6 +123,9 @@ task create_lib_dir {
     If(!(test-path $tests_directory))
     {
         New-Item -Path $tests_directory -ItemType "directory"
+    }
+    Else {
+        Remove-Item -Recurse -Force $tests_directory
     }
 }
 
@@ -198,6 +206,7 @@ task copy_dlls_to_lib_dir -depends create_lib_dir {
     foreach ($file in $files)
     {
         $tmpPath = Join-Path -Path $root -ChildPath $file
+        Write-Host "Copying" $tmpPath
         Copy-Item -path $tmpPath -Destination $tests_directory -Recurse
     }
 }
