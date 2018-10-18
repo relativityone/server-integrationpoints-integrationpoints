@@ -96,7 +96,6 @@ task build_projects -depends create_build_script, restore_nuget, configure_paket
                          ('/property:SourceRoot=' + $root),
                          ('/property:Configuration=' + $build_config),    
                          ('/property:BuildProjectReferences=false'),    
-                         ('/property:Injections=' + $Injections),
                          ('/nodereuse:false'),                         
                          ('/target:BuildTiers'),
 						 ('/verbosity:normal'),
