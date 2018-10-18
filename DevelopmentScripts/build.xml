@@ -377,6 +377,7 @@
           <References>
             <Reference>kCura.IntegrationPoints.SourceProviderInstaller.dll</Reference>
             <Reference>kCura.IntegrationPoints.Contracts.dll</Reference>
+            <Reference>kCura.IntegrationPoints.Domain.dll</Reference>
           </References>
         </Add>
       </Adds>
