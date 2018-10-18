@@ -4,7 +4,7 @@
 task default -depends build
 
 
-task build -depends build_initalize, start_sonar, build_projects, build_rip_documentation, copy_chrome_driver, stop_sonar, generate_validation_message_table {
+task build -depends build_initalize, start_sonar, build_projects, build_rip_documentation, copy_dlls_to_lib_dir, copy_chrome_driver, stop_sonar, generate_validation_message_table {
  
 }
 
@@ -115,11 +115,96 @@ task build_rip_documentation {
     Write-Warning "Ignoring nant command (documentation build step). Please add nant to nuget packages and rewrite this task if needed."
 }
 
-task copy_chrome_driver -depends build_projects{
+task create_lib_dir {
     If(!(test-path $tests_directory))
     {
         New-Item -Path $tests_directory -ItemType "directory"
     }
+}
+
+task copy_dlls_to_lib_dir -depends create_lib_dir {
+    $files =
+        "Source\kCura.IntegrationPoints.Core\bin\x64\Castle.Windsor.dll",
+          "Source\kCura.IntegrationPoints.Core\bin\x64\Castle.Core.dll",
+          "Source\kCura.IntegrationPoints.Core\bin\x64\kCura.Apps.Common.Config.dll",
+          "Source\kCura.IntegrationPoints.Core\bin\x64\kCura.Apps.Common.Data.dll",
+          "Source\kCura.IntegrationPoints.Core\bin\x64\kCura.Apps.Common.Utils.dll",
+          "Source\kCura.IntegrationPoints.Agent\bin\x64\kCura.IntegrationPoints.Agent.dll",
+          "Source\kCura.IntegrationPoints.Core\bin\x64\kCura.IntegrationPoints.Common.dll",
+          "Source\kCura.IntegrationPoints.Core\bin\x64\kCura.IntegrationPoints.Config.dll",
+          "Source\kCura.IntegrationPoints.Core\bin\x64\kCura.IntegrationPoints.Contracts.dll",
+          "Source\kCura.IntegrationPoints.Core\bin\x64\kCura.IntegrationPoints.Core.dll",
+          "Source\kCura.IntegrationPoints.Core\bin\x64\kCura.IntegrationPoints.Core.Contracts.dll",
+          "Source\kCura.IntegrationPoints.Core\bin\x64\kCura.IntegrationPoints.Data.dll",
+          "Source\kCura.IntegrationPoints.DocumentTransferProvider\bin\x64\kCura.IntegrationPoints.DocumentTransferProvider.dll",
+          "Source\kCura.IntegrationPoints.Core\bin\x64\kCura.IntegrationPoints.Domain.dll",
+          "Source\kCura.IntegrationPoints.Email\bin\x64\kCura.IntegrationPoints.Email.dll",
+          "Source\kCura.IntegrationPoints.EventHandlers\bin\x64\kCura.IntegrationPoints.EventHandlers.dll",
+          "Source\kCura.IntegrationPoints.Management\bin\x64\kCura.IntegrationPoints.Management.dll",
+          "Source\kCura.IntegrationPoints.FtpProvider\bin\x64\kCura.IntegrationPoints.FtpProvider.Parser.dll",
+          "Source\kCura.IntegrationPoints.FtpProvider\bin\x64\kCura.IntegrationPoints.FtpProvider.Helpers.dll",
+          "Source\kCura.IntegrationPoints.FtpProvider\bin\x64\kCura.IntegrationPoints.FtpProvider.Connection.dll",
+          "Source\kCura.IntegrationPoints.FtpProvider\bin\x64\kCura.IntegrationPoints.FtpProvider.dll",
+          "Source\kCura.IntegrationPoints.FilesDestinationProvider.Core\bin\x64\kCura.IntegrationPoints.FilesDestinationProvider.Core.dll",
+          "Source\kCura.IntegrationPoints.ImportProvider\bin\x64\kCura.IntegrationPoints.ImportProvider.dll",
+          "Source\kCura.IntegrationPoints.ImportProvider\bin\x64\kCura.IntegrationPoints.ImportProvider.Parser.dll",
+          "Source\kCura.IntegrationPoints.Injection\bin\x64\kCura.IntegrationPoints.Injection.dll",
+          "Source\kCura.IntegrationPoints.LDAPProvider\bin\x64\kCura.IntegrationPoints.LDAPProvider.dll",
+          "Source\kCura.IntegrationPoints.Services\bin\x64\kCura.IntegrationPoints.Services.dll",
+          "Source\kCura.IntegrationPoints.Services\bin\x64\kCura.IntegrationPoints.Services.Interfaces.Private.dll",
+          "Source\kCura.IntegrationPoints.SourceProviderInstaller\bin\x64\kCura.IntegrationPoints.SourceProviderInstaller.dll",
+          "Source\kCura.IntegrationPoints.Synchronizers.RDO\bin\x64\kCura.IntegrationPoints.Synchronizers.RDO.dll",
+          "Source\kCura.IntegrationPoints.Core\bin\x64\kCura.LongPath.dll",
+          "Source\kCura.IntegrationPoints.Core\bin\x64\kCura.Relativity.Client.dll",
+          "Source\kCura.IntegrationPoints.Core\bin\x64\kCura.Relativity.DataReaderClient.dll",
+          "Source\kCura.IntegrationPoints.Core\bin\x64\kCura.WinEDDS.dll",
+          "Source\kCura.IntegrationPoints.Core\bin\x64\kCura.WinEDDS.TApi.dll",
+          "Source\kCura.IntegrationPoints.Core\bin\x64\kCura.WinEDDS.Core.dll",
+          "Source\kCura.IntegrationPoints.Core\bin\x64\Relativity.DataTransfer.MessageService.dll",
+          "Source\kCura.IntegrationPoints.Core\bin\x64\Relativity.Transfer.Client.Aspera.dll",
+          "Source\kCura.IntegrationPoints.Core\bin\x64\Relativity.Transfer.Client.dll",
+          "Source\kCura.IntegrationPoints.Core\bin\x64\Relativity.Transfer.Client.Core.dll",
+          "Source\kCura.IntegrationPoints.Core\bin\x64\Relativity.Transfer.Client.FileShare.dll",
+          "Source\kCura.IntegrationPoints.Core\bin\x64\Relativity.Transfer.Client.Http.dll",
+          "Source\kCura.IntegrationPoints.Core\bin\x64\FaspManager.dll",
+          "Source\kCura.IntegrationPoints.Core\bin\x64\Polly.dll",
+          "Source\kCura.ScheduleQueue.AgentBase\bin\x64\kCura.ScheduleQueue.AgentBase.dll",
+          "Source\kCura.ScheduleQueue.AgentBase\bin\x64\kCura.ScheduleQueue.Core.dll",
+          "Source\kCura.IntegrationPoints.Core\bin\x64\Newtonsoft.Json.dll",
+          "Source\kCura.IntegrationPoints.Core\bin\x64\Renci.SshNet.dll",
+          "Source\kCura.IntegrationPoints.Core\bin\x64\SystemInterface.dll",
+          "Source\kCura.IntegrationPoints.Core\bin\x64\ZetaLongPaths.dll",
+          "Source\kCura.IntegrationPoints.Core\bin\x64\Relativity.Productions.Services.Interfaces.dll",
+          "Source\kCura.IntegrationPoints.Agent.Tests.Integration\bin\x64\kCura.IntegrationPoints.Agent.Tests.Integration.dll",
+            "Source\kCura.IntegrationPoints.Core.Tests.Integration\bin\x64\kCura.IntegrationPoints.Core.Tests.Integration.dll",
+            "Source\kCura.IntegrationPoints.Data.Tests.Integration\bin\x64\kCura.IntegrationPoints.Data.Tests.Integration.dll",
+            "Source\kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration\bin\x64\kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration.dll",
+            "Source\kCura.IntegrationPoints.EventHandlers.Tests.Integration\bin\x64\kCura.IntegrationPoints.EventHandlers.Tests.Integration.dll",
+            "Source\kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration\bin\x64\kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.dll",
+            "Source\kCura.IntegrationPoints.ImportProvider.Tests.Integration\bin\x64\kCura.IntegrationPoints.ImportProvider.Tests.Integration.dll",
+            "Source\kCura.IntegrationPoints.Services.Tests.Integration\bin\x64\kCura.IntegrationPoints.Services.Tests.Integration.dll",
+            "Source\kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration\bin\x64\kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration.dll",
+            "Source\kCura.IntegrationPoints.Web.Tests.Integration\bin\x64\kCura.IntegrationPoints.Web.Tests.Integration.dll",
+            "Source\kCura.ScheduleQueue.Core.Tests.Integration\bin\x64\kCura.ScheduleQueue.Core.Tests.Integration.dll",
+            "Source\kCura.IntegrationPoints.UITests\bin\x64\kCura.IntegrationPoints.UITests.dll",
+            "Source\kCura.IntegrationPoint.Tests.Core\app.config",
+            "Source\kCura.IntegrationPoint.Tests.Core\oi",
+            "Source\kCura.IntegrationPoint.Tests.Core\ExternalDependencies",
+            "Source\kCura.IntegrationPoint.Tests.Core\TestData",
+            "Source\kCura.IntegrationPoint.Tests.Core\TestDataExtended",
+            "Source\kCura.IntegrationPoint.Tests.Core\TestDataImportFromLoadFile",
+            "Source\kCura.IntegrationPoint.Tests.Core\TestDataSaltPepper",
+            "Source\kCura.IntegrationPoint.Tests.Core\TestDataText",
+            "DevelopmentScripts\IntegrationPointsTests.config"
+
+    foreach ($file in $files)
+    {
+        $tmpPath = Join-Path -Path $root -ChildPath $file
+        Copy-Item -path $tmpPath -Destination $tests_directory -Recurse
+    }
+}
+
+task copy_chrome_driver -depends create_lib_dir, build_projects {
 	Copy-Item -path $chromedriver_path -Destination $tests_directory
 }
 
