@@ -72,7 +72,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		{
 			Container = new WindsorContainer();
 			// enable TLS 1.2 for R1 regression environments
-			System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+			ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 
 			Configuration = new TestConfiguration()
 				.MergeCustomConfigWithAppSettings()
@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 				.LogConfiguration();
 
 			Context = new TestContext();
-			Context.CreateUser();
+			Context.InitUser();
 			Task agentSetupTask = SetupAgentAsync();
 			Task workspaceSetupTask = SetupWorkspaceAsync();
 			Task webDriverCreationTask = CreateDriverAsync();
@@ -196,7 +196,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			var loginPage = new LoginPage(Driver);
 			if (loginPage.IsOnLoginPage())
 			{
-				return loginPage.Login(Context.User.EmailAddress, Context.User.Password);
+				return loginPage.Login(Context.User.Email, Context.User.Password);
 			}
 			return new GeneralPage(Driver).PassWelcomeScreen();
 		}

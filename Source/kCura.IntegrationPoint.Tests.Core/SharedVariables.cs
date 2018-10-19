@@ -129,6 +129,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static double UiTimeoutMultiplier => AppSettingDouble("UI.TimeoutMultiplier");
 
+		public static bool UiSkipUserCreation => AppSettingBool("UI.SkipUserCreation");
+
 		#endregion UI Tests Settings
 
 		#region Relativity Settings

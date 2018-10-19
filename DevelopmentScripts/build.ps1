@@ -4,7 +4,7 @@ Import-Module $root\Vendor\psake\tools\psake.psm1
 
 $BUILDCONFIG = "Debug"
 $BUILDTYPE = "DEV"
-$VERSION = "10.0.0.0"
+$VERSION = "10.1.0.0"
 $EDITOR = $false
 $BUILD = $true
 $APPS = $true

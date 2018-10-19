@@ -4,18 +4,18 @@ strategy: min
 source https://proget.kcura.corp/nuget/NuGet
 
 //Main Relativity packages
-nuget kCura 10.0.85.14-DEV 
-nuget kCura.Agent 10.0.85.14-DEV 
-nuget kCura.EventHandler 10.0.85.14-DEV  
-nuget kCura.Relativity.Client 10.0.85.14-DEV  
-nuget Relativity.Authentication 10.0.85.14-DEV  
-nuget Relativity.Core 10.0.85.14-DEV  
-nuget Relativity.CustomPages 10.0.85.14-DEV  
-nuget Relativity.Data 10.0.85.14-DEV  
-nuget Relativity.ImportExport 10.0.85.14-DEV  
-nuget Relativity.Telemetry.Services.Interface 10.0.85.14-DEV  
-nuget RelativityCore 10.0.85.14-DEV 
-nuget Relativity.Services.Interfaces 10.0.85.14-DEV 
+nuget kCura 10.1.12.3-DEV
+nuget kCura.Agent 10.1.12.3-DEV
+nuget kCura.EventHandler 10.1.12.3-DEV 
+nuget kCura.Relativity.Client 10.1.12.3-DEV 
+nuget Relativity.Authentication 10.1.12.3-DEV 
+nuget Relativity.Core 10.1.12.3-DEV 
+nuget Relativity.CustomPages 10.1.12.3-DEV 
+nuget Relativity.Data 10.1.12.3-DEV 
+nuget Relativity.ImportExport 10.1.12.3-DEV 
+nuget Relativity.Telemetry.Services.Interface 2018.9.2-DEV-6
+nuget RelativityCore 10.1.12.3-DEV
+nuget Relativity.Services.Interfaces 10.1.12.3-DEV
 
 //Other Relativity packages
 nuget Relativity.DataTransfer.MessageService ~> 10.0.2
@@ -42,7 +42,6 @@ nuget Castle.Windsor ~> 3.3.0
 
 //Other packages
 nuget AutoMapper 4.2.1
-nuget Clarius.TransformOnBuild 1.21.0
 nuget FluentAssertions 4.19.2
 nuget Microsoft.AspNet.Mvc 5.2.3
 nuget Microsoft.AspNet.SignalR.Core 2.2.0
