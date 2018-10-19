@@ -395,7 +395,9 @@ task copy_dlls_to_lib_dir -depends create_lib_dir {
     }
     $testsConfigPath = Join-Path -Path $root -ChildPath "Source\kCura.IntegrationPoint.Tests.Core\app.config"
     $testsConfigDestinationPath = Join-Path -Path $tests_directory -ChildPath "IntegrationPointsTests.config"
+    $testsConfigDestinationPath2 = Join-Path -Path $development_scripts_directory -ChildPath "IntegrationPointsTests.config"
     Copy-Item -path $testsConfigPath -Destination $testsConfigDestinationPath
+    Copy-Item -path $testsConfigPath -Destination $testsConfigDestinationPath2
 }
 
 task copy_chrome_driver -depends create_lib_dir, build_projects {
