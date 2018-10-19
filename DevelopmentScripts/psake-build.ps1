@@ -99,7 +99,7 @@ task build_projects -depends create_build_script, restore_nuget, configure_paket
                          ('/property:Injections=' + $Injections),
                          ('/nodereuse:false'),                         
                          ('/target:BuildTiers'),
-						 ('/verbosity:quiet'),
+						 ('/verbosity:normal'),
 						 ('/property:WarningLevel=1'),
                          ('/nologo'),
                          ('/maxcpucount'), 
