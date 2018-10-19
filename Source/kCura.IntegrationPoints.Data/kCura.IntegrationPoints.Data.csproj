@@ -85,7 +85,6 @@
     <Compile Include="IRsapiClientWithWorkspaceFactory.cs" />
     <Compile Include="Logging\ISystemEventLoggingService.cs" />
     <Compile Include="Migrations\Migration.cs" />
-    <Compile Include="Models\AuditRecord.cs" />
     <Compile Include="Queries\GetSavedSearchQuery.cs" />
     <Compile Include="Queries\IJobResourceTracker.cs" />
     <Compile Include="QueryBuilders\Implementations\AllIntegrationPointTypesQueryBuilder.cs" />
