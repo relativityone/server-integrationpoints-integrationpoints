@@ -140,7 +140,6 @@ task copy_dlls_to_lib_dir -depends create_lib_dir {
             "Source\kCura.IntegrationPoint.Tests.Core\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoint.Tests.Core\bin\x64\*.xml",
             "Source\kCura.IntegrationPoint.Tests.Core\bin\x64\*.config",
-            "Source\kCura.IntegrationPoint.Tests.Core\oi",
             "Source\kCura.IntegrationPoints.Agent.Tests\bin\x64\*.dll",
             "Source\kCura.IntegrationPoints.Agent.Tests\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.Agent.Tests\bin\x64\*.xml",
@@ -398,6 +397,11 @@ task copy_dlls_to_lib_dir -depends create_lib_dir {
     $testsConfigDestinationPath2 = Join-Path -Path $development_scripts_directory -ChildPath "IntegrationPointsTests.config"
     Copy-Item -path $testsConfigPath -Destination $testsConfigDestinationPath
     Copy-Item -path $testsConfigPath -Destination $testsConfigDestinationPath2
+
+    $oiPathSrc = Join-Path -Path $root -ChildPath "Source\kCura.IntegrationPoint.Tests.Core\oi\unmanaged\*"
+    $oiPathDest = Join-Path -Path $tests_directory -ChildPath "oi\"
+    New-Item -Path $oiPathDest -ItemType "directory"
+    Copy-Item -path $oiPathSrc -Destination $oiPathDest
 }
 
 task copy_chrome_driver -depends create_lib_dir, build_projects {
