@@ -54,7 +54,6 @@
 			self.creatingStatus(statusEnum.FAIL);
 		});
 
-		window.parent.$('.ui-widget-overlay').context.activeElement.style.zIndex = "1000";
 		IP.data.deferred().all(productionSetsPromise).then(function (result) {
 			self.newProductionSetId = result;
 
