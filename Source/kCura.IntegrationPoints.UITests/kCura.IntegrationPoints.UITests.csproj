@@ -100,6 +100,7 @@
     <Compile Include="Components\PropertiesTable.cs" />
     <Compile Include="Components\SavedSearchDialog.cs" />
     <Compile Include="Components\TreeSelect.cs" />
+    <Compile Include="Configuration\RelativityUser.cs" />
     <Compile Include="Configuration\TestConfiguration.cs" />
     <Compile Include="Configuration\TestContext.cs" />
     <Compile Include="Auxiliary\ReuseRemoteWebDriver.cs" />
@@ -171,6 +172,10 @@
     </None>
     <None Include="paket.references" />
     <None Include="UiTestsConfig\cop001.config">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="UiTestsConfig\Reg-Prod-Update.config">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

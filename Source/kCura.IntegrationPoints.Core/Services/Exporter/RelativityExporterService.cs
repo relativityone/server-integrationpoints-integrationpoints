@@ -50,19 +50,19 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		public override ArtifactDTO[] RetrieveData(int size)
 		{
 			Logger.LogDebug("Start retrieving data in RelativityExporterService. Size: {size}, export type: {typeOfExport}, AvfIds size: {avfIdsSize}",
-				size, SourceConfiguration?.TypeOfExport, AvfIds.Length);
+				size, SourceConfiguration?.TypeOfExport, ArtifactViewFieldIds.Length);
 			var result = new List<ArtifactDTO>(size);
-			object[] retrievedData = Exporter.RetrieveResults(ExportJobInfo.RunId, AvfIds, size);
+			object[] retrievedData = Exporter.RetrieveResults(ExportJobInfo.RunId, ArtifactViewFieldIds, size);
 			if (retrievedData != null)
 			{
 				Logger.LogDebug("Retrieved {numberOfDocuments} documents in RelativityExporterService", retrievedData.Length);
 				int artifactType = (int)ArtifactType.Document;
 				foreach (object data in retrievedData)
 				{
-					var fields = new List<ArtifactFieldDTO>(AvfIds.Length);
+					var fields = new List<ArtifactFieldDTO>(ArtifactViewFieldIds.Length);
 
 					object[] fieldsValue = (object[])data;
-					int documentArtifactId = Convert.ToInt32(fieldsValue[AvfIds.Length]);
+					int documentArtifactId = Convert.ToInt32(fieldsValue[ArtifactViewFieldIds.Length]);
 
 					SetupBaseFields(fieldsValue, fields);
 
@@ -81,7 +81,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 		private void SetupBaseFields(object[] fieldsValue, List<ArtifactFieldDTO> fields)
 		{
-			for (int index = 0; index < AvfIds.Length; index++)
+			for (int index = 0; index < ArtifactViewFieldIds.Length; index++)
 			{
 				int artifactId = FieldArtifactIds[index];
 				object value = fieldsValue[index];
@@ -109,7 +109,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 					Name = ExportJobInfo.ColumnNames[index],
 					ArtifactId = artifactId,
 					Value = value,
-					FieldType = QueryFieldLookupRepository.GetFieldByArtifactId(artifactId).FieldType.ToString()
+					FieldType = QueryFieldLookupRepository.GetFieldTypeByArtifactId(artifactId)
 				});
 			}
 		}
