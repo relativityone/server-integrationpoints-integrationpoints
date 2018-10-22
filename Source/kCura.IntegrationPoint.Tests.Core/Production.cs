@@ -1,106 +1,98 @@
-﻿using System;
-using System.Threading;
-using Newtonsoft.Json;
+﻿using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using Relativity.Productions.Services;
+using Relativity.Services.Field;
+using System;
+using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class Production
 	{
 		private const int _MAX_RETRIES_COUNT = 100;
+		private const int _WAIT_TIME_BETWEEN_RETRIES_IN_MILISECONDS = 1000;
 
-		private const string _PRODUCTION_SERVICE_URL_BASE =
-			"api/Relativity.Productions.Services.IProductionModule/Production%20Manager/";
+		public static ITestHelper Helper => new TestHelper();
 
-		private const string _CREATE_PRODUCTION_SERVICE =
-			_PRODUCTION_SERVICE_URL_BASE + "CreateSingleAsync";
-
-		private const string _STAGE_PRODUCTION_SERVICE =
-			_PRODUCTION_SERVICE_URL_BASE + "StageProductionAsync";
-
-		private const string _RUN_PRODUCTION_SERVICE =
-			_PRODUCTION_SERVICE_URL_BASE + "RunProductionAsync";
-
-		private const string _READ_PRODUCTION_SERVICE =
-			_PRODUCTION_SERVICE_URL_BASE + "/ReadSingleAsync";
-
-		public static int Create(int workspaceId, string productionName)
+		public static async Task<int> Create(int workspaceId, string productionName)
 		{
-			var json =
-				$@"
-				{{
-					""workspaceArtifactID"": {workspaceId},
-					""Production"": {{
-						""Details"": {{
-							""BrandingFontSize"": 10,
-							""ScaleBrandingFont"": false
-						}},
-						""Numbering"": {{
-								""NumberingType"": ""DocumentField"",
-								""NumberingField"":{{  
-										 ""ArtifactID"":1003667,
-										 ""ViewFieldID"":0,
-										 ""Name"":""Control Number""
-								}},
-								""AttachmentRelationalField"": {{
-										""ArtifactID"": 0,
-										""ViewFieldID"": 0,
-										""Name"": """"
-								}},							  
-								""BatesPrefix"": """",
-								""BatesSuffix"": """",								
-								""BatesStartNumber"": 1,
-								""IncludePageNumbers"":false,
-								""DocumentNumberPageNumberSeparator"":"""",
-								""NumberOfDigitsForPageNumbering"":0,
-								""NumberOfDigitsForDocumentNumbering"": 7,
-								""StartNumberingOnSecondPage"":false
-						}},								
-						""ShouldCopyInstanceOnWorkspaceCreate"": false,
-						""Name"": ""{productionName}""
-					}}
-				}}";
+			const int productionFontSize = 10;
 
-			var output = Rest.PostRequestAsJson(_CREATE_PRODUCTION_SERVICE, json);
-			return int.Parse(output);
+			using (var productionManager = Helper.CreateAdminProxy<IProductionManager>())
+			{
+				var production = new global::Relativity.Productions.Services.Production
+				{
+					Name = productionName,
+					ShouldCopyInstanceOnWorkspaceCreate = false,
+					Details = new ProductionDetails
+					{
+						BrandingFontSize = productionFontSize,
+						ScaleBrandingFont = false
+					},
+					Numbering = new DocumentFieldNumbering
+					{
+						NumberingType = NumberingType.DocumentField,
+						NumberingField = new FieldRef
+						{
+							ArtifactID = 1003667,
+							ViewFieldID = 0,
+							Name = "Control Number"
+						},
+						AttachmentRelationalField = new FieldRef
+						{
+							ArtifactID = 0,
+							ViewFieldID = 0,
+							Name = ""
+						},
+						BatesPrefix = "PRE",
+						BatesSuffix = "SUF",
+						IncludePageNumbers = false,
+						DocumentNumberPageNumberSeparator = "",
+						NumberOfDigitsForPageNumbering = 0,
+						StartNumberingOnSecondPage = false
+					}
+				};
+
+				return await productionManager.CreateSingleAsync(workspaceId, production);
+			}
 		}
 
-		public static void StageAndWaitForCompletion(int workspaceId, int productionId)
+		public static async Task<bool> StageAndWaitForCompletionAsync(int workspaceId, int productionId)
 		{
-			var json =
-				$@"
-						{{
-						  ""workspaceArtifactID"": {workspaceId},
-						  ""productionArtifactID"": {productionId}
-						}}";
+			using (var productionManager = Helper.CreateAdminProxy<IProductionManager>())
+			{
+				ProductionJobResult result = await productionManager.StageProductionAsync(workspaceId, productionId);
+				if (!result.WasJobCreated)
+				{
+					return false;
+				}
+			}
 
-			Rest.PostRequestAsJson(_STAGE_PRODUCTION_SERVICE, json);
-
-			WaitForProductionStatus(workspaceId, productionId, "Staged");
+			await WaitForProductionStatusAsync(workspaceId, productionId, "Staged");
+			return true;
 		}
 
-		public static void RunAndWaitForCompletion(int workspaceId, int productionId, bool suppressWarnings = true, bool overrideConflicts = false)
+		public static async Task<bool> RunAndWaitForCompletionAsync(int workspaceId, int productionId, bool suppressWarnings = true, bool overrideConflicts = false)
 		{
-			var json =
-				$@"
-				{{
-				  ""workspaceArtifactID"": {workspaceId},
-				  ""productionArtifactID"": {productionId},
-				  ""suppressWarnings"": true,
-				  ""overrideConflicts"": false
-				}}";
-
-			Rest.PostRequestAsJson(_RUN_PRODUCTION_SERVICE, json);
-
-			WaitForProductionStatus(workspaceId, productionId, "Produced");
+			using (var productionManager = Helper.CreateAdminProxy<IProductionManager>())
+			{
+				ProductionJobResult result = await productionManager.RunProductionAsync(workspaceId, productionId, suppressWarnings, overrideConflicts);
+				if (!result.WasJobCreated)
+				{
+					return false;
+				}
+			}
+			await WaitForProductionStatusAsync(workspaceId, productionId, "Produced");
+			return true;
 		}
 
-		private static void WaitForProductionStatus(int workspaceId, int productionId, string expectedStatus, int retriesCount = _MAX_RETRIES_COUNT)
+		private static async Task WaitForProductionStatusAsync(int workspaceId, int productionId, string expectedStatus, int retriesCount = _MAX_RETRIES_COUNT)
 		{
+			TimeSpan waitTimeBetweenRetries = TimeSpan.FromMilliseconds(_WAIT_TIME_BETWEEN_RETRIES_IN_MILISECONDS);
+
 			string status = string.Empty;
-
 			for (var i = 0; i < retriesCount; i++)
 			{
-				status = GetProductionStatus(workspaceId, productionId);
+				status = await GetProductionStatusAsync(workspaceId, productionId);
 
 				if (status == expectedStatus)
 				{
@@ -112,33 +104,19 @@ namespace kCura.IntegrationPoint.Tests.Core
 					throw new Exception("ProductionOperation finished with errors");
 				}
 
-				Thread.Sleep(1000);
+				await Task.Delay(waitTimeBetweenRetries);
 			}
-			
+
 			throw new Exception($"ProductionOperation finished with different status than expected. Received {status} expected {expectedStatus}. WorkspaceId={workspaceId}");
 		}
 
-		private static string GetProductionStatus(int workspaceId, int productionId)
+		private static async Task<string> GetProductionStatusAsync(int workspaceId, int productionId)
 		{
-			var json =
-				$@"
-				{{
-					""workspaceArtifactID"": {workspaceId},
-					""productionArtifactID"": {productionId},
-					""dataSourceReadMode"": ""OnlyDataSources""
-				}}";
-
-			var output = Rest.PostRequestAsJson(_READ_PRODUCTION_SERVICE, json);
-			var status = ExtractStatusFromProductionDtoJson(output);
-			return status;
-		}
-
-		private static string ExtractStatusFromProductionDtoJson(string productionDtoJson)
-		{
-			var productionObject = JsonConvert.DeserializeObject<dynamic>(productionDtoJson);
-			var productionMetadata = productionObject["ProductionMetadata"];
-			var status = productionMetadata["Status"];
-			return status.ToString();
+			using (var productionManager = Helper.CreateAdminProxy<IProductionManager>())
+			{
+				global::Relativity.Productions.Services.Production result = await productionManager.ReadSingleAsync(workspaceId, productionId);
+				return result.ProductionMetadata.Status.ToString();
+			}
 		}
 	}
 }
