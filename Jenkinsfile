@@ -79,15 +79,12 @@ timestamps
 			}
 			stage ('Build')
 			{
-				timeout(time: 10, unit: 'MINUTES')
-				{
-					def sonarParameter = 
-						(env.BRANCH_NAME == "develop")
-						? "-sonarqube"
-						: ""
-					powershell "./build.ps1 release $sonarParameter"
-					archiveArtifacts artifacts: "DevelopmentScripts/*.html", fingerprint: true
-				}
+				def sonarParameter = 
+					(env.BRANCH_NAME == "develop")
+					? "-sonarqube"
+					: ""
+				powershell "./build.ps1 release $sonarParameter"
+				archiveArtifacts artifacts: "DevelopmentScripts/*.html", fingerprint: true
 			}
 			stage ('Unit Tests')
 			{
