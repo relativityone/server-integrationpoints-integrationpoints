@@ -68,51 +68,56 @@ timestamps
 	{
 		node ('PolandBuild')
 		{
-			stage ('Checkout')
+			try
 			{
+				stage ('Checkout')
+				{
+					timeout(time: 3, unit: 'MINUTES')
+					{
+						checkout scm
+						step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
+					}
+
+				}
+				stage ('Build')
+				{
+					def sonarParameter = 
+						(env.BRANCH_NAME == "develop")
+						? "-sonarqube"
+						: ""
+					powershell "./build.ps1 release $sonarParameter"
+					archiveArtifacts artifacts: "DevelopmentScripts/*.html", fingerprint: true
+				}
+				stage ('Unit Tests')
+				{
+					timeout(time: 3, unit: 'MINUTES')
+					{
+						powershell "./build.ps1 release -sk -t"
+						archiveArtifacts artifacts: "TestLogs/*", fingerprint: true
+						currentBuild.result = 'SUCCESS'
+					}
+				}
 				timeout(time: 3, unit: 'MINUTES')
 				{
-					checkout scm
-					step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
-				}
-
-			}
-			stage ('Build')
-			{
-				def sonarParameter = 
-					(env.BRANCH_NAME == "develop")
-					? "-sonarqube"
-					: ""
-				powershell "./build.ps1 release $sonarParameter"
-				archiveArtifacts artifacts: "DevelopmentScripts/*.html", fingerprint: true
-			}
-			stage ('Unit Tests')
-			{
-				timeout(time: 3, unit: 'MINUTES')
-				{
-					powershell "./build.ps1 release -sk -t"
-					archiveArtifacts artifacts: "TestLogs/*", fingerprint: true
-					currentBuild.result = 'SUCCESS'
+					stage ('Stash Tests Artifacts')
+					{
+						stash includes: 'lib/UnitTests/**', name: 'testdlls'
+						stash includes: 'DynamicallyLoadedDLLs/Search-Standard/*', name: 'dynamicallyLoadedDLLs'
+						stash includes: 'Applications/RelativityIntegrationPoints.Auto.rap', name: 'integrationPointsRap'
+						stash includes: 'DevelopmentScripts/IntegrationPointsTests.*', name: 'nunitProjectFiles'
+						stash includes: 'DevelopmentScripts/NUnit.ConsoleRunner/tools/*', name: 'nunitConsoleRunner'
+						stash includes: 'DevelopmentScripts/NUnit.Extension.NUnitProjectLoader/tools/*', name: 'nunitProjectLoader'
+						stash includes: 'DevelopmentScripts/*.ps1', name: 'buildScripts'
+						stash includes: 'build.ps1', name: 'buildps1'
+						stash includes: 'Vendor/psake/tools/*', name: 'psake'
+						stash includes: 'Vendor/NuGet/NuGet.exe', name: 'nuget'
+						stash includes: 'Version/version.txt', name: 'version'
+					}
 				}
 			}
-			timeout(time: 3, unit: 'MINUTES')
+			finally
 			{
-				stage ('Stash Tests Artifacts')
-				{
-					stash includes: 'lib/UnitTests/**', name: 'testdlls'
-					stash includes: 'DynamicallyLoadedDLLs/Search-Standard/*', name: 'dynamicallyLoadedDLLs'
-					stash includes: 'Applications/RelativityIntegrationPoints.Auto.rap', name: 'integrationPointsRap'
-					stash includes: 'DevelopmentScripts/IntegrationPointsTests.*', name: 'nunitProjectFiles'
-					stash includes: 'DevelopmentScripts/NUnit.ConsoleRunner/tools/*', name: 'nunitConsoleRunner'
-					stash includes: 'DevelopmentScripts/NUnit.Extension.NUnitProjectLoader/tools/*', name: 'nunitProjectLoader'
-					stash includes: 'DevelopmentScripts/*.ps1', name: 'buildScripts'
-					stash includes: 'build.ps1', name: 'buildps1'
-					stash includes: 'Vendor/psake/tools/*', name: 'psake'
-					stash includes: 'Vendor/NuGet/NuGet.exe', name: 'nuget'
-					stash includes: 'Version/version.txt', name: 'version'
-
-					deleteDir()
-				}
+				deleteDir()
 			}
 		}
 		if (testingVMsAreRequired())
