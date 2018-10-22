@@ -137,11 +137,11 @@ timestamps
 								if (installing_relativity)
 								{
 									relativity_build = getBuildArtifactsPath(this, "Relativity", params.relativityBranch, params.relativityBuildVersion, params.relativityBuildType, session_id)
-									if (!params.relativityBuildVersion)
+									if (params.relativityBuildVersion && !relativity_build)
 									{
-										echo "Relativity version found: $relativity_build"
+										relativity_build = params.relativityBuildVersion
 									}
-									echo "Installed Relativity, branch: $params.relativityBranch, version: $relativity_build, type: $params.relativityBuildType"
+									echo "Installing Relativity, branch: $params.relativityBranch, version: $relativity_build, type: $params.relativityBuildType"
 									sendVersionToElastic(this, "Relativity", params.relativityBranch, relativity_build, params.relativityBuildType, session_id)
 								}
 
