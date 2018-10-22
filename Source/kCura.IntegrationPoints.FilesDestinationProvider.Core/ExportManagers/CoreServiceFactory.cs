@@ -2,7 +2,6 @@
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.WinEDDS;
-using kCura.WinEDDS.Service;
 using kCura.WinEDDS.Service.Export;
 using Relativity.Core;
 using Relativity.Core.Service;
@@ -23,7 +22,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 
 		public IAuditManager CreateAuditManager()
 		{
-			return new CoreAuditManager(GetBaseServiceContext(_exportFile.CaseArtifactID));
+			return new CoreAuditManager();
 		}
 
 		public IExportFileDownloader CreateExportFileDownloader()
