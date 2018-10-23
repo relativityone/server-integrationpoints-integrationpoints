@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Service.Export;
@@ -25,7 +26,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 
 		public IAuditManager CreateAuditManager()
 		{
-			return new CoreAuditManager(_helper);
+			var repositoryFactory = new RepositoryFactory(_helper, _helper.GetServicesManager());
+			return new CoreAuditManager(repositoryFactory);
 		}
 
 		public IExportFileDownloader CreateExportFileDownloader()
