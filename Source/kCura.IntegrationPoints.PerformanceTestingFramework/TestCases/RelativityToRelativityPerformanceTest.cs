@@ -6,7 +6,8 @@ using kCura.IntegrationPoints.Data.Factories;
 using NUnit.Framework;
 using System;
 using System.Diagnostics;
-using kCura.IntegrationPoints.Core;
+using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoints.PerformanceTestingFramework
@@ -14,55 +15,36 @@ namespace kCura.IntegrationPoints.PerformanceTestingFramework
 	[TestFixture]
 	public class RelativityToRelativityPerformanceTest : RelativityProviderTemplate
 	{
-		private string _sourceConfigurationJson, _destinationConfigurationJson;
 		private IIntegrationPointService _integrationPointService;
 		private const int _ADMIN_USER_ID = 9;
 
-		private const string _SOURCE_WORKSPACE_TOKEN = "SOURCE_WORKSPACE_ARTIFACT_ID";
-		private const string _TARGET_WORKSPACE_TOKEN = "TARGET_WORKSPACE_ARTIFACT_ID";
-
-		//nUnit doesn't allow usage of semicolons in parameters as it is used as delimiter for the actual parameters.
-		//The problem is it also is not possible to escape them.
-		//This means it may be required to have a backup solution for dealing with semicolon separators in RIP
-		//- thus this token has been introduced. It will be replaced with actual semicolon as soon as the parameter is read.
-		private const string _SEMICOLON_TOKEN= "{semicolon}";
-
 		private readonly string _fieldMappingsJson;
-
-		public RelativityToRelativityPerformanceTest() : base(Convert.ToInt32(TestContext.Parameters["SourceWorkspaceArtifactID"]), $"RipPushPerfTest {DateTime.Now:yyyy-MM-dd HH:mm}")
+		
+		public RelativityToRelativityPerformanceTest() : base(Convert.ToInt32(TestContext.Parameters["SourceWorkspaceArtifactID"]), $"RipPushPerfTest {DateTime.Now:yyyy-MM-dd HH-mm}")
 		{
 			_fieldMappingsJson = TestContext.Parameters["FieldMappingsJSON"];
-
-			_sourceConfigurationJson = TestContext.Parameters["SourceConfigurationJSON"]
-				.Replace(_SOURCE_WORKSPACE_TOKEN, TestContext.Parameters["SourceWorkspaceArtifactID"])
-				.Replace(_SEMICOLON_TOKEN, ";");
-
-			_destinationConfigurationJson = TestContext.Parameters["DestinationConfigurationJSON"]
-				.Replace(_SEMICOLON_TOKEN, ";");
 		}
 
 		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
-			ResolveServices();
+			_integrationPointService = Container.Resolve<IIntegrationPointService>();
 		}
 
 		/// <summary>
 		/// This very test is meant to be run via NUnit-Console runner version 3+. It is expecting a number of parameters, which are:
 		/// 1) SourceWorkspaceArtifactID,
 		/// 2) FieldMappingsJSON,
-		/// 3) SourceConfigurationJSON,
-		/// 4) DestinationConfigurationJSON
+		/// 3) ImportNativeFileCopyModeEnum - DoNotImportNativeFiles, SetFileLinks, CopyFiles
+		/// 4) ImageImport - True, False
+		/// 5) ImportNativeFile - True, False
 		/// </summary>
 		[Category("PerformanceTest")]
 		[Test]
 		public void PerformanceTest()
 		{
 			//Arrange
-			_sourceConfigurationJson = _sourceConfigurationJson.Replace(_TARGET_WORKSPACE_TOKEN, TargetWorkspaceArtifactId.ToString());
-			_destinationConfigurationJson = _destinationConfigurationJson.Replace(_TARGET_WORKSPACE_TOKEN, TargetWorkspaceArtifactId.ToString());
-
-			IntegrationPointModel integrationPointModel = PrepareIntegrationPointsModel();
+			IntegrationPointModel integrationPointModel = PrepareIntegrationPointsModel(TargetWorkspaceArtifactId);
 			IntegrationPointModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationPointModel);
 			var testDurationStopWatch = new Stopwatch();
 
@@ -76,22 +58,21 @@ namespace kCura.IntegrationPoints.PerformanceTestingFramework
 			testDurationStopWatch.Stop();
 
 			//it is yet to be decided on how to return the time it took for the job to finish back to the Performance Testing Framework.
-			Console.WriteLine($"PerformanceTestingFramework, transfer duration -> {Math.Round(testDurationStopWatch.Elapsed.TotalSeconds, 2)}s");
+			Console.WriteLine($"PerformanceTest - RIP job duration -> {Math.Round(testDurationStopWatch.Elapsed.TotalSeconds, 2)}s");
 		}
 
-		private IntegrationPointModel PrepareIntegrationPointsModel()
+		private IntegrationPointModel PrepareIntegrationPointsModel(int targetWorkspaceId)
 		{
 			return new IntegrationPointModel
 			{
-
 				Map = _fieldMappingsJson,
-				SourceConfiguration = _sourceConfigurationJson,
-				Destination = _destinationConfigurationJson,
+				SourceConfiguration = SourceConfiguration(targetWorkspaceId, SavedSearchArtifactId),
+				Destination = DestinationConfiguration(targetWorkspaceId),
 
 				SourceProvider = RelativityProvider.ArtifactId,
 				DestinationProvider = DestinationProvider.ArtifactId,
 				LogErrors = true,
-				Name = $"JobHistoryErrors{DateTime.Now:yy-MM-dd HH-mm-ss}",
+				Name = $"JobHistoryErrors{DateTime.Now:yyyy-MM-dd HH-mm}",
 				SelectedOverwrite = "Append Only",
 				Scheduler = new Scheduler()
 				{
@@ -102,11 +83,64 @@ namespace kCura.IntegrationPoints.PerformanceTestingFramework
 			};
 		}
 
-		private void ResolveServices()
+		private string DestinationConfiguration(int targetWorkspaceId)
 		{
-			RepositoryFactory = Container.Resolve<IRepositoryFactory>();
-			_integrationPointService = Container.Resolve<IIntegrationPointService>();
+			ImportNativeFileCopyModeEnum importNativeFileCopyMode;
+			Enum.TryParse(TestContext.Parameters["ImportNativeFileCopyModeEnum"], out importNativeFileCopyMode);
+
+			bool imageImport;
+			bool.TryParse(TestContext.Parameters["ImageImport"], out imageImport);
+
+			bool importNativeFile;
+			bool.TryParse(TestContext.Parameters["ImportNativeFile"], out importNativeFile);
+
+			var destinationConfiguration = new ImportSettings()
+			{
+				ArtifactTypeId = 10,
+				DestinationProviderType = "74A863B9-00EC-4BB7-9B3E-1E22323010C6",
+				CaseArtifactId = targetWorkspaceId,
+				FederatedInstanceArtifactId = null,
+				CreateSavedSearchForTagging = false,
+				DestinationFolderArtifactId = 1003697,
+				ProductionImport = false,
+				Provider = "Relativity",
+				ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
+				UseDynamicFolderPath = false,
+				ImagePrecedence = new Domain.Models.ProductionDTO[0],
+				ProductionPrecedence = null,
+				IncludeOriginalImages = false,
+				IdentifierField = "Control Number",
+				MoveExistingDocuments = false,
+				ExtractedTextFieldContainsFilePath = false,
+				ExtractedTextFileEncoding = "utf-16",
+				EntityManagerFieldContainsLink = true,
+				FieldOverlayBehavior = "Use Field Settings",
+				ImportNativeFile = importNativeFile,
+				ImportNativeFileCopyMode = importNativeFileCopyMode,
+				ImageImport = imageImport
+			};
+
+			var serializer = new JSONSerializer();
+			return serializer.Serialize(destinationConfiguration);
+
 		}
 
+		private string SourceConfiguration(int targetWorkspaceId, int savedSearchArtifactId)
+		{
+			int sourceWorkspaceId;
+			int.TryParse(TestContext.Parameters["SourceWorkspaceArtifactID"], out sourceWorkspaceId);
+
+			var sourceConfiguration = new SourceConfiguration()
+			{
+				SourceWorkspaceArtifactId = sourceWorkspaceId,
+				TargetWorkspaceArtifactId = targetWorkspaceId,
+				SavedSearchArtifactId = savedSearchArtifactId,
+				FederatedInstanceArtifactId = null,
+				TypeOfExport = Core.Contracts.Configuration.SourceConfiguration.ExportType.SavedSearch
+			};
+
+			var serializer = new JSONSerializer();
+			return serializer.Serialize(sourceConfiguration);
+		}
 	}
 }
