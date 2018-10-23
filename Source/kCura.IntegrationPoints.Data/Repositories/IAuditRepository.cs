@@ -4,6 +4,6 @@ namespace kCura.IntegrationPoints.Data.Repositories
 {
 	public interface IAuditRepository
 	{
-		bool AuditExport(int appID, ExportStatistics exportStats);
+		bool AuditExport(ExportStatistics exportStats);
 	}
 }

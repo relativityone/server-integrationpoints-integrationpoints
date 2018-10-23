@@ -1,15 +1,19 @@
 ﻿using Relativity.API;
-using Relativity.APIHelper.Audit;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class AuditRepository : IAuditRepository
 	{
-		public bool AuditExport(int appID, global::Relativity.API.Foundation.ExportStatistics exportStats)
+		private readonly IAuditService _auditService;
+
+		public AuditRepository(IAuditService auditService)
 		{
-			var auditServiceFactory = new AuditServiceFactory();
-			IAuditService auditService = auditServiceFactory.GetAuditService(appID);
-			return auditService.CreateAuditForExport(exportStats);
+			_auditService = auditService;
+		}
+
+		public bool AuditExport(global::Relativity.API.Foundation.ExportStatistics exportStats)
+		{
+			return _auditService.CreateAuditForExport(exportStats);
 		}
 	}
 }

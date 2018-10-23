@@ -3,6 +3,7 @@ using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Service.Export;
+using Relativity.API;
 using Relativity.Core;
 using Relativity.Core.Service;
 using ICaseManager = kCura.WinEDDS.Service.Export.ICaseManager;
@@ -13,16 +14,18 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 	{
 		private readonly ExportFile _exportFile;
 		private readonly int _contextUserId;
+		private readonly IHelper _helper;
 
-		public CoreServiceFactory(ExportFile exportFile, int contextUserId)
+		public CoreServiceFactory(IHelper helper, ExportFile exportFile, int contextUserId)
 		{
+			_helper = helper;
 			_exportFile = exportFile;
 			_contextUserId = contextUserId;
 		}
 
 		public IAuditManager CreateAuditManager()
 		{
-			return new CoreAuditManager();
+			return new CoreAuditManager(_helper);
 		}
 
 		public IExportFileDownloader CreateExportFileDownloader()

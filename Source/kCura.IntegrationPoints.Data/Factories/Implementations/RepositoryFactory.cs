@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Data.SecretStore;
 using Relativity.API;
+using Relativity.APIHelper.Audit;
 using Relativity.Core;
 
 namespace kCura.IntegrationPoints.Data.Factories.Implementations
@@ -259,6 +260,13 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 			IFileRepository fileRepository = new FileRepository(baseServiceContext);
 			return fileRepository;
+		}
+
+		public IAuditRepository GetAuditRepository(int appId)
+		{
+			var auditServiceFactory = new AuditServiceFactory();
+			IAuditService auditService = auditServiceFactory.GetAuditService(appId);
+			return new AuditRepository(auditService);
 		}
 
 		#region Helper Methods

@@ -116,6 +116,7 @@
     </Compile>
     <Compile Include="Extensions\StringExtensionsTests.cs" />
     <Compile Include="Helpers\MatchHelper.cs" />
+    <Compile Include="Repositories\AuditRepositoryTests.cs" />
     <Compile Include="Repositories\KeplerInstanceSettingRepositoryTests.cs" />
     <Compile Include="Repositories\ProductionRepositoryTests.cs" />
     <Compile Include="Repositories\KeplerKeywordSearchRepositoryTests.cs" />
