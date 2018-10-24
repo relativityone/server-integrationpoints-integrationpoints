@@ -28,7 +28,7 @@ def sut = null
 
 def nightlyJobName = "IntegrationPointsNightly"
 def relativityBuildVersion = ""
-def relativityBranch = params.relativityBranch ?: ENV.BRANCH_NAME
+def relativityBranch = params.relativityBranch ?: env.BRANCH_NAME
 // When RAID stage fails, verify if newer versions of cookboos exist
 def ripCookbooks = '"relativity:= 4.1.12,role-testvm:= 3.12.0,role-ci:= 1.3.2,sql:= 2.4.1,servicebus:= 1.0.0"'
 
