@@ -377,6 +377,7 @@
           <References>
             <Reference>kCura.IntegrationPoints.SourceProviderInstaller.dll</Reference>
             <Reference>kCura.IntegrationPoints.Contracts.dll</Reference>
+            <Reference>kCura.IntegrationPoints.Domain.dll</Reference>
           </References>
         </Add>
       </Adds>
@@ -441,25 +442,25 @@
   </BuildHelper>
   <TestRunner>
     <DLLs>
-      <DLL type="x64">Source\kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests\bin\x64\kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.dll</DLL>
-      <DLL type="x64">Source\kCura.IntegrationPoints.Agent.Tests\bin\x64\kCura.IntegrationPoints.Agent.Tests.dll</DLL>
-      <DLL type="x64">Source\kCura.IntegrationPoints.Core.Tests\bin\x64\kCura.IntegrationPoints.Core.Tests.dll</DLL>
-      <DLL type="x64">Source\kCura.IntegrationPoints.Data.Tests\bin\x64\kCura.IntegrationPoints.Data.Tests.dll</DLL>
-      <DLL type="x64">Source\kCura.IntegrationPoints.DocumentTransferProvider.Tests\bin\x64\kCura.IntegrationPoints.DocumentTransferProvider.Tests.dll</DLL>
-      <DLL type="x64">Source\kCura.IntegrationPoints.EventHandlers.Tests\bin\x64\kCura.IntegrationPoints.EventHandlers.Tests.dll</DLL>
-      <DLL type="x64">Source\kCura.IntegrationPoints.Synchronizers.RDO.Tests\bin\x64\kCura.IntegrationPoints.Synchronizers.RDO.Tests.dll</DLL>
-      <DLL type="x64">Source\kCura.IntegrationPoints.Web.Tests\bin\x64\kCura.IntegrationPoints.Web.Tests.dll</DLL>
-      <DLL type="x64">Source\kCura.ScheduleQueue.Core.Tests\bin\x64\kCura.ScheduleQueue.Core.Tests.dll</DLL>
-      <DLL type="x64">Source\kCura.IntegrationPoints.Core.Contracts.Tests\bin\x64\kCura.IntegrationPoints.Core.Contracts.Tests.dll</DLL>
-      <DLL type="x64">Source\kCura.IntegrationPoints.FtpProvider.Helpers.Tests\bin\x64\kCura.IntegrationPoints.FtpProvider.Helpers.Tests.dll</DLL>
-      <DLL type="x64">Source\kCura.IntegrationPoints.FtpProvider.Parser.Tests\bin\x64\kCura.IntegrationPoints.FtpProvider.Parser.Tests.dll</DLL>
-      <DLL type="x64">Source\kCura.IntegrationPoints.FtpProvider.Tests\bin\x64\kCura.IntegrationPoints.FtpProvider.Tests.dll</DLL>
-      <DLL type="x64">Source\kCura.IntegrationPoints.Services.Tests\bin\x64\kCura.IntegrationPoints.Services.Tests.dll</DLL>
-      <DLL type="x64">Source\kCura.IntegrationPoints.Management.Tests\bin\x64\kCura.IntegrationPoints.Management.Tests.dll</DLL>
-      <DLL type="x64">Source\kCura.IntegrationPoints.ImportProvider.Parser.Tests\bin\x64\kCura.IntegrationPoints.ImportProvider.Parser.Tests.dll</DLL>
-      <DLL type="x64">Source\kCura.IntegrationPoints.LDAPProvider.Tests\bin\x64\kCura.IntegrationPoints.LDAPProvider.Tests.dll</DLL>
-      <DLL type="x64">Source\kCura.IntegrationPoints.Domain.Tests\bin\x64\kCura.IntegrationPoints.Domain.Tests.dll</DLL>
-      <DLL type="x64">Source\kCura.IntegrationPoints.Email.Tests\bin\x64\kCura.IntegrationPoints.Email.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.Agent.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.Core.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.Data.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.DocumentTransferProvider.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.EventHandlers.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.Synchronizers.RDO.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.Web.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\kCura.ScheduleQueue.Core.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.Core.Contracts.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.FtpProvider.Helpers.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.FtpProvider.Parser.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.FtpProvider.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.Services.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.Management.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.ImportProvider.Parser.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.LDAPProvider.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.Domain.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.Email.Tests.dll</DLL>
     </DLLs>
     <WhiteList>
       <allow>kCura.IntegrationPoints.Agent.Tests.Tasks.SyncCustodianManagerWorkerTests.Execute_GoldFlow</allow>
@@ -472,57 +473,57 @@
         <Destination>Applications\RelativityIntegrationPoints.Auto.rap</Destination>
         <ApplicationSchema>ApplicationsXML\application.xml</ApplicationSchema>
         <Assemblies>
-          <Assembly>lib\Castle.Windsor.dll</Assembly>
-          <Assembly>lib\Castle.Core.dll</Assembly>
-          <Assembly>lib\kCura.Apps.Common.Config.dll</Assembly>
-          <Assembly>lib\kCura.Apps.Common.Data.dll</Assembly>
-          <Assembly>lib\kCura.Apps.Common.Utils.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.Agent.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.Common.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.Config.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.Contracts.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.Core.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.Core.Contracts.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.Data.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.DocumentTransferProvider.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.Domain.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.Email.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.EventHandlers.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.Management.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.FtpProvider.Parser.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.FtpProvider.Helpers.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.FtpProvider.Connection.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.FtpProvider.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.FilesDestinationProvider.Core.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.ImportProvider.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.ImportProvider.Parser.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.Injection.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.LDAPProvider.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.Services.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.Services.Interfaces.Private.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.Synchronizers.RDO.dll</Assembly>
-          <Assembly>lib\kCura.LongPath.dll</Assembly>
-          <Assembly>lib\kCura.Relativity.Client.dll</Assembly>
-          <Assembly>lib\kCura.Relativity.DataReaderClient.dll</Assembly>
-          <Assembly>lib\kCura.WinEDDS.dll</Assembly>
-          <Assembly>lib\kCura.WinEDDS.TApi.dll</Assembly>
-          <Assembly>lib\kCura.WinEDDS.Core.dll</Assembly>
-          <Assembly>lib\Relativity.DataTransfer.MessageService.dll</Assembly>
-          <Assembly>lib\Relativity.Transfer.Client.Aspera.dll</Assembly>
-          <Assembly>lib\Relativity.Transfer.Client.dll</Assembly>
-          <Assembly>lib\Relativity.Transfer.Client.Core.dll</Assembly>
-          <Assembly>lib\Relativity.Transfer.Client.FileShare.dll</Assembly>
-          <Assembly>lib\Relativity.Transfer.Client.Http.dll</Assembly>
-          <Assembly>lib\FaspManager.dll</Assembly>
-          <Assembly>lib\Polly.dll</Assembly>
-          <Assembly>lib\kCura.ScheduleQueue.AgentBase.dll</Assembly>
-          <Assembly>lib\kCura.ScheduleQueue.Core.dll</Assembly>
-          <Assembly>lib\Newtonsoft.Json.dll</Assembly>
-          <Assembly>lib\Renci.SshNet.dll</Assembly>
-          <Assembly>lib\SystemInterface.dll</Assembly>
-          <Assembly>lib\ZetaLongPaths.dll</Assembly>
-          <Assembly>lib\Relativity.Productions.Services.Interfaces.dll</Assembly>
+          <Assembly>lib\UnitTests\Castle.Windsor.dll</Assembly>
+          <Assembly>lib\UnitTests\Castle.Core.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.Apps.Common.Config.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.Apps.Common.Data.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.Apps.Common.Utils.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Agent.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Common.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Config.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Contracts.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Core.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Core.Contracts.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Data.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.DocumentTransferProvider.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Domain.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Email.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.EventHandlers.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Management.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.FtpProvider.Parser.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.FtpProvider.Helpers.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.FtpProvider.Connection.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.FtpProvider.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.FilesDestinationProvider.Core.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.ImportProvider.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.ImportProvider.Parser.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Injection.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.LDAPProvider.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Services.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Services.Interfaces.Private.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Synchronizers.RDO.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.LongPath.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.Relativity.Client.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.Relativity.DataReaderClient.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.WinEDDS.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.WinEDDS.TApi.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.WinEDDS.Core.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.DataTransfer.MessageService.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.Transfer.Client.Aspera.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.Transfer.Client.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.Transfer.Client.Core.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.Transfer.Client.FileShare.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.Transfer.Client.Http.dll</Assembly>
+          <Assembly>lib\UnitTests\FaspManager.dll</Assembly>
+          <Assembly>lib\UnitTests\Polly.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.ScheduleQueue.AgentBase.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.ScheduleQueue.Core.dll</Assembly>
+          <Assembly>lib\UnitTests\Newtonsoft.Json.dll</Assembly>
+          <Assembly>lib\UnitTests\Renci.SshNet.dll</Assembly>
+          <Assembly>lib\UnitTests\SystemInterface.dll</Assembly>
+          <Assembly>lib\UnitTests\ZetaLongPaths.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.Productions.Services.Interfaces.dll</Assembly>
         </Assemblies>
         <ResourceFiles />
         <CustomPages>
@@ -533,22 +534,22 @@
         <Destination>Applications\MyFirstProvider.rap</Destination>
         <ApplicationSchema>ApplicationsXML\myFirstProviderApplication.xml</ApplicationSchema>
         <Assemblies>
-          <Assembly>lib\kCura.Apps.Common.Config.dll</Assembly>
-          <Assembly>lib\kCura.Apps.Common.Data.dll</Assembly>
-          <Assembly>lib\kCura.Apps.Common.Utils.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.Common.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.Config.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.Contracts.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.Core.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.Core.Contracts.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.Data.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.Domain.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.Synchronizers.RDO.dll</Assembly>
-          <Assembly>lib\kCura.ScheduleQueue.Core.dll</Assembly>
-          <Assembly>lib\Relativity.DataTransfer.MessageService.dll</Assembly>
-          <Assembly>lib\SystemInterface.dll</Assembly>
-          <Assembly>Source\Provider\bin\Provider.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.Apps.Common.Config.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.Apps.Common.Data.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.Apps.Common.Utils.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Common.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Config.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Contracts.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Core.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Core.Contracts.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Data.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Domain.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Synchronizers.RDO.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.ScheduleQueue.Core.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.DataTransfer.MessageService.dll</Assembly>
+          <Assembly>lib\UnitTests\SystemInterface.dll</Assembly>
+          <Assembly>lib\UnitTests\Provider.dll</Assembly>
         </Assemblies>
         <ResourceFiles />
         <CustomPages>
@@ -559,23 +560,23 @@
         <Destination>Applications\JsonLoader.rap</Destination>
         <ApplicationSchema>ApplicationsXML\jsonLoaderApplication.xml</ApplicationSchema>
         <Assemblies>
-          <Assembly>lib\kCura.Apps.Common.Config.dll</Assembly>
-          <Assembly>lib\kCura.Apps.Common.Data.dll</Assembly>
-          <Assembly>lib\kCura.Apps.Common.Utils.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.Common.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.Config.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.Contracts.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.Core.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.Core.Contracts.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.Data.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.Domain.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
-          <Assembly>lib\kCura.IntegrationPoints.Synchronizers.RDO.dll</Assembly>
-          <Assembly>lib\kCura.ScheduleQueue.Core.dll</Assembly>
-          <Assembly>lib\Relativity.DataTransfer.MessageService.dll</Assembly>
-          <Assembly>lib\SystemInterface.dll</Assembly>
-          <Assembly>Source\JsonLoader\bin\JsonLoader.dll</Assembly>
-          <Assembly>Source\JsonLoader\bin\Newtonsoft.Json.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.Apps.Common.Config.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.Apps.Common.Data.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.Apps.Common.Utils.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Common.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Config.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Contracts.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Core.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Core.Contracts.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Data.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Domain.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Synchronizers.RDO.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.ScheduleQueue.Core.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.DataTransfer.MessageService.dll</Assembly>
+          <Assembly>lib\UnitTests\SystemInterface.dll</Assembly>
+          <Assembly>lib\UnitTests\JsonLoader.dll</Assembly>
+          <Assembly>lib\UnitTests\Newtonsoft.Json.dll</Assembly>
         </Assemblies>
         <ResourceFiles />
         <CustomPages>

@@ -257,11 +257,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy $(ProjectDir)..\packages\Relativity.ImportExport.9.5.390.13\lib\native\*  $(ProjectDir)$(OutDir)  /y
-mkdir "$(ProjectDir)..\..\lib\UnitTests"
-xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y
-xcopy "$(ProjectDir)TestDataForImport" "$(ProjectDir)..\..\lib\UnitTests\TestDataForImport" /E /Y /I /R
-</PostBuildEvent>
+    <PostBuildEvent></PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
