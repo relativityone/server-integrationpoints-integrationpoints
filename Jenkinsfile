@@ -414,5 +414,5 @@ def getNewBranchAndVersion(String relativityBranch, String paramRelativityBuildV
 		// It should never be empty!!
 		buildVersion = paramRelativityBuildVersion
 	}
-	return new Tuple(buildVersion, branch)
+	return [buildVersion, branch]
 }
