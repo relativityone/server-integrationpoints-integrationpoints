@@ -16,6 +16,6 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="..\..\lib\kCura.IntegrationPoints.Services.Interfaces.Private.dll" target="lib\net462\" />
+    <file src="..\..\lib\UnitTests\kCura.IntegrationPoints.Services.Interfaces.Private.dll" target="lib\UnitTests\net462\" />
   </files>
 </package>

@@ -15,7 +15,7 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="..\..\lib\kCura.IntegrationPoints.Contracts.dll" target="lib\net462\" />
-    <file src="..\..\lib\kCura.IntegrationPoints.SourceProviderInstaller.dll" target="lib\net462\" />
+    <file src="..\..\lib\UnitTests\kCura.IntegrationPoints.Contracts.dll" target="lib\UnitTests\net462\" />
+    <file src="..\..\lib\UnitTests\kCura.IntegrationPoints.SourceProviderInstaller.dll" target="lib\UnitTests\net462\" />
   </files>
 </package>
