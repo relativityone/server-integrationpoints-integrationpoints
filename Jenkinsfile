@@ -57,8 +57,8 @@ def profile = createProfile(installing_relativity, installing_invariant, install
 def knife = 'C:\\Python27\\Lib\\site-packages\\jeeves\\knife.rb'
 def session_id = System.currentTimeMillis().toString()
 def event_hash = java.security.MessageDigest.getInstance("MD5").digest(env.JOB_NAME.bytes).encodeHex().toString()
-def Scvmm = scvmm(this, session_id)
-Scvmm.setHoursToLive("12")
+def ScvmmInstance = scvmm(this, session_id)
+ScvmmInstance.setHoursToLive("12")
 
 // Make changes here if necessary.
 def python_packages = 'jeeves==4.1.0 phonograph==5.2.0 selenium==3.0.1'
@@ -130,7 +130,7 @@ timestamps
 					timeout(time: 90, unit: 'MINUTES')
 					{
 						echo "Getting server from pool, session_id: $session_id, Relativity build type: $params.relativityBuildType, event hash: $event_hash"
-						sut = Scvmm.getServerFromPool()
+						sut = ScvmmInstance.getServerFromPool()
 						echo "Acquired server: ${sut.name} @ ${sut.domain} (${sut.ip})"
 
 						parallel (
@@ -163,7 +163,7 @@ timestamps
 							{
 								def numberOfSlaves = 1
 								def numberOfExecutors = '1'
-								Scvmm.createNodes(numberOfSlaves, 60, numberOfExecutors)
+								ScvmmInstance.createNodes(numberOfSlaves, 60, numberOfExecutors)
 								withCredentials([
 									usernamePassword(credentialsId: 'JenkinsSDLC', passwordVariable: 'SDLCPASSWORD', usernameVariable: 'SDLCUSERNAME')])
 								{
@@ -242,13 +242,13 @@ timestamps
 										//it returns username who submitted the request to save vms
 										user = input(message: 'Save the VMs?', ok: 'Save', submitter: 'JNK-Basic', submitterParameter: 'submitter')
 									}
-									Scvmm.saveVMs(user)
+									ScvmmInstance.saveVMs(user)
 								}
 								// Exception is thrown if you click abort or let it time out
 								catch(err)
 								{
 									echo "Deleting VMs..."
-									Scvmm.deleteVMs()
+									ScvmmInstance.deleteVMs()
 								}
 							}
 						}
