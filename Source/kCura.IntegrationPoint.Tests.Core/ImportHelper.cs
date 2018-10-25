@@ -36,11 +36,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 			var importApi = new ImportAPI(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword,
 				SharedVariables.RelativityWebApiUrl);
 
-			foreach (var folderWithDocuments in documentsTestData.Documents)
-			{
-				ImportNativeFiles(workspaceArtifactId, folderWithDocuments.Documents.CreateDataReader(), importApi,
-					_CONTROL_NUMBER_FIELD_ARTIFACT_ID, folderWithDocuments.FolderId);
-			}
+			ImportNativeFiles(workspaceArtifactId, documentsTestData.AllDocumentsDataTable.CreateDataReader(), importApi,
+				_CONTROL_NUMBER_FIELD_ARTIFACT_ID, documentsTestData.Documents.First().FolderId);
 
 			ImportImagesAndExtractedText(workspaceArtifactId, documentsTestData.Images, importApi, _CONTROL_NUMBER_FIELD_ARTIFACT_ID);
 
