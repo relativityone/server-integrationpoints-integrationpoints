@@ -74,7 +74,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			// Indicates file path for the native file.
 			importJob.Settings.NativeFilePathSourceFieldName = "Native File";
 			importJob.Settings.NativeFileCopyMode = _withNatives ? NativeFileCopyModeEnum.CopyFiles : NativeFileCopyModeEnum.DoNotImportNativeFiles;
-			importJob.Settings.OverwriteMode = OverwriteModeEnum.Append;
+			importJob.Settings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
 			importJob.Settings.FileNameColumn = "File Name";
 			importJob.Settings.CopyFilesToDocumentRepository = _withNatives;
 			importJob.Settings.DestinationFolderArtifactID = folderId.Value;
@@ -135,7 +135,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 			{
 				jobreport.ErrorRows.ToList().ForEach(error =>
 				{
-					Console.WriteLine(error.Message);
 					ErrorMessages.Add(error.Message);
 				});
 			}
@@ -145,13 +144,12 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			if (jobreport.ErrorRows.Any())
 			{
-				jobreport.ErrorRows.ToList().ForEach(error => Console.WriteLine(error.Message));
+				jobreport.ErrorRows.ToList().ForEach(error => ErrorMessages.Add(error.Message));
 			}
 		}
 
 		private void ImportJobOnMessage(Relativity.DataReaderClient.Status status)
 		{
-			Console.WriteLine(status.Message);
 			Messages.Add(status.Message);
 		}
 	}

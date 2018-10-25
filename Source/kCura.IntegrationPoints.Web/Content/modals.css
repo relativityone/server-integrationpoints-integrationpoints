@@ -39,6 +39,9 @@
     box-shadow: none;
 }
 
+.ui-dialog.ui-widget-content.no-border {border: 0;
+}
+
 .ui-widget-content .card {
     border: none;
     box-shadow: none;

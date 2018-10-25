@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.UITests.Driver;
 using OpenQA.Selenium;
 
 namespace kCura.IntegrationPoints.UITests.Components
@@ -17,7 +18,7 @@ namespace kCura.IntegrationPoints.UITests.Components
 
 		public PropertiesTable Select()
 		{
-			TitleLink.Click();
+			TitleLink.ClickEx();
 			return this;
 		}
 

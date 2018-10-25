@@ -13,7 +13,8 @@ using Relativity.Services.Objects.DataContracts;
 namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 {
 	[TestFixture]
-	public class EntityExportToLoadFile : UiTest
+	[Category(TestCategory.EXPORT_TO_LOAD_FILE)]
+    public class EntityExportToLoadFile : UiTest
 	{
 		private IntegrationPointsAction _integrationPointsAction;
 		private IRSAPIService _service;
@@ -39,11 +40,11 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			model.TransferredObject = TransferredObjectConstants.ENTITY;
 			model.ExportDetails = new EntityExportToLoadFileDetails
 			{
-				View = "Custodians - Legal Hold View"
+				View = "Entity - Legal Hold View",
+				SelectAllFields = true,
+				ExportTextFieldsAsFiles = true,
+				DestinationFolder = ExportToLoadFileProviderModel.DestinationFolderTypeEnum.Root
 			};
-			model.ExportDetails.SelectAllFields = true;
-			model.ExportDetails.ExportTextFieldsAsFiles = true;
-			model.ExportDetails.DestinationFolder = ExportToLoadFileProviderModel.DestinationFolderTypeEnum.Root;
 
 			model.OutputSettings = new ExportToLoadFileOutputSettingsModel
 			{

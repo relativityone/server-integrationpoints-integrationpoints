@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 		private int _groupId;
 		private UserModel _userModel;
 
-		public JobHistoryPermissionTests() : base($"JH_source_{Utils.FormatedDateTimeNow}", $"JH_dest_{Utils.FormatedDateTimeNow}")
+		public JobHistoryPermissionTests() : base($"JH_source_{Utils.FormattedDateTimeNow}", $"JH_dest_{Utils.FormattedDateTimeNow}")
 		{
 		}
 
@@ -33,8 +33,8 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 		public override void TestSetup()
 		{
 			base.TestSetup();
-			_groupId = Group.CreateGroup($"group_{Utils.FormatedDateTimeNow}");
-			_userModel = User.CreateUser("firstname", "lastname", $"test_{Utils.FormatedDateTimeNow}@relativity.com", new List<int> {_groupId});
+			_groupId = Group.CreateGroup($"group_{Utils.FormattedDateTimeNow}");
+			_userModel = User.CreateUser("firstname", "lastname", $"test_{Utils.FormattedDateTimeNow}@relativity.com", new List<int> {_groupId});
 		}
 
 		public override void TestTeardown()
@@ -137,7 +137,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 
 		private void RunDefaultIntegrationPoint()
 		{
-			Core.Models.IntegrationPointModel ipModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, $"ip_{Utils.FormatedDateTimeNow}", "Append Only");
+			Core.Models.IntegrationPointModel ipModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, $"ip_{Utils.FormattedDateTimeNow}", "Append Only");
 			ipModel.Destination = CreateSerializedDestinationConfigWithTargetWorkspace(ImportOverwriteModeEnum.AppendOnly, TargetWorkspaceArtifactId);
 			Core.Models.IntegrationPointModel ip = CreateOrUpdateIntegrationPoint(ipModel);
 

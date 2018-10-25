@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public IntegrationPointDetailsPage SaveIntegrationPoint()
         {
-            SaveButton.ClickWhenClickable();
+            SaveButton.ClickEx();
             return new IntegrationPointDetailsPage(Driver);
         }
 

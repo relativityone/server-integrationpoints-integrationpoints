@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace kCura.IntegrationPoints.Web.DataStructures
@@ -47,13 +48,13 @@ namespace kCura.IntegrationPoints.Web.DataStructures
 
 			if (begIndex < folderPath.Length)
 			{
-				int endIndex = folderPath.IndexOf(_pathSeparator, begIndex);
+				int endIndex = folderPath.IndexOf(_pathSeparator, begIndex, StringComparison.Ordinal);
 				if (endIndex == -1)
 				{
 					endIndex = folderPath.Length;
 				}
 
-				string folderName = folderPath.Substring(begIndex, endIndex - begIndex).ToLower();
+				string folderName = folderPath.Substring(begIndex, endIndex - begIndex).ToLowerInvariant();
 				if (!string.IsNullOrEmpty(folderName))
 				{
 					Folder folder;

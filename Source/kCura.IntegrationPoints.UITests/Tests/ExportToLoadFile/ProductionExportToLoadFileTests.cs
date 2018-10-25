@@ -13,7 +13,8 @@ using IntegrationPointType = kCura.IntegrationPoint.Tests.Core.Models.Integratio
 namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 {
 	[TestFixture]
-	public class ProductionExportToLoadFileTests : ExportToLoadFileTests
+	[Category(TestCategory.EXPORT_TO_LOAD_FILE)]
+    public class ProductionExportToLoadFileTests : ExportToLoadFileTests
 	{
 		private string PRODUCTION_NAME_SMALL = "Small Production under tests";
 		private string PRODUCTION_NAME_BIG = "Big Production under tests";
@@ -23,7 +24,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 		public void OneTimeSetUp()
 		{
 			Context.CreateAndRunProduction(SAVED_SEARCH_NAME, PRODUCTION_NAME_SMALL);
-			Context.ImportDocuments(true, DocumentTestDataBuilder.TestDataType.SaltPepperWithFolderStructure);
 			Context.CreateAndRunProduction(SAVED_SEARCH_NAME, PRODUCTION_NAME_BIG);
 
 			EnsureGeneralPageIsOpened();
@@ -106,7 +106,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			// Step 2
 			model.SourceInformationModel.Source = ExportToLoadFileSourceConstants.PRODUCTION;
 			model.SourceInformationModel.ProductionSet = PRODUCTION_NAME_BIG;
-			model.SourceInformationModel.StartAtRecord = 100;
+			model.SourceInformationModel.StartAtRecord = 10;
 			model.SourceInformationModel.SelectAllFields = false;
 			// Production::Begin Bates, Production::End Bates are selected by default
 

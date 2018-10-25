@@ -109,15 +109,15 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		{
 			if (mode == RelativityProviderModel.CopyNativeFilesEnum.PhysicalFiles)
 			{
-				SelectCopyPhysicalFilesElement.ClickWhenClickable();
+				SelectCopyPhysicalFilesElement.ClickEx();
 			}
 			else if (mode == RelativityProviderModel.CopyNativeFilesEnum.LinksOnly)
 			{
-				SelectCopyLinksOnlyElement.ClickWhenClickable();
+				SelectCopyLinksOnlyElement.ClickEx();
 			}
 			else if (mode == RelativityProviderModel.CopyNativeFilesEnum.No)
 			{
-				SelectCopyNoFilesElement.ClickWhenClickable();
+				SelectCopyNoFilesElement.ClickEx();
 			}
 		}
 
@@ -130,11 +130,11 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 			if (mode.Value)
 			{
-				SelectCopyImagesYesElement.ClickWhenClickable();
+				SelectCopyImagesYesElement.ClickEx();
 			}
 			else
 			{
-				SelectCopyImagesNoElement.ClickWhenClickable();
+				SelectCopyImagesNoElement.ClickEx();
 			}
 
 			Thread.Sleep(200);
@@ -142,7 +142,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public PushToRelativityThirdPage MapAllFields()
 		{
-			MapAllFieldsElement.ClickWhenClickable();
+			MapAllFieldsElement.ClickEx();
 			return this;
 		}
 
@@ -185,11 +185,11 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 			if (mode.Value)
 			{
-				SelectMoveExitstingDocumentsYesElement.ClickWhenClickable();
+				SelectMoveExitstingDocumentsYesElement.ClickEx();
 			}
 			else
 			{
-				SelectMoveExitstingDocumentsNoElement.ClickWhenClickable();
+				SelectMoveExitstingDocumentsNoElement.ClickEx();
 			}
 		}
 
@@ -202,21 +202,21 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 			if (mode.Value)
 			{
-				SelectCopyFilesToRepositoryYesElement.ClickWhenClickable();
+				SelectCopyFilesToRepositoryYesElement.ClickEx();
 			}
 			else
 			{
-				SelectCopyFilesToRepositoryNoElement.ClickWhenClickable();
+				SelectCopyFilesToRepositoryNoElement.ClickEx();
 			}
 		}
 
 		public void SelectProductionPrecedence(string productionName)
 		{
-			ChooseProductionPrecedenceBtn.ClickWhenClickable();
+			ChooseProductionPrecedenceBtn.ClickEx();
 			IWebElement productionOption = SelectAvailableProductions.Options.Single(x => x.Text.Equals(productionName));
 			var action = new OpenQA.Selenium.Interactions.Actions(Driver);
 			action.DoubleClick(productionOption).Perform();
-			AvailableProductionOkBtn.ClickWhenClickable();
+			AvailableProductionOkBtn.ClickEx();
 		}
 
 		public void SelectIncludeOriginalImagesIfNotProduced(bool? mode)
@@ -228,7 +228,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 			if (mode.Value)
 			{
-				IncludeOriginalImagesIfNotProducedElement.ClickWhenClickable();
+				IncludeOriginalImagesIfNotProducedElement.ClickEx();
 			}
 		}
 
@@ -253,7 +253,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 			SelectOption(selectElement, textToSearchFor);
 
-			addFieldElement.ClickWhenClickable();
+			addFieldElement.ClickEx();
 		}
 
 		private static void SelectOption(SelectElement selectElement, string textToSearchFor)
@@ -261,13 +261,13 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			IWebElement option = selectElement.WrappedElement.FindElement(By.XPath($".//option[starts-with(normalize-space(.), \"{textToSearchFor}\")]"));
 			if (!option.Selected)
 			{
-				option.ClickWhenClickable();
+				option.ClickEx();
 			}
 		}
 
 		public IntegrationPointDetailsPage SaveIntegrationPoint()
 		{
-			SaveButton.ClickWhenClickable();
+			SaveButton.ClickEx();
 			return new IntegrationPointDetailsPage(Driver);
 		}
 

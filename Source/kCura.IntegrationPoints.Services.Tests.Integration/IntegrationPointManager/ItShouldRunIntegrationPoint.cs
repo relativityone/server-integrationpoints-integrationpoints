@@ -10,15 +10,15 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 	[TestFixture]
 	public class ItShouldRunIntegrationPoint : RelativityProviderTemplate
 	{
-		public ItShouldRunIntegrationPoint() : base($"KeplerService_{Utils.FormatedDateTimeNow}", $"KeplerService_Target_{Utils.FormatedDateTimeNow}")
+		public ItShouldRunIntegrationPoint() : base($"KeplerService_{Utils.FormattedDateTimeNow}", $"KeplerService_Target_{Utils.FormattedDateTimeNow}")
 		{
 		}
 
-		[Test]
-		[Category(Constants.SMOKE_TEST)]
+		//[Test]
+		//[Category(Constants.SMOKE_TEST)]
 		public void Execute()
 		{
-			var ipModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, $"ip_{Utils.FormatedDateTimeNow}", "Append Only");
+			var ipModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, $"ip_{Utils.FormattedDateTimeNow}", "Append Only");
 			var ip = CreateOrUpdateIntegrationPoint(ipModel);
 
 			var client = Helper.CreateAdminProxy<IIntegrationPointManager>();

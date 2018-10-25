@@ -8,18 +8,18 @@ namespace kCura.IntegrationPoints.UITests.Pages
 {
 	public class IntegrationPointsPage : GeneralPage
 	{
-		private IWebElement NewIntegrationPointButton => Driver.FindElementByXPath("//button[.='New Integration Point']");
+		private IWebElement NewIntegrationPointButton => Driver.FindElementEx(By.CssSelector("#dashboardPanel > div > div.dashboard-controls.new-item-button-wrapper > div > button-wgt > div > button"));
 
 		public IntegrationPointsPage(RemoteWebDriver driver) : base(driver)
 		{
 			WaitForPage();
 			PageFactory.InitElements(driver, this);
-			Driver.SwitchTo().Frame("externalPage");
+			Driver.SwitchTo().DefaultContent().SwitchTo().Frame("externalPage");
 		}
 
 		public ExportFirstPage CreateNewExportIntegrationPoint()
 		{
-			NewIntegrationPointButton.ClickWhenClickable();
+			NewIntegrationPointButton.ClickEx();
 			return new ExportFirstPage(Driver);
 		}
 
@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			where TSecondPage : ImportSecondBasePage<TModel>
 			
 		{
-			NewIntegrationPointButton.ClickWhenClickable();
+			NewIntegrationPointButton.ClickEx();
 			return funcFirstPageCreator();
 		}
 	}

@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.UITests.Components
 		{
 			IWebElement select = Parent.FindElement(By.XPath($@".//div[@id='{_selectDivId}']"));
 			Thread.Sleep(TimeSpan.FromMilliseconds(1000));
-			select.ClickWhenClickable();
+			select.ClickEx();
 			return this;
 		}
 
@@ -36,9 +36,9 @@ namespace kCura.IntegrationPoints.UITests.Components
 
 			IWebElement selectListPopup = Parent.FindElement(By.XPath($@".//div[@id='{_treeDivId}']"));
 			Thread.Sleep(TimeSpan.FromMilliseconds(1000));
-			IWebElement rootElement = selectListPopup.FindElements(By.XPath(@".//a"))[0];
+			IWebElement rootElement = selectListPopup.FindElementsEx(By.XPath(@".//a"))[0];
 			Thread.Sleep(TimeSpan.FromMilliseconds(1000));
-			rootElement.Click();
+			rootElement.ClickEx();
 			return this;
 		}
 
@@ -48,9 +48,9 @@ namespace kCura.IntegrationPoints.UITests.Components
 
 			IWebElement selectListPopup = Parent.FindElement(By.XPath($@".//div[@id='{_treeDivId}']"));
 			Thread.Sleep(TimeSpan.FromMilliseconds(1000));
-			IWebElement rootElement = selectListPopup.FindElements(By.XPath(@".//a"))[1];
+			IWebElement rootElement = selectListPopup.FindElementsEx(By.XPath(@".//a"))[1];
 			Thread.Sleep(TimeSpan.FromMilliseconds(1000));
-			rootElement.Click();
+			rootElement.ClickEx();
 			return this;
 		}
 
@@ -63,10 +63,10 @@ namespace kCura.IntegrationPoints.UITests.Components
 
 			Thread.Sleep(TimeSpan.FromMilliseconds(2000));
 
-			IWebElement folderIcon = tree.FindElements(By.CssSelector(".jstree-anchor")).First(el => el.Text == name);
+			IWebElement folderIcon = tree.FindElementsEx(By.CssSelector(".jstree-anchor")).First(el => el.Text == name);
 			folderIcon.ScrollIntoView();
 			Thread.Sleep(TimeSpan.FromSeconds(1));
-			folderIcon.Click();
+			folderIcon.ClickEx();
 
 			return this;
 		}
@@ -76,7 +76,7 @@ namespace kCura.IntegrationPoints.UITests.Components
 			while (true)
 			{
 				Thread.Sleep(TimeSpan.FromMilliseconds(1000));
-				ICollection<IWebElement> closedNodes = tree.FindElements(By.CssSelector(".jstree-closed"));
+				ICollection<IWebElement> closedNodes = tree.FindElementsEx(By.CssSelector(".jstree-closed"));
 				if (closedNodes.Count == 0)
 				{
 					break;
@@ -85,7 +85,7 @@ namespace kCura.IntegrationPoints.UITests.Components
 				{
 					IWebElement button = closedNode.FindElement(By.TagName("i"));
 					button.ScrollIntoView();
-					button.ClickWhenClickable();
+					button.ClickEx();
 				}
 			}
 		}

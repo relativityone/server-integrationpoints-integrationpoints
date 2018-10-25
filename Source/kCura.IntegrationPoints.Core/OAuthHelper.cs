@@ -88,5 +88,10 @@ namespace kCura.IntegrationPoints.Core
 		{
 			throw new NotImplementedException();
 		}
+
+		public IStringSanitizer GetStringSanitizer(int workspaceID)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

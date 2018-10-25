@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 		}
 
 		[Test]
-		public void ItShouldNot_TriggerOnJobExecutionError_AfterDispose()
+		public void ItShouldNot_TriggerOnTaskExecutionError_AfterDispose()
 		{
 			//Arrange
 			using (_subjectUnderTest = new TaskExceptionMediator(_taskExceptionServiceMock))

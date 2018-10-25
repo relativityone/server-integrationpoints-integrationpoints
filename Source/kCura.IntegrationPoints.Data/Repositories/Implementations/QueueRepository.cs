@@ -8,8 +8,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class QueueRepository : IQueueRepository
 	{
+		private const string _SCHEDULE_AGENT_QUEUE_TABLE_NAME = GlobalConst.SCHEDULE_AGENT_QUEUE_TABLE_NAME;
 		private readonly IDBContext _dbContext;
-		private string _queueTableName = GlobalConst.SCHEDULE_AGENT_QUEUE_TABLE_NAME;
 
 		public QueueRepository(IHelper helper)
 		{
@@ -18,33 +18,75 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public int GetNumberOfJobsExecutingOrInQueue(int workspaceId, int integrationPointId)
 		{
-			//excludes scheduled jobs that are pending
-			string queuedOrRunningSql = $@"SELECT count(*) FROM [{_queueTableName}] WHERE [WorkspaceID] = @workspaceId AND [RelatedObjectArtifactID] = @integrationPointId AND [ScheduleRuleType] is null";
+			//excludes scheduled jobs
+			string queuedOrRunningJobsSql = 
+				
+			$@"SELECT count(*) 
+			FROM [{_SCHEDULE_AGENT_QUEUE_TABLE_NAME}] 
+			WHERE [WorkspaceID] = @workspaceId 
+				AND [RelatedObjectArtifactID] = @integrationPointId 
+				AND [ScheduleRuleType] is null";
 
-			IEnumerable<SqlParameter> queuedOrRunningParameters = new List<SqlParameter>
+			IEnumerable<SqlParameter> queuedOrRunningJobParameters = new List<SqlParameter>
 			{
 				new SqlParameter("@workspaceId", SqlDbType.Int) {Value = workspaceId},
 				new SqlParameter("@integrationPointId", SqlDbType.Int) {Value = integrationPointId},
 			};
 
-			string scheduledRunningSql = $@"SELECT count(*) FROM [{_queueTableName}] WHERE [WorkspaceID] = @workspaceId AND [RelatedObjectArtifactID] = @integrationPointId AND [ScheduleRuleType] is not null AND [LockedByAgentID] is not null";
+			string scheduledRunningJobsSql = 
+			
+			$@"SELECT count(*) 
+			FROM [{_SCHEDULE_AGENT_QUEUE_TABLE_NAME}] 
+			WHERE [WorkspaceID] = @workspaceId 
+				AND [RelatedObjectArtifactID] = @integrationPointId 
+				AND [ScheduleRuleType] is not null 
+				AND [LockedByAgentID] is not null";
 
-			IEnumerable<SqlParameter> scheduledRunningParameters = new List<SqlParameter>
+			IEnumerable<SqlParameter> scheduledRunningJobParameters = new List<SqlParameter>
 			{
 				new SqlParameter("@workspaceId", SqlDbType.Int) {Value = workspaceId},
 				new SqlParameter("@integrationPointId", SqlDbType.Int) {Value = integrationPointId},
 			};
-
-
-			int numberOfJobs = _dbContext.ExecuteSqlStatementAsScalar<int>(queuedOrRunningSql, queuedOrRunningParameters);
-			numberOfJobs += _dbContext.ExecuteSqlStatementAsScalar<int>(scheduledRunningSql, scheduledRunningParameters);
+			
+			int numberOfJobs = _dbContext.ExecuteSqlStatementAsScalar<int>(queuedOrRunningJobsSql, queuedOrRunningJobParameters);
+			numberOfJobs += _dbContext.ExecuteSqlStatementAsScalar<int>(scheduledRunningJobsSql, scheduledRunningJobParameters);
 
 			return numberOfJobs;
 		}
 
+		public int GetNumberOfPendingJobs(int workspaceId, int integrationPointId)
+		{
+			string pendingJobsSql =
+
+			$@"SELECT count(*) 
+			FROM [{_SCHEDULE_AGENT_QUEUE_TABLE_NAME}] 
+			WHERE [WorkspaceID] = @workspaceId 
+				AND [RelatedObjectArtifactID] = @integrationPointId 			
+				AND [LockedByAgentID] is null";
+
+			IEnumerable<SqlParameter> queuedOrRunningJobParameters = new List<SqlParameter>
+			{
+				new SqlParameter("@workspaceId", SqlDbType.Int) {Value = workspaceId},
+				new SqlParameter("@integrationPointId", SqlDbType.Int) {Value = integrationPointId},
+			};
+
+			int numberOfJobs = _dbContext.ExecuteSqlStatementAsScalar<int>(pendingJobsSql, queuedOrRunningJobParameters);
+
+			return numberOfJobs;
+		}
+
+
 		public int GetNumberOfJobsExecuting(int workspaceId, int integrationPointId, long jobId, DateTime runTime)
 		{
-			string sql = $@"SELECT count(*) FROM [{_queueTableName}] WHERE [WorkspaceID] = @workspaceId AND [RelatedObjectArtifactID] = @integrationPointId AND [LockedByAgentID] is not null AND [NextRunTime] <= @dateValue AND [JobID] != @jobId";
+			string sql = 
+				
+			$@"SELECT count(*) 
+			FROM [{_SCHEDULE_AGENT_QUEUE_TABLE_NAME}] 
+			WHERE [WorkspaceID] = @workspaceId 
+				AND [RelatedObjectArtifactID] = @integrationPointId 
+				AND [LockedByAgentID] is not null 
+				AND [NextRunTime] <= @dateValue 
+				AND [JobID] != @jobId";
 
 			IEnumerable<SqlParameter> parameters = new List<SqlParameter>
 			{

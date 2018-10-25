@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.Models;
+using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Components;
 using kCura.IntegrationPoints.UITests.Pages;
 using NUnit.Framework;
@@ -7,7 +8,8 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 {
 	[TestFixture]
-	public class DataGridToSqlTest : RelativityProviderTestsBase
+	[Category(TestCategory.MISCELLANEOUS)]
+    public class DataGridToSqlTest : RelativityProviderTestsBase
 	{
 		private RelativityProviderModel CreateRelativityProviderModelWithNatives()
 		{

@@ -19,6 +19,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 	{
 		/// used as a flag to store the reference of the current artifacts array.
 		private object _readingArtifactIdsReference;
+		private readonly string[] _textTypeFields = { FieldTypeHelper.FieldType.Text.ToString(), FieldTypeHelper.FieldType.OffTableText.ToString() };
 
 		private readonly Dictionary<int, string> _nativeFileLocations;
 		private readonly Dictionary<int, string> _nativeFileNames;
@@ -31,7 +32,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private static readonly string _nativeFileNameColumn = "Filename";
 		private static readonly string _nativeLocationColumn = "Location";
 		private static readonly string _separator = ",";
-
+		
 		public DocumentTransferDataReader(IExporterService relativityExportService,
 			FieldMap[] fieldMappings,
 			BaseServiceContext context,
@@ -150,8 +151,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 		private bool ShouldUseLongTextStream(ArtifactFieldDTO retrievedField)
 		{
-			return _toggleProvider.IsEnabled<UseStreamsForBigLongTextFieldsToggle>() && IsLongTextField(retrievedField) &&
-				retrievedField.Value?.ToString() == global::Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
+			return IsLongTextField(retrievedField) && retrievedField.Value?.ToString() == global::Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
 		}
 
 		private void LoadNativeFilesLocationsAndNames()
@@ -194,9 +194,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			_openedStreams.Clear();
 		}
 
-		private static bool IsLongTextField(ArtifactFieldDTO retrievedField)
+		private bool IsLongTextField(ArtifactFieldDTO retrievedField)
 		{
-			return retrievedField.FieldType == FieldTypeHelper.FieldType.Text.ToString() || retrievedField.FieldType == FieldTypeHelper.FieldType.OffTableText.ToString();
+			return retrievedField.FieldType == _textTypeFields[0] || retrievedField.FieldType == _textTypeFields[1];
 		}
 	}
 }

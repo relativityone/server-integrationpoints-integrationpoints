@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.Web.Attributes
 			SerializerSettings = JSONHelper.GetDefaultSettings();
 		}
 
-		public JsonNetResult GetJsonNetResult(object data = null, int statusCode = (int)HttpStatusCode.OK, string contentType = null)
+		public JsonNetResult GetJsonNetResult(object data = null, int statusCode = (int)HttpStatusCode.NoContent, string contentType = null)
 		{
 			return new JsonNetResult
 			{

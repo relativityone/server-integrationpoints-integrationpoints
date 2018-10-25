@@ -93,7 +93,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public void SelectAllSourceFields()
 		{
-			AddAllSourceFieldsElement.ClickWhenClickable();
+			AddAllSourceFieldsElement.ClickEx();
 		}
 
 		protected SelectElement SelectDestinationFieldElement => new SelectElement(DestinationFieldElement);
@@ -105,12 +105,12 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public void SelectAllDestinationFields()
 		{
-			AddAllDestinationFieldsElement.ClickWhenClickable();
+			AddAllDestinationFieldsElement.ClickEx();
 		}
 
 		public void MapFields()
 		{
-			MapFieldsElement.ClickWhenClickable();
+			MapFieldsElement.ClickEx();
 		}
 
 		protected SelectElement OverwriteSelectElement => new SelectElement(OverwriteSelectWebElement);
@@ -145,7 +145,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		{
 			int checkboxNumber = value ? 0 : 1;
 			IWebElement input = EntityManagerContainsLinkRowElement.FindElements(By.TagName("input"))[checkboxNumber];
-			input.ClickWhenClickable();
+			input.ClickEx();
 		}
 
 		public CopyNativeFiles CopyNativeFiles
@@ -154,15 +154,15 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			{
 				if (value == CopyNativeFiles.PhysicalFiles)
 				{
-					CopyNativeFilesPhysicalFilesElement.Click();
+					CopyNativeFilesPhysicalFilesElement.ClickEx();
 				}
 				else if (value == CopyNativeFiles.LinksOnly)
 				{
-					CopyNativeFilesLinksOnlyElement.Click();
+					CopyNativeFilesLinksOnlyElement.ClickEx();
 				}
 				else if (value == CopyNativeFiles.No)
 				{
-					CopyNativeFilesNoElement.Click();
+					CopyNativeFilesNoElement.ClickEx();
 				}
 			}
 		}
@@ -182,7 +182,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			set
 			{
 				IWebElement element = value ? UseFolderPathInfoYesElement : UseFolderPathInfoNoElement;
-				element.Click();
+				element.ClickEx();
 			}
 		}
 
@@ -201,7 +201,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			set
 			{
 				IWebElement element = value ? CellContainsFileLocationYesElement : CellContainsFileLocationNoElement;
-				element.Click();
+				element.ClickEx();
 			}
 		}
 
@@ -231,7 +231,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		public IntegrationPointDetailsPage SaveIntegrationPoint()
 		{
 			SaveButton.ScrollIntoView(Driver);
-			SaveButton.ClickWhenClickable();
+			SaveButton.ClickEx();
 			return new IntegrationPointDetailsPage(Driver);
 		}
 
@@ -290,7 +290,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 			SelectOption(selectElement, fieldName);
 
-			addFieldElement.ClickWhenClickable();
+			addFieldElement.ClickEx();
 		}
 
 		private static void SelectOption(SelectElement selectElement, string textToSearchFor)
@@ -298,7 +298,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			IWebElement option = selectElement.WrappedElement.FindElement(By.XPath($".//option[starts-with(normalize-space(.), \"{textToSearchFor}\")]"));
 			if (!option.Selected)
 			{
-				option.ClickWhenClickable();
+				option.ClickEx();
 			}
 		}
 	}

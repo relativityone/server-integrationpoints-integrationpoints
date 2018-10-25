@@ -46,6 +46,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Relativity.Core, Version=10.0.85.14, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Core.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -115,6 +119,7 @@
     <Compile Include="Repositories\KeplerInstanceSettingRepositoryTests.cs" />
     <Compile Include="Repositories\ProductionRepositoryTests.cs" />
     <Compile Include="Repositories\KeplerKeywordSearchRepositoryTests.cs" />
+    <Compile Include="Repositories\QueryFieldLookupRepositoryTests.cs" />
     <Compile Include="Repositories\SavedSearchQueryRepositoryTests.cs" />
     <Compile Include="Repositories\SourceJobRepositoryTests.cs" />
     <Compile Include="Repositories\SourceWorkspaceRepositoryTests.cs" />
@@ -132,7 +137,6 @@
     <Compile Include="RelativityReaderBaseTests.cs" />
     <Compile Include="Repositories\JobHistoryErrorRepositoryTests.cs" />
     <Compile Include="Repositories\PermissionRepositoryTests.cs" />
-    <Compile Include="Repositories\QueueRepositoryTests.cs" />
     <Compile Include="Repositories\KeplerArtifactGuidRepositoryTests.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -146,8 +150,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>mkdir "$(ProjectDir)..\..\lib\UnitTests"
-xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y</PostBuildEvent>
+    <PostBuildEvent></PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\..\.paket\paket.targets" />
   <ItemGroup>
@@ -286,6 +289,22 @@ xcopy "$(TargetDir)*" "$(ProjectDir)..\..\lib\UnitTests" /Y</PostBuildEvent>
       <ItemGroup>
         <Reference Include="Relativity.Services.Interfaces.Private">
           <HintPath>..\..\packages\Relativity.Services.Interfaces.Private\lib\net462\Relativity.Services.Interfaces.Private.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Services.Layout.DataContracts">
+          <HintPath>..\..\packages\Relativity.Services.Layout.Interfaces\lib\Relativity.Services.Layout.DataContracts.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.Services.Layout.Interfaces">
+          <HintPath>..\..\packages\Relativity.Services.Layout.Interfaces\lib\Relativity.Services.Layout.Interfaces.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

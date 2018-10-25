@@ -68,6 +68,11 @@ namespace kCura.IntegrationPoint.Tests.Core
 			throw new NotImplementedException();
 		}
 
+		public IStringSanitizer GetStringSanitizer(int workspaceID)
+		{
+			throw new NotImplementedException();
+		}
+
 		public IAuthenticationMgr GetAuthenticationManager()
 		{
 			throw new NotImplementedException();

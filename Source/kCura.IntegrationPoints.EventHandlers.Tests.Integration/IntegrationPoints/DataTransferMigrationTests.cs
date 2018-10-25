@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 		private int _savedIntegrationPointId;
 
 		public DataTransferMigrationTests()
-			: base($"DataTransferMigrationTests_{Utils.FormatedDateTimeNow}")
+			: base($"DataTransferMigrationTests_{Utils.FormattedDateTimeNow}")
 		{ }
 
 		public override void SuiteSetup()

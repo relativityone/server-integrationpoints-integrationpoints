@@ -7,10 +7,9 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 {
-	using IntegrationPoint.Tests.Core;
-
 	[TestFixture]
-	public class NativesSavedSearchToFolderTest : RelativityProviderTestsBase
+	[Category(TestCategory.EXPORT_TO_RELATIVITY)]
+    public class NativesSavedSearchToFolderTest : RelativityProviderTestsBase
 	{
 		private RelativityProviderModel CreateRelativityProviderModelWithNatives()
 		{

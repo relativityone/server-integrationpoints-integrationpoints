@@ -6,8 +6,8 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.UITests.Tests
 {
 	[TestFixture]
-	[Category(TestCategory.SMOKE)]
-	public class UserOnLoginPageTest : UiTest
+	[Category(TestCategory.MISCELLANEOUS)]
+    public class UserOnLoginPageTest : UiTest
 	{
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
@@ -33,10 +33,14 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		public void GoesToWorkspace()
 		{
 			// Arrange
+			var loginPage = new LoginPage(Driver);
 			var generalPage = new GeneralPage(Driver);
 
+			// Act
+			loginPage.Login(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword);
+
 			// Act / Assert
-			generalPage.ChooseWorkspace("Smoke TestCase");
+			generalPage.ChooseWorkspace(Context.WorkspaceName);
 		}
 	}
 }

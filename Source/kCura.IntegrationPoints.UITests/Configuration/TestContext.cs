@@ -22,7 +22,7 @@ using Serilog.Events;
 using ArtifactType = Relativity.ArtifactType;
 using Field = kCura.Relativity.Client.DTOs.Field;
 using Group = kCura.IntegrationPoint.Tests.Core.Group;
-using User = kCura.IntegrationPoint.Tests.Core.User;
+using UserService = kCura.IntegrationPoint.Tests.Core.User;
 using Workspace = kCura.IntegrationPoint.Tests.Core.Workspace;
 
 namespace kCura.IntegrationPoints.UITests.Configuration
@@ -38,10 +38,11 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		
 		private readonly Lazy<ITestHelper> _helper;
 
+		private readonly string _timeStamp;
+
 		private static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(TestContext));
 
-		public readonly string TimeStamp;
-
+		
 		public ITestHelper Helper => _helper.Value;
 
 		public int? WorkspaceId { get; set; }
@@ -50,14 +51,14 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 		public int? GroupId { get; private set; }
 
-		public int? UserId { get; private set; }
+		public RelativityUser User { get; private set; }
 
 		public int? ProductionId { get; private set; }
 
 		public TestContext()
 		{
 			_helper = new Lazy<ITestHelper>(() => new TestHelper());
-			TimeStamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss.ffff");
+			_timeStamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss.ffff");
 		}
 
 		public TestContext CreateTestWorkspace()
@@ -68,7 +69,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 		public async Task CreateTestWorkspaceAsync()
 		{
-			WorkspaceName = $"RIP Test Workspace {TimeStamp}";
+			WorkspaceName = $"RIP Test Workspace {_timeStamp}";
 			string templateWorkspaceName = SharedVariables.UiTemplateWorkspace;
 			Log.Information($"Attempting to create workspace '{WorkspaceName}' using template '{templateWorkspaceName}'.");
 			try
@@ -93,19 +94,26 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			//ChangeFieldToDataGrid(fieldNames);
 		}
 
-		public TestContext SetupUser()
+		public TestContext InitUser()
 		{
-			GroupId = Group.CreateGroup($"TestGroup_{TimeStamp}");
-			Group.AddGroupToWorkspace(GetWorkspaceId(), GetGroupId());
-
-			ClaimsPrincipal.ClaimsPrincipalSelector += () =>
+			if (SharedVariables.UiSkipUserCreation)
 			{
-				var factory = new ClaimsPrincipalFactory();
-				return factory.CreateClaimsPrincipal2(_ADMIN_USER_ID, Helper);
-			};
+				User = new RelativityUser(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword);
+			}
+			else
+			{
+				//GroupId = Group.CreateGroup($"TestGroup_{TimeStamp}");
+				//Group.AddGroupToWorkspace(GetWorkspaceId(), GetGroupId());
 
-			UserModel userModel = User.CreateUser("UI", $"Test_User_{TimeStamp}", $"UI_Test_User_{TimeStamp}@relativity.com", new List<int> { GetGroupId() });
-			UserId = userModel.ArtifactId;
+				ClaimsPrincipal.ClaimsPrincipalSelector += () =>
+				{
+					var factory = new ClaimsPrincipalFactory();
+					return factory.CreateClaimsPrincipal2(_ADMIN_USER_ID, Helper);
+				};
+
+				UserModel userModel = UserService.CreateUser("RIP", $"Test_User_{_timeStamp}", $"RIP_Test_User_{_timeStamp}@relativity.com");
+				User = new RelativityUser(userModel.ArtifactId, userModel.EmailAddress, userModel.Password);
+			}
 			return this;
 		}
 
@@ -132,19 +140,19 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 		public TestContext InstallIntegrationPoints()
 		{
-			return InstallApplication(_RIP_GUID_STRING);
+			return InstallApplication(_RIP_GUID_STRING, "Integration Points");
 		}
 
 		public TestContext InstallLegalHold()
 		{
-			return InstallApplication(_LEGAL_HOLD_GUID_STRING);
+			return InstallApplication(_LEGAL_HOLD_GUID_STRING, "Legal Hold");
 		}
 
-		public TestContext InstallApplication(string guid)
+		public TestContext InstallApplication(string guid, string name)
 		{
 			Assert.NotNull(WorkspaceId, $"{nameof(WorkspaceId)} is null. Was workspace created correctly?.");
 
-			Log.Information("Checking application '{AppGUID}' in workspace with ID '{WorkspaceId}'.", guid, WorkspaceId);
+			Log.Information("Checking application '{AppName}' ({AppGUID}) in workspace '{WorkspaceName}' ({WorkspaceId}).", name, guid, WorkspaceName, WorkspaceId);
 			Stopwatch stopwatch = Stopwatch.StartNew();
 			try
 			{
@@ -154,18 +162,18 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 				bool isAppInstalledAndUpToDate = ipAppManager.IsApplicationInstalledAndUpToDate((int)WorkspaceId, guid);
 				if (!isAppInstalledAndUpToDate)
 				{
-					Log.Information("Installing application '{AppGUID}' in workspace with ID '{WorkspaceId}'.", guid, WorkspaceId);
+					Log.Information("Installing application '{AppName}' ({AppGUID}) in workspace '{WorkspaceName}' ({WorkspaceId}).", name, guid, WorkspaceName, WorkspaceId);
 					ipAppManager.InstallApplicationFromLibrary((int)WorkspaceId, guid);
-					Log.Information("Application '{AppGUID}' has been installed in workspace with ID '{WorkspaceId}' after {AppInstallTime} seconds.", guid, WorkspaceId, stopwatch.Elapsed.Seconds);
+					Log.Information("Application '{AppName}' ({AppGUID}) has been installed in workspace '{WorkspaceName}' ({WorkspaceId}) after {AppInstallTime} seconds.", name, guid, WorkspaceName, WorkspaceId, stopwatch.Elapsed.Seconds);
 				}
 				else
 				{
-					Log.Information("Application '{AppGUID}' is already installed in workspace with ID '{WorkspaceId}'.", guid, WorkspaceId);
+					Log.Information("Application '{AppName}' ({AppGUID}) is already installed in workspace '{WorkspaceName}' ({WorkspaceId}).", name, guid, WorkspaceName, WorkspaceId);
 				}
 			}
 			catch (Exception ex)
 			{
-				Log.Error(ex, $"Detecting or installing application in the workspace failed. Application GUID: {guid}");
+				Log.Error(ex, "Detecting or installing application '{AppName}' ({AppGUID}) in the workspace '{WorkspaceName}' ({WorkspaceId}) failed.", name, guid, WorkspaceName, WorkspaceId);
 				throw;
 			}
 			return this;
@@ -217,6 +225,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			Log.Information(@"Importing documents...");
 			string testDir = NUnit.Framework.TestContext.CurrentContext.TestDirectory.Replace("kCura.IntegrationPoints.UITests",
 				"kCura.IntegrationPoint.Tests.Core");
+			Log.Information("TestDir for ImportDocuments '{testDir}'", testDir);
 			DocumentsTestData data = DocumentTestDataBuilder.BuildTestData(testDir, withNatives, testDataType);
 			var importHelper = new ImportHelper();
 			var workspaceService = new WorkspaceService(importHelper);
@@ -376,9 +385,9 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 				Group.DeleteGroup(GetGroupId());
 			}
 
-			if (UserId.HasValue)
+			if (User != null && User.CreatedInTest)
 			{
-				User.DeleteUser(GetUserId());
+				UserService.DeleteUser(User.ArtifactId);
 			}
 			return this;
 		}
@@ -394,12 +403,6 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			Assert.NotNull(WorkspaceId, $"{nameof(WorkspaceId)} is null. Workspace wasn't created.");
 			Assert.AreNotEqual(0, WorkspaceId, $"{nameof(WorkspaceId)} is 0. Workspace wasn't created correctly.");
 			return WorkspaceId.Value;
-		}
-
-		public int GetUserId()
-		{
-			Assert.NotNull(UserId, $"{nameof(UserId)} is null. User wasn't created.");
-			return UserId.Value;
 		}
 
 		private int RetrieveSavedSearchId(string savedSearchName)

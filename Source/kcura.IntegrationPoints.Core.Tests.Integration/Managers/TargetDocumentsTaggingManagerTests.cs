@@ -65,11 +65,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			_fieldMaps = GetDefaultFieldMap();
 		}
 
-		[Test]
-		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
-		[TestCase(499, "UnderBatch")]
-		[TestCase(500, "EqualBatch")]
-		[TestCase(502, "OverBatch")]
+		//[Test]
+		//[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
+		//[TestCase(499, "UnderBatch")]
+		//[TestCase(500, "EqualBatch")]
+		//[TestCase(502, "OverBatch")]
 		public void TargetWorkspaceDocumentTagging_GoldFlow(int numberOfDocuments, string documentIdentifier)
 		{
 			//Act

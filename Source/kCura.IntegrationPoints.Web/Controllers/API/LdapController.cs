@@ -1,4 +1,5 @@
-﻿using System.Web.Http;
+﻿using System.Net;
+using System.Web.Http;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.LDAPProvider;
 using kCura.IntegrationPoints.Web.Attributes;
@@ -49,7 +50,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			bool isAuthenticated = service.IsAuthenticated();
 			if (isAuthenticated)
 			{
-				return Ok();
+				return StatusCode(HttpStatusCode.NoContent);
 			}
 			return Unauthorized();
 		}

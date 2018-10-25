@@ -25,11 +25,14 @@ namespace kCura.ScheduleQueue.Core.Helpers
 
 			if (attributeObjects != null && attributeObjects.Any())
 			{
-				tableAttribute = attributeObjects.FirstOrDefault(x => x.GetType() == typeof(GuidAttribute));
+				tableAttribute = attributeObjects.FirstOrDefault(x => x is GuidAttribute);
 				if (tableAttribute != null)
 				{
 					tableName = ((GuidAttribute) tableAttribute).Value;
-					if (!string.IsNullOrEmpty(tableName)) tableName = string.Format("ScheduleAgentQueue_{0}", tableName.ToUpper());
+					if (!string.IsNullOrEmpty(tableName))
+					{
+						tableName = $"ScheduleAgentQueue_{tableName.ToUpperInvariant()}";
+					}
 				}
 			}
 			if (string.IsNullOrEmpty(tableName)) throw new Exception("Could not retrieve Queue table name.");
@@ -65,7 +68,7 @@ namespace kCura.ScheduleQueue.Core.Helpers
 				Assembly[] loadedAssemblies = Thread.GetDomain().GetAssemblies();
 				for (int i = 0; i < loadedAssemblies.Length; i++)
 				{
-					if (String.Compare(loadedAssemblies[i].GetName().Name, assemblyString.First()) == 0)
+					if (String.CompareOrdinal(loadedAssemblies[i].GetName().Name, assemblyString.First()) == 0)
 					{
 						assembly = loadedAssemblies[i];
 						break;

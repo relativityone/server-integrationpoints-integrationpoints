@@ -34,9 +34,7 @@
 			})[0].href;
 		};
 
-
-		var FRAME_KEY = 'syncType';
-		var stepCache = {};
+        var stepCache = {};
 
 		this.getTemplate = function () {
 			IP.data.ajax({ dataType: 'html', cache: true, type: 'get', url: self.settings.url }).then(function (result) {
@@ -53,7 +51,7 @@
 				self.template(self.settings.templateID);
 				self.hasTemplate = true;
 				var $frame = $('#' + frameName).attr('src', self.source);
-				$frame.iFrameResize({ heightCalculationMethod: 'max' }).load(function () {
+				$frame.iFrameResize({ heightCalculationMethod: 'max' }).on('load', function () {
 					self.frameBus = IP.frameMessaging({ destination: window[frameName].contentWindow || window[frameName].frameElement.contentWindow });
 
 					//for ImportProvider, pass along full model to our second step
@@ -80,7 +78,6 @@
 			});
 		};
 		this.bus.subscribe("saveState", function (state) {
-			var key = $('#' + frameName).data(FRAME_KEY);
 			//get key from IFrame
 			//save sate in local cache
 			stepCache[self.stepKey] = state;

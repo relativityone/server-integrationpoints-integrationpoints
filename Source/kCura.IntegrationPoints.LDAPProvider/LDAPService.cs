@@ -8,19 +8,17 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.LDAPProvider
 {
-	public class LDAPService : ILDAPService
+	public class LDAPService : ILDAPService, IDisposable
 	{
+		private DirectoryEntry _searchRoot;
 		private readonly LDAPSettings _settings;
 		private readonly LDAPSecuredConfiguration _securedConfiguration;
-		private DirectoryEntry _searchRoot;
 		private readonly List<string> _fieldsToLoad;
 		private readonly IAPILog _logger;
-		private ISerializer _serializer;
 
 		public LDAPService(IAPILog logger, ISerializer serializer, LDAPSettings settings, LDAPSecuredConfiguration securedConfiguration, List<string> fieldsToLoad = null)
 		{
 			_logger = logger;
-			_serializer = serializer;
 			_settings = settings;
 			_securedConfiguration = securedConfiguration;
 			_fieldsToLoad = fieldsToLoad;
@@ -174,6 +172,11 @@ namespace kCura.IntegrationPoints.LDAPProvider
 		{
 			_logger.LogError(ex, "Error occured during LDAP Service authentication");
 		}
-#endregion
+
+		public void Dispose()
+		{
+			_searchRoot.Dispose();
+		}
+		#endregion
 	}
 }

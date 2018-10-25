@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 		private ISecretManager _secretManager;
 		private SecretStoreCleanUp _secretStoreCleanUp;
 
-		public SecretStoreCleanUpTests() : base($"secret_clean_{Utils.FormatedDateTimeNow}")
+		public SecretStoreCleanUpTests() : base($"secret_clean_{Utils.FormattedDateTimeNow}")
 		{
 		}
 
