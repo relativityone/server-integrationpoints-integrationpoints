@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-
-using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.WinEDDS.Api;
@@ -102,12 +99,9 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 			return _schemaTable;
 		}
 
-		public override int FieldCount
-		{
-			get { return _schemaTable.Columns.Count; }
-		}
+		public override int FieldCount => _schemaTable.Columns.Count;
 
-		public override bool IsClosed { get { return _isClosed; } }
+		public override bool IsClosed => _isClosed;
 
 		public override void Close()
 		{
@@ -121,10 +115,9 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 			{
 				return false;
 			}
-			else
-			{
-				return _sourceDataReader.Read();
-			}
+			
+			return _sourceDataReader.Read();
+			
 		}
 		public override string GetDataTypeName(int i)
 		{
@@ -149,116 +142,68 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
 		public ArtifactFieldCollection ReadArtifact()
 		{
-			throw new NotImplementedException("IArtifactReader calls should not be made to ImportDataReader");
+			throw new NotSupportedException("IArtifactReader calls should not be made to ImportDataReader");
 		}
 
 		public string[] GetColumnNames(object args)
 		{
-			throw new NotImplementedException("IArtifactReader calls should not be made to ImportDataReader");
+			throw new NotSupportedException("IArtifactReader calls should not be made to ImportDataReader");
 		}
 
 		public string SourceIdentifierValue()
 		{
-			throw new NotImplementedException("IArtifactReader calls should not be made to ImportDataReader");
+			throw new NotSupportedException("IArtifactReader calls should not be made to ImportDataReader");
 		}
 
 		public void AdvanceRecord()
 		{
-			throw new NotImplementedException("IArtifactReader calls should not be made to ImportDataReader");
+			throw new NotSupportedException("IArtifactReader calls should not be made to ImportDataReader");
 		}
 
 		public void OnFatalErrorState()
 		{
-			throw new NotImplementedException("IArtifactReader calls should not be made to ImportDataReader");
+			throw new NotSupportedException("IArtifactReader calls should not be made to ImportDataReader");
 		}
 
 		public void Halt()
 		{
-			throw new NotImplementedException("IArtifactReader calls should not be made to ImportDataReader");
+			throw new NotSupportedException("IArtifactReader calls should not be made to ImportDataReader");
 		}
 
-		public bool HasMoreRecords
-		{
-			get
-			{
-				throw new NotImplementedException("IArtifactReader calls should not be made to ImportDataReader");
-			}
-		}
+		public bool HasMoreRecords => throw new NotSupportedException("IArtifactReader calls should not be made to ImportDataReader");
 
-		public int CurrentLineNumber
-		{
-			get
-			{
-				throw new NotImplementedException("IArtifactReader calls should not be made to ImportDataReader");
-			}
-		}
+		public int CurrentLineNumber => throw new NotSupportedException("IArtifactReader calls should not be made to ImportDataReader");
 
-		public long SizeInBytes
-		{
-			get
-			{
-				throw new NotImplementedException("IArtifactReader calls should not be made to ImportDataReader");
-			}
-		}
+		public long SizeInBytes => throw new NotSupportedException("IArtifactReader calls should not be made to ImportDataReader");
 
-		public long BytesProcessed
-		{
-			get
-			{
-				throw new NotImplementedException("IArtifactReader calls should not be made to ImportDataReader");
-			}
-		}
+		public long BytesProcessed => throw new NotSupportedException("IArtifactReader calls should not be made to ImportDataReader");
 
 		event IArtifactReader.OnIoWarningEventHandler IArtifactReader.OnIoWarning
 		{
-			add
-			{
-				throw new NotImplementedException();
-			}
+			add => throw new NotImplementedException();
 
-			remove
-			{
-				throw new NotImplementedException();
-			}
+			remove => throw new NotImplementedException();
 		}
 
 		event IArtifactReader.DataSourcePrepEventHandler IArtifactReader.DataSourcePrep
 		{
-			add
-			{
-				throw new NotImplementedException();
-			}
+			add => throw new NotImplementedException();
 
-			remove
-			{
-				throw new NotImplementedException();
-			}
+			remove => throw new NotImplementedException();
 		}
 
 		event IArtifactReader.StatusMessageEventHandler IArtifactReader.StatusMessage
 		{
-			add
-			{
-				throw new NotImplementedException();
-			}
+			add => throw new NotImplementedException();
 
-			remove
-			{
-				throw new NotImplementedException();
-			}
+			remove => throw new NotImplementedException();
 		}
 
 		event IArtifactReader.FieldMappedEventHandler IArtifactReader.FieldMapped
 		{
-			add
-			{
-				throw new NotImplementedException();
-			}
+			add => throw new NotImplementedException();
 
-			remove
-			{
-				throw new NotImplementedException();
-			}
+			remove => throw new NotImplementedException();
 		}
 	}
 }
