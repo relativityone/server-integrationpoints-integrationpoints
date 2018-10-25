@@ -221,7 +221,9 @@
 
 	this.startDate = ko.observable(this.options.startDate);
 
-	this.displayedStartDate = ko.observable(this.options.startDate ? IP.timeUtil.formatDate(this.options.startDate, IP.timeUtil.defaultDateFormat, this.localDateFormat()) : "").extend({
+    this.displayedStartDate =
+        ko.observable(this.options.startDate ? IP.timeUtil.formatDate(this.options.startDate, IP.timeUtil.defaultDateFormat, this.localDateFormat()) : "")
+        .extend({
 		validation: [{
 			validator: function (value) {
 				if (!self.isEnabled()) {

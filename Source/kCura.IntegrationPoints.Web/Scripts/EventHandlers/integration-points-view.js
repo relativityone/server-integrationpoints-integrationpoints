@@ -28,7 +28,8 @@
 	};
 
 	root.stopJob = function (artifactId, appId) {
-		var confirmationMessage = "Stopping this transfer will not remove any data that was transferred. When re-running this transfer, make sure that your overwrite settings will return expected results.";
+		var confirmationMessage = "Stopping this transfer will not remove any data that was transferred. " +
+		    "When re-running this transfer, make sure that your overwrite settings will return expected results.";
 
 		window.Dragon.dialogs.showConfirm({
 			message: confirmationMessage,

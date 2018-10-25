@@ -83,7 +83,11 @@ suite('time-utils.js', () => {
 
     suite('formatDateTime', () => {
         test('2018-07-05T06:58:44Z, MM/DD/YYYY h:mm A', () => {
-            assert.strictEqual(IP.timeUtil.formatDateTime('2018-07-05T06:58:44Z', 'MM/DD/YYYY h:mm A'), '07/05/2018 8:58 AM' , 'datetime should be converted according to given format');
+            assert.strictEqual(
+                IP.timeUtil.formatDateTime('2018-07-05T06:58:44Z', 'MM/DD/YYYY h:mm A'),
+                '07/05/2018 8:58 AM',
+                'datetime should be converted according to given format'
+            );
         });
         test('null, MM/DD/YYYY h:mm A', () => {
             assert.strictEqual(IP.timeUtil.formatDateTime(null, 'MM/DD/YYYY h:mm A'), '' , 'if any of the parametrs is empty, function returns \'\'');
