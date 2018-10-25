@@ -40,13 +40,13 @@
       <HintPath>..\..\packages\kCura.EventHandler\lib\net462\kCura.EventHandler.dll</HintPath>
     </Reference>
     <Reference Include="kCura.IntegrationPoints.Contracts">
-      <HintPath>..\..\lib\kCura.IntegrationPoints.Contracts.dll</HintPath>
+      <HintPath>..\kCura.IntegrationPoints.Contracts\bin\x64\kCura.IntegrationPoints.Contracts.dll</HintPath>
     </Reference>
     <Reference Include="kCura.IntegrationPoints.Domain">
-      <HintPath>..\..\lib\kCura.IntegrationPoints.Domain.dll</HintPath>
+      <HintPath>..\kCura.IntegrationPoints.Domain\bin\x64\kCura.IntegrationPoints.Domain.dll</HintPath>
     </Reference>
     <Reference Include="kCura.IntegrationPoints.SourceProviderInstaller">
-      <HintPath>..\..\lib\kCura.IntegrationPoints.SourceProviderInstaller.dll</HintPath>
+      <HintPath>..\kCura.IntegrationPoints.SourceProviderInstaller\bin\x64\kCura.IntegrationPoints.SourceProviderInstaller.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
