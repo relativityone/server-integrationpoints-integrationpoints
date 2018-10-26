@@ -170,40 +170,52 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 			throw new NotSupportedException("IArtifactReader calls should not be made to ImportDataReader");
 		}
 
-		public bool HasMoreRecords => throw new NotSupportedException("IArtifactReader calls should not be made to ImportDataReader");
+		public bool HasMoreRecords
+		{
+			get { throw new NotSupportedException("IArtifactReader calls should not be made to ImportDataReader"); }
+		}
 
-		public int CurrentLineNumber => throw new NotSupportedException("IArtifactReader calls should not be made to ImportDataReader");
+		public int CurrentLineNumber
+		{
+			get { throw new NotSupportedException("IArtifactReader calls should not be made to ImportDataReader"); }
+		}
 
-		public long SizeInBytes => throw new NotSupportedException("IArtifactReader calls should not be made to ImportDataReader");
+		public long SizeInBytes
+		{
+			get { throw new NotSupportedException("IArtifactReader calls should not be made to ImportDataReader"); }
+		}
 
-		public long BytesProcessed => throw new NotSupportedException("IArtifactReader calls should not be made to ImportDataReader");
+		public long BytesProcessed
+		{
+			get { throw new NotSupportedException("IArtifactReader calls should not be made to ImportDataReader"); }
+		}
 
 		event IArtifactReader.OnIoWarningEventHandler IArtifactReader.OnIoWarning
 		{
-			add => throw new NotImplementedException();
+			add { throw new NotImplementedException(); }
 
-			remove => throw new NotImplementedException();
+			remove { throw new NotImplementedException(); }
 		}
 
 		event IArtifactReader.DataSourcePrepEventHandler IArtifactReader.DataSourcePrep
 		{
-			add => throw new NotImplementedException();
+			add { throw new NotImplementedException(); }
 
-			remove => throw new NotImplementedException();
+			remove { throw new NotImplementedException(); }
 		}
 
 		event IArtifactReader.StatusMessageEventHandler IArtifactReader.StatusMessage
 		{
-			add => throw new NotImplementedException();
+			add { throw new NotImplementedException(); }
 
-			remove => throw new NotImplementedException();
+			remove { throw new NotImplementedException(); }
 		}
 
 		event IArtifactReader.FieldMappedEventHandler IArtifactReader.FieldMapped
 		{
-			add => throw new NotImplementedException();
+			add { throw new NotImplementedException(); }
 
-			remove => throw new NotImplementedException();
+			remove { throw new NotImplementedException(); }
 		}
 	}
 }
