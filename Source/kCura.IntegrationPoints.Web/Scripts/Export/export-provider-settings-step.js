@@ -148,8 +148,11 @@
 				IP.message.error.raise("Can not retrieve data transfer location root path");
 			};
 
-			var isProcessingSourceLocationEnabledPromise = self.ExportDestinationLocationService.createPromiseForIsProcessingSourceLocationEnabled(determiningIfProcessingSourceLocationIsEnabledFailed);
-			var rootDataTransferLocationPromise = self.ExportDestinationLocationService.createPromiseForGetRootDataTransferLocation(state.integrationPointTypeIdentifier, retrievingRootDataTransferLocationFailed);
+            var isProcessingSourceLocationEnabledPromise =
+                self.ExportDestinationLocationService.createPromiseForIsProcessingSourceLocationEnabled(determiningIfProcessingSourceLocationIsEnabledFailed);
+
+		    var rootDataTransferLocationPromise =
+                self.ExportDestinationLocationService.createPromiseForGetRootDataTransferLocation(state.integrationPointTypeIdentifier, retrievingRootDataTransferLocationFailed);
 
 			root.data.deferred()
 				.all([isProcessingSourceLocationEnabledPromise, rootDataTransferLocationPromise])
@@ -1044,9 +1047,10 @@
 					self.ipModel.map = JSON.parse(self.ipModel.map);
 				}
 
-				$.extend(self.ipModel.sourceConfiguration, settings);
-				self.ipModel.sourceConfiguration.TargetWorkspaceArtifactId = self.ipModel.sourceConfiguration.SourceWorkspaceArtifactId; // this is needed as long as summary page displays destination workspace
-
+                $.extend(self.ipModel.sourceConfiguration, settings);
+			    // this is needed as long as summary page displays destination workspace
+                self.ipModel.sourceConfiguration.TargetWorkspaceArtifactId = self.ipModel.sourceConfiguration.SourceWorkspaceArtifactId;
+			    
 				self.ipModel.sourceConfiguration = JSON.stringify(self.ipModel.sourceConfiguration);
 
 				var destination = JSON.parse(self.ipModel.destination);
