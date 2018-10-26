@@ -25,39 +25,33 @@ namespace kCura.IntegrationPoint.Tests.Core
 		}
 		public bool HasErrors => ErrorMessages.Any();
 		
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="workspaceArtifactId"></param>
+		/// <param name="documentsTestData"></param>
+		/// <param name="rootFolderIdForNatives">Set to null if documents testData has folderPath set; set to folder id of your choice or leave null - workspace root folder will be taken</param>
+		/// <returns></returns>
 		public bool ImportData(int workspaceArtifactId, DocumentsTestData documentsTestData)
 		{
 			Messages.Clear();
 			ErrorMessages.Clear();
 
-			CreateFolders(workspaceArtifactId, documentsTestData);
 			WinEDDS.Config.ConfigSettings[nameof(WinEDDS.Config.TapiForceHttpClient)] = true.ToString();
 			WinEDDS.Config.ConfigSettings[nameof(WinEDDS.Config.TapiForceBcpHttpClient)] = true.ToString();
 			var importApi = new ImportAPI(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword,
 				SharedVariables.RelativityWebApiUrl);
 
 			ImportNativeFiles(workspaceArtifactId, documentsTestData.AllDocumentsDataTable.CreateDataReader(), importApi,
-				_CONTROL_NUMBER_FIELD_ARTIFACT_ID, documentsTestData.Documents.First().FolderId);
+				_CONTROL_NUMBER_FIELD_ARTIFACT_ID, documentsTestData.RootFolderId);
 
 			ImportImagesAndExtractedText(workspaceArtifactId, documentsTestData.Images, importApi, _CONTROL_NUMBER_FIELD_ARTIFACT_ID);
 
 			return !HasErrors;
 		}
 
-		private void CreateFolders(int workspaceArtifactId, DocumentsTestData documentsTestData)
-		{
-			var queue = new Queue<FolderWithDocuments>(documentsTestData.Documents);
-
-			while (queue.Count > 0)
-			{
-				FolderWithDocuments folderWithDocuments = queue.Dequeue();
-				if ((folderWithDocuments.ParentFolderWithDocuments != null) && !folderWithDocuments.ParentFolderWithDocuments.FolderId.HasValue)
-				{
-					queue.Enqueue(folderWithDocuments);
-				}
-				folderWithDocuments.FolderId = FolderService.CreateFolder(workspaceArtifactId, folderWithDocuments.FolderName, folderWithDocuments.ParentFolderWithDocuments?.FolderId);
-			}
-		}
+		private int GetWorkspaceRootFolderID(ImportAPI importApi, int workspaceID) =>
+			importApi.Workspaces().First(w => w.ArtifactID == workspaceID).RootFolderID;
 
 		private void ImportNativeFiles(int workspaceArtifactId, IDataReader dataReader, ImportAPI importApi, int identifyFieldArtifactId, int? folderId)
 		{
@@ -74,7 +68,16 @@ namespace kCura.IntegrationPoint.Tests.Core
 			importJob.Settings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
 			importJob.Settings.FileNameColumn = "File Name";
 			importJob.Settings.CopyFilesToDocumentRepository = _withNatives;
-			importJob.Settings.DestinationFolderArtifactID = folderId.Value;
+
+			if (folderId.HasValue)
+			{
+				importJob.Settings.DestinationFolderArtifactID = folderId.Value;
+			}
+			else
+			{
+				importJob.Settings.DestinationFolderArtifactID = GetWorkspaceRootFolderID(importApi, workspaceArtifactId);
+				importJob.Settings.FolderPathSourceFieldName = Constants.FOLDER_PATH;
+			}
 
 			if (!_withNatives)
 			{

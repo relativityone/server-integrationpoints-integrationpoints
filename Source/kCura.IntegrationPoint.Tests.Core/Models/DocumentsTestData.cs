@@ -8,10 +8,11 @@ namespace kCura.IntegrationPoint.Tests.Core.Models
 	{
 		private DataTable _allDocumentsDataTable;
 
-		public DocumentsTestData(IList<FolderWithDocuments> documents, DataTable images)
+		public DocumentsTestData(IList<FolderWithDocuments> documents, DataTable images, int? rootFolderId)
 		{
 			Documents = documents;
 			Images = images;
+			RootFolderId = rootFolderId;
 		}
 
 		public IList<FolderWithDocuments> Documents { get; }
@@ -36,5 +37,10 @@ namespace kCura.IntegrationPoint.Tests.Core.Models
 		}
 
 		public DataTable Images { get; }
+		/// <summary>
+		/// Set to null - workspace root folder id will be set during import and folder path will be taken from Folder Path column in DataTable
+		/// Set to folder id - all documents will go there, not to folders
+		/// </summary>
+		public int? RootFolderId { get; }
 	}
 }

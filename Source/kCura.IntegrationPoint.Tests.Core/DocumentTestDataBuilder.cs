@@ -28,37 +28,44 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			IList<FolderWithDocuments> foldersWithDocuments;
 			DataTable images;
+			int? rootFolderId;
 
 			switch (testDataType)
 			{
 				case TestDataType.SmallWithFoldersStructure:
 					foldersWithDocuments = GetFoldersWithDocuments(testDirectory, withNatives);
 					images = GetImageDataTable(testDirectory);
+					rootFolderId = null;
 					break;
 				case TestDataType.SmallWithoutFolderStructure:
 					foldersWithDocuments = GetDocumentsIntoRootFolder(Path.Combine(testDirectory, TestDataNativesPath), withNatives);
 					images = GetImageDataTableForAllNativesInGivenFolder(testDirectory, TestDataExtendedPath);
+					rootFolderId = foldersWithDocuments.First().FolderId;
 					break;
 				case TestDataType.ModerateWithFoldersStructure:
 					foldersWithDocuments = GetFoldersWithDocumentsBasedOnDirectoryStructureOfNatives(Path.Combine(testDirectory, TestDataExtendedNativesPath), withNatives);
 					images = GetImageDataTableForAllNativesInGivenFolder(testDirectory, TestDataExtendedPath);
+					rootFolderId = null;
 					break;
 				case TestDataType.ModerateWithoutFoldersStructure:
 					foldersWithDocuments = GetDocumentsIntoRootFolder(Path.Combine(testDirectory, TestDataExtendedNativesPath), withNatives);
 					images = GetImageDataTableForAllNativesInGivenFolder(testDirectory, TestDataExtendedPath);
+					rootFolderId = foldersWithDocuments.First().FolderId;
 					break;
 				case TestDataType.TextWithoutFolderStructure:
 					foldersWithDocuments = GetDocumentsIntoRootFolder(Path.Combine(testDirectory, TestDataTextNativesPath), withNatives);
 					images = GetImageDataTableForAllNativesInGivenFolder(testDirectory, TestDataTextPath);
+					rootFolderId = foldersWithDocuments.First().FolderId;
 					break;
 				case TestDataType.SaltPepperWithFolderStructure:
 					foldersWithDocuments = GetDocumentsIntoRootFolder(Path.Combine(testDirectory, SaltPepperTestDataNativesPath), withNatives);
 					images = GetImageDataTableForAllNativesInGivenFolder(testDirectory, SaltPepperTestDataPath);
+					rootFolderId = null;
 					break;
 				default:
 					throw new Exception("Unsupported TestDataType parameter");
 			}
-			return new DocumentsTestData(foldersWithDocuments, images);
+			return new DocumentsTestData(foldersWithDocuments, images, rootFolderId);
 		}
 
 		#region Documents
@@ -66,46 +73,58 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			var table = new DataTable();
 
-			// The document identifer column name must match the field name in the workspace.
+			// The document identifier column name must match the field name in the workspace.
 			table.Columns.Add(Constants.CONTROL_NUMBER_FIELD, typeof(string));
 			table.Columns.Add(Constants.FILE_NAME_FIELD, typeof(string));
 			table.Columns.Add(Constants.NATIVE_FILE_FIELD, typeof(string));
 			table.Columns.Add(Constants.ISSUE_DESIGNATION_FIELD, typeof(string));
 			table.Columns.Add(Constants.HAS_IMAGES_FIELD, typeof(bool));
+			table.Columns.Add(Constants.FOLDER_PATH, typeof(string));
 			return table;
 		}
 
 		private static IList<FolderWithDocuments> GetFoldersWithDocuments(string testDirectory, bool withNatives = true)
 		{
-			var firstFolder = new FolderWithDocuments("first", CreateDataTableForDocuments());
+			string firstFolderName = "first";
+			var firstFolder = new FolderWithDocuments(firstFolderName, CreateDataTableForDocuments());
 			firstFolder.Documents.Rows.Add("AMEYERS_0000757", "AMEYERS_0000757.htm",
-				withNatives ? Path.Combine(testDirectory, @"TestData\NATIVES\AMEYERS_0000757.htm") : string.Empty, "Level1\\Level2", true);
+				withNatives ? Path.Combine(testDirectory, @"TestData\NATIVES\AMEYERS_0000757.htm") : string.Empty, "Level1\\Level2", true, firstFolderName);
 
-			var firstFolderChild = new FolderWithDocuments("child", CreateDataTableForDocuments());
+			string firstFolderChildName = "child";
+			var firstFolderChild = new FolderWithDocuments(firstFolderChildName, CreateDataTableForDocuments());
 			firstFolderChild.Documents.Rows.Add("AMEYERS_0000975", "AMEYERS_0000975.pdf",
-				withNatives ? Path.Combine(testDirectory, @"TestData\NATIVES\AMEYERS_0000975.pdf") : string.Empty, "Level1\\Level2", true);
+				withNatives ? Path.Combine(testDirectory, @"TestData\NATIVES\AMEYERS_0000975.pdf") : string.Empty, "Level1\\Level2", true, firstFolderName + "\\" + firstFolderChildName);
 
 			firstFolderChild.ParentFolderWithDocuments = firstFolder;
 			firstFolder.ChildrenFoldersWithDocument.Add(firstFolderChild);
 
-			var secondFolder = new FolderWithDocuments("second", CreateDataTableForDocuments());
+			string secondFolderName = "second";
+			var secondFolder = new FolderWithDocuments(secondFolderName, CreateDataTableForDocuments());
 			secondFolder.Documents.Rows.Add("AMEYERS_0001185", "AMEYERS_0001185.xls",
-				withNatives ? Path.Combine(testDirectory, @"TestData\NATIVES\AMEYERS_0001185.xls") : string.Empty, "Level1\\Level2", true);
+				withNatives ? Path.Combine(testDirectory, @"TestData\NATIVES\AMEYERS_0001185.xls") : string.Empty, "Level1\\Level2", true, secondFolderName);
 			secondFolder.Documents.Rows.Add("AZIPPER_0011318", "AZIPPER_0011318.msg",
-				withNatives ? Path.Combine(testDirectory, @"TestData\NATIVES\AZIPPER_0011318.msg") : string.Empty, "Level1\\Level2", false);
+				withNatives ? Path.Combine(testDirectory, @"TestData\NATIVES\AZIPPER_0011318.msg") : string.Empty, "Level1\\Level2", false, secondFolderName);
 
 			return new[] { firstFolder, firstFolderChild, secondFolder };
 		}
 
+		private static string GetFoldersPrefix(string folderPath) =>
+			folderPath.Replace(Path.GetFileName(folderPath), "");
+
+		private static string GetDocumentFolderRelativePath(string folderPath, string foldersPrefix) =>
+			folderPath.Replace(foldersPrefix, "").Replace("\\\\", "\\");
+
 		private static IList<FolderWithDocuments> GetFoldersWithDocumentsBasedOnDirectoryStructureOfNatives(string nativesFolderPath, bool withNatives = true)
 		{
 			var foldersList = new List<FolderWithDocuments>();
+			string[] folders = Directory.GetDirectories(nativesFolderPath, "*", SearchOption.AllDirectories);
+			string foldersPrefix = GetFoldersPrefix(folders.First());
 
-			foreach (string folderPath in Directory.GetDirectories(nativesFolderPath, "*", SearchOption.AllDirectories))
+			foreach (string folderPath in folders)
 			{
 				var newFolder = new FolderWithDocuments(Path.GetFileName(folderPath), CreateDataTableForDocuments());
 
-				FillFolderWithFiles(newFolder, folderPath, withNatives);
+				FillFolderWithFiles(newFolder, folderPath, foldersPrefix, withNatives);
 
 				//Link "Child folder" with "Parent folder"
 				DirectoryInfo parentFolderInfo = Directory.GetParent(folderPath);
@@ -123,11 +142,12 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return foldersList;
 		}
 
-		private static void FillFolderWithFiles(FolderWithDocuments newFolder, string folderPath, bool withNatives)
+		private static void FillFolderWithFiles(FolderWithDocuments newFolder, string folderPath, string foldersPrefix, bool withNatives)
 		{
+			string documentsFolderPath = GetDocumentFolderRelativePath(folderPath, foldersPrefix);
 			foreach (string filePath in Directory.GetFiles(folderPath, "*", SearchOption.TopDirectoryOnly))
 			{
-				newFolder.Documents.Rows.Add(Path.GetFileNameWithoutExtension(filePath), Path.GetFileName(filePath), withNatives ? filePath : string.Empty, "Level1\\Level2", false);
+				newFolder.Documents.Rows.Add(Path.GetFileNameWithoutExtension(filePath), Path.GetFileName(filePath), withNatives ? filePath : string.Empty, "Level1\\Level2", false, documentsFolderPath);
 			}
 		}
 
