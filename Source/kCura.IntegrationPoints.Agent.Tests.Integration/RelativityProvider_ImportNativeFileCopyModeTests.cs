@@ -26,7 +26,6 @@ using Workspace = kCura.IntegrationPoint.Tests.Core.Workspace;
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
 	[TestFixture]
-	[Ignore("TODO: Broken test needs to be fixed!")]
 	public class RelativityProvider_ImportNativeFileCopyModeTests : RelativityProviderTemplate
 	{
 		private ExportServiceManager _exportManager;
@@ -113,7 +112,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 		[TestCase(ImportNativeFileCopyModeEnum.CopyFiles)]
 		[TestCase(ImportNativeFileCopyModeEnum.SetFileLinks)]
-		[Ignore("TODO: Broken test needs to be fixed!")]
 		public void NativesShouldBeDeletedInTargetWorkspace_InImportNativesModes(ImportNativeFileCopyModeEnum importNativeFileCopyMode)
 		{
 			TestNativeFilesImport(false, true, true, importNativeFileCopyMode, false);
