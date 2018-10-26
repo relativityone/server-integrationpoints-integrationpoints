@@ -510,9 +510,6 @@
       </PropertyGroup>
     </When>
   </Choose>
-  <PropertyGroup>
-    
-  </PropertyGroup>
   <Import Project="..\..\.paket\paket.targets" />
   <PropertyGroup>
     <TextTransformPath>packages\Mono.TextTransform\tools\TextTransform.exe</TextTransformPath>

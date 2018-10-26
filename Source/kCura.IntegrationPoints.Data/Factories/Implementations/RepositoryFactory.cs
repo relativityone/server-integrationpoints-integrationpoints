@@ -262,10 +262,10 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return fileRepository;
 		}
 
-		public IAuditRepository GetAuditRepository(int appId)
+		public IAuditRepository GetAuditRepository(int appId, int workspaceID)
 		{
 			var auditServiceFactory = new AuditServiceFactory();
-			IAuditService auditService = auditServiceFactory.GetAuditService(appId);
+			IAuditService auditService = auditServiceFactory.GetAuditService(appId, workspaceID);
 			return new AuditRepository(auditService);
 		}
 

@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 		{
 			_auditRepository = Substitute.For<IAuditRepository>();
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
-			_repositoryFactory.GetAuditRepository(_APP_ID).Returns(_auditRepository);
+			_repositoryFactory.GetAuditRepository(_APP_ID, Arg.Any<int>()).Returns(_auditRepository);
 		}
 
 		[Test]

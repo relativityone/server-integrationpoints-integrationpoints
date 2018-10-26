@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 
 		public bool AuditExport(int appID, bool isFatalError, ExportStatistics exportStats)
 		{
-			IAuditRepository auditRepository = _repositoryFactory.GetAuditRepository(appID);
+			IAuditRepository auditRepository = _repositoryFactory.GetAuditRepository(appID, exportStats.DataSourceArtifactID);
 			return auditRepository.AuditExport(exportStats.ToFoundationExportStatistics());
 		}
 	}
