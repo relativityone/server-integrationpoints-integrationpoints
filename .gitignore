@@ -328,3 +328,9 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
+
+# Ignore everything in BuildTools
+buildtools/*
+
+# But not these files...
+!buildtools/packages.config
