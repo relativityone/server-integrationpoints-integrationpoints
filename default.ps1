@@ -1,13 +1,13 @@
 #Requires -Version 5.0
 
 properties {
-    # $root
-    # $toolsDir
-    # $scriptsDir
-    # $sourceDir    
-    # $buildConfig
-    # $buildType
-    # $version
+    $root
+    $toolsDir
+    $scriptsDir
+    $sourceDir    
+    $buildConfig
+    $buildType
+    $version
 }
 
 task default -Depends build
