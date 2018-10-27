@@ -59,6 +59,8 @@
     <None Include="paket.references" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\..\scripts\Build.Version.targets" />
+  <Import Project="$(SolutionDir)\..\scripts\Build.Sign.targets" />
   <ItemGroup>
     <Analyzer Include="..\..\packages\Microsoft.CodeQuality.Analyzers\analyzers\dotnet\cs\Microsoft.CodeQuality.Analyzers.dll">
       <Paket>True</Paket>
