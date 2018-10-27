@@ -39,10 +39,9 @@ param(
 $BASE_DIR = Resolve-Path .
 $TOOLS_DIR = Join-Path $BASE_DIR "buildtools"
 $SCRIPTS_DIR = Join-Path $BASE_DIR "scripts"
-$NUGET_EXE = Join-Path $TOOLS_DIR "nuget.exe"
 
 Write-Verbose "Restoring buildtools..."
-& "$SCRIPTS_DIR\restore-buildtools.ps1" -nugetExe $NUGET_EXE -toolsDir $TOOLS_DIR
+& "$SCRIPTS_DIR\restore-buildtools.ps1" -toolsDir $TOOLS_DIR
 
 Write-Verbose "Importing powershell modules..."
 & "$SCRIPTS_DIR\import-build-modules.ps1" -toolsDir $TOOLS_DIR
@@ -50,8 +49,8 @@ Write-Verbose "Importing powershell modules..."
 Write-Verbose "Executing build..."
 Invoke-PSake "default.ps1" `
 	-parameters @{	'root' = $BASE_DIR;
-					'toolsDir' = $TOOLS_DIR;
-					'nugetExe' = $NUGET_EXE }`
+                    'toolsDir' = $TOOLS_DIR;
+                    'scriptsDir' = $SCRIPTS_DIR }`
 	-properties @{	'buildConfig' = $buildConfig;
 	                'buildType' = $buildType;
 					'version' = $version }`

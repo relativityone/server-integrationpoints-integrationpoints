@@ -4,9 +4,6 @@
 .SYNOPSIS
     Downloads nuget.exe if missing and restores buildtools dependencies
 
-.PARAMETER nugetExe
-    Where nuget.exe file should be located
-
 .PARAMETER toolsDir
     buildtools directory
 #>
@@ -18,6 +15,7 @@ param(
 )
 
 $nugetUrl = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
+$nugetExe = Join-Path $toolsDir "nuget.exe"
 $toolsPackagesFile = Join-Path $toolsDir "packages.config"
 
 Write-Verbose "Checking for NuGet in buildtools path..."
