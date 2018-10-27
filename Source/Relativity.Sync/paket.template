@@ -1,0 +1,11 @@
+﻿type project
+id Relativity.Sync
+title Relativity.Sync
+authors Relativity ODA LLC
+description Relativity Sync
+owners Relativity ODA LLC
+projectUrl https://platform.relativity.com/index.html
+licenseUrl https://www.relativity.com/terms-of-use/
+copyright © Relativity
+requireLicenseAcceptance true
+tags RelativitySync

@@ -21,6 +21,9 @@
 
 .PARAMETER version
     Allows to manually set build version number
+
+.PARAMETER progetApiKey
+    API-key used to authenticate to proget server
 #>
 
 [CmdletBinding()]
@@ -33,15 +36,14 @@ param(
     [ValidateSet("alpha", "beta", "rc", "release")]
     [string]$buildType = "alpha",
 
-    [string]$version = "0.0.0.0"
+    [string]$version = "0.0.0.0",
+    [string]$progetApiKey
 )
 
 $BASE_DIR = Resolve-Path .
 $TOOLS_DIR = Join-Path $BASE_DIR "buildtools"
 $SCRIPTS_DIR = Join-Path $BASE_DIR "scripts"
-$SOURCE_DIR = Join-Path $BASE_DIR "Source"
 $NUGET_EXE = Join-Path $TOOLS_DIR "nuget.exe"
-$PAKET_EXE = Join-Path $BASE_DIR -ChildPath ".paket" | Join-Path -ChildPath "paket.exe"
 
 Write-Verbose "Restoring buildtools..."
 & (Join-Path $SCRIPTS_DIR "restore-buildtools.ps1") -toolsDir $TOOLS_DIR -nugetExe $NUGET_EXE
@@ -54,12 +56,11 @@ Invoke-PSake "default.ps1" `
 	-parameters @{	'root' = $BASE_DIR;
                     'toolsDir' = $TOOLS_DIR;
                     'scriptsDir' = $SCRIPTS_DIR;
-                    'sourceDir' = $SOURCE_DIR; 
                     'buildConfig' = $buildConfig;
                     'buildType' = $buildType;
                     'version' = $version;
                     'nugetExe' = $NUGET_EXE;
-                    'paketExe' = $PAKET_EXE }`
+                    'progetApiKey' = $progetApiKey }`
         -nologo `
 	-taskList $taskList `
 
