@@ -90,8 +90,8 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		{
 			Workspace.EnableDataGrid(GetWorkspaceId());
 
-			//TODO change implementation to IFieldManager Kepler service
-			//ChangeFieldToDataGrid(fieldNames);
+			// TODO change implementation to IFieldManager Kepler service
+			// ChangeFieldToDataGrid(fieldNames);
 		}
 
 		public TestContext InitUser()
@@ -102,9 +102,6 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			}
 			else
 			{
-				//GroupId = Group.CreateGroup($"TestGroup_{TimeStamp}");
-				//Group.AddGroupToWorkspace(GetWorkspaceId(), GetGroupId());
-
 				ClaimsPrincipal.ClaimsPrincipalSelector += () =>
 				{
 					var factory = new ClaimsPrincipalFactory();
