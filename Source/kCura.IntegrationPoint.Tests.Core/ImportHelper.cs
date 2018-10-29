@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				SharedVariables.RelativityWebApiUrl);
 
 			ImportNativeFiles(workspaceArtifactId, documentsTestData.AllDocumentsDataTable.CreateDataReader(), importApi,
-				_CONTROL_NUMBER_FIELD_ARTIFACT_ID, documentsTestData.RootFolderId);
+				_CONTROL_NUMBER_FIELD_ARTIFACT_ID);
 
 			ImportImagesAndExtractedText(workspaceArtifactId, documentsTestData.Images, importApi, _CONTROL_NUMBER_FIELD_ARTIFACT_ID);
 
@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		private int GetWorkspaceRootFolderID(ImportAPI importApi, int workspaceID) =>
 			importApi.Workspaces().First(w => w.ArtifactID == workspaceID).RootFolderID;
 
-		private void ImportNativeFiles(int workspaceArtifactId, IDataReader dataReader, ImportAPI importApi, int identifyFieldArtifactId, int? folderId)
+		private void ImportNativeFiles(int workspaceArtifactId, IDataReader dataReader, ImportAPI importApi, int identifyFieldArtifactId)
 		{
 			ImportBulkArtifactJob importJob = importApi.NewNativeDocumentImportJob();
 			importJob.OnMessage += ImportJobOnMessage;
@@ -69,15 +69,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 			importJob.Settings.FileNameColumn = "File Name";
 			importJob.Settings.CopyFilesToDocumentRepository = _withNatives;
 
-			if (folderId.HasValue)
-			{
-				importJob.Settings.DestinationFolderArtifactID = folderId.Value;
-			}
-			else
-			{
-				importJob.Settings.DestinationFolderArtifactID = GetWorkspaceRootFolderID(importApi, workspaceArtifactId);
-				importJob.Settings.FolderPathSourceFieldName = Constants.FOLDER_PATH;
-			}
+			importJob.Settings.DestinationFolderArtifactID = GetWorkspaceRootFolderID(importApi, workspaceArtifactId);
+			importJob.Settings.FolderPathSourceFieldName = Constants.FOLDER_PATH;
 
 			if (!_withNatives)
 			{

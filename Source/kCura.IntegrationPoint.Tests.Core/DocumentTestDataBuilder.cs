@@ -28,44 +28,37 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			IList<FolderWithDocuments> foldersWithDocuments;
 			DataTable images;
-			int? rootFolderId;
 
 			switch (testDataType)
 			{
 				case TestDataType.SmallWithFoldersStructure:
 					foldersWithDocuments = GetFoldersWithDocuments(testDirectory, withNatives);
 					images = GetImageDataTable(testDirectory);
-					rootFolderId = null;
 					break;
 				case TestDataType.SmallWithoutFolderStructure:
 					foldersWithDocuments = GetDocumentsIntoRootFolder(Path.Combine(testDirectory, TestDataNativesPath), withNatives);
 					images = GetImageDataTableForAllNativesInGivenFolder(testDirectory, TestDataExtendedPath);
-					rootFolderId = foldersWithDocuments.First().FolderId;
 					break;
 				case TestDataType.ModerateWithFoldersStructure:
 					foldersWithDocuments = GetFoldersWithDocumentsBasedOnDirectoryStructureOfNatives(Path.Combine(testDirectory, TestDataExtendedNativesPath), withNatives);
 					images = GetImageDataTableForAllNativesInGivenFolder(testDirectory, TestDataExtendedPath);
-					rootFolderId = null;
 					break;
 				case TestDataType.ModerateWithoutFoldersStructure:
 					foldersWithDocuments = GetDocumentsIntoRootFolder(Path.Combine(testDirectory, TestDataExtendedNativesPath), withNatives);
 					images = GetImageDataTableForAllNativesInGivenFolder(testDirectory, TestDataExtendedPath);
-					rootFolderId = foldersWithDocuments.First().FolderId;
 					break;
 				case TestDataType.TextWithoutFolderStructure:
 					foldersWithDocuments = GetDocumentsIntoRootFolder(Path.Combine(testDirectory, TestDataTextNativesPath), withNatives);
 					images = GetImageDataTableForAllNativesInGivenFolder(testDirectory, TestDataTextPath);
-					rootFolderId = foldersWithDocuments.First().FolderId;
 					break;
 				case TestDataType.SaltPepperWithFolderStructure:
 					foldersWithDocuments = GetDocumentsIntoRootFolder(Path.Combine(testDirectory, SaltPepperTestDataNativesPath), withNatives);
 					images = GetImageDataTableForAllNativesInGivenFolder(testDirectory, SaltPepperTestDataPath);
-					rootFolderId = null;
 					break;
 				default:
 					throw new Exception("Unsupported TestDataType parameter");
 			}
-			return new DocumentsTestData(foldersWithDocuments, images, rootFolderId);
+			return new DocumentsTestData(foldersWithDocuments, images);
 		}
 
 		#region Documents
@@ -159,7 +152,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			foreach (string filePath in Directory.GetFiles(nativesFolderPath, "*", SearchOption.AllDirectories))
 			{
-				newFolder.Documents.Rows.Add(Path.GetFileNameWithoutExtension(filePath), Path.GetFileName(filePath), withNatives ? filePath : string.Empty, "Level1\\Level2", false);
+				newFolder.Documents.Rows.Add(Path.GetFileNameWithoutExtension(filePath), Path.GetFileName(filePath), withNatives ? filePath : string.Empty, "Level1\\Level2", false, newFolder.FolderName);
 			}
 
 			foldersList.Add(newFolder);
