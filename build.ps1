@@ -39,22 +39,28 @@ param(
 $BASE_DIR = Resolve-Path .
 $TOOLS_DIR = Join-Path $BASE_DIR "buildtools"
 $SCRIPTS_DIR = Join-Path $BASE_DIR "scripts"
+$SOURCE_DIR = Join-Path $BASE_DIR "Source"
+$NUGET_EXE = Join-Path $TOOLS_DIR "nuget.exe"
+$PAKET_EXE = Join-Path $BASE_DIR -ChildPath ".paket" | Join-Path -ChildPath "paket.exe"
 
 Write-Verbose "Restoring buildtools..."
-& "$SCRIPTS_DIR\restore-buildtools.ps1" -toolsDir $TOOLS_DIR
+& (Join-Path $SCRIPTS_DIR "restore-buildtools.ps1") -toolsDir $TOOLS_DIR -nugetExe $NUGET_EXE
 
 Write-Verbose "Importing powershell modules..."
-& "$SCRIPTS_DIR\import-build-modules.ps1" -toolsDir $TOOLS_DIR
+& (Join-Path $SCRIPTS_DIR "import-build-modules.ps1") -toolsDir $TOOLS_DIR
 
 Write-Verbose "Executing build..."
 Invoke-PSake "default.ps1" `
 	-parameters @{	'root' = $BASE_DIR;
                     'toolsDir' = $TOOLS_DIR;
-                    'scriptsDir' = $SCRIPTS_DIR }`
-	-properties @{	'buildConfig' = $buildConfig;
-	                'buildType' = $buildType;
-					'version' = $version }`
-	-nologo `
+                    'scriptsDir' = $SCRIPTS_DIR;
+                    'sourceDir' = $SOURCE_DIR; 
+                    'buildConfig' = $buildConfig;
+                    'buildType' = $buildType;
+                    'version' = $version;
+                    'nugetExe' = $NUGET_EXE;
+                    'paketExe' = $PAKET_EXE }`
+        -nologo `
 	-taskList $taskList `
 
 exit ( [int]( -not $psake.build_success ) )
