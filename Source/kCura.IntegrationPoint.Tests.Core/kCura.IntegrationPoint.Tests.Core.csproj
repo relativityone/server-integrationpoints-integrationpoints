@@ -131,7 +131,6 @@
     <Compile Include="FileToBase64Converter.cs" />
     <Compile Include="FolderService.cs" />
     <Compile Include="ImportHelper.cs" />
-    <Compile Include="Injection.cs" />
     <Compile Include="InstanceSetting.cs" />
     <Compile Include="Kepler.cs" />
     <Compile Include="Models\Audit.cs" />
