@@ -334,3 +334,6 @@ buildtools/*
 
 # But not these files...
 !buildtools/packages.config
+
+# Ignore vscode
+.vscode/*
