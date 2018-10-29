@@ -6,18 +6,22 @@ properties {
     $root
     $toolsDir
     $scriptsDir
-    $sourceDir    
     $buildConfig
     $buildType
     $version
     $nugetExe
-    $paketExe
+    $progetApiKey
+    $sourceDir = Join-Path $root "Source"  
+    $paketExe = Join-Path $root -ChildPath ".paket" | Join-Path -ChildPath "paket.exe"
+    $nugetOutput = Join-Path $root "nuget"
+    $certName = "Relativity ODA LLC"
+    $progetUrl = "https://proget.kcura.corp/nuget/NuGet"
 }
 
-task default -depends build
+task default -depends build, packNuget
 
 task sign {
-    $global:certThumbprint = & (Join-Path $scriptsDir "get-certificate-thumbprint.ps1")
+    $global:certThumbprint = & (Join-Path $scriptsDir "get-certificate-thumbprint.ps1") -certName $certName
 }
 
 task restorePackages {
@@ -26,4 +30,12 @@ task restorePackages {
 
 task build -depends restorePackages {
     & (Join-Path $scriptsDir "build-solution.ps1") -buildConf $buildConfig -version $version -sourceDir $sourceDir -certThumbprint $global:certThumbprint
+}
+
+task packNuget {
+    & (Join-Path $scriptsDir "pack-nuget.ps1") -version $version -paketExe $paketExe -nugetOutput $nugetOutput
+}
+
+task publishNuget {
+    & (Join-Path $scriptDir "publish-nuget.ps1") -nugetExe $nugetExe -nugetOutput $nugetOutput -certName $certName -url $progetUrl -apiKey $progetApiKey
 }
