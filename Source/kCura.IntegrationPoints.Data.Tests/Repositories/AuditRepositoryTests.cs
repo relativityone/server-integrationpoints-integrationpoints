@@ -18,16 +18,17 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 		}
 
 		[Test]
-		public void AuditExportTest()
+		public void AuditExportTest(
+			[Values(true, false)] bool expectedResult)
 		{
-			_auditService.CreateAuditForExport(Arg.Any<ExportStatistics>()).Returns(true);
+			_auditService.CreateAuditForExport(Arg.Any<ExportStatistics>()).Returns(expectedResult);
 
 			var auditRepository = new AuditRepository(_auditService);
 			var exportStats = new ExportStatistics();
 			bool result = auditRepository.AuditExport(exportStats);
 
 			_auditService.Received(1).CreateAuditForExport(exportStats);
-			Assert.AreEqual(true, result);
+			Assert.AreEqual(expectedResult, result);
 		}
 	}
 }
