@@ -477,10 +477,6 @@
       <Project>{5d5b52b4-8769-431a-9743-b96f15fed5fd}</Project>
       <Name>kCura.IntegrationPoints.Domain</Name>
     </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.Injection\kCura.IntegrationPoints.Injection.csproj">
-      <Project>{847816a0-e354-4176-83b1-7adb93e5742f}</Project>
-      <Name>kCura.IntegrationPoints.Injection</Name>
-    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
       <Project>{b91cc4ed-abf3-4409-8df3-46a3c26eb4aa}</Project>
       <Name>kCura.IntegrationPoints.Synchronizers.RDO</Name>
@@ -510,9 +506,6 @@
       </PropertyGroup>
     </When>
   </Choose>
-  <PropertyGroup>
-    
-  </PropertyGroup>
   <Import Project="..\..\.paket\paket.targets" />
   <PropertyGroup>
     <TextTransformPath>packages\Mono.TextTransform\tools\TextTransform.exe</TextTransformPath>
@@ -926,16 +919,6 @@
         </Reference>
         <Reference Include="Ionic.Zip">
           <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\Ionic.Zip.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity">
-          <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\Relativity.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="kCura">
-          <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\kCura.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

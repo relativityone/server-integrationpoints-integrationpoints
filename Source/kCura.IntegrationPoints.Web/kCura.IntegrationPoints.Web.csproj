@@ -752,9 +752,6 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
-  <PropertyGroup>
-    
-  </PropertyGroup>
   <Import Project="..\..\.paket\paket.targets" />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
@@ -1301,16 +1298,6 @@
         </Reference>
         <Reference Include="Ionic.Zip">
           <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\Ionic.Zip.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity">
-          <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\Relativity.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="kCura">
-          <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\kCura.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

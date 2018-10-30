@@ -7,7 +7,7 @@ using System.Drawing;
 
 namespace kCura.IntegrationPoints.UITests.Driver
 {
-	public class DriverFactory
+	public static class DriverFactory
 	{
 		private const int _BROWSER_WIDTH = 1920;
 

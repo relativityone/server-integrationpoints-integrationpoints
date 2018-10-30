@@ -2,7 +2,6 @@
 using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Injection;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
@@ -68,7 +67,6 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 
 		public void OnJobComplete(Job job)
 		{
-			InjectionManager.Instance.Evaluate(InjectionPoints.BEFORE_TAGGING_STARTS_ONJOBCOMPLETE.Id);
 			try
 			{
 				if (!_errorOccurDuringJobStart)

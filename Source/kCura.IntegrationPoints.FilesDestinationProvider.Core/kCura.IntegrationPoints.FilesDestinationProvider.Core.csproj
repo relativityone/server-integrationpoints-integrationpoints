@@ -49,7 +49,9 @@
     </Compile>
     <Compile Include="EnumHelper.cs" />
     <Compile Include="ExportManagers\CoreCaseManager.cs" />
+    <Compile Include="ExportManagers\CoreFieldManager.cs" />
     <Compile Include="ExportManagers\CoreSearchManager.cs" />
+    <Compile Include="Helpers\FieldConverter.cs" />
     <Compile Include="SharedLibrary\ExportServiceFactory.cs" />
     <Compile Include="SharedLibrary\ExtendedWebApiServiceFactory.cs" />
     <Compile Include="SharedLibrary\IExportServiceFactory.cs" />
@@ -105,7 +107,6 @@
     <Compile Include="SharedLibrary\CaseManagerFactory.cs" />
     <Compile Include="ExportManagers\CoreAuditManager.cs" />
     <Compile Include="ExportManagers\CoreExportManager.cs" />
-    <Compile Include="ExportManagers\CoreFieldManager.cs" />
     <Compile Include="ExportManagers\CoreProductionManager.cs" />
     <Compile Include="ExportManagers\CoreServiceFactory.cs" />
     <Compile Include="SharedLibrary\FactoryConfigBuilder.cs" />
@@ -193,9 +194,6 @@
       </PropertyGroup>
     </When>
   </Choose>
-  <PropertyGroup>
-    
-  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
@@ -555,16 +553,6 @@
         </Reference>
         <Reference Include="Ionic.Zip">
           <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\Ionic.Zip.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity">
-          <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\Relativity.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="kCura">
-          <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\kCura.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

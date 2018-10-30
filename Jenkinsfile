@@ -13,7 +13,7 @@ import groovy.transform.Field
 properties([
     [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '30', artifactNumToKeepStr: '', daysToKeepStr: '30', numToKeepStr: '']],
     parameters([
-        string(defaultValue: 'develop', description: 'Set Relativity branch', name: 'relativityBranch'),
+        string(defaultValue: '', description: 'Set Relativity branch', name: 'relativityBranch'),
         string(defaultValue: 'DEV', description: 'Set Relativity build type (DEV, GOLD, etc.)', name: 'relativityBuildType'),
         string(defaultValue: '', description: 'Set Relativity version on which RIP will be tested. Leave blank to set the latest version.', name: 'relativityBuildVersion'),
         booleanParam(defaultValue: false, description: 'Check if you want to skip Integrations Tests stage.', name: 'skipIntegrationTests'),
@@ -27,7 +27,15 @@ properties([
 def sut = null
 
 def nightlyJobName = "IntegrationPointsNightly"
-def relativity_build = ""
+def relativityBuildVersion = ""
+def relativityBranch = params.relativityBranch ?: env.BRANCH_NAME
+// *********
+// IMPORTANT
+// *********
+// Set variable below to the branch name, when you create new release branch!!!
+// This should be changed on the release branch
+def relativityBranchFallback = "develop"
+
 // When RAID stage fails, verify if newer versions of cookboos exist
 def ripCookbooks = '"relativity:= 4.1.12,role-testvm:= 3.12.0,role-ci:= 1.3.2,sql:= 2.4.1,servicebus:= 1.0.0"'
 
@@ -56,8 +64,8 @@ def profile = createProfile(installing_relativity, installing_invariant, install
 def knife = 'C:\\Python27\\Lib\\site-packages\\jeeves\\knife.rb'
 def session_id = System.currentTimeMillis().toString()
 def event_hash = java.security.MessageDigest.getInstance("MD5").digest(env.JOB_NAME.bytes).encodeHex().toString()
-def Scvmm = scvmm(this, session_id)
-Scvmm.setHoursToLive("12")
+def ScvmmInstance = scvmm(this, session_id)
+ScvmmInstance.setHoursToLive("12")
 
 // Make changes here if necessary.
 def python_packages = 'jeeves==4.1.0 phonograph==5.2.0 selenium==3.0.1'
@@ -128,8 +136,8 @@ timestamps
 				{
 					timeout(time: 90, unit: 'MINUTES')
 					{
-						echo "Getting server from pool, session_id: $session_id, Relativity branch: $params.relativityBranch, Relativity version: $params.relativityBuildVersion, Relativity build type: $params.relativityBuildType, event hash: $event_hash"
-						sut = Scvmm.getServerFromPool()
+						echo "Getting server from pool, session_id: $session_id, Relativity build type: $params.relativityBuildType, event hash: $event_hash"
+						sut = ScvmmInstance.getServerFromPool()
 						echo "Acquired server: ${sut.name} @ ${sut.domain} (${sut.ip})"
 
 						parallel (
@@ -138,13 +146,9 @@ timestamps
 								registerEvent(this, session_id, 'Talos_Provision_test_CD', 'PASS', '-c', "${sut.name}.${sut.domain}", profile, event_hash)
 								if (installing_relativity)
 								{
-									relativity_build = getBuildArtifactsPath(this, "Relativity", params.relativityBranch, params.relativityBuildVersion, params.relativityBuildType, session_id)
-									if (params.relativityBuildVersion && !relativity_build)
-									{
-										relativity_build = params.relativityBuildVersion
-									}
-									echo "Installing Relativity, branch: $params.relativityBranch, version: $relativity_build, type: $params.relativityBuildType"
-									sendVersionToElastic(this, "Relativity", params.relativityBranch, relativity_build, params.relativityBuildType, session_id)
+									(relativityBuildVersion, relativityBranch) = getNewBranchAndVersion(relativityBranchFallback, relativityBranch, params.relativityBuildVersion, params.relativityBuildType, session_id)
+									echo "Installing Relativity, branch: $relativityBranch, version: $relativityBuildVersion, type: $params.relativityBuildType"
+									sendVersionToElastic(this, "Relativity", relativityBranch, relativityBuildVersion, params.relativityBuildType, session_id)
 								}
 
 								withCredentials([
@@ -152,7 +156,7 @@ timestamps
 									usernamePassword(credentialsId: 'cd_sut_svc', passwordVariable: 'SUTPASSWORD', usernameVariable: 'SUTUSERNAME'),
 									usernamePassword(credentialsId: 'eddsdbo', passwordVariable: 'EDDSDBOPASSWORD', usernameVariable: 'EDDSDBOUSERNAME')])
 								{
-									deployments = [['product' : 'rel', 'build' : relativity_build, 'branch' : params.relativityBranch, 'type' : params.relativityBuildType]]
+									deployments = [['product' : 'rel', 'build' : relativityBuildVersion, 'branch' : relativityBranch, 'type' : params.relativityBuildType]]
 									attributeValues = makeAttributeValues(deployments, SUTUSERNAME, SUTPASSWORD, EDDSDBOPASSWORD)
 									uploadEnvironmentFile(this, sut.name, ripCookbooks, attributeValues, knife, session_id, PROGETUSERNAME, PROGETPASSWORD)
 									addRunlist(this, session_id, sut.name, sut.ip, run_list, knife, SUTUSERNAME, SUTPASSWORD)
@@ -166,11 +170,11 @@ timestamps
 							{
 								def numberOfSlaves = 1
 								def numberOfExecutors = '1'
-								Scvmm.createNodes(numberOfSlaves, 60, numberOfExecutors)
+								ScvmmInstance.createNodes(numberOfSlaves, 60, numberOfExecutors)
 								withCredentials([
 									usernamePassword(credentialsId: 'JenkinsSDLC', passwordVariable: 'SDLCPASSWORD', usernameVariable: 'SDLCUSERNAME')])
 								{
-									bootstrapDependencies(this, python_packages, params.relativityBranch, relativity_build, params.relativityBuildType, session_id, SDLCUSERNAME, SDLCPASSWORD)
+									bootstrapDependencies(this, python_packages, relativityBranch, relativityBuildVersion, params.relativityBuildType, session_id, SDLCUSERNAME, SDLCPASSWORD)
 								}
 							}
 						)
@@ -245,13 +249,13 @@ timestamps
 										//it returns username who submitted the request to save vms
 										user = input(message: 'Save the VMs?', ok: 'Save', submitter: 'JNK-Basic', submitterParameter: 'submitter')
 									}
-									Scvmm.saveVMs(user)
+									ScvmmInstance.saveVMs(user)
 								}
 								// Exception is thrown if you click abort or let it time out
 								catch(err)
 								{
 									echo "Deleting VMs..."
-									Scvmm.deleteVMs()
+									ScvmmInstance.deleteVMs()
 								}
 							}
 						}
@@ -281,7 +285,7 @@ timestamps
 					}
 					withCredentials([usernamePassword(credentialsId: 'TeamCityUser', passwordVariable: 'TEAMCITYPASSWORD', usernameVariable: 'TEAMCITYUSERNAME')])
 					{
-						sendCDSlackNotification(this, env.BUILD_URL, (sut?.name ?: ""), (relativity_build ?: "0.0.0.0"), env.BRANCH_NAME, params.relativityBuildType, getSlackChannelName(nightlyJobName).toString(), numberOfFailedTests as Integer, numberOfPassedTests as Integer, numberOfSkippedTests as Integer, TEAMCITYUSERNAME, TEAMCITYPASSWORD, currentBuild.result.toString()) 
+						sendCDSlackNotification(this, env.BUILD_URL, (sut?.name ?: ""), (relativityBuildVersion ?: "0.0.0.0"), env.BRANCH_NAME, params.relativityBuildType, getSlackChannelName(nightlyJobName).toString(), numberOfFailedTests as Integer, numberOfPassedTests as Integer, numberOfSkippedTests as Integer, TEAMCITYUSERNAME, TEAMCITYPASSWORD, currentBuild.result.toString()) 
 					}
 				}
 			}
@@ -396,4 +400,26 @@ def archiveTestsArtifacts(Boolean skipTests, String resultsFilePath, String repo
 def testingVMsAreRequired()
 {
     return !params.skipIntegrationTests || !params.skipUITests
+}
+
+def getNewBranchAndVersion(String relativityBranchFallback, String relativityBranch, String paramRelativityBuildVersion, String paramRelativityBuildType, String sessionId)
+{
+	def branch = relativityBranch
+	def buildVersion = ''
+	try
+	{
+		buildVersion = getBuildArtifactsPath(this, "Relativity", branch, paramRelativityBuildVersion, paramRelativityBuildType, sessionId)
+	}
+	catch (any)
+	{
+		branch = relativityBranchFallback
+		echo "Changing Relativity branch to fallback: $branch"
+		buildVersion = getBuildArtifactsPath(this, "Relativity", branch, paramRelativityBuildVersion, paramRelativityBuildType, sessionId)
+	}
+	if (paramRelativityBuildVersion && !buildVersion)
+	{
+		// It should never be empty!!
+		buildVersion = paramRelativityBuildVersion
+	}
+	return [buildVersion, branch]
 }

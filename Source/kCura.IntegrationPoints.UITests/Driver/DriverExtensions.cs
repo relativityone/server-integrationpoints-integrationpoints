@@ -19,8 +19,6 @@ namespace kCura.IntegrationPoints.UITests.Driver
 	{
 		private const int _DEFAULT_SEND_KEYS_TIMEOUT_IN_SECONDS = 20;
 
-		private static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(DriverExtensions));
-
 		public static readonly TimeSpan DefaultRetryInterval = TimeSpan.FromMilliseconds(250);
 
 		public static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(30);

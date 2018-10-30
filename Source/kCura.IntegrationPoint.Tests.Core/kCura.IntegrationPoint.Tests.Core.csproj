@@ -131,7 +131,6 @@
     <Compile Include="FileToBase64Converter.cs" />
     <Compile Include="FolderService.cs" />
     <Compile Include="ImportHelper.cs" />
-    <Compile Include="Injection.cs" />
     <Compile Include="InstanceSetting.cs" />
     <Compile Include="Kepler.cs" />
     <Compile Include="Models\Audit.cs" />
@@ -8211,16 +8210,6 @@
         </Reference>
         <Reference Include="Ionic.Zip">
           <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\Ionic.Zip.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity">
-          <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\Relativity.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="kCura">
-          <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\kCura.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

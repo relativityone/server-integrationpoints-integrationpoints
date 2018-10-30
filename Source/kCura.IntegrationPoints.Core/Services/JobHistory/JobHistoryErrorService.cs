@@ -8,7 +8,6 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Extensions;
-using kCura.IntegrationPoints.Injection;
 using kCura.Relativity.Client.DTOs;
 using Relativity.API;
 
@@ -56,7 +55,6 @@ namespace kCura.IntegrationPoints.Core.Services
 				{
 					if (_jobHistoryErrorList.Any())
 					{
-						InjectionManager.Instance.Evaluate("9B9265FB-F63D-44D3-90A2-87C1570F746D");
 						_errorOccurredDuringJob = true;
 
 						if (IntegrationPoint != null)
@@ -174,7 +172,6 @@ namespace kCura.IntegrationPoints.Core.Services
 			{
 				if (IntegrationPoint != null)
 				{
-					InjectionManager.Instance.Evaluate("6a620133-011a-4fb8-8b37-758b53a46872");
 					_context.RsapiService.RelativityObjectManager.Update(IntegrationPoint);
 				}
 			}

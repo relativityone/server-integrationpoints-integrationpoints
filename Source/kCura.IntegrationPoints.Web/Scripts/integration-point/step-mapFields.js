@@ -683,7 +683,8 @@ ko.validation.insertValidationMessage = function (element) {
 				$.each(mapping, function () {
 					if (this.fieldMapType == mapTypes.native && artifactTypeId == 10) {
 					    self.importNativeFile("true");
-					    self.importNativeFileCopyMode(self.importNativeFileCopyMode() === "CopyFiles" || self.importNativeFileCopyMode() === "SetFileLinks" ? self.importNativeFileCopyMode() : "CopyFiles");
+                        self.importNativeFileCopyMode(self.importNativeFileCopyMode() === "CopyFiles" ||
+                            self.importNativeFileCopyMode() === "SetFileLinks" ? self.importNativeFileCopyMode() : "CopyFiles");
 						self.nativeFilePathValue(this.sourceField.displayName);
 						return false;
 					}
