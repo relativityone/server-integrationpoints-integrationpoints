@@ -21,7 +21,6 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Exceptions;
-using kCura.IntegrationPoints.Injection;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.BatchProcess;
 using kCura.ScheduleQueue.Core.Core;
@@ -186,7 +185,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			try
 			{
 				LogJobPreExecuteStart(job);
-				InjectionManager.Instance.Evaluate("B50CD1DD-6FEC-439E-A730-B84B730C9D44");
 				SetupJob(job);
 				ValidateJob(job);
 				LogJobPreExecuteSuccesfulEnd(job);
@@ -240,9 +238,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			JobHistory = _jobHistoryService.GetOrCreateScheduledRunHistoryRdo(IntegrationPoint, BatchInstance, DateTime.UtcNow);
 			_jobHistoryErrorService.JobHistory = JobHistory;
 			_jobHistoryErrorService.IntegrationPoint = IntegrationPoint;
-
-			InjectionManager.Instance.Evaluate("0F8D9778-5228-4D7A-A911-F731292F9CF0");
-
+			
 			JobStopManager = ManagerFactory.CreateJobStopManager(_jobService, _jobHistoryService, BatchInstance, job.JobId, true);
 			JobStopManager.ThrowIfStopRequested();
 

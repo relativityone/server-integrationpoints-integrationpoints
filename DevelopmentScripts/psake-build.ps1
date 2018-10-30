@@ -296,7 +296,6 @@ task copy_dlls_to_lib_dir -depends create_lib_dir {
             "Source\kCura.IntegrationPoints.ImportProvider.Tests.Integration\bin\x64\*.config",
             "Source\kCura.IntegrationPoints.ImportProvider.Tests.Integration\bin\x64\*.xml",
             "Source\kCura.IntegrationPoints.ImportProvider.Tests.Integration\TestDataForImport",
-            "Source\kCura.IntegrationPoints.Injection\bin\x64\*.dll",
             "Source\kCura.IntegrationPoints.LDAPProvider\bin\x64\*.dll",
             "Source\kCura.IntegrationPoints.LDAPProvider\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.LDAPProvider\bin\x64\*.config",

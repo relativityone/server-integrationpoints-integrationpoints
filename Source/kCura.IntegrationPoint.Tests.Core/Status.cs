@@ -17,8 +17,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			double timeWaitedInSeconds = 0.0;
 			ProcessInformation processInfo = rsapiClient.GetProcessState(rsapiClient.APIOptions, processId);
-			// Added because Regression B is fucked this time. Please use commented line or rewrite this piece of   code
-			//while (processInfo.State != ProcessStateValue.Completed)
 			while (processInfo.State != ProcessStateValue.CompletedWithError && processInfo.State != ProcessStateValue.Completed)
 			{
 				if (processInfo.State == ProcessStateValue.UnhandledException)

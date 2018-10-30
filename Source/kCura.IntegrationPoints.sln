@@ -115,8 +115,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Dom
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Core.Contracts.Tests", "kCura.IntegrationPoints.Core.Contracts.Tests\kCura.IntegrationPoints.Core.Contracts.Tests.csproj", "{A6490515-F92D-4157-BF25-5DCC481AA14D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Injection", "kCura.IntegrationPoints.Injection\kCura.IntegrationPoints.Injection.csproj", "{847816A0-E354-4176-83B1-7ADB93E5742F}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Services", "kCura.IntegrationPoints.Services\kCura.IntegrationPoints.Services.csproj", "{FD2C5DB6-8FD6-40D6-8E50-3641B7D89D9D}"
 	ProjectSection(ProjectDependencies) = postProject
 		{BFA5641B-AA6F-4FA5-A20D-6F42B484CAE4} = {BFA5641B-AA6F-4FA5-A20D-6F42B484CAE4}
@@ -467,13 +465,6 @@ Global
 		{A6490515-F92D-4157-BF25-5DCC481AA14D}.Release|Any CPU.ActiveCfg = Release|x64
 		{A6490515-F92D-4157-BF25-5DCC481AA14D}.Release|x64.ActiveCfg = Release|x64
 		{A6490515-F92D-4157-BF25-5DCC481AA14D}.Release|x64.Build.0 = Release|x64
-		{847816A0-E354-4176-83B1-7ADB93E5742F}.Debug|Any CPU.ActiveCfg = Debug|x64
-		{847816A0-E354-4176-83B1-7ADB93E5742F}.Debug|Any CPU.Build.0 = Debug|x64
-		{847816A0-E354-4176-83B1-7ADB93E5742F}.Debug|x64.ActiveCfg = Debug|x64
-		{847816A0-E354-4176-83B1-7ADB93E5742F}.Debug|x64.Build.0 = Debug|x64
-		{847816A0-E354-4176-83B1-7ADB93E5742F}.Release|Any CPU.ActiveCfg = Release|x64
-		{847816A0-E354-4176-83B1-7ADB93E5742F}.Release|x64.ActiveCfg = Release|x64
-		{847816A0-E354-4176-83B1-7ADB93E5742F}.Release|x64.Build.0 = Release|x64
 		{FD2C5DB6-8FD6-40D6-8E50-3641B7D89D9D}.Debug|Any CPU.ActiveCfg = Debug|x64
 		{FD2C5DB6-8FD6-40D6-8E50-3641B7D89D9D}.Debug|Any CPU.Build.0 = Debug|x64
 		{FD2C5DB6-8FD6-40D6-8E50-3641B7D89D9D}.Debug|x64.ActiveCfg = Debug|x64

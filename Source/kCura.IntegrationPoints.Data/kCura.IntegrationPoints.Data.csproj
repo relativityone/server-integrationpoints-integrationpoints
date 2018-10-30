@@ -33,6 +33,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Relativity.APIHelper, Version=10.0.85.14, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.APIHelper.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -96,10 +100,15 @@
     <Compile Include="QueryBuilders\Implementations\SourceProviderArtifactIdByGuidQueryBuilder.cs" />
     <Compile Include="QueryBuilders\ISourceProviderArtifactIdByGuidQueryBuilder.cs" />
     <Compile Include="Repositories\ApplicationRepository.cs" />
+    <Compile Include="Repositories\DTO\ArtifactRef.cs" />
     <Compile Include="Repositories\IApplicationRepository.cs" />
+    <Compile Include="Repositories\IAuditRepository.cs" />
     <Compile Include="Repositories\IFileRepository.cs" />
+    <Compile Include="Repositories\IFoundationRepositoryFactory.cs" />
+    <Compile Include="Repositories\Implementations\AuditRepository.cs" />
     <Compile Include="Repositories\Implementations\ViewFieldInfoFieldTypeExtender.cs" />
     <Compile Include="Repositories\Implementations\FileRepository.cs" />
+    <Compile Include="Repositories\Implementations\FoundationRepositoryFactory.cs" />
     <Compile Include="Repositories\Implementations\ISecretStoreHelper.cs" />
     <Compile Include="Repositories\Implementations\ProductionRepository.cs" />
     <Compile Include="Repositories\Implementations\QueryFieldLookupRepository.cs" />
@@ -343,9 +352,6 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    
-  </PropertyGroup>
   <Import Project="..\..\.paket\paket.targets" />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
