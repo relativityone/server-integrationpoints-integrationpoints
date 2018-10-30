@@ -75,8 +75,19 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 
 			InsertSpecialSourceFields(sourceFields);
 			InsertFolderFields(sourceFields, mappingFields, useDynamicFolderPath);
+			InsertFileTypeField(sourceFields);
 
 			return sourceFields.Select(x => new DataColumn(x.FieldIdentifier)).ToArray();
+		}
+
+		private static void InsertFileTypeField(List<FieldEntry> sourceFields)
+		{
+			sourceFields.Add(new FieldEntry()
+			{
+				DisplayName = IntegrationPoints.Domain.Constants.SPECIAL_FILE_TYPE_FIELD_NAME,
+				FieldIdentifier = IntegrationPoints.Domain.Constants.SPECIAL_FILE_TYPE_FIELD,
+				FieldType = FieldType.String
+			});
 		}
 
 		public override string GetDataTypeName(int i)

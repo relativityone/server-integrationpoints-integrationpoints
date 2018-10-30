@@ -10,6 +10,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using Relativity;
 using Relativity.API;
 using Relativity.Core;
+using Relativity.Core.Service;
 using Relativity.Toggles;
 using FileQuery = Relativity.Core.Service.FileQuery;
 
@@ -23,8 +24,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 		private readonly Dictionary<int, string> _nativeFileLocations;
 		private readonly Dictionary<int, string> _nativeFileNames;
+		private readonly Dictionary<int, string> _nativeFileTypes;
 		private readonly IILongTextStreamFactory _relativityLongTextStreamFactory;
-		private readonly IToggleProvider _toggleProvider;
 		private readonly List<ILongTextStream> _openedStreams;
 		private readonly IAPILog _logger;
 
@@ -45,8 +46,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		{
 			_nativeFileLocations = new Dictionary<int, string>();
 			_nativeFileNames = new Dictionary<int, string>();
+			_nativeFileTypes = new Dictionary<int, string>();
 			_relativityLongTextStreamFactory = longTextStreamFactory;
-			_toggleProvider = toggleProvider;
 			_openedStreams = new List<ILongTextStream>();
 			_logger = logger.ForContext<DocumentTransferDataReader>();
 		}
@@ -88,11 +89,12 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 					retrievedField = CurrentArtifact.GetFieldByName(IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_DYNAMIC_FIELD_NAME);
 					return retrievedField.Value;
 				}
-				
+
 				// We have to get native file locations when the reader fetches a new collection of documents.
 				if (_readingArtifactIdsReference != ReadingArtifactIDs)
 				{
 					LoadNativeFilesLocationsAndNames();
+					LoadNativeMetadataFromDocumentsTable();
 				}
 
 				switch (fieldIdentifier)
@@ -110,6 +112,13 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 						{
 							result = _nativeFileNames[CurrentArtifact.ArtifactId];
 							_nativeFileNames.Remove(CurrentArtifact.ArtifactId);
+						}
+						break;
+					case IntegrationPoints.Domain.Constants.SPECIAL_FILE_TYPE_FIELD:
+						if (_nativeFileTypes.ContainsKey(CurrentArtifact.ArtifactId))
+						{
+							result = _nativeFileTypes[CurrentArtifact.ArtifactId];
+							_nativeFileTypes.Remove(CurrentArtifact.ArtifactId);
 						}
 						break;
 				}
@@ -163,6 +172,19 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				string nativeFileName = (string)row[_nativeFileNameColumn];
 				_nativeFileLocations.Add(nativeDocumentArtifactId, nativeFileLocation);
 				_nativeFileNames.Add(nativeDocumentArtifactId, nativeFileName);
+				
+			}
+		}
+
+		private void LoadNativeMetadataFromDocumentsTable()
+		{
+			const string nativeTypeColumnName = "RelativityNativeType";
+
+			foreach (var artifactId in ReadingArtifactIDs)
+			{
+				object nativeTypeForGivenDocument = DocumentQuery.RetrieveValueByColumnNameAndArtifactID(Context, artifactId, nativeTypeColumnName);
+
+				_nativeFileTypes.Add(artifactId, nativeTypeForGivenDocument.ToString());
 			}
 		}
 
