@@ -94,7 +94,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				if (_readingArtifactIdsReference != ReadingArtifactIDs)
 				{
 					LoadNativeFilesLocationsAndNames();
-					LoadNativeMetadataFromDocumentsTable();
+					LoadNativesMetadataFromDocumentsTable();
 				}
 
 				switch (fieldIdentifier)
@@ -176,15 +176,23 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			}
 		}
 
-		private void LoadNativeMetadataFromDocumentsTable()
+		private void LoadNativesMetadataFromDocumentsTable()
 		{
-			const string nativeTypeColumnName = "RelativityNativeType";
+			string documentArtifactIdColumn = "ArtifactId";
+			string supportedByViewerColumn = "SupportedByViewer";
+			string relativityNativeTypeColumn = "RelativityNativeType";
 
-			foreach (var artifactId in ReadingArtifactIDs)
+			string [] documentColumnsToRetrieve = { supportedByViewerColumn, relativityNativeTypeColumn };
+
+			kCura.Data.DataView nativeTypeForGivenDocument = (kCura.Data.DataView) DocumentQuery.RetrieveValuesByColumnNamesAndArtifactIDs(Context, ReadingArtifactIDs, documentColumnsToRetrieve);
+
+			for (int index = 0; index < nativeTypeForGivenDocument.Table.Rows.Count; index++)
 			{
-				object nativeTypeForGivenDocument = DocumentQuery.RetrieveValueByColumnNameAndArtifactID(Context, artifactId, nativeTypeColumnName);
-
-				_nativeFileTypes.Add(artifactId, nativeTypeForGivenDocument.ToString());
+				DataRow row = nativeTypeForGivenDocument.Table.Rows[index];
+				var documentArtifactId = (int)row[documentArtifactIdColumn];
+				var nativeFileType = (string) row[relativityNativeTypeColumn];
+					
+				_nativeFileTypes.Add(documentArtifactId, nativeFileType);
 			}
 		}
 
