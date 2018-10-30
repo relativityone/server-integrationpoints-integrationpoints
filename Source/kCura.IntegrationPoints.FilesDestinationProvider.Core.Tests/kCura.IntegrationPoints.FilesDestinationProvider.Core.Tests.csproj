@@ -42,6 +42,7 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="ExportManagers\CoreFieldManagerTests.cs" />
     <Compile Include="ExportManagers\CoreAuditManagerTests.cs" />
     <Compile Include="ExportManagers\ExportConvertingExtensionsTests.cs" />
     <Compile Include="Helpers\DestinationFolderHelperTests.cs" />

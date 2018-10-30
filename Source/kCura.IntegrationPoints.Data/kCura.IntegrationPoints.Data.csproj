@@ -100,12 +100,15 @@
     <Compile Include="QueryBuilders\Implementations\SourceProviderArtifactIdByGuidQueryBuilder.cs" />
     <Compile Include="QueryBuilders\ISourceProviderArtifactIdByGuidQueryBuilder.cs" />
     <Compile Include="Repositories\ApplicationRepository.cs" />
+    <Compile Include="Repositories\DTO\ArtifactRef.cs" />
     <Compile Include="Repositories\IApplicationRepository.cs" />
     <Compile Include="Repositories\IAuditRepository.cs" />
     <Compile Include="Repositories\IFileRepository.cs" />
+    <Compile Include="Repositories\IFoundationRepositoryFactory.cs" />
     <Compile Include="Repositories\Implementations\AuditRepository.cs" />
     <Compile Include="Repositories\Implementations\ViewFieldInfoFieldTypeExtender.cs" />
     <Compile Include="Repositories\Implementations\FileRepository.cs" />
+    <Compile Include="Repositories\Implementations\FoundationRepositoryFactory.cs" />
     <Compile Include="Repositories\Implementations\ISecretStoreHelper.cs" />
     <Compile Include="Repositories\Implementations\ProductionRepository.cs" />
     <Compile Include="Repositories\Implementations\QueryFieldLookupRepository.cs" />

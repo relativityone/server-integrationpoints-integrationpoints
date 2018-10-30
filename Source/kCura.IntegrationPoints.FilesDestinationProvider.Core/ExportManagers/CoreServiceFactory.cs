@@ -43,7 +43,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 
 		public IFieldManager CreateFieldManager()
 		{
-			return new CoreFieldManager(GetBaseServiceContext(_exportFile.CaseArtifactID));
+			var repositoryFactory = new RepositoryFactory(_helper, _helper.GetServicesManager());
+			return new CoreFieldManager(repositoryFactory);
 		}
 
 		public IProductionManager CreateProductionManager()

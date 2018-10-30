@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using kCura.IntegrationPoints.Data.Repositories.Implementations.DTO;
 using kCura.IntegrationPoints.Data.RSAPIClient;
-using kCura.Relativity.Client;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.Relativity.Client.DTOs;
 using Relativity.API;
+using Relativity.API.Foundation;
 using Relativity.Services.FieldManager;
+using System;
+using System.Linq;
 using Field = kCura.Relativity.Client.DTOs.Field;
+using FieldType = kCura.Relativity.Client.FieldType;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
@@ -16,9 +18,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private readonly IServicesMgr _servicesMgr;
 		private readonly int _workspaceArtifactId;
 		private readonly IRsapiClientFactory _rsapiClientFactory;
-
+		private readonly IHelper _helper;
 		public FieldRepository(IServicesMgr servicesMgr, IHelper helper, int workspaceArtifactId)
 		{
+			_helper = helper;
 			_servicesMgr = servicesMgr;
 			_workspaceArtifactId = workspaceArtifactId;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<FieldRepository>();
@@ -77,42 +80,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		public List<Field> CreateObjectTypeFields(List<Field> fields)
-		{
-			using (var proxy = _rsapiClientFactory.CreateUserClient(_servicesMgr, _logger))
-			{
-				proxy.APIOptions.WorkspaceID = _workspaceArtifactId;
-
-				var createResult = proxy.Repositories.Field.Create(fields);
-
-				if (!createResult.Success)
-				{
-					_logger.LogError("Failed to create fields: {message}.", createResult.Message);
-					throw new Exception($"Failed to create fields: {createResult.Message}.");
-				}
-
-				List<int> newFieldsIds = createResult.Results.Select(x => x.Artifact.ArtifactID).ToList();
-
-				var readResult = proxy.Repositories.Field.Read(newFieldsIds);
-
-				if (!readResult.Success)
-				{
-					_logger.LogError("Failed to create fields: {message}.", createResult.Message);
-					proxy.Repositories.Field.Delete(newFieldsIds);
-					throw new Exception($"Failed to create fields: {readResult.Message}.");
-				}
-
-				var newFields = readResult.Results.Select(x => x.Artifact).ToList();
-				foreach (var fieldResult in newFields)
-				{
-					var fieldGuid = fields.First(x => x.Name == fieldResult.Name).Guids[0];
-					fieldResult.Guids = new List<Guid> { fieldGuid };
-				}
-
-				return newFields;
-			}
-		}
-
 		public int CreateObjectTypeField(Field field)
 		{
 			using (var proxy = _rsapiClientFactory.CreateUserClient(_servicesMgr, _logger))
@@ -139,6 +106,46 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				}
 
 				return newFieldId;
+			}
+		}
+
+		public IField Read(int fieldArtifactId)
+		{
+			global::Relativity.API.Foundation.Repositories.IFieldRepository fieldRepository = CreateFieldRepository();
+			return ReadFieldFromRepository(fieldArtifactId, fieldRepository);
+		}
+
+		private global::Relativity.API.Foundation.Repositories.IFieldRepository CreateFieldRepository()
+		{
+			try
+			{
+				IFoundationRepositoryFactory frf = new FoundationRepositoryFactory(_helper);
+				global::Relativity.API.Foundation.Repositories.IFieldRepository fieldRepository =
+					frf.GetRepository<global::Relativity.API.Foundation.Repositories.IFieldRepository>(
+						_workspaceArtifactId);
+				return fieldRepository;
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "An error occured while creating field repository for workspace: {workspaceId}", _workspaceArtifactId);
+				throw new IntegrationPointsException($"An error occured while creating field repository for workspace: {_workspaceArtifactId}", ex);
+			}
+		}
+
+		private IField ReadFieldFromRepository(int fieldArtifactId, global::Relativity.API.Foundation.Repositories.IFieldRepository fieldRepository)
+		{
+			IArtifactRef artifactRef = new ArtifactRef
+			{
+				ArtifactID = fieldArtifactId
+			};
+			try
+			{
+				return fieldRepository.Read(artifactRef);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "An error occured while reading field {fieldArtifactId} from workspace {workspaceArtifactId}", fieldArtifactId, _workspaceArtifactId);
+				throw new IntegrationPointsException($"An error occured while reading field {fieldArtifactId} from workspace {_workspaceArtifactId}", ex);
 			}
 		}
 	}
