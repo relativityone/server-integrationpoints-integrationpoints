@@ -487,9 +487,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				settings.DisableNativeLocationValidation = DisableNativeLocationValidation;
 				settings.DisableNativeValidation = DisableNativeValidation;
 				settings.CopyFilesToDocumentRepository = true;
+				settings.FileSizeMapped = true;
+				settings.FileSizeColumn = Constants.SPECIAL_NATIVE_FILE_SIZE_FIELD_NAME;
 				settings.OIFileIdMapped = true;
 				settings.OIFileTypeColumnName = Constants.SPECIAL_FILE_TYPE_FIELD_NAME;
-
+			
 				// NOTE :: So that the destination workspace file icons correctly display, we give the import API the file name of the document
 				settings.FileNameColumn = Constants.SPECIAL_FILE_NAME_FIELD_NAME;
 			}
@@ -502,6 +504,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				settings.DisableNativeLocationValidation = DisableNativeLocationValidation;
 				settings.DisableNativeValidation = DisableNativeValidation;
 				settings.CopyFilesToDocumentRepository = false;
+				settings.FileSizeMapped = true;
+				settings.FileSizeColumn = Constants.SPECIAL_NATIVE_FILE_SIZE_FIELD_NAME;
 				settings.OIFileIdMapped = true;
 				settings.OIFileTypeColumnName = Constants.SPECIAL_FILE_TYPE_FIELD_NAME;
 
