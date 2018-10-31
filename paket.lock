@@ -222,7 +222,7 @@ NUGET
       NuGetPowerTools (>= 0.29)
     Relativity.ImportExport (10.0.178.18)
       kCura (>= 10.0)
-      kCura.OutsideIn.FI.Win32 (>= 2018.8)
+      kCura.OutsideIn.FI.Win32 (>= 2018.7)
       Relativity (>= 10.0)
       Relativity.DataTransfer.MessageService (>= 10.0.2)
       Relativity.Kepler.Client (>= 1.0.1.557)
