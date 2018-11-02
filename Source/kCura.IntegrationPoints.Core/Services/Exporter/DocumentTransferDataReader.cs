@@ -25,6 +25,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private readonly Dictionary<int, string> _nativeFileLocations;
 		private readonly Dictionary<int, string> _nativeFileNames;
 		private readonly Dictionary<int, string> _nativeFileTypes;
+		private readonly List<int> _documentsSupportedByViewer;
 		private readonly IILongTextStreamFactory _relativityLongTextStreamFactory;
 		private readonly List<ILongTextStream> _openedStreams;
 		private readonly IAPILog _logger;
@@ -47,6 +48,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			_nativeFileLocations = new Dictionary<int, string>();
 			_nativeFileNames = new Dictionary<int, string>();
 			_nativeFileTypes = new Dictionary<int, string>();
+			_documentsSupportedByViewer = new List<int>();
 			_relativityLongTextStreamFactory = longTextStreamFactory;
 			_openedStreams = new List<ILongTextStream>();
 			_logger = logger.ForContext<DocumentTransferDataReader>();
@@ -106,7 +108,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 							_nativeFileLocations.Remove(CurrentArtifact.ArtifactId);
 						}
 						break;
-
 					case IntegrationPoints.Domain.Constants.SPECIAL_FILE_NAME_FIELD:
 						if (_nativeFileNames.ContainsKey(CurrentArtifact.ArtifactId))
 						{
@@ -119,6 +120,17 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 						{
 							result = _nativeFileTypes[CurrentArtifact.ArtifactId];
 							_nativeFileTypes.Remove(CurrentArtifact.ArtifactId);
+						}
+						break;
+					case IntegrationPoints.Domain.Constants.SPECIAL_FILE_SUPPORTED_BY_VIEWER_FIELD:
+						if (_documentsSupportedByViewer.Contains(CurrentArtifact.ArtifactId))
+						{
+							result = true;
+							_documentsSupportedByViewer.Remove(CurrentArtifact.ArtifactId);
+						}
+						else
+						{
+							result = false;
 						}
 						break;
 				}
@@ -191,8 +203,14 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				DataRow row = nativeTypeForGivenDocument.Table.Rows[index];
 				var documentArtifactId = (int)row[documentArtifactIdColumn];
 				var nativeFileType = (string) row[relativityNativeTypeColumn];
-					
+				var isSupportedByViewer = (bool) row[supportedByViewerColumn];
+
 				_nativeFileTypes.Add(documentArtifactId, nativeFileType);
+
+				if (isSupportedByViewer)
+				{
+					_documentsSupportedByViewer.Add(documentArtifactId);
+				}
 			}
 		}
 
