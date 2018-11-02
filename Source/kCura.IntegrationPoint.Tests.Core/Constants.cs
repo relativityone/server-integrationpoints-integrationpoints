@@ -14,6 +14,7 @@
 		public const string HAS_IMAGES_FIELD = "Has Images";
 		public const string BATES_BEG_FIELD = "Bates Beg";
 		public const string FILE_FIELD = "File";
+		public const string FOLDER_PATH = "Folder Path";
 
 		private Constants(){}
 	}

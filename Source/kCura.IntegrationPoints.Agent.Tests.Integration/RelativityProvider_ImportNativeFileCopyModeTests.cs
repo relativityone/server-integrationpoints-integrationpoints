@@ -1,4 +1,5 @@
-﻿using Castle.MicroKernel.Registration;
+﻿using System.Linq;
+using Castle.MicroKernel.Registration;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
@@ -26,7 +27,6 @@ using Workspace = kCura.IntegrationPoint.Tests.Core.Workspace;
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
 	[TestFixture]
-	[Ignore("TODO: Broken test needs to be fixed!")]
 	public class RelativityProvider_ImportNativeFileCopyModeTests : RelativityProviderTemplate
 	{
 		private ExportServiceManager _exportManager;
@@ -113,7 +113,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 		[TestCase(ImportNativeFileCopyModeEnum.CopyFiles)]
 		[TestCase(ImportNativeFileCopyModeEnum.SetFileLinks)]
-		[Ignore("TODO: Broken test needs to be fixed!")]
+		[Ignore("This test fails randomly. Internal Defect was created in Jira: REL-268242")]
 		public void NativesShouldBeDeletedInTargetWorkspace_InImportNativesModes(ImportNativeFileCopyModeEnum importNativeFileCopyMode)
 		{
 			TestNativeFilesImport(false, true, true, importNativeFileCopyMode, false);
@@ -121,7 +121,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 		[Test]
 		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
-		[Ignore("TODO: Broken test needs to be fixed!")]
 		public void NativesShouldNotBeDeletedInTargetWorkspace_InDoNotImportNativesMode()
 		{
 			TestNativeFilesImport(false, true, false, ImportNativeFileCopyModeEnum.DoNotImportNativeFiles, true);
