@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		protected ISourceJobManager _sourceJobManager;
 		protected IILongTextStreamFactory _longTextStreamFactory;
 
-		protected const int _SPECIAL_FIELD_COUNT = 4;
+		protected const int _SPECIAL_FIELD_COUNT = 5;
 		protected const int _DOCUMENT_ARTIFACTID = 123423;
 		protected const string _FIELD_NAME = "DispName";
 		protected const int _FIELD_IDENTIFIER = 123;
@@ -654,6 +654,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_NAME_FIELD),
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_SIZE_FIELD),
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_TYPE_FIELD),
+					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_SUPPORTED_BY_VIEWER_FIELD),
 					//new DataColumn(Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD),
 					//new DataColumn(Contracts.Constants.SPECIAL_SOURCEJOB_FIELD)
 				}
@@ -696,6 +697,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_NAME_FIELD),
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_SIZE_FIELD),
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_TYPE_FIELD),
+					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_SUPPORTED_BY_VIEWER_FIELD),
 					//new DataColumn(Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD),
 					//new DataColumn(Contracts.Constants.SPECIAL_SOURCEJOB_FIELD)
 				}
@@ -726,6 +728,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_NAME_FIELD),
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_SIZE_FIELD),
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_TYPE_FIELD),
+					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_SUPPORTED_BY_VIEWER_FIELD),
 					//new DataColumn(Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD),
 					//new DataColumn(Contracts.Constants.SPECIAL_SOURCEJOB_FIELD)
 				}
@@ -756,6 +759,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_NAME_FIELD),
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_SIZE_FIELD),
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_TYPE_FIELD),
+					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_SUPPORTED_BY_VIEWER_FIELD),
 					//new DataColumn(Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD),
 					//new DataColumn(Contracts.Constants.SPECIAL_SOURCEJOB_FIELD)
 				}
