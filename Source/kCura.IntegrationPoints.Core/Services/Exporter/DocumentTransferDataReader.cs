@@ -130,7 +130,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 						{
 							result = _nativeFileTypes[CurrentArtifact.ArtifactId];
 							_nativeFileTypes.Remove(CurrentArtifact.ArtifactId);
-						}
+						} 
 						break;
 					case IntegrationPoints.Domain.Constants.SPECIAL_FILE_SUPPORTED_BY_VIEWER_FIELD:
 						if (_documentsSupportedByViewer.Contains(CurrentArtifact.ArtifactId))
@@ -207,16 +207,19 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 			string [] documentColumnsToRetrieve = { supportedByViewerColumn, relativityNativeTypeColumn };
 
-			kCura.Data.DataView nativeTypeForGivenDocument = (kCura.Data.DataView) DocumentQuery.RetrieveValuesByColumnNamesAndArtifactIDs(Context, ReadingArtifactIDs, documentColumnsToRetrieve);
+			kCura.Data.DataView nativeTypeForGivenDocument = DocumentQuery.RetrieveValuesByColumnNamesAndArtifactIDs(Context, ReadingArtifactIDs, documentColumnsToRetrieve);
 
 			for (int index = 0; index < nativeTypeForGivenDocument.Table.Rows.Count; index++)
 			{
 				DataRow row = nativeTypeForGivenDocument.Table.Rows[index];
 				var documentArtifactId = (int)row[documentArtifactIdColumn];
-				var nativeFileType = (string) row[relativityNativeTypeColumn];
+				string nativeFileType = Convert.ToString(row[relativityNativeTypeColumn]);
 				var isSupportedByViewer = (bool) row[supportedByViewerColumn];
 
-				_nativeFileTypes.Add(documentArtifactId, nativeFileType);
+				if (!string.IsNullOrEmpty(nativeFileType))
+				{
+					_nativeFileTypes.Add(documentArtifactId, nativeFileType);
+				}
 
 				if (isSupportedByViewer)
 				{
