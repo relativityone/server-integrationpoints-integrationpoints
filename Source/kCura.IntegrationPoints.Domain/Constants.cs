@@ -10,7 +10,8 @@
         public const string SPECIAL_FOLDERPATH_FIELD = "d1d9ccdd-9773-428f-8465-4a03909192e4";
         public const string SPECIAL_FOLDERPATH_DYNAMIC_FIELD = "6BE9DD56-C517-4261-AD62-AD5E8511CE69";
         public const string SPECIAL_FILE_NAME_FIELD = "67F1BEA1-67CB-498E-A99D-1781D43D98AF";
-		public const string SPECIAL_FILE_TYPE_FIELD = "18B6108E-2BC7-4EE2-9A9B-866C3C5D678E"; 
+		public const string SPECIAL_FILE_TYPE_FIELD = "18B6108E-2BC7-4EE2-9A9B-866C3C5D678E";
+		public const string SPECIAL_FILE_SUPPORTED_BY_VIEWER_FIELD = "1C780B8B-2F43-4423-A2CE-57C19E8B1832";
         public const string SPECIAL_SOURCEWORKSPACE_FIELD = "036DB373-5724-4C72-A073-375106DE5E73";
         public const string SPECIAL_SOURCEWORKSPACE_FIELD_NAME = "Relativity Source Case";
         public const string SPECIAL_SOURCEJOB_FIELD = "4F632A3F-68CF-400E-BD29-FD364A5EBE58";
@@ -28,11 +29,12 @@
         public const string SPECIAL_FOLDERPATH_DYNAMIC_FIELD_NAME = "REL_FOLDER_PATH_DYNAMIC_001";
         public const string SPECIAL_FILE_NAME_FIELD_NAME = "REL_FILE_NAME_001";
 		public const string SPECIAL_FILE_TYPE_FIELD_NAME = "REL_TYPE_NAME_001";
-        public const string SCHEDULE_QUEUE_INSTANCE_SETTING_SECTION = "kCura.ScheduleQueue.Core";
-        public const string INTEGRATION_POINT_INSTANCE_SETTING_SECTION = "kCura.IntegrationPoints";
-	    public const string REMOVE_ERROR_BATCH_SIZE_INSTANCE_SETTING_NAME = "RemoveErrorsFromScratchTableBatchSize";
-        public const string WEB_API_PATH = "WebAPIPath";
-        public const string SOURCEPROVIDER_ARTIFACTID_FIELD_NAME = "Artifact ID";
+		public const string SPECIAL_FILE_SUPPORTED_BY_VIEWER_FIELD_NAME = "REL_TYPE_SUPPORTED_BY_VIEWER_001";
+		public const string SCHEDULE_QUEUE_INSTANCE_SETTING_SECTION = "kCura.ScheduleQueue.Core";
+		public const string INTEGRATION_POINT_INSTANCE_SETTING_SECTION = "kCura.IntegrationPoints";
+		public const string REMOVE_ERROR_BATCH_SIZE_INSTANCE_SETTING_NAME = "RemoveErrorsFromScratchTableBatchSize";
+		public const string WEB_API_PATH = "WebAPIPath";
+		public const string SOURCEPROVIDER_ARTIFACTID_FIELD_NAME = "Artifact ID";
 		public const string DESTINATION_PROVIDER_ARTIFACTID_FIELD_NAME = "Artifact ID";
 	    public const string REPLACE_WEB_API_WITH_EXPORT_CORE = "ReplaceWebAPIWithExportCore";
         public const string RELATIVITY_PROVIDER_GUID = "423b4d43-eae9-4e14-b767-17d629de4bb2";

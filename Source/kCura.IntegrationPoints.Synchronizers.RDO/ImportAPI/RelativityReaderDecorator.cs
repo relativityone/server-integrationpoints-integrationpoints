@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			HashSet<string> columns = new HashSet<string>(Enumerable.Range(0, sourceReader.FieldCount).Select(sourceReader.GetName));
 			RegisterSpecialField(columns, Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME, Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD);
 			RegisterSpecialField(columns, Constants.SPECIAL_FILE_TYPE_FIELD_NAME, Constants.SPECIAL_FILE_TYPE_FIELD);
-			RegisterSpecialField(columns, Constants.SPECIAL_NATIVE_FILE_SIZE_FIELD_NAME, Constants.SPECIAL_NATIVE_FILE_SIZE_FIELD);
+			RegisterSpecialField(columns, Constants.SPECIAL_FILE_SUPPORTED_BY_VIEWER_FIELD_NAME, Constants.SPECIAL_FILE_SUPPORTED_BY_VIEWER_FIELD);
 			RegisterSpecialField(columns, Constants.SPECIAL_FOLDERPATH_FIELD_NAME, Constants.SPECIAL_FOLDERPATH_FIELD);
 			RegisterSpecialField(columns, Constants.SPECIAL_FOLDERPATH_DYNAMIC_FIELD_NAME, Constants.SPECIAL_FOLDERPATH_DYNAMIC_FIELD);
 

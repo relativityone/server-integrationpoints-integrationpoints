@@ -88,6 +88,13 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 				FieldIdentifier = IntegrationPoints.Domain.Constants.SPECIAL_FILE_TYPE_FIELD,
 				FieldType = FieldType.String
 			});
+
+			sourceFields.Add(new FieldEntry()
+			{
+				DisplayName = IntegrationPoints.Domain.Constants.SPECIAL_FILE_SUPPORTED_BY_VIEWER_FIELD_NAME,
+				FieldIdentifier = IntegrationPoints.Domain.Constants.SPECIAL_FILE_SUPPORTED_BY_VIEWER_FIELD,
+				FieldType = FieldType.String
+			});
 		}
 
 		public override string GetDataTypeName(int i)
