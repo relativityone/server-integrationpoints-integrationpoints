@@ -34,6 +34,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 			target.OIFileIdColumnName = importSettings.OIFileIdColumnName;
 			target.OIFileIdMapped = importSettings.OIFileIdMapped;
 			target.OIFileTypeColumnName = importSettings.OIFileTypeColumnName;
+			target.SupportedByViewerColumn = importSettings.SupportedByViewerColumn;
 			target.MoveDocumentsInAppendOverlayMode = importSettings.MoveDocumentsInAnyOverlayMode;
 
 			// only set if the extracted file map links to extracted text location

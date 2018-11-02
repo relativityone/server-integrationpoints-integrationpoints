@@ -72,6 +72,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 					case IntegrationPoints.Domain.Constants.SPECIAL_FILE_NAME_FIELD:
 						ArtifactFieldDTO nameField = CurrentArtifact.GetFieldByName(IntegrationPoints.Domain.Constants.SPECIAL_FILE_NAME_FIELD_NAME);
 						return nameField.Value;
+					case IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_SIZE_FIELD:
+						ArtifactFieldDTO sizeField = CurrentArtifact.GetFieldByName(IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_SIZE_FIELD_NAME);
+						return sizeField.Value;
 					default:
 						return null;
 				}

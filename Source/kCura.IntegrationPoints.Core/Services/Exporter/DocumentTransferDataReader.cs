@@ -24,6 +24,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 		private readonly Dictionary<int, string> _nativeFileLocations;
 		private readonly Dictionary<int, string> _nativeFileNames;
+		private readonly Dictionary<int, long> _nativeFileSizes;
 		private readonly Dictionary<int, string> _nativeFileTypes;
 		private readonly List<int> _documentsSupportedByViewer;
 		private readonly IILongTextStreamFactory _relativityLongTextStreamFactory;
@@ -32,6 +33,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 		private static readonly string _nativeDocumentArtifactIdColumn = "DocumentArtifactID";
 		private static readonly string _nativeFileNameColumn = "Filename";
+		private static readonly string _nativeFileSizeColumn = "Size";
 		private static readonly string _nativeLocationColumn = "Location";
 		private static readonly string _separator = ",";
 		
@@ -47,6 +49,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		{
 			_nativeFileLocations = new Dictionary<int, string>();
 			_nativeFileNames = new Dictionary<int, string>();
+			_nativeFileSizes = new Dictionary<int, long>();
 			_nativeFileTypes = new Dictionary<int, string>();
 			_documentsSupportedByViewer = new List<int>();
 			_relativityLongTextStreamFactory = longTextStreamFactory;
@@ -115,6 +118,13 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 							_nativeFileNames.Remove(CurrentArtifact.ArtifactId);
 						}
 						break;
+					case IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_SIZE_FIELD:
+						if (_nativeFileSizes.ContainsKey(CurrentArtifact.ArtifactId))
+						{
+							result = _nativeFileSizes[CurrentArtifact.ArtifactId];
+							_nativeFileSizes.Remove(CurrentArtifact.ArtifactId);
+						}
+						break;
 					case IntegrationPoints.Domain.Constants.SPECIAL_FILE_TYPE_FIELD:
 						if (_nativeFileTypes.ContainsKey(CurrentArtifact.ArtifactId))
 						{
@@ -169,7 +179,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			return exc;
 		}
 
-		
+
 		private void LoadNativeFilesLocationsAndNames()
 		{
 			_readingArtifactIdsReference = ReadingArtifactIDs;
@@ -181,10 +191,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				DataRow row = dataView.Table.Rows[index];
 				int nativeDocumentArtifactId = (int)row[_nativeDocumentArtifactIdColumn];
 				string nativeFileLocation = (string)row[_nativeLocationColumn];
-				string nativeFileName = (string)row[_nativeFileNameColumn];
 				_nativeFileLocations.Add(nativeDocumentArtifactId, nativeFileLocation);
+				string nativeFileName = (string)row[_nativeFileNameColumn];
 				_nativeFileNames.Add(nativeDocumentArtifactId, nativeFileName);
-				
+				long nativeFileSize = (long)row[_nativeFileSizeColumn];
+				_nativeFileSizes.Add(nativeDocumentArtifactId, nativeFileSize);
 			}
 		}
 
