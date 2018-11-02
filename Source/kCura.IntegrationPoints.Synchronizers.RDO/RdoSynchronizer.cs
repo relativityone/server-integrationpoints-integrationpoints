@@ -514,6 +514,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			settings.CopyFilesToDocumentRepository = copyFilesToRepository;
 			settings.OIFileIdMapped = true;
 			settings.OIFileTypeColumnName = Constants.SPECIAL_FILE_TYPE_FIELD_NAME;
+			settings.SupportedByViewerColumn = Constants.SPECIAL_FILE_SUPPORTED_BY_VIEWER_FIELD_NAME;
 			settings.FileSizeMapped = true;
 			settings.FileSizeColumn = Constants.SPECIAL_NATIVE_FILE_SIZE_FIELD_NAME;
 			
