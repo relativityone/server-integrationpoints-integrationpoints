@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private readonly Dictionary<int, string> _nativeFileNames;
 		private readonly Dictionary<int, long> _nativeFileSizes;
 		private readonly Dictionary<int, string> _nativeFileTypes;
-		private readonly List<int> _documentsSupportedByViewer;
+		private readonly HashSet<int> _documentsSupportedByViewer;
 		private readonly IILongTextStreamFactory _relativityLongTextStreamFactory;
 		private readonly List<ILongTextStream> _openedStreams;
 		private readonly IAPILog _logger;
@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			_nativeFileNames = new Dictionary<int, string>();
 			_nativeFileSizes = new Dictionary<int, long>();
 			_nativeFileTypes = new Dictionary<int, string>();
-			_documentsSupportedByViewer = new List<int>();
+			_documentsSupportedByViewer = new HashSet<int>();
 			_relativityLongTextStreamFactory = longTextStreamFactory;
 			_openedStreams = new List<ILongTextStream>();
 			_logger = logger.ForContext<DocumentTransferDataReader>();
