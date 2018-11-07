@@ -373,6 +373,20 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 		}
 
+		private void SetupIntegrationPointsConfigurationForStatisticsService(IntegrationPoint ip)
+		{
+			try
+			{
+				SourceConfiguration sourceConfiguration = Serializer.Deserialize<SourceConfiguration>(ip?.SourceConfiguration);
+				ImportSettings importSettings = Serializer.Deserialize<ImportSettings>(ip?.DestinationConfiguration);
+				_statisticsService?.SetIntegrationPointConfiguration(importSettings, sourceConfiguration);
+			}
+			catch (Exception ex)
+			{
+				LogSetupIntegrationPointsConfigurationForStatisticsServiceError(ip, ex);
+			}
+		}
+
 		#region Logging
 
 		private void LogSetupIntegrationPointsConfigurationForStatisticsServiceError(IntegrationPoint ip, Exception ex)
