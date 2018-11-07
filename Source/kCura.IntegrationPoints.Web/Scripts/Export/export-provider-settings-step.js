@@ -1047,10 +1047,10 @@
 					self.ipModel.map = JSON.parse(self.ipModel.map);
 				}
 
-                $.extend(self.ipModel.sourceConfiguration, settings);
-			    // this is needed as long as summary page displays destination workspace
-                self.ipModel.sourceConfiguration.TargetWorkspaceArtifactId = self.ipModel.sourceConfiguration.SourceWorkspaceArtifactId;
-			    
+				$.extend(self.ipModel.sourceConfiguration, settings);
+				// this is needed as long as summary page displays destination workspace
+				self.ipModel.sourceConfiguration.TargetWorkspaceArtifactId = self.ipModel.sourceConfiguration.SourceWorkspaceArtifactId;
+
 				self.ipModel.sourceConfiguration = JSON.stringify(self.ipModel.sourceConfiguration);
 
 				var destination = JSON.parse(self.ipModel.destination);
