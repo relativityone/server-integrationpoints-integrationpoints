@@ -57,12 +57,6 @@
       <Notes />
     </Assembly>
     <Assembly>
-      <ArtifactId>1748153</ArtifactId>
-      <Keywords />
-      <Name>SystemInterface.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
       <ArtifactId>1748154</ArtifactId>
       <Keywords />
       <Name>kCura.IntegrationPoints.Synchronizers.RDO.dll</Name>
@@ -90,6 +84,12 @@
       <ArtifactId>1748160</ArtifactId>
       <Keywords />
       <Name>Relativity.DataTransfer.MessageService.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>1748153</ArtifactId>
+      <Keywords />
+      <Name>SystemInterface.dll</Name>
       <Notes />
     </Assembly>
     <Assembly>
@@ -122,7 +122,7 @@
       <Size>1152245</Size>
       <Keywords />
       <Notes />
-      <Hash />
+      <Hash>3D-23-D4-B9-2A-B5-0B-47-F6-02-DC-A3-9C-BC-D2-13-DA-35-FA-70</Hash>
     </CustomPage>
   </CustomPages>
   <AgentTypes />
