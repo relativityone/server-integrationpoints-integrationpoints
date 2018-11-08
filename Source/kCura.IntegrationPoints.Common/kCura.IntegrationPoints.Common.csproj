@@ -78,9 +78,6 @@
     </When>
   </Choose>
   <Import Project="..\..\.paket\paket.targets" />
-  <PropertyGroup>
-    
-  </PropertyGroup>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
