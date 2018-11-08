@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.IntegrationPoints.Common.Monitoring;
 using kCura.IntegrationPoints.Common.Monitoring.Messages;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
 using kCura.IntegrationPoints.Core.Monitoring.Sinks.Aggregated;
@@ -264,7 +265,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring
 				FileBytes = 10000,
 				MetaBytes = 2345,
 				WorkspaceID = workspaceId,
-				UnitOfMeasure = "Bytes(s)"
+				UnitOfMeasure = UnitsOfMeasureConstants.BYTES
 			};
 			JobStatisticsMessage jobStatisticsMessage2 = new JobStatisticsMessage()
 			{
@@ -274,7 +275,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring
 				FileBytes = 99999,
 				MetaBytes = 3456,
 				WorkspaceID = workspaceId,
-				UnitOfMeasure = "Bytes(s)"
+				UnitOfMeasure = UnitsOfMeasureConstants.BYTES
 			};
 
 			_sink.OnMessage(jobStatisticsMessage1);
@@ -313,7 +314,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring
 				FileBytes = fileBytes,
 				MetaBytes = metaBytes,
 				WorkspaceID = 9999,
-				UnitOfMeasure = "Bytes(s)"
+				UnitOfMeasure = UnitsOfMeasureConstants.BYTES
 			};
 
 			_sink.OnMessage(jobStatisticsMessage1);

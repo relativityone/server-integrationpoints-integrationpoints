@@ -47,12 +47,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Monitoring\UnitsOfMeasureConstants.cs" />
     <Content Include="LICENSE.txt">
       <Paket>True</Paket>
     </Content>
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Monitoring\Instrumentation\IExternalServiceInstrumentation.cs" />
+    <Compile Include="Monitoring\Instrumentation\IExternalServiceInstrumentationStarted.cs" />
     <Compile Include="Monitoring\Messages\JobStatisticsMessage.cs" />
     <Compile Include="Monitoring\Messages\JobLifetime\JobCompletedMessage.cs" />
     <Compile Include="Monitoring\Messages\JobLifetime\JobFailedMessage.cs" />
@@ -117,6 +120,7 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>

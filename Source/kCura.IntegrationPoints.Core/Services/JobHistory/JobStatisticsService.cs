@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.IntegrationPoints.Common.Monitoring;
 using kCura.IntegrationPoints.Common.Monitoring.Messages;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
@@ -79,7 +80,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			{
 				Provider = provider,
 				CorrelationID = _helper.GetBatchInstance(_job).ToString(),
-				UnitOfMeasure = "Byte(s)",
+				UnitOfMeasure = UnitsOfMeasureConstants.BYTES,
 				JobID = _job.JobId.ToString(),
 				WorkspaceID = ((IntegrationPointSourceConfiguration?.SourceWorkspaceArtifactId == 0)
 					? IntegrationPointImportSettings?.CaseArtifactId

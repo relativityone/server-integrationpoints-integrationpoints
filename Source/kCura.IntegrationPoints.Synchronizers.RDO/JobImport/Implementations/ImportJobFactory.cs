@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.IntegrationPoints.Common.Monitoring;
 using kCura.IntegrationPoints.Common.Monitoring.Messages;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.Relativity.DataReaderClient;
@@ -66,7 +67,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 				JobSizeInBytes = jobSizeInBytes,
 				CorrelationID = correlationId.ToString(),
 				WorkspaceID = workspaceId,
-				UnitOfMeasure = "Bytes(s)"
+				UnitOfMeasure = UnitsOfMeasureConstants.BYTES
 			});
 
 			_messageService.Send(new JobThroughputBytesMessage()
