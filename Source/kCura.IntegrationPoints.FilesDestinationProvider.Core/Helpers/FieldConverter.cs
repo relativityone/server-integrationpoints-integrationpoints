@@ -74,22 +74,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers
 				Width = field.Width,
 				Wrapping = field.Wrapping
 			};
-
-			//fields from Field class that do not have equivalent in IField
-			//field.AccessControlListID;
-			//field.AccessControlListIsInherited;
-			//field.ContainerID;
-			//field.DisplayName;
-			//field.FieldCategoryID;
-			//field.FieldTypeID;
-			//field.IsReadOnlyInLayout;
-			//field.LinkType;
-			//field.ObjectsFieldArgs;
-			//field.RelationalPane;
-			//field.RelativityApplications;
-			//field.RepeatColumn;
-			//field.Rows;
-			//field.TableName;
 		}
 
 		private KeyboardShortcut ConvertFieldShortcut(IKeyboardShortcut fieldKeyboardShortcut)
