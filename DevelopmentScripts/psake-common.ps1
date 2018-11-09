@@ -21,7 +21,7 @@ properties {
     $version = '1.0.0.0'
     $server_type = 'teambranch'
     $build_type = 'DEV'
-    $run_sonarQube = $false
+    $run_sonarQube = $false 
 
     $git = Test-Path -Path ([System.IO.Path]::Combine($root, '.git'))
     if ($git) {
@@ -33,7 +33,6 @@ properties {
         $branch_hash = "unknown"
     }
     $build_config = "Debug"
-    $Injections = 'DisableInjections'
 
     #assembly info variables
     $company = 'Relativity ODA LLC'
@@ -61,7 +60,8 @@ properties {
     #nunit variables
     $NUnit = [System.IO.Path]::Combine($development_scripts_directory, 'NUnit.Runners', 'tools', 'nunit-console.exe')
     $NUnit_x86 = [System.IO.Path]::Combine($development_scripts_directory, 'NUnit.Runners', 'tools', 'nunit-console-x86.exe')
-    $NUnit3 = [System.IO.Path]::Combine($development_scripts_directory, 'NUnit.ConsoleRunner', 'tools', 'nunit3-console.exe')
+    $NUnit3 = [System.IO.Path]::Combine($development_scripts_directory, 'NUnit.ConsoleRunner', 'tools', 'nunit3-console.exe')    
+    $NUnit_TestOutputFile = [System.IO.Path]::Combine($testlog_directory, 'Test_Output_x86.xml')
 
     #build variables
     $verbosity ="normal" 
@@ -105,6 +105,10 @@ properties {
     $sonarqube_project_key = "kCura.IntegrationPoints"
     $sonarqube_project_name = "IntegrationPoints"
     $sonarqube_properties = [System.IO.Path]::Combine($development_scripts_directory, "sonarqube", "SonarQube.Analysis.xml")
+
+    #dotCover variables
+    $dotCover_exe = [System.IO.Path]::Combine($development_scripts_directory, 'JetBrains.dotCover.CommandLineTools', 'tools', 'dotCover.exe')
+    $dotCover_result = [System.IO.Path]::Combine($development_scripts_directory, 'AppCoverageReport.html')
 
     #chromedriver
     $chromedriver_path = [System.IO.Path]::Combine($nuget_packages_directory, 'Selenium.WebDriver.ChromeDriver', 'driver', 'win32', 'chromedriver.exe')

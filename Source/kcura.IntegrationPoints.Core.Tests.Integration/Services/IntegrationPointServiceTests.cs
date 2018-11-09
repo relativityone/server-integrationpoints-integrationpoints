@@ -254,6 +254,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		}
 
 		[Test]
+		[Ignore("Test to be fixed - doesn't work on Jenkins. Is fine when run locally. More info in REL-270155")]
 		public void RetryIntegrationPoint_GoldFlow()
 		{
 			//Arrange

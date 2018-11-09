@@ -1,10 +1,10 @@
 . .\psake-common.ps1
-
+. .\psake-test_dependencies.ps1
 
 task default -depends build
 
 
-task build -depends build_initalize, start_sonar, build_projects, build_rip_documentation, copy_dlls_to_lib_dir, copy_chrome_driver, stop_sonar, generate_validation_message_table {
+task build -depends build_initalize, start_sonar, build_projects, build_rip_documentation, copy_dlls_to_lib_dir, copy_chrome_driver, run_coverage, stop_sonar, generate_validation_message_table {
  
 }
 
@@ -17,7 +17,6 @@ task build_initalize {
     'build type   = ' + $build_type 
     'branch       = ' + $branch 
     'build config = ' + $build_config
-    'enable_injections = ' + $enable_injections
     'run_sonarqube = ' + $run_sonarqube
     ''
 
@@ -84,12 +83,6 @@ task configure_paket {
                                                                                 
 task build_projects -depends create_build_script, restore_nuget, configure_paket{  
     exec {     
-        if ($build_type -eq 'DEV' -And $enable_injections) {
-            $Injections = 'EnableInjections'
-        }
-        	
-        Write-Host 'Based on' $build_type 'Injection is set to' $Injections
-
         Write-Host 'Using MSBuild' $msbuild_exe 'with targets file' $targetsfile
 
         If(!(test-path $buildlogs_directory))
@@ -413,7 +406,9 @@ task start_sonar -depends get_sonarqube -precondition { return $RUN_SONARQUBE } 
         ("/k:$sonarqube_project_key"),
         ("/n:$sonarqube_project_name"),
         ("/v:$branch_hash"),
-        ("/s:$sonarqube_properties"))
+        ("/s:$sonarqube_properties"),
+        ("/d:sonar.cs.nunit.reportsPaths=""$NUnit_TestOutputFile"""),
+        ("/d:sonar.cs.dotcover.reportsPaths=""$dotCover_result"""))
     & $sonarqube_exe $args
 }
 
@@ -422,6 +417,29 @@ task stop_sonar -precondition { return $RUN_SONARQUBE }{
         'end')
 
     & $sonarqube_exe $args
+}
+
+task get_dotcover -precondition { (-not [System.IO.File]::Exists($dotCover_exe)) }{
+    exec {
+        & $nuget_exe @('install', 'JetBrains.dotCover.CommandLineTools', '-ExcludeVersion')
+    }    
+}
+
+task run_coverage -depends get_dotcover, get_testrunner, get_nunit, test_initalize -precondition { return $RUN_SONARQUBE } -ContinueOnError {
+    exec{
+        $arg = @(
+            "analyse",
+            ("/TargetExecutable=$testrunner_exe"),
+            ("/TargetArguments=/source:$root /tests:$inputfile /out:$testlog_directory /nunit3:$NUnit3"),
+            ("/Output=""AppCoverageReport.html"""),
+            ("/ReportType=""HTML""")
+            ("/Filters=""-:*Test*"""))
+
+        Write-Host $arg
+        & $dotCover_exe $arg
+        Write-Host "Coverage complete"
+        
+    }    
 }
 
 task generate_validation_message_table{

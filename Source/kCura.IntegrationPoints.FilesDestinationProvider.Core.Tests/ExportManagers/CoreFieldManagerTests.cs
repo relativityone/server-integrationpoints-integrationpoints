@@ -13,7 +13,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 	public class CoreFieldManagerTests
 	{
 		private IFieldRepository _fieldRepository;
-		private IRepositoryFactory _repositoryFactory;
 		private CoreFieldManager _sut;
 		private const int _APP_ID = 123;
 
@@ -21,10 +20,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 		public void SetUp()
 		{
 			_fieldRepository = Substitute.For<IFieldRepository>();
-			_repositoryFactory = Substitute.For<IRepositoryFactory>();
-			_repositoryFactory.GetFieldRepository(_APP_ID).Returns(_fieldRepository);
+			IRepositoryFactory repositoryFactory = Substitute.For<IRepositoryFactory>();
+			repositoryFactory.GetFieldRepository(_APP_ID).Returns(_fieldRepository);
 
-			_sut = new CoreFieldManager(_repositoryFactory);
+			_sut = new CoreFieldManager(repositoryFactory);
 		}
 
 		[Test]
