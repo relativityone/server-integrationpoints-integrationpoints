@@ -123,6 +123,7 @@ write-host "    -de[ploy] WORKSPACEID IPADDRESS uploads Integration Point binari
 write-host ""
 write-host "    -al[ert]                        Sshow alert popup when build completes"
 write-host "    -sonarqube                      runs sonarqube analysis and send results to server"
+write-host "    -st                             skips build of test projects to shorten build times"
 write-host ""
 
 exit

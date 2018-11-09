@@ -119,7 +119,7 @@ task build_rip_documentation {
     Write-Warning "Ignoring nant command (documentation build step). Please add nant to nuget packages and rewrite this task if needed."
 }
 
-task create_lib_dir  -Description "Creating lib directory in tests_directory" {
+task create_lib_dir {
     If (Test-Path $tests_directory)
     {
         Remove-Item -Recurse -Force $tests_directory
