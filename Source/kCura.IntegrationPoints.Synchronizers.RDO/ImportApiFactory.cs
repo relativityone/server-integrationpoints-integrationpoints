@@ -5,6 +5,7 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
@@ -18,17 +19,19 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
 	public class ImportApiFactory : IImportApiFactory
 	{
-		private readonly ITokenProvider _tokenProvider;
+		private readonly ITokenProvider _externalTokenProvider;
 		private readonly IFederatedInstanceManager _federatedInstanceManager;
 		private readonly ISystemEventLoggingService _systemEventLoggingService;
 		private readonly IAPILog _logger;
 		private readonly ISerializer _serializer;
+	    private readonly IAuthTokenGenerator _authTokenGenerator; 
 
 		private const string _RELATIVITY_BEARER_USERNAME = "XxX_BearerTokenCredentials_XxX";
 
-		public ImportApiFactory(ITokenProvider tokenProvider, IFederatedInstanceManager federatedInstanceManager, IHelper helper, ISystemEventLoggingService systemEventLoggingService, ISerializer serializer)
+		public ImportApiFactory(ITokenProvider externalTokenProvider, IAuthTokenGenerator authTokenGenerator, IFederatedInstanceManager federatedInstanceManager, IHelper helper, ISystemEventLoggingService systemEventLoggingService, ISerializer serializer)
 		{
-			_tokenProvider = tokenProvider;
+			_externalTokenProvider = externalTokenProvider;
+		    _authTokenGenerator = authTokenGenerator;
 			_federatedInstanceManager = federatedInstanceManager;
 			_systemEventLoggingService = systemEventLoggingService;
 			_serializer = serializer;
@@ -84,14 +87,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		{
 			if (settings.FederatedInstanceArtifactId == null)
 			{
-				return System.Security.Claims.ClaimsPrincipal.Current.Claims.Single(x => x.Type.Equals("access_token")).Value;
+			    return _authTokenGenerator.GetAuthToken();
 			}
 
 			OAuthClientDto oAuthClientDto = _serializer.Deserialize<OAuthClientDto>(settings.FederatedInstanceCredentials);
 			FederatedInstanceDto federatedInstance =
 				_federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(settings.FederatedInstanceArtifactId.Value);
 
-			return _tokenProvider.GetExternalSystemToken(oAuthClientDto.ClientId, oAuthClientDto.ClientSecret,
+			return _externalTokenProvider.GetExternalSystemToken(oAuthClientDto.ClientId, oAuthClientDto.ClientSecret,
 				new Uri(federatedInstance.InstanceUrl));
 		}
 

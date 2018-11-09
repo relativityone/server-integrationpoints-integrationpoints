@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.ImportProvider.Parser;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
@@ -121,6 +122,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
 
 		private static void RegisterDomainClasses(WindsorContainer windsorContainer)
 		{
+            windsorContainer.Register(Component.For<IAuthTokenGenerator>().Instance(Substitute.For<IAuthTokenGenerator>()));
 			windsorContainer.Register(Component.For<ITokenProvider>().Instance(Substitute.For<ITokenProvider>()));
 			windsorContainer.Register(Component.For<IFederatedInstanceManager>().Instance(Substitute.For<IFederatedInstanceManager>()));
 			windsorContainer.Register(Component.For<IMessageService>().Instance(Substitute.For<IMessageService>()));
