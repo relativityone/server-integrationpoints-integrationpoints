@@ -67,6 +67,7 @@ properties {
     #build variables
     $verbosity ="normal" 
     $inputfile = [System.IO.Path]::Combine($development_scripts_directory, 'build.xml')
+    $inputfile_noTests = [System.IO.Path]::Combine($development_scripts_directory, 'build_noTests.xml')
     $targetsfile = [System.IO.Path]::Combine($development_scripts_directory, 'msbuild.targets')
     $dependencygraph = [System.IO.Path]::Combine($development_scripts_directory, 'DependencyGraph.xml')
     $internaldlls = [System.IO.Path]::Combine($development_scripts_directory, 'dlls.txt')

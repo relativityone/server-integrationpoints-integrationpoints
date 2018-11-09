@@ -41,10 +41,16 @@ task get_buildhelper -precondition { (-not [System.IO.File]::Exists($buildhelper
     Copy-Item ([System.IO.Path]::Combine($development_scripts_directory, 'kCura.BuildHelper', 'lib', 'kCura.BuildHelper.exe')) $development_scripts_directory
 }
 
-task create_build_script -depends get_buildhelper {   
+task create_build_script -depends get_buildhelper { 
+    $build_input_file = $inputfile; 
+    if ($skip_tests)
+    {
+        $build_input_file = $inputfile_noTests
+    }
+
     exec {
         & $buildhelper_exe @(('/source:' + $root), 
-                             ('/input:' + $inputfile), 
+                             ('/input:' + $build_input_file), 
                              ('/output:' + $targetsfile), 
                              ('/graph:' + $dependencygraph), 
                              ('/dllout:' + $internaldlls), 
@@ -82,7 +88,7 @@ task configure_paket {
 	}
 }                                                                             
                                                                                 
-task build_projects -depends create_build_script, restore_nuget, configure_paket -precondition { return $RUN_SONARQUBE }{  
+task build_projects -depends create_build_script, restore_nuget, configure_paket {  
     exec {     
         Write-Host 'Using MSBuild' $msbuild_exe 'with targets file' $targetsfile
 
