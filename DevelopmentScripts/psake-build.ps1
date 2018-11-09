@@ -4,7 +4,7 @@
 task default -depends build
 
 
-task build -depends build_initalize, start_sonar, build_projects, build_rip_documentation, copy_dlls_to_lib_dir, copy_chrome_driver, run_coverage, stop_sonar, generate_validation_message_table {
+task build -depends build_initalize, start_sonar, build_projects, build_rip_documentation, copy_dlls_to_lib_dir, copy_test_dlls_to_lib_dir, copy_chrome_driver, run_coverage, stop_sonar, generate_validation_message_table {
  
 }
 
@@ -12,12 +12,13 @@ task build -depends build_initalize, start_sonar, build_projects, build_rip_docu
 task build_initalize {   
     ''
     ('='*25) + ' Build Parameters ' + ('='*25)
-    'version      = ' + $version 
-    'server type  = ' + $server_type 
-    'build type   = ' + $build_type 
-    'branch       = ' + $branch 
-    'build config = ' + $build_config
+    'version       = ' + $version 
+    'server type   = ' + $server_type 
+    'build type    = ' + $build_type 
+    'branch        = ' + $branch 
+    'build config  = ' + $build_config
     'run_sonarqube = ' + $run_sonarqube
+    'skip_tests    = ' + $skip_tests
     ''
 
     'Time: ' + (Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
@@ -81,7 +82,7 @@ task configure_paket {
 	}
 }                                                                             
                                                                                 
-task build_projects -depends create_build_script, restore_nuget, configure_paket{  
+task build_projects -depends create_build_script, restore_nuget, configure_paket -precondition { return $RUN_SONARQUBE }{  
     exec {     
         Write-Host 'Using MSBuild' $msbuild_exe 'with targets file' $targetsfile
 
@@ -97,11 +98,11 @@ task build_projects -depends create_build_script, restore_nuget, configure_paket
                          ('/nodereuse:false'),                         
                          ('/target:BuildTiers'),
 						 ('/verbosity:normal'),
-						 ('/property:WarningLevel=1'),
+                         ('/clp:ErrorsOnly'),
                          ('/nologo'),
                          ('/maxcpucount'), 
                          ('/dfl'),
-                         ('/flp:LogFile=' + $logfile),
+                         ('/flp:LogFile=' + $logfile + ';Verbosity=Normal'),
                          ('/flp2:warningsonly;LogFile=' + $logfilewarn),
                          ('/flp3:errorsonly;LogFile=' + $logfileerror))       
     } 
@@ -112,7 +113,7 @@ task build_rip_documentation {
     Write-Warning "Ignoring nant command (documentation build step). Please add nant to nuget packages and rewrite this task if needed."
 }
 
-task create_lib_dir {
+task create_lib_dir  -Description "Creating lib directory in tests_directory" {
     If (Test-Path $tests_directory)
     {
         Remove-Item -Recurse -Force $tests_directory
@@ -122,25 +123,6 @@ task create_lib_dir {
 
 task copy_dlls_to_lib_dir -depends create_lib_dir {
     $files =
-            "Source\kCura.IntegrationPoint.Tests.Core\ExternalDependencies",
-            "Source\kCura.IntegrationPoint.Tests.Core\TestData",
-            "Source\kCura.IntegrationPoint.Tests.Core\TestDataExtended",
-            "Source\kCura.IntegrationPoint.Tests.Core\TestDataImportFromLoadFile",
-            "Source\kCura.IntegrationPoint.Tests.Core\TestDataSaltPepper",
-            "Source\kCura.IntegrationPoint.Tests.Core\TestDataText",
-            "Source\kCura.IntegrationPoint.Tests.Core\app.config",
-            "Source\kCura.IntegrationPoint.Tests.Core\bin\x64\*.dll",
-            "Source\kCura.IntegrationPoint.Tests.Core\bin\x64\*.pdb",
-            "Source\kCura.IntegrationPoint.Tests.Core\bin\x64\*.xml",
-            "Source\kCura.IntegrationPoint.Tests.Core\bin\x64\*.config",
-            "Source\kCura.IntegrationPoints.Agent.Tests\bin\x64\*.dll",
-            "Source\kCura.IntegrationPoints.Agent.Tests\bin\x64\*.pdb",
-            "Source\kCura.IntegrationPoints.Agent.Tests\bin\x64\*.xml",
-            "Source\kCura.IntegrationPoints.Agent.Tests\bin\x64\*.config",
-            "Source\kCura.IntegrationPoints.Agent.Tests.Integration\bin\x64\*.dll",
-            "Source\kCura.IntegrationPoints.Agent.Tests.Integration\bin\x64\*.pdb",
-            "Source\kCura.IntegrationPoints.Agent.Tests.Integration\bin\x64\*.xml",
-            "Source\kCura.IntegrationPoints.Agent.Tests.Integration\bin\x64\*.config",
             "Source\kCura.IntegrationPoints.Agent\bin\x64\*.dll",
             "Source\kCura.IntegrationPoints.Agent\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.Agent\bin\x64\*.xml",
@@ -161,6 +143,137 @@ task copy_dlls_to_lib_dir -depends create_lib_dir {
             "Source\kCura.IntegrationPoints.Core.Contracts\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.Core.Contracts\bin\x64\*.config",
             "Source\kCura.IntegrationPoints.Core.Contracts\bin\x64\*.xml",
+            "Source\kCura.IntegrationPoints.Core\bin\x64\*.dll",
+            "Source\kCura.IntegrationPoints.Core\bin\x64\*.pdb",
+            "Source\kCura.IntegrationPoints.Core\bin\x64\*.config",
+            "Source\kCura.IntegrationPoints.Core\bin\x64\*.xml",
+            "Source\kCura.IntegrationPoints.Data\bin\x64\*.dll",
+            "Source\kCura.IntegrationPoints.Data\bin\x64\*.xml",
+            "Source\kCura.IntegrationPoints.Data\bin\x64\*.pdb",
+            "Source\kCura.IntegrationPoints.DocumentTransferProvider\bin\x64\*.dll",
+            "Source\kCura.IntegrationPoints.DocumentTransferProvider\bin\x64\*.config",
+            "Source\kCura.IntegrationPoints.DocumentTransferProvider\bin\x64\*.pdb",
+            "Source\kCura.IntegrationPoints.DocumentTransferProvider\bin\x64\*.xml",
+            "Source\kCura.IntegrationPoints.Domain\bin\x64\*.dll",
+            "Source\kCura.IntegrationPoints.Domain\bin\x64\*.pdb",
+            "Source\kCura.IntegrationPoints.Domain\bin\x64\*.config",
+            "Source\kCura.IntegrationPoints.Domain\bin\x64\*.xml",
+            "Source\kCura.IntegrationPoints.Email\bin\x64\*.dll",
+            "Source\kCura.IntegrationPoints.Email\bin\x64\*.pdb",
+            "Source\kCura.IntegrationPoints.Email\bin\x64\*.config",
+            "Source\kCura.IntegrationPoints.Email\bin\x64\*.xml",
+            "Source\kCura.IntegrationPoints.EventHandlers\bin\x64\*.dll",
+            "Source\kCura.IntegrationPoints.EventHandlers\bin\x64\*.pdb",
+            "Source\kCura.IntegrationPoints.EventHandlers\bin\x64\*.config",
+            "Source\kCura.IntegrationPoints.EventHandlers\bin\x64\*.xml",
+            "Source\kCura.IntegrationPoints.FilesDestinationProvider.Core\bin\x64\*.dll",
+            "Source\kCura.IntegrationPoints.FilesDestinationProvider.Core\bin\x64\*.pdb",
+            "Source\kCura.IntegrationPoints.FilesDestinationProvider.Core\bin\x64\*.config",
+            "Source\kCura.IntegrationPoints.FilesDestinationProvider.Core\bin\x64\*.xml",
+            "Source\kCura.IntegrationPoints.FtpProvider\bin\x64\*.dll",
+            "Source\kCura.IntegrationPoints.FtpProvider\bin\x64\*.config",
+            "Source\kCura.IntegrationPoints.FtpProvider\bin\x64\*.pdb",
+            "Source\kCura.IntegrationPoints.FtpProvider\bin\x64\*.xml",
+            "Source\kCura.IntegrationPoints.FtpProvider.Connection\bin\x64\*.dll",
+            "Source\kCura.IntegrationPoints.FtpProvider.Connection\bin\x64\*.pdb",
+            "Source\kCura.IntegrationPoints.FtpProvider.Connection\bin\x64\*.config",
+            "Source\kCura.IntegrationPoints.FtpProvider.Connection\bin\x64\*.xml",
+            "Source\kCura.IntegrationPoints.FtpProvider.Helpers\bin\x64\*.dll",
+            "Source\kCura.IntegrationPoints.FtpProvider.Helpers\bin\x64\*.pdb",
+            "Source\kCura.IntegrationPoints.FtpProvider.Helpers\bin\x64\*.config",
+            "Source\kCura.IntegrationPoints.FtpProvider.Helpers\bin\x64\*.xml",
+            "Source\kCura.IntegrationPoints.FtpProvider.Parser\bin\x64\*.dll",
+            "Source\kCura.IntegrationPoints.FtpProvider.Parser\bin\x64\*.pdb",
+            "Source\kCura.IntegrationPoints.FtpProvider.Parser\bin\x64\*.config",
+            "Source\kCura.IntegrationPoints.FtpProvider.Parser\bin\x64\*.xml",
+            "Source\kCura.IntegrationPoints.ImportProvider\bin\x64\*.dll",
+            "Source\kCura.IntegrationPoints.ImportProvider\bin\x64\*.pdb",
+            "Source\kCura.IntegrationPoints.ImportProvider\bin\x64\*.config",
+            "Source\kCura.IntegrationPoints.ImportProvider\bin\x64\*.xml",
+            "Source\kCura.IntegrationPoints.ImportProvider.Parser\bin\x64\*.dll",
+            "Source\kCura.IntegrationPoints.ImportProvider.Parser\bin\x64\*.pdb",
+            "Source\kCura.IntegrationPoints.ImportProvider.Parser\bin\x64\*.config",
+            "Source\kCura.IntegrationPoints.ImportProvider.Parser\bin\x64\*.xml",
+            "Source\kCura.IntegrationPoints.LDAPProvider\bin\x64\*.dll",
+            "Source\kCura.IntegrationPoints.LDAPProvider\bin\x64\*.pdb",
+            "Source\kCura.IntegrationPoints.LDAPProvider\bin\x64\*.config",
+            "Source\kCura.IntegrationPoints.LDAPProvider\bin\x64\*.xml",
+            "Source\kCura.IntegrationPoints.Management\bin\x64\*.dll",
+            "Source\kCura.IntegrationPoints.Management\bin\x64\*.config",
+            "Source\kCura.IntegrationPoints.Management\bin\x64\*.pdb",
+            "Source\kCura.IntegrationPoints.Management\bin\x64\*.xml",
+            "Source\kCura.IntegrationPoints.Services\bin\x64\*.dll",
+            "Source\kCura.IntegrationPoints.Services\bin\x64\*.pdb",
+            "Source\kCura.IntegrationPoints.Services\bin\x64\*.xml",
+            "Source\kCura.IntegrationPoints.Services\bin\x64\*.config",
+            "Source\kCura.IntegrationPoints.Services.Interfaces.Private\bin\x64\*.dll",
+            "Source\kCura.IntegrationPoints.Services.Interfaces.Private\bin\x64\*.pdb",
+            "Source\kCura.IntegrationPoints.Services.Interfaces.Private\bin\x64\*.config",
+            "Source\kCura.IntegrationPoints.Services.Interfaces.Private\bin\x64\*.xml",
+            "Source\kCura.IntegrationPoints.SourceProviderInstaller\bin\x64\*.dll",
+            "Source\kCura.IntegrationPoints.SourceProviderInstaller\bin\x64\*.pdb",
+            "Source\kCura.IntegrationPoints.SourceProviderInstaller\bin\x64\*.config",
+            "Source\kCura.IntegrationPoints.SourceProviderInstaller\bin\x64\*.xml",
+            "Source\kCura.IntegrationPoints.Synchronizers.RDO\bin\x64\*.dll",
+            "Source\kCura.IntegrationPoints.Synchronizers.RDO\bin\x64\*.pdb",
+            "Source\kCura.IntegrationPoints.Synchronizers.RDO\bin\x64\*.config",
+            "Source\kCura.IntegrationPoints.Synchronizers.RDO\bin\x64\*.xml",
+            "Source\kCura.IntegrationPoints.Web\bin\x64\*.dll",
+            "Source\kCura.IntegrationPoints.Web\bin\x64\*.pdb",
+            "Source\kCura.IntegrationPoints.Web\bin\x64\*.config",
+            "Source\kCura.IntegrationPoints.Web\bin\x64\*.xml",
+            "Source\kCura.ScheduleQueue.AgentBase\bin\x64\*.dll",
+            "Source\kCura.ScheduleQueue.AgentBase\bin\x64\*.config",
+            "Source\kCura.ScheduleQueue.AgentBase\bin\x64\*.pdb",
+            "Source\kCura.ScheduleQueue.AgentBase\bin\x64\*.xml",
+            "Source\kCura.ScheduleQueue.Core\bin\x64\*.dll",
+            "Source\kCura.ScheduleQueue.Core\bin\x64\*.config",
+            "Source\kCura.ScheduleQueue.Core\bin\x64\*.pdb",
+            "Source\kCura.ScheduleQueue.Core\bin\x64\*.xml",
+            "Source\Provider\bin\*.dll",
+            "Source\Provider\bin\*.config",
+            "Source\Provider\bin\*.xml",
+            "Source\Provider\bin\*.pdb",
+            "Source\JsonLoader\bin\*.dll",
+            "Source\JsonLoader\bin\*.config",
+            "Source\JsonLoader\bin\*.xml",
+            "Source\JsonLoader\bin\*.pdb"
+
+    
+
+    foreach ($file in $files)
+    {
+        $tmpPath = Join-Path -Path $root -ChildPath $file        
+        Copy-Item -path $tmpPath -Destination $tests_directory -Recurse -Force
+    }
+   
+    $oiPathSrc = Join-Path -Path $root -ChildPath "Source\kCura.IntegrationPoint.Tests.Core\oi\unmanaged\*"
+    $oiPathDest = Join-Path -Path $tests_directory -ChildPath "oi\"
+    New-Item -Path $oiPathDest -ItemType "directory"
+    Copy-Item -path $oiPathSrc -Destination $oiPathDest
+}
+
+task copy_test_dlls_to_lib_dir -depends create_lib_dir -precondition { return -not $skip_tests } {
+    $test_files =
+            "Source\kCura.IntegrationPoint.Tests.Core\ExternalDependencies",
+            "Source\kCura.IntegrationPoint.Tests.Core\TestData",
+            "Source\kCura.IntegrationPoint.Tests.Core\TestDataExtended",
+            "Source\kCura.IntegrationPoint.Tests.Core\TestDataImportFromLoadFile",
+            "Source\kCura.IntegrationPoint.Tests.Core\TestDataSaltPepper",
+            "Source\kCura.IntegrationPoint.Tests.Core\TestDataText",
+            "Source\kCura.IntegrationPoint.Tests.Core\app.config",
+            "Source\kCura.IntegrationPoint.Tests.Core\bin\x64\*.dll",
+            "Source\kCura.IntegrationPoint.Tests.Core\bin\x64\*.pdb",
+            "Source\kCura.IntegrationPoint.Tests.Core\bin\x64\*.xml",
+            "Source\kCura.IntegrationPoint.Tests.Core\bin\x64\*.config",
+            "Source\kCura.IntegrationPoints.Agent.Tests\bin\x64\*.dll",
+            "Source\kCura.IntegrationPoints.Agent.Tests\bin\x64\*.pdb",
+            "Source\kCura.IntegrationPoints.Agent.Tests\bin\x64\*.xml",
+            "Source\kCura.IntegrationPoints.Agent.Tests\bin\x64\*.config",
+            "Source\kCura.IntegrationPoints.Agent.Tests.Integration\bin\x64\*.dll",
+            "Source\kCura.IntegrationPoints.Agent.Tests.Integration\bin\x64\*.pdb",
+            "Source\kCura.IntegrationPoints.Agent.Tests.Integration\bin\x64\*.xml",
+            "Source\kCura.IntegrationPoints.Agent.Tests.Integration\bin\x64\*.config",
             "Source\kCura.IntegrationPoints.Core.Contracts.Tests\bin\x64\*.dll",
             "Source\kCura.IntegrationPoints.Core.Contracts.Tests\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.Core.Contracts.Tests\bin\x64\*.config",
@@ -173,13 +286,6 @@ task copy_dlls_to_lib_dir -depends create_lib_dir {
             "Source\kCura.IntegrationPoints.Core.Tests.Integration\bin\x64\*.dll",
             "Source\kCura.IntegrationPoints.Core.Tests.Integration\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.Core.Tests.Integration\bin\x64\*.xml",
-            "Source\kCura.IntegrationPoints.Core\bin\x64\*.dll",
-            "Source\kCura.IntegrationPoints.Core\bin\x64\*.pdb",
-            "Source\kCura.IntegrationPoints.Core\bin\x64\*.config",
-            "Source\kCura.IntegrationPoints.Core\bin\x64\*.xml",
-            "Source\kCura.IntegrationPoints.Data\bin\x64\*.dll",
-            "Source\kCura.IntegrationPoints.Data\bin\x64\*.xml",
-            "Source\kCura.IntegrationPoints.Data\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.Data.Tests\bin\x64\*.dll",
             "Source\kCura.IntegrationPoints.Data.Tests\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.Data.Tests\bin\x64\*.xml",
@@ -188,10 +294,6 @@ task copy_dlls_to_lib_dir -depends create_lib_dir {
             "Source\kCura.IntegrationPoints.Data.Tests.Integration\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.Data.Tests.Integration\bin\x64\*.xml",
             "Source\kCura.IntegrationPoints.Data.Tests.Integration\bin\x64\*.config",
-            "Source\kCura.IntegrationPoints.DocumentTransferProvider\bin\x64\*.dll",
-            "Source\kCura.IntegrationPoints.DocumentTransferProvider\bin\x64\*.config",
-            "Source\kCura.IntegrationPoints.DocumentTransferProvider\bin\x64\*.pdb",
-            "Source\kCura.IntegrationPoints.DocumentTransferProvider\bin\x64\*.xml",
             "Source\kCura.IntegrationPoints.DocumentTransferProvider.Tests\bin\x64\*.dll",
             "Source\kCura.IntegrationPoints.DocumentTransferProvider.Tests\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.DocumentTransferProvider.Tests\bin\x64\*.config",
@@ -200,26 +302,14 @@ task copy_dlls_to_lib_dir -depends create_lib_dir {
             "Source\kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration\bin\x64\*.config",
             "Source\kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration\bin\x64\*.xml",
-            "Source\kCura.IntegrationPoints.Domain\bin\x64\*.dll",
-            "Source\kCura.IntegrationPoints.Domain\bin\x64\*.pdb",
-            "Source\kCura.IntegrationPoints.Domain\bin\x64\*.config",
-            "Source\kCura.IntegrationPoints.Domain\bin\x64\*.xml",
             "Source\kCura.IntegrationPoints.Domain.Tests\bin\x64\*.dll",
             "Source\kCura.IntegrationPoints.Domain.Tests\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.Domain.Tests\bin\x64\*.config",
             "Source\kCura.IntegrationPoints.Domain.Tests\bin\x64\*.xml",
-            "Source\kCura.IntegrationPoints.Email\bin\x64\*.dll",
-            "Source\kCura.IntegrationPoints.Email\bin\x64\*.pdb",
-            "Source\kCura.IntegrationPoints.Email\bin\x64\*.config",
-            "Source\kCura.IntegrationPoints.Email\bin\x64\*.xml",
             "Source\kCura.IntegrationPoints.Email.Tests\bin\x64\*.dll",
             "Source\kCura.IntegrationPoints.Email.Tests\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.Email.Tests\bin\x64\*.config",
             "Source\kCura.IntegrationPoints.Email.Tests\bin\x64\*.xml",
-            "Source\kCura.IntegrationPoints.EventHandlers\bin\x64\*.dll",
-            "Source\kCura.IntegrationPoints.EventHandlers\bin\x64\*.pdb",
-            "Source\kCura.IntegrationPoints.EventHandlers\bin\x64\*.config",
-            "Source\kCura.IntegrationPoints.EventHandlers\bin\x64\*.xml",
             "Source\kCura.IntegrationPoints.EventHandlers.Tests\bin\x64\*.dll",
             "Source\kCura.IntegrationPoints.EventHandlers.Tests\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.EventHandlers.Tests\bin\x64\*.config",
@@ -228,10 +318,6 @@ task copy_dlls_to_lib_dir -depends create_lib_dir {
             "Source\kCura.IntegrationPoints.EventHandlers.Tests.Integration\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.EventHandlers.Tests.Integration\bin\x64\*.config",
             "Source\kCura.IntegrationPoints.EventHandlers.Tests.Integration\bin\x64\*.xml",
-            "Source\kCura.IntegrationPoints.FilesDestinationProvider.Core\bin\x64\*.dll",
-            "Source\kCura.IntegrationPoints.FilesDestinationProvider.Core\bin\x64\*.pdb",
-            "Source\kCura.IntegrationPoints.FilesDestinationProvider.Core\bin\x64\*.config",
-            "Source\kCura.IntegrationPoints.FilesDestinationProvider.Core\bin\x64\*.xml",
             "Source\kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests\bin\x64\*.dll",
             "Source\kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests\bin\x64\*.config",
@@ -240,46 +326,22 @@ task copy_dlls_to_lib_dir -depends create_lib_dir {
             "Source\kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration\bin\x64\*.config",
             "Source\kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration\bin\x64\*.xml",
-            "Source\kCura.IntegrationPoints.FtpProvider\bin\x64\*.dll",
-            "Source\kCura.IntegrationPoints.FtpProvider\bin\x64\*.config",
-            "Source\kCura.IntegrationPoints.FtpProvider\bin\x64\*.pdb",
-            "Source\kCura.IntegrationPoints.FtpProvider\bin\x64\*.xml",
             "Source\kCura.IntegrationPoints.FtpProvider.Tests\bin\x64\*.dll",
             "Source\kCura.IntegrationPoints.FtpProvider.Tests\bin\x64\*.config",
             "Source\kCura.IntegrationPoints.FtpProvider.Tests\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.FtpProvider.Tests\bin\x64\*.xml",
-            "Source\kCura.IntegrationPoints.FtpProvider.Connection\bin\x64\*.dll",
-            "Source\kCura.IntegrationPoints.FtpProvider.Connection\bin\x64\*.pdb",
-            "Source\kCura.IntegrationPoints.FtpProvider.Connection\bin\x64\*.config",
-            "Source\kCura.IntegrationPoints.FtpProvider.Connection\bin\x64\*.xml",
-            "Source\kCura.IntegrationPoints.FtpProvider.Helpers\bin\x64\*.dll",
-            "Source\kCura.IntegrationPoints.FtpProvider.Helpers\bin\x64\*.pdb",
-            "Source\kCura.IntegrationPoints.FtpProvider.Helpers\bin\x64\*.config",
-            "Source\kCura.IntegrationPoints.FtpProvider.Helpers\bin\x64\*.xml",
             "Source\kCura.IntegrationPoints.FtpProvider.Helpers.Tests\bin\x64\*.dll",
             "Source\kCura.IntegrationPoints.FtpProvider.Helpers.Tests\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.FtpProvider.Helpers.Tests\bin\x64\*.config",
             "Source\kCura.IntegrationPoints.FtpProvider.Helpers.Tests\bin\x64\*.xml",
-            "Source\kCura.IntegrationPoints.FtpProvider.Parser\bin\x64\*.dll",
-            "Source\kCura.IntegrationPoints.FtpProvider.Parser\bin\x64\*.pdb",
-            "Source\kCura.IntegrationPoints.FtpProvider.Parser\bin\x64\*.config",
-            "Source\kCura.IntegrationPoints.FtpProvider.Parser\bin\x64\*.xml",
             "Source\kCura.IntegrationPoints.FtpProvider.Parser.Tests\bin\x64\*.dll",
             "Source\kCura.IntegrationPoints.FtpProvider.Parser.Tests\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.FtpProvider.Parser.Tests\bin\x64\*.config",
             "Source\kCura.IntegrationPoints.FtpProvider.Parser.Tests\bin\x64\*.xml",
-            "Source\kCura.IntegrationPoints.ImportProvider\bin\x64\*.dll",
-            "Source\kCura.IntegrationPoints.ImportProvider\bin\x64\*.pdb",
-            "Source\kCura.IntegrationPoints.ImportProvider\bin\x64\*.config",
-            "Source\kCura.IntegrationPoints.ImportProvider\bin\x64\*.xml",
             "Source\kCura.IntegrationPoints.ImportProvider.Tests\bin\x64\*.dll",
             "Source\kCura.IntegrationPoints.ImportProvider.Tests\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.ImportProvider.Tests\bin\x64\*.config",
             "Source\kCura.IntegrationPoints.ImportProvider.Tests\bin\x64\*.xml",
-            "Source\kCura.IntegrationPoints.ImportProvider.Parser\bin\x64\*.dll",
-            "Source\kCura.IntegrationPoints.ImportProvider.Parser\bin\x64\*.pdb",
-            "Source\kCura.IntegrationPoints.ImportProvider.Parser\bin\x64\*.config",
-            "Source\kCura.IntegrationPoints.ImportProvider.Parser\bin\x64\*.xml",
             "Source\kCura.IntegrationPoints.ImportProvider.Parser.Tests\bin\x64\*.dll",
             "Source\kCura.IntegrationPoints.ImportProvider.Parser.Tests\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.ImportProvider.Parser.Tests\bin\x64\*.config",
@@ -289,42 +351,22 @@ task copy_dlls_to_lib_dir -depends create_lib_dir {
             "Source\kCura.IntegrationPoints.ImportProvider.Tests.Integration\bin\x64\*.config",
             "Source\kCura.IntegrationPoints.ImportProvider.Tests.Integration\bin\x64\*.xml",
             "Source\kCura.IntegrationPoints.ImportProvider.Tests.Integration\TestDataForImport",
-            "Source\kCura.IntegrationPoints.LDAPProvider\bin\x64\*.dll",
-            "Source\kCura.IntegrationPoints.LDAPProvider\bin\x64\*.pdb",
-            "Source\kCura.IntegrationPoints.LDAPProvider\bin\x64\*.config",
-            "Source\kCura.IntegrationPoints.LDAPProvider\bin\x64\*.xml",
             "Source\kCura.IntegrationPoints.LDAPProvider.Tests\bin\x64\*.dll",
             "Source\kCura.IntegrationPoints.LDAPProvider.Tests\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.LDAPProvider.Tests\bin\x64\*.config",
             "Source\kCura.IntegrationPoints.LDAPProvider.Tests\bin\x64\*.xml",
-            "Source\kCura.IntegrationPoints.Management\bin\x64\*.dll",
-            "Source\kCura.IntegrationPoints.Management\bin\x64\*.config",
-            "Source\kCura.IntegrationPoints.Management\bin\x64\*.pdb",
-            "Source\kCura.IntegrationPoints.Management\bin\x64\*.xml",
             "Source\kCura.IntegrationPoints.Management.Tests\bin\x64\*.dll",
             "Source\kCura.IntegrationPoints.Management.Tests\bin\x64\*.config",
             "Source\kCura.IntegrationPoints.Management.Tests\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.Management.Tests\bin\x64\*.xml",
-            "Source\kCura.IntegrationPoints.Services\bin\x64\*.dll",
-            "Source\kCura.IntegrationPoints.Services\bin\x64\*.pdb",
-            "Source\kCura.IntegrationPoints.Services\bin\x64\*.xml",
-            "Source\kCura.IntegrationPoints.Services\bin\x64\*.config",
             "Source\kCura.IntegrationPoints.Services.Tests\bin\x64\*.dll",
             "Source\kCura.IntegrationPoints.Services.Tests\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.Services.Tests\bin\x64\*.xml",
             "Source\kCura.IntegrationPoints.Services.Tests\bin\x64\*.config",
-            "Source\kCura.IntegrationPoints.Services.Interfaces.Private\bin\x64\*.dll",
-            "Source\kCura.IntegrationPoints.Services.Interfaces.Private\bin\x64\*.pdb",
-            "Source\kCura.IntegrationPoints.Services.Interfaces.Private\bin\x64\*.config",
-            "Source\kCura.IntegrationPoints.Services.Interfaces.Private\bin\x64\*.xml",
             "Source\kCura.IntegrationPoints.Services.Tests.Integration\bin\x64\*.dll",
             "Source\kCura.IntegrationPoints.Services.Tests.Integration\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.Services.Tests.Integration\bin\x64\*.config",
             "Source\kCura.IntegrationPoints.Services.Tests.Integration\bin\x64\*.xml",
-            "Source\kCura.IntegrationPoints.SourceProviderInstaller\bin\x64\*.dll",
-            "Source\kCura.IntegrationPoints.SourceProviderInstaller\bin\x64\*.pdb",
-            "Source\kCura.IntegrationPoints.SourceProviderInstaller\bin\x64\*.config",
-            "Source\kCura.IntegrationPoints.SourceProviderInstaller\bin\x64\*.xml",
             "Source\kCura.IntegrationPoints.Synchronizers.RDO.Tests\bin\x64\*.dll",
             "Source\kCura.IntegrationPoints.Synchronizers.RDO.Tests\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.Synchronizers.RDO.Tests\bin\x64\*.config",
@@ -333,18 +375,10 @@ task copy_dlls_to_lib_dir -depends create_lib_dir {
             "Source\kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration\bin\x64\*.config",
             "Source\kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration\bin\x64\*.xml",
-            "Source\kCura.IntegrationPoints.Synchronizers.RDO\bin\x64\*.dll",
-            "Source\kCura.IntegrationPoints.Synchronizers.RDO\bin\x64\*.pdb",
-            "Source\kCura.IntegrationPoints.Synchronizers.RDO\bin\x64\*.config",
-            "Source\kCura.IntegrationPoints.Synchronizers.RDO\bin\x64\*.xml",
             "Source\kCura.IntegrationPoints.UITests\bin\x64\*.dll",
             "Source\kCura.IntegrationPoints.UITests\bin\x64\*.config",
             "Source\kCura.IntegrationPoints.UITests\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.UITests\bin\x64\*.xml",
-            "Source\kCura.IntegrationPoints.Web\bin\x64\*.dll",
-            "Source\kCura.IntegrationPoints.Web\bin\x64\*.pdb",
-            "Source\kCura.IntegrationPoints.Web\bin\x64\*.config",
-            "Source\kCura.IntegrationPoints.Web\bin\x64\*.xml",
             "Source\kCura.IntegrationPoints.Web.Tests\bin\x64\*.dll",
             "Source\kCura.IntegrationPoints.Web.Tests\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.Web.Tests\bin\x64\*.config",
@@ -353,14 +387,6 @@ task copy_dlls_to_lib_dir -depends create_lib_dir {
             "Source\kCura.IntegrationPoints.Web.Tests.Integration\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.Web.Tests.Integration\bin\x64\*.config",
             "Source\kCura.IntegrationPoints.Web.Tests.Integration\bin\x64\*.xml",
-            "Source\kCura.ScheduleQueue.AgentBase\bin\x64\*.dll",
-            "Source\kCura.ScheduleQueue.AgentBase\bin\x64\*.config",
-            "Source\kCura.ScheduleQueue.AgentBase\bin\x64\*.pdb",
-            "Source\kCura.ScheduleQueue.AgentBase\bin\x64\*.xml",
-            "Source\kCura.ScheduleQueue.Core\bin\x64\*.dll",
-            "Source\kCura.ScheduleQueue.Core\bin\x64\*.config",
-            "Source\kCura.ScheduleQueue.Core\bin\x64\*.pdb",
-            "Source\kCura.ScheduleQueue.Core\bin\x64\*.xml",
             "Source\kCura.ScheduleQueue.Core.Tests\bin\x64\*.dll",
             "Source\kCura.ScheduleQueue.Core.Tests\bin\x64\*.pdb",
             "Source\kCura.ScheduleQueue.Core.Tests\bin\x64\*.config",
@@ -368,20 +394,11 @@ task copy_dlls_to_lib_dir -depends create_lib_dir {
             "Source\kCura.ScheduleQueue.Core.Tests.Integration\bin\x64\*.dll",
             "Source\kCura.ScheduleQueue.Core.Tests.Integration\bin\x64\*.pdb",
             "Source\kCura.ScheduleQueue.Core.Tests.Integration\bin\x64\*.config",
-            "Source\kCura.ScheduleQueue.Core.Tests.Integration\bin\x64\*.xml",
-            "Source\Provider\bin\*.dll",
-            "Source\Provider\bin\*.config",
-            "Source\Provider\bin\*.xml",
-            "Source\Provider\bin\*.pdb",
-            "Source\JsonLoader\bin\*.dll",
-            "Source\JsonLoader\bin\*.config",
-            "Source\JsonLoader\bin\*.xml",
-            "Source\JsonLoader\bin\*.pdb"
+            "Source\kCura.ScheduleQueue.Core.Tests.Integration\bin\x64\*.xml"
 
-    foreach ($file in $files)
+    foreach ($file in $test_files)
     {
-        $tmpPath = Join-Path -Path $root -ChildPath $file
-        Write-Host "Copying" $tmpPath
+        $tmpPath = Join-Path -Path $root -ChildPath $file        
         Copy-Item -path $tmpPath -Destination $tests_directory -Recurse -Force
     }
     $testsConfigPath = Join-Path -Path $root -ChildPath "Source\kCura.IntegrationPoint.Tests.Core\app.config"
@@ -389,11 +406,6 @@ task copy_dlls_to_lib_dir -depends create_lib_dir {
     $testsConfigDestinationPath2 = Join-Path -Path $development_scripts_directory -ChildPath "IntegrationPointsTests.config"
     Copy-Item -path $testsConfigPath -Destination $testsConfigDestinationPath
     Copy-Item -path $testsConfigPath -Destination $testsConfigDestinationPath2
-
-    $oiPathSrc = Join-Path -Path $root -ChildPath "Source\kCura.IntegrationPoint.Tests.Core\oi\unmanaged\*"
-    $oiPathDest = Join-Path -Path $tests_directory -ChildPath "oi\"
-    New-Item -Path $oiPathDest -ItemType "directory"
-    Copy-Item -path $oiPathSrc -Destination $oiPathDest
 }
 
 task copy_chrome_driver -depends create_lib_dir, build_projects {
