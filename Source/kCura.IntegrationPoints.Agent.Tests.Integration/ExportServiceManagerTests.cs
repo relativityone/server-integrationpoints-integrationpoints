@@ -29,6 +29,7 @@ using kCura.Data.RowDataGateway;
 using kCura.IntegrationPoints.Agent.Validation;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using Relativity.API;
 using Constants = kCura.IntegrationPoint.Tests.Core.Constants;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
@@ -86,7 +87,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			var jobStatisticsService = Container.Resolve<JobStatisticsService>();
 			var agentValidator = Container.Resolve<IAgentValidator>();
 			var jobStatusUpdater = Container.Resolve<IJobStatusUpdater>();
-			var jobHistoryUpdater = new JobHistoryBatchUpdateStatus(jobStatusUpdater, jobHistoryService, _jobService, serializer);
+			var logger = Container.Resolve<IAPILog>();
+			var jobHistoryUpdater = new JobHistoryBatchUpdateStatus(jobStatusUpdater, jobHistoryService, _jobService, serializer, logger);
 			
 
 			_exportManager = new ExportServiceManager(Helper, helperFactory,
