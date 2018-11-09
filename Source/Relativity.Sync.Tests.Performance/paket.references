@@ -4,3 +4,5 @@ CSharpGuidelineAnalyzer
 Newtonsoft.Json
 Polly
 Autofac
+
+NUnit
