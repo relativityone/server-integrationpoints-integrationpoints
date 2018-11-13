@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Agent.TaskFactory;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 			SetUp();
 			// Arrange
 			int jobId = 123;
-			Job job = JobExtensions.CreateJob(jobId);
+			Job job = new JobBuilder().WithJobId(jobId).Build();
 
 			var jobHistory = new JobHistory
 			{
@@ -55,7 +55,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 			SetUp();
 			// Arrange
 			int jobId = 123;
-			Job job = JobExtensions.CreateJob(jobId);
+			Job job = new JobBuilder().WithJobId(jobId).Build();
 
 			var jobHistory = new JobHistory
 			{

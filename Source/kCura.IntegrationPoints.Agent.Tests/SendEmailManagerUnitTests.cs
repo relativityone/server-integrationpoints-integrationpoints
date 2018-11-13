@@ -1,5 +1,4 @@
 ﻿using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Models;
@@ -10,6 +9,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tests
@@ -60,7 +60,11 @@ namespace kCura.IntegrationPoints.Agent.Tests
 		public void CreateBatchJob_GoldFlow(List<string> list)
 		{
 			// arrange
-			Job job = JobExtensions.CreateJob(1, 1, _serializedEmailMessage);
+			Job job = new JobBuilder()
+				.WithWorkspaceId(1)
+				.WithRelatedObjectArtifactId(1)
+				.WithJobDetails(_serializedEmailMessage)
+				.Build();
 			_serializer.Deserialize<EmailMessage>(job.JobDetails).Returns(JsonConvert.DeserializeObject<EmailMessage>(job.JobDetails));
 
 			// act

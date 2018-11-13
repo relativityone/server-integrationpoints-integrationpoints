@@ -11,6 +11,7 @@ namespace kCura.IntegrationPoints.Config
 		private const string _DISABLE_NATIVE_VALIDATION = "DisableNativeValidation";
 		private const string _RIP_METRICS_CONFIGURATION = "MetricsConfiguration";
 		private const string _RIP_METRICS_THROTTLING = "MetricsThrottlingSeconds";
+		private const string _RIP_METRICS_MEASURE_EXTERNAL_CALLS_DURATION = "MeasureDurationOfExternalCalls";
 		private static readonly Lazy<Config> _instance = new Lazy<Config>(() => new Config());
 
 		protected Config()
@@ -41,6 +42,8 @@ namespace kCura.IntegrationPoints.Config
 				return value >= 0 ? value : _BATCH_SIZE_DEFAULT;
 			}
 		}
+
+		public bool MeasureDurationOfExternalCalls => GetValue(_RIP_METRICS_MEASURE_EXTERNAL_CALLS_DURATION, false);
 
 		private bool GetMetricsToggle(Metrics metricName)
 		{

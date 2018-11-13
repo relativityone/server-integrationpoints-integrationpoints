@@ -2,7 +2,7 @@
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 		public void OnJobStart_DoNotUpdateOnStoppingJob()
 		{
 			// ARRANGE
-			Job job = JobExtensions.CreateJob(_workspaceID, _jobID);
+			Job job = new JobBuilder().WithJobId(_jobID).WithWorkspaceId(_workspaceID).Build();
 			_jobService.GetJob(job.JobId).Returns(job.CopyJobWithStopState(StopState.Stopping));
 
 			// ACT
@@ -55,7 +55,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 		public void OnJobStart_DoNotUpdateOnNonStoppingJob(StopState state)
 		{
 			// ARRANGE
-			Job job = JobExtensions.CreateJob(_workspaceID, _jobID);
+			Job job = new JobBuilder().WithJobId(_jobID).WithWorkspaceId(_workspaceID).Build();
 			TaskParameters parameters = new TaskParameters() {BatchInstance = Guid.NewGuid()};
 			_jobService.GetJob(job.JobId).Returns(job.CopyJobWithStopState(state));
 			_serializer.Deserialize<TaskParameters>(job.JobDetails).Returns(parameters);
@@ -73,7 +73,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 		public void OnJobComplete_UpdateTheJobStatus()
 		{
 			// ARRANGE
-			Job job = JobExtensions.CreateJob(_workspaceID, _jobID);
+			Job job = new JobBuilder().WithJobId(_jobID).WithWorkspaceId(_workspaceID).Build();
 			JobHistory history = new JobHistory();
 			var expectedStatus = JobStatusChoices.JobHistoryCompleted;
 			TaskParameters parameters = new TaskParameters() { BatchInstance = Guid.NewGuid() };

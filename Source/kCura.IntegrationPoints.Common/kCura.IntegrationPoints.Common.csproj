@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Monitoring\Instrumentation\IExternalServiceSimpleInstrumentation.cs" />
+    <Compile Include="Monitoring\Instrumentation\IExternalServiceInstrumentationProvider.cs" />
     <Compile Include="Monitoring\UnitsOfMeasureConstants.cs" />
     <Content Include="LICENSE.txt">
       <Paket>True</Paket>

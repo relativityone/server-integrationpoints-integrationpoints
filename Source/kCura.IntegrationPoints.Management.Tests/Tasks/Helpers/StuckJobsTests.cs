@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoint.Tests.Core.Extensions;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Management.Tasks.Helpers;
 using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
-using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
 
@@ -37,6 +36,7 @@ namespace kCura.IntegrationPoints.Management.Tests.Tasks.Helpers
 			// ARRANGE
 			DateTime now = DateTime.UtcNow;
 
+			const int agentId = 671;
 			const string batchInstance2 = "EF1E654E-0164-46C0-9A76-1DFE32C557A9";
 			const string batchInstance3 = "40B02845-FD6A-4A60-A0E2-7F53F4B89CA8";
 
@@ -49,32 +49,11 @@ namespace kCura.IntegrationPoints.Management.Tests.Tasks.Helpers
 			{
 				BatchInstance = new Guid(batchInstance3)
 			};
-
-			Job job1 = JobExtensions.CreateJob(_WORKSPACE_ID_A, 1, row =>
-			{
-				row["LockedByAgentID"] = 671;
-				return new Job(row);
-			});
-
-			Job job2 = JobExtensions.CreateJob(_WORKSPACE_ID_B, 2, row =>
-			{
-				row["LockedByAgentID"] = 671;
-				return new Job(row);
-			});
-
-			job2.JobDetails = JsonConvert.SerializeObject(taskParameter2);
-			Job job3 = JobExtensions.CreateJob(_WORKSPACE_ID_B, 3, row =>
-			{
-				row["LockedByAgentID"] = 671;
-				return new Job(row);
-			});
-
-			job3.JobDetails = JsonConvert.SerializeObject(taskParameter3);
-			Job job4 = JobExtensions.CreateJob(_WORKSPACE_ID_B, 4, row => 
-			{
-				row["LockedByAgentID"] = DBNull.Value;
-				return new Job(row);
-			});
+			
+			Job job1 = new JobBuilder().WithJobId(1).WithWorkspaceId(_WORKSPACE_ID_A).WithLockedByAgentId(agentId).Build();
+			Job job2 = new JobBuilder().WithJobId(2).WithWorkspaceId(_WORKSPACE_ID_B).WithLockedByAgentId(agentId).WithJobDetails(taskParameter2).Build();
+			Job job3 = new JobBuilder().WithJobId(3).WithWorkspaceId(_WORKSPACE_ID_B).WithLockedByAgentId(agentId).WithJobDetails(taskParameter3).Build();
+			Job job4 = new JobBuilder().WithJobId(4).WithWorkspaceId(_WORKSPACE_ID_B).WithLockedByAgentId(DBNull.Value).Build();
 
 			var rdo2 = new RDO(593)
 			{

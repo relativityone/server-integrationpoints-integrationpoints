@@ -50,6 +50,7 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="JobExecutorTests.cs" />
+    <Compile Include="Monitoring\ExternalServiceInstrumentationProviderWithJobContextTests.cs" />
     <Compile Include="SendEmailManagerUnitTests.cs" />
     <Compile Include="TaskExceptionServiceTests.cs" />
     <Compile Include="TaskExceptionMediatorTests.cs" />
@@ -78,6 +79,14 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Agent\kCura.IntegrationPoints.Agent.csproj">
       <Project>{bfa5641b-aa6f-4fa5-a20d-6f42b484cae4}</Project>
       <Name>kCura.IntegrationPoints.Agent</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Common\kCura.IntegrationPoints.Common.csproj">
+      <Project>{32bcb03b-4980-4434-9392-f72334e6e348}</Project>
+      <Name>kCura.IntegrationPoints.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Config\kCura.IntegrationPoints.Config.csproj">
+      <Project>{def928b5-37ce-4bf3-b663-f0b8912c9c3f}</Project>
+      <Name>kCura.IntegrationPoints.Config</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
       <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
@@ -141,7 +150,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent></PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\..\.paket\paket.targets" />
   <Choose>

@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.Instrumentation.Model
 		public ExternalCallCompletedMessage SetJobContext(InstrumentationJobContext context)
 		{
 			CorrelationID = context.CorrelationId;
-			JobID = context.JobId;
+			JobID = context.JobId.ToString();
 			WorkspaceID = context.WorkspaceId;
 			return this;
 		}

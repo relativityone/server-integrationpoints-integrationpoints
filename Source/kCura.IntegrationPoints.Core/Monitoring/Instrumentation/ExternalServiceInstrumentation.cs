@@ -7,7 +7,7 @@ using Relativity.DataTransfer.MessageService;
 
 namespace kCura.IntegrationPoints.Core.Monitoring.Instrumentation
 {
-	internal class ExternalServiceInstrumentation : IExternalServiceInstrumentation, IExternalServiceInstrumentationStarted
+	public class ExternalServiceInstrumentation : IExternalServiceInstrumentation, IExternalServiceInstrumentationStarted
 	{
 		private Stopwatch _stopwatch;
 

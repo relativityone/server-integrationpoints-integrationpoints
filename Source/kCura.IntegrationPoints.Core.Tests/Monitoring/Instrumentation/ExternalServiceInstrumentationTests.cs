@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring.Instrumentation
 		private readonly InstrumentationJobContext _jobContext = new InstrumentationJobContext
 		(
 			correlationId: Guid.NewGuid().ToString(),
-			jobId: Guid.NewGuid().ToString(),
+			jobId: 4384343,
 			workspaceId: _WORKSPACE_ID
 		);
 		private readonly InstrumentationServiceCallContext _callContext = new InstrumentationServiceCallContext
@@ -253,7 +253,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring.Instrumentation
 		{
 			bool isValid = true;
 			isValid &= message.CorrelationID == _jobContext.CorrelationId;
-			isValid &= message.JobID == _jobContext.JobId;
+			isValid &= message.JobID == _jobContext.JobId.ToString();
 			isValid &= message.WorkspaceID == _jobContext.WorkspaceId;
 
 			isValid &= message.ServiceType == _callContext.ServiceType;

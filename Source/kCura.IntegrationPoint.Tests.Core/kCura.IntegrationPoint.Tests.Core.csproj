@@ -227,6 +227,7 @@
     <Compile Include="TestHelpers\IntegrationPointProviderEmptyValidator.cs" />
     <Compile Include="TestHelpers\IProductionImagesService.cs" />
     <Compile Include="TestHelpers\ITestHelper.cs" />
+    <Compile Include="TestHelpers\JobBuilder.cs" />
     <Compile Include="TestHelpers\NativesService.cs" />
     <Compile Include="TestHelpers\ProductionImagesService.cs" />
     <Compile Include="TestHelpers\TestConstants.cs" />
@@ -7747,7 +7748,8 @@
     </When>
   </Choose>
   <PropertyGroup>
-    <PostBuildEvent></PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

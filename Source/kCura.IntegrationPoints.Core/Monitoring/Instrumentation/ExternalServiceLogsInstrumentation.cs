@@ -5,7 +5,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Monitoring.Instrumentation
 {
-	internal class ExternalServiceLogsInstrumentation : IExternalServiceInstrumentation, IExternalServiceInstrumentationStarted
+	public class ExternalServiceLogsInstrumentation : IExternalServiceInstrumentation, IExternalServiceInstrumentationStarted
 	{
 		private readonly IAPILog _logger;
 		private readonly InstrumentationServiceCallContext _serviceCallContext;

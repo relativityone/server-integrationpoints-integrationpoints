@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring.Instrumentation
 			var sut = new ExternalCallCompletedMessage();
 			var context = new InstrumentationJobContext
 			(
-				jobId: Guid.NewGuid().ToString(),
+				jobId: 54543543,
 				correlationId: Guid.NewGuid().ToString(),
 				workspaceId: workspaceId
 			);
@@ -50,8 +50,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring.Instrumentation
 			sut.SetJobContext(context);
 
 			// assert
-			Assert.AreEqual(context.JobId, sut.JobID);
-			Assert.AreEqual(context.JobId, sut.CustomData[nameof(sut.JobID)]);
+			Assert.AreEqual(context.JobId.ToString(), sut.JobID);
+			Assert.AreEqual(context.JobId.ToString(), sut.CustomData[nameof(sut.JobID)]);
 
 			Assert.AreEqual(context.CorrelationId, sut.CorrelationID);
 			Assert.AreEqual(context.WorkspaceId, sut.WorkspaceID);

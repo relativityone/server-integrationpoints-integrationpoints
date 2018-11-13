@@ -67,6 +67,7 @@
     <Compile Include="JobExecutor.cs" />
     <Compile Include="Logging\JobLogInformation.cs" />
     <Compile Include="Logging\CreateErrorRdo.cs" />
+    <Compile Include="Monitoring\ExternalServiceInstrumentationProviderWithJobContext.cs" />
     <Compile Include="TaskFactory\IJobSynchronizationChecker.cs" />
     <Compile Include="TaskFactory\ITaskFactoryJobHistoryServiceFactory.cs" />
     <Compile Include="TaskFactory\ITaskFactoryJobHistoryService.cs" />
@@ -99,6 +100,10 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Common\kCura.IntegrationPoints.Common.csproj">
+      <Project>{32bcb03b-4980-4434-9392-f72334e6e348}</Project>
+      <Name>kCura.IntegrationPoints.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Config\kCura.IntegrationPoints.Config.csproj">
       <Project>{def928b5-37ce-4bf3-b663-f0b8912c9c3f}</Project>
       <Name>kCura.IntegrationPoints.Config</Name>
