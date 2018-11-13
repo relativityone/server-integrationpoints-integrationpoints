@@ -405,7 +405,7 @@ task copy_test_dlls_to_lib_dir -depends create_lib_dir -precondition { return -n
     foreach ($file in $test_files)
     {
         $tmpPath = Join-Path -Path $root -ChildPath $file        
-        Copy-Item -path $tmpPath -Destination $tests_directory -Recurse -Force
+        Copy-Item -path $tmpPath -Destination $tests_dichromerectory -Recurse -Force
     }
     $testsConfigPath = Join-Path -Path $root -ChildPath "Source\kCura.IntegrationPoint.Tests.Core\app.config"
     $testsConfigDestinationPath = Join-Path -Path $tests_directory -ChildPath "IntegrationPointsTests.config"
@@ -414,7 +414,7 @@ task copy_test_dlls_to_lib_dir -depends create_lib_dir -precondition { return -n
     Copy-Item -path $testsConfigPath -Destination $testsConfigDestinationPath2
 }
 
-task copy_chrome_driver -depends create_lib_dir, build_projects {
+task copy_chrome_driver -depends create_lib_dir, build_projects { return -not $skip_tests } {
 	Copy-Item -path $chromedriver_path -Destination $tests_directory
 }
 
