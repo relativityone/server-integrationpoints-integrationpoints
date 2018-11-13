@@ -19,8 +19,7 @@ properties {
     $progetUrl = "https://proget.kcura.corp/nuget/NuGet"
 }
 
-#TODO include runUnitTests after first test is added
-task default -depends build, packNuget
+task default -depends build, runUnitTests, packNuget
 
 task sign {
     $global:certThumbprint = & (Join-Path $scriptsDir "get-certificate-thumbprint.ps1") -certName $certName
@@ -42,10 +41,10 @@ task packNuget -depends build {
     & (Join-Path $scriptsDir "pack-nuget.ps1") -version $version -paketExe $paketExe -nugetOutput $nugetOutput
 }
 
-task publishNuget -depends packNuget {
+task publishNuget {
     & (Join-Path $scriptsDir "publish-nuget.ps1") -nugetExe $nugetExe -nugetOutput $nugetOutput -certName $certName -url $progetUrl -apiKey $progetApiKey
 }
 
-task runUnitTests -depends build {
+task runUnitTests {
     & (Join-Path $scriptsDir "run-unit-tests.ps1") -sourceDir $sourceDir -toolsDir $toolsDir -logsDir $logsDir
 }

@@ -46,7 +46,7 @@ Write-Verbose "Running unit tests..."
 & $dotCover cover /TargetExecutable=$nunitConsoleRunner `
     /Output=".\buildlogs\coverage.xml" `
     /ReportType="XML" `
-    /TargetArguments="$unitTestsDlls" `
+    /TargetArguments="$unitTestsDlls --skipnontestassemblies --work=$logsDir" `
     /Filters="+:Relativity.Sync*;-:Relativity.Sync*.Tests*"
 
 if ($LASTEXITCODE -ne 0) {
