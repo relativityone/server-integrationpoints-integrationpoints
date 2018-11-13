@@ -43,6 +43,11 @@ namespace kCura.IntegrationPoints.Agent.Monitoring
 			return new ExternalServiceLogsInstrumentation(callContext, _logger);
 		}
 
+		public IExternalServiceSimpleInstrumentation CreateSimple(string serviceType, string serviceName, string operationName)
+		{
+			return new ExternalServiceSimpleInstrumentation(Create(serviceType, serviceName, operationName));
+		}
+
 		private bool IsInstrumentationEnabled()
 		{
 			bool result = _DEFAULT_MEASURE_DURATION_OF_EXTERNAL_CALLS_VALUE;
