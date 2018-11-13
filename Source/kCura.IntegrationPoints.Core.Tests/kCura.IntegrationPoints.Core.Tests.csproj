@@ -72,6 +72,7 @@
     <Compile Include="Monitoring\HealthCheckTests.cs" />
     <Compile Include="Monitoring\Instrumentation\ExternalCallCompletedMessageTests.cs" />
     <Compile Include="Monitoring\Instrumentation\ExternalServiceInstrumentationTests.cs" />
+    <Compile Include="Monitoring\Instrumentation\ExternalServiceSimpleInstrumentationTests.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceJobRdoInitializerTests.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceRdoDocumentFieldTests.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceRdoFieldsTests.cs" />
