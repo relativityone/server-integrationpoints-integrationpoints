@@ -56,3 +56,7 @@ task runIntegrationTests {
 task runPerformanceTests {
     & (Join-Path $scriptsDir "run-tests.ps1") -testsType "Performance" -sourceDir $sourceDir -toolsDir $toolsDir -logsDir $logsDir
 }
+
+task runSonarScanner -depends restorePackages {
+    & (Join-Path $scriptsDir "run-sonar-scanner.ps1") -sourceDir $sourceDir -toolsDir $toolsDir -logsDir $logsDir -version $version
+}
