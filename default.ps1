@@ -48,3 +48,11 @@ task publishNuget {
 task runUnitTests {
     & (Join-Path $scriptsDir "run-unit-tests.ps1") -sourceDir $sourceDir -toolsDir $toolsDir -logsDir $logsDir
 }
+
+task runIntegrationTests {
+    & (Join-Path $scriptsDir "run-tests.ps1") -testsType "Integration" -sourceDir $sourceDir -toolsDir $toolsDir -logsDir $logsDir
+}
+
+task runPerformanceTests {
+    & (Join-Path $scriptsDir "run-tests.ps1") -testsType "Performance" -sourceDir $sourceDir -toolsDir $toolsDir -logsDir $logsDir
+}
