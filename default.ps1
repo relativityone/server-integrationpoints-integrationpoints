@@ -30,7 +30,7 @@ task restorePackages {
 }
 
 task checkConfigureAwait {
-    & (Join-Path $scriptsDir "check-configureawait") -sourceDir $sourceDir -toolsDir $toolsDir -logsDir $logsDir
+    & (Join-Path $scriptsDir "check-configureawait.ps1") -sourceDir $sourceDir -toolsDir $toolsDir -logsDir $logsDir
 }
 
 task build -depends restorePackages, checkConfigureAwait {
