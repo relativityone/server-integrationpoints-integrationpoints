@@ -98,13 +98,10 @@ namespace kCura.IntegrationPoints.Core.Tests
 			Job job = JobExtensions.CreateJob(_workspaceID, _jobID);
 			ArrangeJobComplete(expectedStatus, job);
 			InvalidOperationException exception = new InvalidOperationException(_jobHistoryServiceErrorMessage);
-			_jobHistoryService.When(x => x.UpdateRdo(Arg.Any<JobHistory>())).Do(x =>
-			{
-				throw exception;
-			});
+			_jobHistoryService.When(x => x.UpdateRdo(Arg.Any<JobHistory>())).Do(x => throw exception);
 
 			// ACT
-			_instance.OnJobComplete(job);
+			Assert.Throws<InvalidOperationException>(() => _instance.OnJobComplete(job));
 
 			// ASSERT
 			_jobHistoryService.Received(1).UpdateRdo(Arg.Is<JobHistory>(obj => obj.JobStatus.EqualsToChoice(expectedStatus)));
@@ -124,6 +121,23 @@ namespace kCura.IntegrationPoints.Core.Tests
 			_serializer.Deserialize<TaskParameters>(job.JobDetails).Returns(parameters);
 			_jobHistoryService.GetRdo(parameters.BatchInstance).Returns(history);
 			_updater.GenerateStatus(history, job.WorkspaceID).Returns(expectedStatus);
+		}
+
+		[Test]
+		public void OnJobComplete_LogErrorWhenGetHistoryFails()
+		{
+			// ARRANGE
+			Job job = JobExtensions.CreateJob(_workspaceID, _jobID);
+			TaskParameters parameters = new TaskParameters() { BatchInstance = Guid.NewGuid() };
+			_serializer.Deserialize<TaskParameters>(job.JobDetails).Returns(parameters);
+			_jobHistoryService.GetRdo(Arg.Any<Guid>()).Returns((JobHistory) null);
+
+			// ACT
+			Assert.Throws<NullReferenceException>(() => _instance.OnJobComplete(job));
+
+			// ASSERT
+			_jobHistoryService.DidNotReceive().UpdateRdo(Arg.Any<JobHistory>());
+			_logger.Received(1).LogError(Arg.Any<NullReferenceException>(), Arg.Any<string>(), Arg.Any<object[]>());
 		}
 	}
 }

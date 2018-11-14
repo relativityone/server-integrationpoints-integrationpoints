@@ -11,6 +11,7 @@ namespace kCura.IntegrationPoints.Core
 {
 	public class JobHistoryBatchUpdateStatus : IBatchStatus
 	{
+		private const string _JOB_HISTORY_NULL = "Failed to retrieve job history. job ID: {0}.";
 		private const string _JOB_UPDATE_ERROR_MESSAGE_TEMPLATE = "Failed to update finished job error status. Current status: {0}, target status: {1}, job ID: {2}, job history artifact ID: {3}.";
 
 		private readonly IJobStatusUpdater _updater;
@@ -43,6 +44,14 @@ namespace kCura.IntegrationPoints.Core
 		public void OnJobComplete(Job job)
 		{
 			JobHistory result = GetHistory(job);
+			if (result == null)
+			{
+				long jobId = job?.JobId ?? -1;
+				string message = string.Format(_JOB_HISTORY_NULL, jobId);
+				NullReferenceException exception = new NullReferenceException(message);
+				_logger.LogError(exception, _JOB_HISTORY_NULL, jobId);
+				throw exception;
+			}
 			int artifactId = result.ArtifactId;
 			string oldStatusName = result.JobStatus.Name;
 			result.JobStatus = _updater.GenerateStatus(result, job.WorkspaceID);
@@ -55,6 +64,7 @@ namespace kCura.IntegrationPoints.Core
 			catch (Exception exception)
 			{
 				_logger.LogError(exception, _JOB_UPDATE_ERROR_MESSAGE_TEMPLATE, oldStatusName, newStatusName, job.JobId, artifactId);
+				throw;
 			}
 		}
 
