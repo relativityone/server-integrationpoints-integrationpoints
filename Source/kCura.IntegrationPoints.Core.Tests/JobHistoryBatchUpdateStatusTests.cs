@@ -98,7 +98,10 @@ namespace kCura.IntegrationPoints.Core.Tests
 			Job job = JobExtensions.CreateJob(_workspaceID, _jobID);
 			ArrangeJobComplete(expectedStatus, job);
 			InvalidOperationException exception = new InvalidOperationException(_jobHistoryServiceErrorMessage);
-			_jobHistoryService.When(x => x.UpdateRdo(Arg.Any<JobHistory>())).Do(x => throw exception);
+			_jobHistoryService.When(x => x.UpdateRdo(Arg.Any<JobHistory>())).Do(x =>
+			{
+				throw exception;
+			});
 
 			// ACT
 			Assert.Throws<InvalidOperationException>(() => _instance.OnJobComplete(job));
