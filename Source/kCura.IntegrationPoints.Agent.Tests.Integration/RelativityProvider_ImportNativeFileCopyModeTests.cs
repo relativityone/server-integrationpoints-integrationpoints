@@ -21,6 +21,7 @@ using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using NUnit.Framework;
+using Relativity.API;
 using Workspace = kCura.IntegrationPoint.Tests.Core.Workspace;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
@@ -77,7 +78,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			var jobStatisticsService = Container.Resolve<JobStatisticsService>();
 			var agentValidator = Container.Resolve<IAgentValidator>();
 			var jobStatusUpdater = Container.Resolve<IJobStatusUpdater>();
-			var jobHistoryUpdater = new JobHistoryBatchUpdateStatus(jobStatusUpdater, jobHistoryService, _jobService, serializer);
+			var logger = Container.Resolve<IAPILog>();
+			var jobHistoryUpdater = new JobHistoryBatchUpdateStatus(jobStatusUpdater, jobHistoryService, _jobService, serializer, logger);
 
 			_exportManager = new ExportServiceManager(Helper, helperFactory,
 				_caseContext, contextContainerFactory,
