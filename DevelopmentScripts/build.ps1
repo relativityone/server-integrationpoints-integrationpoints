@@ -14,10 +14,9 @@ $UI_TESTS = $false
 $NUGET = $false
 $PACKAGE = $false
 $DEPLOY = ""
-$ENABLEINJECTIONS = $false
 $GIT = Test-Path -Path ([System.IO.Path]::Combine($root, '.git'))
 $RUN_SONARQUBE = $false
-
+$SKIP_TESTS = $false
 $ALERT = [environment]::GetEnvironmentVariable("alertOnBuildCompletion","User")
 
 $SHOWHELP = $false
@@ -54,8 +53,8 @@ for ($i = 0; $i -lt $args.count; $i++){
                        $DEPLOY    += $CUSTOMPAGE;
                        $i++;
         } 
+        "^[/-]st"      {$SKIP_TESTS = $true}
         "^[/-]al"     {$ALERT   = $true}
-        "^[/-]ei"     {$ENABLEINJECTIONS = $true}
                 
         "^debug$"   {$BUILDCONFIG = "Debug"}
         "^release$" {$BUILDCONFIG = "Release"}
@@ -74,10 +73,10 @@ for ($i = 0; $i -lt $args.count; $i++){
     }
 }
 
-write-host "buildconfig is" $BUILDCONFIG
-write-host "buildtype   is" $BUILDTYPE
-write-host "version     is" $VERSION
-write-host "show editor is" $EDITOR
+write-host "buildconfig       is" $BUILDCONFIG
+write-host "buildtype         is" $BUILDTYPE
+write-host "version           is" $VERSION
+write-host "show editor       is" $EDITOR
 write-host "build             step is set to" $BUILD
 write-host "apps              step is set to" $APPS
 write-host "test              step is set to" $TEST
@@ -86,7 +85,8 @@ write-host "ui tests          step is set to" $UI_TESTS
 write-host "nuget             step is set to" $NUGET
 write-host "package           step is set to" $PACKAGE
 write-host "deploy            step is set to" ($DEPLOY -eq "")
-write-host "sonarQube step is set to" $RUN_SONARQUBE
+write-host "sonarQube         step is set to" $RUN_SONARQUBE
+write-host "skip tests build  step is set to" $SKIP_TESTS
 
 
 if($ALERT) {
@@ -123,6 +123,7 @@ write-host "    -de[ploy] WORKSPACEID IPADDRESS uploads Integration Point binari
 write-host ""
 write-host "    -al[ert]                        Sshow alert popup when build completes"
 write-host "    -sonarqube                      runs sonarqube analysis and send results to server"
+write-host "    -st                             skips build of test projects to shorten build times"
 write-host ""
 
 exit
@@ -150,8 +151,9 @@ if($BUILD -and $STATUS){
                                                                         'server_type'='local';
                                                                         'build_config'=$BUILDCONFIG;
                                                                         'build_type'=$BUILDTYPE;
-                                                                        'enable_injections'=$ENABLEINJECTIONS;
-                                                                        'run_sonarqube'=$RUN_SONARQUBE}
+                                                                        'run_sonarqube'=$RUN_SONARQUBE;
+                                                                        'skip_tests'=$SKIP_TESTS;
+                                                                        }
     if ($psake.build_success -eq $false) { $STATUS = $false }
 }
 
