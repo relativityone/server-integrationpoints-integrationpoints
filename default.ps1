@@ -11,7 +11,8 @@ properties {
     $version
     $nugetExe
     $progetApiKey
-    $sourceDir = Join-Path $root "Source"  
+    $sourceDir = Join-Path $root "Source"
+    $logsDir = Join-Path $root "buildlogs"
     $paketExe = Join-Path $root -ChildPath ".paket" | Join-Path -ChildPath "paket.exe"
     $nugetOutput = Join-Path $root "nuget"
     $certName = "Relativity ODA LLC"
@@ -28,7 +29,11 @@ task restorePackages {
     & (Join-Path $scriptsDir "restore-packages.ps1") -paketExe $paketExe
 }
 
-task build -depends restorePackages {
+task checkConfigureAwait {
+    & (Join-Path $scriptsDir "check-configureawait.ps1") -sourceDir $sourceDir -toolsDir $toolsDir -logsDir $logsDir
+}
+
+task build -depends restorePackages, checkConfigureAwait {
     & (Join-Path $scriptsDir "build-solution.ps1") -buildConf $buildConfig -version $version -sourceDir $sourceDir -certThumbprint $global:certThumbprint
 }
 

@@ -329,6 +329,9 @@ ASALocalRun/
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
 
+# Ignore everything in BuildLogs
+buildlogs/*
+
 # Ignore everything in BuildTools
 buildtools/*
 
