@@ -34,7 +34,8 @@ param(
 )
 
 Get-ChildItem -Path $sourceDir -Filter *.sln -File | ForEach-Object {
-    & msbuild $_.FullName "/p:Configuration=$buildConf" "/p:AssemblyVersion=$version" "/p:InformationVersion=$infoVersion" "/p:CertificateThumbprint=$certThumbprint" "/p:SignToolPath=$signToolPath" "/nologo" "/nodereuse:false" "/maxcpucount"
+    & msbuild $_.FullName "/p:Configuration=$buildConf" "/p:AssemblyVersion=$version" "/p:InformationVersion=$infoVersion" `
+        "/p:CertificateThumbprint=$certThumbprint" "/p:SignToolPath=$signToolPath" "/nologo" "/nodereuse:false" "/maxcpucount"
 
     if ($LASTEXITCODE -ne 0) {
         Throw "An error occured while building solution $($_.FullName)."
