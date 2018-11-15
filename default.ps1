@@ -19,7 +19,7 @@ properties {
     $progetUrl = "https://proget.kcura.corp/nuget/NuGet"
 }
 
-task default -depends build, runUnitTests, packNuget
+task default -depends restorePackages, checkConfigureAwait, build, runUnitTests, packNuget
 
 task sign {
     $global:certThumbprint = & (Join-Path $scriptsDir "get-certificate-thumbprint.ps1") -certName $certName
@@ -34,11 +34,14 @@ task checkConfigureAwait -depends restorePackages {
     & (Join-Path $scriptsDir "check-configureawait.ps1") -sourceDir $sourceDir -toolsDir $toolsDir -logsDir $logsDir
 }
 
-task build -depends restorePackages, checkConfigureAwait {
+task build -depends restorePackages {
     & (Join-Path $scriptsDir "build-solution.ps1") -buildConf $buildConfig -version $version -sourceDir $sourceDir -certThumbprint $global:certThumbprint -signToolpath $global:signToolPath
 }
 
-task packNuget -depends build {
+task buildAndSign -depends sign, build {    
+}
+
+task packNuget {
     & (Join-Path $scriptsDir "pack-nuget.ps1") -version $version -paketExe $paketExe -nugetOutput $nugetOutput
 }
 
