@@ -23,3 +23,7 @@ param(
 
 Write-Verbose "Packing NuGet using paket..."
 & $paketExe pack $nugetOutput --include-referenced-projects --version $version --symbols
+
+if ($LASTEXITCODE -ne 0) {
+    Throw "An error occured while packing NuGet."
+}
