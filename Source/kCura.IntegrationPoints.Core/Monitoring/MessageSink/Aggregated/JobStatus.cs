@@ -1,4 +1,4 @@
-﻿namespace kCura.IntegrationPoints.Core.Monitoring.Sinks.Aggregated
+﻿namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
 {
 	public enum JobStatus
 	{
