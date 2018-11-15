@@ -47,6 +47,10 @@ Get-ChildItem -Path $sourceDir -Filter *.sln -File | ForEach-Object {
     Write-Verbose "Running code inspection for $_..."
     & $inspectCode.FullName $_.FullName --output=$errorFile --s="SUGGESTION"
 
+    if ($LASTEXITCODE -ne 0) {
+        Throw "An error occured while analyzing solution $($_.FullName)."
+    }
+
     [xml]$xmlErrors = Get-Content -Path $errorFile
 
     if ($xmlErrors.Report.IssueTypes | Select-Xml -XPath "//IssueType[@Id='ConsiderUsingConfigureAwait']" -ErrorAction Ignore) {
