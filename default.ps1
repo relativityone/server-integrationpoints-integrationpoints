@@ -23,6 +23,7 @@ task default -depends build, runUnitTests, packNuget
 
 task sign {
     $global:certThumbprint = & (Join-Path $scriptsDir "get-certificate-thumbprint.ps1") -certName $certName
+    $global:signToolPath = & (Join-Path $scriptsDir "get-signtool.ps1")
 }
 
 task restorePackages {
@@ -34,7 +35,7 @@ task checkConfigureAwait -depends restorePackages {
 }
 
 task build -depends restorePackages, checkConfigureAwait {
-    & (Join-Path $scriptsDir "build-solution.ps1") -buildConf $buildConfig -version $version -sourceDir $sourceDir -certThumbprint $global:certThumbprint
+    & (Join-Path $scriptsDir "build-solution.ps1") -buildConf $buildConfig -version $version -sourceDir $sourceDir -certThumbprint $global:certThumbprint -signToolpath $global:signToolPath
 }
 
 task packNuget -depends build {

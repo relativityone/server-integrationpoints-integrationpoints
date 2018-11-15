@@ -18,6 +18,9 @@
 
 .PARAMETER certThumbprint
     Thumbprint of certificate used for signing DLLs. In case thumbprint is empty, signing will be skipped
+
+.PARAMETER signToolPath
+    Path to signtool.exe file
 #>
 
 [CmdletBinding()]
@@ -26,17 +29,14 @@ param(
     [string]$infoVersion,
     [string]$buildConf,
     [string]$sourceDir,
-    [string]$certThumbprint
+    [string]$certThumbprint,
+    [string]$signToolPath
 )
 
 Get-ChildItem -Path $sourceDir -Filter *.sln -File | ForEach-Object {
-    exec { msbuild @($_.FullName,
-            ("/p:Configuration=$buildConf"),
-            ("/p:AssemblyVersion=$version"),
-            ("/p:InformationVersion=$infoVersion"),
-            ("/p:CertificateThumbprint=$certThumbprint"),
-            ("/nodereuse:false"),
-            ("/nologo"),
-            ("/maxcpucount"))
+    & msbuild $_.FullName "/p:Configuration=$buildConf" "/p:AssemblyVersion=$version" "/p:InformationVersion=$infoVersion" "/p:CertificateThumbprint=$certThumbprint" "/p:SignToolPath=$signToolPath" "/nologo" "/nodereuse:false" "/maxcpucount"
+
+    if ($LASTEXITCODE -ne 0) {
+        Throw "An error occured while building solution $($_.FullName)."
     }
 }

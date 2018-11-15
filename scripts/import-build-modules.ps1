@@ -22,7 +22,12 @@ $modules | ForEach-Object {
     if ($moduleFile) {
         Write-Verbose "Importing module from $moduleFile..."
         Import-Module $moduleFile.FullName -ErrorAction Stop
-    } else {
+
+        if ($LASTEXITCODE -ne 0) {
+            Throw "Unable to load module $_"
+        }
+    }
+    else {
         Throw "Unable to find module $_"
     }
 }

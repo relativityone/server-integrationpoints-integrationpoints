@@ -14,3 +14,7 @@ param(
 )
 
 & $paketExe restore
+
+if ($LASTEXITCODE -ne 0) {
+    Throw "An error occured while restoring packages using paket."
+}
