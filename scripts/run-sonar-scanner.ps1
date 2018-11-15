@@ -49,17 +49,23 @@ Write-Verbose "Running Sonar Scanner for version $version..."
     /d:sonar.exclusions="Source/**/obj/**/*,Source/**/bin/**/*" `
     /d:sonar.cs.dotcover.reportsPaths=$testCoverageReport
 
+if ($LASTEXITCODE -ne 0) {
+    Throw "An error occured while starting sonar scanner."
+}
+
 $sonarBuildDir = Join-Path $logsDir "sonarBuild"
 
 Get-ChildItem -Path $sourceDir -Filter *.sln -File | ForEach-Object {
-    exec { msbuild @($_.FullName,
-            ("/p:Configuration=Release"),
-            ("/p:OutputPath=$sonarBuildDir"),
-            ("/nodereuse:false"),
-            ("/nologo"),
-            ("/maxcpucount"))
+    & msbuild $_.FullName "/p:Configuration=Release" "/p:OutputPath=$sonarBuildDir" "/nologo" "/nodereuse:false" "/maxcpucount"
+    
+    if ($LASTEXITCODE -ne 0) {
+        Throw "An error occured while scanning solution $($_.FullName)."
     }
 }
 
 & $sonarScannerExe end /d:sonar.login=$token
+
+if ($LASTEXITCODE -ne 0) {
+    Throw "An error occured while ending sonar scanner."
+}
 
