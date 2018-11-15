@@ -205,8 +205,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 		#endregion UpdateProperties
 
-		//[Test]
-		//[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
+		[Test]
+		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
 		public void CreateAndRunIntegrationPoint_GoldFlow()
 		{
 			//Arrange
