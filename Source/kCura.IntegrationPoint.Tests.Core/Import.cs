@@ -3,6 +3,7 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
@@ -23,10 +24,11 @@ namespace kCura.IntegrationPoint.Tests.Core
 			var helper = Substitute.For<IHelper>();
 			var systemEventLoggingService = Substitute.For<ISystemEventLoggingService>();
 			var tokenProvider = Substitute.For<ITokenProvider>();
+		    var authTokenGenerator = Substitute.For<IAuthTokenGenerator>();
 			var federatedInstanceManager = Substitute.For<IFederatedInstanceManager>();
 			var serializer = Substitute.For<ISerializer>();
 
-			ImportApiFactory factory = new ImportApiFactory(tokenProvider, federatedInstanceManager, helper, systemEventLoggingService, serializer);
+			ImportApiFactory factory = new ImportApiFactory(tokenProvider, authTokenGenerator, federatedInstanceManager, helper, systemEventLoggingService, serializer);
 			ImportJobFactory jobFactory = new ImportJobFactory(Substitute.For<IMessageService>());
 			ImportSettings setting = new ImportSettings()
 			{
