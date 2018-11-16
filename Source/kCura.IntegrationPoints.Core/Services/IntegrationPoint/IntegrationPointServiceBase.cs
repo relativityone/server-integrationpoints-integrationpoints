@@ -22,6 +22,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 	public abstract class IntegrationPointServiceBase<T> where T : BaseRdo, new()
 	{
 		private readonly IIntegrationPointBaseFieldGuidsConstants _guidsConstants;
+		private readonly Lazy<IRelativityObjectManager> _objectManager;
 		protected IIntegrationPointSerializer Serializer;
 		protected ICaseServiceContext Context;
 		protected IContextContainer SourceContextContainer;
@@ -33,7 +34,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		protected IHelper _helper;
 
 		protected static readonly object Lock = new object();
-
+		
 		protected abstract string UnableToSaveFormat { get; }
 
 		protected IntegrationPointServiceBase(
@@ -54,29 +55,30 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			_guidsConstants = guidsConstants;
 			_helper = helper;
 			SourceContextContainer = contextContainerFactory.CreateContextContainer(helper);
+			_objectManager = new Lazy<IRelativityObjectManager>(CreateObjectManager);
 		}
 
 		public IList<T> GetAllRDOs()
 		{
-			var query = new IntegrationPointBaseQuery<T>(CreateObjectManager());
+			var query = new IntegrationPointBaseQuery<T>(_objectManager.Value);
 			return query.GetAllIntegrationPoints();
 		}
 
 		public IList<T> GetAllRDOsWithAllFields()
 		{
-			var query = new IntegrationPointBaseQuery<T>(CreateObjectManager());
+			var query = new IntegrationPointBaseQuery<T>(_objectManager.Value);
 			return query.GetIntegrationPointsWithAllFields();
 		}
 
 		public IList<T> GetAllRDOsForSourceProvider(List<int> sourceProviderIds)
 		{
-			var query = new IntegrationPointBaseQuery<T>(CreateObjectManager());
+			var query = new IntegrationPointBaseQuery<T>(_objectManager.Value);
 			return query.GetIntegrationPointsWithAllFields(sourceProviderIds);
 		}
 
 		protected IList<T> GetAllRDOsWithBasicProfileColumns()
 		{
-			var query = new IntegrationPointBaseQuery<T>(CreateObjectManager());
+			var query = new IntegrationPointBaseQuery<T>(_objectManager.Value);
 			return query.GetAllIntegrationPointsProfileWithBasicColumns();
 
 		}
