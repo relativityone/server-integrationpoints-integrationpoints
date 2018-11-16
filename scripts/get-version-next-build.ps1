@@ -88,6 +88,7 @@ END
 "
 
     $version = $Comm.ExecuteScalar()
+    $Conn.Close()
 }
 finally {
     if ($Conn) {
