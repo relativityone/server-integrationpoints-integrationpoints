@@ -38,7 +38,7 @@ SET NOCOUNT ON
 --Declare variables used by SQL passed in from NANT script
 DECLARE @productName AS VARCHAR(255) = '$project'
 DECLARE @majorversion AS VARCHAR(10) = '$majorNumber'
-DECLARE @minorversion AS VARCHAR(10) = '@minorNumber'
+DECLARE @minorversion AS VARCHAR(10) = '$minorNumber'
 DECLARE @buildType AS VARCHAR(10) = '$buildType'
 DECLARE @branchID AS INT
 
