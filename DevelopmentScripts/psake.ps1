@@ -10,7 +10,6 @@ $COMPANY = 'Relativity ODA LLC'
 $PRODUCT = 'Template'
 $PRODUCTDESCRIPTION = 'Template repo for Relativity'
 $PACKAGEROOT = 'C:\Packages'
-$ENABLEINJECTIONS = $false
 $SKIP_PUBLISH = $false
 
 }
@@ -31,8 +30,7 @@ if ($psake.build_success -eq $false) { exit 1 }
 Invoke-psake .\psake-build.ps1 -properties @{'version'=$VERSION;
                                              'server_type'=$SERVERTYPE;
                                              'build_config'=$BUILDCONFIG;
-                                             'build_type'=$BUILDTYPE;
-                                             'enable_injections'=$ENABLEINJECTIONS;}
+                                             'build_type'=$BUILDTYPE;}
 if ($psake.build_success -eq $false) { exit 1 }  
 
 Invoke-psake .\psake-application.ps1 -properties @{'version'=$VERSION;

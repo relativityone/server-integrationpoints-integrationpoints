@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace kCura.IntegrationPoints.Core.Monitoring.Instrumentation.Model
+namespace kCura.IntegrationPoints.Common.Monitoring.Instrumentation.Model
 {
 	[Serializable]
 	public class InstrumentationServiceCallContext

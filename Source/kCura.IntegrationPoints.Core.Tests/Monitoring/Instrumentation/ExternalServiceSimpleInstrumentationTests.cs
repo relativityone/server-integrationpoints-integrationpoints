@@ -1,5 +1,4 @@
 ﻿using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
-using kCura.IntegrationPoints.Core.Monitoring.Instrumentation;
 using NSubstitute;
 using NUnit.Framework;
 using System;

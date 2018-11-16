@@ -1,8 +1,10 @@
-﻿namespace kCura.IntegrationPoints.Data
+﻿using kCura.IntegrationPoints.Data.Repositories;
+
+namespace kCura.IntegrationPoints.Data
 {
 	public class IntegrationPointQuery : IntegrationPointBaseQuery<IntegrationPoint>, IIntegrationPointQuery
 	{
-		public IntegrationPointQuery(IRSAPIService context) : base(context)
+		public IntegrationPointQuery(IRelativityObjectManager relativityObjectManager) : base(relativityObjectManager)
 		{
 		}
 	}

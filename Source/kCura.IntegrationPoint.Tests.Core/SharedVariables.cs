@@ -10,33 +10,63 @@ namespace kCura.IntegrationPoint.Tests.Core
 {
 	public class SharedVariables
 	{
-		public static Configuration CustomConfig { get; set; }
+		private static readonly Dictionary<string, string> ConfigurationOverrides = new Dictionary<string, string>();
 
+		public static Configuration CustomConfig { get; set; }
+		
 		static SharedVariables()
 		{
+			PrepareJeevesConfig();
+			ReadConfigKeysWhichWillOverrideExistingValues();
+		}
+
+		private static void ReadConfigKeysWhichWillOverrideExistingValues()
+		{
+			try
+			{
+				string customConfigurationPath = AppSettingString("CustomizedConfigurationOverridesLocation");
+				if (!File.Exists(customConfigurationPath))
+				{
+					return;
+				}
+
+
+				foreach (var configurationLine in File.ReadAllLines(customConfigurationPath))
+				{
+					ConfigurationOverrides.Add(configurationLine.Split('|')[0], configurationLine.Split('|')[1]);
+				}
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(@"Error occured while checking overridable config values: " + e);
+			}
+		}
+
+		private static void PrepareJeevesConfig()
+		{ 
 			const string configFileName = "app.jeeves-ci.config";
-		    try
-		    {
-		        string assemblyDir = Path.GetDirectoryName(System.Reflection.Assembly.GetCallingAssembly().CodeBase);
-		        string jeevesConfigPath = Path.Combine(assemblyDir, configFileName);
-		        if (File.Exists(jeevesConfigPath.Replace(@"file:\", "")))
-		        {
-		            Console.WriteLine(@"Jeeves config found: " + jeevesConfigPath);
-		            MergeConfigurationWithAppConfig(configFileName);
-		        }
-		        else
-		        {
-		            Console.WriteLine(@"Jeeves config not found: " + jeevesConfigPath);
-		        }
-		    }
-		    catch (ArgumentException ex)
-		    {
-		        Console.WriteLine(@"Error occured while checking jeeves file path: " + ex);
-		    }
-		    finally
-		    {
-		        Console.WriteLine(DumpToString());
-            }
+			try
+			{
+				string assemblyDir = Path.GetDirectoryName(System.Reflection.Assembly.GetCallingAssembly().CodeBase);
+				string jeevesConfigPath = Path.Combine(assemblyDir, configFileName);
+				if (File.Exists(jeevesConfigPath.Replace(@"file:\", "")))
+				{
+					Console.WriteLine(@"Jeeves config found: " + jeevesConfigPath);
+					MergeConfigurationWithAppConfig(configFileName);
+				}
+				else
+				{
+					Console.WriteLine(@"Jeeves config not found: " + jeevesConfigPath);
+				}
+			}
+			catch (ArgumentException ex)
+			{
+				Console.WriteLine(@"Error occured while checking jeeves file path: " + ex);
+			}
+			finally
+			{
+				Console.WriteLine(DumpToString());
+			}
 		}
 
 		public static string DumpToString()
@@ -56,6 +86,12 @@ namespace kCura.IntegrationPoint.Tests.Core
 		
 		public static string AppSettingString(string name)
 		{
+			string overridenValue;
+			if (ConfigurationOverrides.TryGetValue(name, out overridenValue))
+			{
+				return overridenValue;
+			}
+
 			return CustomConfig?.AppSettings.Settings[name]?.Value ?? ConfigurationManager.AppSettings[name];
 		}
 
@@ -165,7 +201,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		#region ConnectionString Settings
 
 		public static string TargetHost => AppSettingString("RelativityInstanceAddress");
-
+		
 		public static string RelativityWebAddress => AppSettingString("RelativityWebAddress");
 
 		public static string TargetDbHost => GetTargetDbHost();

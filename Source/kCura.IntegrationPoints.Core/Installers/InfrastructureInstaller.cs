@@ -3,7 +3,6 @@ using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
-using kCura.IntegrationPoints.Core.Monitoring.Instrumentation;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Installers

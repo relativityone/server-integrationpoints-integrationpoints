@@ -1,10 +1,10 @@
 ﻿using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
-using kCura.IntegrationPoints.Core.Monitoring.Instrumentation.Model;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 using Relativity.DataTransfer.MessageService.Tools;
 using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoints.Common.Monitoring.Instrumentation.Model;
 
 namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.ExternalCalls
 {

@@ -10,6 +10,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using Relativity;
 using Relativity.API;
 using Relativity.Core;
+using Relativity.Core.Service;
 using Relativity.Toggles;
 using FileQuery = Relativity.Core.Service.FileQuery;
 
@@ -23,13 +24,16 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 		private readonly Dictionary<int, string> _nativeFileLocations;
 		private readonly Dictionary<int, string> _nativeFileNames;
+		private readonly Dictionary<int, long> _nativeFileSizes;
+		private readonly Dictionary<int, string> _nativeFileTypes;
+		private readonly HashSet<int> _documentsSupportedByViewer;
 		private readonly IILongTextStreamFactory _relativityLongTextStreamFactory;
-		private readonly IToggleProvider _toggleProvider;
 		private readonly List<ILongTextStream> _openedStreams;
 		private readonly IAPILog _logger;
 
 		private static readonly string _nativeDocumentArtifactIdColumn = "DocumentArtifactID";
 		private static readonly string _nativeFileNameColumn = "Filename";
+		private static readonly string _nativeFileSizeColumn = "Size";
 		private static readonly string _nativeLocationColumn = "Location";
 		private static readonly string _separator = ",";
 		
@@ -45,8 +49,10 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		{
 			_nativeFileLocations = new Dictionary<int, string>();
 			_nativeFileNames = new Dictionary<int, string>();
+			_nativeFileSizes = new Dictionary<int, long>();
+			_nativeFileTypes = new Dictionary<int, string>();
+			_documentsSupportedByViewer = new HashSet<int>();
 			_relativityLongTextStreamFactory = longTextStreamFactory;
-			_toggleProvider = toggleProvider;
 			_openedStreams = new List<ILongTextStream>();
 			_logger = logger.ForContext<DocumentTransferDataReader>();
 		}
@@ -85,15 +91,15 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				}
 				if (fieldIdentifier == IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_DYNAMIC_FIELD)
 				{
-					return CurrentArtifact.GetFieldByName(IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_DYNAMIC_FIELD_NAME)
-						.Value;
+					retrievedField = CurrentArtifact.GetFieldByName(IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_DYNAMIC_FIELD_NAME);
+					return retrievedField.Value;
 				}
 
-
-				// we will have to go and get native file locations when the reader fetch a new collection of documents.
+				// We have to get native file locations when the reader fetches a new collection of documents.
 				if (_readingArtifactIdsReference != ReadingArtifactIDs)
 				{
 					LoadNativeFilesLocationsAndNames();
+					LoadNativesMetadataFromDocumentsTable();
 				}
 
 				switch (fieldIdentifier)
@@ -105,12 +111,36 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 							_nativeFileLocations.Remove(CurrentArtifact.ArtifactId);
 						}
 						break;
-
 					case IntegrationPoints.Domain.Constants.SPECIAL_FILE_NAME_FIELD:
 						if (_nativeFileNames.ContainsKey(CurrentArtifact.ArtifactId))
 						{
 							result = _nativeFileNames[CurrentArtifact.ArtifactId];
 							_nativeFileNames.Remove(CurrentArtifact.ArtifactId);
+						}
+						break;
+					case IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_SIZE_FIELD:
+						if (_nativeFileSizes.ContainsKey(CurrentArtifact.ArtifactId))
+						{
+							result = _nativeFileSizes[CurrentArtifact.ArtifactId];
+							_nativeFileSizes.Remove(CurrentArtifact.ArtifactId);
+						}
+						break;
+					case IntegrationPoints.Domain.Constants.SPECIAL_FILE_TYPE_FIELD:
+						if (_nativeFileTypes.ContainsKey(CurrentArtifact.ArtifactId))
+						{
+							result = _nativeFileTypes[CurrentArtifact.ArtifactId];
+							_nativeFileTypes.Remove(CurrentArtifact.ArtifactId);
+						} 
+						break;
+					case IntegrationPoints.Domain.Constants.SPECIAL_FILE_SUPPORTED_BY_VIEWER_FIELD:
+						if (_documentsSupportedByViewer.Contains(CurrentArtifact.ArtifactId))
+						{
+							result = true;
+							_documentsSupportedByViewer.Remove(CurrentArtifact.ArtifactId);
+						}
+						else
+						{
+							result = false;
 						}
 						break;
 				}
@@ -124,7 +154,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 		private IntegrationPointsException LogGetValueError(
 			Exception e, 
-			int i, 
+			int index, 
 			bool isFieldIdentifierNumeric,
 			ArtifactFieldDTO retrievedField,
 			string fieldIdentifier,
@@ -132,27 +162,23 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			object result
 			)
 		{
-			var message = $"Error ocurred when getting value for index {i}, " +
+			string message = $"Error occurred when getting value for index {index}, " +
 			              $"isFieldIdentifierNumeric: {isFieldIdentifierNumeric}, " +
 			              $"retrievedField: {retrievedField}, " +
 			              $"fieldIdentifier: {fieldIdentifier}, " +
 			              $"fieldArtifactId: {fieldArtifactId}, " +
 			              $"result: {result}";
-			var template = "Error ocurred when getting value for index {i}, " +
+			string template = "Error occurred when getting value for index {index}, " +
 			              "isFieldIdentifierNumeric: {isFieldIdentifierNumeric}, " +
 			              "retrievedField: {@retrievedField}, " +
 			              "fieldIdentifier: {fieldIdentifier}, " +
 			              "fieldArtifactId: {fieldArtifactId}, " +
 			              "result: {@result}";
 			var exc = new IntegrationPointsException(message, e);
-			_logger.LogError(exc, template, i, isFieldIdentifierNumeric, retrievedField, fieldIdentifier, fieldArtifactId, result);
+			_logger.LogError(exc, template, index, isFieldIdentifierNumeric, retrievedField, fieldIdentifier, fieldArtifactId, result);
 			return exc;
 		}
 
-		private bool ShouldUseLongTextStream(ArtifactFieldDTO retrievedField)
-		{
-			return IsLongTextField(retrievedField) && retrievedField.Value?.ToString() == global::Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
-		}
 
 		private void LoadNativeFilesLocationsAndNames()
 		{
@@ -163,11 +189,42 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			for (int index = 0; index < dataView.Table.Rows.Count; index++)
 			{
 				DataRow row = dataView.Table.Rows[index];
-				int nativeDocumentArtifactID = (int)row[_nativeDocumentArtifactIdColumn];
+				int nativeDocumentArtifactId = (int)row[_nativeDocumentArtifactIdColumn];
 				string nativeFileLocation = (string)row[_nativeLocationColumn];
+				_nativeFileLocations.Add(nativeDocumentArtifactId, nativeFileLocation);
 				string nativeFileName = (string)row[_nativeFileNameColumn];
-				_nativeFileLocations.Add(nativeDocumentArtifactID, nativeFileLocation);
-				_nativeFileNames.Add(nativeDocumentArtifactID, nativeFileName);
+				_nativeFileNames.Add(nativeDocumentArtifactId, nativeFileName);
+				long nativeFileSize = (long)row[_nativeFileSizeColumn];
+				_nativeFileSizes.Add(nativeDocumentArtifactId, nativeFileSize);
+			}
+		}
+
+		private void LoadNativesMetadataFromDocumentsTable()
+		{
+			string documentArtifactIdColumn = "ArtifactId";
+			string supportedByViewerColumn = "SupportedByViewer";
+			string relativityNativeTypeColumn = "RelativityNativeType";
+
+			string [] documentColumnsToRetrieve = { supportedByViewerColumn, relativityNativeTypeColumn };
+
+			kCura.Data.DataView nativeTypeForGivenDocument = DocumentQuery.RetrieveValuesByColumnNamesAndArtifactIDs(Context, ReadingArtifactIDs, documentColumnsToRetrieve);
+
+			for (int index = 0; index < nativeTypeForGivenDocument.Table.Rows.Count; index++)
+			{
+				DataRow row = nativeTypeForGivenDocument.Table.Rows[index];
+				var documentArtifactId = (int)row[documentArtifactIdColumn];
+				string nativeFileType = Convert.ToString(row[relativityNativeTypeColumn]);
+				var isSupportedByViewer = (bool) row[supportedByViewerColumn];
+
+				if (!string.IsNullOrEmpty(nativeFileType))
+				{
+					_nativeFileTypes.Add(documentArtifactId, nativeFileType);
+				}
+
+				if (isSupportedByViewer)
+				{
+					_documentsSupportedByViewer.Add(documentArtifactId);
+				}
 			}
 		}
 
@@ -185,13 +242,19 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 		private void DisposeExtractedTextStreams()
 		{
-			// Just to be absolutely sure we will not leave any open streams.
-			// IAPI should close the streams anyway
+			// IAPI should close the streams...
+			// but to be absolutely sure we will not leave any open streams
+			// all of them are being disposed here.
 			foreach (ILongTextStream stream in _openedStreams)
 			{
 				stream.Dispose();
 			}
 			_openedStreams.Clear();
+		}
+
+		private bool ShouldUseLongTextStream(ArtifactFieldDTO retrievedField)
+		{
+			return IsLongTextField(retrievedField) && retrievedField.Value?.ToString() == global::Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN;
 		}
 
 		private bool IsLongTextField(ArtifactFieldDTO retrievedField)
