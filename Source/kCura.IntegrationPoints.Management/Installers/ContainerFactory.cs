@@ -15,6 +15,7 @@ namespace kCura.IntegrationPoints.Management.Installers
 			container.Kernel.Resolver.AddSubResolver(new CollectionResolver(container.Kernel, true));
 			container.Register(Component.For<IAPM>().UsingFactoryMethod(k => Client.APMClient, true).LifestyleTransient());
 
+			container.Install(new InfrastructureInstaller());
 			container.Install(new SharedAgentInstaller());
 			container.Install(new IntegrationPointsManagerInstaller(helper));
 

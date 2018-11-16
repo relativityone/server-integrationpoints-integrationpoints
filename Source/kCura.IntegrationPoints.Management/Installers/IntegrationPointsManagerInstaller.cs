@@ -19,7 +19,6 @@ namespace kCura.IntegrationPoints.Management.Installers
 
 		public void Install(IWindsorContainer container, IConfigurationStore store)
 		{
-			container.Register(Component.For<IAPILog>().UsingFactoryMethod(k => _helper.GetLoggerFactory().GetLogger()).LifestyleSingleton());
 			container.Register(Component.For<IHelper>().UsingFactoryMethod(k => _helper).LifestyleSingleton());
 
 			container.Register(Component.For<IIntegrationPointsManager>().ImplementedBy<IntegrationPointsManager>().LifestyleTransient());

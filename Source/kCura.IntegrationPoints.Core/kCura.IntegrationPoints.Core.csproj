@@ -119,6 +119,7 @@
     <Compile Include="Helpers\LongPathDirectory.cs" />
     <Compile Include="Helpers\LongPathFile.cs" />
     <Compile Include="Helpers\Implementations\MultiObjectSavedSearchCondition.cs" />
+    <Compile Include="Installers\InfrastructureInstaller.cs" />
     <Compile Include="Installers\SharedAgentInstaller.cs" />
     <Compile Include="IServiceManagerProvider.cs" />
     <Compile Include="Models\IRdoFilter.cs" />

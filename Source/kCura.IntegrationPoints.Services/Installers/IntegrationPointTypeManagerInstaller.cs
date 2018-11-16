@@ -30,8 +30,6 @@ namespace kCura.IntegrationPoints.Services.Installers
 
 		protected override void RegisterComponents(IWindsorContainer container, IConfigurationStore store, int workspaceId)
 		{
-			container.Register(Component.For<IServiceHelper>().UsingFactoryMethod(k => global::Relativity.API.Services.Helper, true));
-			container.Register(Component.For<IHelper>().UsingFactoryMethod(k => k.Resolve<IServiceHelper>(), true));
 			container.Register(Component.For<IRSAPIService>().UsingFactoryMethod(k => new RSAPIService(k.Resolve<IHelper>(), workspaceId), true));
 			container.Register(Component.For<IAuthTokenGenerator>().ImplementedBy<ClaimsTokenGenerator>().LifestyleTransient());
 			container.Register(Component.For<IIntegrationPointTypeRepository>().ImplementedBy<IntegrationPointTypeRepository>().LifestyleTransient());

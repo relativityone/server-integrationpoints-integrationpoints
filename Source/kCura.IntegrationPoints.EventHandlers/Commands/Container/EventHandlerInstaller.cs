@@ -4,6 +4,7 @@ using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Authentication;
+using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
@@ -34,6 +35,13 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 		}
 
 		public void Install(IWindsorContainer container, IConfigurationStore store)
+		{
+			container.Install(new InfrastructureInstaller());
+
+			InstallDependencies(container);
+		}
+
+		private void InstallDependencies(IWindsorContainer container)
 		{
 			container.Register(Component.For<IRsapiClientWithWorkspaceFactory>().Instance(new RsapiClientWithWorkspaceFactory(_context.Helper)).LifestyleSingleton());
 			container.Register(Component.For<IEHContext>().Instance(_context).LifestyleSingleton());

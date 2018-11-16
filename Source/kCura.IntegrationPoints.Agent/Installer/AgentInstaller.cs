@@ -1,5 +1,4 @@
-﻿using System;
-using Castle.Facilities.TypedFactory;
+﻿using Castle.Facilities.TypedFactory;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.MicroKernel.SubSystems.Configuration;
@@ -7,9 +6,11 @@ using Castle.Windsor;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.Context;
 using kCura.IntegrationPoints.Agent.kCura.IntegrationPoints.Agent;
+using kCura.IntegrationPoints.Agent.Monitoring;
 using kCura.IntegrationPoints.Agent.TaskFactory;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Agent.Validation;
+using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Factories;
@@ -32,6 +33,7 @@ using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.WinEDDS.Service.Export;
 using Relativity.API;
 using Relativity.Toggles;
+using System;
 using ITaskFactory = kCura.IntegrationPoints.Agent.TaskFactory.ITaskFactory;
 
 namespace kCura.IntegrationPoints.Agent.Installer
@@ -157,7 +159,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 					JobContextProvider jobContextProvider = k.Resolve<JobContextProvider>();
 					int integrationPointId = jobContextProvider.Job.RelatedObjectArtifactID;
 					ICaseServiceContext caseServiceContext = k.Resolve<ICaseServiceContext>();
-						IntegrationPoint integrationPoint = caseServiceContext.RsapiService.RelativityObjectManager.Read<IntegrationPoint>(integrationPointId);
+					IntegrationPoint integrationPoint = caseServiceContext.RsapiService.RelativityObjectManager.Read<IntegrationPoint>(integrationPointId);
 					if (integrationPoint == null)
 					{
 						throw new ArgumentException("Failed to retrieved corresponding Integration Point.");
@@ -187,6 +189,9 @@ namespace kCura.IntegrationPoints.Agent.Installer
 				}).LifestyleTransient());
 
 			container.Register(Component.For<IRsapiClientWithWorkspaceFactory>().ImplementedBy<ExtendedRsapiClientWithWorkspaceFactory>().LifestyleTransient());
+			container.Register(Component.For<IExternalServiceInstrumentationProvider>()
+				.ImplementedBy<ExternalServiceInstrumentationProviderWithJobContext>()
+				.LifestyleSingleton());
 		}
 	}
 }
