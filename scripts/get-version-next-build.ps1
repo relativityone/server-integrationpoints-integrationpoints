@@ -87,7 +87,7 @@ END
 
 "
 
-    $version = $Comm.ExecuteScalar()
+    $global:nextVersion = $Comm.ExecuteScalar()
     $Conn.Close()
 }
 finally {
@@ -96,8 +96,6 @@ finally {
     }
 }         
 
-if (!$version) {
+if (!$global:nextVersion) {
     throw "Unable to retrieve version from SQL"
 }
-
-return $version
