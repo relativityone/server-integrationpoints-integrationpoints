@@ -4,18 +4,18 @@ strategy: min
 source https://proget.kcura.corp/nuget/NuGet
 
 //Main Relativity packages
-nuget kCura 10.1.33.3-DEV
-nuget kCura.Agent 10.1.33.3-DEV
-nuget kCura.EventHandler 10.1.33.3-DEV 
-nuget kCura.Relativity.Client 10.1.33.3-DEV 
-nuget Relativity.Authentication 10.1.33.3-DEV 
-nuget Relativity.Core 10.1.33.3-DEV 
-nuget Relativity.CustomPages 10.1.33.3-DEV 
-nuget Relativity.Data 10.1.33.3-DEV 
-nuget Relativity.ImportExport 10.1.33.3-DEV 
+nuget kCura 10.1.41.114-DEV
+nuget kCura.Agent 10.1.41.114-DEV
+nuget kCura.EventHandler 10.1.41.114-DEV 
+nuget kCura.Relativity.Client 10.1.41.114-DEV 
+nuget Relativity.Authentication 10.1.41.114-DEV 
+nuget Relativity.Core 10.1.41.114-DEV 
+nuget Relativity.CustomPages 10.1.41.114-DEV 
+nuget Relativity.Data 10.1.41.114-DEV 
+nuget Relativity.ImportExport 10.1.41.114-DEV 
 nuget Relativity.Telemetry.Services.Interface 2018.9.2-DEV-6
-nuget RelativityCore 10.1.33.3-DEV
-nuget Relativity.Services.Interfaces 10.1.33.3-DEV
+nuget RelativityCore 10.1.41.114-DEV
+nuget Relativity.Services.Interfaces 10.1.41.114-DEV
 
 //Other Relativity packages
 nuget Relativity.DataTransfer.MessageService ~> 10.0.2
@@ -30,7 +30,7 @@ nuget kCura.FreeImage 3.17.0.1
 //Relativity transient packages
 nuget kCura.OutsideIn.FI.Win32 ~> 2018.7 content: none 	//Relativity.ImportExport
 nuget Relativity.SecretCatalog.AzureKeyVault ~> 1.0.19 		//RelativityCore
-nuget Relativity.ServiceBus ~> 2.3.6 						//RelativityCore
+nuget Relativity.ServiceBus ~> 2.3.14 						//RelativityCore
 nuget Relativity.Telemetry.MetricsCollection ~> 2018.8.0 	//RelativityCore
 nuget Relativity.Vfs.IO ~> 1.0.24 							//RelativityCore
 nuget Relativity.Toggles ~> 1.0.0.100 						//RelativityCore
