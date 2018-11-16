@@ -4,12 +4,12 @@
 
 properties ([
     parameters([
-        choice(defaultValue: 'APLHA',choices: ["ALPHA","BETA","RC","GOLD"], description: 'Build Type', name: 'buildType'),
-        string(defaultValue: '', description: 'Override Version, for example 1.2.3.4', name: 'overrideVersion')
+        choice(defaultValue: 'DEV',choices: ["DEV","GOLD"], description: 'Build type. GOLD can only be used on release branches.', name: 'buildType')
     ])
 ])
 
 def version
+def packageVersion
 
 node('PolandBuild')
 {
@@ -22,15 +22,15 @@ node('PolandBuild')
         }
         stage ('Get version')
         {
-            if(params.overrideVersion != '')
+            def outputString = powershell(returnStdout: true, script: ".\\build.ps1 getVersion -buildType $buildType -branchName ${env.BRANCH_NAME}").trim()
+            version = extractValue("VERSION", outputString)
+            packageVersion = extractValue("PACKAGE_VERSION", outputString)
+            if (!outputString || !version || !packageVersion)
             {
-                version = params.overrideVersion
+                error("Unable to retrieve version!")
             }
-            else
-            {
-                //TODO
-                version = "0.0.0.1"
-            }
+            echo outputString
+            currentBuild.displayName = packageVersion
         }
         stage ('ConfigureAwait check')
         {
@@ -38,7 +38,7 @@ node('PolandBuild')
         }
         stage ('Build')
         {
-            powershell ".\\build.ps1 buildAndSign -buildConfig Release -buildType '${params.buildType}' -version $version"
+            powershell ".\\build.ps1 buildAndSign -buildConfig Release -version $version -packageVersion $packageVersion"
         }
         stage ('Unit Tests')
         {
@@ -50,7 +50,7 @@ node('PolandBuild')
         }
         stage ('NuGet publish')
         {
-            powershell ".\\build.ps1 packNuget -version $version"
+            powershell ".\\build.ps1 packNuget -packageVersion $packageVersion"
 
             withCredentials([string(credentialsId: 'ProgetNugetApiKey', variable: 'key')])
             {
@@ -112,4 +112,12 @@ Check console output at ${env.BUILD_URL} to view the results."""
 def sendEmail(String body, String subject, String recipients)
 {
     emailext attachLog: true, body: body, subject: subject, to: recipients
+}
+
+def extractValue(String value, String output)
+{
+    def matcher = output =~ "!!!$value=(.*)"
+    $result =  matcher[0][0].split("=")[1]
+    matcher = null
+    return $result
 }

@@ -7,8 +7,8 @@
 .PARAMETER version
     Build version number for DLL
 
-.PARAMETER infoVersion
-    Version used to describe package (for example 1.2.3-alpha001)
+.PARAMETER packageVersion
+    Version used to describe package (for example 1.2.3-dev-4)
 
 .PARAMETER buildConf
     Build configuration - Debug or Release
@@ -26,7 +26,7 @@
 [CmdletBinding()]
 param(
     [string]$version,
-    [string]$infoVersion,
+    [string]$packageVersion,
     [string]$buildConf,
     [string]$sourceDir,
     [string]$certThumbprint,
@@ -34,7 +34,7 @@ param(
 )
 
 Get-ChildItem -Path $sourceDir -Filter *.sln -File | ForEach-Object {
-    & msbuild $_.FullName "/p:Configuration=$buildConf" "/p:AssemblyVersion=$version" "/p:InformationVersion=$infoVersion" `
+    & msbuild $_.FullName "/p:Configuration=$buildConf" "/p:AssemblyVersion=$version" "/p:InformationVersion=$packageVersion" `
         "/p:CertificateThumbprint=$certThumbprint" "/p:SignToolPath=$signToolPath" "/nologo" "/nodereuse:false" "/maxcpucount"
 
     if ($LASTEXITCODE -ne 0) {
