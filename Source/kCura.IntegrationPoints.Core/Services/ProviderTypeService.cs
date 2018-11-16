@@ -1,22 +1,23 @@
 ﻿using System;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
 	public class ProviderTypeService : IProviderTypeService
 	{
-		private readonly IRSAPIService _rsapiService;
+		private readonly IRelativityObjectManager _objectManager;
 
-		public ProviderTypeService(IRSAPIService rsapiService)
+		public ProviderTypeService(IRelativityObjectManager objectManager)
 		{
-			_rsapiService = rsapiService;
+			_objectManager = objectManager;
 		}
 
 		public ProviderType GetProviderType(int sourceProviderId, int destinationProviderId)
 		{
-			string sourceProviderGuid = _rsapiService.RelativityObjectManager.Read<SourceProvider>(sourceProviderId).Identifier;
-			string destinationProviderGuid = _rsapiService.RelativityObjectManager.Read<DestinationProvider>(destinationProviderId).Identifier;
+			string sourceProviderGuid = _objectManager.Read<SourceProvider>(sourceProviderId).Identifier;
+			string destinationProviderGuid = _objectManager.Read<DestinationProvider>(destinationProviderId).Identifier;
 			return GetProviderType(sourceProviderGuid, destinationProviderGuid);
 		}
 

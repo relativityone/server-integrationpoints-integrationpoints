@@ -15,15 +15,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 	{
 		private IIntegrationPointQuery _integrationPointQuery;
 		private IDeleteHistoryService _deleteHistoryService;
-		private IRSAPIService _rsapiService;
 		private IRelativityObjectManager _relativityObjectManager;
 
 		[SetUp]
 		public override void SetUp()
 		{
-			_rsapiService = Substitute.For<IRSAPIService>();
 			_relativityObjectManager = Substitute.For<IRelativityObjectManager>();
-			_rsapiService.RelativityObjectManager.Returns(_relativityObjectManager);
 
 			_deleteHistoryService = Substitute.For<IDeleteHistoryService>();
 			_integrationPointQuery = Substitute.For<IIntegrationPointQuery>();
@@ -33,7 +30,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		public void ItShouldThrowExceptionWhenIntegrationPointQueryIsNullTest()
 		{
 			// arrange
-			var deleteIntegrationPoints = new DeleteIntegrationPoints(null, _deleteHistoryService, _rsapiService);
+			var deleteIntegrationPoints = new DeleteIntegrationPoints(null, _deleteHistoryService, _relativityObjectManager);
 			var ids = new List<int> { 1, 2, 3 };
 
 			// act & assert
@@ -44,7 +41,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		public void ItShouldThrowExceptionWhenDeleteHistoryServiceIsNullTest()
 		{
 			// arrange
-			var deleteIntegrationPoints = new DeleteIntegrationPoints(_integrationPointQuery, null, _rsapiService);
+			var deleteIntegrationPoints = new DeleteIntegrationPoints(_integrationPointQuery, null, _relativityObjectManager);
 			var ids = new List<int> { 1, 2, 3 };
 
 			// act & assert
@@ -57,7 +54,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		public void ItShouldCallWithProperArgumentIntegrationPointQueryTest(int[] sourceProvider)
 		{
 			// arrange
-			var deleteIntegrationPoints = new DeleteIntegrationPoints(_integrationPointQuery, _deleteHistoryService, _rsapiService);
+			var deleteIntegrationPoints = new DeleteIntegrationPoints(_integrationPointQuery, _deleteHistoryService, _relativityObjectManager);
 
 			// act
 			deleteIntegrationPoints.DeleteIPsWithSourceProvider(sourceProvider.ToList());
@@ -73,13 +70,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			// arrange
 			var integrationPoints = GetMockIntegrationsPoints(artifactIds).ToList();
 			_integrationPointQuery.GetIntegrationPoints(Arg.Any<List<int>>()).Returns(integrationPoints);
-			var deleteIntegrationPoints = new DeleteIntegrationPoints(_integrationPointQuery, _deleteHistoryService, _rsapiService);
+			var deleteIntegrationPoints = new DeleteIntegrationPoints(_integrationPointQuery, _deleteHistoryService, _relativityObjectManager);
 
 			// act
 			deleteIntegrationPoints.DeleteIPsWithSourceProvider(sourceProvider.ToList());
 
 			// assert
-			_deleteHistoryService.Received(1).DeleteHistoriesAssociatedWithIPs(Arg.Is<List<int>>(x => x.SequenceEqual(artifactIds)), _rsapiService);
+			_deleteHistoryService.Received(1).DeleteHistoriesAssociatedWithIPs(Arg.Is<List<int>>(x => x.SequenceEqual(artifactIds)), _relativityObjectManager);
 		}
 
 		[TestCase(new int[0], new int[0])]
@@ -89,7 +86,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			// arrange
 			var integrationPoints = GetMockIntegrationsPoints(artifactIds).ToList();
 			_integrationPointQuery.GetIntegrationPoints(Arg.Any<List<int>>()).Returns(integrationPoints);
-			var deleteIntegrationPoints = new DeleteIntegrationPoints(_integrationPointQuery, _deleteHistoryService, _rsapiService);
+			var deleteIntegrationPoints = new DeleteIntegrationPoints(_integrationPointQuery, _deleteHistoryService, _relativityObjectManager);
 
 			// act
 			deleteIntegrationPoints.DeleteIPsWithSourceProvider(sourceProvider.ToList());
@@ -107,7 +104,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		{
 			// arrange
 			var sourceProvider = new List<int> { 1 };
-			var deleteIntegrationPoints = new DeleteIntegrationPoints(_integrationPointQuery, _deleteHistoryService, _rsapiService);
+			var deleteIntegrationPoints = new DeleteIntegrationPoints(_integrationPointQuery, _deleteHistoryService, _relativityObjectManager);
 
 			var artifactIds = new[] { 7 };
 			var integrationPoints = GetMockIntegrationsPoints(artifactIds).ToList();

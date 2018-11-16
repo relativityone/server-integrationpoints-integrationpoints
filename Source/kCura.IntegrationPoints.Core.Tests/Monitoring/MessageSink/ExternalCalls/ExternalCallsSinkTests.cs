@@ -1,5 +1,4 @@
 ﻿using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
-using kCura.IntegrationPoints.Core.Monitoring.Instrumentation.Model;
 using kCura.IntegrationPoints.Core.Monitoring.MessageSink.ExternalCalls;
 using NSubstitute;
 using NUnit.Framework;
@@ -8,6 +7,7 @@ using Relativity.DataTransfer.MessageService;
 using Relativity.DataTransfer.MessageService.MetricsManager.APM;
 using System;
 using System.Runtime.InteropServices;
+using kCura.IntegrationPoints.Common.Monitoring.Instrumentation.Model;
 
 namespace kCura.IntegrationPoints.Core.Tests.Monitoring.MessageSink.ExternalCalls
 {

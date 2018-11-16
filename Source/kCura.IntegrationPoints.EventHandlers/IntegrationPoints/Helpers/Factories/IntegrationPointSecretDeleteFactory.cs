@@ -1,5 +1,5 @@
-﻿using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
+﻿using kCura.IntegrationPoints.Data.Factories.Implementations;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.SecretStore;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
 using Relativity.API;
@@ -13,13 +13,12 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
 		{
 			ISecretManager secretManager = new SecretManager(helper.GetActiveCaseID());
 			ISecretCatalog secretCatalog = new DefaultSecretCatalogFactory().Create(helper.GetActiveCaseID());
-			return new IntegrationPointSecretDelete(secretManager, 
-				secretCatalog, 
-				new RelativityObjectManager(helper.GetActiveCaseID(), 
-				helper, new SecretStoreHelper(helper.GetActiveCaseID(),
-						helper,
-						new SecretManager(helper.GetActiveCaseID()),
-						new DefaultSecretCatalogFactory())));
+			return new IntegrationPointSecretDelete(secretManager, secretCatalog, CreateObjectManager(helper));
+		}
+
+		private static IRelativityObjectManager CreateObjectManager(IEHHelper helper)
+		{
+			return new RelativityObjectManagerFactory(helper).CreateRelativityObjectManager(helper.GetActiveCaseID());
 		}
 	}
 }

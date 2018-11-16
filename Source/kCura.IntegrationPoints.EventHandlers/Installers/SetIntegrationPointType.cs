@@ -55,13 +55,13 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			set { _integrationPointTypeService = value; }
 		}
 
-		internal void UpdateIntegrationPointType(Data.IntegrationPoint integrationPoint, IList<IntegrationPointType> integrationPointTypes)
+		internal void UpdateIntegrationPointType(IntegrationPoint integrationPoint, IList<IntegrationPointType> integrationPointTypes)
 		{
 			if ((integrationPoint.Type != null) && (integrationPoint.Type != 0))
 			{
 				return;
 			}
-			var sourceProvider = CaseServiceContext.RsapiService.RelativityObjectManager.Read<Data.SourceProvider>(integrationPoint.SourceProvider.Value);
+			var sourceProvider = ObjectManager.Read<Data.SourceProvider>(integrationPoint.SourceProvider.Value);
 			if (sourceProvider.Identifier == Constants.RELATIVITY_PROVIDER_GUID)
 			{
 				integrationPoint.Type = integrationPointTypes.First(x => x.Identifier == Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString()).ArtifactId;
@@ -70,12 +70,12 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			{
 				integrationPoint.Type = integrationPointTypes.First(x => x.Identifier == Core.Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid.ToString()).ArtifactId;
 			}
-			CaseServiceContext.RsapiService.RelativityObjectManager.Update(integrationPoint);
+			ObjectManager.Update(integrationPoint);
 		}
 
 		internal IList<IntegrationPoint> GetIntegrationPoints()
 		{
-			IntegrationPointQuery integrationPointQuery = new IntegrationPointQuery(CaseServiceContext.RsapiService);
+			IntegrationPointQuery integrationPointQuery = new IntegrationPointQuery(ObjectManager);
 			IList<Data.IntegrationPoint> integrationPoints = integrationPointQuery.GetAllIntegrationPoints();
 			return integrationPoints;
 		}

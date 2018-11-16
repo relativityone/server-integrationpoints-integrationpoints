@@ -124,13 +124,6 @@
     <Compile Include="IServiceManagerProvider.cs" />
     <Compile Include="Models\IRdoFilter.cs" />
     <Compile Include="Monitoring\HealthCheck.cs" />
-    <Compile Include="Monitoring\Instrumentation\ExternalServiceInstrumentationProviderWithoutJobContext.cs" />
-    <Compile Include="Monitoring\Instrumentation\ExternalServiceSimpleInstrumentation.cs" />
-    <Compile Include="Monitoring\Instrumentation\Model\ExternalCallCompletedMessage.cs" />
-    <Compile Include="Monitoring\Instrumentation\ExternalServiceInstrumentation.cs" />
-    <Compile Include="Monitoring\Instrumentation\ExternalServiceLogsInstrumentation.cs" />
-    <Compile Include="Monitoring\Instrumentation\Model\InstrumentationJobContext.cs" />
-    <Compile Include="Monitoring\Instrumentation\Model\InstrumentationServiceCallContext.cs" />
     <Compile Include="Monitoring\IntegrationPointsMessageService.cs" />
     <Compile Include="Monitoring\JobLifetimeMetricBatchStatus.cs" />
     <Compile Include="Monitoring\MessageSink\Aggregated\AggregatedJobSink.cs" />

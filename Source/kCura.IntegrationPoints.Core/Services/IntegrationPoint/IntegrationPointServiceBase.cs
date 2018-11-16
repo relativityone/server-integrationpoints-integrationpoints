@@ -1,22 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Core.Exceptions;
+﻿using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
-using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Data.Factories.Implementations;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core.Helpers;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Newtonsoft.Json;
 using Relativity.API;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 
 namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 {
@@ -59,27 +58,32 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 		public IList<T> GetAllRDOs()
 		{
-			var query = new IntegrationPointBaseQuery<T>(Context.RsapiService);
+			var query = new IntegrationPointBaseQuery<T>(CreateObjectManager());
 			return query.GetAllIntegrationPoints();
 		}
 
 		public IList<T> GetAllRDOsWithAllFields()
 		{
-			var query = new IntegrationPointBaseQuery<T>(Context.RsapiService);
+			var query = new IntegrationPointBaseQuery<T>(CreateObjectManager());
 			return query.GetIntegrationPointsWithAllFields();
 		}
 
 		public IList<T> GetAllRDOsForSourceProvider(List<int> sourceProviderIds)
 		{
-			var query = new IntegrationPointBaseQuery<T>(Context.RsapiService);
+			var query = new IntegrationPointBaseQuery<T>(CreateObjectManager());
 			return query.GetIntegrationPointsWithAllFields(sourceProviderIds);
 		}
 
 		protected IList<T> GetAllRDOsWithBasicProfileColumns()
 		{
-			var query = new IntegrationPointBaseQuery<T>(Context.RsapiService);
+			var query = new IntegrationPointBaseQuery<T>(CreateObjectManager());
 			return query.GetAllIntegrationPointsProfileWithBasicColumns();
-			
+
+		}
+
+		private IRelativityObjectManager CreateObjectManager()
+		{
+			return new RelativityObjectManagerFactory(_helper).CreateRelativityObjectManager(Context.WorkspaceID);
 		}
 
 		public T GetRdo(int artifactId)
@@ -153,7 +157,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			}
 			periodicScheduleRule.TimeZoneOffsetInMinute = model.Scheduler.TimeZoneOffsetInMinute;
 			periodicScheduleRule.TimeZoneId = model.Scheduler.TimeZoneId;
-			
+
 			TimeSpan localTime;
 			if (TimeSpan.TryParse(model.Scheduler.ScheduledTime, out localTime))
 			{
@@ -312,7 +316,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			errorManager.Create(new[] { error });
 		}
 
-		protected void RunValidation(IntegrationPointModelBase model, SourceProvider sourceProvider, DestinationProvider destinationProvider, IntegrationPointType integrationPointType, 
+		protected void RunValidation(IntegrationPointModelBase model, SourceProvider sourceProvider, DestinationProvider destinationProvider, IntegrationPointType integrationPointType,
 			string objectTypeGuid)
 		{
 			var context = new ValidationContext

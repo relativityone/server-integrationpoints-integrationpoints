@@ -1,7 +1,7 @@
-﻿using kCura.IntegrationPoints.Common.Monitoring.Messages;
+﻿using kCura.IntegrationPoints.Common.Monitoring.Instrumentation.Model;
+using kCura.IntegrationPoints.Common.Monitoring.Messages;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
 using kCura.IntegrationPoints.Config;
-using kCura.IntegrationPoints.Core.Monitoring.Instrumentation.Model;
 using kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated;
 using kCura.IntegrationPoints.Core.Monitoring.MessageSink.ExternalCalls;
 using Relativity.API;

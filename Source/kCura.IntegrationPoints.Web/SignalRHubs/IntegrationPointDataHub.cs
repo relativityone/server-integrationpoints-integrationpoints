@@ -20,6 +20,7 @@ using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain.Authentication;
 using Microsoft.AspNet.SignalR;
@@ -107,11 +108,11 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 						IntegrationPointDataHubInput input = _tasks[key];
 
 						var permissionRepository = new PermissionRepository((IHelper)ConnectionHelper.Helper(), input.WorkspaceId);
-						var _rsapiService = new RSAPIService((IHelper)ConnectionHelper.Helper(), input.WorkspaceId);
-						var _providerTypeService = new ProviderTypeService(_rsapiService);
-						var _buttonStateBuilder = new ButtonStateBuilder(_providerTypeService, _queueManager, _jobHistoryManager, _stateManager, permissionRepository, _permissionValidator, _rsapiService);
+						IRelativityObjectManager objectManager = CreateObjectManager(ConnectionHelper.Helper(), input.WorkspaceId);
+						var _providerTypeService = new ProviderTypeService(objectManager);
+						var _buttonStateBuilder = new ButtonStateBuilder(_providerTypeService, _queueManager, _jobHistoryManager, _stateManager, permissionRepository, _permissionValidator, objectManager);
 
-						IntegrationPoint integrationPoint = _rsapiService.RelativityObjectManager.Read<IntegrationPoint>(input.ArtifactId);
+						IntegrationPoint integrationPoint = objectManager.Read<IntegrationPoint>(input.ArtifactId);
 
 						ProviderType providerType = _providerTypeService.GetProviderType(integrationPoint.SourceProvider.Value,
 							integrationPoint.DestinationProvider.Value);
@@ -140,6 +141,11 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			{
 				_updateTimer.Enabled = true;
 			}
+		}
+
+		private IRelativityObjectManager CreateObjectManager(ICPHelper helper, int workspaceId)
+		{
+			return new RelativityObjectManagerFactory(helper).CreateRelativityObjectManager(workspaceId);
 		}
 
 		public void AddTask(int workspaceId, int artifactId, int userId)

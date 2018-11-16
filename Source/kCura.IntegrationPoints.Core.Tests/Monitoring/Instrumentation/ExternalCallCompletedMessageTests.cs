@@ -1,6 +1,6 @@
-﻿using kCura.IntegrationPoints.Core.Monitoring.Instrumentation.Model;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using System;
+using kCura.IntegrationPoints.Common.Monitoring.Instrumentation.Model;
 
 namespace kCura.IntegrationPoints.Core.Tests.Monitoring.Instrumentation
 {

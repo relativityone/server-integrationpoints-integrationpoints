@@ -2,13 +2,12 @@
 using kCura.IntegrationPoints.Agent.Context;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Config;
-using kCura.IntegrationPoints.Core.Monitoring.Instrumentation;
-using kCura.IntegrationPoints.Core.Monitoring.Instrumentation.Model;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 using System;
+using kCura.IntegrationPoints.Common.Monitoring.Instrumentation.Model;
 
 namespace kCura.IntegrationPoints.Agent.Monitoring
 {
