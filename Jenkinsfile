@@ -4,7 +4,7 @@
 
 properties ([
     parameters([
-        choice(defaultValue: 'DEV',choices: ["DEV","GOLD"], description: 'Build type. GOLD can only be used on release branches.', name: 'buildType')
+        choice(defaultValue: 'DEV', choices: ["DEV","GOLD"], description: 'Build type. GOLD can only be used on release branches.', name: 'buildType')
     ])
 ])
 

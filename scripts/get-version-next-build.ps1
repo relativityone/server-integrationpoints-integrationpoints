@@ -18,8 +18,8 @@
 param(
     [ValidateSet("DEV", "GOLD")]
     [string]$buildType,
-    [Int32]$majorNumber,
-    [Int32]$minorNumber
+    [string]$majorNumber,
+    [string]$minorNumber
 )
 
 $project = "Relativity.Sync"
