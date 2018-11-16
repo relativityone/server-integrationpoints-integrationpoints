@@ -136,6 +136,8 @@
     <Compile Include="Monitoring\MessageSink\Aggregated\AggregatedJobSink.cs" />
     <Compile Include="Monitoring\MessageSink\Aggregated\JobStatistics.cs" />
     <Compile Include="Monitoring\MessageSink\Aggregated\JobStatus.cs" />
+    <Compile Include="Monitoring\MessageSink\ExternalCalls\ExternalCallsJobSummaryMessage.cs" />
+    <Compile Include="Monitoring\MessageSink\ExternalCalls\ExternalCallsSink.cs" />
     <Compile Include="Queries\IGetSourceProviderRdoByApplicationIdentifier.cs" />
     <Compile Include="Queries\IGetSourceProviderRdoByIdentifier.cs" />
     <Compile Include="Serialization\SerializerWithLogging.cs" />
