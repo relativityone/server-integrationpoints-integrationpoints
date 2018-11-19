@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Agent.Context;
 using kCura.IntegrationPoints.Agent.Monitoring;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation.Model;
+using kCura.IntegrationPoints.Common.Monitoring.Messages;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Monitoring;
@@ -17,7 +18,6 @@ using Relativity.DataTransfer.MessageService;
 using Relativity.DataTransfer.MessageService.MetricsManager.APM;
 using System;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Common.Monitoring.Messages;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration.Monitoring
 {
@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration.Monitoring
 		private const string _SERVICE_TYPE = "RSAPI";
 		private const string _SERVICE_NAME = "ObjectManager";
 		private const string _OPERATION_NAME = "Query";
-		private const int _DELAY_FOR_PROCESSING_MESSAGE = 100;
+		private const int _DELAY_FOR_PROCESSING_MESSAGE_IN_MS = 100;
 		private static readonly Guid _batchInstance = Guid.NewGuid();
 
 		[SetUp]
@@ -65,8 +65,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration.Monitoring
 		public async Task ItShouldSendMetricToApm_WhenItIsEnabled_SuccessfulMessage()
 		{
 			// arrange
-			SwitchMeasureOfExternallCallConfigValue(true);
-			SwitchSendLiveApmMetricsConfigValue(true);
+			SetupMeasureOfExternallCallConfigValue(true);
+			SetupSendLiveApmMetricsConfigValue(true);
 
 			using (_jobContextProvider.StartJobContext(GetJob()))
 			{
@@ -78,7 +78,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration.Monitoring
 			}
 
 			// assert
-			await Task.Delay(_DELAY_FOR_PROCESSING_MESSAGE);
+			await Task.Delay(_DELAY_FOR_PROCESSING_MESSAGE_IN_MS);
 			_metricManagerMock.Verify(x => x.LogCount(
 				_BUCKET_EXTERNALL_CALL,
 				It.IsAny<long>(),
@@ -90,8 +90,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration.Monitoring
 		public async Task ItShouldSendMetricToApm_WhenItIsEnabled_FailedMessage()
 		{
 			// arrange
-			SwitchMeasureOfExternallCallConfigValue(true);
-			SwitchSendLiveApmMetricsConfigValue(true);
+			SetupMeasureOfExternallCallConfigValue(true);
+			SetupSendLiveApmMetricsConfigValue(true);
 
 			using (_jobContextProvider.StartJobContext(GetJob()))
 			{
@@ -104,7 +104,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration.Monitoring
 			}
 
 			// assert
-			await Task.Delay(_DELAY_FOR_PROCESSING_MESSAGE);
+			await Task.Delay(_DELAY_FOR_PROCESSING_MESSAGE_IN_MS);
 			_metricManagerMock.Verify(x => x.LogCount(
 				_BUCKET_EXTERNALL_CALL,
 				It.IsAny<long>(),
@@ -118,8 +118,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration.Monitoring
 		public async Task ItShouldNotSendMetricToApm_WhenItIsDisabled(bool measureOfExternalCall, bool sendLiveApmMetrics)
 		{
 			// arrange
-			SwitchMeasureOfExternallCallConfigValue(measureOfExternalCall);
-			SwitchSendLiveApmMetricsConfigValue(sendLiveApmMetrics);
+			SetupMeasureOfExternallCallConfigValue(measureOfExternalCall);
+			SetupSendLiveApmMetricsConfigValue(sendLiveApmMetrics);
 
 			using (_jobContextProvider.StartJobContext(GetJob()))
 			{
@@ -129,9 +129,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration.Monitoring
 				// act
 				startedInstrumentation.Completed();
 			}
-			
+
 			// assert
-			await Task.Delay(_DELAY_FOR_PROCESSING_MESSAGE);
+			await Task.Delay(_DELAY_FOR_PROCESSING_MESSAGE_IN_MS);
 			_metricManagerMock.Verify(x => x.LogCount(_BUCKET_EXTERNALL_CALL, It.IsAny<long>(), It.IsAny<IMetricMetadata>()), Times.Never);
 		}
 
@@ -139,8 +139,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration.Monitoring
 		public async Task ItShouldSendAggregatedMetricsWhenJobCompletes()
 		{
 			// arrange
-			SwitchMeasureOfExternallCallConfigValue(true);
-			SwitchSendLiveApmMetricsConfigValue(true);
+			SetupMeasureOfExternallCallConfigValue(true);
+			SetupSendLiveApmMetricsConfigValue(true);
 
 			var jobStartedMessage = new JobStartedMessage
 			{
@@ -149,7 +149,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration.Monitoring
 				WorkspaceID = _WORKSPACE_ID
 			};
 			await _messageService.Send(jobStartedMessage);
-			await Task.Delay(_DELAY_FOR_PROCESSING_MESSAGE);
+			await Task.Delay(_DELAY_FOR_PROCESSING_MESSAGE_IN_MS);
 
 			using (_jobContextProvider.StartJobContext(GetJob()))
 			{
@@ -161,20 +161,20 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration.Monitoring
 					_sut.CreateSimple(_SERVICE_TYPE, _SERVICE_NAME, _OPERATION_NAME);
 				simpleInstrumentation.Execute(() => { });
 			}
-			
+
 			var jobCompletedMessage = new JobCompletedMessage
 			{
 				CorrelationID = _batchInstance.ToString(),
 				JobID = _JOB_ID.ToString(),
 				WorkspaceID = _WORKSPACE_ID
 			};
-			await Task.Delay(_DELAY_FOR_PROCESSING_MESSAGE);
+			await Task.Delay(_DELAY_FOR_PROCESSING_MESSAGE_IN_MS);
 
 			// act
 			await _messageService.Send(jobCompletedMessage);
 
 			// assert
-			await Task.Delay(_DELAY_FOR_PROCESSING_MESSAGE);
+			await Task.Delay(_DELAY_FOR_PROCESSING_MESSAGE_IN_MS);
 			_metricManagerMock.Verify(x => x.LogCount(
 				_BUCKET_EXTERNALL_CALL_JOB_SUMMARY,
 				It.IsAny<long>(),
@@ -192,19 +192,19 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration.Monitoring
 				.Build();
 		}
 
-		private void SwitchMeasureOfExternallCallConfigValue(bool value)
+		private void SetupMeasureOfExternallCallConfigValue(bool value)
 		{
 			_configMock.Setup(x => x.MeasureDurationOfExternalCalls).Returns(value);
 		}
 
-		private void SwitchSendLiveApmMetricsConfigValue(bool value)
+		private void SetupSendLiveApmMetricsConfigValue(bool value)
 		{
 			_configMock.Setup(x => x.SendLiveApmMetrics).Returns(value);
 		}
 
 		private bool VerifyMetadata(IMetricMetadata metadata)
 		{
-			return VerifyMetadata(metadata, "");
+			return VerifyMetadata(metadata, failureReason: "");
 		}
 
 		private bool VerifyMetadata(IMetricMetadata metadata, string failureReason)
