@@ -68,8 +68,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Ftp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Domain", "kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj", "{5D5B52B4-8769-431A-9743-B96F15FED5FD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Injection", "kCura.IntegrationPoints.Injection\kCura.IntegrationPoints.Injection.csproj", "{847816A0-E354-4176-83B1-7ADB93E5742F}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Services", "kCura.IntegrationPoints.Services\kCura.IntegrationPoints.Services.csproj", "{FD2C5DB6-8FD6-40D6-8E50-3641B7D89D9D}"
 	ProjectSection(ProjectDependencies) = postProject
 		{BFA5641B-AA6F-4FA5-A20D-6F42B484CAE4} = {BFA5641B-AA6F-4FA5-A20D-6F42B484CAE4}
@@ -265,13 +263,6 @@ Global
 		{5D5B52B4-8769-431A-9743-B96F15FED5FD}.Release|Any CPU.ActiveCfg = Release|x64
 		{5D5B52B4-8769-431A-9743-B96F15FED5FD}.Release|x64.ActiveCfg = Release|x64
 		{5D5B52B4-8769-431A-9743-B96F15FED5FD}.Release|x64.Build.0 = Release|x64
-		{847816A0-E354-4176-83B1-7ADB93E5742F}.Debug|Any CPU.ActiveCfg = Debug|x64
-		{847816A0-E354-4176-83B1-7ADB93E5742F}.Debug|Any CPU.Build.0 = Debug|x64
-		{847816A0-E354-4176-83B1-7ADB93E5742F}.Debug|x64.ActiveCfg = Debug|x64
-		{847816A0-E354-4176-83B1-7ADB93E5742F}.Debug|x64.Build.0 = Debug|x64
-		{847816A0-E354-4176-83B1-7ADB93E5742F}.Release|Any CPU.ActiveCfg = Release|x64
-		{847816A0-E354-4176-83B1-7ADB93E5742F}.Release|x64.ActiveCfg = Release|x64
-		{847816A0-E354-4176-83B1-7ADB93E5742F}.Release|x64.Build.0 = Release|x64
 		{FD2C5DB6-8FD6-40D6-8E50-3641B7D89D9D}.Debug|Any CPU.ActiveCfg = Debug|x64
 		{FD2C5DB6-8FD6-40D6-8E50-3641B7D89D9D}.Debug|Any CPU.Build.0 = Debug|x64
 		{FD2C5DB6-8FD6-40D6-8E50-3641B7D89D9D}.Debug|x64.ActiveCfg = Debug|x64
@@ -319,5 +310,8 @@ Global
 		{16E36871-2EC6-48BB-ADAA-A9CD481F3337} = {E4D200F1-55C2-42C4-A54B-3AE21F0443DF}
 		{835F7005-E106-4C29-AD9C-FE8BD5CF8280} = {16E36871-2EC6-48BB-ADAA-A9CD481F3337}
 		{180650D2-1EEA-4242-949D-7BDE78EECCB4} = {16E36871-2EC6-48BB-ADAA-A9CD481F3337}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {07C8D1B1-69AB-427E-A4B9-4C1C2588B1CA}
 	EndGlobalSection
 EndGlobal

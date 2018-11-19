@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
-using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
-using kCura.IntegrationPoints.Core.Monitoring.Instrumentation.Model;
+using kCura.IntegrationPoints.Common.Monitoring.Instrumentation.Model;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 
-namespace kCura.IntegrationPoints.Core.Monitoring.Instrumentation
+namespace kCura.IntegrationPoints.Common.Monitoring.Instrumentation
 {
 	public class ExternalServiceInstrumentation : IExternalServiceInstrumentation, IExternalServiceInstrumentationStarted
 	{

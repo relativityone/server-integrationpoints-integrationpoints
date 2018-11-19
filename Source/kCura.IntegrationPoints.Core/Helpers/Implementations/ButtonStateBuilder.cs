@@ -1,5 +1,4 @@
-﻿using System;
-using kCura.IntegrationPoints.Core.Managers;
+﻿using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
@@ -8,13 +7,14 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Newtonsoft.Json;
+using System;
 
 namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 {
 	public class ButtonStateBuilder : IButtonStateBuilder
 	{
 		private readonly IProviderTypeService _providerTypeService;
-		private readonly IRSAPIService _rsapiService;
+		private readonly IRelativityObjectManager _objectManager;
 		private readonly IJobHistoryManager _jobHistoryManager;
 		private readonly IPermissionRepository _permissionRepository;
 		private readonly IQueueManager _queueManager;
@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
 		public ButtonStateBuilder(IProviderTypeService providerTypeService, IQueueManager queueManager, IJobHistoryManager jobHistoryManager,
 			IStateManager stateManager,
-			IPermissionRepository permissionRepository, IIntegrationPointPermissionValidator permissionValidator, IRSAPIService rsapiService)
+			IPermissionRepository permissionRepository, IIntegrationPointPermissionValidator permissionValidator, IRelativityObjectManager objectManager)
 		{
 			_providerTypeService = providerTypeService;
 			_queueManager = queueManager;
@@ -31,12 +31,12 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 			_stateManager = stateManager;
 			_permissionRepository = permissionRepository;
 			_permissionValidator = permissionValidator;
-			_rsapiService = rsapiService;
+			_objectManager = objectManager;
 		}
 
 		public ButtonStateDTO CreateButtonState(int applicationArtifactId, int integrationPointArtifactId)
 		{
-			var integrationPoint = _rsapiService.RelativityObjectManager.Read<IntegrationPoint>(integrationPointArtifactId);
+			var integrationPoint = _objectManager.Read<IntegrationPoint>(integrationPointArtifactId);
 			var providerType = _providerTypeService.GetProviderType(integrationPoint.SourceProvider.Value, integrationPoint.DestinationProvider.Value);
 
 			ValidationResult jobHistoryErrorViewPermissionCheck = _permissionValidator.ValidateViewErrors(applicationArtifactId);
@@ -71,7 +71,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
 		private static bool IsNonStoppableBasedOnProviderType(ProviderType providerType, ImportSettings settings)
 		{
-			return (providerType != ProviderType.Relativity && providerType != ProviderType.LoadFile) || 
+			return (providerType != ProviderType.Relativity && providerType != ProviderType.LoadFile) ||
 				(providerType == ProviderType.Relativity && settings != null && settings.ImageImport);
 		}
 	}

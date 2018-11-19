@@ -27,6 +27,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		protected ISourceJobManager _sourceJobManager;
 		protected IILongTextStreamFactory _longTextStreamFactory;
 
+		protected const int _SPECIAL_FIELD_COUNT = 5;
 		protected const int _DOCUMENT_ARTIFACTID = 123423;
 		protected const string _FIELD_NAME = "DispName";
 		protected const int _FIELD_IDENTIFIER = 123;
@@ -484,8 +485,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			// Act
 			int fieldCount = _instance.FieldCount;
 
+			int expectedFieldCount = _SPECIAL_FIELD_COUNT + _templateFieldEntries.Length;
+
 			// Assert
-			Assert.AreEqual(3, fieldCount, "There should be 3 fields");
+			Assert.AreEqual(expectedFieldCount, fieldCount, $"There should be {expectedFieldCount} fields");
 		}
 
 		[Test]
@@ -497,8 +500,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			// Act
 			int fieldCount = _instance.FieldCount;
 
+			int expectedFieldCount = _SPECIAL_FIELD_COUNT + _templateFieldEntries.Length;
+
 			// Assert
-			Assert.AreEqual(3, fieldCount, "There should be 3 fields");
+			Assert.AreEqual(expectedFieldCount, fieldCount, $"There should be {expectedFieldCount} fields");
 		}
 
 		[Test]
@@ -647,6 +652,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 					new DataColumn(_FIELD_IDENTIFIER.ToString()),
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD),
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_NAME_FIELD),
+					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_SIZE_FIELD),
+					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_TYPE_FIELD),
+					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_SUPPORTED_BY_VIEWER_FIELD),
 					//new DataColumn(Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD),
 					//new DataColumn(Contracts.Constants.SPECIAL_SOURCEJOB_FIELD)
 				}
@@ -687,6 +695,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 					new DataColumn("456"),
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD),
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_NAME_FIELD),
+					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_SIZE_FIELD),
+					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_TYPE_FIELD),
+					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_SUPPORTED_BY_VIEWER_FIELD),
 					//new DataColumn(Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD),
 					//new DataColumn(Contracts.Constants.SPECIAL_SOURCEJOB_FIELD)
 				}
@@ -715,6 +726,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				{
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD),
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_NAME_FIELD),
+					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_SIZE_FIELD),
+					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_TYPE_FIELD),
+					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_SUPPORTED_BY_VIEWER_FIELD),
 					//new DataColumn(Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD),
 					//new DataColumn(Contracts.Constants.SPECIAL_SOURCEJOB_FIELD)
 				}
@@ -743,6 +757,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				{
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD),
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_NAME_FIELD),
+					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_SIZE_FIELD),
+					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_TYPE_FIELD),
+					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_SUPPORTED_BY_VIEWER_FIELD),
 					//new DataColumn(Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD),
 					//new DataColumn(Contracts.Constants.SPECIAL_SOURCEJOB_FIELD)
 				}

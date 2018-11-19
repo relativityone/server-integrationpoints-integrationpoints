@@ -1,18 +1,12 @@
-﻿using System;
+﻿using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain.Exceptions;
+using kCura.IntegrationPoints.SourceProviderInstaller.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using kCura.EventHandler;
-using kCura.IntegrationPoints.Core.Extensions;
-using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Factories.Implementations;
-using kCura.IntegrationPoints.Data.Queries;
-using kCura.IntegrationPoints.Domain;
-using kCura.IntegrationPoints.Domain.Exceptions;
-using kCura.IntegrationPoints.SourceProviderInstaller.Services;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller
 {
@@ -92,25 +86,20 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		}
 		private IntegrationPointQuery _integrationPointQuery;
 		private DeleteHistoryService _deleteHistoryService;
-		private IRSAPIService _service;
 
 		internal IntegrationPointQuery IntegrationPoint
 		{
 			get
 			{
-				return _integrationPointQuery ?? (_integrationPointQuery = new IntegrationPointQuery(Service));
+				return _integrationPointQuery ?? (_integrationPointQuery = new IntegrationPointQuery(ObjectManager));
 			}
 		}
 
 		internal DeleteHistoryService DeleteHistory
 		{
-			get { return _deleteHistoryService ?? (_deleteHistoryService = new DeleteHistoryService(new RSAPIServiceFactory(Helper))); }
+			get { return _deleteHistoryService ?? (_deleteHistoryService = new DeleteHistoryService(ObjectManagerFactory)); }
 		}
 
-		internal IRSAPIService Service
-		{
-			get { return _service ?? (_service = new RSAPIService(Helper, Helper.GetActiveCaseID())); }
-		}
 
 		private DeleteIntegrationPoints _deleteIntegrationPoints;
 
@@ -118,7 +107,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		{
 			get
 			{
-				return _deleteIntegrationPoints ?? (_deleteIntegrationPoints = new DeleteIntegrationPoints(IntegrationPoint, DeleteHistory, Service));
+				return _deleteIntegrationPoints ?? (_deleteIntegrationPoints = new DeleteIntegrationPoints(IntegrationPoint, DeleteHistory, ObjectManager));
 			}
 			set { _deleteIntegrationPoints = value; }
 		}

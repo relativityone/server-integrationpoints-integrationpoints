@@ -1,7 +1,6 @@
 ﻿using System;
-using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 
-namespace kCura.IntegrationPoints.Core.Monitoring.Instrumentation
+namespace kCura.IntegrationPoints.Common.Monitoring.Instrumentation
 {
 	internal class ExternalServiceSimpleInstrumentation : IExternalServiceSimpleInstrumentation 
 	{

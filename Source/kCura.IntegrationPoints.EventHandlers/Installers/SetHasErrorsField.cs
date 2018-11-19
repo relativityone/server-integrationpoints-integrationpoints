@@ -22,6 +22,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Queries;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.SourceProviderInstaller;
@@ -109,8 +110,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, Helper, integrationPointSerializer, jobTracker);
 			IWorkspaceManager workspaceManager = new WorkspaceManager(repositoryFactory);
 			IFederatedInstanceManager federatedInstanceManager = new FederatedInstanceManager(repositoryFactory);
-			IRSAPIService rsapiService = new RSAPIService(Helper, caseServiceContext.WorkspaceID);
-			IProviderTypeService providerTypeService = new ProviderTypeService(rsapiService);
+			IProviderTypeService providerTypeService = new ProviderTypeService(CreateObjectManager(Helper, caseServiceContext.WorkspaceID));
 			IMessageService messageService = new MessageService();
 
 			_jobHistoryService = new JobHistoryService(caseServiceContext, federatedInstanceManager, workspaceManager, Helper, integrationPointSerializer, providerTypeService, messageService);
@@ -135,6 +135,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 
 			_integrationPointService = new IntegrationPointService(Helper, caseServiceContext, contextContainerFactory, integrationPointSerializer,
 				choiceQuery, jobManager, _jobHistoryService, jobHistoryErrorService, managerFactory, validationExecutor, providerTypeService, messageService);
+		}
+
+		private IRelativityObjectManager CreateObjectManager(IEHHelper helper, int workspaceID)
+		{
+			return new RelativityObjectManagerFactory(helper).CreateRelativityObjectManager(workspaceID);
 		}
 
 		internal void UpdateIntegrationPointHasErrorsField(Data.IntegrationPoint integrationPoint)

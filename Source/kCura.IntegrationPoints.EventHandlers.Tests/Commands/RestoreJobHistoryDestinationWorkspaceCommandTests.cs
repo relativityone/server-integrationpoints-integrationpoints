@@ -1,35 +1,35 @@
-﻿using System.Collections.Generic;
-using kCura.IntegrationPoint.Tests.Core;
+﻿using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.EventHandlers.Commands;
 using kCura.IntegrationPoints.EventHandlers.Commands.RestoreJobHistoryParser;
-using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
+using System.Collections.Generic;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 {
 	public class RestoreJobHistoryDestinationWorkspaceCommandTests : TestBase
 	{
-		private const int _WORKSPACE_ARTIFACT_ID = 623424;
-
-		private IRSAPIService _rsapiService;
+		private IRelativityObjectManager _objectManager;
 		private IFederatedInstanceManager _federatedInstanceManager;
 		private IWorkspaceManager _workspaceManager;
 		private RestoreJobHistoryDestinationWorkspaceCommand _command;
 
+		private const int _WORKSPACE_ARTIFACT_ID = 623424;
+
 		public override void SetUp()
 		{
-			_rsapiService = Substitute.For<IRSAPIService>();
+			_objectManager = Substitute.For<IRelativityObjectManager>();
 			_federatedInstanceManager = Substitute.For<IFederatedInstanceManager>();
 			_workspaceManager = Substitute.For<IWorkspaceManager>();
-			
-			_command = new RestoreJobHistoryDestinationWorkspaceCommand(_rsapiService, new JobHistoryDestinationWorkspaceParser(_WORKSPACE_ARTIFACT_ID, _federatedInstanceManager, _workspaceManager));
+
+			_command = new RestoreJobHistoryDestinationWorkspaceCommand(_objectManager, new JobHistoryDestinationWorkspaceParser(_WORKSPACE_ARTIFACT_ID, _federatedInstanceManager, _workspaceManager));
 		}
 
 		[Test]
@@ -50,7 +50,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 				}
 			};
 
-			_rsapiService.RelativityObjectManager.Query<JobHistory>(Arg.Any<QueryRequest>()).Returns(jobHistories);
+			_objectManager.Query<JobHistory>(Arg.Any<QueryRequest>()).Returns(jobHistories);
 
 			_federatedInstanceManager.RetrieveAll().Returns(new List<FederatedInstanceDto>
 			{
@@ -70,10 +70,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 			_command.Execute();
 
 			// ASSERT
-			_rsapiService.RelativityObjectManager.Received(1).Query<JobHistory>(Arg.Any<QueryRequest>());
-			_rsapiService.RelativityObjectManager.Received(1)
+			_objectManager.Received(1).Query<JobHistory>(Arg.Any<QueryRequest>());
+			_objectManager.Received(1)
 				.Update(Arg.Is<JobHistory>(x => x.DestinationWorkspace == "B - 1" && x.DestinationInstance == "A - 3"));
-			_rsapiService.RelativityObjectManager.Received(1)
+			_objectManager.Received(1)
 				.Update(Arg.Is<JobHistory>(x => x.DestinationWorkspace == "D - 2" && x.DestinationInstance == "C - 4"));
 		}
 
@@ -95,16 +95,16 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 				}
 			};
 
-			_rsapiService.RelativityObjectManager.Query<JobHistory>(Arg.Any<QueryRequest>()).Returns(jobHistories);
+			_objectManager.Query<JobHistory>(Arg.Any<QueryRequest>()).Returns(jobHistories);
 
 			// ACT
 			_command.Execute();
 
 			// ASSERT
-			_rsapiService.RelativityObjectManager.Received(1).Query<JobHistory>(Arg.Any<QueryRequest>());
-			_rsapiService.RelativityObjectManager.Received(1)
+			_objectManager.Received(1).Query<JobHistory>(Arg.Any<QueryRequest>());
+			_objectManager.Received(1)
 				.Update(Arg.Is<JobHistory>(x => x.DestinationWorkspace == "B - 1" && x.DestinationInstance == FederatedInstanceManager.LocalInstance.Name));
-			_rsapiService.RelativityObjectManager.Received(1)
+			_objectManager.Received(1)
 				.Update(Arg.Is<JobHistory>(x => x.DestinationWorkspace == "D - 2" && x.DestinationInstance == FederatedInstanceManager.LocalInstance.Name));
 		}
 
@@ -114,13 +114,13 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 			// ARRANGE
 			var jobHistories = new List<JobHistory>();
 
-			_rsapiService.RelativityObjectManager.Query<JobHistory>(Arg.Any<QueryRequest>()).Returns(jobHistories);
+			_objectManager.Query<JobHistory>(Arg.Any<QueryRequest>()).Returns(jobHistories);
 
 			// ACT
 			_command.Execute();
 
 			// ASSERT
-			_rsapiService.RelativityObjectManager.Received(1).Query<JobHistory>(Arg.Any<QueryRequest>());
+			_objectManager.Received(1).Query<JobHistory>(Arg.Any<QueryRequest>());
 		}
 
 		[Test(Description = "Case for old version of RIP")]
@@ -138,7 +138,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 				}
 			};
 
-			_rsapiService.RelativityObjectManager.Query<JobHistory>(Arg.Any<QueryRequest>()).Returns(jobHistories);
+			_objectManager.Query<JobHistory>(Arg.Any<QueryRequest>()).Returns(jobHistories);
 
 			_workspaceManager.RetrieveWorkspace(_WORKSPACE_ARTIFACT_ID).Returns(new WorkspaceDTO
 			{
@@ -149,8 +149,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 			_command.Execute();
 
 			// ASSERT
-			_rsapiService.RelativityObjectManager.Received(1).Query<JobHistory>(Arg.Any<QueryRequest>());
-			_rsapiService.RelativityObjectManager.Received(1)
+			_objectManager.Received(1).Query<JobHistory>(Arg.Any<QueryRequest>());
+			_objectManager.Received(1)
 				.Update(Arg.Is<JobHistory>(x => x.DestinationWorkspace == $"{expectedWorkspaceName} - {_WORKSPACE_ARTIFACT_ID}" &&
 												x.DestinationInstance == FederatedInstanceManager.LocalInstance.Name));
 		}

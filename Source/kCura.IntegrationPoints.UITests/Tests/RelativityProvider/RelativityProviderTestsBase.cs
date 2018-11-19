@@ -37,9 +37,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ImageService = new ImagesService(Context.Helper);
 			ProductionImageService = new ProductionImagesService(Context.Helper);
 			PointsAction = new IntegrationPointsAction(Driver, Context);
-			ObjectManagerFactory = new RelativityObjectManagerFactory(Context.Helper,
-				new DefaultSecretCatalogFactory(),
-				new SecretManagerFactory());
+			ObjectManagerFactory = new RelativityObjectManagerFactory(Context.Helper);
 		}
 
 		[SetUp]

@@ -119,22 +119,18 @@
     <Compile Include="Helpers\LongPathDirectory.cs" />
     <Compile Include="Helpers\LongPathFile.cs" />
     <Compile Include="Helpers\Implementations\MultiObjectSavedSearchCondition.cs" />
+    <Compile Include="Installers\InfrastructureInstaller.cs" />
     <Compile Include="Installers\SharedAgentInstaller.cs" />
     <Compile Include="IServiceManagerProvider.cs" />
     <Compile Include="Models\IRdoFilter.cs" />
     <Compile Include="Monitoring\HealthCheck.cs" />
-    <Compile Include="Monitoring\Instrumentation\ExternalServiceInstrumentationProviderWithoutJobContext.cs" />
-    <Compile Include="Monitoring\Instrumentation\ExternalServiceSimpleInstrumentation.cs" />
-    <Compile Include="Monitoring\Instrumentation\Model\ExternalCallCompletedMessage.cs" />
-    <Compile Include="Monitoring\Instrumentation\ExternalServiceInstrumentation.cs" />
-    <Compile Include="Monitoring\Instrumentation\ExternalServiceLogsInstrumentation.cs" />
-    <Compile Include="Monitoring\Instrumentation\Model\InstrumentationJobContext.cs" />
-    <Compile Include="Monitoring\Instrumentation\Model\InstrumentationServiceCallContext.cs" />
     <Compile Include="Monitoring\IntegrationPointsMessageService.cs" />
     <Compile Include="Monitoring\JobLifetimeMetricBatchStatus.cs" />
     <Compile Include="Monitoring\MessageSink\Aggregated\AggregatedJobSink.cs" />
     <Compile Include="Monitoring\MessageSink\Aggregated\JobStatistics.cs" />
     <Compile Include="Monitoring\MessageSink\Aggregated\JobStatus.cs" />
+    <Compile Include="Monitoring\MessageSink\ExternalCalls\ExternalCallsJobSummaryMessage.cs" />
+    <Compile Include="Monitoring\MessageSink\ExternalCalls\ExternalCallsSink.cs" />
     <Compile Include="Queries\IGetSourceProviderRdoByApplicationIdentifier.cs" />
     <Compile Include="Queries\IGetSourceProviderRdoByIdentifier.cs" />
     <Compile Include="Serialization\SerializerWithLogging.cs" />
@@ -1041,6 +1037,17 @@
         </Reference>
         <Reference Include="Relativity.OAuth2Client.IdentityModel">
           <HintPath>..\..\packages\Relativity.OAuth2Client\lib\net462\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.OAuth2Client.Implicit">
+          <HintPath>..\..\packages\Relativity.OAuth2Client.Implicit\lib\net462\Relativity.OAuth2Client.Implicit.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

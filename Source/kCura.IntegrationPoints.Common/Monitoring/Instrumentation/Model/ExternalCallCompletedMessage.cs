@@ -1,9 +1,8 @@
-﻿using kCura.IntegrationPoints.Common.Monitoring;
-using kCura.IntegrationPoints.Common.Monitoring.Messages;
+﻿using kCura.IntegrationPoints.Common.Monitoring.Messages;
 
-namespace kCura.IntegrationPoints.Core.Monitoring.Instrumentation.Model
+namespace kCura.IntegrationPoints.Common.Monitoring.Instrumentation.Model
 {
-	internal class ExternalCallCompletedMessage : JobMessageBase
+	public class ExternalCallCompletedMessage : JobMessageBase
 	{
 		internal ExternalCallCompletedMessage()
 		{

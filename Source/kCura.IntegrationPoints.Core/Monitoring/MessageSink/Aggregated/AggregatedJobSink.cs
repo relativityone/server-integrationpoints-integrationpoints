@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using kCura.IntegrationPoints.Common.Monitoring.Messages;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 using Relativity.DataTransfer.MessageService.Tools;
 
-namespace kCura.IntegrationPoints.Core.Monitoring.Sinks.Aggregated
+namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
 {
 	public class AggregatedJobSink : IMessageSink<JobStartedMessage>, IMessageSink<JobCompletedMessage>,
 		IMessageSink<JobFailedMessage>, IMessageSink<JobValidationFailedMessage>, IMessageSink<JobTotalRecordsCountMessage>,
@@ -21,10 +20,10 @@ namespace kCura.IntegrationPoints.Core.Monitoring.Sinks.Aggregated
 		private readonly ConcurrentDictionary<string, JobStatistics>
 			_jobs = new ConcurrentDictionary<string, JobStatistics>();
 
-		public AggregatedJobSink(IHelper helper, IMetricsManagerFactory metricsManagerFactory)
+		public AggregatedJobSink(IAPILog logger, IMetricsManagerFactory metricsManagerFactory)
 		{
 			_metricsManagerFactory = metricsManagerFactory;
-			_logger = helper.GetLoggerFactory().GetLogger().ForContext<AggregatedJobSink>();
+			_logger = logger.ForContext<AggregatedJobSink>();
 		}
 
 		public void OnMessage(JobStartedMessage message)

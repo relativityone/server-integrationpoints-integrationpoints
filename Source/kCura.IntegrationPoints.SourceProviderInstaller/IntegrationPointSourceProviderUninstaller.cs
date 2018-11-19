@@ -3,8 +3,9 @@ using kCura.EventHandler;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
-using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.SourceProviderInstaller.Services;
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller
@@ -61,32 +62,18 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		}
 		private IntegrationPointQuery _integrationPointQuery;
 		private DeleteHistoryService _deleteHistoryService;
-		private IRSAPIService _service;
 
 		internal IntegrationPointQuery IntegrationPoint
 		{
 			get
 			{
-				return _integrationPointQuery ?? (_integrationPointQuery = new IntegrationPointQuery(Service));
+				return _integrationPointQuery ?? (_integrationPointQuery = new IntegrationPointQuery(CreateObjectManager()));
 			}
 		}
 
 		internal DeleteHistoryService DeleteHistory
 		{
-			get { return _deleteHistoryService ?? (_deleteHistoryService = new DeleteHistoryService(new RSAPIServiceFactory(Helper))); }
-		}
-
-		internal IRSAPIService Service
-		{
-
-			get
-			{
-				if (_service == null)
-				{
-					_service = new RSAPIService(base.Helper, base.Helper.GetActiveCaseID());
-				}
-				return _service;
-			}
+			get { return _deleteHistoryService ?? (_deleteHistoryService = new DeleteHistoryService(CreateObjectManagerFactory())); }
 		}
 
 		private DeleteIntegrationPoints _deleteIntegrationPoints;
@@ -94,7 +81,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		{
 			get
 			{
-				return _deleteIntegrationPoints ?? (_deleteIntegrationPoints = new DeleteIntegrationPoints(IntegrationPoint, DeleteHistory, Service));
+				return _deleteIntegrationPoints ?? (_deleteIntegrationPoints = new DeleteIntegrationPoints(IntegrationPoint, DeleteHistory, CreateObjectManager()));
 			}
 			set { _deleteIntegrationPoints = value; }
 		}
@@ -177,6 +164,16 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		{
 			if (RaisePreUninstallPostExecuteEvent != null)
 				RaisePreUninstallPostExecuteEvent(isUninstalled, ex);
+		}
+
+		private IRelativityObjectManager CreateObjectManager()
+		{
+			return CreateObjectManagerFactory().CreateRelativityObjectManager(Helper.GetActiveCaseID());
+		}
+
+		private IRelativityObjectManagerFactory CreateObjectManagerFactory()
+		{
+			return new RelativityObjectManagerFactory(Helper);
 		}
 	}
 }

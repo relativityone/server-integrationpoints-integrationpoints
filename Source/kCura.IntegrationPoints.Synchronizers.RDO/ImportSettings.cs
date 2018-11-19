@@ -129,6 +129,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		public string OIFileIdColumnName { get; set; }
 		public bool OIFileIdMapped { get; set; }
 		public string OIFileTypeColumnName { get; set; }
+		public string SupportedByViewerColumn { get; set; }
 		public int OnBehalfOfUserId { get; set; }
 		public string ParentObjectIdSourceFieldName { get; set; }
 		public string Provider { get; set; }

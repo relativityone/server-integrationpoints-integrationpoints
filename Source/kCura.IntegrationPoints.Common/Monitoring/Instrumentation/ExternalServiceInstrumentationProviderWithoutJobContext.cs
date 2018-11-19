@@ -1,12 +1,11 @@
-﻿using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
-using kCura.IntegrationPoints.Core.Monitoring.Instrumentation.Model;
+﻿using kCura.IntegrationPoints.Common.Monitoring.Instrumentation.Model;
 using Relativity.API;
 
-namespace kCura.IntegrationPoints.Core.Monitoring.Instrumentation
+namespace kCura.IntegrationPoints.Common.Monitoring.Instrumentation
 {
 	public class ExternalServiceInstrumentationProviderWithoutJobContext : IExternalServiceInstrumentationProvider
 	{
-		private IAPILog _logger;
+		private readonly IAPILog _logger;
 
 		public ExternalServiceInstrumentationProviderWithoutJobContext(IAPILog logger)
 		{

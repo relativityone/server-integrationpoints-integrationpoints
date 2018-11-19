@@ -26,13 +26,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 			_stateManager = Substitute.For<IStateManager>();
 			_permissionRepository = Substitute.For<IPermissionRepository>();
 			_permissionValidator = Substitute.For<IIntegrationPointPermissionValidator>();
-			_rsapiService = Substitute.For<IRSAPIService>();
+			_objectManager = Substitute.For<IRelativityObjectManager>();
 
 			_buttonStateBuilder = new ButtonStateBuilder(_providerTypeService, _queueManager, _jobHistoryManager, _stateManager, _permissionRepository, _permissionValidator,
-				_rsapiService);
+				_objectManager);
 		}
 
-		private IRSAPIService _rsapiService;
+		private IRelativityObjectManager _objectManager;
 		private IProviderTypeService _providerTypeService;
 		private IJobHistoryManager _jobHistoryManager;
 		private IQueueManager _queueManager;
@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 			int sourceProviderArtifactId = 841;
 			int destinationProviderArtifactId = 273;
 			var importSettings = new ImportSettings {ImageImport = imageImport};
-			_rsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(integrationPointArtifactId).Returns(new Data.IntegrationPoint
+			_objectManager.Read<Data.IntegrationPoint>(integrationPointArtifactId).Returns(new Data.IntegrationPoint
 			{
 				HasErrors = hasErrors,
 				SourceProvider = sourceProviderArtifactId,
