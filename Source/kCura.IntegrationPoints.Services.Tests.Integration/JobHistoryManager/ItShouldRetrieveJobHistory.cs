@@ -7,6 +7,7 @@ using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Data.SecretStore;
@@ -39,12 +40,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 		{
 			base.SuiteSetup();
 
-			_objectManager = new RelativityObjectManager(SourceWorkspaceArtifactId, 
-				Helper, 
-				new SecretStoreHelper(SourceWorkspaceArtifactId,
-					Helper, 
-					new SecretManager(SourceWorkspaceArtifactId), 
-					new DefaultSecretCatalogFactory()));
+			_objectManager = CreateObjectManager();
 
 			_groupId = Group.CreateGroup($"group_{Utils.FormattedDateTimeNow}");
 			_user = User.CreateUser("firstname", "lastname", $"a_{Utils.FormattedDateTimeNow}@relativity.com", new List<int> {_groupId});
@@ -63,6 +59,12 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 
 				CreateIntegrationPointAndAddJobHistory(testData);
 			}
+		}
+
+		private IRelativityObjectManager CreateObjectManager()
+		{
+			var factory = new RelativityObjectManagerFactory(Helper);
+			return factory.CreateRelativityObjectManager(SourceWorkspaceArtifactId);
 		}
 
 		private void CreateIntegrationPointAndAddJobHistory(TestData testData)

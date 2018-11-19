@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoint.Tests.Core.Extensions;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Management.Tasks.Helpers;
@@ -83,12 +82,9 @@ namespace kCura.IntegrationPoints.Management.Tests.Tasks.Helpers
 				BatchInstance = new Guid(batchInstance3)
 			};
 
-			var job1 = JobExtensions.CreateJob<Job>(_WORKSPACE_ID_A, 1, row => new Job(row));
-			job1.JobDetails = JsonConvert.SerializeObject(taskParameter1);
-			var job2 = JobExtensions.CreateJob<Job>(_WORKSPACE_ID_A, 2, row => new Job(row));
-			job2.JobDetails = JsonConvert.SerializeObject(taskParameter2);
-			var job3 = JobExtensions.CreateJob<Job>(_WORKSPACE_ID_B, 3, row => new Job(row));
-			job3.JobDetails = JsonConvert.SerializeObject(taskParameter3);
+			Job job1 = new JobBuilder().WithJobId(1).WithWorkspaceId(_WORKSPACE_ID_A).WithJobDetails(JsonConvert.SerializeObject(taskParameter1)).Build();
+			Job job2 = new JobBuilder().WithJobId(2).WithWorkspaceId(_WORKSPACE_ID_A).WithJobDetails(JsonConvert.SerializeObject(taskParameter2)).Build();
+			Job job3 = new JobBuilder().WithJobId(3).WithWorkspaceId(_WORKSPACE_ID_B).WithJobDetails(JsonConvert.SerializeObject(taskParameter3)).Build();
 
 			Dictionary<Job, TaskParameters> scheduledJobs = new Dictionary<Job, TaskParameters>
 			{

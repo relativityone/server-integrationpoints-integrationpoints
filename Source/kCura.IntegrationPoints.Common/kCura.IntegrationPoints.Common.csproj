@@ -47,12 +47,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Monitoring\Instrumentation\ExternalServiceInstrumentation.cs" />
+    <Compile Include="Monitoring\Instrumentation\ExternalServiceInstrumentationProviderWithoutJobContext.cs" />
+    <Compile Include="Monitoring\Instrumentation\ExternalServiceLogsInstrumentation.cs" />
+    <Compile Include="Monitoring\Instrumentation\ExternalServiceSimpleInstrumentation.cs" />
+    <Compile Include="Monitoring\Instrumentation\IExternalServiceSimpleInstrumentation.cs" />
+    <Compile Include="Monitoring\Instrumentation\IExternalServiceInstrumentationProvider.cs" />
+    <Compile Include="Monitoring\Instrumentation\Model\ExternalCallCompletedMessage.cs" />
+    <Compile Include="Monitoring\Instrumentation\Model\InstrumentationJobContext.cs" />
+    <Compile Include="Monitoring\Instrumentation\Model\InstrumentationServiceCallContext.cs" />
+    <Compile Include="Monitoring\UnitsOfMeasureConstants.cs" />
     <Content Include="LICENSE.txt">
       <Paket>True</Paket>
     </Content>
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Monitoring\Instrumentation\IExternalServiceInstrumentation.cs" />
+    <Compile Include="Monitoring\Instrumentation\IExternalServiceInstrumentationStarted.cs" />
     <Compile Include="Monitoring\Messages\JobStatisticsMessage.cs" />
     <Compile Include="Monitoring\Messages\JobLifetime\JobCompletedMessage.cs" />
     <Compile Include="Monitoring\Messages\JobLifetime\JobFailedMessage.cs" />
@@ -117,6 +129,7 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>

@@ -1,16 +1,19 @@
-﻿using System;
-using System.Linq;
-using System.Runtime.InteropServices;
-using kCura.EventHandler;
+﻿using kCura.EventHandler;
 using kCura.IntegrationPoints.Core.Helpers.Logging;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Data.Queries;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Logging;
 using Relativity.API;
+using System;
+using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller
 {
@@ -23,19 +26,25 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		private const string _ACTION_NAME = "Install";
 
 		private readonly Lazy<IErrorService> _errorService;
-
 		private readonly Lazy<IAPILog> _log;
+		private readonly Lazy<IRelativityObjectManager> _objectManager;
+		private readonly Lazy<IRelativityObjectManagerFactory> _objectManagerFactory;
 
 		protected abstract string SuccessMessage { get; }
 		protected abstract string GetFailureMessage(Exception ex);
 
 		protected IAPILog Logger => _log.Value;
 
+		protected IRelativityObjectManager ObjectManager => _objectManager.Value;
+		protected IRelativityObjectManagerFactory ObjectManagerFactory => _objectManagerFactory.Value;
+
 		protected PostInstallEventHandlerBase()
 		{
 			_log = new Lazy<IAPILog>(CreateLogger);
+			_objectManagerFactory = new Lazy<IRelativityObjectManagerFactory>(CreateObjectManagerFactory);
+			_objectManager = new Lazy<IRelativityObjectManager>(CreateObjectManager);
 
-			_errorService = new Lazy<IErrorService>(() => 
+			_errorService = new Lazy<IErrorService>(() =>
 				new EhErrorService(new CreateErrorRdoQuery(new RsapiClientWithWorkspaceFactory(Helper), Logger, new SystemEventLoggingService()), Logger));
 		}
 
@@ -65,7 +74,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 					OnRaisePostInstallPreExecuteEvent();
 					Run();
 					return response;
-					
+
 				}
 				catch (Exception ex)
 				{
@@ -85,6 +94,16 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 
 		protected virtual void OnRaisePostInstallPostExecuteEvent(Response response)
 		{
+		}
+
+		private IRelativityObjectManager CreateObjectManager()
+		{
+			return ObjectManagerFactory.CreateRelativityObjectManager(Helper.GetActiveCaseID());
+		}
+
+		private IRelativityObjectManagerFactory CreateObjectManagerFactory()
+		{
+			return new RelativityObjectManagerFactory(Helper);
 		}
 
 		private EhCorrelationContext CreateCorrelationContext()

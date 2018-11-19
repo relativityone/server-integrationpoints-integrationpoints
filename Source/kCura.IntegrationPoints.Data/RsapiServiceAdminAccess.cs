@@ -8,10 +8,5 @@ namespace kCura.IntegrationPoints.Data
 		{
 			ExecutionIdentity = ExecutionIdentity.System;
 		}
-
-		internal RSAPIServiceAdminAccess(IGenericLibraryFactory genericLibraryFactory) : base(genericLibraryFactory)
-		{
-			ExecutionIdentity = ExecutionIdentity.System;
-		}
 	}
 }

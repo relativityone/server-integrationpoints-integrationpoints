@@ -1,8 +1,6 @@
 ﻿using System;
-using Castle.MicroKernel.Registration;
-using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -67,7 +65,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		{
 			//Arrange
 			Guid batchInstance = Guid.NewGuid();
-			Job job = JobExtensions.CreateJob(SourceWorkspaceArtifactId, 1, _ADMIN_USER_ID, 1);
+			Job job = new JobBuilder().WithJobId(1)
+				.WithWorkspaceId(SourceWorkspaceArtifactId)
+				.WithRelatedObjectArtifactId(1)
+				.WithSubmittedBy(_ADMIN_USER_ID)
+				.Build();
 
 			//Act
 			bool result = _manager.CheckBatchOnJobComplete(job, batchInstance.ToString());
@@ -86,7 +88,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 			int jobId = 1;
 			int rootJobId = 1;
-			Job job = JobExtensions.CreateJob(SourceWorkspaceArtifactId, integrationPoint.ArtifactID, _ADMIN_USER_ID, jobId, rootJobId);
+			Job job = new JobBuilder()
+				.WithJobId(jobId)
+				.WithRootJobId(rootJobId)
+				.WithRelatedObjectArtifactId(integrationPoint.ArtifactID)
+				.WithWorkspaceId(SourceWorkspaceArtifactId)
+				.WithSubmittedBy(_ADMIN_USER_ID)
+				.Build();
 
 			Guid batchInstance = Guid.NewGuid();
 			string scratchTableSuffix = $"{SourceWorkspaceArtifactId}_{rootJobId}_{batchInstance}";
@@ -111,8 +119,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			int jobId = 10;
 			int jobId2 = 20;
 			int rootJobId = 11;
-			Job job = JobExtensions.CreateJob(SourceWorkspaceArtifactId, integrationPoint.ArtifactID, _ADMIN_USER_ID, jobId, rootJobId);
-			Job job2 = JobExtensions.CreateJob(SourceWorkspaceArtifactId, integrationPoint.ArtifactID, _ADMIN_USER_ID, jobId2, rootJobId);
+			Job job = new JobBuilder()
+				.WithJobId(jobId)
+				.WithRootJobId(rootJobId)
+				.WithRelatedObjectArtifactId(integrationPoint.ArtifactID)
+				.WithWorkspaceId(SourceWorkspaceArtifactId)
+				.WithSubmittedBy(_ADMIN_USER_ID)
+				.Build();
+			Job job2 = new JobBuilder().WithJob(job).WithJobId(jobId2).Build();
 			Guid batchInstance = Guid.NewGuid();
 			string scratchTableSuffix = $"{SourceWorkspaceArtifactId}_{rootJobId}_{batchInstance}";
 			_scratchTableRepository = _repositoryFactory.GetScratchTableRepository(SourceWorkspaceArtifactId, _JOB_TRACKER_TABLE_PREFIX, scratchTableSuffix);
@@ -134,7 +148,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			IntegrationPointModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
 
 			int jobId = 1;
-			Job job = JobExtensions.CreateJob(SourceWorkspaceArtifactId, integrationPoint.ArtifactID, _ADMIN_USER_ID, jobId);
+			Job job = new JobBuilder().WithJobId(jobId)
+				.WithWorkspaceId(SourceWorkspaceArtifactId)
+				.WithRelatedObjectArtifactId(integrationPoint.ArtifactID)
+				.WithSubmittedBy(_ADMIN_USER_ID)
+				.Build();
 
 			//Act
 			_manager.DeleteJob(job.JobId);
