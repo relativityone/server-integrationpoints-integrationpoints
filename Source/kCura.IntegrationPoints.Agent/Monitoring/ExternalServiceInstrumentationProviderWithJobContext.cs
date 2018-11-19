@@ -68,7 +68,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring
 			Job job = GetExecutingJob();
 			if (job == null)
 			{
-				_currentJobContext = new InstrumentationJobContext(0, string.Empty, 0);
+				_currentJobContext = InstrumentationJobContext.EmptyContext;
 			}
 			else if (_currentJobContext?.JobId != job.JobId)
 			{

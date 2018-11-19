@@ -15,5 +15,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.Instrumentation.Model
 			CorrelationId = correlationId;
 			WorkspaceId = workspaceId;
 		}
+
+		public static InstrumentationJobContext EmptyContext => new InstrumentationJobContext(0, "", 0);
 	}
 }
