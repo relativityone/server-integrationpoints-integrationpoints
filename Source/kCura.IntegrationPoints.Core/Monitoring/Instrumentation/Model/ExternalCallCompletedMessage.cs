@@ -5,7 +5,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.Instrumentation.Model
 {
 	internal class ExternalCallCompletedMessage : JobMessageBase
 	{
-		public ExternalCallCompletedMessage()
+		internal ExternalCallCompletedMessage()
 		{
 			UnitOfMeasure = UnitsOfMeasureConstants.MILLISECONDS;
 		}
@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.Instrumentation.Model
 			private set { Set(value); }
 		}
 
-		public ExternalCallCompletedMessage SetJobContext(InstrumentationJobContext context)
+		internal ExternalCallCompletedMessage SetJobContext(InstrumentationJobContext context)
 		{
 			CorrelationID = context.CorrelationId;
 			JobID = context.JobId.ToString();
@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.Instrumentation.Model
 			return this;
 		}
 
-		public ExternalCallCompletedMessage SetCallContext(InstrumentationServiceCallContext context)
+		internal ExternalCallCompletedMessage SetCallContext(InstrumentationServiceCallContext context)
 		{
 			ServiceType = context.ServiceType;
 			ServiceName = context.ServiceName;
@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.Instrumentation.Model
 			return this;
 		}
 
-		public ExternalCallCompletedMessage SetPropertiesForSuccess(long duration)
+		internal ExternalCallCompletedMessage SetPropertiesForSuccess(long duration)
 		{
 			Duration = duration;
 			HasFailed = false;
@@ -70,12 +70,31 @@ namespace kCura.IntegrationPoints.Core.Monitoring.Instrumentation.Model
 			return this;
 		}
 
-		public ExternalCallCompletedMessage SetPropertiesForFailure(long duration, string failReason)
+		internal ExternalCallCompletedMessage SetPropertiesForFailure(long duration, string failReason)
 		{
 			Duration = duration;
 			HasFailed = true;
 			FailureReason = failReason;
 			return this;
+		}
+
+		public static ExternalCallCompletedMessage CreateSuccessMessage(InstrumentationJobContext jobContext, InstrumentationServiceCallContext callContext,
+			long duration)
+		{
+			return new ExternalCallCompletedMessage()
+				.SetJobContext(jobContext)
+				.SetCallContext(callContext)
+				.SetPropertiesForSuccess(duration);
+		}
+
+		public static ExternalCallCompletedMessage CreateFailureMessage(InstrumentationJobContext jobContext,
+			InstrumentationServiceCallContext callContext,
+			long duration, string failReason)
+		{
+			return new ExternalCallCompletedMessage()
+				.SetJobContext(jobContext)
+				.SetCallContext(callContext)
+				.SetPropertiesForFailure(duration, failReason);
 		}
 	}
 }

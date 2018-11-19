@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.Instrumentation
 			if (IsStarted)
 			{
 				long elapsed = GetElapsedMillisecondsAndRemoveStopwatch();
-				ExternalCallCompletedMessage message = new ExternalCallCompletedMessage().SetPropertiesForSuccess(elapsed);
+				ExternalCallCompletedMessage message = ExternalCallCompletedMessage.CreateSuccessMessage(_jobContext, _serviceCallContext, elapsed);
 				SendMessage(message);
 			}
 		}
@@ -75,13 +75,12 @@ namespace kCura.IntegrationPoints.Core.Monitoring.Instrumentation
 
 		private void SendFailedMessage(string reason)
 		{
-			ExternalCallCompletedMessage message = new ExternalCallCompletedMessage().SetPropertiesForFailure(GetElapsedMillisecondsAndRemoveStopwatch(), reason);
+			ExternalCallCompletedMessage message = ExternalCallCompletedMessage.CreateFailureMessage(_jobContext, _serviceCallContext, GetElapsedMillisecondsAndRemoveStopwatch(), reason);
 			SendMessage(message);
 		}
 
 		private void SendMessage(ExternalCallCompletedMessage message)
 		{
-			message.SetJobContext(_jobContext).SetCallContext(_serviceCallContext);
 			SendMessageAsyncFireAndForget(message);
 		}
 
