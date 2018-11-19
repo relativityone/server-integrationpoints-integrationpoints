@@ -81,7 +81,7 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 			IExternalServiceInstrumentationStarted startedInstrumentation)
 		{
 			string[] failedEventHandlersMessages =
-				eventHandlerStatuses.Where(x => x.Success != true).Select(x => x.Message).ToArray();
+				eventHandlerStatuses.Where(x => !x.Success).Select(x => x.Message).ToArray();
 			if (failedEventHandlersMessages.Any())
 			{
 				string reason = string.Join(";", failedEventHandlersMessages);
