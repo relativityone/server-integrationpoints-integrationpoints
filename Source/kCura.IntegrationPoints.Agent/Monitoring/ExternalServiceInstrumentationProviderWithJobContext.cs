@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring
 	{
 		private InstrumentationJobContext _currentJobContext;
 
-		private const bool _DEFAULT_MEASURE_DURATION_OF_EXTERNAL_CALLS_VALUE = false;
+		private const bool _DEFAULT_MEASURE_DURATION_OF_EXTERNAL_CALLS = false;
 		private readonly IAPILog _logger;
 		private readonly IMessageService _messageService;
 		private readonly JobContextProvider _jobContextProvider;
@@ -50,7 +50,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring
 
 		private bool IsMeasuringOfExternalCallEnabled()
 		{
-			bool result = _DEFAULT_MEASURE_DURATION_OF_EXTERNAL_CALLS_VALUE;
+			bool result = _DEFAULT_MEASURE_DURATION_OF_EXTERNAL_CALLS;
 			try
 			{
 				result = _config.MeasureDurationOfExternalCalls;
@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring
 			catch (Exception ex)
 			{
 				_logger.LogWarning(ex, "Error occured while reading setting: {nameOfSetting} from configuration. Default value will be used: {value}",
-					nameof(_config.MeasureDurationOfExternalCalls), _DEFAULT_MEASURE_DURATION_OF_EXTERNAL_CALLS_VALUE);
+					nameof(_config.MeasureDurationOfExternalCalls), _DEFAULT_MEASURE_DURATION_OF_EXTERNAL_CALLS);
 			}
 			return result;
 		}
