@@ -249,7 +249,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
 			{
 				return false;
 			}
-			;
+			
 			bool isValid = true;
 			isValid &= castedMessage.CorrelationID == correlationId;
 			isValid &= castedMessage.WorkspaceID == workspaceId;
