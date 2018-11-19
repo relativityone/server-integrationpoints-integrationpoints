@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
 			IExternalServiceInstrumentation instrumentation = _sut.Create(_SERVICE_TYPE, _SERVICE_NAME, _OPERATION_NAME);
 
 			// assert
-			Assert.IsInstanceOf(typeof(ExternalServiceLogsInstrumentation), instrumentation);
+			Assert.IsInstanceOf<ExternalServiceLogsInstrumentation>(instrumentation);
 		}
 
 		[Test]
