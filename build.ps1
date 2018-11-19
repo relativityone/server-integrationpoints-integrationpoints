@@ -17,10 +17,16 @@
     Build configuration - Debug or Release
 
 .PARAMETER buildType
-    Build type - alpha, beta, rc or release
+    Build type - DEV or GOLD
+
+.PARAMETER branchName
+    Current branch name
 
 .PARAMETER version
-    Allows to manually set build version number
+    Assemblies version (1.2.3.4)
+
+.PARAMETER packageVersion
+    Package version (1.2.3.-dev-4)
 
 .PARAMETER progetApiKey
     API-key used to authenticate to proget server
@@ -33,10 +39,12 @@ param(
     [ValidateSet("Debug","Release")]
     [string]$buildConfig = "Debug",
     
-    [ValidateSet("alpha", "beta", "rc", "release")]
-    [string]$buildType = "alpha",
+    [ValidateSet("DEV", "GOLD")]
+    [string]$buildType = "DEV",
 
+    [string]$branchName,
     [string]$version = "0.0.0.0",
+    [string]$packageVersion = "0.0-dev-0",
     [string]$progetApiKey
 )
 
@@ -58,7 +66,9 @@ Invoke-PSake "default.ps1" `
                     'scriptsDir' = $SCRIPTS_DIR;
                     'buildConfig' = $buildConfig;
                     'buildType' = $buildType;
+                    'branchName' = $branchName;
                     'version' = $version;
+                    'packageVersion' = $packageVersion;
                     'nugetExe' = $NUGET_EXE;
                     'progetApiKey' = $progetApiKey }`
         -nologo `

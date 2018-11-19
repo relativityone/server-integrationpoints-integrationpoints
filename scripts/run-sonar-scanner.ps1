@@ -34,7 +34,7 @@ if (!$sonarScannerExe) {
 }
 
 Write-Verbose "Looking for test coverage report..."
-$testCoverageReport = (Get-ChildItem -Path $logsDir -Filter "coverage.xml" -File -Recurse).FullName
+$testCoverageReport = (Get-ChildItem -Path $logsDir -Filter "coverage.html" -File -Recurse).FullName
 if (!$testCoverageReport) {
     throw "Cannot find test coverage report."
 }

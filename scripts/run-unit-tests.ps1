@@ -44,8 +44,8 @@ if (!$nunitConsoleRunner) {
 
 Write-Verbose "Running unit tests..."
 & $dotCover cover /TargetExecutable=$nunitConsoleRunner `
-    /Output=".\buildlogs\coverage.xml" `
-    /ReportType="XML" `
+    /Output=".\buildlogs\coverage.html" `
+    /ReportType="HTML" `
     /TargetArguments="$unitTestsDlls --skipnontestassemblies --work=$logsDir" `
     /Filters="+:Relativity.Sync*;-:Relativity.Sync*.Tests*"
 

@@ -4,8 +4,8 @@
 .SYNOPSIS
     Creates NuGet package
 
-.PARAMETER version
-    Nuget version
+.PARAMETER packageVersion
+    Nuget package version
 
 .PARAMETER paketExe
     Path to paket.exe file
@@ -16,13 +16,13 @@
 
 [CmdletBinding()]
 param(
-    [string]$version,
+    [string]$packageVersion,
     [string]$paketExe,
     [string]$nugetOutput
 )
 
 Write-Verbose "Packing NuGet using paket..."
-& $paketExe pack $nugetOutput --include-referenced-projects --version $version --symbols
+& $paketExe pack $nugetOutput --include-referenced-projects --version $packageVersion --symbols
 
 if ($LASTEXITCODE -ne 0) {
     Throw "An error occured while packing NuGet."

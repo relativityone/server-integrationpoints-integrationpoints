@@ -9,8 +9,10 @@ properties {
     $buildConfig
     $buildType
     $version
+    $packageVersion
     $nugetExe
     $progetApiKey
+    $branchName
     $sourceDir = Join-Path $root "Source"
     $logsDir = Join-Path $root "buildlogs"
     $paketExe = Join-Path $root -ChildPath ".paket" | Join-Path -ChildPath "paket.exe"
@@ -26,6 +28,12 @@ task sign {
     $global:signToolPath = & (Join-Path $scriptsDir "get-signtool.ps1")
 }
 
+task getVersion {
+    & (Join-Path $scriptsDir "get-version.ps1") -buildType $buildType -scriptsDir $scriptsDir -branchName $branchName
+    Write-Output "!!!VERSION=$global:version"
+    Write-Output "!!!PACKAGE_VERSION=$global:packageVersion"
+}
+
 task restorePackages {
     & (Join-Path $scriptsDir "restore-packages.ps1") -paketExe $paketExe
 }
@@ -35,14 +43,14 @@ task checkConfigureAwait -depends restorePackages {
 }
 
 task build -depends restorePackages {
-    & (Join-Path $scriptsDir "build-solution.ps1") -buildConf $buildConfig -version $version -sourceDir $sourceDir -certThumbprint $global:certThumbprint -signToolpath $global:signToolPath
+    & (Join-Path $scriptsDir "build-solution.ps1") -buildConf $buildConfig -version $version -packageVersion $packageVersion -sourceDir $sourceDir -certThumbprint $global:certThumbprint -signToolpath $global:signToolPath
 }
 
 task buildAndSign -depends sign, build {    
 }
 
 task packNuget {
-    & (Join-Path $scriptsDir "pack-nuget.ps1") -version $version -paketExe $paketExe -nugetOutput $nugetOutput
+    & (Join-Path $scriptsDir "pack-nuget.ps1") -packageVersion $packageVersion -paketExe $paketExe -nugetOutput $nugetOutput
 }
 
 task publishNuget {
