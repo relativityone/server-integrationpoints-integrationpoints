@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring
 		public IExternalServiceInstrumentation Create(string serviceType, string serviceName, string operationName)
 		{
 			var callContext = new InstrumentationServiceCallContext(serviceType, serviceName, operationName);
-			if (IsInstrumentationEnabled())
+			if (IsMeasuringOfExternalCallEnabled())
 			{
 				InstrumentationJobContext jobContext = GetJobContext();
 				return new ExternalServiceInstrumentation(jobContext, callContext, _messageService, _logger);
@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring
 			return new ExternalServiceSimpleInstrumentation(Create(serviceType, serviceName, operationName));
 		}
 
-		private bool IsInstrumentationEnabled()
+		private bool IsMeasuringOfExternalCallEnabled()
 		{
 			bool result = _DEFAULT_MEASURE_DURATION_OF_EXTERNAL_CALLS_VALUE;
 			try
