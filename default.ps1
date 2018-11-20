@@ -25,8 +25,8 @@ properties {
 task default -depends restorePackages, checkConfigureAwait, build, runUnitTests, packNuget
 
 task sign {
-    $global:certThumbprint = & (Join-Path $scriptsDir "get-certificate-thumbprint.ps1") -certName $certName
-    $global:signToolPath = & (Join-Path $scriptsDir "get-signtool.ps1")
+    & (Join-Path $scriptsDir "get-certificate-thumbprint.ps1") -certName $certName
+    & (Join-Path $scriptsDir "get-signtool.ps1")
 }
 
 task getVersion {

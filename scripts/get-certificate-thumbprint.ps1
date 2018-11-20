@@ -17,7 +17,8 @@ Write-Verbose "Looking for certificate named $certName..."
 $certificateObject = Get-ChildItem -Path cert: -Recurse | Where-Object {$_.FriendlyName -like "*$certName*"} | Select-Object -first 1
 if ($certificateObject) {
     Write-Verbose "Certificate found"
-    return $certificateObject.Thumbprint
+    $global:certThumbprint = $certificateObject.Thumbprint
+    return
 }
 else {
     Throw "Certificate $certName not found. Unable to sign DLLs."
