@@ -98,10 +98,7 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 		{
 			try
 			{
-				using (IObjectManager client = _objectManager.Value)
-				{
-					return await f(client).ConfigureAwait(false);
-				}
+				return await f(_objectManager.Value).ConfigureAwait(false);
 			}
 			catch (ServiceNotFoundException ex)
 			{
