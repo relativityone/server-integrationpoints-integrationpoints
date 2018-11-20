@@ -4,6 +4,9 @@
 .SYNOPSIS
     Gets version with incrementing build number
 
+.PARAMETER projectName
+    Project name
+
 .PARAMETER buildType
     Current build type
 
@@ -16,13 +19,12 @@
 
 [CmdletBinding()]
 param(
+    [string]$projectName,
     [ValidateSet("DEV", "GOLD")]
     [string]$buildType,
     [string]$majorNumber,
     [string]$minorNumber
 )
-
-$project = "Relativity.Sync"
 
 $Conn = New-Object System.Data.SqlClient.SqlConnection
 $Conn.ConnectionString = "server='bld-mstr-01.kcura.corp';Database='TCBuildVersion';user=StoryboardUser;password=Test1234!;"
@@ -36,7 +38,7 @@ try {
 SET NOCOUNT ON
 
 --Declare variables used by SQL passed in from NANT script
-DECLARE @productName AS VARCHAR(255) = '$project'
+DECLARE @productName AS VARCHAR(255) = '$projectName'
 DECLARE @majorversion AS VARCHAR(10) = '$majorNumber'
 DECLARE @minorversion AS VARCHAR(10) = '$minorNumber'
 DECLARE @buildType AS VARCHAR(10) = '$buildType'

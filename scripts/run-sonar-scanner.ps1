@@ -4,6 +4,9 @@
 .SYNOPSIS
     Runs SonarQube analysis
 
+.PARAMETER projectName
+    Project name
+
 .PARAMETER sourceDir
     Path to source directory
 
@@ -16,14 +19,13 @@
 
 [CmdletBinding()]
 param(
+    [string]$projectName,
     [string]$sourceDir,
     [string]$toolsDir,
     [string]$logsDir,
     [string]$version
 )
 
-$projectKey = "Relativity.Sync"
-$projectName = "Relativity Sync"
 $url = "https://sonarqube.kcura.corp"
 $token = "f3dc8b5d1dafdb4bdf42465d2b9eb105478d915d"
 
@@ -40,7 +42,7 @@ if (!$testCoverageReport) {
 }
 
 Write-Verbose "Running Sonar Scanner for version $version..."
-& $sonarScannerExe begin /k:$projectKey `
+& $sonarScannerExe begin /k:$projectName `
     /n:$projectName `
     /v:$version `
     /d:sonar.login=$token `

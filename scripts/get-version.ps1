@@ -4,6 +4,9 @@
 .SYNOPSIS
     Gets version for current build
 
+.PARAMETER projectName
+    Project name
+
 .PARAMETER buildType
     Current build type
 
@@ -16,6 +19,7 @@
 
 [CmdletBinding()]
 param(
+    [string]$projectName,
     [ValidateSet("DEV", "GOLD")]
     [string]$buildType,
     [string]$scriptsDir,
@@ -67,7 +71,7 @@ if ($branchName -match "^release-(\d+)-") {
 }
 
 Write-Verbose "Retrieving version from database..."
-& (Join-Path $scriptsDir "get-version-next-build.ps1") -buildType $buildType -majorNumber $major -minorNumber $minor
+& (Join-Path $scriptsDir "get-version-next-build.ps1") -projectName $projectName -buildType $buildType -majorNumber $major -minorNumber $minor
 
 Write-Output "Next version: $global:nextVersion"
 

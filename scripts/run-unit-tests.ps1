@@ -4,6 +4,9 @@
 .SYNOPSIS
     Runs unit tests and generates coverage report
 
+.PARAMETER projectName
+    Project name
+
 .PARAMETER sourceDir
     Path to source directory
 
@@ -16,13 +19,14 @@
 
 [CmdletBinding()]
 param(
+    [string]$projectName,
     [string]$sourceDir,
     [string]$toolsDir,
     [string]$logsDir
 )
 
 Write-Verbose "Looking for unit tests DLLs..."
-$unitTestsDlls = (Get-ChildItem -Path $sourceDir -Filter Relativity.Sync*Tests.Unit.dll -File -Recurse | Where-Object { $_.Directory.Name -match "bin" }).FullName
+$unitTestsDlls = (Get-ChildItem -Path $sourceDir -Filter "$projectName*Tests.Unit.dll" -File -Recurse | Where-Object { $_.Directory.Name -match "bin" }).FullName
 if (!$unitTestsDlls) {
     Throw "Unable to locate any unit tests DLLs."
 }
@@ -47,7 +51,7 @@ Write-Verbose "Running unit tests..."
     /Output=".\buildlogs\coverage.html" `
     /ReportType="HTML" `
     /TargetArguments="$unitTestsDlls --skipnontestassemblies --work=$logsDir" `
-    /Filters="+:Relativity.Sync*;-:Relativity.Sync*.Tests*"
+    /Filters="+:$projectName*;-:$projectName*.Tests*"
 
 if ($LASTEXITCODE -ne 0) {
     Throw "An error occured during unit tests execution."
