@@ -155,11 +155,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			_logger.LogDebug("Attempting to create ExtendedImportAPI ({URL}) using token for Relativity 9.3 or greater.", url);
 		}
 
-		private void LogCreatingImportApiForOldRelativity(string url)
-		{
-			_logger.LogDebug("Attempting to create ExtendedImportAPI ({URL}) for old Relativity using only WebServiceURL.", url);
-		}
-
 		private void LogCreatingImportApiError(Exception ex, string url)
 		{
 			_logger.LogError(ex, "Failed to create Import API ({URL}).", url);
