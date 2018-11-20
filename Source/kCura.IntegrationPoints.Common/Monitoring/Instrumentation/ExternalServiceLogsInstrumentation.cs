@@ -22,6 +22,7 @@ namespace kCura.IntegrationPoints.Common.Monitoring.Instrumentation
 
 		public void Completed()
 		{
+			// do nothing
 		}
 
 		public void Failed(string reason)

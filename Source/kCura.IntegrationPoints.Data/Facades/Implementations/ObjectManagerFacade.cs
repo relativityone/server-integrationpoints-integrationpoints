@@ -140,12 +140,9 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 		{
 			if (!_isDisposed)
 			{
-				if (disposing)
+				if (disposing && _objectManager.IsValueCreated)
 				{
-					if (_objectManager.IsValueCreated)
-					{
-						_objectManager.Value.Dispose();
-					}
+					_objectManager.Value.Dispose();
 				}
 
 				_isDisposed = true;
