@@ -22,7 +22,7 @@ node('PolandBuild')
         }
         stage ('Get version')
         {
-            def outputString = powershell(returnStdout: true, script: ".\\build.ps1 getVersion -buildType $buildType -branchName ${env.BRANCH_NAME}").trim()
+            def outputString = powershell(returnStdout: true, script: ".\\build.ps1 getVersion -buildType ${params.buildType} -branchName ${env.BRANCH_NAME}").trim()
             version = extractValue("VERSION", outputString)
             packageVersion = extractValue("PACKAGE_VERSION", outputString)
             if (!outputString || !version || !packageVersion)
