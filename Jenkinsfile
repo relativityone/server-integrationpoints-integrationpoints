@@ -83,6 +83,7 @@ node('PolandBuild')
     {
         if (currentBuild.result != 'SUCCESS')
         {
+            //TODO change slack to cd_sync after scripts development
             send_slack_message(["#cd_relativity-sync"], "${env.BUILD_NUMBER} from ${env.BRANCH_NAME} failed.\n${env.BUILD_URL}", 'danger')
 
             if (env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'master')
