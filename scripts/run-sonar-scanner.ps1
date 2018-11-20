@@ -15,6 +15,9 @@
 
 .PARAMETER logsDir
     logs directory
+
+.PARAMETER coverageFileName
+    Coverage file name
 #>
 
 [CmdletBinding()]
@@ -23,7 +26,8 @@ param(
     [string]$sourceDir,
     [string]$toolsDir,
     [string]$logsDir,
-    [string]$version
+    [string]$version,
+    [string]$coverageFileName
 )
 
 $url = "https://sonarqube.kcura.corp"
@@ -36,7 +40,7 @@ if (!$sonarScannerExe) {
 }
 
 Write-Verbose "Looking for test coverage report..."
-$testCoverageReport = (Get-ChildItem -Path $logsDir -Filter "coverage.html" -File -Recurse).FullName
+$testCoverageReport = (Get-ChildItem -Path $logsDir -Filter $coverageFileName -File -Recurse).FullName
 if (!$testCoverageReport) {
     throw "Cannot find test coverage report."
 }

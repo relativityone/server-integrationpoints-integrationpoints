@@ -15,6 +15,9 @@
 
 .PARAMETER logsDir
     logs directory
+
+.PARAMETER coverageFileName
+    Coverage file name
 #>
 
 [CmdletBinding()]
@@ -22,7 +25,8 @@ param(
     [string]$projectName,
     [string]$sourceDir,
     [string]$toolsDir,
-    [string]$logsDir
+    [string]$logsDir,
+    [string]$coverageFileName
 )
 
 Write-Verbose "Looking for unit tests DLLs..."
@@ -46,9 +50,11 @@ if (!$nunitConsoleRunner) {
     Throw "Unable to locate NUnit console runner."
 }
 
+$coverageReportPath = Join-Path $logsDir $coverageFileName
+
 Write-Verbose "Running unit tests..."
 & $dotCover cover /TargetExecutable=$nunitConsoleRunner `
-    /Output=".\buildlogs\coverage.html" `
+    /Output=$coverageReportPath `
     /ReportType="HTML" `
     /TargetArguments="$unitTestsDlls --skipnontestassemblies --work=$logsDir" `
     /Filters="+:$projectName*;-:$projectName*.Tests*"

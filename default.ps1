@@ -19,6 +19,7 @@ properties {
     $nugetOutput = Join-Path $root "nuget"
     $certName = "Relativity ODA LLC"
     $progetUrl = "https://proget.kcura.corp/nuget/NuGet"
+    $coverageFileName = "coverage.html"
     $projectName = "Relativity.Sync"
 }
 
@@ -59,7 +60,7 @@ task publishNuget {
 }
 
 task runUnitTests {
-    & (Join-Path $scriptsDir "run-unit-tests.ps1") -projectName $projectName -sourceDir $sourceDir -toolsDir $toolsDir -logsDir $logsDir
+    & (Join-Path $scriptsDir "run-unit-tests.ps1") -projectName $projectName -sourceDir $sourceDir -toolsDir $toolsDir -logsDir $logsDir -coverageFileName $coverageFileName
 }
 
 task runIntegrationTests {
@@ -71,5 +72,5 @@ task runPerformanceTests {
 }
 
 task runSonarScanner -depends restorePackages {
-    & (Join-Path $scriptsDir "run-sonar-scanner.ps1") -projectName $projectName -sourceDir $sourceDir -toolsDir $toolsDir -logsDir $logsDir -version $version
+    & (Join-Path $scriptsDir "run-sonar-scanner.ps1") -projectName $projectName -sourceDir $sourceDir -toolsDir $toolsDir -logsDir $logsDir -version $version -coverageFileName $coverageFileName
 }
