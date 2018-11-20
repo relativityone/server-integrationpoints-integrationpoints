@@ -63,10 +63,6 @@ node('PolandBuild')
             {
                 powershell ".\\build.ps1 runSonarScanner -version $version"
             }
-            stage ('Security')
-            {
-                //TODO
-            }
         }
         
         currentBuild.result = 'SUCCESS'
@@ -96,8 +92,7 @@ node('PolandBuild')
 
 def sendEmailAboutFailureToTeam()
 {
-    // TODO
-    def recipients = 'patryk.stepien@relativity.com'
+    def recipients = 'codigooplomo@relativity.com, buenavistacodingclub@relativity.com'
     sendEmailAboutFailure(recipients)
 }
 
