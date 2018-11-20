@@ -56,18 +56,22 @@ if ($branchName -match "^develop$") {
     }
     $suffix = "beta"
 }
-
-if ($branchName -match "^REL-\d{6}") {
+elseif ($branchName -match "^REL-\d{6}") {
     if ($buildType -eq "GOLD") {
         throw "GOLD builds are supported for release branches only"
     }    
     $suffix = "dev"
-}
-
-if ($branchName -match "^release-(\d+)-") {
+} 
+elseif ($branchName -match "^release-(\d+)-") {
     if ($buildType -ne "GOLD") {
         $suffix = "rc"
     }
+}
+else {
+    if ($buildType -eq "GOLD") {
+        throw "GOLD builds are supported for release branches only"
+    }
+    $suffix = "alpha"
 }
 
 Write-Verbose "Retrieving version from database..."
