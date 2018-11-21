@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Castle.Windsor;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Agent.Exceptions;
 using kCura.IntegrationPoints.Agent.TaskFactory;
 using kCura.IntegrationPoints.Agent.Tasks;
@@ -58,13 +59,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 			_instance = new IntegrationPoints.Agent.TaskFactory.TaskFactory(_helper, _caseServiceContext, _taskExceptionMediator, _jobSynchronizationChecker, _jobHistoryServiceFactory, container);
 		}
 
-		//[Test]
+		[Test]
 		public void ItShouldSetJobIdOnJobHistory()
 		{
 			int jobId = 342343;
 			ScheduleQueueAgentBase agentBase = new TestAgentBase(Guid.NewGuid());
 
-			Job job = JobExtensions.CreateJob(jobId);
+			Job job = new JobBuilder().WithJobId(jobId).Build();
 
 			_instance.CreateTask(job, agentBase);
 
@@ -79,7 +80,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 			int jobId = 342343;
 			ScheduleQueueAgentBase agentBase = new TestAgentBase(Guid.NewGuid());
 
-			Job job = JobExtensions.CreateJob(jobId, taskType, relatedId);
+			Job job = new JobBuilder()
+				.WithJobId(jobId)
+				.WithTaskType(taskType)
+				.WithRelatedObjectArtifactId(relatedId)
+				.Build();
 
 			_instance.CreateTask(job, agentBase);
 
@@ -139,7 +144,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 			int jobId = 342343;
 			ScheduleQueueAgentBase agentBase = new TestAgentBase(Guid.NewGuid());
 
-			Job job = JobExtensions.CreateJob(jobId, taskType, relatedId);
+			Job job = new JobBuilder()
+				.WithJobId(jobId)
+				.WithTaskType(taskType)
+				.WithRelatedObjectArtifactId(relatedId)
+				.Build();
 			try
 			{
 				// Act

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoint.Tests.Core.Extensions;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Agent.Attributes;
 using kCura.IntegrationPoints.Agent.Exceptions;
 using kCura.IntegrationPoints.Agent.TaskFactory;
@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 		{
 			// Arrange
 			int jobId = 53243;
-			var job = JobExtensions.CreateJob(jobId);
+			Job job = new JobBuilder().WithJobId(jobId).Build();
 
 			int integrationPointArtifactId = 434641;
 			var ip = new Data.IntegrationPoint
@@ -72,7 +72,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 		{
 			// Arrange
 			int jobId = 53243;
-			var job = JobExtensions.CreateJob(jobId);
+			Job job = new JobBuilder().WithJobId(jobId).Build();
 
 			int integrationPointArtifactId = 434641;
 			var ip = new Data.IntegrationPoint
@@ -91,7 +91,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 		{
 			// Arrange
 			int jobId = 53243;
-			var job = JobExtensions.CreateJob(jobId);
+			Job job = new JobBuilder().WithJobId(jobId).Build();
 
 			int integrationPointArtifactId = 434641;
 			var ip = new Data.IntegrationPoint
@@ -110,7 +110,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 		{
 			// Arrange
 			int jobId = 53243;
-			var job = JobExtensions.CreateJob(jobId);
+			Job job = new JobBuilder().WithJobId(jobId).Build();
 
 			int integrationPointArtifactId = 434641;
 			var ip = new Data.IntegrationPoint
@@ -129,7 +129,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 		{
 			// Arrange
 			int jobId = 53243;
-			var job = JobExtensions.CreateJob(jobId, "scheduledJob");
+			Job job = new JobBuilder().WithJobId(jobId).WithScheduleRuleType("scheduledJob").Build();
 
 			int integrationPointArtifactId = 434641;
 			var ip = new Data.IntegrationPoint
@@ -157,7 +157,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 		{
 			// Arrange
 			int jobId = 53243;
-			var job = JobExtensions.CreateJob(jobId);
+			Job job = new JobBuilder().WithJobId(jobId).Build();
 
 			int integrationPointArtifactId = 434641;
 			var ip = new Data.IntegrationPoint

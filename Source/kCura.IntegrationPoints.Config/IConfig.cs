@@ -52,5 +52,10 @@ namespace kCura.IntegrationPoints.Config
 		///   <c>true</c> if SUM metrics should be sent; otherwise, <c>false</c>.
 		/// </value>
 		bool SendSumMetrics { get; }
+
+		/// <summary>
+		/// Gets a value indication wheter external calls duration should be measured
+		/// </summary>
+		bool MeasureDurationOfExternalCalls { get; }
 	}
 }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Threading.Tasks;
-using Castle.MicroKernel.Registration;
+﻿using Castle.MicroKernel.Registration;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoint.Tests.Core.Models;
@@ -28,6 +22,12 @@ using Relativity.Core;
 using Relativity.Core.Service;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.ResourceServer;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Threading.Tasks;
 using Component = Castle.MicroKernel.Registration.Component;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
@@ -74,7 +74,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
-			
+
 			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
 
 			if (CreateWorkspace)
@@ -95,7 +95,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 					new FieldRef { Guid = new Guid(DestinationProviderFieldGuids.Identifier) }
 				}
 			}).First(x => x.Identifier == IntegrationPoints.Core.Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID);
-		
+
 		}
 
 		public override void SuiteTeardown()
@@ -120,6 +120,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		protected virtual void Install()
 		{
 			Container.Register(Component.For<IHelper>().UsingFactoryMethod(k => Helper, managedExternally: true));
+			Container.Register(Component.For<IAPILog>().UsingFactoryMethod(k => Helper.GetLoggerFactory().GetLogger()));
 			Container.Register(Component.For<IRsapiClientWithWorkspaceFactory>().ImplementedBy<RsapiClientWithWorkspaceFactory>().LifestyleTransient());
 			Container.Register(Component.For<IServiceContextHelper>()
 				.UsingFactoryMethod(k =>

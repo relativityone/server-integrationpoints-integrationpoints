@@ -2,8 +2,8 @@
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
@@ -13,18 +13,18 @@ namespace kCura.IntegrationPoints.Core.Tests
 	[TestFixture]
 	public class DeleteHistoryServiceTest : TestBase
 	{
-		private const int _WORKSPACE_ID = 813386;
-
 		private DeleteHistoryService _instance;
-		private IRSAPIService _rsapiService;
+		private IRelativityObjectManager _objectManager;
 
+		private const int _WORKSPACE_ID = 813386;
+		
 		[SetUp]
 		public override void SetUp()
 		{
-			_rsapiService = Substitute.For<IRSAPIService>();
+			_objectManager = Substitute.For<IRelativityObjectManager>();
 
-			IRSAPIServiceFactory rsapiServiceFactory = Substitute.For<IRSAPIServiceFactory>();
-			rsapiServiceFactory.Create(_WORKSPACE_ID).Returns(_rsapiService);
+			IRelativityObjectManagerFactory rsapiServiceFactory = Substitute.For<IRelativityObjectManagerFactory>();
+			rsapiServiceFactory.CreateRelativityObjectManager(_WORKSPACE_ID).Returns(_objectManager);
 
 			_instance = new DeleteHistoryService(rsapiServiceFactory);
 		}
@@ -47,13 +47,13 @@ namespace kCura.IntegrationPoints.Core.Tests
 				}
 			};
 
-			_rsapiService.RelativityObjectManager.Query<Data.IntegrationPoint>(Arg.Any<QueryRequest>()).Returns(integrationPoint);
+			_objectManager.Query<Data.IntegrationPoint>(Arg.Any<QueryRequest>()).Returns(integrationPoint);
 
 			//ACT
-			_instance.DeleteHistoriesAssociatedWithIPs(integrationPointsId, _rsapiService);
+			_instance.DeleteHistoriesAssociatedWithIPs(integrationPointsId, _objectManager);
 
 			//ASSERT
-			_rsapiService.RelativityObjectManager.Received(2).Update(Arg.Is<Data.IntegrationPoint>( x => !x.JobHistory.Any()));
+			_objectManager.Received(2).Update(Arg.Is<Data.IntegrationPoint>( x => !x.JobHistory.Any()));
 		}
 	}
 }

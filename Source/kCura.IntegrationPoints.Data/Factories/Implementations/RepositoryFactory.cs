@@ -1,14 +1,13 @@
-﻿using System;
-using System.Security.Claims;
-using kCura.IntegrationPoints.Data.Extensions;
+﻿using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using kCura.IntegrationPoints.Data.SecretStore;
 using Relativity;
 using Relativity.API;
 using Relativity.APIHelper.Audit;
 using Relativity.Core;
 using Relativity.Data;
+using System;
+using System.Security.Claims;
 using Context = kCura.Data.RowDataGateway.Context;
 
 namespace kCura.IntegrationPoints.Data.Factories.Implementations
@@ -17,12 +16,23 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 	{
 		private readonly IHelper _helper;
 		private readonly IServicesMgr _servicesMgr;
+		private readonly Lazy<IRelativityObjectManagerFactory> _objectManagerFactory;
 
 		public RepositoryFactory(IHelper helper, IServicesMgr servicesMgr)
 		{
 			_helper = helper;
 			_servicesMgr = servicesMgr;
+			_objectManagerFactory = new Lazy<IRelativityObjectManagerFactory>(CreateRelativityObjectManagerFactory);
 		}
+
+		public RepositoryFactory(IHelper helper, IServicesMgr servicesMgr, IRelativityObjectManagerFactory objectManagerFactory)
+		{
+			_helper = helper;
+			_servicesMgr = servicesMgr;
+			_objectManagerFactory = new Lazy<IRelativityObjectManagerFactory>(() => objectManagerFactory);
+		}
+
+		private IRelativityObjectManagerFactory ObjectManagerFactory => _objectManagerFactory.Value;
 
 		public IArtifactGuidRepository GetArtifactGuidRepository(int workspaceArtifactId)
 		{
@@ -62,8 +72,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IDocumentRepository GetDocumentRepository(int workspaceArtifactId)
 		{
-			IRelativityObjectManagerFactory relativityObjectManagerFactory = CreateRelativityObjectManagerFactory();
-			IDocumentRepository documentRepository = new KeplerDocumentRepository(relativityObjectManagerFactory, workspaceArtifactId);
+			IDocumentRepository documentRepository = new KeplerDocumentRepository(ObjectManagerFactory, workspaceArtifactId);
 			return documentRepository;
 		}
 
@@ -90,10 +99,8 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IJobHistoryErrorRepository GetJobHistoryErrorRepository(int workspaceArtifactId)
 		{
-			IRelativityObjectManagerFactory relativityObjectManagerFactory = CreateRelativityObjectManagerFactory();
-
 			IJobHistoryErrorRepository jobHistoryErrorRepository = new JobHistoryErrorRepository(_helper,
-				relativityObjectManagerFactory,
+				ObjectManagerFactory,
 				workspaceArtifactId);
 			return jobHistoryErrorRepository;
 		}
@@ -196,11 +203,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public ISavedSearchRepository GetSavedSearchRepository(int workspaceArtifactId, int savedSearchArtifactId)
 		{
-			ISavedSearchRepository repository = new SavedSearchRepository(new RelativityObjectManager(workspaceArtifactId,
-					_helper, new SecretStoreHelper(workspaceArtifactId,
-						_helper,
-						new SecretManager(workspaceArtifactId),
-						new DefaultSecretCatalogFactory())),
+			ISavedSearchRepository repository = new SavedSearchRepository(CreateRelativityObjectManager(workspaceArtifactId),
 					savedSearchArtifactId, 1000);
 			return repository;
 		}
@@ -281,27 +284,17 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		#region Helper Methods
 		private IRelativityObjectManagerFactory CreateRelativityObjectManagerFactory()
 		{
-			return new RelativityObjectManagerFactory(_helper,
-				new DefaultSecretCatalogFactory(),
-				new SecretManagerFactory());
+			return new RelativityObjectManagerFactory(_helper);
 		}
 
-		private RelativityObjectManager CreateRelativityObjectManager(int workspaceArtifactId)
+		private IRelativityObjectManager CreateRelativityObjectManager(int workspaceArtifactId)
 		{
-			return new RelativityObjectManager(workspaceArtifactId,
-				_helper, new SecretStoreHelper(workspaceArtifactId,
-					_helper,
-					new SecretManager(workspaceArtifactId),
-					new DefaultSecretCatalogFactory()));
+			return ObjectManagerFactory.CreateRelativityObjectManager(workspaceArtifactId);
 		}
 
-		private RelativityObjectManager CreateRelativityObjectManagerForFederatedInstance(int workspaceArtifactId)
+		private IRelativityObjectManager CreateRelativityObjectManagerForFederatedInstance(int workspaceArtifactId)
 		{
-			return new RelativityObjectManager(workspaceArtifactId,
-				_servicesMgr, _helper.GetLoggerFactory().GetLogger(), new SecretStoreHelper(workspaceArtifactId,
-					_helper,
-					new SecretManager(workspaceArtifactId),
-					new DefaultSecretCatalogFactory()));
+			return ObjectManagerFactory.CreateRelativityObjectManager(workspaceArtifactId, _servicesMgr);
 		}
 
 		private BaseContext GetBaseContextForWorkspace(int workspaceArtifactId)

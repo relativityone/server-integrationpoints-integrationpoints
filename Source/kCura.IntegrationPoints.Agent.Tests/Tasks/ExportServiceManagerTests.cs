@@ -5,6 +5,7 @@ using Castle.Windsor;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Agent.Validation;
 using kCura.IntegrationPoints.Contracts.Models;
@@ -573,7 +574,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		{
 			// ARRANGE
 			const string newConfig = "new config";
-			Job job = JobExtensions.CreateJob(_configuration.SourceWorkspaceArtifactId, _integrationPoint.ArtifactId, String.Empty);
+			Job job = new JobBuilder()
+				.WithWorkspaceId(_configuration.SourceWorkspaceArtifactId)
+				.WithRelatedObjectArtifactId(_integrationPoint.ArtifactId)
+				.WithJobDetails(string.Empty)
+				.Build();
 			SetUp(job);
 			_serializer.Serialize(Arg.Any<TaskParameters>()).Returns(newConfig);
 			_jobHistoryService.GetRdo(Arg.Any<Guid>()).Returns(_jobHistory);

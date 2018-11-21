@@ -70,6 +70,10 @@
     <Compile Include="Managers\WorkspaceManagerTests.cs" />
     <Compile Include="Monitoring\AggregatedJobSinkTests.cs" />
     <Compile Include="Monitoring\HealthCheckTests.cs" />
+    <Compile Include="Monitoring\Instrumentation\ExternalCallCompletedMessageTests.cs" />
+    <Compile Include="Monitoring\Instrumentation\ExternalServiceInstrumentationTests.cs" />
+    <Compile Include="Monitoring\Instrumentation\ExternalServiceSimpleInstrumentationTests.cs" />
+    <Compile Include="Monitoring\MessageSink\ExternalCalls\ExternalCallsSinkTests.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceJobRdoInitializerTests.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceRdoDocumentFieldTests.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceRdoFieldsTests.cs" />

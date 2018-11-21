@@ -21,7 +21,8 @@ properties {
     $version = '1.0.0.0'
     $server_type = 'teambranch'
     $build_type = 'DEV'
-    $run_sonarQube = $false 
+    $run_sonarQube = $false
+    $skip_tests = $false
 
     $git = Test-Path -Path ([System.IO.Path]::Combine($root, '.git'))
     if ($git) {
@@ -66,6 +67,7 @@ properties {
     #build variables
     $verbosity ="normal" 
     $inputfile = [System.IO.Path]::Combine($development_scripts_directory, 'build.xml')
+    $inputfile_noTests = [System.IO.Path]::Combine($development_scripts_directory, 'build_noTests.xml')
     $targetsfile = [System.IO.Path]::Combine($development_scripts_directory, 'msbuild.targets')
     $dependencygraph = [System.IO.Path]::Combine($development_scripts_directory, 'DependencyGraph.xml')
     $internaldlls = [System.IO.Path]::Combine($development_scripts_directory, 'dlls.txt')

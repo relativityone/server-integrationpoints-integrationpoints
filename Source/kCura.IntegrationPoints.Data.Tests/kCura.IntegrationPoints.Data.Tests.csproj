@@ -73,6 +73,10 @@
       <Project>{ad3e5540-fa39-4983-8a23-fcc756d51a32}</Project>
       <Name>kCura.IntegrationPoint.Tests.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Common\kCura.IntegrationPoints.Common.csproj">
+      <Project>{32bcb03b-4980-4434-9392-f72334e6e348}</Project>
+      <Name>kCura.IntegrationPoints.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Config\kCura.IntegrationPoints.Config.csproj">
       <Project>{def928b5-37ce-4bf3-b663-f0b8912c9c3f}</Project>
       <Name>kCura.IntegrationPoints.Config</Name>
@@ -119,6 +123,7 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Extensions\StringExtensionsTests.cs" />
+    <Compile Include="Facades\Implementations\ObjectManagerFacadeTests.cs" />
     <Compile Include="Helpers\MatchHelper.cs" />
     <Compile Include="Repositories\AuditRepositoryTests.cs" />
     <Compile Include="Repositories\KeplerInstanceSettingRepositoryTests.cs" />

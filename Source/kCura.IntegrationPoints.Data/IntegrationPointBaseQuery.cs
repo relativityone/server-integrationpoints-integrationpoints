@@ -1,18 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using kCura.IntegrationPoints.Data.Repositories;
 using kCura.Relativity.Client.DTOs;
 using Relativity.Services.Objects.DataContracts;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace kCura.IntegrationPoints.Data
 {
 	public class IntegrationPointBaseQuery<T> where T : BaseRdo, new()
 	{
-		private readonly IRSAPIService _context;
+		private readonly IRelativityObjectManager _relativityObjectManager;
 
-		public IntegrationPointBaseQuery(IRSAPIService context)
+		public IntegrationPointBaseQuery(IRelativityObjectManager relativityObjectManager)
 		{
-			_context = context;
+			_relativityObjectManager = relativityObjectManager;
 		}
 
 		public IList<T> GetIntegrationPoints(List<int> sourceProviderIds)
@@ -24,7 +25,7 @@ namespace kCura.IntegrationPoints.Data
 				new FieldRef {Name = IntegrationPointFields.Name}
 			};
 
-			IList<T> result = _context.RelativityObjectManager.Query<T>(sourceProviderQuery);
+			IList<T> result = _relativityObjectManager.Query<T>(sourceProviderQuery);
 			return result;
 		}
 
@@ -33,7 +34,7 @@ namespace kCura.IntegrationPoints.Data
 			IList<T> integrationPointsWithoutFields = GetIntegrationPointsWithoutFields(sourceProviderIds);
 
 			return integrationPointsWithoutFields
-				.Select(integrationPoint => _context.RelativityObjectManager.Read<T>(integrationPoint.ArtifactId)).ToList();
+				.Select(integrationPoint => _relativityObjectManager.Read<T>(integrationPoint.ArtifactId)).ToList();
 		}
 
 		public IList<T> GetAllIntegrationPoints()
@@ -43,7 +44,7 @@ namespace kCura.IntegrationPoints.Data
 				Fields = GetFields()
 			};
 
-			IList<T> result = _context.RelativityObjectManager.Query<T>(query);
+			IList<T> result = _relativityObjectManager.Query<T>(query);
 
 			return result;
 		}
@@ -53,7 +54,7 @@ namespace kCura.IntegrationPoints.Data
 			IList<T> integrationPointsWithoutFields = GetAllIntegrationPointsWithoutFields();
 
 			return integrationPointsWithoutFields
-				.Select(integrationPoint => _context.RelativityObjectManager.Read<T>(integrationPoint.ArtifactId)).ToList();
+				.Select(integrationPoint => _relativityObjectManager.Read<T>(integrationPoint.ArtifactId)).ToList();
 		}
 
 		public IList<T> GetAllIntegrationPointsProfileWithBasicColumns()
@@ -63,7 +64,7 @@ namespace kCura.IntegrationPoints.Data
 				Fields = GetBasicProfileFields()
 			};
 
-			IList<T> result = _context.RelativityObjectManager.Query<T>(query);
+			IList<T> result = _relativityObjectManager.Query<T>(query);
 
 			return result;
 		}
@@ -72,7 +73,7 @@ namespace kCura.IntegrationPoints.Data
 		{
 			var query = new QueryRequest();
 
-			IList<T> result = _context.RelativityObjectManager.Query<T>(query);
+			IList<T> result = _relativityObjectManager.Query<T>(query);
 
 			return result;
 		}
@@ -81,7 +82,7 @@ namespace kCura.IntegrationPoints.Data
 		{
 			QueryRequest sourceProviderQuery = GetBasicSourceProviderQuery(sourceProviderIds);
 
-			IList<T> result = _context.RelativityObjectManager.Query<T>(sourceProviderQuery);
+			IList<T> result = _relativityObjectManager.Query<T>(sourceProviderQuery);
 
 			return result;
 		}

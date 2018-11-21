@@ -2,7 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoint.Tests.Core.Extensions;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Data;
@@ -69,7 +69,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 
 			_testInstance = new JobHistoryErrorManager(_repositoryFactory, helper, _workspaceArtifactId, _uniqueJobId);
 
-			_job = JobExtensions.CreateJob(_workspaceArtifactId, _integrationPointArtifactId, _submittedByArtifactId);
+			_job = new JobBuilder()
+				.WithWorkspaceId(_workspaceArtifactId)
+				.WithRelatedObjectArtifactId(_integrationPointArtifactId)
+				.WithSubmittedBy(_submittedByArtifactId)
+				.Build();
 		}
 
 		[Test]

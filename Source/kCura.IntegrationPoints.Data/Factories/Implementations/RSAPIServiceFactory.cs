@@ -15,5 +15,10 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		{
 			return new RSAPIService(_helper, workspaceArtifactId);
 		}
+
+		public IRSAPIService CreateAdminAccess(int workspaceArtifactId)
+		{
+			return new RSAPIServiceAdminAccess(_helper, workspaceArtifactId);
+		}
 	}
 }

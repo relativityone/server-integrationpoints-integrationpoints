@@ -48,6 +48,7 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Monitoring\ExternalServiceInstrumentationProviderWithJobContextTests.cs" />
     <Compile Include="TestingAgent.cs" />
     <Compile Include="ExportServiceManagerTests.cs" />
     <Compile Include="RelativityProvider_ImportNativeFileCopyModeTests.cs" />
@@ -65,6 +66,14 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Agent\kCura.IntegrationPoints.Agent.csproj">
       <Project>{bfa5641b-aa6f-4fa5-a20d-6f42b484cae4}</Project>
       <Name>kCura.IntegrationPoints.Agent</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Common\kCura.IntegrationPoints.Common.csproj">
+      <Project>{32bcb03b-4980-4434-9392-f72334e6e348}</Project>
+      <Name>kCura.IntegrationPoints.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Config\kCura.IntegrationPoints.Config.csproj">
+      <Project>{def928b5-37ce-4bf3-b663-f0b8912c9c3f}</Project>
+      <Name>kCura.IntegrationPoints.Config</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Core.Contracts\kCura.IntegrationPoints.Core.Contracts.csproj">
       <Project>{30503682-e18d-49df-a308-fe7996c4108e}</Project>
@@ -432,6 +441,17 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Moq">
+          <HintPath>..\..\packages\Moq\lib\net45\Moq.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Nest">
           <HintPath>..\..\packages\NEST\lib\net45\Nest.dll</HintPath>
           <Private>True</Private>
@@ -533,6 +553,17 @@
       <ItemGroup>
         <Reference Include="Relativity.Data">
           <HintPath>..\..\packages\Relativity.Data\lib\net462\Relativity.Data.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.DataTransfer.MessageService">
+          <HintPath>..\..\packages\Relativity.DataTransfer.MessageService\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -798,6 +829,17 @@
       <ItemGroup>
         <Reference Include="Relativity.Telemetry.MetricsCollection">
           <HintPath>..\..\packages\Relativity.Telemetry.MetricsCollection\lib\net462\Relativity.Telemetry.MetricsCollection.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Telemetry.Services.Interface">
+          <HintPath>..\..\packages\Relativity.Telemetry.Services.Interface\lib\net462\Relativity.Telemetry.Services.Interface.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

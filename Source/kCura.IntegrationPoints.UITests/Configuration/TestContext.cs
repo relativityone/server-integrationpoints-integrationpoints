@@ -10,6 +10,8 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Data.Factories.Implementations;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.UITests.Common;
 using kCura.Relativity.Client;
@@ -404,7 +406,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 		private int RetrieveSavedSearchId(string savedSearchName)
 		{
-			var objectManager = new RelativityObjectManager(WorkspaceId.Value, Helper, null); // we don't need secret store helper to read saved search
+			IRelativityObjectManager objectManager = CreateObjectManager();
 			var savedSearchRequest = new QueryRequest
 			{
 				ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Search },
@@ -414,6 +416,11 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			RelativityObject savedSearch = objectManager.Query(savedSearchRequest).First();
 			return savedSearch.ArtifactID;
 		}
-	}
 
+		private IRelativityObjectManager CreateObjectManager()
+		{
+			var factory = new RelativityObjectManagerFactory(Helper);
+			return factory.CreateRelativityObjectManager(WorkspaceId.Value);
+		}
+	}
 }

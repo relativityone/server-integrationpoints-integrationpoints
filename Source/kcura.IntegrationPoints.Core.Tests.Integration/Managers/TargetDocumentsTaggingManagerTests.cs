@@ -4,8 +4,8 @@ using System.Data;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
@@ -65,11 +65,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			_fieldMaps = GetDefaultFieldMap();
 		}
 
-		//[Test]
-		//[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
-		//[TestCase(499, "UnderBatch")]
-		//[TestCase(500, "EqualBatch")]
-		//[TestCase(502, "OverBatch")]
+		[Test]
+		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
+		[TestCase(499, "UnderBatch")]
+		[TestCase(500, "EqualBatch")]
+		[TestCase(502, "OverBatch")]
 		public void TargetWorkspaceDocumentTagging_GoldFlow(int numberOfDocuments, string documentIdentifier)
 		{
 			//Act
@@ -104,7 +104,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			targetDocumentsTaggingManager.ScratchTableRepository.AddArtifactIdsIntoTempTable(documentArtifactIds);
 
 			//Act
-			Job job = JobExtensions.CreateJob(SourceWorkspaceArtifactId, integrationModelCreated.ArtifactID, _ADMIN_USER_ID, 1);
+			Job job = new JobBuilder().WithJobId(1)
+				.WithWorkspaceId(SourceWorkspaceArtifactId)
+				.WithRelatedObjectArtifactId(integrationModelCreated.ArtifactID)
+				.WithSubmittedBy(_ADMIN_USER_ID)
+				.Build();
 			targetDocumentsTaggingManager.OnJobStart(job);
 			targetDocumentsTaggingManager.OnJobComplete(job);
 

@@ -233,6 +233,7 @@
     <Compile Include="TestHelpers\IntegrationPointProviderEmptyValidator.cs" />
     <Compile Include="TestHelpers\IProductionImagesService.cs" />
     <Compile Include="TestHelpers\ITestHelper.cs" />
+    <Compile Include="TestHelpers\JobBuilder.cs" />
     <Compile Include="TestHelpers\NativesService.cs" />
     <Compile Include="TestHelpers\ProductionImagesService.cs" />
     <Compile Include="TestHelpers\TestConstants.cs" />

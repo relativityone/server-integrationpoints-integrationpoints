@@ -4,8 +4,8 @@ using System.Data;
 using System.Linq;
 using System.Security.Claims;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
@@ -208,7 +208,11 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			JobHistory jobHistory = CreateJobHistoryOnIntegrationPoint(integrationPointCreated.ArtifactID, batchInstance);
 
 			//Create Job and temp table suffix
-			Job job = JobExtensions.CreateJob(SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID, _ADMIN_USER_ID, 1);
+			Job job = new JobBuilder().WithJobId(1)
+				.WithWorkspaceId(SourceWorkspaceArtifactId)
+				.WithRelatedObjectArtifactId(integrationPointCreated.ArtifactID)
+				.WithSubmittedBy(_ADMIN_USER_ID)
+				.Build();
 			string tempTableSuffix = $"{ job.JobId }_{ batchInstance }";
 			_jobHistoryErrorManager = new JobHistoryErrorManager(RepositoryFactory, helper, SourceWorkspaceArtifactId, tempTableSuffix);
 
@@ -272,7 +276,11 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			JobHistory jobHistory = CreateJobHistoryOnIntegrationPoint(integrationPointCreated.ArtifactID, batchInstance);
 
 			//Create Job and temp table suffix
-			Job job = JobExtensions.CreateJob(SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID, _ADMIN_USER_ID, 1);
+			Job job = new JobBuilder().WithJobId(1)
+				.WithWorkspaceId(SourceWorkspaceArtifactId)
+				.WithRelatedObjectArtifactId(integrationPointCreated.ArtifactID)
+				.WithSubmittedBy(_ADMIN_USER_ID)
+				.Build();
 			string tempTableSuffix = $"{ job.JobId }_{ batchInstance }";
 
 			_jobHistoryErrorManager = new JobHistoryErrorManager(RepositoryFactory, helper, SourceWorkspaceArtifactId, tempTableSuffix);
@@ -390,7 +398,11 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			JobHistory jobHistory = CreateJobHistoryOnIntegrationPoint(integrationPointCreated.ArtifactID, batchInstance);
 
 			//Create Job and temp table suffix
-			Job job = JobExtensions.CreateJob(SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID, _ADMIN_USER_ID, 1);
+			Job job = new JobBuilder().WithJobId(1)
+				.WithWorkspaceId(SourceWorkspaceArtifactId)
+				.WithRelatedObjectArtifactId(integrationPointCreated.ArtifactID)
+				.WithSubmittedBy(_ADMIN_USER_ID)
+				.Build();
 			string tempTableSuffix = $"{ job.JobId }_{ batchInstance }";
 
 			_jobHistoryErrorManager = new JobHistoryErrorManager(RepositoryFactory, helper, SourceWorkspaceArtifactId, tempTableSuffix);

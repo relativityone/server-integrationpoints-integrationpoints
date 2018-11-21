@@ -22,6 +22,7 @@ using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
@@ -76,6 +77,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				if (_buttonStateBuilder == null)
 				{
 					var logger = Helper.GetLoggerFactory().GetLogger();
+					IRelativityObjectManager objectManager = CreateObjectManager(Helper, Helper.GetActiveCaseID());
 
 					IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(Helper);
 					IQueueManager queueManager = ManagerFactory.CreateQueueManager(contextContainer);
@@ -85,12 +87,16 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 					IIntegrationPointPermissionValidator permissionValidator = 
 						new IntegrationPointPermissionValidator(new[] { new ViewErrorsPermissionValidator(repositoryFactory) }, new IntegrationPointSerializer(logger));
 					IPermissionRepository permissionRepository = new PermissionRepository(Helper, Helper.GetActiveCaseID());
-					IRSAPIService rsapiService = new RSAPIService(Helper, Helper.GetActiveCaseID());
-					IProviderTypeService providerTypeService = new ProviderTypeService(rsapiService);
-					_buttonStateBuilder = new ButtonStateBuilder(providerTypeService, queueManager, jobHistoryManager, stateManager, permissionRepository, permissionValidator, rsapiService);
+					IProviderTypeService providerTypeService = new ProviderTypeService(objectManager);
+					_buttonStateBuilder = new ButtonStateBuilder(providerTypeService, queueManager, jobHistoryManager, stateManager, permissionRepository, permissionValidator, objectManager);
 				}
 				return _buttonStateBuilder;
 			}
+		}
+
+		private IRelativityObjectManager CreateObjectManager(IEHHelper helper, int workspaceId)
+		{
+			return new RelativityObjectManagerFactory(helper).CreateRelativityObjectManager(workspaceId);
 		}
 
 		private IOnClickEventConstructor OnClickEventConstructor
