@@ -22,7 +22,7 @@ node('PolandBuild')
         }
         stage ('Get version')
         {
-            def outputString = powershell(returnStdout: true, script: ".\\build.ps1 getVersion -buildType $buildType -branchName ${env.BRANCH_NAME}").trim()
+            def outputString = powershell(returnStdout: true, script: ".\\build.ps1 getVersion -buildType ${params.buildType} -branchName ${env.BRANCH_NAME}").trim()
             version = extractValue("VERSION", outputString)
             packageVersion = extractValue("PACKAGE_VERSION", outputString)
             if (!outputString || !version || !packageVersion)
@@ -63,10 +63,6 @@ node('PolandBuild')
             {
                 powershell ".\\build.ps1 runSonarScanner -version $version"
             }
-            stage ('Security')
-            {
-                //TODO
-            }
         }
         
         currentBuild.result = 'SUCCESS'
@@ -83,6 +79,7 @@ node('PolandBuild')
     {
         if (currentBuild.result != 'SUCCESS')
         {
+            //TODO change slack to cd_sync after scripts development
             send_slack_message(["#cd_relativity-sync"], "${env.BUILD_NUMBER} from ${env.BRANCH_NAME} failed.\n${env.BUILD_URL}", 'danger')
 
             if (env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'master')
@@ -95,8 +92,7 @@ node('PolandBuild')
 
 def sendEmailAboutFailureToTeam()
 {
-    // TODO
-    def recipients = 'patryk.stepien@relativity.com'
+    def recipients = 'codigooplomo@relativity.com, buenavistacodingclub@relativity.com'
     sendEmailAboutFailure(recipients)
 }
 

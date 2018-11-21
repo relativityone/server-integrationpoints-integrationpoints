@@ -38,7 +38,7 @@ timeout(time: 3, unit: 'HOURS')
         {
             if (currentBuild.result != 'SUCCESS')
             {
-                send_slack_message(["#cd_relativity-sync"], "${env.BUILD_NUMBER} from ${env.BRANCH_NAME} failed.\n${env.BUILD_URL}", 'danger')
+                send_slack_message(["#cd_sync_performance"], "${env.BUILD_NUMBER} from ${env.BRANCH_NAME} failed.\n${env.BUILD_URL}", 'danger')
             }
         }
     }

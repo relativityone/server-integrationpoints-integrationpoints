@@ -19,17 +19,19 @@ properties {
     $nugetOutput = Join-Path $root "nuget"
     $certName = "Relativity ODA LLC"
     $progetUrl = "https://proget.kcura.corp/nuget/NuGet"
+    $coverageFileName = "coverage.html"
+    $projectName = "Relativity.Sync"
 }
 
 task default -depends restorePackages, checkConfigureAwait, build, runUnitTests, packNuget
 
 task sign {
-    $global:certThumbprint = & (Join-Path $scriptsDir "get-certificate-thumbprint.ps1") -certName $certName
-    $global:signToolPath = & (Join-Path $scriptsDir "get-signtool.ps1")
+    & (Join-Path $scriptsDir "get-certificate-thumbprint.ps1") -certName $certName
+    & (Join-Path $scriptsDir "get-signtool.ps1")
 }
 
 task getVersion {
-    & (Join-Path $scriptsDir "get-version.ps1") -buildType $buildType -scriptsDir $scriptsDir -branchName $branchName
+    & (Join-Path $scriptsDir "get-version.ps1") -projectName $projectName -buildType $buildType -scriptsDir $scriptsDir -branchName $branchName
     Write-Output "!!!VERSION=$global:version"
     Write-Output "!!!PACKAGE_VERSION=$global:packageVersion"
 }
@@ -58,17 +60,17 @@ task publishNuget {
 }
 
 task runUnitTests {
-    & (Join-Path $scriptsDir "run-unit-tests.ps1") -sourceDir $sourceDir -toolsDir $toolsDir -logsDir $logsDir
+    & (Join-Path $scriptsDir "run-unit-tests.ps1") -projectName $projectName -sourceDir $sourceDir -toolsDir $toolsDir -logsDir $logsDir -coverageFileName $coverageFileName
 }
 
 task runIntegrationTests {
-    & (Join-Path $scriptsDir "run-tests.ps1") -testsType "Integration" -sourceDir $sourceDir -toolsDir $toolsDir -logsDir $logsDir
+    & (Join-Path $scriptsDir "run-tests.ps1") -projectName $projectName -testsType "Integration" -sourceDir $sourceDir -toolsDir $toolsDir -logsDir $logsDir
 }
 
 task runPerformanceTests {
-    & (Join-Path $scriptsDir "run-tests.ps1") -testsType "Performance" -sourceDir $sourceDir -toolsDir $toolsDir -logsDir $logsDir
+    & (Join-Path $scriptsDir "run-tests.ps1") -projectName $projectName -testsType "Performance" -sourceDir $sourceDir -toolsDir $toolsDir -logsDir $logsDir
 }
 
 task runSonarScanner -depends restorePackages {
-    & (Join-Path $scriptsDir "run-sonar-scanner.ps1") -sourceDir $sourceDir -toolsDir $toolsDir -logsDir $logsDir -version $version
+    & (Join-Path $scriptsDir "run-sonar-scanner.ps1") -projectName $projectName -sourceDir $sourceDir -toolsDir $toolsDir -logsDir $logsDir -version $version -coverageFileName $coverageFileName
 }

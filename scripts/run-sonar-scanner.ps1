@@ -4,6 +4,9 @@
 .SYNOPSIS
     Runs SonarQube analysis
 
+.PARAMETER projectName
+    Project name
+
 .PARAMETER sourceDir
     Path to source directory
 
@@ -12,18 +15,21 @@
 
 .PARAMETER logsDir
     logs directory
+
+.PARAMETER coverageFileName
+    Coverage file name
 #>
 
 [CmdletBinding()]
 param(
+    [string]$projectName,
     [string]$sourceDir,
     [string]$toolsDir,
     [string]$logsDir,
-    [string]$version
+    [string]$version,
+    [string]$coverageFileName
 )
 
-$projectKey = "Relativity.Sync"
-$projectName = "Relativity Sync"
 $url = "https://sonarqube.kcura.corp"
 $token = "f3dc8b5d1dafdb4bdf42465d2b9eb105478d915d"
 
@@ -34,13 +40,13 @@ if (!$sonarScannerExe) {
 }
 
 Write-Verbose "Looking for test coverage report..."
-$testCoverageReport = (Get-ChildItem -Path $logsDir -Filter "coverage.html" -File -Recurse).FullName
+$testCoverageReport = (Get-ChildItem -Path $logsDir -Filter $coverageFileName -File -Recurse).FullName
 if (!$testCoverageReport) {
     throw "Cannot find test coverage report."
 }
 
 Write-Verbose "Running Sonar Scanner for version $version..."
-& $sonarScannerExe begin /k:$projectKey `
+& $sonarScannerExe begin /k:$projectName `
     /n:$projectName `
     /v:$version `
     /d:sonar.login=$token `
