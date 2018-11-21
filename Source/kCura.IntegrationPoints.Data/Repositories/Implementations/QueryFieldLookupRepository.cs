@@ -1,17 +1,21 @@
 ﻿using Relativity;
-using Relativity.Core;
 using System.Collections.Generic;
+using kCura.Data.RowDataGateway;
+using Relativity.Data;
+using ArtifactType = Relativity.ArtifactType;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class QueryFieldLookupRepository : IQueryFieldLookupRepository
 	{
-		private readonly ICoreContext _context;
+		private readonly BaseContext _workspaceDbContext;
+		private readonly int _caseUserArtifactId;
 		protected internal readonly Dictionary<int, ViewFieldInfoFieldTypeExtender> ViewFieldsInfoCache;
 
-		public QueryFieldLookupRepository(ICoreContext context)
+		public QueryFieldLookupRepository(BaseContext workspaceDbContext, int caseUserArtifactId)
 		{
-			_context = context;
+			_workspaceDbContext = workspaceDbContext;
+			_caseUserArtifactId = caseUserArtifactId;
 			ViewFieldsInfoCache = new Dictionary<int, ViewFieldInfoFieldTypeExtender>();
 		}
 
@@ -41,13 +45,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return viewFieldInfo;
 		}
 
-
 		/// <inheritdoc />
 		public virtual ViewFieldInfoFieldTypeExtender RunQueryForViewFieldInfo(int fieldArtifactId)
 		{
-			IQueryFieldLookup fieldLookupHelper = new QueryFieldLookup(_context, (int)ArtifactType.Document);
+			IQueryFieldLookup fieldLookupHelper = new QueryFieldLookup(_workspaceDbContext, _caseUserArtifactId, (int) ArtifactType.Document);
 			return new ViewFieldInfoFieldTypeExtender(fieldLookupHelper.GetFieldByArtifactID(fieldArtifactId));
 		}
-
 	}
 }

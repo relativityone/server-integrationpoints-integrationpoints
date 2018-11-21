@@ -4,9 +4,12 @@ using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Data.SecretStore;
+using Relativity;
 using Relativity.API;
 using Relativity.APIHelper.Audit;
 using Relativity.Core;
+using Relativity.Data;
+using Context = kCura.Data.RowDataGateway.Context;
 
 namespace kCura.IntegrationPoints.Data.Factories.Implementations
 {
@@ -248,9 +251,15 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IQueryFieldLookupRepository GetQueryFieldLookupRepository(int workspaceArtifactId)
 		{
-			BaseServiceContext baseServiceContext = GetBaseServiceContextForWorkspace(workspaceArtifactId);
+			string workspaceConnectionString = _helper.GetDBContext(workspaceArtifactId).GetConnection(false).ConnectionString;
+			var workspaceDbContext = new Context(workspaceConnectionString);
 
-			IQueryFieldLookupRepository queryFieldLookupRepository = new QueryFieldLookupRepository(baseServiceContext);
+			string masterConnectionString = kCura.Data.RowDataGateway.Config.ConnectionString;
+			kCura.Data.RowDataGateway.BaseContext masterDbContext = new Context(masterConnectionString);
+			int userArtifactId = ClaimsPrincipal.Current.Claims.UserArtifactID();
+			int caseUserArtifactId = UserQuery.RetrieveCaseUserArtifactId(masterDbContext, userArtifactId, workspaceArtifactId);
+
+			IQueryFieldLookupRepository queryFieldLookupRepository = new QueryFieldLookupRepository(workspaceDbContext, caseUserArtifactId);
 			return queryFieldLookupRepository;
 		}
 

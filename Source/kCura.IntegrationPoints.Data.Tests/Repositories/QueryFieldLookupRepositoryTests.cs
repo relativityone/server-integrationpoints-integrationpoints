@@ -2,19 +2,20 @@
 using NSubstitute;
 using NUnit.Framework;
 using Relativity;
-using Relativity.Core;
 using System.Linq;
+using kCura.Data.RowDataGateway;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories
 {
 	public class QueryFieldLookupRepositoryTests
 	{
-		private ICoreContext _context;
+		private BaseContext _workspaceDbContext;
+		private const int _CASE_USER_ARTIFACT_ID = 777;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_context = Substitute.For<ICoreContext>();
+			_workspaceDbContext = Substitute.For<BaseContext>();
 		}
 
 		[Test]
@@ -24,13 +25,14 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 			const int fieldArtifactId = 1000000;
 			var expectedViewFieldInfo = new ViewFieldInfo("ColumnName", "DataSource", FieldTypeHelper.FieldType.Boolean);
 			var extendedViewFieldInfo = new ViewFieldInfoFieldTypeExtender(expectedViewFieldInfo);
-			var queryRepository = Substitute.For<QueryFieldLookupRepository>(_context);
+			QueryFieldLookupRepository queryRepository = Substitute.For<QueryFieldLookupRepository>(_workspaceDbContext, _CASE_USER_ARTIFACT_ID);
 			queryRepository.RunQueryForViewFieldInfo(Arg.Any<int>()).Returns(extendedViewFieldInfo);
 			
 			//Act 
 			ViewFieldInfo returnedFieldInfoObject = queryRepository.GetFieldByArtifactId(fieldArtifactId);
 
 			//Assert
+			queryRepository.Received(1).RunQueryForViewFieldInfo(fieldArtifactId);
 			Assert.AreEqual(expectedViewFieldInfo.FieldType, returnedFieldInfoObject.FieldType);
 			Assert.AreEqual(expectedViewFieldInfo.DisplayName, returnedFieldInfoObject.DisplayName);
 			Assert.AreEqual(expectedViewFieldInfo.DataSource, returnedFieldInfoObject.DataSource);
@@ -43,13 +45,14 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 			const int fieldArtifactId = 1000000;
 			var expectedViewFieldInfo = new ViewFieldInfo("ColumnName", "DataSource", FieldTypeHelper.FieldType.Boolean);
 			var extendedViewFieldInfo = new ViewFieldInfoFieldTypeExtender(expectedViewFieldInfo);
-			var queryRepository = Substitute.For<QueryFieldLookupRepository>(_context);
+			QueryFieldLookupRepository queryRepository = Substitute.For<QueryFieldLookupRepository>(_workspaceDbContext, _CASE_USER_ARTIFACT_ID);
 			queryRepository.RunQueryForViewFieldInfo(Arg.Any<int>()).Returns(extendedViewFieldInfo);
 
 			//Act 
 			queryRepository.GetFieldByArtifactId(fieldArtifactId);
 
 			//Assert
+			queryRepository.Received(1).RunQueryForViewFieldInfo(fieldArtifactId);
 			Assert.Contains(fieldArtifactId, queryRepository.ViewFieldsInfoCache.Keys);
 			Assert.AreEqual(expectedViewFieldInfo.FieldType, queryRepository.ViewFieldsInfoCache.Values.First().Value.FieldType);
 			Assert.AreEqual(expectedViewFieldInfo.DisplayName, queryRepository.ViewFieldsInfoCache.Values.First().Value.DisplayName);
@@ -63,7 +66,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 			const int fieldArtifactId = 1000000;
 			var expectedViewFieldInfo = new ViewFieldInfo("ColumnName", "DataSource", FieldTypeHelper.FieldType.Boolean);
 			var extendedViewFieldInfo = new ViewFieldInfoFieldTypeExtender(expectedViewFieldInfo);
-			var queryRepository = Substitute.For<QueryFieldLookupRepository>(_context);
+			QueryFieldLookupRepository queryRepository = Substitute.For<QueryFieldLookupRepository>(_workspaceDbContext, _CASE_USER_ARTIFACT_ID);
 			queryRepository.RunQueryForViewFieldInfo(Arg.Any<int>()).Returns(extendedViewFieldInfo);
 
 			//PreAct check
@@ -76,6 +79,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 			queryRepository.GetFieldByArtifactId(fieldArtifactId);
 
 			//Assert
+			queryRepository.Received(1).RunQueryForViewFieldInfo(fieldArtifactId);
 			Assert.AreEqual(1, queryRepository.ViewFieldsInfoCache.Count, "There should be 1 items cached.");
 		}
 
@@ -87,7 +91,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 			const int field2ArtifactId = 2000000;
 			var expectedViewFieldInfo = new ViewFieldInfo("ColumnName", "DataSource", FieldTypeHelper.FieldType.Boolean);
 			var extendedViewFieldInfo = new ViewFieldInfoFieldTypeExtender(expectedViewFieldInfo);
-			var queryRepository = Substitute.For<QueryFieldLookupRepository>(_context);
+			QueryFieldLookupRepository queryRepository = Substitute.For<QueryFieldLookupRepository>(_workspaceDbContext, _CASE_USER_ARTIFACT_ID);
 			queryRepository.RunQueryForViewFieldInfo(Arg.Any<int>()).Returns(extendedViewFieldInfo);
 
 			//PreAct check
@@ -98,6 +102,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 			queryRepository.GetFieldByArtifactId(field2ArtifactId);
 
 			//Assert
+			queryRepository.Received(2).RunQueryForViewFieldInfo(Arg.Any<int>());
 			Assert.AreEqual(2, queryRepository.ViewFieldsInfoCache.Count, "There should be 2 items cached.");
 			Assert.Contains(field1ArtifactId, queryRepository.ViewFieldsInfoCache.Keys);
 			Assert.Contains(field2ArtifactId, queryRepository.ViewFieldsInfoCache.Keys);
