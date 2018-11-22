@@ -1,6 +1,6 @@
 #!groovy
 
-@Library('PipelineTools@master')_
+@Library('PipelineTools@v2.0')_
 
 properties ([
     parameters([
