@@ -1,21 +1,19 @@
 ﻿using Relativity;
 using System.Collections.Generic;
-using kCura.Data.RowDataGateway;
-using Relativity.Data;
-using ArtifactType = Relativity.ArtifactType;
+using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class QueryFieldLookupRepository : IQueryFieldLookupRepository
 	{
-		private readonly BaseContext _workspaceDbContext;
-		private readonly int _caseUserArtifactId;
+		private readonly IQueryFieldLookup _queryFieldLookup;
+		private readonly IExternalServiceInstrumentationProvider _instrumentationProvider;
 		protected internal readonly Dictionary<int, ViewFieldInfoFieldTypeExtender> ViewFieldsInfoCache;
 
-		public QueryFieldLookupRepository(BaseContext workspaceDbContext, int caseUserArtifactId)
+		public QueryFieldLookupRepository(IQueryFieldLookup queryFieldLookup, IExternalServiceInstrumentationProvider instrumentationProvider)
 		{
-			_workspaceDbContext = workspaceDbContext;
-			_caseUserArtifactId = caseUserArtifactId;
+			_queryFieldLookup = queryFieldLookup;
+			_instrumentationProvider = instrumentationProvider;
 			ViewFieldsInfoCache = new Dictionary<int, ViewFieldInfoFieldTypeExtender>();
 		}
 
@@ -48,8 +46,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		/// <inheritdoc />
 		public virtual ViewFieldInfoFieldTypeExtender RunQueryForViewFieldInfo(int fieldArtifactId)
 		{
-			IQueryFieldLookup fieldLookupHelper = new QueryFieldLookup(_workspaceDbContext, _caseUserArtifactId, (int) ArtifactType.Document);
-			return new ViewFieldInfoFieldTypeExtender(fieldLookupHelper.GetFieldByArtifactID(fieldArtifactId));
+			IExternalServiceSimpleInstrumentation instrumentation = _instrumentationProvider.CreateSimple("Relativity.Data", "QueryFieldLookup", "GetFieldByArtifactID");
+			ViewFieldInfo viewFieldInfo = instrumentation.Execute(() => _queryFieldLookup.GetFieldByArtifactID(fieldArtifactId));
+			return new ViewFieldInfoFieldTypeExtender(viewFieldInfo);
 		}
 	}
 }

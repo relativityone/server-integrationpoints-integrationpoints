@@ -1,21 +1,27 @@
-﻿using kCura.IntegrationPoints.Data.Repositories.Implementations;
+﻿using System;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity;
 using System.Linq;
-using kCura.Data.RowDataGateway;
+using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
+using kCura.IntegrationPoints.Data.Repositories;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories
 {
 	public class QueryFieldLookupRepositoryTests
 	{
-		private BaseContext _workspaceDbContext;
-		private const int _CASE_USER_ARTIFACT_ID = 777;
+		private IQueryFieldLookup _queryFieldLookup;
+		private IExternalServiceSimpleInstrumentation _instrumentation;
+		private IExternalServiceInstrumentationProvider _instrumentationProvider;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_workspaceDbContext = Substitute.For<BaseContext>();
+			_queryFieldLookup = Substitute.For<IQueryFieldLookup>();
+			_instrumentation = Substitute.For<IExternalServiceSimpleInstrumentation>();
+			_instrumentationProvider = Substitute.For<IExternalServiceInstrumentationProvider>();
+			_instrumentationProvider.CreateSimple("Relativity.Data", "QueryFieldLookup", "GetFieldByArtifactID").Returns(_instrumentation);
 		}
 
 		[Test]
@@ -25,7 +31,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 			const int fieldArtifactId = 1000000;
 			var expectedViewFieldInfo = new ViewFieldInfo("ColumnName", "DataSource", FieldTypeHelper.FieldType.Boolean);
 			var extendedViewFieldInfo = new ViewFieldInfoFieldTypeExtender(expectedViewFieldInfo);
-			QueryFieldLookupRepository queryRepository = Substitute.For<QueryFieldLookupRepository>(_workspaceDbContext, _CASE_USER_ARTIFACT_ID);
+			QueryFieldLookupRepository queryRepository = Substitute.For<QueryFieldLookupRepository>(_queryFieldLookup, _instrumentationProvider);
 			queryRepository.RunQueryForViewFieldInfo(Arg.Any<int>()).Returns(extendedViewFieldInfo);
 			
 			//Act 
@@ -45,7 +51,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 			const int fieldArtifactId = 1000000;
 			var expectedViewFieldInfo = new ViewFieldInfo("ColumnName", "DataSource", FieldTypeHelper.FieldType.Boolean);
 			var extendedViewFieldInfo = new ViewFieldInfoFieldTypeExtender(expectedViewFieldInfo);
-			QueryFieldLookupRepository queryRepository = Substitute.For<QueryFieldLookupRepository>(_workspaceDbContext, _CASE_USER_ARTIFACT_ID);
+			QueryFieldLookupRepository queryRepository = Substitute.For<QueryFieldLookupRepository>(_queryFieldLookup, _instrumentationProvider);
 			queryRepository.RunQueryForViewFieldInfo(Arg.Any<int>()).Returns(extendedViewFieldInfo);
 
 			//Act 
@@ -66,7 +72,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 			const int fieldArtifactId = 1000000;
 			var expectedViewFieldInfo = new ViewFieldInfo("ColumnName", "DataSource", FieldTypeHelper.FieldType.Boolean);
 			var extendedViewFieldInfo = new ViewFieldInfoFieldTypeExtender(expectedViewFieldInfo);
-			QueryFieldLookupRepository queryRepository = Substitute.For<QueryFieldLookupRepository>(_workspaceDbContext, _CASE_USER_ARTIFACT_ID);
+			QueryFieldLookupRepository queryRepository = Substitute.For<QueryFieldLookupRepository>(_queryFieldLookup, _instrumentationProvider);
 			queryRepository.RunQueryForViewFieldInfo(Arg.Any<int>()).Returns(extendedViewFieldInfo);
 
 			//PreAct check
@@ -91,7 +97,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 			const int field2ArtifactId = 2000000;
 			var expectedViewFieldInfo = new ViewFieldInfo("ColumnName", "DataSource", FieldTypeHelper.FieldType.Boolean);
 			var extendedViewFieldInfo = new ViewFieldInfoFieldTypeExtender(expectedViewFieldInfo);
-			QueryFieldLookupRepository queryRepository = Substitute.For<QueryFieldLookupRepository>(_workspaceDbContext, _CASE_USER_ARTIFACT_ID);
+			QueryFieldLookupRepository queryRepository = Substitute.For<QueryFieldLookupRepository>(_queryFieldLookup, _instrumentationProvider);
 			queryRepository.RunQueryForViewFieldInfo(Arg.Any<int>()).Returns(extendedViewFieldInfo);
 
 			//PreAct check
@@ -106,6 +112,46 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 			Assert.AreEqual(2, queryRepository.ViewFieldsInfoCache.Count, "There should be 2 items cached.");
 			Assert.Contains(field1ArtifactId, queryRepository.ViewFieldsInfoCache.Keys);
 			Assert.Contains(field2ArtifactId, queryRepository.ViewFieldsInfoCache.Keys);
+		}
+
+		[Test]
+		public void ItShouldCallQueryFieldLookupAndInstrumentationWhenGettingField()
+		{
+			//Arrange
+			const int fieldArtifactId = 1000001;
+			var expectedResult = new ViewFieldInfo();
+			_queryFieldLookup.GetFieldByArtifactID(fieldArtifactId).Returns(expectedResult);
+			_instrumentation.Execute(Arg.Any<Func<ViewFieldInfo>>()).Returns(c => c.ArgAt<Func<ViewFieldInfo>>(0).Invoke());
+			IQueryFieldLookupRepository queryRepository = new QueryFieldLookupRepository(_queryFieldLookup, _instrumentationProvider);
+			
+			//Act
+			ViewFieldInfo actualResult = queryRepository.GetFieldByArtifactId(fieldArtifactId);
+
+			//Assert
+			_queryFieldLookup.Received(1).GetFieldByArtifactID(fieldArtifactId);
+			_instrumentationProvider.Received(1).CreateSimple("Relativity.Data", "QueryFieldLookup", "GetFieldByArtifactID");
+			_instrumentation.Received(1).Execute(Arg.Any<Func<ViewFieldInfo>>());
+			Assert.AreEqual(expectedResult, actualResult);
+		}
+
+		[Test]
+		public void ItShouldCallQueryFieldLookupAndInstrumentationWhenGettingFieldType()
+		{
+			//Arrange
+			const int fieldArtifactId = 1000002;
+			var expectedResult = new ViewFieldInfo();
+			_queryFieldLookup.GetFieldByArtifactID(fieldArtifactId).Returns(expectedResult);
+			_instrumentation.Execute(Arg.Any<Func<ViewFieldInfo>>()).Returns(c => c.ArgAt<Func<ViewFieldInfo>>(0).Invoke());
+			IQueryFieldLookupRepository queryRepository = new QueryFieldLookupRepository(_queryFieldLookup, _instrumentationProvider);
+
+			//Act
+			string actualResult = queryRepository.GetFieldTypeByArtifactId(fieldArtifactId);
+
+			//Assert
+			_queryFieldLookup.Received(1).GetFieldByArtifactID(fieldArtifactId);
+			_instrumentationProvider.Received(1).CreateSimple("Relativity.Data", "QueryFieldLookup", "GetFieldByArtifactID");
+			_instrumentation.Received(1).Execute(Arg.Any<Func<ViewFieldInfo>>());
+			Assert.AreEqual(expectedResult.FieldType.ToString(), actualResult);
 		}
 	}
 }
