@@ -83,8 +83,8 @@ else {
 }
 
 Write-Verbose "Retrieving version from database..."
-& (Join-Path $scriptsDir "get-version-next-build.ps1") -projectName $projectName -buildType $buildType -majorNumber $major -minorNumber `
-    $minor -databaseUser $databaseUser -databasePassword $databasePassword
+& (Join-Path $scriptsDir "get-version-next-build.ps1") -projectName $projectName -buildType $buildType -majorNumber $major -minorNumber $minor `
+    -databaseUser $databaseUser -databasePassword $databasePassword
 
 Write-Output "Next version: $global:nextVersion"
 

@@ -22,7 +22,7 @@ node('PolandBuild')
         }
         stage ('Get version')
         {
-            withCredentials([usernamePassword(credentialsId: 'TCBuildVersionCredentials', passwordVariable: 'DBUSER', usernameVariable: 'DBPASSWORD')])
+            withCredentials([usernamePassword(credentialsId: 'TCBuildVersionCredentials', passwordVariable: 'DBPASSWORD', usernameVariable: 'DBUSER')])
             {
                 def outputString = powershell(returnStdout: true, script: ".\\build.ps1 getVersion -buildType ${params.buildType} -branchName ${env.BRANCH_NAME} -databaseUser $DBUSER -databasePassword $DBPASSWORD").trim()
             }
