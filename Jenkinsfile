@@ -25,15 +25,15 @@ node('PolandBuild')
             withCredentials([usernamePassword(credentialsId: 'TCBuildVersionCredentials', passwordVariable: 'DBPASSWORD', usernameVariable: 'DBUSER')])
             {
                 def outputString = powershell(returnStdout: true, script: ".\\build.ps1 getVersion -buildType ${params.buildType} -branchName ${env.BRANCH_NAME} -databaseUser $DBUSER -databasePassword $DBPASSWORD").trim()
-            }
-            version = extractValue("VERSION", outputString)
-            packageVersion = extractValue("PACKAGE_VERSION", outputString)
-            if (!outputString || !version || !packageVersion)
-            {
-                error("Unable to retrieve version!")
-            }
-            echo outputString
-            currentBuild.displayName = packageVersion
+                version = extractValue("VERSION", outputString)
+                packageVersion = extractValue("PACKAGE_VERSION", outputString)
+                if (!outputString || !version || !packageVersion)
+                {
+                    error("Unable to retrieve version!")
+                }
+                echo outputString
+                currentBuild.displayName = packageVersion
+            }            
         }
         stage ('ConfigureAwait check')
         {
