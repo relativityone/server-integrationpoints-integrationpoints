@@ -13,6 +13,8 @@ properties {
     $nugetExe
     $progetApiKey
     $branchName
+    $databaseUser
+    $databasePassword
     $sourceDir = Join-Path $root "Source"
     $logsDir = Join-Path $root "buildlogs"
     $paketExe = Join-Path $root -ChildPath ".paket" | Join-Path -ChildPath "paket.exe"
@@ -31,7 +33,8 @@ task sign {
 }
 
 task getVersion {
-    & (Join-Path $scriptsDir "get-version.ps1") -projectName $projectName -buildType $buildType -scriptsDir $scriptsDir -branchName $branchName
+    & (Join-Path $scriptsDir "get-version.ps1") -projectName $projectName -buildType $buildType -scriptsDir $scriptsDir -branchName $branchName `
+        -databaseUser $databaseUser -databasePassword $databasePassword
     Write-Output "!!!VERSION=$global:version"
     Write-Output "!!!PACKAGE_VERSION=$global:packageVersion"
 }

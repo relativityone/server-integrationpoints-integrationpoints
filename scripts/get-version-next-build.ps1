@@ -15,6 +15,12 @@
 
 .PARAMETER minorNumber
     Current minor number
+
+.PARAMETER databaseUser
+    Username to connect to TCBuildVersion database
+
+.PARAMETER databasePassword
+    Password to connect to TCBuildVersion database
 #>
 
 [CmdletBinding()]
@@ -23,11 +29,13 @@ param(
     [ValidateSet("DEV", "GOLD")]
     [string]$buildType,
     [string]$majorNumber,
-    [string]$minorNumber
+    [string]$minorNumber,
+    [string]$databaseUser,
+    [string]$databasePassword
 )
 
 $Conn = New-Object System.Data.SqlClient.SqlConnection
-$Conn.ConnectionString = "server='bld-mstr-01.kcura.corp';Database='TCBuildVersion';user=StoryboardUser;password=Test1234!;"
+$Conn.ConnectionString = "server='bld-mstr-01.kcura.corp';Database='TCBuildVersion';user=$databaseUser;password=$databasePassword;"
 
 try {
     $Conn.Open()

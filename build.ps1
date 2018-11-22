@@ -30,6 +30,12 @@
 
 .PARAMETER progetApiKey
     API-key used to authenticate to proget server
+
+.PARAMETER databaseUser
+    Username to connect to TCBuildVersion database
+
+.PARAMETER databasePassword
+    Password to connect to TCBuildVersion database
 #>
 
 [CmdletBinding()]
@@ -45,7 +51,9 @@ param(
     [string]$branchName,
     [string]$version = "0.0.0.0",
     [string]$packageVersion = "0.0-dev-0",
-    [string]$progetApiKey
+    [string]$progetApiKey,
+    [string]$databaseUser,
+    [string]$databasePassword
 )
 
 $BASE_DIR = Resolve-Path .
@@ -70,7 +78,9 @@ Invoke-PSake "default.ps1" `
                     'version' = $version;
                     'packageVersion' = $packageVersion;
                     'nugetExe' = $NUGET_EXE;
-                    'progetApiKey' = $progetApiKey }`
+                    'progetApiKey' = $progetApiKey;
+                    'databaseUser' = $databaseUser;
+                    'databasePassword' = $databasePassword }`
         -nologo `
 	-taskList $taskList `
 

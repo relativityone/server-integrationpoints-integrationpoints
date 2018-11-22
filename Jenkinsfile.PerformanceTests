@@ -38,7 +38,11 @@ timeout(time: 3, unit: 'HOURS')
         {
             if (currentBuild.result != 'SUCCESS')
             {
-                send_slack_message(["#cd_sync_performance"], "${env.BUILD_NUMBER} from ${env.BRANCH_NAME} failed.\n${env.BUILD_URL}", 'danger')
+                withCredentials([string(credentialsId: 'SlackJenkinsIntegrationToken', variable: 'token')])
+                {
+                    message = "${env.BUILD_NUMBER} from ${env.BRANCH_NAME} failed.\n${env.BUILD_URL}"
+                    slackSend channel: "#cd_sync_performance", color: "E8E8E8", message: "${message}", teamDomain: 'kcura-pd', token: token
+                }
             }
         }
     }
