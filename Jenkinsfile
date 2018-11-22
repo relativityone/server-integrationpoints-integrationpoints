@@ -22,7 +22,10 @@ node('PolandBuild')
         }
         stage ('Get version')
         {
-            def outputString = powershell(returnStdout: true, script: ".\\build.ps1 getVersion -buildType ${params.buildType} -branchName ${env.BRANCH_NAME}").trim()
+            withCredentials([usernamePassword(credentialsId: 'TCBuildVersionCredentials', passwordVariable: 'DBUSER', usernameVariable: 'DBPASSWORD')])
+            {
+                def outputString = powershell(returnStdout: true, script: ".\\build.ps1 getVersion -buildType ${params.buildType} -branchName ${env.BRANCH_NAME} -databaseUser $DBUSER -databasePassword $DBPASSWORD").trim()
+            }
             version = extractValue("VERSION", outputString)
             packageVersion = extractValue("PACKAGE_VERSION", outputString)
             if (!outputString || !version || !packageVersion)
@@ -80,7 +83,11 @@ node('PolandBuild')
         if (currentBuild.result != 'SUCCESS')
         {
             //TODO change slack to cd_sync after scripts development
-            send_slack_message(["#cd_relativity-sync"], "${env.BUILD_NUMBER} from ${env.BRANCH_NAME} failed.\n${env.BUILD_URL}", 'danger')
+            withCredentials([string(credentialsId: 'SlackJenkinsIntegrationToken', variable: 'token')])
+            {
+                message = "${env.BUILD_NUMBER} from ${env.BRANCH_NAME} failed.\n${env.BUILD_URL}"
+                slackSend channel: "#cd_relativity-sync", color: "E8E8E8", message: "${message}", teamDomain: 'kcura-pd', token: token
+            }
 
             if (env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'master')
             {
