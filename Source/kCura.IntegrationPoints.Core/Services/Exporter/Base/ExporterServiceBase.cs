@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 		protected readonly IExporter Exporter;
 		protected readonly IILongTextStreamFactory LongTextStreamFactory;
 		protected readonly IJobStopManager JobStopManager;
-		protected readonly int[] AvfIds;
+		protected readonly int[] ArtifactViewFieldIds;
 		protected readonly int[] FieldArtifactIds;
 
 
@@ -53,12 +53,12 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 			IQueryFieldLookupRepository queryFieldLookupRepository,
 			FieldMap[] mappedFields,
 			HashSet<int> longTextField,
-			int[] avfIds)
+			int[] artifactViewFieldIds)
 			: this(mappedFields, jobStopManager, helper)
 		{
 			Exporter = exporter;
 			LongTextStreamFactory = longTextStreamFactory;
-			AvfIds = avfIds;
+			ArtifactViewFieldIds = artifactViewFieldIds;
 			ExportJobInfo = Exporter.InitializeExport(0, null, 0);
 			LongTextFieldArtifactIds = longTextField;
 			QueryFieldLookupRepository = queryFieldLookupRepository;
@@ -85,13 +85,13 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 			QueryFieldLookupRepository = sourceRepositoryFactory.GetQueryFieldLookupRepository(SourceConfiguration.SourceWorkspaceArtifactId);
 
 			Dictionary<int, int> fieldsReferences = InitializeSourceFields(sourceRepositoryFactory, mappedFields);
-			AvfIds = FieldArtifactIds.Select(artifactId => fieldsReferences[artifactId]).ToArray(); // need to make sure that this is in order
+			ArtifactViewFieldIds = FieldArtifactIds.Select(artifactId => fieldsReferences[artifactId]).ToArray(); // need to make sure that this is in order
 
 			Exporter = exporter;
 			try
 			{
-				ExportJobInfo = Exporter.InitializeExport(searchArtifactId, AvfIds, startAt);
-				Logger.LogInformation("Retrived ExportJobInfo in ExporterServiceBase. Run: {runId}, rows: {rowCount}", ExportJobInfo?.RunId, ExportJobInfo?.RowCount);
+				ExportJobInfo = Exporter.InitializeExport(searchArtifactId, ArtifactViewFieldIds, startAt);
+				Logger.LogInformation("Retrieved ExportJobInfo in ExporterServiceBase. Run: {runId}, rows: {rowCount}", ExportJobInfo?.RunId, ExportJobInfo?.RowCount);
 			}
 			catch (Exception exception)
 			{

@@ -44,22 +44,22 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 
 		public override ArtifactDTO[] RetrieveData(int size)
 		{
-			Logger.LogDebug("Start retriving data in ImageExporterService. Size: {size}, export type: {typeOfExport}, AvfIds size: {avfIdsSize}",
-				size, SourceConfiguration.TypeOfExport, AvfIds.Length);
+			Logger.LogDebug("Start retrieving data in ImageExporterService. Size: {size}, export type: {typeOfExport}, AvfIds size: {avfIdsSize}",
+				size, SourceConfiguration.TypeOfExport, ArtifactViewFieldIds.Length);
 
 			var imagesResult = new List<ArtifactDTO>();
-			object[] retrievedData = Exporter.RetrieveResults(ExportJobInfo.RunId, AvfIds, size);
+			object[] retrievedData = Exporter.RetrieveResults(ExportJobInfo.RunId, ArtifactViewFieldIds, size);
 
 			if (retrievedData != null)
 			{
-				Logger.LogDebug("Retrived {numberOfDocuments} documents in ImageExporterService", retrievedData.Length);
+				Logger.LogDebug("Retrieved {numberOfDocuments} documents in ImageExporterService", retrievedData.Length);
 				int artifactType = (int)ArtifactType.Document;
 				foreach (object data in retrievedData)
 				{
 					var fields = new List<ArtifactFieldDTO>();
 					object[] fieldsValue = (object[])data;
 
-					int documentArtifactId = Convert.ToInt32(fieldsValue[AvfIds.Length]);
+					int documentArtifactId = Convert.ToInt32(fieldsValue[ArtifactViewFieldIds.Length]);
 					if (SourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.ProductionSet)
 					{
 						SetProducedImagesByProductionId(documentArtifactId, fields, fieldsValue, artifactType, imagesResult,
@@ -74,7 +74,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 				RetrievedDataCount += retrievedData.Length;
 			}
 
-			Logger.LogDebug("Retrived {numberOfImages} images in ImageExporterService", imagesResult.Count);
+			Logger.LogDebug("Retrieved {numberOfImages} images in ImageExporterService", imagesResult.Count);
 			Context.TotalItemsFound = Context.TotalItemsFound.GetValueOrDefault() + imagesResult.Count;
 			return imagesResult.ToArray();
 		}
@@ -88,7 +88,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 				int producedImagesCount = SetProducedImagesByPrecedence(documentArtifactId, fields, fieldsValue, artifactType, imagesResult);
 				if (_settings.IncludeOriginalImages && producedImagesCount == 0)
 				{
-					Logger.LogDebug("Producent images not available, originial image will be use. Document: {documentArtifactId}", documentArtifactId);
+					Logger.LogDebug("Produced images are not available, original images will be used. Document: {documentArtifactId}", documentArtifactId);
 					SetOriginalImages(documentArtifactId, fieldsValue, fields, artifactType, imagesResult);
 				}
 			}
@@ -152,7 +152,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 
 		private void SetupBaseFields(object[] fieldsValue, List<ArtifactFieldDTO> fields)
 		{
-			for (int index = 0; index < AvfIds.Length; index++)
+			for (int index = 0; index < ArtifactViewFieldIds.Length; index++)
 			{
 				int artifactId = FieldArtifactIds[index];
 				object value = fieldsValue[index];
@@ -162,7 +162,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 					Name = ExportJobInfo.ColumnNames[index],
 					ArtifactId = artifactId,
 					Value = value,
-					FieldType = QueryFieldLookupRepository.GetFieldByArtifactId(artifactId).FieldType.ToString()
+					FieldType = QueryFieldLookupRepository.GetFieldTypeByArtifactId(artifactId)
 				});
 			}
 		}
