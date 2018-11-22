@@ -15,6 +15,12 @@
 
 .PARAMETER branchName
     Current branch name
+
+.PARAMETER databaseUser
+    Username to connect to TCBuildVersion database
+
+.PARAMETER databasePassword
+    Password to connect to TCBuildVersion database
 #>
 
 [CmdletBinding()]
@@ -23,7 +29,9 @@ param(
     [ValidateSet("DEV", "GOLD")]
     [string]$buildType,
     [string]$scriptsDir,
-    [string]$branchName
+    [string]$branchName,
+    [string]$databaseUser,
+    [string]$databasePassword
 )
 
 Write-Output "Attempting to get package version..."
@@ -75,7 +83,8 @@ else {
 }
 
 Write-Verbose "Retrieving version from database..."
-& (Join-Path $scriptsDir "get-version-next-build.ps1") -projectName $projectName -buildType $buildType -majorNumber $major -minorNumber $minor
+& (Join-Path $scriptsDir "get-version-next-build.ps1") -projectName $projectName -buildType $buildType -majorNumber $major -minorNumber $minor `
+    -databaseUser $databaseUser -databasePassword $databasePassword
 
 Write-Output "Next version: $global:nextVersion"
 
