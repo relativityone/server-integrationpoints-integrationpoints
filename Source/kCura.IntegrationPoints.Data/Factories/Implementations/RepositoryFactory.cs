@@ -1,11 +1,17 @@
 ﻿using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
+using Relativity;
 using Relativity.API;
 using Relativity.APIHelper.Audit;
 using Relativity.Core;
+using Relativity.Data;
 using System;
 using System.Security.Claims;
+using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
+using ArtifactType = Relativity.ArtifactType;
+using Context = kCura.Data.RowDataGateway.Context;
+using QueryFieldLookup = Relativity.Data.QueryFieldLookup;
 
 namespace kCura.IntegrationPoints.Data.Factories.Implementations
 {
@@ -14,22 +20,28 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		private readonly IHelper _helper;
 		private readonly IServicesMgr _servicesMgr;
 		private readonly Lazy<IRelativityObjectManagerFactory> _objectManagerFactory;
+		private readonly Lazy<IExternalServiceInstrumentationProvider> _instrumentationProvider;
 
 		public RepositoryFactory(IHelper helper, IServicesMgr servicesMgr)
 		{
 			_helper = helper;
 			_servicesMgr = servicesMgr;
 			_objectManagerFactory = new Lazy<IRelativityObjectManagerFactory>(CreateRelativityObjectManagerFactory);
+			_instrumentationProvider = new Lazy<IExternalServiceInstrumentationProvider>(CreateInstrumentationProvider);
 		}
 
-		public RepositoryFactory(IHelper helper, IServicesMgr servicesMgr, IRelativityObjectManagerFactory objectManagerFactory)
+		public RepositoryFactory(IHelper helper, IServicesMgr servicesMgr,
+			IRelativityObjectManagerFactory objectManagerFactory,
+			IExternalServiceInstrumentationProvider instrumentationProvider)
 		{
 			_helper = helper;
 			_servicesMgr = servicesMgr;
 			_objectManagerFactory = new Lazy<IRelativityObjectManagerFactory>(() => objectManagerFactory);
+			_instrumentationProvider = new Lazy<IExternalServiceInstrumentationProvider>(() => instrumentationProvider);
 		}
 
 		private IRelativityObjectManagerFactory ObjectManagerFactory => _objectManagerFactory.Value;
+		private IExternalServiceInstrumentationProvider InstrumentationProvider => _instrumentationProvider.Value;
 
 		public IArtifactGuidRepository GetArtifactGuidRepository(int workspaceArtifactId)
 		{
@@ -251,9 +263,17 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IQueryFieldLookupRepository GetQueryFieldLookupRepository(int workspaceArtifactId)
 		{
-			BaseServiceContext baseServiceContext = GetBaseServiceContextForWorkspace(workspaceArtifactId);
+			string workspaceConnectionString = _helper.GetDBContext(workspaceArtifactId).GetConnection(false).ConnectionString;
+			var workspaceDbContext = new Context(workspaceConnectionString);
 
-			IQueryFieldLookupRepository queryFieldLookupRepository = new QueryFieldLookupRepository(baseServiceContext);
+			string masterConnectionString = kCura.Data.RowDataGateway.Config.ConnectionString;
+			kCura.Data.RowDataGateway.BaseContext masterDbContext = new Context(masterConnectionString);
+			int userArtifactId = ClaimsPrincipal.Current.Claims.UserArtifactID();
+			int caseUserArtifactId = UserQuery.RetrieveCaseUserArtifactId(masterDbContext, userArtifactId, workspaceArtifactId);
+
+			IQueryFieldLookup fieldLookupHelper = new QueryFieldLookup(workspaceDbContext, caseUserArtifactId, (int)ArtifactType.Document);
+
+			IQueryFieldLookupRepository queryFieldLookupRepository = new QueryFieldLookupRepository(fieldLookupHelper, InstrumentationProvider);
 			return queryFieldLookupRepository;
 		}
 
@@ -276,6 +296,12 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		private IRelativityObjectManagerFactory CreateRelativityObjectManagerFactory()
 		{
 			return new RelativityObjectManagerFactory(_helper);
+		}
+
+		private IExternalServiceInstrumentationProvider CreateInstrumentationProvider()
+		{
+			IAPILog logger = _helper.GetLoggerFactory().GetLogger();
+			return new ExternalServiceInstrumentationProviderWithoutJobContext(logger);
 		}
 
 		private IRelativityObjectManager CreateRelativityObjectManager(int workspaceArtifactId)
