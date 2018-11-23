@@ -82,11 +82,10 @@ node('PolandBuild')
     {
         if (currentBuild.result != 'SUCCESS')
         {
-            //TODO change slack to cd_sync after scripts development
             withCredentials([string(credentialsId: 'SlackJenkinsIntegrationToken', variable: 'token')])
             {
                 message = "${env.BUILD_NUMBER} from ${env.BRANCH_NAME} failed.\n${env.BUILD_URL}"
-                slackSend channel: "#cd_relativity-sync", color: "E8E8E8", message: "${message}", teamDomain: 'kcura-pd', token: token
+                slackSend channel: "#cd_sync", color: "E8E8E8", message: "${message}", teamDomain: 'kcura-pd', token: token
             }
 
             if (env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'master')
