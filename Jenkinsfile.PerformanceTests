@@ -1,0 +1,49 @@
+#!groovy
+
+@Library('PipelineTools@master')_
+
+def version
+
+timeout(time: 3, unit: 'HOURS')
+{
+    node('PolandBuild')
+    {
+        try
+        {
+            stage ('Checkout')
+            {
+                scmProps = checkout scm
+                step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true, commitSha1: scmProps.GIT_COMMIT])
+            }
+            stage ('Build')
+            {            
+                powershell ".\\build.ps1 build -buildConfig Release"
+            }            
+            stage ('Performance Tests')
+            {
+                powershell ".\\build.ps1 runPerformanceTests"
+            }
+
+            currentBuild.result = 'SUCCESS'
+            step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
+        }
+        catch (err)
+        {
+            currentBuild.result = 'FAILURE'
+            echo err.toString()
+            
+            step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
+        }
+        finally
+        {
+            if (currentBuild.result != 'SUCCESS')
+            {
+                withCredentials([string(credentialsId: 'SlackJenkinsIntegrationToken', variable: 'token')])
+                {
+                    message = "${env.BUILD_NUMBER} from ${env.BRANCH_NAME} failed.\n${env.BUILD_URL}"
+                    slackSend channel: "#cd_sync_performance", color: "E8E8E8", message: "${message}", teamDomain: 'kcura-pd', token: token
+                }
+            }
+        }
+    }
+}
