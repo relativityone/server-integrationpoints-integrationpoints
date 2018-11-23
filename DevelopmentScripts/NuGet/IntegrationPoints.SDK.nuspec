@@ -17,6 +17,7 @@
     </dependencies>
   </metadata>
   <files>
+    <file src="..\..\lib\UnitTests\kCura.IntegrationPoints.Common.dll" target="lib" />
     <file src="..\..\lib\UnitTests\kCura.IntegrationPoints.Config.dll" target="lib" />
     <file src="..\..\lib\UnitTests\kCura.IntegrationPoints.Contracts.dll" target="lib" />
     <file src="..\..\lib\UnitTests\kCura.IntegrationPoints.Core.dll" target="lib" />
