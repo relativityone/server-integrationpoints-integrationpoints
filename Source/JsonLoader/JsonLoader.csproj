@@ -60,6 +60,7 @@
   <ItemGroup>
     <Reference Include="kCura.EventHandler">
       <HintPath>..\..\packages\kCura.EventHandler\lib\net462\kCura.EventHandler.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="kCura.IntegrationPoints.Contracts">
       <HintPath>..\kCura.IntegrationPoints.Contracts\bin\x64\kCura.IntegrationPoints.Contracts.dll</HintPath>
@@ -68,10 +69,12 @@
     <Reference Include="kCura.IntegrationPoints.Domain, Version=10.1.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\kCura.IntegrationPoints.Domain\bin\x64\kCura.IntegrationPoints.Domain.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="kCura.IntegrationPoints.SourceProviderInstaller, Version=10.1.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\kCura.IntegrationPoints.SourceProviderInstaller\bin\x64\kCura.IntegrationPoints.SourceProviderInstaller.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
