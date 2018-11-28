@@ -14,7 +14,7 @@ param(
 )
 
 Write-Verbose "Looking for certificate named $certName..."
-$certificateObject = Get-ChildItem -Path cert: -Recurse | Where-Object {$_.FriendlyName -like "*$certName*"} | Select-Object -first 1
+$certificateObject = Get-ChildItem -Path cert: -Recurse | Where-Object {$_.Subject -like "*CN=$certName*"} | Select-Object -first 1
 if ($certificateObject) {
     Write-Verbose "Certificate found"
     $global:certThumbprint = $certificateObject.Thumbprint
