@@ -58,7 +58,9 @@
     <Compile Include="..\..\version\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="EmptyLogger.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="ISyncLog.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="paket.references" />

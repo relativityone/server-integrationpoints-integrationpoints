@@ -60,6 +60,7 @@
     <Compile Include="GlobalSuppressions.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="paket.references" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
@@ -216,5 +217,11 @@
     <Analyzer Include="..\..\packages\Text.Analyzers\analyzers\dotnet\cs\Text.CSharp.Analyzers.dll">
       <Paket>True</Paket>
     </Analyzer>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Relativity.Sync\Relativity.Sync.csproj">
+      <Project>{a3456aed-70a0-4451-8c77-138acd77c88c}</Project>
+      <Name>Relativity.Sync</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

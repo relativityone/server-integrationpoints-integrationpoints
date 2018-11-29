@@ -16,3 +16,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("Sync")]
 [assembly: AssemblyCompany("Relativity ODA LLC")]
 [assembly: AssemblyProduct("Sync")]
+
+[assembly: InternalsVisibleTo("Relativity.Sync.Tests.Unit")]
+[assembly: InternalsVisibleTo("Relativity.Sync.Tests.Integration")]
+[assembly: InternalsVisibleTo("Relativity.Sync.Tests.Performance")]
