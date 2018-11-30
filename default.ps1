@@ -49,7 +49,6 @@ task checkConfigureAwait -depends restorePackages {
 
 task findMsbuild {
     & (Join-Path $scriptsDir "find-msbuild.ps1")
-    Write-Output $global:msbuild_exe
 }
 
 task build -depends restorePackages, findMsbuild {
