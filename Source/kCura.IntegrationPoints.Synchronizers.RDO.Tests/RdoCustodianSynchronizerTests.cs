@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Custodian;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations;
@@ -46,7 +47,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 
 			import.GetWorkspaceFields(Arg.Any<int>(), Arg.Any<int>()).Returns(list);
 
-			var mock = Substitute.For<ImportApiFactory>(Substitute.For<ITokenProvider>(), Substitute.For<IFederatedInstanceManager>(),
+			var mock = Substitute.For<ImportApiFactory>(Substitute.For<ITokenProvider>(), Substitute.For<IAuthTokenGenerator>(), Substitute.For<IFederatedInstanceManager>(),
 				Substitute.For<IHelper>(), Substitute.For<ISystemEventLoggingService>(), Substitute.For<ISerializer>());
 			mock.GetImportAPI(Arg.Any<ImportSettings>()).Returns(import);
 			return mock;
