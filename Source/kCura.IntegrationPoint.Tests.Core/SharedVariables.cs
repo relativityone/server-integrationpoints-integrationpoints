@@ -167,6 +167,34 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static bool UiSkipUserCreation => AppSettingBool("UI.SkipUserCreation");
 
+		public static int UiBrowserWidth => AppSettingInt("UI.BrowserWidth");
+
+		public static int UiBrowserHeight => AppSettingInt("UI.BrowserHeight");
+
+		public static bool UiDriverServiceHideCommandPromptWindow => AppSettingBool("UI.DriverService.HideCommandPromptWindow");
+
+		public static string UiDriverServiceLogPath => AppSettingString("UI.DriverService.LogPath");
+
+		public static bool UiOptionsAcceptInsecureCertificates => AppSettingBool("UI.Options.AcceptInsecureCertificates");
+
+		public static bool UiOptionsArgumentsDisableInfobars => AppSettingBool("UI.Options.Arguments.DisableInfoBars");
+
+		public static bool UiOptionsArgumentsHeadless => AppSettingBool("UI.Options.Arguments.Headless");
+
+		public static bool UiOptionsArgumentsIgnoreCertificateErrors => AppSettingBool("UI.Options.Arguments.IgnoreCertificateErrors");
+
+		public static bool UiOptionsAdditionalCapabilitiesAcceptSslCertificates =>
+			AppSettingBool("UI.Options.AdditionalCapabilities.AcceptSslCertificates");
+
+		public static bool UiOptionsAdditionalCapabilitiesAcceptInsecureCertificates =>
+			AppSettingBool("UI.Options.AdditionalCapabilities.AcceptInsecureCertificates");
+
+		public static bool UiOptionsProfilePreferenceCredentialsEnableService =>
+			AppSettingBool("UI.Options.ProfilePreference.CredentialsEnableService");
+
+		public static bool UiOptionsProfilePreferenceProfilePasswordManagerEnabled =>
+			AppSettingBool("UI.Options.ProfilePreference.ProfilePasswordManagerEnabled");
+
 		#endregion UI Tests Settings
 
 		#region Relativity Settings
