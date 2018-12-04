@@ -62,7 +62,7 @@ if ($LASTEXITCODE -ne 0) {
 $sonarBuildDir = Join-Path $logsDir "sonarBuild"
 
 Get-ChildItem -Path $sourceDir -Filter *.sln -File | ForEach-Object {
-    & msbuild $_.FullName "/p:Configuration=Release" "/p:OutputPath=$sonarBuildDir" "/nologo" "/nodereuse:false" "/maxcpucount"
+    & $global:msbuild_exe $_.FullName "/p:Configuration=Release" "/p:OutputPath=$sonarBuildDir" "/nologo" "/nodereuse:false" "/maxcpucount"
     
     if ($LASTEXITCODE -ne 0) {
         Throw "An error occured while scanning solution $($_.FullName)."

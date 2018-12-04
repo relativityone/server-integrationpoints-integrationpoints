@@ -47,7 +47,11 @@ task checkConfigureAwait -depends restorePackages {
     & (Join-Path $scriptsDir "check-configureawait.ps1") -sourceDir $sourceDir -toolsDir $toolsDir -logsDir $logsDir
 }
 
-task build -depends restorePackages {
+task findMsbuild {
+    & (Join-Path $scriptsDir "find-msbuild.ps1")
+}
+
+task build -depends restorePackages, findMsbuild {
     & (Join-Path $scriptsDir "build-solution.ps1") -buildConf $buildConfig -version $version -packageVersion $packageVersion -sourceDir $sourceDir -certThumbprint $global:certThumbprint -signToolpath $global:signToolPath
 }
 
@@ -74,6 +78,6 @@ task runPerformanceTests {
     & (Join-Path $scriptsDir "run-tests.ps1") -projectName $projectName -testsType "Performance" -sourceDir $sourceDir -toolsDir $toolsDir -logsDir $logsDir
 }
 
-task runSonarScanner -depends restorePackages {
+task runSonarScanner -depends restorePackages, findMsbuild {
     & (Join-Path $scriptsDir "run-sonar-scanner.ps1") -projectName $projectName -sourceDir $sourceDir -toolsDir $toolsDir -logsDir $logsDir -version $version -coverageFileName $coverageFileName
 }
