@@ -16,6 +16,7 @@ kCura.Relativity.Client
 Relativity.Telemetry.APM
 Polly
 Relativity.ImportExport
+FluentAssertions
 
 group TestPackages
 	Serilog

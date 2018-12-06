@@ -77,7 +77,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 				{"Szmigielski, Piotr", "Lorenz, Andrzej"}
 			};
 
-			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
+			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted, JobStatusChoices.JobHistoryCompletedWithErrors);
 			validator.ValidateEntities(expectedEntities);
 		}
 	}

@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
+using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.UITests.Pages;
 using kCura.Relativity.Client.DTOs;
 using NUnit.Framework;
 using OpenQA.Selenium;
+
 
 namespace kCura.IntegrationPoints.UITests.Validation
 {
@@ -25,11 +28,10 @@ namespace kCura.IntegrationPoints.UITests.Validation
 			_jobExecutionTimeoutInMinutes = jobExecutionTimeoutInMinutes;
 		}
 
-		public void ValidateJobStatus(IntegrationPointDetailsPage integrationPointDetailsPage, Choice expectedJobStatus)
+		public void ValidateJobStatus(IntegrationPointDetailsPage integrationPointDetailsPage, params Choice[] expectedJobStatus)
 		{
 			string actualJobStatusAfterExecuted = WaitUntilJobFinishedAndThenGetStatus(integrationPointDetailsPage, _jobExecutionTimeoutInMinutes);
-
-			Assert.That(actualJobStatusAfterExecuted, Is.EqualTo(expectedJobStatus.Name));
+			actualJobStatusAfterExecuted.Should().BeOneOf(expectedJobStatus.Select(js => js.Name));
 		}
 
 		protected static void ValidateHasErrorsProperty(Dictionary<string, string> generalPropertiesTable, bool expectHasErrors)
