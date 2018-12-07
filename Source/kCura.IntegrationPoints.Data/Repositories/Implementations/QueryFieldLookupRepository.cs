@@ -46,7 +46,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		/// <inheritdoc />
 		public virtual ViewFieldInfoFieldTypeExtender RunQueryForViewFieldInfo(int fieldArtifactId)
 		{
-			IExternalServiceSimpleInstrumentation instrumentation = _instrumentationProvider.CreateSimple("Relativity.Data", "QueryFieldLookup", "GetFieldByArtifactID");
+			IExternalServiceSimpleInstrumentation instrumentation = _instrumentationProvider.CreateSimple(
+				ExternalServiceTypes.RELATIVITY_DATA, 
+				nameof(IQueryFieldLookup), 
+				nameof(IQueryFieldLookup.GetFieldByArtifactID));
 			ViewFieldInfo viewFieldInfo = instrumentation.Execute(() => _queryFieldLookup.GetFieldByArtifactID(fieldArtifactId));
 			return new ViewFieldInfoFieldTypeExtender(viewFieldInfo);
 		}

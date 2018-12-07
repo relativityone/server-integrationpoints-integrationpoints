@@ -289,7 +289,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		{
 			var auditServiceFactory = new AuditServiceFactory();
 			IAuditService auditService = auditServiceFactory.GetAuditService(appId, workspaceID);
-			return new AuditRepository(auditService);
+			return new AuditRepository(auditService, InstrumentationProvider);
 		}
 
 		#region Helper Methods

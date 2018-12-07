@@ -111,7 +111,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 			}
 
 			// assert
-			_startedInstrumentation.Failed(exception);
+			_startedInstrumentation.Received().Failed(exception);
 		}
 
 		[Test]
@@ -188,7 +188,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 			}
 
 			// assert
-			_startedInstrumentation.Failed(exception);
+			_startedInstrumentation.Received().Failed(exception);
 		}
 
 		[Test]
@@ -284,7 +284,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 			}
 
 			// assert
-			_startedInstrumentation.Failed(exception);
+			_startedInstrumentation.Received().Failed(exception);
 		}
 
 		[Test]
@@ -361,7 +361,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 			}
 
 			// assert
-			_startedInstrumentation.Failed(exception);
+			_startedInstrumentation.Received().Failed(exception);
 		}
 
 		[Test]
@@ -438,7 +438,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 			}
 
 			// assert
-			_startedInstrumentation.Failed(exception);
+			_startedInstrumentation.Received().Failed(exception);
 		}
 
 		[Test]

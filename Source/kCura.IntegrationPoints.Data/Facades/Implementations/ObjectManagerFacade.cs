@@ -115,7 +115,7 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 		private IExternalServiceInstrumentationStarted StartInstrumentation([CallerMemberName] string operationName = "")
 		{
 			IExternalServiceInstrumentation instrumentation =
-				_instrumentationProvider.Create("Kepler", nameof(IObjectManager), operationName);
+				_instrumentationProvider.Create(ExternalServiceTypes.KEPLER, nameof(IObjectManager), operationName);
 			return instrumentation.Started();
 		}
 

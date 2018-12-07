@@ -7,3 +7,4 @@ Relativity.API
 Relativity.Productions.Services.Interfaces
 Relativity.Services.Interfaces.Private
 Newtonsoft.Json
+FluentAssertions

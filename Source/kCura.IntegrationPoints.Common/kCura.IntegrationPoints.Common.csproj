@@ -51,6 +51,7 @@
     <Compile Include="Monitoring\Instrumentation\ExternalServiceInstrumentationProviderWithoutJobContext.cs" />
     <Compile Include="Monitoring\Instrumentation\ExternalServiceLogsInstrumentation.cs" />
     <Compile Include="Monitoring\Instrumentation\ExternalServiceSimpleInstrumentation.cs" />
+    <Compile Include="Monitoring\Instrumentation\ExternalServiceTypes.cs" />
     <Compile Include="Monitoring\Instrumentation\IExternalServiceSimpleInstrumentation.cs" />
     <Compile Include="Monitoring\Instrumentation\IExternalServiceInstrumentationProvider.cs" />
     <Compile Include="Monitoring\Instrumentation\Model\ExternalCallCompletedMessage.cs" />

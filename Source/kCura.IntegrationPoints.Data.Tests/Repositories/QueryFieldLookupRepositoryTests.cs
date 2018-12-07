@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 			_queryFieldLookup = Substitute.For<IQueryFieldLookup>();
 			_instrumentation = Substitute.For<IExternalServiceSimpleInstrumentation>();
 			_instrumentationProvider = Substitute.For<IExternalServiceInstrumentationProvider>();
-			_instrumentationProvider.CreateSimple("Relativity.Data", "QueryFieldLookup", "GetFieldByArtifactID").Returns(_instrumentation);
+			_instrumentationProvider.CreateSimple("Relativity.Data", "IQueryFieldLookup", "GetFieldByArtifactID").Returns(_instrumentation);
 		}
 
 		[Test]
@@ -129,7 +129,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 
 			//Assert
 			_queryFieldLookup.Received(1).GetFieldByArtifactID(fieldArtifactId);
-			_instrumentationProvider.Received(1).CreateSimple("Relativity.Data", "QueryFieldLookup", "GetFieldByArtifactID");
+			_instrumentationProvider.Received(1).CreateSimple("Relativity.Data", "IQueryFieldLookup", "GetFieldByArtifactID");
 			_instrumentation.Received(1).Execute(Arg.Any<Func<ViewFieldInfo>>());
 			Assert.AreEqual(expectedResult, actualResult);
 		}
@@ -149,7 +149,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 
 			//Assert
 			_queryFieldLookup.Received(1).GetFieldByArtifactID(fieldArtifactId);
-			_instrumentationProvider.Received(1).CreateSimple("Relativity.Data", "QueryFieldLookup", "GetFieldByArtifactID");
+			_instrumentationProvider.Received(1).CreateSimple("Relativity.Data", "IQueryFieldLookup", "GetFieldByArtifactID");
 			_instrumentation.Received(1).Execute(Arg.Any<Func<ViewFieldInfo>>());
 			Assert.AreEqual(expectedResult.FieldType.ToString(), actualResult);
 		}
