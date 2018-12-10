@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Net;
 
 namespace kCura.IntegrationPoints.FtpProvider.Connection.Interfaces
 {
