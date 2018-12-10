@@ -6,89 +6,87 @@ using kCura.IntegrationPoints.FtpProvider.Helpers;
 
 namespace kCura.IntegrationPoints.FtpProvider.Connection
 {
-    public class FtpConnector : Interfaces.IFtpConnector
+	public class FtpConnector : Interfaces.IFtpConnector
     {
         internal bool _disposed;
-        internal FtpWebResponse _ftpClient;
-        internal Stream _fileStream;
+	    internal FtpWebRequest _request;
+		internal FtpWebResponse _ftpClient;
+        internal Stream _stream;
 
-        internal readonly String _host;
-        internal readonly Int32 _port;
-        internal readonly String _username;
-        internal readonly String _password;
-        internal Int32 _downloadRetryCount;
-        internal Int32 _streamRetryCount;
-        public Int32 Timeout { get; set; }
-        public Int32 BufferSize { get; set; }
+        internal readonly string _host;
+        internal readonly int _port;
+        internal readonly string _username;
+        internal readonly string _password;
+        internal int _downloadRetryCount;
+        internal int _streamRetryCount;
+        public int Timeout { get; set; }
+        public int BufferSize { get; set; }
 
-        public FtpConnector(String host, Int32 port, String username, String password)
+        public FtpConnector(string host, int port, string username, string password)
         {
             _host = host.Normalize();
             _port = port;
-            _username = String.IsNullOrWhiteSpace(username) ? Constants.DefaultUsername : username.Normalize();
-            _password = String.IsNullOrWhiteSpace(username) ? Constants.DefaultPassword : password.Normalize();
+            _username = string.IsNullOrWhiteSpace(username) ? Constants.DefaultUsername : username.Normalize();
+            _password = string.IsNullOrWhiteSpace(username) ? Constants.DefaultPassword : password.Normalize();
             BufferSize = 2048;
             Timeout = Constants.Timeout;
         }
 
         public bool TestConnection()
         {
-            var ftpClient = GetClient(BuildBaseFtpUrl(_host, _port), _username, _password);
-            ftpClient.Method = WebRequestMethods.Ftp.ListDirectory;
-            using (var connectionTest = (FtpWebResponse)ftpClient.GetResponse())
+	        _request = CreateRequest(BuildBaseFtpUrl(_host, _port), _username, _password);
+	        _request.Method = WebRequestMethods.Ftp.ListDirectory;
+            using (var connectionTest = (FtpWebResponse)_request.GetResponse())
             {
                 connectionTest.Close();
             }
             return true;
         }
 
-        public Stream DownloadStream(String remotePath, String fileName, Int32 retryLimit)
+	    public Stream DownloadStream(string remotePath, string fileName, int retryLimit)
         {
-            Stream retVal = null;
-            try
-            {
-                if (TestConnection())
-                {
-                    var ftpClient = GetClient(BuildDownloadUrl(remotePath, fileName), _username, _password);
-                    ftpClient.Method = WebRequestMethods.Ftp.DownloadFile;
-                    _ftpClient = (FtpWebResponse)ftpClient.GetResponse();
-                    _fileStream = _ftpClient.GetResponseStream();
-                    retVal = _fileStream;
-                }
-            }
-            catch (Exception)
-            {
-                _streamRetryCount++;
-                if (_streamRetryCount < retryLimit)
-                {
-                    retVal = DownloadStream(remotePath, fileName, retryLimit);
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            _streamRetryCount = 0;
-            return retVal;
-        }
+	        try
+	        {
+		        if (TestConnection())
+				{
+					_request = CreateRequest(BuildDownloadUrl(remotePath, fileName), _username, _password);
+					_request.Method = WebRequestMethods.Ftp.DownloadFile;
+			        _ftpClient = (FtpWebResponse)_request.GetResponse();
+			        _stream = new FtpStream(_ftpClient.GetResponseStream(), _request);
+		        }
+	        }
+	        catch (Exception)
+	        {
+		        _streamRetryCount++;
+		        if (_streamRetryCount < retryLimit)
+		        {
+			        _stream = DownloadStream(remotePath, fileName, retryLimit);
+		        }
+		        else
+		        {
+			        throw;
+		        }
+	        }
+	        _streamRetryCount = 0;
+	        return _stream;
+		}
 
-        public void DownloadFile(String localDownloadPath, String remotePath, String fileName, Int32 retryLimit)
+        public void DownloadFile(string localDownloadPath, string remotePath, string fileName, int retryLimit)
         {
             try
             {
                 if (TestConnection())
                 {
-                    var fullLocalPath = localDownloadPath;
-                    var ftpClient = GetClient(BuildDownloadUrl(remotePath, fileName), _username, _password);
-                    ftpClient.Method = WebRequestMethods.Ftp.DownloadFile;
+	                _request = CreateRequest(BuildDownloadUrl(remotePath, fileName), _username, _password);
+	                _request.Method = WebRequestMethods.Ftp.DownloadFile;
 
-                    using (var response = (FtpWebResponse)ftpClient.GetResponse())
+                    using (var response = (FtpWebResponse)_request.GetResponse())
                     {
                         using (var responseStream = response.GetResponseStream())
                         {
                             if (responseStream != null)
                             {
-                                using (var writer = new FileStream(fullLocalPath, FileMode.Create))
+                                using (var writer = new FileStream(localDownloadPath, FileMode.Create))
                                 {
                                     var buffer = new byte[BufferSize];
 
@@ -119,15 +117,15 @@ namespace kCura.IntegrationPoints.FtpProvider.Connection
             _downloadRetryCount = 0;
         }
 
-        internal FtpWebRequest GetClient(String url, String username, String password)
+        internal FtpWebRequest CreateRequest(string url, string username, string password)
         {
-            var retVal = (FtpWebRequest)WebRequest.Create(url);
-            retVal.Timeout = Timeout * 1000;
-            PrepareCredentials(retVal, username, password);
-            return retVal;
+	        var request = (FtpWebRequest)WebRequest.Create(url);
+            request.Timeout = Timeout * 1000;
+            PrepareCredentials(request, username, password);
+            return request;
         }
 
-        internal String BuildDownloadUrl(String remotePath, String filename)
+        internal string BuildDownloadUrl(string remotePath, string filename)
         {
             var sb = new StringBuilder();
             sb.Append(BuildBaseFtpUrl(_host, _port));
@@ -135,15 +133,15 @@ namespace kCura.IntegrationPoints.FtpProvider.Connection
             return sb.ToString().Replace("\\", "/");
         }
 
-        internal void PrepareCredentials(WebRequest ftpClient, String username, String password)
+        internal void PrepareCredentials(WebRequest ftpClient, string username, string password)
         {
-            if (!String.IsNullOrWhiteSpace(username) && !String.IsNullOrWhiteSpace(password))
+            if (!string.IsNullOrWhiteSpace(username) && !string.IsNullOrWhiteSpace(password))
             {
                 ftpClient.Credentials = new NetworkCredential(username, password);
             }
         }
 
-        internal String BuildBaseFtpUrl(String host, Int32 port)
+        internal string BuildBaseFtpUrl(string host, int port)
         {
             var sb = new StringBuilder();
             sb.Append("ftp://");
@@ -158,14 +156,8 @@ namespace kCura.IntegrationPoints.FtpProvider.Connection
             {
                 if (disposing)
                 {
-                    if (_fileStream != null)
-                    {
-                        _fileStream.Dispose();
-                    }
-                    if (_ftpClient != null)
-                    {
-                        _ftpClient.Dispose();
-                    }
+	                _stream?.Dispose();
+	                _ftpClient?.Dispose();
                 }
             }
             _disposed = true;

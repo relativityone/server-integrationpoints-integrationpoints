@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Net;
 using kCura.IntegrationPoints.FtpProvider.Helpers;
 using Renci.SshNet;
 
@@ -61,21 +62,18 @@ namespace kCura.IntegrationPoints.FtpProvider.Connection
             return success;
         }
 
-        public Stream DownloadStream(String remotePath, String fileName, Int32 retryLimit)
+	    public Stream DownloadStream(String remotePath, String fileName, Int32 retryLimit)
         {
-            Stream retVal = null;
+            Stream stream = null;
             try
             {
                 string fullRemotePath = Path.Combine(remotePath, fileName);
                 fullRemotePath = FilenameFormatter.FormatFtpPath(fullRemotePath);
                 if (TestConnection())
                 {
-                    if (_fileStream != null)
-                    {
-                        _fileStream.Dispose();
-                    }
-                    _fileStream = _sftpClient.OpenRead(fullRemotePath);
-                    retVal = _fileStream;
+	                _fileStream?.Dispose();
+	                _fileStream = _sftpClient.OpenRead(fullRemotePath);
+                    stream = _fileStream;
                 }
             }
             catch (Exception)
@@ -83,7 +81,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Connection
                 _streamRetryCount++;
                 if (_streamRetryCount < retryLimit)
                 {
-                    retVal = DownloadStream(remotePath, fileName, retryLimit);
+                    stream = DownloadStream(remotePath, fileName, retryLimit);
                 }
                 else
                 {
@@ -95,7 +93,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Connection
                 _streamRetryCount = 0;
             }
 
-            return retVal;
+            return stream;
         }
 
         public void DownloadFile(String localDownloadPath, String remotePath, String fileName, Int32 retryLimit)
@@ -137,11 +135,9 @@ namespace kCura.IntegrationPoints.FtpProvider.Connection
             {
                 if (disposing)
                 {
-                    if (_fileStream != null)
-                    {
-                        _fileStream.Dispose();
-                    }
-                    if (_sftpClient != null)
+	                _sftpClient?.Disconnect();
+					_fileStream?.Dispose();
+	                if (_sftpClient != null)
                     {
                         if (_sftpClient.IsConnected)
                         {
