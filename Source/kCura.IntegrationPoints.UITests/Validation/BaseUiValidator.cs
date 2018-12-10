@@ -16,22 +16,18 @@ namespace kCura.IntegrationPoints.UITests.Validation
 {
 	public class BaseUiValidator
 	{
+		private const int _DEFAULT_JOB_EXECUTION_TIMEOUT_IN_MINUTES = 10;
 		private readonly int _jobExecutionTimeoutInMinutes;
 
 		public BaseUiValidator()
 		{
-			_jobExecutionTimeoutInMinutes = 10;
+			_jobExecutionTimeoutInMinutes = _DEFAULT_JOB_EXECUTION_TIMEOUT_IN_MINUTES;
 		}
 
-		public BaseUiValidator(int jobExecutionTimeoutInMinutes)
-		{
-			_jobExecutionTimeoutInMinutes = jobExecutionTimeoutInMinutes;
-		}
-
-		public void ValidateJobStatus(IntegrationPointDetailsPage integrationPointDetailsPage, params Choice[] expectedJobStatus)
+		public void ValidateJobStatus(IntegrationPointDetailsPage integrationPointDetailsPage, params Choice[] expectedJobStatuses)
 		{
 			string actualJobStatusAfterExecuted = WaitUntilJobFinishedAndThenGetStatus(integrationPointDetailsPage, _jobExecutionTimeoutInMinutes);
-			actualJobStatusAfterExecuted.Should().BeOneOf(expectedJobStatus.Select(js => js.Name));
+			actualJobStatusAfterExecuted.Should().BeOneOf(expectedJobStatuses.Select(js => js.Name));
 		}
 
 		protected static void ValidateHasErrorsProperty(Dictionary<string, string> generalPropertiesTable, bool expectHasErrors)

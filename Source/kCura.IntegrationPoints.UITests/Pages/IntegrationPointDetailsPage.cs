@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Threading;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.UITests.Components;
 using kCura.IntegrationPoints.UITests.Driver;
@@ -47,23 +47,48 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		public IntegrationPointDetailsPage RunIntegrationPoint()
 		{
 			RunButton.ClickEx();
+			ConfirmWarningOnDialogBox();
+			return this;
+		}
 
+		private void ConfirmWarningOnDialogBox()
+		{
+			IWebElement okButton = FindOkButtonOnDialogBoxWithDifferentLocatorsForDifferentPageVersions();
+			okButton.ClickEx();
+		}
+
+		private IWebElement FindOkButtonOnDialogBoxWithDifferentLocatorsForDifferentPageVersions()
+		{
 			const int timeoutForWarningBoxSeconds = 5;
-			By okButtonLocator = By.XPath("//button[text()='OK']");
 			var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(timeoutForWarningBoxSeconds));
-			IWebElement okButton;
+
+			By okButtonLocatorForButtonVersion = By.XPath("//button[text()='OK']");
+			IWebElement okButton = FindOkButtonOnDialogBox(wait, okButtonLocatorForButtonVersion);
+			if (okButton != null)
+			{
+				return okButton;
+			}
+
+			By okButtonLocatorForSpanVersion = By.XPath("//span[text()='OK']");
+			okButton = FindOkButtonOnDialogBox(wait, okButtonLocatorForButtonVersion);
+			if (okButton != null)
+			{
+				return okButton;
+			}
+			
+			throw new TestException($"Could not locate OK button on dialog box with either new ({okButtonLocatorForButtonVersion}) or old ({okButtonLocatorForSpanVersion}) locator.");
+		}
+
+		private IWebElement FindOkButtonOnDialogBox(WebDriverWait wait, By locator)
+		{
 			try
 			{
-				okButton = wait.Until(ExpectedConditions.ElementIsVisible(okButtonLocator));
+				return wait.Until(ExpectedConditions.ElementIsVisible(locator));
 			}
 			catch (WebDriverTimeoutException)
 			{
-				By okButtonLocatorForSpanVersion = By.XPath("//span[text()='OK']");
-				okButton = wait.Until(ExpectedConditions.ElementIsVisible(okButtonLocatorForSpanVersion));
+				return null;
 			}
-			okButton.ClickEx();
-
-			return this;
 		}
 
 		public PropertiesTable SelectGeneralPropertiesTable()
