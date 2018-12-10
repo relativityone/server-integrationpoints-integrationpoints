@@ -1,6 +1,9 @@
+Castle.Windsor
+FluentAssertions
 CSharpGuidelineAnalyzer
 kCura.Apps.Common.Data
 kCura.Apps.Common.Utils
+kCura.Relativity.Client
 Microsoft.AspNet.WebApi.Core
 NSubstitute
 NUnit

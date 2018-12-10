@@ -1,5 +1,7 @@
-﻿using Relativity;
+﻿using System;
+using Relativity;
 using System.Collections.Generic;
+using kCura.IntegrationPoints.Common.Constants;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations

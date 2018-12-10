@@ -21,8 +21,12 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly ICPHelper _helper;
 		private readonly ICredentialProvider _credential;
 
-		public ImportProviderImageController(IContextContainerFactory contextContainerFactory, IManagerFactory managerFactory, 
-			ICPHelper helper, ICredentialProvider credential, ICaseManagerFactory caseManagerFactory)
+		public ImportProviderImageController(
+			IContextContainerFactory contextContainerFactory, 
+			IManagerFactory managerFactory, 
+			ICPHelper helper, 
+			ICredentialProvider credential, 
+			ICaseManagerFactory caseManagerFactory)
 		{
 			_managerFactory = managerFactory;
 			_contextContainerFactory = contextContainerFactory;

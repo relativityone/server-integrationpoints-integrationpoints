@@ -1,4 +1,4 @@
-﻿namespace kCura.IntegrationPoints.Common.Monitoring.Instrumentation
+﻿namespace kCura.IntegrationPoints.Common.Constants
 {
 	public static class ExternalServiceTypes
 	{

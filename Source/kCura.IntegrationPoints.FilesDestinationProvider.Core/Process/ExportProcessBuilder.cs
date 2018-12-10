@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using kCura.IntegrationPoints.Config;
+﻿using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.DTO;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
@@ -19,7 +17,12 @@ using kCura.WinEDDS.Exporters;
 using kCura.WinEDDS.Service.Export;
 using Relativity;
 using Relativity.API;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using IExporter = kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary.IExporter;
+using IServiceFactory = kCura.WinEDDS.Service.Export.IServiceFactory;
 using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
@@ -38,12 +41,22 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 		private readonly IUserMessageNotification _userMessageNotification;
 		private readonly IUserNotification _userNotification;
 		private readonly IExportServiceFactory _exportServiceFactory;
+		private readonly IRepositoryFactory _repositoryFactory;
 
-		public ExportProcessBuilder(IConfigFactory configFactory, ICompositeLoggingMediator loggingMediator,
-			IUserMessageNotification userMessageNotification, IUserNotification userNotification,
-			ICredentialProvider credentialProvider, IExtendedExporterFactory extendedExporterFactory,
-			IExportFileBuilder exportFileBuilder, IHelper helper, JobStatisticsService jobStatisticsService,
-			IJobInfoFactory jobHistoryFactory, IDirectoryHelper dirHelper, IExportServiceFactory exportServiceFactory)
+		public ExportProcessBuilder(
+			IConfigFactory configFactory, 
+			ICompositeLoggingMediator loggingMediator,
+			IUserMessageNotification userMessageNotification, 
+			IUserNotification userNotification,
+			ICredentialProvider credentialProvider, 
+			IExtendedExporterFactory extendedExporterFactory,
+			IExportFileBuilder exportFileBuilder, 
+			IHelper helper, 
+			JobStatisticsService jobStatisticsService,
+			IJobInfoFactory jobHistoryFactory, 
+			IDirectoryHelper dirHelper, 
+			IExportServiceFactory exportServiceFactory,
+			IRepositoryFactory repositoryFactory)
 		{
 			_configFactory = configFactory;
 			_loggingMediator = loggingMediator;
@@ -56,6 +69,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			_jobHistoryFactory = jobHistoryFactory;
 			_dirHelper = dirHelper;
 			_exportServiceFactory = exportServiceFactory;
+			_repositoryFactory = repositoryFactory;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ExportProcessBuilder>();
 		}
 
@@ -73,7 +87,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 				};
 
 				PerformLogin(exportFile);
-				IExtendedServiceFactory serviceFactory = _exportServiceFactory.Create(exportDataContext);
+				IServiceFactory serviceFactory = _exportServiceFactory.Create(exportDataContext);
 				PopulateExportFieldsSettings(exportDataContext, serviceFactory);
 
 				SetRuntimeSettings(exportFile, settings, job);
@@ -112,21 +126,18 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			exportFile.Credential = _credentialProvider.Authenticate(cookieContainer);
 		}
 
-		private void PopulateExportFieldsSettings(ExportDataContext exportDataContext, IExtendedServiceFactory serviceFactory)
+		private void PopulateExportFieldsSettings(ExportDataContext exportDataContext, IServiceFactory serviceFactory)
 		{
 			LogPopulatingFields();
 			using (ISearchManager searchManager = serviceFactory.CreateSearchManager())
 			{
-				using (ICaseManager caseManager = serviceFactory.CreateCaseManager())
-				{
-					PopulateCaseInfo(exportDataContext.ExportFile, caseManager);
-					SetRdoModeSpecificSettings(exportDataContext.ExportFile);
-					SetAllExportableFields(exportDataContext.ExportFile, searchManager);
+				PopulateCaseInfo(exportDataContext.ExportFile);
+				SetRdoModeSpecificSettings(exportDataContext.ExportFile);
+				SetAllExportableFields(exportDataContext.ExportFile, searchManager);
 
-					PopulateViewFields(exportDataContext.ExportFile, exportDataContext.Settings.SelViewFieldIds.Select(item => item.Key).ToList());
-					PopulateNativeFileNameViewFields(exportDataContext);
-					PopulateTextPrecedenceFields(exportDataContext.ExportFile, exportDataContext.Settings.TextPrecedenceFieldsIds);
-				}
+				PopulateViewFields(exportDataContext.ExportFile, exportDataContext.Settings.SelViewFieldIds.Select(item => item.Key).ToList());
+				PopulateNativeFileNameViewFields(exportDataContext);
+				PopulateTextPrecedenceFields(exportDataContext.ExportFile, exportDataContext.Settings.TextPrecedenceFieldsIds);
 			}
 		}
 
@@ -160,12 +171,38 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			exportFile.AllExportableFields = searchManager.RetrieveAllExportableViewFields(exportFile.CaseInfo.ArtifactID, exportFile.ArtifactTypeID);
 		}
 
-		private static void PopulateCaseInfo(ExportFile exportFile, ICaseManager caseManager)
+		private void PopulateCaseInfo(ExportFile exportFile)
 		{
-			if (string.IsNullOrEmpty(exportFile.CaseInfo.DocumentPath))
+			if (!string.IsNullOrEmpty(exportFile.CaseInfo.DocumentPath))
 			{
-				exportFile.CaseInfo = caseManager.Read(exportFile.CaseInfo.ArtifactID);
+				return;
 			}
+
+			using (ICaseRepository caseRepository = _repositoryFactory.GetCaseRepository())
+			{
+				ICaseInfoDto caseInfo = caseRepository.Read(exportFile.CaseInfo.ArtifactID);
+				exportFile.CaseInfo = ConvertToDto(caseInfo);
+			}
+		}
+
+		private static CaseInfo ConvertToDto(ICaseInfoDto caseInfo)
+		{
+			return caseInfo == null 
+				? null 
+				: new CaseInfo
+				  {
+					Name = caseInfo.Name,
+					ArtifactID = caseInfo.ArtifactID,
+					DownloadHandlerURL = caseInfo.DownloadHandlerURL,
+					ExportAllowed = caseInfo.ExportAllowed,
+					DocumentPath = caseInfo?.DocumentPath ?? "",
+					MatterArtifactID = caseInfo.MatterArtifactID,
+					RootFolderID = caseInfo.RootFolderID,
+					StatusCodeArtifactID = caseInfo.StatusCodeArtifactID,
+					RootArtifactID = caseInfo.RootArtifactID,
+					AsImportAllowed = caseInfo.AsImportAllowed,
+					EnableDataGrid = caseInfo.EnableDataGrid
+				  };
 		}
 
 		private void PopulateViewFields(ExportFile exportFile, List<int> selectedViewFieldIds)

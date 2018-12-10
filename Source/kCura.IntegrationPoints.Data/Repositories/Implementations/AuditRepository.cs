@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
+﻿using kCura.IntegrationPoints.Common.Constants;
+using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations

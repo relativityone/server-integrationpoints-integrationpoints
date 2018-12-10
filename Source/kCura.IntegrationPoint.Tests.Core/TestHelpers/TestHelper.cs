@@ -8,6 +8,7 @@ using Relativity.Services.InstanceSetting;
 using Relativity.Services.ObjectQuery;
 using Relativity.Services.Objects;
 using Relativity.Services.Permission;
+using Relativity.Services.ResourceServer;
 using Relativity.Services.Search;
 using Relativity.Services.Security;
 using Relativity.Services.ServiceProxy;
@@ -59,6 +60,8 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 		    _serviceManager.CreateProxy<IOAuth2ClientManager>(ExecutionIdentity.System).Returns(_ => CreateAdminProxy<IOAuth2ClientManager>());
 			_serviceManager.CreateProxy<IObjectManager>(ExecutionIdentity.System).Returns(_ => CreateAdminProxy<IObjectManager>());
 			_serviceManager.CreateProxy<IObjectManager>(ExecutionIdentity.CurrentUser).Returns(_ => CreateUserProxy<IObjectManager>());
+			_serviceManager.CreateProxy<IResourceServerManager>(ExecutionIdentity.CurrentUser).Returns(_ => CreateUserProxy<IResourceServerManager>());
+			_serviceManager.CreateProxy<IResourceServerManager>(ExecutionIdentity.System).Returns(_ => CreateAdminProxy<IResourceServerManager>());
 			_serviceManager.GetServicesURL().Returns(SharedVariables.RestClientServiceUri);
 		}
 
@@ -158,6 +161,21 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 		public IServicesMgr GetServicesManager()
 		{
 			return _serviceManager;
+		}
+
+		public IAuthenticationMgr GetAuthenticationManager()
+		{
+			throw new NotImplementedException();
+		}
+
+		public ICSRFManager GetCSRFManager()
+		{
+			throw new NotImplementedException();
+		}
+
+		public int GetActiveCaseID()
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

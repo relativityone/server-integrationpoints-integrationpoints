@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Common.Constants;
 using IObjectManager = Relativity.Services.Objects.IObjectManager;
 
 namespace kCura.IntegrationPoints.Data.Facades.Implementations

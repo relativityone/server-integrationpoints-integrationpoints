@@ -43,6 +43,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 					throw new Exception($"An error occurred while creating workspace {workspaceName}. Error Message: {ex.Message}, error type: {ex.GetType()}", ex);
 				}
 			}
+
 			return workspaceId;
 		}
 
@@ -85,27 +86,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 				catch (Exception ex)
 				{
 					throw new TestException($"An error occurred while deleting workspace [{workspaceArtifactId}]. Error Message: {ex.Message}");
-				}
-			}
-		}
-
-		public static bool IsWorkspacePresent(string workspaceName)
-		{
-			using (IRSAPIClient proxy = Rsapi.CreateRsapiClient())
-			{
-				try
-				{
-					var workspaceNameCondition = new TextCondition(WorkspaceFieldNames.Name, TextConditionEnum.EqualTo, workspaceName);
-					var query = new Query<Relativity.Client.DTOs.Workspace>
-					{
-						Condition = workspaceNameCondition
-					};
-					var result = QueryWorkspace(proxy, query, 0);
-					return result.TotalCount > 0;
-				}
-				catch (Exception ex)
-				{
-					throw new TestException($"An error occurred while retrieving workspace [{workspaceName}]. Error Message: {ex.Message}");
 				}
 			}
 		}
