@@ -47,48 +47,14 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		public IntegrationPointDetailsPage RunIntegrationPoint()
 		{
 			RunButton.ClickEx();
-			ConfirmWarningOnDialogBox();
+			ClickOkOnConfirmationDialog();
 			return this;
 		}
 
-		private void ConfirmWarningOnDialogBox()
+		private void ClickOkOnConfirmationDialog()
 		{
-			IWebElement okButton = FindOkButtonOnDialogBoxWithDifferentLocatorsForDifferentPageVersions();
-			okButton.ClickEx();
-		}
-
-		private IWebElement FindOkButtonOnDialogBoxWithDifferentLocatorsForDifferentPageVersions()
-		{
-			const int timeoutForWarningBoxSeconds = 5;
-			var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(timeoutForWarningBoxSeconds));
-
-			By okButtonLocatorForButtonVersion = By.XPath("//button[text()='OK']");
-			IWebElement okButton = FindOkButtonOnDialogBox(wait, okButtonLocatorForButtonVersion);
-			if (okButton != null)
-			{
-				return okButton;
-			}
-
-			By okButtonLocatorForSpanVersion = By.XPath("//span[text()='OK']");
-			okButton = FindOkButtonOnDialogBox(wait, okButtonLocatorForButtonVersion);
-			if (okButton != null)
-			{
-				return okButton;
-			}
-			
-			throw new TestException($"Could not locate OK button on dialog box with either new ({okButtonLocatorForButtonVersion}) or old ({okButtonLocatorForSpanVersion}) locator.");
-		}
-
-		private IWebElement FindOkButtonOnDialogBox(WebDriverWait wait, By locator)
-		{
-			try
-			{
-				return wait.Until(ExpectedConditions.ElementIsVisible(locator));
-			}
-			catch (WebDriverTimeoutException)
-			{
-				return null;
-			}
+			By okButtonLocator = By.XPath("//*[text()='OK']");
+			Driver.FindElementEx(okButtonLocator).ClickEx();
 		}
 
 		public PropertiesTable SelectGeneralPropertiesTable()
