@@ -43,6 +43,7 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Synchronizers.RDO.Tests")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Web")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Web.Tests")]
+[assembly: InternalsVisibleTo("kCura.IntegrationPoints.Web.Tests.Integration")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Email.Tests")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.PerformanceTests")]
 

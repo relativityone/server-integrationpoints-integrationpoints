@@ -18,8 +18,10 @@ using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using Castle.Core.Internal;
 using Castle.Windsor;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases;
@@ -96,6 +98,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			var configFactoryMock = Substitute.For<IConfigFactory>();
 			configFactoryMock.Create().Returns(configMock);
 
+			IRepositoryFactory repositoryFactory = _windsorContainer.Resolve<IRepositoryFactory>();
+			IInstanceSettingRepository instanceSettingRepository =
+				_windsorContainer.Resolve<IInstanceSettingRepository>();
+			var user = new CurrentUser() {ID = 9};
+			IAPILog logger = helper.GetLoggerFactory().GetLogger();
+			var exportServiceFactory = new ExportServiceFactory(logger, instanceSettingRepository, repositoryFactory, user);
+			
 			var exportProcessBuilder = new ExportProcessBuilder(
 				configFactoryMock,
 				loggingMediator,
@@ -110,7 +119,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				jobStats,
 				GetJobInfo(),
 				new LongPathDirectoryHelper(),
-				new ExportServiceFactory(helper, _windsorContainer.Resolve<IInstanceSettingRepository>(), new CurrentUser() {ID = 9})
+				exportServiceFactory,
+				repositoryFactory
 			);
 
 			var exportSettingsBuilder = new ExportSettingsBuilder(helper, null);

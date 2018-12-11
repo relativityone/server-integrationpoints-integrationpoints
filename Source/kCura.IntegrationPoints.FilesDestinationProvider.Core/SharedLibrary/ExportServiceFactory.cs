@@ -1,6 +1,8 @@
-﻿using kCura.IntegrationPoints.Data.Repositories;
+﻿using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers;
+using kCura.WinEDDS.Service.Export;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
@@ -9,27 +11,27 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 	{
 		private readonly CurrentUser _contextUser;
 		private readonly IInstanceSettingRepository _instanceSettingRepository;
+		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly IAPILog _logger;
-		private readonly IHelper _helper;
 
-		public ExportServiceFactory(IHelper helper, IInstanceSettingRepository instanceSettingRepository, CurrentUser contextUser)
+		public ExportServiceFactory(IAPILog logger, IInstanceSettingRepository instanceSettingRepository, IRepositoryFactory repositoryFactory, CurrentUser contextUser)
 		{
-			_helper = helper;
-			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ExportServiceFactory>();
+			_logger = logger.ForContext<ExportServiceFactory>();
 			_instanceSettingRepository = instanceSettingRepository;
+			_repositoryFactory = repositoryFactory;
 			_contextUser = contextUser;
 		}
 
-		public IExtendedServiceFactory Create(ExportDataContext exportDataContext)
+		public IServiceFactory Create(ExportDataContext exportDataContext)
 		{
 			if (UseCoreApi())
 			{
 				LogUsingRelativityCore();
-				return new CoreServiceFactory(_helper, exportDataContext.ExportFile, _contextUser.ID);
+				return new CoreServiceFactory(_repositoryFactory, exportDataContext.ExportFile, _contextUser.ID);
 			}
 
 			LogUsingWebApi();
-			return new ExtendedWebApiServiceFactory(exportDataContext.ExportFile);
+			return new WebApiServiceFactory(exportDataContext.ExportFile);
 		}
 
 		private bool UseCoreApi()

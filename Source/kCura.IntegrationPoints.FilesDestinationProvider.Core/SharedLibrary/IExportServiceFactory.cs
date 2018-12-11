@@ -1,7 +1,9 @@
-﻿namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
+﻿using kCura.WinEDDS.Service.Export;
+
+namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 {
 	public interface IExportServiceFactory
 	{
-		IExtendedServiceFactory Create(ExportDataContext exportDataContext);
+		IServiceFactory Create(ExportDataContext exportDataContext);
 	}
 }

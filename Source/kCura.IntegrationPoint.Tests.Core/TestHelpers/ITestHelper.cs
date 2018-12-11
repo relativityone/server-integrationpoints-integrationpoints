@@ -6,7 +6,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 {
 	using WinEDDS.Service.Export;
 
-	public interface ITestHelper : IHelper
+	public interface ITestHelper : ICPHelper
 	{
 		string RelativityUserName { get; set; }
 

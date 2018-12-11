@@ -9,6 +9,7 @@ using Relativity.Data;
 using System;
 using System.Security.Claims;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
+using Relativity.Services.ResourceServer;
 using ArtifactType = Relativity.ArtifactType;
 using Context = kCura.Data.RowDataGateway.Context;
 using QueryFieldLookup = Relativity.Data.QueryFieldLookup;
@@ -352,6 +353,13 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		public IKeywordSearchRepository GetKeywordSearchRepository()
 		{
 			return new KeplerKeywordSearchRepository(_servicesMgr);
+		}
+
+		public ICaseRepository GetCaseRepository()
+		{
+			IResourceServerManager resourceServerManagerService = _helper.GetServicesManager()
+				.CreateProxy<IResourceServerManager>(ExecutionIdentity.CurrentUser);
+			return new CaseRepository(resourceServerManagerService, InstrumentationProvider);
 		}
 
 		#endregion Helper Methods

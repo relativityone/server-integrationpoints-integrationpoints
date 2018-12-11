@@ -48,14 +48,11 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="EnumHelper.cs" />
-    <Compile Include="ExportManagers\CoreCaseManager.cs" />
     <Compile Include="ExportManagers\CoreFieldManager.cs" />
     <Compile Include="ExportManagers\CoreSearchManager.cs" />
     <Compile Include="Helpers\FieldConverter.cs" />
     <Compile Include="SharedLibrary\ExportServiceFactory.cs" />
-    <Compile Include="SharedLibrary\ExtendedWebApiServiceFactory.cs" />
     <Compile Include="SharedLibrary\IExportServiceFactory.cs" />
-    <Compile Include="SharedLibrary\IExtendedServiceFactory.cs" />
     <Compile Include="Extensions\ExportFileExtension.cs" />
     <Compile Include="Helpers\ExportedArtifactNameRepository.cs" />
     <Compile Include="Helpers\DestinationFolderHelper.cs" />
