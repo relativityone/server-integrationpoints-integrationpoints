@@ -32,7 +32,7 @@ param(
 )
 
 Write-Verbose "Looking for $testsType tests DLLs..."
-$testsDlls = (Get-ChildItem -Path $sourceDir -Filter "$projectName*Tests.$testsType.dll" -File -Recurse | Where-Object { $_.Directory.Name -match "netcoreapp*" -and $_.Directory.Parent -match "bin" }).FullName
+$testsDlls = (Get-ChildItem -Path $sourceDir -Filter "$projectName*Tests.$testsType.dll" -File -Recurse | Where-Object { $_.Directory.Parent -match "bin" }).FullName
 if (!$testsDlls) {
     Throw "Unable to locate any $testsType tests DLLs."
 }
