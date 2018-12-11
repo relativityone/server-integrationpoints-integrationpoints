@@ -30,7 +30,7 @@ param(
 )
 
 Write-Verbose "Looking for unit tests DLLs..."
-$unitTestsDlls = (Get-ChildItem -Path $sourceDir -Filter "$projectName*Tests.Unit.dll" -File -Recurse | Where-Object { $_.Directory.Name -match "bin" }).FullName
+$unitTestsDlls = (Get-ChildItem -Path $sourceDir -Filter "$projectName*Tests.Unit.dll" -File -Recurse | Where-Object { $_.Directory.Name -match "netcoreapp*" -and $_.Directory.Parent -match "bin" }).FullName
 if (!$unitTestsDlls) {
     Throw "Unable to locate any unit tests DLLs."
 }

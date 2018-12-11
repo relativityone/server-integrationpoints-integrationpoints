@@ -1,12 +1,12 @@
-framework: net462
+framework: netstandard20
 
 source https://proget.kcura.corp/nuget/NuGet
 
 nuget Microsoft.CodeAnalysis.FxCopAnalyzers ~> 2.6
 nuget CSharpGuidelineAnalyzer ~> 2.3
 nuget Autofac ~> 4.8
-nuget Polly 6.1.0
-nuget Newtonsoft.Json 6.0.8
+nuget Polly ~> 6.1
+nuget Newtonsoft.Json ~> 12.0
 
 # tests
 nuget NUnit ~> 3.11
