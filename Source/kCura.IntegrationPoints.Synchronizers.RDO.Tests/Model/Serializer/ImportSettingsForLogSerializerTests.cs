@@ -1,8 +1,5 @@
 ﻿using kCura.IntegrationPoints.Synchronizers.RDO.Model.Serializer;
-using NSubstitute;
 using NUnit.Framework;
-using Relativity.Core;
-using Relativity.Core.Service;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Model.Serializer
 {
@@ -11,16 +8,16 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Model.Serializer
 		[Test]
 		public void RelativityPasswordIsNotPresent()
 		{
-			const string RELATIVITY_PASSWORD = "SuperSecretPassword";
+			const string relativityPassword = "SuperSecretPassword";
 			var settings = new ImportSettings
 			{
-				RelativityPassword = RELATIVITY_PASSWORD
+				RelativityPassword = relativityPassword
 			};
 
 			var serializer = new ImportSettingsForLogSerializer();
 
 			string serializedSettings = serializer.Serialize(settings);
-			bool isSensitivaDataPresent = IsSubstringPresentCaseInsensitive(serializedSettings, RELATIVITY_PASSWORD);
+			bool isSensitivaDataPresent = IsSubstringPresentCaseInsensitive(serializedSettings, relativityPassword);
 
 			Assert.IsFalse(isSensitivaDataPresent);
 		}
@@ -28,16 +25,16 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Model.Serializer
 		[Test]
 		public void RelativityUsernameIsNotPresent()
 		{
-			const string RELATIVITY_USERNAME = "relativity.admin@relativity.com";
+			const string relativityUsername = "relativity.admin@relativity.com";
 			var settings = new ImportSettings
 			{
-				RelativityUsername = RELATIVITY_USERNAME
+				RelativityUsername = relativityUsername
 			};
 
 			var serializer = new ImportSettingsForLogSerializer();
 
 			string serializedSettings = serializer.Serialize(settings);
-			bool isSensitivaDataPresent = IsSubstringPresentCaseInsensitive(serializedSettings, RELATIVITY_USERNAME);
+			bool isSensitivaDataPresent = IsSubstringPresentCaseInsensitive(serializedSettings, relativityUsername);
 
 			Assert.IsFalse(isSensitivaDataPresent);
 		}
@@ -45,16 +42,16 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Model.Serializer
 		[Test]
 		public void FederatedInstanceCredentialsIsNotPresent()
 		{
-			const string FEDERATED_INSTANCE_CREDENTIALS = "sensitivaData";
+			const string federatedInstanceCredentials = "sensitivaData";
 			var settings = new ImportSettings
 			{
-				FederatedInstanceCredentials = FEDERATED_INSTANCE_CREDENTIALS
+				FederatedInstanceCredentials = federatedInstanceCredentials
 			};
 
 			var serializer = new ImportSettingsForLogSerializer();
 
 			string serializedSettings = serializer.Serialize(settings);
-			bool isSensitivaDataPresent = IsSubstringPresentCaseInsensitive(serializedSettings, FEDERATED_INSTANCE_CREDENTIALS);
+			bool isSensitivaDataPresent = IsSubstringPresentCaseInsensitive(serializedSettings, federatedInstanceCredentials);
 
 			Assert.IsFalse(isSensitivaDataPresent);
 		}
@@ -62,36 +59,33 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Model.Serializer
 		[Test]
 		public void OnBehalfOfUserIdIsNotPresent()
 		{
-			const int ON_BEHALF_OF_USER_ID = 487;
+			const int onBehalfOfUserId = 487;
 			var settings = new ImportSettings
 			{
-				OnBehalfOfUserId = ON_BEHALF_OF_USER_ID
+				OnBehalfOfUserId = onBehalfOfUserId
 			};
 
 			var serializer = new ImportSettingsForLogSerializer();
 
 			string serializedSettings = serializer.Serialize(settings);
-			bool isSensitivaDataPresent = IsSubstringPresentCaseInsensitive(serializedSettings, ON_BEHALF_OF_USER_ID.ToString());
+			bool isSensitivaDataPresent = IsSubstringPresentCaseInsensitive(serializedSettings, onBehalfOfUserId.ToString());
 
 			Assert.IsFalse(isSensitivaDataPresent);
 		}
 		[Test]
 		public void OnBehalfOfUserTokenIsNotPresent()
 		{
-			const string USER_TOKEN = "userToken";
-			const int USER_ID = 2;
-			var tokenGenerator = Substitute.For<IAuditSpoofTokenGenerator>();
-			tokenGenerator.Create(Arg.Any<BaseServiceContext>(), USER_ID).Returns(USER_TOKEN);
-
-			var settings = new ImportSettings(tokenGenerator, null)
+			const string userToken = "userToken";
+			const int userId = 2;
+			var settings = new ImportSettings
 			{
-				OnBehalfOfUserId = USER_ID
+				OnBehalfOfUserId = userId
 			};
 
 			var serializer = new ImportSettingsForLogSerializer();
 
 			string serializedSettings = serializer.Serialize(settings);
-			bool isSensitivaDataPresent = IsSubstringPresentCaseInsensitive(serializedSettings, USER_TOKEN);
+			bool isSensitivaDataPresent = IsSubstringPresentCaseInsensitive(serializedSettings, userToken);
 
 			Assert.IsFalse(isSensitivaDataPresent);
 		}

@@ -1,11 +1,11 @@
-﻿using System.Collections;
-using System.Data;
-using kCura.IntegrationPoints.Domain.Readers;
+﻿using kCura.IntegrationPoints.Domain.Readers;
 using kCura.Relativity.Client;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
 using Newtonsoft.Json;
 using Relativity.API;
+using System.Collections;
+using System.Data;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 {
@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 			{
 				if (federatedInstanceArtifactId == null)
 				{
-					return ImportApi.NewNativeDocumentImportJob(ImportSettings.OnBehalfOfUserToken);
+					return ImportApi.NewNativeDocumentImportJob();
 				}
 				return ImportApi.NewNativeDocumentImportJob();
 			}

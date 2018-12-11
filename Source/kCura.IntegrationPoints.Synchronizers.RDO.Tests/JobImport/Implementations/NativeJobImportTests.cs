@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport.Implementati
 			_importSettings = Substitute.For<ImportSettings>();
 			_importApi = Substitute.For<IExtendedImportAPI>();
 			_builder = Substitute.For<IImportSettingsBaseBuilder<Settings>>();
-			var context = Substitute.For<IDataTransferContext>();
+			IDataTransferContext context = Substitute.For<IDataTransferContext>();
 			_loggerMock = Substitute.For<IAPILog>();
 			_helperMock = Substitute.For<IHelper>();
 			_helperMock.GetLoggerFactory().GetLogger().ForContext<NativeJobImport>().Returns(_loggerMock);
@@ -42,14 +42,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport.Implementati
 			_importSettings.ArtifactTypeId = (int) ArtifactType.Document;
 			_importSettings.FederatedInstanceArtifactId = null;
 			var expected = new ImportBulkArtifactJob();
-			_importApi.NewNativeDocumentImportJob(Arg.Any<string>()).Returns(expected);
+			_importApi.NewNativeDocumentImportJob().Returns(expected);
 
 			//Act
 			ImportBulkArtifactJob actual = _instance.CreateJob();
 
 			//Assert
 			Assert.AreEqual(expected, actual);
-			_importApi.Received().NewNativeDocumentImportJob(Arg.Any<string>());
+			_importApi.Received().NewNativeDocumentImportJob();
 		}
 
 		[Test]
@@ -73,7 +73,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport.Implementati
 		public void ItShouldCreateJob_byNewObjectImportJob()
 		{
 			//Arrange
-			_importSettings.ArtifactTypeId = (int)ArtifactType.Document + 10;
+			_importSettings.ArtifactTypeId = (int)ArtifactType.Document + 1;
 			var expected = new ImportBulkArtifactJob();
 			_importApi.NewObjectImportJob(Arg.Any<int>()).Returns(expected);
 
