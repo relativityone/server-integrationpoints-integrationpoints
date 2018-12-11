@@ -212,6 +212,20 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport.Implementati
 			Assert.AreEqual(casePath, imageSettings.SelectedCasePath);
 		}
 
+		[Test]
+		public void ItShouldDisableImageTypeValidation()
+		{
+			// Arrange
+			var importSettings = GetImportSettings();
+			var imageSettings = GetImageSettings();
+
+			// Act
+			SystemUnderTest.PopulateFrom(importSettings, imageSettings);
+
+			// Assert
+			Assert.AreEqual(true, imageSettings.DisableImageTypeValidation);
+		}
+
 		protected ImportSettings GetImportSettings()
 		{
 			var importSettings = new ImportSettings();
