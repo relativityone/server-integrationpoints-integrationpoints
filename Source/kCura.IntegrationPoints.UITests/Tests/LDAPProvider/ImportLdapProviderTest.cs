@@ -16,7 +16,8 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 {
 	[TestFixture]
-	public class ImportLdapProviderTest : UiTest
+	[Category(TestCategory.IMPORT_FROM_FTP_AND_LDAP)]
+    public class ImportLdapProviderTest : UiTest
 	{
 		private IRSAPIService _service;
 		private IntegrationPointsImportLdapAction _integrationPointsAction;

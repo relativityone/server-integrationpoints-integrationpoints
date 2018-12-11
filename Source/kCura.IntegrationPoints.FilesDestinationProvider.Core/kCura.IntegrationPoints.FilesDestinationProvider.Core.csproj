@@ -48,12 +48,11 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="EnumHelper.cs" />
-    <Compile Include="ExportManagers\CoreCaseManager.cs" />
+    <Compile Include="ExportManagers\CoreFieldManager.cs" />
     <Compile Include="ExportManagers\CoreSearchManager.cs" />
+    <Compile Include="Helpers\FieldConverter.cs" />
     <Compile Include="SharedLibrary\ExportServiceFactory.cs" />
-    <Compile Include="SharedLibrary\ExtendedWebApiServiceFactory.cs" />
     <Compile Include="SharedLibrary\IExportServiceFactory.cs" />
-    <Compile Include="SharedLibrary\IExtendedServiceFactory.cs" />
     <Compile Include="Extensions\ExportFileExtension.cs" />
     <Compile Include="Helpers\ExportedArtifactNameRepository.cs" />
     <Compile Include="Helpers\DestinationFolderHelper.cs" />
@@ -105,7 +104,6 @@
     <Compile Include="SharedLibrary\CaseManagerFactory.cs" />
     <Compile Include="ExportManagers\CoreAuditManager.cs" />
     <Compile Include="ExportManagers\CoreExportManager.cs" />
-    <Compile Include="ExportManagers\CoreFieldManager.cs" />
     <Compile Include="ExportManagers\CoreProductionManager.cs" />
     <Compile Include="ExportManagers\CoreServiceFactory.cs" />
     <Compile Include="SharedLibrary\FactoryConfigBuilder.cs" />
@@ -638,6 +636,71 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Relativity.Logging">
+          <HintPath>..\..\packages\Relativity.Logging\lib\net462\Relativity.Logging.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Logging.Interfaces">
+          <HintPath>..\..\packages\Relativity.Logging.Interfaces\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.OAuth2Client">
+          <HintPath>..\..\packages\Relativity.OAuth2Client\lib\net462\Relativity.OAuth2Client.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.OAuth2Client.IdentityModel">
+          <HintPath>..\..\packages\Relativity.OAuth2Client\lib\net462\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.OAuth2Client.Implicit">
+          <HintPath>..\..\packages\Relativity.OAuth2Client.Implicit\lib\net462\Relativity.OAuth2Client.Implicit.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.OAuth2Client.IdentityModel.Interfaces">
+          <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces\lib\net462\Relativity.OAuth2Client.IdentityModel.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.OAuth2Client.Interfaces">
+          <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Relativity.SecretCatalog">
           <HintPath>..\..\packages\Relativity.SecretCatalog\lib\Relativity.SecretCatalog.dll</HintPath>
           <Private>True</Private>
@@ -979,16 +1042,6 @@
         </Reference>
         <Reference Include="Relativity.Telemetry.MetricsCollection.Factory">
           <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Telemetry.MetricsCollection.Factory.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.Telemetry.MetricsCollection.Service.Store">
-          <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Telemetry.MetricsCollection.Service.Store.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.Telemetry.Toggles">
-          <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Telemetry.Toggles.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

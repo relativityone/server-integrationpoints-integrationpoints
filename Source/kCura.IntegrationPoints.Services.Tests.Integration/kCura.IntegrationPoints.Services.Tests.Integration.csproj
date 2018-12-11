@@ -151,7 +151,8 @@
     </When>
   </Choose>
   <PropertyGroup>
-    <PostBuildEvent></PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -961,16 +962,6 @@
         </Reference>
         <Reference Include="Relativity.Telemetry.MetricsCollection.Factory">
           <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Telemetry.MetricsCollection.Factory.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.Telemetry.MetricsCollection.Service.Store">
-          <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Telemetry.MetricsCollection.Service.Store.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.Telemetry.Toggles">
-          <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Telemetry.Toggles.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

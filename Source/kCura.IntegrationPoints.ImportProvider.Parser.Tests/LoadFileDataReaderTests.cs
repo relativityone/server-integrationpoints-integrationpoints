@@ -276,48 +276,5 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 				Assert.IsEmpty(_instance.GetString(i));
 			}
 		}
-
-		[Test]
-		public void ItShouldThrowNotImplementedForUnusedMethods()
-		{
-			//Arrange
-			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader);
-
-			//Act
-			_instance.Init();
-
-			//Assert
-
-			//Methods
-			Assert.Throws(typeof(System.NotImplementedException), () => _instance.GetDataTypeName(0));
-			Assert.Throws(typeof(System.NotImplementedException), () => _instance.GetFieldType(0));
-			Assert.Throws(typeof(System.NotImplementedException), () => _instance.ReadArtifact());
-			Assert.Throws(typeof(System.NotImplementedException), () => _instance.GetColumnNames(null));
-			Assert.Throws(typeof(System.NotImplementedException), () => _instance.SourceIdentifierValue());
-			Assert.Throws(typeof(System.NotImplementedException), () => _instance.AdvanceRecord());
-			Assert.Throws(typeof(System.NotImplementedException), () => _instance.OnFatalErrorState());
-			Assert.Throws(typeof(System.NotImplementedException), () => _instance.Halt());
-
-			//Properties
-			Assert.Throws(typeof(System.NotImplementedException), () => { bool testProperty = _instance.HasMoreRecords; });
-			Assert.Throws(typeof(System.NotImplementedException), () => { int testProperty = _instance.CurrentLineNumber; });
-			Assert.Throws(typeof(System.NotImplementedException), () => { long testProperty = _instance.SizeInBytes; });
-			Assert.Throws(typeof(System.NotImplementedException), () => { long testProperty = _instance.BytesProcessed; });
-
-			//Events
-			IArtifactReader instanceAsArtifactReader = (IArtifactReader)_instance;
-
-			Assert.Throws(typeof(System.NotImplementedException), () => { instanceAsArtifactReader.OnIoWarning += (e) => { }; });
-			Assert.Throws(typeof(System.NotImplementedException), () => { instanceAsArtifactReader.DataSourcePrep += (e) => { }; });
-			Assert.Throws(typeof(System.NotImplementedException), () => { instanceAsArtifactReader.StatusMessage += (e) => { }; });
-			Assert.Throws(typeof(System.NotImplementedException), () => { instanceAsArtifactReader.FieldMapped += (srcField, wsField) => { }; });
-			Assert.Throws(typeof(System.NotImplementedException), () => { instanceAsArtifactReader.OnIoWarning += (e) => { }; });
-
-			Assert.Throws(typeof(System.NotImplementedException), () => { instanceAsArtifactReader.OnIoWarning -= (e) => { }; });
-			Assert.Throws(typeof(System.NotImplementedException), () => { instanceAsArtifactReader.DataSourcePrep -= (e) => { }; });
-			Assert.Throws(typeof(System.NotImplementedException), () => { instanceAsArtifactReader.StatusMessage -= (e) => { }; });
-			Assert.Throws(typeof(System.NotImplementedException), () => { instanceAsArtifactReader.FieldMapped -= (srcField, wsField) => { }; });
-			Assert.Throws(typeof(System.NotImplementedException), () => { instanceAsArtifactReader.OnIoWarning -= (e) => { }; });
-		}
 	}
 }

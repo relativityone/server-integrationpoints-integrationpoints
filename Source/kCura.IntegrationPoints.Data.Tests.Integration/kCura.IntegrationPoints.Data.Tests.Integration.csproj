@@ -55,6 +55,7 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="JobHistoryErrorsBatchingTests.cs" />
+    <Compile Include="Repositories\CaseRepositoryTest.cs" />
     <Compile Include="Repositories\DestinationWorkspaceRepositoryTests.cs" />
     <Compile Include="Repositories\JobHistoryErrorRepositoryTests.cs" />
     <Compile Include="Repositories\KeplerWorkspaceRepositoryTests.cs" />
@@ -71,6 +72,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
       <Project>{ad3e5540-fa39-4983-8a23-fcc756d51a32}</Project>
       <Name>kCura.IntegrationPoint.Tests.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Common\kCura.IntegrationPoints.Common.csproj">
+      <Project>{32BCB03B-4980-4434-9392-F72334E6E348}</Project>
+      <Name>kCura.IntegrationPoints.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">
       <Project>{a1ae667b-1b6e-4bb9-af1d-912620292283}</Project>
@@ -113,7 +118,8 @@
     </When>
   </Choose>
   <PropertyGroup>
-    <PostBuildEvent></PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\..\.paket\paket.targets" />
   <Choose>
@@ -902,16 +908,6 @@
         </Reference>
         <Reference Include="Relativity.Telemetry.MetricsCollection.Factory">
           <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Telemetry.MetricsCollection.Factory.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.Telemetry.MetricsCollection.Service.Store">
-          <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Telemetry.MetricsCollection.Service.Store.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.Telemetry.Toggles">
-          <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Telemetry.Toggles.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

@@ -1,17 +1,21 @@
-﻿using Relativity;
-using Relativity.Core;
+﻿using System;
+using Relativity;
 using System.Collections.Generic;
+using kCura.IntegrationPoints.Common.Constants;
+using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class QueryFieldLookupRepository : IQueryFieldLookupRepository
 	{
-		private readonly ICoreContext _context;
+		private readonly IQueryFieldLookup _queryFieldLookup;
+		private readonly IExternalServiceInstrumentationProvider _instrumentationProvider;
 		protected internal readonly Dictionary<int, ViewFieldInfoFieldTypeExtender> ViewFieldsInfoCache;
 
-		public QueryFieldLookupRepository(ICoreContext context)
+		public QueryFieldLookupRepository(IQueryFieldLookup queryFieldLookup, IExternalServiceInstrumentationProvider instrumentationProvider)
 		{
-			_context = context;
+			_queryFieldLookup = queryFieldLookup;
+			_instrumentationProvider = instrumentationProvider;
 			ViewFieldsInfoCache = new Dictionary<int, ViewFieldInfoFieldTypeExtender>();
 		}
 
@@ -41,13 +45,15 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return viewFieldInfo;
 		}
 
-
 		/// <inheritdoc />
 		public virtual ViewFieldInfoFieldTypeExtender RunQueryForViewFieldInfo(int fieldArtifactId)
 		{
-			IQueryFieldLookup fieldLookupHelper = new QueryFieldLookup(_context, (int)ArtifactType.Document);
-			return new ViewFieldInfoFieldTypeExtender(fieldLookupHelper.GetFieldByArtifactID(fieldArtifactId));
+			IExternalServiceSimpleInstrumentation instrumentation = _instrumentationProvider.CreateSimple(
+				ExternalServiceTypes.RELATIVITY_DATA, 
+				nameof(IQueryFieldLookup), 
+				nameof(IQueryFieldLookup.GetFieldByArtifactID));
+			ViewFieldInfo viewFieldInfo = instrumentation.Execute(() => _queryFieldLookup.GetFieldByArtifactID(fieldArtifactId));
+			return new ViewFieldInfoFieldTypeExtender(viewFieldInfo);
 		}
-
 	}
 }

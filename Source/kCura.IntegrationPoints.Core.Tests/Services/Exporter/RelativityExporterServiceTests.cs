@@ -7,7 +7,6 @@ using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity;
 using Relativity.API;

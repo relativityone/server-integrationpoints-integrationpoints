@@ -90,7 +90,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			{
 				isCloudInstance = "false";
 			}
-			return Json(isCloudInstance.ToLower());
+			return Json(isCloudInstance.ToLowerInvariant());
 		}
 
 		[HttpPost]

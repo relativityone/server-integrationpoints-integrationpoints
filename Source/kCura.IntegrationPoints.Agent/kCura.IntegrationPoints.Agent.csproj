@@ -67,6 +67,7 @@
     <Compile Include="JobExecutor.cs" />
     <Compile Include="Logging\JobLogInformation.cs" />
     <Compile Include="Logging\CreateErrorRdo.cs" />
+    <Compile Include="Monitoring\ExternalServiceInstrumentationProviderWithJobContext.cs" />
     <Compile Include="TaskFactory\IJobSynchronizationChecker.cs" />
     <Compile Include="TaskFactory\ITaskFactoryJobHistoryServiceFactory.cs" />
     <Compile Include="TaskFactory\ITaskFactoryJobHistoryService.cs" />
@@ -99,6 +100,10 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Common\kCura.IntegrationPoints.Common.csproj">
+      <Project>{32bcb03b-4980-4434-9392-f72334e6e348}</Project>
+      <Name>kCura.IntegrationPoints.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Config\kCura.IntegrationPoints.Config.csproj">
       <Project>{def928b5-37ce-4bf3-b663-f0b8912c9c3f}</Project>
       <Name>kCura.IntegrationPoints.Config</Name>
@@ -141,10 +146,6 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.ImportProvider.Parser\kCura.IntegrationPoints.ImportProvider.Parser.csproj">
       <Project>{180650d2-1eea-4242-949d-7bde78eeccb4}</Project>
       <Name>kCura.IntegrationPoints.ImportProvider.Parser</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.Injection\kCura.IntegrationPoints.Injection.csproj">
-      <Project>{847816a0-e354-4176-83b1-7adb93e5742f}</Project>
-      <Name>kCura.IntegrationPoints.Injection</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
       <Project>{b91cc4ed-abf3-4409-8df3-46a3c26eb4aa}</Project>
@@ -643,6 +644,49 @@
       <ItemGroup>
         <Reference Include="Relativity.Logging.Interfaces">
           <HintPath>..\..\packages\Relativity.Logging.Interfaces\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.OAuth2Client">
+          <HintPath>..\..\packages\Relativity.OAuth2Client\lib\net462\Relativity.OAuth2Client.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.OAuth2Client.IdentityModel">
+          <HintPath>..\..\packages\Relativity.OAuth2Client\lib\net462\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.OAuth2Client.Implicit">
+          <HintPath>..\..\packages\Relativity.OAuth2Client.Implicit\lib\net462\Relativity.OAuth2Client.Implicit.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.OAuth2Client.IdentityModel.Interfaces">
+          <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces\lib\net462\Relativity.OAuth2Client.IdentityModel.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.OAuth2Client.Interfaces">
+          <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

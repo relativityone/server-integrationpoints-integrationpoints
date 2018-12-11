@@ -86,10 +86,6 @@
       <Project>{5d5b52b4-8769-431a-9743-b96f15fed5fd}</Project>
       <Name>kCura.IntegrationPoints.Domain</Name>
     </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.Injection\kCura.IntegrationPoints.Injection.csproj">
-      <Project>{847816a0-e354-4176-83b1-7adb93e5742f}</Project>
-      <Name>kCura.IntegrationPoints.Injection</Name>
-    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
       <Project>{b91cc4ed-abf3-4409-8df3-46a3c26eb4aa}</Project>
       <Name>kCura.IntegrationPoints.Synchronizers.RDO</Name>
@@ -120,7 +116,8 @@
     </When>
   </Choose>
   <PropertyGroup>
-    <PostBuildEvent></PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\..\.paket\paket.targets" />
   <Choose>
@@ -865,16 +862,6 @@
         </Reference>
         <Reference Include="Relativity.Telemetry.MetricsCollection.Factory">
           <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Telemetry.MetricsCollection.Factory.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.Telemetry.MetricsCollection.Service.Store">
-          <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Telemetry.MetricsCollection.Service.Store.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.Telemetry.Toggles">
-          <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Telemetry.Toggles.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

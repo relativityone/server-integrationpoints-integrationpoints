@@ -148,8 +148,11 @@
 				IP.message.error.raise("Can not retrieve data transfer location root path");
 			};
 
-			var isProcessingSourceLocationEnabledPromise = self.ExportDestinationLocationService.createPromiseForIsProcessingSourceLocationEnabled(determiningIfProcessingSourceLocationIsEnabledFailed);
-			var rootDataTransferLocationPromise = self.ExportDestinationLocationService.createPromiseForGetRootDataTransferLocation(state.integrationPointTypeIdentifier, retrievingRootDataTransferLocationFailed);
+            var isProcessingSourceLocationEnabledPromise =
+                self.ExportDestinationLocationService.createPromiseForIsProcessingSourceLocationEnabled(determiningIfProcessingSourceLocationIsEnabledFailed);
+
+		    var rootDataTransferLocationPromise =
+                self.ExportDestinationLocationService.createPromiseForGetRootDataTransferLocation(state.integrationPointTypeIdentifier, retrievingRootDataTransferLocationFailed);
 
 			root.data.deferred()
 				.all([isProcessingSourceLocationEnabledPromise, rootDataTransferLocationPromise])
@@ -911,14 +914,12 @@
 		});
 
 		self.FileNameSelection = ko.pureComputed(function () {
-			return getFileNameSelectionRepresentation(self.FileNameParts()) + ".{File Extension}";
+			return getFileNameSelectionRepresentation() + ".{File Extension}";
 		});
 
 		Picker.create("Modals", "file-naming-option-modal", "ExportFileNamingOptionView", self.exportFileNameViewModel,
 			{
 				autoOpen: false,
-				modal: false,
-				width: "800px",
 				modal: true,
 				"min-width": "1000px",
 				height: "auto",
@@ -1047,7 +1048,8 @@
 				}
 
 				$.extend(self.ipModel.sourceConfiguration, settings);
-				self.ipModel.sourceConfiguration.TargetWorkspaceArtifactId = self.ipModel.sourceConfiguration.SourceWorkspaceArtifactId; // this is needed as long as summary page displays destination workspace
+				// this is needed as long as summary page displays destination workspace
+				self.ipModel.sourceConfiguration.TargetWorkspaceArtifactId = self.ipModel.sourceConfiguration.SourceWorkspaceArtifactId;
 
 				self.ipModel.sourceConfiguration = JSON.stringify(self.ipModel.sourceConfiguration);
 

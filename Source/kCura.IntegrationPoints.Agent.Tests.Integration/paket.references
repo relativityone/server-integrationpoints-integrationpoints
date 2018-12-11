@@ -4,9 +4,11 @@ kCura.Apps.Common.Data
 kCura.Apps.Common.Utils
 kCura.OutsideIn.FI.Win32
 kCura.Relativity.Client
+Moq
 NUnit
 Relativity.Authentication
 Relativity.Data
+Relativity.DataTransfer.MessageService
 Relativity.Telemetry.APM
 relativity.transfer.client
 RelativityCore

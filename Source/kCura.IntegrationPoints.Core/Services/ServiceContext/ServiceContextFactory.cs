@@ -1,4 +1,5 @@
 ﻿using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories.Implementations;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services.ServiceContext
@@ -17,7 +18,8 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 
 		public static IRSAPIService CreateRSAPIService(IHelper helper, int workspaceArtifactId)
 		{
-			return new RSAPIService(helper, workspaceArtifactId);
+			var rsapiServiceFactory = new RSAPIServiceFactory(helper);
+			return rsapiServiceFactory.Create(workspaceArtifactId);
 		}
 	}
 }

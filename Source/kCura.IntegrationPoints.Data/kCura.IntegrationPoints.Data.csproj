@@ -33,6 +33,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Relativity.APIHelper, Version=10.0.85.14, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.APIHelper.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -65,6 +69,8 @@
     <Compile Include="Extensions\ObjectQueryResultSetExtensions.cs" />
     <Compile Include="Extensions\ResultSetExtensions.cs" />
     <Compile Include="Extensions\TaskExtension.cs" />
+    <Compile Include="Facades\Implementations\ObjectManagerFacade.cs" />
+    <Compile Include="Facades\IObjectManagerFacade.cs" />
     <Compile Include="Factories\Implementations\RelativityObjectManagerFactory.cs" />
     <Compile Include="Factories\IRelativityObjectManagerFactory.cs" />
     <Compile Include="Factories\IRSAPIServiceFactory.cs" />
@@ -96,10 +102,19 @@
     <Compile Include="QueryBuilders\Implementations\SourceProviderArtifactIdByGuidQueryBuilder.cs" />
     <Compile Include="QueryBuilders\ISourceProviderArtifactIdByGuidQueryBuilder.cs" />
     <Compile Include="Repositories\ApplicationRepository.cs" />
+    <Compile Include="Repositories\DTO\ArtifactRef.cs" />
+    <Compile Include="Repositories\DTO\ICaseInfoDto.cs" />
     <Compile Include="Repositories\IApplicationRepository.cs" />
+    <Compile Include="Repositories\IAuditRepository.cs" />
+    <Compile Include="Repositories\ICaseRepository.cs" />
     <Compile Include="Repositories\IFileRepository.cs" />
+    <Compile Include="Repositories\IFoundationRepositoryFactory.cs" />
+    <Compile Include="Repositories\Implementations\AuditRepository.cs" />
+    <Compile Include="Repositories\Implementations\CaseRepository.cs" />
+    <Compile Include="Repositories\Implementations\DTO\CaseInfoDto.cs" />
     <Compile Include="Repositories\Implementations\ViewFieldInfoFieldTypeExtender.cs" />
     <Compile Include="Repositories\Implementations\FileRepository.cs" />
+    <Compile Include="Repositories\Implementations\FoundationRepositoryFactory.cs" />
     <Compile Include="Repositories\Implementations\ISecretStoreHelper.cs" />
     <Compile Include="Repositories\Implementations\ProductionRepository.cs" />
     <Compile Include="Repositories\Implementations\QueryFieldLookupRepository.cs" />
@@ -208,11 +223,7 @@
     <Compile Include="IntegrationPointQuery.cs" />
     <Compile Include="IWorkspaceDBContext.cs" />
     <Compile Include="IObjectTypeQuery.cs" />
-    <Compile Include="IRSAPIService.cs">
-      <DependentUpon>IRSAPIService.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
+    <Compile Include="IRSAPIService.cs" />
     <Compile Include="Logging\SystemEventLoggingService.cs" />
     <Compile Include="Migrations\AddWebApiConfigValueMigration.cs" />
     <Compile Include="Migrations\IMigration.cs" />
@@ -234,11 +245,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resource.resx</DependentUpon>
     </Compile>
-    <Compile Include="RSAPIService.cs">
-      <DependentUpon>RSAPIService.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="GeneratedDTOs.Extended.cs">
       <DependentUpon>GeneratedDTOs.tt</DependentUpon>
     </Compile>
@@ -251,7 +257,7 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="RSAPIServiceAdminAccess.cs" />
-    <Compile Include="RSAPIServiceGetLibrary.cs" />
+    <Compile Include="RSAPIService.cs" />
     <Compile Include="SecretStore\DefaultSecretCatalogFactory.cs" />
     <Compile Include="SecretStore\ISecretCatalogFactory.cs" />
     <Compile Include="SecretStore\ISecretManager.cs" />
@@ -278,15 +284,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="IRSAPIService.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>IRSAPIService.cs</LastGenOutput>
-    </None>
     <None Include="paket.references" />
-    <None Include="RSAPIService.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>RSAPIService.cs</LastGenOutput>
-    </None>
     <None Include="GeneratedDTOs.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>GeneratedDTOs.cs</LastGenOutput>
@@ -326,6 +324,10 @@
     <Content Include="Resources\UpdateJobStatistics.sql" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Common\kCura.IntegrationPoints.Common.csproj">
+      <Project>{32bcb03b-4980-4434-9392-f72334e6e348}</Project>
+      <Name>kCura.IntegrationPoints.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Config\kCura.IntegrationPoints.Config.csproj">
       <Project>{def928b5-37ce-4bf3-b663-f0b8912c9c3f}</Project>
       <Name>kCura.IntegrationPoints.Config</Name>

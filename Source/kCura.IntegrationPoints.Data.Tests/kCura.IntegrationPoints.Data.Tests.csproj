@@ -46,6 +46,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="kCura, Version=10.1.33.3, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\kCura\lib\net462\kCura.dll</HintPath>
+    </Reference>
     <Reference Include="Relativity.Core, Version=10.0.85.14, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Core.dll</HintPath>
@@ -68,6 +72,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
       <Project>{ad3e5540-fa39-4983-8a23-fcc756d51a32}</Project>
       <Name>kCura.IntegrationPoint.Tests.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Common\kCura.IntegrationPoints.Common.csproj">
+      <Project>{32bcb03b-4980-4434-9392-f72334e6e348}</Project>
+      <Name>kCura.IntegrationPoints.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Config\kCura.IntegrationPoints.Config.csproj">
       <Project>{def928b5-37ce-4bf3-b663-f0b8912c9c3f}</Project>
@@ -115,7 +123,10 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Extensions\StringExtensionsTests.cs" />
+    <Compile Include="Facades\Implementations\ObjectManagerFacadeTests.cs" />
     <Compile Include="Helpers\MatchHelper.cs" />
+    <Compile Include="Repositories\AuditRepositoryTests.cs" />
+    <Compile Include="Repositories\CaseRepositoryTests.cs" />
     <Compile Include="Repositories\KeplerInstanceSettingRepositoryTests.cs" />
     <Compile Include="Repositories\ProductionRepositoryTests.cs" />
     <Compile Include="Repositories\KeplerKeywordSearchRepositoryTests.cs" />
@@ -137,7 +148,6 @@
     <Compile Include="RelativityReaderBaseTests.cs" />
     <Compile Include="Repositories\JobHistoryErrorRepositoryTests.cs" />
     <Compile Include="Repositories\PermissionRepositoryTests.cs" />
-    <Compile Include="Repositories\QueueRepositoryTests.cs" />
     <Compile Include="Repositories\KeplerArtifactGuidRepositoryTests.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -151,7 +161,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent></PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\..\.paket\paket.targets" />
   <ItemGroup>
@@ -159,6 +170,25 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="System.Xml.Linq">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="FluentAssertions">
+          <HintPath>..\..\packages\FluentAssertions\lib\net45\FluentAssertions.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="FluentAssertions.Core">
+          <HintPath>..\..\packages\FluentAssertions\lib\net45\FluentAssertions.Core.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>

@@ -1,11 +1,11 @@
-﻿using System;
-using System.Data.SqlClient;
-using System.Threading.Tasks;
-using Castle.MicroKernel.Registration;
+﻿using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
+using kCura.Apps.Common.Data;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Contracts;
+using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
@@ -14,9 +14,15 @@ using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Monitoring;
+using kCura.IntegrationPoints.Core.Monitoring.JobLifetime;
 using kCura.IntegrationPoints.Core.Queries;
+using kCura.IntegrationPoints.Core.Serialization;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.DestinationTypes;
+using kCura.IntegrationPoints.Core.Services.Domain;
+using kCura.IntegrationPoints.Core.Services.EntityManager;
+using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Keywords;
@@ -31,33 +37,25 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
+using kCura.IntegrationPoints.Data.RSAPIClient;
+using kCura.IntegrationPoints.Data.SecretStore;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
+using kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations;
 using Relativity.API;
 using SystemInterface.IO;
-using kCura.Apps.Common.Data;
-using kCura.IntegrationPoints.Config;
-using kCura.IntegrationPoints.Core.Authentication;
-using kCura.IntegrationPoints.Core.Monitoring;
-using kCura.IntegrationPoints.Core.Monitoring.JobLifetime;
-using kCura.IntegrationPoints.Core.Monitoring.Sinks.Aggregated;
-using kCura.IntegrationPoints.Core.Serialization;
-using kCura.IntegrationPoints.Core.Services.Domain;
-using kCura.IntegrationPoints.Core.Services.EntityManager;
-using kCura.IntegrationPoints.Core.Services.Exporter;
-using kCura.IntegrationPoints.Core.Toggles;
-using kCura.IntegrationPoints.Data.RSAPIClient;
-using kCura.IntegrationPoints.Data.SecretStore;
-using kCura.IntegrationPoints.Domain.Authentication;
-using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
-using kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations;
 using Relativity.DataTransfer.MessageService;
 using Relativity.Telemetry.APM;
 using Relativity.Toggles;
 using Relativity.Toggles.Providers;
+using System;
+using System.Data.SqlClient;
+using System.Threading.Tasks;
 using IFederatedInstanceManager = kCura.IntegrationPoints.Domain.Managers.IFederatedInstanceManager;
 
 namespace kCura.IntegrationPoints.Core.Installers
@@ -89,34 +87,19 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IWindsorContainerSetup>().ImplementedBy<WindsorContainerSetup>().LifestyleSingleton());
 			container.Register(Component.For<IProviderFactoryLifecycleStrategy>().ImplementedBy<ProviderFactoryLifecycleStrategy>());
 			container.Register(Component.For<ProviderFactoryVendor>().ImplementedBy<ProviderFactoryVendor>().LifestyleSingleton());
-
-			if (toggleProvider.IsEnabled<UseOldProviderCreationLogic>())
-			{
-				container.Register(Component.For<IDataProviderFactory>().ImplementedBy<AppDomainFactory>().LifestyleTransient());
-			}
-			else
-			{
-				container.Register(Component.For<IDataProviderFactory>().ImplementedBy<DataProviderBuilder>().LifestyleSingleton());
-			}
+			container.Register(Component.For<IDataProviderFactory>().ImplementedBy<DataProviderBuilder>().LifestyleSingleton());
 			container.Register(Component.For<IDomainHelper>().ImplementedBy<DomainHelper>().LifestyleSingleton());
 			container.Register(Component.For<IJobManager>().ImplementedBy<AgentJobManager>().LifestyleTransient());
 			container.Register(Component.For<ICaseServiceContext>().ImplementedBy<CaseServiceContext>().LifestyleTransient());
 			container.Register(Component.For<IDateTimeHelper>().ImplementedBy<DateTimeUtcHelper>());
-
+			container.Register(Component.For<IRelativityObjectManagerFactory>().ImplementedBy<RelativityObjectManagerFactory>().LifestyleTransient());
 			container.Register(Component.For<IRelativityObjectManager>()
 				.UsingFactoryMethod(x =>
-				{
-					IServiceContextHelper contextHelper = x.Resolve<IServiceContextHelper>();
-					IHelper helper = x.Resolve<IHelper>();
-					return new RelativityObjectManager(contextHelper.WorkspaceID,
-						helper,
-						new SecretStoreHelper(
-							contextHelper.WorkspaceID,
-							helper,
-							new SecretManager(contextHelper.WorkspaceID),
-							new DefaultSecretCatalogFactory()));
-				}).LifestyleTransient());
-			container.Register(Component.For<IRelativityObjectManagerFactory>().ImplementedBy<RelativityObjectManagerFactory>().LifestyleTransient());
+			{
+				int workspaceId = x.Resolve<IServiceContextHelper>().WorkspaceID;
+				IRelativityObjectManagerFactory factory = x.Resolve<IRelativityObjectManagerFactory>();
+				return factory.CreateRelativityObjectManager(workspaceId);
+			}).LifestyleTransient());
 			container.Register(Component.For<IEddsServiceContext>().ImplementedBy<EddsServiceContext>().LifestyleTransient());
 			container.Register(Component.For<IDataSynchronizer>().ImplementedBy<RdoSynchronizer>().Named(typeof(RdoSynchronizer).AssemblyQualifiedName).LifestyleTransient());
 			container.Register(Component.For<IDataSynchronizer>().ImplementedBy<RdoEntitySynchronizer>().Named(typeof(RdoEntitySynchronizer).AssemblyQualifiedName).LifestyleTransient());
@@ -236,7 +219,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 
 		private SqlServerToggleProvider CreateSqlServerToggleProvider(IHelper helper)
 		{
-			return new SqlServerToggleProvider(() => ConnectionFactory(helper), () => AsyncConnectionFactory(helper)){ CacheEnabled = true };
+			return new SqlServerToggleProvider(() => ConnectionFactory(helper), () => AsyncConnectionFactory(helper)) { CacheEnabled = true };
 		}
 
 		private async Task<SqlConnection> AsyncConnectionFactory(IHelper helper)

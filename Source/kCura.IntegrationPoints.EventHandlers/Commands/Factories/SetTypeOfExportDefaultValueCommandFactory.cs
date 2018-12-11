@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using kCura.Apps.Common.Data;
+﻿using kCura.Apps.Common.Data;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Authentication;
@@ -19,6 +17,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Queries;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Domain.Managers;
@@ -28,6 +27,8 @@ using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.Services;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
+using System;
+using System.Linq;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 {
@@ -59,8 +60,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 			IFederatedInstanceManager federatedInstanceManager = new FederatedInstanceManager(repositoryFactory);
 			IWorkspaceManager workspaceManager = new WorkspaceManager(repositoryFactory);
 			IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, helper, integrationPointSerializer, jobTracker);
-			IRSAPIService rsapiService = new RSAPIService(helper, workspaceArtifactId);
-			IProviderTypeService providerTypeService = new ProviderTypeService(rsapiService);
+			IRelativityObjectManager objectManager =
+				new RelativityObjectManagerFactory(helper).CreateRelativityObjectManager(workspaceArtifactId);
+			IProviderTypeService providerTypeService = new ProviderTypeService(objectManager);
 			IMessageService messageService = new MessageService();
 
 			IJobHistoryService jobHistoryService = new JobHistoryService(caseServiceContext, federatedInstanceManager, workspaceManager, helper, integrationPointSerializer, providerTypeService, messageService);
@@ -92,7 +94,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 			ISourceConfigurationTypeOfExportUpdater sourceConfigurationTypeOfExpertUpdater = new SourceConfigurationTypeOfExportUpdater(providerTypeService);
 
 			return new SetTypeOfExportDefaultValueCommand(integrationPointService, integrationPointProfileService,
-				rsapiService.RelativityObjectManager, sourceConfigurationTypeOfExpertUpdater);
+				objectManager, sourceConfigurationTypeOfExpertUpdater);
 		}
 	}
 }

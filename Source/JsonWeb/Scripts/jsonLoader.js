@@ -4,7 +4,6 @@
 	
 	var message = IP.frameMessaging();
 	var pageModel = {};
-	var self = this;
 	message.subscribe('submit', function () {
 		
 		var localModel = JSON.stringify(ko.toJS(pageModel));
@@ -13,7 +12,6 @@
 
 	});
 	var viewModel = function (model) {
-		var self = this;
 		this.fieldLocation = ko.observable(model.fieldLocation);
 		this.dataLocation = ko.observable(model.dataLocation);
 

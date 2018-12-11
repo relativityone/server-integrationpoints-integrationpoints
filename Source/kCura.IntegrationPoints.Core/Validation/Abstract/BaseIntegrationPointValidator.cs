@@ -21,8 +21,8 @@ namespace kCura.IntegrationPoints.Core.Validation.Abstract
 
 		public static string GetProviderValidatorKey(string sourceProviderId, string destinationProviderId)
 		{
-			sourceProviderId = sourceProviderId.ToUpper();
-			destinationProviderId = destinationProviderId.ToUpper();
+			sourceProviderId = sourceProviderId.ToUpperInvariant();
+			destinationProviderId = destinationProviderId.ToUpperInvariant();
 
 			return $"{sourceProviderId}+{destinationProviderId}";
 		}

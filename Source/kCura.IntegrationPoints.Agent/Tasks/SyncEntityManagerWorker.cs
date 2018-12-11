@@ -21,7 +21,6 @@ using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
-using kCura.IntegrationPoints.Injection;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
@@ -76,17 +75,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			try
 			{
 				LogExecuteTaskStart(job);
-
-				InjectionManager.Instance.Evaluate("640E9695-AB99-4763-ADC5-03E1252277F7");
-
+				
 				//get all job parameters
 				EntityManagerJobParameters jobParameters = GetParameters(job);
 				SetIntegrationPoint(job);
 				SetJobHistory();
 				_workspaceArtifactId = job.WorkspaceID;
-
-				InjectionManager.Instance.Evaluate("CB070ADB-8912-4B61-99B0-3321C0670FC6");
-
+				
 				//check if all tasks are done for this batch yet
 				bool IsPrimaryBatchWorkComplete = _managerQueueService.AreAllTasksOfTheBatchDone(job, new[] { TaskType.SyncEntityManagerWorker.ToString() });
 				if (!IsPrimaryBatchWorkComplete)

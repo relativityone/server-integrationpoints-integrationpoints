@@ -2,6 +2,7 @@
 using System.Net;
 using System.Web.Mvc;
 using kCura.IntegrationPoints.Web.Attributes;
+using kCura.IntegrationPoints.Web.Services;
 
 namespace kCura.IntegrationPoints.Web.Controllers
 {

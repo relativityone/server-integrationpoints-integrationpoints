@@ -1,24 +1,23 @@
 ﻿using kCura.EDDS.WebAPI.AuditManagerBase;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.WinEDDS.Service.Export;
-using Relativity.Core;
-using Relativity.Core.Service;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 {
 	public class CoreAuditManager : IAuditManager
 	{
-		private readonly BaseServiceContext _baseServiceContext;
+		private readonly IRepositoryFactory _repositoryFactory;
 
-		public CoreAuditManager(BaseServiceContext baseServiceContext)
+		public CoreAuditManager(IRepositoryFactory repositoryFactory)
 		{
-			_baseServiceContext = baseServiceContext;
+			_repositoryFactory = repositoryFactory;
 		}
 
 		public bool AuditExport(int appID, bool isFatalError, ExportStatistics exportStats)
 		{
-			_baseServiceContext.AppArtifactID = appID;
-			var massExportManager = new MassExportManager();
-			return massExportManager.AuditExport(_baseServiceContext, isFatalError, exportStats.ToExportStatistics());
+			IAuditRepository auditRepository = _repositoryFactory.GetAuditRepository(appID, exportStats.DataSourceArtifactID);
+			return auditRepository.AuditExport(exportStats.ToFoundationExportStatistics());
 		}
 	}
 }

@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -23,7 +24,6 @@ using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
-using kCura.IntegrationPoints.Injection;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
@@ -184,22 +184,20 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			try
 			{
 				LogExecuteTaskStart(job);
-
-				InjectionManager.Instance.Evaluate("640E9695-AB99-4763-ADC5-03E1252277F7");
-
+				
 				SetIntegrationPoint(job);
+				
+				SourceConfiguration sourceConfiguration = Serializer.Deserialize<SourceConfiguration>(IntegrationPoint.SourceConfiguration);
+				ImportSettings importSettings = Serializer.Deserialize<ImportSettings>(IntegrationPoint.DestinationConfiguration);
 
-				SetupIntegrationPointsConfigurationForStatisticsService(IntegrationPoint);
-
+				_statisticsService?.SetIntegrationPointConfiguration(importSettings, sourceConfiguration);
 				List<string> entryIDs = GetEntryIDs(job);
 				SetJobHistory();
 
 				JobStopManager = ManagerFactory.CreateJobStopManager(JobService, JobHistoryService, BatchInstance, job.JobId,
 					_isStoppable);
 				JobHistoryErrorService.JobStopManager = JobStopManager;
-
-				InjectionManager.Instance.Evaluate("CB070ADB-8912-4B61-99B0-3321C0670FC6");
-
+				
 				if (!IntegrationPoint.SourceProvider.HasValue)
 				{
 					LogUnknownSourceProvider(job);
@@ -216,8 +214,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 				ExecuteImport(fieldMap, new DataSourceProviderConfiguration(IntegrationPoint.SourceConfiguration, IntegrationPoint.SecuredConfiguration), 
 					IntegrationPoint.DestinationConfiguration, entryIDs, SourceProvider, DestinationProvider, job);
-
-				InjectErrors();
+				
 				LogExecuteTaskSuccesfulEnd(job);
 			}
 			catch (OperationCanceledException e)
@@ -379,53 +376,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 		}
 
-		private void InjectErrors()
-		{
-			try
-			{
-				InjectionManager.Instance.Evaluate("DFE4D63C-3A6A-49C2-A80D-25CA60F2B31C");
-			}
-			catch (Exception ex)
-			{
-				JobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, ex);
-				if (ex is IntegrationPointsException) // we want to rethrow, so it can be added to error tab if necessary
-				{
-					throw;
-				}
-			}
-
-			try
-			{
-				InjectionManager.Instance.Evaluate("40af620b-af2e-4b50-9f62-870654819df6");
-			}
-			catch (Exception ex)
-			{
-				JobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorItem, "MyUniqueIdentifier", ex.Message, ex.StackTrace);
-			}
-		}
-
-		private void SetupIntegrationPointsConfigurationForStatisticsService(IntegrationPoint ip)
-		{
-			try
-			{
-				SourceConfiguration sourceConfiguration = Serializer.Deserialize<SourceConfiguration>(ip?.SourceConfiguration);
-				ImportSettings importSettings = Serializer.Deserialize<ImportSettings>(ip?.DestinationConfiguration);
-				_statisticsService?.SetIntegrationPointConfiguration(importSettings, sourceConfiguration);
-			}
-			catch (Exception ex)
-			{
-				LogSetupIntegrationPointsConfigurationForStatisticsServiceError(ip, ex);
-			}
-		}
-
 		#region Logging
-
-		private void LogSetupIntegrationPointsConfigurationForStatisticsServiceError(IntegrationPoint ip, Exception ex)
-		{
-			string msg =
-				"Failed to set up integration point configuration for statistics service. SourceConfiguration: {sourceConfiguration}. DestinationConfiguration: {destinationConfiguration}";
-			_logger.LogWarning(ex, msg, ip?.SourceConfiguration, ip?.DestinationConfiguration);
-		}
 
 		private void LogExecutingTaskError(Job job, Exception ex)
 		{

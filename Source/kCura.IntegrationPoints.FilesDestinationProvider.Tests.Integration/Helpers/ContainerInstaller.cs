@@ -17,6 +17,8 @@ using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers.FileNaming;
@@ -78,7 +80,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 			windsorContainer.Register(Component.For<ISerializer>().Instance(Substitute.For<ISerializer>()).LifestyleTransient());
 			windsorContainer.Register(Component.For<ITokenProvider>().Instance(Substitute.For<ITokenProvider>()).LifestyleTransient());
 			windsorContainer.Register(Component.For<IFileNameProvidersDictionaryBuilder>().ImplementedBy<FileNameProvidersDictionaryBuilder>().LifestyleTransient());
-
+			windsorContainer.Register(Component.For<IRepositoryFactory>().ImplementedBy<RepositoryFactory>());
 			return windsorContainer;
 		}
 

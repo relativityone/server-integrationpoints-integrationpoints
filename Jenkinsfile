@@ -29,6 +29,13 @@ def sut = null
 def nightlyJobName = "IntegrationPointsNightly"
 def relativityBuildVersion = ""
 def relativityBranch = params.relativityBranch ?: env.BRANCH_NAME
+// *********
+// IMPORTANT
+// *********
+// Set variable below to the branch name, when you create new release branch!!!
+// This should be changed on the release branch
+def relativityBranchFallback = "develop"
+
 // When RAID stage fails, verify if newer versions of cookboos exist
 def ripCookbooks = '"relativity:= 4.1.12,role-testvm:= 3.12.0,role-ci:= 1.3.2,sql:= 2.4.1,servicebus:= 1.0.0"'
 
@@ -139,7 +146,7 @@ timestamps
 								registerEvent(this, session_id, 'Talos_Provision_test_CD', 'PASS', '-c', "${sut.name}.${sut.domain}", profile, event_hash)
 								if (installing_relativity)
 								{
-									(relativityBuildVersion, relativityBranch) = getNewBranchAndVersion(relativityBranch, params.relativityBuildVersion, params.relativityBuildType, session_id)
+									(relativityBuildVersion, relativityBranch) = getNewBranchAndVersion(relativityBranchFallback, relativityBranch, params.relativityBuildVersion, params.relativityBuildType, session_id)
 									echo "Installing Relativity, branch: $relativityBranch, version: $relativityBuildVersion, type: $params.relativityBuildType"
 									sendVersionToElastic(this, "Relativity", relativityBranch, relativityBuildVersion, params.relativityBuildType, session_id)
 								}
@@ -395,7 +402,7 @@ def testingVMsAreRequired()
     return !params.skipIntegrationTests || !params.skipUITests
 }
 
-def getNewBranchAndVersion(String relativityBranch, String paramRelativityBuildVersion, String paramRelativityBuildType, String sessionId)
+def getNewBranchAndVersion(String relativityBranchFallback, String relativityBranch, String paramRelativityBuildVersion, String paramRelativityBuildType, String sessionId)
 {
 	def branch = relativityBranch
 	def buildVersion = ''
@@ -405,8 +412,8 @@ def getNewBranchAndVersion(String relativityBranch, String paramRelativityBuildV
 	}
 	catch (any)
 	{
-		branch = "release-10.0-larkspur"
-		echo "Changing Relativity branch to $branch"
+		branch = relativityBranchFallback
+		echo "Changing Relativity branch to fallback: $branch"
 		buildVersion = getBuildArtifactsPath(this, "Relativity", branch, paramRelativityBuildVersion, paramRelativityBuildType, sessionId)
 	}
 	if (paramRelativityBuildVersion && !buildVersion)

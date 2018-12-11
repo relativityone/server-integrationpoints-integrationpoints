@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Castle.MicroKernel.Registration;
+﻿using Castle.MicroKernel.Registration;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoint.Tests.Core.Models;
@@ -27,9 +20,16 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.Core;
 using Relativity.Core.Service;
-using Relativity.Services.Agent;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.ResourceServer;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Threading.Tasks;
+using kCura.IntegrationPoints.Web.Services;
+using Component = Castle.MicroKernel.Registration.Component;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
 {
@@ -37,6 +37,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 	public abstract class SourceProviderTemplate : IntegrationTestBase
 	{
 		protected bool CreateAgent { get; set; } = true;
+		protected bool CreateWorkspace { get; set; } = true;
 
 		private readonly string _workspaceName;
 		private readonly string _workspaceTemplate;
@@ -58,46 +59,53 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			RelativityApplicationManager = new RelativityApplicationManager(CoreContext, Helper);
 		}
 
+		/// <summary>
+		/// Use this constructor if you want to run tests versus existing workspace.
+		/// </summary>
+		/// <param name="workspaceId">Artifact ID of existing workspace.</param>
+		protected SourceProviderTemplate(int workspaceId)
+		{
+			WorkspaceArtifactId = workspaceId;
+
+			CreateWorkspace = false;
+			CoreContext = GetBaseServiceContext(-1);
+			RelativityApplicationManager = new RelativityApplicationManager(CoreContext, Helper);
+		}
+
 		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
-			try
+
+			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
+
+			if (CreateWorkspace)
 			{
-				Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
 				WorkspaceArtifactId = Workspace.CreateWorkspace(_workspaceName, _workspaceTemplate);
-
-				Install();
-
-				Task.Run(async () => await SetupAsync()).Wait();
-
-				CaseContext = Container.Resolve<ICaseServiceContext>();
-				SourceProviders = CaseContext.RsapiService.RelativityObjectManager.Query<SourceProvider>(new QueryRequest());
-				DestinationProvider = CaseContext.RsapiService.RelativityObjectManager.Query<DestinationProvider>(new QueryRequest
-				{
-					Fields = new List<FieldRef>
-					{
-						new FieldRef { Guid = new Guid(DestinationProviderFieldGuids.Identifier) }
-					}
-				}).First(x => x.Identifier == IntegrationPoints.Core.Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID);
 			}
-			catch (Exception setupException)
+
+			Install();
+
+			Task.Run(async () => await SetupAsync()).Wait();
+
+			CaseContext = Container.Resolve<ICaseServiceContext>();
+			SourceProviders = CaseContext.RsapiService.RelativityObjectManager.Query<SourceProvider>(new QueryRequest());
+			DestinationProvider = CaseContext.RsapiService.RelativityObjectManager.Query<DestinationProvider>(new QueryRequest
 			{
-				try
+				Fields = new List<FieldRef>
 				{
-					SuiteTeardown();
+					new FieldRef { Guid = new Guid(DestinationProviderFieldGuids.Identifier) }
 				}
-				catch (Exception teardownException)
-				{
-					Exception[] exceptions = new[] { setupException, teardownException };
-					throw new AggregateException(exceptions);
-				}
-				throw;
-			}
+			}).First(x => x.Identifier == IntegrationPoints.Core.Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID);
+
 		}
 
 		public override void SuiteTeardown()
 		{
-			Workspace.DeleteWorkspace(WorkspaceArtifactId);
+			if (CreateWorkspace && WorkspaceArtifactId != 0)
+			{
+				Workspace.DeleteWorkspace(WorkspaceArtifactId);
+			}
+
 			if (_deleteAgentInTeardown)
 			{
 				Agent.DeleteAgent(AgentArtifactId);
@@ -113,6 +121,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		protected virtual void Install()
 		{
 			Container.Register(Component.For<IHelper>().UsingFactoryMethod(k => Helper, managedExternally: true));
+			Container.Register(Component.For<IAPILog>().UsingFactoryMethod(k => Helper.GetLoggerFactory().GetLogger()));
 			Container.Register(Component.For<IRsapiClientWithWorkspaceFactory>().ImplementedBy<RsapiClientWithWorkspaceFactory>().LifestyleTransient());
 			Container.Register(Component.For<IServiceContextHelper>()
 				.UsingFactoryMethod(k =>
@@ -136,7 +145,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				.LifeStyle.Transient);
 
 			Container.Register(Component.For<IWorkspaceService>().ImplementedBy<ControllerCustomPageService>().LifestyleTransient());
-			Container.Register(Component.For<IWorkspaceService>().ImplementedBy<WebAPICustomPageService>().LifestyleTransient());
+			Container.Register(Component.For<IWorkspaceService>().ImplementedBy<WebApiCustomPageService>().LifestyleTransient());
 			Container.Register(Component.For<WebClientFactory>().ImplementedBy<WebClientFactory>().LifestyleTransient());
 			Container.Register(Component.For<IRSAPIService>().Instance(new RSAPIService(Container.Resolve<IHelper>(), WorkspaceArtifactId)).LifestyleTransient());
 			Container.Register(Component.For<IExporterFactory>().ImplementedBy<ExporterFactory>());
@@ -211,39 +220,18 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			SqlParameter jobIdParam = new SqlParameter("@JobId", SqlDbType.BigInt) { Value = jobId };
 
 			Helper.GetDBContext(-1).ExecuteNonQuerySQLStatement(query, new[] { agentIdParam, jobIdParam });
-
-
 		}
 
 		protected void ControlIntegrationPointAgents(bool enable)
 		{
-			AgentTypeRef agentType = Agent.GetAgentTypeByName("Integration Points Agent");
-
-			string updateQuery = "UPDATE [Agent] SET [Enabled] = @enabledFlag, [Updated] = 1 WHERE [AgentTypeArtifactID] = @agentTypeArtifactId";
-			string monitoringQuery = "SELECT Count(*) FROM [Agent] WHERE [AgentTypeArtifactID] = @agentTypeArtifactId AND [Updated] = 1";
-
-			var enabledFlag = new SqlParameter("@enabledFlag", SqlDbType.Bit) { Value = enable };
-			var agentTypeArtifactId = new SqlParameter("@agentTypeArtifactId", SqlDbType.Int) { Value = agentType.ArtifactID };
-
-			IDBContext dbContext = Helper.GetDBContext(-1);
-
-			Console.WriteLine($"Updating Integration Point agent state. Setting Enabled = '{enable}'");
-
-			dbContext.ExecuteNonQuerySQLStatement(updateQuery, new[] { enabledFlag, agentTypeArtifactId });
-
-			int attempts = 0;
-			while (dbContext.ExecuteSqlStatementAsScalar<int>(monitoringQuery, agentTypeArtifactId) > 0)
+			if (enable)
 			{
-				if (attempts == 5)
-				{
-					throw new Exception("[INTEGRATION TESTS] Could not change state of Integration Point agent.");
-				}
-				attempts++;
-				Thread.Sleep(2000);
-				Console.WriteLine("Waiting for agent to update it's state...");
+				Agent.DisableAllAgents();
 			}
-
-			Console.WriteLine("Agent state updated (Update flag = 0 again).");
+			else
+			{
+				Agent.EnableAllAgents();
+			}
 		}
 
 		protected JobHistory CreateJobHistoryOnIntegrationPoint(int integrationPointArtifactId, Guid batchInstance, Relativity.Client.DTOs.Choice jobTypeChoice, Relativity.Client.DTOs.Choice jobStatusChoice = null, bool jobEnded = false)

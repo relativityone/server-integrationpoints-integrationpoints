@@ -19,12 +19,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
 	public class ImportApiFactory : IImportApiFactory
 	{
-		private readonly ITokenProvider _externalTokenProvider;
-		private readonly IFederatedInstanceManager _federatedInstanceManager;
-		private readonly ISystemEventLoggingService _systemEventLoggingService;
-		private readonly IAPILog _logger;
-		private readonly ISerializer _serializer;
-	    private readonly IAuthTokenGenerator _authTokenGenerator; 
+		protected readonly ITokenProvider _externalTokenProvider;
+		protected readonly IFederatedInstanceManager _federatedInstanceManager;
+		protected readonly ISystemEventLoggingService _systemEventLoggingService;
+		protected readonly IAPILog _logger;
+		protected readonly ISerializer _serializer;
+	    protected readonly IAuthTokenGenerator _authTokenGenerator; 
 
 		private const string _RELATIVITY_BEARER_USERNAME = "XxX_BearerTokenCredentials_XxX";
 
@@ -43,34 +43,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			LogImportSettings(settings);
 			IExtendedImportAPI importApi;
 			try
-			{
-				if (RelativityVersion.IsRelativityVersion93OrGreater)
-				{
-					if ((settings.RelativityUsername != null) && (settings.RelativityPassword != null))
-					{
-						LogCreatingImportApiWithPassword(settings.WebServiceURL);
-						importApi = new ExtendedImportAPI(settings.RelativityUsername, settings.RelativityPassword, settings.WebServiceURL);
-					}
-					else
-					{
-						LogCreatingImportApiWithToken(settings.WebServiceURL);
-						const string username = _RELATIVITY_BEARER_USERNAME;
-						string webServiceUrl = GetWebServiceUrl(settings);
-						string token = GetToken(settings);
-						
-						importApi = new ExtendedImportAPI(username, token, webServiceUrl);
-					}
-					// ExtendedImportAPI extends ImportAPI so the following cast is acceptable
-					Relativity.ImportAPI.ImportAPI concreteImplementation = (Relativity.ImportAPI.ImportAPI)importApi;
-					concreteImplementation.ExecutionSource = ExecutionSourceEnum.RIP;
-				}
-				else
-				{
-					LogCreatingImportApiForOldRelativity(settings.WebServiceURL);
-					importApi = new ExtendedImportAPI(settings.WebServiceURL);
-				}
-			}
-			catch (Exception ex)
+            {
+                importApi = CreateExtendedImportAPIForSettings(settings);
+                // ExtendedImportAPI extends ImportAPI so the following cast is acceptable
+                Relativity.ImportAPI.ImportAPI concreteImplementation = (Relativity.ImportAPI.ImportAPI)importApi;
+                concreteImplementation.ExecutionSource = ExecutionSourceEnum.RIP;
+            }
+            catch (Exception ex)
 			{
 				if (string.Equals(ex.Message, "Login failed."))
 				{
@@ -83,7 +62,41 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			return importApi;
 		}
 
-		private string GetToken(ImportSettings settings)
+        protected IExtendedImportAPI CreateExtendedImportAPIForSettings(ImportSettings settings)
+        {
+            string username;
+            string webServiceUrl;
+            string token;
+
+            if (RelativityCredentialsProvided(settings))
+            {
+                LogCreatingImportApiWithPassword(settings.WebServiceURL);
+                username = settings.RelativityUsername;
+                token = settings.RelativityPassword;
+                webServiceUrl = settings.WebServiceURL;
+            }
+            else
+            {
+                LogCreatingImportApiWithToken(settings.WebServiceURL);
+                username = _RELATIVITY_BEARER_USERNAME;
+                webServiceUrl = GetWebServiceUrl(settings);
+                token = GetToken(settings);
+            }
+
+            return CreateExtendedImportAPI(username, token, webServiceUrl);
+        }
+
+	    protected virtual IExtendedImportAPI CreateExtendedImportAPI(string username, string token, string webServiceUrl)
+        {
+            return new ExtendedImportAPI(username, token, webServiceUrl);
+        }
+
+	    private bool RelativityCredentialsProvided(ImportSettings settings)
+	    {
+	        return settings.RelativityUsername != null && settings.RelativityPassword != null;
+	    }
+
+	    private string GetToken(ImportSettings settings)
 		{
 			if (settings.FederatedInstanceArtifactId == null)
 			{
@@ -98,7 +111,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				new Uri(federatedInstance.InstanceUrl));
 		}
 
-		private string GetWebServiceUrl(ImportSettings settings)
+	    private string GetWebServiceUrl(ImportSettings settings)
 		{
 			if (settings.FederatedInstanceArtifactId == null)
 			{
@@ -140,11 +153,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		private void LogCreatingImportApiWithToken(string url)
 		{
 			_logger.LogDebug("Attempting to create ExtendedImportAPI ({URL}) using token for Relativity 9.3 or greater.", url);
-		}
-
-		private void LogCreatingImportApiForOldRelativity(string url)
-		{
-			_logger.LogDebug("Attempting to create ExtendedImportAPI ({URL}) for old Relativity using only WebServiceURL.", url);
 		}
 
 		private void LogCreatingImportApiError(Exception ex, string url)

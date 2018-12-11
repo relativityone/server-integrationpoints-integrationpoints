@@ -1,63 +1,71 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Web.Providers;
+using kCura.IntegrationPoints.Web.Services;
 using Relativity.API;
-using IDBContext = Relativity.API.IDBContext;
 
 namespace kCura.IntegrationPoints.Web
 {
 	public class ServiceContextHelperForWeb : IServiceContextHelper
 	{
-		private const string USER_HEADER_VALUE = "X-IP-USERID";
-		private const string CASEUSER_HEADER_VALUE = "X-IP-CASEUSERID";
-		private ISessionService _sessionService;
-		public ServiceContextHelperForWeb(ICPHelper helper, IEnumerable<IWorkspaceService> services, ISessionService sessionService)
+		private const string _USER_HEADER_VALUE = "X-IP-USERID";
+		private const string _CASE_USER_HEADER_VALUE = "X-IP-CASEUSERID";
+
+		private readonly ISessionService _sessionService;
+		private readonly ICPHelper _helper;
+		private readonly IWorkspaceIdProvider _workspaceIdProvider;
+
+		public ServiceContextHelperForWeb(ICPHelper helper, IWorkspaceIdProvider workspaceIdProvider, ISessionService sessionService)
 		{
-			this.helper = helper;
-			this.customPageServices = services;
+			_helper = helper;
+			_workspaceIdProvider = workspaceIdProvider;
 			_sessionService = sessionService;
 		}
 
-		private ICPHelper helper { get; set; }
-		private IEnumerable<IWorkspaceService> customPageServices;
-
-		private int? _workspaceID;
+		private int? _workspaceId;
 		public int WorkspaceID
 		{
 			get
 			{
-				if (!_workspaceID.HasValue)
-					_workspaceID = customPageServices.First(x => x.GetWorkspaceID() != 0).GetWorkspaceID();
-				return _workspaceID.Value;
+				if (!_workspaceId.HasValue)
+				{
+					_workspaceId = _workspaceIdProvider.GetWorkspaceId();
+				}
+
+				return _workspaceId.Value;
 			}
-			set { _workspaceID = value; }
+			set { _workspaceId = value; }
 		}
+
 		public int GetEddsUserID()
 		{
-			var result = GetRequestNumericValueByKey(USER_HEADER_VALUE);
+			int result = GetRequestNumericValueByKey(_USER_HEADER_VALUE);
 			if (result == 0)
 			{
 				result = _sessionService.UserID;
 			}
 			return result;
 		}
+
 		public int GetWorkspaceUserID()
 		{
-			return GetRequestNumericValueByKey(CASEUSER_HEADER_VALUE);
-		}
-		public IRSAPIService GetRsapiService()
-		{
-			if (this.WorkspaceID > 0)
-				return ServiceContextFactory.CreateRSAPIService(helper, WorkspaceID);
-			else
-				return null;
+			return GetRequestNumericValueByKey(_CASE_USER_HEADER_VALUE);
 		}
 
-		public IDBContext GetDBContext(int workspaceID = -1)
+		public IRSAPIService GetRsapiService()
 		{
-			return helper.GetDBContext(workspaceID);
+			return WorkspaceID > 0 
+				? ServiceContextFactory.CreateRSAPIService(_helper, WorkspaceID) 
+				: null;
+		}
+
+		public IDBContext GetDBContext(int workspaceId = -1)
+		{
+			return _helper.GetDBContext(workspaceId);
 		}
 
 		public int GetRequestNumericValueByKey(string key)

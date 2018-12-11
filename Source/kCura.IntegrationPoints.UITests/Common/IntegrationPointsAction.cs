@@ -23,7 +23,6 @@ namespace kCura.IntegrationPoints.UITests.Common
 			Context = context;
 		}
 
-
         public ExportFirstPage SetupFirstIntegrationPointPage(GeneralPage generalPage, IntegrationPointGeneralModel model)
         {
             IntegrationPointsPage ipPage = generalPage.GoToIntegrationPointsPage();

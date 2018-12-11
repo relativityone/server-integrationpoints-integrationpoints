@@ -6,6 +6,7 @@ using kCura.IntegrationPoint.Tests.Core.Models.Import.LoadFile;
 using kCura.IntegrationPoint.Tests.Core.Models.Shared;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.UITests.BrandNew.Import.FTP;
+using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoints.UITests.Validation;
 using NUnit.Framework;
@@ -13,7 +14,8 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.UITests.Tests.FTPProvider
 {
 	[TestFixture]
-	public class ImportFromFtpTest : UiTest
+	[Category(TestCategory.IMPORT_FROM_FTP_AND_LDAP)]
+    public class ImportFromFtpTest : UiTest
 	{
 		private IRSAPIService _service;
 

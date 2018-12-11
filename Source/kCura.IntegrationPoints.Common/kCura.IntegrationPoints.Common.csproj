@@ -47,12 +47,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Constants\ExternalServiceTypes.cs" />
+    <Compile Include="Monitoring\Instrumentation\ExternalServiceInstrumentation.cs" />
+    <Compile Include="Monitoring\Instrumentation\ExternalServiceInstrumentationProviderWithoutJobContext.cs" />
+    <Compile Include="Monitoring\Instrumentation\ExternalServiceLogsInstrumentation.cs" />
+    <Compile Include="Monitoring\Instrumentation\ExternalServiceSimpleInstrumentation.cs" />
+    <Compile Include="Monitoring\Instrumentation\IExternalServiceSimpleInstrumentation.cs" />
+    <Compile Include="Monitoring\Instrumentation\IExternalServiceInstrumentationProvider.cs" />
+    <Compile Include="Monitoring\Instrumentation\Model\ExternalCallCompletedMessage.cs" />
+    <Compile Include="Monitoring\Instrumentation\Model\InstrumentationJobContext.cs" />
+    <Compile Include="Monitoring\Instrumentation\Model\InstrumentationServiceCallContext.cs" />
+    <Compile Include="Monitoring\UnitsOfMeasureConstants.cs" />
     <Content Include="LICENSE.txt">
       <Paket>True</Paket>
     </Content>
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Monitoring\Instrumentation\IExternalServiceInstrumentation.cs" />
+    <Compile Include="Monitoring\Instrumentation\IExternalServiceInstrumentationStarted.cs" />
     <Compile Include="Monitoring\Messages\JobStatisticsMessage.cs" />
     <Compile Include="Monitoring\Messages\JobLifetime\JobCompletedMessage.cs" />
     <Compile Include="Monitoring\Messages\JobLifetime\JobFailedMessage.cs" />
@@ -801,16 +814,6 @@
         </Reference>
         <Reference Include="Relativity.Telemetry.MetricsCollection.Factory">
           <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Telemetry.MetricsCollection.Factory.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.Telemetry.MetricsCollection.Service.Store">
-          <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Telemetry.MetricsCollection.Service.Store.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.Telemetry.Toggles">
-          <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Telemetry.Toggles.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

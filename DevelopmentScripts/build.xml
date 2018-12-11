@@ -71,6 +71,11 @@
           <Platforms>
             <Platform>x64</Platform>
           </Platforms>
+        </Project> 
+		    <Project path="Source\kCura.IntegrationPoints.PerformanceTestingFramework\kCura.IntegrationPoints.PerformanceTestingFramework.csproj">
+          <Platforms>
+            <Platform>x64</Platform>
+          </Platforms>
         </Project>
         <Project path="Source\kCura.IntegrationPoints.Data.Tests.Integration\kCura.IntegrationPoints.Data.Tests.Integration.csproj">
           <Platforms>
@@ -168,11 +173,6 @@
           </Platforms>
         </Project>
         <Project path="Source\kCura.IntegrationPoints.FtpProvider.Parser.Tests\kCura.IntegrationPoints.FtpProvider.Parser.Tests.csproj">
-          <Platforms>
-            <Platform>x64</Platform>
-          </Platforms>
-        </Project>
-        <Project path="Source\kCura.IntegrationPoints.Injection\kCura.IntegrationPoints.Injection.csproj">
           <Platforms>
             <Platform>x64</Platform>
           </Platforms>
@@ -492,7 +492,6 @@
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.FilesDestinationProvider.Core.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.ImportProvider.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.ImportProvider.Parser.dll</Assembly>
-          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Injection.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.LDAPProvider.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.Services.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.Services.Interfaces.Private.dll</Assembly>

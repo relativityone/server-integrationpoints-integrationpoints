@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.IntegrationPoints.Common.Monitoring;
 using kCura.IntegrationPoints.Common.Monitoring.Messages;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Monitoring;
@@ -127,7 +128,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 			{
 				Provider = providerName,
 				CorrelationID = _historyErrorService.JobHistory.BatchInstance,
-				UnitOfMeasure = "Byte(s)",
+				UnitOfMeasure = UnitsOfMeasureConstants.BYTES,
 				WorkspaceID = _caseServiceContext.WorkspaceID,
 				JobID = _historyErrorService.JobHistory.JobID,
 				BytesPerSecond = bytesPerSecond
@@ -140,7 +141,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 			string provider = GetProviderName();
 			m.Provider = provider;
 			m.CorrelationID = _historyErrorService.JobHistory.BatchInstance;
-			m.UnitOfMeasure = "Byte(s)";
+			m.UnitOfMeasure = UnitsOfMeasureConstants.BYTES;
 			m.JobID = _historyErrorService.JobHistory.JobID;
 			m.WorkspaceID = _caseServiceContext.WorkspaceID;
 		}

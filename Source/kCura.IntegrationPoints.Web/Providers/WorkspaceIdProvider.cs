@@ -1,21 +1,32 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Web.Providers.Exceptions;
 
 namespace kCura.IntegrationPoints.Web.Providers
 {
 	public class WorkspaceIdProvider : IWorkspaceIdProvider
 	{
-		private readonly IEnumerable<IWorkspaceService> _customPageServices;
+		private const int _WORKSPACE_NOT_FOUND_ID = 0;
+		private readonly IEnumerable<IWorkspaceService> _workspaceServices;
 
-		public WorkspaceIdProvider(IEnumerable<IWorkspaceService> services)
+		public WorkspaceIdProvider(IEnumerable<IWorkspaceService> workspaceServices)
 		{
-			_customPageServices = services;
+			_workspaceServices = workspaceServices;
 		}
 
 		public int GetWorkspaceId()
 		{
-			return _customPageServices.First(x => x.GetWorkspaceID() != 0).GetWorkspaceID();
+			foreach (var workspaceService in _workspaceServices)
+			{
+				int workspaceId = workspaceService.GetWorkspaceID();
+
+				if (workspaceId != _WORKSPACE_NOT_FOUND_ID)
+				{
+					return workspaceId;
+				}
+			}
+
+			throw new WorkspaceIdNotFoundException();
 		}
 	}
 }

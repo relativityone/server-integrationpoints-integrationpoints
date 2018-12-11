@@ -683,7 +683,8 @@ ko.validation.insertValidationMessage = function (element) {
 				$.each(mapping, function () {
 					if (this.fieldMapType == mapTypes.native && artifactTypeId == 10) {
 					    self.importNativeFile("true");
-					    self.importNativeFileCopyMode(self.importNativeFileCopyMode() === "CopyFiles" || self.importNativeFileCopyMode() === "SetFileLinks" ? self.importNativeFileCopyMode() : "CopyFiles");
+                        self.importNativeFileCopyMode(self.importNativeFileCopyMode() === "CopyFiles" ||
+                            self.importNativeFileCopyMode() === "SetFileLinks" ? self.importNativeFileCopyMode() : "CopyFiles");
 						self.nativeFilePathValue(this.sourceField.displayName);
 						return false;
 					}
@@ -912,7 +913,7 @@ ko.validation.insertValidationMessage = function (element) {
 				LongTextColumnThatContainsPathToFullText: model.LongTextColumnThatContainsPathToFullText,
 				ExtractedTextFieldContainsFilePath: model.ExtractedTextFieldContainsFilePath,
 				ExtractedTextFileEncoding: model.ExtractedTextFileEncoding
-			} || '';
+			};
 		}
 
 		var stepCache = {};
@@ -1107,17 +1108,6 @@ ko.validation.insertValidationMessage = function (element) {
 					}
 
 					AddFolderPathInfoToMapping(map);
-
-					if (this.model.ExtractedTextFieldContainsFilePath() == 'true') {
-						var longTextField = "";
-						var longTextFields = this.model.MappedLongTextFields();
-						for (var j = 0; j < longTextFields.length; j++) {
-							if (longTextFields[j].displayName === this.model.LongTextColumnThatContainsPathToFullText()) {
-								longTextField = longTextFields[j];
-								break;
-							}
-						}
-					}
 
 					_destination.ImportOverwriteMode = ko.toJS(this.model.SelectedOverwrite).replace('/', '').replace(' ', '');
 					_destination.importNativeFile = this.model.importNativeFile();

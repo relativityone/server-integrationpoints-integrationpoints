@@ -343,7 +343,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			_logger.LogDebug("Initializing Import Job completed.");
 		}
 
-		private void WaitUntilTheJobIsDone()
+		protected virtual void WaitUntilTheJobIsDone()
 		{
 			const int waitDuration = 1000;
 
@@ -360,7 +360,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			while (!isJobDone);
 		}
 
-		protected virtual ImportService InitializeImportService(ImportSettings settings, Dictionary<string, int> importFieldMap, NativeFileImportService nativeFileImportService)
+		protected internal virtual IImportService InitializeImportService(ImportSettings settings, Dictionary<string, int> importFieldMap, NativeFileImportService nativeFileImportService)
 		{
 			LogInitializingImportService();
 
@@ -480,40 +480,46 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		{
 			if (settings.ImportNativeFile && settings.ImportNativeFileCopyMode == ImportNativeFileCopyModeEnum.CopyFiles)
 			{
-				nativeFileImportService.ImportNativeFiles = true;
-				FieldMap field = fieldMap.FirstOrDefault(x => x.FieldMapType == FieldMapTypeEnum.NativeFilePath);
-				nativeFileImportService.SourceFieldName = field != null ? field.SourceField.FieldIdentifier : Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD;
-				settings.NativeFilePathSourceFieldName = nativeFileImportService.DestinationFieldName;
-				settings.DisableNativeLocationValidation = DisableNativeLocationValidation;
-				settings.DisableNativeValidation = DisableNativeValidation;
-				settings.CopyFilesToDocumentRepository = true;
-
-				// NOTE :: So that the destination workspace file icons correctly display, we give the import API the file name of the document
-				settings.FileNameColumn = Constants.SPECIAL_FILE_NAME_FIELD_NAME;
+				SetupSettingsWhenImportingNatives(fieldMap, nativeFileImportService, settings, true);
 			}
 			else if (settings.ImportNativeFileCopyMode == ImportNativeFileCopyModeEnum.SetFileLinks)
 			{
-				nativeFileImportService.ImportNativeFiles = true;
-				FieldMap field = fieldMap.FirstOrDefault(x => x.FieldMapType == FieldMapTypeEnum.NativeFilePath);
-				nativeFileImportService.SourceFieldName = field != null ? field.SourceField.FieldIdentifier : Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD;
-				settings.NativeFilePathSourceFieldName = nativeFileImportService.DestinationFieldName;
-				settings.DisableNativeLocationValidation = DisableNativeLocationValidation;
-				settings.DisableNativeValidation = DisableNativeValidation;
-				settings.CopyFilesToDocumentRepository = false;
-
-				// NOTE :: So that the destination workspace file icons correctly display, we give the import API the file name of the document
-				settings.FileNameColumn = Constants.SPECIAL_FILE_NAME_FIELD_NAME;
+				SetupSettingsWhenImportingNatives(fieldMap, nativeFileImportService, settings, false);
 			}
 			else if (settings.ImportNativeFileCopyMode == ImportNativeFileCopyModeEnum.DoNotImportNativeFiles)
 			{
-				nativeFileImportService.ImportNativeFiles = false;
-				settings.DisableNativeLocationValidation = null;
-				settings.DisableNativeValidation = null;
-				settings.CopyFilesToDocumentRepository = false;
-
-				// NOTE :: Determines if we want to upload/delete native files and update "Has Native", "Supported by viewer" and "Relativity Native Type" fields
-				settings.NativeFilePathSourceFieldName = string.Empty;
+				SetupSettingsWhenNotImportingNatives(nativeFileImportService, settings);
 			}
+		}
+
+		private static void SetupSettingsWhenNotImportingNatives(NativeFileImportService nativeFileImportService, ImportSettings settings)
+		{
+			nativeFileImportService.ImportNativeFiles = false;
+			settings.DisableNativeLocationValidation = null;
+			settings.DisableNativeValidation = null;
+			settings.CopyFilesToDocumentRepository = false;
+
+			// NOTE :: Determines if we want to upload/delete native files and update "Has Native", "Supported by viewer" and "Relativity Native Type" fields
+			settings.NativeFilePathSourceFieldName = string.Empty;
+		}
+
+		private void SetupSettingsWhenImportingNatives(IEnumerable<FieldMap> fieldMap, NativeFileImportService nativeFileImportService, ImportSettings settings, bool copyFilesToRepository)
+		{
+			nativeFileImportService.ImportNativeFiles = true;
+			FieldMap field = fieldMap.FirstOrDefault(x => x.FieldMapType == FieldMapTypeEnum.NativeFilePath);
+			nativeFileImportService.SourceFieldName = field != null ? field.SourceField.FieldIdentifier : Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD;
+			settings.NativeFilePathSourceFieldName = nativeFileImportService.DestinationFieldName;
+			settings.DisableNativeLocationValidation = DisableNativeLocationValidation;
+			settings.DisableNativeValidation = DisableNativeValidation;
+			settings.CopyFilesToDocumentRepository = copyFilesToRepository;
+			settings.OIFileIdMapped = true;
+			settings.OIFileTypeColumnName = Constants.SPECIAL_FILE_TYPE_FIELD_NAME;
+			settings.SupportedByViewerColumn = Constants.SPECIAL_FILE_SUPPORTED_BY_VIEWER_FIELD_NAME;
+			settings.FileSizeMapped = true;
+			settings.FileSizeColumn = Constants.SPECIAL_NATIVE_FILE_SIZE_FIELD_NAME;
+			
+			// NOTE :: So that the destination workspace file icons correctly display, we give the import API the file name of the document
+			settings.FileNameColumn = Constants.SPECIAL_FILE_NAME_FIELD_NAME;
 		}
 
 		protected virtual Dictionary<string, int> GetSyncDataImportFieldMap(IEnumerable<FieldMap> fieldMap, ImportSettings settings)

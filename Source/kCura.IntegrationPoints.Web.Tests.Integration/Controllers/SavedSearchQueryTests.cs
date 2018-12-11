@@ -3,13 +3,9 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
-using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Web.Controllers.API;
-using kCura.IntegrationPoints.Web.Models;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.Core.Service;
@@ -19,7 +15,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Controllers
 	[TestFixture]
 	public class SavedSearchQueryTests : SourceProviderTemplate
 	{
-		private const string _CONTROLNUMBER = "Control Number";
 		private List<int> _savedSearchesArtifactIds;
 		private List<int> _userIds;
 		private List<int> _groupIds;
@@ -40,7 +35,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Controllers
 			_groupIds = new List<int>();
 			_userIds = new List<int>();
 			_savedSearchesArtifactIds = new List<int>();
-			_htmlSanitizerManage = NSubstitute.Substitute.For<IHtmlSanitizerManager>();
+			_htmlSanitizerManage = Substitute.For<IHtmlSanitizerManager>();
 			_htmlSanitizerManage.Sanitize(Arg.Any<string>()).Returns(new SanitizeResult() { CleanHTML = "Bla", HasErrors = false });
 		}
 
@@ -53,7 +48,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Controllers
 			}
 			foreach (var artifactId in _userIds)
 			{
-				IntegrationPoint.Tests.Core.User.DeleteUser(artifactId);
+				User.DeleteUser(artifactId);
 			}
 			foreach (var artifactId in _groupIds)
 			{

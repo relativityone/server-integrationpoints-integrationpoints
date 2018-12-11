@@ -70,6 +70,10 @@
     <Compile Include="Managers\WorkspaceManagerTests.cs" />
     <Compile Include="Monitoring\AggregatedJobSinkTests.cs" />
     <Compile Include="Monitoring\HealthCheckTests.cs" />
+    <Compile Include="Monitoring\Instrumentation\ExternalCallCompletedMessageTests.cs" />
+    <Compile Include="Monitoring\Instrumentation\ExternalServiceInstrumentationTests.cs" />
+    <Compile Include="Monitoring\Instrumentation\ExternalServiceSimpleInstrumentationTests.cs" />
+    <Compile Include="Monitoring\MessageSink\ExternalCalls\ExternalCallsSinkTests.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceJobRdoInitializerTests.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceRdoDocumentFieldTests.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceRdoFieldsTests.cs" />
@@ -94,7 +98,6 @@
     <Compile Include="Services\JobHistory\UnfinishedJobServiceTests.cs" />
     <Compile Include="Services\JobTrackerTests.cs" />
     <Compile Include="Services\Synchronizer\ImportProviderRdoSynchronizerFactoryTests.cs" />
-    <Compile Include="SetupAndTeardown.cs" />
     <Compile Include="JobHelper.cs" />
     <Compile Include="Services\SavedSearchesTreeServiceTests.cs" />
     <Compile Include="Helpers\ArtifactTreeCreatorTests.cs" />
@@ -205,10 +208,6 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
       <Project>{5d5b52b4-8769-431a-9743-b96f15fed5fd}</Project>
       <Name>kCura.IntegrationPoints.Domain</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.Injection\kCura.IntegrationPoints.Injection.csproj">
-      <Project>{847816a0-e354-4176-83b1-7adb93e5742f}</Project>
-      <Name>kCura.IntegrationPoints.Injection</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
       <Project>{B91CC4ED-ABF3-4409-8DF3-46A3C26EB4AA}</Project>
@@ -739,6 +738,55 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Relativity.Logging">
+          <HintPath>..\..\packages\Relativity.Logging\lib\net462\Relativity.Logging.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Logging.Interfaces">
+          <HintPath>..\..\packages\Relativity.Logging.Interfaces\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.OAuth2Client">
+          <HintPath>..\..\packages\Relativity.OAuth2Client\lib\net462\Relativity.OAuth2Client.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.OAuth2Client.IdentityModel">
+          <HintPath>..\..\packages\Relativity.OAuth2Client\lib\net462\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.OAuth2Client.Implicit">
+          <HintPath>..\..\packages\Relativity.OAuth2Client.Implicit\lib\net462\Relativity.OAuth2Client.Implicit.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Relativity.OAuth2Client.IdentityModel.Interfaces">
           <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces\lib\net462\Relativity.OAuth2Client.IdentityModel.Interfaces.dll</HintPath>
           <Private>True</Private>
@@ -1123,16 +1171,6 @@
         </Reference>
         <Reference Include="Relativity.Telemetry.MetricsCollection.Factory">
           <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Telemetry.MetricsCollection.Factory.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.Telemetry.MetricsCollection.Service.Store">
-          <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Telemetry.MetricsCollection.Service.Store.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.Telemetry.Toggles">
-          <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Telemetry.Toggles.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

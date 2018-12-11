@@ -2,7 +2,6 @@
 	try {
 		d = JSON.parse(d);
 	} catch (e) {
-		d = d;
 	}
 	this.settings = $.extend({}, d);
 	var self = this;

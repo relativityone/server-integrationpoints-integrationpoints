@@ -14,7 +14,6 @@
 							value = JSON.parse(value);
 						} catch (exp) {
 							//this is actually a string!!
-							value = value;
 						}
 					}
 					return value;
@@ -41,7 +40,6 @@
 			};
 			
 			var settings = $.extend({}, ajaxDefaults, options);
-			var container = settings.loading.container;
 
 			var beforeSend = settings.beforeSend;
 			settings.beforeSend = function (request) {

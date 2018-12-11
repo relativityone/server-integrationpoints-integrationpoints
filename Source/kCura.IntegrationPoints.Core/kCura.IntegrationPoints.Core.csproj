@@ -119,6 +119,7 @@
     <Compile Include="Helpers\LongPathDirectory.cs" />
     <Compile Include="Helpers\LongPathFile.cs" />
     <Compile Include="Helpers\Implementations\MultiObjectSavedSearchCondition.cs" />
+    <Compile Include="Installers\InfrastructureInstaller.cs" />
     <Compile Include="Installers\SharedAgentInstaller.cs" />
     <Compile Include="IServiceManagerProvider.cs" />
     <Compile Include="Models\IRdoFilter.cs" />
@@ -128,6 +129,8 @@
     <Compile Include="Monitoring\MessageSink\Aggregated\AggregatedJobSink.cs" />
     <Compile Include="Monitoring\MessageSink\Aggregated\JobStatistics.cs" />
     <Compile Include="Monitoring\MessageSink\Aggregated\JobStatus.cs" />
+    <Compile Include="Monitoring\MessageSink\ExternalCalls\ExternalCallsJobSummaryMessage.cs" />
+    <Compile Include="Monitoring\MessageSink\ExternalCalls\ExternalCallsSink.cs" />
     <Compile Include="Queries\IGetSourceProviderRdoByApplicationIdentifier.cs" />
     <Compile Include="Queries\IGetSourceProviderRdoByIdentifier.cs" />
     <Compile Include="Serialization\SerializerWithLogging.cs" />
@@ -271,9 +274,7 @@
     <Compile Include="Services\JobHistory\IDestinationParser.cs" />
     <Compile Include="Services\ProviderTypeService.cs" />
     <Compile Include="Tagging\TagsCreator.cs" />
-    <Compile Include="Toggles\UseOldProviderCreationLogic.cs" />
     <Compile Include="Toggles\UseOldExportVolumeManagerToggle.cs" />
-    <Compile Include="Toggles\UseStreamsForBigLongTextFieldsToggle.cs" />
     <Compile Include="Utils\FileSizeUtils.cs" />
     <Compile Include="Utils\JsonUtils.cs" />
     <Compile Include="Validation\Abstract\BaseIntegrationPointValidator.cs" />
@@ -479,10 +480,6 @@
       <Project>{5d5b52b4-8769-431a-9743-b96f15fed5fd}</Project>
       <Name>kCura.IntegrationPoints.Domain</Name>
     </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.Injection\kCura.IntegrationPoints.Injection.csproj">
-      <Project>{847816a0-e354-4176-83b1-7adb93e5742f}</Project>
-      <Name>kCura.IntegrationPoints.Injection</Name>
-    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
       <Project>{b91cc4ed-abf3-4409-8df3-46a3c26eb4aa}</Project>
       <Name>kCura.IntegrationPoints.Synchronizers.RDO</Name>
@@ -553,7 +550,6 @@
     </When>
   </Choose>
   <Import Project="..\..\packages\Baseclass.Contrib.Nuget.Output\build\$(__paket__Baseclass_Contrib_Nuget_Output_targets).targets" Condition="Exists('..\..\packages\Baseclass.Contrib.Nuget.Output\build\$(__paket__Baseclass_Contrib_Nuget_Output_targets).targets')" Label="Paket" />
-  <Import Project="..\..\packages\Clarius.TransformOnBuild\build\Clarius.TransformOnBuild.targets" Condition="Exists('..\..\packages\Clarius.TransformOnBuild\build\Clarius.TransformOnBuild.targets')" Label="Paket" />
   <ItemGroup>
     <Analyzer Include="..\..\packages\CSharpGuidelineAnalyzer\analyzers\dotnet\cs\CSharpGuidelineAnalyzer.dll">
       <Paket>True</Paket>
@@ -1028,6 +1024,17 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Relativity.OAuth2Client.Implicit">
+          <HintPath>..\..\packages\Relativity.OAuth2Client.Implicit\lib\net462\Relativity.OAuth2Client.Implicit.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Relativity.OAuth2Client.IdentityModel.Interfaces">
           <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces\lib\net462\Relativity.OAuth2Client.IdentityModel.Interfaces.dll</HintPath>
           <Private>True</Private>
@@ -1412,16 +1419,6 @@
         </Reference>
         <Reference Include="Relativity.Telemetry.MetricsCollection.Factory">
           <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Telemetry.MetricsCollection.Factory.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.Telemetry.MetricsCollection.Service.Store">
-          <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Telemetry.MetricsCollection.Service.Store.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.Telemetry.Toggles">
-          <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Telemetry.Toggles.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

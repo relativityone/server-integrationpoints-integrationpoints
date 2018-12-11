@@ -55,6 +55,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="oi\docs\fileids_values_only_sorted.txt">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\docs\fileids_values_strs.txt">
+      <Paket>True</Paket>
+    </Content>
     <Content Include="ExternalDependencies\TransferConsole\LogConfig.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -131,7 +137,6 @@
     <Compile Include="FileToBase64Converter.cs" />
     <Compile Include="FolderService.cs" />
     <Compile Include="ImportHelper.cs" />
-    <Compile Include="Injection.cs" />
     <Compile Include="InstanceSetting.cs" />
     <Compile Include="Kepler.cs" />
     <Compile Include="Models\Audit.cs" />
@@ -228,11 +233,13 @@
     <Compile Include="TestHelpers\IntegrationPointProviderEmptyValidator.cs" />
     <Compile Include="TestHelpers\IProductionImagesService.cs" />
     <Compile Include="TestHelpers\ITestHelper.cs" />
+    <Compile Include="TestHelpers\JobBuilder.cs" />
     <Compile Include="TestHelpers\NativesService.cs" />
     <Compile Include="TestHelpers\ProductionImagesService.cs" />
     <Compile Include="TestHelpers\TestConstants.cs" />
     <Compile Include="TestHelpers\TestHelper.cs" />
     <Compile Include="TestBase.cs" />
+    <Compile Include="TestHelpers\UserPasswordCredentialProvider.cs" />
     <Compile Include="TestHelpers\Utils.cs" />
     <Compile Include="User.cs" />
     <Compile Include="TestServiceContextHelper.cs" />
@@ -8314,6 +8321,17 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Relativity.OAuth2Client.Implicit">
+          <HintPath>..\..\packages\Relativity.OAuth2Client.Implicit\lib\net462\Relativity.OAuth2Client.Implicit.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Relativity.OAuth2Client.IdentityModel.Interfaces">
           <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces\lib\net462\Relativity.OAuth2Client.IdentityModel.Interfaces.dll</HintPath>
           <Private>True</Private>
@@ -8321,6 +8339,22 @@
         </Reference>
         <Reference Include="Relativity.OAuth2Client.Interfaces">
           <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Productions.Services.Interfaces">
+          <HintPath>..\..\packages\Relativity.Productions.Services.Interfaces\lib\net45\Relativity.Productions.Services.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.Productions.Services.Interfaces.Private">
+          <HintPath>..\..\packages\Relativity.Productions.Services.Interfaces\lib\net45\Relativity.Productions.Services.Interfaces.Private.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -8682,16 +8716,6 @@
         </Reference>
         <Reference Include="Relativity.Telemetry.MetricsCollection.Factory">
           <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Telemetry.MetricsCollection.Factory.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.Telemetry.MetricsCollection.Service.Store">
-          <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Telemetry.MetricsCollection.Service.Store.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.Telemetry.Toggles">
-          <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Telemetry.Toggles.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

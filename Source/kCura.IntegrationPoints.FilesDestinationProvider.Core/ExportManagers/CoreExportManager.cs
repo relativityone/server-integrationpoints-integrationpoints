@@ -124,11 +124,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 			Export export;
 			if (textPrecedenceAvfIds == null)
 			{
-				export = new Export(_baseServiceContext, _userPermissionsMatrix, artifactTypeId);
+				export = new ExportRIP(_baseServiceContext, _userPermissionsMatrix, artifactTypeId);
 			}
 			else
 			{
-				export = new Export(_baseServiceContext, _userPermissionsMatrix, artifactTypeId, textPrecedenceAvfIds);
+				export = new ExportRIP(_baseServiceContext, _userPermissionsMatrix, artifactTypeId, textPrecedenceAvfIds);
 			}
 			export.SerializeRetrievedDataIntoBytes = false;
 			return export;

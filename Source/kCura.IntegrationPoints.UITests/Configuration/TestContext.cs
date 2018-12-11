@@ -10,6 +10,8 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Data.Factories.Implementations;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.UITests.Common;
 using kCura.Relativity.Client;
@@ -22,7 +24,7 @@ using Serilog.Events;
 using ArtifactType = Relativity.ArtifactType;
 using Field = kCura.Relativity.Client.DTOs.Field;
 using Group = kCura.IntegrationPoint.Tests.Core.Group;
-using User = kCura.IntegrationPoint.Tests.Core.User;
+using UserService = kCura.IntegrationPoint.Tests.Core.User;
 using Workspace = kCura.IntegrationPoint.Tests.Core.Workspace;
 
 namespace kCura.IntegrationPoints.UITests.Configuration
@@ -38,10 +40,11 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		
 		private readonly Lazy<ITestHelper> _helper;
 
+		private readonly string _timeStamp;
+
 		private static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(TestContext));
 
-		public readonly string TimeStamp;
-
+		
 		public ITestHelper Helper => _helper.Value;
 
 		public int? WorkspaceId { get; set; }
@@ -50,14 +53,14 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 		public int? GroupId { get; private set; }
 
-		public int? UserId { get; private set; }
+		public RelativityUser User { get; private set; }
 
 		public int? ProductionId { get; private set; }
 
 		public TestContext()
 		{
 			_helper = new Lazy<ITestHelper>(() => new TestHelper());
-			TimeStamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss.ffff");
+			_timeStamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss.ffff");
 		}
 
 		public TestContext CreateTestWorkspace()
@@ -68,7 +71,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 		public async Task CreateTestWorkspaceAsync()
 		{
-			WorkspaceName = $"RIP Test Workspace {TimeStamp}";
+			WorkspaceName = $"RIP Test Workspace {_timeStamp}";
 			string templateWorkspaceName = SharedVariables.UiTemplateWorkspace;
 			Log.Information($"Attempting to create workspace '{WorkspaceName}' using template '{templateWorkspaceName}'.");
 			try
@@ -89,23 +92,27 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		{
 			Workspace.EnableDataGrid(GetWorkspaceId());
 
-			//TODO change implementation to IFieldManager Kepler service
-			//ChangeFieldToDataGrid(fieldNames);
+			// TODO change implementation to IFieldManager Kepler service
+			// ChangeFieldToDataGrid(fieldNames);
 		}
 
-		public TestContext SetupUser()
+		public TestContext InitUser()
 		{
-			GroupId = Group.CreateGroup($"TestGroup_{TimeStamp}");
-			Group.AddGroupToWorkspace(GetWorkspaceId(), GetGroupId());
-
-			ClaimsPrincipal.ClaimsPrincipalSelector += () =>
+			if (SharedVariables.UiSkipUserCreation)
 			{
-				var factory = new ClaimsPrincipalFactory();
-				return factory.CreateClaimsPrincipal2(_ADMIN_USER_ID, Helper);
-			};
+				User = new RelativityUser(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword);
+			}
+			else
+			{
+				ClaimsPrincipal.ClaimsPrincipalSelector += () =>
+				{
+					var factory = new ClaimsPrincipalFactory();
+					return factory.CreateClaimsPrincipal2(_ADMIN_USER_ID, Helper);
+				};
 
-			UserModel userModel = User.CreateUser("UI", $"Test_User_{TimeStamp}", $"UI_Test_User_{TimeStamp}@relativity.com", new List<int> { GetGroupId() });
-			UserId = userModel.ArtifactId;
+				UserModel userModel = UserService.CreateUser("RIP", $"Test_User_{_timeStamp}", $"RIP_Test_User_{_timeStamp}@relativity.com");
+				User = new RelativityUser(userModel.ArtifactId, userModel.EmailAddress, userModel.Password);
+			}
 			return this;
 		}
 
@@ -377,9 +384,9 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 				Group.DeleteGroup(GetGroupId());
 			}
 
-			if (UserId.HasValue)
+			if (User != null && User.CreatedInTest)
 			{
-				User.DeleteUser(GetUserId());
+				UserService.DeleteUser(User.ArtifactId);
 			}
 			return this;
 		}
@@ -397,15 +404,9 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			return WorkspaceId.Value;
 		}
 
-		public int GetUserId()
-		{
-			Assert.NotNull(UserId, $"{nameof(UserId)} is null. User wasn't created.");
-			return UserId.Value;
-		}
-
 		private int RetrieveSavedSearchId(string savedSearchName)
 		{
-			var objectManager = new RelativityObjectManager(WorkspaceId.Value, Helper, null); // we don't need secret store helper to read saved search
+			IRelativityObjectManager objectManager = CreateObjectManager();
 			var savedSearchRequest = new QueryRequest
 			{
 				ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Search },
@@ -415,6 +416,11 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			RelativityObject savedSearch = objectManager.Query(savedSearchRequest).First();
 			return savedSearch.ArtifactID;
 		}
-	}
 
+		private IRelativityObjectManager CreateObjectManager()
+		{
+			var factory = new RelativityObjectManagerFactory(Helper);
+			return factory.CreateRelativityObjectManager(WorkspaceId.Value);
+		}
+	}
 }

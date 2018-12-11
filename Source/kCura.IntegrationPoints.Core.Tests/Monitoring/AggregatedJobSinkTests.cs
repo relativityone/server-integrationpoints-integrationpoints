@@ -1,7 +1,8 @@
 ﻿using System;
+using kCura.IntegrationPoints.Common.Monitoring;
 using kCura.IntegrationPoints.Common.Monitoring.Messages;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
-using kCura.IntegrationPoints.Core.Monitoring.Sinks.Aggregated;
+using kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
@@ -13,7 +14,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring
 	[TestFixture]
 	public class AggregatedJobSinkTests
 	{
-		private IHelper _helper;
 		private IAPILog _logger;
 		private IMetricsManagerFactory _metricsManagerFactory;
 		private IMetricsManager _sum, _apm;
@@ -25,9 +25,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring
 		[SetUp]
 		public void SetUp()
 		{
-			_helper = Substitute.For<IHelper>();
 			_logger = Substitute.For<IAPILog>();
-			_helper.GetLoggerFactory().GetLogger().ForContext<AggregatedJobSink>().Returns(_logger);
+			_logger.ForContext<AggregatedJobSink>().Returns(_logger);
 			_metricsManagerFactory = Substitute.For<IMetricsManagerFactory>();
 			_sum = Substitute.For<IMetricsManager>();
 			_metricsManagerFactory.CreateSUMManager().Returns(_sum);
@@ -35,7 +34,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring
 			_metricsManagerFactory.CreateAPMManager().Returns(_apm);
 			_correlationId = Guid.NewGuid().ToString();
 
-			_sink = new AggregatedJobSink(_helper, _metricsManagerFactory);
+			_sink = new AggregatedJobSink(_logger, _metricsManagerFactory);
 		}
 
 		private IMetricMetadata CreateValidator()
@@ -264,7 +263,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring
 				FileBytes = 10000,
 				MetaBytes = 2345,
 				WorkspaceID = workspaceId,
-				UnitOfMeasure = "Bytes(s)"
+				UnitOfMeasure = UnitsOfMeasureConstants.BYTES
 			};
 			JobStatisticsMessage jobStatisticsMessage2 = new JobStatisticsMessage()
 			{
@@ -274,7 +273,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring
 				FileBytes = 99999,
 				MetaBytes = 3456,
 				WorkspaceID = workspaceId,
-				UnitOfMeasure = "Bytes(s)"
+				UnitOfMeasure = UnitsOfMeasureConstants.BYTES
 			};
 
 			_sink.OnMessage(jobStatisticsMessage1);
@@ -289,8 +288,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring
 			_apm.Received(1).LogDouble("IntegrationPoints.Performance.JobStatistics", expectedJobSizeBytes,
 				Arg.Is<IMetricMetadata>(x =>
 					x.CorrelationID.Equals(_correlationId) &&
-					x.CustomData[JobStatistics._FILE_BYTES_KEY_NAME].Equals(expectedFileBytes) &&
-					x.CustomData[JobStatistics._METADATA_KEY_NAME].Equals(expectedMetaBytes)
+					x.CustomData[JobStatistics.FILE_BYTES_KEY_NAME].Equals(expectedFileBytes) &&
+					x.CustomData[JobStatistics.METADATA_KEY_NAME].Equals(expectedMetaBytes)
 				));
 		}
 
@@ -313,7 +312,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring
 				FileBytes = fileBytes,
 				MetaBytes = metaBytes,
 				WorkspaceID = 9999,
-				UnitOfMeasure = "Bytes(s)"
+				UnitOfMeasure = UnitsOfMeasureConstants.BYTES
 			};
 
 			_sink.OnMessage(jobStatisticsMessage1);
@@ -326,12 +325,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring
 			_apm.Received(1).LogDouble("IntegrationPoints.Performance.JobStatistics", fileBytes + metaBytes,
 				Arg.Is<IMetricMetadata>(x =>
 					x.CorrelationID.Equals(_correlationId) &&
-					x.CustomData[JobStatistics._FILE_BYTES_KEY_NAME].Equals(fileBytes) &&
-					x.CustomData[JobStatistics._METADATA_KEY_NAME].Equals(metaBytes) &&
-					x.CustomData[JobStatistics._TOTAL_RECORDS_KEY_NAME].Equals(totalRecords) &&
-					x.CustomData[JobStatistics._COMPLETED_RECORDS_KEY_NAME].Equals(completedRecords) &&
-					x.CustomData[JobStatistics._THROUGHPUT_KEY_NAME].Equals(throughput) &&
-					x.CustomData[JobStatistics._THROUGHPUT_BYTES_KEY_NAME].Equals(throughputBytes)
+					x.CustomData[JobStatistics.FILE_BYTES_KEY_NAME].Equals(fileBytes) &&
+					x.CustomData[JobStatistics.METADATA_KEY_NAME].Equals(metaBytes) &&
+					x.CustomData[JobStatistics.TOTAL_RECORDS_KEY_NAME].Equals(totalRecords) &&
+					x.CustomData[JobStatistics.COMPLETED_RECORDS_KEY_NAME].Equals(completedRecords) &&
+					x.CustomData[JobStatistics.THROUGHPUT_KEY_NAME].Equals(throughput) &&
+					x.CustomData[JobStatistics.THROUGHPUT_BYTES_KEY_NAME].Equals(throughputBytes)
 				));
 		}
 	}

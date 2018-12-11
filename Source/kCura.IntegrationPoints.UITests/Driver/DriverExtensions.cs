@@ -19,8 +19,6 @@ namespace kCura.IntegrationPoints.UITests.Driver
 	{
 		private const int _DEFAULT_SEND_KEYS_TIMEOUT_IN_SECONDS = 20;
 
-		private static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(DriverExtensions));
-
 		public static readonly TimeSpan DefaultRetryInterval = TimeSpan.FromMilliseconds(250);
 
 		public static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(30);
@@ -75,14 +73,14 @@ namespace kCura.IntegrationPoints.UITests.Driver
 			RetryPolicy<bool> retryUntilTrue = Policy.HandleResult(false)
 				.WaitAndRetryForever(retryAttempt => TimeSpan.FromMilliseconds(sleepInMs));
 
+			ExecuteWithTimeout(() => element.Displayed, timeout, DefaultRetryInterval);
+
 			element.Clear();
-			Thread.Sleep(500);
 			Policy.Timeout(timeout)
 				.Wrap(retryUntilTrue)
-				.Execute(() => element.GetAttribute("value") == "");
+				.Execute(() => element.GetAttribute("value") == string.Empty);
 
 			element.SendKeys(text);
-			Thread.Sleep(500);
 			Policy.Timeout(timeout)
 				.Wrap(retryUntilTrue)
 				.Execute(() => element.GetAttribute("value") == text);
@@ -118,12 +116,12 @@ namespace kCura.IntegrationPoints.UITests.Driver
 			}
 		}
 
-		public static T ExecuteWithTimeout<T>(Func<T> action, TimeSpan timeout, TimeSpan retryInterval)
+		public static T ExecuteWithTimeout<T>(Func<T> func, TimeSpan timeout, TimeSpan retryInterval)
 		{
 			try
 			{
 				Policy clickUpToTimeout = CreatePolicy(timeout, retryInterval);
-				PolicyResult<T> result = clickUpToTimeout.ExecuteAndCapture<T>(action);
+				PolicyResult<T> result = clickUpToTimeout.ExecuteAndCapture(func);
 
 				switch (result.Outcome)
 				{
@@ -147,6 +145,8 @@ namespace kCura.IntegrationPoints.UITests.Driver
 				.Handle<TargetInvocationException>()
 				.Or<InvalidOperationException>()
 				.Or<WebDriverException>()
+				.Or<NoSuchElementException>()
+				.Or<StaleElementReferenceException>()
 				.WaitAndRetry(Enumerable.Repeat(retryInterval, int.MaxValue));
 			Policy policy = Policy.Timeout(timeout).Wrap(retry);
 			return policy;

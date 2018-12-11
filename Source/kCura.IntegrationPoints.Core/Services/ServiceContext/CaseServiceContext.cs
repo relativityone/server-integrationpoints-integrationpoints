@@ -6,11 +6,11 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 {
 	public class CaseServiceContext : ICaseServiceContext
 	{
-		private readonly IServiceContextHelper _serviceContextHelper;
 		private int? _eddsUserId;
 		private int? _workspaceUserId;
 		private IRSAPIService _rsapiService;
 		private IDBContext _sqlContext;
+		private readonly IServiceContextHelper _serviceContextHelper;
 
 		public CaseServiceContext(IServiceContextHelper serviceContextHelper)
 		{

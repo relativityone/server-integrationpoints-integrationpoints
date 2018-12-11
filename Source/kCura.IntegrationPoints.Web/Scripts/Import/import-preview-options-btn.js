@@ -12,7 +12,6 @@
 	var SHOWN = 'shown';
 	var SELECT = 'select';
 
-	var windowPar = windowObj.parent;
 	var baseUrlCache = root.utils.getBaseURL();
 
 	windowObj.RelativityImport.PreviewOptions.UI.Elements = {
@@ -141,7 +140,6 @@
 		var trident = ua.indexOf('Trident/');
 		if (trident > 0) {
 			// IE 11 => return version number
-			var rv = ua.indexOf('rv:');
 			return true;
 		}
 
@@ -155,29 +153,14 @@
 		return false;
 	};
 
-	//Updates the CSS for the Preview Options Btn depending on the broswer
+	//Updates the CSS for the Preview Options Btn depending on the browser
 	windowObj.RelativityImport.PreviewOptions.renderCssForDifferentBrowser = function() {
-		var browsers = ['chrome', 'IE/Edge', 'firefox'];
-
-		for (var i = 0; i < browsers.length; i++) {
-			// initial check to see if broswer is Chrome or Firefox
-			if (!!window.chrome) { //chrome or Edge = return true
-				if (windowObj.RelativityImport.PreviewOptions.detectIE()) {
-					//render Edge CSS
-					windowObj.$(idSelector(PROGRESS_BUTTONS)).css({ 'margin-top': '-55px', 'position': 'absolute' });
-					break;
-				}
-				//chrome
-				windowObj.$(idSelector(PROGRESS_BUTTONS)).css({ 'margin-top': '30px', 'position': 'absolute' });
-				break;
-			} else if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
-				// render css for FireFox
-				windowObj.$(idSelector(PROGRESS_BUTTONS)).css({ 'margin-top': '-55px', 'position': 'absolute' });
-				break;
-			} else {
-				windowObj.$(idSelector(PROGRESS_BUTTONS)).css({ 'margin-top': '-55px', 'position': 'absolute' });
-				break;
-			}
+		// initial check to see if browser is Chrome or Firefox
+        if (!!window.chrome && !windowObj.RelativityImport.PreviewOptions.detectIE()) { //chrome or Edge = returns true
+			//chrome
+			windowObj.$(idSelector(PROGRESS_BUTTONS)).css({ 'margin-top': '30px', 'position': 'absolute' });
+		}  else {
+			windowObj.$(idSelector(PROGRESS_BUTTONS)).css({ 'margin-top': '-55px', 'position': 'absolute' });
 		}
 	};
 

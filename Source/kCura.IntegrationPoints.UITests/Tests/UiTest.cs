@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Drawing;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -9,13 +8,13 @@ using Relativity.API;
 using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoint.Tests.Core;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
 using System.Net;
 using System.Reflection;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.UITests.Configuration;
+using kCura.IntegrationPoints.UITests.Driver;
 using kCura.IntegrationPoints.UITests.Logging;
 using NUnit.Framework.Interfaces;
 using OpenQA.Selenium.Remote;
@@ -73,7 +72,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		{
 			Container = new WindsorContainer();
 			// enable TLS 1.2 for R1 regression environments
-			System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+			ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 
 			Configuration = new TestConfiguration()
 				.MergeCustomConfigWithAppSettings()
@@ -81,6 +80,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 				.LogConfiguration();
 
 			Context = new TestContext();
+			Context.InitUser();
 			Task agentSetupTask = SetupAgentAsync();
 			Task workspaceSetupTask = SetupWorkspaceAsync();
 			Task webDriverCreationTask = CreateDriverAsync();
@@ -142,39 +142,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 
 		protected async Task CreateDriverAsync()
 		{
-			await Task.Run(() => CreateDriver()).ConfigureAwait(false);
-		}
-
-		protected void CreateDriver()
-		{
-			ChromeDriverService driverService = ChromeDriverService.CreateDefaultService();
-			// Otherwise console window appears for chromedriver process
-			driverService.HideCommandPromptWindow = true;
-			driverService.LogPath = "chromeLog.txt"; // TODO
-			var options = new ChromeOptions
-			{
-				AcceptInsecureCertificates = true
-			};
-
-			// Disables "Save password" popup
-			options.AddUserProfilePreference("credentials_enable_service", false);
-			options.AddUserProfilePreference("profile.password_manager_enabled", false);
-			// Disables "Chrome is being controlled by automated test software." bar
-			options.AddArguments("disable-infobars");
-			options.AddArguments("headless");
-			options.AddArguments("ignore-certificate-errors");
-			options.AddAdditionalCapability(CapabilityType.AcceptSslCertificates, true, true);
-			options.AddAdditionalCapability(CapabilityType.AcceptInsecureCertificates, true, true);
-
-			Driver = new ChromeDriver(driverService, options);
-			// Long implicit wait as Relativity uses IFrames and is usually quite slow
-			Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(SharedVariables.UiImplicitWaitInSec);
-			Driver.Manage().Window.Size = new Size(1920, 1400);
-
-			Size browseSize = Driver.Manage().Window.Size;
-			Log.Information("Browser size: Width: {width}, Height: {height}", browseSize.Width, browseSize.Height);
-
-			Driver.Url = SharedVariables.ProtocolVersion + "://" + SharedVariables.TargetHost + "/Relativity";
+			await Task.Run(() => Driver = DriverFactory.CreateDriver()).ConfigureAwait(false);
 		}
 
 		[OneTimeTearDown]
@@ -228,7 +196,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			var loginPage = new LoginPage(Driver);
 			if (loginPage.IsOnLoginPage())
 			{
-				return loginPage.Login(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword);
+				return loginPage.Login(Context.User.Email, Context.User.Password);
 			}
 			return new GeneralPage(Driver).PassWelcomeScreen();
 		}
