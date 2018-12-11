@@ -47,14 +47,14 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		public IntegrationPointDetailsPage RunIntegrationPoint()
 		{
 			RunButton.ClickEx();
-
-			const int timeoutForWarningBoxSeconds = 5;
-			By okButtonLocator = By.XPath("//span[text()='OK']");
-			var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(timeoutForWarningBoxSeconds));
-			IWebElement okButton = wait.Until(ExpectedConditions.ElementIsVisible(okButtonLocator));
-			okButton.ClickEx();
-
+			ClickOkOnConfirmationDialog();
 			return this;
+		}
+
+		private void ClickOkOnConfirmationDialog()
+		{
+			By okButtonLocator = By.XPath("//*[text()='OK']");
+			Driver.FindElementEx(okButtonLocator).ClickEx();
 		}
 
 		public PropertiesTable SelectGeneralPropertiesTable()

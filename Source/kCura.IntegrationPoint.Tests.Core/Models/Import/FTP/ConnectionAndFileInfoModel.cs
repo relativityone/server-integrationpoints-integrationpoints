@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Models.Import.FTP
 		{
 			get
 			{
-				return _secureUsername.ToPlainString();
+				return _securePassword.ToPlainString();
 			}
 			set
 			{

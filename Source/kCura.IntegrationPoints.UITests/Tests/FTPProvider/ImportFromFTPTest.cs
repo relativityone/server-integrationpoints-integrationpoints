@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FTPProvider
 	{
 		private IRSAPIService _service;
 
-		private const string _CSV_FILEPATH = "TestFtpCustodianImport.csv";
+		private const string _CSV_FILEPATH = "All Documents.csv";
 
 		protected override bool InstallLegalHoldApp => true;
 
@@ -46,7 +46,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.FTPProvider
 					CsvFilepath = _CSV_FILEPATH
 				},
 				FieldsMapping = new FieldsMappingModel(
-					"Email", "Control Number [Object Identifier]"
+					"Control Number", "Control Number [Object Identifier]",
+					"Extracted Text", "Extracted Text [Long Text]"
 				),
 				Settings = new SettingsModel
 				{
