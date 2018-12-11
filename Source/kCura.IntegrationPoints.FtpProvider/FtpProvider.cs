@@ -41,13 +41,13 @@ namespace kCura.IntegrationPoints.FtpProvider
 		public IEnumerable<FieldEntry> GetFields(string options)
 		{
 			LogRetrievingFields();
-			List<FieldEntry> retVal = new List<FieldEntry>();
+			List<FieldEntry> fields = new List<FieldEntry>();
 			string fileName = string.Empty;
 			string remoteLocation = string.Empty;
 			Settings settings = GetSettingsModel(options);
 			try
 			{
-				var csvInput = AddFileExtension(settings.Filename_Prefix);
+				string csvInput = AddFileExtension(settings.Filename_Prefix);
 				fileName = GetDynamicFileName(Path.GetFileName(csvInput), settings.Timezone_Offset);
 				remoteLocation = Path.GetDirectoryName(FormatPath(csvInput));
 				using (var client = _connectorFactory.GetConnector(settings.Protocol, settings.Host, settings.Port, settings.Username, settings.Password))
@@ -56,11 +56,8 @@ namespace kCura.IntegrationPoints.FtpProvider
 					{
 						using (var parser = _parserFactory.GetDelimitedFileParser(stream, ParserOptions.GetDefaultParserOptions()))
 						{
-							var columns = parser.ParseColumns();
-							foreach (var column in columns)
-							{
-								retVal.Add(new FieldEntry { DisplayName = column, FieldIdentifier = column });
-							}
+							IEnumerable<string> columns = parser.ParseColumns();
+							fields.AddRange(columns.Select(name => new FieldEntry() { DisplayName = name, FieldIdentifier = name }));
 						}
 					}
 				}
@@ -87,7 +84,7 @@ namespace kCura.IntegrationPoints.FtpProvider
 				}
 			}
 
-			return retVal;
+			return fields;
 		}
 
 		public IDataReader GetBatchableIds(FieldEntry identifier, string options)
@@ -146,28 +143,25 @@ namespace kCura.IntegrationPoints.FtpProvider
 
 		public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, string options)
 		{
-			LogRetrievingData(entryIds);
-			IDataReader retVal;
-			string fileName = string.Empty;
-			string remoteLocation = string.Empty;
+			List<string> entryIdsList = entryIds.ToList();
+			LogRetrievingData(entryIdsList);
 			Settings settings = GetSettingsModel(options);
 			ParserOptions parserOptions = ParserOptions.GetDefaultParserOptions();
 			parserOptions.FirstLineContainsColumnNames = false;
 			try
 			{
 				List<string> columnList = settings.ColumnList.Select(x => x.FieldIdentifier).ToList();
-				TextReader reader = _dataReaderFactory.GetEnumerableReader(entryIds);
+				TextReader reader = _dataReaderFactory.GetEnumerableReader(entryIdsList);
 				IParser parser = _parserFactory.GetDelimitedFileParser(reader, parserOptions, columnList);
-				retVal = parser.ParseData();
-
-				return retVal;
+				IDataReader dataReader = parser.ParseData();
+				return dataReader;
 			}
 			catch (Exception ex)
 			{
 				if (ex is SftpPathNotFoundException || (ex is WebException && ex.ToString().Contains("(550) File unavailable")))
 				{
-					var message = $"Unable to access: {remoteLocation}{fileName} {ex}";
-					LogRetrievingDataErrorWithDetails(entryIds, ex, message);
+					var message = $"Unable to access: {ex}";
+					LogRetrievingDataErrorWithDetails(entryIdsList, ex, message);
 					throw new Exception(message);
 				}
 				else if ((ex is WebException && (ex.ToString().Contains("The underlying connection was closed")) ||
@@ -179,7 +173,7 @@ namespace kCura.IntegrationPoints.FtpProvider
 				}
 				else
 				{
-					LogRetrievingDataError(entryIds, ex);
+					LogRetrievingDataError(entryIdsList, ex);
 					throw new Exception(ex.ToString());
 				}
 			}

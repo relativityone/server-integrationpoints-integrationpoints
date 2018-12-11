@@ -342,10 +342,6 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
             {
                 if (disposing)
                 {
-                    if (_fileStream != null)
-                    {
-                        _fileStream.Dispose();
-                    }
                     if (_parser != null)
                     {
                         _parser.Dispose();
