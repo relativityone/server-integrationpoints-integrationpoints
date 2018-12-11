@@ -1,26 +1,23 @@
-﻿using System;
+﻿using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.Models;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Data.Factories.Implementations;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.UITests.Common;
+using kCura.IntegrationPoints.UITests.Logging;
+using kCura.Relativity.Client;
+using kCura.Relativity.Client.DTOs;
+using NUnit.Framework;
+using Relativity.Services.Objects.DataContracts;
+using Serilog;
+using Serilog.Events;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.UITests.Logging;
-using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoint.Tests.Core.Models;
-using kCura.IntegrationPoint.Tests.Core.Templates;
-using kCura.IntegrationPoint.Tests.Core.TestHelpers;
-using kCura.IntegrationPoints.Data.Factories.Implementations;
-using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using kCura.IntegrationPoints.UITests.Common;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
-using NUnit.Framework;
-using Relativity.Core;
-using Relativity.Services.Objects.DataContracts;
-using Serilog;
-using Serilog.Events;
 using ArtifactType = Relativity.ArtifactType;
 using Field = kCura.Relativity.Client.DTOs.Field;
 using Group = kCura.IntegrationPoint.Tests.Core.Group;
@@ -155,15 +152,14 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			Stopwatch stopwatch = Stopwatch.StartNew();
 			try
 			{
-				ICoreContext coreContext = SourceProviderTemplate.GetBaseServiceContext(-1);
-
-				var ipAppManager = new RelativityApplicationManager(coreContext, Helper);
+				var ipAppManager = new RelativityApplicationManager(Helper);
 				bool isAppInstalledAndUpToDate = ipAppManager.IsApplicationInstalledAndUpToDate((int)WorkspaceId, guid);
 				if (!isAppInstalledAndUpToDate)
 				{
 					Log.Information("Installing application '{AppName}' ({AppGUID}) in workspace '{WorkspaceName}' ({WorkspaceId}).", name, guid, WorkspaceName, WorkspaceId);
 					ipAppManager.InstallApplicationFromLibrary((int)WorkspaceId, guid);
-					Log.Information("Application '{AppName}' ({AppGUID}) has been installed in workspace '{WorkspaceName}' ({WorkspaceId}) after {AppInstallTime} seconds.", name, guid, WorkspaceName, WorkspaceId, stopwatch.Elapsed.Seconds);
+					Log.Information("Application '{AppName}' ({AppGUID}) has been installed in workspace '{WorkspaceName}' ({WorkspaceId}) after {AppInstallTime} seconds.", 
+						name, guid, WorkspaceName, WorkspaceId, stopwatch.Elapsed.Seconds);
 				}
 				else
 				{
@@ -262,10 +258,9 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 		private RelativityScript FindRelativityFolderPathScript(IRSAPIClient proxy)
 		{
-			TextCondition nameCondition =
-				new TextCondition(RelativityScriptFieldNames.Name, TextConditionEnum.EqualTo,
+			var nameCondition = new TextCondition(RelativityScriptFieldNames.Name, TextConditionEnum.EqualTo,
 					"Set Relativity Folder Path Field");
-			Query<RelativityScript> relScriptQuery = new Query<RelativityScript>()
+			var relScriptQuery = new Query<RelativityScript>()
 			{
 				Condition = nameCondition,
 				Fields = FieldValue.NoFields
@@ -338,9 +333,9 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 		private static bool EnableDataGridOnField(string fieldName, IRSAPIClient client)
 		{
-			TextCondition nameCondition = new TextCondition(FieldFieldNames.Name, TextConditionEnum.EqualTo, fieldName);
+			var nameCondition = new TextCondition(FieldFieldNames.Name, TextConditionEnum.EqualTo, fieldName);
 
-			Query<Field> fieldQuery = new Query<Field>()
+			var fieldQuery = new Query<Field>
 			{
 				Condition = nameCondition,
 				Fields = FieldValue.AllFields
@@ -348,7 +343,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 			try
 			{
-				var queryResult = client.Repositories.Field.Query(fieldQuery);
+				QueryResultSet<Field> queryResult = client.Repositories.Field.Query(fieldQuery);
 
 				if (!queryResult.Success)
 				{
@@ -360,7 +355,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 				field.EnableDataGrid = true;
 
-				var updateResult = client.Repositories.Field.Update(new List<Field> { field });
+				WriteResultSet<Field> updateResult = client.Repositories.Field.Update(new List<Field> { field });
 
 				if (!updateResult.Success)
 				{
@@ -409,7 +404,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			IRelativityObjectManager objectManager = CreateObjectManager();
 			var savedSearchRequest = new QueryRequest
 			{
-				ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Search },
+				ObjectType = new ObjectTypeRef { ArtifactTypeID = (int) ArtifactType.Search },
 				Condition = $"'Name' == '{savedSearchName}'",
 				Fields = new FieldRef[0]
 			};

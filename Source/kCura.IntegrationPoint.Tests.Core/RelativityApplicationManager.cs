@@ -1,10 +1,10 @@
-﻿using System;
-using System.IO;
-using kCura.IntegrationPoint.Tests.Core.TestHelpers;
-using Relativity.Core;
-using Relativity.Core.DTO;
-using Relativity.Core.Service;
+﻿using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using Relativity.Kepler.Transport;
 using Relativity.Services.ApplicationInstallManager;
+using Relativity.Services.LibraryApplicationsManager;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 using File = System.IO.File;
 
 namespace kCura.IntegrationPoint.Tests.Core
@@ -15,41 +15,26 @@ namespace kCura.IntegrationPoint.Tests.Core
 	{
 		private const string _RIP_GUID_STRING = IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING;
 
-		private readonly ITestHelper _helper;
-		private readonly LibraryApplicationManager _libraryManager;
-		private readonly ICoreContext _baseServiceContext;
+		private const string _TESTING_RAP_NAME = "Integration Points";
 
-		public RelativityApplicationManager(ICoreContext coreContext, ITestHelper helper)
+		private readonly ITestHelper _helper;
+
+		private readonly ILibraryApplicationsManager _libraryManager;
+
+		public RelativityApplicationManager(ITestHelper helper)
 		{
 			_helper = helper;
-			_libraryManager = new LibraryApplicationManager();
-			_baseServiceContext = coreContext;
+			_libraryManager = helper.CreateAdminProxy<ILibraryApplicationsManager>();
 		}
-
-		public LibraryApplication GetLibraryApplicationDTO(Guid applicationGuid)
+		
+		public async Task ImportApplicationToLibrary()
 		{
-			LibraryApplication libraryApplicationDto = _libraryManager.ReadWithFileData(_baseServiceContext, applicationGuid);
-			return libraryApplicationDto;
-		}
-
-		public void RemoveApplicationFromLibrary(LibraryApplication libraryApplication)
-		{
-			libraryApplication.IsVisible = false;
-			_libraryManager.Update((BaseServiceContext)_baseServiceContext, libraryApplication);
-		}
-
-		public void ImportApplicationToLibrary(string appGuidString = _RIP_GUID_STRING)
-		{
-			LibraryApplication libraryApplication = GetLibraryApplicationDTO(new Guid(appGuidString));
-			
-			if (libraryApplication != null && libraryApplication.IsVisible)
-			{
-				RemoveApplicationFromLibrary(libraryApplication);
-			}
-
 			string applicationFilePath = SharedVariables.UseLocalRap ? GetLocalRapPath() : GetBuildPackagesRapPath();
-
-			UpdateLibraryApplicationRap(applicationFilePath, libraryApplication);
+			using (FileStream fileStream = File.OpenRead(applicationFilePath))
+			{
+				var keplerStream = new KeplerStream(fileStream);
+				await _libraryManager.EnsureApplication(_TESTING_RAP_NAME, keplerStream, true, true);
+			}
 		}
 
 		public void InstallApplicationFromLibrary(int workspaceArtifactId, string appGuidString = _RIP_GUID_STRING)
@@ -65,25 +50,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 			using (var applicationInstallManager = _helper.CreateAdminProxy<IApplicationInstallManager>())
 			{
 				ApplicationInstallStatus installStatus = applicationInstallManager.GetApplicationInstallStatusAsync(workspaceArtifactId, new Guid(appGuidString)).Result;
-
 				return installStatus == ApplicationInstallStatus.Installed;
 			}
-		}
-
-		public void DeployIntegrationPointsCustomPage()
-		{
-			string sqlText =
-				$@"Update EDDS.eddsdbo.ApplicationServer set state = 0 where AppGuid = '{IntegrationPoints.Core.Constants
-					.IntegrationPoints.RELATIVITY_CUSTOMPAGE_GUID}'";
-
-			_baseServiceContext.ChicagoContext.DBContext.ExecuteNonQuerySQLStatement(sqlText);
-		}
-
-		private void UpdateLibraryApplicationRap(string applicationFilePath, LibraryApplication libraryApplication)
-		{
-			var rapData = File.ReadAllBytes(applicationFilePath);
-			libraryApplication.FileData = rapData;
-			_libraryManager.Update(_baseServiceContext as BaseServiceContext, libraryApplication, false, false);
 		}
 
 		private string GetLocalRapPath()

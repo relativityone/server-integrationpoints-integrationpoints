@@ -5,6 +5,7 @@ using NSubstitute;
 using Relativity.API;
 using Relativity.Services.ArtifactGuid;
 using Relativity.Services.InstanceSetting;
+using Relativity.Services.LibraryApplicationsManager;
 using Relativity.Services.ObjectQuery;
 using Relativity.Services.Objects;
 using Relativity.Services.Permission;
@@ -95,18 +96,19 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 
 		public void Dispose()
 		{
+			// empty by design
 		}
 
-		public IDBContext GetDBContext(int caseId)
+		public IDBContext GetDBContext(int caseID)
 		{
 			Data.RowDataGateway.Context baseContext;
-			if (caseId == -1)
+			if (caseID == -1)
 			{
 				baseContext = new Data.RowDataGateway.Context(SharedVariables.EddsConnectionString);
 			}
 			else
 			{
-				string connectionString = string.Format(SharedVariables.WorkspaceConnectionStringFormat, caseId);
+				string connectionString = string.Format(SharedVariables.WorkspaceConnectionStringFormat, caseID);
 				baseContext = new Data.RowDataGateway.Context(connectionString);
 			}
 			TestDbContext context = new TestDbContext(baseContext);
@@ -138,7 +140,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			throw new NotImplementedException();
 		}
 
-		public Guid GetGuid(int workspaceId, int artifactId)
+		public Guid GetGuid(int workspaceID, int artifactID)
 		{
 			throw new NotImplementedException();
 		}

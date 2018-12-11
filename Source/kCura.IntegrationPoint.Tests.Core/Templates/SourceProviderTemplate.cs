@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			_workspaceName = workspaceName;
 			_workspaceTemplate = workspaceTemplate;
 			CoreContext = GetBaseServiceContext(-1);
-			RelativityApplicationManager = new RelativityApplicationManager(CoreContext, Helper);
+			RelativityApplicationManager = new RelativityApplicationManager(Helper);
 		}
 
 		/// <summary>
@@ -69,7 +69,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 			CreateWorkspace = false;
 			CoreContext = GetBaseServiceContext(-1);
-			RelativityApplicationManager = new RelativityApplicationManager(CoreContext, Helper);
+			RelativityApplicationManager = new RelativityApplicationManager(Helper);
 		}
 
 		public override void SuiteSetup()
@@ -96,7 +96,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 					new FieldRef { Guid = new Guid(DestinationProviderFieldGuids.Identifier) }
 				}
 			}).First(x => x.Identifier == IntegrationPoints.Core.Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID);
-
 		}
 
 		public override void SuiteTeardown()
@@ -208,7 +207,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		{
 			ICaseServiceContext caseServiceContext = Container.Resolve<ICaseServiceContext>();
 
-			var ip = caseServiceContext.RsapiService.RelativityObjectManager.Read<IntegrationPoints.Data.IntegrationPoint>(model.ArtifactID);
+			IntegrationPoints.Data.IntegrationPoint ip = caseServiceContext.RsapiService.RelativityObjectManager.Read<IntegrationPoints.Data.IntegrationPoint>(model.ArtifactID);
 			return IntegrationPointModel.FromIntegrationPoint(ip);
 		}
 
@@ -234,7 +233,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			}
 		}
 
-		protected JobHistory CreateJobHistoryOnIntegrationPoint(int integrationPointArtifactId, Guid batchInstance, Relativity.Client.DTOs.Choice jobTypeChoice, Relativity.Client.DTOs.Choice jobStatusChoice = null, bool jobEnded = false)
+		protected JobHistory CreateJobHistoryOnIntegrationPoint(int integrationPointArtifactId, Guid batchInstance, Relativity.Client.DTOs.Choice jobTypeChoice, 
+			Relativity.Client.DTOs.Choice jobStatusChoice = null, bool jobEnded = false)
 		{
 			IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
 			IntegrationPoints.Data.IntegrationPoint integrationPoint = CaseContext.RsapiService.RelativityObjectManager.Read<IntegrationPoints.Data.IntegrationPoint>(integrationPointArtifactId);
@@ -325,23 +325,19 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 					jobServiceManager.UnlockJobs(pickedUpJob.AgentTypeID);
 				}
 			}
-			throw new Exception("Unable to find the job. Please check the integration point agent and make sure that it is turned off.");
+			throw new TestException("Unable to find the job. Please check the integration point agent and make sure that it is turned off.");
 		}
 
 		protected async Task SetupAsync()
 		{
 			await AddAgentServerToResourcePool();
-
-			await Task.Run(() =>
+			
+			if (SharedVariables.UseIpRapFile())
 			{
-				if (SharedVariables.UseIpRapFile())
-				{
-					RelativityApplicationManager.ImportApplicationToLibrary();
-				}
+				await RelativityApplicationManager.ImportApplicationToLibrary();
+			}
 
-				RelativityApplicationManager.InstallApplicationFromLibrary(WorkspaceArtifactId);
-				RelativityApplicationManager.DeployIntegrationPointsCustomPage();
-			});
+			RelativityApplicationManager.InstallApplicationFromLibrary(WorkspaceArtifactId);
 
 			if (CreateAgent)
 			{
@@ -367,7 +363,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			}
 			catch (Exception exception)
 			{
-				throw new Exception("Unable to initialize the user context.", exception);
+				throw new TestException("Unable to initialize the user context.", exception);
 			}
 		}
 
