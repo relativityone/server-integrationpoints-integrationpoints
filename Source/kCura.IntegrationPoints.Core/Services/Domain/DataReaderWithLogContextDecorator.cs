@@ -6,6 +6,7 @@ namespace kCura.IntegrationPoints.Core.Services.Domain
 {
 	public class DataReaderWithLogContextDecorator : IDataReader
 	{
+		private bool _isDisposed;
 		private readonly IDataReader _dataReaderImplementation;
 		private readonly IDisposable _contextRestorer;
 
@@ -13,12 +14,6 @@ namespace kCura.IntegrationPoints.Core.Services.Domain
 		{
 			_dataReaderImplementation = decoratedDataReader;
 			_contextRestorer = new SerilogContextRestorer();
-		}
-
-		public void Dispose()
-		{
-			_dataReaderImplementation.Dispose();
-			_contextRestorer.Dispose();
 		}
 
 		public string GetName(int i)
@@ -229,6 +224,25 @@ namespace kCura.IntegrationPoints.Core.Services.Domain
 				using (new SerilogContextRestorer())
 					return _dataReaderImplementation.RecordsAffected;
 			}
+		}
+
+		protected virtual void Dispose(bool disposing)
+		{
+			if (!_isDisposed)
+			{
+				if (disposing)
+				{
+					_dataReaderImplementation?.Dispose();
+					_contextRestorer?.Dispose();
+				}
+
+				_isDisposed = true;
+			}
+		}
+
+		public void Dispose()
+		{
+			Dispose(true);
 		}
 	}
 }
