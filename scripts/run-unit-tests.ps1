@@ -57,7 +57,8 @@ Write-Verbose "Running unit tests..."
     /Output=$coverageReportPath `
     /ReportType="HTML" `
     /TargetArguments="$unitTestsDlls --skipnontestassemblies --work=$logsDir" `
-    /Filters="+:$projectName*;-:$projectName*.Tests*"
+    /Filters="+:$projectName*;-:$projectName*.Tests*" `
+    /AttributeFilters=System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute
 
 if ($LASTEXITCODE -ne 0) {
     Throw "An error occured during unit tests execution."

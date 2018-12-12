@@ -1,4 +1,4 @@
-framework: netstandard20
+framework: auto-detect
 
 source https://proget.kcura.corp/nuget/NuGet
 
@@ -8,7 +8,7 @@ nuget Autofac ~> 4.8
 nuget Polly ~> 6.1
 nuget Newtonsoft.Json ~> 12.0
 
-# tests
+// Tests
 nuget NUnit ~> 3.11
 nuget FluentAssertions ~> 5.4
 nuget Moq ~> 4.10
