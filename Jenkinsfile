@@ -283,10 +283,18 @@ timestamps
 					{
 						registerEvent(this, session_id, 'Pipeline_Status', currentBuild.result, '-ps', "${sut.name}.${sut.domain}", profile, event_hash, env.BUILD_URL)
 					}
-					withCredentials([usernamePassword(credentialsId: 'TeamCityUser', passwordVariable: 'TEAMCITYPASSWORD', usernameVariable: 'TEAMCITYUSERNAME')])
-					{
-						sendCDSlackNotification(this, env.BUILD_URL, (sut?.name ?: ""), (relativityBuildVersion ?: "0.0.0.0"), env.BRANCH_NAME, params.relativityBuildType, getSlackChannelName(nightlyJobName).toString(), numberOfFailedTests as Integer, numberOfPassedTests as Integer, numberOfSkippedTests as Integer, TEAMCITYUSERNAME, TEAMCITYPASSWORD, currentBuild.result.toString()) 
-					}
+					withCredentials([string(credentialsId: 'SlackJenkinsIntegrationToken', variable: 'token')])
+            		{
+                		message = "*${currentBuild.result.toString()}* ${((currentBuild.result.toString() == "FAILURE") ? ":alert:" : "" )} \n\n" +  
+						"Build *#${env.BUILD_NUMBER}* from *${env.BRANCH_NAME}*.\n" +
+						":greencheck: Passed tests: ${numberOfPassedTests}\n" +
+						":negative_squared_cross_mark: Failed tests: ${numberOfFailedTests}\n" +
+						":yellow_card: Skipped tests: ${numberOfSkippedTests} \n\n" +
+						"${env.BUILD_URL} \n" +
+						"Relativity build type: ${params.relativityBuildType} \n" +
+						"Relativity build version: ${(relativityBuildVersion ?: "0.0.0.0")}"
+                		slackSend channel: getSlackChannelName(nightlyJobName).toString(), color: "E8E8E8", message: "${message}", teamDomain: 'kcura-pd', token: token
+		            }
 				}
 			}
 		}
