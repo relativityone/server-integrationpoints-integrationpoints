@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data.Transformers;
 using kCura.IntegrationPoints.Data.UtilityDTO;
@@ -13,8 +12,6 @@ using Relativity.Services.Objects.DataContracts;
 using FieldRef = Relativity.Services.Objects.DataContracts.FieldRef;
 using QueryResult = Relativity.Services.Objects.DataContracts.QueryResult;
 using RelativityObjectRef = Relativity.Services.Objects.DataContracts.RelativityObjectRef;
-using Polly;
-using Polly.Retry;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
@@ -22,7 +19,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 	{
 		private const int _BATCH_SIZE = 1000;
 
-		private readonly RetryPolicy _retryPolicy;
+		private readonly RetryHandler _retryHandler;
 		private readonly IServicesMgr _servicesMgr;
 		private readonly int _workspaceArtifactId;
 		private readonly IAPILog _logger;
@@ -40,7 +37,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_logger = logger.ForContext<RelativityObjectManager>();
 			_secretStoreHelper = secretStoreHelper;
 
-			_retryPolicy = CreateRetryPolicy();
+			_retryHandler = new RetryHandler(_logger);
 		}
 
 		public int Create<T>(T rdo, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new()
@@ -132,7 +129,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					var request = new DeleteRequest { Object = rdo.ToObjectRef() };
 
 					// ReSharper disable AccessToDisposedClosure
-					DeleteResult result = ExecuteWithRetries(() => client.DeleteAsync(_workspaceArtifactId, request));
+					DeleteResult result = _retryHandler.ExecuteWithRetries(() => client.DeleteAsync(_workspaceArtifactId, request));
 					// ReSharper enable AccessToDisposedClosure
 
 					return result.Report.DeletedItems.Any();
@@ -160,7 +157,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					};
 
 					// ReSharper disable AccessToDisposedClosure
-					DeleteResult result = ExecuteWithRetries(() => client.DeleteAsync(_workspaceArtifactId, request));
+					DeleteResult result = _retryHandler.ExecuteWithRetries(() => client.DeleteAsync(_workspaceArtifactId, request));
 					// ReSharper enable AccessToDisposedClosure
 					return result.Report.DeletedItems.Any();
 				}
@@ -192,7 +189,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				using (var client = _servicesMgr.CreateProxy<IObjectManager>(executionIdentity))
 				{
 					// ReSharper disable AccessToDisposedClosure
-					QueryResult queryResults = await ExecuteWithRetriesAsync(async () => await client.QueryAsync(_workspaceArtifactId, q, start + 1, length).ConfigureAwait(false));
+					QueryResult queryResults = await _retryHandler.ExecuteWithRetriesAsync(async () => await client.QueryAsync(_workspaceArtifactId, q, start + 1, length).ConfigureAwait(false));
 					// ReSharper enable AccessToDisposedClosure
 					return new ResultSet<T>
 					{
@@ -233,7 +230,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					do
 					{
 						// ReSharper disable AccessToDisposedClosure
-						QueryResult partialResult = await ExecuteWithRetriesAsync(async () => await client.QueryAsync(_workspaceArtifactId, q, retrievedResults + 1, _BATCH_SIZE).ConfigureAwait(false));
+						QueryResult partialResult = await _retryHandler.ExecuteWithRetriesAsync(async () => await client.QueryAsync(_workspaceArtifactId, q, retrievedResults + 1, _BATCH_SIZE).ConfigureAwait(false));
 						// ReSharper enable AccessToDisposedClosure
 
 						totalResults = partialResult.TotalCount;
@@ -293,7 +290,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					do
 					{
 						// ReSharper disable AccessToDisposedClosure
-						QueryResult partialResult = await ExecuteWithRetriesAsync(async () => await client.QueryAsync(_workspaceArtifactId, q, retrievedResults + 1, _BATCH_SIZE).ConfigureAwait(false));
+						QueryResult partialResult = await _retryHandler.ExecuteWithRetriesAsync(async () => await client.QueryAsync(_workspaceArtifactId, q, retrievedResults + 1, _BATCH_SIZE).ConfigureAwait(false));
 						// ReSharper enable AccessToDisposedClosure
 
 						totalResults = partialResult.TotalCount;
@@ -334,7 +331,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				using (var client = _servicesMgr.CreateProxy<IObjectManager>(executionIdentity))
 				{
 					// ReSharper disable AccessToDisposedClosure
-					QueryResult result = await ExecuteWithRetriesAsync(async () => await client.QueryAsync(_workspaceArtifactId, q, start + 1, length).ConfigureAwait(false));
+					QueryResult result = await _retryHandler.ExecuteWithRetriesAsync(async () => await client.QueryAsync(_workspaceArtifactId, q, start + 1, length).ConfigureAwait(false));
 					// ReSharper enable AccessToDisposedClosure
 
 					return new ResultSet<RelativityObject>
@@ -363,7 +360,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				using (var client = _servicesMgr.CreateProxy<IObjectManager>(executionIdentity))
 				{
 					// ReSharper disable AccessToDisposedClosure
-					QueryResult result = await ExecuteWithRetriesAsync(async () => await client.QueryAsync(_workspaceArtifactId, q, 1, 1).ConfigureAwait(false));
+					QueryResult result = await _retryHandler.ExecuteWithRetriesAsync(async () => await client.QueryAsync(_workspaceArtifactId, q, 1, 1).ConfigureAwait(false));
 					// ReSharper enable AccessToDisposedClosure
 					return result.TotalCount;
 				}
@@ -405,7 +402,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					_secretStoreHelper.SetEncryptedSecuredConfigurationForNewRdo(createRequest.FieldValues);
 
 					// ReSharper disable AccessToDisposedClosure
-					CreateResult createResult = ExecuteWithRetries(async () => await client.CreateAsync(_workspaceArtifactId, createRequest).ConfigureAwait(false));
+					CreateResult createResult = _retryHandler.ExecuteWithRetries(async () => await client.CreateAsync(_workspaceArtifactId, createRequest).ConfigureAwait(false));
 					// ReSharper enable AccessToDisposedClosure
 					int artifactId = createResult.Object.ArtifactID;
 					return artifactId;
@@ -438,7 +435,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				using (var client = _servicesMgr.CreateProxy<IObjectManager>(executionIdentity))
 				{
 					// ReSharper disable AccessToDisposedClosure
-					ReadResult result = ExecuteWithRetries(async () => await client.ReadAsync(_workspaceArtifactId, request).ConfigureAwait(false));
+					ReadResult result = _retryHandler.ExecuteWithRetries(async () => await client.ReadAsync(_workspaceArtifactId, request).ConfigureAwait(false));
 					// ReSharper restore AccessToDisposedClosure
 					T rdo = result.Object.ToRDO<T>();
 					return decryptSecuredConfiguration ? SetDecryptedSecuredConfiguration(rdo) : rdo;
@@ -461,7 +458,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				using (var client = _servicesMgr.CreateProxy<IObjectManager>(executionIdentity))
 				{
 					// ReSharper disable AccessToDisposedClosure
-					UpdateResult result = ExecuteWithRetries(async () => await client.UpdateAsync(_workspaceArtifactId, request).ConfigureAwait(false));
+					UpdateResult result = _retryHandler.ExecuteWithRetries(async () => await client.UpdateAsync(_workspaceArtifactId, request).ConfigureAwait(false));
 					// ReSharper restore AccessToDisposedClosure
 
 					return result.EventHandlerStatuses.All(x => x.Success);
@@ -490,7 +487,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			if (rdo is IntegrationPoint && rdo.HasField(new Guid(IntegrationPointFieldGuids.SecuredConfiguration)))
 			{
-				var secretId = rdo.GetField<string>(new Guid(IntegrationPointFieldGuids.SecuredConfiguration));
+				string secretId = rdo.GetField<string>(new Guid(IntegrationPointFieldGuids.SecuredConfiguration));
 				if (!String.IsNullOrWhiteSpace(secretId))
 				{
 					var decryptedSecret = _secretStoreHelper.DecryptSecuredConfiguration(secretId);
@@ -537,7 +534,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			};
 		}
 
-
 		private IntegrationPointsException LogObjectManagerException(BaseRdo rdo, string operationName, Exception ex)
 		{
 			string rdoType = GetRdoType(rdo);
@@ -570,44 +566,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private string GetRdoType(BaseRdo rdo)
 		{
 			return rdo?.GetType().Name ?? "[UnknownObjectType]";
-		}
-
-		// TODO extract to separate class
-		private RetryPolicy CreateRetryPolicy()
-		{
-			return Policy
-				.Handle<Exception>()
-				.WaitAndRetryAsync(
-					3,
-					retryAttempt => TimeSpan.FromSeconds(Math.Pow(3, retryAttempt)),
-					(exception, waitTime, retryCount, context) => OnRetry(exception, waitTime, retryCount, context)
-				);
-		}
-
-		private void OnRetry(Exception exception, TimeSpan waitTime, int retryCount, Context context)
-		{
-			string policyKey = context.PolicyKey;
-			_logger.LogWarning(exception,
-				"ObjectManager request failed. RetryCount: {retryCount}, waitTime: {waitTime}, correlationId: {policyKey}",
-				retryCount, waitTime, policyKey);
-		}
-
-		private T ExecuteWithRetries<T>(Func<Task<T>> function, [CallerMemberName] string callerName = "")
-		{
-			return ExecuteWithRetriesAsync(function, callerName)
-				.ConfigureAwait(false)
-				.GetAwaiter()
-				.GetResult();
-		}
-
-		private async Task<T> ExecuteWithRetriesAsync<T>(Func<Task<T>> function, [CallerMemberName] string callerName = "")
-		{
-			return await _retryPolicy
-				.ExecuteAsync(
-					async () => await function().ConfigureAwait(false),
-					false
-				)
-				.ConfigureAwait(false);
 		}
 	}
 }
