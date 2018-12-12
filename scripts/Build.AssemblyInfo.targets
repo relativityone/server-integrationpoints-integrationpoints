@@ -4,5 +4,6 @@
         <Product>Relativity Sync</Product>
         <Description>Relativity Sync</Description>
         <Copyright>© Relativity</Copyright>
+        <Company>Relativity ODA LLC</Company>
     </PropertyGroup>
 </Project>

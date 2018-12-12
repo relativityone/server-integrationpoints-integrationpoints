@@ -9,7 +9,7 @@
     <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
-  <Import Project="..\..\scripts\Build.Version.targets" />
+  <Import Project="..\..\scripts\Build.AssemblyInfo.targets" />
   <Import Project="..\..\scripts\Build.Sign.targets" />
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

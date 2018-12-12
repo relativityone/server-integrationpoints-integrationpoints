@@ -9,6 +9,6 @@
     <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
-  <Import Project="..\..\scripts\Build.Version.targets" />
+  <Import Project="..\..\scripts\Build.AssemblyInfo.targets" />
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
