@@ -3,10 +3,10 @@
 // Based on https://git.kcura.com/projects/RAID/repos/rmtjobs/browse/Template.jenkinsfile
 // Set PipelineTools label to the same as here: https://git.kcura.com/projects/REL/repos/relativity/browse/Junkinsfile
 
-library 'PipelineTools@RelativityCD-6.3.0'
+library 'PipelineTools@RMT-9.3.1'
 library 'SCVMMHelpers@3.2.0'
 library 'GitHelpers@1.0.0'
-library 'SlackHelpers@1.0.0'
+library 'SlackHelpers@3.0.0'
 
 import groovy.transform.Field
 
@@ -36,8 +36,8 @@ def relativityBranch = params.relativityBranch ?: env.BRANCH_NAME
 // This should be changed on the release branch
 def relativityBranchFallback = "develop"
 
-// When RAID stage fails, verify if newer versions of cookboos exist
-def ripCookbooks = '"relativity:= 4.1.12,role-testvm:= 3.12.0,role-ci:= 1.3.2,sql:= 2.4.1,servicebus:= 1.0.0"'
+def chef_attributes = 'fluidOn:1,cdonprem:1'
+def ripCookbooks = getCookbooks()
 
 // Set this the same as in psake-test.ps1 in DevelopmentScripts
 def integration_tests_results_file_path = "DevelopmentScripts/IntegrationTestsResults.xml"
@@ -143,27 +143,21 @@ timestamps
 						parallel (
 							Deploy:
 							{
-								registerEvent(this, session_id, 'Talos_Provision_test_CD', 'PASS', '-c', "${sut.name}.${sut.domain}", profile, event_hash)
 								if (installing_relativity)
 								{
 									(relativityBuildVersion, relativityBranch) = getNewBranchAndVersion(relativityBranchFallback, relativityBranch, params.relativityBuildVersion, params.relativityBuildType, session_id)
-									echo "Installing Relativity, branch: $relativityBranch, version: $relativityBuildVersion, type: $params.relativityBuildType"
-									sendVersionToElastic(this, "Relativity", relativityBranch, relativityBuildVersion, params.relativityBuildType, session_id)
+									echo "Installing Relativity, branch: $relativityBranch, version: $relativityBuildVersion, type: $params.relativityBuildType"									
 								}
-
-								withCredentials([
-									usernamePassword(credentialsId: 'proget_ci', passwordVariable: 'PROGETPASSWORD', usernameVariable: 'PROGETUSERNAME'),
-									usernamePassword(credentialsId: 'cd_sut_svc', passwordVariable: 'SUTPASSWORD', usernameVariable: 'SUTUSERNAME'),
-									usernamePassword(credentialsId: 'eddsdbo', passwordVariable: 'EDDSDBOPASSWORD', usernameVariable: 'EDDSDBOUSERNAME')])
-								{
-									deployments = [['product' : 'rel', 'build' : relativityBuildVersion, 'branch' : relativityBranch, 'type' : params.relativityBuildType]]
-									attributeValues = makeAttributeValues(deployments, SUTUSERNAME, SUTPASSWORD, EDDSDBOPASSWORD)
-									uploadEnvironmentFile(this, sut.name, ripCookbooks, attributeValues, knife, session_id, PROGETUSERNAME, PROGETPASSWORD)
-									addRunlist(this, session_id, sut.name, sut.ip, run_list, knife, SUTUSERNAME, SUTPASSWORD)
-								}
-
-								tags = getTags(this, sut.name, knife, session_id)
-								checkTags(deployments, tags)
+								
+								uploadEnvironmentFile(this, sut.name, relativityBuildVersion, relativityBranch, relativityBuildType,
+									"", "", // invariant version and branch
+									ripCookbooks, chef_attributes, knife,
+									"", "", // analytics version and branch
+									session_id, installing_relativity, installing_invariant, installing_analytics
+								)
+								
+								addRunlist(this, session_id, sut.name, sut.domain, sut.ip, run_list, knife, profile, event_hash, "", "")
+								
 								checkWorkspaceUpgrade(this, sut.name, session_id)
 							},
 							ProvisionNodes:
@@ -171,11 +165,7 @@ timestamps
 								def numberOfSlaves = 1
 								def numberOfExecutors = '1'
 								ScvmmInstance.createNodes(numberOfSlaves, 60, numberOfExecutors)
-								withCredentials([
-									usernamePassword(credentialsId: 'JenkinsSDLC', passwordVariable: 'SDLCPASSWORD', usernameVariable: 'SDLCUSERNAME')])
-								{
-									bootstrapDependencies(this, python_packages, relativityBranch, relativityBuildVersion, params.relativityBuildType, session_id, SDLCUSERNAME, SDLCPASSWORD)
-								}
+								bootstrapDependencies(this, python_packages, relativityBranch, relativityBuildVersion, params.relativityBuildType, session_id)
 							}
 						)
 					}
@@ -279,22 +269,19 @@ timestamps
 				timeout(time: 3, unit: 'MINUTES')
 				{
 					step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
-					if (sut?.name)
-					{
-						registerEvent(this, session_id, 'Pipeline_Status', currentBuild.result, '-ps', "${sut.name}.${sut.domain}", profile, event_hash, env.BUILD_URL)
-					}
 					withCredentials([string(credentialsId: 'SlackJenkinsIntegrationToken', variable: 'token')])
-            		{
-                		message = "*${currentBuild.result.toString()}* ${((currentBuild.result.toString() == "FAILURE") ? ":alert:" : "" )} \n\n" +  
-						"Build *#${env.BUILD_NUMBER}* from *${env.BRANCH_NAME}*.\n" +
-						":greencheck: Passed tests: ${numberOfPassedTests}\n" +
-						":negative_squared_cross_mark: Failed tests: ${numberOfFailedTests}\n" +
-						":yellow_card: Skipped tests: ${numberOfSkippedTests} \n\n" +
-						"${env.BUILD_URL} \n" +
-						"Relativity build type: ${params.relativityBuildType} \n" +
-						"Relativity build version: ${(relativityBuildVersion ?: "0.0.0.0")}"
-                		slackSend channel: getSlackChannelName(nightlyJobName).toString(), color: "E8E8E8", message: "${message}", teamDomain: 'kcura-pd', token: token
-		            }
+					{
+						message = "*${currentBuild.result.toString()}* ${((currentBuild.result.toString() == "FAILURE") ? ":alert:" : "" )} \n\n" +  
+							"Build *#${env.BUILD_NUMBER}* from *${env.BRANCH_NAME}*.\n" +
+							":greencheck: Passed tests: ${numberOfPassedTests}\n" +
+							":negative_squared_cross_mark: Failed tests: ${numberOfFailedTests}\n" +
+							":yellow_card: Skipped tests: ${numberOfSkippedTests} \n\n" +
+							"${env.BUILD_URL} \n" +
+							"Relativity branch: ${relativityBranch} \n" +
+							"Relativity build type: ${params.relativityBuildType} \n" +
+							"Relativity build version: ${(relativityBuildVersion ?: "0.0.0.0")}"
+						slackSend channel: getSlackChannelName(nightlyJobName).toString(), color: "E8E8E8", message: "${message}", teamDomain: 'kcura-pd', token: token
+					}
 				}
 			}
 		}
@@ -303,7 +290,6 @@ timestamps
 			echo "Reporting failed: $err"
 		}
 	}
-	
 }
 
 
