@@ -9,8 +9,8 @@ namespace kCura.IntegrationPoints.Data
 {
 	internal class RetryHandler
 	{
-		private const int _NUMBER_OF_RETRIES = 3;
-		private const int _EXPONENTIAL_WAIT_TIME_BASE = 3;
+		private const int _MAX_NUMER_OF_RETRIES = 3;
+		private const int _EXPONENTIAL_WAIT_TIME_BASE_IN_SEC = 3;
 		private readonly IAPILog _logger;
 		private readonly RetryPolicy _retryPolicy;
 
@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Data
 			_logger = logger.ForContext<RetryHandler>();
 			_retryPolicy = CreateRetryPolicy();
 		}
-		
+
 		public T ExecuteWithRetries<T>(Func<Task<T>> function, [CallerMemberName] string callerName = "")
 		{
 			return ExecuteWithRetriesAsync(function, callerName)
@@ -28,14 +28,9 @@ namespace kCura.IntegrationPoints.Data
 				.GetResult();
 		}
 
-		public async Task<T> ExecuteWithRetriesAsync<T>(Func<Task<T>> function, [CallerMemberName] string callerName = "")
+		public Task<T> ExecuteWithRetriesAsync<T>(Func<Task<T>> function, [CallerMemberName] string callerName = "")
 		{
-			return await _retryPolicy
-				.ExecuteAsync(
-					async () => await function().ConfigureAwait(false),
-					false
-				)
-				.ConfigureAwait(false);
+			return _retryPolicy.ExecuteAsync(function, continueOnCapturedContext: false);
 		}
 
 		private RetryPolicy CreateRetryPolicy()
@@ -43,8 +38,8 @@ namespace kCura.IntegrationPoints.Data
 			return Policy
 				.Handle<Exception>()
 				.WaitAndRetryAsync(
-					_NUMBER_OF_RETRIES,
-					retryAttempt => TimeSpan.FromSeconds(Math.Pow(_EXPONENTIAL_WAIT_TIME_BASE, retryAttempt)),
+					_MAX_NUMER_OF_RETRIES,
+					retryAttempt => TimeSpan.FromSeconds(Math.Pow(_EXPONENTIAL_WAIT_TIME_BASE_IN_SEC, retryAttempt)),
 					(exception, waitTime, retryCount, context) => OnRetry(exception, waitTime, retryCount, context)
 				);
 		}
@@ -53,7 +48,7 @@ namespace kCura.IntegrationPoints.Data
 		{
 			string policyKey = context.PolicyKey;
 			_logger.LogWarning(exception,
-				"ObjectManager request failed. RetryCount: {retryCount}, waitTime: {waitTime}, correlationId: {policyKey}",
+				"Requested operation failed. RetryCount: {retryCount}, waitTime: {waitTime}, correlationId: {policyKey}",
 				retryCount, waitTime, policyKey);
 		}
 	}
