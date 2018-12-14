@@ -29,14 +29,15 @@ task build_initalize {
     [System.IO.Directory]::CreateDirectory($buildlogs_directory)
 }
 
-task get_sonarqube -precondition { (-not [System.IO.File]::Exists($sonarCube_exe)) } {
+task get_sonarqube -precondition { (-not [System.IO.File]::Exists($sonarCube_exe)) } {    
     exec {
-        & $nuget_exe @('install', 'MSBuild.SonarQube.Runner.Tool', '-ExcludeVersion', '-Version', $sonarqube_version)
-    }
+    & $nuget_exe @('install', 'MSBuild.SonarQube.Runner.Tool', '-ExcludeVersion', '-Version', $sonarqube_version)
+    }      
 }
+
 task get_buildhelper -precondition { (-not [System.IO.File]::Exists($buildhelper_exe)) } {
     exec {
-        & $nuget_exe @('install', 'kCura.BuildHelper', '-ExcludeVersion')
+        & $nuget_exe @('install', 'kCura.BuildHelper', '-ExcludeVersion', '-Source', $proget_server)
     }      
     Copy-Item ([System.IO.Path]::Combine($development_scripts_directory, 'kCura.BuildHelper', 'lib', 'kCura.BuildHelper.exe')) $development_scripts_directory
 }
@@ -418,7 +419,7 @@ task copy_chrome_driver -depends create_lib_dir, build_projects -precondition { 
 	Copy-Item -path $chromedriver_path -Destination $tests_directory
 }
 
-task start_sonar -depends get_sonarqube -precondition { return $RUN_SONARQUBE } {  
+task start_sonar -depends get_sonarqube -precondition { return $RUN_SONARQUBE -and [System.IO.File]::Exists($sonarCube_exe)} {     
     $args = @(
         'begin',
         ("/k:$sonarqube_project_key"),
@@ -427,10 +428,10 @@ task start_sonar -depends get_sonarqube -precondition { return $RUN_SONARQUBE } 
         ("/s:$sonarqube_properties"),
         ("/d:sonar.cs.nunit.reportsPaths=""$NUnit_TestOutputFile"""),
         ("/d:sonar.cs.dotcover.reportsPaths=""$dotCover_result"""))
-    & $sonarqube_exe $args
+    & $sonarqube_exe $args    
 }
 
-task stop_sonar -precondition { return $RUN_SONARQUBE }{
+task stop_sonar -precondition { return $RUN_SONARQUBE -and [System.IO.File]::Exists($sonarCube_exe)}{
     $args = @(
         'end')
 
