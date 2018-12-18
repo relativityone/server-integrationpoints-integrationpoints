@@ -114,6 +114,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 		[Test]
 		[Category(Constants.SMOKE_TEST)]
+		[Ignore("Unstable - to be fixed -> REL-280310")]
 		public void RunRelativityProviderAlone()
 		{
 			// arrange
