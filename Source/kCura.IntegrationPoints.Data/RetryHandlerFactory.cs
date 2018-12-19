@@ -1,0 +1,20 @@
+﻿using kCura.IntegrationPoints.Data.Interfaces;
+using Relativity.API;
+
+namespace kCura.IntegrationPoints.Data
+{
+	internal class RetryHandlerFactory : IRetryHandlerFactory
+	{
+		private readonly IAPILog _logger;
+
+		public RetryHandlerFactory(IAPILog logger)
+		{
+			_logger = logger;
+		}
+
+		public IRetryHandler Create(ushort maxNumberOfRetries = 3, ushort exponentialWaitTimeBaseInSeconds = 3)
+		{
+			return new RetryHandler(_logger, maxNumberOfRetries, exponentialWaitTimeBaseInSeconds);
+		}
+	}
+}

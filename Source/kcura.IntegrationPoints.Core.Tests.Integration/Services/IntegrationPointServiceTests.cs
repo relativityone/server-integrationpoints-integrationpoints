@@ -207,6 +207,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 		[Test]
 		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
+		[Ignore("Unstable - to be fixed -> REL-280316")]
 		public void CreateAndRunIntegrationPoint_GoldFlow()
 		{
 			//Arrange

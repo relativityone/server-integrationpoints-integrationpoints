@@ -29,50 +29,50 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 			_logger = logger.ForContext<ObjectManagerFacade>();
 		}
 
-		public async Task<CreateResult> CreateAsync(int workspaceArtifactId, CreateRequest createRequest)
+		public async Task<CreateResult> CreateAsync(int workspaceArtifactID, CreateRequest createRequest)
 		{
 			IExternalServiceInstrumentationStarted startedInstrumentation = StartInstrumentation();
 			CreateResult result =
-				await Execute(x => x.CreateAsync(workspaceArtifactId, createRequest), startedInstrumentation)
+				await Execute(x => x.CreateAsync(workspaceArtifactID, createRequest), startedInstrumentation)
 					.ConfigureAwait(false);
 			CompleteResultWithEventHandlers(result.EventHandlerStatuses, startedInstrumentation);
 			return result;
 		}
 
-		public async Task<DeleteResult> DeleteAsync(int workspaceArtifactId, DeleteRequest request)
+		public async Task<DeleteResult> DeleteAsync(int workspaceArtifactID, DeleteRequest request)
 		{
 			IExternalServiceInstrumentationStarted startedInstrumentation = StartInstrumentation();
 			DeleteResult result =
-				await Execute(x => x.DeleteAsync(workspaceArtifactId, request), startedInstrumentation)
+				await Execute(x => x.DeleteAsync(workspaceArtifactID, request), startedInstrumentation)
 					.ConfigureAwait(false);
 			startedInstrumentation.Completed();
 			return result;
 		}
 
-		public async Task<QueryResult> QueryAsync(int workspaceArtifactId, QueryRequest request, int start, int length)
+		public async Task<QueryResult> QueryAsync(int workspaceArtifactID, QueryRequest request, int start, int length)
 		{
 			IExternalServiceInstrumentationStarted startedInstrumentation = StartInstrumentation();
 			QueryResult result =
-				await Execute(x => x.QueryAsync(workspaceArtifactId, request, start, length), startedInstrumentation)
+				await Execute(x => x.QueryAsync(workspaceArtifactID, request, start, length), startedInstrumentation)
 					.ConfigureAwait(false);
 			startedInstrumentation.Completed();
 			return result;
 		}
 
-		public async Task<ReadResult> ReadAsync(int workspaceArtifactId, ReadRequest request)
+		public async Task<ReadResult> ReadAsync(int workspaceArtifactID, ReadRequest request)
 		{
 			IExternalServiceInstrumentationStarted startedInstrumentation = StartInstrumentation();
-			ReadResult result = await Execute(x => x.ReadAsync(workspaceArtifactId, request), startedInstrumentation)
+			ReadResult result = await Execute(x => x.ReadAsync(workspaceArtifactID, request), startedInstrumentation)
 				.ConfigureAwait(false);
 			startedInstrumentation.Completed();
 			return result;
 		}
 
-		public async Task<UpdateResult> UpdateAsync(int workspaceArtifactId, UpdateRequest request)
+		public async Task<UpdateResult> UpdateAsync(int workspaceArtifactID, UpdateRequest request)
 		{
 			IExternalServiceInstrumentationStarted startedInstrumentation = StartInstrumentation();
 			UpdateResult result =
-				await Execute(x => x.UpdateAsync(workspaceArtifactId, request), startedInstrumentation)
+				await Execute(x => x.UpdateAsync(workspaceArtifactID, request), startedInstrumentation)
 					.ConfigureAwait(false);
 			CompleteResultWithEventHandlers(result.EventHandlerStatuses, startedInstrumentation);
 			return result;
