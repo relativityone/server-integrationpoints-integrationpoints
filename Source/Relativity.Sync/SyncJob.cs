@@ -11,7 +11,7 @@ namespace Relativity.Sync
 			throw new NotImplementedException();
 		}
 
-		public void Abort()
+		public Task RetryAsync(CancellationToken token)
 		{
 			throw new NotImplementedException();
 		}

@@ -27,9 +27,9 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public void ItShouldAbortJob()
+		public void ItShouldRetryJob()
 		{
-			Action action = () => _instance.Abort();
+			Func<Task> action = async () => await _instance.RetryAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
 			action.Should().Throw<NotImplementedException>();

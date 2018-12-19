@@ -15,11 +15,9 @@ namespace Relativity.Sync
 		Task ExecuteAsync(CancellationToken token);
 
 		/// <summary>
-		///     Aborts job without waiting for current step to complete
+		///     Retries job
 		/// </summary>
-		/// <remarks>
-		///     Preferred way to manage job cancellation is to pass CancellationToken to ExecuteAsync method
-		/// </remarks>
-		void Abort();
+		/// <param name="token">Cancellation token</param>
+		Task RetryAsync(CancellationToken token);
 	}
 }
