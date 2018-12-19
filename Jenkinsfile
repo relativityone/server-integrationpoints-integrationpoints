@@ -34,7 +34,7 @@ def relativityBranch = params.relativityBranch ?: env.BRANCH_NAME
 // *********
 // Set variable below to the branch name, when you create new release branch!!!
 // This should be changed on the release branch
-def relativityBranchFallback = "develop"
+def relativityBranchFallback = "release-10.1-blazingstar"
 
 def chef_attributes = 'fluidOn:1,cdonprem:1'
 def ripCookbooks = getCookbooks()
@@ -149,7 +149,7 @@ timestamps
 									echo "Installing Relativity, branch: $relativityBranch, version: $relativityBuildVersion, type: $params.relativityBuildType"									
 								}
 								
-								uploadEnvironmentFile(this, sut.name, relativityBuildVersion, relativityBranch, relativityBuildType,
+								uploadEnvironmentFile(this, sut.name, relativityBuildVersion, relativityBranch, params.relativityBuildType,
 									"", "", // invariant version and branch
 									ripCookbooks, chef_attributes, knife,
 									"", "", // analytics version and branch
