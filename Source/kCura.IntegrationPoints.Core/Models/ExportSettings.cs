@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using FileNaming.CustomFileNaming;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.WinEDDS.Core.Model;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 {

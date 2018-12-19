@@ -2,8 +2,7 @@
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Extensions;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.WinEDDS;
-using kCura.WinEDDS.Core.Export.Natives.Name;
-using kCura.WinEDDS.Core.Export.Natives.Name.Factories;
+using kCura.WinEDDS.FileNaming.CustomFileNaming;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers.FileNaming
 {
@@ -16,7 +15,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers.FileNami
 			{
 				{ExportNativeWithFilenameFrom.Identifier, new IdentifierExportFileNameProvider(exportContext.ExportFile) },
 				{ExportNativeWithFilenameFrom.Production, new ProductionExportFileNameProvider(exportContext.ExportFile, nameTextAndNativesAfterBegBates) },
-				{ExportNativeWithFilenameFrom.Custom, new CustomFileNameProvider(exportContext.Settings.FileNameParts, new FileNamePartProviderContainer()) }
+				{ExportNativeWithFilenameFrom.Custom, new CustomFileNameProvider(exportContext.Settings.FileNameParts, new FileNamePartProviderContainer(), exportContext.ExportFile.AppendOriginalFileName) }
 			};
 
 			return fileNameProviders;

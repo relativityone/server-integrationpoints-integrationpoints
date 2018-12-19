@@ -6,7 +6,6 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.Extensions;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers.FileNaming;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
-using kCura.WinEDDS.Core.Model.Export;
 using kCura.WinEDDS.Service.Export;
 using NSubstitute;
 using NUnit.Framework;
