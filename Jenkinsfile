@@ -149,7 +149,7 @@ timestamps
 									echo "Installing Relativity, branch: $relativityBranch, version: $relativityBuildVersion, type: $params.relativityBuildType"									
 								}
 								
-								uploadEnvironmentFile(this, sut.name, relativityBuildVersion, relativityBranch, relativityBuildType,
+								uploadEnvironmentFile(this, sut.name, relativityBuildVersion, relativityBranch, $params.relativityBuildType,
 									"", "", // invariant version and branch
 									ripCookbooks, chef_attributes, knife,
 									"", "", // analytics version and branch
