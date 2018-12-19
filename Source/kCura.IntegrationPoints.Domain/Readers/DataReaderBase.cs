@@ -5,6 +5,7 @@ namespace kCura.IntegrationPoints.Domain.Readers
 {
 	public abstract class DataReaderBase : IDataReader
 	{
+		private bool _isDisposed = false; 
 		//Abstract Properties
 
 		public abstract int FieldCount { get; }
@@ -159,6 +160,11 @@ namespace kCura.IntegrationPoints.Domain.Readers
 
 		private void Dispose(bool disposing)
 		{
+			if (_isDisposed)
+			{
+				return;
+			}
+
 			if (disposing)
 			{
 				try
@@ -170,6 +176,7 @@ namespace kCura.IntegrationPoints.Domain.Readers
 					throw new SystemException("An exception of type " + e.GetType() +
 											  " was encountered while closing the " + this.GetType().Name);
 				}
+				_isDisposed = true;
 			}
 		}
 
