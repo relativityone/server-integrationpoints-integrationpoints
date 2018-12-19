@@ -13,7 +13,6 @@ using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -186,11 +185,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				LogExecuteTaskStart(job);
 				
 				SetIntegrationPoint(job);
-				
-				SourceConfiguration sourceConfiguration = Serializer.Deserialize<SourceConfiguration>(IntegrationPoint.SourceConfiguration);
-				ImportSettings importSettings = Serializer.Deserialize<ImportSettings>(IntegrationPoint.DestinationConfiguration);
 
-				_statisticsService?.SetIntegrationPointConfiguration(importSettings, sourceConfiguration);
+				SetupIntegrationPointsConfigurationForStatisticsService(IntegrationPoint);
+
 				List<string> entryIDs = GetEntryIDs(job);
 				SetJobHistory();
 
@@ -376,7 +373,28 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 		}
 
+		private void SetupIntegrationPointsConfigurationForStatisticsService(IntegrationPoint ip)
+		{
+			try
+			{
+				SourceConfiguration sourceConfiguration = Serializer.Deserialize<SourceConfiguration>(ip?.SourceConfiguration);
+				ImportSettings importSettings = Serializer.Deserialize<ImportSettings>(ip?.DestinationConfiguration);
+				_statisticsService?.SetIntegrationPointConfiguration(importSettings, sourceConfiguration);
+			}
+			catch (Exception ex)
+			{
+				LogSetupIntegrationPointsConfigurationForStatisticsServiceError(ip, ex);
+			}
+		}
+
 		#region Logging
+
+		private void LogSetupIntegrationPointsConfigurationForStatisticsServiceError(IntegrationPoint ip, Exception ex)
+		{
+			string msg =
+				"Failed to set up integration point configuration for statistics service. SourceConfiguration: {sourceConfiguration}. DestinationConfiguration: {destinationConfiguration}";
+			_logger.LogWarning(ex, msg, ip?.SourceConfiguration, ip?.DestinationConfiguration);
+		}
 
 		private void LogExecutingTaskError(Job job, Exception ex)
 		{
