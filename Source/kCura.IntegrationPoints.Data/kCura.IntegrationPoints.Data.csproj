@@ -70,7 +70,10 @@
     <Compile Include="Extensions\ResultSetExtensions.cs" />
     <Compile Include="Extensions\TaskExtension.cs" />
     <Compile Include="Facades\Implementations\ObjectManagerFacade.cs" />
+    <Compile Include="Facades\Implementations\ObjectManagerFacadeFactory.cs" />
+    <Compile Include="Facades\Implementations\ObjectManagerFacadeWithRetries.cs" />
     <Compile Include="Facades\IObjectManagerFacade.cs" />
+    <Compile Include="Facades\IObjectManagerFacadeFactory.cs" />
     <Compile Include="Factories\Implementations\RelativityObjectManagerFactory.cs" />
     <Compile Include="Factories\IRelativityObjectManagerFactory.cs" />
     <Compile Include="Factories\IRSAPIServiceFactory.cs" />
@@ -82,8 +85,10 @@
     <Compile Include="IIntegrationPointBaseFieldsConstants.cs" />
     <Compile Include="IIntegrationPointQuery.cs" />
     <Compile Include="IntegrationPointBaseQuery.cs" />
+    <Compile Include="Interfaces\IRetryHandlerFactory.cs" />
     <Compile Include="IResourceDbProvider.cs" />
     <Compile Include="IResourcePoolContext.cs" />
+    <Compile Include="Interfaces\IRetryHandler.cs" />
     <Compile Include="IRsapiClientWithWorkspaceFactory.cs" />
     <Compile Include="Logging\ISystemEventLoggingService.cs" />
     <Compile Include="Migrations\Migration.cs" />
@@ -130,6 +135,8 @@
     <Compile Include="Repositories\IRelativityObjectManager.cs" />
     <Compile Include="Repositories\IJobRepository.cs" />
     <Compile Include="ResourcePoolContext.cs" />
+    <Compile Include="RetryHandler.cs" />
+    <Compile Include="RetryHandlerFactory.cs" />
     <Compile Include="RSAPIClient\IRsapiClientFactory.cs" />
     <Compile Include="RSAPIClient\RsapiClientFactory.cs" />
     <Compile Include="RSAPIClient\RsapiClientWrapperWithLogging.cs" />
@@ -422,6 +429,17 @@
       <ItemGroup>
         <Reference Include="Newtonsoft.Json">
           <HintPath>..\..\packages\Newtonsoft.Json\lib\net45\Newtonsoft.Json.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Polly">
+          <HintPath>..\..\packages\Polly\lib\net45\Polly.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

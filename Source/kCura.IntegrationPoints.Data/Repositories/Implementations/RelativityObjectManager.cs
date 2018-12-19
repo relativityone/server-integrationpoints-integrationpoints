@@ -1,11 +1,8 @@
-﻿using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
-using kCura.IntegrationPoints.Data.Facades;
-using kCura.IntegrationPoints.Data.Facades.Implementations;
+﻿using kCura.IntegrationPoints.Data.Facades;
 using kCura.IntegrationPoints.Data.Transformers;
 using kCura.IntegrationPoints.Data.UtilityDTO;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using Relativity.API;
-using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using System;
 using System.Collections.Generic;
@@ -20,20 +17,22 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 	public class RelativityObjectManager : IRelativityObjectManager
 	{
 		private const int _BATCH_SIZE = 1000;
-		private readonly IServicesMgr _servicesMgr;
-		private readonly IAPILog _logger;
-		private readonly int _workspaceArtifactId;
-		private readonly ISecretStoreHelper _secretStoreHelper;
-		private readonly IExternalServiceInstrumentationProvider _instrumentationProvider;
 
-		public RelativityObjectManager(int workspaceArtifactId, IServicesMgr servicesMgr, IAPILog logger,
-			ISecretStoreHelper secretStoreHelper, IExternalServiceInstrumentationProvider instrumentationProvider)
+		private readonly int _workspaceArtifactId;
+		private readonly IAPILog _logger;
+		private readonly ISecretStoreHelper _secretStoreHelper;
+		private readonly IObjectManagerFacadeFactory _objectManagerFacadeFactory;
+
+		internal RelativityObjectManager(
+			int workspaceArtifactId,
+			IAPILog logger,
+			ISecretStoreHelper secretStoreHelper,
+			IObjectManagerFacadeFactory objectManagerFacadeFactory)
 		{
 			_workspaceArtifactId = workspaceArtifactId;
-			_servicesMgr = servicesMgr;
 			_logger = logger.ForContext<RelativityObjectManager>();
 			_secretStoreHelper = secretStoreHelper;
-			_instrumentationProvider = instrumentationProvider;
+			_objectManagerFacadeFactory = objectManagerFacadeFactory;
 		}
 
 		public int Create<T>(T rdo, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new()
@@ -119,7 +118,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			try
 			{
-				using (IObjectManagerFacade client = CreateObjectManagerClient(executionIdentity))
+				using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(executionIdentity))
 				{
 					var request = new DeleteRequest
 					{
@@ -145,7 +144,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			try
 			{
-				using (IObjectManagerFacade client = CreateObjectManagerClient(executionIdentity))
+				using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(executionIdentity))
 				{
 					var request = new DeleteRequest
 					{
@@ -182,7 +181,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				BootstrapQuery<T>(q, noFields);
 
-				using (IObjectManagerFacade client = CreateObjectManagerClient(executionIdentity))
+				using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(executionIdentity))
 				{
 					QueryResult queryResults = await client.QueryAsync(_workspaceArtifactId, q, start + 1, length)
 						.ConfigureAwait(false);
@@ -216,7 +215,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				BootstrapQuery<T>(q, noFields);
 
-				using (IObjectManagerFacade client = CreateObjectManagerClient(executionIdentity))
+				using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(executionIdentity))
 				{
 					List<T> output = null;
 					int retrievedResults = 0;
@@ -277,7 +276,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			try
 			{
-				using (IObjectManagerFacade client = CreateObjectManagerClient(executionIdentity))
+				using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(executionIdentity))
 				{
 					List<RelativityObject> output = null;
 					int retrievedResults = 0;
@@ -324,7 +323,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			try
 			{
-				using (IObjectManagerFacade client = CreateObjectManagerClient(executionIdentity))
+				using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(executionIdentity))
 				{
 					QueryResult result = await client.QueryAsync(_workspaceArtifactId, q, start + 1, length)
 						.ConfigureAwait(false);
@@ -356,7 +355,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			try
 			{
-				using (IObjectManagerFacade client = CreateObjectManagerClient(executionIdentity))
+				using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(executionIdentity))
 				{
 					QueryResult result = await client.QueryAsync(_workspaceArtifactId, q, 1, 1).ConfigureAwait(false);
 					return result.TotalCount;
@@ -394,7 +393,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			try
 			{
-				using (IObjectManagerFacade client = CreateObjectManagerClient(executionIdentity))
+				using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(executionIdentity))
 				{
 					_secretStoreHelper.SetEncryptedSecuredConfigurationForNewRdo(createRequest.FieldValues);
 
@@ -430,7 +429,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			try
 			{
-				using (IObjectManagerFacade client = CreateObjectManagerClient(executionIdentity))
+				using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(executionIdentity))
 				{
 					ReadResult result = client.ReadAsync(_workspaceArtifactId, request)
 						.GetAwaiter()
@@ -453,12 +452,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			try
 			{
-				using (IObjectManagerFacade client = CreateObjectManagerClient(executionIdentity))
+				using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(executionIdentity))
 				{
 					UpdateResult result = client.UpdateAsync(_workspaceArtifactId, request)
 						.GetAwaiter()
 						.GetResult();
-					return !result.EventHandlerStatuses.Any(x => !x.Success);
+					return result.EventHandlerStatuses.All(x => x.Success);
 				}
 			}
 			catch (IntegrationPointsException)
@@ -485,10 +484,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			if (rdo is IntegrationPoint && rdo.HasField(new Guid(IntegrationPointFieldGuids.SecuredConfiguration)))
 			{
 				string secretId = rdo.GetField<string>(new Guid(IntegrationPointFieldGuids.SecuredConfiguration));
-				if (!String.IsNullOrWhiteSpace(secretId))
+				if (!string.IsNullOrWhiteSpace(secretId))
 				{
 					string decryptedSecret = _secretStoreHelper.DecryptSecuredConfiguration(secretId);
-					if (!String.IsNullOrWhiteSpace(decryptedSecret))
+					if (!string.IsNullOrWhiteSpace(decryptedSecret))
 					{
 						rdo.SetField<string>(new Guid(IntegrationPointFieldGuids.SecuredConfiguration), decryptedSecret);
 						return rdo;
@@ -520,7 +519,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			};
 		}
 
-
 		private IntegrationPointsException LogObjectManagerException(BaseRdo rdo, string operationName, Exception ex)
 		{
 			string rdoType = GetRdoType(rdo);
@@ -547,17 +545,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private string ConvertFieldsToStringRepresentation(QueryRequest queryRequest)
 		{
 			IEnumerable<string> fieldsAsString = queryRequest?.Fields?.Select(x => $"({x.Name}: {x.Guid})");
-			return string.Join(", ", fieldsAsString);
+			return fieldsAsString != null ? string.Join(", ", fieldsAsString) : string.Empty;
 		}
 
 		private string GetRdoType(BaseRdo rdo)
 		{
 			return rdo?.GetType().Name ?? "[UnknownObjectType]";
-		}
-
-		private IObjectManagerFacade CreateObjectManagerClient(ExecutionIdentity executionIdentity)
-		{
-			return new ObjectManagerFacade(() => _servicesMgr.CreateProxy<IObjectManager>(executionIdentity), _instrumentationProvider, _logger);
 		}
 	}
 }

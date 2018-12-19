@@ -2,9 +2,11 @@ CSharpGuidelineAnalyzer
 kCura.Relativity.Client
 NSubstitute
 NUnit
+Polly
 Relativity
 Relativity.API
 Relativity.Productions.Services.Interfaces
 Relativity.Services.Interfaces.Private
+Moq
 Newtonsoft.Json
 FluentAssertions
