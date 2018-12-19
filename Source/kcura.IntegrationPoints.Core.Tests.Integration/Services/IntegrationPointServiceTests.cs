@@ -207,6 +207,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 		[Test]
 		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
+		[Ignore("Test to be fixed, Jira: REL-280316")]
 		public void CreateAndRunIntegrationPoint_GoldFlow()
 		{
 			//Arrange

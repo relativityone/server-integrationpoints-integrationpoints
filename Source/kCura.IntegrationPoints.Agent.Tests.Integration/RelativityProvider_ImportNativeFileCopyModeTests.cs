@@ -123,6 +123,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 		[Test]
 		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
+		[Ignore("Test to be fixed, Jira: REL-280718")]
 		public void NativesShouldNotBeDeletedInTargetWorkspace_InDoNotImportNativesMode()
 		{
 			TestNativeFilesImport(false, true, false, ImportNativeFileCopyModeEnum.DoNotImportNativeFiles, true);
