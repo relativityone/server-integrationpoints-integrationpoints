@@ -12,6 +12,7 @@ Relativity.Core
 Relativity.Data
 Relativity.ImportExport
 Relativity.Kepler
+Relativity.Productions.Services.Interfaces
 Relativity.Services.Interfaces
 Relativity.Telemetry.DataContracts.Shared
 Relativity.Telemetry.Services.Interface
