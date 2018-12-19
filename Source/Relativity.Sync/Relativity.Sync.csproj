@@ -11,5 +11,10 @@
   </PropertyGroup>
   <Import Project="..\..\scripts\Build.AssemblyInfo.targets" />
   <Import Project="..\..\scripts\Build.Sign.targets" />
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Relativity.Sync.Tests.Unit</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
