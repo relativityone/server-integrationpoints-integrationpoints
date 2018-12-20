@@ -21,8 +21,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.FTPProvider
 
 		private const string _CSV_FILEPATH = "All Documents.csv";
 
-		protected override bool InstallLegalHoldApp => true;
-
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{

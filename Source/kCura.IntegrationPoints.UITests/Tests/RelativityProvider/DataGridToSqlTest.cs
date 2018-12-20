@@ -8,16 +8,18 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 {
 	[TestFixture]
-	[Category(TestCategory.MISCELLANEOUS)]
+	[Category(TestCategory.DATA_GRID_RELATED)]
     public class DataGridToSqlTest : RelativityProviderTestsBase
 	{
 		private RelativityProviderModel CreateRelativityProviderModelWithNatives()
 		{
-			var model = new RelativityProviderModel(NUnit.Framework.TestContext.CurrentContext.Test.Name);
-			model.Source = RelativityProviderModel.SourceTypeEnum.SavedSearch;
-			model.RelativityInstance = "This Instance";
-			model.DestinationWorkspace = $"{DestinationContext.WorkspaceName} - {DestinationContext.WorkspaceId}";
-			model.CopyNativeFiles = RelativityProviderModel.CopyNativeFilesEnum.PhysicalFiles;
+			var model = new RelativityProviderModel(TestContext.CurrentContext.Test.Name)
+			{
+				Source = RelativityProviderModel.SourceTypeEnum.SavedSearch,
+				RelativityInstance = "This Instance",
+				DestinationWorkspace = $"{DestinationContext.WorkspaceName} - {DestinationContext.WorkspaceId}",
+				CopyNativeFiles = RelativityProviderModel.CopyNativeFilesEnum.PhysicalFiles
+			};
 			return model;
 		}
 

@@ -22,14 +22,11 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		protected IProductionImagesService ProductionImageService { get; set; }
 		protected IRelativityObjectManagerFactory ObjectManagerFactory { get; set; }
 
-		protected override void ContextSetUp()
-		{
-			Context.ExecuteRelativityFolderPathScript();
-		}
-
 		[OneTimeSetUp]
 		public virtual void OneTimeSetUp()
 		{
+			Context.ExecuteRelativityFolderPathScript();
+
 			EnsureGeneralPageIsOpened();
 
 			FolderManager = Context.Helper.CreateAdminProxy<IFolderManager>();

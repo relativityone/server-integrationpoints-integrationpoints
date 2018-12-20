@@ -101,10 +101,9 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		{
 			WaitForPage();
 			QuickNavigation.ClickEx();
-			QuickNavigationInput.SendKeys("Integration Points" + Keys.Enter);
+			QuickNavigationInput.SendKeys("Integration Points");
 			Sleep(300);
-			QuickNavigationInput.SendKeys(Keys.Enter);
-			//QuickNavigationResult.ClickEx();
+			QuickNavigationResult.ClickEx();
 			return new IntegrationPointsPage(Driver);
 		}
 

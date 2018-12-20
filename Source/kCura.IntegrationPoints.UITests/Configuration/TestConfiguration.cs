@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.UITests.Logging;
-using kCura.IntegrationPoint.Tests.Core;
 using Serilog;
+using System;
+using System.Collections.Generic;
 
 namespace kCura.IntegrationPoints.UITests.Configuration
 {
