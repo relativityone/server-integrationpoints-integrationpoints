@@ -1,4 +1,5 @@
-﻿using Autofac;
+﻿using System.Reflection;
+using Autofac;
 
 namespace Relativity.Sync
 {
@@ -34,6 +35,9 @@ namespace Relativity.Sync
 			builder.RegisterInstance(new ContextLogger(correlationId, logger)).As<ISyncLog>();
 			builder.RegisterInstance(syncJobParameters).As<SyncJobParameters>();
 			builder.RegisterInstance(configuration).As<SyncConfiguration>();
+
+			builder.RegisterGeneric(typeof(Command<>)).As(typeof(ICommand<>));
+			builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly()).AsImplementedInterfaces();
 		}
 	}
 }

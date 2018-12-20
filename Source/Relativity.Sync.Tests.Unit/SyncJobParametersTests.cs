@@ -25,5 +25,27 @@ namespace Relativity.Sync.Tests.Unit
 			// ASSERT
 			syncJobParameters.CorrelationId.Should().Be(id);
 		}
+
+		[Test]
+		public static void ItShouldSetJobId()
+		{
+			const int jobId = 801314;
+
+			SyncJobParameters syncJobParameters = new SyncJobParameters(jobId, 1);
+
+			// ASSERT
+			syncJobParameters.JobId.Should().Be(jobId);
+		}
+
+		[Test]
+		public static void ItShouldSetWorkspaceId()
+		{
+			const int workspaceId = 172320;
+
+			SyncJobParameters syncJobParameters = new SyncJobParameters(1, workspaceId);
+
+			// ASSERT
+			syncJobParameters.WorkspaceId.Should().Be(workspaceId);
+		}
 	}
 }
