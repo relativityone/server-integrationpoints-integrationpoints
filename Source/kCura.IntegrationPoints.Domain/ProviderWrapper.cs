@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Runtime.Remoting;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Domain.Extensions;
@@ -11,8 +12,9 @@ using Relativity.API;
 namespace kCura.IntegrationPoints.Domain
 {
 	//represents a wrapper to allow for certain safeties to be guaranteed when marshalling
-	internal class ProviderWrapper : MarshalByRefObject, IDataSourceProvider, IEmailBodyData
+	internal class ProviderWrapper : MarshalByRefObject, IDataSourceProvider, IEmailBodyData, IDisposable
 	{
+		private bool _isDisposed;
 		private readonly IDataSourceProvider _provider;
 		private readonly IAPILog _logger;
 		internal ProviderWrapper(IDataSourceProvider provider, IAPILog logger) : this(provider)
@@ -80,5 +82,41 @@ namespace kCura.IntegrationPoints.Domain
 		{
 			return (object)LogContextHelper.GetAgentLogContext() ?? LogContextHelper.GetWebLogContext();
 		}
+
+		#region Cross AppDomain comunication
+		public override object InitializeLifetimeService()
+		{
+			return null;
+		}
+
+		private void DisconnectFromRemoteObject()
+		{
+			RemotingServices.Disconnect(this);
+		}
+		#endregion
+
+		#region IDisposable Support
+		protected virtual void Dispose(bool disposing)
+		{
+			if (_isDisposed)
+			{
+				return;
+			}
+
+			DisconnectFromRemoteObject();
+			_isDisposed = true;
+		}
+
+		~ProviderWrapper()
+		{
+			Dispose(false);
+		}
+
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+		#endregion
 	}
 }
