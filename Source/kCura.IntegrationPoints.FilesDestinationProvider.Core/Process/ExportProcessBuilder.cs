@@ -195,7 +195,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 					ArtifactID = caseInfo.ArtifactID,
 					DownloadHandlerURL = caseInfo.DownloadHandlerURL,
 					ExportAllowed = caseInfo.ExportAllowed,
-					DocumentPath = caseInfo?.DocumentPath ?? "",
+					DocumentPath = caseInfo.DocumentPath ?? "",
 					MatterArtifactID = caseInfo.MatterArtifactID,
 					RootFolderID = caseInfo.RootFolderID,
 					StatusCodeArtifactID = caseInfo.StatusCodeArtifactID,

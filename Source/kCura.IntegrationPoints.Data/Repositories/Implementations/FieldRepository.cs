@@ -7,6 +7,8 @@ using Relativity.API.Foundation;
 using Relativity.Services.FieldManager;
 using System;
 using System.Linq;
+using kCura.IntegrationPoints.Common.Constants;
+using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using Field = kCura.Relativity.Client.DTOs.Field;
 using FieldType = kCura.Relativity.Client.FieldType;
 
@@ -18,14 +20,22 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private readonly IServicesMgr _servicesMgr;
 		private readonly int _workspaceArtifactId;
 		private readonly IRsapiClientFactory _rsapiClientFactory;
-		private readonly IHelper _helper;
-		public FieldRepository(IServicesMgr servicesMgr, IHelper helper, int workspaceArtifactId)
+		private readonly IExternalServiceInstrumentationProvider _instrumentationProvider;
+		private readonly IFoundationRepositoryFactory _foundationRepositoryFactory;
+
+		public FieldRepository(
+			IServicesMgr servicesMgr, 
+			IHelper helper,
+			IFoundationRepositoryFactory foundationRepositoryFactory,
+			IExternalServiceInstrumentationProvider instrumentationProvider, 
+			int workspaceArtifactId)
 		{
-			_helper = helper;
+			_instrumentationProvider = instrumentationProvider;
 			_servicesMgr = servicesMgr;
 			_workspaceArtifactId = workspaceArtifactId;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<FieldRepository>();
 			_rsapiClientFactory = new RsapiClientFactory();
+			_foundationRepositoryFactory = foundationRepositoryFactory;
 		}
 
 		public void UpdateFilterType(int artifactViewFieldId, string filterType)
@@ -119,10 +129,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			try
 			{
-				IFoundationRepositoryFactory frf = new FoundationRepositoryFactory(_helper);
 				global::Relativity.API.Foundation.Repositories.IFieldRepository fieldRepository =
-					frf.GetRepository<global::Relativity.API.Foundation.Repositories.IFieldRepository>(
-						_workspaceArtifactId);
+					_foundationRepositoryFactory.GetRepository<global::Relativity.API.Foundation.Repositories.IFieldRepository>(_workspaceArtifactId);
 				return fieldRepository;
 			}
 			catch (Exception ex)
@@ -138,13 +146,18 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				ArtifactID = fieldArtifactId
 			};
+			IExternalServiceInstrumentationStarted instrumentation = _instrumentationProvider
+				.Create(ExternalServiceTypes.API_FOUNDATION, nameof(IFieldRepository), nameof(IFieldRepository.Read))
+				.Started();
 			try
 			{
-				return fieldRepository.Read(artifactRef);
+				IField result = fieldRepository.Read(artifactRef);
+				instrumentation.Completed();
+				return result;
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, "An error occured while reading field {fieldArtifactId} from workspace {workspaceArtifactId}", fieldArtifactId, _workspaceArtifactId);
+				instrumentation.Failed(ex);
 				throw new IntegrationPointsException($"An error occured while reading field {fieldArtifactId} from workspace {_workspaceArtifactId}", ex);
 			}
 		}
