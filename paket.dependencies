@@ -4,24 +4,24 @@ strategy: min
 source https://proget.kcura.corp/nuget/NuGet
 
 //Main Relativity packages
-nuget kCura 9.7.123.4-DEV
-nuget kCura.Agent 9.7.123.4-DEV
-nuget kCura.EventHandler 9.7.123.4-DEV
-nuget kCura.Relativity.Client 9.7.123.4-DEV
-nuget Relativity.Authentication 9.7.123.4-DEV
-nuget Relativity.Core 9.7.123.4-DEV
-nuget Relativity.CustomPages 9.7.123.4-DEV
-nuget Relativity.Data 9.7.123.4-DEV
-nuget Relativity.ImportExport 9.7.123.4-DEV
-nuget Relativity.Telemetry.Services.Interface 9.7.123.4-DEV
-nuget RelativityCore 9.7.123.4-DEV
-nuget Relativity.Services.Interfaces 9.7.123.4-DEV
+nuget kCura 9.7.189.7
+nuget kCura.Agent 9.7.189.7
+nuget kCura.EventHandler 9.7.189.7
+nuget kCura.Relativity.Client 9.7.189.7
+nuget Relativity.Authentication 9.7.189.7
+nuget Relativity.Core 9.7.189.7
+nuget Relativity.CustomPages 9.7.189.7
+nuget Relativity.Data 9.7.189.7
+nuget Relativity.ImportExport 9.7.189.7
+nuget Relativity.Telemetry.Services.Interface 9.7.189.7
+nuget RelativityCore 9.7.189.7
+nuget Relativity.Services.Interfaces 9.7.189.7
 
 //Other Relativity packages
 nuget Relativity.DataTransfer.MessageService ~> 1.0.21
 nuget kCura.Apps.Common.Config 2.1.3
 nuget kCura.LongPath 1.0.10
-nuget Relativity.OAuth2Client 1.0.23
+nuget Relativity.OAuth2Client 1.0.27
 nuget Relativity.Productions.Services.Interfaces 9.7.20
 nuget Relativity.Telemetry.APM 9.4.164
 nuget kCura.FreeImage 3.15.1.1
