@@ -5,7 +5,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
-using kCura.WinEDDS.Core.Model.Export;
+using kCura.WinEDDS;
 using kCura.WinEDDS.Service.Export;
 using NSubstitute;
 using NUnit.Framework;

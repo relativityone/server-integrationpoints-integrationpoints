@@ -1,5 +1,5 @@
 ﻿
-using kCura.WinEDDS.Core.Model.Export;
+using kCura.WinEDDS;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 {
