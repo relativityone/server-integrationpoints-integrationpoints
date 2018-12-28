@@ -44,6 +44,9 @@ Copy-Item $configureAwaitPlugin.FullName -Destination $inspectCode.DirectoryName
 Write-Verbose "Running code inspection for all solutions..."
 $errorFile = Join-Path $logsDir "await.xml"
 Get-ChildItem -Path $sourceDir -Filter *.sln -File | ForEach-Object {
+    Write-Verbose "Restoring packages..."
+	& dotnet restore $_.FullName
+
     Write-Verbose "Running code inspection for $_..."
     & $inspectCode.FullName $_.FullName --output=$errorFile --s="SUGGESTION"
 
