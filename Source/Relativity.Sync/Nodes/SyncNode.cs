@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Banzai;
+using Relativity.Sync.Configuration;
 
-namespace Relativity.Sync
+namespace Relativity.Sync.Nodes
 {
 	internal abstract class SyncNode<T> : Node<SyncExecutionContext> where T : IConfiguration
 	{

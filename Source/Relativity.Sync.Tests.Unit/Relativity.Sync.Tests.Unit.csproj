@@ -11,6 +11,7 @@
   </PropertyGroup>
   <Import Project="..\..\scripts\Build.AssemblyInfo.targets" />
   <ItemGroup>
+    <ProjectReference Include="..\Relativity.Sync.Tests.Common\Relativity.Sync.Tests.Common.csproj" />
     <ProjectReference Include="..\Relativity.Sync\Relativity.Sync.csproj" />
   </ItemGroup>
   <ItemGroup>

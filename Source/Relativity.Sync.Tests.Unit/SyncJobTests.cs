@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Banzai;
 using FluentAssertions;
 using NUnit.Framework;
+using Relativity.Sync.Tests.Unit.Stubs;
 
 namespace Relativity.Sync.Tests.Unit
 {
@@ -11,19 +13,40 @@ namespace Relativity.Sync.Tests.Unit
 	{
 		private SyncJob _instance;
 
+		private NodeWithResultStub _pipeline;
+
 		[SetUp]
 		public void SetUp()
 		{
-			_instance = new SyncJob();
+			_pipeline = new NodeWithResultStub();
+
+			ISyncExecutionContextFactory contextFactory = new SyncExecutionContextFactory(new SyncConfiguration());
+
+			_instance = new SyncJob(_pipeline, contextFactory);
 		}
 
 		[Test]
-		public void ItShouldExecuteJob()
+		public async Task ItShouldExecuteJob()
 		{
+			_pipeline.ResultStatus = NodeResultStatus.Succeeded;
+
+			// ACT
+			await _instance.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+
+			// ASSERT
+			Assert.Pass();
+		}
+
+		[Test]
+		public void ItShouldThrowExceptionWhenJobFailed()
+		{
+			_pipeline.ResultStatus = NodeResultStatus.Failed;
+
+			// ACT
 			Func<Task> action = async () => await _instance.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			action.Should().Throw<NotImplementedException>();
+			action.Should().Throw<SyncException>();
 		}
 
 		[Test]

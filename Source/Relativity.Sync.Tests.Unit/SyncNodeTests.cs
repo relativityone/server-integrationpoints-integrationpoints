@@ -5,6 +5,7 @@ using Banzai;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.Tests.Unit.Stubs;
 
 namespace Relativity.Sync.Tests.Unit
@@ -17,13 +18,15 @@ namespace Relativity.Sync.Tests.Unit
 		private SyncExecutionContext _executionContext;
 
 		private Mock<ICommand<IConfiguration>> _command;
+		private ProgressStub _progress;
 
 		private const string _STEP_NAME = "step name";
 
 		[SetUp]
 		public void SetUp()
 		{
-			_executionContext = new SyncExecutionContext(new Progress<SyncProgress>(), CancellationToken.None);
+			_progress = new ProgressStub();
+			_executionContext = new SyncExecutionContext(_progress, CancellationToken.None);
 
 			_command = new Mock<ICommand<IConfiguration>>();
 
@@ -71,6 +74,18 @@ namespace Relativity.Sync.Tests.Unit
 
 			// ASSERT
 			action.Should().Throw<Exception>();
+		}
+
+		[Test]
+		public async Task ItShouldReportProgress()
+		{
+			_command.Setup(x => x.CanExecuteAsync(CancellationToken.None)).ReturnsAsync(true);
+
+			// ACT
+			await _instance.ExecuteAsync(_executionContext).ConfigureAwait(false);
+
+			// ASSERT
+			_progress.SyncProgress.State.Should().Be(_STEP_NAME);
 		}
 	}
 }
