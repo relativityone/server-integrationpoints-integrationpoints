@@ -9,7 +9,6 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts;
 using kCura.WinEDDS;
-using kCura.WinEDDS.Core.Model.Export;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity;
