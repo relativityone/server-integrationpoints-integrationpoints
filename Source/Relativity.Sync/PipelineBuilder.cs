@@ -14,7 +14,9 @@ namespace Relativity.Sync
 
 			FlowBuilder<SyncExecutionContext> flowBuilder = new FlowBuilder<SyncExecutionContext>(new AutofacFlowRegistrar(containerBuilder));
 
-			flowBuilder.CreateFlow("SYNC")
+			const string pipelineName = "SYNC";
+
+			flowBuilder.CreateFlow(pipelineName)
 				.AddRoot<IPipelineNode<SyncExecutionContext>>()
 				.AddChild<PermissionsCheckNode>()
 				.AddChild<ValidationNode>()
@@ -38,7 +40,7 @@ namespace Relativity.Sync
 
 			flowBuilder.Register();
 
-			containerBuilder.Register(c => c.Resolve<INodeFactory<SyncExecutionContext>>().BuildFlow("SYNC")).As<INode<SyncExecutionContext>>();
+			containerBuilder.Register(c => c.Resolve<INodeFactory<SyncExecutionContext>>().BuildFlow(pipelineName)).As<INode<SyncExecutionContext>>();
 		}
 	}
 }
