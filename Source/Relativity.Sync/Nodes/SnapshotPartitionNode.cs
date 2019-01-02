@@ -6,8 +6,7 @@ namespace Relativity.Sync.Nodes
 	{
 		public SnapshotPartitionNode(ICommand<ISnapshotPartitionConfiguration> command, ISyncLog logger) : base(command, logger)
 		{
+			Id = "Partitioning snapshot into batches";
 		}
-
-		protected override string Name => "Partitioning snapshot into batches";
 	}
 }

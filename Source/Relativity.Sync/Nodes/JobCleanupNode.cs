@@ -6,8 +6,7 @@ namespace Relativity.Sync.Nodes
 	{
 		public JobCleanupNode(ICommand<IJobCleanupConfiguration> command, ISyncLog logger) : base(command, logger)
 		{
+			Id = "Cleaning up after job";
 		}
-
-		protected override string Name => "Cleaning up after job";
 	}
 }

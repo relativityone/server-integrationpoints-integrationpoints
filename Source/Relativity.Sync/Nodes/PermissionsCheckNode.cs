@@ -6,8 +6,7 @@ namespace Relativity.Sync.Nodes
 	{
 		public PermissionsCheckNode(ICommand<IPermissionsCheckConfiguration> command, ISyncLog logger) : base(command, logger)
 		{
+			Id = "Checking permissions";
 		}
-
-		protected override string Name => "Checking permissions";
 	}
 }

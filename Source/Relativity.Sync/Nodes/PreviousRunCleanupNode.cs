@@ -6,8 +6,7 @@ namespace Relativity.Sync.Nodes
 	{
 		public PreviousRunCleanupNode(ICommand<IPreviousRunCleanupConfiguration> command, ISyncLog logger) : base(command, logger)
 		{
+			Id = "Cleaning up after last run";
 		}
-
-		protected override string Name => "Cleaning up after last run";
 	}
 }

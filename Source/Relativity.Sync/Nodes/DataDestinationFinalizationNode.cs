@@ -6,8 +6,7 @@ namespace Relativity.Sync.Nodes
 	{
 		public DataDestinationFinalizationNode(ICommand<IDataDestinationFinalizationConfiguration> command, ISyncLog logger) : base(command, logger)
 		{
+			Id = "Finalizing data destination";
 		}
-
-		protected override string Name => "Finalizing data destination";
 	}
 }

@@ -10,8 +10,6 @@ namespace Relativity.Sync.Nodes
 		private readonly ICommand<T> _command;
 		private readonly ISyncLog _logger;
 
-		protected abstract string Name { get; }
-
 		protected SyncNode(ICommand<T> command, ISyncLog logger)
 		{
 			_command = command;
@@ -46,7 +44,7 @@ namespace Relativity.Sync.Nodes
 
 		protected override void OnBeforeExecute(IExecutionContext<SyncExecutionContext> context)
 		{
-			SyncProgress progress = new SyncProgress(Name);
+			SyncProgress progress = new SyncProgress(Id);
 			context.Subject.Progress.Report(progress);
 		}
 	}

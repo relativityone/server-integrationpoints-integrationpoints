@@ -6,8 +6,7 @@ namespace Relativity.Sync.Nodes
 	{
 		public ValidationNode(ICommand<IValidationConfiguration> command, ISyncLog logger) : base(command, logger)
 		{
+			Id = "Validating";
 		}
-
-		protected override string Name => "Validating";
 	}
 }

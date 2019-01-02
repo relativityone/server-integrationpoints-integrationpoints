@@ -6,8 +6,7 @@ namespace Relativity.Sync.Nodes
 	{
 		public TemporaryStorageInitializationNode(ICommand<ITemporaryStorageInitializationConfiguration> command, ISyncLog logger) : base(command, logger)
 		{
+			Id = "Initializing temporary storage";
 		}
-
-		protected override string Name => "Initializing temporary storage";
 	}
 }

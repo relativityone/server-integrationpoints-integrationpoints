@@ -6,8 +6,7 @@ namespace Relativity.Sync.Nodes
 	{
 		public NotificationNode(ICommand<INotificationConfiguration> command, ISyncLog logger) : base(command, logger)
 		{
+			Id = "Sending notifications";
 		}
-
-		protected override string Name => "Sending notifications";
 	}
 }

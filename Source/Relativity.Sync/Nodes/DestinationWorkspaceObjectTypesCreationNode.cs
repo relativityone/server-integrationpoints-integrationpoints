@@ -6,8 +6,7 @@ namespace Relativity.Sync.Nodes
 	{
 		public DestinationWorkspaceObjectTypesCreationNode(ICommand<IDestinationWorkspaceObjectTypesCreationConfiguration> command, ISyncLog logger) : base(command, logger)
 		{
+			Id = "Creating object types in destination workspace";
 		}
-
-		protected override string Name => "Creating object types in destination workspace";
 	}
 }

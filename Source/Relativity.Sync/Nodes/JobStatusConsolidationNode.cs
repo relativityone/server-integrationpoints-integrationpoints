@@ -6,8 +6,7 @@ namespace Relativity.Sync.Nodes
 	{
 		public JobStatusConsolidationNode(ICommand<IJobStatusConsolidationConfiguration> command, ISyncLog logger) : base(command, logger)
 		{
+			Id = "Consolidating job status";
 		}
-
-		protected override string Name => "Consolidating job status";
 	}
 }

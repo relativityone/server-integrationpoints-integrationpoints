@@ -6,8 +6,7 @@ namespace Relativity.Sync.Nodes
 	{
 		public DataSourceSnapshotNode(ICommand<IDataSourceSnapshotConfiguration> command, ISyncLog logger) : base(command, logger)
 		{
+			Id = "Creating data source snapshots";
 		}
-
-		protected override string Name => "Creating data source snapshots";
 	}
 }

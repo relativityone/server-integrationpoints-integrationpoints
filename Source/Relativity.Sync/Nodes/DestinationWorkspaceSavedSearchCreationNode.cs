@@ -6,8 +6,7 @@ namespace Relativity.Sync.Nodes
 	{
 		public DestinationWorkspaceSavedSearchCreationNode(ICommand<IDestinationWorkspaceSavedSearchCreationConfiguration> command, ISyncLog logger) : base(command, logger)
 		{
+			Id = "Creating saved search in destination workspace";
 		}
-
-		protected override string Name => "Creating saved search in destination workspace";
 	}
 }

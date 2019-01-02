@@ -6,8 +6,7 @@ namespace Relativity.Sync.Nodes
 	{
 		public SynchronizationNode(ICommand<ISynchronizationConfiguration> command, ISyncLog logger) : base(command, logger)
 		{
+			Id = "Synchronizing";
 		}
-
-		protected override string Name => "Synchronizing";
 	}
 }
