@@ -1,4 +1,5 @@
-﻿using Autofac;
+﻿using System;
+using Autofac;
 
 namespace Relativity.Sync
 {
@@ -34,6 +35,26 @@ namespace Relativity.Sync
 		/// <inheritdoc />
 		public ISyncJob Create(IContainer container, SyncJobParameters syncJobParameters, SyncConfiguration configuration, ISyncLog logger)
 		{
+			if (container == null)
+			{
+				throw new ArgumentNullException(nameof(container));
+			}
+
+			if (syncJobParameters == null)
+			{
+				throw new ArgumentNullException(nameof(syncJobParameters));
+			}
+
+			if (configuration == null)
+			{
+				throw new ArgumentNullException(nameof(configuration));
+			}
+
+			if (logger == null)
+			{
+				throw new ArgumentNullException(nameof(logger));
+			}
+
 			using (ILifetimeScope scope = container.BeginLifetimeScope(builder => RegisterDependencies(builder, syncJobParameters, configuration, logger)))
 			{
 				return scope.Resolve<ISyncJob>();

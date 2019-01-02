@@ -1,4 +1,5 @@
-﻿using Autofac;
+﻿using System;
+using Autofac;
 using Banzai;
 using Banzai.Autofac;
 using Banzai.Factories;
@@ -10,6 +11,11 @@ namespace Relativity.Sync
 	{
 		public void RegisterFlow(ContainerBuilder containerBuilder)
 		{
+			if (containerBuilder == null)
+			{
+				throw new ArgumentNullException(nameof(containerBuilder));
+			}
+
 			containerBuilder.RegisterBanzaiNodes(GetType().Assembly, true);
 
 			FlowBuilder<SyncExecutionContext> flowBuilder = new FlowBuilder<SyncExecutionContext>(new AutofacFlowRegistrar(containerBuilder));

@@ -15,6 +15,11 @@ namespace Relativity.Sync
 
 		public IExecutionContext<SyncExecutionContext> Create(IProgress<SyncProgress> progress, CancellationToken token)
 		{
+			if (progress == null)
+			{
+				throw new ArgumentNullException(nameof(progress));
+			}
+
 			SyncExecutionContext subject = new SyncExecutionContext(progress, token);
 			ExecutionOptions globalOptions = new ExecutionOptions
 			{
