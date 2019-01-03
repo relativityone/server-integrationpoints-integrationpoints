@@ -346,7 +346,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void SetupStatisticsSubscriptions(IDataSynchronizer synchronizer, Job job)
 		{
-			_statisticsService?.Subscribe(synchronizer as IBatchReporter, job);
+			_statisticsService.Subscribe(synchronizer as IBatchReporter, job);
 		}
 
 		private void SetupSubscriptions(IDataSynchronizer synchronizer, Job job)
@@ -379,7 +379,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				SourceConfiguration sourceConfiguration = Serializer.Deserialize<SourceConfiguration>(ip?.SourceConfiguration);
 				ImportSettings importSettings = Serializer.Deserialize<ImportSettings>(ip?.DestinationConfiguration);
-				_statisticsService?.SetIntegrationPointConfiguration(importSettings, sourceConfiguration);
+				_statisticsService.SetIntegrationPointConfiguration(importSettings, sourceConfiguration);
 			}
 			catch (Exception ex)
 			{
