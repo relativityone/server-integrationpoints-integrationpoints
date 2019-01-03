@@ -420,7 +420,7 @@ task copy_web_drivers -depends create_lib_dir, build_projects -precondition { re
 	Copy-Item -path $geckodriver_path -Destination $tests_directory
 }
 
-task start_sonar -depends get_sonarqube -precondition { return $RUN_SONARQUBE -and [System.IO.File]::Exists($sonarCube_exe)} {     
+task start_sonar -depends get_sonarqube -precondition { return $RUN_SONARQUBE } {     
     $args = @(
         'begin',
         ("/k:$sonarqube_project_key"),
@@ -432,7 +432,7 @@ task start_sonar -depends get_sonarqube -precondition { return $RUN_SONARQUBE -a
     & $sonarqube_exe $args    
 }
 
-task stop_sonar -precondition { return $RUN_SONARQUBE -and [System.IO.File]::Exists($sonarCube_exe)}{
+task stop_sonar -precondition { return $RUN_SONARQUBE }{
     $args = @(
         'end')
 
