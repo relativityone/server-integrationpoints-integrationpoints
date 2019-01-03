@@ -186,6 +186,9 @@ echo.
 echo SYNOPSIS
 echo    Prepares RIP SDK for specified version.
 echo.
+echo REQUIREMENTS 
+echo    7-zip                           https://www.7-zip.org/a/7z1806-x64.exe
+echo.
 echo OPTIONS
 echo    -h, --help                      display help and exit
 echo.
