@@ -44,8 +44,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		private IQueueDBContext _queueContext;
 		private Relativity.Client.DTOs.Workspace _sourceWorkspaceDto;
 
-		public ExportServiceManagerTests() : base("ExportServiceManagerTests", 
-			"ExportServiceManagerTests_Destination")
+		public ExportServiceManagerTests() 
+			: base("ExportServiceManagerTests", "ExportServiceManagerTests_Destination")
 		{ }
 
 		public override void SuiteSetup()
@@ -71,22 +71,22 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		public override void TestSetup()
 		{
 			_caseContext = Container.Resolve<ICaseServiceContext>();
-			var helperFactory = Container.Resolve<IHelperFactory>();
-			var contextContainerFactory = Container.Resolve<IContextContainerFactory>();
-			var synchronizerFactory = Container.Resolve<ISynchronizerFactory>();
-			var exporterFactory = Container.Resolve<IExporterFactory>();
-			var onBehalfOfUserClaimsPrincipalFactory = Container.Resolve<IOnBehalfOfUserClaimsPrincipalFactory>();
-			var repositoryFactory = Container.Resolve<IRepositoryFactory>();
-			var managerFactory = Container.Resolve<IManagerFactory>();
-			var serializer = Container.Resolve<ISerializer>();
+			IHelperFactory helperFactory = Container.Resolve<IHelperFactory>();
+			IContextContainerFactory contextContainerFactory = Container.Resolve<IContextContainerFactory>();
+			ISynchronizerFactory synchronizerFactory = Container.Resolve<ISynchronizerFactory>();
+			IExporterFactory exporterFactory = Container.Resolve<IExporterFactory>();
+			IOnBehalfOfUserClaimsPrincipalFactory onBehalfOfUserClaimsPrincipalFactory = Container.Resolve<IOnBehalfOfUserClaimsPrincipalFactory>();
+			IRepositoryFactory repositoryFactory = Container.Resolve<IRepositoryFactory>();
+			IManagerFactory managerFactory = Container.Resolve<IManagerFactory>();
+			ISerializer serializer = Container.Resolve<ISerializer>();
 			_jobService = Container.Resolve<IJobService>();
 			IScheduleRuleFactory scheduleRuleFactory = new DefaultScheduleRuleFactory();
-			var jobHistoryService = Container.Resolve<IJobHistoryService>();
-			var jobHistoryErrorService = Container.Resolve<IJobHistoryErrorService>();
-			var jobStatisticsService = Container.Resolve<JobStatisticsService>();
-			var agentValidator = Container.Resolve<IAgentValidator>();
-			var jobStatusUpdater = Container.Resolve<IJobStatusUpdater>();
-			var logger = Container.Resolve<IAPILog>();
+			IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
+			IJobHistoryErrorService jobHistoryErrorService = Container.Resolve<IJobHistoryErrorService>();
+			JobStatisticsService jobStatisticsService = Container.Resolve<JobStatisticsService>();
+			IAgentValidator agentValidator = Container.Resolve<IAgentValidator>();
+			IJobStatusUpdater jobStatusUpdater = Container.Resolve<IJobStatusUpdater>();
+			IAPILog logger = Container.Resolve<IAPILog>();
 			var jobHistoryUpdater = new JobHistoryBatchUpdateStatus(jobStatusUpdater, jobHistoryService, _jobService, serializer, logger);
 			
 
@@ -118,7 +118,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		public void RunRelativityProviderAlone()
 		{
 			// arrange
-			var serializer = Container.Resolve<ISerializer>();
+			ISerializer serializer = Container.Resolve<ISerializer>();
 			var model = new IntegrationPointModel()
 			{
 				SourceProvider = RelativityProvider.ArtifactId,
@@ -142,7 +142,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			{
 				job = GetNextJobInScheduleQueue(new[] { _sourceWorkspaceDto.ResourcePoolID.Value }, model.ArtifactID); // pick up job
 
-				var parameters = serializer.Deserialize<TaskParameters>(job.JobDetails);
+				TaskParameters parameters = serializer.Deserialize<TaskParameters>(job.JobDetails);
 
 				// act
 				Assert.IsNotNull(job, "There is no job to execute");
@@ -150,7 +150,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				
 				// assert
 				model = RefreshIntegrationModel(model);
-				var jobHistoryService = Container.Resolve<IJobHistoryService>();
+				IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
 				JobHistory history = jobHistoryService.GetRdo(parameters.BatchInstance);
 
 				Assert.IsNotNull(model);

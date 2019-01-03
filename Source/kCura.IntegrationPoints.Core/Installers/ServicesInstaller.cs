@@ -56,6 +56,7 @@ using Relativity.Toggles.Providers;
 using System;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
+using Castle.MicroKernel.Resolvers;
 using IFederatedInstanceManager = kCura.IntegrationPoints.Domain.Managers.IFederatedInstanceManager;
 
 namespace kCura.IntegrationPoints.Core.Installers

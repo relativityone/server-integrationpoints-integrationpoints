@@ -22,11 +22,11 @@ namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 		private IRSAPIService _service;
 		private IntegrationPointsImportLdapAction _integrationPointsAction;
 
-		protected override bool InstallLegalHoldApp => true;
-
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
+			Context.InstallLegalHold();
+
 			EnsureGeneralPageIsOpened();
 			_integrationPointsAction = new IntegrationPointsImportLdapAction(Driver, Context);
 			Install(Context.WorkspaceId.Value);
@@ -75,7 +75,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 			// Assert
 			var expectedEntities = new Dictionary<string, string>
 			{
-				{"Szmigielski, Piotr", "Lorenz, Andrzej"}
+				{"Wolny, Stan", "Kukla, Krzysztof"}
 			};
 
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted, JobStatusChoices.JobHistoryCompletedWithErrors);

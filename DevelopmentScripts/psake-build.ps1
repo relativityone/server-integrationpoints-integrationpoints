@@ -4,7 +4,7 @@
 task default -depends build
 
 
-task build -depends build_initalize, start_sonar, build_projects, build_rip_documentation, copy_dlls_to_lib_dir, copy_test_dlls_to_lib_dir, copy_chrome_driver, run_coverage, stop_sonar, generate_validation_message_table {
+task build -depends build_initalize, start_sonar, build_projects, build_rip_documentation, copy_dlls_to_lib_dir, copy_test_dlls_to_lib_dir, copy_web_drivers, run_coverage, stop_sonar, generate_validation_message_table {
  
 }
 
@@ -415,8 +415,9 @@ task copy_test_dlls_to_lib_dir -depends create_lib_dir -precondition { return -n
     Copy-Item -path $testsConfigPath -Destination $testsConfigDestinationPath2
 }
 
-task copy_chrome_driver -depends create_lib_dir, build_projects -precondition { return -not $skip_tests } {
+task copy_web_drivers -depends create_lib_dir, build_projects -precondition { return -not $skip_tests } {
 	Copy-Item -path $chromedriver_path -Destination $tests_directory
+	Copy-Item -path $geckodriver_path -Destination $tests_directory
 }
 
 task start_sonar -depends get_sonarqube -precondition { return $RUN_SONARQUBE -and [System.IO.File]::Exists($sonarCube_exe)} {     

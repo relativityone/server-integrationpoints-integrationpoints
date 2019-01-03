@@ -34,7 +34,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				_resourceServerService.ReadCaseInfo(caseArtifactId).ConfigureAwait(false).GetAwaiter().GetResult();
 
 			IExternalServiceSimpleInstrumentation simpleInstrumentation =
-				_instrumentationProvider.CreateSimple(ExternalServiceTypes.KEPLER, nameof(IResourceServerManager),
+				_instrumentationProvider.CreateSimple(
+					ExternalServiceTypes.KEPLER, 
+					nameof(IResourceServerManager),
 					nameof(IResourceServerManager.ReadCaseInfo));
 			try
 			{

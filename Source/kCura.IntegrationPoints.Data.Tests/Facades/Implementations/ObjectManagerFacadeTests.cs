@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		public async Task ItShouldCallStartedAndCompletedForSuccessfulCall_Create()
 		{
-			// assert
+			// arrange
 			_objectManager.CreateAsync(Arg.Any<int>(), Arg.Any<CreateRequest>()).Returns(new CreateResult());
 
 			// act
@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		public async Task ItShouldCallStartedAndFailedForResultWithFailedEventHandlers_Create()
 		{
-			// assert
+			// arrange
 			string failReason = "Bad request";
 			var result = new CreateResult
 			{
@@ -72,7 +72,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		public async Task ItShouldAggregateFailReasonsFromEventHandler_Create()
 		{
-			// assert
+			// arrange
 			string failReason1 = "Bad request";
 			string failReason2 = "Internal error";
 			string expectedFailureReason = $"{failReason1};{failReason2}";
@@ -96,7 +96,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		public async Task ItShouldCallFailedWhenExceptionIsThrown_Create()
 		{
-			// assert
+			// arrange
 			var exception = new Exception();
 			_objectManager.CreateAsync(Arg.Any<int>(), Arg.Any<CreateRequest>()).Throws(exception);
 
@@ -117,7 +117,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		public async Task ItShouldRethrowExceptions_Create()
 		{
-			// assert
+			// arrange
 			var exception = new Exception();
 			_objectManager.CreateAsync(Arg.Any<int>(), Arg.Any<CreateRequest>()).Throws(exception);
 
@@ -138,7 +138,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		public async Task ItShouldWrapServiceNotFoundException_Create()
 		{
-			// assert
+			// arrange
 			var exception = new ServiceNotFoundException();
 			_objectManager.CreateAsync(Arg.Any<int>(), Arg.Any<CreateRequest>()).Throws(exception);
 
@@ -159,7 +159,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		public async Task ItShouldCallStartedAndCompletedForSuccessfulCall_Read()
 		{
-			// assert
+			// arrange
 			_objectManager.ReadAsync(Arg.Any<int>(), Arg.Any<ReadRequest>()).Returns(new ReadResult());
 
 			// act
@@ -173,7 +173,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		public async Task ItShouldCallFailedWhenExceptionIsThrown_Read()
 		{
-			// assert
+			// arrange
 			var exception = new Exception();
 			_objectManager.ReadAsync(Arg.Any<int>(), Arg.Any<ReadRequest>()).Throws(exception);
 
@@ -194,7 +194,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		public async Task ItShouldRethrowExceptions_Read()
 		{
-			// assert
+			// arrange
 			var exception = new Exception();
 			_objectManager.ReadAsync(Arg.Any<int>(), Arg.Any<ReadRequest>()).Throws(exception);
 
@@ -215,7 +215,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		public async Task ItShouldWrapServiceNotFoundException_Read()
 		{
-			// assert
+			// arrange
 			var exception = new ServiceNotFoundException();
 			_objectManager.ReadAsync(Arg.Any<int>(), Arg.Any<ReadRequest>()).Throws(exception);
 
@@ -236,7 +236,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		public async Task ItShouldCallStartedAndCompletedForSuccessfulCall_Update()
 		{
-			// assert
+			// arrange
 			_objectManager.UpdateAsync(Arg.Any<int>(), Arg.Any<UpdateRequest>()).Returns(new UpdateResult());
 
 			// act
@@ -250,7 +250,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		public async Task ItShouldCallStartedAndFailedForResultWithFailedEventHandlers_Update()
 		{
-			// assert
+			// arrange
 			string failReason = "Unauthorized";
 			var result = new UpdateResult
 			{
@@ -269,7 +269,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		public async Task ItShouldCallFailedWhenExceptionIsThrown_Update()
 		{
-			// assert
+			// arrange
 			var exception = new Exception();
 			_objectManager.UpdateAsync(Arg.Any<int>(), Arg.Any<UpdateRequest>()).Throws(exception);
 
@@ -290,7 +290,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		public async Task ItShouldRethrowExceptions_Update()
 		{
-			// assert
+			// arrange
 			var exception = new Exception();
 			_objectManager.UpdateAsync(Arg.Any<int>(), Arg.Any<UpdateRequest>()).Throws(exception);
 
@@ -311,7 +311,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		public async Task ItShouldWrapServiceNotFoundException_Update()
 		{
-			// assert
+			// arrange
 			var exception = new ServiceNotFoundException();
 			_objectManager.UpdateAsync(Arg.Any<int>(), Arg.Any<UpdateRequest>()).Throws(exception);
 
@@ -332,7 +332,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		public async Task ItShouldCallStartedAndCompletedForSuccessfulCall_Delete()
 		{
-			// assert
+			// arrange
 			_objectManager.DeleteAsync(Arg.Any<int>(), Arg.Any<DeleteRequest>()).Returns(new DeleteResult());
 
 			// act
@@ -346,7 +346,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		public async Task ItShouldCallFailedWhenExceptionIsThrown_Delete()
 		{
-			// assert
+			// arrange
 			var exception = new Exception();
 			_objectManager.DeleteAsync(Arg.Any<int>(), Arg.Any<DeleteRequest>()).Throws(exception);
 
@@ -367,7 +367,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		public async Task ItShouldRethrowExceptions_Delete()
 		{
-			// assert
+			// arrange
 			var exception = new Exception();
 			_objectManager.DeleteAsync(Arg.Any<int>(), Arg.Any<DeleteRequest>()).Throws(exception);
 
@@ -388,7 +388,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		public async Task ItShouldWrapServiceNotFoundException_Delete()
 		{
-			// assert
+			// arrange
 			var exception = new ServiceNotFoundException();
 			_objectManager.DeleteAsync(Arg.Any<int>(), Arg.Any<DeleteRequest>()).Throws(exception);
 
@@ -409,7 +409,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		public async Task ItShouldCallStartedAndCompletedForSuccessfulCall_Query()
 		{
-			// assert
+			// arrange
 			_objectManager.QueryAsync(Arg.Any<int>(), Arg.Any<QueryRequest>(), Arg.Any<int>(), Arg.Any<int>()).Returns(new QueryResult());
 
 			// act
@@ -423,7 +423,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		public async Task ItShouldCallFailedWhenExceptionIsThrown_Query()
 		{
-			// assert
+			// arrange
 			var exception = new Exception();
 			_objectManager.QueryAsync(Arg.Any<int>(), Arg.Any<QueryRequest>(), Arg.Any<int>(), Arg.Any<int>()).Throws(exception);
 
@@ -444,7 +444,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		public async Task ItShouldRethrowExceptions_Query()
 		{
-			// assert
+			// arrange
 			var exception = new Exception();
 			_objectManager.QueryAsync(Arg.Any<int>(), Arg.Any<QueryRequest>(), Arg.Any<int>(), Arg.Any<int>()).Throws(exception);
 
@@ -465,7 +465,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		public async Task ItShouldWrapServiceNotFoundException_Query()
 		{
-			// assert
+			// arrange
 			var exception = new ServiceNotFoundException();
 			_objectManager.QueryAsync(Arg.Any<int>(), Arg.Any<QueryRequest>(), Arg.Any<int>(), Arg.Any<int>()).Throws(exception);
 

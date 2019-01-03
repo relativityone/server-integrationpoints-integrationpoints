@@ -1,9 +1,7 @@
 ﻿using kCura.Windows.Process;
 using kCura.WinEDDS;
-using kCura.WinEDDS.Core.Export;
 using kCura.WinEDDS.Core.Export.VolumeManagerV2.Container;
 using kCura.WinEDDS.Core.IO;
-using kCura.WinEDDS.Core.Model.Export;
 using kCura.WinEDDS.Exporters;
 using kCura.WinEDDS.Service.Export;
 

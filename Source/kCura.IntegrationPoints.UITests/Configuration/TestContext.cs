@@ -179,12 +179,6 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			await Task.Run(() => InstallIntegrationPoints());
 		}
 
-		public async Task InstallLegalHoldAsync()
-		{
-			await Task.Run(() => InstallLegalHold());
-		}
-
-
 		// TODO fold
 		public TestContext ImportDocumentsToRoot(DocumentTestDataBuilder.TestDataType testDataType = DocumentTestDataBuilder.TestDataType.ModerateWithoutFoldersStructure)
 		{
@@ -199,12 +193,6 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		}
 
 		public TestContext ImportDocumentsWithoutNatives(DocumentTestDataBuilder.TestDataType testDataType = DocumentTestDataBuilder.TestDataType.ModerateWithFoldersStructure)
-		{
-			ImportDocuments(false, testDataType);
-			return this;
-		}
-
-		public TestContext ImportDocumentsWithLargeText(DocumentTestDataBuilder.TestDataType testDataType = DocumentTestDataBuilder.TestDataType.TextWithoutFolderStructure)
 		{
 			ImportDocuments(false, testDataType);
 			return this;
@@ -225,20 +213,20 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			var importHelper = new ImportHelper();
 			var workspaceService = new WorkspaceService(importHelper);
 			bool importSucceded = workspaceService.ImportData(GetWorkspaceId(), data);
-			if (importSucceded)
+			if (!importSucceded)
 			{
-				if (Log.IsEnabled(LogEventLevel.Information))
-				{
-					string suffix = importHelper.Messages.Any() ? " Messages: " + string.Join("; ", importHelper.Messages) : " No messages.";
-					Log.Information(@"Documents imported." + suffix);
-				}
-			}
-			else
-			{
-				string suffix = importHelper.ErrorMessages.Any() ? " Error messages: " + string.Join("; ", importHelper.ErrorMessages) : " No error messages.";
+				string suffix = importHelper.ErrorMessages.Any()
+					? " Error messages: " + string.Join("; ", importHelper.ErrorMessages)
+					: " No error messages.";
 				throw new UiTestException("Import of documents failed." + suffix);
 			}
 
+			if (Log.IsEnabled(LogEventLevel.Verbose))
+			{
+				string suffix = importHelper.Messages.Any() ? " Messages: " + string.Join("; ", importHelper.Messages) : " No messages.";
+				Log.Verbose(@"Documents imported." + suffix);
+			}
+			
 			return this;
 		}
 

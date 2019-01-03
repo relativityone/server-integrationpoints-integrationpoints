@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
@@ -84,13 +83,11 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			importJob.SourceData.SourceData = dataReader;
 
-			Console.WriteLine(@"Executing import native files...");
-
 			importJob.Execute();
 		}
 
 		private void ImportImagesAndExtractedText(int workspaceArtifactId, DataTable dataTable,
-			ImportAPI importApi, int identifyFieldArtifactId)
+			IImportAPI importApi, int identifyFieldArtifactId)
 		{
 			ImageImportBulkArtifactJob importJob = importApi.NewImageImportJob();
 
@@ -116,8 +113,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 			importJob.Settings.IdentityFieldId = identifyFieldArtifactId;
 			importJob.Settings.OverwriteMode = OverwriteModeEnum.Overlay;
 			importJob.SourceData.SourceData = dataTable;
-
-			Console.WriteLine(@"Executing native import...");
 
 			importJob.Execute();
 		}

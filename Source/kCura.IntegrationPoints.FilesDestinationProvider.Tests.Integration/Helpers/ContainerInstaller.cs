@@ -9,11 +9,13 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.Services;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Abstract;
 using kCura.Relativity.Client;
 using Castle.MicroKernel.Registration;
+using Castle.MicroKernel.Resolvers;
 using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
 using kCura.Apps.Common.Data;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Factories;
@@ -42,8 +44,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 
 		private const int _EXPORT_LOADFILE_IO_ERROR_WAIT_TIME = 1;
 		private const int _EXPORT_LOADFILE_IO_ERROR_RETRIES_NUMBER = 1;
-		private const int _EXPORT_LOADFILE_ERROR_WAIT_TIME = 1;
-		private const int _EXPORT_LOADFILE_ERROR_RETRIES_NUMBER = 1;
 
 		public static WindsorContainer CreateContainer(ConfigSettings configSettings)
 		{
@@ -53,6 +53,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 			RegisterExportTestCases(windsorContainer);
 			RegisterInvalidExportTestCases(windsorContainer);
 			RegisterLoggingClasses(windsorContainer);
+			RegisterMetrics(windsorContainer);
 			RegisterJobManagers(windsorContainer);
 			RegisterConfig(configSettings, windsorContainer);
 			RegisterRSAPIClient(windsorContainer);
@@ -82,6 +83,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 			windsorContainer.Register(Component.For<IFileNameProvidersDictionaryBuilder>().ImplementedBy<FileNameProvidersDictionaryBuilder>().LifestyleTransient());
 			windsorContainer.Register(Component.For<IRepositoryFactory>().ImplementedBy<RepositoryFactory>());
 			return windsorContainer;
+		}
+
+		private static void RegisterMetrics(WindsorContainer windsorContainer)
+		{
+			windsorContainer.Register(Component.For<IExternalServiceInstrumentationProvider>()
+				.ImplementedBy<ExternalServiceInstrumentationProviderWithoutJobContext>()
+				.LifestyleSingleton());
 		}
 
 		private static void RegisterRSAPIClient(WindsorContainer windsorContainer)

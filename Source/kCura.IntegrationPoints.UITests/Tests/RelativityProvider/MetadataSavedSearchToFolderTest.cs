@@ -1,4 +1,6 @@
-﻿using kCura.IntegrationPoint.Tests.Core.Models;
+﻿using System;
+using System.Collections.Generic;
+using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Validators;
 using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Components;
@@ -11,6 +13,14 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 	[Category(TestCategory.EXPORT_TO_RELATIVITY)]
     public class MetadataSavedSearchToFolderTest: RelativityProviderTestsBase
 	{
+
+		private static readonly List<Tuple<string, string>> DefaultFieldsMapping = new List<Tuple<string, string>>
+		{
+			new Tuple<string, string>("Control Number", "Control Number"),
+			new Tuple<string, string>("Extracted Text", "Extracted Text"),
+			new Tuple<string, string>("Title", "Title")
+		};
+
 		private RelativityProviderModel CreateRelativityProviderModel()
 		{
 			var model = new RelativityProviderModel(NUnit.Framework.TestContext.CurrentContext.Test.Name)

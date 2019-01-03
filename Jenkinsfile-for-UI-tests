@@ -223,6 +223,11 @@ timestamps
 						numberOfPassedTests = getTestsStatistic(integration_tests_results_file_path, 'passed')
 						numberOfSkippedTests = getTestsStatistic(integration_tests_results_file_path, 'skipped')
 						archiveTestsArtifacts(params.skipUITests, ui_tests_results_file_path, ui_tests_html_report, ui_tests_report_task)
+						if (!params.skipUITests)
+						{
+							archiveArtifacts artifacts: "lib/UnitTests/app.jeeves-ci.config", fingerprint: true
+							archiveArtifacts artifacts: "lib/UnitTests/*.png", fingerprint: true
+						}
 					}
 				}
 			}

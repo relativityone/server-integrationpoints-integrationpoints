@@ -6,7 +6,6 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.Extensions;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers.FileNaming;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
-using kCura.WinEDDS.Core.Model.Export;
 using kCura.WinEDDS.Service.Export;
 using NSubstitute;
 using NUnit.Framework;
@@ -58,7 +57,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 		[Test]
 		public void ShouldCreateCompleteFactoryConfig()
 		{
-			var factoryConfig = _factory.BuildFactoryConfig(_exportDataContext, _serviceFactory);
+			ExporterFactoryConfig factoryConfig = _factory.BuildFactoryConfig(_exportDataContext, _serviceFactory);
 			Assert.IsNotNull(factoryConfig.Controller);
 			Assert.IsNotNull(factoryConfig.FileNameProvider);
 			Assert.AreSame(factoryConfig.JobStopManager, _jobHistoryErrorServiceProvider?.JobHistoryErrorService.JobStopManager);

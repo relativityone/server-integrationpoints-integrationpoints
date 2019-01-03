@@ -1,5 +1,5 @@
-﻿using kCura.IntegrationPoints.Domain.Models;
-using kCura.WinEDDS.Core.Model;
+﻿using FileNaming.CustomFileNaming;
+using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers.FileNaming
 {
