@@ -346,7 +346,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void SetupStatisticsSubscriptions(IDataSynchronizer synchronizer, Job job)
 		{
-			_statisticsService.Subscribe(synchronizer as IBatchReporter, job);
+				_statisticsService.Subscribe(synchronizer as IBatchReporter, job);
 		}
 
 		private void SetupSubscriptions(IDataSynchronizer synchronizer, Job job)
@@ -384,6 +384,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			catch (Exception ex)
 			{
 				LogSetupIntegrationPointsConfigurationForStatisticsServiceError(ip, ex);
+				throw;
 			}
 		}
 
