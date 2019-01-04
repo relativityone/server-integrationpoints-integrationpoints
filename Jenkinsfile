@@ -71,6 +71,8 @@ timestamps
 		{
 			try
 			{
+				(relativityBuildVersion, relativityBranch) = getNewBranchAndVersion(relativityBranch, params.relativityBuildVersion, params.relativityBuildType, session_id)
+				
 				stage ('Checkout')
 				{
 					timeout(time: 3, unit: 'MINUTES')
