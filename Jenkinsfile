@@ -73,7 +73,7 @@ timestamps
 			{
 				echo "Calling getBuildArtifactsPath"
 				def bV = ''
-				bV = getBuildArtifactsPath(this, "Relativity", "release-10.0-larkspur", "", "DEV", session_id)
+				bV = getBuildArtifactsPath(this, "Relativity", "release-10.0-larkspur1", "", "DEV", session_id)
 				echo "Calling getBuildArtifactsPath result: $bV"
 				
 				throw new hudson.AbortException("Abort build $bV")
