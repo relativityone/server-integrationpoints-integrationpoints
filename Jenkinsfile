@@ -70,14 +70,7 @@ timestamps
 		node ('PolandBuild')
 		{
 			try
-			{
-				echo "Calling getBuildArtifactsPath"
-				def bV = ''
-				bV = getBuildArtifactsPath(this, "Relativity", "release-10.0-larkspur1", "", "DEV", session_id)
-				echo "Calling getBuildArtifactsPath result: $bV"
-				
-				throw new hudson.AbortException("Abort build $bV")
-				
+			{		
 				stage ('Checkout')
 				{
 					timeout(time: 3, unit: 'MINUTES')
@@ -412,7 +405,7 @@ def getNewBranchAndVersion(String relativityBranch, String paramRelativityBuildV
 	}
 	catch (any)
 	{
-		branch = "release-10.0-larkspur"
+		branch = "release-10.0-larkspur1"
 		echo "Changing Relativity branch to $branch"
 		buildVersion = getBuildArtifactsPath(this, "Relativity", branch, paramRelativityBuildVersion, paramRelativityBuildType, sessionId)
 	}
