@@ -71,7 +71,11 @@ timestamps
 		{
 			try
 			{
-				(relativityBuildVersion, relativityBranch) = getNewBranchAndVersion(relativityBranch, params.relativityBuildVersion, params.relativityBuildType, session_id)
+				echo "Calling getBuildArtifactsPath"
+				def bV = ''
+				bV = getBuildArtifactsPath(this, "Relativity", "develop", "", "DEV", session_id)
+				echo "Calling getBuildArtifactsPath result: $bV"
+				
 				
 				stage ('Checkout')
 				{
