@@ -3,7 +3,7 @@
 // Based on https://git.kcura.com/projects/RAID/repos/rmtjobs/browse/Template.jenkinsfile
 // Set PipelineTools label to the same as here: https://git.kcura.com/projects/REL/repos/relativity/browse/Junkinsfile
 
-library 'PipelineTools@RelativityCD-6.3.0'
+library 'PipelineTools@RMT-9.3.1'
 library 'SCVMMHelpers@3.2.0'
 library 'GitHelpers@1.0.0'
 library 'SlackHelpers@1.0.0'
