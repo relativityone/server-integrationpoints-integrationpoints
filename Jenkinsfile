@@ -71,10 +71,6 @@ timestamps
 		{
 			try
 			{
-				echo "before get new branch: relativityBuildVersion: $relativityBuildVersion, relativityBranch: $relativityBranch"
-				(relativityBuildVersion, relativityBranch) = getNewBranchAndVersion(relativityBranch, params.relativityBuildVersion, params.relativityBuildType, session_id)
-				echo "after get new branch: relativityBuildVersion: $relativityBuildVersion, relativityBranch: $relativityBranch"
-				
 				stage ('Checkout')
 				{
 					timeout(time: 3, unit: 'MINUTES')
@@ -405,21 +401,16 @@ def getNewBranchAndVersion(String relativityBranch, String paramRelativityBuildV
 	def buildVersion = ''
 	try
 	{
-		echo "entering getBuildArtifactsPath buildVersion: $buildVersion"
 		buildVersion = getBuildArtifactsPath(this, "Relativity", branch, paramRelativityBuildVersion, paramRelativityBuildType, sessionId)
-		echo "after getBuildArtifactsPath buildVersion: $buildVersion"
 	}
 	catch (any)
 	{
-		echo "In catch changing to release-10"
 		branch = "release-10.0-larkspur"
 		echo "Changing Relativity branch to $branch"
 		buildVersion = getBuildArtifactsPath(this, "Relativity", branch, paramRelativityBuildVersion, paramRelativityBuildType, sessionId)
-		echo "after Changing Relativity branch getBuildArtifactsPath buildVersion: $buildVersion"
 	}
 	if (paramRelativityBuildVersion && !buildVersion)
 	{
-		echo "It should never be empty!!"
 		// It should never be empty!!
 		buildVersion = paramRelativityBuildVersion
 	}
