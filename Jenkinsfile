@@ -3,7 +3,7 @@
 // Based on https://git.kcura.com/projects/RAID/repos/rmtjobs/browse/Template.jenkinsfile
 // Set PipelineTools label to the same as here: https://git.kcura.com/projects/REL/repos/relativity/browse/Junkinsfile
 
-library 'PipelineTools@RMT-9.3.1'
+library 'PipelineTools@RelativityCD-6.3.0'
 library 'SCVMMHelpers@3.2.0'
 library 'GitHelpers@1.0.0'
 library 'SlackHelpers@1.0.0'
@@ -76,6 +76,7 @@ timestamps
 				bV = getBuildArtifactsPath(this, "Relativity", "develop", "", "DEV", session_id)
 				echo "Calling getBuildArtifactsPath result: $bV"
 				
+				throw new hudson.AbortException("Abort build $bV")
 				
 				stage ('Checkout')
 				{
