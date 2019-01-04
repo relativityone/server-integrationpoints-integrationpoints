@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Data;
+using System.Runtime.Remoting;
 
 namespace kCura.IntegrationPoints.Domain
 {
 	//represents a wrapper to allow for certain safeties to be guaranteed when marshalling
 	internal class DataReaderWrapper : MarshalByRefObject, IDataReader
 	{
+		private bool _isDisposed;
 		private readonly IDataReader _dataReader;
 		internal DataReaderWrapper(IDataReader dataReader)
 		{
@@ -16,7 +18,7 @@ namespace kCura.IntegrationPoints.Domain
 			_dataReader = dataReader;
 		}
 
-
+		#region Decorated Methods
 		public void Close()
 		{
 			_dataReader.Close();
@@ -50,11 +52,6 @@ namespace kCura.IntegrationPoints.Domain
 		public int RecordsAffected
 		{
 			get { return _dataReader.RecordsAffected; }
-		}
-
-		public void Dispose()
-		{
-			_dataReader.Dispose();
 		}
 
 		public int FieldCount
@@ -181,5 +178,47 @@ namespace kCura.IntegrationPoints.Domain
 		{
 			get { return _dataReader[i]; }
 		}
+		#endregion
+
+		#region Cross AppDomain comunication
+		public override object InitializeLifetimeService()
+		{
+			return null;
+		}
+
+		private void DisconnectFromRemoteObject()
+		{
+			RemotingServices.Disconnect(this);
+		}
+		#endregion
+
+		#region IDisposable Support
+		protected virtual void Dispose(bool disposing)
+		{
+			if (_isDisposed)
+			{
+				return;
+			}
+
+			if (disposing)
+			{
+				_dataReader.Dispose();
+			}
+
+			DisconnectFromRemoteObject();
+			_isDisposed = true;
+		}
+
+		~DataReaderWrapper()
+		{
+			Dispose(false);
+		}
+
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+		#endregion
 	}
 }
