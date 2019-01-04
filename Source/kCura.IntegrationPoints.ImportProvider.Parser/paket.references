@@ -3,4 +3,5 @@ CSharpGuidelineAnalyzer
 kCura.Apps.Common.Utils
 Relativity.ImportExport
 Relativity.OAuth2Client
+Relativity.Logging.Interfaces
 SystemWrapper.Interfaces
