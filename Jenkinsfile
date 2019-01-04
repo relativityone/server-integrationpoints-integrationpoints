@@ -70,7 +70,7 @@ timestamps
 		node ('PolandBuild')
 		{
 			try
-			{		
+			{
 				stage ('Checkout')
 				{
 					timeout(time: 3, unit: 'MINUTES')
