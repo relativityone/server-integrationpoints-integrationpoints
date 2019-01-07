@@ -4,6 +4,6 @@
 	{
 		int DataSourceArtifactId { get; }
 
-		int SnapshotId { set; }
+		int SnapshotId { get; set; }
 	}
 }

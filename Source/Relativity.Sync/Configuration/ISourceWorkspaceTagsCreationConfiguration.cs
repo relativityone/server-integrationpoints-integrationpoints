@@ -2,10 +2,10 @@
 {
 	internal interface ISourceWorkspaceTagsCreationConfiguration : IConfiguration
 	{
-		//TODO fields from DestinationWorkspace object
+		//fields from DestinationWorkspace object
 
 		bool IsTagArtifactIdSet { get; }
 
-		int TagArtifactId { set; }
+		int TagArtifactId { get; set; }
 	}
 }

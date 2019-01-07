@@ -6,10 +6,10 @@
 
 		int WorkspaceTagArtifactId { get; }
 
-		//TODO params to create saved search name
+		//params to create saved search name
 
 		bool IsSavedSearchArtifactIdSet { get; }
 
-		int SavedSearchArtifactId { set; }
+		int SavedSearchArtifactId { get; set; }
 	}
 }
