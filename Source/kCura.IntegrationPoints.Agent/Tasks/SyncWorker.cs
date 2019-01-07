@@ -384,7 +384,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			catch (Exception ex)
 			{
 				LogSetupIntegrationPointsConfigurationForStatisticsServiceError(ip, ex);
-				throw;
 			}
 		}
 
