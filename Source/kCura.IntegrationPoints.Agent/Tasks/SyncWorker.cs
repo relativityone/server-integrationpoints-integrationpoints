@@ -387,15 +387,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				LogDeserializeIntegrationPointsConfigurationForStatisticsServiceError(ip, ex);
 			}
 
-			SetupIntegrationPointsConfigurationForStatisticsService(ip, sourceConfiguration, importSettings);
+			SetupIntegrationPointsConfigurationForStatisticsService(sourceConfiguration, importSettings);
 		}
 
-		private void SetupIntegrationPointsConfigurationForStatisticsService(IntegrationPoint ip,
-			SourceConfiguration sourceConfiguration, ImportSettings importSettings)
+		private void SetupIntegrationPointsConfigurationForStatisticsService(SourceConfiguration sourceConfiguration, ImportSettings importSettings)
 		{
 			if (sourceConfiguration == null || importSettings == null)
 			{
-				LogSkippingSetupIntegrationPointsConfigurationForStatisticsServiceWarning(ip);
+				LogSkippingSetupIntegrationPointsConfigurationForStatisticsServiceWarning();
 			}
 
 			try
@@ -404,21 +403,21 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 			catch (Exception ex)
 			{
-				LogSetupIntegrationPointsConfigurationForStatisticsServiceError(ip, ex);
+				LogSetupIntegrationPointsConfigurationForStatisticsServiceError(sourceConfiguration, importSettings, ex);
 				throw;
 			}
 		}
 
 		#region Logging
-		private void LogSkippingSetupIntegrationPointsConfigurationForStatisticsServiceWarning(IntegrationPoint ip)
+		private void LogSkippingSetupIntegrationPointsConfigurationForStatisticsServiceWarning()
 		{
-			_logger.LogWarning("Skipping setup of Integration Point configuration for statistics service.", ip?.ArtifactId);
+			_logger.LogWarning("Skipping setup of Integration Point configuration for statistics service.");
 		}
-		private void LogSetupIntegrationPointsConfigurationForStatisticsServiceError(IntegrationPoint ip, Exception ex)
+		private void LogSetupIntegrationPointsConfigurationForStatisticsServiceError(SourceConfiguration sourceConfiguration, ImportSettings importSettings, Exception ex)
 		{
 			string msg =
-				"Failed to set up integration point configuration for statistics service. SourceConfiguration: {sourceConfiguration}. DestinationConfiguration: {destinationConfiguration}";
-			_logger.LogWarning(ex, msg, ip?.SourceConfiguration, ip?.DestinationConfiguration);
+				"Failed to set up integration point configuration for statistics service. SourceConfiguration: {sourceConfiguration}. ImportSettings: {importSettings}";
+			_logger.LogWarning(ex, msg, sourceConfiguration, importSettings);
 		}
 
 		private void LogDeserializeIntegrationPointsConfigurationForStatisticsServiceError(IntegrationPoint ip, Exception ex)
