@@ -7,6 +7,7 @@ using kCura.IntegrationPoint.Tests.Core.Models.Shared;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.UITests.BrandNew.Import.FTP;
 using kCura.IntegrationPoints.UITests.Common;
+using kCura.IntegrationPoints.UITests.NUnitExtensions;
 using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoints.UITests.Validation;
 using NUnit.Framework;
@@ -29,7 +30,9 @@ namespace kCura.IntegrationPoints.UITests.Tests.FTPProvider
 			_service = Container.Resolve<IRSAPIService>();
 		}
 
-		[Test, Order(10)]
+		[Test]
+		[RetryOnError]
+		[Order(10)]
 		public void ImportDocumentsFromFtp()
 		{
 			// Arrange

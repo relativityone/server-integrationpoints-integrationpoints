@@ -111,6 +111,7 @@
     <Compile Include="Driver\ScreenshotSaver.cs" />
     <Compile Include="Logging\LoggerFactory.cs" />
     <Compile Include="Logging\LoggerNameEnricher.cs" />
+    <Compile Include="NUnitExtensions\RetryOnErrorAttribute.cs" />
     <Compile Include="Pages\ExportEntityToFileSecondPage.cs" />
     <Compile Include="Pages\ExportToFileThirdPage.cs" />
     <Compile Include="Pages\ExportToFileThirdPageExportDetails.cs" />
@@ -266,6 +267,7 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>

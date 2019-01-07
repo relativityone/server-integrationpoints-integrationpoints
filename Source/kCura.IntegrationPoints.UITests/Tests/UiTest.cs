@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 
 	public abstract class UiTest
 	{
-
+		
 		private readonly Lazy<ITestHelper> _help;
 
 		protected IConfigurationStore ConfigurationStore;

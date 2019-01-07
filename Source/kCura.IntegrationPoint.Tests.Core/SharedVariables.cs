@@ -149,6 +149,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		#region UI Tests Settings
 
+		public static int UiTestRepeatOnErrorCount => AppSettingInt("ui.testRepeatOnErrorCount");
+
 		public static int UiImplicitWaitInSec => AppSettingInt("ui.implicitWaitInSec");
 
 		public static int UiWaitForAjaxCallsInSec => AppSettingInt("ui.waitForAjaxCallsInSec");
@@ -293,6 +295,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		#region Fileshare Configuration Settings
 
 		public static string FileshareLocation => AppSettingString("fileshareLocation");
+		
 
 		#endregion
 

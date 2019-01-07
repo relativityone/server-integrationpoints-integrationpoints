@@ -1,9 +1,11 @@
-﻿using System.Threading.Tasks;
-using kCura.IntegrationPoint.Tests.Core.Models;
+﻿using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Components;
+using kCura.IntegrationPoints.UITests.NUnitExtensions;
 using kCura.IntegrationPoints.UITests.Pages;
 using NUnit.Framework;
+using System.Threading.Tasks;
+
 
 namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 {
@@ -35,6 +37,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
+		[RetryOnError]
 		public void RelativityProvider_TC_RTR_NF_01_with_DG()
 		{
 			//Arrange

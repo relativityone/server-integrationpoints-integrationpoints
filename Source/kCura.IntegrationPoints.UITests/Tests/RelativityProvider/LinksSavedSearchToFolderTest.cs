@@ -2,6 +2,7 @@
 using kCura.IntegrationPoint.Tests.Core.Validators;
 using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Components;
+using kCura.IntegrationPoints.UITests.NUnitExtensions;
 using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoints.UITests.Validation.RelativityProviderValidation;
 using NUnit.Framework;
@@ -23,6 +24,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
+		[RetryOnError]
 		[Category(TestCategory.SMOKE)]
 		public void RelativityProvider_TC_RTR_LO_01()
 		{
@@ -46,6 +48,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
+		[RetryOnError]
 		public void RelativityProvider_TC_RTR_LO_02()
 		{
 			//Arrange
@@ -68,6 +71,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
+		[RetryOnError]
 		public void RelativityProvider_TC_RTR_LO_03()
 		{
 			//Arrange
@@ -90,6 +94,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
+		[RetryOnError]
 		public void RelativityProvider_TC_RTR_LO_04()
 		{
 			// Arrange
@@ -114,6 +119,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
+		[RetryOnError]
 		public void RelativityProvider_TC_RTR_LO_05()
 		{
 			// Arrange
@@ -139,6 +145,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
+		[RetryOnError]
 		public void RelativityProvider_TC_RTR_LO_06()
 		{
 			// Arrange
@@ -164,6 +171,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
+		[RetryOnError]
 		public void RelativityProvider_TC_RTR_LO_07()
 		{
 			// Arrange
@@ -189,6 +197,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
+		[RetryOnError]
 		public void RelativityProvider_TC_RTR_LO_08()
 		{
 			// Arrange
@@ -215,6 +224,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
+		[RetryOnError]
 		public void RelativityProvider_TC_RTR_LO_09()
 		{
 			// Arrange
@@ -240,6 +250,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
+		[RetryOnError]
 		public void RelativityProvider_TC_RTR_LO_10()
 		{
 			// Arrange
@@ -266,6 +277,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
+		[RetryOnError]
 		public void RelativityProvider_TC_RTR_LO_11()
 		{
 			// Arrange
@@ -292,6 +304,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
+		[RetryOnError]
 		public void RelativityProvider_TC_RTR_LO_12()
 		{
 			// Arrange
@@ -318,6 +331,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
+		[RetryOnError]
 		public void RelativityProvider_TC_RTR_LO_13()
 		{
 			// Arrange

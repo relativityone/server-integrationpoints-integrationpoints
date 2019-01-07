@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
-using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoint.Tests.Core.Models;
+﻿using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Models.Constants.ExportToLoadFile;
 using kCura.IntegrationPoint.Tests.Core.Models.Constants.Shared;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.UITests.Common;
+using kCura.IntegrationPoints.UITests.NUnitExtensions;
 using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoints.UITests.Validation;
 using NUnit.Framework;
+using System.Collections.Generic;
 using IntegrationPointType = kCura.IntegrationPoint.Tests.Core.Models.IntegrationPointType;
 
 namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
@@ -31,6 +31,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 		}
 
 		[Test]
+		[RetryOnError]
 		public void ProductionExportToLoadFile_TC_ELF_PROD_1()
 		{
 			// Arrange
@@ -93,6 +94,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 		}
 
 		[Test]
+		[RetryOnError]
 		public void ProductionExportToLoadFile_TC_ELF_PROD_2()
 		{
 			// Arrange
@@ -139,6 +141,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 		}
 
 		[Test]
+		[RetryOnError]
 		public void ProductionExportToLoadFile_TC_ELF_PROD_3()
 		{
 			// Arrange
@@ -184,6 +187,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 		}
 
 		[Test]
+		[RetryOnError]
 		public void ProductionExportToLoadFile_TC_ELF_PROD_4()
 		{
 			// Arrange
@@ -241,6 +245,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 		}
 
 		[Test]
+		[RetryOnError]
 		public void ProductionExportToLoadFile_TC_ELF_PROD_5()
 		{
 			// Arrange
