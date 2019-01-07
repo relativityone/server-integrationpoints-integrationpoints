@@ -395,7 +395,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			if (sourceConfiguration == null || importSettings == null)
 			{
-				LogSkippingSetupIntegrationPointsConfigurationForStatisticsService(ip);
+				LogSkippingSetupIntegrationPointsConfigurationForStatisticsServiceWarning(ip);
 			}
 
 			try
@@ -410,7 +410,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		}
 
 		#region Logging
-		private void LogSkippingSetupIntegrationPointsConfigurationForStatisticsService(IntegrationPoint ip)
+		private void LogSkippingSetupIntegrationPointsConfigurationForStatisticsServiceWarning(IntegrationPoint ip)
 		{
 			_logger.LogWarning("Skipping setup of Integration Point configuration for statistics service.", ip?.ArtifactId);
 		}
@@ -425,7 +425,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			string msg =
 				"Failed to deserialize integration point configuration for statistics service. SourceConfiguration: {sourceConfiguration}. DestinationConfiguration: {destinationConfiguration}";
-			_logger.LogWarning(ex, msg, ip?.SourceConfiguration, ip?.DestinationConfiguration);
+			_logger.LogError(ex, msg, ip?.SourceConfiguration, ip?.DestinationConfiguration);
 		}
 
 		private void LogExecutingTaskError(Job job, Exception ex)
