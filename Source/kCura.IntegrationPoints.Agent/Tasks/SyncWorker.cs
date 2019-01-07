@@ -384,7 +384,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 			catch (Exception ex)
 			{
-				LogDeserializeIntegrationPointsConfigurationForStatisticsServiceError(ip, ex);
+				LogDeserializeIntegrationPointsConfigurationForStatisticsServiceWarning(ip, ex);
 			}
 
 			SetupIntegrationPointsConfigurationForStatisticsService(sourceConfiguration, importSettings);
@@ -417,14 +417,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			string msg =
 				"Failed to set up integration point configuration for statistics service. SourceConfiguration: {sourceConfiguration}. ImportSettings: {importSettings}";
-			_logger.LogWarning(ex, msg, sourceConfiguration, importSettings);
+			_logger.LogError(ex, msg, sourceConfiguration, importSettings);
 		}
 
-		private void LogDeserializeIntegrationPointsConfigurationForStatisticsServiceError(IntegrationPoint ip, Exception ex)
+		private void LogDeserializeIntegrationPointsConfigurationForStatisticsServiceWarning(IntegrationPoint ip, Exception ex)
 		{
 			string msg =
 				"Failed to deserialize integration point configuration for statistics service. SourceConfiguration: {sourceConfiguration}. DestinationConfiguration: {destinationConfiguration}";
-			_logger.LogError(ex, msg, ip?.SourceConfiguration, ip?.DestinationConfiguration);
+			_logger.LogWarning(ex, msg, ip?.SourceConfiguration, ip?.DestinationConfiguration);
 		}
 
 		private void LogExecutingTaskError(Job job, Exception ex)
