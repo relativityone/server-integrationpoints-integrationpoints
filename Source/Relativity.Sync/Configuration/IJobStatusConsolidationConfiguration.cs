@@ -6,6 +6,6 @@
 
 		bool IsJobStatusArtifactIdSet { get; }
 
-		int JobStatusArtifactId { set; }
+		int JobStatusArtifactId { get; set; }
 	}
 }

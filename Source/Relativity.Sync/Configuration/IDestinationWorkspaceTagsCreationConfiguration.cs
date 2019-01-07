@@ -2,14 +2,14 @@
 {
 	internal interface IDestinationWorkspaceTagsCreationConfiguration : IConfiguration
 	{
-		//TODO fields from RelativitySourceCase and RelativitySourceJob
+		//fields from RelativitySourceCase and RelativitySourceJob
 
 		bool IsWorkspaceTagArtifactIdSet { get; }
 
 		bool IsJobTagArtifactIdSet { get; }
 
-		int WorkspaceTagArtifactId { set; }
+		int WorkspaceTagArtifactId { get; set; }
 
-		int JobTagArtifactId { set; }
+		int JobTagArtifactId { get; set; }
 	}
 }

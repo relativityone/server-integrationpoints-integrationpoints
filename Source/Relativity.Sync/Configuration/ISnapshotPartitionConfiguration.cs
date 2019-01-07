@@ -8,6 +8,6 @@ namespace Relativity.Sync.Configuration
 
 		bool AreBatchesIdsSet { get; }
 
-		List<int> BatchesIds { set; }
+		List<int> BatchesIds { get; set; }
 	}
 }

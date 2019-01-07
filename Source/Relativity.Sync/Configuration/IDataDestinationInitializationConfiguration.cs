@@ -6,6 +6,6 @@
 
 		bool IsDataDestinationArtifactIdSet { get; }
 
-		int DataDestinationArtifactId { set; }
+		int DataDestinationArtifactId { get; set; }
 	}
 }
