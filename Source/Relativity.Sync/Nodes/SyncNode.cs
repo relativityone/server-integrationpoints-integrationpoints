@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Banzai;
+using Relativity.Sync.Configuration;
 
-namespace Relativity.Sync
+namespace Relativity.Sync.Nodes
 {
 	internal abstract class SyncNode<T> : Node<SyncExecutionContext> where T : IConfiguration
 	{
 		private readonly ICommand<T> _command;
 		private readonly ISyncLog _logger;
-
-		protected abstract string Name { get; }
 
 		protected SyncNode(ICommand<T> command, ISyncLog logger)
 		{
@@ -45,7 +44,7 @@ namespace Relativity.Sync
 
 		protected override void OnBeforeExecute(IExecutionContext<SyncExecutionContext> context)
 		{
-			SyncProgress progress = new SyncProgress(Name);
+			SyncProgress progress = new SyncProgress(Id);
 			context.Subject.Progress.Report(progress);
 		}
 	}

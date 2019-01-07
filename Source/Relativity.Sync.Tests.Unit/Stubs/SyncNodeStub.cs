@@ -1,4 +1,6 @@
 ﻿using Banzai;
+using Relativity.Sync.Configuration;
+using Relativity.Sync.Nodes;
 
 namespace Relativity.Sync.Tests.Unit.Stubs
 {
@@ -6,14 +8,12 @@ namespace Relativity.Sync.Tests.Unit.Stubs
 	{
 		public SyncNodeStub(ICommand<IConfiguration> command, ISyncLog logger, string name) : base(command, logger)
 		{
-			Name = name;
+			Id = name;
 		}
 
 		public SyncNodeStub(ExecutionOptions localOptions, ICommand<IConfiguration> command, ISyncLog logger, string name) : base(localOptions, command, logger)
 		{
-			Name = name;
+			Id = name;
 		}
-
-		protected override string Name { get; }
 	}
 }

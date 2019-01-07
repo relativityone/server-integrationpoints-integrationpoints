@@ -1,6 +1,6 @@
 ﻿using Banzai.Logging;
 using NUnit.Framework;
-using Relativity.Sync.Tests.Unit.Helpers;
+using Relativity.Sync.Tests.Common;
 
 namespace Relativity.Sync.Tests.Unit
 {

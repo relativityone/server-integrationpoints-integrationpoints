@@ -1,9 +1,9 @@
 ﻿using System;
 using Banzai.Logging;
 
-namespace Relativity.Sync.Tests.Unit.Helpers
+namespace Relativity.Sync.Tests.Common
 {
-	internal sealed class LogWriterFactory : ILogWriterFactory
+	public sealed class LogWriterFactory : ILogWriterFactory
 	{
 		public ILogWriter GetLogger(Type type)
 		{

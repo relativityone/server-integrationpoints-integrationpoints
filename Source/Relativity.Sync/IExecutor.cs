@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync
 {
