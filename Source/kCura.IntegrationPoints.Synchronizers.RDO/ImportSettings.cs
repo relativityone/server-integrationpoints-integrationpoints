@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		{
 			_generator = generator;
 			_context = context;
-			ImportAuditLevel = ImportAuditLevelEnum.NoSnapshot;
+			ImportAuditLevel = ImportAuditLevelEnum.FullAudit;
 			ExtractedTextFieldContainsFilePath = false;
 			MultiValueDelimiter = Constants.MULTI_VALUE_DELIMITER;
 			ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.DoNotImportNativeFiles;
