@@ -48,8 +48,42 @@ namespace kCura.IntegrationPoints.Data.Transformers
 			return rdo;
 		}
 
+		public static ObjectTypeRef ToObjectType(this BaseRdo rdo)
+		{
+			DynamicObjectAttribute dynamicObject = rdo.GetType().GetCustomAttribute<DynamicObjectAttribute>();
+			return new ObjectTypeRef() { Guid = Guid.Parse(dynamicObject.ArtifactTypeGuid) };
+		}
+
+		public static RelativityObjectRef ToObjectRef(this BaseRdo rdo)
+		{
+			return new RelativityObjectRef()
+			{
+				ArtifactID = rdo.ArtifactId
+			};
+		}
+
+		public static IEnumerable<FieldRefValuePair> ToFieldValues(this BaseRdo rdo, BindingFlags bindingAttr = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance)
+		{
+			IEnumerable<FieldRefValuePair> fields = ConvertPropertiesToFieldValuePairs(rdo, bindingAttr);
+
+			return fields;
+		}
+		public static IEnumerable<FieldRef> ToFieldList(this BaseRdo rdo, BindingFlags bindingAttr = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance)
+		{
+			IEnumerable<FieldRef> fields = ConvertPropertiesToFields(rdo, bindingAttr);
+
+			return fields;
+		}
+
+		// TODO move to proper class
+		public static IEnumerable<FieldRef> ConvertPropertiesToFields<T>() where T : BaseRdo
+		{
+			BindingFlags bindingAttr = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance;
+			return ConvertPropertiesToFields(typeof(T), bindingAttr);
+		}
+
 		// TODO refactor
-		private static object ConvertFieldValueToExpectedFormat(FieldValuePair item, Type propeType)
+		private static object ConvertFieldValueToExpectedFormat(FieldValuePair item, Type properType)
 		{
 			object valueToSet = item?.Value;
 
@@ -73,13 +107,14 @@ namespace kCura.IntegrationPoints.Data.Transformers
 				var itemValues = (IEnumerable<Choice>)item.Value;
 				valueToSet = itemValues.Select(ConvertChoice).ToArray();
 			}
-			else if (propeType == typeof(int) || propeType == typeof(int?)) // TODO logging
+			else if (properType == typeof(int) || properType == typeof(int?)) // TODO logging
 			{
 				if (item?.Value != null)
 				{
 					valueToSet = Convert.ToInt32(item.Value);
 				}
-			} else if (propeType == typeof(long) || propeType == typeof(long?)) // TODO logging
+			}
+			else if (properType == typeof(long) || properType == typeof(long?)) // TODO logging
 			{
 				if (item?.Value != null)
 				{
@@ -134,23 +169,23 @@ namespace kCura.IntegrationPoints.Data.Transformers
 
 		private static IEnumerable<FieldRefValuePair> ConvertPropertiesToFieldValuePairs(BaseRdo rdo, BindingFlags bindingAttr)
 		{
-			var properties = rdo.GetType().GetProperties(bindingAttr);
+			PropertyInfo[] properties = rdo.GetType().GetProperties(bindingAttr);
 			foreach (PropertyInfo prop in properties)
 			{
-				DynamicFieldAttribute attributes = prop?.GetCustomAttribute<DynamicFieldAttribute>();
-				if (attributes == null)
+				DynamicFieldAttribute attribute = prop?.GetCustomAttribute<DynamicFieldAttribute>();
+				if (attribute == null)
 				{
 					continue;
 				}
 
 				FieldRefValuePair output = null;
 
-				if (rdo.HasField(attributes.FieldGuid))
+				if (rdo.HasField(attribute.FieldGuid))
 				{
 					output = new FieldRefValuePair
 					{
-						Value = ConvertRdoFieldValueToObjectManagerFieldValue(prop.GetValue(rdo), attributes),
-						Field = new FieldRef { Guid = attributes.FieldGuid }
+						Value = ConvertRdoFieldValueToObjectManagerFieldValue(prop.GetValue(rdo), attribute),
+						Field = new FieldRef { Guid = attribute.FieldGuid, Name = attribute.FieldName}
 					};
 				}
 
@@ -206,55 +241,16 @@ namespace kCura.IntegrationPoints.Data.Transformers
 			return ConvertPropertiesToFields(rdo.GetType(), bindingAttr);
 		}
 
-		// TODO move to proper class
-		public static IEnumerable<FieldRef> ConvertPropertiesToFields<T>() where T : BaseRdo
-		{
-			BindingFlags bindingAttr = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance;
-			return ConvertPropertiesToFields(typeof(T), bindingAttr);
-		}
-
 		private static IEnumerable<FieldRef> ConvertPropertiesToFields(Type type, BindingFlags bindingAttr)
 		{
-			foreach (var property in type.GetProperties(bindingAttr))
-			{
-				Guid? fieldGuid = property?.GetCustomAttribute<DynamicFieldAttribute>()?.FieldGuid;
-				if (fieldGuid.HasValue)
+			return type.GetProperties(bindingAttr)
+				.Select(property => property.GetCustomAttribute<DynamicFieldAttribute>())
+				.Select(dynamicField => new FieldRef
 				{
-					yield return new FieldRef
-					{
-						Guid = fieldGuid.Value
-					};
-				}
-			}
+					Guid = dynamicField.FieldGuid,
+					Name = dynamicField.FieldName
+				});
 		}
-
-		public static ObjectTypeRef ToObjectType(this BaseRdo rdo)
-		{
-			var dynamiCobject = rdo.GetType().GetCustomAttribute<DynamicObjectAttribute>();
-			return new ObjectTypeRef() { Guid = Guid.Parse(dynamiCobject.ArtifactTypeGuid) };
-		}
-
-		public static RelativityObjectRef ToObjectRef(this BaseRdo rdo)
-		{
-			return new RelativityObjectRef()
-			{
-				ArtifactID = rdo.ArtifactId
-			};
-		}
-
-		public static IEnumerable<FieldRefValuePair> ToFieldValues(this BaseRdo rdo, BindingFlags bindingAttr = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance)
-		{
-			IEnumerable<FieldRefValuePair> fields = ConvertPropertiesToFieldValuePairs(rdo, bindingAttr);
-
-			return fields;
-		}
-		public static IEnumerable<FieldRef> ToFieldList(this BaseRdo rdo, BindingFlags bindingAttr = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance)
-		{
-			IEnumerable<FieldRef> fields = ConvertPropertiesToFields(rdo, bindingAttr);
-
-			return fields;
-		}
-
 
 	}
 }

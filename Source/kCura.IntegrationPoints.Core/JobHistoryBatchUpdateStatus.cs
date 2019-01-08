@@ -1,5 +1,6 @@
 ﻿using System;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Core.QueryOptions;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
@@ -20,8 +21,17 @@ namespace kCura.IntegrationPoints.Core
 		private readonly ISerializer _serializer;
 		private readonly IAPILog _logger;
 
-	    public JobHistoryBatchUpdateStatus(IJobStatusUpdater jobStatusUpdater, IJobHistoryService jobHistoryService,
-	        IJobService jobService, ISerializer serializer, IAPILog logger)
+		private readonly JobHistoryQueryOptions _jobHistoryQueryOptions =
+			JobHistoryQueryOptions.Query
+				.All()
+				.Except(JobHistoryFields.Documents);
+
+	    public JobHistoryBatchUpdateStatus(
+		    IJobStatusUpdater jobStatusUpdater, 
+		    IJobHistoryService jobHistoryService,
+	        IJobService jobService, 
+		    ISerializer serializer,
+		    IAPILog logger)
 	    {
 	        _updater = jobStatusUpdater;
 	        _jobHistoryService = jobHistoryService;
@@ -35,31 +45,24 @@ namespace kCura.IntegrationPoints.Core
 			Job updatedJob = _jobService.GetJob(job.JobId);
 			if (updatedJob.StopState != StopState.Stopping)
 			{
-				JobHistory result = GetHistory(job);
-				result.JobStatus = JobStatusChoices.JobHistoryProcessing;
-				_jobHistoryService.UpdateRdo(result);
+				JobHistory jobHistory = GetHistory(job);
+				jobHistory.JobStatus = JobStatusChoices.JobHistoryProcessing;
+				UpdateHistory(jobHistory);
 			}
 		}
 
 		public void OnJobComplete(Job job)
 		{
-			JobHistory result = GetHistory(job);
-			if (result == null)
-			{
-				long jobId = job?.JobId ?? -1;
-				string message = string.Format(_JOB_HISTORY_NULL, jobId);
-				NullReferenceException exception = new NullReferenceException(message);
-				_logger.LogError(exception, _JOB_HISTORY_NULL, jobId);
-				throw exception;
-			}
-			int artifactId = result.ArtifactId;
-			string oldStatusName = result.JobStatus.Name;
-			result.JobStatus = _updater.GenerateStatus(result, job.WorkspaceID);
-			string newStatusName = result.JobStatus.Name;
-			result.EndTimeUTC = DateTime.UtcNow;
+			JobHistory jobHistory = GetHistory(job);
+			
+			int artifactId = jobHistory.ArtifactId;
+			string oldStatusName = jobHistory.JobStatus.Name;
+			jobHistory.JobStatus = _updater.GenerateStatus(jobHistory, job.WorkspaceID);
+			string newStatusName = jobHistory.JobStatus.Name;
+			jobHistory.EndTimeUTC = DateTime.UtcNow;
 			try
 			{
-				_jobHistoryService.UpdateRdo(result);
+				UpdateHistory(jobHistory);
 			}
 			catch (Exception exception)
 			{
@@ -71,7 +74,34 @@ namespace kCura.IntegrationPoints.Core
 		private JobHistory GetHistory(Job job)
 		{
 			TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
-			return _jobHistoryService.GetRdo(taskParameters.BatchInstance);
+			JobHistory jobHistory = _jobHistoryService.GetRdo(
+				taskParameters.BatchInstance, 
+				_jobHistoryQueryOptions
+			);
+
+			if (jobHistory == null)
+			{
+				ThrowWhenJobHistoryNotRetrieved(job);
+			}
+
+			return jobHistory;
+		}
+
+		private void UpdateHistory(JobHistory jobHistory)
+		{
+			_jobHistoryService.UpdateRdo(
+				jobHistory,
+				_jobHistoryQueryOptions
+			);
+		}
+
+		private void ThrowWhenJobHistoryNotRetrieved(Job job)
+		{
+			long jobId = job?.JobId ?? -1;
+			string message = string.Format(_JOB_HISTORY_NULL, jobId);
+			var exception = new NullReferenceException(message);
+			_logger.LogError(exception, _JOB_HISTORY_NULL, jobId);
+			throw exception;
 		}
 	}
 }
