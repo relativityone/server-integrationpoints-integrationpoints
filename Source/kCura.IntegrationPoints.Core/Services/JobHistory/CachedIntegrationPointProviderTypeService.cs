@@ -17,8 +17,11 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		private readonly Dictionary<int, ProviderType> _providerTypesCache = new Dictionary<int, ProviderType>();
 		private readonly object _providerTypesCacheLock = new object();
 
-		public CachedIntegrationPointProviderTypeService(IProviderTypeService providerTypeService,
-			IIntegrationPointService integrationPointService, IDateTimeHelper currentDateTimeProvider, TimeSpan cacheRefreshDelay)
+		public CachedIntegrationPointProviderTypeService(
+			IProviderTypeService providerTypeService,
+			IIntegrationPointService integrationPointService, 
+			IDateTimeHelper currentDateTimeProvider, 
+			TimeSpan cacheRefreshDelay)
 		{
 			_cacheRefreshDelay = cacheRefreshDelay;
 			_providerTypeService = providerTypeService;

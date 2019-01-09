@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			_messageService = messageService;
 		}
 
-		public Data.JobHistory GetRdo(Guid batchInstance, JobHistoryQueryOptions queryOptions = null)
+		public Data.JobHistory GetRdo(Guid batchInstance, IQueryOptions queryOptions = null)
 		{
 			var request = new QueryRequest
 			{
@@ -171,7 +171,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			return jobHistory;
 		}
 
-		public void UpdateRdo(Data.JobHistory jobHistory, JobHistoryQueryOptions queryOptions = null)
+		public void UpdateRdo(Data.JobHistory jobHistory, IQueryOptions queryOptions = null)
 		{
 			IRelativityObjectManager objectManager = _caseServiceContext.RsapiService.RelativityObjectManager;
 

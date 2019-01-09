@@ -25,8 +25,13 @@ namespace kCura.IntegrationPoints.Core.Monitoring.JobLifetime
 		private readonly ISerializer _serializer;
 		private readonly IDateTimeHelper _dateTimeHelper;
 
-		public JobLifetimeMetricBatchStatus(IMessageService messageService, IIntegrationPointService integrationPointService,
-			IProviderTypeService providerTypeService, IJobStatusUpdater updater, IJobHistoryService jobHistoryService, ISerializer serializer, 
+		public JobLifetimeMetricBatchStatus(
+			IMessageService messageService, 
+			IIntegrationPointService integrationPointService,
+			IProviderTypeService providerTypeService, 
+			IJobStatusUpdater updater, 
+			IJobHistoryService jobHistoryService, 
+			ISerializer serializer, 
 			IDateTimeHelper dateTimeHelper)
 		{
 			_messageService = messageService;

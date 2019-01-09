@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using kCura.IntegrationPoints.Core.FetchOptions;
 using kCura.IntegrationPoints.Core.QueryOptions;
 
 namespace kCura.IntegrationPoints.Core.Services.JobHistory
@@ -41,14 +40,14 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		/// <param name="batchInstance">Batch instance Guid</param>
 		/// <param name="queryOptions">Specifies how Rdo will be fetched. Fetch whole object when not set.</param>
 		/// <returns></returns>
-		Data.JobHistory GetRdo(Guid batchInstance, JobHistoryQueryOptions queryOptions = null);
+		Data.JobHistory GetRdo(Guid batchInstance, IQueryOptions queryOptions = null);
 
 		/// <summary>
 		/// Updates job history Rdo
 		/// </summary>
 		/// <param name="jobHistory">Job history Rdo</param>
 		/// <param name="queryOptions">Specifies how Rdo will be updated. Update whole object when not set.</param>
-		void UpdateRdo(Data.JobHistory jobHistory, JobHistoryQueryOptions queryOptions = null);
+		void UpdateRdo(Data.JobHistory jobHistory, IQueryOptions queryOptions = null);
 
 		/// <summary>
 		/// Deletes an instance of job history given its Artifact ID.
