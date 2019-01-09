@@ -397,22 +397,32 @@ def testingVMsAreRequired()
 
 def getNewBranchAndVersion(String relativityBranch, String paramRelativityBuildVersion, String paramRelativityBuildType, String sessionId)
 {
-	def branch = relativityBranch
-	def buildVersion = ''
+	def relativityBranchesToTry = [relativityBranch, "release-10.0-larkspur1", "master"] // we should change first fallback branch on RIP release branches
+
+	def buildVersion = null
+	for(branch in relativityBranchesToTry)
+	{
+		echo "Retrieving latest Relativity build from '$firstFallbackBranch' branch"
+
+		buildVersion = tryGetBuildVersion(relativityBranch, paramRelativityBuildVersion, paramRelativityBuildType, sessionId)
+		if(buildVersion != null)
+		{
+			return [buildVersion, branch]
+		}	
+	}
+
+	echo 'Failed to retrieve Relativity branch/version'
+}
+
+def tryGetBuildVersion(String relativityBranch, String paramRelativityBuildVersion, String paramRelativityBuildType, String sessionId)
+{
 	try
 	{
-		buildVersion = getBuildArtifactsPath(this, "Relativity", branch, paramRelativityBuildVersion, paramRelativityBuildType, sessionId)
+		return getBuildArtifactsPath(this, "Relativity", relativityBranch, paramRelativityBuildVersion, paramRelativityBuildType, sessionId)
 	}
-	catch (any)
+	catch (err)
 	{
-		branch = "release-10.0-larkspur1"
-		echo "Changing Relativity branch to $branch"
-		buildVersion = getBuildArtifactsPath(this, "Relativity", branch, paramRelativityBuildVersion, paramRelativityBuildType, sessionId)
+		echo "Error occured while getting build version for '$relativityBranch' Relativity branch: $err"
+		return null
 	}
-	if (paramRelativityBuildVersion && !buildVersion)
-	{
-		// It should never be empty!!
-		buildVersion = paramRelativityBuildVersion
-	}
-	return [buildVersion, branch]
 }
