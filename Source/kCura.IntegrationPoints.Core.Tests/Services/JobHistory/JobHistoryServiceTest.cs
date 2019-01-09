@@ -183,7 +183,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		}
 
 		[Test]
-		public void UpdateRdo_SucceedsWithQueryOperations_Test()
+		public void UpdateRdo_SucceedsWithQueryOptions_Test()
 		{
 			// Arrange
 			int artifactId = 456;
@@ -261,7 +261,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		}
 
 		[Test]
-		public void GetOrCreateSchduleRunHistoryRdo_FoundRdo()
+		public void GetOrCreateScheduleRunHistoryRdo_FoundRdo()
 		{
 			// ARRANGE
 			Data.JobHistory history = new Data.JobHistory();
