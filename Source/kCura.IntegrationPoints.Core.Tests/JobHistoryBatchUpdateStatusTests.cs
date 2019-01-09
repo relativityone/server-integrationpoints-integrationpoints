@@ -83,7 +83,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 			_instance.OnJobStart(job);
 
 			// ASSERT
-			_jobHistoryService.DidNotReceive().UpdateRdo(Arg.Any<JobHistory>());
+			_jobHistoryService.DidNotReceive().UpdateRdo(Arg.Any<JobHistory>(), Arg.Any<IQueryOptions>());
 		}
 
 		[TestCase(StopState.Unstoppable)]
@@ -95,7 +95,11 @@ namespace kCura.IntegrationPoints.Core.Tests
 			TaskParameters parameters = new TaskParameters() { BatchInstance = Guid.NewGuid() };
 			_jobService.GetJob(job.JobId).Returns(job.CopyJobWithStopState(state));
 			_serializer.Deserialize<TaskParameters>(job.JobDetails).Returns(parameters);
-			_jobHistoryService.GetRdo(parameters.BatchInstance).Returns(new JobHistory());
+			_jobHistoryService.GetRdo(parameters.BatchInstance, Arg.Any<IQueryOptions>()).Returns(new JobHistory
+			{
+				ArtifactId = _jobHistoryArtifactId,
+				JobStatus = JobStatusChoices.JobHistoryPending
+			});
 
 			// ACT
 			_instance.OnJobStart(job);
@@ -145,7 +149,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 
 			ArrangeJobComplete(expectedStatus, expectedEndTimeUtc, job);
 			InvalidOperationException exception = new InvalidOperationException(_jobHistoryServiceErrorMessage);
-			_jobHistoryService.When(x => x.UpdateRdo(Arg.Any<JobHistory>())).Do(x =>
+			_jobHistoryService.When(x => x.UpdateRdo(Arg.Any<JobHistory>(), Arg.Any<IQueryOptions>())).Do(x =>
 			{
 				throw exception;
 			});
@@ -171,7 +175,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 			Job job = new JobBuilder().WithJobId(_jobID).WithWorkspaceId(_workspaceID).Build();
 			TaskParameters parameters = new TaskParameters() { BatchInstance = Guid.NewGuid() };
 			_serializer.Deserialize<TaskParameters>(job.JobDetails).Returns(parameters);
-			_jobHistoryService.GetRdo(Arg.Any<Guid>()).Returns((JobHistory)null);
+			_jobHistoryService.GetRdo(Arg.Any<Guid>(), Arg.Any<IQueryOptions>()).Returns((JobHistory)null);
 
 			// ACT
 			Assert.Throws<NullReferenceException>(() => _instance.OnJobComplete(job));
@@ -192,7 +196,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 			TaskParameters parameters = new TaskParameters() { BatchInstance = Guid.NewGuid() };
 			_jobService.GetJob(job.JobId).Returns(job.CopyJobWithStopState(StopState.None));
 			_serializer.Deserialize<TaskParameters>(job.JobDetails).Returns(parameters);
-			_jobHistoryService.GetRdo(parameters.BatchInstance).Returns(history);
+			_jobHistoryService.GetRdo(parameters.BatchInstance, Arg.Any<IQueryOptions>()).Returns(history);
 			_updater.GenerateStatus(history, job.WorkspaceID).Returns(expectedStatus);
 			_dateTimeHelper.Now().Returns(expectedEndTimeUtc);
 		}

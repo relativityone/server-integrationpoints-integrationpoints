@@ -72,7 +72,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			};
 			_batchGuid = Guid.NewGuid();
 			_jobHistoryArtifactId = 987465;
-			_instance = new JobHistoryService(_caseServiceContext, _federatedInstanceManager, _workspaceManager, _helper, _serializer, _providerTypeService, _messageService);
+			_instance = new JobHistoryService(_caseServiceContext, 
+				_federatedInstanceManager, 
+				_workspaceManager, 
+				_helper, 
+				_serializer, 
+				_providerTypeService, 
+				_messageService);
 		}
 
 		[Test]
@@ -80,8 +86,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		{
 			// Arrange
 			Guid batchInstance = new Guid();
-			TextCondition expectedCondition = new TextCondition(Guid.Parse(JobHistoryFieldGuids.BatchInstance),
-				TextConditionEnum.EqualTo, batchInstance.ToString());
 
 			_caseServiceContext.RsapiService.RelativityObjectManager
 				.Query<Data.JobHistory>(Arg.Is<QueryRequest>(x => !string.IsNullOrEmpty(x.Condition)))
@@ -125,7 +129,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		public void UpdateRdo_Succeeds_Test()
 		{
 			// Arrange
-			Data.JobHistory jobHistory = new Data.JobHistory { ArtifactId = 456, BatchInstance = new Guid().ToString() };
+			Data.JobHistory jobHistory = new Data.JobHistory
+			{
+				ArtifactId = 456,
+				BatchInstance = new Guid().ToString()
+			};
 
 			// Act
 			_instance.UpdateRdo(jobHistory);
@@ -199,7 +207,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		}
 
 		[Test]
-		public void GetOrCreateSchduleRunHistoryRdo_NoExistingRdo()
+		public void GetOrCreateScheduleRunHistoryRdo_NoExistingRdo()
 		{
 			// ARRANGE
 			_caseServiceContext.RsapiService.RelativityObjectManager.Query<Data.JobHistory>(Arg.Any<QueryRequest>()).Returns(new List<Data.JobHistory>());
@@ -217,9 +225,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			_messageService.Received().Send(Arg.Any<JobStartedMessage>());
 		}
 
-
 		[Test]
-		public void GetOrCreateSchduleRunHistoryRdo_ErrorOnGetRdo()
+		public void GetOrCreateScheduleRunHistoryRdo_ErrorOnGetRdo()
 		{
 			// ARRANGE
 			_caseServiceContext.RsapiService.RelativityObjectManager.Query<Data.JobHistory>(Arg.Any<QueryRequest>()).Throws(new Exception("blah blah"));
@@ -246,98 +253,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			Assert.IsTrue(jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryPending));
 			Assert.AreEqual(0, jobHistory.ItemsTransferred);
 			Assert.AreEqual(0, jobHistory.ItemsWithErrors);
-		}
-
-		private bool ValidateCondition<T>(Condition actualCondition, Condition expectedCondition)
-		{
-			if (actualCondition == null && expectedCondition == null)
-			{
-				return true;
-			}
-			if (actualCondition == null || expectedCondition == null)
-			{
-				return false;
-			}
-			if (!(actualCondition is T) || !(expectedCondition is T))
-			{
-				return false;
-			}
-
-			if (typeof(T) == typeof(WholeNumberCondition))
-			{
-				return ValidateWholeNumberCondition(actualCondition, expectedCondition);
-			}
-			if (typeof(T) == typeof(TextCondition))
-			{
-				return ValidateTextCondition(actualCondition, expectedCondition);
-			}
-
-			throw new NotImplementedException("Test helper has not implemented specific condition check. Please implement.");
-		}
-
-		private bool ValidateTextCondition(Condition actualCondition, Condition expectedCondition)
-		{
-			var actual = actualCondition as TextCondition;
-			var expected = expectedCondition as TextCondition;
-
-			if (actual == null || expected == null)
-			{
-				return false;
-			}
-			if (actual.Guid != expected.Guid)
-			{
-				return false;
-			}
-			if (actual.Field != expected.Field)
-			{
-				return false;
-			}
-			if (actual.Value != expected.Value)
-			{
-				return false;
-			}
-			if (actual.Operator != expected.Operator)
-			{
-				return false;
-			}
-
-			return true;
-		}
-
-		private bool ValidateWholeNumberCondition(Condition actualCondition, Condition expectedCondition)
-		{
-			var actual = actualCondition as WholeNumberCondition;
-			var expected = expectedCondition as WholeNumberCondition;
-
-			if (actual == null || expected == null)
-			{
-				return false;
-			}
-			if (actual.Guid != expected.Guid)
-			{
-				return false;
-			}
-			if (actual.Field != expected.Field)
-			{
-				return false;
-			}
-			if (actual.Value.Count != expected.Value.Count)
-			{
-				return false;
-			}
-			for (int i = 0; i < actual.Value.Count; i++)
-			{
-				if (actual.Value[i] != expected.Value[i])
-				{
-					return false;
-				}
-			}
-			if (actual.Operator != expected.Operator)
-			{
-				return false;
-			}
-
-			return true;
 		}
 	}
 }
