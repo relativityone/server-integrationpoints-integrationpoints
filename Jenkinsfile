@@ -28,6 +28,7 @@ def sut = null
 
 def nightlyJobName = "IntegrationPointsNightly"
 def relativityBuildVersion = ""
+def relativityBuildType = ""
 def relativityBranch = params.relativityBranch ?: env.BRANCH_NAME
 // *********
 // IMPORTANT
@@ -145,11 +146,11 @@ timestamps
 							{
 								if (installing_relativity)
 								{
-									(relativityBuildVersion, relativityBranch) = getNewBranchAndVersion(relativityBranchFallback, relativityBranch, params.relativityBuildVersion, params.relativityBuildType, session_id)
-									echo "Installing Relativity, branch: $relativityBranch, version: $relativityBuildVersion, type: $params.relativityBuildType"									
+									(relativityBuildVersion, relativityBranch, relativityBuildType) = getNewBranchAndVersion(relativityBranchFallback, relativityBranch, params.relativityBuildVersion, params.relativityBuildType, session_id)
+									echo "Installing Relativity, branch: $relativityBranch, version: $relativityBuildVersion, type: $relativityBuildType"
 								}
 								
-								uploadEnvironmentFile(this, sut.name, relativityBuildVersion, relativityBranch, params.relativityBuildType,
+								uploadEnvironmentFile(this, sut.name, relativityBuildVersion, relativityBranch, relativityBuildType,
 									"", "", // invariant version and branch
 									ripCookbooks, chef_attributes, knife,
 									"", "", // analytics version and branch
@@ -397,23 +398,79 @@ def testingVMsAreRequired()
 }
 
 def getNewBranchAndVersion(String relativityBranchFallback, String relativityBranch, String paramRelativityBuildVersion, String paramRelativityBuildType, String sessionId)
+{	
+	def firstFallbackBranch = relativityBranchFallback // we should change first fallback branch on RIP release branches
+	def GOLD_BUILD_TYPE = "GOLD"
+	def DEV_BUILD_TYPE = "DEV"
+	def relativityBranchesToTry = [[relativityBranch, paramRelativityBuildType], [firstFallbackBranch, DEV_BUILD_TYPE], [firstFallbackBranch, GOLD_BUILD_TYPE], ["master", GOLD_BUILD_TYPE]]
+
+	for (branchAndType in relativityBranchesToTry)
+	{
+		def branch = branchAndType[0]
+	    def buildType = branchAndType[1]
+
+		echo "Retrieving latest Relativity '$buildType' build from '$branch' branch"
+
+		def buildVersion = tryGetBuildVersion(branch, paramRelativityBuildVersion, buildType, sessionId)
+		if (buildVersion != null)
+		{
+			return [buildVersion, branch, buildType]
+		}	
+	}	
+
+	error 'Failed to retrieve Relativity branch/version'
+}
+
+def tryGetBuildVersion(String relativityBranch, String paramRelativityBuildVersion, String paramRelativityBuildType, String sessionId)
 {
-	def branch = relativityBranch
-	def buildVersion = ''
 	try
 	{
-		buildVersion = getBuildArtifactsPath(this, "Relativity", branch, paramRelativityBuildVersion, paramRelativityBuildType, sessionId)
+        if (!isRelativityBranchPresent(relativityBranch))
+        {
+            echo "Branch was not found: $relativityBranch"
+            return null
+        }
+        def latestVersion = paramRelativityBuildVersion ?: getLatestVersion(relativityBranch, paramRelativityBuildType)
+        echo "Checking Relativity artifacts for version: $latestVersion"
+        return checkRelativityArtifacts(relativityBranch, latestVersion, paramRelativityBuildType)
+               ? latestVersion
+               : null
 	}
-	catch (any)
+	catch (err)
 	{
-		branch = relativityBranchFallback
-		echo "Changing Relativity branch to fallback: $branch"
-		buildVersion = getBuildArtifactsPath(this, "Relativity", branch, paramRelativityBuildVersion, paramRelativityBuildType, sessionId)
+		echo "Error occured while getting build version for: '$relativityBranch' Relativity branch, version '$paramRelativityBuildVersion', and type '$paramRelativityBuildType', error: $err"
+		return null
 	}
-	if (paramRelativityBuildVersion && !buildVersion)
-	{
-		// It should never be empty!!
-		buildVersion = paramRelativityBuildVersion
-	}
-	return [buildVersion, branch]
+}
+
+def isTrue(s)
+{
+    s.trim() == "True"
+}
+
+def isRelativityBranchPresent(branch)
+{
+    return isTrue(powershell(returnStdout: true, script: "([System.IO.DirectoryInfo]\"//bld-pkgs/Packages/Relativity/$branch\").Exists"))
+}
+
+def getLatestVersion(branch, type)
+{
+    return powershell(returnStdout: true, script: String.format('''
+					$result = (Get-ChildItem -path "\\\\bld-pkgs\\Packages\\Relativity\\%1$s" |
+						? { (Get-ChildItem -Path $_.FullName).Name -like "BuildType_%2$s" } |
+						ForEach-Object { $_.Name } | ForEach-Object { [System.Version] $_ } | sort) | Select-Object -Last 1;
+                    if (!$result) 
+                    {
+                        return ''
+                    }
+                    else
+                    {
+                        return $result.ToString()
+                    }
+					''', branch, type)).trim()
+}
+
+def checkRelativityArtifacts(branch, version, type)
+{
+    return isTrue(powershell(returnStdout: true, script: "([System.IO.FileInfo]\"//bld-pkgs/Packages/Relativity/$branch/$version/MasterPackage/$type $version Relativity.exe\").Exists"))
 }
