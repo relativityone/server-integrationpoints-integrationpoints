@@ -411,7 +411,7 @@ def getNewBranchAndVersion(String relativityBranch, String paramRelativityBuildV
 		}	
 	}
 
-	echo 'Failed to retrieve Relativity branch/version'
+	error('Failed to retrieve Relativity branch/version')
 }
 
 def tryGetBuildVersion(String relativityBranch, String paramRelativityBuildVersion, String paramRelativityBuildType, String sessionId)
