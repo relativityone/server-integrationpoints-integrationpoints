@@ -1,11 +1,13 @@
 ﻿type project
 id Relativity.Sync
-title Relativity.Sync
-authors Relativity ODA LLC
+title Relativity Sync
+authors Relativity
 description Relativity Sync
-owners Relativity ODA LLC
-projectUrl https://platform.relativity.com/index.html
-licenseUrl https://www.relativity.com/terms-of-use/
-copyright © Relativity
+owners Relativity
+projectUrl https://platform.relativity.com
+licenseUrl https://www.relativity.com/nugetLicense.txt
+releaseNotes https://platform.relativity.com
+iconUrl https://www.relativity.com/images/relativity-nuget-logo.png
+copyright Relativity
 requireLicenseAcceptance true
-tags RelativitySync
+tags RelativitySync Relativity.Sync Sync
