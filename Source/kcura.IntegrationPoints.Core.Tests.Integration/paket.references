@@ -8,3 +8,5 @@ relativity.transfer.client
 RelativityCore
 Selenium.WebDriver
 Relativity.OAuth2Client
+NSubstitute
+FluentAssertions
