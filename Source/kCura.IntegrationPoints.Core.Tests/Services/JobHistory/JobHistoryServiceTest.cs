@@ -5,6 +5,7 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Monitoring;
+using kCura.IntegrationPoints.Core.QueryOptions;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -72,12 +73,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			};
 			_batchGuid = Guid.NewGuid();
 			_jobHistoryArtifactId = 987465;
-			_instance = new JobHistoryService(_caseServiceContext, 
-				_federatedInstanceManager, 
-				_workspaceManager, 
-				_helper, 
-				_serializer, 
-				_providerTypeService, 
+			_instance = new JobHistoryService(_caseServiceContext,
+				_federatedInstanceManager,
+				_workspaceManager,
+				_helper,
+				_serializer,
+				_providerTypeService,
 				_messageService);
 		}
 
@@ -86,16 +87,53 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		{
 			// Arrange
 			Guid batchInstance = new Guid();
+			var jobHistory = new Data.JobHistory
+			{
+				ArtifactId = 100
+			};
 
 			_caseServiceContext.RsapiService.RelativityObjectManager
 				.Query<Data.JobHistory>(Arg.Is<QueryRequest>(x => !string.IsNullOrEmpty(x.Condition)))
-				.Returns(new List<Data.JobHistory>(1) { new Data.JobHistory() });
+				.Returns(new List<Data.JobHistory>(1) { jobHistory });
 
 			// Act
 			Data.JobHistory actual = _instance.GetRdo(batchInstance);
 
 			// Assert
 			Assert.IsNotNull(actual);
+			Assert.AreEqual(actual.ArtifactId, jobHistory.ArtifactId);
+
+			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1)
+				.Query<Data.JobHistory>(Arg.Is<QueryRequest>(x =>
+					x.Condition.Contains(batchInstance.ToString())));
+		}
+
+		[Test]
+		public void GetRdo_SucceedsWithQueryOptions_Test()
+		{
+			// Arrange
+			Guid batchInstance = new Guid();
+			var jobHistory = new Data.JobHistory
+			{
+				ArtifactId = 100,
+				Name = "Job Name 1",
+				JobID = "10"
+			};
+			IQueryOptions queryOptions = Substitute.For<IQueryOptions>();
+			queryOptions.Fields.Returns(new[] { "Name", "Job ID" });
+
+			_caseServiceContext.RsapiService.RelativityObjectManager
+				.Query<Data.JobHistory>(Arg.Is<QueryRequest>(x => !string.IsNullOrEmpty(x.Condition)))
+				.Returns(new List<Data.JobHistory>(1) { jobHistory });
+
+			// Act
+			Data.JobHistory actual = _instance.GetRdo(batchInstance);
+
+			// Assert
+			Assert.IsNotNull(actual);
+			Assert.AreEqual(actual.ArtifactId, jobHistory.ArtifactId);
+			Assert.AreEqual(actual.Name, jobHistory.Name);
+			Assert.AreEqual(actual.JobID, jobHistory.JobID);
 
 			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1)
 				.Query<Data.JobHistory>(Arg.Is<QueryRequest>(x =>
@@ -139,7 +177,38 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			_instance.UpdateRdo(jobHistory);
 
 			// Assert
-			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1).Update(jobHistory);
+			_caseServiceContext.RsapiService.RelativityObjectManager
+				.Received(1)
+				.Update(jobHistory);
+		}
+
+		[Test]
+		public void UpdateRdo_SucceedsWithQueryOperations_Test()
+		{
+			// Arrange
+			int artifactId = 456;
+			string name = "Job Name 1";
+			string jobID = "10";
+			Data.JobHistory jobHistory = new Data.JobHistory
+			{
+				ArtifactId = artifactId,
+				Name = name,
+				JobID = jobID
+			};
+			IQueryOptions queryOptions = Substitute.For<IQueryOptions>();
+			queryOptions.Fields.Returns(new[] { "Name", "Job ID" });
+
+			// Act
+			_instance.UpdateRdo(jobHistory, queryOptions);
+
+			// Assert
+			_caseServiceContext.RsapiService.RelativityObjectManager
+				.Received(1)
+				.Update(
+					Arg.Is<int>(actualArtifactId => actualArtifactId == artifactId), 
+					Arg.Is<List<FieldRefValuePair>>(actualFieldRefValuePairs => actualFieldRefValuePairs.Count == 2
+						&& actualFieldRefValuePairs.Count(x => x.Field.Name == "Name" &&  (string)x.Value == name) == 1
+						&& actualFieldRefValuePairs.Count(x => x.Field.Name == "Job ID" && (string)x.Value == jobID) == 1));
 		}
 
 		[Test]
