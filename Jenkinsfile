@@ -402,9 +402,9 @@ def getNewBranchAndVersion(String relativityBranch, String paramRelativityBuildV
 	def buildVersion = null
 	for(branch in relativityBranchesToTry)
 	{
-		echo "Retrieving latest Relativity build from '$firstFallbackBranch' branch"
+		echo "Retrieving latest Relativity build from '$branch' branch"
 
-		buildVersion = tryGetBuildVersion(relativityBranch, paramRelativityBuildVersion, paramRelativityBuildType, sessionId)
+		buildVersion = tryGetBuildVersion(branch, paramRelativityBuildVersion, paramRelativityBuildType, sessionId)
 		if(buildVersion != null)
 		{
 			return [buildVersion, branch]
@@ -422,7 +422,7 @@ def tryGetBuildVersion(String relativityBranch, String paramRelativityBuildVersi
 	}
 	catch (err)
 	{
-		echo "Error occured while getting build version for '$relativityBranch' Relativity branch: $err"
+		echo "Error occured while getting build version for '$relativityBranch' Relativity branch, error: $err"
 		return null
 	}
 }
