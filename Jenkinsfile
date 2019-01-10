@@ -139,8 +139,8 @@ timestamps
 								registerEvent(this, session_id, 'Talos_Provision_test_CD', 'PASS', '-c', "${sut.name}.${sut.domain}", profile, event_hash)
 								if (installing_relativity)
 								{
-									(relativityBuildVersion, relativityBranch) = getNewBranchAndVersion(relativityBranch, params.relativityBuildVersion, params.relativityBuildType, session_id)
-									echo "Installing Relativity, branch: $relativityBranch, version: $relativityBuildVersion, type: $params.relativityBuildType"
+									(relativityBuildVersion, relativityBranch, relativityBuildType) = getNewBranchAndVersion(relativityBranch, params.relativityBuildVersion, params.relativityBuildType, session_id)
+									echo "Installing Relativity, branch: $relativityBranch, version: $relativityBuildVersion, type: $relativityBuildType"
 									sendVersionToElastic(this, "Relativity", relativityBranch, relativityBuildVersion, params.relativityBuildType, session_id)
 								}
 
@@ -412,7 +412,7 @@ def getNewBranchAndVersion(String relativityBranch, String paramRelativityBuildV
 		def buildVersion = tryGetBuildVersion(branch, paramRelativityBuildVersion, buildType, sessionId)
 		if(buildVersion != null)
 		{
-			return [buildVersion, branch]
+			return [buildVersion, branch, buildType]
 		}	
 	}
 
