@@ -94,12 +94,17 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 					new FieldRefValuePair()
 					{
 						Field = new FieldRef {Guid = Guid.Parse(EntityFieldGuids.FirstName)},
-						Value = "First name"
+						Value = "Grzegorz"
 					},
 					new FieldRefValuePair()
 					{
 						Field = new FieldRef {Guid = Guid.Parse(EntityFieldGuids.LastName)},
-						Value = "Last name"
+						Value = "Brzeczyszczykiewicz"
+					},
+					new FieldRefValuePair()
+					{
+						Field = new FieldRef {Guid = Guid.Parse(EntityFieldGuids.Email)},
+						Value = "Grzegorz.Brzeczyszczykiewicz@company.com"
 					}
 				});
 		}
