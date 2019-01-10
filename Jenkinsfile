@@ -396,15 +396,20 @@ def testingVMsAreRequired()
 }
 
 def getNewBranchAndVersion(String relativityBranch, String paramRelativityBuildVersion, String paramRelativityBuildType, String sessionId)
-{
-	def relativityBranchesToTry = [relativityBranch, "release-10.0-larkspur1", "master"] // we should change first fallback branch on RIP release branches
+{	
+	def firstCallbackBranch = "release-10.0-larkspur1" // we should change first fallback branch on RIP release branches
+	def GOLD_BUILD_TYPE = "GOLD"
+	def DEV_BUILD_TYPE = "DEV"
+	def relativityBranchesToTry = [[relativityBranch, paramRelativityBuildType], [firstCallbackBranch, DEV_BUILD_TYPE], [firstCallbackBranch, GOLD_BUILD_TYPE], ["master", GOLD_BUILD_TYPE]]
 
-	def buildVersion = null
-	for(branch in relativityBranchesToTry)
+	for(branchAndType in relativityBranchesToTry)
 	{
-		echo "Retrieving latest Relativity build from '$branch' branch"
+		def branch = branchAndType[0]
+	    def buildType = branchAndType[1]
 
-		buildVersion = tryGetBuildVersion(branch, paramRelativityBuildVersion, paramRelativityBuildType, sessionId)
+		echo "Retrieving latest Relativity '$buildType' build from '$branch' branch"
+
+		def buildVersion = tryGetBuildVersion(branch, paramRelativityBuildVersion, buildType, sessionId)
 		if(buildVersion != null)
 		{
 			return [buildVersion, branch]
