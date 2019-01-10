@@ -28,6 +28,7 @@ def sut = null
 
 def nightlyJobName = "IntegrationPointsNightly"
 def relativityBuildVersion = ""
+def relativityBuildType = ""
 def relativityBranch = params.relativityBranch ?: env.BRANCH_NAME
 // When RAID stage fails, verify if newer versions of cookboos exist
 def ripCookbooks = '"relativity:= 4.1.12,role-testvm:= 3.12.0,role-ci:= 1.3.2,sql:= 2.4.1,servicebus:= 1.0.0"'
@@ -139,9 +140,9 @@ timestamps
 								registerEvent(this, session_id, 'Talos_Provision_test_CD', 'PASS', '-c', "${sut.name}.${sut.domain}", profile, event_hash)
 								if (installing_relativity)
 								{
-									(relativityBuildVersion, relativityBranch) = getNewBranchAndVersion(relativityBranch, params.relativityBuildVersion, params.relativityBuildType, session_id)
-									echo "Installing Relativity, branch: $relativityBranch, version: $relativityBuildVersion, type: $params.relativityBuildType"
-									sendVersionToElastic(this, "Relativity", relativityBranch, relativityBuildVersion, params.relativityBuildType, session_id)
+									(relativityBuildVersion, relativityBranch, relativityBuildType) = getNewBranchAndVersion(relativityBranch, params.relativityBuildVersion, params.relativityBuildType, session_id)
+									echo "Installing Relativity, branch: $relativityBranch, version: $relativityBuildVersion, type: $relativityBuildType"
+									sendVersionToElastic(this, "Relativity", relativityBranch, relativityBuildVersion, relativityBuildType, session_id)
 								}
 
 								withCredentials([
@@ -149,7 +150,7 @@ timestamps
 									usernamePassword(credentialsId: 'cd_sut_svc', passwordVariable: 'SUTPASSWORD', usernameVariable: 'SUTUSERNAME'),
 									usernamePassword(credentialsId: 'eddsdbo', passwordVariable: 'EDDSDBOPASSWORD', usernameVariable: 'EDDSDBOUSERNAME')])
 								{
-									deployments = [['product' : 'rel', 'build' : relativityBuildVersion, 'branch' : relativityBranch, 'type' : params.relativityBuildType]]
+									deployments = [['product' : 'rel', 'build' : relativityBuildVersion, 'branch' : relativityBranch, 'type' : relativityBuildType]]
 									attributeValues = makeAttributeValues(deployments, SUTUSERNAME, SUTPASSWORD, EDDSDBOPASSWORD)
 									uploadEnvironmentFile(this, sut.name, ripCookbooks, attributeValues, knife, session_id, PROGETUSERNAME, PROGETPASSWORD)
 									addRunlist(this, session_id, sut.name, sut.ip, run_list, knife, SUTUSERNAME, SUTPASSWORD)
@@ -167,7 +168,7 @@ timestamps
 								withCredentials([
 									usernamePassword(credentialsId: 'JenkinsSDLC', passwordVariable: 'SDLCPASSWORD', usernameVariable: 'SDLCUSERNAME')])
 								{
-									bootstrapDependencies(this, python_packages, relativityBranch, relativityBuildVersion, params.relativityBuildType, session_id, SDLCUSERNAME, SDLCPASSWORD)
+									bootstrapDependencies(this, python_packages, relativityBranch, relativityBuildVersion, relativityBuildType, session_id, SDLCUSERNAME, SDLCPASSWORD)
 								}
 							}
 						)
@@ -278,7 +279,7 @@ timestamps
 					}
 					withCredentials([usernamePassword(credentialsId: 'TeamCityUser', passwordVariable: 'TEAMCITYPASSWORD', usernameVariable: 'TEAMCITYUSERNAME')])
 					{
-						sendCDSlackNotification(this, env.BUILD_URL, (sut?.name ?: ""), (relativityBuildVersion ?: "0.0.0.0"), env.BRANCH_NAME, params.relativityBuildType, getSlackChannelName(nightlyJobName).toString(), numberOfFailedTests as Integer, numberOfPassedTests as Integer, numberOfSkippedTests as Integer, TEAMCITYUSERNAME, TEAMCITYPASSWORD, currentBuild.result.toString()) 
+						sendCDSlackNotification(this, env.BUILD_URL, (sut?.name ?: ""), (relativityBuildVersion ?: "0.0.0.0"), env.BRANCH_NAME, relativityBuildType, getSlackChannelName(nightlyJobName).toString(), numberOfFailedTests as Integer, numberOfPassedTests as Integer, numberOfSkippedTests as Integer, TEAMCITYUSERNAME, TEAMCITYPASSWORD, currentBuild.result.toString()) 
 					}
 				}
 			}
@@ -396,23 +397,38 @@ def testingVMsAreRequired()
 }
 
 def getNewBranchAndVersion(String relativityBranch, String paramRelativityBuildVersion, String paramRelativityBuildType, String sessionId)
+{	
+	def firstFallbackBranch = "release-10.0-larkspur" // we should change first fallback branch on RIP release branches
+	def GOLD_BUILD_TYPE = "GOLD"
+	def DEV_BUILD_TYPE = "DEV"
+	def relativityBranchesToTry = [[relativityBranch, paramRelativityBuildType], [firstFallbackBranch, DEV_BUILD_TYPE], [firstFallbackBranch, GOLD_BUILD_TYPE], ["master", GOLD_BUILD_TYPE]]
+
+	for(branchAndType in relativityBranchesToTry)
+	{
+		def branch = branchAndType[0]
+	    def buildType = branchAndType[1]
+
+		echo "Retrieving latest Relativity '$buildType' build from '$branch' branch"
+
+		def buildVersion = tryGetBuildVersion(branch, paramRelativityBuildVersion, buildType, sessionId)
+		if(buildVersion != null)
+		{
+			return [buildVersion, branch, buildType]
+		}	
+	}
+
+	error('Failed to retrieve Relativity branch/version')
+}
+
+def tryGetBuildVersion(String relativityBranch, String paramRelativityBuildVersion, String paramRelativityBuildType, String sessionId)
 {
-	def branch = relativityBranch
-	def buildVersion = ''
 	try
 	{
-		buildVersion = getBuildArtifactsPath(this, "Relativity", branch, paramRelativityBuildVersion, paramRelativityBuildType, sessionId)
+		return getBuildArtifactsPath(this, "Relativity", relativityBranch, paramRelativityBuildVersion, paramRelativityBuildType, sessionId)
 	}
-	catch (any)
+	catch (err)
 	{
-		branch = "release-10.0-larkspur"
-		echo "Changing Relativity branch to $branch"
-		buildVersion = getBuildArtifactsPath(this, "Relativity", branch, paramRelativityBuildVersion, paramRelativityBuildType, sessionId)
+		echo "Error occured while getting build version for '$relativityBranch' Relativity branch, error: $err"
+		return null
 	}
-	if (paramRelativityBuildVersion && !buildVersion)
-	{
-		// It should never be empty!!
-		buildVersion = paramRelativityBuildVersion
-	}
-	return [buildVersion, branch]
 }
