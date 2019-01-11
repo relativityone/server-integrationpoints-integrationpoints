@@ -26,6 +26,8 @@ In case of running against your TestVM, modify `testvm.config` file. Set proper 
 
 Web browsers run in headless mode by default. To disable this mode and see browser window, set `UI.Options.Arguments.Headless` in `app.config` to `false`.
 
+It's recommended to run these tests in debug mode in Visual Studio. Thanks to that, Visual Studio will pause execution on error. Then it's possible to interact with web page as one wishes. For example, data entered on page can be modified, Integration Point can be rerun, or Errors tab can be checked.
+
 ---
 
 ## Running tests on Jenkins
