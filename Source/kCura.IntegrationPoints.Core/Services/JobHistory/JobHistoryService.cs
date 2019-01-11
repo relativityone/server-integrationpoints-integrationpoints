@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			var request = new QueryRequest
 			{
 				Condition = $"'{JobHistoryFields.BatchInstance}' == '{batchInstance}'",
-				Fields = MapToFieldRefs(queryOptions?.Fields)
+				Fields = MapToFieldRefs(queryOptions?.FieldGuids)
 			};
 
 			IList<Data.JobHistory> jobHistories = _caseServiceContext.RsapiService.RelativityObjectManager.Query<Data.JobHistory>(request);
@@ -181,7 +181,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 				return;
 			}
 
-			List<FieldRefValuePair> fieldValues = MapToFieldValues(queryOptions.Fields, jobHistory).ToList();
+			List<FieldRefValuePair> fieldValues = MapToFieldValues(queryOptions.FieldGuids, jobHistory).ToList();
 
 			objectManager.Update(jobHistory.ArtifactId, fieldValues);
 		}
@@ -208,20 +208,20 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			});
 		}
 
-		private IEnumerable<FieldRef> MapToFieldRefs(string[] rdoFields)
+		private IEnumerable<FieldRef> MapToFieldRefs(Guid[] rdoFieldGuids)
 		{
 			IEnumerable<FieldRef> fieldRefs = RDOConverter.ConvertPropertiesToFields<Data.JobHistory>();
-			return rdoFields == null
+			return rdoFieldGuids == null
 				? fieldRefs
-				: fieldRefs.Where(fr => rdoFields.Contains(fr.Name));
+				: fieldRefs.Where(fr => rdoFieldGuids.Contains(fr.Guid.Value));
 		}
 
-		private IEnumerable<FieldRefValuePair> MapToFieldValues(string[] rdoFields, Data.JobHistory jobHistory)
+		private IEnumerable<FieldRefValuePair> MapToFieldValues(Guid[] rdoFieldGuids, Data.JobHistory jobHistory)
 		{
 			IEnumerable<FieldRefValuePair> fieldValues = jobHistory.ToFieldValues();
-			return rdoFields == null
+			return rdoFieldGuids == null
 				? fieldValues
-				: fieldValues.Where(fv => rdoFields.Contains(fv.Field.Name));
+				: fieldValues.Where(fv => rdoFieldGuids.Contains(fv.Field.Guid.Value));
 		}
 
 		#region Logging

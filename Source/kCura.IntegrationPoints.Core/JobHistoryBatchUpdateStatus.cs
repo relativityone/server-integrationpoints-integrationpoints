@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Core
 		private readonly JobHistoryQueryOptions _jobHistoryQueryOptions =
 			JobHistoryQueryOptions.Query
 				.All()
-				.Except(JobHistoryFields.Documents);
+				.Except(JobHistoryFieldGuids.Documents);
 
 	    public JobHistoryBatchUpdateStatus(IJobStatusUpdater jobStatusUpdater, 
 		    IJobHistoryService jobHistoryService,

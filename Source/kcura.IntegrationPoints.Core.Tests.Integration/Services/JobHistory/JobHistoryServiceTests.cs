@@ -25,6 +25,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services.JobHistory
 		private Data.JobHistory _jobHistory;
 		private Guid batchInstance;
 
+		private readonly Guid _nameFieldGuid = new Guid("07061466-5fab-4581-979c-c801e8207370");
+		private readonly Guid _jobIdFieldGuid = new Guid("77d797ef-96c9-4b47-9ef8-33f498b5af0d");
+		private readonly Guid _itemsTransferredFieldGuid = new Guid("70680399-c8ea-4b12-b711-e9ecbc53cb1c");
+
 		public JobHistoryServiceTests() 
 			: base(nameof(JobHistoryServiceTests), targetWorkspaceName: null)
 		{
@@ -86,10 +90,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services.JobHistory
 		{
 			//arrange
 			IQueryOptions queryOptions = Substitute.For<IQueryOptions>();
-			queryOptions.Fields.Returns(new[]
+			queryOptions.FieldGuids.Returns(new[]
 			{
-				"Name",
-				"Job ID"
+				_nameFieldGuid,
+				_jobIdFieldGuid
 			});
 
 			//act
@@ -121,10 +125,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services.JobHistory
 		{
 			//arrange
 			IQueryOptions queryOptions = Substitute.For<IQueryOptions>();
-			queryOptions.Fields.Returns(new[]
+			queryOptions.FieldGuids.Returns(new[]
 			{
-				"Name",
-				"Items Transferred"
+				_nameFieldGuid,
+				_itemsTransferredFieldGuid
 			});
 			var jobHistoryToUpdate = new Data.JobHistory
 			{

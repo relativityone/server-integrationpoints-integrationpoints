@@ -1,7 +1,9 @@
-﻿namespace kCura.IntegrationPoints.Core.QueryOptions
+﻿using System;
+
+namespace kCura.IntegrationPoints.Core.QueryOptions
 {
 	public interface IQueryOptions
 	{
-		string[] Fields { get; }
+		Guid[] FieldGuids { get; }
 	}
 }

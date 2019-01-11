@@ -42,6 +42,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		private int _jobHistoryArtifactId;
 		private Guid _batchGuid;
 
+		private readonly Guid _nameFieldGuid = new Guid("07061466-5fab-4581-979c-c801e8207370");
+		private readonly Guid _jobIdFieldGuid = new Guid("77d797ef-96c9-4b47-9ef8-33f498b5af0d");
+
 		[SetUp]
 		public override void SetUp()
 		{
@@ -120,7 +123,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 				JobID = "10"
 			};
 			IQueryOptions queryOptions = Substitute.For<IQueryOptions>();
-			queryOptions.Fields.Returns(new[] { "Name", "Job ID" });
+			queryOptions.FieldGuids.Returns(new[] { _nameFieldGuid, _jobIdFieldGuid });
 
 			_caseServiceContext.RsapiService.RelativityObjectManager
 				.Query<Data.JobHistory>(Arg.Is<QueryRequest>(x => !string.IsNullOrEmpty(x.Condition)))
@@ -196,7 +199,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 				JobID = jobID
 			};
 			IQueryOptions queryOptions = Substitute.For<IQueryOptions>();
-			queryOptions.Fields.Returns(new[] { "Name", "Job ID" });
+			queryOptions.FieldGuids.Returns(new[] { _nameFieldGuid, _jobIdFieldGuid });
 
 			// Act
 			_instance.UpdateRdo(jobHistory, queryOptions);
@@ -207,8 +210,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 				.Update(
 					Arg.Is<int>(actualArtifactId => actualArtifactId == artifactId), 
 					Arg.Is<List<FieldRefValuePair>>(actualFieldRefValuePairs => actualFieldRefValuePairs.Count == 2
-						&& actualFieldRefValuePairs.Count(x => x.Field.Name == "Name" &&  (string)x.Value == name) == 1
-						&& actualFieldRefValuePairs.Count(x => x.Field.Name == "Job ID" && (string)x.Value == jobID) == 1));
+						&& actualFieldRefValuePairs.Count(x => x.Field.Guid == _nameFieldGuid &&  (string)x.Value == name) == 1
+						&& actualFieldRefValuePairs.Count(x => x.Field.Guid == _jobIdFieldGuid && (string)x.Value == jobID) == 1));
 		}
 
 		[Test]

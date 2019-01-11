@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Transformers;
 
@@ -6,26 +7,27 @@ namespace kCura.IntegrationPoints.Core.QueryOptions
 {
 	public class JobHistoryQueryOptions : IQueryOptions
 	{
-		public string[] Fields { get; }
+		public Guid[] FieldGuids { get; }
 
-		private JobHistoryQueryOptions(string[] fields)
+		private JobHistoryQueryOptions(Guid[] fieldGuids)
 		{
-			Fields = fields;
+			FieldGuids = fieldGuids;
 		}
 
-		public static JobHistoryQueryOptions Query => new JobHistoryQueryOptions(fields: null);
+		public static JobHistoryQueryOptions Query => new JobHistoryQueryOptions(fieldGuids: null);
 
 		public JobHistoryQueryOptions All()
 		{
-			string[] fields = RDOFieldsConverter
-				.GetFieldNames<JobHistoryFields>()
+			Guid[] fields = RDOFieldsConverter
+				.GetFieldGuids<JobHistoryFieldGuids>()
 				.ToArray();
 			return new JobHistoryQueryOptions(fields);
 		}
 
-		public JobHistoryQueryOptions Except(string field)
+		public JobHistoryQueryOptions Except(string fieldGuidAsString)
 		{
-			string[] fields = Fields.Except(new[] { field }).ToArray();
+			var fieldGuid = new Guid(fieldGuidAsString);
+			Guid[] fields = FieldGuids.Except(new[] { fieldGuid }).ToArray();
 			return new JobHistoryQueryOptions(fields);
 		}
 	}
