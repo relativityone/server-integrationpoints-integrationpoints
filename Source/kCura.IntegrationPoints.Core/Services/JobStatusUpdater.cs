@@ -51,10 +51,12 @@ namespace kCura.IntegrationPoints.Core.Services
 						: JobStatusChoices.JobHistoryErrorJobFailed;
 				}
 			}
-
-			if (jobHistory.ItemsWithErrors.GetValueOrDefault(0) > 0)
+			else
 			{
-				return JobStatusChoices.JobHistoryCompletedWithErrors;
+				if (jobHistory.ItemsWithErrors.GetValueOrDefault(0) > 0)
+				{
+					return JobStatusChoices.JobHistoryCompletedWithErrors;
+				}
 			}
 
 			return JobStatusChoices.JobHistoryCompleted;
