@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.Core
 			if (emails != null && emails.Any())
 			{
 				TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
-				Relativity.Client.DTOs.Choice choice = _jobStatusUpdater.GenerateStatus(taskParameters.BatchInstance, job.WorkspaceID);
+				Relativity.Client.DTOs.Choice choice = _jobStatusUpdater.GenerateStatus(taskParameters.BatchInstance);
 
 				EmailMessage message = GenerateEmail(choice);
 
