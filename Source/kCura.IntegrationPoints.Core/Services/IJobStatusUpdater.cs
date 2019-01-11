@@ -7,6 +7,5 @@ namespace kCura.IntegrationPoints.Core.Services
 	{
 		Choice GenerateStatus(Guid batchId);
 		Choice GenerateStatus(Data.JobHistory jobHistory);
-		void SendHealthCheck(Data.JobHistory jobHistory, long workspaceID);
 	}
 }
