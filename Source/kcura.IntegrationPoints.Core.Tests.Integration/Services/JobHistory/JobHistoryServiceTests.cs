@@ -11,6 +11,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using Moq;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
@@ -89,15 +90,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services.JobHistory
 		public void GetRdo_ShouldReturnLimitedRdoBasedOnTheQueryOptionsFields()
 		{
 			//arrange
-			IQueryOptions queryOptions = Substitute.For<IQueryOptions>();
-			queryOptions.FieldGuids.Returns(new[]
+			var queryOptionsMock = new Mock<IQueryOptions>();
+			queryOptionsMock.Setup(x => x.FieldGuids).Returns(new[]
 			{
 				_nameFieldGuid,
 				_jobIdFieldGuid
 			});
 
 			//act
-			Data.JobHistory result = _sut.GetRdo(batchInstance, queryOptions);
+			Data.JobHistory result = _sut.GetRdo(batchInstance, queryOptionsMock.Object);
 
 			//assert
 			result.ArtifactId.Should().Be(_jobHistory.ArtifactId);
@@ -124,12 +125,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services.JobHistory
 		public void UpdateRdo_ShouldUpdateOnlyLimitedRdoBasedOnTheQueryOptionsFields()
 		{
 			//arrange
-			IQueryOptions queryOptions = Substitute.For<IQueryOptions>();
-			queryOptions.FieldGuids.Returns(new[]
+			var queryOptionsMock = new Mock<IQueryOptions>();
+			queryOptionsMock.Setup(x => x.FieldGuids).Returns(new[]
 			{
 				_nameFieldGuid,
 				_itemsTransferredFieldGuid
 			});
+			
 			var jobHistoryToUpdate = new Data.JobHistory
 			{
 				ArtifactId = _jobHistory.ArtifactId,
@@ -138,7 +140,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services.JobHistory
 			};
 
 			//act
-			_sut.UpdateRdo(jobHistoryToUpdate, queryOptions);
+			_sut.UpdateRdo(jobHistoryToUpdate, queryOptionsMock.Object);
 			Data.JobHistory updatedJobHistory = _sut.GetRdo(batchInstance);
 
 			//assert
