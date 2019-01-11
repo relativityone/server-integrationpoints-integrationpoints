@@ -1,12 +1,9 @@
 ﻿using System;
-using kCura.IntegrationPoints.Core.Monitoring;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.Relativity.Client.DTOs;
-using Relativity.Telemetry.APM;
-using Client = Relativity.Telemetry.APM.Client;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
@@ -54,29 +51,13 @@ namespace kCura.IntegrationPoints.Core.Services
 						: JobStatusChoices.JobHistoryErrorJobFailed;
 				}
 			}
-			else
+
+			if (jobHistory.ItemsWithErrors.GetValueOrDefault(0) > 0)
 			{
-				if (jobHistory.ItemsWithErrors.GetValueOrDefault(0) > 0)
-				{
-					return JobStatusChoices.JobHistoryCompletedWithErrors;
-				}
+				return JobStatusChoices.JobHistoryCompletedWithErrors;
 			}
 
 			return JobStatusChoices.JobHistoryCompleted;
-		}
-
-		public void SendHealthCheck(Data.JobHistory jobHistory, long workspaceID)
-		{
-			if (IsJobFailed(jobHistory.JobStatus))
-			{
-				IHealthMeasure healthcheck = Client.APMClient.HealthCheckOperation(Constants.IntegrationPoints.Telemetry.APM_HEALTHCHECK, () => HealthCheck.CreateJobFailedMetric(jobHistory, workspaceID));
-				healthcheck.Write();
-			}
-		}
-
-		private static bool IsJobFailed(Choice jobStatusChoice)
-		{
-			return jobStatusChoice.EqualsToChoice(JobStatusChoices.JobHistoryValidationFailed) || jobStatusChoice.EqualsToChoice(JobStatusChoices.JobHistoryErrorJobFailed);
 		}
 	}
 }
