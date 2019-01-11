@@ -149,7 +149,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			catch (Exception ex)
 			{
 				jobHistory.DestinationWorkspace = "[Unable to retrieve workspace name]";
-				LogGettingWorkspaceNamerError(ex);
+				LogGettingWorkspaceNameError(ex);
 			}
 
 			FederatedInstanceDto federatedInstanceDto = _federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(importSettings.FederatedInstanceArtifactId);
@@ -226,9 +226,9 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
 		#region Logging
 
-		private void LogGettingWorkspaceNamerError(Exception exception)
+		private void LogGettingWorkspaceNameError(Exception exception)
 		{
-			_logger.LogError(exception, "Unable to get workspace name from destination workspace");
+			_logger.LogWarning(exception, "Unable to get workspace name from destination workspace");
 		}
 
 		private void LogMoreThanOneHistoryInstanceWarning(Guid batchInstance)
