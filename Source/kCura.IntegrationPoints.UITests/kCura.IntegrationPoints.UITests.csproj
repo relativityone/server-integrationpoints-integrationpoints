@@ -103,11 +103,15 @@
     <Compile Include="Configuration\RelativityUser.cs" />
     <Compile Include="Configuration\TestConfiguration.cs" />
     <Compile Include="Configuration\TestContext.cs" />
-    <Compile Include="Auxiliary\ReuseRemoteWebDriver.cs" />
+    <Compile Include="Driver\ChromeDriverFactory.cs" />
+    <Compile Include="Driver\ChromeOptionsExtensions.cs" />
     <Compile Include="Driver\DriverExtensions.cs" />
     <Compile Include="Driver\DriverFactory.cs" />
+    <Compile Include="Driver\FirefoxDriverFactory.cs" />
+    <Compile Include="Driver\ScreenshotSaver.cs" />
     <Compile Include="Logging\LoggerFactory.cs" />
     <Compile Include="Logging\LoggerNameEnricher.cs" />
+    <Compile Include="NUnitExtensions\RetryOnErrorAttribute.cs" />
     <Compile Include="Pages\ExportEntityToFileSecondPage.cs" />
     <Compile Include="Pages\ExportToFileThirdPage.cs" />
     <Compile Include="Pages\ExportToFileThirdPageExportDetails.cs" />
@@ -132,8 +136,6 @@
     <Compile Include="Pages\LoginPage.cs" />
     <Compile Include="Pages\PushToRelativitySecondPage.cs" />
     <Compile Include="Pages\PushtoRelativityThirdPage.cs" />
-    <Compile Include="Tests\CreateIpSmokeTest.cs" />
-    <Compile Include="Auxiliary\Grinder.cs" />
     <Compile Include="Tests\ExportToLoadFile\EntityExportToLoadFile.cs" />
     <Compile Include="Tests\ExportToLoadFile\DocumentExportToLoadFileTests.cs" />
     <Compile Include="Tests\ExportToLoadFile\ExportToLoadFileTests.cs" />
@@ -171,6 +173,7 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="paket.references" />
+    <None Include="Readme.md" />
     <None Include="UiTestsConfig\cop001.config">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -230,7 +233,6 @@
     <Content Include="LICENSE.txt">
       <Paket>True</Paket>
     </Content>
-    <Content Include="Auxiliary\Readme.txt" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
@@ -265,6 +267,7 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
@@ -607,6 +610,22 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Relativity.Productions.Services.Interfaces">
+          <HintPath>..\..\packages\Relativity.Productions.Services.Interfaces\lib\net45\Relativity.Productions.Services.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.Productions.Services.Interfaces.Private">
+          <HintPath>..\..\packages\Relativity.Productions.Services.Interfaces\lib\net45\Relativity.Productions.Services.Interfaces.Private.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Relativity.Services.DataContracts">
           <HintPath>..\..\packages\Relativity.Services.DataContracts\lib\net462\Relativity.Services.DataContracts.dll</HintPath>
           <Private>True</Private>
@@ -765,4 +784,5 @@
   <Import Project="..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets')" Label="Paket" />
   <Import Project="..\..\packages\Relativity.ImportExport\build\Relativity.ImportExport.targets" Condition="Exists('..\..\packages\Relativity.ImportExport\build\Relativity.ImportExport.targets')" Label="Paket" />
   <Import Project="..\..\packages\Selenium.WebDriver.ChromeDriver\build\Selenium.WebDriver.ChromeDriver.targets" Condition="Exists('..\..\packages\Selenium.WebDriver.ChromeDriver\build\Selenium.WebDriver.ChromeDriver.targets')" Label="Paket" />
+  <Import Project="..\..\packages\Selenium.WebDriver.GeckoDriver\build\Selenium.WebDriver.GeckoDriver.targets" Condition="Exists('..\..\packages\Selenium.WebDriver.GeckoDriver\build\Selenium.WebDriver.GeckoDriver.targets')" Label="Paket" />
 </Project>

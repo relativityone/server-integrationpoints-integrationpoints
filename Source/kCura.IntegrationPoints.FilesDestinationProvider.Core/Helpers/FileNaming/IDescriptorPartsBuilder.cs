@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using FileNaming.CustomFileNaming;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.WinEDDS.Core.Model;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers.FileNaming
 {

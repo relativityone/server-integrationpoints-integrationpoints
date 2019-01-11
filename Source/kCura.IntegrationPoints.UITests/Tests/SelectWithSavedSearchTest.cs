@@ -1,8 +1,9 @@
-﻿using System.Threading;
-using kCura.IntegrationPoints.UITests.Common;
+﻿using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Components;
+using kCura.IntegrationPoints.UITests.NUnitExtensions;
 using kCura.IntegrationPoints.UITests.Pages;
 using NUnit.Framework;
+using System.Threading;
 
 namespace kCura.IntegrationPoints.UITests.Tests
 {
@@ -18,7 +19,9 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			EnsureGeneralPageIsOpened();
 		}
 
-		[Test, Order(10)]
+		[Test]
+		[RetryOnError]
+		[Order(10)]
 		public void ChangesValueWhenSavedSearchIsChosenInDialog()
 		{
 			// Arrange

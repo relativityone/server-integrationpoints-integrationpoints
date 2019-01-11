@@ -1,83 +1,85 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Drawing;
-using kCura.IntegrationPoint.Tests.Core;
-using OpenQA.Selenium.Chrome;
+﻿using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.UITests.Logging;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 using Serilog;
+using Serilog.Events;
+using System;
+using System.Drawing;
+using System.Text;
 
 namespace kCura.IntegrationPoints.UITests.Driver
 {
 	public static class DriverFactory
 	{
-		private static readonly int BrowserWidth = SharedVariables.UiBrowserWidth;
+		private const string _VERSION_CAPABILITY_NAME = "version";
 
-		private static readonly int BrowserHeight = SharedVariables.UiBrowserHeight;
+		private const string _BROWSER_VERSION_CAPABILITY_NAME = "browserVersion";
 
-		public static RemoteWebDriver CreateDriver()
+		private static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(DriverFactory));
+		
+		public static RemoteWebDriver Create()
 		{
-			ChromeDriverService driverService = ChromeDriverService.CreateDefaultService();
-			// Otherwise console window appears for ChromeDriver process
-			driverService.HideCommandPromptWindow = SharedVariables.UiDriverServiceHideCommandPromptWindow;
-			driverService.LogPath = SharedVariables.UiDriverServiceLogPath;
-
-			var options = new ChromeOptions
+			RemoteWebDriver driver;
+			switch (SharedVariables.UiBrowser)
 			{
-				AcceptInsecureCertificates = SharedVariables.UiOptionsAcceptInsecureCertificates
-			};
+				case "chrome":
+					driver = ChromeDriverFactory.Create();
+					break;
+				case "firefox":
+					driver = FirefoxDriverFactory.Create();
+					break;
+				default:
+					throw new ArgumentException($"Unsupported browser '{SharedVariables.UiBrowser}'");
+			}
 
-			// Disables "Save password" popup
-			options.AddUserProfilePreference("credentials_enable_service",
-				SharedVariables.UiOptionsProfilePreferenceCredentialsEnableService);
-			options.AddUserProfilePreference("profile.password_manager_enabled",
-				SharedVariables.UiOptionsProfilePreferenceProfilePasswordManagerEnabled);
-
-			options.AddBrowserOptions();
-			options.AddAdditionalCapabilities();
-
-			RemoteWebDriver driver = new ChromeDriver(driverService, options);
-			// Long implicit wait as Relativity uses IFrames and is usually quite slow
-			driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(SharedVariables.UiImplicitWaitInSec);
-			driver.Manage().Window.Size = new Size(BrowserWidth, BrowserHeight);
-
-			Size browseSize = driver.Manage().Window.Size;
-			Log.Information("Browser size: Width: {width}, Height: {height}", browseSize.Width, browseSize.Height);
-
+			driver.Manage().Timeouts().ImplicitWait = DriverImplicitWait;
+			driver.Manage().Window.Size = new Size(SharedVariables.UiBrowserWidth, SharedVariables.UiBrowserHeight);
 			driver.Url = SharedVariables.ProtocolVersion + "://" + SharedVariables.TargetHost + "/Relativity";
+			
+			LogDriverInformation(driver);
 			return driver;
 		}
-	}
-}
 
-public static class ChromeOptionsExtensions
-{
-	public static ChromeOptions AddAdditionalCapabilities(this ChromeOptions value)
-	{
-		if (SharedVariables.UiOptionsAdditionalCapabilitiesAcceptSslCertificates)
+		public static string GetBrowserVersion(IHasCapabilities driver)
 		{
-			value.AddAdditionalCapability(CapabilityType.AcceptSslCertificates, true, true);
-		}
-		if (SharedVariables.UiOptionsAdditionalCapabilitiesAcceptInsecureCertificates)
-		{
-			value.AddAdditionalCapability(CapabilityType.AcceptInsecureCertificates, true, true);
-		}
-		return value;
-	}
+			ICapabilities caps = driver.Capabilities;
+			if (caps.HasCapability(_VERSION_CAPABILITY_NAME))
+			{
+				return caps[_VERSION_CAPABILITY_NAME].ToString();
+			}
 
-	public static void AddBrowserOptions(this ChromeOptions value)
-	{
-		var optionsFromAppConfig = new Dictionary<string, bool>
-		{
-			// Disables "Chrome is being controlled by automated test software." bar
-			["disable-infobars"] = SharedVariables.UiOptionsArgumentsDisableInfobars,
-			["headless"] = SharedVariables.UiOptionsArgumentsHeadless,
-			["ignore-certificate-errors"] = SharedVariables.UiOptionsArgumentsIgnoreCertificateErrors
-		};
+			if (caps.HasCapability(_BROWSER_VERSION_CAPABILITY_NAME))
+			{
+				return caps[_BROWSER_VERSION_CAPABILITY_NAME].ToString();
+			}
 
-		foreach (var option in optionsFromAppConfig.Where(x => x.Value))
-		{
-			value.AddArgument(option.Key);
+			Log.Warning($"Cannot retrieve {GetBrowserName(driver)} browser version.");
+			return "Unknown";
 		}
+
+		private static TimeSpan DriverImplicitWait => TimeSpan.FromSeconds(SharedVariables.UiImplicitWaitInSec);
+
+		private static string GetBrowserName(IHasCapabilities driver)
+		{
+			return driver.Capabilities["browserName"].ToString();
+		}
+		
+		private static void LogDriverInformation(RemoteWebDriver driver)
+		{
+			if (Log.IsEnabled(LogEventLevel.Information))
+			{
+				Size browseSize = driver.Manage().Window.Size;
+				StringBuilder builder = new StringBuilder()
+					.AppendLine($"Browser name: {GetBrowserName(driver)}")
+					.AppendLine($"Browser version: {GetBrowserVersion(driver)}")
+					.AppendLine($"Browser width: {browseSize.Width}, height: {browseSize.Height}")
+					.AppendLine($"Driver implicit wait: {DriverImplicitWait}")
+					.AppendLine($"Driver URL: {driver.Url}");
+
+				Log.Information("Driver info:\n{DriverInfo}", builder.ToString());
+			}
+		}
+
 	}
 }

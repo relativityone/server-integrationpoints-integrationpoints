@@ -1,35 +1,35 @@
-﻿using System;
-using System.Threading.Tasks;
-using kCura.IntegrationPoint.Tests.Core.TestHelpers;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.Relativity.Client;
-using NUnit.Framework;
-using Relativity.API;
-using kCura.IntegrationPoints.UITests.Pages;
-using kCura.IntegrationPoint.Tests.Core;
-using OpenQA.Selenium;
-using System.Net;
-using System.Reflection;
-using Castle.MicroKernel.Registration;
+﻿using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
+using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.UITests.Configuration;
 using kCura.IntegrationPoints.UITests.Driver;
 using kCura.IntegrationPoints.UITests.Logging;
+using kCura.IntegrationPoints.UITests.Pages;
+using kCura.Relativity.Client;
+using NUnit.Framework;
 using NUnit.Framework.Interfaces;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
+using Relativity.API;
 using Serilog;
+using System;
+using System.Collections.ObjectModel;
+using System.Net;
+using System.Text;
+using System.Threading.Tasks;
 using TestContext = kCura.IntegrationPoints.UITests.Configuration.TestContext;
 
 namespace kCura.IntegrationPoints.UITests.Tests
 {
-	using System.Collections.Generic;
 	using Data;
 	using Validation;
 
 	public abstract class UiTest
 	{
-
+		
 		private readonly Lazy<ITestHelper> _help;
 
 		protected IConfigurationStore ConfigurationStore;
@@ -37,14 +37,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		protected IWindsorContainer Container;
 
 		protected static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(UiTest));
-
-		protected static readonly List<Tuple<string, string>> DefaultFieldsMapping = new List<Tuple<string, string>>
-		{
-			new Tuple<string, string>("Control Number", "Control Number"),
-			new Tuple<string, string>("Extracted Text", "Extracted Text"),
-			new Tuple<string, string>("Title", "Title")
-		};
-
+		
 		public static string Now => DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
 
 		public ITestHelper Helper => _help.Value;
@@ -55,18 +48,13 @@ namespace kCura.IntegrationPoints.UITests.Tests
 
 		protected RemoteWebDriver Driver { get; set; }
 
-		public UiTest()
+		protected UiTest()
 		{
 			Container = new WindsorContainer();
 			ConfigurationStore = new DefaultConfigurationStore();
 			_help = new Lazy<ITestHelper>(() => new TestHelper());
 		}
-		protected virtual bool InstallLegalHoldApp => false;
-
-		protected virtual void ContextSetUp()
-		{
-		}
-
+		
 		[OneTimeSetUp]
 		protected void SetupSuite()
 		{
@@ -119,15 +107,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 				await ImportDocumentsAsync();
 			}
 
-			ContextSetUp(); // TODO del such things
-
 			await installIntegrationPointsTask;
-
-			if (InstallLegalHoldApp)
-			{
-				Task installLegalHoldTask = Context.InstallLegalHoldAsync();
-				await installLegalHoldTask;
-			}
 		}
 
 		protected virtual async Task CreateWorkspaceAsync()
@@ -142,24 +122,85 @@ namespace kCura.IntegrationPoints.UITests.Tests
 
 		protected async Task CreateDriverAsync()
 		{
-			await Task.Run(() => Driver = DriverFactory.CreateDriver()).ConfigureAwait(false);
+			await Task.Run(() => Driver = DriverFactory.Create()).ConfigureAwait(false);
 		}
 
-		[OneTimeTearDown]
-		protected void CloseAndQuitDriver()
+		[TearDown]
+		protected void LogTestErrors()
+		{
+			LogTestStatus();
+
+			LogBrowserLogsIfTestFailed();
+		}
+
+		private void LogBrowserLogsIfTestFailed()
 		{
 			try
 			{
-				if (!NUnit.Framework.TestContext.CurrentContext.Result.Outcome.Equals(ResultState.Success))
+				if (HasTestFailed())
 				{
-					SaveScreenshot();
+					ReadOnlyCollection<LogEntry> entries = Driver.Manage().Logs.GetLog(LogType.Browser);
+					var builder = new StringBuilder();
+					foreach (LogEntry entry in entries)
+					{
+						builder.AppendLine(entry.ToString());
+					}
+
+					Log.Error("Browser logs:\n{BrowserLogs}", builder.ToString());
+				}
+			}
+			catch (Exception ex)
+			{
+				Log.Error(ex, "Error during accessing browser logs.");
+			}
+		}
+
+		private static void LogTestStatus()
+		{
+			try
+			{
+				NUnit.Framework.TestContext tc = NUnit.Framework.TestContext.CurrentContext;
+				if (HasTestFailed())
+				{
+					Log.Error("Test {TestName} finished unsuccessfully. Status: {TestStatus},\n" +
+					          "message: '{ErrorMessage}', stacktrace:\n{TestStacktrace}",
+						tc.Test.FullName, tc.Result.Outcome.Status, tc.Result.Message, tc.Result.StackTrace);
+				}
+				else
+				{
+					Log.Information("Test {TestName} finished successfully.", tc.Test.FullName);
+				}
+			}
+			catch (Exception ex)
+			{
+				Log.Error(ex, "Error during logging test status.");
+			}
+		}
+
+		[TearDown]
+		private void SaveScreenshotIfTestFailed()
+		{
+			try
+			{
+				if (HasTestFailed())
+				{
+					ScreenshotSaver.SaveScreenshot(Driver);
 				}
 			}
 			catch (Exception ex)
 			{
 				Log.Error(ex, "Error during saving screenshot.");
 			}
+		}
 
+		private static bool HasTestFailed()
+		{
+			return !NUnit.Framework.TestContext.CurrentContext.Result.Outcome.Equals(ResultState.Success);
+		}
+
+		[OneTimeTearDown]
+		protected void CloseAndQuitDriver()
+		{
 			try
 			{
 				if (string.IsNullOrEmpty(SharedVariables.UiUseThisExistingWorkspace) && Context.WorkspaceId != null)
@@ -200,36 +241,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			}
 			return new GeneralPage(Driver).PassWelcomeScreen();
 		}
-
-		protected void SaveScreenshot()
-		{
-			if (Driver == null)
-			{
-				return;
-			}
-			Screenshot screenshot = ((ITakesScreenshot)Driver).GetScreenshot();
-			string testDir = NUnit.Framework.TestContext.CurrentContext.TestDirectory;
-			string className = NUnit.Framework.TestContext.CurrentContext.Test.FullName;
-			string methodName = NUnit.Framework.TestContext.CurrentContext.Test.MethodName;
-			string timeStamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss-ffff");
-			screenshot.SaveAsFile($@"{testDir}\{timeStamp}_{className}.{methodName}.png", ScreenshotImageFormat.Png);
-		}
-
-		protected string GetExecutorUrl()
-		{
-			FieldInfo executorField = Driver.GetType().GetField("executor", BindingFlags.NonPublic | BindingFlags.Instance);
-			if (executorField == null)
-			{
-				executorField = Driver.GetType().BaseType.GetField("executor", BindingFlags.NonPublic | BindingFlags.Instance);
-			}
-			object executor = executorField.GetValue(Driver);
-			FieldInfo internalExecutorField = executor.GetType().GetField("internalExecutor", BindingFlags.Instance | BindingFlags.NonPublic);
-			object internalExecutor = internalExecutorField.GetValue(executor);
-			FieldInfo remoteServerUriField = internalExecutor.GetType().GetField("remoteServerUri", BindingFlags.Instance | BindingFlags.NonPublic);
-			var remoteServerUri = remoteServerUriField.GetValue(internalExecutor) as Uri;
-			return remoteServerUri.ToString();
-		}
-
+		
 		protected void WaitForJobToFinishAndValidateCompletedStatus(IntegrationPointDetailsPage detailsPage)
 		{
 			new BaseUiValidator().ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);

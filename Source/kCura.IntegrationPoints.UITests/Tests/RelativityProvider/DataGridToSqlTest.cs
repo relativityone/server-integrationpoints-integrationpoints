@@ -1,23 +1,27 @@
-﻿using System.Threading.Tasks;
-using kCura.IntegrationPoint.Tests.Core.Models;
+﻿using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Components;
+using kCura.IntegrationPoints.UITests.NUnitExtensions;
 using kCura.IntegrationPoints.UITests.Pages;
 using NUnit.Framework;
+using System.Threading.Tasks;
+
 
 namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 {
 	[TestFixture]
-	[Category(TestCategory.MISCELLANEOUS)]
+	[Category(TestCategory.DATA_GRID_RELATED)]
     public class DataGridToSqlTest : RelativityProviderTestsBase
 	{
 		private RelativityProviderModel CreateRelativityProviderModelWithNatives()
 		{
-			var model = new RelativityProviderModel(NUnit.Framework.TestContext.CurrentContext.Test.Name);
-			model.Source = RelativityProviderModel.SourceTypeEnum.SavedSearch;
-			model.RelativityInstance = "This Instance";
-			model.DestinationWorkspace = $"{DestinationContext.WorkspaceName} - {DestinationContext.WorkspaceId}";
-			model.CopyNativeFiles = RelativityProviderModel.CopyNativeFilesEnum.PhysicalFiles;
+			var model = new RelativityProviderModel(TestContext.CurrentContext.Test.Name)
+			{
+				Source = RelativityProviderModel.SourceTypeEnum.SavedSearch,
+				RelativityInstance = "This Instance",
+				DestinationWorkspace = $"{DestinationContext.WorkspaceName} - {DestinationContext.WorkspaceId}",
+				CopyNativeFiles = RelativityProviderModel.CopyNativeFilesEnum.PhysicalFiles
+			};
 			return model;
 		}
 
@@ -33,6 +37,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
+		[RetryOnError]
 		public void RelativityProvider_TC_RTR_NF_01_with_DG()
 		{
 			//Arrange

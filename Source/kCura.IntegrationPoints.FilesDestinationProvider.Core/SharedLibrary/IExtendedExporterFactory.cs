@@ -1,6 +1,5 @@
 ﻿using kCura.Windows.Process;
-using kCura.WinEDDS.Core.Export;
-using kCura.WinEDDS.Core.Model.Export;
+using kCura.WinEDDS;
 using kCura.WinEDDS.Exporters;
 using kCura.WinEDDS.Service.Export;
 

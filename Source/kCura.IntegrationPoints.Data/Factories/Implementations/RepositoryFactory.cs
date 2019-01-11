@@ -19,26 +19,39 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 	public class RepositoryFactory : MarshalByRefObject, IRepositoryFactory
 	{
 		private readonly IHelper _helper;
-		private readonly IServicesMgr _servicesMgr;
+		private readonly IServicesMgr _destinationServiceMgr;
+		private readonly IServicesMgr _sourceServiceMgr;
 		private readonly Lazy<IRelativityObjectManagerFactory> _objectManagerFactory;
 		private readonly Lazy<IExternalServiceInstrumentationProvider> _instrumentationProvider;
 
-		public RepositoryFactory(IHelper helper, IServicesMgr servicesMgr)
+		public RepositoryFactory(IHelper helper, IServicesMgr destinationServiceMgr)
+			: this(helper, destinationServiceMgr, CreateRelativityObjectManagerFactory(helper), CreateInstrumentationProvider(helper))
 		{
-			_helper = helper;
-			_servicesMgr = servicesMgr;
-			_objectManagerFactory = new Lazy<IRelativityObjectManagerFactory>(CreateRelativityObjectManagerFactory);
-			_instrumentationProvider = new Lazy<IExternalServiceInstrumentationProvider>(CreateInstrumentationProvider);
 		}
 
-		public RepositoryFactory(IHelper helper, IServicesMgr servicesMgr,
+		public RepositoryFactory(
+			IHelper helper,
+			IServicesMgr destinationServiceMgr,
 			IRelativityObjectManagerFactory objectManagerFactory,
 			IExternalServiceInstrumentationProvider instrumentationProvider)
+			: this(helper, 
+				destinationServiceMgr, 
+				new Lazy<IRelativityObjectManagerFactory>(() => objectManagerFactory), 
+				new Lazy<IExternalServiceInstrumentationProvider>(() => instrumentationProvider))
+		{
+		}
+
+		private RepositoryFactory(
+			IHelper helper,
+			IServicesMgr destinationServiceMgr,
+			Lazy<IRelativityObjectManagerFactory> objectManagerFactory,
+			Lazy<IExternalServiceInstrumentationProvider> instrumentationProvider)
 		{
 			_helper = helper;
-			_servicesMgr = servicesMgr;
-			_objectManagerFactory = new Lazy<IRelativityObjectManagerFactory>(() => objectManagerFactory);
-			_instrumentationProvider = new Lazy<IExternalServiceInstrumentationProvider>(() => instrumentationProvider);
+			_destinationServiceMgr = destinationServiceMgr;
+			_sourceServiceMgr = _helper.GetServicesManager(); //TODO: it's on our wall of shame
+			_objectManagerFactory = objectManagerFactory;
+			_instrumentationProvider = instrumentationProvider;
 		}
 
 		private IRelativityObjectManagerFactory ObjectManagerFactory => _objectManagerFactory.Value;
@@ -46,7 +59,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IArtifactGuidRepository GetArtifactGuidRepository(int workspaceArtifactId)
 		{
-			return new KeplerArtifactGuidRepository(workspaceArtifactId, _servicesMgr);
+			return new KeplerArtifactGuidRepository(workspaceArtifactId, _destinationServiceMgr);
 		}
 
 		public IArtifactTypeRepository GetArtifactTypeRepository()
@@ -90,19 +103,20 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		{
 			IRelativityObjectManager relativityObjectManager =
 				CreateRelativityObjectManagerForFederatedInstance(workspaceArtifactId);
-			IFieldQueryRepository fieldQueryRepository = new FieldQueryRepository(_helper, _servicesMgr, relativityObjectManager, workspaceArtifactId);
+			IFieldQueryRepository fieldQueryRepository = new FieldQueryRepository(_helper, _destinationServiceMgr, relativityObjectManager, workspaceArtifactId);
 
 			return fieldQueryRepository;
 		}
 
 		public IFieldRepository GetFieldRepository(int workspaceArtifactId)
 		{
-			return new FieldRepository(_servicesMgr, _helper, workspaceArtifactId);
+			var foundationRepositoryFactory = new FoundationRepositoryFactory(_sourceServiceMgr, InstrumentationProvider);
+			return new FieldRepository(_destinationServiceMgr, _helper, foundationRepositoryFactory, InstrumentationProvider, workspaceArtifactId);
 		}
 
 		public IJobHistoryRepository GetJobHistoryRepository(int workspaceArtifactId = 0)
 		{
-			var relativityObjectManager = CreateRelativityObjectManager(workspaceArtifactId);
+			IRelativityObjectManager relativityObjectManager = CreateRelativityObjectManager(workspaceArtifactId);
 			IJobHistoryRepository jobHistoryRepository = new JobHistoryRepository(relativityObjectManager);
 			return jobHistoryRepository;
 		}
@@ -127,7 +141,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		{
 			IRelativityObjectManager relativityObjectManager =
 				CreateRelativityObjectManager(workspaceArtifactId);
-			IObjectTypeRepository repository = new ObjectTypeRepository(workspaceArtifactId, _servicesMgr, _helper, relativityObjectManager);
+			IObjectTypeRepository repository = new ObjectTypeRepository(workspaceArtifactId, _destinationServiceMgr, _helper, relativityObjectManager);
 
 			return repository;
 		}
@@ -136,7 +150,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		{
 			IRelativityObjectManager relativityObjectManager =
 				CreateRelativityObjectManagerForFederatedInstance(workspaceArtifactId);
-			return new ObjectTypeRepository(workspaceArtifactId, _servicesMgr, _helper, relativityObjectManager);
+			return new ObjectTypeRepository(workspaceArtifactId, _destinationServiceMgr, _helper, relativityObjectManager);
 		}
 
 		public IPermissionRepository GetPermissionRepository(int workspaceArtifactId)
@@ -156,8 +170,8 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public ISourceJobRepository GetSourceJobRepository(int workspaceArtifactId)
 		{
-			var objectTypeRepository = GetObjectTypeRepository(workspaceArtifactId);
-			var fieldRepository = GetFieldRepository(workspaceArtifactId);
+			IObjectTypeRepository objectTypeRepository = GetObjectTypeRepository(workspaceArtifactId);
+			IFieldRepository fieldRepository = GetFieldRepository(workspaceArtifactId);
 			IRelativityObjectManager objectManager = CreateRelativityObjectManagerForFederatedInstance(workspaceArtifactId);
 			ISourceJobRepository repository = new SourceJobRepository(objectTypeRepository, fieldRepository, objectManager);
 
@@ -182,7 +196,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public ITabRepository GetTabRepository(int workspaceArtifactId)
 		{
-			ITabRepository tabRepository = new RsapiTabRepository(_servicesMgr, _helper, workspaceArtifactId);
+			ITabRepository tabRepository = new RsapiTabRepository(_destinationServiceMgr, _helper, workspaceArtifactId);
 
 			return tabRepository;
 		}
@@ -191,7 +205,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		{
 			IRelativityObjectManager relativityObjectManager =
 				CreateRelativityObjectManagerForFederatedInstance(-1);
-			IWorkspaceRepository repository = new KeplerWorkspaceRepository(_helper, _servicesMgr, relativityObjectManager);
+			IWorkspaceRepository repository = new KeplerWorkspaceRepository(_helper, _destinationServiceMgr, relativityObjectManager);
 
 			return repository;
 		}
@@ -200,7 +214,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		{
 			IRelativityObjectManager relativityObjectManager =
 				CreateRelativityObjectManager(-1);
-			IWorkspaceRepository repository = new KeplerWorkspaceRepository(_helper, _servicesMgr, relativityObjectManager);
+			IWorkspaceRepository repository = new KeplerWorkspaceRepository(_helper, _destinationServiceMgr, relativityObjectManager);
 			return repository;
 		}
 
@@ -213,14 +227,16 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public ISavedSearchRepository GetSavedSearchRepository(int workspaceArtifactId, int savedSearchArtifactId)
 		{
-			ISavedSearchRepository repository = new SavedSearchRepository(CreateRelativityObjectManager(workspaceArtifactId),
-					savedSearchArtifactId, 1000);
+			ISavedSearchRepository repository = new SavedSearchRepository(
+				CreateRelativityObjectManager(workspaceArtifactId),
+				savedSearchArtifactId,
+				pageSize: 1000);
 			return repository;
 		}
 
 		public IProductionRepository GetProductionRepository(int workspaceArtifactId)
 		{
-			IProductionRepository repository = new ProductionRepository(_servicesMgr);
+			IProductionRepository repository = new ProductionRepository(_destinationServiceMgr);
 			return repository;
 		}
 
@@ -286,23 +302,23 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return fileRepository;
 		}
 
-		public IAuditRepository GetAuditRepository(int appId, int workspaceID)
+		public IAuditRepository GetAuditRepository(int appId, int workspaceId)
 		{
 			var auditServiceFactory = new AuditServiceFactory();
-			IAuditService auditService = auditServiceFactory.GetAuditService(appId, workspaceID);
+			IAuditService auditService = auditServiceFactory.GetAuditService(appId, workspaceId);
 			return new AuditRepository(auditService, InstrumentationProvider);
 		}
 
 		#region Helper Methods
-		private IRelativityObjectManagerFactory CreateRelativityObjectManagerFactory()
+		private static Lazy<IRelativityObjectManagerFactory> CreateRelativityObjectManagerFactory(IHelper helper)
 		{
-			return new RelativityObjectManagerFactory(_helper);
+			return new Lazy<IRelativityObjectManagerFactory>(() => new RelativityObjectManagerFactory(helper));
 		}
 
-		private IExternalServiceInstrumentationProvider CreateInstrumentationProvider()
+		private static Lazy<IExternalServiceInstrumentationProvider> CreateInstrumentationProvider(IHelper helper)
 		{
-			IAPILog logger = _helper.GetLoggerFactory().GetLogger();
-			return new ExternalServiceInstrumentationProviderWithoutJobContext(logger);
+			IAPILog logger = helper.GetLoggerFactory().GetLogger();
+			return new Lazy<IExternalServiceInstrumentationProvider>(() => new ExternalServiceInstrumentationProviderWithoutJobContext(logger));
 		}
 
 		private IRelativityObjectManager CreateRelativityObjectManager(int workspaceArtifactId)
@@ -312,7 +328,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		private IRelativityObjectManager CreateRelativityObjectManagerForFederatedInstance(int workspaceArtifactId)
 		{
-			return ObjectManagerFactory.CreateRelativityObjectManager(workspaceArtifactId, _servicesMgr);
+			return ObjectManagerFactory.CreateRelativityObjectManager(workspaceArtifactId, _destinationServiceMgr);
 		}
 
 		private BaseContext GetBaseContextForWorkspace(int workspaceArtifactId)
@@ -352,7 +368,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IKeywordSearchRepository GetKeywordSearchRepository()
 		{
-			return new KeplerKeywordSearchRepository(_servicesMgr);
+			return new KeplerKeywordSearchRepository(_destinationServiceMgr);
 		}
 
 		public ICaseRepository GetCaseRepository()

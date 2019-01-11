@@ -1,142 +1,105 @@
-﻿using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
-using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Contracts.RDO;
+﻿using System;
+using FluentAssertions;
+using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Core;
+using Relativity.API.Foundation;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories
 {
 	[TestFixture]
-	public class ExtendedFieldRepositoryTests : TestBase
+	public class FieldRepositoryTests
 	{
-		private const int _WORKSPACE_ARTIFACT_ID = 1024165;
-
+		private IServicesMgr _servicesMgr;
 		private IHelper _helper;
-		private IObjectQueryManagerAdaptor _objectQueryManagerAdaptor;
-		private BaseServiceContext _baseServiceContext;
-		private BaseContext _baseContext;
+		private IFoundationRepositoryFactory _foundationRepositoryFactory;
+		private global::Relativity.API.Foundation.Repositories.IFieldRepository _apiFieldRepository;
+		private IExternalServiceInstrumentationProvider _instrumentationProvider;
+		private IExternalServiceInstrumentation _instrumentation;
+		private IExternalServiceInstrumentationStarted _startedInstrumentation;
 
-		private IExtendedFieldRepository _instance;
+		private const int WORKSPACE_ID = 10001;
+		private const string API_FOUNDATION = "API.Foundation";
+		private const string IFIELD_REPOSITORY = "IFieldRepository";
+		private const string READ = "Read";
 
 		[SetUp]
-		public override void SetUp()
+		public void SetUp()
 		{
+			_servicesMgr = Substitute.For<IServicesMgr>();
 			_helper = Substitute.For<IHelper>();
-			_objectQueryManagerAdaptor = Substitute.For<IObjectQueryManagerAdaptor>();
-			_baseServiceContext = Substitute.For<BaseServiceContext>();
-			_baseContext = Substitute.For<BaseContext>();
-
-			_instance = new SqlExtendedFieldRepository(_helper, _objectQueryManagerAdaptor, _baseServiceContext, _baseContext, _WORKSPACE_ARTIFACT_ID);
+			_apiFieldRepository = Substitute.For<global::Relativity.API.Foundation.Repositories.IFieldRepository>();
+			_foundationRepositoryFactory = Substitute.For<IFoundationRepositoryFactory>();
+			_foundationRepositoryFactory
+				.GetRepository<global::Relativity.API.Foundation.Repositories.IFieldRepository>(Arg.Any<int>())
+				.Returns(_apiFieldRepository);
+			_startedInstrumentation = Substitute.For<IExternalServiceInstrumentationStarted>();
+			_instrumentation = Substitute.For<IExternalServiceInstrumentation>();
+			_instrumentation.Started().Returns(_startedInstrumentation);
+			_instrumentationProvider = Substitute.For<IExternalServiceInstrumentationProvider>();
+			_instrumentationProvider.Create(
+					Arg.Any<string>(),
+					Arg.Any<string>(),
+					Arg.Any<string>())
+				.Returns(_instrumentation);
 		}
 
 		[Test]
-		public void RetrieveField_ReturnsValidArtifactId_Test()
+		public void ShouldCallStartedAndCompletedWhenReadExecutedSuccessfully()
 		{
-			// Arrange
-			int expectedFieldArtifactId = 456;
-			string fieldDisplayName = "Relativity Source Case Test Field";
-			int fieldArtifactTypeId = 104165;
-			int fieldTypeId = (int) Relativity.Client.FieldType.FixedLengthText;
+			//arrange
+			const int fieldId = 100;
+			IField field = Substitute.For<IField>();
+			field.ArtifactID.Returns(fieldId);
+			_apiFieldRepository.Read(Arg.Any<IArtifactRef>()).Returns(field);
+			var sut = new FieldRepository(
+				_servicesMgr, 
+				_helper,
+				_foundationRepositoryFactory,
+				_instrumentationProvider,
+				WORKSPACE_ID);
 
-			IDBContext workspaceContext = Substitute.For<IDBContext>();
-			_helper.GetDBContext(_WORKSPACE_ARTIFACT_ID).Returns(workspaceContext);
+			//act
+			IField result = sut.Read(fieldId);
 
-			SqlParameter displayNameParameter = new SqlParameter("@displayName", SqlDbType.NVarChar) { Value = fieldDisplayName };
-			SqlParameter fieldArtifactTypeIdParameter = new SqlParameter("@fieldArtifactTypeId", SqlDbType.Int) { Value = fieldArtifactTypeId };
-			SqlParameter fieldTypeIdParameter = new SqlParameter("@fieldTypeId", SqlDbType.Int) { Value = fieldTypeId };
-			SqlParameter[] sqlParameters = { displayNameParameter, fieldArtifactTypeIdParameter, fieldTypeIdParameter };
-
-			workspaceContext.ExecuteSqlStatementAsScalar<int>(
-				Arg.Is<string>(x => x.Trim() == _RETRIEVE_FIELD_SQL.Trim()),
-				Arg.Is<SqlParameter[]>(p => CompareSqlParameters(sqlParameters, p)))
-				.Returns(expectedFieldArtifactId);
-
-			// Act
-			int? actualArtifactId = _instance.RetrieveField(fieldDisplayName, fieldArtifactTypeId, fieldTypeId);
-
-			// Assert
-			Assert.IsNotNull(actualArtifactId);
-			Assert.AreEqual(expectedFieldArtifactId, actualArtifactId);
-
-			_helper.Received(1).GetDBContext(_WORKSPACE_ARTIFACT_ID);
-			workspaceContext.Received(1).ExecuteSqlStatementAsScalar<int>(Arg.Any<string>(), Arg.Any<SqlParameter[]>());
+			//assert
+			result.ArtifactID.Should().Be(fieldId);
+			_instrumentationProvider.Received()
+				.Create(API_FOUNDATION, IFIELD_REPOSITORY, READ);
+			_instrumentation.Received().Started();
+			_startedInstrumentation.Received().Completed();
 		}
 
 		[Test]
-		public void RetrieveField_ReturnsZeroArtifactId_ReturnsNull_Test()
+		public void ShouldCallStartedAndFailedWhenReadThrowsException()
 		{
-			// Arrange
-			int expectedFieldArtifactId = 0;
-			string fieldDisplayName = "Relativity Source Case Test Field";
-			int fieldArtifactTypeId = 104165;
-			int fieldTypeId = (int)Relativity.Client.FieldType.FixedLengthText;
+			//arrange
+			const int fieldId = 100;
+			var exception = new InvalidOperationException();
+			_apiFieldRepository.Read(Arg.Any<IArtifactRef>()).Throws(exception);
+			var sut = new FieldRepository(
+				_servicesMgr,
+				_helper,
+				_foundationRepositoryFactory,
+				_instrumentationProvider,
+				WORKSPACE_ID);
 
-			IDBContext workspaceContext = Substitute.For<IDBContext>();
-			_helper.GetDBContext(_WORKSPACE_ARTIFACT_ID).Returns(workspaceContext);
+			//act
+			Action act = () => sut.Read(fieldId);
 
-			SqlParameter displayNameParameter = new SqlParameter("@displayName", SqlDbType.NVarChar) { Value = fieldDisplayName };
-			SqlParameter fieldArtifactTypeIdParameter = new SqlParameter("@fieldArtifactTypeId", SqlDbType.Int) { Value = fieldArtifactTypeId };
-			SqlParameter fieldTypeIdParameter = new SqlParameter("@fieldTypeId", SqlDbType.Int) { Value = fieldTypeId };
-			SqlParameter[] sqlParameters = { displayNameParameter, fieldArtifactTypeIdParameter, fieldTypeIdParameter };
-
-			workspaceContext.ExecuteSqlStatementAsScalar<int>(
-				Arg.Is<string>(x => x.Trim() == _RETRIEVE_FIELD_SQL.Trim()),
-				Arg.Is<SqlParameter[]>(p => CompareSqlParameters(sqlParameters, p)))
-				.Returns(expectedFieldArtifactId);
-
-			// Act
-			int? actualArtifactId = _instance.RetrieveField(fieldDisplayName, fieldArtifactTypeId, fieldTypeId);
-
-			// Assert
-			Assert.IsNull(actualArtifactId);
-
-			_helper.Received(1).GetDBContext(_WORKSPACE_ARTIFACT_ID);
-			workspaceContext.Received(1).ExecuteSqlStatementAsScalar<int>(Arg.Any<string>(), Arg.Any<SqlParameter[]>());
+            //assert
+            act.ShouldThrow<IntegrationPointsException>()
+	           .WithMessage($"An error occured while reading field {fieldId} from workspace {WORKSPACE_ID}")
+	           .WithInnerExceptionExactly<InvalidOperationException>();
+			_instrumentationProvider.Received()
+				.Create(API_FOUNDATION, IFIELD_REPOSITORY, READ);
+			_instrumentation.Received().Started();
+			_startedInstrumentation.Received().Failed(exception);
 		}
-
-		private bool CompareSqlParameters(SqlParameter[] expectedParameters, SqlParameter[] actualParameters)
-		{
-			if (expectedParameters == null && actualParameters == null)
-			{
-				return true;
-			}
-			if (expectedParameters == null || actualParameters == null)
-			{
-				return false;
-			}
-			if (expectedParameters.Length != actualParameters.Length)
-			{
-				return false;
-			}
-			foreach (SqlParameter expectedParameter in expectedParameters)
-			{
-				SqlParameter actualParameter = actualParameters.FirstOrDefault(x => x.ParameterName == expectedParameter.ParameterName);
-				if (actualParameter == null)
-				{
-					return false;
-				}
-				if (!expectedParameter.Value.Equals(actualParameter.Value))
-				{
-					return false;
-				}
-				if (expectedParameter.DbType != actualParameter.DbType)
-				{
-					return false;
-				}
-			}
-			return true;
-		}
-
-		#region SQL Queries
-
-		private const string _RETRIEVE_FIELD_SQL = @"SELECT [ArtifactID] FROM [eddsdbo].[Field] WHERE [FieldArtifactTypeID] = @fieldArtifactTypeId AND [FieldTypeID] = @fieldTypeId AND [DisplayName] = @displayName";
-
-		#endregion
 	}
 }

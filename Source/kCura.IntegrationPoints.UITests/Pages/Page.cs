@@ -50,6 +50,11 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			}
 		}
 
+		public void Refresh()
+		{
+			Driver.Navigate().Refresh();
+		}
+
 		public bool IsAnyElementVisible(params By[] bys)
 		{
 			return IsAnyElementVisible(Driver, bys);

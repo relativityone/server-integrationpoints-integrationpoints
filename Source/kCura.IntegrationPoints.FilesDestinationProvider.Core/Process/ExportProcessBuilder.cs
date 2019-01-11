@@ -11,8 +11,6 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.ScheduleQueue.Core;
 using kCura.WinEDDS;
-using kCura.WinEDDS.Core.Model;
-using kCura.WinEDDS.Core.Model.Export;
 using kCura.WinEDDS.Exporters;
 using kCura.WinEDDS.Service.Export;
 using Relativity;
@@ -21,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using FileNaming.CustomFileNaming;
 using IExporter = kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary.IExporter;
 using IServiceFactory = kCura.WinEDDS.Service.Export.IServiceFactory;
 using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
@@ -195,7 +194,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 					ArtifactID = caseInfo.ArtifactID,
 					DownloadHandlerURL = caseInfo.DownloadHandlerURL,
 					ExportAllowed = caseInfo.ExportAllowed,
-					DocumentPath = caseInfo?.DocumentPath ?? "",
+					DocumentPath = caseInfo.DocumentPath ?? "",
 					MatterArtifactID = caseInfo.MatterArtifactID,
 					RootFolderID = caseInfo.RootFolderID,
 					StatusCodeArtifactID = caseInfo.StatusCodeArtifactID,

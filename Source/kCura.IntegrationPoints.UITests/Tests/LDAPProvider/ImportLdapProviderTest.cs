@@ -1,17 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security;
-using kCura.IntegrationPoint.Tests.Core;
+﻿using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models.Constants.Shared;
 using kCura.IntegrationPoint.Tests.Core.Models.Import.Ldap;
 using kCura.IntegrationPoint.Tests.Core.Models.Shared;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.UITests.Actions;
 using kCura.IntegrationPoints.UITests.Common;
+using kCura.IntegrationPoints.UITests.NUnitExtensions;
 using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoints.UITests.Validation;
 using kCura.Vendor.Castle.Core.Internal;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Security;
 
 namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 {
@@ -22,18 +23,20 @@ namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 		private IRSAPIService _service;
 		private IntegrationPointsImportLdapAction _integrationPointsAction;
 
-		protected override bool InstallLegalHoldApp => true;
-
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
+			Context.InstallLegalHold();
+
 			EnsureGeneralPageIsOpened();
 			_integrationPointsAction = new IntegrationPointsImportLdapAction(Driver, Context);
 			Install(Context.WorkspaceId.Value);
 			_service = Container.Resolve<IRSAPIService>();
 		}
 
-		[Test, Order(1)]
+		[Test]
+		[RetryOnError]
+		[Order(1)]
 		[Category(TestCategory.SMOKE)]
 		public void DocumentExportToLoadFile_TC_IMPORT_CUST_1()
 		{
@@ -75,7 +78,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 			// Assert
 			var expectedEntities = new Dictionary<string, string>
 			{
-				{"Szmigielski, Piotr", "Lorenz, Andrzej"}
+				{"Wolny, Stan", "Kukla, Krzysztof"}
 			};
 
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted, JobStatusChoices.JobHistoryCompletedWithErrors);

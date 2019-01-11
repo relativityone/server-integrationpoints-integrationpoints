@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.UITests.Driver
 				.Wrap(retryUntilTrue)
 				.Execute(() => element.GetAttribute("value") == string.Empty);
 
-			element.SendKeys(text);
+			ExecuteWithTimeout(() => element.SendKeys(text), timeout, DefaultRetryInterval);
 			Policy.Timeout(timeout)
 				.Wrap(retryUntilTrue)
 				.Execute(() => element.GetAttribute("value") == text);
@@ -120,8 +120,8 @@ namespace kCura.IntegrationPoints.UITests.Driver
 		{
 			try
 			{
-				Policy clickUpToTimeout = CreatePolicy(timeout, retryInterval);
-				PolicyResult<T> result = clickUpToTimeout.ExecuteAndCapture(func);
+				Policy policy = CreatePolicy(timeout, retryInterval);
+				PolicyResult<T> result = policy.ExecuteAndCapture(func);
 
 				switch (result.Outcome)
 				{

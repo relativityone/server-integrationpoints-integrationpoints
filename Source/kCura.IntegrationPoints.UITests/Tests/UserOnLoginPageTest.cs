@@ -1,6 +1,7 @@
-﻿using kCura.IntegrationPoints.UITests.Pages;
-using kCura.IntegrationPoint.Tests.Core;
+﻿using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.UITests.Common;
+using kCura.IntegrationPoints.UITests.NUnitExtensions;
+using kCura.IntegrationPoints.UITests.Pages;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.UITests.Tests
@@ -19,7 +20,9 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			}
 		}
 
-		[Test, Order(10)]
+		[Test]
+		[RetryOnError]
+		[Order(10)]
 		public void CanLoginSuccessfullyWithValidCredentials()
 		{
 			// Arrange
@@ -29,7 +32,9 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			loginPage.Login(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword);
 		}
 
-		[Test, Order(20)]
+		[Test]
+		[RetryOnError]
+		[Order(20)]
 		public void GoesToWorkspace()
 		{
 			// Arrange

@@ -8,7 +8,7 @@ using System.Text;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
-	public class SharedVariables
+	public static class SharedVariables
 	{
 		private static readonly Dictionary<string, string> ConfigurationOverrides = new Dictionary<string, string>();
 
@@ -149,6 +149,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		#region UI Tests Settings
 
+		public static int UiTestRepeatOnErrorCount => AppSettingInt("ui.testRepeatOnErrorCount");
+
 		public static int UiImplicitWaitInSec => AppSettingInt("ui.implicitWaitInSec");
 
 		public static int UiWaitForAjaxCallsInSec => AppSettingInt("ui.waitForAjaxCallsInSec");
@@ -167,11 +169,15 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static bool UiSkipUserCreation => AppSettingBool("UI.SkipUserCreation");
 
+		public static string UiBrowser => AppSettingString("UI.Browser");
+
 		public static int UiBrowserWidth => AppSettingInt("UI.BrowserWidth");
 
 		public static int UiBrowserHeight => AppSettingInt("UI.BrowserHeight");
 
 		public static bool UiDriverServiceHideCommandPromptWindow => AppSettingBool("UI.DriverService.HideCommandPromptWindow");
+
+		public static string UiMaxChromeSupportedVersion => AppSettingString("UI.ChromeDriver.MaxSupportedVersion");
 
 		public static string UiDriverServiceLogPath => AppSettingString("UI.DriverService.LogPath");
 
@@ -206,7 +212,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 				{
 					return AppSettingBool("IsHttps") ? "https" : "http";
 				}
-				return AppSettingString("ProtocolVersion");
+
+				return ServerBindingType;
 			}
 		}
 
@@ -288,6 +295,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		#region Fileshare Configuration Settings
 
 		public static string FileshareLocation => AppSettingString("fileshareLocation");
+		
 
 		#endregion
 
