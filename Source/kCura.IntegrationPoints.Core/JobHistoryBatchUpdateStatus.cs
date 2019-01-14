@@ -1,10 +1,12 @@
 ﻿using System;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Helpers;
+using kCura.IntegrationPoints.Core.Monitoring;
 using kCura.IntegrationPoints.Core.QueryOptions;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Extensions;
 using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
@@ -23,6 +25,7 @@ namespace kCura.IntegrationPoints.Core
 		private readonly IAPILog _logger;
 		private readonly ISerializer _serializer;
 		private readonly IDateTimeHelper _dateTimeHelper;
+		private readonly IJobStatusUpdater _updater;
 
 		private readonly JobHistoryQueryOptions _jobHistoryQueryOptions =
 			JobHistoryQueryOptions.Query
@@ -80,11 +83,13 @@ namespace kCura.IntegrationPoints.Core
 		{
 			JobHistory jobHistory = GetHistory(job);
 			
-			Choice newStatus = _updater.GenerateStatus(jobHistory, job.WorkspaceID);
+			Choice newStatus = _updater.GenerateStatus(jobHistory);
 			string oldStatusName = jobHistory.JobStatus.Name;
 
 			jobHistory.JobStatus = newStatus;
 			jobHistory.EndTimeUTC = _dateTimeHelper.Now();
+
+			SendHealthCheck(jobHistory, job.WorkspaceID);
 
 			UpdateJobHistory(jobHistory,
 				oldStatusName,
@@ -142,5 +147,21 @@ namespace kCura.IntegrationPoints.Core
 			_logger.LogError(exception, _JOB_HISTORY_NULL, jobId);
 			throw exception;
 		}
+
+		private void SendHealthCheck(Data.JobHistory jobHistory, long workspaceID)
+		{
+			if (IsJobFailed(jobHistory.JobStatus))
+			{
+				IHealthMeasure healthcheck = Client.APMClient.HealthCheckOperation(Constants.IntegrationPoints.Telemetry.APM_HEALTHCHECK,
+					() => HealthCheck.CreateJobFailedMetric(jobHistory, workspaceID));
+				healthcheck.Write();
+			}
+		}
+
+		private bool IsJobFailed(Choice jobStatusChoice)
+		{
+			return jobStatusChoice.EqualsToChoice(JobStatusChoices.JobHistoryValidationFailed) || jobStatusChoice.EqualsToChoice(JobStatusChoices.JobHistoryErrorJobFailed);
+		}
+
 	}
 }
