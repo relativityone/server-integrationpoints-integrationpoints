@@ -5,4 +5,5 @@ NSubstitute
 NUnit
 Relativity.API
 Relativity.ImportExport
+Relativity.Productions.Services.Interfaces
 Relativity.Telemetry.MetricsCollection

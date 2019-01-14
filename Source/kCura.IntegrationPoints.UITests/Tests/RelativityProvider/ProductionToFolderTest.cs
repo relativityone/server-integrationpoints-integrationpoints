@@ -1,11 +1,12 @@
-﻿using System;
-using kCura.IntegrationPoint.Tests.Core;
+﻿using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Validators;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.UITests.Common;
+using kCura.IntegrationPoints.UITests.NUnitExtensions;
 using kCura.IntegrationPoints.UITests.Pages;
 using NUnit.Framework;
+using System;
 
 namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 {
@@ -41,6 +42,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
+		[RetryOnError]
 		public void RelativityProvider_TC_RTR_PTF_1()
 		{
 			//Arrange
@@ -61,6 +63,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
+		[RetryOnError]
 		public void RelativityProvider_TC_RTR_PTF_2()
 		{
 			//Arrange
@@ -81,6 +84,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
+		[RetryOnError]
 		public void RelativityProvider_TC_RTR_PTF_3()
 		{
 			//Not all documents have images, so production would add missing ones
@@ -105,6 +109,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
+		[RetryOnError]
 		public void RelativityProvider_TC_RTR_PTF_4()
 		{
 			//Not all documents have images, so production would add missing ones
@@ -129,6 +134,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
+		[RetryOnError]
 		public void RelativityProvider_TC_RTR_PTF_5()
 		{
 			//Arrange
@@ -150,6 +156,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[Test]
+		[RetryOnError]
 		public void RelativityProvider_TC_RTR_PTF_6()
 		{
 			//Arrange

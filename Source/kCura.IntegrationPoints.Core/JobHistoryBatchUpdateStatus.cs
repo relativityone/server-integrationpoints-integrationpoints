@@ -1,14 +1,17 @@
 ﻿using System;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Core.Helpers;
+using kCura.IntegrationPoints.Core.Monitoring;
 using kCura.IntegrationPoints.Core.QueryOptions;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Extensions;
 using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using Relativity.API;
+using Relativity.Telemetry.APM;
+using Client = Relativity.Telemetry.APM.Client;
 
 namespace kCura.IntegrationPoints.Core
 {
@@ -20,8 +23,8 @@ namespace kCura.IntegrationPoints.Core
 		private readonly IJobStatusUpdater _updater;
 		private readonly IJobHistoryService _jobHistoryService;
 		private readonly IJobService _jobService;
-		private readonly ISerializer _serializer;
 		private readonly IAPILog _logger;
+		private readonly ISerializer _serializer;
 		private readonly IDateTimeHelper _dateTimeHelper;
 
 		private readonly JobHistoryQueryOptions _jobHistoryQueryOptions =
@@ -44,7 +47,7 @@ namespace kCura.IntegrationPoints.Core
 		    _dateTimeHelper = dateTimeHelper;
 	    }
 
-	    public void OnJobStart(Job job)
+		public void OnJobStart(Job job)
 		{
 			Job updatedJob = _jobService.GetJob(job.JobId);
 
@@ -70,11 +73,12 @@ namespace kCura.IntegrationPoints.Core
 		{
 			JobHistory jobHistory = GetHistory(job);
 			
-			Choice newStatus = _updater.GenerateStatus(jobHistory, job.WorkspaceID);
+			Choice newStatus = _updater.GenerateStatus(jobHistory);
 			string oldStatusName = jobHistory.JobStatus.Name;
 
 			jobHistory.JobStatus = newStatus;
 			jobHistory.EndTimeUTC = _dateTimeHelper.Now();
+			SendHealthCheck(jobHistory, job.WorkspaceID);
 
 			UpdateJobHistory(jobHistory,
 				oldStatusName,
@@ -105,6 +109,7 @@ namespace kCura.IntegrationPoints.Core
 			long jobId, 
 			int jobHistoryArtifactId)
 		{
+			
 			try
 			{
 				_jobHistoryService.UpdateRdo(
@@ -122,6 +127,23 @@ namespace kCura.IntegrationPoints.Core
 					jobHistoryArtifactId);
 				throw;
 			}
+		}
+		
+		private void SendHealthCheck(JobHistory jobHistory, long workspaceID)
+		{
+			if (!IsJobFailed(jobHistory.JobStatus))
+			{
+				return;
+			}
+			IHealthMeasure healthCheck = Client.APMClient.HealthCheckOperation(
+				Constants.IntegrationPoints.Telemetry.APM_HEALTHCHECK,
+				() => HealthCheck.CreateJobFailedMetric(jobHistory, workspaceID));
+			healthCheck.Write();
+		}
+
+		private bool IsJobFailed(Choice jobStatusChoice)
+		{
+			return jobStatusChoice.EqualsToChoice(JobStatusChoices.JobHistoryValidationFailed) || jobStatusChoice.EqualsToChoice(JobStatusChoices.JobHistoryErrorJobFailed);
 		}
 
 		private void ThrowWhenJobHistoryNotRetrieved(Job job)

@@ -1,14 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using kCura.IntegrationPoint.Tests.Core.Models;
+﻿using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Models.Constants.Shared;
 using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.UITests.Common;
+using kCura.IntegrationPoints.UITests.NUnitExtensions;
 using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoints.UITests.Validation;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
+using System;
+using System.Collections.Generic;
 
 namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 {
@@ -34,6 +35,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 		}
 
 		[Test]
+		[RetryOnError]
 		public void EntityExportToLoadFile_TC_ELF_CUST_1()
 		{
 			EntityExportToLoadFileModel model = new EntityExportToLoadFileModel("TC-ELF-CUST-1");
@@ -92,12 +94,17 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 					new FieldRefValuePair()
 					{
 						Field = new FieldRef {Guid = Guid.Parse(EntityFieldGuids.FirstName)},
-						Value = "First name"
+						Value = "Grzegorz"
 					},
 					new FieldRefValuePair()
 					{
 						Field = new FieldRef {Guid = Guid.Parse(EntityFieldGuids.LastName)},
-						Value = "Last name"
+						Value = "Brzeczyszczykiewicz"
+					},
+					new FieldRefValuePair()
+					{
+						Field = new FieldRef {Guid = Guid.Parse(EntityFieldGuids.Email)},
+						Value = "Grzegorz.Brzeczyszczykiewicz@company.com"
 					}
 				});
 		}
