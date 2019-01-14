@@ -4,3 +4,4 @@ kCura.Apps.Common.Utils
 Relativity.ImportExport
 Relativity.OAuth2Client
 SystemWrapper.Interfaces
+Relativity.Logging.Interfaces

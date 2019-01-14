@@ -38,7 +38,9 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		public int TypeOfExport { get; set; }
 		public int FolderArtifactId { get; set; }
 
-		public RelativityProviderTemplate(string sourceWorkspaceName, string targetWorkspaceName,
+		public RelativityProviderTemplate(
+			string sourceWorkspaceName, 
+			string targetWorkspaceName,
 			string sourceWorkspaceTemplate = WorkspaceTemplates.NEW_CASE_TEMPLATE,
 			string targetWorkspaceTemplate = WorkspaceTemplates.NEW_CASE_TEMPLATE)
 			: base(sourceWorkspaceName, sourceWorkspaceTemplate)

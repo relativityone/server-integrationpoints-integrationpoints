@@ -405,7 +405,7 @@ def getNewBranchAndVersion(String relativityBranch, String paramRelativityBuildV
 	}
 	catch (any)
 	{
-		branch = "release-10.0-larkspur"
+		branch = "release-10.0-larkspur1"
 		echo "Changing Relativity branch to $branch"
 		buildVersion = getBuildArtifactsPath(this, "Relativity", branch, paramRelativityBuildVersion, paramRelativityBuildType, sessionId)
 	}

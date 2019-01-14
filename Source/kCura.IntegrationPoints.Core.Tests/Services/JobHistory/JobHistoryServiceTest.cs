@@ -5,6 +5,7 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Monitoring;
+using kCura.IntegrationPoints.Core.QueryOptions;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -41,6 +42,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		private int _jobHistoryArtifactId;
 		private Guid _batchGuid;
 
+		private readonly Guid _nameFieldGuid = new Guid("07061466-5fab-4581-979c-c801e8207370");
+		private readonly Guid _jobIdFieldGuid = new Guid("77d797ef-96c9-4b47-9ef8-33f498b5af0d");
+
 		[SetUp]
 		public override void SetUp()
 		{
@@ -72,7 +76,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			};
 			_batchGuid = Guid.NewGuid();
 			_jobHistoryArtifactId = 987465;
-			_instance = new JobHistoryService(_caseServiceContext, _federatedInstanceManager, _workspaceManager, _helper, _serializer, _providerTypeService, _messageService);
+			_instance = new JobHistoryService(_caseServiceContext,
+				_federatedInstanceManager,
+				_workspaceManager,
+				_helper,
+				_serializer,
+				_providerTypeService,
+				_messageService);
 		}
 
 		[Test]
@@ -80,18 +90,53 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		{
 			// Arrange
 			Guid batchInstance = new Guid();
-			TextCondition expectedCondition = new TextCondition(Guid.Parse(JobHistoryFieldGuids.BatchInstance),
-				TextConditionEnum.EqualTo, batchInstance.ToString());
+			var jobHistory = new Data.JobHistory
+			{
+				ArtifactId = 100
+			};
 
 			_caseServiceContext.RsapiService.RelativityObjectManager
 				.Query<Data.JobHistory>(Arg.Is<QueryRequest>(x => !string.IsNullOrEmpty(x.Condition)))
-				.Returns(new List<Data.JobHistory>(1) { new Data.JobHistory() });
+				.Returns(new List<Data.JobHistory>(1) { jobHistory });
 
 			// Act
 			Data.JobHistory actual = _instance.GetRdo(batchInstance);
 
 			// Assert
 			Assert.IsNotNull(actual);
+			Assert.AreEqual(actual.ArtifactId, jobHistory.ArtifactId);
+
+			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1)
+				.Query<Data.JobHistory>(Arg.Is<QueryRequest>(x =>
+					x.Condition.Contains(batchInstance.ToString())));
+		}
+
+		[Test]
+		public void GetRdo_SucceedsWithQueryOptions_Test()
+		{
+			// Arrange
+			Guid batchInstance = new Guid();
+			var jobHistory = new Data.JobHistory
+			{
+				ArtifactId = 100,
+				Name = "Job Name 1",
+				JobID = "10"
+			};
+			IQueryOptions queryOptions = Substitute.For<IQueryOptions>();
+			queryOptions.FieldGuids.Returns(new[] { _nameFieldGuid, _jobIdFieldGuid });
+
+			_caseServiceContext.RsapiService.RelativityObjectManager
+				.Query<Data.JobHistory>(Arg.Is<QueryRequest>(x => !string.IsNullOrEmpty(x.Condition)))
+				.Returns(new List<Data.JobHistory>(1) { jobHistory });
+
+			// Act
+			Data.JobHistory actual = _instance.GetRdo(batchInstance);
+
+			// Assert
+			Assert.IsNotNull(actual);
+			Assert.AreEqual(actual.ArtifactId, jobHistory.ArtifactId);
+			Assert.AreEqual(actual.Name, jobHistory.Name);
+			Assert.AreEqual(actual.JobID, jobHistory.JobID);
 
 			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1)
 				.Query<Data.JobHistory>(Arg.Is<QueryRequest>(x =>
@@ -125,13 +170,48 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		public void UpdateRdo_Succeeds_Test()
 		{
 			// Arrange
-			Data.JobHistory jobHistory = new Data.JobHistory { ArtifactId = 456, BatchInstance = new Guid().ToString() };
+			Data.JobHistory jobHistory = new Data.JobHistory
+			{
+				ArtifactId = 456,
+				BatchInstance = new Guid().ToString()
+			};
 
 			// Act
 			_instance.UpdateRdo(jobHistory);
 
 			// Assert
-			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1).Update(jobHistory);
+			_caseServiceContext.RsapiService.RelativityObjectManager
+				.Received(1)
+				.Update(jobHistory);
+		}
+
+		[Test]
+		public void UpdateRdo_SucceedsWithQueryOptions_Test()
+		{
+			// Arrange
+			int artifactId = 456;
+			string name = "Job Name 1";
+			string jobID = "10";
+			Data.JobHistory jobHistory = new Data.JobHistory
+			{
+				ArtifactId = artifactId,
+				Name = name,
+				JobID = jobID
+			};
+			IQueryOptions queryOptions = Substitute.For<IQueryOptions>();
+			queryOptions.FieldGuids.Returns(new[] { _nameFieldGuid, _jobIdFieldGuid });
+
+			// Act
+			_instance.UpdateRdo(jobHistory, queryOptions);
+
+			// Assert
+			_caseServiceContext.RsapiService.RelativityObjectManager
+				.Received(1)
+				.Update(
+					Arg.Is<int>(actualArtifactId => actualArtifactId == artifactId), 
+					Arg.Is<List<FieldRefValuePair>>(actualFieldRefValuePairs => actualFieldRefValuePairs.Count == 2
+						&& actualFieldRefValuePairs.Count(x => x.Field.Guid == _nameFieldGuid &&  (string)x.Value == name) == 1
+						&& actualFieldRefValuePairs.Count(x => x.Field.Guid == _jobIdFieldGuid && (string)x.Value == jobID) == 1));
 		}
 
 		[Test]
@@ -184,7 +264,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		}
 
 		[Test]
-		public void GetOrCreateSchduleRunHistoryRdo_FoundRdo()
+		public void GetOrCreateScheduleRunHistoryRdo_FoundRdo()
 		{
 			// ARRANGE
 			Data.JobHistory history = new Data.JobHistory();
@@ -199,7 +279,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		}
 
 		[Test]
-		public void GetOrCreateSchduleRunHistoryRdo_NoExistingRdo()
+		public void GetOrCreateScheduleRunHistoryRdo_NoExistingRdo()
 		{
 			// ARRANGE
 			_caseServiceContext.RsapiService.RelativityObjectManager.Query<Data.JobHistory>(Arg.Any<QueryRequest>()).Returns(new List<Data.JobHistory>());
@@ -217,9 +297,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			_messageService.Received().Send(Arg.Any<JobStartedMessage>());
 		}
 
-
 		[Test]
-		public void GetOrCreateSchduleRunHistoryRdo_ErrorOnGetRdo()
+		public void GetOrCreateScheduleRunHistoryRdo_ErrorOnGetRdo()
 		{
 			// ARRANGE
 			_caseServiceContext.RsapiService.RelativityObjectManager.Query<Data.JobHistory>(Arg.Any<QueryRequest>()).Throws(new Exception("blah blah"));
@@ -246,98 +325,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			Assert.IsTrue(jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryPending));
 			Assert.AreEqual(0, jobHistory.ItemsTransferred);
 			Assert.AreEqual(0, jobHistory.ItemsWithErrors);
-		}
-
-		private bool ValidateCondition<T>(Condition actualCondition, Condition expectedCondition)
-		{
-			if (actualCondition == null && expectedCondition == null)
-			{
-				return true;
-			}
-			if (actualCondition == null || expectedCondition == null)
-			{
-				return false;
-			}
-			if (!(actualCondition is T) || !(expectedCondition is T))
-			{
-				return false;
-			}
-
-			if (typeof(T) == typeof(WholeNumberCondition))
-			{
-				return ValidateWholeNumberCondition(actualCondition, expectedCondition);
-			}
-			if (typeof(T) == typeof(TextCondition))
-			{
-				return ValidateTextCondition(actualCondition, expectedCondition);
-			}
-
-			throw new NotImplementedException("Test helper has not implemented specific condition check. Please implement.");
-		}
-
-		private bool ValidateTextCondition(Condition actualCondition, Condition expectedCondition)
-		{
-			var actual = actualCondition as TextCondition;
-			var expected = expectedCondition as TextCondition;
-
-			if (actual == null || expected == null)
-			{
-				return false;
-			}
-			if (actual.Guid != expected.Guid)
-			{
-				return false;
-			}
-			if (actual.Field != expected.Field)
-			{
-				return false;
-			}
-			if (actual.Value != expected.Value)
-			{
-				return false;
-			}
-			if (actual.Operator != expected.Operator)
-			{
-				return false;
-			}
-
-			return true;
-		}
-
-		private bool ValidateWholeNumberCondition(Condition actualCondition, Condition expectedCondition)
-		{
-			var actual = actualCondition as WholeNumberCondition;
-			var expected = expectedCondition as WholeNumberCondition;
-
-			if (actual == null || expected == null)
-			{
-				return false;
-			}
-			if (actual.Guid != expected.Guid)
-			{
-				return false;
-			}
-			if (actual.Field != expected.Field)
-			{
-				return false;
-			}
-			if (actual.Value.Count != expected.Value.Count)
-			{
-				return false;
-			}
-			for (int i = 0; i < actual.Value.Count; i++)
-			{
-				if (actual.Value[i] != expected.Value[i])
-				{
-					return false;
-				}
-			}
-			if (actual.Operator != expected.Operator)
-			{
-				return false;
-			}
-
-			return true;
 		}
 	}
 }
