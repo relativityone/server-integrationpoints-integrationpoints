@@ -104,8 +104,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return SendReadRequest<T>(request, true, executionIdentity);
 		}
 
-		public bool Update(int artifactId, List<FieldRefValuePair> fieldsValues,
-			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+		public bool Update(int artifactId, IList<FieldRefValuePair> fieldsValues, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
 		{
 			var request = new UpdateRequest
 			{
