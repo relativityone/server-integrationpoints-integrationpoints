@@ -403,7 +403,7 @@ def getNewBranchAndVersion(String relativityBranch, String paramRelativityBuildV
 	def DEV_BUILD_TYPE = "DEV"
 	def relativityBranchesToTry = [[relativityBranch, paramRelativityBuildType], [firstFallbackBranch, DEV_BUILD_TYPE], [firstFallbackBranch, GOLD_BUILD_TYPE], ["master", GOLD_BUILD_TYPE]]
 
-	for(branchAndType in relativityBranchesToTry)
+	for (branchAndType in relativityBranchesToTry)
 	{
 		def branch = branchAndType[0]
 	    def buildType = branchAndType[1]
@@ -411,13 +411,13 @@ def getNewBranchAndVersion(String relativityBranch, String paramRelativityBuildV
 		echo "Retrieving latest Relativity '$buildType' build from '$branch' branch"
 
 		def buildVersion = tryGetBuildVersion(branch, paramRelativityBuildVersion, buildType, sessionId)
-		if(buildVersion != null)
+		if (buildVersion != null)
 		{
 			return [buildVersion, branch, buildType]
 		}	
 	}
 
-	error('Failed to retrieve Relativity branch/version')
+	error 'Failed to retrieve Relativity branch/version'
 }
 
 def tryGetBuildVersion(String relativityBranch, String paramRelativityBuildVersion, String paramRelativityBuildType, String sessionId)
