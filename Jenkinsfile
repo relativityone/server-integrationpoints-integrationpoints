@@ -429,6 +429,8 @@ def tryGetBuildVersion(String relativityBranch, String paramRelativityBuildVersi
 	catch (err)
 	{
 		echo "Error occured while getting build version for '$relativityBranch' Relativity branch, error: $err"
+		echo currentBuild.result
+		currentBuild.result = 'SUCCESS'
 		return null
 	}
 }
