@@ -424,11 +424,52 @@ def tryGetBuildVersion(String relativityBranch, String paramRelativityBuildVersi
 {
 	try
 	{
-		return getBuildArtifactsPath(this, "Relativity", relativityBranch, paramRelativityBuildVersion, paramRelativityBuildType, sessionId)
+        if (!isRelativityBranchPresent(relativityBranch))
+        {
+            echo "Branch was not found: $relativityBranch"
+            return null
+        }
+        def latestVersion = paramRelativityBuildVersion ?: getLatestVersion(relativityBranch, paramRelativityBuildType)
+        echo "Checking Relativity artifacts for version: $latestVersion"
+        return checkRelativityArtifacts(relativityBranch, latestVersion, paramRelativityBuildType)
+               ? latestVersion
+               : null
 	}
 	catch (err)
 	{
-		echo "Error occured while getting build version for '$relativityBranch' Relativity branch, error: $err"
+		echo "Error occured while getting build version for: '$relativityBranch' Relativity branch, version '$paramRelativityBuildVersion', and type '$paramRelativityBuildType', error: $err"
 		return null
 	}
+}
+
+def isTrue(s)
+{
+    s.trim() == "True"
+}
+
+def isRelativityBranchPresent(branch)
+{
+    return isTrue(powershell(returnStdout: true, script: "([System.IO.DirectoryInfo]\"//bld-pkgs/Packages/Relativity/$branch\").Exists"))
+}
+
+def getLatestVersion(branch, type)
+{
+    return powershell(returnStdout: true, script: String.format('''
+					$result = (Get-ChildItem -path "\\\\bld-pkgs\\Packages\\Relativity\\%1$s" |
+						? { (Get-ChildItem -Path $_.FullName).Name -like "BuildType_%2$s" } |
+						ForEach-Object { $_.Name } | ForEach-Object { [System.Version] $_ } | sort) | Select-Object -Last 1;
+                    if (!$result) 
+                    {
+                        return ''
+                    }
+                    else
+                    {
+                        return $result.ToString()
+                    }
+					''', branch, type)).trim()
+}
+
+def checkRelativityArtifacts(branch, version, type)
+{
+    return isTrue(powershell(returnStdout: true, script: "([System.IO.FileInfo]\"//bld-pkgs/Packages/Relativity/$branch/$version/MasterPackage/$type $version Relativity.exe\").Exists"))
 }
