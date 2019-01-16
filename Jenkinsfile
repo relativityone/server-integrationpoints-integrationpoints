@@ -416,13 +416,13 @@ def getNewBranchAndVersion(String relativityBranch, String paramRelativityBuildV
 		def buildVersion = tryGetBuildVersion(branch, paramRelativityBuildVersion, buildType, sessionId)
 		if(buildVersion != null)
 		{
+			echo "Build status after reporting: $currentBuild.result"
+			echo "Reverting build status to: $buildResultToRevert"
+			currentBuild.result = buildResultToRevert
+			
 			return [buildVersion, branch, buildType]
 		}	
-	}
-	
-	echo "Build status after reporting: $currentBuild.result"
-	echo "Reverting build status to: $buildResultToRevert"
-	currentBuild.result = buildResultToRevert
+	}	
 
 	error('Failed to retrieve Relativity branch/version')
 }
