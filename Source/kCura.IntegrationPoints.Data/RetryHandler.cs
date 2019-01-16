@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.Data
 			{
 				[_CALLER_NAME_KEY] = callerName
 			};
-			return _retryPolicy.ExecuteAsync(function, contextData);
+			return _retryPolicy.ExecuteAsync(context => function(), contextData);
 		}
 
 		private RetryPolicy CreateRetryPolicy()
