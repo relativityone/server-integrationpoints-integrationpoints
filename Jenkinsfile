@@ -398,15 +398,12 @@ def testingVMsAreRequired()
 
 def getNewBranchAndVersion(String relativityBranch, String paramRelativityBuildVersion, String paramRelativityBuildType, String sessionId)
 {	
-	def buildResultToRevert = currentBuild.result
-	echo "Build status before reporting: $buildResultToRevert"
-
 	def firstFallbackBranch = "release-10.0-larkspur1" // we should change first fallback branch on RIP release branches
 	def GOLD_BUILD_TYPE = "GOLD"
 	def DEV_BUILD_TYPE = "DEV"
 	def relativityBranchesToTry = [[relativityBranch, paramRelativityBuildType], [firstFallbackBranch, DEV_BUILD_TYPE], [firstFallbackBranch, GOLD_BUILD_TYPE], ["master", GOLD_BUILD_TYPE]]
 
-	for(branchAndType in relativityBranchesToTry)
+	for (branchAndType in relativityBranchesToTry)
 	{
 		def branch = branchAndType[0]
 	    def buildType = branchAndType[1]
@@ -414,17 +411,13 @@ def getNewBranchAndVersion(String relativityBranch, String paramRelativityBuildV
 		echo "Retrieving latest Relativity '$buildType' build from '$branch' branch"
 
 		def buildVersion = tryGetBuildVersion(branch, paramRelativityBuildVersion, buildType, sessionId)
-		if(buildVersion != null)
+		if (buildVersion != null)
 		{
-			echo "Build status after reporting: $currentBuild.result"
-			echo "Reverting build status to: $buildResultToRevert"
-			currentBuild.result = buildResultToRevert
-			
 			return [buildVersion, branch, buildType]
 		}	
 	}	
 
-	error('Failed to retrieve Relativity branch/version')
+	error 'Failed to retrieve Relativity branch/version'
 }
 
 def tryGetBuildVersion(String relativityBranch, String paramRelativityBuildVersion, String paramRelativityBuildType, String sessionId)
