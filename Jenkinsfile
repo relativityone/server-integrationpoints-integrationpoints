@@ -166,7 +166,7 @@ timestamps
 								def numberOfSlaves = 1
 								def numberOfExecutors = '1'
 								ScvmmInstance.createNodes(numberOfSlaves, 60, numberOfExecutors)
-								bootstrapDependencies(this, python_packages, relativityBranch, relativityBuildVersion, params.relativityBuildType, session_id)
+								bootstrapDependencies(this, python_packages, relativityBranch, relativityBuildVersion, relativityBuildType, session_id)
 							}
 						)
 					}
