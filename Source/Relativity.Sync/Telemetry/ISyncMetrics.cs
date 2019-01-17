@@ -7,11 +7,11 @@ namespace Relativity.Sync.Telemetry
 	public interface ISyncMetrics
 	{
 		/// <summary>
-		/// 
+		/// Logs a single execution time along with execution status.
 		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="duration"></param>
-		/// <param name="executionStatus"></param>
+		/// <param name="name">Name of the timer.</param>
+		/// <param name="duration">Execution duration.</param>
+		/// <param name="executionStatus">Execution status.</param>
 		void TimedOperation(string name, TimeSpan duration, string executionStatus);
 	}
 }
