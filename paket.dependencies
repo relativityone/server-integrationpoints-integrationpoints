@@ -1,4 +1,4 @@
-framework: net462
+framework: auto-detect
 strategy: min
 
 source https://proget.kcura.corp/nuget/NuGet

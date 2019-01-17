@@ -1,9 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
-using Autofac;
 using Castle.Windsor;
 using kCura.Agent.CustomAttributes;
 using kCura.Apps.Common.Data;
@@ -18,14 +15,13 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Domain.Exceptions;
+using kCura.IntegrationPoints.RelativitySync;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.TimeMachine;
 using Newtonsoft.Json;
 using Relativity.API;
-using Relativity.Sync;
-using IContainer = Autofac.IContainer;
 using ITaskFactory = kCura.IntegrationPoints.Agent.TaskFactory.ITaskFactory;
 
 namespace kCura.IntegrationPoints.Agent
@@ -82,53 +78,50 @@ namespace kCura.IntegrationPoints.Agent
 			{
 				if (ShouldUseRelativitySync(job))
 				{
-					IContainer container = CreateAutofacContainer();
-					ISyncJob syncJob = CreateSyncJob(job, container);
-					syncJob.ExecuteAsync(CancellationToken.None).GetAwaiter().GetResult();
-					return new TaskResult { Status = TaskStatusEnum.Success };
+					return RelativitySyncAdapter.Run(job);
 				}
-
 				return _jobExecutor.ProcessJob(job);
 			}
 		}
 
 		private bool ShouldUseRelativitySync(Job job)
 		{
-			IIntegrationPointService integrationPointService = _agentLevelContainer.Value.Resolve<IIntegrationPointService>();
-			IntegrationPoint integrationPoint = integrationPointService.GetRdo(job.RelatedObjectArtifactID);
-			IProviderTypeService providerTypeService = _agentLevelContainer.Value.Resolve<IProviderTypeService>();
-			ProviderType providerType = providerTypeService.GetProviderType(integrationPoint.SourceProvider ?? 0,
-				integrationPoint.DestinationProvider ?? 0);
-			if (providerType == ProviderType.Relativity)
+			IIntegrationPointService integrationPointService = null;
+			IProviderTypeService providerTypeService = null;
+			try
 			{
-				SourceConfiguration sourceConfiguration =
-					JsonConvert.DeserializeObject<SourceConfiguration>(integrationPoint.SourceConfiguration);
-				ImportSettings destinationConfiguration =
-					JsonConvert.DeserializeObject<ImportSettings>(integrationPoint.SourceConfiguration);
-				if (sourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.SavedSearch &&
-				    !destinationConfiguration.ImageImport &&
-				    !destinationConfiguration.ProductionImport)
+				integrationPointService = _agentLevelContainer.Value.Resolve<IIntegrationPointService>();
+				IntegrationPoint integrationPoint = integrationPointService.GetRdo(job.RelatedObjectArtifactID);
+				providerTypeService = _agentLevelContainer.Value.Resolve<IProviderTypeService>();
+				ProviderType providerType = providerTypeService.GetProviderType(integrationPoint.SourceProvider ?? 0,
+					integrationPoint.DestinationProvider ?? 0);
+				if (providerType == ProviderType.Relativity)
 				{
-					return true;
+					SourceConfiguration sourceConfiguration =
+						JsonConvert.DeserializeObject<SourceConfiguration>(integrationPoint.SourceConfiguration);
+					ImportSettings destinationConfiguration =
+						JsonConvert.DeserializeObject<ImportSettings>(integrationPoint.SourceConfiguration);
+					if (sourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.SavedSearch &&
+					    !destinationConfiguration.ImageImport &&
+					    !destinationConfiguration.ProductionImport)
+					{
+						return true;
+					}
+				}
+
+				return false;
+			}
+			finally
+			{
+				if (integrationPointService != null)
+				{
+					_agentLevelContainer.Value.Release(integrationPointService);
+				}
+				if (providerTypeService != null)
+				{
+					_agentLevelContainer.Value.Release(providerTypeService);
 				}
 			}
-
-			return false;
-		}
-
-		private ISyncJob CreateSyncJob(Job job, IContainer container)
-		{
-			SyncJobFactory jobFactory = new SyncJobFactory();
-			SyncJobParameters parameters = new SyncJobParameters((int) job.JobId, job.WorkspaceID);
-			ISyncJob syncJob = jobFactory.Create(container, parameters);
-			return syncJob;
-		}
-
-		private static IContainer CreateAutofacContainer()
-		{
-			var containerBuilder = new ContainerBuilder();
-			IContainer container = containerBuilder.Build();
-			return container;
 		}
 
 		public ITask GetTask(Job job)
