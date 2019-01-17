@@ -42,25 +42,6 @@ task get_buildhelper -precondition { (-not [System.IO.File]::Exists($buildhelper
     Copy-Item ([System.IO.Path]::Combine($development_scripts_directory, 'kCura.BuildHelper', 'lib', 'kCura.BuildHelper.exe')) $development_scripts_directory
 }
 
-task create_build_script -depends get_buildhelper { 
-    $build_input_file = $inputfile; 
-    if ($skip_tests)
-    {
-        $build_input_file = $inputfile_noTests
-    }
-
-    exec {
-        & $buildhelper_exe @(('/source:' + $root), 
-                             ('/input:' + $build_input_file), 
-                             ('/output:' + $targetsfile), 
-                             ('/graph:' + $dependencygraph), 
-                             ('/dllout:' + $internaldlls), 
-                             ('/vs:14.0'), 
-                             ('/sign:' + ($build_type -ne 'DEV' -and $server_type -ne 'local')), 
-                             ('/signscript:' + $signScript))
-    }                                                                      
-}  
-
 task restore_nuget {
 
     foreach($o in Get-ChildItem $source_directory){
@@ -87,29 +68,27 @@ task configure_paket {
 	} else {
 		Write-Host 'Configuring credentials for ProGet server will be skipped'
 	}
-}                                                                             
-                                                                                
-task build_projects -depends create_build_script, restore_nuget, configure_paket {  
-    exec {     
-        Write-Host 'Using MSBuild' $msbuild_exe 'with targets file' $targetsfile
+}
+
+task build_projects -depends restore_nuget, configure_paket {
+    exec {
+        Write-Host 'Using MSBuild' $msbuild_exe
 
         If(!(test-path $buildlogs_directory))
         {
             New-Item -Path $buildlogs_directory -ItemType Directory -Force
         }
         
-        &  $msbuild_exe @(($targetsfile),   
-                         ('/property:SourceRoot=' + $root),
-                         ('/property:Configuration=' + $build_config),    
-                         ('/property:BuildProjectReferences=false'),    
-                         ('/nodereuse:false'),                         
-                         ('/target:BuildTiers'),
-						 ('/verbosity:normal'),
+        & $msbuild_exe @((Join-Path $source_directory 'kCura.IntegrationPoints.sln'),
+                         ("/property:Configuration=${build_config}"),
+                         ('/nodereuse:false'),
+                         #('/target:BuildTiers'), # TODO: configurable
+                         ('/verbosity:normal'), # TODO: configurable
                          ('/clp:ErrorsOnly'),
                          ('/nologo'),
                          ('/maxcpucount'), 
-                         ('/dfl'),
-                         ('/flp:LogFile=' + $logfile + ';Verbosity=Normal'),
+                         #('/dfl'), # ???
+                         ('/flp:LogFile=' + $logfile + ';Verbosity=Normal'), # TODO: configurable
                          ('/flp2:warningsonly;LogFile=' + $logfilewarn),
                          ('/flp3:errorsonly;LogFile=' + $logfileerror))       
     } 
