@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Runtime.InteropServices;
 using Castle.Windsor;
 using kCura.Agent.CustomAttributes;
@@ -8,6 +7,7 @@ using kCura.IntegrationPoints.Agent.Context;
 using kCura.IntegrationPoints.Agent.Installer;
 using kCura.IntegrationPoints.Agent.Interfaces;
 using kCura.IntegrationPoints.Agent.Logging;
+using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
@@ -22,13 +22,14 @@ using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.TimeMachine;
 using Newtonsoft.Json;
 using Relativity.API;
+using Relativity.Toggles;
 using ITaskFactory = kCura.IntegrationPoints.Agent.TaskFactory.ITaskFactory;
 
 namespace kCura.IntegrationPoints.Agent
 {
 	[Name(_AGENT_NAME)]
 	[Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID)]
-	[Description("An agent that manages Integration Point jobs.")]
+	[System.ComponentModel.Description("An agent that manages Integration Point jobs.")]
 	public class Agent : ScheduleQueueAgentBase, ITaskProvider, IAgentNotifier, IDisposable
 	{
 		private CreateErrorRdo _errorService;
@@ -86,30 +87,62 @@ namespace kCura.IntegrationPoints.Agent
 
 		private bool ShouldUseRelativitySync(Job job)
 		{
-			IIntegrationPointService integrationPointService = null;
+			if (!IsRelativitySyncToggleEnabled())
+			{
+				return false;
+			}
+			IntegrationPoint integrationPoint = GetIntegrationPoint(job.RelatedObjectArtifactID);
+			ProviderType providerType = GetProviderType(integrationPoint.SourceProvider ?? 0, integrationPoint.DestinationProvider ?? 0);
+			if (providerType == ProviderType.Relativity)
+			{
+				SourceConfiguration sourceConfiguration =
+					JsonConvert.DeserializeObject<SourceConfiguration>(integrationPoint.SourceConfiguration);
+				ImportSettings destinationConfiguration =
+					JsonConvert.DeserializeObject<ImportSettings>(integrationPoint.SourceConfiguration);
+
+				if (ConfigurationAllowsUsingRelativitySync(sourceConfiguration, destinationConfiguration))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		private static bool ConfigurationAllowsUsingRelativitySync(SourceConfiguration sourceConfiguration, ImportSettings destinationConfiguration)
+		{
+			return sourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.SavedSearch &&
+			       !destinationConfiguration.ImageImport &&
+			       !destinationConfiguration.ProductionImport;
+		}
+
+		private ProviderType GetProviderType(int sourceProviderId, int destinationProviderId)
+		{
 			IProviderTypeService providerTypeService = null;
 			try
 			{
-				integrationPointService = _agentLevelContainer.Value.Resolve<IIntegrationPointService>();
-				IntegrationPoint integrationPoint = integrationPointService.GetRdo(job.RelatedObjectArtifactID);
 				providerTypeService = _agentLevelContainer.Value.Resolve<IProviderTypeService>();
-				ProviderType providerType = providerTypeService.GetProviderType(integrationPoint.SourceProvider ?? 0,
-					integrationPoint.DestinationProvider ?? 0);
-				if (providerType == ProviderType.Relativity)
+				ProviderType providerType =
+					providerTypeService.GetProviderType(sourceProviderId, destinationProviderId);
+				return providerType;
+			}
+			finally
+			{
+				if (providerTypeService != null)
 				{
-					SourceConfiguration sourceConfiguration =
-						JsonConvert.DeserializeObject<SourceConfiguration>(integrationPoint.SourceConfiguration);
-					ImportSettings destinationConfiguration =
-						JsonConvert.DeserializeObject<ImportSettings>(integrationPoint.SourceConfiguration);
-					if (sourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.SavedSearch &&
-					    !destinationConfiguration.ImageImport &&
-					    !destinationConfiguration.ProductionImport)
-					{
-						return true;
-					}
+					_agentLevelContainer.Value.Release(providerTypeService);
 				}
+			}
+		}
 
-				return false;
+		private IntegrationPoint GetIntegrationPoint(int integrationPointId)
+		{
+			IIntegrationPointService integrationPointService = null;
+
+			try
+			{
+				integrationPointService = _agentLevelContainer.Value.Resolve<IIntegrationPointService>();
+				return integrationPointService.GetRdo(integrationPointId);
 			}
 			finally
 			{
@@ -117,9 +150,22 @@ namespace kCura.IntegrationPoints.Agent
 				{
 					_agentLevelContainer.Value.Release(integrationPointService);
 				}
-				if (providerTypeService != null)
+			}
+		}
+
+		private bool IsRelativitySyncToggleEnabled()
+		{
+			IToggleProvider toggleProvider = null;
+			try
+			{
+				toggleProvider = _agentLevelContainer.Value.Resolve<IToggleProvider>();
+				return toggleProvider.IsEnabled<EnableSyncToggle>();
+			}
+			finally
+			{
+				if (toggleProvider != null)
 				{
-					_agentLevelContainer.Value.Release(providerTypeService);
+					_agentLevelContainer.Value.Release(toggleProvider);
 				}
 			}
 		}
