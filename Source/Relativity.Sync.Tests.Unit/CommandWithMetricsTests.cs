@@ -51,11 +51,13 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public async Task ItShouldReportValidIdentifier()
 		{
+			const string expectedName = nameof(IConfiguration);
+
 			// ACT
 			await _command.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			_metrics.Verify(x => x.TimedOperation(nameof(IConfiguration), It.IsAny<TimeSpan>(), It.IsAny<string>()), Times.Once);
+			_metrics.Verify(x => x.TimedOperation(expectedName, It.IsAny<TimeSpan>(), It.IsAny<string>()), Times.Once);
 		}
 
 		[Test]
