@@ -9,10 +9,12 @@ namespace kCura.IntegrationPoints.RelativitySync
 	{
 		public static TaskResult Run(Job job)
 		{
-			IContainer container = InitializeAutofacContainer();
-			ISyncJob syncJob = CreateSyncJob(job, container);
-			syncJob.ExecuteAsync(CancellationToken.None).GetAwaiter().GetResult();
-			return new TaskResult { Status = TaskStatusEnum.Success };
+			using (IContainer container = InitializeAutofacContainer())
+			{
+				ISyncJob syncJob = CreateSyncJob(job, container);
+				syncJob.ExecuteAsync(CancellationToken.None).GetAwaiter().GetResult();
+				return new TaskResult { Status = TaskStatusEnum.Success };
+			}
 		}
 		
 		private static ISyncJob CreateSyncJob(Job job, IContainer container)
