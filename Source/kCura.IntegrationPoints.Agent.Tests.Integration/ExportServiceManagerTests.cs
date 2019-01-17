@@ -81,13 +81,20 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			var serializer = Container.Resolve<ISerializer>();
 			_jobService = Container.Resolve<IJobService>();
 			IScheduleRuleFactory scheduleRuleFactory = new DefaultScheduleRuleFactory();
-			var jobHistoryService = Container.Resolve<IJobHistoryService>();
-			var jobHistoryErrorService = Container.Resolve<IJobHistoryErrorService>();
-			var jobStatisticsService = Container.Resolve<JobStatisticsService>();
-			var agentValidator = Container.Resolve<IAgentValidator>();
-			var jobStatusUpdater = Container.Resolve<IJobStatusUpdater>();
-			var logger = Container.Resolve<IAPILog>();
-			var jobHistoryUpdater = new JobHistoryBatchUpdateStatus(jobStatusUpdater, jobHistoryService, _jobService, serializer, logger);
+			IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
+			IJobHistoryErrorService jobHistoryErrorService = Container.Resolve<IJobHistoryErrorService>();
+			JobStatisticsService jobStatisticsService = Container.Resolve<JobStatisticsService>();
+			IAgentValidator agentValidator = Container.Resolve<IAgentValidator>();
+			IJobStatusUpdater jobStatusUpdater = Container.Resolve<IJobStatusUpdater>();
+			IAPILog logger = Container.Resolve<IAPILog>();
+			IDateTimeHelper dateTimeHelper = Container.Resolve<IDateTimeHelper>();
+			var jobHistoryUpdater = new JobHistoryBatchUpdateStatus(
+				jobStatusUpdater, 
+				jobHistoryService, 
+				_jobService, 
+				serializer, 
+				logger,
+				dateTimeHelper);
 			
 
 			_exportManager = new ExportServiceManager(Helper, helperFactory,
@@ -105,8 +112,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				jobHistoryErrorService,
 				jobStatisticsService,
 				null,
-				agentValidator
-				);
+				agentValidator);
 
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
 			_sourceWorkspaceDto = Workspace.GetWorkspaceDto(SourceWorkspaceArtifactId);

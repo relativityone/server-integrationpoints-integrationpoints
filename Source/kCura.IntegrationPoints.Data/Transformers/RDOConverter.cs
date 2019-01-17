@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.Data.Transformers
 			return rdo;
 		}
 
-		// TODO refactor
+		// TODO refactor 
 		private static object ConvertFieldValueToExpectedFormat(FieldValuePair item, Type propeType)
 		{
 			object valueToSet = item?.Value;
@@ -73,13 +73,14 @@ namespace kCura.IntegrationPoints.Data.Transformers
 				var itemValues = (IEnumerable<Choice>)item.Value;
 				valueToSet = itemValues.Select(ConvertChoice).ToArray();
 			}
-			else if (propeType == typeof(int) || propeType == typeof(int?)) // TODO logging
+			else if (propeType == typeof(int) || propeType == typeof(int?)) // TODO logging 
 			{
 				if (item?.Value != null)
 				{
 					valueToSet = Convert.ToInt32(item.Value);
 				}
-			} else if (propeType == typeof(long) || propeType == typeof(long?)) // TODO logging
+			}
+			else if (propeType == typeof(long) || propeType == typeof(long?)) // TODO logging 
 			{
 				if (item?.Value != null)
 				{
@@ -150,7 +151,7 @@ namespace kCura.IntegrationPoints.Data.Transformers
 					output = new FieldRefValuePair
 					{
 						Value = ConvertRdoFieldValueToObjectManagerFieldValue(prop.GetValue(rdo), attributes),
-						Field = new FieldRef { Guid = attributes.FieldGuid }
+						Field = new FieldRef { Guid = attributes.FieldGuid, Name = attributes.FieldName }
 					};
 				}
 
@@ -161,7 +162,7 @@ namespace kCura.IntegrationPoints.Data.Transformers
 			}
 		}
 
-		// TODO - refactor
+		// TODO - refactor 
 		private static object ConvertRdoFieldValueToObjectManagerFieldValue(object rawValue, DynamicFieldAttribute attributes)
 		{
 			if (rawValue == null)
@@ -206,7 +207,7 @@ namespace kCura.IntegrationPoints.Data.Transformers
 			return ConvertPropertiesToFields(rdo.GetType(), bindingAttr);
 		}
 
-		// TODO move to proper class
+		// TODO move to proper class 
 		public static IEnumerable<FieldRef> ConvertPropertiesToFields<T>() where T : BaseRdo
 		{
 			BindingFlags bindingAttr = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance;
@@ -217,14 +218,17 @@ namespace kCura.IntegrationPoints.Data.Transformers
 		{
 			foreach (var property in type.GetProperties(bindingAttr))
 			{
-				Guid? fieldGuid = property?.GetCustomAttribute<DynamicFieldAttribute>()?.FieldGuid;
-				if (fieldGuid.HasValue)
+				DynamicFieldAttribute attribute = property.GetCustomAttribute<DynamicFieldAttribute>();
+				if (attribute == null)
 				{
-					yield return new FieldRef
-					{
-						Guid = fieldGuid.Value
-					};
+					continue;
 				}
+
+				yield return new FieldRef
+				{
+					Guid = attribute.FieldGuid,
+					Name = attribute.FieldName
+				};
 			}
 		}
 
@@ -248,6 +252,7 @@ namespace kCura.IntegrationPoints.Data.Transformers
 
 			return fields;
 		}
+
 		public static IEnumerable<FieldRef> ToFieldList(this BaseRdo rdo, BindingFlags bindingAttr = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance)
 		{
 			IEnumerable<FieldRef> fields = ConvertPropertiesToFields(rdo, bindingAttr);
