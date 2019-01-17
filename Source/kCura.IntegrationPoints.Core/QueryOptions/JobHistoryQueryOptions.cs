@@ -5,7 +5,7 @@ using kCura.IntegrationPoints.Data.Transformers;
 
 namespace kCura.IntegrationPoints.Core.QueryOptions
 {
-	public class JobHistoryQueryOptions : IQueryOptions
+	public class JobHistoryQueryOptions
 	{
 		public Guid[] FieldGuids { get; }
 

@@ -1,20 +1,19 @@
 ﻿using System;
-using System.Drawing;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.QueryOptions;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using Moq;
+using kCura.Relativity.Client;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
+using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Services.JobHistory
 {
@@ -22,12 +21,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services.JobHistory
 	public class JobHistoryServiceTests : RelativityProviderTemplate
 	{
 		private JobHistoryService _sut;
-		private Data.JobHistory _jobHistory;
-		private Guid batchInstance;
-
-		private readonly Guid _nameFieldGuid = new Guid("07061466-5fab-4581-979c-c801e8207370");
-		private readonly Guid _jobIdFieldGuid = new Guid("77d797ef-96c9-4b47-9ef8-33f498b5af0d");
-		private readonly Guid _itemsTransferredFieldGuid = new Guid("70680399-c8ea-4b12-b711-e9ecbc53cb1c");
+		private int _jobHistoryArtifactId;
+		private Guid _batchInstance;
 
 		public JobHistoryServiceTests() 
 			: base(nameof(JobHistoryServiceTests), targetWorkspaceName: null)
@@ -76,91 +71,112 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services.JobHistory
 
 			//Create an Integration Point and assign a Job History
 			IntegrationPointModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
-			batchInstance = Guid.NewGuid();
-			_jobHistory = CreateJobHistoryOnIntegrationPoint(
+			_batchInstance = Guid.NewGuid();
+
+			Data.JobHistory jobHistory = CreateJobHistoryOnIntegrationPoint(
 				integrationPointCreated.ArtifactID,
-				batchInstance,
+				_batchInstance,
 				Data.JobTypeChoices.JobHistoryRun,
 				Data.JobStatusChoices.JobHistoryCompletedWithErrors,
 				jobEnded: true);
+
+			_jobHistoryArtifactId = jobHistory.ArtifactId;
 		}
 
 		[Test]
-		public void GetRdo_ShouldReturnLimitedRdoBasedOnTheQueryOptionsFields()
+		public void GetRdoWithoutDocuments_ShouldReturnRdoWithoutDocumentsField()
 		{
 			//arrange
-			var queryOptionsMock = new Mock<IQueryOptions>();
-			queryOptionsMock.Setup(x => x.FieldGuids).Returns(new[]
-			{
-				_nameFieldGuid,
-				_jobIdFieldGuid
-			});
+			Data.JobHistory jobHistoryWithAllFieldsFetched = _sut.GetRdo(_batchInstance);
 
 			//act
-			Data.JobHistory result = _sut.GetRdo(batchInstance, queryOptionsMock.Object);
+			Data.JobHistory result = _sut.GetRdoWithoutDocuments(_batchInstance);
 
 			//assert
-			result.ArtifactId.Should().Be(_jobHistory.ArtifactId);
-			result.Name.Should().Be(_jobHistory.Name);
-			result.JobID.Should().Be(_jobHistory.JobID);
+			Action getDocuments = () =>
+			{
+				int[] docs = result.Documents;
+			};
+			getDocuments.ShouldThrow<FieldNotFoundException>();
 
-			result.Documents.Should().BeNull();
-			result.IntegrationPoint.Should().BeNull();
-			result.JobStatus.Should().BeNull();
-			result.ItemsTransferred.Should().BeNull();
-			result.ItemsWithErrors.Should().BeNull();
-			result.StartTimeUTC.Should().BeNull();
-			result.EndTimeUTC.Should().BeNull();
-			result.BatchInstance.Should().BeNull();
-			result.DestinationWorkspace.Should().BeNull();
-			result.TotalItems.Should().BeNull();
-			result.DestinationWorkspaceInformation.Should().BeNull();
-			result.DestinationInstance.Should().BeNull();
-			result.FilesSize.Should().BeNull();
-			result.Overwrite.Should().BeNull();
+			Action getOtherFields = () =>
+			{
+				int artifactId = result.ArtifactId;
+				string name = result.Name;
+				string jobId = result.JobID;
+				int[] integrationPoint = result.IntegrationPoint;
+				Choice jobStatus = result.JobStatus;
+				int? itemsTransferred = result.ItemsTransferred;
+				int? itemsWithErrors = result.ItemsWithErrors;
+				DateTime? startTimeUtc = result.StartTimeUTC;
+				DateTime? endTimeUtc = result.EndTimeUTC;
+				string bInstance = result.BatchInstance;
+				string destinationWorkspace = result.DestinationWorkspace;
+				long? totalItems = result.TotalItems;
+				int[] destinationWorkspaceInfo = result.DestinationWorkspaceInformation;
+				string destinationInstance = result.DestinationInstance;
+				string fileSize = result.FilesSize;
+				string overwrite = result.Overwrite;
+			};
+			getOtherFields.ShouldNotThrow<FieldNotFoundException>();
+
+			result.ArtifactId.Should().Be(jobHistoryWithAllFieldsFetched.ArtifactId);
+			result.Name.Should().Be(jobHistoryWithAllFieldsFetched.Name);
+			result.JobID.Should().Be(jobHistoryWithAllFieldsFetched.JobID);
+			result.IntegrationPoint.ShouldBeEquivalentTo(jobHistoryWithAllFieldsFetched.IntegrationPoint);
+			result.JobStatus.ArtifactID.Should().Be(jobHistoryWithAllFieldsFetched.JobStatus.ArtifactID);
+			result.JobStatus.Name.Should().Be(jobHistoryWithAllFieldsFetched.JobStatus.Name);
+			result.ItemsTransferred.Should().Be(jobHistoryWithAllFieldsFetched.ItemsTransferred);
+			result.ItemsWithErrors.Should().Be(jobHistoryWithAllFieldsFetched.ItemsWithErrors);
+			result.StartTimeUTC.Should().Be(jobHistoryWithAllFieldsFetched.StartTimeUTC);
+			result.EndTimeUTC.Should().Be(jobHistoryWithAllFieldsFetched.EndTimeUTC);
+			result.BatchInstance.Should().Be(jobHistoryWithAllFieldsFetched.BatchInstance);
+			result.DestinationWorkspace.Should().Be(jobHistoryWithAllFieldsFetched.DestinationWorkspace);
+			result.TotalItems.Should().Be(jobHistoryWithAllFieldsFetched.TotalItems);
+			result.DestinationWorkspaceInformation.ShouldBeEquivalentTo(jobHistoryWithAllFieldsFetched.DestinationWorkspaceInformation);
+			result.DestinationInstance.Should().Be(jobHistoryWithAllFieldsFetched.DestinationInstance);
+			result.FilesSize.Should().Be(jobHistoryWithAllFieldsFetched.FilesSize);
+			result.Overwrite.Should().Be(jobHistoryWithAllFieldsFetched.Overwrite);
 		}
 
 		[Test]
-		public void UpdateRdo_ShouldUpdateOnlyLimitedRdoBasedOnTheQueryOptionsFields()
+		public void UpdateRdoWithoutDocuments_ShouldUpdateRdoWithoutDocumentsField()
 		{
 			//arrange
-			var queryOptionsMock = new Mock<IQueryOptions>();
-			queryOptionsMock.Setup(x => x.FieldGuids).Returns(new[]
-			{
-				_nameFieldGuid,
-				_itemsTransferredFieldGuid
-			});
-			
+			Data.JobHistory oldJobHistory = _sut.GetRdo(_batchInstance);
+
 			var jobHistoryToUpdate = new Data.JobHistory
 			{
-				ArtifactId = _jobHistory.ArtifactId,
+				ArtifactId = _jobHistoryArtifactId,
 				Name = "New Name 1234",
-				ItemsTransferred = 103
+				Documents = new []{ 1, 2, 3, 4}
 			};
 
 			//act
-			_sut.UpdateRdo(jobHistoryToUpdate, queryOptionsMock.Object);
-			Data.JobHistory updatedJobHistory = _sut.GetRdo(batchInstance);
+			_sut.UpdateRdoWithoutDocuments(jobHistoryToUpdate);
 
 			//assert
+			Data.JobHistory updatedJobHistory = _sut.GetRdo(_batchInstance);
+
+			updatedJobHistory.Documents.Should().BeEquivalentTo(oldJobHistory.Documents);
+
 			updatedJobHistory.ArtifactId.Should().Be(jobHistoryToUpdate.ArtifactId);
 			updatedJobHistory.Name.Should().Be(jobHistoryToUpdate.Name);
-			updatedJobHistory.ItemsTransferred.Should().Be(jobHistoryToUpdate.ItemsTransferred);
-
-			updatedJobHistory.JobID.Should().Be(jobHistoryToUpdate.JobID);
-			updatedJobHistory.Documents.Should().BeEquivalentTo(jobHistoryToUpdate.Documents);
-			updatedJobHistory.IntegrationPoint.Should().BeEquivalentTo(jobHistoryToUpdate.IntegrationPoint);
-			updatedJobHistory.JobStatus.Should().Be(jobHistoryToUpdate.JobStatus);
-			updatedJobHistory.ItemsWithErrors.Should().Be(jobHistoryToUpdate.ItemsWithErrors);
-			updatedJobHistory.StartTimeUTC.Should().Be(jobHistoryToUpdate.StartTimeUTC);
-			updatedJobHistory.EndTimeUTC.Should().Be(jobHistoryToUpdate.EndTimeUTC);
-			updatedJobHistory.BatchInstance.Should().Be(jobHistoryToUpdate.BatchInstance);
-			updatedJobHistory.DestinationWorkspace.Should().Be(jobHistoryToUpdate.DestinationInstance);
-			updatedJobHistory.TotalItems.Should().Be(jobHistoryToUpdate.TotalItems);
-			updatedJobHistory.DestinationWorkspaceInformation.Should().BeEquivalentTo(jobHistoryToUpdate.DestinationWorkspaceInformation);
-			updatedJobHistory.DestinationInstance.Should().Be(jobHistoryToUpdate.DestinationInstance);
-			updatedJobHistory.FilesSize.Should().Be(jobHistoryToUpdate.FilesSize);
-			updatedJobHistory.Overwrite.Should().Be(jobHistoryToUpdate.Overwrite);
+			updatedJobHistory.ItemsTransferred.Should().Be(oldJobHistory.ItemsTransferred);
+			updatedJobHistory.JobID.Should().Be(oldJobHistory.JobID);
+			updatedJobHistory.IntegrationPoint.Should().BeEquivalentTo(oldJobHistory.IntegrationPoint);
+			updatedJobHistory.JobStatus.ArtifactID.Should().Be(oldJobHistory.JobStatus.ArtifactID);
+			updatedJobHistory.JobStatus.Name.Should().Be(oldJobHistory.JobStatus.Name);
+			updatedJobHistory.ItemsWithErrors.Should().Be(oldJobHistory.ItemsWithErrors);
+			updatedJobHistory.StartTimeUTC.Should().Be(oldJobHistory.StartTimeUTC);
+			updatedJobHistory.EndTimeUTC.Should().Be(oldJobHistory.EndTimeUTC);
+			updatedJobHistory.BatchInstance.Should().Be(oldJobHistory.BatchInstance);
+			updatedJobHistory.DestinationWorkspace.Should().Be(oldJobHistory.DestinationWorkspace);
+			updatedJobHistory.TotalItems.Should().Be(oldJobHistory.TotalItems);
+			updatedJobHistory.DestinationWorkspaceInformation.Should().BeEquivalentTo(oldJobHistory.DestinationWorkspaceInformation);
+			updatedJobHistory.DestinationInstance.Should().Be(oldJobHistory.DestinationInstance);
+			updatedJobHistory.FilesSize.Should().Be(oldJobHistory.FilesSize);
+			updatedJobHistory.Overwrite.Should().Be(oldJobHistory.Overwrite);
 		}
 	}
 }

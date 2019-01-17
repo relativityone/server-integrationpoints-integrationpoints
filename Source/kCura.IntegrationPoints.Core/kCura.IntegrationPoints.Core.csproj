@@ -74,7 +74,6 @@
     <Compile Include="ContextContainer.cs" />
     <Compile Include="FederatedInstanceKeplerHandler.cs" />
     <Compile Include="FederatedInstanceRsapiHandler.cs" />
-    <Compile Include="QueryOptions\IQueryOptions.cs" />
     <Compile Include="QueryOptions\JobHistoryQueryOptions.cs" />
     <Compile Include="Helpers\Implementations\DateTimeUtcHelper.cs" />
     <Compile Include="Helpers\JSONHelper.cs" />
