@@ -1,2 +1,3 @@
-Autofac
-Relativity.Sync
+group Sync
+	Relativity.Sync
+	Autofac

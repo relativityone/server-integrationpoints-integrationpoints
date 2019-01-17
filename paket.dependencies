@@ -1,4 +1,4 @@
-framework: auto-detect
+framework: net462
 strategy: min
 
 source https://proget.kcura.corp/nuget/NuGet
@@ -15,7 +15,6 @@ nuget Relativity.Data 10.2.8.1-DEV
 nuget Relativity.ImportExport 10.2.8.1-DEV
 nuget RelativityCore 10.2.8.1-DEV
 nuget Relativity.Services.Interfaces 10.2.8.1-DEV
-nuget Relativity.Sync 0.0.0.alpha-98
 
 //Other Relativity packages
 nuget Relativity.DataTransfer.MessageService ~> 10.2.0
@@ -58,7 +57,6 @@ nuget DotNetSeleniumExtras.PageObjects 3.11.0
 nuget DotNetSeleniumExtras.WaitHelpers 3.11.0
 nuget Selenium.WebDriver.ChromeDriver 2.45
 nuget Selenium.WebDriver.GeckoDriver 0.23.0.3
-nuget Autofac ~> 4.8.1
 
 //Analyzers
 nuget CSharpGuidelineAnalyzer 1.0.3.0
@@ -73,3 +71,10 @@ group TestPackages
 	nuget Serilog 1.5.14	
 	nuget Serilog.Sinks.Seq 1.5.36
 	nuget CSharpGuidelineAnalyzer 2.3.0.0
+	
+group Sync
+	framework: auto-detect
+	strategy: max
+	source https://proget.kcura.corp/nuget/NuGet
+	nuget Relativity.Sync 0.0.0.alpha-98
+	nuget Autofac ~>  4.8.1
