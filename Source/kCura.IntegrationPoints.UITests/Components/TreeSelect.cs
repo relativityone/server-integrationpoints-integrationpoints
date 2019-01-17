@@ -83,7 +83,7 @@ namespace kCura.IntegrationPoints.UITests.Components
 				}
 				foreach (var closedNode in closedNodes)
 				{
-					IWebElement button = closedNode.FindElement(By.TagName("i"));
+					IWebElement button = closedNode.FindElementEx(By.TagName("i"));
 					button.ScrollIntoView();
 					button.ClickEx();
 				}

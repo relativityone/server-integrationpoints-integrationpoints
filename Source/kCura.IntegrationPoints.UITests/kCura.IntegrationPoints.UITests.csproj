@@ -111,6 +111,7 @@
     <Compile Include="Driver\ScreenshotSaver.cs" />
     <Compile Include="Logging\LoggerFactory.cs" />
     <Compile Include="Logging\LoggerNameEnricher.cs" />
+    <Compile Include="NUnitExtensions\RetryOnErrorAttribute.cs" />
     <Compile Include="Pages\ExportEntityToFileSecondPage.cs" />
     <Compile Include="Pages\ExportToFileThirdPage.cs" />
     <Compile Include="Pages\ExportToFileThirdPageExportDetails.cs" />
@@ -613,6 +614,22 @@
         </Reference>
         <Reference Include="Relativity.OAuth2Client.Interfaces">
           <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Productions.Services.Interfaces">
+          <HintPath>..\..\packages\Relativity.Productions.Services.Interfaces\lib\net45\Relativity.Productions.Services.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.Productions.Services.Interfaces.Private">
+          <HintPath>..\..\packages\Relativity.Productions.Services.Interfaces\lib\net45\Relativity.Productions.Services.Interfaces.Private.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

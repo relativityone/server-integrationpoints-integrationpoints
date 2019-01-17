@@ -19,7 +19,8 @@ properties([
         booleanParam(defaultValue: false, description: 'Check if you want to skip Integrations Tests stage.', name: 'skipIntegrationTests'),
         booleanParam(defaultValue: true, description: 'Check if you want to skip UI Tests stage.', name: 'skipUITests'),
         string(defaultValue: 'cat==SmokeTest', description: 'Set filter for integration and UI tests', name: 'testsFilter'),
-        string(defaultValue: '', description: 'Set filter for nightly integration and UI tests', name: 'nightlyTestsFilter')
+        string(defaultValue: '', description: 'Set filter for nightly integration and UI tests', name: 'nightlyTestsFilter'),
+        booleanParam(defaultValue: true, description: 'Enable SonarQube analysis for develop branch.', name: 'enableSonarAnalysis')
     ])
 ])
 
@@ -90,7 +91,7 @@ timestamps
 				stage ('Build')
 				{
 					def sonarParameter = 
-						(env.BRANCH_NAME == "develop")
+						(params.enableSonarAnalysis && env.BRANCH_NAME == "develop")
 						? "-sonarqube"
 						: ""
 					powershell "./build.ps1 release $sonarParameter"
@@ -217,6 +218,11 @@ timestamps
 						numberOfPassedTests = getTestsStatistic(integration_tests_results_file_path, 'passed')
 						numberOfSkippedTests = getTestsStatistic(integration_tests_results_file_path, 'skipped')
 						archiveTestsArtifacts(params.skipUITests, ui_tests_results_file_path, ui_tests_html_report, ui_tests_report_task)
+						if (!params.skipUITests)
+						{
+							archiveArtifacts artifacts: "lib/UnitTests/app.jeeves-ci.config", fingerprint: true
+							archiveArtifacts artifacts: "lib/UnitTests/*.png", fingerprint: true
+						}
 					}
 				}
 			}

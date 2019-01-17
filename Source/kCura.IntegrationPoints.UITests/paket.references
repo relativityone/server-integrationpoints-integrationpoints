@@ -13,6 +13,7 @@ Selenium.Support
 Selenium.WebDriver.ChromeDriver
 Selenium.WebDriver.GeckoDriver
 Relativity.Services.Interfaces
+Relativity.Productions.Services.Interfaces
 kCura.Relativity.Client
 Relativity.Telemetry.APM
 Polly

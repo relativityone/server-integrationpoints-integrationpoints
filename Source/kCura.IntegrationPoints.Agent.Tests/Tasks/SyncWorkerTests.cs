@@ -59,6 +59,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IContextContainer _contextContainer;
 		private IJobHistoryManager _jobHistoryManager;
 		private IProviderTypeService _providerTypeService;
+		private JobStatisticsService _statisticsService;
 
 		[SetUp]
 		public override void SetUp()
@@ -72,6 +73,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_jobHistoryErrorService = Substitute.For<IJobHistoryErrorService>();
 			_jobManager = Substitute.For<IJobManager>();
 			_batchStatus = Substitute.For<IBatchStatus>();
+			_statisticsService = Substitute.For<JobStatisticsService>();
 			_managerFactory = Substitute.For<IManagerFactory>();
 			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			_jobService = Substitute.For<IJobService>();
@@ -85,7 +87,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			_instance = new SyncWorker(_caseServiceContext, _helper, _dataProviderFactory, _serializer, 
 				_appDomainRdoSynchronizerFactory, _jobHistoryService, _jobHistoryErrorService, _jobManager, new IBatchStatus[] { _batchStatus },
-				null, _managerFactory, _contextContainerFactory, _jobService, _providerTypeService);
+				_statisticsService, _managerFactory, _contextContainerFactory, _jobService, _providerTypeService);
 
 			_job = JobHelper.GetJob(1, null, null, 1, 1, 111, 222, TaskType.SyncEntityManagerWorker, new DateTime(), null, "detail",
 				0, new DateTime(), 1, null, null);

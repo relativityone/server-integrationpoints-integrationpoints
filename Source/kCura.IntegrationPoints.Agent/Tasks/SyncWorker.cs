@@ -13,7 +13,6 @@ using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -186,11 +185,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				LogExecuteTaskStart(job);
 				
 				SetIntegrationPoint(job);
-				
-				SourceConfiguration sourceConfiguration = Serializer.Deserialize<SourceConfiguration>(IntegrationPoint.SourceConfiguration);
-				ImportSettings importSettings = Serializer.Deserialize<ImportSettings>(IntegrationPoint.DestinationConfiguration);
 
-				_statisticsService?.SetIntegrationPointConfiguration(importSettings, sourceConfiguration);
+				DeserializeAndSetupIntegrationPointsConfigurationForStatisticsService(IntegrationPoint);
+
 				List<string> entryIDs = GetEntryIDs(job);
 				SetJobHistory();
 
@@ -349,7 +346,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void SetupStatisticsSubscriptions(IDataSynchronizer synchronizer, Job job)
 		{
-			_statisticsService?.Subscribe(synchronizer as IBatchReporter, job);
+				_statisticsService.Subscribe(synchronizer as IBatchReporter, job);
 		}
 
 		private void SetupSubscriptions(IDataSynchronizer synchronizer, Job job)
@@ -376,7 +373,59 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 		}
 
+		private void DeserializeAndSetupIntegrationPointsConfigurationForStatisticsService(IntegrationPoint ip)
+		{
+			SourceConfiguration sourceConfiguration = null;
+			ImportSettings importSettings = null;
+			try
+			{
+				sourceConfiguration = Serializer.Deserialize<SourceConfiguration>(ip?.SourceConfiguration);
+				importSettings = Serializer.Deserialize<ImportSettings>(ip?.DestinationConfiguration);
+			}
+			catch (Exception ex)
+			{
+				LogDeserializeIntegrationPointsConfigurationForStatisticsServiceWarning(ip, ex);
+			}
+
+			SetupIntegrationPointsConfigurationForStatisticsService(sourceConfiguration, importSettings);
+		}
+
+		private void SetupIntegrationPointsConfigurationForStatisticsService(SourceConfiguration sourceConfiguration, ImportSettings importSettings)
+		{
+			if (sourceConfiguration == null || importSettings == null)
+			{
+				LogSkippingSetupIntegrationPointsConfigurationForStatisticsServiceWarning();
+			}
+
+			try
+			{
+				_statisticsService.SetIntegrationPointConfiguration(importSettings, sourceConfiguration);
+			}
+			catch (Exception ex)
+			{
+				LogSetupIntegrationPointsConfigurationForStatisticsServiceError(sourceConfiguration, importSettings, ex);
+				throw;
+			}
+		}
+
 		#region Logging
+		private void LogSkippingSetupIntegrationPointsConfigurationForStatisticsServiceWarning()
+		{
+			_logger.LogWarning("Skipping setup of Integration Point configuration for statistics service.");
+		}
+		private void LogSetupIntegrationPointsConfigurationForStatisticsServiceError(SourceConfiguration sourceConfiguration, ImportSettings importSettings, Exception ex)
+		{
+			string msg =
+				"Failed to set up integration point configuration for statistics service. SourceConfiguration: {sourceConfiguration}. ImportSettings: {importSettings}";
+			_logger.LogError(ex, msg, sourceConfiguration, importSettings);
+		}
+
+		private void LogDeserializeIntegrationPointsConfigurationForStatisticsServiceWarning(IntegrationPoint ip, Exception ex)
+		{
+			string msg =
+				"Failed to deserialize integration point configuration for statistics service. SourceConfiguration: {sourceConfiguration}. DestinationConfiguration: {destinationConfiguration}";
+			_logger.LogWarning(ex, msg, ip?.SourceConfiguration, ip?.DestinationConfiguration);
+		}
 
 		private void LogExecutingTaskError(Job job, Exception ex)
 		{

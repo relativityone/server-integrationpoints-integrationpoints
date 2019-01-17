@@ -2,14 +2,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net462</TargetFramework>
-	  <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
-	  <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-	  <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-	  <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-	  <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
-	  <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
   </PropertyGroup>
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
   <ItemGroup>
     <Compile Include="..\..\Version\AssemblyInfo.cs" Link="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -19,4 +18,5 @@
   <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
