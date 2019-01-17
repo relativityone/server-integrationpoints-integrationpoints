@@ -3,6 +3,7 @@
 namespace Relativity.Sync.Telemetry
 {
 	/// <summary>
+	/// Provides methods for logging metrics.
 	/// </summary>
 	public interface ISyncMetrics
 	{
