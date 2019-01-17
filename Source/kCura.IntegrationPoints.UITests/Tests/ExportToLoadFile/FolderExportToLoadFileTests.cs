@@ -4,6 +4,7 @@ using kCura.IntegrationPoint.Tests.Core.Models.Constants.Shared;
 using kCura.IntegrationPoint.Tests.Core.Models.Shared;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.UITests.Common;
+using kCura.IntegrationPoints.UITests.NUnitExtensions;
 using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoints.UITests.Validation;
 using NUnit.Framework;
@@ -24,7 +25,9 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			_integrationPointsAction = new IntegrationPointsAction(Driver, Context);
 		}
 
-		[Test, Order(1)]
+		[Test]
+		[RetryOnError]
+		[Order(1)]
 		public void FolderExportToLoadFile_TC_ELF_DIR_1()
 		{
 			// Arrange
@@ -89,7 +92,9 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
 		}
 
-		[Test, Order(2)]
+		[Test]
+		[RetryOnError]
+		[Order(2)]
 		public void FolderExportToLoadFile_TC_ELF_DIR_2()
 		{
 			// Arrange

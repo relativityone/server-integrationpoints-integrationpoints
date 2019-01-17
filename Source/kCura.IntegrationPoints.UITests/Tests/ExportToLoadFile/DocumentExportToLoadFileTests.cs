@@ -1,10 +1,10 @@
-﻿using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoint.Tests.Core.Models;
+﻿using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Models.Constants.ExportToLoadFile;
 using kCura.IntegrationPoint.Tests.Core.Models.Constants.Shared;
 using kCura.IntegrationPoint.Tests.Core.Models.Shared;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.UITests.Common;
+using kCura.IntegrationPoints.UITests.NUnitExtensions;
 using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoints.UITests.Validation;
 using NUnit.Framework;
@@ -25,7 +25,9 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			_integrationPointsAction = new IntegrationPointsAction(Driver, Context);
 		}
 
-		[Test, Order(1)]
+		[Test]
+		[RetryOnError]
+		[Order(1)]
 		[Category(TestCategory.SMOKE)]
 		public void DocumentExportToLoadFile_TC_ELF_DOC_1()
 		{
@@ -87,7 +89,9 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
 		}
 		
-		[Test, Order(2)]
+		[Test]
+		[RetryOnError]
+		[Order(2)]
 		public void DocumentExportToLoadFile_TC_ELF_DOC_3()
 		{
 			// Arrange
@@ -131,7 +135,9 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
 		}
 
-		[Test, Order(3)]
+		[Test]
+		[RetryOnError]
+		[Order(3)]
 		public void DocumentExportToLoadFile_TC_ELF_DOC_5()
 		{
 			// Arrange
@@ -173,7 +179,9 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
 		}
 
-		[Test, Order(4)]
+		[Test]
+		[RetryOnError]
+		[Order(4)]
 		public void DocumentExportToLoadFile_TC_ELF_DOC_2()
 		{
 			// Arrange
@@ -233,7 +241,9 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
 		}
 
-		[Test, Order(5)]
+		[Test]
+		[RetryOnError]
+		[Order(5)]
 		public void DocumentExportToLoadFile_TC_ELF_DOC_4()
 		{
 			// Arrange

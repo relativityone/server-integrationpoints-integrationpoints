@@ -81,7 +81,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 		{
 			// ARRANGE
 			Job job = JobExtensions.CreateJob();
-			_updater.GenerateStatus(Arg.Any<JobHistory>(), Arg.Any<long>()).Returns(JobStatusChoices.JobHistoryErrorJobFailed);
+			_updater.GenerateStatus(Arg.Any<JobHistory>()).Returns(JobStatusChoices.JobHistoryErrorJobFailed);
 
 			// ACT
 			_instance.OnJobComplete(job);
@@ -95,7 +95,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 		{
 			// ARRANGE
 			Job job = JobExtensions.CreateJob();
-			_updater.GenerateStatus(Arg.Any<JobHistory>(), Arg.Any<long>()).Returns(JobStatusChoices.JobHistoryValidationFailed);
+			_updater.GenerateStatus(Arg.Any<JobHistory>()).Returns(JobStatusChoices.JobHistoryValidationFailed);
 
 			// ACT
 			_instance.OnJobComplete(job);
@@ -110,7 +110,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 		{
 			// ARRANGE
 			Job job = JobExtensions.CreateJob();
-			_updater.GenerateStatus(Arg.Any<JobHistory>(), Arg.Any<long>()).Returns(status);
+			_updater.GenerateStatus(Arg.Any<JobHistory>()).Returns(status);
 
 			// ACT
 			_instance.OnJobComplete(job);
@@ -136,7 +136,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 			jobHistory.ItemsWithErrors = 0;
 			jobHistoryService.GetRdo(Arg.Any<Guid>()).Returns(jobHistory);
 
-			_updater.GenerateStatus(Arg.Any<JobHistory>(), Arg.Any<long>()).Returns(JobStatusChoices.JobHistoryCompleted);
+			_updater.GenerateStatus(Arg.Any<JobHistory>()).Returns(JobStatusChoices.JobHistoryCompleted);
 
 			JobLifetimeMetricBatchStatus metric = new JobLifetimeMetricBatchStatus(_messageService, _integrationPointService, _providerTypeService, _updater, jobHistoryService, _serializer, _dateTimeHelper);
 
@@ -162,7 +162,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 			jobHistory.ItemsWithErrors = 0;
 			jobHistoryService.GetRdo(Arg.Any<Guid>()).Returns(jobHistory);
 
-			_updater.GenerateStatus(Arg.Any<JobHistory>(), Arg.Any<long>()).Returns(JobStatusChoices.JobHistoryCompleted);
+			_updater.GenerateStatus(Arg.Any<JobHistory>()).Returns(JobStatusChoices.JobHistoryCompleted);
 
 			JobLifetimeMetricBatchStatus metric = new JobLifetimeMetricBatchStatus(_messageService, _integrationPointService, _providerTypeService, _updater, jobHistoryService, _serializer, _dateTimeHelper);
 
@@ -180,7 +180,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 			int itemsTransfered = 10;
 			int seconds = 10;
 			Job job = JobExtensions.CreateJob();
-			_updater.GenerateStatus(Arg.Any<JobHistory>(), Arg.Any<long>()).Returns(JobStatusChoices.JobHistoryErrorJobFailed);
+			_updater.GenerateStatus(Arg.Any<JobHistory>()).Returns(JobStatusChoices.JobHistoryErrorJobFailed);
 			IJobHistoryService jobHistoryService = Substitute.For<IJobHistoryService>();
 			JobHistory jobHistory = new JobHistory();
 			jobHistory.StartTimeUTC = new DateTime(2018, 1, 1, 0, 0, 0);

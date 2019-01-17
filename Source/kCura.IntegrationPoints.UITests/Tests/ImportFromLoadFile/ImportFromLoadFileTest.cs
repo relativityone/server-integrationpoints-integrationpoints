@@ -1,5 +1,4 @@
-﻿using System.IO;
-using kCura.IntegrationPoint.Tests.Core;
+﻿using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models.Constants.Shared;
 using kCura.IntegrationPoint.Tests.Core.Models.Import;
 using kCura.IntegrationPoint.Tests.Core.Models.Import.LoadFile;
@@ -13,9 +12,11 @@ using kCura.IntegrationPoints.UITests.BrandNew.Import.LoadFile.Documents;
 using kCura.IntegrationPoints.UITests.BrandNew.Import.LoadFile.Images;
 using kCura.IntegrationPoints.UITests.BrandNew.Import.LoadFile.Productions;
 using kCura.IntegrationPoints.UITests.Common;
+using kCura.IntegrationPoints.UITests.NUnitExtensions;
 using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoints.UITests.Validation;
 using NUnit.Framework;
+using System.IO;
 
 namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 {
@@ -54,7 +55,9 @@ namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 			}
 		}
 		
-		[Test, Order(10)]
+		[Test]
+		[RetryOnError]
+		[Order(10)]
 		public void ImportDocumentsFromLoadFile()
 		{
 			// Arrange
@@ -97,7 +100,9 @@ namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 			new BaseUiValidator().ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
 		}
 		
-		[Test, Order(20)]
+		[Test]
+		[RetryOnError]
+		[Order(20)]
 		public void ImportImagesFromLoadFile()
 		{
 			// Arrange
@@ -129,7 +134,9 @@ namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 			new BaseUiValidator().ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
 		}
 
-		[Test, Order(30)]
+		[Test]
+		[RetryOnError]
+		[Order(30)]
 		public void ImportProductionsFromLoadFile()
 		{
 			// Arrange
