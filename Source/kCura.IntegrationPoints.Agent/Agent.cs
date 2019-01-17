@@ -102,12 +102,10 @@ namespace kCura.IntegrationPoints.Agent
 			ProviderType providerType = GetProviderType(integrationPoint.SourceProvider ?? 0, integrationPoint.DestinationProvider ?? 0);
 			if (providerType == ProviderType.Relativity)
 			{
-				SourceConfiguration sourceConfiguration =
-					JsonConvert.DeserializeObject<SourceConfiguration>(integrationPoint.SourceConfiguration);
-				ImportSettings destinationConfiguration =
-					JsonConvert.DeserializeObject<ImportSettings>(integrationPoint.SourceConfiguration);
+				SourceConfiguration sourceConfiguration = VerboseDeserialize<SourceConfiguration>(integrationPoint.SourceConfiguration);
+				ImportSettings importSettings = VerboseDeserialize<ImportSettings>(integrationPoint.SourceConfiguration);
 
-				if (ConfigurationAllowsUsingRelativitySync(sourceConfiguration, destinationConfiguration))
+				if (ConfigurationAllowsUsingRelativitySync(sourceConfiguration, importSettings))
 				{
 					_logger.LogInformation("Relativity Sync flow will be used for job with ID: {jobId}. IntegrationPointId: {integrationPointId}", job.JobId, job.RelatedObjectArtifactID);
 					return true;
@@ -120,17 +118,39 @@ namespace kCura.IntegrationPoints.Agent
 			return false;
 		}
 
-		private bool ConfigurationAllowsUsingRelativitySync(SourceConfiguration sourceConfiguration, ImportSettings destinationConfiguration)
+		private T VerboseDeserialize<T>(string jsonToDeserialize)
+		{
+			_logger.LogInformation($"Deserializing json for type {nameof(T)}");
+
+			if (string.IsNullOrWhiteSpace(jsonToDeserialize))
+			{
+				throw new ArgumentNullException(nameof(jsonToDeserialize));
+			}
+
+			try
+			{
+				T result = JsonConvert.DeserializeObject<T>(jsonToDeserialize);
+				_logger.LogInformation($"Json for type {nameof(T)} deserialized successfully");
+				return result;
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Deserializing json for type {nameof(T)} operation resulted in an error.");
+				throw;
+			}
+		}
+
+		private bool ConfigurationAllowsUsingRelativitySync(SourceConfiguration sourceConfiguration, ImportSettings importSettings)
 		{
 			_logger.LogInformation(
 				"Checking if configurations allow using RelativitySync. SourceConfiguration.TypeOfExport: {typeOfExport}; DestinationConfiguration.ImageImport: {imageImport}; DestinationConfiguration.ProductionImport: {productionImport}",
 				sourceConfiguration.TypeOfExport, 
-				destinationConfiguration.ImageImport,
-				destinationConfiguration.ProductionImport);
+				importSettings.ImageImport,
+				importSettings.ProductionImport);
 
 			return sourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.SavedSearch &&
-			       !destinationConfiguration.ImageImport &&
-			       !destinationConfiguration.ProductionImport;
+			       !importSettings.ImageImport &&
+			       !importSettings.ProductionImport;
 		}
 
 		private ProviderType GetProviderType(int sourceProviderId, int destinationProviderId)
