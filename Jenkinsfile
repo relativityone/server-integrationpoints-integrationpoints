@@ -285,7 +285,7 @@ timestamps
 							":yellow_card: Skipped tests: ${numberOfSkippedTests} \n\n" +
 							"${env.BUILD_URL} \n" +
 							"Relativity branch: ${relativityBranch} \n" +
-							"Relativity build type: ${params.relativityBuildType} \n" +
+							"Relativity build type: ${relativityBuildType} \n" +
 							"Relativity build version: ${(relativityBuildVersion ?: "0.0.0.0")}"
 						slackSend channel: getSlackChannelName(nightlyJobName).toString(), color: "E8E8E8", message: "${message}", teamDomain: 'kcura-pd', token: token
 					}
