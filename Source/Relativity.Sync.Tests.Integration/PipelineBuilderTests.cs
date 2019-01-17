@@ -38,6 +38,36 @@ namespace Relativity.Sync.Tests.Integration
 			AssertExecutionOrder(expectedOrder);
 		}
 
+		[Test]
+		public async Task NotificationShouldBeExecutedInCaseOfSuccessfulPipeline()
+		{
+			IContainer container = IntegrationTestsContainerBuilder.CreateContainer(_executorTypes);
+			ISyncJob syncJob = _syncJobFactory.Create(container, new SyncJobParameters(1, 1));
+
+			// ACT
+			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+
+			// ASSERT
+			_executorTypes.Should().Contain(typeof(INotificationConfiguration));
+		}
+
+		[Test]
+		public void NotificationShouldBeExecutedInCaseOfFailedPipeline()
+		{
+			ContainerBuilder containerBuilder = IntegrationTestsContainerBuilder.CreateContainerBuilder(_executorTypes);
+
+			containerBuilder.RegisterType<FailingExecutorStub<IValidationConfiguration>>().As<IExecutor<IValidationConfiguration>>();
+
+			ISyncJob syncJob = _syncJobFactory.Create(containerBuilder.Build(), new SyncJobParameters(1, 1));
+
+			// ACT
+			Func<Task> action = async () => await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+
+			// ASSERT
+			action.Should().Throw<SyncException>();
+			_executorTypes.Should().Contain(typeof(INotificationConfiguration));
+		}
+
 		private void AssertExecutionOrder(List<Type[]> expectedOrder)
 		{
 			int counter = 0;
