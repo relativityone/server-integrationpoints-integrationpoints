@@ -87,10 +87,17 @@ namespace kCura.IntegrationPoints.Agent
 
 		private bool ShouldUseRelativitySync(Job job)
 		{
+			_logger.LogInformation("Checking if Relativity Sync flow should be used for job with ID: {jobId}. IntegrationPointId: {integrationPointId}", job.JobId);
+
 			if (!IsRelativitySyncToggleEnabled())
 			{
+				_logger.LogInformation(
+					$"Normal flow will be used for job with ID: {{jobId}} because {nameof(EnableSyncToggle)} is disabled. IntegrationPointId: {{integrationPointId}}",
+					job.JobId, job.RelatedObjectArtifactID);
+
 				return false;
 			}
+
 			IntegrationPoint integrationPoint = GetIntegrationPoint(job.RelatedObjectArtifactID);
 			ProviderType providerType = GetProviderType(integrationPoint.SourceProvider ?? 0, integrationPoint.DestinationProvider ?? 0);
 			if (providerType == ProviderType.Relativity)
@@ -102,15 +109,25 @@ namespace kCura.IntegrationPoints.Agent
 
 				if (ConfigurationAllowsUsingRelativitySync(sourceConfiguration, destinationConfiguration))
 				{
+					_logger.LogInformation("Relativity Sync flow will be used for job with ID: {jobId}. IntegrationPointId: {integrationPointId}", job.JobId, job.RelatedObjectArtifactID);
 					return true;
 				}
 			}
 
+			_logger.LogInformation(
+				"Normal flow will be used for job with ID: {jobId} because this integration point does not meet conditions required for running Relativity Sync. IntegrationPointId: {integrationPointId}",
+				job.JobId, job.RelatedObjectArtifactID);
 			return false;
 		}
 
-		private static bool ConfigurationAllowsUsingRelativitySync(SourceConfiguration sourceConfiguration, ImportSettings destinationConfiguration)
+		private bool ConfigurationAllowsUsingRelativitySync(SourceConfiguration sourceConfiguration, ImportSettings destinationConfiguration)
 		{
+			_logger.LogInformation(
+				"Checking if configurations allow using RelativitySync. SourceConfiguration.TypeOfExport: {typeOfExport}; DestinationConfiguration.ImageImport: {imageImport}; DestinationConfiguration.ProductionImport: {productionImport}",
+				sourceConfiguration.TypeOfExport, 
+				destinationConfiguration.ImageImport,
+				destinationConfiguration.ProductionImport);
+
 			return sourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.SavedSearch &&
 			       !destinationConfiguration.ImageImport &&
 			       !destinationConfiguration.ProductionImport;
@@ -118,13 +135,26 @@ namespace kCura.IntegrationPoints.Agent
 
 		private ProviderType GetProviderType(int sourceProviderId, int destinationProviderId)
 		{
+			_logger.LogInformation(
+				$"Determining Integration Point provider type based on source and destination provider id's using {nameof(IProviderTypeService)} SourceProviderId: {{sourceProviderId}}; DestinationProviderId: {{destinationProviderId}}",
+				sourceProviderId, 
+				destinationProviderId);
+
 			IProviderTypeService providerTypeService = null;
 			try
 			{
 				providerTypeService = _agentLevelContainer.Value.Resolve<IProviderTypeService>();
 				ProviderType providerType =
 					providerTypeService.GetProviderType(sourceProviderId, destinationProviderId);
+				_logger.LogInformation(
+					"ProviderType for given providers has been determined as: {providerType}. SourceProviderId: {sourceProviderId}; DestinationProviderId: {destinationProviderId}",
+					providerType, sourceProviderId, destinationProviderId);
 				return providerType;
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Getting Provider Type operation resulted in an error.");
+				throw;
 			}
 			finally
 			{
@@ -137,12 +167,20 @@ namespace kCura.IntegrationPoints.Agent
 
 		private IntegrationPoint GetIntegrationPoint(int integrationPointId)
 		{
-			IIntegrationPointService integrationPointService = null;
+			_logger.LogInformation("Retrieving Integration Point using IntegrationPointService. IntegrationPointId: {integrationPointId}", integrationPointId);
 
+			IIntegrationPointService integrationPointService = null;
 			try
 			{
 				integrationPointService = _agentLevelContainer.Value.Resolve<IIntegrationPointService>();
-				return integrationPointService.GetRdo(integrationPointId);
+				IntegrationPoint integrationPoint = integrationPointService.GetRdo(integrationPointId);
+				_logger.LogInformation("Integration Point with id: {integrationPointId} retrieved successfully.", integrationPointId);
+				return integrationPoint;
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Getting Integration Point operation resulted in an error.");
+				throw;
 			}
 			finally
 			{
@@ -155,11 +193,21 @@ namespace kCura.IntegrationPoints.Agent
 
 		private bool IsRelativitySyncToggleEnabled()
 		{
+			_logger.LogInformation($"Checking if {nameof(EnableSyncToggle)} is enabled.");
+
 			IToggleProvider toggleProvider = null;
 			try
 			{
 				toggleProvider = _agentLevelContainer.Value.Resolve<IToggleProvider>();
-				return toggleProvider.IsEnabled<EnableSyncToggle>();
+				bool isEnabled = toggleProvider.IsEnabled<EnableSyncToggle>();
+				_logger.LogInformation($"Confirmed that {nameof(EnableSyncToggle)} is {(isEnabled ? "enabled" : "disabled")}.");
+				return isEnabled;
+
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Checking if {nameof(EnableSyncToggle)} is enabled resulted in an error.");
+				throw;
 			}
 			finally
 			{

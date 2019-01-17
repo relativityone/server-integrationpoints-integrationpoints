@@ -68,7 +68,7 @@
     <Compile Include="Logging\JobLogInformation.cs" />
     <Compile Include="Logging\CreateErrorRdo.cs" />
     <Compile Include="Monitoring\ExternalServiceInstrumentationProviderWithJobContext.cs" />
-    <Compile Include="Sync\EnableSyncToggle.cs" />
+    <Compile Include="Toggles\EnableSyncToggle.cs" />
     <Compile Include="TaskFactory\IJobSynchronizationChecker.cs" />
     <Compile Include="TaskFactory\ITaskFactoryJobHistoryServiceFactory.cs" />
     <Compile Include="TaskFactory\ITaskFactoryJobHistoryService.cs" />
