@@ -1,5 +1,6 @@
 ﻿using kCura.IntegrationPoints.Data.Interfaces;
 using Relativity.API;
+using System.IO;
 
 namespace kCura.IntegrationPoints.Data
 {
@@ -14,7 +15,15 @@ namespace kCura.IntegrationPoints.Data
 
 		public IRetryHandler Create(ushort maxNumberOfRetries = 3, ushort exponentialWaitTimeBaseInSeconds = 3)
 		{
-			return new RetryHandler(_logger, maxNumberOfRetries, exponentialWaitTimeBaseInSeconds);
+			try
+			{
+				return new RetryHandler(_logger, maxNumberOfRetries, exponentialWaitTimeBaseInSeconds);
+			}
+			catch (FileNotFoundException ex) // TODO this is hack for fixing REL-285938
+			{
+				_logger?.LogWarning(ex, $"Exception occured during {nameof(RetryHandler)} instantiation. {nameof(NonRetryHandler)} will be used");
+				return new NonRetryHandler();
+			}
 		}
 	}
 }

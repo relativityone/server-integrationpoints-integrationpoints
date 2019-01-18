@@ -135,6 +135,7 @@
     <Compile Include="Repositories\IRelativityObjectManager.cs" />
     <Compile Include="Repositories\IJobRepository.cs" />
     <Compile Include="ResourcePoolContext.cs" />
+    <Compile Include="NonRetryHandler.cs" />
     <Compile Include="RetryHandler.cs" />
     <Compile Include="RetryHandlerFactory.cs" />
     <Compile Include="RSAPIClient\IRsapiClientFactory.cs" />
