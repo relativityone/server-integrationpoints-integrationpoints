@@ -4,7 +4,7 @@
 task default -depends build
 
 
-task build -depends build_initalize, start_sonar, build_projects, build_rip_documentation, copy_dlls_to_lib_dir, copy_test_dlls_to_lib_dir, copy_web_drivers, run_coverage, stop_sonar, generate_validation_message_table {
+task build -depends build_initalize, start_sonar, build_integration_points, build_my_first_provider, build_json_loader, build_rip_documentation, copy_dlls_to_lib_dir, copy_test_dlls_to_lib_dir, copy_web_drivers, run_coverage, stop_sonar, generate_validation_message_table {
  
 }
 
@@ -70,7 +70,7 @@ task configure_paket {
 	}
 }
 
-task build_projects -depends restore_nuget, configure_paket {
+task build_integration_points -depends restore_nuget, configure_paket {
     exec {
         Write-Host 'Using MSBuild' $msbuild_exe
 
@@ -79,7 +79,55 @@ task build_projects -depends restore_nuget, configure_paket {
             New-Item -Path $buildlogs_directory -ItemType Directory -Force
         }
         
-        & $msbuild_exe @((Join-Path $source_directory 'kCura.IntegrationPoints.Master.sln'),
+        & $msbuild_exe @((Join-Path $source_directory 'kCura.IntegrationPoints.sln'),
+                         ("/property:Configuration=${build_config}"),
+                         ("/property:PublishWebProjects=True"),
+                         ('/nodereuse:false'),
+                         #('/target:BuildTiers'), # TODO: configurable
+                         ('/verbosity:normal'), # TODO: configurable
+                         ('/clp:ErrorsOnly'),
+                         ('/nologo'),
+                         ('/maxcpucount'), 
+                         #('/dfl'), # ???
+                         ('/flp:LogFile=' + $logfile + ';Verbosity=Normal'), # TODO: configurable
+                         ('/flp2:warningsonly;LogFile=' + $logfilewarn),
+                         ('/flp3:errorsonly;LogFile=' + $logfileerror))       
+    } 
+}
+task build_my_first_provider -depends restore_nuget, configure_paket {
+    exec {
+        Write-Host 'Using MSBuild' $msbuild_exe
+
+        If(!(test-path $buildlogs_directory))
+        {
+            New-Item -Path $buildlogs_directory -ItemType Directory -Force
+        }
+        
+        & $msbuild_exe @((Join-Path $source_directory 'MyFirstProvider.sln'),
+                         ("/property:Configuration=${build_config}"),
+                         ("/property:PublishWebProjects=True"),
+                         ('/nodereuse:false'),
+                         #('/target:BuildTiers'), # TODO: configurable
+                         ('/verbosity:normal'), # TODO: configurable
+                         ('/clp:ErrorsOnly'),
+                         ('/nologo'),
+                         ('/maxcpucount'), 
+                         #('/dfl'), # ???
+                         ('/flp:LogFile=' + $logfile + ';Verbosity=Normal'), # TODO: configurable
+                         ('/flp2:warningsonly;LogFile=' + $logfilewarn),
+                         ('/flp3:errorsonly;LogFile=' + $logfileerror))       
+    } 
+}
+task build_json_loader -depends restore_nuget, configure_paket {
+    exec {
+        Write-Host 'Using MSBuild' $msbuild_exe
+
+        If(!(test-path $buildlogs_directory))
+        {
+            New-Item -Path $buildlogs_directory -ItemType Directory -Force
+        }
+        
+        & $msbuild_exe @((Join-Path $source_directory 'JsonLoader.sln'),
                          ("/property:Configuration=${build_config}"),
                          ("/property:PublishWebProjects=True"),
                          ('/nodereuse:false'),
