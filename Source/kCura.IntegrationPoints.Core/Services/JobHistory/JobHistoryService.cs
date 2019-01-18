@@ -206,7 +206,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		{
 			IRelativityObjectManager objectManager = _caseServiceContext.RsapiService.RelativityObjectManager;
 
-			if (queryOptions == null)
+			if (queryOptions.QueriesAll())
 			{
 				objectManager.Update(jobHistory);
 				return;

@@ -30,5 +30,11 @@ namespace kCura.IntegrationPoints.Core.QueryOptions
 			Guid[] fields = FieldGuids.Except(new[] { fieldGuid }).ToArray();
 			return new JobHistoryQueryOptions(fields);
 		}
+
+		public bool QueriesAll()
+		{
+			var queryAllOptions = JobHistoryQueryOptions.Query.All();
+			return FieldGuids.SequenceEqual(queryAllOptions.FieldGuids);
+		}
 	}
 }
