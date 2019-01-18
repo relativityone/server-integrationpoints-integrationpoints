@@ -87,7 +87,7 @@ namespace kCura.IntegrationPoints.Agent
 
 		private bool ShouldUseRelativitySync(Job job)
 		{
-			_logger.LogInformation("Checking if Relativity Sync flow should be used for job with ID: {jobId}. IntegrationPointId: {integrationPointId}", job.JobId);
+			_logger.LogDebug("Checking if Relativity Sync flow should be used for job with ID: {jobId}. IntegrationPointId: {integrationPointId}", job.JobId);
 
 			if (!IsRelativitySyncToggleEnabled())
 			{
@@ -120,7 +120,7 @@ namespace kCura.IntegrationPoints.Agent
 
 		private T VerboseDeserialize<T>(string jsonToDeserialize)
 		{
-			_logger.LogInformation($"Deserializing json for type {nameof(T)}");
+			_logger.LogDebug($"Deserializing json for type {nameof(T)}");
 
 			if (string.IsNullOrWhiteSpace(jsonToDeserialize))
 			{
@@ -142,7 +142,7 @@ namespace kCura.IntegrationPoints.Agent
 
 		private bool ConfigurationAllowsUsingRelativitySync(SourceConfiguration sourceConfiguration, ImportSettings importSettings)
 		{
-			_logger.LogInformation(
+			_logger.LogDebug(
 				"Checking if configurations allow using RelativitySync. SourceConfiguration.TypeOfExport: {typeOfExport}; DestinationConfiguration.ImageImport: {imageImport}; DestinationConfiguration.ProductionImport: {productionImport}",
 				sourceConfiguration.TypeOfExport, 
 				importSettings.ImageImport,
@@ -155,7 +155,7 @@ namespace kCura.IntegrationPoints.Agent
 
 		private ProviderType GetProviderType(int sourceProviderId, int destinationProviderId)
 		{
-			_logger.LogInformation(
+			_logger.LogDebug(
 				$"Determining Integration Point provider type based on source and destination provider id's using {nameof(IProviderTypeService)} SourceProviderId: {{sourceProviderId}}; DestinationProviderId: {{destinationProviderId}}",
 				sourceProviderId, 
 				destinationProviderId);
@@ -187,7 +187,7 @@ namespace kCura.IntegrationPoints.Agent
 
 		private IntegrationPoint GetIntegrationPoint(int integrationPointId)
 		{
-			_logger.LogInformation("Retrieving Integration Point using IntegrationPointService. IntegrationPointId: {integrationPointId}", integrationPointId);
+			_logger.LogDebug("Retrieving Integration Point using IntegrationPointService. IntegrationPointId: {integrationPointId}", integrationPointId);
 
 			IIntegrationPointService integrationPointService = null;
 			try
@@ -213,7 +213,7 @@ namespace kCura.IntegrationPoints.Agent
 
 		private bool IsRelativitySyncToggleEnabled()
 		{
-			_logger.LogInformation($"Checking if {nameof(EnableSyncToggle)} is enabled.");
+			_logger.LogDebug($"Checking if {nameof(EnableSyncToggle)} is enabled.");
 
 			IToggleProvider toggleProvider = null;
 			try
