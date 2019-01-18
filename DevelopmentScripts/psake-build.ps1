@@ -79,8 +79,9 @@ task build_projects -depends restore_nuget, configure_paket {
             New-Item -Path $buildlogs_directory -ItemType Directory -Force
         }
         
-        & $msbuild_exe @((Join-Path $source_directory 'kCura.IntegrationPoints.sln'),
+        & $msbuild_exe @((Join-Path $source_directory 'kCura.IntegrationPoints.Master.sln'),
                          ("/property:Configuration=${build_config}"),
+                         ("/property:PublishWebProjects=True"),
                          ('/nodereuse:false'),
                          #('/target:BuildTiers'), # TODO: configurable
                          ('/verbosity:normal'), # TODO: configurable
