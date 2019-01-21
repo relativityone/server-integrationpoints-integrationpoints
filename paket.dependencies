@@ -76,5 +76,5 @@ group Sync
 	framework: auto-detect
 	strategy: max
 	source https://proget.kcura.corp/nuget/NuGet
-	nuget Relativity.Sync 0.0.0.alpha-98
-	nuget Autofac ~>  4.8.1
+	nuget Relativity.Sync ~> 0.0.0-alpha98
+	nuget Autofac ~> 4.8.1
