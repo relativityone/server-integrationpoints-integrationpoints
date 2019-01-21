@@ -25,39 +25,38 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 			_retryHandler = retryHandlerFactory.Create(_MAX_NUMBER_OF_RETRIES, _EXPONENTIAL_WAIT_TIME_BASE_IN_SEC);
 		}
 
-		public async Task<CreateResult> CreateAsync(int workspaceArtifactID, CreateRequest createRequest)
+		public Task<CreateResult> CreateAsync(int workspaceArtifactID, CreateRequest createRequest)
 		{
-			return await _retryHandler.ExecuteWithRetriesAsync(
-					() => _objectManager.CreateAsync(workspaceArtifactID, createRequest))
-				.ConfigureAwait(false);
+			return _retryHandler.ExecuteWithRetriesAsync(
+					() => _objectManager.CreateAsync(workspaceArtifactID, createRequest));
 		}
 
-		public async Task<DeleteResult> DeleteAsync(int workspaceArtifactID, DeleteRequest request)
+		public Task<DeleteResult> DeleteAsync(int workspaceArtifactID, DeleteRequest request)
 		{
-			return await _retryHandler.ExecuteWithRetriesAsync(
-					() => _objectManager.DeleteAsync(workspaceArtifactID, request))
-				.ConfigureAwait(false);
+			return _retryHandler.ExecuteWithRetriesAsync(
+					() => _objectManager.DeleteAsync(workspaceArtifactID, request));
 		}
 
-		public async Task<QueryResult> QueryAsync(int workspaceArtifactID, QueryRequest request, int start, int length)
+		public Task<QueryResult> QueryAsync(int workspaceArtifactID, QueryRequest request, int start, int length)
 		{
-			return await _retryHandler.ExecuteWithRetriesAsync(
-					() => _objectManager.QueryAsync(workspaceArtifactID, request, start, length))
-				.ConfigureAwait(false);
+			return _retryHandler.ExecuteWithRetriesAsync(
+				() => _objectManager.QueryAsync(
+					workspaceArtifactID,
+					request,
+					start,
+					length));
 		}
 
-		public async Task<ReadResult> ReadAsync(int workspaceArtifactID, ReadRequest request)
+		public Task<ReadResult> ReadAsync(int workspaceArtifactID, ReadRequest request)
 		{
-			return await _retryHandler.ExecuteWithRetriesAsync(
-					() => _objectManager.ReadAsync(workspaceArtifactID, request))
-				.ConfigureAwait(false);
+			return _retryHandler.ExecuteWithRetriesAsync(
+				() => _objectManager.ReadAsync(workspaceArtifactID, request));
 		}
 
-		public async Task<UpdateResult> UpdateAsync(int workspaceArtifactID, UpdateRequest request)
+		public Task<UpdateResult> UpdateAsync(int workspaceArtifactID, UpdateRequest request)
 		{
-			return await _retryHandler.ExecuteWithRetriesAsync(
-					() => _objectManager.UpdateAsync(workspaceArtifactID, request))
-				.ConfigureAwait(false);
+			return _retryHandler.ExecuteWithRetriesAsync(
+				() => _objectManager.UpdateAsync(workspaceArtifactID, request));
 		}
 
 		protected virtual void Dispose(bool disposing)

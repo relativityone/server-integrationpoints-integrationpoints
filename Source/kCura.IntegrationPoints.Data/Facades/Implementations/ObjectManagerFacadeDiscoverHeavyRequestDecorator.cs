@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 			_logger = logger.ForContext<ObjectManagerFacadeDiscoverHeavyRequestDecorator>();
 		}
 
-		public async Task<CreateResult> CreateAsync(int workspaceArtifactID, CreateRequest request)
+		public Task<CreateResult> CreateAsync(int workspaceArtifactID, CreateRequest request)
 		{
 			Func<string> getMessage =
 				() => GetWarningMessage<CreateRequest>(
@@ -45,9 +45,7 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 
 			AnalyzeFields(fieldValues, getMessage);
 
-			return await _objectManager
-				.CreateAsync(workspaceArtifactID, request)
-				.ConfigureAwait(false);
+			return _objectManager.CreateAsync(workspaceArtifactID, request);
 		}
 
 		public async Task<ReadResult> ReadAsync(int workspaceArtifactID, ReadRequest request)
@@ -70,7 +68,7 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 			return result;
 		}
 
-		public async Task<UpdateResult> UpdateAsync(int workspaceArtifactID, UpdateRequest request)
+		public Task<UpdateResult> UpdateAsync(int workspaceArtifactID, UpdateRequest request)
 		{
 			Func<string> getMessage = 
 				() => GetWarningMessage<UpdateRequest>(
@@ -83,15 +81,12 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 
 			AnalyzeFields(fieldValues, getMessage);
 
-			return await _objectManager
-				.UpdateAsync(workspaceArtifactID, request)
-				.ConfigureAwait(false);
+			return _objectManager.UpdateAsync(workspaceArtifactID, request);
 		}
 
-		public async Task<DeleteResult> DeleteAsync(int workspaceArtifactID, DeleteRequest request)
+		public Task<DeleteResult> DeleteAsync(int workspaceArtifactID, DeleteRequest request)
 		{
-			return await _objectManager.DeleteAsync(workspaceArtifactID, request)
-				.ConfigureAwait(false);
+			return _objectManager.DeleteAsync(workspaceArtifactID, request);
 		}
 
 		public async Task<QueryResult> QueryAsync(int workspaceArtifactID, QueryRequest request, int start, int length)

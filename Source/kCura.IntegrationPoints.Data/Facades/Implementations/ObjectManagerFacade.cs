@@ -16,46 +16,41 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 			_objectManager = new Lazy<IObjectManager>(objectManager);
 		}
 
-		public async Task<CreateResult> CreateAsync(int workspaceArtifactID, CreateRequest createRequest)
+		public Task<CreateResult> CreateAsync(int workspaceArtifactID, CreateRequest createRequest)
 		{
-			return await _objectManager.Value.CreateAsync(
+			return _objectManager.Value.CreateAsync(
 					workspaceArtifactID, 
-					createRequest)
-				.ConfigureAwait(false);
+					createRequest);
 		}
 
-		public async Task<ReadResult> ReadAsync(int workspaceArtifactID, ReadRequest request)
+		public Task<ReadResult> ReadAsync(int workspaceArtifactID, ReadRequest request)
 		{
-			return await _objectManager.Value.ReadAsync(
+			return _objectManager.Value.ReadAsync(
 					workspaceArtifactID, 
-					request)
-				.ConfigureAwait(false);
+					request);
 		}
 
-		public async Task<UpdateResult> UpdateAsync(int workspaceArtifactID, UpdateRequest request)
+		public Task<UpdateResult> UpdateAsync(int workspaceArtifactID, UpdateRequest request)
 		{
-			return await _objectManager.Value.UpdateAsync(
+			return _objectManager.Value.UpdateAsync(
 					workspaceArtifactID,
-					request)
-				.ConfigureAwait(false);
+					request);
 		}
 
-		public async Task<DeleteResult> DeleteAsync(int workspaceArtifactID, DeleteRequest request)
+		public Task<DeleteResult> DeleteAsync(int workspaceArtifactID, DeleteRequest request)
 		{
-			return await _objectManager.Value.DeleteAsync(
+			return _objectManager.Value.DeleteAsync(
 					workspaceArtifactID,
-					request)
-				.ConfigureAwait(false);
+					request);
 		}
 
-		public async Task<QueryResult> QueryAsync(int workspaceArtifactID, QueryRequest request, int start, int length)
+		public Task<QueryResult> QueryAsync(int workspaceArtifactID, QueryRequest request, int start, int length)
 		{
-			return await _objectManager.Value.QueryAsync(
+			return _objectManager.Value.QueryAsync(
 					workspaceArtifactID,
 					request,
 					start,
-					length)
-				.ConfigureAwait(false);
+					length);
 		}
 
 		#region IDisposable Support
