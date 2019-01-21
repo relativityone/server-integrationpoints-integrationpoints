@@ -226,10 +226,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 			const string objectId = "[UNKNOWN]";
 			IEnumerable<FieldValueTestCase> exceededFieldValues = fieldValueTestCases
 				.FieldValues
-				.Where(x => x.Count > _MAX_COLLECTION_COUNT);
+				.Where(x => x.Value.Count > _MAX_COLLECTION_COUNT);
 			IEnumerable<FieldValueTestCase> notExceededFieldValues = fieldValueTestCases
 				.FieldValues
-				.Where(x => x.Count <= _MAX_COLLECTION_COUNT);
+				.Where(x => x.Value.Count <= _MAX_COLLECTION_COUNT);
 
 			CreateRequest request = BuildCreateRequest(
 				fieldValueTestCases.FieldValues,
@@ -385,10 +385,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 
 			IEnumerable<FieldValueTestCase> exceededFieldValues = fieldValueTestCases
 				.FieldValues
-				.Where(x => x.Count > _MAX_COLLECTION_COUNT);
+				.Where(x => x.Value.Count > _MAX_COLLECTION_COUNT);
 			IEnumerable<FieldValueTestCase> notExceededFieldValues = fieldValueTestCases
 				.FieldValues
-				.Where(x => x.Count <= _MAX_COLLECTION_COUNT);
+				.Where(x => x.Value.Count <= _MAX_COLLECTION_COUNT);
 
 			ReadRequest request = BuildReadRequest(objectId);
 
@@ -537,10 +537,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 
 			IEnumerable<FieldValueTestCase> exceededFieldValues = fieldValueTestCases
 				.FieldValues
-				.Where(x => x.Count > _MAX_COLLECTION_COUNT);
+				.Where(x => x.Value.Count > _MAX_COLLECTION_COUNT);
 			IEnumerable<FieldValueTestCase> notExceededFieldValues = fieldValueTestCases
 				.FieldValues
-				.Where(x => x.Count <= _MAX_COLLECTION_COUNT);
+				.Where(x => x.Value.Count <= _MAX_COLLECTION_COUNT);
 
 			UpdateRequest request = BuildUpdateRequest(
 				fieldValueTestCases.FieldValues,
@@ -705,10 +705,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 
 			IEnumerable<FieldValueTestCase> exceededFieldValues = fieldValueTestCases
 				.FieldValues
-				.Where(x => x.Count > _MAX_COLLECTION_COUNT);
+				.Where(x => x.Value.Count > _MAX_COLLECTION_COUNT);
 			IEnumerable<FieldValueTestCase> notExceededFieldValues = fieldValueTestCases
 				.FieldValues
-				.Where(x => x.Count <= _MAX_COLLECTION_COUNT);
+				.Where(x => x.Value.Count <= _MAX_COLLECTION_COUNT);
 
 			QueryRequest request = BuildQueryRequest(objectTypeName);
 
@@ -1005,7 +1005,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 			{
 				_loggerMock.Verify(x => x.LogWarning(
 						$"Requested field {notExceededTestCase.Name} exceeded max collection count"
-						+ $" - {notExceededTestCase.Count}, when allowed is {_MAX_COLLECTION_COUNT}")
+						+ $" - {notExceededTestCase.Value.Count}, when allowed is {_MAX_COLLECTION_COUNT}")
 					, Times.Never);
 			}
 		}
@@ -1026,7 +1026,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 			{
 				_loggerMock.Verify(x => x.LogWarning(
 					$"Requested field {exceededTestCase.Name} exceeded max collection count"
-					+ $" - {exceededTestCase.Count}, when allowed is {_MAX_COLLECTION_COUNT}")
+					+ $" - {exceededTestCase.Value.Count}, when allowed is {_MAX_COLLECTION_COUNT}")
 					, Times.Once);
 			}
 		}
