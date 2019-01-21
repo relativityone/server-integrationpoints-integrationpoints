@@ -14,6 +14,11 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 
 		public static IContainer CreateContainer(List<Type> executorTypes)
 		{
+			return CreateContainerBuilder(executorTypes).Build();
+		}
+
+		public static ContainerBuilder CreateContainerBuilder(List<Type> executorTypes)
+		{
 			ContainerBuilder containerBuilder = new ContainerBuilder();
 
 			containerBuilder.RegisterInstance(new ConfigurationStub()).AsImplementedInterfaces();
@@ -22,7 +27,7 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 			containerBuilder.RegisterInstance(executorTypes).As<List<Type>>();
 			containerBuilder.RegisterType<SyncMetricsStub>().As<ISyncMetrics>();
 
-			return containerBuilder.Build();
+			return containerBuilder;
 		}
 	}
 }

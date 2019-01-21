@@ -23,7 +23,7 @@ namespace Relativity.Sync
 			const string pipelineName = "SYNC";
 
 			flowBuilder.CreateFlow(pipelineName)
-				.AddRoot<IPipelineNode<SyncExecutionContext>>()
+				.AddRoot<SyncRootNode>()
 				.AddChild<PermissionsCheckNode>()
 				.AddChild<ValidationNode>()
 				.AddChild<PreviousRunCleanupNode>()
@@ -41,8 +41,7 @@ namespace Relativity.Sync
 				.AddChild<SynchronizationNode>()
 				.AddChild<DataDestinationFinalizationNode>()
 				.AddChild<JobStatusConsolidationNode>()
-				.AddChild<JobCleanupNode>()
-				.AddChild<NotificationNode>();
+				.AddChild<JobCleanupNode>();
 
 			flowBuilder.Register();
 

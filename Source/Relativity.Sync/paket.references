@@ -1,7 +1,6 @@
 Microsoft.CodeAnalysis.FxCopAnalyzers
 CSharpGuidelineAnalyzer
 
-Newtonsoft.Json
 Polly
 Autofac
 Banzai
