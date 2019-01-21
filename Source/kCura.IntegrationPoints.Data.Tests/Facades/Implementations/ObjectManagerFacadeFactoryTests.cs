@@ -53,13 +53,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		}
 
 		[Test]
-		public void ShouldCreateFacadeWithRetries()
+		public void ShouldCreateFacadeDiscoverHeavyRequestDecorator()
 		{
 			// act
 			IObjectManagerFacade createdInstance = _sut.Create(ExecutionIdentity.Manual);
 
 			// assert
-			createdInstance.Should().BeOfType<ObjectManagerFacadeWithRetries>();
+			createdInstance.Should().BeOfType<ObjectManagerFacadeDiscoverHeavyRequestDecorator>();
 		}
 
 		[TestCase(ExecutionIdentity.Manual)]

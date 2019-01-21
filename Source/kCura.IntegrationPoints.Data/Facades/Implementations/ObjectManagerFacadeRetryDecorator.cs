@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.Data.Facades.Implementations
 {
-	internal class ObjectManagerFacadeWithRetries : IObjectManagerFacade
+	internal class ObjectManagerFacadeRetryDecorator : IObjectManagerFacade
 	{
 		private bool _disposedValue = false;
 
-		private const ushort _MAX_NUMER_OF_RETRIES = 3;
+		private const ushort _MAX_NUMBER_OF_RETRIES = 3;
 		private const ushort _EXPONENTIAL_WAIT_TIME_BASE_IN_SEC = 3;
 
 		private readonly IRetryHandler _retryHandler;
@@ -19,28 +19,32 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 		/// </summary>
 		/// <param name="objectManager">This object will be disposed when Dispose is called</param>
 		/// <param name="retryHandlerFactory"></param>
-		public ObjectManagerFacadeWithRetries(IObjectManagerFacade objectManager, IRetryHandlerFactory retryHandlerFactory)
+		public ObjectManagerFacadeRetryDecorator(IObjectManagerFacade objectManager, IRetryHandlerFactory retryHandlerFactory)
 		{
 			_objectManager = objectManager;
-			_retryHandler = retryHandlerFactory.Create(_MAX_NUMER_OF_RETRIES, _EXPONENTIAL_WAIT_TIME_BASE_IN_SEC);
+			_retryHandler = retryHandlerFactory.Create(_MAX_NUMBER_OF_RETRIES, _EXPONENTIAL_WAIT_TIME_BASE_IN_SEC);
 		}
 
 		public Task<CreateResult> CreateAsync(int workspaceArtifactID, CreateRequest createRequest)
 		{
 			return _retryHandler.ExecuteWithRetriesAsync(
-				() => _objectManager.CreateAsync(workspaceArtifactID, createRequest));
+					() => _objectManager.CreateAsync(workspaceArtifactID, createRequest));
 		}
 
 		public Task<DeleteResult> DeleteAsync(int workspaceArtifactID, DeleteRequest request)
 		{
 			return _retryHandler.ExecuteWithRetriesAsync(
-				() => _objectManager.DeleteAsync(workspaceArtifactID, request));
+					() => _objectManager.DeleteAsync(workspaceArtifactID, request));
 		}
 
 		public Task<QueryResult> QueryAsync(int workspaceArtifactID, QueryRequest request, int start, int length)
 		{
 			return _retryHandler.ExecuteWithRetriesAsync(
-				() => _objectManager.QueryAsync(workspaceArtifactID, request, start, length));
+				() => _objectManager.QueryAsync(
+					workspaceArtifactID,
+					request,
+					start,
+					length));
 		}
 
 		public Task<ReadResult> ReadAsync(int workspaceArtifactID, ReadRequest request)
@@ -57,15 +61,16 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!_disposedValue)
+			if (_disposedValue)
 			{
-				if (disposing)
-				{
-					_objectManager?.Dispose();
-				}
-
-				_disposedValue = true;
+				return;
 			}
+			if (disposing)
+			{
+				_objectManager?.Dispose();
+			}
+
+			_disposedValue = true;
 		}
 
 		public void Dispose()

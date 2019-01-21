@@ -22,10 +22,15 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		private readonly IProviderTypeService _providerTypeService;
 		private readonly IMessageService _messageService;
 		
-		public ServiceFactory(ICaseServiceContext caseServiceContext, IContextContainerFactory contextContainerFactory,
-			IIntegrationPointSerializer serializer, IChoiceQuery choiceQuery,
-			IJobManager jobService, IManagerFactory managerFactory,
-			IValidationExecutor validationExecutor, IProviderTypeService providerTypeService, IMessageService messageService)
+		public ServiceFactory(ICaseServiceContext caseServiceContext, 
+			IContextContainerFactory contextContainerFactory,
+			IIntegrationPointSerializer serializer, 
+			IChoiceQuery choiceQuery,
+			IJobManager jobService, 
+			IManagerFactory managerFactory,
+			IValidationExecutor validationExecutor, 
+			IProviderTypeService providerTypeService, 
+			IMessageService messageService)
 		{
 			_managerFactory = managerFactory;
 			_validationExecutor = validationExecutor;
@@ -64,11 +69,19 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 
 		public IJobHistoryService CreateJobHistoryService(IHelper helper, IHelper targetHelper)
 		{
-			IContextContainer sourceContextContainer = _contextContainerFactory.CreateContextContainer(helper);
-			IContextContainer targetContextContainer = _contextContainerFactory.CreateContextContainer(helper, targetHelper.GetServicesManager());
+			IContextContainer sourceContextContainer = _contextContainerFactory
+				.CreateContextContainer(helper);
+			IContextContainer targetContextContainer = _contextContainerFactory
+				.CreateContextContainer(helper, targetHelper.GetServicesManager());
 
-			IJobHistoryService jobHistoryService = new JobHistoryService(_caseServiceContext, _managerFactory.CreateFederatedInstanceManager(sourceContextContainer),
-				_managerFactory.CreateWorkspaceManager(targetContextContainer), helper, _serializer, _providerTypeService, _messageService);
+			IJobHistoryService jobHistoryService = new JobHistoryService(
+				_caseServiceContext.RsapiService.RelativityObjectManager, 
+				_managerFactory.CreateFederatedInstanceManager(sourceContextContainer),
+				_managerFactory.CreateWorkspaceManager(targetContextContainer), 
+				helper, 
+				_serializer, 
+				_providerTypeService, 
+				_messageService);
 
 			return jobHistoryService;
 		}

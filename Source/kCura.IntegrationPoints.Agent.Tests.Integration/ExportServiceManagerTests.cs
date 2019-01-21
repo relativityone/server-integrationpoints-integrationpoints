@@ -87,7 +87,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			IAgentValidator agentValidator = Container.Resolve<IAgentValidator>();
 			IJobStatusUpdater jobStatusUpdater = Container.Resolve<IJobStatusUpdater>();
 			IAPILog logger = Container.Resolve<IAPILog>();
-			var jobHistoryUpdater = new JobHistoryBatchUpdateStatus(jobStatusUpdater, jobHistoryService, _jobService, serializer, logger);
+			IDateTimeHelper dateTimeHelper = Container.Resolve<IDateTimeHelper>();
+			var jobHistoryUpdater = new JobHistoryBatchUpdateStatus(
+				jobStatusUpdater, 
+				jobHistoryService, 
+				_jobService, 
+				serializer, 
+				logger,
+				dateTimeHelper);
 			
 
 			_exportManager = new ExportServiceManager(Helper, helperFactory,
@@ -105,8 +112,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				jobHistoryErrorService,
 				jobStatisticsService,
 				null,
-				agentValidator
-				);
+				agentValidator);
 
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
 			_sourceWorkspaceDto = Workspace.GetWorkspaceDto(SourceWorkspaceArtifactId);
