@@ -160,7 +160,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				.GetResult();
 		}
 
-		public async Task<ResultSet<T>> QueryAsync<T>(QueryRequest q, 
+		public Task<ResultSet<T>> QueryAsync<T>(QueryRequest q, 
 			int start, 
 			int length, 
 			bool noFields = false,
@@ -185,10 +185,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			T rdo = new T();
 			BootstrapQuery(q, rdo, noFields);
 
-			ResultSet<T> result = await SendQueryRequestAsync(func, q, rdo, executionIdentity)
-				.ConfigureAwait(false);
-
-			return result;
+			return SendQueryRequestAsync(func, q, rdo, executionIdentity);
 		}
 
 		public List<T> Query<T>(QueryRequest q, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new()
@@ -198,7 +195,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				.GetResult();
 		}
 
-		public async Task<List<T>> QueryAsync<T>(QueryRequest q, 
+		public Task<List<T>> QueryAsync<T>(QueryRequest q, 
 			bool noFields = false, 
 			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) 
 			where T : BaseRdo, new()
@@ -234,11 +231,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			T rdo = new T();
 			BootstrapQuery(q, rdo, noFields);
 
-			List<T> result = await SendQueryRequestAsync(func, q, rdo, executionIdentity)
-				.ConfigureAwait(false);
-
-			return result;
-
+			return SendQueryRequestAsync(func, q, rdo, executionIdentity);
 		}
 
 		/// <summary>
@@ -258,7 +251,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		/// <param name="q"></param>
 		/// <param name="executionIdentity"></param>
 		/// <returns></returns>
-		public async Task<List<RelativityObject>> QueryAsync(QueryRequest q, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+		public Task<List<RelativityObject>> QueryAsync(QueryRequest q, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
 		{
 			Func<IObjectManagerFacade, Task<List<RelativityObject>>> func = async (client) =>
 			{
@@ -286,19 +279,22 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				return output;
 			};
 
-			List<RelativityObject> result = await SendQueryRequestAsync(func, q, null, executionIdentity)
-				.ConfigureAwait(false);
-
-			return result;
+			return SendQueryRequestAsync(
+				func, 
+				q, 
+				rdo: null, 
+				executionIdentity: executionIdentity);
 		}
 
 		public ResultSet<RelativityObject> Query(QueryRequest q, int start, int length, bool noFields = false,
 			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
 		{
-			return QueryAsync(q, start, length, noFields, executionIdentity).GetAwaiter().GetResult();
+			return QueryAsync(q, start, length, noFields, executionIdentity)
+				.GetAwaiter()
+				.GetResult();
 		}
 
-		public async Task<ResultSet<RelativityObject>> QueryAsync(QueryRequest q, 
+		public Task<ResultSet<RelativityObject>> QueryAsync(QueryRequest q, 
 			int start, 
 			int length, 
 			bool noFields = false,
@@ -317,10 +313,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				};
 			};
 
-			ResultSet<RelativityObject> result = await SendQueryRequestAsync(func, q, null, executionIdentity)
-				.ConfigureAwait(false);
-
-			return result;
+			return SendQueryRequestAsync(
+				func, 
+				q, 
+				rdo: null, 
+				executionIdentity: executionIdentity);
 		}
 
 		public int QueryTotalCount(QueryRequest q, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
@@ -328,7 +325,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return QueryTotalCountAsync(q, executionIdentity).GetAwaiter().GetResult();
 		}
 
-		public async Task<int> QueryTotalCountAsync(QueryRequest q, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+		public Task<int> QueryTotalCountAsync(QueryRequest q, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
 		{
 			Func<IObjectManagerFacade, Task<int>> func = async (client) =>
 			{
@@ -337,14 +334,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				return queryResult.TotalCount;
 			};
 
-			int result = await SendQueryRequestAsync(
-					func, 
-					q, 
-					rdo: null, 
-					executionIdentity: executionIdentity)
-				.ConfigureAwait(false);
-
-			return result;
+			return SendQueryRequestAsync(
+				func,
+				q,
+				rdo: null,
+				executionIdentity: executionIdentity);
 		}
 
 		private async Task<T> SendQueryRequestAsync<T>(Func<IObjectManagerFacade, 
@@ -577,7 +571,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private string ConvertFieldsToStringRepresentation(QueryRequest queryRequest)
 		{
 			IEnumerable<string> fieldsAsString = queryRequest?.Fields?.Select(x => $"({x.Name}: {x.Guid})");
-			return fieldsAsString != null ? string.Join(", ", fieldsAsString) : string.Empty;
+			return fieldsAsString != null 
+				? string.Join(", ", fieldsAsString) 
+				: string.Empty;
 		}
 
 		private string GetRdoType(IBaseRdo rdo)

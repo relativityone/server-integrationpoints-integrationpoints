@@ -32,8 +32,8 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 				(om) => new ObjectManagerFacadeInstrumentationDecorator(om,
 						_instrumentationProvider,
 						_logger),
-				(om) => new ObjectManagerFacadeDiscoverHeavyRequestDecorator(om, _logger),
-				(om) => new ObjectManagerFacadeRetryDecorator(om, _retryHandlerFactory)
+				(om) => new ObjectManagerFacadeRetryDecorator(om, _retryHandlerFactory),
+				(om) => new ObjectManagerFacadeDiscoverHeavyRequestDecorator(om, _logger)
 			};
 		}
 

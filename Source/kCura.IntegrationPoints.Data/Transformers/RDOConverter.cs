@@ -48,7 +48,6 @@ namespace kCura.IntegrationPoints.Data.Transformers
 			return rdo;
 		}
 
-		// TODO refactor 
 		private static object ConvertFieldValueToExpectedFormat(FieldValuePair item, Type propeType)
 		{
 			object valueToSet = item?.Value;
@@ -73,14 +72,14 @@ namespace kCura.IntegrationPoints.Data.Transformers
 				var itemValues = (IEnumerable<Choice>)item.Value;
 				valueToSet = itemValues.Select(ConvertChoice).ToArray();
 			}
-			else if (propeType == typeof(int) || propeType == typeof(int?)) // TODO logging 
+			else if (propeType == typeof(int) || propeType == typeof(int?))
 			{
 				if (item?.Value != null)
 				{
 					valueToSet = Convert.ToInt32(item.Value);
 				}
 			}
-			else if (propeType == typeof(long) || propeType == typeof(long?)) // TODO logging 
+			else if (propeType == typeof(long) || propeType == typeof(long?)) 
 			{
 				if (item?.Value != null)
 				{
@@ -162,7 +161,6 @@ namespace kCura.IntegrationPoints.Data.Transformers
 			}
 		}
 
-		// TODO - refactor 
 		private static object ConvertRdoFieldValueToObjectManagerFieldValue(object rawValue, DynamicFieldAttribute attributes)
 		{
 			if (rawValue == null)
@@ -207,7 +205,6 @@ namespace kCura.IntegrationPoints.Data.Transformers
 			return ConvertPropertiesToFields(rdo.GetType(), bindingAttr);
 		}
 
-		// TODO move to proper class 
 		public static IEnumerable<FieldRef> ConvertPropertiesToFields<T>() where T : BaseRdo
 		{
 			BindingFlags bindingAttr = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance;

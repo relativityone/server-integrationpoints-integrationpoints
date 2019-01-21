@@ -16,9 +16,8 @@ namespace kCura.IntegrationPoints.Core.QueryOptions
 
 		public static JobHistoryQueryOptions All()
 		{
-			Guid[] fields = RDOFieldsConverter
-				.GetFieldGuids<JobHistoryFieldGuids>()
-				.ToArray();
+			Guid[] fields = BaseRdo.GetFieldMetadata(typeof(JobHistory))
+				.Keys.ToArray();
 			return new JobHistoryQueryOptions(fields);
 		}
 
