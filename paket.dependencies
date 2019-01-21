@@ -9,6 +9,7 @@ nuget Autofac ~> 4.8
 nuget Polly ~> 6.1
 nuget Banzai ~> 3.0
 nuget Banzai.AUtofac ~> 3.0
+nuget Newtonsoft.Json ~> 12.0
 
 // Tests
 nuget NUnit ~> 3.11
