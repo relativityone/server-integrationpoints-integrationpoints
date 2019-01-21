@@ -38,16 +38,27 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		/// Retrieves job history Rdo
 		/// </summary>
 		/// <param name="batchInstance">Batch instance Guid</param>
-		/// <param name="queryOptions">Specifies how Rdo will be fetched. Fetch whole object when not set.</param>
 		/// <returns></returns>
-		Data.JobHistory GetRdo(Guid batchInstance, IQueryOptions queryOptions = null);
+		Data.JobHistory GetRdo(Guid batchInstance);
+
+		/// <summary>
+		/// Retrieves job history Rdo without Documents field
+		/// </summary>
+		/// <param name="batchInstance">Batch instance Guid</param>
+		/// <returns></returns>
+		Data.JobHistory GetRdoWithoutDocuments(Guid batchInstance);
 
 		/// <summary>
 		/// Updates job history Rdo
 		/// </summary>
 		/// <param name="jobHistory">Job history Rdo</param>
-		/// <param name="queryOptions">Specifies how Rdo will be updated. Update whole object when not set.</param>
-		void UpdateRdo(Data.JobHistory jobHistory, IQueryOptions queryOptions = null);
+		void UpdateRdo(Data.JobHistory jobHistory);
+
+		/// <summary>
+		/// Updates job history Rdo without Documents field
+		/// </summary>
+		/// <param name="jobHistory">Job history Rdo</param>
+		void UpdateRdoWithoutDocuments(Data.JobHistory jobHistory);
 
 		/// <summary>
 		/// Deletes an instance of job history given its Artifact ID.

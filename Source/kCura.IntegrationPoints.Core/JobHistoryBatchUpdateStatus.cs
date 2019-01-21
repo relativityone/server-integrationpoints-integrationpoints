@@ -1,7 +1,6 @@
 ﻿using System;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Core.Helpers;
-using kCura.IntegrationPoints.Core.QueryOptions;
+using kCura.IntegrationPoints.Core.Monitoring;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
@@ -24,12 +23,8 @@ namespace kCura.IntegrationPoints.Core
 		private readonly IAPILog _logger;
 		private readonly IDateTimeHelper _dateTimeHelper;
 
-		private readonly JobHistoryQueryOptions _jobHistoryQueryOptions =
-			JobHistoryQueryOptions.Query
-				.All()
-				.Except(JobHistoryFieldGuids.Documents);
-
-	    public JobHistoryBatchUpdateStatus(IJobStatusUpdater jobStatusUpdater, 
+	    public JobHistoryBatchUpdateStatus(
+		    IJobStatusUpdater jobStatusUpdater, 
 		    IJobHistoryService jobHistoryService,
 	        IJobService jobService, 
 		    ISerializer serializer,
@@ -86,9 +81,8 @@ namespace kCura.IntegrationPoints.Core
 		private JobHistory GetHistory(Job job)
 		{
 			TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
-			JobHistory jobHistory = _jobHistoryService.GetRdo(
-				taskParameters.BatchInstance, 
-				_jobHistoryQueryOptions
+			JobHistory jobHistory = _jobHistoryService.GetRdoWithoutDocuments(
+				taskParameters.BatchInstance
 			);
 
 			if (jobHistory == null)
@@ -107,10 +101,7 @@ namespace kCura.IntegrationPoints.Core
 		{
 			try
 			{
-				_jobHistoryService.UpdateRdo(
-					jobHistory,
-					_jobHistoryQueryOptions
-				);
+				_jobHistoryService.UpdateRdoWithoutDocuments(jobHistory);
 			}
 			catch (Exception exception)
 			{

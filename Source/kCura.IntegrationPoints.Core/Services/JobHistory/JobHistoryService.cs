@@ -49,22 +49,21 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			_messageService = messageService;
 		}
 
-		public Data.JobHistory GetRdo(Guid batchInstance, IQueryOptions queryOptions = null)
+		public Data.JobHistory GetRdo(Guid batchInstance)
 		{
-			var request = new QueryRequest
-			{
-				Condition = $"'{JobHistoryFields.BatchInstance}' == '{batchInstance}'",
-				Fields = MapToFieldRefs(queryOptions?.FieldGuids)
-			};
+			JobHistoryQueryOptions queryOptions = JobHistoryQueryOptions
+				.Query
+				.All();
+			return GetRdo(batchInstance, queryOptions);
+		}
 
-			IList<Data.JobHistory> jobHistories = _caseServiceContext.RsapiService.RelativityObjectManager.Query<Data.JobHistory>(request);
-			if (jobHistories.Count > 1)
-			{
-				LogMoreThanOneHistoryInstanceWarning(batchInstance);
-			}
-			Data.JobHistory jobHistory = jobHistories.SingleOrDefault(); //there should only be one!
-
-			return jobHistory;
+		public Data.JobHistory GetRdoWithoutDocuments(Guid batchInstance)
+		{
+			JobHistoryQueryOptions queryOptions = JobHistoryQueryOptions
+				.Query
+				.All()
+				.Except(JobHistoryFieldGuids.Documents);
+			return GetRdo(batchInstance, queryOptions);
 		}
 
 		public IList<Data.JobHistory> GetJobHistory(IList<int> jobHistoryArtifactIds)
@@ -171,19 +170,21 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			return jobHistory;
 		}
 
-		public void UpdateRdo(Data.JobHistory jobHistory, IQueryOptions queryOptions = null)
+		public void UpdateRdo(Data.JobHistory jobHistory)
 		{
-			IRelativityObjectManager objectManager = _caseServiceContext.RsapiService.RelativityObjectManager;
+			JobHistoryQueryOptions queryOptions = JobHistoryQueryOptions
+				.Query
+				.All();
+			UpdateRdo(jobHistory, queryOptions);
+		}
 
-			if (queryOptions == null)
-			{
-				objectManager.Update(jobHistory);
-				return;
-			}
-
-			List<FieldRefValuePair> fieldValues = MapToFieldValues(queryOptions.FieldGuids, jobHistory).ToList();
-
-			objectManager.Update(jobHistory.ArtifactId, fieldValues);
+		public void UpdateRdoWithoutDocuments(Data.JobHistory jobHistory)
+		{
+			JobHistoryQueryOptions queryOptions = JobHistoryQueryOptions
+				.Query
+				.All()
+				.Except(JobHistoryFieldGuids.Documents);
+			UpdateRdo(jobHistory, queryOptions);
 		}
 
 		public void DeleteRdo(int jobHistoryId)
@@ -197,6 +198,43 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			{
 				Fields = RDOConverter.ConvertPropertiesToFields<Data.JobHistory>()
 			});
+		}
+
+		private void UpdateRdo(
+			Data.JobHistory jobHistory, 
+			JobHistoryQueryOptions queryOptions)
+		{
+			IRelativityObjectManager objectManager = _caseServiceContext.RsapiService.RelativityObjectManager;
+
+			if (queryOptions.QueriesAll())
+			{
+				objectManager.Update(jobHistory);
+				return;
+			}
+
+			List<FieldRefValuePair> fieldValues = MapToFieldValues(queryOptions.FieldGuids, jobHistory).ToList();
+
+			objectManager.Update(jobHistory.ArtifactId, fieldValues);
+		}
+
+		private Data.JobHistory GetRdo(
+			Guid batchInstance, 
+			JobHistoryQueryOptions queryOptions)
+		{
+			var request = new QueryRequest
+			{
+				Condition = $"'{JobHistoryFields.BatchInstance}' == '{batchInstance}'",
+				Fields = MapToFieldRefs(queryOptions?.FieldGuids)
+			};
+
+			IList<Data.JobHistory> jobHistories = _caseServiceContext.RsapiService.RelativityObjectManager.Query<Data.JobHistory>(request);
+			if (jobHistories.Count > 1)
+			{
+				LogMoreThanOneHistoryInstanceWarning(batchInstance);
+			}
+			Data.JobHistory jobHistory = jobHistories.SingleOrDefault(); //there should only be one!
+
+			return jobHistory;
 		}
 
 		private void OnBatchStart(Data.IntegrationPoint integrationPoint, Guid batchInstanceId)

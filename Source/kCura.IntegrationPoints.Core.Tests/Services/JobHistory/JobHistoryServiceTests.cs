@@ -25,7 +25,7 @@ using Relativity.Services.Objects.DataContracts;
 namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 {
 	[TestFixture]
-	public class JobHistoryServiceTest : TestBase
+	public class JobHistoryServiceTests : TestBase
 	{
 		private ICaseServiceContext _caseServiceContext;
 		private IWorkspaceManager _workspaceManager;
@@ -41,9 +41,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		private WorkspaceDTO _workspace;
 		private int _jobHistoryArtifactId;
 		private Guid _batchGuid;
-
-		private readonly Guid _nameFieldGuid = new Guid("07061466-5fab-4581-979c-c801e8207370");
-		private readonly Guid _jobIdFieldGuid = new Guid("77d797ef-96c9-4b47-9ef8-33f498b5af0d");
 
 		[SetUp]
 		public override void SetUp()
@@ -112,7 +109,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		}
 
 		[Test]
-		public void GetRdo_SucceedsWithQueryOptions_Test()
+		public void GetRdoWithoutDocuments_Succeeds_Test()
 		{
 			// Arrange
 			Guid batchInstance = new Guid();
@@ -122,15 +119,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 				Name = "Job Name 1",
 				JobID = "10"
 			};
-			IQueryOptions queryOptions = Substitute.For<IQueryOptions>();
-			queryOptions.FieldGuids.Returns(new[] { _nameFieldGuid, _jobIdFieldGuid });
 
 			_caseServiceContext.RsapiService.RelativityObjectManager
 				.Query<Data.JobHistory>(Arg.Is<QueryRequest>(x => !string.IsNullOrEmpty(x.Condition)))
 				.Returns(new List<Data.JobHistory>(1) { jobHistory });
 
 			// Act
-			Data.JobHistory actual = _instance.GetRdo(batchInstance);
+			Data.JobHistory actual = _instance.GetRdoWithoutDocuments(batchInstance);
 
 			// Assert
 			Assert.IsNotNull(actual);
@@ -138,7 +133,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			Assert.AreEqual(actual.Name, jobHistory.Name);
 			Assert.AreEqual(actual.JobID, jobHistory.JobID);
 
-			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1)
+			_caseServiceContext.RsapiService.RelativityObjectManager
+				.Received(1)
 				.Query<Data.JobHistory>(Arg.Is<QueryRequest>(x =>
 					x.Condition.Contains(batchInstance.ToString())));
 		}
@@ -186,7 +182,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		}
 
 		[Test]
-		public void UpdateRdo_SucceedsWithQueryOptions_Test()
+		public void UpdateRdoWithoutDocuments_Succeeds_Test()
 		{
 			// Arrange
 			int artifactId = 456;
@@ -198,11 +194,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 				Name = name,
 				JobID = jobID
 			};
-			IQueryOptions queryOptions = Substitute.For<IQueryOptions>();
-			queryOptions.FieldGuids.Returns(new[] { _nameFieldGuid, _jobIdFieldGuid });
 
 			// Act
-			_instance.UpdateRdo(jobHistory, queryOptions);
+			_instance.UpdateRdoWithoutDocuments(jobHistory);
 
 			// Assert
 			_caseServiceContext.RsapiService.RelativityObjectManager
@@ -210,8 +204,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 				.Update(
 					Arg.Is<int>(actualArtifactId => actualArtifactId == artifactId), 
 					Arg.Is<List<FieldRefValuePair>>(actualFieldRefValuePairs => actualFieldRefValuePairs.Count == 2
-						&& actualFieldRefValuePairs.Count(x => x.Field.Guid == _nameFieldGuid &&  (string)x.Value == name) == 1
-						&& actualFieldRefValuePairs.Count(x => x.Field.Guid == _jobIdFieldGuid && (string)x.Value == jobID) == 1));
+						&& actualFieldRefValuePairs.Count(x => x.Field.Guid.ToString() == JobHistoryFieldGuids.Name 
+						                                       &&  (string)x.Value == name) == 1
+						&& actualFieldRefValuePairs.Count(x => x.Field.Guid.ToString() == JobHistoryFieldGuids.JobID 
+						                                       && (string)x.Value == jobID) == 1));
 		}
 
 		[Test]

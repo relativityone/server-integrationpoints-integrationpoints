@@ -5,7 +5,7 @@ using kCura.IntegrationPoints.Data.Transformers;
 
 namespace kCura.IntegrationPoints.Core.QueryOptions
 {
-	public class JobHistoryQueryOptions : IQueryOptions
+	public class JobHistoryQueryOptions
 	{
 		public Guid[] FieldGuids { get; }
 
@@ -29,6 +29,12 @@ namespace kCura.IntegrationPoints.Core.QueryOptions
 			var fieldGuid = new Guid(fieldGuidAsString);
 			Guid[] fields = FieldGuids.Except(new[] { fieldGuid }).ToArray();
 			return new JobHistoryQueryOptions(fields);
+		}
+
+		public bool QueriesAll()
+		{
+			var queryAllOptions = JobHistoryQueryOptions.Query.All();
+			return FieldGuids.SequenceEqual(queryAllOptions.FieldGuids);
 		}
 	}
 }
