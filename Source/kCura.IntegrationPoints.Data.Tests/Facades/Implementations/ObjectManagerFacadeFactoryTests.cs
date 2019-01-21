@@ -59,7 +59,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 			IObjectManagerFacade createdInstance = _sut.Create(ExecutionIdentity.Manual);
 
 			// assert
-			createdInstance.Should().BeOfType<ObjectManagerFacadeWithRetries>();
+			createdInstance.Should().BeOfType<ObjectManagerFacadeRetryDecorator>();
 		}
 
 		[TestCase(ExecutionIdentity.Manual)]

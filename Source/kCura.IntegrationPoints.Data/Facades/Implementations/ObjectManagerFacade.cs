@@ -1,15 +1,7 @@
-﻿using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
-using kCura.IntegrationPoints.Domain.Exceptions;
-using Relativity.API;
-using Relativity.Kepler.Exceptions;
-using Relativity.Services.Objects.DataContracts;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
+﻿using System;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Common.Constants;
-using IObjectManager = Relativity.Services.Objects.IObjectManager;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Facades.Implementations
 {
@@ -17,137 +9,68 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 	{
 		private bool _isDisposed = false;
 
-		private readonly IExternalServiceInstrumentationProvider _instrumentationProvider;
-		private readonly IAPILog _logger;
 		private readonly Lazy<IObjectManager> _objectManager;
 
-		public ObjectManagerFacade(Func<IObjectManager> objectManagerFactoryFactory,
-			IExternalServiceInstrumentationProvider instrumentationProvider, IAPILog logger)
+		public ObjectManagerFacade(Func<IObjectManager> objectManager)
 		{
-			_objectManager = new Lazy<IObjectManager>(objectManagerFactoryFactory);
-			_instrumentationProvider = instrumentationProvider;
-			_logger = logger.ForContext<ObjectManagerFacade>();
+			_objectManager = new Lazy<IObjectManager>(objectManager);
 		}
 
 		public async Task<CreateResult> CreateAsync(int workspaceArtifactID, CreateRequest createRequest)
 		{
-			IExternalServiceInstrumentationStarted startedInstrumentation = StartInstrumentation();
-			CreateResult result =
-				await Execute(x => x.CreateAsync(workspaceArtifactID, createRequest), startedInstrumentation)
-					.ConfigureAwait(false);
-			CompleteResultWithEventHandlers(result.EventHandlerStatuses, startedInstrumentation);
-			return result;
-		}
-
-		public async Task<DeleteResult> DeleteAsync(int workspaceArtifactID, DeleteRequest request)
-		{
-			IExternalServiceInstrumentationStarted startedInstrumentation = StartInstrumentation();
-			DeleteResult result =
-				await Execute(x => x.DeleteAsync(workspaceArtifactID, request), startedInstrumentation)
-					.ConfigureAwait(false);
-			startedInstrumentation.Completed();
-			return result;
-		}
-
-		public async Task<QueryResult> QueryAsync(int workspaceArtifactID, QueryRequest request, int start, int length)
-		{
-			IExternalServiceInstrumentationStarted startedInstrumentation = StartInstrumentation();
-			QueryResult result =
-				await Execute(x => x.QueryAsync(workspaceArtifactID, request, start, length), startedInstrumentation)
-					.ConfigureAwait(false);
-			startedInstrumentation.Completed();
-			return result;
+			return await _objectManager.Value.CreateAsync(
+					workspaceArtifactID, 
+					createRequest)
+				.ConfigureAwait(false);
 		}
 
 		public async Task<ReadResult> ReadAsync(int workspaceArtifactID, ReadRequest request)
 		{
-			IExternalServiceInstrumentationStarted startedInstrumentation = StartInstrumentation();
-			ReadResult result = await Execute(x => x.ReadAsync(workspaceArtifactID, request), startedInstrumentation)
+			return await _objectManager.Value.ReadAsync(
+					workspaceArtifactID, 
+					request)
 				.ConfigureAwait(false);
-			startedInstrumentation.Completed();
-			return result;
 		}
 
 		public async Task<UpdateResult> UpdateAsync(int workspaceArtifactID, UpdateRequest request)
 		{
-			IExternalServiceInstrumentationStarted startedInstrumentation = StartInstrumentation();
-			UpdateResult result =
-				await Execute(x => x.UpdateAsync(workspaceArtifactID, request), startedInstrumentation)
-					.ConfigureAwait(false);
-			CompleteResultWithEventHandlers(result.EventHandlerStatuses, startedInstrumentation);
-			return result;
+			return await _objectManager.Value.UpdateAsync(
+					workspaceArtifactID,
+					request)
+				.ConfigureAwait(false);
 		}
 
-		private void CompleteResultWithEventHandlers(List<EventHandlerStatus> eventHandlerStatuses,
-			IExternalServiceInstrumentationStarted startedInstrumentation)
+		public async Task<DeleteResult> DeleteAsync(int workspaceArtifactID, DeleteRequest request)
 		{
-			string[] failedEventHandlersMessages =
-				eventHandlerStatuses.Where(x => !x.Success).Select(x => x.Message).ToArray();
-			if (failedEventHandlersMessages.Any())
-			{
-				string reason = string.Join(";", failedEventHandlersMessages);
-				startedInstrumentation.Failed(reason);
-			}
-			else
-			{
-				startedInstrumentation.Completed();
-			}
+			return await _objectManager.Value.DeleteAsync(
+					workspaceArtifactID,
+					request)
+				.ConfigureAwait(false);
 		}
 
-		private async Task<T> Execute<T>(Func<IObjectManager, Task<T>> f,
-			IExternalServiceInstrumentationStarted instrumentation, [CallerMemberName]string operation = "")
+		public async Task<QueryResult> QueryAsync(int workspaceArtifactID, QueryRequest request, int start, int length)
 		{
-			try
-			{
-				return await f(_objectManager.Value).ConfigureAwait(false);
-			}
-			catch (ServiceNotFoundException ex)
-			{
-				instrumentation.Failed(ex);
-				throw LogServiceNotFoundException(operation, ex);
-			}
-			catch (Exception ex)
-			{
-				instrumentation.Failed(ex);
-				throw;
-			}
-		}
-
-		private IExternalServiceInstrumentationStarted StartInstrumentation([CallerMemberName] string operationName = "")
-		{
-			IExternalServiceInstrumentation instrumentation =
-				_instrumentationProvider.Create(ExternalServiceTypes.KEPLER, nameof(IObjectManager), operationName);
-			return instrumentation.Started();
-		}
-
-		private IntegrationPointsException LogServiceNotFoundException(string operationName,
-			ServiceNotFoundException ex)
-		{
-			string message = $"Error while connecting to object manager service. Cannot perform {operationName} operation.";
-			_logger.LogError(
-				"Error while connecting to object manager service. Cannot perform {operationName} operation.",
-				operationName);
-
-			return new IntegrationPointsException(message, ex)
-			{
-				ShouldAddToErrorsTab = true,
-
-				Source = IntegrationPointsExceptionSource.KEPLER
-			};
+			return await _objectManager.Value.QueryAsync(
+					workspaceArtifactID,
+					request,
+					start,
+					length)
+				.ConfigureAwait(false);
 		}
 
 		#region IDisposable Support
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!_isDisposed)
+			if (_isDisposed)
 			{
-				if (disposing && _objectManager.IsValueCreated)
-				{
-					_objectManager.Value.Dispose();
-				}
-
-				_isDisposed = true;
+				return;
 			}
+			if (disposing && _objectManager.IsValueCreated)
+			{
+				_objectManager.Value.Dispose();
+			}
+
+			_isDisposed = true;
 		}
 
 		public void Dispose()
