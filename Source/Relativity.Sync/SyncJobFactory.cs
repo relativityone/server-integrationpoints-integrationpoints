@@ -1,6 +1,5 @@
 ﻿using System;
 using Autofac;
-using Relativity.Sync.Configuration;
 using Relativity.Sync.Telemetry;
 
 namespace Relativity.Sync

@@ -9,5 +9,6 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "<Pending>", Scope = "type", Target = "~T:Relativity.Sync.Tests.Integration.Stubs.ExecutionConstrainsStub`1")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "<Pending>", Scope = "type", Target = "~T:Relativity.Sync.Tests.Integration.Stubs.ExecutorStub`1")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "<Pending>", Scope = "type", Target = "~T:Relativity.Sync.Tests.Integration.Stubs.FailingExecutorStub`1")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "<Pending>", Scope = "type", Target = "~T:Relativity.Sync.Tests.Integration.Stubs.SyncMetricsStub")]
 
 #pragma warning restore RG2001 // Character Per Line

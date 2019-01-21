@@ -21,18 +21,30 @@ namespace Relativity.Sync
 
 		public async Task<bool> CanExecuteAsync(CancellationToken token)
 		{
-			return await _innerCommand.CanExecuteAsync(token).ConfigureAwait(false);
+			return await MeasureExecutionTime(async () => 
+				await _innerCommand.CanExecuteAsync(token).ConfigureAwait(false),
+				token).ConfigureAwait(false);
 		}
 
 		public async Task ExecuteAsync(CancellationToken token)
+		{
+			await MeasureExecutionTime(async () =>
+			{
+				await _innerCommand.ExecuteAsync(token).ConfigureAwait(false);
+				return new object();
+			}, token).ConfigureAwait(false);
+		}
+
+		private async Task<TResult> MeasureExecutionTime<TResult>(Func<Task<TResult>> action, CancellationToken token)
 		{
 			CommandExecutionStatus status = CommandExecutionStatus.None;
 			_stopwatch.Start();
 
 			try
 			{
-				await _innerCommand.ExecuteAsync(token).ConfigureAwait(false);
+				TResult actionResult = await action().ConfigureAwait(false);
 				status = token.IsCancellationRequested ? CommandExecutionStatus.Canceled : CommandExecutionStatus.Completed;
+				return actionResult;
 			}
 			catch (OperationCanceledException)
 			{
@@ -47,7 +59,7 @@ namespace Relativity.Sync
 			finally
 			{
 				_stopwatch.Stop();
-				_metrics.TimedOperation(typeof(T).Name, _stopwatch.Elapsed, status.ToString());
+				_metrics.TimedOperation(typeof(T).Name, _stopwatch.Elapsed, status);
 			}
 		}
 	}
