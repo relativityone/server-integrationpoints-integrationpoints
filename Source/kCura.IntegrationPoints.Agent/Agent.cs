@@ -7,20 +7,15 @@ using kCura.IntegrationPoints.Agent.Context;
 using kCura.IntegrationPoints.Agent.Installer;
 using kCura.IntegrationPoints.Agent.Interfaces;
 using kCura.IntegrationPoints.Agent.Logging;
-using kCura.IntegrationPoints.Agent.Toggles;
-using kCura.IntegrationPoints.Core.Contracts.Configuration;
-using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.RelativitySync;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.TimeMachine;
-using Newtonsoft.Json;
 using Relativity.API;
 using Relativity.Toggles;
 using ITaskFactory = kCura.IntegrationPoints.Agent.TaskFactory.ITaskFactory;
@@ -87,120 +82,21 @@ namespace kCura.IntegrationPoints.Agent
 
 		private bool ShouldUseRelativitySync(Job job)
 		{
-			_logger.LogDebug("Checking if Relativity Sync flow should be used for job with ID: {jobId}. IntegrationPointId: {integrationPointId}", job.JobId);
-
-			if (!IsRelativitySyncToggleEnabled())
-			{
-				_logger.LogInformation(
-					$"Normal flow will be used for job with ID: {{jobId}} because {nameof(EnableSyncToggle)} is disabled. IntegrationPointId: {{integrationPointId}}",
-					job.JobId, job.RelatedObjectArtifactID);
-
-				return false;
-			}
-
-			IntegrationPoint integrationPoint = GetIntegrationPoint(job.RelatedObjectArtifactID);
-			ProviderType providerType = GetProviderType(integrationPoint.SourceProvider ?? 0, integrationPoint.DestinationProvider ?? 0);
-			if (providerType == ProviderType.Relativity)
-			{
-				SourceConfiguration sourceConfiguration = VerboseDeserialize<SourceConfiguration>(integrationPoint.SourceConfiguration);
-				ImportSettings importSettings = VerboseDeserialize<ImportSettings>(integrationPoint.SourceConfiguration);
-
-				if (ConfigurationAllowsUsingRelativitySync(sourceConfiguration, importSettings))
-				{
-					_logger.LogInformation("Relativity Sync flow will be used for job with ID: {jobId}. IntegrationPointId: {integrationPointId}", job.JobId, job.RelatedObjectArtifactID);
-					return true;
-				}
-			}
-
-			_logger.LogInformation(
-				"Normal flow will be used for job with ID: {jobId} because this integration point does not meet conditions required for running Relativity Sync. IntegrationPointId: {integrationPointId}",
-				job.JobId, job.RelatedObjectArtifactID);
-			return false;
-		}
-
-		private T VerboseDeserialize<T>(string jsonToDeserialize)
-		{
-			_logger.LogDebug($"Deserializing json for type {nameof(T)}");
-
-			if (string.IsNullOrWhiteSpace(jsonToDeserialize))
-			{
-				throw new ArgumentNullException(nameof(jsonToDeserialize));
-			}
-
-			try
-			{
-				T result = JsonConvert.DeserializeObject<T>(jsonToDeserialize);
-				_logger.LogInformation($"Json for type {nameof(T)} deserialized successfully");
-				return result;
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, $"Deserializing json for type {nameof(T)} operation resulted in an error.");
-				throw;
-			}
-		}
-
-		private bool ConfigurationAllowsUsingRelativitySync(SourceConfiguration sourceConfiguration, ImportSettings importSettings)
-		{
-			_logger.LogDebug(
-				"Checking if configurations allow using RelativitySync. SourceConfiguration.TypeOfExport: {typeOfExport}; DestinationConfiguration.ImageImport: {imageImport}; DestinationConfiguration.ProductionImport: {productionImport}",
-				sourceConfiguration.TypeOfExport, 
-				importSettings.ImageImport,
-				importSettings.ProductionImport);
-
-			return sourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.SavedSearch &&
-			       !importSettings.ImageImport &&
-			       !importSettings.ProductionImport;
-		}
-
-		private ProviderType GetProviderType(int sourceProviderId, int destinationProviderId)
-		{
-			_logger.LogDebug(
-				$"Determining Integration Point provider type based on source and destination provider id's using {nameof(IProviderTypeService)} SourceProviderId: {{sourceProviderId}}; DestinationProviderId: {{destinationProviderId}}",
-				sourceProviderId, 
-				destinationProviderId);
-
-			IProviderTypeService providerTypeService = null;
-			try
-			{
-				providerTypeService = _agentLevelContainer.Value.Resolve<IProviderTypeService>();
-				ProviderType providerType =
-					providerTypeService.GetProviderType(sourceProviderId, destinationProviderId);
-				_logger.LogInformation(
-					"ProviderType for given providers has been determined as: {providerType}. SourceProviderId: {sourceProviderId}; DestinationProviderId: {destinationProviderId}",
-					providerType, sourceProviderId, destinationProviderId);
-				return providerType;
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "Getting Provider Type operation resulted in an error.");
-				throw;
-			}
-			finally
-			{
-				if (providerTypeService != null)
-				{
-					_agentLevelContainer.Value.Release(providerTypeService);
-				}
-			}
-		}
-
-		private IntegrationPoint GetIntegrationPoint(int integrationPointId)
-		{
-			_logger.LogDebug("Retrieving Integration Point using IntegrationPointService. IntegrationPointId: {integrationPointId}", integrationPointId);
-
 			IIntegrationPointService integrationPointService = null;
+			IProviderTypeService providerTypeService = null;
+			IToggleProvider toggleProvider = null;
+			IConfigurationDeserializer configurationDeserializer = null;
 			try
 			{
 				integrationPointService = _agentLevelContainer.Value.Resolve<IIntegrationPointService>();
-				IntegrationPoint integrationPoint = integrationPointService.GetRdo(integrationPointId);
-				_logger.LogInformation("Integration Point with id: {integrationPointId} retrieved successfully.", integrationPointId);
-				return integrationPoint;
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "Getting Integration Point operation resulted in an error.");
-				throw;
+				providerTypeService = _agentLevelContainer.Value.Resolve<IProviderTypeService>();
+				toggleProvider = _agentLevelContainer.Value.Resolve<IToggleProvider>();
+				configurationDeserializer = _agentLevelContainer.Value.Resolve<IConfigurationDeserializer>();
+
+				RelativitySyncConstrainsChecker constrainsChecker =
+					new RelativitySyncConstrainsChecker(integrationPointService, providerTypeService, toggleProvider,
+						configurationDeserializer, _logger);
+				return constrainsChecker.ShouldUseRelativitySync(job);
 			}
 			finally
 			{
@@ -208,35 +104,24 @@ namespace kCura.IntegrationPoints.Agent
 				{
 					_agentLevelContainer.Value.Release(integrationPointService);
 				}
-			}
-		}
-
-		private bool IsRelativitySyncToggleEnabled()
-		{
-			_logger.LogDebug($"Checking if {nameof(EnableSyncToggle)} is enabled.");
-
-			IToggleProvider toggleProvider = null;
-			try
-			{
-				toggleProvider = _agentLevelContainer.Value.Resolve<IToggleProvider>();
-				bool isEnabled = toggleProvider.IsEnabled<EnableSyncToggle>();
-				_logger.LogInformation($"Confirmed that {nameof(EnableSyncToggle)} is {(isEnabled ? "enabled" : "disabled")}.");
-				return isEnabled;
-
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, $"Checking if {nameof(EnableSyncToggle)} is enabled resulted in an error.");
-				throw;
-			}
-			finally
-			{
+				
+				if (providerTypeService != null)
+				{
+					_agentLevelContainer.Value.Release(providerTypeService);
+				}
+				
 				if (toggleProvider != null)
 				{
 					_agentLevelContainer.Value.Release(toggleProvider);
 				}
+				
+				if (configurationDeserializer != null)
+				{
+					_agentLevelContainer.Value.Release(configurationDeserializer);
+				}
 			}
 		}
+
 
 		public ITask GetTask(Job job)
 		{

@@ -5,7 +5,7 @@ using Relativity.Sync;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
-	public class RelativitySyncAdapter
+	public static class RelativitySyncAdapter
 	{
 		public static TaskResult Run(Job job)
 		{
