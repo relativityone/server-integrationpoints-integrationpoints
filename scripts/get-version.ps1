@@ -102,5 +102,5 @@ if ($buildType -eq "GOLD") {
 }
 else {
     $global:version = "$major.$minor.$patch.$build"
-    $global:packageVersion = "$major.$minor.$patch-$suffix-$build"
+    $global:packageVersion = "$major.$minor.$patch-$suffix.$build"
 }
