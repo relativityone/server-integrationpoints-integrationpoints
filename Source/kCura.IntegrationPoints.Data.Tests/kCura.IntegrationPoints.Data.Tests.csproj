@@ -128,8 +128,8 @@
     <Compile Include="Facades\Implementations\ObjectManagerFacadeInstrumentationDecoratorTests.cs" />
     <Compile Include="Facades\Implementations\ObjectManagerFacadeRetryDecoratorTests.cs" />
     <Compile Include="Facades\Implementations\ObjectManagerFacadeTests.cs" />
-    <Compile Include="Facades\Implementations\TestCases\FieldValueTestCase.cs" />
-    <Compile Include="Facades\Implementations\TestCases\FieldValueTestCases.cs" />
+    <Compile Include="Facades\Implementations\TestCases\CollectionFieldValueTestCase.cs" />
+    <Compile Include="Facades\Implementations\TestCases\CollectionFieldValueTestCases.cs" />
     <Compile Include="Helpers\MatchHelper.cs" />
     <Compile Include="Repositories\AuditRepositoryTests.cs" />
     <Compile Include="Repositories\CaseRepositoryTests.cs" />

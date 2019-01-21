@@ -2,12 +2,12 @@
 
 namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations.TestCases
 {
-	public class FieldValueTestCase
+	public class CollectionFieldValueTestCase
 	{
 		public ICollection Value { get; }
 		public string Name { get; }
 
-		public FieldValueTestCase(ICollection value, string name)
+		public CollectionFieldValueTestCase(ICollection value, string name)
 		{
 			Value = value;
 			Name = name;

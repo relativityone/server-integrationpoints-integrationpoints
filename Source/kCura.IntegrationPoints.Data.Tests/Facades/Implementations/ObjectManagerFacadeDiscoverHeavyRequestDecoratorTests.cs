@@ -19,34 +19,34 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		private Mock<IObjectManagerFacade> _objectManagerMock;
 		private ObjectManagerFacadeDiscoverHeavyRequestDecorator _sut;
 
-		private static IEnumerable<FieldValueTestCases> FieldValueExceededAndNotTestSource = new[]
+		private static IEnumerable<CollectionFieldValueTestCases> FieldValueExceededAndNotTestSource = new[]
 		{
-			new FieldValueTestCases
+			new CollectionFieldValueTestCases
 			{
 				FieldValues = new []
 				{
-					new FieldValueTestCase(
+					new CollectionFieldValueTestCase(
 						value: Enumerable.Range(1, _MAX_COLLECTION_COUNT + 1)
 							.ToArray(),
 						name: "Array Field Exceeded"
 					),
-					new FieldValueTestCase(
+					new CollectionFieldValueTestCase(
 						value: Enumerable.Range(1, _MAX_COLLECTION_COUNT)
 							.ToArray(),
 						name: "Array Field Not Exceeded"
 					)
 				}
 			},
-			new FieldValueTestCases
+			new CollectionFieldValueTestCases
 			{
 				FieldValues = new []
 				{
-					new FieldValueTestCase(
+					new CollectionFieldValueTestCase(
 						value: Enumerable.Range(1, _MAX_COLLECTION_COUNT + 1)
 							.ToList(),
 						name: "List Field Exceeded"
 					),
-					new FieldValueTestCase(
+					new CollectionFieldValueTestCase(
 						value: Enumerable.Range(1, _MAX_COLLECTION_COUNT)
 							.ToArray(),
 						name: "List Field Not Exceeded"
@@ -55,24 +55,24 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 			}
 		};
 
-		private static IEnumerable<FieldValueTestCases> FieldValueExceededByOneTestSource = new[]
+		private static IEnumerable<CollectionFieldValueTestCases> FieldValueExceededByOneTestSource = new[]
 		{
-			new FieldValueTestCases
+			new CollectionFieldValueTestCases
 			{
 				FieldValues = new []
 				{
-					new FieldValueTestCase(
+					new CollectionFieldValueTestCase(
 						value: Enumerable.Range(1, _MAX_COLLECTION_COUNT + 1)
 							.ToArray(),
 						name: "Array Field"
 					)
 				}
 			},
-			new FieldValueTestCases
+			new CollectionFieldValueTestCases
 			{
 				FieldValues = new []
 				{
-					new FieldValueTestCase(
+					new CollectionFieldValueTestCase(
 						value: Enumerable.Range(1, _MAX_COLLECTION_COUNT + 1)
 							.ToList(),
 						name: "List Field"
@@ -81,24 +81,24 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 			}
 		};
 
-		private static IEnumerable<FieldValueTestCases> FieldValueEqualToMaxTestSource = new[]
+		private static IEnumerable<CollectionFieldValueTestCases> FieldValueEqualToMaxTestSource = new[]
 		{
-			new FieldValueTestCases
+			new CollectionFieldValueTestCases
 			{
 				FieldValues = new []
 				{
-					new FieldValueTestCase(
+					new CollectionFieldValueTestCase(
 						value: Enumerable.Range(1, _MAX_COLLECTION_COUNT)
 							.ToArray(),
 						name: "Array Field"
 					)
 				}
 			},
-			new FieldValueTestCases
+			new CollectionFieldValueTestCases
 			{
 				FieldValues = new []
 				{
-					new FieldValueTestCase(
+					new CollectionFieldValueTestCase(
 						value: Enumerable.Range(1, _MAX_COLLECTION_COUNT)
 							.ToList(),
 						name: "List Field"
@@ -107,24 +107,24 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 			}
 		};
 
-		private static IEnumerable<FieldValueTestCases> FieldValueLowerThanMaxTestSource = new[]
+		private static IEnumerable<CollectionFieldValueTestCases> FieldValueLowerThanMaxTestSource = new[]
 		{
-			new FieldValueTestCases
+			new CollectionFieldValueTestCases
 			{
 				FieldValues = new []
 				{
-					new FieldValueTestCase(
+					new CollectionFieldValueTestCase(
 						value: Enumerable.Range(1, _MAX_COLLECTION_COUNT - 1)
 							.ToArray(),
 						name: "Array Field"
 					)
 				}
 			},
-			new FieldValueTestCases
+			new CollectionFieldValueTestCases
 			{
 				FieldValues = new []
 				{
-					new FieldValueTestCase(
+					new CollectionFieldValueTestCase(
 						value: Enumerable.Range(1, _MAX_COLLECTION_COUNT - 1)
 							.ToList(),
 						name: "List Field"
@@ -133,21 +133,21 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 			}
 		};
 
-		private static IEnumerable<FieldValueTestCases> FieldValueAreEmptyTestSource = new[]
+		private static IEnumerable<CollectionFieldValueTestCases> FieldValueAreEmptyTestSource = new[]
 		{
-			new FieldValueTestCases
+			new CollectionFieldValueTestCases
 			{
 				FieldValues = new []
 				{
-					new FieldValueTestCase(
+					new CollectionFieldValueTestCase(
 						value: Enumerable.Range(0, 0).ToArray(),
 						name: "Array Field"
 					)
 				}
 			},
-			new FieldValueTestCases {
+			new CollectionFieldValueTestCases {
 				FieldValues = new [] {
-					new FieldValueTestCase(
+					new CollectionFieldValueTestCase(
 						value: Enumerable.Range(0, 0).ToList(),
 						name: "List Field"
 					)
@@ -155,13 +155,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 			}
 		};
 
-		private static IEnumerable<FieldValueTestCases> FieldValueAreNullsTestSource = new[]
+		private static IEnumerable<CollectionFieldValueTestCases> FieldValueAreNullsTestSource = new[]
 		{
-			new FieldValueTestCases
+			new CollectionFieldValueTestCases
 			{
 				FieldValues = new []
 				{
-					new FieldValueTestCase(
+					new CollectionFieldValueTestCase(
 						value: null,
 						name: "Null Field"
 					)
@@ -187,7 +187,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		[TestCaseSource(nameof(FieldValueExceededByOneTestSource))]
 		public async Task CreateAsync_ShouldLogWarningWhenFieldCollectionCountExceededByOne(
-			FieldValueTestCases fieldValueTestCases)
+			CollectionFieldValueTestCases fieldValueTestCases)
 		{
 			//arrange
 			const int workspaceId = 101;
@@ -217,17 +217,17 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		[TestCaseSource(nameof(FieldValueExceededAndNotTestSource))]
 		public async Task CreateAsync_ShouldLogWarningOnlyWhenFieldCollectionCountIsExceeded(
-			FieldValueTestCases fieldValueTestCases)
+			CollectionFieldValueTestCases fieldValueTestCases)
 		{
 			//arrange
 			const int workspaceId = 101;
 			const string objectTypeName = "Object Is Exceeded Or Not";
 			const string operation = "CREATE";
 			const string objectId = "[UNKNOWN]";
-			IEnumerable<FieldValueTestCase> exceededFieldValues = fieldValueTestCases
+			IEnumerable<CollectionFieldValueTestCase> exceededFieldValues = fieldValueTestCases
 				.FieldValues
 				.Where(x => x.Value.Count > _MAX_COLLECTION_COUNT);
-			IEnumerable<FieldValueTestCase> notExceededFieldValues = fieldValueTestCases
+			IEnumerable<CollectionFieldValueTestCase> notExceededFieldValues = fieldValueTestCases
 				.FieldValues
 				.Where(x => x.Value.Count <= _MAX_COLLECTION_COUNT);
 
@@ -255,7 +255,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		[TestCaseSource(nameof(FieldValueEqualToMaxTestSource))]
 		public async Task CreateAsync_ShouldNotLogWarningWhenFieldCollectionCountEqualsMax(
-			FieldValueTestCases fieldValueTestCases)
+			CollectionFieldValueTestCases fieldValueTestCases)
 		{
 			//arrange
 			const int workspaceId = 101;
@@ -278,7 +278,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		[TestCaseSource(nameof(FieldValueLowerThanMaxTestSource))]
 		public async Task CreateAsync_ShouldNotLogWarningWhenFieldCollectionCountLowerThanMax(
-			FieldValueTestCases fieldValueTestCases)
+			CollectionFieldValueTestCases fieldValueTestCases)
 		{
 			//arrange
 			const int workspaceId = 101;
@@ -301,7 +301,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		[TestCaseSource(nameof(FieldValueAreEmptyTestSource))]
 		public async Task CreateAsync_ShouldNotLogWarningWhenFieldCollectionIsEmpty(
-			FieldValueTestCases fieldValueTestCases)
+			CollectionFieldValueTestCases fieldValueTestCases)
 		{
 			//arrange
 			const int workspaceId = 101;
@@ -324,7 +324,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		[TestCaseSource(nameof(FieldValueAreNullsTestSource))]
 		public async Task CreateAsync_ShouldNotLogWarningWhenFieldIsNull(
-			FieldValueTestCases fieldValueTestCases)
+			CollectionFieldValueTestCases fieldValueTestCases)
 		{
 			//arrange
 			const int workspaceId = 101;
@@ -347,7 +347,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		[TestCaseSource(nameof(FieldValueExceededByOneTestSource))]
 		public async Task ReadAsync_ShouldLogWarningWhenFieldCollectionCountExceededByOne(
-			FieldValueTestCases fieldValueTestCases)
+			CollectionFieldValueTestCases fieldValueTestCases)
 		{
 			//arrange
 			const int workspaceId = 101;
@@ -375,7 +375,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		[TestCaseSource(nameof(FieldValueExceededAndNotTestSource))]
 		public async Task ReadAsync_ShouldLogWarningOnlyWhenFieldCollectionCountIsExceeded(
-			FieldValueTestCases fieldValueTestCases)
+			CollectionFieldValueTestCases fieldValueTestCases)
 		{
 			//arrange
 			const int workspaceId = 101;
@@ -383,10 +383,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 			const string operation = "READ";
 			const int objectId = 33;
 
-			IEnumerable<FieldValueTestCase> exceededFieldValues = fieldValueTestCases
+			IEnumerable<CollectionFieldValueTestCase> exceededFieldValues = fieldValueTestCases
 				.FieldValues
 				.Where(x => x.Value.Count > _MAX_COLLECTION_COUNT);
-			IEnumerable<FieldValueTestCase> notExceededFieldValues = fieldValueTestCases
+			IEnumerable<CollectionFieldValueTestCase> notExceededFieldValues = fieldValueTestCases
 				.FieldValues
 				.Where(x => x.Value.Count <= _MAX_COLLECTION_COUNT);
 
@@ -412,7 +412,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		[TestCaseSource(nameof(FieldValueEqualToMaxTestSource))]
 		public async Task ReadAsync_ShouldNotLogWarningWhenFieldCollectionCountEqualsMax(
-			FieldValueTestCases fieldValueTestCases)
+			CollectionFieldValueTestCases fieldValueTestCases)
 		{
 			//arrange
 			const int workspaceId = 101;
@@ -433,7 +433,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		[TestCaseSource(nameof(FieldValueLowerThanMaxTestSource))]
 		public async Task ReadAsync_ShouldNotLogWarningWhenFieldCollectionCountLowerThanMax(
-			FieldValueTestCases fieldValueTestCases)
+			CollectionFieldValueTestCases fieldValueTestCases)
 		{
 			//arrange
 			const int workspaceId = 101;
@@ -454,7 +454,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		[TestCaseSource(nameof(FieldValueAreEmptyTestSource))]
 		public async Task ReadAsync_ShouldNotLogWarningWhenFieldCollectionIsEmpty(
-			FieldValueTestCases fieldValueTestCases)
+			CollectionFieldValueTestCases fieldValueTestCases)
 		{
 			//arrange
 			const int workspaceId = 101;
@@ -475,7 +475,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		[TestCaseSource(nameof(FieldValueAreNullsTestSource))]
 		public async Task ReadAsync_ShouldNotLogWarningWhenFieldIsNull(
-			FieldValueTestCases fieldValueTestCases)
+			CollectionFieldValueTestCases fieldValueTestCases)
 		{
 			//arrange
 			const int workspaceId = 101;
@@ -496,7 +496,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		[TestCaseSource(nameof(FieldValueExceededByOneTestSource))]
 		public async Task UpdateAsync_ShouldLogWarningWhenFieldCollectionCountExceededByOne(
-			FieldValueTestCases fieldValueTestCases)
+			CollectionFieldValueTestCases fieldValueTestCases)
 		{
 			//arrange
 			const int workspaceId = 101;
@@ -527,7 +527,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		[TestCaseSource(nameof(FieldValueExceededAndNotTestSource))]
 		public async Task UpdateAsync_ShouldLogWarningOnlyWhenFieldCollectionCountIsExceeded(
-			FieldValueTestCases fieldValueTestCases)
+			CollectionFieldValueTestCases fieldValueTestCases)
 		{
 			//arrange
 			const int workspaceId = 101;
@@ -535,10 +535,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 			const string operation = "UPDATE";
 			const int objectId = 33;
 
-			IEnumerable<FieldValueTestCase> exceededFieldValues = fieldValueTestCases
+			IEnumerable<CollectionFieldValueTestCase> exceededFieldValues = fieldValueTestCases
 				.FieldValues
 				.Where(x => x.Value.Count > _MAX_COLLECTION_COUNT);
-			IEnumerable<FieldValueTestCase> notExceededFieldValues = fieldValueTestCases
+			IEnumerable<CollectionFieldValueTestCase> notExceededFieldValues = fieldValueTestCases
 				.FieldValues
 				.Where(x => x.Value.Count <= _MAX_COLLECTION_COUNT);
 
@@ -566,7 +566,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		[TestCaseSource(nameof(FieldValueEqualToMaxTestSource))]
 		public async Task UpdateAsync_ShouldNotLogWarningWhenFieldCollectionCountEqualsMax(
-			FieldValueTestCases fieldValueTestCases)
+			CollectionFieldValueTestCases fieldValueTestCases)
 		{
 			//arrange
 			const int workspaceId = 101;
@@ -590,7 +590,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		[TestCaseSource(nameof(FieldValueLowerThanMaxTestSource))]
 		public async Task UpdateAsync_ShouldNotLogWarningWhenFieldCollectionCountLowerThanMax(
-			FieldValueTestCases fieldValueTestCases)
+			CollectionFieldValueTestCases fieldValueTestCases)
 		{
 			//arrange
 			const int workspaceId = 101;
@@ -614,7 +614,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		[TestCaseSource(nameof(FieldValueAreEmptyTestSource))]
 		public async Task UpdateAsync_ShouldNotLogWarningWhenFieldCollectionIsEmpty(
-			FieldValueTestCases fieldValueTestCases)
+			CollectionFieldValueTestCases fieldValueTestCases)
 		{
 			//arrange
 			const int workspaceId = 101;
@@ -638,7 +638,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		[TestCaseSource(nameof(FieldValueAreNullsTestSource))]
 		public async Task UpdateAsync_ShouldNotLogWarningWhenFieldIsNull(
-			FieldValueTestCases fieldValueTestCases)
+			CollectionFieldValueTestCases fieldValueTestCases)
 		{
 			//arrange
 			const int workspaceId = 101;
@@ -662,7 +662,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		[TestCaseSource(nameof(FieldValueExceededByOneTestSource))]
 		public async Task QueryAsync_ShouldLogWarningWhenFieldCollectionCountExceededByOne(
-			FieldValueTestCases fieldValueTestCases)
+			CollectionFieldValueTestCases fieldValueTestCases)
 		{
 			//arrange
 			const int workspaceId = 101;
@@ -693,7 +693,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		[TestCaseSource(nameof(FieldValueExceededAndNotTestSource))]
 		public async Task QueryAsync_ShouldLogWarningOnlyWhenFieldCollectionCountIsExceeded(
-			FieldValueTestCases fieldValueTestCases)
+			CollectionFieldValueTestCases fieldValueTestCases)
 		{
 			//arrange
 			const int workspaceId = 101;
@@ -703,10 +703,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 			const int start = 0;
 			const int length = 1;
 
-			IEnumerable<FieldValueTestCase> exceededFieldValues = fieldValueTestCases
+			IEnumerable<CollectionFieldValueTestCase> exceededFieldValues = fieldValueTestCases
 				.FieldValues
 				.Where(x => x.Value.Count > _MAX_COLLECTION_COUNT);
-			IEnumerable<FieldValueTestCase> notExceededFieldValues = fieldValueTestCases
+			IEnumerable<CollectionFieldValueTestCase> notExceededFieldValues = fieldValueTestCases
 				.FieldValues
 				.Where(x => x.Value.Count <= _MAX_COLLECTION_COUNT);
 
@@ -732,7 +732,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		[TestCaseSource(nameof(FieldValueEqualToMaxTestSource))]
 		public async Task QueryAsync_ShouldNotLogWarningWhenFieldCollectionCountEqualsMax(
-			FieldValueTestCases fieldValueTestCases)
+			CollectionFieldValueTestCases fieldValueTestCases)
 		{
 			//arrange
 			const int workspaceId = 101;
@@ -756,7 +756,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		[TestCaseSource(nameof(FieldValueLowerThanMaxTestSource))]
 		public async Task QueryAsync_ShouldNotLogWarningWhenFieldCollectionCountLowerThanMax(
-			FieldValueTestCases fieldValueTestCases)
+			CollectionFieldValueTestCases fieldValueTestCases)
 		{
 			//arrange
 			const int workspaceId = 101;
@@ -780,7 +780,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		[TestCaseSource(nameof(FieldValueAreEmptyTestSource))]
 		public async Task QueryAsync_ShouldNotLogWarningWhenFieldCollectionIsEmpty(
-			FieldValueTestCases fieldValueTestCases)
+			CollectionFieldValueTestCases fieldValueTestCases)
 		{
 			//arrange
 			const int workspaceId = 101;
@@ -804,7 +804,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		[Test]
 		[TestCaseSource(nameof(FieldValueAreNullsTestSource))]
 		public async Task QueryAsync_ShouldNotLogWarningWhenFieldIsNull(
-			FieldValueTestCases fieldValueTestCases)
+			CollectionFieldValueTestCases fieldValueTestCases)
 		{
 			//arrange
 			const int workspaceId = 101;
@@ -865,7 +865,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		}
 
 		private CreateRequest BuildCreateRequest(
-			IEnumerable<FieldValueTestCase> fieldValueTestCases,
+			IEnumerable<CollectionFieldValueTestCase> fieldValueTestCases,
 			string objectTypeName)
 		{
 			return new CreateRequest
@@ -880,7 +880,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		}
 
 		private UpdateRequest BuildUpdateRequest(
-			IEnumerable<FieldValueTestCase> fieldValueTestCases,
+			IEnumerable<CollectionFieldValueTestCase> fieldValueTestCases,
 			int objectId)
 		{
 			return new UpdateRequest
@@ -905,7 +905,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 			};
 		}
 
-		private ReadResult BuildReadResult(IEnumerable<FieldValueTestCase> fieldValueTestCases)
+		private ReadResult BuildReadResult(IEnumerable<CollectionFieldValueTestCase> fieldValueTestCases)
 		{
 			return new ReadResult
 			{
@@ -931,7 +931,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 			};
 		}
 
-		private QueryResult BuildQueryResult(IEnumerable<FieldValueTestCase> fieldValueTestCases)
+		private QueryResult BuildQueryResult(IEnumerable<CollectionFieldValueTestCase> fieldValueTestCases)
 		{
 			return new QueryResult
 			{
@@ -999,7 +999,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		}
 
 		private void VerifyIfHeavyRequestIsNotLoggedIn(
-			IEnumerable<FieldValueTestCase> notExceededTestCases)
+			IEnumerable<CollectionFieldValueTestCase> notExceededTestCases)
 		{
 			foreach (var notExceededTestCase in notExceededTestCases)
 			{
@@ -1015,7 +1015,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 			string objectTypeName,
 			string objectId,
 			int workspaceId,
-			IEnumerable<FieldValueTestCase> exceededTestCases)
+			IEnumerable<CollectionFieldValueTestCase> exceededTestCases)
 		{
 			_loggerMock.Verify(x => x.LogWarning(
 				$"Heavy request discovered when executing {operation}"
