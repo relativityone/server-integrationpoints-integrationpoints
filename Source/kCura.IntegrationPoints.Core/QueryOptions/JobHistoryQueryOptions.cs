@@ -14,9 +14,7 @@ namespace kCura.IntegrationPoints.Core.QueryOptions
 			FieldGuids = fieldGuids;
 		}
 
-		public static JobHistoryQueryOptions Query => new JobHistoryQueryOptions(fieldGuids: null);
-
-		public JobHistoryQueryOptions All()
+		public static JobHistoryQueryOptions All()
 		{
 			Guid[] fields = RDOFieldsConverter
 				.GetFieldGuids<JobHistoryFieldGuids>()
@@ -31,10 +29,9 @@ namespace kCura.IntegrationPoints.Core.QueryOptions
 			return new JobHistoryQueryOptions(fields);
 		}
 
-		public bool QueriesAll()
+		public bool ContainsAll()
 		{
-			var queryAllOptions = JobHistoryQueryOptions.Query.All();
-			return FieldGuids.SequenceEqual(queryAllOptions.FieldGuids);
+			return FieldGuids.SequenceEqual(All().FieldGuids);
 		}
 	}
 }

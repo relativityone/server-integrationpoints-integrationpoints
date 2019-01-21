@@ -51,16 +51,13 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
 		public Data.JobHistory GetRdo(Guid batchInstance)
 		{
-			JobHistoryQueryOptions queryOptions = JobHistoryQueryOptions
-				.Query
-				.All();
+			JobHistoryQueryOptions queryOptions = JobHistoryQueryOptions.All();
 			return GetRdo(batchInstance, queryOptions);
 		}
 
 		public Data.JobHistory GetRdoWithoutDocuments(Guid batchInstance)
 		{
 			JobHistoryQueryOptions queryOptions = JobHistoryQueryOptions
-				.Query
 				.All()
 				.Except(JobHistoryFieldGuids.Documents);
 			return GetRdo(batchInstance, queryOptions);
@@ -172,16 +169,13 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
 		public void UpdateRdo(Data.JobHistory jobHistory)
 		{
-			JobHistoryQueryOptions queryOptions = JobHistoryQueryOptions
-				.Query
-				.All();
+			JobHistoryQueryOptions queryOptions = JobHistoryQueryOptions.All();
 			UpdateRdo(jobHistory, queryOptions);
 		}
 
 		public void UpdateRdoWithoutDocuments(Data.JobHistory jobHistory)
 		{
 			JobHistoryQueryOptions queryOptions = JobHistoryQueryOptions
-				.Query
 				.All()
 				.Except(JobHistoryFieldGuids.Documents);
 			UpdateRdo(jobHistory, queryOptions);
@@ -206,7 +200,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		{
 			IRelativityObjectManager objectManager = _caseServiceContext.RsapiService.RelativityObjectManager;
 
-			if (queryOptions.QueriesAll())
+			if (queryOptions.ContainsAll())
 			{
 				objectManager.Update(jobHistory);
 				return;
