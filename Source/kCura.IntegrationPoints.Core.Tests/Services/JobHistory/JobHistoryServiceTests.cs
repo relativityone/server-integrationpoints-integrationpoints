@@ -11,6 +11,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -27,7 +28,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 	[TestFixture]
 	public class JobHistoryServiceTests : TestBase
 	{
-		private ICaseServiceContext _caseServiceContext;
+		private IRelativityObjectManager _relativityObjectManager;
 		private IWorkspaceManager _workspaceManager;
 		private IFederatedInstanceManager _federatedInstanceManager;
 		private IHelper _helper;
@@ -45,7 +46,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		[SetUp]
 		public override void SetUp()
 		{
-			_caseServiceContext = Substitute.For<ICaseServiceContext>();
+			_relativityObjectManager = Substitute.For<IRelativityObjectManager>();
 			_workspaceManager = Substitute.For<IWorkspaceManager>();
 			_federatedInstanceManager = Substitute.For<IFederatedInstanceManager>();
 			_helper = Substitute.For<IHelper>();
@@ -73,7 +74,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			};
 			_batchGuid = Guid.NewGuid();
 			_jobHistoryArtifactId = 987465;
-			_instance = new JobHistoryService(_caseServiceContext,
+			_instance = new JobHistoryService(
+				_relativityObjectManager,
 				_federatedInstanceManager,
 				_workspaceManager,
 				_helper,
@@ -92,7 +94,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 				ArtifactId = 100
 			};
 
-			_caseServiceContext.RsapiService.RelativityObjectManager
+			_relativityObjectManager
 				.Query<Data.JobHistory>(Arg.Is<QueryRequest>(x => !string.IsNullOrEmpty(x.Condition)))
 				.Returns(new List<Data.JobHistory>(1) { jobHistory });
 
@@ -103,7 +105,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			Assert.IsNotNull(actual);
 			Assert.AreEqual(actual.ArtifactId, jobHistory.ArtifactId);
 
-			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1)
+			_relativityObjectManager
+				.Received(1)
 				.Query<Data.JobHistory>(Arg.Is<QueryRequest>(x =>
 					x.Condition.Contains(batchInstance.ToString())));
 		}
@@ -120,7 +123,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 				JobID = "10"
 			};
 
-			_caseServiceContext.RsapiService.RelativityObjectManager
+			_relativityObjectManager
 				.Query<Data.JobHistory>(Arg.Is<QueryRequest>(x => !string.IsNullOrEmpty(x.Condition)))
 				.Returns(new List<Data.JobHistory>(1) { jobHistory });
 
@@ -133,7 +136,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			Assert.AreEqual(actual.Name, jobHistory.Name);
 			Assert.AreEqual(actual.JobID, jobHistory.JobID);
 
-			_caseServiceContext.RsapiService.RelativityObjectManager
+			_relativityObjectManager
 				.Received(1)
 				.Query<Data.JobHistory>(Arg.Is<QueryRequest>(x =>
 					x.Condition.Contains(batchInstance.ToString())));
@@ -146,7 +149,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			IList<int> jobHistoryArtifactIds = new[] { 123, 456, 789 };
 			string conditionValue = string.Join(",", jobHistoryArtifactIds);
 
-			_caseServiceContext.RsapiService.RelativityObjectManager
+			_relativityObjectManager
 				.Query<Data.JobHistory>(Arg.Is<QueryRequest>(x => x.Condition.Contains(conditionValue)))
 				.Returns(new List<Data.JobHistory>(1) { new Data.JobHistory() });
 
@@ -156,7 +159,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			// Assert
 			Assert.IsNotNull(actual);
 
-			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1)
+			_relativityObjectManager
+				.Received(1)
 				.Query<Data.JobHistory>(Arg.Is<QueryRequest>(x =>
 					!string.IsNullOrEmpty(x.Condition) &&
 						x.Condition.Contains(conditionValue)));
@@ -176,7 +180,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			_instance.UpdateRdo(jobHistory);
 
 			// Assert
-			_caseServiceContext.RsapiService.RelativityObjectManager
+			_relativityObjectManager
 				.Received(1)
 				.Update(jobHistory);
 		}
@@ -199,7 +203,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			_instance.UpdateRdoWithoutDocuments(jobHistory);
 
 			// Assert
-			_caseServiceContext.RsapiService.RelativityObjectManager
+			_relativityObjectManager
 				.Received(1)
 				.Update(
 					Arg.Is<int>(actualArtifactId => actualArtifactId == artifactId), 
@@ -220,18 +224,18 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			_instance.DeleteRdo(jobHistoryId);
 
 			//Assert
-			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1).Delete(jobHistoryId);
+			_relativityObjectManager.Received(1).Delete(jobHistoryId);
 		}
 
 		[Test]
 		public void CreateRdo_GoldFlow()
 		{
 			// ARRANGE
-			_caseServiceContext.RsapiService.RelativityObjectManager.Query<Data.JobHistory>(Arg.Any<QueryRequest>()).Returns(new List<Data.JobHistory>());
+			_relativityObjectManager.Query<Data.JobHistory>(Arg.Any<QueryRequest>()).Returns(new List<Data.JobHistory>());
 			_serializer.Deserialize<ImportSettings>(_integrationPoint.DestinationConfiguration).Returns(_settings);
 			_workspaceManager.RetrieveWorkspace(_settings.CaseArtifactId).Returns(_workspace);
 			_federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(_settings.FederatedInstanceArtifactId).Returns(new FederatedInstanceDto());
-			_caseServiceContext.RsapiService.RelativityObjectManager.Create(Arg.Any<Data.JobHistory>()).Returns(_jobHistoryArtifactId);
+			_relativityObjectManager.Create(Arg.Any<Data.JobHistory>()).Returns(_jobHistoryArtifactId);
 
 			// ACT
 			Data.JobHistory jobHistory = _instance.CreateRdo(_integrationPoint, _batchGuid, JobTypeChoices.JobHistoryRun, DateTime.Now);
@@ -245,12 +249,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		public void CreateRdo_WhenGetRdoThrowsException_NewJobHistoryCreated()
 		{
 			// ARRANGE
-			_caseServiceContext.RsapiService.RelativityObjectManager.Query<Data.JobHistory>(Arg.Any<QueryRequest>()).Throws(new Exception("blah blah"));
+			_relativityObjectManager.Query<Data.JobHistory>(Arg.Any<QueryRequest>()).Throws(new Exception("blah blah"));
 			_serializer.Deserialize<ImportSettings>(_integrationPoint.DestinationConfiguration).Returns(_settings);
 			_workspaceManager.RetrieveWorkspace(_settings.CaseArtifactId).Returns(_workspace);
 			_federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(_settings.FederatedInstanceArtifactId)
 				.Returns(new FederatedInstanceDto());
-			_caseServiceContext.RsapiService.RelativityObjectManager.Create(Arg.Any<Data.JobHistory>()).Returns(_jobHistoryArtifactId);
+			_relativityObjectManager.Create(Arg.Any<Data.JobHistory>()).Returns(_jobHistoryArtifactId);
 
 			// ACT
 			Data.JobHistory jobHistory = _instance.CreateRdo(_integrationPoint, _batchGuid, JobTypeChoices.JobHistoryRun, DateTime.Now);
@@ -265,7 +269,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			// ARRANGE
 			Data.JobHistory history = new Data.JobHistory();
 			List<Data.JobHistory> jobHistories = new List<Data.JobHistory>() { history };
-			_caseServiceContext.RsapiService.RelativityObjectManager.Query<Data.JobHistory>(Arg.Any<QueryRequest>()).Returns(jobHistories);
+			_relativityObjectManager.Query<Data.JobHistory>(Arg.Any<QueryRequest>()).Returns(jobHistories);
 
 			// ACT
 			Data.JobHistory returnedJobHistory = _instance.GetOrCreateScheduledRunHistoryRdo(_integrationPoint, _batchGuid, DateTime.Now);
@@ -278,12 +282,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		public void GetOrCreateScheduleRunHistoryRdo_NoExistingRdo()
 		{
 			// ARRANGE
-			_caseServiceContext.RsapiService.RelativityObjectManager.Query<Data.JobHistory>(Arg.Any<QueryRequest>()).Returns(new List<Data.JobHistory>());
+			_relativityObjectManager.Query<Data.JobHistory>(Arg.Any<QueryRequest>()).Returns(new List<Data.JobHistory>());
 			_serializer.Deserialize<ImportSettings>(_integrationPoint.DestinationConfiguration).Returns(_settings);
 			_workspaceManager.RetrieveWorkspace(_settings.CaseArtifactId).Returns(_workspace);
 			_federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(_settings.FederatedInstanceArtifactId)
 				.Returns(new FederatedInstanceDto());
-			_caseServiceContext.RsapiService.RelativityObjectManager.Create(Arg.Any<Data.JobHistory>()).Returns(_jobHistoryArtifactId);
+			_relativityObjectManager.Create(Arg.Any<Data.JobHistory>()).Returns(_jobHistoryArtifactId);
 
 			// ACT
 			Data.JobHistory returnedJobHistory = _instance.GetOrCreateScheduledRunHistoryRdo(_integrationPoint, _batchGuid, DateTime.Now);
@@ -297,12 +301,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		public void GetOrCreateScheduleRunHistoryRdo_ErrorOnGetRdo()
 		{
 			// ARRANGE
-			_caseServiceContext.RsapiService.RelativityObjectManager.Query<Data.JobHistory>(Arg.Any<QueryRequest>()).Throws(new Exception("blah blah"));
+			_relativityObjectManager.Query<Data.JobHistory>(Arg.Any<QueryRequest>()).Throws(new Exception("blah blah"));
 			_serializer.Deserialize<ImportSettings>(_integrationPoint.DestinationConfiguration).Returns(_settings);
 			_workspaceManager.RetrieveWorkspace(_settings.CaseArtifactId).Returns(_workspace);
 			_federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(_settings.FederatedInstanceArtifactId)
 				.Returns(new FederatedInstanceDto());
-			_caseServiceContext.RsapiService.RelativityObjectManager.Create(Arg.Any<Data.JobHistory>()).Returns(_jobHistoryArtifactId);
+			_relativityObjectManager.Create(Arg.Any<Data.JobHistory>()).Returns(_jobHistoryArtifactId);
 
 			// ACT
 			Data.JobHistory returnedJobHistory = _instance.GetOrCreateScheduledRunHistoryRdo(_integrationPoint, _batchGuid, DateTime.Now);

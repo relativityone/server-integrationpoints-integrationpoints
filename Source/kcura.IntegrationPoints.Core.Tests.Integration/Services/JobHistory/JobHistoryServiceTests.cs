@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
@@ -31,7 +32,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services.JobHistory
 
 		public override void TestSetup()
 		{
-			ICaseServiceContext caseServiceContext = Container.Resolve<ICaseServiceContext>();
+			IRelativityObjectManager relativityObjectManager = Container.Resolve<IRelativityObjectManager>();
 			IFederatedInstanceManager federatedInstanceManager = Container.Resolve<IFederatedInstanceManager>();
 			IWorkspaceManager workspaceManager = Container.Resolve<IWorkspaceManager>();
 			IHelper helper = Container.Resolve<IHelper>();
@@ -40,7 +41,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services.JobHistory
 			IMessageService messageService = Container.Resolve<IMessageService>();
 
 			_sut = new JobHistoryService(
-				caseServiceContext,
+				relativityObjectManager,
 				federatedInstanceManager,
 				workspaceManager,
 				helper,

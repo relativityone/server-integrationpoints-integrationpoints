@@ -5,7 +5,6 @@ using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.QueryOptions;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Transformers;
@@ -23,7 +22,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 {
 	public class JobHistoryService : IJobHistoryService
 	{
-		private readonly ICaseServiceContext _caseServiceContext;
+		private readonly IRelativityObjectManager _relativityObjectManager;
 		private readonly IFederatedInstanceManager _federatedInstanceManager;
 		private readonly IWorkspaceManager _workspaceManager;
 		private readonly IAPILog _logger;
@@ -32,7 +31,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		private readonly IMessageService _messageService;
 
 		public JobHistoryService(
-			ICaseServiceContext caseServiceContext,
+			IRelativityObjectManager relativityObjectManager,
 			IFederatedInstanceManager federatedInstanceManager,
 			IWorkspaceManager workspaceManager,
 			IHelper helper,
@@ -40,7 +39,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			IProviderTypeService providerTypeService,
 			IMessageService messageService)
 		{
-			_caseServiceContext = caseServiceContext;
+			_relativityObjectManager = relativityObjectManager;
 			_federatedInstanceManager = federatedInstanceManager;
 			_workspaceManager = workspaceManager;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<JobHistoryService>();
@@ -71,11 +70,14 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 				Fields = RDOConverter.ConvertPropertiesToFields<Data.JobHistory>()
 			};
 
-			IList<Data.JobHistory> jobHistories = _caseServiceContext.RsapiService.RelativityObjectManager.Query<Data.JobHistory>(request);
+			IList<Data.JobHistory> jobHistories = _relativityObjectManager.Query<Data.JobHistory>(request);
 			return jobHistories;
 		}
 
-		public Data.JobHistory GetOrCreateScheduledRunHistoryRdo(Data.IntegrationPoint integrationPoint, Guid batchInstance, DateTime? startTimeUtc)
+		public Data.JobHistory GetOrCreateScheduledRunHistoryRdo(
+			Data.IntegrationPoint integrationPoint, 
+			Guid batchInstance, 
+			DateTime? startTimeUtc)
 		{
 			Data.JobHistory jobHistory = null;
 
@@ -100,7 +102,11 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			return jobHistory;
 		}
 
-		public Data.JobHistory CreateRdo(Data.IntegrationPoint integrationPoint, Guid batchInstance, Choice jobType, DateTime? startTimeUtc)
+		public Data.JobHistory CreateRdo(
+			Data.IntegrationPoint integrationPoint, 
+			Guid batchInstance, 
+			Choice jobType, 
+			DateTime? startTimeUtc)
 		{
 			Data.JobHistory jobHistory = null;
 
@@ -159,7 +165,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 				jobHistory.StartTimeUTC = startTimeUtc.Value;
 			}
 
-			int artifactId = _caseServiceContext.RsapiService.RelativityObjectManager.Create(jobHistory);
+			int artifactId = _relativityObjectManager.Create(jobHistory);
 			jobHistory.ArtifactId = artifactId;
 
 			OnBatchStart(integrationPoint, batchInstance);
@@ -183,12 +189,12 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
 		public void DeleteRdo(int jobHistoryId)
 		{
-			_caseServiceContext.RsapiService.RelativityObjectManager.Delete(jobHistoryId);
+			_relativityObjectManager.Delete(jobHistoryId);
 		}
 
 		public IList<Data.JobHistory> GetAll()
 		{
-			return _caseServiceContext.RsapiService.RelativityObjectManager.Query<Data.JobHistory>(new QueryRequest()
+			return _relativityObjectManager.Query<Data.JobHistory>(new QueryRequest()
 			{
 				Fields = RDOConverter.ConvertPropertiesToFields<Data.JobHistory>()
 			});
@@ -198,17 +204,16 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			Data.JobHistory jobHistory, 
 			JobHistoryQueryOptions queryOptions)
 		{
-			IRelativityObjectManager objectManager = _caseServiceContext.RsapiService.RelativityObjectManager;
-
 			if (queryOptions.ContainsAll())
 			{
-				objectManager.Update(jobHistory);
+				_relativityObjectManager.Update(jobHistory);
 				return;
 			}
 
-			List<FieldRefValuePair> fieldValues = MapToFieldValues(queryOptions.FieldGuids, jobHistory).ToList();
+			List<FieldRefValuePair> fieldValues = MapToFieldValues(queryOptions.FieldGuids, jobHistory)
+				.ToList();
 
-			objectManager.Update(jobHistory.ArtifactId, fieldValues);
+			_relativityObjectManager.Update(jobHistory.ArtifactId, fieldValues);
 		}
 
 		private Data.JobHistory GetRdo(
@@ -221,7 +226,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 				Fields = MapToFieldRefs(queryOptions?.FieldGuids)
 			};
 
-			IList<Data.JobHistory> jobHistories = _caseServiceContext.RsapiService.RelativityObjectManager.Query<Data.JobHistory>(request);
+			IList<Data.JobHistory> jobHistories = _relativityObjectManager.Query<Data.JobHistory>(request);
 			if (jobHistories.Count > 1)
 			{
 				LogMoreThanOneHistoryInstanceWarning(batchInstance);
@@ -248,7 +253,9 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 				: fieldRefs.Where(fr => rdoFieldGuids.Contains(fr.Guid.Value));
 		}
 
-		private IEnumerable<FieldRefValuePair> MapToFieldValues(Guid[] rdoFieldGuids, Data.JobHistory jobHistory)
+		private IEnumerable<FieldRefValuePair> MapToFieldValues(
+			Guid[] rdoFieldGuids, 
+			Data.JobHistory jobHistory)
 		{
 			IEnumerable<FieldRefValuePair> fieldValues = jobHistory.ToFieldValues();
 			return rdoFieldGuids == null
