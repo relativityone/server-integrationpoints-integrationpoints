@@ -135,6 +135,7 @@
     <Compile Include="Repositories\IRelativityObjectManager.cs" />
     <Compile Include="Repositories\IJobRepository.cs" />
     <Compile Include="ResourcePoolContext.cs" />
+    <Compile Include="NonRetryHandler.cs" />
     <Compile Include="RetryHandler.cs" />
     <Compile Include="RetryHandlerFactory.cs" />
     <Compile Include="RSAPIClient\IRsapiClientFactory.cs" />
@@ -224,6 +225,7 @@
     <Compile Include="Extensions\ChoiceExtensions.cs" />
     <Compile Include="GetArtifactForMassAction.cs" />
     <Compile Include="IEddsDBContext.cs" />
+    <Compile Include="Transformers\RDOFieldsConverter.cs" />
     <Compile Include="WorkspaceContext.cs" />
     <Compile Include="Extensions\DBContextExtensions.cs" />
     <Compile Include="GetObjectBase.cs" />

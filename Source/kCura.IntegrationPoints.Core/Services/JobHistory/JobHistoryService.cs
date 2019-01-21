@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.QueryOptions;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Transformers;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
@@ -29,8 +31,14 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		private readonly IProviderTypeService _providerTypeService;
 		private readonly IMessageService _messageService;
 
-		public JobHistoryService(ICaseServiceContext caseServiceContext, IFederatedInstanceManager federatedInstanceManager, IWorkspaceManager workspaceManager, 
-			IHelper helper, IIntegrationPointSerializer serializer, IProviderTypeService providerTypeService, IMessageService messageService)
+		public JobHistoryService(
+			ICaseServiceContext caseServiceContext,
+			IFederatedInstanceManager federatedInstanceManager,
+			IWorkspaceManager workspaceManager,
+			IHelper helper,
+			IIntegrationPointSerializer serializer,
+			IProviderTypeService providerTypeService,
+			IMessageService messageService)
 		{
 			_caseServiceContext = caseServiceContext;
 			_federatedInstanceManager = federatedInstanceManager;
@@ -43,18 +51,19 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
 		public Data.JobHistory GetRdo(Guid batchInstance)
 		{
-			var request = new QueryRequest
-			{
-				Condition = $"'{JobHistoryFields.BatchInstance}' == '{batchInstance}'"
-			};
-			List<Data.JobHistory> jobHistories = _caseServiceContext.RsapiService.RelativityObjectManager.Query<Data.JobHistory>(request);
-			if (jobHistories.Count > 1)
-			{
-				LogMoreThanOneHistoryInstanceWarning(batchInstance);
-			}
-			Data.JobHistory jobHistory = jobHistories.SingleOrDefault(); //there should only be one!
+			JobHistoryQueryOptions queryOptions = JobHistoryQueryOptions
+				.Query
+				.All();
+			return GetRdo(batchInstance, queryOptions);
+		}
 
-			return jobHistory;
+		public Data.JobHistory GetRdoWithoutDocuments(Guid batchInstance)
+		{
+			JobHistoryQueryOptions queryOptions = JobHistoryQueryOptions
+				.Query
+				.All()
+				.Except(JobHistoryFieldGuids.Documents);
+			return GetRdo(batchInstance, queryOptions);
 		}
 
 		public IList<Data.JobHistory> GetJobHistory(IList<int> jobHistoryArtifactIds)
@@ -62,7 +71,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			var request = new QueryRequest
 			{
 				Condition = $"'{ArtifactQueryFieldNames.ArtifactID}' in [{string.Join(",", jobHistoryArtifactIds.ToList())}]",
-				Fields = new Data.JobHistory().ToFieldList()
+				Fields = RDOConverter.ConvertPropertiesToFields<Data.JobHistory>()
 			};
 
 			IList<Data.JobHistory> jobHistories = _caseServiceContext.RsapiService.RelativityObjectManager.Query<Data.JobHistory>(request);
@@ -108,82 +117,127 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 				// ignored
 			}
 
-			if (jobHistory == null)
+			if (jobHistory != null)
 			{
-				jobHistory = new Data.JobHistory
-				{
-					Name = integrationPoint.Name,
-					IntegrationPoint = new[] { integrationPoint.ArtifactId },
-					BatchInstance = batchInstance.ToString(),
-					JobType = jobType,
-					JobStatus = JobStatusChoices.JobHistoryPending,
-					ItemsTransferred = 0,
-					ItemsWithErrors = 0,
-					Overwrite = integrationPoint.OverwriteFields.Name,
-					JobID = null
-				};
-
-				ImportSettings importSettings = _serializer.Deserialize<ImportSettings>(integrationPoint.DestinationConfiguration);
-
-                try
-                {
-                    WorkspaceDTO workspaceDto = _workspaceManager.RetrieveWorkspace(importSettings.CaseArtifactId);
-                    if (workspaceDto != null)
-                    {
-                        jobHistory.DestinationWorkspace = WorkspaceAndJobNameUtils.GetFormatForWorkspaceOrJobDisplay(workspaceDto.Name, importSettings.CaseArtifactId);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    jobHistory.DestinationWorkspace = "[Unable to retrieve workspace name]";
-                    LogGettingWorkspaceNamerError(ex);
-                }
-
-				FederatedInstanceDto federatedInstanceDto = _federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(importSettings.FederatedInstanceArtifactId);
-				if (federatedInstanceDto != null)
-				{
-					jobHistory.DestinationInstance = WorkspaceAndJobNameUtils.GetFormatForWorkspaceOrJobDisplay(federatedInstanceDto.Name, federatedInstanceDto.ArtifactId);
-				}
-
-				if (startTimeUtc.HasValue)
-				{
-					jobHistory.StartTimeUTC = startTimeUtc.Value;
-				}
-
-				int artifactId = _caseServiceContext.RsapiService.RelativityObjectManager.Create(jobHistory);
-				jobHistory.ArtifactId = artifactId;
-
-				OnBatchStart(integrationPoint, batchInstance);
+				return jobHistory;
 			}
+
+			jobHistory = new Data.JobHistory
+			{
+				Name = integrationPoint.Name,
+				IntegrationPoint = new[] { integrationPoint.ArtifactId },
+				BatchInstance = batchInstance.ToString(),
+				JobType = jobType,
+				JobStatus = JobStatusChoices.JobHistoryPending,
+				ItemsTransferred = 0,
+				ItemsWithErrors = 0,
+				Overwrite = integrationPoint.OverwriteFields.Name,
+				JobID = null
+			};
+
+			ImportSettings importSettings = _serializer.Deserialize<ImportSettings>(integrationPoint.DestinationConfiguration);
+
+			try
+			{
+				WorkspaceDTO workspaceDto = _workspaceManager.RetrieveWorkspace(importSettings.CaseArtifactId);
+				if (workspaceDto != null)
+				{
+					jobHistory.DestinationWorkspace = WorkspaceAndJobNameUtils.GetFormatForWorkspaceOrJobDisplay(workspaceDto.Name, importSettings.CaseArtifactId);
+				}
+			}
+			catch (Exception ex)
+			{
+				jobHistory.DestinationWorkspace = "[Unable to retrieve workspace name]";
+				LogGettingWorkspaceNameError(ex);
+			}
+
+			FederatedInstanceDto federatedInstanceDto = _federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(importSettings.FederatedInstanceArtifactId);
+			if (federatedInstanceDto != null)
+			{
+				jobHistory.DestinationInstance = WorkspaceAndJobNameUtils.GetFormatForWorkspaceOrJobDisplay(federatedInstanceDto.Name, federatedInstanceDto.ArtifactId);
+			}
+
+			if (startTimeUtc.HasValue)
+			{
+				jobHistory.StartTimeUTC = startTimeUtc.Value;
+			}
+
+			int artifactId = _caseServiceContext.RsapiService.RelativityObjectManager.Create(jobHistory);
+			jobHistory.ArtifactId = artifactId;
+
+			OnBatchStart(integrationPoint, batchInstance);
 
 			return jobHistory;
 		}
 
-	    public void UpdateRdo(Data.JobHistory jobHistory)
+		public void UpdateRdo(Data.JobHistory jobHistory)
 		{
-			_caseServiceContext.RsapiService.RelativityObjectManager.Update(jobHistory);
+			JobHistoryQueryOptions queryOptions = JobHistoryQueryOptions
+				.Query
+				.All();
+			UpdateRdo(jobHistory, queryOptions);
 		}
 
-	    public void DeleteRdo(int jobHistoryId)
+		public void UpdateRdoWithoutDocuments(Data.JobHistory jobHistory)
+		{
+			JobHistoryQueryOptions queryOptions = JobHistoryQueryOptions
+				.Query
+				.All()
+				.Except(JobHistoryFieldGuids.Documents);
+			UpdateRdo(jobHistory, queryOptions);
+		}
+
+		public void DeleteRdo(int jobHistoryId)
 		{
 			_caseServiceContext.RsapiService.RelativityObjectManager.Delete(jobHistoryId);
 		}
 
-	    public IList<Data.JobHistory> GetAll()
+		public IList<Data.JobHistory> GetAll()
 		{
 			return _caseServiceContext.RsapiService.RelativityObjectManager.Query<Data.JobHistory>(new QueryRequest()
 			{
-				Fields = new Data.JobHistory().ToFieldList()
+				Fields = RDOConverter.ConvertPropertiesToFields<Data.JobHistory>()
 			});
 		}
 
-	    protected List<FieldValue> GetFields<T>()
+		private void UpdateRdo(
+			Data.JobHistory jobHistory, 
+			JobHistoryQueryOptions queryOptions)
 		{
-			return (from field in BaseRdo.GetFieldMetadata(typeof(Data.JobHistory)).Values.ToList()
-					select new FieldValue(field.FieldGuid)).ToList();
+			IRelativityObjectManager objectManager = _caseServiceContext.RsapiService.RelativityObjectManager;
+
+			if (queryOptions.QueriesAll())
+			{
+				objectManager.Update(jobHistory);
+				return;
+			}
+
+			List<FieldRefValuePair> fieldValues = MapToFieldValues(queryOptions.FieldGuids, jobHistory).ToList();
+
+			objectManager.Update(jobHistory.ArtifactId, fieldValues);
 		}
 
-	    private void OnBatchStart(Data.IntegrationPoint integrationPoint, Guid batchInstanceId)
+		private Data.JobHistory GetRdo(
+			Guid batchInstance, 
+			JobHistoryQueryOptions queryOptions)
+		{
+			var request = new QueryRequest
+			{
+				Condition = $"'{JobHistoryFields.BatchInstance}' == '{batchInstance}'",
+				Fields = MapToFieldRefs(queryOptions?.FieldGuids)
+			};
+
+			IList<Data.JobHistory> jobHistories = _caseServiceContext.RsapiService.RelativityObjectManager.Query<Data.JobHistory>(request);
+			if (jobHistories.Count > 1)
+			{
+				LogMoreThanOneHistoryInstanceWarning(batchInstance);
+			}
+			Data.JobHistory jobHistory = jobHistories.SingleOrDefault(); //there should only be one!
+
+			return jobHistory;
+		}
+
+		private void OnBatchStart(Data.IntegrationPoint integrationPoint, Guid batchInstanceId)
 		{
 			_messageService.Send(new JobStartedMessage
 			{
@@ -192,24 +246,40 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			});
 		}
 
-	    #region Logging
+		private IEnumerable<FieldRef> MapToFieldRefs(Guid[] rdoFieldGuids)
+		{
+			IEnumerable<FieldRef> fieldRefs = RDOConverter.ConvertPropertiesToFields<Data.JobHistory>();
+			return rdoFieldGuids == null
+				? fieldRefs
+				: fieldRefs.Where(fr => rdoFieldGuids.Contains(fr.Guid.Value));
+		}
 
-	    private void LogGettingWorkspaceNamerError(Exception exception)
-	    {
-	        _logger.LogError(exception, "Unable to get workspace name from destination workspace");
-	    }
+		private IEnumerable<FieldRefValuePair> MapToFieldValues(Guid[] rdoFieldGuids, Data.JobHistory jobHistory)
+		{
+			IEnumerable<FieldRefValuePair> fieldValues = jobHistory.ToFieldValues();
+			return rdoFieldGuids == null
+				? fieldValues
+				: fieldValues.Where(fv => rdoFieldGuids.Contains(fv.Field.Guid.Value));
+		}
 
-        private void LogMoreThanOneHistoryInstanceWarning(Guid batchInstance)
+		#region Logging
+
+		private void LogGettingWorkspaceNameError(Exception exception)
+		{
+			_logger.LogWarning(exception, "Unable to get workspace name from destination workspace");
+		}
+
+		private void LogMoreThanOneHistoryInstanceWarning(Guid batchInstance)
 		{
 			_logger.LogWarning("More than one job history instance found for {BatchInstance}.", batchInstance.ToString());
 		}
 
-	    private void LogHistoryNotFoundError(Data.IntegrationPoint integrationPoint, Exception e)
+		private void LogHistoryNotFoundError(Data.IntegrationPoint integrationPoint, Exception e)
 		{
 			_logger.LogError(e, "Job history for Integration Point {IntegrationPointId} not found.", integrationPoint.ArtifactId);
 		}
 
-	    private void LogCreatingHistoryRdoError(Exception e)
+		private void LogCreatingHistoryRdoError(Exception e)
 		{
 			_logger.LogError(e, "Failed to create History RDO.");
 		}
