@@ -23,29 +23,23 @@ namespace kCura.IntegrationPoints.Agent.Tests
 		private Mock<IIntegrationPointService> _integrationPointService;
 		private Mock<IProviderTypeService> _providerTypeService;
 		private Job _job;
-
-		private int _integrationPointId;
-		private int _sourceProviderId;
-		private int _destinationProviderId;
 		private Data.IntegrationPoint _integrationPoint;
 
 		private Mock<IConfigurationDeserializer> _configurationDeserializer;
 		private SourceConfiguration _sourceConfiguration;
 		private ImportSettings _importSettings;
 
-		private RelativitySyncConstrainsChecker _instance;
-		private string _sourceConfigurationString;
-		private string _destinationConfigurationString;
+		private readonly int _integrationPointId = 123;
+		private readonly int _sourceProviderId = 987;
+		private readonly int _destinationProviderId = 789;
+		private readonly string _sourceConfigurationString = "Source Configuration";
+		private readonly string _destinationConfigurationString = "Destination Configuration";
 
+		private RelativitySyncConstrainsChecker _instance;
+		
 		[SetUp]
 		public void SetUp()
 		{
-			_integrationPointId = 123;
-			_sourceConfigurationString = "Source Configuration";
-			_destinationConfigurationString = "Destination Configuration";
-			_sourceProviderId = 987;
-			_destinationProviderId = 789;
-
 			_job = JobHelper.GetJob(1, 2, 3, 4, 5, 6, _integrationPointId, TaskType.ExportWorker,
 				DateTime.MinValue, DateTime.MinValue, null, 1, DateTime.MinValue, 2, "", null);
 

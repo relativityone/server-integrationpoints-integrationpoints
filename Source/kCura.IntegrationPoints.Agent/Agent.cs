@@ -98,6 +98,11 @@ namespace kCura.IntegrationPoints.Agent
 						configurationDeserializer, _logger);
 				return constrainsChecker.ShouldUseRelativitySync(job);
 			}
+			catch (Exception ex)
+			{
+				Logger.LogError(ex,
+					"Error occurred when trying to determine if Relativity Sync should be used. RIP will use old logic instead.");
+			}
 			finally
 			{
 				if (integrationPointService != null)
@@ -120,6 +125,8 @@ namespace kCura.IntegrationPoints.Agent
 					_agentLevelContainer.Value.Release(configurationDeserializer);
 				}
 			}
+
+			return false;
 		}
 
 

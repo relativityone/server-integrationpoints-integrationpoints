@@ -7,7 +7,6 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
-using Newtonsoft.Json;
 using Relativity.API;
 using Relativity.Toggles;
 
@@ -77,39 +76,39 @@ namespace kCura.IntegrationPoints.Agent
 			}
 		}
 
-		private T VerboseDeserialize<T>(string jsonToDeserialize)
+		private bool IsRelativitySyncToggleEnabled()
 		{
-			_logger.LogDebug($"Deserializing json for type {nameof(T)}");
-
-			if (string.IsNullOrWhiteSpace(jsonToDeserialize))
-			{
-				throw new ArgumentNullException(nameof(jsonToDeserialize));
-			}
+			_logger.LogDebug($"Checking if {nameof(EnableSyncToggle)} is enabled.");
 
 			try
 			{
-				T result = _configurationDeserializer.DeserializeConfiguration<T>(jsonToDeserialize);
-				_logger.LogInformation($"Json for type {nameof(T)} deserialized successfully");
-				return result;
+				bool isEnabled = _toggleProvider.IsEnabled<EnableSyncToggle>();
+				_logger.LogInformation($"Confirmed that {nameof(EnableSyncToggle)} is {(isEnabled ? "enabled" : "disabled")}.");
+				return isEnabled;
+
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, $"Deserializing json for type {nameof(T)} operation resulted in an error.");
+				_logger.LogError(ex, $"Checking if {nameof(EnableSyncToggle)} is enabled operation failed.");
 				throw;
 			}
 		}
 
-		private bool ConfigurationAllowsUsingRelativitySync(SourceConfiguration sourceConfiguration, ImportSettings importSettings)
+		private IntegrationPoint GetIntegrationPoint(int integrationPointId)
 		{
-			_logger.LogDebug(
-				"Checking if configurations allow using RelativitySync. SourceConfiguration.TypeOfExport: {typeOfExport}; DestinationConfiguration.ImageImport: {imageImport}; DestinationConfiguration.ProductionImport: {productionImport}",
-				sourceConfiguration.TypeOfExport, 
-				importSettings.ImageImport,
-				importSettings.ProductionImport);
+			_logger.LogDebug("Retrieving Integration Point using IntegrationPointService. IntegrationPointId: {integrationPointId}", integrationPointId);
 
-			return sourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.SavedSearch &&
-			       !importSettings.ImageImport &&
-			       !importSettings.ProductionImport;
+			try
+			{
+				IntegrationPoint integrationPoint = _integrationPointService.GetRdo(integrationPointId);
+				_logger.LogInformation("Integration Point with id: {integrationPointId} retrieved successfully.", integrationPointId);
+				return integrationPoint;
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Getting Integration Point operation failed.");
+				throw;
+			}
 		}
 
 		private ProviderType GetProviderType(int sourceProviderId, int destinationProviderId)
@@ -130,44 +129,44 @@ namespace kCura.IntegrationPoints.Agent
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, "Getting Provider Type operation resulted in an error.");
+				_logger.LogError(ex, "Getting Provider Type operation failed.");
 				throw;
 			}
 		}
 
-		private IntegrationPoint GetIntegrationPoint(int integrationPointId)
+		private T VerboseDeserialize<T>(string jsonToDeserialize)
 		{
-			_logger.LogDebug("Retrieving Integration Point using IntegrationPointService. IntegrationPointId: {integrationPointId}", integrationPointId);
+			_logger.LogDebug($"Deserializing json for type {nameof(T)}");
+
+			if (string.IsNullOrWhiteSpace(jsonToDeserialize))
+			{
+				throw new ArgumentNullException(nameof(jsonToDeserialize));
+			}
 
 			try
 			{
-				IntegrationPoint integrationPoint = _integrationPointService.GetRdo(integrationPointId);
-				_logger.LogInformation("Integration Point with id: {integrationPointId} retrieved successfully.", integrationPointId);
-				return integrationPoint;
+				T result = _configurationDeserializer.DeserializeConfiguration<T>(jsonToDeserialize);
+				_logger.LogInformation($"Json for type {nameof(T)} deserialized successfully");
+				return result;
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, "Getting Integration Point operation resulted in an error.");
+				_logger.LogError(ex, $"Deserializing json for type {nameof(T)} operation failed.");
 				throw;
 			}
 		}
 
-		private bool IsRelativitySyncToggleEnabled()
+		private bool ConfigurationAllowsUsingRelativitySync(SourceConfiguration sourceConfiguration, ImportSettings importSettings)
 		{
-			_logger.LogDebug($"Checking if {nameof(EnableSyncToggle)} is enabled.");
+			_logger.LogDebug(
+				"Checking if configurations allow using RelativitySync. SourceConfiguration.TypeOfExport: {typeOfExport}; DestinationConfiguration.ImageImport: {imageImport}; DestinationConfiguration.ProductionImport: {productionImport}",
+				sourceConfiguration.TypeOfExport, 
+				importSettings.ImageImport,
+				importSettings.ProductionImport);
 
-			try
-			{
-				bool isEnabled = _toggleProvider.IsEnabled<EnableSyncToggle>();
-				_logger.LogInformation($"Confirmed that {nameof(EnableSyncToggle)} is {(isEnabled ? "enabled" : "disabled")}.");
-				return isEnabled;
-
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, $"Checking if {nameof(EnableSyncToggle)} is enabled resulted in an error.");
-				throw;
-			}
+			return sourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.SavedSearch &&
+			       !importSettings.ImageImport &&
+			       !importSettings.ProductionImport;
 		}
 	}
 }
