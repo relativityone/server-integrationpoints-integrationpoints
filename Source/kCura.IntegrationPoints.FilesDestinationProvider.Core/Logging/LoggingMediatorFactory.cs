@@ -15,8 +15,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 		private readonly IIntegrationPointProviderTypeService _integrationPointProviderTypeService;
 		private readonly IDateTimeHelper _dateTimeHelper;
 
-		public LoggingMediatorFactory(JobHistoryErrorServiceProvider jobHistoryErrorServiceProvider, IHelper helper,
-			IMessageService messageService, ICaseServiceContext caseServiceContext, IDateTimeHelper dateTimeHelper,
+		public LoggingMediatorFactory(
+			JobHistoryErrorServiceProvider jobHistoryErrorServiceProvider, 
+			IHelper helper,
+			IMessageService messageService, 
+			ICaseServiceContext caseServiceContext, 
+			IDateTimeHelper dateTimeHelper,
 			IIntegrationPointProviderTypeService integrationPointProviderTypeService)
 		{
 			_historyErrorService = jobHistoryErrorServiceProvider.JobHistoryErrorService;

@@ -78,6 +78,7 @@
     <Compile Include="IntegrationPointBaseQuery.cs" />
     <Compile Include="IResourceDbProvider.cs" />
     <Compile Include="IResourcePoolContext.cs" />
+    <Compile Include="IRetryHandler.cs" />
     <Compile Include="IRsapiClientWithWorkspaceFactory.cs" />
     <Compile Include="Logging\ISystemEventLoggingService.cs" />
     <Compile Include="Migrations\Migration.cs" />
@@ -115,6 +116,7 @@
     <Compile Include="Repositories\IRelativityObjectManager.cs" />
     <Compile Include="Repositories\IJobRepository.cs" />
     <Compile Include="ResourcePoolContext.cs" />
+    <Compile Include="NonRetryHandler.cs" />
     <Compile Include="RetryHandler.cs" />
     <Compile Include="RSAPIClient\IRsapiClientFactory.cs" />
     <Compile Include="RSAPIClient\RsapiClientFactory.cs" />
@@ -203,6 +205,7 @@
     <Compile Include="Extensions\ChoiceExtensions.cs" />
     <Compile Include="GetArtifactForMassAction.cs" />
     <Compile Include="IEddsDBContext.cs" />
+    <Compile Include="Transformers\RDOFieldsConverter.cs" />
     <Compile Include="WorkspaceContext.cs" />
     <Compile Include="Extensions\DBContextExtensions.cs" />
     <Compile Include="GetObjectBase.cs" />

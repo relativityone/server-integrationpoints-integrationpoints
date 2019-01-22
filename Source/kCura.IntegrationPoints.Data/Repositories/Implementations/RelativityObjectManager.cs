@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data.Transformers;
@@ -19,7 +20,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 	{
 		private const int _BATCH_SIZE = 1000;
 
-		private readonly RetryHandler _retryHandler;
+		private readonly IRetryHandler _retryHandler;
 		private readonly IServicesMgr _servicesMgr;
 		private readonly int _workspaceArtifactId;
 		private readonly IAPILog _logger;
@@ -47,7 +48,15 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_logger = logger.ForContext<RelativityObjectManager>();
 			_secretStoreHelper = secretStoreHelper;
 
-			_retryHandler = new RetryHandler(_logger);
+			try
+			{
+				_retryHandler = new RetryHandler(_logger);
+			}
+			catch (FileNotFoundException ex) // TODO this is hack for fixing REL-285938
+			{
+				_logger.LogWarning(ex, $"Exception occured during {nameof(RetryHandler)} instantiation. {nameof(NonRetryHandler)} will be used");
+				_retryHandler = new NonRetryHandler();
+			}
 		}
 
 		public int Create<T>(T rdo, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new()
@@ -104,8 +113,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return SendReadRequest<T>(request, true, executionIdentity);
 		}
 
-		public bool Update(int artifactId, List<FieldRefValuePair> fieldsValues,
-			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+		public bool Update(int artifactId, IList<FieldRefValuePair> fieldsValues, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
 		{
 			var request = new UpdateRequest
 			{

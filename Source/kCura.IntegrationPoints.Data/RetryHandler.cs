@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Polly;
 using Polly.Retry;
@@ -7,7 +6,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data
 {
-	internal class RetryHandler
+	internal class RetryHandler : IRetryHandler
 	{
 		private const int _MAX_NUMER_OF_RETRIES = 3;
 		private const int _EXPONENTIAL_WAIT_TIME_BASE_IN_SEC = 3;
@@ -20,7 +19,7 @@ namespace kCura.IntegrationPoints.Data
 			_retryPolicy = CreateRetryPolicy();
 		}
 
-		public T ExecuteWithRetries<T>(Func<Task<T>> function, [CallerMemberName] string callerName = "")
+		public T ExecuteWithRetries<T>(Func<Task<T>> function, string callerName = "")
 		{
 			return ExecuteWithRetriesAsync(function, callerName)
 				.ConfigureAwait(false)
@@ -28,7 +27,7 @@ namespace kCura.IntegrationPoints.Data
 				.GetResult();
 		}
 
-		public Task<T> ExecuteWithRetriesAsync<T>(Func<Task<T>> function, [CallerMemberName] string callerName = "")
+		public Task<T> ExecuteWithRetriesAsync<T>(Func<Task<T>> function, string callerName = "")
 		{
 			return _retryPolicy.ExecuteAsync(function, continueOnCapturedContext: false);
 		}
