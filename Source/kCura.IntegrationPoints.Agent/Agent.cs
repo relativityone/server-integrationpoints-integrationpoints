@@ -125,6 +125,8 @@ namespace kCura.IntegrationPoints.Agent
 					_agentLevelContainer.Value.Release(configurationDeserializer);
 				}
 			}
+
+			return false;
 		}
 
 
