@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
@@ -34,7 +35,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			var helper = Substitute.For<IHelper>();
 			_guid = Guid.NewGuid();
 			_jobId = 123;
-			_instance = new JobStopManager(_jobService, _jobHistoryService, helper, _guid, _jobId);
+			_instance = new JobStopManager(_jobService, _jobHistoryService, helper, _guid, _jobId, new CancellationTokenSource());
 		}
 
 		[Test]

@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 		public object SyncRoot { get; }
 
-		public JobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, IHelper helper, Guid jobHistoryInstanceId, long jobId)
+		public JobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, IHelper helper, Guid jobHistoryInstanceId, long jobId, CancellationTokenSource cancellationTokenSource)
 		{
 			SyncRoot = new object();
 			_jobService = jobService;
@@ -74,7 +74,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 					}
 				}
 			};
-			_cancellationTokenSource = new CancellationTokenSource();
+			_cancellationTokenSource = cancellationTokenSource;
 			_token = _cancellationTokenSource.Token;
 			_timerThread = new Timer(Callback, null, 0, 500);
 		}
