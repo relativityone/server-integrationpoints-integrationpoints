@@ -1,5 +1,6 @@
 ﻿using System;
 using Autofac;
+using Relativity.Sync.Telemetry;
 
 namespace Relativity.Sync
 {
@@ -69,10 +70,13 @@ namespace Relativity.Sync
 			builder.RegisterInstance(syncJobParameters).As<SyncJobParameters>();
 			builder.RegisterInstance(configuration).As<SyncConfiguration>();
 			builder.RegisterType<SyncExecutionContextFactory>().As<ISyncExecutionContextFactory>();
+			builder.RegisterType<SystemStopwatch>().As<IStopwatch>();
 
 			_pipelineBuilder.RegisterFlow(builder);
 
-			builder.RegisterGeneric(typeof(Command<>)).As(typeof(ICommand<>));
+			const string command = "command";
+			builder.RegisterGeneric(typeof(Command<>)).Named(command, typeof(ICommand<>));
+			builder.RegisterGenericDecorator(typeof(CommandWithMetrics<>), typeof(ICommand<>), fromKey: command);
 		}
 	}
 }

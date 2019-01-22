@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Autofac;
+using Relativity.Sync.Telemetry;
 
 namespace Relativity.Sync.Tests.Integration.Stubs
 {
@@ -24,6 +25,7 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 			containerBuilder.RegisterGeneric(typeof(ExecutionConstrainsStub<>)).As(typeof(IExecutionConstrains<>));
 			containerBuilder.RegisterGeneric(typeof(ExecutorStub<>)).As(typeof(IExecutor<>));
 			containerBuilder.RegisterInstance(executorTypes).As<List<Type>>();
+			containerBuilder.RegisterType<SyncMetricsStub>().As<ISyncMetrics>();
 
 			return containerBuilder;
 		}

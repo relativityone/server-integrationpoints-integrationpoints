@@ -4,8 +4,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using FluentAssertions;
+using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Telemetry;
 using Relativity.Sync.Tests.Integration.Stubs;
 
 namespace Relativity.Sync.Tests.Integration
@@ -66,6 +68,21 @@ namespace Relativity.Sync.Tests.Integration
 			// ASSERT
 			action.Should().Throw<SyncException>();
 			_executorTypes.Should().Contain(typeof(INotificationConfiguration));
+		}
+
+		[Test]
+		public async Task MetricShouldBeReportedWhileRunningPipeline()
+		{
+			ContainerBuilder containerBuilder = IntegrationTestsContainerBuilder.CreateContainerBuilder(_executorTypes);
+			Mock<ISyncMetrics> syncMetrics = new Mock<ISyncMetrics>();
+			containerBuilder.RegisterInstance(syncMetrics.Object).As<ISyncMetrics>();
+			ISyncJob syncJob = _syncJobFactory.Create(containerBuilder.Build(), new SyncJobParameters(1, 1));
+
+			// ACT
+			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+
+			// ASSERT
+			syncMetrics.Verify(x => x.TimedOperation(It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<CommandExecutionStatus>()));
 		}
 
 		private void AssertExecutionOrder(List<Type[]> expectedOrder)
