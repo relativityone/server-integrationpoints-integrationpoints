@@ -3,6 +3,7 @@ CSharpGuidelineAnalyzer
 
 Polly
 Autofac
+Newtonsoft.Json
 
 NUnit
 FluentAssertions
