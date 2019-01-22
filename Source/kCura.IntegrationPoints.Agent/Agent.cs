@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Runtime.InteropServices;
 using Castle.Windsor;
 using kCura.Agent.CustomAttributes;
@@ -8,20 +7,24 @@ using kCura.IntegrationPoints.Agent.Context;
 using kCura.IntegrationPoints.Agent.Installer;
 using kCura.IntegrationPoints.Agent.Interfaces;
 using kCura.IntegrationPoints.Agent.Logging;
+using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Domain.Exceptions;
+using kCura.IntegrationPoints.RelativitySync;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.TimeMachine;
 using Relativity.API;
+using Relativity.Toggles;
 using ITaskFactory = kCura.IntegrationPoints.Agent.TaskFactory.ITaskFactory;
 
 namespace kCura.IntegrationPoints.Agent
 {
 	[Name(_AGENT_NAME)]
 	[Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID)]
-	[Description("An agent that manages Integration Point jobs.")]
+	[System.ComponentModel.Description("An agent that manages Integration Point jobs.")]
 	public class Agent : ScheduleQueueAgentBase, ITaskProvider, IAgentNotifier, IDisposable
 	{
 		private CreateErrorRdo _errorService;
@@ -69,10 +72,62 @@ namespace kCura.IntegrationPoints.Agent
 		{
 			using (JobContextProvider.StartJobContext(job))
 			{
+				if (ShouldUseRelativitySync(job))
+				{
+					return RelativitySyncAdapter.Run(job);
+				}
 				return _jobExecutor.ProcessJob(job);
 			}
 		}
-		
+
+		private bool ShouldUseRelativitySync(Job job)
+		{
+			IIntegrationPointService integrationPointService = null;
+			IProviderTypeService providerTypeService = null;
+			IToggleProvider toggleProvider = null;
+			IConfigurationDeserializer configurationDeserializer = null;
+			try
+			{
+				integrationPointService = _agentLevelContainer.Value.Resolve<IIntegrationPointService>();
+				providerTypeService = _agentLevelContainer.Value.Resolve<IProviderTypeService>();
+				toggleProvider = _agentLevelContainer.Value.Resolve<IToggleProvider>();
+				configurationDeserializer = _agentLevelContainer.Value.Resolve<IConfigurationDeserializer>();
+
+				RelativitySyncConstrainsChecker constrainsChecker =
+					new RelativitySyncConstrainsChecker(integrationPointService, providerTypeService, toggleProvider,
+						configurationDeserializer, _logger);
+				return constrainsChecker.ShouldUseRelativitySync(job);
+			}
+			catch (Exception ex)
+			{
+				Logger.LogError(ex,
+					"Error occurred when trying to determine if Relativity Sync should be used. RIP will use old logic instead.");
+			}
+			finally
+			{
+				if (integrationPointService != null)
+				{
+					_agentLevelContainer.Value.Release(integrationPointService);
+				}
+				
+				if (providerTypeService != null)
+				{
+					_agentLevelContainer.Value.Release(providerTypeService);
+				}
+				
+				if (toggleProvider != null)
+				{
+					_agentLevelContainer.Value.Release(toggleProvider);
+				}
+				
+				if (configurationDeserializer != null)
+				{
+					_agentLevelContainer.Value.Release(configurationDeserializer);
+				}
+			}
+		}
+
+
 		public ITask GetTask(Job job)
 		{
 			IWindsorContainer container = _agentLevelContainer.Value;
