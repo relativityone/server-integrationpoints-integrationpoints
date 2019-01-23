@@ -43,7 +43,17 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 	{
 	    #region Fields
 
-		private readonly string[] _defaultFields = {"Control Number", "File Name", "Issue Designation"};
+		private readonly string[] _defaultFields = 
+			{   "Control Number",
+				"File Name",
+				"Issue Designation",
+				"Batch",
+				"Case Admin Saved Searches",
+				"Custodian - Single Choice",
+				"Production Image Count",
+				"System Created On",
+				"Imaging Warning"
+			};
 		private static readonly ConfigSettings _configSettings = new ConfigSettings {WorkspaceName = DateTime.UtcNow.ToString("yyyyMMdd_HHmmss")};
 
 		private ExportProcessRunner _instanceUnderTest;
@@ -64,7 +74,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			var fieldsService = _windsorContainer.Resolve<IExportFieldsService>();
 			var fields = fieldsService.GetAllExportableFields(_configSettings.WorkspaceId, (int) ArtifactType.Document);
 
-			_configSettings.DefaultFields = fields.Where(x => _defaultFields.Contains(x.DisplayName)).ToArray();
+			_configSettings.DefaultFields = fields.Where(x => _defaultFields.Contains(x.DisplayName)).OrderBy(x => x.DisplayName).ToArray();
 
 			_configSettings.LongTextField = fields.FirstOrDefault(x => x.DisplayName == _configSettings.LongTextFieldName);
 
