@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			});
 
 			IProvideServiceUris serviceUrisProvider = Substitute.For<IProvideServiceUris>();
-			serviceUrisProvider.AuthenticationUri().Returns(new Uri($"{SharedVariables.ProtocolVersion}://{SharedVariables.TargetHost}/Relativity"));
+			serviceUrisProvider.AuthenticationUri().Returns(SharedVariables.RelativityFrontedUri);
 			ExtensionPointServiceFinder.ServiceUriProvider = serviceUrisProvider;
 
 #pragma warning disable 414, CS0618

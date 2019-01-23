@@ -96,8 +96,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 		{
 			windsorContainer.Register(Component.For<IRSAPIClient>().UsingFactoryMethod(k =>
 			{
-				Uri relativityServicesUri = new Uri(SharedVariables.RsapiClientUri);
-				return new RSAPIClient(relativityServicesUri, new UsernamePasswordCredentials(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword));
+				return new RSAPIClient(SharedVariables.RsapiUri, new UsernamePasswordCredentials(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword));
 			}));
 		}
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Castle.Core.Internal;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.Relativity.Client;
 using Relativity.Services;
 using Relativity.Services.Agent;
@@ -14,7 +15,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 	{
 		private const string _INTEGRATION_POINT_AGENT_TYPE_NAME = "Integration Points Agent";
 		private const int _MAX_NUMBER_OF_AGENTS_TO_CREATE = 4;
-		
+
+		private static ITestHelper Helper => new TestHelper();
+
 		public static Result CreateIntegrationPointAgent()
 		{
 			global::Relativity.Services.Agent.Agent[] agents = GetIntegrationPointsAgents();
@@ -87,7 +90,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			try
 			{
 				using (
-					IAgentManager proxy = Kepler.CreateProxy<IAgentManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true))
+					IAgentManager proxy = Helper.CreateAdminProxy<IAgentManager>())
 				{
 					int artifactId = proxy.CreateSingleAsync(agentDto).ConfigureAwait(false).GetAwaiter().GetResult();
 
@@ -104,25 +107,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public static global::Relativity.Services.Agent.Agent ReadIntegrationPointAgent(int agentArtifactId)
-		{
-			using (IAgentManager proxy = Kepler.CreateProxy<IAgentManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true))
-			{
-				try
-				{
-					global::Relativity.Services.Agent.Agent agent = proxy.ReadSingleAsync(agentArtifactId).ConfigureAwait(false).GetAwaiter().GetResult();
-					return agent;
-				}
-				catch (Exception ex)
-				{
-					throw new Exception($"Error: Failed to read agent. Exception: {ex.Message}");
-				}
-			}
-		}
-
 		public static void UpdateAgent(global::Relativity.Services.Agent.Agent agent)
 		{
-			using (IAgentManager proxy = Kepler.CreateProxy<IAgentManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true))
+			using (IAgentManager proxy = Helper.CreateAdminProxy<IAgentManager>())
 			{
 				try
 				{
@@ -137,7 +124,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static List<ResourceServer> GetAgentServers()
 		{
-			using (IAgentManager proxy = Kepler.CreateProxy<IAgentManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true))
+			using (IAgentManager proxy = Helper.CreateAdminProxy<IAgentManager>())
 			{
 				try
 				{
@@ -157,7 +144,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			{
 				return;
 			}
-			using (IAgentManager proxy = Kepler.CreateProxy<IAgentManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true))
+			using (IAgentManager proxy = Helper.CreateAdminProxy<IAgentManager>())
 			{
 				try
 				{
@@ -172,7 +159,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static List<AgentTypeRef> GetAgentTypes()
 		{
-			using (IAgentManager proxy = Kepler.CreateProxy<IAgentManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true))
+			using (IAgentManager proxy = Helper.CreateAdminProxy<IAgentManager>())
 			{
 				try
 				{
@@ -188,7 +175,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static AgentQueryResultSet QueryAgents(Query query)
 		{
-			using (IAgentManager proxy = Kepler.CreateProxy<IAgentManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true))
+			using (IAgentManager proxy = Helper.CreateAdminProxy<IAgentManager>())
 			{
 				AgentQueryResultSet agentQueryResultSet = proxy.QueryAsync(query).ConfigureAwait(false).GetAwaiter().GetResult();
 

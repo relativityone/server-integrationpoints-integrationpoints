@@ -3,6 +3,7 @@ CSharpGuidelineAnalyzer
 Newtonsoft.Json
 NSubstitute
 NUnit
+Polly
 Relativity.API
 Relativity.Core
 Relativity.Kepler.Client
