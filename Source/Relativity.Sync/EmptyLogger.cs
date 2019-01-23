@@ -6,8 +6,6 @@ namespace Relativity.Sync
 	[ExcludeFromCodeCoverage]
 	internal sealed class EmptyLogger : ISyncLog
 	{
-		public bool IsEnabled { get; set; }
-
 		public void LogVerbose(string messageTemplate, params object[] propertyValues)
 		{
 			// Method intentionally left empty.
