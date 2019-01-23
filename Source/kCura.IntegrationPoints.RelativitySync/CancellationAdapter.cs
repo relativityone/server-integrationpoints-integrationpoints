@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Threading;
+using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
@@ -31,7 +33,8 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 
 			CancellationTokenSource tokenSource = new CancellationTokenSource();
-			managerFactory.CreateJobStopManager(jobService, jobHistoryService, jobIdentifier, job.JobId, true, tokenSource);
+			IJobStopManager jobStopManager = managerFactory.CreateJobStopManager(jobService, jobHistoryService, jobIdentifier, job.JobId, true, tokenSource);
+			ripContainer.Register(Component.For<IJobStopManager>().Instance(jobStopManager));
 			return tokenSource.Token;
 		}
 	}
