@@ -43,7 +43,7 @@ nuget Relativity.ServiceBus.PriorityQueue 10.0.196.1-DEV
 
 //Other packages
 nuget AutoMapper 4.2.1
-nuget Clarius.TransformOnBuild 1.21.0
+nuget Clarius.TransformOnBuild 1.22.0
 nuget FluentAssertions 4.19.2
 nuget Microsoft.AspNet.Mvc 5.2.3
 nuget Microsoft.AspNet.SignalR.Core 2.2.0
