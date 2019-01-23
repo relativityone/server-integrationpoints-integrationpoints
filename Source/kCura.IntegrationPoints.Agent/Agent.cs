@@ -74,7 +74,7 @@ namespace kCura.IntegrationPoints.Agent
 			{
 				if (ShouldUseRelativitySync(job))
 				{
-					return RelativitySyncAdapter.Run(job, _logger);
+					return RelativitySyncAdapter.Run(job, _agentLevelContainer.Value, _logger);
 				}
 				return _jobExecutor.ProcessJob(job);
 			}
