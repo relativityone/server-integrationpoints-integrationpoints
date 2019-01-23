@@ -142,6 +142,12 @@
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.Services.Interfaces.Private.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.Synchronizers.RDO.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.RelativitySync.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.Sync.dll</Assembly>
+          <Assembly>lib\UnitTests\Autofac.dll</Assembly>
+          <Assembly>lib\UnitTests\netstandard.dll</Assembly>
+          <Assembly>lib\UnitTests\Banzai.dll</Assembly>
+          <Assembly>lib\UnitTests\Banzai.Autofac.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.LongPath.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.Relativity.Client.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.Relativity.DataReaderClient.dll</Assembly>
