@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Factories;
@@ -31,9 +32,9 @@ namespace kCura.IntegrationPoints.RelativitySync
 				jobIdentifier = taskParameters.BatchInstance;
 			}
 
-			IJobStopManager jobStopManager = managerFactory.CreateJobStopManager(jobService, jobHistoryService, jobIdentifier, job.JobId, true);
 			CancellationTokenSource tokenSource = new CancellationTokenSource();
-			jobStopManager.StopRequestedEvent += (sender, args) => tokenSource.Cancel();
+			IJobStopManager jobStopManager = managerFactory.CreateJobStopManager(jobService, jobHistoryService, jobIdentifier, job.JobId, true, tokenSource);
+			ripContainer.Register(Component.For<IJobStopManager>().Instance(jobStopManager));
 			return tokenSource.Token;
 		}
 	}

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
@@ -87,8 +88,9 @@ namespace kCura.IntegrationPoints.Core.Factories
 		/// <param name="jobIdentifier">Guid of the job history</param>
 		/// <param name="jobId">Artifact id of the scheduled queue job</param>
 		/// <param name="isStoppableJob">A boolean flag to indicate whether the job stop manager is on an unstoppable job.</param>
+		/// <param name="cancellationTokenSource">Cancellation token source passed to JobStopManager</param>
 		/// <returns></returns>
-		IJobStopManager CreateJobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, Guid jobIdentifier, long jobId, bool isStoppableJob);
+		IJobStopManager CreateJobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, Guid jobIdentifier, long jobId, bool isStoppableJob, CancellationTokenSource cancellationTokenSource = null);
 
 		/// <summary>
 		/// Creates an audit manager.
