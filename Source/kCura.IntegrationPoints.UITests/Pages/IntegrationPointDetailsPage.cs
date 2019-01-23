@@ -5,9 +5,7 @@ using kCura.IntegrationPoints.UITests.Components;
 using kCura.IntegrationPoints.UITests.Driver;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
-using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.PageObjects;
-using ExpectedConditions = SeleniumExtras.WaitHelpers.ExpectedConditions;
 
 namespace kCura.IntegrationPoints.UITests.Pages
 {
@@ -47,14 +45,10 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		public IntegrationPointDetailsPage RunIntegrationPoint()
 		{
 			RunButton.ClickEx();
-			ClickOkOnConfirmationDialog();
-			return this;
-		}
 
-		private void ClickOkOnConfirmationDialog()
-		{
-			By okButtonLocator = By.XPath("//*[text()='OK']");
-			Driver.FindElementEx(okButtonLocator).ClickEx();
+			ClickOkOnConfirmationDialog();
+
+			return this;
 		}
 
 		public PropertiesTable SelectGeneralPropertiesTable()
@@ -80,25 +74,30 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		private static JobHistoryModel BuildLatestJobHistory(JobStatusTable jobStatusTable)
 		{
-		    //TODO implement remaining methods and assing JobHistoryModel remaining properties
-		    var jobHistoryModel = new JobHistoryModel
-		    {
-                //JobId = int.Parse(Parent.FindElement(By.ClassName("itemTable")).FindElements(By.XPath("tbody/tr/td"))[1].Text),
-                //StartTime = DateTime.Parse(Parent.FindElement(By.ClassName("itemTable")).FindElements(By.XPath("tbody/tr/td"))[2].Text, CultureInfo.GetCultureInfo(1033)),
-                //ArtifactId = int.Parse(Parent.FindElement(By.ClassName("itemTable")).FindElements(By.XPath("tbody/tr/td"))[3].Text),
-                //Name = Parent.FindElement(By.ClassName("itemTable")).FindElements(By.XPath("tbody/tr/td"))[4].Text,
-                //IntegrationPoint = Parent.FindElement(By.ClassName("itemTable")).FindElements(By.XPath("tbody/tr/td"))[5].Text,
-                //JobType = Parent.FindElement(By.ClassName("itemTable")).FindElements(By.XPath("tbody/tr/td"))[6].Text,
-		        //DestinationWorkspace = Parent.FindElement(By.ClassName("itemTable")).FindElements(By.XPath("tbody/tr/td"))[8].Text,
-		        //DestinationInstance = Parent.FindElement(By.ClassName("itemTable")).FindElements(By.XPath("tbody/tr/td"))[9].Text,
-		        JobStatus = jobStatusTable.GetLatestJobStatus(),
-		        ItemsWithErrors = jobStatusTable.GetItemsWithErrors(),
-		        ItemsTransferred = jobStatusTable.GetItemsTransfered(),
-		        TotalItems = jobStatusTable.GetTotalItems()
-		    };
+			//TODO implement remaining methods and assing JobHistoryModel remaining properties
+			var jobHistoryModel = new JobHistoryModel
+			{
+				//JobId = int.Parse(Parent.FindElement(By.ClassName("itemTable")).FindElements(By.XPath("tbody/tr/td"))[1].Text),
+				//StartTime = DateTime.Parse(Parent.FindElement(By.ClassName("itemTable")).FindElements(By.XPath("tbody/tr/td"))[2].Text, CultureInfo.GetCultureInfo(1033)),
+				//ArtifactId = int.Parse(Parent.FindElement(By.ClassName("itemTable")).FindElements(By.XPath("tbody/tr/td"))[3].Text),
+				//Name = Parent.FindElement(By.ClassName("itemTable")).FindElements(By.XPath("tbody/tr/td"))[4].Text,
+				//IntegrationPoint = Parent.FindElement(By.ClassName("itemTable")).FindElements(By.XPath("tbody/tr/td"))[5].Text,
+				//JobType = Parent.FindElement(By.ClassName("itemTable")).FindElements(By.XPath("tbody/tr/td"))[6].Text,
+				//DestinationWorkspace = Parent.FindElement(By.ClassName("itemTable")).FindElements(By.XPath("tbody/tr/td"))[8].Text,
+				//DestinationInstance = Parent.FindElement(By.ClassName("itemTable")).FindElements(By.XPath("tbody/tr/td"))[9].Text,
+				JobStatus = jobStatusTable.GetLatestJobStatus(),
+				ItemsWithErrors = jobStatusTable.GetItemsWithErrors(),
+				ItemsTransferred = jobStatusTable.GetItemsTransfered(),
+				TotalItems = jobStatusTable.GetTotalItems()
+			};
 
+			return jobHistoryModel;
+		}
 
-		    return jobHistoryModel;
+		private void ClickOkOnConfirmationDialog()
+		{
+			By okButtonLocator = By.XPath("//*[text()='OK']");
+			Driver.FindElementEx(okButtonLocator).ClickEx();
 		}
 	}
 }

@@ -133,11 +133,9 @@
     <Compile Include="Extensions\ObjectPermissionListExtension.cs" />
     <Compile Include="Extensions\SecureStringExtension.cs" />
     <Compile Include="Fields.cs" />
-    <Compile Include="FileToBase64Converter.cs" />
     <Compile Include="FolderService.cs" />
     <Compile Include="ImportHelper.cs" />
     <Compile Include="InstanceSetting.cs" />
-    <Compile Include="Kepler.cs" />
     <Compile Include="Models\Audit.cs" />
     <Compile Include="Models\Constants\Shared\LoadFileEncodingConstants.cs" />
     <Compile Include="Models\Constants\ExportToLoadFile\ExportToLoadFileDataFileFormatConstants.cs" />
@@ -205,7 +203,6 @@
     <Compile Include="RelativityApplicationManager.cs" />
     <Compile Include="ResourcePoolHelper.cs" />
     <Compile Include="ResourceServerHelper.cs" />
-    <Compile Include="Rest.cs" />
     <Compile Include="Rsapi.cs" />
     <Compile Include="SavedSearch.cs" />
     <Compile Include="SharedVariables.cs" />
