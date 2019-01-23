@@ -33,32 +33,6 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		[TestCase(true)]
-		[TestCase(false)]
-		public void ItShouldDelegateGettingOfIsEnableProperty(bool isEnabled)
-		{
-			_logger.Setup(x => x.IsEnabled).Returns(isEnabled);
-
-			// ACT
-			bool actualResult = _instance.IsEnabled;
-
-			// ASSERT
-			actualResult.Should().Be(isEnabled);
-		}
-
-		[Test]
-		[TestCase(true)]
-		[TestCase(false)]
-		public void ItShouldDelegateSettingIsEnableProperty(bool isEnabled)
-		{
-			// ACT
-			_instance.IsEnabled = isEnabled;
-
-			// ASSERT
-			_logger.VerifySet(x => x.IsEnabled = isEnabled);
-		}
-
-		[Test]
 		public void ItShouldPassModifiedMessageAndParametersForVerboseLevel()
 		{
 			// ACT

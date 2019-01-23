@@ -13,12 +13,6 @@ namespace Relativity.Sync
 			_logger = logger;
 		}
 
-		public bool IsEnabled
-		{
-			get => _logger.IsEnabled;
-			set => _logger.IsEnabled = value;
-		}
-
 		public void LogVerbose(string messageTemplate, params object[] propertyValues)
 		{
 			_logger.LogVerbose(FormatMessage(messageTemplate), ModifyPropertyValues(propertyValues));

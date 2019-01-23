@@ -8,14 +8,6 @@ namespace Relativity.Sync
 	public interface ISyncLog
 	{
 		/// <summary>
-		///     Gets or sets a value indicating whether this logging instance is enabled
-		/// </summary>
-		/// <value>
-		///     <see langword="true" /> if this instance is enabled; otherwise, <see langword="false" />.
-		/// </value>
-		bool IsEnabled { get; set; }
-
-		/// <summary>
 		///     Logs a verbose message
 		/// </summary>
 		/// <param name="messageTemplate">Message template</param>
