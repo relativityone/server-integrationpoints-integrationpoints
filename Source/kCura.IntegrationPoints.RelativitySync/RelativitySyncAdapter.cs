@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 				return new TaskResult {Status = TaskStatusEnum.Success};
 			}
 		}
-
+		
 		private static ISyncJob CreateSyncJob(Job job, IContainer container, IAPILog logger)
 		{
 			SyncJobFactory jobFactory = new SyncJobFactory();
