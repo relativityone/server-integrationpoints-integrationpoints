@@ -1,27 +1,29 @@
 ﻿using System.Threading;
 using Autofac;
 using kCura.ScheduleQueue.Core;
+using Relativity.API;
 using Relativity.Sync;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
 	public static class RelativitySyncAdapter
 	{
-		public static TaskResult Run(Job job)
+		public static TaskResult Run(Job job, IAPILog logger)
 		{
 			using (IContainer container = InitializeAutofacContainer())
 			{
-				ISyncJob syncJob = CreateSyncJob(job, container);
+				ISyncJob syncJob = CreateSyncJob(job, container, logger);
 				syncJob.ExecuteAsync(CancellationToken.None).GetAwaiter().GetResult();
-				return new TaskResult { Status = TaskStatusEnum.Success };
+				return new TaskResult {Status = TaskStatusEnum.Success};
 			}
 		}
-		
-		private static ISyncJob CreateSyncJob(Job job, IContainer container)
+
+		private static ISyncJob CreateSyncJob(Job job, IContainer container, IAPILog logger)
 		{
 			SyncJobFactory jobFactory = new SyncJobFactory();
 			SyncJobParameters parameters = new SyncJobParameters((int) job.JobId, job.WorkspaceID);
-			ISyncJob syncJob = jobFactory.Create(container, parameters);
+			ISyncLog syncLog = new SyncLog(logger);
+			ISyncJob syncJob = jobFactory.Create(container, parameters, syncLog);
 			return syncJob;
 		}
 
