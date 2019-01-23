@@ -13,18 +13,19 @@ namespace kCura.IntegrationPoints.RelativitySync
 		{
 			using (IContainer container = InitializeAutofacContainer(job, ripContainer, logger))
 			{
-				ISyncJob syncJob = CreateSyncJob(job, container);
+				ISyncJob syncJob = CreateSyncJob(job, container, logger);
 				CancellationToken cancellationToken = CancellationAdapter.GetCancellationToken(job, ripContainer);
 				syncJob.ExecuteAsync(cancellationToken).GetAwaiter().GetResult();
 				return new TaskResult {Status = TaskStatusEnum.Success};
 			}
 		}
 
-		private static ISyncJob CreateSyncJob(Job job, IContainer container)
+		private static ISyncJob CreateSyncJob(Job job, IContainer container, IAPILog logger)
 		{
 			SyncJobFactory jobFactory = new SyncJobFactory();
 			SyncJobParameters parameters = new SyncJobParameters((int) job.JobId, job.WorkspaceID);
-			ISyncJob syncJob = jobFactory.Create(container, parameters);
+			ISyncLog syncLog = new SyncLog(logger);
+			ISyncJob syncJob = jobFactory.Create(container, parameters, syncLog);
 			return syncJob;
 		}
 
