@@ -9,3 +9,4 @@ Relativity.API
 Relativity.ImportExport
 Relativity.Services.DataContracts
 Relativity.Telemetry.MetricsCollection
+Relativity.Productions.Services.Interfaces

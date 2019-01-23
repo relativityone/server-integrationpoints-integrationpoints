@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers
 {
@@ -16,21 +12,27 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 		/// <returns></returns>
 		public static Encoding GetFileEncoding(string srcFile)
 		{
-			byte[] buffer = new byte[4];
-			using (FileStream file = new FileStream(srcFile, FileMode.Open))
-			{
-				file.Read(buffer, 0, 4);
-			}
-			if (buffer[0] == 0xEF && buffer[1] == 0xBB && buffer[2] == 0xBF)
-				return Encoding.UTF8;
-			if (buffer[0] == 0xFF && buffer[1] == 0xFE)
-				return Encoding.Unicode;
-			if (buffer[0] == 0xFE && buffer[1] == 0xFF)
-				return Encoding.BigEndianUnicode;
-			if (buffer[0] == 0xFE && buffer[1] == 0x43)
-				return Encoding.Default;
+			Encoding enc = Encoding.Default;
 
-			throw new Exception($"Not supported encoding type found in file: {srcFile}");
+			byte[] buffer = new byte[4];
+			FileStream file = new FileStream(srcFile, FileMode.Open);
+			file.Read(buffer, 0, 4);
+			file.Close();
+			
+			if (buffer[0] == 0xEF && buffer[1] == 0xBB && buffer[2] == 0xBF)
+			{
+				enc = Encoding.UTF8;
+			}
+			else if (buffer[0] == 0xFF && buffer[1] == 0xFE)
+			{
+				enc = Encoding.Unicode;
+			}
+			else if (buffer[0] == 0xFE && buffer[1] == 0xFF)
+			{
+				enc = Encoding.BigEndianUnicode;
+			}
+
+			return enc;
 		}
 	}
 
