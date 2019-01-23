@@ -13,102 +13,64 @@ namespace kCura.IntegrationPoints.RelativitySync
 			_logger = logger;
 		}
 
-		public bool IsEnabled { get; set; } = true;
-
 		public void LogVerbose(string messageTemplate, params object[] propertyValues)
 		{
-			if (IsEnabled)
-			{
-				_logger.LogVerbose(messageTemplate, propertyValues);
-			}
+			_logger.LogVerbose(messageTemplate, propertyValues);
 		}
 
 		public void LogVerbose(Exception exception, string messageTemplate, params object[] propertyValues)
 		{
-			if (IsEnabled)
-			{
-				_logger.LogVerbose(exception, messageTemplate, propertyValues);
-			}
+			_logger.LogVerbose(exception, messageTemplate, propertyValues);
 		}
 
 		public void LogDebug(string messageTemplate, params object[] propertyValues)
 		{
-			if (IsEnabled)
-			{
-				_logger.LogDebug(messageTemplate, propertyValues);
-			}
+			_logger.LogDebug(messageTemplate, propertyValues);
 		}
 
 		public void LogDebug(Exception exception, string messageTemplate, params object[] propertyValues)
 		{
-			if (IsEnabled)
-			{
-				_logger.LogDebug(exception, messageTemplate, propertyValues);
-			}
+			_logger.LogDebug(exception, messageTemplate, propertyValues);
 		}
 
 		public void LogInformation(string messageTemplate, params object[] propertyValues)
 		{
-			if (IsEnabled)
-			{
-				_logger.LogInformation(messageTemplate, propertyValues);
-			}
+			_logger.LogInformation(messageTemplate, propertyValues);
 		}
 
 		public void LogInformation(Exception exception, string messageTemplate, params object[] propertyValues)
 		{
-			if (IsEnabled)
-			{
-				_logger.LogInformation(exception, messageTemplate, propertyValues);
-			}
+			_logger.LogInformation(exception, messageTemplate, propertyValues);
 		}
 
 		public void LogWarning(string messageTemplate, params object[] propertyValues)
 		{
-			if (IsEnabled)
-			{
-				_logger.LogWarning(messageTemplate, propertyValues);
-			}
+			_logger.LogWarning(messageTemplate, propertyValues);
 		}
 
 		public void LogWarning(Exception exception, string messageTemplate, params object[] propertyValues)
 		{
-			if (IsEnabled)
-			{
-				_logger.LogWarning(exception, messageTemplate, propertyValues);
-			}
+			_logger.LogWarning(exception, messageTemplate, propertyValues);
 		}
 
 		public void LogError(string messageTemplate, params object[] propertyValues)
 		{
-			if (IsEnabled)
-			{
-				_logger.LogError(messageTemplate, propertyValues);
-			}
+			_logger.LogError(messageTemplate, propertyValues);
 		}
 
 		public void LogError(Exception exception, string messageTemplate, params object[] propertyValues)
 		{
-			if (IsEnabled)
-			{
-				_logger.LogError(exception, messageTemplate, propertyValues);
-			}
+			_logger.LogError(exception, messageTemplate, propertyValues);
 		}
 
 		public void LogFatal(string messageTemplate, params object[] propertyValues)
 		{
-			if (IsEnabled)
-			{
-				_logger.LogFatal(messageTemplate, propertyValues);
-			}
+			_logger.LogFatal(messageTemplate, propertyValues);
 		}
 
 		public void LogFatal(Exception exception, string messageTemplate, params object[] propertyValues)
 		{
-			if (IsEnabled)
-			{
-				_logger.LogFatal(exception, messageTemplate, propertyValues);
-			}
+			_logger.LogFatal(exception, messageTemplate, propertyValues);
 		}
 	}
 }
