@@ -5,14 +5,13 @@ using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.ScheduleQueue.Core;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
 	internal static class SyncConfigurationFactory
 	{
-		public static SyncConfiguration Create(Job job, IWindsorContainer ripContainer, IAPILog logger)
+		public static SyncConfiguration Create(IExtendedJob job, IWindsorContainer ripContainer, IAPILog logger)
 		{
 			IIntegrationPointService integrationPointService;
 			ISerializer serializer;
@@ -30,11 +29,11 @@ namespace kCura.IntegrationPoints.RelativitySync
 			IntegrationPoint integrationPoint;
 			try
 			{
-				integrationPoint = integrationPointService.GetRdo(job.RelatedObjectArtifactID);
+				integrationPoint = integrationPointService.GetRdo(job.IntegrationPointId);
 			}
 			catch (Exception e)
 			{
-				logger.LogError(e, "Unable to query for integration point {id}.", job.RelatedObjectArtifactID);
+				logger.LogError(e, "Unable to query for integration point {id}.", job.IntegrationPointId);
 				throw;
 			}
 
@@ -43,7 +42,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 				SourceConfiguration sourceConfiguration = serializer.Deserialize<SourceConfiguration>(integrationPoint.SourceConfiguration);
 				ImportSettings destinationConfiguration = serializer.Deserialize<ImportSettings>(integrationPoint.DestinationConfiguration);
 
-				return new SyncConfiguration((int) job.JobId, sourceConfiguration, destinationConfiguration);
+				return new SyncConfiguration(job.JobHistoryId, sourceConfiguration, destinationConfiguration);
 			}
 			catch (Exception e)
 			{

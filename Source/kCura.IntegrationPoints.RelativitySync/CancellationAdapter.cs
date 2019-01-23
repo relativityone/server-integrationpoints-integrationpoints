@@ -1,39 +1,23 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.ScheduleQueue.Core;
-using kCura.ScheduleQueue.Core.Core;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
 	internal static class CancellationAdapter
 	{
-		public static CancellationToken GetCancellationToken(Job job, IWindsorContainer ripContainer)
+		public static CancellationToken GetCancellationToken(IExtendedJob job, IWindsorContainer ripContainer)
 		{
 			IManagerFactory managerFactory = ripContainer.Resolve<IManagerFactory>();
 			IJobService jobService = ripContainer.Resolve<IJobService>();
 			IJobHistoryService jobHistoryService = ripContainer.Resolve<IJobHistoryService>();
 
-			Guid jobIdentifier;
-
-			if (string.IsNullOrWhiteSpace(job.JobDetails))
-			{
-				jobIdentifier = Guid.NewGuid();
-			}
-			else
-			{
-				ISerializer serializer = ripContainer.Resolve<ISerializer>();
-				TaskParameters taskParameters = serializer.Deserialize<TaskParameters>(job.JobDetails);
-				jobIdentifier = taskParameters.BatchInstance;
-			}
-
 			CancellationTokenSource tokenSource = new CancellationTokenSource();
-			IJobStopManager jobStopManager = managerFactory.CreateJobStopManager(jobService, jobHistoryService, jobIdentifier, job.JobId, true, tokenSource);
+			IJobStopManager jobStopManager = managerFactory.CreateJobStopManager(jobService, jobHistoryService, job.JobIdentifier, job.JobId, true, tokenSource);
 			ripContainer.Register(Component.For<IJobStopManager>().Instance(jobStopManager));
 			return tokenSource.Token;
 		}
