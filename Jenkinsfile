@@ -91,10 +91,7 @@ timestamps
 				}
 				stage ('Build')
 				{
-					def sonarParameter = 
-						(params.enableSonarAnalysis && env.BRANCH_NAME == "develop")
-						? "-sonarqube"
-						: ""
+					def sonarParameter = shouldRunSonar(params.enableSonarAnalysis, env.BRANCH_NAME, nightlyJobName)
 					powershell "./build.ps1 release $sonarParameter"
 					archiveArtifacts artifacts: "DevelopmentScripts/*.html", fingerprint: true
 				}
@@ -297,6 +294,13 @@ timestamps
 			echo "Reporting failed: $err"
 		}
 	}
+}
+
+def shouldRunSonar(Boolean enableSonarAnalysis, String branchName, String nightlyJobName)
+{
+	return (enableSonarAnalysis && branchName == "develop" && !isNightly(nightlyJobName))
+						? "-sonarqube"
+						: ""
 }
 
 
