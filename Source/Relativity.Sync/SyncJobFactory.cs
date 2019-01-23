@@ -65,7 +65,7 @@ namespace Relativity.Sync
 			}
 			catch (Exception e)
 			{
-				logger.LogError(e, "Failed to create Sync job.");
+				logger.LogError(e, "Failed to create Sync job {correlationId}.", syncJobParameters.CorrelationId);
 				throw new SyncException("Unable to create Sync job. See inner exception for more details.", e, syncJobParameters.CorrelationId);
 			}
 		}
@@ -85,7 +85,7 @@ namespace Relativity.Sync
 
 			const string command = "command";
 			builder.RegisterGeneric(typeof(Command<>)).Named(command, typeof(ICommand<>));
-			builder.RegisterGenericDecorator(typeof(CommandWithMetrics<>), typeof(ICommand<>), fromKey: command);
+			builder.RegisterGenericDecorator(typeof(CommandWithMetrics<>), typeof(ICommand<>), command);
 		}
 	}
 }

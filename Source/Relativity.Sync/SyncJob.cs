@@ -38,8 +38,9 @@ namespace Relativity.Sync
 				_logger.LogWarning(e, "Operation cancelled.");
 				throw;
 			}
-			catch (SyncException)
+			catch (SyncException e)
 			{
+				_logger.LogError(e, "SyncException has been thrown during job execution.");
 				throw;
 			}
 			catch (Exception e)
