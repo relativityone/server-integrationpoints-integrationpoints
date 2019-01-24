@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.UITests.Driver
 			Size browseSize = driver.Manage().Window.Size;
 			Log.Information("Browser size: Width: {width}, Height: {height}", browseSize.Width, browseSize.Height);
 
-			driver.Url = SharedVariables.ProtocolVersion + "://" + SharedVariables.TargetHost + "/Relativity";
+			driver.Url = SharedVariables.RelativityFrontendUrlValue;
 			return driver;
 		}
 	}

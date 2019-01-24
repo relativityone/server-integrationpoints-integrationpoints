@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Remote;
 
 namespace kCura.IntegrationPoints.UITests.Auxiliary
@@ -9,7 +10,7 @@ namespace kCura.IntegrationPoints.UITests.Auxiliary
 	{
 		private readonly string _sessionId;
 
-		public ReuseRemoteWebDriver(Uri remoteAddress, string sessionId) : base(remoteAddress, new DesiredCapabilities())
+		public ReuseRemoteWebDriver(Uri remoteAddress, string sessionId) : base(remoteAddress, new ChromeOptions())
 		{
 			_sessionId = sessionId;
 			System.Reflection.FieldInfo sessionIdBase = GetType()

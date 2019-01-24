@@ -7,8 +7,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 	{
 		public static IRSAPIClient CreateRsapiClient()
 		{
-			Uri relativityServicesUri = new Uri(SharedVariables.RsapiClientUri);
-			IRSAPIClient client = new RSAPIClient(relativityServicesUri, new UsernamePasswordCredentials(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword));
+			IRSAPIClient client = new RSAPIClient(SharedVariables.RsapiUri, new UsernamePasswordCredentials(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword));
 			return client;
 		}
 	}

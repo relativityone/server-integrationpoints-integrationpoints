@@ -1,120 +1,125 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using kCura.IntegrationPoint.Tests.Core.Models;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Text;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.Relativity.Client;
+using kCura.Relativity.Client.DTOs;
 using Relativity.Services.Security;
 using Relativity.Services.Security.Models;
+using Artifact = kCura.Relativity.Client.DTOs.Artifact;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class User
 	{
+		private const int _SYSTEM_ADMINISTRATOR_GROUP_ID = 20;
+		private static ITestHelper Helper => new TestHelper();
+
 		public static UserModel CreateUser(string firstName, string lastName, string emailAddress, IList<int> groupIds = null)
 		{
-			List<BaseField> groups = new List<BaseField>();
+			IEnumerable<Relativity.Client.DTOs.Group> groups = GetGroupsForUser(groupIds);
 
-			if (groupIds == null)
+			var userToCreate = new Relativity.Client.DTOs.User
 			{
-				groups.Add(new BaseField { ArtifactId = 20 }); // System Administrators
-			}
-			else
-			{
-				foreach (int groupId in groupIds)
-				{
-					groups.Add(new BaseField { ArtifactId = groupId });
-				}
-			}
-
-			UserModel user = new UserModel
-			{
-				ArtifactTypeId = 2,
+				ArtifactTypeID = 2,
 				ArtifactTypeName = "User",
-				ParentArtifact = new BaseField { ArtifactId = 20 },
-				Groups = groups.ToArray(),
+				ParentArtifact = new Artifact(20),
+				Groups = new FieldValueList<Relativity.Client.DTOs.Group>(groups),
 				FirstName = firstName,
 				LastName = lastName,
 				EmailAddress = emailAddress,
-				Type = new BaseFields
+				Type = new Relativity.Client.DTOs.Choice(663)
 				{
-					ArtifactId = 663,
-					ArtifactTypeId = 7,
+					ArtifactTypeID = 7,
 					ArtifactTypeName = "Choice"
 				},
 				ItemListPageLength = 25,
-				Client = new BaseFields
+				Client = new Client(1006066)
 				{
-					ArtifactId = 1006066,
-					ArtifactTypeId = 5,
+					ArtifactTypeID = 5,
 					ArtifactTypeName = "Client"
 				},
-				AuthenticationData = String.Empty,
-				DefaultSelectedFileType = new BaseFields
+				AuthenticationData = string.Empty,
+				DefaultSelectedFileType = new Relativity.Client.DTOs.Choice(1014420)
 				{
-					ArtifactId = 1014420,
-					ArtifactTypeId = 7,
+					ArtifactTypeID = 7,
 					ArtifactTypeName = "Choice"
 				},
 				BetaUser = false,
 				ChangeSettings = true,
-				TrustedIPs = String.Empty,
+				TrustedIPs = string.Empty,
 				RelativityAccess = true,
 				AdvancedSearchPublicByDefault = false,
 				NativeViewerCacheAhead = true,
 				ChangePassword = true,
 				MaximumPasswordAge = 0,
 				ChangePasswordNextLogin = false,
-				SendPasswordTo = new BaseFields
+				SendPasswordTo = new Relativity.Client.DTOs.Choice(1015049)
 				{
-					ArtifactId = 1015049,
-					ArtifactTypeId = 7,
+					ArtifactTypeID = 7,
 					ArtifactTypeName = "Choice"
 				},
-				PasswordAction = new BaseFields
+				PasswordAction = new Relativity.Client.DTOs.Choice(1015048)
 				{
-					ArtifactId = 1015048,
-					ArtifactTypeId = 7,
+					ArtifactTypeID = 7,
 					ArtifactTypeName = "Choice"
 				},
 				Password = "Test1234!",
-				DocumentSkip = new BaseFields
+				DocumentSkip = new Relativity.Client.DTOs.Choice(1015042)
 				{
-					ArtifactId = 1015042,
-					ArtifactTypeId = 7,
+					ArtifactTypeID = 7,
 					ArtifactTypeName = "Choice"
 				},
 				DataFocus = 1,
 				KeyboardShortcuts = true,
 				EnforceViewerCompatibility = true,
-				SkipDefaultPreference = new BaseFields
+				SkipDefaultPreference = new Relativity.Client.DTOs.Choice(1015044)
 				{
-					ArtifactId = 1015044,
-					ArtifactTypeId = 7,
+					ArtifactTypeID = 7,
 					ArtifactTypeName = "Choice"
 				}
 			};
 
-			string parameters = JsonConvert.SerializeObject(user);
-			string response = Rest.PostRequestAsJson("Relativity/User", parameters);
-			JObject resultObject = JObject.Parse(response);
-			user.ArtifactId = resultObject["Results"][0]["ArtifactID"].Value<int>();
+			int createdUserArtifactId;
+			using (IRSAPIClient rsapiClient = Rsapi.CreateRsapiClient())
+			{
+				WriteResultSet<Relativity.Client.DTOs.User> result = rsapiClient.Repositories.User.Create(userToCreate);
+				createdUserArtifactId = result.Results.Single().Artifact.ArtifactID;
+			}
 
-			CreateLoginProfile(user);
-			return user;
+			CreateLoginProfile(createdUserArtifactId, userToCreate.EmailAddress);
+
+			return new UserModel(createdUserArtifactId, userToCreate.EmailAddress, userToCreate.Password);
 		}
 
-		private static void CreateLoginProfile(UserModel user)
+		public static void DeleteUser(int userArtifactId)
 		{
-			using (var manager = Kepler.CreateProxy<ILoginProfileManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true))
+			if (userArtifactId == 0)
 			{
-				manager.SaveLoginProfileAsync(new LoginProfile()
+				return;
+			}
+
+			using (IRSAPIClient rsapiClient = Rsapi.CreateRsapiClient())
+			{
+				rsapiClient.Repositories.User.Delete(userArtifactId);
+			}
+		}
+
+		private static IEnumerable<Relativity.Client.DTOs.Group> GetGroupsForUser(IList<int> groupIds)
+		{
+			groupIds = groupIds ?? new List<int> { _SYSTEM_ADMINISTRATOR_GROUP_ID };
+			return groupIds.Select(groupId => new Relativity.Client.DTOs.Group(groupId));
+		}
+
+		private static void CreateLoginProfile(int userArtifactId, string userEmail)
+		{
+			using (var manager = Helper.CreateAdminProxy<ILoginProfileManager>())
+			{
+				manager.SaveLoginProfileAsync(new LoginProfile
 				{
-					Password = new PasswordMethod()
+					Password = new PasswordMethod
 					{
-						Email = user.EmailAddress,
+						Email = userEmail,
 						InvalidLoginAttempts = 0,
 						IsEnabled = true,
 						MustResetPasswordOnNextLogin = false,
@@ -122,36 +127,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 						TwoFactorMode = TwoFactorMode.None,
 						UserCanChangePassword = true
 					},
-					UserId = user.ArtifactId
+					UserId = userArtifactId
 				}).Wait();
 			}
-		}
-
-		public static void DeleteUser(int userArtifactId)
-		{
-			if (userArtifactId != 0)
-			{
-				Rest.DeleteRequestAsJson(SharedVariables.TargetHost, $"Relativity/User/{userArtifactId}", SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, false);
-			}
-		}
-
-		public static UserModel ReadUser(int userArtifactId)
-		{
-			string url = $"Relativity/User/{ userArtifactId }";
-			string response = Rest.GetRequest(url, false, SharedVariables.RelativityUserName, SharedVariables.RelativityPassword);
-			JObject userJObject = JObject.Parse(response);
-			UserModel userModel = userJObject.ToObject<UserModel>();
-			return userModel;
-		}
-
-		public static UserModel ReadUser(string email)
-		{
-			string url = $"Relativity/User/QueryResult";
-			string QueryInputJSON = string.Format(@"{{""condition"":"" 'Email Address' == '{0}'"", ""fields"":[""*""]}}", email);
-			string response = Rest.PostRequestAsJson(url, QueryInputJSON);
-			JObject userJObject = JObject.Parse(response);
-			UserModel userModel = userJObject.ToObject<UserModel>();
-			return userModel;
 		}
 	}
 }
