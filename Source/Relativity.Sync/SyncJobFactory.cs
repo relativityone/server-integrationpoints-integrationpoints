@@ -56,9 +56,17 @@ namespace Relativity.Sync
 				throw new ArgumentNullException(nameof(logger));
 			}
 
-			using (ILifetimeScope scope = container.BeginLifetimeScope(builder => RegisterDependencies(builder, syncJobParameters, configuration, logger)))
+			try
 			{
-				return scope.Resolve<ISyncJob>();
+				using (ILifetimeScope scope = container.BeginLifetimeScope(builder => RegisterDependencies(builder, syncJobParameters, configuration, logger)))
+				{
+					return scope.Resolve<ISyncJob>();
+				}
+			}
+			catch (Exception e)
+			{
+				logger.LogError(e, "Failed to create Sync job {correlationId}.", syncJobParameters.CorrelationId);
+				throw new SyncException("Unable to create Sync job. See inner exception for more details.", e, syncJobParameters.CorrelationId);
 			}
 		}
 
@@ -68,6 +76,7 @@ namespace Relativity.Sync
 			builder.RegisterType<SyncJob>().As<ISyncJob>();
 			builder.RegisterInstance(new ContextLogger(correlationId, logger)).As<ISyncLog>();
 			builder.RegisterInstance(syncJobParameters).As<SyncJobParameters>();
+			builder.RegisterInstance(correlationId).As<CorrelationId>();
 			builder.RegisterInstance(configuration).As<SyncConfiguration>();
 			builder.RegisterType<SyncExecutionContextFactory>().As<ISyncExecutionContextFactory>();
 			builder.RegisterType<SystemStopwatch>().As<IStopwatch>();
@@ -76,7 +85,7 @@ namespace Relativity.Sync
 
 			const string command = "command";
 			builder.RegisterGeneric(typeof(Command<>)).Named(command, typeof(ICommand<>));
-			builder.RegisterGenericDecorator(typeof(CommandWithMetrics<>), typeof(ICommand<>), fromKey: command);
+			builder.RegisterGenericDecorator(typeof(CommandWithMetrics<>), typeof(ICommand<>), command);
 		}
 	}
 }
