@@ -31,19 +31,53 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			IntegrationPointModel integrationPointModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOverlay, "name", "Append Only");
 			integrationPointModel = CreateOrUpdateIntegrationPoint(integrationPointModel);
 
-			_jobHistory = CreateJobHistoryOnIntegrationPoint(integrationPointModel.ArtifactID, new Guid(), JobTypeChoices.JobHistoryRun);
+			_jobHistory = CreateJobHistoryOnIntegrationPoint(integrationPointModel.ArtifactID, Guid.NewGuid(), JobTypeChoices.JobHistoryRun);
 
 			_instance = new JobHistoryHelper();
 		}
 
 		[Test]
-		public async Task ItShouldMarkJobAsStopped()
+		[TestCase("processing")]
+		[TestCase("synchronizing")]
+		[TestCase("creating tags")]
+		public async Task ItShouldUpdateStatusToProcessing(string status)
 		{
-			const int jobId = 196427;
-
 			Mock<IExtendedJob> job = new Mock<IExtendedJob>();
 			job.Setup(x => x.JobHistoryId).Returns(_jobHistory.ArtifactId);
-			job.Setup(x => x.JobId).Returns(jobId);
+			job.Setup(x => x.WorkspaceId).Returns(WorkspaceArtifactId);
+
+			// ACT
+			await _instance.UpdateJobStatus(status, job.Object, Helper).ConfigureAwait(false);
+
+			// ASSERT
+			IList<JobHistory> jobHistories = Container.Resolve<IJobHistoryService>().GetJobHistory(new[] {_jobHistory.ArtifactId});
+			Assert.AreEqual(jobHistories.Count, 1);
+			Assert.AreEqual(jobHistories[0].JobStatus.Name, JobStatusChoices.JobHistoryProcessing.Name);
+		}
+
+		[Test]
+		[TestCase("validating")]
+		[TestCase("checking permissions")]
+		public async Task ItShouldUpdateStatusToValidating(string status)
+		{
+			Mock<IExtendedJob> job = new Mock<IExtendedJob>();
+			job.Setup(x => x.JobHistoryId).Returns(_jobHistory.ArtifactId);
+			job.Setup(x => x.WorkspaceId).Returns(WorkspaceArtifactId);
+
+			// ACT
+			await _instance.UpdateJobStatus(status, job.Object, Helper).ConfigureAwait(false);
+
+			// ASSERT
+			IList<JobHistory> jobHistories = Container.Resolve<IJobHistoryService>().GetJobHistory(new[] {_jobHistory.ArtifactId});
+			Assert.AreEqual(jobHistories.Count, 1);
+			Assert.AreEqual(jobHistories[0].JobStatus.Name, JobStatusChoices.JobHistoryValidating.Name);
+		}
+
+		[Test]
+		public async Task ItShouldMarkJobAsStopped()
+		{
+			Mock<IExtendedJob> job = new Mock<IExtendedJob>();
+			job.Setup(x => x.JobHistoryId).Returns(_jobHistory.ArtifactId);
 			job.Setup(x => x.WorkspaceId).Returns(WorkspaceArtifactId);
 
 			// ACT
@@ -51,19 +85,72 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 
 			// ASSERT
 			IList<JobHistory> jobHistories = Container.Resolve<IJobHistoryService>().GetJobHistory(new[] {_jobHistory.ArtifactId});
-			Assert.IsTrue(jobHistories.Count == 1);
+			Assert.AreEqual(jobHistories.Count, 1);
+			Assert.IsTrue(jobHistories[0].EndTimeUTC.HasValue);
 			Assert.AreEqual(jobHistories[0].JobStatus.Name, JobStatusChoices.JobHistoryStopped.Name);
+		}
+
+		[Test]
+		public async Task ItShouldMarkJobAsStarted()
+		{
+			const int jobId = 585535;
+
+			Mock<IExtendedJob> job = new Mock<IExtendedJob>();
+			job.Setup(x => x.JobHistoryId).Returns(_jobHistory.ArtifactId);
+			job.Setup(x => x.JobId).Returns(jobId);
+			job.Setup(x => x.WorkspaceId).Returns(WorkspaceArtifactId);
+
+			// ACT
+			await _instance.MarkJobAsStarted(job.Object, Helper).ConfigureAwait(false);
+
+			// ASSERT
+			IList<JobHistory> jobHistories = Container.Resolve<IJobHistoryService>().GetJobHistory(new[] {_jobHistory.ArtifactId});
+			Assert.AreEqual(jobHistories.Count, 1);
+			Assert.IsTrue(jobHistories[0].StartTimeUTC.HasValue);
 			Assert.AreEqual(jobHistories[0].JobID, jobId.ToString());
+		}
+
+		[Test]
+		public async Task ItShouldMarkJobAsCompletedWithoutErrors()
+		{
+			Mock<IExtendedJob> job = new Mock<IExtendedJob>();
+			job.Setup(x => x.JobHistoryId).Returns(_jobHistory.ArtifactId);
+			job.Setup(x => x.WorkspaceId).Returns(WorkspaceArtifactId);
+
+			// ACT
+			await _instance.MarkJobAsCompleted(job.Object, Helper).ConfigureAwait(false);
+
+			// ASSERT
+			IList<JobHistory> jobHistories = Container.Resolve<IJobHistoryService>().GetJobHistory(new[] {_jobHistory.ArtifactId});
+			Assert.AreEqual(jobHistories.Count, 1);
+			Assert.IsTrue(jobHistories[0].EndTimeUTC.HasValue);
+			Assert.AreEqual(jobHistories[0].JobStatus.Name, JobStatusChoices.JobHistoryCompleted.Name);
+		}
+
+		[Test]
+		public async Task ItShouldMarkJobAsCompletedWithErrors()
+		{
+			Mock<IExtendedJob> job = new Mock<IExtendedJob>();
+			job.Setup(x => x.JobHistoryId).Returns(_jobHistory.ArtifactId);
+			job.Setup(x => x.WorkspaceId).Returns(WorkspaceArtifactId);
+
+			CreateJobHistoryError(_jobHistory.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew, ErrorTypeChoices.JobHistoryErrorItem);
+
+			// ACT
+			await _instance.MarkJobAsCompleted(job.Object, Helper).ConfigureAwait(false);
+
+			// ASSERT
+			IList<JobHistory> jobHistories = Container.Resolve<IJobHistoryService>().GetJobHistory(new[] {_jobHistory.ArtifactId});
+			Assert.AreEqual(jobHistories.Count, 1);
+			Assert.IsTrue(jobHistories[0].EndTimeUTC.HasValue);
+			Assert.AreEqual(jobHistories[0].JobStatus.Name, JobStatusChoices.JobHistoryCompletedWithErrors.Name);
 		}
 
 		[Test]
 		public async Task ItShouldMarkJobAsFailed()
 		{
-			const int jobId = 393971;
-
 			Mock<IExtendedJob> job = new Mock<IExtendedJob>();
 			job.Setup(x => x.JobHistoryId).Returns(_jobHistory.ArtifactId);
-			job.Setup(x => x.JobId).Returns(jobId);
 			job.Setup(x => x.WorkspaceId).Returns(WorkspaceArtifactId);
 
 
@@ -75,8 +162,8 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			// ASSERT
 			IList<JobHistory> jobHistories = Container.Resolve<IJobHistoryService>().GetJobHistory(new[] {_jobHistory.ArtifactId});
 			Assert.AreEqual(jobHistories.Count, 1);
+			Assert.IsTrue(jobHistories[0].EndTimeUTC.HasValue);
 			Assert.AreEqual(jobHistories[0].JobStatus.Name, JobStatusChoices.JobHistoryErrorJobFailed.Name);
-			Assert.AreEqual(jobHistories[0].JobID, jobId.ToString());
 
 			IList<JobHistoryError> errors = GetJobHistoryError(_jobHistory.ArtifactId);
 			Assert.AreEqual(errors.Count, 1);
