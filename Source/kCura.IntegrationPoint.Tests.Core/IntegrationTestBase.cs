@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Security.Claims;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
@@ -13,47 +14,32 @@ namespace kCura.IntegrationPoint.Tests.Core
 {
 	public abstract class IntegrationTestBase
 	{
-		protected IWindsorContainer Container;
-		protected IConfigurationStore ConfigurationStore;
-		public ITestHelper Helper => _help.Value;
 		private readonly Lazy<ITestHelper> _help;
 		public const int ADMIN_USER_ID = 9;
 
+		protected IWindsorContainer Container { get; }
+		protected IConfigurationStore ConfigurationStore { get; }
+		protected ITestHelper Helper => _help.Value;
+
 		protected IntegrationTestBase()
 		{
-			Data.RowDataGateway.Config.MockConfigurationValue("LongRunningQueryTimeout", 100);
-			Config.Config.SetConnectionString(SharedVariables.EddsConnectionString);
-			global::Relativity.Data.Config.InjectConfigSettings(new Dictionary<string, object>()
-			{
-				{"connectionString", SharedVariables.EddsConnectionString}
-			});
+			DisableServerCertificateValidation();
 
-			IProvideServiceUris serviceUrisProvider = Substitute.For<IProvideServiceUris>();
-			serviceUrisProvider.AuthenticationUri().Returns(SharedVariables.RelativityFrontedUri);
-			ExtensionPointServiceFinder.ServiceUriProvider = serviceUrisProvider;
+			SetupConfigValues();
+			SetupSecretStore();
+			SetupAuthentication();
 
-#pragma warning disable 414, CS0618
-			// Platform made currently BuildSecretStore method internal. The only option is for now use obsolute method. 
-			// When Platofrm team deliver final solution we should replace the code
-			ExtensionPointServiceFinder.SecretStoreHelper = APIHelper_SecretStoreFactory.SecretCatalog;
-#pragma warning restore
-			ClaimsPrincipal.ClaimsPrincipalSelector += () =>
-            {
-                var factory = new ClaimsPrincipalFactory();
-                return factory.CreateClaimsPrincipal2(ADMIN_USER_ID, Helper);
-            };
-
-            Container = new WindsorContainer();
+			Container = new WindsorContainer();
 			ConfigurationStore = new DefaultConfigurationStore();
 			_help = new Lazy<ITestHelper>(() => new TestHelper());
 		}
 
-		public virtual void SuiteSetup() {}
-		
-		public virtual void TestSetup() {}
+		public virtual void SuiteSetup() { }
+
+		public virtual void TestSetup() { }
 
 		[TearDown]
-		public virtual void TestTeardown() {}
+		public virtual void TestTeardown() { }
 
 		[OneTimeSetUp]
 		public void InitiateSuiteSetup()
@@ -102,6 +88,43 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 				throw;
 			}
+		}
+
+		private static void DisableServerCertificateValidation()
+		{
+			ServicePointManager.ServerCertificateValidationCallback = (senderX, certificate, chain, sslPolicyErrors) => true; // we don't want to validate certificate in our tests
+		}
+
+		private static void SetupConfigValues()
+		{
+			Data.RowDataGateway.Config.MockConfigurationValue("LongRunningQueryTimeout", 100);
+			Config.Config.SetConnectionString(SharedVariables.EddsConnectionString);
+			global::Relativity.Data.Config.InjectConfigSettings(new Dictionary<string, object>()
+			{
+				{"connectionString", SharedVariables.EddsConnectionString}
+			});
+		}
+
+		private static void SetupSecretStore()
+		{
+#pragma warning disable 414, CS0618
+			// Platform made currently BuildSecretStore method internal. The only option is for now use obsolute method. 
+			// When Platofrm team deliver final solution we should replace the code
+			ExtensionPointServiceFinder.SecretStoreHelper = APIHelper_SecretStoreFactory.SecretCatalog;
+#pragma warning restore
+		}
+
+		private void SetupAuthentication()
+		{
+			IProvideServiceUris serviceUrisProvider = Substitute.For<IProvideServiceUris>();
+			serviceUrisProvider.AuthenticationUri().Returns(SharedVariables.RelativityFrontedUri);
+			ExtensionPointServiceFinder.ServiceUriProvider = serviceUrisProvider;
+
+			ClaimsPrincipal.ClaimsPrincipalSelector += () =>
+			{
+				var factory = new ClaimsPrincipalFactory();
+				return factory.CreateClaimsPrincipal2(ADMIN_USER_ID, Helper);
+			};
 		}
 	}
 }
