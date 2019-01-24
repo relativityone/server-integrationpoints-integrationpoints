@@ -88,14 +88,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 	    protected virtual IExtendedImportAPI CreateExtendedImportAPI(string username, string token, string webServiceUrl)
         {
-	        try
-	        {
-		        return new ExtendedImportAPI(username, token, webServiceUrl);
-	        }
-	        catch (Exception ex)
-	        {
-		        throw new Exception($"Exception occured while creating ExtendedImportApi. User: {username}, token: {token}, webApi: {webServiceUrl}", ex); // TODO remove, temporary solution
-	        }
+            return new ExtendedImportAPI(username, token, webServiceUrl);
         }
 
 	    private bool RelativityCredentialsProvided(ImportSettings settings)
