@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.JobLifetime
 		{
 			ProviderType providerType = GetProviderType(job);
 			JobHistory jobHistory = GetHistory(job);
-			Choice status = _updater.GenerateStatus(jobHistory, job.JobId);
+			Choice status = _updater.GenerateStatus(jobHistory);
 			TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
 			string correlationId = taskParameters.BatchInstance.ToString();
 
