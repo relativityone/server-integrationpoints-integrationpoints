@@ -11,23 +11,22 @@ namespace kCura.IntegrationPoints.RelativitySync
 		private Guid? _identifier;
 		private int? _jobHistoryId;
 
+		private readonly Job _job;
 		private readonly IJobHistoryService _jobHistoryService;
 		private readonly ISerializer _serializer;
 
 		public ExtendedJob(Job job, IJobHistoryService jobHistoryService, ISerializer serializer)
 		{
-			Job = job;
+			_job = job;
 			_jobHistoryService = jobHistoryService;
 			_serializer = serializer;
 		}
 
-		public Job Job { get; }
+		public long JobId => _job.JobId;
 
-		public long JobId => Job.JobId;
+		public int WorkspaceId => _job.WorkspaceID;
 
-		public int WorkspaceId => Job.WorkspaceID;
-
-		public int IntegrationPointId => Job.RelatedObjectArtifactID;
+		public int IntegrationPointId => _job.RelatedObjectArtifactID;
 
 		public Guid JobIdentifier
 		{
@@ -35,13 +34,13 @@ namespace kCura.IntegrationPoints.RelativitySync
 			{
 				if (!_identifier.HasValue)
 				{
-					if (string.IsNullOrWhiteSpace(Job.JobDetails))
+					if (string.IsNullOrWhiteSpace(_job.JobDetails))
 					{
 						_identifier = Guid.NewGuid();
 					}
 					else
 					{
-						TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(Job.JobDetails);
+						TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(_job.JobDetails);
 						_identifier = taskParameters.BatchInstance;
 					}
 				}
