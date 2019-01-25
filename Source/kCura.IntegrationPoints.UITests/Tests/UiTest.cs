@@ -83,7 +83,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		[SetUp]
 		public void SetupDriver()
 		{
-			Driver = DriverFactory.CreateDriver();
+			Driver = DriverFactory.Create();
 			if (_shouldLoginToRelativity)
 			{
 				EnsureGeneralPageIsOpened();
