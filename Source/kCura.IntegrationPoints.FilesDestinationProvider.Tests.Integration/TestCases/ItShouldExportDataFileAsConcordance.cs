@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core.Models;
@@ -25,8 +25,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 		{
 			var fileInfo = GetFileInfo(directory);
 			IEnumerable<string> columns = ExportSettings.SelViewFieldIds.Select(x => x.Value.DisplayName);
-			bool expected = DataFileFormatHelper.FileContainsColumnsInOrder(columns, fileInfo);
-			Assert.IsTrue(expected, $"Columns are in the wrong order in the file ({fileInfo.FullName})!");
+			bool columnsAreInOrder = DataFileFormatHelper.FileContainsColumnsInOrder(columns, fileInfo);
+			Assert.IsTrue(columnsAreInOrder, $"Columns are in the wrong order in the file ({fileInfo.FullName})!");
 		}
 	}
 }
