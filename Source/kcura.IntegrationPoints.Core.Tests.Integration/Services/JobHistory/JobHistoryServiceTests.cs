@@ -86,6 +86,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services.JobHistory
 		}
 
 		[Test]
+		[Ignore("This test is fixed for future versions.")]
 		public void GetRdo_ShouldReturnLimitedRdoBasedOnTheQueryOptionsFields()
 		{
 			//arrange
@@ -121,6 +122,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services.JobHistory
 		}
 
 		[Test]
+		[Ignore("This test is fixed for future versions.")]
 		public void UpdateRdo_ShouldUpdateOnlyLimitedRdoBasedOnTheQueryOptionsFields()
 		{
 			//arrange
