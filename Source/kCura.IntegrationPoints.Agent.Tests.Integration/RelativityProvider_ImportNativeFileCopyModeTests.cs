@@ -4,6 +4,7 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Agent.Validation;
@@ -128,8 +129,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			TestNativeFilesImport(false, true, true, importNativeFileCopyMode, false);
 		}
 
-		[Test]
-		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
+		[SmokeTest]
 		public void NativesShouldNotBeDeletedInTargetWorkspace_InDoNotImportNativesMode()
 		{
 			TestNativeFilesImport(false, true, false, ImportNativeFileCopyModeEnum.DoNotImportNativeFiles, true);

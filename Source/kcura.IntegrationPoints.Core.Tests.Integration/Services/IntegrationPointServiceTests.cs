@@ -6,6 +6,7 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
@@ -205,8 +206,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 		#endregion UpdateProperties
 
-		[Test]
-		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
+		[SmokeTest]
 		[Ignore("Unstable - to be fixed -> REL-280316")]
 		public void CreateAndRunIntegrationPoint_GoldFlow()
 		{

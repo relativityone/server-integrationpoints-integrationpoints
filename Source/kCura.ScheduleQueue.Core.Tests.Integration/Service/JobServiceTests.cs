@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using kCura.Data.RowDataGateway;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core.Core;
@@ -76,7 +75,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 			AssertJobStopState(job, state);
 		}
 
-		[NUnit.Framework.Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
+		[SmokeTest]
 		[TestCase(StopState.None)]
 		[TestCase(StopState.Stopping)]
 		[TestCase(StopState.Unstoppable)]

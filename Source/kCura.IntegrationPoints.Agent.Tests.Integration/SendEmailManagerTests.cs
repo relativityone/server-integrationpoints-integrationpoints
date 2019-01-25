@@ -11,6 +11,7 @@ using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.Data.Queries;
 using NUnit.Framework;
 using System.Data;
+using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
@@ -47,8 +48,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			_queueContext = new QueueDBContext(Helper, GlobalConst.SCHEDULE_AGENT_QUEUE_TABLE_NAME);
 		}
 
-		[Test]
-		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
+		[SmokeTest]
 		public void VerifyGetUnbatchedId()
 		{
 			string jobDetails =

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.EventHandler;
+using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
@@ -56,8 +57,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 			_errorService.Received().Log(Arg.Is<ErrorModel>(error => error.Message == "Failed to migrate Source Provider."));
 		}
 
-		[Test]
-		[Category(kCura.IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
+		[SmokeTest]
 		public void OneProviderInPreviousWorkspace()
 		{
 			Guid identifier = new Guid("e01ff2d2-2ac7-4390-bbc3-64c6c17758bc");

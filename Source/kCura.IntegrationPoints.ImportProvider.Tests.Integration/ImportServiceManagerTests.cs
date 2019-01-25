@@ -12,6 +12,7 @@ using NUnit.Framework;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
+using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Agent.Validation;
 using kCura.IntegrationPoints.Core;
@@ -194,7 +195,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 		}
 
 		[TestCaseSource(nameof(ImportTestCaseSource))]
-		[Category(kCura.IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
+		[SmokeTest]
 		public void RunTestCase(IImportTestCase testCase)
 		{
 			// https://jira.kcura.com/browse/REL-225244 TODO: Broken test needs to be fixed! Ignore tests until verification mechanism will be fixed. DocumentService.GetNativeMD5String(workspaceId, docResult) needs to be reimplemented."

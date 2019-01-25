@@ -18,11 +18,11 @@ using Relativity.DataTransfer.MessageService;
 using Relativity.DataTransfer.MessageService.MetricsManager.APM;
 using System;
 using System.Threading.Tasks;
+using kCura.IntegrationPoint.Tests.Core.TestCategories;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration.Monitoring
 {
-	[TestFixture]
-	[Category(Constants.SMOKE_TEST)]
+	[SmokeTests]
 	public class ExternalServiceInstrumentationProviderWithJobContextTests
 	{
 		private Mock<IConfig> _configMock;

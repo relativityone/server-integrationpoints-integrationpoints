@@ -1,5 +1,6 @@
 ﻿using System;
 using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
@@ -78,8 +79,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.IsFalse(result);
 		}
 
-		[Test]
-		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
+		[SmokeTest]
 		public void VerifyCheckBatchOnCompleteTrue()
 		{
 			//Arrange

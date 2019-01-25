@@ -18,6 +18,7 @@ using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using Castle.Core.Internal;
 using Castle.Windsor;
+using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
@@ -140,7 +141,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		}
 
 		[TestCaseSource(nameof(ExportTestCaseSource))]
-		[Category(Constants.SMOKE_TEST)]
+		[SmokeTest]
 		public void RunTestCase(IExportTestCase testCase)
 		{
 			if (ShouldIgnoreTest(testCase))
@@ -162,7 +163,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		}
 
 		[TestCaseSource(nameof(InvalidFileshareExportTestCaseSource))]
-		[Category(Constants.SMOKE_TEST)]
+		[SmokeTest]
 		public void RunInvalidFileshareTestCase(IInvalidFileshareExportTestCase testCase)
 		{
 			// Arrange

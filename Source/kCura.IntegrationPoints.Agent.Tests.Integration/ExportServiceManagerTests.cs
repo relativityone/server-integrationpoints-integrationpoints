@@ -26,6 +26,7 @@ using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.Data.RowDataGateway;
+using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoints.Agent.Validation;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -118,8 +119,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			_sourceWorkspaceDto = Workspace.GetWorkspaceDto(SourceWorkspaceArtifactId);
 		}
 
-		[Test]
-		[Category(Constants.SMOKE_TEST)]
+		[SmokeTest]
 		[Ignore("Unstable - to be fixed -> REL-280310")]
 		public void RunRelativityProviderAlone()
 		{
@@ -174,8 +174,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			}
 		}
 
-		[Test]
-		[Category(Constants.SMOKE_TEST)]
+		[SmokeTest]
 		[Ignore("Broken test, it should be fixed/removed after review")]
 		public void StopStateCannotBeUpdatedWhileExportServiceObservers()
 		{

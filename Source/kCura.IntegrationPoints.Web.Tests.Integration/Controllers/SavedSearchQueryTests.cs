@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using NSubstitute;
@@ -56,8 +57,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Controllers
 			}
 		}
 
-		[Test]
-		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
+		[SmokeTest]
 		public void Query_SavedSearchesWithController_Success()
 		{
 			//Arrange

@@ -8,6 +8,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Relativity.Services.ResourceServer;
 using System;
+using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using Relativity.API;
 using CaseInfo = Relativity.CaseInfo;
 using TestCategories = kCura.IntegrationPoint.Tests.Core.Constants;
@@ -50,8 +51,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			_sut = new CaseRepository(resourceServerManager, instrumentationProvider);
 		}
 
-		[Test]
-		[Category(TestCategories.SMOKE_TEST)]
+		[SmokeTest]
 		public void ItShouldReturnWorkspaceInfo()
 		{
 			// act
