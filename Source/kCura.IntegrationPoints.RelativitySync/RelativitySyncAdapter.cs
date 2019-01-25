@@ -6,6 +6,7 @@ using Castle.Windsor;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
 using Relativity.Sync;
+using Relativity.Telemetry.APM;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
@@ -15,17 +16,23 @@ namespace kCura.IntegrationPoints.RelativitySync
 		private readonly IExtendedJob _job;
 		private readonly IWindsorContainer _ripContainer;
 		private readonly IAPILog _logger;
+		private readonly IAPM _apmMetrics;
+		private readonly Guid _correlationId;
 
-		public RelativitySyncAdapter(IExtendedJob job, IWindsorContainer ripContainer, IAPILog logger)
+		public RelativitySyncAdapter(IExtendedJob job, IWindsorContainer ripContainer, IAPILog logger, IAPM apmMetrics)
 		{
 			_jobHistoryHelper = new JobHistoryHelper();
 			_job = job;
 			_ripContainer = ripContainer;
 			_logger = logger;
+			_apmMetrics = apmMetrics;
+			_correlationId = Guid.NewGuid();
 		}
 
 		public async Task<TaskResult> RunAsync()
 		{
+			SyncMetrics metrics = new SyncMetrics(_apmMetrics, _logger);
+			TaskResult taskResult = new TaskResult{Status = TaskStatusEnum.Fail };
 			try
 			{
 				CancellationToken cancellationToken = CancellationAdapter.GetCancellationToken(_job, _ripContainer);
@@ -38,19 +45,25 @@ namespace kCura.IntegrationPoints.RelativitySync
 						await MarkJobAsStoppedAsync().ConfigureAwait(false);
 					}
 
-					return new TaskResult {Status = TaskStatusEnum.Success};
+					taskResult = new TaskResult {Status = TaskStatusEnum.Success};
 				}
 			}
 			catch (OperationCanceledException)
 			{
 				await MarkJobAsStoppedAsync().ConfigureAwait(false);
-				return new TaskResult {Status = TaskStatusEnum.Fail};
+				taskResult = new TaskResult {Status = TaskStatusEnum.Fail};
 			}
 			catch (Exception e)
 			{
 				await MarkJobAsFailed(e).ConfigureAwait(false);
-				return new TaskResult {Status = TaskStatusEnum.Fail};
+				taskResult = new TaskResult {Status = TaskStatusEnum.Fail};
 			}
+			finally
+			{
+				metrics.SendMetric(_correlationId, taskResult);
+			}
+
+			return taskResult;
 		}
 
 		private async Task MarkJobAsStoppedAsync()
@@ -82,7 +95,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		private ISyncJob CreateSyncJob(IContainer container)
 		{
 			SyncJobFactory jobFactory = new SyncJobFactory();
-			SyncJobParameters parameters = new SyncJobParameters(_job.JobHistoryId, _job.WorkspaceId);
+			SyncJobParameters parameters = new SyncJobParameters(_job.JobHistoryId, _job.WorkspaceId, _correlationId.ToString());
 			ISyncLog syncLog = new SyncLog(_logger);
 			ISyncJob syncJob = jobFactory.Create(container, parameters, syncLog);
 			return syncJob;

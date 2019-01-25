@@ -3,6 +3,7 @@ kCura.Apps.Common.Utils
 Relativity.API
 Relativity.Services.Interfaces
 kCura.Relativity.Client
+Relativity.Telemetry.APM
 
 group Sync
 	Relativity.Sync
