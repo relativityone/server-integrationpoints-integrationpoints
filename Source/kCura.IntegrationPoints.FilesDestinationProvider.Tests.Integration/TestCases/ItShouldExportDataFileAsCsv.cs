@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 		{
 			var fileInfo = GetFileInfo(directory);
 			IEnumerable<string> columns = ExportSettings.SelViewFieldIds.Select(x => x.Value.DisplayName);
-			bool columnsAreInOrder = DataFileFormatHelper.FileContainsColumnsInOrder(columns, fileInfo);
+			bool columnsAreInOrder = DataFileFormatHelper.AreColumnsInFileOrdered(columns, fileInfo);
 			Assert.IsTrue(columnsAreInOrder, $"Columns are in the wrong order in the file ({fileInfo.FullName})!");
 		}
 	}
