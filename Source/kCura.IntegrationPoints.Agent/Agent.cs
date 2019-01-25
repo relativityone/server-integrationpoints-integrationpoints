@@ -99,20 +99,10 @@ namespace kCura.IntegrationPoints.Agent
 
 		private bool ShouldUseRelativitySync(Job job)
 		{
-			IIntegrationPointService integrationPointService = null;
-			IProviderTypeService providerTypeService = null;
-			IToggleProvider toggleProvider = null;
-			IConfigurationDeserializer configurationDeserializer = null;
+			RelativitySyncConstrainsChecker constrainsChecker = null;
 			try
 			{
-				integrationPointService = _agentLevelContainer.Value.Resolve<IIntegrationPointService>();
-				providerTypeService = _agentLevelContainer.Value.Resolve<IProviderTypeService>();
-				toggleProvider = _agentLevelContainer.Value.Resolve<IToggleProvider>();
-				configurationDeserializer = _agentLevelContainer.Value.Resolve<IConfigurationDeserializer>();
-
-				RelativitySyncConstrainsChecker constrainsChecker =
-					new RelativitySyncConstrainsChecker(integrationPointService, providerTypeService, toggleProvider,
-						configurationDeserializer, _logger);
+				constrainsChecker = _agentLevelContainer.Value.Resolve<RelativitySyncConstrainsChecker>();
 				return constrainsChecker.ShouldUseRelativitySync(job);
 			}
 			catch (Exception ex)
@@ -122,24 +112,9 @@ namespace kCura.IntegrationPoints.Agent
 			}
 			finally
 			{
-				if (integrationPointService != null)
+				if (constrainsChecker != null)
 				{
-					_agentLevelContainer.Value.Release(integrationPointService);
-				}
-
-				if (providerTypeService != null)
-				{
-					_agentLevelContainer.Value.Release(providerTypeService);
-				}
-
-				if (toggleProvider != null)
-				{
-					_agentLevelContainer.Value.Release(toggleProvider);
-				}
-
-				if (configurationDeserializer != null)
-				{
-					_agentLevelContainer.Value.Release(configurationDeserializer);
+					_agentLevelContainer.Value.Release(constrainsChecker);
 				}
 			}
 
