@@ -198,6 +198,16 @@ timestamps
 							runTests(params.skipIntegrationTests, "-in", "Integration", nightlyJobName)
 						}
 					}
+					if(isNightly(nightlyJobName))
+					{
+						stage ('Integration Tests in Quarantine')
+						{
+							timeout(time: 180, unit: 'MINUTES')
+							{
+								runTests(params.skipIntegrationTests, "-in", "Quarantined Integration", nightlyJobName)
+							}
+						}
+					}
 					stage ('UI Tests')
 					{
 						timeout(time: 8, unit: 'HOURS')
@@ -318,6 +328,11 @@ def isNightly(String nightlyJobName)
     return env.JOB_NAME.contains(nightlyJobName)
 }
 
+def isQuarantined(String testName)
+{
+	return testName == "Quarantined Integration";
+}
+
 def getSlackChannelName(String nightlyJobName)
 {
     if (isNightly(nightlyJobName) && env.BRANCH_NAME == "develop")
@@ -330,30 +345,33 @@ def getSlackChannelName(String nightlyJobName)
     }
 }
 
-def getTestsFilter(String nightlyJobName)
+def getTestsFilter(String testName, String nightlyJobName)
 {
     echo "env.JOB_NAME $env.JOB_NAME"
+
+	if(isNightly(nightlyJobName) && isQuarantined(testName))
+
     return (isNightly(nightlyJobName))
         ? params.nightlyTestsFilter
         : params.testsFilter
 }
 
-def runTests(Boolean skipTests, String cmdOption, String name, String nightlyJobName)
+def runTests(Boolean skipTests, String cmdOption, String testName, String nightlyJobName)
 {
     if (!skipTests) 
     {
         configureNunitTests()
-        def currentFilter = getTestsFilter(nightlyJobName)
+        def currentFilter = getTestsFilter(testName, nightlyJobName)
         def result = powershell returnStatus: true, script: "./build.ps1 -sk $cmdOption $currentFilter"
         if (result != 0)
         {
-            error "$name Tests FAILED with status: $result"
+            error "$testName Tests FAILED with status: $result"
         }
-        echo "$name Tests OK"
+        echo "$testName Tests OK"
     }
     else
     {
-        echo "$name Tests are going to be skipped."
+        echo "$testName Tests are going to be skipped."
     }
 }
 
