@@ -38,7 +38,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 
 	        char quote = fileFirstLine[0];
 	        IEnumerable<int> indexes = columns.Select(col => fileFirstLine.IndexOf($"{quote}{col}{quote}"));
-	        if (indexes.Any(x => x == -1))
+	        bool anyColumnIsMissing = indexes.Any(x => x == -1);
+			if (anyColumnIsMissing)
 	        {
 				throw new TestException("Some column is not present in a header of the load file!");
 	        }
