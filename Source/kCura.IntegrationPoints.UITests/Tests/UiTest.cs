@@ -9,9 +9,7 @@ using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoint.Tests.Core;
 using OpenQA.Selenium;
 using System.Net;
-using System.Reflection;
 using Castle.MicroKernel.Registration;
-using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.UITests.Configuration;
 using kCura.IntegrationPoints.UITests.Driver;
@@ -29,13 +27,8 @@ namespace kCura.IntegrationPoints.UITests.Tests
 
 	public abstract class UiTest
 	{
-
 		private readonly Lazy<ITestHelper> _help;
-
-		protected IConfigurationStore ConfigurationStore;
-
-		protected IWindsorContainer Container;
-
+		
 		protected static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(UiTest));
 
 		protected static readonly List<Tuple<string, string>> DefaultFieldsMapping = new List<Tuple<string, string>>
@@ -45,6 +38,8 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			new Tuple<string, string>("Title", "Title")
 		};
 
+		protected IWindsorContainer Container { get; private set; }
+
 		public static string Now => DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
 
 		public ITestHelper Helper => _help.Value;
@@ -53,12 +48,15 @@ namespace kCura.IntegrationPoints.UITests.Tests
 
 		protected TestContext Context { get; set; }
 
+		/// <summary>
+		/// Value is assigned before during SetUp phase, before each test is executed.
+		/// Property should not be accessed before SetUp phase of test.
+		/// </summary>
 		protected RemoteWebDriver Driver { get; set; }
 
-		public UiTest()
+		protected UiTest()
 		{
 			Container = new WindsorContainer();
-			ConfigurationStore = new DefaultConfigurationStore();
 			_help = new Lazy<ITestHelper>(() => new TestHelper());
 		}
 		protected virtual bool InstallLegalHoldApp => false;
@@ -83,9 +81,15 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			Context.InitUser();
 			Task agentSetupTask = SetupAgentAsync();
 			Task workspaceSetupTask = SetupWorkspaceAsync();
-			Task webDriverCreationTask = CreateDriverAsync();
 
-			Task.WaitAll(agentSetupTask, workspaceSetupTask, webDriverCreationTask);
+			Task.WaitAll(agentSetupTask, workspaceSetupTask);
+		}
+
+		[SetUp]
+		public void SetupDriver()
+		{
+			Driver = DriverFactory.CreateDriver();
+			EnsureGeneralPageIsOpened();
 		}
 
 		private async Task SetupAgentAsync()
@@ -140,12 +144,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			await Context.ImportDocumentsAsync();
 		}
 
-		protected async Task CreateDriverAsync()
-		{
-			await Task.Run(() => Driver = DriverFactory.CreateDriver()).ConfigureAwait(false);
-		}
-
-		[OneTimeTearDown]
+		[TearDown]
 		protected void CloseAndQuitDriver()
 		{
 			try
@@ -160,6 +159,21 @@ namespace kCura.IntegrationPoints.UITests.Tests
 				Log.Error(ex, "Error during saving screenshot.");
 			}
 
+			try
+			{
+				Driver?.Quit();
+				Driver = null;
+			}
+			catch (Exception ex)
+			{
+				Log.Error(ex, "Quiting Driver failed.");
+			}
+		}
+
+
+		[OneTimeTearDown]
+		protected void OneTimeTearDown()
+		{
 			try
 			{
 				if (string.IsNullOrEmpty(SharedVariables.UiUseThisExistingWorkspace) && Context.WorkspaceId != null)
@@ -180,25 +194,20 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			{
 				Log.Error(ex, "Error in Context TearDown.");
 			}
-
-			try
-			{
-				Driver?.Quit();
-			}
-			catch (Exception ex)
-			{
-				Log.Error(ex, "Quiting Driver failed.");
-			}
 		}
 
-		protected GeneralPage EnsureGeneralPageIsOpened()
+		private void EnsureGeneralPageIsOpened()
 		{
 			var loginPage = new LoginPage(Driver);
+
 			if (loginPage.IsOnLoginPage())
 			{
-				return loginPage.Login(Context.User.Email, Context.User.Password);
+				loginPage.Login(Context.User.Email, Context.User.Password);
 			}
-			return new GeneralPage(Driver).PassWelcomeScreen();
+			else
+			{
+				new GeneralPage(Driver).PassWelcomeScreen();
+			}
 		}
 
 		protected void SaveScreenshot()
@@ -213,21 +222,6 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			string methodName = NUnit.Framework.TestContext.CurrentContext.Test.MethodName;
 			string timeStamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss-ffff");
 			screenshot.SaveAsFile($@"{testDir}\{timeStamp}_{className}.{methodName}.png", ScreenshotImageFormat.Png);
-		}
-
-		protected string GetExecutorUrl()
-		{
-			FieldInfo executorField = Driver.GetType().GetField("executor", BindingFlags.NonPublic | BindingFlags.Instance);
-			if (executorField == null)
-			{
-				executorField = Driver.GetType().BaseType.GetField("executor", BindingFlags.NonPublic | BindingFlags.Instance);
-			}
-			object executor = executorField.GetValue(Driver);
-			FieldInfo internalExecutorField = executor.GetType().GetField("internalExecutor", BindingFlags.Instance | BindingFlags.NonPublic);
-			object internalExecutor = internalExecutorField.GetValue(executor);
-			FieldInfo remoteServerUriField = internalExecutor.GetType().GetField("remoteServerUri", BindingFlags.Instance | BindingFlags.NonPublic);
-			var remoteServerUri = remoteServerUriField.GetValue(internalExecutor) as Uri;
-			return remoteServerUri.ToString();
 		}
 
 		protected void WaitForJobToFinishAndValidateCompletedStatus(IntegrationPointDetailsPage detailsPage)

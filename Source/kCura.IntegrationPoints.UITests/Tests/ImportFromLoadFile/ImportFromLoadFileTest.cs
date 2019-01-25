@@ -26,7 +26,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
-			EnsureGeneralPageIsOpened();
 			Install(Context.GetWorkspaceId());
 			CopyFilesToFileshare();
 		}

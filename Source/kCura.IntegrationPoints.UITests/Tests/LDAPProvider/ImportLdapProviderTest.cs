@@ -27,10 +27,14 @@ namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
-			EnsureGeneralPageIsOpened();
-			_integrationPointsAction = new IntegrationPointsImportLdapAction(Driver, Context);
 			Install(Context.WorkspaceId.Value);
 			_service = Container.Resolve<IRSAPIService>();
+		}
+
+		[SetUp]
+		public void SetUp()
+		{
+			_integrationPointsAction = new IntegrationPointsImportLdapAction(Driver, Context);
 		}
 
 		[Test, Order(1)]

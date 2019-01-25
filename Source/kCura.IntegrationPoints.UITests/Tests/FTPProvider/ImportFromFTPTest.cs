@@ -26,7 +26,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.FTPProvider
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
-			EnsureGeneralPageIsOpened();
 			Install(Context.WorkspaceId.Value);
 			_service = Container.Resolve<IRSAPIService>();
 		}

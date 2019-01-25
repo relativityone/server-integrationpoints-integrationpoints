@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 {
 	[TestFixture]
 	[Category(TestCategory.EXPORT_TO_LOAD_FILE)]
-    public class EntityExportToLoadFile : UiTest
+	public class EntityExportToLoadFile : UiTest
 	{
 		private IntegrationPointsAction _integrationPointsAction;
 		private IRSAPIService _service;
@@ -22,15 +22,17 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 		[OneTimeSetUp]
 		public void OneTimeSetup()
 		{
-			EnsureGeneralPageIsOpened();
 			Context.InstallLegalHold();
 			Install(Context.WorkspaceId.Value);
 			_service = Container.Resolve<IRSAPIService>();
 
 			SetupEntities();
+		}
 
+		[SetUp]
+		public void Setup()
+		{
 			_integrationPointsAction = new IntegrationPointsAction(Driver, Context);
-
 		}
 
 		[Test]
