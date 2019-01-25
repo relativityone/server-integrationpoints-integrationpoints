@@ -43,18 +43,18 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 	        {
 				throw new TestException("Some column is not present in a header of the load file!");
 	        }
-	        bool indexesAreSorted = indexes
+	        bool columnsAreSorted = indexes
 		        .Zip(indexes.Skip(1), (i1, i2) => i1 < i2)
 		        .All(b => b);
 
-	        if (!indexesAreSorted)
+	        if (!columnsAreSorted)
 	        {
 		        string msg =
 			        $"Headers line ({fileFirstLine}), contains columns in the wrong order!\n Should be: {string.Join(" ", columns)}";
 				throw new TestException(msg);
 	        }
 
-	        return indexesAreSorted;
+	        return columnsAreSorted;
         }
 
         public static string GetContent(FileInfo file)
