@@ -1,5 +1,4 @@
 ﻿using Castle.MicroKernel.Registration;
-using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
@@ -29,15 +28,12 @@ namespace kCura.IntegrationPoints.UITests.Tests
 
 	public abstract class UiTest
 	{
-		
 		private readonly Lazy<ITestHelper> _help;
 
-		protected IConfigurationStore ConfigurationStore;
-
-		protected IWindsorContainer Container;
-
 		protected static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(UiTest));
-		
+
+		protected IWindsorContainer Container { get; }
+
 		public static string Now => DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
 
 		public ITestHelper Helper => _help.Value;
@@ -46,19 +42,21 @@ namespace kCura.IntegrationPoints.UITests.Tests
 
 		protected TestContext Context { get; set; }
 
+		/// <summary>
+		/// Value is assigned before during SetUp phase, before each test is executed.
+		/// Property should not be accessed before SetUp phase of test.
+		/// </summary>
 		protected RemoteWebDriver Driver { get; set; }
 
 		protected UiTest()
 		{
 			Container = new WindsorContainer();
-			ConfigurationStore = new DefaultConfigurationStore();
 			_help = new Lazy<ITestHelper>(() => new TestHelper());
 		}
-		
+
 		[OneTimeSetUp]
 		protected void SetupSuite()
 		{
-			Container = new WindsorContainer();
 			// enable TLS 1.2 for R1 regression environments
 			ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 
@@ -71,9 +69,15 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			Context.InitUser();
 			Task agentSetupTask = SetupAgentAsync();
 			Task workspaceSetupTask = SetupWorkspaceAsync();
-			Task webDriverCreationTask = CreateDriverAsync();
 
-			Task.WaitAll(agentSetupTask, workspaceSetupTask, webDriverCreationTask);
+			Task.WaitAll(agentSetupTask, workspaceSetupTask);
+		}
+
+		[SetUp]
+		public void SetupDriver()
+		{
+			Driver = DriverFactory.Create();
+			EnsureGeneralPageIsOpened();
 		}
 
 		private async Task SetupAgentAsync()
@@ -120,17 +124,21 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			await Context.ImportDocumentsAsync();
 		}
 
-		protected async Task CreateDriverAsync()
-		{
-			await Task.Run(() => Driver = DriverFactory.Create()).ConfigureAwait(false);
-		}
-
 		[TearDown]
-		protected void LogTestErrors()
+		private void TearDown()
 		{
 			LogTestStatus();
-
 			LogBrowserLogsIfTestFailed();
+			SaveScreenshotIfTestFailed();
+
+			CloseDriver();
+		}
+
+		[OneTimeTearDown]
+		protected void OneTimeTearDown()
+		{
+			DeleteWorkspace();
+			TearDownContext();
 		}
 
 		private void LogBrowserLogsIfTestFailed()
@@ -163,7 +171,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 				if (HasTestFailed())
 				{
 					Log.Error("Test {TestName} finished unsuccessfully. Status: {TestStatus},\n" +
-					          "message: '{ErrorMessage}', stacktrace:\n{TestStacktrace}",
+							  "message: '{ErrorMessage}', stacktrace:\n{TestStacktrace}",
 						tc.Test.FullName, tc.Result.Outcome.Status, tc.Result.Message, tc.Result.StackTrace);
 				}
 				else
@@ -177,7 +185,6 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			}
 		}
 
-		[TearDown]
 		private void SaveScreenshotIfTestFailed()
 		{
 			try
@@ -193,13 +200,32 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			}
 		}
 
-		private static bool HasTestFailed()
+		private void CloseDriver()
 		{
-			return !NUnit.Framework.TestContext.CurrentContext.Result.Outcome.Equals(ResultState.Success);
+			try
+			{
+				Driver?.Quit();
+				Driver = null;
+			}
+			catch (Exception ex)
+			{
+				Log.Error(ex, "Quiting Driver failed.");
+			}
 		}
 
-		[OneTimeTearDown]
-		protected void CloseAndQuitDriver()
+		private void TearDownContext()
+		{
+			try
+			{
+				Context.TearDown();
+			}
+			catch (Exception ex)
+			{
+				Log.Error(ex, "Error in Context TearDown.");
+			}
+		}
+
+		private void DeleteWorkspace()
 		{
 			try
 			{
@@ -212,36 +238,27 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			{
 				Log.Error(ex, "Error during deleting workspace.");
 			}
-
-			try
-			{
-				Context.TearDown();
-			}
-			catch (Exception ex)
-			{
-				Log.Error(ex, "Error in Context TearDown.");
-			}
-
-			try
-			{
-				Driver?.Quit();
-			}
-			catch (Exception ex)
-			{
-				Log.Error(ex, "Quiting Driver failed.");
-			}
 		}
 
-		protected GeneralPage EnsureGeneralPageIsOpened()
+		private static bool HasTestFailed()
+		{
+			return !NUnit.Framework.TestContext.CurrentContext.Result.Outcome.Equals(ResultState.Success);
+		}
+
+		private void EnsureGeneralPageIsOpened()
 		{
 			var loginPage = new LoginPage(Driver);
+
 			if (loginPage.IsOnLoginPage())
 			{
-				return loginPage.Login(Context.User.Email, Context.User.Password);
+				loginPage.Login(Context.User.Email, Context.User.Password);
 			}
-			return new GeneralPage(Driver).PassWelcomeScreen();
+			else
+			{
+				new GeneralPage(Driver).PassWelcomeScreen();
+			}
 		}
-		
+
 		protected void WaitForJobToFinishAndValidateCompletedStatus(IntegrationPointDetailsPage detailsPage)
 		{
 			new BaseUiValidator().ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
