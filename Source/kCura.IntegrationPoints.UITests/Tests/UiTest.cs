@@ -27,6 +27,8 @@ namespace kCura.IntegrationPoints.UITests.Tests
 
 	public abstract class UiTest
 	{
+		private readonly bool _shouldLoginToRelativity;
+
 		private readonly Lazy<ITestHelper> _help;
 		
 		protected static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(UiTest));
@@ -54,11 +56,17 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		/// </summary>
 		protected RemoteWebDriver Driver { get; set; }
 
-		protected UiTest()
+		protected UiTest() : this(true)
 		{
+		}
+
+		protected UiTest(bool shouldLoginToRelativity)
+		{
+			_shouldLoginToRelativity = shouldLoginToRelativity;
 			Container = new WindsorContainer();
 			_help = new Lazy<ITestHelper>(() => new TestHelper());
 		}
+
 		protected virtual bool InstallLegalHoldApp => false;
 
 		protected virtual void ContextSetUp()
@@ -89,7 +97,10 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		public void SetupDriver()
 		{
 			Driver = DriverFactory.CreateDriver();
-			EnsureGeneralPageIsOpened();
+			if (_shouldLoginToRelativity)
+			{
+				EnsureGeneralPageIsOpened();
+			}
 		}
 
 		private async Task SetupAgentAsync()
