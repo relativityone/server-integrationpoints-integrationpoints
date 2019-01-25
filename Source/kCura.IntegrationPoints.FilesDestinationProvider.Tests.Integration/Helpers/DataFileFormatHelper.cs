@@ -1,9 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Domain.Exceptions;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers
 {
