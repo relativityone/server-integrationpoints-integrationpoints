@@ -345,15 +345,35 @@ def getSlackChannelName(String nightlyJobName)
     }
 }
 
+def getQuarantinedTestCategory()
+{
+	return "InQuarantine"
+}
+
+def getTestFilterWithoutQuarantined(String testFilter)
+{
+	def notQuarantinedTestFilter = "cat!=${getQuarantinedTestCategory()}"
+	if(testFilter == "")
+	{
+		return notQuarantinedTestFilter
+	}
+	return "${testFilter} and ${notQuarantinedTestFilter}"
+}
+
 def getTestsFilter(String testName, String nightlyJobName)
 {
     echo "env.JOB_NAME $env.JOB_NAME"
 
-	if(isNightly(nightlyJobName) && isQuarantined(testName))
+	if(isNightly(nightlyJobName))
+	{
+		if(isQuarantined(testName))
+		{
+			return "cat==${getQuarantinedTestCategory()}"
+		}
+		return getTestFilterWithoutQuarantined(params.nightlyTestsFilter)
+	}
 
-    return (isNightly(nightlyJobName))
-        ? params.nightlyTestsFilter
-        : params.testsFilter
+	return getTestFilterWithoutQuarantined(params.testsFilter)
 }
 
 def runTests(Boolean skipTests, String cmdOption, String testName, String nightlyJobName)
