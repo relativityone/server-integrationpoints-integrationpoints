@@ -198,8 +198,8 @@ timestamps
 							runTests(params.skipIntegrationTests, "-in", "Integration", nightlyJobName)
 						}
 					}
-					if(isNightly(nightlyJobName))
-					{
+					//if(isNightly(nightlyJobName)) //commented out temporarly for testing purposes
+					//{
 						stage ('Integration Tests in Quarantine')
 						{
 							timeout(time: 180, unit: 'MINUTES')
@@ -207,7 +207,7 @@ timestamps
 								runTests(params.skipIntegrationTests, "-in", "Quarantined Integration", nightlyJobName)
 							}
 						}
-					}
+					//}
 					stage ('UI Tests')
 					{
 						timeout(time: 8, unit: 'HOURS')
