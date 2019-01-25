@@ -4,6 +4,8 @@ using System.Globalization;
 using System.Threading;
 using kCura.Data.RowDataGateway;
 using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoint.Tests.Core.TestCategories;
+using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
@@ -197,7 +199,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 
 		[Test, Timeout(300000)]
 		[Description("This test takes sometime to process. It requires the IP agent to be running.")]
-		[Ignore("Ignoring until test is fixed")]
+		[TestInQuarantine]
 		public void OneExecutedScheduledJobInTheQueue_ExpectCountZero()
 		{
 			ControlIntegrationPointAgents(true);

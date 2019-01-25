@@ -9,6 +9,7 @@ using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestCategories;
+using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using kCura.IntegrationPoints.Web.Tests.Integration.Helpers;
 using Newtonsoft.Json;

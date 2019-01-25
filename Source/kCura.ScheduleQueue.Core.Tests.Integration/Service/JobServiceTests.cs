@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using kCura.Data.RowDataGateway;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.TestCategories;
+using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core.Core;

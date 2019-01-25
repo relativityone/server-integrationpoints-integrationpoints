@@ -19,6 +19,7 @@ using Relativity.DataTransfer.MessageService.MetricsManager.APM;
 using System;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.TestCategories;
+using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration.Monitoring
 {

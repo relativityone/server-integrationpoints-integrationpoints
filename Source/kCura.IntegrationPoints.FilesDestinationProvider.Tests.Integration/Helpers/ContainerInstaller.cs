@@ -160,7 +160,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 				Classes.FromThisAssembly()
 					.IncludeNonPublicTypes()
 					.BasedOn<IExportTestCase>()
-					.Unless(type => Attribute.IsDefined(type, typeof(IgnoreAttribute)))
 					.WithServiceAllInterfaces()
 					.AllowMultipleMatches());
 		}
@@ -171,7 +170,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 				Classes.FromThisAssembly()
 					.IncludeNonPublicTypes()
 					.BasedOn<IInvalidFileshareExportTestCase>()
-					.Unless(type => Attribute.IsDefined(type, typeof(IgnoreAttribute)))
 					.WithServiceAllInterfaces()
 					.AllowMultipleMatches());
 		}

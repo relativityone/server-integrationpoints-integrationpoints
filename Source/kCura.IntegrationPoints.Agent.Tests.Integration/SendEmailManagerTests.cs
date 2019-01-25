@@ -12,6 +12,7 @@ using kCura.ScheduleQueue.Core.Data.Queries;
 using NUnit.Framework;
 using System.Data;
 using kCura.IntegrationPoint.Tests.Core.TestCategories;
+using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration

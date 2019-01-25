@@ -10,7 +10,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases
 {
-	[Ignore("This test fails due to missing validator in WinEDDS for StartNumber greater than zero REL-198503")]
+	//"This test fails due to missing validator in WinEDDS for StartNumber greater than zero REL-198503"
 	internal class ItShouldLogJobErrorForNegativeSubdirectoryStartNumber : ExportTestCaseBase
 	{
 		private readonly IJobHistoryErrorService _jobHistoryErrorService;

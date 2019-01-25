@@ -2,6 +2,7 @@
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.EventHandler;
 using kCura.IntegrationPoint.Tests.Core.TestCategories;
+using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Helpers;

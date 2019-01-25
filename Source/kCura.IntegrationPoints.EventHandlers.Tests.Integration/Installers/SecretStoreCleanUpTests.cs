@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoint.Tests.Core.TestCategories;
+using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Data.SecretStore;
 using kCura.IntegrationPoints.EventHandlers.Installers.Helpers.Implementations;
@@ -32,8 +34,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 			_secretStoreCleanUp = new SecretStoreCleanUp(_secretManager, _secretCatalog);
 		}
 
-		[Test]
-		[Ignore("Known Issue in secret store: whole paths from secret catalog are returned instead of keys in dictionary. Details: https://jira.kcura.com/browse/STVD-12542")]
+		[TestInQuarantine(@"Known Issue in secret store: 
+					whole paths from secret catalog are returned instead 
+					of keys in dictionary. Details: STVD-12542")]
 		public void ItShouldRemoveSecretAndTenantId()
 		{
 			string tenantId = _secretManager.GetTenantID();

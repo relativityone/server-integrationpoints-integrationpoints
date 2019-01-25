@@ -3,6 +3,7 @@ using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestCategories;
+using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data;

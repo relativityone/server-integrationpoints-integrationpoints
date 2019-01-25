@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core.TestCategories;
+using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoints.EventHandlers.Installers;
 using kCura.IntegrationPoints.SourceProviderInstaller;
 using NUnit.Framework;
