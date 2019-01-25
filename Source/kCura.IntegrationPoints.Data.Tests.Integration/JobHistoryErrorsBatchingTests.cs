@@ -602,7 +602,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			var savedSearchQuery = new global::Relativity.Services.Query();
 			savedSearchQuery.Condition = $"'Name' EqualTo '{tempSavedSearchName}'";
 
-			using (var proxy = Kepler.CreateProxy<IKeywordSearchManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true))
+			using (var proxy = Helper.CreateAdminProxy<IKeywordSearchManager>())
 			{
 				KeywordSearchQueryResultSet resultSet = proxy.QueryAsync(SourceWorkspaceArtifactId, savedSearchQuery).Result;
 				if (resultSet.TotalCount != 0)

@@ -1,9 +1,9 @@
-﻿using System;
+﻿using NUnit.Framework;
+using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
-using NUnit.Framework;
-using System.Collections.Generic;
 using System.Text;
 
 namespace kCura.IntegrationPoint.Tests.Core
@@ -15,28 +15,28 @@ namespace kCura.IntegrationPoint.Tests.Core
 		static SharedVariables()
 		{
 			const string configFileName = "app.jeeves-ci.config";
-		    try
-		    {
-		        string assemblyDir = Path.GetDirectoryName(System.Reflection.Assembly.GetCallingAssembly().CodeBase);
-		        string jeevesConfigPath = Path.Combine(assemblyDir, configFileName);
-		        if (File.Exists(jeevesConfigPath.Replace(@"file:\", "")))
-		        {
-		            Console.WriteLine(@"Jeeves config found: " + jeevesConfigPath);
-		            MergeConfigurationWithAppConfig(configFileName);
-		        }
-		        else
-		        {
-		            Console.WriteLine(@"Jeeves config not found: " + jeevesConfigPath);
-		        }
-		    }
-		    catch (ArgumentException ex)
-		    {
-		        Console.WriteLine(@"Error occured while checking jeeves file path: " + ex);
-		    }
-		    finally
-		    {
-		        Console.WriteLine(DumpToString());
-            }
+			try
+			{
+				string assemblyDir = Path.GetDirectoryName(System.Reflection.Assembly.GetCallingAssembly().CodeBase);
+				string jeevesConfigPath = Path.Combine(assemblyDir, configFileName);
+				if (File.Exists(jeevesConfigPath.Replace(@"file:\", "")))
+				{
+					Console.WriteLine(@"Jeeves config found: " + jeevesConfigPath);
+					MergeConfigurationWithAppConfig(configFileName);
+				}
+				else
+				{
+					Console.WriteLine(@"Jeeves config not found: " + jeevesConfigPath);
+				}
+			}
+			catch (ArgumentException ex)
+			{
+				Console.WriteLine(@"Error occured while checking jeeves file path: " + ex);
+			}
+			finally
+			{
+				Console.WriteLine(DumpToString());
+			}
 		}
 
 		public static string DumpToString()
@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 			return dump.ToString();
 		}
-		
+
 		public static string AppSettingString(string name)
 		{
 			return CustomConfig?.AppSettings.Settings[name]?.Value ?? ConfigurationManager.AppSettings[name];
@@ -133,38 +133,66 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		#region Relativity Settings
 
-		public static string ProtocolVersion {
-			get
-			{
-				if (AppSettingString("IsHttps") != null)
-				{
-					return AppSettingBool("IsHttps") ? "https" : "http";
-				}
-				return AppSettingString("ProtocolVersion");
-			}
-		}
+		/// <summary>
+		/// Returns RelativityInstanceAddress value from config file
+		/// </summary>
+		public static string RelativityInstanceHostname => AppSettingString("RelativityInstanceAddress");
 
-		public static string ServerBindingType => AppSettingString("ServerBindingType");
+		/// <summary>
+		/// Returns Relativity instance base URL
+		/// </summary>
+		/// <returns>
+		/// {ServerBindingType}://{RelativityInstanceAddress}
+		/// </returns>
+		public static string RelativityBaseAdressUrlValue => $"{ServerBindingType}://{RelativityInstanceHostname}";
 
-		public static string RSAPIServerAddress => !string.IsNullOrEmpty(AppSettingString("RSAPIServerAddress")) ? AppSettingString("RSAPIServerAddress") : TargetHost;
+		/// <summary>
+		/// Returns Relativity fronted URL value
+		/// </summary>
+		/// <returns>
+		/// {ServerBindingType}://{RelativityInstanceAddress}/Relativity
+		/// </returns>
+		public static string RelativityFrontendUrlValue => $"{RelativityBaseAdressUrlValue}/Relativity";
 
-		public static string RsapiClientUri => $"{ServerBindingType}://{RSAPIServerAddress}/Relativity.Services";
+		/// <summary>
+		/// Returns Relativity fronted URI
+		/// </summary>
+		/// <returns>
+		/// {ServerBindingType}://{RelativityInstanceAddress}/Relativity
+		/// </returns>
+		public static Uri RelativityFrontedUri => new Uri(RelativityFrontendUrlValue);
 
-		public static Uri RsapiClientServiceUri => new Uri($"{RsapiClientUri}/");
+		/// <summary>
+		/// Returns RSAPI URL
+		/// </summary>
+		/// <returns>
+		/// {ServerBindingType}://{RSAPIServerAddress ?? RelativityInstanceAddress}/Relativity.Services/
+		/// </returns>
+		public static Uri RsapiUri => new Uri($"{ServerBindingType}://{RsapiServerAddress}/Relativity.Services/");
 
-		public static string RestServer => $"{ServerBindingType}://{TargetHost}/Relativity.Rest/";
+		/// <summary>
+		/// Returns Relativity REST URL
+		/// </summary>
+		/// <returns>
+		/// {ServerBindingType}://{RelativityInstanceAddress}/Relativity.Rest/api
+		/// </returns>
+		public static Uri RelativityRestUri => new Uri($"{RelativityBaseAdressUrlValue}/Relativity.Rest/api");
 
-		public static Uri RestClientServiceUri => new Uri($"{RestServer}/api");
+		/// <summary>
+		/// Returns Relativity WebAPI URL
+		/// </summary>
+		/// <returns>
+		/// {ServerBindingType}://{RelativityInstanceAddress}/RelativityWebAPI/
+		/// </returns>
+		public static string RelativityWebApiUrl => $"{RelativityBaseAdressUrlValue}/RelativityWebAPI/";
 
-		public static string RelativityWebApiUrl => $"{ServerBindingType}://{TargetHost}/RelativityWebAPI/";
+		private static string ServerBindingType => AppSettingString("ServerBindingType");
+		
+		private static string RsapiServerAddress => !string.IsNullOrEmpty(AppSettingString("RSAPIServerAddress")) ? AppSettingString("RSAPIServerAddress") : RelativityInstanceHostname;
 
 		#endregion Relativity Settings
 
 		#region ConnectionString Settings
-
-		public static string TargetHost => AppSettingString("RelativityInstanceAddress");
-
-		public static string RelativityWebAddress => AppSettingString("RelativityWebAddress");
 
 		public static string TargetDbHost => GetTargetDbHost();
 		public static string SqlServerAddress => AppSettingString("SQLServerAddress");
@@ -232,10 +260,10 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			return latestVersionFolder?.Name;
 		}
-		
+
 		private static string GetTargetDbHost()
 		{
-			return !string.IsNullOrEmpty(AppSettingString("targetDbHost")) ? AppSettingString("targetDbHost") : TargetHost;
+			return !string.IsNullOrEmpty(AppSettingString("targetDbHost")) ? AppSettingString("targetDbHost") : RelativityInstanceHostname;
 		}
 
 		public static bool UseIpRapFile()

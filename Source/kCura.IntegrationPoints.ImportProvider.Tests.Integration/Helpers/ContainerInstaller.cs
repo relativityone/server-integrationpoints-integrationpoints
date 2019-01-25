@@ -91,8 +91,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
 		{
 			windsorContainer.Register(Component.For<IRSAPIClient>().UsingFactoryMethod(k =>
 			{
-				Uri relativityServicesUri = new Uri(SharedVariables.RsapiClientUri);
-				return new RSAPIClient(relativityServicesUri, new UsernamePasswordCredentials(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword));
+				return new RSAPIClient(SharedVariables.RsapiUri, new UsernamePasswordCredentials(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword));
 			}));
 		}
 
@@ -107,7 +106,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
 		{
 			ICredentialProvider credProvider = Substitute.For<ICredentialProvider>();
 			NetworkCredential temp = new NetworkCredential(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword);
-			NetworkCredential authorizedCredential = temp.GetCredential(SharedVariables.TargetHost, 8990, "password");
+			NetworkCredential authorizedCredential = temp.GetCredential(SharedVariables.RelativityInstanceHostname, 8990, "password");
 			credProvider.Authenticate(Arg.Any<CookieContainer>()).Returns(authorizedCredential);
 			windsorContainer.Register(Component.For<ICredentialProvider>().Instance(credProvider));
 		}

@@ -174,7 +174,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			Size browseSize = Driver.Manage().Window.Size;
 			Log.Information("Browser size: Width: {width}, Height: {height}", browseSize.Width, browseSize.Height);
 
-			Driver.Url = SharedVariables.ProtocolVersion + "://" + SharedVariables.TargetHost + "/Relativity";
+			Driver.Url = SharedVariables.RelativityFrontendUrlValue;
 		}
 
 		[OneTimeTearDown]

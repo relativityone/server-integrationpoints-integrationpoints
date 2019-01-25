@@ -5,6 +5,7 @@ using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.Relativity.Client;
 using NUnit.Framework;
+using Relativity.Productions.Services;
 using Relativity.Services.Field;
 using Relativity.Services.Search;
 
@@ -90,7 +91,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			var search = new KeywordSearch
 			{
 				Name = savedSearchName,
-				ArtifactTypeID = (int) ArtifactType.Document,
+				ArtifactTypeID = (int)ArtifactType.Document,
 				SearchContainer = new SearchContainerRef(folderArtifactId),
 				Fields = fields
 			};
@@ -104,7 +105,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public int CreateProductionSet(int workspaceArtifactId, string productionSetName)
 		{
-			return Production.Create(workspaceArtifactId, productionSetName);
+			return Production.Create(workspaceArtifactId, productionSetName).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
 		public int CreateAndRunProduction(int workspaceArtifactId, int savedSearchId, string productionName)
@@ -116,16 +117,14 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public int CreateAndRunProduction(int workspaceArtifactId, int savedSearchId, string productionName, string placeHolderFilePath)
 		{
-			var placeHolderFileData = FileToBase64Converter.Convert(placeHolderFilePath);
+			byte[] placeHolderFileDataBytes = File.ReadAllBytes(placeHolderFilePath);
+			int productionId = CreateProductionSet(workspaceArtifactId, productionName);
+			int placeholderId = Placeholder.Create(workspaceArtifactId, placeHolderFileDataBytes);
+			ProductionDataSource.CreateDataSourceWithPlaceholderAsync(workspaceArtifactId, productionId, savedSearchId,
+				UseImagePlaceholderOption.WhenNoImageExists, placeholderId).ConfigureAwait(false).GetAwaiter().GetResult();
 
-			var productionId = CreateProductionSet(workspaceArtifactId, productionName);
-
-			var placeholderId = Placeholder.Create(workspaceArtifactId, placeHolderFileData);
-			ProductionDataSource.CreateDataSourceWithPlaceholder(workspaceArtifactId, productionId, savedSearchId,
-				"WhenNoImageExists", placeholderId);
-
-			Production.StageAndWaitForCompletion(workspaceArtifactId, productionId);
-			Production.RunAndWaitForCompletion(workspaceArtifactId, productionId);
+			Production.StageAndWaitForCompletionAsync(workspaceArtifactId, productionId).ConfigureAwait(false).GetAwaiter().GetResult();
+			Production.RunAndWaitForCompletionAsync(workspaceArtifactId, productionId).ConfigureAwait(false).GetAwaiter().GetResult();
 
 			return productionId;
 		}

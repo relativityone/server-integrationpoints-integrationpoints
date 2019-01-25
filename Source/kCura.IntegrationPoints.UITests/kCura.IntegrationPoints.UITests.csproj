@@ -169,6 +169,10 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="paket.references" />
+    <None Include="UiTestsConfig\Reg-Prod-Update.config">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="UiTestsConfig\Reg-Prod.config">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

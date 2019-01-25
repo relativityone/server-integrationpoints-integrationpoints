@@ -134,12 +134,10 @@
     <Compile Include="Extensions\SecureStringExtension.cs" />
     <Compile Include="FieldMaps.cs" />
     <Compile Include="Fields.cs" />
-    <Compile Include="FileToBase64Converter.cs" />
     <Compile Include="FolderService.cs" />
     <Compile Include="ImportHelper.cs" />
     <Compile Include="Injection.cs" />
     <Compile Include="InstanceSetting.cs" />
-    <Compile Include="Kepler.cs" />
     <Compile Include="Models\Audit.cs" />
     <Compile Include="Models\Constants\Shared\LoadFileEncodingConstants.cs" />
     <Compile Include="Models\Constants\ExportToLoadFile\ExportToLoadFileDataFileFormatConstants.cs" />
@@ -207,7 +205,6 @@
     <Compile Include="RelativityApplicationManager.cs" />
     <Compile Include="ResourcePoolHelper.cs" />
     <Compile Include="ResourceServerHelper.cs" />
-    <Compile Include="Rest.cs" />
     <Compile Include="Rsapi.cs" />
     <Compile Include="SavedSearch.cs" />
     <Compile Include="SharedVariables.cs" />
@@ -8349,6 +8346,22 @@
         </Reference>
         <Reference Include="Relativity.OAuth2Client.Interfaces">
           <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Productions.Services.Interfaces">
+          <HintPath>..\..\packages\Relativity.Productions.Services.Interfaces\lib\net45\Relativity.Productions.Services.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.Productions.Services.Interfaces.Private">
+          <HintPath>..\..\packages\Relativity.Productions.Services.Interfaces\lib\net45\Relativity.Productions.Services.Interfaces.Private.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
