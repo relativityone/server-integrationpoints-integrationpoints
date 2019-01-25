@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 			catch (Exception e)
 			{
-				helper.GetLoggerFactory().GetLogger().LogError(e, "Failed to mark job as stopped.");
+				_logger.LogError(e, "Failed to mark job as stopped.");
 			}
 		}
 
@@ -75,7 +75,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 			catch (Exception e)
 			{
-				helper.GetLoggerFactory().GetLogger().LogError(e, "Failed to mark job as failed.");
+				_logger.LogError(e, "Failed to mark job as failed.");
 			}
 		}
 
