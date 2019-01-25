@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 	        }
 	        bool columnsAreSorted = indexes
 		        .Zip(indexes.Skip(1), (i1, i2) => i1 < i2)
-		        .All(b => b);
+		        .All(inOrder => inOrder);
 
 	        if (!columnsAreSorted)
 	        {
