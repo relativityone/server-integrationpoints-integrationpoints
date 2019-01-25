@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
             }
         }
 
-        public static bool FileContainsColumnsInOrder(IEnumerable<string> columns, FileInfo file)
+        public static bool AreColumnsInFileOrdered(IEnumerable<string> columns, FileInfo file)
         {
 	        string fileFirstLine;
             using (var reader = new StreamReader(file.FullName))
