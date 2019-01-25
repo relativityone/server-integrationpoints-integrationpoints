@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		protected TestContext Context { get; set; }
 
 		/// <summary>
-		/// Value is assigned before during SetUp phase, before each test is executed.
+		/// Value is assigned during SetUp phase, before each test is executed.
 		/// Property should not be accessed before SetUp phase of test.
 		/// </summary>
 		protected RemoteWebDriver Driver { get; set; }
