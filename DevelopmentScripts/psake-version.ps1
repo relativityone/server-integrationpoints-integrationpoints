@@ -27,10 +27,8 @@ task version {
     $NewCompany = 'AssemblyCompany("' + $company + '")'
     $NewProduct = 'AssemblyProduct("' + $product + '")'
 
-    foreach($o in Get-ChildItem $version_directory){
-
-       if($o.BaseName -ne 'AssemblyInfo') {continue}
-       
+    foreach ($o in (Get-ChildItem $version_directory -File -Filter AssemblyInfo.*))
+    {
        Write-Host "Updating" $o.FullName "to version" $version "..."
        
        $tmp = Get-Content $o.FullName | 

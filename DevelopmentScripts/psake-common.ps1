@@ -85,6 +85,7 @@ properties {
     $nuget_exe = [System.IO.Path]::Combine($nuget_exe_directory,'NuGet.exe')
     $proget_server = 'https://proget.kcura.corp/nuget/NuGet'
     $nuget_version = $version
+    $proget_api_key = $null
 	
 	#paket variables
 	$paket_exe_directory = [System.IO.Path]::Combine($root, '.paket')
