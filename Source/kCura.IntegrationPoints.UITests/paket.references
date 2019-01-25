@@ -11,6 +11,7 @@ DotNetSeleniumExtras.PageObjects
 DotNetSeleniumExtras.WaitHelpers
 Selenium.Support
 Selenium.WebDriver.ChromeDriver
+Relativity.Productions.Services.Interfaces
 Relativity.Services.Interfaces
 kCura.Relativity.Client
 Relativity.Telemetry.APM
