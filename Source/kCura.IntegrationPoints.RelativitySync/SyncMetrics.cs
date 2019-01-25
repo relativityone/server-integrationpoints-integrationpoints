@@ -10,6 +10,9 @@ namespace kCura.IntegrationPoints.RelativitySync
 {
 	internal sealed class SyncMetrics : ISyncMetrics
 	{
+		internal const string RELATIVITY_SYNC_APM_METRIC_NAME = "RelativitySync.Performance.Job";
+		internal const string JOB_RESULT_KEY_NAME = "JobResult";
+
 		private readonly Dictionary<string, object> _data = new Dictionary<string, object>();
 		private readonly IAPM _apm;
 		private readonly IAPILog _logger;
@@ -23,6 +26,14 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 		public void TimedOperation(string name, TimeSpan duration, CommandExecutionStatus executionStatus)
 		{
+			if (name == null)
+			{
+				throw new ArgumentNullException(nameof(name));
+			}
+			if (string.IsNullOrWhiteSpace(name))
+			{
+				throw new ArgumentException("Name cannot be empty", nameof(name));
+			}
 			_data[name] = new StepResult(executionStatus, duration);
 			_elapsed += duration;
 		}
@@ -31,9 +42,12 @@ namespace kCura.IntegrationPoints.RelativitySync
 		{
 			try
 			{
-				_data.Add("JobResult", taskResult);
-				_apm.TimedOperation("RelativitySync.Performance.Job", _elapsed.TotalMilliseconds,
-					correlationID: correlationId.ToString(), customData: _data);
+				if (taskResult != null)
+				{
+					_data[JOB_RESULT_KEY_NAME] = taskResult;
+				}
+
+				_apm.TimedOperation(RELATIVITY_SYNC_APM_METRIC_NAME, _elapsed.TotalMilliseconds, correlationID: correlationId.ToString(), customData: _data);
 			}
 			catch (Exception ex)
 			{
