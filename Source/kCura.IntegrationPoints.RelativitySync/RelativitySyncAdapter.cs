@@ -55,7 +55,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 			catch (Exception e)
 			{
-				await MarkJobAsFailed(e).ConfigureAwait(false);
+				await MarkJobAsFailedAsync(e).ConfigureAwait(false);
 				taskResult = new TaskResult {Status = TaskStatusEnum.Fail};
 			}
 			finally
@@ -71,24 +71,24 @@ namespace kCura.IntegrationPoints.RelativitySync
 			IHelper helper = _ripContainer.Resolve<IHelper>();
 			try
 			{
-				await _jobHistoryHelper.MarkJobAsStopped(_job, helper).ConfigureAwait(false);
+				await _jobHistoryHelper.MarkJobAsStoppedAsync(_job, helper).ConfigureAwait(false);
 			}
 			catch (Exception e)
 			{
-				helper.GetLoggerFactory().GetLogger().LogError(e, "Failed to mark job as stopped.");
+				_logger.LogError(e, "Failed to mark job as stopped.");
 			}
 		}
 
-		private async Task MarkJobAsFailed(Exception exception)
+		private async Task MarkJobAsFailedAsync(Exception exception)
 		{
 			IHelper helper = _ripContainer.Resolve<IHelper>();
 			try
 			{
-				await _jobHistoryHelper.MarkJobAsFailed(_job, exception, helper).ConfigureAwait(false);
+				await _jobHistoryHelper.MarkJobAsFailedAsync(_job, exception, helper).ConfigureAwait(false);
 			}
 			catch (Exception e)
 			{
-				helper.GetLoggerFactory().GetLogger().LogError(e, "Failed to mark job as failed.");
+				_logger.LogError(e, "Failed to mark job as failed.");
 			}
 		}
 

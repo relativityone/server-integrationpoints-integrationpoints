@@ -10,7 +10,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 {
 	internal sealed class JobHistoryHelper
 	{
-		public async Task MarkJobAsStopped(IExtendedJob job, IHelper helper)
+		public async Task MarkJobAsStoppedAsync(IExtendedJob job, IHelper helper)
 		{
 			using (IObjectManager manager = helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
@@ -18,16 +18,16 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 		}
 
-		public async Task MarkJobAsFailed(IExtendedJob job, Exception e, IHelper helper)
+		public async Task MarkJobAsFailedAsync(IExtendedJob job, Exception e, IHelper helper)
 		{
 			using (IObjectManager manager = helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
-				await MarkJobAsFailed(job, manager).ConfigureAwait(false);
-				await AddJobHistoryError(job, manager, e).ConfigureAwait(false);
+				await MarkJobAsFailedAsync(job, manager).ConfigureAwait(false);
+				await AddJobHistoryErrorAsync(job, manager, e).ConfigureAwait(false);
 			}
 		}
 
-		private static async Task MarkJobAsFailed(IExtendedJob job, IObjectManager manager)
+		private static async Task MarkJobAsFailedAsync(IExtendedJob job, IObjectManager manager)
 		{
 			await UpdateJobAsync(job, JobFailedStateRef(), manager).ConfigureAwait(false);
 		}
@@ -94,7 +94,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			};
 		}
 
-		private async Task AddJobHistoryError(IExtendedJob job, IObjectManager manager, Exception e)
+		private async Task AddJobHistoryErrorAsync(IExtendedJob job, IObjectManager manager, Exception e)
 		{
 			CreateRequest createRequest = new CreateRequest
 			{
