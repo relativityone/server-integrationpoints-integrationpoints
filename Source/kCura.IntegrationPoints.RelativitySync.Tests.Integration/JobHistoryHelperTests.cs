@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			job.Setup(x => x.WorkspaceId).Returns(WorkspaceArtifactId);
 
 			// ACT
-			await _instance.UpdateJobStatus(status, job.Object, Helper).ConfigureAwait(false);
+			await _instance.UpdateJobStatusAsync(status, job.Object, Helper).ConfigureAwait(false);
 
 			// ASSERT
 			IList<JobHistory> jobHistories = Container.Resolve<IJobHistoryService>().GetJobHistory(new[] {_jobHistory.ArtifactId});
@@ -65,7 +65,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			job.Setup(x => x.WorkspaceId).Returns(WorkspaceArtifactId);
 
 			// ACT
-			await _instance.UpdateJobStatus(status, job.Object, Helper).ConfigureAwait(false);
+			await _instance.UpdateJobStatusAsync(status, job.Object, Helper).ConfigureAwait(false);
 
 			// ASSERT
 			IList<JobHistory> jobHistories = Container.Resolve<IJobHistoryService>().GetJobHistory(new[] {_jobHistory.ArtifactId});
@@ -81,7 +81,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			job.Setup(x => x.WorkspaceId).Returns(WorkspaceArtifactId);
 
 			// ACT
-			await _instance.MarkJobAsStopped(job.Object, Helper).ConfigureAwait(false);
+			await _instance.MarkJobAsStoppedAsync(job.Object, Helper).ConfigureAwait(false);
 
 			// ASSERT
 			IList<JobHistory> jobHistories = Container.Resolve<IJobHistoryService>().GetJobHistory(new[] {_jobHistory.ArtifactId});
@@ -101,7 +101,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			job.Setup(x => x.WorkspaceId).Returns(WorkspaceArtifactId);
 
 			// ACT
-			await _instance.MarkJobAsStarted(job.Object, Helper).ConfigureAwait(false);
+			await _instance.MarkJobAsStartedAsync(job.Object, Helper).ConfigureAwait(false);
 
 			// ASSERT
 			IList<JobHistory> jobHistories = Container.Resolve<IJobHistoryService>().GetJobHistory(new[] {_jobHistory.ArtifactId});
@@ -118,7 +118,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			job.Setup(x => x.WorkspaceId).Returns(WorkspaceArtifactId);
 
 			// ACT
-			await _instance.MarkJobAsCompleted(job.Object, Helper).ConfigureAwait(false);
+			await _instance.MarkJobAsCompletedAsync(job.Object, Helper).ConfigureAwait(false);
 
 			// ASSERT
 			IList<JobHistory> jobHistories = Container.Resolve<IJobHistoryService>().GetJobHistory(new[] {_jobHistory.ArtifactId});
@@ -137,7 +137,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			CreateJobHistoryError(_jobHistory.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew, ErrorTypeChoices.JobHistoryErrorItem);
 
 			// ACT
-			await _instance.MarkJobAsCompleted(job.Object, Helper).ConfigureAwait(false);
+			await _instance.MarkJobAsCompletedAsync(job.Object, Helper).ConfigureAwait(false);
 
 			// ASSERT
 			IList<JobHistory> jobHistories = Container.Resolve<IJobHistoryService>().GetJobHistory(new[] {_jobHistory.ArtifactId});
@@ -157,7 +157,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			InvalidOperationException exception = new InvalidOperationException();
 
 			// ACT
-			await _instance.MarkJobAsFailed(job.Object, exception, Helper).ConfigureAwait(false);
+			await _instance.MarkJobAsFailedAsync(job.Object, exception, Helper).ConfigureAwait(false);
 
 			// ASSERT
 			IList<JobHistory> jobHistories = Container.Resolve<IJobHistoryService>().GetJobHistory(new[] {_jobHistory.ArtifactId});
