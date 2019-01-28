@@ -12,12 +12,6 @@ namespace kCura.IntegrationPoints.UITests.Tests
 	{
 		private const int _MILLISECONDSTIMEOUT = 1000;
 
-		[OneTimeSetUp]
-		public void OneTimeSetUp()
-		{
-			EnsureGeneralPageIsOpened();
-		}
-
 		[Test, Order(10)]
 		public void ChangesValueWhenSavedSearchIsChosenInDialog()
 		{

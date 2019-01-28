@@ -9,15 +9,14 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.UITests.Tests
 {
 	[TestFixture]
-    [Category(TestCategory.MISCELLANEOUS)]
+	[Category(TestCategory.MISCELLANEOUS)]
 	public class CreateIpSmokeTest : UiTest
 	{
 		private IntegrationPointsAction _integrationPointsAction;
 
-		[OneTimeSetUp]
-		public void OneTimeSetUp()
+		[SetUp]
+		public void SetUp()
 		{
-			EnsureGeneralPageIsOpened();
 			_integrationPointsAction = new IntegrationPointsAction(Driver, Context);
 		}
 

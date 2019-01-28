@@ -1,7 +1,6 @@
 ﻿using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
-using kCura.IntegrationPoints.Data.SecretStore;
 
 namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 {
@@ -15,7 +14,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 	public class RelativityProviderTestsBase : UiTest
 	{
 		protected TestContext DestinationContext { get; set; }
-		protected IntegrationPointsAction PointsAction { get; set; }
+		protected IntegrationPointsAction PointsAction { get; private set; }
 		protected IFolderManager FolderManager { get; set; }
 		protected INativesService NativesService { get; set; }
 		protected IImagesService ImageService { get; set; }
@@ -30,13 +29,10 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		[OneTimeSetUp]
 		public virtual void OneTimeSetUp()
 		{
-			EnsureGeneralPageIsOpened();
-
 			FolderManager = Context.Helper.CreateAdminProxy<IFolderManager>();
 			NativesService = new NativesService(Context.Helper);
 			ImageService = new ImagesService(Context.Helper);
 			ProductionImageService = new ProductionImagesService(Context.Helper);
-			PointsAction = new IntegrationPointsAction(Driver, Context);
 			ObjectManagerFactory = new RelativityObjectManagerFactory(Context.Helper);
 		}
 
@@ -44,6 +40,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		public virtual void SetUp()
 		{
 			DestinationContext = new TestContext().CreateTestWorkspace();
+			PointsAction = new IntegrationPointsAction(Driver, Context);
 		}
 
 		[TearDown]

@@ -1,5 +1,4 @@
-﻿using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoint.Tests.Core.Models;
+﻿using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Models.Constants.ExportToLoadFile;
 using kCura.IntegrationPoint.Tests.Core.Models.Constants.Shared;
 using kCura.IntegrationPoint.Tests.Core.Models.Shared;
@@ -18,10 +17,9 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 	{
 		private IntegrationPointsAction _integrationPointsAction;
 
-		[OneTimeSetUp]
-		public void OneTimeSetUp()
+		[SetUp]
+		public void SetUp()
 		{
-			EnsureGeneralPageIsOpened();
 			_integrationPointsAction = new IntegrationPointsAction(Driver, Context);
 		}
 
