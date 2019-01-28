@@ -87,7 +87,14 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			IIntegrationPointSerializer serializer = new IntegrationPointSerializer(Logger);
 			IProviderTypeService providerTypeService = new ProviderTypeService(CreateObjectManager(Helper, Helper.GetActiveCaseID()));
 			IMessageService messageService = new MessageService();
-			return new JobHistoryService(caseContext, federatedInstanceManager, workspaceManager, Helper, serializer, providerTypeService, messageService);
+			return new JobHistoryService(
+				caseContext.RsapiService.RelativityObjectManager, 
+				federatedInstanceManager, 
+				workspaceManager, 
+				Helper, 
+				serializer, 
+				providerTypeService, 
+				messageService);
 		}
 
 		private IRelativityObjectManager CreateObjectManager(IEHHelper helper, int workspaceId)

@@ -74,6 +74,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 		}
 
 		[Test]
+		[Ignore("Unstable test. Jira ticket: REL-287237.")]
 		public void MissingTargetWorkspacePermission()
 		{
 			Group.AddGroupToWorkspace(SourceWorkspaceArtifactId, _groupId);

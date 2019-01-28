@@ -2,9 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using kCura.WinEDDS;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using Relativity.Logging;
@@ -17,7 +15,14 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
 		public LoadFilePreviewerWrapper(LoadFile loadFile, ILog logger, int timeZoneOffset, bool errorsOnly, bool doRetryLogic)
 		{
-            _loadFilePreviewer = new LoadFilePreviewer(loadFile, logger, timeZoneOffset, errorsOnly, doRetryLogic, new CancellationTokenSource());
+            _loadFilePreviewer = new LoadFilePreviewer(
+	            args: loadFile, 
+	            reporter: null, 
+	            logger: logger,
+	            timeZoneOffset: timeZoneOffset, 
+	            errorsOnly: errorsOnly, 
+	            doRetryLogic: doRetryLogic, 
+	            tokenSource: new CancellationTokenSource());
 		}
 
 		public List<object> ReadFile(bool previewChoicesAndFolders)
