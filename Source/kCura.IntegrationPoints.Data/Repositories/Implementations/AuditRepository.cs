@@ -1,28 +1,28 @@
 ﻿using kCura.IntegrationPoints.Common.Constants;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
-using Relativity.API;
+using Relativity.API.Foundation.Repositories;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class AuditRepository : IAuditRepository
 	{
-		private readonly IAuditService _auditService;
+		private readonly IExportAuditRepository _exportAuditRepository;
 		private readonly IExternalServiceInstrumentationProvider _instrumentationProvider;
 
-		public AuditRepository(IAuditService auditService, IExternalServiceInstrumentationProvider instrumentationProvider)
+		public AuditRepository(IExportAuditRepository exportAuditRepository, IExternalServiceInstrumentationProvider instrumentationProvider)
 		{
-			_auditService = auditService;
+			_exportAuditRepository = exportAuditRepository;
 			_instrumentationProvider = instrumentationProvider;
 		}
 
-		public bool AuditExport(global::Relativity.API.Foundation.ExportStatistics exportStats)
+		public bool AuditExport(global::Relativity.API.Foundation.ExportStatistics exportStats, int contextUserId)
 		{
 			IExternalServiceSimpleInstrumentation instrumentation = _instrumentationProvider.CreateSimple(
 				ExternalServiceTypes.API_FOUNDATION,
-				nameof(IAuditService),
-				nameof(IAuditService.CreateAuditForExport));
+				nameof(IExportAuditRepository),
+				nameof(IExportAuditRepository.CreateAuditForExport));
 
-			return instrumentation.Execute(() => _auditService.CreateAuditForExport(exportStats));
+			return instrumentation.Execute(() => _exportAuditRepository.CreateAuditForExport(exportStats, contextUserId));
 		}
 	}
 }
