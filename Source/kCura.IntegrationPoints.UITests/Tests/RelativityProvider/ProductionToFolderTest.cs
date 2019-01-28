@@ -1,5 +1,4 @@
-﻿using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoint.Tests.Core.Models;
+﻿using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Validators;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.UITests.Common;
@@ -14,18 +13,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 	[Category(TestCategory.EXPORT_TO_RELATIVITY)]
     public class ProductionToFolderTest : RelativityProviderTestsBase
 	{
-		public override void TearDown()
-		{
-			if (DestinationContext != null)
-			{
-				if (string.IsNullOrEmpty(SharedVariables.UiUseThisExistingWorkspace))
-				{
-					Workspace.DeleteWorkspace(DestinationContext.GetWorkspaceId());
-				}
-				DestinationContext.TearDown();
-			}
-		}
-
 		private RelativityProviderModel CreateRelativityProviderModelWithProduction()
 		{
 			var model = new RelativityProviderModel(TestContext.CurrentContext.Test.Name)

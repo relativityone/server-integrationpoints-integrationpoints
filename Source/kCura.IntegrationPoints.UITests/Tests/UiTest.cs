@@ -135,7 +135,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		}
 
 		[TearDown]
-		private void TearDown()
+		protected void TearDown()
 		{
 			LogTestStatus();
 			LogBrowserLogsIfTestFailed();

@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[TearDown]
-		public virtual void TearDown()
+		public void TearDownDestinationContext()
 		{
 			if (DestinationContext != null)
 			{
