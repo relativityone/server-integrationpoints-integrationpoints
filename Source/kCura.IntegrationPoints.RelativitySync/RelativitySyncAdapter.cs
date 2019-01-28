@@ -38,11 +38,20 @@ namespace kCura.IntegrationPoints.RelativitySync
 				CancellationToken cancellationToken = CancellationAdapter.GetCancellationToken(_job, _ripContainer);
 				using (IContainer container = InitializeAutofacContainer())
 				{
+					await MarkJobAsStartedAsync().ConfigureAwait(false);
+
 					ISyncJob syncJob = CreateSyncJob(container);
-					await syncJob.ExecuteAsync(cancellationToken).ConfigureAwait(false);
+					Progress<SyncProgress> progress = new Progress<SyncProgress>();
+					progress.ProgressChanged += (sender, syncProgress) => UpdateJobStatus(syncProgress.State).ConfigureAwait(false).GetAwaiter().GetResult();
+					await syncJob.ExecuteAsync(progress, cancellationToken).ConfigureAwait(false);
+
 					if (cancellationToken.IsCancellationRequested)
 					{
 						await MarkJobAsStoppedAsync().ConfigureAwait(false);
+					}
+					else
+					{
+						await MarkJobAsCompletedAsync().ConfigureAwait(false);
 					}
 
 					taskResult = new TaskResult {Status = TaskStatusEnum.Success};
@@ -64,6 +73,45 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 
 			return taskResult;
+		}
+
+		private async Task UpdateJobStatus(string status)
+		{
+			IHelper helper = _ripContainer.Resolve<IHelper>();
+			try
+			{
+				await _jobHistoryHelper.UpdateJobStatus(status, _job, helper).ConfigureAwait(false);
+			}
+			catch (Exception e)
+			{
+				helper.GetLoggerFactory().GetLogger().LogError(e, "Failed to mark job as stopped.");
+			}
+		}
+
+		private async Task MarkJobAsStartedAsync()
+		{
+			IHelper helper = _ripContainer.Resolve<IHelper>();
+			try
+			{
+				await _jobHistoryHelper.MarkJobAsStarted(_job, helper).ConfigureAwait(false);
+			}
+			catch (Exception e)
+			{
+				helper.GetLoggerFactory().GetLogger().LogError(e, "Failed to mark job as stopped.");
+			}
+		}
+
+		private async Task MarkJobAsCompletedAsync()
+		{
+			IHelper helper = _ripContainer.Resolve<IHelper>();
+			try
+			{
+				await _jobHistoryHelper.MarkJobAsCompleted(_job, helper).ConfigureAwait(false);
+			}
+			catch (Exception e)
+			{
+				helper.GetLoggerFactory().GetLogger().LogError(e, "Failed to mark job as stopped.");
+			}
 		}
 
 		private async Task MarkJobAsStoppedAsync()

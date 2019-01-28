@@ -72,50 +72,60 @@ namespace kCura.IntegrationPoints.Agent
 
 		protected override TaskResult ProcessJob(Job job)
 		{
-			using (JobContextProvider.StartJobContext(job))
+			using (IWindsorContainer ripContainerForSync = CreateAgentLevelContainer())
 			{
-				if (ShouldUseRelativitySync(job))
+				using (ripContainerForSync.Resolve<JobContextProvider>().StartJobContext(job))
 				{
-					try
+					if (ShouldUseRelativitySync(job, ripContainerForSync))
 					{
-						_agentLevelContainer.Value.Register(Component.For<IExtendedJob>().ImplementedBy<ExtendedJob>());
-						_agentLevelContainer.Value.Register(Component.For<RelativitySyncAdapter>().ImplementedBy<RelativitySyncAdapter>());
-						_agentLevelContainer.Value.Register(Component.For<IWindsorContainer>().Instance(_agentLevelContainer.Value));
+						try
+						{
+							ripContainerForSync.Register(Component.For<IExtendedJob>().ImplementedBy<ExtendedJob>());
+							ripContainerForSync.Register(Component.For<RelativitySyncAdapter>().ImplementedBy<RelativitySyncAdapter>());
+							ripContainerForSync.Register(Component.For<IWindsorContainer>().Instance(ripContainerForSync));
 
-						RelativitySyncAdapter syncAdapter = _agentLevelContainer.Value.Resolve<RelativitySyncAdapter>();
-						return syncAdapter.RunAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-					}
-					catch (Exception e)
-					{
-						//Not much we can do here. If container failed we're unable to do anything.
-						//Exception was thrown from container, because RelativitySyncAdapter catches all exceptions inside
-						_logger.LogError(e, $"Unable to resolve {nameof(RelativitySyncAdapter)}.");
+							RelativitySyncAdapter syncAdapter = ripContainerForSync.Resolve<RelativitySyncAdapter>();
+							return syncAdapter.RunAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+						}
+						catch (Exception e)
+						{
+							//Not much we can do here. If container failed we're unable to do anything.
+							//Exception was thrown from container, because RelativitySyncAdapter catches all exceptions inside
+							_logger.LogError(e, $"Unable to resolve {nameof(RelativitySyncAdapter)}.");
+							return new TaskResult
+							{
+								Status = TaskStatusEnum.Fail,
+								Exceptions = new[] {e}
+							};
+						}
 					}
 				}
+			}
 
+			using (JobContextProvider.StartJobContext(job))
+			{
 				return _jobExecutor.ProcessJob(job);
 			}
 		}
 
-		private bool ShouldUseRelativitySync(Job job)
+		private bool ShouldUseRelativitySync(Job job, IWindsorContainer ripContainerForSync)
 		{
-			RelativitySyncConstrainsChecker constrainsChecker = null;
 			try
 			{
-				constrainsChecker = _agentLevelContainer.Value.Resolve<RelativitySyncConstrainsChecker>();
+				IIntegrationPointService integrationPointService = ripContainerForSync.Resolve<IIntegrationPointService>();
+				IProviderTypeService providerTypeService = ripContainerForSync.Resolve<IProviderTypeService>();
+				IToggleProvider toggleProvider = ripContainerForSync.Resolve<IToggleProvider>();
+				IConfigurationDeserializer configurationDeserializer = ripContainerForSync.Resolve<IConfigurationDeserializer>();
+
+				RelativitySyncConstrainsChecker constrainsChecker =
+					new RelativitySyncConstrainsChecker(integrationPointService, providerTypeService, toggleProvider,
+						configurationDeserializer, _logger);
 				return constrainsChecker.ShouldUseRelativitySync(job);
 			}
 			catch (Exception ex)
 			{
 				Logger.LogError(ex,
 					"Error occurred when trying to determine if Relativity Sync should be used. RIP will use old logic instead.");
-			}
-			finally
-			{
-				if (constrainsChecker != null)
-				{
-					_agentLevelContainer.Value.Release(constrainsChecker);
-				}
 			}
 
 			return false;
