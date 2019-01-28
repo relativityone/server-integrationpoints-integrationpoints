@@ -2,11 +2,13 @@
 using System.Runtime.InteropServices;
 using Castle.Windsor;
 using kCura.Agent.CustomAttributes;
+using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Agent.Context;
 using kCura.IntegrationPoints.Agent.Installer;
 using kCura.IntegrationPoints.Agent.Interfaces;
 using kCura.IntegrationPoints.Agent.Logging;
+using kCura.IntegrationPoints.Agent.TaskFactory;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
@@ -18,7 +20,7 @@ using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.TimeMachine;
 using Relativity.API;
 using Relativity.Toggles;
-using ITaskFactory = kCura.IntegrationPoints.Agent.TaskFactory.ITaskFactory;
+using Component = Castle.MicroKernel.Registration.Component;
 
 namespace kCura.IntegrationPoints.Agent
 {
@@ -39,7 +41,7 @@ namespace kCura.IntegrationPoints.Agent
 
 		public Agent() : base(Guid.Parse(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID))
 		{
-			Apps.Common.Config.Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
+			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
 
 			_agentLevelContainer = new Lazy<IWindsorContainer>(CreateAgentLevelContainer);
 
@@ -50,12 +52,12 @@ namespace kCura.IntegrationPoints.Agent
 		}
 
 		/// <summary>
-		/// Set should be used only for unit/integration tests purpose
+		///     Set should be used only for unit/integration tests purpose
 		/// </summary>
 		public new IAgentHelper Helper
 		{
-			get { return _helper ?? (_helper = base.Helper); }
-			set { _helper = value; }
+			get => _helper ?? (_helper = base.Helper);
+			set => _helper = value;
 		}
 
 		public override string Name => _AGENT_NAME;
@@ -74,8 +76,23 @@ namespace kCura.IntegrationPoints.Agent
 			{
 				if (ShouldUseRelativitySync(job))
 				{
-					return RelativitySyncAdapter.Run(job, _agentLevelContainer.Value, _logger);
+					try
+					{
+						_agentLevelContainer.Value.Register(Component.For<IExtendedJob>().ImplementedBy<ExtendedJob>());
+						_agentLevelContainer.Value.Register(Component.For<RelativitySyncAdapter>().ImplementedBy<RelativitySyncAdapter>());
+						_agentLevelContainer.Value.Register(Component.For<IWindsorContainer>().Instance(_agentLevelContainer.Value));
+
+						RelativitySyncAdapter syncAdapter = _agentLevelContainer.Value.Resolve<RelativitySyncAdapter>();
+						return syncAdapter.RunAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+					}
+					catch (Exception e)
+					{
+						//Not much we can do here. If container failed we're unable to do anything.
+						//Exception was thrown from container, because RelativitySyncAdapter catches all exceptions inside
+						_logger.LogError(e, $"Unable to resolve {nameof(RelativitySyncAdapter)}.");
+					}
 				}
+
 				return _jobExecutor.ProcessJob(job);
 			}
 		}
@@ -109,17 +126,17 @@ namespace kCura.IntegrationPoints.Agent
 				{
 					_agentLevelContainer.Value.Release(integrationPointService);
 				}
-				
+
 				if (providerTypeService != null)
 				{
 					_agentLevelContainer.Value.Release(providerTypeService);
 				}
-				
+
 				if (toggleProvider != null)
 				{
 					_agentLevelContainer.Value.Release(toggleProvider);
 				}
-				
+
 				if (configurationDeserializer != null)
 				{
 					_agentLevelContainer.Value.Release(configurationDeserializer);
@@ -162,7 +179,7 @@ namespace kCura.IntegrationPoints.Agent
 			}
 
 			_logger.LogInformation("Integration Points job status update: {@JobLogInformation}",
-				new JobLogInformation { Job = job, State = state, Details = details });
+				new JobLogInformation {Job = job, State = state, Details = details});
 		}
 
 		protected void OnJobExecutionError(Job job, ITask task, Exception exception)
@@ -178,6 +195,7 @@ namespace kCura.IntegrationPoints.Agent
 			{
 				ErrorService.Execute(job, exception, _AGENT_NAME);
 			}
+
 			JobExecutionError?.Invoke(job, task, exception);
 		}
 
@@ -189,6 +207,7 @@ namespace kCura.IntegrationPoints.Agent
 				{
 					_jobContextProvider = _agentLevelContainer.Value.Resolve<JobContextProvider>();
 				}
+
 				return _jobContextProvider;
 			}
 		}
@@ -210,6 +229,7 @@ namespace kCura.IntegrationPoints.Agent
 				{
 					_agentLevelContainer.Value?.Release(_jobContextProvider);
 				}
+
 				_agentLevelContainer.Value?.Dispose();
 			}
 		}

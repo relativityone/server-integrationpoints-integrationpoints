@@ -3,7 +3,7 @@ kCura.Apps.Common.Utils
 Relativity.API
 Relativity.Services.Interfaces
 kCura.Relativity.Client
+Polly
 
-group Sync
-	Relativity.Sync
-	Autofac
+Moq
+NUnit

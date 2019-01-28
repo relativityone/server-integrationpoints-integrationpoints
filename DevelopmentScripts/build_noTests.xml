@@ -213,6 +213,7 @@
         <Project path="Source\kCura.IntegrationPoints.Services.Tests.Integration\kCura.IntegrationPoints.Services.Tests.Integration.csproj" />
         <Project path="Source\kCura.IntegrationPoints.Synchronizers.RDO.Tests\kCura.IntegrationPoints.Synchronizers.RDO.Tests.csproj" />
         <Project path="Source\kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration\kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration.csproj" />
+        <Project path="Source\kCura.IntegrationPoints.RelativitySync.Tests.Integration\kCura.IntegrationPoints.RelativitySync.Tests.Integration.csproj" />
         <Project path="Source\kCura.IntegrationPoints.UITests\kCura.IntegrationPoints.UITests.csproj" />
         <Project path="Source\kCura.IntegrationPoints.Web.Tests\kCura.IntegrationPoints.Web.Tests.csproj" />
         <Project path="Source\kCura.IntegrationPoints.Web.Tests.Integration\kCura.IntegrationPoints.Web.Tests.Integration.csproj" />
