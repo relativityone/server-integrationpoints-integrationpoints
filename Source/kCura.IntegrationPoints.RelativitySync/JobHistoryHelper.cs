@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		{
 			using (IObjectManager manager = helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
-				await UpdateJobAsync(job, JobStoppedStateRef(), manager).ConfigureAwait(false);
+				await UpdateFinishedJobAsync(job, JobStoppedStateRef(), manager).ConfigureAwait(false);
 			}
 		}
 
@@ -106,7 +106,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 					status = JobCompletedStateRef();
 				}
 
-				await UpdateJobAsync(job, status, manager).ConfigureAwait(false);
+				await UpdateFinishedJobAsync(job, status, manager).ConfigureAwait(false);
 			}
 		}
 
@@ -124,10 +124,10 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 		private static async Task MarkJobAsFailedAsync(IExtendedJob job, IObjectManager manager)
 		{
-			await UpdateJobAsync(job, JobFailedStateRef(), manager).ConfigureAwait(false);
+			await UpdateFinishedJobAsync(job, JobFailedStateRef(), manager).ConfigureAwait(false);
 		}
 
-		private static async Task UpdateJobAsync(IExtendedJob job, ChoiceRef status, IObjectManager manager)
+		private static async Task UpdateFinishedJobAsync(IExtendedJob job, ChoiceRef status, IObjectManager manager)
 		{
 			UpdateRequest updateRequest = new UpdateRequest
 			{
