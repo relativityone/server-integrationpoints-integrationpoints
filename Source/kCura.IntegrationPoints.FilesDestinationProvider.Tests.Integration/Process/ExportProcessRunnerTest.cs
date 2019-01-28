@@ -21,6 +21,7 @@ using Castle.Windsor;
 using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Data.Factories;
@@ -44,7 +45,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 	{
 	    #region Fields
 
-		private readonly string[] _defaultFields = {"Control Number", "File Name", "Issue Designation"};
 		private static readonly ConfigSettings _configSettings = new ConfigSettings {WorkspaceName = DateTime.UtcNow.ToString("yyyyMMdd_HHmmss")};
 
 		private ExportProcessRunner _instanceUnderTest;
@@ -63,18 +63,17 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		    _configSettings.WorkspaceId = _workspaceService.CreateWorkspace(_configSettings.WorkspaceName);
 
 			var fieldsService = _windsorContainer.Resolve<IExportFieldsService>();
-			var fields = fieldsService.GetAllExportableFields(_configSettings.WorkspaceId, (int) ArtifactType.Document);
+			FieldEntry[] fields = fieldsService.GetAllExportableFields(_configSettings.WorkspaceId, (int) ArtifactType.Document);
 
-			_configSettings.DefaultFields = fields.Where(x => _defaultFields.Contains(x.DisplayName)).ToArray();
+			_configSettings.DefaultFields = fields.OrderBy(x => x.DisplayName).ToArray();
 
 			_configSettings.LongTextField = fields.FirstOrDefault(x => x.DisplayName == _configSettings.LongTextFieldName);
 
-			_configSettings.AdditionalFields = _configSettings.AdditionalFieldNames.Length > 0
-				? fields.Where(x => _configSettings.AdditionalFieldNames.Contains(x.DisplayName)).ToArray()
-				: fields.Where(x => x.DisplayName.Equals("MD5 Hash")).ToArray();
-
-		    _configSettings.ExportedObjArtifactId = _workspaceService.CreateSavedSearch(_configSettings.DefaultFields, _configSettings.AdditionalFields,
-				_configSettings.WorkspaceId, _configSettings.SavedSearchArtifactName);
+			_configSettings.AdditionalFields = new FieldEntry[] {};
+		    _configSettings.ExportedObjArtifactId = _workspaceService.CreateSavedSearch(
+			    _configSettings.DefaultFields, 
+				_configSettings.WorkspaceId, 
+			    _configSettings.SavedSearchArtifactName);
 
 
 			_configSettings.DocumentsTestData = DocumentTestDataBuilder.BuildTestData();
@@ -193,8 +192,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 			_configSettings.AdditionalFields.ForEach(item => fieldIds.Add(int.Parse(item.FieldIdentifier), item));
 
-			// Add Long Text Field
-			fieldIds.Add(int.Parse(_configSettings.LongTextField.FieldIdentifier), _configSettings.LongTextField);
+			// Add Long Text Field if not present on the fields list
+			if (!fieldIds.ContainsKey(int.Parse(_configSettings.LongTextField.FieldIdentifier)))
+			{
+				fieldIds.Add(int.Parse(_configSettings.LongTextField.FieldIdentifier), _configSettings.LongTextField);
+			}
 
 			var settings = new Core.ExportSettings
 			{

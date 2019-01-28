@@ -225,10 +225,9 @@ namespace kCura.IntegrationPoints.Data.Factories
 		/// <summary>
 		/// Returns a class implementing the IAuditRepository interface.
 		/// </summary>
-		/// <param name="appId"></param>
-		/// <param name="workspaceId"></param>
+		/// <param name="workspaceArtifactId"></param>
 		/// <returns>A class implementing the IAuditRepository interface.</returns>
-		IAuditRepository GetAuditRepository(int appId, int workspaceId);
+		IAuditRepository GetAuditRepository(int workspaceArtifactId);
 		
 		ICaseRepository GetCaseRepository();
 	}
