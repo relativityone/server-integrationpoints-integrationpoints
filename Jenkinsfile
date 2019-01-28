@@ -246,14 +246,7 @@ timestamps
 						{
 							timeout(time: 180, unit: 'MINUTES')
 							{
-								runTests(params.skipIntegrationTests, "-in", "Integration", nightlyJobName)
-							}
-						}
-						stage ('UI Tests')
-						{
-							timeout(time: 8, unit: 'HOURS')
-							{
-								runTests(params.skipUITests, "-ui", "UI", nightlyJobName)
+								runTestsAndSetBuildResult(params.skipIntegrationTests, "-in", "Integration", nightlyJobName)
 							}
 						}
 						//if(isNightly(nightlyJobName)) //commented out temporarly for testing purposes
@@ -262,7 +255,10 @@ timestamps
 						{
 							timeout(time: 180, unit: 'MINUTES')
 							{
-								runTests(params.skipIntegrationTests, "-in", "Quarantined Integration", nightlyJobName)
+								if(!params.skipIntegrationTests)
+								{
+									runTests("-in", "Quarantined Integration", nightlyJobName)
+								}
 							}
 						}
 						//}
@@ -270,7 +266,7 @@ timestamps
 						{
 							timeout(time: 8, unit: 'HOURS')
 							{
-								runTests(params.skipUITests, "-ui", "UI", nightlyJobName)
+								runTestsAndSetBuildResult(params.skipUITests, "-ui", "UI", nightlyJobName)
 							}
 						}
 					}
@@ -462,9 +458,9 @@ def isNightly(String nightlyJobName)
 	return env.JOB_NAME.contains(nightlyJobName)
 }
 
-def isQuarantined(String testName)
+def isQuarantined(String testStageName)
 {
-	return testName == "Quarantined Integration"
+	return testStageName == "Quarantined Integration"
 }
 
 def getSlackChannelName(String nightlyJobName)
@@ -493,16 +489,16 @@ def getTestFilterWithoutQuarantined(String testFilter)
 		return notQuarantinedTestFilter
 	}
 	echo "NOT EMPTY FILTER $testFilter"
-	return "${testFilter} and ${notQuarantinedTestFilter}"
+	return "${testFilter} && ${notQuarantinedTestFilter}"
 }
 
-def getTestsFilter(String testName, String nightlyJobName)
+def getTestsFilter(String testStageName, String nightlyJobName)
 {
     echo "env.JOB_NAME $env.JOB_NAME"
 
 	if(isNightly(nightlyJobName))
 	{
-		if(isQuarantined(testName))
+		if(isQuarantined(testStageName))
 		{
 			return "cat==${getQuarantinedTestCategory()}"
 		}
@@ -512,24 +508,31 @@ def getTestsFilter(String testName, String nightlyJobName)
 	return getTestFilterWithoutQuarantined(params.testsFilter)
 }
 
-def runTests(Boolean skipTests, String cmdOption, String testName, String nightlyJobName)
+def runTestsAndSetBuildResult(Boolean skipTests, String cmdOption, String testStageName, String nightlyJobName)
 {
     if (!skipTests) 
     {
-        configureNunitTests()
-        def currentFilter = getTestsFilter(testName, nightlyJobName)
-		echo "FILTER: $currentFilter"
-        def result = powershell returnStatus: true, script: "./build.ps1 -ci -sk $cmdOption \"$currentFilter\""
+        def result = runTests(cmdOption, testStageName, nightlyJobName)
         if (result != 0)
         {
-            error "$testName Tests FAILED with status: $result"
+            error "$testStageName Tests FAILED with status: $result"
         }
-        echo "$testName Tests OK"
+        echo "$testStageName Tests OK"
     }
     else
     {
-        echo "$testName Tests are going to be skipped."
+        echo "$testStageName Tests are going to be skipped."
     }
+}
+
+def runTests(String cmdOption, String testStageName, String nightlyJobName)
+{
+	configureNunitTests()
+    def currentFilter = getTestsFilter(testStageName, nightlyJobName)
+	echo "FILTER: $currentFilter"
+	echo """./build.ps1 -ci -sk $cmdOption "$currentFilter" """
+    def result = powershell returnStatus: true, script: """./build.ps1 -ci -sk $cmdOption "$currentFilter" """
+	return result
 }
 
 def getTestsStatistic(String filePath, String prop)
