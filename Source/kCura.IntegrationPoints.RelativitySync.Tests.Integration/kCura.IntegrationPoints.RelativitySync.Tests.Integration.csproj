@@ -11,6 +11,12 @@
     <Platforms>AnyCPU;x64</Platforms>
     <NoWarn>NU1605</NoWarn>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutputPath>bin\x64\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutputPath>bin\x64\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\..\Version\AssemblyInfo.cs" Link="Properties\AssemblyInfo.cs" />
   </ItemGroup>
