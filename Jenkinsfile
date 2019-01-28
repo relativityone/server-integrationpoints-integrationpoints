@@ -245,11 +245,20 @@ timestamps
 						{
 							timeout(time: 5, unit: 'MINUTES')
 							{
-								archiveTestsArtifacts(params.skipIntegrationTests, integration_tests_results_file_path, integration_tests_html_report, integration_tests_report_task)
+								archiveTestsArtifacts(
+									params.skipIntegrationTests, 
+									integration_tests_results_file_path, 
+									integration_tests_html_report, 
+									integration_tests_report_task
+								)
 								numberOfFailedTests = getTestsStatistic(integration_tests_results_file_path, 'failed')
 								numberOfPassedTests = getTestsStatistic(integration_tests_results_file_path, 'passed')
 								numberOfSkippedTests = getTestsStatistic(integration_tests_results_file_path, 'skipped')
-								archiveTestsArtifacts(params.skipUITests, ui_tests_results_file_path, ui_tests_html_report, ui_tests_report_task)
+								archiveTestsArtifacts(
+									params.skipUITests, 
+									ui_tests_results_file_path, ui_tests_html_report, 
+									ui_tests_report_task
+								)
 								if (!params.skipUITests)
 								{
 									archiveArtifacts artifacts: "lib/UnitTests/app.jeeves-ci.config", fingerprint: true
@@ -385,7 +394,7 @@ def isNightly(String nightlyJobName)
 
 def isQuarantined(String testName)
 {
-	return testName == "Quarantined Integration";
+	return testName == "Quarantined Integration"
 }
 
 def getSlackChannelName(String nightlyJobName)
@@ -437,7 +446,7 @@ def runTests(Boolean skipTests, String cmdOption, String testName, String nightl
     {
         configureNunitTests()
         def currentFilter = getTestsFilter(testName, nightlyJobName)
-        def result = powershell returnStatus: true, script: "./build.ps1 -ci -sk $cmdOption $currentFilter"
+        def result = powershell returnStatus: true, script: "./build.ps1 -ci -sk $cmdOption \"$currentFilter\""
         if (result != 0)
         {
             error "$testName Tests FAILED with status: $result"
