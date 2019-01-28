@@ -202,7 +202,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 		}
 
 		[SmokeTest]
-		[TestInQuarantine(@"REL-225244 TODO: Broken test needs to be fixed!
+		[TestInQuarantine(TestQuarantineState.UnderObservation, 
+						@"REL-225244 TODO: Broken test needs to be fixed!
 						Ignore tests until verification mechanism will be fixed.
 						DocumentService.GetNativeMD5String(workspaceId, docResult)
 						needs to be reimplemented.")]

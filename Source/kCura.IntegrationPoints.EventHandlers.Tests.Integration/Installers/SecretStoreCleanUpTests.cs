@@ -34,7 +34,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 			_secretStoreCleanUp = new SecretStoreCleanUp(_secretManager, _secretCatalog);
 		}
 
-		[TestInQuarantine(@"Known Issue in secret store: 
+		[TestInQuarantine(TestQuarantineState.UnderObservation, 
+					@"Known Issue in secret store: 
 					whole paths from secret catalog are returned instead 
 					of keys in dictionary. Details: STVD-12542")]
 		public void ItShouldRemoveSecretAndTenantId()

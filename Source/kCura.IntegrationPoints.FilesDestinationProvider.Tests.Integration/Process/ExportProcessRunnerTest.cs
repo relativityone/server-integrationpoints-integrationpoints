@@ -147,7 +147,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		}
 
 		[SmokeTest]
-		[TestInQuarantine]
+		[TestInQuarantine(TestQuarantineState.UnderObservation)]
 		[TestCaseSource(nameof(FlakyExportTestCaseSource))]
 		public void RunFlakyTestCase(IExportTestCase testCase)
 		{

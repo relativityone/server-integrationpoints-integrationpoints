@@ -75,7 +75,8 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 			PermissionsHelper.AssertPermissionErrorMessage(() => client.GetJobHistoryAsync(jobHistoryRequest).Result);
 		}
 
-		[TestInQuarantine("Unstable test. Jira ticket: REL-287237.")]
+		[TestInQuarantine(TestQuarantineState.UnderObservation, 
+			"Unstable test. Jira ticket: REL-287237.")]
 		public void MissingTargetWorkspacePermission()
 		{
 			Group.AddGroupToWorkspace(SourceWorkspaceArtifactId, _groupId);

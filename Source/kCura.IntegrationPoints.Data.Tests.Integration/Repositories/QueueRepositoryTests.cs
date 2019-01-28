@@ -199,7 +199,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 
 		[Test, Timeout(300000)]
 		[Description("This test takes sometime to process. It requires the IP agent to be running.")]
-		[TestInQuarantine]
+		[TestInQuarantine(TestQuarantineState.UnderObservation)]
 		public void OneExecutedScheduledJobInTheQueue_ExpectCountZero()
 		{
 			ControlIntegrationPointAgents(true);

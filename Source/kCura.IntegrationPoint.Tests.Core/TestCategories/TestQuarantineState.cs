@@ -2,7 +2,8 @@
 {
 	public enum TestQuarantineState
 	{
-		Observation,
-		ToBeFixed
+		UnderObservation,
+		ToBeFixed,
+		SeemsToBeStable
 	}
 }

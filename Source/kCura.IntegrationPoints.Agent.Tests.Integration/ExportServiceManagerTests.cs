@@ -121,7 +121,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		}
 
 		[SmokeTest]
-		[TestInQuarantine("Unstable - to be fixed -> REL-280310")]
+		[TestInQuarantine(TestQuarantineState.UnderObservation,
+						"Unstable - to be fixed -> REL-280310")]
 		public void RunRelativityProviderAlone()
 		{
 			// arrange
@@ -176,7 +177,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		}
 
 		[SmokeTest]
-		[TestInQuarantine]
+		[TestInQuarantine(TestQuarantineState.UnderObservation)]
 		public void StopStateCannotBeUpdatedWhileExportServiceObservers()
 		{
 			Job job = null;
