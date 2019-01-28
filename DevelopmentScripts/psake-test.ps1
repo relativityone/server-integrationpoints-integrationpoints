@@ -66,6 +66,13 @@ task generate_integration_tests_report {
     } 
 }
 
+task generate_quarantined_integration_tests_report {
+    exec {
+        & $nuget_exe @('install', 'ReportUnit', '-Version', $reportUnitVersion, '-ExcludeVersion')
+        & ./ReportUnit/tools/reportunit "QuarantinedIntegrationTestsResults.xml" "QuarantinedIntegrationTestsResults.html"
+    } 
+}
+
 task run_ui_tests -depends get_nunit {
     if (-not [string]::IsNullOrEmpty($ui_where_expr)) {
         $ui_where_expr = '--where=' + $ui_where_expr

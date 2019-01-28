@@ -53,6 +53,9 @@ def ripCookbooks = getCookbooks()
 def integration_tests_results_file_path = "DevelopmentScripts/IntegrationTestsResults.xml"
 def integration_tests_html_report = "IntegrationTestsResults.html"
 def integration_tests_report_task = "generate_integration_tests_report"
+def quarantined_integration_tests_results_file_path = "DevelopmentScripts/QuarantinedIntegrationTestsResults.xml"
+def quarantined_integration_tests_html_report = "QuarantinedIntegrationTestsResults.html"
+def quarantined_integration_tests_report_task = "generate_quarantined_integration_tests_report"
 def ui_tests_results_file_path = "DevelopmentScripts/UITestsResults.xml"
 def ui_tests_html_report = "UITestsResults.html"
 def ui_tests_report_task = "generate_ui_tests_report"
@@ -288,14 +291,25 @@ timestamps
 									integration_tests_html_report, 
 									integration_tests_report_task
 								)
+
 								numberOfFailedTests = getTestsStatistic(integration_tests_results_file_path, 'failed')
 								numberOfPassedTests = getTestsStatistic(integration_tests_results_file_path, 'passed')
 								numberOfSkippedTests = getTestsStatistic(integration_tests_results_file_path, 'skipped')
+
+								archiveTestsArtifacts(
+									params.skipIntegrationTests, 
+									quarantined_integration_tests_results_file_path, 
+									quarantined_integration_tests_html_report, 
+									quarantined_integration_tests_report_task
+								)
+
 								archiveTestsArtifacts(
 									params.skipUITests, 
-									ui_tests_results_file_path, ui_tests_html_report, 
+									ui_tests_results_file_path, 
+									ui_tests_html_report, 
 									ui_tests_report_task
 								)
+
 								if (!params.skipUITests)
 								{
 									archiveArtifacts artifacts: "lib/UnitTests/app.jeeves-ci.config", fingerprint: true
