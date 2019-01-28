@@ -10,11 +10,51 @@ namespace kCura.IntegrationPoints.RelativitySync
 {
 	internal sealed class JobHistoryHelper
 	{
+		public async Task UpdateJobStatusAsync(string syncStatus, IExtendedJob job, IHelper helper)
+		{
+			using (IObjectManager manager = helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
+			{
+				ChoiceRef status;
+
+				const string validating = "validating";
+				const string checkingPermissions = "checking permissions";
+
+				if (syncStatus.Equals(validating, StringComparison.InvariantCultureIgnoreCase) || syncStatus.Equals(checkingPermissions, StringComparison.InvariantCultureIgnoreCase))
+				{
+					status = new ChoiceRef
+					{
+						Guid = JobStatusChoices.JobHistoryValidating.Guids[0]
+					};
+				}
+				else
+				{
+					status = new ChoiceRef
+					{
+						Guid = JobStatusChoices.JobHistoryProcessing.Guids[0]
+					};
+				}
+
+				UpdateRequest updateRequest = new UpdateRequest
+				{
+					Object = JobHistoryRef(job),
+					FieldValues = new[]
+					{
+						new FieldRefValuePair
+						{
+							Field = JobStatusRef(),
+							Value = status
+						}
+					}
+				};
+				await manager.UpdateAsync(job.WorkspaceId, updateRequest).ConfigureAwait(false);
+			}
+		}
+
 		public async Task MarkJobAsStoppedAsync(IExtendedJob job, IHelper helper)
 		{
 			using (IObjectManager manager = helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
-				await UpdateJobAsync(job, JobStoppedStateRef(), manager).ConfigureAwait(false);
+				await UpdateFinishedJobAsync(job, JobStoppedStateRef(), manager).ConfigureAwait(false);
 			}
 		}
 
@@ -27,12 +67,67 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 		}
 
-		private static async Task MarkJobAsFailedAsync(IExtendedJob job, IObjectManager manager)
+		public async Task MarkJobAsStartedAsync(IExtendedJob job, IHelper helper)
 		{
-			await UpdateJobAsync(job, JobFailedStateRef(), manager).ConfigureAwait(false);
+			using (IObjectManager manager = helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
+			{
+				UpdateRequest updateRequest = new UpdateRequest
+				{
+					Object = JobHistoryRef(job),
+					FieldValues = new[]
+					{
+						new FieldRefValuePair
+						{
+							Field = StartTimeRef(),
+							Value = DateTime.UtcNow
+						},
+						new FieldRefValuePair
+						{
+							Field = JobIdRef(),
+							Value = job.JobId.ToString()
+						}
+					}
+				};
+				await manager.UpdateAsync(job.WorkspaceId, updateRequest).ConfigureAwait(false);
+			}
 		}
 
-		private static async Task UpdateJobAsync(IExtendedJob job, ChoiceRef status, IObjectManager manager)
+		public async Task MarkJobAsCompletedAsync(IExtendedJob job, IHelper helper)
+		{
+			using (IObjectManager manager = helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
+			{
+				ChoiceRef status;
+				if (await HasErrorsAsync(job, manager).ConfigureAwait(false))
+				{
+					status = JobCompletedWithErrorsStateRef();
+				}
+				else
+				{
+					status = JobCompletedStateRef();
+				}
+
+				await UpdateFinishedJobAsync(job, status, manager).ConfigureAwait(false);
+			}
+		}
+
+		private static async Task<bool> HasErrorsAsync(IExtendedJob job, IObjectManager manager)
+		{
+			QueryRequest request = new QueryRequest
+			{
+				ObjectType = JobHistoryErrorTypeRef(),
+				Condition =
+					$"('{Data.JobHistoryErrorFields.JobHistory}' IN OBJECT [{job.JobHistoryId}]) AND ('{Data.JobHistoryErrorFields.ErrorType}' == CHOICE {ErrorTypeChoices.JobHistoryErrorItem.Guids[0]})"
+			};
+			QueryResult queryResult = await manager.QueryAsync(job.WorkspaceId, request, 0, 1).ConfigureAwait(false);
+			return queryResult.ResultCount > 0;
+		}
+
+		private static async Task MarkJobAsFailedAsync(IExtendedJob job, IObjectManager manager)
+		{
+			await UpdateFinishedJobAsync(job, JobFailedStateRef(), manager).ConfigureAwait(false);
+		}
+
+		private static async Task UpdateFinishedJobAsync(IExtendedJob job, ChoiceRef status, IObjectManager manager)
 		{
 			UpdateRequest updateRequest = new UpdateRequest
 			{
@@ -46,8 +141,8 @@ namespace kCura.IntegrationPoints.RelativitySync
 					},
 					new FieldRefValuePair
 					{
-						Field = JobIdRef(),
-						Value = job.JobId.ToString()
+						Field = EndTimeRef(),
+						Value = DateTime.UtcNow
 					}
 				}
 			};
@@ -59,6 +154,14 @@ namespace kCura.IntegrationPoints.RelativitySync
 			return new FieldRef
 			{
 				Guid = Guid.Parse(JobHistoryFieldGuids.JobID)
+			};
+		}
+
+		private static FieldRef EndTimeRef()
+		{
+			return new FieldRef
+			{
+				Guid = Guid.Parse(JobHistoryFieldGuids.EndTimeUTC)
 			};
 		}
 
@@ -78,11 +181,35 @@ namespace kCura.IntegrationPoints.RelativitySync
 			};
 		}
 
+		private static FieldRef StartTimeRef()
+		{
+			return new FieldRef
+			{
+				Guid = Guid.Parse(JobHistoryFieldGuids.StartTimeUTC)
+			};
+		}
+
 		private static ChoiceRef JobStoppedStateRef()
 		{
 			return new ChoiceRef
 			{
 				Guid = JobStatusChoices.JobHistoryStopped.Guids[0]
+			};
+		}
+
+		private static ChoiceRef JobCompletedStateRef()
+		{
+			return new ChoiceRef
+			{
+				Guid = JobStatusChoices.JobHistoryCompleted.Guids[0]
+			};
+		}
+
+		private static ChoiceRef JobCompletedWithErrorsStateRef()
+		{
+			return new ChoiceRef
+			{
+				Guid = JobStatusChoices.JobHistoryCompletedWithErrors.Guids[0]
 			};
 		}
 

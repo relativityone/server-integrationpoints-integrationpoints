@@ -72,43 +72,50 @@ namespace kCura.IntegrationPoints.Agent
 
 		protected override TaskResult ProcessJob(Job job)
 		{
-			using (JobContextProvider.StartJobContext(job))
+			using (IWindsorContainer ripContainerForSync = CreateAgentLevelContainer())
 			{
-				if (ShouldUseRelativitySync(job))
+				using (ripContainerForSync.Resolve<JobContextProvider>().StartJobContext(job))
 				{
-					try
+					if (ShouldUseRelativitySync(job, ripContainerForSync))
 					{
-						_agentLevelContainer.Value.Register(Component.For<IExtendedJob>().ImplementedBy<ExtendedJob>());
-						_agentLevelContainer.Value.Register(Component.For<RelativitySyncAdapter>().ImplementedBy<RelativitySyncAdapter>());
-						_agentLevelContainer.Value.Register(Component.For<IWindsorContainer>().Instance(_agentLevelContainer.Value));
+						try
+						{
+							ripContainerForSync.Register(Component.For<IExtendedJob>().ImplementedBy<ExtendedJob>());
+							ripContainerForSync.Register(Component.For<RelativitySyncAdapter>().ImplementedBy<RelativitySyncAdapter>());
+							ripContainerForSync.Register(Component.For<IWindsorContainer>().Instance(ripContainerForSync));
 
-						RelativitySyncAdapter syncAdapter = _agentLevelContainer.Value.Resolve<RelativitySyncAdapter>();
-						return syncAdapter.RunAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-					}
-					catch (Exception e)
-					{
-						//Not much we can do here. If container failed we're unable to do anything.
-						//Exception was thrown from container, because RelativitySyncAdapter catches all exceptions inside
-						_logger.LogError(e, $"Unable to resolve {nameof(RelativitySyncAdapter)}.");
+							RelativitySyncAdapter syncAdapter = ripContainerForSync.Resolve<RelativitySyncAdapter>();
+							return syncAdapter.RunAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+						}
+						catch (Exception e)
+						{
+							//Not much we can do here. If container failed we're unable to do anything.
+							//Exception was thrown from container, because RelativitySyncAdapter catches all exceptions inside
+							_logger.LogError(e, $"Unable to resolve {nameof(RelativitySyncAdapter)}.");
+							return new TaskResult
+							{
+								Status = TaskStatusEnum.Fail,
+								Exceptions = new[] {e}
+							};
+						}
 					}
 				}
+			}
 
+			using (JobContextProvider.StartJobContext(job))
+			{
 				return _jobExecutor.ProcessJob(job);
 			}
 		}
 
-		private bool ShouldUseRelativitySync(Job job)
+		private bool ShouldUseRelativitySync(Job job, IWindsorContainer ripContainerForSync)
 		{
-			IIntegrationPointService integrationPointService = null;
-			IProviderTypeService providerTypeService = null;
-			IToggleProvider toggleProvider = null;
-			IConfigurationDeserializer configurationDeserializer = null;
 			try
 			{
-				integrationPointService = _agentLevelContainer.Value.Resolve<IIntegrationPointService>();
-				providerTypeService = _agentLevelContainer.Value.Resolve<IProviderTypeService>();
-				toggleProvider = _agentLevelContainer.Value.Resolve<IToggleProvider>();
-				configurationDeserializer = _agentLevelContainer.Value.Resolve<IConfigurationDeserializer>();
+				IIntegrationPointService integrationPointService = ripContainerForSync.Resolve<IIntegrationPointService>();
+				IProviderTypeService providerTypeService = ripContainerForSync.Resolve<IProviderTypeService>();
+				IToggleProvider toggleProvider = ripContainerForSync.Resolve<IToggleProvider>();
+				IConfigurationDeserializer configurationDeserializer = ripContainerForSync.Resolve<IConfigurationDeserializer>();
 
 				RelativitySyncConstrainsChecker constrainsChecker =
 					new RelativitySyncConstrainsChecker(integrationPointService, providerTypeService, toggleProvider,
@@ -119,28 +126,6 @@ namespace kCura.IntegrationPoints.Agent
 			{
 				Logger.LogError(ex,
 					"Error occurred when trying to determine if Relativity Sync should be used. RIP will use old logic instead.");
-			}
-			finally
-			{
-				if (integrationPointService != null)
-				{
-					_agentLevelContainer.Value.Release(integrationPointService);
-				}
-
-				if (providerTypeService != null)
-				{
-					_agentLevelContainer.Value.Release(providerTypeService);
-				}
-
-				if (toggleProvider != null)
-				{
-					_agentLevelContainer.Value.Release(toggleProvider);
-				}
-
-				if (configurationDeserializer != null)
-				{
-					_agentLevelContainer.Value.Release(configurationDeserializer);
-				}
 			}
 
 			return false;
