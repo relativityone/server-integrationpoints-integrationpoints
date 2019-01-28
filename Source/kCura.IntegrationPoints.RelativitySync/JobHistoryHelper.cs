@@ -10,7 +10,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 {
 	internal sealed class JobHistoryHelper
 	{
-		public async Task UpdateJobStatus(string syncStatus, IExtendedJob job, IHelper helper)
+		public async Task UpdateJobStatusAsync(string syncStatus, IExtendedJob job, IHelper helper)
 		{
 			using (IObjectManager manager = helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
@@ -50,24 +50,24 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 		}
 
-		public async Task MarkJobAsStopped(IExtendedJob job, IHelper helper)
+		public async Task MarkJobAsStoppedAsync(IExtendedJob job, IHelper helper)
 		{
 			using (IObjectManager manager = helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
-				await UpdateJobAsync(job, JobStoppedStateRef(), manager).ConfigureAwait(false);
+				await UpdateFinishedJobAsync(job, JobStoppedStateRef(), manager).ConfigureAwait(false);
 			}
 		}
 
-		public async Task MarkJobAsFailed(IExtendedJob job, Exception e, IHelper helper)
+		public async Task MarkJobAsFailedAsync(IExtendedJob job, Exception e, IHelper helper)
 		{
 			using (IObjectManager manager = helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
-				await MarkJobAsFailed(job, manager).ConfigureAwait(false);
-				await AddJobHistoryError(job, manager, e).ConfigureAwait(false);
+				await MarkJobAsFailedAsync(job, manager).ConfigureAwait(false);
+				await AddJobHistoryErrorAsync(job, manager, e).ConfigureAwait(false);
 			}
 		}
 
-		public async Task MarkJobAsStarted(IExtendedJob job, IHelper helper)
+		public async Task MarkJobAsStartedAsync(IExtendedJob job, IHelper helper)
 		{
 			using (IObjectManager manager = helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
@@ -92,12 +92,12 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 		}
 
-		public async Task MarkJobAsCompleted(IExtendedJob job, IHelper helper)
+		public async Task MarkJobAsCompletedAsync(IExtendedJob job, IHelper helper)
 		{
 			using (IObjectManager manager = helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
 				ChoiceRef status;
-				if (await HasErrors(job, manager).ConfigureAwait(false))
+				if (await HasErrorsAsync(job, manager).ConfigureAwait(false))
 				{
 					status = JobCompletedWithErrorsStateRef();
 				}
@@ -106,11 +106,11 @@ namespace kCura.IntegrationPoints.RelativitySync
 					status = JobCompletedStateRef();
 				}
 
-				await UpdateJobAsync(job, status, manager).ConfigureAwait(false);
+				await UpdateFinishedJobAsync(job, status, manager).ConfigureAwait(false);
 			}
 		}
 
-		private static async Task<bool> HasErrors(IExtendedJob job, IObjectManager manager)
+		private static async Task<bool> HasErrorsAsync(IExtendedJob job, IObjectManager manager)
 		{
 			QueryRequest request = new QueryRequest
 			{
@@ -122,12 +122,12 @@ namespace kCura.IntegrationPoints.RelativitySync
 			return queryResult.ResultCount > 0;
 		}
 
-		private static async Task MarkJobAsFailed(IExtendedJob job, IObjectManager manager)
+		private static async Task MarkJobAsFailedAsync(IExtendedJob job, IObjectManager manager)
 		{
-			await UpdateJobAsync(job, JobFailedStateRef(), manager).ConfigureAwait(false);
+			await UpdateFinishedJobAsync(job, JobFailedStateRef(), manager).ConfigureAwait(false);
 		}
 
-		private static async Task UpdateJobAsync(IExtendedJob job, ChoiceRef status, IObjectManager manager)
+		private static async Task UpdateFinishedJobAsync(IExtendedJob job, ChoiceRef status, IObjectManager manager)
 		{
 			UpdateRequest updateRequest = new UpdateRequest
 			{
@@ -221,7 +221,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			};
 		}
 
-		private async Task AddJobHistoryError(IExtendedJob job, IObjectManager manager, Exception e)
+		private async Task AddJobHistoryErrorAsync(IExtendedJob job, IObjectManager manager, Exception e)
 		{
 			CreateRequest createRequest = new CreateRequest
 			{

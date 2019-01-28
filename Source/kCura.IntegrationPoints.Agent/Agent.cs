@@ -9,17 +9,13 @@ using kCura.IntegrationPoints.Agent.Installer;
 using kCura.IntegrationPoints.Agent.Interfaces;
 using kCura.IntegrationPoints.Agent.Logging;
 using kCura.IntegrationPoints.Agent.TaskFactory;
-using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.RelativitySync;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
-using kCura.ScheduleQueue.Core.TimeMachine;
 using Relativity.API;
-using Relativity.Toggles;
 using Component = Castle.MicroKernel.Registration.Component;
 
 namespace kCura.IntegrationPoints.Agent
@@ -112,14 +108,8 @@ namespace kCura.IntegrationPoints.Agent
 		{
 			try
 			{
-				IIntegrationPointService integrationPointService = ripContainerForSync.Resolve<IIntegrationPointService>();
-				IProviderTypeService providerTypeService = ripContainerForSync.Resolve<IProviderTypeService>();
-				IToggleProvider toggleProvider = ripContainerForSync.Resolve<IToggleProvider>();
-				IConfigurationDeserializer configurationDeserializer = ripContainerForSync.Resolve<IConfigurationDeserializer>();
-
-				RelativitySyncConstrainsChecker constrainsChecker =
-					new RelativitySyncConstrainsChecker(integrationPointService, providerTypeService, toggleProvider,
-						configurationDeserializer, _logger);
+				ripContainerForSync.Register(Component.For<RelativitySyncConstrainsChecker>().ImplementedBy<RelativitySyncConstrainsChecker>());
+				RelativitySyncConstrainsChecker constrainsChecker = ripContainerForSync.Resolve<RelativitySyncConstrainsChecker>();
 				return constrainsChecker.ShouldUseRelativitySync(job);
 			}
 			catch (Exception ex)

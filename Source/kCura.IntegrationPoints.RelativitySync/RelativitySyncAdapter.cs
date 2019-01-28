@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			IHelper helper = _ripContainer.Resolve<IHelper>();
 			try
 			{
-				await _jobHistoryHelper.UpdateJobStatus(status, _job, helper).ConfigureAwait(false);
+				await _jobHistoryHelper.UpdateJobStatusAsync(status, _job, helper).ConfigureAwait(false);
 			}
 			catch (Exception e)
 			{
@@ -93,7 +93,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			IHelper helper = _ripContainer.Resolve<IHelper>();
 			try
 			{
-				await _jobHistoryHelper.MarkJobAsStarted(_job, helper).ConfigureAwait(false);
+				await _jobHistoryHelper.MarkJobAsStartedAsync(_job, helper).ConfigureAwait(false);
 			}
 			catch (Exception e)
 			{
@@ -106,7 +106,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			IHelper helper = _ripContainer.Resolve<IHelper>();
 			try
 			{
-				await _jobHistoryHelper.MarkJobAsCompleted(_job, helper).ConfigureAwait(false);
+				await _jobHistoryHelper.MarkJobAsCompletedAsync(_job, helper).ConfigureAwait(false);
 			}
 			catch (Exception e)
 			{

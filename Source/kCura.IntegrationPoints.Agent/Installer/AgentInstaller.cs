@@ -139,7 +139,6 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Register(Component.For<ITaskFactoryJobHistoryServiceFactory>().ImplementedBy<TaskFactoryJobHistoryServiceFactory>().LifestyleTransient());
 			container.Register(Component.For<ITaskFactory>().ImplementedBy<TaskFactory.TaskFactory>().DependsOn(new { container }).LifestyleTransient());
 			container.Register(Component.For<IConfigurationDeserializer>().ImplementedBy<ConfigurationDeserializer>().LifestyleSingleton());
-			container.Register(Component.For<RelativitySyncConstrainsChecker>().ImplementedBy<RelativitySyncConstrainsChecker>().LifestyleSingleton());
 
 			container.Register(Component.For<IAuthTokenGenerator>().UsingFactoryMethod(kernel =>
 			{
