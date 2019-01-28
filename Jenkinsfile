@@ -200,13 +200,13 @@ timestamps
 					}
 					//if(isNightly(nightlyJobName)) //commented out temporarly for testing purposes
 					//{
-						stage ('Integration Tests in Quarantine')
+					stage ('Integration Tests in Quarantine')
+					{
+						timeout(time: 180, unit: 'MINUTES')
 						{
-							timeout(time: 180, unit: 'MINUTES')
-							{
-								runTests(params.skipIntegrationTests, "-in", "Quarantined Integration", nightlyJobName)
-							}
+							runTests(params.skipIntegrationTests, "-in", "Quarantined Integration", nightlyJobName)
 						}
+					}
 					//}
 					stage ('UI Tests')
 					{
