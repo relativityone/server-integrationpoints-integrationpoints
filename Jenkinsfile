@@ -154,18 +154,48 @@ timestamps
 							{
 								if (installing_relativity)
 								{
-									(relativityBuildVersion, relativityBranch, relativityBuildType) = getNewBranchAndVersion(relativityBranchFallback, relativityBranch, params.relativityBuildVersion, params.relativityBuildType, session_id)
+									(relativityBuildVersion, relativityBranch, relativityBuildType) = getNewBranchAndVersion(
+										relativityBranchFallback, 
+										relativityBranch, 
+										params.relativityBuildVersion, 
+										params.relativityBuildType, 
+										session_id
+									)
 									echo "Installing Relativity, branch: $relativityBranch, version: $relativityBuildVersion, type: $relativityBuildType"
 								}
 
-								uploadEnvironmentFile(this, sut.name, relativityBuildVersion, relativityBranch, relativityBuildType,
-									"", "", // invariant version and branch
-									ripCookbooks, chef_attributes, knife,
-									"", "", // analytics version and branch
-									session_id, installing_relativity, installing_invariant, installing_analytics
+								uploadEnvironmentFile(
+									this, 
+									sut.name, 
+									relativityBuildVersion, 
+									relativityBranch, 
+									relativityBuildType,
+									"", //invariant version
+									"", //invariant branch
+									ripCookbooks, 
+									chef_attributes, 
+									knife,
+									"", //analytics version
+									"", //analytics branch
+									session_id, 
+									installing_relativity, 
+									installing_invariant, 
+									installing_analytics
 								)
 
-								addRunlist(this, session_id, sut.name, sut.domain, sut.ip, run_list, knife, profile, event_hash, "", "")
+								addRunlist(
+									this, 
+									session_id, 
+									sut.name, 
+									sut.domain, 
+									sut.ip, 
+									run_list, 
+									knife, 
+									profile, 
+									event_hash, 
+									"", 
+									""
+								)
 
 								checkWorkspaceUpgrade(this, sut.name, session_id)
 							},
@@ -174,7 +204,14 @@ timestamps
 								def numberOfSlaves = 1
 								def numberOfExecutors = '1'
 								ScvmmInstance.createNodes(numberOfSlaves, 60, numberOfExecutors)
-								bootstrapDependencies(this, python_packages, relativityBranch, relativityBuildVersion, relativityBuildType, session_id)
+								bootstrapDependencies(
+									this, 
+									python_packages, 
+									relativityBranch, 
+									relativityBuildVersion, 
+									relativityBuildType, 
+									session_id
+								)
 							}
 						)
 					}
@@ -283,9 +320,23 @@ timestamps
 
 			stage ('Publish to bld-pkgs')
 			{
-				withCredentials([usernamePassword(credentialsId: 'jenkins_packages_svc', passwordVariable: 'BLDPKGSPASSWORD', usernameVariable: 'BLDPKGSUSERNAME')])
+				def credentials = [
+					usernamePassword(
+						credentialsId: 'jenkins_packages_svc', 
+						passwordVariable: 'BLDPKGSPASSWORD', 
+						usernameVariable: 'BLDPKGSUSERNAME'
+					)
+				]
+				withCredentials(credentials)
 				{
-					jenkinsHelpers.publishToBldPkgs(BLDPKGSUSERNAME, BLDPKGSPASSWORD, './BuildPackages', PACKAGE_NAME, env.BRANCH_NAME, version)
+					jenkinsHelpers.publishToBldPkgs(
+						BLDPKGSUSERNAME, 
+						BLDPKGSPASSWORD, 
+						'./BuildPackages', 
+						PACKAGE_NAME, 
+						env.BRANCH_NAME, 
+						version
+					)
 				}
 			}
 
@@ -316,7 +367,12 @@ timestamps
 								timeout(time: 5, unit: 'MINUTES')
 								{
 									//it returns username who submitted the request to save vms
-									user = input(message: 'Save the VMs?', ok: 'Save', submitter: 'JNK-Basic', submitterParameter: 'submitter')
+									user = input(
+										message: 'Save the VMs?', 
+										ok: 'Save', 
+										submitter: 'JNK-Basic', 
+										submitterParameter: 'submitter'
+									)
 								}
 								ScvmmInstance.saveVMs(user)
 							}
