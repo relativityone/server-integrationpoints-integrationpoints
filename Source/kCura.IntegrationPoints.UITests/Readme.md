@@ -2,7 +2,7 @@
 
 ## Developer documentation
 
-More details regarding UI tests are available here: https://einstein.kcura.com/display/DV/RIP+UI+Tests
+More details about RIP UI tests: https://einstein.kcura.com/display/DV/RIP+UI+Tests
 
 ## Updating WebDriver packages
 
