@@ -154,7 +154,7 @@
 				try {
 					const validationResultDto = JSON.parse(responseText);
 					msg = getFormattedMessage(validationResultDto.errors, errPrefix);
-				} catch{
+				} catch (e) {
 					msg = errPrefix + " " + responseText;
 				};
 
