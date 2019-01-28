@@ -15,6 +15,7 @@ using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.RelativitySync;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.TimeMachine;
 using Relativity.API;
 using Component = Castle.MicroKernel.Registration.Component;
 

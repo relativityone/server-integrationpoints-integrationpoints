@@ -6,6 +6,7 @@ using Castle.Windsor;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
 using Relativity.Sync;
+using Relativity.Sync.Telemetry;
 using Relativity.Telemetry.APM;
 
 namespace kCura.IntegrationPoints.RelativitySync
@@ -36,8 +37,9 @@ namespace kCura.IntegrationPoints.RelativitySync
 			try
 			{
 				CancellationToken cancellationToken = CancellationAdapter.GetCancellationToken(_job, _ripContainer);
-				using (IContainer container = InitializeAutofacContainer())
+				using (IContainer container = InitializeSyncContainer(metrics))
 				{
+					metrics.MarkStartTime();
 					await MarkJobAsStartedAsync().ConfigureAwait(false);
 
 					ISyncJob syncJob = CreateSyncJob(container);
@@ -149,10 +151,11 @@ namespace kCura.IntegrationPoints.RelativitySync
 			return syncJob;
 		}
 
-		private IContainer InitializeAutofacContainer()
+		private IContainer InitializeSyncContainer(SyncMetrics metrics)
 		{
 			var containerBuilder = new ContainerBuilder();
 			containerBuilder.RegisterInstance(SyncConfigurationFactory.Create(_job, _ripContainer, _logger)).AsImplementedInterfaces().SingleInstance();
+			containerBuilder.RegisterInstance(metrics).As<ISyncMetrics>().SingleInstance();
 			IContainer container = containerBuilder.Build();
 			return container;
 		}

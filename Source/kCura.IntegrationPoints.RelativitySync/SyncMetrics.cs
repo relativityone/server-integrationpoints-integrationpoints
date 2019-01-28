@@ -16,6 +16,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		private readonly Dictionary<string, object> _data = new Dictionary<string, object>();
 		private readonly IAPM _apm;
 		private readonly IAPILog _logger;
+		private DateTime _startTime = DateTime.MinValue;
 		private TimeSpan _elapsed = TimeSpan.Zero;
 
 		public SyncMetrics(IAPM apm, IAPILog logger)
@@ -38,16 +39,24 @@ namespace kCura.IntegrationPoints.RelativitySync
 			_elapsed += duration;
 		}
 
+		public void MarkStartTime()
+		{
+			_startTime = DateTime.UtcNow;
+		}
+
 		public void SendMetric(Guid correlationId, TaskResult taskResult)
 		{
 			try
 			{
+				var totalElapsedTimeMs = (_startTime - DateTime.UtcNow).TotalMilliseconds;
 				if (taskResult != null)
 				{
 					_data[JOB_RESULT_KEY_NAME] = taskResult;
+					_data["TotalElapsedTimeMs"] = totalElapsedTimeMs;
+					_data["AllStepsElapsedTimeMs"] = _elapsed.TotalMilliseconds;
 				}
 
-				_apm.TimedOperation(RELATIVITY_SYNC_APM_METRIC_NAME, _elapsed.TotalMilliseconds, correlationID: correlationId.ToString(), customData: _data);
+				_apm.TimedOperation(RELATIVITY_SYNC_APM_METRIC_NAME, totalElapsedTimeMs, correlationID: correlationId.ToString(), customData: _data);
 			}
 			catch (Exception ex)
 			{
