@@ -247,7 +247,6 @@ timestamps
 							timeout(time: 180, unit: 'MINUTES')
 							{
                                 runIntegrationTests()
-								// runTests(params.skipIntegrationTests, "-in", "Integration", nightlyJobName)
 							}
 						}
 						//if(isNightly(nightlyJobName)) //commented out temporarly for testing purposes
@@ -257,7 +256,6 @@ timestamps
 							timeout(time: 180, unit: 'MINUTES')
 							{
                                 runQuarantineTests()
-								// runTests(params.skipIntegrationTests, "-in", "Quarantined Integration", nightlyJobName)
 							}
 						}
 						//}
@@ -266,7 +264,6 @@ timestamps
 							timeout(time: 8, unit: 'HOURS')
 							{
                                 runUITests()
-								// runTests(params.skipUITests, "-ui", "UI", nightlyJobName)
 							}
 						}
 					}
