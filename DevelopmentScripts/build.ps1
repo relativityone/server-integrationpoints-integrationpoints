@@ -20,6 +20,7 @@ $EDITOR = $false
 $BUILD = $true
 $APPS = $true
 $TEST = $false
+$QUARANTINE = $false
 $INTEGRATION_TESTS = $false
 $UI_TESTS = $false
 $NUGET = $false
@@ -46,6 +47,7 @@ for ($i = 0; $i -lt $args.count; $i++){
         "^[/-]no"     {$APPS    = $false}
         "^[/-]sk"     {$BUILD   = $false; $APPS = $false}
         "^[/-]t"      {$TEST    = $true}
+        "^[/-]qu"     {$QUARANTINE = $true}
         "^[/-]in"     {
                         $INTEGRATION_TESTS        = $true;
                         $INTEGRATION_TESTS_FILTER = $args[$i + 1];
@@ -97,6 +99,7 @@ write-host "package root      is" $PACKAGEROOT
 write-host "build             step is set to" $BUILD
 write-host "apps              step is set to" $APPS
 write-host "test              step is set to" $TEST
+write-host "quarantine        is" $QUARANTINE
 write-host "integration tests step is set to" $INTEGRATION_TESTS
 write-host "ui tests          step is set to" $UI_TESTS
 write-host "nuget             step is set to" $NUGET
@@ -133,6 +136,7 @@ write-host "    -r[oot] PACKAGEROOT             uses PACKAGEROOT as the root dir
 write-host "    -ap[ps]                         skips the build step, continues to only build apps"
 write-host "    -no[apps]                       skips build apps step"
 write-host "    -sk[ip]                         skips build and build apps step"
+write-host "    -qu[arantine]                   modifies tests results and report file names adding Quarantine postfix"
 write-host "    -t[est]                         runs nunit unit test step"
 write-host "    -in[tegration] FILTER           runs nunit integration tests step with expression for where clause for nunit"
 write-host "    -ui[tests] FILTER               runs nunit ui tests step with expression for where clause for nunit"
@@ -208,12 +212,14 @@ if($TEST -and $STATUS -and ($RUN_SONARQUBE -eq $false)){
 }
 
 if($INTEGRATION_TESTS -and $STATUS){
-    Invoke-psake $root\DevelopmentScripts\psake-test.ps1 run_integration_tests -parameters @{'integration_tests_filter'="$INTEGRATION_TESTS_FILTER"}
+    Invoke-psake $root\DevelopmentScripts\psake-test.ps1 run_integration_tests -parameters @{'tests_filter'="$INTEGRATION_TESTS_FILTER";
+                                                                                             'is_quarantine'=$QUARANTINE;}
     if ($psake.build_success -eq $false) { $STATUS = $false }
 }
 
 if($UI_TESTS -and $STATUS){
-    Invoke-psake $root\DevelopmentScripts\psake-test.ps1 run_ui_tests -parameters @{'ui_tests_filter'="$UI_TESTS_FILTER"}
+    Invoke-psake $root\DevelopmentScripts\psake-test.ps1 run_ui_tests -parameters @{'tests_filter'="$UI_TESTS_FILTER";
+                                                                                    'is_quarantine'=$QUARANTINE;}
     if ($psake.build_success -eq $false) { $STATUS = $false }
 }
 
