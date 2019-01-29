@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
@@ -29,7 +30,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 		/// </summary>
 		/// <param name="workspaceArtifactId"></param>
 		/// <param name="documentsTestData"></param>
-		/// <param name="rootFolderIdForNatives">Set to null if documents testData has folderPath set; set to folder id of your choice or leave null - workspace root folder will be taken</param>
 		/// <returns></returns>
 		public bool ImportData(int workspaceArtifactId, DocumentsTestData documentsTestData)
 		{
