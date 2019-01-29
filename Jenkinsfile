@@ -507,14 +507,17 @@ def runQuarantineTests()
 
 def getCmdOption(TestType testType)
 {
-    switch (testType)
+    if (testType == TestType.integration)
     {
-        case TestType.integration:
-            return "-in"
-        case TestType.quarantine:
-            return "-qu -in"
-        case TestType.ui:
-            return "-ui"
+        return "-in"
+    }
+    else if (testType == TestType.quarantine)
+    {
+        return "-qu -in"
+    }
+    else 
+    {
+        return "-ui"
     }​​​​​
 }
 
