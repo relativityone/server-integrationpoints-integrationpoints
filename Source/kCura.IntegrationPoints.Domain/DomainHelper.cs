@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using kCura.IntegrationPoints.Contracts.Domain;
 using Relativity.API;
-using Relativity.APIHelper;
 
 namespace kCura.IntegrationPoints.Domain
 {
@@ -174,8 +173,12 @@ namespace kCura.IntegrationPoints.Domain
 			DomainManager manager = CreateInstance<DomainManager>(domain, _helper);
 
 			manager.Init();
-			Bootstrapper.InitAppDomain(Constants.IntegrationPoints.APP_DOMAIN_SUBSYSTEM_NAME,
-				Constants.IntegrationPoints.APPLICATION_GUID_STRING, string.Empty, domain);
+
+			Bootstrappers.AppDomainBootstrapper.Bootstrap(
+				Constants.IntegrationPoints.APP_DOMAIN_SUBSYSTEM_NAME,
+				Constants.IntegrationPoints.APPLICATION_GUID_STRING, 
+				libraryPath: string.Empty, 
+				domain: domain);
 
 			return manager;
 		}
