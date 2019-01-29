@@ -485,10 +485,8 @@ def getTestFilterWithoutQuarantined(String testFilter)
 	def notQuarantinedTestFilter = "cat!=${getQuarantinedTestCategory()}"
 	if(testFilter == "")
 	{
-		echo "EMPTY FILTER $testFilter"
 		return notQuarantinedTestFilter
 	}
-	echo "NOT EMPTY FILTER $testFilter"
 	return "${testFilter} && ${notQuarantinedTestFilter}"
 }
 
@@ -529,9 +527,7 @@ def runTests(String cmdOption, String testStageName, String nightlyJobName)
 {
 	configureNunitTests()
     def currentFilter = getTestsFilter(testStageName, nightlyJobName)
-	echo "FILTER: $currentFilter"
-	echo """./build.ps1 -ci -sk $cmdOption "$currentFilter" """
-    def result = powershell returnStatus: true, script: """./build.ps1 -ci -sk $cmdOption "$currentFilter" """
+    def result = powershell returnStatus: true, script: "./build.ps1 -ci -sk $cmdOption \"\"\"$currentFilter\"\"\""
 	return result
 }
 
