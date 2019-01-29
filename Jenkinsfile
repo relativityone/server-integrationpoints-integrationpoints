@@ -458,7 +458,7 @@ def isNightly(String nightlyJobName)
 	return env.JOB_NAME.contains(nightlyJobName)
 }
 
-def isQuarantined(String testStageName)
+def isQuarantinedStage(String testStageName)
 {
 	return testStageName == "Quarantined Integration"
 }
@@ -480,30 +480,37 @@ def getQuarantinedTestCategory()
 	return "InQuarantine"
 }
 
-def getTestFilterWithoutQuarantined(String testFilter)
+def exceptQuarantinedTestFilter()
 {
-	def notQuarantinedTestFilter = "cat!=${getQuarantinedTestCategory()}"
+	return "cat!=${getQuarantinedTestCategory()}"
+}
+
+def andQuarantinedTestFilter()
+{
+	return "cat==${getQuarantinedTestCategory()}"
+}
+
+def unionTestFilters(String testFilter, String andTestFilter)
+{
 	if(testFilter == "")
 	{
-		return notQuarantinedTestFilter
+		return andTestFilter
 	}
-	return "${testFilter} && ${notQuarantinedTestFilter}"
+	return "${testFilter} && ${andTestFilter}"
 }
 
 def getTestsFilter(String testStageName, String nightlyJobName)
 {
-    echo "env.JOB_NAME $env.JOB_NAME"
-
 	if(isNightly(nightlyJobName))
 	{
-		if(isQuarantined(testStageName))
+		if(isQuarantinedStage(testStageName))
 		{
-			return "cat==${getQuarantinedTestCategory()}"
+			return unionTestFilters(params.nightlyTestsFilter, andQuarantinedTestFilter())
 		}
-		return getTestFilterWithoutQuarantined(params.nightlyTestsFilter)
+		return unionTestFilters(params.nightlyTestsFilter, exceptQuarantinedTestFilter())
 	}
 
-	return getTestFilterWithoutQuarantined(params.testsFilter)
+	return unionTestFilters(params.testsFilter, exceptQuarantinedTestFilter())
 }
 
 def runTestsAndSetBuildResult(Boolean skipTests, String cmdOption, String testStageName, String nightlyJobName)
