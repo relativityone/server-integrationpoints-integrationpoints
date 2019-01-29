@@ -3,7 +3,6 @@
 
 	<!-- Build properties -->
 	<property name="source.code.directory" value="${root}\source" />
-	<property name="source.provider.includes.directory" value="${source.code.directory}\Dependencies\ProviderIncludes" />
 	<property name="lib.directory" value="${root}\lib" />
 	<property name="sdk.directory" value="${root}\documentation\sdk" />
 	<property name="examples.directory" value="${root}\documentation\sdk\Examples" />
@@ -38,7 +37,6 @@
 		<copy todir="${sdk.directory}\Web">
 			<fileset basedir="${source.provider.includes.directory}">
 				<include name="frame-messaging.js" />
-				<include name="jquery-1.8.2.js" />
 				<include name="jquery-postMessage.js" />
 			</fileset>
 		</copy>
