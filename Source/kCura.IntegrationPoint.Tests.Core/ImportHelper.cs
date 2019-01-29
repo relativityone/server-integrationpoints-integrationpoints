@@ -50,8 +50,16 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return !HasErrors;
 		}
 
-		private int GetWorkspaceRootFolderID(ImportAPI importApi, int workspaceID) =>
-			importApi.Workspaces().First(w => w.ArtifactID == workspaceID).RootFolderID;
+		private int GetWorkspaceRootFolderID(int workspaceID)
+		{ 
+			Relativity.Client.DTOs.Workspace dto = Workspace.GetWorkspaceDto(workspaceID);
+			if (dto?.RootFolderID != null)
+			{
+				return dto.RootFolderID.Value;
+			}
+
+			throw new Exception($"An error occured while retrieving RootFolderId for workspace: {workspaceID}");
+		}
 
 		private void ImportNativeFiles(int workspaceArtifactId, IDataReader dataReader, ImportAPI importApi, int identifyFieldArtifactId)
 		{
@@ -69,7 +77,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			importJob.Settings.FileNameColumn = "File Name";
 			importJob.Settings.CopyFilesToDocumentRepository = _withNatives;
 
-			importJob.Settings.DestinationFolderArtifactID = GetWorkspaceRootFolderID(importApi, workspaceArtifactId);
+			importJob.Settings.DestinationFolderArtifactID = GetWorkspaceRootFolderID(workspaceArtifactId);
 			importJob.Settings.FolderPathSourceFieldName = Constants.FOLDER_PATH;
 
 			if (!_withNatives)
