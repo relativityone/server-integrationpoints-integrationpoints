@@ -102,16 +102,23 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public void SelectAllSourceFields()
 		{
-			AddAllSourceFieldElements.ClickEx();
-			ValidateAllFieldsAreMapped(SelectSourceFieldsElement);
-		}
+			const int maxRetryCount = 3;
+			int currentRetry = 0;
+			do
+			{
+				AddAllSourceFieldElements.ClickEx();
+				currentRetry++;
+			} while (!AreAllFieldsAreMapped(SelectSourceFieldsElement) && currentRetry < maxRetryCount);
 
-		protected void ValidateAllFieldsAreMapped(SelectElement sourceFields)
-		{
-			if (sourceFields.Options.Count != 0)
+			if (!AreAllFieldsAreMapped(SelectSourceFieldsElement))
 			{
 				throw new UiTestException("All fields have not been selected!");
 			}
+		}
+
+		protected bool AreAllFieldsAreMapped(SelectElement sourceFields)
+		{
+			return sourceFields.Options.Count == 0;
 		}
 
 		public void SelectSourceField(string fieldName)
