@@ -4,6 +4,7 @@ Bin
 obj
 Obj
 CustomPages
+BuildPackages
 DependencyGraph.xml
 build*.log
 Output

@@ -11,26 +11,34 @@ library 'SlackHelpers@3.0.0'
 import groovy.transform.Field
 
 properties([
-    [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '30', artifactNumToKeepStr: '', daysToKeepStr: '30', numToKeepStr: '']],
-    parameters([
-        string(defaultValue: '', description: 'Set Relativity branch', name: 'relativityBranch'),
-        string(defaultValue: 'DEV', description: 'Set Relativity build type (DEV, GOLD, etc.)', name: 'relativityBuildType'),
-        string(defaultValue: '', description: 'Set Relativity version on which RIP will be tested. Leave blank to set the latest version.', name: 'relativityBuildVersion'),
-        booleanParam(defaultValue: false, description: 'Check if you want to skip Integrations Tests stage.', name: 'skipIntegrationTests'),
-        booleanParam(defaultValue: true, description: 'Check if you want to skip UI Tests stage.', name: 'skipUITests'),
-        string(defaultValue: 'cat==SmokeTest', description: 'Set filter for integration and UI tests', name: 'testsFilter'),
-        string(defaultValue: '', description: 'Set filter for nightly integration and UI tests', name: 'nightlyTestsFilter'),
-        booleanParam(defaultValue: true, description: 'Enable SonarQube analysis for develop branch.', name: 'enableSonarAnalysis')
-    ])
+	[$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '30', artifactNumToKeepStr: '', daysToKeepStr: '30', numToKeepStr: '']],
+	parameters([
+		string(defaultValue: '', description: 'Set Relativity branch', name: 'relativityBranch'),
+		string(defaultValue: 'DEV', description: 'Set Relativity build type (DEV, GOLD, etc.)', name: 'relativityBuildType'),
+		string(defaultValue: '', description: 'Set Relativity version on which RIP will be tested. Leave blank to set the latest version.', name: 'relativityBuildVersion'),
+		booleanParam(defaultValue: false, description: 'Check if you want to skip Integrations Tests stage.', name: 'skipIntegrationTests'),
+		booleanParam(defaultValue: true, description: 'Check if you want to skip UI Tests stage.', name: 'skipUITests'),
+		string(defaultValue: 'cat==SmokeTest', description: 'Set filter for integration and UI tests', name: 'testsFilter'),
+		string(defaultValue: '', description: 'Set filter for nightly integration and UI tests', name: 'nightlyTestsFilter'),
+		booleanParam(defaultValue: true, description: 'Enable SonarQube analysis for develop branch.', name: 'enableSonarAnalysis')
+	])
 ])
+
+// This repo's package name for purposes of versioning & publishing
+final String PACKAGE_NAME = 'IntegrationPoints'
 
 @Field
 def sut = null
+
+def jenkinsHelpers = null
+def version = null
+def commonBuildArgs = null
 
 def nightlyJobName = "IntegrationPointsNightly"
 def relativityBuildVersion = ""
 def relativityBuildType = ""
 def relativityBranch = params.relativityBranch ?: env.BRANCH_NAME
+
 // *********
 // IMPORTANT
 // *********
@@ -72,69 +80,68 @@ ScvmmInstance.setHoursToLive("12")
 // Make changes here if necessary.
 def python_packages = 'jeeves==4.1.0 phonograph==5.2.0 selenium==3.0.1'
 
-timestamps 
+timestamps
 {
-	catchError
+	try
 	{
 		node ('PolandBuild')
 		{
-			try
+			stage ('Checkout')
 			{
-				stage ('Checkout')
+				timeout(time: 10, unit: 'MINUTES')
 				{
-					timeout(time: 3, unit: 'MINUTES')
-					{
-						checkout scm
-						step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
-					}
-
+					checkout scm
+					step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
 				}
-				stage ('Build')
-				{
-					def sonarParameter = 
-						(params.enableSonarAnalysis && env.BRANCH_NAME == "develop")
-						? "-sonarqube"
-						: ""
-					powershell "./build.ps1 release $sonarParameter"
-					archiveArtifacts artifacts: "DevelopmentScripts/*.html", fingerprint: true
-				}
-				stage ('Unit Tests')
-				{
-					timeout(time: 3, unit: 'MINUTES')
-					{
-						powershell "./build.ps1 release -sk -t"
-						archiveArtifacts artifacts: "TestLogs/*", fingerprint: true
-						currentBuild.result = 'SUCCESS'
-					}
-				}
+			}
+			stage ('Get Version')
+			{
+				jenkinsHelpers = load (pwd() + '/DevelopmentScripts/JenkinsHelpers.groovy')
+				version = jenkinsHelpers.incrementBuildVersion(PACKAGE_NAME, params.relativityBuildType)
+				currentBuild.displayName="${params.relativityBuildType}-$version"
+				commonBuildArgs = "release $params.relativityBuildType -ci -v $version -b $env.BRANCH_NAME"
+			}
+			stage ('Build')
+			{
+				def sonarParameter = shouldRunSonar(params.enableSonarAnalysis, env.BRANCH_NAME, nightlyJobName)
+				powershell "./build.ps1 $sonarParameter $commonBuildArgs"
+				archiveArtifacts artifacts: "DevelopmentScripts/*.html", fingerprint: true
+			}
+			stage ('Unit Tests')
+			{
 				timeout(time: 3, unit: 'MINUTES')
 				{
-					stage ('Stash Tests Artifacts')
-					{
-						stash includes: 'lib/UnitTests/**', name: 'testdlls'
-						stash includes: 'DynamicallyLoadedDLLs/Search-Standard/*', name: 'dynamicallyLoadedDLLs'
-						stash includes: 'Applications/RelativityIntegrationPoints.Auto.rap', name: 'integrationPointsRap'
-						stash includes: 'DevelopmentScripts/IntegrationPointsTests.*', name: 'nunitProjectFiles'
-						stash includes: 'DevelopmentScripts/NUnit.ConsoleRunner/tools/*', name: 'nunitConsoleRunner'
-						stash includes: 'DevelopmentScripts/NUnit.Extension.NUnitProjectLoader/tools/*', name: 'nunitProjectLoader'
-						stash includes: 'DevelopmentScripts/*.ps1', name: 'buildScripts'
-						stash includes: 'build.ps1', name: 'buildps1'
-						stash includes: 'Vendor/psake/tools/*', name: 'psake'
-						stash includes: 'Vendor/NuGet/NuGet.exe', name: 'nuget'
-						stash includes: 'Version/version.txt', name: 'version'
-					}
+					powershell "./build.ps1 -sk -t $commonBuildArgs"
+					archiveArtifacts artifacts: "TestLogs/*", fingerprint: true
+					currentBuild.result = 'SUCCESS'
 				}
 			}
-			finally
+			stage ('Package')
 			{
-				deleteDir()
+				powershell "./build.ps1 -sk -package -root ./BuildPackages $commonBuildArgs"
 			}
-		}
-		if (testingVMsAreRequired())
-		{
-			stage('Install RAID')
+			timeout(time: 3, unit: 'MINUTES')
 			{
-				node (agentsPool)
+				stage ('Stash Tests Artifacts')
+				{
+					stash includes: 'lib/UnitTests/**', name: 'testdlls'
+					stash includes: 'DynamicallyLoadedDLLs/Search-Standard/*', name: 'dynamicallyLoadedDLLs'
+					stash includes: 'Applications/RelativityIntegrationPoints.Auto.rap', name: 'integrationPointsRap'
+					stash includes: 'DevelopmentScripts/IntegrationPointsTests.*', name: 'nunitProjectFiles'
+					stash includes: 'DevelopmentScripts/NUnit.ConsoleRunner/tools/*', name: 'nunitConsoleRunner'
+					stash includes: 'DevelopmentScripts/NUnit.Extension.NUnitProjectLoader/tools/*', name: 'nunitProjectLoader'
+					stash includes: 'DevelopmentScripts/*.ps1', name: 'buildScripts'
+					stash includes: 'build.ps1', name: 'buildps1'
+					stash includes: 'Vendor/psake/tools/*', name: 'psake'
+					stash includes: 'Vendor/NuGet/NuGet.exe', name: 'nuget'
+					stash includes: 'Version/version.txt', name: 'version'
+				}
+			}
+
+			if (testingVMsAreRequired())
+			{
+				// Provision SUT
+				stage('Install RAID')
 				{
 					timeout(time: 90, unit: 'MINUTES')
 					{
@@ -150,16 +157,16 @@ timestamps
 									(relativityBuildVersion, relativityBranch, relativityBuildType) = getNewBranchAndVersion(relativityBranchFallback, relativityBranch, params.relativityBuildVersion, params.relativityBuildType, session_id)
 									echo "Installing Relativity, branch: $relativityBranch, version: $relativityBuildVersion, type: $relativityBuildType"
 								}
-								
+
 								uploadEnvironmentFile(this, sut.name, relativityBuildVersion, relativityBranch, relativityBuildType,
 									"", "", // invariant version and branch
 									ripCookbooks, chef_attributes, knife,
 									"", "", // analytics version and branch
 									session_id, installing_relativity, installing_invariant, installing_analytics
 								)
-								
+
 								addRunlist(this, session_id, sut.name, sut.domain, sut.ip, run_list, knife, profile, event_hash, "", "")
-								
+
 								checkWorkspaceUpgrade(this, sut.name, session_id)
 							},
 							ProvisionNodes:
@@ -172,239 +179,284 @@ timestamps
 						)
 					}
 				}
-			}
-			node ("$session_id && dependencies")
-			{
-				timeout(time: 3, unit: 'MINUTES')
+
+				// Run tests on provisioned SUT
+				node ("$session_id && dependencies")
 				{
-					stage ('Unstash Tests Artifacts')
+					timeout(time: 3, unit: 'MINUTES')
 					{
-						unstash 'testdlls'
-						unstash 'dynamicallyLoadedDLLs'
-						unstash 'integrationPointsRap'
-						unstash 'nunitProjectFiles'
-						unstash 'nunitConsoleRunner'
-						unstash 'nunitProjectLoader'
-						unstash 'buildps1'
-						unstash 'buildScripts'
-						unstash 'psake'
-						unstash 'nuget'
-						unstash 'version'
-					}
-				}
-				catchError
-				{
-					stage ('Integration Tests')
-					{
-						timeout(time: 180, unit: 'MINUTES')
+						stage ('Unstash Tests Artifacts')
 						{
-							runTests(params.skipIntegrationTests, "-in", "Integration", nightlyJobName)
+							unstash 'testdlls'
+							unstash 'dynamicallyLoadedDLLs'
+							unstash 'integrationPointsRap'
+							unstash 'nunitProjectFiles'
+							unstash 'nunitConsoleRunner'
+							unstash 'nunitProjectLoader'
+							unstash 'buildps1'
+							unstash 'buildScripts'
+							unstash 'psake'
+							unstash 'nuget'
+							unstash 'version'
 						}
 					}
-					stage ('UI Tests')
+					try
 					{
-						timeout(time: 8, unit: 'HOURS')
+						stage ('Integration Tests')
 						{
-							runTests(params.skipUITests, "-ui", "UI", nightlyJobName)
-						}
-					}
-					currentBuild.result = 'SUCCESS'
-				}
-				stage ('Gathering test stats')
-				{
-					timeout(time: 5, unit: 'MINUTES')
-					{				
-						archiveTestsArtifacts(params.skipIntegrationTests, integration_tests_results_file_path, integration_tests_html_report, integration_tests_report_task)
-						numberOfFailedTests = getTestsStatistic(integration_tests_results_file_path, 'failed')
-						numberOfPassedTests = getTestsStatistic(integration_tests_results_file_path, 'passed')
-						numberOfSkippedTests = getTestsStatistic(integration_tests_results_file_path, 'skipped')
-						archiveTestsArtifacts(params.skipUITests, ui_tests_results_file_path, ui_tests_html_report, ui_tests_report_task)
-						if (!params.skipUITests)
-						{
-							archiveArtifacts artifacts: "lib/UnitTests/app.jeeves-ci.config", fingerprint: true
-							archiveArtifacts artifacts: "lib/UnitTests/*.png", fingerprint: true
-						}
-					}
-				}
-			}
-			stage('Cleanup VMs')
-			{
-				try
-				{
-					timeout(time: 20, unit: 'MINUTES')
-					{
-						if(sut?.name)
-						{
-							// If we don't have a result, we didn't get to a test because somthing failed out earlier.
-							// If the result is FAILURE, a test failed.
-							if (!currentBuild.result || currentBuild.result == "FAILURE")
+							timeout(time: 180, unit: 'MINUTES')
 							{
-								try
+								runTests(params.skipIntegrationTests, "-in", "Integration", nightlyJobName)
+							}
+						}
+						stage ('UI Tests')
+						{
+							timeout(time: 8, unit: 'HOURS')
+							{
+								runTests(params.skipUITests, "-ui", "UI", nightlyJobName)
+							}
+						}
+					}
+					catch (err)
+					{
+						echo err.toString()
+						currentBuild.result = "FAILED"
+					}
+					finally
+					{
+						stage ('Gathering test stats')
+						{
+							timeout(time: 5, unit: 'MINUTES')
+							{
+								archiveTestsArtifacts(params.skipIntegrationTests, integration_tests_results_file_path, integration_tests_html_report, integration_tests_report_task)
+								numberOfFailedTests = getTestsStatistic(integration_tests_results_file_path, 'failed')
+								numberOfPassedTests = getTestsStatistic(integration_tests_results_file_path, 'passed')
+								numberOfSkippedTests = getTestsStatistic(integration_tests_results_file_path, 'skipped')
+								archiveTestsArtifacts(params.skipUITests, ui_tests_results_file_path, ui_tests_html_report, ui_tests_report_task)
+								if (!params.skipUITests)
 								{
-									timeout(time: 5, unit: 'MINUTES')
-									{
-										//it returns username who submitted the request to save vms
-										user = input(message: 'Save the VMs?', ok: 'Save', submitter: 'JNK-Basic', submitterParameter: 'submitter')
-									}
-									ScvmmInstance.saveVMs(user)
-								}
-								// Exception is thrown if you click abort or let it time out
-								catch(err)
-								{
-									echo "Deleting VMs..."
-									ScvmmInstance.deleteVMs()
+									archiveArtifacts artifacts: "lib/UnitTests/app.jeeves-ci.config", fingerprint: true
+									archiveArtifacts artifacts: "lib/UnitTests/*.png", fingerprint: true
 								}
 							}
 						}
-						deleteNodes(this, session_id)
 					}
 				}
-				catch (err)
+			}
+
+			stage ('Publish to NuGet')
+			{
+				withCredentials([string(credentialsId: 'ProgetNugetApiKey', variable: 'key')])
 				{
-					echo "Cleanup VMs FAILED."
+					retry(3)
+					{
+						powershell "./build.ps1 -sk -nuget $key $commonBuildArgs"
+					}
 				}
 			}
+
+			stage ('Publish to bld-pkgs')
+			{
+				withCredentials([usernamePassword(credentialsId: 'jenkins_packages_svc', passwordVariable: 'BLDPKGSPASSWORD', usernameVariable: 'BLDPKGSUSERNAME')])
+				{
+					jenkinsHelpers.publishToBldPkgs(BLDPKGSUSERNAME, BLDPKGSPASSWORD, './BuildPackages', PACKAGE_NAME, env.BRANCH_NAME, version)
+				}
+			}
+
+			currentBuild.result = 'SUCCESS'
 		}
 	}
-	stage('Reporting')
+	catch (err)
 	{
-		try
+		echo err.toString()
+		currentBuild.result = "FAILED"
+	}
+	finally
+	{
+		stage('Cleanup VMs')
 		{
-			echo "Build result: $currentBuild.result"
-			node(agentsPool)
+			try
 			{
-				timeout(time: 3, unit: 'MINUTES')
+				timeout(time: 20, unit: 'MINUTES')
 				{
-					step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
-					withCredentials([string(credentialsId: 'SlackJenkinsIntegrationToken', variable: 'token')])
+					if(sut?.name)
 					{
-						message = "*${currentBuild.result.toString()}* ${((currentBuild.result.toString() == "FAILURE") ? ":alert:" : "" )} \n\n" +  
-							"Build *#${env.BUILD_NUMBER}* from *${env.BRANCH_NAME}*.\n" +
-							":greencheck: Passed tests: ${numberOfPassedTests}\n" +
-							":negative_squared_cross_mark: Failed tests: ${numberOfFailedTests}\n" +
-							":yellow_card: Skipped tests: ${numberOfSkippedTests} \n\n" +
-							"${env.BUILD_URL} \n" +
-							"Relativity branch: ${relativityBranch} \n" +
-							"Relativity build type: ${relativityBuildType} \n" +
-							"Relativity build version: ${(relativityBuildVersion ?: "0.0.0.0")}"
-						slackSend channel: getSlackChannelName(nightlyJobName).toString(), color: "E8E8E8", message: "${message}", teamDomain: 'kcura-pd', token: token
+						// If we don't have a result, we didn't get to a test because somthing failed out earlier.
+						// If the result is FAILURE, a test failed.
+						if (!currentBuild.result || currentBuild.result == "FAILURE")
+						{
+							try
+							{
+								timeout(time: 5, unit: 'MINUTES')
+								{
+									//it returns username who submitted the request to save vms
+									user = input(message: 'Save the VMs?', ok: 'Save', submitter: 'JNK-Basic', submitterParameter: 'submitter')
+								}
+								ScvmmInstance.saveVMs(user)
+							}
+							// Exception is thrown if you click abort or let it time out
+							catch(err)
+							{
+								echo "Deleting VMs..."
+								ScvmmInstance.deleteVMs()
+							}
+						}
+					}
+					deleteNodes(this, session_id)
+				}
+			}
+			catch (err)
+			{
+				echo "Cleanup VMs FAILED."
+			}
+		}
+
+		stage('Reporting')
+		{
+			try
+			{
+				echo "Build result: $currentBuild.result"
+				node(agentsPool)
+				{
+					timeout(time: 3, unit: 'MINUTES')
+					{
+						step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
+						withCredentials([string(credentialsId: 'SlackJenkinsIntegrationToken', variable: 'token')])
+						{
+							message = "*${currentBuild.result.toString()}* ${((currentBuild.result.toString() == "FAILURE") ? ":alert:" : "" )} \n\n" +
+								"Build *#${env.BUILD_NUMBER}* from *${env.BRANCH_NAME}*.\n" +
+								":greencheck: Passed tests: ${numberOfPassedTests}\n" +
+								":negative_squared_cross_mark: Failed tests: ${numberOfFailedTests}\n" +
+								":yellow_card: Skipped tests: ${numberOfSkippedTests} \n\n" +
+								"${env.BUILD_URL} \n" +
+								"Relativity branch: ${relativityBranch} \n" +
+								"Relativity build type: ${relativityBuildType} \n" +
+								"Relativity build version: ${(relativityBuildVersion ?: "0.0.0.0")}"
+							slackSend channel: getSlackChannelName(nightlyJobName).toString(), color: "E8E8E8", message: "${message}", teamDomain: 'kcura-pd', token: token
+						}
 					}
 				}
 			}
-		}
-		catch (err)  // Just catch everything here, if reporting/cleanup is the only thing that failed, let's not fail out the pipeline.
-		{
-			echo "Reporting failed: $err"
+			catch (err)  // Just catch everything here, if reporting/cleanup is the only thing that failed, let's not fail out the pipeline.
+			{
+				echo "Reporting failed: $err"
+			}
 		}
 	}
 }
 
+def shouldRunSonar(Boolean enableSonarAnalysis, String branchName, String nightlyJobName)
+{
+	return (enableSonarAnalysis && branchName == "develop" && !isNightly(nightlyJobName))
+						? "-sonarqube"
+						: ""
+}
 
 def configureNunitTests()
 {
-    withCredentials([usernamePassword(credentialsId: 'eddsdbo', passwordVariable: 'eddsdboPassword', usernameVariable: 'eddsdboUsername')])
-    {
-        def configuration_command = """python -m jeeves.create_config -t nunit -n "app.jeeves-ci" --dbuser "${eddsdboUsername}" --dbpass "${eddsdboPassword}" -s "${sut.name}.${sut.domain}" -db "${sut.name}\\EDDSINSTANCE001" -o .\\lib\\UnitTests\\"""
-        bat script: configuration_command
-    }
+	withCredentials([usernamePassword(credentialsId: 'eddsdbo', passwordVariable: 'eddsdboPassword', usernameVariable: 'eddsdboUsername')])
+	{
+		def configuration_command = """python -m jeeves.create_config -t nunit -n "app.jeeves-ci" --dbuser "${eddsdboUsername}" --dbpass "${eddsdboPassword}" -s "${sut.name}.${sut.domain}" -db "${sut.name}\\EDDSINSTANCE001" -o .\\lib\\UnitTests\\"""
+		bat script: configuration_command
+	}
 }
 
 def isNightly(String nightlyJobName)
 {
-    return env.JOB_NAME.contains(nightlyJobName)
+	return env.JOB_NAME.contains(nightlyJobName)
 }
 
 def getSlackChannelName(String nightlyJobName)
 {
-    if (isNightly(nightlyJobName) && env.BRANCH_NAME == "develop")
-    {
-        return "#cd_rip_nightly"
-    }
-    else
-    {
-        return "#cd_rip_${env.BRANCH_NAME}"
-    }
+	if (isNightly(nightlyJobName) && env.BRANCH_NAME == "develop")
+	{
+		return "#cd_rip_nightly"
+	}
+	else
+	{
+		return "#cd_rip_${env.BRANCH_NAME}"
+	}
 }
 
 def getTestsFilter(String nightlyJobName)
 {
-    echo "env.JOB_NAME $env.JOB_NAME"
-    return (isNightly(nightlyJobName))
-        ? params.nightlyTestsFilter
-        : params.testsFilter
+	echo "env.JOB_NAME $env.JOB_NAME"
+	return (isNightly(nightlyJobName))
+		? params.nightlyTestsFilter
+		: params.testsFilter
 }
 
 def runTests(Boolean skipTests, String cmdOption, String name, String nightlyJobName)
 {
-    if (!skipTests) 
-    {
-        configureNunitTests()
-        def currentFilter = getTestsFilter(nightlyJobName)
-        def result = powershell returnStatus: true, script: "./build.ps1 -sk $cmdOption $currentFilter"
-        if (result != 0)
-        {
-            error "$name Tests FAILED with status: $result"
-        }
-        echo "$name Tests OK"
-    }
-    else
-    {
-        echo "$name Tests are going to be skipped."
-    }
+	if (!skipTests)
+	{
+		configureNunitTests()
+		def currentFilter = getTestsFilter(nightlyJobName)
+		def result = powershell returnStatus: true, script: "./build.ps1 -ci -sk $cmdOption $currentFilter"
+		if (result != 0)
+		{
+			error "$name Tests FAILED with status: $result"
+		}
+		echo "$name Tests OK"
+	}
+	else
+	{
+		echo "$name Tests are going to be skipped."
+	}
 }
 
 def getTestsStatistic(String filePath, String prop)
 {
-    try
-    {
-        def cmd = ('''
-            [xml]$testResults = Get-Content ''' 
-            + filePath 
-            + '''; $testResults.'test-run'.'''
-            + "'$prop'")
-        echo "getTestsStatistic cmd: $cmd"
-        def stdout = powershell returnStdout: true, script: cmd
-        echo "getTestsStatistic result: $stdout"
-        if (stdout)
-        {
-            return stdout
-        }
-        else
-        {
-            return -1
-        }
-    }
-    catch(err)
-    {
-        echo "getTestsStatistic error: $err"
-        return -1
-    }
+	try
+	{
+		def cmd = ('''
+			[xml]$testResults = Get-Content '''
+			+ filePath
+			+ '''; $testResults.'test-run'.'''
+			+ "'$prop'")
+		echo "getTestsStatistic cmd: $cmd"
+		def stdout = powershell returnStdout: true, script: cmd
+		echo "getTestsStatistic result: $stdout"
+		if (stdout)
+		{
+			return stdout
+		}
+		else
+		{
+			return -1
+		}
+	}
+	catch(err)
+	{
+		echo "getTestsStatistic error: $err"
+		return -1
+	}
 }
 
 def archiveTestsArtifacts(Boolean skipTests, String resultsFilePath, String reportFile, String generateHtmlReportTaskName)
 {
-    try
-    {
-        if (!skipTests) 
-        {
-            archiveArtifacts artifacts: "${resultsFilePath}", fingerprint: true
-            powershell "Import-Module ./Vendor/psake/tools/psake.psm1; Invoke-psake ./DevelopmentScripts/psake-test.ps1 $generateHtmlReportTaskName"
-            archiveArtifacts artifacts: "DevelopmentScripts/${reportFile}", fingerprint: true
-        }
-    }
-    catch(err)
-    {
-        echo "archiveTestsArtifacts failed with error: $err"
-    }
+	try
+	{
+		if (!skipTests)
+		{
+			archiveArtifacts artifacts: "${resultsFilePath}", fingerprint: true
+			powershell "Import-Module ./Vendor/psake/tools/psake.psm1; Invoke-psake ./DevelopmentScripts/psake-test.ps1 $generateHtmlReportTaskName"
+			archiveArtifacts artifacts: "DevelopmentScripts/${reportFile}", fingerprint: true
+		}
+	}
+	catch(err)
+	{
+		echo "archiveTestsArtifacts failed with error: $err"
+	}
 }
 
 def testingVMsAreRequired()
 {
-    return !params.skipIntegrationTests || !params.skipUITests
+	return !params.skipIntegrationTests || !params.skipUITests
 }
 
 def getNewBranchAndVersion(String relativityBranchFallback, String relativityBranch, String paramRelativityBuildVersion, String paramRelativityBuildType, String sessionId)
-{	
+{
 	def firstFallbackBranch = relativityBranchFallback // we should change first fallback branch on RIP release branches
 	def GOLD_BUILD_TYPE = "GOLD"
 	def DEV_BUILD_TYPE = "DEV"
@@ -413,7 +465,7 @@ def getNewBranchAndVersion(String relativityBranchFallback, String relativityBra
 	for (branchAndType in relativityBranchesToTry)
 	{
 		def branch = branchAndType[0]
-	    def buildType = branchAndType[1]
+		def buildType = branchAndType[1]
 
 		echo "Retrieving latest Relativity '$buildType' build from '$branch' branch"
 
@@ -421,8 +473,8 @@ def getNewBranchAndVersion(String relativityBranchFallback, String relativityBra
 		if (buildVersion != null)
 		{
 			return [buildVersion, branch, buildType]
-		}	
-	}	
+		}
+	}
 
 	error 'Failed to retrieve Relativity branch/version'
 }
@@ -431,16 +483,16 @@ def tryGetBuildVersion(String relativityBranch, String paramRelativityBuildVersi
 {
 	try
 	{
-        if (!isRelativityBranchPresent(relativityBranch))
-        {
-            echo "Branch was not found: $relativityBranch"
-            return null
-        }
-        def latestVersion = paramRelativityBuildVersion ?: getLatestVersion(relativityBranch, paramRelativityBuildType)
-        echo "Checking Relativity artifacts for version: $latestVersion"
-        return checkRelativityArtifacts(relativityBranch, latestVersion, paramRelativityBuildType)
-               ? latestVersion
-               : null
+		if (!isRelativityBranchPresent(relativityBranch))
+		{
+			echo "Branch was not found: $relativityBranch"
+			return null
+		}
+		def latestVersion = paramRelativityBuildVersion ?: getLatestVersion(relativityBranch, paramRelativityBuildType)
+		echo "Checking Relativity artifacts for version: $latestVersion"
+		return checkRelativityArtifacts(relativityBranch, latestVersion, paramRelativityBuildType)
+				? latestVersion
+				: null
 	}
 	catch (err)
 	{
@@ -451,32 +503,32 @@ def tryGetBuildVersion(String relativityBranch, String paramRelativityBuildVersi
 
 def isTrue(s)
 {
-    s.trim() == "True"
+	s.trim() == "True"
 }
 
 def isRelativityBranchPresent(branch)
 {
-    return isTrue(powershell(returnStdout: true, script: "([System.IO.DirectoryInfo]\"//bld-pkgs/Packages/Relativity/$branch\").Exists"))
+	return isTrue(powershell(returnStdout: true, script: "([System.IO.DirectoryInfo]\"//bld-pkgs/Packages/Relativity/$branch\").Exists"))
 }
 
 def getLatestVersion(branch, type)
 {
-    return powershell(returnStdout: true, script: String.format('''
+	return powershell(returnStdout: true, script: String.format('''
 					$result = (Get-ChildItem -path "\\\\bld-pkgs\\Packages\\Relativity\\%1$s" |
 						? { (Get-ChildItem -Path $_.FullName).Name -like "BuildType_%2$s" } |
 						ForEach-Object { $_.Name } | ForEach-Object { [System.Version] $_ } | sort) | Select-Object -Last 1;
-                    if (!$result) 
-                    {
-                        return ''
-                    }
-                    else
-                    {
-                        return $result.ToString()
-                    }
+					if (!$result)
+					{
+						return ''
+					}
+					else
+					{
+						return $result.ToString()
+					}
 					''', branch, type)).trim()
 }
 
 def checkRelativityArtifacts(branch, version, type)
 {
-    return isTrue(powershell(returnStdout: true, script: "([System.IO.FileInfo]\"//bld-pkgs/Packages/Relativity/$branch/$version/MasterPackage/$type $version Relativity.exe\").Exists"))
+	return isTrue(powershell(returnStdout: true, script: "([System.IO.FileInfo]\"//bld-pkgs/Packages/Relativity/$branch/$version/MasterPackage/$type $version Relativity.exe\").Exists"))
 }
