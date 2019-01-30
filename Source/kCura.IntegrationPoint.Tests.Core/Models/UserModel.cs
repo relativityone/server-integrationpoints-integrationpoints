@@ -2,15 +2,15 @@ namespace kCura.IntegrationPoint.Tests.Core.Models
 {
 	public class UserModel
 	{
-		public int ArtifactId { get; }
+		public int ArtifactID { get; }
 
 		public string EmailAddress { get; }
 		
 		public string Password { get; }
 
-		public UserModel(int artifactId, string emailAddress, string password)
+		public UserModel(int artifactID, string emailAddress, string password)
 		{
-			ArtifactId = artifactId;
+			ArtifactID = artifactID;
 			EmailAddress = emailAddress;
 			Password = password;
 		}
