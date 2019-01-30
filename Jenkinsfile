@@ -150,8 +150,10 @@ timestamps
 			}
 			stage ('Get Version')
 			{
-				jenkinsHelpers = load (pwd() + '/DevelopmentScripts/JenkinsHelpers.groovy')
+				jenkinsHelpers = load ("${pwd()}/DevelopmentScripts/JenkinsHelpers.groovy")
+
 				version = jenkinsHelpers.incrementBuildVersion(PACKAGE_NAME, params.relativityBuildType)
+
 				currentBuild.displayName="${params.relativityBuildType}-$version"
 				commonBuildArgs = "release $params.relativityBuildType -ci -v $version -b $env.BRANCH_NAME"
 			}
@@ -199,8 +201,13 @@ timestamps
 				{
 					timeout(time: 90, unit: 'MINUTES')
 					{
-						echo "Getting server from pool, session_id: $session_id, Relativity build type: $params.relativityBuildType, event hash: $event_hash"
+						echo "Getting server from pool, 
+						session_id: $session_id, 
+						Relativity build type: $params.relativityBuildType, 
+						event hash: $event_hash"
+
 						sut = ScvmmInstance.getServerFromPool()
+
 						echo "Acquired server: ${sut.name} @ ${sut.domain} (${sut.ip})"
 
 						parallel (
@@ -274,9 +281,9 @@ timestamps
 				// Run tests on provisioned SUT
 				node ("$session_id && dependencies")
 				{
-					timeout(time: 3, unit: 'MINUTES')
+					stage ('Unstash Tests Artifacts')
 					{
-						stage ('Unstash Tests Artifacts')
+						timeout(time: 3, unit: 'MINUTES')
 						{
 							unstash 'testdlls'
 							unstash 'dynamicallyLoadedDLLs'
@@ -479,12 +486,12 @@ def shouldRunSonar(Boolean enableSonarAnalysis, String branchName)
 
 def configureNunitTests()
 {
-	def userNamePassword = usernamePassword(
+	def credentials = usernamePassword(
 		credentialsId: 'eddsdbo', 
 		passwordVariable: 'eddsdboPassword', 
 		usernameVariable: 'eddsdboUsername'
 	)
-	withCredentials([userNamePassword])
+	withCredentials([credentials])
 	{
 		def configuration_command = """python -m jeeves.create_config -t nunit -n "app.jeeves-ci" --dbuser "${eddsdboUsername}" --dbpass "${eddsdboPassword}" -s "${sut.name}.${sut.domain}" -db "${sut.name}\\EDDSINSTANCE001" -o .\\lib\\UnitTests\\"""
 		bat script: configuration_command
@@ -667,7 +674,12 @@ def tryGetBuildVersion(
 	}
 	catch (err)
 	{
-		echo "Error occured while getting build version for: '$relativityBranch' Relativity branch, version '$paramRelativityBuildVersion', and type '$paramRelativityBuildType', error: $err"
+		echo "Error occured while getting build version for: 
+		'$relativityBranch' Relativity branch, 
+		version '$paramRelativityBuildVersion', 
+		type '$paramRelativityBuildType', 
+		error: $err"
+
 		return null
 	}
 }
@@ -685,19 +697,21 @@ def isRelativityBranchPresent(branch)
 
 def getLatestVersion(branch, type)
 {
-	return powershell(returnStdout: true, script: String.format('''
-					$result = (Get-ChildItem -path "\\\\bld-pkgs\\Packages\\Relativity\\%1$s" |
-						? { (Get-ChildItem -Path $_.FullName).Name -like "BuildType_%2$s" } |
-						ForEach-Object { $_.Name } | ForEach-Object { [System.Version] $_ } | sort) | Select-Object -Last 1;
-					if (!$result)
-					{
-						return ''
-					}
-					else
-					{
-						return $result.ToString()
-					}
-					''', branch, type)).trim()
+	def command = '''
+		$result = (Get-ChildItem -path "\\\\bld-pkgs\\Packages\\Relativity\\%1$s" |
+			? { (Get-ChildItem -Path $_.FullName).Name -like "BuildType_%2$s" } |
+			ForEach-Object { $_.Name } | ForEach-Object { [System.Version] $_ } | sort) | Select-Object -Last 1;
+		if (!$result)
+		{
+			return ''
+		}
+		else
+		{
+			return $result.ToString()
+		}
+	'''
+
+	return powershell(returnStdout: true, script: String.format(command, branch, type)).trim()
 }
 
 def checkRelativityArtifacts(branch, version, type)
