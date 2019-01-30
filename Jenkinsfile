@@ -27,17 +27,29 @@ properties([
 enum TestType {
     integration,
     ui,
-    quarantine
+    integrationInQuarantine
 }
 
 // This repo's package name for purposes of versioning & publishing
 final String PACKAGE_NAME = 'IntegrationPoints'
-
 final String NIGHTLY_JOB_NAME = "IntegrationPointsNightly"
-
 final String ARTIFACTS_PATH = 'Artifacts'
-
 final String INTEGRATION_TESTS_RESULTS_REPORT_PATH = "$ARTIFACTS_PATH/IntegrationTestsResults.xml"
+final String QUARANTINED_TESTS_CATEGORY = 'InQuarantine'
+
+@Field
+def testStageName = [
+	TestType.integration: "Integration Tests",
+	TestType.ui: "UI Tests",
+	TestType.integrationInQuarantine: "Integration Tests in Quarantine"
+]
+
+@Field
+def testCmdOptions = [
+	TestType.integration: "-in",
+	TestType.ui: "-ui",
+	TestType.integrationInQuarantine: "-qu -in"
+]
 
 @Field
 def sut = null
@@ -106,7 +118,7 @@ timestamps
 			}
 			stage ('Build')
 			{
-				def sonarParameter = shouldRunSonar(params.enableSonarAnalysis, env.BRANCH_NAME, NIGHTLY_JOB_NAME)
+				def sonarParameter = shouldRunSonar(params.enableSonarAnalysis, env.BRANCH_NAME)
 				powershell "./build.ps1 $sonarParameter $commonBuildArgs"
 				archiveArtifacts artifacts: "DevelopmentScripts/*.html", fingerprint: true
 			}
@@ -246,19 +258,16 @@ timestamps
 						{
 							timeout(time: 180, unit: 'MINUTES')
 							{
-								runTestsAndSetBuildResult(params.skipIntegrationTests, "-in", "Integration", nightlyJobName)
+								runIntegrationTests()
 							}
 						}
-						//if(isNightly(nightlyJobName)) //commented out temporarly for testing purposes
+						//if(isNightly()) //commented out temporarly for testing purposes
 						//{
 						stage ('Integration Tests in Quarantine')
 						{
 							timeout(time: 180, unit: 'MINUTES')
 							{
-								if(!params.skipIntegrationTests)
-								{
-									runTests("-in", "Quarantined Integration", nightlyJobName)
-								}
+								runIntegrationTestsInQuarantine()
 							}
 						}
 						//}
@@ -266,13 +275,13 @@ timestamps
 						{
 							timeout(time: 8, unit: 'HOURS')
 							{
-								runTestsAndSetBuildResult(params.skipUITests, "-ui", "UI", nightlyJobName)
+								runUiTests()
 							}
 						}
 					}
 					catch(err)
 					{
-						echo err.toString() + ", " + $err.getStacktrace()
+						echo "${err.toString()}, ${err.getStacktrace()}"
 						currentBuild.result = "FAILED"
 					}
 					finally
@@ -422,9 +431,9 @@ timestamps
 	}
 }
 
-def shouldRunSonar(Boolean enableSonarAnalysis, String branchName, String nightlyJobName)
+def shouldRunSonar(Boolean enableSonarAnalysis, String branchName)
 {
-	return (enableSonarAnalysis && branchName == "develop" && !isNightly(nightlyJobName))
+	return (enableSonarAnalysis && branchName == "develop" && !isNightly())
 						? "-sonarqube"
 						: ""
 }
@@ -438,19 +447,14 @@ def configureNunitTests()
 	}
 }
 
-def isNightly(String nightlyJobName)
+def isNightly()
 {
-	return env.JOB_NAME.contains(nightlyJobName)
+	return env.JOB_NAME.contains(NIGHTLY_JOB_NAME)
 }
 
-def isQuarantinedStage(String testStageName)
+def getSlackChannelName()
 {
-	return testStageName == "Quarantined Integration"
-}
-
-def getSlackChannelName(String nightlyJobName)
-{
-	if (isNightly(nightlyJobName) && env.BRANCH_NAME == "develop")
+	if (isNightly() && env.BRANCH_NAME == "develop")
 	{
 		return "#cd_rip_nightly"
 	}
@@ -460,19 +464,14 @@ def getSlackChannelName(String nightlyJobName)
 	}
 }
 
-def getQuarantinedTestCategory()
-{
-	return "InQuarantine"
-}
-
 def exceptQuarantinedTestFilter()
 {
-	return "cat!=${getQuarantinedTestCategory()}"
+	return "cat!=$QUARANTINED_TESTS_CATEGORY"
 }
 
 def andQuarantinedTestFilter()
 {
-	return "cat==${getQuarantinedTestCategory()}"
+	return "cat==$QUARANTINED_TESTS_CATEGORY"
 }
 
 def unionTestFilters(String testFilter, String andTestFilter)
@@ -484,11 +483,11 @@ def unionTestFilters(String testFilter, String andTestFilter)
 	return "${testFilter} && ${andTestFilter}"
 }
 
-def getTestsFilter(String testStageName, String nightlyJobName)
+def getTestsFilter(TestType testType)
 {
-	if(isNightly(nightlyJobName))
+	if(isNightly())
 	{
-		if(isQuarantinedStage(testStageName))
+		if(testType == TestType.integrationInQuarantine)
 		{
 			return unionTestFilters(params.nightlyTestsFilter, andQuarantinedTestFilter())
 		}
@@ -498,59 +497,49 @@ def getTestsFilter(String testStageName, String nightlyJobName)
 	return unionTestFilters(params.testsFilter, exceptQuarantinedTestFilter())
 }
 
-def runTestsAndSetBuildResult(Boolean skipTests, String cmdOption, String testStageName, String nightlyJobName)
+def runIntegrationTests()
 {
-    runTests(NIGHTLY_JOB_NAME, TestType.integration, params.skipIntegrationTests)
+    runTestsAndSetBuildResult(TestType.integration, params.skipIntegrationTests)
 }
 
-def runUITests()
+def runUiTests()
 {
-    runTests(NIGHTLY_JOB_NAME, TestType.ui, params.skipUITests)
+    runTestsAndSetBuildResult(TestType.ui, params.skipUITests)
 }
 
-def runQuarantineTests()
+def runIntegrationTestsInQuarantine()
 {
-    runTests(NIGHTLY_JOB_NAME, TestType.quarantine, params.skipIntegrationTests)
+	if(params.skipIntegrationTests)
+	{
+		return
+	}
+    runTests(TestType.integrationInQuarantine, params.skipIntegrationTests)
 }
 
-def getCmdOption(TestType testType)
-{
-    if (testType == TestType.integration)
-    {
-        return "-in"
-    }
-    else if (testType == TestType.quarantine)
-    {
-        return "-qu -in"
-    }
+def runTestsAndSetBuildResult(TestType testType, Boolean skipTests) 
+{ 
+	def stageName = testStageName[testType]
+    if (!skipTests)  
+    { 
+        def result = runTests(testType) 
+        if (result != 0) 
+        { 
+            error "$stageName FAILED with status: $result" 
+        } 
+        echo "$stageName OK" 
+    } 
     else 
-    {
-        return "-ui"
-    }​​​​​
+    { 
+        echo "$stageName are going to be skipped." 
+    } 
 }
 
-def runTests(String nightlyJobName, TestType testType, Boolean skipTest)
-{
-    if (!skipTests) 
-    {
-        def result = runTests(cmdOption, testStageName, nightlyJobName)
-        if (result != 0)
-        {
-            error "$testStageName Tests FAILED with status: $result"
-        }
-        echo "$testStageName Tests OK"
-    }
-    else
-    {
-        echo "$testStageName Tests are going to be skipped."
-    }
-}
-
-def runTests(String cmdOption, String testStageName, String nightlyJobName)
+def runTests(TestType testType)
 {
 	configureNunitTests()
-    def currentFilter = getTestsFilter(testStageName, nightlyJobName)
-    def result = powershell returnStatus: true, script: "./build.ps1 -ci -sk $cmdOption \"\"\"$currentFilter\"\"\""
+	def cmdOptions = testCmdOptions[testType]
+    def currentFilter = getTestsFilter(testType)
+    def result = powershell returnStatus: true, script: "./build.ps1 -ci -sk $cmdOptions \"\"\"$currentFilter\"\"\""
 	return result
 }
 
@@ -587,7 +576,12 @@ def testingVMsAreRequired()
 	return !params.skipIntegrationTests || !params.skipUITests
 }
 
-def getNewBranchAndVersion(String relativityBranchFallback, String relativityBranch, String paramRelativityBuildVersion, String paramRelativityBuildType, String sessionId)
+def getNewBranchAndVersion(
+	String relativityBranchFallback, 
+	String relativityBranch, 
+	String paramRelativityBuildVersion, 
+	String paramRelativityBuildType, 
+	String sessionId)
 {
 	def firstFallbackBranch = relativityBranchFallback // we should change first fallback branch on RIP release branches
 	def GOLD_BUILD_TYPE = "GOLD"
@@ -611,7 +605,11 @@ def getNewBranchAndVersion(String relativityBranchFallback, String relativityBra
 	error 'Failed to retrieve Relativity branch/version'
 }
 
-def tryGetBuildVersion(String relativityBranch, String paramRelativityBuildVersion, String paramRelativityBuildType, String sessionId)
+def tryGetBuildVersion(
+	String relativityBranch, 
+	String paramRelativityBuildVersion, 
+	String paramRelativityBuildType, 
+	String sessionId)
 {
 	try
 	{
