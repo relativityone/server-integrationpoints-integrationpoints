@@ -1,5 +1,4 @@
-﻿using System;
-using kCura.Relativity.Client;
+﻿using kCura.Relativity.Client;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -7,9 +6,13 @@ namespace kCura.IntegrationPoint.Tests.Core
 	{
 		public static IRSAPIClient CreateRsapiClient()
 		{
-			Uri relativityServicesUri = new Uri(SharedVariables.RsapiClientUri);
-			IRSAPIClient client = new RSAPIClient(relativityServicesUri, new UsernamePasswordCredentials(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword));
-			return client;
+			return new RSAPIClient(
+				SharedVariables.RsapiUri,
+				new UsernamePasswordCredentials(
+					SharedVariables.RelativityUserName,
+					SharedVariables.RelativityPassword
+				)
+			);
 		}
 	}
 }

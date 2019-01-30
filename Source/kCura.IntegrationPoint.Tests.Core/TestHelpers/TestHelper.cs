@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			_serviceManager.CreateProxy<IObjectManager>(ExecutionIdentity.CurrentUser).Returns(_ => CreateUserProxy<IObjectManager>());
 			_serviceManager.CreateProxy<IResourceServerManager>(ExecutionIdentity.CurrentUser).Returns(_ => CreateUserProxy<IResourceServerManager>());
 			_serviceManager.CreateProxy<IResourceServerManager>(ExecutionIdentity.System).Returns(_ => CreateAdminProxy<IResourceServerManager>());
-			_serviceManager.GetServicesURL().Returns(SharedVariables.RestClientServiceUri);
+			_serviceManager.GetServicesURL().Returns(SharedVariables.RelativityRestUri);
 		}
 
 		public T CreateUserProxy<T>() where T : IDisposable
@@ -74,7 +74,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 		public T CreateAdminProxy<T>() where T : IDisposable
 		{
 			var credential = new global::Relativity.Services.ServiceProxy.UsernamePasswordCredentials(RelativityUserName, RelativityPassword);
-			ServiceFactorySettings settings = new ServiceFactorySettings(SharedVariables.RsapiClientServiceUri, SharedVariables.RestClientServiceUri, credential);
+			ServiceFactorySettings settings = new ServiceFactorySettings(SharedVariables.RsapiUri, SharedVariables.RelativityRestUri, credential);
 			ServiceFactory adminServiceFactory = new ServiceFactory(settings);
 			return adminServiceFactory.CreateProxy<T>();
 		}
@@ -82,7 +82,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 		public T CreateUserProxy<T>(string username) where T : IDisposable
 		{
 			var userCredential = new global::Relativity.Services.ServiceProxy.UsernamePasswordCredentials(username, RelativityPassword);
-			ServiceFactorySettings userSettings = new ServiceFactorySettings(SharedVariables.RsapiClientServiceUri, SharedVariables.RestClientServiceUri, userCredential);
+			ServiceFactorySettings userSettings = new ServiceFactorySettings(SharedVariables.RsapiUri, SharedVariables.RelativityRestUri, userCredential);
 			ServiceFactory userServiceFactory = new ServiceFactory(userSettings);
 			return userServiceFactory.CreateProxy<T>();
 		}

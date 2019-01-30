@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.Permissions
 
 			if (UserModel != null)
 			{
-				User.DeleteUser(UserModel.ArtifactId);
+				User.DeleteUser(UserModel.ArtifactID);
 			}
 		}
 	}
