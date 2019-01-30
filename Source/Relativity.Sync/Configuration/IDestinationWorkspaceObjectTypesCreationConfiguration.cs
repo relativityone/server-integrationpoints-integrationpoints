@@ -4,11 +4,11 @@
 	{
 		bool IsSourceWorkspaceArtifactTypeIdSet { get; }
 
-		int SourceWorkspaceArtifactTypeId { get; set; }
+		void SetSourceWorkspaceArtifactTypeId(int artifactTypeId);
 
 		bool IsSourceJobArtifactTypeIdSet { get; }
 
-		int SourceJobArtifactTypeId { get; set; }
+		void SetSourceJobArtifactTypeId(int artifactTypeId);
 
 		int DestinationWorkspaceArtifactId { get; }
 	}

@@ -31,9 +31,17 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 		public bool IsTagArtifactIdSet { get; set; }
 		public int TagArtifactId { get; set; }
 		public bool IsSourceWorkspaceArtifactTypeIdSet { get; set; }
-		public int SourceWorkspaceArtifactTypeId { get; set; }
+
+		public void SetSourceWorkspaceArtifactTypeId(int artifactTypeId)
+		{
+		}
+
 		public bool IsSourceJobArtifactTypeIdSet { get; set; }
-		public int SourceJobArtifactTypeId { get; set; }
+
+		public void SetSourceJobArtifactTypeId(int artifactTypeId)
+		{
+		}
+
 		public int DestinationWorkspaceArtifactId { get; set; }
 	}
 }
