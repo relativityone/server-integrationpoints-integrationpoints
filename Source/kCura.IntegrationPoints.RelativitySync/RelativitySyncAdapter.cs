@@ -3,9 +3,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using Castle.Windsor;
+using kCura.IntegrationPoints.RelativitySync.Adapters;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
 using Relativity.Sync;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.Telemetry;
 using Relativity.Telemetry.APM;
 
@@ -156,6 +158,9 @@ namespace kCura.IntegrationPoints.RelativitySync
 			var containerBuilder = new ContainerBuilder();
 			containerBuilder.RegisterInstance(SyncConfigurationFactory.Create(_job, _ripContainer, _logger)).AsImplementedInterfaces().SingleInstance();
 			containerBuilder.RegisterInstance(metrics).As<ISyncMetrics>().SingleInstance();
+			containerBuilder.RegisterInstance(new Validator(_ripContainer, _job, new ValidationExecutorFactory(_ripContainer), _logger))
+				.As<IExecutor<IValidationConfiguration>>()
+				.As<IExecutionConstrains<IValidationConfiguration>>();
 			IContainer container = containerBuilder.Build();
 			return container;
 		}

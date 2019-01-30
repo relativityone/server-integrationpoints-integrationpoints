@@ -106,7 +106,7 @@ namespace kCura.IntegrationPoints.Agent
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, "Getting Integration Point operation failed.");
+				_logger.LogError(ex, "Failed to retrieve Integration Point with id: {integrationPointId}", integrationPointId);
 				throw;
 			}
 		}

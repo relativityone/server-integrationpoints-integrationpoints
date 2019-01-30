@@ -2,6 +2,7 @@ Castle.Windsor
 kCura.Apps.Common.Utils
 Relativity.API
 Relativity.Services.Interfaces
+Relativity.Sync
 kCura.Relativity.Client
 Polly
 
