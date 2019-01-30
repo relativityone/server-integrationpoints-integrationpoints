@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using kCura.IntegrationPoint.Tests.Core;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers
 {
@@ -24,6 +25,35 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
                 var fileFirstLine = reader.ReadLine();
                 return fileFirstLine != null && fileFirstLine.StartsWith(firstLineStartsWith);
             }
+        }
+
+        public static bool AreColumnsInFileOrdered(IEnumerable<string> columns, FileInfo file)
+        {
+	        string fileFirstLine;
+            using (var reader = new StreamReader(file.FullName))
+            {
+				fileFirstLine = reader.ReadLine();
+            }
+
+	        char quote = fileFirstLine[0];
+	        IEnumerable<int> indexes = columns.Select(col => fileFirstLine.IndexOf($"{quote}{col}{quote}"));
+	        bool anyColumnIsMissing = indexes.Any(x => x == -1);
+			if (anyColumnIsMissing)
+	        {
+				throw new TestException("Some column is not present in a header of the load file!");
+	        }
+	        bool columnsAreSorted = indexes
+		        .Zip(indexes.Skip(1), (i1, i2) => i1 < i2)
+		        .All(inOrder => inOrder);
+
+	        if (!columnsAreSorted)
+	        {
+		        string msg =
+			        $"Headers line ({fileFirstLine}), contains columns in the wrong order!\n Should be: {string.Join(" ", columns)}";
+				throw new TestException(msg);
+	        }
+
+	        return columnsAreSorted;
         }
 
         public static string GetContent(FileInfo file)

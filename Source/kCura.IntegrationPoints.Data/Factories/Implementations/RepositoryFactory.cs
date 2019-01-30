@@ -9,9 +9,14 @@ using Relativity.Data;
 using System;
 using System.Security.Claims;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
+using Relativity.API.Foundation.Repositories;
 using Relativity.Services.ResourceServer;
 using ArtifactType = Relativity.ArtifactType;
 using Context = kCura.Data.RowDataGateway.Context;
+using IAuditRepository = kCura.IntegrationPoints.Data.Repositories.IAuditRepository;
+using IErrorRepository = kCura.IntegrationPoints.Data.Repositories.IErrorRepository;
+using IFieldRepository = kCura.IntegrationPoints.Data.Repositories.IFieldRepository;
+using IObjectRepository = kCura.IntegrationPoints.Data.Repositories.IObjectRepository;
 using QueryFieldLookup = Relativity.Data.QueryFieldLookup;
 
 namespace kCura.IntegrationPoints.Data.Factories.Implementations
@@ -302,11 +307,11 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return fileRepository;
 		}
 
-		public IAuditRepository GetAuditRepository(int appId, int workspaceId)
+		public IAuditRepository GetAuditRepository(int workspaceArtifactId)
 		{
-			var auditServiceFactory = new AuditServiceFactory();
-			IAuditService auditService = auditServiceFactory.GetAuditService(appId, workspaceId);
-			return new AuditRepository(auditService, InstrumentationProvider);
+			var foundationRepositoryFactory = new FoundationRepositoryFactory(_sourceServiceMgr, InstrumentationProvider);
+			IExportAuditRepository exportAuditRepository = foundationRepositoryFactory.GetRepository<IExportAuditRepository>(workspaceArtifactId);
+			return new AuditRepository(exportAuditRepository, InstrumentationProvider);
 		}
 
 		#region Helper Methods

@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Relativity ODA LLC")]
 [assembly: AssemblyProduct("kCura.IntegrationPoints")]
-[assembly: AssemblyCopyright("Copyright (c) 2018, Relativity ODA LLC")]
+[assembly: AssemblyCopyright("Copyright (c) 2019, Relativity ODA LLC")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

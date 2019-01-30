@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 			_contextUserId = contextUserId;
 		}
 
-		public IAuditManager CreateAuditManager() => new CoreAuditManager(_repositoryFactory);
+		public IAuditManager CreateAuditManager() => new CoreAuditManager(_repositoryFactory, _contextUserId);
 
 		public IExportManager CreateExportManager() => new CoreExportManager(GetBaseServiceContext(_exportFile.CaseArtifactID));
 

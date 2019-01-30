@@ -49,11 +49,10 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public int CreateSavedSearch(FieldEntry[] defaultFields, FieldEntry[] additionalFields, int workspaceId, string savedSearchName)
+		public int CreateSavedSearch(FieldEntry[] fieldEntries,  int workspaceId, string savedSearchName)
 		{
-			List<FieldRef> fields = defaultFields
+			List<FieldRef> fields = fieldEntries
 				.Select(x => new FieldRef(x.DisplayName))
-				.Concat(additionalFields.Select(x => new FieldRef(x.DisplayName)))
 				.ToList();
 
 			return CreateSavedSearch(fields, workspaceId, savedSearchName);
@@ -81,11 +80,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 				Fields = fields
 			};
 			return SavedSearch.Create(workspaceId, search);
-		}
-
-		public int CreateSavedSearch(FieldEntry[] defaultFields, FieldEntry[] additionalFields, int workspaceId)
-		{
-			return CreateSavedSearch(defaultFields, additionalFields, workspaceId, _SAVED_SEARCH_NAME);
 		}
 
 		public int CreateProductionSet(int workspaceArtifactId, string productionSetName)
