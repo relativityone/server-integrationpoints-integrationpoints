@@ -6,6 +6,7 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 using SeleniumExtras.PageObjects;
 using OpenQA.Selenium.Support.UI;
+using Polly;
 
 namespace kCura.IntegrationPoints.UITests.Pages
 {
@@ -103,22 +104,20 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		public void SelectAllSourceFields()
 		{
 			const int maxRetryCount = 3;
-			int currentRetry = 0;
-			do
+			Policy.Handle<UiTestException>().Retry(maxRetryCount, (exception, retryCount) =>
 			{
 				AddAllSourceFieldElements.ClickEx();
-				currentRetry++;
-			} while (!AreAllFieldsAreMapped(SelectSourceFieldsElement) && currentRetry < maxRetryCount);
+				ValidateAllFieldsAreMapped(SelectSourceFieldsElement);
+			}
+				);
+		}
 
-			if (!AreAllFieldsAreMapped(SelectSourceFieldsElement))
+		protected void ValidateAllFieldsAreMapped(SelectElement sourceFields)
+		{
+			if (sourceFields.Options.Count != 0)
 			{
 				throw new UiTestException("All fields have not been selected!");
 			}
-		}
-
-		protected bool AreAllFieldsAreMapped(SelectElement sourceFields)
-		{
-			return sourceFields.Options.Count == 0;
 		}
 
 		public void SelectSourceField(string fieldName)
