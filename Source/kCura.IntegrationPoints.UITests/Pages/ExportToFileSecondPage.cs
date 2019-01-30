@@ -104,12 +104,14 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		public void SelectAllSourceFields()
 		{
 			const int maxRetryCount = 3;
-			Policy.Handle<UiTestException>().Retry(maxRetryCount, (exception, retryCount) =>
-			{
-				AddAllSourceFieldElements.ClickEx();
-				ValidateAllFieldsAreMapped(SelectSourceFieldsElement);
-			}
-				);
+			Policy
+				.Handle<UiTestException>()
+				.WaitAndRetry(maxRetryCount, retryInterval => DriverExtensions.DefaultRetryInterval)
+				.Execute(() =>
+				{
+					AddAllSourceFieldElements.ClickEx();
+					ValidateAllFieldsAreMapped(SelectSourceFieldsElement);
+				});
 		}
 
 		protected void ValidateAllFieldsAreMapped(SelectElement sourceFields)
