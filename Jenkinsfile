@@ -176,9 +176,10 @@ timestamps
 			{
 				powershell "./build.ps1 -sk -package -root ./BuildPackages $commonBuildArgs"
 			}
-			timeout(time: 3, unit: 'MINUTES')
+
+			stage ('Stash Tests Artifacts')
 			{
-				stage ('Stash Tests Artifacts')
+				timeout(time: 3, unit: 'MINUTES')
 				{
 					stash includes: 'lib/UnitTests/**', name: 'testdlls'
 					stash includes: 'DynamicallyLoadedDLLs/Search-Standard/*', name: 'dynamicallyLoadedDLLs'
@@ -324,7 +325,7 @@ timestamps
 					}
 					catch(err)
 					{
-						echo "${err.toString()}, ${err.getStackTrace()}"
+						echo err.toString()
 						currentBuild.result = "FAILED"
 					}
 					finally
@@ -574,7 +575,8 @@ def runTestsAndSetBuildResult(TestType testType, Boolean skipTests)
     def result = runTests(testType) 
     if (result != 0) 
     { 
-        error "$stageName FAILED with status: $result" 
+        echo "$stageName FAILED with status: $result"
+		currentBuild.result = "FAILED"
     } 
     echo "$stageName OK" 
 }
