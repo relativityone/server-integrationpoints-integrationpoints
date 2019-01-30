@@ -2,14 +2,22 @@
 {
 	internal interface IDestinationWorkspaceTagsCreationConfiguration : IConfiguration
 	{
-		//fields from RelativitySourceCase and RelativitySourceJob
+		int SourceWorkspaceArtifactId { get; }
 
-		bool IsWorkspaceTagArtifactIdSet { get; }
+		int DestinationWorkspaceArtifactId { get; }
 
-		bool IsJobTagArtifactIdSet { get; }
+		int JobArtifactId { get; }
 
-		int WorkspaceTagArtifactId { get; set; }
+		int SourceWorkspaceArtifactTypeId { get; }
 
-		int JobTagArtifactId { get; set; }
+		int SourceJobArtifactTypeId { get; }
+
+		bool IsSourceJobTagSet { get; }
+
+		void SetSourceJobTag(int artifactId, string name);
+
+		bool IsSourceWorkspaceTagSet { get; }
+
+		void SetSourceWorkspaceTag(int artifactId, string name);
 	}
 }
