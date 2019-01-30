@@ -210,6 +210,7 @@ NUGET
     Relativity.Core (10.2.22.3-DEV)
     Relativity.CustomPages (10.2.22.3-DEV)
     Relativity.Data (10.2.22.3-DEV)
+    Relativity.DataGrid (12.0.0)
     Relativity.DataTransfer.MessageService (10.2.0)
       Relativity.Kepler.Client (>= 1.0.1.445)
       Relativity.Telemetry.DataContracts.Shared (>= 9.4.159)
