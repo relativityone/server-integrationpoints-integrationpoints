@@ -11,4 +11,9 @@
     <copyright>© Relativity</copyright>
     <tags>Relativity IntegrationPoints Web</tags>  
   </metadata>
+  <files>
+    <file src="..\..\Source\Dependencies\ProviderIncludes\frame-messaging.js" target="content\scripts\" />
+    <file src="..\..\Source\Dependencies\ProviderIncludes\jquery-3.3.1.js" target="content\scripts\" />
+    <file src="..\..\Source\Dependencies\ProviderIncludes\jquery-postMessage.js" target="content\scripts\" />
+  </files>
 </package>
