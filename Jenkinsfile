@@ -11,16 +11,55 @@ library 'SlackHelpers@3.0.0'
 import groovy.transform.Field
 
 properties([
-	[$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '30', artifactNumToKeepStr: '', daysToKeepStr: '30', numToKeepStr: '']],
+	[$class: 'BuildDiscarderProperty', strategy: [
+			$class: 'LogRotator', 
+			artifactDaysToKeepStr: '30',
+			artifactNumToKeepStr: '', 
+			daysToKeepStr: '30', 
+			numToKeepStr: ''
+		]
+	],
 	parameters([
-		string(defaultValue: '', description: 'Set Relativity branch', name: 'relativityBranch'),
-		string(defaultValue: 'DEV', description: 'Set Relativity build type (DEV, GOLD, etc.)', name: 'relativityBuildType'),
-		string(defaultValue: '', description: 'Set Relativity version on which RIP will be tested. Leave blank to set the latest version.', name: 'relativityBuildVersion'),
-		booleanParam(defaultValue: false, description: 'Check if you want to skip Integrations Tests stage.', name: 'skipIntegrationTests'),
-		booleanParam(defaultValue: true, description: 'Check if you want to skip UI Tests stage.', name: 'skipUITests'),
-		string(defaultValue: 'cat==SmokeTest', description: 'Set filter for integration and UI tests', name: 'testsFilter'),
-		string(defaultValue: '', description: 'Set filter for nightly integration and UI tests', name: 'nightlyTestsFilter'),
-		booleanParam(defaultValue: true, description: 'Enable SonarQube analysis for develop branch.', name: 'enableSonarAnalysis')
+		string(
+			name: 'relativityBranch', 
+			defaultValue: '', 
+			description: 'Set Relativity branch'
+		),
+		string(
+			name: 'relativityBuildType', 
+			defaultValue: 'DEV', 
+			description: 'Set Relativity build type (DEV, GOLD, etc.)'
+		),
+		string(
+			name: 'relativityBuildVersion', 
+			defaultValue: '', 
+			description: 'Set Relativity version on which RIP will be tested. Leave blank to set the latest version.'
+		),
+		booleanParam(
+			name: 'skipIntegrationTests', 
+			defaultValue: false, 
+			description: 'Check if you want to skip Integrations Tests stage.'
+		),
+		booleanParam(
+			name: 'skipUITests', 
+			defaultValue: true, 
+			description: 'Check if you want to skip UI Tests stage.'
+		),
+		string(
+			name: 'testsFilter', 
+			defaultValue: 'cat==SmokeTest', 
+			description: 'Set filter for integration and UI tests'
+		),
+		string(
+			name: 'nightlyTestsFilter', 
+			defaultValue: '', 
+			description: 'Set filter for nightly integration and UI tests'
+		),
+		booleanParam(
+			name: 'enableSonarAnalysis', 
+			defaultValue: true, 
+			description: 'Enable SonarQube analysis for develop branch.'
+		)
 	])
 ])
 
@@ -434,13 +473,18 @@ timestamps
 def shouldRunSonar(Boolean enableSonarAnalysis, String branchName)
 {
 	return (enableSonarAnalysis && branchName == "develop" && !isNightly())
-						? "-sonarqube"
-						: ""
+			? "-sonarqube"
+			: ""
 }
 
 def configureNunitTests()
 {
-	withCredentials([usernamePassword(credentialsId: 'eddsdbo', passwordVariable: 'eddsdboPassword', usernameVariable: 'eddsdboUsername')])
+	def userNamePassword = usernamePassword(
+		credentialsId: 'eddsdbo', 
+		passwordVariable: 'eddsdboPassword', 
+		usernameVariable: 'eddsdboUsername'
+	)
+	withCredentials([userNamePassword])
 	{
 		def configuration_command = """python -m jeeves.create_config -t nunit -n "app.jeeves-ci" --dbuser "${eddsdboUsername}" --dbpass "${eddsdboPassword}" -s "${sut.name}.${sut.domain}" -db "${sut.name}\\EDDSINSTANCE001" -o .\\lib\\UnitTests\\"""
 		bat script: configuration_command
@@ -458,10 +502,7 @@ def getSlackChannelName()
 	{
 		return "#cd_rip_nightly"
 	}
-	else
-	{
-		return "#cd_rip_${env.BRANCH_NAME}"
-	}
+	return "#cd_rip_${env.BRANCH_NAME}"
 }
 
 def exceptQuarantinedTestFilter()
@@ -485,16 +526,16 @@ def unionTestFilters(String testFilter, String andTestFilter)
 
 def getTestsFilter(TestType testType)
 {
-	if(isNightly())
+	if(!isNightly())
 	{
-		if(testType == TestType.integrationInQuarantine)
-		{
-			return unionTestFilters(params.nightlyTestsFilter, andQuarantinedTestFilter())
-		}
-		return unionTestFilters(params.nightlyTestsFilter, exceptQuarantinedTestFilter())
+		return unionTestFilters(params.testsFilter, exceptQuarantinedTestFilter())
 	}
-
-	return unionTestFilters(params.testsFilter, exceptQuarantinedTestFilter())
+	
+	if(testType == TestType.integrationInQuarantine)
+	{
+		return unionTestFilters(params.nightlyTestsFilter, andQuarantinedTestFilter())
+	}
+	return unionTestFilters(params.nightlyTestsFilter, exceptQuarantinedTestFilter())
 }
 
 def runIntegrationTests()
@@ -513,25 +554,25 @@ def runIntegrationTestsInQuarantine()
 	{
 		return
 	}
-    runTests(TestType.integrationInQuarantine, params.skipIntegrationTests)
+    runTests(TestType.integrationInQuarantine)
 }
 
 def runTestsAndSetBuildResult(TestType testType, Boolean skipTests) 
 { 
 	def stageName = testStageName[testType]
-    if (!skipTests)  
+
+    if (skipTests)
+	{
+		echo "$stageName are going to be skipped."
+		return
+	}
+
+    def result = runTests(testType) 
+    if (result != 0) 
     { 
-        def result = runTests(testType) 
-        if (result != 0) 
-        { 
-            error "$stageName FAILED with status: $result" 
-        } 
-        echo "$stageName OK" 
+        error "$stageName FAILED with status: $result" 
     } 
-    else 
-    { 
-        echo "$stageName are going to be skipped." 
-    } 
+    echo "$stageName OK" 
 }
 
 def runTests(TestType testType)
@@ -543,7 +584,7 @@ def runTests(TestType testType)
 	return result
 }
 
-def getTestsStatistic(String filePath, String prop)
+def getTestsStatistic(String prop)
 {
 	try
 	{
@@ -552,17 +593,12 @@ def getTestsStatistic(String filePath, String prop)
 			+ INTEGRATION_TESTS_RESULTS_REPORT_PATH  
 			+ '''; $testResults.'test-run'.'''
 			+ "'$prop'")
+
 		echo "getTestsStatistic cmd: $cmd"
 		def stdout = powershell returnStdout: true, script: cmd
 		echo "getTestsStatistic result: $stdout"
-		if (stdout)
-		{
-			return stdout
-		}
-		else
-		{
-			return -1
-		}
+
+		return stdout ?: -1
 	}
 	catch(err)
 	{
@@ -586,7 +622,12 @@ def getNewBranchAndVersion(
 	def firstFallbackBranch = relativityBranchFallback // we should change first fallback branch on RIP release branches
 	def GOLD_BUILD_TYPE = "GOLD"
 	def DEV_BUILD_TYPE = "DEV"
-	def relativityBranchesToTry = [[relativityBranch, paramRelativityBuildType], [firstFallbackBranch, DEV_BUILD_TYPE], [firstFallbackBranch, GOLD_BUILD_TYPE], ["master", GOLD_BUILD_TYPE]]
+	def relativityBranchesToTry = [
+		[relativityBranch, paramRelativityBuildType], 
+		[firstFallbackBranch, DEV_BUILD_TYPE], 
+		[firstFallbackBranch, GOLD_BUILD_TYPE], 
+		["master", GOLD_BUILD_TYPE]
+	]
 
 	for (branchAndType in relativityBranchesToTry)
 	{
@@ -633,12 +674,13 @@ def tryGetBuildVersion(
 
 def isTrue(s)
 {
-	s.trim() == "True"
+	return s.trim() == "True"
 }
 
 def isRelativityBranchPresent(branch)
 {
-	return isTrue(powershell(returnStdout: true, script: "([System.IO.DirectoryInfo]\"//bld-pkgs/Packages/Relativity/$branch\").Exists"))
+	def command = "([System.IO.DirectoryInfo]\"//bld-pkgs/Packages/Relativity/$branch\").Exists"
+	return isTrue(powershell(returnStdout: true, script: command))
 }
 
 def getLatestVersion(branch, type)
@@ -660,5 +702,7 @@ def getLatestVersion(branch, type)
 
 def checkRelativityArtifacts(branch, version, type)
 {
-	return isTrue(powershell(returnStdout: true, script: "([System.IO.FileInfo]\"//bld-pkgs/Packages/Relativity/$branch/$version/MasterPackage/$type $version Relativity.exe\").Exists"))
+	def command = "([System.IO.FileInfo]\"//bld-pkgs/Packages/Relativity/$branch/$version/MasterPackage/$type $version Relativity.exe\").Exists"
+	def result = powershell(returnStdout: true, script: command)
+	return isTrue(result)
 }
