@@ -28,9 +28,11 @@ namespace kCura.IntegrationPoints.UITests.Tests
 
 	public abstract class UiTest
 	{
+		private RemoteWebDriver _driver;
+
 		private readonly bool _shouldLoginToRelativity;
 
-		private readonly Lazy<ITestHelper> _help;
+		private readonly Lazy<ITestHelper> _testHelperLazy;
 
 		protected static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(UiTest));
 
@@ -38,19 +40,33 @@ namespace kCura.IntegrationPoints.UITests.Tests
 
 		public static string Now => DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
 
-		public ITestHelper Helper => _help.Value;
+		public ITestHelper Helper => _testHelperLazy.Value;
 
 		protected TestConfiguration Configuration { get; set; }
 
 		protected TestContext Context { get; set; }
 
 		/// <summary>
-		/// Value is assigned before during SetUp phase, before each test is executed.
+		/// Value is assigned during SetUp phase, before each test is executed.
 		/// Property should not be accessed before SetUp phase of test.
 		/// </summary>
-		protected RemoteWebDriver Driver { get; set; }
+		protected RemoteWebDriver Driver
+		{
+			get
+			{
+				if (_driver == null)
+				{
+					throw new TestException("Driver should not be accessed before SetUp phase.");
+				}
+				return _driver;
+			}
+			private set
+			{
+				_driver = value;
+			}
+		}
 
-		protected UiTest() : this(true)
+		protected UiTest() : this(shouldLoginToRelativity: true)
 		{
 		}
 
@@ -58,7 +74,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		{
 			_shouldLoginToRelativity = shouldLoginToRelativity;
 			Container = new WindsorContainer();
-			_help = new Lazy<ITestHelper>(() => new TestHelper());
+			_testHelperLazy = new Lazy<ITestHelper>(() => new TestHelper());
 		}
 
 		[OneTimeSetUp]
