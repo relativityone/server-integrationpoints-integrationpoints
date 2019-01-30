@@ -106,7 +106,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			const int maxRetryCount = 3;
 			Policy
 				.Handle<UiTestException>()
-				.WaitAndRetry(maxRetryCount, retryInterval => DriverExtensions.DefaultRetryInterval)
+				.WaitAndRetry(maxRetryCount, retryAttempt => DriverExtensions.DefaultRetryInterval)
 				.Execute(() =>
 				{
 					AddAllSourceFieldElements.ClickEx();
