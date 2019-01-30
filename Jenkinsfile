@@ -201,10 +201,7 @@ timestamps
 				{
 					timeout(time: 90, unit: 'MINUTES')
 					{
-						echo "Getting server from pool, 
-						session_id: $session_id, 
-						Relativity build type: $params.relativityBuildType, 
-						event hash: $event_hash"
+						echo "Getting server from pool, session_id: $session_id, Relativity build type: $params.relativityBuildType, event hash: $event_hash"
 
 						sut = ScvmmInstance.getServerFromPool()
 
@@ -674,12 +671,7 @@ def tryGetBuildVersion(
 	}
 	catch (err)
 	{
-		echo "Error occured while getting build version for: 
-		'$relativityBranch' Relativity branch, 
-		version '$paramRelativityBuildVersion', 
-		type '$paramRelativityBuildType', 
-		error: $err"
-
+		echo "Error occured while getting build version for: '$relativityBranch' Relativity branch, version '$paramRelativityBuildVersion', type '$paramRelativityBuildType', error: $err"
 		return null
 	}
 }
