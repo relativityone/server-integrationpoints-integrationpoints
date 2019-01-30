@@ -39,16 +39,16 @@ final String QUARANTINED_TESTS_CATEGORY = 'InQuarantine'
 
 @Field
 def testStageName = [
-	TestType.integration: "Integration Tests",
-	TestType.ui: "UI Tests",
-	TestType.integrationInQuarantine: "Integration Tests in Quarantine"
+	(TestType.integration) : "Integration Tests",
+	(TestType.ui) : "UI Tests",
+	(TestType.integrationInQuarantine) : "Integration Tests in Quarantine"
 ]
 
 @Field
 def testCmdOptions = [
-	TestType.integration: "-in",
-	TestType.ui: "-ui",
-	TestType.integrationInQuarantine: "-qu -in"
+	(TestType.integration) : "-in",
+	(TestType.ui) : "-ui",
+	(TestType.integrationInQuarantine) : "-qu -in"
 ]
 
 @Field
