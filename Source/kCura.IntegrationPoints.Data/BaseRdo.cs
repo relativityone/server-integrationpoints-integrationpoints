@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.Data
 			return this.FieldMetadata.Single(x => x.Value.FieldGuid == fieldGuid).Value.FieldName;
 		}
 
-		public virtual void SetField<T>(Guid fieldName, T fieldValue, Boolean markAsUpdated = true)
+		public virtual void SetField<T>(Guid fieldName, T fieldValue, bool markAsUpdated = true)
 		{
 			object value = ConvertValue(FieldMetadata[fieldName].Type, fieldValue);
 			if (!Rdo.Fields.Any(x => x.Guids.Contains(fieldName)))

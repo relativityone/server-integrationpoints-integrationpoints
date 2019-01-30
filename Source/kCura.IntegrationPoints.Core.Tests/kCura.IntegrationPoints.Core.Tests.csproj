@@ -74,6 +74,7 @@
     <Compile Include="Monitoring\Instrumentation\ExternalServiceInstrumentationTests.cs" />
     <Compile Include="Monitoring\Instrumentation\ExternalServiceSimpleInstrumentationTests.cs" />
     <Compile Include="Monitoring\MessageSink\ExternalCalls\ExternalCallsSinkTests.cs" />
+    <Compile Include="QueryOptions\JobHistoryQueryOptionsTests.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceJobRdoInitializerTests.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceRdoDocumentFieldTests.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceRdoFieldsTests.cs" />
@@ -140,7 +141,7 @@
     <Compile Include="Services\Exporter\RelativityExporterServiceTests.cs" />
     <Compile Include="Services\IntegrationPointServiceTests.cs" />
     <Compile Include="Services\JobHistory\JobHistoryErrorServiceTest.cs" />
-    <Compile Include="Services\JobHistory\JobHistoryServiceTest.cs" />
+    <Compile Include="Services\JobHistory\JobHistoryServiceTests.cs" />
     <Compile Include="Tagging\TaggerTests.cs" />
     <Compile Include="Tagging\TagSavedSearchFolderTests.cs" />
     <Compile Include="Tagging\TagSavedSearchManagerTests.cs" />
@@ -290,6 +291,25 @@
       <ItemGroup>
         <Reference Include="Elasticsearch.Net">
           <HintPath>..\..\packages\Elasticsearch.Net\lib\net45\Elasticsearch.Net.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="System.Xml.Linq">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="FluentAssertions">
+          <HintPath>..\..\packages\FluentAssertions\lib\net45\FluentAssertions.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="FluentAssertions.Core">
+          <HintPath>..\..\packages\FluentAssertions\lib\net45\FluentAssertions.Core.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

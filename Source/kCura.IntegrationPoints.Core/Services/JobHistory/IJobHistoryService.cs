@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoints.Core.QueryOptions;
 
 namespace kCura.IntegrationPoints.Core.Services.JobHistory
 {
@@ -41,10 +42,23 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		Data.JobHistory GetRdo(Guid batchInstance);
 
 		/// <summary>
+		/// Retrieves job history Rdo without Documents field
+		/// </summary>
+		/// <param name="batchInstance">Batch instance Guid</param>
+		/// <returns></returns>
+		Data.JobHistory GetRdoWithoutDocuments(Guid batchInstance);
+
+		/// <summary>
 		/// Updates job history Rdo
 		/// </summary>
 		/// <param name="jobHistory">Job history Rdo</param>
 		void UpdateRdo(Data.JobHistory jobHistory);
+
+		/// <summary>
+		/// Updates job history Rdo without Documents field
+		/// </summary>
+		/// <param name="jobHistory">Job history Rdo</param>
+		void UpdateRdoWithoutDocuments(Data.JobHistory jobHistory);
 
 		/// <summary>
 		/// Deletes an instance of job history given its Artifact ID.

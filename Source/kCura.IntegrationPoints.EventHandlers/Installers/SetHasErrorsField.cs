@@ -113,7 +113,14 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			IProviderTypeService providerTypeService = new ProviderTypeService(CreateObjectManager(Helper, caseServiceContext.WorkspaceID));
 			IMessageService messageService = new MessageService();
 
-			_jobHistoryService = new JobHistoryService(caseServiceContext, federatedInstanceManager, workspaceManager, Helper, integrationPointSerializer, providerTypeService, messageService);
+			_jobHistoryService = new JobHistoryService(
+				caseServiceContext.RsapiService.RelativityObjectManager, 
+				federatedInstanceManager, 
+				workspaceManager, 
+				Helper, 
+				integrationPointSerializer, 
+				providerTypeService, 
+				messageService);
 			IContextContainerFactory contextContainerFactory = new ContextContainerFactory();
 
 			IConfigFactory configFactory = new ConfigFactory();

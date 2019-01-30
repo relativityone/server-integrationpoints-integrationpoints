@@ -46,7 +46,7 @@ set @source-rap-dir=%@packages-dir%\RAP
 set @source-bin-dir=%@packages-dir%\bin
 set @source-web-scripts=%@source-dir%\Web\Scripts
 
-set @sdk-dlls-count=13
+set @sdk-dlls-count=14
 set @sdk-dlls[0]=kCura.Apps.Common.Config.dll
 set @sdk-dlls[1]=kCura.Apps.Common.Data.dll
 set @sdk-dlls[2]=kCura.Apps.Common.Utils.dll
@@ -61,6 +61,7 @@ set @sdk-dlls[10]=kCura.IntegrationPoints.Synchronizers.RDO.dll
 set @sdk-dlls[11]=kCura.ScheduleQueue.Core.dll
 set @sdk-dlls[12]=Relativity.DataTransfer.MessageService.dll
 set @sdk-dlls[13]=SystemInterface.dll
+set @sdk-dlls[14]=kCura.IntegrationPoints.Common.dll
 
 set @sdk-web-scripts-count=2
 set @sdk-web-scripts[0]=frame-messaging.js

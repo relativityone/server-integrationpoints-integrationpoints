@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Core.QueryOptions;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
@@ -24,6 +26,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 		private IJobService _jobService;
 		private ISerializer _serializer;
 		private IAPILog _logger;
+		private IDateTimeHelper _dateTimeHelper;
 		private JobHistoryBatchUpdateStatus _instance;
 		private int _workspaceID = 100001;
 		private long _jobID = 10;
@@ -38,8 +41,15 @@ namespace kCura.IntegrationPoints.Core.Tests
 			_jobService = Substitute.For<IJobService>();
 			_serializer = Substitute.For<ISerializer>();
 			_logger = Substitute.For<IAPILog>();
+			_dateTimeHelper = Substitute.For<IDateTimeHelper>();
 
-			_instance = new JobHistoryBatchUpdateStatus(_updater, _jobHistoryService, _jobService, _serializer, _logger);
+			_instance = new JobHistoryBatchUpdateStatus(
+				_updater,
+				_jobHistoryService,
+				_jobService,
+				_serializer,
+				_logger,
+				_dateTimeHelper);
 		}
 
 		[Test]
@@ -53,7 +63,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 			_instance.OnJobStart(job);
 
 			// ASSERT
-			_jobHistoryService.DidNotReceive().UpdateRdo(Arg.Any<JobHistory>());
+			_jobHistoryService.DidNotReceive().UpdateRdoWithoutDocuments(Arg.Any<JobHistory>());
 		}
 
 		[TestCase(StopState.Unstoppable)]
@@ -62,16 +72,22 @@ namespace kCura.IntegrationPoints.Core.Tests
 		{
 			// ARRANGE
 			Job job = new JobBuilder().WithJobId(_jobID).WithWorkspaceId(_workspaceID).Build();
-			TaskParameters parameters = new TaskParameters() {BatchInstance = Guid.NewGuid()};
+			TaskParameters parameters = new TaskParameters() { BatchInstance = Guid.NewGuid() };
 			_jobService.GetJob(job.JobId).Returns(job.CopyJobWithStopState(state));
 			_serializer.Deserialize<TaskParameters>(job.JobDetails).Returns(parameters);
-			_jobHistoryService.GetRdo(parameters.BatchInstance).Returns(new JobHistory());
+			_jobHistoryService.GetRdoWithoutDocuments(parameters.BatchInstance).Returns(new JobHistory
+			{
+				ArtifactId = _jobHistoryArtifactId,
+				JobStatus = JobStatusChoices.JobHistoryPending
+			});
 
 			// ACT
 			_instance.OnJobStart(job);
 
 			// ASSERT
-			_jobHistoryService.Received(1).UpdateRdo(Arg.Is<JobHistory>(obj => obj.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryProcessing)));
+			_jobHistoryService
+				.Received(1)
+				.UpdateRdoWithoutDocuments(Arg.Is<JobHistory>(obj => obj.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryProcessing)));
 		}
 
 
@@ -79,27 +95,39 @@ namespace kCura.IntegrationPoints.Core.Tests
 		public void OnJobComplete_UpdateTheJobStatus()
 		{
 			// ARRANGE
-			Choice expectedStatus = JobStatusChoices.JobHistoryCompleted;
 			Job job = new JobBuilder().WithJobId(_jobID).WithWorkspaceId(_workspaceID).Build();
-			ArrangeJobComplete(expectedStatus, job);
+
+			Choice expectedStatus = JobStatusChoices.JobHistoryCompleted;
+			var expectedEndTimeUtc = new DateTime(2010, 10, 10, 10, 10, 10);
+
+			ArrangeJobComplete(expectedStatus, expectedEndTimeUtc, job);
 
 			// ACT
 			_instance.OnJobComplete(job);
 
 			// ASSERT
-			_jobHistoryService.Received(1).UpdateRdo(Arg.Is<JobHistory>(obj => obj.JobStatus.EqualsToChoice(expectedStatus)));
-			_logger.DidNotReceive().LogError(Arg.Any<string>(), Arg.Any<object[]>());
+			_jobHistoryService
+				.Received(1)
+				.UpdateRdoWithoutDocuments(
+					Arg.Is<JobHistory>(jh => jh.JobStatus.EqualsToChoice(expectedStatus) 
+					                         && jh.EndTimeUTC == expectedEndTimeUtc));
+			_logger
+				.DidNotReceive()
+				.LogError(Arg.Any<string>(), Arg.Any<object[]>());
 		}
 
 		[Test]
 		public void OnJobComplete_LogErrorWhenJobServiceFails()
 		{
 			// ARRANGE
-			Choice expectedStatus = JobStatusChoices.JobHistoryCompleted;
 			Job job = new JobBuilder().WithJobId(_jobID).WithWorkspaceId(_workspaceID).Build();
-			ArrangeJobComplete(expectedStatus, job);
+
+			Choice expectedStatus = JobStatusChoices.JobHistoryCompleted;
+			var expectedEndTimeUtc = new DateTime(2010, 10, 10, 10, 10, 10);
+
+			ArrangeJobComplete(expectedStatus, expectedEndTimeUtc, job);
 			InvalidOperationException exception = new InvalidOperationException(_jobHistoryServiceErrorMessage);
-			_jobHistoryService.When(x => x.UpdateRdo(Arg.Any<JobHistory>())).Do(x =>
+			_jobHistoryService.When(x => x.UpdateRdoWithoutDocuments(Arg.Any<JobHistory>())).Do(x =>
 			{
 				throw exception;
 			});
@@ -108,11 +136,35 @@ namespace kCura.IntegrationPoints.Core.Tests
 			Assert.Throws<InvalidOperationException>(() => _instance.OnJobComplete(job));
 
 			// ASSERT
-			_jobHistoryService.Received(1).UpdateRdo(Arg.Is<JobHistory>(obj => obj.JobStatus.EqualsToChoice(expectedStatus)));
-			_logger.Received(1).LogError(exception, Arg.Any<string>(), Arg.Any<object[]>());
+			_jobHistoryService
+				.Received(1)
+				.UpdateRdoWithoutDocuments(
+					Arg.Is<JobHistory>(jh => jh.JobStatus.EqualsToChoice(expectedStatus) 
+					                         && jh.EndTimeUTC == expectedEndTimeUtc));
+			_logger
+				.Received(1)
+				.LogError(exception, Arg.Any<string>(), Arg.Any<object[]>());
 		}
 
-		private void ArrangeJobComplete(Choice expectedStatus, Job job)
+		[Test]
+		public void OnJobComplete_LogErrorWhenGetHistoryFails()
+		{
+			// ARRANGE
+			Job job = new JobBuilder().WithJobId(_jobID).WithWorkspaceId(_workspaceID).Build();
+			TaskParameters parameters = new TaskParameters() { BatchInstance = Guid.NewGuid() };
+			_serializer.Deserialize<TaskParameters>(job.JobDetails).Returns(parameters);
+			_jobHistoryService.GetRdoWithoutDocuments(Arg.Any<Guid>())
+				.Returns((JobHistory)null);
+
+			// ACT
+			Assert.Throws<NullReferenceException>(() => _instance.OnJobComplete(job));
+
+			// ASSERT
+			_jobHistoryService.DidNotReceive().UpdateRdoWithoutDocuments(Arg.Any<JobHistory>());
+			_logger.Received(1).LogError(Arg.Any<NullReferenceException>(), Arg.Any<string>(), Arg.Any<object[]>());
+		}
+
+		private void ArrangeJobComplete(Choice expectedStatus, DateTime expectedEndTimeUtc, Job job)
 		{
 			JobHistory history = new JobHistory
 			{
@@ -123,25 +175,9 @@ namespace kCura.IntegrationPoints.Core.Tests
 			TaskParameters parameters = new TaskParameters() { BatchInstance = Guid.NewGuid() };
 			_jobService.GetJob(job.JobId).Returns(job.CopyJobWithStopState(StopState.None));
 			_serializer.Deserialize<TaskParameters>(job.JobDetails).Returns(parameters);
-			_jobHistoryService.GetRdo(parameters.BatchInstance).Returns(history);
+			_jobHistoryService.GetRdoWithoutDocuments(parameters.BatchInstance).Returns(history);
 			_updater.GenerateStatus(history).Returns(expectedStatus);
-		}
-
-		[Test]
-		public void OnJobComplete_LogErrorWhenGetHistoryFails()
-		{
-			// ARRANGE
-			Job job = new JobBuilder().WithJobId(_jobID).WithWorkspaceId(_workspaceID).Build();
-			TaskParameters parameters = new TaskParameters() { BatchInstance = Guid.NewGuid() };
-			_serializer.Deserialize<TaskParameters>(job.JobDetails).Returns(parameters);
-			_jobHistoryService.GetRdo(Arg.Any<Guid>()).Returns((JobHistory) null);
-
-			// ACT
-			Assert.Throws<NullReferenceException>(() => _instance.OnJobComplete(job));
-
-			// ASSERT
-			_jobHistoryService.DidNotReceive().UpdateRdo(Arg.Any<JobHistory>());
-			_logger.Received(1).LogError(Arg.Any<NullReferenceException>(), Arg.Any<string>(), Arg.Any<object[]>());
+			_dateTimeHelper.Now().Returns(expectedEndTimeUtc);
 		}
 	}
 }

@@ -1,486 +1,252 @@
-﻿using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
+﻿using System;
+using System.Threading.Tasks;
+using FluentAssertions;
 using kCura.IntegrationPoints.Data.Facades.Implementations;
-using kCura.IntegrationPoints.Domain.Exceptions;
-using NSubstitute;
-using NSubstitute.ExceptionExtensions;
+using Moq;
 using NUnit.Framework;
-using Relativity.API;
-using Relativity.Kepler.Exceptions;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using System;
-using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 {
 	[TestFixture]
 	public class ObjectManagerFacadeTests
 	{
-		private IObjectManager _objectManager;
-		private IExternalServiceInstrumentationProvider _instrumentationProvider;
-		private IExternalServiceInstrumentation _instrumentation;
-		private IExternalServiceInstrumentationStarted _startedInstrumentation;
-		private IAPILog _logger;
+		private Mock<IObjectManager> _objectManagerMock;
 		private ObjectManagerFacade _sut;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_objectManager = Substitute.For<IObjectManager>();
-			_logger = Substitute.For<IAPILog>();
-			_instrumentation = Substitute.For<IExternalServiceInstrumentation>();
-			_startedInstrumentation = Substitute.For<IExternalServiceInstrumentationStarted>();
-			_instrumentation.Started().Returns(_startedInstrumentation);
-			_instrumentationProvider = Substitute.For<IExternalServiceInstrumentationProvider>();
-			_instrumentationProvider.Create(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
-				.Returns(_instrumentation);
-			_sut = new ObjectManagerFacade(() => _objectManager, _instrumentationProvider, _logger);
+			_objectManagerMock = new Mock<IObjectManager>();
+			_sut = new ObjectManagerFacade(() => _objectManagerMock.Object);
 		}
 
 		[Test]
-		public async Task ItShouldCallStartedAndCompletedForSuccessfulCall_Create()
+		public async Task CreateAsync_ShouldReturnSameResultAsObjectManager()
 		{
-			// arrange
-			_objectManager.CreateAsync(Arg.Any<int>(), Arg.Any<CreateRequest>()).Returns(new CreateResult());
+			//arrange
+			const int workspaceId = 101;
+			var request = new CreateRequest();
+			var result = new CreateResult();
 
-			// act
-			await _sut.CreateAsync(0, null);
+			_objectManagerMock.Setup(x => x.CreateAsync(
+					It.IsAny<int>(),
+					It.IsAny<CreateRequest>()))
+				.ReturnsAsync(result);
 
-			// assert
-			_instrumentation.Received().Started();
-			_startedInstrumentation.Received().Completed();
+			//act
+			CreateResult actualResult = await _sut.CreateAsync(workspaceId, request);
+
+			//assert
+			result.Should().Be(actualResult);
 		}
 
 		[Test]
-		public async Task ItShouldCallStartedAndFailedForResultWithFailedEventHandlers_Create()
+		public async Task ReadAsync_ShouldReturnSameResultAsObjectManager()
 		{
-			// arrange
-			string failReason = "Bad request";
-			var result = new CreateResult
-			{
-				EventHandlerStatuses = { new EventHandlerStatus { Message = failReason, Success = false } }
-			};
-			_objectManager.CreateAsync(Arg.Any<int>(), Arg.Any<CreateRequest>()).Returns(result);
+			//arrange
+			const int workspaceId = 101;
+			var request = new ReadRequest();
+			var result = new ReadResult();
 
-			// act
-			await _sut.CreateAsync(0, null);
+			_objectManagerMock.Setup(x => x.ReadAsync(
+					It.IsAny<int>(),
+					It.IsAny<ReadRequest>()))
+				.ReturnsAsync(result);
 
-			// assert
-			_startedInstrumentation.Received().Failed(failReason);
+			//act
+			ReadResult actualResult = await _sut.ReadAsync(workspaceId, request);
+
+			//assert
+			result.Should().Be(actualResult);
 		}
 
 		[Test]
-		public async Task ItShouldAggregateFailReasonsFromEventHandler_Create()
+		public async Task UpdateAsync_ShouldReturnSameResultAsObjectManager()
 		{
-			// arrange
-			string failReason1 = "Bad request";
-			string failReason2 = "Internal error";
-			string expectedFailureReason = $"{failReason1};{failReason2}";
-			var result = new CreateResult
-			{
-				EventHandlerStatuses =
-				{
-					new EventHandlerStatus { Message = failReason1, Success = false },
-					new EventHandlerStatus { Message = failReason2, Success = false }
-				}
-			};
-			_objectManager.CreateAsync(Arg.Any<int>(), Arg.Any<CreateRequest>()).Returns(result);
+			//arrange
+			const int workspaceId = 101;
+			var request = new UpdateRequest();
+			var result = new UpdateResult();
 
-			// act
-			await _sut.CreateAsync(0, null);
+			_objectManagerMock.Setup(x => x.UpdateAsync(
+					It.IsAny<int>(),
+					It.IsAny<UpdateRequest>()))
+				.ReturnsAsync(result);
 
-			// assert
-			_startedInstrumentation.Received().Failed(expectedFailureReason);
+			//act
+			UpdateResult actualResult = await _sut.UpdateAsync(workspaceId, request);
+
+			//assert
+			result.Should().Be(actualResult);
 		}
 
 		[Test]
-		public async Task ItShouldCallFailedWhenExceptionIsThrown_Create()
+		public async Task QueryAsync_ShouldReturnSameResultAsObjectManager()
 		{
-			// arrange
-			var exception = new Exception();
-			_objectManager.CreateAsync(Arg.Any<int>(), Arg.Any<CreateRequest>()).Throws(exception);
+			//arrange
+			const int workspaceId = 101;
+			const int start = 0;
+			const int length = 1;
+			var request = new QueryRequest();
+			var result = new QueryResult();
 
-			// act
-			try
-			{
-				await _sut.CreateAsync(0, null);
-			}
-			catch (Exception)
-			{
-				// ignore
-			}
+			_objectManagerMock.Setup(x => x.QueryAsync(
+					It.IsAny<int>(),
+					It.IsAny<QueryRequest>(),
+					It.IsAny<int>(),
+					It.IsAny<int>()))
+				.ReturnsAsync(result);
 
-			// assert
-			_startedInstrumentation.Received().Failed(exception);
+			//act
+			QueryResult actualResult = await _sut.QueryAsync(workspaceId, request, start, length);
+
+			//assert
+			result.Should().Be(actualResult);
 		}
 
 		[Test]
-		public async Task ItShouldRethrowExceptions_Create()
+		public async Task DeleteAsync_ShouldReturnSameResultAsObjectManager()
 		{
-			// arrange
-			var exception = new Exception();
-			_objectManager.CreateAsync(Arg.Any<int>(), Arg.Any<CreateRequest>()).Throws(exception);
+			//arrange
+			const int workspaceId = 101;
+			var request = new DeleteRequest();
+			var result = new DeleteResult();
 
-			// act
-			try
-			{
-				await _sut.CreateAsync(0, null);
+			_objectManagerMock.Setup(x => x.DeleteAsync(
+					It.IsAny<int>(),
+					It.IsAny<DeleteRequest>()))
+				.ReturnsAsync(result);
 
-				// assert
-				Assert.Fail();
-			}
-			catch (Exception ex)
-			{
-				Assert.AreEqual(exception, ex);
-			}
+			//act
+			DeleteResult actualResult = await _sut.DeleteAsync(workspaceId, request);
+
+			//assert
+			result.Should().Be(actualResult);
 		}
 
 		[Test]
-		public async Task ItShouldWrapServiceNotFoundException_Create()
+		public void CreateAsync_ShouldThrowWhenObjectManagerNotInitialized()
 		{
-			// arrange
-			var exception = new ServiceNotFoundException();
-			_objectManager.CreateAsync(Arg.Any<int>(), Arg.Any<CreateRequest>()).Throws(exception);
+			//arrange
+			const int workspaceId = 101;
+			var request = new CreateRequest();
 
-			// act
-			try
-			{
-				await _sut.CreateAsync(0, null);
+			_sut = new ObjectManagerFacade(() => null);
 
-				// assert
-				Assert.Fail();
-			}
-			catch (IntegrationPointsException ex)
-			{
-				Assert.AreEqual(exception, ex.InnerException);
-			}
+			//act
+			Func<Task> action = async () => await _sut.CreateAsync(workspaceId, request);
+
+			//assert
+			action.ShouldThrow<NullReferenceException>();
 		}
 
 		[Test]
-		public async Task ItShouldCallStartedAndCompletedForSuccessfulCall_Read()
+		public void ReadAsync_ShouldThrowWhenObjectManagerNotInitialized()
 		{
-			// arrange
-			_objectManager.ReadAsync(Arg.Any<int>(), Arg.Any<ReadRequest>()).Returns(new ReadResult());
+			//arrange
+			const int workspaceId = 101;
+			var request = new ReadRequest();
 
-			// act
-			await _sut.ReadAsync(0, null);
+			_sut = new ObjectManagerFacade(() => null);
 
-			// assert
-			_instrumentation.Received().Started();
-			_startedInstrumentation.Received().Completed();
+			//act
+			Func<Task> action = async () => await _sut.ReadAsync(workspaceId, request);
+
+			//assert
+			action.ShouldThrow<NullReferenceException>();
 		}
 
 		[Test]
-		public async Task ItShouldCallFailedWhenExceptionIsThrown_Read()
+		public void UpdateAsync_ShouldThrowWhenObjectManagerNotInitialized()
 		{
-			// arrange
-			var exception = new Exception();
-			_objectManager.ReadAsync(Arg.Any<int>(), Arg.Any<ReadRequest>()).Throws(exception);
+			//arrange
+			const int workspaceId = 101;
+			var request = new UpdateRequest();
 
-			// act
-			try
-			{
-				await _sut.ReadAsync(0, null);
-			}
-			catch (Exception)
-			{
-				// ignore
-			}
+			_sut = new ObjectManagerFacade(() => null);
 
-			// assert
-			_startedInstrumentation.Received().Failed(exception);
+			//act
+			Func<Task> action = async () => await _sut.UpdateAsync(workspaceId, request);
+
+			//assert
+			action.ShouldThrow<NullReferenceException>();
 		}
 
 		[Test]
-		public async Task ItShouldRethrowExceptions_Read()
+		public void QueryAsync_ShouldThrowWhenObjectManagerNotInitialized()
 		{
-			// arrange
-			var exception = new Exception();
-			_objectManager.ReadAsync(Arg.Any<int>(), Arg.Any<ReadRequest>()).Throws(exception);
+			//arrange
+			const int workspaceId = 101;
+			const int start = 0;
+			const int length = 1;
+			var request = new QueryRequest();
 
-			// act
-			try
-			{
-				await _sut.ReadAsync(0, null);
+			_sut = new ObjectManagerFacade(() => null);
 
-				// assert
-				Assert.Fail();
-			}
-			catch (Exception ex)
-			{
-				Assert.AreEqual(exception, ex);
-			}
+			//act
+			Func<Task> action = async () => await _sut.QueryAsync(workspaceId, request, start, length);
+
+			//assert
+			action.ShouldThrow<NullReferenceException>();
 		}
 
 		[Test]
-		public async Task ItShouldWrapServiceNotFoundException_Read()
+		public void DeleteAsync_ShouldThrowWhenObjectManagerNotInitialized()
 		{
-			// arrange
-			var exception = new ServiceNotFoundException();
-			_objectManager.ReadAsync(Arg.Any<int>(), Arg.Any<ReadRequest>()).Throws(exception);
+			//arrange
+			const int workspaceId = 101;
+			var request = new DeleteRequest();
 
-			// act
-			try
-			{
-				await _sut.ReadAsync(0, null);
+			_sut = new ObjectManagerFacade(() => null);
 
-				// assert
-				Assert.Fail();
-			}
-			catch (IntegrationPointsException ex)
-			{
-				Assert.AreEqual(exception, ex.InnerException);
-			}
+			//act
+			Func<Task> action = async () => await _sut.DeleteAsync(workspaceId, request);
+
+			//assert
+			action.ShouldThrow<NullReferenceException>();
 		}
 
 		[Test]
-		public async Task ItShouldCallStartedAndCompletedForSuccessfulCall_Update()
+		public async Task This_ShouldDisposeObjectManagerWhenItsAlreadyCreated()
 		{
-			// arrange
-			_objectManager.UpdateAsync(Arg.Any<int>(), Arg.Any<UpdateRequest>()).Returns(new UpdateResult());
+			//arrange
+			const int workspaceId = 101;
+			ReadRequest request = new ReadRequest();
+			await _sut.ReadAsync(workspaceId, request);
 
-			// act
-			await _sut.UpdateAsync(0, null);
+			//act
+			_sut.Dispose();
 
-			// assert
-			_instrumentation.Received().Started();
-			_startedInstrumentation.Received().Completed();
+			//assert
+			_objectManagerMock.Verify(x => x.Dispose(), Times.Once);
 		}
 
 		[Test]
-		public async Task ItShouldCallStartedAndFailedForResultWithFailedEventHandlers_Update()
+		public void This_ShouldNotDisposeObjectManagerWhenItsNotCreated()
 		{
-			// arrange
-			string failReason = "Unauthorized";
-			var result = new UpdateResult
-			{
-				EventHandlerStatuses = { new EventHandlerStatus { Message = failReason, Success = false } }
-			};
-			_objectManager.UpdateAsync(Arg.Any<int>(), Arg.Any<UpdateRequest>()).Returns(result);
+			//act
+			_sut.Dispose();
 
-			// act
-			await _sut.UpdateAsync(0, null);
-
-			// assert
-			_instrumentation.Received().Started();
-			_startedInstrumentation.Received().Failed(failReason);
+			//assert
+			_objectManagerMock.Verify(x => x.Dispose(), Times.Never);
 		}
 
 		[Test]
-		public async Task ItShouldCallFailedWhenExceptionIsThrown_Update()
+		public async Task This_ShouldDisposeObjectManagerOnlyOnceWhenItsAlreadyCreated()
 		{
-			// arrange
-			var exception = new Exception();
-			_objectManager.UpdateAsync(Arg.Any<int>(), Arg.Any<UpdateRequest>()).Throws(exception);
+			//arrange
+			const int workspaceId = 101;
+			ReadRequest request = new ReadRequest();
+			await _sut.ReadAsync(workspaceId, request);
 
-			// act
-			try
-			{
-				await _sut.UpdateAsync(0, null);
-			}
-			catch (Exception)
-			{
-				// ignore
-			}
+			//act
+			_sut.Dispose();
+			_sut.Dispose();
 
-			// assert
-			_startedInstrumentation.Received().Failed(exception);
-		}
-
-		[Test]
-		public async Task ItShouldRethrowExceptions_Update()
-		{
-			// arrange
-			var exception = new Exception();
-			_objectManager.UpdateAsync(Arg.Any<int>(), Arg.Any<UpdateRequest>()).Throws(exception);
-
-			// act
-			try
-			{
-				await _sut.UpdateAsync(0, null);
-
-				// assert
-				Assert.Fail();
-			}
-			catch (Exception ex)
-			{
-				Assert.AreEqual(exception, ex);
-			}
-		}
-
-		[Test]
-		public async Task ItShouldWrapServiceNotFoundException_Update()
-		{
-			// arrange
-			var exception = new ServiceNotFoundException();
-			_objectManager.UpdateAsync(Arg.Any<int>(), Arg.Any<UpdateRequest>()).Throws(exception);
-
-			// act
-			try
-			{
-				await _sut.UpdateAsync(0, null);
-
-				// assert
-				Assert.Fail();
-			}
-			catch (IntegrationPointsException ex)
-			{
-				Assert.AreEqual(exception, ex.InnerException);
-			}
-		}
-
-		[Test]
-		public async Task ItShouldCallStartedAndCompletedForSuccessfulCall_Delete()
-		{
-			// arrange
-			_objectManager.DeleteAsync(Arg.Any<int>(), Arg.Any<DeleteRequest>()).Returns(new DeleteResult());
-
-			// act
-			await _sut.DeleteAsync(0, null);
-
-			// assert
-			_instrumentation.Received().Started();
-			_startedInstrumentation.Received().Completed();
-		}
-
-		[Test]
-		public async Task ItShouldCallFailedWhenExceptionIsThrown_Delete()
-		{
-			// arrange
-			var exception = new Exception();
-			_objectManager.DeleteAsync(Arg.Any<int>(), Arg.Any<DeleteRequest>()).Throws(exception);
-
-			// act
-			try
-			{
-				await _sut.DeleteAsync(0, null);
-			}
-			catch (Exception)
-			{
-				// ignore
-			}
-
-			// assert
-			_startedInstrumentation.Received().Failed(exception);
-		}
-
-		[Test]
-		public async Task ItShouldRethrowExceptions_Delete()
-		{
-			// arrange
-			var exception = new Exception();
-			_objectManager.DeleteAsync(Arg.Any<int>(), Arg.Any<DeleteRequest>()).Throws(exception);
-
-			// act
-			try
-			{
-				await _sut.DeleteAsync(0, null);
-
-				// assert
-				Assert.Fail();
-			}
-			catch (Exception ex)
-			{
-				Assert.AreEqual(exception, ex);
-			}
-		}
-
-		[Test]
-		public async Task ItShouldWrapServiceNotFoundException_Delete()
-		{
-			// arrange
-			var exception = new ServiceNotFoundException();
-			_objectManager.DeleteAsync(Arg.Any<int>(), Arg.Any<DeleteRequest>()).Throws(exception);
-
-			// act
-			try
-			{
-				await _sut.DeleteAsync(0, null);
-
-				// assert
-				Assert.Fail();
-			}
-			catch (IntegrationPointsException ex)
-			{
-				Assert.AreEqual(exception, ex.InnerException);
-			}
-		}
-
-		[Test]
-		public async Task ItShouldCallStartedAndCompletedForSuccessfulCall_Query()
-		{
-			// arrange
-			_objectManager.QueryAsync(Arg.Any<int>(), Arg.Any<QueryRequest>(), Arg.Any<int>(), Arg.Any<int>()).Returns(new QueryResult());
-
-			// act
-			await _sut.QueryAsync(0, null, 0, 0);
-
-			// assert
-			_instrumentation.Received().Started();
-			_startedInstrumentation.Received().Completed();
-		}
-
-		[Test]
-		public async Task ItShouldCallFailedWhenExceptionIsThrown_Query()
-		{
-			// arrange
-			var exception = new Exception();
-			_objectManager.QueryAsync(Arg.Any<int>(), Arg.Any<QueryRequest>(), Arg.Any<int>(), Arg.Any<int>()).Throws(exception);
-
-			// act
-			try
-			{
-				await _sut.QueryAsync(0, null, 0, 0);
-			}
-			catch (Exception)
-			{
-				// ignore
-			}
-
-			// assert
-			_startedInstrumentation.Received().Failed(exception);
-		}
-
-		[Test]
-		public async Task ItShouldRethrowExceptions_Query()
-		{
-			// arrange
-			var exception = new Exception();
-			_objectManager.QueryAsync(Arg.Any<int>(), Arg.Any<QueryRequest>(), Arg.Any<int>(), Arg.Any<int>()).Throws(exception);
-
-			// act
-			try
-			{
-				await _sut.QueryAsync(0, null, 0, 0);
-
-				// assert
-				Assert.Fail();
-			}
-			catch (Exception ex)
-			{
-				Assert.AreEqual(exception, ex);
-			}
-		}
-
-		[Test]
-		public async Task ItShouldWrapServiceNotFoundException_Query()
-		{
-			// arrange
-			var exception = new ServiceNotFoundException();
-			_objectManager.QueryAsync(Arg.Any<int>(), Arg.Any<QueryRequest>(), Arg.Any<int>(), Arg.Any<int>()).Throws(exception);
-
-			// act
-			try
-			{
-				await _sut.QueryAsync(0, null, 0, 0);
-
-				// assert
-				Assert.Fail();
-			}
-			catch (IntegrationPointsException ex)
-			{
-				Assert.AreEqual(exception, ex.InnerException);
-			}
+			//assert
+			_objectManagerMock.Verify(x => x.Dispose(), Times.Once);
 		}
 	}
 }
