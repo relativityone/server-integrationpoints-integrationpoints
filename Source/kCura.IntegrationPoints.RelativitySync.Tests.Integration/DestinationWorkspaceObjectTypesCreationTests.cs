@@ -33,8 +33,10 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			container.Register(Component.For<IHelper>().Instance(Helper));
 			_instance = new DestinationWorkspaceObjectTypesCreation(container);
 
-			_configuration = new DestinationWorkspaceObjectTypesCreationConfigurationStub();
-			_configuration.DestinationWorkspaceArtifactId = _workspaceId;
+			_configuration = new DestinationWorkspaceObjectTypesCreationConfigurationStub
+			{
+				DestinationWorkspaceArtifactId = _workspaceId
+			};
 		}
 
 		[TearDown]
@@ -72,6 +74,36 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 
 			// ASSERT
 			Assert.Pass();
+		}
+
+		[Test]
+		public async Task ItShouldNotExecuteIfObjectTypesAreSet()
+		{
+			_configuration.IsSourceJobArtifactTypeIdSet = true;
+			_configuration.IsSourceWorkspaceArtifactTypeIdSet = true;
+
+			// ACT
+			bool result = await _instance.CanExecuteAsync(_configuration, CancellationToken.None).ConfigureAwait(false);
+
+			// ASSERT
+			Assert.IsFalse(result);
+		}
+
+		[Test]
+		[TestCase(true, false)]
+		[TestCase(false, true)]
+		[TestCase(false, false)]
+		public async Task ItShouldExecuteIfObjectTypesAreMissing(bool isSourceJobArtifactTypeIdSet, bool isSourceWorkspaceArtifactTypeIdSet)
+		{
+			_configuration.IsSourceJobArtifactTypeIdSet = isSourceJobArtifactTypeIdSet;
+			_configuration.IsSourceWorkspaceArtifactTypeIdSet = isSourceWorkspaceArtifactTypeIdSet;
+
+			// ACT
+
+			bool result = await _instance.CanExecuteAsync(_configuration, CancellationToken.None).ConfigureAwait(false);
+
+			// ASSERT
+			Assert.IsTrue(result);
 		}
 
 		private async Task AssertSourceWorkspaceFields()
