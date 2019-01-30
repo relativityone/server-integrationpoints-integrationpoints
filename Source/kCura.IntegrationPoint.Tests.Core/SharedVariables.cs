@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		private static readonly Dictionary<string, string> ConfigurationOverrides = new Dictionary<string, string>();
 
 		public static Configuration CustomConfig { get; set; }
-		
+
 		static SharedVariables()
 		{
 			PrepareJeevesConfig();
@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		}
 
 		private static void PrepareJeevesConfig()
-		{ 
+		{
 			const string configFileName = "app.jeeves-ci.config";
 			try
 			{
@@ -259,8 +259,10 @@ namespace kCura.IntegrationPoint.Tests.Core
 		public static string RelativityWebApiUrl => $"{RelativityBaseAdressUrlValue}/RelativityWebAPI/";
 
 		private static string ServerBindingType => AppSettingString("ServerBindingType");
-		
-		private static string RsapiServerAddress => !string.IsNullOrEmpty(AppSettingString("RSAPIServerAddress")) ? AppSettingString("RSAPIServerAddress") : RelativityInstanceHostname;
+
+		private static string RsapiServerAddress => string.IsNullOrEmpty(AppSettingString("RSAPIServerAddress"))
+			? RelativityInstanceHostname
+			: AppSettingString("RSAPIServerAddress");
 
 		#endregion Relativity Settings
 
@@ -322,7 +324,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		#region Fileshare Configuration Settings
 
 		public static string FileshareLocation => AppSettingString("fileshareLocation");
-		
+
 
 		#endregion
 

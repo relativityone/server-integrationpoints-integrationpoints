@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Castle.Core.Internal;
+﻿using Castle.Core.Internal;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.Relativity.Client;
 using Relativity.Services;
 using Relativity.Services.Agent;
 using Relativity.Services.ResourceServer;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Query = Relativity.Services.Query;
 
 namespace kCura.IntegrationPoint.Tests.Core
@@ -89,8 +89,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			try
 			{
-				using (
-					IAgentManager proxy = Helper.CreateAdminProxy<IAgentManager>())
+				using (IAgentManager proxy = Helper.CreateAdminProxy<IAgentManager>())
 				{
 					int artifactId = proxy.CreateSingleAsync(agentDto).ConfigureAwait(false).GetAwaiter().GetResult();
 

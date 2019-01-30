@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			UseImagePlaceholderOption useImagePlaceholder,
 			int placeholderId)
 		{
-			const int markupSetArtifactId = 1034197; // TODO why it is harcoded???
+			const int markupSetArtifactId = 1034197;
 
 			using (var productionManager = Helper.CreateAdminProxy<IProductionDataSourceManager>())
 			{

@@ -58,29 +58,29 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static Task<bool> StageAndWaitForCompletionAsync(int workspaceID, int productionID)
 		{
-			Func<IProductionManager, int, int, Task<ProductionJobResult>> stageProduction =
-				(productionManager, wkspId, prodId) => productionManager.StageProductionAsync(wkspId, prodId);
+			Func<IProductionManager, Task<ProductionJobResult>> stageProduction =
+				productionManager => productionManager.StageProductionAsync(workspaceID, productionID);
 
-			return ExecuteAndWaitForCompletionAsync(workspaceID, productionID, stageProduction, "Staged");
+			return ExecuteAndWaitForCompletionAsync(workspaceID, productionID, stageProduction, expectedStatus: "Staged");
 		}
 
 		public static Task<bool> RunAndWaitForCompletionAsync(int workspaceID, int productionID)
 		{
-			Func<IProductionManager, int, int, Task<ProductionJobResult>> runProduction =
-				(productionManager, wkspId, prodId) => productionManager.RunProductionAsync(wkspId, prodId, suppressWarnings: true);
+			Func<IProductionManager, Task<ProductionJobResult>> runProduction =
+				productionManager => productionManager.RunProductionAsync(workspaceID, productionID, suppressWarnings: true);
 
-			return ExecuteAndWaitForCompletionAsync(workspaceID, productionID, runProduction, "Produced");
+			return ExecuteAndWaitForCompletionAsync(workspaceID, productionID, runProduction, expectedStatus: "Produced");
 		}
 
 		private static async Task<bool> ExecuteAndWaitForCompletionAsync(
 			int workspaceID,
 			int productionID,
-			Func<IProductionManager,int, int, Task<ProductionJobResult>> functionToExecute,
+			Func<IProductionManager, Task<ProductionJobResult>> functionToExecute,
 			string expectedStatus)
 		{
 			using (var productionManager = Helper.CreateAdminProxy<IProductionManager>())
 			{
-				ProductionJobResult result = await functionToExecute(productionManager, workspaceID, productionID).ConfigureAwait(false);
+				ProductionJobResult result = await functionToExecute(productionManager).ConfigureAwait(false);
 				if (!result.WasJobCreated)
 				{
 					return false;
@@ -106,13 +106,13 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 				if (HasErrors(status))
 				{
-					throw new Exception("ProductionOperation finished with errors");
+					throw new TestException("ProductionOperation finished with errors");
 				}
 
 				await Task.Delay(waitTimeBetweenRetries).ConfigureAwait(false);
 			}
 
-			throw new Exception($"ProductionOperation finished with different status than expected. Received {status} expected {expectedStatus}. WorkspaceId={workspaceId}");
+			throw new TestException($"ProductionOperation finished with different status than expected. Received {status} expected {expectedStatus}. WorkspaceId={workspaceId}");
 		}
 
 		private static bool HasErrors(string status)
@@ -124,7 +124,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			using (var productionManager = Helper.CreateAdminProxy<IProductionManager>())
 			{
-				global::Relativity.Productions.Services.Production result = await productionManager.ReadSingleAsync(workspaceId, productionId).ConfigureAwait(false);
+				global::Relativity.Productions.Services.Production result = await productionManager
+					.ReadSingleAsync(workspaceId, productionId)
+					.ConfigureAwait(false);
 				return result.ProductionMetadata.Status.ToString();
 			}
 		}

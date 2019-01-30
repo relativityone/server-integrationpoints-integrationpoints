@@ -14,12 +14,12 @@ namespace kCura.IntegrationPoint.Tests.Core
 {
 	public abstract class IntegrationTestBase
 	{
-		private readonly Lazy<ITestHelper> _help;
+		private readonly Lazy<ITestHelper> _testHelperLazy;
 		public const int ADMIN_USER_ID = 9;
 
 		protected IWindsorContainer Container { get; }
 		protected IConfigurationStore ConfigurationStore { get; }
-		protected ITestHelper Helper => _help.Value;
+		protected ITestHelper Helper => _testHelperLazy.Value;
 
 		protected IntegrationTestBase()
 		{
@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			Container = new WindsorContainer();
 			ConfigurationStore = new DefaultConfigurationStore();
-			_help = new Lazy<ITestHelper>(() => new TestHelper());
+			_testHelperLazy = new Lazy<ITestHelper>(() => new TestHelper());
 		}
 
 		public virtual void SuiteSetup() { }
@@ -108,8 +108,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 		private static void SetupSecretStore()
 		{
 #pragma warning disable 414, CS0618
-			// Platform made currently BuildSecretStore method internal. The only option is for now use obsolute method. 
+			// Platform made currently BuildSecretStore method internal. The only option is for now use obsolete method. 
 			// When Platofrm team deliver final solution we should replace the code
+			// We have JIRA for removing it: REL-281626
 			ExtensionPointServiceFinder.SecretStoreHelper = APIHelper_SecretStoreFactory.SecretCatalog;
 #pragma warning restore
 		}

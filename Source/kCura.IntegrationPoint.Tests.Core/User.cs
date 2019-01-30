@@ -17,9 +17,31 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static UserModel CreateUser(string firstName, string lastName, string emailAddress, IList<int> groupIds = null)
 		{
+			Relativity.Client.DTOs.User userToCreate = GetUserToCreate(firstName, lastName, emailAddress, groupIds);
+			int createdUserArtifactId = CreateUser(userToCreate);
+			CreateLoginProfile(createdUserArtifactId, userToCreate.EmailAddress);
+
+			return new UserModel(createdUserArtifactId, userToCreate.EmailAddress, userToCreate.Password);
+		}
+		
+		public static void DeleteUser(int userArtifactId)
+		{
+			if (userArtifactId == 0)
+			{
+				return;
+			}
+
+			using (IRSAPIClient rsapiClient = Rsapi.CreateRsapiClient())
+			{
+				rsapiClient.Repositories.User.Delete(userArtifactId);
+			}
+		}
+
+		private static Relativity.Client.DTOs.User GetUserToCreate(string firstName, string lastName, string emailAddress, IList<int> groupIds)
+		{
 			IEnumerable<Relativity.Client.DTOs.Group> groups = GetGroupsForUser(groupIds);
 
-			var userToCreate = new Relativity.Client.DTOs.User
+			return new Relativity.Client.DTOs.User
 			{
 				ArtifactTypeID = 2,
 				ArtifactTypeName = "User",
@@ -79,36 +101,21 @@ namespace kCura.IntegrationPoint.Tests.Core
 					ArtifactTypeName = "Choice"
 				}
 			};
-
-			int createdUserArtifactId;
-			using (IRSAPIClient rsapiClient = Rsapi.CreateRsapiClient())
-			{
-				WriteResultSet<Relativity.Client.DTOs.User> result = rsapiClient.Repositories.User.Create(userToCreate);
-				createdUserArtifactId = result.Results.Single().Artifact.ArtifactID;
-			}
-
-			CreateLoginProfile(createdUserArtifactId, userToCreate.EmailAddress);
-
-			return new UserModel(createdUserArtifactId, userToCreate.EmailAddress, userToCreate.Password);
-		}
-
-		public static void DeleteUser(int userArtifactId)
-		{
-			if (userArtifactId == 0)
-			{
-				return;
-			}
-
-			using (IRSAPIClient rsapiClient = Rsapi.CreateRsapiClient())
-			{
-				rsapiClient.Repositories.User.Delete(userArtifactId);
-			}
 		}
 
 		private static IEnumerable<Relativity.Client.DTOs.Group> GetGroupsForUser(IList<int> groupIds)
 		{
 			groupIds = groupIds ?? new List<int> { _SYSTEM_ADMINISTRATOR_GROUP_ID };
 			return groupIds.Select(groupId => new Relativity.Client.DTOs.Group(groupId));
+		}
+
+		private static int CreateUser(Relativity.Client.DTOs.User userToCreate)
+		{
+			using (IRSAPIClient rsapiClient = Rsapi.CreateRsapiClient())
+			{
+				WriteResultSet<Relativity.Client.DTOs.User> result = rsapiClient.Repositories.User.Create(userToCreate);
+				return result.Results.Single().Artifact.ArtifactID;
+			}
 		}
 
 		private static void CreateLoginProfile(int userArtifactId, string userEmail)
