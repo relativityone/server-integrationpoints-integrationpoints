@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				return dto.RootFolderID.Value;
 			}
 
-			throw new Exception($"An error occured while retrieving RootFolderId for workspace: {workspaceID}");
+			throw new TestException($"An error occured while retrieving RootFolderId for workspace: {workspaceID}");
 		}
 
 		private void ImportNativeFiles(int workspaceArtifactId, IDataReader dataReader, ImportAPI importApi, int identifyFieldArtifactId)
