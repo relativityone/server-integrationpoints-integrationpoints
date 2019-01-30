@@ -40,6 +40,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Relativity.Audit.Ingestion.Interface">
+      <HintPath>..\..\packages\Relativity.Audit.Ingestion.Interface\lib\net462\Relativity.Audit.Ingestion.Interface.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Audit.SDK">
+      <HintPath>..\..\packages\Relativity.Audit.SDK\lib\net462\Relativity.Audit.SDK.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
