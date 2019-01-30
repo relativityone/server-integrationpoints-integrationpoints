@@ -1,5 +1,9 @@
 ﻿# UI test
 
+## Developer documentation
+
+More details about RIP UI tests: https://einstein.kcura.com/display/DV/RIP+UI+Tests
+
 ## Updating WebDriver packages
 
 After upgrading `Selenium.WebDriver.ChromeDriver` package, please update `UI.ChromeDriver.MaxSupportedVersion` in `app.config` to maximum version supported by this driver.
@@ -19,7 +23,8 @@ Change `UI.Browser` in `app.config`. Currently Chrome and Firefox are supported 
 To run tests against chosen environment, either set `uiTestsConfig` system variable, or just set `_configName` in `kCura.IntegrationPoints.UITests.Configuration.TestConfiguration`. Its value should correspond to config file located in `kCura.IntegrationPoints.UITests\UiTestsConfig\`.
 In case of running against your TestVM, modify `testvm.config` file. Set proper values to:
 * RelativityInstanceAddress
-* RelativityWebAddress
+* RSAPIServerAddress
+* ServerBindingType
 * AdminUsername
 * AdminPassword
 * fileshareLocation
