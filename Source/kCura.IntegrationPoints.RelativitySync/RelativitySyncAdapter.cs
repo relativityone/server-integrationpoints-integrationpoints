@@ -3,9 +3,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using Castle.Windsor;
+using kCura.IntegrationPoints.RelativitySync.Adapters;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
 using Relativity.Sync;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.Telemetry;
 using Relativity.Telemetry.APM;
 
@@ -33,7 +35,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		public async Task<TaskResult> RunAsync()
 		{
 			SyncMetrics metrics = new SyncMetrics(_apmMetrics, _logger);
-			TaskResult taskResult = new TaskResult{Status = TaskStatusEnum.Fail };
+			TaskResult taskResult = new TaskResult {Status = TaskStatusEnum.Fail};
 			try
 			{
 				CancellationToken cancellationToken = CancellationAdapter.GetCancellationToken(_job, _ripContainer);
@@ -156,6 +158,9 @@ namespace kCura.IntegrationPoints.RelativitySync
 			var containerBuilder = new ContainerBuilder();
 			containerBuilder.RegisterInstance(SyncConfigurationFactory.Create(_job, _ripContainer, _logger)).AsImplementedInterfaces().SingleInstance();
 			containerBuilder.RegisterInstance(metrics).As<ISyncMetrics>().SingleInstance();
+			containerBuilder.RegisterInstance(new DestinationWorkspaceObjectTypesCreation(_ripContainer))
+				.As<IExecutor<IDestinationWorkspaceObjectTypesCreationConfiguration>>()
+				.As<IExecutionConstrains<IDestinationWorkspaceObjectTypesCreationConfiguration>>();
 			IContainer container = containerBuilder.Build();
 			return container;
 		}
