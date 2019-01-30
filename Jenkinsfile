@@ -272,7 +272,7 @@ timestamps
 					}
 					catch(err)
 					{
-						echo err.toString()
+						echo err.toString() + ", " + $err.getStacktrace()
 						currentBuild.result = "FAILED"
 					}
 					finally
