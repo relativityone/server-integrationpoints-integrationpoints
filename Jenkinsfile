@@ -9,7 +9,6 @@ library 'GitHelpers@1.0.0'
 library 'SlackHelpers@3.0.0'
 
 import groovy.transform.Field
-import static Constants.*
 
 properties([
 	[$class: 'BuildDiscarderProperty', strategy: [
@@ -71,14 +70,11 @@ enum TestType {
 }
 
 // This repo's package name for purposes of versioning & publishing
-class Constants
-{
-    static final String PACKAGE_NAME = 'IntegrationPoints'
-    static final String NIGHTLY_JOB_NAME = "IntegrationPointsNightly"
-    static final String ARTIFACTS_PATH = 'Artifacts'
-    static final String INTEGRATION_TESTS_RESULTS_REPORT_PATH = "$ARTIFACTS_PATH/IntegrationTestsResults.xml"
-    static final String QUARANTINED_TESTS_CATEGORY = 'InQuarantine'
-}
+@Field final String PACKAGE_NAME = 'IntegrationPoints'
+@Field final String NIGHTLY_JOB_NAME = "IntegrationPointsNightly"
+@Field final String ARTIFACTS_PATH = 'Artifacts'
+@Field final String INTEGRATION_TESTS_RESULTS_REPORT_PATH = "$ARTIFACTS_PATH/IntegrationTestsResults.xml"
+@Field final String QUARANTINED_TESTS_CATEGORY = 'InQuarantine'
 
 @Field
 def testStageName = [
