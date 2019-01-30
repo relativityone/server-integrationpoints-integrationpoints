@@ -24,8 +24,20 @@ properties([
 	])
 ])
 
+enum TestType {
+    integration,
+    ui,
+    quarantine
+}
+
 // This repo's package name for purposes of versioning & publishing
 final String PACKAGE_NAME = 'IntegrationPoints'
+
+final String NIGHTLY_JOB_NAME = "IntegrationPointsNightly"
+
+final String ARTIFACTS_PATH = 'Artifacts'
+
+final String INTEGRATION_TESTS_RESULTS_REPORT_PATH = "$ARTIFACTS_PATH/IntegrationTestsResults.xml"
 
 @Field
 def sut = null
@@ -34,7 +46,6 @@ def jenkinsHelpers = null
 def version = null
 def commonBuildArgs = null
 
-def nightlyJobName = "IntegrationPointsNightly"
 def relativityBuildVersion = ""
 def relativityBuildType = ""
 def relativityBranch = params.relativityBranch ?: env.BRANCH_NAME
@@ -48,17 +59,6 @@ def relativityBranchFallback = "develop"
 
 def chef_attributes = 'fluidOn:1,cdonprem:1'
 def ripCookbooks = getCookbooks()
-
-// Set this the same as in psake-test.ps1 in DevelopmentScripts
-def integration_tests_results_file_path = "DevelopmentScripts/IntegrationTestsResults.xml"
-def integration_tests_html_report = "IntegrationTestsResults.html"
-def integration_tests_report_task = "generate_integration_tests_report"
-def quarantined_integration_tests_results_file_path = "DevelopmentScripts/QuarantinedIntegrationTestsResults.xml"
-def quarantined_integration_tests_html_report = "QuarantinedIntegrationTestsResults.html"
-def quarantined_integration_tests_report_task = "generate_quarantined_integration_tests_report"
-def ui_tests_results_file_path = "DevelopmentScripts/UITestsResults.xml"
-def ui_tests_html_report = "UITestsResults.html"
-def ui_tests_report_task = "generate_ui_tests_report"
 
 def numberOfFailedTests = -1
 def numberOfPassedTests = -1
@@ -106,7 +106,7 @@ timestamps
 			}
 			stage ('Build')
 			{
-				def sonarParameter = shouldRunSonar(params.enableSonarAnalysis, env.BRANCH_NAME, nightlyJobName)
+				def sonarParameter = shouldRunSonar(params.enableSonarAnalysis, env.BRANCH_NAME, NIGHTLY_JOB_NAME)
 				powershell "./build.ps1 $sonarParameter $commonBuildArgs"
 				archiveArtifacts artifacts: "DevelopmentScripts/*.html", fingerprint: true
 			}
@@ -281,36 +281,21 @@ timestamps
 						{
 							timeout(time: 5, unit: 'MINUTES')
 							{
-								archiveTestsArtifacts(
-									params.skipIntegrationTests, 
-									integration_tests_results_file_path, 
-									integration_tests_html_report, 
-									integration_tests_report_task
-								)
-
-								numberOfFailedTests = getTestsStatistic(integration_tests_results_file_path, 'failed')
-								numberOfPassedTests = getTestsStatistic(integration_tests_results_file_path, 'passed')
-								numberOfSkippedTests = getTestsStatistic(integration_tests_results_file_path, 'skipped')
-
-								archiveTestsArtifacts(
-									params.skipIntegrationTests, 
-									quarantined_integration_tests_results_file_path, 
-									quarantined_integration_tests_html_report, 
-									quarantined_integration_tests_report_task
-								)
-
-								archiveTestsArtifacts(
-									params.skipUITests, 
-									ui_tests_results_file_path, 
-									ui_tests_html_report, 
-									ui_tests_report_task
-								)
+								if (!params.skipIntegrationTests)
+								{
+                                    numberOfFailedTests = getTestsStatistic('failed')
+                                    numberOfPassedTests = getTestsStatistic('passed')
+                                    numberOfSkippedTests = getTestsStatistic('skipped')
+                                }
 
 								if (!params.skipUITests)
 								{
 									archiveArtifacts artifacts: "lib/UnitTests/app.jeeves-ci.config", fingerprint: true
-									archiveArtifacts artifacts: "lib/UnitTests/*.png", fingerprint: true
+									archiveArtifacts artifacts: "lib/UnitTests/*.png", fingerprint: true, allowEmptyArchive: true
 								}
+
+                                powershell "Import-Module ./Vendor/psake/tools/psake.psm1; Invoke-psake ./DevelopmentScripts/psake-test.ps1 generate_nunit_reports" 
+                                archiveArtifacts artifacts: "$ARTIFACTS_PATH/**/*", fingerprint: true, allowEmptyArchive: true
 							}
 						}
 					}
@@ -424,7 +409,7 @@ timestamps
 								"Relativity branch: ${relativityBranch} \n" +
 								"Relativity build type: ${relativityBuildType} \n" +
 								"Relativity build version: ${(relativityBuildVersion ?: "0.0.0.0")}"
-							slackSend channel: getSlackChannelName(nightlyJobName).toString(), color: "E8E8E8", message: "${message}", teamDomain: 'kcura-pd', token: token
+							slackSend channel: getSlackChannelName(NIGHTLY_JOB_NAME).toString(), color: "E8E8E8", message: "${message}", teamDomain: 'kcura-pd', token: token
 						}
 					}
 				}
@@ -515,6 +500,37 @@ def getTestsFilter(String testStageName, String nightlyJobName)
 
 def runTestsAndSetBuildResult(Boolean skipTests, String cmdOption, String testStageName, String nightlyJobName)
 {
+    runTests(NIGHTLY_JOB_NAME, TestType.integration, params.skipIntegrationTests)
+}
+
+def runUITests()
+{
+    runTests(NIGHTLY_JOB_NAME, TestType.ui, params.skipUITests)
+}
+
+def runQuarantineTests()
+{
+    runTests(NIGHTLY_JOB_NAME, TestType.quarantine, params.skipIntegrationTests)
+}
+
+def getCmdOption(TestType testType)
+{
+    if (testType == TestType.integration)
+    {
+        return "-in"
+    }
+    else if (testType == TestType.quarantine)
+    {
+        return "-qu -in"
+    }
+    else 
+    {
+        return "-ui"
+    }​​​​​
+}
+
+def runTests(String nightlyJobName, TestType testType, Boolean skipTest)
+{
     if (!skipTests) 
     {
         def result = runTests(cmdOption, testStageName, nightlyJobName)
@@ -544,7 +560,7 @@ def getTestsStatistic(String filePath, String prop)
 	{
 		def cmd = ('''
 			[xml]$testResults = Get-Content '''
-			+ filePath
+			+ INTEGRATION_TESTS_RESULTS_REPORT_PATH  
 			+ '''; $testResults.'test-run'.'''
 			+ "'$prop'")
 		echo "getTestsStatistic cmd: $cmd"
@@ -563,23 +579,6 @@ def getTestsStatistic(String filePath, String prop)
 	{
 		echo "getTestsStatistic error: $err"
 		return -1
-	}
-}
-
-def archiveTestsArtifacts(Boolean skipTests, String resultsFilePath, String reportFile, String generateHtmlReportTaskName)
-{
-	try
-	{
-		if (!skipTests)
-		{
-			archiveArtifacts artifacts: "${resultsFilePath}", fingerprint: true
-			powershell "Import-Module ./Vendor/psake/tools/psake.psm1; Invoke-psake ./DevelopmentScripts/psake-test.ps1 $generateHtmlReportTaskName"
-			archiveArtifacts artifacts: "DevelopmentScripts/${reportFile}", fingerprint: true
-		}
-	}
-	catch(err)
-	{
-		echo "archiveTestsArtifacts failed with error: $err"
 	}
 }
 

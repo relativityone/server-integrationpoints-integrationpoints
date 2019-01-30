@@ -1,11 +1,9 @@
 . .\psake-common.ps1
 
 properties {
-    $in_where_expr = $integration_tests_filter
-    $ui_where_expr = $ui_tests_filter
+    $where_expr = $tests_filter
+    $is_quarantine = $is_quarantine
 }
-
-$reportUnitVersion = '1.2.1'
 
 task default -depends test
 
@@ -21,6 +19,17 @@ task test_initalize {
     [System.IO.Directory]::CreateDirectory($testlog_directory)  
 }
 
+task test_reporting_initalize {
+
+    Write-Host "test_reporting_initalize task initialize"
+
+    If (-not [System.IO.Directory]::Exists($artifacts_directory))
+    {
+        [System.IO.Directory]::CreateDirectory($artifacts_directory)
+    }
+
+}
+
 task get_testrunner -precondition { (-not [System.IO.File]::Exists($testrunner_exe)) }  {
     exec {
         & $nuget_exe @('install', 'kCura.TestRunner', '-ExcludeVersion')
@@ -31,6 +40,13 @@ task get_testrunner -precondition { (-not [System.IO.File]::Exists($testrunner_e
 task get_nunit -precondition { (-not [System.IO.File]::Exists($NUnit3)) }  {
     exec {
         & $nuget_exe @('install', 'NUnit.Console', '-Version', '3.4.1', '-ExcludeVersion')
+    } 
+}
+
+task get_reportunit -precondition { (-not [System.IO.File]::Exists($ReportUnit)) }  {
+    $reportUnitVersion = '1.2.1'
+    exec {
+        & $nuget_exe @('install', 'ReportUnit', '-Version', $reportUnitVersion, '-ExcludeVersion')
     } 
 }
 
@@ -45,51 +61,54 @@ task test -depends get_testrunner, get_nunit, test_initalize {
     }
 }
 
-task run_integration_tests -depends get_nunit {
-    if (-not [string]::IsNullOrEmpty($in_where_expr)) {
-        $in_where_expr = '--where=' + $in_where_expr
+function run_tests($test_type, $config_section, $where_string, $is_in_quarantine) {
+    Write-Host "Is it run in Quarantine? " $is_in_quarantine
+
+    if (-not [string]::IsNullOrEmpty($where_string)) {
+        $where_string = '--where=' + $where_string
     }
-    Write-Host "Integration tests where expression: " $in_where_expr
+    Write-Host $test_type " tests where expression: " $where_string
+
+    $result_file = $config_section + "Results.xml"
+    if ($is_in_quarantine) {
+        $result_file = "Quarantine" + $result_file
+    }
+    Write-Host "Tests results file name: " $result_file
+
     exec {
         & $NUnit3 @($tests_project_file,
-                    '--config="IntegrationTests"',
+                    "--config=$config_section",
                     '--inprocess',
-                    $in_where_expr,
-                    '--result="IntegrationTestsResults.xml"')
+                    $where_string,
+                    "--result=$result_file")
     }
 }
 
-task generate_integration_tests_report {
-    exec {
-        & $nuget_exe @('install', 'ReportUnit', '-Version', $reportUnitVersion, '-ExcludeVersion')
-        & ./ReportUnit/tools/reportunit "IntegrationTestsResults.xml" "IntegrationTestsResults.html"
-    } 
-}
-
-task generate_quarantined_integration_tests_report {
-    exec {
-        & $nuget_exe @('install', 'ReportUnit', '-Version', $reportUnitVersion, '-ExcludeVersion')
-        & ./ReportUnit/tools/reportunit "QuarantinedIntegrationTestsResults.xml" "QuarantinedIntegrationTestsResults.html"
-    } 
+task run_integration_tests -depends get_nunit {
+    run_tests -test_type "Integration" -config_section "IntegrationTests" -where_string $where_expr -is_in_quarantine $is_quarantine
 }
 
 task run_ui_tests -depends get_nunit {
-    if (-not [string]::IsNullOrEmpty($ui_where_expr)) {
-        $ui_where_expr = '--where=' + $ui_where_expr
-    }
-    Write-Host "UI tests where expression: " $ui_where_expr
-    exec {
-        & $NUnit3 @($tests_project_file,
-                    '--config="UITests"',
-                    '--inprocess',
-                    $ui_where_expr,
-                    '--result="UITestsResults.xml"')
-    }
+    run_tests -test_type "UI" -config_section "UITests" -where_string $where_expr -is_in_quarantine $is_quarantine
 }
 
-task generate_ui_tests_report {
-    exec {
-        & $nuget_exe @('install', 'ReportUnit', '-Version', $reportUnitVersion, '-ExcludeVersion')
-        & ./ReportUnit/tools/reportunit "UITestsResults.xml" "UITestsResults.html"
-    } 
+task generate_nunit_reports -depend get_reportunit, test_reporting_initalize {
+
+    $result_files = "IntegrationTestsResults.xml","UITestsResults.xml","QuarantineIntegrationTestsResults.xml"
+    foreach ($result_file in $result_files)
+    {
+        try {
+            Write-Host "Generating html report for" $result_file
+            Copy-Item $result_file -Destination $artifacts_directory 
+            $report_file = $result_file -replace ".xml", ".html"
+            exec {
+                & $ReportUnit $result_file $report_file
+            }
+            Copy-Item $report_file -Destination $artifacts_directory 
+        }
+        catch {
+            Write-Warning "Error occurred when generating nunit report $result_file"
+        }
+    }
+
 }
