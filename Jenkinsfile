@@ -91,9 +91,6 @@ def testCmdOptions = [
 ]
 
 @Field
-def paramsTestsFilter = isNightly() ? params.nightlyTestsFilter : params.testsFilter
-
-@Field
 def sut = null
 
 def jenkinsHelpers = null
@@ -539,6 +536,7 @@ def isQuarantine(TestType type)
 
 def getTestsFilter(TestType testType)
 {
+	def paramsTestsFilter = isNightly() ? params.nightlyTestsFilter : params.testsFilter
 	return isQuarantine(testType)
 		? unionTestFilters(paramsTestsFilter, withQuarantinedTestFilter())
 		: unionTestFilters(paramsTestsFilter, exceptQuarantinedTestFilter())
