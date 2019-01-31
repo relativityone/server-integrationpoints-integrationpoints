@@ -529,7 +529,7 @@ def unionTestFilters(String testFilter, String andTestFilter)
 	return "${testFilter} && ${andTestFilter}"
 }
 
-def isQuarantine(TestType type)
+def isQuarantine(TestType testType)
 {
 	return testType == TestType.integrationInQuarantine
 }
