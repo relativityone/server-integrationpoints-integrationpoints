@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using kCura.IntegrationPoint.Tests.Core;
+﻿using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Contracts.Models;
@@ -9,16 +7,18 @@ using kCura.IntegrationPoints.Data.Factories;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration
 {
 	[TestFixture]
-	public class DocumentTransferProviderTests : RelativityProviderTemplate
+	public class DocumentTransferProviderTests : SourceProviderTemplate
 	{
 		private DocumentTransferProvider _documentTransferProvider;
 		private string[] _forbiddenFields;
 
-		public DocumentTransferProviderTests() : base("SourceWorkspace", "DestinationWorkspace")
+		public DocumentTransferProviderTests() : base("SourceWorkspace")
 		{
 		}
 
@@ -33,8 +33,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration
 				DocumentFields.JobHistory
 			};
 
-			var webApiConfig = Substitute.For<IWebApiConfig>();
-			var logger = Substitute.For<IAPILog>();
+			IWebApiConfig webApiConfig = Substitute.For<IWebApiConfig>();
+			IAPILog logger = Substitute.For<IAPILog>();
 			webApiConfig.GetWebApiUrl.Returns(SharedVariables.RelativityWebApiUrl);
 			var importApiFactory = new ExtendedImportApiFactory(webApiConfig);
 
@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration
 		public void Get_RelativityFieldsFromSourceWorkspace_Success()
 		{
 			//Arrange
-			string documentTransferSettings = $"{{\"SourceWorkspaceArtifactId\":{SourceWorkspaceArtifactId}}}";
+			string documentTransferSettings = $"{{\"SourceWorkspaceArtifactId\":{WorkspaceArtifactId}}}";
 
 			//Act
 			IEnumerable<FieldEntry> documentFields = _documentTransferProvider.GetFields(new DataSourceProviderConfiguration(documentTransferSettings));

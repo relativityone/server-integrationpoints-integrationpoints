@@ -1,32 +1,26 @@
-﻿using Relativity.Services.Production;
+﻿using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using Relativity.Productions.Services;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
 	public class Placeholder
 	{
-		private const string _PRODUCTION_PLACEHOLDER_SERVICE_BASE =
-			@"/Relativity.REST/api/Relativity.Productions.Services.IProductionModule/Production%20Placeholder%20Manager/";
+		private static ITestHelper Helper => new TestHelper();
 
-		private const string _CREATE_SINGLE_SERVICE =
-			_PRODUCTION_PLACEHOLDER_SERVICE_BASE + "CreateSingleAsync";
-
-		public static int Create(int workspaceId, string fileData)
+		public static int Create(int workspaceId, byte[] fileData)
 		{
-			var json =
-				$@"
-					{{
-					  ""workspaceArtifactID"": {workspaceId},
-					  ""placeholder"":
-						{{
-							""PlaceholderType"": ""Image"", 
-							""FileData"": ""{fileData}"",
-							""Filename"": ""DefaultPlaceholder.tif"",
-							""Name"": ""CustomPlaceholder""
-						}}
-					}}";
+			var productionPlaceholder = new ProductionPlaceholder
+			{
+				PlaceholderType = PlaceholderType.Image,
+				FileData = fileData,
+				Filename = "DefaultPlaceholder.tif",
+				Name = "CustomPlaceholder"
+			};
 
-			string output = Rest.PostRequestAsJson(_CREATE_SINGLE_SERVICE, json);
-			return int.Parse(output);
+			using (var proxy = Helper.CreateAdminProxy<IProductionPlaceholderManager>())
+			{
+				return proxy.CreateSingleAsync(workspaceId, productionPlaceholder).GetAwaiter().GetResult();
+			}
 		}
 	}
 }

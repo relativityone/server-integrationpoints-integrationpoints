@@ -771,6 +771,28 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Relativity.Audit.Ingestion.Interface">
+          <HintPath>..\..\packages\Relativity.Audit.Ingestion.Interface\lib\net462\Relativity.Audit.Ingestion.Interface.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Audit.SDK">
+          <HintPath>..\..\packages\Relativity.Audit.SDK\lib\net462\Relativity.Audit.SDK.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Application.Utility">
           <HintPath>..\..\packages\RelativityCore\lib\net462\Application.Utility.dll</HintPath>
           <Private>True</Private>

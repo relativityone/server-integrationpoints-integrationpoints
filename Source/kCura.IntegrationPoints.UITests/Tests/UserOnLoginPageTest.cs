@@ -10,14 +10,8 @@ namespace kCura.IntegrationPoints.UITests.Tests
 	[Category(TestCategory.MISCELLANEOUS)]
     public class UserOnLoginPageTest : UiTest
 	{
-		[OneTimeSetUp]
-		public void OneTimeSetUp()
+		public UserOnLoginPageTest() : base(shouldLoginToRelativity: false)
 		{
-			var loginPage = new LoginPage(Driver);
-			if (!loginPage.IsOnLoginPage())
-			{
-				new GeneralPage(Driver).LogOut();
-			}
 		}
 
 		[Test]

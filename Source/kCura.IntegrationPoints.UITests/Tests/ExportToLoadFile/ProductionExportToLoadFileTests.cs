@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoint.Tests.Core.Models;
+﻿using System.Collections.Generic;
+using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Models.Constants.ExportToLoadFile;
 using kCura.IntegrationPoint.Tests.Core.Models.Constants.Shared;
 using kCura.IntegrationPoints.Data;
@@ -7,7 +8,6 @@ using kCura.IntegrationPoints.UITests.NUnitExtensions;
 using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoints.UITests.Validation;
 using NUnit.Framework;
-using System.Collections.Generic;
 using IntegrationPointType = kCura.IntegrationPoint.Tests.Core.Models.IntegrationPointType;
 
 namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
@@ -25,8 +25,11 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 		{
 			Context.CreateAndRunProduction(SAVED_SEARCH_NAME, PRODUCTION_NAME_SMALL);
 			Context.CreateAndRunProduction(SAVED_SEARCH_NAME, PRODUCTION_NAME_BIG);
+		}
 
-			EnsureGeneralPageIsOpened();
+		[SetUp]
+		public void SetUp()
+		{
 			_integrationPointsAction = new IntegrationPointsAction(Driver, Context);
 		}
 

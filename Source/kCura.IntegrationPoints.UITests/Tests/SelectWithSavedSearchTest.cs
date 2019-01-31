@@ -13,12 +13,6 @@ namespace kCura.IntegrationPoints.UITests.Tests
 	{
 		private const int _MILLISECONDSTIMEOUT = 1000;
 
-		[OneTimeSetUp]
-		public void OneTimeSetUp()
-		{
-			EnsureGeneralPageIsOpened();
-		}
-
 		[Test]
 		[RetryOnError]
 		[Order(10)]
