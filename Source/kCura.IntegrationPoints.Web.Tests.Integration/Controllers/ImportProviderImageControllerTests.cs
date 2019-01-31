@@ -8,6 +8,8 @@ using Castle.Windsor;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoint.Tests.Core.TestCategories;
+using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using kCura.IntegrationPoints.Web.Tests.Integration.Helpers;
 using Newtonsoft.Json;
@@ -50,8 +52,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Controllers
 			_container = ContainerInstaller.CreateContainer();
 		}
 
-		[Test]
-		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
+        [Test]
+		[SmokeTest]
 		public async Task ShouldReturnProperDefaultFileRepoWhenWorkspaceExists()
 		{
 			//arrange
@@ -69,8 +71,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Controllers
 			resultDefaultFileRepo.Should().Be(actualDefaultFileRepo);
 		}
 
-		[Test]
-		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
+        [Test]
+		[SmokeTest]
 		public void ShouldThrowWhenTryingToGetDefaultFileRepoWithZeroWorkspaceId()
 		{
 			//arrange
@@ -84,8 +86,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Controllers
 				.WithMessage($"Could not retrieve ApplicationID #{zeroWorkspaceId}.");
 		}
 
-		[Test]
-		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
+        [Test]
+		[SmokeTest]
 		public void ShouldThrowWhenTryingToGetDefaultFileRepoWithNegativeWorkspaceId()
 		{
 			//arrange
