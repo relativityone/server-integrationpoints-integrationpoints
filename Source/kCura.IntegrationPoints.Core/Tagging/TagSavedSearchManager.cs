@@ -15,11 +15,18 @@ namespace kCura.IntegrationPoints.Core.Tagging
 
 		public void CreateSavedSearchForTagging(int destinationWorkspaceArtifactId, ImportSettings importSettings, TagsContainer tagsContainer)
 		{
-			if (importSettings.CreateSavedSearchForTagging)
+			CreateSavedSearchForTagging(destinationWorkspaceArtifactId, importSettings.CreateSavedSearchForTagging, tagsContainer);
+		}
+
+		public int CreateSavedSearchForTagging(int destinationWorkspaceArtifactId, bool createSavedSearch, TagsContainer tagsContainer)
+		{
+			if (createSavedSearch)
 			{
 				int folderId = _tagSavedSearchFolder.GetFolderId(destinationWorkspaceArtifactId);
-				_tagSavedSearch.CreateTagSavedSearch(destinationWorkspaceArtifactId, tagsContainer, folderId);
+				return _tagSavedSearch.CreateTagSavedSearch(destinationWorkspaceArtifactId, tagsContainer, folderId);
 			}
+
+			return 0;
 		}
 	}
 }
