@@ -305,16 +305,16 @@ timestamps
 								runIntegrationTests()
 							}
 						}
-						//if(isNightly()) //commented out temporarly for testing purposes - TO BE REMOVED
-						//{
-						stage ('Integration Tests in Quarantine')
+						if(isNightly())
 						{
-							timeout(time: 180, unit: 'MINUTES')
+							stage ('Integration Tests in Quarantine')
 							{
-								runIntegrationTestsInQuarantine()
+								timeout(time: 180, unit: 'MINUTES')
+								{
+									runIntegrationTestsInQuarantine()
+								}
 							}
 						}
-						//}
 						stage ('UI Tests')
 						{
 							timeout(time: 8, unit: 'HOURS')
