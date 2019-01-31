@@ -17,6 +17,10 @@ namespace kCura.IntegrationPoints.RelativitySync
 		private int? _tagArtifactId;
 		private int? _sourceWorkspaceArtifactTypeId;
 		private int? _sourceJobArtifactTypeId;
+		private int? _sourceJobTagArtifactId;
+		private string _sourceJobTagName;
+		private int? _sourceWorkspaceTagArtifactId;
+		private string _sourceWorkspaceTagName;
 
 		public SyncConfiguration(int jobId, SourceConfiguration sourceConfiguration, ImportSettings destinationConfiguration)
 		{
@@ -24,6 +28,8 @@ namespace kCura.IntegrationPoints.RelativitySync
 			DataSourceArtifactId = sourceConfiguration.SavedSearchArtifactId;
 			DataDestinationArtifactId = destinationConfiguration.DestinationFolderArtifactId;
 			DestinationWorkspaceArtifactId = destinationConfiguration.CaseArtifactId;
+			JobArtifactId = jobId;
+			SourceWorkspaceArtifactId = sourceConfiguration.SourceWorkspaceArtifactId;
 		}
 
 		public string DataDestinationName => string.Empty;
@@ -39,9 +45,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		public bool AreBatchesIdsSet => true;
 
 		public List<int> BatchesIds { get; set; } = new List<int>();
-
-		public bool IsJobTagArtifactIdSet => _jobTagArtifactId.HasValue;
-
+		
 		public int JobTagArtifactId
 		{
 			get
@@ -55,9 +59,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 			set => _jobTagArtifactId = value;
 		}
-
-		public bool IsWorkspaceTagArtifactIdSet => _workspaceTagArtifactId.HasValue;
-
+		
 		public int WorkspaceTagArtifactId
 		{
 			get
@@ -130,8 +132,28 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 		public bool IsSourceWorkspaceArtifactTypeIdSet => _sourceWorkspaceArtifactTypeId.HasValue;
 
+		public int JobArtifactId { get; }
+		public int SourceWorkspaceArtifactTypeId => _sourceWorkspaceArtifactTypeId.Value;
+		public int SourceJobArtifactTypeId => _sourceJobArtifactTypeId.Value;
+
 		public bool IsSourceJobArtifactTypeIdSet => _sourceJobArtifactTypeId.HasValue;
 
+		public bool IsSourceJobTagSet => _sourceJobTagArtifactId.HasValue;
+		public bool IsSourceWorkspaceTagSet => _sourceWorkspaceTagArtifactId.HasValue;
+
+		public void SetSourceJobTag(int artifactId, string name)
+		{
+			_sourceJobTagArtifactId = artifactId;
+			_sourceJobTagName = name;
+		}
+
+		public void SetSourceWorkspaceTag(int artifactId, string name)
+		{
+			_sourceWorkspaceTagArtifactId = artifactId;
+			_sourceWorkspaceTagName = name;
+		}
+
+		public int SourceWorkspaceArtifactId { get; }
 		public int DestinationWorkspaceArtifactId { get; }
 	}
 }
