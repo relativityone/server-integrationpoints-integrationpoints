@@ -139,6 +139,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			}
 		}
 
+        [Test]
 		[SmokeTest]
 		[TestCaseSource(nameof(ExportTestCaseSource))]
 		public void RunStableTestCase(IExportTestCase testCase)
@@ -146,6 +147,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			RunTestCase(testCase);
 		}
 
+        [Test]
 		[SmokeTest]
 		[TestInQuarantine(TestQuarantineState.UnderObservation)]
 		[TestCaseSource(nameof(FlakyExportTestCaseSource))]
@@ -169,6 +171,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			testCase.Verify(directory, _configSettings.DocumentsTestData);
 		}
 
+        [Test]
         [SmokeTest]
         [TestCaseSource(nameof(InvalidFileshareExportTestCaseSource))]
 		public void RunInvalidFileshareTestCase(IInvalidFileshareExportTestCase testCase)

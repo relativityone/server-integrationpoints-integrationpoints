@@ -48,6 +48,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 			_helper = Container.Resolve<IHelper>();
 		}
 
+        [Test]
 		[SmokeTest]
 		public void ItShouldReturnSourceWorkspaceFields()
 		{
@@ -66,6 +67,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 			Assert.NotNull(fields.FirstOrDefault(field => field.IsRequired));
 		}
 
+        [Test]
 		[SmokeTest]
 		public void ItShouldSyncDataToWorkspace()
 		{

@@ -274,6 +274,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 			}
 		}
 
+        [Test]
 		[SmokeTest]
 		[TestCase(true, true, ProviderType.FTP)]
 		[TestCase(true, true, ProviderType.LDAP)]

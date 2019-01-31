@@ -122,6 +122,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			FolderService.DeleteUnusedFolders(TargetWorkspaceArtifactId);
 		}
 
+        [Test]
 		[TestCase(ImportNativeFileCopyModeEnum.CopyFiles)]
 		[TestCase(ImportNativeFileCopyModeEnum.SetFileLinks)]
 		[TestInQuarantine(TestQuarantineState.UnderObservation, 
@@ -131,6 +132,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			TestNativeFilesImport(false, true, true, importNativeFileCopyMode, false);
 		}
 
+        [Test]
 		[SmokeTest]
 		public void NativesShouldNotBeDeletedInTargetWorkspace_InDoNotImportNativesMode()
 		{

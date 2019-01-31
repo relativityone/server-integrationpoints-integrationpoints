@@ -120,6 +120,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			_sourceWorkspaceDto = Workspace.GetWorkspaceDto(SourceWorkspaceArtifactId);
 		}
 
+        [Test]
 		[SmokeTest]
 		[TestInQuarantine(TestQuarantineState.UnderObservation,
 						"Unstable - to be fixed -> REL-280310")]
@@ -176,6 +177,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			}
 		}
 
+        [Test]
 		[SmokeTest]
 		[TestInQuarantine(TestQuarantineState.UnderObservation)]
 		public void StopStateCannotBeUpdatedWhileExportServiceObservers()

@@ -11,6 +11,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 	[TestFixture]
 	internal class RegisterDocumentTransferProviderTests
 	{
+        [Test]
 		[SmokeTest]
 		public void RegisterDocumentTransferProvider_ReturnCorrectInstallationDetail()
 		{

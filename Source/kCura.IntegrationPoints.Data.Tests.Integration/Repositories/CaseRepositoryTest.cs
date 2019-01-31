@@ -52,6 +52,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			_sut = new CaseRepository(resourceServerManager, instrumentationProvider);
 		}
 
+        [Test]
 		[SmokeTest]
 		public void ItShouldReturnWorkspaceInfo()
 		{

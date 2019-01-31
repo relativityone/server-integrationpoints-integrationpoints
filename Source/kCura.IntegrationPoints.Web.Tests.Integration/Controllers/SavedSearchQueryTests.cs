@@ -58,6 +58,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Controllers
 			}
 		}
 
+        [Test]
 		[SmokeTest]
 		public void Query_SavedSearchesWithController_Success()
 		{

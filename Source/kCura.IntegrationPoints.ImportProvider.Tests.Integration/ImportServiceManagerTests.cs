@@ -194,6 +194,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 			DocumentService.DeleteAllDocuments(_workspaceId);
 		}
 
+        [Test]
 		[SmokeTest]
 		[TestCaseSource(nameof(ImportTestCaseSource))]
 		public void RunStableTestCase(IImportTestCase testCase)
@@ -201,6 +202,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 			RunTestCase(testCase);
 		}
 
+        [Test]
 		[SmokeTest]
 		[TestInQuarantine(TestQuarantineState.UnderObservation, 
 						@"REL-225244 TODO: Broken test needs to be fixed!

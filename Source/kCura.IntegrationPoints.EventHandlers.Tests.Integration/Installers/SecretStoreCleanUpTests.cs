@@ -34,6 +34,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 			_secretStoreCleanUp = new SecretStoreCleanUp(_secretManager, _secretCatalog);
 		}
 
+        [Test]
 		[TestInQuarantine(TestQuarantineState.UnderObservation, 
 					@"Known Issue in secret store: 
 					whole paths from secret catalog are returned instead 

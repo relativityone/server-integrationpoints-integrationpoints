@@ -80,6 +80,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.IsFalse(result);
 		}
 
+        [Test]
 		[SmokeTest]
 		public void VerifyCheckBatchOnCompleteTrue()
 		{

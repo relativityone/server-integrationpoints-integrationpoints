@@ -44,6 +44,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration
 			_documentTransferProvider = new DocumentTransferProvider(importApiFacade, Container.Resolve<IRepositoryFactory>(), Container.Resolve<IHelper>());
 		}
 
+        [Test]
 		[SmokeTest]
 		public void Get_RelativityFieldsFromSourceWorkspace_Success()
 		{

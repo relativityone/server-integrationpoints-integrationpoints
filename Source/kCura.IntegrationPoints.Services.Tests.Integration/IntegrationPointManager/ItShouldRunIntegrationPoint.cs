@@ -16,6 +16,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 		{
 		}
 
+        [Test]
 		[SmokeTest]
 		public void Execute()
 		{

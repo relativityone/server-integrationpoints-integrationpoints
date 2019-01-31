@@ -2,11 +2,10 @@
 
 namespace kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes
 {
-	public class SmokeTestAttribute : TestCaseAttribute
+	public class SmokeTestAttribute : CategoryAttribute
 	{
-		public SmokeTestAttribute()
+		public SmokeTestAttribute() : base(TestCategories.SMOKE_TEST)
 		{
-			Category = TestCategories.SMOKE_TEST;
 		}
 	}
 }

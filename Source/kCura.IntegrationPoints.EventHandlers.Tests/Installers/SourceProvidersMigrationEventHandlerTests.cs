@@ -58,6 +58,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 			_errorService.Received().Log(Arg.Is<ErrorModel>(error => error.Message == "Failed to migrate Source Provider."));
 		}
 
+        [Test]
 		[SmokeTest]
 		public void OneProviderInPreviousWorkspace()
 		{

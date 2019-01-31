@@ -67,6 +67,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			_fieldMaps = GetDefaultFieldMap();
 		}
 
+        [Test]
 		[SmokeTest]
 		[TestCase(499, "UnderBatch")]
 		[TestCase(500, "EqualBatch")]

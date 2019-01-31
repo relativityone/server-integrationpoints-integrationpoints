@@ -23,7 +23,8 @@ using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration.Monitoring
 {
-	[SmokeTests]
+	[SmokeTest]
+    [TestFixture]
 	public class ExternalServiceInstrumentationProviderWithJobContextTests
 	{
 		private Mock<IConfig> _configMock;

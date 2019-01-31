@@ -207,6 +207,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 		#endregion UpdateProperties
 
+        [Test]
 		[SmokeTest]
 		[TestInQuarantine(TestQuarantineState.UnderObservation, 
 			"Unstable - to be fixed -> REL-280316")]
@@ -256,6 +257,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			AssertThatAuditDetailsChanged(postRunAudits.First(), new HashSet<string>() { "Last Runtime (UTC)" });
 		}
 
+        [Test]
 		[TestInQuarantine(TestQuarantineState.UnderObservation, 
 			@"Test to be fixed - doesn't work on Jenkins.
 			 Is fine when run locally. More info in REL-270155")]
@@ -324,6 +326,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			AssertThatAuditDetailsChanged(postRetryAudits.First(), new HashSet<string>() { "Last Runtime (UTC)", "Has Errors" });
 		}
 
+        [Test]
 		[TestInQuarantine(TestQuarantineState.UnderObservation)]
 		public void CreateAndRunIntegrationPoint_ScheduledIntegrationPoint_GoldFlow()
 		{

@@ -52,6 +52,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Controllers
 			_container = ContainerInstaller.CreateContainer();
 		}
 
+        [Test]
 		[SmokeTest]
 		public async Task ShouldReturnProperDefaultFileRepoWhenWorkspaceExists()
 		{
@@ -70,6 +71,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Controllers
 			resultDefaultFileRepo.Should().Be(actualDefaultFileRepo);
 		}
 
+        [Test]
 		[SmokeTest]
 		public void ShouldThrowWhenTryingToGetDefaultFileRepoWithZeroWorkspaceId()
 		{
@@ -84,6 +86,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Controllers
 				.WithMessage($"Could not retrieve ApplicationID #{zeroWorkspaceId}.");
 		}
 
+        [Test]
 		[SmokeTest]
 		public void ShouldThrowWhenTryingToGetDefaultFileRepoWithNegativeWorkspaceId()
 		{
