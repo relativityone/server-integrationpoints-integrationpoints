@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Adapters
 		private readonly IAPILog _logger;
 		private readonly IWindsorContainer _container;
 		private readonly IExtendedJob _job;
-		readonly IValidationExecutorFactory _validationExecutorFactory;
+		private readonly IValidationExecutorFactory _validationExecutorFactory;
 
 		public Validator(IWindsorContainer container, IExtendedJob job, IValidationExecutorFactory validationExecutorFactory, IAPILog logger)
 		{
