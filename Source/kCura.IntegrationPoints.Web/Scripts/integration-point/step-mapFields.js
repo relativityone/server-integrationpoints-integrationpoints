@@ -1,5 +1,4 @@
-﻿/// <reference path="../jquery-1.8.2.min.js" />
-var IP = IP || {};
+﻿var IP = IP || {};
 
 ko.validation.rules.pattern.message = 'Invalid.';
 
