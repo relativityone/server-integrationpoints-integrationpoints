@@ -118,37 +118,19 @@ namespace kCura.IntegrationPoints.RelativitySync
 			set => _tagArtifactId = value;
 		}
 
+		public void SetSourceWorkspaceArtifactTypeId(int artifactTypeId)
+		{
+			_sourceWorkspaceArtifactTypeId = artifactTypeId;
+		}
+
+		public void SetSourceJobArtifactTypeId(int artifactTypeId)
+		{
+			_sourceJobArtifactTypeId = artifactTypeId;
+		}
+
 		public bool IsSourceWorkspaceArtifactTypeIdSet => _sourceWorkspaceArtifactTypeId.HasValue;
 
-		public int SourceWorkspaceArtifactTypeId
-		{
-			get
-			{
-				if (!_sourceWorkspaceArtifactTypeId.HasValue)
-				{
-					throw new ArgumentException($"Initialize {nameof(SourceWorkspaceArtifactTypeId)} first");
-				}
-
-				return _sourceWorkspaceArtifactTypeId.Value;
-			}
-			set => _sourceWorkspaceArtifactTypeId = value;
-		}
-
 		public bool IsSourceJobArtifactTypeIdSet => _sourceJobArtifactTypeId.HasValue;
-
-		public int SourceJobArtifactTypeId
-		{
-			get
-			{
-				if (!_sourceJobArtifactTypeId.HasValue)
-				{
-					throw new ArgumentException($"Initialize {nameof(SourceJobArtifactTypeId)} first");
-				}
-
-				return _sourceJobArtifactTypeId.Value;
-			}
-			set => _sourceJobArtifactTypeId = value;
-		}
 
 		public int DestinationWorkspaceArtifactId { get; }
 	}

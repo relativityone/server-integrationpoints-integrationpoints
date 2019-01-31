@@ -36,10 +36,11 @@ namespace kCura.IntegrationPoints.RelativitySync.Adapters
 			IRelativitySourceJobRdoInitializer sourceJobRdoInitializer = new RelativitySourceJobRdoInitializer(helper, repositoryFactory, relativitySourceRdoHelpersFactory);
 			IRelativitySourceWorkspaceRdoInitializer sourceWorkspaceRdoInitializer = new RelativitySourceWorkspaceRdoInitializer(helper, repositoryFactory, relativitySourceRdoHelpersFactory);
 
-			configuration.SourceWorkspaceArtifactTypeId = sourceWorkspaceRdoInitializer.InitializeWorkspaceWithSourceWorkspaceRdo(configuration.DestinationWorkspaceArtifactId);
+			int sourceWorkspaceArtifactTypeId = sourceWorkspaceRdoInitializer.InitializeWorkspaceWithSourceWorkspaceRdo(configuration.DestinationWorkspaceArtifactId);
+			configuration.SetSourceWorkspaceArtifactTypeId(sourceWorkspaceArtifactTypeId);
 
-			configuration.SourceJobArtifactTypeId =
-				sourceJobRdoInitializer.InitializeWorkspaceWithSourceJobRdo(configuration.DestinationWorkspaceArtifactId, configuration.SourceWorkspaceArtifactTypeId);
+			int sourceJobArtifactTypeId = sourceJobRdoInitializer.InitializeWorkspaceWithSourceJobRdo(configuration.DestinationWorkspaceArtifactId, sourceWorkspaceArtifactTypeId);
+			configuration.SetSourceJobArtifactTypeId(sourceJobArtifactTypeId);
 		}
 	}
 }
