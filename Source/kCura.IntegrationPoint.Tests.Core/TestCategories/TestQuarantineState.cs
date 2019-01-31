@@ -16,10 +16,10 @@
         UnderObservation,
         /// <summary>
         /// Particular test still fails because of the defect
-        /// in a product and should be fixed as soon as possible. After fixing, 
-        /// it should be marked with SeemsToBeStable.
+        /// in a test itself and should be fixed as soon as possible. 
+        /// After fixing, it should be marked with SeemsToBeStable.
         /// </summary>
-        DetectsDefect,
+        FailsContinuously,
         /// <summary>
         /// A test randomly fails because of some instability
         /// issues in itself. The reason of instability should be described.
