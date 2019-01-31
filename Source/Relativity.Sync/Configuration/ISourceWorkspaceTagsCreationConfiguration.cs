@@ -2,10 +2,14 @@
 {
 	internal interface ISourceWorkspaceTagsCreationConfiguration : IConfiguration
 	{
-		//fields from DestinationWorkspace object
+		int DestinationWorkspaceArtifactId { get; }
 
-		bool IsTagArtifactIdSet { get; }
+		int SourceWorkspaceArtifactId { get; }
 
-		int TagArtifactId { get; set; }
+		int JobArtifactId { get; }
+
+		bool IsDestinationWorkspaceTagArtifactIdSet { get; }
+
+		void SetDestinationWorkspaceTagArtifactId(int artifactId);
 	}
 }
