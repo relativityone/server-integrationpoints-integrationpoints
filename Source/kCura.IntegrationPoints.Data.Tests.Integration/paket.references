@@ -4,6 +4,7 @@ kCura.Apps.Common.Utils
 kCura.Relativity.Client
 NSubstitute
 NUnit
+Relativity.Audit.SDK
 Relativity.API
 Relativity.Core
 Relativity.Telemetry.APM

@@ -1,16 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
-using Newtonsoft.Json;
 using Relativity.Services.Group;
 using Relativity.Services.Permission;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class Group
 	{
+		private static ITestHelper Helper => new TestHelper();
+
 		public static int CreateGroup(string name)
 		{
 			// STEP 1: Create a DTO and set its properties.
@@ -89,28 +92,37 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return true;
 		}
 
-		private const string _GET_WORKSPACE_GROUP = "api/Relativity.Services.Permission.IPermissionModule/Permission Manager/GetWorkspaceGroupSelectorAsync";
-		private const string _ADD_REMOVE_WORKSPACE_GROUPS = "api/Relativity.Services.Permission.IPermissionModule/Permission Manager/AddRemoveWorkspaceGroupsAsync";
-
 		public static void AddGroupToWorkspace(int workspaceId, int groupId)
 		{
-			string response = Rest.PostRequestAsJson(_GET_WORKSPACE_GROUP, $"{{workspaceArtifactID:{workspaceId}}}");
-			GroupSelector groupSelector = JsonConvert.DeserializeObject<GroupSelector>(response);
-			groupSelector.DisabledGroups = new List<GroupRef>();
-			groupSelector.EnabledGroups = new List<GroupRef> { new GroupRef(groupId) };
-
-			string parameter = $"{{workspaceArtifactID:{workspaceId},groupSelector:{JsonConvert.SerializeObject(groupSelector)}}}";
-			Rest.PostRequestAsJson(_ADD_REMOVE_WORKSPACE_GROUPS, parameter);
+			AddGroupToWorkspaceAsync(workspaceId, groupId).GetAwaiter().GetResult();
 		}
 
 		public static void RemoveGroupFromWorkspace(int workspaceId, int groupId)
 		{
-			string response = Rest.PostRequestAsJson(_GET_WORKSPACE_GROUP, $"{{workspaceArtifactID:{workspaceId}}}");
-			GroupSelector groupSelector = JsonConvert.DeserializeObject<GroupSelector>(response);
-			groupSelector.DisabledGroups = new List<GroupRef> { new GroupRef(groupId) };
+			RemoveGroupFromWorkspaceAsync(workspaceId, groupId).GetAwaiter().GetResult();
+		}
 
-			string parameter = $"{{workspaceArtifactID:{workspaceId},groupSelector:{JsonConvert.SerializeObject(groupSelector)}}}";
-			Rest.PostRequestAsJson(_ADD_REMOVE_WORKSPACE_GROUPS, parameter);
+		private static async Task AddGroupToWorkspaceAsync(int workspaceId, int groupId)
+		{
+			using (var proxy = Helper.CreateAdminProxy<IPermissionManager>())
+			{
+				GroupSelector groupSelector = await proxy.GetWorkspaceGroupSelectorAsync(workspaceId).ConfigureAwait(false);
+				groupSelector.DisabledGroups = new List<GroupRef>();
+				groupSelector.EnabledGroups = new List<GroupRef> { new GroupRef(groupId) };
+
+				await proxy.AddRemoveWorkspaceGroupsAsync(workspaceId, groupSelector).ConfigureAwait(false);
+			}
+		}
+
+		private static async Task RemoveGroupFromWorkspaceAsync(int workspaceId, int groupId)
+		{
+			using (var proxy = Helper.CreateAdminProxy<IPermissionManager>())
+			{
+				GroupSelector groupSelector = await proxy.GetWorkspaceGroupSelectorAsync(workspaceId).ConfigureAwait(false);
+				groupSelector.DisabledGroups = new List<GroupRef> { new GroupRef(groupId) };
+
+				await proxy.AddRemoveWorkspaceGroupsAsync(workspaceId, groupSelector).ConfigureAwait(false);
+			}
 		}
 	}
 }

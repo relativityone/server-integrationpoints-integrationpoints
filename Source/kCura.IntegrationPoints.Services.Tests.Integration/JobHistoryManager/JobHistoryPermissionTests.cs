@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 		{
 			base.TestTeardown();
 			Group.DeleteGroup(_groupId);
-			User.DeleteUser(_userModel.ArtifactId);
+			User.DeleteUser(_userModel.ArtifactID);
 		}
 
 		[Test]

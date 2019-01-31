@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -11,31 +12,26 @@ namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class SavedSearch
 	{
-		private const string _CREATE_SINGLE_SERVICE = "api/Relativity.Services.Search.ISearchModule/Keyword Search Manager/CreateSingleAsync";
+		private static ITestHelper Helper => new TestHelper();
 
 		public static int CreateSavedSearch(int workspaceId, string name)
 		{
-			string json = string.Format(@"
-				{{
-					workspaceArtifactID: {0},
-					searchDTO: {{
-						ArtifactTypeID: {1},
-						Name: ""{2}"",
-						Fields: [
-							{{
-								Name: ""Control Number""
-							}}
-						]
-					}}
-				}}
-			", workspaceId, (int) ArtifactType.Document, name);
-			string output = Rest.PostRequestAsJson(_CREATE_SINGLE_SERVICE, json);
-			return int.Parse(output);
+			var keywordSearch = new KeywordSearch
+			{
+				ArtifactTypeID = (int)ArtifactType.Document,
+				Name = name,
+				Fields = new List<FieldRef> { new FieldRef("Control Number") }
+			};
+
+			using (var proxy = Helper.CreateAdminProxy<IKeywordSearchManager>())
+			{
+				return proxy.CreateSingleAsync(workspaceId, keywordSearch).GetAwaiter().GetResult();
+			}
 		}
 
 		public static void UpdateSavedSearchCriteria(int workspaceArtifactId, int searchArtifactId, CriteriaCollection searchCriteria)
 		{
-			using (IKeywordSearchManager proxy = Kepler.CreateProxy<IKeywordSearchManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true))
+			using (var proxy = Helper.CreateAdminProxy<IKeywordSearchManager>())
 			{
 				KeywordSearch keywordSearch = proxy.ReadSingleAsync(workspaceArtifactId, searchArtifactId).Result;
 				keywordSearch.SearchCriteria = searchCriteria;
@@ -49,7 +45,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			{
 				return;
 			}
-			using (IKeywordSearchManager proxy = Kepler.CreateProxy<IKeywordSearchManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true))
+			using (var proxy = Helper.CreateAdminProxy<IKeywordSearchManager>())
 			{
 				proxy.DeleteSingleAsync(workspaceArtifactId, savedSearchArtifactId).GetAwaiter().GetResult();
 			}
@@ -57,7 +53,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static int Create(int workspaceArtifactId, KeywordSearch search)
 		{
-			using (IKeywordSearchManager proxy = Kepler.CreateProxy<IKeywordSearchManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true))
+			using (var proxy = Helper.CreateAdminProxy<IKeywordSearchManager>())
 			{
 				return proxy.CreateSingleAsync(workspaceArtifactId, search).GetResultsWithoutContextSync();
 			}
@@ -65,7 +61,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static int CreateSearchFolder(int workspaceArtifactId, SearchContainer searchContainer)
 		{
-			using (ISearchContainerManager proxy = Kepler.CreateProxy<ISearchContainerManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true))
+			using (var proxy = Helper.CreateAdminProxy<ISearchContainerManager>())
 			{
 				return proxy.CreateSingleAsync(workspaceArtifactId, searchContainer).GetResultsWithoutContextSync();
 			}
@@ -76,17 +72,17 @@ namespace kCura.IntegrationPoint.Tests.Core
 			IFieldQueryRepository sourceFieldQueryRepository = repositoryFactory.GetFieldQueryRepository(workspaceId);
 			int controlNumberFieldArtifactId = sourceFieldQueryRepository.RetrieveTheIdentifierField((int) ArtifactType.Document).ArtifactId;
 
-			FieldRef fieldRef = new FieldRef(controlNumberFieldArtifactId)
+			var fieldRef = new FieldRef(controlNumberFieldArtifactId)
 			{
 				Name = "Control Number",
 				Guids = new List<Guid> {new Guid("2a3f1212-c8ca-4fa9-ad6b-f76c97f05438")}
 			};
 
-			CriteriaCollection searchCriteria = new CriteriaCollection();
+			var searchCriteria = new CriteriaCollection();
 
 			if (excludeExpDocs)
 			{
-				Criteria criteria = new Criteria
+				var criteria = new Criteria
 				{
 					BooleanOperator = BooleanOperatorEnum.None,
 					Condition = new CriteriaCondition(fieldRef, CriteriaConditionEnum.IsLike, documentPrefix)

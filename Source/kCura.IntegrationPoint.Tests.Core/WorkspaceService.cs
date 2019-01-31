@@ -1,49 +1,34 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using kCura.IntegrationPoint.Tests.Core.Models;
+﻿using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.Relativity.Client;
 using NUnit.Framework;
+using Relativity.Productions.Services;
 using Relativity.Services.Field;
 using Relativity.Services.Search;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
 	public class WorkspaceService
 	{
-		#region Constructors
+		private const string _TEMPLATE_WORKSPACE_NAME = "Relativity Starter Template";
+		private const string _LEGACY_TEMPLATE_WORKSPACE_NAME = "kCura Starter Template";
+		private const string _SAVED_SEARCH_FOLDER = "Testing Folder";
+		private const string _SAVED_SEARCH_NAME = "Testing Saved Search";
+
+		private readonly ImportHelper _importHelper;
 
 		public WorkspaceService(ImportHelper importHelper)
 		{
 			_importHelper = importHelper;
 		}
 
-		#endregion //Constructors
-
-		#region Fields
-
-		private readonly ImportHelper _importHelper;
-
-		private const string _TEMPLATE_WORKSPACE_NAME = "Relativity Starter Template";
-		private const string _LEGACY_TEMPLATE_WORKSPACE_NAME = "kCura Starter Template";
-		private const string _SAVED_SEARCH_FOLDER = "Testing Folder";
-		private const string _SAVED_SEARCH_NAME = "Testing Saved Search";
-
-		#endregion //Fields
-
-		#region Properties
-
 		public static string StarterTemplateName => SharedVariables.UseLegacyTemplateName()
 			? _LEGACY_TEMPLATE_WORKSPACE_NAME
 			: _TEMPLATE_WORKSPACE_NAME;
-
-		#endregion
-
-		#region Methods
-
-
 
 		public int CreateWorkspace(string name, string template = null)
 		{
@@ -58,9 +43,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public void DeleteWorkspace(int artifactId)
 		{
-			using (var rsApiClient = Rsapi.CreateRsapiClient())
+			using (IRSAPIClient rsapiClient = Rsapi.CreateRsapiClient())
 			{
-				rsApiClient.Repositories.Workspace.DeleteSingle(artifactId);
+				rsapiClient.Repositories.Workspace.DeleteSingle(artifactId);
 			}
 		}
 
@@ -85,16 +70,16 @@ namespace kCura.IntegrationPoint.Tests.Core
 			{
 				Name = _SAVED_SEARCH_FOLDER
 			};
-			var folderArtifactId = Core.SavedSearch.CreateSearchFolder(workspaceId, folder);
+			int folderArtifactId = SavedSearch.CreateSearchFolder(workspaceId, folder);
 
 			var search = new KeywordSearch
 			{
 				Name = savedSearchName,
-				ArtifactTypeID = (int) ArtifactType.Document,
+				ArtifactTypeID = (int)ArtifactType.Document,
 				SearchContainer = new SearchContainerRef(folderArtifactId),
 				Fields = fields
 			};
-			return Core.SavedSearch.Create(workspaceId, search);
+			return SavedSearch.Create(workspaceId, search);
 		}
 
 		public int CreateProductionSet(int workspaceArtifactId, string productionSetName)
@@ -116,22 +101,37 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public int CreateAndRunProduction(int workspaceArtifactId, int savedSearchId, string productionName, string placeHolderFilePath)
 		{
-			return CreateAndRunProductionAsync(workspaceArtifactId, savedSearchId, productionName, placeHolderFilePath)
-				.ConfigureAwait(false).GetAwaiter().GetResult();
+			return CreateAndRunProductionAsync(
+					workspaceArtifactId,
+					savedSearchId,
+					productionName,
+					placeHolderFilePath
+				).GetAwaiter().GetResult();
 		}
 
 		public async Task<int> CreateAndRunProductionAsync(int workspaceArtifactId, int savedSearchId, string productionName, string placeHolderFilePath)
 		{
-			string placeHolderFileData = FileToBase64Converter.Convert(placeHolderFilePath);
+			byte[] placeHolderFileDataBytes = File.ReadAllBytes(placeHolderFilePath);
+			int productionId = CreateProductionSet(workspaceArtifactId, productionName);
+			int placeholderId = Placeholder.Create(workspaceArtifactId, placeHolderFileDataBytes);
 
-			int productionId = await CreateProductionSetAsync(workspaceArtifactId, productionName);
+			await ProductionDataSource.CreateDataSourceWithPlaceholderAsync(
+				workspaceArtifactId,
+				productionId,
+				savedSearchId,
+				UseImagePlaceholderOption.WhenNoImageExists,
+				placeholderId
+			).ConfigureAwait(false);
 
-			int placeholderId = Placeholder.Create(workspaceArtifactId, placeHolderFileData);
-			ProductionDataSource.CreateDataSourceWithPlaceholder(workspaceArtifactId, productionId, savedSearchId,
-				"WhenNoImageExists", placeholderId);
+			await Production.StageAndWaitForCompletionAsync(
+				workspaceArtifactId,
+				productionId
+			).ConfigureAwait(false);
 
-			await Production.StageAndWaitForCompletionAsync(workspaceArtifactId, productionId);
-			await Production.RunAndWaitForCompletionAsync(workspaceArtifactId, productionId);
+			await Production.RunAndWaitForCompletionAsync(
+				workspaceArtifactId,
+				productionId
+			).ConfigureAwait(false);
 
 			return productionId;
 		}
@@ -140,7 +140,5 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			return View.QueryView(workspaceId, viewName);
 		}
-
-		#endregion Methods
 	}
 }
