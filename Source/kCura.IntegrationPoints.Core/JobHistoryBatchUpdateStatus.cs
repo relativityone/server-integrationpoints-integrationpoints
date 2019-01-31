@@ -41,16 +41,6 @@ namespace kCura.IntegrationPoints.Core
 		    _dateTimeHelper = dateTimeHelper;
 	    }
 
-		public JobHistoryBatchUpdateStatus(IJobStatusUpdater jobStatusUpdater, IJobHistoryService jobHistoryService,
-			IJobService jobService, ISerializer serializer, IAPILog logger)
-		{
-			_updater = jobStatusUpdater;
-			_jobHistoryService = jobHistoryService;
-			_jobService = jobService;
-			_serializer = serializer;
-			_logger = logger;
-		}
-
 		public void OnJobStart(Job job)
 		{
 			Job updatedJob = _jobService.GetJob(job.JobId);
