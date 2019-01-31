@@ -91,6 +91,9 @@ def testCmdOptions = [
 ]
 
 @Field
+def paramsTestsFilter = isNightly() ? params.nightlyTestsFilter : params.testsFilter
+
+@Field
 def sut = null
 
 def jenkinsHelpers = null
@@ -305,7 +308,7 @@ timestamps
 								runIntegrationTests()
 							}
 						}
-						//if(isNightly()) //commented out temporarly for testing purposes
+						//if(isNightly()) //commented out temporarly for testing purposes - TO BE REMOVED
 						//{
 						stage ('Integration Tests in Quarantine')
 						{
@@ -515,7 +518,7 @@ def exceptQuarantinedTestFilter()
 	return "cat!=$QUARANTINED_TESTS_CATEGORY"
 }
 
-def andQuarantinedTestFilter()
+def withQuarantinedTestFilter()
 {
 	return "cat==$QUARANTINED_TESTS_CATEGORY"
 }
@@ -529,18 +532,16 @@ def unionTestFilters(String testFilter, String andTestFilter)
 	return "${testFilter} && ${andTestFilter}"
 }
 
+def isQuarantine(TestType type)
+{
+	return testType == TestType.integrationInQuarantine
+}
+
 def getTestsFilter(TestType testType)
 {
-	if(!isNightly())
-	{
-		return unionTestFilters(params.testsFilter, exceptQuarantinedTestFilter())
-	}
-	
-	if(testType == TestType.integrationInQuarantine)
-	{
-		return unionTestFilters(params.nightlyTestsFilter, andQuarantinedTestFilter())
-	}
-	return unionTestFilters(params.nightlyTestsFilter, exceptQuarantinedTestFilter())
+	return isQuarantine(testType)
+		? unionTestFilters(paramsTestsFilter, withQuarantinedTestFilter())
+		: unionTestFilters(paramsTestsFilter, exceptQuarantinedTestFilter())
 }
 
 def runIntegrationTests()
