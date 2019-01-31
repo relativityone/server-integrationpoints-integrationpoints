@@ -47,7 +47,7 @@ properties([
 		),
 		string(
 			name: 'testsFilter', 
-			defaultValue: 'cat==SmokeTest', 
+			defaultValue: 'cat == SmokeTest', 
 			description: 'Set filter for integration and UI tests'
 		),
 		string(
@@ -512,12 +512,12 @@ def getSlackChannelName()
 
 def exceptQuarantinedTestFilter()
 {
-	return "cat!=$QUARANTINED_TESTS_CATEGORY"
+	return "cat != $QUARANTINED_TESTS_CATEGORY"
 }
 
 def withQuarantinedTestFilter()
 {
-	return "cat==$QUARANTINED_TESTS_CATEGORY"
+	return "cat == $QUARANTINED_TESTS_CATEGORY"
 }
 
 def unionTestFilters(String testFilter, String andTestFilter)

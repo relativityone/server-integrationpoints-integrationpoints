@@ -169,8 +169,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			testCase.Verify(directory, _configSettings.DocumentsTestData);
 		}
 
-		[TestCaseSource(nameof(InvalidFileshareExportTestCaseSource))]
-		[SmokeTest]
+        [SmokeTest]
+        [TestCaseSource(nameof(InvalidFileshareExportTestCaseSource))]
 		public void RunInvalidFileshareTestCase(IInvalidFileshareExportTestCase testCase)
 		{
 			// Arrange

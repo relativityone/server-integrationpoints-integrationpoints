@@ -256,7 +256,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			AssertThatAuditDetailsChanged(postRunAudits.First(), new HashSet<string>() { "Last Runtime (UTC)" });
 		}
 
-		[Test]
 		[TestInQuarantine(TestQuarantineState.UnderObservation, 
 			@"Test to be fixed - doesn't work on Jenkins.
 			 Is fine when run locally. More info in REL-270155")]
