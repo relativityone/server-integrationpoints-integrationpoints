@@ -32,12 +32,14 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 
 		public void SetSourceWorkspaceArtifactTypeId(int artifactTypeId)
 		{
+			// Method intentionally left empty.
 		}
 
 		public bool IsSourceJobArtifactTypeIdSet { get; set; }
 
 		public void SetSourceJobArtifactTypeId(int artifactTypeId)
 		{
+			// Method intentionally left empty.
 		}
 
 		public int SourceWorkspaceArtifactId { get; set; }
@@ -49,12 +51,14 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 
 		public void SetSourceJobTag(int artifactId, string name)
 		{
+			// Method intentionally left empty.
 		}
 
 		public bool IsSourceWorkspaceTagSet { get; set; }
 
 		public void SetSourceWorkspaceTag(int artifactId, string name)
 		{
+			// Method intentionally left empty.
 		}
 	}
 }
