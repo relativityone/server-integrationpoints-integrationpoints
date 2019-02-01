@@ -22,7 +22,7 @@
         /// JIRA issue linked. After fixing, it should be marked with
         /// SeemsToBeStable.
         /// </summary>
-        DetectsDefectInExternalProvider,
+        DetectsDefectInExternalDependency,
         /// <summary>
         /// Particular test still fails because of the defect
         /// in a test itself and should be fixed as soon as possible. 
