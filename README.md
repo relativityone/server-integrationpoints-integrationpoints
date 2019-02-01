@@ -72,7 +72,7 @@ Running unit tests:
     kCura.IntegrationPonits.Domain.dll
     kCura.IntegrationPonits.SourceProviderInstaller.dll
     frame-messaging.js
-    jquery-1.8.2.js
+    jquery-3.3.1.js
     jquery-postMessage.js
 * Example projects (Coming soon)
     * MyFirstProvider.sln
