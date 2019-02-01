@@ -207,6 +207,12 @@ timestamps
 					}
 					stage ('UI Tests')
 					{
+						// update chrome to latest version
+						powershell """
+                    		Invoke-WebRequest "http://dl.google.com/chrome/install/375.126/chrome_installer.exe" -OutFile chrome_installer.exe
+                    		Start-Process -FilePath chrome_installer.exe -Args "/silent /install" -Verb RunAs -Wait
+                    		(Get-Item (Get-ItemProperty "HKLM:/SOFTWARE/Microsoft/Windows/CurrentVersion/App Paths/chrome.exe")."(Default)").VersionInfo
+                		"""
 						timeout(time: 8, unit: 'HOURS')
 						{
 							runTests(params.skipUITests, "-ui", "UI", nightlyJobName)
@@ -400,18 +406,10 @@ def testingVMsAreRequired()
 
 def getNewBranchAndVersion(String relativityBranchFallback, String relativityBranch, String paramRelativityBuildVersion, String paramRelativityBuildType, String sessionId)
 {
-	def branch = relativityBranch
-	def buildVersion = ''
-	try
-	{
-		buildVersion = getBuildArtifactsPath(this, "Relativity", branch, paramRelativityBuildVersion, paramRelativityBuildType, sessionId)
-	}
-	catch (any)
-	{
-		branch = relativityBranchFallback
-		echo "Changing Relativity branch to fallback: $branch"
-		buildVersion = getBuildArtifactsPath(this, "Relativity", branch, paramRelativityBuildVersion, paramRelativityBuildType, sessionId)
-	}
+	// TODO move logic from Jenkinsfile
+	branch = relativityBranchFallback
+	echo "Changing Relativity branch to fallback: $branch"
+	buildVersion = getBuildArtifactsPath(this, "Relativity", branch, paramRelativityBuildVersion, paramRelativityBuildType, sessionId)
 	if (paramRelativityBuildVersion && !buildVersion)
 	{
 		// It should never be empty!!
