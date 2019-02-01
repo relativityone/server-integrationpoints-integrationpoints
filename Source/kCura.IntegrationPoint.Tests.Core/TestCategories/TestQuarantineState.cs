@@ -10,10 +10,19 @@
         /// <summary>
         /// Initial state of a test in the quarantine. 
         /// A test should stay with it no longer than duration of a single 
-        /// sprint (two weeks). After two weeks, we have enough data to 
+        /// sprint (two weeks). After this time, we have enough data to 
         /// decide what action should be made to each test in the quarantine.
         /// </summary>
         UnderObservation,
+        /// <summary>
+        /// A test fails because of some defect in external dependency
+        /// like library, component or API that a test consumes
+        /// and cannot be fixed without involvment of different team.
+        /// The reason of failure should be described and appropriate
+        /// JIRA issue linked. After fixing, it should be marked with
+        /// SeemsToBeStable.
+        /// </summary>
+        DetectsDefectInExternalProvider,
         /// <summary>
         /// Particular test still fails because of the defect
         /// in a test itself and should be fixed as soon as possible. 
