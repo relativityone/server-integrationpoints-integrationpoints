@@ -24,6 +24,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		public int CreateDestinationWorkspaceTag(int destinationWorkspaceId, int jobHistoryInstanceId, int? federatedInstanceId)
 		{
 			DestinationWorkspace destinationWorkspace = _destinationWorkspaceRepository.Query(destinationWorkspaceId, federatedInstanceId);
+
 			string destinationWorkspaceName = _workspaceRepository.Retrieve(destinationWorkspaceId).Name;
 			string destinationInstanceName = _federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(federatedInstanceId).Name;
 
