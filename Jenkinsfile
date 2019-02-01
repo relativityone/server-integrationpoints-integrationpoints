@@ -334,13 +334,6 @@ timestamps
 						{
 							timeout(time: 5, unit: 'MINUTES')
 							{
-								if (!params.skipIntegrationTests)
-								{
-                                    numberOfFailedTests = getTestsStatistic('failed')
-                                    numberOfPassedTests = getTestsStatistic('passed')
-                                    numberOfSkippedTests = getTestsStatistic('skipped')
-                                }
-
 								if (!params.skipUITests)
 								{
 									archiveArtifacts artifacts: "lib/UnitTests/app.jeeves-ci.config", fingerprint: true
@@ -349,6 +342,13 @@ timestamps
 
                                 powershell "Import-Module ./Vendor/psake/tools/psake.psm1; Invoke-psake ./DevelopmentScripts/psake-test.ps1 generate_nunit_reports" 
                                 archiveArtifacts artifacts: "$ARTIFACTS_PATH/**/*", fingerprint: true, allowEmptyArchive: true
+
+								if (!params.skipIntegrationTests)
+								{
+                                    numberOfFailedTests = getTestsStatistic('failed')
+                                    numberOfPassedTests = getTestsStatistic('passed')
+                                    numberOfSkippedTests = getTestsStatistic('skipped')
+                                }
 							}
 						}
 					}
