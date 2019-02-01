@@ -6,6 +6,8 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoint.Tests.Core.TestCategories;
+using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
@@ -205,9 +207,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 		#endregion UpdateProperties
 
-		[Test]
-		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
-		[Ignore("Unstable - to be fixed -> REL-280316")]
+        [Test]
+		[SmokeTest]
+		[TestInQuarantine(TestQuarantineState.UnderObservation, 
+			"Unstable - to be fixed -> REL-280316")]
 		public void CreateAndRunIntegrationPoint_GoldFlow()
 		{
 			//Arrange
@@ -254,8 +257,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			AssertThatAuditDetailsChanged(postRunAudits.First(), new HashSet<string>() { "Last Runtime (UTC)" });
 		}
 
-		[Test]
-		[Ignore("Test to be fixed - doesn't work on Jenkins. Is fine when run locally. More info in REL-270155")]
+        [Test]
+		[TestInQuarantine(TestQuarantineState.UnderObservation, 
+			@"Test to be fixed - doesn't work on Jenkins.
+			 Is fine when run locally. More info in REL-270155")]
 		public void RetryIntegrationPoint_GoldFlow()
 		{
 			//Arrange
@@ -321,8 +326,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			AssertThatAuditDetailsChanged(postRetryAudits.First(), new HashSet<string>() { "Last Runtime (UTC)", "Has Errors" });
 		}
 
-		[Test]
-		[Ignore("Ignoring until test is fixed")]
+        [Test]
+		[TestInQuarantine(TestQuarantineState.UnderObservation)]
 		public void CreateAndRunIntegrationPoint_ScheduledIntegrationPoint_GoldFlow()
 		{
 			//Arrange

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoint.Tests.Core.TestCategories;
+using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Domain.Models;
@@ -46,8 +48,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 			_helper = Container.Resolve<IHelper>();
 		}
 
-		[Test]
-		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
+        [Test]
+		[SmokeTest]
 		public void ItShouldReturnSourceWorkspaceFields()
 		{
 			//Arrange
@@ -65,8 +67,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 			Assert.NotNull(fields.FirstOrDefault(field => field.IsRequired));
 		}
 
-		[Test]
-		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
+        [Test]
+		[SmokeTest]
 		public void ItShouldSyncDataToWorkspace()
 		{
 			//Arrange

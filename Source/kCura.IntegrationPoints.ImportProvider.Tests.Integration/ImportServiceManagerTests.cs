@@ -2,16 +2,17 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
+using System.Linq;
 using Microsoft.VisualBasic.Devices;
-
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using NSubstitute;
 using NUnit.Framework;
-
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
+using kCura.IntegrationPoint.Tests.Core.TestCategories;
+using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Agent.Validation;
 using kCura.IntegrationPoints.Core;
@@ -193,15 +194,29 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 			DocumentService.DeleteAllDocuments(_workspaceId);
 		}
 
+        [Test]
+		[SmokeTest]
 		[TestCaseSource(nameof(ImportTestCaseSource))]
-		[Category(kCura.IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
-		public void RunTestCase(IImportTestCase testCase)
+		public void RunStableTestCase(IImportTestCase testCase)
 		{
-			// https://jira.kcura.com/browse/REL-225244 TODO: Broken test needs to be fixed! Ignore tests until verification mechanism will be fixed. DocumentService.GetNativeMD5String(workspaceId, docResult) needs to be reimplemented."
-			if (testCase is ItShouldLoadNativesFromPaths)
-			{
-				Assert.Ignore(@"https://jira.kcura.com/browse/REL-225244 TODO: Broken test needs to be fixed! Ignore tests until verification mechanism will be fixed. DocumentService.GetNativeMD5String(workspaceId, docResult) needs to be reimplemented.");
-			}
+			RunTestCase(testCase);
+		}
+
+        [Test]
+		[SmokeTest]
+		[TestInQuarantine(TestQuarantineState.UnderObservation, 
+						@"REL-225244 TODO: Broken test needs to be fixed!
+						Ignore tests until verification mechanism will be fixed.
+						DocumentService.GetNativeMD5String(workspaceId, docResult)
+						needs to be reimplemented.")]
+		[TestCaseSource(nameof(ImportFlakyTestCaseSource))]
+		public void RunFlakyTestCase(IImportTestCase testCase)
+		{
+			RunTestCase(testCase);
+		}
+
+		private void RunTestCase(IImportTestCase testCase)
+		{
 			SettingsObjects settingsObjects = testCase.Prepare(_workspaceId);
 
 			settingsObjects.ImportSettings.RelativityUsername = SharedVariables.RelativityUserName;
@@ -220,7 +235,18 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 		private static IEnumerable<IImportTestCase> ImportTestCaseSource()
 		{
 			InitContainer();
-			return _windsorContainer.ResolveAll<IImportTestCase>();
+			return _windsorContainer
+				.ResolveAll<IImportTestCase>()
+				.Where(x => x.GetType() != typeof(ItShouldLoadNativesFromPaths));
+		}
+
+		private static IEnumerable<IImportTestCase> ImportFlakyTestCaseSource()
+		{
+			InitContainer();
+			return new[]
+			{
+				_windsorContainer.Resolve<ItShouldLoadNativesFromPaths>()
+			};
 		}
 
 		private static void InitContainer()
@@ -238,11 +264,12 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 			if (!Directory.Exists(inputPath))
 			{
 				Directory.CreateDirectory(inputPath);
-			} else
+			}
+			else
 			{
 				Directory.Delete(inputPath, true);
 			}
-			
+
 			(new Computer()).FileSystem.CopyDirectory(Path.Combine(TestContext.CurrentContext.TestDirectory, _TEST_DATA_PATH), inputPath);
 
 			return inputPath;
