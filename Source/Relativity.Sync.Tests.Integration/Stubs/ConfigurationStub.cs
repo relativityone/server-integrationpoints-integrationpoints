@@ -70,5 +70,9 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 		{
 			// Method intentionally left empty.
 		}
+
+		public string JobStatus { get; set; }
+		public bool SendEmails { get; set; }
+		public IEnumerable<string> EmailRecipients { get; } = new List<string>();
 	}
 }
