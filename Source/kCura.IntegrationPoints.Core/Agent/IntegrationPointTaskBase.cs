@@ -137,14 +137,19 @@ namespace kCura.IntegrationPoints.Core.Agent
 
 		protected List<string> GetRecipientEmails()
 		{
+			return GetRecipientEmails(IntegrationPoint, _logger);
+		}
+
+		public static List<string> GetRecipientEmails(IntegrationPoint integrationPoint, IAPILog logger)
+		{
 			string emailRecipients = string.Empty;
 			try
 			{
-				emailRecipients = IntegrationPoint.EmailNotificationRecipients;
+				emailRecipients = integrationPoint.EmailNotificationRecipients;
 			}
 			catch (Exception e)
 			{
-				LogRetrievingRecipientEmailsError(e);
+				LogRetrievingRecipientEmailsError(e, logger);
 				//this property might be not loaded on RDO if it's null, so suppress exception
 			}
 
@@ -218,9 +223,9 @@ namespace kCura.IntegrationPoints.Core.Agent
 			_logger.LogError("Retrieving Destination Provider: The Integration Point Rdo has not been set yet.");
 		}
 
-		private void LogRetrievingRecipientEmailsError(Exception e)
+		private static void LogRetrievingRecipientEmailsError(Exception e, IAPILog logger)
 		{
-			_logger.LogError(e, "Failed to retrieve recipient emails.");
+			logger.LogError(e, "Failed to retrieve recipient emails.");
 		}
 
 		private void LogSettingIntegrationPointError(Job job)
