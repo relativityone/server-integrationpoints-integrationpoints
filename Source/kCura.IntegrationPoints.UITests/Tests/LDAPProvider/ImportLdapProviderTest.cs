@@ -79,7 +79,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 			// Assert
 			var expectedEntities = new Dictionary<string, string>
 			{
-				{"Szmigielski, Piotr", "Lorenz, Andrzej"}
+				{"Szmigielski, Piotr", "Clouston, Christian"}
 			};
 
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted, JobStatusChoices.JobHistoryCompletedWithErrors);
