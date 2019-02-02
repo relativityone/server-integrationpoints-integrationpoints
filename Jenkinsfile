@@ -202,6 +202,12 @@ timestamps
 					}
 					stage ('UI Tests')
 					{
+						// update chrome to latest version
+						powershell """
+                    		Invoke-WebRequest "http://dl.google.com/chrome/install/375.126/chrome_installer.exe" -OutFile chrome_installer.exe
+                    		Start-Process -FilePath chrome_installer.exe -Args "/silent /install" -Verb RunAs -Wait
+                    		(Get-Item (Get-ItemProperty "HKLM:/SOFTWARE/Microsoft/Windows/CurrentVersion/App Paths/chrome.exe")."(Default)").VersionInfo
+                		"""
 						timeout(time: 8, unit: 'HOURS')
 						{
 							runTests(params.skipUITests, "-ui", "UI", nightlyJobName)
