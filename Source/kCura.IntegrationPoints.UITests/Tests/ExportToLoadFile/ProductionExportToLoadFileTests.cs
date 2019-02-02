@@ -98,6 +98,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 
 		[Test]
 		[RetryOnError]
+		[Ignore("REL-258301")]
 		public void ProductionExportToLoadFile_TC_ELF_PROD_2()
 		{
 			// Arrange
