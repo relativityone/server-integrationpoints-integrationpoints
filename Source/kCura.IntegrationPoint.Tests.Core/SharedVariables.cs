@@ -323,7 +323,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		#region Fileshare Configuration Settings
 
-		public static string FileshareLocation => AppSettingString("fileshareLocation");
+		public static string FileshareLocation => !string.IsNullOrEmpty(AppSettingString("fileshareLocation"))
+			? AppSettingString("fileshareLocation")
+			: $@"\\{RelativityInstanceHostname}\fileshare";
 
 
 		#endregion
