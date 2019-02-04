@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 		private JobHistoryHelper _instance;
 		private JobHistory _jobHistory;
 
-		public JobHistoryHelperTests() : base(Guid.NewGuid().ToString(), new Guid().ToString())
+		public JobHistoryHelperTests() : base(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())
 		{
 		}
 
