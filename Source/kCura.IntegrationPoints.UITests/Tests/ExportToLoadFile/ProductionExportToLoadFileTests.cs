@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 		}
 
 		[Test]
-		[Ignore("TODO - create JIRA, defect: The given key was not present in the dictionary.")]
+		[Ignore("REL-291038")]
 		public void ProductionExportToLoadFile_TC_ELF_PROD_1()
 		{
 			// Arrange
@@ -96,7 +96,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 		}
 
 		[Test]
-		[Ignore("1) REL-258301 2) TODO - create JIRA, defect: The given key was not present in the dictionary.")]
+		[Ignore("REL-258301 REL-291038")]
 		public void ProductionExportToLoadFile_TC_ELF_PROD_2()
 		{
 			// Arrange
@@ -143,7 +143,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 		}
 
 		[Test]
-		[Ignore("TODO - create JIRA, defect: The given key was not present in the dictionary.")]
+		[Ignore("REL-291038")]
 		public void ProductionExportToLoadFile_TC_ELF_PROD_3()
 		{
 			// Arrange
@@ -189,7 +189,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 		}
 
 		[Test]
-		[Ignore("TODO - create JIRA, defect: The given key was not present in the dictionary.")]
+		[Ignore("REL-291038")]
 		public void ProductionExportToLoadFile_TC_ELF_PROD_4()
 		{
 			// Arrange
@@ -247,7 +247,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 		}
 
 		[Test]
-		[Ignore("TODO - create JIRA, defect: The given key was not present in the dictionary.")]
+		[Ignore("REL-291038")]
 		public void ProductionExportToLoadFile_TC_ELF_PROD_5()
 		{
 			// Arrange
