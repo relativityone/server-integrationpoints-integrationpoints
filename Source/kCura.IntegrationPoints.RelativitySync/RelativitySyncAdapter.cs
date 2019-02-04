@@ -161,6 +161,10 @@ namespace kCura.IntegrationPoints.RelativitySync
 			containerBuilder.RegisterInstance(new DestinationWorkspaceObjectTypesCreation(_ripContainer))
 				.As<IExecutor<IDestinationWorkspaceObjectTypesCreationConfiguration>>()
 				.As<IExecutionConstrains<IDestinationWorkspaceObjectTypesCreationConfiguration>>();
+
+			containerBuilder.RegisterType<DataDestinationInitialization>()
+				.As<IExecutor<IDataDestinationInitializationConfiguration>>()
+				.As<IExecutionConstrains<IDataDestinationInitializationConfiguration>>();
 			IContainer container = containerBuilder.Build();
 			return container;
 		}
