@@ -400,49 +400,17 @@ def testingVMsAreRequired()
 }
 
 def getNewBranchAndVersion(String relativityBranchFallback, String relativityBranch, String paramRelativityBuildVersion, String paramRelativityBuildType, String sessionId)
-{	
-	def firstFallbackBranch = relativityBranchFallback // we should change first fallback branch on RIP release branches
-	def GOLD_BUILD_TYPE = "GOLD"
-	def DEV_BUILD_TYPE = "DEV"
-	def relativityBranchesToTry = [[relativityBranch, paramRelativityBuildType], [firstFallbackBranch, DEV_BUILD_TYPE], [firstFallbackBranch, GOLD_BUILD_TYPE], ["master", GOLD_BUILD_TYPE]]
-
-	for (branchAndType in relativityBranchesToTry)
-	{
-		def branch = branchAndType[0]
-	    def buildType = branchAndType[1]
-
-		echo "Retrieving latest Relativity '$buildType' build from '$branch' branch"
-
-		def buildVersion = tryGetBuildVersion(branch, paramRelativityBuildVersion, buildType, sessionId)
-		if (buildVersion != null)
-		{
-			return [buildVersion, branch, buildType]
-		}	
-	}	
-
-	error 'Failed to retrieve Relativity branch/version'
-}
-
-def tryGetBuildVersion(String relativityBranch, String paramRelativityBuildVersion, String paramRelativityBuildType, String sessionId)
 {
-	try
+	// TODO move logic from Jenkinsfile
+	branch = relativityBranchFallback
+	echo "Changing Relativity branch to fallback: $branch"
+	buildVersion = getBuildArtifactsPath(this, "Relativity", branch, paramRelativityBuildVersion, paramRelativityBuildType, sessionId)
+	if (paramRelativityBuildVersion && !buildVersion)
 	{
-        if (!isRelativityBranchPresent(relativityBranch))
-        {
-            echo "Branch was not found: $relativityBranch"
-            return null
-        }
-        def latestVersion = paramRelativityBuildVersion ?: getLatestVersion(relativityBranch, paramRelativityBuildType)
-        echo "Checking Relativity artifacts for version: $latestVersion"
-        return checkRelativityArtifacts(relativityBranch, latestVersion, paramRelativityBuildType)
-               ? latestVersion
-               : null
+		// It should never be empty!!
+		buildVersion = paramRelativityBuildVersion
 	}
-	catch (err)
-	{
-		echo "Error occured while getting build version for: '$relativityBranch' Relativity branch, version '$paramRelativityBuildVersion', and type '$paramRelativityBuildType', error: $err"
-		return null
-	}
+	return [buildVersion, branch]
 }
 
 def updateChromeToLatestVersion()
