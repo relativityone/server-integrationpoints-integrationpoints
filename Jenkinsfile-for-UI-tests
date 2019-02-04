@@ -405,7 +405,7 @@ def testingVMsAreRequired()
 
 def getNewBranchAndVersion(String relativityBranchFallback, String relativityBranch, String paramRelativityBuildVersion, String paramRelativityBuildType, String sessionId)
 {
-	// TODO move logic from Jenkinsfile
+	// always use release branch
 	branch = relativityBranchFallback
 	echo "Changing Relativity branch to fallback: $branch"
 	buildVersion = getBuildArtifactsPath(this, "Relativity", branch, paramRelativityBuildVersion, paramRelativityBuildType, sessionId)
