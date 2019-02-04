@@ -97,7 +97,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 		}
 		
 		[Test, Order(20)]
-		[Ignore("TODO - create JIRA, it fails when whole fixture is executed, passes when first test is skipped.")]
+		[Ignore("REL-291039, it fails when whole fixture is executed, passes when first test is skipped.")]
 		public void ImportImagesFromLoadFile()
 		{
 			// Arrange
@@ -130,7 +130,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 		}
 
 		[Test, Order(30)]
-		[Ignore("TODO - create JIRA, it fails when whole fixture is executed, passes when first test is skipped.")]
+		[Ignore("REL-291039 it fails when whole fixture is executed, passes when first test is skipped.")]
 		public void ImportProductionsFromLoadFile()
 		{
 			// Arrange
