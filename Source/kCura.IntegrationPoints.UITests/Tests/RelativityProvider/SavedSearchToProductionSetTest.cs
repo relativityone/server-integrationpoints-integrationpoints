@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 		[Test]
 		[RetryOnError]
-		[Ignore("TODO - create JIRA")]
+		[Ignore("REL-291041")]
 		public void RelativityProvider_TC_RTR_IPS_01()
 		{
 			//Arrange
@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 		[Test]
 		[RetryOnError]
-		[Ignore("TODO - create JIRA")]
+		[Ignore("REL-291041")]
 		public void RelativityProvider_TC_RTR_IPS_02()
 		{
 			//Arrange
@@ -81,7 +81,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 		[Test]
 		[RetryOnError]
-		[Ignore("TODO - create JIRA")]
+		[Ignore("REL-291041")]
 		public void RelativityProvider_TC_RTR_IPS_03()
 		{
 			//Arrange
@@ -131,7 +131,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 		[Test]
 		[RetryOnError]
-		[Ignore("TODO - create JIRA")]
+		[Ignore("REL-291041")]
 		public void RelativityProvider_TC_RTR_IPS_05()
 		{
 			//Arrange
@@ -155,7 +155,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 		[Test]
 		[RetryOnError]
-		[Ignore("TODO - create JIRA")]
+		[Ignore("REL-291041")]
 		public void RelativityProvider_TC_RTR_IPS_06()
 		{
 			//Arrange
@@ -179,7 +179,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 		[Test]
 		[RetryOnError]
-		[Ignore("TODO - create JIRA")]
+		[Ignore("REL-291041")]
 		public void RelativityProvider_TC_RTR_IPS_07()
 		{
 			//Arrange
@@ -205,7 +205,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 		[Test]
 		[RetryOnError]
-		[Ignore("TODO - create JIRA")]
+		[Ignore("REL-291041")]
 		public void RelativityProvider_TC_RTR_IPS_08()
 		{
 			//Arrange
@@ -231,7 +231,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 		[Test]
 		[RetryOnError]
-		[Ignore("TODO - create JIRA")]
+		[Ignore("REL-291041")]
 		public void RelativityProvider_TC_RTR_IPS_09()
 		{
 			//Arrange
@@ -258,7 +258,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 		[Test]
 		[RetryOnError]
-		[Ignore("TODO - create JIRA")]
+		[Ignore("REL-291041")]
 		public void RelativityProvider_TC_RTR_IPS_10()
 		{
 			//Arrange
@@ -286,7 +286,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 		[Test]
 		[RetryOnError]
-		[Ignore("TODO - create JIRA")]
+		[Ignore("REL-291041")]
 		public void RelativityProvider_TC_RTR_IPS_11()
 		{
 			//Arrange
@@ -312,7 +312,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 		[Test]
 		[RetryOnError]
-		[Ignore("TODO - create JIRA")]
+		[Ignore("REL-291041")]
 		public void RelativityProvider_TC_RTR_IPS_12()
 		{
 			//Arrange
@@ -338,7 +338,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 		[Test]
 		[RetryOnError]
-		[Ignore("TODO - create JIRA")]
+		[Ignore("REL-291041")]
 		public void RelativityProvider_TC_RTR_IPS_13()
 		{
 			//Arrange
