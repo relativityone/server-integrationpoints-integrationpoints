@@ -445,6 +445,11 @@ def tryGetBuildVersion(String relativityBranch, String paramRelativityBuildVersi
 	}
 }
 
+def checkRelativityArtifacts(branch, version, type)
+{
+    return isTrue(powershell(returnStdout: true, script: "([System.IO.FileInfo]\"//bld-pkgs/Packages/Relativity/$branch/$version/MasterPackage/$type $version Relativity.exe\").Exists"))
+}
+
 def updateChromeToLatestVersion()
 {
 	try
