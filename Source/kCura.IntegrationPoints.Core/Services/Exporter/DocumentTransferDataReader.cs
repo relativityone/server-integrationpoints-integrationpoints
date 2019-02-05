@@ -124,13 +124,21 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 							result = _nativeFileSizes[CurrentArtifact.ArtifactId];
 							_nativeFileSizes.Remove(CurrentArtifact.ArtifactId);
 						}
+						else
+						{
+							result = false;
+						}
 						break;
 					case IntegrationPoints.Domain.Constants.SPECIAL_FILE_TYPE_FIELD:
 						if (_nativeFileTypes.ContainsKey(CurrentArtifact.ArtifactId))
 						{
 							result = _nativeFileTypes[CurrentArtifact.ArtifactId];
 							_nativeFileTypes.Remove(CurrentArtifact.ArtifactId);
-						} 
+						}
+						else
+						{
+							result = false;
+						}
 						break;
 					case IntegrationPoints.Domain.Constants.SPECIAL_FILE_SUPPORTED_BY_VIEWER_FIELD:
 						if (_documentsSupportedByViewer.Contains(CurrentArtifact.ArtifactId))
