@@ -9,6 +9,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Common.Constants;
+using Relativity.Kepler.Transport;
 using IObjectManager = Relativity.Services.Objects.IObjectManager;
 
 namespace kCura.IntegrationPoints.Data.Facades.Implementations
@@ -77,6 +78,18 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 				await Execute(x => x.UpdateAsync(workspaceArtifactID, request), startedInstrumentation)
 					.ConfigureAwait(false);
 			CompleteResultWithEventHandlers(result.EventHandlerStatuses, startedInstrumentation);
+			return result;
+		}
+
+		public async Task<IKeplerStream> StreamLongTextAsync(int workspaceArtifactID, RelativityObjectRef exportObject, FieldRef fieldRef)
+		{
+			IExternalServiceInstrumentationStarted startedInstrumentation = StartInstrumentation();
+			IKeplerStream result = 
+				await Execute(x => 
+						x.StreamLongTextAsync(workspaceArtifactID, exportObject, fieldRef), 
+						startedInstrumentation)
+				.ConfigureAwait(false);
+			startedInstrumentation.Completed();
 			return result;
 		}
 

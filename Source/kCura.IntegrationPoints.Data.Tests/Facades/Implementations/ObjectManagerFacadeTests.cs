@@ -4,6 +4,7 @@ using FluentAssertions;
 using kCura.IntegrationPoints.Data.Facades.Implementations;
 using Moq;
 using NUnit.Framework;
+using Relativity.Kepler.Transport;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 
@@ -127,6 +128,29 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 		}
 
 		[Test]
+		public async Task StreamLongTextAsync_ShouldReturnSameResultAsObjectManager()
+		{
+			//arrange
+			const int workspaceId = 101;
+			var relativityObjectRef = new RelativityObjectRef();
+			var fieldRef = new FieldRef();
+			IKeplerStream result = new Mock<IKeplerStream>().Object;
+
+			_objectManagerMock.Setup(x => x.StreamLongTextAsync(
+					It.IsAny<int>(),
+					It.IsAny<RelativityObjectRef>(),
+					It.IsAny<FieldRef>()))
+				.ReturnsAsync(result);
+
+			//act
+			IKeplerStream actualResult = await _sut.StreamLongTextAsync(workspaceId, relativityObjectRef, fieldRef);
+
+			//assert
+			result.Should().Be(actualResult);
+		}
+
+
+		[Test]
 		public void CreateAsync_ShouldThrowWhenObjectManagerNotInitialized()
 		{
 			//arrange
@@ -207,6 +231,24 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 			//assert
 			action.ShouldThrow<NullReferenceException>();
 		}
+
+		[Test]
+		public void StreamLongTextAsync_ShouldThrowWhenObjectManagerNotInitialized()
+		{
+			//arrange
+			const int workspaceArtifactID = 101;
+			var relativityObjectRef = new RelativityObjectRef();
+			var fieldRef = new FieldRef();
+
+			_sut = new ObjectManagerFacade(() => null);
+
+			//act
+			Func<Task> action = async () => await _sut.StreamLongTextAsync(workspaceArtifactID, relativityObjectRef, fieldRef);
+
+			//assert
+			action.ShouldThrow<NullReferenceException>();
+		}
+
 
 		[Test]
 		public async Task This_ShouldDisposeObjectManagerWhenItsAlreadyCreated()
