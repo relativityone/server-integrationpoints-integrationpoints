@@ -341,8 +341,17 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				executionIdentity: executionIdentity);
 		}
 
-		private async Task<T> SendQueryRequestAsync<T>(Func<IObjectManagerFacade, 
-			Task<T>> queryAction,
+		public Task<System.IO.Stream> StreamLongTextAsync(
+			int workspaceArtifactID,
+			RelativityObjectRef exportObject, 
+			FieldRef longTextField,
+			ExecutionIdentity executionIdentity)
+		{
+			return null;
+		}
+
+		private async Task<T> SendQueryRequestAsync<T>(
+			Func<IObjectManagerFacade, Task<T>> queryAction,
 			QueryRequest q,
 			BaseRdo rdo,
 			ExecutionIdentity executionIdentity)
