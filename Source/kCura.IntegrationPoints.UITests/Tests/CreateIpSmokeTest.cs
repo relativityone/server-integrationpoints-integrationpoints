@@ -10,6 +10,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 {
 	[TestFixture]
 	[Category(TestCategory.MISCELLANEOUS)]
+	[Ignore("These tests were deleted from develop branch.")]
 	public class CreateIpSmokeTest : UiTest
 	{
 		private IntegrationPointsAction _integrationPointsAction;
