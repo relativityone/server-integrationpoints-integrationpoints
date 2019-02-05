@@ -27,6 +27,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		public void SetUp()
 		{
 			_apiLogMock = new Mock<IAPILog>();
+			_apiLogMock.Setup(x => x.ForContext<RelativityObjectManager>()).Returns(_apiLogMock.Object);
 			_secretStoreHelperMock = new Mock<ISecretStoreHelper>();
 			_objectManagerFacadeFactoryMock = new Mock<Data.Facades.IObjectManagerFacadeFactory>();
 			_objectManagerFacadeMock = new Mock<Data.Facades.IObjectManagerFacade>();
@@ -49,7 +50,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.Throws<IntegrationPointsException>();
 
 			_objectManagerFacadeFactoryMock
-				.Setup(x => x.Create(ExecutionIdentity.CurrentUser))
+				.Setup(x => x.Create(It.IsAny<ExecutionIdentity>()))
 				.Returns(_objectManagerFacadeMock.Object);
 
 			Func<Task> action = async () => 
@@ -66,15 +67,15 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		public void StreamLongTextAsync_ItShouldThrowExceptionWrappedInIntegrationPointException()
 		{
 			_objectManagerFacadeMock
-				.Setup(x => 
+				.Setup(x =>
 					x.StreamLongTextAsync(
-						It.IsAny<int>(), 
-						It.IsAny<RelativityObjectRef>(), 
+						It.IsAny<int>(),
+						It.IsAny<RelativityObjectRef>(),
 						It.IsAny<FieldRef>()))
 				.Throws<Exception>();
 
 			_objectManagerFacadeFactoryMock
-				.Setup(x => x.Create(ExecutionIdentity.CurrentUser))
+				.Setup(x => x.Create(It.IsAny<ExecutionIdentity>()))
 				.Returns(_objectManagerFacadeMock.Object);
 
 			Func<Task> action = async () => 
@@ -102,7 +103,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.ReturnsAsync(keplerStreamMock.Object);
 
 			_objectManagerFacadeFactoryMock
-				.Setup(x => x.Create(ExecutionIdentity.CurrentUser))
+				.Setup(x => x.Create(It.IsAny<ExecutionIdentity>()))
 				.Returns(_objectManagerFacadeMock.Object);
 
 			Stream result = await _sut.StreamLongTextAsync(

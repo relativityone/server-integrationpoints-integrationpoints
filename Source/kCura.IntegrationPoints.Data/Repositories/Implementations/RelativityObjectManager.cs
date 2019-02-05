@@ -7,7 +7,9 @@ using Relativity.Services.Objects.DataContracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using Relativity.Kepler.Transport;
 using FieldRef = Relativity.Services.Objects.DataContracts.FieldRef;
 using QueryResult = Relativity.Services.Objects.DataContracts.QueryResult;
 using RelativityObjectRef = Relativity.Services.Objects.DataContracts.RelativityObjectRef;
@@ -347,7 +349,48 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			FieldRef longTextField,
 			ExecutionIdentity executionIdentity)
 		{
-			return null;
+			try
+			{
+				using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(executionIdentity))
+				{
+					IKeplerStream keplerStream = client.StreamLongTextAsync(
+							workspaceArtifactID,
+							exportObject,
+							longTextField)
+						.GetAwaiter()
+						.GetResult();
+					return keplerStream.GetStreamAsync();
+				}
+			}
+			catch (IntegrationPointsException)
+			{
+				throw;
+			}
+			catch (Exception ex)
+			{
+				string message = GetStreamLongTextAsyncErrorMessage(
+					workspaceArtifactID,
+					exportObject,
+					longTextField,
+					executionIdentity);
+				HandleObjectManagerException(ex, message);
+				throw;
+			}
+		}
+
+		private string GetStreamLongTextAsyncErrorMessage(
+			int workspaceArtifactID,
+			RelativityObjectRef exportObject,
+			FieldRef longTextField,
+			ExecutionIdentity executionIdentity)
+		{
+			var msgBuilder = new StringBuilder();
+			msgBuilder.Append($"Error occurred when calling {nameof(StreamLongTextAsync)} method. ");
+			msgBuilder.Append($"Workspace: ({workspaceArtifactID}) ");
+			msgBuilder.Append($"ExportObject: ({exportObject?.ArtifactID}) ");
+			msgBuilder.Append($"Long text field: {longTextField?.Name} ({longTextField?.ArtifactID}) ");
+			msgBuilder.Append($"Execution identity: {executionIdentity}");
+			return msgBuilder.ToString();
 		}
 
 		private async Task<T> SendQueryRequestAsync<T>(
