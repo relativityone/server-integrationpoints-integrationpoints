@@ -7,17 +7,17 @@ using Relativity.Sync.Configuration;
 namespace Relativity.Sync.Tests.Integration
 {
 	[TestFixture]
-	internal sealed class DestinationWorkspaceTagsCreationStepTests : FailingStepsBase<IDestinationWorkspaceTagsCreationConfiguration>
+	internal sealed class SourceWorkspaceTagsCreationStepTests : FailingStepsBase<ISourceWorkspaceTagsCreationConfiguration>
 	{
 		protected override void AssertExecutedSteps(List<Type> executorTypes)
 		{
-			executorTypes.Should().Contain(x => x == typeof(ISourceWorkspaceTagsCreationConfiguration));
+			executorTypes.Should().Contain(x => x == typeof(IDestinationWorkspaceTagsCreationConfiguration));
 			executorTypes.Should().Contain(x => x == typeof(IDataDestinationInitializationConfiguration));
 		}
 
 		protected override int ExpectedNumberOfExecutedSteps()
 		{
-			// validation, permissions, cleanup, storage init, object types, snapshot, source workspace tags, data destination init, notification
+			// validation, permissions, cleanup, storage init, object types, snapshot, destination workspace tags, data destination init, notification
 			const int expectedNumberOfExecutedSteps = 9;
 			return expectedNumberOfExecutedSteps;
 		}

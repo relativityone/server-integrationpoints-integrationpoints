@@ -26,8 +26,6 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 		public bool IsPreviousRunArtifactIdSet { get; set; }
 		public int PreviousRunArtifactId { get; set; }
 		public bool Retrying { get; set; }
-		public bool IsTagArtifactIdSet { get; set; }
-		public int TagArtifactId { get; set; }
 		public bool IsSourceWorkspaceArtifactTypeIdSet { get; set; }
 
 		public void SetSourceWorkspaceArtifactTypeId(int artifactTypeId)
@@ -45,6 +43,12 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 		public int SourceWorkspaceArtifactId { get; set; }
 		public int DestinationWorkspaceArtifactId { get; set; }
 		public int JobArtifactId { get; set; }
+		public bool IsDestinationWorkspaceTagArtifactIdSet { get; set; }
+		public void SetDestinationWorkspaceTagArtifactId(int artifactId)
+		{
+			// Method intentionally left empty.
+		}
+
 		public int SourceWorkspaceArtifactTypeId { get; set; }
 		public int SourceJobArtifactTypeId { get; set; }
 		public bool IsSourceJobTagSet { get; set; }
