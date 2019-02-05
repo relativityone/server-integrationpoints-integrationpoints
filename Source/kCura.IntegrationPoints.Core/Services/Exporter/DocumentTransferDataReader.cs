@@ -222,14 +222,14 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				DataRow row = nativeTypeForGivenDocument.Table.Rows[index];
 				var documentArtifactId = (int)row[documentArtifactIdColumn];
 				string nativeFileType = Convert.ToString(row[relativityNativeTypeColumn]);
-				var isSupportedByViewer = (bool) row[supportedByViewerColumn];
 
 				if (!string.IsNullOrEmpty(nativeFileType))
 				{
 					_nativeFileTypes.Add(documentArtifactId, nativeFileType);
 				}
 
-				if (isSupportedByViewer)
+				bool supportedByViewer;
+				if (bool.TryParse(row[supportedByViewerColumn].ToString(), out supportedByViewer) && supportedByViewer)
 				{
 					_documentsSupportedByViewer.Add(documentArtifactId);
 				}
