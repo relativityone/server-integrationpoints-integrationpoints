@@ -73,7 +73,10 @@ namespace kCura.IntegrationPoints.RelativitySync.Adapters
 				Model = IntegrationPointModel.FromIntegrationPoint(integrationPoint),
 				ObjectTypeGuid = ObjectTypeGuids.IntegrationPoint,
 				SourceProvider = sourceProvider,
-				UserId = -1
+				UserId = -1 // User permissions check is a separate step in Sync flow.
+                // Putting -1 as UserId here, allows ValidationExecutor to pass
+                // successfully (because it's supposed to validate only IntegrationPoint model,
+                // not user permissions).
 			};
 
 			IValidationExecutor validationExecutor = _validationExecutorFactory.CreateValidationExecutor();
