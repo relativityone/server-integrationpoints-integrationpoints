@@ -5,7 +5,7 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 {
 	internal sealed class ConfigurationStub : IDataDestinationFinalizationConfiguration, IDataDestinationInitializationConfiguration, IDataSourceSnapshotConfiguration,
 		IDestinationWorkspaceObjectTypesCreationConfiguration, IDestinationWorkspaceSavedSearchCreationConfiguration, IDestinationWorkspaceTagsCreationConfiguration, IJobCleanupConfiguration,
-		IJobStatusConsolidationConfiguration, INotificationConfiguration, IPermissionsCheckConfiguration, IPreviousRunCleanupConfiguration, ISnapshotPartitionConfiguration,
+		IJobStatusConsolidationConfiguration, INotificationConfiguration, IPermissionsCheckConfiguration, ISnapshotPartitionConfiguration,
 		ISourceWorkspaceTagsCreationConfiguration, ISynchronizationConfiguration, ITemporaryStorageInitializationConfiguration, IValidationConfiguration
 	{
 		public string DataDestinationName { get; set; }
@@ -26,9 +26,6 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 		public int StorageId { get; set; }
 		public bool IsJobStatusArtifactIdSet { get; set; }
 		public int JobStatusArtifactId { get; set; }
-		public bool IsPreviousRunArtifactIdSet { get; set; }
-		public int PreviousRunArtifactId { get; set; }
-		public bool Retrying { get; set; }
 		public bool IsSourceWorkspaceArtifactTypeIdSet { get; set; }
 
 		public void SetSourceWorkspaceArtifactTypeId(int artifactTypeId)

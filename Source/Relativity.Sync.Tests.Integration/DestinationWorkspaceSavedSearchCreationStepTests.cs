@@ -15,9 +15,9 @@ namespace Relativity.Sync.Tests.Integration
 
 		protected override int ExpectedNumberOfExecutedSteps()
 		{
-			// validation, permissions, cleanup, storage init, object types, snapshot
+			// validation, permissions, storage init, object types, snapshot
 			// source workspace tags, destination workspace tags
-			const int expectedNumberOfExecutedSteps = 10;
+			const int expectedNumberOfExecutedSteps = 9;
 			return expectedNumberOfExecutedSteps;
 		}
 	}
