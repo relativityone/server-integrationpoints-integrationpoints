@@ -1,9 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using kCura.EDDS.DocumentCompareGateway;
 using kCura.IntegrationPoints.Core.Services.Exporter.Base;
-using kCura.IntegrationPoints.Core.Toggles;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
@@ -11,7 +10,6 @@ using Relativity;
 using Relativity.API;
 using Relativity.Core;
 using Relativity.Core.Service;
-using Relativity.Toggles;
 using FileQuery = Relativity.Core.Service.FileQuery;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
@@ -42,7 +40,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			BaseServiceContext context,
 			IScratchTableRepository[] scratchTableRepositories,
 			IILongTextStreamFactory longTextStreamFactory,
-			IToggleProvider toggleProvider,
 			IAPILog logger,
 			bool useDynamicFolderPath) :
 			base(relativityExportService, fieldMappings, context, scratchTableRepositories, logger, useDynamicFolderPath)
