@@ -42,8 +42,7 @@ namespace Relativity.Sync.Tests.Integration
 			_executorTypes.Count.Should().Be(ExpectedNumberOfExecutedSteps());
 
 			// should contain steps run in parallel
-			//_executorTypes.Should().Contain(x => x == typeof(IDestinationWorkspaceTagsCreationConfiguration));
-			//_executorTypes.Should().Contain(x => x == typeof(IDataDestinationInitializationConfiguration));
+			AssertExecutedSteps(_executorTypes);
 		}
 
 		protected abstract void AssertExecutedSteps(List<Type> executorTypes);
