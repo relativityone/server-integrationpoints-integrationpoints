@@ -14,13 +14,12 @@ namespace kCura.IntegrationPoints.RelativitySync
 		private int? _jobTagArtifactId;
 		private int? _workspaceTagArtifactId;
 		private int? _savedSearchArtifactId;
-		private int? _tagArtifactId;
 		private int? _sourceWorkspaceArtifactTypeId;
 		private int? _sourceJobArtifactTypeId;
 		private int? _sourceJobTagArtifactId;
-		private string _sourceJobTagName;
 		private int? _sourceWorkspaceTagArtifactId;
 		private string _sourceWorkspaceTagName;
+		private int? _destinationWorkspaceTagArtifactId;
 
 		public SyncConfiguration(int jobId, SourceConfiguration sourceConfiguration, ImportSettings destinationConfiguration)
 		{
@@ -30,6 +29,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			DestinationWorkspaceArtifactId = destinationConfiguration.CaseArtifactId;
 			JobArtifactId = jobId;
 			SourceWorkspaceArtifactId = sourceConfiguration.SourceWorkspaceArtifactId;
+			CreateSavedSearchForTags = destinationConfiguration.CreateSavedSearchForTagging;
 		}
 
 		public string DataDestinationName => string.Empty;
@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		public bool AreBatchesIdsSet => true;
 
 		public List<int> BatchesIds { get; set; } = new List<int>();
-		
+
 		public int JobTagArtifactId
 		{
 			get
@@ -59,7 +59,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 			set => _jobTagArtifactId = value;
 		}
-		
+
 		public int WorkspaceTagArtifactId
 		{
 			get
@@ -74,21 +74,9 @@ namespace kCura.IntegrationPoints.RelativitySync
 			set => _workspaceTagArtifactId = value;
 		}
 
+		public bool CreateSavedSearchForTags { get; }
+
 		public bool IsSavedSearchArtifactIdSet => _savedSearchArtifactId.HasValue;
-
-		public int SavedSearchArtifactId
-		{
-			get
-			{
-				if (!_savedSearchArtifactId.HasValue)
-				{
-					throw new ArgumentException($"Initialize {nameof(SavedSearchArtifactId)} first");
-				}
-
-				return _savedSearchArtifactId.Value;
-			}
-			set => _savedSearchArtifactId = value;
-		}
 
 		public bool IsStorageIdSet => true;
 
@@ -104,22 +92,6 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 		public bool Retrying => false;
 
-		public bool IsTagArtifactIdSet => _tagArtifactId.HasValue;
-
-		public int TagArtifactId
-		{
-			get
-			{
-				if (!_tagArtifactId.HasValue)
-				{
-					throw new ArgumentException($"Initialize {nameof(TagArtifactId)} first");
-				}
-
-				return _tagArtifactId.Value;
-			}
-			set => _tagArtifactId = value;
-		}
-
 		public void SetSourceWorkspaceArtifactTypeId(int artifactTypeId)
 		{
 			_sourceWorkspaceArtifactTypeId = artifactTypeId;
@@ -133,6 +105,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		public bool IsSourceWorkspaceArtifactTypeIdSet => _sourceWorkspaceArtifactTypeId.HasValue;
 
 		public int JobArtifactId { get; }
+		public bool IsDestinationWorkspaceTagArtifactIdSet => _destinationWorkspaceTagArtifactId.HasValue;
 		public int SourceWorkspaceArtifactTypeId => _sourceWorkspaceArtifactTypeId.Value;
 		public int SourceJobArtifactTypeId => _sourceJobArtifactTypeId.Value;
 
@@ -144,7 +117,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		public void SetSourceJobTag(int artifactId, string name)
 		{
 			_sourceJobTagArtifactId = artifactId;
-			_sourceJobTagName = name;
+			SourceJobTagName = name;
 		}
 
 		public void SetSourceWorkspaceTag(int artifactId, string name)
@@ -154,6 +127,21 @@ namespace kCura.IntegrationPoints.RelativitySync
 		}
 
 		public int SourceWorkspaceArtifactId { get; }
+
+		public void SetDestinationWorkspaceTagArtifactId(int artifactId)
+		{
+			_destinationWorkspaceTagArtifactId = artifactId;
+		}
+
+		public void SetSavedSearchArtifactId(int artifactId)
+		{
+			_savedSearchArtifactId = artifactId;
+		}
+
 		public int DestinationWorkspaceArtifactId { get; }
+		public string SourceJobTagName { get; private set; }
+
+		public int SourceJobTagArtifactId => _sourceJobTagArtifactId.Value;
+		public int SourceWorkspaceTagArtifactId => _sourceWorkspaceTagArtifactId.Value;
 	}
 }
