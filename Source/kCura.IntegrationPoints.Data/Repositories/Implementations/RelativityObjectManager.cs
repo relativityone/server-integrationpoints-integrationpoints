@@ -344,7 +344,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		}
 
 		public Task<System.IO.Stream> StreamLongTextAsync(
-			int workspaceArtifactID,
 			RelativityObjectRef exportObject, 
 			FieldRef longTextField,
 			ExecutionIdentity executionIdentity)
@@ -354,7 +353,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(executionIdentity))
 				{
 					IKeplerStream keplerStream = client.StreamLongTextAsync(
-							workspaceArtifactID,
+							_workspaceArtifactId,
 							exportObject,
 							longTextField)
 						.GetAwaiter()
@@ -369,7 +368,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			catch (Exception ex)
 			{
 				string message = GetStreamLongTextAsyncErrorMessage(
-					workspaceArtifactID,
+					_workspaceArtifactId,
 					exportObject,
 					longTextField,
 					executionIdentity);

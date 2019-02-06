@@ -55,7 +55,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 
 			Func<Task> action = async () => 
 				await _sut.StreamLongTextAsync(
-					_WORKSPACE_ARTIFACT_ID, 
 					new RelativityObjectRef(), 
 					new FieldRef(), 
 					ExecutionIdentity.System);
@@ -80,7 +79,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 
 			Func<Task> action = async () => 
 				await _sut.StreamLongTextAsync(
-					_WORKSPACE_ARTIFACT_ID, 
 					new RelativityObjectRef(), 
 					new FieldRef(), 
 					ExecutionIdentity.System);
@@ -107,7 +105,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.Returns(_objectManagerFacadeMock.Object);
 
 			Stream result = await _sut.StreamLongTextAsync(
-					_WORKSPACE_ARTIFACT_ID, 
 					new RelativityObjectRef(), 
 					new FieldRef(), 
 					ExecutionIdentity.System);
