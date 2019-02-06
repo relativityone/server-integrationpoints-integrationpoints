@@ -445,7 +445,7 @@ NUGET
       Microsoft.NETCore.Platforms (>= 1.1)
     Polly (6.1.2)
       NETStandard.Library (>= 1.6.1)
-    Relativity.Sync (0.0.1-dev12)
+    Relativity.Sync (0.0.1-beta36)
       Autofac (>= 4.8 < 5.0)
       Banzai (>= 3.0 < 4.0)
       Banzai.Autofac (>= 3.0 < 4.0)
