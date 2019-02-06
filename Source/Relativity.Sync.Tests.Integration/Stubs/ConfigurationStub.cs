@@ -16,8 +16,6 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 		public bool AreBatchesIdsSet { get; set; }
 		public List<int> BatchesIds { get; set; }
 		public int JobTagArtifactId { get; set; }
-		public bool IsWorkspaceTagArtifactIdSet { get; set; }
-		public bool IsJobTagArtifactIdSet { get; set; }
 		public int WorkspaceTagArtifactId { get; set; }
 		public bool IsSavedSearchArtifactIdSet { get; set; }
 		public int SavedSearchArtifactId { get; set; }
@@ -28,7 +26,43 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 		public bool IsPreviousRunArtifactIdSet { get; set; }
 		public int PreviousRunArtifactId { get; set; }
 		public bool Retrying { get; set; }
-		public bool IsTagArtifactIdSet { get; set; }
-		public int TagArtifactId { get; set; }
+		public bool IsSourceWorkspaceArtifactTypeIdSet { get; set; }
+
+		public void SetSourceWorkspaceArtifactTypeId(int artifactTypeId)
+		{
+			// Method intentionally left empty.
+		}
+
+		public bool IsSourceJobArtifactTypeIdSet { get; set; }
+
+		public void SetSourceJobArtifactTypeId(int artifactTypeId)
+		{
+			// Method intentionally left empty.
+		}
+
+		public int SourceWorkspaceArtifactId { get; set; }
+		public int DestinationWorkspaceArtifactId { get; set; }
+		public int JobArtifactId { get; set; }
+		public bool IsDestinationWorkspaceTagArtifactIdSet { get; set; }
+		public void SetDestinationWorkspaceTagArtifactId(int artifactId)
+		{
+			// Method intentionally left empty.
+		}
+
+		public int SourceWorkspaceArtifactTypeId { get; set; }
+		public int SourceJobArtifactTypeId { get; set; }
+		public bool IsSourceJobTagSet { get; set; }
+
+		public void SetSourceJobTag(int artifactId, string name)
+		{
+			// Method intentionally left empty.
+		}
+
+		public bool IsSourceWorkspaceTagSet { get; set; }
+
+		public void SetSourceWorkspaceTag(int artifactId, string name)
+		{
+			// Method intentionally left empty.
+		}
 	}
 }
