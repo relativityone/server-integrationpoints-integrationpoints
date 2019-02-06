@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 		public async Task ItShouldAlwaysReturnTrueForCanExecute()
 		{
 			Mock<IValidationExecutorFactory> factory = new Mock<IValidationExecutorFactory>();
-			Validator validator = new Validator(Container, 0, factory.Object);
+			Validator validator = new Validator(Container, factory.Object);
 			bool canExecute = await validator.CanExecuteAsync(_config, CancellationToken.None).ConfigureAwait(false);
 			Assert.IsTrue(canExecute);
 		}
@@ -38,9 +38,9 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 		public async Task ItShouldPassValidationOnValidIntegrationPointModel()
 		{
 			IntegrationPointModel integrationPointModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOverlay, "SomeName", "Append Only");
-			integrationPointModel = CreateOrUpdateIntegrationPoint(integrationPointModel);
+			CreateOrUpdateIntegrationPoint(integrationPointModel);
 
-			Validator validator = new Validator(Container, integrationPointModel.ArtifactID, new ValidationExecutorFactory(Container));
+			Validator validator = new Validator(Container, new ValidationExecutorFactory(Container));
 			await validator.ExecuteAsync(_config, CancellationToken.None).ConfigureAwait(false);
 
 			Assert.Pass();

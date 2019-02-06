@@ -158,8 +158,8 @@ namespace kCura.IntegrationPoints.RelativitySync
 			var containerBuilder = new ContainerBuilder();
 			containerBuilder.RegisterInstance(SyncConfigurationFactory.Create(_job, _ripContainer, _logger)).AsImplementedInterfaces().SingleInstance();
 			containerBuilder.RegisterInstance(metrics).As<ISyncMetrics>().SingleInstance();
-			containerBuilder.RegisterType<IValidationExecutorFactory>().As<ValidationExecutorFactory>();
-			containerBuilder.Register(context => new Validator(_ripContainer, _job.IntegrationPointId, context.Resolve<IValidationExecutorFactory>()))
+			containerBuilder.RegisterType<ValidationExecutorFactory>().As<IValidationExecutorFactory>();
+			containerBuilder.Register(context => new Validator(_ripContainer, context.Resolve<IValidationExecutorFactory>()))
 				.As<IExecutor<IValidationConfiguration>>()
 				.As<IExecutionConstrains<IValidationConfiguration>>();
 			IContainer container = containerBuilder.Build();

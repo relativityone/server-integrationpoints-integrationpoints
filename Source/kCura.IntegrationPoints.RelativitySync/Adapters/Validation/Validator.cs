@@ -17,14 +17,14 @@ namespace kCura.IntegrationPoints.RelativitySync.Adapters
 	{
 		private readonly IAPILog _logger;
 		private readonly IWindsorContainer _container;
-		private readonly int _integrationPointId;
+		private readonly IExtendedJob _extendedJob;
 		private readonly IValidationExecutorFactory _validationExecutorFactory;
 
-		public Validator(IWindsorContainer container, int integrationPointId, IValidationExecutorFactory validationExecutorFactory)
+		public Validator(IWindsorContainer container, IValidationExecutorFactory validationExecutorFactory)
 		{
 			_container = container;
-			_integrationPointId = integrationPointId;
 			_validationExecutorFactory = validationExecutorFactory;
+			_extendedJob = _container.Resolve<IExtendedJob>();
 			_logger = _container.Resolve<IAPILog>();
 		}
 
@@ -100,17 +100,18 @@ namespace kCura.IntegrationPoints.RelativitySync.Adapters
 
 		private IntegrationPoint GetIntegrationPoint()
 		{
+			int integrationPointId = _extendedJob.IntegrationPointId;
 			try
 			{
-				_logger.LogDebug("Retrieving Integration Point with id: {integrationPointId}", _integrationPointId);
+				_logger.LogDebug("Retrieving Integration Point with id: {integrationPointId}", integrationPointId);
 				IIntegrationPointService integrationPointService = _container.Resolve<IIntegrationPointService>();
-				IntegrationPoint integrationPoint = integrationPointService.GetRdo(_integrationPointId);
-				_logger.LogInformation("Integration Point with id: {integrationPointId} retrieved successfully.", _integrationPointId);
+				IntegrationPoint integrationPoint = integrationPointService.GetRdo(integrationPointId);
+				_logger.LogInformation("Integration Point with id: {integrationPointId} retrieved successfully.", integrationPointId);
 				return integrationPoint;
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, "Failed to retrieve Integration Point with id: {integrationPointId}", _integrationPointId);
+				_logger.LogError(ex, "Failed to retrieve Integration Point with id: {integrationPointId}", integrationPointId);
 				throw;
 			}
 		}
