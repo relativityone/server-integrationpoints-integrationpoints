@@ -15,6 +15,13 @@ namespace kCura.IntegrationPoints.RelativitySync
 		private int? _workspaceTagArtifactId;
 		private int? _savedSearchArtifactId;
 		private int? _tagArtifactId;
+		private int _destinationWorkspaceArtifactId;
+		private int _sourceWorkspaceArtifactId;
+		private int _destinationWorkspaceArtifactId1;
+		private int _jobArtifactId;
+		private int _destinationWorkspaceArtifactId2;
+		private int _sourceWorkspaceArtifactId1;
+		private int _jobArtifactId1;
 
 		public SyncConfiguration(int jobId, SourceConfiguration sourceConfiguration, ImportSettings destinationConfiguration)
 		{
@@ -114,5 +121,49 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 			set => _tagArtifactId = value;
 		}
+
+		public void SetSourceWorkspaceArtifactTypeId(int artifactTypeId)
+		{
+		}
+
+		public void SetSourceJobArtifactTypeId(int artifactTypeId)
+		{
+		}
+
+		public bool IsSourceWorkspaceArtifactTypeIdSet { get; }
+		public bool IsSourceJobArtifactTypeIdSet { get; }
+		public void SetSourceJobTag(int artifactId, string name)
+		{
+		}
+
+		public void SetSourceWorkspaceTag(int artifactId, string name)
+		{
+		}
+
+		int IDestinationWorkspaceTagsCreationConfiguration.SourceWorkspaceArtifactId => _sourceWorkspaceArtifactId;
+
+		int ISourceWorkspaceTagsCreationConfiguration.JobArtifactId => _jobArtifactId1;
+
+		public bool IsDestinationWorkspaceTagArtifactIdSet { get; }
+
+		public void SetDestinationWorkspaceTagArtifactId(int artifactId)
+		{
+			throw new NotImplementedException();
+		}
+
+		int ISourceWorkspaceTagsCreationConfiguration.DestinationWorkspaceArtifactId => _destinationWorkspaceArtifactId2;
+
+		int ISourceWorkspaceTagsCreationConfiguration.SourceWorkspaceArtifactId => _sourceWorkspaceArtifactId1;
+
+		int IDestinationWorkspaceTagsCreationConfiguration.DestinationWorkspaceArtifactId => _destinationWorkspaceArtifactId1;
+
+		int IDestinationWorkspaceTagsCreationConfiguration.JobArtifactId => _jobArtifactId;
+
+		public int SourceWorkspaceArtifactTypeId { get; }
+		public int SourceJobArtifactTypeId { get; }
+		public bool IsSourceJobTagSet { get; }
+		public bool IsSourceWorkspaceTagSet { get; }
+
+		int IDestinationWorkspaceObjectTypesCreationConfiguration.DestinationWorkspaceArtifactId => _destinationWorkspaceArtifactId;
 	}
 }

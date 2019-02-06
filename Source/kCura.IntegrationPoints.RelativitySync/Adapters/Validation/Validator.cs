@@ -17,15 +17,15 @@ namespace kCura.IntegrationPoints.RelativitySync.Adapters
 	{
 		private readonly IAPILog _logger;
 		private readonly IWindsorContainer _container;
-		private readonly IExtendedJob _job;
+		private readonly int _integrationPointId;
 		private readonly IValidationExecutorFactory _validationExecutorFactory;
 
-		public Validator(IWindsorContainer container, IExtendedJob job, IValidationExecutorFactory validationExecutorFactory, IAPILog logger)
+		public Validator(IWindsorContainer container, int integrationPointId, IValidationExecutorFactory validationExecutorFactory)
 		{
 			_container = container;
-			_job = job;
+			_integrationPointId = integrationPointId;
 			_validationExecutorFactory = validationExecutorFactory;
-			_logger = logger;
+			_logger = _container.Resolve<IAPILog>();
 		}
 
 		public Task<bool> CanExecuteAsync(IValidationConfiguration configuration, CancellationToken token)
@@ -35,15 +35,15 @@ namespace kCura.IntegrationPoints.RelativitySync.Adapters
 
 		public async Task ExecuteAsync(IValidationConfiguration configuration, CancellationToken token)
 		{
-			_logger.LogDebug("Validating job");
+			_logger.LogDebug("Validating IntegrationPoint");
 
 			await Task.Yield();
-			ValidateIntegrationPointModel();
+			ValidateIntegrationPoint();
 
 			_logger.LogDebug("Validation successful");
 		}
 
-		private void ValidateIntegrationPointModel()
+		private void ValidateIntegrationPoint()
 		{
 			IntegrationPoint integrationPoint = GetIntegrationPoint();
 
@@ -100,18 +100,17 @@ namespace kCura.IntegrationPoints.RelativitySync.Adapters
 
 		private IntegrationPoint GetIntegrationPoint()
 		{
-			int integrationPointId = _job.IntegrationPointId;
 			try
 			{
-				_logger.LogDebug("Retrieving Integration Point with id: {integrationPointId}", integrationPointId);
+				_logger.LogDebug("Retrieving Integration Point with id: {integrationPointId}", _integrationPointId);
 				IIntegrationPointService integrationPointService = _container.Resolve<IIntegrationPointService>();
-				IntegrationPoint integrationPoint = integrationPointService.GetRdo(integrationPointId);
-				_logger.LogInformation("Integration Point with id: {integrationPointId} retrieved successfully.", integrationPointId);
+				IntegrationPoint integrationPoint = integrationPointService.GetRdo(_integrationPointId);
+				_logger.LogInformation("Integration Point with id: {integrationPointId} retrieved successfully.", _integrationPointId);
 				return integrationPoint;
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, "Failed to retrieve Integration Point with id: {integrationPointId}", integrationPointId);
+				_logger.LogError(ex, "Failed to retrieve Integration Point with id: {integrationPointId}", _integrationPointId);
 				throw;
 			}
 		}

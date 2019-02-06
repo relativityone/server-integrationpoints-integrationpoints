@@ -1,44 +1,49 @@
 ﻿using System;
-using Castle.MicroKernel.Registration;
-using Castle.Windsor;
-using kCura.IntegrationPoint.Tests.Core;
+using System.Threading;
+using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.RelativitySync.Adapters;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 {
-	internal sealed class ValidatorTests : IntegrationTestBase
+	internal sealed class ValidatorTests : RelativityProviderTemplate
 	{
-		private Validator _validator;
 		private ValidationConfigurationStub _config;
-		private int _workspaceId;
 
-		[SetUp]
-		public void SetUp()
+		public ValidatorTests() : base(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())
 		{
-			_workspaceId = Workspace.CreateWorkspace(Guid.NewGuid().ToString(), SourceProviderTemplate.WorkspaceTemplates.NEW_CASE_TEMPLATE);
+		}
 
-			IWindsorContainer container = new WindsorContainer();
-			container.Register(Component.For<IHelper>().Instance(Helper));
-
-			IExtendedJob job = new Mock<IExtendedJob>().Object;
-			IValidationExecutorFactory validationExecutorFactory = new Mock<IValidationExecutorFactory>().Object;
-			IAPILog logger = new Mock<IAPILog>().Object;
-
-			_validator = new Validator(container, job, validationExecutorFactory, logger);
+		public override void TestSetup()
+		{
+			base.TestSetup();
 			_config = new ValidationConfigurationStub();
 		}
 
-		[TearDown]
-		public void TearDown()
+		[Test]
+		public async Task ItShouldAlwaysReturnTrueForCanExecute()
 		{
-			if (_workspaceId != 0)
-			{
-				Workspace.DeleteWorkspace(_workspaceId);
-			}
+			Mock<IValidationExecutorFactory> factory = new Mock<IValidationExecutorFactory>();
+			Validator validator = new Validator(Container, 0, factory.Object);
+			bool canExecute = await validator.CanExecuteAsync(_config, CancellationToken.None).ConfigureAwait(false);
+			Assert.IsTrue(canExecute);
+		}
+
+		[Test]
+		public async Task ItShouldPassValidationOnValidIntegrationPointModel()
+		{
+			IntegrationPointModel integrationPointModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOverlay, "SomeName", "Append Only");
+			integrationPointModel = CreateOrUpdateIntegrationPoint(integrationPointModel);
+
+			Validator validator = new Validator(Container, integrationPointModel.ArtifactID, new ValidationExecutorFactory(Container));
+			await validator.ExecuteAsync(_config, CancellationToken.None).ConfigureAwait(false);
+
+			Assert.Pass();
 		}
 	}
 }
