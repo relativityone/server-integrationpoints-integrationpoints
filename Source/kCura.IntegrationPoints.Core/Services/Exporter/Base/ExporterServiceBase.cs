@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 		protected readonly HashSet<int> SingleChoiceFieldsArtifactIds;
 		protected readonly IAPILog Logger;
 		protected readonly IExporter Exporter;
-		protected readonly IILongTextStreamFactory LongTextStreamFactory;
+		protected readonly IRelativityObjectManager RelativityObjectManager;
 		protected readonly IJobStopManager JobStopManager;
 		protected readonly int[] ArtifactViewFieldIds;
 		protected readonly int[] FieldArtifactIds;
@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 		/// </summary>
 		protected ExporterServiceBase(
 			IExporter exporter,
-			IILongTextStreamFactory longTextStreamFactory,
+			IRelativityObjectManager relativityObjectManager,
 			IJobStopManager jobStopManager,
 			IHelper helper,
 			IQueryFieldLookupRepository queryFieldLookupRepository,
@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 			: this(mappedFields, jobStopManager, helper)
 		{
 			Exporter = exporter;
-			LongTextStreamFactory = longTextStreamFactory;
+			RelativityObjectManager = relativityObjectManager;
 			ArtifactViewFieldIds = artifactViewFieldIds;
 			ExportJobInfo = Exporter.InitializeExport(0, null, 0);
 			LongTextFieldArtifactIds = longTextField;
@@ -102,7 +102,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 			}
 
 			Logger.LogInformation("Creating LongTextStreamFactory. DataGridContext == null : {isDgContextNull}", DataGridContext == null);
-			LongTextStreamFactory = new ExportApiDataHelper.RelativityLongTextStreamFactory(BaseContext, DataGridContext, SourceConfiguration.SourceWorkspaceArtifactId);
 		}
 
 		protected ExporterServiceBase(FieldMap[] mappedFields, IJobStopManager jobStopManager, IHelper helper)

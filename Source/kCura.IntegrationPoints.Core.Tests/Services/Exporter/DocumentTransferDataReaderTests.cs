@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				_templateFieldEntries,
 				_context,
 				_scratchRepositories, 
-				_longTextStreamFactory, 
+				_relativityObjectManager,
 				Substitute.For<IAPILog>(), 
 				false);
 		}
@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				fieldMappings,
 				context,
 				scratchTableRepositories,
-				_longTextStreamFactory, 
+				_relativityObjectManager,
 				Substitute.For<IAPILog>(), 
 				false);
 		}
