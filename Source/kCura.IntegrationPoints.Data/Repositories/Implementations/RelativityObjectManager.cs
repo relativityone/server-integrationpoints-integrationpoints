@@ -344,17 +344,18 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		}
 
 		public Task<System.IO.Stream> StreamLongTextAsync(
-			int workspaceArtifactID,
-			RelativityObjectRef exportObject, 
-			FieldRef longTextField,
+			int relativityObjectArtifactId,
+			int longTextFieldArtifactId,
 			ExecutionIdentity executionIdentity)
 		{
 			try
 			{
 				using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(executionIdentity))
 				{
+					var exportObject = new RelativityObjectRef() {ArtifactID = relativityObjectArtifactId};
+					var longTextField = new FieldRef() {ArtifactID = longTextFieldArtifactId};
 					IKeplerStream keplerStream = client.StreamLongTextAsync(
-							workspaceArtifactID,
+							_workspaceArtifactId,
 							exportObject,
 							longTextField)
 						.GetAwaiter()
@@ -369,9 +370,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			catch (Exception ex)
 			{
 				string message = GetStreamLongTextAsyncErrorMessage(
-					workspaceArtifactID,
-					exportObject,
-					longTextField,
+					_workspaceArtifactId,
+					relativityObjectArtifactId,
+					longTextFieldArtifactId,
 					executionIdentity);
 				HandleObjectManagerException(ex, message);
 				throw;
@@ -380,15 +381,15 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		private string GetStreamLongTextAsyncErrorMessage(
 			int workspaceArtifactID,
-			RelativityObjectRef exportObject,
-			FieldRef longTextField,
+			int relativityObjectArtifactId,
+			int longTextFieldArtifactId,
 			ExecutionIdentity executionIdentity)
 		{
 			var msgBuilder = new StringBuilder();
 			msgBuilder.Append($"Error occurred when calling {nameof(StreamLongTextAsync)} method. ");
 			msgBuilder.Append($"Workspace: ({workspaceArtifactID}) ");
-			msgBuilder.Append($"ExportObject: ({exportObject?.ArtifactID}) ");
-			msgBuilder.Append($"Long text field: {longTextField?.Name} ({longTextField?.ArtifactID}) ");
+			msgBuilder.Append($"ExportObject artifact id: ({relativityObjectArtifactId}) ");
+			msgBuilder.Append($"Long text field artifact id: ({longTextFieldArtifactId}) ");
 			msgBuilder.Append($"Execution identity: {executionIdentity}");
 			return msgBuilder.ToString();
 		}

@@ -35,6 +35,6 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		int QueryTotalCount(QueryRequest q, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser);
 		Task<int> QueryTotalCountAsync(QueryRequest q, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser);
 
-		Task<System.IO.Stream> StreamLongTextAsync(int workspaceArtifactID, RelativityObjectRef exportObject, FieldRef longTextField, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser);
+		Task<System.IO.Stream> StreamLongTextAsync(int relativityObjectArtifactId, int longTextFieldArtifactId, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser);
 	}
 }

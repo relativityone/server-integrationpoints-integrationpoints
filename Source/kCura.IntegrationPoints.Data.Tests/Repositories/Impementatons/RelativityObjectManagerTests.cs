@@ -22,6 +22,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		private RelativityObjectManager _sut;
 
 		private const int _WORKSPACE_ARTIFACT_ID = 12345;
+		private const int _REL_OBJECT_ARTIFACT_ID = 10;
+		private const int _FIELD_ARTIFACT_ID = 789;
 
 		[SetUp]
 		public void SetUp()
@@ -55,9 +57,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 
 			Func<Task> action = async () => 
 				await _sut.StreamLongTextAsync(
-					_WORKSPACE_ARTIFACT_ID, 
-					new RelativityObjectRef(), 
-					new FieldRef(), 
+					_REL_OBJECT_ARTIFACT_ID,
+					_FIELD_ARTIFACT_ID,
 					ExecutionIdentity.System);
 
 			action.ShouldThrow<IntegrationPointsException>();
@@ -80,9 +81,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 
 			Func<Task> action = async () => 
 				await _sut.StreamLongTextAsync(
-					_WORKSPACE_ARTIFACT_ID, 
-					new RelativityObjectRef(), 
-					new FieldRef(), 
+					_REL_OBJECT_ARTIFACT_ID,
+					_FIELD_ARTIFACT_ID,
 					ExecutionIdentity.System);
 
 			action.ShouldThrow<IntegrationPointsException>();
@@ -107,9 +107,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.Returns(_objectManagerFacadeMock.Object);
 
 			Stream result = await _sut.StreamLongTextAsync(
-					_WORKSPACE_ARTIFACT_ID, 
-					new RelativityObjectRef(), 
-					new FieldRef(), 
+					_REL_OBJECT_ARTIFACT_ID,
+					_FIELD_ARTIFACT_ID,
 					ExecutionIdentity.System);
 
 			result.Should().Be(expectedStream);

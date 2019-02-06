@@ -1,9 +1,8 @@
 ﻿using System;
+using Stream = System.IO.Stream;
 using System.Collections.Generic;
 using System.Data;
-using kCura.EDDS.DocumentCompareGateway;
 using kCura.IntegrationPoints.Core.Services.Exporter.Base;
-using kCura.IntegrationPoints.Core.Toggles;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
@@ -11,7 +10,7 @@ using Relativity;
 using Relativity.API;
 using Relativity.Core;
 using Relativity.Core.Service;
-using Relativity.Toggles;
+using Relativity.Services.Objects.DataContracts;
 using FileQuery = Relativity.Core.Service.FileQuery;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
@@ -27,8 +26,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private readonly Dictionary<int, long> _nativeFileSizes;
 		private readonly Dictionary<int, string> _nativeFileTypes;
 		private readonly HashSet<int> _documentsSupportedByViewer;
-		private readonly IILongTextStreamFactory _relativityLongTextStreamFactory;
-		private readonly List<ILongTextStream> _openedStreams;
+		private readonly IRelativityObjectManager _relativityObjectManager;
+		private readonly List<Stream> _openedStreams;
 		private readonly IAPILog _logger;
 
 		private static readonly string _nativeDocumentArtifactIdColumn = "DocumentArtifactID";
@@ -41,8 +40,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			FieldMap[] fieldMappings,
 			BaseServiceContext context,
 			IScratchTableRepository[] scratchTableRepositories,
-			IILongTextStreamFactory longTextStreamFactory,
-			IToggleProvider toggleProvider,
+			IRelativityObjectManager relativityObjectManager,
 			IAPILog logger,
 			bool useDynamicFolderPath) :
 			base(relativityExportService, fieldMappings, context, scratchTableRepositories, logger, useDynamicFolderPath)
@@ -52,11 +50,10 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			_nativeFileSizes = new Dictionary<int, long>();
 			_nativeFileTypes = new Dictionary<int, string>();
 			_documentsSupportedByViewer = new HashSet<int>();
-			_relativityLongTextStreamFactory = longTextStreamFactory;
-			_openedStreams = new List<ILongTextStream>();
+			_relativityObjectManager = relativityObjectManager;
+			_openedStreams = new List<Stream>();
 			_logger = logger.ForContext<DocumentTransferDataReader>();
 		}
-
 
 		public override object GetValue(int i)
 		{
@@ -75,8 +72,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 					retrievedField = CurrentArtifact.GetFieldForIdentifier(fieldArtifactId);
 					if (ShouldUseLongTextStream(retrievedField))
 					{
-						ILongTextStream stream =
-							_relativityLongTextStreamFactory.CreateLongTextStream(CurrentArtifact.ArtifactId, fieldArtifactId);
+						Stream stream =
+							_relativityObjectManager.StreamLongTextAsync(CurrentArtifact.ArtifactId, fieldArtifactId)
+								.ConfigureAwait(false)
+								.GetAwaiter()
+								.GetResult();
 						_openedStreams.Add(stream);
 						return stream;
 					}
@@ -245,7 +245,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			// IAPI should close the streams...
 			// but to be absolutely sure we will not leave any open streams
 			// all of them are being disposed here.
-			foreach (ILongTextStream stream in _openedStreams)
+			foreach (Stream stream in _openedStreams)
 			{
 				stream.Dispose();
 			}

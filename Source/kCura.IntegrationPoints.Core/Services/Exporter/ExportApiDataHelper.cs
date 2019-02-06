@@ -88,45 +88,5 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			public String[] Object { get; set; }
 		}
 
-		public class RelativityLongTextStreamFactory : IILongTextStreamFactory
-		{
-			private readonly BaseServiceContext _context;
-			private readonly DataGridContext _dataGridContext;
-			private readonly int _caseId;
-
-			public RelativityLongTextStreamFactory(BaseServiceContext context, DataGridContext dgContext, int caseId)
-			{
-				_context = context;
-				_dataGridContext = dgContext;
-				_caseId = caseId;
-			}
-
-			public ILongTextStream CreateLongTextStream(int documentArtifactId, int fieldArtifactId)
-			{
-				return new LongTextStream(_context, documentArtifactId, _caseId, _dataGridContext, fieldArtifactId);
-			}
-		}
-
-		public static async Task<string> RetrieveLongTextFieldAsync(IILongTextStreamFactory longTextStreamFactory, int documentArtifactId, int fieldArtifactId)
-		{
-			const int bufferSize = 4016;
-			return await Task.Run(() =>
-			{
-				StringBuilder strBuilder = null;
-				using (ILongTextStream stream = longTextStreamFactory.CreateLongTextStream(documentArtifactId, fieldArtifactId))
-				{
-					Encoding encoding = stream.IsUnicode ? Encoding.Unicode : Encoding.ASCII;
-					strBuilder  = new StringBuilder();
-					byte[] buffer = new byte[bufferSize];
-					int read;
-					while ((read = stream.Read(buffer, 0, buffer.Length)) != 0)
-					{
-						strBuilder.Append(encoding.GetString(buffer, 0, read));
-						buffer = new byte[bufferSize];
-					}
-				}
-				return strBuilder.ToString();
-			});
-		}
 	}
 }
