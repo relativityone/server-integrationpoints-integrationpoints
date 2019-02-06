@@ -12,9 +12,9 @@ using System.Threading.Tasks;
 namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 {
 	[TestFixture]
-	public class ObjectManagerFacadeWithRetriesTests
+	public class ObjectManagerFacadeRetryDecoratorTests
 	{
-		private ObjectManagerFacadeWithRetries _sut;
+		private ObjectManagerFacadeRetryDecorator _sut;
 		private Mock<IObjectManagerFacade> _objectManager;
 
 		private const int _WORKSPACE_ID = 3232;
@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 
 			_objectManager = new Mock<IObjectManagerFacade>();
 
-			_sut = new ObjectManagerFacadeWithRetries(_objectManager.Object, retryHandlerFactory.Object);
+			_sut = new ObjectManagerFacadeRetryDecorator(_objectManager.Object, retryHandlerFactory.Object);
 		}
 
 		[Test]

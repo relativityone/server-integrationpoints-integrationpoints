@@ -69,9 +69,12 @@
     <Compile Include="Extensions\ObjectQueryResultSetExtensions.cs" />
     <Compile Include="Extensions\ResultSetExtensions.cs" />
     <Compile Include="Extensions\TaskExtension.cs" />
+    <Compile Include="Facades\Implementations\FieldValueMap.cs" />
     <Compile Include="Facades\Implementations\ObjectManagerFacade.cs" />
+    <Compile Include="Facades\Implementations\ObjectManagerFacadeDiscoverHeavyRequestDecorator.cs" />
     <Compile Include="Facades\Implementations\ObjectManagerFacadeFactory.cs" />
-    <Compile Include="Facades\Implementations\ObjectManagerFacadeWithRetries.cs" />
+    <Compile Include="Facades\Implementations\ObjectManagerFacadeInstrumentationDecorator.cs" />
+    <Compile Include="Facades\Implementations\ObjectManagerFacadeRetryDecorator.cs" />
     <Compile Include="Facades\IObjectManagerFacade.cs" />
     <Compile Include="Facades\IObjectManagerFacadeFactory.cs" />
     <Compile Include="Factories\Implementations\RelativityObjectManagerFactory.cs" />

@@ -2,6 +2,7 @@
 using Relativity.API;
 using Relativity.Services.Objects;
 using System;
+using System.Linq;
 using kCura.IntegrationPoints.Data.Interfaces;
 
 namespace kCura.IntegrationPoints.Data.Facades.Implementations
@@ -13,6 +14,8 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 		private readonly IExternalServiceInstrumentationProvider _instrumentationProvider;
 		private readonly IRetryHandlerFactory _retryHandlerFactory;
 
+		private readonly Func<IObjectManagerFacade, IObjectManagerFacade>[] _decorators;
+
 		public ObjectManagerFacadeFactory(
 			IServicesMgr servicesMgr,
 			IAPILog logger,
@@ -23,13 +26,25 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 			_logger = logger;
 			_instrumentationProvider = instrumentationProvider;
 			_retryHandlerFactory = retryHandlerFactory;
+
+			_decorators = new Func<IObjectManagerFacade, IObjectManagerFacade>[] 
+			{
+				(om) => new ObjectManagerFacadeInstrumentationDecorator(om,
+						_instrumentationProvider,
+						_logger),
+				(om) => new ObjectManagerFacadeRetryDecorator(om, _retryHandlerFactory),
+				(om) => new ObjectManagerFacadeDiscoverHeavyRequestDecorator(om, _logger)
+			};
 		}
 
 		public IObjectManagerFacade Create(ExecutionIdentity executionIdentity)
 		{
-			Func<IObjectManager> objectManagerFactory = () => _servicesMgr.CreateProxy<IObjectManager>(executionIdentity);
-			var objectManagerFacade = new ObjectManagerFacade(objectManagerFactory, _instrumentationProvider, _logger);
-			return new ObjectManagerFacadeWithRetries(objectManagerFacade, _retryHandlerFactory);
+			Func<IObjectManager> objectManagerFactory = 
+				() => _servicesMgr.CreateProxy<IObjectManager>(executionIdentity);
+			IObjectManagerFacade objectManagerFacade = new ObjectManagerFacade(objectManagerFactory);
+			return _decorators.Aggregate(
+				objectManagerFacade,
+				(objectManager, decorator) => decorator(objectManager));
 		}
 	}
 }

@@ -2,95 +2,97 @@
 using FluentAssertions;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using NSubstitute;
-using NSubstitute.ExceptionExtensions;
+using Moq;
 using NUnit.Framework;
-using Relativity.API;
 using Relativity.API.Foundation;
+using Relativity.API.Foundation.Repositories;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories
 {
 	[TestFixture]
 	public class AuditRepositoryTests
 	{
-		private IAuditService _auditService;
-		private IExternalServiceInstrumentationProvider _instrumentationProvider;
-		private IExternalServiceSimpleInstrumentation _instrumentation;
+		private Mock<IExportAuditRepository> _exportAuditRepository;
+		private Mock<IExternalServiceInstrumentationProvider> _instrumentationProvider;
+		private Mock<IExternalServiceSimpleInstrumentation> _instrumentation;
+
+		private const int _USER_ID = 9;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_auditService = Substitute.For<IAuditService>();
-			_instrumentation = Substitute.For<IExternalServiceSimpleInstrumentation>();
-			_instrumentation.Execute(Arg.Any<Func<bool>>())
-				.Returns(c => c.ArgAt<Func<bool>>(0).Invoke());
-			_instrumentationProvider = Substitute.For<IExternalServiceInstrumentationProvider>();
-			_instrumentationProvider.CreateSimple(
-					Arg.Any<string>(),
-					Arg.Any<string>(),
-					Arg.Any<string>())
-				.Returns(_instrumentation);
+			_exportAuditRepository = new Mock<IExportAuditRepository>();
+			_instrumentation = new Mock<IExternalServiceSimpleInstrumentation>();
+			_instrumentation.Setup(x => x.Execute(It.IsAny<Func<bool>>())).Returns<Func<bool>>(y => y.Invoke());
+			_instrumentationProvider = new Mock<IExternalServiceInstrumentationProvider>();
+			_instrumentationProvider.Setup(x => x.CreateSimple(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(_instrumentation.Object);
 		}
 
 		[Test]
 		public void ShouldReturnProperResultWhenCallAuditExportAndInstrumentSuccessfully([Values(true, false)] bool expectedResult)
 		{
 			//arrange
-			_auditService.CreateAuditForExport(Arg.Any<ExportStatistics>()).Returns(expectedResult);
-			var auditRepository = new AuditRepository(_auditService, _instrumentationProvider);
+			_exportAuditRepository.Setup(x => x.CreateAuditForExport(It.IsAny<ExportStatistics>(),_USER_ID)).Returns(expectedResult);
+			var auditRepository = new AuditRepository(_exportAuditRepository.Object, _instrumentationProvider.Object);
 			var exportStats = new ExportStatistics();
 
 			//act
-			bool result = auditRepository.AuditExport(exportStats);
+			bool result = auditRepository.AuditExport(exportStats, _USER_ID);
 
 			//assert
-			_auditService.Received().CreateAuditForExport(exportStats);
-			_instrumentationProvider.Received().CreateSimple(
-				"API.Foundation",
-				"IAuditService",
-				"CreateAuditForExport");
-			_instrumentation.Received().Execute(Arg.Any<Func<bool>>());
+			_exportAuditRepository.Verify(x => x.CreateAuditForExport(exportStats, _USER_ID), Times.Once);
+			_instrumentationProvider.Verify(
+				x => x.CreateSimple(
+					"API.Foundation",
+					nameof(IExportAuditRepository),
+					nameof(IExportAuditRepository.CreateAuditForExport)), 
+				Times.Once);
+			_instrumentation.Verify(x => x.Execute(It.IsAny<Func<bool>>()), Times.Once);
 			expectedResult.Should().Be(result);
 		}
 
 		[Test]
-		public void ShouldInstrumentSuccessfullyWhenIAuditServiceFails()
+		public void ShouldInstrumentSuccessfullyWhenIExportAuditRepositoryFails()
 		{
 			//arrange
-			_auditService.CreateAuditForExport(Arg.Any<ExportStatistics>()).Throws<Exception>();
-			var auditRepository = new AuditRepository(_auditService, _instrumentationProvider);
+			_exportAuditRepository.Setup(x => x.CreateAuditForExport(It.IsAny<ExportStatistics>(), _USER_ID)).Throws<Exception>();
+			var auditRepository = new AuditRepository(_exportAuditRepository.Object, _instrumentationProvider.Object);
 			var exportStats = new ExportStatistics();
 
 			//act
-			Action action = () => auditRepository.AuditExport(exportStats);
+			Action action = () => auditRepository.AuditExport(exportStats, _USER_ID);
 
 			//assert
 			action.ShouldThrow<Exception>();
-			_auditService.Received().CreateAuditForExport(exportStats);
-			_instrumentationProvider.Received().CreateSimple(
-				"API.Foundation",
-				"IAuditService",
-				"CreateAuditForExport");
-			_instrumentation.Received().Execute(Arg.Any<Func<bool>>());
+			_exportAuditRepository.Verify(x => x.CreateAuditForExport(exportStats, _USER_ID), Times.Once);
+			_instrumentationProvider.Verify(
+				x => x.CreateSimple(
+					"API.Foundation",
+					nameof(IExportAuditRepository),
+					nameof(IExportAuditRepository.CreateAuditForExport)),
+				Times.Once);
+			_instrumentation.Verify(x => x.Execute(It.IsAny<Func<bool>>()), Times.Once);
 		}
 
 		[Test]
 		public void ShouldReturnFalseWhenCallAuditExportWithNullAndInstrumentSuccessfully()
 		{
 			//arrange
-			_auditService.CreateAuditForExport(Arg.Any<ExportStatistics>()).Returns(false);
-			var auditRepository = new AuditRepository(_auditService, _instrumentationProvider);
+			_exportAuditRepository.Setup(x => x.CreateAuditForExport(It.IsAny<ExportStatistics>(), _USER_ID)).Returns(false);
+			var auditRepository = new AuditRepository(_exportAuditRepository.Object, _instrumentationProvider.Object);
 
 			//act
-			bool result = auditRepository.AuditExport(null);
+			bool result = auditRepository.AuditExport(null, _USER_ID);
 
 			//assert
-			_auditService.Received().CreateAuditForExport(null);
-			_instrumentationProvider.Received().CreateSimple(
-				"API.Foundation",
-				"IAuditService",
-				"CreateAuditForExport");
-			_instrumentation.Received().Execute(Arg.Any<Func<bool>>());
+			_exportAuditRepository.Verify(x => x.CreateAuditForExport(null, _USER_ID), Times.Once);
+			_instrumentationProvider.Verify(
+				x => x.CreateSimple(
+					"API.Foundation",
+					nameof(IExportAuditRepository),
+					nameof(IExportAuditRepository.CreateAuditForExport)),
+				Times.Once);
+			_instrumentation.Verify(x => x.Execute(It.IsAny<Func<bool>>()), Times.Once);
 			result.Should().BeFalse();
 		}
 	}
