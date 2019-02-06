@@ -167,6 +167,9 @@ namespace kCura.IntegrationPoints.RelativitySync
 				.As<IExecutor<IDestinationWorkspaceTagsCreationConfiguration>>()
 				.As<IExecutionConstrains<IDestinationWorkspaceTagsCreationConfiguration>>();
 
+			containerBuilder.RegisterType<DataDestinationFinalization>()
+				.As<IExecutor<IDataDestinationFinalizationConfiguration>>()
+				.As<IExecutionConstrains<IDataDestinationFinalizationConfiguration>>();
 			IContainer container = containerBuilder.Build();
 			return container;
 		}
