@@ -6,7 +6,6 @@ using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Core;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 {
@@ -21,7 +20,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				_context,
 				_scratchRepositories, 
 				_longTextStreamFactory, 
-				Substitute.For<IToggleProvider>(), 
 				Substitute.For<IAPILog>(), 
 				false);
 		}
@@ -38,7 +36,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				context,
 				scratchTableRepositories,
 				_longTextStreamFactory, 
-				Substitute.For<IToggleProvider>(), 
 				Substitute.For<IAPILog>(), 
 				false);
 		}
