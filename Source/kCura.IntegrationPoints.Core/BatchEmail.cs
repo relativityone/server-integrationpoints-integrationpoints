@@ -68,7 +68,7 @@ namespace kCura.IntegrationPoints.Core
 			}
 		}
 
-		public EmailMessage GenerateEmail(Relativity.Client.DTOs.Choice choice)
+		public static EmailMessage GenerateEmail(Relativity.Client.DTOs.Choice choice)
 		{
 			EmailMessage message = new EmailMessage();
 
@@ -97,10 +97,15 @@ namespace kCura.IntegrationPoints.Core
 
 		private void SendEmail(Job parentJob, EmailMessage message, IEnumerable<string> emails)
 		{
-			message.Emails = emails;
-			message.Subject = _converter.Convert(message.Subject);
-			message.MessageBody = _converter.Convert(message.MessageBody);
+			ConvertMessage(message, emails, _converter);
 			JobManager.CreateJob(parentJob, message, TaskType.SendEmailManager);
+		}
+
+		public static void ConvertMessage(EmailMessage message, IEnumerable<string> emails, KeywordConverter converter)
+		{
+			message.Emails = emails;
+			message.Subject = converter.Convert(message.Subject);
+			message.MessageBody = converter.Convert(message.MessageBody);
 		}
 	}
 }

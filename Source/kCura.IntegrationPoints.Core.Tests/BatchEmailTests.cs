@@ -101,7 +101,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 		public void GenerateEmail(Relativity.Client.DTOs.Choice jobStatus, string expectedSubject, string expectedBody)
 		{
 			// ACT
-			EmailMessage message = _testInstance.GenerateEmail(jobStatus);
+			EmailMessage message = BatchEmail.GenerateEmail(jobStatus);
 
 			// ASSERT
 			Assert.AreEqual(expectedSubject, message.Subject);

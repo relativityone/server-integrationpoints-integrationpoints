@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		private string _sourceWorkspaceTagName;
 		private int? _destinationWorkspaceTagArtifactId;
 
-		public SyncConfiguration(int jobId, SourceConfiguration sourceConfiguration, ImportSettings destinationConfiguration)
+		public SyncConfiguration(int jobId, SourceConfiguration sourceConfiguration, ImportSettings destinationConfiguration, List<string> emailRecipients)
 		{
 			JobStatusArtifactId = jobId;
 			DataSourceArtifactId = sourceConfiguration.SavedSearchArtifactId;
@@ -30,6 +30,8 @@ namespace kCura.IntegrationPoints.RelativitySync
 			JobArtifactId = jobId;
 			SourceWorkspaceArtifactId = sourceConfiguration.SourceWorkspaceArtifactId;
 			CreateSavedSearchForTags = destinationConfiguration.CreateSavedSearchForTagging;
+			EmailRecipients = emailRecipients;
+			SendEmails = emailRecipients.Count > 0;
 		}
 
 		public string DataDestinationName => string.Empty;
@@ -143,5 +145,8 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 		public int SourceJobTagArtifactId => _sourceJobTagArtifactId.Value;
 		public int SourceWorkspaceTagArtifactId => _sourceWorkspaceTagArtifactId.Value;
+		public string JobStatus { get; set; }
+		public bool SendEmails { get; }
+		public IEnumerable<string> EmailRecipients { get; }
 	}
 }
