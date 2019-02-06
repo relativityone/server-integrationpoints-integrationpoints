@@ -15,10 +15,13 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 		public int SnapshotId { get; set; }
 		public bool AreBatchesIdsSet { get; set; }
 		public List<int> BatchesIds { get; set; }
-		public int JobTagArtifactId { get; set; }
-		public int WorkspaceTagArtifactId { get; set; }
+		public bool CreateSavedSearchForTags { get; set; }
 		public bool IsSavedSearchArtifactIdSet { get; set; }
-		public int SavedSearchArtifactId { get; set; }
+		public void SetSavedSearchArtifactId(int artifactId)
+		{
+			// Method intentionally left empty.
+		}
+
 		public bool IsStorageIdSet { get; set; }
 		public int StorageId { get; set; }
 		public bool IsJobStatusArtifactIdSet { get; set; }
@@ -42,6 +45,9 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 
 		public int SourceWorkspaceArtifactId { get; set; }
 		public int DestinationWorkspaceArtifactId { get; set; }
+		public string SourceJobTagName { get; set; }
+		public int SourceJobTagArtifactId { get; set; }
+		public int SourceWorkspaceTagArtifactId { get; set; }
 		public int JobArtifactId { get; set; }
 		public bool IsDestinationWorkspaceTagArtifactIdSet { get; set; }
 		public void SetDestinationWorkspaceTagArtifactId(int artifactId)
@@ -64,5 +70,9 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 		{
 			// Method intentionally left empty.
 		}
+
+		public string JobStatus { get; set; }
+		public bool SendEmails { get; set; }
+		public IEnumerable<string> EmailRecipients { get; } = new List<string>();
 	}
 }
