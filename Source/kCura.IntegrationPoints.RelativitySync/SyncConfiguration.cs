@@ -15,12 +15,15 @@ namespace kCura.IntegrationPoints.RelativitySync
 		private int? _workspaceTagArtifactId;
 		private int? _savedSearchArtifactId;
 		private int? _tagArtifactId;
+		private int? _sourceWorkspaceArtifactTypeId;
+		private int? _sourceJobArtifactTypeId;
 
 		public SyncConfiguration(int jobId, SourceConfiguration sourceConfiguration, ImportSettings destinationConfiguration)
 		{
 			JobStatusArtifactId = jobId;
 			DataSourceArtifactId = sourceConfiguration.SavedSearchArtifactId;
 			DataDestinationArtifactId = destinationConfiguration.DestinationFolderArtifactId;
+			DestinationWorkspaceArtifactId = destinationConfiguration.CaseArtifactId;
 		}
 
 		public string DataDestinationName => string.Empty;
@@ -117,21 +120,18 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 		public void SetSourceWorkspaceArtifactTypeId(int artifactTypeId)
 		{
+			_sourceWorkspaceArtifactTypeId = artifactTypeId;
 		}
 
 		public void SetSourceJobArtifactTypeId(int artifactTypeId)
 		{
+			_sourceJobArtifactTypeId = artifactTypeId;
 		}
 
-		public bool IsSourceWorkspaceArtifactTypeIdSet { get; }
-		public bool IsSourceJobArtifactTypeIdSet { get; }
-		public void SetSourceJobTag(int artifactId, string name)
-		{
-		}
+		public bool IsSourceWorkspaceArtifactTypeIdSet => _sourceWorkspaceArtifactTypeId.HasValue;
 
-		public void SetSourceWorkspaceTag(int artifactId, string name)
-		{
-		}
+		public bool IsSourceJobArtifactTypeIdSet => _sourceJobArtifactTypeId.HasValue;
 
+		public int DestinationWorkspaceArtifactId { get; }
 	}
 }

@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		public async Task<TaskResult> RunAsync()
 		{
 			SyncMetrics metrics = new SyncMetrics(_apmMetrics, _logger);
-			TaskResult taskResult = new TaskResult{Status = TaskStatusEnum.Fail };
+			TaskResult taskResult = new TaskResult {Status = TaskStatusEnum.Fail};
 			try
 			{
 				CancellationToken cancellationToken = CancellationAdapter.GetCancellationToken(_job, _ripContainer);
@@ -158,6 +158,9 @@ namespace kCura.IntegrationPoints.RelativitySync
 			var containerBuilder = new ContainerBuilder();
 			containerBuilder.RegisterInstance(SyncConfigurationFactory.Create(_job, _ripContainer, _logger)).AsImplementedInterfaces().SingleInstance();
 			containerBuilder.RegisterInstance(metrics).As<ISyncMetrics>().SingleInstance();
+			containerBuilder.RegisterInstance(new DestinationWorkspaceObjectTypesCreation(_ripContainer))
+				.As<IExecutor<IDestinationWorkspaceObjectTypesCreationConfiguration>>()
+				.As<IExecutionConstrains<IDestinationWorkspaceObjectTypesCreationConfiguration>>();
 			containerBuilder.RegisterType<ValidationExecutorFactory>().As<IValidationExecutorFactory>();
 			containerBuilder.Register(context => new Validator(_ripContainer, context.Resolve<IValidationExecutorFactory>()))
 				.As<IExecutor<IValidationConfiguration>>()
