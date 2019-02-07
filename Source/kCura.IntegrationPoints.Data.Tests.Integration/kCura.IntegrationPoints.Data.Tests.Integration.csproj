@@ -57,6 +57,7 @@
     <Compile Include="JobHistoryErrorsBatchingTests.cs" />
     <Compile Include="Repositories\CaseRepositoryTest.cs" />
     <Compile Include="Repositories\DestinationWorkspaceRepositoryTests.cs" />
+    <Compile Include="Repositories\Implementations\RelativityObjectManagerTests.cs" />
     <Compile Include="Repositories\JobHistoryErrorRepositoryTests.cs" />
     <Compile Include="Repositories\KeplerWorkspaceRepositoryTests.cs" />
     <Compile Include="Repositories\PermissionRepositoryTests.cs" />

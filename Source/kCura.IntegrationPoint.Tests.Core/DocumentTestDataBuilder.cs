@@ -19,6 +19,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 		private static readonly string SaltPepperTestDataPath = @"TestDataSaltPepper";
 		private static readonly string SaltPepperTestDataNativesPath = $@"{SaltPepperTestDataPath}\NATIVES";
 
+		private const string _WORKSPACE_EXTRACTED_TEXT = "Extracted Text";
+
 		public static DocumentsTestData BuildTestData(string testDirectory = null, bool withNatives = true, TestDataType testDataType = TestDataType.SmallWithFoldersStructure)
 		{
 			if (string.IsNullOrEmpty(testDirectory))
@@ -59,6 +61,18 @@ namespace kCura.IntegrationPoint.Tests.Core
 					throw new Exception("Unsupported TestDataType parameter");
 			}
 			return new DocumentsTestData(foldersWithDocuments, images);
+		}
+
+		public static DataTable GetSingleExtractedTextDocument(long textSizeInBytes)
+		{
+			var table = new DataTable();
+			table.Columns.Add(Constants.CONTROL_NUMBER_FIELD, typeof(string));
+			table.Columns.Add(_WORKSPACE_EXTRACTED_TEXT, typeof(string));
+
+			// TODO generate long text stream.
+			table.Rows.Add("STREAM_0001", "abc");
+
+			return table;
 		}
 
 		#region Documents

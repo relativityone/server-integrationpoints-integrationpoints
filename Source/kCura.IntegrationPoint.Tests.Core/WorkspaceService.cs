@@ -17,7 +17,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 		private const string _TEMPLATE_WORKSPACE_NAME = "Relativity Starter Template";
 		private const string _LEGACY_TEMPLATE_WORKSPACE_NAME = "kCura Starter Template";
 		private const string _SAVED_SEARCH_FOLDER = "Testing Folder";
-		private const string _SAVED_SEARCH_NAME = "Testing Saved Search";
 
 		private readonly ImportHelper _importHelper;
 
@@ -40,6 +39,13 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			return _importHelper.ImportData(workspaceArtifactId, documentsTestData);
 		}
+
+		public bool ImportExtractedTextSimple(int workspaceArtifactId, long textSizeInBytes)
+		{
+			System.Data.DataTable documentData = DocumentTestDataBuilder.GetSingleExtractedTextDocument(textSizeInBytes);
+			return _importHelper.ImportExtractedTextSimple(workspaceArtifactId, documentData);
+		}
+
 
 		public void DeleteWorkspace(int artifactId)
 		{

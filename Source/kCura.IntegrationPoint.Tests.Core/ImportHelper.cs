@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using kCura.IntegrationPoint.Tests.Core.Models;
+using kCura.Relativity.Client;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
 
@@ -45,6 +46,48 @@ namespace kCura.IntegrationPoint.Tests.Core
 				_CONTROL_NUMBER_FIELD_ARTIFACT_ID);
 
 			ImportImagesAndExtractedText(workspaceArtifactId, documentsTestData.Images, importApi, _CONTROL_NUMBER_FIELD_ARTIFACT_ID);
+
+			return !HasErrors;
+		}
+
+		public bool ImportExtractedTextSimple(
+			int workspaceArtifactId, 
+			DataTable dataTable)
+		{
+			Messages.Clear();
+			ErrorMessages.Clear();
+
+			WinEDDS.Config.ConfigSettings[nameof(WinEDDS.Config.TapiForceHttpClient)] = true.ToString();
+			WinEDDS.Config.ConfigSettings[nameof(WinEDDS.Config.TapiForceBcpHttpClient)] = true.ToString();
+
+			var importApi = 
+				new ImportAPI(
+					SharedVariables.RelativityUserName, 
+					SharedVariables.RelativityPassword,
+					SharedVariables.RelativityWebApiUrl);
+
+			ImportBulkArtifactJob importJob = importApi.NewObjectImportJob((int) ArtifactType.Document);
+
+			importJob.OnMessage += ImportJobOnMessage;
+			importJob.OnComplete += ImportJobOnComplete;
+			importJob.OnFatalException += ImportJobOnFatalException;
+
+			importJob.Settings.CaseArtifactId = workspaceArtifactId;
+			importJob.Settings.ExtractedTextFieldContainsFilePath = false;
+			importJob.Settings.ExtractedTextEncoding = Encoding.UTF8;
+
+			importJob.Settings.DisableNativeLocationValidation = null;
+			importJob.Settings.DisableNativeValidation = null;
+			importJob.Settings.CopyFilesToDocumentRepository = false;
+			importJob.Settings.NativeFileCopyMode = NativeFileCopyModeEnum.DoNotImportNativeFiles;
+
+			importJob.Settings.DestinationFolderArtifactID = GetWorkspaceRootFolderID(workspaceArtifactId);
+			importJob.Settings.IdentityFieldId = _CONTROL_NUMBER_FIELD_ARTIFACT_ID;
+			importJob.Settings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
+
+			importJob.SourceData.SourceData = dataTable.CreateDataReader();
+
+			importJob.Execute();
 
 			return !HasErrors;
 		}
