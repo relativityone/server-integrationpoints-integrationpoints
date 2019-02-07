@@ -50,8 +50,7 @@ namespace Relativity.Sync.Tests.Integration
 		[Test]
 		public void ItShouldHandleExceptionAndStopExecutionAfterStepConstrainsCheckFails()
 		{
-			IExecutionConstrains<T> executionConstrains =
-				new FailingExecutionConstrainsStub<T>();
+			IExecutionConstrains<T> executionConstrains = new FailingExecutionConstrainsStub<T>();
 
 			_containerBuilder.RegisterInstance(executionConstrains).As<IExecutionConstrains<T>>();
 
