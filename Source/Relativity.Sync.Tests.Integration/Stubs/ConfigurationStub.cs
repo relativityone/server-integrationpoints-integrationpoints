@@ -64,5 +64,7 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 		{
 			// Method intentionally left empty.
 		}
+
+		public int ExecutingUserId { get; set; }
 	}
 }
