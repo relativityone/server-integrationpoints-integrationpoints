@@ -89,7 +89,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 		}
 
 		[Test, Order(2)]
-		[Ignore("REL-258301")]
 		public void FolderExportToLoadFile_TC_ELF_DIR_2()
 		{
 			// Arrange
