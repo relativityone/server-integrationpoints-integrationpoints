@@ -173,10 +173,27 @@ namespace kCura.IntegrationPoints.RelativitySync
 			containerBuilder.RegisterType<DataDestinationFinalization>()
 				.As<IExecutor<IDataDestinationFinalizationConfiguration>>()
 				.As<IExecutionConstrains<IDataDestinationFinalizationConfiguration>>();
-				
+
 			containerBuilder.RegisterType<DataDestinationInitialization>()
 				.As<IExecutor<IDataDestinationInitializationConfiguration>>()
 				.As<IExecutionConstrains<IDataDestinationInitializationConfiguration>>();
+
+			containerBuilder.RegisterType<JobCleanup>()
+				.As<IExecutor<IJobCleanupConfiguration>>()
+				.As<IExecutionConstrains<IJobCleanupConfiguration>>();
+
+			containerBuilder.RegisterType<JobStatusConsolidation>()
+				.As<IExecutor<IJobStatusConsolidationConfiguration>>()
+				.As<IExecutionConstrains<IJobStatusConsolidationConfiguration>>();
+
+			containerBuilder.RegisterType<SnapshotPartition>()
+				.As<IExecutor<ISnapshotPartitionConfiguration>>()
+				.As<IExecutionConstrains<ISnapshotPartitionConfiguration>>();
+
+			containerBuilder.RegisterType<DataSourceSnapshot>()
+				.As<IExecutor<IDataSourceSnapshotConfiguration>>()
+				.As<IExecutionConstrains<IDataSourceSnapshotConfiguration>>();
+
 			IContainer container = containerBuilder.Build();
 			return container;
 		}
