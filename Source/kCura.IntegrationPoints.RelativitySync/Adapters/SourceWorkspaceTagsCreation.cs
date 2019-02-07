@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Adapters
 
 		public Task<bool> CanExecuteAsync(ISourceWorkspaceTagsCreationConfiguration configuration, CancellationToken token)
 		{
-			return Task.FromResult(configuration.IsDestinationWorkspaceTagArtifactIdSet);
+			return Task.FromResult(!configuration.IsDestinationWorkspaceTagArtifactIdSet);
 		}
 
 		public async Task ExecuteAsync(ISourceWorkspaceTagsCreationConfiguration configuration, CancellationToken token)
