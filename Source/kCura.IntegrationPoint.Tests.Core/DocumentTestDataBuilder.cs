@@ -63,16 +63,32 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return new DocumentsTestData(foldersWithDocuments, images);
 		}
 
-		public static DataTable GetSingleExtractedTextDocument(long textSizeInBytes)
+		public static DataTable GetSingleExtractedTextDocument(string controlNumber, string extractedText)
 		{
 			var table = new DataTable();
 			table.Columns.Add(Constants.CONTROL_NUMBER_FIELD, typeof(string));
 			table.Columns.Add(_WORKSPACE_EXTRACTED_TEXT, typeof(string));
-
-			// TODO generate long text stream.
-			table.Rows.Add("STREAM_0001", "abc");
-
+			table.Rows.Add(controlNumber, extractedText);
 			return table;
+		}
+
+		public static string GenerateRandomExtractedText(int textSizeInBytes)
+		{
+			const int minCharCode = 1;
+			const int maxCharCode = 1000;
+			const int charsCount = maxCharCode - minCharCode + 1;
+			int numberOf2ByteCharsBatches = textSizeInBytes / 2 / charsCount;
+			int numberOfCharsLeft = (textSizeInBytes / 2) % charsCount;
+			IEnumerable<char> charsSet =
+				Enumerable
+					.Range(minCharCode, maxCharCode)
+					.Select(n => (char) n);
+			IEnumerable<char> extractedTextChars =
+				Enumerable
+					.Repeat(charsSet, numberOf2ByteCharsBatches)
+					.SelectMany(x => x)
+					.Concat(charsSet.Take(numberOfCharsLeft));
+			return string.Join("", extractedTextChars);
 		}
 
 		#region Documents
