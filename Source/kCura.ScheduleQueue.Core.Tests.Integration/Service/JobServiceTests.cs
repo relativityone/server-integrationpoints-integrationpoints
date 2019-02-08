@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using kCura.Data.RowDataGateway;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.TestCategories;
+using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core.Core;
@@ -53,7 +53,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 		}
 
 		[Test]
-		[NUnit.Framework.Description("When we update the stop state, there is a possibility that the job is already removed from the queue. This scenario will occur when the job is finished before we get to update the job.")]
+		[Description("When we update the stop state, there is a possibility that the job is already removed from the queue. This scenario will occur when the job is finished before we get to update the job.")]
 		public void UpdateStopState_JobDoesNotExist()
 		{
 			Assert.Throws<InvalidOperationException>(() => _instance.UpdateStopState( new List<long>() {  987654321 }, StopState.Stopping));
@@ -63,7 +63,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 		[TestCase(StopState.None)]
 		[TestCase(StopState.Stopping)]
 		[TestCase(StopState.Unstoppable)]
-		[NUnit.Framework.Description("This scenario will occur when the some sub-jobs finishes before we get to update the job. We do not expect any error as the job should be stopped still.")]
+		[Description("This scenario will occur when the some sub-jobs finishes before we get to update the job. We do not expect any error as the job should be stopped still.")]
 		public void UpdateStopState_SomeJobsDoNotExist(StopState state)
 		{
 			// arrange
@@ -76,7 +76,8 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 			AssertJobStopState(job, state);
 		}
 
-		[NUnit.Framework.Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
+        [Test]
+		[SmokeTest]
 		[TestCase(StopState.None)]
 		[TestCase(StopState.Stopping)]
 		[TestCase(StopState.Unstoppable)]
@@ -127,7 +128,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 		}
 
 		[Test]
-		[NUnit.Framework.Description("This case will occur when a user click on stop right before the agent set the unstoppable flag.")]
+		[Description("This case will occur when a user click on stop right before the agent set the unstoppable flag.")]
 		public void UpdateStopState_SetUnstoppableAfterStopping()
 		{
 			Job job = _instance.CreateJob(999999, 99999999, TaskType.None.ToString(), DateTime.MaxValue, String.Empty, 9, null, null);

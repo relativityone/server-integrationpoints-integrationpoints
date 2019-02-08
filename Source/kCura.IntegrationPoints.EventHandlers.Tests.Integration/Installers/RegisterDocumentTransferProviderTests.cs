@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoint.Tests.Core.TestCategories;
+using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoints.EventHandlers.Installers;
 using kCura.IntegrationPoints.SourceProviderInstaller;
 using NUnit.Framework;
@@ -9,8 +11,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 	[TestFixture]
 	internal class RegisterDocumentTransferProviderTests
 	{
-		[Test]
-		[Category(kCura.IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
+        [Test]
+		[SmokeTest]
 		public void RegisterDocumentTransferProvider_ReturnCorrectInstallationDetail()
 		{
 			RegisterDocumentTransferProvider installer = new RegisterDocumentTransferProvider();

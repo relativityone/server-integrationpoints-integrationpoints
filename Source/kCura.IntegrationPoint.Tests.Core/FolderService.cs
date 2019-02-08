@@ -1,12 +1,15 @@
-﻿using Relativity.Services.Folder;
+﻿using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using Relativity.Services.Folder;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class FolderService
 	{
+		private static ITestHelper Helper => new TestHelper();
+
 		public static int CreateFolder(int workspaceArtifactId, string folderName, int? parentFolderId)
 		{
-			using (var folderManager = Kepler.CreateProxy<IFolderManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true))
+			using (var folderManager = Helper.CreateAdminProxy<IFolderManager>())
 			{
 				var folder = new global::Relativity.Services.Folder.Folder
 				{
@@ -30,7 +33,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static void DeleteUnusedFolders(int workspaceId)
 		{
-			using (var folderManager = Kepler.CreateProxy<IFolderManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true))
+			using (var folderManager = Helper.CreateAdminProxy<IFolderManager>())
 			{
 				folderManager.DeleteUnusedFoldersAsync(workspaceId).Wait();
 			}

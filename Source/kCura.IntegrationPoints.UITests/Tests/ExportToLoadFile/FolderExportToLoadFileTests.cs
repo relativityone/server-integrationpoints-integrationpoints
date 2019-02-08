@@ -18,10 +18,9 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 	{
 		private IntegrationPointsAction _integrationPointsAction;
 
-		[OneTimeSetUp]
-		public void OneTimeSetUp()
+		[SetUp]
+		public void SetUp()
 		{
-			EnsureGeneralPageIsOpened();
 			_integrationPointsAction = new IntegrationPointsAction(Driver, Context);
 		}
 

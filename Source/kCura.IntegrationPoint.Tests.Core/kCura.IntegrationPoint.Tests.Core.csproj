@@ -133,11 +133,9 @@
     <Compile Include="Extensions\ObjectPermissionListExtension.cs" />
     <Compile Include="Extensions\SecureStringExtension.cs" />
     <Compile Include="Fields.cs" />
-    <Compile Include="FileToBase64Converter.cs" />
     <Compile Include="FolderService.cs" />
     <Compile Include="ImportHelper.cs" />
     <Compile Include="InstanceSetting.cs" />
-    <Compile Include="Kepler.cs" />
     <Compile Include="Models\Audit.cs" />
     <Compile Include="Models\Constants\Shared\LoadFileEncodingConstants.cs" />
     <Compile Include="Models\Constants\ExportToLoadFile\ExportToLoadFileDataFileFormatConstants.cs" />
@@ -190,6 +188,10 @@
     <Compile Include="Models\RelativityProviderModel.cs" />
     <Compile Include="Models\SchedulerModel.cs" />
     <Compile Include="Models\Shared\ImagePrecedence.cs" />
+    <Compile Include="TestCategories\TestQuarantineState.cs" />
+    <Compile Include="TestCategories\Attributes\SmokeTestAttribute.cs" />
+    <Compile Include="TestCategories\TestCategories.cs" />
+    <Compile Include="TestCategories\Attributes\TestInQuarantineAttribute.cs" />
     <Compile Include="TestDbContext.cs" />
     <Compile Include="TestException.cs" />
     <Compile Include="Permission.cs" />
@@ -205,7 +207,6 @@
     <Compile Include="RelativityApplicationManager.cs" />
     <Compile Include="ResourcePoolHelper.cs" />
     <Compile Include="ResourceServerHelper.cs" />
-    <Compile Include="Rest.cs" />
     <Compile Include="Rsapi.cs" />
     <Compile Include="SavedSearch.cs" />
     <Compile Include="SharedVariables.cs" />

@@ -18,6 +18,8 @@ using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using Castle.Core.Internal;
 using Castle.Windsor;
+using kCura.IntegrationPoint.Tests.Core.TestCategories;
+using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core;
@@ -32,7 +34,6 @@ using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
 using ArtifactType = Relativity.ArtifactType;
-using Constants = kCura.IntegrationPoint.Tests.Core.Constants;
 using DateTime = System.DateTime;
 using Directory = kCura.Utility.Directory;
 using ExportSettings = kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportSettings;
@@ -138,19 +139,29 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			}
 		}
 
+        [Test]
+		[SmokeTest]
 		[TestCaseSource(nameof(ExportTestCaseSource))]
-		[Category(Constants.SMOKE_TEST)]
+		public void RunStableTestCase(IExportTestCase testCase)
+		{
+			RunTestCase(testCase);
+		}
+
+        [Test]
+		[SmokeTest]
+		[TestInQuarantine(TestQuarantineState.UnderObservation)]
+		[TestCaseSource(nameof(FlakyExportTestCaseSource))]
+		public void RunFlakyTestCase(IExportTestCase testCase)
+		{
+			RunTestCase(testCase);
+		}
+
 		public void RunTestCase(IExportTestCase testCase)
 		{
-			if (ShouldIgnoreTest(testCase))
-			{
-				Assert.Ignore(@"TODO: Broken test needs to be fixed!");
-			}
-
 			// Arrange
 			ExportSettings settings = testCase.Prepare(CreateExportSettings());
 			var directory = new DirectoryInfo(settings.ExportFilesLocation);
-			
+
 			CreateOutputFolder(directory.FullName);
 
 			// Act
@@ -160,8 +171,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			testCase.Verify(directory, _configSettings.DocumentsTestData);
 		}
 
-		[TestCaseSource(nameof(InvalidFileshareExportTestCaseSource))]
-		[Category(Constants.SMOKE_TEST)]
+        [Test]
+        [SmokeTest]
+        [TestCaseSource(nameof(InvalidFileshareExportTestCaseSource))]
 		public void RunInvalidFileshareTestCase(IInvalidFileshareExportTestCase testCase)
 		{
 			// Arrange
@@ -229,7 +241,17 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		private static IEnumerable<IExportTestCase> ExportTestCaseSource()
 		{
 			InitContainer();
-			return _windsorContainer.ResolveAll<IExportTestCase>();
+			return _windsorContainer
+				.ResolveAll<IExportTestCase>()
+				.Where(x => !IsFlakyTest(x));
+		}
+
+		private static IEnumerable<IExportTestCase> FlakyExportTestCaseSource()
+		{
+			InitContainer();
+			return _windsorContainer
+				.ResolveAll<IExportTestCase>()
+				.Where(IsFlakyTest);
 		}
 
 		private static IEnumerable<IInvalidFileshareExportTestCase> InvalidFileshareExportTestCaseSource()
@@ -261,9 +283,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 		#endregion Methods
 
-		private bool ShouldIgnoreTest(IExportTestCase testCase)
+		private static bool IsFlakyTest(IExportTestCase testCase)
 		{
-			// TODO: Broken tests needs to be fixed!
 			return testCase is ItShouldExportFilesStartingFromGivenRecord
 			       || testCase is ItShouldExportFolderAndSubfoldersWithNatives
 			       || testCase is ItShouldExportFolderWithNatives
@@ -275,6 +296,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			       || testCase is ItShouldExportProductionSetWithImages
 			       || testCase is ItShouldExportProductionSetWithNatives
 			       || testCase is ItShouldExportSavedSearch
+				   || testCase is ItShouldLogJobErrorForNegativeVolumeStartNumber
+				   || testCase is ItShouldLogJobErrorForNegativeSubdirectoryStartNumber
 				;
 		}
 	}

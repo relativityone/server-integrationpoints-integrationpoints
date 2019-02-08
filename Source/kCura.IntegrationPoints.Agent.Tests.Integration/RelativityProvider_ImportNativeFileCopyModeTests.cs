@@ -4,6 +4,8 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoint.Tests.Core.TestCategories;
+using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Agent.Validation;
@@ -120,16 +122,18 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			FolderService.DeleteUnusedFolders(TargetWorkspaceArtifactId);
 		}
 
+        [Test]
 		[TestCase(ImportNativeFileCopyModeEnum.CopyFiles)]
 		[TestCase(ImportNativeFileCopyModeEnum.SetFileLinks)]
-		[Ignore("This test fails randomly. Internal Defect was created in Jira: REL-268242")]
+		[TestInQuarantine(TestQuarantineState.UnderObservation, 
+			"This test fails randomly. Internal Defect was created in Jira: REL-268242")]
 		public void NativesShouldBeDeletedInTargetWorkspace_InImportNativesModes(ImportNativeFileCopyModeEnum importNativeFileCopyMode)
 		{
 			TestNativeFilesImport(false, true, true, importNativeFileCopyMode, false);
 		}
 
-		[Test]
-		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
+        [Test]
+		[SmokeTest]
 		public void NativesShouldNotBeDeletedInTargetWorkspace_InDoNotImportNativesMode()
 		{
 			TestNativeFilesImport(false, true, false, ImportNativeFileCopyModeEnum.DoNotImportNativeFiles, true);

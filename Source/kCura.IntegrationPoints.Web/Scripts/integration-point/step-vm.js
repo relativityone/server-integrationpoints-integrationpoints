@@ -197,7 +197,7 @@
 					const errPrefix = "Failed to save Integration Point.";
 					const validationResultDto = JSON.parse(error.responseText);
 					IP.message.errorFormatted.raise(validationResultDto.errors, null, errPrefix);
-				}catch{
+				}catch (e) {
 					IP.message.error.raise(error);
 				}
 			});
