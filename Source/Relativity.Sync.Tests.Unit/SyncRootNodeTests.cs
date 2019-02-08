@@ -40,6 +40,7 @@ namespace Relativity.Sync.Tests.Unit
 			int nodeExecutionOrder = 0;
 			int commandExecutionOrder = 0;
 			_childNode.Setup(x => x.ExecuteAsync(It.IsAny<IExecutionContext<SyncExecutionContext>>())).Callback(() => nodeExecutionOrder = index++);
+			_command.Setup(x => x.CanExecuteAsync(CancellationToken.None)).ReturnsAsync(true);
 			_command.Setup(x => x.ExecuteAsync(CancellationToken.None)).Returns(Task.CompletedTask).Callback(() => commandExecutionOrder = index++);
 
 			// ACT
@@ -54,6 +55,7 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public async Task ItShouldSendNotificationsAfterExecutionFailed()
 		{
+			_command.Setup(x => x.CanExecuteAsync(CancellationToken.None)).ReturnsAsync(true);
 			_childNode.Setup(x => x.ExecuteAsync(It.IsAny<IExecutionContext<SyncExecutionContext>>())).Throws<InvalidOperationException>();
 
 			// ACT
@@ -62,6 +64,18 @@ namespace Relativity.Sync.Tests.Unit
 			// ASSERT
 			result.Status.Should().Be(NodeResultStatus.Failed);
 			_command.Verify(x => x.ExecuteAsync(CancellationToken.None), Times.Once);
+		}
+
+		[Test]
+		public async Task ItShouldNotSendNotificationsIfDisabled()
+		{
+			_command.Setup(x => x.CanExecuteAsync(CancellationToken.None)).ReturnsAsync(false);
+
+			// ACT
+			await _instance.ExecuteAsync(_syncExecutionContext).ConfigureAwait(false);
+
+			// ASSERT
+			_command.Verify(x => x.ExecuteAsync(CancellationToken.None), Times.Never);
 		}
 	}
 }
