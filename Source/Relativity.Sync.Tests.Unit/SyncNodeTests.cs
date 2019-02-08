@@ -6,6 +6,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.Unit.Stubs;
 
 namespace Relativity.Sync.Tests.Unit

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Banzai;
 using FluentAssertions;
 using NUnit.Framework;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.Unit.Stubs;
 
 namespace Relativity.Sync.Tests.Unit
