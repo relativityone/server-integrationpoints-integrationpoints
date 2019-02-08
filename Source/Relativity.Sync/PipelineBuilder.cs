@@ -26,8 +26,6 @@ namespace Relativity.Sync
 				.AddRoot<SyncRootNode>()
 				.AddChild<PermissionsCheckNode>()
 				.AddChild<ValidationNode>()
-				.AddChild<PreviousRunCleanupNode>()
-				.AddChild<TemporaryStorageInitializationNode>()
 				.AddChild<DestinationWorkspaceObjectTypesCreationNode>()
 				.AddChild<DataSourceSnapshotNode>()
 				.AddChild<SyncMultiNode>()

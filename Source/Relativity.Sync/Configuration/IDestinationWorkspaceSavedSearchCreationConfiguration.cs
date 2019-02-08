@@ -2,14 +2,18 @@
 {
 	internal interface IDestinationWorkspaceSavedSearchCreationConfiguration : IConfiguration
 	{
-		int JobTagArtifactId { get; }
+		int DestinationWorkspaceArtifactId { get; }
 
-		int WorkspaceTagArtifactId { get; }
+		string SourceJobTagName { get; }
 
-		//params to create saved search name
+		int SourceJobTagArtifactId { get; }
+
+		int SourceWorkspaceTagArtifactId { get; }
+
+		bool CreateSavedSearchForTags { get; }
 
 		bool IsSavedSearchArtifactIdSet { get; }
 
-		int SavedSearchArtifactId { get; set; }
+		void SetSavedSearchArtifactId(int artifactId);
 	}
 }

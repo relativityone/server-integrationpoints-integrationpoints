@@ -6,7 +6,7 @@ using Relativity.Sync.Configuration;
 namespace Relativity.Sync.Tests.Integration
 {
 	[TestFixture]
-	internal sealed class DestinationWorkspaceObjectTypesCreationStepTests : FailingStepsBase<IDestinationWorkspaceObjectTypesCreationConfiguration>
+	internal sealed class NotificationStepTests : FailingStepsBase<INotificationConfiguration>
 	{
 		protected override void AssertExecutedSteps(List<Type> executorTypes)
 		{
@@ -15,8 +15,8 @@ namespace Relativity.Sync.Tests.Integration
 
 		protected override int ExpectedNumberOfExecutedSteps()
 		{
-			// validation, permissions, notification
-			const int expectedNumberOfExecutedSteps = 3;
+			// all except notification
+			const int expectedNumberOfExecutedSteps = 13;
 			return expectedNumberOfExecutedSteps;
 		}
 	}
