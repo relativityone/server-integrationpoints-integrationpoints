@@ -107,6 +107,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		public bool IsSourceWorkspaceArtifactTypeIdSet => _sourceWorkspaceArtifactTypeId.HasValue;
 
 		public int JobArtifactId { get; }
+
 		public bool IsDestinationWorkspaceTagArtifactIdSet => _destinationWorkspaceTagArtifactId.HasValue;
 		public int SourceWorkspaceArtifactTypeId => _sourceWorkspaceArtifactTypeId.Value;
 		public int SourceJobArtifactTypeId => _sourceJobArtifactTypeId.Value;
