@@ -50,14 +50,24 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.Relativity
 		[Test]
 		public async Task ItShouldFetchDocumentWith15MBExtractedText()
 		{
-			int bytes15MB = 15 * 1024 * 1024;
-			await ExecuteTest(bytes15MB);
+			int bytes = GetBytesFromMB(15);
+			await ExecuteTest(bytes);
 		}
+
+		[Test]
+		// TODO change to StressTest attribute
+		public async Task ItShouldFetchDocumentWith1500MBExtractedText()
+		{
+			int bytes = GetBytesFromMB(1500);
+			await ExecuteTest(bytes);
+		}
+
+		private int GetBytesFromMB(int sizeInMB) => sizeInMB * 1024 * 1024;
 
 		private async Task ExecuteTest(int textSizeInBytes)
 		{
 			// Arrange
-			string controlNumber = Guid.NewGuid().ToString();
+			string controlNumber = GetRandomControlNumber();
 			string extractedText = DocumentTestDataBuilder.GenerateRandomExtractedText(textSizeInBytes);
 
 			_workspaceService.ImportExtractedTextSimple(_workspaceId, controlNumber, extractedText);
@@ -80,6 +90,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.Relativity
 			IEnumerable<int> charsIndexes = GetExponentialIndexes(extractedText.Length);
 			ValidateSpecificCharacters(charsIndexes, extractedText, actualExtractedTextString);
 		}
+
+		private string GetRandomControlNumber()
+			=> Guid.NewGuid().ToString().Replace("-", "");
 
 		private int[] GetExponentialIndexes(int size)
 		{
