@@ -23,7 +23,6 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 
 		public bool CreateSavedSearchForTags { get; set; }
 		public bool IsSavedSearchArtifactIdSet { get; set; }
-
 		public void SetSavedSearchArtifactId(int artifactId)
 		{
 			// Method intentionally left empty.
@@ -49,7 +48,6 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 		public int SourceWorkspaceTagArtifactId { get; set; }
 		public int JobArtifactId { get; set; }
 		public bool IsDestinationWorkspaceTagArtifactIdSet { get; set; }
-
 		public void SetDestinationWorkspaceTagArtifactId(int artifactId)
 		{
 			// Method intentionally left empty.
@@ -71,6 +69,7 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 			// Method intentionally left empty.
 		}
 
+		public int ExecutingUserId { get; set; }
 		public string JobStatus { get; set; }
 		public bool SendEmails { get; set; }
 		public IEnumerable<string> EmailRecipients { get; } = new List<string>();
