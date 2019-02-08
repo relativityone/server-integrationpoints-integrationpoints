@@ -345,7 +345,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public Task<System.IO.Stream> StreamLongTextAsync(
 			int relativityObjectArtifactId,
-			int longTextFieldArtifactId,
+			FieldRef longTextFieldRef,
 			ExecutionIdentity executionIdentity)
 		{
 			try
@@ -353,11 +353,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(executionIdentity))
 				{
 					var exportObject = new RelativityObjectRef() {ArtifactID = relativityObjectArtifactId};
-					var longTextField = new FieldRef() {ArtifactID = longTextFieldArtifactId};
 					IKeplerStream keplerStream = client.StreamLongTextAsync(
 							_workspaceArtifactId,
 							exportObject,
-							longTextField)
+							longTextFieldRef)
 						.GetAwaiter()
 						.GetResult();
 					return keplerStream.GetStreamAsync();
@@ -372,7 +371,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				string message = GetStreamLongTextAsyncErrorMessage(
 					_workspaceArtifactId,
 					relativityObjectArtifactId,
-					longTextFieldArtifactId,
+					longTextFieldRef,
 					executionIdentity);
 				HandleObjectManagerException(ex, message);
 				throw;
@@ -382,14 +381,14 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private string GetStreamLongTextAsyncErrorMessage(
 			int workspaceArtifactID,
 			int relativityObjectArtifactId,
-			int longTextFieldArtifactId,
+			FieldRef longTextFieldRef,
 			ExecutionIdentity executionIdentity)
 		{
 			var msgBuilder = new StringBuilder();
 			msgBuilder.Append($"Error occurred when calling {nameof(StreamLongTextAsync)} method. ");
 			msgBuilder.Append($"Workspace: ({workspaceArtifactID}) ");
 			msgBuilder.Append($"ExportObject artifact id: ({relativityObjectArtifactId}) ");
-			msgBuilder.Append($"Long text field artifact id: ({longTextFieldArtifactId}) ");
+			msgBuilder.Append($"Long text field ({longTextFieldRef?.Name}) artifact id: ({longTextFieldRef?.ArtifactID}) ");
 			msgBuilder.Append($"Execution identity: {executionIdentity}");
 			return msgBuilder.ToString();
 		}
