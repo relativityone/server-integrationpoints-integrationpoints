@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -46,15 +47,23 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.Relativity
 			Workspace.DeleteWorkspace(_workspaceId);
 		}
 
-        [Test]
+		[Test]
 		public async Task ItShouldFetchDocumentWith15MBExtractedText()
-        {
+		{
 			int bytes15MB = 15 * 1024 * 1024;
-			string controlNumber = "STREAM_0001";
-			string extractedText = DocumentTestDataBuilder.GenerateRandomExtractedText(bytes15MB);
+			await ExecuteTest(bytes15MB);
+		}
+
+		private async Task ExecuteTest(int textSizeInBytes)
+		{
+			// Arrange
+			string controlNumber = Guid.NewGuid().ToString();
+			string extractedText = DocumentTestDataBuilder.GenerateRandomExtractedText(textSizeInBytes);
+
 			_workspaceService.ImportExtractedTextSimple(_workspaceId, controlNumber, extractedText);
 			int documentArtifactID = GetDocumentArtifactID(controlNumber);
 
+			// Act
 			System.IO.Stream actualExtractedTextStream = 
 				await _relativityObjectManager.StreamLongTextAsync(
 					documentArtifactID, 
@@ -62,16 +71,28 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.Relativity
 			var actualExtractedTextStreamReader = new StreamReader(actualExtractedTextStream, Encoding.UTF8);
 			string actualExtractedTextString = actualExtractedTextStreamReader.ReadToEnd();
 
+			// Assert
 			Assert.AreEqual(
 				extractedText.Length,
 				actualExtractedTextString.Length,
 				"Extracted Text returned by ObjectManager should be the same length as original text!");
 
-			int[] charsIndexes = { 0, 10, 123, 1234, extractedText.Length - 1 };
+			IEnumerable<int> charsIndexes = GetExponentialIndexes(extractedText.Length);
 			ValidateSpecificCharacters(charsIndexes, extractedText, actualExtractedTextString);
 		}
 
-		private void ValidateSpecificCharacters(int[] positions, string expectedString, string actualString)
+		private int[] GetExponentialIndexes(int size)
+		{
+			int @base = 2;
+			int lastExponent = (int)Math.Floor(Math.Log(size, @base));
+			return new int[] {0}
+				.Concat(Enumerable.Range(0, lastExponent))
+				.Select(x => (int)Math.Pow(@base, x))
+				.Concat(new int[] {size - 1})
+				.ToArray();
+		}
+
+		private void ValidateSpecificCharacters(IEnumerable<int> positions, string expectedString, string actualString)
 		{
 			positions.ForEach(i =>
 			{
