@@ -26,6 +26,9 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 		public int StorageId { get; set; }
 		public bool IsJobStatusArtifactIdSet { get; set; }
 		public int JobStatusArtifactId { get; set; }
+		public bool IsPreviousRunArtifactIdSet { get; set; }
+		public int PreviousRunArtifactId { get; set; }
+		public bool Retrying { get; set; }
 		public bool IsSourceWorkspaceArtifactTypeIdSet { get; set; }
 
 		public void SetSourceWorkspaceArtifactTypeId(int artifactTypeId)
@@ -68,6 +71,7 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 			// Method intentionally left empty.
 		}
 
+		public int ExecutingUserId { get; set; }
 		public string JobStatus { get; set; }
 		public bool SendEmails { get; set; }
 		public IEnumerable<string> EmailRecipients { get; } = new List<string>();

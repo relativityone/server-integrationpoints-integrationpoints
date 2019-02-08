@@ -2,8 +2,6 @@
 {
 	internal interface IPermissionsCheckConfiguration : IConfiguration
 	{
-		int DataSourceArtifactId { get; }
-
-		int DataDestinationArtifactId { get; }
+		int ExecutingUserId { get; }
 	}
 }
