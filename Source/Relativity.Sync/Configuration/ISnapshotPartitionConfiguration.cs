@@ -1,13 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Relativity.Sync.Configuration
 {
 	internal interface ISnapshotPartitionConfiguration : IConfiguration
 	{
-		int SnapshotId { get; }
+		int TotalRecordsCount { get; }
 
-		bool AreBatchesIdsSet { get; }
+		Guid ExportRunId { get; }
 
-		List<int> BatchesIds { get; set; }
+		bool IsSnapshotPartitioned { get; }
+
+		void SetSnapshotPartitions(List<int> batchesIds);
 	}
 }

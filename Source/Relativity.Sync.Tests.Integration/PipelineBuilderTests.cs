@@ -111,7 +111,6 @@ namespace Relativity.Sync.Tests.Integration
 			{
 				new[] {typeof(IPermissionsCheckConfiguration)},
 				new[] {typeof(IValidationConfiguration)},
-				new[] {typeof(ITemporaryStorageInitializationConfiguration)},
 				new[] {typeof(IDestinationWorkspaceObjectTypesCreationConfiguration)},
 				new[] {typeof(IDataSourceSnapshotConfiguration)},
 				new[]

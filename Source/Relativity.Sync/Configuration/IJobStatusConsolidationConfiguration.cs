@@ -1,11 +1,11 @@
-﻿namespace Relativity.Sync.Configuration
+﻿using System;
+
+namespace Relativity.Sync.Configuration
 {
 	internal interface IJobStatusConsolidationConfiguration : IConfiguration
 	{
-		int StorageId { get; }
+		Guid ExportRunId { get; }
 
-		bool IsJobStatusArtifactIdSet { get; }
-
-		int JobStatusArtifactId { get; set; }
+		int TotalRecordsCount { get; }
 	}
 }

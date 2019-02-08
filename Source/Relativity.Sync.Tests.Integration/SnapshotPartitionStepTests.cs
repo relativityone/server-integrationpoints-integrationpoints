@@ -6,7 +6,7 @@ using Relativity.Sync.Configuration;
 namespace Relativity.Sync.Tests.Integration
 {
 	[TestFixture]
-	internal sealed class DestinationWorkspaceObjectTypesCreationStepTests : FailingStepsBase<IDestinationWorkspaceObjectTypesCreationConfiguration>
+	internal sealed class SnapshotPartitionStepTests : FailingStepsBase<ISnapshotPartitionConfiguration>
 	{
 		protected override void AssertExecutedSteps(List<Type> executorTypes)
 		{
@@ -15,8 +15,9 @@ namespace Relativity.Sync.Tests.Integration
 
 		protected override int ExpectedNumberOfExecutedSteps()
 		{
-			// validation, permissions, notification
-			const int expectedNumberOfExecutedSteps = 3;
+			// validation, permissions, object types, snapshot, source tags, dest tags,
+			// data destination init, saved search, notification
+			const int expectedNumberOfExecutedSteps = 9;
 			return expectedNumberOfExecutedSteps;
 		}
 	}
