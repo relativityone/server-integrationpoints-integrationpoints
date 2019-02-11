@@ -1,4 +1,4 @@
-STRATEGY: MIN
+STRATEGY: MIN 
 RESTRICTION: == net462
 NUGET
   remote: https://proget.kcura.corp/nuget/NuGet
