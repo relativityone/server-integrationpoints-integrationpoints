@@ -107,56 +107,9 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 				{
 					foreach (var key in _tasks.Keys)
 					{
-						try
-						{
-							IntegrationPointDataHubInput input = _tasks[key];
+						UpdateIntegrationPointData(key);
 
-							var permissionRepository =
-								new PermissionRepository((IHelper)ConnectionHelper.Helper(), input.WorkspaceId);
-							IRelativityObjectManager objectManager =
-								CreateObjectManager(ConnectionHelper.Helper(), input.WorkspaceId);
-							var _providerTypeService = new ProviderTypeService(objectManager);
-							var _buttonStateBuilder = new ButtonStateBuilder(_providerTypeService, _queueManager,
-								_jobHistoryManager, _stateManager, permissionRepository, _permissionValidator,
-								objectManager);
-
-							IntegrationPoint integrationPoint = objectManager.Read<IntegrationPoint>(input.ArtifactId);
-
-							ProviderType providerType = _providerTypeService.GetProviderType(
-								integrationPoint.SourceProvider.Value,
-								integrationPoint.DestinationProvider.Value);
-							bool sourceProviderIsRelativity = providerType == ProviderType.Relativity;
-
-							IntegrationPointModel model = new IntegrationPointModel
-							{
-								HasErrors = integrationPoint.HasErrors,
-								LastRun = integrationPoint.LastRuntimeUTC,
-								NextRun = integrationPoint.NextScheduledRuntimeUTC
-							};
-
-							IOnClickEventConstructor onClickEventHelper =
-								_helperClassFactory.CreateOnClickEventHelper(_managerFactory, _contextContainer);
-
-							var buttonStates = _buttonStateBuilder.CreateButtonState(input.WorkspaceId, input.ArtifactId);
-							var onClickEvents = onClickEventHelper.GetOnClickEvents(input.WorkspaceId, input.ArtifactId,
-								integrationPoint.Name, buttonStates);
-							
-							Clients.Group(key).updateIntegrationPointData(model, buttonStates, onClickEvents,
-								sourceProviderIsRelativity);
-						}
-						catch (Exception exception)
-						{
-							_logger.LogError(exception, "{hub} error when doing {method}: {message}", nameof(IntegrationPointDataHub), "updateIntegrationPointData", exception.Message);
-						}
-
-						try
-						{
-							Clients.Group(key).updateIntegrationPointJobStatus();
-						}
-						catch (Exception exception)
-						{
-							_logger.LogError(exception, "{hub} error when doing {method}: {message}", nameof(IntegrationPointDataHub), "updateIntegrationPointJobStatus", exception.Message);
-						}
+						UpdateIntegrationPointJobStatus(key);
 
 						//sleep between getting each stats to get SQL Server a break
 						Thread.Sleep(_intervalBetweentasks);
@@ -170,6 +123,65 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			finally
 			{
 				_updateTimer.Enabled = true;
+			}
+		}
+
+		private void UpdateIntegrationPointJobStatus(string key)
+		{
+			try
+			{
+				Clients.Group(key).updateIntegrationPointJobStatus();
+			}
+			catch (Exception exception)
+			{
+				_logger.LogError(exception, "{hub} error when doing {method}: {message}", nameof(IntegrationPointDataHub),
+					"updateIntegrationPointJobStatus", exception.Message);
+			}
+		}
+
+		private void UpdateIntegrationPointData(string key)
+		{
+			try
+			{
+				IntegrationPointDataHubInput input = _tasks[key];
+
+				var permissionRepository =
+					new PermissionRepository((IHelper) ConnectionHelper.Helper(), input.WorkspaceId);
+				IRelativityObjectManager objectManager =
+					CreateObjectManager(ConnectionHelper.Helper(), input.WorkspaceId);
+				var _providerTypeService = new ProviderTypeService(objectManager);
+				var _buttonStateBuilder = new ButtonStateBuilder(_providerTypeService, _queueManager,
+					_jobHistoryManager, _stateManager, permissionRepository, _permissionValidator,
+					objectManager);
+
+				IntegrationPoint integrationPoint = objectManager.Read<IntegrationPoint>(input.ArtifactId);
+
+				ProviderType providerType = _providerTypeService.GetProviderType(
+					integrationPoint.SourceProvider.Value,
+					integrationPoint.DestinationProvider.Value);
+				bool sourceProviderIsRelativity = providerType == ProviderType.Relativity;
+
+				IntegrationPointModel model = new IntegrationPointModel
+				{
+					HasErrors = integrationPoint.HasErrors,
+					LastRun = integrationPoint.LastRuntimeUTC,
+					NextRun = integrationPoint.NextScheduledRuntimeUTC
+				};
+
+				IOnClickEventConstructor onClickEventHelper =
+					_helperClassFactory.CreateOnClickEventHelper(_managerFactory, _contextContainer);
+
+				var buttonStates = _buttonStateBuilder.CreateButtonState(input.WorkspaceId, input.ArtifactId);
+				var onClickEvents = onClickEventHelper.GetOnClickEvents(input.WorkspaceId, input.ArtifactId,
+					integrationPoint.Name, buttonStates);
+
+				Clients.Group(key).updateIntegrationPointData(model, buttonStates, onClickEvents,
+					sourceProviderIsRelativity);
+			}
+			catch (Exception exception)
+			{
+				_logger.LogError(exception, "{hub} error when doing {method}: {message}", nameof(IntegrationPointDataHub),
+					"updateIntegrationPointData", exception.Message);
 			}
 		}
 
