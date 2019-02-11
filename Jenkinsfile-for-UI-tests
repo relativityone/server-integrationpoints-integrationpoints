@@ -222,7 +222,7 @@ timestamps
 						if (!params.skipUITests)
 						{
 							archiveArtifacts artifacts: "lib/UnitTests/app.jeeves-ci.config", fingerprint: true
-							archiveArtifacts artifacts: "lib/UnitTests/*.png", fingerprint: true
+							archiveFailedUiTestsScreenshoots()
 						}
 					}
 				}
@@ -395,6 +395,18 @@ def archiveTestsArtifacts(Boolean skipTests, String resultsFilePath, String repo
     catch(err)
     {
         echo "archiveTestsArtifacts failed with error: $err"
+    }
+}
+
+def archiveFailedUiTestsScreenshoots()
+{
+    try
+    {
+        archiveArtifacts artifacts: "lib/UnitTests/*.png", fingerprint: true
+    }
+    catch(err)
+    {
+        echo "archiveFailedUiTestsScreenshoots failed with error: $err"
     }
 }
 
