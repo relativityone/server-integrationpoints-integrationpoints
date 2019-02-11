@@ -23,17 +23,12 @@ namespace kCura.IntegrationPoints.RelativitySync
 				logger.LogError(e, "Unable to resolve dependencies from container.");
 				throw;
 			}
-
+			
 			try
 			{
 				SourceConfiguration sourceConfiguration = serializer.Deserialize<SourceConfiguration>(job.IntegrationPointModel.SourceConfiguration);
 				ImportSettings destinationConfiguration = serializer.Deserialize<ImportSettings>(job.IntegrationPointModel.DestinationConfiguration);
-
-			try
-			{
-				SourceConfiguration sourceConfiguration = serializer.Deserialize<SourceConfiguration>(integrationPoint.SourceConfiguration);
-				ImportSettings destinationConfiguration = serializer.Deserialize<ImportSettings>(integrationPoint.DestinationConfiguration);
-				List<string> emailRecipients = IntegrationPointTaskBase.GetRecipientEmails(integrationPoint, logger);
+				List<string> emailRecipients = IntegrationPointTaskBase.GetRecipientEmails(job.IntegrationPointModel, logger);
 
 				return new SyncConfiguration(job.JobHistoryId, sourceConfiguration, destinationConfiguration, emailRecipients);
 			}
