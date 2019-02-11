@@ -4,6 +4,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Adapters
 {
 	public interface IValidationExecutorFactory
 	{
-		IValidationExecutor CreateValidationExecutor();
+		IValidationExecutor CreateProviderValidationExecutor();
+		IValidationExecutor CreatePermissionValidationExecutor();
 	}
 }

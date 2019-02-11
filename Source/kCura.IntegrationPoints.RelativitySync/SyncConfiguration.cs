@@ -128,10 +128,41 @@ namespace kCura.IntegrationPoints.RelativitySync
 			_sourceJobArtifactTypeId = artifactTypeId;
 		}
 
+		public void SetDestinationWorkspaceTagArtifactId(int artifactId)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void SetSourceJobTag(int artifactId, string name)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void SetSourceWorkspaceTag(int artifactId, string name)
+		{
+			throw new NotImplementedException();
+		}
+
 		public bool IsSourceWorkspaceArtifactTypeIdSet => _sourceWorkspaceArtifactTypeId.HasValue;
 
 		public bool IsSourceJobArtifactTypeIdSet => _sourceJobArtifactTypeId.HasValue;
 
 		public int DestinationWorkspaceArtifactId { get; }
+
+		public int ExecutingUserId { get; } = -1;
+
+		public int SourceWorkspaceArtifactId => throw new NotImplementedException();
+
+		public int JobArtifactId => throw new NotImplementedException();
+
+		public bool IsDestinationWorkspaceTagArtifactIdSet => throw new NotImplementedException();
+
+		public int SourceWorkspaceArtifactTypeId => throw new NotImplementedException();
+
+		public int SourceJobArtifactTypeId => throw new NotImplementedException();
+
+		public bool IsSourceJobTagSet => throw new NotImplementedException();
+
+		public bool IsSourceWorkspaceTagSet => throw new NotImplementedException();
 	}
 }

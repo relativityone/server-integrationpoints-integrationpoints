@@ -78,6 +78,7 @@ namespace kCura.IntegrationPoints.Agent
 						try
 						{
 							ripContainerForSync.Register(Component.For<IExtendedJob>().ImplementedBy<ExtendedJob>());
+							ripContainerForSync.Register(Component.For<Job>().Instance(job));
 							ripContainerForSync.Register(Component.For<RelativitySyncAdapter>().ImplementedBy<RelativitySyncAdapter>());
 							ripContainerForSync.Register(Component.For<IWindsorContainer>().Instance(ripContainerForSync));
 

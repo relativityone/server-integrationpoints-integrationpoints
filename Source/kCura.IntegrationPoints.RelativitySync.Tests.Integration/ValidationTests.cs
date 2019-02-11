@@ -7,15 +7,14 @@ using kCura.IntegrationPoints.RelativitySync.Adapters;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Moq;
 using NUnit.Framework;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 {
-	internal sealed class ValidatorTests : RelativityProviderTemplate
+	internal sealed class ValidationTests : RelativityProviderTemplate
 	{
 		private ValidationConfigurationStub _config;
 
-		public ValidatorTests() : base(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())
+		public ValidationTests() : base(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())
 		{
 		}
 
@@ -29,7 +28,8 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 		public async Task ItShouldAlwaysReturnTrueForCanExecute()
 		{
 			Mock<IValidationExecutorFactory> factory = new Mock<IValidationExecutorFactory>();
-			Validator validator = new Validator(Container, factory.Object);
+			Mock<IRdoRepository> rdoRepository = new Mock<IRdoRepository>();
+			Validation validator = new Validation(Container, factory.Object, rdoRepository.Object);
 			bool canExecute = await validator.CanExecuteAsync(_config, CancellationToken.None).ConfigureAwait(false);
 			Assert.IsTrue(canExecute);
 		}
@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			IntegrationPointModel integrationPointModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOverlay, "SomeName", "Append Only");
 			CreateOrUpdateIntegrationPoint(integrationPointModel);
 
-			Validator validator = new Validator(Container, new ValidationExecutorFactory(Container));
+			Validation validator = new Validation(Container, new ValidationExecutorFactory(Container), new RdoRepository(Container));
 			await validator.ExecuteAsync(_config, CancellationToken.None).ConfigureAwait(false);
 
 			Assert.Pass();
