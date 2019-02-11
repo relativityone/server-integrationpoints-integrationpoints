@@ -96,7 +96,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 		}
 
 		[Test]
-		[Ignore("REL-258301 REL-291038")]
+		[Ignore("REL-291038")]
 		public void ProductionExportToLoadFile_TC_ELF_PROD_2()
 		{
 			// Arrange
