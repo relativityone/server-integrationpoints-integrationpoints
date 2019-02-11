@@ -24,6 +24,7 @@ using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain.Authentication;
+using kCura.IntegrationPoints.Domain.Models;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 using Relativity.API;
@@ -44,7 +45,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 		private readonly IHelperClassFactory _helperClassFactory;
 		private readonly IIntegrationPointPermissionValidator _permissionValidator;
 		private readonly IAPILog _logger;
-		private readonly int _intervalBetweentasks = 100;
+		private readonly int _intervalBetweenTasks = 100;
 		private readonly IManagerFactory _managerFactory;
 		private readonly int _updateInterval = 5000;
 
@@ -112,7 +113,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 						UpdateIntegrationPointJobStatus(key);
 
 						//sleep between getting each stats to get SQL Server a break
-						Thread.Sleep(_intervalBetweentasks);
+						Thread.Sleep(_intervalBetweenTasks);
 					}
 				}
 			}
@@ -150,14 +151,14 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 					new PermissionRepository((IHelper) ConnectionHelper.Helper(), input.WorkspaceId);
 				IRelativityObjectManager objectManager =
 					CreateObjectManager(ConnectionHelper.Helper(), input.WorkspaceId);
-				var _providerTypeService = new ProviderTypeService(objectManager);
-				var _buttonStateBuilder = new ButtonStateBuilder(_providerTypeService, _queueManager,
+				var providerTypeService = new ProviderTypeService(objectManager);
+				var buttonStateBuilder = new ButtonStateBuilder(providerTypeService, _queueManager,
 					_jobHistoryManager, _stateManager, permissionRepository, _permissionValidator,
 					objectManager);
 
 				IntegrationPoint integrationPoint = objectManager.Read<IntegrationPoint>(input.ArtifactId);
 
-				ProviderType providerType = _providerTypeService.GetProviderType(
+				ProviderType providerType = providerTypeService.GetProviderType(
 					integrationPoint.SourceProvider.Value,
 					integrationPoint.DestinationProvider.Value);
 				bool sourceProviderIsRelativity = providerType == ProviderType.Relativity;
@@ -172,8 +173,8 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 				IOnClickEventConstructor onClickEventHelper =
 					_helperClassFactory.CreateOnClickEventHelper(_managerFactory, _contextContainer);
 
-				var buttonStates = _buttonStateBuilder.CreateButtonState(input.WorkspaceId, input.ArtifactId);
-				var onClickEvents = onClickEventHelper.GetOnClickEvents(input.WorkspaceId, input.ArtifactId,
+				ButtonStateDTO buttonStates = buttonStateBuilder.CreateButtonState(input.WorkspaceId, input.ArtifactId);
+				OnClickEventDTO onClickEvents = onClickEventHelper.GetOnClickEvents(input.WorkspaceId, input.ArtifactId,
 					integrationPoint.Name, buttonStates);
 
 				Clients.Group(key).updateIntegrationPointData(model, buttonStates, onClickEvents,
