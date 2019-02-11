@@ -108,7 +108,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 				};
 
 				UserModel userModel = UserService.CreateUser("RIP", $"Test_User_{_timeStamp}", $"RIP_Test_User_{_timeStamp}@relativity.com");
-				User = new RelativityUser(userModel.ArtifactId, userModel.EmailAddress, userModel.Password);
+				User = new RelativityUser(userModel.ArtifactID, userModel.EmailAddress, userModel.Password);
 			}
 			return this;
 		}

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Data.Extensions;
 using Relativity.Services;
 using Relativity.Services.InstanceSetting;
@@ -9,10 +10,11 @@ namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class InstanceSetting
 	{
+		private static ITestHelper Helper => new TestHelper();
+
 		public static int Create(string section, string name, string value, ValueType valueType)
 		{
-			using (IInstanceSettingManager instanceSettingManager = Kepler.CreateProxy<IInstanceSettingManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true)
-			)
+			using (IInstanceSettingManager instanceSettingManager = Helper.CreateAdminProxy<IInstanceSettingManager>())
 			{
 				global::Relativity.Services.InstanceSetting.InstanceSetting instanceSetting = new global::Relativity.Services.InstanceSetting.InstanceSetting
 				{
@@ -36,8 +38,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static global::Relativity.Services.InstanceSetting.InstanceSetting Query(string section, string name)
 		{
-			using (IInstanceSettingManager instanceSettingManager = Kepler.CreateProxy<IInstanceSettingManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true)
-			)
+			using (IInstanceSettingManager instanceSettingManager = Helper.CreateAdminProxy<IInstanceSettingManager>())
 			{
 				Query query = new Query();
 				Condition sectionCondition = new TextCondition(InstanceSettingFieldNames.Section, TextConditionEnum.EqualTo, section);
@@ -82,8 +83,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		private static void Update(global::Relativity.Services.InstanceSetting.InstanceSetting instanceSetting)
 		{
-			using (IInstanceSettingManager instanceSettingManager = Kepler.CreateProxy<IInstanceSettingManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true)
-			)
+			using (IInstanceSettingManager instanceSettingManager = Helper.CreateAdminProxy<IInstanceSettingManager>())
 			{
 				try
 				{

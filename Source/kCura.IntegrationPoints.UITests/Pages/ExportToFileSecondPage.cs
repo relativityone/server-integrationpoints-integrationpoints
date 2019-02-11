@@ -1,10 +1,12 @@
 ﻿using System;
+using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Components;
 using kCura.IntegrationPoints.UITests.Driver;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 using SeleniumExtras.PageObjects;
 using OpenQA.Selenium.Support.UI;
+using Polly;
 
 namespace kCura.IntegrationPoints.UITests.Pages
 {
@@ -101,7 +103,23 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public void SelectAllSourceFields()
 		{
-			AddAllSourceFieldElements.ClickEx();
+			const int maxRetryCount = 3;
+			Policy
+				.Handle<UiTestException>()
+				.WaitAndRetry(maxRetryCount, retryAttempt => DriverExtensions.DefaultRetryInterval)
+				.Execute(() =>
+				{
+					AddAllSourceFieldElements.ClickEx();
+					ValidateAllFieldsAreMapped(SelectSourceFieldsElement);
+				});
+		}
+
+		protected void ValidateAllFieldsAreMapped(SelectElement sourceFields)
+		{
+			if (sourceFields.Options.Count != 0)
+			{
+				throw new UiTestException("All fields have not been selected!");
+			}
 		}
 
 		public void SelectSourceField(string fieldName)

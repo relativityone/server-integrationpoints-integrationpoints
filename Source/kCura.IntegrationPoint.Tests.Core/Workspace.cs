@@ -130,7 +130,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				}
 				catch (Exception ex)
 				{
-					throw new TestException($"An error occurred while deleting workspace [{workspaceArtifactId}]. Error Message: {ex.Message}");
+					throw new TestException($"An error occurred while retrieving workspace [{workspaceArtifactId}]. Error Message: {ex.Message}");
 				}
 			}
 		}

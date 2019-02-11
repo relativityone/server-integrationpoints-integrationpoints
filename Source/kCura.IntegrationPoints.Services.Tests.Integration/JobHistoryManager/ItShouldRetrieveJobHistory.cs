@@ -113,7 +113,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 				ExceptionHelper.IgnoreExceptions(() => Workspace.DeleteWorkspace(testData.WorkspaceId));
 			}
 			ExceptionHelper.IgnoreExceptions(() => Group.DeleteGroup(_groupId));
-			ExceptionHelper.IgnoreExceptions(() => User.DeleteUser(_user.ArtifactId));
+			ExceptionHelper.IgnoreExceptions(() => User.DeleteUser(_user.ArtifactID));
 		}
 
 		[Test]

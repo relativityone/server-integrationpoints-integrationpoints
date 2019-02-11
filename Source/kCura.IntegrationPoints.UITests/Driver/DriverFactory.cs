@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.UITests.Driver
 
 			driver.Manage().Timeouts().ImplicitWait = DriverImplicitWait;
 			driver.Manage().Window.Size = new Size(SharedVariables.UiBrowserWidth, SharedVariables.UiBrowserHeight);
-			driver.Url = SharedVariables.ProtocolVersion + "://" + SharedVariables.TargetHost + "/Relativity";
+			driver.Url = SharedVariables.RelativityFrontendUrlValue;
 			
 			LogDriverInformation(driver);
 			return driver;

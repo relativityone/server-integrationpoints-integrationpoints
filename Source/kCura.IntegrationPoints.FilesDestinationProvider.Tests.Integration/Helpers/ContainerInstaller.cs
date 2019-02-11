@@ -96,8 +96,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 		{
 			windsorContainer.Register(Component.For<IRSAPIClient>().UsingFactoryMethod(k =>
 			{
-				Uri relativityServicesUri = new Uri(SharedVariables.RsapiClientUri);
-				return new RSAPIClient(relativityServicesUri, new UsernamePasswordCredentials(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword));
+				return new RSAPIClient(SharedVariables.RsapiUri, new UsernamePasswordCredentials(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword));
 			}));
 		}
 
@@ -160,7 +159,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 				Classes.FromThisAssembly()
 					.IncludeNonPublicTypes()
 					.BasedOn<IExportTestCase>()
-					.Unless(type => Attribute.IsDefined(type, typeof(IgnoreAttribute)))
 					.WithServiceAllInterfaces()
 					.AllowMultipleMatches());
 		}
@@ -171,7 +169,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 				Classes.FromThisAssembly()
 					.IncludeNonPublicTypes()
 					.BasedOn<IInvalidFileshareExportTestCase>()
-					.Unless(type => Attribute.IsDefined(type, typeof(IgnoreAttribute)))
 					.WithServiceAllInterfaces()
 					.AllowMultipleMatches());
 		}

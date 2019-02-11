@@ -3,6 +3,8 @@ using System.Data;
 using System.Globalization;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoint.Tests.Core.TestCategories;
+using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Agent.Exceptions;
 using kCura.IntegrationPoints.Core.Models;
@@ -52,8 +54,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			};
 		}
 
-		[Test]
-		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
+        [Test]
+		[SmokeTest]
 		public void Ldap_MultipleJobs_AgentDropsJob_RunJob()
 		{
 			Job job1 = null;
@@ -188,8 +190,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			}
 		}
 
-		[Test]
-		[Category(IntegrationPoint.Tests.Core.Constants.SMOKE_TEST)]
+        [Test]
+		[SmokeTest]
 		public void ItShouldSetJobIdOnJobHistory()
 		{
 			Job job1 = null;
