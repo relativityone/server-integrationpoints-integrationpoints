@@ -2,6 +2,6 @@
 {
 	public interface ITagSavedSearch
 	{
-		void CreateTagSavedSearch(int workspaceArtifactId, TagsContainer tagsContainer, int savedSearchFolderId);
+		int CreateTagSavedSearch(int workspaceArtifactId, TagsContainer tagsContainer, int savedSearchFolderId);
 	}
 }

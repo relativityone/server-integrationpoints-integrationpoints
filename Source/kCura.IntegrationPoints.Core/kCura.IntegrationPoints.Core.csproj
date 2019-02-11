@@ -65,6 +65,7 @@
     <Compile Include="Authentication\TokenCredentialProvider.cs" />
     <Compile Include="Authentication\TokenProviderFactoryFactory.cs" />
     <Compile Include="BatchEmail.cs" />
+    <Compile Include="BatchStatusCommands\Implementations\SourceWorkspaceTagCreator.cs" />
     <Compile Include="BatchStatusCommands\Implementations\IConsumeScratchTableBatchStatus.cs" />
     <Compile Include="BatchStatusCommands\Implementations\JobHistoryErrorBatchUpdateManager.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TargetDocumentsTaggingManager.cs" />
