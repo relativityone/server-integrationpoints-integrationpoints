@@ -38,16 +38,20 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 	{
 		private static SortedDictionary<string, IntegrationPointDataHubInput> _tasks;
 		private static Timer _updateTimer;
+
+		private const string _MESSAGE_TEMPLATE = "Section={Section} | Method={Method} | Message={Message} | Key={Key} | Exception={Exception}";
+		private const string _SECTION = "RIP";
+
+		private readonly IAPILog _logger;
 		private readonly IContextContainer _contextContainer;
-		private readonly IQueueManager _queueManager;
-		private readonly IJobHistoryManager _jobHistoryManager;
-		private readonly IStateManager _stateManager;
 		private readonly IHelperClassFactory _helperClassFactory;
 		private readonly IIntegrationPointPermissionValidator _permissionValidator;
-		private readonly IAPILog _logger;
-		private readonly int _intervalBetweenTasks = 100;
+		private readonly IJobHistoryManager _jobHistoryManager;
 		private readonly IManagerFactory _managerFactory;
+		private readonly int _intervalBetweenTasks = 100;
 		private readonly int _updateInterval = 5000;
+		private readonly IQueueManager _queueManager;
+		private readonly IStateManager _stateManager;
 
 		public IntegrationPointDataHub() : this(new ContextContainer((IHelper)ConnectionHelper.Helper()), new HelperClassFactory())
 		{
@@ -119,8 +123,8 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			}
 			catch (Exception exception)
 			{
-				_logger.LogError(exception, "{hub} error in {method}. {message}", nameof(IntegrationPointDataHub),
-					nameof(_updateTimer_Elapsed), exception.Message);
+				_logger.LogError(exception, _MESSAGE_TEMPLATE, _SECTION, nameof(_updateTimer_Elapsed),
+					"Exception was thrown", null, exception.Message);
 			}
 			finally
 			{
@@ -136,8 +140,8 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			}
 			catch (Exception exception)
 			{
-				_logger.LogError(exception, "{hub} error when doing {method}: {message}", nameof(IntegrationPointDataHub),
-					"updateIntegrationPointJobStatus", exception.Message);
+				_logger.LogError(exception, _MESSAGE_TEMPLATE, _SECTION, nameof(UpdateIntegrationPointJobStatus),
+					"Exception was thrown", key, exception.Message);
 			}
 		}
 
@@ -182,8 +186,8 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			}
 			catch (Exception exception)
 			{
-				_logger.LogError(exception, "{hub} error when doing {method}: {message}", nameof(IntegrationPointDataHub),
-					"updateIntegrationPointData", exception.Message);
+				_logger.LogError(exception, _MESSAGE_TEMPLATE, _SECTION, nameof(UpdateIntegrationPointData),
+					"Exception was thrown", key, exception.Message);
 			}
 		}
 
