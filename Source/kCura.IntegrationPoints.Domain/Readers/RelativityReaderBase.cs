@@ -143,9 +143,9 @@ namespace kCura.IntegrationPoints.Domain.Readers
 		private Exception CreateFetchDataToReadException(Exception exception)
 		{
 			bool isDataGridException = exception is DataGridException;
-			string exceptionMessage = isDataGridException ?
-				"Error occurred while fetching data from Data Grid" :
-				"Error occurred while fetching data";
+			string exceptionMessage = isDataGridException 
+                ? "Error occurred while fetching data from Data Grid" 
+                : "Error occurred while fetching data";
 			string exceptionSource = isDataGridException
 				? IntegrationPointsExceptionSource.DATA_GRID
 				: IntegrationPointsExceptionSource.GENERIC;

@@ -10,10 +10,22 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Installers
 	{
 		public void Install(IWindsorContainer container, IConfigurationStore store)
 		{
-			container.Register(Component.For<IExtendedImportApiFactory>().ImplementedBy<ExtendedImportApiFactory>().LifestyleSingleton());
-			container.Register(Component.For<IExtendedImportApiFacade>().ImplementedBy<ExtendedImportApiFacade>().LifestyleSingleton());
-			container.Register(Component.For<IDataSourceProvider>().ImplementedBy<DocumentTransferProvider>()
-				.Named(new Guid(Domain.Constants.RELATIVITY_PROVIDER_GUID).ToString()));
+			container.Register(Component
+				.For<IExtendedImportApiFactory>()
+				.ImplementedBy<ExtendedImportApiFactory>()
+				.LifestyleSingleton()
+			);
+			container.Register(Component
+				.For<IExtendedImportApiFacade>()
+				.ImplementedBy<ExtendedImportApiFacade>()
+				.LifestyleTransient()
+			);
+			container.Register(Component
+				.For<IDataSourceProvider>()
+				.ImplementedBy<DocumentTransferProvider>()
+				.Named(new Guid(Domain.Constants.RELATIVITY_PROVIDER_GUID).ToString())
+				.LifestyleTransient()
+			);
 		}
 	}
 }

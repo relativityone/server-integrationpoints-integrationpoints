@@ -153,7 +153,9 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 
 		private async Task<IList<HistoricalPromotionStatusModel>> GetHistoricalDocumentModelAsync(int workspaceId)
 		{
+#pragma warning disable CS0618 // Type or member is obsolete REL-292860
 			IDBContext workspaceContext = global::Relativity.API.Services.Helper.GetDBContext(workspaceId);
+#pragma warning restore CS0618 // Type or member is obsolete
 
 			List<HistoricalPromotionStatusModel> historicalModels = new List<HistoricalPromotionStatusModel>();
 			using (SqlDataReader reader = workspaceContext.ExecuteSQLStatementAsReader(_DOCUMENT_VOLUME_SQL))
@@ -178,7 +180,9 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 			SqlParameter artifactGuidParameter = new SqlParameter("@artifactGuid", artifactGuid);
 			SqlParameter[] sqlParameters = {artifactGuidParameter};
 
+#pragma warning disable CS0618 // Type or member is obsolete REL-292860
 			IDBContext workspaceContext = global::Relativity.API.Services.Helper.GetDBContext(workspaceArtifactId);
+#pragma warning restore CS0618 // Type or member is obsolete
 			string displayName = workspaceContext.ExecuteSqlStatementAsScalar<string>(_DISPLAY_NAME_SQL, sqlParameters);
 			return displayName;
 		}
