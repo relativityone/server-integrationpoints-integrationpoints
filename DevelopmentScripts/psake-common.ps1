@@ -16,6 +16,7 @@ properties {
     $nuget_packages_directory = [System.IO.Path]::Combine($root, 'packages')
     $lib_directory = [System.IO.Path]::Combine($root, 'lib')
     $tests_directory = [System.IO.Path]::Combine($lib_directory, 'UnitTests')
+    $artifacts_directory = [System.IO.Path]::Combine($root, 'Artifacts')
     
     #build variables
     $version = '1.0.0.0'
@@ -61,6 +62,7 @@ properties {
     $NUnit_x86 = [System.IO.Path]::Combine($development_scripts_directory, 'NUnit.Runners', 'tools', 'nunit-console-x86.exe')
     $NUnit3 = [System.IO.Path]::Combine($development_scripts_directory, 'NUnit.ConsoleRunner', 'tools', 'nunit3-console.exe')    
     $NUnit_TestOutputFile = [System.IO.Path]::Combine($testlog_directory, 'Test_Output_x86.xml')
+    $ReportUnit = [System.IO.Path]::Combine($development_scripts_directory, 'ReportUnit', 'tools', 'ReportUnit.exe')
 
     #build variables
     $verbosity ="normal" 

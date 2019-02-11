@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 
 		public override void TestTeardown()
 		{
-			User.DeleteUser(_user.ArtifactId);
+			User.DeleteUser(_user.ArtifactID);
 			Group.DeleteGroup(_groupId);
 
 			Helper.RelativityUserName = _originalHelperUsername;

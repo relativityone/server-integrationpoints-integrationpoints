@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
@@ -29,7 +30,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 		/// </summary>
 		/// <param name="workspaceArtifactId"></param>
 		/// <param name="documentsTestData"></param>
-		/// <param name="rootFolderIdForNatives">Set to null if documents testData has folderPath set; set to folder id of your choice or leave null - workspace root folder will be taken</param>
 		/// <returns></returns>
 		public bool ImportData(int workspaceArtifactId, DocumentsTestData documentsTestData)
 		{
@@ -49,8 +49,16 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return !HasErrors;
 		}
 
-		private int GetWorkspaceRootFolderID(ImportAPI importApi, int workspaceID) =>
-			importApi.Workspaces().First(w => w.ArtifactID == workspaceID).RootFolderID;
+		private int GetWorkspaceRootFolderID(int workspaceID)
+		{ 
+			Relativity.Client.DTOs.Workspace dto = Workspace.GetWorkspaceDto(workspaceID);
+			if (dto?.RootFolderID != null)
+			{
+				return dto.RootFolderID.Value;
+			}
+
+			throw new TestException($"An error occured while retrieving RootFolderId for workspace: {workspaceID}");
+		}
 
 		private void ImportNativeFiles(int workspaceArtifactId, IDataReader dataReader, ImportAPI importApi, int identifyFieldArtifactId)
 		{
@@ -68,7 +76,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			importJob.Settings.FileNameColumn = "File Name";
 			importJob.Settings.CopyFilesToDocumentRepository = _withNatives;
 
-			importJob.Settings.DestinationFolderArtifactID = GetWorkspaceRootFolderID(importApi, workspaceArtifactId);
+			importJob.Settings.DestinationFolderArtifactID = GetWorkspaceRootFolderID(workspaceArtifactId);
 			importJob.Settings.FolderPathSourceFieldName = Constants.FOLDER_PATH;
 
 			if (!_withNatives)

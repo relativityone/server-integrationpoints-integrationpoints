@@ -27,7 +27,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
-			EnsureGeneralPageIsOpened();
 			Install(Context.GetWorkspaceId());
 			CopyFilesToFileshare();
 		}
@@ -40,7 +39,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 			{
 				const int tapiTimeoutInSeconds = 60 * 3;
 				FileCopier.UploadToImportDirectory(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestDataImportFromLoadFile"),
-					SharedVariables.ProtocolVersion + "://" + SharedVariables.RelativityWebAddress,
+					SharedVariables.RelativityBaseAdressUrlValue,
 					Context.GetWorkspaceId(),
 					SharedVariables.RelativityUserName,
 					SharedVariables.RelativityPassword,
