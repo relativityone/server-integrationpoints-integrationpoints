@@ -121,7 +121,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		}
 
         [Test]
-		[SmokeTest]
+		[StressTest]
 		[TestInQuarantine(TestQuarantineState.UnderObservation,
 						"Unstable - to be fixed -> REL-280310")]
 		public void RunRelativityProviderAlone()

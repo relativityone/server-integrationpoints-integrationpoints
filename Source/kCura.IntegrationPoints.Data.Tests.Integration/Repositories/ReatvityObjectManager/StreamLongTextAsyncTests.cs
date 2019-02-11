@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Castle.Core.Internal;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoint.Tests.Core.TestCategories;
+using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -55,6 +57,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.Relativity
 		}
 
 		[Test]
+		[TestInQuarantine(
+			TestQuarantineState.DetectsDefectInExternalDependency,
+			"IAPI failure prevents import of test data - REL-293423")]
 		// TODO change to StressTest attribute
 		public async Task ItShouldFetchDocumentWith1500MBExtractedText()
 		{
