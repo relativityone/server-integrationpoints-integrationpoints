@@ -8,8 +8,8 @@ namespace kCura.IntegrationPoints.RelativitySync
 {
 	internal sealed class SyncConfiguration : IDataDestinationFinalizationConfiguration, IDataDestinationInitializationConfiguration, IDataSourceSnapshotConfiguration,
 		IDestinationWorkspaceObjectTypesCreationConfiguration, IDestinationWorkspaceSavedSearchCreationConfiguration, IDestinationWorkspaceTagsCreationConfiguration, IJobCleanupConfiguration,
-		IJobStatusConsolidationConfiguration, INotificationConfiguration, IPermissionsCheckConfiguration, IPreviousRunCleanupConfiguration, ISnapshotPartitionConfiguration,
-		ISourceWorkspaceTagsCreationConfiguration, ISynchronizationConfiguration, ITemporaryStorageInitializationConfiguration, IValidationConfiguration
+		IJobStatusConsolidationConfiguration, INotificationConfiguration, IPermissionsCheckConfiguration, ISnapshotPartitionConfiguration,
+		ISourceWorkspaceTagsCreationConfiguration, ISynchronizationConfiguration, IValidationConfiguration
 	{
 		private int? _jobTagArtifactId;
 		private int? _workspaceTagArtifactId;
@@ -20,6 +20,8 @@ namespace kCura.IntegrationPoints.RelativitySync
 		private int? _sourceWorkspaceTagArtifactId;
 		private string _sourceWorkspaceTagName;
 		private int? _destinationWorkspaceTagArtifactId;
+		private Guid? _exportRunId;
+		private List<int> _batchesIds;
 
 		public SyncConfiguration(int jobId, SourceConfiguration sourceConfiguration, ImportSettings destinationConfiguration, List<string> emailRecipients)
 		{
@@ -32,6 +34,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			CreateSavedSearchForTags = destinationConfiguration.CreateSavedSearchForTagging;
 			EmailRecipients = emailRecipients;
 			SendEmails = emailRecipients.Count > 0;
+			FieldMappings = string.Empty;
 		}
 
 		public string DataDestinationName => string.Empty;
@@ -39,14 +42,10 @@ namespace kCura.IntegrationPoints.RelativitySync
 		public bool IsDataDestinationArtifactIdSet => false;
 
 		public int DataSourceArtifactId { get; }
-
-		public int SnapshotId { get; set; } = 0;
+		public string FieldMappings { get; }
+		public bool IsSnapshotCreated => _exportRunId.HasValue;
 
 		public int DataDestinationArtifactId { get; set; }
-
-		public bool AreBatchesIdsSet => true;
-
-		public List<int> BatchesIds { get; set; } = new List<int>();
 
 		public int JobTagArtifactId
 		{
@@ -80,17 +79,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 		public bool IsSavedSearchArtifactIdSet => _savedSearchArtifactId.HasValue;
 
-		public bool IsStorageIdSet => true;
-
-		public int StorageId { get; set; } = 0;
-
-		public bool IsJobStatusArtifactIdSet => true;
-
 		public int JobStatusArtifactId { get; set; }
-
-		public bool IsPreviousRunArtifactIdSet { get; } = true;
-
-		public int PreviousRunArtifactId { get; } = 0;
 
 		public bool Retrying => false;
 
@@ -129,6 +118,12 @@ namespace kCura.IntegrationPoints.RelativitySync
 			_sourceWorkspaceTagName = name;
 		}
 
+		public void SetSnapshotData(Guid runId, int totalRecordsCount)
+		{
+			_exportRunId = runId;
+			TotalRecordsCount = totalRecordsCount;
+		}
+
 		public int SourceWorkspaceArtifactId { get; }
 
 		public void SetDestinationWorkspaceTagArtifactId(int artifactId)
@@ -149,5 +144,17 @@ namespace kCura.IntegrationPoints.RelativitySync
 		public string JobStatus { get; set; }
 		public bool SendEmails { get; }
 		public IEnumerable<string> EmailRecipients { get; }
+
+		public bool IsSnapshotPartitioned => _batchesIds != null;
+
+		public void SetSnapshotPartitions(List<int> batchesIds)
+		{
+			_batchesIds = batchesIds;
+		}
+
+		public int TotalRecordsCount { get; private set; }
+
+
+		public Guid ExportRunId => _exportRunId.Value;
 	}
 }
