@@ -148,7 +148,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 				IntegrationPointDataHubInput input = _tasks[key];
 
 				var permissionRepository =
-					new PermissionRepository((IHelper) ConnectionHelper.Helper(), input.WorkspaceId);
+					new PermissionRepository((IHelper)ConnectionHelper.Helper(), input.WorkspaceId);
 				IRelativityObjectManager objectManager =
 					CreateObjectManager(ConnectionHelper.Helper(), input.WorkspaceId);
 				var providerTypeService = new ProviderTypeService(objectManager);
