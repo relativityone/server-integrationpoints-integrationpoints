@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.Relativity
 		private ImportHelper _importHelper;
 		private WorkspaceService _workspaceService;
 
-		private const string _WORKSPACE_NAME = "RIPStreamLongTextIntegrationTests";
+		private const string _WORKSPACE_NAME = "RIPStreamLongTextTests";
 		private const string _EXTRACTED_TEXT_FIELD_NAME = "Extracted Text";
 
 		[OneTimeSetUp]
