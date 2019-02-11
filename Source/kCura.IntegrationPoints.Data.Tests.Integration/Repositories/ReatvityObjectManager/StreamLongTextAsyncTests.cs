@@ -60,7 +60,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.Relativity
 		[TestInQuarantine(
 			TestQuarantineState.DetectsDefectInExternalDependency,
 			"IAPI failure prevents import of test data - REL-293423")]
-		// TODO change to StressTest attribute
 		public async Task ItShouldFetchDocumentWith1500MBExtractedText()
 		{
 			int bytes = GetBytesFromMB(1500);
@@ -71,29 +70,49 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.Relativity
 
 		private async Task ExecuteTest(int textSizeInBytes)
 		{
-			// Arrange
-			string controlNumber = GetRandomControlNumber();
-			string extractedText = DocumentTestDataBuilder.GenerateRandomExtractedText(textSizeInBytes);
+			string filePath = "";
+			try
+			{
+				// Arrange
+				string controlNumber = GetRandomControlNumber();
+				string extractedText = DocumentTestDataBuilder.GenerateRandomExtractedText(textSizeInBytes);
 
-			_workspaceService.ImportExtractedTextSimple(_workspaceId, controlNumber, extractedText);
-			int documentArtifactID = GetDocumentArtifactID(controlNumber);
+				string fileName = $"{controlNumber}.txt";
+				string assemblyDir =
+					Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().CodeBase)
+						.Replace(@"file:\", "");
+				filePath = Path.Combine(assemblyDir, fileName);
+				File.WriteAllText(filePath, extractedText, Encoding.UTF8);
 
-			// Act
-			System.IO.Stream actualExtractedTextStream = 
-				await _relativityObjectManager.StreamLongTextAsync(
-					documentArtifactID, 
-					new FieldRef { Name = _EXTRACTED_TEXT_FIELD_NAME});
-			var actualExtractedTextStreamReader = new StreamReader(actualExtractedTextStream, Encoding.UTF8);
-			string actualExtractedTextString = actualExtractedTextStreamReader.ReadToEnd();
+				_workspaceService.ImportExtractedTextSimple(_workspaceId, controlNumber, filePath);
+				int documentArtifactID = GetDocumentArtifactID(controlNumber);
 
-			// Assert
-			Assert.AreEqual(
-				extractedText.Length,
-				actualExtractedTextString.Length,
-				"Extracted Text returned by ObjectManager should be the same length as original text!");
+				// Act
+				Stream actualExtractedTextStream =
+					await _relativityObjectManager.StreamLongTextAsync(
+						documentArtifactID,
+						new FieldRef {Name = _EXTRACTED_TEXT_FIELD_NAME});
+				var actualExtractedTextStreamReader = new StreamReader(actualExtractedTextStream, Encoding.UTF8);
+				string actualExtractedTextString = actualExtractedTextStreamReader.ReadToEnd();
 
-			IEnumerable<int> charsIndexes = GetExponentialIndexes(extractedText.Length);
-			ValidateSpecificCharacters(charsIndexes, extractedText, actualExtractedTextString);
+				// Assert
+				Assert.AreEqual(
+					extractedText.Length,
+					actualExtractedTextString.Length,
+					"Extracted Text returned by ObjectManager should be the same length as original text!");
+
+				IEnumerable<int> charsIndexes = GetExponentialIndexes(extractedText.Length);
+				ValidateSpecificCharacters(charsIndexes, extractedText, actualExtractedTextString);
+
+			}
+			finally
+			{
+				// Tear Down
+				if (!string.IsNullOrWhiteSpace(filePath))
+				{
+					File.Delete(filePath);
+				}
+			}
 		}
 
 		private string GetRandomControlNumber()

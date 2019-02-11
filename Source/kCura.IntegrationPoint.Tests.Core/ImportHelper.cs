@@ -73,7 +73,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			importJob.OnFatalException += ImportJobOnFatalException;
 
 			importJob.Settings.CaseArtifactId = workspaceArtifactId;
-			importJob.Settings.ExtractedTextFieldContainsFilePath = false;
+			importJob.Settings.ExtractedTextFieldContainsFilePath = true;
 			importJob.Settings.ExtractedTextEncoding = Encoding.UTF8;
 
 			importJob.Settings.DisableNativeLocationValidation = null;

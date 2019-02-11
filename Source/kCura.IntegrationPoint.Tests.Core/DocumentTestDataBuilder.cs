@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -63,12 +63,12 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return new DocumentsTestData(foldersWithDocuments, images);
 		}
 
-		public static DataTable GetSingleExtractedTextDocument(string controlNumber, string extractedText)
+		public static DataTable GetSingleExtractedTextDocument(string controlNumber, string extractedTextFilePath)
 		{
 			var table = new DataTable();
 			table.Columns.Add(Constants.CONTROL_NUMBER_FIELD, typeof(string));
 			table.Columns.Add(_WORKSPACE_EXTRACTED_TEXT, typeof(string));
-			table.Rows.Add(controlNumber, extractedText);
+			table.Rows.Add(controlNumber, extractedTextFilePath);
 			return table;
 		}
 
