@@ -118,7 +118,8 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			}
 			catch (Exception exception)
 			{
-				_logger.LogError(exception, "{hub} error in {method}. {message}", nameof(IntegrationPointDataHub), nameof(_updateTimer_Elapsed), exception.Message);
+				_logger.LogError(exception, "{hub} error in {method}. {message}", nameof(IntegrationPointDataHub),
+					nameof(_updateTimer_Elapsed), exception.Message);
 			}
 			finally
 			{
@@ -214,7 +215,10 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 		{
 			lock (_tasks)
 			{
-				string key = _tasks.Values.Where(x => x.ConnectionIds.Contains(Context.ConnectionId)).Select(x => GetKey(x.WorkspaceId, x.ArtifactId, x.UserId)).FirstOrDefault();
+				string key = _tasks.Values
+					.Where(x => x.ConnectionIds.Contains(Context.ConnectionId))
+					.Select(x => GetKey(x.WorkspaceId, x.ArtifactId, x.UserId))
+					.FirstOrDefault();
 				if (!string.IsNullOrEmpty(key))
 				{
 					Groups.Remove(Context.ConnectionId, key);
