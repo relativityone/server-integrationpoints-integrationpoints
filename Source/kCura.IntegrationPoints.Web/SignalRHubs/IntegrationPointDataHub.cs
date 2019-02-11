@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -42,6 +43,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 		private readonly IStateManager _stateManager;
 		private readonly IHelperClassFactory _helperClassFactory;
 		private readonly IIntegrationPointPermissionValidator _permissionValidator;
+		private readonly IAPILog _logger;
 		private readonly int _intervalBetweentasks = 100;
 		private readonly IManagerFactory _managerFactory;
 		private readonly int _updateInterval = 5000;
@@ -49,7 +51,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 		public IntegrationPointDataHub() : this(new ContextContainer((IHelper)ConnectionHelper.Helper()), new HelperClassFactory())
 		{
 			IHelper helper = ConnectionHelper.Helper();
-			IAPILog logger = helper.GetLoggerFactory().GetLogger();
+			_logger = helper.GetLoggerFactory().GetLogger();
 			ISqlServiceFactory sqlServiceFactory = new HelperConfigSqlServiceFactory(helper);
 			IAuthProvider authProvider = new AuthProvider();
 			IAuthTokenGenerator authTokenGenerator = new ClaimsTokenGenerator();
@@ -63,7 +65,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			_jobHistoryManager = _managerFactory.CreateJobHistoryManager(_contextContainer);
 			_stateManager = _managerFactory.CreateStateManager();
 			IRepositoryFactory repositoryFactory = new RepositoryFactory(helper, helper.GetServicesManager());
-			_permissionValidator = new IntegrationPointPermissionValidator(new[] { new ViewErrorsPermissionValidator(repositoryFactory) }, new IntegrationPointSerializer(logger));
+			_permissionValidator = new IntegrationPointPermissionValidator(new[] { new ViewErrorsPermissionValidator(repositoryFactory) }, new IntegrationPointSerializer(_logger));
 		}
 
 		internal IntegrationPointDataHub(IContextContainer contextContainer, IHelperClassFactory helperClassFactory)
@@ -105,37 +107,65 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 				{
 					foreach (var key in _tasks.Keys)
 					{
-						IntegrationPointDataHubInput input = _tasks[key];
-
-						var permissionRepository = new PermissionRepository((IHelper)ConnectionHelper.Helper(), input.WorkspaceId);
-						IRelativityObjectManager objectManager = CreateObjectManager(ConnectionHelper.Helper(), input.WorkspaceId);
-						var _providerTypeService = new ProviderTypeService(objectManager);
-						var _buttonStateBuilder = new ButtonStateBuilder(_providerTypeService, _queueManager, _jobHistoryManager, _stateManager, permissionRepository, _permissionValidator, objectManager);
-
-						IntegrationPoint integrationPoint = objectManager.Read<IntegrationPoint>(input.ArtifactId);
-
-						ProviderType providerType = _providerTypeService.GetProviderType(integrationPoint.SourceProvider.Value,
-							integrationPoint.DestinationProvider.Value);
-						bool sourceProviderIsRelativity = providerType == ProviderType.Relativity;
-
-						IntegrationPointModel model = new IntegrationPointModel
+						try
 						{
-							HasErrors = integrationPoint.HasErrors,
-							LastRun = integrationPoint.LastRuntimeUTC,
-							NextRun = integrationPoint.NextScheduledRuntimeUTC
-						};
+							IntegrationPointDataHubInput input = _tasks[key];
 
-						IOnClickEventConstructor onClickEventHelper = _helperClassFactory.CreateOnClickEventHelper(_managerFactory, _contextContainer);
+							var permissionRepository =
+								new PermissionRepository((IHelper)ConnectionHelper.Helper(), input.WorkspaceId);
+							IRelativityObjectManager objectManager =
+								CreateObjectManager(ConnectionHelper.Helper(), input.WorkspaceId);
+							var _providerTypeService = new ProviderTypeService(objectManager);
+							var _buttonStateBuilder = new ButtonStateBuilder(_providerTypeService, _queueManager,
+								_jobHistoryManager, _stateManager, permissionRepository, _permissionValidator,
+								objectManager);
 
-						var buttonStates = _buttonStateBuilder.CreateButtonState(input.WorkspaceId, input.ArtifactId);
-						var onClickEvents = onClickEventHelper.GetOnClickEvents(input.WorkspaceId, input.ArtifactId, integrationPoint.Name, buttonStates);
+							IntegrationPoint integrationPoint = objectManager.Read<IntegrationPoint>(input.ArtifactId);
 
-						Clients.Group(key).updateIntegrationPointData(model, buttonStates, onClickEvents, sourceProviderIsRelativity);
+							ProviderType providerType = _providerTypeService.GetProviderType(
+								integrationPoint.SourceProvider.Value,
+								integrationPoint.DestinationProvider.Value);
+							bool sourceProviderIsRelativity = providerType == ProviderType.Relativity;
+
+							IntegrationPointModel model = new IntegrationPointModel
+							{
+								HasErrors = integrationPoint.HasErrors,
+								LastRun = integrationPoint.LastRuntimeUTC,
+								NextRun = integrationPoint.NextScheduledRuntimeUTC
+							};
+
+							IOnClickEventConstructor onClickEventHelper =
+								_helperClassFactory.CreateOnClickEventHelper(_managerFactory, _contextContainer);
+
+							var buttonStates = _buttonStateBuilder.CreateButtonState(input.WorkspaceId, input.ArtifactId);
+							var onClickEvents = onClickEventHelper.GetOnClickEvents(input.WorkspaceId, input.ArtifactId,
+								integrationPoint.Name, buttonStates);
+							
+							Clients.Group(key).updateIntegrationPointData(model, buttonStates, onClickEvents,
+								sourceProviderIsRelativity);
+						}
+						catch (Exception exception)
+						{
+							_logger.LogError(exception, "{hub} error when doing {method}: {message}", nameof(IntegrationPointDataHub), "updateIntegrationPointData", exception.Message);
+						}
+
+						try
+						{
+							Clients.Group(key).updateIntegrationPointJobStatus();
+						}
+						catch (Exception exception)
+						{
+							_logger.LogError(exception, "{hub} error when doing {method}: {message}", nameof(IntegrationPointDataHub), "updateIntegrationPointJobStatus", exception.Message);
+						}
 
 						//sleep between getting each stats to get SQL Server a break
 						Thread.Sleep(_intervalBetweentasks);
 					}
 				}
+			}
+			catch (Exception exception)
+			{
+				_logger.LogError(exception, "{hub} error in {method}. {message}", nameof(IntegrationPointDataHub), nameof(_updateTimer_Elapsed), exception.Message);
 			}
 			finally
 			{

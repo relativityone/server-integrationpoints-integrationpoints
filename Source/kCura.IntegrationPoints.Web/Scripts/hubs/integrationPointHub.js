@@ -107,9 +107,11 @@
                         .attr("disabled");
 				}
 			}
-
-			$('.associative-list').load(document.URL + ' .associative-list');
 		};
+
+		data.client.updateIntegrationPointJobStatus = function() {
+			$('.associative-list').load(document.URL + ' .associative-list');
+		}
 
 		$.connection.hub.start({ transport: 'longPolling' }).done(function () {
 			var workspaceId = IP.utils.getParameterByName("AppID");
