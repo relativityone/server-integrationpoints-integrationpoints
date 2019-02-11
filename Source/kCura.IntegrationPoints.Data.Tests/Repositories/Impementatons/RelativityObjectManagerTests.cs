@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			Func<Task> action = async () => 
 				await _sut.StreamLongTextAsync(
 					_REL_OBJECT_ARTIFACT_ID,
-					_FIELD_ARTIFACT_ID,
+					new FieldRef() {ArtifactID = _FIELD_ARTIFACT_ID},
 					ExecutionIdentity.System);
 
 			action.ShouldThrow<IntegrationPointsException>();
@@ -82,7 +82,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			Func<Task> action = async () => 
 				await _sut.StreamLongTextAsync(
 					_REL_OBJECT_ARTIFACT_ID,
-					_FIELD_ARTIFACT_ID,
+					new FieldRef() {ArtifactID = _FIELD_ARTIFACT_ID},
 					ExecutionIdentity.System);
 
 			action.ShouldThrow<IntegrationPointsException>();
@@ -108,7 +108,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 
 			Stream result = await _sut.StreamLongTextAsync(
 					_REL_OBJECT_ARTIFACT_ID,
-					_FIELD_ARTIFACT_ID,
+					new FieldRef() {ArtifactID = _FIELD_ARTIFACT_ID},
 					ExecutionIdentity.System);
 
 			result.Should().Be(expectedStream);

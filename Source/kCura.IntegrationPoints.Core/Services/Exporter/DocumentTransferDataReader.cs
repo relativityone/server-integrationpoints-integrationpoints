@@ -72,8 +72,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 					retrievedField = CurrentArtifact.GetFieldForIdentifier(fieldArtifactId);
 					if (ShouldUseLongTextStream(retrievedField))
 					{
+						FieldRef fieldRef = new FieldRef {ArtifactID = fieldArtifactId};
 						Stream stream =
-							_relativityObjectManager.StreamLongTextAsync(CurrentArtifact.ArtifactId, fieldArtifactId)
+							_relativityObjectManager.StreamLongTextAsync(CurrentArtifact.ArtifactId, fieldRef)
 								.ConfigureAwait(false)
 								.GetAwaiter()
 								.GetResult();
