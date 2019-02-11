@@ -158,6 +158,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			var containerBuilder = new ContainerBuilder();
 			containerBuilder.RegisterInstance(SyncConfigurationFactory.Create(_job, _ripContainer, _logger)).AsImplementedInterfaces().SingleInstance();
 			containerBuilder.RegisterInstance(metrics).As<ISyncMetrics>().SingleInstance();
+
 			containerBuilder.RegisterInstance(new DestinationWorkspaceObjectTypesCreation(_ripContainer))
 				.As<IExecutor<IDestinationWorkspaceObjectTypesCreationConfiguration>>()
 				.As<IExecutionConstrains<IDestinationWorkspaceObjectTypesCreationConfiguration>>();
@@ -165,6 +166,30 @@ namespace kCura.IntegrationPoints.RelativitySync
 			containerBuilder.Register(context => new Validator(_ripContainer, context.Resolve<IValidationExecutorFactory>()))
 				.As<IExecutor<IValidationConfiguration>>()
 				.As<IExecutionConstrains<IValidationConfiguration>>();
+
+			containerBuilder.RegisterInstance(new DestinationWorkspaceTagsCreation(_ripContainer))
+				.As<IExecutor<IDestinationWorkspaceTagsCreationConfiguration>>()
+				.As<IExecutionConstrains<IDestinationWorkspaceTagsCreationConfiguration>>();
+
+			containerBuilder.RegisterInstance(new DestinationWorkspaceSavedSearchCreation(_ripContainer))
+				.As<IExecutor<IDestinationWorkspaceSavedSearchCreationConfiguration>>()
+				.As<IExecutionConstrains<IDestinationWorkspaceSavedSearchCreationConfiguration>>();
+
+			containerBuilder.RegisterInstance(new SourceWorkspaceTagsCreation(_ripContainer))
+				.As<IExecutor<ISourceWorkspaceTagsCreationConfiguration>>()
+				.As<IExecutionConstrains<ISourceWorkspaceTagsCreationConfiguration>>();
+
+			containerBuilder.RegisterInstance(new Notification(_ripContainer))
+				.As<IExecutor<INotificationConfiguration>>()
+				.As<IExecutionConstrains<INotificationConfiguration>>();
+
+			containerBuilder.RegisterType<DataDestinationFinalization>()
+				.As<IExecutor<IDataDestinationFinalizationConfiguration>>()
+				.As<IExecutionConstrains<IDataDestinationFinalizationConfiguration>>();
+				
+			containerBuilder.RegisterType<DataDestinationInitialization>()
+				.As<IExecutor<IDataDestinationInitializationConfiguration>>()
+				.As<IExecutionConstrains<IDataDestinationInitializationConfiguration>>();
 			IContainer container = containerBuilder.Build();
 			return container;
 		}

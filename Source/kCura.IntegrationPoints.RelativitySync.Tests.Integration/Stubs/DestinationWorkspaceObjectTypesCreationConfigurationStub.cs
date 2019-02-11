@@ -1,6 +1,6 @@
 ﻿using Relativity.Sync.Configuration;
 
-namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
+namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration.Stubs
 {
 	internal sealed class DestinationWorkspaceObjectTypesCreationConfigurationStub : IDestinationWorkspaceObjectTypesCreationConfiguration
 	{

@@ -9,6 +9,7 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.RelativitySync.Adapters;
+using kCura.IntegrationPoints.RelativitySync.Tests.Integration.Stubs;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Objects;

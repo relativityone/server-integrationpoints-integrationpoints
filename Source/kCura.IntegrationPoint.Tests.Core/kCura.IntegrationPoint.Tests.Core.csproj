@@ -226,6 +226,7 @@
     <Compile Include="TestHelpers\ExtendedIPermissionManager.cs" />
     <Compile Include="TestHelpers\ExtendedIRSAPIClient.cs" />
     <Compile Include="TestHelpers\ExtendedIWorkspaceManager.cs" />
+    <Compile Include="TestHelpers\ExtendedSearchContainerManager.cs" />
     <Compile Include="TestHelpers\FileServiceBase.cs" />
     <Compile Include="TestHelpers\IImagesService.cs" />
     <Compile Include="TestHelpers\ImagesService.cs" />
