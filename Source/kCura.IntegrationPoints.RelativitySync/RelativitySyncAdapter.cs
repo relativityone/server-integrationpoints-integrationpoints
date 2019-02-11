@@ -162,6 +162,10 @@ namespace kCura.IntegrationPoints.RelativitySync
 			containerBuilder.RegisterInstance(new DestinationWorkspaceObjectTypesCreation(_ripContainer))
 				.As<IExecutor<IDestinationWorkspaceObjectTypesCreationConfiguration>>()
 				.As<IExecutionConstrains<IDestinationWorkspaceObjectTypesCreationConfiguration>>();
+			containerBuilder.RegisterType<ValidationExecutorFactory>().As<IValidationExecutorFactory>();
+			containerBuilder.Register(context => new Validator(_ripContainer, context.Resolve<IValidationExecutorFactory>()))
+				.As<IExecutor<IValidationConfiguration>>()
+				.As<IExecutionConstrains<IValidationConfiguration>>();
 
 			containerBuilder.RegisterInstance(new DestinationWorkspaceTagsCreation(_ripContainer))
 				.As<IExecutor<IDestinationWorkspaceTagsCreationConfiguration>>()
