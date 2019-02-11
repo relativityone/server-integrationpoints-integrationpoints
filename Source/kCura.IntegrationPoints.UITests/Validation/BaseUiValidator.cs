@@ -45,8 +45,11 @@ namespace kCura.IntegrationPoints.UITests.Validation
 			{
 				try
 				{
-					integrationPointDetailsPage.Refresh();
-					integrationPointDetailsPage.WaitForPage();
+					// this is a workaround for REL-148925 (RIP Job Status Not Updating)
+					// the bug is not deterministically reproducible
+					// exception logging was added to help with investigating that and assuring if this is still an issue
+					//integrationPointDetailsPage.Refresh();
+					//integrationPointDetailsPage.WaitForPage();
 					jobHistoryModel = integrationPointDetailsPage.GetLatestJobHistoryFromJobStatusTable();
 				}
 				catch (StaleElementReferenceException)
