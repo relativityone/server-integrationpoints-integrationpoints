@@ -1,5 +1,7 @@
 ﻿using System;
 using Autofac;
+using Banzai.Logging;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Telemetry;
 
 namespace Relativity.Sync
@@ -58,6 +60,8 @@ namespace Relativity.Sync
 
 			try
 			{
+				LogWriter.SetFactory(new SyncLogWriterFactory(logger));
+
 				using (ILifetimeScope scope = container.BeginLifetimeScope(builder => RegisterDependencies(builder, syncJobParameters, configuration, logger)))
 				{
 					return scope.Resolve<ISyncJob>();

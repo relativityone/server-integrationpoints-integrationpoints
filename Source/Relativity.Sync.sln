@@ -18,8 +18,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Relativity.Sync.Tests.Integ
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Relativity.Sync.Tests.Performance", "Relativity.Sync.Tests.Performance\Relativity.Sync.Tests.Performance.csproj", "{58EF822C-220E-43FF-A5E5-0EBDA8E6D0F3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.Sync.Tests.Common", "Relativity.Sync.Tests.Common\Relativity.Sync.Tests.Common.csproj", "{8CB64E91-6F15-4A57-9AD8-67EBF4AFE6CF}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,10 +40,6 @@ Global
 		{58EF822C-220E-43FF-A5E5-0EBDA8E6D0F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{58EF822C-220E-43FF-A5E5-0EBDA8E6D0F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{58EF822C-220E-43FF-A5E5-0EBDA8E6D0F3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8CB64E91-6F15-4A57-9AD8-67EBF4AFE6CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8CB64E91-6F15-4A57-9AD8-67EBF4AFE6CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8CB64E91-6F15-4A57-9AD8-67EBF4AFE6CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8CB64E91-6F15-4A57-9AD8-67EBF4AFE6CF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -54,7 +48,6 @@ Global
 		{FE322410-F6A3-457A-A0DA-4C5C250E004D} = {307583E0-12A5-4253-96FD-79A334886705}
 		{F554366E-D52E-4512-AFF5-9DD802EF1E42} = {307583E0-12A5-4253-96FD-79A334886705}
 		{58EF822C-220E-43FF-A5E5-0EBDA8E6D0F3} = {307583E0-12A5-4253-96FD-79A334886705}
-		{8CB64E91-6F15-4A57-9AD8-67EBF4AFE6CF} = {307583E0-12A5-4253-96FD-79A334886705}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {396CB10D-9E33-487D-B497-2E94B53B3874}

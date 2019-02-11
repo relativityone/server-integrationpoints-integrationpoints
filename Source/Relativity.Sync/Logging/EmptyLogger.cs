@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Relativity.Sync
+namespace Relativity.Sync.Logging
 {
 	[ExcludeFromCodeCoverage]
 	internal sealed class EmptyLogger : ISyncLog
