@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
@@ -45,32 +44,30 @@ namespace kCura.IntegrationPoints.RelativitySync.Adapters
 
 		private void ValidateIntegrationPoint()
 		{
-			IntegrationPoint integrationPoint = GetIntegrationPoint();
-
-			if (!integrationPoint.SourceProvider.HasValue)
+			if (!_extendedJob.IntegrationPointModel.SourceProvider.HasValue)
 			{
 				throw new InvalidOperationException($"SourceProvider in retrieved IntegrationPoint has no value.");
 			}
 
-			if (!integrationPoint.DestinationProvider.HasValue)
+			if (!_extendedJob.IntegrationPointModel.DestinationProvider.HasValue)
 			{
 				throw new InvalidOperationException($"DestinationProvider in retrieved IntegrationPoint has no value.");
 			}
 
-			if (!integrationPoint.Type.HasValue)
+			if (!_extendedJob.IntegrationPointModel.Type.HasValue)
 			{
 				throw new InvalidOperationException($"Type in retrieved IntegrationPoint has no value.");
 			}
 
-			SourceProvider sourceProvider = ReadObject<SourceProvider>(integrationPoint.SourceProvider.Value);
-			DestinationProvider destinationProvider = ReadObject<DestinationProvider>(integrationPoint.DestinationProvider.Value);
-			IntegrationPointType integrationPointType = ReadObject<IntegrationPointType>(integrationPoint.Type.Value);
+			SourceProvider sourceProvider = ReadObject<SourceProvider>(_extendedJob.IntegrationPointModel.SourceProvider.Value);
+			DestinationProvider destinationProvider = ReadObject<DestinationProvider>(_extendedJob.IntegrationPointModel.DestinationProvider.Value);
+			IntegrationPointType integrationPointType = ReadObject<IntegrationPointType>(_extendedJob.IntegrationPointModel.Type.Value);
 
 			ValidationContext context = new ValidationContext
 			{
 				DestinationProvider = destinationProvider,
 				IntegrationPointType = integrationPointType,
-				Model = IntegrationPointModel.FromIntegrationPoint(integrationPoint),
+				Model = IntegrationPointModel.FromIntegrationPoint(_extendedJob.IntegrationPointModel),
 				ObjectTypeGuid = ObjectTypeGuids.IntegrationPoint,
 				SourceProvider = sourceProvider,
 				UserId = -1 // User permissions check is a separate step in Sync flow.
@@ -97,24 +94,6 @@ namespace kCura.IntegrationPoints.RelativitySync.Adapters
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Failed to retrieve object of type {typeName} with artifact ID: {artifactId} using ObjectManager", typeName, artifactId);
-				throw;
-			}
-		}
-
-		private IntegrationPoint GetIntegrationPoint()
-		{
-			int integrationPointId = _extendedJob.IntegrationPointId;
-			try
-			{
-				_logger.LogDebug("Retrieving Integration Point with id: {integrationPointId}", integrationPointId);
-				IIntegrationPointService integrationPointService = _container.Resolve<IIntegrationPointService>();
-				IntegrationPoint integrationPoint = integrationPointService.GetRdo(integrationPointId);
-				_logger.LogInformation("Integration Point with id: {integrationPointId} retrieved successfully.", integrationPointId);
-				return integrationPoint;
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "Failed to retrieve Integration Point with id: {integrationPointId}", integrationPointId);
 				throw;
 			}
 		}

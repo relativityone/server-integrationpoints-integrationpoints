@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.IntegrationPoints.Data;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
@@ -7,6 +8,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		long JobId { get; }
 		int WorkspaceId { get; }
 		int IntegrationPointId { get; }
+		IntegrationPoint IntegrationPointModel { get; }
 		Guid JobIdentifier { get; }
 		int JobHistoryId { get; }
 	}

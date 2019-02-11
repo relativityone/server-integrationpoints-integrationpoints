@@ -1,6 +1,7 @@
 ﻿using System;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
+using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 
@@ -27,6 +28,8 @@ namespace kCura.IntegrationPoints.RelativitySync
 		public int WorkspaceId => _job.WorkspaceID;
 
 		public int IntegrationPointId => _job.RelatedObjectArtifactID;
+
+		public IntegrationPoint IntegrationPointModel { get; }
 
 		public Guid JobIdentifier
 		{
