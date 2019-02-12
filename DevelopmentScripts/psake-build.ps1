@@ -4,7 +4,7 @@
 task default -depends build
 
 
-task build -depends build_initalize, start_sonar, build_integration_points, build_my_first_provider, build_json_loader, build_rip_documentation, copy_dlls_to_lib_dir, copy_test_dlls_to_lib_dir, copy_web_drivers, run_coverage, stop_sonar, generate_validation_message_table {
+task build -depends build_initalize, start_sonar, build_integration_points, build_my_first_provider, build_json_loader, build_rip_documentation, copy_dlls_to_lib_dir, copy_test_dlls_to_lib_dir, copy_web_drivers, run_coverage, stop_sonar, generate_validation_message_table, sign {
  
 }
 
@@ -508,4 +508,11 @@ task generate_validation_message_table{
     $xslt.Transform($xml, $output);
 
     Write-Host "generated" +  $output;
+}
+
+task sign -precondition { ($build_type -ne 'DEV') -and ($server_type -ne 'local') } {
+    foreach ($o in Get-ChildItem -Path $package_directory -Recurse  -Include '*.exe', '*.dll', '*.msi')
+    {
+        & $signscript @($o.FullName)
+    }
 }

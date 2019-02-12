@@ -10,6 +10,9 @@ using kCura.IntegrationPoints.Agent.Interfaces;
 using kCura.IntegrationPoints.Agent.Logging;
 using kCura.IntegrationPoints.Agent.TaskFactory;
 using kCura.IntegrationPoints.Agent.Tasks;
+using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
+using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Domain.Exceptions;
@@ -18,6 +21,7 @@ using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.TimeMachine;
 using Relativity.API;
+using Relativity.DataTransfer.MessageService;
 using Component = Castle.MicroKernel.Registration.Component;
 
 namespace kCura.IntegrationPoints.Agent
@@ -103,8 +107,31 @@ namespace kCura.IntegrationPoints.Agent
 
 			using (JobContextProvider.StartJobContext(job))
 			{
+				// If the JobHistory object for this job has already been created by the API (e.g. if a user clicks
+				// the "Run" button on an IP), then the JobStarted message will have been raised in the web process
+				// instead of the agent process, and we won't have entirely accurate metrics. Therefore we send the
+				// same message here as well.
+				SendJobStartedMessage(job);
+
 				return _jobExecutor.ProcessJob(job);
 			}
+		}
+
+		private void SendJobStartedMessage(Job job)
+		{
+			TaskParameterHelper taskParameterHelper = _agentLevelContainer.Value.Resolve<TaskParameterHelper>();
+			IIntegrationPointService integrationPointService = _agentLevelContainer.Value.Resolve<IIntegrationPointService>();
+			IProviderTypeService providerTypeService = _agentLevelContainer.Value.Resolve<IProviderTypeService>();
+			IMessageService messageService = _agentLevelContainer.Value.Resolve<IMessageService>();
+
+			Guid batchInstanceId = taskParameterHelper.GetBatchInstance(job);
+			IntegrationPoint integrationPoint = integrationPointService.GetRdo(job.RelatedObjectArtifactID);
+			var message = new JobStartedMessage
+			{
+				Provider = integrationPoint.GetProviderType(providerTypeService).ToString(),
+				CorrelationID = batchInstanceId.ToString()
+			};
+			messageService.Send(message).GetAwaiter().GetResult();
 		}
 
 		private bool ShouldUseRelativitySync(Job job, IWindsorContainer ripContainerForSync)

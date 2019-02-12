@@ -12,15 +12,15 @@ namespace kCura.IntegrationPoints.Core.Monitoring
 {
 	public class IntegrationPointsMessageService : MessageService
 	{
-		public IntegrationPointsMessageService(IMetricsManagerFactory metricsManagerFactory, IConfig config, IAPILog logger)
+		public IntegrationPointsMessageService(IMetricsManagerFactory metricsManagerFactory, IConfig config, IAPILog logger, IDateTimeHelper dateTimeHelper)
 		{
-			ConfigureAggregatedJobSink(metricsManagerFactory, config, logger);
+			ConfigureAggregatedJobSink(metricsManagerFactory, config, logger, dateTimeHelper);
 			ConfigureExternalCallsSink(metricsManagerFactory, config, logger);
 		}
 
-		private void ConfigureAggregatedJobSink(IMetricsManagerFactory metricsManagerFactory, IConfig config, IAPILog logger)
+		private void ConfigureAggregatedJobSink(IMetricsManagerFactory metricsManagerFactory, IConfig config, IAPILog logger, IDateTimeHelper dateTimeHelper)
 		{
-			var aggregatedJobSink = new AggregatedJobSink(logger, metricsManagerFactory);
+			var aggregatedJobSink = new AggregatedJobSink(logger, metricsManagerFactory, dateTimeHelper);
 
 			this.AddSink(new ToggledMessageSink<JobStartedMessage>(aggregatedJobSink, () => config.SendSumMetrics));
 			this.AddSink(new ToggledMessageSink<JobCompletedMessage>(aggregatedJobSink, () => config.SendSumMetrics));

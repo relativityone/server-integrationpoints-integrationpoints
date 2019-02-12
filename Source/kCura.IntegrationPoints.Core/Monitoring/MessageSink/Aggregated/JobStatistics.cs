@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Common.Monitoring.Messages;
+﻿using System;
+using kCura.IntegrationPoints.Common.Monitoring.Messages;
 
 namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
 {
@@ -11,6 +12,13 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
 		public const string THROUGHPUT_KEY_NAME = "Throughput";
 		public const string COMPLETED_RECORDS_KEY_NAME = "CompletedRecords";
 		public const string TOTAL_RECORDS_KEY_NAME = "TotalRecords";
+		public const string START_TIME_KEY_NAME = "StartTime";
+		public const string END_TIME_KEY_NAME = "EndTime";
+		public const string DURATION_SECONDS_KEY_NAME = "DurationSeconds";
+		public const string OVERALL_THROUGHPUT_BYTES_KEY_NAME = "OverallThroughputBytes";
+		public const string AVERAGE_FILE_THROUGHPUT_NAME = "AverageFileThroughput";
+		public const string AVERAGE_METADATA_THROUGHPUT_NAME = "AverageMetadataThroughput";
+		public const string LAST_THROUGHPUT_CHECK_NAME = "LastThroughputCheck";
 
 		public JobStatus JobStatus { get; set; }
 
@@ -56,6 +64,48 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
 		{
 			get { return this.GetValueOrDefault<long>(TOTAL_RECORDS_KEY_NAME); }
 			set { CustomData[TOTAL_RECORDS_KEY_NAME] = value; }
+		}
+
+		public DateTime StartTime
+		{
+			get { return this.GetValueOrDefault<DateTime>(START_TIME_KEY_NAME); }
+			set { CustomData[START_TIME_KEY_NAME] = value; }
+		}
+
+		public DateTime EndTime
+		{
+			get { return this.GetValueOrDefault<DateTime>(END_TIME_KEY_NAME); }
+			set { CustomData[END_TIME_KEY_NAME] = value; }
+		}
+
+		public double DurationSeconds
+		{
+			get { return this.GetValueOrDefault<double>(DURATION_SECONDS_KEY_NAME); }
+			set { CustomData[DURATION_SECONDS_KEY_NAME] = value; }
+		}
+
+		public double OverallThroughputBytes
+		{
+			get { return this.GetValueOrDefault<double>(OVERALL_THROUGHPUT_BYTES_KEY_NAME); }
+			set { CustomData[OVERALL_THROUGHPUT_BYTES_KEY_NAME] = value; }
+		}
+
+		public double AverageFileThroughput
+		{
+			get { return this.GetValueOrDefault<double>(AVERAGE_FILE_THROUGHPUT_NAME); }
+			set { CustomData[AVERAGE_FILE_THROUGHPUT_NAME] = value; }
+		}
+
+		public double AverageMetadataThroughput
+		{
+			get { return this.GetValueOrDefault<double>(AVERAGE_METADATA_THROUGHPUT_NAME); }
+			set { CustomData[AVERAGE_METADATA_THROUGHPUT_NAME] = value; }
+		}
+
+		public DateTime LastThroughputCheck
+		{
+			get { return this.GetValueOrDefault<DateTime>(LAST_THROUGHPUT_CHECK_NAME); }
+			set { CustomData[LAST_THROUGHPUT_CHECK_NAME] = value; }
 		}
 	}
 }

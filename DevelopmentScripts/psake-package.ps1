@@ -1,7 +1,7 @@
 . .\psake-common.ps1
 
 
-task default -depends package, sign
+task default -depends package
 
 
 task package_initalize {
@@ -46,11 +46,5 @@ task package -depends package_initalize {
 
     if ([System.IO.Directory]::Exists($doc_directory)) {
         Copy-Item -Path ([System.IO.Path]::Combine($doc_directory, '*')) -Destination $package_doc_directory -Include '**' -Recurse
-    }
-}
-
-task sign -precondition { ($build_type -ne 'DEV') -and ($server_type -ne 'local') } {
-    foreach($o in Get-ChildItem -Path $package_directory -Recurse  -Include '*.exe', '*.dll', '*.msi') {
-        & $signscript @($o.FullName)
     }
 }
