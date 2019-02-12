@@ -1,9 +1,9 @@
-﻿using System;
+﻿using FluentAssertions;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Castle.Core.Internal;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
@@ -108,10 +108,11 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.Relativity
 				string actualExtractedTextString = actualExtractedTextStreamReader.ReadToEnd();
 
 				// Assert
-				Assert.AreEqual(
-					extractedText.Length,
-					actualExtractedTextString.Length,
-					"Extracted Text returned by ObjectManager should be the same length as original text!");
+				extractedText.Length
+					.Should()
+					.Be(
+						actualExtractedTextString.Length,
+						"Extracted Text returned by ObjectManager should be the same length as original text!");
 
 				IEnumerable<int> charsIndexes = GetExponentialIndexes(extractedText.Length);
 				ValidateSpecificCharacters(charsIndexes, extractedText, actualExtractedTextString);
@@ -144,10 +145,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.Relativity
 			{
 				char expectedChar = expectedString[i];
 				char actualChar = actualString[i];
-				Assert.AreEqual(
-					expectedChar,
-					actualChar,
-					"Characters on the same position both in input string and result stream should be the same!");
+				expectedChar
+					.Should()
+					.Be(actualChar,
+						"Characters on the same position both in input string and result stream should be the same!");
 			});
 		}
 
