@@ -57,11 +57,11 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.Relativity
 		}
 
 		[Test]
-		public async Task ItShouldFetchDocumentWith15MBExtractedText()
+		public void ItShouldFetchDocumentWith15MBExtractedText()
 		{
 			int bytes = GetBytesFromMB(15);
 			string controlNumber = _CONTROL_NUMBERS_POOL[0];
-			await ExecuteTest(bytes, controlNumber);
+			ExecuteTest(bytes, controlNumber);
 		}
 
 		[Test]
@@ -69,16 +69,16 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.Relativity
 		[TestInQuarantine(
 			TestQuarantineState.DetectsDefectInExternalDependency,
 			"IAPI failure prevents import of test data - REL-293423")]
-		public async Task ItShouldFetchDocumentWith1500MBExtractedText()
+		public void ItShouldFetchDocumentWith1500MBExtractedText()
 		{
 			int bytes = GetBytesFromMB(1500);
 			string controlNumber = _CONTROL_NUMBERS_POOL[1];
-			await ExecuteTest(bytes, controlNumber);
+			ExecuteTest(bytes, controlNumber);
 		}
 
 		private int GetBytesFromMB(int sizeInMB) => sizeInMB * 1024 * 1024;
 
-		private async Task ExecuteTest(int textSizeInBytes, string controlNumber)
+		private void ExecuteTest(int textSizeInBytes, string controlNumber)
 		{
 			string filePath = "";
 			try
@@ -98,9 +98,12 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.Relativity
 
 				// Act
 				Stream actualExtractedTextStream =
-					await _relativityObjectManager.StreamLongTextAsync(
+					_relativityObjectManager.StreamLongTextAsync(
 						documentArtifactID,
-						new FieldRef {Name = _EXTRACTED_TEXT_FIELD_NAME});
+						new FieldRef {Name = _EXTRACTED_TEXT_FIELD_NAME})
+						.ConfigureAwait(false)
+						.GetAwaiter()
+						.GetResult();
 				var actualExtractedTextStreamReader = new StreamReader(actualExtractedTextStream, Encoding.UTF8);
 				string actualExtractedTextString = actualExtractedTextStreamReader.ReadToEnd();
 
