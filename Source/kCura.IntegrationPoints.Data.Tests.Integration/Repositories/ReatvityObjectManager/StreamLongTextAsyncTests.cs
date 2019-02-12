@@ -32,6 +32,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.Relativity
 		private const string _WORKSPACE_NAME = "RIPStreamLongTextTests";
 		private const string _EXTRACTED_TEXT_FIELD_NAME = "Extracted Text";
 
+		private readonly string[] _CONTROL_NUMBERS_POOL =
+			new[]
+			{
+				"9b2d388d08974c02a3ca5fe768e7e234",
+				"d32b43508b574a1eb06523d4e1cdeb25"
+			};
+
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
@@ -53,7 +60,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.Relativity
 		public async Task ItShouldFetchDocumentWith15MBExtractedText()
 		{
 			int bytes = GetBytesFromMB(15);
-			await ExecuteTest(bytes);
+			string controlNumber = _CONTROL_NUMBERS_POOL[0];
+			await ExecuteTest(bytes, controlNumber);
 		}
 
 		[Test]
@@ -63,18 +71,18 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.Relativity
 		public async Task ItShouldFetchDocumentWith1500MBExtractedText()
 		{
 			int bytes = GetBytesFromMB(1500);
-			await ExecuteTest(bytes);
+			string controlNumber = _CONTROL_NUMBERS_POOL[1];
+			await ExecuteTest(bytes, controlNumber);
 		}
 
 		private int GetBytesFromMB(int sizeInMB) => sizeInMB * 1024 * 1024;
 
-		private async Task ExecuteTest(int textSizeInBytes)
+		private async Task ExecuteTest(int textSizeInBytes, string controlNumber)
 		{
 			string filePath = "";
 			try
 			{
 				// Arrange
-				string controlNumber = GetRandomControlNumber();
 				string extractedText = DocumentTestDataBuilder.GenerateRandomExtractedText(textSizeInBytes);
 
 				string fileName = $"{controlNumber}.txt";
@@ -114,9 +122,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.Relativity
 				}
 			}
 		}
-
-		private string GetRandomControlNumber()
-			=> Guid.NewGuid().ToString().Replace("-", "");
 
 		private int[] GetExponentialIndexes(int size)
 		{
