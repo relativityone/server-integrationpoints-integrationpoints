@@ -65,6 +65,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.Relativity
 		}
 
 		[Test]
+		[StressTest]
 		[TestInQuarantine(
 			TestQuarantineState.DetectsDefectInExternalDependency,
 			"IAPI failure prevents import of test data - REL-293423")]
