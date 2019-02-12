@@ -155,9 +155,14 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 		private IContainer InitializeSyncContainer(SyncMetrics metrics)
 		{
+			// We are registering types directly related to adapting the new Relativity Sync workflow to the
+			// existing RIP workflow. The Autofac container we are building will only resolve adapters and related
+			// wrappers, and the Windsor container will only resolve existing RIP classes.
+
 			var containerBuilder = new ContainerBuilder();
 			containerBuilder.RegisterInstance(SyncConfigurationFactory.Create(_job, _ripContainer, _logger)).AsImplementedInterfaces().SingleInstance();
 			containerBuilder.RegisterInstance(metrics).As<ISyncMetrics>().SingleInstance();
+
 			containerBuilder.RegisterInstance(new DestinationWorkspaceObjectTypesCreation(_ripContainer))
 				.As<IExecutor<IDestinationWorkspaceObjectTypesCreationConfiguration>>()
 				.As<IExecutionConstrains<IDestinationWorkspaceObjectTypesCreationConfiguration>>();
@@ -169,6 +174,47 @@ namespace kCura.IntegrationPoints.RelativitySync
 			containerBuilder.Register(context => new PermissionsCheck(_ripContainer, context.Resolve<IValidationExecutorFactory>(), context.Resolve<IRdoRepository>()))
 				.As<IExecutor<IPermissionsCheckConfiguration>>()
 				.As<IExecutionConstrains<IPermissionsCheckConfiguration>>();
+
+			containerBuilder.RegisterInstance(new DestinationWorkspaceTagsCreation(_ripContainer))
+				.As<IExecutor<IDestinationWorkspaceTagsCreationConfiguration>>()
+				.As<IExecutionConstrains<IDestinationWorkspaceTagsCreationConfiguration>>();
+
+			containerBuilder.RegisterInstance(new DestinationWorkspaceSavedSearchCreation(_ripContainer))
+				.As<IExecutor<IDestinationWorkspaceSavedSearchCreationConfiguration>>()
+				.As<IExecutionConstrains<IDestinationWorkspaceSavedSearchCreationConfiguration>>();
+
+			containerBuilder.RegisterInstance(new SourceWorkspaceTagsCreation(_ripContainer))
+				.As<IExecutor<ISourceWorkspaceTagsCreationConfiguration>>()
+				.As<IExecutionConstrains<ISourceWorkspaceTagsCreationConfiguration>>();
+
+			containerBuilder.RegisterInstance(new Notification(_ripContainer))
+				.As<IExecutor<INotificationConfiguration>>()
+				.As<IExecutionConstrains<INotificationConfiguration>>();
+
+			containerBuilder.RegisterType<DataDestinationFinalization>()
+				.As<IExecutor<IDataDestinationFinalizationConfiguration>>()
+				.As<IExecutionConstrains<IDataDestinationFinalizationConfiguration>>();
+
+			containerBuilder.RegisterType<DataDestinationInitialization>()
+				.As<IExecutor<IDataDestinationInitializationConfiguration>>()
+				.As<IExecutionConstrains<IDataDestinationInitializationConfiguration>>();
+
+			containerBuilder.RegisterType<JobCleanup>()
+				.As<IExecutor<IJobCleanupConfiguration>>()
+				.As<IExecutionConstrains<IJobCleanupConfiguration>>();
+
+			containerBuilder.RegisterType<JobStatusConsolidation>()
+				.As<IExecutor<IJobStatusConsolidationConfiguration>>()
+				.As<IExecutionConstrains<IJobStatusConsolidationConfiguration>>();
+
+			containerBuilder.RegisterType<SnapshotPartition>()
+				.As<IExecutor<ISnapshotPartitionConfiguration>>()
+				.As<IExecutionConstrains<ISnapshotPartitionConfiguration>>();
+
+			containerBuilder.RegisterType<DataSourceSnapshot>()
+				.As<IExecutor<IDataSourceSnapshotConfiguration>>()
+				.As<IExecutionConstrains<IDataSourceSnapshotConfiguration>>();
+
 			IContainer container = containerBuilder.Build();
 			return container;
 		}

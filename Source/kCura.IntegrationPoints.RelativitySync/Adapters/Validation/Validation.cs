@@ -45,32 +45,30 @@ namespace kCura.IntegrationPoints.RelativitySync.Adapters
 
 		private void ValidateIntegrationPoint()
 		{
-			IntegrationPoint integrationPoint = _rdoRepository.Get<IntegrationPoint>(_extendedJob.IntegrationPointId);
-
-			if (!integrationPoint.SourceProvider.HasValue)
+			if (!_extendedJob.IntegrationPointModel.SourceProvider.HasValue)
 			{
 				throw new InvalidOperationException($"SourceProvider in retrieved IntegrationPoint has no value.");
 			}
 
-			if (!integrationPoint.DestinationProvider.HasValue)
+			if (!_extendedJob.IntegrationPointModel.DestinationProvider.HasValue)
 			{
 				throw new InvalidOperationException($"DestinationProvider in retrieved IntegrationPoint has no value.");
 			}
 
-			if (!integrationPoint.Type.HasValue)
+			if (!_extendedJob.IntegrationPointModel.Type.HasValue)
 			{
 				throw new InvalidOperationException($"Type in retrieved IntegrationPoint has no value.");
 			}
 
-			SourceProvider sourceProvider = _rdoRepository.Get<SourceProvider>(integrationPoint.SourceProvider.Value);
-			DestinationProvider destinationProvider = _rdoRepository.Get<DestinationProvider>(integrationPoint.DestinationProvider.Value);
-			IntegrationPointType integrationPointType = _rdoRepository.Get<IntegrationPointType>(integrationPoint.Type.Value);
+			SourceProvider sourceProvider = _rdoRepository.Get<SourceProvider>(_extendedJob.IntegrationPointModel.SourceProvider.Value);
+			DestinationProvider destinationProvider = _rdoRepository.Get<DestinationProvider>(_extendedJob.IntegrationPointModel.DestinationProvider.Value);
+			IntegrationPointType integrationPointType = _rdoRepository.Get<IntegrationPointType>(_extendedJob.IntegrationPointModel.Type.Value);
 
 			ValidationContext context = new ValidationContext
 			{
 				DestinationProvider = destinationProvider,
 				IntegrationPointType = integrationPointType,
-				Model = IntegrationPointModel.FromIntegrationPoint(integrationPoint),
+				Model = IntegrationPointModel.FromIntegrationPoint(_extendedJob.IntegrationPointModel),
 				ObjectTypeGuid = ObjectTypeGuids.IntegrationPoint,
 				SourceProvider = sourceProvider,
 				UserId = -1 // User permissions check is a separate step in Sync flow.

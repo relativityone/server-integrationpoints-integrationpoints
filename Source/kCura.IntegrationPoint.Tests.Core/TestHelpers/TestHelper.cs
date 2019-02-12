@@ -58,6 +58,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			_serviceManager.CreateProxy<IArtifactGuidManager>(ExecutionIdentity.System).Returns(new ExtendedIArtifactGuidManager(this, ExecutionIdentity.System));
 			_serviceManager.CreateProxy<IFieldManager>(ExecutionIdentity.System).Returns(new ExtendedIFieldManager(this, ExecutionIdentity.System));
 			_serviceManager.CreateProxy<IInstanceSettingManager>(ExecutionIdentity.CurrentUser).Returns(new ExtendedInstanceSettingManager(this, ExecutionIdentity.CurrentUser));
+			_serviceManager.CreateProxy<ISearchContainerManager>(ExecutionIdentity.CurrentUser).Returns(new ExtendedSearchContainerManager(this, ExecutionIdentity.CurrentUser));
 		    _serviceManager.CreateProxy<IOAuth2ClientManager>(ExecutionIdentity.System).Returns(_ => CreateAdminProxy<IOAuth2ClientManager>());
 			_serviceManager.CreateProxy<IObjectManager>(ExecutionIdentity.System).Returns(_ => CreateAdminProxy<IObjectManager>());
 			_serviceManager.CreateProxy<IObjectManager>(ExecutionIdentity.CurrentUser).Returns(_ => CreateUserProxy<IObjectManager>());

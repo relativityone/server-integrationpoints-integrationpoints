@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using Castle.Windsor;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Core.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
-using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
-using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 
@@ -13,11 +14,9 @@ namespace kCura.IntegrationPoints.RelativitySync
 	{
 		public static SyncConfiguration Create(IExtendedJob job, IWindsorContainer ripContainer, IAPILog logger)
 		{
-			IIntegrationPointService integrationPointService;
 			ISerializer serializer;
 			try
 			{
-				integrationPointService = ripContainer.Resolve<IIntegrationPointService>();
 				serializer = ripContainer.Resolve<ISerializer>();
 			}
 			catch (Exception e)
@@ -25,24 +24,14 @@ namespace kCura.IntegrationPoints.RelativitySync
 				logger.LogError(e, "Unable to resolve dependencies from container.");
 				throw;
 			}
-
-			IntegrationPoint integrationPoint;
+			
 			try
 			{
-				integrationPoint = integrationPointService.GetRdo(job.IntegrationPointId);
-			}
-			catch (Exception e)
-			{
-				logger.LogError(e, "Unable to query for integration point {id}.", job.IntegrationPointId);
-				throw;
-			}
+				SourceConfiguration sourceConfiguration = serializer.Deserialize<SourceConfiguration>(job.IntegrationPointModel.SourceConfiguration);
+				ImportSettings destinationConfiguration = serializer.Deserialize<ImportSettings>(job.IntegrationPointModel.DestinationConfiguration);
+				List<string> emailRecipients = IntegrationPointTaskBase.GetRecipientEmails(job.IntegrationPointModel, logger);
 
-			try
-			{
-				SourceConfiguration sourceConfiguration = serializer.Deserialize<SourceConfiguration>(integrationPoint.SourceConfiguration);
-				ImportSettings destinationConfiguration = serializer.Deserialize<ImportSettings>(integrationPoint.DestinationConfiguration);
-
-				return new SyncConfiguration(job.JobHistoryId, sourceConfiguration, destinationConfiguration);
+				return new SyncConfiguration(job.JobHistoryId, job.SubmittedById, sourceConfiguration, destinationConfiguration, emailRecipients);
 			}
 			catch (Exception e)
 			{

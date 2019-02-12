@@ -8,22 +8,34 @@ namespace kCura.IntegrationPoints.RelativitySync
 {
 	internal sealed class SyncConfiguration : IDataDestinationFinalizationConfiguration, IDataDestinationInitializationConfiguration, IDataSourceSnapshotConfiguration,
 		IDestinationWorkspaceObjectTypesCreationConfiguration, IDestinationWorkspaceSavedSearchCreationConfiguration, IDestinationWorkspaceTagsCreationConfiguration, IJobCleanupConfiguration,
-		IJobStatusConsolidationConfiguration, INotificationConfiguration, IPermissionsCheckConfiguration, IPreviousRunCleanupConfiguration, ISnapshotPartitionConfiguration,
-		ISourceWorkspaceTagsCreationConfiguration, ISynchronizationConfiguration, ITemporaryStorageInitializationConfiguration, IValidationConfiguration
+		IJobStatusConsolidationConfiguration, INotificationConfiguration, IPermissionsCheckConfiguration, ISnapshotPartitionConfiguration,
+		ISourceWorkspaceTagsCreationConfiguration, ISynchronizationConfiguration, IValidationConfiguration
 	{
 		private int? _jobTagArtifactId;
 		private int? _workspaceTagArtifactId;
 		private int? _savedSearchArtifactId;
-		private int? _tagArtifactId;
 		private int? _sourceWorkspaceArtifactTypeId;
 		private int? _sourceJobArtifactTypeId;
+		private int? _sourceJobTagArtifactId;
+		private int? _sourceWorkspaceTagArtifactId;
+		private string _sourceWorkspaceTagName;
+		private int? _destinationWorkspaceTagArtifactId;
+		private Guid? _exportRunId;
+		private List<int> _batchesIds;
 
-		public SyncConfiguration(int jobId, SourceConfiguration sourceConfiguration, ImportSettings destinationConfiguration)
+		public SyncConfiguration(int jobId, int submittedById, SourceConfiguration sourceConfiguration, ImportSettings destinationConfiguration, List<string> emailRecipients)
 		{
 			JobStatusArtifactId = jobId;
 			DataSourceArtifactId = sourceConfiguration.SavedSearchArtifactId;
 			DataDestinationArtifactId = destinationConfiguration.DestinationFolderArtifactId;
 			DestinationWorkspaceArtifactId = destinationConfiguration.CaseArtifactId;
+			JobArtifactId = jobId;
+			SourceWorkspaceArtifactId = sourceConfiguration.SourceWorkspaceArtifactId;
+			CreateSavedSearchForTags = destinationConfiguration.CreateSavedSearchForTagging;
+			EmailRecipients = emailRecipients;
+			SendEmails = emailRecipients.Count > 0;
+			FieldMappings = string.Empty;
+			ExecutingUserId = submittedById;
 		}
 
 		public string DataDestinationName => string.Empty;
@@ -31,16 +43,10 @@ namespace kCura.IntegrationPoints.RelativitySync
 		public bool IsDataDestinationArtifactIdSet => false;
 
 		public int DataSourceArtifactId { get; }
-
-		public int SnapshotId { get; set; } = 0;
+		public string FieldMappings { get; }
+		public bool IsSnapshotCreated => _exportRunId.HasValue;
 
 		public int DataDestinationArtifactId { get; set; }
-
-		public bool AreBatchesIdsSet => true;
-
-		public List<int> BatchesIds { get; set; } = new List<int>();
-
-		public bool IsJobTagArtifactIdSet => _jobTagArtifactId.HasValue;
 
 		public int JobTagArtifactId
 		{
@@ -56,8 +62,6 @@ namespace kCura.IntegrationPoints.RelativitySync
 			set => _jobTagArtifactId = value;
 		}
 
-		public bool IsWorkspaceTagArtifactIdSet => _workspaceTagArtifactId.HasValue;
-
 		public int WorkspaceTagArtifactId
 		{
 			get
@@ -72,51 +76,13 @@ namespace kCura.IntegrationPoints.RelativitySync
 			set => _workspaceTagArtifactId = value;
 		}
 
+		public bool CreateSavedSearchForTags { get; }
+
 		public bool IsSavedSearchArtifactIdSet => _savedSearchArtifactId.HasValue;
-
-		public int SavedSearchArtifactId
-		{
-			get
-			{
-				if (!_savedSearchArtifactId.HasValue)
-				{
-					throw new ArgumentException($"Initialize {nameof(SavedSearchArtifactId)} first");
-				}
-
-				return _savedSearchArtifactId.Value;
-			}
-			set => _savedSearchArtifactId = value;
-		}
-
-		public bool IsStorageIdSet => true;
-
-		public int StorageId { get; set; } = 0;
-
-		public bool IsJobStatusArtifactIdSet => true;
 
 		public int JobStatusArtifactId { get; set; }
 
-		public bool IsPreviousRunArtifactIdSet { get; } = true;
-
-		public int PreviousRunArtifactId { get; } = 0;
-
 		public bool Retrying => false;
-
-		public bool IsTagArtifactIdSet => _tagArtifactId.HasValue;
-
-		public int TagArtifactId
-		{
-			get
-			{
-				if (!_tagArtifactId.HasValue)
-				{
-					throw new ArgumentException($"Initialize {nameof(TagArtifactId)} first");
-				}
-
-				return _tagArtifactId.Value;
-			}
-			set => _tagArtifactId = value;
-		}
 
 		public void SetSourceWorkspaceArtifactTypeId(int artifactTypeId)
 		{
@@ -128,41 +94,69 @@ namespace kCura.IntegrationPoints.RelativitySync
 			_sourceJobArtifactTypeId = artifactTypeId;
 		}
 
-		public void SetDestinationWorkspaceTagArtifactId(int artifactId)
-		{
-			throw new NotImplementedException();
-		}
+		public bool IsSourceWorkspaceArtifactTypeIdSet => _sourceWorkspaceArtifactTypeId.HasValue;
+
+		public int JobArtifactId { get; }
+
+		public bool IsDestinationWorkspaceTagArtifactIdSet => _destinationWorkspaceTagArtifactId.HasValue;
+		public int SourceWorkspaceArtifactTypeId => _sourceWorkspaceArtifactTypeId.Value;
+		public int SourceJobArtifactTypeId => _sourceJobArtifactTypeId.Value;
+
+		public bool IsSourceJobArtifactTypeIdSet => _sourceJobArtifactTypeId.HasValue;
+
+		public bool IsSourceJobTagSet => _sourceJobTagArtifactId.HasValue;
+		public bool IsSourceWorkspaceTagSet => _sourceWorkspaceTagArtifactId.HasValue;
 
 		public void SetSourceJobTag(int artifactId, string name)
 		{
-			throw new NotImplementedException();
+			_sourceJobTagArtifactId = artifactId;
+			SourceJobTagName = name;
 		}
 
 		public void SetSourceWorkspaceTag(int artifactId, string name)
 		{
-			throw new NotImplementedException();
+			_sourceWorkspaceTagArtifactId = artifactId;
+			_sourceWorkspaceTagName = name;
 		}
 
-		public bool IsSourceWorkspaceArtifactTypeIdSet => _sourceWorkspaceArtifactTypeId.HasValue;
+		public void SetSnapshotData(Guid runId, int totalRecordsCount)
+		{
+			_exportRunId = runId;
+			TotalRecordsCount = totalRecordsCount;
+		}
 
-		public bool IsSourceJobArtifactTypeIdSet => _sourceJobArtifactTypeId.HasValue;
+		public int SourceWorkspaceArtifactId { get; }
+
+		public void SetDestinationWorkspaceTagArtifactId(int artifactId)
+		{
+			_destinationWorkspaceTagArtifactId = artifactId;
+		}
+
+		public void SetSavedSearchArtifactId(int artifactId)
+		{
+			_savedSearchArtifactId = artifactId;
+		}
 
 		public int DestinationWorkspaceArtifactId { get; }
+		public string SourceJobTagName { get; private set; }
 
-		public int ExecutingUserId { get; } = -1;
+		public int SourceJobTagArtifactId => _sourceJobTagArtifactId.Value;
+		public int SourceWorkspaceTagArtifactId => _sourceWorkspaceTagArtifactId.Value;
+		public string JobStatus { get; set; }
+		public bool SendEmails { get; }
+		public IEnumerable<string> EmailRecipients { get; }
 
-		public int SourceWorkspaceArtifactId => throw new NotImplementedException();
+		public bool IsSnapshotPartitioned => _batchesIds != null;
 
-		public int JobArtifactId => throw new NotImplementedException();
+		public void SetSnapshotPartitions(List<int> batchesIds)
+		{
+			_batchesIds = batchesIds;
+		}
 
-		public bool IsDestinationWorkspaceTagArtifactIdSet => throw new NotImplementedException();
+		public int TotalRecordsCount { get; private set; }
 
-		public int SourceWorkspaceArtifactTypeId => throw new NotImplementedException();
+		public Guid ExportRunId => _exportRunId.Value;
 
-		public int SourceJobArtifactTypeId => throw new NotImplementedException();
-
-		public bool IsSourceJobTagSet => throw new NotImplementedException();
-
-		public bool IsSourceWorkspaceTagSet => throw new NotImplementedException();
+		public int ExecutingUserId { get; private set; }
 	}
 }
