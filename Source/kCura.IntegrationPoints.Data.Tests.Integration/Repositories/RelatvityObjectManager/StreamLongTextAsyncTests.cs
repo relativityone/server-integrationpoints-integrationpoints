@@ -93,7 +93,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.Relativity
 				filePath = Path.Combine(assemblyDir, fileName);
 				File.WriteAllText(filePath, extractedText, Encoding.UTF8);
 
-				_workspaceService.ImportExtractedTextSimple(_workspaceId, controlNumber, filePath);
+				_workspaceService.ImportSingleExtractedText(_workspaceId, controlNumber, filePath);
 				int documentArtifactID = GetDocumentArtifactID(controlNumber);
 
 				// Act

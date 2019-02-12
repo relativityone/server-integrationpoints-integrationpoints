@@ -50,7 +50,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return !HasErrors;
 		}
 
-		public bool ImportExtractedTextSimple(
+		public bool ImportMetadataFromFileWithExtractedTextInFile(
 			int workspaceArtifactId, 
 			DataTable dataTable)
 		{

@@ -40,11 +40,11 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return _importHelper.ImportData(workspaceArtifactId, documentsTestData);
 		}
 
-		public bool ImportExtractedTextSimple(int workspaceArtifactId, string controlNumber, string extractedTextFilePath)
+		public bool ImportSingleExtractedText(int workspaceArtifactId, string controlNumber, string extractedTextFilePath)
 		{
 			System.Data.DataTable documentData = 
 				DocumentTestDataBuilder.GetSingleExtractedTextDocument(controlNumber, extractedTextFilePath);
-			return _importHelper.ImportExtractedTextSimple(workspaceArtifactId, documentData);
+			return _importHelper.ImportMetadataFromFileWithExtractedTextInFile(workspaceArtifactId, documentData);
 		}
 
 
