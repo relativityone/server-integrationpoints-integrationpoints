@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		private Guid? _exportRunId;
 		private List<int> _batchesIds;
 
-		public SyncConfiguration(int jobId, SourceConfiguration sourceConfiguration, ImportSettings destinationConfiguration, List<string> emailRecipients)
+		public SyncConfiguration(int jobId, int submittedById, SourceConfiguration sourceConfiguration, ImportSettings destinationConfiguration, List<string> emailRecipients)
 		{
 			JobStatusArtifactId = jobId;
 			DataSourceArtifactId = sourceConfiguration.SavedSearchArtifactId;
@@ -35,6 +35,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			EmailRecipients = emailRecipients;
 			SendEmails = emailRecipients.Count > 0;
 			FieldMappings = string.Empty;
+			ExecutingUserId = submittedById;
 		}
 
 		public string DataDestinationName => string.Empty;
@@ -154,7 +155,8 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 		public int TotalRecordsCount { get; private set; }
 
-
 		public Guid ExportRunId => _exportRunId.Value;
+
+		public int ExecutingUserId { get; private set; }
 	}
 }

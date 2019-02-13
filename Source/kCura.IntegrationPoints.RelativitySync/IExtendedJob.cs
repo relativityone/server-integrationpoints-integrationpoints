@@ -7,6 +7,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 	{
 		long JobId { get; }
 		int WorkspaceId { get; }
+		int SubmittedById { get; }
 		int IntegrationPointId { get; }
 		IntegrationPoint IntegrationPointModel { get; }
 		Guid JobIdentifier { get; }

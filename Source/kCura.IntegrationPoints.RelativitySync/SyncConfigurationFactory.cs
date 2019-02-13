@@ -4,6 +4,7 @@ using Castle.Windsor;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 
@@ -30,7 +31,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 				ImportSettings destinationConfiguration = serializer.Deserialize<ImportSettings>(job.IntegrationPointModel.DestinationConfiguration);
 				List<string> emailRecipients = IntegrationPointTaskBase.GetRecipientEmails(job.IntegrationPointModel, logger);
 
-				return new SyncConfiguration(job.JobHistoryId, sourceConfiguration, destinationConfiguration, emailRecipients);
+				return new SyncConfiguration(job.JobHistoryId, job.SubmittedById, sourceConfiguration, destinationConfiguration, emailRecipients);
 			}
 			catch (Exception e)
 			{

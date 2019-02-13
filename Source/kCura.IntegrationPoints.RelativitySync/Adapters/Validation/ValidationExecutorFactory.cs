@@ -14,9 +14,15 @@ namespace kCura.IntegrationPoints.RelativitySync.Adapters
 			_container = container;
 		}
 
-		public IValidationExecutor CreateValidationExecutor()
+		public IValidationExecutor CreateProviderValidationExecutor()
 		{
 			return new ValidationExecutor(_container.Resolve<IIntegrationPointProviderValidator>(), new EmptyPermissionValidator(), _container.Resolve<IHelper>());
+		}
+
+		public IValidationExecutor CreatePermissionValidationExecutor()
+		{
+			return new ValidationExecutor(new EmptyProviderValidator(), _container.Resolve<IIntegrationPointPermissionValidator>(), _container.Resolve<IHelper>());
+
 		}
 	}
 }

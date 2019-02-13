@@ -155,6 +155,10 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 		private IContainer InitializeSyncContainer(SyncMetrics metrics)
 		{
+			// We are registering types directly related to adapting the new Relativity Sync workflow to the
+			// existing RIP workflow. The Autofac container we are building will only resolve adapters and related
+			// wrappers, and the Windsor container will only resolve existing RIP classes.
+
 			var containerBuilder = new ContainerBuilder();
 			containerBuilder.RegisterInstance(SyncConfigurationFactory.Create(_job, _ripContainer, _logger)).AsImplementedInterfaces().SingleInstance();
 			containerBuilder.RegisterInstance(metrics).As<ISyncMetrics>().SingleInstance();
@@ -163,9 +167,13 @@ namespace kCura.IntegrationPoints.RelativitySync
 				.As<IExecutor<IDestinationWorkspaceObjectTypesCreationConfiguration>>()
 				.As<IExecutionConstrains<IDestinationWorkspaceObjectTypesCreationConfiguration>>();
 			containerBuilder.RegisterType<ValidationExecutorFactory>().As<IValidationExecutorFactory>();
-			containerBuilder.Register(context => new Validator(_ripContainer, context.Resolve<IValidationExecutorFactory>()))
+			containerBuilder.RegisterType<RdoRepository>().As<IRdoRepository>();
+			containerBuilder.Register(context => new Validation(_ripContainer, context.Resolve<IValidationExecutorFactory>(), context.Resolve<IRdoRepository>()))
 				.As<IExecutor<IValidationConfiguration>>()
 				.As<IExecutionConstrains<IValidationConfiguration>>();
+			containerBuilder.Register(context => new PermissionsCheck(_ripContainer, context.Resolve<IValidationExecutorFactory>(), context.Resolve<IRdoRepository>()))
+				.As<IExecutor<IPermissionsCheckConfiguration>>()
+				.As<IExecutionConstrains<IPermissionsCheckConfiguration>>();
 
 			containerBuilder.RegisterInstance(new DestinationWorkspaceTagsCreation(_ripContainer))
 				.As<IExecutor<IDestinationWorkspaceTagsCreationConfiguration>>()
