@@ -29,6 +29,15 @@ namespace kCura.IntegrationPoints.RelativitySync
 			_logger = logger;
 		}
 
+		public ExtendedJob(Job job, IJobHistoryService jobHistoryService, IntegrationPoint integrationPoint, ISerializer serializer, IAPILog logger)
+		{
+			Job = job;
+			_jobHistoryService = jobHistoryService;
+			_integrationPoint = integrationPoint;
+			_serializer = serializer;
+			_logger = logger;
+		}
+
 		public Job Job { get; }
 	
 		public long JobId => Job.JobId;
