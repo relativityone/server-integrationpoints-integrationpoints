@@ -144,6 +144,29 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			catch (Exception ex)
 			{
 				HandleGenericException(ex, job);
+
+				IExtendedJob extendedJob = new ExtendedJob(job, JobHistoryService, IntegrationPointDto, Serializer, Logger);
+				JobHistoryHelper jobHistoryHelper = new JobHistoryHelper();
+				//this is last catch in push workflow, so we need to mark job as failed
+				//and we need to use object manager and update only one field.
+				//I'm not using RelativityObjectManager here because we need to do everything we can no to fail.
+				//any additional operation that is happening in RelativityObjectManager can potentially cause failures.
+				try
+				{
+					jobHistoryHelper.MarkJobAsFailedAsync(extendedJob, _helper).ConfigureAwait(false).GetAwaiter().GetResult();
+				}
+				catch (Exception)
+				{
+					//one last chance
+					try
+					{
+						jobHistoryHelper.MarkJobAsFailedAsync(extendedJob, _helper).ConfigureAwait(false).GetAwaiter().GetResult();
+					}
+					catch (Exception)
+					{
+						//now really eat the exception :(
+					}
+				}
 				if (ex is PermissionException || ex is IntegrationPointValidationException || ex is IntegrationPointsException)
 				{
 					throw;
