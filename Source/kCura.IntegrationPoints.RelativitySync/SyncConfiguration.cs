@@ -12,7 +12,6 @@ namespace kCura.IntegrationPoints.RelativitySync
 		ISourceWorkspaceTagsCreationConfiguration, ISynchronizationConfiguration, IValidationConfiguration
 	{
 		private int? _jobTagArtifactId;
-		private int? _workspaceTagArtifactId;
 		private int? _savedSearchArtifactId;
 		private int? _sourceWorkspaceArtifactTypeId;
 		private int? _sourceJobArtifactTypeId;
@@ -23,7 +22,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		private Guid? _exportRunId;
 		private List<int> _batchesIds;
 
-		public SyncConfiguration(int jobId, int submittedById, SourceConfiguration sourceConfiguration, ImportSettings destinationConfiguration, List<string> emailRecipients)
+		public SyncConfiguration(int jobId, int submittedBy, SourceConfiguration sourceConfiguration, ImportSettings destinationConfiguration, List<string> emailRecipients)
 		{
 			JobStatusArtifactId = jobId;
 			DataSourceArtifactId = sourceConfiguration.SavedSearchArtifactId;
@@ -35,7 +34,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			EmailRecipients = emailRecipients;
 			SendEmails = emailRecipients.Count > 0;
 			FieldMappings = string.Empty;
-			ExecutingUserId = submittedById;
+			ExecutingUserId = submittedBy;
 		}
 
 		public string DataDestinationName => string.Empty;
@@ -62,20 +61,6 @@ namespace kCura.IntegrationPoints.RelativitySync
 			set => _jobTagArtifactId = value;
 		}
 
-		public int WorkspaceTagArtifactId
-		{
-			get
-			{
-				if (!_workspaceTagArtifactId.HasValue)
-				{
-					throw new ArgumentException($"Initialize {nameof(WorkspaceTagArtifactId)} first");
-				}
-
-				return _workspaceTagArtifactId.Value;
-			}
-			set => _workspaceTagArtifactId = value;
-		}
-
 		public bool CreateSavedSearchForTags { get; }
 
 		public bool IsSavedSearchArtifactIdSet => _savedSearchArtifactId.HasValue;
@@ -99,6 +84,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		public int JobArtifactId { get; }
 
 		public bool IsDestinationWorkspaceTagArtifactIdSet => _destinationWorkspaceTagArtifactId.HasValue;
+		public int DestinationWorkspaceTagArtifactId => _destinationWorkspaceTagArtifactId.Value;
 		public int SourceWorkspaceArtifactTypeId => _sourceWorkspaceArtifactTypeId.Value;
 		public int SourceJobArtifactTypeId => _sourceJobArtifactTypeId.Value;
 

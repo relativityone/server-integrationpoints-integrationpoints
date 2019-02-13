@@ -1,6 +1,6 @@
 ﻿using kCura.IntegrationPoints.Core.Models;
 
-namespace kCura.IntegrationPoints.RelativitySync
+namespace kCura.IntegrationPoints.RelativitySync.RipOverride
 {
 	internal interface ISendEmailWorker
 	{

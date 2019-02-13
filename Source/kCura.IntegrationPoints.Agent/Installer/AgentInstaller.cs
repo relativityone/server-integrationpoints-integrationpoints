@@ -34,6 +34,7 @@ using kCura.WinEDDS.Service.Export;
 using Relativity.API;
 using Relativity.Toggles;
 using System;
+using kCura.IntegrationPoints.Core.Validation;
 using ITaskFactory = kCura.IntegrationPoints.Agent.TaskFactory.ITaskFactory;
 
 namespace kCura.IntegrationPoints.Agent.Installer

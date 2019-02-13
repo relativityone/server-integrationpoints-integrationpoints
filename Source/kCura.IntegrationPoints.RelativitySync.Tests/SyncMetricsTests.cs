@@ -41,8 +41,8 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 			TimeSpan duration1 = TimeSpan.FromSeconds(42);
 			TimeSpan duration2 = TimeSpan.FromSeconds(7);
 			TimeSpan duration3 = TimeSpan.FromSeconds(13);
-			TimeSpan totalDuration = duration1 + duration2 + duration3;
 
+			_instance.MarkStartTime();
 			_instance.TimedOperation(name1, duration1, _executionStatus);
 			_instance.TimedOperation(name2, duration2, _executionStatus);
 			_instance.TimedOperation(name3, duration3, _executionStatus);
@@ -50,10 +50,10 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 			
 			_apmMetrics.Verify(m => m.TimedOperation(
 					SyncMetrics.RELATIVITY_SYNC_APM_METRIC_NAME,
-					totalDuration.TotalMilliseconds,
+					It.IsAny<double>(),
 					It.IsAny<Guid>(),
-					It.Is<string>(correlationId => _correlationId == new Guid(correlationId)),
-					It.Is<Dictionary<string, object>>(obj => new[]{name1, name2, name3, SyncMetrics.JOB_RESULT_KEY_NAME}.All(obj.ContainsKey)),
+					It.Is<string>(correlationId => _correlationId == Guid.Parse(correlationId)),
+					It.Is<Dictionary<string, object>>(obj => new[]{name1, name2, name3, SyncMetrics.JOB_RESULT_KEY_NAME, SyncMetrics.TOTAL_ELAPSED_TIME_MS, SyncMetrics.ALL_STEPS_ELAPSED_TIME_MS}.All(obj.ContainsKey)),
 					It.IsAny<IEnumerable<ISink>>()), 
 				Times.Once);
 		}

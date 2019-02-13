@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -8,6 +9,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.ScheduleQueue.Core;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Factories
 {
@@ -123,5 +125,7 @@ namespace kCura.IntegrationPoints.Core.Factories
 		IProductionManager CreateProductionManager(IContextContainer contextContainer);
 		
 		ITagSavedSearchManager CreateTaggingSavedSearchManager(IContextContainer contextContainer);
+
+		ISourceWorkspaceTagCreator CreateSourceWorkspaceTagsCreator(IContextContainer contextContainer, IHelper targetHelper, SourceConfiguration sourceConfiguration);
 	}
 }

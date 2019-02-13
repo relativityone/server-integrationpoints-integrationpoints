@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Keywords;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.RelativitySync.RipOverride;
 using Relativity.Sync;
 using Relativity.Sync.Configuration;
 

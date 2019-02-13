@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading;
+using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
+using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
@@ -142,6 +144,14 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			ITagSavedSearch tagSavedSearch = new TagSavedSearch(repositoryFactory, new MultiObjectSavedSearchCondition(), _helper);
 			ITagSavedSearchFolder tagSavedSearchFolder = new TagSavedSearchFolder(repositoryFactory, _helper);
 			return new TagSavedSearchManager(tagSavedSearch, tagSavedSearchFolder);
+		}
+
+		public ISourceWorkspaceTagCreator CreateSourceWorkspaceTagsCreator(IContextContainer contextContainer, IHelper targetHelper, SourceConfiguration sourceConfiguration)
+		{
+			IFederatedInstanceManager federatedInstanceManager = CreateFederatedInstanceManager(contextContainer);
+			var targetRepositoryFactory = new RepositoryFactory(targetHelper, targetHelper.GetServicesManager());
+			return new SourceWorkspaceTagCreator(targetRepositoryFactory.GetDestinationWorkspaceRepository(sourceConfiguration.SourceWorkspaceArtifactId),
+				CreateRepositoryFactory(contextContainer).GetWorkspaceRepository(), federatedInstanceManager, _helper.GetLoggerFactory().GetLogger());
 		}
 
 		#region Private Helpers

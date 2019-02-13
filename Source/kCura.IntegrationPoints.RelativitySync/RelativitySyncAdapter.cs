@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
+using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.RelativitySync.Adapters;
 using kCura.ScheduleQueue.Core;
@@ -45,8 +46,8 @@ namespace kCura.IntegrationPoints.RelativitySync
 					await MarkJobAsStartedAsync().ConfigureAwait(false);
 
 					ISyncJob syncJob = CreateSyncJob(container);
-					Progress<SyncProgress> progress = new Progress<SyncProgress>();
-					progress.ProgressChanged += (sender, syncProgress) => UpdateJobStatus(syncProgress.State).ConfigureAwait(false).GetAwaiter().GetResult();
+					Progress progress = new Progress();
+					progress.SyncProgress += (sender, syncProgress) => UpdateJobStatus(syncProgress.State).ConfigureAwait(false).GetAwaiter().GetResult();
 					await syncJob.ExecuteAsync(progress, cancellationToken).ConfigureAwait(false);
 
 					if (cancellationToken.IsCancellationRequested)
@@ -160,14 +161,22 @@ namespace kCura.IntegrationPoints.RelativitySync
 			// wrappers, and the Windsor container will only resolve existing RIP classes.
 
 			var containerBuilder = new ContainerBuilder();
-			containerBuilder.RegisterInstance(SyncConfigurationFactory.Create(_job, _ripContainer, _logger)).AsImplementedInterfaces().SingleInstance();
+			SyncConfiguration syncConfiguration = SyncConfigurationFactory.Create(_job, _ripContainer, _logger);
+
+			_ripContainer.Register(Component.For<SyncConfiguration>().Instance(syncConfiguration));
+
+			containerBuilder.RegisterInstance(syncConfiguration).AsImplementedInterfaces().SingleInstance();
 			containerBuilder.RegisterInstance(metrics).As<ISyncMetrics>().SingleInstance();
+
+			containerBuilder.RegisterInstance(new DestinationWorkspaceSavedSearchCreation(_ripContainer))
+				.As<IExecutor<IDestinationWorkspaceSavedSearchCreationConfiguration>>()
+				.As<IExecutionConstrains<IDestinationWorkspaceSavedSearchCreationConfiguration>>();
 
 			containerBuilder.RegisterInstance(new DestinationWorkspaceObjectTypesCreation(_ripContainer))
 				.As<IExecutor<IDestinationWorkspaceObjectTypesCreationConfiguration>>()
 				.As<IExecutionConstrains<IDestinationWorkspaceObjectTypesCreationConfiguration>>();
-			containerBuilder.RegisterType<ValidationExecutorFactory>().As<IValidationExecutorFactory>();
-			containerBuilder.RegisterType<RdoRepository>().As<IRdoRepository>();
+			containerBuilder.RegisterInstance(new ValidationExecutorFactory(_ripContainer)).As<IValidationExecutorFactory>();
+			containerBuilder.RegisterInstance(new RdoRepository(_ripContainer)).As<IRdoRepository>();
 			containerBuilder.Register(context => new Validation(_ripContainer, context.Resolve<IValidationExecutorFactory>(), context.Resolve<IRdoRepository>()))
 				.As<IExecutor<IValidationConfiguration>>()
 				.As<IExecutionConstrains<IValidationConfiguration>>();
@@ -186,6 +195,10 @@ namespace kCura.IntegrationPoints.RelativitySync
 			containerBuilder.RegisterInstance(new SourceWorkspaceTagsCreation(_ripContainer))
 				.As<IExecutor<ISourceWorkspaceTagsCreationConfiguration>>()
 				.As<IExecutionConstrains<ISourceWorkspaceTagsCreationConfiguration>>();
+
+			containerBuilder.RegisterInstance(new Synchronization(_ripContainer))
+				.As<IExecutor<ISynchronizationConfiguration>>()
+				.As<IExecutionConstrains<ISynchronizationConfiguration>>();
 
 			containerBuilder.RegisterInstance(new Notification(_ripContainer))
 				.As<IExecutor<INotificationConfiguration>>()
@@ -214,6 +227,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			containerBuilder.RegisterType<DataSourceSnapshot>()
 				.As<IExecutor<IDataSourceSnapshotConfiguration>>()
 				.As<IExecutionConstrains<IDataSourceSnapshotConfiguration>>();
+
 
 			IContainer container = containerBuilder.Build();
 			return container;

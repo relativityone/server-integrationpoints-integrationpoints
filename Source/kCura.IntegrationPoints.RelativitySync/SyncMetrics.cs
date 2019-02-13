@@ -12,6 +12,8 @@ namespace kCura.IntegrationPoints.RelativitySync
 	{
 		internal const string RELATIVITY_SYNC_APM_METRIC_NAME = "RelativitySync.Performance.Job";
 		internal const string JOB_RESULT_KEY_NAME = "JobResult";
+		internal const string TOTAL_ELAPSED_TIME_MS = "TotalElapsedTimeMs";
+		internal const string ALL_STEPS_ELAPSED_TIME_MS = "AllStepsElapsedTimeMs";
 
 		private readonly Dictionary<string, object> _data = new Dictionary<string, object>();
 		private readonly IAPM _apm;
@@ -41,19 +43,19 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 		public void MarkStartTime()
 		{
-			_startTime = DateTime.UtcNow;
+			_startTime = DateTime.Now;
 		}
 
 		public void SendMetric(Guid correlationId, TaskResult taskResult)
 		{
 			try
 			{
-				var totalElapsedTimeMs = (_startTime - DateTime.UtcNow).TotalMilliseconds;
+				var totalElapsedTimeMs = (DateTime.Now - _startTime).TotalMilliseconds;
 				if (taskResult != null)
 				{
 					_data[JOB_RESULT_KEY_NAME] = taskResult;
-					_data["TotalElapsedTimeMs"] = totalElapsedTimeMs;
-					_data["AllStepsElapsedTimeMs"] = _elapsed.TotalMilliseconds;
+					_data[TOTAL_ELAPSED_TIME_MS] = totalElapsedTimeMs;
+					_data[ALL_STEPS_ELAPSED_TIME_MS] = _elapsed.TotalMilliseconds;
 				}
 
 				_apm.TimedOperation(RELATIVITY_SYNC_APM_METRIC_NAME, totalElapsedTimeMs, correlationID: correlationId.ToString(), customData: _data);

@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("kCura.IntegrationPoints")]
-[assembly: AssemblyDescription("kCura.IntegrationPoints")]
+[assembly: AssemblyTitle("IntegrationPoints")]
+[assembly: AssemblyDescription("IntegrationPoints")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Relativity ODA LLC")]
-[assembly: AssemblyProduct("kCura.IntegrationPoints")]
+[assembly: AssemblyProduct("IntegrationPoints")]
 [assembly: AssemblyCopyright("Copyright (c) 2019, Relativity ODA LLC")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -60,6 +60,6 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
-// [assembly: AssemblyVersion("10.2.0.0")]
-[assembly: AssemblyVersion("10.2.0.0")]
-[assembly: AssemblyFileVersion("10.2.0.0")]
+// [assembly: AssemblyVersion("10.2.117.1")]
+[assembly: AssemblyVersion("10.2.117.1")]
+[assembly: AssemblyFileVersion("10.2.117.1")]

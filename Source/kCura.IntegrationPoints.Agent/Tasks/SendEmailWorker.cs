@@ -7,6 +7,7 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Email;
 using kCura.IntegrationPoints.RelativitySync;
+using kCura.IntegrationPoints.RelativitySync.RipOverride;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
 

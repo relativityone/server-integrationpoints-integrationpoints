@@ -64,6 +64,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			ISerializer serializer,
 			IJobHistoryErrorManager jobHistoryErrorManager,
 			IJobStopManager jobStopManager,
+			ISourceWorkspaceTagCreator sourceWorkspaceTagsCreator,
 			FieldMap[] mappedFields,
 			SourceConfiguration configuration,
 			JobHistoryErrorDTO.UpdateStatusType updateStatusType,
@@ -74,7 +75,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		{
 			IConsumeScratchTableBatchStatus destinationFieldsTagger = CreateDestinationFieldsTagger(tagsCreator, tagSavedSearchManager, synchronizerFactory,
 				serializer, mappedFields, configuration, integrationPoint, jobHistory, uniqueJobId, userImportApiSettings);
-			IConsumeScratchTableBatchStatus sourceFieldsTagger = CreateSourceFieldsTagger(job, configuration, jobHistory, uniqueJobId);
+			IConsumeScratchTableBatchStatus sourceFieldsTagger = CreateSourceFieldsTagger(job, configuration, jobHistory, sourceWorkspaceTagsCreator, uniqueJobId);
 			IBatchStatus sourceJobHistoryErrorUpdater = CreateJobHistoryErrorUpdater(job, jobHistoryErrorManager, jobStopManager, configuration, updateStatusType);
 
 			var batchStatusCommands = new List<IBatchStatus>
@@ -116,10 +117,11 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			return destinationFieldsTagger;
 		}
 
-	    private IConsumeScratchTableBatchStatus CreateSourceFieldsTagger(Job job, SourceConfiguration configuration, JobHistory jobHistory, string uniqueJobId)
+	    private IConsumeScratchTableBatchStatus CreateSourceFieldsTagger(Job job, SourceConfiguration configuration, JobHistory jobHistory, ISourceWorkspaceTagCreator sourceWorkspaceTagsCreator,
+		    string uniqueJobId)
 		{
 			return new SourceObjectBatchUpdateManager(_sourceRepositoryFactory, _targetRepositoryFactory, _claimsPrincipalFactory, _helper,
-				_federatedInstanceManager, configuration, jobHistory.ArtifactId, job.SubmittedBy, uniqueJobId);
+				_federatedInstanceManager, sourceWorkspaceTagsCreator, configuration, jobHistory.ArtifactId, job.SubmittedBy, uniqueJobId);
 		}
 
 	    private IBatchStatus CreateJobHistoryErrorUpdater(Job job, IJobHistoryErrorManager jobHistoryErrorManager, IJobStopManager jobStopManager, 

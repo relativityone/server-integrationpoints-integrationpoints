@@ -29,6 +29,7 @@ using kCura.Data.RowDataGateway;
 using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoints.Agent.Validation;
+using kCura.IntegrationPoints.Core.Validation;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using Relativity.API;

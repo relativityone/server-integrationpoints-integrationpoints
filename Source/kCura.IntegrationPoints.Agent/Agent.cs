@@ -17,6 +17,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.RelativitySync;
+using kCura.IntegrationPoints.RelativitySync.RipOverride;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.TimeMachine;
@@ -86,6 +87,7 @@ namespace kCura.IntegrationPoints.Agent
 							ripContainerForSync.Register(Component.For<RelativitySyncAdapter>().ImplementedBy<RelativitySyncAdapter>());
 							ripContainerForSync.Register(Component.For<IWindsorContainer>().Instance(ripContainerForSync));
 							ripContainerForSync.Register(Component.For<ISendEmailWorker>().UsingFactoryMethod(k => k.Resolve<SendEmailWorker>()));
+							ripContainerForSync.Register(Component.For<IExportServiceManager>().ImplementedBy<ExportServiceManager>().Named(Guid.NewGuid().ToString()).IsDefault());
 
 							RelativitySyncAdapter syncAdapter = ripContainerForSync.Resolve<RelativitySyncAdapter>();
 							return syncAdapter.RunAsync().ConfigureAwait(false).GetAwaiter().GetResult();

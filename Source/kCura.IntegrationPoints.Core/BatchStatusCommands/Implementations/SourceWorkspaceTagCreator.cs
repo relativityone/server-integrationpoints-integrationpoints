@@ -1,11 +1,12 @@
-﻿using kCura.IntegrationPoints.Data;
+﻿using kCura.IntegrationPoints.Core.Tagging;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Managers;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 {
-	public sealed class SourceWorkspaceTagCreator
+	public sealed class SourceWorkspaceTagCreator : ISourceWorkspaceTagCreator
 	{
 		private readonly IDestinationWorkspaceRepository _destinationWorkspaceRepository;
 		private readonly IWorkspaceRepository _workspaceRepository;

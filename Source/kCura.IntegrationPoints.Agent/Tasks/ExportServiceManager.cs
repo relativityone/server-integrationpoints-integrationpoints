@@ -34,12 +34,14 @@ using Constants = kCura.IntegrationPoints.Core.Constants;
 using Relativity.Telemetry.MetricsCollection;
 using APMClient = Relativity.Telemetry.APM.Client;
 using kCura.IntegrationPoints.Domain.Managers;
+using kCura.IntegrationPoints.RelativitySync;
+using kCura.IntegrationPoints.RelativitySync.RipOverride;
 using Relativity;
 using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
-	public class ExportServiceManager : ServiceManagerBase
+	public class ExportServiceManager : ServiceManagerBase, IExportServiceManager
 	{
 		private ExportJobErrorService _exportJobErrorService;
 		private int _savedSearchArtifactId;
@@ -369,10 +371,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				targetHelper.GetServicesManager());
 			ITagsCreator tagsCreator = ManagerFactory.CreateTagsCreator(contextContainer);
 			ITagSavedSearchManager tagSavedSearchManager = ManagerFactory.CreateTaggingSavedSearchManager(contextContainer);
+			ISourceWorkspaceTagCreator sourceWorkspaceTagsCreator = ManagerFactory.CreateSourceWorkspaceTagsCreator(contextContainer, targetHelper, settings);
 
 			_exportServiceJobObservers = _exporterFactory.InitializeExportServiceJobObservers(job, tagsCreator,
 				tagSavedSearchManager, SynchronizerFactory,
-				Serializer, JobHistoryErrorManager, JobStopManager,
+				Serializer, JobHistoryErrorManager, JobStopManager,sourceWorkspaceTagsCreator,
 				MappedFields.ToArray(), SourceConfiguration,
 				UpdateStatusType, IntegrationPointDto, JobHistory,
 				GetUniqueJobId(job), userImportApiSettings);

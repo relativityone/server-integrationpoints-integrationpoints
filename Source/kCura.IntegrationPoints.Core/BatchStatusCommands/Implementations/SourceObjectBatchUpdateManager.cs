@@ -1,6 +1,7 @@
 using System;
 using System.Security.Claims;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
+using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -23,11 +24,11 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		private readonly IAPILog _logger;
 		private readonly int _sourceWorkspaceId;
 		private readonly int? _federatedInstanceId;
-		private readonly SourceWorkspaceTagCreator _sourceWorkspaceTagCreator;
+		private readonly ISourceWorkspaceTagCreator _sourceWorkspaceTagCreator;
 
 		public SourceObjectBatchUpdateManager(IRepositoryFactory sourceRepositoryFactory, IRepositoryFactory targetRepositoryFactory,
-			IOnBehalfOfUserClaimsPrincipalFactory userClaimsPrincipalFactory, IHelper helper, IFederatedInstanceManager federatedInstanceManager, SourceConfiguration sourceConfig,
-			int jobHistoryInstanceId, int submittedBy, string uniqueJobId)
+			IOnBehalfOfUserClaimsPrincipalFactory userClaimsPrincipalFactory, IHelper helper, IFederatedInstanceManager federatedInstanceManager, ISourceWorkspaceTagCreator sourceWorkspaceTagCreator, 
+			SourceConfiguration sourceConfig, int jobHistoryInstanceId, int submittedBy, string uniqueJobId)
 		{
 			_destinationWorkspaceRepository = sourceRepositoryFactory.GetDestinationWorkspaceRepository(sourceConfig.SourceWorkspaceArtifactId);
 			ScratchTableRepository = sourceRepositoryFactory.GetScratchTableRepository(sourceConfig.SourceWorkspaceArtifactId, Data.Constants.TEMPORARY_DOC_TABLE_SOURCE_OBJECTS, uniqueJobId);
@@ -36,9 +37,8 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			_destinationWorkspaceId = sourceConfig.TargetWorkspaceArtifactId;
 			_federatedInstanceId = sourceConfig.FederatedInstanceArtifactId;
 			_jobHistoryInstanceId = jobHistoryInstanceId;
+			_sourceWorkspaceTagCreator = sourceWorkspaceTagCreator;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<SourceObjectBatchUpdateManager>();
-
-			_sourceWorkspaceTagCreator = new SourceWorkspaceTagCreator(_destinationWorkspaceRepository, targetRepositoryFactory.GetWorkspaceRepository(), federatedInstanceManager, _logger);
 		}
 
 		public IScratchTableRepository ScratchTableRepository { get; }
