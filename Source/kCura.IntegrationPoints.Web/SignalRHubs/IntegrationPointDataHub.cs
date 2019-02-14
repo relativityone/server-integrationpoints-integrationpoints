@@ -128,9 +128,9 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 				{
 					foreach (var key in _tasks.Keys)
 					{
-						UpdateIntegrationPointData(key);
+						UpdateIntegrationPointData(key).GetAwaiter().GetResult();
 
-						UpdateIntegrationPointJobStatus(key);
+						UpdateIntegrationPointJobStatus(key).GetAwaiter().GetResult();
 
 						//sleep between getting each stats to get SQL Server a break
 						Thread.Sleep(_intervalBetweenTasks);
@@ -147,7 +147,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			}
 		}
 
-		private async void UpdateIntegrationPointJobStatus(IntegrationPointDataHubKey key)
+		private async Task UpdateIntegrationPointJobStatus(IntegrationPointDataHubKey key)
 		{
 			try
 			{
@@ -160,7 +160,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			}
 		}
 
-		private async void UpdateIntegrationPointData(IntegrationPointDataHubKey key)
+		private async Task UpdateIntegrationPointData(IntegrationPointDataHubKey key)
 		{
 			try
 			{
