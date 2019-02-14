@@ -147,11 +147,11 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			}
 		}
 
-		private void UpdateIntegrationPointJobStatus(IntegrationPointDataHubKey key)
+		private async void UpdateIntegrationPointJobStatus(IntegrationPointDataHubKey key)
 		{
 			try
 			{
-				Clients.Group(key.ToString()).updateIntegrationPointJobStatus();
+				await Clients.Group(key.ToString()).updateIntegrationPointJobStatus();
 				_logger.LogVerbose("SignalR update completed: {method} (key = {key})", nameof(UpdateIntegrationPointJobStatus), key);
 			}
 			catch (Exception exception)
@@ -160,7 +160,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			}
 		}
 
-		private void UpdateIntegrationPointData(IntegrationPointDataHubKey key)
+		private async void UpdateIntegrationPointData(IntegrationPointDataHubKey key)
 		{
 			try
 			{
@@ -196,8 +196,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 				OnClickEventDTO onClickEvents = onClickEventHelper.GetOnClickEvents(input.WorkspaceId, input.ArtifactId,
 					integrationPoint.Name, buttonStates);
 
-				Clients.Group(key.ToString()).updateIntegrationPointData(model, buttonStates, onClickEvents,
-					sourceProviderIsRelativity);
+				await Clients.Group(key.ToString()).updateIntegrationPointData(model, buttonStates, onClickEvents, sourceProviderIsRelativity);
 				_logger.LogVerbose("SignalR update completed: {method} (key = {key})", nameof(UpdateIntegrationPointData), key);
 			}
 			catch (Exception exception)
