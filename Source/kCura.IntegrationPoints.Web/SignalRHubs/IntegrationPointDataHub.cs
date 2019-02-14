@@ -100,6 +100,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			{
 				_logger.LogError(exception, "SignalR task removal failed: {method} (key = {key})", nameof(OnDisconnected), key);
 			}
+
 			return base.OnDisconnected(stopCalled);
 		}
 
@@ -191,6 +192,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 					integrationPoint.Name, buttonStates);
 
 				await Clients.Group(key.ToString()).updateIntegrationPointData(model, buttonStates, onClickEvents, sourceProviderIsRelativity);
+
 				_logger.LogVerbose("SignalR update completed: {method} (key = {key})", nameof(UpdateIntegrationPointData), key);
 			}
 			catch (Exception exception)
