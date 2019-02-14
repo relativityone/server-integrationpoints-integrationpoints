@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -239,7 +239,6 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 					.Where(x => x.ConnectionIds.Contains(Context.ConnectionId))
 					.Select(x => new IntegrationPointDataHubKey(x.WorkspaceId, x.ArtifactId, x.UserId))
 					.FirstOrDefault();
-				_logger.LogWarning("SignalR removing task: {method} (key = {key})", nameof(RemoveTask), key);
 				if (key != null)
 				{
 					Groups.Remove(Context.ConnectionId, key.ToString());
