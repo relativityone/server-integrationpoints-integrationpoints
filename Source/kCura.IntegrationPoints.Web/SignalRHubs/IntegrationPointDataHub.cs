@@ -105,18 +105,12 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 
 		public void GetIntegrationPointUpdate(int workspaceId, int artifactId)
 		{
-			IntegrationPointDataHubKey key = null;
-			try
-			{
-				int userId = ((ICPHelper)_contextContainer.Helper).GetAuthenticationManager().UserInfo.ArtifactID;
-				key = new IntegrationPointDataHubKey(workspaceId, artifactId, userId);
-				AddTask(key);
-				_logger.LogVerbose("SignalR add task completed: {method} (key = {key})", nameof(GetIntegrationPointUpdate), key);
-			}
-			catch (Exception exception)
-			{
-				_logger.LogError(exception, "SignalR add task failed: {method} (key = {key})", nameof(GetIntegrationPointUpdate), key);
-			}
+			int userId = ((ICPHelper)_contextContainer.Helper).GetAuthenticationManager().UserInfo.ArtifactID;
+			IntegrationPointDataHubKey key = new IntegrationPointDataHubKey(workspaceId, artifactId, userId);
+
+			AddTask(key);
+
+			_logger.LogVerbose("SignalR add task completed: {method} (key = {key})", nameof(GetIntegrationPointUpdate), key);
 		}
 
 		private void _updateTimer_Elapsed(object sender, ElapsedEventArgs e)
