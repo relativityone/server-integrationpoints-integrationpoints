@@ -161,6 +161,7 @@
     <Compile Include="RequestExtensions.cs" />
     <Compile Include="ServiceContextHelperForWeb.cs" />
     <Compile Include="Services\SessionService.cs" />
+    <Compile Include="SignalRHubs\IntegrationPointDataHubErrorHandlingPipelineModule.cs" />
     <Compile Include="SignalRHubs\IntegrationPointDataHubInput.cs" />
     <Compile Include="SignalRHubs\IntegrationPointDataHub.cs" />
     <Compile Include="SignalRHubs\IntegrationPointDataHubKey.cs" />

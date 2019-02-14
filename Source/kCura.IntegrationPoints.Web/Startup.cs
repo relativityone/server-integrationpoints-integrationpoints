@@ -5,6 +5,7 @@ using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
 using Castle.Windsor.Installer;
 using kCura.IntegrationPoints.Web.Installers;
+using kCura.IntegrationPoints.Web.SignalRHubs;
 using Microsoft.AspNet.SignalR;
 using Microsoft.Owin;
 using Owin;
@@ -16,7 +17,8 @@ namespace kCura.IntegrationPoints.Web
     {
         public void Configuration(IAppBuilder app)
         {
-            app.MapSignalR();
+	        GlobalHost.HubPipeline.AddModule(new IntegrationPointDataHubErrorHandlingPipelineModule());
+			app.MapSignalR();
         }
     }
 }
