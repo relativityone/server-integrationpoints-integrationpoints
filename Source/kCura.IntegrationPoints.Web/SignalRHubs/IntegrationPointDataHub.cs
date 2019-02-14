@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 	[HubName("IntegrationPointData")]
 	public class IntegrationPointDataHub : Hub
 	{
-		private static SortedDictionary<IntegrationPointDataHubKey, IntegrationPointDataHubInput> _tasks;
+		private static Dictionary<IntegrationPointDataHubKey, IntegrationPointDataHubInput> _tasks;
 		private static Timer _updateTimer;
 
 		private readonly IAPILog _logger;
@@ -77,7 +77,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 
 			if (_tasks == null)
 			{
-				_tasks = new SortedDictionary<IntegrationPointDataHubKey, IntegrationPointDataHubInput>();
+				_tasks = new Dictionary<IntegrationPointDataHubKey, IntegrationPointDataHubInput>();
 			}
 
 			if (_updateTimer == null)
