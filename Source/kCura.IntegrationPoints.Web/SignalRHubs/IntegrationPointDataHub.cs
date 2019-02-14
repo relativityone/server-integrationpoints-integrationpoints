@@ -36,11 +36,8 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 	[HubName("IntegrationPointData")]
 	public class IntegrationPointDataHub : Hub
 	{
-		private static SortedDictionary<string, IntegrationPointDataHubInput> _tasks;
+		private static SortedDictionary<IntegrationPointDataHubKey, IntegrationPointDataHubInput> _tasks;
 		private static Timer _updateTimer;
-
-		private const string _MESSAGE_TEMPLATE = "Section={Section} | Method={Method} | Message={Message} | Key={Key} | Exception={Exception}";
-		private const string _SECTION = "RIP";
 
 		private readonly IAPILog _logger;
 		private readonly IContextContainer _contextContainer;
@@ -80,7 +77,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 
 			if (_tasks == null)
 			{
-				_tasks = new SortedDictionary<string, IntegrationPointDataHubInput>();
+				_tasks = new SortedDictionary<IntegrationPointDataHubKey, IntegrationPointDataHubInput>();
 			}
 
 			if (_updateTimer == null)
@@ -93,14 +90,33 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 
 		public override Task OnDisconnected(bool stopCalled)
 		{
-			RemoveTask();
+			IntegrationPointDataHubKey key = null;
+			try
+			{
+				key = RemoveTask();
+				_logger.LogVerbose("SignalR task removal completed: {method} (key = {key})", nameof(OnDisconnected), key);
+			}
+			catch (Exception exception)
+			{
+				_logger.LogError(exception, "SignalR task removal failed: {method} (key = {key})", nameof(OnDisconnected), key);
+			}
 			return base.OnDisconnected(stopCalled);
 		}
 
 		public void GetIntegrationPointUpdate(int workspaceId, int artifactId)
 		{
-			int userId = ((ICPHelper)_contextContainer.Helper).GetAuthenticationManager().UserInfo.ArtifactID;
-			AddTask(workspaceId, artifactId, userId);
+			IntegrationPointDataHubKey key = null;
+			try
+			{
+				int userId = ((ICPHelper)_contextContainer.Helper).GetAuthenticationManager().UserInfo.ArtifactID;
+				key = new IntegrationPointDataHubKey(workspaceId, artifactId, userId);
+				AddTask(key);
+				_logger.LogVerbose("SignalR add task completed: {method} (key = {key})", nameof(GetIntegrationPointUpdate), key);
+			}
+			catch (Exception exception)
+			{
+				_logger.LogError(exception, "SignalR add task failed: {method} (key = {key})", nameof(GetIntegrationPointUpdate), key);
+			}
 		}
 
 		private void _updateTimer_Elapsed(object sender, ElapsedEventArgs e)
@@ -123,8 +139,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			}
 			catch (Exception exception)
 			{
-				_logger.LogError(exception, _MESSAGE_TEMPLATE, _SECTION, nameof(_updateTimer_Elapsed),
-					"Exception was thrown", null, exception.Message);
+				_logger.LogError(exception, "SignalR update error in {method}", nameof(_updateTimer_Elapsed));
 			}
 			finally
 			{
@@ -132,20 +147,20 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			}
 		}
 
-		private void UpdateIntegrationPointJobStatus(string key)
+		private void UpdateIntegrationPointJobStatus(IntegrationPointDataHubKey key)
 		{
 			try
 			{
-				Clients.Group(key).updateIntegrationPointJobStatus();
+				Clients.Group(key.ToString()).updateIntegrationPointJobStatus();
+				_logger.LogVerbose("SignalR update completed: {method} (key = {key})", nameof(UpdateIntegrationPointJobStatus), key);
 			}
 			catch (Exception exception)
 			{
-				_logger.LogError(exception, _MESSAGE_TEMPLATE, _SECTION, nameof(UpdateIntegrationPointJobStatus),
-					"Exception was thrown", key, exception.Message);
+				_logger.LogError(exception, "SignalR update error in {method} (key = {key})", nameof(UpdateIntegrationPointJobStatus), key);
 			}
 		}
 
-		private void UpdateIntegrationPointData(string key)
+		private void UpdateIntegrationPointData(IntegrationPointDataHubKey key)
 		{
 			try
 			{
@@ -181,13 +196,13 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 				OnClickEventDTO onClickEvents = onClickEventHelper.GetOnClickEvents(input.WorkspaceId, input.ArtifactId,
 					integrationPoint.Name, buttonStates);
 
-				Clients.Group(key).updateIntegrationPointData(model, buttonStates, onClickEvents,
+				Clients.Group(key.ToString()).updateIntegrationPointData(model, buttonStates, onClickEvents,
 					sourceProviderIsRelativity);
+				_logger.LogVerbose("SignalR update completed: {method} (key = {key})", nameof(UpdateIntegrationPointData), key);
 			}
 			catch (Exception exception)
 			{
-				_logger.LogError(exception, _MESSAGE_TEMPLATE, _SECTION, nameof(UpdateIntegrationPointData),
-					"Exception was thrown", key, exception.Message);
+				_logger.LogError(exception, "SignalR update error in {method} (key = {key})", nameof(UpdateIntegrationPointData), key);
 			}
 		}
 
@@ -196,15 +211,14 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			return new RelativityObjectManagerFactory(helper).CreateRelativityObjectManager(workspaceId);
 		}
 
-		public void AddTask(int workspaceId, int artifactId, int userId)
+		public void AddTask(IntegrationPointDataHubKey key)
 		{
-			string key = GetKey(workspaceId, artifactId, userId);
 			lock (_tasks)
 			{
-				Groups.Add(Context.ConnectionId, key);
+				Groups.Add(Context.ConnectionId, key.ToString());
 				if (!_tasks.ContainsKey(key))
 				{
-					_tasks.Add(key, new IntegrationPointDataHubInput(workspaceId, artifactId, userId, Context.ConnectionId));
+					_tasks.Add(key, new IntegrationPointDataHubInput(key.WorkspaceId, key.IntegrationPointId, key.UserId, Context.ConnectionId));
 				}
 				else
 				{
@@ -216,17 +230,19 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			}
 		}
 
-		private void RemoveTask()
+		private IntegrationPointDataHubKey RemoveTask()
 		{
+			IntegrationPointDataHubKey key;
 			lock (_tasks)
 			{
-				string key = _tasks.Values
+				key = _tasks.Values
 					.Where(x => x.ConnectionIds.Contains(Context.ConnectionId))
-					.Select(x => GetKey(x.WorkspaceId, x.ArtifactId, x.UserId))
+					.Select(x => new IntegrationPointDataHubKey(x.WorkspaceId, x.ArtifactId, x.UserId))
 					.FirstOrDefault();
-				if (!string.IsNullOrEmpty(key))
+				_logger.LogWarning("SignalR removing task: {method} (key = {key})", nameof(RemoveTask), key);
+				if (key != null)
 				{
-					Groups.Remove(Context.ConnectionId, key);
+					Groups.Remove(Context.ConnectionId, key.ToString());
 					if (_tasks.ContainsKey(key))
 					{
 						if (_tasks[key].ConnectionIds.Contains(Context.ConnectionId))
@@ -240,11 +256,8 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 					}
 				}
 			}
-		}
 
-		private string GetKey(int workspaceId, int artifactId, int userId)
-		{
-			return $"{userId}{workspaceId}{artifactId}";
+			return key;
 		}
 	}
 }
