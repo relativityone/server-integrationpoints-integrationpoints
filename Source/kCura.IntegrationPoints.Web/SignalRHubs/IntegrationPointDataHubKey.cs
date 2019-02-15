@@ -20,17 +20,26 @@
 
 		public override bool Equals(object obj)
 		{
-			if (ReferenceEquals(null, obj)) return false;
-			if (ReferenceEquals(this, obj)) return true;
-			if (obj.GetType() != this.GetType()) return false;
-			return Equals((IntegrationPointDataHubKey) obj);
+			if (ReferenceEquals(null, obj))
+			{
+				return false;
+			}
+			if (ReferenceEquals(this, obj))
+			{
+				return true;
+			}
+			if (obj.GetType() != this.GetType())
+			{
+				return false;
+			}
+			return Equals((IntegrationPointDataHubKey)obj);
 		}
 
 		public override int GetHashCode()
 		{
 			unchecked
 			{
-				var hashCode = WorkspaceId;
+				int hashCode = WorkspaceId;
 				hashCode = (hashCode * 397) ^ IntegrationPointId;
 				hashCode = (hashCode * 397) ^ UserId;
 				return hashCode;
