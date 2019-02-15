@@ -83,7 +83,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			if (_updateTimer == null)
 			{
 				_updateTimer = new Timer(_updateInterval);
-				_updateTimer.Elapsed += _updateTimer_Elapsed;
+				_updateTimer.Elapsed += UpdateTimerElapsed;
 				_updateTimer.Start();
 			}
 		}
@@ -115,7 +115,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			_logger.LogVerbose("SignalR add task completed: {method} (key = {key})", nameof(GetIntegrationPointUpdate), key);
 		}
 
-		private void _updateTimer_Elapsed(object sender, ElapsedEventArgs e)
+		private void UpdateTimerElapsed(object sender, ElapsedEventArgs e)
 		{
 			try
 			{
@@ -132,7 +132,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			}
 			catch (Exception exception)
 			{
-				_logger.LogError(exception, "SignalR update error in {method}", nameof(_updateTimer_Elapsed));
+				_logger.LogError(exception, "SignalR update error in {method}", nameof(UpdateTimerElapsed));
 			}
 			finally
 			{
@@ -158,7 +158,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			try
 			{
 				var permissionRepository =
-					new PermissionRepository((IHelper)ConnectionHelper.Helper(), key.WorkspaceId);
+					new PermissionRepository(ConnectionHelper.Helper(), key.WorkspaceId);
 				IRelativityObjectManager objectManager =
 					CreateObjectManager(ConnectionHelper.Helper(), key.WorkspaceId);
 				var providerTypeService = new ProviderTypeService(objectManager);
