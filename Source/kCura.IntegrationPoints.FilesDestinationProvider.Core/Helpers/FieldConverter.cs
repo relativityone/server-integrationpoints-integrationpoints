@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers
 				AllowPivot = field.AllowPivot,
 				ArtifactID = field.ArtifactID,
 				ArtifactTypeID = field.ArtifactTypeID,
-				ArtifactViewFieldID = field.FieldArtifactTypeID,
+				ArtifactViewFieldID = field.ViewFieldID,
 				AssociativeArtifactTypeID = field.AssociativeArtifactTypeID,
 				AutoAddChoices = field.AutoAddChoices,
 				AvailableInViewer = field.AvailableInViewer,
