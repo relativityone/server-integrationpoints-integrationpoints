@@ -7,14 +7,17 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.LDAPProvider;
 using kCura.IntegrationPoints.Web.Models;
+using kCura.IntegrationPoints.Web.Services;
 
 namespace kCura.IntegrationPoints.Web.Controllers
 {
-	public abstract class IntegrationPointBaseController : BaseController
+	public abstract class IntegrationPointBaseController : Controller
 	{
 		private readonly IObjectTypeRepository _objectTypeRepository;
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly ITabService _tabService;
+
+		public ISessionService SessionService { get; set; }
 
 		protected IntegrationPointBaseController(IObjectTypeRepository objectTypeRepository, IRepositoryFactory repositoryFactory, ITabService tabService, ILDAPServiceFactory ldapServiceFactory)
 		{
@@ -26,7 +29,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		protected abstract string ObjectTypeGuid { get; }
 		protected abstract string ObjectType { get; }
 		protected abstract string APIControllerName { get; }
-
+		
 		public ActionResult Edit(int? artifactId)
 		{
 			var objectTypeId = _objectTypeRepository.GetObjectTypeID(ObjectType);

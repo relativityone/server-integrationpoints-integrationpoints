@@ -12,7 +12,7 @@ using kCura.IntegrationPoints.Web.Models;
 
 namespace kCura.IntegrationPoints.Web.Controllers
 {
-    public class FtpProviderController : BaseController
+    public class FtpProviderController : Controller
     {
         private readonly IConnectorFactory _connectorFactory;
 	    private readonly ISettingsManager _settingsManager;

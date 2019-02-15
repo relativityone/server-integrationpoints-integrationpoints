@@ -2,7 +2,7 @@
 
 namespace kCura.IntegrationPoints.Web.Controllers
 {
-	public class ModalsController : BaseController
+	public class ModalsController : Controller
 	{
 		public ActionResult AuthenticationModalView()
 		{

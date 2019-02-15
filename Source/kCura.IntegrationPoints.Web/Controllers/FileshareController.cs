@@ -2,7 +2,7 @@
 
 namespace kCura.IntegrationPoints.Web.Controllers
 {
-    public class FileshareController : BaseController
+    public class FileshareController : Controller
     {
         public ActionResult SavedSearchPicker()
         {

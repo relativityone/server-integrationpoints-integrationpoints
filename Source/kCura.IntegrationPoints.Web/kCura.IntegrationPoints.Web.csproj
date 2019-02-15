@@ -121,7 +121,6 @@
     <Compile Include="Controllers\API\RdoFilterController.cs" />
     <Compile Include="Controllers\API\WorkspaceFieldController.cs" />
     <Compile Include="Controllers\API\WorkspaceFinderController.cs" />
-    <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\API\IntegrationPointsAPIController.cs" />
     <Compile Include="Controllers\API\EntityController.cs" />
     <Compile Include="Controllers\FileshareController.cs" />
@@ -131,7 +130,6 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="GridModelFactory.cs" />
     <Compile Include="HelperConfigSqlServiceFactoryWrapper.cs" />
     <Compile Include="Logging\CacheHolder.cs" />
     <Compile Include="Helpers\SummaryPageSelector.cs" />
