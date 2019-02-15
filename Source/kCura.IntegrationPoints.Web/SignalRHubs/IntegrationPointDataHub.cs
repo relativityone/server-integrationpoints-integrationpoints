@@ -226,13 +226,13 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			Groups.Remove(Context.ConnectionId, key.ToString());
 			if (_tasks.ContainsKey(key))
 			{
-				if (_tasks[key].Contains(Context.ConnectionId))
+				if (_tasks[key].Remove(Context.ConnectionId))
 				{
-					_tasks[key].Remove(Context.ConnectionId);
-				}
-				if (_tasks[key].Count == 0)
-				{
-					_tasks.TryRemove(key, out _);
+					if (_tasks[key].Count == 0)
+					{
+						HashSet<string> result; // it's not `out _` because build.ps1 uses some old MSBuild, that does not support new and fancy language features
+						_tasks.TryRemove(key, out result);
+					}
 				}
 			}
 
