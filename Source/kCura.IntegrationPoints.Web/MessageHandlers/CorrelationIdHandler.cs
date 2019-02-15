@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.Web.MessageHandlers
 			{
 				WebRequestCorrelationId = GetValue(request.GetCorrelationId, "Error while retrieving web request correlation id"),
 				UserId = userId,
-				WorkspaceId = GetValue(_helper.GetActiveCaseID, "Error while retrieving Workspace Id"),
+				WorkspaceId = GetValue(_helper.GetActiveCaseID, "Error while retrieving Workspace Id"), // TODO use workspaceIdProvider
 				ActionName = actionContext.ActionName,
 				CorrelationId = actionContext.ActionGuid
 			};

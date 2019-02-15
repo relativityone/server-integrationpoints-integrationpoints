@@ -6,6 +6,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.WorkspaceIdProvider
 {
+	// TODO move to proper place
 	internal class SessionServiceFactory
 	{
 		private const string _SESSION_KEY = "__WEB_SESSION_KEY__";

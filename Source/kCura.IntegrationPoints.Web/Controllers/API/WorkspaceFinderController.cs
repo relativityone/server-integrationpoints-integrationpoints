@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Utils;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Models;
+using kCura.IntegrationPoints.Web.WorkspaceIdProvider;
 using Relativity.API;
 using Relativity.Core.Service;
 
@@ -21,15 +22,22 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly IHelperFactory _helperFactory;
 		private readonly IHtmlSanitizerManager _htmlSanitizerManager;
 		private readonly IManagerFactory _managerFactory;
+		private readonly IWorkspaceIdProvider _workspaceIdProvider;
 
-		public WorkspaceFinderController(IManagerFactory managerFactory, IContextContainerFactory contextContainerFactory, IHtmlSanitizerManager htmlSanitizerManager, ICPHelper helper,
-			IHelperFactory helperFactory)
+		public WorkspaceFinderController(
+			IManagerFactory managerFactory, 
+			IContextContainerFactory contextContainerFactory, 
+			IHtmlSanitizerManager htmlSanitizerManager, 
+			ICPHelper helper,
+			IHelperFactory helperFactory,
+			IWorkspaceIdProvider workspaceIdProvider)
 		{
 			_managerFactory = managerFactory;
 			_contextContainerFactory = contextContainerFactory;
 			_helper = helper;
 			_helperFactory = helperFactory;
 			_htmlSanitizerManager = htmlSanitizerManager;
+			_workspaceIdProvider = workspaceIdProvider;
 		}
 
 		[HttpPost]
@@ -53,7 +61,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		private HttpResponseMessage GetWorkspaces(IWorkspaceManager workspaceManager)
 		{
-			int currentWorkspaceId = _helper.GetActiveCaseID();
+			int currentWorkspaceId = _workspaceIdProvider.GetWorkspaceId();
 			IEnumerable<WorkspaceDTO> userWorkspaces = workspaceManager.GetUserAvailableDestinationWorkspaces(currentWorkspaceId);
 			return CreateResponseFromWorkspaceDTOs(userWorkspaces);
 		}
