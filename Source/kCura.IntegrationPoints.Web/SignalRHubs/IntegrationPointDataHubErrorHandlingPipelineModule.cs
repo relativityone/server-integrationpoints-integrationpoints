@@ -1,7 +1,5 @@
-﻿using System.Diagnostics;
-using Microsoft.AspNet.SignalR.Hubs;
+﻿using Microsoft.AspNet.SignalR.Hubs;
 using Relativity.API;
-using Relativity.CustomPages;
 
 namespace kCura.IntegrationPoints.Web.SignalRHubs
 {
@@ -9,10 +7,9 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 	{
 		private readonly IAPILog _logger;
 
-		public IntegrationPointDataHubErrorHandlingPipelineModule()
+		public IntegrationPointDataHubErrorHandlingPipelineModule(IAPILog logger)
 		{
-			ICPHelper helper = ConnectionHelper.Helper();
-			_logger = helper.GetLoggerFactory().GetLogger();
+			_logger = logger;
 		}
 
 
