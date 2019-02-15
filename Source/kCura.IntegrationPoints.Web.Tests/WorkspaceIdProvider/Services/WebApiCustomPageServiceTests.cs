@@ -1,9 +1,9 @@
 ﻿using System.Web;
 using FluentAssertions;
-using kCura.IntegrationPoints.Web.Services;
+using kCura.IntegrationPoints.Web.WorkspaceIdProvider.Services;
 using NUnit.Framework;
 
-namespace kCura.IntegrationPoints.Web.Tests.Services
+namespace kCura.IntegrationPoints.Web.Tests.WorkspaceIdProvider.Services
 {
 	public class WebApiCustomPageServiceTests
 	{

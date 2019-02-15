@@ -1,5 +1,6 @@
 ﻿using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Web.Helpers;
+using kCura.IntegrationPoints.Web.Logging;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Web.Tests.Helpers

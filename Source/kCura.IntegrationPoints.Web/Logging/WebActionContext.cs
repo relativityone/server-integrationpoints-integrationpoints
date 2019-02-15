@@ -1,11 +1,17 @@
 ﻿using System;
 
-namespace kCura.IntegrationPoints.Core.Logging.Web
+namespace kCura.IntegrationPoints.Web.Logging
 {
 	public class WebActionContext
 	{
-		public string ActionName;
+		public string ActionName { get; }
 
-		public Guid ActionGuid;
+		public Guid ActionGuid { get; }
+
+		public WebActionContext(string actionName, Guid actionGuid)
+		{
+			ActionName = actionName;
+			ActionGuid = actionGuid;
+		}
 	}
 }

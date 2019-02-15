@@ -1,4 +1,4 @@
-﻿namespace kCura.IntegrationPoints.Web.Providers
+﻿namespace kCura.IntegrationPoints.Web.WorkspaceIdProvider
 {
 	public interface IWorkspaceIdProvider
 	{

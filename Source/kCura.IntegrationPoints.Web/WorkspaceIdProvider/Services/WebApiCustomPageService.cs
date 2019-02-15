@@ -1,9 +1,8 @@
 ﻿using System.Web;
-using kCura.IntegrationPoints.Core;
 
-namespace kCura.IntegrationPoints.Web.Services
+namespace kCura.IntegrationPoints.Web.WorkspaceIdProvider.Services
 {
-	public class WebApiCustomPageService : IWorkspaceService
+	internal class WebApiCustomPageService : IWorkspaceService
 	{
 		private const string _WORKSPACE_ID_KEY = "workspaceID";
 

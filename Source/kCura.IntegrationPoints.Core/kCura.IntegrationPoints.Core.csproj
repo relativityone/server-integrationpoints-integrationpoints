@@ -335,7 +335,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ErrorMessages.resx</DependentUpon>
     </Compile>
-    <Compile Include="IContextService.cs" />
     <Compile Include="Queries\GetSourceProviderRdoByIdentifier.cs" />
     <Compile Include="Queries\GetSourceProviderRdoByApplicationIdentifier.cs" />
     <Compile Include="Services\Exporter\DocumentTransferDataReader.cs" />

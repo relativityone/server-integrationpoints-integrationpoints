@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Web.Providers.Exceptions;
+using kCura.IntegrationPoints.Web.RelativityServices.Exceptions;
+using kCura.IntegrationPoints.Web.WorkspaceIdProvider.Services;
 
-namespace kCura.IntegrationPoints.Web.Providers
+namespace kCura.IntegrationPoints.Web.WorkspaceIdProvider
 {
-	public class WorkspaceIdProvider : IWorkspaceIdProvider
+	internal class WorkspaceIdProvider : IWorkspaceIdProvider
 	{
 		private const int _WORKSPACE_NOT_FOUND_ID = 0;
 		private readonly IEnumerable<IWorkspaceService> _workspaceServices;

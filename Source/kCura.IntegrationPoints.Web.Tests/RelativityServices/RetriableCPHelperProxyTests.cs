@@ -1,12 +1,12 @@
 ﻿using System;
 using FluentAssertions;
-using kCura.IntegrationPoints.Web.Services;
-using kCura.IntegrationPoints.Web.Services.Exceptions;
+using kCura.IntegrationPoints.Web.RelativityServices;
+using kCura.IntegrationPoints.Web.WorkspaceIdProvider.Services.Exceptions;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
 
-namespace kCura.IntegrationPoints.Web.Tests.Services
+namespace kCura.IntegrationPoints.Web.Tests.RelativityServices
 {
 	public class RetriableCPHelperProxyTests
 	{

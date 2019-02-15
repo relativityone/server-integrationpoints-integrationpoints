@@ -4,7 +4,7 @@ using Relativity.DragonGrid.Core.Grid;
 
 namespace kCura.IntegrationPoints.Web
 {
-	public class GridModelFactory
+	public class GridModelFactory // TODO to remove
 	{
 		private readonly int DEFAULT_PAGE_SIZE = 25;
 		private readonly UserService _userService;

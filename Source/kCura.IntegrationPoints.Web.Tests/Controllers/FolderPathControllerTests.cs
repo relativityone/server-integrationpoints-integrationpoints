@@ -17,7 +17,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
-using kCura.IntegrationPoints.Web.Providers;
+using kCura.IntegrationPoints.Web.WorkspaceIdProvider;
 using Relativity.API;
 using Field = kCura.Relativity.ImportAPI.Data.Field;
 using Query = kCura.Relativity.Client.Query;

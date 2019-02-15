@@ -1,10 +1,8 @@
 ﻿using System.Collections.Concurrent;
-using System.Web;
-using kCura.IntegrationPoints.Web.Logging;
 
-namespace kCura.IntegrationPoints.Web.Helpers
+namespace kCura.IntegrationPoints.Web.Logging
 {
-	public class CacheHolder : ICacheHolder
+	internal class CacheHolder : ICacheHolder
 	{
 		private const string _SESSION_PREFIX = "_RIP_LOG_";
 

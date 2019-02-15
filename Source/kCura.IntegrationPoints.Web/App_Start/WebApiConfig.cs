@@ -1,5 +1,4 @@
 ﻿using System.Web.Http;
-using kCura.IntegrationPoints.Core.Logging.Web;
 using kCura.IntegrationPoints.Web.Logging;
 using kCura.IntegrationPoints.Web.MessageHandlers;
 using Relativity.API;

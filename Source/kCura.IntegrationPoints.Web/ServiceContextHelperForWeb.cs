@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
+﻿using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Web.Providers;
 using kCura.IntegrationPoints.Web.Services;
+using kCura.IntegrationPoints.Web.WorkspaceIdProvider;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web
@@ -27,7 +23,7 @@ namespace kCura.IntegrationPoints.Web
 		}
 
 		private int? _workspaceId;
-		public int WorkspaceID
+		public int WorkspaceID // TODO
 		{
 			get
 			{

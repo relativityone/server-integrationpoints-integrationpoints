@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using kCura.IntegrationPoints.Web.Services.Exceptions;
+using kCura.IntegrationPoints.Web.WorkspaceIdProvider.Services.Exceptions;
 using Polly;
 using Relativity.API;
 
-namespace kCura.IntegrationPoints.Web.Services
+namespace kCura.IntegrationPoints.Web.RelativityServices
 {
-	public class RetriableCPHelperProxy : ICPHelper
+	internal class RetriableCPHelperProxy : ICPHelper
 	{
 		private const int _RETRY_LIMIT = 2;
 		private readonly ICPHelper _baseCpHelper;

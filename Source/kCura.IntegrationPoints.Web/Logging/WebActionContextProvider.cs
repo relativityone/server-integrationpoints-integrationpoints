@@ -3,18 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Castle.Core.Internal;
-using kCura.IntegrationPoints.Core.Logging.Web;
 
 namespace kCura.IntegrationPoints.Web.Logging
 {
-	public interface IWebCorrelationContextProvider
+	internal class WebActionContextProvider : IWebCorrelationContextProvider
 	{
-		WebActionContext GetDetails(string url, int userId);
-	}
-
-	public class WebActionContextProvider : IWebCorrelationContextProvider
-	{
-
 		/// <summary>
 		/// Expression for mapping IntegrationPointsAPIController.Edit method (New record). Example:
 		/// https://test.relativity.corp/Relativity/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/1018658/api/IntegrationPointsAPI/1040486?_=1510730418617
@@ -89,11 +82,10 @@ namespace kCura.IntegrationPoints.Web.Logging
 			};
 		}
 
-		public WebActionContextProvider(IntegrationPoints.Web.Logging.ICacheHolder cacheHolder)
+		public WebActionContextProvider(ICacheHolder cacheHolder)
 		{
 			_cacheHolder = cacheHolder;
 		}
-
 
 		public WebActionContext GetDetails(string url, int userId)
 		{
@@ -104,26 +96,19 @@ namespace kCura.IntegrationPoints.Web.Logging
 				WebActionContext cachedAction = _cacheHolder.GetObject<WebActionContext>(key);
 				if (cachedAction == null)
 				{
-					cachedAction = new WebActionContext
-					{
-						ActionName = JOB_EDIT_ACTION,
-						ActionGuid = Guid.NewGuid()
-					};
+					cachedAction = new WebActionContext(JOB_EDIT_ACTION, Guid.NewGuid());
 				}
 				return cachedAction;
 			}
-			var newActionContext = new WebActionContext
-			{
-				ActionName = parsedAction,
-				ActionGuid = Guid.NewGuid()
-			};
+
+			var newActionContext = new WebActionContext(parsedAction, Guid.NewGuid());
 			_cacheHolder.SetObject(key, newActionContext);
 			return newActionContext;
 		}
 
 		private string ParseAction(string url)
 		{
-			var foundEntry = _matchedRegExActions.FirstOrDefault(item => item.Key.IsMatch(url));
+			KeyValuePair<Regex, string> foundEntry = _matchedRegExActions.FirstOrDefault(item => item.Key.IsMatch(url));
 
 			return foundEntry.Equals(default(KeyValuePair<Regex, string>)) ? string.Empty : foundEntry.Value;
 		}

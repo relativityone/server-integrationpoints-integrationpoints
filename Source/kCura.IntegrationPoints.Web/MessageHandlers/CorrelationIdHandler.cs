@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.Web.MessageHandlers
 		{
 			int userId = GetValue(() => _helper.GetAuthenticationManager().UserInfo.ArtifactID, "Error while retrieving User Id");
 
-			var actionContext = _webCorrelationContextProvider.GetDetails(request.RequestUri.ToString(), userId);
+			WebActionContext actionContext = _webCorrelationContextProvider.GetDetails(request.RequestUri.ToString(), userId);
 			var correlationContext = new WebCorrelationContext
 			{
 				WebRequestCorrelationId = GetValue(request.GetCorrelationId, "Error while retrieving web request correlation id"),

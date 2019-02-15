@@ -1,9 +1,8 @@
-﻿using System;
-using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Core.Logging.Web;
+﻿using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Web.Logging;
 using NSubstitute;
 using NUnit.Framework;
+using System;
 
 namespace kCura.IntegrationPoints.Web.Tests.Logging.Web
 {
@@ -16,14 +15,14 @@ namespace kCura.IntegrationPoints.Web.Tests.Logging.Web
 		private const int _USER_ID = 1234;
 		private const string _ACTION_NAME = "ActionName";
 
-		private static readonly Guid _guid = Guid.NewGuid();
+		private static readonly Guid _actionGuid = Guid.NewGuid();
 
 		public override void SetUp()
 		{
 			_cacheHolder = Substitute.For<ICacheHolder>();
 
 			_subjectUnderTests = new WebActionContextProvider(_cacheHolder);
-			_webActionContext = new WebActionContext {ActionGuid = _guid, ActionName = _ACTION_NAME };
+			_webActionContext = new WebActionContext(_ACTION_NAME, _actionGuid);
 		}
 
 		[Test]
@@ -72,7 +71,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Logging.Web
 
 			// Assert
 			Assert.That(webActionContext.ActionName, Is.EqualTo(actionName));
-			Assert.That(webActionContext.ActionGuid, result ? Is.Not.EqualTo(_guid) : Is.EqualTo(_guid));
+			Assert.That(webActionContext.ActionGuid, result ? Is.Not.EqualTo(_actionGuid) : Is.EqualTo(_actionGuid));
 
 			if (!result)
 			{

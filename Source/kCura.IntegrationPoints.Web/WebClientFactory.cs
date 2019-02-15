@@ -1,5 +1,5 @@
 ﻿using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Web.Providers;
+using kCura.IntegrationPoints.Web.WorkspaceIdProvider;
 using kCura.Relativity.Client;
 using Relativity.API;
 

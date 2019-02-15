@@ -1,18 +1,18 @@
 ﻿using System;
-using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Web.Services;
 using Relativity.API;
 
-namespace kCura.IntegrationPoints.Web.Services
+namespace kCura.IntegrationPoints.Web.WorkspaceIdProvider.Services
 {
-	public class ControllerCustomPageService : IWorkspaceService
+	internal class ControllerCustomPageService : IWorkspaceService
 	{
 		private readonly ISessionService _sessionService;
 		private readonly IAPILog _logger;
 
-		public ControllerCustomPageService(ISessionService sessionService, IHelper helper)
+		public ControllerCustomPageService(ISessionService sessionService, IAPILog logger)
 		{
 			_sessionService = sessionService;
-			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ControllerCustomPageService>();
+			_logger = logger.ForContext<ControllerCustomPageService>();
 		}
 
 		public int GetWorkspaceID()
