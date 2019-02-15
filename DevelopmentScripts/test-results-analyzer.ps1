@@ -1,3 +1,4 @@
+#TEMP till we have our own Azure subscription
 $STORE_TEST_RESULT_URL = "https://testresultsanalyzer.azurewebsites.net/api/StoreTestResultFunction?code=BqgMKu1Mp/WMNPKfacvIGR4oSzBpDGgdxKNGYnAOOPrwe9DHYQidlA=="
 
 function store_tests_results($branch_id, $build_name, $test_type, $test_results_path) 
