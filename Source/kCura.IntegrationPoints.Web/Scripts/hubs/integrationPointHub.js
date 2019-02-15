@@ -109,7 +109,7 @@
 			}
 		};
 		
-		hub.client.updateIntegrationPointJobStatus = function () {
+		hub.client.updateIntegrationPointJobStatusTable = function () {
 			$('.associative-list').load(document.URL + ' .associative-list');
 		}
 
