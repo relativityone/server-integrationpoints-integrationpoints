@@ -1,11 +1,10 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.Windsor;
-using kCura.IntegrationPoints.Web.WorkspaceIdProvider;
 using Relativity.API;
 
-namespace kCura.IntegrationPoints.Web.Services
+namespace kCura.IntegrationPoints.Web.InfrastructureServices
 {
-	internal static class ServicesInstaller
+	internal static class InfrastructureServicesInstaller
 	{
 		public static IWindsorContainer AddServices(this IWindsorContainer container)
 		{

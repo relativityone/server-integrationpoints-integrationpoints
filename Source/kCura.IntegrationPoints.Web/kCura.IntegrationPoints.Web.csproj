@@ -77,9 +77,9 @@
     <Compile Include="Logging\IWebCorrelationContextProvider.cs" />
     <Compile Include="Logging\LoggingInstaller.cs" />
     <Compile Include="RelativityServices\RelativityServicesInstaler.cs" />
-    <Compile Include="Services\ServicesInstaller.cs" />
+    <Compile Include="InfrastructureServices\InfrastructureServicesInstaller.cs" />
     <Compile Include="WorkspaceIdProvider\Services\IContextService.cs" />
-    <Compile Include="WorkspaceIdProvider\SessionServiceFactory.cs" />
+    <Compile Include="InfrastructureServices\SessionServiceFactory.cs" />
     <Compile Include="WorkspaceIdProvider\WorkspaceIdProviderInstaller.cs" />
     <Compile Include="WorkspaceIdProvider\Services\ControllerCustomPageService.cs" />
     <Compile Include="Controllers\API\ExportSettingsValidationController.cs" />
@@ -146,7 +146,7 @@
     <Compile Include="Models\IpDetailModel.cs" />
     <Compile Include="WorkspaceIdProvider\Services\Exceptions\BaseCpHelperCannotBeTypeOfRetriableCpHelperException.cs" />
     <Compile Include="RelativityServices\RetriableCPHelperProxy.cs" />
-    <Compile Include="Services\ISessionService.cs" />
+    <Compile Include="InfrastructureServices\ISessionService.cs" />
     <Compile Include="Models\LdapProviderSummaryPageSettingsModel.cs" />
     <Compile Include="Models\SavedSearchModel.cs" />
     <Compile Include="Models\SavedSearchResultsModel.cs" />
@@ -165,7 +165,7 @@
     <Compile Include="Helpers\RelativityUrlHelper.cs" />
     <Compile Include="RequestExtensions.cs" />
     <Compile Include="ServiceContextHelperForWeb.cs" />
-    <Compile Include="Services\SessionService.cs" />
+    <Compile Include="InfrastructureServices\SessionService.cs" />
     <Compile Include="SignalRHubs\IntegrationPointDataHubInput.cs" />
     <Compile Include="SignalRHubs\IntegrationPointDataHub.cs" />
     <Compile Include="Startup.cs" />

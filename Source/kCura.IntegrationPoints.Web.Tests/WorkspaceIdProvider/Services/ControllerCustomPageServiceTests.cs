@@ -1,6 +1,6 @@
 ﻿using System;
 using FluentAssertions;
-using kCura.IntegrationPoints.Web.Services;
+using kCura.IntegrationPoints.Web.InfrastructureServices;
 using kCura.IntegrationPoints.Web.WorkspaceIdProvider.Services;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;

@@ -1,6 +1,6 @@
 ﻿using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Web.Services;
+using kCura.IntegrationPoints.Web.InfrastructureServices;
 using kCura.IntegrationPoints.Web.WorkspaceIdProvider;
 using Relativity.API;
 

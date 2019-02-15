@@ -5,10 +5,10 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.LDAPProvider;
 using kCura.IntegrationPoints.Web.Models;
-using kCura.IntegrationPoints.Web.Services;
 using kCura.IntegrationPoints.Web.WorkspaceIdProvider;
 using System;
 using System.Web.Mvc;
+using kCura.IntegrationPoints.Web.InfrastructureServices;
 
 namespace kCura.IntegrationPoints.Web.Controllers
 {

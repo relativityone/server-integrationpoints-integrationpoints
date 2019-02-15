@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Web;
 using System.Web.SessionState;
-using kCura.IntegrationPoints.Web.Services;
 using Relativity.API;
 
-namespace kCura.IntegrationPoints.Web.WorkspaceIdProvider
+namespace kCura.IntegrationPoints.Web.InfrastructureServices
 {
 	// TODO move to proper place
 	internal class SessionServiceFactory

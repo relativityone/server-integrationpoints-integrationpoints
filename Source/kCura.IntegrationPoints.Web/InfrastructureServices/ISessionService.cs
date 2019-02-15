@@ -1,4 +1,4 @@
-﻿namespace kCura.IntegrationPoints.Web.Services
+﻿namespace kCura.IntegrationPoints.Web.InfrastructureServices
 {
 	public interface ISessionService
 	{

@@ -1,5 +1,5 @@
 ﻿using System;
-using kCura.IntegrationPoints.Web.Services;
+using kCura.IntegrationPoints.Web.InfrastructureServices;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.WorkspaceIdProvider.Services

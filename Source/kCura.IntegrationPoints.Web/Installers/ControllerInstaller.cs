@@ -16,8 +16,8 @@ using Microsoft.AspNet.SignalR.Hubs;
 using Relativity.API;
 using System.Web.Http.Controllers;
 using System.Web.Mvc;
+using kCura.IntegrationPoints.Web.InfrastructureServices;
 using kCura.IntegrationPoints.Web.RelativityServices;
-using kCura.IntegrationPoints.Web.Services;
 using kCura.IntegrationPoints.Web.WorkspaceIdProvider;
 
 namespace kCura.IntegrationPoints.Web.Installers
