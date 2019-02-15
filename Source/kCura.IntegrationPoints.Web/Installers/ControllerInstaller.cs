@@ -34,8 +34,8 @@ namespace kCura.IntegrationPoints.Web.Installers
 			container.Register(Classes.FromThisAssembly().BasedOn<IHub>().LifestyleTransient());
 			container.Register(Classes.FromThisAssembly().BasedOn<IHttpController>().LifestyleTransient());
 
-			container.Register(Component.For<IWorkspaceService>().ImplementedBy<ControllerCustomPageService>().LifestyleTransient());
 			container.Register(Component.For<IWorkspaceService>().ImplementedBy<WebAPICustomPageService>().LifestyleTransient());
+			container.Register(Component.For<IWorkspaceService>().ImplementedBy<ControllerCustomPageService>().LifestyleTransient());
 			container.Register(Component.For<ISessionService>().UsingFactoryMethod(k => SessionService.Session).LifestylePerWebRequest());
 			container.Register(Component.For<IHelper>().UsingFactoryMethod((k) => ConnectionHelper.Helper()).LifestyleTransient());
 			container.Register(Component.For<IWorkspaceIdProvider>().ImplementedBy<WorkspaceIdProvider>().LifestyleTransient());
