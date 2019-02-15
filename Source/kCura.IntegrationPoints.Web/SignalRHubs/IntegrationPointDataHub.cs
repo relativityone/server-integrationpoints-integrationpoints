@@ -125,9 +125,8 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 					Task.WhenAll(
 						UpdateIntegrationPointDataAsync(key),
 						UpdateIntegrationPointJobStatusTableAsync(key),
-						Task.Delay(_intervalBetweenTasks)       //sleep between getting each stats to get SQL Server a break
-					);
-
+						Task.Delay(_intervalBetweenTasks) //sleep between getting each stats to get SQL Server a break
+					).GetAwaiter().GetResult();
 				}
 			}
 			catch (Exception exception)
