@@ -1,15 +1,47 @@
-function store_tests_results() 
-{
-    $body = @{
-		FullTestName = "kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers.SecretStoreCleanUpTests.ItShouldRemoveSecretAndTenantId"
-		Result = "Passed"
-		BranchId = "developnightly"
-		BuildName = "DEV-102TESDEPLOYED"
-		TestType = "IntegrationInQuarantine"
-		Duration = 30.111123
-		Categories = @( "SmokeTest", "InQuarantine" )
-		Message = 'at kCura.Data.RowDataGateway.Context.ExecuteSqlStatementAsList[T](String sqlStatement, Func`2 converter, IEnumerable`1 parameters, Int32 timeoutValue) at Relativity.SecretCatalog.SQL.SQLCatalog.SecretManager.ReadTenantSecrets(String tenantID) at Relativity.APIHelper.SecretStore.SecretStoreSecretCatalog.List(String path) at Relativity.APIHelper.SecretStore.SecretStoreSecretCatalog.ListAsync(String path) at Relativity.Core.SecretCatalogFactory.VB$StateMachine_12_GetTenantSecretPathsAsync.MoveNext() --- End of stack trace from previous location where exception was thrown --- at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw() at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task) at Relativity.Core.SecretCatalogFactory.VB$StateMachine_11_GetTenantSecretsAsync.MoveNext() --- End of stack trace from previous location where exception was thrown --- at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw() at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task) at Relativity.Core.SecretCatalogFactory.GetTenantSecrets(String tenantID) at kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers.SecretStoreCleanUpTests.ItShouldRemoveSecretAndTenantId'
-	} | ConvertTo-Json
+$STORE_TEST_RESULT_URL = "https://testresultsanalyzer.azurewebsites.net/api/StoreTestResultFunction?code=BqgMKu1Mp/WMNPKfacvIGR4oSzBpDGgdxKNGYnAOOPrwe9DHYQidlA=="
 
-    $wc =Invoke-WebRequest -Uri "https://testresultsanalyzer.azurewebsites.net/api/StoreTestResultFunction?code=BqgMKu1Mp/WMNPKfacvIGR4oSzBpDGgdxKNGYnAOOPrwe9DHYQidlA==" -ContentType "application/json" -Method POST -Body $body
+function store_tests_results($branch_id, $build_name, $test_type, $test_results_path) 
+{
+    $rawTestResults = Get-Content $test_results_path -Raw | formatToXmlParsableForm
+
+    [xml]$testResultsFile = $rawdata
+
+    foreach ($testCase in $testResultsFile.SelectNodes('//test-case')) 
+    {
+        $body = @{
+		    FullTestName = $testCase.fullname
+		    Result = $testCase.result
+		    BranchId = $branch_id
+		    BuildName = $build_name
+		    TestType = $test_type
+		    Duration = $testCase.duration
+		    Categories = @(findCategories $testCase)
+		    Message = $testCase.output.'#cdata-section'
+	    } | ConvertTo-Json
+
+        Invoke-WebRequest -Uri $STORE_TEST_RESULT_URL -ContentType "application/json" -Method POST -Body $body
+    }
+}
+
+function formatToXmlParsableForm($rawcontent)
+{
+    $matchesToReplace = Select-String '\(.*?(?<!\))\".*?\".*?\)' -input $rawcontent -AllMatches | Foreach {$_.matches.Value}
+
+    foreach ($match in $matchesToReplace)
+    {
+        $replaced = $match -replace "`"", ""
+        $rawcontent = $rawcontent -replace $match, $replaced
+    }
+    $rawcontent
+}
+
+function findCategories($testCaseNode)
+{
+    $categories = @()
+    $node = $testCaseNode
+    while ($node.type -ne 'TestSuite') {
+        $categories += $node.properties.property | where name -eq "Category" | select -ExpandProperty value
+        $node = $node.ParentNode
+    }
+    $categories
 }
