@@ -86,8 +86,8 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 			IExternalServiceInstrumentationStarted startedInstrumentation = StartInstrumentation();
 			IKeplerStream result = 
 				await Execute(x => 
-						x.StreamLongTextAsync(workspaceArtifactID, exportObject, fieldRef), 
-						startedInstrumentation)
+					x.StreamLongTextAsync(workspaceArtifactID, exportObject, fieldRef), 
+					startedInstrumentation)
 				.ConfigureAwait(false);
 			startedInstrumentation.Completed();
 			return result;
