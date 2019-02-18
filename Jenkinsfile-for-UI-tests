@@ -146,8 +146,14 @@ timestamps
 							{
 								if (installing_relativity)
 								{
-									(relativityBuildVersion, relativityBranch) = getNewBranchAndVersion(relativityBranchFallback, relativityBranch, params.relativityBuildVersion, params.relativityBuildType, session_id)
-									echo "Installing Relativity, branch: $relativityBranch, version: $relativityBuildVersion, type: $params.relativityBuildType"									
+									(relativityBuildVersion, relativityBranch, relativityBuildType) = getNewBranchAndVersion(
+										relativityBranchFallback, 
+										relativityBranch, 
+										params.relativityBuildVersion, 
+										params.relativityBuildType, 
+										session_id
+									)
+									echo "Installing Relativity, branch: $relativityBranch, version: $relativityBuildVersion, type: $relativityBuildType"									
 								}
 								
 								uploadEnvironmentFile(this, sut.name, relativityBuildVersion, relativityBranch, relativityBuildType,
@@ -202,6 +208,7 @@ timestamps
 					}
 					stage ('UI Tests')
 					{
+						updateChromeToLatestVersion()
 						timeout(time: 8, unit: 'HOURS')
 						{
 							runTests(params.skipUITests, "-ui", "UI", nightlyJobName)
@@ -221,7 +228,7 @@ timestamps
 						if (!params.skipUITests)
 						{
 							archiveArtifacts artifacts: "lib/UnitTests/app.jeeves-ci.config", fingerprint: true
-							archiveArtifacts artifacts: "lib/UnitTests/*.png", fingerprint: true
+							archiveFailedUiTestsScreenshoots()
 						}
 					}
 				}
@@ -397,29 +404,132 @@ def archiveTestsArtifacts(Boolean skipTests, String resultsFilePath, String repo
     }
 }
 
+def archiveFailedUiTestsScreenshoots()
+{
+    try
+    {
+        archiveArtifacts artifacts: "lib/UnitTests/*.png", fingerprint: true
+    }
+    catch(err)
+    {
+        echo "archiveFailedUiTestsScreenshoots failed with error: $err"
+    }
+}
+
 def testingVMsAreRequired()
 {
     return !params.skipIntegrationTests || !params.skipUITests
 }
 
-def getNewBranchAndVersion(String relativityBranchFallback, String relativityBranch, String paramRelativityBuildVersion, String paramRelativityBuildType, String sessionId)
+def getNewBranchAndVersion(
+	String relativityBranchFallback, 
+	String relativityBranch, 
+	String paramRelativityBuildVersion, 
+	String paramRelativityBuildType, 
+	String sessionId)
 {
-	def branch = relativityBranch
-	def buildVersion = ''
+	def firstFallbackBranch = relativityBranchFallback // we should change first fallback branch on RIP release branches
+	def GOLD_BUILD_TYPE = "GOLD"
+	def DEV_BUILD_TYPE = "DEV"
+	def relativityBranchesToTry = [
+		[relativityBranch, paramRelativityBuildType], 
+		[firstFallbackBranch, DEV_BUILD_TYPE], 
+		[firstFallbackBranch, GOLD_BUILD_TYPE], 
+		["master", GOLD_BUILD_TYPE]
+	]
+
+	for (branchAndType in relativityBranchesToTry)
+	{
+		def branch = branchAndType[0]
+		def buildType = branchAndType[1]
+
+		echo "Retrieving latest Relativity '$buildType' build from '$branch' branch"
+
+		def buildVersion = tryGetBuildVersion(branch, paramRelativityBuildVersion, buildType, sessionId)
+		if (buildVersion != null)
+		{
+			return [buildVersion, branch, buildType]
+		}
+	}
+
+	error 'Failed to retrieve Relativity branch/version'
+}
+
+def tryGetBuildVersion(
+	String relativityBranch, 
+	String paramRelativityBuildVersion, 
+	String paramRelativityBuildType, 
+	String sessionId)
+{
 	try
 	{
-		buildVersion = getBuildArtifactsPath(this, "Relativity", branch, paramRelativityBuildVersion, paramRelativityBuildType, sessionId)
+		if (!isRelativityBranchPresent(relativityBranch))
+		{
+			echo "Branch was not found: $relativityBranch"
+			return null
+		}
+		def latestVersion = paramRelativityBuildVersion ?: getLatestVersion(relativityBranch, paramRelativityBuildType)
+		echo "Checking Relativity artifacts for version: $latestVersion"
+		return checkRelativityArtifacts(relativityBranch, latestVersion, paramRelativityBuildType)
+				? latestVersion
+				: null
 	}
-	catch (any)
+	catch (err)
 	{
-		branch = relativityBranchFallback
-		echo "Changing Relativity branch to fallback: $branch"
-		buildVersion = getBuildArtifactsPath(this, "Relativity", branch, paramRelativityBuildVersion, paramRelativityBuildType, sessionId)
+		echo "Error occured while getting build version for: '$relativityBranch' Relativity branch, version '$paramRelativityBuildVersion', type '$paramRelativityBuildType', error: $err"
+		return null
 	}
-	if (paramRelativityBuildVersion && !buildVersion)
-	{
-		// It should never be empty!!
-		buildVersion = paramRelativityBuildVersion
-	}
-	return [buildVersion, branch]
+}
+
+def isTrue(s)
+{
+	return s.trim() == "True"
+}
+
+def isRelativityBranchPresent(branch)
+{
+	def command = "([System.IO.DirectoryInfo]\"//bld-pkgs/Packages/Relativity/$branch\").Exists"
+	return isTrue(powershell(returnStdout: true, script: command))
+}
+
+def getLatestVersion(branch, type)
+{
+	def command = '''
+		$result = (Get-ChildItem -path "\\\\bld-pkgs\\Packages\\Relativity\\%1$s" |
+			? { (Get-ChildItem -Path $_.FullName).Name -like "BuildType_%2$s" } |
+			ForEach-Object { $_.Name } | ForEach-Object { [System.Version] $_ } | sort) | Select-Object -Last 1;
+		if (!$result)
+		{
+			return ''
+		}
+		else
+		{
+			return $result.ToString()
+		}
+	'''
+
+	return powershell(returnStdout: true, script: String.format(command, branch, type)).trim()
+}
+
+def checkRelativityArtifacts(branch, version, type)
+{
+	def command = "([System.IO.FileInfo]\"//bld-pkgs/Packages/Relativity/$branch/$version/MasterPackage/$type $version Relativity.exe\").Exists"
+	def result = powershell(returnStdout: true, script: command)
+	return isTrue(result)
+}
+
+def updateChromeToLatestVersion()
+{
+	try
+    {
+		powershell """
+            Invoke-WebRequest "http://dl.google.com/chrome/install/latest/chrome_installer.exe" -OutFile chrome_installer.exe
+            Start-Process -FilePath chrome_installer.exe -Args "/silent /install" -Verb RunAs -Wait
+            (Get-Item (Get-ItemProperty "HKLM:/SOFTWARE/Microsoft/Windows/CurrentVersion/App Paths/chrome.exe")."(Default)").VersionInfo
+        """
+    }
+    catch(err)
+    {
+        echo "An error occured while updating Chrome: $err"
+    }
 }

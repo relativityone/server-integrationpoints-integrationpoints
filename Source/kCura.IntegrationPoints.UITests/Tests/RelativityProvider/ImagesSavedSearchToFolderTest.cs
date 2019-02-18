@@ -51,10 +51,10 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			//Act
 			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			detailsPage.RunIntegrationPoint();
-			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 
 			// Assert
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
+			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 			validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
 			ValidateOriginalImages(model.GetValueOrDefault(x => x.CopyFilesToRepository));
 		}
@@ -73,10 +73,10 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			// Act
 			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			detailsPage.RunIntegrationPoint();
-			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
-
+			
 			// Assert
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
+			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 			validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
 			ValidateOriginalImages(model.GetValueOrDefault(x => x.CopyFilesToRepository));
 		}
@@ -97,10 +97,10 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			// Act
 			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			detailsPage.RunIntegrationPoint();
-			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 
 			// Assert
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
+			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 			validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
 			ValidateOriginalImages(model.GetValueOrDefault(x => x.CopyFilesToRepository));
 		}
@@ -122,10 +122,10 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			// Act
 			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			detailsPage.RunIntegrationPoint();
-			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 
 			// Assert
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
+			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 			validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
 			ValidateOriginalImages(model.GetValueOrDefault(x => x.CopyFilesToRepository));
 		}
@@ -144,10 +144,10 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			// Act
 			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			detailsPage.RunIntegrationPoint();
-			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 
 			// Assert
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
+			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 			validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
 			ValidateOriginalImages(model.GetValueOrDefault(x => x.CopyFilesToRepository));
 		}
@@ -166,10 +166,10 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			// Act
 			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			detailsPage.RunIntegrationPoint();
-			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 
 			// Assert
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
+			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 			validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
 			ValidateOriginalImages(model.GetValueOrDefault(x => x.CopyFilesToRepository));
 		}
