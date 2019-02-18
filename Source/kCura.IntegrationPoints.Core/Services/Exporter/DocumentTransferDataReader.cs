@@ -75,7 +75,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 						FieldRef fieldRef = new FieldRef {ArtifactID = fieldArtifactId};
 						Stream stream =
 							_relativityObjectManager.StreamLongTextAsync(CurrentArtifact.ArtifactId, fieldRef)
-								.ConfigureAwait(false)
 								.GetAwaiter()
 								.GetResult();
 						_openedStreams.Add(stream);
