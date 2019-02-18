@@ -17,6 +17,7 @@ using Relativity.API;
 using System.Web.Http.Controllers;
 using System.Web.Mvc;
 using kCura.IntegrationPoints.Web.InfrastructureServices;
+using kCura.IntegrationPoints.Web.MessageHandlers;
 using kCura.IntegrationPoints.Web.RelativityServices;
 using kCura.IntegrationPoints.Web.WorkspaceIdProvider;
 
@@ -57,7 +58,8 @@ namespace kCura.IntegrationPoints.Web.Installers
 				.AddLoggingContext()
 				.AddRelativityServices()
 				.AddServices()
-				.AddWorkspaceIdProvider();
+				.AddWorkspaceIdProvider()
+				.AddMessageHandler();
 		}
 		
 		private static void RegisterAspNetEntryPoints(IWindsorContainer container)

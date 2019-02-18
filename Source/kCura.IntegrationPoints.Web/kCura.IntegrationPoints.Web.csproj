@@ -76,6 +76,7 @@
     <Compile Include="Constants.cs" />
     <Compile Include="Logging\IWebCorrelationContextProvider.cs" />
     <Compile Include="Logging\LoggingInstaller.cs" />
+    <Compile Include="MessageHandlers\MessageHandlersInstaller.cs" />
     <Compile Include="RelativityServices\RelativityServicesInstaler.cs" />
     <Compile Include="InfrastructureServices\InfrastructureServicesInstaller.cs" />
     <Compile Include="WorkspaceIdProvider\Services\IContextService.cs" />

@@ -1,7 +1,5 @@
-﻿using System.Web.Http;
-using kCura.IntegrationPoints.Web.Logging;
-using kCura.IntegrationPoints.Web.MessageHandlers;
-using Relativity.API;
+﻿using System.Net.Http;
+using System.Web.Http;
 
 namespace kCura.IntegrationPoints.Web
 {
@@ -385,11 +383,9 @@ namespace kCura.IntegrationPoints.Web
 			);
 		}
 
-		public static void AddMessageHandlers(HttpConfiguration config, ICPHelper helper, IWebCorrelationContextProvider webCorrelationContextProvider)
+		public static void AddMessageHandlers(HttpConfiguration config, DelegatingHandler handler)
 		{
-			config.MessageHandlers.Add(new CorrelationIdHandler(helper, webCorrelationContextProvider));
+			config.MessageHandlers.Add(handler);
 		}
-
 	}
-
 }

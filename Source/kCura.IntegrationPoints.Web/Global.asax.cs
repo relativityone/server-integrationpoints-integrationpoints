@@ -1,12 +1,4 @@
-﻿using System;
-using System.Net.Http.Formatting;
-using System.Web;
-using System.Web.Http;
-using System.Web.Http.Dispatcher;
-using System.Web.Mvc;
-using System.Web.Optimization;
-using System.Web.Routing;
-using Castle.MicroKernel;
+﻿using Castle.MicroKernel;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
@@ -17,10 +9,18 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Data.Queries;
-using kCura.IntegrationPoints.Web.Logging;
+using kCura.IntegrationPoints.Web.MessageHandlers;
 using Newtonsoft.Json;
 using Relativity.API;
 using Relativity.CustomPages;
+using System;
+using System.Net.Http.Formatting;
+using System.Web;
+using System.Web.Http;
+using System.Web.Http.Dispatcher;
+using System.Web.Mvc;
+using System.Web.Optimization;
+using System.Web.Routing;
 
 namespace kCura.IntegrationPoints.Web
 {
@@ -39,8 +39,11 @@ namespace kCura.IntegrationPoints.Web
 			CreateWindsorContainer();
 
 			WebApiConfig.Register(GlobalConfiguration.Configuration);
-			WebApiConfig.AddMessageHandlers(GlobalConfiguration.Configuration, ConnectionHelper.Helper(),
-				_container.Kernel.Resolve<IWebCorrelationContextProvider>());
+			WebApiConfig.AddMessageHandlers(
+				GlobalConfiguration.Configuration,
+				_container.Resolve<CorrelationIdHandler>()
+			);
+
 			FilterConfig.RegisterWebAPIFilters(GlobalConfiguration.Configuration, _container);
 			FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
 			RouteConfig.RegisterRoutes(RouteTable.Routes);
@@ -67,6 +70,11 @@ namespace kCura.IntegrationPoints.Web
 			};
 			errorService.Log(errorModel);
 		}
+		
+		protected void Application_End()
+		{
+			_container?.Dispose();
+		}
 
 		private void CreateWindsorContainer()
 		{
@@ -80,11 +88,5 @@ namespace kCura.IntegrationPoints.Web
 			ControllerBuilder.Current.SetControllerFactory(new WindsorControllerFactory(_container.Kernel));
 			GlobalConfiguration.Configuration.Services.Replace(typeof(IHttpControllerActivator), new WindsorCompositionRoot(_container));
 		}
-
-		protected void Application_End()
-		{
-			_container?.Dispose();
-		}
-
 	}
 }

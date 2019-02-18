@@ -6,6 +6,7 @@ using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Web.WorkspaceIdProvider;
 
 namespace kCura.IntegrationPoints.Web.MessageHandlers
 {
@@ -13,28 +14,34 @@ namespace kCura.IntegrationPoints.Web.MessageHandlers
 	{
 		private readonly IAPILog _logger;
 		private readonly ICPHelper _helper;
-		private readonly IWebCorrelationContextProvider _webCorrelationContextProvider;
+		private readonly Func<IWebCorrelationContextProvider> _webCorrelationContextProviderFactory;
+		private readonly Func<IWorkspaceIdProvider> _workspaceIdProviderFactory;
 
 		public const string WEB_CORRELATION_ID_HEADER_NAME = "X-Correlation-ID";
 
 		// TODO remove helper dependency
-		public CorrelationIdHandler(ICPHelper helper, IWebCorrelationContextProvider webCorrelationContextProvider)
+		public CorrelationIdHandler(
+			ICPHelper helper, 
+			Func<IWebCorrelationContextProvider> webCorrelationContextProviderFactoryFactory, 
+			Func<IWorkspaceIdProvider> workspaceIdProviderFactoryFactory
+		)
 		{
 			_helper = helper;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<CorrelationIdHandler>(); // TODO inject logger
-			_webCorrelationContextProvider = webCorrelationContextProvider;
+			_webCorrelationContextProviderFactory = webCorrelationContextProviderFactoryFactory;
+			_workspaceIdProviderFactory = workspaceIdProviderFactoryFactory;
 		}
 
 		protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
 		{
-			int userId = GetValue(() => _helper.GetAuthenticationManager().UserInfo.ArtifactID, "Error while retrieving User Id");
+			int userId = GetValue(() => _helper.GetAuthenticationManager().UserInfo.ArtifactID, "Error while retrieving User Id"); // TODO change it
 
-			WebActionContext actionContext = _webCorrelationContextProvider.GetDetails(request.RequestUri.ToString(), userId);
+			WebActionContext actionContext = _webCorrelationContextProviderFactory().GetDetails(request.RequestUri.ToString(), userId);
 			var correlationContext = new WebCorrelationContext
 			{
 				WebRequestCorrelationId = GetValue(request.GetCorrelationId, "Error while retrieving web request correlation id"),
 				UserId = userId,
-				WorkspaceId = GetValue(_helper.GetActiveCaseID, "Error while retrieving Workspace Id"),
+				WorkspaceId = GetValue(_workspaceIdProviderFactory().GetWorkspaceId, "Error while retrieving Workspace Id"),
 				ActionName = actionContext.ActionName,
 				CorrelationId = actionContext.ActionGuid
 			};
