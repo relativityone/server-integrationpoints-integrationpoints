@@ -147,7 +147,7 @@ timestamps
 			}
 			stage ('Get Version')
 			{
-				jenkinsHelpers = load ("${pwd()}/DevelopmentScripts/JenkinsHelpers.groovy")
+				jenkinsHelpers = load "DevelopmentScripts/JenkinsHelpers.groovy"
 
 				version = jenkinsHelpers.incrementBuildVersion(PACKAGE_NAME, params.relativityBuildType)
 
