@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Contracts.Models;
@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		private Mock<IExporter> _exporter;
 		private Mock<IFolderPathReader> _folderPathReader;
 		private Mock<IHelper> _helper;
-		private IJobStopManager _jobStopManager;
+		private Mock<IJobStopManager> _jobStopManager;
 		private int[] _avfIds;
 		private IQueryFieldLookupRepository _queryFieldLookupRepository;
 		private IRelativityObjectManager _relativityObjectManager;
@@ -91,8 +91,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			_longTextField = new HashSet<int>(new int[] { 456 });
 
 			_avfIds = new[] { 1, 2 };
-			_jobStopManager = new Mock<IJobStopManager>().Object;
-			Mock.Get(_jobStopManager)
+			_jobStopManager = new Mock<IJobStopManager>();
+			_jobStopManager
 				.Setup(x => x.IsStopRequested())
 				.Returns(false);
 			_folderPathReader = new Mock<IFolderPathReader>();
@@ -101,7 +101,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			_instance = new RelativityExporterService(
 				_exporter.Object, 
 				_relativityObjectManager,
-				_jobStopManager, 
+				_jobStopManager.Object, 
 				_helper.Object,
 				_queryFieldLookupRepository, 
 				_folderPathReader.Object, 
@@ -189,7 +189,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			// arrange
 			_exportApiResult.RowCount = Int64.MaxValue;
 			
-			Mock.Get(_jobStopManager)
+			_jobStopManager
 				.Setup(x => x.IsStopRequested())
 				.Returns(true);
 
