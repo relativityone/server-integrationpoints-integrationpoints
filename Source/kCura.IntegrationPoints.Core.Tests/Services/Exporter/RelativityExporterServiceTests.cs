@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		private HashSet<int> _longTextField;
 		private IExporter _exporter;
 		private IFolderPathReader _folderPathReader;
-		private IHelper _helper;
+		private Mock<IHelper> _helper;
 		private IJobStopManager _jobStopManager;
 		private int[] _avfIds;
 		private IQueryFieldLookupRepository _queryFieldLookupRepository;
@@ -37,8 +37,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		public override void SetUp()
 		{
 			var apiLogMock = new Mock<IAPILog>();
-			_helper = new Mock<IHelper>().Object;
-			Mock.Get(_helper)
+			_helper = new Mock<IHelper>();
+			_helper
 				.Setup(x => x.GetLoggerFactory().GetLogger().ForContext<RelativityExporterService>())
 				.Returns(apiLogMock.Object);
 			_exporter = new Mock<IExporter>().Object;
@@ -102,7 +102,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				_exporter, 
 				_relativityObjectManager,
 				_jobStopManager, 
-				_helper,
+				_helper.Object,
 				_queryFieldLookupRepository, 
 				_folderPathReader, 
 				_mappedFields, 
