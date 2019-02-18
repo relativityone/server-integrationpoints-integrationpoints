@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		private FieldMap[] _mappedFields;
 		private global::Relativity.Core.Export.InitializationResults _exportApiResult;
 		private HashSet<int> _longTextField;
-		private IExporter _exporter;
+		private Mock<IExporter> _exporter;
 		private IFolderPathReader _folderPathReader;
 		private Mock<IHelper> _helper;
 		private IJobStopManager _jobStopManager;
@@ -41,13 +41,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			_helper
 				.Setup(x => x.GetLoggerFactory().GetLogger().ForContext<RelativityExporterService>())
 				.Returns(apiLogMock.Object);
-			_exporter = new Mock<IExporter>().Object;
+			_exporter = new Mock<IExporter>();
 			_exportApiResult = new global::Relativity.Core.Export.InitializationResults()
 			{
 				RunId = new Guid("3A51AF56-0813-4E25-89DD-E08EC0C8526C"),
 				ColumnNames = new[] { _CONTROL_NUMBER, _FILE_NAME }
 			};
-			Mock.Get(_exporter)
+			_exporter
 				.Setup(x => x.InitializeExport(0, null, 0))
 				.Returns(_exportApiResult);
 
@@ -99,7 +99,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			_queryFieldLookupRepository = new Mock<IQueryFieldLookupRepository>().Object;
 			_relativityObjectManager = new Mock<IRelativityObjectManager>().Object;
 			_instance = new RelativityExporterService(
-				_exporter, 
+				_exporter.Object, 
 				_relativityObjectManager,
 				_jobStopManager, 
 				_helper.Object,
@@ -134,7 +134,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			// arrange
 			_exportApiResult.RowCount = 1;
 			
-			Mock.Get(_exporter)
+			_exporter
 				.Setup(x => x.RetrieveResults(_exportApiResult.RunId, _avfIds, 1))
 				.Returns(_goldFlowRetrievableData);
 
@@ -207,7 +207,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			object[] obj = new[] {new object[] { "REL01", "FileName", 1111 }};
 
 
-			Mock.Get(_exporter)
+			_exporter
 				.Setup(x => x.RetrieveResults(_exportApiResult.RunId, It.IsAny<int[]>(), 1))
 				.Returns(obj);
 
@@ -255,7 +255,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			// Arrange
 			int[] avfIds = new[] { 1, 2 };
 
-			Mock.Get(_exporter)
+			_exporter
 				.Setup(x => x.RetrieveResults(_exportApiResult.RunId, avfIds, 1))
 				.Returns<object>(null);
 
@@ -273,7 +273,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			// Arrange
 			int[] avfIds = new[] { 1, 2 };
 
-			Mock.Get(_exporter)
+			_exporter
 				.Setup(x => x.RetrieveResults(_exportApiResult.RunId, avfIds, 1))
 				.Returns<object>(null);
 
