@@ -1,11 +1,11 @@
-enum TestType {
+enum TestTypeT {
     integration,
     ui,
     integrationInQuarantine
 }
 
 @Field
-def testStageName = [
+def testStageNameT = [
 	(TestType.integration) : "Integration Tests",
 	(TestType.ui) : "UI Tests",
 	(TestType.integrationInQuarantine) : "Integration Tests in Quarantine"

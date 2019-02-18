@@ -67,6 +67,19 @@ properties([
 @Field final String INTEGRATION_TESTS_RESULTS_REPORT_PATH = "$ARTIFACTS_PATH/IntegrationTestsResults.xml"
 @Field final String QUARANTINED_TESTS_CATEGORY = 'InQuarantine'
 
+enum TestType {
+    integration,
+    ui,
+    integrationInQuarantine
+}
+
+@Field
+def testStageName = [
+	(TestType.integration) : "Integration Tests",
+	(TestType.ui) : "UI Tests",
+	(TestType.integrationInQuarantine) : "Integration Tests in Quarantine"
+]
+
 @Field
 def testCmdOptions = [
 	(TestType.integration) : "-in",
