@@ -1,4 +1,5 @@
 ﻿using System;
+using Castle.Core;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -29,6 +30,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			_logger = logger;
 		}
 
+		[DoNotSelect]
 		public ExtendedJob(Job job, IJobHistoryService jobHistoryService, IntegrationPoint integrationPoint, ISerializer serializer, IAPILog logger)
 		{
 			Job = job;
