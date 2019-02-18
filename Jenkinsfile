@@ -317,6 +317,7 @@ timestamps
 						}
 						stage ('UI Tests')
 						{
+							updateChromeToLatestVersion()
 							timeout(time: 8, unit: 'HOURS')
 							{
 								runUiTests()
@@ -712,4 +713,20 @@ def checkRelativityArtifacts(branch, version, type)
 	def command = "([System.IO.FileInfo]\"//bld-pkgs/Packages/Relativity/$branch/$version/MasterPackage/$type $version Relativity.exe\").Exists"
 	def result = powershell(returnStdout: true, script: command)
 	return isTrue(result)
+}
+
+def updateChromeToLatestVersion()
+{
+	try
+    {
+		powershell """
+            Invoke-WebRequest "http://dl.google.com/chrome/install/latest/chrome_installer.exe" -OutFile chrome_installer.exe
+            Start-Process -FilePath chrome_installer.exe -Args "/silent /install" -Verb RunAs -Wait
+            (Get-Item (Get-ItemProperty "HKLM:/SOFTWARE/Microsoft/Windows/CurrentVersion/App Paths/chrome.exe")."(Default)").VersionInfo
+        """
+    }
+    catch(err)
+    {
+        echo "An error occured while updating Chrome: $err"
+    }
 }

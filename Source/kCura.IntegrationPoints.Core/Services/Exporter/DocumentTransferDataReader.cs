@@ -124,13 +124,21 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 							result = _nativeFileSizes[CurrentArtifact.ArtifactId];
 							_nativeFileSizes.Remove(CurrentArtifact.ArtifactId);
 						}
+						else
+						{
+							result = false;
+						}
 						break;
 					case IntegrationPoints.Domain.Constants.SPECIAL_FILE_TYPE_FIELD:
 						if (_nativeFileTypes.ContainsKey(CurrentArtifact.ArtifactId))
 						{
 							result = _nativeFileTypes[CurrentArtifact.ArtifactId];
 							_nativeFileTypes.Remove(CurrentArtifact.ArtifactId);
-						} 
+						}
+						else
+						{
+							result = false;
+						}
 						break;
 					case IntegrationPoints.Domain.Constants.SPECIAL_FILE_SUPPORTED_BY_VIEWER_FIELD:
 						if (_documentsSupportedByViewer.Contains(CurrentArtifact.ArtifactId))
@@ -214,14 +222,14 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				DataRow row = nativeTypeForGivenDocument.Table.Rows[index];
 				var documentArtifactId = (int)row[documentArtifactIdColumn];
 				string nativeFileType = Convert.ToString(row[relativityNativeTypeColumn]);
-				var isSupportedByViewer = (bool) row[supportedByViewerColumn];
 
 				if (!string.IsNullOrEmpty(nativeFileType))
 				{
 					_nativeFileTypes.Add(documentArtifactId, nativeFileType);
 				}
 
-				if (isSupportedByViewer)
+				bool supportedByViewer;
+				if (bool.TryParse(row[supportedByViewerColumn].ToString(), out supportedByViewer) && supportedByViewer)
 				{
 					_documentsSupportedByViewer.Add(documentArtifactId);
 				}

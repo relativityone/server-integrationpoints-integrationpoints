@@ -181,6 +181,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 		[Test]
 		[RetryOnError]
 		[Order(4)]
+		[Ignore("REL-258301")]
 		public void DocumentExportToLoadFile_TC_ELF_DOC_2()
 		{
 			// Arrange

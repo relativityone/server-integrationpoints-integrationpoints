@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 		}
 
         [Test]
-		[TestInQuarantine(TestQuarantineState.UnderObservation, 
+		[TestInQuarantine(TestQuarantineState.DetectsDefectInExternalDependency, 
 					@"Known Issue in secret store: 
 					whole paths from secret catalog are returned instead 
 					of keys in dictionary. Details: STVD-12542")]

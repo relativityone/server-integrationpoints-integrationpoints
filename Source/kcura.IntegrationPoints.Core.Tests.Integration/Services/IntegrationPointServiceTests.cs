@@ -209,7 +209,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
         [Test]
 		[SmokeTest]
-		[TestInQuarantine(TestQuarantineState.UnderObservation, 
+		[TestInQuarantine(TestQuarantineState.SeemsToBeStable, 
 			"Unstable - to be fixed -> REL-280316")]
 		public void CreateAndRunIntegrationPoint_GoldFlow()
 		{
@@ -258,7 +258,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		}
 
         [Test]
-		[TestInQuarantine(TestQuarantineState.UnderObservation, 
+		[TestInQuarantine(TestQuarantineState.SeemsToBeStable, 
 			@"Test to be fixed - doesn't work on Jenkins.
 			 Is fine when run locally. More info in REL-270155")]
 		public void RetryIntegrationPoint_GoldFlow()
@@ -327,7 +327,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		}
 
         [Test]
-		[TestInQuarantine(TestQuarantineState.UnderObservation)]
+		[TestInQuarantine(TestQuarantineState.SeemsToBeStable)]
 		public void CreateAndRunIntegrationPoint_ScheduledIntegrationPoint_GoldFlow()
 		{
 			//Arrange

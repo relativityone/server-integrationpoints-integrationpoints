@@ -29,7 +29,9 @@ namespace kCura.IntegrationPoints.Services.Installers
 		private void RegisterCommonComponents(IWindsorContainer container)
 		{
 			container.Install(new InfrastructureInstaller());
+#pragma warning disable CS0618 // Type or member is obsolete REL-292860
 			container.Register(Component.For<IHelper, IServiceHelper>().Instance(global::Relativity.API.Services.Helper));
+#pragma warning restore CS0618 // Type or member is obsolete
 		}
 
 		protected abstract IList<IWindsorInstaller> Dependencies { get; }

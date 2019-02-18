@@ -24,6 +24,8 @@ namespace kCura.IntegrationPoints.Services
 		/// </summary>
 		private readonly IWindsorContainer _container;
 
+		protected readonly ILog Logger;
+
 		/// <summary>
 		///     Since we cannot register any dependencies for Kepler Service we have to create separate constructors for runtime
 		///     and for testing
@@ -31,18 +33,20 @@ namespace kCura.IntegrationPoints.Services
 		/// <param name="logger"></param>
 		/// <param name="permissionRepositoryFactory"></param>
 		/// <param name="container"></param>
-		protected KeplerServiceBase(ILog logger, IPermissionRepositoryFactory permissionRepositoryFactory, IWindsorContainer container)
+		protected KeplerServiceBase(
+			ILog logger, 
+			IPermissionRepositoryFactory permissionRepositoryFactory, 
+			IWindsorContainer container)
 		{
 			_permissionRepositoryFactory = permissionRepositoryFactory;
 			Logger = logger;
 			_container = container;
 		}
 
-		protected KeplerServiceBase(ILog logger) : this(logger, new PermissionRepositoryFactory(), null)
+		protected KeplerServiceBase(ILog logger) 
+			: this(logger, new PermissionRepositoryFactory(), container: null)
 		{
 		}
-
-		protected readonly ILog Logger;
 
 		public async Task<bool> PingAsync()
 		{
@@ -75,7 +79,9 @@ namespace kCura.IntegrationPoints.Services
 		{
 			SafePermissionCheck(() =>
 			{
+#pragma warning disable CS0618 // Type or member is obsolete REL-292860
 				var permissionRepository = _permissionRepositoryFactory.Create(global::Relativity.API.Services.Helper, workspaceId);
+#pragma warning restore CS0618 // Type or member is obsolete
 				var missingPermissions = new List<string>();
 				if (!permissionRepository.UserHasPermissionToAccessWorkspace())
 				{
