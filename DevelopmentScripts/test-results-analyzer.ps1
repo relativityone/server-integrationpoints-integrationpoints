@@ -3,7 +3,7 @@ $STORE_TEST_RESULT_URL = "https://testresultsanalyzer.azurewebsites.net/api/Stor
 
 function store_tests_results($branch_id, $build_name, $test_type, $test_results_path) 
 {
-    $rawTestResults = Get-Content $test_results_path -Raw | formatToXmlParsableForm
+    $rawTestResults = Get-Content $test_results_path -Raw | format_to_xml_parsable_form
 
     [xml]$testResultsFile = $rawdata
 
@@ -16,7 +16,7 @@ function store_tests_results($branch_id, $build_name, $test_type, $test_results_
 		    BuildName = $build_name
 		    TestType = $test_type
 		    Duration = $testCase.duration
-		    Categories = @(findCategories $testCase)
+		    Categories = @(find_categories $testCase)
 		    Message = $testCase.output.'#cdata-section'
 	    } | ConvertTo-Json
 
@@ -24,7 +24,12 @@ function store_tests_results($branch_id, $build_name, $test_type, $test_results_
     }
 }
 
-function formatToXmlParsableForm($rawcontent)
+function format_to_xml_parsable_form($rawcontent)
+{
+    get_rid_of_quotes_from_attribute_values $rawcontent
+}
+
+function get_rid_of_quotes_from_attribute_values($rawcontent)
 {
     $matchesToReplace = Select-String '\(.*?(?<!\))\".*?\".*?\)' -input $rawcontent -AllMatches | Foreach {$_.matches.Value}
 
@@ -36,7 +41,7 @@ function formatToXmlParsableForm($rawcontent)
     $rawcontent
 }
 
-function findCategories($testCaseNode)
+function find_categories($testCaseNode)
 {
     $categories = @()
     $node = $testCaseNode
