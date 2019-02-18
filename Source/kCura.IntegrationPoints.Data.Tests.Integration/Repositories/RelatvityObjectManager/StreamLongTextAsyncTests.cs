@@ -101,8 +101,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.Relativity
 					_relativityObjectManager.StreamLongTextAsync(
 						documentArtifactID,
 						new FieldRef {Name = _EXTRACTED_TEXT_FIELD_NAME})
-							.GetAwaiter()
-							.GetResult();
+					.GetAwaiter()
+					.GetResult();
 				var actualExtractedTextStreamReader = new StreamReader(actualExtractedTextStream, Encoding.UTF8);
 				string actualExtractedTextString = actualExtractedTextStreamReader.ReadToEnd();
 
