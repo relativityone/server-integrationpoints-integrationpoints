@@ -36,8 +36,8 @@ nuget Relativity.Telemetry.MetricsCollection ~> 2018.12.2 	//RelativityCore
 nuget Relativity.Vfs.IO ~> 1.0.24 							//RelativityCore
 nuget Relativity.Toggles ~> 1.0.0.100 						//RelativityCore
 nuget SystemWrapper.Wrappers ~> 0.25.0.186 					//RelativityCore
-nuget Relativity.Logging 2018.11.58.3 						//RelativityCore
-nuget Relativity.Logging.Interfaces 2018.11.8.3
+nuget Relativity.Logging 2018.11.8	 						//RelativityCore
+nuget Relativity.Logging.Interfaces 2018.11.8
 nuget Relativity.Kepler ~> 1.0.1.589						
 nuget Relativity.Kepler.Client ~> 1.0.1.589
 nuget Castle.Windsor ~> 3.3.0						
