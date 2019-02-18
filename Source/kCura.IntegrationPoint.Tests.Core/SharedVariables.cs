@@ -260,9 +260,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		private static string ServerBindingType => AppSettingString("ServerBindingType");
 
-		private static string RsapiServerAddress => string.IsNullOrEmpty(AppSettingString("RSAPIServerAddress"))
-			? RelativityInstanceHostname
-			: AppSettingString("RSAPIServerAddress");
+		private static string RsapiServerAddress =>
+			GetAppSettingStringOrDefault("RSAPIServerAddress", () => RelativityInstanceHostname);
 
 		#endregion Relativity Settings
 
@@ -323,8 +322,11 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		#region Fileshare Configuration Settings
 
-		public static string FileshareLocation => AppSettingString("fileshareLocation");
-
+		public static string FileshareLocation =>
+			GetAppSettingStringOrDefault(
+				"fileshareLocation",
+				() => $@"\\{RelativityInstanceHostname}\fileshare"
+			);
 
 		#endregion
 
@@ -336,10 +338,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return latestVersionFolder?.Name;
 		}
 
-		private static string GetTargetDbHost()
-		{
-			return !string.IsNullOrEmpty(AppSettingString("targetDbHost")) ? AppSettingString("targetDbHost") : RelativityInstanceHostname;
-		}
+		private static string GetTargetDbHost() =>
+			GetAppSettingStringOrDefault("targetDbHost", () => RelativityInstanceHostname);
 
 		public static bool UseIpRapFile()
 		{
@@ -369,6 +369,14 @@ namespace kCura.IntegrationPoint.Tests.Core
 				}
 			}
 			return false;
+		}
+
+		private static string GetAppSettingStringOrDefault(string settingName, Func<string> defaultValueProvider)
+		{
+			string value = AppSettingString(settingName);
+			return !string.IsNullOrWhiteSpace(value)
+				? value
+				: defaultValueProvider();
 		}
 	}
 }

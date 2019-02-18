@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Castle.Core.Internal;
 using Relativity.API;
+using Relativity.Kepler.Transport;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Facades.Implementations
@@ -108,6 +109,12 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 			AnalyzeFields(fieldValues, getMessage);
 
 			return result;
+		}
+
+		public Task<IKeplerStream> StreamLongTextAsync(int workspaceArtifactID, RelativityObjectRef exportObject,
+			FieldRef longTextField)
+		{
+			return _objectManager.StreamLongTextAsync(workspaceArtifactID, exportObject, longTextField);
 		}
 
 		private void AnalyzeFields(

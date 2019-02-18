@@ -102,6 +102,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 		[Test]
 		[RetryOnError]
 		[Order(20)]
+		[Ignore("REL-291039, it fails when whole fixture is executed, passes when first test is skipped.")]
 		public void ImportImagesFromLoadFile()
 		{
 			// Arrange
@@ -136,6 +137,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 		[Test]
 		[RetryOnError]
 		[Order(30)]
+		[Ignore("REL-291039 it fails when whole fixture is executed, passes when first test is skipped.")]
 		public void ImportProductionsFromLoadFile()
 		{
 			// Arrange
