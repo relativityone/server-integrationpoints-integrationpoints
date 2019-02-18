@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		private Mock<IHelper> _helper;
 		private Mock<IJobStopManager> _jobStopManager;
 		private Mock<IQueryFieldLookupRepository> _queryFieldLookupRepository;
-		private IRelativityObjectManager _relativityObjectManager;
+		private Mock<IRelativityObjectManager> _relativityObjectManager;
 		private RelativityExporterService _instance;
 		private const string _CONTROL_NUMBER = "Control Num";
 		private const string _FILE_NAME = "FileName";
@@ -97,10 +97,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				.Returns(false);
 			_folderPathReader = new Mock<IFolderPathReader>();
 			_queryFieldLookupRepository = new Mock<IQueryFieldLookupRepository>();
-			_relativityObjectManager = new Mock<IRelativityObjectManager>().Object;
+			_relativityObjectManager = new Mock<IRelativityObjectManager>();
 			_instance = new RelativityExporterService(
 				_exporter.Object, 
-				_relativityObjectManager,
+				_relativityObjectManager.Object,
 				_jobStopManager.Object, 
 				_helper.Object,
 				_queryFieldLookupRepository.Object, 
