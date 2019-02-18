@@ -22,12 +22,20 @@ namespace kCura.IntegrationPoints.RelativitySync.RipOverride
 
 		private SourceJobDTO GetSourceJobTag()
 		{
-			return new SourceJobDTO {ArtifactId = _config.SourceJobTagArtifactId, Name = _config.SourceJobTagName};
+			return new SourceJobDTO
+			{
+				ArtifactId = _config.SourceJobTagArtifactId,
+				Name = _config.SourceJobTagName
+			};
 		}
 
 		private SourceWorkspaceDTO GetSourceWorkspaceTag()
 		{
-			return new SourceWorkspaceDTO {ArtifactId = _config.SourceWorkspaceTagArtifactId};
+			return new SourceWorkspaceDTO
+			{
+				ArtifactId = _config.SourceWorkspaceTagArtifactId,
+				Name = _config.SourceWorkspaceTagName
+			};
 		}
 	}
 }
