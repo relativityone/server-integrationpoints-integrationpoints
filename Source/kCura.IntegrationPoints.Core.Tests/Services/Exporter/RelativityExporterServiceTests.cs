@@ -23,6 +23,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		private object[] _goldFlowRetrievableData;
 		private global::Relativity.Core.Export.InitializationResults _exportApiResult;
 		private HashSet<int> _longTextField;
+
 		private Mock<IExporter> _exporter;
 		private Mock<IFolderPathReader> _folderPathReader;
 		private Mock<IHelper> _helper;
@@ -30,9 +31,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		private Mock<IQueryFieldLookupRepository> _queryFieldLookupRepository;
 		private Mock<IRelativityObjectManager> _relativityObjectManager;
 		private RelativityExporterService _instance;
+		
 		private const string _CONTROL_NUMBER = "Control Num";
 		private const string _FILE_NAME = "FileName";
-		
+
 		[SetUp]
 		public override void SetUp()
 		{
@@ -51,7 +53,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				.Setup(x => x.InitializeExport(0, null, 0))
 				.Returns(_exportApiResult);
 
-			// source identifier is the only thing that matter
+			// source identifier is the only thing that matters
 			_mappedFields = new FieldMap[]
 			{
 				new FieldMap()
