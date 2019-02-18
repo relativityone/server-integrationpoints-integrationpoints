@@ -7,9 +7,12 @@ function store_tests_results($branch_id, $build_name, $test_type, $test_results_
     $rawTestResults = Get-Content $test_results_path -Raw
     $rawTestResults = format_to_xml_parsable_form $rawTestResults
 	
-    Write-Host $url
+    Write-Host "Storing test results in: $STORE_TEST_RESULT_URL"
 
     [xml]$xmlTestResults = $rawTestResults
+
+    $storedCounter = 0
+    $failedCounter = 0
 
     foreach ($testCase in $xmlTestResults.SelectNodes('//test-case')) 
     {
@@ -24,8 +27,19 @@ function store_tests_results($branch_id, $build_name, $test_type, $test_results_
 		    Message = $testCase.output.'#cdata-section'
 	    } | ConvertTo-Json
 
-        Invoke-WebRequest -Uri $url -ContentType "application/json" -Method POST -Body $body
+        $request = Invoke-WebRequest -Uri $url -ContentType "application/json" -Method POST -Body $body
+
+        if($request.StatusCode -eq 200)
+        {
+            $storedCounter++
+        }
+        else
+        {
+            $failedCounter++
+        }
     }
+
+    Write-Host "Storing test results finished. Stored: $storedCounter Failed: $failedCounter"
 }
 
 function format_to_xml_parsable_form($rawcontent)
