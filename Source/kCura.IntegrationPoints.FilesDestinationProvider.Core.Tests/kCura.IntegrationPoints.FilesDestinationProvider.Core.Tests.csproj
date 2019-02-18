@@ -29,6 +29,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Moq">
+      <HintPath>..\..\packages\Moq\lib\net45\Moq.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -46,6 +49,7 @@
     <Compile Include="ExportManagers\CoreAuditManagerTests.cs" />
     <Compile Include="ExportManagers\ExportConvertingExtensionsTests.cs" />
     <Compile Include="Helpers\DestinationFolderHelperTests.cs" />
+    <Compile Include="Helpers\FieldConverterTests.cs" />
     <Compile Include="Logging\CompositeLoggingMediatorTests.cs" />
     <Compile Include="Logging\ExportLoggingMediatorTests.cs" />
     <Compile Include="Logging\JobErrorLoggingMediatorTests.cs" />
