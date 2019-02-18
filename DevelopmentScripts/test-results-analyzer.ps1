@@ -3,12 +3,15 @@ $STORE_TEST_RESULT_URL = "https://testresultsanalyzer.azurewebsites.net/api/Stor
 
 function store_tests_results($branch_id, $build_name, $test_type, $test_results_path, $securityCode) 
 {
-    $url = "$STORE_TEST_RESULT_URL?code=$securityCode"
-    $rawTestResults = Get-Content $test_results_path -Raw | format_to_xml_parsable_form
+    $url = $STORE_TEST_RESULT_URL + "?code=" + $securityCode
+    $rawTestResults = Get-Content $test_results_path -Raw
+    $rawTestResults = format_to_xml_parsable_form $rawTestResults
+	
+    Write-Host $url
 
-    [xml]$testResultsFile = $rawdata
+    [xml]$xmlTestResults = $rawTestResults
 
-    foreach ($testCase in $testResultsFile.SelectNodes('//test-case')) 
+    foreach ($testCase in $xmlTestResults.SelectNodes('//test-case')) 
     {
         $body = @{
 		    FullTestName = $testCase.fullname
@@ -46,7 +49,8 @@ function find_categories($testCaseNode)
 {
     $categories = @()
     $node = $testCaseNode
-    while ($node.type -ne 'TestSuite') {
+    while ($node.type -ne 'TestSuite') 
+	{
         $categories += $node.properties.property | where name -eq "Category" | select -ExpandProperty value
         $node = $node.ParentNode
     }
