@@ -1,30 +1,31 @@
-﻿using System;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using kCura.IntegrationPoints.Domain.Extensions;
+﻿using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Web.Logging;
 using Relativity.API;
+using System;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.Web.MessageHandlers
 {
 	public class CorrelationIdHandler : DelegatingHandler
 	{
-		public const string WebCorrelationIdName = "X-Correlation-ID";
-
-		private readonly Lazy<IAPILog> _apiLogLocal;
+		private readonly IAPILog _logger;
 		private readonly ICPHelper _helper;
 		private readonly IWebCorrelationContextProvider _webCorrelationContextProvider;
 
+		public const string WEB_CORRELATION_ID_HEADER_NAME = "X-Correlation-ID";
+
+		// TODO remove helper dependency
 		public CorrelationIdHandler(ICPHelper helper, IWebCorrelationContextProvider webCorrelationContextProvider)
 		{
 			_helper = helper;
-			_apiLogLocal = new Lazy<IAPILog>(() => helper.GetLoggerFactory().GetLogger().ForContext<CorrelationIdHandler>());
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<CorrelationIdHandler>(); // TODO inject logger
 			_webCorrelationContextProvider = webCorrelationContextProvider;
 		}
 
-		protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+		protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
 		{
 			int userId = GetValue(() => _helper.GetAuthenticationManager().UserInfo.ArtifactID, "Error while retrieving User Id");
 
@@ -33,21 +34,20 @@ namespace kCura.IntegrationPoints.Web.MessageHandlers
 			{
 				WebRequestCorrelationId = GetValue(request.GetCorrelationId, "Error while retrieving web request correlation id"),
 				UserId = userId,
-				WorkspaceId = GetValue(_helper.GetActiveCaseID, "Error while retrieving Workspace Id"), // TODO use workspaceIdProvider
+				WorkspaceId = GetValue(_helper.GetActiveCaseID, "Error while retrieving Workspace Id"),
 				ActionName = actionContext.ActionName,
 				CorrelationId = actionContext.ActionGuid
 			};
 
-			using (_apiLogLocal.Value.LogContextPushProperties(correlationContext))
+			using (_logger.LogContextPushProperties(correlationContext))
 			{
-				request.Headers.Add(WebCorrelationIdName, correlationContext.CorrelationId?.ToString());
-				_apiLogLocal.Value.LogDebug($"Integration Point Web Request: {request.RequestUri}");
-				return base.SendAsync(request, cancellationToken).ContinueWith(task =>
-				{
-					HttpResponseMessage response = task.Result;
-					response.Headers.Add(WebCorrelationIdName, correlationContext.CorrelationId?.ToString());
-					return response;
-				}, cancellationToken);
+				_logger.LogDebug($"Integration Point Web Request: {request.RequestUri}");
+
+				string correlationId = correlationContext.CorrelationId?.ToString();
+				request.Headers.Add(WEB_CORRELATION_ID_HEADER_NAME, correlationId);
+				HttpResponseMessage response = await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
+				response.Headers.Add(WEB_CORRELATION_ID_HEADER_NAME, correlationId);
+				return response;
 			}
 		}
 
@@ -59,7 +59,7 @@ namespace kCura.IntegrationPoints.Web.MessageHandlers
 			}
 			catch (Exception e)
 			{
-				_apiLogLocal.Value.LogError(e, errorMessage);
+				_logger.LogError(e, errorMessage);
 				throw new CorrelationContextCreationException(errorMessage, e);
 			}
 		}

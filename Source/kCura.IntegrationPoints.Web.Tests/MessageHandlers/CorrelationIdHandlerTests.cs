@@ -55,24 +55,24 @@ namespace kCura.IntegrationPoints.Web.Tests.MessageHandlers
 		}
 
 		[Test]
-		public void ItShouldPushWebRequestCorrelationIdToLogContext()
+		public async Task ItShouldPushWebRequestCorrelationIdToLogContext()
 		{
 			var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Get");
 			Guid expectedCorrelationId = request.GetCorrelationId();
 
-			HttpResponseMessage response = _subjectUnderTests.SendAyncInternal(request, CancellationToken.None).Result;
+			await _subjectUnderTests.SendAyncInternal(request, CancellationToken.None);
 
 			Logger.Received().LogContextPushProperty($"RIP.{nameof(WebCorrelationContext.WebRequestCorrelationId)}", expectedCorrelationId.ToString());
 		}
 
 		[Test]
-		public void ItShouldPushWorkspaceIdToLogContext()
+		public async Task ItShouldPushWorkspaceIdToLogContext()
 		{
 			var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Get");
 			int expectedWorkspaceId = 123;
 			Helper.GetActiveCaseID().Returns(expectedWorkspaceId);
 
-			HttpResponseMessage response = _subjectUnderTests.SendAyncInternal(request, CancellationToken.None).Result;
+			await _subjectUnderTests.SendAyncInternal(request, CancellationToken.None);
 
 			Logger.Received().LogContextPushProperty($"RIP.{nameof(WebCorrelationContext.WorkspaceId)}", expectedWorkspaceId.ToString());
 		}
@@ -84,15 +84,15 @@ namespace kCura.IntegrationPoints.Web.Tests.MessageHandlers
 			var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Get");
 			Helper.GetActiveCaseID().Throws(thrownException);
 
-			CorrelationContextCreationException rethrownException = Assert.Throws<CorrelationContextCreationException>(() =>
+			CorrelationContextCreationException rethrownException = Assert.ThrowsAsync<CorrelationContextCreationException>(async () =>
 			{
-				HttpResponseMessage response = _subjectUnderTests.SendAyncInternal(request, CancellationToken.None).Result;
+				await _subjectUnderTests.SendAyncInternal(request, CancellationToken.None);
 			});
 			Assert.AreEqual(thrownException, rethrownException.InnerException);
 		}
 
 		[Test]
-		public void ItShouldPushUserIdToLogContext()
+		public async Task ItShouldPushUserIdToLogContext()
 		{
 			var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Get");
 			int expectedUserId = 532;
@@ -103,7 +103,7 @@ namespace kCura.IntegrationPoints.Web.Tests.MessageHandlers
 			authenticationManager.UserInfo.Returns(userInfo);
 			Helper.GetAuthenticationManager().Returns(authenticationManager);
 
-			HttpResponseMessage response = _subjectUnderTests.SendAyncInternal(request, CancellationToken.None).Result;
+			await _subjectUnderTests.SendAyncInternal(request, CancellationToken.None);
 
 			Logger.Received().LogContextPushProperty($"RIP.{nameof(WebCorrelationContext.UserId)}", expectedUserId.ToString());
 		}
@@ -115,9 +115,9 @@ namespace kCura.IntegrationPoints.Web.Tests.MessageHandlers
 			var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Get");
 			Helper.GetAuthenticationManager().Throws(thrownException);
 
-			CorrelationContextCreationException rethrownException = Assert.Throws<CorrelationContextCreationException>(() =>
+			CorrelationContextCreationException rethrownException = Assert.ThrowsAsync<CorrelationContextCreationException>(async () =>
 			{
-				HttpResponseMessage response = _subjectUnderTests.SendAyncInternal(request, CancellationToken.None).Result;
+				await _subjectUnderTests.SendAyncInternal(request, CancellationToken.None);
 			});
 			Assert.AreEqual(thrownException, rethrownException.InnerException);
 		}
@@ -134,7 +134,7 @@ namespace kCura.IntegrationPoints.Web.Tests.MessageHandlers
 		{
 			IWebCorrelationContextProvider webCorrelationContextProviderMock = Substitute.For<IWebCorrelationContextProvider>();
 			webCorrelationContextProviderMock.GetDetails(Arg.Any<string>(), Arg.Any<int>())
-				.Returns(new WebActionContext(String.Empty, Guid.Empty));
+				.Returns(new WebActionContext(string.Empty, Guid.Empty));
 			return webCorrelationContextProviderMock;
 		}
 	}

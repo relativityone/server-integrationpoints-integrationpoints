@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.Web.Attributes
 		{
 			string corrrelationId = string.Empty;
 			IEnumerable<string> headerValues = Enumerable.Empty<string>();
-			if (context.Request?.Headers.TryGetValues(CorrelationIdHandler.WebCorrelationIdName, out headerValues) == true)
+			if (context.Request?.Headers.TryGetValues(CorrelationIdHandler.WEB_CORRELATION_ID_HEADER_NAME, out headerValues) == true)
 			{
 				corrrelationId = headerValues.FirstOrDefault();
 			}
