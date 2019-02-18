@@ -1,5 +1,5 @@
 ﻿using System;
-using kCura.IntegrationPoints.Web.WorkspaceIdProvider.Services.Exceptions;
+using kCura.IntegrationPoints.Web.Context.WorkspaceIdProvider.Services.Exceptions;
 using Polly;
 using Relativity.API;
 

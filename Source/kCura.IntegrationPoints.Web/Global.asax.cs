@@ -9,7 +9,6 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Data.Queries;
-using kCura.IntegrationPoints.Web.MessageHandlers;
 using Newtonsoft.Json;
 using Relativity.API;
 using Relativity.CustomPages;
@@ -21,6 +20,8 @@ using System.Web.Http.Dispatcher;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using kCura.IntegrationPoints.Web.Infrastructure.MessageHandlers;
+using kCura.IntegrationPoints.Web.Infrastructure.ExceptionLoggers;
 
 namespace kCura.IntegrationPoints.Web
 {
@@ -44,7 +45,8 @@ namespace kCura.IntegrationPoints.Web
 				_container.Resolve<CorrelationIdHandler>()
 			);
 
-			FilterConfig.RegisterWebAPIFilters(GlobalConfiguration.Configuration, _container);
+			FilterConfig.RegisterWebAPIFilters(GlobalConfiguration.Configuration);
+			FilterConfig.AddExceptionLogger(GlobalConfiguration.Configuration, _container.Resolve<WebAPIExceptionLogger>());
 			FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
 			RouteConfig.RegisterRoutes(RouteTable.Routes);
 			BundleConfig.RegisterBundles(BundleTable.Bundles);

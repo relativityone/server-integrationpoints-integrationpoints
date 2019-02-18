@@ -47,7 +47,7 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Attributes\WebAPIFilterExceptionTests.cs" />
+    <Compile Include="Infrastructure\ExceptionLogger\WebAPIExceptionLoggerTests.cs" />
     <Compile Include="Controllers\API\DataTransferLocationControllerTests.cs" />
     <Compile Include="Controllers\API\ExportFieldsControllerTests.cs" />
     <Compile Include="Controllers\API\FieldCatalogControllerTests.cs" />
@@ -76,14 +76,14 @@
     <Compile Include="Controllers\SourceTypeControllerTests.cs" />
     <Compile Include="Controllers\JobControllerTests.cs" />
     <Compile Include="DataStructures\FolderTreeTests.cs" />
-    <Compile Include="Helpers\CacheHolderTests.cs" />
+    <Compile Include="IntegrationPointsServices\Logging\CacheHolderTests.cs" />
     <Compile Include="Helpers\SummaryPageSelectorTests.cs" />
-    <Compile Include="Logging\Web\WebCorrelationContextProviderTests.cs" />
-    <Compile Include="MessageHandlers\CorrelationIdHandlerTests.cs" />
-    <Compile Include="WorkspaceIdProvider\WorkspaceIdProviderTests.cs" />
-    <Compile Include="WorkspaceIdProvider\Services\ControllerCustomPageServiceTests.cs" />
+    <Compile Include="IntegrationPointsServices\Logging\WebCorrelationContextProviderTests.cs" />
+    <Compile Include="Infrastructure\MessageHandlers\CorrelationIdHandlerTests.cs" />
+    <Compile Include="Context\WorkspaceIdProvider\WorkspaceIdProviderTests.cs" />
+    <Compile Include="Context\WorkspaceIdProvider\Services\ControllerCustomPageServiceTests.cs" />
     <Compile Include="RelativityServices\RetriableCPHelperProxyTests.cs" />
-    <Compile Include="WorkspaceIdProvider\Services\WebApiCustomPageServiceTests.cs" />
+    <Compile Include="Context\WorkspaceIdProvider\Services\WebApiCustomPageServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">

@@ -13,7 +13,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using kCura.IntegrationPoints.Web.WorkspaceIdProvider;
+using kCura.IntegrationPoints.Web.Context.WorkspaceIdProvider;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {

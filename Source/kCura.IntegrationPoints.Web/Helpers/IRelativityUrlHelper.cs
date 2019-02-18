@@ -1,4 +1,4 @@
-﻿namespace kCura.IntegrationPoints.Web
+﻿namespace kCura.IntegrationPoints.Web.Helpers
 {
 	public interface IRelativityUrlHelper
 	{

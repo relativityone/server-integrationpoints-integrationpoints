@@ -1,7 +1,7 @@
 ﻿using System.Web;
 using kCura.IntegrationPoints.Core.Services;
 
-namespace kCura.IntegrationPoints.Web
+namespace kCura.IntegrationPoints.Web.Helpers
 {
 	public class RelativityUrlHelper : IRelativityUrlHelper
 	{ 

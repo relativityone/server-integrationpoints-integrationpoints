@@ -8,8 +8,8 @@ using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Utils;
 using kCura.IntegrationPoints.Web.Attributes;
+using kCura.IntegrationPoints.Web.Context.WorkspaceIdProvider;
 using kCura.IntegrationPoints.Web.Models;
-using kCura.IntegrationPoints.Web.WorkspaceIdProvider;
 using Relativity.API;
 using Relativity.Core.Service;
 

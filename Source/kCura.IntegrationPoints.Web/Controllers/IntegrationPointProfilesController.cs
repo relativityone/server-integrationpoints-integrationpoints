@@ -5,7 +5,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.LDAPProvider;
-using kCura.IntegrationPoints.Web.WorkspaceIdProvider;
+using kCura.IntegrationPoints.Web.Context.WorkspaceIdProvider;
 
 namespace kCura.IntegrationPoints.Web.Controllers
 {

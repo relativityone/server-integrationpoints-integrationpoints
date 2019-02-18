@@ -1,7 +1,7 @@
 ﻿using System;
 using FluentAssertions;
+using kCura.IntegrationPoints.Web.Context.WorkspaceIdProvider.Services.Exceptions;
 using kCura.IntegrationPoints.Web.RelativityServices;
-using kCura.IntegrationPoints.Web.WorkspaceIdProvider.Services.Exceptions;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
