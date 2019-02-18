@@ -374,7 +374,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		private static string GetAppSettingStringOrDefault(string settingName, Func<string> defaultValueProvider)
 		{
 			string value = AppSettingString(settingName);
-			return !string.IsNullOrEmpty(value)
+			return !string.IsNullOrWhiteSpace(value)
 				? value
 				: defaultValueProvider();
 		}
