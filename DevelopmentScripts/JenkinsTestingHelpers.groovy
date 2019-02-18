@@ -8,9 +8,9 @@ enum TestTypeT {
 
 @Field
 def testStageNameT = [
-	(TestType.integration) : "Integration Tests",
-	(TestType.ui) : "UI Tests",
-	(TestType.integrationInQuarantine) : "Integration Tests in Quarantine"
+	(TestTypeT.integration) : "Integration Tests",
+	(TestTypeT.ui) : "UI Tests",
+	(TestTypeT.integrationInQuarantine) : "Integration Tests in Quarantine"
 ]
 
 return this
