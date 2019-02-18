@@ -599,12 +599,15 @@ def storeIntegrationTestsInQuarantineResults()
 {
 	try
 	{
-		def branchId = env.BRANCH_NAME
-		def buildName = currentBuild.displayName
-		def testType = TestType.integrationInQuarantine.name().capitalize()
-		def testResultsPath = INTEGRATION_TESTS_IN_QUARANTINE_RESULTS_REPORT_PATH
-		powershell script: ". ./DevelopmentScripts/test-results-analyzer.ps1"
-		powershell script: """store_tests_results "${branchId}" "${buildName}" "${testType}" "${testResultsPath}" """
+		withCredentials([string(credentialsId: 'TestResultAnalyzerStoreTestsResultsFunctionSecurityCode', variable: 'securityCode')])
+		{
+			def branchId = env.BRANCH_NAME
+			def buildName = currentBuild.displayName
+			def testType = TestType.integrationInQuarantine.name().capitalize()
+			def testResultsPath = INTEGRATION_TESTS_IN_QUARANTINE_RESULTS_REPORT_PATH
+			powershell script: ". ./DevelopmentScripts/test-results-analyzer.ps1"
+			powershell script: """store_tests_results "${branchId}" "${buildName}" "${testType}" "${testResultsPath}" "$securityCode" """
+		}
 	}
 	catch(err)
 	{

@@ -1,8 +1,9 @@
 #TEMP till we have our own Azure subscription
-$STORE_TEST_RESULT_URL = "https://testresultsanalyzer.azurewebsites.net/api/StoreTestResultFunction?code=BqgMKu1Mp/WMNPKfacvIGR4oSzBpDGgdxKNGYnAOOPrwe9DHYQidlA=="
+$STORE_TEST_RESULT_URL = "https://testresultsanalyzer.azurewebsites.net/api/StoreTestResultFunction"
 
-function store_tests_results($branch_id, $build_name, $test_type, $test_results_path) 
+function store_tests_results($branch_id, $build_name, $test_type, $test_results_path, $securityCode) 
 {
+    $url = "$STORE_TEST_RESULT_URL?code=$securityCode"
     $rawTestResults = Get-Content $test_results_path -Raw | format_to_xml_parsable_form
 
     [xml]$testResultsFile = $rawdata
@@ -20,7 +21,7 @@ function store_tests_results($branch_id, $build_name, $test_type, $test_results_
 		    Message = $testCase.output.'#cdata-section'
 	    } | ConvertTo-Json
 
-        Invoke-WebRequest -Uri $STORE_TEST_RESULT_URL -ContentType "application/json" -Method POST -Body $body
+        Invoke-WebRequest -Uri $url -ContentType "application/json" -Method POST -Body $body
     }
 }
 
