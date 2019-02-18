@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Contracts.Models;
@@ -281,7 +281,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			_instance.RetrieveData(1);
 
 			// Assert
-			Mock.Get(_folderPathReader)
+			_folderPathReader
 				.Verify(x => x.SetFolderPaths(It.IsAny<List<ArtifactDTO>>()), Times.Once);
 		}
 
