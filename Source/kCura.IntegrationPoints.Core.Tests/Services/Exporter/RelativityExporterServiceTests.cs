@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Contracts.Models;
@@ -19,16 +19,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 	{
 		private ArtifactDTO _goldFlowExpectedDto;
 		private FieldMap[] _mappedFields;
+		private int[] _avfIds;
+		private object[] _goldFlowRetrievableData;
 		private global::Relativity.Core.Export.InitializationResults _exportApiResult;
 		private HashSet<int> _longTextField;
 		private Mock<IExporter> _exporter;
 		private Mock<IFolderPathReader> _folderPathReader;
 		private Mock<IHelper> _helper;
 		private Mock<IJobStopManager> _jobStopManager;
-		private int[] _avfIds;
-		private IQueryFieldLookupRepository _queryFieldLookupRepository;
+		private Mock<IQueryFieldLookupRepository> _queryFieldLookupRepository;
 		private IRelativityObjectManager _relativityObjectManager;
-		private object[] _goldFlowRetrievableData;
 		private RelativityExporterService _instance;
 		private const string _CONTROL_NUMBER = "Control Num";
 		private const string _FILE_NAME = "FileName";
@@ -96,14 +96,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				.Setup(x => x.IsStopRequested())
 				.Returns(false);
 			_folderPathReader = new Mock<IFolderPathReader>();
-			_queryFieldLookupRepository = new Mock<IQueryFieldLookupRepository>().Object;
+			_queryFieldLookupRepository = new Mock<IQueryFieldLookupRepository>();
 			_relativityObjectManager = new Mock<IRelativityObjectManager>().Object;
 			_instance = new RelativityExporterService(
 				_exporter.Object, 
 				_relativityObjectManager,
 				_jobStopManager.Object, 
 				_helper.Object,
-				_queryFieldLookupRepository, 
+				_queryFieldLookupRepository.Object, 
 				_folderPathReader.Object, 
 				_mappedFields, 
 				_longTextField, 
@@ -116,7 +116,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			// arrange
 			_exportApiResult.RowCount = 0;
 
-			Mock.Get(_queryFieldLookupRepository)
+			_queryFieldLookupRepository
 				.Setup(x => x.GetFieldByArtifactId(It.IsAny<int>()))
 				.Returns(new ViewFieldInfo(string.Empty, string.Empty, FieldTypeHelper.FieldType.Code));
 
@@ -138,11 +138,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				.Setup(x => x.RetrieveResults(_exportApiResult.RunId, _avfIds, 1))
 				.Returns(_goldFlowRetrievableData);
 
-			Mock.Get(_queryFieldLookupRepository)
+			_queryFieldLookupRepository
 				.Setup(x => x.GetFieldByArtifactId(It.IsAny<int>()))
 				.Returns(new ViewFieldInfo(string.Empty, string.Empty, FieldTypeHelper.FieldType.Empty));
 
-			Mock.Get(_queryFieldLookupRepository)
+			_queryFieldLookupRepository
 				.Setup(x => x.GetFieldTypeByArtifactId(It.IsAny<int>()))
 				.Returns(FieldTypeHelper.FieldType.Empty.ToString());
 
@@ -229,11 +229,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				},
 			});
 
-			Mock.Get(_queryFieldLookupRepository)
+			_queryFieldLookupRepository
 				.Setup(x => x.GetFieldByArtifactId(It.IsAny<int>()))
 				.Returns(new ViewFieldInfo(string.Empty, string.Empty, FieldTypeHelper.FieldType.Empty));
 
-			Mock.Get(_queryFieldLookupRepository)
+			_queryFieldLookupRepository
 				.Setup(x => x.GetFieldTypeByArtifactId(It.IsAny<int>()))
 				.Returns(FieldTypeHelper.FieldType.Empty.ToString());
 
