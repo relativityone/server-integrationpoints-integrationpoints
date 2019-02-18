@@ -60,25 +60,12 @@ properties([
 	])
 ])
 
-enum TestType {
-    integration,
-    ui,
-    integrationInQuarantine
-}
-
 // This repo's package name for purposes of versioning & publishing
 @Field final String PACKAGE_NAME = 'IntegrationPoints'
 @Field final String NIGHTLY_JOB_NAME = "IntegrationPointsNightly"
 @Field final String ARTIFACTS_PATH = 'Artifacts'
 @Field final String INTEGRATION_TESTS_RESULTS_REPORT_PATH = "$ARTIFACTS_PATH/IntegrationTestsResults.xml"
 @Field final String QUARANTINED_TESTS_CATEGORY = 'InQuarantine'
-
-@Field
-def testStageName = [
-	(TestType.integration) : "Integration Tests",
-	(TestType.ui) : "UI Tests",
-	(TestType.integrationInQuarantine) : "Integration Tests in Quarantine"
-]
 
 @Field
 def testCmdOptions = [
@@ -91,6 +78,8 @@ def testCmdOptions = [
 def sut = null
 
 def jenkinsHelpers = null
+def jenkinsTestingHelpers = null
+
 def version = null
 def commonBuildArgs = null
 
@@ -144,11 +133,11 @@ timestamps
 					checkout scm
 					step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
 				}
+				jenkinsHelpers = load "DevelopmentScripts/JenkinsHelpers.groovy"
+				jenkinsTestingHelpers = load "DevelopmentScripts/JenkinsTestingHelpers.groovy"
 			}
 			stage ('Get Version')
 			{
-				jenkinsHelpers = load "DevelopmentScripts/JenkinsHelpers.groovy"
-
 				version = jenkinsHelpers.incrementBuildVersion(PACKAGE_NAME, params.relativityBuildType)
 
 				currentBuild.displayName="${params.relativityBuildType}-$version"
