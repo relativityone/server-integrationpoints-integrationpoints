@@ -1,6 +1,7 @@
 ﻿using System;
 using Relativity.Services.Objects.DataContracts;
 using System.Threading.Tasks;
+using Relativity.Kepler.Transport;
 
 namespace kCura.IntegrationPoints.Data.Facades
 {
@@ -11,5 +12,6 @@ namespace kCura.IntegrationPoints.Data.Facades
 		Task<UpdateResult> UpdateAsync(int workspaceArtifactID, UpdateRequest request);
 		Task<DeleteResult> DeleteAsync(int workspaceArtifactID, DeleteRequest request);
 		Task<QueryResult> QueryAsync(int workspaceArtifactID, QueryRequest request, int start, int length);
+		Task<IKeplerStream> StreamLongTextAsync(int workspaceArtifactID, RelativityObjectRef exportObject, FieldRef longTextField);
 	}
 }

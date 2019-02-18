@@ -136,7 +136,6 @@
     <Compile Include="Services\Exporter\DocumentTransferDataReaderTests.cs" />
     <Compile Include="Services\Exporter\ExportApiHelperTests.cs" />
     <Compile Include="Services\Exporter\ExportJobErrorServiceTest.cs" />
-    <Compile Include="Services\Exporter\InMemoryILongTextStream.cs" />
     <Compile Include="Services\Exporter\LazyExceptArtifactFieldDtoTests.cs" />
     <Compile Include="Services\Exporter\RelativityExporterServiceTests.cs" />
     <Compile Include="Services\IntegrationPointServiceTests.cs" />
