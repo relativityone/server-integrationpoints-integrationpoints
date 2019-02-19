@@ -677,11 +677,6 @@ def tryGetBuildVersion(
 	}
 }
 
-def isTrue(s)
-{
-	return s.trim() == "True"
-}
-
 def isRelativityBranchPresent(branch)
 {
 	def command = "([System.IO.DirectoryInfo]\"//bld-pkgs/Packages/Relativity/$branch\").Exists"

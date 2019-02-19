@@ -6,11 +6,24 @@ enum TestTypeT {
     integrationInQuarantine
 }
 
-@Field
-def testStageNameT = [
-	(TestTypeT.integration) : "Integration Tests",
-	(TestTypeT.ui) : "UI Tests",
-	(TestTypeT.integrationInQuarantine) : "Integration Tests in Quarantine"
-]
+def testStageName(TestTypeT testType)
+{
+    if (testType == TestTypeT.integration)
+    {
+        return "Integration Tests"
+    }
+    if (testType == TestTypeT.integration)
+    {
+        return "Integration Tests"
+    }
+    if (testType == TestTypeT.ui)
+    {
+        return "UI Tests"
+    }
+    if (testType == TestTypeT.integrationInQuarantine)
+    {
+        return "Integration Tests in Quarantine"
+    }
+}
 
 return this
