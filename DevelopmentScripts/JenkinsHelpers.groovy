@@ -1,7 +1,10 @@
 /**
  ** CONSTANTS
  **/
-@Field final String NIGHTLY_JOB_NAME = "IntegrationPointsNightly"
+interface Constants
+{
+    final String NIGHTLY_JOB_NAME = "IntegrationPointsNightly"
+}
 final String ARTIFACTS_PATH = 'Artifacts'
 final String QUARANTINED_TESTS_CATEGORY = 'InQuarantine'
 final String INTEGRATION_TESTS_RESULTS_REPORT_PATH = "$ARTIFACTS_PATH/IntegrationTestsResults.xml"
@@ -68,7 +71,7 @@ def isPowershellResultTrue(s)
  */
 def isNightly()
 {
-	return env.JOB_NAME.contains(NIGHTLY_JOB_NAME)
+	return env.JOB_NAME.contains(Constants.NIGHTLY_JOB_NAME)
 }
 
 def shouldRunSonar(Boolean enableSonarAnalysis, String branchName)
