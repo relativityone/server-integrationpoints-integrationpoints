@@ -2,7 +2,7 @@
 using FluentAssertions;
 using kCura.IntegrationPoints.Web.Context.WorkspaceIdProvider;
 using kCura.IntegrationPoints.Web.Context.WorkspaceIdProvider.Services;
-using kCura.IntegrationPoints.Web.RelativityServices.Exceptions;
+using kCura.IntegrationPoints.Web.Context.WorkspaceIdProvider.Services.Exceptions;
 using NSubstitute;
 using NUnit.Framework;
 

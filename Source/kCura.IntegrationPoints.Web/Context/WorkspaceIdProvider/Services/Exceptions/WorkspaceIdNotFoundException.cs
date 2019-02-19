@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace kCura.IntegrationPoints.Web.RelativityServices.Exceptions
+namespace kCura.IntegrationPoints.Web.Context.WorkspaceIdProvider.Services.Exceptions
 {
 	public class WorkspaceIdNotFoundException : InvalidOperationException
 	{

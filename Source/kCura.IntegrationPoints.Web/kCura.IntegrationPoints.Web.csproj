@@ -151,7 +151,7 @@
     <Compile Include="Models\FtpProviderSummaryPageSettingsModel.cs" />
     <Compile Include="Models\IntegrationPointTypeModel.cs" />
     <Compile Include="Models\IpDetailModel.cs" />
-    <Compile Include="Context\WorkspaceIdProvider\Services\Exceptions\BaseCpHelperCannotBeTypeOfRetriableCpHelperException.cs" />
+    <Compile Include="RelativityServices\Exceptions\BaseCpHelperCannotBeTypeOfRetriableCpHelperException.cs" />
     <Compile Include="RelativityServices\RetriableCPHelperProxy.cs" />
     <Compile Include="Infrastructure\Session\ISessionService.cs" />
     <Compile Include="Models\LdapProviderSummaryPageSettingsModel.cs" />
@@ -166,7 +166,7 @@
     <Compile Include="Models\Validation\ValidationResultDTO.cs" />
     <Compile Include="Models\Validation\ValidationResultMapper.cs" />
     <Compile Include="Models\WorkspaceModel.cs" />
-    <Compile Include="RelativityServices\Exceptions\WorkspaceIdNotFoundException.cs" />
+    <Compile Include="Context\WorkspaceIdProvider\Services\Exceptions\WorkspaceIdNotFoundException.cs" />
     <Compile Include="Context\WorkspaceIdProvider\WorkspaceIdProvider.cs" />
     <Compile Include="Context\WorkspaceIdProvider\IWorkspaceIdProvider.cs" />
     <Compile Include="Helpers\RelativityUrlHelper.cs" />
