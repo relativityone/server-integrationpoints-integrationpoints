@@ -57,7 +57,7 @@ class RIPPipelineState
         this.params = params
     }
 
-    def getServerFromPool()
+    def getServerFromPool(echo)
     {
         eventHash = java.security.MessageDigest.getInstance("MD5").digest(env.JOB_NAME.bytes).encodeHex().toString()
         echo "Getting server from pool, sessionId: $sessionId, Relativity build type: $params.relativityBuildType, event hash: $eventHash"
@@ -138,7 +138,7 @@ def raid()
 {
     timeout(time: 90, unit: 'MINUTES')
     {
-        ripPipelineState.getServerFromPool()
+        ripPipelineState.getServerFromPool(this.&echo)
         def sut = ripPipelineState.sut
 
         final installingRelativity = true
