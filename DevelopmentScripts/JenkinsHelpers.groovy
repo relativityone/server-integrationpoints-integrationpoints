@@ -46,7 +46,7 @@ class RIPPipeline
 
     def getVersion()
     {
-        def version = _script.incrementBuildVersion(Constants.PACKAGE_NAME, params.relativityBuildType)
+        def version = incrementBuildVersion(Constants.PACKAGE_NAME, params.relativityBuildType)
         currentBuild.displayName = "$params.relativityBuildType-$version"
         commonBuildArgs = "release $params.relativityBuildType -ci -v $version -b $env.BRANCH_NAME"
         echo "RIPPipeline::getVersion set commonBuildArgs to: $commonBuildArgs"
