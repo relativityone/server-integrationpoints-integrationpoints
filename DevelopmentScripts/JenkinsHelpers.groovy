@@ -26,20 +26,22 @@ def getConstants()
     return Constants
 }
 
-def createRIPPipeline(params, currentBuild)
+def createRIPPipeline(jenkins, params, currentBuild)
 {
-    return new RIPPipeline(params, currentBuild)
+    return new RIPPipeline(jenkins, params, currentBuild)
 }
 
 class RIPPipeline
 {
+    private final jenkins
     private final params
     private final currentBuild
 
     private commonBuildArgs = null
 
-    RIPPipeline(params, currentBuild)
+    RIPPipeline(jenkins, params, currentBuild)
     {
+        this.jenkins = jenkins
         this.params = params
         this.currentBuild = currentBuild
     }
@@ -63,7 +65,7 @@ class RIPPipeline
     */
     def incrementBuildVersion(String packageName, String buildType)
     {
-        def versionOutput = powershell(returnStdout: true, script: ".\\DevelopmentScripts\\New-TeamCityBuildVersion.ps1 -Product '$packageName' -Project 'Development' -ServerType 'Jenkins' -BuildType '$buildType'")
+        def versionOutput = jenkins.powershell(returnStdout: true, script: ".\\DevelopmentScripts\\New-TeamCityBuildVersion.ps1 -Product '$packageName' -Project 'Development' -ServerType 'Jenkins' -BuildType '$buildType'")
         versionNumber = versionOutput.tokenize()[0]
         return versionNumber
     }
