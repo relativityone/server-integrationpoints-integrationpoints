@@ -60,9 +60,6 @@ properties([
 	])
 ])
 
-// This repo's package name for purposes of versioning & publishing
-@Field final String PACKAGE_NAME = 'IntegrationPoints'
-
 @Field
 def sut = null
 

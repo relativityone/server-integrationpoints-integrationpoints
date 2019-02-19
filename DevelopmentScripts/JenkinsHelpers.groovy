@@ -3,11 +3,13 @@
  **/
 interface Constants
 {
+    // This repo's package name for purposes of versioning & publishing
+    final String PACKAGE_NAME = 'IntegrationPoints'
     final String NIGHTLY_JOB_NAME = "IntegrationPointsNightly"
+    final String ARTIFACTS_PATH = 'Artifacts'
+    final String QUARANTINED_TESTS_CATEGORY = 'InQuarantine'
+    final String INTEGRATION_TESTS_RESULTS_REPORT_PATH = "$ARTIFACTS_PATH/IntegrationTestsResults.xml"
 }
-final String ARTIFACTS_PATH = 'Artifacts'
-final String QUARANTINED_TESTS_CATEGORY = 'InQuarantine'
-final String INTEGRATION_TESTS_RESULTS_REPORT_PATH = "$ARTIFACTS_PATH/IntegrationTestsResults.xml"
 
 
 /**
@@ -274,7 +276,7 @@ def configureNunitTests(sut)
  */
 def exceptQuarantinedTestFilter()
 {
-	return "cat != $QUARANTINED_TESTS_CATEGORY"
+	return "cat != $Constants.QUARANTINED_TESTS_CATEGORY"
 }
 
 /*
@@ -381,7 +383,7 @@ def getTestsStatistic(String prop)
 	{
 		def cmd = ('''
 			[xml]$testResults = Get-Content '''
-			+ INTEGRATION_TESTS_RESULTS_REPORT_PATH  
+			+ Constants.INTEGRATION_TESTS_RESULTS_REPORT_PATH  
 			+ '''; $testResults.'test-run'.'''
 			+ "'$prop'")
 
