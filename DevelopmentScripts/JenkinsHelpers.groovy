@@ -80,7 +80,7 @@ class RIPPipeline
     * @param buildType   Build type of the current build, e.g. 'DEV', 'GOLD', etc. Affects how the next version is incremented.
     * @return String indicating the current build version, e.g. "10.2.1.3".
     */
-    def incrementBuildVersion(String packageName, String buildType)
+    private incrementBuildVersion(String packageName, String buildType)
     {
         def versionOutput = jenkins.powershell(returnStdout: true, script: ".\\DevelopmentScripts\\New-TeamCityBuildVersion.ps1 -Product '$packageName' -Project 'Development' -ServerType 'Jenkins' -BuildType '$buildType'")
         return versionOutput.tokenize()[0]
