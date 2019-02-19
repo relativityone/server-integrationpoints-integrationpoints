@@ -29,7 +29,23 @@ def getConstants()
 
 class RIPPipelineState
 {
+    // *********
+    // IMPORTANT
+    // *********
+    // Set variable below to the branch name, when you create new release branch!!!
+    // This should be changed on the release branch
+    final String relativityBranchFallback = "develop"
+
+    final String sessionId = System.currentTimeMillis().toString()
+    final String eventHash = java.security.MessageDigest.getInstance("MD5").digest(env.JOB_NAME.bytes).encodeHex().toString()
+
+    def relativityBuildVersion = ""
+    def relativityBuildType = ""
+    def relativityBranch = params.relativityBranch ?: env.BRANCH_NAME
+
     def commonBuildArgs
+    def scvmmInstance
+    def sut
 }
 
 // State for the whole pipeline
@@ -88,6 +104,104 @@ def testingVMsAreRequired(params)
 	return !params.skipIntegrationTests || !params.skipUITests
 }
 
+/*
+ * @param script - workflow script (Jenkins pipeline)
+ */
+def raid(script)
+{
+    timeout(time: 90, unit: 'MINUTES')
+    {
+        echo "Getting server from pool, sessionId: $sessionId, Relativity build type: $params.relativityBuildType, event hash: $eventHash"
+
+        scvmmInstance = scvmm(script, session_id)
+        scvmmInstance.setHoursToLive("12")
+
+        sut = scvmmInstance.getServerFromPool()
+
+        echo "Acquired server: ${sut.name} @ ${sut.domain} (${sut.ip})"
+
+        final installingRelativity = true
+        final installingInvariant = false
+        final installingAnalytics = false
+        final installingDatagrid = false
+
+        // Do not modify.
+        final runList = createRunList(installingRelativity, installingInvariant, installingAnalytics, installingDatagrid)
+        final profile = createProfile(installingRelativity, installingInvariant, installingAnalytics, installingDatagrid)
+        final knife = 'C:\\Python27\\Lib\\site-packages\\jeeves\\knife.rb'
+        def chefAttributes = 'fluidOn:1,cdonprem:1'
+        def ripCookbooks = getCookbooks()
+
+        parallel (
+            Deploy:
+            {
+                if (installingRelativity)
+                {
+                    (relativityBuildVersion, relativityBranch, relativityBuildType) = getNewBranchAndVersion(
+                        relativityBranchFallback, 
+                        relativityBranch, 
+                        params.relativityBuildVersion, 
+                        params.relativityBuildType, 
+                        sessionId
+                    )
+                    echo "Installing Relativity, branch: $relativityBranch, version: $relativityBuildVersion, type: $relativityBuildType"
+                }
+
+                uploadEnvironmentFile(
+                    script, 
+                    sut.name, 
+                    relativityBuildVersion, 
+                    relativityBranch, 
+                    relativityBuildType,
+                    "", //invariant version
+                    "", //invariant branch
+                    ripCookbooks, 
+                    chefAttributes, 
+                    knife,
+                    "", //analytics version
+                    "", //analytics branch
+                    sessionId, 
+                    installingRelativity, 
+                    installingInvariant, 
+                    installingAnalytics
+                )
+
+                addRunlist(
+                    script, 
+                    sessionId, 
+                    sut.name, 
+                    sut.domain, 
+                    sut.ip, 
+                    runList, 
+                    knife, 
+                    profile, 
+                    eventHash, 
+                    "", 
+                    ""
+                )
+
+                checkWorkspaceUpgrade(script, sut.name, sessionId)
+            },
+            ProvisionNodes:
+            {
+                // Make changes here if necessary.
+                final String pythonPackages = 'jeeves==4.1.0 phonograph==5.2.0 selenium==3.0.1'
+                def numberOfSlaves = 1
+                def numberOfExecutors = '1'
+                scvmmInstance.createNodes(numberOfSlaves, 60, numberOfExecutors)
+                bootstrapDependencies(
+                    script, 
+                    pythonPackages, 
+                    relativityBranch, 
+                    relativityBuildVersion, 
+                    relativityBuildType, 
+                    sessionId
+                )
+            }
+        )
+    }
+
+}
 
 
 /*****************

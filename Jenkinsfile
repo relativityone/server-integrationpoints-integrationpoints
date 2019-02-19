@@ -60,53 +60,13 @@ properties([
 	])
 ])
 
-@Field
-def sut = null
-
 def jenkinsHelpers = null
-
-def version = null
-def commonBuildArgs = null
-
-def relativityBuildVersion = ""
-def relativityBuildType = ""
-def relativityBranch = params.relativityBranch ?: env.BRANCH_NAME
-
-
-def chef_attributes = 'fluidOn:1,cdonprem:1'
-def ripCookbooks = getCookbooks()
 
 def numberOfFailedTests = -1
 def numberOfPassedTests = -1
 def numberOfSkippedTests = -1
 
-def installing_relativity = true
-def installing_invariant = false
-def installing_analytics = false
-def installing_datagrid = false
-
 def agentsPool = "SCVMM-AGENTS-POOL"
-
-// Do not modify.
-def run_list = createRunList(installing_relativity, installing_invariant, installing_analytics, installing_datagrid)
-def profile = createProfile(installing_relativity, installing_invariant, installing_analytics, installing_datagrid)
-def knife = 'C:\\Python27\\Lib\\site-packages\\jeeves\\knife.rb'
-def session_id = System.currentTimeMillis().toString()
-def event_hash = java.security.MessageDigest.getInstance("MD5").digest(env.JOB_NAME.bytes).encodeHex().toString()
-def ScvmmInstance = scvmm(this, session_id)
-ScvmmInstance.setHoursToLive("12")
-
-// Make changes here if necessary.
-def python_packages = 'jeeves==4.1.0 phonograph==5.2.0 selenium==3.0.1'
-
-// *********
-// IMPORTANT
-// *********
-// Set variable below to the branch name, when you create new release branch!!!
-// This should be changed on the release branch
-def relativityBranchFallback = "develop"
-
-def pipeline = null
 
 timestamps
 {
@@ -150,80 +110,7 @@ timestamps
 				// Provision SUT
 				stage('Install RAID')
 				{
-					timeout(time: 90, unit: 'MINUTES')
-					{
-						echo "Getting server from pool, session_id: $session_id, Relativity build type: $params.relativityBuildType, event hash: $event_hash"
-
-						sut = ScvmmInstance.getServerFromPool()
-
-						echo "Acquired server: ${sut.name} @ ${sut.domain} (${sut.ip})"
-
-						parallel (
-							Deploy:
-							{
-								if (installing_relativity)
-								{
-									(relativityBuildVersion, relativityBranch, relativityBuildType) = jenkinsHelpers.getNewBranchAndVersion(
-										relativityBranchFallback, 
-										relativityBranch, 
-										params.relativityBuildVersion, 
-										params.relativityBuildType, 
-										session_id
-									)
-									echo "Installing Relativity, branch: $relativityBranch, version: $relativityBuildVersion, type: $relativityBuildType"
-								}
-
-								uploadEnvironmentFile(
-									this, 
-									sut.name, 
-									relativityBuildVersion, 
-									relativityBranch, 
-									relativityBuildType,
-									"", //invariant version
-									"", //invariant branch
-									ripCookbooks, 
-									chef_attributes, 
-									knife,
-									"", //analytics version
-									"", //analytics branch
-									session_id, 
-									installing_relativity, 
-									installing_invariant, 
-									installing_analytics
-								)
-
-								addRunlist(
-									this, 
-									session_id, 
-									sut.name, 
-									sut.domain, 
-									sut.ip, 
-									run_list, 
-									knife, 
-									profile, 
-									event_hash, 
-									"", 
-									""
-								)
-
-								checkWorkspaceUpgrade(this, sut.name, session_id)
-							},
-							ProvisionNodes:
-							{
-								def numberOfSlaves = 1
-								def numberOfExecutors = '1'
-								ScvmmInstance.createNodes(numberOfSlaves, 60, numberOfExecutors)
-								bootstrapDependencies(
-									this, 
-									python_packages, 
-									relativityBranch, 
-									relativityBuildVersion, 
-									relativityBuildType, 
-									session_id
-								)
-							}
-						)
-					}
+                    jenkinsHelpers.raid(this)
 				}
 
 				// Run tests on provisioned SUT
