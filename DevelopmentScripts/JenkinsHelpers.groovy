@@ -67,7 +67,25 @@ class RIPPipelineState
 
         sut = scvmmInstance.getServerFromPool()
         script.echo "Acquired server: ${sut.name} @ ${sut.domain} (${sut.ip})"
+    }
 
+    def provisionNodes()
+    {
+        script.echo "Start provisioning"
+        // Make changes here if necessary.
+        final String pythonPackages = 'jeeves==4.1.0 phonograph==5.2.0 selenium==3.0.1'
+        def numberOfSlaves = 1
+        def numberOfExecutors = '1'
+        scvmmInstance.createNodes(numberOfSlaves, 60, numberOfExecutors)
+        script.bootstrapDependencies(
+            script, 
+            pythonPackages, 
+            relativityBranch, 
+            relativityBuildVersion, 
+            relativityBuildType, 
+            sessionId
+        )
+        script.echo "Provisioning DONE"
     }
 
 }
@@ -213,19 +231,7 @@ def raid()
             },
             ProvisionNodes:
             {
-                // Make changes here if necessary.
-                final String pythonPackages = 'jeeves==4.1.0 phonograph==5.2.0 selenium==3.0.1'
-                def numberOfSlaves = 1
-                def numberOfExecutors = '1'
-                scvmmInstance.createNodes(numberOfSlaves, 60, numberOfExecutors)
-                bootstrapDependencies(
-                    script, 
-                    pythonPackages, 
-                    relativityBranch, 
-                    relativityBuildVersion, 
-                    relativityBuildType, 
-                    sessionId
-                )
+                ripPipelineState.provisionNodes()
             }
         )
     }
