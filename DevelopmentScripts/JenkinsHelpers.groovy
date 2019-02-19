@@ -34,14 +34,23 @@ def createRIPPipeline(jenkins, params, currentBuild)
 class RIPPipeline
 {
     private final jenkins
+    private final env
     private final params
     private final currentBuild
 
     private commonBuildArgs = null
 
-    RIPPipeline(jenkins, params, currentBuild)
+    /*
+     * @param jenkins - the whole Jenkinsfile script - pipeline with all its plugins, etc. */
+     */
+    RIPPipeline(
+        jenkins,
+        env,
+        params, 
+        currentBuild)
     {
         this.jenkins = jenkins
+        this.env = env
         this.params = params
         this.currentBuild = currentBuild
     }
@@ -51,7 +60,7 @@ class RIPPipeline
         def version = incrementBuildVersion(Constants.PACKAGE_NAME, params.relativityBuildType)
         currentBuild.displayName = "$params.relativityBuildType-$version"
         commonBuildArgs = "release $params.relativityBuildType -ci -v $version -b $env.BRANCH_NAME"
-        echo "RIPPipeline::getVersion set commonBuildArgs to: $commonBuildArgs"
+        jenkins.echo "RIPPipeline::getVersion set commonBuildArgs to: $commonBuildArgs"
     }
 
     /**
