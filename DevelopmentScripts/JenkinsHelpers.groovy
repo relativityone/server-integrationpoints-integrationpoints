@@ -65,6 +65,25 @@ def package()
     powershell "./build.ps1 -sk -package -root ./BuildPackages $ripPipelineState.commonBuildArgs"
 }
 
+def stashTestsArtifacts()
+{
+    timeout(time: 3, unit: 'MINUTES')
+    {
+        stash includes: 'lib/UnitTests/**', name: 'testdlls'
+        stash includes: 'DynamicallyLoadedDLLs/Search-Standard/*', name: 'dynamicallyLoadedDLLs'
+        stash includes: 'Applications/RelativityIntegrationPoints.Auto.rap', name: 'integrationPointsRap'
+        stash includes: 'DevelopmentScripts/IntegrationPointsTests.*', name: 'nunitProjectFiles'
+        stash includes: 'DevelopmentScripts/NUnit.ConsoleRunner/tools/*', name: 'nunitConsoleRunner'
+        stash includes: 'DevelopmentScripts/NUnit.Extension.NUnitProjectLoader/tools/*', name: 'nunitProjectLoader'
+        stash includes: 'DevelopmentScripts/*.ps1', name: 'buildScripts'
+        stash includes: 'build.ps1', name: 'buildps1'
+        stash includes: 'Vendor/psake/tools/*', name: 'psake'
+        stash includes: 'Vendor/NuGet/NuGet.exe', name: 'nuget'
+        stash includes: 'Version/version.txt', name: 'version'
+    }
+}
+
+
 
 /*****************
  *** PRIVATE *****
