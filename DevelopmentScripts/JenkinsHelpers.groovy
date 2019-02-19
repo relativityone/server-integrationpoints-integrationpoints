@@ -71,11 +71,6 @@ class RIPPipeline
         jenkins.echo "RIPPipeline::getVersion set commonBuildArgs to: $commonBuildArgs"
     }
 
-    def build()
-    {
-        echo ripPipelineState.commonBuildArgs
-    }
-
     /**
     * Return the current build version in the TeamCity versioning database & increment
     * for the next build if necessary. Basically a pass-through to the New-TeamCityBuildVersion.ps1
@@ -107,6 +102,11 @@ def getVersion()
     echo "RIPPipeline::getVersion set commonBuildArgs to: $ripPipelineState.commonBuildArgs"
 }
 
+def build()
+{
+    echo ripPipelineState.commonBuildArgs
+}
+
 /**
 * Return the current build version in the TeamCity versioning database & increment
 * for the next build if necessary. Basically a pass-through to the New-TeamCityBuildVersion.ps1
@@ -116,7 +116,7 @@ def getVersion()
 * @param buildType   Build type of the current build, e.g. 'DEV', 'GOLD', etc. Affects how the next version is incremented.
 * @return String indicating the current build version, e.g. "10.2.1.3".
 */
-def incrementBuildVersion(String packageName, String buildType)
+private incrementBuildVersion(String packageName, String buildType)
 {
     def versionOutput = powershell(returnStdout: true, script: ".\\DevelopmentScripts\\New-TeamCityBuildVersion.ps1 -Product '$packageName' -Project 'Development' -ServerType 'Jenkins' -BuildType '$buildType'")
     return versionOutput.tokenize()[0]
