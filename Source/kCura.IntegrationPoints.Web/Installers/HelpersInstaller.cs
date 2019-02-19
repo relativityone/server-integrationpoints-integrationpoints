@@ -10,7 +10,7 @@ namespace kCura.IntegrationPoints.Web.Installers
 		public void Install(IWindsorContainer container, IConfigurationStore store)
 		{
 			container.Register(Component.For<IRelativityUrlHelper>().ImplementedBy<RelativityUrlHelper>().LifestyleTransient());
-			container.Register(Component.For<SummaryPageSelector>().ImplementedBy<SummaryPageSelector>().LifestyleSingleton());
+			container.Register(Component.For<SummaryPageSelector>().LifestyleSingleton());
 		}
 	}
 }
