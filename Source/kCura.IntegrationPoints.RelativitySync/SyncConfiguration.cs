@@ -17,7 +17,6 @@ namespace kCura.IntegrationPoints.RelativitySync
 		private int? _sourceJobArtifactTypeId;
 		private int? _sourceJobTagArtifactId;
 		private int? _sourceWorkspaceTagArtifactId;
-		private string _sourceWorkspaceTagName;
 		private int? _destinationWorkspaceTagArtifactId;
 		private Guid? _exportRunId;
 		private List<int> _batchesIds;
@@ -102,7 +101,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		public void SetSourceWorkspaceTag(int artifactId, string name)
 		{
 			_sourceWorkspaceTagArtifactId = artifactId;
-			_sourceWorkspaceTagName = name;
+			SourceWorkspaceTagName = name;
 		}
 
 		public void SetSnapshotData(Guid runId, int totalRecordsCount)
@@ -125,6 +124,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 		public int DestinationWorkspaceArtifactId { get; }
 		public string SourceJobTagName { get; private set; }
+		public string SourceWorkspaceTagName { get; private set; }
 
 		public int SourceJobTagArtifactId => _sourceJobTagArtifactId.Value;
 		public int SourceWorkspaceTagArtifactId => _sourceWorkspaceTagArtifactId.Value;
