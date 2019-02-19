@@ -315,7 +315,7 @@ timestamps
 								}
 
                                 powershell "Import-Module ./Vendor/psake/tools/psake.psm1; Invoke-psake ./DevelopmentScripts/psake-test.ps1 generate_nunit_reports" 
-                                archiveArtifacts artifacts: "$ARTIFACTS_PATH/**/*", fingerprint: true, allowEmptyArchive: true
+                                archiveArtifacts artifacts: "$jenkinsHelpers.Constants.ARTIFACTS_PATH/**/*", fingerprint: true, allowEmptyArchive: true
 
 								if (!params.skipIntegrationTests)
 								{
