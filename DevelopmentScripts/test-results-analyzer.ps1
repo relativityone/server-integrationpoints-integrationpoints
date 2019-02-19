@@ -27,7 +27,7 @@ function store_tests_results($branch_id, $build_name, $test_type, $test_results_
 		    Message = $testCase.output.'#cdata-section'
 	    } | ConvertTo-Json
 
-        $request = Invoke-WebRequest -Uri $url -ContentType "application/json" -Method POST -Body $body
+        $request = Invoke-WebRequest -Uri $url -UseBasicParsing -ContentType "application/json" -Method POST -Body $body
 
         if($request.StatusCode -eq 200)
         {
