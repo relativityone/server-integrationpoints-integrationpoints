@@ -36,6 +36,8 @@ class RIPPipelineState
     // This should be changed on the release branch
     final String relativityBranchFallback = "develop"
 
+    final env
+    final params
     final String sessionId = System.currentTimeMillis().toString()
     final String eventHash = java.security.MessageDigest.getInstance("MD5").digest(env.JOB_NAME.bytes).encodeHex().toString()
 
@@ -46,10 +48,21 @@ class RIPPipelineState
     def commonBuildArgs
     def scvmmInstance
     def sut
+
+    RIPPipelineState(env, params)
+    {
+        this.env = env
+        this.params = params
+    }
 }
 
 // State for the whole pipeline
-ripPipelineState = new RIPPipelineState()
+ripPipelineState = null
+
+def initializeRIPPipeline(env, params)
+{
+    ripPipelineState = new RIPPipelineState(env, params)
+}
 
 def getVersion()
 {
