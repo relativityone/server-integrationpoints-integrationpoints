@@ -7,7 +7,7 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Web.Infrastructure.Session;
 using Relativity.API;
 
-namespace kCura.IntegrationPoints.Web.Infrastructure
+namespace kCura.IntegrationPoints.Web.Installers
 {
 	public class InfrastructureInstaller : IWindsorInstaller
 	{

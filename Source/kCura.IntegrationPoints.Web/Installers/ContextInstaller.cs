@@ -3,7 +3,7 @@ using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Web.Context.WorkspaceIdProvider;
 
-namespace kCura.IntegrationPoints.Web.Context
+namespace kCura.IntegrationPoints.Web.Installers
 {
 	public class ContextInstaller : IWindsorInstaller
 	{

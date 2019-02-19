@@ -7,7 +7,6 @@ using System.Web.Mvc;
 
 namespace kCura.IntegrationPoints.Web.Installers
 {
-	// This class is used by Castle.Windsor
 	public class ControllersInstaller : IWindsorInstaller
 	{
 		public void Install(IWindsorContainer container, IConfigurationStore store)

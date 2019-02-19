@@ -3,8 +3,11 @@ using Castle.Windsor;
 
 namespace kCura.IntegrationPoints.Web.IntegrationPointsServices.Logging
 {
-	internal static class LoggingInstaller
+	internal static class LoggingRegistration
 	{
+		/// <summary>
+		/// Registers <see cref="IWebCorrelationContextProvider"/> in a container.
+		/// </summary>
 		public static IWindsorContainer AddLoggingContext(this IWindsorContainer container)
 		{
 			container.Register(Component.For<ICacheHolder>().ImplementedBy<CacheHolder>().LifestyleSingleton());

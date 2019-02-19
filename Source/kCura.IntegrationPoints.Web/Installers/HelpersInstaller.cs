@@ -1,8 +1,9 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Web.Helpers;
 
-namespace kCura.IntegrationPoints.Web.Helpers
+namespace kCura.IntegrationPoints.Web.Installers
 {
 	public class HelpersInstaller : IWindsorInstaller
 	{

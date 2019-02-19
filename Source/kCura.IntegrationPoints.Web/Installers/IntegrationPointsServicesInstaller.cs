@@ -8,24 +8,20 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Web.Context.WorkspaceIdProvider;
+using kCura.IntegrationPoints.Web.IntegrationPointsServices;
 using kCura.IntegrationPoints.Web.IntegrationPointsServices.Logging;
 using Relativity.API;
 
-namespace kCura.IntegrationPoints.Web.IntegrationPointsServices
+namespace kCura.IntegrationPoints.Web.Installers
 {
 	public class IntegrationPointsServicesInstaller : IWindsorInstaller
 	{
 		public void Install(IWindsorContainer container, IConfigurationStore store)
 		{
-			RegisterHelpers(container);
 			RegisterCoreIntegrationPointsServices(container);
+			RegisterHelpers(container);
 
 			container.AddLoggingContext();
-		}
-
-		private void RegisterHelpers(IWindsorContainer container)
-		{
-			container.Register(Component.For<IFolderTreeBuilder>().ImplementedBy<FolderTreeBuilder>().LifestyleTransient());
 		}
 
 		private void RegisterCoreIntegrationPointsServices(IWindsorContainer container)
@@ -56,6 +52,11 @@ namespace kCura.IntegrationPoints.Web.IntegrationPointsServices
 				.ImplementedBy<ClaimsTokenGenerator>()
 				.LifestyleTransient()
 			);
+		}
+
+		private void RegisterHelpers(IWindsorContainer container)
+		{
+			container.Register(Component.For<IFolderTreeBuilder>().ImplementedBy<FolderTreeBuilder>().LifestyleTransient());
 		}
 
 		private WebClientFactory WebClientFactoryFactory(IKernel kernel)
