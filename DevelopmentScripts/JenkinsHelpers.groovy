@@ -57,16 +57,16 @@ class RIPPipelineState
         this.params = params
     }
 
-    def getServerFromPool(echo)
+    def getServerFromPool()
     {
         eventHash = java.security.MessageDigest.getInstance("MD5").digest(env.JOB_NAME.bytes).encodeHex().toString()
-        echo "Getting server from pool, sessionId: $sessionId, Relativity build type: $params.relativityBuildType, event hash: $eventHash"
+        script.echo "Getting server from pool, sessionId: $sessionId, Relativity build type: $params.relativityBuildType, event hash: $eventHash"
 
-        scvmmInstance = scvmm(script, sessionId)
+        scvmmInstance = script.scvmm(script, sessionId)
         scvmmInstance.setHoursToLive("12")
 
         sut = scvmmInstance.getServerFromPool()
-        echo "Acquired server: ${sut.name} @ ${sut.domain} (${sut.ip})"
+        script.echo "Acquired server: ${sut.name} @ ${sut.domain} (${sut.ip})"
 
     }
 
@@ -138,7 +138,7 @@ def raid()
 {
     timeout(time: 90, unit: 'MINUTES')
     {
-        ripPipelineState.getServerFromPool(this.&echo)
+        ripPipelineState.getServerFromPool()
         def sut = ripPipelineState.sut
 
         final installingRelativity = true
