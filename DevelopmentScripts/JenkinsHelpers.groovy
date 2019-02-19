@@ -50,6 +50,16 @@ def build()
     archiveArtifacts artifacts: "DevelopmentScripts/*.html", fingerprint: true
 }
 
+def unitTest()
+{
+    timeout(time: 3, unit: 'MINUTES')
+    {
+        powershell "./build.ps1 -sk -t $ripPipelineState.commonBuildArgs"
+        archiveArtifacts artifacts: "TestLogs/*", fingerprint: true
+        currentBuild.result = 'SUCCESS'
+    }
+}
+
 /*****************
  *** PRIVATE *****
 /*****************

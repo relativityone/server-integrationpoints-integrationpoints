@@ -133,12 +133,7 @@ timestamps
 			}
 			stage ('Unit Tests')
 			{
-				timeout(time: 3, unit: 'MINUTES')
-				{
-					powershell "./build.ps1 -sk -t $commonBuildArgs"
-					archiveArtifacts artifacts: "TestLogs/*", fingerprint: true
-					currentBuild.result = 'SUCCESS'
-				}
+				jenkinsHelpers.unitTest()
 			}
 			stage ('Package')
 			{
