@@ -21,77 +21,18 @@ interface Constants
     final String INTEGRATION_TESTS_RESULTS_REPORT_PATH = "$ARTIFACTS_PATH/IntegrationTestsResults.xml"
 }
 
+// TODO remove once the pipeline is moved here
 def getConstants()
 {
     return Constants
-}
-
-def createRIPPipeline(
-    jenkins, 
-    env, 
-    params, 
-    currentBuild)
-{
-    return new RIPPipeline(
-        jenkins, 
-        env, 
-        params, 
-        currentBuild)
-}
-
-class RIPPipeline
-{
-    private final jenkins
-    private final env
-    private final params
-    private final currentBuild
-
-    private commonBuildArgs = null
-
-    /*
-     * @param jenkins - the whole Jenkinsfile script - pipeline with all its plugins, etc.
-     */
-    RIPPipeline(
-        jenkins,
-        env,
-        params, 
-        currentBuild)
-    {
-        this.jenkins = jenkins
-        this.env = env
-        this.params = params
-        this.currentBuild = currentBuild
-    }
-
-    def getVersion()
-    {
-        def version = incrementBuildVersion(Constants.PACKAGE_NAME, params.relativityBuildType)
-        currentBuild.displayName = "$params.relativityBuildType-$version"
-        commonBuildArgs = "release $params.relativityBuildType -ci -v $version -b $env.BRANCH_NAME"
-        jenkins.echo "RIPPipeline::getVersion set commonBuildArgs to: $commonBuildArgs"
-    }
-
-    /**
-    * Return the current build version in the TeamCity versioning database & increment
-    * for the next build if necessary. Basically a pass-through to the New-TeamCityBuildVersion.ps1
-    * script. Examine that script for info about how CI build versioning works.
-    *
-    * @param packageName Name of the package being versioned. Equivalent to the "Product" for purposes of build versioning or the folder in the bld-pkgs Packages folder.
-    * @param buildType   Build type of the current build, e.g. 'DEV', 'GOLD', etc. Affects how the next version is incremented.
-    * @return String indicating the current build version, e.g. "10.2.1.3".
-    */
-    private incrementBuildVersion(String packageName, String buildType)
-    {
-        def versionOutput = jenkins.powershell(returnStdout: true, script: ".\\DevelopmentScripts\\New-TeamCityBuildVersion.ps1 -Product '$packageName' -Project 'Development' -ServerType 'Jenkins' -BuildType '$buildType'")
-        return versionOutput.tokenize()[0]
-    }
-
 }
 
 class RIPPipelineState
 {
     def commonBuildArgs
 }
+
+// State for the whole pipeline
 ripPipelineState = new RIPPipelineState()
 
 def getVersion()
@@ -104,8 +45,14 @@ def getVersion()
 
 def build()
 {
-    echo ripPipelineState.commonBuildArgs
+    def sonarParameter = shouldRunSonar(params.enableSonarAnalysis, env.BRANCH_NAME)
+    powershell "./build.ps1 $sonarParameter $ripPipelineState.commonBuildArgs"
+    archiveArtifacts artifacts: "DevelopmentScripts/*.html", fingerprint: true
 }
+
+/*****************
+ *** PRIVATE *****
+/*****************
 
 /**
 * Return the current build version in the TeamCity versioning database & increment
@@ -170,7 +117,7 @@ def isNightly()
 	return env.JOB_NAME.contains(Constants.NIGHTLY_JOB_NAME)
 }
 
-def shouldRunSonar(Boolean enableSonarAnalysis, String branchName)
+private shouldRunSonar(Boolean enableSonarAnalysis, String branchName)
 {
 	return (enableSonarAnalysis && branchName == "develop" && !isNightly())
 			? "-sonarqube"

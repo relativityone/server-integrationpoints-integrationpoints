@@ -130,9 +130,6 @@ timestamps
 			stage ('Build')
 			{
                 jenkinsHelpers.build()
-				def sonarParameter = jenkinsHelpers.shouldRunSonar(params.enableSonarAnalysis, env.BRANCH_NAME)
-				powershell "./build.ps1 $sonarParameter $commonBuildArgs"
-				archiveArtifacts artifacts: "DevelopmentScripts/*.html", fingerprint: true
 			}
 			stage ('Unit Tests')
 			{
