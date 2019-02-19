@@ -168,7 +168,7 @@ timestamps
 				}
 			}
 
-			if (jenkinsHelpers.testingVMsAreRequired())
+			if (jenkinsHelpers.testingVMsAreRequired(params))
 			{
 				// Provision SUT
 				stage('Install RAID')
