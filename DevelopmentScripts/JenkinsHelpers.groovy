@@ -83,6 +83,11 @@ def stashTestsArtifacts()
     }
 }
 
+def testingVMsAreRequired(params)
+{
+	return !params.skipIntegrationTests || !params.skipUITests
+}
+
 
 
 /*****************
@@ -166,11 +171,6 @@ def getSlackChannelName()
 		return "#cd_rip_nightly"
 	}
 	return "#cd_rip_${env.BRANCH_NAME}"
-}
-
-def testingVMsAreRequired(params)
-{
-	return !params.skipIntegrationTests || !params.skipUITests
 }
 
 /*
