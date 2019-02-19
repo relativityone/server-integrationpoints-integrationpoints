@@ -1,7 +1,7 @@
 /**
  ** CONSTANTS
  **/
-final String NIGHTLY_JOB_NAME = "IntegrationPointsNightly"
+@Field final String NIGHTLY_JOB_NAME = "IntegrationPointsNightly"
 final String ARTIFACTS_PATH = 'Artifacts'
 final String QUARANTINED_TESTS_CATEGORY = 'InQuarantine'
 final String INTEGRATION_TESTS_RESULTS_REPORT_PATH = "$ARTIFACTS_PATH/IntegrationTestsResults.xml"
