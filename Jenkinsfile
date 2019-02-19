@@ -62,8 +62,6 @@ properties([
 
 // This repo's package name for purposes of versioning & publishing
 @Field final String PACKAGE_NAME = 'IntegrationPoints'
-@Field final String ARTIFACTS_PATH = 'Artifacts'
-@Field final String INTEGRATION_TESTS_RESULTS_REPORT_PATH = "$ARTIFACTS_PATH/IntegrationTestsResults.xml"
 
 @Field
 def sut = null
@@ -134,7 +132,7 @@ timestamps
 			}
 			stage ('Build')
 			{
-				def sonarParameter = shouldRunSonar(params.enableSonarAnalysis, env.BRANCH_NAME)
+				def sonarParameter = jenkinsHelpers.shouldRunSonar(params.enableSonarAnalysis, env.BRANCH_NAME)
 				powershell "./build.ps1 $sonarParameter $commonBuildArgs"
 				archiveArtifacts artifacts: "DevelopmentScripts/*.html", fingerprint: true
 			}
@@ -170,7 +168,7 @@ timestamps
 				}
 			}
 
-			if (testingVMsAreRequired())
+			if (jenkinsHelpers.testingVMsAreRequired())
 			{
 				// Provision SUT
 				stage('Install RAID')
@@ -188,7 +186,7 @@ timestamps
 							{
 								if (installing_relativity)
 								{
-									(relativityBuildVersion, relativityBranch, relativityBuildType) = getNewBranchAndVersion(
+									(relativityBuildVersion, relativityBranch, relativityBuildType) = jenkinsHelpers.getNewBranchAndVersion(
 										relativityBranchFallback, 
 										relativityBranch, 
 										params.relativityBuildVersion, 
@@ -292,7 +290,7 @@ timestamps
 						}
 						stage ('UI Tests')
 						{
-							updateChromeToLatestVersion()
+							jenkinsHelpers.updateChromeToLatestVersion()
 							timeout(time: 8, unit: 'HOURS')
 							{
 								jenkinsHelpers.runUiTests(params)
@@ -321,9 +319,9 @@ timestamps
 
 								if (!params.skipIntegrationTests)
 								{
-                                    numberOfFailedTests = getTestsStatistic('failed')
-                                    numberOfPassedTests = getTestsStatistic('passed')
-                                    numberOfSkippedTests = getTestsStatistic('skipped')
+                                    numberOfFailedTests = jenkinsHelpers.getTestsStatistic('failed')
+                                    numberOfPassedTests = jenkinsHelpers.getTestsStatistic('passed')
+                                    numberOfSkippedTests = jenkinsHelpers.getTestsStatistic('skipped')
                                 }
 							}
 						}
@@ -438,7 +436,7 @@ timestamps
 								"Relativity branch: ${relativityBranch} \n" +
 								"Relativity build type: ${relativityBuildType} \n" +
 								"Relativity build version: ${(relativityBuildVersion ?: "0.0.0.0")}"
-							slackSend channel: getSlackChannelName().toString(), color: "E8E8E8", message: "${message}", teamDomain: 'kcura-pd', token: token
+							slackSend channel: jenkinsHelpers.getSlackChannelName().toString(), color: "E8E8E8", message: "${message}", teamDomain: 'kcura-pd', token: token
 						}
 					}
 				}
@@ -449,156 +447,4 @@ timestamps
 			}
 		}
 	}
-}
-
-def shouldRunSonar(Boolean enableSonarAnalysis, String branchName)
-{
-	return (enableSonarAnalysis && branchName == "develop" && !isNightly())
-			? "-sonarqube"
-			: ""
-}
-
-def getSlackChannelName()
-{
-	if (isNightly() && env.BRANCH_NAME == "develop")
-	{
-		return "#cd_rip_nightly"
-	}
-	return "#cd_rip_${env.BRANCH_NAME}"
-}
-
-def getTestsStatistic(String prop)
-{
-	try
-	{
-		def cmd = ('''
-			[xml]$testResults = Get-Content '''
-			+ INTEGRATION_TESTS_RESULTS_REPORT_PATH  
-			+ '''; $testResults.'test-run'.'''
-			+ "'$prop'")
-
-		echo "getTestsStatistic cmd: $cmd"
-		def stdout = powershell returnStdout: true, script: cmd
-		echo "getTestsStatistic result: $stdout"
-
-		return stdout ?: -1
-	}
-	catch(err)
-	{
-		echo "getTestsStatistic error: $err"
-		return -1
-	}
-}
-
-def testingVMsAreRequired()
-{
-	return !params.skipIntegrationTests || !params.skipUITests
-}
-
-def getNewBranchAndVersion(
-	String relativityBranchFallback, 
-	String relativityBranch, 
-	String paramRelativityBuildVersion, 
-	String paramRelativityBuildType, 
-	String sessionId)
-{
-	def firstFallbackBranch = relativityBranchFallback // we should change first fallback branch on RIP release branches
-	def GOLD_BUILD_TYPE = "GOLD"
-	def DEV_BUILD_TYPE = "DEV"
-	def relativityBranchesToTry = [
-		[relativityBranch, paramRelativityBuildType], 
-		[firstFallbackBranch, DEV_BUILD_TYPE], 
-		[firstFallbackBranch, GOLD_BUILD_TYPE], 
-		["master", GOLD_BUILD_TYPE]
-	]
-
-	for (branchAndType in relativityBranchesToTry)
-	{
-		def branch = branchAndType[0]
-		def buildType = branchAndType[1]
-
-		echo "Retrieving latest Relativity '$buildType' build from '$branch' branch"
-
-		def buildVersion = tryGetBuildVersion(branch, paramRelativityBuildVersion, buildType, sessionId)
-		if (buildVersion != null)
-		{
-			return [buildVersion, branch, buildType]
-		}
-	}
-
-	error 'Failed to retrieve Relativity branch/version'
-}
-
-def tryGetBuildVersion(
-	String relativityBranch, 
-	String paramRelativityBuildVersion, 
-	String paramRelativityBuildType, 
-	String sessionId)
-{
-	try
-	{
-		if (!isRelativityBranchPresent(relativityBranch))
-		{
-			echo "Branch was not found: $relativityBranch"
-			return null
-		}
-		def latestVersion = paramRelativityBuildVersion ?: getLatestVersion(relativityBranch, paramRelativityBuildType)
-		echo "Checking Relativity artifacts for version: $latestVersion"
-		return checkRelativityArtifacts(relativityBranch, latestVersion, paramRelativityBuildType)
-				? latestVersion
-				: null
-	}
-	catch (err)
-	{
-		echo "Error occured while getting build version for: '$relativityBranch' Relativity branch, version '$paramRelativityBuildVersion', type '$paramRelativityBuildType', error: $err"
-		return null
-	}
-}
-
-def isRelativityBranchPresent(branch)
-{
-	def command = "([System.IO.DirectoryInfo]\"//bld-pkgs/Packages/Relativity/$branch\").Exists"
-	return isTrue(powershell(returnStdout: true, script: command))
-}
-
-def getLatestVersion(branch, type)
-{
-	def command = '''
-		$result = (Get-ChildItem -path "\\\\bld-pkgs\\Packages\\Relativity\\%1$s" |
-			? { (Get-ChildItem -Path $_.FullName).Name -like "BuildType_%2$s" } |
-			ForEach-Object { $_.Name } | ForEach-Object { [System.Version] $_ } | sort) | Select-Object -Last 1;
-		if (!$result)
-		{
-			return ''
-		}
-		else
-		{
-			return $result.ToString()
-		}
-	'''
-
-	return powershell(returnStdout: true, script: String.format(command, branch, type)).trim()
-}
-
-def checkRelativityArtifacts(branch, version, type)
-{
-	def command = "([System.IO.FileInfo]\"//bld-pkgs/Packages/Relativity/$branch/$version/MasterPackage/$type $version Relativity.exe\").Exists"
-	def result = powershell(returnStdout: true, script: command)
-	return isTrue(result)
-}
-
-def updateChromeToLatestVersion()
-{
-	try
-    {
-		powershell """
-            Invoke-WebRequest "http://dl.google.com/chrome/install/latest/chrome_installer.exe" -OutFile chrome_installer.exe
-            Start-Process -FilePath chrome_installer.exe -Args "/silent /install" -Verb RunAs -Wait
-            (Get-Item (Get-ItemProperty "HKLM:/SOFTWARE/Microsoft/Windows/CurrentVersion/App Paths/chrome.exe")."(Default)").VersionInfo
-        """
-    }
-    catch(err)
-    {
-        echo "An error occured while updating Chrome: $err"
-    }
 }
