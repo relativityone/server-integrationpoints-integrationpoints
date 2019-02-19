@@ -1,5 +1,6 @@
 import groovy.transform.Field
 
+@Field
 enum TestTypeT {
     integration,
     ui,
