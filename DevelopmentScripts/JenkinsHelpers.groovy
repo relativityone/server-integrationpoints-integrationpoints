@@ -36,6 +36,7 @@ class RIPPipelineState
     // This should be changed on the release branch
     final String relativityBranchFallback = "develop"
 
+    final script
     final env
     final params
     final String sessionId = System.currentTimeMillis().toString()
@@ -49,11 +50,26 @@ class RIPPipelineState
     def scvmmInstance
     def sut
 
-    RIPPipelineState(env, params)
+    RIPPipelineState(script, env, params)
     {
+        this.script = script
         this.env = env
         this.params = params
     }
+
+    def getServerFromPool()
+    {
+        eventHash = java.security.MessageDigest.getInstance("MD5").digest(env.JOB_NAME.bytes).encodeHex().toString()
+        echo "Getting server from pool, sessionId: $sessionId, Relativity build type: $params.relativityBuildType, event hash: $eventHash"
+
+        scvmmInstance = scvmm(script, sessionId)
+        scvmmInstance.setHoursToLive("12")
+
+        sut = scvmmInstance.getServerFromPool()
+        echo "Acquired server: ${sut.name} @ ${sut.domain} (${sut.ip})"
+
+    }
+
 }
 
 // State for the whole pipeline
@@ -118,22 +134,12 @@ def testingVMsAreRequired(params)
 	return !params.skipIntegrationTests || !params.skipUITests
 }
 
-/*
- * @param script - workflow script (Jenkins pipeline)
- */
-def raid(script)
+def raid()
 {
     timeout(time: 90, unit: 'MINUTES')
     {
-        eventHash = java.security.MessageDigest.getInstance("MD5").digest(env.JOB_NAME.bytes).encodeHex().toString()
-        echo "Getting server from pool, sessionId: $sessionId, Relativity build type: $params.relativityBuildType, event hash: $eventHash"
-
-        scvmmInstance = scvmm(script, session_id)
-        scvmmInstance.setHoursToLive("12")
-
-        sut = scvmmInstance.getServerFromPool()
-
-        echo "Acquired server: ${sut.name} @ ${sut.domain} (${sut.ip})"
+        ripPipelineState.getServerFromPool()
+        def sut = ripPipelineState.sut
 
         final installingRelativity = true
         final installingInvariant = false
@@ -146,6 +152,14 @@ def raid(script)
         final knife = 'C:\\Python27\\Lib\\site-packages\\jeeves\\knife.rb'
         def chefAttributes = 'fluidOn:1,cdonprem:1'
         def ripCookbooks = getCookbooks()
+
+        def relativityBuildVersion = ripPipelineState.relativityBuildVersion
+        def relativityBranch = ripPipelineState.relativityBranch
+        def relativityBuildType = ripPipelineState.relativityBuildType
+
+        def sessionId = ripPipelineState.sessionId
+        def script = ripPipelineState.script
+        def eventHash = ripPipelineState.eventHash
 
         parallel (
             Deploy:
@@ -379,7 +393,7 @@ def tryGetBuildVersion(
 	}
 }
 
-def getNewBranchAndVersion(
+private getNewBranchAndVersion(
 	String relativityBranchFallback, 
 	String relativityBranch, 
 	String paramRelativityBuildVersion, 
