@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.Web.Infrastructure.MessageHandlers
 		private readonly IAPILog _logger;
 		private readonly ICPHelper _helper;
 		private readonly Func<IWebCorrelationContextProvider> _webCorrelationContextProviderFactory;
-		private readonly Func<IWorkspaceIdProvider> _workspaceIdProviderFactory;
+		private readonly Func<IWorkspaceContext> _workspaceIdProviderFactory;
 
 		public const string WEB_CORRELATION_ID_HEADER_NAME = "X-Correlation-ID";
 
@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Web.Infrastructure.MessageHandlers
 		public CorrelationIdHandler(
 			ICPHelper helper, 
 			Func<IWebCorrelationContextProvider> webCorrelationContextProviderFactoryFactory, 
-			Func<IWorkspaceIdProvider> workspaceIdProviderFactoryFactory
+			Func<IWorkspaceContext> workspaceIdProviderFactoryFactory
 		)
 		{
 			_helper = helper;

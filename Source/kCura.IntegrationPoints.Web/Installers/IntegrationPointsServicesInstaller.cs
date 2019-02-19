@@ -43,8 +43,8 @@ namespace kCura.IntegrationPoints.Web.Installers
 			);
 			container.Register(Component
 				.For<IWorkspaceDBContext>()
-				.ImplementedBy<WorkspaceContext>()
-				.UsingFactoryMethod(k => new WorkspaceContext(k.Resolve<WebClientFactory>().CreateDbContext()))
+				.ImplementedBy<Data.WorkspaceContext>()
+				.UsingFactoryMethod(k => new Data.WorkspaceContext(k.Resolve<WebClientFactory>().CreateDbContext()))
 				.LifestyleTransient()
 			);
 			container.Register(Component
@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoints.Web.Installers
 		{
 			IHelper helper = kernel.Resolve<IHelper>();
 			IRsapiClientWithWorkspaceFactory rsapiClientFactory = kernel.Resolve<IRsapiClientWithWorkspaceFactory>();
-			IWorkspaceIdProvider workspaceIdProvider = kernel.Resolve<IWorkspaceIdProvider>();
+			IWorkspaceContext workspaceIdProvider = kernel.Resolve<IWorkspaceContext>();
 			return new WebClientFactory(helper, rsapiClientFactory, workspaceIdProvider);
 		}
 	}

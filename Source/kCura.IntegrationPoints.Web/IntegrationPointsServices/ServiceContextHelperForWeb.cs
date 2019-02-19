@@ -10,9 +10,9 @@ namespace kCura.IntegrationPoints.Web.IntegrationPointsServices
 	{
 		private readonly IUserContext _userContext;
 		private readonly ICPHelper _helper;
-		private readonly IWorkspaceIdProvider _workspaceIdProvider;
+		private readonly IWorkspaceContext _workspaceIdProvider;
 
-		public ServiceContextHelperForWeb(ICPHelper helper, IWorkspaceIdProvider workspaceIdProvider, IUserContext userContext)
+		public ServiceContextHelperForWeb(ICPHelper helper, IWorkspaceContext workspaceIdProvider, IUserContext userContext)
 		{
 			_helper = helper;
 			_workspaceIdProvider = workspaceIdProvider;

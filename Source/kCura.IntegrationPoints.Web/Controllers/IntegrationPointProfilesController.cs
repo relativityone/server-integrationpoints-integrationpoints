@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			ITabService tabService,
 			ILDAPServiceFactory ldapServiceFactory,
 			IIntegrationPointProfileService profileService,
-			IWorkspaceIdProvider workspaceIdProvider,
+			IWorkspaceContext workspaceIdProvider,
 			IUserContext userContext
 		) : base(
 			objectTypeRepository,

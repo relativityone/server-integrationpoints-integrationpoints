@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Infrastructure.MessageHandlers
 {
 	public class CorrelationIdHandlerTests : WebControllerTestBase
 	{
-		private Mock<IWorkspaceIdProvider> _workpsaceIdProviderMock;
+		private Mock<IWorkspaceContext> _workpsaceIdProviderMock;
 		private CorrelationIdHandlerMock _subjectUnderTests;
 
 		/// <summary>
@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Infrastructure.MessageHandlers
 			public CorrelationIdHandlerMock(
 				ICPHelper helper,
 				IWebCorrelationContextProvider webCorrelationContextProvide,
-				IWorkspaceIdProvider workspaceIdProvider
+				IWorkspaceContext workspaceIdProvider
 			) : base(
 				helper,
 				() => webCorrelationContextProvide,
@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Infrastructure.MessageHandlers
 
 			InitializeLoggerMockInHelper();
 			IWebCorrelationContextProvider webCorrelationContextProviderMock = GetWebCorrelationContextProviderMock();
-			_workpsaceIdProviderMock = new Mock<IWorkspaceIdProvider>();
+			_workpsaceIdProviderMock = new Mock<IWorkspaceContext>();
 			_subjectUnderTests = new CorrelationIdHandlerMock(Helper, webCorrelationContextProviderMock, _workpsaceIdProviderMock.Object)
 			{
 				InnerHandler = new MockHandler()

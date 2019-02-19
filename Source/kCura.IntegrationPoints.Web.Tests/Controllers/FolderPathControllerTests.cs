@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 		private IImportApiFactory _importApiFactory;
 		private IConfig _config;
 		private IChoiceService _choiceService;
-		private IWorkspaceIdProvider _workspaceIdProvider;
+		private IWorkspaceContext _workspaceIdProvider;
 		private IImportApiFacade _importApiFacade;
 		private ICPHelper _helper;
 
@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			_importApiFactory = Substitute.For<IImportApiFactory>();
 			_config = Substitute.For<IConfig>();
 			_choiceService = Substitute.For<IChoiceService>();
-			_workspaceIdProvider = Substitute.For<IWorkspaceIdProvider>();
+			_workspaceIdProvider = Substitute.For<IWorkspaceContext>();
 			_importApiFacade = Substitute.For<IImportApiFacade>();
 			_configuration = Substitute.For<HttpConfiguration>();
 			_helper = Substitute.For<ICPHelper>();

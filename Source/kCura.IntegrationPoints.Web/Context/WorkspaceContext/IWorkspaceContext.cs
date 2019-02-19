@@ -1,6 +1,6 @@
 ﻿namespace kCura.IntegrationPoints.Web.Context.WorkspaceContext
 {
-	public interface IWorkspaceIdProvider
+	public interface IWorkspaceContext
 	{
 		int GetWorkspaceId();
 	}

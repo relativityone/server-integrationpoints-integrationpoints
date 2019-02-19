@@ -9,9 +9,9 @@ namespace kCura.IntegrationPoints.Web.IntegrationPointsServices
 	{
 		private readonly IHelper _helper;
 		private readonly IRsapiClientWithWorkspaceFactory _factory;
-		private readonly IWorkspaceIdProvider _workspaceIdProvider;
+		private readonly IWorkspaceContext _workspaceIdProvider;
 
-		public WebClientFactory(IHelper helper, IRsapiClientWithWorkspaceFactory factory, IWorkspaceIdProvider workspaceIdProvider)
+		public WebClientFactory(IHelper helper, IRsapiClientWithWorkspaceFactory factory, IWorkspaceContext workspaceIdProvider)
 		{
 			_helper = helper;
 			_factory = factory;

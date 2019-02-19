@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly IRSAPIClient _client;
 		private readonly IFieldService _fieldService;
 		private readonly IChoiceService _choiceService;
-		private readonly IWorkspaceIdProvider _workspaceIdProvider;
+		private readonly IWorkspaceContext _workspaceIdProvider;
 		private readonly IImportApiFacade _importApiFacade;
 		private readonly IAPILog _logger;
 
@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			IRSAPIClient client,
 			IFieldService fieldService,
 			IChoiceService choiceService,
-			IWorkspaceIdProvider workspaceIdProvider,
+			IWorkspaceContext workspaceIdProvider,
 			IImportApiFacade importApiFacade,
 			ICPHelper helper
 			)

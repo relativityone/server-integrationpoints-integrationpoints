@@ -7,7 +7,7 @@ namespace kCura.IntegrationPoints.Web.Context.WorkspaceContext
 	internal static class WorkspaceContextRegistration
 	{
 		/// <summary>
-		/// Registers <see cref="IWorkspaceIdProvider"/> in a container.
+		/// Registers <see cref="IWorkspaceContext"/> in a container.
 		/// </summary>
 		public static IWindsorContainer AddWorkspaceContext(this IWindsorContainer container)
 		{
@@ -22,8 +22,8 @@ namespace kCura.IntegrationPoints.Web.Context.WorkspaceContext
 				.LifestylePerWebRequest()
 			);
 			container.Register(Component
-				.For<IWorkspaceIdProvider>()
-				.ImplementedBy<WorkspaceIdProvider>()
+				.For<IWorkspaceContext>()
+				.ImplementedBy<WorkspaceContext>()
 				.LifestylePerWebRequest()
 			);
 

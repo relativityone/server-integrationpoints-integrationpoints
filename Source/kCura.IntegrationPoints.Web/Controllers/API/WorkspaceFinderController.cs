@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly IHelperFactory _helperFactory;
 		private readonly IHtmlSanitizerManager _htmlSanitizerManager;
 		private readonly IManagerFactory _managerFactory;
-		private readonly IWorkspaceIdProvider _workspaceIdProvider;
+		private readonly IWorkspaceContext _workspaceIdProvider;
 
 		public WorkspaceFinderController(
 			IManagerFactory managerFactory, 
@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			IHtmlSanitizerManager htmlSanitizerManager, 
 			ICPHelper helper,
 			IHelperFactory helperFactory,
-			IWorkspaceIdProvider workspaceIdProvider)
+			IWorkspaceContext workspaceIdProvider)
 		{
 			_managerFactory = managerFactory;
 			_contextContainerFactory = contextContainerFactory;

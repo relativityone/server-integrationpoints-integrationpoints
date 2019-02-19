@@ -92,7 +92,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			_servicesMgrMock = Substitute.For<IServicesMgr>();
 			_contextContainerMock = Substitute.For<IContextContainer>();
 			_helperMock = Substitute.For<IHelper>();
-			IWorkspaceIdProvider workspaceIdProviderMock = CreateWorkspaceIdProviderMock();
+			IWorkspaceContext workspaceIdProviderMock = CreateWorkspaceIdProviderMock();
 
 			_subjectUnderTest = new WorkspaceFinderController(
 				_managerFactoryMock,
@@ -161,9 +161,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			Assert.AreEqual(_remoteWorkspaces[1].Value, retValue[1].Value);
 		}
 
-		private static IWorkspaceIdProvider CreateWorkspaceIdProviderMock()
+		private static IWorkspaceContext CreateWorkspaceIdProviderMock()
 		{
-			IWorkspaceIdProvider workspaceIdProviderMock = Substitute.For<IWorkspaceIdProvider>();
+			IWorkspaceContext workspaceIdProviderMock = Substitute.For<IWorkspaceContext>();
 			workspaceIdProviderMock.GetWorkspaceId().Returns(_CURRENT_WORKSPACE_ARTIFACT_ID);
 			return workspaceIdProviderMock;
 		}

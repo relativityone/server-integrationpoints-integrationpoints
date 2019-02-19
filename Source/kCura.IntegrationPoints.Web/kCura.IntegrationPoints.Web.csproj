@@ -171,8 +171,8 @@
     <Compile Include="Models\Validation\ValidationResultMapper.cs" />
     <Compile Include="Models\WorkspaceModel.cs" />
     <Compile Include="Context\WorkspaceContext\Exceptions\WorkspaceIdNotFoundException.cs" />
-    <Compile Include="Context\WorkspaceContext\WorkspaceIdProvider.cs" />
-    <Compile Include="Context\WorkspaceContext\IWorkspaceIdProvider.cs" />
+    <Compile Include="Context\WorkspaceContext\WorkspaceContext.cs" />
+    <Compile Include="Context\WorkspaceContext\IWorkspaceContext.cs" />
     <Compile Include="Helpers\RelativityUrlHelper.cs" />
     <Compile Include="RequestExtensions.cs" />
     <Compile Include="IntegrationPointsServices\ServiceContextHelperForWeb.cs" />

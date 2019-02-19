@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly ITabService _tabService;
 
-		private readonly IWorkspaceIdProvider _workspaceIdProvider;
+		private readonly IWorkspaceContext _workspaceIdProvider;
 		private readonly IUserContext _userContext;
 
 		protected IntegrationPointBaseController(
@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			IRepositoryFactory repositoryFactory,
 			ITabService tabService,
 			ILDAPServiceFactory ldapServiceFactory,
-			IWorkspaceIdProvider workspaceIdProvider,
+			IWorkspaceContext workspaceIdProvider,
 			IUserContext userContext)
 		{
 			_objectTypeRepository = objectTypeRepository;
