@@ -7,7 +7,7 @@ using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Authentication;
-using kCura.IntegrationPoints.Web.Context.WorkspaceIdProvider;
+using kCura.IntegrationPoints.Web.Context.WorkspaceContext;
 using kCura.IntegrationPoints.Web.IntegrationPointsServices;
 using kCura.IntegrationPoints.Web.IntegrationPointsServices.Logging;
 using Relativity.API;

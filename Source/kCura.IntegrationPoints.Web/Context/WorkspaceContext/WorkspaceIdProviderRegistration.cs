@@ -1,8 +1,8 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.Windsor;
-using kCura.IntegrationPoints.Web.Context.WorkspaceIdProvider.Services;
+using kCura.IntegrationPoints.Web.Context.WorkspaceContext.Services;
 
-namespace kCura.IntegrationPoints.Web.Context.WorkspaceIdProvider
+namespace kCura.IntegrationPoints.Web.Context.WorkspaceContext
 {
 	internal static class WorkspaceIdProviderRegistration
 	{

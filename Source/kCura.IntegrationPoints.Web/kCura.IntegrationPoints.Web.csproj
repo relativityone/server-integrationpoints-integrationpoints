@@ -85,10 +85,10 @@
     <Compile Include="IntegrationPointsServices\Logging\LoggingRegistration.cs" />
     <Compile Include="Installers\InfrastructureInstaller.cs" />
     <Compile Include="Installers\RelativityServicesInstaler.cs" />
-    <Compile Include="Context\WorkspaceIdProvider\Services\IContextService.cs" />
+    <Compile Include="Context\WorkspaceContext\Services\IContextService.cs" />
     <Compile Include="Infrastructure\Session\SessionServiceFactory.cs" />
-    <Compile Include="Context\WorkspaceIdProvider\WorkspaceIdProviderRegistration.cs" />
-    <Compile Include="Context\WorkspaceIdProvider\Services\ControllerCustomPageService.cs" />
+    <Compile Include="Context\WorkspaceContext\WorkspaceIdProviderRegistration.cs" />
+    <Compile Include="Context\WorkspaceContext\Services\ControllerCustomPageService.cs" />
     <Compile Include="Controllers\API\ExportSettingsValidationController.cs" />
     <Compile Include="Controllers\API\FieldCatalogController.cs" />
     <Compile Include="Controllers\API\ImportPreviewController.cs" />
@@ -166,9 +166,9 @@
     <Compile Include="Models\Validation\ValidationResultDTO.cs" />
     <Compile Include="Models\Validation\ValidationResultMapper.cs" />
     <Compile Include="Models\WorkspaceModel.cs" />
-    <Compile Include="Context\WorkspaceIdProvider\Services\Exceptions\WorkspaceIdNotFoundException.cs" />
-    <Compile Include="Context\WorkspaceIdProvider\WorkspaceIdProvider.cs" />
-    <Compile Include="Context\WorkspaceIdProvider\IWorkspaceIdProvider.cs" />
+    <Compile Include="Context\WorkspaceContext\Services\Exceptions\WorkspaceIdNotFoundException.cs" />
+    <Compile Include="Context\WorkspaceContext\WorkspaceIdProvider.cs" />
+    <Compile Include="Context\WorkspaceContext\IWorkspaceIdProvider.cs" />
     <Compile Include="Helpers\RelativityUrlHelper.cs" />
     <Compile Include="RequestExtensions.cs" />
     <Compile Include="IntegrationPointsServices\ServiceContextHelperForWeb.cs" />
@@ -176,7 +176,7 @@
     <Compile Include="SignalRHubs\IntegrationPointDataHubInput.cs" />
     <Compile Include="SignalRHubs\IntegrationPointDataHub.cs" />
     <Compile Include="Startup.cs" />
-    <Compile Include="Context\WorkspaceIdProvider\Services\WebApiCustomPageService.cs" />
+    <Compile Include="Context\WorkspaceContext\Services\WebApiCustomPageService.cs" />
     <Compile Include="IntegrationPointsServices\WebClientFactory.cs" />
     <Compile Include="WindsorCompositionRoot.cs" />
     <Compile Include="WindsorControllerFactory.cs" />

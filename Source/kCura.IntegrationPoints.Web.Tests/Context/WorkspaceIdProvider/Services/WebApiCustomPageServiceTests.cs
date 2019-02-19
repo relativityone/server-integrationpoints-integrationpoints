@@ -1,6 +1,6 @@
 ﻿using System.Web;
 using FluentAssertions;
-using kCura.IntegrationPoints.Web.Context.WorkspaceIdProvider.Services;
+using kCura.IntegrationPoints.Web.Context.WorkspaceContext.Services;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceIdProvider.Services

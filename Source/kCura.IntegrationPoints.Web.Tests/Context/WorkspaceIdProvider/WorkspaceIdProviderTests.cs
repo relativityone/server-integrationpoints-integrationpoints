@@ -1,8 +1,8 @@
 ﻿using System;
 using FluentAssertions;
-using kCura.IntegrationPoints.Web.Context.WorkspaceIdProvider;
-using kCura.IntegrationPoints.Web.Context.WorkspaceIdProvider.Services;
-using kCura.IntegrationPoints.Web.Context.WorkspaceIdProvider.Services.Exceptions;
+using kCura.IntegrationPoints.Web.Context.WorkspaceContext;
+using kCura.IntegrationPoints.Web.Context.WorkspaceContext.Services;
+using kCura.IntegrationPoints.Web.Context.WorkspaceContext.Services.Exceptions;
 using NSubstitute;
 using NUnit.Framework;
 
@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceIdProvider
 			workspaceService1.GetWorkspaceID().Returns(workspaceId);
 
 			IWorkspaceService[] workspaceServices = { workspaceService1 };
-			IWorkspaceIdProvider workspaceIdProvider = new Web.Context.WorkspaceIdProvider.WorkspaceIdProvider(workspaceServices);
+			IWorkspaceIdProvider workspaceIdProvider = new Web.Context.WorkspaceContext.WorkspaceIdProvider(workspaceServices);
 
 			//act
 			int result = workspaceIdProvider.GetWorkspaceId();
@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceIdProvider
 			workspaceService2.GetWorkspaceID().Returns(workspaceId);
 
 			IWorkspaceService[] workspaceServices = { workspaceService1, workspaceService2 };
-			IWorkspaceIdProvider workspaceIdProvider = new Web.Context.WorkspaceIdProvider.WorkspaceIdProvider(workspaceServices);
+			IWorkspaceIdProvider workspaceIdProvider = new Web.Context.WorkspaceContext.WorkspaceIdProvider(workspaceServices);
 
 			//act
 			int result = workspaceIdProvider.GetWorkspaceId();
@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceIdProvider
 		{
 			//arrange
 			var workspaceServices = new IWorkspaceService[] {};
-			IWorkspaceIdProvider workspaceIdProvider = new Web.Context.WorkspaceIdProvider.WorkspaceIdProvider(workspaceServices);
+			IWorkspaceIdProvider workspaceIdProvider = new Web.Context.WorkspaceContext.WorkspaceIdProvider(workspaceServices);
 
 			//act
 			Action act = () => workspaceIdProvider.GetWorkspaceId();
@@ -77,7 +77,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceIdProvider
 			workspaceService2.GetWorkspaceID().Returns(workspaceNotFoundId);
 
 			IWorkspaceService[] workspaceServices = { workspaceService1, workspaceService2 };
-			IWorkspaceIdProvider workspaceIdProvider = new Web.Context.WorkspaceIdProvider.WorkspaceIdProvider(workspaceServices);
+			IWorkspaceIdProvider workspaceIdProvider = new Web.Context.WorkspaceContext.WorkspaceIdProvider(workspaceServices);
 
 			//act
 			Action act = () => workspaceIdProvider.GetWorkspaceId();
@@ -99,7 +99,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceIdProvider
 			workspaceService2.GetWorkspaceID().Returns(workspaceId);
 
 			IWorkspaceService[] workspaceServices = { workspaceService1, workspaceService2 };
-			IWorkspaceIdProvider workspaceIdProvider = new Web.Context.WorkspaceIdProvider.WorkspaceIdProvider(workspaceServices);
+			IWorkspaceIdProvider workspaceIdProvider = new Web.Context.WorkspaceContext.WorkspaceIdProvider(workspaceServices);
 
 			//act
 			int result = workspaceIdProvider.GetWorkspaceId();

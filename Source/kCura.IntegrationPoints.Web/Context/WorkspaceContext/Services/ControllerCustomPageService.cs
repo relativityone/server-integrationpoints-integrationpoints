@@ -2,7 +2,7 @@
 using kCura.IntegrationPoints.Web.Infrastructure.Session;
 using Relativity.API;
 
-namespace kCura.IntegrationPoints.Web.Context.WorkspaceIdProvider.Services
+namespace kCura.IntegrationPoints.Web.Context.WorkspaceContext.Services
 {
 	internal class ControllerCustomPageService : IWorkspaceService
 	{

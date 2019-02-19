@@ -1,6 +1,6 @@
 ﻿using System.Web;
 
-namespace kCura.IntegrationPoints.Web.Context.WorkspaceIdProvider.Services
+namespace kCura.IntegrationPoints.Web.Context.WorkspaceContext.Services
 {
 	internal class WebApiCustomPageService : IWorkspaceService
 	{

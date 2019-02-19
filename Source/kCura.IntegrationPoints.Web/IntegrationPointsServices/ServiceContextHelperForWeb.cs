@@ -1,14 +1,14 @@
 ﻿using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Web.Context.UserContext;
-using kCura.IntegrationPoints.Web.Context.WorkspaceIdProvider;
+using kCura.IntegrationPoints.Web.Context.WorkspaceContext;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.IntegrationPointsServices
 {
 	internal class ServiceContextHelperForWeb : IServiceContextHelper
 	{
-		private const string _USER_HEADER_VALUE = "X-IP-USERID";
+		private const string _USER_HEADER_VALUE = "X-IP-USERID"; // TODO move it to user context provider
 		private const string _CASE_USER_HEADER_VALUE = "X-IP-CASEUSERID";
 
 		private readonly IUserContext _userContext;

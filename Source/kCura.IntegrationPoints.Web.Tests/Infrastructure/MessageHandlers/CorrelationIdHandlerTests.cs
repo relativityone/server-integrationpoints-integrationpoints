@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Domain.Logging;
-using kCura.IntegrationPoints.Web.Context.WorkspaceIdProvider;
+using kCura.IntegrationPoints.Web.Context.WorkspaceContext;
 using kCura.IntegrationPoints.Web.Infrastructure.MessageHandlers;
 using kCura.IntegrationPoints.Web.IntegrationPointsServices.Logging;
 using Moq;

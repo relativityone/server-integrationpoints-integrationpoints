@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using kCura.IntegrationPoints.Web.Context.WorkspaceIdProvider.Services;
-using kCura.IntegrationPoints.Web.Context.WorkspaceIdProvider.Services.Exceptions;
+using kCura.IntegrationPoints.Web.Context.WorkspaceContext.Services;
+using kCura.IntegrationPoints.Web.Context.WorkspaceContext.Services.Exceptions;
 
-namespace kCura.IntegrationPoints.Web.Context.WorkspaceIdProvider
+namespace kCura.IntegrationPoints.Web.Context.WorkspaceContext
 {
 	internal class WorkspaceIdProvider : IWorkspaceIdProvider
 	{
