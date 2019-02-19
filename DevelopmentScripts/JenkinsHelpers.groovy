@@ -39,11 +39,11 @@ class RIPPipelineState
     final env
     final params
     final String sessionId = System.currentTimeMillis().toString()
-    final String eventHash = java.security.MessageDigest.getInstance("MD5").digest(env.JOB_NAME.bytes).encodeHex().toString()
 
+    String eventHash
     def relativityBuildVersion = ""
     def relativityBuildType = ""
-    def relativityBranch = params.relativityBranch ?: env.BRANCH_NAME
+    def relativityBranch = ""
 
     def commonBuildArgs
     def scvmmInstance
@@ -62,6 +62,7 @@ ripPipelineState = null
 def initializeRIPPipeline(env, params)
 {
     ripPipelineState = new RIPPipelineState(env, params)
+    ripPipelineState.relativityBranch = params.relativityBranch ?: env.BRANCH_NAME
 }
 
 def getVersion()
@@ -124,6 +125,7 @@ def raid(script)
 {
     timeout(time: 90, unit: 'MINUTES')
     {
+        eventHash = java.security.MessageDigest.getInstance("MD5").digest(env.JOB_NAME.bytes).encodeHex().toString()
         echo "Getting server from pool, sessionId: $sessionId, Relativity build type: $params.relativityBuildType, event hash: $eventHash"
 
         scvmmInstance = scvmm(script, session_id)
