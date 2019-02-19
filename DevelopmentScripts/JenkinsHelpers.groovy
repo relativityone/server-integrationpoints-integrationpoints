@@ -60,6 +60,12 @@ def unitTest()
     }
 }
 
+def package()
+{
+    powershell "./build.ps1 -sk -package -root ./BuildPackages $ripPipelineState.commonBuildArgs"
+}
+
+
 /*****************
  *** PRIVATE *****
 /*****************

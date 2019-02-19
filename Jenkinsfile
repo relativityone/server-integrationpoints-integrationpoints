@@ -137,7 +137,7 @@ timestamps
 			}
 			stage ('Package')
 			{
-				powershell "./build.ps1 -sk -package -root ./BuildPackages $commonBuildArgs"
+                jenkinsHelpers.package()
 			}
 
 			stage ('Stash Tests Artifacts')
