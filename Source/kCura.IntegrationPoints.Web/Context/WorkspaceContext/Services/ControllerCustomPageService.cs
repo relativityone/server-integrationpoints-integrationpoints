@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Web.Context.WorkspaceContext.Services
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, "ControllerCustomPageService failed when retrieving workspaceId");
+				_logger.LogError(ex, "ControllerCustomPageService failed when retrieving workspaceId"); // TODO move logging to SessionService
 				return 0;
 			}
 		}

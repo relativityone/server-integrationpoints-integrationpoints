@@ -2,7 +2,7 @@
 {
 	public interface IUserContext
 	{
-		int UserID { get; }
-		int WorkspaceUserID { get; }
+		int GetUserID();
+		int GetWorkspaceUserID();
 	}
 }

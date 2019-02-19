@@ -8,9 +8,6 @@ namespace kCura.IntegrationPoints.Web.IntegrationPointsServices
 {
 	internal class ServiceContextHelperForWeb : IServiceContextHelper
 	{
-		private const string _USER_HEADER_VALUE = "X-IP-USERID"; // TODO move it to user context provider
-		private const string _CASE_USER_HEADER_VALUE = "X-IP-CASEUSERID";
-
 		private readonly IUserContext _userContext;
 		private readonly ICPHelper _helper;
 		private readonly IWorkspaceIdProvider _workspaceIdProvider;
@@ -23,7 +20,7 @@ namespace kCura.IntegrationPoints.Web.IntegrationPointsServices
 		}
 
 		private int? _workspaceId;
-		public int WorkspaceID // TODO
+		public int WorkspaceID
 		{
 			get
 			{
@@ -38,17 +35,12 @@ namespace kCura.IntegrationPoints.Web.IntegrationPointsServices
 
 		public int GetEddsUserID()
 		{
-			int result = GetRequestNumericValueByKey(_USER_HEADER_VALUE);
-			if (result == 0)
-			{
-				result = _userContext.UserID;
-			}
-			return result;
+			return _userContext.GetUserID();
 		}
 
 		public int GetWorkspaceUserID()
 		{
-			return GetRequestNumericValueByKey(_CASE_USER_HEADER_VALUE);
+			return _userContext.GetWorkspaceUserID();
 		}
 
 		public IRSAPIService GetRsapiService()
@@ -61,17 +53,6 @@ namespace kCura.IntegrationPoints.Web.IntegrationPointsServices
 		public IDBContext GetDBContext(int workspaceId = -1)
 		{
 			return _helper.GetDBContext(workspaceId);
-		}
-
-		private int GetRequestNumericValueByKey(string key)
-		{
-			int returnValue = 0;
-			string[] sValues = System.Web.HttpContext.Current.Request.Headers.GetValues(key);
-			if (sValues != null && sValues.Length > 0 && !string.IsNullOrEmpty(sValues[0]))
-			{
-				int.TryParse(sValues[0], out returnValue);
-			}
-			return returnValue;
 		}
 	}
 }

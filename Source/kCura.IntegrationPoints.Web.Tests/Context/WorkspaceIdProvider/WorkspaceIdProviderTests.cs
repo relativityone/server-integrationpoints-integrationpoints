@@ -1,8 +1,8 @@
 ﻿using System;
 using FluentAssertions;
 using kCura.IntegrationPoints.Web.Context.WorkspaceContext;
+using kCura.IntegrationPoints.Web.Context.WorkspaceContext.Exceptions;
 using kCura.IntegrationPoints.Web.Context.WorkspaceContext.Services;
-using kCura.IntegrationPoints.Web.Context.WorkspaceContext.Services.Exceptions;
 using NSubstitute;
 using NUnit.Framework;
 

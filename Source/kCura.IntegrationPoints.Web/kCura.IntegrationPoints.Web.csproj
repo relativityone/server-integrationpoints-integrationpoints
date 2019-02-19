@@ -72,7 +72,11 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Attributes\LogApiExceptionFilterAttribute.cs" />
     <Compile Include="Attributes\JsonNetResult.cs" />
+    <Compile Include="Context\UserContext\Exceptions\UserContextNotFoundException.cs" />
     <Compile Include="Context\UserContext\IUserContext.cs" />
+    <Compile Include="Context\UserContext\Services\IUserContextService.cs" />
+    <Compile Include="Context\UserContext\Services\RequestHeadersUserContextService.cs" />
+    <Compile Include="Context\UserContext\Services\SessionUserContextService.cs" />
     <Compile Include="Context\UserContext\UserContext.cs" />
     <Compile Include="Context\UserContext\UserContextRegistration.cs" />
     <Compile Include="Installers\ContextInstaller.cs" />
@@ -166,7 +170,7 @@
     <Compile Include="Models\Validation\ValidationResultDTO.cs" />
     <Compile Include="Models\Validation\ValidationResultMapper.cs" />
     <Compile Include="Models\WorkspaceModel.cs" />
-    <Compile Include="Context\WorkspaceContext\Services\Exceptions\WorkspaceIdNotFoundException.cs" />
+    <Compile Include="Context\WorkspaceContext\Exceptions\WorkspaceIdNotFoundException.cs" />
     <Compile Include="Context\WorkspaceContext\WorkspaceIdProvider.cs" />
     <Compile Include="Context\WorkspaceContext\IWorkspaceIdProvider.cs" />
     <Compile Include="Helpers\RelativityUrlHelper.cs" />

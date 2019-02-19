@@ -54,8 +54,8 @@ namespace kCura.IntegrationPoints.Web.Controllers
 				{
 					AppID = workspaceId,
 					ArtifactID = artifactId.GetValueOrDefault(0),
-					UserID = _userContext.UserID,
-					CaseUserID = _userContext.WorkspaceUserID,
+					UserID = _userContext.GetUserID(),
+					CaseUserID = _userContext.GetWorkspaceUserID(),
 					URL = previousURL,
 					APIControllerName = APIControllerName,
 					ArtifactTypeName = ObjectType

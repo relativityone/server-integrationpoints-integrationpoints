@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using kCura.IntegrationPoints.Web.Context.WorkspaceContext.Exceptions;
 using kCura.IntegrationPoints.Web.Context.WorkspaceContext.Services;
-using kCura.IntegrationPoints.Web.Context.WorkspaceContext.Services.Exceptions;
 
 namespace kCura.IntegrationPoints.Web.Context.WorkspaceContext
 {
