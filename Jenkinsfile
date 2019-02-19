@@ -62,36 +62,13 @@ properties([
 
 // This repo's package name for purposes of versioning & publishing
 @Field final String PACKAGE_NAME = 'IntegrationPoints'
-@Field final String NIGHTLY_JOB_NAME = "IntegrationPointsNightly"
 @Field final String ARTIFACTS_PATH = 'Artifacts'
 @Field final String INTEGRATION_TESTS_RESULTS_REPORT_PATH = "$ARTIFACTS_PATH/IntegrationTestsResults.xml"
-@Field final String QUARANTINED_TESTS_CATEGORY = 'InQuarantine'
-
-enum TestType {
-    integration,
-    ui,
-    integrationInQuarantine
-}
-
-@Field
-def testStageName = [
-	(TestType.integration) : "Integration Tests",
-	(TestType.ui) : "UI Tests",
-	(TestType.integrationInQuarantine) : "Integration Tests in Quarantine"
-]
-
-@Field
-def testCmdOptions = [
-	(TestType.integration) : "-in",
-	(TestType.ui) : "-ui",
-	(TestType.integrationInQuarantine) : "-qu -in"
-]
 
 @Field
 def sut = null
 
 def jenkinsHelpers = null
-def jenkinsTestingHelpers = null
 
 def version = null
 def commonBuildArgs = null
@@ -147,7 +124,6 @@ timestamps
 					step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
 				}
 				jenkinsHelpers = load "DevelopmentScripts/JenkinsHelpers.groovy"
-				jenkinsTestingHelpers = load "DevelopmentScripts/JenkinsTestingHelpers.groovy"
 			}
 			stage ('Get Version')
 			{
@@ -301,16 +277,16 @@ timestamps
 						{
 							timeout(time: 180, unit: 'MINUTES')
 							{
-								runIntegrationTests()
+								jenkinsHelpers.runIntegrationTests(params)
 							}
 						}
-						if(isNightly())
+						if (jenkinsHelpers.isNightly())
 						{
 							stage ('Integration Tests in Quarantine')
 							{
 								timeout(time: 180, unit: 'MINUTES')
 								{
-									runIntegrationTestsInQuarantine()
+									jenkinsHelpers.runIntegrationTestsInQuarantine(params)
 								}
 							}
 						}
@@ -319,7 +295,7 @@ timestamps
 							updateChromeToLatestVersion()
 							timeout(time: 8, unit: 'HOURS')
 							{
-								runUiTests()
+								jenkinsHelpers.runUiTests(params)
 							}
 						}
 					}
@@ -482,25 +458,6 @@ def shouldRunSonar(Boolean enableSonarAnalysis, String branchName)
 			: ""
 }
 
-def configureNunitTests()
-{
-	def credentials = usernamePassword(
-		credentialsId: 'eddsdbo', 
-		passwordVariable: 'eddsdboPassword', 
-		usernameVariable: 'eddsdboUsername'
-	)
-	withCredentials([credentials])
-	{
-		def configuration_command = """python -m jeeves.create_config -t nunit -n "app.jeeves-ci" --dbuser "${eddsdboUsername}" --dbpass "${eddsdboPassword}" -s "${sut.name}.${sut.domain}" -db "${sut.name}\\EDDSINSTANCE001" -o .\\lib\\UnitTests\\"""
-		bat script: configuration_command
-	}
-}
-
-def isNightly()
-{
-	return env.JOB_NAME.contains(NIGHTLY_JOB_NAME)
-}
-
 def getSlackChannelName()
 {
 	if (isNightly() && env.BRANCH_NAME == "develop")
@@ -508,85 +465,6 @@ def getSlackChannelName()
 		return "#cd_rip_nightly"
 	}
 	return "#cd_rip_${env.BRANCH_NAME}"
-}
-
-def exceptQuarantinedTestFilter()
-{
-	return "cat != $QUARANTINED_TESTS_CATEGORY"
-}
-
-def withQuarantinedTestFilter()
-{
-	return "cat == $QUARANTINED_TESTS_CATEGORY"
-}
-
-def unionTestFilters(String testFilter, String andTestFilter)
-{
-	if(testFilter == "")
-	{
-		return andTestFilter
-	}
-	return "${testFilter} && ${andTestFilter}"
-}
-
-def isQuarantine(TestType testType)
-{
-	return testType == TestType.integrationInQuarantine
-}
-
-def getTestsFilter(TestType testType)
-{
-	def paramsTestsFilter = isNightly() ? params.nightlyTestsFilter : params.testsFilter
-	return isQuarantine(testType)
-		? unionTestFilters(paramsTestsFilter, withQuarantinedTestFilter())
-		: unionTestFilters(paramsTestsFilter, exceptQuarantinedTestFilter())
-}
-
-def runIntegrationTests()
-{
-    runTestsAndSetBuildResult(TestType.integration, params.skipIntegrationTests)
-}
-
-def runUiTests()
-{
-    runTestsAndSetBuildResult(TestType.ui, params.skipUITests)
-}
-
-def runIntegrationTestsInQuarantine()
-{
-	if(params.skipIntegrationTests)
-	{
-		return
-	}
-    runTests(TestType.integrationInQuarantine)
-}
-
-def runTestsAndSetBuildResult(TestType testType, Boolean skipTests) 
-{ 
-	def stageName = testStageName[testType]
-
-    if (skipTests)
-	{
-		echo "$stageName are going to be skipped."
-		return
-	}
-
-    def result = runTests(testType) 
-    if (result != 0) 
-    { 
-        echo "$stageName FAILED with status: $result"
-		currentBuild.result = "FAILED"
-    } 
-    echo "$stageName OK" 
-}
-
-def runTests(TestType testType)
-{
-	configureNunitTests()
-	def cmdOptions = testCmdOptions[testType]
-    def currentFilter = getTestsFilter(testType)
-    def result = powershell returnStatus: true, script: "./build.ps1 -ci -sk $cmdOptions \"\"\"$currentFilter\"\"\""
-	return result
 }
 
 def getTestsStatistic(String prop)
