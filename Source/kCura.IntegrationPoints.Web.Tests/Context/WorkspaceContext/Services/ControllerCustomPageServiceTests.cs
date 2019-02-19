@@ -7,7 +7,7 @@ using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
 
-namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceIdProvider.Services
+namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceContext.Services
 {
 	public class ControllerCustomPageServiceTests
 	{

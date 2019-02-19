@@ -6,7 +6,7 @@ using kCura.IntegrationPoints.Web.Context.WorkspaceContext.Services;
 using NSubstitute;
 using NUnit.Framework;
 
-namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceIdProvider
+namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceContext
 {
 	public class WorkspaceIdProviderTests
 	{

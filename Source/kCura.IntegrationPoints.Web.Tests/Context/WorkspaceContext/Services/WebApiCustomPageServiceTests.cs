@@ -3,7 +3,7 @@ using FluentAssertions;
 using kCura.IntegrationPoints.Web.Context.WorkspaceContext.Services;
 using NUnit.Framework;
 
-namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceIdProvider.Services
+namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceContext.Services
 {
 	public class WebApiCustomPageServiceTests
 	{
