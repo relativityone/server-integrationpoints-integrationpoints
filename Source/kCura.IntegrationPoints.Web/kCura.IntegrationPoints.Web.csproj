@@ -72,6 +72,9 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Attributes\LogApiExceptionFilterAttribute.cs" />
     <Compile Include="Attributes\JsonNetResult.cs" />
+    <Compile Include="Context\UserContext\IUserContext.cs" />
+    <Compile Include="Context\UserContext\UserContext.cs" />
+    <Compile Include="Context\UserContext\UserContextRegistration.cs" />
     <Compile Include="Installers\ContextInstaller.cs" />
     <Compile Include="Installers\HelpersInstaller.cs" />
     <Compile Include="Infrastructure\ExceptionLoggers\WebAPIExceptionLogger.cs" />

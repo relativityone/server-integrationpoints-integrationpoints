@@ -1,6 +1,7 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Web.Context.UserContext;
 using kCura.IntegrationPoints.Web.Context.WorkspaceIdProvider;
 
 namespace kCura.IntegrationPoints.Web.Installers
@@ -9,7 +10,9 @@ namespace kCura.IntegrationPoints.Web.Installers
 	{
 		public void Install(IWindsorContainer container, IConfigurationStore store)
 		{
-			container.AddWorkspaceIdProvider();
+			container
+				.AddWorkspaceIdProvider()
+				.AddUserContext();
 		}
 	}
 }

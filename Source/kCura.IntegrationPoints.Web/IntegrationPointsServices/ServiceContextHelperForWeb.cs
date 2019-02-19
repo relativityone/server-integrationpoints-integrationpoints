@@ -1,7 +1,7 @@
 ﻿using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Web.Context.UserContext;
 using kCura.IntegrationPoints.Web.Context.WorkspaceIdProvider;
-using kCura.IntegrationPoints.Web.Infrastructure.Session;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.IntegrationPointsServices
@@ -11,15 +11,15 @@ namespace kCura.IntegrationPoints.Web.IntegrationPointsServices
 		private const string _USER_HEADER_VALUE = "X-IP-USERID";
 		private const string _CASE_USER_HEADER_VALUE = "X-IP-CASEUSERID";
 
-		private readonly ISessionService _sessionService;
+		private readonly IUserContext _userContext;
 		private readonly ICPHelper _helper;
 		private readonly IWorkspaceIdProvider _workspaceIdProvider;
 
-		public ServiceContextHelperForWeb(ICPHelper helper, IWorkspaceIdProvider workspaceIdProvider, ISessionService sessionService)
+		public ServiceContextHelperForWeb(ICPHelper helper, IWorkspaceIdProvider workspaceIdProvider, IUserContext userContext)
 		{
 			_helper = helper;
 			_workspaceIdProvider = workspaceIdProvider;
-			_sessionService = sessionService;
+			_userContext = userContext;
 		}
 
 		private int? _workspaceId;
@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.Web.IntegrationPointsServices
 			int result = GetRequestNumericValueByKey(_USER_HEADER_VALUE);
 			if (result == 0)
 			{
-				result = _sessionService.UserID;
+				result = _userContext.UserID;
 			}
 			return result;
 		}

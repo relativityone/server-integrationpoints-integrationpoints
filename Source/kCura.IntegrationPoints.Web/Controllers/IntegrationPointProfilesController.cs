@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.LDAPProvider;
+using kCura.IntegrationPoints.Web.Context.UserContext;
 using kCura.IntegrationPoints.Web.Context.WorkspaceIdProvider;
 
 namespace kCura.IntegrationPoints.Web.Controllers
@@ -19,13 +20,15 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			ITabService tabService,
 			ILDAPServiceFactory ldapServiceFactory,
 			IIntegrationPointProfileService profileService,
-			IWorkspaceIdProvider workspaceIdProvider
+			IWorkspaceIdProvider workspaceIdProvider,
+			IUserContext userContext
 		) : base(
 			objectTypeRepository,
 			repositoryFactory,
 			tabService,
 			ldapServiceFactory,
-			workspaceIdProvider
+			workspaceIdProvider,
+			userContext
 		)
 		{
 			_profileService = profileService;

@@ -7,8 +7,8 @@ using kCura.IntegrationPoints.LDAPProvider;
 using kCura.IntegrationPoints.Web.Models;
 using System;
 using System.Web.Mvc;
+using kCura.IntegrationPoints.Web.Context.UserContext;
 using kCura.IntegrationPoints.Web.Context.WorkspaceIdProvider;
-using kCura.IntegrationPoints.Web.Infrastructure.Session;
 
 namespace kCura.IntegrationPoints.Web.Controllers
 {
@@ -17,21 +17,23 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		private readonly IObjectTypeRepository _objectTypeRepository;
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly ITabService _tabService;
-		private readonly IWorkspaceIdProvider _workspaceIdProvider;
 
-		public ISessionService SessionService { get; set; }
+		private readonly IWorkspaceIdProvider _workspaceIdProvider;
+		private readonly IUserContext _userContext;
 
 		protected IntegrationPointBaseController(
 			IObjectTypeRepository objectTypeRepository,
 			IRepositoryFactory repositoryFactory,
 			ITabService tabService,
 			ILDAPServiceFactory ldapServiceFactory,
-			IWorkspaceIdProvider workspaceIdProvider)
+			IWorkspaceIdProvider workspaceIdProvider,
+			IUserContext userContext)
 		{
 			_objectTypeRepository = objectTypeRepository;
 			_repositoryFactory = repositoryFactory;
 			_tabService = tabService;
 			_workspaceIdProvider = workspaceIdProvider;
+			_userContext = userContext;
 		}
 
 		protected abstract string ObjectTypeGuid { get; }
@@ -52,8 +54,8 @@ namespace kCura.IntegrationPoints.Web.Controllers
 				{
 					AppID = workspaceId,
 					ArtifactID = artifactId.GetValueOrDefault(0),
-					UserID = SessionService.UserID,
-					CaseUserID = SessionService.WorkspaceUserID,
+					UserID = _userContext.UserID,
+					CaseUserID = _userContext.WorkspaceUserID,
 					URL = previousURL,
 					APIControllerName = APIControllerName,
 					ArtifactTypeName = ObjectType

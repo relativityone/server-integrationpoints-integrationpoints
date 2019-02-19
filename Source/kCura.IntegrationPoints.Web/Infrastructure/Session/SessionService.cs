@@ -11,7 +11,7 @@ namespace kCura.IntegrationPoints.Web.Infrastructure.Session
 			_connectionHelper = connectionHelper;
 		}
 
-		public int WorkspaceID => _connectionHelper.GetActiveCaseID(); // TODO maybe this service should be internal(infrastructure) and another service for usercontext should be created to use
+		public int WorkspaceID => _connectionHelper.GetActiveCaseID();
 
 		public int UserID => _connectionHelper.GetAuthenticationManager().UserInfo.ArtifactID;
 
