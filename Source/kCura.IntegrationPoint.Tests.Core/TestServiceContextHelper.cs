@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			WorkspaceID = workspaceArtifactId;
 		}
 
-		public int WorkspaceID { get; set; }
+		public int WorkspaceID { get; }
 
 		public int GetEddsUserID()
 		{

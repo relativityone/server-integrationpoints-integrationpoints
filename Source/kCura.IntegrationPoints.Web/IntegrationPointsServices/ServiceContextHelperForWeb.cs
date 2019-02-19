@@ -34,7 +34,6 @@ namespace kCura.IntegrationPoints.Web.IntegrationPointsServices
 
 				return _workspaceId.Value;
 			}
-			set { _workspaceId = value; }
 		}
 
 		public int GetEddsUserID()
@@ -64,7 +63,7 @@ namespace kCura.IntegrationPoints.Web.IntegrationPointsServices
 			return _helper.GetDBContext(workspaceId);
 		}
 
-		public int GetRequestNumericValueByKey(string key)
+		private int GetRequestNumericValueByKey(string key)
 		{
 			int returnValue = 0;
 			string[] sValues = System.Web.HttpContext.Current.Request.Headers.GetValues(key);

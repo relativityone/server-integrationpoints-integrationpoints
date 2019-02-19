@@ -5,25 +5,29 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 {
 	public class ServiceContextHelperForAgent : IServiceContextHelper
 	{
+		private readonly IAgentHelper _helper;
+
 		public ServiceContextHelperForAgent(IAgentHelper helper, int workspaceId)
 		{
-			this.helper = helper;
-			this.WorkspaceID = workspaceId;
+			_helper = helper;
+			WorkspaceID = workspaceId;
 		}
 		
-		private IAgentHelper helper { get; set; }
-		public int WorkspaceID { get; set; }
-		public int GetEddsUserID() { return helper.GetAuthenticationManager().UserInfo.ArtifactID; }
-		public int GetWorkspaceUserID() { return helper.GetAuthenticationManager().UserInfo.WorkspaceUserArtifactID; }
-		public IDBContext GetDBContext() { return helper.GetDBContext(this.WorkspaceID); }
+		public int WorkspaceID { get; }
+
+		public int GetEddsUserID() => _helper.GetAuthenticationManager().UserInfo.ArtifactID;
+
+		public int GetWorkspaceUserID() => _helper.GetAuthenticationManager().UserInfo.WorkspaceUserArtifactID;
+
+		public IDBContext GetDBContext() => _helper.GetDBContext(this.WorkspaceID);
+
 		public IRSAPIService GetRsapiService()
 		{
-			if (this.WorkspaceID > 0)
-				return ServiceContextFactory.CreateRSAPIService(helper, WorkspaceID);
-			else
-				return null;
+			return WorkspaceID > 0
+				? ServiceContextFactory.CreateRSAPIService(_helper, WorkspaceID)
+				: null;
 		}
 
-		public IDBContext GetDBContext(int workspaceID = -1) { return helper.GetDBContext(workspaceID); }
+		public IDBContext GetDBContext(int workspaceID = -1) => _helper.GetDBContext(workspaceID);
 	}
 }
