@@ -111,7 +111,7 @@ timestamps
 				// Provision SUT
 				stage('Install RAID')
 				{
-                    jenkinsHelpers.raid(this)
+                    jenkinsHelpers.raid()
 				}
 
 				// Run tests on provisioned SUT
