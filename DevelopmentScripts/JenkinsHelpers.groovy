@@ -71,6 +71,11 @@ class RIPPipeline
         jenkins.echo "RIPPipeline::getVersion set commonBuildArgs to: $commonBuildArgs"
     }
 
+    def build()
+    {
+        echo ripPipelineState.commonBuildArgs
+    }
+
     /**
     * Return the current build version in the TeamCity versioning database & increment
     * for the next build if necessary. Basically a pass-through to the New-TeamCityBuildVersion.ps1
