@@ -66,8 +66,7 @@ class RIPPipeline
     def incrementBuildVersion(String packageName, String buildType)
     {
         def versionOutput = jenkins.powershell(returnStdout: true, script: ".\\DevelopmentScripts\\New-TeamCityBuildVersion.ps1 -Product '$packageName' -Project 'Development' -ServerType 'Jenkins' -BuildType '$buildType'")
-        versionNumber = versionOutput.tokenize()[0]
-        return versionNumber
+        return versionOutput.tokenize()[0]
     }
 
 }
