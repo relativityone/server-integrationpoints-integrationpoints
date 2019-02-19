@@ -4,12 +4,12 @@ using kCura.IntegrationPoints.Web.Context.WorkspaceContext.Services;
 
 namespace kCura.IntegrationPoints.Web.Context.WorkspaceContext
 {
-	internal static class WorkspaceIdProviderRegistration
+	internal static class WorkspaceContextRegistration
 	{
 		/// <summary>
 		/// Registers <see cref="IWorkspaceIdProvider"/> in a container.
 		/// </summary>
-		public static IWindsorContainer AddWorkspaceIdProvider(this IWindsorContainer container)
+		public static IWindsorContainer AddWorkspaceContext(this IWindsorContainer container)
 		{
 			container.Register(Component
 				.For<IWorkspaceService>()

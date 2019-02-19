@@ -87,7 +87,7 @@
     <Compile Include="Installers\RelativityServicesInstaler.cs" />
     <Compile Include="Context\WorkspaceContext\Services\IContextService.cs" />
     <Compile Include="Infrastructure\Session\SessionServiceFactory.cs" />
-    <Compile Include="Context\WorkspaceContext\WorkspaceIdProviderRegistration.cs" />
+    <Compile Include="Context\WorkspaceContext\WorkspaceContextRegistration.cs" />
     <Compile Include="Context\WorkspaceContext\Services\ControllerCustomPageService.cs" />
     <Compile Include="Controllers\API\ExportSettingsValidationController.cs" />
     <Compile Include="Controllers\API\FieldCatalogController.cs" />

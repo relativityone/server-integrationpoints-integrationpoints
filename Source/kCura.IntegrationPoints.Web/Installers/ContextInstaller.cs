@@ -11,7 +11,7 @@ namespace kCura.IntegrationPoints.Web.Installers
 		public void Install(IWindsorContainer container, IConfigurationStore store)
 		{
 			container
-				.AddWorkspaceIdProvider()
+				.AddWorkspaceContext()
 				.AddUserContext();
 		}
 	}
