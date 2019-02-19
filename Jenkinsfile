@@ -122,11 +122,10 @@ timestamps
 					step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
 				}
 				jenkinsHelpers = load "DevelopmentScripts/JenkinsHelpers.groovy"
-                pipeline = jenkinsHelpers.createRIPPipeline(this, env, params, currentBuild)
 			}
 			stage ('Get Version')
 			{
-                pipeline.getVersion()
+                jenkinsHelpers.getVersion()
 			}
 			stage ('Build')
 			{
