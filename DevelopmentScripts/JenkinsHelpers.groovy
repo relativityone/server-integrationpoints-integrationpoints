@@ -26,46 +26,48 @@ def getConstants()
     return Constants
 }
 
-def createRIPPipeline(params)
+def createRIPPipeline(params, currentBuild)
 {
-    return new RIPPipeline(params)
+    return new RIPPipeline(params, currentBuild)
 }
 
 class RIPPipeline
 {
     private final params
+    private final currentBuild
 
     private commonBuildArgs = null
 
-    RIPPipeline(params)
+    RIPPipeline(params, currentBuild)
     {
         this.params = params
+        this.currentBuild = currentBuild
     }
 
     def getVersion()
     {
-        def version = incrementBuildVersion(Constants.PACKAGE_NAME, params.relativityBuildType)
-        currentBuild.displayName="${params.relativityBuildType}-$version"
+        def version = _script.incrementBuildVersion(Constants.PACKAGE_NAME, params.relativityBuildType)
+        currentBuild.displayName = "$params.relativityBuildType-$version"
         commonBuildArgs = "release $params.relativityBuildType -ci -v $version -b $env.BRANCH_NAME"
         echo "RIPPipeline::getVersion set commonBuildArgs to: $commonBuildArgs"
     }
+
 }
 
-
 /**
- * Return the current build version in the TeamCity versioning database & increment
- * for the next build if necessary. Basically a pass-through to the New-TeamCityBuildVersion.ps1
- * script. Examine that script for info about how CI build versioning works.
- *
- * @param packageName Name of the package being versioned. Equivalent to the "Product" for purposes of build versioning or the folder in the bld-pkgs Packages folder.
- * @param buildType   Build type of the current build, e.g. 'DEV', 'GOLD', etc. Affects how the next version is incremented.
- * @return String indicating the current build version, e.g. "10.2.1.3".
- */
+* Return the current build version in the TeamCity versioning database & increment
+* for the next build if necessary. Basically a pass-through to the New-TeamCityBuildVersion.ps1
+* script. Examine that script for info about how CI build versioning works.
+*
+* @param packageName Name of the package being versioned. Equivalent to the "Product" for purposes of build versioning or the folder in the bld-pkgs Packages folder.
+* @param buildType   Build type of the current build, e.g. 'DEV', 'GOLD', etc. Affects how the next version is incremented.
+* @return String indicating the current build version, e.g. "10.2.1.3".
+*/
 def incrementBuildVersion(String packageName, String buildType)
 {
-	def versionOutput = powershell(returnStdout: true, script: ".\\DevelopmentScripts\\New-TeamCityBuildVersion.ps1 -Product '$packageName' -Project 'Development' -ServerType 'Jenkins' -BuildType '$buildType'")
-	versionNumber = versionOutput.tokenize()[0]
-	return versionNumber
+    def versionOutput = powershell(returnStdout: true, script: ".\\DevelopmentScripts\\New-TeamCityBuildVersion.ps1 -Product '$packageName' -Project 'Development' -ServerType 'Jenkins' -BuildType '$buildType'")
+    versionNumber = versionOutput.tokenize()[0]
+    return versionNumber
 }
 
 /**
