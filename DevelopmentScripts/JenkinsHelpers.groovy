@@ -26,14 +26,21 @@ def getConstants()
     return Constants
 }
 
-def createRIPPipeline()
+def createRIPPipeline(params)
 {
-    return new RIPPipeline()
+    return new RIPPipeline(params)
 }
 
 class RIPPipeline
 {
-    def commonBuildArgs = null
+    private final params
+
+    private commonBuildArgs = null
+
+    RIPPipeline(params)
+    {
+        this.params = params
+    }
 
     def getVersion()
     {
