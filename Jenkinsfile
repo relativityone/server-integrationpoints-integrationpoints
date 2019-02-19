@@ -122,7 +122,7 @@ timestamps
 			}
 			stage ('Get Version')
 			{
-				version = jenkinsHelpers.incrementBuildVersion(jenkinsHelpers.Constants.PACKAGE_NAME, params.relativityBuildType)
+				version = jenkinsHelpers.incrementBuildVersion(jenkinsHelpers.getConstants().PACKAGE_NAME, params.relativityBuildType)
 
 				currentBuild.displayName="${params.relativityBuildType}-$version"
 				commonBuildArgs = "release $params.relativityBuildType -ci -v $version -b $env.BRANCH_NAME"
@@ -312,7 +312,7 @@ timestamps
 								}
 
                                 powershell "Import-Module ./Vendor/psake/tools/psake.psm1; Invoke-psake ./DevelopmentScripts/psake-test.ps1 generate_nunit_reports" 
-                                archiveArtifacts artifacts: "$jenkinsHelpers.Constants.ARTIFACTS_PATH/**/*", fingerprint: true, allowEmptyArchive: true
+                                archiveArtifacts artifacts: "$jenkinsHelpers.getConstants().ARTIFACTS_PATH/**/*", fingerprint: true, allowEmptyArchive: true
 
 								if (!params.skipIntegrationTests)
 								{
@@ -352,7 +352,7 @@ timestamps
 						BLDPKGSUSERNAME, 
 						BLDPKGSPASSWORD, 
 						'./BuildPackages', 
-						jenkinsHelpers.Constants.PACKAGE_NAME, 
+						jenkinsHelpers.getConstants().PACKAGE_NAME, 
 						env.BRANCH_NAME, 
 						version
 					)

@@ -11,6 +11,11 @@ interface Constants
     final String INTEGRATION_TESTS_RESULTS_REPORT_PATH = "$ARTIFACTS_PATH/IntegrationTestsResults.xml"
 }
 
+def getConstants()
+{
+    return Constants
+}
+
 
 /**
  * Return the current build version in the TeamCity versioning database & increment
