@@ -26,6 +26,24 @@ def getConstants()
     return Constants
 }
 
+def createRIPPipeline()
+{
+    return new RIPPipeline()
+}
+
+class RIPPipeline
+{
+    def commonBuildArgs = null
+
+    def getVersion()
+    {
+        def version = incrementBuildVersion(Constants.PACKAGE_NAME, params.relativityBuildType)
+        currentBuild.displayName="${params.relativityBuildType}-$version"
+        commonBuildArgs = "release $params.relativityBuildType -ci -v $version -b $env.BRANCH_NAME"
+        echo "RIPPipeline::getVersion set commonBuildArgs to: $commonBuildArgs"
+    }
+}
+
 
 /**
  * Return the current build version in the TeamCity versioning database & increment

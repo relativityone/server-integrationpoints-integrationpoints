@@ -72,12 +72,6 @@ def relativityBuildVersion = ""
 def relativityBuildType = ""
 def relativityBranch = params.relativityBranch ?: env.BRANCH_NAME
 
-// *********
-// IMPORTANT
-// *********
-// Set variable below to the branch name, when you create new release branch!!!
-// This should be changed on the release branch
-def relativityBranchFallback = "develop"
 
 def chef_attributes = 'fluidOn:1,cdonprem:1'
 def ripCookbooks = getCookbooks()
@@ -105,6 +99,15 @@ ScvmmInstance.setHoursToLive("12")
 // Make changes here if necessary.
 def python_packages = 'jeeves==4.1.0 phonograph==5.2.0 selenium==3.0.1'
 
+// *********
+// IMPORTANT
+// *********
+// Set variable below to the branch name, when you create new release branch!!!
+// This should be changed on the release branch
+def relativityBranchFallback = "develop"
+
+def pipeline = null
+
 timestamps
 {
 	try
@@ -119,13 +122,11 @@ timestamps
 					step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
 				}
 				jenkinsHelpers = load "DevelopmentScripts/JenkinsHelpers.groovy"
+                pipeline = jenkinsHelpers.createRIPPipeline()
 			}
 			stage ('Get Version')
 			{
-				version = jenkinsHelpers.incrementBuildVersion(jenkinsHelpers.getConstants().PACKAGE_NAME, params.relativityBuildType)
-
-				currentBuild.displayName="${params.relativityBuildType}-$version"
-				commonBuildArgs = "release $params.relativityBuildType -ci -v $version -b $env.BRANCH_NAME"
+                pipeline.getVersion()
 			}
 			stage ('Build')
 			{
