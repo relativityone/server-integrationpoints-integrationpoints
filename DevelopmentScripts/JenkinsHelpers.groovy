@@ -42,4 +42,16 @@ def publishToBldPkgs(String username, String password, String localPackages, Str
 	"""
 }
 
+
+/*
+ * Check whether boolean value returned from Powershell represents true
+ *
+ * @param s - string result from powershell script
+ * @return -  True if the script result is considered true
+ */
+def isPowershellResultTrue(s)
+{
+	return s.trim() == "True"
+}
+
 return this
