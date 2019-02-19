@@ -41,7 +41,7 @@ class RIPPipeline
     private commonBuildArgs = null
 
     /*
-     * @param jenkins - the whole Jenkinsfile script - pipeline with all its plugins, etc. */
+     * @param jenkins - the whole Jenkinsfile script - pipeline with all its plugins, etc.
      */
     RIPPipeline(
         jenkins,
