@@ -137,7 +137,7 @@ timestamps
 			}
 			stage ('Package')
 			{
-                jenkinsHelpers.package()
+                jenkinsHelpers.packageRIP()
 			}
 
 			stage ('Stash Tests Artifacts')

@@ -60,7 +60,7 @@ def unitTest()
     }
 }
 
-def package()
+def packageRIP()
 {
     powershell "./build.ps1 -sk -package -root ./BuildPackages $ripPipelineState.commonBuildArgs"
 }
@@ -91,7 +91,7 @@ def testingVMsAreRequired(params)
 
 
 /*****************
- *** PRIVATE *****
+ **** PRIVATE ****
 /*****************
 
 /**
