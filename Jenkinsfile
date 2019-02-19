@@ -74,6 +74,7 @@ enum TestType {
 @Field final String NIGHTLY_JOB_NAME = "IntegrationPointsNightly"
 @Field final String ARTIFACTS_PATH = 'Artifacts'
 @Field final String INTEGRATION_TESTS_RESULTS_REPORT_PATH = "$ARTIFACTS_PATH/IntegrationTestsResults.xml"
+@Field final String INTEGRATION_TESTS_IN_QUARANTINE_RESULTS_REPORT_PATH = "$ARTIFACTS_PATH/QuarantineIntegrationTestsResults.xml"
 @Field final String QUARANTINED_TESTS_CATEGORY = 'InQuarantine'
 
 @Field
@@ -344,6 +345,11 @@ timestamps
                                 powershell "Import-Module ./Vendor/psake/tools/psake.psm1; Invoke-psake ./DevelopmentScripts/psake-test.ps1 generate_nunit_reports" 
                                 archiveArtifacts artifacts: "$ARTIFACTS_PATH/**/*", fingerprint: true, allowEmptyArchive: true
 
+								if(isNightly())
+								{
+									storeIntegrationTestsInQuarantineResults()
+								}
+
 								if (!params.skipIntegrationTests)
 								{
                                     numberOfFailedTests = getTestsStatistic('failed')
@@ -588,6 +594,26 @@ def runTests(TestType testType)
     def currentFilter = getTestsFilter(testType)
     def result = powershell returnStatus: true, script: "./build.ps1 -ci -sk $cmdOptions \"\"\"$currentFilter\"\"\""
 	return result
+}
+
+def storeIntegrationTestsInQuarantineResults()
+{
+	try
+	{
+		withCredentials([string(credentialsId: 'TestResultAnalyzerStoreTestsResultsFunctionSecurityCode', variable: 'securityCode')])
+		{
+			def branchId = env.BRANCH_NAME
+			def buildName = currentBuild.displayName
+			def testType = TestType.integrationInQuarantine.name().capitalize()
+			def testResultsPath = "$env.WORKSPACE/$INTEGRATION_TESTS_IN_QUARANTINE_RESULTS_REPORT_PATH"
+
+			powershell script: """. ./DevelopmentScripts/test-results-analyzer.ps1; store_tests_results "$branchId" "$buildName" "$testType" "$testResultsPath" "$securityCode" """
+		}
+	}
+	catch(err)
+	{
+		echo "storeIntegrationTestsInQuarantineResults error: $err"
+	}
 }
 
 def getTestsStatistic(String prop)
