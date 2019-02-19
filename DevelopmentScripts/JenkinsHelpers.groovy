@@ -75,9 +75,9 @@ class RIPPipelineState
 // State for the whole pipeline
 ripPipelineState = null
 
-def initializeRIPPipeline(env, params)
+def initializeRIPPipeline(script, env, params)
 {
-    ripPipelineState = new RIPPipelineState(env, params)
+    ripPipelineState = new RIPPipelineState(script, env, params)
     ripPipelineState.relativityBranch = params.relativityBranch ?: env.BRANCH_NAME
 }
 
