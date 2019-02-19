@@ -122,7 +122,7 @@ timestamps
 			}
 			stage ('Get Version')
 			{
-				version = jenkinsHelpers.incrementBuildVersion(PACKAGE_NAME, params.relativityBuildType)
+				version = jenkinsHelpers.incrementBuildVersion(jenkinsHelpers.Constants.PACKAGE_NAME, params.relativityBuildType)
 
 				currentBuild.displayName="${params.relativityBuildType}-$version"
 				commonBuildArgs = "release $params.relativityBuildType -ci -v $version -b $env.BRANCH_NAME"
@@ -352,7 +352,7 @@ timestamps
 						BLDPKGSUSERNAME, 
 						BLDPKGSPASSWORD, 
 						'./BuildPackages', 
-						PACKAGE_NAME, 
+						jenkinsHelpers.Constants.PACKAGE_NAME, 
 						env.BRANCH_NAME, 
 						version
 					)
