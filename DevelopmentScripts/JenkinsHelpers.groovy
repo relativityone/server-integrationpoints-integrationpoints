@@ -26,9 +26,17 @@ def getConstants()
     return Constants
 }
 
-def createRIPPipeline(jenkins, params, currentBuild)
+def createRIPPipeline(
+    jenkins, 
+    env, 
+    params, 
+    currentBuild)
 {
-    return new RIPPipeline(jenkins, params, currentBuild)
+    return new RIPPipeline(
+        jenkins, 
+        env, 
+        params, 
+        currentBuild)
 }
 
 class RIPPipeline
