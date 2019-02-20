@@ -246,7 +246,6 @@ def raid(String relativityBranchFallback)
             }
         )
     }
-
 }
 
 def getSessionId()
@@ -271,6 +270,17 @@ def unstashTestsArtifacts()
         unstash 'version'
     }
 }
+
+// TODO remove
+def testEnums()
+{
+    def x = TestType.ui
+    echo "runTestsAndSetBuildResult test: $tesType"
+	def stageName = testStageName(x)
+    echo "$stageName"
+}
+
+
 
 def runIntegrationTests()
 {
