@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers
 				AllowPivot = field.AllowPivot,
 				ArtifactID = field.ArtifactID,
 				ArtifactTypeID = field.ArtifactTypeID,
-				ArtifactViewFieldID = field.FieldArtifactTypeID,
+				ArtifactViewFieldID = field.ViewFieldID,
 				AssociativeArtifactTypeID = field.AssociativeArtifactTypeID,
 				AutoAddChoices = field.AutoAddChoices,
 				AvailableInViewer = field.AvailableInViewer,
@@ -98,7 +98,15 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers
 			{
 				return default(TEnum);
 			}
-			return (TEnum)Enum.Parse(typeof(TEnum), source.ToString(), true);
+
+			Type type = typeof(TEnum);
+			if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+			{
+				type = type.GetGenericArguments().First();
+			}
+
+			return (TEnum)Enum.Parse(type, source.ToString(), true);
 		}
+
 	}
 }

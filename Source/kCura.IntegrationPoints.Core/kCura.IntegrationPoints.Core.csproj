@@ -345,7 +345,6 @@
     <Compile Include="Services\Exporter\ExportApiDataHelper.cs" />
     <Compile Include="Factories\Implementations\ExporterFactory.cs" />
     <Compile Include="Services\Exporter\IExporterService.cs" />
-    <Compile Include="Services\Exporter\ILongTextStreamFactory.cs" />
     <Compile Include="Services\Exporter\LazyExceptArtifactFieldDto.cs" />
     <Compile Include="Services\Exporter\RelativityExporterService.cs" />
     <Compile Include="Services\FieldCatalogService.cs" />

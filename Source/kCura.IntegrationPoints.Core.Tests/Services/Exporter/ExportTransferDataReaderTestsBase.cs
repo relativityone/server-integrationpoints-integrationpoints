@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		protected IScratchTableRepository[] _scratchRepositories;
 		protected ISourceWorkspaceManager _sourceWorkspaceManager;
 		protected ISourceJobManager _sourceJobManager;
-		protected IILongTextStreamFactory _longTextStreamFactory;
+		protected IRelativityObjectManager _relativityObjectManager;
 
 		protected const int _SPECIAL_FIELD_COUNT = 5;
 		protected const int _DOCUMENT_ARTIFACTID = 123423;
@@ -35,7 +35,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		protected const int _FETCH_ARTIFACTDTOS_BATCH_SIZE = 200;
 		protected const int _SOURCE_WORKSPACE_ARTIFACTID = 93020;
 		protected const int _TARGET_WORKSPACE_ARTIFACTID = 930233;
-		protected const int _JOB_HISTORY_ARTIFACTID = 94903;
 		protected const string _SOURCE_WORKSPACE_NAME = "Source Workspace";
 
 
@@ -91,7 +90,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		[SetUp]
 		public override void SetUp()
 		{
-			_longTextStreamFactory = Substitute.For<IILongTextStreamFactory>();
 			_exportService = Substitute.For<IExporterService>();
 			var scratchTable = Substitute.For<IScratchTableRepository>();
 			_scratchRepositories = new[] { scratchTable };

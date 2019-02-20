@@ -6,12 +6,11 @@ using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
-using NSubstitute;
+using Moq;
 using NUnit.Framework;
 using Relativity;
 using Relativity.API;
 using Relativity.Core.Api.Shared.Manager.Export;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 {
@@ -20,33 +19,41 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 	{
 		private ArtifactDTO _goldFlowExpectedDto;
 		private FieldMap[] _mappedFields;
+		private int[] _avfIds;
+		private object[] _goldFlowRetrievableData;
 		private global::Relativity.Core.Export.InitializationResults _exportApiResult;
 		private HashSet<int> _longTextField;
-		private IExporter _exporter;
-		private IFolderPathReader _folderPathReader;
-		private IHelper _helper;
-		private IILongTextStreamFactory _longTextFieldFactory;
-		private IJobStopManager _jobStopManager;
-		private int[] _avfIds;
-		private IQueryFieldLookupRepository _queryFieldLookupRepository;
-		private object[] _goldFlowRetrievableData;
+
+		private Mock<IExporter> _exporter;
+		private Mock<IFolderPathReader> _folderPathReader;
+		private Mock<IHelper> _helper;
+		private Mock<IJobStopManager> _jobStopManager;
+		private Mock<IQueryFieldLookupRepository> _queryFieldLookupRepository;
+		private Mock<IRelativityObjectManager> _relativityObjectManager;
 		private RelativityExporterService _instance;
+		
 		private const string _CONTROL_NUMBER = "Control Num";
 		private const string _FILE_NAME = "FileName";
-		
+
 		[SetUp]
 		public override void SetUp()
 		{
-			_helper = Substitute.For<IHelper>();
-			_exporter = Substitute.For<IExporter>();
-			_longTextFieldFactory = Substitute.For<IILongTextStreamFactory>();
+			var apiLogMock = new Mock<IAPILog>();
+			_helper = new Mock<IHelper>();
+			_helper
+				.Setup(x => x.GetLoggerFactory().GetLogger().ForContext<RelativityExporterService>())
+				.Returns(apiLogMock.Object);
+			_exporter = new Mock<IExporter>();
 			_exportApiResult = new global::Relativity.Core.Export.InitializationResults()
 			{
 				RunId = new Guid("3A51AF56-0813-4E25-89DD-E08EC0C8526C"),
 				ColumnNames = new[] { _CONTROL_NUMBER, _FILE_NAME }
 			};
+			_exporter
+				.Setup(x => x.InitializeExport(0, null, 0))
+				.Returns(_exportApiResult);
 
-			// source identifier is the only thing that matter
+			// source identifier is the only thing that matters
 			_mappedFields = new FieldMap[]
 			{
 				new FieldMap()
@@ -86,13 +93,23 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			_longTextField = new HashSet<int>(new int[] { 456 });
 
 			_avfIds = new[] { 1, 2 };
-			_jobStopManager = Substitute.For<IJobStopManager>();
-			_folderPathReader = Substitute.For<IFolderPathReader>();
-			_queryFieldLookupRepository = Substitute.For<IQueryFieldLookupRepository>();
-			IToggleProvider toggleProvider = Substitute.For<IToggleProvider>();
-			_exporter.InitializeExport(0, null, 0).Returns(_exportApiResult);
-			_instance = new RelativityExporterService(_exporter, _longTextFieldFactory, _jobStopManager, _helper,
-				_queryFieldLookupRepository, _folderPathReader, toggleProvider, _mappedFields, _longTextField, _avfIds);
+			_jobStopManager = new Mock<IJobStopManager>();
+			_jobStopManager
+				.Setup(x => x.IsStopRequested())
+				.Returns(false);
+			_folderPathReader = new Mock<IFolderPathReader>();
+			_queryFieldLookupRepository = new Mock<IQueryFieldLookupRepository>();
+			_relativityObjectManager = new Mock<IRelativityObjectManager>();
+			_instance = new RelativityExporterService(
+				_exporter.Object, 
+				_relativityObjectManager.Object,
+				_jobStopManager.Object, 
+				_helper.Object,
+				_queryFieldLookupRepository.Object, 
+				_folderPathReader.Object, 
+				_mappedFields, 
+				_longTextField, 
+				_avfIds);
 		}
 
 		[Test]
@@ -100,9 +117,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		{
 			// arrange
 			_exportApiResult.RowCount = 0;
-			
-			_queryFieldLookupRepository.GetFieldByArtifactId(Arg.Any<int>()).Returns(new ViewFieldInfo(string.Empty, string.Empty, FieldTypeHelper.FieldType.Code));
-			_jobStopManager.IsStopRequested().Returns(false);
+
+			_queryFieldLookupRepository
+				.Setup(x => x.GetFieldByArtifactId(It.IsAny<int>()))
+				.Returns(new ViewFieldInfo(string.Empty, string.Empty, FieldTypeHelper.FieldType.Code));
 
 			// act
 			bool hasDataToRetrieve = _instance.HasDataToRetrieve;
@@ -118,10 +136,17 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			// arrange
 			_exportApiResult.RowCount = 1;
 			
-			_exporter.RetrieveResults(_exportApiResult.RunId, _avfIds, 1).Returns(_goldFlowRetrievableData);
-			_queryFieldLookupRepository.GetFieldByArtifactId(Arg.Any<int>()).Returns(new ViewFieldInfo(string.Empty, string.Empty, FieldTypeHelper.FieldType.Empty));
-			_queryFieldLookupRepository.GetFieldTypeByArtifactId(Arg.Any<int>()).Returns(FieldTypeHelper.FieldType.Empty.ToString());
-			_jobStopManager.IsStopRequested().Returns(false);
+			_exporter
+				.Setup(x => x.RetrieveResults(_exportApiResult.RunId, _avfIds, 1))
+				.Returns(_goldFlowRetrievableData);
+
+			_queryFieldLookupRepository
+				.Setup(x => x.GetFieldByArtifactId(It.IsAny<int>()))
+				.Returns(new ViewFieldInfo(string.Empty, string.Empty, FieldTypeHelper.FieldType.Empty));
+
+			_queryFieldLookupRepository
+				.Setup(x => x.GetFieldTypeByArtifactId(It.IsAny<int>()))
+				.Returns(FieldTypeHelper.FieldType.Empty.ToString());
 
 			// act
 			ArtifactDTO[] retrievedData = _instance.RetrieveData(1);
@@ -139,8 +164,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		{
 			// arrange
 			_exportApiResult.RowCount = Int32.MaxValue;
-			
-			_jobStopManager.IsStopRequested().Returns(false);
 
 			// act
 			bool hasDataToRetrieve = _instance.HasDataToRetrieve;
@@ -155,8 +178,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			// arrange
 			_exportApiResult.RowCount = Int64.MaxValue;
 			
-			_jobStopManager.IsStopRequested().Returns(false);
-
 			// act
 			bool hasDataToRetrieve = _instance.HasDataToRetrieve;
 
@@ -170,7 +191,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			// arrange
 			_exportApiResult.RowCount = Int64.MaxValue;
 			
-			_jobStopManager.IsStopRequested().Returns(true);
+			_jobStopManager
+				.Setup(x => x.IsStopRequested())
+				.Returns(true);
 
 			// act
 			bool hasDataToRetrieve = _instance.HasDataToRetrieve;
@@ -186,7 +209,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			object[] obj = new[] {new object[] { "REL01", "FileName", 1111 }};
 
 
-			_exporter.RetrieveResults(_exportApiResult.RunId, Arg.Any<int[]>(), 1).Returns(obj);
+			_exporter
+				.Setup(x => x.RetrieveResults(_exportApiResult.RunId, It.IsAny<int[]>(), 1))
+				.Returns(obj);
 
 			ArtifactDTO expecteDto = new ArtifactDTO(1111, 10, "Document", new []
 			{
@@ -206,9 +231,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				},
 			});
 
+			_queryFieldLookupRepository
+				.Setup(x => x.GetFieldByArtifactId(It.IsAny<int>()))
+				.Returns(new ViewFieldInfo(string.Empty, string.Empty, FieldTypeHelper.FieldType.Empty));
+
+			_queryFieldLookupRepository
+				.Setup(x => x.GetFieldTypeByArtifactId(It.IsAny<int>()))
+				.Returns(FieldTypeHelper.FieldType.Empty.ToString());
+
 			// Act
-			_queryFieldLookupRepository.GetFieldByArtifactId(Arg.Any<int>()).Returns(new ViewFieldInfo(string.Empty, string.Empty, FieldTypeHelper.FieldType.Empty));
-			_queryFieldLookupRepository.GetFieldTypeByArtifactId(Arg.Any<int>()).Returns(FieldTypeHelper.FieldType.Empty.ToString());
 			ArtifactDTO[] data = _instance.RetrieveData(1);
 
 
@@ -226,8 +257,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 			// Arrange
 			int[] avfIds = new[] { 1, 2 };
 
-			
-			_exporter.RetrieveResults(_exportApiResult.RunId, avfIds, 1).Returns((object)null);
+			_exporter
+				.Setup(x => x.RetrieveResults(_exportApiResult.RunId, avfIds, 1))
+				.Returns<object>(null);
 
 			// Act
 			ArtifactDTO[] data = _instance.RetrieveData(1);
@@ -242,14 +274,17 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		{
 			// Arrange
 			int[] avfIds = new[] { 1, 2 };
-			
-			_exporter.RetrieveResults(_exportApiResult.RunId, avfIds, 1).Returns((object)null);
+
+			_exporter
+				.Setup(x => x.RetrieveResults(_exportApiResult.RunId, avfIds, 1))
+				.Returns<object>(null);
 
 			// Act
 			_instance.RetrieveData(1);
 
 			// Assert
-			_folderPathReader.Received(1).SetFolderPaths(Arg.Any<List<ArtifactDTO>>());
+			_folderPathReader
+				.Verify(x => x.SetFolderPaths(It.IsAny<List<ArtifactDTO>>()), Times.Once);
 		}
 
 		private void ValidateArtifact(ArtifactDTO expect, ArtifactDTO actual)

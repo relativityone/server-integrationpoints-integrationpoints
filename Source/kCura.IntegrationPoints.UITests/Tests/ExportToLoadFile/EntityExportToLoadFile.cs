@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			model.TransferredObject = TransferredObjectConstants.ENTITY;
 			model.ExportDetails = new EntityExportToLoadFileDetails
 			{
-				View = "Entity - Legal Hold View",
+				View = "Entities - Legal Hold View",
 				SelectAllFields = true,
 				ExportTextFieldsAsFiles = true,
 				DestinationFolder = ExportToLoadFileProviderModel.DestinationFolderTypeEnum.Root

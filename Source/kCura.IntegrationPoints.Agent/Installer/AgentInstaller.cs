@@ -184,10 +184,8 @@ namespace kCura.IntegrationPoints.Agent.Installer
 					}
 					IFederatedInstanceManager federatedInstanceManager = k.Resolve<IFederatedInstanceManager>();
 					IFolderPathReaderFactory folderPathReaderFactory = k.Resolve<IFolderPathReaderFactory>();
-					IToggleProvider toggleProvider = k.Resolve<IToggleProvider>();
 					return new global::kCura.IntegrationPoints.Core.Factories.Implementations.ExporterFactory(claimsPrincipalFactory,
-						sourceRepositoryFactory, targetRepositoryFactory, sourceHelper, federatedInstanceManager, folderPathReaderFactory,
-						toggleProvider);
+						sourceRepositoryFactory, targetRepositoryFactory, sourceHelper, federatedInstanceManager, folderPathReaderFactory);
 				}).LifestyleTransient());
 
 			container.Register(Component.For<IRsapiClientWithWorkspaceFactory>().ImplementedBy<ExtendedRsapiClientWithWorkspaceFactory>().LifestyleTransient());

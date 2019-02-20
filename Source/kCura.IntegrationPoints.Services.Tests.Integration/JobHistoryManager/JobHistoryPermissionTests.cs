@@ -76,7 +76,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 		}
 
         [Test]
-		[TestInQuarantine(TestQuarantineState.UnderObservation, 
+		[TestInQuarantine(TestQuarantineState.SeemsToBeStable, 
 			"Unstable test. Jira ticket: REL-287237.")]
 		public void MissingTargetWorkspacePermission()
 		{
