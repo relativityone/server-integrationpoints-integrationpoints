@@ -276,8 +276,8 @@ def testEnums()
 {
     def x = TestType.ui
     echo "runTestsAndSetBuildResult test: $tesType"
-	def stageName = testStageName(x)
-    echo "$stageName"
+	// def stageName = testStageName(x)
+    // echo "$stageName"
 }
 
 
