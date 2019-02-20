@@ -490,7 +490,7 @@ def updateChromeToLatestVersion()
 * @param buildType   Build type of the current build, e.g. 'DEV', 'GOLD', etc. Affects how the next version is incremented.
 * @return String indicating the current build version, e.g. "10.2.1.3".
 */
-def incrementBuildVersion(String packageName, String buildType)
+private incrementBuildVersion(String packageName, String buildType)
 {
     def versionOutput = powershell(returnStdout: true, script: ".\\DevelopmentScripts\\New-TeamCityBuildVersion.ps1 -Product '$packageName' -Project 'Development' -ServerType 'Jenkins' -BuildType '$buildType'")
     return versionOutput.tokenize()[0]
@@ -502,19 +502,19 @@ def incrementBuildVersion(String packageName, String buildType)
  * @param s - string result from powershell script
  * @return -  True if the script result is considered true
  */
-def isPowershellResultTrue(s)
+private isPowershellResultTrue(s)
 {
 	return s.trim() == "True"
 }
 
-def shouldRunSonar(Boolean enableSonarAnalysis, String branchName)
+private shouldRunSonar(Boolean enableSonarAnalysis, String branchName)
 {
 	return (enableSonarAnalysis && branchName == "develop" && !isNightly())
 			? "-sonarqube"
 			: ""
 }
 
-def getSlackChannelName()
+private getSlackChannelName()
 {
 	if (isNightly() && env.BRANCH_NAME == "develop")
 	{
@@ -526,13 +526,13 @@ def getSlackChannelName()
 /*
  * Checks whether folder for given Relativity branch exists in build packages
  */
-def isRelativityBranchPresent(String branch)
+private isRelativityBranchPresent(String branch)
 {
 	def command = "([System.IO.DirectoryInfo]\"//bld-pkgs/Packages/Relativity/$branch\").Exists"
 	return isPowershellResultTrue(powershell(returnStdout: true, script: command))
 }
 
-def getLatestVersion(String branch, String type)
+private getLatestVersion(String branch, String type)
 {
 	def command = '''
 		$result = (Get-ChildItem -path "\\\\bld-pkgs\\Packages\\Relativity\\%1$s" |
@@ -550,14 +550,14 @@ def getLatestVersion(String branch, String type)
 	return powershell(returnStdout: true, script: String.format(command, branch, type)).trim()
 }
 
-def checkRelativityArtifacts(String branch, String version, String type)
+private checkRelativityArtifacts(String branch, String version, String type)
 {
 	def command = "([System.IO.FileInfo]\"//bld-pkgs/Packages/Relativity/$branch/$version/MasterPackage/$type $version Relativity.exe\").Exists"
 	def result = powershell(returnStdout: true, script: command)
 	return isPowershellResultTrue(result)
 }
 
-def tryGetBuildVersion(
+private tryGetBuildVersion(
 	String relativityBranch, 
 	String paramRelativityBuildVersion, 
 	String paramRelativityBuildType, 
@@ -583,7 +583,7 @@ def tryGetBuildVersion(
 	}
 }
 
-def getNewBranchAndVersion(
+private getNewBranchAndVersion(
 	String relativityBranchFallback, 
 	String relativityBranch, 
 	String paramRelativityBuildVersion, 
@@ -629,7 +629,7 @@ interface TestType {
 }
 
 /* Return test name based on the type of the test */
-def testStageName(testType)
+private testStageName(testType)
 {
     if (testType == TestType.integration)
     {
@@ -646,7 +646,7 @@ def testStageName(testType)
 }
 
 /* Return command line option for powershell build script based on the type of the test */
-def testCmdOptions(testType)
+private testCmdOptions(testType)
 {
     if (TestType.integration == testType)
     {
@@ -666,7 +666,7 @@ def testCmdOptions(testType)
  * Function creates configuration file using some python helper library for integration and ui tests
  * @param sut - sut returned from ScvmmInstance.getServerFromPool() 
  */
-def configureNunitTests(sut)
+private configureNunitTests(sut)
 {
 	def credentials = usernamePassword(
 		credentialsId: 'eddsdbo', 
@@ -683,7 +683,7 @@ def configureNunitTests(sut)
 /*
  * Returns filter for NUnit
  */
-def exceptQuarantinedTestFilter()
+private exceptQuarantinedTestFilter()
 {
 	return "cat != $Constants.QUARANTINED_TESTS_CATEGORY"
 }
@@ -691,7 +691,7 @@ def exceptQuarantinedTestFilter()
 /*
  * Returns filter for NUnit
  */
-def withQuarantinedTestFilter()
+private withQuarantinedTestFilter()
 {
 	return "cat == $Constants.QUARANTINED_TESTS_CATEGORY"
 }
@@ -701,7 +701,7 @@ def withQuarantinedTestFilter()
  * @param - testType - string value which should be equal to one of the values from TestType interface
  * @param - params - the params object in the pipeline
  */
-def getTestsFilter(testType, params)
+private getTestsFilter(testType, params)
 {
 	def paramsTestsFilter = isNightly() ? params.nightlyTestsFilter : params.testsFilter
 	return isQuarantine(testType)
@@ -713,7 +713,7 @@ def getTestsFilter(testType, params)
  * Helper function for running specific type of test
  * @param - params - the params object in the pipeline
  */
-def runTests(testType, params)
+private runTests(testType, params)
 {
 	configureNunitTests(ripPipelineState.sut)
 	def cmdOptions = testCmdOptions(testType)
@@ -722,7 +722,7 @@ def runTests(testType, params)
 	return result
 }
 
-def runTestsAndSetBuildResult(testType, Boolean skipTests) 
+private runTestsAndSetBuildResult(testType, Boolean skipTests) 
 { 
     echo "runTestsAndSetBuildResult test: $tesType"
 	def stageName = testStageName(testType)
@@ -742,7 +742,7 @@ def runTestsAndSetBuildResult(testType, Boolean skipTests)
     echo "$stageName OK" 
 }
 
-def unionTestFilters(String testFilter, String andTestFilter)
+private unionTestFilters(String testFilter, String andTestFilter)
 {
 	if(testFilter == "")
 	{
@@ -751,12 +751,12 @@ def unionTestFilters(String testFilter, String andTestFilter)
 	return "${testFilter} && ${andTestFilter}"
 }
 
-def isQuarantine(testType)
+private isQuarantine(testType)
 {
 	return testType == TestType.integrationInQuarantine
 }
 
-def getTestsStatistic(String prop)
+private getTestsStatistic(String prop)
 {
 	try
 	{
