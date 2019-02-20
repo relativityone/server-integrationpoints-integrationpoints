@@ -64,7 +64,7 @@ class RIPPipelineState
 
     def provisionNodes()
     {
-        script.echo "Start provisioning"
+        script.echo "Start provisioning for id ($sessionId)"
         // Make changes here if necessary.
         final String pythonPackages = 'jeeves==4.1.0 phonograph==5.2.0 selenium==3.0.1'
         def numberOfSlaves = 1
@@ -90,6 +90,14 @@ def initializeRIPPipeline(script, env, params)
 {
     ripPipelineState = new RIPPipelineState(script, env, params)
     ripPipelineState.relativityBranch = params.relativityBranch ?: env.BRANCH_NAME
+}
+
+/*
+ * Returns true if the job is a nightly job based on naming convention
+ */
+def isNightly()
+{
+	return env.JOB_NAME.contains(Constants.NIGHTLY_JOB_NAME)
 }
 
 def getVersion()
@@ -187,9 +195,14 @@ def raid(String relativityBranchFallback)
                         params.relativityBuildType, 
                         sessionId
                     )
+                    ripPipelineState.relativityBuildVersion = relativityBuildVersion
+                    ripPipelineState.relativityBranch = relativityBranch
+                    ripPipelineState.relativityBuildType = relativityBuildType
+
                     echo "Installing Relativity, branch: $relativityBranch, version: $relativityBuildVersion, type: $relativityBuildType"
                 }
 
+                echo "Uploading environment files"
                 uploadEnvironmentFile(
                     script, 
                     sut.name, 
@@ -209,6 +222,7 @@ def raid(String relativityBranchFallback)
                     installingAnalytics
                 )
 
+                echo "Calling addRunList"
                 addRunlist(
                     script, 
                     sessionId, 
@@ -223,6 +237,7 @@ def raid(String relativityBranchFallback)
                     ""
                 )
 
+                echo "Checking workspace upgrade"
                 checkWorkspaceUpgrade(script, sut.name, sessionId)
             },
             ProvisionNodes:
@@ -255,6 +270,102 @@ def unstashTestsArtifacts()
         unstash 'nuget'
         unstash 'version'
     }
+}
+
+def runIntegrationTests()
+{
+    runTestsAndSetBuildResult(TestType.integration, params.skipIntegrationTests)
+}
+
+def runUiTests()
+{
+    runTestsAndSetBuildResult(TestType.ui, params.skipUITests)
+}
+
+def runIntegrationTestsInQuarantine()
+{
+	if (params.skipIntegrationTests)
+	{
+		return
+	}
+    runTests(TestType.integrationInQuarantine, params)
+}
+
+def cleanupVMs()
+{
+    try
+    {
+        timeout(time: 20, unit: 'MINUTES')
+        {
+            if(ripPipelineState.sut?.name)
+            {
+                // If we don't have a result, we didn't get to a test because somthing failed out earlier.
+                // If the result is FAILURE, a test failed.
+                if (!currentBuild.result || currentBuild.result == "FAILURE")
+                {
+                    try
+                    {
+                        timeout(time: 5, unit: 'MINUTES')
+                        {
+                            //it returns username who submitted the request to save vms
+                            user = input(
+                                message: 'Save the VMs?', 
+                                ok: 'Save', 
+                                submitter: 'JNK-Basic', 
+                                submitterParameter: 'submitter'
+                            )
+                        }
+                        ripPipelineState.scvmmInstance.saveVMs(user)
+                    }
+                    // Exception is thrown if you click abort or let it time out
+                    catch(err)
+                    {
+                        echo "Deleting VMs..."
+                        ripPipelineState.scvmmInstance.deleteVMs()
+                    }
+                }
+            }
+            deleteNodes(ripPipelineState.script, ripPipelineState.sessionId)
+        }
+    }
+    catch (err)
+    {
+        echo "Cleanup VMs FAILED."
+    }
+
+}
+
+def reporting()
+{
+    try
+    {
+        echo "Build result: $currentBuild.result"
+        node("SCVMM-AGENTS-POOL")
+        {
+            timeout(time: 3, unit: 'MINUTES')
+            {
+                step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
+                withCredentials([string(credentialsId: 'SlackJenkinsIntegrationToken', variable: 'token')])
+                {
+                    message = "*${currentBuild.result.toString()}* ${((currentBuild.result.toString() == "FAILURE") ? ":alert:" : "" )} \n\n" +
+                        "Build *#${env.BUILD_NUMBER}* from *${env.BRANCH_NAME}*.\n" +
+                        ":greencheck: Passed tests: ${numberOfPassedTests}\n" +
+                        ":negative_squared_cross_mark: Failed tests: ${numberOfFailedTests}\n" +
+                        ":yellow_card: Skipped tests: ${numberOfSkippedTests} \n\n" +
+                        "${env.BUILD_URL} \n" +
+                        "Relativity branch: ${ripPipelineState.relativityBranch} \n" +
+                        "Relativity build type: ${ripPipelineState.relativityBuildType} \n" +
+                        "Relativity build version: ${(ripPipelineState.relativityBuildVersion ?: "0.0.0.0")}"
+                    slackSend channel: getSlackChannelName().toString(), color: "E8E8E8", message: "${message}", teamDomain: 'kcura-pd', token: token
+                }
+            }
+        }
+    }
+    catch (err)  // Just catch everything here, if reporting/cleanup is the only thing that failed, let's not fail out the pipeline.
+    {
+        echo "Reporting failed: $err"
+    }
+
 }
 
 
@@ -312,17 +423,9 @@ def publishToBldPkgs(String username, String password, String localPackages, Str
  * @param s - string result from powershell script
  * @return -  True if the script result is considered true
  */
-def isPowershellResultTrue(s)
+private isPowershellResultTrue(s)
 {
 	return s.trim() == "True"
-}
-
-/*
- * Returns true if the job is a nightly job based on naming convention
- */
-def isNightly()
-{
-	return env.JOB_NAME.contains(Constants.NIGHTLY_JOB_NAME)
 }
 
 private shouldRunSonar(Boolean enableSonarAnalysis, String branchName)
@@ -344,7 +447,7 @@ def getSlackChannelName()
 /*
  * Checks whether folder for given Relativity branch exists in build packages
  */
-def isRelativityBranchPresent(String branch)
+private isRelativityBranchPresent(String branch)
 {
 	def command = "([System.IO.DirectoryInfo]\"//bld-pkgs/Packages/Relativity/$branch\").Exists"
 	return isPowershellResultTrue(powershell(returnStdout: true, script: command))
@@ -501,7 +604,7 @@ def testCmdOptions(TestType testType)
  * Function creates configuration file using some python helper library for integration and ui tests
  * @param sut - sut returned from ScvmmInstance.getServerFromPool() 
  */
-def configureNunitTests(sut)
+private configureNunitTests(sut)
 {
 	def credentials = usernamePassword(
 		credentialsId: 'eddsdbo', 
@@ -548,7 +651,7 @@ def getTestsFilter(TestType testType, params)
  * @param sut - sut returned from ScvmmInstance.getServerFromPool() 
  * @param - params - the params object in the pipeline
  */
-def runTests(TestType testType, sut, params)
+private runTests(TestType testType, sut, params)
 {
 	configureNunitTests(sut)
 	def cmdOptions = testCmdOptions(testType)
@@ -560,9 +663,9 @@ def runTests(TestType testType, sut, params)
 /*
  * @param sut - sut returned from ScvmmInstance.getServerFromPool() 
  */
-def runTestsAndSetBuildResult(TestType testType, Boolean skipTests, sut) 
+private runTestsAndSetBuildResult(TestType testType, Boolean skipTests, sut) 
 { 
-	def stageName = jenkinsTestingHelpers.testStageName(testType)
+	def stageName = testStageName(testType)
 
     if (skipTests)
 	{
@@ -591,34 +694,6 @@ def unionTestFilters(String testFilter, String andTestFilter)
 def isQuarantine(TestType testType)
 {
 	return testType == TestType.integrationInQuarantine
-}
-
-/*
- * @param - params - the params object in the pipeline
- */
-def runIntegrationTests(params)
-{
-    runTestsAndSetBuildResult(TestType.integration, params.skipIntegrationTests)
-}
-
-/*
- * @param - params - the params object in the pipeline
- */
-def runUiTests(params)
-{
-    runTestsAndSetBuildResult(TestType.ui, params.skipUITests)
-}
-
-/*
- * @param - params - the params object in the pipeline
- */
-def runIntegrationTestsInQuarantine(params)
-{
-	if(params.skipIntegrationTests)
-	{
-		return
-	}
-    runTests(TestType.integrationInQuarantine, params)
 }
 
 def getTestsStatistic(String prop)

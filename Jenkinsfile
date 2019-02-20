@@ -62,8 +62,6 @@ def numberOfFailedTests = -1
 def numberOfPassedTests = -1
 def numberOfSkippedTests = -1
 
-def agentsPool = "SCVMM-AGENTS-POOL"
-
 // *********
 // IMPORTANT
 // *********
@@ -133,7 +131,7 @@ timestamps
 						{
 							timeout(time: 180, unit: 'MINUTES')
 							{
-								jenkinsHelpers.runIntegrationTests(params)
+								jenkinsHelpers.runIntegrationTests()
 							}
 						}
 						if (jenkinsHelpers.isNightly())
@@ -142,7 +140,7 @@ timestamps
 							{
 								timeout(time: 180, unit: 'MINUTES')
 								{
-									jenkinsHelpers.runIntegrationTestsInQuarantine(params)
+									jenkinsHelpers.runIntegrationTestsInQuarantine()
 								}
 							}
 						}
@@ -151,7 +149,7 @@ timestamps
 							jenkinsHelpers.updateChromeToLatestVersion()
 							timeout(time: 8, unit: 'HOURS')
 							{
-								jenkinsHelpers.runUiTests(params)
+								jenkinsHelpers.runUiTests()
 							}
 						}
 					}
@@ -233,77 +231,12 @@ timestamps
 	{
 		stage('Cleanup VMs')
 		{
-			try
-			{
-				timeout(time: 20, unit: 'MINUTES')
-				{
-					if(sut?.name)
-					{
-						// If we don't have a result, we didn't get to a test because somthing failed out earlier.
-						// If the result is FAILURE, a test failed.
-						if (!currentBuild.result || currentBuild.result == "FAILURE")
-						{
-							try
-							{
-								timeout(time: 5, unit: 'MINUTES')
-								{
-									//it returns username who submitted the request to save vms
-									user = input(
-										message: 'Save the VMs?', 
-										ok: 'Save', 
-										submitter: 'JNK-Basic', 
-										submitterParameter: 'submitter'
-									)
-								}
-								ScvmmInstance.saveVMs(user)
-							}
-							// Exception is thrown if you click abort or let it time out
-							catch(err)
-							{
-								echo "Deleting VMs..."
-								ScvmmInstance.deleteVMs()
-							}
-						}
-					}
-					deleteNodes(this, session_id)
-				}
-			}
-			catch (err)
-			{
-				echo "Cleanup VMs FAILED."
-			}
+            jenkinsHelpers.cleanupVMs()
 		}
 
 		stage('Reporting')
 		{
-			try
-			{
-				echo "Build result: $currentBuild.result"
-				node(agentsPool)
-				{
-					timeout(time: 3, unit: 'MINUTES')
-					{
-						step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
-						withCredentials([string(credentialsId: 'SlackJenkinsIntegrationToken', variable: 'token')])
-						{
-							message = "*${currentBuild.result.toString()}* ${((currentBuild.result.toString() == "FAILURE") ? ":alert:" : "" )} \n\n" +
-								"Build *#${env.BUILD_NUMBER}* from *${env.BRANCH_NAME}*.\n" +
-								":greencheck: Passed tests: ${numberOfPassedTests}\n" +
-								":negative_squared_cross_mark: Failed tests: ${numberOfFailedTests}\n" +
-								":yellow_card: Skipped tests: ${numberOfSkippedTests} \n\n" +
-								"${env.BUILD_URL} \n" +
-								"Relativity branch: ${relativityBranch} \n" +
-								"Relativity build type: ${relativityBuildType} \n" +
-								"Relativity build version: ${(relativityBuildVersion ?: "0.0.0.0")}"
-							slackSend channel: jenkinsHelpers.getSlackChannelName().toString(), color: "E8E8E8", message: "${message}", teamDomain: 'kcura-pd', token: token
-						}
-					}
-				}
-			}
-			catch (err)  // Just catch everything here, if reporting/cleanup is the only thing that failed, let's not fail out the pipeline.
-			{
-				echo "Reporting failed: $err"
-			}
+            jenkinsHelpers.reporting()
 		}
 	}
 }
