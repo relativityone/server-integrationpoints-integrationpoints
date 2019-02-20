@@ -271,14 +271,6 @@ def unstashTestsArtifacts()
     }
 }
 
-// TODO remove
-def testEnums()
-{
-    def x = TestType.ui
-	def stageName = testStageName(x)
-    echo "$stageName"
-}
-
 def runIntegrationTests()
 {
     timeout(time: 180, unit: 'MINUTES')
@@ -643,6 +635,14 @@ private testStageName(TestType testType)
     {
         return "Integration Tests in Quarantine"
     }
+}
+
+// TODO remove
+def testEnums()
+{
+    def x = TestType.ui
+	def stageName = testStageName(x)
+    echo "$stageName"
 }
 
 /* Return command line option for powershell build script based on the type of the test */
