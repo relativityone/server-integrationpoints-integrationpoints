@@ -82,6 +82,14 @@ class RIPPipelineState
 
 }
 
+// TODO remove
+def testEnums()
+{
+    def x = TestType.ui
+	def stageName = this.testStageName(x)
+    echo "$stageName"
+}
+
 // State for the whole pipeline
 ripPipelineState = null
 
@@ -635,14 +643,6 @@ def testStageName(testType)
     {
         return "Integration Tests in Quarantine"
     }
-}
-
-// TODO remove
-def testEnums()
-{
-    def x = TestType.ui
-	def stageName = this.testStageName(x)
-    echo "$stageName"
 }
 
 /* Return command line option for powershell build script based on the type of the test */
