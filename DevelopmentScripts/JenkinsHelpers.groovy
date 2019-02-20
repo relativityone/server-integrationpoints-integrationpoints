@@ -337,16 +337,11 @@ def publishToNuget()
 /**
  * Publish a local package to the bld-pkgs share. Packages should be built under the
  * folder structure '<root>\<packageName>\<branch>\<version>'.
- *
- * @param username      Username to use when authenticating with blg-pkgs.
- * @param password      Password to use when authenticating with blg-pkgs.
- * @param localPackages Local directory containing packaged code, e.g. "./BuildPackages".
- * @param packageName   Name of the package. Equivalent to the "Product" for purposes of build versioning or the folder in the bld-pkgs Packages folder.
- * @param branch        Git branch on which the build is being run.
- * @param version       Version of the package to publish.
  */
 def publishToBldPkgs()
 {
+    // * @param username      Username to use when authenticating with blg-pkgs.
+    // * @param password      Password to use when authenticating with blg-pkgs.
     def credentials = [
         usernamePassword(
             credentialsId: 'jenkins_packages_svc', 
@@ -358,9 +353,13 @@ def publishToBldPkgs()
     {
         def username = BLDPKGSUSERNAME
         def password = BLDPKGSPASSWORD
+        // @param localPackages Local directory containing packaged code, e.g. "./BuildPackages".
         def localPackages = './BuildPackages'
+        // Name of the package. Equivalent to the "Product" for purposes of build versioning or the folder in the bld-pkgs Packages folder.
         def packageName = Constants.PACKAGE_NAME
+        // Git branch on which the build is being run.
         def branch = env.BRANCH_NAME
+        // Version of the package to publish.
         def version = ripPipelineState.version
         powershell """
             net use \\\\bld-pkgs\\Packages\\$packageName /user:kcura\\$username "$password"
@@ -508,7 +507,7 @@ private shouldRunSonar(Boolean enableSonarAnalysis, String branchName)
 			: ""
 }
 
-def getSlackChannelName()
+private getSlackChannelName()
 {
 	if (isNightly() && env.BRANCH_NAME == "develop")
 	{
@@ -526,7 +525,7 @@ private isRelativityBranchPresent(String branch)
 	return isPowershellResultTrue(powershell(returnStdout: true, script: command))
 }
 
-def getLatestVersion(String branch, String type)
+private getLatestVersion(String branch, String type)
 {
 	def command = '''
 		$result = (Get-ChildItem -path "\\\\bld-pkgs\\Packages\\Relativity\\%1$s" |
