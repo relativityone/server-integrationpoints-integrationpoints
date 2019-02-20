@@ -21,12 +21,6 @@ interface Constants
     final String INTEGRATION_TESTS_RESULTS_REPORT_PATH = "$ARTIFACTS_PATH/IntegrationTestsResults.xml"
 }
 
-// TODO remove once the pipeline is moved here
-def getConstants()
-{
-    return Constants
-}
-
 class RIPPipelineState
 {
     final script
@@ -382,6 +376,7 @@ def publishToBldPkgs()
             }
         """
 }
+}
 
 
 def cleanupVMs()
@@ -458,7 +453,6 @@ def reporting()
     {
         echo "Reporting failed: $err"
     }
-
 }
 
 def updateChromeToLatestVersion()
@@ -548,7 +542,6 @@ def getLatestVersion(String branch, String type)
 			return $result.ToString()
 		}
 	'''
-
 	return powershell(returnStdout: true, script: String.format(command, branch, type)).trim()
 }
 
