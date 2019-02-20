@@ -29,13 +29,6 @@ def getConstants()
 
 class RIPPipelineState
 {
-    // *********
-    // IMPORTANT
-    // *********
-    // Set variable below to the branch name, when you create new release branch!!!
-    // This should be changed on the release branch
-    final String relativityBranchFallback = "develop"
-
     final script
     final env
     final params
@@ -152,7 +145,10 @@ def testingVMsAreRequired(params)
 	return !params.skipIntegrationTests || !params.skipUITests
 }
 
-def raid()
+/*
+ * @param relativityBranchFallback - the default fallback branch. develop by default, but should be set to release branch name on release branches!!!
+ */
+def raid(String relativityBranchFallback)
 {
     timeout(time: 90, unit: 'MINUTES')
     {

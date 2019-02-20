@@ -68,6 +68,13 @@ def numberOfSkippedTests = -1
 
 def agentsPool = "SCVMM-AGENTS-POOL"
 
+// *********
+// IMPORTANT
+// *********
+// Set variable below to the branch name, when you create new release branch!!!
+// This should be changed on the release branch
+def relativityBranchFallback = "develop"
+
 timestamps
 {
 	try
@@ -111,7 +118,7 @@ timestamps
 				// Provision SUT
 				stage('Install RAID')
 				{
-                    jenkinsHelpers.raid()
+                    jenkinsHelpers.raid(relativityBranchFallback)
 				}
 
 				// Run tests on provisioned SUT
