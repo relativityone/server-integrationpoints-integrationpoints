@@ -82,14 +82,6 @@ class RIPPipelineState
 
 }
 
-// TODO remove
-def testEnums()
-{
-    def x = TestType.ui
-	def stageName = this.testStageName(x)
-    echo "$stageName"
-}
-
 // State for the whole pipeline
 ripPipelineState = null
 
