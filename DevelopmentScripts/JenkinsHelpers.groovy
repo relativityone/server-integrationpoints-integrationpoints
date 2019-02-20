@@ -716,7 +716,7 @@ private runTests(testType, params)
 
 private runTestsAndSetBuildResult(testType, Boolean skipTests) 
 { 
-    echo "runTestsAndSetBuildResult test: $tesType"
+    echo "runTestsAndSetBuildResult test: $testType"
 	def stageName = testStageName(testType)
 
     if (skipTests)
