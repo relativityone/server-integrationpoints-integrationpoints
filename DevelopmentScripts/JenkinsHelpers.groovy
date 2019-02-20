@@ -641,7 +641,7 @@ def testStageName(TestType testType)
 def testEnums()
 {
     def x = TestType.ui
-	def stageName = testStageName(x)
+	def stageName = this.testStageName(x)
     echo "$stageName"
 }
 
