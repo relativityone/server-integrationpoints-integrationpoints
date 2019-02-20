@@ -58,10 +58,6 @@ properties([
 	])
 ])
 
-def numberOfFailedTests = -1
-def numberOfPassedTests = -1
-def numberOfSkippedTests = -1
-
 // *********
 // IMPORTANT
 // *********

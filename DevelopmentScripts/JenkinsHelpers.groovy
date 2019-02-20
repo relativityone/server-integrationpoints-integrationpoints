@@ -436,9 +436,9 @@ def reporting()
                 {
                     message = "*${currentBuild.result.toString()}* ${((currentBuild.result.toString() == "FAILURE") ? ":alert:" : "" )} \n\n" +
                         "Build *#${env.BUILD_NUMBER}* from *${env.BRANCH_NAME}*.\n" +
-                        ":greencheck: Passed tests: ${numberOfPassedTests}\n" +
-                        ":negative_squared_cross_mark: Failed tests: ${numberOfFailedTests}\n" +
-                        ":yellow_card: Skipped tests: ${numberOfSkippedTests} \n\n" +
+                        ":greencheck: Passed tests: ${ripPipelineState.numberOfPassedTests}\n" +
+                        ":negative_squared_cross_mark: Failed tests: ${ripPipelineState.numberOfFailedTests}\n" +
+                        ":yellow_card: Skipped tests: ${ripPipelineState.numberOfSkippedTests} \n\n" +
                         "${env.BUILD_URL} \n" +
                         "Relativity branch: ${ripPipelineState.relativityBranch} \n" +
                         "Relativity build type: ${ripPipelineState.relativityBuildType} \n" +
