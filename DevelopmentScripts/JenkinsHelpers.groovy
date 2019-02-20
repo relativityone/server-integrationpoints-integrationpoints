@@ -375,9 +375,8 @@ def publishToBldPkgs()
                 net use \\\\bld-pkgs\\Packages\\$packageName /DELETE /Y
             }
         """
+    }
 }
-}
-
 
 def cleanupVMs()
 {
@@ -678,7 +677,7 @@ private configureNunitTests(sut)
 /*
  * Returns filter for NUnit
  */
-def exceptQuarantinedTestFilter()
+private exceptQuarantinedTestFilter()
 {
 	return "cat != $Constants.QUARANTINED_TESTS_CATEGORY"
 }
@@ -686,7 +685,7 @@ def exceptQuarantinedTestFilter()
 /*
  * Returns filter for NUnit
  */
-def withQuarantinedTestFilter()
+private withQuarantinedTestFilter()
 {
 	return "cat == $QUARANTINED_TESTS_CATEGORY"
 }
@@ -695,7 +694,7 @@ def withQuarantinedTestFilter()
  * Get NUnit filter for particular test based also on the pipeline type - whether it is nightly or not
  * @param - params - the params object in the pipeline
  */
-def getTestsFilter(TestType testType, params)
+private getTestsFilter(TestType testType, params)
 {
 	def paramsTestsFilter = isNightly() ? params.nightlyTestsFilter : params.testsFilter
 	return isQuarantine(testType)
@@ -739,7 +738,7 @@ private runTestsAndSetBuildResult(TestType testType, Boolean skipTests, sut)
     echo "$stageName OK" 
 }
 
-def unionTestFilters(String testFilter, String andTestFilter)
+private unionTestFilters(String testFilter, String andTestFilter)
 {
 	if(testFilter == "")
 	{
@@ -748,12 +747,12 @@ def unionTestFilters(String testFilter, String andTestFilter)
 	return "${testFilter} && ${andTestFilter}"
 }
 
-def isQuarantine(TestType testType)
+private isQuarantine(TestType testType)
 {
 	return testType == TestType.integrationInQuarantine
 }
 
-def getTestsStatistic(String prop)
+private getTestsStatistic(String prop)
 {
 	try
 	{
@@ -775,6 +774,5 @@ def getTestsStatistic(String prop)
 		return -1
 	}
 }
-
 
 return this
