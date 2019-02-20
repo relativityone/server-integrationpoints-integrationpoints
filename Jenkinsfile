@@ -142,7 +142,6 @@ timestamps
 						{
 							jenkinsHelpers.updateChromeToLatestVersion()
                             jenkinsHelpers.runUiTests()
-							}
 						}
 					}
 					catch(err)
