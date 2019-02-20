@@ -149,7 +149,7 @@ timestamps
 					{
 						stage ('Gathering test stats')
 						{
-                            gatherTestStats()
+                            jenkinsHelpers.gatherTestStats()
 						}
 					}
 				}
@@ -157,12 +157,12 @@ timestamps
 
 			stage ('Publish to NuGet')
 			{
-                publishToNuget()
+                jenkinsHelpers.publishToNuget()
 			}
 
 			stage ('Publish to bld-pkgs')
 			{
-                publishToBldPkgs()
+                jenkinsHelpers.publishToBldPkgs()
 			}
 
 			currentBuild.result = 'SUCCESS'
