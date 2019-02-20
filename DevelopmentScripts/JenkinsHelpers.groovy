@@ -687,7 +687,7 @@ private exceptQuarantinedTestFilter()
  */
 private withQuarantinedTestFilter()
 {
-	return "cat == $QUARANTINED_TESTS_CATEGORY"
+	return "cat == $Constants.QUARANTINED_TESTS_CATEGORY"
 }
 
 /*
@@ -704,23 +704,20 @@ private getTestsFilter(TestType testType, params)
 
 /* 
  * Helper function for running specific type of test
- * @param sut - sut returned from ScvmmInstance.getServerFromPool() 
  * @param - params - the params object in the pipeline
  */
-private runTests(TestType testType, sut, params)
+private runTests(TestType testType, params)
 {
-	configureNunitTests(sut)
+	configureNunitTests(ripPipelineState.sut)
 	def cmdOptions = testCmdOptions(testType)
     def currentFilter = getTestsFilter(testType, params)
     def result = powershell returnStatus: true, script: "./build.ps1 -ci -sk $cmdOptions \"\"\"$currentFilter\"\"\""
 	return result
 }
 
-/*
- * @param sut - sut returned from ScvmmInstance.getServerFromPool() 
- */
-private runTestsAndSetBuildResult(TestType testType, Boolean skipTests, sut) 
+private runTestsAndSetBuildResult(TestType testType, Boolean skipTests) 
 { 
+    echo "runTestsAndSetBuildResult test: $tesType"
 	def stageName = testStageName(testType)
 
     if (skipTests)
@@ -729,7 +726,7 @@ private runTestsAndSetBuildResult(TestType testType, Boolean skipTests, sut)
 		return
 	}
 
-    def result = runTests(testType, sut) 
+    def result = runTests(testType, params) 
     if (result != 0) 
     { 
         echo "$stageName FAILED with status: $result"
