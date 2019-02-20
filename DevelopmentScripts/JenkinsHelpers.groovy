@@ -625,10 +625,10 @@ private getNewBranchAndVersion(
  * Testing helpers
  **********************
  */
-enum TestType {
-    integration,
-    ui,
-    integrationInQuarantine
+interface TestType {
+    final integration = "integration"
+    final ui = "ui"
+    final integrationInQuarantine = "integrationInQuarantine"
 }
 
 /* Return test name based on the type of the test */
