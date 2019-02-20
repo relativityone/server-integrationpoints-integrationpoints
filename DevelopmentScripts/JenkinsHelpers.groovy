@@ -234,6 +234,29 @@ def raid(String relativityBranchFallback)
 
 }
 
+def getSessionId()
+{
+    return ripPipelineState.sessionId
+}
+
+def unstashTestsArtifacts()
+{
+    timeout(time: 3, unit: 'MINUTES')
+    {
+        unstash 'testdlls'
+        unstash 'dynamicallyLoadedDLLs'
+        unstash 'integrationPointsRap'
+        unstash 'nunitProjectFiles'
+        unstash 'nunitConsoleRunner'
+        unstash 'nunitProjectLoader'
+        unstash 'buildps1'
+        unstash 'buildScripts'
+        unstash 'psake'
+        unstash 'nuget'
+        unstash 'version'
+    }
+}
+
 
 /*****************
  **** PRIVATE ****

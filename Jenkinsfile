@@ -5,8 +5,6 @@ library 'SCVMMHelpers@3.2.0'
 library 'GitHelpers@1.0.0'
 library 'SlackHelpers@3.0.0'
 
-import groovy.transform.Field
-
 properties([
 	[$class: 'BuildDiscarderProperty', strategy: [
 			$class: 'LogRotator', 
@@ -60,8 +58,6 @@ properties([
 	])
 ])
 
-def jenkinsHelpers = null
-
 def numberOfFailedTests = -1
 def numberOfPassedTests = -1
 def numberOfSkippedTests = -1
@@ -74,6 +70,8 @@ def agentsPool = "SCVMM-AGENTS-POOL"
 // Set variable below to the branch name, when you create new release branch!!!
 // This should be changed on the release branch
 def relativityBranchFallback = "develop"
+
+def jenkinsHelpers = null
 
 timestamps
 {
@@ -122,24 +120,12 @@ timestamps
 				}
 
 				// Run tests on provisioned SUT
-				node ("$session_id && dependencies")
+                def sessionId = jenkinsHelpers.getSessionId()
+				node ("$sessionId && dependencies")
 				{
 					stage ('Unstash Tests Artifacts')
 					{
-						timeout(time: 3, unit: 'MINUTES')
-						{
-							unstash 'testdlls'
-							unstash 'dynamicallyLoadedDLLs'
-							unstash 'integrationPointsRap'
-							unstash 'nunitProjectFiles'
-							unstash 'nunitConsoleRunner'
-							unstash 'nunitProjectLoader'
-							unstash 'buildps1'
-							unstash 'buildScripts'
-							unstash 'psake'
-							unstash 'nuget'
-							unstash 'version'
-						}
+                        jenkinsHelpers.unstashTestsArtifacts()
 					}
 					try
 					{
