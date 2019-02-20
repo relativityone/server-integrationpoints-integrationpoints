@@ -29,13 +29,34 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 
 		#region Events
 
+		private BatchSubmitted _onBatchSubmit;
+		private BatchCreated _onBatchCreated;
+		private JobError _onJobError;
+		private StatisticsUpdate _onStatisticsUpdate;
+
 		public event BatchCompleted OnBatchComplete;
-		public event BatchSubmitted OnBatchSubmit { add { } remove { } }
-		public event BatchCreated OnBatchCreate { add { } remove { } }
+		public event BatchSubmitted OnBatchSubmit
+		{
+			add { _onBatchSubmit += value; }
+			remove { _onBatchSubmit -= value; }
+		}
+		public event BatchCreated OnBatchCreate
+		{
+			add { _onBatchCreated += value; }
+			remove { _onBatchCreated -= value; }
+		}
 		public event StatusUpdate OnStatusUpdate;
-		public event JobError OnJobError { add { } remove { } }
+		public event JobError OnJobError
+		{
+			add { _onJobError += value; }
+			remove { _onJobError -= value; }
+		}
 		public event RowError OnDocumentError;
-		public event StatisticsUpdate OnStatisticsUpdate { add { } remove { } }
+		public event StatisticsUpdate OnStatisticsUpdate
+		{
+			add { _onStatisticsUpdate += value; }
+			remove { _onStatisticsUpdate -= value; }
+		}
 
 		#endregion //Events
 

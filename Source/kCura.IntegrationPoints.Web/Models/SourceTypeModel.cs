@@ -47,14 +47,15 @@ namespace kCura.IntegrationPoints.Web.Models
 				return result.ToArray();
 			}
 			set // this is requires as part of the data member attribute
-			{ }
+			{
+			}
 		}
 
 		[DataMember]
 		public bool OnlyMapIdentifierToIdentifier
 		{
 			get { return _originalConfig.OnlyMapIdentifierToIdentifier; }
-			set { }
+			set { _originalConfig.OnlyMapIdentifierToIdentifier = value; }
 		}
 
 		[DataMember]
@@ -68,7 +69,7 @@ namespace kCura.IntegrationPoints.Web.Models
 				}
 				return _originalConfig.AvailableImportSettings;
 			}
-			set { }
+			set { _originalConfig.AvailableImportSettings = value; }
 		}
 	}
 }
