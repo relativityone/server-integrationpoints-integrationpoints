@@ -39,9 +39,14 @@ class RIPPipelineState
     def relativityBuildType = ""
     def relativityBranch = ""
 
+    def version
     def commonBuildArgs
     def scvmmInstance
     def sut
+
+    def numberOfFailedTests = -1
+    def numberOfPassedTests = -1
+    def numberOfSkippedTests = -1
 
     RIPPipelineState(script, env, params)
     {
@@ -105,6 +110,7 @@ def getVersion()
     def version = incrementBuildVersion(Constants.PACKAGE_NAME, params.relativityBuildType)
     currentBuild.displayName = "$params.relativityBuildType-$version"
     ripPipelineState.commonBuildArgs = "release $params.relativityBuildType -ci -v $version -b $env.BRANCH_NAME"
+    ripPipelineState.version = version
     echo "RIPPipeline::getVersion set commonBuildArgs to: $ripPipelineState.commonBuildArgs"
 }
 
@@ -274,12 +280,18 @@ def unstashTestsArtifacts()
 
 def runIntegrationTests()
 {
-    runTestsAndSetBuildResult(TestType.integration, params.skipIntegrationTests)
+    timeout(time: 180, unit: 'MINUTES')
+    {
+        runTestsAndSetBuildResult(TestType.integration, params.skipIntegrationTests)
+    }
 }
 
 def runUiTests()
 {
-    runTestsAndSetBuildResult(TestType.ui, params.skipUITests)
+    timeout(time: 8, unit: 'HOURS')
+    {
+        runTestsAndSetBuildResult(TestType.ui, params.skipUITests)
+    }
 }
 
 def runIntegrationTestsInQuarantine()
@@ -288,8 +300,89 @@ def runIntegrationTestsInQuarantine()
 	{
 		return
 	}
-    runTests(TestType.integrationInQuarantine, params)
+    timeout(time: 180, unit: 'MINUTES')
+    {
+        runTests(TestType.integrationInQuarantine, params)
+    }
 }
+
+def gatherTestStats()
+{
+    timeout(time: 5, unit: 'MINUTES')
+    {
+        if (!params.skipUITests)
+        {
+            archiveArtifacts artifacts: "lib/UnitTests/app.jeeves-ci.config", fingerprint: true
+            archiveArtifacts artifacts: "lib/UnitTests/*.png", fingerprint: true, allowEmptyArchive: true
+        }
+
+        powershell "Import-Module ./Vendor/psake/tools/psake.psm1; Invoke-psake ./DevelopmentScripts/psake-test.ps1 generate_nunit_reports" 
+        def artifactsPath = Constants.ARTIFACTS_PATH
+        archiveArtifacts artifacts: "$artifactsPath/**/*", fingerprint: true, allowEmptyArchive: true
+
+        if (!params.skipIntegrationTests)
+        {
+            ripPipelineState.numberOfFailedTests = getTestsStatistic('failed')
+            ripPipelineState.numberOfPassedTests = getTestsStatistic('passed')
+            ripPipelineState.numberOfSkippedTests = getTestsStatistic('skipped')
+        }
+    }
+}
+
+def publishToNuget()
+{
+    withCredentials([string(credentialsId: 'ProgetNugetApiKey', variable: 'key')])
+    {
+        retry(3)
+        {
+            powershell "./build.ps1 -sk -nuget $key $ripPipelineState.commonBuildArgs"
+        }
+    }
+}
+
+/**
+ * Publish a local package to the bld-pkgs share. Packages should be built under the
+ * folder structure '<root>\<packageName>\<branch>\<version>'.
+ *
+ * @param username      Username to use when authenticating with blg-pkgs.
+ * @param password      Password to use when authenticating with blg-pkgs.
+ * @param localPackages Local directory containing packaged code, e.g. "./BuildPackages".
+ * @param packageName   Name of the package. Equivalent to the "Product" for purposes of build versioning or the folder in the bld-pkgs Packages folder.
+ * @param branch        Git branch on which the build is being run.
+ * @param version       Version of the package to publish.
+ */
+def publishToBldPkgs()
+{
+    def credentials = [
+        usernamePassword(
+            credentialsId: 'jenkins_packages_svc', 
+            passwordVariable: 'BLDPKGSPASSWORD', 
+            usernameVariable: 'BLDPKGSUSERNAME'
+        )
+    ]
+    withCredentials(credentials)
+    {
+        def username = BLDPKGSUSERNAME
+        def password = BLDPKGSPASSWORD
+        def localPackages = './BuildPackages'
+        def packageName = Constants.PACKAGE_NAME
+        def branch = env.BRANCH_NAME
+        def version = ripPipelineState.version
+        powershell """
+            net use \\\\bld-pkgs\\Packages\\$packageName /user:kcura\\$username "$password"
+            try
+            {
+                \$destination_path = "\\\\BLD-PKGS.kcura.corp\\Packages\\$packageName\\$branch\\$version"
+                \$source_path = Join-Path '$localPackages' '$packageName\\$branch\\$version'
+                & .\\DevelopmentScripts\\Invoke-Robocopy.ps1 -Source \$source_path -Destination \$destination_path -Verbose
+            }
+            finally
+            {
+                net use \\\\bld-pkgs\\Packages\\$packageName /DELETE /Y
+            }
+        """
+}
+
 
 def cleanupVMs()
 {
@@ -368,6 +461,22 @@ def reporting()
 
 }
 
+def updateChromeToLatestVersion()
+{
+	try
+    {
+		powershell """
+            Invoke-WebRequest "http://dl.google.com/chrome/install/latest/chrome_installer.exe" -OutFile chrome_installer.exe
+            Start-Process -FilePath chrome_installer.exe -Args "/silent /install" -Verb RunAs -Wait
+            (Get-Item (Get-ItemProperty "HKLM:/SOFTWARE/Microsoft/Windows/CurrentVersion/App Paths/chrome.exe")."(Default)").VersionInfo
+        """
+    }
+    catch(err)
+    {
+        echo "An error occured while updating Chrome: $err"
+    }
+}
+
 
 /*****************
  **** PRIVATE ****
@@ -387,35 +496,6 @@ private incrementBuildVersion(String packageName, String buildType)
     def versionOutput = powershell(returnStdout: true, script: ".\\DevelopmentScripts\\New-TeamCityBuildVersion.ps1 -Product '$packageName' -Project 'Development' -ServerType 'Jenkins' -BuildType '$buildType'")
     return versionOutput.tokenize()[0]
 }
-
-/**
- * Publish a local package to the bld-pkgs share. Packages should be built under the
- * folder structure '<root>\<packageName>\<branch>\<version>'.
- *
- * @param username      Username to use when authenticating with blg-pkgs.
- * @param password      Password to use when authenticating with blg-pkgs.
- * @param localPackages Local directory containing packaged code, e.g. "./BuildPackages".
- * @param packageName   Name of the package. Equivalent to the "Product" for purposes of build versioning or the folder in the bld-pkgs Packages folder.
- * @param branch        Git branch on which the build is being run.
- * @param version       Version of the package to publish.
- */
-def publishToBldPkgs(String username, String password, String localPackages, String packageName, String branch, String version)
-{
-	powershell """
-		net use \\\\bld-pkgs\\Packages\\$packageName /user:kcura\\$username "$password"
-		try
-		{
-			\$destination_path = "\\\\BLD-PKGS.kcura.corp\\Packages\\$packageName\\$branch\\$version"
-			\$source_path = Join-Path '$localPackages' '$packageName\\$branch\\$version'
-			& .\\DevelopmentScripts\\Invoke-Robocopy.ps1 -Source \$source_path -Destination \$destination_path -Verbose
-		}
-		finally
-		{
-			net use \\\\bld-pkgs\\Packages\\$packageName /DELETE /Y
-		}
-	"""
-}
-
 
 /*
  * Check whether boolean value returned from Powershell represents true
@@ -472,30 +552,14 @@ def getLatestVersion(String branch, String type)
 	return powershell(returnStdout: true, script: String.format(command, branch, type)).trim()
 }
 
-def checkRelativityArtifacts(String branch, String version, String type)
+private checkRelativityArtifacts(String branch, String version, String type)
 {
 	def command = "([System.IO.FileInfo]\"//bld-pkgs/Packages/Relativity/$branch/$version/MasterPackage/$type $version Relativity.exe\").Exists"
 	def result = powershell(returnStdout: true, script: command)
 	return isPowershellResultTrue(result)
 }
 
-def updateChromeToLatestVersion()
-{
-	try
-    {
-		powershell """
-            Invoke-WebRequest "http://dl.google.com/chrome/install/latest/chrome_installer.exe" -OutFile chrome_installer.exe
-            Start-Process -FilePath chrome_installer.exe -Args "/silent /install" -Verb RunAs -Wait
-            (Get-Item (Get-ItemProperty "HKLM:/SOFTWARE/Microsoft/Windows/CurrentVersion/App Paths/chrome.exe")."(Default)").VersionInfo
-        """
-    }
-    catch(err)
-    {
-        echo "An error occured while updating Chrome: $err"
-    }
-}
-
-def tryGetBuildVersion(
+private tryGetBuildVersion(
 	String relativityBranch, 
 	String paramRelativityBuildVersion, 
 	String paramRelativityBuildType, 
@@ -567,7 +631,7 @@ enum TestType {
 }
 
 /* Return test name based on the type of the test */
-def testStageName(TestType testType)
+private testStageName(TestType testType)
 {
     if (testType == TestType.integration)
     {
@@ -584,7 +648,7 @@ def testStageName(TestType testType)
 }
 
 /* Return command line option for powershell build script based on the type of the test */
-def testCmdOptions(TestType testType)
+private testCmdOptions(TestType testType)
 {
     if (TestType.integration == testType)
     {

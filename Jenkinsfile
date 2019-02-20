@@ -129,27 +129,19 @@ timestamps
 					{
 						stage ('Integration Tests')
 						{
-							timeout(time: 180, unit: 'MINUTES')
-							{
-								jenkinsHelpers.runIntegrationTests()
-							}
+                            jenkinsHelpers.runIntegrationTests()
 						}
 						if (jenkinsHelpers.isNightly())
 						{
 							stage ('Integration Tests in Quarantine')
 							{
-								timeout(time: 180, unit: 'MINUTES')
-								{
-									jenkinsHelpers.runIntegrationTestsInQuarantine()
-								}
+                                jenkinsHelpers.runIntegrationTestsInQuarantine()
 							}
 						}
 						stage ('UI Tests')
 						{
 							jenkinsHelpers.updateChromeToLatestVersion()
-							timeout(time: 8, unit: 'HOURS')
-							{
-								jenkinsHelpers.runUiTests()
+                            jenkinsHelpers.runUiTests()
 							}
 						}
 					}
@@ -162,25 +154,7 @@ timestamps
 					{
 						stage ('Gathering test stats')
 						{
-							timeout(time: 5, unit: 'MINUTES')
-							{
-								if (!params.skipUITests)
-								{
-									archiveArtifacts artifacts: "lib/UnitTests/app.jeeves-ci.config", fingerprint: true
-									archiveArtifacts artifacts: "lib/UnitTests/*.png", fingerprint: true, allowEmptyArchive: true
-								}
-
-                                powershell "Import-Module ./Vendor/psake/tools/psake.psm1; Invoke-psake ./DevelopmentScripts/psake-test.ps1 generate_nunit_reports" 
-                                def artifactsPath = jenkinsHelpers.getConstants().ARTIFACTS_PATH
-                                archiveArtifacts artifacts: "$artifactsPath/**/*", fingerprint: true, allowEmptyArchive: true
-
-								if (!params.skipIntegrationTests)
-								{
-                                    numberOfFailedTests = jenkinsHelpers.getTestsStatistic('failed')
-                                    numberOfPassedTests = jenkinsHelpers.getTestsStatistic('passed')
-                                    numberOfSkippedTests = jenkinsHelpers.getTestsStatistic('skipped')
-                                }
-							}
+                            gatherTestStats()
 						}
 					}
 				}
@@ -188,35 +162,12 @@ timestamps
 
 			stage ('Publish to NuGet')
 			{
-				withCredentials([string(credentialsId: 'ProgetNugetApiKey', variable: 'key')])
-				{
-					retry(3)
-					{
-						powershell "./build.ps1 -sk -nuget $key $commonBuildArgs"
-					}
-				}
+                publishToNuget()
 			}
 
 			stage ('Publish to bld-pkgs')
 			{
-				def credentials = [
-					usernamePassword(
-						credentialsId: 'jenkins_packages_svc', 
-						passwordVariable: 'BLDPKGSPASSWORD', 
-						usernameVariable: 'BLDPKGSUSERNAME'
-					)
-				]
-				withCredentials(credentials)
-				{
-					jenkinsHelpers.publishToBldPkgs(
-						BLDPKGSUSERNAME, 
-						BLDPKGSPASSWORD, 
-						'./BuildPackages', 
-						jenkinsHelpers.getConstants().PACKAGE_NAME, 
-						env.BRANCH_NAME, 
-						version
-					)
-				}
+                publishToBldPkgs()
 			}
 
 			currentBuild.result = 'SUCCESS'
