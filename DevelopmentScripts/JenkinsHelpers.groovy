@@ -621,7 +621,7 @@ interface TestType {
 }
 
 /* Return test name based on the type of the test */
-def testStageName(TestType testType)
+def testStageName(testType)
 {
     if (testType == TestType.integration)
     {
@@ -646,7 +646,7 @@ def testEnums()
 }
 
 /* Return command line option for powershell build script based on the type of the test */
-def testCmdOptions(TestType testType)
+def testCmdOptions(testType)
 {
     if (TestType.integration == testType)
     {
@@ -698,9 +698,10 @@ def withQuarantinedTestFilter()
 
 /*
  * Get NUnit filter for particular test based also on the pipeline type - whether it is nightly or not
+ * @param - testType - string value which should be equal to one of the values from TestType interface
  * @param - params - the params object in the pipeline
  */
-def getTestsFilter(TestType testType, params)
+def getTestsFilter(testType, params)
 {
 	def paramsTestsFilter = isNightly() ? params.nightlyTestsFilter : params.testsFilter
 	return isQuarantine(testType)
@@ -712,7 +713,7 @@ def getTestsFilter(TestType testType, params)
  * Helper function for running specific type of test
  * @param - params - the params object in the pipeline
  */
-def runTests(TestType testType, params)
+def runTests(testType, params)
 {
 	configureNunitTests(ripPipelineState.sut)
 	def cmdOptions = testCmdOptions(testType)
@@ -721,7 +722,7 @@ def runTests(TestType testType, params)
 	return result
 }
 
-def runTestsAndSetBuildResult(TestType testType, Boolean skipTests) 
+def runTestsAndSetBuildResult(testType, Boolean skipTests) 
 { 
     echo "runTestsAndSetBuildResult test: $tesType"
 	def stageName = testStageName(testType)
@@ -750,7 +751,7 @@ def unionTestFilters(String testFilter, String andTestFilter)
 	return "${testFilter} && ${andTestFilter}"
 }
 
-def isQuarantine(TestType testType)
+def isQuarantine(testType)
 {
 	return testType == TestType.integrationInQuarantine
 }
