@@ -43,20 +43,29 @@ Copy-Item $configureAwaitPlugin.FullName -Destination $inspectCode.DirectoryName
 
 Write-Verbose "Running code inspection for all solutions..."
 $errorFile = Join-Path $logsDir "await.xml"
-Get-ChildItem -Path $sourceDir -Filter *.sln -File | ForEach-Object {
-    Write-Verbose "Restoring packages..."
-	& dotnet restore $_.FullName
 
-    Write-Verbose "Running code inspection for $_..."
-    & $inspectCode.FullName $_.FullName --output=$errorFile --s="SUGGESTION"
+$cacheDir = Join-Path $logsDir "cache"
+if (!(Test-Path -Path $cacheDir)) {
+    New-Item -ItemType directory -Path $cacheDir
+}
+try {
+    Get-ChildItem -Path $sourceDir -Filter *.sln -File | ForEach-Object {
+        Write-Verbose "Restoring packages..."
+        & dotnet restore $_.FullName
 
-    if ($LASTEXITCODE -ne 0) {
-        Throw "An error occured while analyzing solution $($_.FullName)."
+        Write-Verbose "Running code inspection for $_..."
+        & $inspectCode.FullName $_.FullName --output=$errorFile --s="SUGGESTION" --caches-home="$cacheDir"
+
+        if ($LASTEXITCODE -ne 0) {
+            Throw "An error occured while analyzing solution $($_.FullName)."
+        }
+
+        [xml]$xmlErrors = Get-Content -Path $errorFile
+
+        if ($xmlErrors.Report.IssueTypes | Select-Xml -XPath "//IssueType[@Id='ConsiderUsingConfigureAwait']" -ErrorAction Ignore) {
+            throw "Build failed. ConfigureAwait missing. Details about where ConfigureAwait needs to be added can be found at $errorFile"
+        }
     }
-
-    [xml]$xmlErrors = Get-Content -Path $errorFile
-
-    if ($xmlErrors.Report.IssueTypes | Select-Xml -XPath "//IssueType[@Id='ConsiderUsingConfigureAwait']" -ErrorAction Ignore) {
-        throw "Build failed. ConfigureAwait missing. Details about where ConfigureAwait needs to be added can be found at $errorFile"
-    }
+} finally {
+    Remove-Item -Recurse -Force $cacheDir
 }
