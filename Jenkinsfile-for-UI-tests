@@ -144,16 +144,6 @@ timestamps
 				}
 			}
 
-			stage ('Publish to NuGet')
-			{
-                jenkinsHelpers.publishToNuget()
-			}
-
-			stage ('Publish to bld-pkgs')
-			{
-                jenkinsHelpers.publishToBldPkgs()
-			}
-
 			currentBuild.result = 'SUCCESS'
 		}
 	}
