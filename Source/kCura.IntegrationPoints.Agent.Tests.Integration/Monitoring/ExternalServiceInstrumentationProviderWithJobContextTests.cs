@@ -29,6 +29,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration.Monitoring
 	{
 		private Mock<IConfig> _configMock;
 		private Mock<IMetricsManager> _metricManagerMock;
+		private Mock<IDateTimeHelper> _dateTimeHelperMock;
 		private JobContextProvider _jobContextProvider;
 		private IntegrationPointsMessageService _messageService;
 		private ExternalServiceInstrumentationProviderWithJobContext _sut;
@@ -56,7 +57,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration.Monitoring
 			_metricManagerMock = new Mock<IMetricsManager>();
 			var metricManagerFactory = new Mock<IMetricsManagerFactory>();
 			metricManagerFactory.Setup(x => x.CreateAPMManager()).Returns(_metricManagerMock.Object);
-			_messageService = new IntegrationPointsMessageService(metricManagerFactory.Object, _configMock.Object, logger.Object);
+			_dateTimeHelperMock = new Mock<IDateTimeHelper>();
+			_messageService = new IntegrationPointsMessageService(metricManagerFactory.Object, _configMock.Object, logger.Object, _dateTimeHelperMock.Object);
 
 			_jobContextProvider = new JobContextProvider();
 

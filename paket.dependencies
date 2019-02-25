@@ -73,3 +73,10 @@ group TestPackages
 	nuget Serilog 1.5.14	
 	nuget Serilog.Sinks.Seq 1.5.36
 	nuget CSharpGuidelineAnalyzer 2.3.0.0
+	
+group Sync
+	framework: auto-detect
+	strategy: max
+	source https://proget.kcura.corp/nuget/NuGet
+	nuget Relativity.Sync 0.0.1-beta70
+	nuget Autofac ~> 4.8.1

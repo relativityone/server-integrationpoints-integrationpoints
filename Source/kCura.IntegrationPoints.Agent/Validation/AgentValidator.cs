@@ -1,14 +1,11 @@
-﻿using kCura.IntegrationPoints.Core.Models;
+﻿using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 
 namespace kCura.IntegrationPoints.Agent.Validation
 {
-	public interface IAgentValidator
-	{
-		void Validate(IntegrationPoint integrationPointDto, int submittedByUserId);
-	}
 
 	public class AgentValidator : IAgentValidator
 	{
@@ -56,6 +53,5 @@ namespace kCura.IntegrationPoints.Agent.Validation
 
 		#endregion //Methods
 	}
-
 
 }

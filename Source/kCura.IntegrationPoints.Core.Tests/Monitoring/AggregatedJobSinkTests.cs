@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using kCura.IntegrationPoints.Common.Monitoring;
 using kCura.IntegrationPoints.Common.Monitoring.Messages;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
@@ -17,10 +18,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring
 		private IAPILog _logger;
 		private IMetricsManagerFactory _metricsManagerFactory;
 		private IMetricsManager _sum, _apm;
+		private IDateTimeHelper _dateTimeHelper;
 
 		private string _provider = "TestProvider";
 		private string _correlationId;
 		private AggregatedJobSink _sink;
+
+		// Didn't want to use MinTime/MaxTime in case of under-/overflow, so this is the example time used by Microsoft in its DateTime docs! :P
+		private static readonly DateTime _DEFAULT_START_TIME = DateTime.Parse("2009-06-15T13:45:30.0000000", CultureInfo.InvariantCulture);
 
 		[SetUp]
 		public void SetUp()
@@ -33,8 +38,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring
 			_apm = Substitute.For<IMetricsManager>();
 			_metricsManagerFactory.CreateAPMManager().Returns(_apm);
 			_correlationId = Guid.NewGuid().ToString();
+			_dateTimeHelper = Substitute.For<IDateTimeHelper>();
 
-			_sink = new AggregatedJobSink(_logger, _metricsManagerFactory);
+			_sink = new AggregatedJobSink(_logger, _metricsManagerFactory, _dateTimeHelper);
 		}
 
 		private IMetricMetadata CreateValidator()
@@ -248,6 +254,198 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring
 
 			_apm.DidNotReceive().LogDouble("IntegrationPoints.Performance.JobStatistics", Arg.Any<double>(), CreateValidator());
 			_sum.DidNotReceive().LogLong($"IntegrationPoints.Performance.JobSize.{_provider}", Arg.Any<long>(), CreateValidator());
+		}
+
+		[Test]
+		[TestCase(2560, 2.5, 1024, 2.5)]
+		[TestCase(12345, 10, 1234.5, 10)]
+		[TestCase(0, 1, 0, 1)]
+		[TestCase(2048, -1, 0, 0)]
+		[TestCase(2048, 0, 0, 0)]
+		[TestCase(0, 0, 0, 0)]
+		public void ShouldSendDurationStatisticsWhenJobEnds(long jobSizeBytes, double durationSec, double expectedThroughputBsec, double expectedDurationSec)
+		{
+			_dateTimeHelper.Now().Returns(_DEFAULT_START_TIME, _DEFAULT_START_TIME + TimeSpan.FromSeconds(durationSec));
+
+			_sink.OnMessage(CreateMessage<JobStartedMessage>());
+			_sink.OnMessage(CreateMessage<JobStatisticsMessage>(message =>
+			{
+				message.FileBytes = jobSizeBytes;
+			}
+			));
+			_sink.OnMessage(CreateMessage<JobCompletedMessage>());
+
+			_apm.Received(1).LogDouble("IntegrationPoints.Performance.JobStatistics", Arg.Any<double>(), Arg.Is<IMetricMetadata>(x =>
+				x.CorrelationID.Equals(_correlationId) &&
+				x.CustomData[JobStatistics.OVERALL_THROUGHPUT_BYTES_KEY_NAME].Equals(expectedThroughputBsec) &&
+				x.CustomData[JobStatistics.DURATION_SECONDS_KEY_NAME].Equals(expectedDurationSec)
+			));
+		}
+
+		[Test]
+		public void ShouldSendCorrectDurationStatisticsWhenJobEndsWithoutJobStart()
+		{
+			const long jobSize = 1024;
+			TimeSpan expectedDuration = _DEFAULT_START_TIME - DateTime.MinValue;
+			double expectedOverallThroughput = jobSize / expectedDuration.TotalSeconds;
+
+			_dateTimeHelper.Now().Returns(_DEFAULT_START_TIME);
+
+			_sink.OnMessage(CreateMessage<JobStatisticsMessage>(message =>
+			{
+				message.FileBytes = jobSize;
+			}));
+			_sink.OnMessage(CreateMessage<JobCompletedMessage>());
+
+			_apm.Received(1).LogDouble("IntegrationPoints.Performance.JobStatistics", Arg.Any<double>(), Arg.Is<IMetricMetadata>(x =>
+				x.CorrelationID.Equals(_correlationId) &&
+				x.CustomData[JobStatistics.OVERALL_THROUGHPUT_BYTES_KEY_NAME].Equals(expectedOverallThroughput) &&
+				x.CustomData[JobStatistics.DURATION_SECONDS_KEY_NAME].Equals(expectedDuration.TotalSeconds)
+			));
+		}
+
+		[Test]
+		public void ShouldUseCombinedFileMetaJobSizeForOverallThroughput()
+		{
+			const long fileBytes = 1024;
+			const long metadataBytes = 1024;
+			const double expectedDurationSec = 1;
+			const double expectedOverallThroughput = (fileBytes + metadataBytes) / expectedDurationSec;
+
+			TimeSpan duration = TimeSpan.FromSeconds(expectedDurationSec);
+			_dateTimeHelper.Now().Returns(_DEFAULT_START_TIME, _DEFAULT_START_TIME + duration);
+
+			_sink.OnMessage(CreateMessage<JobStartedMessage>());
+			_sink.OnMessage(CreateMessage<JobStatisticsMessage>(message =>
+			{
+				message.FileBytes = fileBytes;
+				message.MetaBytes = metadataBytes;
+			}));
+			_sink.OnMessage(CreateMessage<JobCompletedMessage>());
+
+			_apm.Received(1).LogDouble("IntegrationPoints.Performance.JobStatistics", Arg.Any<double>(), Arg.Is<IMetricMetadata>(x =>
+				x.CorrelationID.Equals(_correlationId) &&
+				x.CustomData[JobStatistics.OVERALL_THROUGHPUT_BYTES_KEY_NAME].Equals(expectedOverallThroughput) &&
+				x.CustomData[JobStatistics.DURATION_SECONDS_KEY_NAME].Equals(expectedDurationSec)
+			));
+		}
+
+		[Test]
+		public void ShouldNotStompOverExistingThroughput()
+		{
+			const long fileBytes = 1024;
+			const long metadataBytes = 1024;
+			const double expectedDurationSec = 1;
+			const double expectedThroughput = 12345; // calculated throughput would be 2048 B / 1 s = 2048 B/s
+			const double expectedOverallThoughput = (fileBytes + metadataBytes) / expectedDurationSec;
+
+			TimeSpan duration = TimeSpan.FromSeconds(expectedDurationSec);
+			_dateTimeHelper.Now().Returns(_DEFAULT_START_TIME, _DEFAULT_START_TIME + duration);
+
+			_sink.OnMessage(CreateMessage<JobStartedMessage>());
+			_sink.OnMessage(CreateMessage<JobStatisticsMessage>(message =>
+			{
+				message.FileBytes = fileBytes;
+				message.MetaBytes = metadataBytes;
+			}));
+			_sink.OnMessage(CreateMessage<JobThroughputBytesMessage>(message =>
+			{
+				message.BytesPerSecond = expectedThroughput;
+			}));
+			_sink.OnMessage(CreateMessage<JobCompletedMessage>());
+
+			_apm.Received(1).LogDouble("IntegrationPoints.Performance.JobStatistics", Arg.Any<double>(), Arg.Is<IMetricMetadata>(x =>
+				x.CorrelationID.Equals(_correlationId) &&
+				x.CustomData[JobStatistics.THROUGHPUT_BYTES_KEY_NAME].Equals(expectedThroughput) &&
+				x.CustomData[JobStatistics.OVERALL_THROUGHPUT_BYTES_KEY_NAME].Equals(expectedOverallThoughput) &&
+				x.CustomData[JobStatistics.DURATION_SECONDS_KEY_NAME].Equals(expectedDurationSec)
+			));
+		}
+
+		[Test]
+		public void ShouldSendUpdatedProgressMessages()
+		{
+			const double progressDurationSec1 = 10;
+			const double fileThroughput1 = 50;
+			const double metadataThroughput1 = 20;
+			const double expectedAverageFileThroughput1 = 50;
+			const double expectedAverageMetadataThroughput1 = 20;
+
+			const double progressDurationSec2 = 15;
+			const double fileThroughput2 = 0;
+			const double metadataThroughput2 = 20;
+			const double expectedAverageFileThroughput2 = 20;
+			const double expectedAverageMetadataThroughput2 = 20;
+
+			const double progressDurationSec3 = 5;
+			const double fileThroughput3 = 20;
+			const double metadataThroughput3 = 80;
+			const double expectedAverageFileThroughput3 = 20;
+			const double expectedAverageMetadataThroughput3 = 30;
+
+			TimeSpan progressDuration1 = TimeSpan.FromSeconds(progressDurationSec1);
+			TimeSpan progressDuration2 = TimeSpan.FromSeconds(progressDurationSec2);
+			TimeSpan progressDuration3 = TimeSpan.FromSeconds(progressDurationSec3);
+			_dateTimeHelper.Now().Returns(
+				_DEFAULT_START_TIME,
+				_DEFAULT_START_TIME + progressDuration1,
+				_DEFAULT_START_TIME + progressDuration1 + progressDuration2,
+				_DEFAULT_START_TIME + progressDuration1 + progressDuration2 + progressDuration3);
+
+			_sink.OnMessage(CreateMessage<JobStartedMessage>());
+			_sink.OnMessage(CreateMessage<JobProgressMessage>(message =>
+			{
+				message.FileThroughput = fileThroughput1;
+				message.MetadataThroughput = metadataThroughput1;
+			}));
+			_sink.OnMessage(CreateMessage<JobProgressMessage>(message =>
+			{
+				message.FileThroughput = fileThroughput2;
+				message.MetadataThroughput = metadataThroughput2;
+			}));
+			_sink.OnMessage(CreateMessage<JobProgressMessage>(message =>
+			{
+				message.FileThroughput = fileThroughput3;
+				message.MetadataThroughput = metadataThroughput3;
+			}));
+
+			_apm.Received(1).LogDouble("IntegrationPoints.Performance.Progress", Arg.Any<double>(), Arg.Is<IMetricMetadata>(x =>
+				x.CorrelationID.Equals(_correlationId) &&
+				x.CustomData["FileThroughput"].Equals(fileThroughput1) &&
+				x.CustomData["MetadataThroughput"].Equals(metadataThroughput1) &&
+				x.CustomData["AverageFileThroughput"].Equals(expectedAverageFileThroughput1) &&
+				x.CustomData["AverageMetadataThroughput"].Equals(expectedAverageMetadataThroughput1)
+			));
+			_apm.Received(1).LogDouble("IntegrationPoints.Performance.Progress", Arg.Any<double>(), Arg.Is<IMetricMetadata>(x =>
+				x.CorrelationID.Equals(_correlationId) &&
+				x.CustomData["FileThroughput"].Equals(fileThroughput2) &&
+				x.CustomData["MetadataThroughput"].Equals(metadataThroughput2) &&
+				x.CustomData["AverageFileThroughput"].Equals(expectedAverageFileThroughput2) &&
+				x.CustomData["AverageMetadataThroughput"].Equals(expectedAverageMetadataThroughput2)
+			));
+			_apm.Received(1).LogDouble("IntegrationPoints.Performance.Progress", Arg.Any<double>(), Arg.Is<IMetricMetadata>(x =>
+				x.CorrelationID.Equals(_correlationId) &&
+				x.CustomData["FileThroughput"].Equals(fileThroughput3) &&
+				x.CustomData["MetadataThroughput"].Equals(metadataThroughput3) &&
+				x.CustomData["AverageFileThroughput"].Equals(expectedAverageFileThroughput3) &&
+				x.CustomData["AverageMetadataThroughput"].Equals(expectedAverageMetadataThroughput3)
+			));
+		}
+
+		[Test]
+		public void ShouldNotSendProgressPropertiesOnJobEnd()
+		{
+			_sink.OnMessage(CreateMessage<JobStartedMessage>());
+			_sink.OnMessage(CreateMessage<JobProgressMessage>());
+			_sink.OnMessage(CreateMessage<JobStatisticsMessage>());
+			_sink.OnMessage(CreateMessage<JobCompletedMessage>());
+
+			_apm.Received(1).LogDouble("IntegrationPoints.Performance.JobStatistics", Arg.Any<double>(), Arg.Is<IMetricMetadata>(x =>
+				x.CorrelationID.Equals(_correlationId) &&
+				!x.CustomData.ContainsKey(JobStatistics.AVERAGE_FILE_THROUGHPUT_NAME) &&
+				!x.CustomData.ContainsKey(JobStatistics.AVERAGE_METADATA_THROUGHPUT_NAME) &&
+				!x.CustomData.ContainsKey(JobStatistics.LAST_THROUGHPUT_CHECK_NAME)
+			));
 		}
 
 		[Test]

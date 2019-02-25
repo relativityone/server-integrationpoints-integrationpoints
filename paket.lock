@@ -436,6 +436,25 @@ NUGET
       Newtonsoft.Json (>= 5.0.4)
     ZetaLongPaths (1.0.0.16)
 
+GROUP Sync
+STRATEGY: MAX
+RESTRICTION: == net462
+NUGET
+  remote: https://proget.kcura.corp/nuget/NuGet
+    Autofac (4.8.1)
+    Banzai (3.0.3)
+    Banzai.Autofac (3.0.3)
+    Microsoft.NETCore.Platforms (2.2.0)
+    NETStandard.Library (2.0.3)
+      Microsoft.NETCore.Platforms (>= 1.1)
+    Polly (6.1.2)
+      NETStandard.Library (>= 1.6.1)
+    Relativity.Sync (0.0.1-beta70)
+      Autofac (>= 4.8 < 5.0)
+      Banzai (>= 3.0 < 4.0)
+      Banzai.Autofac (>= 3.0 < 4.0)
+      Polly (>= 6.1 < 7.0)
+
 GROUP TestPackages
 STRATEGY: MIN
 RESTRICTION: == net462
