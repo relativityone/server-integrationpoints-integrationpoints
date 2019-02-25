@@ -27,7 +27,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private readonly Dictionary<int, string> _nativeFileTypes;
 		private readonly HashSet<int> _documentsSupportedByViewer;
 		private readonly IRelativityObjectManager _relativityObjectManager;
-		private readonly List<Stream> _openedStreams;
 		private readonly IAPILog _logger;
 
 		private static readonly string _nativeDocumentArtifactIdColumn = "DocumentArtifactID";
@@ -51,7 +50,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			_nativeFileTypes = new Dictionary<int, string>();
 			_documentsSupportedByViewer = new HashSet<int>();
 			_relativityObjectManager = relativityObjectManager;
-			_openedStreams = new List<Stream>();
 			_logger = logger.ForContext<DocumentTransferDataReader>();
 		}
 
@@ -77,8 +75,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 							_relativityObjectManager.StreamLongTextAsync(CurrentArtifact.ArtifactId, fieldRef)
 								.GetAwaiter()
 								.GetResult();
-						_openedStreams.Add(stream);
-						return stream;
+						SelfDisposingStream selfDisposingStream = new SelfDisposingStream(stream);
+						return selfDisposingStream;
 					}
 
 					return retrievedField.Value;
@@ -234,30 +232,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 					_documentsSupportedByViewer.Add(documentArtifactId);
 				}
 			}
-		}
-
-		public override bool Read()
-		{
-			DisposeExtractedTextStreams();
-			return base.Read();
-		}
-
-		public override void Close()
-		{
-			DisposeExtractedTextStreams();
-			base.Close();
-		}
-
-		private void DisposeExtractedTextStreams()
-		{
-			// IAPI should close the streams...
-			// but to be absolutely sure we will not leave any open streams
-			// all of them are being disposed here.
-			foreach (Stream stream in _openedStreams)
-			{
-				stream.Dispose();
-			}
-			_openedStreams.Clear();
 		}
 
 		private bool ShouldUseLongTextStream(ArtifactFieldDTO retrievedField)
