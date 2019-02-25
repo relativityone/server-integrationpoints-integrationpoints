@@ -123,17 +123,6 @@ timestamps
 					}
 					try
 					{
-						stage ('Integration Tests')
-						{
-                            jenkinsHelpers.runIntegrationTests()
-						}
-						if (jenkinsHelpers.isNightly())
-						{
-							stage ('Integration Tests in Quarantine')
-							{
-                                jenkinsHelpers.runIntegrationTestsInQuarantine()
-							}
-						}
 						stage ('UI Tests')
 						{
 							jenkinsHelpers.updateChromeToLatestVersion()
