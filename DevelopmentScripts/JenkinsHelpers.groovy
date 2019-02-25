@@ -19,6 +19,7 @@ interface Constants
     final String ARTIFACTS_PATH = 'Artifacts'
     final String QUARANTINED_TESTS_CATEGORY = 'InQuarantine'
     final String INTEGRATION_TESTS_RESULTS_REPORT_PATH = "$ARTIFACTS_PATH/IntegrationTestsResults.xml"
+    final String INTEGRATION_TESTS_IN_QUARANTINE_RESULTS_REPORT_PATH = "$ARTIFACTS_PATH/QuarantineIntegrationTestsResults.xml"
 }
 
 class RIPPipelineState
@@ -312,6 +313,11 @@ def gatherTestStats()
         powershell "Import-Module ./Vendor/psake/tools/psake.psm1; Invoke-psake ./DevelopmentScripts/psake-test.ps1 generate_nunit_reports" 
         def artifactsPath = Constants.ARTIFACTS_PATH
         archiveArtifacts artifacts: "$artifactsPath/**/*", fingerprint: true, allowEmptyArchive: true
+
+        if(isNightly())
+        {
+            storeIntegrationTestsInQuarantineResults()
+        }
 
         if (!params.skipIntegrationTests)
         {
@@ -768,6 +774,26 @@ private getTestsStatistic(String prop)
 	{
 		echo "getTestsStatistic error: $err"
 		return -1
+	}
+}
+
+private storeIntegrationTestsInQuarantineResults()
+{
+	try
+	{
+		withCredentials([string(credentialsId: 'TestResultAnalyzerStoreTestsResultsFunctionSecurityCode', variable: 'securityCode')])
+		{
+			def branchId = env.BRANCH_NAME
+			def buildName = currentBuild.displayName
+			def testType = TestType.integrationInQuarantine.name().capitalize()
+			def testResultsPath = "$env.WORKSPACE/$Constants.INTEGRATION_TESTS_IN_QUARANTINE_RESULTS_REPORT_PATH"
+
+			powershell script: """. ./DevelopmentScripts/test-results-analyzer.ps1; store_tests_results "$branchId" "$buildName" "$testType" "$testResultsPath" "$securityCode" """
+		}
+	}
+	catch(err)
+	{
+		echo "storeIntegrationTestsInQuarantineResults error: $err"
 	}
 }
 
