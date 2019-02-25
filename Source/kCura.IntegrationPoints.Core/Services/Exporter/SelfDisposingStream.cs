@@ -1,10 +1,11 @@
 ﻿using System.IO;
-using System.Text;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
 	/// <summary>
-	///     TODO
+	///     ImportAPI does not provide any way to dispose streams we're passing
+	///     this stream will dispose itself when read
+	///     it's working under assumption that IAPI won't access this stream twice
 	/// </summary>
 	internal sealed class SelfDisposingStream : Stream
 	{
