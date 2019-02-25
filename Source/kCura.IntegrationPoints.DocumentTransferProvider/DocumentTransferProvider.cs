@@ -24,11 +24,11 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly IAPILog _logger;
 
-		public DocumentTransferProvider(IExtendedImportApiFacade extendedImportApiFacade, IRepositoryFactory repositoryFactory , IHelper helper)
+		public DocumentTransferProvider(IExtendedImportApiFacade extendedImportApiFacade, IRepositoryFactory repositoryFactory, IAPILog logger)
 		{
 			_extendedImportApiFacade = extendedImportApiFacade;
 			_repositoryFactory = repositoryFactory;
-			_logger = helper.GetLoggerFactory().GetLogger().ForContext<DocumentTransferProvider>();
+			_logger = logger.ForContext<DocumentTransferProvider>();
 		}
 
 		public IEnumerable<FieldEntry> GetFields(DataSourceProviderConfiguration providerConfiguration)

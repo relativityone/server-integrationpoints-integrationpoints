@@ -132,6 +132,7 @@
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\ObjectPermissionListExtension.cs" />
     <Compile Include="Extensions\SecureStringExtension.cs" />
+    <Compile Include="Extensions\WindsorTestingExtensions.cs" />
     <Compile Include="Fields.cs" />
     <Compile Include="FolderService.cs" />
     <Compile Include="ImportHelper.cs" />
