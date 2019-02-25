@@ -15,6 +15,7 @@ namespace kCura.IntegrationPoints.Web.Models
 		public SourceProviderConfigModel Config { set; get; }
 	}
 
+	[DataContract]
 	public class SourceProviderConfigModel
 	{
 		private readonly SourceProviderConfiguration _originalConfig;
@@ -25,7 +26,7 @@ namespace kCura.IntegrationPoints.Web.Models
 			_originalConfig = originalConfig ?? new SourceProviderConfiguration();
 			_rdoTypeCache = rdoTypesCache;
 		}
-
+		[DataMember]
 		public int[] CompatibleRdoTypes
 		{
 			get
@@ -46,11 +47,13 @@ namespace kCura.IntegrationPoints.Web.Models
 			}
 		}
 
+		[DataMember]
 		public bool OnlyMapIdentifierToIdentifier
 		{
 			get { return _originalConfig.OnlyMapIdentifierToIdentifier; }
 		}
 
+		[DataMember]
 		internal ImportSettingVisibility ImportSettingVisibility
 		{
 			get
