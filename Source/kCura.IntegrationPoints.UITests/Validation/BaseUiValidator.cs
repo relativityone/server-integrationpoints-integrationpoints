@@ -45,8 +45,6 @@ namespace kCura.IntegrationPoints.UITests.Validation
 			{
 				try
 				{
-					integrationPointDetailsPage.Refresh();
-					integrationPointDetailsPage.WaitForPage();
 					jobHistoryModel = integrationPointDetailsPage.GetLatestJobHistoryFromJobStatusTable();
 				}
 				catch (StaleElementReferenceException)
