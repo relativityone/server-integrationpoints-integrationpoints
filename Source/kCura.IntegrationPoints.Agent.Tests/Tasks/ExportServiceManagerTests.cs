@@ -19,6 +19,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Core.Tagging;
+using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Extensions;
@@ -96,6 +97,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IDataSynchronizer _synchornizer;
 		private IJobHistoryManager _historyManager;
 		private IAgentValidator _agentValidator;
+		private ISourceWorkspaceTagCreator _sourceWorkspaceTagsCreator;
 
 		[SetUp]
 		public override void SetUp()
@@ -145,9 +147,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_historyManager = Substitute.For<IJobHistoryManager>();
 			_agentValidator = Substitute.For<IAgentValidator>();
 			_jobStatisticsService = Substitute.For<JobStatisticsService>();
+			_sourceWorkspaceTagsCreator = Substitute.For<ISourceWorkspaceTagCreator>();
 
 			_exporterFactory.InitializeExportServiceJobObservers(Arg.Any<Job>(), _tagsCreator, _tagSavedSearchManager,
-				_synchronizerFactory, _serializer, _jobHistoryErrorManager, _jobStopManager,
+				_synchronizerFactory, _serializer, _jobHistoryErrorManager, _jobStopManager, _sourceWorkspaceTagsCreator,
 				Arg.Any<FieldMap[]>(), Arg.Any<SourceConfiguration>(), Arg.Any<JobHistoryErrorDTO.UpdateStatusType>(),
 				Arg.Any<Data.IntegrationPoint>(), Arg.Any<JobHistory>(), Arg.Any<string>(), Arg.Any<string>())
 				.Returns(new List<IBatchStatus>() { _exportServiceObserver });
@@ -206,6 +209,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			_managerFactory.CreateTagsCreator(Arg.Any<IContextContainer>()).Returns(_tagsCreator);
 			_managerFactory.CreateTaggingSavedSearchManager(Arg.Any<IContextContainer>()).Returns(_tagSavedSearchManager);
+			_managerFactory.CreateSourceWorkspaceTagsCreator(Arg.Any<IContextContainer>(), Arg.Any<IHelper>(), Arg.Any<SourceConfiguration>()).Returns(_sourceWorkspaceTagsCreator);
 
 			_instance = new ExportServiceManager(_helper, _helperFactory,
 				_caseContext, _contextContainerFactory,

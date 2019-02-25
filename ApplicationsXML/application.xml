@@ -1358,6 +1358,42 @@
       <Name>kCura.IntegrationPoints.Common.dll</Name>
       <Notes />
     </Assembly>
+    <Assembly>
+      <ArtifactId>3100669</ArtifactId>
+      <Keywords />
+      <Name>kCura.IntegrationPoints.RelativitySync.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>3100670</ArtifactId>
+      <Keywords />
+      <Name>Relativity.Sync.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>3100671</ArtifactId>
+      <Keywords />
+      <Name>Autofac.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>3100672</ArtifactId>
+      <Keywords />
+      <Name>netstandard.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>3100673</ArtifactId>
+      <Keywords />
+      <Name>Banzai.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>3100674</ArtifactId>
+      <Keywords />
+      <Name>Banzai.Autofac.dll</Name>
+      <Notes />
+    </Assembly>
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />

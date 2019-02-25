@@ -34,6 +34,7 @@ using kCura.WinEDDS.Service.Export;
 using Relativity.API;
 using Relativity.Toggles;
 using System;
+using kCura.IntegrationPoints.Core.Validation;
 using ITaskFactory = kCura.IntegrationPoints.Agent.TaskFactory.ITaskFactory;
 
 namespace kCura.IntegrationPoints.Agent.Installer
@@ -138,6 +139,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Register(Component.For<IJobSynchronizationChecker>().ImplementedBy<JobSynchronizationChecker>().LifestyleTransient());
 			container.Register(Component.For<ITaskFactoryJobHistoryServiceFactory>().ImplementedBy<TaskFactoryJobHistoryServiceFactory>().LifestyleTransient());
 			container.Register(Component.For<ITaskFactory>().ImplementedBy<TaskFactory.TaskFactory>().DependsOn(new { container }).LifestyleTransient());
+			container.Register(Component.For<IConfigurationDeserializer>().ImplementedBy<ConfigurationDeserializer>().LifestyleSingleton());
 
 			container.Register(Component.For<IAuthTokenGenerator>().UsingFactoryMethod(kernel =>
 			{

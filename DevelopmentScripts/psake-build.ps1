@@ -4,7 +4,7 @@
 task default -depends build
 
 
-task build -depends build_initalize, start_sonar, build_projects, build_rip_documentation, copy_dlls_to_lib_dir, copy_test_dlls_to_lib_dir, copy_web_drivers, run_coverage, stop_sonar, generate_validation_message_table {
+task build -depends build_initalize, start_sonar, build_integration_points, build_my_first_provider, build_json_loader, build_rip_documentation, copy_dlls_to_lib_dir, copy_test_dlls_to_lib_dir, copy_web_drivers, run_coverage, stop_sonar, generate_validation_message_table, sign {
  
 }
 
@@ -42,25 +42,6 @@ task get_buildhelper -precondition { (-not [System.IO.File]::Exists($buildhelper
     Copy-Item ([System.IO.Path]::Combine($development_scripts_directory, 'kCura.BuildHelper', 'lib', 'kCura.BuildHelper.exe')) $development_scripts_directory
 }
 
-task create_build_script -depends get_buildhelper { 
-    $build_input_file = $inputfile; 
-    if ($skip_tests)
-    {
-        $build_input_file = $inputfile_noTests
-    }
-
-    exec {
-        & $buildhelper_exe @(('/source:' + $root), 
-                             ('/input:' + $build_input_file), 
-                             ('/output:' + $targetsfile), 
-                             ('/graph:' + $dependencygraph), 
-                             ('/dllout:' + $internaldlls), 
-                             ('/vs:14.0'), 
-                             ('/sign:' + ($build_type -ne 'DEV' -and $server_type -ne 'local')), 
-                             ('/signscript:' + $signScript))
-    }                                                                      
-}  
-
 task restore_nuget {
 
     foreach($o in Get-ChildItem $source_directory){
@@ -87,29 +68,76 @@ task configure_paket {
 	} else {
 		Write-Host 'Configuring credentials for ProGet server will be skipped'
 	}
-}                                                                             
-                                                                                
-task build_projects -depends create_build_script, restore_nuget, configure_paket {  
-    exec {     
-        Write-Host 'Using MSBuild' $msbuild_exe 'with targets file' $targetsfile
+}
+
+task build_integration_points -depends restore_nuget, configure_paket {
+    exec {
+        Write-Host 'Using MSBuild' $msbuild_exe
 
         If(!(test-path $buildlogs_directory))
         {
             New-Item -Path $buildlogs_directory -ItemType Directory -Force
         }
         
-        &  $msbuild_exe @(($targetsfile),   
-                         ('/property:SourceRoot=' + $root),
-                         ('/property:Configuration=' + $build_config),    
-                         ('/property:BuildProjectReferences=false'),    
-                         ('/nodereuse:false'),                         
-                         ('/target:BuildTiers'),
-						 ('/verbosity:normal'),
+        & $msbuild_exe @((Join-Path $source_directory 'kCura.IntegrationPoints.sln'),
+                         ("/property:Configuration=${build_config}"),
+                         ("/property:PublishWebProjects=True"),
+                         ('/nodereuse:false'),
+                         #('/target:BuildTiers'), # TODO: configurable
+                         ('/verbosity:normal'), # TODO: configurable
                          ('/clp:ErrorsOnly'),
                          ('/nologo'),
                          ('/maxcpucount'), 
-                         ('/dfl'),
-                         ('/flp:LogFile=' + $logfile + ';Verbosity=Normal'),
+                         #('/dfl'), # ???
+                         ('/flp:LogFile=' + $logfile + ';Verbosity=Normal'), # TODO: configurable
+                         ('/flp2:warningsonly;LogFile=' + $logfilewarn),
+                         ('/flp3:errorsonly;LogFile=' + $logfileerror))       
+    } 
+}
+task build_my_first_provider -depends restore_nuget, configure_paket {
+    exec {
+        Write-Host 'Using MSBuild' $msbuild_exe
+
+        If(!(test-path $buildlogs_directory))
+        {
+            New-Item -Path $buildlogs_directory -ItemType Directory -Force
+        }
+        
+        & $msbuild_exe @((Join-Path $source_directory 'MyFirstProvider.sln'),
+                         ("/property:Configuration=${build_config}"),
+                         ("/property:PublishWebProjects=True"),
+                         ('/nodereuse:false'),
+                         #('/target:BuildTiers'), # TODO: configurable
+                         ('/verbosity:normal'), # TODO: configurable
+                         ('/clp:ErrorsOnly'),
+                         ('/nologo'),
+                         ('/maxcpucount'), 
+                         #('/dfl'), # ???
+                         ('/flp:LogFile=' + $logfile + ';Verbosity=Normal'), # TODO: configurable
+                         ('/flp2:warningsonly;LogFile=' + $logfilewarn),
+                         ('/flp3:errorsonly;LogFile=' + $logfileerror))       
+    } 
+}
+task build_json_loader -depends restore_nuget, configure_paket {
+    exec {
+        Write-Host 'Using MSBuild' $msbuild_exe
+
+        If(!(test-path $buildlogs_directory))
+        {
+            New-Item -Path $buildlogs_directory -ItemType Directory -Force
+        }
+        
+        & $msbuild_exe @((Join-Path $source_directory 'JsonLoader.sln'),
+                         ("/property:Configuration=${build_config}"),
+                         ("/property:PublishWebProjects=True"),
+                         ('/nodereuse:false'),
+                         #('/target:BuildTiers'), # TODO: configurable
+                         ('/verbosity:normal'), # TODO: configurable
+                         ('/clp:ErrorsOnly'),
+                         ('/nologo'),
+                         ('/maxcpucount'), 
+                         #('/dfl'), # ???
+                         ('/flp:LogFile=' + $logfile + ';Verbosity=Normal'), # TODO: configurable
                          ('/flp2:warningsonly;LogFile=' + $logfilewarn),
                          ('/flp3:errorsonly;LogFile=' + $logfileerror))       
     } 
@@ -382,6 +410,14 @@ task copy_test_dlls_to_lib_dir -depends create_lib_dir -precondition { return -n
             "Source\kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration\bin\x64\*.config",
             "Source\kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration\bin\x64\*.xml",
+            "Source\kCura.IntegrationPoints.RelativitySync.Tests.Integration\bin\x64\net462\*.dll",
+            "Source\kCura.IntegrationPoints.RelativitySync.Tests.Integration\bin\x64\net462\*.pdb",
+            "Source\kCura.IntegrationPoints.RelativitySync.Tests.Integration\bin\x64\net462\*.config",
+            "Source\kCura.IntegrationPoints.RelativitySync.Tests.Integration\bin\x64\net462\*.xml",
+            "Source\kCura.IntegrationPoints.RelativitySync.Tests\bin\x64\net462\*.dll",
+            "Source\kCura.IntegrationPoints.RelativitySync.Tests\bin\x64\net462\*.pdb",
+            "Source\kCura.IntegrationPoints.RelativitySync.Tests\bin\x64\net462\*.config",
+            "Source\kCura.IntegrationPoints.RelativitySync.Tests\bin\x64\net462\*.xml",
             "Source\kCura.IntegrationPoints.UITests\bin\x64\*.dll",
             "Source\kCura.IntegrationPoints.UITests\bin\x64\*.config",
             "Source\kCura.IntegrationPoints.UITests\bin\x64\*.pdb",
@@ -415,7 +451,7 @@ task copy_test_dlls_to_lib_dir -depends create_lib_dir -precondition { return -n
     Copy-Item -path $testsConfigPath -Destination $testsConfigDestinationPath2
 }
 
-task copy_web_drivers -depends create_lib_dir, build_projects -precondition { return -not $skip_tests } {
+task copy_web_drivers -depends create_lib_dir, build_integration_points -precondition { return -not $skip_tests } {
 	Copy-Item -path $chromedriver_path -Destination $tests_directory
 	Copy-Item -path $geckodriver_path -Destination $tests_directory
 }
@@ -472,4 +508,11 @@ task generate_validation_message_table{
     $xslt.Transform($xml, $output);
 
     Write-Host "generated" +  $output;
+}
+
+task sign -precondition { ($build_type -ne 'DEV') -and ($server_type -ne 'local') } {
+    foreach ($o in Get-ChildItem -Path $package_directory -Recurse  -Include '*.exe', '*.dll', '*.msi')
+    {
+        & $signscript @($o.FullName)
+    }
 }

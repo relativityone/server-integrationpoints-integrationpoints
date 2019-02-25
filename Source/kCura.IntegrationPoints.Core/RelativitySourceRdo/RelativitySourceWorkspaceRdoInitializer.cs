@@ -26,6 +26,11 @@ namespace kCura.IntegrationPoints.Core.RelativitySourceRdo
 
 		public int InitializeWorkspaceWithSourceWorkspaceRdo(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId)
 		{
+			return InitializeWorkspaceWithSourceWorkspaceRdo(destinationWorkspaceArtifactId);
+		}
+
+		public int InitializeWorkspaceWithSourceWorkspaceRdo(int destinationWorkspaceArtifactId)
+		{
 			try
 			{
 				ISourceWorkspaceRepository sourceWorkspaceRepository = _repositoryFactory.GetSourceWorkspaceRepository(destinationWorkspaceArtifactId);
