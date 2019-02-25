@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Security.Claims;
+using System.Text;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
@@ -22,7 +23,6 @@ using Newtonsoft.Json;
 using Relativity.API;
 using Relativity.Core;
 using Relativity.Core.Api.Shared.Manager.Export;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.Factories.Implementations
 {
@@ -35,7 +35,6 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		private readonly IHelper _helper;
 		private readonly IFederatedInstanceManager _federatedInstanceManager;
 		private readonly IFolderPathReaderFactory _folderPathReaderFactory;
-		private readonly IToggleProvider _toggleProvider;
 		private readonly IAPILog _logger;
 
 		public ExporterFactory(
@@ -43,9 +42,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			IRepositoryFactory sourceRepositoryFactory,
 			IRepositoryFactory targetRepositoryFactory,
 			IHelper helper, IFederatedInstanceManager federatedInstanceManager,
-			IFolderPathReaderFactory folderPathReaderFactory,
-			IToggleProvider toggleProvider
-			)
+			IFolderPathReaderFactory folderPathReaderFactory)
 		{
 			_claimsPrincipalFactory = claimsPrincipalFactory;
 			_sourceRepositoryFactory = sourceRepositoryFactory;
@@ -53,7 +50,6 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			_helper = helper;
 			_federatedInstanceManager = federatedInstanceManager;
 			_folderPathReaderFactory = folderPathReaderFactory;
-			_toggleProvider = toggleProvider;
 			_logger = _helper.GetLoggerFactory().GetLogger().ForContext<ExporterFactory>();
 		}
 
@@ -72,10 +68,27 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			string uniqueJobId,
 			string userImportApiSettings)
 		{
-			IConsumeScratchTableBatchStatus destinationFieldsTagger = CreateDestinationFieldsTagger(tagsCreator, tagSavedSearchManager, synchronizerFactory,
-				serializer, mappedFields, configuration, integrationPoint, jobHistory, uniqueJobId, userImportApiSettings);
-			IConsumeScratchTableBatchStatus sourceFieldsTagger = CreateSourceFieldsTagger(job, configuration, jobHistory, uniqueJobId);
-			IBatchStatus sourceJobHistoryErrorUpdater = CreateJobHistoryErrorUpdater(job, jobHistoryErrorManager, jobStopManager, configuration, updateStatusType);
+			IConsumeScratchTableBatchStatus destinationFieldsTagger = 
+				CreateDestinationFieldsTagger(
+					tagsCreator, 
+					tagSavedSearchManager, 
+					synchronizerFactory,
+					serializer, 
+					mappedFields, 
+					configuration, 
+					integrationPoint, 
+					jobHistory, 
+					uniqueJobId, 
+					userImportApiSettings);
+			IConsumeScratchTableBatchStatus sourceFieldsTagger = 
+				CreateSourceFieldsTagger(job, configuration, jobHistory, uniqueJobId);
+			IBatchStatus sourceJobHistoryErrorUpdater = 
+				CreateJobHistoryErrorUpdater(
+					job, 
+					jobHistoryErrorManager, 
+					jobStopManager, 
+					configuration, 
+					updateStatusType);
 
 			var batchStatusCommands = new List<IBatchStatus>
 			{
@@ -86,62 +99,146 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			return batchStatusCommands;
 		}
 
-		public IExporterService BuildExporter(IJobStopManager jobStopManager, FieldMap[] mappedFields, string config, int savedSearchArtifactId, int onBehalfOfUser,
+		public IExporterService BuildExporter(
+			IJobStopManager jobStopManager, 
+			FieldMap[] mappedFields, 
+			string config, 
+			int savedSearchArtifactId, 
+			int onBehalfOfUser,
 			string userImportApiSettings)
-        {
-            LogBuildExporterExecutionWithParameters(mappedFields, config, savedSearchArtifactId, onBehalfOfUser, userImportApiSettings);
-            ClaimsPrincipal claimsPrincipal = GetClaimsPrincipal(onBehalfOfUser);
-            IBaseServiceContextProvider baseServiceContextProvider = new BaseServiceContextProvider(claimsPrincipal);
+		{
+			LogBuildExporterExecutionWithParameters(mappedFields, config, savedSearchArtifactId, onBehalfOfUser, userImportApiSettings);
+			ClaimsPrincipal claimsPrincipal = GetClaimsPrincipal(onBehalfOfUser);
+			IBaseServiceContextProvider baseServiceContextProvider = new BaseServiceContextProvider(claimsPrincipal);
 
-            ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(userImportApiSettings);
-            SourceConfiguration sourceConfiguration = JsonConvert.DeserializeObject<SourceConfiguration>(config);
-            BaseServiceContext baseServiceContext = claimsPrincipal.GetUnversionContext(sourceConfiguration.SourceWorkspaceArtifactId);
+			ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(userImportApiSettings);
+			SourceConfiguration sourceConfiguration = JsonConvert.DeserializeObject<SourceConfiguration>(config);
+			BaseServiceContext baseServiceContext = claimsPrincipal.GetUnversionContext(sourceConfiguration.SourceWorkspaceArtifactId);
 
-            IExporterService exporter = settings.ImageImport ?
-                CreateImageExporterService(jobStopManager, mappedFields, config, savedSearchArtifactId, baseServiceContextProvider, settings, sourceConfiguration, baseServiceContext) :
-                CreateRelativityExporterService(jobStopManager, mappedFields, config, savedSearchArtifactId, claimsPrincipal, baseServiceContextProvider, settings, baseServiceContext);
-            return exporter;
-        }
+			IExporterService exporter = settings.ImageImport 
+				? CreateImageExporterService(
+					jobStopManager, 
+					mappedFields, 
+					config, 
+					savedSearchArtifactId, 
+					baseServiceContextProvider, 
+					settings, 
+					sourceConfiguration, 
+					baseServiceContext) 
+				: CreateRelativityExporterService(
+					jobStopManager, 
+					mappedFields, 
+					config, 
+					savedSearchArtifactId, 
+					claimsPrincipal, 
+					baseServiceContextProvider, 
+					settings, 
+					baseServiceContext);
+			return exporter;
+		}
 
-	    private IConsumeScratchTableBatchStatus CreateDestinationFieldsTagger(ITagsCreator tagsCreator, ITagSavedSearchManager tagSavedSearchManager, 
-			ISynchronizerFactory synchronizerFactory, ISerializer serializer, FieldMap[] mappedFields, SourceConfiguration configuration, 
-			IntegrationPoint integrationPoint, JobHistory jobHistory, string uniqueJobId, string userImportApiSettings)
+		private IConsumeScratchTableBatchStatus CreateDestinationFieldsTagger(
+			ITagsCreator tagsCreator, 
+			ITagSavedSearchManager tagSavedSearchManager, 
+			ISynchronizerFactory synchronizerFactory, 
+			ISerializer serializer, 
+			FieldMap[] mappedFields, 
+			SourceConfiguration configuration, 
+			IntegrationPoint integrationPoint, 
+			JobHistory jobHistory, 
+			string uniqueJobId, 
+			string userImportApiSettings)
 		{
 			IDocumentRepository documentRepository = _sourceRepositoryFactory.GetDocumentRepository(configuration.SourceWorkspaceArtifactId);
 
-			var taggerFactory = new TargetDocumentsTaggingManagerFactory(_sourceRepositoryFactory, tagsCreator, tagSavedSearchManager, documentRepository,
-				synchronizerFactory, _helper, serializer, mappedFields, integrationPoint.SourceConfiguration, userImportApiSettings, jobHistory.ArtifactId, uniqueJobId);
+			var taggerFactory = 
+				new TargetDocumentsTaggingManagerFactory(
+					_sourceRepositoryFactory, 
+					tagsCreator, 
+					tagSavedSearchManager, 
+					documentRepository,
+					synchronizerFactory, 
+					_helper, 
+					serializer, 
+					mappedFields, 
+					integrationPoint.SourceConfiguration, 
+					userImportApiSettings, 
+					jobHistory.ArtifactId, 
+					uniqueJobId);
 
 			IConsumeScratchTableBatchStatus destinationFieldsTagger = taggerFactory.BuildDocumentsTagger();
 			return destinationFieldsTagger;
 		}
 
-	    private IConsumeScratchTableBatchStatus CreateSourceFieldsTagger(Job job, SourceConfiguration configuration, JobHistory jobHistory, string uniqueJobId)
+		private IConsumeScratchTableBatchStatus CreateSourceFieldsTagger(Job job, SourceConfiguration configuration, JobHistory jobHistory, string uniqueJobId)
 		{
-			return new SourceObjectBatchUpdateManager(_sourceRepositoryFactory, _targetRepositoryFactory, _claimsPrincipalFactory, _helper,
-				_federatedInstanceManager, configuration, jobHistory.ArtifactId, job.SubmittedBy, uniqueJobId);
+			return new SourceObjectBatchUpdateManager(
+				_sourceRepositoryFactory, 
+				_targetRepositoryFactory, 
+				_claimsPrincipalFactory, 
+				_helper,
+				_federatedInstanceManager, 
+				configuration, 
+				jobHistory.ArtifactId, 
+				job.SubmittedBy, 
+				uniqueJobId);
 		}
 
-	    private IBatchStatus CreateJobHistoryErrorUpdater(Job job, IJobHistoryErrorManager jobHistoryErrorManager, IJobStopManager jobStopManager, 
-			SourceConfiguration configuration, JobHistoryErrorDTO.UpdateStatusType updateStatusType)
+		private IBatchStatus CreateJobHistoryErrorUpdater(
+			Job job, 
+			IJobHistoryErrorManager jobHistoryErrorManager, 
+			IJobStopManager jobStopManager, 
+			SourceConfiguration configuration, 
+			JobHistoryErrorDTO.UpdateStatusType updateStatusType)
 		{
-			return new JobHistoryErrorBatchUpdateManager(jobHistoryErrorManager, _helper, _sourceRepositoryFactory, _claimsPrincipalFactory, jobStopManager,
-				configuration.SourceWorkspaceArtifactId, job.SubmittedBy, updateStatusType);
+			return new JobHistoryErrorBatchUpdateManager(
+				jobHistoryErrorManager, 
+				_helper, 
+				_sourceRepositoryFactory, 
+				_claimsPrincipalFactory, 
+				jobStopManager,
+				configuration.SourceWorkspaceArtifactId, 
+				job.SubmittedBy, 
+				updateStatusType);
 		}
 
-	    private IExporterService CreateRelativityExporterService(IJobStopManager jobStopManager, FieldMap[] mappedFields, string config, int savedSearchArtifactId,
-			ClaimsPrincipal claimsPrincipal, IBaseServiceContextProvider baseServiceContextProvider, ImportSettings settings, BaseServiceContext baseServiceContext)
+		private IExporterService CreateRelativityExporterService(
+			IJobStopManager jobStopManager, 
+			FieldMap[] mappedFields, 
+			string config, 
+			int savedSearchArtifactId,
+			ClaimsPrincipal claimsPrincipal, 
+			IBaseServiceContextProvider baseServiceContextProvider, 
+			ImportSettings settings, 
+			BaseServiceContext baseServiceContext)
 		{
 			IExporter exporter = BuildSavedSearchExporter(baseServiceContext, settings.LoadImportedFullTextFromServer);
 
 			IFolderPathReader folderPathReader = _folderPathReaderFactory.Create(claimsPrincipal, settings, config);
-			var exporterService = new RelativityExporterService(exporter, _sourceRepositoryFactory, _targetRepositoryFactory, jobStopManager, _helper,
-				folderPathReader, _toggleProvider, baseServiceContextProvider, mappedFields, 0, config, savedSearchArtifactId);
+			var exporterService = new RelativityExporterService(
+				exporter, 
+				_sourceRepositoryFactory, 
+				_targetRepositoryFactory, 
+				jobStopManager, 
+				_helper,
+				folderPathReader, 
+				baseServiceContextProvider, 
+				mappedFields, 
+				0, 
+				config, 
+				savedSearchArtifactId);
 			return exporterService;
 		}
 
-	    private IExporterService CreateImageExporterService(IJobStopManager jobStopManager, FieldMap[] mappedFiles, string config, int savedSearchArtifactId,
-			IBaseServiceContextProvider baseServiceContextProvider, ImportSettings settings, SourceConfiguration sourceConfiguration, BaseServiceContext baseServiceContext)
+		private IExporterService CreateImageExporterService(
+			IJobStopManager jobStopManager, 
+			FieldMap[] mappedFiles, 
+			string config, 
+			int savedSearchArtifactId,
+			IBaseServiceContextProvider baseServiceContextProvider, 
+			ImportSettings settings, 
+			SourceConfiguration sourceConfiguration, 
+			BaseServiceContext baseServiceContext)
 		{
 			IExporter exporter;
 			int searchArtifactId;
@@ -161,7 +258,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			return exporterService;
 		}
 
-	    private ClaimsPrincipal GetClaimsPrincipal(int onBehalfOfUser)
+		private ClaimsPrincipal GetClaimsPrincipal(int onBehalfOfUser)
 		{
 			if (onBehalfOfUser == 0)
 			{
@@ -171,7 +268,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			return claimsPrincipal;
 		}
 
-	    private IExporter BuildSavedSearchExporter(BaseServiceContext baseService, bool shouldUseDgPaths)
+		private IExporter BuildSavedSearchExporter(BaseServiceContext baseService, bool shouldUseDgPaths)
 		{
 			return new SavedSearchExporter
 				(
@@ -185,7 +282,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				);
 		}
 
-	    private IExporter BuildProductionExporter(BaseServiceContext baseService, bool shouldUseDgPaths)
+		private IExporter BuildProductionExporter(BaseServiceContext baseService, bool shouldUseDgPaths)
 		{
 			return new ProductionExporter
 				(
@@ -199,10 +296,22 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				);
 		}
 
-	    private void LogBuildExporterExecutionWithParameters(FieldMap[] mappedFields, string config, int savedSearchArtifactId, int onBehalfOfUser, string userImportApiSettings)
-	    {
-	        _logger.LogDebug("Building Exporter with parameters: \nmappedFields {@mappedFields} \nconfig {config} \nsavedSearchArtifactId {savedSearchArtifactId} \nonBehalfOfUser: {onBehalfOfUser} \nuserImportApiSettings {userImportApiSettings}",
-                mappedFields,config, savedSearchArtifactId, onBehalfOfUser, userImportApiSettings);
-	    }
+		private void LogBuildExporterExecutionWithParameters(FieldMap[] mappedFields, string config, int savedSearchArtifactId, int onBehalfOfUser, string userImportApiSettings)
+		{
+			var msgBuilder = new StringBuilder("Building Exporter with parameters: \n");
+			msgBuilder.AppendLine("mappedFields {@mappedFields} ");
+			msgBuilder.AppendLine("config {config} ");
+			msgBuilder.AppendLine("savedSearchArtifactId {savedSearchArtifactId} ");
+			msgBuilder.AppendLine("onBehalfOfUser: {onBehalfOfUser} ");
+			msgBuilder.AppendLine("userImportApiSettings {userImportApiSettings}");
+			string msgTemplate = msgBuilder.ToString();
+			_logger.LogDebug(
+				msgTemplate, 
+				mappedFields, 
+				config, 
+				savedSearchArtifactId, 
+				onBehalfOfUser, 
+				userImportApiSettings);
+		}
 	}
 }

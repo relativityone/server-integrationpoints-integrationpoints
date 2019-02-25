@@ -11,3 +11,4 @@ Relativity.Telemetry.APM
 relativity.transfer.client
 RelativityCore
 Relativity.OAuth2Client
+FluentAssertions

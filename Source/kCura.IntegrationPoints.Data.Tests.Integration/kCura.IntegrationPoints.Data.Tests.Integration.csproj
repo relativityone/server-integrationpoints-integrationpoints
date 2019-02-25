@@ -57,6 +57,7 @@
     <Compile Include="JobHistoryErrorsBatchingTests.cs" />
     <Compile Include="Repositories\CaseRepositoryTest.cs" />
     <Compile Include="Repositories\DestinationWorkspaceRepositoryTests.cs" />
+    <Compile Include="Repositories\RelatvityObjectManager\StreamLongTextAsyncTests.cs" />
     <Compile Include="Repositories\JobHistoryErrorRepositoryTests.cs" />
     <Compile Include="Repositories\KeplerWorkspaceRepositoryTests.cs" />
     <Compile Include="Repositories\PermissionRepositoryTests.cs" />
@@ -169,6 +170,25 @@
       <ItemGroup>
         <Reference Include="Elasticsearch.Net">
           <HintPath>..\..\packages\Elasticsearch.Net\lib\net45\Elasticsearch.Net.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="System.Xml.Linq">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="FluentAssertions">
+          <HintPath>..\..\packages\FluentAssertions\lib\net45\FluentAssertions.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="FluentAssertions.Core">
+          <HintPath>..\..\packages\FluentAssertions\lib\net45\FluentAssertions.Core.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

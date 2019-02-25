@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration
 			var importApiFactory = new ExtendedImportApiFactory(webApiConfig);
 
 			var importApiFacade = new ExtendedImportApiFacade(importApiFactory, logger);
-			_documentTransferProvider = new DocumentTransferProvider(importApiFacade, Container.Resolve<IRepositoryFactory>(), Container.Resolve<IHelper>());
+			_documentTransferProvider = new DocumentTransferProvider(importApiFacade, Container.Resolve<IRepositoryFactory>(), logger);
 		}
 
         [Test]

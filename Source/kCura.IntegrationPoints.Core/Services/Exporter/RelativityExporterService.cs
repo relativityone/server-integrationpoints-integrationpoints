@@ -10,7 +10,6 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using Relativity.API;
 using Relativity.Core.Api.Shared.Manager.Export;
-using Relativity.Toggles;
 using ArtifactType = kCura.Relativity.Client.ArtifactType;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
@@ -18,32 +17,62 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 	public class RelativityExporterService : ExporterServiceBase
 	{
 		private readonly IFolderPathReader _folderPathReader;
-		private readonly IToggleProvider _toggleProvider;
 
-		public RelativityExporterService(IExporter exporter, IRepositoryFactory sourceRepositoryFactory, IRepositoryFactory targetRepositoryFactory, IJobStopManager jobStopManager, IHelper helper,
-			IFolderPathReader folderPathReader, IToggleProvider toggleProvider, IBaseServiceContextProvider baseServiceContextProvider, FieldMap[] mappedFields, int startAt, string config, int searchArtifactId)
-			: base(exporter, sourceRepositoryFactory, targetRepositoryFactory, jobStopManager, helper, baseServiceContextProvider, mappedFields, startAt, config, searchArtifactId)
+		public RelativityExporterService(
+			IExporter exporter, 
+			IRepositoryFactory sourceRepositoryFactory, 
+			IRepositoryFactory targetRepositoryFactory, 
+			IJobStopManager jobStopManager, 
+			IHelper helper,
+			IFolderPathReader folderPathReader, 
+			IBaseServiceContextProvider baseServiceContextProvider, 
+			FieldMap[] mappedFields, 
+			int startAt, 
+			string config, 
+			int searchArtifactId)
+			: base(
+				exporter, 
+				sourceRepositoryFactory, 
+				targetRepositoryFactory, 
+				jobStopManager, 
+				helper, 
+				baseServiceContextProvider, 
+				mappedFields, 
+				startAt, 
+				config, 
+				searchArtifactId)
 		{
 			_folderPathReader = folderPathReader;
-			_toggleProvider = toggleProvider;
 		}
 
-		internal RelativityExporterService(IExporter exporter, IILongTextStreamFactory longTextStreamFactory, IJobStopManager jobStopManager, IHelper helper,
-			IQueryFieldLookupRepository queryFieldLookupRepository, IFolderPathReader folderPathReader, IToggleProvider toggleProvider, FieldMap[] mappedFields, HashSet<int> longTextField, int[] avfIds)
-			: base(exporter, longTextStreamFactory, jobStopManager, helper, queryFieldLookupRepository, mappedFields, longTextField, avfIds)
+		internal RelativityExporterService(
+			IExporter exporter, 
+			IRelativityObjectManager relativityObjectManager,
+			IJobStopManager jobStopManager, 
+			IHelper helper,
+			IQueryFieldLookupRepository queryFieldLookupRepository, 
+			IFolderPathReader folderPathReader, 
+			FieldMap[] mappedFields, 
+			HashSet<int> longTextField, 
+			int[] avfIds)
+			: base(exporter, relativityObjectManager, jobStopManager, helper, queryFieldLookupRepository, mappedFields, longTextField, avfIds)
 		{
 			_folderPathReader = folderPathReader;
-			_toggleProvider = toggleProvider;
 		}
 
 		public override IDataTransferContext GetDataTransferContext(IExporterTransferConfiguration transferConfiguration)
 		{
-			var documentTransferDataReader = new DocumentTransferDataReader(this, MappedFields, BaseContext,
-				transferConfiguration.ScratchRepositories, LongTextStreamFactory,
-				_toggleProvider,
+			var documentTransferDataReader = new DocumentTransferDataReader(
+				this, 
+				MappedFields, 
+				BaseContext,
+				transferConfiguration.ScratchRepositories, 
+				RelativityObjectManager,
 				Logger,
 				transferConfiguration.ImportSettings.UseDynamicFolderPath);
-			var exporterTransferContext = new ExporterTransferContext(documentTransferDataReader, transferConfiguration) { TotalItemsFound = TotalRecordsFound };
+			var exporterTransferContext = 
+				new ExporterTransferContext(documentTransferDataReader, transferConfiguration)
+					{ TotalItemsFound = TotalRecordsFound };
 			return Context ?? (Context = exporterTransferContext);
 		}
 

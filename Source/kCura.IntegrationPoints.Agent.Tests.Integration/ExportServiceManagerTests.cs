@@ -120,7 +120,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			_sourceWorkspaceDto = Workspace.GetWorkspaceDto(SourceWorkspaceArtifactId);
 		}
 
-        [Test]
+		[Test]
 		[SmokeTest]
 		[TestInQuarantine(TestQuarantineState.SeemsToBeStable,
 						"Unstable - to be fixed -> REL-280310")]

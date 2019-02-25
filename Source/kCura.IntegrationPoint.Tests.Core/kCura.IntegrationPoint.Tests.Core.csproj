@@ -132,6 +132,7 @@
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\ObjectPermissionListExtension.cs" />
     <Compile Include="Extensions\SecureStringExtension.cs" />
+    <Compile Include="Extensions\WindsorTestingExtensions.cs" />
     <Compile Include="Fields.cs" />
     <Compile Include="FolderService.cs" />
     <Compile Include="ImportHelper.cs" />
@@ -188,6 +189,7 @@
     <Compile Include="Models\RelativityProviderModel.cs" />
     <Compile Include="Models\SchedulerModel.cs" />
     <Compile Include="Models\Shared\ImagePrecedence.cs" />
+    <Compile Include="TestCategories\Attributes\StressTestAttribute.cs" />
     <Compile Include="TestCategories\TestQuarantineState.cs" />
     <Compile Include="TestCategories\Attributes\SmokeTestAttribute.cs" />
     <Compile Include="TestCategories\TestCategories.cs" />

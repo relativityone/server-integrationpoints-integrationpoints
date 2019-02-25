@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Relativity.Kepler.Transport;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 
@@ -51,6 +52,14 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 					request,
 					start,
 					length);
+		}
+
+		public Task<IKeplerStream> StreamLongTextAsync(int workspaceArtifactID, RelativityObjectRef exportObject, FieldRef longTextField)
+		{
+			return _objectManager.Value.StreamLongTextAsync(
+				workspaceArtifactID,
+				exportObject,
+				longTextField);
 		}
 
 		#region IDisposable Support

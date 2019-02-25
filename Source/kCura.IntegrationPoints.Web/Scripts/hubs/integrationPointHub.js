@@ -1,8 +1,8 @@
 ﻿(function ($) {
 	$(function () {
-		var data = $.connection.IntegrationPointData;
+		var hub = $.connection.IntegrationPointData;
 		// Create a function that the hub can call back to update properties.
-		data.client.updateIntegrationPointData = function (integrationPoint, buttonStates, onClickEvents, sourceProviderIsRelativity) {
+		hub.client.updateIntegrationPointData = function (integrationPoint, buttonStates, onClickEvents, sourceProviderIsRelativity) {
 			var RUN = "Run";
 			var STOP = "Stop";
 			var RETRY_ERRORS = "Retry Errors";
@@ -107,14 +107,16 @@
                         .attr("disabled");
 				}
 			}
-
-			$('.associative-list').load(document.URL + ' .associative-list');
 		};
+		
+		hub.client.updateIntegrationPointJobStatusTable = function () {
+			$('.associative-list').load(document.URL + ' .associative-list');
+		}
 
 		$.connection.hub.start({ transport: 'longPolling' }).done(function () {
 			var workspaceId = IP.utils.getParameterByName("AppID");
 			var objectId = IP.utils.getParameterByName("ArtifactID");
-			data.server.getIntegrationPointUpdate(workspaceId, objectId);
+			hub.server.getIntegrationPointUpdate(workspaceId, objectId);
 		});
 	});
 })(jQuery);
