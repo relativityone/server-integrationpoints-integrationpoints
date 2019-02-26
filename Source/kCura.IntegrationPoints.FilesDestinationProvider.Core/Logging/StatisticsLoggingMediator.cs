@@ -29,33 +29,52 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 
 		#region Events
 
-		private BatchSubmitted _onBatchSubmit;
-		private BatchCreated _onBatchCreated;
-		private JobError _onJobError;
-		private StatisticsUpdate _onStatisticsUpdate;
-
 		public event BatchCompleted OnBatchComplete;
 		public event BatchSubmitted OnBatchSubmit
 		{
-			add { _onBatchSubmit += value; }
-			remove { _onBatchSubmit -= value; }
+			add
+			{
+				//We need this event because it's defined in IBatchReporter but we don't need to use it.
+			}
+			remove
+			{
+				//We need this event because it's defined in IBatchReporter but we don't need to use it.
+			}
 		}
 		public event BatchCreated OnBatchCreate
 		{
-			add { _onBatchCreated += value; }
-			remove { _onBatchCreated -= value; }
+			add
+			{
+				//We need this event because it's defined in IBatchReporter but we don't need to use it.
+			}
+			remove
+			{
+				//We need this event because it's defined in IBatchReporter but we don't need to use it.
+			}
 		}
 		public event StatusUpdate OnStatusUpdate;
 		public event JobError OnJobError
 		{
-			add { _onJobError += value; }
-			remove { _onJobError -= value; }
+			add
+			{
+				//We need this event because it's defined in IBatchReporter but we don't need to use it.
+			}
+			remove
+			{
+				//We need this event because it's defined in IBatchReporter but we don't need to use it.
+			}
 		}
 		public event RowError OnDocumentError;
 		public event StatisticsUpdate OnStatisticsUpdate
 		{
-			add { _onStatisticsUpdate += value; }
-			remove { _onStatisticsUpdate -= value; }
+			add
+			{
+				//We need this event because it's defined in IBatchReporter but we don't need to use it.
+			}
+			remove
+			{
+				//We need this event because it's defined in IBatchReporter but we don't need to use it.
+			}
 		}
 
 		#endregion //Events
