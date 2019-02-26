@@ -734,8 +734,8 @@ private runTestsAndSetBuildResult(testType, Boolean skipTests)
     def result = runTests(testType, params) 
     if (result != 0) 
     { 
-        echo "$stageName FAILED with status: $result"
 		currentBuild.result = "FAILED"
+        error "$stageName FAILED with status: $result"
     } 
     echo "$stageName OK" 
 }
