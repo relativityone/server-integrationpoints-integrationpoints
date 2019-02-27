@@ -13,7 +13,6 @@ namespace kCura.IntegrationPoints.RelativitySync.Adapters
 {
 	internal class PermissionsCheck : IExecutor<IPermissionsCheckConfiguration>, IExecutionConstrains<IPermissionsCheckConfiguration>
 	{
-		private readonly IWindsorContainer _ripContainer;
 		private readonly IAPILog _logger;
 		private readonly IExtendedJob _extendedJob;
 		private readonly IValidationExecutorFactory _validationExecutorFactory;
@@ -21,11 +20,10 @@ namespace kCura.IntegrationPoints.RelativitySync.Adapters
 
 		public PermissionsCheck(IWindsorContainer ripContainer, IValidationExecutorFactory validationExecutorFactory, IRdoRepository rdoRepository)
 		{
-			_ripContainer = ripContainer;
 			_validationExecutorFactory = validationExecutorFactory;
 			_rdoRepository = rdoRepository;
-			_logger = _ripContainer.Resolve<IAPILog>();
-			_extendedJob = _ripContainer.Resolve<IExtendedJob>();
+			_logger = ripContainer.Resolve<IAPILog>();
+			_extendedJob = ripContainer.Resolve<IExtendedJob>();
 		}
 
 		public Task<bool> CanExecuteAsync(IPermissionsCheckConfiguration configuration, CancellationToken token)

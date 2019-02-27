@@ -14,10 +14,12 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
 		IMessageSink<JobThroughputBytesMessage>,
 		IMessageSink<JobStatisticsMessage>, IMessageSink<JobProgressMessage>
 	{
+		private const double _TOLERANCE = 0.0000001;
+
 		private readonly IMetricsManagerFactory _metricsManagerFactory;
 		private readonly IAPILog _logger;
 		private readonly IDateTimeHelper _dateTimeHelper;
-
+		
 		private readonly ConcurrentDictionary<string, JobStatistics>
 			_jobs = new ConcurrentDictionary<string, JobStatistics>();
 
@@ -117,7 +119,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
 		private void UpdateAverageThroughputs(JobProgressMessage message, JobProgressStatisticsMessage reportedStatistics, JobStatistics statistics)
 		{
 			DateTime now = _dateTimeHelper.Now();
-			if (statistics.AverageFileThroughput == default(double))
+			if (Math.Abs(statistics.AverageFileThroughput - default(double)) < _TOLERANCE)
 			{
 				statistics.AverageFileThroughput = message.FileThroughput;
 			}
@@ -132,7 +134,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
 				statistics.AverageFileThroughput = newThroughput;
 			}
 
-			if (statistics.AverageMetadataThroughput == default(double))
+			if (Math.Abs(statistics.AverageMetadataThroughput - default(double)) < _TOLERANCE)
 			{
 				statistics.AverageMetadataThroughput = message.MetadataThroughput;
 			}
@@ -185,7 +187,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
 				// Set the floor for job duration at TimeSpan.Zero. This might happen if we don't receive a JobStartedMessage before a job end message.
 				TimeSpan calculatedJobDuration = jobStatistics.EndTime - jobStatistics.StartTime;
 				TimeSpan reportedJobDuration = calculatedJobDuration <= TimeSpan.Zero ? TimeSpan.Zero : calculatedJobDuration;
-				double averageThroughput = reportedJobDuration.TotalSeconds != 0 ? jobSize / reportedJobDuration.TotalSeconds : 0;
+				double averageThroughput = Math.Abs(reportedJobDuration.TotalSeconds) > _TOLERANCE ? jobSize / reportedJobDuration.TotalSeconds : 0;
 
 				// OverallThroughputBytes may differ from ThroughputBytes, since the latter value is reported by external services, which may have
 				// their own way of calculating throughput and which may "finish" earlier than the job as a whole finishes.

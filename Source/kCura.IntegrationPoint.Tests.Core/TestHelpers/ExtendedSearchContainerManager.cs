@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Relativity.API;
 using Relativity.Services;
 using Relativity.Services.DataContracts.DTOs.Search;
 using Relativity.Services.Search;
@@ -15,15 +14,13 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 	/// </summary>
 	internal sealed class ExtendedSearchContainerManager : ISearchContainerManager
 	{
-		private readonly ITestHelper _helper;
-		private ExecutionIdentity _executionIdentity;
 		private Lazy<ISearchContainerManager> _managerWrapper;
+		private readonly ITestHelper _helper;
 		private ISearchContainerManager Manager => _managerWrapper.Value;
 
-		public ExtendedSearchContainerManager(ITestHelper helper, ExecutionIdentity executionIdentity)
+		public ExtendedSearchContainerManager(ITestHelper helper)
 		{
 			_helper = helper;
-			_executionIdentity = executionIdentity;
 			_managerWrapper = new Lazy<ISearchContainerManager>(helper.CreateUserProxy<ISearchContainerManager>);
 		}
 

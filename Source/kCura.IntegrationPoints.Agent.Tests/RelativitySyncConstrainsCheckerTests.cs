@@ -18,12 +18,10 @@ namespace kCura.IntegrationPoints.Agent.Tests
 	[TestFixture]
 	public class RelativitySyncConstrainsCheckerTests
 	{
-		private Mock<IAPILog> _log;
 		private Mock<IToggleProvider> _toggleProvider;
 		private Mock<IIntegrationPointService> _integrationPointService;
 		private Mock<IProviderTypeService> _providerTypeService;
 		private Job _job;
-		private Data.IntegrationPoint _integrationPoint;
 
 		private Mock<IConfigurationDeserializer> _configurationDeserializer;
 		private SourceConfiguration _sourceConfiguration;
@@ -47,7 +45,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 
 			_importSettings = new ImportSettings {ImageImport = false, ProductionImport = false};
 
-			_integrationPoint = new Data.IntegrationPoint
+			var integrationPoint = new Data.IntegrationPoint
 			{
 				SourceConfiguration = _sourceConfigurationString,
 				DestinationConfiguration = _destinationConfigurationString,
@@ -55,14 +53,14 @@ namespace kCura.IntegrationPoints.Agent.Tests
 				DestinationProvider = _destinationProviderId, 
 			};
 
-			_log = new Mock<IAPILog>();
+			var log = new Mock<IAPILog>();
 			
 			_toggleProvider = new Mock<IToggleProvider>();
 			_toggleProvider.Setup(p => p.IsEnabled<EnableSyncToggle>()).Returns(true);
 
 
 			_integrationPointService = new Mock<IIntegrationPointService>();
-			_integrationPointService.Setup(s => s.GetRdo(_integrationPointId)).Returns(_integrationPoint);
+			_integrationPointService.Setup(s => s.GetRdo(_integrationPointId)).Returns(integrationPoint);
 
 
 			_configurationDeserializer = new Mock<IConfigurationDeserializer>();
@@ -76,7 +74,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 				.Returns(ProviderType.Relativity);
 
 			_instance = new RelativitySyncConstrainsChecker(_integrationPointService.Object,
-				_providerTypeService.Object, _toggleProvider.Object, _configurationDeserializer.Object, _log.Object);
+				_providerTypeService.Object, _toggleProvider.Object, _configurationDeserializer.Object, log.Object);
 		}
 
 		[Test]
