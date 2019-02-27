@@ -66,6 +66,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 
 		internal ExporterServiceBase(
 			IExporter exporter,
+			IRelativityObjectManager relativityObjectManager,
 			IRepositoryFactory sourceRepositoryFactory,
 			IRepositoryFactory targetRepositoryFactory,
 			IJobStopManager jobStopManager,
@@ -77,6 +78,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 			int searchArtifactId)
 			: this(mappedFields, jobStopManager, helper)
 		{
+			RelativityObjectManager = relativityObjectManager;
 			SourceConfiguration = JsonConvert.DeserializeObject<SourceConfiguration>(config);
 			BaseContext = baseServiceContextProvider.GetUnversionContext(SourceConfiguration.SourceWorkspaceArtifactId);
 

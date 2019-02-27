@@ -36,6 +36,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		private readonly IHelper _helper;
 		private readonly IFederatedInstanceManager _federatedInstanceManager;
 		private readonly IFolderPathReaderFactory _folderPathReaderFactory;
+		private readonly IRelativityObjectManager _relativityObjectManager;
 		private readonly IAPILog _logger;
 
 		public ExporterFactory(
@@ -43,8 +44,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			IRepositoryFactory sourceRepositoryFactory,
 			IRepositoryFactory targetRepositoryFactory,
 			IHelper helper, IFederatedInstanceManager federatedInstanceManager,
-			IFolderPathReaderFactory folderPathReaderFactory
-			)
+			IFolderPathReaderFactory folderPathReaderFactory,
+			IRelativityObjectManager relativityObjectManager)
 		{
 			_claimsPrincipalFactory = claimsPrincipalFactory;
 			_sourceRepositoryFactory = sourceRepositoryFactory;
@@ -52,6 +53,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			_helper = helper;
 			_federatedInstanceManager = federatedInstanceManager;
 			_folderPathReaderFactory = folderPathReaderFactory;
+			_relativityObjectManager = relativityObjectManager;
 			_logger = _helper.GetLoggerFactory().GetLogger().ForContext<ExporterFactory>();
 		}
 
@@ -135,7 +137,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			IExporter exporter = BuildSavedSearchExporter(baseServiceContext, settings.LoadImportedFullTextFromServer);
 
 			IFolderPathReader folderPathReader = _folderPathReaderFactory.Create(claimsPrincipal, settings, config);
-			var exporterService = new RelativityExporterService(exporter, _sourceRepositoryFactory, _targetRepositoryFactory, jobStopManager, _helper,
+			var exporterService = new RelativityExporterService(exporter, _relativityObjectManager, _sourceRepositoryFactory, _targetRepositoryFactory, jobStopManager, _helper,
 				folderPathReader, baseServiceContextProvider, mappedFields, 0, config, savedSearchArtifactId);
 			return exporterService;
 		}
@@ -156,7 +158,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				searchArtifactId = sourceConfiguration.SourceProductionId;
 			}
 
-			var exporterService = new ImageExporterService(exporter, _sourceRepositoryFactory, _targetRepositoryFactory, jobStopManager, _helper,
+			var exporterService = new ImageExporterService(exporter, _relativityObjectManager, _sourceRepositoryFactory, _targetRepositoryFactory, jobStopManager, _helper,
 				baseServiceContextProvider, mappedFiles, 0, config, searchArtifactId, settings);
 			return exporterService;
 		}
