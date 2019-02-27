@@ -77,13 +77,18 @@ namespace Relativity.Sync
 		private void RegisterDependencies(ContainerBuilder builder, SyncJobParameters syncJobParameters, SyncConfiguration configuration, ISyncLog logger)
 		{
 			CorrelationId correlationId = new CorrelationId(syncJobParameters.CorrelationId);
-			builder.RegisterType<SyncJob>().As<ISyncJob>();
+
+			const string syncJob = "syncJob";
+			builder.RegisterType<SyncJob>().Named(syncJob, typeof(ISyncJob));
+			builder.RegisterDecorator<ISyncJob>((context, job) => new SyncJobWithUnhandledExceptionLogging(job, context.Resolve<IAppDomain>(), context.Resolve<ISyncLog>()), syncJob);
+
 			builder.RegisterInstance(new ContextLogger(correlationId, logger)).As<ISyncLog>();
 			builder.RegisterInstance(syncJobParameters).As<SyncJobParameters>();
 			builder.RegisterInstance(correlationId).As<CorrelationId>();
 			builder.RegisterInstance(configuration).As<SyncConfiguration>();
 			builder.RegisterType<SyncExecutionContextFactory>().As<ISyncExecutionContextFactory>();
 			builder.RegisterType<SystemStopwatch>().As<IStopwatch>();
+			builder.RegisterType<AppDomainWrapper>().As<IAppDomain>();
 
 			_pipelineBuilder.RegisterFlow(builder);
 
