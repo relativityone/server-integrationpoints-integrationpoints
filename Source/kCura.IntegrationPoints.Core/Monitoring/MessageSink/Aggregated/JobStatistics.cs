@@ -90,13 +90,13 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
 			set { CustomData[OVERALL_THROUGHPUT_BYTES_KEY_NAME] = value; }
 		}
 
-		public double AverageFileThroughput
+		public double? AverageFileThroughput
 		{
 			get { return this.GetValueOrDefault<double>(AVERAGE_FILE_THROUGHPUT_NAME); }
 			set { CustomData[AVERAGE_FILE_THROUGHPUT_NAME] = value; }
 		}
 
-		public double AverageMetadataThroughput
+		public double? AverageMetadataThroughput
 		{
 			get { return this.GetValueOrDefault<double>(AVERAGE_METADATA_THROUGHPUT_NAME); }
 			set { CustomData[AVERAGE_METADATA_THROUGHPUT_NAME] = value; }

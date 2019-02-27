@@ -119,14 +119,14 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
 		private void UpdateAverageThroughputs(JobProgressMessage message, JobProgressStatisticsMessage reportedStatistics, JobStatistics statistics)
 		{
 			DateTime now = _dateTimeHelper.Now();
-			if (Math.Abs(statistics.AverageFileThroughput - default(double)) < _TOLERANCE)
+			if (!statistics.AverageFileThroughput.HasValue)
 			{
 				statistics.AverageFileThroughput = message.FileThroughput;
 			}
 			else
 			{
 				double newThroughput = CalculateAverageThroughput(
-					statistics.AverageFileThroughput,
+					statistics.AverageFileThroughput.Value,
 					statistics.LastThroughputCheck - statistics.StartTime,
 					message.FileThroughput,
 					now - statistics.LastThroughputCheck);
@@ -134,14 +134,14 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
 				statistics.AverageFileThroughput = newThroughput;
 			}
 
-			if (Math.Abs(statistics.AverageMetadataThroughput - default(double)) < _TOLERANCE)
+			if (!statistics.AverageMetadataThroughput.HasValue)
 			{
 				statistics.AverageMetadataThroughput = message.MetadataThroughput;
 			}
 			else
 			{
 				double newThroughput = CalculateAverageThroughput(
-					statistics.AverageMetadataThroughput,
+					statistics.AverageMetadataThroughput.Value,
 					statistics.LastThroughputCheck - statistics.StartTime,
 					message.MetadataThroughput,
 					now - statistics.LastThroughputCheck);
