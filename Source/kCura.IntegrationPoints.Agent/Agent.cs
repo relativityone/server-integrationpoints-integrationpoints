@@ -34,7 +34,6 @@ namespace kCura.IntegrationPoints.Agent
 	{
 		private CreateErrorRdo _errorService;
 		private IAgentHelper _helper;
-		private IAPILog _logger;
 		private JobContextProvider _jobContextProvider;
 		private IJobExecutor _jobExecutor;
 		private const string _AGENT_NAME = "Integration Points Agent";
@@ -44,6 +43,7 @@ namespace kCura.IntegrationPoints.Agent
 
 		public Agent() : base(Guid.Parse(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID))
 		{
+			AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
 
 			_agentLevelContainer = new Lazy<IWindsorContainer>(CreateAgentLevelContainer);
@@ -68,8 +68,7 @@ namespace kCura.IntegrationPoints.Agent
 		protected override void Initialize()
 		{
 			base.Initialize();
-			_logger = Helper.GetLoggerFactory().GetLogger().ForContext<Agent>();
-			_jobExecutor = new JobExecutor(this, this, _logger);
+			_jobExecutor = new JobExecutor(this, this, Logger);
 			_jobExecutor.JobExecutionError += OnJobExecutionError;
 		}
 
@@ -96,7 +95,7 @@ namespace kCura.IntegrationPoints.Agent
 						{
 							//Not much we can do here. If container failed we're unable to do anything.
 							//Exception was thrown from container, because RelativitySyncAdapter catches all exceptions inside
-							_logger.LogError(e, $"Unable to resolve {nameof(RelativitySyncAdapter)}.");
+							Logger.LogError(e, $"Unable to resolve {nameof(RelativitySyncAdapter)}.");
 							return new TaskResult
 							{
 								Status = TaskStatusEnum.Fail,
@@ -185,7 +184,7 @@ namespace kCura.IntegrationPoints.Agent
 				details += exception.Message + Environment.NewLine + exception.StackTrace;
 			}
 
-			_logger.LogInformation("Integration Points job status update: {@JobLogInformation}",
+			Logger.LogInformation("Integration Points job status update: {@JobLogInformation}",
 				new JobLogInformation {Job = job, State = state, Details = details});
 		}
 
@@ -246,6 +245,11 @@ namespace kCura.IntegrationPoints.Agent
 		{
 			Logger.LogError(exception, "An error occured during execution of Job with ID: {JobID} in {TypeName}", job.JobId,
 				nameof(ScheduleQueueAgentBase));
+		}
+
+		private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+		{
+			Logger.LogFatal(e.ExceptionObject as Exception, "Unhandled exception occurred!");
 		}
 	}
 }
