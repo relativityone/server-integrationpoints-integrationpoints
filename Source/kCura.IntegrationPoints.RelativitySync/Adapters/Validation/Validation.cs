@@ -14,18 +14,16 @@ namespace kCura.IntegrationPoints.RelativitySync.Adapters
 	internal sealed class Validation : IExecutor<IValidationConfiguration>, IExecutionConstrains<IValidationConfiguration>
 	{
 		private readonly IAPILog _logger;
-		private readonly IWindsorContainer _container;
 		private readonly IExtendedJob _extendedJob;
 		private readonly IValidationExecutorFactory _validationExecutorFactory;
 		private readonly IRdoRepository _rdoRepository;
 
 		public Validation(IWindsorContainer container, IValidationExecutorFactory validationExecutorFactory, IRdoRepository rdoRepository)
 		{
-			_container = container;
 			_validationExecutorFactory = validationExecutorFactory;
 			_rdoRepository = rdoRepository;
-			_extendedJob = _container.Resolve<IExtendedJob>();
-			_logger = _container.Resolve<IAPILog>();
+			_extendedJob = container.Resolve<IExtendedJob>();
+			_logger = container.Resolve<IAPILog>();
 		}
 
 		public Task<bool> CanExecuteAsync(IValidationConfiguration configuration, CancellationToken token)
