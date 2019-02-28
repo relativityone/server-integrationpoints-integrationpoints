@@ -28,6 +28,15 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public async Task ItShouldCallInnerExecuteAsync()
 		{
+			// ACT
+			await _sut.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+
+			// ASSERT
+			_syncJob.Verify(x => x.ExecuteAsync(CancellationToken.None));
+		}
+		[Test]
+		public async Task ItShouldCallInnerExecuteWithProgressAsync()
+		{
 			IProgress<SyncProgress> progress = new Progress<SyncProgress>();
 
 			// ACT
@@ -39,6 +48,15 @@ namespace Relativity.Sync.Tests.Unit
 
 		[Test]
 		public async Task ItShouldCallInnerRetryAsync()
+		{
+			// ACT
+			await _sut.RetryAsync(CancellationToken.None).ConfigureAwait(false);
+
+			// ASSERT
+			_syncJob.Verify(x => x.RetryAsync(CancellationToken.None));
+		}
+		[Test]
+		public async Task ItShouldCallInnerRetryWithProgressAsync()
 		{
 			IProgress<SyncProgress> progress = new Progress<SyncProgress>();
 
