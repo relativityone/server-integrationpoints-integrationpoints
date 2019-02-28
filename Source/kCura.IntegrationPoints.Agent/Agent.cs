@@ -229,6 +229,7 @@ namespace kCura.IntegrationPoints.Agent
 
 		public void Dispose()
 		{
+			AppDomain.CurrentDomain.UnhandledException -= OnUnhandledException;
 			if (_agentLevelContainer.IsValueCreated)
 			{
 				if (_jobContextProvider != null)
