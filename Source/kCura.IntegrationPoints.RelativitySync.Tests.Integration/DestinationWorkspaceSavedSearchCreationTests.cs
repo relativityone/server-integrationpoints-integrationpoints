@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 		private string _jobTagName;
 
 
-		public DestinationWorkspaceSavedSearchCreationTests() : base(1783340, Guid.NewGuid().ToString())
+		public DestinationWorkspaceSavedSearchCreationTests() : base(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())
 		{
 		}
 
