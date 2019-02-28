@@ -94,7 +94,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 		{
 		}
 
-		private SearchQuery InitSearchQuery(int appArtifactId)
+		private ISearchQuery InitSearchQuery(int appArtifactId)
 		{
 			Init(appArtifactId);
 			return new SearchManager().Query;

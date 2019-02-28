@@ -10,6 +10,7 @@ using System;
 using System.Security.Claims;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using Relativity.API.Foundation.Repositories;
+using Relativity.Services.Interfaces.ViewField;
 using Relativity.Services.ResourceServer;
 using ArtifactType = Relativity.ArtifactType;
 using Context = kCura.Data.RowDataGateway.Context;
@@ -312,6 +313,12 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			var foundationRepositoryFactory = new FoundationRepositoryFactory(_sourceServiceMgr, InstrumentationProvider);
 			IExportAuditRepository exportAuditRepository = foundationRepositoryFactory.GetRepository<IExportAuditRepository>(workspaceArtifactId);
 			return new AuditRepository(exportAuditRepository, InstrumentationProvider);
+		}
+
+		public IViewFieldRepository GetViewFieldRepository(int workspaceArtifactID)
+		{
+			IViewFieldManager viewFieldManager = _sourceServiceMgr.CreateProxy<IViewFieldManager>(ExecutionIdentity.CurrentUser);
+			return new ViewFieldRepository(viewFieldManager, InstrumentationProvider, workspaceArtifactID);
 		}
 
 		#region Helper Methods
