@@ -5,7 +5,7 @@ source https://proget.kcura.corp/nuget/NuGet
 
 nuget Microsoft.CodeAnalysis.FxCopAnalyzers ~> 2.6
 nuget CSharpGuidelineAnalyzer ~> 2.3
-nuget Autofac ~> 4.8
+nuget Autofac ~> 4.9
 nuget Polly ~> 6.1
 nuget Banzai ~> 3.0
 nuget Banzai.AUtofac ~> 3.0
