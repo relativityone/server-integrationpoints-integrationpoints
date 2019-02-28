@@ -17,24 +17,24 @@ namespace Relativity.Sync
 			_logger = logger;
 		}
 
-		public Task ExecuteAsync(CancellationToken token)
+		public async Task ExecuteAsync(CancellationToken token)
 		{
-			return ExecuteWithUnhandledExceptionLogging(_syncJob.ExecuteAsync, token);
+			await ExecuteWithUnhandledExceptionLogging(_syncJob.ExecuteAsync, token).ConfigureAwait(false);
 		}
 
-		public Task ExecuteAsync(IProgress<SyncProgress> progress, CancellationToken token)
+		public async Task ExecuteAsync(IProgress<SyncProgress> progress, CancellationToken token)
 		{
-			return ExecuteWithUnhandledExceptionLogging(_syncJob.ExecuteAsync, progress, token);
+			await ExecuteWithUnhandledExceptionLogging(_syncJob.ExecuteAsync, progress, token).ConfigureAwait(false);
 		}
 
-		public Task RetryAsync(CancellationToken token)
+		public async Task RetryAsync(CancellationToken token)
 		{
-			return ExecuteWithUnhandledExceptionLogging(_syncJob.RetryAsync, token);
+			await ExecuteWithUnhandledExceptionLogging(_syncJob.RetryAsync, token).ConfigureAwait(false);
 		}
 
-		public Task RetryAsync(IProgress<SyncProgress> progress, CancellationToken token)
+		public async Task RetryAsync(IProgress<SyncProgress> progress, CancellationToken token)
 		{
-			return ExecuteWithUnhandledExceptionLogging(_syncJob.RetryAsync, progress, token);
+			await ExecuteWithUnhandledExceptionLogging(_syncJob.RetryAsync, progress, token).ConfigureAwait(false);
 		}
 
 		private Task ExecuteWithUnhandledExceptionLogging(Func<CancellationToken, Task> action, CancellationToken token)
