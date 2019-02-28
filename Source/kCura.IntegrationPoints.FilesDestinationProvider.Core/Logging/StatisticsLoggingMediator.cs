@@ -30,52 +30,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 		#region Events
 
 		public event BatchCompleted OnBatchComplete;
-		public event BatchSubmitted OnBatchSubmit
-		{
-			add
-			{
-				//We need this event because it's defined in IBatchReporter but we don't need to use it.
-			}
-			remove
-			{
-				//We need this event because it's defined in IBatchReporter but we don't need to use it.
-			}
-		}
-		public event BatchCreated OnBatchCreate
-		{
-			add
-			{
-				//We need this event because it's defined in IBatchReporter but we don't need to use it.
-			}
-			remove
-			{
-				//We need this event because it's defined in IBatchReporter but we don't need to use it.
-			}
-		}
+		public event BatchSubmitted OnBatchSubmit;//
+		public event BatchCreated OnBatchCreate;//
 		public event StatusUpdate OnStatusUpdate;
-		public event JobError OnJobError
-		{
-			add
-			{
-				//We need this event because it's defined in IBatchReporter but we don't need to use it.
-			}
-			remove
-			{
-				//We need this event because it's defined in IBatchReporter but we don't need to use it.
-			}
-		}
+		public event JobError OnJobError;//
 		public event RowError OnDocumentError;
-		public event StatisticsUpdate OnStatisticsUpdate
-		{
-			add
-			{
-				//We need this event because it's defined in IBatchReporter but we don't need to use it.
-			}
-			remove
-			{
-				//We need this event because it's defined in IBatchReporter but we don't need to use it.
-			}
-		}
+		public event StatisticsUpdate OnStatisticsUpdate;//
 
 		#endregion //Events
 
@@ -92,6 +52,15 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 			_integrationPointProviderTypeService = integrationPointProviderTypeService;
 			_dateTimeHelper = dateTimeHelper;
 			_startTime = _dateTimeHelper.Now();
+			InitializeEmptyEventHandlers();
+		}
+
+		private void InitializeEmptyEventHandlers()
+		{
+			OnBatchSubmit = (size, batchSize) => {};
+			OnBatchCreate = size => { };
+			OnJobError = exception => { };
+			OnStatisticsUpdate = (throughput, fileThroughput) => { };
 		}
 
 		public void RegisterEventHandlers(IUserMessageNotification userMessageNotification,
