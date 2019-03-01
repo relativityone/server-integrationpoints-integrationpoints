@@ -23,7 +23,7 @@
 [CmdletBinding()]
 param(
     [string]$projectName,
-    [ValidateSet("Integration", "Performance")]
+    [ValidateSet("Integration", "Performance", "System")]
     [string]$testsType,
 
     [string]$sourceDir,
