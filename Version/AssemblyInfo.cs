@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("kCura.IntegrationPoints")]
-[assembly: AssemblyDescription("kCura.IntegrationPoints")]
+[assembly: AssemblyTitle("IntegrationPoints")]
+[assembly: AssemblyDescription("IntegrationPoints")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Relativity ODA LLC")]
-[assembly: AssemblyProduct("kCura.IntegrationPoints")]
+[assembly: AssemblyProduct("IntegrationPoints")]
 [assembly: AssemblyCopyright("Copyright (c) 2019, Relativity ODA LLC")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -46,6 +46,7 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Web.Tests.Integration")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Email.Tests")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.PerformanceTests")]
+[assembly: InternalsVisibleTo("kCura.IntegrationPoints.RelativitySync.Tests")]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 //[assembly: Guid("9808fab4-ae17-49c5-a74a-e34543378422")]

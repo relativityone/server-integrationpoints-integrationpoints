@@ -20,6 +20,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 		public RelativityExporterService(
 			IExporter exporter, 
+			IRelativityObjectManager relativityObjectManager,
 			IRepositoryFactory sourceRepositoryFactory, 
 			IRepositoryFactory targetRepositoryFactory, 
 			IJobStopManager jobStopManager, 
@@ -31,7 +32,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			string config, 
 			int searchArtifactId)
 			: base(
-				exporter, 
+				exporter,
+				relativityObjectManager,
 				sourceRepositoryFactory, 
 				targetRepositoryFactory, 
 				jobStopManager, 

@@ -132,6 +132,7 @@
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\ObjectPermissionListExtension.cs" />
     <Compile Include="Extensions\SecureStringExtension.cs" />
+    <Compile Include="Extensions\WindsorTestingExtensions.cs" />
     <Compile Include="Fields.cs" />
     <Compile Include="FolderService.cs" />
     <Compile Include="ImportHelper.cs" />
@@ -227,6 +228,7 @@
     <Compile Include="TestHelpers\ExtendedIPermissionManager.cs" />
     <Compile Include="TestHelpers\ExtendedIRSAPIClient.cs" />
     <Compile Include="TestHelpers\ExtendedIWorkspaceManager.cs" />
+    <Compile Include="TestHelpers\ExtendedSearchContainerManager.cs" />
     <Compile Include="TestHelpers\FileServiceBase.cs" />
     <Compile Include="TestHelpers\IImagesService.cs" />
     <Compile Include="TestHelpers\ImagesService.cs" />

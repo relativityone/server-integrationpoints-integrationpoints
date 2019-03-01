@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Core.Tagging
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<TagSavedSearch>();
 		}
 
-		public void CreateTagSavedSearch(int workspaceArtifactId, TagsContainer tagsContainer, int savedSearchFolderId)
+		public int CreateTagSavedSearch(int workspaceArtifactId, TagsContainer tagsContainer, int savedSearchFolderId)
 		{
 			try
 			{
@@ -35,6 +35,7 @@ namespace kCura.IntegrationPoints.Core.Tagging
 				KeywordSearch searchDto = CreateKeywordSearchForTagging(tagsContainer, savedSearchFolderId);
 				int keywordSearchId = keywordSearchRepository.CreateSavedSearch(workspaceArtifactId, searchDto);
 				_logger.LogDebug("Created tagging keyword search: {keywordSearchId}", keywordSearchId);
+				return keywordSearchId;
 			}
 			catch (Exception e)
 			{

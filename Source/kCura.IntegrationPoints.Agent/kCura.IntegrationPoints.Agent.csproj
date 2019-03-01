@@ -56,7 +56,9 @@
     </Compile>
     <Compile Include="Agent.cs" />
     <Compile Include="Attributes\SynchronizedTaskAttribute.cs" />
+    <Compile Include="ConfigurationDeserializer.cs" />
     <Compile Include="Exceptions\AgentDropJobException.cs" />
+    <Compile Include="IConfigurationDeserializer.cs" />
     <Compile Include="Installer\AgentAggregatedInstaller.cs" />
     <Compile Include="Installer\AgentInstaller.cs" />
     <Compile Include="Context\JobContextProvider.cs" />
@@ -68,6 +70,8 @@
     <Compile Include="Logging\JobLogInformation.cs" />
     <Compile Include="Logging\CreateErrorRdo.cs" />
     <Compile Include="Monitoring\ExternalServiceInstrumentationProviderWithJobContext.cs" />
+    <Compile Include="RelativitySyncConstrainsChecker.cs" />
+    <Compile Include="Toggles\EnableSyncToggle.cs" />
     <Compile Include="TaskFactory\IJobSynchronizationChecker.cs" />
     <Compile Include="TaskFactory\ITaskFactoryJobHistoryServiceFactory.cs" />
     <Compile Include="TaskFactory\ITaskFactoryJobHistoryService.cs" />
@@ -146,6 +150,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.ImportProvider.Parser\kCura.IntegrationPoints.ImportProvider.Parser.csproj">
       <Project>{180650d2-1eea-4242-949d-7bde78eeccb4}</Project>
       <Name>kCura.IntegrationPoints.ImportProvider.Parser</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.RelativitySync\kCura.IntegrationPoints.RelativitySync.csproj">
+      <Project>{c2aaddb6-21ac-4372-924c-5b82ed014313}</Project>
+      <Name>kCura.IntegrationPoints.RelativitySync</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
       <Project>{b91cc4ed-abf3-4409-8df3-46a3c26eb4aa}</Project>

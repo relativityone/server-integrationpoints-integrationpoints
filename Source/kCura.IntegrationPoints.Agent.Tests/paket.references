@@ -6,6 +6,7 @@ kCura.Apps.Common.Utils
 kCura.Relativity.Client
 NSubstitute
 NUnit
+Moq
 Relativity.Authentication
 Relativity.Data
 Relativity.ImportExport

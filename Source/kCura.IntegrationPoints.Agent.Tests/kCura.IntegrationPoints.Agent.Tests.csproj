@@ -51,6 +51,7 @@
     </Compile>
     <Compile Include="JobExecutorTests.cs" />
     <Compile Include="Monitoring\ExternalServiceInstrumentationProviderWithJobContextTests.cs" />
+    <Compile Include="RelativitySyncConstrainsCheckerTests.cs" />
     <Compile Include="SendEmailManagerUnitTests.cs" />
     <Compile Include="TaskExceptionServiceTests.cs" />
     <Compile Include="TaskExceptionMediatorTests.cs" />
@@ -395,6 +396,17 @@
       <ItemGroup>
         <Reference Include="Microsoft.Web.Administration">
           <HintPath>..\..\packages\Microsoft.Web.Administration\lib\net20\Microsoft.Web.Administration.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Moq">
+          <HintPath>..\..\packages\Moq\lib\net45\Moq.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

@@ -5,3 +5,5 @@ NUnit
 Relativity.API
 Relativity.ImportExport
 RelativityCore
+Moq
+FluentAssertions
