@@ -37,13 +37,13 @@ namespace Relativity.Sync
 			await ExecuteWithUnhandledExceptionLogging(_syncJob.RetryAsync, progress, token).ConfigureAwait(false);
 		}
 
-		private Task ExecuteWithUnhandledExceptionLogging(Func<CancellationToken, Task> action, CancellationToken token)
+		private async Task ExecuteWithUnhandledExceptionLogging(Func<CancellationToken, Task> action, CancellationToken token)
 		{
 			_appDomain.UnhandledException += OnUnhandledException;
 
 			try
 			{
-				return action(token);
+				await action(token).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -51,13 +51,13 @@ namespace Relativity.Sync
 			}
 		}
 
-		private Task ExecuteWithUnhandledExceptionLogging(Func<IProgress<SyncProgress>, CancellationToken, Task> action, IProgress<SyncProgress> progress, CancellationToken token)
+		private async Task ExecuteWithUnhandledExceptionLogging(Func<IProgress<SyncProgress>, CancellationToken, Task> action, IProgress<SyncProgress> progress, CancellationToken token)
 		{
 			_appDomain.UnhandledException += OnUnhandledException;
 
 			try
 			{
-				return action(progress, token);
+				await action(progress, token).ConfigureAwait(false);
 			}
 			finally
 			{
