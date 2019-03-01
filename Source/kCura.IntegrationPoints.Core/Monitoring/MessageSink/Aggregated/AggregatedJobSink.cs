@@ -14,16 +14,20 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
 		IMessageSink<JobThroughputBytesMessage>,
 		IMessageSink<JobStatisticsMessage>, IMessageSink<JobProgressMessage>
 	{
+		private const double _TOLERANCE = 0.0000001;
+
 		private readonly IMetricsManagerFactory _metricsManagerFactory;
 		private readonly IAPILog _logger;
-
+		private readonly IDateTimeHelper _dateTimeHelper;
+		
 		private readonly ConcurrentDictionary<string, JobStatistics>
 			_jobs = new ConcurrentDictionary<string, JobStatistics>();
 
-		public AggregatedJobSink(IAPILog logger, IMetricsManagerFactory metricsManagerFactory)
+		public AggregatedJobSink(IAPILog logger, IMetricsManagerFactory metricsManagerFactory, IDateTimeHelper dateTimeHelper)
 		{
 			_metricsManagerFactory = metricsManagerFactory;
 			_logger = logger.ForContext<AggregatedJobSink>();
+			_dateTimeHelper = dateTimeHelper;
 		}
 
 		public void OnMessage(JobStartedMessage message)
@@ -31,7 +35,14 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
 			if (!_jobs.ContainsKey(message.CorrelationID))
 			{
 				_metricsManagerFactory.CreateSUMManager().LogCount($"IntegrationPoints.Performance.JobStartedCount.{message.Provider}", 1, message);
-				UpdateJobStatistics(message, statistics => { statistics.JobStatus = JobStatus.Started; });
+				DateTime now = _dateTimeHelper.Now();
+				UpdateJobStatistics(
+					message,
+					statistics =>
+					{
+						statistics.JobStatus = JobStatus.Started;
+						statistics.StartTime = now;
+					});
 			}
 		}
 
@@ -57,26 +68,26 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
 		{
 			_metricsManagerFactory.CreateSUMManager().LogLong($"IntegrationPoints.Usage.TotalRecords.{message.Provider}", message.TotalRecordsCount, message);
 
-			UpdateJobStatistics(message, jobStatistics => { jobStatistics.TotalRecordsCount = message.TotalRecordsCount; });
+			UpdateJobStatistics(message, jobStatistics => jobStatistics.TotalRecordsCount = message.TotalRecordsCount);
 		}
 
 		public void OnMessage(JobCompletedRecordsCountMessage message)
 		{
 			_metricsManagerFactory.CreateSUMManager().LogLong($"IntegrationPoints.Usage.CompletedRecords.{message.Provider}", message.CompletedRecordsCount, message);
 
-			UpdateJobStatistics(message, jobStatistics => { jobStatistics.CompletedRecordsCount = message.CompletedRecordsCount; });
+			UpdateJobStatistics(message, jobStatistics => jobStatistics.CompletedRecordsCount = message.CompletedRecordsCount);
 		}
 
 		public void OnMessage(JobThroughputMessage message)
 		{
 			_metricsManagerFactory.CreateSUMManager().LogDouble($"IntegrationPoints.Performance.Throughput.{message.Provider}", message.RecordsPerSecond, message);
 
-			UpdateJobStatistics(message, jobStatistics => { jobStatistics.RecordsPerSecond = message.RecordsPerSecond; });
+			UpdateJobStatistics(message, jobStatistics => jobStatistics.RecordsPerSecond = message.RecordsPerSecond);
 		}
 
 		public void OnMessage(JobThroughputBytesMessage message)
 		{
-			UpdateJobStatistics(message, jobStatistics => { jobStatistics.BytesPerSecond = message.BytesPerSecond; });
+			UpdateJobStatistics(message, jobStatistics => jobStatistics.BytesPerSecond = message.BytesPerSecond);
 		}
 
 		public void OnMessage(JobStatisticsMessage message)
@@ -96,7 +107,52 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
 
 		public void OnMessage(JobProgressMessage message)
 		{
-			_metricsManagerFactory.CreateAPMManager().LogDouble("IntegrationPoints.Performance.Progress", 1, message);
+			JobProgressStatisticsMessage reportedStatistics = new JobProgressStatisticsMessage(message);
+			UpdateJobStatistics(message, s => UpdateAverageThroughputs(message, reportedStatistics, s));
+
+			_metricsManagerFactory.CreateAPMManager().LogDouble("IntegrationPoints.Performance.Progress", 1, reportedStatistics);
+		}
+
+		// Updates the AverageFileThroughput and AverageMetadataThroughput properties on the given
+		// JobStatisitics object with new throughput data from the given JobProgressMessage, then
+		// sets those same properties on the given JobProgressStatisticsMessage to report in APM.
+		private void UpdateAverageThroughputs(JobProgressMessage message, JobProgressStatisticsMessage reportedStatistics, JobStatistics statistics)
+		{
+			DateTime now = _dateTimeHelper.Now();
+			if (!statistics.AverageFileThroughput.HasValue)
+			{
+				statistics.AverageFileThroughput = message.FileThroughput;
+			}
+			else
+			{
+				double newThroughput = CalculateAverageThroughput(
+					statistics.AverageFileThroughput.Value,
+					statistics.LastThroughputCheck - statistics.StartTime,
+					message.FileThroughput,
+					now - statistics.LastThroughputCheck);
+
+				statistics.AverageFileThroughput = newThroughput;
+			}
+
+			if (!statistics.AverageMetadataThroughput.HasValue)
+			{
+				statistics.AverageMetadataThroughput = message.MetadataThroughput;
+			}
+			else
+			{
+				double newThroughput = CalculateAverageThroughput(
+					statistics.AverageMetadataThroughput.Value,
+					statistics.LastThroughputCheck - statistics.StartTime,
+					message.MetadataThroughput,
+					now - statistics.LastThroughputCheck);
+
+				statistics.AverageMetadataThroughput = newThroughput;
+			}
+
+			statistics.LastThroughputCheck = now;
+
+			reportedStatistics.AverageFileThroughput = statistics.AverageFileThroughput;
+			reportedStatistics.AverageMetadataThroughput = statistics.AverageMetadataThroughput;
 		}
 
 		private void OnJobEnd(JobMessageBase message, JobStatus jobStatus)
@@ -106,7 +162,14 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
 				LogMissingJobStartedMetric(message.CorrelationID);
 			}
 
-			UpdateJobStatistics(message, s => { s.JobStatus = jobStatus; });
+			DateTime now = _dateTimeHelper.Now();
+			UpdateJobStatistics(
+				message,
+				s =>
+				{
+					s.JobStatus = jobStatus;
+					s.EndTime = now;
+				});
 
 			HandleJobEnd(message.CorrelationID);
 		}
@@ -120,7 +183,23 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
 				IMetricsManager sum = _metricsManagerFactory.CreateSUMManager();
 				sum.LogLong($"IntegrationPoints.Performance.JobSize.{jobStatistics.Provider}", jobSize, jobStatistics);
 				sum.LogDouble($"IntegrationPoints.Performance.ThroughputBytes.{jobStatistics.Provider}", jobStatistics.BytesPerSecond, jobStatistics);
-				_metricsManagerFactory.CreateAPMManager().LogDouble($"IntegrationPoints.Performance.JobStatistics", jobSize, jobStatistics);
+
+				// Set the floor for job duration at TimeSpan.Zero. This might happen if we don't receive a JobStartedMessage before a job end message.
+				TimeSpan calculatedJobDuration = jobStatistics.EndTime - jobStatistics.StartTime;
+				TimeSpan reportedJobDuration = calculatedJobDuration <= TimeSpan.Zero ? TimeSpan.Zero : calculatedJobDuration;
+				double averageThroughput = Math.Abs(reportedJobDuration.TotalSeconds) > _TOLERANCE ? jobSize / reportedJobDuration.TotalSeconds : 0;
+
+				// OverallThroughputBytes may differ from ThroughputBytes, since the latter value is reported by external services, which may have
+				// their own way of calculating throughput and which may "finish" earlier than the job as a whole finishes.
+				jobStatistics.OverallThroughputBytes = averageThroughput;
+				jobStatistics.DurationSeconds = reportedJobDuration.TotalSeconds;
+
+				// Ugly hack - remove data related to tracking throughput progress metrics. We don't want to report these in our end-of-job metrics.
+				jobStatistics.CustomData.Remove(JobStatistics.AVERAGE_FILE_THROUGHPUT_NAME);
+				jobStatistics.CustomData.Remove(JobStatistics.AVERAGE_METADATA_THROUGHPUT_NAME);
+				jobStatistics.CustomData.Remove(JobStatistics.LAST_THROUGHPUT_CHECK_NAME);
+
+				_metricsManagerFactory.CreateAPMManager().LogDouble("IntegrationPoints.Performance.JobStatistics", jobSize, jobStatistics);
 			}
 		}
 
@@ -175,6 +254,17 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
 			}
 
 			return true;
+		}
+
+		// Given a throughput r1 over a duration t1 and a throughput r2 over a duration t2, returns the average throughput over the
+		// duration (t1 + t2). E.g. if you had an average throughput of 8 b/s for 10 seconds and then a throughput of 2 b/s for
+		// 2 seconds, this would calculate an overall throughput of 7 b/s.
+		private double CalculateAverageThroughput(double throughput1, TimeSpan duration1, double throughput2, TimeSpan duration2)
+		{
+			double duration1Sec = duration1.TotalSeconds;
+			double duration2Sec = duration2.TotalSeconds;
+			double updatedRate = (throughput1 * duration1Sec + throughput2 * duration2Sec) / (duration1Sec + duration2Sec);
+			return updatedRate;
 		}
 
 		#region Logging

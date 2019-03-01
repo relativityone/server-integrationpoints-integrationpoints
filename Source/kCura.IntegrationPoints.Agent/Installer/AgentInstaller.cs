@@ -34,6 +34,8 @@ using kCura.WinEDDS.Service.Export;
 using Relativity.API;
 using Relativity.Toggles;
 using System;
+using kCura.IntegrationPoints.Core.Validation;
+using kCura.IntegrationPoints.Data.Repositories;
 using ITaskFactory = kCura.IntegrationPoints.Agent.TaskFactory.ITaskFactory;
 
 namespace kCura.IntegrationPoints.Agent.Installer
@@ -138,6 +140,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Register(Component.For<IJobSynchronizationChecker>().ImplementedBy<JobSynchronizationChecker>().LifestyleTransient());
 			container.Register(Component.For<ITaskFactoryJobHistoryServiceFactory>().ImplementedBy<TaskFactoryJobHistoryServiceFactory>().LifestyleTransient());
 			container.Register(Component.For<ITaskFactory>().ImplementedBy<TaskFactory.TaskFactory>().DependsOn(new { container }).LifestyleTransient());
+			container.Register(Component.For<IConfigurationDeserializer>().ImplementedBy<ConfigurationDeserializer>().LifestyleSingleton());
 
 			container.Register(Component.For<IAuthTokenGenerator>().UsingFactoryMethod(kernel =>
 			{
@@ -182,8 +185,9 @@ namespace kCura.IntegrationPoints.Agent.Installer
 					}
 					IFederatedInstanceManager federatedInstanceManager = k.Resolve<IFederatedInstanceManager>();
 					IFolderPathReaderFactory folderPathReaderFactory = k.Resolve<IFolderPathReaderFactory>();
+					IRelativityObjectManager relativityObjectManager = k.Resolve<IRelativityObjectManager>();
 					return new global::kCura.IntegrationPoints.Core.Factories.Implementations.ExporterFactory(claimsPrincipalFactory,
-						sourceRepositoryFactory, targetRepositoryFactory, sourceHelper, federatedInstanceManager, folderPathReaderFactory);
+						sourceRepositoryFactory, targetRepositoryFactory, sourceHelper, federatedInstanceManager, folderPathReaderFactory, relativityObjectManager);
 				}).LifestyleTransient());
 
 			container.Register(Component.For<IRsapiClientWithWorkspaceFactory>().ImplementedBy<ExtendedRsapiClientWithWorkspaceFactory>().LifestyleTransient());

@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests
 			repositoryFactory.GetWorkspaceRepository().Returns(workspaceRepository);
 			workspaceRepository.Retrieve(Arg.Any<int>()).Returns(workspace);
 
-			var mockDocumentTransferProvider = new DocumentTransferProvider(Substitute.For<IExtendedImportApiFacade>(), repositoryFactory, Substitute.For<IHelper>());
+			var mockDocumentTransferProvider = new DocumentTransferProvider(Substitute.For<IExtendedImportApiFacade>(), repositoryFactory, Substitute.For<IAPILog>());
 
 			var settings = new DocumentTransferSettings { SourceWorkspaceArtifactId = _WORKSPACE_ARTIFACT_ID };
 			var options = JsonConvert.SerializeObject(settings);
@@ -69,7 +69,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests
 			repositoryFactory.GetWorkspaceRepository().Returns(workspaceRepository);
 			workspaceRepository.Retrieve(Arg.Any<int>()).Returns(workspace);
 
-			var mockDocumentTransferProvider = new DocumentTransferProvider(Substitute.For<IExtendedImportApiFacade>(), Substitute.For<IRepositoryFactory>(), Substitute.For<IHelper>());
+			var mockDocumentTransferProvider = new DocumentTransferProvider(Substitute.For<IExtendedImportApiFacade>(), Substitute.For<IRepositoryFactory>(), Substitute.For<IAPILog>());
 			var settings = new DocumentTransferSettings { SourceWorkspaceArtifactId = _WORKSPACE_ARTIFACT_ID };
 			var options = JsonConvert.SerializeObject(settings);
 			
@@ -87,7 +87,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests
 			_retrievieFieldsResult = PrepareRetrieveFieldsResult(_getWorkspaceFieldsResult);
 			_getWorkspaceFieldsResult.AddRange(PrepareFieldsToBeExcluded());
 
-			var documentTransferProvider = new DocumentTransferProvider(GetImportApiMock(), GetRepositoryFactoryMock(), Substitute.For<IHelper>());
+			var documentTransferProvider = new DocumentTransferProvider(GetImportApiMock(), GetRepositoryFactoryMock(), Substitute.For<IAPILog>());
 
 			IEnumerable<FieldEntry> documentFields = documentTransferProvider.GetFields(new DataSourceProviderConfiguration(_documentTransferSettings)).ToList();
 

@@ -22,6 +22,7 @@ namespace kCura.IntegrationPoints.Core.Factories
 			ISerializer serializer,
 			IJobHistoryErrorManager jobHistoryErrorManager,
 			IJobStopManager jobStopManager,
+			ISourceWorkspaceTagCreator sourceWorkspaceTagCreator,
 			FieldMap[] mappedFields,
 			SourceConfiguration configuration,
 			JobHistoryErrorDTO.UpdateStatusType updateStatusType,

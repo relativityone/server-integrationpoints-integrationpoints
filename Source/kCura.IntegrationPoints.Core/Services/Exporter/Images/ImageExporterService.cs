@@ -26,10 +26,10 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 
 		private readonly IFileRepository _fileRepository;
 
-		public ImageExporterService(IExporter exporter, IRepositoryFactory sourceRepositoryFactory, IRepositoryFactory targetRepositoryFactory,
+		public ImageExporterService(IExporter exporter, IRelativityObjectManager relativityObjectManager, IRepositoryFactory sourceRepositoryFactory, IRepositoryFactory targetRepositoryFactory,
 			IJobStopManager jobStopManager, IHelper helper, IBaseServiceContextProvider baseServiceContextProvider, FieldMap[] mappedFields, int startAt,
 			string config, int searchArtifactId, ImportSettings settings)
-			: base(exporter, sourceRepositoryFactory, targetRepositoryFactory, jobStopManager, helper, baseServiceContextProvider, mappedFields, startAt,
+			: base(exporter, relativityObjectManager, sourceRepositoryFactory, targetRepositoryFactory, jobStopManager, helper, baseServiceContextProvider, mappedFields, startAt,
 				config, searchArtifactId)
 		{
 			_settings = settings;

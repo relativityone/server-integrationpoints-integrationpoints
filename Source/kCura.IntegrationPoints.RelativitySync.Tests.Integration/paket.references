@@ -1,0 +1,10 @@
+Castle.Windsor
+kCura.Apps.Common.Utils
+Relativity.API
+Relativity.Services.Interfaces
+kCura.Relativity.Client
+Polly
+
+Moq
+NUnit
+Serilog

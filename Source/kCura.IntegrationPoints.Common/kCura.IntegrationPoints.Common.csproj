@@ -57,6 +57,7 @@
     <Compile Include="Monitoring\Instrumentation\Model\ExternalCallCompletedMessage.cs" />
     <Compile Include="Monitoring\Instrumentation\Model\InstrumentationJobContext.cs" />
     <Compile Include="Monitoring\Instrumentation\Model\InstrumentationServiceCallContext.cs" />
+    <Compile Include="Monitoring\Messages\JobProgressStatisticsMessage.cs" />
     <Compile Include="Monitoring\UnitsOfMeasureConstants.cs" />
     <Content Include="LICENSE.txt">
       <Paket>True</Paket>

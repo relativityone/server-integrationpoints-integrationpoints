@@ -65,11 +65,13 @@
     <Compile Include="Authentication\TokenCredentialProvider.cs" />
     <Compile Include="Authentication\TokenProviderFactoryFactory.cs" />
     <Compile Include="BatchEmail.cs" />
+    <Compile Include="BatchStatusCommands\Implementations\SourceWorkspaceTagCreator.cs" />
     <Compile Include="BatchStatusCommands\Implementations\IConsumeScratchTableBatchStatus.cs" />
     <Compile Include="BatchStatusCommands\Implementations\JobHistoryErrorBatchUpdateManager.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TargetDocumentsTaggingManager.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TargetDocumentsTaggingManagerFactory.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TempTableReader.cs" />
+    <Compile Include="Validation\IAgentValidator.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="ContextContainer.cs" />
     <Compile Include="FederatedInstanceKeplerHandler.cs" />
@@ -162,6 +164,7 @@
     <Compile Include="Services\Domain\ProviderFactoryVendor.cs" />
     <Compile Include="Services\EhErrorService.cs" />
     <Compile Include="Services\ErrorServiceBase.cs" />
+    <Compile Include="Services\Exporter\SelfDisposingStream.cs" />
     <Compile Include="Services\Exporter\Validators\DestinationFieldsValidator.cs" />
     <Compile Include="Services\Exporter\Validators\NestedAndMultiValuesFieldValidator.cs" />
     <Compile Include="Services\FieldService.cs" />
@@ -185,6 +188,7 @@
     <Compile Include="Services\ServiceContext\IBaseServiceContextProvider.cs" />
     <Compile Include="Services\Synchronizer\ImportProviderRdoSynchronizerFactory.cs" />
     <Compile Include="Services\Synchronizer\RelativityRdoSynchronizerFactory.cs" />
+    <Compile Include="Tagging\ISourceWorkspaceTagCreator.cs" />
     <Compile Include="Tagging\ITagSavedSearch.cs" />
     <Compile Include="Tagging\ITagSavedSearchFolder.cs" />
     <Compile Include="Tagging\ITagSavedSearchManager.cs" />

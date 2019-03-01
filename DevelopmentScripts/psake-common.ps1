@@ -57,8 +57,6 @@ properties {
     $microsoft_vs_directory = [System.IO.Path]::Combine($env:VS110COMNTOOLS,'Common7','Tools')
     $windows_sdk_directory = [System.IO.Path]::Combine(${env:ProgramFiles(x86)}, 'Microsoft SDKs', 'Windows', 'v7.0A')
     
-    $msbuild_exe = [System.IO.Path]::Combine(${env:ProgramFiles(x86)}, 'MSBuild', '14.0', 'Bin','MSBuild.exe')
-
     #nunit variables
     $NUnit = [System.IO.Path]::Combine($development_scripts_directory, 'NUnit.Runners', 'tools', 'nunit-console.exe')
     $NUnit_x86 = [System.IO.Path]::Combine($development_scripts_directory, 'NUnit.Runners', 'tools', 'nunit-console-x86.exe')
@@ -164,4 +162,50 @@ properties {
     if ($GIT) {
         validateVersions
     }
+
+    function Find-MsBuild
+    {
+        $agentPath = "$Env:programfiles (x86)\Microsoft Visual Studio\2017\BuildTools\MSBuild\15.0\Bin\msbuild.exe"
+        $devPath = "$Env:programfiles (x86)\Microsoft Visual Studio\2017\Enterprise\MSBuild\15.0\Bin\msbuild.exe"
+        $proPath = "$Env:programfiles (x86)\Microsoft Visual Studio\2017\Professional\MSBuild\15.0\Bin\msbuild.exe"
+        $communityPath = "$Env:programfiles (x86)\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\msbuild.exe"
+        $fallback2015Path = "${Env:ProgramFiles(x86)}\MSBuild\14.0\Bin\MSBuild.exe"
+        $fallback2013Path = "${Env:ProgramFiles(x86)}\MSBuild\12.0\Bin\MSBuild.exe"
+        $fallbackPath = "C:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe"
+        
+        If (Test-Path $agentPath) {
+            Write-Verbose "Found MSBuild 15.0"
+            $agentPath
+        }
+        ElseIf (Test-Path $devPath) {
+            Write-Verbose "Found MSBuild 15.0"
+            $devPath
+        }
+        ElseIf (Test-Path $proPath) {
+            Write-Verbose "Found MSBuild 15.0"
+            $proPath
+        }
+        ElseIf (Test-Path $communityPath) {
+            Write-Verbose "Found MSBuild 15.0"
+            $communityPath
+        }
+        ElseIf (Test-Path $fallback2015Path) {
+            Write-Verbose "Found MSBuild 14.0"
+            $fallback2015Path
+        }
+        ElseIf (Test-Path $fallback2013Path) {
+            Write-Verbose "Found MSBuild 12.0"
+            $fallback2013Path
+        }
+        ElseIf (Test-Path $fallbackPath) {
+            Write-Verbose "Found MSBuild 4.0"
+            $fallbackPath
+        }
+        Else {
+            throw "Unable to find msbuild"
+        }
+    }
+
+    # $msbuild_exe = [System.IO.Path]::Combine(${env:ProgramFiles(x86)}, 'MSBuild', '14.0', 'Bin','MSBuild.exe')
+    $msbuild_exe = Find-MsBuild
 }
