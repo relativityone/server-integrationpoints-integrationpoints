@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Web.Infrastructure.Session;
 using Relativity.API;
 using System.Net.Http;
+using System.Web;
 using System.Web.Http.ExceptionHandling;
 
 namespace kCura.IntegrationPoints.Web.Installers
@@ -13,11 +14,26 @@ namespace kCura.IntegrationPoints.Web.Installers
 	{
 		public void Install(IWindsorContainer container, IConfigurationStore store)
 		{
+			RegisterCurrentHttpContext(container);
 			RegisterDelegatingHandlers(container);
 			RegisterExceptionLoggers(container);
 
 			RegisterSessionService(container);
 			RegisterErrorService(container);
+		}
+
+		private static void RegisterCurrentHttpContext(IWindsorContainer container)
+		{
+			container.Register(
+				Component
+					.For<HttpContextBase>()
+					.UsingFactoryMethod(x => new HttpContextWrapper(HttpContext.Current))
+					.LifestylePerWebRequest(),
+				Component
+					.For<HttpRequestBase>()
+					.UsingFactoryMethod(k => k.Resolve<HttpContextBase>().Request)
+					.LifestylePerWebRequest()
+			);
 		}
 
 		private static void RegisterExceptionLoggers(IWindsorContainer container)
@@ -51,7 +67,12 @@ namespace kCura.IntegrationPoints.Web.Installers
 		{
 			container.Register(Component
 				.For<ISessionService>()
-				.UsingFactoryMethod(k => SessionServiceFactory.GetSessionService(k.Resolve<ICPHelper>))
+				.UsingFactoryMethod(k =>
+					SessionServiceFactory.GetSessionService(
+						k.Resolve<ICPHelper>,
+						k.Resolve<HttpContextBase>()
+					)
+				)
 				.LifestylePerWebRequest()
 			);
 		}

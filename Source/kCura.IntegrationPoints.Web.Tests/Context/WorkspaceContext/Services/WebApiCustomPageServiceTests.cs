@@ -14,11 +14,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceContext.Services
 			const int workspaceId = 1019723;
 			const string workspaceIdKey = "workspaceID";
 
-			HttpContext httpContext = CreateHttpContextMock();
-			httpContext.Request.RequestContext.RouteData.Values.Add(workspaceIdKey, workspaceId.ToString());
-			HttpContext.Current = httpContext;
+			HttpRequestBase httpRequest = CreateHttpRequestMock();
+			httpRequest.RequestContext.RouteData.Values.Add(workspaceIdKey, workspaceId.ToString());
 
-			var service = new WebApiCustomPageService();
+			var service = new WebApiCustomPageService(httpRequest);
 
 			//act
 			int result = service.GetWorkspaceID();
@@ -31,9 +30,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceContext.Services
 		public void ShouldReturnZeroIfHttpRequestDoesNotContainWorkspaceId()
 		{
 			//arrange
-			HttpContext.Current = CreateHttpContextMock();
+			HttpRequestBase httpRequest = CreateHttpRequestMock();
 
-			var service = new WebApiCustomPageService();
+			var service = new WebApiCustomPageService(httpRequest);
 
 			//act
 			int result = service.GetWorkspaceID();
@@ -49,11 +48,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceContext.Services
 			const string nonNumericWorkspaceId = "xyz";
 			const string workspaceIdKey = "workspaceID";
 
-			HttpContext httpContext = CreateHttpContextMock();
-			httpContext.Request.RequestContext.RouteData.Values.Add(workspaceIdKey, nonNumericWorkspaceId);
-			HttpContext.Current = httpContext;
+			HttpRequestBase httpRequest = CreateHttpRequestMock();
+			httpRequest.RequestContext.RouteData.Values.Add(workspaceIdKey, nonNumericWorkspaceId);
 
-			var service = new WebApiCustomPageService();
+			var service = new WebApiCustomPageService(httpRequest);
 
 			//act
 			int result = service.GetWorkspaceID();
@@ -62,12 +60,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceContext.Services
 			result.Should().Be(0);
 		}
 
-		private HttpContext CreateHttpContextMock()
+		private HttpRequestBase CreateHttpRequestMock()
 		{
 			var request = new HttpRequest(string.Empty, "http://test.org", string.Empty);
-			var response = new HttpResponse(null);
-			var mock = new HttpContext(request, response);
-			return mock;
+			return new HttpRequestWrapper(request);
 		}
 	}
 }

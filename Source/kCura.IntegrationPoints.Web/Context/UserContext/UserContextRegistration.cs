@@ -11,22 +11,20 @@ namespace kCura.IntegrationPoints.Web.Context.UserContext
 		/// </summary>
 		public static IWindsorContainer AddUserContext(this IWindsorContainer container)
 		{
-			container.Register(Component
-				.For<IUserContextService>()
-				.ImplementedBy<RequestHeadersUserContextService>()
-				.LifestyleSingleton()
+			return container.Register(
+				Component
+					.For<IUserContextService>()
+					.ImplementedBy<RequestHeadersUserContextService>()
+					.LifestylePerWebRequest(),
+				Component
+					.For<IUserContextService>()
+					.ImplementedBy<SessionUserContextService>()
+					.LifestylePerWebRequest(),
+				Component
+					.For<IUserContext>()
+					.ImplementedBy<UserContext>()
+					.LifestylePerWebRequest()
 			);
-			container.Register(Component
-				.For<IUserContextService>()
-				.ImplementedBy<SessionUserContextService>()
-				.LifestylePerWebRequest()
-			);
-			container.Register(Component
-				.For<IUserContext>()
-				.ImplementedBy<UserContext>()
-				.LifestylePerWebRequest()
-			);
-			return container;
 		}
 	}
 }

@@ -5,29 +5,21 @@ namespace kCura.IntegrationPoints.Web
 {
 	public static class RequestExtensions
 	{
+		private const string _DEFAULT_APPLICATION_PATH = "/Relativity";
+
 		public static string GetRootApplicationPath(this HttpRequestBase request)
 		{
-			var appPath = request.ApplicationPath;
-			var result = "/Relativity";
-			if (appPath != null)
-			{
-				result = appPath.Split('/').First(x => !string.IsNullOrEmpty(x.Trim()));
-			}
-			return result;
+			string applicationPath = request.ApplicationPath;
+			return applicationPath != null
+				? GetFirstApplicationPath(applicationPath)
+				: _DEFAULT_APPLICATION_PATH;
 		}
 
-		public static string GetApplicationPath(this HttpRequestBase request)
+		private static string GetFirstApplicationPath(string applicationPath)
 		{
-			return string.Format("{0}{1}", GetRootURL(request), request.ApplicationPath);
+			return applicationPath
+				.Split('/')
+				.First(x => !string.IsNullOrWhiteSpace(x));
 		}
-
-		public static string GetRootURL(this HttpRequestBase request)
-		{
-			return string.Format("{0}://{1}{2}",
-						request.Url.Scheme,
-						request.Url.Host,
-						request.Url.Port == 80 ? string.Empty : ":" + HttpContext.Current.Request.Url.Port);
-		}
-
 	}
 }

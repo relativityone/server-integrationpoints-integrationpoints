@@ -6,9 +6,16 @@ namespace kCura.IntegrationPoints.Web.Context.WorkspaceContext.Services
 	{
 		private const string _WORKSPACE_ID_KEY = "workspaceID";
 
+		private readonly HttpRequestBase _httpRequest;
+		
+		public WebApiCustomPageService(HttpRequestBase httpRequest)
+		{
+			_httpRequest = httpRequest;
+		}
+
 		public int GetWorkspaceID()
 		{
-			var context = HttpContext.Current.Request.RequestContext.RouteData.Values[_WORKSPACE_ID_KEY] as string;
+			var context = _httpRequest.RequestContext.RouteData.Values[_WORKSPACE_ID_KEY] as string;
 			int workspaceId = 0;
 			int.TryParse(context, out workspaceId);
 			return workspaceId;

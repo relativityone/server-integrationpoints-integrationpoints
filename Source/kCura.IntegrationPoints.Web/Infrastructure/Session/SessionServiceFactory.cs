@@ -1,7 +1,6 @@
-﻿using System;
+﻿using Relativity.API;
+using System;
 using System.Web;
-using System.Web.SessionState;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.Infrastructure.Session
 {
@@ -9,24 +8,23 @@ namespace kCura.IntegrationPoints.Web.Infrastructure.Session
 	{
 		private const string _SESSION_KEY = "__WEB_SESSION_KEY__";
 
-		public static ISessionService GetSessionService(Func<ICPHelper> helperFactory)
+		public static ISessionService GetSessionService(Func<ICPHelper> helperFactory, HttpContextBase httpContext)
 		{
-			ISessionService sessionService = GetOrCreateSessionService(helperFactory);
-			UpdateHttpSessionStateSessionService(sessionService);
+			HttpSessionStateBase sessionState = httpContext.Session;
+
+			ISessionService sessionService = GetOrCreateSessionService(helperFactory, sessionState);
+			UpdateHttpSessionStateSessionService(sessionService, sessionState);
 			return sessionService;
 		}
 
-		private static ISessionService GetOrCreateSessionService(Func<ICPHelper> helperFactory)
+		private static ISessionService GetOrCreateSessionService(Func<ICPHelper> helperFactory, HttpSessionStateBase sessionState)
 		{
-			HttpSessionState sessionState = HttpContext.Current.Session;
 			var sessionService = sessionState?[_SESSION_KEY] as ISessionService;
 			return sessionService ?? new SessionService(helperFactory());
 		}
 
-		private static void UpdateHttpSessionStateSessionService(ISessionService sessionService)
+		private static void UpdateHttpSessionStateSessionService(ISessionService sessionService, HttpSessionStateBase sessionState)
 		{
-			HttpSessionState sessionState = HttpContext.Current.Session;
-
 			if (sessionState == null)
 			{
 				return;

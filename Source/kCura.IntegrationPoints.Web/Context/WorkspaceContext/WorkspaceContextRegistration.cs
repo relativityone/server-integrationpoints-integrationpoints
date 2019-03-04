@@ -11,23 +11,20 @@ namespace kCura.IntegrationPoints.Web.Context.WorkspaceContext
 		/// </summary>
 		public static IWindsorContainer AddWorkspaceContext(this IWindsorContainer container)
 		{
-			container.Register(Component
-				.For<IWorkspaceService>()
-				.ImplementedBy<WebApiCustomPageService>()
-				.LifestyleSingleton()
+			return container.Register(
+				Component
+					.For<IWorkspaceService>()
+					.ImplementedBy<WebApiCustomPageService>()
+					.LifestylePerWebRequest(),
+				Component
+					.For<IWorkspaceService>()
+					.ImplementedBy<ControllerCustomPageService>()
+					.LifestylePerWebRequest(),
+				Component
+					.For<IWorkspaceContext>()
+					.ImplementedBy<WorkspaceContext>()
+					.LifestylePerWebRequest()
 			);
-			container.Register(Component
-				.For<IWorkspaceService>()
-				.ImplementedBy<ControllerCustomPageService>()
-				.LifestylePerWebRequest()
-			);
-			container.Register(Component
-				.For<IWorkspaceContext>()
-				.ImplementedBy<WorkspaceContext>()
-				.LifestylePerWebRequest()
-			);
-
-			return container;
 		}
 	}
 }

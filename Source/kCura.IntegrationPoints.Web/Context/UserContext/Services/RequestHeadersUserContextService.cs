@@ -1,9 +1,19 @@
-﻿namespace kCura.IntegrationPoints.Web.Context.UserContext.Services
+﻿using System.Linq;
+using System.Web;
+
+namespace kCura.IntegrationPoints.Web.Context.UserContext.Services
 {
 	internal class RequestHeadersUserContextService : IUserContextService
 	{
 		private const string _USER_HEADER_VALUE = "X-IP-USERID";
 		private const string _CASE_USER_HEADER_VALUE = "X-IP-CASEUSERID";
+
+		private readonly HttpRequestBase _httpRequest;
+
+		public RequestHeadersUserContextService(HttpRequestBase httpRequest)
+		{
+			_httpRequest = httpRequest;
+		}
 
 		public int GetUserID()
 		{
@@ -18,12 +28,20 @@
 		private int GetRequestNumericValueByKey(string key)
 		{
 			int returnValue = 0;
-			string[] sValues = System.Web.HttpContext.Current.Request.Headers.GetValues(key);
-			if (sValues != null && sValues.Length > 0 && !string.IsNullOrEmpty(sValues[0]))
+			string firstValueForKey = GetFirstHeaderValueForKey(key);
+			if (!string.IsNullOrEmpty(firstValueForKey))
 			{
-				int.TryParse(sValues[0], out returnValue);
+				int.TryParse(firstValueForKey, out returnValue);
 			}
 			return returnValue;
+		}
+
+		private string GetFirstHeaderValueForKey(string key)
+		{
+			return _httpRequest
+				.Headers
+				.GetValues(key)
+				?.FirstOrDefault();
 		}
 	}
 }
