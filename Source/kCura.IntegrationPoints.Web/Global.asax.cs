@@ -20,6 +20,7 @@ using System.Web.Http.Dispatcher;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using kCura.IntegrationPoints.Web.Extensions;
 using kCura.IntegrationPoints.Web.Infrastructure.MessageHandlers;
 using kCura.IntegrationPoints.Web.Infrastructure.ExceptionLoggers;
 
@@ -45,8 +46,8 @@ namespace kCura.IntegrationPoints.Web
 				_container.Resolve<CorrelationIdHandler>()
 			);
 
-			FilterConfig.RegisterWebAPIFilters(GlobalConfiguration.Configuration);
-			FilterConfig.AddExceptionLogger(GlobalConfiguration.Configuration, _container.Resolve<WebAPIExceptionLogger>());
+			GlobalConfiguration.Configuration.RegisterWebAPIFilters();
+			GlobalConfiguration.Configuration.AddExceptionLogger(_container.Resolve<WebAPIExceptionLogger>());
 			FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
 			RouteConfig.RegisterRoutes(RouteTable.Routes);
 			BundleConfig.RegisterBundles(BundleTable.Bundles);

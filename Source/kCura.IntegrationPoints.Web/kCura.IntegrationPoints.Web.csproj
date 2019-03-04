@@ -82,6 +82,7 @@
     <Compile Include="Context\UserContext\Services\RequestHeadersUserContextService.cs" />
     <Compile Include="Context\UserContext\Services\SessionUserContextService.cs" />
     <Compile Include="Context\UserContext\UserContext.cs" />
+    <Compile Include="Extensions\HttpConfigurationExtensions.cs" />
     <Compile Include="Installers\Context\UserContextRegistration.cs" />
     <Compile Include="Installers\Context\ContextInstaller.cs" />
     <Compile Include="Installers\HelpersInstaller.cs" />
