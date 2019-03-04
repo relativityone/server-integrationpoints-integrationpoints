@@ -394,7 +394,7 @@ def testingVMsAreRequired()
 
 def getNewBranchAndVersion(String relativityBranch, String paramRelativityBuildVersion, String paramRelativityBuildType, String sessionId)
 {	
-	def firstFallbackBranch = "release-10.0-larkspur1" // we should change first fallback branch on RIP release branches
+	def firstFallbackBranch = "release-10.0" // we should change first fallback branch on RIP release branches
 	def GOLD_BUILD_TYPE = "GOLD"
 	def DEV_BUILD_TYPE = "DEV"
 	def relativityBranchesToTry = [[relativityBranch, paramRelativityBuildType], [firstFallbackBranch, DEV_BUILD_TYPE], [firstFallbackBranch, GOLD_BUILD_TYPE], ["master", GOLD_BUILD_TYPE]]
