@@ -13,6 +13,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		private const int _MILLISECONDSTIMEOUT = 1000;
 
 		[Test, Order(10)]
+		[Ignore("REL-299432")]
 		public void ChangesValueWhenSavedSearchIsChosenInDialog()
 		{
 			// Arrange
