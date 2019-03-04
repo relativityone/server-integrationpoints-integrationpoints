@@ -1,25 +1,27 @@
-﻿using System;
-using System.Net;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Domain.Logging;
+﻿using kCura.IntegrationPoints.Domain.Logging;
+using kCura.IntegrationPoints.Web.Context.UserContext;
 using kCura.IntegrationPoints.Web.Context.WorkspaceContext;
 using kCura.IntegrationPoints.Web.Infrastructure.MessageHandlers;
 using kCura.IntegrationPoints.Web.IntegrationPointsServices.Logging;
 using Moq;
-using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
+using System;
+using System.Net;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.Web.Tests.Infrastructure.MessageHandlers
 {
-	public class CorrelationIdHandlerTests : WebControllerTestBase
+	[TestFixture]
+	public class CorrelationIdHandlerTests
 	{
-		private Mock<IWorkspaceContext> _workpsaceIdProviderMock;
-		private CorrelationIdHandlerMock _subjectUnderTests;
+		private Mock<IAPILog> _loggerMock;
+		private Mock<IWorkspaceContext> _workspaceContextMock;
+		private Mock<IUserContext> _userContextMock;
+
+		private CorrelationIdHandlerMock _sut;
 
 		/// <summary>
 		/// We need to setup this dummy Handler to as CorrelationIdHandler will run the next in the chain message handler SyncAsync method
@@ -32,16 +34,18 @@ namespace kCura.IntegrationPoints.Web.Tests.Infrastructure.MessageHandlers
 			}
 		}
 
-		public class CorrelationIdHandlerMock : CorrelationIdHandler
+		private class CorrelationIdHandlerMock : CorrelationIdHandler
 		{
 			public CorrelationIdHandlerMock(
-				ICPHelper helper,
+				IAPILog logger,
 				IWebCorrelationContextProvider webCorrelationContextProvide,
-				IWorkspaceContext workspaceIdProvider
+				IWorkspaceContext workspaceIdProvider,
+				IUserContext userContext
 			) : base(
-				helper,
+				logger,
 				() => webCorrelationContextProvide,
-				() => workspaceIdProvider
+				() => workspaceIdProvider,
+				() => userContext
 			)
 			{
 			}
@@ -52,14 +56,21 @@ namespace kCura.IntegrationPoints.Web.Tests.Infrastructure.MessageHandlers
 			}
 		}
 
-		public override void SetUp()
+		[SetUp]
+		public void SetUp()
 		{
-			base.SetUp();
+			_loggerMock = new Mock<IAPILog>();
+			_loggerMock.Setup(x => x.ForContext<CorrelationIdHandler>()).Returns(_loggerMock.Object);
 
-			InitializeLoggerMockInHelper();
 			IWebCorrelationContextProvider webCorrelationContextProviderMock = GetWebCorrelationContextProviderMock();
-			_workpsaceIdProviderMock = new Mock<IWorkspaceContext>();
-			_subjectUnderTests = new CorrelationIdHandlerMock(Helper, webCorrelationContextProviderMock, _workpsaceIdProviderMock.Object)
+			_workspaceContextMock = new Mock<IWorkspaceContext>();
+			_userContextMock = new Mock<IUserContext>();
+
+			_sut = new CorrelationIdHandlerMock(
+				_loggerMock.Object,
+				webCorrelationContextProviderMock,
+				_workspaceContextMock.Object,
+				_userContextMock.Object)
 			{
 				InnerHandler = new MockHandler()
 			};
@@ -71,9 +82,11 @@ namespace kCura.IntegrationPoints.Web.Tests.Infrastructure.MessageHandlers
 			var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Get");
 			Guid expectedCorrelationId = request.GetCorrelationId();
 
-			await _subjectUnderTests.SendAyncInternal(request, CancellationToken.None);
+			await _sut.SendAyncInternal(request, CancellationToken.None);
 
-			Logger.Received().LogContextPushProperty($"RIP.{nameof(WebCorrelationContext.WebRequestCorrelationId)}", expectedCorrelationId.ToString());
+			_loggerMock.Verify(x =>
+				x.LogContextPushProperty($"RIP.{nameof(WebCorrelationContext.WebRequestCorrelationId)}", expectedCorrelationId.ToString())
+			);
 		}
 
 		[Test]
@@ -81,13 +94,15 @@ namespace kCura.IntegrationPoints.Web.Tests.Infrastructure.MessageHandlers
 		{
 			var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Get");
 			int expectedWorkspaceId = 123;
-			_workpsaceIdProviderMock
+			_workspaceContextMock
 				.Setup(x => x.GetWorkspaceId())
 				.Returns(expectedWorkspaceId);
 
-			await _subjectUnderTests.SendAyncInternal(request, CancellationToken.None);
+			await _sut.SendAyncInternal(request, CancellationToken.None);
 
-			Logger.Received().LogContextPushProperty($"RIP.{nameof(WebCorrelationContext.WorkspaceId)}", expectedWorkspaceId.ToString());
+			_loggerMock.Verify(x =>
+				x.LogContextPushProperty($"RIP.{nameof(WebCorrelationContext.WorkspaceId)}", expectedWorkspaceId.ToString())
+			);
 		}
 
 		[Test]
@@ -95,13 +110,13 @@ namespace kCura.IntegrationPoints.Web.Tests.Infrastructure.MessageHandlers
 		{
 			var thrownException = new Exception();
 			var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Get");
-			_workpsaceIdProviderMock
+			_workspaceContextMock
 				.Setup(x => x.GetWorkspaceId())
 				.Throws(thrownException);
 
 			CorrelationContextCreationException rethrownException = Assert.ThrowsAsync<CorrelationContextCreationException>(async () =>
 			{
-				await _subjectUnderTests.SendAyncInternal(request, CancellationToken.None);
+				await _sut.SendAyncInternal(request, CancellationToken.None);
 			});
 			Assert.AreEqual(thrownException, rethrownException.InnerException);
 		}
@@ -112,15 +127,15 @@ namespace kCura.IntegrationPoints.Web.Tests.Infrastructure.MessageHandlers
 			var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Get");
 			int expectedUserId = 532;
 
-			var userInfo = Substitute.For<IUserInfo>();
-			userInfo.ArtifactID.Returns(expectedUserId);
-			var authenticationManager = Substitute.For<IAuthenticationMgr>();
-			authenticationManager.UserInfo.Returns(userInfo);
-			Helper.GetAuthenticationManager().Returns(authenticationManager);
+			_userContextMock
+				.Setup(x => x.GetUserID())
+				.Returns(expectedUserId);
 
-			await _subjectUnderTests.SendAyncInternal(request, CancellationToken.None);
+			await _sut.SendAyncInternal(request, CancellationToken.None);
 
-			Logger.Received().LogContextPushProperty($"RIP.{nameof(WebCorrelationContext.UserId)}", expectedUserId.ToString());
+			_loggerMock.Verify(x =>
+				x.LogContextPushProperty($"RIP.{nameof(WebCorrelationContext.UserId)}", expectedUserId.ToString())
+			);
 		}
 
 		[Test]
@@ -128,29 +143,29 @@ namespace kCura.IntegrationPoints.Web.Tests.Infrastructure.MessageHandlers
 		{
 			var thrownException = new Exception();
 			var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Get");
-			Helper.GetAuthenticationManager().Throws(thrownException);
+
+			_userContextMock
+				.Setup(x => x.GetUserID())
+				.Throws(thrownException);
 
 			CorrelationContextCreationException rethrownException = Assert.ThrowsAsync<CorrelationContextCreationException>(async () =>
 			{
-				await _subjectUnderTests.SendAyncInternal(request, CancellationToken.None);
+				await _sut.SendAyncInternal(request, CancellationToken.None);
 			});
 			Assert.AreEqual(thrownException, rethrownException.InnerException);
 		}
 
-		private void InitializeLoggerMockInHelper()
-		{
-			ILogFactory loggerFactory = Substitute.For<ILogFactory>();
-			loggerFactory.GetLogger().Returns(Logger);
-			Logger.ForContext<CorrelationIdHandler>().Returns(Logger);
-			Helper.GetLoggerFactory().Returns(loggerFactory);
-		}
-
 		private static IWebCorrelationContextProvider GetWebCorrelationContextProviderMock()
 		{
-			IWebCorrelationContextProvider webCorrelationContextProviderMock = Substitute.For<IWebCorrelationContextProvider>();
-			webCorrelationContextProviderMock.GetDetails(Arg.Any<string>(), Arg.Any<int>())
+			var webCorrelationContextProviderMock = new Mock<IWebCorrelationContextProvider>();
+			webCorrelationContextProviderMock
+				.Setup(x => x.GetDetails(
+					It.IsAny<string>(),
+					It.IsAny<int>())
+				)
 				.Returns(new WebActionContext(string.Empty, Guid.Empty));
-			return webCorrelationContextProviderMock;
+
+			return webCorrelationContextProviderMock.Object;
 		}
 	}
 }

@@ -1,50 +1,41 @@
-﻿using System;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using kCura.IntegrationPoints.Domain.Extensions;
+﻿using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Logging;
+using kCura.IntegrationPoints.Web.Context.UserContext;
 using kCura.IntegrationPoints.Web.Context.WorkspaceContext;
 using kCura.IntegrationPoints.Web.IntegrationPointsServices.Logging;
 using Relativity.API;
+using System;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.Web.Infrastructure.MessageHandlers
 {
 	public class CorrelationIdHandler : DelegatingHandler
 	{
 		private readonly IAPILog _logger;
-		private readonly ICPHelper _helper;
 		private readonly Func<IWebCorrelationContextProvider> _webCorrelationContextProviderFactory;
-		private readonly Func<IWorkspaceContext> _workspaceIdProviderFactory;
+		private readonly Func<IWorkspaceContext> _workspaceContextFactory;
+		private readonly Func<IUserContext> _userContextFactory;
 
 		public const string WEB_CORRELATION_ID_HEADER_NAME = "X-Correlation-ID";
 
-		// TODO remove helper dependency
 		public CorrelationIdHandler(
-			ICPHelper helper, 
-			Func<IWebCorrelationContextProvider> webCorrelationContextProviderFactoryFactory, 
-			Func<IWorkspaceContext> workspaceIdProviderFactoryFactory
+			IAPILog logger,
+			Func<IWebCorrelationContextProvider> webCorrelationContextProviderFactoryFactory,
+			Func<IWorkspaceContext> workspaceContextFactory,
+			Func<IUserContext> userContextFactory
 		)
 		{
-			_helper = helper;
-			_logger = helper.GetLoggerFactory().GetLogger().ForContext<CorrelationIdHandler>(); // TODO inject logger
+			_logger = logger.ForContext<CorrelationIdHandler>();
 			_webCorrelationContextProviderFactory = webCorrelationContextProviderFactoryFactory;
-			_workspaceIdProviderFactory = workspaceIdProviderFactoryFactory;
+			_workspaceContextFactory = workspaceContextFactory;
+			_userContextFactory = userContextFactory;
 		}
 
 		protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
 		{
-			int userId = GetValue(() => _helper.GetAuthenticationManager().UserInfo.ArtifactID, "Error while retrieving User Id"); // TODO change it
-
-			WebActionContext actionContext = _webCorrelationContextProviderFactory().GetDetails(request.RequestUri.ToString(), userId);
-			var correlationContext = new WebCorrelationContext
-			{
-				WebRequestCorrelationId = GetValue(request.GetCorrelationId, "Error while retrieving web request correlation id"),
-				UserId = userId,
-				WorkspaceId = GetValue(_workspaceIdProviderFactory().GetWorkspaceId, "Error while retrieving Workspace Id"),
-				ActionName = actionContext.ActionName,
-				CorrelationId = actionContext.ActionGuid
-			};
+			WebCorrelationContext correlationContext = GetWebActionContext(request);
 
 			using (_logger.LogContextPushProperties(correlationContext))
 			{
@@ -58,7 +49,36 @@ namespace kCura.IntegrationPoints.Web.Infrastructure.MessageHandlers
 			}
 		}
 
-		private T GetValue<T>(Func<T> valueGetter, string errorMessage)
+		private WebCorrelationContext GetWebActionContext(HttpRequestMessage request)
+		{
+			IUserContext userContext = _userContextFactory();
+			IWorkspaceContext workspaceContext = _workspaceContextFactory();
+			IWebCorrelationContextProvider webCorrelationContextProvider = _webCorrelationContextProviderFactory();
+
+			return GetWebActionContext(request, userContext, workspaceContext, webCorrelationContextProvider);
+		}
+
+		private WebCorrelationContext GetWebActionContext(
+			HttpRequestMessage request, 
+			IUserContext userContext, 
+			IWorkspaceContext workspaceContext, 
+			IWebCorrelationContextProvider webCorrelationContextProvider)
+		{
+			int userId = GetValueOrThrowException(userContext.GetUserID, "Error while retrieving User Id");
+
+			WebActionContext actionContext = webCorrelationContextProvider.GetDetails(request.RequestUri.ToString(), userId);
+			var correlationContext = new WebCorrelationContext
+			{
+				WebRequestCorrelationId = GetValueOrThrowException(request.GetCorrelationId, "Error while retrieving web request correlation id"),
+				UserId = userId,
+				WorkspaceId = GetValueOrThrowException(workspaceContext.GetWorkspaceId, "Error while retrieving Workspace Id"),
+				ActionName = actionContext.ActionName,
+				CorrelationId = actionContext.ActionGuid
+			};
+			return correlationContext;
+		}
+
+		private T GetValueOrThrowException<T>(Func<T> valueGetter, string errorMessage)
 		{
 			try
 			{
