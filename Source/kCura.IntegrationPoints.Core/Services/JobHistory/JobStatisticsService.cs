@@ -61,15 +61,15 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
 		public void Subscribe(IBatchReporter reporter, Job job)
 		{
-			if (reporter == null)
-			{
-				reporter = new NullBatchReporter();
-			}
 			_job = job;
-			reporter.OnStatusUpdate += StatusUpdate;
-			reporter.OnStatisticsUpdate += OnStatisticsUpdate;
-			reporter.OnBatchComplete += OnJobComplete;
-			reporter.OnDocumentError += RowError;
+
+			if (reporter != null)
+			{
+				reporter.OnStatusUpdate += StatusUpdate;
+				reporter.OnStatisticsUpdate += OnStatisticsUpdate;
+				reporter.OnBatchComplete += OnJobComplete;
+				reporter.OnDocumentError += RowError;
+			}
 		}
 
 		private void OnStatisticsUpdate(double metadataThroughput, double fileThroughput)

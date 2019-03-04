@@ -53,7 +53,6 @@
     </Compile>
     <Compile Include="Agent\IJobManager.cs" />
     <Compile Include="Agent\ITaskJobSubmitter.cs" />
-    <Compile Include="BatchReporter\NullBatchReporter.cs" />
     <Compile Include="Configuration\DestinationConfiguration.cs" />
     <Compile Include="Configuration\SourceConfiguration.cs" />
     <Compile Include="Entity\EntityConstants.cs" />
