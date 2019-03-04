@@ -3,6 +3,8 @@ redirects: on
 
 source https://proget.kcura.corp/nuget/NuGet
 
+nuget Relativity.API ~> 10.2
+
 nuget Microsoft.CodeAnalysis.FxCopAnalyzers ~> 2.6
 nuget CSharpGuidelineAnalyzer ~> 2.3
 nuget Autofac ~> 4.9
