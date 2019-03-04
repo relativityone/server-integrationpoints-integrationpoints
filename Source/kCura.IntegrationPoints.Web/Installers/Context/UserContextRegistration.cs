@@ -1,8 +1,9 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Web.Context.UserContext;
 using kCura.IntegrationPoints.Web.Context.UserContext.Services;
 
-namespace kCura.IntegrationPoints.Web.Context.UserContext
+namespace kCura.IntegrationPoints.Web.Installers.Context
 {
 	internal static class UserContextRegistration
 	{

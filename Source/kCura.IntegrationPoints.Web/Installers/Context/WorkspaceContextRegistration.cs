@@ -1,8 +1,9 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Web.Context.WorkspaceContext;
 using kCura.IntegrationPoints.Web.Context.WorkspaceContext.Services;
 
-namespace kCura.IntegrationPoints.Web.Context.WorkspaceContext
+namespace kCura.IntegrationPoints.Web.Installers.Context
 {
 	internal static class WorkspaceContextRegistration
 	{

@@ -1,7 +1,8 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Web.IntegrationPointsServices.Logging;
 
-namespace kCura.IntegrationPoints.Web.IntegrationPointsServices.Logging
+namespace kCura.IntegrationPoints.Web.Installers.IntegrationPointsServices
 {
 	internal static class LoggingRegistration
 	{

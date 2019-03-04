@@ -1,10 +1,8 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
-using kCura.IntegrationPoints.Web.Context.UserContext;
-using kCura.IntegrationPoints.Web.Context.WorkspaceContext;
 
-namespace kCura.IntegrationPoints.Web.Installers
+namespace kCura.IntegrationPoints.Web.Installers.Context
 {
 	public class ContextInstaller : IWindsorInstaller
 	{

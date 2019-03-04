@@ -9,10 +9,9 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Web.Context.WorkspaceContext;
 using kCura.IntegrationPoints.Web.IntegrationPointsServices;
-using kCura.IntegrationPoints.Web.IntegrationPointsServices.Logging;
 using Relativity.API;
 
-namespace kCura.IntegrationPoints.Web.Installers
+namespace kCura.IntegrationPoints.Web.Installers.IntegrationPointsServices
 {
 	public class IntegrationPointsServicesInstaller : IWindsorInstaller
 	{
