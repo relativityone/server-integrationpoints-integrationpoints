@@ -2,7 +2,7 @@
 
 namespace Relativity.Sync.ServiceFactory
 {
-	public interface IProxyFactory
+	internal interface IProxyFactory
 	{
 		T CreateProxy<T>() where T : IDisposable;
 	}

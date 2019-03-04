@@ -1,4 +1,5 @@
 ﻿using System;
+using Relativity.API;
 
 namespace Relativity.Sync.ServiceFactory
 {

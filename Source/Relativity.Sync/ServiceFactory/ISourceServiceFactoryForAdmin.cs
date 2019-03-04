@@ -1,6 +1,6 @@
 ﻿namespace Relativity.Sync.ServiceFactory
 {
-	public interface ISourceServiceFactoryForAdmin : IProxyFactory
+	internal interface ISourceServiceFactoryForAdmin : IProxyFactory
 	{
 		
 	}
