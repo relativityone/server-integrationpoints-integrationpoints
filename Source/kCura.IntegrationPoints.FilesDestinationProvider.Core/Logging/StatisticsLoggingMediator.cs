@@ -30,12 +30,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 		#region Events
 
 		public event BatchCompleted OnBatchComplete;
-		public event BatchSubmitted OnBatchSubmit;//
-		public event BatchCreated OnBatchCreate;//
+		public event BatchSubmitted OnBatchSubmit;
+		public event BatchCreated OnBatchCreate;
 		public event StatusUpdate OnStatusUpdate;
-		public event JobError OnJobError;//
+		public event JobError OnJobError;
 		public event RowError OnDocumentError;
-		public event StatisticsUpdate OnStatisticsUpdate;//
+		public event StatisticsUpdate OnStatisticsUpdate;
 
 		#endregion //Events
 
