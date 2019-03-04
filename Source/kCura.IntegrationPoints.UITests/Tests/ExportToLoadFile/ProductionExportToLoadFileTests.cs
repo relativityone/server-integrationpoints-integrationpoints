@@ -35,7 +35,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 
 		[Test]
 		[RetryOnError]
-		[Ignore("REL-291038")]
 		public void ProductionExportToLoadFile_TC_ELF_PROD_1()
 		{
 			// Arrange
@@ -99,7 +98,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 
 		[Test]
 		[RetryOnError]
-		[Ignore("REL-291038")]
 		public void ProductionExportToLoadFile_TC_ELF_PROD_2()
 		{
 			// Arrange
@@ -147,7 +145,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 
 		[Test]
 		[RetryOnError]
-		[Ignore("REL-291038")]
 		public void ProductionExportToLoadFile_TC_ELF_PROD_3()
 		{
 			// Arrange
@@ -194,7 +191,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 
 		[Test]
 		[RetryOnError]
-		[Ignore("REL-291038")]
 		public void ProductionExportToLoadFile_TC_ELF_PROD_4()
 		{
 			// Arrange
@@ -253,7 +249,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 
 		[Test]
 		[RetryOnError]
-		[Ignore("REL-291038")]
 		public void ProductionExportToLoadFile_TC_ELF_PROD_5()
 		{
 			// Arrange
