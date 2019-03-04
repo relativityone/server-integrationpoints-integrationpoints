@@ -8,7 +8,7 @@ namespace Relativity.Sync.Tests.Unit
 
 		public void FireUnhandledException()
 		{
-			UnhandledException?.Invoke(this, new UnhandledExceptionEventArgs(new Exception(), true));
+			UnhandledException?.Invoke(this, new UnhandledExceptionEventArgs(new ApplicationException(), true));
 		}
 	}
 }
