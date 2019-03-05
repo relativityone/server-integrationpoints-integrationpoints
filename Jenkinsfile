@@ -21,7 +21,7 @@ node ('PolandBuild')
 }
 
 properties([
-	pipelineTriggers(jenkinsHelpers.isNightly() ? [] : [cron('H/5 * * * *')]),
+	pipelineTriggers(jenkinsHelpers.isNightly() ? [cron('H 16 * * *')] : []),
 	[$class: 'BuildDiscarderProperty', strategy: [
 			$class: 'LogRotator', 
 			artifactDaysToKeepStr: '30',
