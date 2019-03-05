@@ -41,13 +41,11 @@ namespace kCura.IntegrationPoints.Web
 			CreateWindsorContainer();
 
 			WebApiConfig.Register(GlobalConfiguration.Configuration);
-			WebApiConfig.AddMessageHandlers(
-				GlobalConfiguration.Configuration,
-				_container.Resolve<CorrelationIdHandler>()
-			);
 
+			GlobalConfiguration.Configuration.AddMessageHandler(_container.Resolve<CorrelationIdHandler>());
 			GlobalConfiguration.Configuration.RegisterWebAPIFilters();
 			GlobalConfiguration.Configuration.AddExceptionLogger(_container.Resolve<WebAPIExceptionLogger>());
+
 			FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
 			RouteConfig.RegisterRoutes(RouteTable.Routes);
 			BundleConfig.RegisterBundles(BundleTable.Bundles);

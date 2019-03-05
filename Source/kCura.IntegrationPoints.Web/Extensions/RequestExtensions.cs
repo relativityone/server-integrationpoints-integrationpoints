@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Web;
 
-namespace kCura.IntegrationPoints.Web
+namespace kCura.IntegrationPoints.Web.Extensions
 {
 	public static class RequestExtensions
 	{

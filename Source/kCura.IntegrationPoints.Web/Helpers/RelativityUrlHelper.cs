@@ -1,5 +1,6 @@
 ﻿using kCura.IntegrationPoints.Core.Services;
 using System.Web;
+using kCura.IntegrationPoints.Web.Extensions;
 
 namespace kCura.IntegrationPoints.Web.Helpers
 {
