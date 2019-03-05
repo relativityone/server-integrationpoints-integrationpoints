@@ -12,7 +12,7 @@ namespace kCura.IntegrationPoints.Web.Infrastructure.Session
 		public SessionService(ICPHelper connectionHelper, IAPILog logger)
 		{
 			_connectionHelper = connectionHelper;
-			_logger = logger;
+			_logger = logger.ForContext<SessionService>();
 		}
 
 		public int? WorkspaceID => GetValueOrLogError(
@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.Web.Infrastructure.Session
 			}
 			catch (Exception ex)
 			{
-				_logger.LogWarning(ex, $"{nameof(ISessionService)} failed when executing {propertyName}");
+				_logger.LogWarning(ex, $"{nameof(SessionService)} failed when executing {propertyName}");
 			}
 
 			return null;
