@@ -1,7 +1,7 @@
-﻿using System.Web;
-using FluentAssertions;
+﻿using FluentAssertions;
 using kCura.IntegrationPoints.Web.Context.WorkspaceContext.Services;
 using NUnit.Framework;
+using System.Web;
 
 namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceContext.Services
 {
@@ -62,8 +62,12 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceContext.Services
 
 		private HttpRequestBase CreateHttpRequestMock()
 		{
+
 			var request = new HttpRequest(string.Empty, "http://test.org", string.Empty);
-			return new HttpRequestWrapper(request);
+			var response = new HttpResponse(null);
+			var httpContext = new HttpContext(request, response);
+			var httpContextWrapper = new HttpContextWrapper(httpContext);
+			return httpContextWrapper.Request;
 		}
 	}
 }
