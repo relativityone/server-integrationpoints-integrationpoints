@@ -117,13 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="SMTP_Port_Negative" xml:space="preserve">
-    <value>Smtp Port cannot be negative.</value>
+  <data name="SMTP_Port_Missing" xml:space="preserve">
+    <value>The SMTP port was not specified.</value>
   </data>
   <data name="SMTP_Requires_SMTP_Domain" xml:space="preserve">
     <value>The SMTP host was not specified.</value>
   </data>
   <data name="Invalid_SMTP_Settings" xml:space="preserve">
     <value>Unable to retrieve email notification configuration. Please verify kCura.Notification's settings to enable emailing functionality.</value>
+  </data>
+  <data name="SMTP_Requires_IsSSL" xml:space="preserve">
+    <value>UseSsl SMTP config value was not specified.</value>
   </data>
 </root>

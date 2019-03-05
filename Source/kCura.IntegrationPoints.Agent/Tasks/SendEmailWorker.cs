@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Mail;
-using kCura.Apps.Common.Config.Sections;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Email;
 using kCura.IntegrationPoints.RelativitySync;
 using kCura.IntegrationPoints.RelativitySync.RipOverride;
+using kCura.IntegrationPoints.Email.Dto;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
 
@@ -16,13 +15,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 	public class SendEmailWorker : ITask, ISendEmailWorker
 	{
 		private readonly IAPILog _logger;
-		private readonly ISendable _sendable;
+		private readonly IEmailSender _emailSender;
 		private readonly ISerializer _serializer;
 
-		public SendEmailWorker(ISerializer serializer, ISendable sendable, IHelper helper)
+		public SendEmailWorker(ISerializer serializer, IEmailSender emailSender, IHelper helper)
 		{
 			_serializer = serializer;
-			_sendable = sendable;
+			_emailSender = emailSender;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<SendEmailManager>();
 		}
 
@@ -31,7 +30,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			var jobId = job.JobId;
 			LogExecuteStart(jobId);
 
-            var details = _serializer.Deserialize<EmailMessage>(job.JobDetails);
+			EmailMessage details = _serializer.Deserialize<EmailMessage>(job.JobDetails);
 
 			Execute(details, jobId);
 		}
@@ -39,17 +38,18 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		public void Execute(EmailMessage details, long jobId)
 		{
 			var exceptions = new List<Exception>();
-			var emails = details.Emails;
-			foreach (var email in emails)
+			IEnumerable<string> emails = details.Emails;
+			foreach (string email in emails)
 			{
 				try
 				{
-					var message = new MailMessage();
-					message.Body = details.MessageBody;
-					message.Subject = details.Subject;
-					message.To.Add(email);
-					message.From = new MailAddress(NotificationConfig.EmailFrom);
-					_sendable.Send(message);
+					var message = new EmailMessageDto(
+						subject: details.Subject,
+						body: details.MessageBody,
+						toAddress: email
+					);
+					_emailSender.Send(message);
+
 					LogExecuteSuccesfulEnd(jobId);
 				}
 				catch (Exception e)

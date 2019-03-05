@@ -1,5 +1,6 @@
 Castle.Windsor
 CSharpGuidelineAnalyzer
+FluentAssertions
 kCura.Agent
 kCura.Apps.Common.Data
 kCura.Apps.Common.Utils

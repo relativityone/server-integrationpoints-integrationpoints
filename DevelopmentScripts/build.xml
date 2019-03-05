@@ -169,6 +169,8 @@
           <Assembly>lib\UnitTests\SystemInterface.dll</Assembly>
           <Assembly>lib\UnitTests\ZetaLongPaths.dll</Assembly>
           <Assembly>lib\UnitTests\Relativity.Productions.Services.Interfaces.dll</Assembly>
+          <Assembly>lib\UnitTests\LanguageExt.Core.dll</Assembly>
+          <Assembly>lib\UnitTests\System.ValueTuple.dll</Assembly>
         </Assemblies>
         <ResourceFiles />
         <CustomPages>
