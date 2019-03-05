@@ -94,7 +94,7 @@ timestamps
 					checkout scm
 					step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
 				}
-				jenkinsHelpers = load "DevelopmentScripts/JenkinsHelpers.groovy"
+				//jenkinsHelpers = load "DevelopmentScripts/JenkinsHelpers.groovy"
                 jenkinsHelpers.initializeRIPPipeline(this, env, params)
 			}
 			stage ('Get Version')
