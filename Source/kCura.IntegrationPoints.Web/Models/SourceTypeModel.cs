@@ -26,7 +26,6 @@ namespace kCura.IntegrationPoints.Web.Models
 			_originalConfig = originalConfig ?? new SourceProviderConfiguration();
 			_rdoTypeCache = rdoTypesCache;
 		}
-
 		[DataMember]
 		public int[] CompatibleRdoTypes
 		{
@@ -46,15 +45,12 @@ namespace kCura.IntegrationPoints.Web.Models
 				}
 				return result.ToArray();
 			}
-			set // this is requires as part of the data member attribute
-			{ }
 		}
 
 		[DataMember]
 		public bool OnlyMapIdentifierToIdentifier
 		{
 			get { return _originalConfig.OnlyMapIdentifierToIdentifier; }
-			set { }
 		}
 
 		[DataMember]
@@ -68,7 +64,6 @@ namespace kCura.IntegrationPoints.Web.Models
 				}
 				return _originalConfig.AvailableImportSettings;
 			}
-			set { }
 		}
 	}
 }

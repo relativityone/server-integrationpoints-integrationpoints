@@ -1,11 +1,7 @@
-﻿using System;
-using System.Linq;
-using Castle.Core;
-using Castle.MicroKernel;
+﻿using Castle.Core;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
-using FluentAssertions;
-using kCura.IntegrationPoint.Tests.Core.Extensions;
+using kCura.IntegrationPoint.Tests.Core.FluentAssertions;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Data.Factories;
@@ -13,6 +9,7 @@ using kCura.IntegrationPoints.DocumentTransferProvider.Installers;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
+using System;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Installers
 {
@@ -31,26 +28,15 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Installers
 		[Test]
 		public void IExtendedImportApiFactory_ShouldBeRegisteredWithProperLifestyle()
 		{
-			//arrange & act
-			IHandler handler = _sut
-				.GetHandlersFor<IExtendedImportApiFactory>()
-				.Single();
-
-			//assert
-			handler.ComponentModel.LifestyleType
-				.Should().Be(LifestyleType.Singleton);
+			_sut.Should()
+				.HaveRegisteredSingleComponent<IExtendedImportApiFactory>()
+				.WithLifestyle(LifestyleType.Singleton);
 		}
 
 		[Test]
 		public void IExtendedImportApiFactory_ShouldBeRegisteredWithProperImplementation()
 		{
-			//arrange & act
-			Type implementationType = _sut
-				.GetImplementationTypesFor<IExtendedImportApiFactory>()
-				.Single();
-
-			//assert
-			implementationType.Should().Be(typeof(ExtendedImportApiFactory));
+			_sut.Should().HaveRegisteredProperImplementation<IExtendedImportApiFactory, ExtendedImportApiFactory>();
 		}
 
 		[Test]
@@ -58,39 +44,23 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Installers
 		{
 			//arrange
 			RegisterInstallerDependencies(_sut);
-			IExtendedImportApiFactory resolved = null;
 
-			//act
-			Action action = () => resolved = _sut.Resolve<IExtendedImportApiFactory>();
-
-			//assert
-			action.ShouldNotThrow();
-			resolved.Should().NotBeNull();
+			//act & assert
+			_sut.Should().ResolveWithoutThrowing<IExtendedImportApiFactory>();
 		}
 
 		[Test]
 		public void IExtendedImportApiFacade_ShouldBeRegisteredWithProperLifestyle()
 		{
-			//arrange & act
-			IHandler handler = _sut
-				.GetHandlersFor<IExtendedImportApiFacade>()
-				.Single();
-
-			//assert
-			handler.ComponentModel.LifestyleType
-				.Should().Be(LifestyleType.Transient);
+			_sut.Should()
+				.HaveRegisteredSingleComponent<IExtendedImportApiFacade>()
+				.WithLifestyle(LifestyleType.Transient);
 		}
 
 		[Test]
 		public void IExtendedImportApiFacade_ShouldBeRegisteredWithProperImplementation()
 		{
-			//arrange & act
-			Type implementationType = _sut
-				.GetImplementationTypesFor<IExtendedImportApiFacade>()
-				.Single();
-
-			//assert
-			implementationType.Should().Be(typeof(ExtendedImportApiFacade));
+			_sut.Should().HaveRegisteredProperImplementation<IExtendedImportApiFacade, ExtendedImportApiFacade>();
 		}
 
 		[Test]
@@ -98,27 +68,17 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Installers
 		{
 			//arrange
 			RegisterInstallerDependencies(_sut);
-			IExtendedImportApiFacade resolved = null;
 
-			//act
-			Action action = () => resolved = _sut.Resolve<IExtendedImportApiFacade>();
-
-			//assert
-			action.ShouldNotThrow();
-			resolved.Should().NotBeNull();
+			//act & assert
+			_sut.Should().ResolveWithoutThrowing<IExtendedImportApiFacade>();
 		}
 
 		[Test]
 		public void IDataSourceProvider_ShouldBeRegisteredWithProperLifestyle()
 		{
-			//arrange & act
-			IHandler handler = _sut
-				.GetHandlersFor<IDataSourceProvider>()
-				.Single();
-
-			//assert
-			handler.ComponentModel.LifestyleType
-				.Should().Be(LifestyleType.Transient);
+			_sut.Should()
+				.HaveRegisteredSingleComponent<IDataSourceProvider>()
+				.WithLifestyle(LifestyleType.Transient);
 		}
 
 		[Test]
@@ -128,26 +88,16 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Installers
 			string expectedComponentName = new Guid(Domain.Constants.RELATIVITY_PROVIDER_GUID)
 				.ToString();
 
-			//act
-			IHandler handler = _sut
-				.GetHandlersFor<IDataSourceProvider>()
-				.Single();
-
-			//assert
-			handler.ComponentModel.Name
-				.Should().Be(expectedComponentName);
+			//act & assert
+			_sut.Should()
+				.HaveRegisteredSingleComponent<IDataSourceProvider>()
+				.WithName(expectedComponentName);
 		}
 
 		[Test]
 		public void IDataSourceProvider_ShouldBeRegisteredWithProperImplementation()
 		{
-			//arrange & act
-			Type implementationType = _sut
-				.GetImplementationTypesFor<IDataSourceProvider>()
-				.Single();
-
-			//assert
-			implementationType.Should().Be(typeof(DocumentTransferProvider));
+			_sut.Should().HaveRegisteredProperImplementation<IDataSourceProvider, DocumentTransferProvider>();
 		}
 
 		[Test]
@@ -155,14 +105,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Installers
 		{
 			//arrange
 			RegisterInstallerDependencies(_sut);
-			IDataSourceProvider resolved = null;
 
-			//act
-			Action action = () => resolved = _sut.Resolve<IDataSourceProvider>();
-
-			//assert
-			action.ShouldNotThrow();
-			resolved.Should().NotBeNull();
+			//act & assert
+			_sut.Should().ResolveWithoutThrowing<IDataSourceProvider>();
 		}
 
 		private void RegisterInstallerDependencies(IWindsorContainer container)

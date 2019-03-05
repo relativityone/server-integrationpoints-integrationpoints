@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Email.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Resources {
@@ -70,11 +70,20 @@ namespace kCura.IntegrationPoints.Email.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Smtp Port cannot be negative..
+        ///   Looks up a localized string similar to The SMTP port was not specified..
         /// </summary>
-        public static string SMTP_Port_Negative {
+        public static string SMTP_Port_Missing {
             get {
-                return ResourceManager.GetString("SMTP_Port_Negative", resourceCulture);
+                return ResourceManager.GetString("SMTP_Port_Missing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to UseSsl SMTP config value was not specified..
+        /// </summary>
+        public static string SMTP_Requires_IsSSL {
+            get {
+                return ResourceManager.GetString("SMTP_Requires_IsSSL", resourceCulture);
             }
         }
         

@@ -2,6 +2,8 @@ Castle.Windsor
 CSharpGuidelineAnalyzer
 kCura.Agent
 kCura.Apps.Common.Config
+kCura.Apps.Common.Data
+kCura.Apps.Common.Utils
 kCura.Relativity.Client
 Relativity.Authentication
 Relativity.ImportExport

@@ -1394,6 +1394,18 @@
       <Name>Banzai.Autofac.dll</Name>
       <Notes />
     </Assembly>
+	<Assembly>
+      <ArtifactId>4499254</ArtifactId>
+      <Keywords />
+      <Name>LanguageExt.Core.dll</Name>
+      <Notes />
+    </Assembly>
+	<Assembly>
+      <ArtifactId>4499255</ArtifactId>
+      <Keywords />
+      <Name>System.ValueTuple.dll</Name>
+      <Notes />
+    </Assembly>
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />

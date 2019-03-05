@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services.JobHistory
 			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
-				DestinationProvider = DestinationProvider.ArtifactId,
+				DestinationProvider = RelativityDestinationProviderArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
 				LogErrors = true,

@@ -16,6 +16,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		[Test]
 		[RetryOnError]
 		[Order(10)]
+		[Ignore("REL-299432")]
 		public void ChangesValueWhenSavedSearchIsChosenInDialog()
 		{
 			// Arrange

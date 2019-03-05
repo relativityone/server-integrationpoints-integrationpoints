@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Threading;
-using kCura.Data.RowDataGateway;
+﻿using kCura.Data.RowDataGateway;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
@@ -15,6 +12,10 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Threading;
 
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 {
@@ -35,7 +36,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			_jobService = Container.Resolve<IJobService>();
 			_helper = new TestHelper();
 			_queueRepo = new QueueRepository(_helper);
-			ControlIntegrationPointAgents(false);
+
+			Agent.DisableAllAgents();
 		}
 
 		#region GetNumberOfJobsExecutingOrInQueue
@@ -202,42 +204,52 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		[TestInQuarantine(TestQuarantineState.ShowsInstability)]
 		public void OneExecutedScheduledJobInTheQueue_ExpectCountZero()
 		{
-			ControlIntegrationPointAgents(true);
-			// arrange
-			IntegrationPointModel model = new IntegrationPointModel()
+			Agent.EnableAllAgents();
+			try
 			{
-				SourceProvider = RelativityProvider.ArtifactId,
-				Name = "OneExecutingScheduledJobInTheQueue",
-				DestinationProvider = DestinationProvider.ArtifactId,
-				SourceConfiguration = CreateDefaultSourceConfig(),
-				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
-				Map = CreateDefaultFieldMap(),
-				Scheduler = new Scheduler()
+				// arrange
+				var model = new IntegrationPointModel
 				{
-					EnableScheduler = true,
-					EndDate = DateTime.UtcNow.AddYears(1000).ToString("MM/dd/yyyy", CultureInfo.InvariantCulture),
-					Reoccur = 2,
-					StartDate = DateTime.UtcNow.AddDays(-1).ToString("MM/dd/yyyy", CultureInfo.InvariantCulture),
-					ScheduledTime = DateTime.UtcNow.AddMinutes(1).TimeOfDay.ToString(),
-					SelectedFrequency = ScheduleInterval.Daily.ToString(),
-					TimeZoneId = TimeZoneInfo.Utc.Id
-				},
-				SelectedOverwrite = "Append Only",
-				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
-			};
+					SourceProvider = RelativityProvider.ArtifactId,
+					Name = "OneExecutingScheduledJobInTheQueue",
+					DestinationProvider = RelativityDestinationProviderArtifactId,
+					SourceConfiguration = CreateDefaultSourceConfig(),
+					Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
+					Map = CreateDefaultFieldMap(),
+					Scheduler = new Scheduler()
+					{
+						EnableScheduler = true,
+						EndDate = DateTime.UtcNow.AddYears(1000).ToString("MM/dd/yyyy", CultureInfo.InvariantCulture),
+						Reoccur = 2,
+						StartDate = DateTime.UtcNow.AddDays(-1).ToString("MM/dd/yyyy", CultureInfo.InvariantCulture),
+						ScheduledTime = DateTime.UtcNow.AddMinutes(1).TimeOfDay.ToString(),
+						SelectedFrequency = ScheduleInterval.Daily.ToString(),
+						TimeZoneId = TimeZoneInfo.Utc.Id
+					},
+					SelectedOverwrite = "Append Only",
+					Type = Container.Resolve<IIntegrationPointTypeService>()
+						.GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid)
+						.ArtifactId
+				};
 
-			// act
-			var result = CreateOrUpdateIntegrationPoint(model);
-			while (result.LastRun.HasValue == false)
-			{
-				Thread.Sleep(200);
-				result = RefreshIntegrationModel(result);
+				// act
+				IntegrationPointModel result = CreateOrUpdateIntegrationPoint(model);
+				while (!result.LastRun.HasValue)
+				{
+					Thread.Sleep(200);
+					result = RefreshIntegrationModel(result);
+				}
+
+				int count = _queueRepo.GetNumberOfJobsExecutingOrInQueue(SourceWorkspaceArtifactId,
+					_RipObjectArtifactId);
+
+				// assert
+				Assert.AreEqual(0, count);
 			}
-
-			int count = _queueRepo.GetNumberOfJobsExecutingOrInQueue(SourceWorkspaceArtifactId, _RipObjectArtifactId);
-
-			// assert
-			Assert.AreEqual(0, count);
+			finally
+			{
+				Agent.DisableAllAgents();
+			}
 		}
 
 		[Test]

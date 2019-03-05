@@ -5,7 +5,6 @@ using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.Context;
-using kCura.IntegrationPoints.Agent.kCura.IntegrationPoints.Agent;
 using kCura.IntegrationPoints.Agent.Monitoring;
 using kCura.IntegrationPoints.Agent.TaskFactory;
 using kCura.IntegrationPoints.Agent.Tasks;
@@ -23,7 +22,6 @@ using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Domain.Managers;
-using kCura.IntegrationPoints.Email;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -32,9 +30,10 @@ using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.WinEDDS.Service.Export;
 using Relativity.API;
-using Relativity.Toggles;
 using System;
+using Castle.MicroKernel.Resolvers;
 using kCura.IntegrationPoints.Core.Validation;
+using kCura.IntegrationPoints.Agent.Installer.Components;
 using kCura.IntegrationPoints.Data.Repositories;
 using ITaskFactory = kCura.IntegrationPoints.Agent.TaskFactory.ITaskFactory;
 
@@ -67,8 +66,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 
 		private void InstallContainer(IWindsorContainer container)
 		{
-			container.Kernel.Resolver.AddSubResolver(new CollectionResolver(container.Kernel));
-			container.Kernel.AddFacility<TypedFactoryFacility>();
+			ConfigureContainer(container);
 
 			container.Register(Component.For<JobContextProvider>().Instance(new JobContextProvider()).LifestyleSingleton());
 
@@ -81,10 +79,10 @@ namespace kCura.IntegrationPoints.Agent.Installer
 
 			//container.Register(Component.For<IServiceContextHelper>().ImplementedBy<ServiceContextHelperForAgent>().DependsOn(Dependency.OnValue<int>(_job.WorkspaceID)).LifestyleTransient());
 			container.Register(Component.For<IServiceContextHelper>().ImplementedBy<ServiceContextHelperForAgent>().DynamicParameters((k, d) =>
-				{
-					JobContextProvider jobContextProvider = k.Resolve<JobContextProvider>();
-					d.InsertTyped(jobContextProvider.Job.WorkspaceID);
-				}).LifestyleTransient());
+			{
+				JobContextProvider jobContextProvider = k.Resolve<JobContextProvider>();
+				d.InsertTyped(jobContextProvider.Job.WorkspaceID);
+			}).LifestyleTransient());
 
 			container.Register(Component.For<IWorkspaceDBContext>().UsingFactoryMethod(k =>
 			{
@@ -119,9 +117,6 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Register(Component.For<IScheduleRuleFactory>().UsingFactoryMethod(k => _scheduleRuleFactory, true).LifestyleTransient());
 			container.Register(Component.For<IHelper>().UsingFactoryMethod(k => _agentHelper, true).LifestyleTransient());
 			container.Register(Component.For<IAgentHelper>().UsingFactoryMethod(k => _agentHelper, true).LifestyleTransient());
-			container.Register(Component.For<IRelativityConfigurationFactory>().ImplementedBy<RelativityConfigurationFactory>().LifestyleSingleton());
-			container.Register(Component.For<ISendable>().ImplementedBy<SMTP>().DependsOn(Dependency.OnValue<EmailConfiguration>(container.Resolve<IRelativityConfigurationFactory>().GetConfiguration())));
-			container.Register(Component.For<ISMTPClientFactory>().ImplementedBy<SMTPClientFactory>().LifestyleTransient());
 			container.Register(Component.For<SyncWorker>().ImplementedBy<SyncWorker>().LifestyleTransient());
 			container.Register(Component.For<SyncManager>().ImplementedBy<SyncManager>().LifestyleTransient());
 			container.Register(Component.For<ExportServiceManager>().ImplementedBy<ExportServiceManager>().LifestyleTransient());
@@ -191,9 +186,29 @@ namespace kCura.IntegrationPoints.Agent.Installer
 				}).LifestyleTransient());
 
 			container.Register(Component.For<IRsapiClientWithWorkspaceFactory>().ImplementedBy<ExtendedRsapiClientWithWorkspaceFactory>().LifestyleTransient());
-			container.Register(Component.For<IExternalServiceInstrumentationProvider>()
+			container.Register(Component
+				.For<IExternalServiceInstrumentationProvider>()
 				.ImplementedBy<ExternalServiceInstrumentationProviderWithJobContext>()
-				.LifestyleSingleton());
+				.LifestyleSingleton()
+			);
+			container.Register(Component
+				.For<IInstanceSettingsBundle>()
+				.UsingFactoryMethod(kernel => kernel.Resolve<IHelper>().GetInstanceSettingBundle())
+				.LifestyleTransient()
+			);
+
+			container.AddEmailSender();
+		}
+
+		private static void ConfigureContainer(IWindsorContainer container)
+		{
+			container.Kernel.Resolver.AddSubResolver(new CollectionResolver(container.Kernel));
+			container.Kernel.AddFacility<TypedFactoryFacility>();
+
+			container.Register(Component
+				.For<ILazyComponentLoader>()
+				.ImplementedBy<LazyOfTComponentLoader>()
+			);
 		}
 	}
 }

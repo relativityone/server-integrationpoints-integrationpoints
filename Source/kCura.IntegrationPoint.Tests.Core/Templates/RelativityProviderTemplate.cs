@@ -9,14 +9,12 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using NUnit.Framework;
 using System;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using NSubstitute;
-using Relativity.Data.Toggles;
 using Relativity.Services.Folder;
 using Relativity.Toggles;
 
@@ -177,9 +175,9 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			return map;
 		}
 
-		protected new async Task SetupAsync()
+		private async Task SetupAsync()
 		{
-			TargetWorkspaceArtifactId = String.IsNullOrEmpty(_targetWorkspaceName)
+			TargetWorkspaceArtifactId = string.IsNullOrEmpty(_targetWorkspaceName)
 				? SourceWorkspaceArtifactId
 				: await Task.Run(() => Workspace.CreateWorkspace(_targetWorkspaceName, _targetWorkspaceTemplate));
 
@@ -204,7 +202,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		private void SetIntegrationPointBaseModelProperties(IntegrationPointModelBase modelBase, ImportOverwriteModeEnum overwriteMode, string name, string overwrite, bool promoteEligible)
 		{
 			modelBase.Destination = CreateDestinationConfig(overwriteMode);
-			modelBase.DestinationProvider = DestinationProvider.ArtifactId;
+			modelBase.DestinationProvider = RelativityDestinationProviderArtifactId;
 			modelBase.SourceProvider = RelativityProvider.ArtifactId;
 			modelBase.SourceConfiguration = CreateDefaultSourceConfig();
 			modelBase.LogErrors = true;
@@ -235,7 +233,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			var integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(overwriteMode),
-				DestinationProvider = DestinationProvider.ArtifactId,
+				DestinationProvider = RelativityDestinationProviderArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
 				LogErrors = true,

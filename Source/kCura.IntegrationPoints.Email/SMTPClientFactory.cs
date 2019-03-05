@@ -1,26 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Net.Mail;
-using System.Text;
-using System.Threading.Tasks;
+using kCura.IntegrationPoints.Email.Dto;
 
 namespace kCura.IntegrationPoints.Email
 {
-	public class SMTPClientFactory : ISMTPClientFactory
+	internal class SmtpClientFactory : ISmtpClientFactory
 	{
-		public SmtpClient GetClient(EmailConfiguration configuration)
+		public SmtpClient Create(SmtpClientSettings settings)
 		{
-			var client = new SmtpClient(configuration.Domain, configuration.Port)
+			return new SmtpClient(settings.Domain, settings.Port)
 			{
 				UseDefaultCredentials = false,
-				Credentials = new NetworkCredential(configuration.UserName, configuration.Password),
+				Credentials = new NetworkCredential(settings.UserName, settings.Password),
 				DeliveryMethod = SmtpDeliveryMethod.Network,
-				EnableSsl = configuration.UseSSL
+				EnableSsl = settings.UseSSL
 			};
-			return client;
-
 		}
 	}
 }
