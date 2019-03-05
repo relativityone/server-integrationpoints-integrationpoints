@@ -315,10 +315,10 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return new AuditRepository(exportAuditRepository, InstrumentationProvider);
 		}
 
-		public IViewFieldRepository GetViewFieldRepository(int workspaceArtifactID)
+		public IViewFieldRepository GetViewFieldRepository()
 		{
 			IViewFieldManager viewFieldManager = _sourceServiceMgr.CreateProxy<IViewFieldManager>(ExecutionIdentity.CurrentUser);
-			return new ViewFieldRepository(viewFieldManager, InstrumentationProvider, workspaceArtifactID);
+			return new ViewFieldRepository(viewFieldManager, InstrumentationProvider);
 		}
 
 		#region Helper Methods

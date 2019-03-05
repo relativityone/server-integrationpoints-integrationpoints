@@ -4,9 +4,10 @@ namespace kCura.IntegrationPoints.Data.Repositories
 {
 	public interface IViewFieldRepository
 	{
-		ViewFieldResponse[] GetAllViewFieldsByArtifactTypeID(int artifactTypeID);
+		ViewFieldResponse[] ReadExportableViewFields(int workspaceID, int artifactTypeID);
 
-		ViewFieldIDResponse[] GetViewFieldsByArtifactTypeIDAndViewArtifactID(int artifactTypeID,
-			int viewArtifactID, bool fromProduction);
+		ViewFieldIDResponse[] ReadViewFieldIDsFromSearch(int workspaceID, int artifactTypeID, int viewArtifactID);
+
+		ViewFieldIDResponse[] ReadViewFieldIDsFromProduction(int workspaceID, int artifactTypeID, int viewArtifactID);
 	}
 }

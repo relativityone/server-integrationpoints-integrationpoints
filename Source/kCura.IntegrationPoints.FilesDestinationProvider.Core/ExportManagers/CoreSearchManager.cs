@@ -1,19 +1,25 @@
 ﻿using System.Collections.Generic;
 using System.Data;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Service.Export;
 using Relativity.Core;
 using Relativity.Core.Service;
+using Relativity.Services.Interfaces.ViewField.Models;
+using RelativityViewFieldInfo = Relativity.ViewFieldInfo;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 {
 	public class CoreSearchManager : ISearchManager
 	{
 		private readonly BaseServiceContext _baseServiceContext;
+		private readonly IViewFieldRepository _viewFieldRepository;
 
-		public CoreSearchManager(BaseServiceContext baseServiceContext)
+		public CoreSearchManager(BaseServiceContext baseServiceContext, IViewFieldRepository viewFieldRepository)
 		{
 			_baseServiceContext = baseServiceContext;
+			_viewFieldRepository = viewFieldRepository;
 		}
 
 		public DataSet RetrieveNativesForSearch(int caseContextArtifactID, string documentArtifactIDs)
@@ -56,32 +62,40 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 
 		public ViewFieldInfo[] RetrieveAllExportableViewFields(int caseContextArtifactID, int artifactTypeID)
 		{
-			var allExportableViewFieldsDataSet = InitSearchQuery(caseContextArtifactID).RetrieveAllExportableViewFields(_baseServiceContext, artifactTypeID).ToDataSet();
-			var allExportableViewFieldsRows = allExportableViewFieldsDataSet.Tables[0].Rows;
+			ViewFieldResponse[] viewFieldResponseArray = _viewFieldRepository.ReadExportableViewFields(caseContextArtifactID, artifactTypeID);
+			ViewFieldInfo[] viewFieldInfoArray = ToViewFieldInfoArray(viewFieldResponseArray);
+			return viewFieldInfoArray;
+		}
 
-			var result = new ViewFieldInfo[allExportableViewFieldsRows.Count];
-			for (var i = 0; i < result.Length; i++)
+		private static ViewFieldInfo[] ToViewFieldInfoArray(ViewFieldResponse[] viewFieldResponseArray)
+		{
+			var viewFieldInfoList = new List<ViewFieldInfo>(viewFieldResponseArray.Length);
+
+			foreach (var viewFieldResponse in viewFieldResponseArray)
 			{
-				result[i] = new ViewFieldInfo(allExportableViewFieldsRows[i]);
+				RelativityViewFieldInfo coreViewFieldInfo = new CoreViewFieldInfo(viewFieldResponse);
+				ViewFieldInfo viewFieldInfo = new ViewFieldInfo(coreViewFieldInfo);
+				viewFieldInfoList.Add(viewFieldInfo);
 			}
-			return result;
+
+			return viewFieldInfoList.ToArray();
 		}
 
 		public int[] RetrieveDefaultViewFieldIds(int caseContextArtifactID, int viewArtifactID, int artifactTypeID, bool isProduction)
 		{
-			var avfLookupByArtifactIdDataSet =
-				InitSearchQuery(caseContextArtifactID).RetrieveOrderedAvfLookupByArtifactIdList(_baseServiceContext, artifactTypeID, new[] {viewArtifactID}, isProduction)
-					.ToDataSet();
-			var avfLookupByArtifactIdRows = avfLookupByArtifactIdDataSet.Tables[0].Rows;
+			ViewFieldIDResponse[] viewFieldIDResponseArray = isProduction
+				? _viewFieldRepository.ReadViewFieldIDsFromProduction(caseContextArtifactID, artifactTypeID, viewArtifactID)
+				: _viewFieldRepository.ReadViewFieldIDsFromSearch(caseContextArtifactID, artifactTypeID, viewArtifactID);
 
 			var result = new List<int>();
-			foreach (DataRow avfLookupByArtifactIdRow in avfLookupByArtifactIdRows)
+			foreach (var viewFieldIdResponse in viewFieldIDResponseArray)
 			{
-				if (viewArtifactID.Equals(avfLookupByArtifactIdRow["ArtifactID"]))
+				if (viewFieldIdResponse.ArtifactID.Equals(viewArtifactID))
 				{
-					result.Add(int.Parse(avfLookupByArtifactIdRow["ArtifactViewFieldID"].ToString()));
+					result.Add(viewFieldIdResponse.ArtifactViewFieldID);
 				}
 			}
+
 			return result.ToArray();
 		}
 
@@ -92,12 +106,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 
 		public void Dispose()
 		{
-		}
-
-		private ISearchQuery InitSearchQuery(int appArtifactId)
-		{
-			Init(appArtifactId);
-			return new SearchManager().Query;
 		}
 
 		private ViewManager InitViewManager(int appArtifactId)

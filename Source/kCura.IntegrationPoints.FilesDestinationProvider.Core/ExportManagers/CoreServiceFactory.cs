@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 
 		public IFieldManager CreateFieldManager() => new CoreFieldManager(_repositoryFactory);
 
-		public ISearchManager CreateSearchManager() => new CoreSearchManager(GetBaseServiceContext(_exportFile.CaseArtifactID));
+		public ISearchManager CreateSearchManager() => new CoreSearchManager(GetBaseServiceContext(_exportFile.CaseArtifactID), _repositoryFactory.GetViewFieldRepository());
 
 		public IProductionManager CreateProductionManager() => new CoreProductionManager(GetBaseServiceContext(_exportFile.CaseArtifactID));
 

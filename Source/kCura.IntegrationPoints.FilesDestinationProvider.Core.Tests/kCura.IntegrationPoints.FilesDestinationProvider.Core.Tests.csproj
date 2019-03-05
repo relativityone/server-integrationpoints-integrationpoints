@@ -32,6 +32,14 @@
     <Reference Include="Moq">
       <HintPath>..\..\packages\Moq\lib\net45\Moq.dll</HintPath>
     </Reference>
+    <Reference Include="Relativity.Core, Version=10.2.56.11, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Services.Interfaces, Version=10.2.56.11, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Relativity.Services.Interfaces\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -47,6 +55,7 @@
     </Compile>
     <Compile Include="ExportManagers\CoreFieldManagerTests.cs" />
     <Compile Include="ExportManagers\CoreAuditManagerTests.cs" />
+    <Compile Include="ExportManagers\CoreSearchManagerTests.cs" />
     <Compile Include="ExportManagers\ExportConvertingExtensionsTests.cs" />
     <Compile Include="Helpers\DestinationFolderHelperTests.cs" />
     <Compile Include="Helpers\FieldConverterTests.cs" />

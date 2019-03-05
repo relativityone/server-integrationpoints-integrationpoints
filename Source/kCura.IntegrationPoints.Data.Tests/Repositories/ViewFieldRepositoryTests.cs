@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 		}
 
 		[Test]
-		public void GetAllViewFieldsByArtifactTypeID_ReturnsProperResult_WhenCallIsSuccessful()
+		public void ReadExportableViewFields_ReturnsProperResult_WhenCallIsSuccessful()
 		{
 			// arrange
 			_instrumentationMock.Setup(x => x.Execute(It.IsAny<Func<ViewFieldResponse[]>>()))
@@ -42,22 +42,22 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 			var viewFieldResponse = new ViewFieldResponse();
 			ViewFieldResponse[] expectedResult = { viewFieldResponse };
 			Task<ViewFieldResponse[]> expectedResultTask = Task.FromResult(expectedResult);
-			_viewFieldManagerMock.Setup(x => x.GetAllViewFieldsByArtifactTypeIDAsync(_WORKSPACE_ID, _ARTIFACT_TYPE_ID))
+			_viewFieldManagerMock.Setup(x => x.ReadExportableViewFieldsAsync(_WORKSPACE_ID, _ARTIFACT_TYPE_ID))
 				.Returns(expectedResultTask);
-			var viewFieldRepository =
-				new ViewFieldRepository(_viewFieldManagerMock.Object, _instrumentationProviderMock.Object, _WORKSPACE_ID);
+			var viewFieldRepository = new ViewFieldRepository(_viewFieldManagerMock.Object, _instrumentationProviderMock.Object);
 
 			// act
-			ViewFieldResponse[] actualResult = viewFieldRepository.GetAllViewFieldsByArtifactTypeID(_ARTIFACT_TYPE_ID);
+			ViewFieldResponse[] actualResult =
+				viewFieldRepository.ReadExportableViewFields(_WORKSPACE_ID, _ARTIFACT_TYPE_ID);
 
 			// assert
-			_viewFieldManagerMock.Verify(x => x.GetAllViewFieldsByArtifactTypeIDAsync(_WORKSPACE_ID, _ARTIFACT_TYPE_ID),
+			_viewFieldManagerMock.Verify(x => x.ReadExportableViewFieldsAsync(_WORKSPACE_ID, _ARTIFACT_TYPE_ID),
 				Times.Once);
 			_instrumentationProviderMock.Verify(
 				x => x.CreateSimple(
 					ExternalServiceTypes.KEPLER,
 					nameof(IViewFieldManager),
-					nameof(IViewFieldManager.GetAllViewFieldsByArtifactTypeIDAsync)),
+					nameof(IViewFieldManager.ReadExportableViewFieldsAsync)),
 				Times.Once);
 			_instrumentationMock.Verify(x => x.Execute(It.IsAny<Func<ViewFieldResponse[]>>()), Times.Once);
 			actualResult.Length.Should().Be(1);
@@ -65,35 +65,34 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 		}
 
 		[Test]
-		public void GetAllViewFieldsByArtifactTypeID_IsInstrumentedProperly_WhenCallThrowsException()
+		public void ReadExportableViewFields_IsInstrumentedProperly_WhenCallThrowsException()
 		{
 			// arrange
 			_instrumentationMock.Setup(x => x.Execute(It.IsAny<Func<ViewFieldResponse[]>>()))
 				.Returns<Func<ViewFieldResponse[]>>(y => y.Invoke());
 
-			_viewFieldManagerMock.Setup(x => x.GetAllViewFieldsByArtifactTypeIDAsync(_WORKSPACE_ID, _ARTIFACT_TYPE_ID))
+			_viewFieldManagerMock.Setup(x => x.ReadExportableViewFieldsAsync(_WORKSPACE_ID, _ARTIFACT_TYPE_ID))
 				.Throws<Exception>();
-			var viewFieldRepository =
-				new ViewFieldRepository(_viewFieldManagerMock.Object, _instrumentationProviderMock.Object, _WORKSPACE_ID);
+			var viewFieldRepository = new ViewFieldRepository(_viewFieldManagerMock.Object, _instrumentationProviderMock.Object);
 
 			// act
-			Action action = () => viewFieldRepository.GetAllViewFieldsByArtifactTypeID(_ARTIFACT_TYPE_ID);
+			Action action = () => viewFieldRepository.ReadExportableViewFields(_WORKSPACE_ID, _ARTIFACT_TYPE_ID);
 
 			// assert
 			action.ShouldThrow<Exception>();
-			_viewFieldManagerMock.Verify(x => x.GetAllViewFieldsByArtifactTypeIDAsync(_WORKSPACE_ID, _ARTIFACT_TYPE_ID),
+			_viewFieldManagerMock.Verify(x => x.ReadExportableViewFieldsAsync(_WORKSPACE_ID, _ARTIFACT_TYPE_ID),
 				Times.Once);
 			_instrumentationProviderMock.Verify(
 				x => x.CreateSimple(
 					ExternalServiceTypes.KEPLER,
 					nameof(IViewFieldManager),
-					nameof(IViewFieldManager.GetAllViewFieldsByArtifactTypeIDAsync)),
+					nameof(IViewFieldManager.ReadExportableViewFieldsAsync)),
 				Times.Once);
 			_instrumentationMock.Verify(x => x.Execute(It.IsAny<Func<ViewFieldResponse[]>>()), Times.Once);
 		}
 
 		[Test]
-		public void GetViewFieldsByArtifactTypeIDAndViewArtifactID_ReturnsProperResult_WhenCallIsSuccessful()
+		public void ReadViewFieldIDsFromSearch_ReturnsProperResult_WhenCallIsSuccessful()
 		{
 			// arrange
 			_instrumentationMock.Setup(x => x.Execute(It.IsAny<Func<ViewFieldIDResponse[]>>()))
@@ -103,24 +102,22 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 			ViewFieldIDResponse[] expectedResult = { viewFieldIDResponse };
 			Task<ViewFieldIDResponse[]> expectedResultTask = Task.FromResult(expectedResult);
 			_viewFieldManagerMock
-				.Setup(x => x.GetViewFieldsByArtifactTypeIDAndViewArtifactIDAsync(_WORKSPACE_ID, _ARTIFACT_TYPE_ID,
-					_VIEW_ARTIFACT_ID, true)).Returns(expectedResultTask);
-			var viewFieldRepository =
-				new ViewFieldRepository(_viewFieldManagerMock.Object, _instrumentationProviderMock.Object, _WORKSPACE_ID);
+				.Setup(x => x.ReadViewFieldIDsFromSearchAsync(_WORKSPACE_ID, _ARTIFACT_TYPE_ID,_VIEW_ARTIFACT_ID))
+				.Returns(expectedResultTask);
+			var viewFieldRepository = new ViewFieldRepository(_viewFieldManagerMock.Object, _instrumentationProviderMock.Object);
 
 			// act
 			ViewFieldIDResponse[] actualResult =
-				viewFieldRepository.GetViewFieldsByArtifactTypeIDAndViewArtifactID(_ARTIFACT_TYPE_ID, _VIEW_ARTIFACT_ID, true);
+				viewFieldRepository.ReadViewFieldIDsFromSearch(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _VIEW_ARTIFACT_ID);
 
 			// assert
 			_viewFieldManagerMock.Verify(
-				x => x.GetViewFieldsByArtifactTypeIDAndViewArtifactIDAsync(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _VIEW_ARTIFACT_ID,
-					true), Times.Once);
+				x => x.ReadViewFieldIDsFromSearchAsync(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _VIEW_ARTIFACT_ID), Times.Once);
 			_instrumentationProviderMock.Verify(
 				x => x.CreateSimple(
 					ExternalServiceTypes.KEPLER,
 					nameof(IViewFieldManager),
-					nameof(IViewFieldManager.GetViewFieldsByArtifactTypeIDAndViewArtifactIDAsync)),
+					nameof(IViewFieldManager.ReadViewFieldIDsFromSearchAsync)),
 				Times.Once);
 			_instrumentationMock.Verify(x => x.Execute(It.IsAny<Func<ViewFieldIDResponse[]>>()), Times.Once);
 			actualResult.Length.Should().Be(1);
@@ -128,32 +125,92 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 		}
 
 		[Test]
-		public void GetViewFieldsByArtifactTypeIDAndViewArtifactID_IsInstrumentedProperly_WhenCallThrowsException()
+		public void ReadViewFieldIDsFromSearch_IsInstrumentedProperly_WhenCallThrowsException()
 		{
 			// arrange
 			_instrumentationMock.Setup(x => x.Execute(It.IsAny<Func<ViewFieldIDResponse[]>>()))
 				.Returns<Func<ViewFieldIDResponse[]>>(y => y.Invoke());
 
 			_viewFieldManagerMock
-				.Setup(x => x.GetViewFieldsByArtifactTypeIDAndViewArtifactIDAsync(_WORKSPACE_ID, _ARTIFACT_TYPE_ID,
-					_VIEW_ARTIFACT_ID, true)).Throws<Exception>();
-			var viewFieldRepository =
-				new ViewFieldRepository(_viewFieldManagerMock.Object, _instrumentationProviderMock.Object, _WORKSPACE_ID);
+				.Setup(x => x.ReadViewFieldIDsFromSearchAsync(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _VIEW_ARTIFACT_ID))
+				.Throws<Exception>();
+			var viewFieldRepository = new ViewFieldRepository(_viewFieldManagerMock.Object, _instrumentationProviderMock.Object);
 
 			// act
 			Action action = () =>
-				viewFieldRepository.GetViewFieldsByArtifactTypeIDAndViewArtifactID(_ARTIFACT_TYPE_ID, _VIEW_ARTIFACT_ID, true);
+				viewFieldRepository.ReadViewFieldIDsFromSearch(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _VIEW_ARTIFACT_ID);
 
 			// assert
 			action.ShouldThrow<Exception>();
 			_viewFieldManagerMock.Verify(
-				x => x.GetViewFieldsByArtifactTypeIDAndViewArtifactIDAsync(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _VIEW_ARTIFACT_ID,
-					true), Times.Once);
+				x => x.ReadViewFieldIDsFromSearchAsync(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _VIEW_ARTIFACT_ID), Times.Once);
 			_instrumentationProviderMock.Verify(
 				x => x.CreateSimple(
 					ExternalServiceTypes.KEPLER,
 					nameof(IViewFieldManager),
-					nameof(IViewFieldManager.GetViewFieldsByArtifactTypeIDAndViewArtifactIDAsync)),
+					nameof(IViewFieldManager.ReadViewFieldIDsFromSearchAsync)),
+				Times.Once);
+			_instrumentationMock.Verify(x => x.Execute(It.IsAny<Func<ViewFieldIDResponse[]>>()), Times.Once);
+		}
+
+		[Test]
+		public void ReadViewFieldIDsFromProduction_ReturnsProperResult_WhenCallIsSuccessful()
+		{
+			// arrange
+			_instrumentationMock.Setup(x => x.Execute(It.IsAny<Func<ViewFieldIDResponse[]>>()))
+				.Returns<Func<ViewFieldIDResponse[]>>(y => y.Invoke());
+
+			var viewFieldIDResponse = new ViewFieldIDResponse();
+			ViewFieldIDResponse[] expectedResult = { viewFieldIDResponse };
+			Task<ViewFieldIDResponse[]> expectedResultTask = Task.FromResult(expectedResult);
+			_viewFieldManagerMock
+				.Setup(x => x.ReadViewFieldIDsFromProductionAsync(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _VIEW_ARTIFACT_ID))
+				.Returns(expectedResultTask);
+			var viewFieldRepository = new ViewFieldRepository(_viewFieldManagerMock.Object, _instrumentationProviderMock.Object);
+
+			// act
+			ViewFieldIDResponse[] actualResult =
+				viewFieldRepository.ReadViewFieldIDsFromProduction(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _VIEW_ARTIFACT_ID);
+
+			// assert
+			_viewFieldManagerMock.Verify(
+				x => x.ReadViewFieldIDsFromProductionAsync(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _VIEW_ARTIFACT_ID), Times.Once);
+			_instrumentationProviderMock.Verify(
+				x => x.CreateSimple(
+					ExternalServiceTypes.KEPLER,
+					nameof(IViewFieldManager),
+					nameof(IViewFieldManager.ReadViewFieldIDsFromProductionAsync)),
+				Times.Once);
+			_instrumentationMock.Verify(x => x.Execute(It.IsAny<Func<ViewFieldIDResponse[]>>()), Times.Once);
+			actualResult.Length.Should().Be(1);
+			actualResult[0].Should().Be(expectedResult[0]);
+		}
+
+		[Test]
+		public void ReadViewFieldIDsFromProduction_IsInstrumentedProperly_WhenCallThrowsException()
+		{
+			// arrange
+			_instrumentationMock.Setup(x => x.Execute(It.IsAny<Func<ViewFieldIDResponse[]>>()))
+				.Returns<Func<ViewFieldIDResponse[]>>(y => y.Invoke());
+
+			_viewFieldManagerMock
+				.Setup(x => x.ReadViewFieldIDsFromProductionAsync(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _VIEW_ARTIFACT_ID))
+				.Throws<Exception>();
+			var viewFieldRepository = new ViewFieldRepository(_viewFieldManagerMock.Object, _instrumentationProviderMock.Object);
+
+			// act
+			Action action = () =>
+				viewFieldRepository.ReadViewFieldIDsFromProduction(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _VIEW_ARTIFACT_ID);
+
+			// assert
+			action.ShouldThrow<Exception>();
+			_viewFieldManagerMock.Verify(
+				x => x.ReadViewFieldIDsFromProductionAsync(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _VIEW_ARTIFACT_ID), Times.Once);
+			_instrumentationProviderMock.Verify(
+				x => x.CreateSimple(
+					ExternalServiceTypes.KEPLER,
+					nameof(IViewFieldManager),
+					nameof(IViewFieldManager.ReadViewFieldIDsFromProductionAsync)),
 				Times.Once);
 			_instrumentationMock.Verify(x => x.Execute(It.IsAny<Func<ViewFieldIDResponse[]>>()), Times.Once);
 		}
