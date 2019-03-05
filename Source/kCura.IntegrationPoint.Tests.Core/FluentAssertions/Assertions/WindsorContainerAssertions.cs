@@ -24,12 +24,29 @@ namespace kCura.IntegrationPoint.Tests.Core.FluentAssertions.Assertions
 			params object[] becauseArgs
 		) where T : class
 		{
+			bool resolvedNotNull = false;
+			Exception thrownException = null;
+
+			try
+			{
+				T resolved = Subject.Resolve<T>();
+				resolvedNotNull = resolved != null;
+			}
+			catch (Exception ex)
+			{
+				thrownException = ex;
+			}
+
 			Execute.Assertion
 				.BecauseOf(because, becauseArgs)
-				.ForCondition(IsResolvedWithoutThrowing<T>())
-				.FailWith("Expected {context:IWindsorContainer} to resolve {0} without throwing{reason}, but it failed.",
-					typeof(T).Name
-				);
+				.ForCondition(thrownException == null)
+				.FailWith("Expected {context:IWindsorContainer} to resolve {0} without throwing{reason}, but exception was thrown: {1}",
+					typeof(T).Name,
+					thrownException
+				)
+				.Then
+				.ForCondition(resolvedNotNull)
+				.FailWith("Expected {context:IWindsorContainer} to resolve not null value for {0}{reason}, but it was null");
 
 			return new AndConstraint<WindsorContainerAssertions>(this);
 		}
@@ -60,26 +77,13 @@ namespace kCura.IntegrationPoint.Tests.Core.FluentAssertions.Assertions
 			Execute.Assertion
 				.BecauseOf(because, becauseArgs)
 				.ForCondition(registeredType == typeof(TImplementation))
-				.FailWith("Expected {context:IWindsorContainer} to have single component of type {0} for {1}{reason}, but it has {2}.", 
+				.FailWith("Expected {context:IWindsorContainer} to have single component of type {0} for {1}{reason}, but it has {2}.",
 					typeof(TImplementation).Name,
 					typeof(TInterface).Name,
 					registeredType?.Name
 				);
 
 			return new AndConstraint<WindsorContainerAssertions>(this);
-		}
-
-		private bool IsResolvedWithoutThrowing<T>() where T : class
-		{
-			try
-			{
-				T resolved = Subject.Resolve<T>();
-				return resolved != null;
-			}
-			catch (Exception)
-			{
-				return false;
-			}
 		}
 
 		private ComponentModel GetRegisteredComponent<T>()
