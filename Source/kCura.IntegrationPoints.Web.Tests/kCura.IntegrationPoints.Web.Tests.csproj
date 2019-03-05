@@ -77,6 +77,7 @@
     <Compile Include="Controllers\SourceTypeControllerTests.cs" />
     <Compile Include="Controllers\JobControllerTests.cs" />
     <Compile Include="DataStructures\FolderTreeTests.cs" />
+    <Compile Include="Infrastructure\Session\SessionServiceFactoryTests.cs" />
     <Compile Include="Infrastructure\Session\SessionServiceTests.cs" />
     <Compile Include="IntegrationPointsServices\Logging\CacheHolderTests.cs" />
     <Compile Include="Helpers\SummaryPageSelectorTests.cs" />
