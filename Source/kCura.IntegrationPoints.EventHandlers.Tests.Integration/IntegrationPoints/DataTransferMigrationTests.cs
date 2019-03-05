@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 		private IDestinationProviderRepository _destinationProviderRepository;
 		private ISourceProviderRepository _sourceProviderRepository;
 		private IDataTransferLocationMigrationHelper _dataTransferLocationMigrationHelper;
-		private IRelativityObjectManager _integrationPointLibrary;
+		private IRelativityObjectManager _relativityObjectManager;
 		private IDataTransferLocationService _dataTransferLocationService;
 		private IResourcePoolManager _resourcePoolManager;
 		private IEHHelper _ehHelper;
@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 			_dataTransferLocationMigrationHelper = new DataTransferLocationMigrationHelper(_serializer);
 			_dataTransferLocationService = Container.Resolve<IDataTransferLocationService>();
 			_ehHelper = new EHHelper(Helper, WorkspaceArtifactId);
-			_integrationPointLibrary = CaseContext.RsapiService.RelativityObjectManager;
+			_relativityObjectManager = CaseContext.RsapiService.RelativityObjectManager;
 			_choiceQuery = Container.Resolve<IChoiceQuery>();
 			_resourcePoolManager = Substitute.For<IResourcePoolManager>();
 
@@ -75,17 +75,17 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 
 			_destinationProviderRepository = _repositoryFactory.GetDestinationProviderRepository(WorkspaceArtifactId);
 			_sourceProviderRepository = _repositoryFactory.GetSourceProviderRepository(WorkspaceArtifactId);
-			_integrationPointLibrary = CaseContext.RsapiService.RelativityObjectManager;
+			_relativityObjectManager = CaseContext.RsapiService.RelativityObjectManager;
 
 			_dataTransferLocationMigration = CreteDataTransferLocationMigration(_logger, _destinationProviderRepository,
-				_sourceProviderRepository, _dataTransferLocationMigrationHelper, CaseContext, _integrationPointLibrary,
+				_sourceProviderRepository, _dataTransferLocationMigrationHelper, CaseContext, _relativityObjectManager,
 				_dataTransferLocationService, _resourcePoolManager, _ehHelper);
 		}
 
 		public override void TestTeardown()
 		{
 			base.TestTeardown();
-			_integrationPointLibrary.Delete(_savedIntegrationPointId);
+			_relativityObjectManager.Delete(_savedIntegrationPointId);
 		}
 
 		[Test]
@@ -130,7 +130,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 				.Throws(new Exception("SampleException"));
 
 			_dataTransferLocationMigration = CreteDataTransferLocationMigration(_logger, _destinationProviderRepository,
-				_sourceProviderRepository, _dataTransferLocationMigrationHelper, CaseContext, _integrationPointLibrary,
+				_sourceProviderRepository, _dataTransferLocationMigrationHelper, CaseContext, _relativityObjectManager,
 				_dataTransferLocationService, _resourcePoolManager, _ehHelper);
 
 			Assert.That(() => _dataTransferLocationMigration.Migrate(), Throws.Exception);
@@ -149,7 +149,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 				.Throws(new Exception("SampleException"));
 
 			_dataTransferLocationMigration = CreteDataTransferLocationMigration(_logger, _destinationProviderRepository,
-				_sourceProviderRepository, _dataTransferLocationMigrationHelper, CaseContext, _integrationPointLibrary,
+				_sourceProviderRepository, _dataTransferLocationMigrationHelper, CaseContext, _relativityObjectManager,
 				_dataTransferLocationService, _resourcePoolManager, _ehHelper);
 
 			Assert.That(() => _dataTransferLocationMigration.Migrate(), Throws.Exception);
@@ -162,11 +162,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 			Data.IntegrationPoint integrationPoint = CreateIntegrationPoint();
 			_savedIntegrationPointId = SaveIntegrationPoint(integrationPoint);
 
-			_integrationPointLibrary = Substitute.For<IRelativityObjectManager>();
-			_integrationPointLibrary.Query<Data.IntegrationPoint>(Arg.Any<QueryRequest>()).Throws(new Exception("SampleException"));
+			_relativityObjectManager = Substitute.For<IRelativityObjectManager>();
+			_relativityObjectManager.Query<Data.IntegrationPoint>(Arg.Any<QueryRequest>()).Throws(new Exception("SampleException"));
 
 			_dataTransferLocationMigration = CreteDataTransferLocationMigration(_logger, _destinationProviderRepository,
-				_sourceProviderRepository, _dataTransferLocationMigrationHelper, CaseContext, _integrationPointLibrary,
+				_sourceProviderRepository, _dataTransferLocationMigrationHelper, CaseContext, _relativityObjectManager,
 				_dataTransferLocationService, _resourcePoolManager, _ehHelper);
 
 			Assert.That(() => _dataTransferLocationMigration.Migrate(), Throws.Exception);
@@ -195,7 +195,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 
 		private int SaveIntegrationPoint(Data.IntegrationPoint integrationPointRdo)
 		{
-			return _integrationPointLibrary.Create(integrationPointRdo);
+			return _relativityObjectManager.Create(integrationPointRdo);
 		}
 
 		private IntegrationPointModel CreateIntegrationModel()
