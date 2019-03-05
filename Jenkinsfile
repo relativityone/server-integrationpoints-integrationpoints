@@ -5,7 +5,18 @@ library 'SCVMMHelpers@3.2.0'
 library 'GitHelpers@1.0.0'
 library 'SlackHelpers@3.0.0'
 
-jenkinsHelpers = load "DevelopmentScripts/JenkinsHelpers.groovy"
+node ('PolandBuild')
+{
+	stage ('Checkout')
+	{
+		timeout(time: 10, unit: 'MINUTES')
+		{
+			checkout scm
+			step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
+		}
+		jenkinsHelpers = load "DevelopmentScripts/JenkinsHelpers.groovy"
+	}
+}
 
 properties([
 	pipelineTriggers(jenkinsHelpers.isNightly() ? [cron('H 16 * * *')] : []),
