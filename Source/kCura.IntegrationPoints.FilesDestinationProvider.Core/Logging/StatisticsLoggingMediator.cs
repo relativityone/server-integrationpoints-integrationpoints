@@ -30,12 +30,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 		#region Events
 
 		public event BatchCompleted OnBatchComplete;
-		public event BatchSubmitted OnBatchSubmit { add { } remove { } }
-		public event BatchCreated OnBatchCreate { add { } remove { } }
+		public event BatchSubmitted OnBatchSubmit;
+		public event BatchCreated OnBatchCreate;
 		public event StatusUpdate OnStatusUpdate;
-		public event JobError OnJobError { add { } remove { } }
+		public event JobError OnJobError;
 		public event RowError OnDocumentError;
-		public event StatisticsUpdate OnStatisticsUpdate { add { } remove { } }
+		public event StatisticsUpdate OnStatisticsUpdate;
 
 		#endregion //Events
 
@@ -52,6 +52,15 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 			_integrationPointProviderTypeService = integrationPointProviderTypeService;
 			_dateTimeHelper = dateTimeHelper;
 			_startTime = _dateTimeHelper.Now();
+			InitializeEmptyEventHandlers();
+		}
+
+		private void InitializeEmptyEventHandlers()
+		{
+			OnBatchSubmit = (size, batchSize) => {};
+			OnBatchCreate = size => { };
+			OnJobError = exception => { };
+			OnStatisticsUpdate = (throughput, fileThroughput) => { };
 		}
 
 		public void RegisterEventHandlers(IUserMessageNotification userMessageNotification,

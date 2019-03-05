@@ -14,7 +14,6 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 	public class SyncMetricsTests
 	{
 		private Mock<IAPM> _apmMetrics;
-		private Mock<IAPILog> _logger;
 
 		private readonly Guid _correlationId = new Guid("057FB3A4-EFE8-4D21-9540-84DE344C78A5");
 		private readonly TaskResult _taskResult = new TaskResult {Status = TaskStatusEnum.Success};
@@ -27,9 +26,9 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 		public void SetUp()
 		{
 			_apmMetrics = new Mock<IAPM>();
-			_logger = new Mock<IAPILog>();
+			var logger = new Mock<IAPILog>();
 
-			_instance = new SyncMetrics(_apmMetrics.Object, _logger.Object);
+			_instance = new SyncMetrics(_apmMetrics.Object, logger.Object);
 		}
 
 		[Test]

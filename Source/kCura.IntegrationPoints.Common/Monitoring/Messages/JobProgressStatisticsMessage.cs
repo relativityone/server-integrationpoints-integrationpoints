@@ -17,15 +17,15 @@ namespace kCura.IntegrationPoints.Common.Monitoring.Messages
 			this.CustomData = new Dictionary<string, object>(source.CustomData);
 		}
 
-		public double AverageMetadataThroughput
+		public double? AverageMetadataThroughput
 		{
-			get { return this.GetValueOrDefault<double>(_AVERAGE_METADATA_THROUGHPUT_KEY_NAME); }
+			get { return this.GetValueOrDefault<double?>(_AVERAGE_METADATA_THROUGHPUT_KEY_NAME); }
 			set { CustomData[_AVERAGE_METADATA_THROUGHPUT_KEY_NAME] = value; }
 		}
 
-		public double AverageFileThroughput
+		public double? AverageFileThroughput
 		{
-			get { return this.GetValueOrDefault<double>(_AVERAGE_FILE_THROUGHPUT); }
+			get { return this.GetValueOrDefault<double?>(_AVERAGE_FILE_THROUGHPUT); }
 			set { CustomData[_AVERAGE_FILE_THROUGHPUT] = value; }
 		}
 	}

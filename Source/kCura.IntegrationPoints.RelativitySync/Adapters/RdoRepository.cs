@@ -8,8 +8,8 @@ namespace kCura.IntegrationPoints.RelativitySync.Adapters
 {
 	internal class RdoRepository : IRdoRepository
 	{
-		private IAPILog _logger;
-		private ICaseServiceContext _caseServiceContext;
+		private readonly IAPILog _logger;
+		private readonly ICaseServiceContext _caseServiceContext;
 
 		public RdoRepository(IWindsorContainer ripContainer)
 		{
