@@ -10,7 +10,7 @@ jenkinsHelpers = null
 
 node ('PolandBuild')
 {
-	stage ('Checkout')
+	stage ('Checkout helper')
 	{
 		timeout(time: 10, unit: 'MINUTES')
 		{
@@ -21,7 +21,7 @@ node ('PolandBuild')
 }
 
 properties([
-	pipelineTriggers(jenkinsHelpers.isNightly() ? [cron('H 16 * * *')] : []),
+	pipelineTriggers(jenkinsHelpers.isNightly() ? [] : [cron('H/5 * * * *')]),
 	[$class: 'BuildDiscarderProperty', strategy: [
 			$class: 'LogRotator', 
 			artifactDaysToKeepStr: '30',
@@ -93,8 +93,7 @@ timestamps
 				{
 					checkout scm
 					step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
-				}
-				//jenkinsHelpers = load "DevelopmentScripts/JenkinsHelpers.groovy"
+				}				
                 jenkinsHelpers.initializeRIPPipeline(this, env, params)
 			}
 			stage ('Get Version')
