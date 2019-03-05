@@ -5,8 +5,10 @@ library 'SCVMMHelpers@3.2.0'
 library 'GitHelpers@1.0.0'
 library 'SlackHelpers@3.0.0'
 
+jenkinsHelpers = load "DevelopmentScripts/JenkinsHelpers.groovy"
+
 properties([
-	pipelineTriggers(env.JOB_NAME.contains("IntegrationPointsNightly") ? [cron('H 16 * * *')] : []),
+	pipelineTriggers(jenkinsHelpers.isNightly() ? [cron('H 16 * * *')] : []),
 	[$class: 'BuildDiscarderProperty', strategy: [
 			$class: 'LogRotator', 
 			artifactDaysToKeepStr: '30',
