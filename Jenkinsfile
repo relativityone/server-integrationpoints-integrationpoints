@@ -5,14 +5,16 @@ library 'SCVMMHelpers@3.2.0'
 library 'GitHelpers@1.0.0'
 library 'SlackHelpers@3.0.0'
 
+@groovy.transform.Field
+jenkinsHelpers = null
+
 node ('PolandBuild')
 {
 	stage ('Checkout')
 	{
 		timeout(time: 10, unit: 'MINUTES')
 		{
-			checkout scm
-			step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
+			checkout scm			
 		}
 		jenkinsHelpers = load "DevelopmentScripts/JenkinsHelpers.groovy"
 	}
