@@ -78,10 +78,9 @@
     <Compile Include="Attributes\JsonNetResult.cs" />
     <Compile Include="Context\UserContext\Exceptions\UserContextNotFoundException.cs" />
     <Compile Include="Context\UserContext\IUserContext.cs" />
-    <Compile Include="Context\UserContext\Services\IUserContextService.cs" />
-    <Compile Include="Context\UserContext\Services\RequestHeadersUserContextService.cs" />
-    <Compile Include="Context\UserContext\Services\SessionUserContextService.cs" />
-    <Compile Include="Context\UserContext\UserContext.cs" />
+    <Compile Include="Context\UserContext\LastUserContextService.cs" />
+    <Compile Include="Context\UserContext\RequestHeadersUserContextService.cs" />
+    <Compile Include="Context\UserContext\SessionUserContextService.cs" />
     <Compile Include="Extensions\HttpConfigurationExtensions.cs" />
     <Compile Include="Installers\Context\UserContextRegistration.cs" />
     <Compile Include="Installers\Context\ContextInstaller.cs" />
