@@ -111,7 +111,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			{
 				SourceProvider = LdapProvider.ArtifactId,
 				Name = name,
-				DestinationProvider = DestinationProvider.ArtifactId,
+				DestinationProvider = RelativityDestinationProviderArtifactId,
 				SourceConfiguration = CreateDefaultLdapSourceConfig(),
 				Destination = CreateDefaultLdapDestinationConfig((int)ArtifactType.Document, overwrite),
 				Map = CreateDefaultLdapFieldMap(),

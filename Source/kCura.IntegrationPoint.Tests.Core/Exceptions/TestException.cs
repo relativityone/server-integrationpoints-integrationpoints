@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace kCura.IntegrationPoint.Tests.Core
+namespace kCura.IntegrationPoint.Tests.Core.Exceptions
 {
 	[Serializable]
 	public class TestException : Exception

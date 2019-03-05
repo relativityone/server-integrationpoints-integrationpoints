@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
+using kCura.IntegrationPoint.Tests.Core.Exceptions;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.Relativity.Client;
 using kCura.Relativity.DataReaderClient;

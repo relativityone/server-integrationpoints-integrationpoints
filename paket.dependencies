@@ -53,6 +53,7 @@ nuget Microsoft.AspNet.WebApi 5.2.3
 nuget Microsoft.Net.Http 2.2.29 strategy: max
 nuget Mono.TextTransform 1.0.0
 nuget Moq 4.5.3
+nuget netDumbster 2.0.0.4
 nuget NSubstitute 1.10.0.0
 nuget NUnit 3.4.1
 nuget Selenium.Support 3.141.0

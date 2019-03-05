@@ -1,9 +1,5 @@
-﻿using System;
-using System.Data;
-using System.Globalization;
-using kCura.IntegrationPoint.Tests.Core.Extensions;
+﻿using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.Templates;
-using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Agent.Exceptions;
@@ -15,6 +11,9 @@ using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.Data.Queries;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using NUnit.Framework;
+using System;
+using System.Data;
+using System.Globalization;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
@@ -34,13 +33,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
-			ControlIntegrationPointAgents(false);
+
+			IntegrationPoint.Tests.Core.Agent.DisableAllAgents();
 			_queueContext = new QueueDBContext(Helper, GlobalConst.SCHEDULE_AGENT_QUEUE_TABLE_NAME);
 		}
 
 		public override void SuiteTeardown()
 		{
-			ControlIntegrationPointAgents(true);
+			IntegrationPoint.Tests.Core.Agent.EnableAllAgents();
 			base.SuiteTeardown();
 		}
 
@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			};
 		}
 
-        [Test]
+		[Test]
 		[SmokeTest]
 		public void Ldap_MultipleJobs_AgentDropsJob_RunJob()
 		{
@@ -190,7 +190,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			}
 		}
 
-        [Test]
+		[Test]
 		[SmokeTest]
 		public void ItShouldSetJobIdOnJobHistory()
 		{

@@ -1,6 +1,7 @@
 ﻿using Castle.MicroKernel.Registration;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
+using kCura.IntegrationPoint.Tests.Core.Exceptions;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
@@ -12,8 +13,10 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Installers;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Web;
+using kCura.IntegrationPoints.Web.Services;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using NUnit.Framework;
@@ -28,7 +31,6 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Web.Services;
 using Component = Castle.MicroKernel.Registration.Component;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
@@ -36,27 +38,25 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 	[TestFixture]
 	public abstract class SourceProviderTemplate : IntegrationTestBase
 	{
-		protected bool CreateAgent { get; set; } = true;
-		protected bool CreateWorkspace { get; set; } = true;
-
+		private bool _wasAgentCreated = true;
 		private readonly string _workspaceName;
 		private readonly string _workspaceTemplate;
+
+		protected int RelativityDestinationProviderArtifactId { get; private set; }
+		protected IEnumerable<SourceProvider> SourceProviders { get; private set; }
+		protected ICaseServiceContext CaseContext { get; private set; }
+		protected IRelativityObjectManager ObjectManager { get; private set; }
+		protected bool CreatingAgentEnabled { get; set; } = true;
+		protected bool CreatingWorkspaceEnabled { get; set; } = true;
+
 		protected int WorkspaceArtifactId { get; private set; }
 		protected int AgentArtifactId { get; private set; }
-		private bool _deleteAgentInTeardown = true;
-		protected DestinationProvider DestinationProvider;
-		protected IEnumerable<SourceProvider> SourceProviders;
-		protected ICoreContext CoreContext;
-		protected ICaseServiceContext CaseContext;
-		protected RelativityApplicationManager RelativityApplicationManager;
 
 		protected SourceProviderTemplate(string workspaceName,
 			string workspaceTemplate = WorkspaceTemplates.NEW_CASE_TEMPLATE)
 		{
 			_workspaceName = workspaceName;
 			_workspaceTemplate = workspaceTemplate;
-			CoreContext = GetBaseServiceContext(-1);
-			RelativityApplicationManager = new RelativityApplicationManager(Helper);
 		}
 
 		/// <summary>
@@ -66,10 +66,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		protected SourceProviderTemplate(int workspaceId)
 		{
 			WorkspaceArtifactId = workspaceId;
-
-			CreateWorkspace = false;
-			CoreContext = GetBaseServiceContext(-1);
-			RelativityApplicationManager = new RelativityApplicationManager(Helper);
+			CreatingWorkspaceEnabled = false;
 		}
 
 		public override void SuiteSetup()
@@ -78,34 +75,33 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
 
-			if (CreateWorkspace)
+			if (CreatingWorkspaceEnabled)
 			{
 				WorkspaceArtifactId = Workspace.CreateWorkspace(_workspaceName, _workspaceTemplate);
 			}
 
-			Install();
+			InitializeIocContainer();
 
 			Task.Run(async () => await SetupAsync()).Wait();
 
-			CaseContext = Container.Resolve<ICaseServiceContext>();
-			SourceProviders = CaseContext.RsapiService.RelativityObjectManager.Query<SourceProvider>(new QueryRequest());
-			DestinationProvider = CaseContext.RsapiService.RelativityObjectManager.Query<DestinationProvider>(new QueryRequest
+			if (CreatingWorkspaceEnabled)
 			{
-				Fields = new List<FieldRef>
-				{
-					new FieldRef { Guid = new Guid(DestinationProviderFieldGuids.Identifier) }
-				}
-			}).First(x => x.Identifier == IntegrationPoints.Core.Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID);
+				CaseContext = Container.Resolve<ICaseServiceContext>();
+				ObjectManager = CaseContext.RsapiService.RelativityObjectManager;
+
+				SourceProviders = GetSourceProviders();
+				RelativityDestinationProviderArtifactId = GetRelativityDestinationProviderArtifactId();
+			}
 		}
 
 		public override void SuiteTeardown()
 		{
-			if (CreateWorkspace && WorkspaceArtifactId != 0)
+			if (CreatingWorkspaceEnabled && WorkspaceArtifactId != 0)
 			{
 				Workspace.DeleteWorkspace(WorkspaceArtifactId);
 			}
 
-			if (_deleteAgentInTeardown)
+			if (_wasAgentCreated)
 			{
 				Agent.DeleteAgent(AgentArtifactId);
 			}
@@ -117,7 +113,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			public const string NEW_CASE_TEMPLATE = "New Case Template";
 		}
 
-		protected virtual void Install()
+		protected virtual void InitializeIocContainer()
 		{
 			Container.Register(Component.For<IHelper>().UsingFactoryMethod(k => Helper, managedExternally: true));
 			Container.Register(Component.For<IAPILog>().UsingFactoryMethod(k => Helper.GetLoggerFactory().GetLogger()));
@@ -159,8 +155,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			}
 		}
 
-		#region Helper methods
-
 		protected IntegrationPointModel CreateOrUpdateIntegrationPoint(IntegrationPointModel model)
 		{
 			IIntegrationPointService service = Container.Resolve<IIntegrationPointService>();
@@ -171,6 +165,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			IntegrationPointModel newModel = IntegrationPointModel.FromIntegrationPoint(rdo);
 			return newModel;
 		}
+
 		protected IntegrationPointProfileModel CreateOrUpdateIntegrationPointProfile(IntegrationPointProfileModel model)
 		{
 			IIntegrationPointProfileService service = Container.Resolve<IIntegrationPointProfileService>();
@@ -205,9 +200,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		protected IntegrationPointModel RefreshIntegrationModel(IntegrationPointModel model)
 		{
-			ICaseServiceContext caseServiceContext = Container.Resolve<ICaseServiceContext>();
-
-			IntegrationPoints.Data.IntegrationPoint ip = caseServiceContext.RsapiService.RelativityObjectManager.Read<IntegrationPoints.Data.IntegrationPoint>(model.ArtifactID);
+			IntegrationPoints.Data.IntegrationPoint ip = ObjectManager.Read<IntegrationPoints.Data.IntegrationPoint>(model.ArtifactID);
 			return IntegrationPointModel.FromIntegrationPoint(ip);
 		}
 
@@ -221,19 +214,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			Helper.GetDBContext(-1).ExecuteNonQuerySQLStatement(query, new[] { agentIdParam, jobIdParam });
 		}
 
-		protected void ControlIntegrationPointAgents(bool enable)
-		{
-			if (enable)
-			{
-				Agent.DisableAllAgents();
-			}
-			else
-			{
-				Agent.EnableAllAgents();
-			}
-		}
-
-		protected JobHistory CreateJobHistoryOnIntegrationPoint(int integrationPointArtifactId, Guid batchInstance, Relativity.Client.DTOs.Choice jobTypeChoice, 
+		protected JobHistory CreateJobHistoryOnIntegrationPoint(int integrationPointArtifactId, Guid batchInstance, Relativity.Client.DTOs.Choice jobTypeChoice,
 			Relativity.Client.DTOs.Choice jobStatusChoice = null, bool jobEnded = false)
 		{
 			IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
@@ -328,32 +309,38 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			throw new TestException("Unable to find the job. Please check the integration point agent and make sure that it is turned off.");
 		}
 
-		protected async Task SetupAsync()
+		private async Task SetupAsync()
 		{
+			var applicationManagerLazy = new Lazy<RelativityApplicationManager>(() => new RelativityApplicationManager(Helper));
+
 			await AddAgentServerToResourcePool();
-			
+
 			if (SharedVariables.UseIpRapFile())
 			{
-				await RelativityApplicationManager.ImportApplicationToLibrary();
+				await applicationManagerLazy.Value.ImportApplicationToLibrary();
 			}
 
-			RelativityApplicationManager.InstallApplicationFromLibrary(WorkspaceArtifactId);
+			if (CreatingWorkspaceEnabled)
+			{
+				applicationManagerLazy.Value.InstallApplicationFromLibrary(WorkspaceArtifactId);
+			}
 
-			if (CreateAgent)
+			if (CreatingAgentEnabled)
 			{
 				Result agentCreatedResult = await Task.Run(() => Agent.CreateIntegrationPointAgent());
 				AgentArtifactId = agentCreatedResult.ArtifactID;
-				_deleteAgentInTeardown = agentCreatedResult.Success;
+				_wasAgentCreated = agentCreatedResult.Success;
 			}
 		}
 
 		private async Task AddAgentServerToResourcePool()
 		{
-			ResourceServer agentServer = await ResourceServerHelper.GetAgentServer(CoreContext);
+			ICoreContext coreContext = GetBaseServiceContext(-1);
+			ResourceServer agentServer = await ResourceServerHelper.GetAgentServer(coreContext);
 			await ResourcePoolHelper.AddAgentServerToResourcePool(agentServer, "Default");
 		}
 
-		public static ICoreContext GetBaseServiceContext(int workspaceId)
+		private static ICoreContext GetBaseServiceContext(int workspaceId)
 		{
 			try
 			{
@@ -367,6 +354,26 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			}
 		}
 
-		#endregion Helper methods
+		private IEnumerable<SourceProvider> GetSourceProviders()
+		{
+			var queryRequest = new QueryRequest();
+			return ObjectManager.Query<SourceProvider>(queryRequest);
+		}
+
+		private int GetRelativityDestinationProviderArtifactId()
+		{
+			var queryRequestForIdentifierField = new QueryRequest
+			{
+				Fields = new List<FieldRef>
+				{
+					new FieldRef {Guid = new Guid(DestinationProviderFieldGuids.Identifier)}
+				}
+			};
+
+			return ObjectManager
+				.Query<DestinationProvider>(queryRequestForIdentifierField)
+				.First(x => x.Identifier == IntegrationPoints.Core.Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID)
+				.ArtifactId;
+		}
 	}
 }

@@ -4,7 +4,6 @@ using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Email;
-using kCura.IntegrationPoints.RelativitySync;
 using kCura.IntegrationPoints.RelativitySync.RipOverride;
 using kCura.IntegrationPoints.Email.Dto;
 using kCura.ScheduleQueue.Core;

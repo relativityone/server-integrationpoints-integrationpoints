@@ -181,6 +181,7 @@ NUGET
     NEST (1.4.3)
       Elasticsearch.Net (>= 1.4.3)
       Newtonsoft.Json (>= 6.0.1)
+    netDumbster (2.0.0.4)
     Newtonsoft.Json (6.0.8)
     NSubstitute (1.10.0.0)
     NuGetPowerTools (0.29)

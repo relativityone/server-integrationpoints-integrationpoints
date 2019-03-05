@@ -70,7 +70,7 @@ namespace kCura.IntegrationPoints.PerformanceTestingFramework
 				Destination = DestinationConfiguration(targetWorkspaceId),
 
 				SourceProvider = RelativityProvider.ArtifactId,
-				DestinationProvider = DestinationProvider.ArtifactId,
+				DestinationProvider = RelativityDestinationProviderArtifactId,
 				LogErrors = true,
 				Name = $"JobHistoryErrors{DateTime.Now:yyyy-MM-dd HH-mm}",
 				SelectedOverwrite = "Append Only",
