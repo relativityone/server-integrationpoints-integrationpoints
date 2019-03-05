@@ -91,11 +91,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceContext
 
 			HttpRequestBase httpRequest = CreateHttpRequestMock();
 			RequestContextWorkspaceContextService sut = CreateSut(httpRequest);
-
-			//act
+			
 			Action getWorkspaceIdAction = () => sut.GetWorkspaceId();
 
-			//assert
+			// act & assert
 			getWorkspaceIdAction.ShouldThrow<InvalidOperationException>()
 				.Which.Should().Be(expectedException);
 		}

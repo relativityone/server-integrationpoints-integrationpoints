@@ -29,23 +29,23 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceContext
 		[Test]
 		public void ShouldReturnWorkspaceIfInjectedSessionServiceReturnsWorkspaceId()
 		{
-			//arrange
+			// arrange
 			const int workspaceId = 1019723;
 			_sessionServiceMock
 				.Setup(x => x.WorkspaceID)
 				.Returns(workspaceId);
 
-			//act
+			// act
 			int result = _sut.GetWorkspaceId();
 
-			//assert
+			// assert
 			result.Should().Be(workspaceId);
 		}
 
 		[Test]
 		public void ShouldCallNextServiceWhenSessionServiceReturnsNull()
 		{
-			//arrange
+			// arrange
 			const int workspaceId = 1019723;
 
 			_sessionServiceMock
@@ -55,10 +55,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceContext
 				.Setup(x => x.GetWorkspaceId())
 				.Returns(workspaceId);
 
-			//act
+			// act
 			int result = _sut.GetWorkspaceId();
 
-			//assert
+			// assert
 			result.Should().Be(workspaceId);
 			_nextWorkspaceContextServiceMock
 				.Verify(x => x.GetWorkspaceId());
@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceContext
 		[Test]
 		public void ShouldThrowExceptionWhenSessionServiceReturnsNullAndNextServiceThrowsException()
 		{
-			//arrange
+			// arrange
 			var expectedException = new InvalidOperationException();
 
 			_sessionServiceMock
@@ -77,10 +77,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceContext
 				.Setup(x => x.GetWorkspaceId())
 				.Throws(expectedException);
 
-			//act
 			Action getWorkspaceAction = () => _sut.GetWorkspaceId();
 
-			//assert
+			// act & assert
 			getWorkspaceAction.ShouldThrow<InvalidOperationException>()
 				.Which.Should().Be(expectedException);
 		}
