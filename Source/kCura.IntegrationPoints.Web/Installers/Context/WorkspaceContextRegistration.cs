@@ -1,7 +1,6 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Web.Context.WorkspaceContext;
-using kCura.IntegrationPoints.Web.Context.WorkspaceContext.Services;
 
 namespace kCura.IntegrationPoints.Web.Installers.Context
 {
@@ -14,16 +13,16 @@ namespace kCura.IntegrationPoints.Web.Installers.Context
 		{
 			return container.Register(
 				Component
-					.For<IWorkspaceService>()
-					.ImplementedBy<WebApiCustomPageService>()
-					.LifestylePerWebRequest(),
-				Component
-					.For<IWorkspaceService>()
-					.ImplementedBy<ControllerCustomPageService>()
+					.For<IWorkspaceContext>()
+					.ImplementedBy<RequestContextWorkspaceContextService>()
 					.LifestylePerWebRequest(),
 				Component
 					.For<IWorkspaceContext>()
-					.ImplementedBy<WorkspaceContext>()
+					.ImplementedBy<SessionWorkspaceContextService>()
+					.LifestylePerWebRequest(),
+				Component
+					.For<IWorkspaceContext>()
+					.ImplementedBy<LastWorkspaceContextService>()
 					.LifestylePerWebRequest()
 			);
 		}

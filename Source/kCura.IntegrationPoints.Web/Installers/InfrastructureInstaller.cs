@@ -70,6 +70,7 @@ namespace kCura.IntegrationPoints.Web.Installers
 				.UsingFactoryMethod(k =>
 					SessionServiceFactory.GetSessionService(
 						k.Resolve<ICPHelper>,
+						k.Resolve<IAPILog>,
 						k.Resolve<HttpContextBase>()
 					)
 				)

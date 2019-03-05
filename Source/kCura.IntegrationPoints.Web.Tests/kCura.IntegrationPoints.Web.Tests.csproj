@@ -80,10 +80,9 @@
     <Compile Include="Helpers\SummaryPageSelectorTests.cs" />
     <Compile Include="IntegrationPointsServices\Logging\WebCorrelationContextProviderTests.cs" />
     <Compile Include="Infrastructure\MessageHandlers\CorrelationIdHandlerTests.cs" />
-    <Compile Include="Context\WorkspaceContext\WorkspaceIdProviderTests.cs" />
-    <Compile Include="Context\WorkspaceContext\Services\ControllerCustomPageServiceTests.cs" />
+    <Compile Include="Context\WorkspaceContext\SessionWorkspaceContextServiceTests.cs" />
     <Compile Include="RelativityServices\RetriableCPHelperProxyTests.cs" />
-    <Compile Include="Context\WorkspaceContext\Services\WebApiCustomPageServiceTests.cs" />
+    <Compile Include="Context\WorkspaceContext\RequestContextWorkspaceContextServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">

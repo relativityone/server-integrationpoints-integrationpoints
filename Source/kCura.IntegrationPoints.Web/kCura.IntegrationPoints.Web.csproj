@@ -81,6 +81,7 @@
     <Compile Include="Context\UserContext\LastUserContextService.cs" />
     <Compile Include="Context\UserContext\RequestHeadersUserContextService.cs" />
     <Compile Include="Context\UserContext\SessionUserContextService.cs" />
+    <Compile Include="Context\WorkspaceContext\LastWorkspaceContextService.cs" />
     <Compile Include="Extensions\HttpConfigurationExtensions.cs" />
     <Compile Include="Installers\Context\UserContextRegistration.cs" />
     <Compile Include="Installers\Context\ContextInstaller.cs" />
@@ -93,10 +94,9 @@
     <Compile Include="Installers\IntegrationPointsServices\LoggingRegistration.cs" />
     <Compile Include="Installers\InfrastructureInstaller.cs" />
     <Compile Include="Installers\RelativityServicesInstaler.cs" />
-    <Compile Include="Context\WorkspaceContext\Services\IContextService.cs" />
     <Compile Include="Infrastructure\Session\SessionServiceFactory.cs" />
     <Compile Include="Installers\Context\WorkspaceContextRegistration.cs" />
-    <Compile Include="Context\WorkspaceContext\Services\ControllerCustomPageService.cs" />
+    <Compile Include="Context\WorkspaceContext\SessionWorkspaceContextService.cs" />
     <Compile Include="Controllers\API\ExportSettingsValidationController.cs" />
     <Compile Include="Controllers\API\FieldCatalogController.cs" />
     <Compile Include="Controllers\API\ImportPreviewController.cs" />
@@ -175,7 +175,6 @@
     <Compile Include="Models\Validation\ValidationResultMapper.cs" />
     <Compile Include="Models\WorkspaceModel.cs" />
     <Compile Include="Context\WorkspaceContext\Exceptions\WorkspaceIdNotFoundException.cs" />
-    <Compile Include="Context\WorkspaceContext\WorkspaceContext.cs" />
     <Compile Include="Context\WorkspaceContext\IWorkspaceContext.cs" />
     <Compile Include="Helpers\RelativityUrlHelper.cs" />
     <Compile Include="RequestExtensions.cs" />
@@ -185,7 +184,7 @@
     <Compile Include="SignalRHubs\IntegrationPointDataHub.cs" />
     <Compile Include="SignalRHubs\IntegrationPointDataHubKey.cs" />
     <Compile Include="Startup.cs" />
-    <Compile Include="Context\WorkspaceContext\Services\WebApiCustomPageService.cs" />
+    <Compile Include="Context\WorkspaceContext\RequestContextWorkspaceContextService.cs" />
     <Compile Include="IntegrationPointsServices\WebClientFactory.cs" />
     <Compile Include="WindsorCompositionRoot.cs" />
     <Compile Include="WindsorControllerFactory.cs" />

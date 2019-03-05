@@ -2,8 +2,8 @@
 {
 	public interface ISessionService
 	{
-		int WorkspaceID { get; }
-		int UserID { get; }
-		int WorkspaceUserID { get; }
+		int? WorkspaceID { get; }
+		int? UserID { get; }
+		int? WorkspaceUserID { get; }
 	}
 }
