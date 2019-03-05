@@ -6,6 +6,7 @@ library 'GitHelpers@1.0.0'
 library 'SlackHelpers@3.0.0'
 
 properties([
+	pipelineTriggers(env.JOB_NAME.contains("IntegrationPointsNightly") ? [cron('H 16 * * *')] : []),
 	[$class: 'BuildDiscarderProperty', strategy: [
 			$class: 'LogRotator', 
 			artifactDaysToKeepStr: '30',
