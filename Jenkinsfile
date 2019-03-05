@@ -81,8 +81,6 @@ properties([
 // This should be changed on the release branch
 def relativityBranchFallback = "develop"
 
-def jenkinsHelpers = null
-
 timestamps
 {
 	try
