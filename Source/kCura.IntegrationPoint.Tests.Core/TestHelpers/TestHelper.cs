@@ -5,7 +5,6 @@ using NSubstitute;
 using Relativity.API;
 using Relativity.Services.ArtifactGuid;
 using Relativity.Services.InstanceSetting;
-using Relativity.Services.LibraryApplicationsManager;
 using Relativity.Services.ObjectQuery;
 using Relativity.Services.Objects;
 using Relativity.Services.Permission;
@@ -28,6 +27,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 
 		private readonly IServicesMgr _serviceManager;
 		private readonly ILogFactory _logFactory;
+		private readonly IInstanceSettingsBundle _instanceSettingsBundleMock;
 		
 		public string RelativityUserName {
 			get { return _relativityUserName ?? SharedVariables.RelativityUserName; }
@@ -47,6 +47,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			PermissionManager = Substitute.For<IPermissionRepository>();
 			_serviceManager = Substitute.For<IServicesMgr>();
 			_logFactory = Substitute.For<ILogFactory>();
+			_instanceSettingsBundleMock = Substitute.For<IInstanceSettingsBundle>();
 			_serviceManager.CreateProxy<IRSAPIClient>(Arg.Any<ExecutionIdentity>()).Returns(new ExtendedIRSAPIClient());
 			_serviceManager.CreateProxy<IPermissionManager>(ExecutionIdentity.CurrentUser).Returns(new ExtendedIPermissionManager(this, ExecutionIdentity.CurrentUser));
 			_serviceManager.CreateProxy<IPermissionManager>(ExecutionIdentity.System).Returns(new ExtendedIPermissionManager(this, ExecutionIdentity.System));
@@ -152,7 +153,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 
 		public IInstanceSettingsBundle GetInstanceSettingBundle()
 		{
-			throw new NotImplementedException();
+			return _instanceSettingsBundleMock;
 		}
 
 		public IStringSanitizer GetStringSanitizer(int workspaceID)

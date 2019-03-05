@@ -9,11 +9,16 @@ namespace kCura.IntegrationPoints.Agent
 	{
 		public class RelativityConfigurationFactory : IRelativityConfigurationFactory
 		{
+			private const string _SMTP_SETTINGS_SECTION = "kCura.Notification";
+			private const string _SMTP_PASSWORD_SETTING_NAME = "SMTPPassword";
+
 			private readonly IAPILog _logger;
+			private readonly IInstanceSettingsBundle _instanceSettingsBundle;
 
 			public RelativityConfigurationFactory(IHelper helper)
 			{
 				_logger = helper.GetLoggerFactory().GetLogger().ForContext<RelativityConfigurationFactory>();
+				_instanceSettingsBundle = helper.GetInstanceSettingBundle();
 			}
 
 			public EmailConfiguration GetConfiguration()
@@ -24,7 +29,7 @@ namespace kCura.IntegrationPoints.Agent
 					config = new EmailConfiguration
 					{
 						Domain = NotificationConfig.SMTPServer,
-						Password = NotificationConfig.SMTPPassword,
+						Password = _instanceSettingsBundle.GetString(_SMTP_SETTINGS_SECTION, _SMTP_PASSWORD_SETTING_NAME),
 						Port = NotificationConfig.SMTPPort,
 						UserName = NotificationConfig.SMTPUserName,
 						UseSSL = NotificationConfig.SMTPSSLisRequired
