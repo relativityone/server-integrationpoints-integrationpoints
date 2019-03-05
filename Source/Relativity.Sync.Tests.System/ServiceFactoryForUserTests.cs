@@ -22,23 +22,20 @@ using Workspace = kCura.Relativity.Client.DTOs.Workspace;
 namespace Relativity.Sync.Tests.System
 {
 	[TestFixture]
-#pragma warning disable CA1001 // Types that own disposable fields should be disposable
-	public sealed class ServiceFactoryForUserTests
-#pragma warning restore CA1001 // Types that own disposable fields should be disposable
+	public sealed class ServiceFactoryForUserTests : IDisposable
 	{
+		private string _relativityServicesUrl, _relativityRestUrl, _relativityAdminUserName, _relativityAdminPassword;
 		private IRSAPIClient _client;
 		private Workspace _workspace;
-
-		// hardcoded settings until this story is not finished: REL-297309IN Create project for system tests
-		private const string _RELATIVITY_ADMIN_USER_NAME = "relativity.admin@kcura.com";
-		private const string _RELATIVITY_ADMIN_PASSWORD = "Test1234!";
-		private const string _RELATIVITY_SERVICES_URL = "https://testvmaj10.kcura.corp/Relativity.Services/";
-		private const string _RELATIVITY_REST_URL = "https://testvmaj10.kcura.corp/Relativity.Rest/api";
 
 		[OneTimeSetUp]
 		public void SuiteSetup()
 		{
-			_client = new RSAPIClient(new Uri(_RELATIVITY_SERVICES_URL), new UsernamePasswordCredentials(_RELATIVITY_ADMIN_USER_NAME, _RELATIVITY_ADMIN_PASSWORD));
+			_relativityServicesUrl = $"https://{AppSettings.RelativityHostName}/Relativity.Services";
+			_relativityRestUrl = $"https://{AppSettings.RelativityHostName}/Relativity.Rest/api";
+			_relativityAdminUserName = AppSettings.RelativityUserName;
+			_relativityAdminPassword = AppSettings.RelativityUserPassword;
+			_client = new RSAPIClient(new Uri(_relativityServicesUrl), new UsernamePasswordCredentials(_relativityAdminUserName, _relativityAdminPassword));
 			_workspace = CreateWorkspaceAsync().Result;
 		}
 
@@ -53,13 +50,14 @@ namespace Relativity.Sync.Tests.System
 		public async Task UserShouldNotHavePermissionToWorkspace()
 		{
 			const string groupName = "Test Group";
-			const string userName = "test@kcura.com";
+			const string userName = "testuser@relativity.com";
+			const string password = "Test1234!";
 			SetUpGroup(groupName);
-			SetUpUser(userName, groupName);
+			SetUpUser(userName, password, groupName);
 			AddGroupToWorkspace(groupName);
 
 			Mock<IServicesMgr> servicesManager = new Mock<IServicesMgr>();
-			servicesManager.Setup(x => x.CreateProxy<IPermissionManager>(ExecutionIdentity.CurrentUser)).Returns(CreateUserProxy<IPermissionManager>(userName, _RELATIVITY_ADMIN_PASSWORD));
+			servicesManager.Setup(x => x.CreateProxy<IPermissionManager>(ExecutionIdentity.CurrentUser)).Returns(CreateUserProxy<IPermissionManager>(userName, password));
 			ServiceFactoryForUser sut = new ServiceFactoryForUser(servicesManager.Object);
 			IPermissionManager permissionManager = sut.CreateProxy<IPermissionManager>();
 			PermissionRef permissionRef = new PermissionRef()
@@ -125,7 +123,7 @@ namespace Relativity.Sync.Tests.System
 		private T CreateUserProxy<T>(string username, string password) where T : IDisposable
 		{
 			var userCredential = new global::Relativity.Services.ServiceProxy.UsernamePasswordCredentials(username, password);
-			ServiceFactorySettings userSettings = new ServiceFactorySettings(new Uri(_RELATIVITY_SERVICES_URL), new Uri(_RELATIVITY_REST_URL), userCredential);
+			ServiceFactorySettings userSettings = new ServiceFactorySettings(new Uri(_relativityServicesUrl), new Uri(_relativityRestUrl), userCredential);
 			global::Relativity.Services.ServiceProxy.ServiceFactory userServiceFactory = new global::Relativity.Services.ServiceProxy.ServiceFactory(userSettings);
 			return userServiceFactory.CreateProxy<T>();
 		}
@@ -151,7 +149,7 @@ namespace Relativity.Sync.Tests.System
 			_client.Repositories.Group.Create(newGroup);
 		}
 
-		private void SetUpUser(string userName, string groupName)
+		private void SetUpUser(string userName, string password, string groupName)
 		{
 			int userArtifactId = UserHelpers.FindUserArtifactID(_client, userName);
 
@@ -159,7 +157,7 @@ namespace Relativity.Sync.Tests.System
 			if (userArtifactId == 0)
 			{
 				Client client = _client.Repositories.Client.ReadSingle(_workspace.Client.ArtifactID);
-				user = UserHelpers.CreateUserWithPassword(_client, "Test", "Test", userName, client.Name, _RELATIVITY_ADMIN_PASSWORD);
+				user = UserHelpers.CreateUserWithPassword(_client, "Test", "Test", userName, client.Name, password);
 			}
 			else
 			{
@@ -172,11 +170,16 @@ namespace Relativity.Sync.Tests.System
 
 		private void AddGroupToWorkspace(string groupName)
 		{
-			using (IPermissionManager permissionManager = CreateUserProxy<IPermissionManager>(_RELATIVITY_ADMIN_USER_NAME, _RELATIVITY_ADMIN_PASSWORD))
+			using (IPermissionManager permissionManager = CreateUserProxy<IPermissionManager>(_relativityAdminUserName, _relativityAdminPassword))
 			{
 				Group group = GroupHelpers.GroupGetOrCreateByName(_client, groupName);
 				PermissionHelpers.AddGroupToWorkspace(permissionManager, _workspace.ArtifactID, group);
 			}
+		}
+
+		public void Dispose()
+		{
+			_client?.Dispose();
 		}
 	}
 }
