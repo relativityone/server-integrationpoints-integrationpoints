@@ -2,7 +2,6 @@
 using FluentAssertions;
 using FluentAssertions.Execution;
 using FluentAssertions.Primitives;
-using System.Linq;
 
 namespace kCura.IntegrationPoint.Tests.Core.FluentAssertions.Assertions
 {
@@ -49,25 +48,5 @@ namespace kCura.IntegrationPoint.Tests.Core.FluentAssertions.Assertions
 
 			return new AndConstraint<ComponentModelAssertions>(this);
 		}
-
-		//public AndWhichConstraint<ComponentModelAssertions, ComponentModel> BeDependencyOf<T>(
-		//	string because = "",
-		//	params object[] becauseArgs)
-		//{
-		//	ComponentModel dependent = Subject
-		//		.Dependents
-		//		.OfType<ComponentModel>()
-		//		.FirstOrDefault(x => x.Implementation == typeof(T));
-			
-		//	Execute.Assertion
-		//		.BecauseOf(because, becauseArgs)
-		//		.ForCondition(dependent != null)
-		//		.FailWith("Component {0} expected to be dependency of {1}, but it wasn't.",
-		//			Subject.Implementation.Name,
-		//			typeof(T).Name
-		//		);
-
-		//	return new AndWhichConstraint<ComponentModelAssertions, ComponentModel>(this, dependent);
-		//}
 	}
 }
