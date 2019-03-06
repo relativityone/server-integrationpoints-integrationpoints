@@ -13,12 +13,18 @@ namespace kCura.IntegrationPoints.Web.IntegrationPointsServices
 		private const int _ADMIN_CASE_WORKSPACE_ARTIFACT_ID = -1;
 		private const int _MINIMUM_VALID_WORKSPACE_ARTIFACT_ID = 1;
 
+		private readonly IAPILog _logger;
 		private readonly IUserContext _userContext;
 		private readonly IHelper _helper;
 		private readonly IWorkspaceContext _workspaceContext;
 
-		public ServiceContextHelperForWeb(IHelper helper, IWorkspaceContext workspaceContext, IUserContext userContext)
+		public ServiceContextHelperForWeb(
+			IAPILog logger,
+			IHelper helper,
+			IWorkspaceContext workspaceContext,
+			IUserContext userContext)
 		{
+			_logger = logger.ForContext<ServiceContextHelperForWeb>();
 			_helper = helper;
 			_workspaceContext = workspaceContext;
 			_userContext = userContext;
@@ -50,9 +56,17 @@ namespace kCura.IntegrationPoints.Web.IntegrationPointsServices
 
 		public IRSAPIService GetRsapiService()
 		{
-			return WorkspaceID >= _MINIMUM_VALID_WORKSPACE_ARTIFACT_ID
-				? ServiceContextFactory.CreateRSAPIService(_helper, WorkspaceID)
-				: null;
+			if (WorkspaceID < _MINIMUM_VALID_WORKSPACE_ARTIFACT_ID)
+			{
+				_logger.LogWarning(
+					"Cannot create {service} because workspaceId is invalid: {workspaceId}", 
+					nameof(IRSAPIService), 
+					WorkspaceID
+				);
+				return null;
+			}
+
+			return ServiceContextFactory.CreateRSAPIService(_helper, WorkspaceID);
 		}
 
 		public IDBContext GetDBContext(int workspaceId = _ADMIN_CASE_WORKSPACE_ARTIFACT_ID)
