@@ -8,25 +8,30 @@ namespace kCura.IntegrationPoints.Web.IntegrationPointsServices
 {
 	internal class ServiceContextHelperForWeb : IServiceContextHelper
 	{
-		private readonly IUserContext _userContext;
-		private readonly ICPHelper _helper;
-		private readonly IWorkspaceContext _workspaceIdProvider;
+		private int? _workspaceId;
 
-		public ServiceContextHelperForWeb(ICPHelper helper, IWorkspaceContext workspaceIdProvider, IUserContext userContext)
+		private const int _ADMIN_CASE_WORKSPACE_ARTIFACT_ID = -1;
+		private const int _MINIMUM_VALID_WORKSPACE_ARTIFACT_ID = 1;
+
+		private readonly IUserContext _userContext;
+		private readonly IHelper _helper;
+		private readonly IWorkspaceContext _workspaceContext;
+
+		public ServiceContextHelperForWeb(IHelper helper, IWorkspaceContext workspaceContext, IUserContext userContext)
 		{
 			_helper = helper;
-			_workspaceIdProvider = workspaceIdProvider;
+			_workspaceContext = workspaceContext;
 			_userContext = userContext;
 		}
 
-		private int? _workspaceId;
+
 		public int WorkspaceID
 		{
 			get
 			{
 				if (!_workspaceId.HasValue)
 				{
-					_workspaceId = _workspaceIdProvider.GetWorkspaceId();
+					_workspaceId = _workspaceContext.GetWorkspaceId();
 				}
 
 				return _workspaceId.Value;
@@ -45,12 +50,12 @@ namespace kCura.IntegrationPoints.Web.IntegrationPointsServices
 
 		public IRSAPIService GetRsapiService()
 		{
-			return WorkspaceID > 0 
-				? ServiceContextFactory.CreateRSAPIService(_helper, WorkspaceID) 
+			return WorkspaceID >= _MINIMUM_VALID_WORKSPACE_ARTIFACT_ID
+				? ServiceContextFactory.CreateRSAPIService(_helper, WorkspaceID)
 				: null;
 		}
 
-		public IDBContext GetDBContext(int workspaceId = -1)
+		public IDBContext GetDBContext(int workspaceId = _ADMIN_CASE_WORKSPACE_ARTIFACT_ID)
 		{
 			return _helper.GetDBContext(workspaceId);
 		}
