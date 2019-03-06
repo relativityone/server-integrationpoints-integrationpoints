@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Domain.Logging;
+﻿using FluentAssertions;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Web.Context.UserContext;
 using kCura.IntegrationPoints.Web.Context.WorkspaceContext;
 using kCura.IntegrationPoints.Web.Infrastructure.MessageHandlers;
@@ -79,11 +80,14 @@ namespace kCura.IntegrationPoints.Web.Tests.Infrastructure.MessageHandlers
 		[Test]
 		public async Task ItShouldPushWebRequestCorrelationIdToLogContext()
 		{
+			// arrange
 			var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Get");
 			Guid expectedCorrelationId = request.GetCorrelationId();
 
+			// act
 			await _sut.SendAyncInternal(request, CancellationToken.None);
 
+			// assert
 			_loggerMock.Verify(x =>
 				x.LogContextPushProperty($"RIP.{nameof(WebCorrelationContext.WebRequestCorrelationId)}", expectedCorrelationId.ToString())
 			);
@@ -92,14 +96,17 @@ namespace kCura.IntegrationPoints.Web.Tests.Infrastructure.MessageHandlers
 		[Test]
 		public async Task ItShouldPushWorkspaceIdToLogContext()
 		{
+			// arrange
 			var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Get");
 			int expectedWorkspaceId = 123;
 			_workspaceContextMock
 				.Setup(x => x.GetWorkspaceId())
 				.Returns(expectedWorkspaceId);
 
+			// act
 			await _sut.SendAyncInternal(request, CancellationToken.None);
 
+			// assert
 			_loggerMock.Verify(x =>
 				x.LogContextPushProperty($"RIP.{nameof(WebCorrelationContext.WorkspaceId)}", expectedWorkspaceId.ToString())
 			);
@@ -108,22 +115,24 @@ namespace kCura.IntegrationPoints.Web.Tests.Infrastructure.MessageHandlers
 		[Test]
 		public void ItShouldRethrowExceptionWhileAccessingWorkspaceId()
 		{
+			// arrange
 			var thrownException = new Exception();
 			var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Get");
 			_workspaceContextMock
 				.Setup(x => x.GetWorkspaceId())
 				.Throws(thrownException);
 
-			CorrelationContextCreationException rethrownException = Assert.ThrowsAsync<CorrelationContextCreationException>(async () =>
-			{
-				await _sut.SendAyncInternal(request, CancellationToken.None);
-			});
-			Assert.AreEqual(thrownException, rethrownException.InnerException);
+			Func<Task> sendAsyncAction = async () => await _sut.SendAyncInternal(request, CancellationToken.None);
+
+			// act & assert
+			sendAsyncAction.ShouldThrow<CorrelationContextCreationException>()
+				.Which.InnerException.Should().Be(thrownException);
 		}
 
 		[Test]
 		public async Task ItShouldPushUserIdToLogContext()
 		{
+			// arrange
 			var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Get");
 			int expectedUserId = 532;
 
@@ -131,8 +140,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Infrastructure.MessageHandlers
 				.Setup(x => x.GetUserID())
 				.Returns(expectedUserId);
 
+			// act
 			await _sut.SendAyncInternal(request, CancellationToken.None);
 
+			// assert
 			_loggerMock.Verify(x =>
 				x.LogContextPushProperty($"RIP.{nameof(WebCorrelationContext.UserId)}", expectedUserId.ToString())
 			);
@@ -141,6 +152,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Infrastructure.MessageHandlers
 		[Test]
 		public void ItShouldRethrowExceptionWhileAccessingUserId()
 		{
+			// arrange
 			var thrownException = new Exception();
 			var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Get");
 
@@ -148,11 +160,11 @@ namespace kCura.IntegrationPoints.Web.Tests.Infrastructure.MessageHandlers
 				.Setup(x => x.GetUserID())
 				.Throws(thrownException);
 
-			CorrelationContextCreationException rethrownException = Assert.ThrowsAsync<CorrelationContextCreationException>(async () =>
-			{
-				await _sut.SendAyncInternal(request, CancellationToken.None);
-			});
-			Assert.AreEqual(thrownException, rethrownException.InnerException);
+			Func<Task> sendAsyncAction = async () => await _sut.SendAyncInternal(request, CancellationToken.None);
+
+			// act & assert
+			sendAsyncAction.ShouldThrow<CorrelationContextCreationException>()
+				.Which.InnerException.Should().Be(thrownException);
 		}
 
 		private static IWebCorrelationContextProvider GetWebCorrelationContextProviderMock()
