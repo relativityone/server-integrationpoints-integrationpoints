@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceContext
 				.Returns(workspaceId);
 
 			// act
-			int result = _sut.GetWorkspaceId();
+			int result = _sut.GetWorkspaceID();
 
 			// assert
 			result.Should().Be(workspaceId);
@@ -52,16 +52,16 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceContext
 				.Setup(x => x.WorkspaceID)
 				.Returns((int?)null);
 			_nextWorkspaceContextServiceMock
-				.Setup(x => x.GetWorkspaceId())
+				.Setup(x => x.GetWorkspaceID())
 				.Returns(workspaceId);
 
 			// act
-			int result = _sut.GetWorkspaceId();
+			int result = _sut.GetWorkspaceID();
 
 			// assert
 			result.Should().Be(workspaceId);
 			_nextWorkspaceContextServiceMock
-				.Verify(x => x.GetWorkspaceId());
+				.Verify(x => x.GetWorkspaceID());
 		}
 
 		[Test]
@@ -74,10 +74,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceContext
 				.Setup(x => x.WorkspaceID)
 				.Returns((int?)null);
 			_nextWorkspaceContextServiceMock
-				.Setup(x => x.GetWorkspaceId())
+				.Setup(x => x.GetWorkspaceID())
 				.Throws(expectedException);
 
-			Action getWorkspaceAction = () => _sut.GetWorkspaceId();
+			Action getWorkspaceAction = () => _sut.GetWorkspaceID();
 
 			// act & assert
 			getWorkspaceAction.ShouldThrow<InvalidOperationException>()

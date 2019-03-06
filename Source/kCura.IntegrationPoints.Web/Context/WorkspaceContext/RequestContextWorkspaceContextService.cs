@@ -17,14 +17,14 @@ namespace kCura.IntegrationPoints.Web.Context.WorkspaceContext
 			_nextWorkspaceContextService = nextWorkspaceContextService;
 		}
 
-		public int GetWorkspaceId()
+		public int GetWorkspaceID()
 		{
 			var workspaceIdRouteData = _httpRequest.RequestContext.RouteData.Values[_WORKSPACE_ID_KEY] as string;
 			bool isWorkspaceIdValidNumber = int.TryParse(workspaceIdRouteData, out int workspaceId);
 
 			return isWorkspaceIdValidNumber
 				? workspaceId
-				: _nextWorkspaceContextService.GetWorkspaceId();
+				: _nextWorkspaceContextService.GetWorkspaceID();
 		}
 	}
 }

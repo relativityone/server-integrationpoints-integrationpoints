@@ -93,7 +93,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private int GetWorkspaceId()
 		{
 			int oldWorkspaceId = _client.APIOptions.WorkspaceID;
-			int workspaceId = _workspaceIdProvider.GetWorkspaceId();
+			int workspaceId = _workspaceIdProvider.GetWorkspaceID();
 
 			if (workspaceId != oldWorkspaceId)
 			{

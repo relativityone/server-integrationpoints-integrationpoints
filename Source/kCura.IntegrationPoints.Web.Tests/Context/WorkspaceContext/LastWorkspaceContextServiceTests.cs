@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceContext
 		{
 			// arrange
 			var sut = new LastWorkspaceContextService();
-			Action getWorkspaceIdAction = () => sut.GetWorkspaceId();
+			Action getWorkspaceIdAction = () => sut.GetWorkspaceID();
 
 			// act & assert
 			getWorkspaceIdAction.ShouldThrow<WorkspaceIdNotFoundException>();

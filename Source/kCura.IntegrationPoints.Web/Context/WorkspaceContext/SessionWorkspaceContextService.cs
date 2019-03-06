@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.Web.Context.WorkspaceContext
 			_nextWorkspaceContextService = nextWorkspaceContextService;
 		}
 
-		public int GetWorkspaceId() =>
-			_sessionService.WorkspaceID ?? _nextWorkspaceContextService.GetWorkspaceId();
+		public int GetWorkspaceID() =>
+			_sessionService.WorkspaceID ?? _nextWorkspaceContextService.GetWorkspaceID();
 	}
 }

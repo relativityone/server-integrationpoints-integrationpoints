@@ -42,17 +42,17 @@ namespace kCura.IntegrationPoints.Web.Controllers
 
 		public ActionResult Edit(int? artifactId)
 		{
-			int workspaceId = _workspaceIdProvider.GetWorkspaceId();
+			int workspaceID = _workspaceIdProvider.GetWorkspaceID();
 
-			int objectTypeId = _objectTypeRepository.GetObjectTypeID(ObjectType);
-			int tabID = _tabService.GetTabId(objectTypeId);
-			int objectID = _objectTypeRepository.GetObjectType(objectTypeId).ParentArtifactId;
-			string previousURL = $"List.aspx?AppID={workspaceId}&ArtifactID={objectID}&ArtifactTypeID={objectTypeId}&SelectedTab={tabID}";
+			int objectTypeID = _objectTypeRepository.GetObjectTypeID(ObjectType);
+			int tabID = _tabService.GetTabId(objectTypeID);
+			int objectID = _objectTypeRepository.GetObjectType(objectTypeID).ParentArtifactId;
+			string previousURL = $"List.aspx?AppID={workspaceID}&ArtifactID={objectID}&ArtifactTypeID={objectTypeID}&SelectedTab={tabID}";
 			if (HasPermissions(artifactId))
 			{
 				return View("~/Views/IntegrationPoints/Edit.cshtml", new EditPoint
 				{
-					AppID = workspaceId,
+					AppID = workspaceID,
 					ArtifactID = artifactId.GetValueOrDefault(0),
 					UserID = _userContext.GetUserID(),
 					CaseUserID = _userContext.GetWorkspaceUserID(),
@@ -66,7 +66,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
 
 		protected bool HasPermissions(int? artifactId)
 		{
-			IPermissionRepository permissionRepository = _repositoryFactory.GetPermissionRepository(_workspaceIdProvider.GetWorkspaceId());
+			IPermissionRepository permissionRepository = _repositoryFactory.GetPermissionRepository(_workspaceIdProvider.GetWorkspaceID());
 			bool canImport = permissionRepository.UserCanImport();
 			bool canAddOrEdit = permissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuid),
 				artifactId.HasValue ? ArtifactPermission.Edit : ArtifactPermission.Create);

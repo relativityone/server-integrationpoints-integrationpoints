@@ -20,13 +20,13 @@ namespace kCura.IntegrationPoints.Web.IntegrationPointsServices
 
 		public IRSAPIClient CreateClient()
 		{
-			int workspaceId = _workspaceIdProvider.GetWorkspaceId();
+			int workspaceId = _workspaceIdProvider.GetWorkspaceID();
 			return _factory.CreateUserClient(workspaceId);
 		}
 
 		public IDBContext CreateDbContext()
 		{
-			int workspaceId = _workspaceIdProvider.GetWorkspaceId();
+			int workspaceId = _workspaceIdProvider.GetWorkspaceID();
 			return _helper.GetDBContext(workspaceId);
 		}
 	}

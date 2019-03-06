@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		private HttpResponseMessage GetWorkspaces(IWorkspaceManager workspaceManager)
 		{
-			int currentWorkspaceId = _workspaceIdProvider.GetWorkspaceId();
+			int currentWorkspaceId = _workspaceIdProvider.GetWorkspaceID();
 			IEnumerable<WorkspaceDTO> userWorkspaces = workspaceManager.GetUserAvailableDestinationWorkspaces(currentWorkspaceId);
 			return CreateResponseFromWorkspaceDTOs(userWorkspaces);
 		}

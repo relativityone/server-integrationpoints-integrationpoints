@@ -100,7 +100,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Infrastructure.MessageHandlers
 			var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Get");
 			int expectedWorkspaceId = 123;
 			_workspaceContextMock
-				.Setup(x => x.GetWorkspaceId())
+				.Setup(x => x.GetWorkspaceID())
 				.Returns(expectedWorkspaceId);
 
 			// act
@@ -119,7 +119,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Infrastructure.MessageHandlers
 			var thrownException = new Exception();
 			var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Get");
 			_workspaceContextMock
-				.Setup(x => x.GetWorkspaceId())
+				.Setup(x => x.GetWorkspaceID())
 				.Throws(thrownException);
 
 			Func<Task> sendAsyncAction = async () => await _sut.SendAyncInternal(request, CancellationToken.None);

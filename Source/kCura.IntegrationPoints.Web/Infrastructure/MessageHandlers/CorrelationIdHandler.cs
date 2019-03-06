@@ -41,10 +41,10 @@ namespace kCura.IntegrationPoints.Web.Infrastructure.MessageHandlers
 			{
 				_logger.LogDebug($"Integration Point Web Request: {request.RequestUri}");
 
-				string correlationId = correlationContext.CorrelationId?.ToString();
-				request.Headers.Add(WEB_CORRELATION_ID_HEADER_NAME, correlationId);
+				string correlationID = correlationContext.CorrelationId?.ToString();
+				request.Headers.Add(WEB_CORRELATION_ID_HEADER_NAME, correlationID);
 				HttpResponseMessage response = await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
-				response.Headers.Add(WEB_CORRELATION_ID_HEADER_NAME, correlationId);
+				response.Headers.Add(WEB_CORRELATION_ID_HEADER_NAME, correlationID);
 				return response;
 			}
 		}
@@ -64,14 +64,14 @@ namespace kCura.IntegrationPoints.Web.Infrastructure.MessageHandlers
 			IWorkspaceContext workspaceContext, 
 			IWebCorrelationContextProvider webCorrelationContextProvider)
 		{
-			int userId = GetValueOrThrowException(userContext.GetUserID, "Error while retrieving User Id");
+			int userID = GetValueOrThrowException(userContext.GetUserID, "Error while retrieving User Id");
 
-			WebActionContext actionContext = webCorrelationContextProvider.GetDetails(request.RequestUri.ToString(), userId);
+			WebActionContext actionContext = webCorrelationContextProvider.GetDetails(request.RequestUri.ToString(), userID);
 			var correlationContext = new WebCorrelationContext
 			{
 				WebRequestCorrelationId = GetValueOrThrowException(request.GetCorrelationId, "Error while retrieving web request correlation id"),
-				UserId = userId,
-				WorkspaceId = GetValueOrThrowException(workspaceContext.GetWorkspaceId, "Error while retrieving Workspace Id"),
+				UserId = userID,
+				WorkspaceId = GetValueOrThrowException(workspaceContext.GetWorkspaceID, "Error while retrieving Workspace Id"),
 				ActionName = actionContext.ActionName,
 				CorrelationId = actionContext.ActionGuid
 			};

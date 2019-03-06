@@ -123,7 +123,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 
 			_client.Query(Arg.Any<APIOptions>(), Arg.Any<Query>()).Returns(result);
 
-	        _workspaceIdProvider.GetWorkspaceId().Returns(workspaceId);
+	        _workspaceIdProvider.GetWorkspaceID().Returns(workspaceId);
 
 	        _fieldService.GetTextFields(Arg.Any<int>(), Arg.Any<bool>()).Returns(new List<FieldEntry>());
         }

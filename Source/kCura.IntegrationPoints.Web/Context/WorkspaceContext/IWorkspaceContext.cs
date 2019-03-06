@@ -2,6 +2,6 @@
 {
 	public interface IWorkspaceContext
 	{
-		int GetWorkspaceId();
+		int GetWorkspaceID();
 	}
 }

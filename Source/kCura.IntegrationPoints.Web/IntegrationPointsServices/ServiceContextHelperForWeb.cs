@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Web.IntegrationPointsServices
 			{
 				if (!_workspaceId.HasValue)
 				{
-					_workspaceId = _workspaceContext.GetWorkspaceId();
+					_workspaceId = _workspaceContext.GetWorkspaceID();
 				}
 
 				return _workspaceId.Value;

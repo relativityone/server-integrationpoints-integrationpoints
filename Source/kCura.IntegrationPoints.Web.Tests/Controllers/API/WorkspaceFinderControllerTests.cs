@@ -164,7 +164,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		private static IWorkspaceContext CreateWorkspaceIdProviderMock()
 		{
 			IWorkspaceContext workspaceIdProviderMock = Substitute.For<IWorkspaceContext>();
-			workspaceIdProviderMock.GetWorkspaceId().Returns(_CURRENT_WORKSPACE_ARTIFACT_ID);
+			workspaceIdProviderMock.GetWorkspaceID().Returns(_CURRENT_WORKSPACE_ARTIFACT_ID);
 			return workspaceIdProviderMock;
 		}
 	}
