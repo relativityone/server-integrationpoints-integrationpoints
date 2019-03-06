@@ -11,9 +11,16 @@ namespace kCura.IntegrationPoints.Web.Installers.IntegrationPointsServices
 		/// </summary>
 		public static IWindsorContainer AddLoggingContext(this IWindsorContainer container)
 		{
-			container.Register(Component.For<ICacheHolder>().ImplementedBy<CacheHolder>().LifestyleSingleton());
-			container.Register(Component.For<IWebCorrelationContextProvider>().ImplementedBy<WebActionContextProvider>().LifestyleTransient());
-			return container;
+			return container.Register(
+				Component
+					.For<ICacheHolder>()
+					.ImplementedBy<CacheHolder>()
+					.LifestyleSingleton(),
+				Component
+					.For<IWebCorrelationContextProvider>()
+					.ImplementedBy<WebActionContextProvider>()
+					.LifestyleTransient()
+			);
 		}
 	}
 }

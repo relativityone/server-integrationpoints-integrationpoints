@@ -1,5 +1,4 @@
 ﻿using Castle.MicroKernel.Registration;
-using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Web.Infrastructure.Session;
@@ -10,21 +9,22 @@ using System.Web.Http.ExceptionHandling;
 
 namespace kCura.IntegrationPoints.Web.Installers
 {
-	public class InfrastructureInstaller : IWindsorInstaller
+	public static class InfrastructureRegistration
 	{
-		public void Install(IWindsorContainer container, IConfigurationStore store)
+		public static IWindsorContainer AddInfrastructure(this IWindsorContainer container)
 		{
-			RegisterCurrentHttpContext(container);
-			RegisterDelegatingHandlers(container);
-			RegisterExceptionLoggers(container);
+			return container
+				.AddCurrentHttpContext()
+				.AddDelegatingHandlers()
+				.AddExceptionLoggers()
+				.AddSessionService()
+				.AddErrorService();
 
-			RegisterSessionService(container);
-			RegisterErrorService(container);
 		}
 
-		private static void RegisterCurrentHttpContext(IWindsorContainer container)
+		private static IWindsorContainer AddCurrentHttpContext(this IWindsorContainer container)
 		{
-			container.Register(
+			return container.Register(
 				Component
 					.For<HttpContextBase>()
 					.UsingFactoryMethod(x => new HttpContextWrapper(HttpContext.Current))
@@ -36,36 +36,36 @@ namespace kCura.IntegrationPoints.Web.Installers
 			);
 		}
 
-		private static void RegisterExceptionLoggers(IWindsorContainer container)
+		private static IWindsorContainer AddExceptionLoggers(this IWindsorContainer container)
 		{
-			container.Register(Classes
+			return container.Register(Classes
 				.FromThisAssembly()
 				.BasedOn<ExceptionLogger>()
 				.LifestyleSingleton()
 			);
 		}
 
-		private static void RegisterDelegatingHandlers(IWindsorContainer container)
+		private static IWindsorContainer AddDelegatingHandlers(this IWindsorContainer container)
 		{
-			container.Register(Classes
+			return container.Register(Classes
 				.FromThisAssembly()
 				.BasedOn<DelegatingHandler>()
 				.LifestyleSingleton()
 			);
 		}
 
-		private static void RegisterErrorService(IWindsorContainer container)
+		private static IWindsorContainer AddErrorService(this IWindsorContainer container)
 		{
-			container.Register(Component
+			return container.Register(Component
 				.For<IErrorService>()
 				.ImplementedBy<CustomPageErrorService>()
 				.LifestyleSingleton()
 			);
 		}
 
-		private static void RegisterSessionService(IWindsorContainer container)
+		private static IWindsorContainer AddSessionService(this IWindsorContainer container)
 		{
-			container.Register(Component
+			return container.Register(Component
 				.For<ISessionService>()
 				.UsingFactoryMethod(k =>
 					SessionServiceFactory.GetSessionService(
