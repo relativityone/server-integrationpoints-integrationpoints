@@ -5,6 +5,7 @@ using FluentAssertions.Execution;
 using FluentAssertions.Primitives;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace kCura.IntegrationPoint.Tests.Core.FluentAssertions.Assertions
@@ -46,12 +47,14 @@ namespace kCura.IntegrationPoint.Tests.Core.FluentAssertions.Assertions
 				)
 				.Then
 				.ForCondition(resolvedNotNull)
-				.FailWith("Expected {context:IWindsorContainer} to resolve not null value for {0}{reason}, but it was null");
+				.FailWith("Expected {context:IWindsorContainer} to resolve not null value for {0}{reason}, but it was null",
+					typeof(T).Name
+				);
 
 			return new AndConstraint<WindsorContainerAssertions>(this);
 		}
 
-		public ComponentModelAssertions HaveRegisteredSingleComponent<T>(
+		public AndWhichConstraint<WindsorContainerAssertions, ComponentModel> HaveRegisteredSingleComponent<T>(
 			string because = "",
 			params object[] becauseArgs
 		) where T : class
@@ -61,9 +64,29 @@ namespace kCura.IntegrationPoint.Tests.Core.FluentAssertions.Assertions
 			Execute.Assertion
 				.BecauseOf(because, becauseArgs)
 				.ForCondition(registeredComponent != null)
-				.FailWith("Expected {context:IWindsorContainer} to have single component for {0}{reason}, but it hasn't.");
+				.FailWith("Expected {context:IWindsorContainer} to have single component for {0}{reason}, but it hasn't.",
+					typeof(T).Name
+				);
 
-			return new ComponentModelAssertions(registeredComponent, typeof(T).Name);
+			return new AndWhichConstraint<WindsorContainerAssertions, ComponentModel>(this, registeredComponent);
+		}
+
+		public AndConstraint<ComponentsModelAssertions> HaveRegisteredMultipleComponents<T>(
+			string because = "",
+			params object[] becauseArgs
+		) where T : class
+		{
+			IList<ComponentModel> registeredComponent = GetRegisteredComponents<T>()?.ToList();
+
+			Execute.Assertion
+				.BecauseOf(because, becauseArgs)
+				.ForCondition(registeredComponent != null && registeredComponent.Any())
+				.FailWith("Expected {context:IWindsorContainer} to have multiple components for {0}{reason}, but it hasn't",
+					typeof(T).Name
+				);
+
+			var componentsAssertions = new ComponentsModelAssertions(registeredComponent);
+			return new AndConstraint<ComponentsModelAssertions>(componentsAssertions);
 		}
 
 		public AndConstraint<WindsorContainerAssertions> HaveRegisteredProperImplementation<TInterface, TImplementation>(
@@ -90,10 +113,21 @@ namespace kCura.IntegrationPoint.Tests.Core.FluentAssertions.Assertions
 		{
 			try
 			{
+				return GetRegisteredComponents<T>().Single();
+			}
+			catch (Exception)
+			{
+				return null;
+			}
+		}
+
+		private IEnumerable<ComponentModel> GetRegisteredComponents<T>()
+		{
+			try
+			{
 				return Subject
 					.GetHandlersFor<T>()
-					.Single()
-					.ComponentModel;
+					.Select(x => x.ComponentModel);
 			}
 			catch (Exception)
 			{

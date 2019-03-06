@@ -136,7 +136,9 @@
     <Compile Include="Extensions\WindsorTestingExtensions.cs" />
     <Compile Include="Fields.cs" />
     <Compile Include="FluentAssertions\Assertions\ComponentModelAssertions.cs" />
+    <Compile Include="FluentAssertions\Assertions\ComponentsModelAssertions.cs" />
     <Compile Include="FluentAssertions\Assertions\WindsorContainerAssertions.cs" />
+    <Compile Include="FluentAssertions\ComponentModelExtensions.cs" />
     <Compile Include="FluentAssertions\WindsorContainerExtensions.cs" />
     <Compile Include="FolderService.cs" />
     <Compile Include="ImportHelper.cs" />
@@ -249,6 +251,7 @@
     <Compile Include="TestBase.cs" />
     <Compile Include="TestHelpers\UserPasswordCredentialProvider.cs" />
     <Compile Include="TestHelpers\Utils.cs" />
+    <Compile Include="TestHelpers\WindsorDependenciesGraphRecorder.cs" />
     <Compile Include="User.cs" />
     <Compile Include="TestServiceContextHelper.cs" />
     <Compile Include="Validators\DocumentFieldsValidator.cs" />
