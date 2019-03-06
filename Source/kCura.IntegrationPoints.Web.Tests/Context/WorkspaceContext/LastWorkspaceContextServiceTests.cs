@@ -1,23 +1,26 @@
-﻿using FluentAssertions;
-using kCura.IntegrationPoints.Web.Context.WorkspaceContext;
-using kCura.IntegrationPoints.Web.Context.WorkspaceContext.Exceptions;
+﻿using kCura.IntegrationPoints.Web.Context.WorkspaceContext;
+using Moq;
 using NUnit.Framework;
-using System;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceContext
 {
 	[TestFixture]
 	public class LastWorkspaceContextServiceTests
 	{
-		[Test]
-		public void GetWorkspaceId_ShouldThrowException()
-		{
-			// arrange
-			var sut = new LastWorkspaceContextService();
-			Action getWorkspaceIdAction = () => sut.GetWorkspaceID();
+		private Mock<IAPILog> _loggerMock;
+		private LastWorkspaceContextService _sut;
 
-			// act & assert
-			getWorkspaceIdAction.ShouldThrow<WorkspaceIdNotFoundException>();
+		[SetUp]
+		public void SetUp()
+		{
+			_loggerMock = new Mock<IAPILog>();
+			_loggerMock
+				.Setup(x => x.ForContext<LastWorkspaceContextService>())
+				.Returns(_loggerMock.Object);
+
+			_sut = new LastWorkspaceContextService(_loggerMock.Object);
 		}
 	}
 }
+;

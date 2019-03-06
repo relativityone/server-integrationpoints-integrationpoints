@@ -80,6 +80,7 @@
     <Compile Include="Infrastructure\Session\SessionServiceFactoryTests.cs" />
     <Compile Include="Infrastructure\Session\SessionServiceTests.cs" />
     <Compile Include="Installers\Context\UserContextRegistrationTests.cs" />
+    <Compile Include="Installers\Context\WorkspaceContextRegistrationTests.cs" />
     <Compile Include="IntegrationPointsServices\Logging\CacheHolderTests.cs" />
     <Compile Include="Helpers\SummaryPageSelectorTests.cs" />
     <Compile Include="IntegrationPointsServices\Logging\WebCorrelationContextProviderTests.cs" />
