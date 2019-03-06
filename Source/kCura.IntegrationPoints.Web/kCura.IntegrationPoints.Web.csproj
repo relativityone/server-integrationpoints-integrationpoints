@@ -78,10 +78,10 @@
     <Compile Include="Attributes\JsonNetResult.cs" />
     <Compile Include="Context\UserContext\Exceptions\UserContextNotFoundException.cs" />
     <Compile Include="Context\UserContext\IUserContext.cs" />
-    <Compile Include="Context\UserContext\LastUserContextService.cs" />
+    <Compile Include="Context\UserContext\NotFoundUserContextService.cs" />
     <Compile Include="Context\UserContext\RequestHeadersUserContextService.cs" />
     <Compile Include="Context\UserContext\SessionUserContextService.cs" />
-    <Compile Include="Context\WorkspaceContext\LastWorkspaceContextService.cs" />
+    <Compile Include="Context\WorkspaceContext\NotFoundWorkspaceContextService.cs" />
     <Compile Include="Extensions\HttpConfigurationExtensions.cs" />
     <Compile Include="Installers\Context\UserContextRegistration.cs" />
     <Compile Include="Installers\Context\ContextRegistration.cs" />

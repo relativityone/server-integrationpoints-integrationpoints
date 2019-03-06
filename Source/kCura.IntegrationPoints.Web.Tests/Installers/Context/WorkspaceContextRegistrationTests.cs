@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Installers.Context
 		}
 		
 		[Test]
-		public void LastWorkspaceContextService_ShouldBeRegisteredWithProperLifestyle()
+		public void NotFoundWorkspaceContextService_ShouldBeRegisteredWithProperLifestyle()
 		{
 			// arrange
 			IWindsorContainer sut = new WindsorContainer();
@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Installers.Context
 			// assert
 			sut.Should()
 				.HaveRegisteredMultipleComponents<IWorkspaceContext>()
-				.And.OneOfThemWithImplementation<LastWorkspaceContextService>()
+				.And.OneOfThemWithImplementation<NotFoundWorkspaceContextService>()
 				.Which.Should()
 				.BeRegisteredWithLifestyle(LifestyleType.PerWebRequest);
 		}
@@ -96,9 +96,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Installers.Context
 				.Should()
 				.BeTrue("because {0} depends on {1}", nameof(RequestContextWorkspaceContextService), nameof(SessionWorkspaceContextService));
 			dependenciesRecorder
-				.WasDependencyPresent<SessionWorkspaceContextService, LastWorkspaceContextService>()
+				.WasDependencyPresent<SessionWorkspaceContextService, NotFoundWorkspaceContextService>()
 				.Should()
-				.BeTrue("because {0} depends on {1}", nameof(SessionWorkspaceContextService), nameof(LastWorkspaceContextService));
+				.BeTrue("because {0} depends on {1}", nameof(SessionWorkspaceContextService), nameof(NotFoundWorkspaceContextService));
 		}
 
 		private static void RegisterDependencies(IWindsorContainer container)

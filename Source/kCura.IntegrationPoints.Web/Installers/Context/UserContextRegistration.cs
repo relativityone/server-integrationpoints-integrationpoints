@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Web.Installers.Context
 					.LifestylePerWebRequest(),
 				Component
 					.For<IUserContext>()
-					.ImplementedBy<LastUserContextService>()
+					.ImplementedBy<NotFoundUserContextService>()
 					.LifestyleSingleton()
 			);
 		}

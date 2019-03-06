@@ -9,17 +9,17 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceContext
 	public class LastWorkspaceContextServiceTests
 	{
 		private Mock<IAPILog> _loggerMock;
-		private LastWorkspaceContextService _sut;
+		private NotFoundWorkspaceContextService _sut;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_loggerMock = new Mock<IAPILog>();
 			_loggerMock
-				.Setup(x => x.ForContext<LastWorkspaceContextService>())
+				.Setup(x => x.ForContext<NotFoundWorkspaceContextService>())
 				.Returns(_loggerMock.Object);
 
-			_sut = new LastWorkspaceContextService(_loggerMock.Object);
+			_sut = new NotFoundWorkspaceContextService(_loggerMock.Object);
 		}
 	}
 }

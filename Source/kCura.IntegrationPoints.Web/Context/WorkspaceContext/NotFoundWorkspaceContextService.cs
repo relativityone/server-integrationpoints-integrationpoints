@@ -3,13 +3,13 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.Context.WorkspaceContext
 {
-	internal class LastWorkspaceContextService : IWorkspaceContext
+	internal class NotFoundWorkspaceContextService : IWorkspaceContext
 	{
 		private readonly IAPILog _logger;
 
-		public LastWorkspaceContextService(IAPILog logger)
+		public NotFoundWorkspaceContextService(IAPILog logger)
 		{
-			_logger = logger.ForContext<LastWorkspaceContextService>();
+			_logger = logger.ForContext<NotFoundWorkspaceContextService>();
 		}
 
 		public int GetWorkspaceID()

@@ -4,13 +4,13 @@ using System.Runtime.CompilerServices;
 
 namespace kCura.IntegrationPoints.Web.Context.UserContext
 {
-	public class LastUserContextService : IUserContext
+	public class NotFoundUserContextService : IUserContext
 	{
 		private readonly IAPILog _logger;
 
-		public LastUserContextService(IAPILog logger)
+		public NotFoundUserContextService(IAPILog logger)
 		{
-			_logger = logger.ForContext<LastUserContextService>();
+			_logger = logger.ForContext<NotFoundUserContextService>();
 		}
 
 		public int GetUserID() => LogWarningAndThrowException();
