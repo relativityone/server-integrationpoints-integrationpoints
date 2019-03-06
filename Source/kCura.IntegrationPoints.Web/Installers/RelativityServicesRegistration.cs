@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Web.Installers
 				Component
 					.For<ICPHelper, IHelper>()
 					.UsingFactoryMethod(k => new RetriableCPHelperProxy(ConnectionHelper.Helper()))
-					.LifestyleTransient(), // TODO shouldn't it be PerWebRequest?
+					.LifestylePerWebRequest(),
 				Component
 					.For<IHtmlSanitizerManager>()
 					.ImplementedBy<HtmlSanitizerManager>()
