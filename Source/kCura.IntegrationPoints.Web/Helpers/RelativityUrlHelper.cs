@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.Web.Helpers
 
 		public string GetRelativityViewUrl(int workspaceID, int artifactID, string objectTypeName)
 		{
-			string applicationRoot = _httpRequest.GetRootApplicationPath();
+			string applicationRoot = _httpRequest.GetApplicationRootPath();
 			int typeID = _service.GetObjectTypeID(objectTypeName);
 
 			return string.Format(

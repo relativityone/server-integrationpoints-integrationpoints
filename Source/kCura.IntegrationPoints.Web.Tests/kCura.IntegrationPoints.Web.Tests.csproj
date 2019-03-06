@@ -48,6 +48,7 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Context\WorkspaceContext\LastWorkspaceContextServiceTests.cs" />
+    <Compile Include="Extensions\RequestExtensionsTests.cs" />
     <Compile Include="Infrastructure\ExceptionLogger\WebAPIExceptionLoggerTests.cs" />
     <Compile Include="Controllers\API\DataTransferLocationControllerTests.cs" />
     <Compile Include="Controllers\API\ExportFieldsControllerTests.cs" />
