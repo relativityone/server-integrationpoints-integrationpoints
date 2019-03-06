@@ -10,6 +10,7 @@ using Moq;
 using NUnit.Framework;
 using System.Web;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.Tests.Installers.Context
 {
@@ -105,7 +106,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Installers.Context
 			IRegistration[] dependencies =
 			{
 				Component.For<HttpRequestBase>().Instance(new Mock<HttpRequestBase>().Object),
-				Component.For<ISessionService>().Instance(new Mock<ISessionService>().Object)
+				Component.For<ISessionService>().Instance(new Mock<ISessionService>().Object),
+				Component.For<IAPILog>().Instance(new Mock<IAPILog>().Object)
 			};
 
 			container.Register(dependencies);
