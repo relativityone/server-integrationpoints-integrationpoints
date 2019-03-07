@@ -245,7 +245,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			if (!JobHistory.StartTimeUTC.HasValue)
 			{
 				JobHistory.StartTimeUTC = DateTime.UtcNow;
-				//TODO: jobHistory.Status = "";
 				_jobHistoryService.UpdateRdo(JobHistory);
 			}
 		}

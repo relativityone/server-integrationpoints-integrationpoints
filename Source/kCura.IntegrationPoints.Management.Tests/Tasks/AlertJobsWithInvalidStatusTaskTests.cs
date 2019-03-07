@@ -50,10 +50,7 @@ namespace kCura.IntegrationPoints.Management.Tests.Tasks
 			_instance.Run(workspaceArtifactIds);
 
 			// ASSERT
-			// temporary solution to disable invalid status job alert (REL-205785)
 			_apm.DidNotReceive().HealthCheckOperation(Arg.Any<string>(), Arg.Any<Func<HealthCheckOperationResult>>());
-			// _apm.Received(1).HealthCheckOperation(Constants.IntegrationPoints.Telemetry.APM_HEALTHCHECK,
-			//	Arg.Is<Func<HealthCheckOperationResult>>(x => ValidateHealthCheckResult(x(), invalidJobs)));
 		}
 
 		private bool ValidateHealthCheckResult(HealthCheckOperationResult healthCheckOperationResult, Dictionary<int, IList<JobHistory>> invalidJobs)

@@ -68,7 +68,6 @@ namespace kCura.IntegrationPoints.UITests.Components
 
 		private static string GetSelectNumericId(string selectFullId)
 		{
-			// selectFullId format: s2id_autogen{ID}
 			int lengthOfPrefixInSelectFullId = "s2id_autogen".Length;
 			return selectFullId.Substring(lengthOfPrefixInSelectFullId);
 		}

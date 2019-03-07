@@ -151,7 +151,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			// Arrange
 			DestinationContext.ImportDocumentsToRoot();
 
-			//LinksSavedSearchToFolderValidator validator = new LinksSavedSearchToFolderValidator();
 			RelativityProviderModel model = CreateRelativityProviderModelWithLinks();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
 			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.ReadFromFolderTree;
@@ -203,7 +202,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			// Arrange
 			DestinationContext.ImportDocuments();
 
-			//LinksSavedSearchToFolderValidator validator = new LinksSavedSearchToFolderValidator();
 			RelativityProviderModel model = CreateRelativityProviderModelWithLinks();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
 			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.ReadFromFolderTree;
@@ -215,7 +213,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			detailsPage.RunIntegrationPoint();
 
 			// Assert
-			//validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
 
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
@@ -230,7 +227,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			// Arrange
 			DestinationContext.ImportDocumentsToRoot();
 
-			//LinksSavedSearchToFolderValidator validator = new LinksSavedSearchToFolderValidator();
 			RelativityProviderModel model = CreateRelativityProviderModelWithLinks();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
 			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.No;
@@ -241,7 +237,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			detailsPage.RunIntegrationPoint();
 
 			// Assert
-			//validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
 
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
@@ -256,7 +251,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			// Arrange
 			DestinationContext.ImportDocumentsToRoot();
 
-			//LinksSavedSearchToFolderValidator validator = new LinksSavedSearchToFolderValidator();
 			RelativityProviderModel model = CreateRelativityProviderModelWithLinks();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
 			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.ReadFromField;
@@ -268,7 +262,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			detailsPage.RunIntegrationPoint();
 
 			// Assert
-			//validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
 
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
@@ -283,7 +276,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			// Arrange
 			DestinationContext.ImportDocumentsToRoot();
 
-			//LinksSavedSearchToFolderValidator validator = new LinksSavedSearchToFolderValidator();
 			RelativityProviderModel model = CreateRelativityProviderModelWithLinks();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
 			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.ReadFromFolderTree;
@@ -295,7 +287,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			detailsPage.RunIntegrationPoint();
 
 			// Assert
-			//validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
 
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
@@ -310,7 +301,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			// Arrange
 			DestinationContext.ImportDocuments();
 
-			//LinksSavedSearchToFolderValidator validator = new LinksSavedSearchToFolderValidator();
 			RelativityProviderModel model = CreateRelativityProviderModelWithLinks();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
 			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.ReadFromField;
@@ -322,7 +312,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			detailsPage.RunIntegrationPoint();
 
 			// Assert
-			//validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
 
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
@@ -337,7 +326,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			// Arrange
 			DestinationContext.ImportDocuments();
 
-			//LinksSavedSearchToFolderValidator validator = new LinksSavedSearchToFolderValidator();
 			RelativityProviderModel model = CreateRelativityProviderModelWithLinks();
 			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
 			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.ReadFromFolderTree;
@@ -349,7 +337,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			detailsPage.RunIntegrationPoint();
 
 			// Assert
-			//validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
 
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);

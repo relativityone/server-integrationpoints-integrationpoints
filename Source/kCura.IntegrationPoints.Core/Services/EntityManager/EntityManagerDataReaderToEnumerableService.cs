@@ -23,9 +23,6 @@ namespace kCura.IntegrationPoints.Core.Services.EntityManager
 		{
 			try
 			{
-				//this was not getting me the correct table columns it was giving me some bs column names that made no sense
-				//DataColumnCollection columns = reader.GetSchemaTable().Columns;
-				//found http://stackoverflow.com/questions/681653/can-you-get-the-column-names-from-a-sqldatareader
 				var columns = Enumerable.Range(0, reader.FieldCount).Select(reader.GetName).ToList();
 				while (reader.Read())
 				{

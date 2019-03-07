@@ -58,8 +58,6 @@ namespace kCura.IntegrationPoints.Web.Logging
 
 		private readonly ICacheHolder _cacheHolder;
 
-		//private static readonly Dictionary<Regex, string> _matchedRegExActions = new Dictionary<Regex, string>();
-
 		private static readonly Dictionary<Regex, string> _matchedRegExActions;
 
 		private static readonly Regex _jobEditRegEx = new Regex(_JOB_EDIT_ACTION_REG_EX);
