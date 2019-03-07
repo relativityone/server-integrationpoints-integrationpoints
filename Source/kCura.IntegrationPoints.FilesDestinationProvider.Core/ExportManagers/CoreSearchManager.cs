@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
 using kCura.WinEDDS;
@@ -69,16 +70,16 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 
 		private static ViewFieldInfo[] ToViewFieldInfoArray(ViewFieldResponse[] viewFieldResponseArray)
 		{
-			var viewFieldInfoList = new List<ViewFieldInfo>(viewFieldResponseArray.Length);
+			return viewFieldResponseArray
+				.Select(ToViewFieldInfo)
+				.ToArray();
+		}
 
-			foreach (var viewFieldResponse in viewFieldResponseArray)
-			{
-				RelativityViewFieldInfo coreViewFieldInfo = new CoreViewFieldInfo(viewFieldResponse);
-				ViewFieldInfo viewFieldInfo = new ViewFieldInfo(coreViewFieldInfo);
-				viewFieldInfoList.Add(viewFieldInfo);
-			}
-
-			return viewFieldInfoList.ToArray();
+		private static ViewFieldInfo ToViewFieldInfo(ViewFieldResponse viewFieldResponse)
+		{
+			RelativityViewFieldInfo coreViewFieldInfo = new CoreViewFieldInfo(viewFieldResponse);
+			ViewFieldInfo viewFieldInfo = new ViewFieldInfo(coreViewFieldInfo);
+			return viewFieldInfo;
 		}
 
 		public int[] RetrieveDefaultViewFieldIds(int caseContextArtifactID, int viewArtifactID, int artifactTypeID, bool isProduction)
@@ -87,16 +88,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 				? _viewFieldRepository.ReadViewFieldIDsFromProduction(caseContextArtifactID, artifactTypeID, viewArtifactID)
 				: _viewFieldRepository.ReadViewFieldIDsFromSearch(caseContextArtifactID, artifactTypeID, viewArtifactID);
 
-			var result = new List<int>();
-			foreach (var viewFieldIdResponse in viewFieldIDResponseArray)
-			{
-				if (viewFieldIdResponse.ArtifactID.Equals(viewArtifactID))
-				{
-					result.Add(viewFieldIdResponse.ArtifactViewFieldID);
-				}
-			}
-
-			return result.ToArray();
+			return viewFieldIDResponseArray
+				.Where(x => x.ArtifactID.Equals(viewArtifactID))
+				.Select(x => x.ArtifactViewFieldID)
+				.ToArray();
 		}
 
 		public DataSet RetrieveViewsByContextArtifactID(int caseContextArtifactID, int artifactTypeID, bool isSearch)

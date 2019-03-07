@@ -12,13 +12,19 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 		private readonly CurrentUser _contextUser;
 		private readonly IInstanceSettingRepository _instanceSettingRepository;
 		private readonly IRepositoryFactory _repositoryFactory;
+		private readonly IViewFieldRepository _viewFieldRepository;
 		private readonly IAPILog _logger;
 
-		public ExportServiceFactory(IAPILog logger, IInstanceSettingRepository instanceSettingRepository, IRepositoryFactory repositoryFactory, CurrentUser contextUser)
+		public ExportServiceFactory(IAPILog logger, 
+			IInstanceSettingRepository instanceSettingRepository,
+			IRepositoryFactory repositoryFactory, 
+			IViewFieldRepository viewFieldRepository, 
+			CurrentUser contextUser)
 		{
 			_logger = logger.ForContext<ExportServiceFactory>();
 			_instanceSettingRepository = instanceSettingRepository;
 			_repositoryFactory = repositoryFactory;
+			_viewFieldRepository = viewFieldRepository;
 			_contextUser = contextUser;
 		}
 
@@ -27,7 +33,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 			if (UseCoreApi())
 			{
 				LogUsingRelativityCore();
-				return new CoreServiceFactory(_repositoryFactory, exportDataContext.ExportFile, _contextUser.ID);
+				return new CoreServiceFactory(_repositoryFactory, _viewFieldRepository, exportDataContext.ExportFile, _contextUser.ID);
 			}
 
 			LogUsingWebApi();
