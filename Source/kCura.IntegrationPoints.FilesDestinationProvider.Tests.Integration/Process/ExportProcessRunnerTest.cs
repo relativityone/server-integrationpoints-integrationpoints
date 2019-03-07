@@ -99,11 +99,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			configFactoryMock.Create().Returns(configMock);
 
 			IRepositoryFactory repositoryFactory = _windsorContainer.Resolve<IRepositoryFactory>();
+			IViewFieldRepository viewFieldRepository = _windsorContainer.Resolve<IViewFieldRepository>();
 			IInstanceSettingRepository instanceSettingRepository =
 				_windsorContainer.Resolve<IInstanceSettingRepository>();
 			var user = new CurrentUser() {ID = 9};
 			IAPILog logger = helper.GetLoggerFactory().GetLogger();
-			var exportServiceFactory = new ExportServiceFactory(logger, instanceSettingRepository, repositoryFactory, user);
+			var exportServiceFactory = new ExportServiceFactory(logger, instanceSettingRepository, repositoryFactory, viewFieldRepository, user);
 			
 			var exportProcessBuilder = new ExportProcessBuilder(
 				configFactoryMock,
