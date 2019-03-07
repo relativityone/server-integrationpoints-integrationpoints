@@ -236,12 +236,12 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.UseFolderPathInformation = RelativityProviderModel.UseFolderPathInformationEnum.No;
 
 			// Act
-			//validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
 			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 			detailsPage.RunIntegrationPoint();
 
 			// Assert
+			//validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
 
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
@@ -263,12 +263,12 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.MoveExistingDocuments = false;
 
 			// Act
-			//validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
 			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 			detailsPage.RunIntegrationPoint();
 
 			// Assert
+			//validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
 
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
