@@ -31,7 +31,7 @@ namespace Relativity.Sync.Tests.Integration
 			List<Type[]> expectedOrder = ExpectedExecutionOrder();
 
 			IContainer container = IntegrationTestsContainerBuilder.CreateContainer(_executorTypes);
-			ISyncJob syncJob = _syncJobFactory.Create(container, new SyncJobParameters(1, 1));
+			ISyncJob syncJob = _syncJobFactory.Create(container, new List<IInstaller>(), new SyncJobParameters(1, 1));
 
 			// ACT
 			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
@@ -44,7 +44,7 @@ namespace Relativity.Sync.Tests.Integration
 		public async Task NotificationShouldBeExecutedInCaseOfSuccessfulPipeline()
 		{
 			IContainer container = IntegrationTestsContainerBuilder.CreateContainer(_executorTypes);
-			ISyncJob syncJob = _syncJobFactory.Create(container, new SyncJobParameters(1, 1));
+			ISyncJob syncJob = _syncJobFactory.Create(container, new List<IInstaller>(), new SyncJobParameters(1, 1));
 
 			// ACT
 			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
@@ -60,7 +60,7 @@ namespace Relativity.Sync.Tests.Integration
 
 			containerBuilder.RegisterType<FailingExecutorStub<IValidationConfiguration>>().As<IExecutor<IValidationConfiguration>>();
 
-			ISyncJob syncJob = _syncJobFactory.Create(containerBuilder.Build(), new SyncJobParameters(1, 1));
+			ISyncJob syncJob = _syncJobFactory.Create(containerBuilder.Build(), new List<IInstaller>(), new SyncJobParameters(1, 1));
 
 			// ACT
 			Func<Task> action = async () => await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);

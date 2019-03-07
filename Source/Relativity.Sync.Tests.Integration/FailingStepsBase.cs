@@ -31,7 +31,7 @@ namespace Relativity.Sync.Tests.Integration
 
 			_containerBuilder.RegisterInstance(executor).As<IExecutor<T>>();
 
-			ISyncJob syncJob = _syncJobFactory.Create(_containerBuilder.Build(), new SyncJobParameters(1, 1));
+			ISyncJob syncJob = _syncJobFactory.Create(_containerBuilder.Build(), new List<IInstaller>(), new SyncJobParameters(1, 1));
 
 			// ACT
 			Func<Task> action = async () => await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
@@ -54,7 +54,7 @@ namespace Relativity.Sync.Tests.Integration
 
 			_containerBuilder.RegisterInstance(executionConstrains).As<IExecutionConstrains<T>>();
 
-			ISyncJob syncJob = _syncJobFactory.Create(_containerBuilder.Build(), new SyncJobParameters(1, 1));
+			ISyncJob syncJob = _syncJobFactory.Create(_containerBuilder.Build(), new List<IInstaller>(), new SyncJobParameters(1, 1));
 
 			// ACT
 			Func<Task> action = async () => await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);

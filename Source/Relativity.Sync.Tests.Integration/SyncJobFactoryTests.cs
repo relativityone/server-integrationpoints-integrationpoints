@@ -1,4 +1,5 @@
-﻿using Autofac;
+﻿using System.Collections.Generic;
+using Autofac;
 using FluentAssertions;
 using NUnit.Framework;
 using Relativity.Sync.Tests.Integration.Stubs;
@@ -23,7 +24,7 @@ namespace Relativity.Sync.Tests.Integration
 			SyncJobParameters syncJobParameters = new SyncJobParameters(1, 1);
 
 			// ACT
-			ISyncJob job = _instance.Create(container, syncJobParameters);
+			ISyncJob job = _instance.Create(container, new List<IInstaller>(), syncJobParameters);
 
 			// ASSERT
 			job.Should().NotBeNull();
