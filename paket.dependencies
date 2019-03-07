@@ -10,6 +10,7 @@ nuget Polly ~> 6.1
 nuget Banzai ~> 3.0
 nuget Banzai.AUtofac ~> 3.0
 nuget Newtonsoft.Json ~> 12.0
+nuget Relativity.Telemetry.APM ~> 2018.12.2
 
 // Tests
 nuget NUnit ~> 3.11

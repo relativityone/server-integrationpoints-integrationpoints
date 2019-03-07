@@ -81,3 +81,7 @@ task runPerformanceTests {
 task runSonarScanner -depends restorePackages, findMsbuild {
     & (Join-Path $scriptsDir "run-sonar-scanner.ps1") -projectName $projectName -sourceDir $sourceDir -toolsDir $toolsDir -logsDir $logsDir -version $version -coverageFileName $coverageFileName
 }
+
+task help -alias ? {
+    WriteDocumentation
+}

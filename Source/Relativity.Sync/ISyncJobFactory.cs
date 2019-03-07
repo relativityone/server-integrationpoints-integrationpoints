@@ -1,4 +1,5 @@
-﻿using Autofac;
+﻿using System.Collections.Generic;
+using Autofac;
 
 namespace Relativity.Sync
 {
@@ -34,9 +35,18 @@ namespace Relativity.Sync
 		///     Creates <see cref="ISyncJob" />
 		/// </summary>
 		/// <param name="container">Container initialized with all required adapters</param>
+		/// <param name="installers">Dependent <see cref="IInstaller"/>s that register dependencies in the <see cref="IContainer"/> for this job</param>
+		/// <param name="syncJobParameters">Parameters of job to be created</param>
+		ISyncJob Create(IContainer container, IEnumerable<IInstaller> installers, SyncJobParameters syncJobParameters);
+
+		/// <summary>
+		///     Creates <see cref="ISyncJob" />
+		/// </summary>
+		/// <param name="container">Container initialized with all required adapters</param>
+		/// <param name="installers">Dependent <see cref="IInstaller"/>s that register dependencies in the <see cref="IContainer"/> for this job</param>
 		/// <param name="syncJobParameters">Parameters of job to be created</param>
 		/// <param name="configuration">Sync configuration</param>
 		/// <param name="logger">Logger</param>
-		ISyncJob Create(IContainer container, SyncJobParameters syncJobParameters, SyncConfiguration configuration, ISyncLog logger);
+		ISyncJob Create(IContainer container, IEnumerable<IInstaller> installers, SyncJobParameters syncJobParameters, SyncConfiguration configuration, ISyncLog logger);
 	}
 }

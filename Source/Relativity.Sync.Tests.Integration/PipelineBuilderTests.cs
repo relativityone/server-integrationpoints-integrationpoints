@@ -76,7 +76,7 @@ namespace Relativity.Sync.Tests.Integration
 			ContainerBuilder containerBuilder = IntegrationTestsContainerBuilder.CreateContainerBuilder(_executorTypes);
 			Mock<ISyncMetrics> syncMetrics = new Mock<ISyncMetrics>();
 			containerBuilder.RegisterInstance(syncMetrics.Object).As<ISyncMetrics>();
-			ISyncJob syncJob = _syncJobFactory.Create(containerBuilder.Build(), new SyncJobParameters(1, 1));
+			ISyncJob syncJob = _syncJobFactory.Create(containerBuilder.Build(), new List<IInstaller>(), new SyncJobParameters(1, 1));
 
 			// ACT
 			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);

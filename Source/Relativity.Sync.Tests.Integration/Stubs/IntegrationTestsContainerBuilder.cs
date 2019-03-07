@@ -26,6 +26,8 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 			containerBuilder.RegisterGeneric(typeof(ExecutorStub<>)).As(typeof(IExecutor<>));
 			containerBuilder.RegisterInstance(executorTypes).As<List<Type>>();
 			containerBuilder.RegisterType<SyncMetricsStub>().As<ISyncMetrics>();
+			containerBuilder.RegisterType<APMClientStub>().As<IAPMClient>();
+			containerBuilder.RegisterType<StopwatchStub>().As<IStopwatch>();
 
 			return containerBuilder;
 		}
