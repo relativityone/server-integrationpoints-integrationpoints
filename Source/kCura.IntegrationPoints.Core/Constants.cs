@@ -38,8 +38,8 @@ namespace kCura.IntegrationPoints.Core
 			public const string UNABLE_TO_RETRY_INTEGRATION_POINT_USER_MESSAGE = "Unable to retry this Integration Point. Please contact your system administrator.";
 			public const string UNABLE_TO_RETRY_INTEGRATION_POINT_ADMIN_ERROR_MESSAGE = "Unable to retry Integration Point.";
 			public const string UNABLE_TO_SAVE_INTEGRATION_POINT_VALIDATION_FAILED = "Unable to save the Integration Point. Validation has failed.";
-			public static Regex InvalidMultiChoicesValueFormat = new Regex($".*{kCura.IntegrationPoints.Domain.Constants.MULTI_VALUE_DELIMITER}|{kCura.IntegrationPoints.Domain.Constants.NESTED_VALUE_DELIMITER}.*", RegexOptions.Compiled);
-			public static Regex InvalidMultiObjectsValueFormat = new Regex($".*{kCura.IntegrationPoints.Domain.Constants.MULTI_VALUE_DELIMITER}.*", RegexOptions.Compiled);
+			public static readonly Regex InvalidMultiChoicesValueFormat = new Regex($".*{kCura.IntegrationPoints.Domain.Constants.MULTI_VALUE_DELIMITER}|{kCura.IntegrationPoints.Domain.Constants.NESTED_VALUE_DELIMITER}.*", RegexOptions.Compiled);
+			public static readonly Regex InvalidMultiObjectsValueFormat = new Regex($".*{kCura.IntegrationPoints.Domain.Constants.MULTI_VALUE_DELIMITER}.*", RegexOptions.Compiled);
 
 			public const string API_CONTROLLER_NAME = "IntegrationPointsAPI";
 			public const string OAUTH2_CLIENT_NAME_PREFIX = "F6B8C2B4B3E8465CA00775F699375D3C";
@@ -47,10 +47,10 @@ namespace kCura.IntegrationPoints.Core
 
 			public static class IntegrationPointTypes
 			{
-				public static Guid ImportGuid = new Guid("700D94A7-014C-4C7C-B1A2-B53229E3A1C4");
-				public static string ImportName = @"Import";
-				public static Guid ExportGuid = new Guid("DBB2860A-5691-449B-BC4A-E18D8519EB3A");
-				public static string ExportName = @"Export";
+				public static readonly Guid ImportGuid = new Guid("700D94A7-014C-4C7C-B1A2-B53229E3A1C4");
+				public static readonly string ImportName = @"Import";
+				public static readonly Guid ExportGuid = new Guid("DBB2860A-5691-449B-BC4A-E18D8519EB3A");
+				public static readonly string ExportName = @"Export";
 			}
 
 			public static class PermissionErrors
@@ -165,14 +165,14 @@ namespace kCura.IntegrationPoints.Core
 
 		public static class Fields
 		{
-			internal static string Name = "Name";
-			internal static string ArtifactId = "ArtifactID";
-			internal static string Choices = "Choices";
-			internal static string ObjectTypeArtifactTypeId = "Object Type Artifact Type ID";
-			internal static string FieldType = "Field Type";
-			internal static string FieldTypeName = "Field Type Name";
-			internal static string IsIdentifier = "Is Identifier";
-			internal static string MultipleChoice = "Multiple Choice";
+			internal static readonly string Name = "Name";
+			internal static readonly string ArtifactId = "ArtifactID";
+			internal static readonly string Choices = "Choices";
+			internal static readonly string ObjectTypeArtifactTypeId = "Object Type Artifact Type ID";
+			internal static readonly string FieldType = "Field Type";
+			internal static readonly string FieldTypeName = "Field Type Name";
+			internal static readonly string IsIdentifier = "Is Identifier";
+			internal static readonly string MultipleChoice = "Multiple Choice";
 		}
 
 		public static class ObjectTypeArtifactTypesGuid

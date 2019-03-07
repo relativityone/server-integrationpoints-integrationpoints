@@ -264,8 +264,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		internal static class Fields //MNG: similar to class used in DocumentTransferProvider, probably find a better way to reference these
 		{
-			internal static string Name = "Name";
-			internal static string IsIdentifier = "Is Identifier";
+			internal static readonly string Name = "Name";
+			internal static readonly string IsIdentifier = "Is Identifier";
 		}
 	}
 }

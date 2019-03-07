@@ -2,6 +2,6 @@
 {
 	public static class ExportToLoadFileNameOutputFilesAfterConstants
 	{
-		public static string IDENTIFIER = "Identifier";
+		public static readonly string IDENTIFIER = "Identifier";
 	}
 }

@@ -18,16 +18,16 @@ namespace kCura.IntegrationPoints.Data
 
 	public partial class OverwriteFieldsChoiceGuids
 	{
-		public static string APPEND_GUID = "998c2b04-d42e-435b-9fba-11fec836aad8";
-		public static string APPEND_AND_OVERLAY_GUID = "5450ebc3-ac57-4e6a-9d28-d607bbdcf6fd";
-		public static string OVERLAY_GUID = "70a1052d-93a3-4b72-9235-ac65f0d5a515";
+		public static readonly string APPEND_GUID = "998c2b04-d42e-435b-9fba-11fec836aad8";
+		public static readonly string APPEND_AND_OVERLAY_GUID = "5450ebc3-ac57-4e6a-9d28-d607bbdcf6fd";
+		public static readonly string OVERLAY_GUID = "70a1052d-93a3-4b72-9235-ac65f0d5a515";
 
 	}
 	public partial class FrequencyChoiceGuids
 	{
-		public static string Daily = "B8B0849B-5E92-4730-B5F4-858DC2982491";
-		public static string Weekly = "A694AAA9-F374-494C-8FE9-60C1EE388B27";
-		public static string Monthly = "D8E62A6F-7B0D-4F38-881F-1699EF41B4E0";
+		public static readonly string Daily = "B8B0849B-5E92-4730-B5F4-858DC2982491";
+		public static readonly string Weekly = "A694AAA9-F374-494C-8FE9-60C1EE388B27";
+		public static readonly string Monthly = "D8E62A6F-7B0D-4F38-881F-1699EF41B4E0";
 	}
 
 	public class Constants
@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoints.Data
 		public const string TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START_EXCLUDED = "IntegrationPoint_Relativity_JobHistoryErrors_ItemStart_Excluded";
 		public const string TEMPORARY_JOB_HISTORY_ERROR_SAVED_SEARCH_NAME = "Temporary Retry Errors Search";
 		public const string TEMPORARY_DOC_TABLE_SOURCEWORKSPACE = "IntegrationPoint_Relativity_SourceWorkspace";
-		public static Guid RELATIVITY_SOURCEPROVIDER_GUID = new Guid("74A863B9-00EC-4BB7-9B3E-1E22323010C6");
+		public static readonly Guid RELATIVITY_SOURCEPROVIDER_GUID = new Guid("74A863B9-00EC-4BB7-9B3E-1E22323010C6");
 		public const string DESTINATION_WORKSPACE_SAVED_SEARCH_FOLDER_NAME = "Integration Points";
 
 		public const int DEFAULT_NAME_FIELD_LENGTH = 255;
