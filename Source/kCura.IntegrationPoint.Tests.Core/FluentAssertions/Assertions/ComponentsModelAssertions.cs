@@ -32,5 +32,43 @@ namespace kCura.IntegrationPoint.Tests.Core.FluentAssertions.Assertions
 
 			return new AndWhichConstraint<ComponentsModelAssertions, ComponentModel>(this, foundComponent);
 		}
+
+		public AndConstraint<ComponentsModelAssertions> AllWithLifestyle(
+			LifestyleType lifestyleType,
+			string because = "",
+			params object[] becauseArgs)
+		{
+			IEnumerable<string> invalidComponentsNames = Subject
+				.Where(component => component.LifestyleType != lifestyleType)
+				.Select(component => component.Implementation.Name);
+
+			Execute.Assertion
+				.BecauseOf(because, becauseArgs)
+				.ForCondition(!invalidComponentsNames.Any())
+				.FailWith("All components expected to have {0} lifestyle{reason}, but {1} have different lifestyle",
+					lifestyleType,
+					invalidComponentsNames
+				);
+
+			return new AndConstraint<ComponentsModelAssertions>(this);
+		}
+
+		public AndConstraint<ComponentsModelAssertions> AllExposeThemselvesAsService(
+			string because = "",
+			params object[] becauseArgs)
+		{
+			IEnumerable<string> invalidComponentsNames = Subject
+				.Where(component => component.Services.Single() != component.Implementation)
+				.Select(component => component.Implementation.Name);
+
+			Execute.Assertion
+				.BecauseOf(because, becauseArgs)
+				.ForCondition(!invalidComponentsNames.Any())
+				.FailWith("All components expected to expose themselves as service{reason}, but {1} haven't",
+					invalidComponentsNames
+				);
+
+			return new AndConstraint<ComponentsModelAssertions>(this);
+		}
 	}
 }
