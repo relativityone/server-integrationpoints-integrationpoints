@@ -47,7 +47,10 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Context\WorkspaceContext\LastWorkspaceContextServiceTests.cs" />
+    <Compile Include="Context\UserContext\NotFoundUserContextServiceTests.cs" />
+    <Compile Include="Context\UserContext\RequestHeadersUserContextServiceTests.cs" />
+    <Compile Include="Context\UserContext\SessionUserContextServiceTests.cs" />
+    <Compile Include="Context\WorkspaceContext\NotFoundWorkspaceContextServiceTests.cs" />
     <Compile Include="Extensions\HttpConfigurationExtensionsTests.cs" />
     <Compile Include="Extensions\RequestExtensionsTests.cs" />
     <Compile Include="Helpers\RelativityUrlHelperTests.cs" />

@@ -7,6 +7,7 @@ using System.Web;
 
 namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceContext
 {
+	[TestFixture]
 	public class RequestContextWorkspaceContextServiceTests
 	{
 		private Mock<IWorkspaceContext> _nextWorkspaceContextServiceMock;
