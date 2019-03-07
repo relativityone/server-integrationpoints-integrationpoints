@@ -16,7 +16,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			get
 			{
 				if (_secretCatalog == null)
+				{
 					_secretCatalog = _secretCatalogFactory.Create(_workspaceArtifactId);
+				}
 				return _secretCatalog;
 			}
 		}

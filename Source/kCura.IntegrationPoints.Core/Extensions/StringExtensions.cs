@@ -29,7 +29,9 @@ namespace kCura.IntegrationPoints.Core.Extensions
 		public static string WithEnding(this string str, string ending)
 		{
 			if (str == null)
+			{
 				return ending;
+			}
 
 			string result = str;
 
@@ -40,7 +42,9 @@ namespace kCura.IntegrationPoints.Core.Extensions
 			{
 				string tmp = result + ending.Right(i);
 				if (tmp.EndsWith(ending))
+				{
 					return tmp;
+				}
 			}
 
 			return result;

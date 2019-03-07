@@ -12,7 +12,9 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 			IScheduleRule rule;
 
 			if (string.IsNullOrEmpty(serializedString))
+			{
 				return null;
+			}
 
 			ISerializer defaultSerializer = new XMLSerializerFactory();
 
@@ -22,13 +24,17 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 			{
 				rule = Deserialize<PeriodicScheduleRule>(serializedString, defaultSerializer);
 				if (rule != null)
+				{
 					return rule;
+				}
 			}
 
 			//Try reflection
 			rule = DeserializeWithNoType(job);
 			if (rule != null)
+			{
 				return rule;
+			}
 
 			return null;
 		}

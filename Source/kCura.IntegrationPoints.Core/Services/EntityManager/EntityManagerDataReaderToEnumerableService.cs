@@ -31,7 +31,10 @@ namespace kCura.IntegrationPoints.Core.Services.EntityManager
 				{
 					string oldKey = reader[_oldKeyFieldID].ToString();
 					string newKey = reader[_newKeyFieldID].ToString();
-					if (!ManagerOldNewKeyMap.ContainsKey(oldKey)) ManagerOldNewKeyMap.Add(oldKey, newKey);
+					if (!ManagerOldNewKeyMap.ContainsKey(oldKey))
+					{
+						ManagerOldNewKeyMap.Add(oldKey, newKey);
+					}
 					yield return _objectBuilder.BuildObject<T>(reader, columns);
 				}
 			}

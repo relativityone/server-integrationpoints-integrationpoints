@@ -19,9 +19,13 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 		public IRSAPIService GetRsapiService()
 		{
 			if (this.WorkspaceID > 0)
+			{
 				return ServiceContextFactory.CreateRSAPIService(helper, WorkspaceID);
+			}
 			else
+			{
 				return null;
+			}
 		}
 		public IDBContext GetDBContext(int workspaceID = -1) { return helper.GetDBContext(workspaceID); }
 	}

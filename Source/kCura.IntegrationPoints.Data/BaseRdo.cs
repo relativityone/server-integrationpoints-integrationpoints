@@ -93,16 +93,28 @@ namespace kCura.IntegrationPoints.Data
 
 		internal object ConvertValue(string fieldType, object value)
 		{
-			if (value == null) return value;
+			if (value == null)
+			{
+				return value;
+			}
 			object newValue = null;
 
 			switch (fieldType)
 			{
 				case FieldTypes.MultipleChoice:
 					Choice[] choices = null;
-					if (value is List<Choice>) choices = ((List<Choice>)value).ToArray();
-					else if (value is object[]) choices = ((object[])value).Select(x => ((Choice)x)).ToArray();
-					else if (value is Choice[]) choices = (Choice[])value;
+					if (value is List<Choice>)
+					{
+						choices = ((List<Choice>)value).ToArray();
+					}
+					else if (value is object[])
+					{
+						choices = ((object[])value).Select(x => ((Choice)x)).ToArray();
+					}
+					else if (value is Choice[])
+					{
+						choices = (Choice[])value;
+					}
 					MultiChoiceFieldValueList multiChoices = new MultiChoiceFieldValueList();
 					multiChoices.UpdateBehavior = MultiChoiceUpdateBehavior.Replace;
 					if (choices != null)

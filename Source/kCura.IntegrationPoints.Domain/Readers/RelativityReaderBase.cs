@@ -105,7 +105,10 @@ namespace kCura.IntegrationPoints.Domain.Readers
 		public override bool Read()
 		{
 			// if the reader is closed, go no further
-			if (!ReaderOpen) return false;
+			if (!ReaderOpen)
+			{
+				return false;
+			}
 
 			// Check if search results have been populated
 			if (Enumerator == null)

@@ -32,9 +32,13 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 
 			DataRow row = null;
 			if (dataTable != null && dataTable.Rows != null && dataTable.Rows.Count > 0)
+			{
 				row = dataTable.Rows[0];
+			}
 			else
+			{
 				row = null;
+			}
 
 			return row;
 		}

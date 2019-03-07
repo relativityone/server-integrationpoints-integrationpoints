@@ -95,7 +95,9 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 				}
 			}
 			else
+			{
 				settings[nameof(ExportUsingSavedSearchSettings.SavedSearchArtifactId)] = 0;
+			}
 		}
 
 		private void SetSourceProductionName(IDictionary<string, object> settings)
@@ -257,12 +259,16 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 		private string FindFolderName(Folder folder, int folderArtifactId)
 		{
 			if (folder.ArtifactID == folderArtifactId)
+			{
 				return folder.Name;
+			}
 			foreach (var folderChild in folder.Children)
 			{
 				var name = FindFolderName(folderChild, folderArtifactId);
 				if (!string.IsNullOrEmpty(name))
+				{
 					return $"{folder.Name}/{name}";
+				}
 			}
 			return string.Empty;
 		}
