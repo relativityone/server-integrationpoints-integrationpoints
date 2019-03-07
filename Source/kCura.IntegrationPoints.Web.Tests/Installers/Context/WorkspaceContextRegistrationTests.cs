@@ -3,6 +3,7 @@ using Castle.Core;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using FluentAssertions;
+using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Web.Context.WorkspaceContext;
@@ -67,7 +68,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Installers.Context
 		{
 			// arrange
 			IWindsorContainer sut = new WindsorContainer();
-			ChangeLifestyleFromPerWebRequestToTransient(sut); // we cannot resolve PerWebRequest object in tests
+			sut.ChangeLifestyleFromPerWebRequestToTransientInNewRegistrations(); // we cannot resolve PerWebRequest object in tests
 			sut.AddWorkspaceContext();
 			RegisterDependencies(sut);
 
@@ -81,7 +82,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Installers.Context
 		{
 			// arrange
 			IWindsorContainer sut = new WindsorContainer();
-			ChangeLifestyleFromPerWebRequestToTransient(sut); // we cannot resolve PerWebRequest object in tests
+			sut.ChangeLifestyleFromPerWebRequestToTransientInNewRegistrations(); // we cannot resolve PerWebRequest object in tests
 			sut.AddWorkspaceContext();
 			RegisterDependencies(sut);
 
@@ -111,17 +112,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Installers.Context
 			};
 
 			container.Register(dependencies);
-		}
-
-		private static void ChangeLifestyleFromPerWebRequestToTransient(IWindsorContainer container)
-		{
-			container.Kernel.ComponentModelCreated += model =>
-			{
-				if (model.LifestyleType == LifestyleType.PerWebRequest)
-				{
-					model.LifestyleType = LifestyleType.Transient;
-				}
-			};
 		}
 	}
 }

@@ -13,6 +13,7 @@ using System;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 
 namespace kCura.IntegrationPoints.Web.Tests.Integration.Context
@@ -136,7 +137,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Context
 		private IWindsorContainer CreateIoCContainer()
 		{
 			var container = new WindsorContainer();
-			ChangeLifestyleFromPerWebRequestToTransient(container); // we cannot resolve PerWebRequest object in tests
+			container.ChangeLifestyleFromPerWebRequestToTransientInNewRegistrations(); // we cannot resolve PerWebRequest object in tests
 			container.AddWorkspaceContext();
 			RegisterDependencies(container);
 			container.Register(
@@ -146,17 +147,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Context
 			);
 
 			return container;
-		}
-
-		private static void ChangeLifestyleFromPerWebRequestToTransient(IWindsorContainer container) // TODO move to helper class
-		{
-			container.Kernel.ComponentModelCreated += model =>
-			{
-				if (model.LifestyleType == LifestyleType.PerWebRequest)
-				{
-					model.LifestyleType = LifestyleType.Transient;
-				}
-			};
 		}
 
 		private class TestController : Controller

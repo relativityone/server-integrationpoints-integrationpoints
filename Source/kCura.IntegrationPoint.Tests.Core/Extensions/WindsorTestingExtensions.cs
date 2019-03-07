@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Castle.Core;
 using Castle.MicroKernel;
 using Castle.Windsor;
 
@@ -23,6 +24,19 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 				.Select(h => h.ComponentModel.Implementation)
 				.OrderBy(t => t.Name)
 				.ToArray();
+		}
+
+		public static IWindsorContainer ChangeLifestyleFromPerWebRequestToTransientInNewRegistrations(this IWindsorContainer container)
+		{
+			container.Kernel.ComponentModelCreated += model =>
+			{
+				if (model.LifestyleType == LifestyleType.PerWebRequest)
+				{
+					model.LifestyleType = LifestyleType.Transient;
+				}
+			};
+
+			return container;
 		}
 	}
 }
