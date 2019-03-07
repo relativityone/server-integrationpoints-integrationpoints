@@ -4,7 +4,9 @@ FluentAssertions
 kCura.Apps.Common.Utils
 kCura.Relativity.Client
 Microsoft.AspNet.Mvc
+Microsoft.AspNet.SignalR.Core
 Microsoft.AspNet.WebApi.Core
+Moq
 NSubstitute
 NUnit
 Relativity.API

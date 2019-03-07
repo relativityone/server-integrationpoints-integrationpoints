@@ -17,7 +17,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
-using kCura.IntegrationPoints.Web.Providers;
+using kCura.IntegrationPoints.Web.Context.WorkspaceContext;
 using Relativity.API;
 using Field = kCura.Relativity.ImportAPI.Data.Field;
 using Query = kCura.Relativity.Client.Query;
@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 		private IImportApiFactory _importApiFactory;
 		private IConfig _config;
 		private IChoiceService _choiceService;
-		private IWorkspaceIdProvider _workspaceIdProvider;
+		private IWorkspaceContext _workspaceIdProvider;
 		private IImportApiFacade _importApiFacade;
 		private ICPHelper _helper;
 
@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			_importApiFactory = Substitute.For<IImportApiFactory>();
 			_config = Substitute.For<IConfig>();
 			_choiceService = Substitute.For<IChoiceService>();
-			_workspaceIdProvider = Substitute.For<IWorkspaceIdProvider>();
+			_workspaceIdProvider = Substitute.For<IWorkspaceContext>();
 			_importApiFacade = Substitute.For<IImportApiFacade>();
 			_configuration = Substitute.For<HttpConfiguration>();
 			_helper = Substitute.For<ICPHelper>();
@@ -123,7 +123,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 
 			_client.Query(Arg.Any<APIOptions>(), Arg.Any<Query>()).Returns(result);
 
-	        _workspaceIdProvider.GetWorkspaceId().Returns(workspaceId);
+	        _workspaceIdProvider.GetWorkspaceID().Returns(workspaceId);
 
 	        _fieldService.GetTextFields(Arg.Any<int>(), Arg.Any<bool>()).Returns(new List<FieldEntry>());
         }
