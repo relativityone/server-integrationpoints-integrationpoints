@@ -13,6 +13,7 @@ using System;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 
 namespace kCura.IntegrationPoints.Web.Tests.Integration.Context
 {
@@ -33,6 +34,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Context
 		}
 
 		[Test]
+		[SmokeTest]
 		public void ShouldReturnCorrectWorkspaceIdWhenRequestContextContainsData()
 		{
 			// arrange
@@ -53,6 +55,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Context
 		}
 
 		[Test]
+		[SmokeTest]
 		public void ShouldReturnCorrectWorkspaceIdWhenRequestContextIsEmptyAndSessionReturnsData()
 		{
 			// arrange
@@ -71,6 +74,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Context
 		}
 
 		[Test]
+		[SmokeTest]
 		public void ShouldThrowExceptionWhenNoWorkspaceContextIsPresent()
 		{
 			// arrange
