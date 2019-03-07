@@ -47,7 +47,14 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Attributes\WebAPIFilterExceptionTests.cs" />
+    <Compile Include="Context\UserContext\NotFoundUserContextServiceTests.cs" />
+    <Compile Include="Context\UserContext\RequestHeadersUserContextServiceTests.cs" />
+    <Compile Include="Context\UserContext\SessionUserContextServiceTests.cs" />
+    <Compile Include="Context\WorkspaceContext\NotFoundWorkspaceContextServiceTests.cs" />
+    <Compile Include="Extensions\HttpConfigurationExtensionsTests.cs" />
+    <Compile Include="Extensions\RequestExtensionsTests.cs" />
+    <Compile Include="Helpers\RelativityUrlHelperTests.cs" />
+    <Compile Include="Infrastructure\ExceptionLogger\WebAPIExceptionLoggerTests.cs" />
     <Compile Include="Controllers\API\DataTransferLocationControllerTests.cs" />
     <Compile Include="Controllers\API\ExportFieldsControllerTests.cs" />
     <Compile Include="Controllers\API\FieldCatalogControllerTests.cs" />
@@ -76,14 +83,19 @@
     <Compile Include="Controllers\SourceTypeControllerTests.cs" />
     <Compile Include="Controllers\JobControllerTests.cs" />
     <Compile Include="DataStructures\FolderTreeTests.cs" />
-    <Compile Include="Helpers\CacheHolderTests.cs" />
+    <Compile Include="Infrastructure\Session\SessionServiceFactoryTests.cs" />
+    <Compile Include="Infrastructure\Session\SessionServiceTests.cs" />
+    <Compile Include="Installers\Context\UserContextRegistrationTests.cs" />
+    <Compile Include="Installers\Context\WorkspaceContextRegistrationTests.cs" />
+    <Compile Include="Installers\ControllersRegistrationTests.cs" />
+    <Compile Include="Installers\IntegrationPointsServices\LoggingRegistrationTests.cs" />
+    <Compile Include="IntegrationPointsServices\Logging\CacheHolderTests.cs" />
     <Compile Include="Helpers\SummaryPageSelectorTests.cs" />
-    <Compile Include="Logging\Web\WebCorrelationContextProviderTests.cs" />
-    <Compile Include="MessageHandlers\CorrelationIdHandlerTests.cs" />
-    <Compile Include="Providers\WorkspaceIdProviderTests.cs" />
-    <Compile Include="Services\ControllerCustomPageServiceTests.cs" />
-    <Compile Include="Services\RetriableCPHelperProxyTests.cs" />
-    <Compile Include="Services\WebApiCustomPageServiceTests.cs" />
+    <Compile Include="IntegrationPointsServices\Logging\WebCorrelationContextProviderTests.cs" />
+    <Compile Include="Infrastructure\MessageHandlers\CorrelationIdHandlerTests.cs" />
+    <Compile Include="Context\WorkspaceContext\SessionWorkspaceContextServiceTests.cs" />
+    <Compile Include="RelativityServices\RetriableCPHelperProxyTests.cs" />
+    <Compile Include="Context\WorkspaceContext\RequestContextWorkspaceContextServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
@@ -308,6 +320,17 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Microsoft.AspNet.SignalR.Core">
+          <HintPath>..\..\packages\Microsoft.AspNet.SignalR.Core\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="System.Net.Http.Formatting">
           <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Client\lib\net45\System.Net.Http.Formatting.dll</HintPath>
           <Private>True</Private>
@@ -356,8 +379,41 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Microsoft.Owin">
+          <HintPath>..\..\packages\Microsoft.Owin\lib\net45\Microsoft.Owin.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Microsoft.Owin.Security">
+          <HintPath>..\..\packages\Microsoft.Owin.Security\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Microsoft.Web.Infrastructure">
           <HintPath>..\..\packages\Microsoft.Web.Infrastructure\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Moq">
+          <HintPath>..\..\packages\Moq\lib\net45\Moq.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -391,6 +447,17 @@
       <ItemGroup>
         <Reference Include="nunit.framework">
           <HintPath>..\..\packages\NUnit\lib\net45\nunit.framework.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Owin">
+          <HintPath>..\..\packages\Owin\lib\net40\Owin.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

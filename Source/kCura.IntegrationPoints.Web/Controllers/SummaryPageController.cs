@@ -9,7 +9,7 @@ using kCura.IntegrationPoints.Web.Helpers;
 
 namespace kCura.IntegrationPoints.Web.Controllers
 {
-	public class SummaryPageController : BaseController
+	public class SummaryPageController : Controller
 	{
 		private readonly ICaseServiceContext _context;
 		private readonly IProviderTypeService _providerTypeService;

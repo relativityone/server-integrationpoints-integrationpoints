@@ -6,18 +6,14 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 	public class ServiceContextHelperForKeplerService : IServiceContextHelper
 	{
 		private readonly IServiceHelper _helper;
-		private int _workspaceArtifactId;
 
 		public ServiceContextHelperForKeplerService(IServiceHelper helper, int workspaceArtifactId)
 		{
 			_helper = helper;
-			_workspaceArtifactId = workspaceArtifactId;
+			WorkspaceID = workspaceArtifactId;
 		}
 
-		public int WorkspaceID {
-			get { return _workspaceArtifactId; }
-			set { _workspaceArtifactId = value; }
-		}
+		public int WorkspaceID { get; }
 
 		public int GetEddsUserID()
 		{

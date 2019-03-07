@@ -30,7 +30,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Installers
 		{
 			_sut.Should()
 				.HaveRegisteredSingleComponent<IExtendedImportApiFactory>()
-				.WithLifestyle(LifestyleType.Singleton);
+				.Which.Should()
+				.BeRegisteredWithLifestyle(LifestyleType.Singleton);
 		}
 
 		[Test]
@@ -54,7 +55,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Installers
 		{
 			_sut.Should()
 				.HaveRegisteredSingleComponent<IExtendedImportApiFacade>()
-				.WithLifestyle(LifestyleType.Transient);
+				.Which.Should()
+				.BeRegisteredWithLifestyle(LifestyleType.Transient);
 		}
 
 		[Test]
@@ -78,7 +80,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Installers
 		{
 			_sut.Should()
 				.HaveRegisteredSingleComponent<IDataSourceProvider>()
-				.WithLifestyle(LifestyleType.Transient);
+				.Which.Should()
+				.BeRegisteredWithLifestyle(LifestyleType.Transient);
 		}
 
 		[Test]
@@ -91,7 +94,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Installers
 			//act & assert
 			_sut.Should()
 				.HaveRegisteredSingleComponent<IDataSourceProvider>()
-				.WithName(expectedComponentName);
+				.Which.Should()
+				.BeRegisteredWithName(expectedComponentName);
 		}
 
 		[Test]

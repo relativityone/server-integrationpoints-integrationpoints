@@ -27,7 +27,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Installer.Components
 		{
 			_sut.Should()
 				.HaveRegisteredSingleComponent<ISmtpConfigurationProvider>()
-				.WithLifestyle(LifestyleType.Transient);
+				.Which.Should()
+				.BeRegisteredWithLifestyle(LifestyleType.Transient);
 		}
 
 		[Test]
@@ -51,7 +52,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Installer.Components
 		{
 			_sut.Should()
 				.HaveRegisteredSingleComponent<ISmtpClientFactory>()
-				.WithLifestyle(LifestyleType.Transient);
+				.Which.Should()
+				.BeRegisteredWithLifestyle(LifestyleType.Transient);
 		}
 
 		[Test]
@@ -75,7 +77,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Installer.Components
 		{
 			_sut.Should()
 				.HaveRegisteredSingleComponent<IEmailSender>()
-				.WithLifestyle(LifestyleType.Transient);
+				.Which.Should()
+				.BeRegisteredWithLifestyle(LifestyleType.Transient);
 		}
 
 		[Test]
