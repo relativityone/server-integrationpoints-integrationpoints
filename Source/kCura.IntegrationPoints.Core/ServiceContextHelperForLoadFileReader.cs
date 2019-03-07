@@ -7,7 +7,7 @@ namespace kCura.IntegrationPoints.Core
 {
 	public class ServiceContextHelperForLoadFileReader : IServiceContextHelper
 	{
-		private int _workspaceId;
+		private readonly int _workspaceId;
 		public ServiceContextHelperForLoadFileReader(int workspaceId)
 		{
 			_workspaceId = workspaceId;

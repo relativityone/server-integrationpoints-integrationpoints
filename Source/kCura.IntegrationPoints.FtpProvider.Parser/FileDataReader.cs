@@ -7,7 +7,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
 	public class FileDataReader : IDataReader
 	{
 		private StreamReader _file;
-		private string[] _headers;
+		private readonly string[] _headers;
 		private string _currentLine;
 		private int _currentIndex;
 

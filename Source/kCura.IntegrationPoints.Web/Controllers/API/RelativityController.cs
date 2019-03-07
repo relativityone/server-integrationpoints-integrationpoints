@@ -9,7 +9,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 {
 	public class RelativityController : ApiController
 	{
-		private IHtmlSanitizerManager _htmlSanitizerManager;
+		private readonly IHtmlSanitizerManager _htmlSanitizerManager;
 
 		public RelativityController(IHtmlSanitizerManager htmlSanitizerManager)
 		{

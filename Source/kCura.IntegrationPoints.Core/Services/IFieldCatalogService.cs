@@ -7,8 +7,8 @@ using Relativity.Services.FieldMapping;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
-    public interface IFieldCatalogService
-    {
-        ExternalMapping[] GetAllFieldCatalogMappings(int workspaceId);
-    }
+	public interface IFieldCatalogService
+	{
+		ExternalMapping[] GetAllFieldCatalogMappings(int workspaceId);
+	}
 }

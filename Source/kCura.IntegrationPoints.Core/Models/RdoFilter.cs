@@ -8,7 +8,7 @@ namespace kCura.IntegrationPoints.Core.Models
 {
 	public class RdoFilter : IRdoFilter
 	{
-		private IObjectTypeQuery _rdoQuery;
+		private readonly IObjectTypeQuery _rdoQuery;
 		private readonly ICaseServiceContext _serviceContext;
 		public RdoFilter(IObjectTypeQuery rdoQuery, ICaseServiceContext serviceContext)
 		{

@@ -5,8 +5,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
 	public class LoadFileFieldParser : IFieldParser
 	{
-		private kCura.WinEDDS.LoadFile _config;
-		private kCura.WinEDDS.Api.IArtifactReader _loadFileReader;
+		private readonly kCura.WinEDDS.LoadFile _config;
+		private readonly kCura.WinEDDS.Api.IArtifactReader _loadFileReader;
 
 		public LoadFileFieldParser(kCura.WinEDDS.LoadFile config, kCura.WinEDDS.Api.IArtifactReader loadFileReader)
 		{

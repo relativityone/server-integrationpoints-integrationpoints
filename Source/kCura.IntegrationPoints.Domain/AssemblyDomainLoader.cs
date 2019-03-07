@@ -11,9 +11,9 @@ namespace kCura.IntegrationPoints.Contracts.Domain
 	/// </summary>
 	internal class AssemblyDomainLoader : MarshalByRefObject
 	{
-		public AssemblyDomainLoader()
-		{
-		}
+
+		private readonly Dictionary<string, Assembly> _assemblies =
+			new Dictionary<string, Assembly>(StringComparer.OrdinalIgnoreCase);
 
 		public readonly HashSet<string> MergedBinariesList = new HashSet<string>()
 		{
@@ -34,6 +34,9 @@ namespace kCura.IntegrationPoints.Contracts.Domain
 			"kCura.IntegrationPoints.DocumentTransferProvider.Shared",
 			"kCura.ScheduleQueue.Core"
 		};
+		public AssemblyDomainLoader()
+		{
+		}
 
 		/// <summary>
 		/// Loads assembly the current app domain.
@@ -98,9 +101,6 @@ namespace kCura.IntegrationPoints.Contracts.Domain
 				throw new ArgumentException($"Path \"{path}\" does not exist");
 			}
 		}
-
-		private Dictionary<String, System.Reflection.Assembly> _assemblies =
-			new Dictionary<String, System.Reflection.Assembly>(StringComparer.OrdinalIgnoreCase);
 
 		public System.Reflection.Assembly ResolveAssembly(object sender, ResolveEventArgs args)
 		{

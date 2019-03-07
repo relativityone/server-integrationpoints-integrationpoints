@@ -11,8 +11,8 @@ namespace kCura.IntegrationPoints.ImportProvider
 	[Contracts.DataSourceProvider(Constants.Guids.ImportProviderEventHandler)]
 	public class ImportProvider : Contracts.Provider.IDataSourceProvider
 	{
-		IFieldParserFactory _fieldParserFactory;
-		private ISerializer _serializer;
+		readonly IFieldParserFactory _fieldParserFactory;
+		private readonly ISerializer _serializer;
 
 		public ImportProvider(IFieldParserFactory fieldParserFactory,
 			ISerializer serializer)

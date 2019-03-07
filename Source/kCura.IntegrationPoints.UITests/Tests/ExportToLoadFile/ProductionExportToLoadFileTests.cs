@@ -14,11 +14,11 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 {
 	[TestFixture]
 	[Category(TestCategory.EXPORT_TO_LOAD_FILE)]
-    public class ProductionExportToLoadFileTests : ExportToLoadFileTests
+	public class ProductionExportToLoadFileTests : ExportToLoadFileTests
 	{
-		private string PRODUCTION_NAME_SMALL = "Small Production under tests";
-		private string PRODUCTION_NAME_BIG = "Big Production under tests";
 		private IntegrationPointsAction _integrationPointsAction;
+		private readonly string PRODUCTION_NAME_BIG = "Big Production under tests";
+		private readonly string PRODUCTION_NAME_SMALL = "Small Production under tests";
 
 		[OneTimeSetUp]
 		public void OneTimeSetUp()

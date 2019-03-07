@@ -7,9 +7,9 @@ namespace kCura.IntegrationPoints.Core.Services.EntityManager
 {
 	public class EntityManagerDataReaderToEnumerableService
 	{
-		private IObjectBuilder _objectBuilder;
-		private string _oldKeyFieldID;
-		private string _newKeyFieldID;
+		private readonly IObjectBuilder _objectBuilder;
+		private readonly string _oldKeyFieldID;
+		private readonly string _newKeyFieldID;
 		public EntityManagerDataReaderToEnumerableService(IObjectBuilder objectBuilder, string oldKeyFieldID, string newKeyFieldID)
 		{
 			_objectBuilder = objectBuilder;

@@ -8,7 +8,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class KeplerObjectRepository : KeplerServiceBase, IObjectRepository
 	{
-		private int ArtifactTypeId;
+		private readonly int ArtifactTypeId;
 
 		public KeplerObjectRepository(IRelativityObjectManager relativityObjectManager, int objectTypeId)
 			: base(relativityObjectManager)

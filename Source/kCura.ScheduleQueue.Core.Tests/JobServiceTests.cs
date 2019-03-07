@@ -20,28 +20,28 @@ namespace kCura.ScheduleQueue.Core.Tests
 	public class JobServiceTests : TestBase
 	{
 		private IAgentService _agentService;
+		private IJobServiceDataProvider _mockDataProvider;
+		private const int _AGENT_TYPE_ID = 4239;
+		private const int _JOB_FLAGS = 48923;
+		private const int _RELATED_OBJECT_ARTIFACT_ID = 432;
+		private const int _SUBMITTED_BY = 4936;
+		private const int _WORKSPACE_ID = 3429;
+		private const long _MOCK_JOB_ID = 123;
+		private const long _PARENT_JOB_ID = 756;
+		private const long _ROOT_JOB_ID = 287;
 
 		private const string _MOCK_JOB_DETAILS = "There should be details";
-		private const long _MOCK_JOB_ID = 123;
-		private const long _ROOT_JOB_ID = 287;
-		private const long _PARENT_JOB_ID = 756;
-		private const int _AGENT_TYPE_ID = 4239;
-		private const int _WORKSPACE_ID = 3429;
-		private const int _RELATED_OBJECT_ARTIFACT_ID = 432;
 		private const TaskType _TASK_TYPE = TaskType.ImportService;
-		private static readonly DateTime _nextRunTime = new DateTime(2020, 12, 31);
-		private static readonly DateTime _lastRunTime = new DateTime(2019, 1, 1);
-		private const int _JOB_FLAGS = 48923;
-		private static readonly DateTime _submittedDate = new DateTime(2016, 1, 6);
-		private const int _SUBMITTED_BY = 4936;
-
-		private int _goldFlowAgentTypeId = 54;
-		private string _goldFlowAgentName = "AgentName";
-		private string _goldFlowAgentNamespace = "Namespace";
-		private readonly Guid _goldFlowAgentGuid = Guid.NewGuid();
 		private readonly DateTime _mockScheduleRuleReturnDate = new DateTime(2020, 12, 31);
+		private readonly Guid _goldFlowAgentGuid = Guid.NewGuid();
 		private readonly IHelper _mockEmptyDbHelper = Substitute.For<IHelper>();
-		private IJobServiceDataProvider _mockDataProvider;
+
+		private readonly int _goldFlowAgentTypeId = 54;
+		private readonly string _goldFlowAgentName = "AgentName";
+		private readonly string _goldFlowAgentNamespace = "Namespace";
+		private static readonly DateTime _lastRunTime = new DateTime(2019, 1, 1);
+		private static readonly DateTime _nextRunTime = new DateTime(2020, 12, 31);
+		private static readonly DateTime _submittedDate = new DateTime(2016, 1, 6);
 
 		public override void FixtureSetUp()
 		{

@@ -9,7 +9,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 {
 	public class DataTransferLocationServiceFactory : IDataTransferLocationServiceFactory
 	{
-		private IWindsorContainer _container;
+		private readonly IWindsorContainer _container;
 		public DataTransferLocationServiceFactory(IWindsorContainer container)
 		{
 			_container = container;
