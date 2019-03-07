@@ -1,6 +1,4 @@
-﻿using Relativity.Services.Security.Models;
-
-namespace Relativity.Sync.Authentication
+﻿namespace Relativity.Sync.Authentication
 {
 	internal interface IOAuth2ClientFactory
 	{
