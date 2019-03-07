@@ -1,4 +1,7 @@
 Relativity.API
+Relativity.OAuth2Client
+Relativity.Platform.Keywords
+Relativity.Services.Interfaces
 
 Microsoft.CodeAnalysis.FxCopAnalyzers
 CSharpGuidelineAnalyzer
