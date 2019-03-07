@@ -84,7 +84,7 @@ namespace kCura.IntegrationPoints.Core
 				public const string INTEGRATION_POINT_SAVE_FAILURE_USER_MESSAGE = "You do not have all required permissions to save this Integration Point. Please contact your system administrator.";
 			}
 
-			public class Telemetry
+			public static class Telemetry
 			{
 				public const string TELEMETRY_CATEGORY = "Integration Points";
 
@@ -119,7 +119,7 @@ namespace kCura.IntegrationPoints.Core
 
 			}
 
-			public class SourceProviders
+			public static class SourceProviders
 			{
 				public const string RELATIVITY = "423B4D43-EAE9-4E14-B767-17D629DE4BB2";
 				public const string FTP = "85120BC8-B2B9-4F05-99E9-DE37BB6C0E15";
@@ -127,7 +127,7 @@ namespace kCura.IntegrationPoints.Core
 				public const string IMPORTLOADFILE = "548f0873-8e5e-4da6-9f27-5f9cda764636";
 			}
 
-			public class DestinationProviders
+			public static class DestinationProviders
 			{
 				public const string RELATIVITY = "74A863B9-00EC-4BB7-9B3E-1E22323010C6";
 				public const string LOADFILE = "1D3AD995-32C5-48FE-BAA5-5D97089C8F18";
@@ -154,7 +154,7 @@ namespace kCura.IntegrationPoints.Core
 				public const string UNABLE_TO_SAVE_INTEGRATION_POINT_PROFILE_USER_MESSAGE = "Unable to save the Integration Point Profile. Please contact your system administrator.";
 			}
 
-			public class Validation
+			public static class Validation
 			{
 				public const string EMAIL = "B69D1072-63EF-4C31-9857-BCE13D1B7379";
 				public const string SCHEDULE = "D036003D-32FF-4297-84D5-2C9009C559BA";

@@ -6,7 +6,7 @@ using kCura.IntegrationPoint.Tests.Core.Exceptions;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers
 {
-	internal class DataFileFormatHelper
+	internal static class DataFileFormatHelper
 	{
 		public static FileInfo GetFileInFormat(string fileFormatExtension, DirectoryInfo directory)
 		{

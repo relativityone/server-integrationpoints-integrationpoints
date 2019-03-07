@@ -4,7 +4,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 {
-	public class ServiceContextFactory
+	public static class ServiceContextFactory
 	{
 		public static ICaseServiceContext CreateCaseServiceContext(IEHHelper helper, int workspaceID)
 		{

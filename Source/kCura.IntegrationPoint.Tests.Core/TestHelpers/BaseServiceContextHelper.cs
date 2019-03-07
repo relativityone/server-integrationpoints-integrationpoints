@@ -5,7 +5,7 @@ using SystemArtifactQuery = Relativity.Data.SystemArtifactQuery;
 
 namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 {
-	public class BaseServiceContextHelper
+	public static class BaseServiceContextHelper
 	{
 		public static BaseServiceContext Create()
 		{

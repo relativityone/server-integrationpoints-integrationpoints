@@ -32,7 +32,7 @@ using System.Linq;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 {
-	public class SetTypeOfExportDefaultValueCommandFactory
+	public static class SetTypeOfExportDefaultValueCommandFactory
 	{
 		public static SetTypeOfExportDefaultValueCommand Create(IEHHelper helper, int workspaceArtifactId)
 		{
