@@ -1,5 +1,4 @@
-﻿using Castle.Core;
-using Castle.MicroKernel.Registration;
+﻿using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using FluentAssertions;
 using kCura.IntegrationPoints.Web.Context.WorkspaceContext;
@@ -18,6 +17,7 @@ using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 
 namespace kCura.IntegrationPoints.Web.Tests.Integration.Context
 {
+	[TestFixture]
 	public class WorkspaceContextIntegrationTests
 	{
 		private IWindsorContainer _container;
@@ -39,20 +39,20 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Context
 		public void ShouldReturnCorrectWorkspaceIdWhenRequestContextContainsData()
 		{
 			// arrange
-			const int requestContextWorkspaceId = 8782;
-			const int sessionWorkspaceId = 4232;
+			const int requestContextWorkspaceID = 8782;
+			const int sessionWorkspaceID = 4232;
 
-			SetupRequestContextMock(requestContextWorkspaceId);
-			SetupSessionServiceMock(sessionWorkspaceId);
+			SetupRequestContextMock(requestContextWorkspaceID);
+			SetupSessionServiceMock(sessionWorkspaceID);
 
 
 			TestController sut = _container.Resolve<TestController>();
 
 			// act
-			int actualWorkspaceId = sut.GetWorkspaceId();
+			int actualWorkspaceID = sut.GetWorkspaceID();
 
 			// assert
-			actualWorkspaceId.Should().Be(requestContextWorkspaceId, "because workspaceId was present in RequestContext");
+			actualWorkspaceID.Should().Be(requestContextWorkspaceID, "because workspaceId was present in RequestContext");
 		}
 
 		[Test]
@@ -60,18 +60,18 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Context
 		public void ShouldReturnCorrectWorkspaceIdWhenRequestContextIsEmptyAndSessionReturnsData()
 		{
 			// arrange
-			const int sessionWorkspaceId = 4232;
+			const int sessionWorkspaceID = 4232;
 
-			SetupRequestContextMock(workspaceId: null);
-			SetupSessionServiceMock(sessionWorkspaceId);
+			SetupRequestContextMock(workspaceID: null);
+			SetupSessionServiceMock(sessionWorkspaceID);
 
 			TestController sut = _container.Resolve<TestController>();
 
 			// act
-			int actualWorkspaceId = sut.GetWorkspaceId();
+			int actualWorkspaceID = sut.GetWorkspaceID();
 
 			// assert
-			actualWorkspaceId.Should().Be(sessionWorkspaceId, "because session contains this value and RequestContext was empty.");
+			actualWorkspaceID.Should().Be(sessionWorkspaceID, "because session contains this value and RequestContext was empty.");
 		}
 
 		[Test]
@@ -79,25 +79,25 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Context
 		public void ShouldThrowExceptionWhenNoWorkspaceContextIsPresent()
 		{
 			// arrange
-			SetupRequestContextMock(workspaceId: null);
-			SetupSessionServiceMock(workspaceId: null);
+			SetupRequestContextMock(workspaceID: null);
+			SetupSessionServiceMock(workspaceID: null);
 
 			TestController sut = _container.Resolve<TestController>();
 
 			// act
-			Action getWorkspaceIdAction = () => sut.GetWorkspaceId();
+			Action getWorkspaceIDAction = () => sut.GetWorkspaceID();
 
 			// assert
-			getWorkspaceIdAction.ShouldThrow<WorkspaceIdNotFoundException>(
+			getWorkspaceIDAction.ShouldThrow<WorkspaceIdNotFoundException>(
 				"because workspace context is not present");
 		}
 
-		private void SetupRequestContextMock(int? workspaceId)
+		private void SetupRequestContextMock(int? workspaceID)
 		{
 			var routeData = new RouteData();
-			if (workspaceId.HasValue)
+			if (workspaceID.HasValue)
 			{
-				routeData.Values["workspaceID"] = workspaceId.ToString();
+				routeData.Values["workspaceID"] = workspaceID.ToString();
 			}
 
 			var requestContextMock = new Mock<RequestContext>();
@@ -110,11 +110,11 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Context
 				.Returns(requestContextMock.Object);
 		}
 
-		private void SetupSessionServiceMock(int? workspaceId)
+		private void SetupSessionServiceMock(int? workspaceID)
 		{
 			_sessionServiceMock
 				.Setup(x => x.WorkspaceID)
-				.Returns(workspaceId);
+				.Returns(workspaceID);
 		}
 
 		private void RegisterDependencies(IWindsorContainer container)
@@ -158,7 +158,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Context
 				_workspaceContext = workspaceContext;
 			}
 
-			public int GetWorkspaceId()
+			public int GetWorkspaceID()
 			{
 				return _workspaceContext.GetWorkspaceID();
 			}
