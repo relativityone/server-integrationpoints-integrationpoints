@@ -210,12 +210,12 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.MoveExistingDocuments = true;
 
 			// Act
-			//validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
 			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 			detailsPage.RunIntegrationPoint();
 
 			// Assert
+			//validator.ValidateSummaryPage(generalProperties, model, Context, DestinationContext, false);
 			Assert.AreEqual("Saved Search: All Documents", generalProperties.Properties["Source Details:"]);
 
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
