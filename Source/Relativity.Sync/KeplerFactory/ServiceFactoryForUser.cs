@@ -5,11 +5,11 @@ using Relativity.Services.ServiceProxy;
 using Relativity.Sync.Authentication;
 using Relativity.Sync.Configuration;
 
-namespace Relativity.Sync.ServiceFactory
+namespace Relativity.Sync.KeplerFactory
 {
 	internal sealed class ServiceFactoryForUser : ISourceServiceFactoryForUser, IDestinationServiceFactoryForUser
 	{
-		private Services.ServiceProxy.ServiceFactory _serviceFactory;
+		private ServiceFactory _serviceFactory;
 
 		private readonly IUserContextConfiguration _userContextConfiguration;
 		private readonly IServicesMgr _servicesMgr;
@@ -32,12 +32,12 @@ namespace Relativity.Sync.ServiceFactory
 			return _serviceFactory.CreateProxy<T>();
 		}
 
-		private async Task<Services.ServiceProxy.ServiceFactory> CreateServiceFactoryAsync()
+		private async Task<ServiceFactory> CreateServiceFactoryAsync()
 		{
 			string authToken = await _tokenGenerator.GetAuthTokenAsync(_userContextConfiguration.ExecutingUserId).ConfigureAwait(false);
 			Credentials credentials = new BearerTokenCredentials(authToken);
 			ServiceFactorySettings settings = new ServiceFactorySettings(_servicesMgr.GetServicesURL(), _servicesMgr.GetRESTServiceUrl(), credentials);
-			return new Services.ServiceProxy.ServiceFactory(settings);
+			return new ServiceFactory(settings);
 		}
 	}
 }

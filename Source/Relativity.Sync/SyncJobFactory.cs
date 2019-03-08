@@ -3,8 +3,8 @@ using Autofac;
 using Banzai.Logging;
 using Relativity.API;
 using Relativity.Sync.Authentication;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
-using Relativity.Sync.ServiceFactory;
 using Relativity.Sync.Telemetry;
 
 namespace Relativity.Sync

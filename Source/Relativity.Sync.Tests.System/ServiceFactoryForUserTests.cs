@@ -12,7 +12,7 @@ using Relativity.Services;
 using Relativity.Services.Permission;
 using Relativity.Sync.Authentication;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.ServiceFactory;
+using Relativity.Sync.KeplerFactory;
 using TextCondition = kCura.Relativity.Client.TextCondition;
 using TextConditionEnum = kCura.Relativity.Client.TextConditionEnum;
 using User = kCura.Relativity.Client.DTOs.User;

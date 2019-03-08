@@ -1,4 +1,4 @@
-﻿namespace Relativity.Sync.ServiceFactory
+﻿namespace Relativity.Sync.KeplerFactory
 {
 	internal interface IDestinationServiceFactoryForUser : IProxyFactory
 	{

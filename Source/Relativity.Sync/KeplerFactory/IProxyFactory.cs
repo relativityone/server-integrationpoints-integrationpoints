@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Relativity.Sync.ServiceFactory
+namespace Relativity.Sync.KeplerFactory
 {
 	internal interface IProxyFactory
 	{

@@ -9,6 +9,7 @@ nuget Relativity.OAuth2Client 1.0.27
 nuget Relativity.Platform.Keywords ~> 10.2
 nuget Relativity.Services.Interfaces ~> 10.2
 nuget kCura.Relativity.Client ~> 10.2
+nuget Relativity.Kepler.Client ~> 1.0
 
 nuget Microsoft.CodeAnalysis.FxCopAnalyzers ~> 2.6
 nuget CSharpGuidelineAnalyzer ~> 2.3

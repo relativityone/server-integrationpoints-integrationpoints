@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Relativity.API;
 
-namespace Relativity.Sync.ServiceFactory
+namespace Relativity.Sync.KeplerFactory
 {
 	internal sealed class ServiceFactoryForAdmin : ISourceServiceFactoryForAdmin, IDestinationServiceFactoryForAdmin
 	{
