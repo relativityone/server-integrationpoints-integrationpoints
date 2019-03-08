@@ -1,6 +1,9 @@
 ﻿using System;
 using Autofac;
 using Banzai.Logging;
+using Relativity.API;
+using Relativity.Sync.Authentication;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Telemetry;
 
@@ -78,7 +81,7 @@ namespace Relativity.Sync
 		{
 			CorrelationId correlationId = new CorrelationId(syncJobParameters.CorrelationId);
 
-			const string syncJob = "syncJob";
+			const string syncJob = nameof(SyncJob);
 			builder.RegisterType<SyncJob>().Named(syncJob, typeof(ISyncJob));
 			builder.RegisterDecorator<ISyncJob>((context, job) => new SyncJobWithUnhandledExceptionLogging(job, context.Resolve<IAppDomain>(), context.Resolve<ISyncLog>()), syncJob);
 
@@ -89,6 +92,16 @@ namespace Relativity.Sync
 			builder.RegisterType<SyncExecutionContextFactory>().As<ISyncExecutionContextFactory>();
 			builder.RegisterType<SystemStopwatch>().As<IStopwatch>();
 			builder.RegisterType<AppDomainWrapper>().As<IAppDomain>();
+			builder.RegisterType<OAuth2ClientFactory>().As<IOAuth2ClientFactory>();
+			builder.RegisterType<OAuth2TokenGenerator>().As<IAuthTokenGenerator>();
+
+			builder.RegisterType<TokenProviderFactoryFactory>().As<ITokenProviderFactoryFactory>();
+			builder.RegisterType<ServiceFactoryForUser>()
+				.As<ISourceServiceFactoryForUser>()
+				.As<IDestinationServiceFactoryForUser>();
+			builder.RegisterType<ServiceFactoryForAdmin>()
+				.As<ISourceServiceFactoryForAdmin>()
+				.As<IDestinationServiceFactoryForAdmin>();
 
 			_pipelineBuilder.RegisterFlow(builder);
 

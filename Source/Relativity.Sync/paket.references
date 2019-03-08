@@ -1,3 +1,8 @@
+Relativity.API
+Relativity.OAuth2Client
+Relativity.Services.Interfaces
+Relativity.Kepler.Client
+
 Microsoft.CodeAnalysis.FxCopAnalyzers
 CSharpGuidelineAnalyzer
 

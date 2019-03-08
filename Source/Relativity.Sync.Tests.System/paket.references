@@ -1,3 +1,9 @@
+Relativity.API
+Relativity.Kepler
+Relativity.Platform.Keywords
+Relativity.Services.Interfaces
+kCura.Relativity.Client
+
 Microsoft.CodeAnalysis.FxCopAnalyzers
 CSharpGuidelineAnalyzer
 
