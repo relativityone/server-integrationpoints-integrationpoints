@@ -28,7 +28,8 @@ param(
 
     [string]$sourceDir,
     [string]$toolsDir,
-    [string]$logsDir
+    [string]$logsDir,
+    [string]$sutAddress
 )
 
 Write-Verbose "Looking for $testsType tests DLLs..."
@@ -38,6 +39,24 @@ if (!$testsDlls) {
 }
 else {
     Write-Verbose "Found $testsType tests DLLs: $testsDlls"
+}
+
+if ($sutAddress) {
+    Write-Verbose "Looking for .config files to edit..."
+    foreach ($dll in $testsDlls) {
+        $configPath = "$dll.config"
+        if (Test-Path $configPath) { 
+            $configXml = [xml]$(Get-Content $configPath)
+            $hostNode = $configXml.SelectSingleNode("//add[@key='RelativityHostName']")
+            if($hostNode){
+                $hostNode.value = $sutAddress
+                $configXml.Save($configPath)
+            }
+        }
+        else {
+            Write-Verbose ".config file for '$dll' dll not found."
+        }
+    }
 }
 
 Write-Verbose "Looking for NUnit console runner..."

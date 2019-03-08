@@ -1,23 +1,10 @@
 /*
 Required libraries:
 
-library 'PipelineTools@RMT-9.3.1'
+library 'PipelineTools@RMT-9.3.2'
 library 'SCVMMHelpers@3.2.0'
-library 'GitHelpers@1.0.0'
-library 'SlackHelpers@3.0.0'
 
  */
-
-/**
- ** CONSTANTS
- **/
-interface Constants
-{
-    // This repo's package name for purposes of versioning & publishing
-    final String ARTIFACTS_PATH = 'Artifacts'
-    final String INTEGRATION_TESTS_RESULTS_REPORT_PATH = "$ARTIFACTS_PATH/IntegrationTestsResults.xml"
-    final String INTEGRATION_TESTS_IN_QUARANTINE_RESULTS_REPORT_PATH = "$ARTIFACTS_PATH/QuarantineIntegrationTestsResults.xml"
-}
 
 class PipelineState
 {
@@ -52,26 +39,6 @@ class PipelineState
         sut = scvmmInstance.getServerFromPool()
         script.echo "Acquired server: ${sut.name} @ ${sut.domain} (${sut.ip})"
     }
-
-    def provisionNodes()
-    {
-        script.echo "Start provisioning for id ($sessionId)"
-        // Make changes here if necessary.
-        final String pythonPackages = 'jeeves==4.1.0 phonograph==5.2.0 selenium==3.0.1'
-        def numberOfSlaves = 1
-        def numberOfExecutors = '1'
-        scvmmInstance.createNodes(numberOfSlaves, 60, numberOfExecutors)
-        script.bootstrapDependencies(
-            script, 
-            pythonPackages, 
-            relativityBranch, 
-            relativityBuildVersion, 
-            relativityBuildType, 
-            sessionId
-        )
-        script.echo "Provisioning DONE"
-    }
-
 }
 
 // State for the whole pipeline
@@ -79,33 +46,15 @@ pipelineState = null
 
 def initializePipeline(script, env, params)
 {
-    pipelineState = new RIPPipelineState(script, env, params)
+    pipelineState = new PipelineState(script, env, params)
     pipelineState.relativityBranch = params.relativityBranch ?: env.BRANCH_NAME
     return pipelineState.sessionId
-}
-
-def stashTestsArtifacts()
-{
-    timeout(time: 3, unit: 'MINUTES')
-    {
-        stash includes: 'lib/UnitTests/**', name: 'testdlls'
-        stash includes: 'DynamicallyLoadedDLLs/Search-Standard/*', name: 'dynamicallyLoadedDLLs'
-        stash includes: 'Applications/RelativityIntegrationPoints.Auto.rap', name: 'integrationPointsRap'
-        stash includes: 'DevelopmentScripts/IntegrationPointsTests.*', name: 'nunitProjectFiles'
-        stash includes: 'DevelopmentScripts/NUnit.ConsoleRunner/tools/*', name: 'nunitConsoleRunner'
-        stash includes: 'DevelopmentScripts/NUnit.Extension.NUnitProjectLoader/tools/*', name: 'nunitProjectLoader'
-        stash includes: 'DevelopmentScripts/*.ps1', name: 'buildScripts'
-        stash includes: 'build.ps1', name: 'buildps1'
-        stash includes: 'Vendor/psake/tools/*', name: 'psake'
-        stash includes: 'Vendor/NuGet/NuGet.exe', name: 'nuget'
-        stash includes: 'Version/version.txt', name: 'version'
-    }
 }
 
 /*
  * @param relativityBranchFallback - the default fallback branch. develop by default, but should be set to release branch name on release branches!!!
  */
-def raid(String relativityBranchFallback)
+def prepareSut(String relativityBranchFallback)
 {
     timeout(time: 90, unit: 'MINUTES')
     {
@@ -185,33 +134,8 @@ def raid(String relativityBranchFallback)
                     "", 
                     ""
                 )
-
-                echo "Checking workspace upgrade"
-                checkWorkspaceUpgrade(script, sut.name, sessionId)
             },
-            ProvisionNodes:
-            {
-                pipelineState.provisionNodes()
-            }
         )
-    }
-}
-
-def unstashTestsArtifacts()
-{
-    timeout(time: 3, unit: 'MINUTES')
-    {
-        unstash 'testdlls'
-        unstash 'dynamicallyLoadedDLLs'
-        unstash 'integrationPointsRap'
-        unstash 'nunitProjectFiles'
-        unstash 'nunitConsoleRunner'
-        unstash 'nunitProjectLoader'
-        unstash 'buildps1'
-        unstash 'buildScripts'
-        unstash 'psake'
-        unstash 'nuget'
-        unstash 'version'
     }
 }
 
@@ -229,7 +153,7 @@ def cleanupVMs()
                 {
                     try
                     {
-                        timeout(time: 5, unit: 'MINUTES')
+                        timeout(time: 1, unit: 'MINUTES')
                         {
                             //it returns username who submitted the request to save vms
                             user = input(
@@ -256,7 +180,6 @@ def cleanupVMs()
     {
         echo "Cleanup VMs FAILED."
     }
-
 }
 
 /*****************
@@ -283,6 +206,13 @@ private isRelativityBranchPresent(String branch)
 	return isPowershellResultTrue(powershell(returnStdout: true, script: command))
 }
 
+private checkRelativityArtifacts(String branch, String version, String type)
+{
+	def command = "([System.IO.FileInfo]\"//bld-pkgs/Packages/Relativity/$branch/$version/MasterPackage/$type $version Relativity.exe\").Exists"
+	def result = powershell(returnStdout: true, script: command)
+	return isPowershellResultTrue(result)
+}
+
 private getLatestVersion(String branch, String type)
 {
 	def command = '''
@@ -299,13 +229,6 @@ private getLatestVersion(String branch, String type)
 		}
 	'''
 	return powershell(returnStdout: true, script: String.format(command, branch, type)).trim()
-}
-
-private checkRelativityArtifacts(String branch, String version, String type)
-{
-	def command = "([System.IO.FileInfo]\"//bld-pkgs/Packages/Relativity/$branch/$version/MasterPackage/$type $version Relativity.exe\").Exists"
-	def result = powershell(returnStdout: true, script: command)
-	return isPowershellResultTrue(result)
 }
 
 private tryGetBuildVersion(
