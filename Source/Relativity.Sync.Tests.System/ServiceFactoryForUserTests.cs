@@ -25,18 +25,20 @@ namespace Relativity.Sync.Tests.System
 	[TestFixture]
 	public sealed class ServiceFactoryForUserTests : IDisposable
 	{
-		private string _relativityServicesUrl, _relativityRestUrl, _relativityAdminUserName, _relativityAdminPassword;
+		private string _relativityAdminUserName, _relativityAdminPassword;
+		private ServicesManagerStub _servicesManager;
+		private ProvideServiceUrisStub _provideServiceUris;
 		private IRSAPIClient _client;
 		private Workspace _workspace;
 
 		[OneTimeSetUp]
 		public void SuiteSetup()
 		{
-			_relativityServicesUrl = $"https://{AppSettings.RelativityHostName}/Relativity.Services";
-			_relativityRestUrl = $"https://{AppSettings.RelativityHostName}/Relativity.Rest/api";
 			_relativityAdminUserName = AppSettings.RelativityUserName;
 			_relativityAdminPassword = AppSettings.RelativityUserPassword;
-			_client = new RSAPIClient(new Uri(_relativityServicesUrl), new UsernamePasswordCredentials(_relativityAdminUserName, _relativityAdminPassword));
+			_servicesManager = new ServicesManagerStub();
+			_provideServiceUris = new ProvideServiceUrisStub();
+			_client = new RSAPIClient(AppSettings.RelativityServicesUrl, new UsernamePasswordCredentials(_relativityAdminUserName, _relativityAdminPassword));
 			_workspace = CreateWorkspaceAsync().Result;
 		}
 
@@ -60,23 +62,17 @@ namespace Relativity.Sync.Tests.System
 			Mock<IUserContextConfiguration> userContextConfiguration = new Mock<IUserContextConfiguration>();
 			userContextConfiguration.SetupGet(x => x.ExecutingUserId).Returns(UserHelpers.FindUserArtifactID(_client, userName));
 
-			Mock<IServicesMgr> servicesManager = new Mock<IServicesMgr>();
-			servicesManager.Setup(x => x.GetRESTServiceUrl()).Returns(new Uri(_relativityRestUrl));
-			servicesManager.Setup(x => x.GetServicesURL()).Returns(new Uri(_relativityServicesUrl));
-			servicesManager.Setup(x => x.CreateProxy<IOAuth2ClientManager>(ExecutionIdentity.System)).Returns(CreateUserProxy<IOAuth2ClientManager>(_relativityAdminUserName, _relativityAdminPassword));
-			Mock<IProvideServiceUris> provideServiceUris = new Mock<IProvideServiceUris>();
-			provideServiceUris.Setup(x => x.AuthenticationUri()).Returns(new Uri($"https://{AppSettings.RelativityHostName}/Relativity/"));
 			Mock<IAPILog> apiLog = new Mock<IAPILog>();
-			IAuthTokenGenerator authTokenGenerator = new OAuth2TokenGenerator(new OAuth2ClientFactory(servicesManager.Object, apiLog.Object),
-				new TokenProviderFactoryFactory(), provideServiceUris.Object, apiLog.Object);
+			IAuthTokenGenerator authTokenGenerator = new OAuth2TokenGenerator(new OAuth2ClientFactory(_servicesManager, apiLog.Object),
+				new TokenProviderFactoryFactory(), _provideServiceUris, apiLog.Object);
 			PermissionRef permissionRef = new PermissionRef
 			{
 				ArtifactType = new ArtifactTypeIdentifier((int)ArtifactType.Batch),
 				PermissionType = PermissionType.Edit
 			};
 
-			ServiceFactoryForUser sut = new ServiceFactoryForUser(userContextConfiguration.Object, servicesManager.Object, authTokenGenerator);
-			IPermissionManager permissionManager = sut.CreateProxy<IPermissionManager>();
+			ServiceFactoryForUser sut = new ServiceFactoryForUser(userContextConfiguration.Object, _servicesManager, authTokenGenerator);
+			IPermissionManager permissionManager = await sut.CreateProxyAsync<IPermissionManager>().ConfigureAwait(false);
 
 			// ACT
 			List<PermissionValue> permissionValues = await permissionManager.GetPermissionSelectedAsync(_workspace.ArtifactID, new List<PermissionRef> { permissionRef }).ConfigureAwait(false);
@@ -132,14 +128,6 @@ namespace Relativity.Sync.Tests.System
 			return workspace;
 		}
 
-		private T CreateUserProxy<T>(string username, string password) where T : IDisposable
-		{
-			var userCredential = new Services.ServiceProxy.UsernamePasswordCredentials(username, password);
-			ServiceFactorySettings userSettings = new ServiceFactorySettings(new Uri(_relativityServicesUrl), new Uri(_relativityRestUrl), userCredential);
-			Services.ServiceProxy.ServiceFactory userServiceFactory = new Services.ServiceProxy.ServiceFactory(userSettings);
-			return userServiceFactory.CreateProxy<T>();
-		}
-
 		private void SetUpGroup(string groupName)
 		{
 			Group group = GroupHelpers.GroupGetByName(_client, groupName);
@@ -182,7 +170,7 @@ namespace Relativity.Sync.Tests.System
 
 		private void AddGroupToWorkspace(string groupName)
 		{
-			using (IPermissionManager permissionManager = CreateUserProxy<IPermissionManager>(_relativityAdminUserName, _relativityAdminPassword))
+			using (IPermissionManager permissionManager = _servicesManager.CreateProxy<IPermissionManager>(ExecutionIdentity.System))
 			{
 				Group group = GroupHelpers.GroupGetOrCreateByName(_client, groupName);
 				PermissionHelpers.AddGroupToWorkspace(permissionManager, _workspace.ArtifactID, group);

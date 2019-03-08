@@ -2,7 +2,7 @@ REDIRECTS: ON
 RESTRICTION: == net462
 NUGET
   remote: https://proget.kcura.corp/nuget/NuGet
-    Autofac (4.9.1)
+    Autofac (4.9.1) - redirects: force
     Banzai (3.0.3)
     Banzai.Autofac (3.0.3)
     Castle.Core (4.3.1)

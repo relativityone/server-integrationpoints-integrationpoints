@@ -12,7 +12,7 @@ nuget kCura.Relativity.Client ~> 10.2
 
 nuget Microsoft.CodeAnalysis.FxCopAnalyzers ~> 2.6
 nuget CSharpGuidelineAnalyzer ~> 2.3
-nuget Autofac ~> 4.9
+nuget Autofac ~> 4.9 redirects: force
 nuget Polly ~> 6.1
 nuget Banzai ~> 3.0
 nuget Banzai.AUtofac ~> 3.0

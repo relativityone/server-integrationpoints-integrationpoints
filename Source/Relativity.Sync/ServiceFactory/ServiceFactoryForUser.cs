@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Services.ServiceProxy;
 using Relativity.Sync.Authentication;
@@ -8,10 +9,12 @@ namespace Relativity.Sync.ServiceFactory
 {
 	internal sealed class ServiceFactoryForUser : ISourceServiceFactoryForUser, IDestinationServiceFactoryForUser
 	{
+		private Services.ServiceProxy.ServiceFactory _serviceFactory;
+
 		private readonly IUserContextConfiguration _userContextConfiguration;
 		private readonly IServicesMgr _servicesMgr;
 		private readonly IAuthTokenGenerator _tokenGenerator;
-
+		
 		public ServiceFactoryForUser(IUserContextConfiguration userContextConfiguration, IServicesMgr servicesMgr, IAuthTokenGenerator tokenGenerator)
 		{
 			_userContextConfiguration = userContextConfiguration;
@@ -19,13 +22,22 @@ namespace Relativity.Sync.ServiceFactory
 			_tokenGenerator = tokenGenerator;
 		}
 
-		public T CreateProxy<T>() where T : IDisposable
+		public async Task<T> CreateProxyAsync<T>() where T : IDisposable
 		{
-			string authToken = _tokenGenerator.GetAuthToken(_userContextConfiguration.ExecutingUserId);
+			if (_serviceFactory == null)
+			{
+				_serviceFactory = await CreateServiceFactoryAsync().ConfigureAwait(false);
+			}
+
+			return _serviceFactory.CreateProxy<T>();
+		}
+
+		private async Task<Services.ServiceProxy.ServiceFactory> CreateServiceFactoryAsync()
+		{
+			string authToken = await _tokenGenerator.GetAuthTokenAsync(_userContextConfiguration.ExecutingUserId).ConfigureAwait(false);
 			Credentials credentials = new BearerTokenCredentials(authToken);
 			ServiceFactorySettings settings = new ServiceFactorySettings(_servicesMgr.GetServicesURL(), _servicesMgr.GetRESTServiceUrl(), credentials);
-			Services.ServiceProxy.ServiceFactory serviceFactory = new Services.ServiceProxy.ServiceFactory(settings);
-			return serviceFactory.CreateProxy<T>();
+			return new Services.ServiceProxy.ServiceFactory(settings);
 		}
 	}
 }

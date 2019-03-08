@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Relativity.API;
 
 namespace Relativity.Sync.ServiceFactory
@@ -12,8 +13,9 @@ namespace Relativity.Sync.ServiceFactory
 			_servicesMgr = servicesMgr;
 		}
 
-		public T CreateProxy<T>() where T : IDisposable
+		public async Task<T> CreateProxyAsync<T>() where T : IDisposable
 		{
+			await Task.Yield();
 			return _servicesMgr.CreateProxy<T>(ExecutionIdentity.System);
 		}
 	}

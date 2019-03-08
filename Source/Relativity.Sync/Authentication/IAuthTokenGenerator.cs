@@ -1,7 +1,9 @@
-﻿namespace Relativity.Sync.Authentication
+﻿using System.Threading.Tasks;
+
+namespace Relativity.Sync.Authentication
 {
 	internal interface IAuthTokenGenerator
 	{
-		string GetAuthToken(int userId);
+		Task<string> GetAuthTokenAsync(int userId);
 	}
 }

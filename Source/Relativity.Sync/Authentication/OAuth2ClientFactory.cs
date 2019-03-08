@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Services.Security;
 using Relativity.Services.Security.Models;
@@ -19,7 +20,7 @@ namespace Relativity.Sync.Authentication
 			_logger = logger;
 		}
 
-		public Services.Security.Models.OAuth2Client GetOauth2Client(int userId)
+		public async Task<Services.Security.Models.OAuth2Client> GetOauth2ClientAsync(int userId)
 		{
 			using (var oAuth2ClientManager = _servicesMgr.CreateProxy<IOAuth2ClientManager>(ExecutionIdentity.System))
 			{
@@ -28,13 +29,12 @@ namespace Relativity.Sync.Authentication
 
 				try
 				{
-					IEnumerable<Services.Security.Models.OAuth2Client> clients = oAuth2ClientManager.ReadAllAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+					IEnumerable<Services.Security.Models.OAuth2Client> clients = await oAuth2ClientManager.ReadAllAsync().ConfigureAwait(false);
 					client = clients.SingleOrDefault(x => x.Name.Equals(clientName, StringComparison.InvariantCulture));
 
 					if (client == null)
 					{
-						client = oAuth2ClientManager.CreateAsync(clientName, OAuth2Flow.ClientCredentials,
-							new List<Uri>(), userId).ConfigureAwait(false).GetAwaiter().GetResult();
+						client = await oAuth2ClientManager.CreateAsync(clientName, OAuth2Flow.ClientCredentials, new List<Uri>(), userId).ConfigureAwait(false);
 					}
 				}
 				catch (Exception ex)

@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Relativity.Sync.ServiceFactory
 {
 	internal interface IProxyFactory
 	{
-		T CreateProxy<T>() where T : IDisposable;
+		Task<T> CreateProxyAsync<T>() where T : IDisposable;
 	}
 }

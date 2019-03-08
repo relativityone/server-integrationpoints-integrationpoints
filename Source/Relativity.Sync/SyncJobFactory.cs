@@ -93,10 +93,7 @@ namespace Relativity.Sync
 			builder.RegisterType<SystemStopwatch>().As<IStopwatch>();
 			builder.RegisterType<AppDomainWrapper>().As<IAppDomain>();
 			builder.RegisterType<OAuth2ClientFactory>().As<IOAuth2ClientFactory>();
-
-			const string authTokenGenerator = nameof(OAuth2TokenGenerator);
-			builder.RegisterType<OAuth2TokenGenerator>().Named(authTokenGenerator, typeof(IAuthTokenGenerator));
-			builder.RegisterDecorator<IAuthTokenGenerator>((context, tokenGenerator) => new OAuth2TokenGeneratorWithCache(tokenGenerator), authTokenGenerator);
+			builder.RegisterType<OAuth2TokenGenerator>().As<IAuthTokenGenerator>();
 
 			builder.RegisterType<TokenProviderFactoryFactory>().As<ITokenProviderFactoryFactory>();
 			builder.RegisterType<ServiceFactoryForUser>()
