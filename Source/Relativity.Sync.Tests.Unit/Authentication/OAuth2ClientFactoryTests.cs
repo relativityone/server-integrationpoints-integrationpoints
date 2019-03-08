@@ -69,5 +69,36 @@ namespace Relativity.Sync.Tests.Unit.Authentication
 			clientManager.Verify(x => x.CreateAsync(clientName, OAuth2Flow.ClientCredentials, It.IsAny<IEnumerable<Uri>>(), userId),
 				Times.Once);
 		}
+
+		[Test]
+		public void ItShouldThrowInvalidOperationExceptionWhenReadAllAsyncFails()
+		{
+			const int userId = 1;
+			Mock<IOAuth2ClientManager> clientManager = new Mock<IOAuth2ClientManager>();
+			clientManager.Setup(x => x.ReadAllAsync()).Throws<Exception>();
+			_servicesMgr.Setup(x => x.CreateProxy<IOAuth2ClientManager>(ExecutionIdentity.System)).Returns(clientManager.Object);
+
+			// act
+			Func<Task> action = async () => await _sut.GetOauth2ClientAsync(userId).ConfigureAwait(false);
+
+			// assert
+			action.Should().Throw<InvalidOperationException>();
+		}
+
+		[Test]
+		public void ItShouldThrowInvalidOperationExceptionWhenCreateAsyncFails()
+		{
+			const int userId = 1;
+			Mock<IOAuth2ClientManager> clientManager = new Mock<IOAuth2ClientManager>();
+			clientManager.Setup(x => x.CreateAsync(
+				It.IsAny<string>(), It.IsAny<OAuth2Flow>(), It.IsAny<IEnumerable<Uri>>(), It.IsAny<int?>())).Throws<Exception>();
+			_servicesMgr.Setup(x => x.CreateProxy<IOAuth2ClientManager>(ExecutionIdentity.System)).Returns(clientManager.Object);
+
+			// act
+			Func<Task> action = async () => await _sut.GetOauth2ClientAsync(userId).ConfigureAwait(false);
+
+			// assert
+			action.Should().Throw<InvalidOperationException>();
+		}
 	}
 }

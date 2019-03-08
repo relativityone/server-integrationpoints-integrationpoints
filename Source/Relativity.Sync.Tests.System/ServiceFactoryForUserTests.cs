@@ -47,6 +47,7 @@ namespace Relativity.Sync.Tests.System
 		{
 			DeleteWorkspace(_workspace.ArtifactID);
 			_client?.Dispose();
+			_client = null;
 		}
 		
 		[Test]
