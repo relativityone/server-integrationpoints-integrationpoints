@@ -1,7 +1,7 @@
 /*
 Required libraries:
 
-library 'PipelineTools@RMT-9.3.1'
+library 'PipelineTools@RMT-9.3.2'
 library 'SCVMMHelpers@3.2.0'
 
  */
