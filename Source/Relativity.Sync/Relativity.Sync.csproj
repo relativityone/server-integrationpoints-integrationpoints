@@ -35,10 +35,5 @@
 			<_Parameter1>kCura.IntegrationPoints.RelativitySync.Tests.Integration</_Parameter1>
 		</AssemblyAttribute>
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Relativity.Kepler">
-      <HintPath>C:\Users\artur.jaskiewicz\.nuget\packages\relativity.kepler\1.0.1.589\lib\net462\Relativity.Kepler.dll</HintPath>
-    </Reference>
-  </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
