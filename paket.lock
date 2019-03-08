@@ -1,4 +1,3 @@
-REDIRECTS: ON
 RESTRICTION: == net462
 NUGET
   remote: https://proget.kcura.corp/nuget/NuGet

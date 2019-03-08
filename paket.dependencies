@@ -1,5 +1,4 @@
 framework: auto-detect
-redirects: on
 
 source https://proget.kcura.corp/nuget/NuGet
 
