@@ -36,6 +36,9 @@
 
 .PARAMETER databasePassword
     Password to connect to TCBuildVersion database
+
+.PARAMETER sutAddress
+    Address of Server Under Test instance
 #>
 
 [CmdletBinding()]
@@ -53,7 +56,8 @@ param(
     [string]$packageVersion = "0.0-dev-0",
     [string]$progetApiKey,
     [string]$databaseUser,
-    [string]$databasePassword
+    [string]$databasePassword,
+	[string]$sutAddress
 )
 
 $BASE_DIR = Resolve-Path .
@@ -80,7 +84,8 @@ Invoke-PSake "default.ps1" `
                     'nugetExe' = $NUGET_EXE;
                     'progetApiKey' = $progetApiKey;
                     'databaseUser' = $databaseUser;
-                    'databasePassword' = $databasePassword }`
+                    'databasePassword' = $databasePassword;
+                    'sutAddress' =  $sutAddress }`
         -nologo `
 	-taskList $taskList `
 

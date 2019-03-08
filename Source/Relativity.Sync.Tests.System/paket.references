@@ -1,0 +1,10 @@
+Microsoft.CodeAnalysis.FxCopAnalyzers
+CSharpGuidelineAnalyzer
+
+Polly
+Autofac
+Newtonsoft.Json
+
+NUnit
+FluentAssertions
+Moq
