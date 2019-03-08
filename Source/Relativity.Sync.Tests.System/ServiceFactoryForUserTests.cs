@@ -10,8 +10,6 @@ using Platform.Keywords.RSAPI;
 using Relativity.API;
 using Relativity.Services;
 using Relativity.Services.Permission;
-using Relativity.Services.Security;
-using Relativity.Services.ServiceProxy;
 using Relativity.Sync.Authentication;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.ServiceFactory;
@@ -73,10 +71,12 @@ namespace Relativity.Sync.Tests.System
 			};
 
 			ServiceFactoryForUser sut = new ServiceFactoryForUser(userContextConfiguration.Object, _servicesManager, authTokenGenerator);
-			IPermissionManager permissionManager = await sut.CreateProxyAsync<IPermissionManager>().ConfigureAwait(false);
-
-			// ACT
-			List<PermissionValue> permissionValues = await permissionManager.GetPermissionSelectedAsync(_workspace.ArtifactID, new List<PermissionRef> { permissionRef }).ConfigureAwait(false);
+			List<PermissionValue> permissionValues;
+			using (IPermissionManager permissionManager = await sut.CreateProxyAsync<IPermissionManager>().ConfigureAwait(false))
+			{
+				// ACT
+				permissionValues = await permissionManager.GetPermissionSelectedAsync(_workspace.ArtifactID, new List<PermissionRef> {permissionRef}).ConfigureAwait(false);
+			}
 
 			// ASSERT
 			bool hasPermission = permissionValues.All(x => x.Selected);
