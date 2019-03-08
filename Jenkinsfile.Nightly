@@ -1,7 +1,7 @@
 #!groovy
 
-@Library('PipelineTools@v2.0')_
-@Library('SCVMMHelpers@3.2.0')_
+library 'PipelineTools@RMT-9.3.2'
+library 'SCVMMHelpers@3.2.0'
 
 
 properties ([
@@ -21,9 +21,6 @@ def raidInstalator = null
 
 node('PolandBuild')
 {
-    raidInstalator = load "scripts/install-raid.groovy"
-    def sessionId = raidInstalator.initializePipeline(this, env, params)
-
     try
     {
         stage ('Checkout')
@@ -45,12 +42,15 @@ node('PolandBuild')
         }
         stage('Install RAID')
         {
-            raidInstalator.raid(relativityBranchFallback)
+            raidInstalator = load "scripts/installRaid.groovy"
+            raidInstalator.initializePipeline(this, env, params)
+            raidInstalator.prepareSut(relativityBranchFallback)
         }
-        // stage ('System Tests')
-        // {
-        //     powershell ".\\build.ps1 runIntegrationTests"
-        // }
+
+        stage ('System Tests')
+        {
+            powershell ".\\build.ps1 runSystemTests -sutAddress $pipelineState.sut.name"
+        }
         
         currentBuild.result = 'SUCCESS'
         step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
@@ -112,3 +112,4 @@ def extractValue(String value, String output)
     matcher = null
     return $result
 }
+
