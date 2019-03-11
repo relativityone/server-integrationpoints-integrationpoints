@@ -35,7 +35,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\kCura.Relativity.Client\lib\net462\kCura.Relativity.Client.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.WinEDDS, Version=10.2.56.11, Culture=neutral, PublicKeyToken=null" />
+    <Reference Include="kCura.WinEDDS, Version=10.2.56.11, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Relativity.ImportExport\lib\net462\kCura.WinEDDS.dll</HintPath>
+    </Reference>
     <Reference Include="Moq">
       <HintPath>..\..\packages\Moq\lib\net45\Moq.dll</HintPath>
     </Reference>
@@ -49,12 +52,18 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.API, Version=10.2.56.11, Culture=neutral, PublicKeyToken=null" />
+    <Reference Include="Relativity.API, Version=10.2.56.11, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Relativity.API\lib\net462\Relativity.API.dll</HintPath>
+    </Reference>
     <Reference Include="Relativity.Core, Version=10.2.56.11, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Services.DataContracts, Version=10.2.56.11, Culture=neutral, PublicKeyToken=null" />
+    <Reference Include="Relativity.Services.DataContracts, Version=10.2.56.11, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Relativity.Services.DataContracts\lib\net462\Relativity.Services.DataContracts.dll</HintPath>
+    </Reference>
     <Reference Include="Relativity.Services.Interfaces, Version=10.2.56.11, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Relativity.Services.Interfaces\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
@@ -63,15 +72,16 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\Version\AssemblyInfo.cs">
+      <Link>AssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="RelativityServices\CoreSearchManagerTests.cs" />
     <Compile Include="RelativityServices\RelativityObjectManagerTests.cs" />
-    <Compile Include="RelativityServices\TestClass1.cs" />
     <Compile Include="SystemTestsFixture.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="packages.config" />
+    <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
@@ -107,4 +117,5 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <Import Project="..\..\.paket\paket.targets" />
 </Project>

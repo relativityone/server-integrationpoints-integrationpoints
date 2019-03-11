@@ -1,0 +1,9 @@
+﻿kCura.Relativity.Client
+Moq
+NUnit
+Polly
+RelativityCore
+Relativity.API
+Relativity.ImportExport
+Relativity.Services.DataContracts
+Relativity.Services.Interfaces
