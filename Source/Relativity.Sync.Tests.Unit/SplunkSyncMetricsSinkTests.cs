@@ -14,7 +14,7 @@ namespace Relativity.Sync.Tests.Unit
 
 		private SplunkSyncMetricsSink _sut;
 
-		[OneTimeSetUp]
+		[SetUp]
 		public void SetUp()
 		{
 			_logger = new Mock<ISyncLog>();
