@@ -16,7 +16,6 @@ namespace Relativity.Sync.Tests.Unit
 	{
 		private ServiceFactoryForUser _instance;
 
-		private Mock<IServicesMgr> _servicesMgr;
 		private Mock<IAuthTokenGenerator> _tokenGenerator;
 		private Mock<IDynamicProxyFactory> _dynamicProxyFactory;
 
@@ -28,16 +27,16 @@ namespace Relativity.Sync.Tests.Unit
 			Mock<IUserContextConfiguration> userContextConfiguration = new Mock<IUserContextConfiguration>();
 			userContextConfiguration.Setup(x => x.ExecutingUserId).Returns(_USER_ID);
 
-			_servicesMgr = new Mock<IServicesMgr>();
-			_servicesMgr.Setup(x => x.GetRESTServiceUrl()).Returns(new Uri("", UriKind.Relative));
-			_servicesMgr.Setup(x => x.GetServicesURL()).Returns(new Uri("", UriKind.Relative));
+			var servicesMgr = new Mock<IServicesMgr>();
+			servicesMgr.Setup(x => x.GetRESTServiceUrl()).Returns(new Uri("", UriKind.Relative));
+			servicesMgr.Setup(x => x.GetServicesURL()).Returns(new Uri("", UriKind.Relative));
 
 			_tokenGenerator = new Mock<IAuthTokenGenerator>();
 			_tokenGenerator.Setup(x => x.GetAuthTokenAsync(_USER_ID)).ReturnsAsync("token");
 
 			_dynamicProxyFactory = new Mock<IDynamicProxyFactory>();
 
-			_instance = new ServiceFactoryForUser(userContextConfiguration.Object, _servicesMgr.Object, _tokenGenerator.Object, _dynamicProxyFactory.Object);
+			_instance = new ServiceFactoryForUser(userContextConfiguration.Object, servicesMgr.Object, _tokenGenerator.Object, _dynamicProxyFactory.Object);
 		}
 
 		[Test]

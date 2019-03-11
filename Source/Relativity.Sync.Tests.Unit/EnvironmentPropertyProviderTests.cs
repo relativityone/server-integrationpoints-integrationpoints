@@ -5,7 +5,6 @@ using Moq;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.InstanceSetting;
-using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Telemetry;
 
 namespace Relativity.Sync.Tests.Unit
@@ -74,7 +73,7 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public void ItShouldUseDefaultInstanceNameIfQueryErrored()
+		public void ItShouldUseDefaultInstanceNameIfQueryFailed()
 		{
 			var resultSet = new InstanceSettingQueryResultSet
 			{
@@ -94,7 +93,7 @@ namespace Relativity.Sync.Tests.Unit
 		public void ItShouldUseDefaultInstanceNameIfQueryThrows()
 		{
 			_instanceSettingManagerMock.Setup(x => x.QueryAsync(It.IsAny<Services.Query>()))
-				.Throws(new Exception("blech"));
+				.Throws<Exception>();
 
 			// Act
 			IEnvironmentPropertyProvider environmentPropertyProvider = EnvironmentPropertyProvider.Create(_serviceMgr.Object, _logger.Object);
