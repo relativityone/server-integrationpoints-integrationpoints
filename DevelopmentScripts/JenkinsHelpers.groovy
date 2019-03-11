@@ -131,21 +131,59 @@ def packageRIP()
     powershell "./build.ps1 -sk -package -root ./BuildPackages $ripPipelineState.commonBuildArgs"
 }
 
+def stashTestsAndPackageArtifacts()
+{
+    timeout(time: 3, unit: 'MINUTES')
+    {
+        stashCommonArtifacts()
+		stashPackageOnlyArtifacts()
+		stashTestsOnlyArtifacts()
+    }
+}
+
+def unstashTestsAndPackageArtifacts()
+{
+    timeout(time: 3, unit: 'MINUTES')
+    {
+        unstashCommonArtifacts()
+		unstashPackageOnlyArtifacts()
+		unstashTestsOnlyArtifacts()
+    }
+}
+
 def stashTestsArtifacts()
 {
     timeout(time: 3, unit: 'MINUTES')
     {
-        stash includes: 'lib/UnitTests/**', name: 'testdlls'
-        stash includes: 'DynamicallyLoadedDLLs/Search-Standard/*', name: 'dynamicallyLoadedDLLs'
-        stash includes: 'Applications/RelativityIntegrationPoints.Auto.rap', name: 'integrationPointsRap'
-        stash includes: 'DevelopmentScripts/IntegrationPointsTests.*', name: 'nunitProjectFiles'
-        stash includes: 'DevelopmentScripts/NUnit.ConsoleRunner/tools/*', name: 'nunitConsoleRunner'
-        stash includes: 'DevelopmentScripts/NUnit.Extension.NUnitProjectLoader/tools/*', name: 'nunitProjectLoader'
-        stash includes: 'DevelopmentScripts/*.ps1', name: 'buildScripts'
-        stash includes: 'build.ps1', name: 'buildps1'
-        stash includes: 'Vendor/psake/tools/*', name: 'psake'
-        stash includes: 'Vendor/NuGet/NuGet.exe', name: 'nuget'
-        stash includes: 'Version/version.txt', name: 'version'
+        stashCommonArtifacts()
+		stashTestsOnlyArtifacts()
+    }
+}
+
+def unstashTestsArtifacts()
+{
+    timeout(time: 3, unit: 'MINUTES')
+    {
+        unstashCommonArtifacts()
+		unstashTestsOnlyArtifacts()
+    }
+}
+
+def stashPackageArtifacts()
+{
+    timeout(time: 3, unit: 'MINUTES')
+    {
+		stashCommonArtifacts()
+		stashPackageOnlyArtifacts()
+    }
+}
+
+def unstashPackageArtifacts()
+{
+    timeout(time: 3, unit: 'MINUTES')
+    {
+		unstashCommonArtifacts()
+		unstashPackageOnlyArtifacts()
     }
 }
 
@@ -252,24 +290,6 @@ def raid(String relativityBranchFallback)
 def getSessionId()
 {
     return ripPipelineState.sessionId
-}
-
-def unstashTestsArtifacts()
-{
-    timeout(time: 3, unit: 'MINUTES')
-    {
-        unstash 'testdlls'
-        unstash 'dynamicallyLoadedDLLs'
-        unstash 'integrationPointsRap'
-        unstash 'nunitProjectFiles'
-        unstash 'nunitConsoleRunner'
-        unstash 'nunitProjectLoader'
-        unstash 'buildps1'
-        unstash 'buildScripts'
-        unstash 'psake'
-        unstash 'nuget'
-        unstash 'version'
-    }
 }
 
 def runIntegrationTests()
@@ -795,6 +815,61 @@ private storeIntegrationTestsInQuarantineResults()
 	{
 		echo "storeIntegrationTestsInQuarantineResults error: $err"
 	}
+}
+
+/**********************
+ * Stash helpers
+ **********************
+ */
+
+private stashCommonArtifacts()
+{
+	stash includes: 'DevelopmentScripts/*.ps1', name: 'buildScripts'
+    stash includes: 'build.ps1', name: 'buildps1'
+    stash includes: 'Vendor/psake/tools/*', name: 'psake'
+    stash includes: 'Vendor/NuGet/NuGet.exe', name: 'nuget'
+    stash includes: 'Version/version.txt', name: 'version'
+}
+
+private unstashCommonArtifacts()
+{	
+    unstash 'buildScripts'
+	unstash 'buildps1'
+    unstash 'psake'
+    unstash 'nuget'
+    unstash 'version'
+}
+
+private stashPackageOnlyArtifacts()
+{
+	stash includes: 'BuildPackages/**', name: 'buildPackages'
+	stash includes: 'DevelopmentScripts/NuGet/*', name: 'nugets'   
+}
+
+private unstashPackageOnlyArtifacts()
+{
+	unstash 'buildPackages'
+	unstash 'nugets'
+}
+
+private stashTestsOnlyArtifacts()
+{
+	stash includes: 'lib/UnitTests/**', name: 'testdlls'
+    stash includes: 'DynamicallyLoadedDLLs/Search-Standard/*', name: 'dynamicallyLoadedDLLs'
+    stash includes: 'Applications/RelativityIntegrationPoints.Auto.rap', name: 'integrationPointsRap'
+    stash includes: 'DevelopmentScripts/IntegrationPointsTests.*', name: 'nunitProjectFiles'
+    stash includes: 'DevelopmentScripts/NUnit.ConsoleRunner/tools/*', name: 'nunitConsoleRunner'
+    stash includes: 'DevelopmentScripts/NUnit.Extension.NUnitProjectLoader/tools/*', name: 'nunitProjectLoader'
+}
+
+private unstashTestsOnlyArtifacts()
+{
+	unstash 'testdlls'
+    unstash 'dynamicallyLoadedDLLs'
+    unstash 'integrationPointsRap'
+    unstash 'nunitProjectFiles'
+    unstash 'nunitConsoleRunner'
+    unstash 'nunitProjectLoader'
 }
 
 return this

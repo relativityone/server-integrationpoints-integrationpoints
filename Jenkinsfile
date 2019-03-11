@@ -110,76 +110,98 @@ timestamps
 			}
 			stage ('Package')
 			{
-                jenkinsHelpers.packageRIP()
-			}
-
-			stage ('Stash Tests Artifacts')
-			{
-                jenkinsHelpers.stashTestsArtifacts()
-			}
+				jenkinsHelpers.packageRIP()
+			}			
 
 			if (jenkinsHelpers.testingVMsAreRequired(params))
+			{	
+				stage ('Stash Tests and Package Artifacts')
+				{
+					jenkinsHelpers.stashTestsAndPackageArtifacts()
+				}
+			} 
+			else
+			{			
+				stage ('Publish to NuGet')
+				{
+					jenkinsHelpers.publishToNuget()
+				}
+
+				stage ('Publish to bld-pkgs')
+				{
+					jenkinsHelpers.publishToBldPkgs()
+				}				
+			}			
+		}
+		
+		if (jenkinsHelpers.testingVMsAreRequired(params))
+		{
+			node('SCVMM-AGENTS-POOL')
 			{
 				// Provision SUT
 				stage('Install RAID')
 				{
                     jenkinsHelpers.raid(relativityBranchFallback)
-				}
-
-				// Run tests on provisioned SUT
-                def sessionId = jenkinsHelpers.getSessionId()
-				node ("$sessionId && dependencies")
+				}						
+			}
+				
+			def sessionId = jenkinsHelpers.getSessionId()
+			node ("$sessionId && dependencies")
+			{
+				stage ('Unstash Tests Artifacts')
 				{
-					stage ('Unstash Tests Artifacts')
+                    jenkinsHelpers.unstashTestsArtifacts()
+				}
+			
+				try
+				{
+					stage ('Integration Tests')
 					{
-                        jenkinsHelpers.unstashTestsArtifacts()
+						jenkinsHelpers.runIntegrationTests()
 					}
-					try
+					if (jenkinsHelpers.isNightly())
 					{
-						stage ('Integration Tests')
+						stage ('Integration Tests in Quarantine')
 						{
-                            jenkinsHelpers.runIntegrationTests()
-						}
-						if (jenkinsHelpers.isNightly())
-						{
-							stage ('Integration Tests in Quarantine')
-							{
-                                jenkinsHelpers.runIntegrationTestsInQuarantine()
-							}
-						}
-						stage ('UI Tests')
-						{
-							jenkinsHelpers.updateChromeToLatestVersion()
-                            jenkinsHelpers.runUiTests()
+							jenkinsHelpers.runIntegrationTestsInQuarantine()
 						}
 					}
-					catch(err)
+					stage ('UI Tests')
 					{
-						echo err.toString()
-						currentBuild.result = "FAILED"
-					}
-					finally
-					{
-						stage ('Gathering test stats')
-						{
-                            jenkinsHelpers.gatherTestStats()
-						}
+						jenkinsHelpers.updateChromeToLatestVersion()
+						jenkinsHelpers.runUiTests()
 					}
 				}
+				finally
+				{
+					stage ('Gathering test stats')
+					{
+						jenkinsHelpers.gatherTestStats()
+					}
+				}						
 			}
-
-			stage ('Publish to NuGet')
+			
+			node ('PolandBuild')
 			{
-                jenkinsHelpers.publishToNuget()
+				dir('publishArtifactsWorkspace')
+				{
+					stage ('Unstash Package artifacts')
+					{
+						jenkinsHelpers.unstashPackageArtifacts()
+					}			
+					stage ('Publish to NuGet')
+					{
+						jenkinsHelpers.publishToNuget()
+					}
+					stage ('Publish to bld-pkgs')
+					{
+						jenkinsHelpers.publishToBldPkgs()
+					}
+				}				
 			}
-
-			stage ('Publish to bld-pkgs')
-			{
-                jenkinsHelpers.publishToBldPkgs()
-			}
-
-			currentBuild.result = 'SUCCESS'
 		}
+		currentBuild.result = 'SUCCESS'
+		
 	}
 	catch (err)
 	{
