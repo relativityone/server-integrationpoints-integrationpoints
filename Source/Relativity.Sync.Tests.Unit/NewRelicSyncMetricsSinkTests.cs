@@ -19,7 +19,7 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public void ItDoesntSendMetricsOnLog()
+		public void ItDoesNotSendMetricsOnLog()
 		{
 			NewRelicSyncMetricsSink sink = new NewRelicSyncMetricsSink(_apmClient.Object);
 			Metric metric = Metric.TimedOperation("Test", TimeSpan.FromSeconds(1), ExecutionStatus.Completed, "foobar");
@@ -35,7 +35,7 @@ namespace Relativity.Sync.Tests.Unit
 		public void ItSendsMetricsOnDispose()
 		{
 			NewRelicSyncMetricsSink sink = new NewRelicSyncMetricsSink(_apmClient.Object);
-			Metric[] expectedMetrics = new Metric[] { Metric.TimedOperation("Test", TimeSpan.FromSeconds(1), ExecutionStatus.Completed, "foobar") };
+			Metric[] expectedMetrics = { Metric.TimedOperation("Test", TimeSpan.FromSeconds(1), ExecutionStatus.Completed, "foobar") };
 
 			foreach (Metric m in expectedMetrics)
 			{
@@ -52,7 +52,7 @@ namespace Relativity.Sync.Tests.Unit
 		public void ItSendsMultipleMetricsInPayload()
 		{
 			NewRelicSyncMetricsSink sink = new NewRelicSyncMetricsSink(_apmClient.Object);
-			Metric[] expectedMetrics = new Metric[]
+			Metric[] expectedMetrics =
 			{
 				Metric.TimedOperation("Test1", TimeSpan.FromDays(1), ExecutionStatus.Canceled, "foobar"),
 				Metric.TimedOperation("Test2", TimeSpan.FromMilliseconds(1), ExecutionStatus.Completed, "foobar"),

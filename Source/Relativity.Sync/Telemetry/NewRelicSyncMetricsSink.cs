@@ -69,7 +69,6 @@ namespace Relativity.Sync.Telemetry
 		public void Dispose()
 		{
 			Dispose(true);
-			GC.SuppressFinalize(this);
 		}
 	}
 }

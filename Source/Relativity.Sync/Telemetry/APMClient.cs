@@ -8,7 +8,7 @@ namespace Relativity.Sync.Telemetry
 	/// </summary>
 	internal sealed class APMClient : IAPMClient
 	{
-		private IAPM _apm;
+		private readonly IAPM _apm;
 
 		/// <summary>
 		///     Creates an instance of <see cref="APMClient"/>.
