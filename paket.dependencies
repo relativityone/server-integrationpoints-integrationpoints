@@ -18,6 +18,7 @@ nuget Polly ~> 6.1
 nuget Banzai ~> 3.0
 nuget Banzai.AUtofac ~> 3.0
 nuget Newtonsoft.Json ~> 12.0
+nuget SexyProxy.Emit 2.0.97
 
 // Tests
 nuget NUnit ~> 3.11

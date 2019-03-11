@@ -1,10 +1,10 @@
 ﻿using System;
 using Autofac;
 using Banzai.Logging;
-using Relativity.API;
 using Relativity.Sync.Authentication;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
+using Relativity.Sync.Proxy;
 using Relativity.Sync.Telemetry;
 
 namespace Relativity.Sync
@@ -102,6 +102,8 @@ namespace Relativity.Sync
 			builder.RegisterType<ServiceFactoryForAdmin>()
 				.As<ISourceServiceFactoryForAdmin>()
 				.As<IDestinationServiceFactoryForAdmin>();
+
+			builder.RegisterType<DynamicProxyFactory>().As<IDynamicProxyFactory>();
 
 			_pipelineBuilder.RegisterFlow(builder);
 

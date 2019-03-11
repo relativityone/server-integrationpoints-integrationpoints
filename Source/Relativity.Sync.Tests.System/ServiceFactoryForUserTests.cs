@@ -13,6 +13,8 @@ using Relativity.Services.Permission;
 using Relativity.Sync.Authentication;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Proxy;
+using Relativity.Sync.Tests.System.Stub;
 using TextCondition = kCura.Relativity.Client.TextCondition;
 using TextConditionEnum = kCura.Relativity.Client.TextConditionEnum;
 using User = kCura.Relativity.Client.DTOs.User;
@@ -70,7 +72,8 @@ namespace Relativity.Sync.Tests.System
 				PermissionType = PermissionType.Edit
 			};
 
-			ServiceFactoryForUser sut = new ServiceFactoryForUser(userContextConfiguration.Object, _servicesManager, authTokenGenerator);
+			IDynamicProxyFactory dynamicProxyFactory = new DynamicProxyFactoryStub();
+			ServiceFactoryForUser sut = new ServiceFactoryForUser(userContextConfiguration.Object, _servicesManager, authTokenGenerator, dynamicProxyFactory);
 			List<PermissionValue> permissionValues;
 			using (IPermissionManager permissionManager = await sut.CreateProxyAsync<IPermissionManager>().ConfigureAwait(false))
 			{

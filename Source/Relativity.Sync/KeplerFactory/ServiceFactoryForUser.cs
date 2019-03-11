@@ -4,6 +4,7 @@ using Relativity.API;
 using Relativity.Services.ServiceProxy;
 using Relativity.Sync.Authentication;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Proxy;
 
 namespace Relativity.Sync.KeplerFactory
 {
@@ -14,12 +15,14 @@ namespace Relativity.Sync.KeplerFactory
 		private readonly IUserContextConfiguration _userContextConfiguration;
 		private readonly IServicesMgr _servicesMgr;
 		private readonly IAuthTokenGenerator _tokenGenerator;
+		private readonly IDynamicProxyFactory _dynamicProxyFactory;
 		
-		public ServiceFactoryForUser(IUserContextConfiguration userContextConfiguration, IServicesMgr servicesMgr, IAuthTokenGenerator tokenGenerator)
+		public ServiceFactoryForUser(IUserContextConfiguration userContextConfiguration, IServicesMgr servicesMgr, IAuthTokenGenerator tokenGenerator, IDynamicProxyFactory dynamicProxyFactory)
 		{
 			_userContextConfiguration = userContextConfiguration;
 			_servicesMgr = servicesMgr;
 			_tokenGenerator = tokenGenerator;
+			_dynamicProxyFactory = dynamicProxyFactory;
 		}
 
 		public async Task<T> CreateProxyAsync<T>() where T : IDisposable
@@ -29,7 +32,8 @@ namespace Relativity.Sync.KeplerFactory
 				_serviceFactory = await CreateServiceFactoryAsync().ConfigureAwait(false);
 			}
 
-			return _serviceFactory.CreateProxy<T>();
+			T keplerService =  _serviceFactory.CreateProxy<T>();
+			return _dynamicProxyFactory.WrapKeplerService(keplerService);
 		}
 
 		private async Task<ServiceFactory> CreateServiceFactoryAsync()
