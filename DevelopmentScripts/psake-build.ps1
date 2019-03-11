@@ -282,7 +282,7 @@ task copy_dlls_to_lib_dir -depends create_lib_dir {
         Copy-Item -path $tmpPath -Destination $tests_directory -Recurse -Force
     }
    
-    $oiPathSrc = Join-Path -Path $root -ChildPath "Source\kCura.IntegrationPoint.Tests.Core\bin\x64\oi\unmanaged\*"
+    $oiPathSrc = Join-Path -Path $root -ChildPath "Source\kCura.IntegrationPoint.Tests.Core\bin\x64\oi\*"
     $oiPathDest = Join-Path -Path $tests_directory -ChildPath "oi\"
     New-Item -Path $oiPathDest -ItemType "directory"
     Copy-Item -path $oiPathSrc -Destination $oiPathDest
