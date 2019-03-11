@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Relativity.API;
-using Relativity.Sync.Proxy;
 
 namespace Relativity.Sync.KeplerFactory
 {

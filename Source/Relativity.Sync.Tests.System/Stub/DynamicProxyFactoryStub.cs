@@ -1,4 +1,4 @@
-﻿using Relativity.Sync.Proxy;
+﻿using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Tests.System.Stub
 {

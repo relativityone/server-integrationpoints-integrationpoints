@@ -8,7 +8,6 @@ using Relativity.Services.Objects;
 using Relativity.Sync.Authentication;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
-using Relativity.Sync.Proxy;
 
 namespace Relativity.Sync.Tests.Unit
 {

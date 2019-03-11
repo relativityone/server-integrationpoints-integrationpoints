@@ -6,7 +6,6 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Sync.KeplerFactory;
-using Relativity.Sync.Proxy;
 
 namespace Relativity.Sync.Tests.Unit
 {

@@ -3,7 +3,7 @@
 	/// <summary>
 	/// Indicates execution status of the command.
 	/// </summary>
-	internal enum CommandExecutionStatus
+	internal enum ExecutionStatus
 	{
 		None,
 		Completed,

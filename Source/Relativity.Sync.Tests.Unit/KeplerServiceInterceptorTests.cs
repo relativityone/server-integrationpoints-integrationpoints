@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
-using Relativity.Sync.Proxy;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Tests.Unit.Stubs;
 
@@ -43,7 +43,9 @@ namespace Relativity.Sync.Tests.Unit
 
 			// ASSERT
 			_stubForInterception.Verify(x => x.ExecuteAsync(), Times.Once);
-			_syncMetrics.Verify(x => x.TimedOperation(GetMetricName(nameof(IStubForInterception.ExecuteAsync)), _executionTime, CommandExecutionStatus.Completed), Times.Once);
+			_syncMetrics.Verify(
+				x => x.TimedOperation(GetMetricName(nameof(IStubForInterception.ExecuteAsync)), _executionTime, ExecutionStatus.Completed,
+					It.Is<Dictionary<string, object>>(dict => !dict.ContainsKey("KeplerException"))), Times.Once);
 		}
 
 		[Test]
@@ -70,13 +72,14 @@ namespace Relativity.Sync.Tests.Unit
 
 			// ASSERT
 			action.Should().Throw<Exception>();
-			_syncMetrics.Verify(x => x.TimedOperation(GetMetricName(nameof(IStubForInterception.ExecuteAsync)), _executionTime, CommandExecutionStatus.Failed), Times.Once);
+			_syncMetrics.Verify(x => x.TimedOperation(GetMetricName(nameof(IStubForInterception.ExecuteAsync)), _executionTime, ExecutionStatus.Failed, It.IsAny<Dictionary<string, object>>()),
+				Times.Once);
 		}
 
 		[Test]
 		public void ItShouldNotFailWhenMetricsFails()
 		{
-			_syncMetrics.Setup(x => x.TimedOperation(It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<CommandExecutionStatus>())).Throws<Exception>();
+			_syncMetrics.Setup(x => x.TimedOperation(It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<ExecutionStatus>(), It.IsAny<Dictionary<string, object>>())).Throws<Exception>();
 
 			// ACT
 			Func<Task> action = async () => await _instance.ExecuteAsync().ConfigureAwait(false);
@@ -93,7 +96,7 @@ namespace Relativity.Sync.Tests.Unit
 
 			// ASSERT
 			_stubForInterception.Verify(x => x.Dispose(), Times.Once);
-			_syncMetrics.Verify(x => x.TimedOperation(It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<CommandExecutionStatus>()), Times.Never);
+			_syncMetrics.Verify(x => x.TimedOperation(It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<ExecutionStatus>(), It.IsAny<Dictionary<string, object>>()), Times.Never);
 		}
 
 		[Test]
@@ -147,15 +150,39 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public void ItShouldAddNumberOfRetriesToMetrics()
+		[TestCaseSource(nameof(ExceptionsToRetry))]
+		public void ItShouldAddExceptionToMetrics(Type exceptionType)
 		{
-			Assert.Ignore("ISyncMetrics interface needs to be changed first.");
+			Exception exception = (Exception) Activator.CreateInstance(exceptionType);
+			_stubForInterception.Setup(x => x.ExecuteAsync()).Throws(exception);
+
+			// ACT
+			Func<Task> action = async () => await _instance.ExecuteAsync().ConfigureAwait(false);
+
+			// ASSERT
+			action.Should().Throw<Exception>();
+			_syncMetrics.Verify(
+				x => x.TimedOperation(GetMetricName(nameof(IStubForInterception.ExecuteAsync)), _executionTime, ExecutionStatus.Failed,
+					It.Is<Dictionary<string, object>>(dict => dict["KeplerException"] == exception)), Times.Once);
 		}
 
 		[Test]
-		public void ItShouldAddExceptionToMetrics()
+		[TestCaseSource(nameof(ExceptionsToRetry))]
+		public void ItShouldAddNumberOfRetriesToMetrics(Type exceptionType)
 		{
-			Assert.Ignore("ISyncMetrics interface needs to be changed first.");
+			const int expectedRetries = 2;
+
+			Exception exception = (Exception) Activator.CreateInstance(exceptionType);
+			_stubForInterception.SetupSequence(x => x.ExecuteAsync()).Throws(exception).Throws(exception).Returns(Task.CompletedTask);
+
+			// ACT
+			Func<Task> action = async () => await _instance.ExecuteAsync().ConfigureAwait(false);
+
+			// ASSERT
+			action.Should().NotThrow();
+			_syncMetrics.Verify(
+				x => x.TimedOperation(GetMetricName(nameof(IStubForInterception.ExecuteAsync)), _executionTime, ExecutionStatus.Completed,
+					It.Is<Dictionary<string, object>>(dict => dict["KeplerRetries"].Equals(expectedRetries))), Times.Once);
 		}
 
 		private static string GetMetricName(string methodName)

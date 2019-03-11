@@ -1,16 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Polly;
 using Relativity.Sync.Telemetry;
 using SexyProxy;
 
-namespace Relativity.Sync.Proxy
+namespace Relativity.Sync.KeplerFactory
 {
 	internal sealed class KeplerServiceInterceptor : IProxy
 	{
 		private const int _NUMBER_OF_RETRIES = 3;
 		private const int _MS_BETWEEN_RETRIES = 500;
+
+		private const string _RETRIES_COUNT_METRIC_NAME = "KeplerRetries";
+		private const string _EXCEPTION_METRIC_NAME = "KeplerException";
 
 		private readonly ISyncMetrics _syncMetrics;
 		private readonly IStopwatch _stopwatch;
@@ -32,18 +36,21 @@ namespace Relativity.Sync.Proxy
 				return await invocation.Proceed().ConfigureAwait(false);
 			}
 
-			CommandExecutionStatus status = CommandExecutionStatus.Completed;
+			ExecutionStatus status = ExecutionStatus.Completed;
+			Exception exception = null;
+			int numberOfRetries = 0;
 			_stopwatch.Start();
 			try
 			{
 				return await Policy
 					.Handle<HttpRequestException>() //Thrown when remote endpoint cannot be resolved - connection error
-					.WaitAndRetryAsync(_NUMBER_OF_RETRIES, (i, c) => TimeSpan.FromMilliseconds(_MS_BETWEEN_RETRIES), OnRetry)
+					.WaitAndRetryAsync(_NUMBER_OF_RETRIES, (i, c) => TimeSpan.FromMilliseconds(_MS_BETWEEN_RETRIES), (e, waitTime, retryCount, context) => numberOfRetries = retryCount)
 					.ExecuteAsync(async () => await invocation.Proceed().ConfigureAwait(false)).ConfigureAwait(false);
 			}
-			catch (Exception)
+			catch (Exception e)
 			{
-				status = CommandExecutionStatus.Failed;
+				status = ExecutionStatus.Failed;
+				exception = e;
 				throw;
 			}
 			finally
@@ -51,7 +58,7 @@ namespace Relativity.Sync.Proxy
 				_stopwatch.Stop();
 				try
 				{
-					_syncMetrics.TimedOperation(GetMetricName(invocation), _stopwatch.Elapsed, status);
+					_syncMetrics.TimedOperation(GetMetricName(invocation), _stopwatch.Elapsed, status, CreateCustomData(numberOfRetries, exception));
 				}
 				catch (Exception e)
 				{
@@ -60,9 +67,18 @@ namespace Relativity.Sync.Proxy
 			}
 		}
 
-		private Task OnRetry(Exception arg1, TimeSpan arg2, Context arg3)
+		private static Dictionary<string, object> CreateCustomData(int numberOfRetries, Exception exception)
 		{
-			return Task.CompletedTask;
+			Dictionary<string, object> dictionary = new Dictionary<string, object>
+			{
+				{_RETRIES_COUNT_METRIC_NAME, numberOfRetries}
+			};
+			if (exception != null)
+			{
+				dictionary.Add(_EXCEPTION_METRIC_NAME, exception);
+			}
+
+			return dictionary;
 		}
 
 		private static string GetMetricName(Invocation invocation)

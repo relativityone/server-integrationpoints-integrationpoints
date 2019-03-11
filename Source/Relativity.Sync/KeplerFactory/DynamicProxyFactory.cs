@@ -1,6 +1,6 @@
 ﻿using Relativity.Sync.Telemetry;
 
-namespace Relativity.Sync.Proxy
+namespace Relativity.Sync.KeplerFactory
 {
 	internal sealed class DynamicProxyFactory : IDynamicProxyFactory
 	{

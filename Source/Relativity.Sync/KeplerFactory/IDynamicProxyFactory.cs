@@ -1,4 +1,4 @@
-﻿namespace Relativity.Sync.Proxy
+﻿namespace Relativity.Sync.KeplerFactory
 {
 	internal interface IDynamicProxyFactory
 	{

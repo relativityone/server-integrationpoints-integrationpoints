@@ -4,7 +4,6 @@ using Relativity.API;
 using Relativity.Services.ServiceProxy;
 using Relativity.Sync.Authentication;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Proxy;
 
 namespace Relativity.Sync.KeplerFactory
 {

@@ -82,7 +82,7 @@ namespace Relativity.Sync.Tests.Integration
 			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			syncMetrics.Verify(x => x.TimedOperation(It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<CommandExecutionStatus>()));
+			syncMetrics.Verify(x => x.TimedOperation(It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<ExecutionStatus>()));
 		}
 
 		private void AssertExecutionOrder(List<Type[]> expectedOrder)

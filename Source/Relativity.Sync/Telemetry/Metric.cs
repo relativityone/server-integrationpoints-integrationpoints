@@ -49,7 +49,7 @@ namespace Relativity.Sync.Telemetry
 		/// <summary>
 		///     Status of the operation related to this metric.
 		/// </summary>
-		public CommandExecutionStatus ExecutionStatus { get; set; }
+		public ExecutionStatus ExecutionStatus { get; set; }
 
 		/// <summary>
 		///     Any metadata associated with this metric.
@@ -79,7 +79,7 @@ namespace Relativity.Sync.Telemetry
 		/// <param name="executionStatus">Result of the oepration</param>
 		/// <param name="correlationId">ID which correlates all metrics across a job</param>
 		/// <returns></returns>
-		public static Metric TimedOperation(string name, TimeSpan duration, CommandExecutionStatus executionStatus, string correlationId)
+		public static Metric TimedOperation(string name, TimeSpan duration, ExecutionStatus executionStatus, string correlationId)
 		{
 			return new Metric(name, MetricType.TimedOperation, correlationId)
 			{
