@@ -49,7 +49,7 @@ node('PolandBuild')
 
         stage ('System Tests')
         {
-            powershell ".\\build.ps1 runSystemTests -sutAddress $pipelineState.sut.name"
+            powershell ".\\build.ps1 runSystemTests -sutAddress $pipelineState.sut.name" + ".kcura.corp"
         }
         
         currentBuild.result = 'SUCCESS'
