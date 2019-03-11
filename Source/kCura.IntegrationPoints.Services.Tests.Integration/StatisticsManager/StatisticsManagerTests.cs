@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoint.Tests.Core.TestCategories;
+using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Services.Tests.Integration.StatisticsManager.TestCase;
 using NUnit.Framework;
@@ -11,12 +12,39 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.StatisticsManager
 {
 	public class StatisticsManagerTests : SourceProviderTemplate
 	{
+		private TestCaseSettings _testCaseSettings;
+
+		private static IEnumerable<IStatisticsTestCase> _testCases = new IStatisticsTestCase[]
+		{
+			new GetDocumentsTotalForSavedSearch(),
+			new GetImagesFileSizeForSavedSearch(),
+			new GetImagesTotalForSavedSearch(),
+			new GetNativesFileSizeForSavedSearch(),
+			new GetNativesTotalForSavedSearch(),
+			new GetDocumentsTotalForFolder(),
+			new GetImagesTotalForFolder(),
+			new GetNativesTotalForFolder(),
+			new GetDocumentsTotalForProduction(),
+			new GetNativesTotalForProduction()
+		};
+
+		private static IEnumerable<IStatisticsTestCase> _quarantinedBrokenTestCases = new IStatisticsTestCase[]
+		{
+			new GetImagesFileSizeForFolder(), //TODO: Correct this test case. It's checking non-existent folder with ID = 0
+			new GetNativesFileSizeForFolder(), //TODO: Correct this test case. It's checking non-existent folder with ID = 0
+		};
+
+		private static IEnumerable<IStatisticsTestCase> _quarantinedDueToREL301226 = new IStatisticsTestCase[]
+		{
+			new GetImagesFileSizeForProduction(),
+			new GetImagesTotalForProduction(),
+			new GetNativesFileSizeForProduction()
+		};
+		
 		public StatisticsManagerTests() : base($"Statistics_{Utils.FormattedDateTimeNow}")
 		{
 		}
-
-		private TestCaseSettings _testCaseSettings;
-
+		
 		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
@@ -42,25 +70,18 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.StatisticsManager
 			statisticsTestCase.Execute(Helper, WorkspaceArtifactId, _testCaseSettings);
 		}
 
-		private static IEnumerable<IStatisticsTestCase> _testCases = new IStatisticsTestCase[]
+		[TestCaseSource(nameof(_quarantinedBrokenTestCases))]
+		[TestInQuarantine(TestQuarantineState.FailsContinuously)]
+		public void ItShouldGetDocumentTotalQuarantinedBrokentests(IStatisticsTestCase statisticsTestCase)
 		{
-			new GetDocumentsTotalForSavedSearch(),
-			new GetImagesFileSizeForSavedSearch(),
-			new GetImagesTotalForSavedSearch(),
-			new GetNativesFileSizeForSavedSearch(),
-			new GetNativesTotalForSavedSearch(),
-			new GetDocumentsTotalForFolder(),
-			//TODO: Correct this test case. It's checking non-existent folder with ID = 0
-			//new GetImagesFileSizeForFolder(),
-			new GetImagesTotalForFolder(),
-			//TODO: Correct this test case. It's checking non-existent folder with ID = 0
-			//new GetNativesFileSizeForFolder(),
-			new GetNativesTotalForFolder(),
-			new GetDocumentsTotalForProduction(),
-			new GetImagesFileSizeForProduction(),
-			new GetImagesTotalForProduction(),
-			new GetNativesFileSizeForProduction(),
-			new GetNativesTotalForProduction()
-		};
+			statisticsTestCase.Execute(Helper, WorkspaceArtifactId, _testCaseSettings);
+		}
+
+		[TestCaseSource(nameof(_quarantinedDueToREL301226))]
+		[TestInQuarantine(TestQuarantineState.DetectsDefectInExternalDependency, "REL-301226")]
+		public void ItShouldGetDocumentTotalQuarantinedDueToREL301226(IStatisticsTestCase statisticsTestCase)
+		{
+			statisticsTestCase.Execute(Helper, WorkspaceArtifactId, _testCaseSettings);
+		}
 	}
 }

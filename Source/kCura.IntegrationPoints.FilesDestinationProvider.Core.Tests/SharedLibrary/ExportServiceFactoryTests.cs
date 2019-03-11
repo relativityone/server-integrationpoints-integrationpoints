@@ -4,6 +4,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Service.Export;
@@ -29,13 +30,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			IAPILog logger = Substitute.For<IAPILog>();
 			logger.ForContext<ExportServiceFactory>().Returns(logger);
 			IRepositoryFactory repositoryFactory = Substitute.For<IRepositoryFactory>();
+			IViewFieldRepository viewFieldRepository = Substitute.For<IViewFieldRepository>();
 			var contextUser = new CurrentUser
 			{
 				ID = 9
 			};
 			_exportDataContext = new ExportDataContext() {ExportFile = new ExtendedExportFile(1234)};
 			
-			_instance = new ExportServiceFactory(logger, _instanceSettingRepository, repositoryFactory, contextUser);
+			_instance = new ExportServiceFactory(logger, _instanceSettingRepository, repositoryFactory, viewFieldRepository, contextUser);
 		}
 
 		[Test]

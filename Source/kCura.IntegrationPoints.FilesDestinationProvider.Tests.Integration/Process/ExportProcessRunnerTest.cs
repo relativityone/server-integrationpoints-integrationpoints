@@ -27,6 +27,7 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases;
 using kCura.WinEDDS.Core.IO;
 using kCura.WinEDDS.Exporters;
@@ -99,11 +100,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			configFactoryMock.Create().Returns(configMock);
 
 			IRepositoryFactory repositoryFactory = _windsorContainer.Resolve<IRepositoryFactory>();
+			IViewFieldRepository viewFieldRepository = _windsorContainer.Resolve<IViewFieldRepository>();
 			IInstanceSettingRepository instanceSettingRepository =
 				_windsorContainer.Resolve<IInstanceSettingRepository>();
 			var user = new CurrentUser() {ID = 9};
 			IAPILog logger = helper.GetLoggerFactory().GetLogger();
-			var exportServiceFactory = new ExportServiceFactory(logger, instanceSettingRepository, repositoryFactory, user);
+			var exportServiceFactory = new ExportServiceFactory(logger, instanceSettingRepository, repositoryFactory, viewFieldRepository, user);
 			
 			var exportProcessBuilder = new ExportProcessBuilder(
 				configFactoryMock,
