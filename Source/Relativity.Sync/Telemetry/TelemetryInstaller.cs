@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Reflection;
 using Autofac;
+using Relativity.API;
 
 namespace Relativity.Sync.Telemetry
 {
@@ -15,6 +16,7 @@ namespace Relativity.Sync.Telemetry
 			builder.RegisterType<APMClient>().As<IAPMClient>();
 			builder.RegisterType<SystemStopwatch>().As<IStopwatch>();
 			builder.RegisterType<SyncMetrics>().As<ISyncMetrics>();
+			builder.Register(c => EnvironmentPropertyProvider.GetInstance(c.Resolve<IHelper>())).As<IEnvironmentPropertyProvider>().SingleInstance();
 			builder.RegisterTypes(Assembly.GetExecutingAssembly().GetTypes()
 				.Where(t => !t.IsAbstract && t.IsAssignableTo<ISyncMetricsSink>())
 				.ToArray()).As<ISyncMetricsSink>();

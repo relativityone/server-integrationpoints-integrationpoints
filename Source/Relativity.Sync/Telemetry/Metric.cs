@@ -19,10 +19,11 @@ namespace Relativity.Sync.Telemetry
 				.GetProperties(BindingFlags.Instance | BindingFlags.Public)
 				.Where(p => p.GetMethod != null);
 
-		private Metric(string name, MetricType type)
+		private Metric(string name, MetricType type, string correlationId)
 		{
 			Name = name;
 			Type = type;
+			CorrelationId = correlationId;
 		}
 
 		/// <summary>
@@ -34,6 +35,11 @@ namespace Relativity.Sync.Telemetry
 		///     Type of metric this represents, e.g. a timed operation, a counter, etc.
 		/// </summary>
 		public MetricType Type { get; }
+
+		/// <summary>
+		///     ID that correlates logging and telemetry across a single job.
+		/// </summary>
+		public string CorrelationId { get; }
 
 		/// <summary>
 		///     Value of this metric.
@@ -71,10 +77,11 @@ namespace Relativity.Sync.Telemetry
 		/// <param name="name">Name or bucket for the metric</param>
 		/// <param name="duration">Duration of the operation</param>
 		/// <param name="executionStatus">Result of the oepration</param>
+		/// <param name="correlationId">ID which correlates all metrics across a job</param>
 		/// <returns></returns>
-		public static Metric TimedOperation(string name, TimeSpan duration, CommandExecutionStatus executionStatus)
+		public static Metric TimedOperation(string name, TimeSpan duration, CommandExecutionStatus executionStatus, string correlationId)
 		{
-			return new Metric(name, MetricType.TimedOperation)
+			return new Metric(name, MetricType.TimedOperation, correlationId)
 			{
 				Value = duration.TotalMilliseconds,
 				ExecutionStatus = executionStatus

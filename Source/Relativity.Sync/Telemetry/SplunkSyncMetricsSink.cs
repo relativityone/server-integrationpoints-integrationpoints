@@ -12,20 +12,25 @@ namespace Relativity.Sync.Telemetry
 	internal class SplunkSyncMetricsSink : ISyncMetricsSink
 	{
 		private readonly ISyncLog _logger;
+		private readonly IEnvironmentPropertyProvider _envProperties;
 
 		/// <summary>
 		///     Creates a new instance of <see cref="SplunkSyncMetricsSink"/>.
 		/// </summary>
 		/// <param name="logger">Logger to use for logging metrics</param>
-		public SplunkSyncMetricsSink(ISyncLog logger)
+		/// <param name="envProperties">Provider of environment properties used to enrich metadata</param>
+		public SplunkSyncMetricsSink(ISyncLog logger, IEnvironmentPropertyProvider envProperties)
 		{
 			_logger = logger;
+			_envProperties = envProperties;
 		}
 
 		/// <inheritdoc />
 		public void Log(Metric metric)
 		{
 			Dictionary<string, object> parameters = metric.ToDictionary();
+			parameters.Add(nameof(_envProperties.InstanceName), _envProperties.InstanceName);
+			parameters.Add(nameof(_envProperties.CallingAssembly), _envProperties.CallingAssembly);
 
 			// The message template is not used here, so we'll just log an empty string.
 			_logger.LogInformation(string.Empty, parameters);

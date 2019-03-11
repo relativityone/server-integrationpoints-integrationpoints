@@ -22,7 +22,7 @@ namespace Relativity.Sync.Tests.Unit
 		public void ItDoesntSendMetricsOnLog()
 		{
 			NewRelicSyncMetricsSink sink = new NewRelicSyncMetricsSink(_apmClient.Object);
-			Metric metric = Metric.TimedOperation("Test", TimeSpan.FromSeconds(1), CommandExecutionStatus.Completed);
+			Metric metric = Metric.TimedOperation("Test", TimeSpan.FromSeconds(1), CommandExecutionStatus.Completed, "foobar");
 			sink.Log(metric);
 
 			// Need to specify all arguments when mocking out a method.
@@ -35,7 +35,7 @@ namespace Relativity.Sync.Tests.Unit
 		public void ItSendsMetricsOnDispose()
 		{
 			NewRelicSyncMetricsSink sink = new NewRelicSyncMetricsSink(_apmClient.Object);
-			Metric[] expectedMetrics = new Metric[] { Metric.TimedOperation("Test", TimeSpan.FromSeconds(1), CommandExecutionStatus.Completed) };
+			Metric[] expectedMetrics = new Metric[] { Metric.TimedOperation("Test", TimeSpan.FromSeconds(1), CommandExecutionStatus.Completed, "foobar") };
 
 			foreach (Metric m in expectedMetrics)
 			{
@@ -54,9 +54,9 @@ namespace Relativity.Sync.Tests.Unit
 			NewRelicSyncMetricsSink sink = new NewRelicSyncMetricsSink(_apmClient.Object);
 			Metric[] expectedMetrics = new Metric[]
 			{
-				Metric.TimedOperation("Test1", TimeSpan.FromDays(1), CommandExecutionStatus.Canceled),
-				Metric.TimedOperation("Test2", TimeSpan.FromMilliseconds(1), CommandExecutionStatus.Completed),
-				Metric.TimedOperation("Test3", TimeSpan.FromSeconds(1), CommandExecutionStatus.Failed)
+				Metric.TimedOperation("Test1", TimeSpan.FromDays(1), CommandExecutionStatus.Canceled, "foobar"),
+				Metric.TimedOperation("Test2", TimeSpan.FromMilliseconds(1), CommandExecutionStatus.Completed, "foobar"),
+				Metric.TimedOperation("Test3", TimeSpan.FromSeconds(1), CommandExecutionStatus.Failed, "foobar")
 			};
 
 			foreach (Metric m in expectedMetrics)

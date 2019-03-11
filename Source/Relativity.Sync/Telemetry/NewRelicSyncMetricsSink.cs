@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Relativity.Telemetry.APM;
 
 namespace Relativity.Sync.Telemetry
 {
@@ -11,6 +10,7 @@ namespace Relativity.Sync.Telemetry
 	/// </summary>
 	internal class NewRelicSyncMetricsSink : ISyncMetricsSink, IDisposable
 	{
+		// See comment in Dispose(bool).
 		private bool _disposed = false;
 
 		private const string _METRIC_NAME = "Relativity.Sync.JobComplete";
@@ -49,13 +49,16 @@ namespace Relativity.Sync.Telemetry
 				}
 
 				// This isn't meant to ensure thread-safety, just safety from repeated calls to Dipose.
+				// If this _should_ be thread-safe, consider locking or marking the field `volatile`.
 				_disposed = true;
 			}
 		}
 
-		// Builds a customData payload for APM so we can send all metrics in one call.
-		// Keys are random IDs and values are dictionaries mapping public Metric properties
-		// to their values, i.e.: {(guid) => {(property) => (property_val)}}
+		/// <summary>
+		///     Builds a customData payload for APM so we can send all metrics in one call.
+		///     Keys are random IDs and values are dictionaries mapping public Metric properties
+		///     to their values, i.e.: {(guid) => {(property) => (property_val)}}
+		/// </summary>
 		private Dictionary<string, object> BuildPayload(IEnumerable<Metric> metrics)
 		{
 			Dictionary<string, object> payload = metrics.ToDictionary(m => Guid.NewGuid().ToString(), m => (object)m.ToDictionary());

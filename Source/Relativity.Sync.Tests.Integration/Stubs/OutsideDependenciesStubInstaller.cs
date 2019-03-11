@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Autofac;
 using Moq;
 using Relativity.Telemetry.APM;
+using Relativity.API;
 
 namespace Relativity.Sync.Tests.Integration.Stubs
 {
@@ -14,6 +15,7 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 	{
 		public void Install(ContainerBuilder builder)
 		{
+			// Relativity.Telemetry.APM
 			Mock<IAPM> apmMock = new Mock<IAPM>();
 			Mock<ICounterMeasure> counterMock = new Mock<ICounterMeasure>();
 			apmMock.Setup(a => a.CountOperation(It.IsAny<string>(),
@@ -25,8 +27,13 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 				It.IsAny<Dictionary<string, object>>(),
 				It.IsAny<IEnumerable<ISink>>())
 			).Returns(counterMock.Object);
-
 			builder.RegisterInstance(apmMock.Object).As<IAPM>();
+
+			// Relativity.API
+			Mock<IHelper> helperMock = new Mock<IHelper>();
+			Mock<IDBContext> dbContextMock = new Mock<IDBContext>();
+			helperMock.Setup(h => h.GetDBContext(It.IsAny<int>())).Returns(dbContextMock.Object);
+			builder.RegisterInstance(helperMock.Object).As<IHelper>();
 		}
 	}
 }
