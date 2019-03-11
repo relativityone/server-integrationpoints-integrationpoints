@@ -33,7 +33,6 @@ using kCura.IntegrationPoints.Core.Validation;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using Relativity.API;
-using Constants = kCura.IntegrationPoint.Tests.Core.Constants;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
@@ -55,19 +54,19 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		{
 			base.SuiteSetup();
 
-			ControlIntegrationPointAgents(false);
+			IntegrationPoint.Tests.Core.Agent.DisableAllAgents();
 			_queueContext = new QueueDBContext(Helper, GlobalConst.SCHEDULE_AGENT_QUEUE_TABLE_NAME);
 		}
 
-		protected override void Install()
+		protected override void InitializeIocContainer()
 		{
-			base.Install();
+			base.InitializeIocContainer();
 			Container.Register(Component.For<IAgentValidator>().ImplementedBy<AgentValidator>().LifestyleTransient());
 		}
 
 		public override void SuiteTeardown()
 		{
-			ControlIntegrationPointAgents(true);
+			IntegrationPoint.Tests.Core.Agent.EnableAllAgents();
 			base.SuiteTeardown();
 		}
 
@@ -133,7 +132,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			{
 				SourceProvider = RelativityProvider.ArtifactId,
 				Name = "ARRRRRRRGGGHHHHH - RunRelativityProviderAlone",
-				DestinationProvider = DestinationProvider.ArtifactId,
+				DestinationProvider = RelativityDestinationProviderArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
 				Map = CreateDefaultFieldMap(),

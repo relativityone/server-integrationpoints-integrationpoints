@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Castle.MicroKernel.Registration;
+﻿using Castle.MicroKernel.Registration;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
@@ -49,18 +48,18 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
-			ControlIntegrationPointAgents(false);
+			IntegrationPoint.Tests.Core.Agent.DisableAllAgents();
 		}
 
-		protected override void Install()
+		protected override void InitializeIocContainer()
 		{
-			base.Install();
+			base.InitializeIocContainer();
 			Container.Register(Component.For<IAgentValidator>().ImplementedBy<AgentValidator>().LifestyleTransient());
 		}
 
 		public override void SuiteTeardown()
 		{
-			ControlIntegrationPointAgents(true);
+			IntegrationPoint.Tests.Core.Agent.EnableAllAgents();
 			base.SuiteTeardown();
 		}
 
@@ -183,7 +182,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			{
 				SourceProvider = RelativityProvider.ArtifactId,
 				Name = $"PUSH - sourceNatives {areNativesPresentInSource} - targetNatives {areNativesPresentInTarget}",
-				DestinationProvider = DestinationProvider.ArtifactId,
+				DestinationProvider = RelativityDestinationProviderArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
 				Destination = serializedDestinationConfig,
 				Map = CreateDefaultFieldMap(),

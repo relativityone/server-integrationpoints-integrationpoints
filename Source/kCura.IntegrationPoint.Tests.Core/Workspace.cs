@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using kCura.IntegrationPoint.Tests.Core.Exceptions;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using kCura.Relativity.Client.Repositories;

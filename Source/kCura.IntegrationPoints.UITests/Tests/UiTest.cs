@@ -19,6 +19,7 @@ using System.Collections.ObjectModel;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using kCura.IntegrationPoint.Tests.Core.Exceptions;
 using TestContext = kCura.IntegrationPoints.UITests.Configuration.TestContext;
 
 namespace kCura.IntegrationPoints.UITests.Tests

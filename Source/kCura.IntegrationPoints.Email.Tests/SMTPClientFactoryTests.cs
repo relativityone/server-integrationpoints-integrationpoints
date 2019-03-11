@@ -1,41 +1,82 @@
-﻿using NUnit.Framework;
-using kCura.IntegrationPoints.Email;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using kCura.IntegrationPoint.Tests.Core;
+﻿using System.Net.Mail;
+using FluentAssertions;
+using kCura.IntegrationPoints.Email.Dto;
+using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Email.Tests
 {
-	[TestFixture()]
-	public class SMTPClientFactoryTests : TestBase
+	[TestFixture]
+	public class SmtpClientFactoryTests
 	{
 		[Test]
-		public void GetClientTest()
+		public void ShouldGetClientForValidInput()
 		{
-			var emailConfiguration = new EmailConfiguration()
-			{
-				Domain = "testDomain",
-				Password = "testPass",
-				Port = 1234,
-				UseSSL = true,
-				UserName = "testUser"
-			};
-			SMTPClientFactory clientFactory = new SMTPClientFactory();
-			var client = clientFactory.GetClient(emailConfiguration);
+			// arrange
+			var emailConfiguration = new SmtpClientSettings
+			(
+				domain: "testDomain",
+				port: 1234,
+				useSsl: true,
+				userName: "testUser",
+				password: "testPass"
+			);
+			var clientFactory = new SmtpClientFactory();
 
-			Assert.AreEqual(emailConfiguration.Domain, client.Host);
-			Assert.That(client.Credentials != null);
-			Assert.AreEqual(emailConfiguration.Port, client.Port);
-			Assert.AreEqual(emailConfiguration.UseSSL, client.EnableSsl);
+			// act
+			SmtpClient client = clientFactory.Create(emailConfiguration);
+
+			// assert
+			AssertSmptClientWasConstructedWithProperSettings(client, emailConfiguration);
 		}
 
-		[SetUp]
-		public override void SetUp()
+		[Test]
+		public void ShouldGetClientForNullUsername()
 		{
-			
+			// arrange
+			var emailConfiguration = new SmtpClientSettings
+			(
+				domain: "testDomain",
+				port: 1234,
+				useSsl: true,
+				userName: null,
+				password: "testPass"
+			);
+			var clientFactory = new SmtpClientFactory();
+
+			// act
+			SmtpClient client = clientFactory.Create(emailConfiguration);
+
+			// assert
+			AssertSmptClientWasConstructedWithProperSettings(client, emailConfiguration);
+		}
+
+		[Test]
+		public void ShouldGetClientForNullPassword()
+		{
+			// arrange
+			var emailConfiguration = new SmtpClientSettings
+			(
+				domain: "testDomain",
+				port: 1234,
+				useSsl: true,
+				userName: "user",
+				password: null
+			);
+			var clientFactory = new SmtpClientFactory();
+
+			// act
+			SmtpClient client = clientFactory.Create(emailConfiguration);
+
+			// assert
+			AssertSmptClientWasConstructedWithProperSettings(client, emailConfiguration);
+		}
+
+		private static void AssertSmptClientWasConstructedWithProperSettings(SmtpClient client, SmtpClientSettings emailConfiguration)
+		{
+			client.Host.Should().Be(emailConfiguration.Domain);
+			client.Credentials.Should().NotBeNull();
+			client.Port.Should().Be(emailConfiguration.Port);
+			client.EnableSsl.Should().Be(emailConfiguration.UseSSL);
 		}
 	}
 }

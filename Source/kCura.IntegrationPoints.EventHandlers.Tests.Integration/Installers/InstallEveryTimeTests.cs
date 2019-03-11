@@ -14,10 +14,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 		{
 			public TestHelper(int workspaceID)
 			{
-				this.WorkspaceID = workspaceID;
+				WorkspaceID = workspaceID;
 			}
 
-			public int WorkspaceID { get; set; }
+			public int WorkspaceID { get; }
 
 			public int GetEddsUserID()
 			{

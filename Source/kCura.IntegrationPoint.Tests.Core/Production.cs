@@ -3,6 +3,7 @@ using Relativity.Productions.Services;
 using Relativity.Services.Field;
 using System;
 using System.Threading.Tasks;
+using kCura.IntegrationPoint.Tests.Core.Exceptions;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {

@@ -1,12 +1,4 @@
-﻿using System;
-using System.Net.Http.Formatting;
-using System.Web;
-using System.Web.Http;
-using System.Web.Http.Dispatcher;
-using System.Web.Mvc;
-using System.Web.Optimization;
-using System.Web.Routing;
-using Castle.MicroKernel;
+﻿using Castle.MicroKernel;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
@@ -17,10 +9,20 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Data.Queries;
-using kCura.IntegrationPoints.Web.Logging;
 using Newtonsoft.Json;
 using Relativity.API;
 using Relativity.CustomPages;
+using System;
+using System.Net.Http.Formatting;
+using System.Web;
+using System.Web.Http;
+using System.Web.Http.Dispatcher;
+using System.Web.Mvc;
+using System.Web.Optimization;
+using System.Web.Routing;
+using kCura.IntegrationPoints.Web.Extensions;
+using kCura.IntegrationPoints.Web.Infrastructure.MessageHandlers;
+using kCura.IntegrationPoints.Web.Infrastructure.ExceptionLoggers;
 
 namespace kCura.IntegrationPoints.Web
 {
@@ -39,9 +41,11 @@ namespace kCura.IntegrationPoints.Web
 			CreateWindsorContainer();
 
 			WebApiConfig.Register(GlobalConfiguration.Configuration);
-			WebApiConfig.AddMessageHandlers(GlobalConfiguration.Configuration, ConnectionHelper.Helper(),
-				_container.Kernel.Resolve<IWebCorrelationContextProvider>());
-			FilterConfig.RegisterWebAPIFilters(GlobalConfiguration.Configuration, _container);
+
+			GlobalConfiguration.Configuration.AddMessageHandler(_container.Resolve<CorrelationIdHandler>());
+			GlobalConfiguration.Configuration.RegisterWebAPIFilters();
+			GlobalConfiguration.Configuration.AddExceptionLogger(_container.Resolve<WebAPIExceptionLogger>());
+
 			FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
 			RouteConfig.RegisterRoutes(RouteTable.Routes);
 			BundleConfig.RegisterBundles(BundleTable.Bundles);
@@ -67,6 +71,11 @@ namespace kCura.IntegrationPoints.Web
 			};
 			errorService.Log(errorModel);
 		}
+		
+		protected void Application_End()
+		{
+			_container?.Dispose();
+		}
 
 		private void CreateWindsorContainer()
 		{
@@ -80,11 +89,5 @@ namespace kCura.IntegrationPoints.Web
 			ControllerBuilder.Current.SetControllerFactory(new WindsorControllerFactory(_container.Kernel));
 			GlobalConfiguration.Configuration.Services.Replace(typeof(IHttpControllerActivator), new WindsorCompositionRoot(_container));
 		}
-
-		protected void Application_End()
-		{
-			_container?.Dispose();
-		}
-
 	}
 }

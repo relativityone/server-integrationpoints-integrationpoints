@@ -5,7 +5,23 @@ library 'SCVMMHelpers@3.2.0'
 library 'GitHelpers@1.0.0'
 library 'SlackHelpers@3.0.0'
 
+@groovy.transform.Field
+jenkinsHelpers = null
+
+node ('PolandBuild')
+{
+	stage ('Checkout helper')
+	{
+		timeout(time: 10, unit: 'MINUTES')
+		{
+			checkout scm			
+		}
+		jenkinsHelpers = load "DevelopmentScripts/JenkinsHelpers.groovy"
+	}
+}
+
 properties([
+	pipelineTriggers(jenkinsHelpers.isNightly() ? [cron('H 16 * * *')] : []),
 	[$class: 'BuildDiscarderProperty', strategy: [
 			$class: 'LogRotator', 
 			artifactDaysToKeepStr: '30',
@@ -65,8 +81,6 @@ properties([
 // This should be changed on the release branch
 def relativityBranchFallback = "develop"
 
-def jenkinsHelpers = null
-
 timestamps
 {
 	try
@@ -79,8 +93,7 @@ timestamps
 				{
 					checkout scm
 					step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
-				}
-				jenkinsHelpers = load "DevelopmentScripts/JenkinsHelpers.groovy"
+				}				
                 jenkinsHelpers.initializeRIPPipeline(this, env, params)
 			}
 			stage ('Get Version')

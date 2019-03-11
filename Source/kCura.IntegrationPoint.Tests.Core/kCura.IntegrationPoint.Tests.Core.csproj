@@ -126,6 +126,7 @@
     <Compile Include="DocumentService.cs" />
     <Compile Include="DocumentTestDataBuilder.cs" />
     <Compile Include="EHHelper.cs" />
+    <Compile Include="Exceptions\TestSetupException.cs" />
     <Compile Include="Extensions\DefaultValueAttributeExtension.cs" />
     <Compile Include="Extensions\GenericPermissionListExtension.cs" />
     <Compile Include="Extensions\JobExtensions.cs" />
@@ -134,6 +135,11 @@
     <Compile Include="Extensions\SecureStringExtension.cs" />
     <Compile Include="Extensions\WindsorTestingExtensions.cs" />
     <Compile Include="Fields.cs" />
+    <Compile Include="FluentAssertions\Assertions\ComponentModelAssertions.cs" />
+    <Compile Include="FluentAssertions\Assertions\ComponentsModelAssertions.cs" />
+    <Compile Include="FluentAssertions\Assertions\WindsorContainerAssertions.cs" />
+    <Compile Include="FluentAssertions\ComponentModelExtensions.cs" />
+    <Compile Include="FluentAssertions\WindsorContainerExtensions.cs" />
     <Compile Include="FolderService.cs" />
     <Compile Include="ImportHelper.cs" />
     <Compile Include="InstanceSetting.cs" />
@@ -189,13 +195,14 @@
     <Compile Include="Models\RelativityProviderModel.cs" />
     <Compile Include="Models\SchedulerModel.cs" />
     <Compile Include="Models\Shared\ImagePrecedence.cs" />
+    <Compile Include="TestCategories\Attributes\ConnectivityToTestRunnerRequiredTestAttribute.cs" />
     <Compile Include="TestCategories\Attributes\StressTestAttribute.cs" />
     <Compile Include="TestCategories\TestQuarantineState.cs" />
     <Compile Include="TestCategories\Attributes\SmokeTestAttribute.cs" />
     <Compile Include="TestCategories\TestCategories.cs" />
     <Compile Include="TestCategories\Attributes\TestInQuarantineAttribute.cs" />
     <Compile Include="TestDbContext.cs" />
-    <Compile Include="TestException.cs" />
+    <Compile Include="Exceptions\TestException.cs" />
     <Compile Include="Permission.cs" />
     <Compile Include="Import.cs" />
     <Compile Include="IntegrationTestBase.cs" />
@@ -244,6 +251,7 @@
     <Compile Include="TestBase.cs" />
     <Compile Include="TestHelpers\UserPasswordCredentialProvider.cs" />
     <Compile Include="TestHelpers\Utils.cs" />
+    <Compile Include="TestHelpers\WindsorDependenciesGraphRecorder.cs" />
     <Compile Include="User.cs" />
     <Compile Include="TestServiceContextHelper.cs" />
     <Compile Include="Validators\DocumentFieldsValidator.cs" />
@@ -7827,6 +7835,25 @@
       <ItemGroup>
         <Reference Include="Elasticsearch.Net">
           <HintPath>..\..\packages\Elasticsearch.Net\lib\net45\Elasticsearch.Net.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="System.Xml.Linq">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="FluentAssertions">
+          <HintPath>..\..\packages\FluentAssertions\lib\net45\FluentAssertions.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="FluentAssertions.Core">
+          <HintPath>..\..\packages\FluentAssertions\lib\net45\FluentAssertions.Core.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

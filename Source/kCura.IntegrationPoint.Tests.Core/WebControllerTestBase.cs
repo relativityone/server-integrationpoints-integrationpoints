@@ -6,9 +6,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 {
 	public abstract class WebControllerTestBase : TestBase
 	{
-		protected ICPHelper Helper;
-		protected ILogFactory LogFactory;
-		protected IAPILog Logger;
+		protected ICPHelper Helper { get; private set; }
+		protected ILogFactory LogFactory { get; private set; }
+		protected IAPILog Logger { get; private set; }
 
 		public override void SetUp()
 		{

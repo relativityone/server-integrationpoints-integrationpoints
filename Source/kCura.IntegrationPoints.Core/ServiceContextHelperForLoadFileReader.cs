@@ -7,23 +7,12 @@ namespace kCura.IntegrationPoints.Core
 {
 	public class ServiceContextHelperForLoadFileReader : IServiceContextHelper
 	{
-		private int _workspaceId;
 		public ServiceContextHelperForLoadFileReader(int workspaceId)
 		{
-			_workspaceId = workspaceId;
+			WorkspaceID = workspaceId;
 		}
-		public int WorkspaceID
-		{
-			get
-			{
-				return _workspaceId;
-			}
 
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
+		public int WorkspaceID { get; }
 
 		public IDBContext GetDBContext(int workspaceID = -1)
 		{

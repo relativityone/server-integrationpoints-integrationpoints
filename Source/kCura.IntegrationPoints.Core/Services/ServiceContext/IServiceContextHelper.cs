@@ -5,7 +5,7 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 {
 	public interface IServiceContextHelper
 	{
-		int WorkspaceID { get; set; }
+		int WorkspaceID { get; }
 		int GetEddsUserID();
 		int GetWorkspaceUserID();
 		IDBContext GetDBContext(int workspaceID = -1);

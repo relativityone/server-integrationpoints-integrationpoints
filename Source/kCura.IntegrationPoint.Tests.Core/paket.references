@@ -1,6 +1,7 @@
 AutoMapper
 Castle.Windsor
 CSharpGuidelineAnalyzer
+FluentAssertions
 kCura.Apps.Common.Config
 kCura.Relativity.Client
 NSubstitute

@@ -6,6 +6,7 @@ using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using System;
 using System.Net;
+using kCura.IntegrationPoint.Tests.Core.Exceptions;
 
 namespace kCura.IntegrationPoints.UITests.Auxiliary
 {
