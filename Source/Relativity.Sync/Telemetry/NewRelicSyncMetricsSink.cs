@@ -8,7 +8,7 @@ namespace Relativity.Sync.Telemetry
 	///     Logs <see cref="Metric"/>s to New Relic. Metrics are aggregated and sent in a single call
 	///     when the object is disposed, which should be at the end of the Sync job.
 	/// </summary>
-	internal class NewRelicSyncMetricsSink : ISyncMetricsSink, IDisposable
+	internal sealed class NewRelicSyncMetricsSink : ISyncMetricsSink, IDisposable
 	{
 		// See comment in Dispose(bool).
 		private bool _disposed = false;
@@ -38,7 +38,7 @@ namespace Relativity.Sync.Telemetry
 		///     Sends accumulated <see cref="Metric"/>s to the APM endpoint.
 		/// </summary>
 		/// <param name="disposing">Indicates whether this method is being called from <see cref="Dispose()"/> (true) or from the finalizer (false).</param>
-		protected virtual void Dispose(bool disposing)
+		private void Dispose(bool disposing)
 		{
 			if (!_disposed)
 			{
@@ -59,7 +59,7 @@ namespace Relativity.Sync.Telemetry
 		///     Keys are random IDs and values are dictionaries mapping public Metric properties
 		///     to their values, i.e.: {(guid) => {(property) => (property_val)}}
 		/// </summary>
-		private Dictionary<string, object> BuildPayload(IEnumerable<Metric> metrics)
+		private static Dictionary<string, object> BuildPayload(IEnumerable<Metric> metrics)
 		{
 			Dictionary<string, object> payload = metrics.ToDictionary(m => Guid.NewGuid().ToString(), m => (object)m.ToDictionary());
 			return payload;

@@ -8,9 +8,9 @@ namespace Relativity.Sync.Telemetry
 	/// <summary>
 	///     Simple data bag representing a metric sent to a sink.
 	/// </summary>
-	internal class Metric
+	internal sealed class Metric
 	{
-		private IDictionary<string, object> _metadata;
+		private IDictionary<string, object> _customData;
 
 		// Info for public properties with get methods on this class.
 		// These are set by compile time, so we can calculate these ahead of time.
@@ -52,22 +52,22 @@ namespace Relativity.Sync.Telemetry
 		public CommandExecutionStatus ExecutionStatus { get; set; }
 
 		/// <summary>
-		///     Any metadata associated with this metric.
+		///     Any custom data associated with this metric.
 		/// </summary>
-		public IDictionary<string, object> Metadata
+		public IDictionary<string, object> CustomData
 		{
 			get
 			{
-				if (_metadata == null)
+				if (_customData == null)
 				{
-					_metadata = new Dictionary<string, object>();
+					_customData = new Dictionary<string, object>();
 				}
-				return _metadata;
+				return _customData;
 			}
 
 			set
 			{
-				_metadata = value;
+				_customData = value;
 			}
 		}
 

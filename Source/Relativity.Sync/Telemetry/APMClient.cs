@@ -6,7 +6,7 @@ namespace Relativity.Sync.Telemetry
 	/// <summary>
 	///     Logs APM metrics to Relativity APM.
 	/// </summary>
-	internal class APMClient : IAPMClient
+	internal sealed class APMClient : IAPMClient
 	{
 		private IAPM _apm;
 

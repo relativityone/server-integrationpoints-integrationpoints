@@ -8,6 +8,7 @@ nuget Relativity.Kepler ~> 1.0.1.589
 nuget Relativity.OAuth2Client 1.0.27
 nuget Relativity.Platform.Keywords ~> 10.2
 nuget Relativity.Services.Interfaces ~> 10.2
+nuget Relativity.Services.Interfaces.Private ~> 10.2
 nuget kCura.Relativity.Client ~> 10.2
 nuget Relativity.Kepler.Client ~> 1.0
 
