@@ -89,7 +89,7 @@ namespace Relativity.Sync.Tests.System
 
 			if (!createWorkspaceResult.Success)
 			{
-				throw new SystemTestException($"Failed to create workspace '{newWorkspace.Name}': {createWorkspaceResult.Message}");
+				throw new InvalidOperationException($"Failed to create workspace '{newWorkspace.Name}': {createWorkspaceResult.Message}");
 			}
 
 			ProcessInformation processInfo;
@@ -103,7 +103,7 @@ namespace Relativity.Sync.Tests.System
 
 			if (processInfo.State != ProcessStateValue.Completed)
 			{
-				throw new SystemTestException($"Workspace creation did not completed successfuly: {processInfo.Message}");
+				throw new InvalidOperationException($"Workspace creation did not completed successfuly: {processInfo.Message}");
 			}
 
 			return FindWorkspace(name);
