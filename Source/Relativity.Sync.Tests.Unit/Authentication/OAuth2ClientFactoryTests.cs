@@ -15,7 +15,6 @@ namespace Relativity.Sync.Tests.Unit.Authentication
 	[TestFixture]
 	public class OAuth2ClientFactoryTests
 	{
-		private Mock<IAPILog> _log;
 		private Mock<IServicesMgr> _servicesMgr;
 		private OAuth2ClientFactory _sut;
 
@@ -24,9 +23,9 @@ namespace Relativity.Sync.Tests.Unit.Authentication
 		[OneTimeSetUp]
 		public void SetUp()
 		{
-			_log = new Mock<IAPILog>();
+			Mock<IAPILog> log = new Mock<IAPILog>();
 			_servicesMgr = new Mock<IServicesMgr>();
-			_sut = new OAuth2ClientFactory(_servicesMgr.Object, _log.Object);
+			_sut = new OAuth2ClientFactory(_servicesMgr.Object, log.Object);
 		}
 
 		[Test]
