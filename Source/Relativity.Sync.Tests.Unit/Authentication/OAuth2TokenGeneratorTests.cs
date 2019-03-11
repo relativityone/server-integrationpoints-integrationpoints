@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -16,8 +15,6 @@ namespace Relativity.Sync.Tests.Unit.Authentication
 	{
 		private Mock<IOAuth2ClientFactory> _oAuth2ClientFactory;
 		private Mock<ITokenProviderFactoryFactory> _tokenProviderFactoryFactory;
-		private Mock<IProvideServiceUris> _providerServiceUris;
-		private Mock<IAPILog> _log;
 		private OAuth2TokenGenerator _sut;
 
 		[OneTimeSetUp]
@@ -25,10 +22,10 @@ namespace Relativity.Sync.Tests.Unit.Authentication
 		{
 			_oAuth2ClientFactory = new Mock<IOAuth2ClientFactory>();
 			_tokenProviderFactoryFactory = new Mock<ITokenProviderFactoryFactory>();
-			_providerServiceUris = new Mock<IProvideServiceUris>();
-			_providerServiceUris.Setup(x => x.AuthenticationUri()).Returns(new Uri("https://fakeaddress"));
-			_log = new Mock<IAPILog>();
-			_sut = new OAuth2TokenGenerator(_oAuth2ClientFactory.Object, _tokenProviderFactoryFactory.Object, _providerServiceUris.Object, _log.Object);
+			Mock<IProvideServiceUris> provideServiceUris = new Mock<IProvideServiceUris>();
+			provideServiceUris.Setup(x => x.AuthenticationUri()).Returns(new Uri("https://fakeaddress"));
+			Mock<IAPILog> log = new Mock<IAPILog>();
+			_sut = new OAuth2TokenGenerator(_oAuth2ClientFactory.Object, _tokenProviderFactoryFactory.Object, provideServiceUris.Object, log.Object);
 		}
 
 		[Test]

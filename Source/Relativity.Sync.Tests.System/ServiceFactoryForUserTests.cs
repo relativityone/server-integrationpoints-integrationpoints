@@ -23,7 +23,6 @@ namespace Relativity.Sync.Tests.System
 	[TestFixture]
 	public sealed class ServiceFactoryForUserTests : IDisposable
 	{
-		private string _relativityAdminUserName, _relativityAdminPassword;
 		private ServicesManagerStub _servicesManager;
 		private ProvideServiceUrisStub _provideServiceUris;
 		private IRSAPIClient _client;
@@ -32,11 +31,9 @@ namespace Relativity.Sync.Tests.System
 		[OneTimeSetUp]
 		public void SuiteSetup()
 		{
-			_relativityAdminUserName = AppSettings.RelativityUserName;
-			_relativityAdminPassword = AppSettings.RelativityUserPassword;
 			_servicesManager = new ServicesManagerStub();
 			_provideServiceUris = new ProvideServiceUrisStub();
-			_client = new RSAPIClient(AppSettings.RelativityServicesUrl, new UsernamePasswordCredentials(_relativityAdminUserName, _relativityAdminPassword));
+			_client = new RSAPIClient(AppSettings.RelativityServicesUrl, new UsernamePasswordCredentials(AppSettings.RelativityUserName, AppSettings.RelativityUserPassword));
 			_workspace = CreateWorkspaceAsync().Result;
 		}
 
@@ -92,7 +89,7 @@ namespace Relativity.Sync.Tests.System
 
 			if (!createWorkspaceResult.Success)
 			{
-				throw new ApplicationException($"Failed to create workspace '{newWorkspace.Name}': {createWorkspaceResult.Message}");
+				throw new InvalidOperationException($"Failed to create workspace '{newWorkspace.Name}': {createWorkspaceResult.Message}");
 			}
 
 			ProcessInformation processInfo;
@@ -106,7 +103,7 @@ namespace Relativity.Sync.Tests.System
 
 			if (processInfo.State != ProcessStateValue.Completed)
 			{
-				throw new ApplicationException($"Workspace creation did not completed successfuly: {processInfo.Message}");
+				throw new InvalidOperationException($"Workspace creation did not completed successfuly: {processInfo.Message}");
 			}
 
 			return FindWorkspace(name);
