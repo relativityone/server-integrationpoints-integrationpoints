@@ -29,6 +29,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Castle.Windsor, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc" />
     <Reference Include="Moq">
       <HintPath>..\..\packages\Moq\lib\net45\Moq.dll</HintPath>
     </Reference>
@@ -55,6 +56,7 @@
     <Compile Include="ExportManagers\ExportConvertingExtensionsTests.cs" />
     <Compile Include="Helpers\DestinationFolderHelperTests.cs" />
     <Compile Include="Helpers\FieldConverterTests.cs" />
+    <Compile Include="Installer\ExportRepositoryRegistrationTests.cs" />
     <Compile Include="Logging\CompositeLoggingMediatorTests.cs" />
     <Compile Include="Logging\ExportLoggingMediatorTests.cs" />
     <Compile Include="Logging\JobErrorLoggingMediatorTests.cs" />

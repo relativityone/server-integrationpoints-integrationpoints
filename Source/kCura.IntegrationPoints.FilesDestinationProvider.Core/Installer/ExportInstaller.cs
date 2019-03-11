@@ -46,6 +46,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 			container.Register(Component.For<IExportConfig>().ImplementedBy<LoadFileExportConfig>().LifestyleTransient());
 			container.Register(Component.For<IExportServiceFactory>().ImplementedBy<ExportServiceFactory>().LifestyleTransient());
 
+			container.AddExportRepositories();
 		}
 	}
 }
