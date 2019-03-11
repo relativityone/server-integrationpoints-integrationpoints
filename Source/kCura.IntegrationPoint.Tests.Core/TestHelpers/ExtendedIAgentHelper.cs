@@ -1,22 +1,17 @@
-﻿using System;
-using Relativity.API;
+﻿using Relativity.API;
+using System;
 
 namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 {
 	public class ExtendedIAgentHelper : IAgentHelper
 	{
+		private bool _isDisposed = false;
+
 		private readonly ITestHelper _helper;
-		private readonly ILogFactory _logFactory;
 
 		public ExtendedIAgentHelper(ITestHelper helper)
 		{
 			_helper = helper;
-			_logFactory = NSubstitute.Substitute.For<ILogFactory>();
-		}
-
-		public void Dispose()
-		{
-			throw new NotImplementedException();
 		}
 
 		public IDBContext GetDBContext(int caseId)
@@ -31,52 +26,72 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 
 		public IUrlHelper GetUrlHelper()
 		{
-			throw new NotImplementedException();
+			return _helper.GetUrlHelper();
 		}
 
 		public ILogFactory GetLoggerFactory()
 		{
-			return _logFactory;
+			return _helper.GetLoggerFactory();
 		}
 
 		public string ResourceDBPrepend()
 		{
-			throw new NotImplementedException();
+			return _helper.ResourceDBPrepend();
 		}
 
 		public string ResourceDBPrepend(IDBContext context)
 		{
-			throw new NotImplementedException();
+			return _helper.ResourceDBPrepend(context);
 		}
 
 		public string GetSchemalessResourceDataBasePrepend(IDBContext context)
 		{
-			throw new NotImplementedException();
+			return _helper.GetSchemalessResourceDataBasePrepend(context);
 		}
 
 		public Guid GetGuid(int workspaceId, int artifactId)
 		{
-			throw new NotImplementedException();
+			return _helper.GetGuid(workspaceId, artifactId);
 		}
 
 		public ISecretStore GetSecretStore()
 		{
-			throw new NotImplementedException();
+			return _helper.GetSecretStore();
 		}
 
 		public IInstanceSettingsBundle GetInstanceSettingBundle()
 		{
-			throw new NotImplementedException();
+			return _helper.GetInstanceSettingBundle();
 		}
 
 		public IStringSanitizer GetStringSanitizer(int workspaceID)
 		{
-			throw new NotImplementedException();
+			return _helper.GetStringSanitizer(workspaceID);
 		}
 
 		public IAuthenticationMgr GetAuthenticationManager()
 		{
 			throw new NotImplementedException();
+		}
+
+		protected virtual void Dispose(bool disposing)
+		{
+			if (_isDisposed)
+			{
+				return;
+			}
+
+			if (disposing)
+			{
+				_helper?.Dispose();
+			}
+
+			_isDisposed = true;
+		}
+
+		public void Dispose()
+		{
+			Dispose(true);
 		}
 	}
 }

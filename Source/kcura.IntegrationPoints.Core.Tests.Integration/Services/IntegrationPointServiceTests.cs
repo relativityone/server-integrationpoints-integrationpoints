@@ -165,7 +165,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.OverlayOnly),
-				DestinationProvider = DestinationProvider.ArtifactId,
+				DestinationProvider = RelativityDestinationProviderArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
 				LogErrors = true,
@@ -217,7 +217,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.OverlayOnly),
-				DestinationProvider = DestinationProvider.ArtifactId,
+				DestinationProvider = RelativityDestinationProviderArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
 				LogErrors = true,
@@ -268,7 +268,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
-				DestinationProvider = DestinationProvider.ArtifactId,
+				DestinationProvider = RelativityDestinationProviderArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
 				LogErrors = true,
@@ -338,7 +338,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.OverlayOnly),
-				DestinationProvider = DestinationProvider.ArtifactId,
+				DestinationProvider = RelativityDestinationProviderArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
 				LogErrors = true,
@@ -400,7 +400,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.OverlayOnly),
-				DestinationProvider = DestinationProvider.ArtifactId,
+				DestinationProvider = RelativityDestinationProviderArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
 				LogErrors = true,
@@ -440,7 +440,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.OverlayOnly),
-				DestinationProvider = DestinationProvider.ArtifactId,
+				DestinationProvider = RelativityDestinationProviderArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
 				LogErrors = true,
@@ -477,7 +477,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.OverlayOnly),
-				DestinationProvider = DestinationProvider.ArtifactId,
+				DestinationProvider = RelativityDestinationProviderArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateSourceConfigWithCustomParameters(TargetWorkspaceArtifactId, TemporarySavedSearchId, SourceWorkspaceArtifactId, SourceConfiguration.ExportType.SavedSearch),
 				LogErrors = true,

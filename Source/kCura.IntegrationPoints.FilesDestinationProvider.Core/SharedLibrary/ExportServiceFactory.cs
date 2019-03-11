@@ -2,6 +2,7 @@
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories;
 using kCura.WinEDDS.Service.Export;
 using Relativity.API;
 

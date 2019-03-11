@@ -42,16 +42,27 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="EmailConfiguration.cs" />
-    <Compile Include="ISenable.cs" />
-    <Compile Include="ISMTPClientFactory.cs" />
+    <Compile Include="Dto\ValidEmailAddress.cs" />
+    <Compile Include="Dto\EmailMessageDto.cs" />
+    <Compile Include="Dto\SmtpClientSettings.cs" />
+    <Compile Include="Dto\SmtpConfigurationDto.cs" />
+    <Compile Include="Dto\ValidSmtpConfigurationDto.cs" />
+    <Compile Include="Exceptions\SendEmailException.cs" />
+    <Compile Include="Extensions\ValidationExtensions.cs" />
+    <Compile Include="IEmailSender.cs" />
+    <Compile Include="ISmtpConfigurationProvider.cs" />
+    <Compile Include="ISmtpClientFactory.cs" />
+    <Compile Include="Mappers\EmailMessageDtoExtensions.cs" />
+    <Compile Include="Mappers\SmtpConfigurationInstanceSettingsExtensions.cs" />
+    <Compile Include="Mappers\Validators\EmailAddressValidator.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="SMTP.cs" />
-    <Compile Include="SMTPClientFactory.cs" />
+    <Compile Include="InstanceSettingsSmptConfigurationProvider.cs" />
+    <Compile Include="EmailSender.cs" />
+    <Compile Include="SmtpClientFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -73,8 +84,33 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="LanguageExt.Core">
+          <HintPath>..\..\packages\LanguageExt.Core\lib\net45\LanguageExt.Core.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Relativity.API">
           <HintPath>..\..\packages\Relativity.API\lib\net462\Relativity.API.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="mscorlib">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.ValueTuple">
+          <HintPath>..\..\packages\System.ValueTuple\lib\net461\System.ValueTuple.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

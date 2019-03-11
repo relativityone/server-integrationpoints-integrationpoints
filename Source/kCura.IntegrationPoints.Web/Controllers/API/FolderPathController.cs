@@ -8,7 +8,7 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.IntegrationPoints.Web.Attributes;
-using kCura.IntegrationPoints.Web.Providers;
+using kCura.IntegrationPoints.Web.Context.WorkspaceContext;
 using kCura.Relativity.Client;
 using Relativity.API;
 
@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly IRSAPIClient _client;
 		private readonly IFieldService _fieldService;
 		private readonly IChoiceService _choiceService;
-		private readonly IWorkspaceIdProvider _workspaceIdProvider;
+		private readonly IWorkspaceContext _workspaceIdProvider;
 		private readonly IImportApiFacade _importApiFacade;
 		private readonly IAPILog _logger;
 
@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			IRSAPIClient client,
 			IFieldService fieldService,
 			IChoiceService choiceService,
-			IWorkspaceIdProvider workspaceIdProvider,
+			IWorkspaceContext workspaceIdProvider,
 			IImportApiFacade importApiFacade,
 			ICPHelper helper
 			)
@@ -93,7 +93,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private int GetWorkspaceId()
 		{
 			int oldWorkspaceId = _client.APIOptions.WorkspaceID;
-			int workspaceId = _workspaceIdProvider.GetWorkspaceId();
+			int workspaceId = _workspaceIdProvider.GetWorkspaceID();
 
 			if (workspaceId != oldWorkspaceId)
 			{

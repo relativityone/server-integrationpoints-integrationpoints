@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Controllers.API;
+using kCura.IntegrationPoints.Web.Helpers;
 using kCura.IntegrationPoints.Web.Models.Validation;
 using Newtonsoft.Json;
 using NSubstitute;

@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Attributes;
+using kCura.IntegrationPoints.Web.Helpers;
 using kCura.IntegrationPoints.Web.Models.Validation;
 using Newtonsoft.Json;
 using Relativity.API;

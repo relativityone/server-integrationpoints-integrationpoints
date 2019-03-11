@@ -143,7 +143,6 @@
     <Compile Include="Repositories\SavedSearchQueryRepositoryTests.cs" />
     <Compile Include="Repositories\SourceJobRepositoryTests.cs" />
     <Compile Include="Repositories\SourceWorkspaceRepositoryTests.cs" />
-    <Compile Include="Repositories\ViewFieldRepositoryTests.cs" />
     <Compile Include="RetryHandlerFactoryTests.cs" />
     <Compile Include="RetryHandlerTests.cs" />
     <Compile Include="RSAPIClient\RsapiClientWrapperWithLoggingTests.cs" />

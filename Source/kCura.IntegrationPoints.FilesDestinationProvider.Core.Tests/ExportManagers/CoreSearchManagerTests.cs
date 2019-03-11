@@ -1,5 +1,5 @@
-﻿using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers;
+﻿using kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories;
 using Moq;
 using NUnit.Framework;
 using Relativity;
@@ -73,41 +73,47 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 		}
 
 		[Test]
-		public void RetrieveDefaultViewFieldIdsTest([Values(true, false)] bool isProduction)
+		public void RetrieveDefaultViewFieldIdsForSavedSearchTest()
 		{
 			// arrange
 			ViewFieldIDResponse viewFieldIDResponse1 = CreateTestViewFieldIDResponse(_ARTIFACT_ID, _ARTIFACT_VIEW_FIELD_ID);
 			ViewFieldIDResponse viewFieldIdResponse2 = CreateTestViewFieldIDResponse(_ARTIFACT_ID_2, _ARTIFACT_VIEW_FIELD_ID_2);
-			ViewFieldIDResponse[] viewFieldIDResponseArray = {viewFieldIDResponse1, viewFieldIdResponse2};
-			if (isProduction)
-			{
-				_viewFieldRepositoryMock
-					.Setup(x => x.ReadViewFieldIDsFromProduction(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _ARTIFACT_ID))
-					.Returns(viewFieldIDResponseArray);
-			}
-			else
-			{
-				_viewFieldRepositoryMock
-					.Setup(x => x.ReadViewFieldIDsFromSearch(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _ARTIFACT_ID))
-					.Returns(viewFieldIDResponseArray);
-			}
+			ViewFieldIDResponse[] viewFieldIDResponseArray = { viewFieldIDResponse1, viewFieldIdResponse2 };
+			_viewFieldRepositoryMock
+				.Setup(x => x.ReadViewFieldIDsFromSearch(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _ARTIFACT_ID))
+				.Returns(viewFieldIDResponseArray);
 
 			var coreSearchManager = new CoreSearchManager(_baseServiceContextMock.Object, _viewFieldRepositoryMock.Object);
 
 			// act
-			int[] result = coreSearchManager.RetrieveDefaultViewFieldIds(_WORKSPACE_ID, _ARTIFACT_ID, _ARTIFACT_TYPE_ID, isProduction);
+			int[] result = coreSearchManager.RetrieveDefaultViewFieldIds(_WORKSPACE_ID, _ARTIFACT_ID, _ARTIFACT_TYPE_ID, false);
 
 			// assert
-			if (isProduction)
-			{
-				_viewFieldRepositoryMock.Verify(
-					x => x.ReadViewFieldIDsFromProduction(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _ARTIFACT_ID), Times.Once);
-			}
-			else
-			{
-				_viewFieldRepositoryMock.Verify(
-					x => x.ReadViewFieldIDsFromSearch(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _ARTIFACT_ID), Times.Once);
-			}
+			_viewFieldRepositoryMock.Verify(
+				x => x.ReadViewFieldIDsFromSearch(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _ARTIFACT_ID), Times.Once);
+			Assert.AreEqual(1, result.Length);
+			Assert.AreEqual(_ARTIFACT_VIEW_FIELD_ID, result[0]);
+		}
+
+		[Test]
+		public void RetrieveDefaultViewFieldIdsForProductionTest()
+		{
+			// arrange
+			ViewFieldIDResponse viewFieldIDResponse1 = CreateTestViewFieldIDResponse(_ARTIFACT_ID, _ARTIFACT_VIEW_FIELD_ID);
+			ViewFieldIDResponse viewFieldIdResponse2 = CreateTestViewFieldIDResponse(_ARTIFACT_ID_2, _ARTIFACT_VIEW_FIELD_ID_2);
+			ViewFieldIDResponse[] viewFieldIDResponseArray = { viewFieldIDResponse1, viewFieldIdResponse2 };
+			_viewFieldRepositoryMock
+				.Setup(x => x.ReadViewFieldIDsFromProduction(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _ARTIFACT_ID))
+				.Returns(viewFieldIDResponseArray);
+
+			var coreSearchManager = new CoreSearchManager(_baseServiceContextMock.Object, _viewFieldRepositoryMock.Object);
+
+			// act
+			int[] result = coreSearchManager.RetrieveDefaultViewFieldIds(_WORKSPACE_ID, _ARTIFACT_ID, _ARTIFACT_TYPE_ID, true);
+
+			// assert
+			_viewFieldRepositoryMock.Verify(
+				x => x.ReadViewFieldIDsFromProduction(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _ARTIFACT_ID), Times.Once);
 			Assert.AreEqual(1, result.Length);
 			Assert.AreEqual(_ARTIFACT_VIEW_FIELD_ID, result[0]);
 		}

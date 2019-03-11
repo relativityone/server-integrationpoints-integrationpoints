@@ -1,9 +1,10 @@
 ﻿using System.Net.Mail;
+using kCura.IntegrationPoints.Email.Dto;
 
 namespace kCura.IntegrationPoints.Email
 {
-	public interface ISMTPClientFactory
+	internal interface ISmtpClientFactory
 	{
-		SmtpClient GetClient(EmailConfiguration configuration);
+		SmtpClient Create(SmtpClientSettings settings);
 	}
 }

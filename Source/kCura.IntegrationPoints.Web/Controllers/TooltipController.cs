@@ -2,7 +2,7 @@
 
 namespace kCura.IntegrationPoints.Web.Controllers
 {
-	public class TooltipController : BaseController
+	public class TooltipController : Controller
 	{
 		public ActionResult TooltipView()
 		{

@@ -2,7 +2,7 @@
 
 namespace kCura.IntegrationPoints.Web.Controllers
 {
-    public class ImportProviderController : BaseController
+    public class ImportProviderController : Controller
     {
         public ActionResult ImportSettings()
         {

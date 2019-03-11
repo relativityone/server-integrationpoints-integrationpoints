@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Service.Export;
 using Relativity.Core;

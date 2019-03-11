@@ -27,6 +27,7 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases;
 using kCura.WinEDDS.Core.IO;
 using kCura.WinEDDS.Exporters;
