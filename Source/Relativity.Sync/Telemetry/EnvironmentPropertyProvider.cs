@@ -35,30 +35,39 @@ namespace Relativity.Sync.Telemetry
 		{
 			IInstanceSettingManager instanceSettingManager = await helper.CreateProxyAsync<IInstanceSettingManager>().ConfigureAwait(false);
 			Services.Query query = CreateInstanceSettingQuery();
-			InstanceSettingQueryResultSet result = await instanceSettingManager.QueryAsync(query).ConfigureAwait(false);
 
-			string relativityInstanceName;
-			if (result.Success && result.TotalCount > 0)
+			string relativityInstanceName = _INSTANCENAME_DEFAULT_VALUE;
+			try
 			{
-				relativityInstanceName = result.Results[0].Artifact.Value;
-			}
-			else
-			{
-				relativityInstanceName = _INSTANCENAME_DEFAULT_VALUE;
+				InstanceSettingQueryResultSet result = await instanceSettingManager.QueryAsync(query).ConfigureAwait(false);
 
-				if (result.Success)
+				if (result.Success && result.TotalCount > 0)
 				{
-					logger.LogWarning(
-						$"No results found when querying for Instance Setting {_INSTANCENAME_SETTING_SECTION}:{_INSTANCENAME_SETTING_NAME} on Relativity.Sync startup; defaulting to \"{{value}}\"",
-						relativityInstanceName);
+					relativityInstanceName = result.Results[0].Artifact.Value;
 				}
 				else
 				{
-					logger.LogWarning(
-						$"Query for Instance Setting {_INSTANCENAME_SETTING_SECTION}:{_INSTANCENAME_SETTING_NAME} on Relativity.Sync startup failed ('{{error}}'); defaulting to \"{{value}}\"",
-						result.Message,
-						relativityInstanceName);
+					if (result.Success)
+					{
+						logger.LogWarning(
+							$"No results found when querying for Instance Setting {_INSTANCENAME_SETTING_SECTION}:{_INSTANCENAME_SETTING_NAME} on Relativity.Sync startup; defaulting to \"{{value}}\"",
+							relativityInstanceName);
+					}
+					else
+					{
+						logger.LogWarning(
+							$"Query for Instance Setting {_INSTANCENAME_SETTING_SECTION}:{_INSTANCENAME_SETTING_NAME} on Relativity.Sync startup failed ('{{error}}'); defaulting to \"{{value}}\"",
+							result.Message,
+							relativityInstanceName);
+					}
 				}
+			}
+			catch (Exception ex)
+			{
+				logger.LogWarning(
+					ex,
+					$"Query for Instance Setting {_INSTANCENAME_SETTING_SECTION}:{_INSTANCENAME_SETTING_NAME} on Relativity.Sync startup threw an exception; defaulting to \"{{value}}\"",
+					relativityInstanceName);
 			}
 
 			var instance = new EnvironmentPropertyProvider(relativityInstanceName);
