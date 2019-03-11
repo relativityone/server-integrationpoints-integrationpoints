@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Linq;
+using System.Reflection;
+using System.Collections.Generic;
 using Autofac;
 using Banzai.Logging;
 using Relativity.API;
 using Relativity.Sync.Authentication;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
-using Relativity.Sync.Telemetry;
 
 namespace Relativity.Sync
 {
@@ -23,27 +25,38 @@ namespace Relativity.Sync
 		/// <inheritdoc />
 		public ISyncJob Create(IContainer container, SyncJobParameters syncJobParameters)
 		{
-			return Create(container, syncJobParameters, new SyncConfiguration(), new EmptyLogger());
+			return Create(container, GetInstallersInExecutingAssembly(), syncJobParameters, new SyncConfiguration(), new EmptyLogger());
 		}
 
 		/// <inheritdoc />
 		public ISyncJob Create(IContainer container, SyncJobParameters syncJobParameters, ISyncLog logger)
 		{
-			return Create(container, syncJobParameters, new SyncConfiguration(), logger);
+			return Create(container, GetInstallersInExecutingAssembly(), syncJobParameters, new SyncConfiguration(), logger);
 		}
 
 		/// <inheritdoc />
 		public ISyncJob Create(IContainer container, SyncJobParameters syncJobParameters, SyncConfiguration configuration)
 		{
-			return Create(container, syncJobParameters, configuration, new EmptyLogger());
+			return Create(container, GetInstallersInExecutingAssembly(), syncJobParameters, configuration, new EmptyLogger());
 		}
 
 		/// <inheritdoc />
-		public ISyncJob Create(IContainer container, SyncJobParameters syncJobParameters, SyncConfiguration configuration, ISyncLog logger)
+		public ISyncJob Create(IContainer container, IEnumerable<IInstaller> installers, SyncJobParameters syncJobParameters)
+		{
+			return Create(container, installers, syncJobParameters, new SyncConfiguration(), new EmptyLogger());
+		}
+
+		/// <inheritdoc />
+		public ISyncJob Create(IContainer container, IEnumerable<IInstaller> installers, SyncJobParameters syncJobParameters, SyncConfiguration configuration, ISyncLog logger)
 		{
 			if (container == null)
 			{
 				throw new ArgumentNullException(nameof(container));
+			}
+
+			if (installers == null)
+			{
+				throw new ArgumentNullException(nameof(installers));
 			}
 
 			if (syncJobParameters == null)
@@ -65,7 +78,7 @@ namespace Relativity.Sync
 			{
 				LogWriter.SetFactory(new SyncLogWriterFactory(logger));
 
-				using (ILifetimeScope scope = container.BeginLifetimeScope(builder => RegisterDependencies(builder, syncJobParameters, configuration, logger)))
+				using (ILifetimeScope scope = container.BeginLifetimeScope(builder => RegisterDependencies(builder, installers, syncJobParameters, configuration, logger)))
 				{
 					return scope.Resolve<ISyncJob>();
 				}
@@ -77,7 +90,15 @@ namespace Relativity.Sync
 			}
 		}
 
-		private void RegisterDependencies(ContainerBuilder builder, SyncJobParameters syncJobParameters, SyncConfiguration configuration, ISyncLog logger)
+		private IEnumerable<IInstaller> GetInstallersInExecutingAssembly()
+		{
+			return Assembly.GetExecutingAssembly()
+				.GetTypes()
+				.Where(t => !t.IsAbstract && t.IsAssignableTo<IInstaller>())
+				.Select(t => (IInstaller)Activator.CreateInstance(t));
+		}
+
+		private void RegisterDependencies(ContainerBuilder builder, IEnumerable<IInstaller> installers, SyncJobParameters syncJobParameters, SyncConfiguration configuration, ISyncLog logger)
 		{
 			CorrelationId correlationId = new CorrelationId(syncJobParameters.CorrelationId);
 
@@ -90,7 +111,6 @@ namespace Relativity.Sync
 			builder.RegisterInstance(correlationId).As<CorrelationId>();
 			builder.RegisterInstance(configuration).As<SyncConfiguration>();
 			builder.RegisterType<SyncExecutionContextFactory>().As<ISyncExecutionContextFactory>();
-			builder.RegisterType<SystemStopwatch>().As<IStopwatch>();
 			builder.RegisterType<AppDomainWrapper>().As<IAppDomain>();
 			builder.RegisterType<OAuth2ClientFactory>().As<IOAuth2ClientFactory>();
 			builder.RegisterType<OAuth2TokenGenerator>().As<IAuthTokenGenerator>();
@@ -108,6 +128,13 @@ namespace Relativity.Sync
 			const string command = "command";
 			builder.RegisterGeneric(typeof(Command<>)).Named(command, typeof(ICommand<>));
 			builder.RegisterGenericDecorator(typeof(CommandWithMetrics<>), typeof(ICommand<>), command);
+
+			// Register dependencies from installers. These generally register new types
+			// but may also override registrations performed immediately above.
+			foreach (IInstaller installer in installers)
+			{
+				installer.Install(builder);
+			}
 		}
 	}
 }

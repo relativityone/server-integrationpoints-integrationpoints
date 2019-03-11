@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
@@ -18,7 +19,7 @@ namespace Relativity.Sync.Tests.Integration
 			_logger = new Mock<ISyncLog>();
 
 			SyncJobFactory factory = new SyncJobFactory();
-			_syncJob = factory.Create(IntegrationTestsContainerBuilder.CreateContainer(), new SyncJobParameters(1, 1), _logger.Object);
+			_syncJob = factory.Create(IntegrationTestsContainerBuilder.CreateContainer(), new List<IInstaller>(), new SyncJobParameters(1, 1), new SyncConfiguration(), _logger.Object);
 		}
 
 		[Test]

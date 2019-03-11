@@ -1,6 +1,7 @@
 Relativity.API
 Relativity.OAuth2Client
 Relativity.Services.Interfaces
+Relativity.Services.Interfaces.Private
 Relativity.Kepler.Client
 
 Microsoft.CodeAnalysis.FxCopAnalyzers
@@ -10,3 +11,4 @@ Polly
 Autofac
 Banzai
 Banzai.Autofac
+Relativity.Telemetry.APM
