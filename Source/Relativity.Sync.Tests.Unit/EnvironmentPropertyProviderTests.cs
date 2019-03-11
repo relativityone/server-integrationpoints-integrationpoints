@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Services.InstanceSetting;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Telemetry;
@@ -13,18 +14,18 @@ namespace Relativity.Sync.Tests.Unit
 	public sealed class EnvironmentPropertyProviderTests
 	{
 		private Mock<IInstanceSettingManager> _instanceSettingManagerMock;
-		private Mock<ISourceServiceFactoryForAdmin> _sourceServiceFactoryMock;
+		private Mock<IServicesMgr> _serviceMgr;
 		private Mock<ISyncLog> _logger;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_instanceSettingManagerMock = new Mock<IInstanceSettingManager>();
-			_sourceServiceFactoryMock = new Mock<ISourceServiceFactoryForAdmin>();
+			_serviceMgr = new Mock<IServicesMgr>();
 			_logger = new Mock<ISyncLog>();
 
-			_sourceServiceFactoryMock.Setup(x => x.CreateProxyAsync<IInstanceSettingManager>())
-				.Returns(Task.FromResult(_instanceSettingManagerMock.Object));
+			_serviceMgr.Setup(x => x.CreateProxy<IInstanceSettingManager>(ExecutionIdentity.System))
+				.Returns(_instanceSettingManagerMock.Object);
 		}
 
 		[Test]
@@ -48,7 +49,7 @@ namespace Relativity.Sync.Tests.Unit
 				.Returns(Task.FromResult(resultSet));
 
 			// Act
-			IEnvironmentPropertyProvider environmentPropertyProvider = EnvironmentPropertyProvider.Create(_sourceServiceFactoryMock.Object, _logger.Object);
+			IEnvironmentPropertyProvider environmentPropertyProvider = EnvironmentPropertyProvider.Create(_serviceMgr.Object, _logger.Object);
 
 			// Assert
 			Assert.AreEqual("FooBar", environmentPropertyProvider.InstanceName);
@@ -66,7 +67,7 @@ namespace Relativity.Sync.Tests.Unit
 				.Returns(Task.FromResult(resultSet));
 
 			// Act
-			IEnvironmentPropertyProvider environmentPropertyProvider = EnvironmentPropertyProvider.Create(_sourceServiceFactoryMock.Object, _logger.Object);
+			IEnvironmentPropertyProvider environmentPropertyProvider = EnvironmentPropertyProvider.Create(_serviceMgr.Object, _logger.Object);
 
 			// Assert
 			Assert.AreEqual("unknown", environmentPropertyProvider.InstanceName);
@@ -83,7 +84,7 @@ namespace Relativity.Sync.Tests.Unit
 				.Returns(Task.FromResult(resultSet));
 
 			// Act
-			IEnvironmentPropertyProvider environmentPropertyProvider = EnvironmentPropertyProvider.Create(_sourceServiceFactoryMock.Object, _logger.Object);
+			IEnvironmentPropertyProvider environmentPropertyProvider = EnvironmentPropertyProvider.Create(_serviceMgr.Object, _logger.Object);
 
 			// Assert
 			Assert.AreEqual("unknown", environmentPropertyProvider.InstanceName);
@@ -96,7 +97,7 @@ namespace Relativity.Sync.Tests.Unit
 				.Throws(new Exception("blech"));
 
 			// Act
-			IEnvironmentPropertyProvider environmentPropertyProvider = EnvironmentPropertyProvider.Create(_sourceServiceFactoryMock.Object, _logger.Object);
+			IEnvironmentPropertyProvider environmentPropertyProvider = EnvironmentPropertyProvider.Create(_serviceMgr.Object, _logger.Object);
 
 			// Assert
 			Assert.AreEqual("unknown", environmentPropertyProvider.InstanceName);

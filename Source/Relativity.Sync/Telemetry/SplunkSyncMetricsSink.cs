@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace Relativity.Sync.Telemetry
+﻿namespace Relativity.Sync.Telemetry
 {
 	/// <summary>
 	///     Logs <see cref="Metric"/>s to Splunk. Uses the Relativity <see cref="ISyncLog"/>
