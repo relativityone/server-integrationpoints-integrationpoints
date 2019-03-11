@@ -2,6 +2,7 @@ Relativity.API
 Relativity.OAuth2Client
 Relativity.Services.Interfaces
 Relativity.Kepler.Client
+Relativity.Telemetry.APM
 
 Microsoft.CodeAnalysis.FxCopAnalyzers
 CSharpGuidelineAnalyzer
