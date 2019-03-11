@@ -3,13 +3,13 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoints.Common.Constants;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories.Implementations;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.Interfaces.ViewField;
 using Relativity.Services.Interfaces.ViewField.Models;
 
-namespace kCura.IntegrationPoints.Data.Tests.Repositories
+namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Repositories
 {
 	[TestFixture]
 	public class ViewFieldRepositoryTests
@@ -102,7 +102,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 			ViewFieldIDResponse[] expectedResult = { viewFieldIDResponse };
 			Task<ViewFieldIDResponse[]> expectedResultTask = Task.FromResult(expectedResult);
 			_viewFieldManagerMock
-				.Setup(x => x.ReadViewFieldIDsFromSearchAsync(_WORKSPACE_ID, _ARTIFACT_TYPE_ID,_VIEW_ARTIFACT_ID))
+				.Setup(x => x.ReadViewFieldIDsFromSearchAsync(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _VIEW_ARTIFACT_ID))
 				.Returns(expectedResultTask);
 			var viewFieldRepository = new ViewFieldRepository(_viewFieldManagerMock.Object, _instrumentationProviderMock.Object);
 

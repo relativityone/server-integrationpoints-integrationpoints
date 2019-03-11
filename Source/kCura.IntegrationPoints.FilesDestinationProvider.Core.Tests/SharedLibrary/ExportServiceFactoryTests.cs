@@ -4,6 +4,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Service.Export;

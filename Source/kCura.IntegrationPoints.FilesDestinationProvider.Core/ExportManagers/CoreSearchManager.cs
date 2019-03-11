@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Data;
+﻿using System.Data;
 using System.Linq;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Service.Export;
 using Relativity.Core;

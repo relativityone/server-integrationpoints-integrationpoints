@@ -129,7 +129,6 @@
     <Compile Include="Repositories\Implementations\RelativityObjectManager.cs" />
     <Compile Include="Repositories\Implementations\JobRepository.cs" />
     <Compile Include="Repositories\Implementations\SecretStoreHelper.cs" />
-    <Compile Include="Repositories\Implementations\ViewFieldRepository.cs" />
     <Compile Include="Repositories\IProductionRepository.cs" />
     <Compile Include="Repositories\IKeywordSearchRepository.cs" />
     <Compile Include="Repositories\Implementations\KeplerKeywordSearchRepository.cs" />
@@ -138,7 +137,6 @@
     <Compile Include="Repositories\IQueryFieldLookupRepository.cs" />
     <Compile Include="Repositories\IRelativityObjectManager.cs" />
     <Compile Include="Repositories\IJobRepository.cs" />
-    <Compile Include="Repositories\IViewFieldRepository.cs" />
     <Compile Include="ResourcePoolContext.cs" />
     <Compile Include="RetryHandler.cs" />
     <Compile Include="RetryHandlerFactory.cs" />

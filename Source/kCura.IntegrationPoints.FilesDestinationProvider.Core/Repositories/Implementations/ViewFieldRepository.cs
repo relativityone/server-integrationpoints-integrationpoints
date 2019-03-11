@@ -3,7 +3,7 @@ using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using Relativity.Services.Interfaces.ViewField;
 using Relativity.Services.Interfaces.ViewField.Models;
 
-namespace kCura.IntegrationPoints.Data.Repositories.Implementations
+namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories.Implementations
 {
 	public class ViewFieldRepository : IViewFieldRepository
 	{

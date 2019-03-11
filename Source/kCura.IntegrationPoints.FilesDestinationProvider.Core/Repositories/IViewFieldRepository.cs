@@ -1,6 +1,6 @@
 ﻿using Relativity.Services.Interfaces.ViewField.Models;
 
-namespace kCura.IntegrationPoints.Data.Repositories
+namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories
 {
 	public interface IViewFieldRepository
 	{
