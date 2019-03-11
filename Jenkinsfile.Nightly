@@ -7,7 +7,8 @@ library 'SCVMMHelpers@3.2.0'
 properties ([
     parameters([
         choice(defaultValue: 'DEV', choices: ["DEV","GOLD"], description: 'Build type. GOLD can only be used on release branches.', name: 'buildType'),
-        string(name: 'relativityBranch', defaultValue: '', description: 'Set Relativity branch')
+        string(name: 'relativityBranch', defaultValue: '', description: 'Set Relativity branch'),
+        string(name: 'syncBranch', defaultValue: 'develop', description: '')
     ])
 ])
 
