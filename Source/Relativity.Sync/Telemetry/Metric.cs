@@ -8,9 +8,9 @@ namespace Relativity.Sync.Telemetry
 	/// <summary>
 	///     Simple data bag representing a metric sent to a sink.
 	/// </summary>
-	internal class Metric
+	internal sealed class Metric
 	{
-		private IDictionary<string, object> _metadata;
+		private IDictionary<string, object> _customData;
 
 		// Info for public properties with get methods on this class.
 		// These are set by compile time, so we can calculate these ahead of time.
@@ -52,22 +52,22 @@ namespace Relativity.Sync.Telemetry
 		public ExecutionStatus ExecutionStatus { get; set; }
 
 		/// <summary>
-		///     Any metadata associated with this metric.
+		///     Any custom data associated with this metric.
 		/// </summary>
-		public IDictionary<string, object> Metadata
+		public IDictionary<string, object> CustomData
 		{
 			get
 			{
-				if (_metadata == null)
+				if (_customData == null)
 				{
-					_metadata = new Dictionary<string, object>();
+					_customData = new Dictionary<string, object>();
 				}
-				return _metadata;
+				return _customData;
 			}
 
 			set
 			{
-				_metadata = value;
+				_customData = value;
 			}
 		}
 
@@ -89,11 +89,19 @@ namespace Relativity.Sync.Telemetry
 		}
 
 		/// <summary>
-		/// Creates a Dictionary out of the given <see cref="Metric"/>'s public readable properties.
+		///     Creates a Dictionary out of the given <see cref="Metric"/>'s public readable properties.
 		/// </summary>
 		public Dictionary<string, object> ToDictionary()
 		{
 			return _PUBLIC_READABLE_PROPERTIES.ToDictionary(p => p.Name, p => p.GetValue(this));
+		}
+
+		/// <summary>
+		///     Creates an array of <see cref="object"/>s out of the the given <see cref="Metric"/>'s public readable properties.
+		/// </summary>
+		public object[] ToPropertyArray()
+		{
+			return _PUBLIC_READABLE_PROPERTIES.Select(p => (object)new KeyValuePair<string, object>(p.Name, p.GetValue(this))).ToArray();
 		}
 	}
 }

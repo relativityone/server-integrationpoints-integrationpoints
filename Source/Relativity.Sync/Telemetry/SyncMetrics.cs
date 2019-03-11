@@ -6,7 +6,7 @@ namespace Relativity.Sync.Telemetry
 	/// <summary>
 	///     Entry point for logging metrics. Dispatches metrics to registered <see cref="ISyncMetricsSink" />s for processing.
 	/// </summary>
-	internal class SyncMetrics : ISyncMetrics
+	internal sealed class SyncMetrics : ISyncMetrics
 	{
 		private readonly IEnumerable<ISyncMetricsSink> _sinks;
 		private readonly CorrelationId _correlationId;

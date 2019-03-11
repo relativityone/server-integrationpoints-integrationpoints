@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Relativity.Sync.Telemetry
 {
@@ -9,7 +10,7 @@ namespace Relativity.Sync.Telemetry
 	///         1) have logs for this application sent to the Splunk sink;
 	///         2) have the log level for this application set to at least Information.
 	/// </summary>
-	internal class SplunkSyncMetricsSink : ISyncMetricsSink
+	internal sealed class SplunkSyncMetricsSink : ISyncMetricsSink
 	{
 		private readonly ISyncLog _logger;
 		private readonly IEnvironmentPropertyProvider _envProperties;
@@ -28,12 +29,26 @@ namespace Relativity.Sync.Telemetry
 		/// <inheritdoc />
 		public void Log(Metric metric)
 		{
-			Dictionary<string, object> parameters = metric.ToDictionary();
-			parameters.Add(nameof(_envProperties.InstanceName), _envProperties.InstanceName);
-			parameters.Add(nameof(_envProperties.CallingAssembly), _envProperties.CallingAssembly);
+			EnrichCustomData(metric);
 
-			// The message template is not used here, so we'll just log an empty string.
-			_logger.LogInformation(string.Empty, parameters);
+			// We convert this directly to an object[] b/c otherwise the properties
+			// are logged as a single-element array instead of an element per property.
+			object[] properties = metric.ToPropertyArray();
+
+			// The message template is not used here, so we just log an empty string.
+			_logger.LogInformation(string.Empty, properties);
+		}
+
+		private void EnrichCustomData(Metric metric)
+		{
+			if (!metric.CustomData.ContainsKey(nameof(_envProperties.InstanceName)))
+			{
+				metric.CustomData.Add(nameof(_envProperties.InstanceName), _envProperties.InstanceName);
+			}
+			if (!metric.CustomData.ContainsKey(nameof(_envProperties.CallingAssembly)))
+			{
+				metric.CustomData.Add(nameof(_envProperties.CallingAssembly), _envProperties.CallingAssembly);
+			}
 		}
 	}
 }
