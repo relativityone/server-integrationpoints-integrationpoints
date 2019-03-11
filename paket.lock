@@ -43,6 +43,7 @@ NUGET
     Relativity.Services.Interfaces (10.2.48.1)
       Relativity.Services.DataContracts (>= 10.2.48.1)
     Relativity.Telemetry.APM (2019.1.0)
+    SexyProxy.Emit (2.0.97)
     System.Runtime.CompilerServices.Unsafe (4.5.2)
     System.Threading.Tasks.Extensions (4.5.2)
       System.Runtime.CompilerServices.Unsafe (>= 4.5.2)

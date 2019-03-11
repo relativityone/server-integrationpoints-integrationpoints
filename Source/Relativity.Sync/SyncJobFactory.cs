@@ -112,7 +112,6 @@ namespace Relativity.Sync
 			builder.RegisterInstance(correlationId).As<CorrelationId>();
 			builder.RegisterInstance(configuration).As<SyncConfiguration>();
 			builder.RegisterType<SyncExecutionContextFactory>().As<ISyncExecutionContextFactory>();
-			builder.RegisterType<SystemStopwatch>().As<IStopwatch>();
 			builder.RegisterType<AppDomainWrapper>().As<IAppDomain>();
 			builder.RegisterType<OAuth2ClientFactory>().As<IOAuth2ClientFactory>();
 			builder.RegisterType<OAuth2TokenGenerator>().As<IAuthTokenGenerator>();
