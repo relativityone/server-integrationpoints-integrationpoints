@@ -37,23 +37,23 @@ namespace Relativity.Sync
 
 		private async Task<TResult> MeasureExecutionTime<TResult>(Func<Task<TResult>> action, CancellationToken token)
 		{
-			CommandExecutionStatus status = CommandExecutionStatus.None;
+			ExecutionStatus status = ExecutionStatus.None;
 			_stopwatch.Start();
 
 			try
 			{
 				TResult actionResult = await action().ConfigureAwait(false);
-				status = token.IsCancellationRequested ? CommandExecutionStatus.Canceled : CommandExecutionStatus.Completed;
+				status = token.IsCancellationRequested ? ExecutionStatus.Canceled : ExecutionStatus.Completed;
 				return actionResult;
 			}
 			catch (OperationCanceledException)
 			{
-				status = CommandExecutionStatus.Canceled;
+				status = ExecutionStatus.Canceled;
 				throw;
 			}
 			catch (Exception)
 			{
-				status = CommandExecutionStatus.Failed;
+				status = ExecutionStatus.Failed;
 				throw;
 			}
 			finally

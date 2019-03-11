@@ -112,16 +112,6 @@ namespace Relativity.Sync
 			builder.RegisterInstance(configuration).As<SyncConfiguration>();
 			builder.RegisterType<SyncExecutionContextFactory>().As<ISyncExecutionContextFactory>();
 			builder.RegisterType<AppDomainWrapper>().As<IAppDomain>();
-			builder.RegisterType<OAuth2ClientFactory>().As<IOAuth2ClientFactory>();
-			builder.RegisterType<OAuth2TokenGenerator>().As<IAuthTokenGenerator>();
-
-			builder.RegisterType<TokenProviderFactoryFactory>().As<ITokenProviderFactoryFactory>();
-			builder.RegisterType<ServiceFactoryForUser>()
-				.As<ISourceServiceFactoryForUser>()
-				.As<IDestinationServiceFactoryForUser>();
-			builder.RegisterType<ServiceFactoryForAdmin>()
-				.As<ISourceServiceFactoryForAdmin>()
-				.As<IDestinationServiceFactoryForAdmin>();
 
 			_pipelineBuilder.RegisterFlow(builder);
 

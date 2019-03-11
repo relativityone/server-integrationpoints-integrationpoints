@@ -28,7 +28,7 @@ namespace Relativity.Sync.Tests.Unit
 		public void ItShouldLogMetricWithEmptyMessageTemplate()
 		{
 			// act
-			_sut.Log(Metric.TimedOperation(It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<CommandExecutionStatus>(), It.IsAny<string>()));
+			_sut.Log(Metric.TimedOperation(It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<ExecutionStatus>(), It.IsAny<string>()));
 
 			// assert
 			_logger.Verify(x => x.LogInformation(string.Empty, It.IsAny<object[]>()));
@@ -39,7 +39,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			const string metricName = "metricName";
 			TimeSpan duration = TimeSpan.MaxValue;
-			CommandExecutionStatus executionStatus = CommandExecutionStatus.Completed;
+			ExecutionStatus executionStatus = ExecutionStatus.Completed;
 			const string correlationId = "correlationId";
 			const string instanceName = "instance name";
 			const string callingAssembly = "Calling.Assembly";
@@ -74,7 +74,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			const string metricName = "metricName";
 			TimeSpan duration = TimeSpan.MaxValue;
-			CommandExecutionStatus executionStatus = CommandExecutionStatus.Completed;
+			ExecutionStatus executionStatus = ExecutionStatus.Completed;
 			const string correlationId = "correlationId";
 			const string instanceNameFromProvider = "instance name";
 			const string callingAssemblyFromProvider = "Calling.Assembly";
