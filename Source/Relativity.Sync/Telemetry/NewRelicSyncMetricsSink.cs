@@ -47,11 +47,15 @@ namespace Relativity.Sync.Telemetry
 					Dictionary<string, object> payload = BuildPayload(_metrics);
 					_apmClient.Log(_METRIC_NAME, payload);
 				}
+
+				// This isn't meant to ensure thread-safety, just safety from repeated calls to Dipose.
+				_disposed = true;
 			}
 		}
 
 		// Builds a customData payload for APM so we can send all metrics in one call.
-		// Keys are random IDs and values are dictionaries mapping public Metric properties to their values.
+		// Keys are random IDs and values are dictionaries mapping public Metric properties
+		// to their values, i.e.: {(guid) => {(property) => (property_val)}}
 		private Dictionary<string, object> BuildPayload(IEnumerable<Metric> metrics)
 		{
 			Dictionary<string, object> payload = metrics.ToDictionary(m => Guid.NewGuid().ToString(), m => (object)m.ToDictionary());

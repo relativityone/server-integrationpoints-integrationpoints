@@ -26,6 +26,8 @@ namespace Relativity.Sync.Telemetry
 		public void Log(Metric metric)
 		{
 			Dictionary<string, object> parameters = metric.ToDictionary();
+
+			// The message template is not used here, so we'll just log an empty string.
 			_logger.LogInformation(string.Empty, parameters);
 		}
 	}
