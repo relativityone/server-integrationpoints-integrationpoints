@@ -42,7 +42,7 @@ namespace Relativity.Sync.Telemetry
 				{
 					InstanceSettingQueryResultSet result = await instanceSettingManager.QueryAsync(query).ConfigureAwait(false);
 
-					if (result.Success && result.TotalCount > 0)
+					if (result.Success && result.Results.Count > 0)
 					{
 						relativityInstanceName = result.Results[0].Artifact.Value;
 					}
