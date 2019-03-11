@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Telemetry;
@@ -42,18 +43,19 @@ namespace Relativity.Sync.Tests.Unit
 			const string correlationId = "correlationId";
 			const string instanceName = "instance name";
 			const string callingAssembly = "Calling.Assembly";
-			Dictionary<string, object> metadata = new Dictionary<string, object>();
-
-			Dictionary<string, object> expectedDictionary = new Dictionary<string, object>
+			Dictionary<string, object> expectedCustomData = new Dictionary<string, object>
 			{
-				{"Name", metricName},
-				{ "Type", MetricType.TimedOperation},
-				{ "CorrelationId", correlationId},
-				{ "ExecutionStatus", executionStatus },
-				{ "Metadata", metadata },
-				{ "Value", duration.TotalMilliseconds },
 				{ "InstanceName", instanceName },
 				{ "CallingAssembly", callingAssembly }
+			};
+			Dictionary<string, object> expectedDictionary = new Dictionary<string, object>
+			{
+				{ "Name", metricName },
+				{ "Type", MetricType.TimedOperation},
+				{ "Value", duration.TotalMilliseconds },
+				{ "CorrelationId", correlationId},
+				{ "ExecutionStatus", executionStatus },
+				{ "CustomData", expectedCustomData },
 			};
 
 			_envProp.Setup(x => x.CallingAssembly).Returns(callingAssembly);
@@ -61,32 +63,70 @@ namespace Relativity.Sync.Tests.Unit
 			
 			// act
 			Metric metric = Metric.TimedOperation(metricName, duration, executionStatus, correlationId);
-			metric.Metadata = metadata;
 			_sut.Log(metric);
 
 			// assert
 			_logger.Verify(x => x.LogInformation(It.IsAny<string>(), It.Is<object[]>(objects => VerifyParameters(objects, expectedDictionary))));
 		}
 
-		private bool VerifyParameters(object[] parameters, Dictionary<string, object> expectedDictionary)
+		[Test]
+		public void ItDoesNotOverrideExistingCustomData()
 		{
-			Dictionary<string, object> dict = parameters[0] as Dictionary<string, object>;
-
-			if (dict == null)
+			const string metricName = "metricName";
+			TimeSpan duration = TimeSpan.MaxValue;
+			CommandExecutionStatus executionStatus = CommandExecutionStatus.Completed;
+			const string correlationId = "correlationId";
+			const string instanceNameFromProvider = "instance name";
+			const string callingAssemblyFromProvider = "Calling.Assembly";
+			const string instanceNameOriginal = "instance name orig";
+			const string callingAssemblyOriginal = "Calling.Assembly.Orig";
+			Dictionary<string, object> expectedCustomData = new Dictionary<string, object>
 			{
-				return false;
+				{ "InstanceName", instanceNameOriginal },
+				{ "CallingAssembly", callingAssemblyOriginal }
+			};
+			Dictionary<string, object> expectedDictionary = new Dictionary<string, object>
+			{
+				{ "Name", metricName },
+				{ "Type", MetricType.TimedOperation},
+				{ "Value", duration.TotalMilliseconds },
+				{ "CorrelationId", correlationId},
+				{ "ExecutionStatus", executionStatus },
+				{ "CustomData", expectedCustomData },
+			};
+			_envProp.Setup(x => x.CallingAssembly).Returns(callingAssemblyFromProvider);
+			_envProp.Setup(x => x.InstanceName).Returns(instanceNameFromProvider);
+
+			// act
+			Metric metric = Metric.TimedOperation(metricName, duration, executionStatus, correlationId);
+			metric.CustomData.Add("InstanceName", instanceNameOriginal);
+			metric.CustomData.Add("CallingAssembly", callingAssemblyOriginal);
+			_sut.Log(metric);
+
+			// assert
+			_logger.Verify(x => x.LogInformation(It.IsAny<string>(), It.Is<object[]>(objects => VerifyParameters(objects, expectedDictionary))));
+		}
+
+		private static bool VerifyParameters(object[] parameters, Dictionary<string, object> expectedDictionary)
+		{
+			KeyValuePair<string, object>[] keyValuePairs = parameters.Select(p => (KeyValuePair<string, object>)p).ToArray();
+			return
+				keyValuePairs.Count(p => p.Key == "Name" && p.Value.Equals(expectedDictionary["Name"])) == 1 &&
+				keyValuePairs.Count(p => p.Key == "Type" && p.Value.Equals(expectedDictionary["Type"])) == 1 &&
+				keyValuePairs.Count(p => p.Key == "Value" && p.Value.Equals(expectedDictionary["Value"])) == 1 &&
+				keyValuePairs.Count(p => p.Key == "CorrelationId" && p.Value.Equals(expectedDictionary["CorrelationId"])) == 1 &&
+				keyValuePairs.Count(p => p.Key == "ExecutionStatus" && p.Value.Equals(expectedDictionary["ExecutionStatus"])) == 1 &&
+				keyValuePairs.Count(p => p.Key == "CustomData" && AreEqualDictionaries(p.Value, expectedDictionary["CustomData"])) == 1;
+		}
+
+		private static bool AreEqualDictionaries(object me, object you)
+		{
+			if (me is Dictionary<string, object> meAsDict && you is Dictionary<string, object> youAsDict)
+			{
+				return Enumerable.SequenceEqual(meAsDict, youAsDict);
 			}
 
-			return
-				dict["Name"].Equals(expectedDictionary["Name"]) &&
-				dict["Type"].Equals(expectedDictionary["Type"]) &&
-				dict["CorrelationId"].Equals(expectedDictionary["CorrelationId"]) &&
-				dict["ExecutionStatus"].Equals(expectedDictionary["ExecutionStatus"]) &&
-				dict["Value"].Equals(expectedDictionary["Value"]) &&
-				dict["Metadata"].Equals(expectedDictionary["Metadata"]) &&
-				dict["InstanceName"].Equals(expectedDictionary["InstanceName"]) &&
-				dict["CallingAssembly"].Equals(expectedDictionary["CallingAssembly"])
-				;
+			return false;
 		}
 	}
 }

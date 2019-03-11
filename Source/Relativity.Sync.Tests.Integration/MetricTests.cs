@@ -30,9 +30,9 @@ namespace Relativity.Sync.Tests.Integration
 		[Test]
 		public void ItShouldSerializeMetricWithCustomData()
 		{
-			_metric.Metadata.Add("custom data int", 1);
-			_metric.Metadata.Add("custom data object", new object());
-			_metric.Metadata.Add("custom data null", null);
+			_metric.CustomData.Add("custom data int", 1);
+			_metric.CustomData.Add("custom data object", new object());
+			_metric.CustomData.Add("custom data null", null);
 
 			// ACT
 			string serializedObject = JsonConvert.SerializeObject(_metric);

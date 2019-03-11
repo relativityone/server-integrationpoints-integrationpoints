@@ -89,11 +89,19 @@ namespace Relativity.Sync.Telemetry
 		}
 
 		/// <summary>
-		/// Creates a Dictionary out of the given <see cref="Metric"/>'s public readable properties.
+		///     Creates a Dictionary out of the given <see cref="Metric"/>'s public readable properties.
 		/// </summary>
 		public Dictionary<string, object> ToDictionary()
 		{
 			return _PUBLIC_READABLE_PROPERTIES.ToDictionary(p => p.Name, p => p.GetValue(this));
+		}
+
+		/// <summary>
+		///     Creates an array of <see cref="object"/>s out of the the given <see cref="Metric"/>'s public readable properties.
+		/// </summary>
+		public object[] ToPropertyArray()
+		{
+			return _PUBLIC_READABLE_PROPERTIES.Select(p => (object)new KeyValuePair<string, object>(p.Name, p.GetValue(this))).ToArray();
 		}
 	}
 }
