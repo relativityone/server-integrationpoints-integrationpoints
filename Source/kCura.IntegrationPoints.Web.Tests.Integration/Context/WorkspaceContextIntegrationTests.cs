@@ -137,7 +137,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Context
 		private IWindsorContainer CreateIoCContainer()
 		{
 			var container = new WindsorContainer();
-			container.ChangeLifestyleFromPerWebRequestToTransientInNewRegistrations(); // we cannot resolve PerWebRequest object in tests
+			container.ConfigureChangingLifestyleFromPerWebRequestToTransientBecausePerWebRequestIsNotResolvableInTests();
 			container.AddWorkspaceContext();
 			RegisterDependencies(container);
 			container.Register(

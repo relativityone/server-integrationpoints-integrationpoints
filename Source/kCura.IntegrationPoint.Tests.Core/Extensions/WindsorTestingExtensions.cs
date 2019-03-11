@@ -1,8 +1,8 @@
-﻿using System;
-using System.Linq;
-using Castle.Core;
+﻿using Castle.Core;
 using Castle.MicroKernel;
 using Castle.Windsor;
+using System;
+using System.Linq;
 
 namespace kCura.IntegrationPoint.Tests.Core.Extensions
 {
@@ -26,7 +26,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions
 				.ToArray();
 		}
 
-		public static IWindsorContainer ChangeLifestyleFromPerWebRequestToTransientInNewRegistrations(this IWindsorContainer container)
+		public static IWindsorContainer ConfigureChangingLifestyleFromPerWebRequestToTransientBecausePerWebRequestIsNotResolvableInTests(
+			this IWindsorContainer container)
 		{
 			container.Kernel.ComponentModelCreated += model =>
 			{

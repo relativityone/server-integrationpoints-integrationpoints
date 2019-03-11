@@ -68,7 +68,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Installers.Context
 		{
 			// arrange
 			IWindsorContainer sut = new WindsorContainer();
-			sut.ChangeLifestyleFromPerWebRequestToTransientInNewRegistrations(); // we cannot resolve PerWebRequest object in tests
+			sut.ConfigureChangingLifestyleFromPerWebRequestToTransientBecausePerWebRequestIsNotResolvableInTests();
 			sut.AddWorkspaceContext();
 			RegisterDependencies(sut);
 
@@ -82,7 +82,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Installers.Context
 		{
 			// arrange
 			IWindsorContainer sut = new WindsorContainer();
-			sut.ChangeLifestyleFromPerWebRequestToTransientInNewRegistrations(); // we cannot resolve PerWebRequest object in tests
+			sut.ConfigureChangingLifestyleFromPerWebRequestToTransientBecausePerWebRequestIsNotResolvableInTests();
 			sut.AddWorkspaceContext();
 			RegisterDependencies(sut);
 
