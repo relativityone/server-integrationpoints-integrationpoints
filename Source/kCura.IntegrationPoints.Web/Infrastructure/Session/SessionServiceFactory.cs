@@ -4,7 +4,7 @@ using System.Web;
 
 namespace kCura.IntegrationPoints.Web.Infrastructure.Session
 {
-	internal class SessionServiceFactory
+	internal static class SessionServiceFactory
 	{
 		private const string _SESSION_KEY = "__WEB_SESSION_KEY__";
 
