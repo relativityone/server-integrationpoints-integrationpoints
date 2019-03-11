@@ -14,7 +14,7 @@ namespace Relativity.Sync.Tests.Integration
 		[SetUp]
 		public void SetUp()
 		{
-			_metric = Metric.TimedOperation("metric name", TimeSpan.FromMilliseconds(1), CommandExecutionStatus.Completed, "correlation ID");
+			_metric = Metric.TimedOperation("metric name", TimeSpan.FromMilliseconds(1), ExecutionStatus.Completed, "correlation ID");
 		}
 
 		[Test]

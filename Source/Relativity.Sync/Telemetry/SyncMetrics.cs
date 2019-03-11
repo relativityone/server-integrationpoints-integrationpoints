@@ -40,7 +40,7 @@ namespace Relativity.Sync.Telemetry
 				Metric metric = Metric.TimedOperation(name, duration, executionStatus, _correlationId.Value);
 				foreach (KeyValuePair<string, object> keyValuePair in customData)
 				{
-					metric.Metadata.Add(keyValuePair);
+					metric.CustomData.Add(keyValuePair);
 				}
 
 				sink.Log(metric);
