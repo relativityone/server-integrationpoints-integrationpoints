@@ -3,13 +3,13 @@
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width" />
-	<link href="~/Content/fonts/open-sans-v15-latin-regular.css" rel="stylesheet" type="text/css" />
+	@Styles.Render("~/Content/fonts/bundleFonts")
 	<title>@ViewBag.Title</title>
 	@Styles.Render("~/Content/styles")
-    <link href="~/Content/buttermilk.9_2.min.css" rel="stylesheet" />
+	<link href="~/Content/buttermilk.9_2.min.css" rel="stylesheet" />
 	@Styles.Render("~/Content/themes/base/css")
 	<link href="~/Content/jquery.jqGrid/ui.jqgrid.css" rel="stylesheet" />
-    <link href="~/Content/modals.min.css" rel="stylesheet" />
+	<link href="~/Content/modals.min.css" rel="stylesheet" />
 	@Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
