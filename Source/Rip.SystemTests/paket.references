@@ -1,4 +1,5 @@
-﻿kCura.Relativity.Client
+﻿FluentAssertions
+kCura.Relativity.Client
 Moq
 NUnit
 Polly

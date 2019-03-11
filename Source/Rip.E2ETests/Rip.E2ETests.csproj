@@ -31,15 +31,20 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="nunit.framework, Version=3.6.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.3.6.1\lib\net45\nunit.framework.dll</HintPath>
+      <HintPath>..\..\packages\NUnit.3.6.1\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\Version\AssemblyInfo.cs">
+      <Link>AssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="TestClass.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+	<None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />
+  </ItemGroup>
+  <ItemGroup>
 	<None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>

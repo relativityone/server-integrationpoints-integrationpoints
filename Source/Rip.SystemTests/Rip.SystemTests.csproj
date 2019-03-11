@@ -31,6 +31,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FluentAssertions">
+      <HintPath>..\..\packages\FluentAssertions\lib\net45\FluentAssertions.dll</HintPath>
+    </Reference>
+    <Reference Include="FluentAssertions.Core, Version=4.19.4.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\FluentAssertions\lib\net45\FluentAssertions.Core.dll</HintPath>
+    </Reference>
     <Reference Include="kCura.Relativity.Client, Version=10.2.56.11, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\kCura.Relativity.Client\lib\net462\kCura.Relativity.Client.dll</HintPath>
@@ -43,7 +50,7 @@
       <HintPath>..\..\packages\Moq\lib\net45\Moq.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework, Version=3.6.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.3.6.1\lib\net45\nunit.framework.dll</HintPath>
+      <HintPath>..\..\packages\NUnit.3.6.1\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="Polly">
       <HintPath>..\..\packages\Polly\lib\net45\Polly.dll</HintPath>
@@ -70,17 +77,20 @@
     </Reference>
     <Reference Include="Serilog, Version=1.5.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10" />
     <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="RelativityServices\CoreSearchManagerTests.cs" />
-    <Compile Include="RelativityServices\RelativityObjectManagerTests.cs" />
     <Compile Include="SystemTestsFixture.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>

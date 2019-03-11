@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
@@ -34,13 +35,17 @@ namespace Rip.SystemTests.RelativityServices
 		private IViewManager _viewManager;
 		private int _workspaceID;
 
+		private const string _RELATIVITY_STARTER_TEMPLATE_NAME = "Relativity Starter Template";
 		private const int _DOCUMENT_ARTIFACT_TYPE_ID = 10;
 
 		[OneTimeSetUp]
 		public void OneSetup()
 		{
 			_testHelperLazy = new Lazy<ITestHelper>(() => new TestHelper());
-			_workspaceID = Workspace.CreateWorkspace(Guid.NewGuid().ToString(), "Relativity Starter Template");
+			_workspaceID = Workspace.CreateWorkspace(
+				workspaceName: $"CoreSearchManager-{DateTime.Now.Ticks}",
+				templateName: _RELATIVITY_STARTER_TEMPLATE_NAME
+			);
 
 			IRelativityObjectManagerFactory objectManagerFactory = new RelativityObjectManagerFactory(_testHelperLazy.Value);
 			_objectManager = objectManagerFactory.CreateRelativityObjectManager(_workspaceID);
@@ -54,20 +59,40 @@ namespace Rip.SystemTests.RelativityServices
 		}
 
 		[Test]
-		public void RetrieveAllExportableViewFieldsTest()
+		public void RetrieveAllExportableViewFields_ShouldRetrieveAllViewFieldsForDocument()
 		{
 			// arrange
-			CoreSearchManager coreSearchManager = CreateCoreSearchManager();
+			CoreSearchManager sut = CreateCoreSearchManager();
 			IList<int> exportableFieldIDs = RetrieveExportableFieldIDs();
 
 			// act
-			ViewFieldInfo[] result = coreSearchManager.RetrieveAllExportableViewFields(_workspaceID, _DOCUMENT_ARTIFACT_TYPE_ID);
+			ViewFieldInfo[] result = sut.RetrieveAllExportableViewFields(_workspaceID, _DOCUMENT_ARTIFACT_TYPE_ID);
 
 			// assert
-			Assert.AreEqual(result.Length, exportableFieldIDs.Count);
+			result.Length.Should().Be(exportableFieldIDs.Count);
 			foreach (var viewFieldInfo in result)
 			{
-				Assert.IsTrue(exportableFieldIDs.Contains(viewFieldInfo.FieldArtifactId));
+				exportableFieldIDs.Contains(viewFieldInfo.FieldArtifactId).Should().BeTrue();
+			}
+		}
+
+		[Test]
+		public void RetrieveDefaultViewFieldIDs_ShouldRetrieveDefaultViewFieldIDsForSavedSearchView()
+		{
+			// arrange
+			CoreSearchManager sut = CreateCoreSearchManager();
+			Relativity.Services.View.View view = CreateTestView();
+
+			// act
+			int[] result =
+				sut.RetrieveDefaultViewFieldIds(_workspaceID, view.ArtifactID, _DOCUMENT_ARTIFACT_TYPE_ID, false);
+
+			// assert
+			view.Fields.Count.Should().Be(result.Length);
+			foreach (var fieldRef in view.Fields)
+			{
+				int artifactViewFieldID = fieldRef.ViewFieldID;
+				result.Contains(artifactViewFieldID).Should().BeTrue();
 			}
 		}
 
@@ -75,7 +100,7 @@ namespace Rip.SystemTests.RelativityServices
 		{
 			var fieldQuery = new QueryRequest
 			{
-				ObjectType = new ObjectTypeRef {ArtifactTypeID = (int) ArtifactType.Field},
+				ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Field },
 				Fields = new[]
 				{
 					new Relativity.Services.Objects.DataContracts.FieldRef {Name = TestConstants.FieldNames.ARTIFACT_ID},
@@ -87,31 +112,28 @@ namespace Rip.SystemTests.RelativityServices
 
 			ResultSet<RelativityObject> resultSet = _objectManager.Query(fieldQuery, 0, 1000);
 
-			IList<int> fields = new List<int>();
-
-			foreach (var fieldObject in resultSet.Items)
-			{
-				string fieldType = fieldObject[TestConstants.FieldNames.FIELD_TYPE].Value.ToString();
-				int fieldCategoryID = (int)fieldObject[TestConstants.FieldNames.FIELD_CATEGORY_ID].Value;
-
-				if (IsFieldExportable(fieldType, fieldCategoryID))
+			IList<int> fields = resultSet.Items
+				.Select(fieldObject => new
 				{
-					int artifactID = (int) fieldObject[TestConstants.FieldNames.ARTIFACT_ID].Value;
-					fields.Add(artifactID);
-				}
-			}
+					ArtifactID = (int) fieldObject[TestConstants.FieldNames.ARTIFACT_ID].Value,
+					FieldType = fieldObject[TestConstants.FieldNames.FIELD_TYPE].Value.ToString(),
+					CategoryID = (int) fieldObject[TestConstants.FieldNames.FIELD_CATEGORY_ID].Value
+				})
+				.Where(item => IsFieldExportable(item.FieldType, item.CategoryID))
+				.Select(item => item.ArtifactID)
+				.ToList();
 
 			return fields;
 		}
 
 		private static bool IsFieldExportable(string fieldType, int fieldCategoryID)
 		{
-			if (fieldCategoryID == (int) FieldCategory.FileInfo)
+			if (fieldCategoryID == (int)FieldCategory.FileInfo)
 			{
 				return false;
 			}
 
-			if (fieldCategoryID == (int) FieldCategory.MultiReflected)
+			if (fieldCategoryID == (int)FieldCategory.MultiReflected)
 			{
 				if (fieldType == TestConstants.FieldTypeNames.LONG_TEXT ||
 				    fieldType == TestConstants.FieldTypeNames.MULTIPLE_CHOICE)
@@ -121,26 +143,6 @@ namespace Rip.SystemTests.RelativityServices
 			}
 
 			return true;
-		}
-
-		[Test]
-		public void RetrieveDefaultViewFieldIdsTest()
-		{
-			// arrange
-			CoreSearchManager coreSearchManager = CreateCoreSearchManager();
-			Relativity.Services.View.View view = CreateTestView();
-
-			// act
-			int[] result =
-				coreSearchManager.RetrieveDefaultViewFieldIds(_workspaceID, view.ArtifactID, _DOCUMENT_ARTIFACT_TYPE_ID, false);
-
-			// assert
-			Assert.AreEqual(view.Fields.Count, result.Length);
-			foreach (var fieldRef in view.Fields)
-			{
-				int artifactViewFieldID = fieldRef.ViewFieldID;
-				Assert.IsTrue(result.Contains(artifactViewFieldID));
-			}
 		}
 
 		private Relativity.Services.View.View CreateTestView()
