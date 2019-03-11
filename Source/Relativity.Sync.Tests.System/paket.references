@@ -1,4 +1,4 @@
-﻿Relativity.API
+Relativity.API
 Relativity.Kepler
 Relativity.Platform.Keywords
 Relativity.Services.Interfaces
@@ -9,6 +9,7 @@ CSharpGuidelineAnalyzer
 
 Polly
 Autofac
+Newtonsoft.Json
 
 NUnit
 FluentAssertions

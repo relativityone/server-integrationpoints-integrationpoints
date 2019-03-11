@@ -15,6 +15,7 @@ properties {
     $branchName
     $databaseUser
     $databasePassword
+    $sutAddress
     $sourceDir = Join-Path $root "Source"
     $logsDir = Join-Path $root "buildlogs"
     $paketExe = Join-Path $root -ChildPath ".paket" | Join-Path -ChildPath "paket.exe"
@@ -75,7 +76,11 @@ task runIntegrationTests {
 }
 
 task runPerformanceTests {
-    & (Join-Path $scriptsDir "run-tests.ps1") -projectName $projectName -testsType "Performance" -sourceDir $sourceDir -toolsDir $toolsDir -logsDir $logsDir
+    & (Join-Path $scriptsDir "run-tests.ps1") -projectName $projectName -testsType "Performance" -sourceDir $sourceDir -toolsDir $toolsDir -logsDir $logsDir -sutAddress $sutAddress
+}
+
+task runSystemTests {
+    & (Join-Path $scriptsDir "run-tests.ps1") -projectName $projectName -testsType "System" -sourceDir $sourceDir -toolsDir $toolsDir -logsDir $logsDir -sutAddress $sutAddress
 }
 
 task runSonarScanner -depends restorePackages, findMsbuild {

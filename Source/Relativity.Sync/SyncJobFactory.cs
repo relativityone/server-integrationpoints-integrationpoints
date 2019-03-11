@@ -4,6 +4,9 @@ using System.Reflection;
 using System.Collections.Generic;
 using Autofac;
 using Banzai.Logging;
+using Relativity.API;
+using Relativity.Sync.Authentication;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 
 namespace Relativity.Sync
@@ -98,12 +101,27 @@ namespace Relativity.Sync
 		private void RegisterDependencies(ContainerBuilder builder, IEnumerable<IInstaller> installers, SyncJobParameters syncJobParameters, SyncConfiguration configuration, ISyncLog logger)
 		{
 			CorrelationId correlationId = new CorrelationId(syncJobParameters.CorrelationId);
-			builder.RegisterType<SyncJob>().As<ISyncJob>();
+
+			const string syncJob = nameof(SyncJob);
+			builder.RegisterType<SyncJob>().Named(syncJob, typeof(ISyncJob));
+			builder.RegisterDecorator<ISyncJob>((context, job) => new SyncJobWithUnhandledExceptionLogging(job, context.Resolve<IAppDomain>(), context.Resolve<ISyncLog>()), syncJob);
+
 			builder.RegisterInstance(new ContextLogger(correlationId, logger)).As<ISyncLog>();
 			builder.RegisterInstance(syncJobParameters).As<SyncJobParameters>();
 			builder.RegisterInstance(correlationId).As<CorrelationId>();
 			builder.RegisterInstance(configuration).As<SyncConfiguration>();
 			builder.RegisterType<SyncExecutionContextFactory>().As<ISyncExecutionContextFactory>();
+			builder.RegisterType<AppDomainWrapper>().As<IAppDomain>();
+			builder.RegisterType<OAuth2ClientFactory>().As<IOAuth2ClientFactory>();
+			builder.RegisterType<OAuth2TokenGenerator>().As<IAuthTokenGenerator>();
+
+			builder.RegisterType<TokenProviderFactoryFactory>().As<ITokenProviderFactoryFactory>();
+			builder.RegisterType<ServiceFactoryForUser>()
+				.As<ISourceServiceFactoryForUser>()
+				.As<IDestinationServiceFactoryForUser>();
+			builder.RegisterType<ServiceFactoryForAdmin>()
+				.As<ISourceServiceFactoryForAdmin>()
+				.As<IDestinationServiceFactoryForAdmin>();
 
 			_pipelineBuilder.RegisterFlow(builder);
 
