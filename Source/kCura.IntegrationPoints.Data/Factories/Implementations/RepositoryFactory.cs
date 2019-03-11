@@ -10,6 +10,7 @@ using System;
 using System.Security.Claims;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using Relativity.API.Foundation.Repositories;
+using Relativity.Services.Interfaces.ViewField;
 using Relativity.Services.ResourceServer;
 using ArtifactType = Relativity.ArtifactType;
 using Context = kCura.Data.RowDataGateway.Context;

@@ -51,6 +51,10 @@
     <Compile Include="ExportManagers\CoreFieldManager.cs" />
     <Compile Include="ExportManagers\CoreSearchManager.cs" />
     <Compile Include="Helpers\FieldConverter.cs" />
+    <Compile Include="Helpers\CoreViewFieldInfo.cs" />
+    <Compile Include="Installer\ExportRepositoryRegistration.cs" />
+    <Compile Include="Repositories\Implementations\ViewFieldRepository.cs" />
+    <Compile Include="Repositories\IViewFieldRepository.cs" />
     <Compile Include="SharedLibrary\ExportServiceFactory.cs" />
     <Compile Include="SharedLibrary\IExportServiceFactory.cs" />
     <Compile Include="Extensions\ExportFileExtension.cs" />

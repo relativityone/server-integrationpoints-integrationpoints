@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Service.Export;
 using Relativity.Core;
@@ -13,10 +14,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 		private readonly ExportFile _exportFile;
 		private readonly int _contextUserId;
 		private readonly IRepositoryFactory _repositoryFactory;
+		private readonly IViewFieldRepository _viewFieldRepository;
 
-		public CoreServiceFactory(IRepositoryFactory repositoryFactory, ExportFile exportFile, int contextUserId)
+		public CoreServiceFactory(IRepositoryFactory repositoryFactory, IViewFieldRepository viewFieldRepository, ExportFile exportFile, int contextUserId)
 		{
 			_repositoryFactory = repositoryFactory;
+			_viewFieldRepository = viewFieldRepository;
 			_exportFile = exportFile;
 			_contextUserId = contextUserId;
 		}
@@ -27,7 +30,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 
 		public IFieldManager CreateFieldManager() => new CoreFieldManager(_repositoryFactory);
 
-		public ISearchManager CreateSearchManager() => new CoreSearchManager(GetBaseServiceContext(_exportFile.CaseArtifactID));
+		public ISearchManager CreateSearchManager() => new CoreSearchManager(GetBaseServiceContext(_exportFile.CaseArtifactID), _viewFieldRepository);
 
 		public IProductionManager CreateProductionManager() => new CoreProductionManager(GetBaseServiceContext(_exportFile.CaseArtifactID));
 

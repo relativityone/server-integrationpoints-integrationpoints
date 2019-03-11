@@ -1,4 +1,5 @@
 CSharpGuidelineAnalyzer
+FluentAssertions
 kCura.Apps.Common.Utils
 kCura.Relativity.Client
 NSubstitute
@@ -6,4 +7,5 @@ NUnit
 Relativity.API
 Relativity.ImportExport
 Relativity.Productions.Services.Interfaces
+Relativity.Services.Interfaces
 Relativity.Telemetry.MetricsCollection
