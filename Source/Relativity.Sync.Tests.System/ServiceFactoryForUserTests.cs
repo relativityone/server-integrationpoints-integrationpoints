@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
@@ -31,6 +32,7 @@ namespace Relativity.Sync.Tests.System
 		[OneTimeSetUp]
 		public void SuiteSetup()
 		{
+			ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
 			_servicesManager = new ServicesManagerStub();
 			_provideServiceUris = new ProvideServiceUrisStub();
 			_client = new RSAPIClient(AppSettings.RelativityServicesUrl, new UsernamePasswordCredentials(AppSettings.RelativityUserName, AppSettings.RelativityUserPassword));
