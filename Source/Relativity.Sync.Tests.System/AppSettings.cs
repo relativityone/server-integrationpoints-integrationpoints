@@ -12,7 +12,7 @@ namespace Relativity.Sync.Tests.System
 		private static readonly UriBuilder Builder = new UriBuilder("https", RelativityHostName);
 		private static string RelativityHostName => ConfigurationManager.AppSettings.Get(nameof(RelativityHostName));
 
-		public static Uri RelativityUrl => _relativityUrl ?? (_relativityUrl  = Builder.Uri);
+		public static Uri RelativityUrl => _relativityUrl ?? (_relativityUrl  = BuildUri("Relativity"));
 		public static Uri RelativityServicesUrl => _relativityServicesUrl ?? (_relativityServicesUrl = BuildUri(ConfigurationManager.AppSettings.Get(nameof(RelativityServicesUrl))));
 		public static Uri RelativityRestUrl => _relativityRestUrl ?? (_relativityRestUrl = BuildUri(ConfigurationManager.AppSettings.Get(nameof(RelativityRestUrl))));
 		public static string RelativityUserName => ConfigurationManager.AppSettings.Get(nameof(RelativityUserName));
