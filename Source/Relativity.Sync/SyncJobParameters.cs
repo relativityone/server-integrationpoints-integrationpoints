@@ -25,19 +25,18 @@ namespace Relativity.Sync
 		/// <summary>
 		///     Constructor
 		/// </summary>
-		public SyncJobParameters(int jobId, int workspaceId)
+		public SyncJobParameters(int jobId, int workspaceId) : this(jobId, workspaceId, Guid.NewGuid().ToString())
 		{
-			CorrelationId = new Guid().ToString();
-			JobId = jobId;
-			WorkspaceId = workspaceId;
 		}
 
 		/// <summary>
 		///     Constructor
 		/// </summary>
-		public SyncJobParameters(int jobId, int workspaceId, string correlationId) : this(jobId, workspaceId)
+		public SyncJobParameters(int jobId, int workspaceId, string correlationId)
 		{
 			CorrelationId = correlationId;
+			JobId = jobId;
+			WorkspaceId = workspaceId;
 		}
 	}
 }
