@@ -11,7 +11,7 @@ Relativity.API
 Relativity.Core
 Relativity.Data
 Relativity.ImportExport
-kCura.OutsideIn.FI.Win32 content: true
+kCura.OutsideIn.FI.Win32 content: none
 Relativity.Kepler.Client
 Relativity.Productions.Services.Interfaces
 Relativity.Services.Interfaces.Private
