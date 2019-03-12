@@ -84,7 +84,7 @@ namespace kCura.ScheduleQueue.Core.BatchProcess
 			foreach (var id in batchIDs)
 			{
 				//TODO: later we will need to generate error entry for every item we bypass
-				if ((id != null) && id is string && (id.ToString() != string.Empty))
+				if ((!Equals(id, default(T))) && id is string && (id.ToString() != string.Empty))
 				{
 					list.Add(id);
 					count += 1;

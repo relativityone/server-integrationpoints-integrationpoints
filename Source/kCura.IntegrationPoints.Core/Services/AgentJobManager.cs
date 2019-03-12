@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			try
 			{
 				string serializedDetails = null;
-				if (jobDetails != null)
+				if(!Equals(jobDetails, default(T)))
 				{
 					serializedDetails = _serializer.Serialize(jobDetails);
 				}
@@ -147,7 +147,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			try
 			{
 				string serializedDetails = null;
-				if (jobDetails != null)
+				if (!Equals(jobDetails, default(T)))
 				{
 					serializedDetails = _serializer.Serialize(jobDetails);
 				}

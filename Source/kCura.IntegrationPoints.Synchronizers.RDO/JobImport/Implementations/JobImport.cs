@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 		{
 			get
 			{
-				if (_job == null)
+				if(Equals(_job, default(TJob)))
 				{
 					_job = CreateJob();
 				}
