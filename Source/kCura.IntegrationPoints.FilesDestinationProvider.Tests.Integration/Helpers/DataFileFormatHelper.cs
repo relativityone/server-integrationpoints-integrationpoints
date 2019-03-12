@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 			}
 
 			char quote = fileFirstLine[0];
-			IEnumerable<int> indexes = columns.Select(col => fileFirstLine.IndexOf($"{quote}{col}{quote}"));
+			IEnumerable<int> indexes = columns.Select(col => fileFirstLine.IndexOf($"{quote}{col}{quote}", StringComparison.Ordinal));
 			bool anyColumnIsMissing = indexes.Any(x => x == -1);
 			if (anyColumnIsMissing)
 			{
