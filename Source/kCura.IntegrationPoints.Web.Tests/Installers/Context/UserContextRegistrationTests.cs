@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Web.Installers.Context;
 using Moq;
 using NUnit.Framework;
 using System.Web;
+using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using Relativity.API;
 
@@ -67,7 +68,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Installers.Context
 		{
 			// arrange
 			IWindsorContainer sut = new WindsorContainer();
-			ChangeLifestyleFromPerWebRequestToTransient(sut); // we cannot resolve PerWebRequest object in tests
+			sut.ConfigureChangingLifestyleFromPerWebRequestToTransientBecausePerWebRequestIsNotResolvableInTests();
 			sut.AddUserContext();
 			RegisterDependencies(sut);
 
@@ -81,7 +82,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Installers.Context
 		{
 			// arrange
 			IWindsorContainer sut = new WindsorContainer();
-			ChangeLifestyleFromPerWebRequestToTransient(sut); // we cannot resolve PerWebRequest object in tests
+			sut.ConfigureChangingLifestyleFromPerWebRequestToTransientBecausePerWebRequestIsNotResolvableInTests();
 			sut.AddUserContext();
 			RegisterDependencies(sut);
 
@@ -111,17 +112,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Installers.Context
 			};
 
 			container.Register(dependencies);
-		}
-
-		private static void ChangeLifestyleFromPerWebRequestToTransient(IWindsorContainer container)
-		{
-			container.Kernel.ComponentModelCreated += model =>
-			{
-				if (model.LifestyleType == LifestyleType.PerWebRequest)
-				{
-					model.LifestyleType = LifestyleType.Transient;
-				}
-			};
 		}
 	}
 }
