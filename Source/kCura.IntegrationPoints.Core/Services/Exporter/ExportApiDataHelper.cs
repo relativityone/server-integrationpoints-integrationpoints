@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 using kCura.EDDS.DocumentCompareGateway;
+using kCura.IntegrationPoints.Core.Utils;
 using Relativity.Core;
 using Relativity.Core.Service;
 using Relativity.Data;
@@ -103,7 +104,16 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 			public ILongTextStream CreateLongTextStream(int documentArtifactId, int fieldArtifactId)
 			{
-				return new LongTextStream(_context, documentArtifactId, _caseId, _dataGridContext, fieldArtifactId);
+				var longTextStream = new LongTextStream(_context, documentArtifactId, _caseId, _dataGridContext, fieldArtifactId);
+
+				if (longTextStream.IsUnicode)
+				{
+					return longTextStream;
+				}
+
+				var asciiToUnicodeStream = new AsciiToUnicodeLongTextStream(longTextStream);
+
+				return asciiToUnicodeStream;
 			}
 		}
 
