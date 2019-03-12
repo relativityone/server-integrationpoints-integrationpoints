@@ -14,7 +14,7 @@ node ('PolandBuild')
 	{
 		timeout(time: 10, unit: 'MINUTES')
 		{
-			checkout scm			
+			checkout scm
 		}
 		jenkinsHelpers = load "DevelopmentScripts/JenkinsHelpers.groovy"
 	}
@@ -93,16 +93,16 @@ timestamps
 				{
 					checkout scm
 					step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
-				}				
-                jenkinsHelpers.initializeRIPPipeline(this, env, params)
+				}
+				jenkinsHelpers.initializeRIPPipeline(this, env, params)
 			}
 			stage ('Get Version')
 			{
-                jenkinsHelpers.getVersion()
+				jenkinsHelpers.getVersion()
 			}
 			stage ('Build')
 			{
-                jenkinsHelpers.build()
+				jenkinsHelpers.build()
 			}
 			stage ('Unit Tests')
 			{
@@ -111,7 +111,7 @@ timestamps
 			stage ('Package')
 			{
 				jenkinsHelpers.packageRIP()
-			}			
+			}
 
 			if (jenkinsHelpers.testingVMsAreRequired(params))
 			{	
@@ -121,7 +121,7 @@ timestamps
 				}
 			} 
 			else
-			{			
+			{
 				stage ('Publish to NuGet')
 				{
 					jenkinsHelpers.publishToNuget()
@@ -130,8 +130,8 @@ timestamps
 				stage ('Publish to bld-pkgs')
 				{
 					jenkinsHelpers.publishToBldPkgs()
-				}				
-			}			
+				}
+			}
 		}
 		
 		if (jenkinsHelpers.testingVMsAreRequired(params))
@@ -141,18 +141,18 @@ timestamps
 				// Provision SUT
 				stage('Install RAID')
 				{
-                    jenkinsHelpers.raid(relativityBranchFallback)
-				}						
+					jenkinsHelpers.raid(relativityBranchFallback)
+				}
 			}
-				
+
 			def sessionId = jenkinsHelpers.getSessionId()
 			node ("$sessionId && dependencies")
 			{
 				stage ('Unstash Tests Artifacts')
 				{
-                    jenkinsHelpers.unstashTestsArtifacts()
+					jenkinsHelpers.unstashTestsArtifacts()
 				}
-			
+
 				try
 				{
 					stage ('Integration Tests')
@@ -178,9 +178,9 @@ timestamps
 					{
 						jenkinsHelpers.gatherTestStats()
 					}
-				}						
+				}
 			}
-			
+
 			node ('PolandBuild')
 			{
 				dir('publishArtifactsWorkspace')
@@ -188,7 +188,7 @@ timestamps
 					stage ('Unstash Package artifacts')
 					{
 						jenkinsHelpers.unstashPackageArtifacts()
-					}			
+					}
 					stage ('Publish to NuGet')
 					{
 						jenkinsHelpers.publishToNuget()
@@ -197,11 +197,11 @@ timestamps
 					{
 						jenkinsHelpers.publishToBldPkgs()
 					}
-				}				
+				}
 			}
 		}
-		currentBuild.result = 'SUCCESS'
 		
+		currentBuild.result = 'SUCCESS'
 	}
 	catch (err)
 	{
@@ -212,12 +212,12 @@ timestamps
 	{
 		stage('Cleanup VMs')
 		{
-            jenkinsHelpers.cleanupVMs()
+			jenkinsHelpers.cleanupVMs()
 		}
 
 		stage('Reporting')
 		{
-            jenkinsHelpers.reporting()
+			jenkinsHelpers.reporting()
 		}
 	}
 }

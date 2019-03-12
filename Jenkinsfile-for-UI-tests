@@ -82,24 +82,20 @@ timestamps
 					step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
 				}
 				jenkinsHelpers = load "DevelopmentScripts/JenkinsHelpers.groovy"
-                jenkinsHelpers.initializeRIPPipeline(this, env, params)
+				jenkinsHelpers.initializeRIPPipeline(this, env, params)
 			}
 			stage ('Get Version')
 			{
-                jenkinsHelpers.getVersion()
+				jenkinsHelpers.getVersion()
 			}
 			stage ('Build')
 			{
-                jenkinsHelpers.build()
+				jenkinsHelpers.build()
 			}
 			stage ('Unit Tests')
 			{
 				jenkinsHelpers.unitTest()
 			}
-			stage ('Package')
-			{
-                jenkinsHelpers.packageRIP()
-			}			
 
 			if (jenkinsHelpers.testingVMsAreRequired(params))
 			{				
@@ -107,7 +103,7 @@ timestamps
 				{
 					jenkinsHelpers.stashTestsArtifacts()
 				}
-			}			
+			}
 		}
 		
 		if (jenkinsHelpers.testingVMsAreRequired(params))
@@ -117,8 +113,8 @@ timestamps
 				// Provision SUT
 				stage('Install RAID')
 				{
-                    jenkinsHelpers.raid(relativityBranchFallback)
-				}						
+					jenkinsHelpers.raid(relativityBranchFallback)
+				}
 			}
 		
 			def sessionId = jenkinsHelpers.getSessionId()
@@ -126,7 +122,7 @@ timestamps
 			{
 				stage ('Unstash Tests Artifacts')
 				{
-                    jenkinsHelpers.unstashTestsArtifacts()
+					jenkinsHelpers.unstashTestsArtifacts()
 				}
 					
 				try
@@ -134,14 +130,14 @@ timestamps
 					stage ('UI Tests')
 					{
 						jenkinsHelpers.updateChromeToLatestVersion()
-                        jenkinsHelpers.runUiTests()
+						jenkinsHelpers.runUiTests()
 					}
 				}
 				finally
 				{
 					stage ('Gathering test stats')
 					{
-                           jenkinsHelpers.gatherTestStats()
+							jenkinsHelpers.gatherTestStats()
 					}
 				}	
 			}
@@ -158,12 +154,12 @@ timestamps
 	{
 		stage('Cleanup VMs')
 		{
-            jenkinsHelpers.cleanupVMs()
+			jenkinsHelpers.cleanupVMs()
 		}
 
 		stage('Reporting')
 		{
-            jenkinsHelpers.reporting()
+			jenkinsHelpers.reporting()
 		}
 	}
 }
