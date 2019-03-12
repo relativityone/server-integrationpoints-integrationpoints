@@ -2,7 +2,7 @@
 using Relativity.API;
 using Relativity.Services.ServiceProxy;
 
-namespace Relativity.Sync.Tests.System
+namespace Relativity.Sync.Tests.System.Stub
 {
 	public class ServicesManagerStub : IServicesMgr
 	{

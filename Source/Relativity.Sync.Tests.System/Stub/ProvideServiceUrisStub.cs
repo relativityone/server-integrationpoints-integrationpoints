@@ -1,7 +1,7 @@
 ﻿using System;
 using Relativity.API;
 
-namespace Relativity.Sync.Tests.System
+namespace Relativity.Sync.Tests.System.Stub
 {
 	public class ProvideServiceUrisStub : IProvideServiceUris
 	{
