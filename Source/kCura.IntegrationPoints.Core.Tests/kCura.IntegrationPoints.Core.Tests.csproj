@@ -148,6 +148,7 @@
     <Compile Include="Tagging\TagsCreatorTests.cs" />
     <Compile Include="Telemetry\ExportTelemetryMetricProviderTest.cs" />
     <Compile Include="Telemetry\TelemetryMangerTest.cs" />
+    <Compile Include="Utils\AsciiToUnicodeStreamTests.cs" />
     <Compile Include="Utils\JsonUtilsTests.cs" />
     <Compile Include="Validation\ArtifactValidatorTests.cs" />
     <Compile Include="Validation\Helpers\NonValidCharactersValidatorTests.cs" />

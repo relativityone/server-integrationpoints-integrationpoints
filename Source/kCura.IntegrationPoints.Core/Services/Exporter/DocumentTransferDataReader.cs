@@ -3,6 +3,7 @@ using Stream = System.IO.Stream;
 using System.Collections.Generic;
 using System.Data;
 using kCura.IntegrationPoints.Core.Services.Exporter.Base;
+using kCura.IntegrationPoints.Core.Utils;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
@@ -27,6 +28,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private readonly Dictionary<int, string> _nativeFileTypes;
 		private readonly HashSet<int> _documentsSupportedByViewer;
 		private readonly IRelativityObjectManager _relativityObjectManager;
+		private readonly IQueryFieldLookupRepository _fieldLookupRepository;
 		private readonly IAPILog _logger;
 
 		private static readonly string _nativeDocumentArtifactIdColumn = "DocumentArtifactID";
@@ -41,6 +43,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			IScratchTableRepository[] scratchTableRepositories,
 			IRelativityObjectManager relativityObjectManager,
 			IAPILog logger,
+			IQueryFieldLookupRepository fieldLookupRepository,
 			bool useDynamicFolderPath) :
 			base(relativityExportService, fieldMappings, context, scratchTableRepositories, logger, useDynamicFolderPath)
 		{
@@ -50,6 +53,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			_nativeFileTypes = new Dictionary<int, string>();
 			_documentsSupportedByViewer = new HashSet<int>();
 			_relativityObjectManager = relativityObjectManager;
+			_fieldLookupRepository = fieldLookupRepository;
 			_logger = logger.ForContext<DocumentTransferDataReader>();
 		}
 
@@ -70,13 +74,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 					retrievedField = CurrentArtifact.GetFieldForIdentifier(fieldArtifactId);
 					if (ShouldUseLongTextStream(retrievedField))
 					{
-						FieldRef fieldRef = new FieldRef {ArtifactID = fieldArtifactId};
-						Stream stream =
-							_relativityObjectManager.StreamLongTextAsync(CurrentArtifact.ArtifactId, fieldRef)
-								.GetAwaiter()
-								.GetResult();
-						SelfDisposingStream selfDisposingStream = new SelfDisposingStream(stream);
-						return selfDisposingStream;
+						return GetLongTextStreamFromField(fieldArtifactId);
 					}
 
 					return retrievedField.Value;
@@ -156,6 +154,23 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			{
 				throw LogGetValueError(e, i, isFieldIdentifierNumeric, retrievedField, fieldIdentifier, fieldArtifactId, result);
 			}
+		}
+
+		private SelfDisposingStream GetLongTextStreamFromField(int fieldArtifactId)
+		{
+			var fieldRef = new FieldRef {ArtifactID = fieldArtifactId};
+			Stream stream =
+				_relativityObjectManager.StreamLongTextAsync(CurrentArtifact.ArtifactId, fieldRef)
+					.GetAwaiter()
+					.GetResult();
+
+			ViewFieldInfo field = _fieldLookupRepository.GetFieldByArtifactId(fieldArtifactId);
+			if (!field.IsUnicodeEnabled)
+			{
+				stream = new AsciiToUnicodeStream(stream);
+			}
+
+			return new SelfDisposingStream(stream);
 		}
 
 		private IntegrationPointsException LogGetValueError(

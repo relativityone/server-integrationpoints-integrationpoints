@@ -20,7 +20,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				_context,
 				_scratchRepositories, 
 				_relativityObjectManager,
-				Substitute.For<IAPILog>(), 
+				Substitute.For<IAPILog>(),
+				Substitute.For<IQueryFieldLookupRepository>(),
 				false);
 		}
 
@@ -36,7 +37,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 				context,
 				scratchTableRepositories,
 				_relativityObjectManager,
-				Substitute.For<IAPILog>(), 
+				Substitute.For<IAPILog>(),
+				Substitute.For<IQueryFieldLookupRepository>(),
 				false);
 		}
 	}
