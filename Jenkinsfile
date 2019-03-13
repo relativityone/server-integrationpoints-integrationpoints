@@ -14,7 +14,7 @@ node ('PolandBuild')
 	{
 		timeout(time: 10, unit: 'MINUTES')
 		{
-			checkout scm			
+			checkout scm
 		}
 		jenkinsHelpers = load "DevelopmentScripts/JenkinsHelpers.groovy"
 	}
@@ -93,16 +93,16 @@ timestamps
 				{
 					checkout scm
 					step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
-				}				
-                jenkinsHelpers.initializeRIPPipeline(this, env, params)
+				}
+				jenkinsHelpers.initializeRIPPipeline(this, env, params)
 			}
 			stage ('Get Version')
 			{
-                jenkinsHelpers.getVersion()
+				jenkinsHelpers.getVersion()
 			}
 			stage ('Build')
 			{
-                jenkinsHelpers.build()
+				jenkinsHelpers.build()
 			}
 			stage ('Unit Tests')
 			{
@@ -110,76 +110,98 @@ timestamps
 			}
 			stage ('Package')
 			{
-                jenkinsHelpers.packageRIP()
-			}
-
-			stage ('Stash Tests Artifacts')
-			{
-                jenkinsHelpers.stashTestsArtifacts()
+				jenkinsHelpers.packageRIP()
 			}
 
 			if (jenkinsHelpers.testingVMsAreRequired(params))
+			{	
+				stage ('Stash Tests and Package Artifacts')
+				{
+					jenkinsHelpers.stashTestsAndPackageArtifacts()
+				}
+			} 
+			else
+			{
+				stage ('Publish to NuGet')
+				{
+					jenkinsHelpers.publishToNuget()
+				}
+
+				stage ('Publish to bld-pkgs')
+				{
+					jenkinsHelpers.publishToBldPkgs()
+				}
+			}
+		}
+		
+		if (jenkinsHelpers.testingVMsAreRequired(params))
+		{
+			node('SCVMM-AGENTS-POOL')
 			{
 				// Provision SUT
 				stage('Install RAID')
 				{
-                    jenkinsHelpers.raid(relativityBranchFallback)
+					jenkinsHelpers.raid(relativityBranchFallback)
 				}
+			}
 
-				// Run tests on provisioned SUT
-                def sessionId = jenkinsHelpers.getSessionId()
-				node ("$sessionId && dependencies")
+			def sessionId = jenkinsHelpers.getSessionId()
+			node ("$sessionId && dependencies")
+			{
+				stage ('Unstash Tests Artifacts')
 				{
-					stage ('Unstash Tests Artifacts')
+					jenkinsHelpers.unstashTestsArtifacts()
+				}
+
+				try
+				{
+					stage ('Integration Tests')
 					{
-                        jenkinsHelpers.unstashTestsArtifacts()
+						jenkinsHelpers.runIntegrationTests()
 					}
-					try
+					if (jenkinsHelpers.isNightly())
 					{
-						stage ('Integration Tests')
+						stage ('Integration Tests in Quarantine')
 						{
-                            jenkinsHelpers.runIntegrationTests()
-						}
-						if (jenkinsHelpers.isNightly())
-						{
-							stage ('Integration Tests in Quarantine')
-							{
-                                jenkinsHelpers.runIntegrationTestsInQuarantine()
-							}
-						}
-						stage ('UI Tests')
-						{
-							jenkinsHelpers.updateChromeToLatestVersion()
-                            jenkinsHelpers.runUiTests()
+							jenkinsHelpers.runIntegrationTestsInQuarantine()
 						}
 					}
-					catch(err)
+					stage ('UI Tests')
 					{
-						echo err.toString()
-						currentBuild.result = "FAILED"
+						jenkinsHelpers.updateChromeToLatestVersion()
+						jenkinsHelpers.runUiTests()
 					}
-					finally
+				}
+				finally
+				{
+					stage ('Gathering test stats')
 					{
-						stage ('Gathering test stats')
-						{
-                            jenkinsHelpers.gatherTestStats()
-						}
+						jenkinsHelpers.gatherTestStats()
 					}
 				}
 			}
 
-			stage ('Publish to NuGet')
+			node ('PolandBuild')
 			{
-                jenkinsHelpers.publishToNuget()
+				dir('publishArtifactsWorkspace')
+				{
+					stage ('Unstash Package artifacts')
+					{
+						jenkinsHelpers.unstashPackageArtifacts()
+					}
+					stage ('Publish to NuGet')
+					{
+						jenkinsHelpers.publishToNuget()
+					}
+					stage ('Publish to bld-pkgs')
+					{
+						jenkinsHelpers.publishToBldPkgs()
+					}
+				}
 			}
-
-			stage ('Publish to bld-pkgs')
-			{
-                jenkinsHelpers.publishToBldPkgs()
-			}
-
-			currentBuild.result = 'SUCCESS'
 		}
+		
+		currentBuild.result = 'SUCCESS'
 	}
 	catch (err)
 	{
@@ -190,12 +212,12 @@ timestamps
 	{
 		stage('Cleanup VMs')
 		{
-            jenkinsHelpers.cleanupVMs()
+			jenkinsHelpers.cleanupVMs()
 		}
 
 		stage('Reporting')
 		{
-            jenkinsHelpers.reporting()
+			jenkinsHelpers.reporting()
 		}
 	}
 }
