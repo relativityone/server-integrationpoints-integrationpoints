@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
-using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Data.Factories;
@@ -35,27 +34,16 @@ namespace Rip.SystemTests.RelativityServices
 		private IViewManager _viewManager;
 		private int _workspaceID;
 
-		private const string _RELATIVITY_STARTER_TEMPLATE_NAME = "Relativity Starter Template";
 		private const int _DOCUMENT_ARTIFACT_TYPE_ID = 10;
 
 		[OneTimeSetUp]
 		public void OneSetup()
 		{
+			_workspaceID = SystemTestsFixture.WorkspaceID;
 			_testHelperLazy = new Lazy<ITestHelper>(() => new TestHelper());
-			_workspaceID = Workspace.CreateWorkspace(
-				workspaceName: $"CoreSearchManager-{DateTime.Now.Ticks}",
-				templateName: _RELATIVITY_STARTER_TEMPLATE_NAME
-			);
-
 			IRelativityObjectManagerFactory objectManagerFactory = new RelativityObjectManagerFactory(_testHelperLazy.Value);
 			_objectManager = objectManagerFactory.CreateRelativityObjectManager(_workspaceID);
 			_viewManager = _testHelperLazy.Value.CreateUserProxy<IViewManager>();
-		}
-		
-		[OneTimeTearDown]
-		public void TearDown()
-		{
-			Workspace.DeleteWorkspace(_workspaceID);
 		}
 
 		[Test]
@@ -81,7 +69,7 @@ namespace Rip.SystemTests.RelativityServices
 		{
 			// arrange
 			CoreSearchManager sut = CreateCoreSearchManager();
-			Relativity.Services.View.View view = CreateTestView();
+			View view = CreateTestView();
 
 			// act
 			int[] result =
@@ -145,9 +133,9 @@ namespace Rip.SystemTests.RelativityServices
 			return true;
 		}
 
-		private Relativity.Services.View.View CreateTestView()
+		private View CreateTestView()
 		{
-			Relativity.Services.View.View view = new Relativity.Services.View.View
+			View view = new View
 			{
 				Name = "CoreSearchManagerTestsView",
 				ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID,

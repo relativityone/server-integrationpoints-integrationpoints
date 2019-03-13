@@ -1,26 +1,30 @@
 ﻿using NUnit.Framework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using kCura.IntegrationPoint.Tests.Core;
 
 namespace Rip.SystemTests
 {
     [SetUpFixture]
     public class SystemTestsFixture
     {
+	    private const string _RELATIVITY_STARTER_TEMPLATE_NAME = "Relativity Starter Template";
+
+		public static int WorkspaceID;
+
         [OneTimeSetUp]
         public void InitializeFixture()
         {
-
-        }
+	        WorkspaceID = Workspace.CreateWorkspace(
+		        workspaceName: $"CoreSearchManager-{DateTime.Now.Ticks}",
+		        templateName: _RELATIVITY_STARTER_TEMPLATE_NAME
+	        );
+		}
 
         [OneTimeTearDown]
         public void TearDownFixture()
         {
-
-        }
+	        Workspace.DeleteWorkspace(WorkspaceID);
+		}
 
     }
 }
