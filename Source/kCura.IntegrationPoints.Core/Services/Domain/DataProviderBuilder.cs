@@ -1,7 +1,8 @@
-﻿using System;
-using kCura.IntegrationPoints.Contracts;
+﻿using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core.Services.Provider;
+using kCura.IntegrationPoints.Domain.Wrappers;
+using System;
 
 namespace kCura.IntegrationPoints.Core.Services.Domain
 {
@@ -17,7 +18,17 @@ namespace kCura.IntegrationPoints.Core.Services.Domain
 		public IDataSourceProvider GetDataProvider(Guid applicationGuid, Guid providerGuid)
 		{
 			IProviderFactory providerFactory = _providerFactoryVendor.GetProviderFactory(applicationGuid);
-			return providerFactory.CreateProvider(providerGuid);
+
+			IDataSourceProvider provider = providerFactory.CreateProvider(providerGuid);
+			return WrapDataProviderInSafeDisposeDecorator(provider);
+		}
+
+		private static IDataSourceProvider WrapDataProviderInSafeDisposeDecorator(IDataSourceProvider provider)
+		{
+			var providedAggregatedInterfaces = provider as IProviderAggregatedInterfaces;
+			return providedAggregatedInterfaces != null
+				? new ProviderSafeDisposeWrapper(providedAggregatedInterfaces)
+				: provider;
 		}
 	}
 }

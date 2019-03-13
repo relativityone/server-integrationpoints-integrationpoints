@@ -2,6 +2,7 @@
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Contracts.Provider;
+using kCura.IntegrationPoints.Domain.Wrappers;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Domain
@@ -52,7 +53,7 @@ namespace kCura.IntegrationPoints.Domain
 			    throw new Exception(message);
 			}
 
-			return new ProviderWrapper(provider);
+			return new ProviderCrossAppDomainWrapper(provider);
 		}
 
 #region Logging
