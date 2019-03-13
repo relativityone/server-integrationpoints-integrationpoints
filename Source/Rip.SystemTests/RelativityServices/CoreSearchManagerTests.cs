@@ -77,11 +77,8 @@ namespace Rip.SystemTests.RelativityServices
 
 			// assert
 			view.Fields.Count.Should().Be(result.Length);
-			foreach (var fieldRef in view.Fields)
-			{
-				int artifactViewFieldID = fieldRef.ViewFieldID;
-				result.Contains(artifactViewFieldID).Should().BeTrue();
-			}
+			var expectedViewFieldIDs = view.Fields.Select(fieldRef => fieldRef.ViewFieldID);
+			result.Should().Contain(expectedViewFieldIDs);
 		}
 
 		private IList<int> RetrieveExportableFieldIDs()
