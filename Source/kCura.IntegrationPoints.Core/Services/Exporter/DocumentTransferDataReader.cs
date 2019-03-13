@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using kCura.EDDS.DocumentCompareGateway;
 using kCura.IntegrationPoints.Core.Services.Exporter.Base;
-using kCura.IntegrationPoints.Core.Toggles;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
@@ -28,7 +26,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private readonly Dictionary<int, string> _nativeFileTypes;
 		private readonly HashSet<int> _documentsSupportedByViewer;
 		private readonly IILongTextStreamFactory _relativityLongTextStreamFactory;
-		private readonly List<ILongTextStream> _openedStreams;
 		private readonly IAPILog _logger;
 
 		private static readonly string _nativeDocumentArtifactIdColumn = "DocumentArtifactID";
@@ -53,7 +50,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			_nativeFileTypes = new Dictionary<int, string>();
 			_documentsSupportedByViewer = new HashSet<int>();
 			_relativityLongTextStreamFactory = longTextStreamFactory;
-			_openedStreams = new List<ILongTextStream>();
 			_logger = logger.ForContext<DocumentTransferDataReader>();
 		}
 
@@ -75,10 +71,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 					retrievedField = CurrentArtifact.GetFieldForIdentifier(fieldArtifactId);
 					if (ShouldUseLongTextStream(retrievedField))
 					{
-						ILongTextStream stream =
-							_relativityLongTextStreamFactory.CreateLongTextStream(CurrentArtifact.ArtifactId, fieldArtifactId);
-						_openedStreams.Add(stream);
-						return stream;
+						return _relativityLongTextStreamFactory.CreateLongTextStream(CurrentArtifact.ArtifactId, fieldArtifactId);
 					}
 
 					return retrievedField.Value;
@@ -234,30 +227,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 					_documentsSupportedByViewer.Add(documentArtifactId);
 				}
 			}
-		}
-
-		public override bool Read()
-		{
-			DisposeExtractedTextStreams();
-			return base.Read();
-		}
-
-		public override void Close()
-		{
-			DisposeExtractedTextStreams();
-			base.Close();
-		}
-
-		private void DisposeExtractedTextStreams()
-		{
-			// IAPI should close the streams...
-			// but to be absolutely sure we will not leave any open streams
-			// all of them are being disposed here.
-			foreach (ILongTextStream stream in _openedStreams)
-			{
-				stream.Dispose();
-			}
-			_openedStreams.Clear();
 		}
 
 		private bool ShouldUseLongTextStream(ArtifactFieldDTO retrievedField)
