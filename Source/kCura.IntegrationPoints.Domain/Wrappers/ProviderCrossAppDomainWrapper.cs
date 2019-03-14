@@ -32,12 +32,18 @@ namespace kCura.IntegrationPoints.Domain.Wrappers
 
 		public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, DataSourceProviderConfiguration providerConfiguration)
 		{
-			return new DataReaderCrossAppDomainWrapper(_provider.GetData(fields, entryIds, providerConfiguration));
+			IDataReader dataReader = _provider.GetData(fields, entryIds, providerConfiguration);
+			return dataReader != null
+				? new DataReaderCrossAppDomainWrapper(dataReader)
+				: null;
 		}
 
 		public IDataReader GetBatchableIds(FieldEntry identifier, DataSourceProviderConfiguration providerConfiguration)
 		{
-			return new DataReaderCrossAppDomainWrapper(_provider.GetBatchableIds(identifier, providerConfiguration));
+			IDataReader dataReader = _provider.GetBatchableIds(identifier, providerConfiguration);
+			return dataReader != null
+				? new DataReaderCrossAppDomainWrapper(dataReader)
+				: null;
 		}
 
 		public string GetEmailBodyData(IEnumerable<FieldEntry> fields, string options)

@@ -61,7 +61,9 @@
     <Compile Include="Models\SourceWorkspaceDTOTests.cs" />
     <Compile Include="StackOfDisposablesTests.cs" />
     <Compile Include="Utils\WorkspaceAndJobNameUtilsTests.cs" />
+    <Compile Include="Wrappers\DataReaderCrossAppDomainWrapperTests.cs" />
     <Compile Include="Wrappers\DataReaderSafeDisposeWrapperTests.cs" />
+    <Compile Include="Wrappers\ProviderCrossAppDomainWrapperTests.cs" />
     <Compile Include="Wrappers\ProviderSafeDisposeWrapperTests.cs" />
   </ItemGroup>
   <ItemGroup>
