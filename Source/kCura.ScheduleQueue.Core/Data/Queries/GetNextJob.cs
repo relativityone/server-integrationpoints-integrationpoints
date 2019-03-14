@@ -7,7 +7,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 {
 	public class GetNextJob
 	{
-		private IQueueDBContext qDBContext = null;
+		private readonly IQueueDBContext qDBContext = null;
 		public GetNextJob(IQueueDBContext qDBContext)
 		{
 			this.qDBContext = qDBContext;

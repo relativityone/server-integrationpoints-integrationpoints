@@ -7,7 +7,7 @@ namespace kCura.IntegrationPoints.Data
 {
 	public abstract class GetObjectBase
 	{
-		private Type _objectType;
+		private readonly Type _objectType;
 		public GetObjectBase(Type objectType)
 		{
 			_objectType = objectType;

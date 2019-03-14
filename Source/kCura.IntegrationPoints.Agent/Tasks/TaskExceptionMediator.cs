@@ -6,7 +6,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 {
 	public class TaskExceptionMediator : ITaskExceptionMediator, IDisposable
 	{
-		private ITaskExceptionService _taskExceptionService;
+		private readonly ITaskExceptionService _taskExceptionService;
 		private Agent _agent;
 
 		public TaskExceptionMediator(ITaskExceptionService taskExceptionService)

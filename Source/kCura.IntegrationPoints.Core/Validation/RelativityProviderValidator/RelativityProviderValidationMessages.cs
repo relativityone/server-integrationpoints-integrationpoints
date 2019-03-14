@@ -1,7 +1,6 @@
-﻿
-namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
+﻿namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 {
-	public class RelativityProviderValidationMessages
+	public static class RelativityProviderValidationMessages
 	{
 		public static readonly string FIELD_MAP_DESTINATION_FIELD_NOT_MAPPED = "All selected fields must be mapped. Destination field not mapped to Source: ";
 		public static readonly string FIELD_MAP_FIELD_IS_IDENTIFIER = "Is Identifier";

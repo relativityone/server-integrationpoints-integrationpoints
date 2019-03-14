@@ -10,9 +10,9 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 	public class ImportDataReader : DataReaderBase, IArtifactReader
 	{
 		private bool _isClosed;
-		private IDataReader _sourceDataReader;
-		private Dictionary<int, int> _ordinalMap; //map publicly available ordinals ==> source data reader ordinals
-		private DataTable _schemaTable;
+		private readonly IDataReader _sourceDataReader;
+		private readonly Dictionary<int, int> _ordinalMap; //map publicly available ordinals ==> source data reader ordinals
+		private readonly DataTable _schemaTable;
 
 		public ImportDataReader(IDataReader sourceDataReader)
 		{

@@ -18,10 +18,10 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 		private const string _ERROR_FILE_NAME_STUB = "Error_file";
 		private const string _ELEMENT_SEPARATOR = "-";
 
-		private IIntegrationPointService _integrationPointReader;
-		private IDataTransferLocationService _locationService;
-		private ISerializer _serializer;
-		IDirectory _directoryHelper;
+		private readonly IIntegrationPointService _integrationPointReader;
+		private readonly IDataTransferLocationService _locationService;
+		private readonly ISerializer _serializer;
+		private readonly IDirectory _directoryHelper;
 
 		public ImportFileLocationService(IIntegrationPointService integrationPointReader,
 			IDataTransferLocationService locationService,

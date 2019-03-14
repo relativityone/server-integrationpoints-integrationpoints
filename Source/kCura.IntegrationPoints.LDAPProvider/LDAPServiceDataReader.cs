@@ -8,14 +8,14 @@ namespace kCura.IntegrationPoints.LDAPProvider
 {
 	public class LDAPServiceDataReader : IDataReader
 	{
-		private DataTable _dataTable;
+		private readonly DataTable _dataTable;
 		private bool _readerOpen;
 		private int _position = 0;
-		private ILDAPService _ldapService;
-		private List<string> _fields;
-		private ILDAPDataFormatter _dataFormattter;
-		private IEnumerator<string> _entryIds;
-		private string _identifier;
+		private readonly ILDAPService _ldapService;
+		private readonly List<string> _fields;
+		private readonly ILDAPDataFormatter _dataFormattter;
+		private readonly IEnumerator<string> _entryIds;
+		private readonly string _identifier;
 		private SearchResult _currentItem;
 
 		public LDAPServiceDataReader(ILDAPService ldapService, IEnumerable<string> entryIds, string identifier, List<string> fields, ILDAPDataFormatter dataFormattter)

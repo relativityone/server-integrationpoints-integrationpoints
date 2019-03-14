@@ -2,7 +2,7 @@
 
 namespace kCura.IntegrationPoints.Data
 {
-	public class RelativityVersion
+	public static class RelativityVersion
 	{
 		private static Version _currentRelativityVersion = null;
 		public static Version GetCurrentVersion()

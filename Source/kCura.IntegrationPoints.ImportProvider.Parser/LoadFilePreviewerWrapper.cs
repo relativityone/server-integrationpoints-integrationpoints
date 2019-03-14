@@ -11,7 +11,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
 	public class LoadFilePreviewerWrapper : ILoadFilePreviewer
 	{
-		private LoadFilePreviewer _loadFilePreviewer;
+		private readonly LoadFilePreviewer _loadFilePreviewer;
 
 		public LoadFilePreviewerWrapper(LoadFile loadFile, ILog logger, int timeZoneOffset, bool errorsOnly, bool doRetryLogic)
 		{

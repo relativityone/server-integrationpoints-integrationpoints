@@ -35,7 +35,11 @@ namespace kCura.ScheduleQueue.Core.Helpers
 					}
 				}
 			}
-			if (string.IsNullOrEmpty(tableName)) throw new Exception("Could not retrieve Queue table name.");
+
+			if (string.IsNullOrEmpty(tableName))
+			{
+				throw new Exception("Could not retrieve Queue table name.");
+			}
 			return tableName;
 		}
 
@@ -100,10 +104,17 @@ namespace kCura.ScheduleQueue.Core.Helpers
 				if (tableAttribute != null)
 				{
 					string possibleGuid = ((GuidAttribute) tableAttribute).Value;
-					if (!string.IsNullOrEmpty(possibleGuid)) agentGuid = Guid.Parse(possibleGuid);
+					if (!string.IsNullOrEmpty(possibleGuid))
+					{
+						agentGuid = Guid.Parse(possibleGuid);
+					}
 				}
 			}
-			if (agentGuid == Guid.Empty) throw new Exception("Could not retrieve Agent Guid.");
+
+			if (agentGuid == Guid.Empty)
+			{
+				throw new Exception("Could not retrieve Agent Guid.");
+			}
 			return agentGuid;
 		}
 	}

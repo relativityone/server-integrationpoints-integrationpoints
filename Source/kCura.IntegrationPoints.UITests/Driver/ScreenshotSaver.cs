@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.UITests.Driver
 			string fullTestName = NUnit.Framework.TestContext.CurrentContext.Test.FullName;
 			string timeStamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss-ffff");
 			const ScreenshotImageFormat fileType = ScreenshotImageFormat.Png;
-			string fileName = $"{timeStamp}_{fullTestName}.{fileType.ToString().ToLower()}";
+			string fileName = $"{timeStamp}_{fullTestName}.{fileType.ToString().ToLowerInvariant()}";
 			string screenshotFullPath = Path.Combine(testDir, fileName);
 			Log.Information("Saving screenshot: {ScreenshotFullPath}", screenshotFullPath);
 			screenshot.SaveAsFile(screenshotFullPath, fileType);

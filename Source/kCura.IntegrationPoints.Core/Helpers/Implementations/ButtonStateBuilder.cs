@@ -62,7 +62,10 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
 		private bool IntegrationPointIsStoppable(ProviderType providerType, int applicationArtifactId, int integrationPointArtifactId, ImportSettings settings)
 		{
-			if (IsNonStoppableBasedOnProviderType(providerType, settings)) return false;
+			if (IsNonStoppableBasedOnProviderType(providerType, settings))
+			{
+				return false;
+			}
 
 			StoppableJobCollection stoppableJobCollection = _jobHistoryManager.GetStoppableJobCollection(applicationArtifactId, integrationPointArtifactId);
 			bool integrationPointIsStoppable = stoppableJobCollection.HasStoppableJobs;

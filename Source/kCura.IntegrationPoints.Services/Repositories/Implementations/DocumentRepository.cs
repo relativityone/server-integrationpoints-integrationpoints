@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Services.Repositories.Implementations
 
 		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int) ArtifactType.Document;
 
-		private IRelativityObjectManagerFactory _releRelativityObjectManagerFactory;
+		private readonly IRelativityObjectManagerFactory _releRelativityObjectManagerFactory;
 
 		public DocumentRepository(IRelativityObjectManagerFactory relativityObjectManagerFactory)
 		{

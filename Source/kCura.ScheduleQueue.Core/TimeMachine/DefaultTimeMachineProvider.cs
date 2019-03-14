@@ -42,7 +42,10 @@ namespace kCura.ScheduleQueue.Core.TimeMachine
 				if (tm != null && tm.Date.HasValue)
 				{
 					_utcNow = tm.Date.Value;
-					if (tm.CaseID > 0) _workspaceID = tm.CaseID;
+					if (tm.CaseID > 0)
+					{
+						_workspaceID = tm.CaseID;
+					}
 					_enabled = true;
 				}
 			}

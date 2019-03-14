@@ -3,7 +3,7 @@ using Relativity.Productions.Services;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
-	public class Placeholder
+	public static class Placeholder
 	{
 		private static ITestHelper Helper => new TestHelper();
 

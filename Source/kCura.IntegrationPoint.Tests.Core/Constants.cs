@@ -1,6 +1,6 @@
 ﻿namespace kCura.IntegrationPoint.Tests.Core
 {
-	public class Constants
+	public static class Constants
 	{
 
 		public const string INTEGRATION_CATEGORY = "Integration";
@@ -13,7 +13,5 @@
 		public const string BATES_BEG_FIELD = "Bates Beg";
 		public const string FILE_FIELD = "File";
 		public const string FOLDER_PATH = "Folder Path";
-
-		private Constants(){}
 	}
 }

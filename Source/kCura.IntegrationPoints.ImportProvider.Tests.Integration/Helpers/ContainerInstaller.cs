@@ -26,7 +26,7 @@ using Relativity.DataTransfer.MessageService;
 
 namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
 {
-	public class ContainerInstaller
+	public static class ContainerInstaller
 	{
 		public static WindsorContainer CreateContainer()
 		{

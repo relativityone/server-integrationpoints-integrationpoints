@@ -12,7 +12,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factories
 {
-	public class RelativityProviderSourceConfigurationFactory
+	public static class RelativityProviderSourceConfigurationFactory
 	{
 		public static IRelativityProviderConfiguration Create(IEHHelper helper, IFederatedInstanceModelFactory federatedInstanceModelFactory, IInstanceSettingsManager federatedInstanceManager)
 		{
@@ -22,8 +22,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
 			ICredentialProvider credentialProvider = new TokenCredentialProvider(authProvider, authTokenGenerator, helper);
 			ISerializer serializer = new JSONSerializer();
 			ITokenProvider tokenProvider = new RelativityCoreTokenProvider();
-            ISqlServiceFactory sqlServiceFactory = new HelperConfigSqlServiceFactory(helper);
-            IServiceManagerProvider serviceManagerProvider = new ServiceManagerProvider(configFactory, credentialProvider,serializer, tokenProvider, sqlServiceFactory);
+			ISqlServiceFactory sqlServiceFactory = new HelperConfigSqlServiceFactory(helper);
+			IServiceManagerProvider serviceManagerProvider = new ServiceManagerProvider(configFactory, credentialProvider,serializer, tokenProvider, sqlServiceFactory);
 
 			IManagerFactory managerFactory = new ManagerFactory(helper, serviceManagerProvider);
 			IContextContainerFactory contextContainerFactory = new ContextContainerFactory();
