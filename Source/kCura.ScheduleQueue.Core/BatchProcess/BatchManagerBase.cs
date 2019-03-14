@@ -9,7 +9,7 @@ namespace kCura.ScheduleQueue.Core.BatchProcess
 
 	public delegate void JobPostExecuteEvent(Job job, TaskResult taskResult, long items);
 
-	public abstract class BatchManagerBase<T> : ITask
+	public abstract class BatchManagerBase<T> : ITask where T : class
 	{
 		private readonly IAPILog _logger;
 
@@ -84,7 +84,7 @@ namespace kCura.ScheduleQueue.Core.BatchProcess
 			foreach (var id in batchIDs)
 			{
 				//TODO: later we will need to generate error entry for every item we bypass
-				if ((!Equals(id, default(T))) && id is string && (id.ToString() != string.Empty))
+				if ((id != null) && id is string && (id.ToString() != string.Empty))
 				{
 					list.Add(id);
 					count += 1;

@@ -28,12 +28,12 @@ namespace kCura.IntegrationPoints.Core.Services
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<AgentJobManager>();
 		}
 
-		public void CreateJob<T>(T jobDetails, TaskType task, int workspaceId, int integrationPointId, IScheduleRule rule, long? rootJobID = null, long? parentJobID = null)
+		public void CreateJob<T>(T jobDetails, TaskType task, int workspaceId, int integrationPointId, IScheduleRule rule, long? rootJobID = null, long? parentJobID = null) where T : class
 		{
 			try
 			{
 				string serializedDetails = null;
-				if(!Equals(jobDetails, default(T)))
+				if(jobDetails != null)
 				{
 					serializedDetails = _serializer.Serialize(jobDetails);
 				}
@@ -53,12 +53,12 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 		}
 
-		public void CreateJob<T>(Job parentJob, T jobDetails, TaskType task)
+		public void CreateJob<T>(Job parentJob, T jobDetails, TaskType task) where T : class
 		{
 			CreateJob(jobDetails, task, parentJob.WorkspaceID, parentJob.RelatedObjectArtifactID, GetRootJobId(parentJob), parentJob.JobId);
 		}
 
-		public void CreateJobWithTracker<T>(Job parentJob, T jobDetails, TaskType type, string batchId)
+		public void CreateJobWithTracker<T>(Job parentJob, T jobDetails, TaskType type, string batchId) where T: class
 		{
 			Job job = CreateJobInternal(jobDetails, type, parentJob.WorkspaceID, parentJob.RelatedObjectArtifactID, parentJob.SubmittedBy, GetRootJobId(parentJob), parentJob.JobId);
 			_tracker.CreateTrackingEntry(job, batchId);
@@ -69,13 +69,13 @@ namespace kCura.IntegrationPoints.Core.Services
 			return _tracker.CheckEntries(job, batchId);
 		}
 
-		public void CreateJob<T>(T jobDetails, TaskType task, int workspaceId, int integrationPointId, long? rootJobId = null, long? parentJobId = null)
+		public void CreateJob<T>(T jobDetails, TaskType task, int workspaceId, int integrationPointId, long? rootJobId = null, long? parentJobId = null) where T : class
 		{
 			CreateJobInternal(jobDetails, task, workspaceId, integrationPointId, _context.UserID, rootJobId, parentJobId);
 		}
 
 		public void CreateJobOnBehalfOfAUser<T>(T jobDetails, TaskType task, int workspaceId, int integrationPointId, int userId, long? rootJobId = null,
-			long? parentJobId = null)
+			long? parentJobId = null) where T: class
 		{
 			CreateJobInternal(jobDetails, task, workspaceId, integrationPointId, userId, rootJobId, parentJobId);
 		}
@@ -142,12 +142,12 @@ namespace kCura.IntegrationPoints.Core.Services
 			_jobService.UpdateStopState(jobIds, StopState.Stopping);
 		}
 
-		private Job CreateJobInternal<T>(T jobDetails, TaskType task, int workspaceId, int integrationPointId, int userId, long? rootJobId = null, long? parentJobID = null)
+		private Job CreateJobInternal<T>(T jobDetails, TaskType task, int workspaceId, int integrationPointId, int userId, long? rootJobId = null, long? parentJobID = null) where T : class
 		{
 			try
 			{
 				string serializedDetails = null;
-				if (!Equals(jobDetails, default(T)))
+				if (jobDetails != null)
 				{
 					serializedDetails = _serializer.Serialize(jobDetails);
 				}
