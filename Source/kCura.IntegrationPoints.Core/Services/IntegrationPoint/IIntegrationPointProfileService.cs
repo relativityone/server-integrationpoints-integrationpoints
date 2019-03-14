@@ -2,7 +2,6 @@
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 {
@@ -15,7 +14,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		FieldEntry GetIdentifierFieldEntry(int artifactId);
 		IntegrationPointProfileModel ReadIntegrationPointProfile(int artifactId);
 		IList<IntegrationPointProfileModel> ReadIntegrationPointProfiles();
-		IEnumerable<FieldMap> GetFieldMap(int artifactId);
 		IEnumerable<string> GetRecipientEmails(int artifactId);
 		int SaveIntegration(IntegrationPointProfileModel model);
 		IList<IntegrationPointProfileModel> ReadIntegrationPointProfilesSimpleModel();

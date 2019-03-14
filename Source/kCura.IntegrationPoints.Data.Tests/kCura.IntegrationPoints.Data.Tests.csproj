@@ -136,6 +136,7 @@
     <Compile Include="Repositories\FieldRepositoryTests.cs" />
     <Compile Include="Repositories\FoundationRepositoryFactoryTests.cs" />
     <Compile Include="Repositories\Impementatons\RelativityObjectManagerTests.cs" />
+    <Compile Include="Repositories\IntegrationPointRepositoryTests.cs" />
     <Compile Include="Repositories\KeplerInstanceSettingRepositoryTests.cs" />
     <Compile Include="Repositories\ProductionRepositoryTests.cs" />
     <Compile Include="Repositories\KeplerKeywordSearchRepositoryTests.cs" />

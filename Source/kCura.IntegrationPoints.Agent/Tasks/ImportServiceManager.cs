@@ -14,6 +14,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
@@ -48,21 +49,23 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			JobStatisticsService statisticsService,
 			IDataReaderFactory dataReaderFactory,
 			IImportFileLocationService importFileLocationService,
-			IAgentValidator agentValidator)
+			IAgentValidator agentValidator,
+			IIntegrationPointRepository integrationPointRepository)
 			: base(helper,
-				  jobService,
-				  serializer,
-				  jobHistoryService,
-				  jobHistoryErrorService,
-				  scheduleRuleFactory,
-				  managerFactory,
-				  contextContainerFactory,
-				  statuses,
-				  caseServiceContext,
-				  onBehalfOfUserClaimsPrincipalFactory,
-				  statisticsService,
-				  synchronizerFactory,
-				agentValidator)
+				jobService,
+				serializer,
+				jobHistoryService,
+				jobHistoryErrorService,
+				scheduleRuleFactory,
+				managerFactory,
+				contextContainerFactory,
+				statuses,
+				caseServiceContext,
+				onBehalfOfUserClaimsPrincipalFactory,
+				statisticsService,
+				synchronizerFactory,
+				agentValidator,
+				integrationPointRepository)
 		{
 			Logger = helper.GetLoggerFactory().GetLogger().ForContext<ImportServiceManager>();
 			_dataReaderFactory = dataReaderFactory;

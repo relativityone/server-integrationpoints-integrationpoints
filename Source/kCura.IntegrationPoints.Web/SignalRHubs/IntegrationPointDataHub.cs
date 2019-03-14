@@ -50,7 +50,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 		private readonly IQueueManager _queueManager;
 		private readonly IStateManager _stateManager;
 
-		public IntegrationPointDataHub() : this(new ContextContainer((IHelper)ConnectionHelper.Helper()), new HelperClassFactory())
+		public IntegrationPointDataHub() : this(new ContextContainer(ConnectionHelper.Helper()), new HelperClassFactory())
 		{
 			IHelper helper = ConnectionHelper.Helper();
 			_logger = helper.GetLoggerFactory().GetLogger();
@@ -156,16 +156,14 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 		{
 			try
 			{
-				var permissionRepository =
-					new PermissionRepository(ConnectionHelper.Helper(), key.WorkspaceId);
-				IRelativityObjectManager objectManager =
-					CreateObjectManager(ConnectionHelper.Helper(), key.WorkspaceId);
+				var permissionRepository = new PermissionRepository(ConnectionHelper.Helper(), key.WorkspaceId);
+				IRelativityObjectManager objectManager = CreateObjectManager(ConnectionHelper.Helper(), key.WorkspaceId);
+				IIntegrationPointRepository integrationPointRepository = CreateIntegrationPointRepository(objectManager);
 				var providerTypeService = new ProviderTypeService(objectManager);
-				var buttonStateBuilder = new ButtonStateBuilder(providerTypeService, _queueManager,
-					_jobHistoryManager, _stateManager, permissionRepository, _permissionValidator,
-					objectManager);
+				var buttonStateBuilder = new ButtonStateBuilder(providerTypeService, _queueManager, _jobHistoryManager,
+					_stateManager, permissionRepository, _permissionValidator, integrationPointRepository);
 
-				IntegrationPoint integrationPoint = objectManager.Read<IntegrationPoint>(key.IntegrationPointId);
+				IntegrationPoint integrationPoint = integrationPointRepository.Read(key.IntegrationPointId);
 
 				ProviderType providerType = providerTypeService.GetProviderType(
 					integrationPoint.SourceProvider.Value,
@@ -199,6 +197,11 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 		private IRelativityObjectManager CreateObjectManager(ICPHelper helper, int workspaceId)
 		{
 			return new RelativityObjectManagerFactory(helper).CreateRelativityObjectManager(workspaceId);
+		}
+
+		private IIntegrationPointRepository CreateIntegrationPointRepository(IRelativityObjectManager relativityObjectManager)
+		{
+			return new IntegrationPointRepository(relativityObjectManager);
 		}
 
 		public void AddTask(IntegrationPointDataHubKey key)

@@ -3,6 +3,8 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
 using Relativity.API;
 
@@ -13,11 +15,12 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
 		public static IIntegrationPointViewPreLoad Create(IEHHelper helper, IIntegrationPointBaseFieldsConstants integrationPointBaseFieldsConstants)
 		{
 			ICaseServiceContext caseServiceContext = ServiceContextFactory.CreateCaseServiceContext(helper, helper.GetActiveCaseID());
+			IIntegrationPointRepository integrationPointRepository = new IntegrationPointRepository(caseServiceContext.RsapiService.RelativityObjectManager);
 
 			IFederatedInstanceModelFactory federatedInstanceModelFactory;
 			if (integrationPointBaseFieldsConstants.Name == IntegrationPointFieldGuids.Name)
 			{
-				federatedInstanceModelFactory = new IntegrationPointFederatedInstanceModelFactory(caseServiceContext);
+				federatedInstanceModelFactory = new IntegrationPointFederatedInstanceModelFactory(integrationPointRepository);
 			}
 			else
 			{

@@ -54,6 +54,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IManagerQueueService _managerQueueService;
 		private int _workspaceArtifactId;
 		private IProviderTypeService _providerTypeService;
+		private IIntegrationPointRepository _integrationPointRepository;
 		private IRelativityObjectManager _relativityObjectManager;
 		private IRepositoryFactory _repositoryFactory;
 
@@ -100,6 +101,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			_jobService = Substitute.For<IJobService>();
 			_providerTypeService = Substitute.For<IProviderTypeService>();
+			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
 
 			_jobStopManager = Substitute.For<IJobStopManager>();
 			_dataSynchronizer = Substitute.For<IDataSynchronizer>();
@@ -127,8 +129,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				_repositoryFactory,
 				helperFactory,
 				_relativityObjectManager,
-				_providerTypeService
-				);
+				_providerTypeService,
+				_integrationPointRepository);
 
 			_job = JobHelper.GetJob(
 				1,
@@ -242,7 +244,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			
 			_associatedJobs = new List<Job> { _job };
 			_fieldsMap = new List<FieldMap>();
-			_caseServiceContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(_job.RelatedObjectArtifactID).Returns(_integrationPoint);
+			_integrationPointRepository.Read(_job.RelatedObjectArtifactID).Returns(_integrationPoint);
+			_integrationPointRepository.GetSecuredConfiguration(_job.RelatedObjectArtifactID).Returns(_integrationPoint.SecuredConfiguration);
 			_caseServiceContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider.Value).Returns(_sourceProvider);
 			_caseServiceContext.RsapiService.RelativityObjectManager.Read<DestinationProvider>(_integrationPoint.DestinationProvider.Value).Returns(_destinationProvider);
 			_serializer.Deserialize<TaskParameters>(_job.JobDetails).Returns(_taskParams);
@@ -306,7 +309,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			//ARRANGE
 			Job job = GetJob(jsonParam1);
 			SyncEntityManagerWorker task =
-				new SyncEntityManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null, null, null);
+				new SyncEntityManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 
 			//ACT
 			MethodInfo dynMethod = task.GetType().GetMethod("GetParameters",
@@ -339,7 +342,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		{
 			//ARRANGE
 			SyncEntityManagerWorker task =
-				new SyncEntityManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null, null, null);
+				new SyncEntityManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 			_integrationPoint.DestinationConfiguration = jsonParam2;
 			task.GetType().GetProperty("IntegrationPoint", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).SetValue(task, _integrationPoint);
 			

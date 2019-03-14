@@ -1,7 +1,5 @@
 ﻿using System;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Validators;
 using NSubstitute;
@@ -18,7 +16,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Validato
 
 		private PreCascadeDeleteEventHandlerValidator _instance;
 		private IQueueRepository _queueRepository;
-		private IRSAPIService _rsapiService;
+		private IIntegrationPointRepository _integrationPointRepository;
 
 		#endregion //Fields
 
@@ -26,12 +24,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Validato
 		public override void SetUp()
 		{
 			_queueRepository = Substitute.For<IQueueRepository>();
-			_rsapiService = Substitute.For<IRSAPIService>();
+			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
 
-			IRSAPIServiceFactory rsapiServiceFactory = Substitute.For<IRSAPIServiceFactory>();
-			rsapiServiceFactory.Create(_WORKSPACE_ID).Returns(_rsapiService);
-
-			_instance = new PreCascadeDeleteEventHandlerValidator(_queueRepository, rsapiServiceFactory);
+			_instance = new PreCascadeDeleteEventHandlerValidator(_queueRepository, _integrationPointRepository);
 		}
 
 		#region Tests
@@ -46,7 +41,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Validato
 			_instance.Validate(_WORKSPACE_ID, _INTEGRATION_POINT_ID);
 
 			// Assert
-			_rsapiService.RelativityObjectManager.DidNotReceive().Read<Data.IntegrationPoint>(_WORKSPACE_ID);
+			_integrationPointRepository.DidNotReceive().Read(_WORKSPACE_ID);
 		}
 
 		[Test]
@@ -58,7 +53,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Validato
 			// Arrange
 			_queueRepository.GetNumberOfJobsExecutingOrInQueue(_WORKSPACE_ID, _INTEGRATION_POINT_ID).Returns(numberOfJobs);
 
-			_rsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(_INTEGRATION_POINT_ID).Returns(new Data.IntegrationPoint
+			_integrationPointRepository.Read(_INTEGRATION_POINT_ID).Returns(new Data.IntegrationPoint
 			{
 				Name = "integration_point_524"
 			});

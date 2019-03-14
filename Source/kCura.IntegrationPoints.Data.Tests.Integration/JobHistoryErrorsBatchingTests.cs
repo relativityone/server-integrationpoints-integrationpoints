@@ -600,7 +600,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 
 		private JobHistory CreateJobHistoryOnIntegrationPoint(int integrationPointArtifactId, Guid batchInstance)
 		{
-			IntegrationPoint integrationPoint = CaseContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(integrationPointArtifactId);
+			IntegrationPoint integrationPoint = IntegrationPointRepository.Read(integrationPointArtifactId);
 			JobHistory jobHistory = _jobHistoryService.CreateRdo(integrationPoint, batchInstance, JobTypeChoices.JobHistoryRun, DateTime.Now);
 			jobHistory.EndTimeUTC = DateTime.Now;
 			jobHistory.JobStatus = JobStatusChoices.JobHistoryCompletedWithErrors;

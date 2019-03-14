@@ -11,6 +11,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.ScheduleQueue.Core;
@@ -37,6 +38,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
 		protected IManagerFactory _managerFactory;
 		protected IContextContainerFactory _contextContainerFactory;
 		protected IJobService _jobService;
+		protected IIntegrationPointRepository _integrationPointRepository;
 
 		protected IContextContainer _contextContainer;
 
@@ -52,6 +54,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
 			_serializer = Substitute.For<kCura.Apps.Common.Utils.Serializers.ISerializer>();
 			_dataProviderFactory = Substitute.For<IDataProviderFactory>();
 			_appDomainRdoSynchronizerFactoryFactory = Substitute.For<ISynchronizerFactory>();
+			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
 
 			// Stubs
 			_contextContainerFactory.CreateContextContainer(Arg.Is(_helper)).Returns(_contextContainer);
@@ -66,7 +69,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
 				_jobManager,
 				_managerFactory,
 				_contextContainerFactory,
-				_jobService);
+				_jobService,
+				_integrationPointRepository);
 		}
 
 		[TestCase("")]
@@ -232,11 +236,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
 			Job job = JobHelper.GetJob(jobIdValue, null, null, 0, 0, 0, 0, TaskType.SyncWorker, DateTime.Now, null,
 				jobDetailsText, 0, DateTime.Now, 0, String.Empty, String.Empty);
 
-			var integrationPoint = new Data.IntegrationPoint
-			{
-				SecuredConfiguration = "{}"
-			};
-			_caseServiceContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(Arg.Any<int>()).Returns(integrationPoint);
+			const string securedConfiguration = "{}";
+			_integrationPointRepository.GetSecuredConfiguration(Arg.Any<int>()).Returns(securedConfiguration);
 
 			_serializer.Deserialize<TaskParameters>(Arg.Is<string>(x => x.Equals(jobDetailsText))).Returns(taskParameters);
 
@@ -244,7 +245,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
 				Arg.Is(taskParameters.BatchInstance), jobIdValue, true)
 				.Returns(jobStopManager);
 
-			_appDomainRdoSynchronizerFactoryFactory.CreateSynchronizer(Arg.Is(new Guid(destinationProvider.Identifier)), Arg.Is(configuration), Arg.Is(integrationPoint.SecuredConfiguration))
+			_appDomainRdoSynchronizerFactoryFactory.CreateSynchronizer(Arg.Is(new Guid(destinationProvider.Identifier)), Arg.Is(configuration), Arg.Is(securedConfiguration))
 				.Returns(expectedDataSynchronizer);
 
 			// ACT
@@ -252,25 +253,27 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
 
 			// ASSERT
 			Assert.AreEqual(expectedDataSynchronizer, result);
-			_appDomainRdoSynchronizerFactoryFactory.Received(1).CreateSynchronizer(Arg.Is(new Guid(destinationProvider.Identifier)), Arg.Is(configuration), Arg.Is(integrationPoint.SecuredConfiguration));
+			_appDomainRdoSynchronizerFactoryFactory.Received(1).CreateSynchronizer(Arg.Is(new Guid(destinationProvider.Identifier)), Arg.Is(configuration), Arg.Is(securedConfiguration));
 		}
 	}
 
-		public class TestClass : IntegrationPointTaskBase
+	public class TestClass : IntegrationPointTaskBase
 	{
 		public TestClass(ICaseServiceContext caseServiceContext,
 			IHelper helper,
 			IDataProviderFactory dataProviderFactory,
-			kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
+			Apps.Common.Utils.Serializers.ISerializer serializer,
 			ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
 			IJobHistoryService jobHistoryService,
 			JobHistoryErrorService jobHistoryErrorService,
 			IJobManager jobManager,
 			IManagerFactory managerFactory,
 			IContextContainerFactory contextContainerFactory,
-			IJobService jobService)
+			IJobService jobService,
+			IIntegrationPointRepository integrationPointRepository)
 			: base(caseServiceContext, helper, dataProviderFactory, serializer, appDomainRdoSynchronizerFactoryFactory,
-				jobHistoryService, jobHistoryErrorService, jobManager, managerFactory, contextContainerFactory, jobService)
+				jobHistoryService, jobHistoryErrorService, jobManager, managerFactory, contextContainerFactory, jobService,
+				integrationPointRepository)
 		{
 		}
 

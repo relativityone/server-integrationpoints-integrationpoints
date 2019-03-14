@@ -5,6 +5,8 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 
@@ -47,6 +49,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		{
 			IJobHistoryService jobHistoryService = CreateJobHistoryService(helper, targetHelper);
 			IJobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(_caseServiceContext, helper);
+			IIntegrationPointRepository integrationPointRepository = new IntegrationPointRepository(_caseServiceContext.RsapiService.RelativityObjectManager);
 			return new IntegrationPointService(
 				helper,
 				_caseServiceContext,
@@ -59,7 +62,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				_managerFactory,
 				_validationExecutor,
 				_providerTypeService,
-				_messageService);
+				_messageService,
+				integrationPointRepository);
 		}
 
 		public IFieldCatalogService CreateFieldCatalogService(IHelper targetHelper)

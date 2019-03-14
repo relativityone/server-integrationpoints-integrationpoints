@@ -9,7 +9,6 @@ using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Monitoring;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -36,45 +35,45 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 	[TestFixture]
 	public class IntegrationPointServiceTests : TestBase
 	{
-		private readonly int _sourceWorkspaceArtifactId = 789;
-		private readonly int _targetWorkspaceArtifactId = 9954;
-		private readonly int _integrationPointArtifactId = 741;
-		private readonly int _savedSearchArtifactId = 93032;
-		private readonly int _sourceProviderId = 321;
-		private readonly int _destinationProviderId = 424;
-		private readonly int _userId = 951;
-		private readonly int _previousJobHistoryArtifactId = Int32.MaxValue;
-		private readonly int _integrationPointTypeArtifactId = 12345;
-		private readonly string _objectTypeGuid = ObjectTypeGuids.IntegrationPoint;
-
-		private IHelper _helper;
+		private Data.IntegrationPoint _integrationPoint;
+		private Data.JobHistory _previousJobHistory;
+		private DestinationProvider _destinationProvider;
 		private ICaseServiceContext _caseServiceContext;
+		private IChoiceQuery _choiceQuery;
 		private IContextContainer _contextContainer;
-		private IRepositoryFactory _repositoryFactory;
+		private IContextContainerFactory _contextContainerFactory;
+		private IErrorManager _errorManager;
+		private IHelper _helper;
+		private IIntegrationPointRepository _integrationPointRepository;
+		private IIntegrationPointSerializer _serializer;
+		private IJobHistoryErrorService _jobHistoryErrorService;
+		private IJobHistoryManager _jobHistoryManager;
+		private IJobHistoryService _jobHistoryService;
+		private IJobManager _jobManager;
+		private IManagerFactory _managerFactory;
+		private IMessageService _messageService;
+		private IntegrationPointModelBase _integrationPointModel;
+		private IntegrationPointService _instance;
+		private IntegrationPointType _integrationPointType;
 		private IPermissionRepository _sourcePermissionRepository;
 		private IPermissionRepository _targetPermissionRepository;
-		private IContextContainerFactory _contextContainerFactory;
-		private IJobManager _jobManager;
-		private IQueueManager _queueManager;
-		private IIntegrationPointSerializer _serializer;
-		private IJobHistoryService _jobHistoryService;
-		private IJobHistoryErrorService _jobHistoryErrorService;
-		private IManagerFactory _managerFactory;
-		private IServiceFactory _serviceFactory;
-		private Data.IntegrationPoint _integrationPoint;
-		private SourceProvider _sourceProvider;
-		private DestinationProvider _destinationProvider;
-		private IntegrationPointType _integrationPointType;
-		private IErrorManager _errorManager;
-		private IJobHistoryManager _jobHistoryManager;
-		private IntegrationPointService _instance;
-		private IChoiceQuery _choiceQuery;
-		private ValidationResult _stopPermissionChecksResults;
-		private Data.JobHistory _previousJobHistory;
-		private IntegrationPointModelBase _integrationPointModel;
-		private IValidationExecutor _validationExecutor;
 		private IProviderTypeService _providerTypeService;
-		private IMessageService _messageService;
+		private IQueueManager _queueManager;
+		private IRepositoryFactory _repositoryFactory;
+		private IValidationExecutor _validationExecutor;
+		private SourceProvider _sourceProvider;
+		private ValidationResult _stopPermissionChecksResults;
+
+		private readonly int _destinationProviderId = 424;
+		private readonly int _integrationPointArtifactId = 741;
+		private readonly int _integrationPointTypeArtifactId = 12345;
+		private readonly int _previousJobHistoryArtifactId = Int32.MaxValue;
+		private readonly int _savedSearchArtifactId = 93032;
+		private readonly int _sourceProviderId = 321;
+		private readonly int _sourceWorkspaceArtifactId = 789;
+		private readonly int _targetWorkspaceArtifactId = 9954;
+		private readonly int _userId = 951;
+		private readonly string _objectTypeGuid = ObjectTypeGuids.IntegrationPoint;
 
 		[SetUp]
 		public override void SetUp()
@@ -91,7 +90,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_jobHistoryService = Substitute.For<IJobHistoryService>();
 			_jobHistoryErrorService = Substitute.For<IJobHistoryErrorService>();
 			_managerFactory = Substitute.For<IManagerFactory>();
-			_serviceFactory = Substitute.For<IServiceFactory>();
 			_queueManager = Substitute.For<IQueueManager>();
 			_choiceQuery = Substitute.For<IChoiceQuery>();
 			_errorManager = Substitute.For<IErrorManager>();
@@ -99,7 +97,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
 			_providerTypeService = Substitute.For<IProviderTypeService>();
 			_messageService = Substitute.For<IMessageService>();
-
+			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
 
 			_validationExecutor = Substitute.For<IValidationExecutor>();
 
@@ -115,7 +113,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				_managerFactory,
 				_validationExecutor,
 				_providerTypeService,
-				_messageService
+				_messageService,
+				_integrationPointRepository
 			);
 
 			_caseServiceContext.RsapiService = Substitute.For<IRSAPIService>();
@@ -174,10 +173,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				.Returns(_previousJobHistoryArtifactId);
 			_caseServiceContext.RsapiService.RelativityObjectManager.Read<Data.JobHistory>(_previousJobHistoryArtifactId).Returns(_previousJobHistory);
 
-			_caseServiceContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(_integrationPointArtifactId).Returns(_integrationPoint);
+			_integrationPointRepository.Read(_integrationPointArtifactId).Returns(_integrationPoint);
 			_caseServiceContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(_sourceProviderId).Returns(_sourceProvider);
 			_caseServiceContext.RsapiService.RelativityObjectManager.Read<DestinationProvider>(_destinationProviderId).Returns(_destinationProvider);
-			_caseServiceContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(_integrationPointArtifactId).Returns(_integrationPoint);
+			_integrationPointRepository.Read(_integrationPointArtifactId).Returns(_integrationPoint);
 			_caseServiceContext.RsapiService.RelativityObjectManager.Read<IntegrationPointType>(_integrationPointTypeArtifactId).Returns(_integrationPointType);
 		}
 
@@ -942,7 +941,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			// Act
 			const string errorMessage = "KHAAAAAANN!!!";
 			var exception = new Exception(errorMessage);
-			_caseServiceContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(0).ThrowsForAnyArgs(exception);
+			_integrationPointRepository.Read(0).ThrowsForAnyArgs(exception);
 			_managerFactory.CreateErrorManager(_contextContainer).Returns(_errorManager);
 
 			// Assert
@@ -1423,7 +1422,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			Data.IntegrationPoint integrationPoint = _instance.GetRdo(_integrationPointArtifactId);
 
 			//Assert
-			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1).Read<Data.IntegrationPoint>(_integrationPointArtifactId);
+			_integrationPointRepository.Received(1).Read(_integrationPointArtifactId);
 			Assert.IsNotNull(integrationPoint);
 		}
 
@@ -1431,7 +1430,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		public void GetRdo_ArtifactIdDoesNotExist_ExceptionThrown_Test()
 		{
 			//Arrange
-			_caseServiceContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(_integrationPointArtifactId).Throws<Exception>();
+			_integrationPointRepository.Read(_integrationPointArtifactId).Throws<Exception>();
 
 			//Act
 			Assert.Throws<Exception>(() => _instance.GetRdo(_integrationPointArtifactId), "Unable to retrieve Integration Point.");

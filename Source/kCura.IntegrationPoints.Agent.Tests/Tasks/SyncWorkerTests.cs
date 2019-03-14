@@ -17,6 +17,7 @@ using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Tests;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
@@ -60,6 +61,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IJobHistoryManager _jobHistoryManager;
 		private IProviderTypeService _providerTypeService;
 		private JobStatisticsService _statisticsService;
+		private IIntegrationPointRepository _integrationPointRepository;
 
 		[SetUp]
 		public override void SetUp()
@@ -84,10 +86,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_contextContainer = Substitute.For<IContextContainer>();
 			_jobHistoryManager = Substitute.For<IJobHistoryManager>();
 			_providerTypeService = Substitute.For<IProviderTypeService>();
+			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
 
 			_instance = new SyncWorker(_caseServiceContext, _helper, _dataProviderFactory, _serializer, 
 				_appDomainRdoSynchronizerFactory, _jobHistoryService, _jobHistoryErrorService, _jobManager, new IBatchStatus[] { _batchStatus },
-				_statisticsService, _managerFactory, _contextContainerFactory, _jobService, _providerTypeService);
+				_statisticsService, _managerFactory, _contextContainerFactory, _jobService, _providerTypeService, _integrationPointRepository);
 
 			_job = JobHelper.GetJob(1, null, null, 1, 1, 111, 222, TaskType.SyncEntityManagerWorker, new DateTime(), null, "detail",
 				0, new DateTime(), 1, null, null);
@@ -110,7 +113,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			};
 			_associatedJobs = new List<Job>() {_job};
 			_fieldsMap = new List<FieldMap>();
-			_caseServiceContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(_job.RelatedObjectArtifactID).Returns(_integrationPoint);
+			_integrationPointRepository.Read(_job.RelatedObjectArtifactID).Returns(_integrationPoint);
+			_integrationPointRepository.GetSecuredConfiguration(_job.RelatedObjectArtifactID).Returns(_integrationPoint.SecuredConfiguration);
 			_caseServiceContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider.Value).Returns(_sourceProvider);
 			_caseServiceContext.RsapiService.RelativityObjectManager.Read<DestinationProvider>(_integrationPoint.DestinationProvider.Value).Returns(_destinationProvider);
 			_serializer.Deserialize<TaskParameters>(_job.JobDetails).Returns(_taskParams);

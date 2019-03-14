@@ -165,6 +165,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IImportTypeService>().ImplementedBy<ImportTypeService>().LifestyleTransient());
 			container.Register(Component.For<IArtifactService>().ImplementedBy<ArtifactService>().LifestyleTransient());
 			container.Register(Component.For<IProviderTypeService>().ImplementedBy<ProviderTypeService>().LifestyleTransient());
+			container.Register(Component.For<IIntegrationPointRepository>().ImplementedBy<IntegrationPointRepository>().LifestyleTransient());
 			container.Register(Component.For<IResourcePoolManager>().ImplementedBy<ResourcePoolManager>().LifestyleTransient());
 			container.Register(Component.For<IResourcePoolContext>().ImplementedBy<ResourcePoolContext>().LifestyleTransient());
 			container.Register(Component.For<IProcessingSourceLocationService>().ImplementedBy<ProcessingSourceLocationService>().LifestyleTransient());

@@ -97,7 +97,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
 			};
 			IntegrationPointModel integrationModelCreated = CreateOrUpdateIntegrationPoint(integrationModel);
-			kCura.IntegrationPoints.Data.IntegrationPoint integrationPoint = CaseContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(integrationModelCreated.ArtifactID);
+			Data.IntegrationPoint integrationPoint = IntegrationPointRepository.Read(integrationModelCreated.ArtifactID);
 			JobHistory jobHistory = _jobHistoryService.GetOrCreateScheduledRunHistoryRdo(integrationPoint, Guid.NewGuid(), DateTime.Now);
 
 			string destinationConfig = AppendWebAPIPathToImportSettings(integrationModelCreated.Destination);

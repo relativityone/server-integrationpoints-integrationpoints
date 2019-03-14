@@ -135,7 +135,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			};
 
 			var integrationModelCreated = CreateOrUpdateIntegrationPoint(integrationModel);
-			var integrationPoint = CaseContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(integrationModelCreated.ArtifactID);
+			var integrationPoint = IntegrationPointRepository.Read(integrationModelCreated.ArtifactID);
 
 			var batchInstance = Guid.NewGuid();
 			var jobHistory = _jobHistoryService.CreateRdo(integrationPoint, batchInstance, JobTypeChoices.JobHistoryRun, DateTime.Now);
@@ -175,14 +175,19 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
 			};
 
-			var integrationModelCreated = CreateOrUpdateIntegrationPoint(integrationModel);
-			var integrationPoint = CaseContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(integrationModelCreated.ArtifactID);
+			IntegrationPointModel integrationModelCreated = CreateOrUpdateIntegrationPoint(integrationModel);
+			IntegrationPoint integrationPoint = IntegrationPointRepository.Read(integrationModelCreated.ArtifactID);
 
-			var batchInstance = Guid.NewGuid();
-			var jobHistory = _jobHistoryService.CreateRdo(integrationPoint, batchInstance, JobTypeChoices.JobHistoryRun, DateTime.Now);
+			Guid batchInstance = Guid.NewGuid();
+			JobHistory jobHistory = _jobHistoryService.CreateRdo(integrationPoint, batchInstance, JobTypeChoices.JobHistoryRun, DateTime.Now);
 
 			//Act
-			_destinationWorkspaceRepository.TagDocsWithDestinationWorkspaceAndJobHistory(ClaimsPrincipal.Current, 10, _destinationWorkspaceDto.ArtifactId, jobHistory.ArtifactId, _scratchTableRepository.GetTempTableName(), SourceWorkspaceArtifactId);
+			_destinationWorkspaceRepository.TagDocsWithDestinationWorkspaceAndJobHistory(ClaimsPrincipal.Current,
+				10,
+				_destinationWorkspaceDto.ArtifactId,
+				jobHistory.ArtifactId,
+				_scratchTableRepository.GetTempTableName(),
+				SourceWorkspaceArtifactId);
 
 			//Assert
 			VerifyDocumentTagging(documentArtifactIds, jobHistory.Name);

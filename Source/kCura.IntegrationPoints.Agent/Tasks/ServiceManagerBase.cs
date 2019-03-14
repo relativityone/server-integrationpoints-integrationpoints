@@ -15,6 +15,7 @@ using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
@@ -44,6 +45,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		protected IContextContainerFactory ContextContainerFactory { get; }
 		protected List<IBatchStatus> BatchStatus { get; }
 		protected ICaseServiceContext CaseServiceContext { get; }
+		protected IIntegrationPointRepository IntegrationPointRepository { get; }
 		protected IOnBehalfOfUserClaimsPrincipalFactory OnBehalfOfUserClaimsPrincipalFactory { get; }
 		protected JobStatisticsService StatisticsService { get; }
 		protected ISynchronizerFactory SynchronizerFactory { get; }
@@ -66,8 +68,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IOnBehalfOfUserClaimsPrincipalFactory onBehalfOfUserClaimsPrincipalFactory,
 			JobStatisticsService statisticsService,
 			ISynchronizerFactory synchronizerFactory,
-			IAgentValidator agentValidator
-			)
+			IAgentValidator agentValidator,
+			IIntegrationPointRepository integrationPointRepository)
 		{
 			_agentValidator = agentValidator;
 			Logger = helper.GetLoggerFactory().GetLogger().ForContext<ServiceManagerBase>();
@@ -81,6 +83,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			ContextContainerFactory = contextContainerFactory;
 			BatchStatus = statuses.ToList();
 			CaseServiceContext = caseServiceContext;
+			IntegrationPointRepository = integrationPointRepository;
 			OnBehalfOfUserClaimsPrincipalFactory = onBehalfOfUserClaimsPrincipalFactory;
 			StatisticsService = statisticsService;
 			SynchronizerFactory = synchronizerFactory;
@@ -279,7 +282,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			LogLoadInformationPointDtoStart(job);
 
 			int integrationPointId = job.RelatedObjectArtifactID;
-			IntegrationPoint integrationPoint = CaseServiceContext.RsapiService.RelativityObjectManager.Read<IntegrationPoint>(integrationPointId);
+			IntegrationPoint integrationPoint = IntegrationPointRepository.Read(integrationPointId);
 			if (integrationPoint == null)
 			{
 				LogLoadingIntegrationPointDtoError(job);

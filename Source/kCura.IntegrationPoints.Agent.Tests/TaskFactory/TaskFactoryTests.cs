@@ -8,8 +8,6 @@ using kCura.IntegrationPoints.Agent.Exceptions;
 using kCura.IntegrationPoints.Agent.TaskFactory;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
@@ -25,12 +23,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 	{
 		private IAPILog _logger;
 		private IAgentHelper _helper;
-		private ICaseServiceContext _caseServiceContext;
 		private ITaskExceptionMediator _taskExceptionMediator;
 		private IJobSynchronizationChecker _jobSynchronizationChecker;
 		private ITaskFactoryJobHistoryService _jobHistoryService;
 		private ITaskFactoryJobHistoryServiceFactory _jobHistoryServiceFactory;
-		private IntegrationPoints.Agent.TaskFactory.ITaskFactory _instance;
+		private IIntegrationPointRepository _integrationPointRepository;
+		private ITaskFactory _instance;
 
 		[SetUp]
 		public override void SetUp()
@@ -45,7 +43,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 			_helper.GetLoggerFactory().Returns(loggerFactory);
 
 
-			_caseServiceContext = CreateCaseServiceContextMock();
+			_integrationPointRepository = CreateIntegrationPointRepositoryMock();
 			_taskExceptionMediator = Substitute.For<ITaskExceptionMediator>();
 
 
@@ -56,7 +54,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 
 			IWindsorContainer container = Substitute.For<IWindsorContainer>();
 
-			_instance = new IntegrationPoints.Agent.TaskFactory.TaskFactory(_helper, _caseServiceContext, _taskExceptionMediator, _jobSynchronizationChecker, _jobHistoryServiceFactory, container);
+			_instance = new IntegrationPoints.Agent.TaskFactory.TaskFactory(_helper, _taskExceptionMediator,
+				_jobSynchronizationChecker, _jobHistoryServiceFactory, container, _integrationPointRepository);
 		}
 
 		[Test]
@@ -171,20 +170,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 			}
 		}
 
-		private ICaseServiceContext CreateCaseServiceContextMock()
+		private IIntegrationPointRepository CreateIntegrationPointRepositoryMock()
 		{
 			var integrationPoint = new Data.IntegrationPoint();
 
-			var relativityObjectManager = Substitute.For<IRelativityObjectManager>();
-			relativityObjectManager.Read<Data.IntegrationPoint>(Arg.Any<int>()).Returns(integrationPoint);
-
-
-			var rsapiService = Substitute.For<IRSAPIService>();
-			rsapiService.RelativityObjectManager.Returns(relativityObjectManager);
-
-			var caseServiceContext = Substitute.For<ICaseServiceContext>();
-			caseServiceContext.RsapiService.Returns(rsapiService);
-			return caseServiceContext;
+			IIntegrationPointRepository integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
+			integrationPointRepository.Read(Arg.Any<int>()).Returns(integrationPoint);
+			return integrationPointRepository;
 		}
 
 		private static IEnumerable<TestCaseData> CreateTask_CaseData()

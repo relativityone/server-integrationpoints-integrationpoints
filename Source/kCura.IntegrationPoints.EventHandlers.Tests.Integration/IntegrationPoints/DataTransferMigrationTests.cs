@@ -17,7 +17,6 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
-using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
@@ -96,7 +95,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 
 			_dataTransferLocationMigration.Migrate();
 
-			Data.IntegrationPoint integrationPointAfterMigration = _relativityObjectManager.Read<Data.IntegrationPoint>(_savedIntegrationPointId);
+			Data.IntegrationPoint integrationPointAfterMigration = IntegrationPointRepository.Read(_savedIntegrationPointId);
 			Dictionary<string, object> deserializedSourceConfigurationAfterMigration =
 				_serializer.Deserialize<Dictionary<string, object>>(integrationPointAfterMigration.SourceConfiguration);
 

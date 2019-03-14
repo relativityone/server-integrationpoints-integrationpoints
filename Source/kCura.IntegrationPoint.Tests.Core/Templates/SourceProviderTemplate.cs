@@ -43,6 +43,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		protected IEnumerable<SourceProvider> SourceProviders { get; private set; }
 		protected ICaseServiceContext CaseContext { get; private set; }
 		protected IRelativityObjectManager ObjectManager { get; private set; }
+		protected IIntegrationPointRepository IntegrationPointRepository { get; private set; }
 		protected bool CreatingAgentEnabled { get; set; } = true;
 		protected bool CreatingWorkspaceEnabled { get; set; } = true;
 
@@ -85,6 +86,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			{
 				CaseContext = Container.Resolve<ICaseServiceContext>();
 				ObjectManager = CaseContext.RsapiService.RelativityObjectManager;
+				IntegrationPointRepository = Container.Resolve<IIntegrationPointRepository>();
 
 				SourceProviders = GetSourceProviders();
 				RelativityDestinationProviderArtifactId = GetRelativityDestinationProviderArtifactId();
@@ -166,7 +168,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 			int integrationPointArtifactId = service.SaveIntegration(model);
 
-			IntegrationPoints.Data.IntegrationPointProfile rdo = service.GetRdo(integrationPointArtifactId);
+			IntegrationPointProfile rdo = service.GetRdo(integrationPointArtifactId);
 			IntegrationPointProfileModel newModel = IntegrationPointProfileModel.FromIntegrationPointProfile(rdo);
 			return newModel;
 		}
@@ -194,7 +196,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		protected IntegrationPointModel RefreshIntegrationModel(IntegrationPointModel model)
 		{
-			IntegrationPoints.Data.IntegrationPoint ip = ObjectManager.Read<IntegrationPoints.Data.IntegrationPoint>(model.ArtifactID);
+			IntegrationPoints.Data.IntegrationPoint ip = IntegrationPointRepository.Read(model.ArtifactID);
 			return IntegrationPointModel.FromIntegrationPoint(ip);
 		}
 
@@ -212,7 +214,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			Relativity.Client.DTOs.Choice jobStatusChoice = null, bool jobEnded = false)
 		{
 			IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
-			IntegrationPoints.Data.IntegrationPoint integrationPoint = CaseContext.RsapiService.RelativityObjectManager.Read<IntegrationPoints.Data.IntegrationPoint>(integrationPointArtifactId);
+			IntegrationPoints.Data.IntegrationPoint integrationPoint = IntegrationPointRepository.Read(integrationPointArtifactId);
 			JobHistory jobHistory = jobHistoryService.CreateRdo(integrationPoint, batchInstance, jobTypeChoice, DateTime.Now);
 
 			if (jobEnded)

@@ -78,6 +78,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				{
 					var logger = Helper.GetLoggerFactory().GetLogger();
 					IRelativityObjectManager objectManager = CreateObjectManager(Helper, Helper.GetActiveCaseID());
+					IIntegrationPointRepository integrationPointRepository = CreateIntegrationPointRepository(objectManager);
 
 					IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(Helper);
 					IQueueManager queueManager = ManagerFactory.CreateQueueManager(contextContainer);
@@ -88,7 +89,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 						new IntegrationPointPermissionValidator(new[] { new ViewErrorsPermissionValidator(repositoryFactory) }, new IntegrationPointSerializer(logger));
 					IPermissionRepository permissionRepository = new PermissionRepository(Helper, Helper.GetActiveCaseID());
 					IProviderTypeService providerTypeService = new ProviderTypeService(objectManager);
-					_buttonStateBuilder = new ButtonStateBuilder(providerTypeService, queueManager, jobHistoryManager, stateManager, permissionRepository, permissionValidator, objectManager);
+					_buttonStateBuilder = new ButtonStateBuilder(providerTypeService, queueManager, jobHistoryManager, stateManager,
+						permissionRepository, permissionValidator, integrationPointRepository);
 				}
 				return _buttonStateBuilder;
 			}
@@ -97,6 +99,11 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		private IRelativityObjectManager CreateObjectManager(IEHHelper helper, int workspaceId)
 		{
 			return new RelativityObjectManagerFactory(helper).CreateRelativityObjectManager(workspaceId);
+		}
+
+		private IIntegrationPointRepository CreateIntegrationPointRepository(IRelativityObjectManager objectManager)
+		{
+			return new IntegrationPointRepository(objectManager);
 		}
 
 		private IOnClickEventConstructor OnClickEventConstructor

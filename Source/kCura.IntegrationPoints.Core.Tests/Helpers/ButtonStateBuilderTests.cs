@@ -17,6 +17,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 {
 	public class ButtonStateBuilderTests : TestBase
 	{
+		private ButtonStateBuilder _buttonStateBuilder;
+		private IIntegrationPointPermissionValidator _permissionValidator;
+		private IIntegrationPointRepository _integrationPointRepository;
+		private IJobHistoryManager _jobHistoryManager;
+		private IPermissionRepository _permissionRepository;
+		private IProviderTypeService _providerTypeService;
+		private IQueueManager _queueManager;
+		private IStateManager _stateManager;
+
 		[SetUp]
 		public override void SetUp()
 		{
@@ -26,21 +35,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 			_stateManager = Substitute.For<IStateManager>();
 			_permissionRepository = Substitute.For<IPermissionRepository>();
 			_permissionValidator = Substitute.For<IIntegrationPointPermissionValidator>();
-			_objectManager = Substitute.For<IRelativityObjectManager>();
+			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
 
-			_buttonStateBuilder = new ButtonStateBuilder(_providerTypeService, _queueManager, _jobHistoryManager, _stateManager, _permissionRepository, _permissionValidator,
-				_objectManager);
+			_buttonStateBuilder = new ButtonStateBuilder(_providerTypeService, _queueManager, _jobHistoryManager, _stateManager,
+				_permissionRepository, _permissionValidator, _integrationPointRepository);
 		}
-
-		private IRelativityObjectManager _objectManager;
-		private IProviderTypeService _providerTypeService;
-		private IJobHistoryManager _jobHistoryManager;
-		private IQueueManager _queueManager;
-		private IStateManager _stateManager;
-		private IPermissionRepository _permissionRepository;
-		private IIntegrationPointPermissionValidator _permissionValidator;
-
-		private ButtonStateBuilder _buttonStateBuilder;
 
 		[TestCase(ProviderType.Relativity, true, true, true, true, true,false)]
 		[TestCase(ProviderType.Other, true, true, true, true, true, false)]
@@ -62,7 +61,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 			int sourceProviderArtifactId = 841;
 			int destinationProviderArtifactId = 273;
 			var importSettings = new ImportSettings {ImageImport = imageImport};
-			_objectManager.Read<Data.IntegrationPoint>(integrationPointArtifactId).Returns(new Data.IntegrationPoint
+			_integrationPointRepository.Read(integrationPointArtifactId).Returns(new Data.IntegrationPoint
 			{
 				HasErrors = hasErrors,
 				SourceProvider = sourceProviderArtifactId,

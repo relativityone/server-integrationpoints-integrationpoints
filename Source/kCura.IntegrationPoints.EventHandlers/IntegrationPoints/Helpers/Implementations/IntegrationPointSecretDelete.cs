@@ -1,4 +1,3 @@
-using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.SecretStore;
 using Relativity.SecretCatalog;
@@ -7,15 +6,15 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 {
 	public class IntegrationPointSecretDelete : IIntegrationPointSecretDelete
 	{
-		private readonly IRelativityObjectManager _objectManager;
+		private readonly IIntegrationPointRepository _integrationPointRepository;
 		private readonly ISecretManager _secretManager;
 		private readonly ISecretCatalog _secretCatalog;
 
-		public IntegrationPointSecretDelete(ISecretManager secretManager, ISecretCatalog secretCatalog, IRelativityObjectManager objectManager)
+		public IntegrationPointSecretDelete(ISecretManager secretManager, ISecretCatalog secretCatalog, IIntegrationPointRepository integrationPointRepository)
 		{
 			_secretManager = secretManager;
 			_secretCatalog = secretCatalog;
-			_objectManager = objectManager;
+			_integrationPointRepository = integrationPointRepository;
 		}
 
 		public void DeleteSecret(int integrationPointId)
@@ -30,7 +29,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 
 		private string RetrieveSecretId(int integrationPointId)
 		{
-			return _objectManager.Read<IntegrationPoint>(integrationPointId).SecuredConfiguration;
+			return _integrationPointRepository.GetSecuredConfiguration(integrationPointId);
 		}
 
 		private void DeleteSecret(string integrationPointSecret)

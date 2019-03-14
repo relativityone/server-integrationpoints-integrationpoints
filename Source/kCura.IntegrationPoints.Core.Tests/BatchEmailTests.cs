@@ -36,6 +36,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 		private IManagerFactory _managerFactory;
 		private IContextContainerFactory _contextContainerFactory;
 		private IJobService _jobService;
+		private IIntegrationPointRepository _integrationPointRepository;
 
 		private IRSAPIService _rsapiService;
 		private IRelativityObjectManager _objectManager;
@@ -52,6 +53,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 			_managerFactory = Substitute.For<IManagerFactory>();
 			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			_jobService = Substitute.For<IJobService>();
+			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
 
 			_rsapiService.RelativityObjectManager.Returns(_objectManager);
 			_caseServiceContext.RsapiService.Returns(_rsapiService);
@@ -69,7 +71,8 @@ namespace kCura.IntegrationPoints.Core.Tests
 				_converter,
 				_managerFactory,
 				_contextContainerFactory,
-				_jobService);
+				_jobService,
+				_integrationPointRepository);
 		}
 
 		[Test]
@@ -83,7 +86,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 				EmailNotificationRecipients = string.Empty,
 			};
 
-			_objectManager.Read<Data.IntegrationPoint>(_INTEGRATION_POINT_ID).Returns(integrationPoint);
+			_integrationPointRepository.Read(_INTEGRATION_POINT_ID).Returns(integrationPoint);
 
 			// ACT + ASSERT
 			Assert.DoesNotThrow(()=> { _testInstance.OnJobComplete(job); }, "Sending of email logic should have been skipped");

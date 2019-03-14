@@ -3,8 +3,8 @@ using Castle.Windsor;
 using kCura.IntegrationPoints.Agent.Exceptions;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
@@ -14,21 +14,22 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 	public class TaskFactory : ITaskFactory
 	{
 		private readonly IWindsorContainer _container;
-		private readonly ICaseServiceContext _caseServiceContext;
 		private readonly ITaskExceptionMediator _taskExceptionMediator;
 		private readonly IAPILog _logger;
 		private readonly IJobSynchronizationChecker _jobSynchronizationChecker;
 		private readonly ITaskFactoryJobHistoryServiceFactory _jobHistoryServiceFactory;
+		private readonly IIntegrationPointRepository _integrationPointRepository;
 
-		public TaskFactory(IAgentHelper helper, ICaseServiceContext caseServiceContext, ITaskExceptionMediator taskExceptionMediator,
-			IJobSynchronizationChecker jobSynchronizationChecker, ITaskFactoryJobHistoryServiceFactory jobHistoryServiceFactory, IWindsorContainer container)
+		public TaskFactory(IAgentHelper helper, ITaskExceptionMediator taskExceptionMediator,
+			IJobSynchronizationChecker jobSynchronizationChecker, ITaskFactoryJobHistoryServiceFactory jobHistoryServiceFactory,
+			IWindsorContainer container, IIntegrationPointRepository integrationPointRepository)
 		{
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<TaskFactory>();
-			_caseServiceContext = caseServiceContext;
 			_taskExceptionMediator = taskExceptionMediator;
 			_jobSynchronizationChecker = jobSynchronizationChecker;
 			_jobHistoryServiceFactory = jobHistoryServiceFactory;
 			_container = container;
+			_integrationPointRepository = integrationPointRepository;
 		}
 
 		public ITask CreateTask(Job job, ScheduleQueueAgentBase agentBase)
@@ -99,7 +100,7 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 		private IntegrationPoint GetIntegrationPoint(Job job)
 		{
 			LogGetIntegrationPointStart(job);
-			IntegrationPoint integrationPoint = _caseServiceContext.RsapiService.RelativityObjectManager.Read<IntegrationPoint>(job.RelatedObjectArtifactID);
+			IntegrationPoint integrationPoint = _integrationPointRepository.Read(job.RelatedObjectArtifactID);
 
 			if (integrationPoint == null)
 			{

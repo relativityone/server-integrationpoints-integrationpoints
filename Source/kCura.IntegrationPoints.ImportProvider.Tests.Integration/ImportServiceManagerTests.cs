@@ -14,7 +14,6 @@ using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoints.Agent.Tasks;
-using kCura.IntegrationPoints.Agent.Validation;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
@@ -69,6 +68,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 		private IDataReaderFactory _dataReaderFactory;
 		private IImportFileLocationService _importFileLocationService;
 		private IAgentValidator _agentValidator;
+		private IIntegrationPointRepository _integrationPointRepository;
 
 		[OneTimeSetUp]
 		public void Init()
@@ -92,6 +92,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 			_jobHistoryErrorService = Substitute.For<IJobHistoryErrorService>();
 			_importFileLocationService = Substitute.For<IImportFileLocationService>();
 			_agentValidator = Substitute.For<IAgentValidator>();
+			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
 
 			//Data Transfer Location
 
@@ -135,7 +136,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 			_ip.SecuredConfiguration = "";
 			_ip.SourceProvider = -1;
 
-			_objectManager.Read<Data.IntegrationPoint>(Arg.Any<int>()).Returns(_ip);
+			_integrationPointRepository.Read(Arg.Any<int>()).Returns(_ip);
 
 			//JobStopManager
 
@@ -180,7 +181,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 				null,
 				_dataReaderFactory,
 				_importFileLocationService,
-				_agentValidator);
+				_agentValidator,
+				_integrationPointRepository);
 		}
 
 		[OneTimeTearDown]

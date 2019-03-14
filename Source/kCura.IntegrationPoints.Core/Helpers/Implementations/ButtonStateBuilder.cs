@@ -14,16 +14,19 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 	public class ButtonStateBuilder : IButtonStateBuilder
 	{
 		private readonly IProviderTypeService _providerTypeService;
-		private readonly IRelativityObjectManager _objectManager;
+		private readonly IIntegrationPointRepository _integrationPointRepository;
 		private readonly IJobHistoryManager _jobHistoryManager;
 		private readonly IPermissionRepository _permissionRepository;
 		private readonly IQueueManager _queueManager;
 		private readonly IStateManager _stateManager;
 		private readonly IIntegrationPointPermissionValidator _permissionValidator;
 
-		public ButtonStateBuilder(IProviderTypeService providerTypeService, IQueueManager queueManager, IJobHistoryManager jobHistoryManager,
+		public ButtonStateBuilder(IProviderTypeService providerTypeService, 
+			IQueueManager queueManager, IJobHistoryManager jobHistoryManager,
 			IStateManager stateManager,
-			IPermissionRepository permissionRepository, IIntegrationPointPermissionValidator permissionValidator, IRelativityObjectManager objectManager)
+			IPermissionRepository permissionRepository, 
+			IIntegrationPointPermissionValidator permissionValidator,
+			IIntegrationPointRepository integrationPointRepository)
 		{
 			_providerTypeService = providerTypeService;
 			_queueManager = queueManager;
@@ -31,13 +34,13 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 			_stateManager = stateManager;
 			_permissionRepository = permissionRepository;
 			_permissionValidator = permissionValidator;
-			_objectManager = objectManager;
+			_integrationPointRepository = integrationPointRepository;
 		}
 
 		public ButtonStateDTO CreateButtonState(int applicationArtifactId, int integrationPointArtifactId)
 		{
-			var integrationPoint = _objectManager.Read<IntegrationPoint>(integrationPointArtifactId);
-			var providerType = _providerTypeService.GetProviderType(integrationPoint.SourceProvider.Value, integrationPoint.DestinationProvider.Value);
+			IntegrationPoint integrationPoint = _integrationPointRepository.Read(integrationPointArtifactId);
+			ProviderType providerType = _providerTypeService.GetProviderType(integrationPoint.SourceProvider.Value, integrationPoint.DestinationProvider.Value);
 
 			ValidationResult jobHistoryErrorViewPermissionCheck = _permissionValidator.ValidateViewErrors(applicationArtifactId);
 

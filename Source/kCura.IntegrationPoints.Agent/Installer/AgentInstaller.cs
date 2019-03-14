@@ -155,8 +155,8 @@ namespace kCura.IntegrationPoints.Agent.Installer
 					IRepositoryFactory sourceRepositoryFactory = k.Resolve<IRepositoryFactory>();
 					JobContextProvider jobContextProvider = k.Resolve<JobContextProvider>();
 					int integrationPointId = jobContextProvider.Job.RelatedObjectArtifactID;
-					ICaseServiceContext caseServiceContext = k.Resolve<ICaseServiceContext>();
-					IntegrationPoint integrationPoint = caseServiceContext.RsapiService.RelativityObjectManager.Read<IntegrationPoint>(integrationPointId);
+					IIntegrationPointRepository integrationPointRepository = k.Resolve<IIntegrationPointRepository>();
+					IntegrationPoint integrationPoint = integrationPointRepository.Read(integrationPointId);
 					if (integrationPoint == null)
 					{
 						throw new ArgumentException("Failed to retrieved corresponding Integration Point.");
