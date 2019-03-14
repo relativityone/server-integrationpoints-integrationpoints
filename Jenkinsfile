@@ -58,7 +58,7 @@ properties([
 		),
 		string(
 			name: 'testsFilter', 
-			defaultValue: 'cat == SmokeTest', 
+			defaultValue: '', 
 			description: 'Set filter for integration and UI tests'
 		),
 		string(
