@@ -183,7 +183,12 @@ timestamps
 
 			node ('PolandBuild')
 			{
-				dir('publishArtifactsWorkspace')
+				def publishArtifactsDirectory = 'publishArtifactsWorkspace'
+				dir(publishArtifactsDirectory)
+				{
+					deleteDir()
+				}
+				dir(publishArtifactsDirectory)
 				{
 					stage ('Unstash Package artifacts')
 					{
