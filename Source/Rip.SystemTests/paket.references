@@ -3,8 +3,10 @@ kCura.Relativity.Client
 Moq
 NUnit
 Polly
-RelativityCore
+Relativity
 Relativity.API
+Relativity.Core
 Relativity.ImportExport
 Relativity.Services.DataContracts
 Relativity.Services.Interfaces
+Serilog

@@ -85,7 +85,7 @@ namespace Rip.SystemTests.RelativityServices
 		{
 			var fieldQuery = new QueryRequest
 			{
-				ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Field },
+				ObjectType = new ObjectTypeRef { ArtifactTypeID = (int) ArtifactType.Field },
 				Fields = new[]
 				{
 					new Relativity.Services.Objects.DataContracts.FieldRef {Name = TestConstants.FieldNames.ARTIFACT_ID},
