@@ -10,6 +10,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 	public class GetAgentTypeInformation
 	{
 		private readonly IDBContext DBContext;
+
 		public GetAgentTypeInformation(IDBContext dbContext)
 		{
 			this.DBContext = dbContext;

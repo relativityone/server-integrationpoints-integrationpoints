@@ -12,6 +12,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 	public class ImportPreviewController : ApiController
 	{
 		private readonly IImportPreviewService _importPreviewService;
+
 		public ImportPreviewController(IImportPreviewService importPreviewService)
 		{
 			_importPreviewService = importPreviewService;

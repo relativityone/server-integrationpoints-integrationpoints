@@ -10,6 +10,7 @@ namespace kCura.IntegrationPoints.Data.Queries
 	public class GetApplicationBinaries
 	{
 		private readonly IDBContext _eddsDBcontext;
+
 		public GetApplicationBinaries(IDBContext eddsDBcontext)
 		{
 			_eddsDBcontext = eddsDBcontext;

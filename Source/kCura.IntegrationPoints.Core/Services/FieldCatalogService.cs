@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Services.FieldMapping;
 
@@ -10,8 +6,8 @@ namespace kCura.IntegrationPoints.Core.Services
 {
 	public class FieldCatalogService : IFieldCatalogService
 	{
-
 		private readonly IHelper _helper;
+
 		public FieldCatalogService(IHelper helper)
 		{
 			_helper = helper;

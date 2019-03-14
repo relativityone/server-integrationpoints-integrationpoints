@@ -10,6 +10,7 @@ namespace kCura.IntegrationPoints.Core.Models
 	{
 		private readonly IObjectTypeQuery _rdoQuery;
 		private readonly ICaseServiceContext _serviceContext;
+
 		public RdoFilter(IObjectTypeQuery rdoQuery, ICaseServiceContext serviceContext)
 		{
 			_rdoQuery = rdoQuery;
