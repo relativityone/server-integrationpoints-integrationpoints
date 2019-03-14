@@ -437,7 +437,15 @@ task copy_test_dlls_to_lib_dir -depends create_lib_dir -precondition { return -n
             "Source\kCura.ScheduleQueue.Core.Tests.Integration\bin\x64\*.dll",
             "Source\kCura.ScheduleQueue.Core.Tests.Integration\bin\x64\*.pdb",
             "Source\kCura.ScheduleQueue.Core.Tests.Integration\bin\x64\*.config",
-            "Source\kCura.ScheduleQueue.Core.Tests.Integration\bin\x64\*.xml"
+            "Source\kCura.ScheduleQueue.Core.Tests.Integration\bin\x64\*.xml",
+			"Source\Rip.E2ETests\bin\x64\*.dll",
+			"Source\Rip.E2ETests\bin\x64\*.pdb",
+			"Source\Rip.E2ETests\bin\x64\*.config",
+			"Source\Rip.E2ETests\bin\x64\*.xml",
+			"Source\Rip.SystemTests\bin\x64\*.dll",
+			"Source\Rip.SystemTests\bin\x64\*.pdb",
+			"Source\Rip.SystemTests\bin\x64\*.config",
+			"Source\Rip.SystemTests\bin\x64\*.xml"
 
     foreach ($file in $test_files)
     {
