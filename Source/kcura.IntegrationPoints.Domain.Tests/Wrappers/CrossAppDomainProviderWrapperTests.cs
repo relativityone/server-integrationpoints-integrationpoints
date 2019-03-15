@@ -1,25 +1,30 @@
-﻿using FluentAssertions;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Runtime.Remoting;
+using System.Text;
+using System.Threading.Tasks;
+using FluentAssertions;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Domain.Wrappers;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Data;
 
 namespace kCura.IntegrationPoints.Domain.Tests.Wrappers
 {
 	[TestFixture]
-	public class ProviderSafeDisposeWrapperTests
+	public class CrossAppDomainProviderWrapperTests
 	{
-		private Mock<IProviderAggregatedInterfaces> _innerProviderMock;
-		private ProviderSafeDisposeWrapper _sut;
+		private Mock<IDataSourceProvider> _innerProviderMock;
+		private CrossAppDomainProviderWrapper _sut;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_innerProviderMock = new Mock<IProviderAggregatedInterfaces>();
-			_sut = new ProviderSafeDisposeWrapper(_innerProviderMock.Object);
+			_innerProviderMock = new Mock<IDataSourceProvider>();
+			_sut = new CrossAppDomainProviderWrapper(_innerProviderMock.Object);
 		}
 
 		[Test]
@@ -29,14 +34,37 @@ namespace kCura.IntegrationPoints.Domain.Tests.Wrappers
 			IProviderAggregatedInterfaces innerProvider = null;
 
 			// act
-			Action callConstructorActionWithNullParameter = () => new ProviderSafeDisposeWrapper(innerProvider);
+			Action callConstructorActionWithNullParameter = () => new SafeDisposingProviderWrapper(innerProvider);
 
 			// assert
 			callConstructorActionWithNullParameter.ShouldThrow<ArgumentNullException>();
 		}
 
 		[Test]
-		public void GetData_ShouldWrapDataReaderInDataReaderSafeDisposeWrapper()
+		public void InitializeLifetimeService_ShouldReturnNull()
+		{
+			// act
+			object result = _sut.InitializeLifetimeService();
+
+			// assert
+			result.Should().BeNull("because remote object should not be garbage collected");
+		}
+
+		[Test]
+		public void Dispose_ShouldDisconnectRemoteObject()
+		{
+			// arrange
+			ObjRef realObjectReference = RemotingServices.Marshal(_sut);
+
+			// act
+			_sut.Dispose();
+
+			// assert
+			realObjectReference.URI.Should().BeNull("because remote object should be disconnected");
+		}
+
+		[Test]
+		public void GetData_ShouldWrapDataReaderInDataReaderCrossAppDomainWrapper()
 		{
 			// arrage
 			var innerDataReaderMock = new Mock<IDataReader>();
@@ -51,10 +79,10 @@ namespace kCura.IntegrationPoints.Domain.Tests.Wrappers
 
 			// assert
 			returnedDataReader.Should()
-				.BeOfType<DataReaderSafeDisposeWrapper>(
+				.BeOfType<CrossAppDomainDataReaderWrapper>(
 					"because returned {0} should be wrapped in {1}",
 					nameof(IDataReader),
-					nameof(DataReaderSafeDisposeWrapper)
+					nameof(CrossAppDomainDataReaderWrapper)
 				);
 		}
 
@@ -81,7 +109,7 @@ namespace kCura.IntegrationPoints.Domain.Tests.Wrappers
 		}
 
 		[Test]
-		public void GetBatchableIds_ShouldWrapDataReaderInDataReaderSafeDisposeWrapper()
+		public void GetBatchableIds_ShouldWrapDataReaderInDataReaderCrossAppDomainWrapper()
 		{
 			// arrage
 			var innerDataReaderMock = new Mock<IDataReader>();
@@ -95,10 +123,10 @@ namespace kCura.IntegrationPoints.Domain.Tests.Wrappers
 
 			// assert
 			returnedDataReader.Should()
-				.BeOfType<DataReaderSafeDisposeWrapper>(
+				.BeOfType<CrossAppDomainDataReaderWrapper>(
 					"because returned {0} should be wrapped in {1}",
 					nameof(IDataReader),
-					nameof(DataReaderSafeDisposeWrapper)
+					nameof(CrossAppDomainDataReaderWrapper)
 				);
 		}
 
@@ -121,28 +149,6 @@ namespace kCura.IntegrationPoints.Domain.Tests.Wrappers
 					"because returned {0} was null",
 					nameof(IDataReader)
 				);
-		}
-
-		[Test]
-		public void Dispose_ShouldDisposeInnerProvider()
-		{
-			// act
-			_sut.Dispose();
-
-			// assert
-			_innerProviderMock.Verify(x => x.Dispose(), Times.Once);
-		}
-
-		[Test]
-		public void Dispose_ShouldDisposeInnerProviderExactlyOnceEvenWhenDisposeCalledMultipleTimes()
-		{
-			// act
-			_sut.Dispose();
-			_sut.Dispose();
-			_sut.Dispose();
-
-			// assert
-			_innerProviderMock.Verify(x => x.Dispose(), Times.Once);
 		}
 
 		private void SetupInnerDataReaderGetData(IDataReader innerDataReader)

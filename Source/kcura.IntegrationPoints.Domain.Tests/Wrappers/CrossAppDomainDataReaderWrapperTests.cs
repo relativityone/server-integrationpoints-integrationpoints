@@ -8,10 +8,10 @@ using System.Runtime.Remoting;
 namespace kCura.IntegrationPoints.Domain.Tests.Wrappers
 {
 	[TestFixture]
-	public class DataReaderCrossAppDomainWrapperTests : DataReaderSafeDisposeWrapperTests
+	public class CrossAppDomainDataReaderWrapperTests : SafeDisposingDataReaderWrapperTests
 	{
 		private Mock<IDataReader> _innerDataReaderMock;
-		private DataReaderCrossAppDomainWrapper _sut;
+		private CrossAppDomainDataReaderWrapper _sut;
 
 		[SetUp]
 		public new void SetUp()
@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Domain.Tests.Wrappers
 			base.SetUp();
 
 			_innerDataReaderMock = new Mock<IDataReader>();
-			_sut = new DataReaderCrossAppDomainWrapper(_innerDataReaderMock.Object);
+			_sut = new CrossAppDomainDataReaderWrapper(_innerDataReaderMock.Object);
 		}
 
 		[Test]

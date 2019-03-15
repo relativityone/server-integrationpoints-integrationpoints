@@ -1,38 +1,67 @@
 ﻿using System;
 using System.Data;
+using System.Runtime.Remoting;
 
 namespace kCura.IntegrationPoints.Domain.Wrappers
 {
 	/// <summary>
-	/// This wrapper guarantees that <see cref="Dispose"/> method on wrapped <see cref="IDataReader"/>
-	/// object will not be called more than once
+	/// This class wraps <see cref="IDataReader"/> from another AppDomain
+	/// <see cref="CrossAppDomainDataReaderWrapper"/> objects shouldn't be used directly in parent's AppDomain because of issues
+	/// with multiple calls to <see cref="Dispose"/>. Proxy in parent AppDomain tries to call Dispose in child AppDomain
+	/// but this objects was already disposed there, so <see cref="ObjectDisposedException"/> is thrown. Instead we should
+	/// use <see cref="SafeDisposingDataReaderWrapper"/> which guarantees proper IDisposable implementation.
 	/// </summary>
-	internal class DataReaderSafeDisposeWrapper : IDataReader
+	/// <inheritdoc cref="MarshalByRefObject"/>
+	/// <inheritdoc cref="IDataReader"/>
+	internal class CrossAppDomainDataReaderWrapper : MarshalByRefObject, IDataReader
 	{
-		private bool isDisposed = false;
+		private bool _isDisposed;
 		private readonly IDataReader _dataReader;
 
-		internal DataReaderSafeDisposeWrapper(IDataReader dataReader)
+		internal CrossAppDomainDataReaderWrapper(IDataReader dataReader)
 		{
 			_dataReader = dataReader ?? throw new ArgumentNullException(nameof(dataReader));
 		}
 
 		#region Decorated Methods
-		public object this[int i] => _dataReader[i];
-
-		public object this[string name] => _dataReader[name];
-
-		public int Depth => _dataReader.Depth;
-
-		public bool IsClosed => _dataReader.IsClosed;
-
-		public int RecordsAffected => _dataReader.RecordsAffected;
-
-		public int FieldCount => _dataReader.FieldCount;
-
 		public void Close()
 		{
 			_dataReader.Close();
+		}
+
+		public int Depth
+		{
+			get { return _dataReader.Depth; }
+		}
+
+		public DataTable GetSchemaTable()
+		{
+			return _dataReader.GetSchemaTable();
+		}
+
+		public bool IsClosed
+		{
+			get { return _dataReader.IsClosed; }
+		}
+
+		public bool NextResult()
+		{
+			return _dataReader.NextResult();
+		}
+
+		public bool Read()
+		{
+			return _dataReader.Read();
+		}
+
+		public int RecordsAffected
+		{
+			get { return _dataReader.RecordsAffected; }
+		}
+
+		public int FieldCount
+		{
+			get { return _dataReader.FieldCount; }
 		}
 
 		public bool GetBoolean(int i)
@@ -125,11 +154,6 @@ namespace kCura.IntegrationPoints.Domain.Wrappers
 			return _dataReader.GetOrdinal(name);
 		}
 
-		public DataTable GetSchemaTable()
-		{
-			return _dataReader.GetSchemaTable();
-		}
-
 		public string GetString(int i)
 		{
 			return _dataReader.GetString(i);
@@ -150,36 +174,55 @@ namespace kCura.IntegrationPoints.Domain.Wrappers
 			return _dataReader.IsDBNull(i);
 		}
 
-		public bool NextResult()
+		public object this[string name]
 		{
-			return _dataReader.NextResult();
+			get { return _dataReader[name]; }
 		}
 
-		public bool Read()
+		public object this[int i]
 		{
-			return _dataReader.Read();
+			get { return _dataReader[i]; }
 		}
-		#endregion Decorated Methods
+		#endregion
+
+		#region Cross AppDomain communication
+		public override object InitializeLifetimeService()
+		{
+			return null;
+		}
+
+		private void DisconnectFromRemoteObject()
+		{
+			RemotingServices.Disconnect(this);
+		}
+		#endregion
 
 		#region IDisposable Support
 		protected virtual void Dispose(bool disposing)
 		{
-			if (isDisposed)
+			if (_isDisposed)
 			{
 				return;
 			}
 
 			if (disposing)
 			{
-				_dataReader?.Dispose();
+				_dataReader.Dispose();
 			}
 
-			isDisposed = true;
+			DisconnectFromRemoteObject();
+			_isDisposed = true;
+		}
+
+		~CrossAppDomainDataReaderWrapper()
+		{
+			Dispose(false);
 		}
 
 		public void Dispose()
 		{
 			Dispose(true);
+			GC.SuppressFinalize(this);
 		}
 		#endregion
 	}

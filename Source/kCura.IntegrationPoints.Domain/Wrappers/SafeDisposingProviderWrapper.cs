@@ -10,12 +10,12 @@ namespace kCura.IntegrationPoints.Domain.Wrappers
 	/// object will not be called more than once. All returned <see cref="IDataReader"/> are guarenteed 
 	/// to have proper <see cref="Dispose"/> implementation as well.
 	/// </summary>
-	internal class ProviderSafeDisposeWrapper : IProviderAggregatedInterfaces
+	internal class SafeDisposingProviderWrapper : IProviderAggregatedInterfaces
 	{
 		private bool _isDisposed;
 		private readonly IProviderAggregatedInterfaces _provider;
 
-		public ProviderSafeDisposeWrapper(IProviderAggregatedInterfaces provider)
+		public SafeDisposingProviderWrapper(IProviderAggregatedInterfaces provider)
 		{
 			_provider = provider ?? throw new ArgumentNullException(nameof(provider));
 		}
@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Domain.Wrappers
 		{
 			IDataReader dataReader = _provider.GetBatchableIds(identifier, providerConfiguration);
 			return dataReader != null
-				? new DataReaderSafeDisposeWrapper(dataReader)
+				? new SafeDisposingDataReaderWrapper(dataReader)
 				: null;
 		}
 
@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Domain.Wrappers
 		{
 			IDataReader dataReader = _provider.GetData(fields, entryIds, providerConfiguration);
 			return dataReader != null
-				? new DataReaderSafeDisposeWrapper(dataReader)
+				? new SafeDisposingDataReaderWrapper(dataReader)
 				: null;
 		}
 

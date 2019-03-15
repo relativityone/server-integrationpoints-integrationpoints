@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.Domain
 		{
 			Type t = GetType(identifier);
 			IDataSourceProvider provider = CreateInstance(t);
-			return new ProviderCrossAppDomainWrapper(provider);
+			return new CrossAppDomainProviderWrapper(provider);
 		}
 
 		/// <summary>

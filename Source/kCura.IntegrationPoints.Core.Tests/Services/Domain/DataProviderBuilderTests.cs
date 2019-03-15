@@ -54,10 +54,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Domain
 
 			// assert
 			createdProvider.Should()
-				.BeOfType<ProviderSafeDisposeWrapper>(
+				.BeOfType<SafeDisposingProviderWrapper>(
 					"because providers implementing {0} should be wrapped in a {1} type",
 					nameof(IProviderAggregatedInterfaces),
-					nameof(ProviderSafeDisposeWrapper)
+					nameof(SafeDisposingProviderWrapper)
 				);
 		}
 
@@ -73,10 +73,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Domain
 
 			// assert
 			createdProvider.Should()
-				.NotBeOfType<ProviderSafeDisposeWrapper>(
+				.NotBeOfType<SafeDisposingProviderWrapper>(
 					"because providers do not implementing {0} should not be wrapped in a {1} type",
 					nameof(IProviderAggregatedInterfaces),
-					nameof(ProviderSafeDisposeWrapper)
+					nameof(SafeDisposingProviderWrapper)
 				);
 		}
 

@@ -8,16 +8,16 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.Domain.Tests.Wrappers
 {
 	[TestFixture]
-	public class DataReaderSafeDisposeWrapperTests
+	public class SafeDisposingDataReaderWrapperTests
 	{
 		private Mock<IDataReader> _innerDataReaderMock;
-		private DataReaderSafeDisposeWrapper _sut;
+		private SafeDisposingDataReaderWrapper _sut;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_innerDataReaderMock = new Mock<IDataReader>();
-			_sut = new DataReaderSafeDisposeWrapper(_innerDataReaderMock.Object);
+			_sut = new SafeDisposingDataReaderWrapper(_innerDataReaderMock.Object);
 		}
 
 		[Test]
@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Domain.Tests.Wrappers
 			IDataReader innerDataReader = null;
 
 			// act
-			Action callConstructorActionWithNullParameter = () => new DataReaderSafeDisposeWrapper(innerDataReader);
+			Action callConstructorActionWithNullParameter = () => new SafeDisposingDataReaderWrapper(innerDataReader);
 
 			// assert
 			callConstructorActionWithNullParameter.ShouldThrow<ArgumentNullException>();

@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.Domain
 			    throw new Exception(message);
 			}
 
-			return new ProviderCrossAppDomainWrapper(provider);
+			return new CrossAppDomainProviderWrapper(provider);
 		}
 
 #region Logging

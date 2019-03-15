@@ -61,10 +61,10 @@
     <Compile Include="Models\SourceWorkspaceDTOTests.cs" />
     <Compile Include="StackOfDisposablesTests.cs" />
     <Compile Include="Utils\WorkspaceAndJobNameUtilsTests.cs" />
-    <Compile Include="Wrappers\DataReaderCrossAppDomainWrapperTests.cs" />
-    <Compile Include="Wrappers\DataReaderSafeDisposeWrapperTests.cs" />
-    <Compile Include="Wrappers\ProviderCrossAppDomainWrapperTests.cs" />
-    <Compile Include="Wrappers\ProviderSafeDisposeWrapperTests.cs" />
+    <Compile Include="Wrappers\CrossAppDomainDataReaderWrapperTests.cs" />
+    <Compile Include="Wrappers\SafeDisposingDataReaderWrapperTests.cs" />
+    <Compile Include="Wrappers\CrossAppDomainProviderWrapperTests.cs" />
+    <Compile Include="Wrappers\SafeDisposingProviderWrapperTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

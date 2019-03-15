@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Core.Services.Domain
 		{
 			var providedAggregatedInterfaces = provider as IProviderAggregatedInterfaces;
 			return providedAggregatedInterfaces != null
-				? new ProviderSafeDisposeWrapper(providedAggregatedInterfaces)
+				? new SafeDisposingProviderWrapper(providedAggregatedInterfaces)
 				: provider;
 		}
 	}

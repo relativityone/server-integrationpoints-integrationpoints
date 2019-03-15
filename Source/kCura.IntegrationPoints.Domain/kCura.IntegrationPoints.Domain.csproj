@@ -60,7 +60,7 @@
     <Compile Include="Authentication\ClaimsTokenGenerator.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="CurrentUser.cs" />
-    <Compile Include="Wrappers\DataReaderCrossAppDomainWrapper.cs" />
+    <Compile Include="Wrappers\CrossAppDomainDataReaderWrapper.cs" />
     <Compile Include="DefaultProviderFactory.cs" />
     <Compile Include="DomainHelper.cs" />
     <Compile Include="Exceptions\IntegrationPointsException.cs" />
@@ -125,9 +125,9 @@
     <Compile Include="Models\WorkspaceDTO.cs" />
     <Compile Include="DomainManager.cs" />
     <Compile Include="ProviderFactoryBase.cs" />
-    <Compile Include="Wrappers\DataReaderSafeDisposeWrapper.cs" />
+    <Compile Include="Wrappers\SafeDisposingDataReaderWrapper.cs" />
     <Compile Include="Wrappers\IProviderAggregatedInterfaces.cs" />
-    <Compile Include="Wrappers\ProviderCrossAppDomainWrapper.cs" />
+    <Compile Include="Wrappers\CrossAppDomainProviderWrapper.cs" />
     <Compile Include="Readers\DataColumnWithValue.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -140,7 +140,7 @@
     <Compile Include="Synchronizer\IDataSynchronizer.cs" />
     <Compile Include="Utils\WorkspaceAndJobNameUtils.cs" />
     <Compile Include="WindsorContainerSetup.cs" />
-    <Compile Include="Wrappers\ProviderSafeDisposeWrapper.cs" />
+    <Compile Include="Wrappers\SafeDisposingProviderWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

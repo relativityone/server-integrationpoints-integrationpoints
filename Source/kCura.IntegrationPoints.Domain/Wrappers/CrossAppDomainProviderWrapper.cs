@@ -10,17 +10,18 @@ namespace kCura.IntegrationPoints.Domain.Wrappers
 {
 	/// <summary>
 	/// This class wraps <see cref="IDataSourceProvider"/> from another AppDomain
-	/// <see cref="ProviderCrossAppDomainWrapper"/> objects shouldn't be used directly in parent's AppDomain because of issues
+	/// <see cref="CrossAppDomainProviderWrapper"/> objects shouldn't be used directly in parent's AppDomain because of issues
 	/// with multiple calls to <see cref="Dispose"/>. Proxy in parent AppDomain tries to call Dispose in child AppDomain
 	/// but this objects was already disposed there, so <see cref="ObjectDisposedException"/> is thrown. Instead we should
-	/// use <see cref="ProviderSafeDisposeWrapper"/> which guarantees proper IDisposable implementation.
+	/// use <see cref="SafeDisposingProviderWrapper"/> which guarantees proper IDisposable implementation.
 	/// </summary>
-	internal class ProviderCrossAppDomainWrapper : MarshalByRefObject, IProviderAggregatedInterfaces
+	/// <inheritdoc cref="MarshalByRefObject"/>
+	internal class CrossAppDomainProviderWrapper : MarshalByRefObject, IProviderAggregatedInterfaces
 	{
 		private bool _isDisposed;
 		private readonly IDataSourceProvider _provider;
 
-		internal ProviderCrossAppDomainWrapper(IDataSourceProvider provider)
+		internal CrossAppDomainProviderWrapper(IDataSourceProvider provider)
 		{
 			_provider = provider ?? throw new ArgumentNullException(nameof(provider));
 		}
@@ -34,7 +35,7 @@ namespace kCura.IntegrationPoints.Domain.Wrappers
 		{
 			IDataReader dataReader = _provider.GetData(fields, entryIds, providerConfiguration);
 			return dataReader != null
-				? new DataReaderCrossAppDomainWrapper(dataReader)
+				? new CrossAppDomainDataReaderWrapper(dataReader)
 				: null;
 		}
 
@@ -42,7 +43,7 @@ namespace kCura.IntegrationPoints.Domain.Wrappers
 		{
 			IDataReader dataReader = _provider.GetBatchableIds(identifier, providerConfiguration);
 			return dataReader != null
-				? new DataReaderCrossAppDomainWrapper(dataReader)
+				? new CrossAppDomainDataReaderWrapper(dataReader)
 				: null;
 		}
 
@@ -53,7 +54,7 @@ namespace kCura.IntegrationPoints.Domain.Wrappers
 				: string.Empty;
 		}
 
-		#region Cross AppDomain comunication
+		#region Cross AppDomain communication
 		public override object InitializeLifetimeService()
 		{
 			return null;
@@ -77,7 +78,7 @@ namespace kCura.IntegrationPoints.Domain.Wrappers
 			_isDisposed = true;
 		}
 
-		~ProviderCrossAppDomainWrapper()
+		~CrossAppDomainProviderWrapper()
 		{
 			Dispose(false);
 		}
