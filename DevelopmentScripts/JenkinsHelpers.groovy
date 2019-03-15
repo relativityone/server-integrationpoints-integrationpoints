@@ -494,6 +494,14 @@ def updateChromeToLatestVersion()
     }
 }
 
+def deleteDirectoryIfExists(String directoryToDelete)
+{
+    dir(directoryToDelete)
+	{
+		deleteDir()
+	}
+}
+
 
 /*****************
  **** PRIVATE ****
