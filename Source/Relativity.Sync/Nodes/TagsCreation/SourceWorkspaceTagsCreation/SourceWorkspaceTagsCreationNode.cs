@@ -1,6 +1,6 @@
 ﻿using Relativity.Sync.Configuration;
 
-namespace Relativity.Sync.Nodes
+namespace Relativity.Sync.Nodes.TagsCreation.SourceWorkspaceTagsCreation
 {
 	internal sealed class SourceWorkspaceTagsCreationNode : SyncNode<ISourceWorkspaceTagsCreationConfiguration>
 	{

@@ -35,5 +35,9 @@
 			<_Parameter1>kCura.IntegrationPoints.RelativitySync.Tests.Integration</_Parameter1>
 		</AssemblyAttribute>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Executors\" />
+    <Folder Include="ExecutionConstrains\" />
+  </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

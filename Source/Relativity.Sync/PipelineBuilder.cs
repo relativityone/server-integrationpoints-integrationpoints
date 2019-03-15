@@ -4,6 +4,7 @@ using Banzai;
 using Banzai.Autofac;
 using Banzai.Factories;
 using Relativity.Sync.Nodes;
+using Relativity.Sync.Nodes.TagsCreation.SourceWorkspaceTagsCreation;
 
 namespace Relativity.Sync
 {

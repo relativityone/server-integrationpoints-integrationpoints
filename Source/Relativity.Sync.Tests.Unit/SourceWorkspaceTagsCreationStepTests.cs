@@ -4,6 +4,7 @@ using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Nodes;
+using Relativity.Sync.Nodes.TagsCreation.SourceWorkspaceTagsCreation;
 
 namespace Relativity.Sync.Tests.Unit
 {
