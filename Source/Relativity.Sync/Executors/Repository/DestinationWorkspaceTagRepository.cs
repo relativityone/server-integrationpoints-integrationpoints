@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.Executors.FederatedInstance;
 using Relativity.Sync.Executors.SourceWorkspaceTagsCreation;
 using Relativity.Sync.KeplerFactory;
 
@@ -12,11 +13,10 @@ namespace Relativity.Sync.Executors.Repository
 {
 	internal sealed class DestinationWorkspaceTagRepository : IDestinationWorkspaceTagRepository
 	{
-		private const int _FEDERATED_INSTANCE_ID = -1;
-		private const string _DEFAULT_DESTINATION_WORKSPACE_INSTANCE_NAME = "This Instance";
 		private const int _NAME_MAX_LENGTH = 255;
 
 		private readonly ISourceServiceFactoryForUser _sourceServiceFactoryForUser;
+		private readonly IFederatedInstance _federatedInstance;
 		private readonly ISyncLog _logger;
 
 		private static readonly Guid _OBJECT_TYPE_GUID = new Guid("3F45E490-B4CF-4C7D-8BB6-9CA891C0C198");
@@ -26,9 +26,10 @@ namespace Relativity.Sync.Executors.Repository
 		private static readonly Guid _NAME_GUID = new Guid("155649c0-db15-4ee7-b449-bfdf2a54b7b5");
 		private static readonly Guid _DESTINATION_WORKSPACE_ARTIFACTID_GUID = new Guid("207e6836-2961-466b-a0d2-29974a4fad36");
 
-		public DestinationWorkspaceTagRepository(ISourceServiceFactoryForUser sourceServiceFactoryForUser, ISyncLog logger)
+		public DestinationWorkspaceTagRepository(ISourceServiceFactoryForUser sourceServiceFactoryForUser, IFederatedInstance federatedInstance, ISyncLog logger)
 		{
 			_sourceServiceFactoryForUser = sourceServiceFactoryForUser;
+			_federatedInstance = federatedInstance;
 			_logger = logger;
 		}
 
@@ -56,9 +57,10 @@ namespace Relativity.Sync.Executors.Repository
 		{
 			using (IObjectManager objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
+				int federatedInstanceId = await _federatedInstance.GetInstanceIdAsync().ConfigureAwait(false);
 				QueryRequest queryRequest = new QueryRequest()
 				{
-					Condition = $"'{_DESTINATION_WORKSPACE_ARTIFACTID_GUID}' == {destinationWorkspaceArtifactId} AND '{_DESTINATION_INSTANCE_ARTIFACTID_GUID}' == {_FEDERATED_INSTANCE_ID}",
+					Condition = $"'{_DESTINATION_WORKSPACE_ARTIFACTID_GUID}' == {destinationWorkspaceArtifactId} AND '{_DESTINATION_INSTANCE_ARTIFACTID_GUID}' == {federatedInstanceId}",
 					Fields = new List<FieldRef>
 					{
 						new FieldRef { Name = "ArtifactId" },
@@ -76,12 +78,15 @@ namespace Relativity.Sync.Executors.Repository
 
 		public async Task<DestinationWorkspaceTag> CreateAsync(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId, string destinationWorkspaceName)
 		{
+			string federatedInstanceName = await _federatedInstance.GetInstanceNameAsync().ConfigureAwait(false);
+			int federatedInstanceId = await _federatedInstance.GetInstanceIdAsync().ConfigureAwait(false);
+
 			using (IObjectManager objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				CreateRequest request = new CreateRequest
 				{
 					ObjectType = new ObjectTypeRef { Guid = _OBJECT_TYPE_GUID },
-					FieldValues = CreateFieldValues(destinationWorkspaceArtifactId, destinationWorkspaceName, _DEFAULT_DESTINATION_WORKSPACE_INSTANCE_NAME)
+					FieldValues = CreateFieldValues(destinationWorkspaceArtifactId, destinationWorkspaceName, federatedInstanceName, federatedInstanceId)
 				};
 
 				CreateResult result = await objectManager.CreateAsync(sourceWorkspaceArtifactId, request).ConfigureAwait(false);
@@ -90,7 +95,7 @@ namespace Relativity.Sync.Executors.Repository
 				{
 					ArtifactId = result.Object.ArtifactID,
 					DestinationWorkspaceName = destinationWorkspaceName,
-					DestinationInstanceName = _DEFAULT_DESTINATION_WORKSPACE_INSTANCE_NAME,
+					DestinationInstanceName = federatedInstanceName,
 					DestinationWorkspaceArtifactId = destinationWorkspaceArtifactId
 				};
 				return createdTag;
@@ -99,10 +104,13 @@ namespace Relativity.Sync.Executors.Repository
 
 		public async Task UpdateAsync(int sourceWorkspaceArtifactId, DestinationWorkspaceTag destinationWorkspaceTag)
 		{
+			string federatedInstanceName = await _federatedInstance.GetInstanceNameAsync().ConfigureAwait(false);
+			int federatedInstanceId = await _federatedInstance.GetInstanceIdAsync().ConfigureAwait(false);
+
 			UpdateRequest request = new UpdateRequest
 			{
 				Object = new RelativityObjectRef { ArtifactID =  destinationWorkspaceTag.ArtifactId },
-				FieldValues = CreateFieldValues(destinationWorkspaceTag.DestinationWorkspaceArtifactId, destinationWorkspaceTag.DestinationWorkspaceName, _DEFAULT_DESTINATION_WORKSPACE_INSTANCE_NAME),
+				FieldValues = CreateFieldValues(destinationWorkspaceTag.DestinationWorkspaceArtifactId, destinationWorkspaceTag.DestinationWorkspaceName, federatedInstanceName, federatedInstanceId),
 			};
 
 			using (IObjectManager objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
@@ -111,7 +119,7 @@ namespace Relativity.Sync.Executors.Repository
 			}
 		}
 
-		private IEnumerable<FieldRefValuePair> CreateFieldValues(int destinationWorkspaceArtifactId, string destinationWorkspaceName, string federatedInstanceName)
+		private IEnumerable<FieldRefValuePair> CreateFieldValues(int destinationWorkspaceArtifactId, string destinationWorkspaceName, string federatedInstanceName, int federatedInstanceId)
 		{
 			FieldRefValuePair[] pairs =
 			{
@@ -138,7 +146,7 @@ namespace Relativity.Sync.Executors.Repository
 				new FieldRefValuePair
 				{
 					Field = new FieldRef {Guid = _DESTINATION_INSTANCE_ARTIFACTID_GUID},
-					Value = _FEDERATED_INSTANCE_ID
+					Value = federatedInstanceId
 				}
 			};
 

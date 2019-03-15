@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Executors.FederatedInstance;
 using Relativity.Sync.Executors.Repository;
 using Relativity.Sync.Executors.TagsCreation;
 
@@ -11,13 +12,16 @@ namespace Relativity.Sync.Executors.SourceWorkspaceTagsCreation
 	internal sealed class SourceWorkspaceTagsCreationStep : IExecutor<ISourceWorkspaceTagsCreationConfiguration>
 	{
 		private readonly IDestinationWorkspaceTagRepository _destinationWorkspaceTagRepository;
-		private readonly IAPILog _logger;
 		private readonly IWorkspaceNameQuery _workspaceNameQuery;
+		private readonly IFederatedInstance _federatedInstance;
+		private readonly IAPILog _logger;
 
-		public SourceWorkspaceTagsCreationStep(IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository, IWorkspaceNameQuery workspaceNameQuery, IAPILog logger)
+		public SourceWorkspaceTagsCreationStep(IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository, IWorkspaceNameQuery workspaceNameQuery,
+			IFederatedInstance federatedInstance, IAPILog logger)
 		{
 			_destinationWorkspaceTagRepository = destinationWorkspaceTagRepository;
 			_workspaceNameQuery = workspaceNameQuery;
+			_federatedInstance = federatedInstance;
 			_logger = logger;
 		}
 
@@ -30,7 +34,7 @@ namespace Relativity.Sync.Executors.SourceWorkspaceTagsCreation
 		private async Task<int> CreateOrUpdateDestinationWorkspaceTag(ISourceWorkspaceTagsCreationConfiguration configuration)
 		{
 			string destinationWorkspaceName = await _workspaceNameQuery.GetWorkspaceNameAsync(configuration.DestinationWorkspaceArtifactId).ConfigureAwait(false);
-			string destinationInstanceName = "some other instance";
+			string destinationInstanceName = await _federatedInstance.GetInstanceNameAsync().ConfigureAwait(false);
 
 			DestinationWorkspaceTag tag = await _destinationWorkspaceTagRepository.ReadAsync(configuration.SourceWorkspaceArtifactId, configuration.DestinationWorkspaceArtifactId).ConfigureAwait(false);
 			if (tag == null)
