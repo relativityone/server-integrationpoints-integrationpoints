@@ -3,23 +3,21 @@ using System.Threading;
 using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Executors.Repository;
 using Relativity.Sync.Executors.TagsCreation;
 
 namespace Relativity.Sync.Executors.SourceWorkspaceTagsCreation
 {
 	internal sealed class SourceWorkspaceTagsCreationStep : IExecutor<ISourceWorkspaceTagsCreationConfiguration>
 	{
-		private readonly IDestinationWorkspaceTagQuery _destinationWorkspaceTagQuery;
-		private readonly IDestinationWorkspaceTagCreator _destinationWorkspaceTagCreator;
+		private readonly IDestinationWorkspaceTagRepository _destinationWorkspaceTagRepository;
 		private readonly IAPILog _logger;
 		private readonly IWorkspaceNameQuery _workspaceNameQuery;
 
-		public SourceWorkspaceTagsCreationStep(IDestinationWorkspaceTagQuery destinationWorkspaceTagQuery, IWorkspaceNameQuery workspaceNameQuery,
-			IDestinationWorkspaceTagCreator destinationWorkspaceTagCreator, IAPILog logger)
+		public SourceWorkspaceTagsCreationStep(IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository, IWorkspaceNameQuery workspaceNameQuery, IAPILog logger)
 		{
-			_destinationWorkspaceTagQuery = destinationWorkspaceTagQuery;
+			_destinationWorkspaceTagRepository = destinationWorkspaceTagRepository;
 			_workspaceNameQuery = workspaceNameQuery;
-			_destinationWorkspaceTagCreator = destinationWorkspaceTagCreator;
 			_logger = logger;
 		}
 
@@ -34,10 +32,10 @@ namespace Relativity.Sync.Executors.SourceWorkspaceTagsCreation
 			string destinationWorkspaceName = await _workspaceNameQuery.GetWorkspaceNameAsync(configuration.DestinationWorkspaceArtifactId).ConfigureAwait(false);
 			string destinationInstanceName = "some other instance";
 
-			DestinationWorkspaceTag tag = await _destinationWorkspaceTagQuery.QueryAsync(configuration).ConfigureAwait(false);
+			DestinationWorkspaceTag tag = await _destinationWorkspaceTagRepository.QueryAsync(configuration.SourceWorkspaceArtifactId, configuration.DestinationWorkspaceArtifactId).ConfigureAwait(false);
 			if (tag == null)
 			{
-				tag = await _destinationWorkspaceTagCreator.CreateAsync(configuration.SourceWorkspaceArtifactId, configuration.DestinationWorkspaceArtifactId, destinationWorkspaceName).ConfigureAwait(false);
+				tag = await _destinationWorkspaceTagRepository.CreateAsync(configuration.SourceWorkspaceArtifactId, configuration.DestinationWorkspaceArtifactId, destinationWorkspaceName).ConfigureAwait(false);
 			}
 			else if (!destinationWorkspaceName.Equals(tag.DestinationWorkspaceName, StringComparison.InvariantCulture) ||
 				!destinationInstanceName.Equals(tag.DestinationInstanceName, StringComparison.InvariantCulture))
@@ -51,15 +49,16 @@ namespace Relativity.Sync.Executors.SourceWorkspaceTagsCreation
 			return tag.ArtifactId;
 		}
 
+		private Task UpdateDestinationWorkspaceTagAsync(DestinationWorkspaceTag tag)
+		{
+			throw new NotImplementedException();
+		}
+
 		private Task LinkDestinationWorkspaceToJobHistoryAsync(int tagArtifactId, int jobArtifactId)
 		{
 			_logger.LogVerbose("Linking destination workspace tag {tagArtifactId} to job {jobArtifactId}", tagArtifactId, jobArtifactId);
 			throw new NotImplementedException();
 		}
 
-		private Task UpdateDestinationWorkspaceTagAsync(DestinationWorkspaceTag tag)
-		{
-			throw new NotImplementedException();
-		}
 	}
 }
