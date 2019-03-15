@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Relativity.Sync.Nodes.TagsCreation
+namespace Relativity.Sync.Executors.TagsCreation
 {
 	internal interface IWorkspaceNameQuery
 	{

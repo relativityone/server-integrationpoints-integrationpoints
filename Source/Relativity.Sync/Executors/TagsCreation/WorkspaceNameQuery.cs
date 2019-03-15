@@ -5,7 +5,7 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
 
-namespace Relativity.Sync.Nodes.TagsCreation
+namespace Relativity.Sync.Executors.TagsCreation
 {
 	internal sealed class WorkspaceNameQuery : IWorkspaceNameQuery
 	{

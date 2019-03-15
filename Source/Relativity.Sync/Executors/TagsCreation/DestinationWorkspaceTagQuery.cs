@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Executors.SourceWorkspaceTagsCreation;
 using Relativity.Sync.KeplerFactory;
-using Relativity.Sync.Nodes.TagsCreation.SourceWorkspaceTagsCreation;
 
-namespace Relativity.Sync.Nodes.TagsCreation
+namespace Relativity.Sync.Executors.TagsCreation
 {
 	internal sealed class DestinationWorkspaceTagQuery : IDestinationWorkspaceTagQuery
 	{
@@ -27,13 +27,13 @@ namespace Relativity.Sync.Nodes.TagsCreation
 			_sourceServiceFactoryForUser = sourceServiceFactoryForUser;
 		}
 
-		public async Task<SourceWorkspaceTagsCreation.DestinationWorkspaceTag> QueryAsync(ISourceWorkspaceTagsCreationConfiguration configuration)
+		public async Task<DestinationWorkspaceTag> QueryAsync(ISourceWorkspaceTagsCreationConfiguration configuration)
 		{
 			RelativityObject tag = await QueryRelativityObjectTag(configuration).ConfigureAwait(false);
 
 			if (tag != null)
 			{
-				SourceWorkspaceTagsCreation.DestinationWorkspaceTag destinationWorkspaceTag = new SourceWorkspaceTagsCreation.DestinationWorkspaceTag();
+				DestinationWorkspaceTag destinationWorkspaceTag = new DestinationWorkspaceTag();
 				destinationWorkspaceTag.ArtifactId = tag.ArtifactID;
 				destinationWorkspaceTag.DestinationWorkspaceName = tag[_DESTINATION_WORKSPACE_NAME_GUID].Value.ToString();
 				destinationWorkspaceTag.DestinationInstanceName = tag[_DESTINATION_INSTANCE_NAME_GUID].Value.ToString();

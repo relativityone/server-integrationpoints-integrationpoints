@@ -3,20 +3,19 @@ using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Nodes;
-using Relativity.Sync.Nodes.TagsCreation.SourceWorkspaceTagsCreation;
+using Relativity.Sync.ExecutionConstrains;
 
 namespace Relativity.Sync.Tests.Unit
 {
 	[TestFixture]
-	public sealed class SourceWorkspaceTagsCreationStepTests
+	public sealed class SourceWorkspaceTagsCreationExecutionConstrainsTests
 	{
-		private SourceWorkspaceTagsCreationStep _sut;
+		private SourceWorkspaceTagsCreationExecutionConstrains _sut;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_sut = new SourceWorkspaceTagsCreationStep();
+			_sut = new SourceWorkspaceTagsCreationExecutionConstrains();
 		}
 
 		[Test]
