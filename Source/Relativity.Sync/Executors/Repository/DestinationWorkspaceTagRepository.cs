@@ -33,7 +33,7 @@ namespace Relativity.Sync.Executors.Repository
 		}
 
 
-		public async Task<DestinationWorkspaceTag> QueryAsync(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId)
+		public async Task<DestinationWorkspaceTag> ReadAsync(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId)
 		{
 			RelativityObject tag = await QueryRelativityObjectTag(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId).ConfigureAwait(false);
 
