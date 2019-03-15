@@ -185,7 +185,7 @@ timestamps
 			{
 				def publishArtifactsDirectory = 'publishArtifactsWorkspace'
 				
-				deleteDirectoryIfExists(publishArtifactsDirectory)
+				jenkinsHelpers.deleteDirectoryIfExists(publishArtifactsDirectory)
 				dir(publishArtifactsDirectory)
 				{
 					stage ('Unstash Package artifacts')
