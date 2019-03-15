@@ -5,5 +5,6 @@
 		public int ArtifactId { get; set; }
 		public string DestinationWorkspaceName { get; set; }
 		public string DestinationInstanceName { get; set; }
+		public int DestinationWorkspaceArtifactId { get; set; }
 	}
 }

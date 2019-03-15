@@ -42,16 +42,11 @@ namespace Relativity.Sync.Executors.SourceWorkspaceTagsCreation
 			{
 				tag.DestinationWorkspaceName = destinationWorkspaceName;
 				tag.DestinationInstanceName = destinationInstanceName;
-				await UpdateDestinationWorkspaceTagAsync(tag).ConfigureAwait(false);
+				await _destinationWorkspaceTagRepository.UpdateAsync(configuration.SourceWorkspaceArtifactId, tag).ConfigureAwait(false);
 			}
 
 			await LinkDestinationWorkspaceToJobHistoryAsync(tag.ArtifactId, configuration.JobArtifactId).ConfigureAwait(false);
 			return tag.ArtifactId;
-		}
-
-		private Task UpdateDestinationWorkspaceTagAsync(DestinationWorkspaceTag tag)
-		{
-			throw new NotImplementedException();
 		}
 
 		private Task LinkDestinationWorkspaceToJobHistoryAsync(int tagArtifactId, int jobArtifactId)
