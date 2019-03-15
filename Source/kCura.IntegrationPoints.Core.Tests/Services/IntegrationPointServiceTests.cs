@@ -176,7 +176,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_integrationPointRepository.Read(_integrationPointArtifactId).Returns(_integrationPoint);
 			_caseServiceContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(_sourceProviderId).Returns(_sourceProvider);
 			_caseServiceContext.RsapiService.RelativityObjectManager.Read<DestinationProvider>(_destinationProviderId).Returns(_destinationProvider);
-			_integrationPointRepository.Read(_integrationPointArtifactId).Returns(_integrationPoint);
+			_caseServiceContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(_integrationPointArtifactId).Returns(_integrationPoint);
 			_caseServiceContext.RsapiService.RelativityObjectManager.Read<IntegrationPointType>(_integrationPointTypeArtifactId).Returns(_integrationPointType);
 		}
 
@@ -1422,7 +1422,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			Data.IntegrationPoint integrationPoint = _instance.GetRdo(_integrationPointArtifactId);
 
 			//Assert
-			_integrationPointRepository.Received(1).Read(_integrationPointArtifactId);
+			_caseServiceContext.RsapiService.RelativityObjectManager.Received(1).Read<Data.IntegrationPoint>(_integrationPointArtifactId);
 			Assert.IsNotNull(integrationPoint);
 		}
 
@@ -1430,7 +1430,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		public void GetRdo_ArtifactIdDoesNotExist_ExceptionThrown_Test()
 		{
 			//Arrange
-			_integrationPointRepository.Read(_integrationPointArtifactId).Throws<Exception>();
+			_caseServiceContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(_integrationPointArtifactId).Throws<Exception>();
 
 			//Act
 			Assert.Throws<Exception>(() => _instance.GetRdo(_integrationPointArtifactId), "Unable to retrieve Integration Point.");
