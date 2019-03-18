@@ -10,7 +10,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 {
 	public class LdapController : ApiController
 	{
-		private ICPHelper _cpHelper;
+		private readonly ICPHelper _cpHelper;
 	    private readonly ILDAPSettingsReader _settingsReader;
 	    private readonly ISerializer _serializer;
 		private readonly ILDAPServiceFactory _ldapServiceFactory;

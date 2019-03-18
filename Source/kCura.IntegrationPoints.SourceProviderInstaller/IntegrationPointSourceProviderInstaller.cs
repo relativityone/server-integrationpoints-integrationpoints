@@ -168,7 +168,9 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		protected override void OnRaisePostInstallPreExecuteEvent()
 		{
 			if (RaisePostInstallPreExecuteEvent != null)
+			{
 				RaisePostInstallPreExecuteEvent();
+			}
 		}
 
 		/// <summary>
@@ -179,7 +181,9 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		protected void OnRaisePostInstallPostExecuteEvent(bool isInstalled, Exception ex)
 		{
 			if (RaisePostInstallPostExecuteEvent != null)
+			{
 				RaisePostInstallPostExecuteEvent(isInstalled, ex);
+			}
 		}
 	}
 }

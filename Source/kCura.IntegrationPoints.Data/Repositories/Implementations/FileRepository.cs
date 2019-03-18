@@ -11,7 +11,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class FileRepository : IFileRepository
 	{
-		private ICoreContext _coreContext;
+		private readonly ICoreContext _coreContext;
 
 		public FileRepository(ICoreContext coreContext)
 		{

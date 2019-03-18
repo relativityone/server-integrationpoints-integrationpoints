@@ -6,8 +6,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
 	public class FieldParserFactory : IFieldParserFactory
 	{
-		private IWinEddsLoadFileFactory _winEddsLoadFileFactory;
-		private IWinEddsFileReaderFactory _winEddsFileReaderFactory;
+		private readonly IWinEddsLoadFileFactory _winEddsLoadFileFactory;
+		private readonly IWinEddsFileReaderFactory _winEddsFileReaderFactory;
 
 		public FieldParserFactory(IWinEddsLoadFileFactory winEddsLoadFileFactory, IWinEddsFileReaderFactory winEddsFileReaderFactory)
 		{

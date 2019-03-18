@@ -8,10 +8,10 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 {
 	public class ExportJobErrorService
 	{
-		private readonly IScratchTableRepository[] _scratchTable;
-		private readonly IRepositoryFactory _repositoryFactory;
 		private int? _flushErrorBatchSize = null;
-		private List<string> _erroredDocumentIds;
+		private readonly IRepositoryFactory _repositoryFactory;
+		private readonly IScratchTableRepository[] _scratchTable;
+		private readonly List<string> _erroredDocumentIds;
 		private static readonly object _lock = new Object();
 		public int FlushErrorBatchSize
 		{

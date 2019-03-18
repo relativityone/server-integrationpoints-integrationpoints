@@ -33,9 +33,9 @@ using Relativity.Services.Interfaces.ViewField;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers
 {
-	internal class ContainerInstaller
+	internal static class ContainerInstaller
 	{
-	    private static IInstanceSettingRepository _instanceSettings;
+		private static IInstanceSettingRepository _instanceSettings;
 
 		private const int _DEF_EXPORT_BATCH_SIZE = 1000;
 		private const int _DEF_EXPORT_THREAD_COUNT = 4;
@@ -60,22 +60,22 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 
 			windsorContainer.Register(Component.For<ICredentialProvider>().ImplementedBy<UserPasswordCredentialProvider>());
 			windsorContainer.Register(Component.For<IExportFieldsService>().ImplementedBy<ExportFieldsService>().LifestyleTransient());
-            windsorContainer.Register(Component.For<ISqlServiceFactory>().ImplementedBy<HelperConfigSqlServiceFactory>().LifestyleSingleton());
-            windsorContainer.Register(Component.For<IServiceManagerProvider>().ImplementedBy<ServiceManagerProvider>().LifestyleTransient());
+			windsorContainer.Register(Component.For<ISqlServiceFactory>().ImplementedBy<HelperConfigSqlServiceFactory>().LifestyleSingleton());
+			windsorContainer.Register(Component.For<IServiceManagerProvider>().ImplementedBy<ServiceManagerProvider>().LifestyleTransient());
 			windsorContainer.Register(Component.For<IHelper>().Instance(new TestHelper()).LifestyleTransient());
 
-            windsorContainer.Register(Component.For<IServicesMgr>().UsingFactoryMethod(f => f.Resolve<IHelper>().GetServicesManager()));
+			windsorContainer.Register(Component.For<IServicesMgr>().UsingFactoryMethod(f => f.Resolve<IHelper>().GetServicesManager()));
 
 			windsorContainer.Register(Component.For<IFactoryConfigBuilder>().ImplementedBy<FactoryConfigBuilder>().LifestyleTransient());
 
 			_instanceSettings = Substitute.For<IInstanceSettingRepository>();
-		    _instanceSettings.GetConfigurationValue(Domain.Constants.INTEGRATION_POINT_INSTANCE_SETTING_SECTION,
-		        Domain.Constants.REPLACE_WEB_API_WITH_EXPORT_CORE).Returns("False");
+			_instanceSettings.GetConfigurationValue(Domain.Constants.INTEGRATION_POINT_INSTANCE_SETTING_SECTION,
+				Domain.Constants.REPLACE_WEB_API_WITH_EXPORT_CORE).Returns("False");
 
-            windsorContainer.Register(Component.For<IInstanceSettingRepository>()
-                .Instance(_instanceSettings)
-                .LifestyleTransient());
-		    windsorContainer.Register(Component.For<IExtendedExporterFactory>().ImplementedBy<ExtendedExporterFactory>().LifestyleTransient());
+			windsorContainer.Register(Component.For<IInstanceSettingRepository>()
+				.Instance(_instanceSettings)
+				.LifestyleTransient());
+			windsorContainer.Register(Component.For<IExtendedExporterFactory>().ImplementedBy<ExtendedExporterFactory>().LifestyleTransient());
 			windsorContainer.Register(Component.For<IJobInfoFactory>().Instance(Substitute.For<IJobInfoFactory>()).LifestyleTransient());
 			windsorContainer.Register(Component.For<IJobInfo>().Instance(Substitute.For<IJobInfo>()).LifestyleTransient());
 			windsorContainer.Register(Component.For<ISerializer>().Instance(Substitute.For<ISerializer>()).LifestyleTransient());

@@ -66,44 +66,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				}
 			};
 
-			//FieldMap mapIdentifier = FieldMaps.CreateIdentifierFieldMapForRelativityProvider(workspaceId, workspaceId);
-
 			FieldMap[] allFieldMaps = { mapIdentifier };
-
-			//FieldMap datefield2 = new FieldMap
-			//{
-			//	FieldMapType = FieldMapTypeEnum.None,
-			//	SourceField = new FieldEntry()
-			//	{
-			//		DisplayName = "Date Sent",
-			//		IsIdentifier = false,
-			//		FieldIdentifier = "Date Sent",
-			//	},
-			//	DestinationField = new FieldEntry()
-			//	{
-			//		DisplayName = "Date Sent",
-			//		FieldIdentifier = "1035355",
-			//		IsIdentifier = false,
-			//	}
-			//};
-
-			// TODO: make this work
-			//FieldMap mapIdentifier2 = new FieldMap
-			//{
-			//	FieldMapType = FieldMapTypeEnum.NativeFilePath,
-			//	SourceField = new FieldEntry()
-			//	{
-			//		DisplayName = "NATIVE_FILE_PATH_001",
-			//		IsIdentifier = false,
-			//		FieldIdentifier = "NATIVE_FILE_PATH_001",
-			//	},
-			//	DestinationField = new FieldEntry()
-			//	{
-			//		DisplayName = "NATIVE_FILE_PATH_001",
-			//		FieldIdentifier = "NATIVE_FILE_PATH_001",
-			//		IsIdentifier = false,
-			//	}
-			//};
 
 			DataTableReader reader = importTable.CreateDataReader();
 			var context = new DefaultTransferContext(reader);

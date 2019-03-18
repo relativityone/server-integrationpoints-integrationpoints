@@ -76,7 +76,10 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static void DeleteWorkspace(int workspaceArtifactId)
 		{
-			if (workspaceArtifactId == 0) return;
+			if (workspaceArtifactId == 0)
+			{
+				return;
+			}
 			//Create workspace DTO
 			using (IRSAPIClient proxy = Rsapi.CreateRsapiClient())
 			{

@@ -8,13 +8,13 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factories
 {
-	public class CorrespondingJobDeleteFactory
+	public static class CorrespondingJobDeleteFactory
 	{
 		public static ICorrespondingJobDelete Create(IHelper helper)
 		{
 			IAgentService agentService = new AgentService(helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
-		    IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(agentService, helper);
-		    IJobService jobService = new JobService(agentService, jobServiceDataProvider, helper);
+			IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(agentService, helper);
+			IJobService jobService = new JobService(agentService, jobServiceDataProvider, helper);
 			return new CorrespondingJobDelete(jobService);
 		}
 	}

@@ -154,7 +154,9 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		protected void OnRaisePreUninstallPreExecuteEvent()
 		{
 			if (RaisePreUninstallPreExecuteEvent != null)
+			{
 				RaisePreUninstallPreExecuteEvent();
+			}
 		}
 
 		/// <summary>
@@ -163,7 +165,9 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		protected void OnRaisePreUninstallPostExecuteEvent(bool isUninstalled, Exception ex)
 		{
 			if (RaisePreUninstallPostExecuteEvent != null)
+			{
 				RaisePreUninstallPostExecuteEvent(isUninstalled, ex);
+			}
 		}
 
 		private IRelativityObjectManager CreateObjectManager()

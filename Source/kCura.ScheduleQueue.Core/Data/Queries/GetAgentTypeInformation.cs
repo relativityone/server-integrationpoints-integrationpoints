@@ -9,7 +9,8 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 {
 	public class GetAgentTypeInformation
 	{
-		private IDBContext DBContext;
+		private readonly IDBContext DBContext;
+
 		public GetAgentTypeInformation(IDBContext dbContext)
 		{
 			this.DBContext = dbContext;
@@ -32,9 +33,13 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 
 			DataRow row = null;
 			if (dataTable != null && dataTable.Rows != null && dataTable.Rows.Count > 0)
+			{
 				row = dataTable.Rows[0];
+			}
 			else
+			{
 				row = null;
+			}
 
 			return row;
 		}

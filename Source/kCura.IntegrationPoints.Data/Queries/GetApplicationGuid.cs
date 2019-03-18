@@ -7,7 +7,8 @@ namespace kCura.IntegrationPoints.Data.Queries
 {
 	public class GetApplicationGuid
 	{
-		private IDBContext _caseDBcontext;
+		private readonly IDBContext _caseDBcontext;
+
 		public GetApplicationGuid(IDBContext caseDBcontext)
 		{
 			_caseDBcontext = caseDBcontext;

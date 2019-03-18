@@ -602,7 +602,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		private string GetOperationNameForRequestType<T>()
 		{
-			return typeof(T).Name.Replace("Request", string.Empty).ToUpper();
+			return typeof(T).Name.Replace("Request", string.Empty).ToUpperInvariant();
 		}
 
 		private string GetErrorMessage<T>(string rdoType)

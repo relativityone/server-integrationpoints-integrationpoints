@@ -106,12 +106,18 @@ namespace kCura.IntegrationPoints.LDAPProvider
 				searcher.PropertyNamesOnly = _settings.PropertyNamesOnly;
 				searcher.ReferralChasing = _settings.ReferralChasing;
 				searcher.SearchScope = _settings.SearchScope;
-				if (_fieldsToLoad != null && _fieldsToLoad.Count > 0) searcher.PropertiesToLoad.AddRange(_fieldsToLoad.ToArray());
+				if (_fieldsToLoad != null && _fieldsToLoad.Count > 0)
+				{
+					searcher.PropertiesToLoad.AddRange(_fieldsToLoad.ToArray());
+				}
 
 				if (!overrideSizeLimit.HasValue)
 				{
 					searcher.PageSize = _settings.PageSize;
-					if (searcher.PageSize == 0) searcher.SizeLimit = _settings.SizeLimit;
+					if (searcher.PageSize == 0)
+					{
+						searcher.SizeLimit = _settings.SizeLimit;
+					}
 				}
 				else
 				{

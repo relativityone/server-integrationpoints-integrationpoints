@@ -2,7 +2,7 @@
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 {
-	public class SetPromoteEligibleFieldCommandFactory
+	public static class SetPromoteEligibleFieldCommandFactory
 	{
 		public static ICommand Create(IHelper helper, int workspaceArtifactId)
 		{

@@ -220,6 +220,8 @@
         <Project path="Source\kCura.IntegrationPoints.Web.Tests.Integration\kCura.IntegrationPoints.Web.Tests.Integration.csproj" />
         <Project path="Source\kCura.ScheduleQueue.Core.Tests\kCura.ScheduleQueue.Core.Tests.csproj" />
         <Project path="Source\kCura.ScheduleQueue.Core.Tests.Integration\kCura.ScheduleQueue.Core.Tests.Integration.csproj" />
+		<Project path="Source\Rip.E2ETests\Rip.E2ETests.csproj" />
+		<Project path="Source\Rip.SystemTests\Rip.SystemTests.csproj" />
       </Ignore>
     </Projects>
     <References>

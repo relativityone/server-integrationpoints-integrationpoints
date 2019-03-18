@@ -43,13 +43,13 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 
 		private static class Fields
 		{
-			internal static string Name = "Name";
-			internal static string Choices = "Choices";
-			internal static string ObjectTypeArtifactTypeId = "Object Type Artifact Type ID";
-			internal static string FieldType = "Field Type";
-			internal static string FieldTypeId = "Field Type ID";
-			internal static string FieldTypeName = "Field Type Name";
-			internal static string IsIdentifier = "Is Identifier";
+			internal static readonly string Name = "Name";
+			internal static readonly string Choices = "Choices";
+			internal static readonly string ObjectTypeArtifactTypeId = "Object Type Artifact Type ID";
+			internal static readonly string FieldType = "Field Type";
+			internal static readonly string FieldTypeId = "Field Type ID";
+			internal static readonly string FieldTypeName = "Field Type Name";
+			internal static readonly string IsIdentifier = "Is Identifier";
 		}
 
 		private ArtifactDTO[] GetRelativityFields(int sourceWorkspaceId, int rdoTypeId)

@@ -34,7 +34,9 @@ namespace kCura.IntegrationPoints.Web.Attributes
 		public override void ExecuteResult(ControllerContext context)
 		{
 			if (context == null)
+			{
 				throw new ArgumentNullException("context");
+			}
 
 			var response = context.HttpContext.Response;
 
@@ -42,13 +44,19 @@ namespace kCura.IntegrationPoints.Web.Attributes
 			response.ContentType = string.IsNullOrEmpty(ContentType) ? "application/json" : ContentType;
 
 			if ((StatusCode >= 400) && (StatusCode <= 599))
+			{
 				response.TrySkipIisCustomErrors = true;
+			}
 
 			if (ContentEncoding != null)
+			{
 				response.ContentEncoding = ContentEncoding;
+			}
 
 			if (Data == null)
+			{
 				return;
+			}
 
 			var formatting = Formatting.None;
 

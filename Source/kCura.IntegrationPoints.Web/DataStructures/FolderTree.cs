@@ -6,8 +6,8 @@ namespace kCura.IntegrationPoints.Web.DataStructures
 {
 	public class FolderTree
 	{
-		private string _pathSeparatorString = @"\";
-		private char _pathSeparatorChar = '\\';
+		private readonly string _pathSeparatorString = @"\";
+		private readonly char _pathSeparatorChar = '\\';
 
 		private readonly FolderTreeCollection _root;
 		private int _count;
@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.Web.DataStructures
 	#region FolderTreeCollection
 	internal class FolderTreeCollection : Dictionary<string, Folder>
 	{
-		private string _pathSeparator = @"\";
+		private readonly string _pathSeparator = @"\";
 
 		public int AddEntry(string folderPath, int begIndex)
 		{

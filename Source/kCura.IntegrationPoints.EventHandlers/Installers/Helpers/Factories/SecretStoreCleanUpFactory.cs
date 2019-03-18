@@ -3,7 +3,7 @@ using kCura.IntegrationPoints.EventHandlers.Installers.Helpers.Implementations;
 
 namespace kCura.IntegrationPoints.EventHandlers.Installers.Helpers.Factories
 {
-	public class SecretStoreCleanUpFactory
+	public static class SecretStoreCleanUpFactory
 	{
 		public static ISecretStoreCleanUp Create(int workspaceArtifactId)
 		{

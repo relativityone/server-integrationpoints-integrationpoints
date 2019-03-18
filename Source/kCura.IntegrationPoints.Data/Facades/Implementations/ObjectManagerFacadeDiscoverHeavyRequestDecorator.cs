@@ -166,7 +166,7 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 
 		private string GetOperationNameForRequestType<T>()
 		{
-			return typeof(T).Name.Replace("Request", string.Empty).ToUpper();
+			return typeof(T).Name.Replace("Request", string.Empty).ToUpperInvariant();
 		}
 
 		protected virtual void Dispose(bool disposing)

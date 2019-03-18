@@ -7,7 +7,7 @@ using Relativity.SecretCatalog;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factories
 {
-	public class IntegrationPointSecretDeleteFactory
+	public static class IntegrationPointSecretDeleteFactory
 	{
 		public static IIntegrationPointSecretDelete Create(IEHHelper helper)
 		{
