@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.SourceWorkspaceTagsCreation;
 
 namespace Relativity.Sync.Executors.Repository

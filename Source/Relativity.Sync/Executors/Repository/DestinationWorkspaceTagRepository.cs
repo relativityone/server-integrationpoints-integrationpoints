@@ -32,11 +32,13 @@ namespace Relativity.Sync.Executors.Repository
 			_federatedInstance = federatedInstance;
 			_logger = logger;
 		}
-
-
+		
 		public async Task<DestinationWorkspaceTag> ReadAsync(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId)
 		{
-			RelativityObject tag = await QueryRelativityObjectTag(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId).ConfigureAwait(false);
+			_logger.LogVerbose("Reading destination workspace tag. Source workspace artifact ID: {sourceWorkspaceArtifactId} " +
+				"Destination workspace artifact ID: {destinationWorkspaceArtifactId}",
+				sourceWorkspaceArtifactId, destinationWorkspaceArtifactId);
+			RelativityObject tag = await QueryRelativityObjectTagAsync(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId).ConfigureAwait(false);
 
 			if (tag != null)
 			{
@@ -53,7 +55,7 @@ namespace Relativity.Sync.Executors.Repository
 			return null;
 		}
 
-		private async Task<RelativityObject> QueryRelativityObjectTag(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId)
+		private async Task<RelativityObject> QueryRelativityObjectTagAsync(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId)
 		{
 			using (IObjectManager objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
@@ -78,6 +80,10 @@ namespace Relativity.Sync.Executors.Repository
 
 		public async Task<DestinationWorkspaceTag> CreateAsync(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId, string destinationWorkspaceName)
 		{
+			_logger.LogVerbose("Creating destination workspace tag in source workspace ID: {sourceWorkspaceArtifactId} " +
+					"Destination workspace ID: {destinationWorkspaceArtifactId} " +
+					"Destination workspace name: {destinationWorkspaceName}",
+					sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, destinationWorkspaceName);
 			string federatedInstanceName = await _federatedInstance.GetInstanceNameAsync().ConfigureAwait(false);
 			int federatedInstanceId = await _federatedInstance.GetInstanceIdAsync().ConfigureAwait(false);
 
@@ -104,6 +110,7 @@ namespace Relativity.Sync.Executors.Repository
 
 		public async Task UpdateAsync(int sourceWorkspaceArtifactId, DestinationWorkspaceTag destinationWorkspaceTag)
 		{
+			_logger.LogVerbose("Updating destination workspace tag in source workspace ID: {sourceWorkspaceArtifactId}", sourceWorkspaceArtifactId);
 			string federatedInstanceName = await _federatedInstance.GetInstanceNameAsync().ConfigureAwait(false);
 			int federatedInstanceId = await _federatedInstance.GetInstanceIdAsync().ConfigureAwait(false);
 
