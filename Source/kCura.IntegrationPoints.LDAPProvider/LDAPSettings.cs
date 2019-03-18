@@ -77,7 +77,6 @@ namespace kCura.IntegrationPoints.LDAPProvider
 		/// One of the SearchScope values. The default is Subtree.
 		/// </summary>
 		public bool ImportNested { get; set; }
-		//public SearchScopeEnum ProviderSearchScope { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the search retrieves only the names of attributes to which values have been assigned.

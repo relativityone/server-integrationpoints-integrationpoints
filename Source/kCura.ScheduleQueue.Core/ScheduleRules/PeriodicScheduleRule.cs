@@ -237,8 +237,15 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 			{
 				var returnValue = new StringBuilder();
 
-				if (StartDate.HasValue) returnValue.Append(string.Format("Recurring job. Scheduled as: starting on {0}", StartDate.Value.ToString("d")));
-				if (EndDate.HasValue) returnValue.Append(string.Format(", ending on {0}", EndDate.Value.ToString("d")));
+				if (StartDate.HasValue)
+				{
+					returnValue.Append(string.Format("Recurring job. Scheduled as: starting on {0}", StartDate.Value.ToString("d")));
+				}
+
+				if (EndDate.HasValue)
+				{
+					returnValue.Append(string.Format(", ending on {0}", EndDate.Value.ToString("d")));
+				}
 				switch (Interval)
 				{
 					case ScheduleInterval.Daily:
@@ -247,13 +254,22 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 
 					case ScheduleInterval.Weekly:
 						returnValue.Append(string.Format(", run this job every {0}", Reoccur.HasValue && Reoccur.Value > 1 ? string.Format("{0} week(s)", Reoccur.Value) : "week"));
-						if (DaysToRun.HasValue) returnValue.Append(string.Format(" on {0}", DaysOfWeekToString(DaysToRun.Value)));
+						if (DaysToRun.HasValue)
+						{
+							returnValue.Append(string.Format(" on {0}", DaysOfWeekToString(DaysToRun.Value)));
+						}
 						break;
 
 					case ScheduleInterval.Monthly:
 						returnValue.Append(string.Format(", run this job every {0}", Reoccur.HasValue && Reoccur.Value > 1 ? string.Format("{0} month(s)", Reoccur.Value) : "month"));
-						if (DayOfMonth.HasValue) returnValue.Append(string.Format(" on {0} day", DayOfMonth.Value));
-						else if (OccuranceInMonth.HasValue) returnValue.Append(string.Format(" the {0} {1} of the month", OccuranceInMonth.Value.ToString(), DaysOfWeekToString(DaysToRun.Value)));
+						if (DayOfMonth.HasValue)
+						{
+							returnValue.Append(string.Format(" on {0} day", DayOfMonth.Value));
+						}
+						else if (OccuranceInMonth.HasValue)
+						{
+							returnValue.Append(string.Format(" the {0} {1} of the month", OccuranceInMonth.Value.ToString(), DaysOfWeekToString(DaysToRun.Value)));
+						}
 						break;
 
 					case ScheduleInterval.None:
@@ -264,7 +280,11 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 						throw new NotImplementedException(
 							"Scheduling rule does not exist on this object, this only supports Daily, Weekly, Monthly");
 				}
-				if (localTimeOfDayTicks.HasValue) returnValue.Append(string.Format(" at {0} local server time.", DateTime.Now.Date.AddTicks(localTimeOfDayTicks.Value).ToString("t")));
+
+				if (localTimeOfDayTicks.HasValue)
+				{
+					returnValue.Append(string.Format(" at {0} local server time.", DateTime.Now.Date.AddTicks(localTimeOfDayTicks.Value).ToString("t")));
+				}
 				return returnValue.ToString();
 			}
 		}

@@ -92,7 +92,10 @@ namespace kCura.IntegrationPoints.Domain
 				Stream stream = assemblies[appBinary];
 				stream.Seek(0, SeekOrigin.Begin);
 				var file = Path.Combine(domain.BaseDirectory, appBinary.Name);
-				if (!File.Exists(file)) File.WriteAllBytes(file, ReadFully(stream));
+				if (!File.Exists(file))
+				{
+					File.WriteAllBytes(file, ReadFully(stream));
+				}
 				files.Add(file);
 				stream.Dispose();
 			}
@@ -102,7 +105,9 @@ namespace kCura.IntegrationPoints.Domain
 			{
 				string name = assembly.GetName().Name;
 				if (!loadedAssemblies.ContainsKey(name))
+				{
 					loadedAssemblies.Add(name, assembly);
+				}
 			}
 			foreach (string file in files)
 			{
@@ -192,12 +197,17 @@ namespace kCura.IntegrationPoints.Domain
 
 			//kCura.Agent
 			libDllPath = _relativityFeaturePathService.WebProcessingPath;
-			if (!string.IsNullOrWhiteSpace(libDllPath)) CopyFileWithWildcard(libDllPath, finalDllPath, "kCura.Agent*");
+			if (!string.IsNullOrWhiteSpace(libDllPath))
+			{
+				CopyFileWithWildcard(libDllPath, finalDllPath, "kCura.Agent*");
+			}
 
 			//FSharp.Core
 			libDllPath = _relativityFeaturePathService.EddsPath;
 			if (!string.IsNullOrWhiteSpace(libDllPath))
+			{
 				CopyFileWithWildcard(Path.Combine(libDllPath, "bin"), finalDllPath, "FSharp.Core*");
+			}
 		}
 
 		private void CopyFileWithWildcard(string sourceDir, string targetDir, string fileName)

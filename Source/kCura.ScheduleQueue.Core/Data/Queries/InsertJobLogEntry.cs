@@ -6,7 +6,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 {
 	public class InsertJobLogEntry
 	{
-		private IQueueDBContext qDBContext = null;
+		private readonly IQueueDBContext qDBContext = null;
 		public InsertJobLogEntry(IQueueDBContext qDBContext)
 		{
 			this.qDBContext = qDBContext;

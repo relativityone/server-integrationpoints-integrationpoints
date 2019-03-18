@@ -13,16 +13,16 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 	public class LoadFileDataReader : DataReaderBase, IArtifactReader
 	{
 		private bool _isClosed;
-		private bool _extractedTextHasPathInfo;
-		private bool _nativeFileHasPathInfo;
-		private string _loadFileDirectory;
-		private string[] _currentLine;
 		private int _columnCount;
-		private LoadFile _config;
-		private IArtifactReader _loadFileReader;
-		private DataTable _schemaTable;
-		private Dictionary<string, int> _ordinalMap;
-		ImportProviderSettings _providerSettings;
+		private string[] _currentLine;
+		private readonly bool _extractedTextHasPathInfo;
+		private readonly bool _nativeFileHasPathInfo;
+		private readonly DataTable _schemaTable;
+		private readonly Dictionary<string, int> _ordinalMap;
+		private readonly IArtifactReader _loadFileReader;
+		private readonly LoadFile _config;
+		private readonly string _loadFileDirectory;
+		private readonly ImportProviderSettings _providerSettings;
 
 		public LoadFileDataReader(ImportProviderSettings providerSettings, LoadFile config, IArtifactReader reader)
 		{

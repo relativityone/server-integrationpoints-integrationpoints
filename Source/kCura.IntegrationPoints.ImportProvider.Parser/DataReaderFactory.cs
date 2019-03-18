@@ -14,10 +14,10 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
 	public class DataReaderFactory : IDataReaderFactory
 	{
-		private IWinEddsLoadFileFactory _winEddsLoadFileFactory;
-		private IWinEddsFileReaderFactory _winEddsFileReaderFactory;
-		private IFieldParserFactory _fieldParserFactory;
-		private ISerializer _serializer;
+		private readonly IWinEddsLoadFileFactory _winEddsLoadFileFactory;
+		private readonly IWinEddsFileReaderFactory _winEddsFileReaderFactory;
+		private readonly IFieldParserFactory _fieldParserFactory;
+		private readonly ISerializer _serializer;
 
 		public DataReaderFactory(IFieldParserFactory fieldParserFactory,
 			IWinEddsLoadFileFactory winEddsLoadFileFactory,

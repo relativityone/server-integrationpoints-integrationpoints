@@ -9,7 +9,7 @@ namespace kCura.ScheduleQueue.Core.BatchProcess
 
 	public delegate void JobPostExecuteEvent(Job job, TaskResult taskResult, long items);
 
-	public abstract class BatchManagerBase<T> : ITask
+	public abstract class BatchManagerBase<T> : ITask where T : class
 	{
 		private readonly IAPILog _logger;
 

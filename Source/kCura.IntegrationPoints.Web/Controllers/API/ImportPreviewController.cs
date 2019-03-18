@@ -9,47 +9,48 @@ using kCura.IntegrationPoints.ImportProvider.Parser.Services.Interfaces;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
-    public class ImportPreviewController : ApiController
-    {
-        private IImportPreviewService _importPreviewService;
-        public ImportPreviewController(IImportPreviewService importPreviewService)
-        {
-            _importPreviewService = importPreviewService;
-        }
+	public class ImportPreviewController : ApiController
+	{
+		private readonly IImportPreviewService _importPreviewService;
 
-        [HttpPost]
-        [LogApiExceptionFilter(Message = "Unable to create Preview Job")]
-        public IHttpActionResult CreatePreviewJob([FromBody] ImportPreviewSettings settings)
-        {
-            int jobId = _importPreviewService.CreatePreviewJob(settings);
-            _importPreviewService.StartPreviewJob(jobId);
-            return Json(jobId);
-        }
+		public ImportPreviewController(IImportPreviewService importPreviewService)
+		{
+			_importPreviewService = importPreviewService;
+		}
 
-        [HttpGet]
-        [LogApiExceptionFilter(Message = "Unable to check the progress of the given Preview Job")]
-        public IHttpActionResult CheckProgress(int jobId)
-        {
-            ImportPreviewStatus progressData =_importPreviewService.CheckProgress(jobId);
+		[HttpPost]
+		[LogApiExceptionFilter(Message = "Unable to create Preview Job")]
+		public IHttpActionResult CreatePreviewJob([FromBody] ImportPreviewSettings settings)
+		{
+			int jobId = _importPreviewService.CreatePreviewJob(settings);
+			_importPreviewService.StartPreviewJob(jobId);
+			return Json(jobId);
+		}
 
-            return Json(progressData);
-        }
+		[HttpGet]
+		[LogApiExceptionFilter(Message = "Unable to check the progress of the given Preview Job")]
+		public IHttpActionResult CheckProgress(int jobId)
+		{
+			ImportPreviewStatus progressData =_importPreviewService.CheckProgress(jobId);
 
-        [HttpGet]
-        [LogApiExceptionFilter(Message = "Unable to retrieve the Table for the given Preview Job")]
-        public IHttpActionResult GetImportPreviewTable(int jobId)
-        {
-            ImportPreviewTable previewTable = _importPreviewService.RetrievePreviewTable(jobId);
+			return Json(progressData);
+		}
 
-            previewTable.Header.Insert(0, "#");
-            int rowNumber = 1;
-            foreach(var row in previewTable.Data)
-            {
-                //Add a column that simply numbers each row
-                row.Insert(0, string.Format("{0}",rowNumber++));
-            }
+		[HttpGet]
+		[LogApiExceptionFilter(Message = "Unable to retrieve the Table for the given Preview Job")]
+		public IHttpActionResult GetImportPreviewTable(int jobId)
+		{
+			ImportPreviewTable previewTable = _importPreviewService.RetrievePreviewTable(jobId);
 
-            return Json(previewTable);
-        }
-    }
+			previewTable.Header.Insert(0, "#");
+			int rowNumber = 1;
+			foreach(var row in previewTable.Data)
+			{
+				//Add a column that simply numbers each row
+				row.Insert(0, string.Format("{0}",rowNumber++));
+			}
+
+			return Json(previewTable);
+		}
+	}
 }

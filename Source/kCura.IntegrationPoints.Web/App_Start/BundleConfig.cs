@@ -2,7 +2,7 @@
 
 namespace kCura.IntegrationPoints.Web
 {
-	public class BundleConfig
+	public static class BundleConfig
 	{
 		// For more information on Bundling, visit http://go.microsoft.com/fwlink/?LinkId=254725
 		public static void RegisterBundles(BundleCollection bundles)
@@ -133,6 +133,9 @@ namespace kCura.IntegrationPoints.Web
 				"~/Content/jquery.jqGrid/ui.jqgrid.css"
 			));
 
+			bundles.Add(new StyleBundle("~/Content/fonts/bundleFonts").Include(
+				"~/Content/fonts/open-sans-v15-latin-regular.css"
+			));
 		}
 	}
 }

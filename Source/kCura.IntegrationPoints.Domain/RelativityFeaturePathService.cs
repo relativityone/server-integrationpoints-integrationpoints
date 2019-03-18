@@ -173,13 +173,21 @@ namespace kCura.IntegrationPoints.Domain
 						subDirectory = "WebProcessing";
 						break;
 				}
-				if (!string.IsNullOrWhiteSpace(subDirectory)) path = Path.Combine(_baseInstallDir, subDirectory);
+
+				if (!string.IsNullOrWhiteSpace(subDirectory))
+				{
+					path = Path.Combine(_baseInstallDir, subDirectory);
+				}
 			}
 			else
 			{
 				path = GetRelativityFeaturePathsRegistryValue(keyName);
 			}
-			if (!DirectoryExists(path)) path = string.Empty;
+
+			if (!DirectoryExists(path))
+			{
+				path = string.Empty;
+			}
 			return path;
 		}
 

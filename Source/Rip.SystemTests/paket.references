@@ -1,0 +1,12 @@
+﻿FluentAssertions
+kCura.Relativity.Client
+Moq
+NUnit
+Polly
+Relativity
+Relativity.API
+Relativity.Core
+Relativity.ImportExport
+Relativity.Services.DataContracts
+Relativity.Services.Interfaces
+Serilog

@@ -331,8 +331,6 @@ namespace kCura.IntegrationPoints.UITests.Common
 
 			SelectSource(secondPage, model);
 
-			//secondPage.RelativityInstance = model.RelativityInstance;
-
 			secondPage.DestinationWorkspace = model.DestinationWorkspace;
 			SelectDestination(secondPage, model);
 			return secondPage;

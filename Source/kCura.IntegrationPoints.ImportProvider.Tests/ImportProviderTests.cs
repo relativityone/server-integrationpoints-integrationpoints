@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests
 	[TestFixture]
 	public class ImportProviderTests : TestBase
 	{
-		private int MAX_COLS = 100;
+		private readonly int MAX_COLS = 100;
 
 		private IFieldParser _fieldParser;
 		private IFieldParserFactory _fieldParserFactory;

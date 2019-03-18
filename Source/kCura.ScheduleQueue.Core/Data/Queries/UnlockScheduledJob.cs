@@ -6,7 +6,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 {
 	public class UnlockScheduledJob
 	{
-		private IQueueDBContext qDBContext = null;
+		private readonly IQueueDBContext qDBContext = null;
 		public UnlockScheduledJob(IQueueDBContext qDBContext)
 		{
 			this.qDBContext = qDBContext;

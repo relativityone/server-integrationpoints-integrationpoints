@@ -7,7 +7,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 {
 	public class UpdateScheduledJob
 	{
-		private IQueueDBContext qDBContext = null;
+		private readonly IQueueDBContext qDBContext = null;
 		public UpdateScheduledJob(IQueueDBContext qDBContext)
 		{
 			this.qDBContext = qDBContext;

@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			IJobStopManager jobStopManager, 
 			IHelper helper,
 			IFolderPathReader folderPathReader, 
-			IBaseServiceContextProvider baseServiceContextProvider, 
+			IBaseServiceContextProvider baseServiceContextProvider,
 			FieldMap[] mappedFields, 
 			int startAt, 
 			string config, 
@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			IJobStopManager jobStopManager, 
 			IHelper helper,
 			IQueryFieldLookupRepository queryFieldLookupRepository, 
-			IFolderPathReader folderPathReader, 
+			IFolderPathReader folderPathReader,
 			FieldMap[] mappedFields, 
 			HashSet<int> longTextField, 
 			int[] avfIds)
@@ -71,6 +71,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				transferConfiguration.ScratchRepositories, 
 				RelativityObjectManager,
 				Logger,
+				QueryFieldLookupRepository,
 				transferConfiguration.ImportSettings.UseDynamicFolderPath);
 			var exporterTransferContext = 
 				new ExporterTransferContext(documentTransferDataReader, transferConfiguration)

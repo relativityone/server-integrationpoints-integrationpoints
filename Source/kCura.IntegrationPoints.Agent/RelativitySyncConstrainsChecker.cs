@@ -45,6 +45,11 @@ namespace kCura.IntegrationPoints.Agent
 					return false;
 				}
 
+				if (!string.IsNullOrWhiteSpace(job.ScheduleRuleType))
+				{
+					return false;
+				}
+
 				IntegrationPoint integrationPoint = GetIntegrationPoint(job.RelatedObjectArtifactID);
 				ProviderType providerType = GetProviderType(integrationPoint.SourceProvider ?? 0,
 					integrationPoint.DestinationProvider ?? 0);

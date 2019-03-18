@@ -2,7 +2,7 @@
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 {
-	internal class ExportFileHelper
+	internal static class ExportFileHelper
 	{
 		public static void SetDefaultValues(ExportFile expFile)
 		{

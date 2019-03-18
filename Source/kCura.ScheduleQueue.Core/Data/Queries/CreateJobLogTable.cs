@@ -4,7 +4,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 {
 	public class CreateJobLogTable
 	{
-		private IQueueDBContext qDBContext = null;
+		private readonly IQueueDBContext qDBContext = null;
 		public CreateJobLogTable(IQueueDBContext qDBContext)
 		{
 			this.qDBContext = qDBContext;

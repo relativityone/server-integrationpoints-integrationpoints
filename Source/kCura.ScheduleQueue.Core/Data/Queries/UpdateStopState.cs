@@ -9,20 +9,20 @@ using kCura.ScheduleQueue.Core.Properties;
 
 namespace kCura.ScheduleQueue.Core.Data.Queries
 {
-    public class UpdateStopState
-    {
-        private IQueueDBContext _qDbContext;
+	public class UpdateStopState
+	{
+		private readonly IQueueDBContext _qDbContext;
 
-        public UpdateStopState(IQueueDBContext qDbContext)
-        {
-            this._qDbContext = qDbContext;
-        }
+		public UpdateStopState(IQueueDBContext qDbContext)
+		{
+			this._qDbContext = qDbContext;
+		}
 
-        public int Execute(IList<long> jobIds, StopState state)
-        {
-            string query = string.Format(Resources.UpdateStopState, _qDbContext.TableName, string.Join(",", jobIds.Distinct()));
-            var sqlParams = new List<SqlParameter> { new SqlParameter("@State", (int)state) };
-            return _qDbContext.EddsDBContext.ExecuteNonQuerySQLStatement(query, sqlParams);
-        }
-    }
+		public int Execute(IList<long> jobIds, StopState state)
+		{
+			string query = string.Format(Resources.UpdateStopState, _qDbContext.TableName, string.Join(",", jobIds.Distinct()));
+			var sqlParams = new List<SqlParameter> { new SqlParameter("@State", (int)state) };
+			return _qDbContext.EddsDBContext.ExecuteNonQuerySQLStatement(query, sqlParams);
+		}
+	}
 }

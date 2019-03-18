@@ -14,6 +14,16 @@
 			public static readonly string CUSTODIAN = "Custodian - Single Choice";
 			public static readonly string ISSUE_DESIGNATION = "Issue Designation";
 			public static readonly string FOLDER_NAME = "Folder Name";
+			public static readonly string FIELD_TYPE = "Field Type";
+			public static readonly string FIELD_CATEGORY_ID = "Field Category ID";
+			public static readonly string OBJECT_TYPE_ARTIFACT_TYPE_ID = "Object Type Artifact Type ID";
+			public static readonly string ARTIFACT_ID = "Artifact ID";
+		}
+
+		public static class FieldTypeNames
+		{
+			public static readonly string LONG_TEXT = "Long Text";
+			public static readonly string MULTIPLE_CHOICE = "Multiple Choice";
 		}
 
 		public static class Resources
