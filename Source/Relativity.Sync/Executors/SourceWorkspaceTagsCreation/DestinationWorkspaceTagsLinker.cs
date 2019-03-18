@@ -17,9 +17,9 @@ namespace Relativity.Sync.Executors.SourceWorkspaceTagsCreation
 			_sourceServiceFactoryForUser = sourceServiceFactoryForUser;
 		}
 		
-		public async Task LinkDestinationWorkspaceTagToJobHistoryAsync(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId, int jobArtifactId)
+		public async Task LinkDestinationWorkspaceTagToJobHistoryAsync(int sourceWorkspaceArtifactId, int destinationWorkspaceTagArtifactId, int jobArtifactId)
 		{
-			UpdateRequest request = CreateUpdateRequest(destinationWorkspaceArtifactId, jobArtifactId);
+			UpdateRequest request = CreateUpdateRequest(destinationWorkspaceTagArtifactId, jobArtifactId);
 
 			using (IObjectManager objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
@@ -27,11 +27,11 @@ namespace Relativity.Sync.Executors.SourceWorkspaceTagsCreation
 			}
 		}
 
-		private UpdateRequest CreateUpdateRequest(int destinationWorkspaceArtifactId, int jobArtifactId)
+		private UpdateRequest CreateUpdateRequest(int destinationWorkspaceTagArtifactId, int jobArtifactId)
 		{
 			RelativityObjectValue destinationWorkspaceObjectValue = new RelativityObjectValue()
 			{
-				ArtifactID = destinationWorkspaceArtifactId
+				ArtifactID = destinationWorkspaceTagArtifactId
 			};
 
 			UpdateRequest request = new UpdateRequest

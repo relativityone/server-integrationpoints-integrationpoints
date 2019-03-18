@@ -8,14 +8,14 @@ using Relativity.Sync.Executors.TagsCreation;
 
 namespace Relativity.Sync.Executors.SourceWorkspaceTagsCreation
 {
-	internal sealed class SourceWorkspaceTagsCreationStep : IExecutor<ISourceWorkspaceTagsCreationConfiguration>
+	internal sealed class SourceWorkspaceTagsCreationExecutor : IExecutor<ISourceWorkspaceTagsCreationConfiguration>
 	{
 		private readonly IDestinationWorkspaceTagRepository _destinationWorkspaceTagRepository;
 		private readonly IDestinationWorkspaceTagsLinker _destinationWorkspaceTagsLinker;
 		private readonly IWorkspaceNameQuery _workspaceNameQuery;
 		private readonly IFederatedInstance _federatedInstance;
 
-		public SourceWorkspaceTagsCreationStep(IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository,
+		public SourceWorkspaceTagsCreationExecutor(IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository,
 			IDestinationWorkspaceTagsLinker destinationWorkspaceTagsLinker, IWorkspaceNameQuery workspaceNameQuery, IFederatedInstance federatedInstance)
 		{
 			_destinationWorkspaceTagRepository = destinationWorkspaceTagRepository;

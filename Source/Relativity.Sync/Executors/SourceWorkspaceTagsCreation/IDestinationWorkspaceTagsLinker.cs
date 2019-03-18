@@ -4,6 +4,6 @@ namespace Relativity.Sync.Executors.SourceWorkspaceTagsCreation
 {
 	internal interface IDestinationWorkspaceTagsLinker
 	{
-		Task LinkDestinationWorkspaceTagToJobHistoryAsync(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId, int jobArtifactId);
+		Task LinkDestinationWorkspaceTagToJobHistoryAsync(int sourceWorkspaceArtifactId, int destinationWorkspaceTagArtifactId, int jobArtifactId);
 	}
 }
