@@ -52,8 +52,8 @@ namespace Relativity.Sync.Executors
 
 		private static bool ShouldUpdateDestinationWorkspaceTag(DestinationWorkspaceTag tag, string destinationWorkspaceName, string destinationInstanceName)
 		{
-			return !destinationWorkspaceName.Equals(tag.DestinationWorkspaceName, StringComparison.InvariantCulture) ||
-				!destinationInstanceName.Equals(tag.DestinationInstanceName, StringComparison.InvariantCulture);
+			return !string.Equals(destinationWorkspaceName, tag.DestinationWorkspaceName, StringComparison.InvariantCulture) ||
+				!string.Equals(destinationInstanceName, tag.DestinationInstanceName, StringComparison.InvariantCulture);
 		}
 	}
 }

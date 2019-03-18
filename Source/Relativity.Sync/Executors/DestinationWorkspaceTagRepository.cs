@@ -71,7 +71,9 @@ namespace Relativity.Sync.Executors
 						new FieldRef { Guid = _NAME_GUID }
 					}
 				};
-				QueryResult queryResult = await objectManager.QueryAsync(sourceWorkspaceArtifactId, queryRequest, 0, 1).ConfigureAwait(false);
+				const int start = 0;
+				const int length = 1;
+				QueryResult queryResult = await objectManager.QueryAsync(sourceWorkspaceArtifactId, queryRequest, start, length).ConfigureAwait(false);
 				return queryResult.Objects.FirstOrDefault();
 			}
 		}
