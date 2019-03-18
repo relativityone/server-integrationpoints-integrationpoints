@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Relativity.Services.Exceptions;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
@@ -58,7 +59,7 @@ namespace Relativity.Sync.Executors
 			using (IObjectManager objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				int federatedInstanceId = await _federatedInstance.GetInstanceIdAsync().ConfigureAwait(false);
-				QueryRequest queryRequest = new QueryRequest()
+				QueryRequest request = new QueryRequest()
 				{
 					ObjectType = new ObjectTypeRef { Guid = _OBJECT_TYPE_GUID },
 					Condition = $"'{_DESTINATION_WORKSPACE_ARTIFACTID_GUID}' == {destinationWorkspaceArtifactId} AND '{_DESTINATION_INSTANCE_ARTIFACTID_GUID}' == {federatedInstanceId}",
@@ -77,11 +78,16 @@ namespace Relativity.Sync.Executors
 				{
 					const int start = 0;
 					const int length = 1;
-					queryResult = await objectManager.QueryAsync(sourceWorkspaceArtifactId, queryRequest, start, length).ConfigureAwait(false);
+					queryResult = await objectManager.QueryAsync(sourceWorkspaceArtifactId, request, start, length).ConfigureAwait(false);
+				}
+				catch (ServiceException ex)
+				{
+					_logger.LogError(ex, $"Service call failed while querying {nameof(DestinationWorkspaceTag)} object: {{request}}", request);
+					throw new DestinationWorkspaceTagRepositoryException($"Service call failed while querying {nameof(DestinationWorkspaceTag)} in workspace {sourceWorkspaceArtifactId}", ex);
 				}
 				catch (Exception ex)
 				{
-					_logger.LogError(ex, $"Failed to query {nameof(DestinationWorkspaceTag)} object: {{request}}", queryRequest);
+					_logger.LogError(ex, $"Failed to query {nameof(DestinationWorkspaceTag)} object: {{request}}", request);
 					throw new DestinationWorkspaceTagRepositoryException($"Failed to query {nameof(DestinationWorkspaceTag)} in workspace {sourceWorkspaceArtifactId}", ex);
 				}
 
@@ -110,6 +116,11 @@ namespace Relativity.Sync.Executors
 				try
 				{
 					result = await objectManager.CreateAsync(sourceWorkspaceArtifactId, request).ConfigureAwait(false);
+				}
+				catch (ServiceException ex)
+				{
+					_logger.LogError(ex, $"Service call failed while creating {nameof(DestinationWorkspaceTag)}: {{request}}", request);
+					throw new DestinationWorkspaceTagRepositoryException($"Service call failed while creating {nameof(DestinationWorkspaceTag)}: {{request}}", ex);
 				}
 				catch (Exception ex)
 				{
@@ -148,6 +159,11 @@ namespace Relativity.Sync.Executors
 				try
 				{
 					await objectManager.UpdateAsync(sourceWorkspaceArtifactId, request).ConfigureAwait(false);
+				}
+				catch (ServiceException ex)
+				{
+					_logger.LogError(ex, $"Service call failed while updating {nameof(DestinationWorkspaceTag)}: {{request}}", request);
+					throw new DestinationWorkspaceTagRepositoryException($"Failed to update {nameof(DestinationWorkspaceTag)} with id {destinationWorkspaceTag.ArtifactId} in workspace {sourceWorkspaceArtifactId}", ex);
 				}
 				catch (Exception ex)
 				{
