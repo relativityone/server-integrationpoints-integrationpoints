@@ -27,7 +27,15 @@ namespace Relativity.Sync.Executors
 
 			using (IObjectManager objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
-				await objectManager.UpdateAsync(sourceWorkspaceArtifactId, request).ConfigureAwait(false);
+				try
+				{
+					await objectManager.UpdateAsync(sourceWorkspaceArtifactId, request).ConfigureAwait(false);
+				}
+				catch(Exception ex)
+				{
+					_logger.LogError(ex, $"Failed to link {nameof(DestinationWorkspaceTag)} to Job History: {{request}}", request);
+					throw new DestinationWorkspaceTagsLinkerException($"Failed to link {nameof(DestinationWorkspaceTag)} to Job History", ex);
+				}
 			}
 		}
 
@@ -49,7 +57,7 @@ namespace Relativity.Sync.Executors
 						{
 							Guid = DestinationWorkspaceInformationGuid
 						},
-						Value = new[] {destinationWorkspaceObjectValue}
+						Value = new[] { destinationWorkspaceObjectValue }
 					}
 				}
 			};

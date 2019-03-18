@@ -33,7 +33,7 @@ namespace Relativity.Sync.Executors
 		
 		public async Task<DestinationWorkspaceTag> ReadAsync(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId)
 		{
-			_logger.LogVerbose("Reading destination workspace tag. Source workspace artifact ID: {sourceWorkspaceArtifactId} " +
+			_logger.LogVerbose($"Reading {nameof(DestinationWorkspaceTag)}. Source workspace artifact ID: {{sourceWorkspaceArtifactId}} " +
 				"Destination workspace artifact ID: {destinationWorkspaceArtifactId}",
 				sourceWorkspaceArtifactId, destinationWorkspaceArtifactId);
 			RelativityObject tag = await QueryRelativityObjectTagAsync(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId).ConfigureAwait(false);
@@ -60,6 +60,7 @@ namespace Relativity.Sync.Executors
 				int federatedInstanceId = await _federatedInstance.GetInstanceIdAsync().ConfigureAwait(false);
 				QueryRequest queryRequest = new QueryRequest()
 				{
+					ObjectType = new ObjectTypeRef { Guid = _OBJECT_TYPE_GUID },
 					Condition = $"'{_DESTINATION_WORKSPACE_ARTIFACTID_GUID}' == {destinationWorkspaceArtifactId} AND '{_DESTINATION_INSTANCE_ARTIFACTID_GUID}' == {federatedInstanceId}",
 					Fields = new List<FieldRef>
 					{
@@ -71,14 +72,24 @@ namespace Relativity.Sync.Executors
 						new FieldRef { Guid = _NAME_GUID }
 					}
 				};
-				QueryResult queryResult = await objectManager.QueryAsync(sourceWorkspaceArtifactId, queryRequest, 0, 1).ConfigureAwait(false);
+				QueryResult queryResult;
+				try
+				{
+					queryResult = await objectManager.QueryAsync(sourceWorkspaceArtifactId, queryRequest, 0, 1).ConfigureAwait(false);
+				}
+				catch (Exception ex)
+				{
+					_logger.LogError(ex, $"Failed to query {nameof(DestinationWorkspaceTag)} object: {{request}}", queryRequest);
+					throw new DestinationWorkspaceTagRepositoryException($"Failed to query {nameof(DestinationWorkspaceTag)} in workspace {sourceWorkspaceArtifactId}", ex);
+				}
+
 				return queryResult.Objects.FirstOrDefault();
 			}
 		}
 
 		public async Task<DestinationWorkspaceTag> CreateAsync(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId, string destinationWorkspaceName)
 		{
-			_logger.LogVerbose("Creating destination workspace tag in source workspace ID: {sourceWorkspaceArtifactId} " +
+			_logger.LogVerbose($"Creating {nameof(DestinationWorkspaceTag)} in source workspace ID: {{sourceWorkspaceArtifactId}} " +
 					"Destination workspace ID: {destinationWorkspaceArtifactId} " +
 					"Destination workspace name: {destinationWorkspaceName}",
 					sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, destinationWorkspaceName);
@@ -93,7 +104,19 @@ namespace Relativity.Sync.Executors
 					FieldValues = CreateFieldValues(destinationWorkspaceArtifactId, destinationWorkspaceName, federatedInstanceName, federatedInstanceId)
 				};
 
-				CreateResult result = await objectManager.CreateAsync(sourceWorkspaceArtifactId, request).ConfigureAwait(false);
+				CreateResult result;
+				try
+				{
+					result = await objectManager.CreateAsync(sourceWorkspaceArtifactId, request).ConfigureAwait(false);
+				}
+				catch (Exception ex)
+				{
+					_logger.LogError(ex, $"Failed to create {nameof(DestinationWorkspaceTag)}: {{request}}", request);
+					string tagName = request.FieldValues.First(x => x.Field.Guid == _NAME_GUID).Value.ToString();
+					throw new DestinationWorkspaceTagRepositoryException(
+						$"Failed to create {nameof(DestinationWorkspaceTag)} '{tagName}' in workspace {sourceWorkspaceArtifactId}",
+						ex);
+				}
 
 				DestinationWorkspaceTag createdTag = new DestinationWorkspaceTag
 				{
@@ -108,7 +131,7 @@ namespace Relativity.Sync.Executors
 
 		public async Task UpdateAsync(int sourceWorkspaceArtifactId, DestinationWorkspaceTag destinationWorkspaceTag)
 		{
-			_logger.LogVerbose("Updating destination workspace tag in source workspace ID: {sourceWorkspaceArtifactId}", sourceWorkspaceArtifactId);
+			_logger.LogVerbose($"Updating {nameof(DestinationWorkspaceTag)} in source workspace ID: {{sourceWorkspaceArtifactId}}", sourceWorkspaceArtifactId);
 			string federatedInstanceName = await _federatedInstance.GetInstanceNameAsync().ConfigureAwait(false);
 			int federatedInstanceId = await _federatedInstance.GetInstanceIdAsync().ConfigureAwait(false);
 
@@ -120,7 +143,15 @@ namespace Relativity.Sync.Executors
 
 			using (IObjectManager objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
-				await objectManager.UpdateAsync(sourceWorkspaceArtifactId, request).ConfigureAwait(false);
+				try
+				{
+					await objectManager.UpdateAsync(sourceWorkspaceArtifactId, request).ConfigureAwait(false);
+				}
+				catch (Exception ex)
+				{
+					_logger.LogError(ex, $"Failed to update {nameof(DestinationWorkspaceTag)}: {{request}}", request);
+					throw new DestinationWorkspaceTagRepositoryException($"Failed to update {nameof(DestinationWorkspaceTag)} with id {destinationWorkspaceTag.ArtifactId} in workspace {sourceWorkspaceArtifactId}", ex);
+				}
 			}
 		}
 
