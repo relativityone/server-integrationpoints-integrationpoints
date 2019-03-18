@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
@@ -10,10 +12,12 @@ namespace Relativity.Sync.Executors.TagsCreation
 	internal sealed class WorkspaceNameQuery : IWorkspaceNameQuery
 	{
 		private readonly ISourceServiceFactoryForUser _sourceServiceFactoryForUser;
+		private readonly IAPILog _logger;
 
-		public WorkspaceNameQuery(ISourceServiceFactoryForUser sourceServiceFactoryForUser)
+		public WorkspaceNameQuery(ISourceServiceFactoryForUser sourceServiceFactoryForUser, IAPILog logger)
 		{
 			_sourceServiceFactoryForUser = sourceServiceFactoryForUser;
+			_logger = logger;
 		}
 
 		public async Task<string> GetWorkspaceNameAsync(int workspaceArtifactId)
@@ -26,11 +30,15 @@ namespace Relativity.Sync.Executors.TagsCreation
 					ObjectType = new ObjectTypeRef() { ArtifactTypeID = (int)ArtifactType.Case },
 					Fields = new List<FieldRef>() { new FieldRef() { Name = "Name" } }
 				};
-				QueryResult result = await objectManager.QueryAsync(-1, request, 0, 1).ConfigureAwait(false);
+				const int workspaceId = -1;
+				const int start = 0;
+				const int length = 1;
+				QueryResult result = await objectManager.QueryAsync(workspaceId, request, start, length).ConfigureAwait(false);
 
 				if (!result.Objects.Any())
 				{
-					throw new SyncException($"Query for ArtifactID = {workspaceArtifactId} did not return any results.");
+					_logger.LogError("Couldn't find workspace Artifact ID: {workspaceArtifactId}", workspaceArtifactId);
+					throw new SyncException($"Couldn't find workspace Artifact ID: {workspaceArtifactId}");
 				}
 
 				return result.Objects.First().Name;

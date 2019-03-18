@@ -160,16 +160,6 @@ namespace Relativity.Sync.Executors.Repository
 			return pairs;
 		}
 
-		private static string GetFormatForWorkspaceOrJobDisplay(string name, int? id)
-		{
-			return id.HasValue ? $"{name} - {id}" : name;
-		}
-
-		private static string GetFormatForWorkspaceOrJobDisplay(string prefix, string name, int? id)
-		{
-			return $"{prefix} - {GetFormatForWorkspaceOrJobDisplay(name, id)}";
-		}
-
 		private string FormatWorkspaceDestinationTagName(string federatedInstanceName, string destinationWorkspaceName, int destinationWorkspaceArtifactId)
 		{
 			string name = GetFormatForWorkspaceOrJobDisplay(federatedInstanceName, destinationWorkspaceName, destinationWorkspaceArtifactId);
@@ -183,6 +173,16 @@ namespace Relativity.Sync.Executors.Repository
 			}
 
 			return name;
+		}
+
+		private static string GetFormatForWorkspaceOrJobDisplay(string prefix, string name, int? id)
+		{
+			return $"{prefix} - {GetFormatForWorkspaceOrJobDisplay(name, id)}";
+		}
+
+		private static string GetFormatForWorkspaceOrJobDisplay(string name, int? id)
+		{
+			return id.HasValue ? $"{name} - {id}" : name;
 		}
 	}
 }

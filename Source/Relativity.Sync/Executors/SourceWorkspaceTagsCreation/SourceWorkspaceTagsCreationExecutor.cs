@@ -48,9 +48,7 @@ namespace Relativity.Sync.Executors.SourceWorkspaceTagsCreation
 			}
 
 			await _destinationWorkspaceTagsLinker.LinkDestinationWorkspaceTagToJobHistoryAsync(
-				configuration.SourceWorkspaceArtifactId, configuration.DestinationWorkspaceArtifactId, configuration.JobArtifactId).ConfigureAwait(false);
-
-			configuration.SetDestinationWorkspaceTagArtifactId(tag.ArtifactId);
+				configuration.SourceWorkspaceArtifactId, tag.ArtifactId, configuration.JobArtifactId).ConfigureAwait(false);
 
 			return tag.ArtifactId;
 		}
