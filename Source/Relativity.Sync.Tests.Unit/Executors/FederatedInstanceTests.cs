@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using NUnit.Framework;
-using Relativity.Sync.Executors.FederatedInstance;
+using Relativity.Sync.Executors;
 
 namespace Relativity.Sync.Tests.Unit.Executors
 {
