@@ -53,8 +53,6 @@ else {
     & $nugetExe sources add -Name $newJetBrainsSourceName -Source $jetBrainsNewUrl -Verbosity quiet
 }
 
-& $nugetExe sources disable -Name $newJetBrainsSourceName
-
 if ($LASTEXITCODE -ne 0) {
     Throw "An error occured while adding JetBrains source to NuGet."
 }
