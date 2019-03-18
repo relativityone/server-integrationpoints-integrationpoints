@@ -26,11 +26,11 @@ namespace Relativity.Sync.Executors.SourceWorkspaceTagsCreation
 
 		public async Task ExecuteAsync(ISourceWorkspaceTagsCreationConfiguration configuration, CancellationToken token)
 		{
-			int destinationWorkspaceTagArtifactId = await CreateOrUpdateDestinationWorkspaceTag(configuration).ConfigureAwait(false);
+			int destinationWorkspaceTagArtifactId = await CreateOrUpdateDestinationWorkspaceTagAsync(configuration).ConfigureAwait(false);
 			configuration.SetDestinationWorkspaceTagArtifactId(destinationWorkspaceTagArtifactId);
 		}
 
-		private async Task<int> CreateOrUpdateDestinationWorkspaceTag(ISourceWorkspaceTagsCreationConfiguration configuration)
+		private async Task<int> CreateOrUpdateDestinationWorkspaceTagAsync(ISourceWorkspaceTagsCreationConfiguration configuration)
 		{
 			string destinationWorkspaceName = await _workspaceNameQuery.GetWorkspaceNameAsync(configuration.DestinationWorkspaceArtifactId).ConfigureAwait(false);
 			string destinationInstanceName = await _federatedInstance.GetInstanceNameAsync().ConfigureAwait(false);
