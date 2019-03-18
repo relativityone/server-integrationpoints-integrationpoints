@@ -48,7 +48,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			// assert
 			_destinationWorkspaceTagRepository.Verify(x => x.CreateAsync(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, destinationWorkspaceName));
-			_destinationWorkspaceTagRepository.Verify(x => x.UpdateAsync(default(int), It.IsAny<DestinationWorkspaceTag>()), Times.Never);
+			_destinationWorkspaceTagRepository.Verify(x => x.UpdateAsync(It.IsAny<int>(), It.IsAny<DestinationWorkspaceTag>()), Times.Never);
 		}
 
 		[Test]
@@ -75,7 +75,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			// assert
 			_destinationWorkspaceTagRepository.Verify(x => x.UpdateAsync(sourceWorkspaceArtifactId, It.Is<DestinationWorkspaceTag>(tag => 
 				tag.DestinationWorkspaceName.Equals(destinationWorkspaceNewName, StringComparison.InvariantCulture))));
-			_destinationWorkspaceTagRepository.Verify(x => x.CreateAsync(default(int), default(int), It.IsAny<string>()), Times.Never);
+			_destinationWorkspaceTagRepository.Verify(x => x.CreateAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>()), Times.Never);
 		}
 
 		[Test]
@@ -104,7 +104,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			// assert
 			_destinationWorkspaceTagRepository.Verify(x => x.UpdateAsync(sourceWorkspaceArtifactId, It.Is<DestinationWorkspaceTag>(tag =>
 				tag.DestinationInstanceName.Equals(federatedInstanceNewName, StringComparison.InvariantCulture))));
-			_destinationWorkspaceTagRepository.Verify(x => x.CreateAsync(default(int), default(int), It.IsAny<string>()), Times.Never);
+			_destinationWorkspaceTagRepository.Verify(x => x.CreateAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>()), Times.Never);
 		}
 
 		[Test]
@@ -172,7 +172,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[Test]
 		public void ItShouldThrowExceptionWhenWorkspaceNameQueryFails()
 		{
-			_workspaceNameQuery.Setup(x => x.GetWorkspaceNameAsync(default(int))).Throws<InvalidOperationException>();
+			_workspaceNameQuery.Setup(x => x.GetWorkspaceNameAsync(It.IsAny<int>())).Throws<InvalidOperationException>();
 
 			// act
 			Func<Task> action = async () => await _sut.ExecuteAsync(Mock.Of<ISourceWorkspaceTagsCreationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
@@ -196,7 +196,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[Test]
 		public void ItShouldThrowExceptionWhenDestinationWorkspaceTagReadFails()
 		{
-			_destinationWorkspaceTagRepository.Setup(x => x.ReadAsync(default(int), default(int))).Throws<InvalidOperationException>();
+			_destinationWorkspaceTagRepository.Setup(x => x.ReadAsync(It.IsAny<int>(), It.IsAny<int>())).Throws<InvalidOperationException>();
 
 			// act
 			Func<Task> action = async () => await _sut.ExecuteAsync(Mock.Of<ISourceWorkspaceTagsCreationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
@@ -209,8 +209,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		public void ItShouldThrowExceptionWhenCreateTagFails()
 		{
 			DestinationWorkspaceTag tag = null;
-			_destinationWorkspaceTagRepository.Setup(x => x.ReadAsync(default(int), default(int))).ReturnsAsync(tag);
-			_destinationWorkspaceTagRepository.Setup(x => x.CreateAsync(default(int), default(int), default(string))).Throws<InvalidOperationException>();
+			_destinationWorkspaceTagRepository.Setup(x => x.ReadAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(tag);
+			_destinationWorkspaceTagRepository.Setup(x => x.CreateAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>())).Throws<InvalidOperationException>();
 
 			// act
 			Func<Task> action = async () => await _sut.ExecuteAsync(Mock.Of<ISourceWorkspaceTagsCreationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
@@ -227,9 +227,9 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			{
 				DestinationWorkspaceName = "old workspace name"
 			};
-			_workspaceNameQuery.Setup(x => x.GetWorkspaceNameAsync(default(int))).ReturnsAsync(destinationWorkspaceNewName);
-			_destinationWorkspaceTagRepository.Setup(x => x.ReadAsync(default(int), default(int))).ReturnsAsync(outdatedTag);
-			_destinationWorkspaceTagRepository.Setup(x => x.UpdateAsync(default(int), outdatedTag)).Throws<InvalidOperationException>();
+			_workspaceNameQuery.Setup(x => x.GetWorkspaceNameAsync(It.IsAny<int>())).ReturnsAsync(destinationWorkspaceNewName);
+			_destinationWorkspaceTagRepository.Setup(x => x.ReadAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(outdatedTag);
+			_destinationWorkspaceTagRepository.Setup(x => x.UpdateAsync(It.IsAny<int>(), outdatedTag)).Throws<InvalidOperationException>();
 
 			// act
 			Func<Task> action = async () => await _sut.ExecuteAsync(Mock.Of<ISourceWorkspaceTagsCreationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
@@ -242,8 +242,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		public void ItShouldThrowExceptionWhenLinkDestinationWorkspaceTagWithJobHistoryFails()
 		{
 			DestinationWorkspaceTag tag = new DestinationWorkspaceTag();
-			_destinationWorkspaceTagRepository.Setup(x => x.ReadAsync(default(int), default(int))).ReturnsAsync(tag);
-			_destinationWorkspaceTagsLinker.Setup(x => x.LinkDestinationWorkspaceTagToJobHistoryAsync(default(int), default(int), default(int))).Throws<InvalidOperationException>();
+			_destinationWorkspaceTagRepository.Setup(x => x.ReadAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(tag);
+			_destinationWorkspaceTagsLinker.Setup(x => x.LinkDestinationWorkspaceTagToJobHistoryAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>())).Throws<InvalidOperationException>();
 
 			// act
 			Func<Task> action = async () => await _sut.ExecuteAsync(Mock.Of<ISourceWorkspaceTagsCreationConfiguration>(), CancellationToken.None).ConfigureAwait(false);

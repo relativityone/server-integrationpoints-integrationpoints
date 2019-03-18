@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Relativity.API;
@@ -32,15 +33,25 @@ namespace Relativity.Sync.Executors
 				const int workspaceId = -1;
 				const int start = 0;
 				const int length = 1;
-				QueryResult result = await objectManager.QueryAsync(workspaceId, request, start, length).ConfigureAwait(false);
+				QueryResult queryResult;
 
-				if (!result.Objects.Any())
+				try
+				{
+					queryResult = await objectManager.QueryAsync(workspaceId, request, start, length).ConfigureAwait(false);
+				}
+				catch (Exception ex)
+				{
+					_logger.LogError(ex, "Failed to query for workspace Artifact ID: {workspaceArtifactId}", workspaceArtifactId);
+					throw;
+				}
+
+				if (!queryResult.Objects.Any())
 				{
 					_logger.LogError("Couldn't find workspace Artifact ID: {workspaceArtifactId}", workspaceArtifactId);
 					throw new SyncException($"Couldn't find workspace Artifact ID: {workspaceArtifactId}");
 				}
 
-				return result.Objects.First().Name;
+				return queryResult.Objects.First().Name;
 			}
 		}
 	}
