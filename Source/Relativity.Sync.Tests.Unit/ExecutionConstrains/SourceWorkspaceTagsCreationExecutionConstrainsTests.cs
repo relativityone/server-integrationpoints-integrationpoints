@@ -21,7 +21,7 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public async Task ItShouldAlwaysCanExecute()
 		{
-			bool canExecute = await _sut.CanExecuteAsync(It.IsAny<ISourceWorkspaceTagsCreationConfiguration>(), It.IsAny<CancellationToken>()).ConfigureAwait(false);
+			bool canExecute = await _sut.CanExecuteAsync(Mock.Of<ISourceWorkspaceTagsCreationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
 
 			Assert.True(canExecute);
 		}
