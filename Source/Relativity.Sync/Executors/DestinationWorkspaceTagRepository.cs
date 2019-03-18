@@ -75,7 +75,9 @@ namespace Relativity.Sync.Executors
 				QueryResult queryResult;
 				try
 				{
-					queryResult = await objectManager.QueryAsync(sourceWorkspaceArtifactId, queryRequest, 0, 1).ConfigureAwait(false);
+					const int start = 0;
+					const int length = 1;
+					queryResult = await objectManager.QueryAsync(sourceWorkspaceArtifactId, queryRequest, start, length).ConfigureAwait(false);
 				}
 				catch (Exception ex)
 				{

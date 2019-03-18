@@ -57,7 +57,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Func<Task> action = async () => await _sut.LinkDestinationWorkspaceTagToJobHistoryAsync(0, 0, 0).ConfigureAwait(false);
 
 			// assert
-			action.Should().Throw<InvalidOperationException>();
+			action.Should().Throw<DestinationWorkspaceTagsLinkerException>();
 		}
 
 		private bool VerifyUpdateRequest(UpdateRequest request, int destinationWorkspaceTagArtifactId, int jobArtifactId)
