@@ -9,29 +9,18 @@ namespace Relativity.Sync
 {
 	internal sealed class ContainerFactory : IContainerFactory
 	{
-		private readonly SyncJobParameters _syncJobParameters;
-		private readonly SyncConfiguration _configuration;
-		private readonly ISyncLog _logger;
-
-		public ContainerFactory(SyncJobParameters syncJobParameters, SyncConfiguration configuration, ISyncLog logger)
+		public void RegisterSyncDependencies(ContainerBuilder containerBuilder, SyncJobParameters syncJobParameters, SyncConfiguration configuration, ISyncLog logger)
 		{
-			_syncJobParameters = syncJobParameters;
-			_configuration = configuration;
-			_logger = logger;
-		}
-
-		public void RegisterSyncDependencies(ContainerBuilder containerBuilder)
-		{
-			CorrelationId correlationId = new CorrelationId(_syncJobParameters.CorrelationId);
+			CorrelationId correlationId = new CorrelationId(syncJobParameters.CorrelationId);
 
 			const string syncJob = nameof(SyncJob);
 			containerBuilder.RegisterType<SyncJob>().Named(syncJob, typeof(ISyncJob));
 			containerBuilder.RegisterDecorator<ISyncJob>((context, job) => new SyncJobWithUnhandledExceptionLogging(job, context.Resolve<IAppDomain>(), context.Resolve<ISyncLog>()), syncJob);
 
-			containerBuilder.RegisterInstance(new ContextLogger(correlationId, _logger)).As<ISyncLog>();
-			containerBuilder.RegisterInstance(_syncJobParameters).As<SyncJobParameters>();
+			containerBuilder.RegisterInstance(new ContextLogger(correlationId, logger)).As<ISyncLog>();
+			containerBuilder.RegisterInstance(syncJobParameters).As<SyncJobParameters>();
 			containerBuilder.RegisterInstance(correlationId).As<CorrelationId>();
-			containerBuilder.RegisterInstance(_configuration).As<SyncConfiguration>();
+			containerBuilder.RegisterInstance(configuration).As<SyncConfiguration>();
 			containerBuilder.RegisterType<SyncExecutionContextFactory>().As<ISyncExecutionContextFactory>();
 			containerBuilder.RegisterType<AppDomainWrapper>().As<IAppDomain>();
 

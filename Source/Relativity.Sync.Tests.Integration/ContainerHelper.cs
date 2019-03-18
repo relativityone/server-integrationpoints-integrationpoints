@@ -8,15 +8,9 @@ namespace Relativity.Sync.Tests.Integration
 		public static ContainerBuilder CreateInitializedContainerBuilder()
 		{
 			ContainerBuilder containerBuilder = new ContainerBuilder();
-			ContainerFactory containerFactory = new ContainerFactory(new SyncJobParameters(1, 1), new SyncConfiguration(), new EmptyLogger());
-			containerFactory.RegisterSyncDependencies(containerBuilder);
+			ContainerFactory containerFactory = new ContainerFactory();
+			containerFactory.RegisterSyncDependencies(containerBuilder, new SyncJobParameters(1, 1), new SyncConfiguration(), new EmptyLogger());
 			return containerBuilder;
-		}
-
-		public static IContainer CreateInitializedContainer()
-		{
-			ContainerBuilder containerBuilder = CreateInitializedContainerBuilder();
-			return containerBuilder.Build();
 		}
 	}
 }
