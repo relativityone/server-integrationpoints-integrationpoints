@@ -133,6 +133,9 @@ namespace kCura.IntegrationPoints.Web
 				"~/Content/jquery.jqGrid/ui.jqgrid.css"
 			));
 
+			bundles.Add(new StyleBundle("~/Content/fonts/bundleFonts").Include(
+				"~/Content/fonts/open-sans-v15-latin-regular.css"
+			));
 		}
 	}
 }
