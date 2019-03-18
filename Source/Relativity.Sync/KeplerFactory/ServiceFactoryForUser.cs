@@ -9,18 +9,27 @@ namespace Relativity.Sync.KeplerFactory
 {
 	internal sealed class ServiceFactoryForUser : ISourceServiceFactoryForUser, IDestinationServiceFactoryForUser
 	{
-		private ServiceFactory _serviceFactory;
+		private IServiceFactory _serviceFactory;
 
 		private readonly IUserContextConfiguration _userContextConfiguration;
 		private readonly IServicesMgr _servicesMgr;
 		private readonly IAuthTokenGenerator _tokenGenerator;
 		private readonly IDynamicProxyFactory _dynamicProxyFactory;
-		
+
 		public ServiceFactoryForUser(IUserContextConfiguration userContextConfiguration, IServicesMgr servicesMgr, IAuthTokenGenerator tokenGenerator, IDynamicProxyFactory dynamicProxyFactory)
 		{
 			_userContextConfiguration = userContextConfiguration;
 			_servicesMgr = servicesMgr;
 			_tokenGenerator = tokenGenerator;
+			_dynamicProxyFactory = dynamicProxyFactory;
+		}
+
+		/// <summary>
+		///     For testing purposes
+		/// </summary>
+		internal ServiceFactoryForUser(IServiceFactory serviceFactory, IDynamicProxyFactory dynamicProxyFactory)
+		{
+			_serviceFactory = serviceFactory;
 			_dynamicProxyFactory = dynamicProxyFactory;
 		}
 
@@ -31,7 +40,7 @@ namespace Relativity.Sync.KeplerFactory
 				_serviceFactory = await CreateServiceFactoryAsync().ConfigureAwait(false);
 			}
 
-			T keplerService =  _serviceFactory.CreateProxy<T>();
+			T keplerService = _serviceFactory.CreateProxy<T>();
 			return _dynamicProxyFactory.WrapKeplerService(keplerService);
 		}
 
