@@ -10,8 +10,6 @@ namespace kCura.IntegrationPoints.Core.Services.Domain
 
 		private readonly IProviderFactoryLifecycleStrategy _providerFactoryStrategy;
 
-		internal ProviderFactoryVendor() { }
-
 		public ProviderFactoryVendor(IProviderFactoryLifecycleStrategy providerFactoryStrategy)
 		{
 			_providerFactoryStrategy = providerFactoryStrategy;

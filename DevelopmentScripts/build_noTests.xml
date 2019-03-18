@@ -193,6 +193,7 @@
         <Project path="Source\kCura.IntegrationPoints.DocumentTransferProvider.Tests\kCura.IntegrationPoints.DocumentTransferProvider.Tests.csproj" />
         <Project path="Source\kCura.IntegrationPoints.DocumentTransferProvider.Tests\kCura.IntegrationPoints.DocumentTransferProvider.Tests.csproj" />
         <Project path="Source\kcura.IntegrationPoints.Domain.Tests\kCura.IntegrationPoints.Domain.Tests.csproj" />
+        <Project path="Source\kCura.IntegrationPoints.Domain.Tests.Integration\kCura.IntegrationPoints.Domain.Tests.Integration.csproj" />
         <Project path="Source\kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration\kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration.csproj" />
         <Project path="Source\kCura.IntegrationPoints.Email.Tests\kCura.IntegrationPoints.Email.Tests.csproj" />
         <Project path="Source\kCura.IntegrationPoints.EventHandlers.Tests\kCura.IntegrationPoints.EventHandlers.Tests.csproj" />

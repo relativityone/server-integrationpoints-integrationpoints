@@ -1,6 +1,4 @@
-﻿using System;
-using System.Runtime.Remoting;
-using kCura.IntegrationPoints.Contracts;
+﻿using kCura.IntegrationPoints.Contracts;
 
 namespace kCura.IntegrationPoints.Domain
 {
@@ -12,8 +10,5 @@ namespace kCura.IntegrationPoints.Domain
 		void Init();
 
 		IProviderFactory CreateProviderFactory();
-		object GetLifetimeService();
-		object InitializeLifetimeService();
-		ObjRef CreateObjRef(Type requestedType);
 	}
 }

@@ -9,6 +9,7 @@
     <assembly path="kCura.IntegrationPoints.Agent.Tests.Integration.dll"/>
     <assembly path="kCura.IntegrationPoints.Core.Tests.Integration.dll"/>
     <assembly path="kCura.IntegrationPoints.Data.Tests.Integration.dll"/>
+	<assembly path="kCura.IntegrationPoints.Domain.Tests.Integration.dll"/>	
     <assembly path="kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration.dll"/>
     <assembly path="kCura.IntegrationPoints.EventHandlers.Tests.Integration.dll"/>
     <assembly path="kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.dll"/>
