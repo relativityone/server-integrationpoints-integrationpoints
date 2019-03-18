@@ -1,4 +1,4 @@
-﻿namespace Relativity.Sync.Executors.SourceWorkspaceTagsCreation
+﻿namespace Relativity.Sync.Executors
 {
 	internal sealed class DestinationWorkspaceTag
 	{

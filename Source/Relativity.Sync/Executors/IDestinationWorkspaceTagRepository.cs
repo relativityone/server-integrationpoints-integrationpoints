@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
-using Relativity.Sync.Executors.SourceWorkspaceTagsCreation;
 
-namespace Relativity.Sync.Executors.Repository
+namespace Relativity.Sync.Executors
 {
 	internal interface IDestinationWorkspaceTagRepository
 	{

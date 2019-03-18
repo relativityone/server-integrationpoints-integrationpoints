@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Relativity.Sync.Executors.FederatedInstance
+namespace Relativity.Sync.Executors
 {
 	internal interface IFederatedInstance
 	{

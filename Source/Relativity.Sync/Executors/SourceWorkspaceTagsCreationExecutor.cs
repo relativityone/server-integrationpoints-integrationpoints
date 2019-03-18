@@ -2,11 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Executors.FederatedInstance;
-using Relativity.Sync.Executors.Repository;
-using Relativity.Sync.Executors.TagsCreation;
 
-namespace Relativity.Sync.Executors.SourceWorkspaceTagsCreation
+namespace Relativity.Sync.Executors
 {
 	internal sealed class SourceWorkspaceTagsCreationExecutor : IExecutor<ISourceWorkspaceTagsCreationConfiguration>
 	{

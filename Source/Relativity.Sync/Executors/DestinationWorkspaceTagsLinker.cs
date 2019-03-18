@@ -5,7 +5,7 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
 
-namespace Relativity.Sync.Executors.SourceWorkspaceTagsCreation
+namespace Relativity.Sync.Executors
 {
 	internal sealed class DestinationWorkspaceTagsLinker : IDestinationWorkspaceTagsLinker
 	{

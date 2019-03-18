@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Relativity.API;
@@ -7,7 +6,7 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
 
-namespace Relativity.Sync.Executors.TagsCreation
+namespace Relativity.Sync.Executors
 {
 	internal sealed class WorkspaceNameQuery : IWorkspaceNameQuery
 	{

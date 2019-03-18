@@ -5,11 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Sync.Executors.FederatedInstance;
-using Relativity.Sync.Executors.SourceWorkspaceTagsCreation;
 using Relativity.Sync.KeplerFactory;
 
-namespace Relativity.Sync.Executors.Repository
+namespace Relativity.Sync.Executors
 {
 	internal sealed class DestinationWorkspaceTagRepository : IDestinationWorkspaceTagRepository
 	{
