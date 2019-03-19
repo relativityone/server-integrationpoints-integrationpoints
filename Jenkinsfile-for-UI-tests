@@ -136,6 +136,7 @@ timestamps
 					{
 						echo "ui tests browser in stage view = ${params.UITestsBrowser}"
 						withEnv("UITestsBrowser=${params.UITestsBrowser}"){
+							echo "Now I will download browser"
 							jenkinsHelpers.downloadAndSetUpBrowser()
 							jenkinsHelpers.runUiTests()
 						}
