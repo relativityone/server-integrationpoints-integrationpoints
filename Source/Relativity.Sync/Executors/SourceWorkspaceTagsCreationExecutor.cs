@@ -23,16 +23,16 @@ namespace Relativity.Sync.Executors
 
 		public async Task ExecuteAsync(ISourceWorkspaceTagsCreationConfiguration configuration, CancellationToken token)
 		{
-			int destinationWorkspaceTagArtifactId = await CreateOrUpdateDestinationWorkspaceTagAsync(configuration).ConfigureAwait(false);
+			int destinationWorkspaceTagArtifactId = await CreateOrUpdateDestinationWorkspaceTagAsync(configuration, token).ConfigureAwait(false);
 			configuration.SetDestinationWorkspaceTagArtifactId(destinationWorkspaceTagArtifactId);
 		}
 
-		private async Task<int> CreateOrUpdateDestinationWorkspaceTagAsync(ISourceWorkspaceTagsCreationConfiguration configuration)
+		private async Task<int> CreateOrUpdateDestinationWorkspaceTagAsync(ISourceWorkspaceTagsCreationConfiguration configuration, CancellationToken token)
 		{
-			string destinationWorkspaceName = await _workspaceNameQuery.GetWorkspaceNameAsync(configuration.DestinationWorkspaceArtifactId).ConfigureAwait(false);
+			string destinationWorkspaceName = await _workspaceNameQuery.GetWorkspaceNameAsync(configuration.DestinationWorkspaceArtifactId, token).ConfigureAwait(false);
 			string destinationInstanceName = await _federatedInstance.GetInstanceNameAsync().ConfigureAwait(false);
 
-			DestinationWorkspaceTag tag = await _destinationWorkspaceTagRepository.ReadAsync(configuration.SourceWorkspaceArtifactId, configuration.DestinationWorkspaceArtifactId).ConfigureAwait(false);
+			DestinationWorkspaceTag tag = await _destinationWorkspaceTagRepository.ReadAsync(configuration.SourceWorkspaceArtifactId, configuration.DestinationWorkspaceArtifactId, token).ConfigureAwait(false);
 			if (tag == null)
 			{
 				tag = await _destinationWorkspaceTagRepository.CreateAsync(configuration.SourceWorkspaceArtifactId, configuration.DestinationWorkspaceArtifactId, destinationWorkspaceName).ConfigureAwait(false);
