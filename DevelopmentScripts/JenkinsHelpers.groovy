@@ -481,7 +481,7 @@ def reporting()
 
 def downloadAndSetUpBrowser()
 {
-    switch(params.UITestsBrowserName) {
+    switch(params.UITestsBrowser) {
         case 'chromium':
             downloadChromiumInSetVersion('72.0.3626.0')
         break
