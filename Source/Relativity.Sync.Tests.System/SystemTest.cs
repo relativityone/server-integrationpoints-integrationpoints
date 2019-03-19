@@ -10,10 +10,12 @@ using Platform.Keywords.RSAPI;
 using Relativity.API;
 using Relativity.Services;
 using Relativity.Services.Permission;
+using Relativity.Services.ServiceProxy;
 using Relativity.Sync.Authentication;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Tests.System.Stub;
+using BearerTokenCredentials = Relativity.Services.ServiceProxy.BearerTokenCredentials;
 using TextCondition = kCura.Relativity.Client.TextCondition;
 using TextConditionEnum = kCura.Relativity.Client.TextConditionEnum;
 using User = kCura.Relativity.Client.DTOs.User;
@@ -33,14 +35,6 @@ namespace Relativity.Sync.Tests.System
 			ChildSuiteSetup();
 		}
 
-		protected virtual void ChildSuiteSetup()
-		{
-		}
-
-		protected virtual void ChildSuiteTeardown()
-		{
-		}
-
 		[OneTimeTearDown]
 		public void SuiteTeardown()
 		{
@@ -48,6 +42,14 @@ namespace Relativity.Sync.Tests.System
 			Client.Repositories.Workspace.Delete(_workspaces);
 			Client?.Dispose();
 			Client = null;
+		}
+
+		protected virtual void ChildSuiteSetup()
+		{
+		}
+
+		protected virtual void ChildSuiteTeardown()
+		{
 		}
 
 		protected async Task<Workspace> CreateWorkspaceAsync()
@@ -91,6 +93,13 @@ namespace Relativity.Sync.Tests.System
 			query.Fields.Add(new FieldValue("*"));
 			Workspace workspace = Client.Repositories.Workspace.Query(query).Results[0].Artifact;
 			return workspace;
+		}
+
+		protected ServiceFactory CreateServideFactory()
+		{
+			Credentials credentials = new Services.ServiceProxy.UsernamePasswordCredentials(AppSettings.RelativityUserName, AppSettings.RelativityUserPassword);
+			ServiceFactorySettings settings = new ServiceFactorySettings(AppSettings.RelativityServicesUrl, AppSettings.RelativityRestUrl, credentials);
+			return new ServiceFactory(settings);
 		}
 
 		protected virtual void Dispose(bool disposing)
