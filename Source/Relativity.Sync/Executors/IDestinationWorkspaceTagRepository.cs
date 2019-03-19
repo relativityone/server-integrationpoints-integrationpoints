@@ -1,0 +1,11 @@
+﻿using System.Threading.Tasks;
+
+namespace Relativity.Sync.Executors
+{
+	internal interface IDestinationWorkspaceTagRepository
+	{
+		Task<DestinationWorkspaceTag> ReadAsync(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId);
+		Task<DestinationWorkspaceTag> CreateAsync(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId, string destinationWorkspaceName);
+		Task UpdateAsync(int sourceWorkspaceArtifactId, DestinationWorkspaceTag destinationWorkspaceTag);
+	}
+}

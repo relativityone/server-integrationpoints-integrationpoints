@@ -36,9 +36,13 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 			Mock<IHelper> helperMock = new Mock<IHelper>();
 			Mock<IDBContext> dbContextMock = new Mock<IDBContext>();
 			Mock<IServicesMgr> servicesMgrMock = new Mock<IServicesMgr>();
+			Mock<IAPILog> apiLogMock = new Mock<IAPILog>();
+			Mock<IProvideServiceUris> serviceUriProviderMock = new Mock<IProvideServiceUris>();
 			helperMock.Setup(h => h.GetDBContext(It.IsAny<int>())).Returns(dbContextMock.Object);
 			builder.RegisterInstance(helperMock.Object).As<IHelper>();
 			builder.RegisterInstance(servicesMgrMock.Object).As<IServicesMgr>();
+			builder.RegisterInstance(apiLogMock.Object).As<IAPILog>();
+			builder.RegisterInstance(serviceUriProviderMock.Object).As<IProvideServiceUris>();
 
 			// Relativity.Services.InstanceSettings
 			Mock<IInstanceSettingManager> instanceSettingsManagerMock = new Mock<IInstanceSettingManager>();

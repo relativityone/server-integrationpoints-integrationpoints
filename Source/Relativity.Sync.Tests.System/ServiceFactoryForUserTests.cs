@@ -22,30 +22,19 @@ using UsernamePasswordCredentials = kCura.Relativity.Client.UsernamePasswordCred
 namespace Relativity.Sync.Tests.System
 {
 	[TestFixture]
-	public sealed class ServiceFactoryForUserTests : IDisposable
+	public sealed class ServiceFactoryForUserTests : SystemTest
 	{
 		private ServicesManagerStub _servicesManager;
 		private ProvideServiceUrisStub _provideServiceUris;
-		private IRSAPIClient _client;
 		private Workspace _workspace;
 
-		[OneTimeSetUp]
-		public void SuiteSetup()
+		protected override void ChildSuiteSetup()
 		{
 			_servicesManager = new ServicesManagerStub();
 			_provideServiceUris = new ProvideServiceUrisStub();
-			_client = new RSAPIClient(AppSettings.RelativityServicesUrl, new UsernamePasswordCredentials(AppSettings.RelativityUserName, AppSettings.RelativityUserPassword));
 			_workspace = CreateWorkspaceAsync().Result;
 		}
 
-		[OneTimeTearDown]
-		public void SuiteTeardown()
-		{
-			DeleteWorkspace(_workspace.ArtifactID);
-			_client?.Dispose();
-			_client = null;
-		}
-		
 		[Test]
 		public async Task UserShouldNotHavePermissionToWorkspace()
 		{
@@ -57,7 +46,7 @@ namespace Relativity.Sync.Tests.System
 			AddGroupToWorkspace(groupName);
 
 			Mock<IUserContextConfiguration> userContextConfiguration = new Mock<IUserContextConfiguration>();
-			userContextConfiguration.SetupGet(x => x.ExecutingUserId).Returns(UserHelpers.FindUserArtifactID(_client, userName));
+			userContextConfiguration.SetupGet(x => x.ExecutingUserId).Returns(UserHelpers.FindUserArtifactID(Client, userName));
 
 			Mock<IAPILog> apiLog = new Mock<IAPILog>();
 			IAuthTokenGenerator authTokenGenerator = new OAuth2TokenGenerator(new OAuth2ClientFactory(_servicesManager, apiLog.Object),
@@ -82,59 +71,13 @@ namespace Relativity.Sync.Tests.System
 			Assert.False(hasPermission);
 		}
 
-		private async Task<Workspace> CreateWorkspaceAsync()
-		{
-			string name = $"{Guid.NewGuid().ToString()}";
-			Workspace newWorkspace = new Workspace {Name = name};
-			Workspace template = FindWorkspace("Relativity Starter Template");
-			ProcessOperationResult createWorkspaceResult = _client.Repositories.Workspace.CreateAsync(template.ArtifactID, newWorkspace);
-
-			if (!createWorkspaceResult.Success)
-			{
-				throw new InvalidOperationException($"Failed to create workspace '{newWorkspace.Name}': {createWorkspaceResult.Message}");
-			}
-
-			ProcessInformation processInfo;
-			do
-			{
-				processInfo = _client.GetProcessState(_client.APIOptions, createWorkspaceResult.ProcessID);
-				const int millisecondsDelay = 100;
-				await Task.Delay(millisecondsDelay).ConfigureAwait(false);
-			}
-			while (processInfo.State == ProcessStateValue.Running || processInfo.State == ProcessStateValue.RunningWarning);
-
-			if (processInfo.State != ProcessStateValue.Completed)
-			{
-				throw new InvalidOperationException($"Workspace creation did not completed successfuly: {processInfo.Message}");
-			}
-
-			return FindWorkspace(name);
-		}
-
-		private void DeleteWorkspace(int workspaceArtifactId)
-		{
-			_client.Repositories.Workspace.DeleteSingle(workspaceArtifactId);
-		}
-
-		private Workspace FindWorkspace(string name)
-		{
-			var workspaceNameCondition = new TextCondition(WorkspaceFieldNames.Name, TextConditionEnum.EqualTo, name);
-			var query = new Query<Workspace>
-			{
-				Condition = workspaceNameCondition
-			};
-			query.Fields.Add(new FieldValue("*"));
-			Workspace workspace = _client.Repositories.Workspace.Query(query).Results[0].Artifact;
-			return workspace;
-		}
-
 		private void SetUpGroup(string groupName)
 		{
-			Group group = GroupHelpers.GroupGetByName(_client, groupName);
+			Group group = GroupHelpers.GroupGetByName(Client, groupName);
 			if (group == null)
 			{
 				CreateGroup(groupName);
-				GroupHelpers.GroupGetByName(_client, groupName);
+				GroupHelpers.GroupGetByName(Client, groupName);
 			}
 		}
 
@@ -146,40 +89,35 @@ namespace Relativity.Sync.Tests.System
 				Users = new MultiUserFieldValueList(),
 				Client = _workspace.Client
 			};
-			_client.Repositories.Group.Create(newGroup);
+			Client.Repositories.Group.Create(newGroup);
 		}
 
 		private void SetUpUser(string userName, string password, string groupName)
 		{
-			int userArtifactId = UserHelpers.FindUserArtifactID(_client, userName);
+			int userArtifactId = UserHelpers.FindUserArtifactID(Client, userName);
 
 			User user;
 			if (userArtifactId == 0)
 			{
-				Client client = _client.Repositories.Client.ReadSingle(_workspace.Client.ArtifactID);
-				user = UserHelpers.CreateUserWithPassword(_client, "Test", "Test", userName, client.Name, password);
+				Client client = Client.Repositories.Client.ReadSingle(_workspace.Client.ArtifactID);
+				user = UserHelpers.CreateUserWithPassword(Client, "Test", "Test", userName, client.Name, password);
 			}
 			else
 			{
-				user = _client.Repositories.User.ReadSingle(userArtifactId);
+				user = Client.Repositories.User.ReadSingle(userArtifactId);
 			}
 
-			Group group = GroupHelpers.GroupGetByName(_client, groupName);
-			GroupHelpers.GroupAddUserIfNotInGroup(_client, group, user);
+			Group group = GroupHelpers.GroupGetByName(Client, groupName);
+			GroupHelpers.GroupAddUserIfNotInGroup(Client, group, user);
 		}
 
 		private void AddGroupToWorkspace(string groupName)
 		{
 			using (IPermissionManager permissionManager = _servicesManager.CreateProxy<IPermissionManager>(ExecutionIdentity.System))
 			{
-				Group group = GroupHelpers.GroupGetOrCreateByName(_client, groupName);
+				Group group = GroupHelpers.GroupGetOrCreateByName(Client, groupName);
 				PermissionHelpers.AddGroupToWorkspace(permissionManager, _workspace.ArtifactID, group);
 			}
-		}
-
-		public void Dispose()
-		{
-			_client?.Dispose();
 		}
 	}
 }

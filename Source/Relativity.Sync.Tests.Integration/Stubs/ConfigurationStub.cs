@@ -50,8 +50,9 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 		public bool IsDestinationWorkspaceTagArtifactIdSet { get; set; }
 		public void SetDestinationWorkspaceTagArtifactId(int artifactId)
 		{
-			// Method intentionally left empty.
+			DestinationWorkspaceTagArtifactId = artifactId;
 		}
+		public int DestinationWorkspaceTagArtifactId { get; set; }
 
 		public int SourceWorkspaceArtifactTypeId { get; set; }
 		public int SourceJobArtifactTypeId { get; set; }
@@ -66,8 +67,8 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 
 		public void SetSourceWorkspaceTag(int artifactId, string name)
 		{
-			// Method intentionally left empty.
 		}
+
 
 		public int ExecutingUserId { get; set; }
 		public string JobStatus { get; set; }
