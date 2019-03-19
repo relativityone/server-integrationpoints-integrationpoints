@@ -15,13 +15,16 @@ namespace Relativity.Sync.KeplerFactory
 		private readonly IServicesMgr _servicesMgr;
 		private readonly IAuthTokenGenerator _tokenGenerator;
 		private readonly IDynamicProxyFactory _dynamicProxyFactory;
+		private readonly IServiceFactoryFactory _serviceFactoryFactory;
 
-		public ServiceFactoryForUser(IUserContextConfiguration userContextConfiguration, IServicesMgr servicesMgr, IAuthTokenGenerator tokenGenerator, IDynamicProxyFactory dynamicProxyFactory)
+		public ServiceFactoryForUser(IUserContextConfiguration userContextConfiguration, IServicesMgr servicesMgr, IAuthTokenGenerator tokenGenerator, IDynamicProxyFactory dynamicProxyFactory,
+			IServiceFactoryFactory serviceFactoryFactory)
 		{
 			_userContextConfiguration = userContextConfiguration;
 			_servicesMgr = servicesMgr;
 			_tokenGenerator = tokenGenerator;
 			_dynamicProxyFactory = dynamicProxyFactory;
+			_serviceFactoryFactory = serviceFactoryFactory;
 		}
 
 		/// <summary>
@@ -44,12 +47,12 @@ namespace Relativity.Sync.KeplerFactory
 			return _dynamicProxyFactory.WrapKeplerService(keplerService);
 		}
 
-		private async Task<ServiceFactory> CreateServiceFactoryAsync()
+		private async Task<IServiceFactory> CreateServiceFactoryAsync()
 		{
 			string authToken = await _tokenGenerator.GetAuthTokenAsync(_userContextConfiguration.ExecutingUserId).ConfigureAwait(false);
 			Credentials credentials = new BearerTokenCredentials(authToken);
 			ServiceFactorySettings settings = new ServiceFactorySettings(_servicesMgr.GetServicesURL(), _servicesMgr.GetRESTServiceUrl(), credentials);
-			return new ServiceFactory(settings);
+			return _serviceFactoryFactory.Create(settings);
 		}
 	}
 }

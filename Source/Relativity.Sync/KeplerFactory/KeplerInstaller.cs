@@ -19,6 +19,8 @@ namespace Relativity.Sync.KeplerFactory
 				.As<IDestinationServiceFactoryForAdmin>();
 
 			builder.RegisterType<DynamicProxyFactory>().As<IDynamicProxyFactory>();
+
+			builder.RegisterType<ServiceFactoryFactory>().As<IServiceFactoryFactory>();
 		}
 	}
 }
