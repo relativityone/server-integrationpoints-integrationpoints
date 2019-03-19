@@ -36,7 +36,7 @@ namespace Relativity.Sync.Tests.Unit
 
 			_dynamicProxyFactory = new Mock<IDynamicProxyFactory>();
 
-			_instance = new ServiceFactoryForUser(userContextConfiguration.Object, servicesMgr.Object, _tokenGenerator.Object, _dynamicProxyFactory.Object);
+			_instance = new ServiceFactoryForUser(userContextConfiguration.Object, servicesMgr.Object, _tokenGenerator.Object, _dynamicProxyFactory.Object, new ServiceFactoryFactory());
 		}
 
 		[Test]

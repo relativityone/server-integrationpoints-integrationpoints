@@ -69,7 +69,7 @@ namespace Relativity.Sync.Tests.System
 			};
 
 			IDynamicProxyFactory dynamicProxyFactory = new DynamicProxyFactoryStub();
-			ServiceFactoryForUser sut = new ServiceFactoryForUser(userContextConfiguration.Object, _servicesManager, authTokenGenerator, dynamicProxyFactory);
+			ServiceFactoryForUser sut = new ServiceFactoryForUser(userContextConfiguration.Object, _servicesManager, authTokenGenerator, dynamicProxyFactory, new ServiceFactoryFactory());
 			List<PermissionValue> permissionValues;
 			using (IPermissionManager permissionManager = await sut.CreateProxyAsync<IPermissionManager>().ConfigureAwait(false))
 			{
