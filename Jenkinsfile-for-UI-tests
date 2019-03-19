@@ -134,7 +134,7 @@ timestamps
 				{
 					stage ('UI Tests')
 					{
-						withEnv(['UITestsBrowser=${params.UITestsBrowserName}']){
+						withEnv("UITestsBrowser=${params.UITestsBrowserName}"]){
 							jenkinsHelpers.downloadAndSetUpBrowser()
 							jenkinsHelpers.runUiTests()
 						}
