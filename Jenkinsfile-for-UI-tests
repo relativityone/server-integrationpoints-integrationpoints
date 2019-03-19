@@ -56,9 +56,9 @@ properties([
 			defaultValue: false, 
 			description: 'Enable SonarQube analysis for develop branch.'
 		),
-		choise(
+		choice(
 			name: 'UITestsBrowserName',
-			choises: ['chromium', 'chrome'],
+			choices: ['chromium', 'chrome'],
 			description: 'Name of browser the UI tests should be run on. Default: chrome'
 		)
 	])
