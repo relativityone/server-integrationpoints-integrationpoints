@@ -1,32 +1,32 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.Serialization;
 
 namespace Relativity.Sync.Executors
 {
-	/// <inheritdoc/>
+	/// <summary>
+	///     Exception thrown by methods of <see cref="IDestinationWorkspaceTagsLinker" />
+	///     when errors occur in external services.
+	/// </summary>
 	[Serializable]
 	public sealed class DestinationWorkspaceTagsLinkerException : Exception
 	{
-		/// <inheritdoc/>
-		public DestinationWorkspaceTagsLinkerException() : base()
+		/// <inheritdoc />
+		public DestinationWorkspaceTagsLinkerException()
 		{
 		}
 
-		/// <inheritdoc/>
+		/// <inheritdoc />
 		public DestinationWorkspaceTagsLinkerException(string message) : base(message)
 		{
 		}
 
-		/// <inheritdoc/>
-		public DestinationWorkspaceTagsLinkerException(string message, System.Exception innerException) : base(message, innerException)
+		/// <inheritdoc />
+		public DestinationWorkspaceTagsLinkerException(string message, Exception innerException) : base(message, innerException)
 		{
 		}
 
-		/// <inheritdoc/>
-		private DestinationWorkspaceTagsLinkerException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base(info, context)
+		/// <inheritdoc />
+		private DestinationWorkspaceTagsLinkerException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 		}
 	}
