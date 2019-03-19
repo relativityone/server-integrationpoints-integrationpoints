@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Relativity.API;
+using Relativity.Services.DataContracts.DTOs;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
@@ -20,7 +22,7 @@ namespace Relativity.Sync.Executors
 			_logger = logger;
 		}
 
-		public async Task<string> GetWorkspaceNameAsync(int workspaceArtifactId)
+		public async Task<string> GetWorkspaceNameAsync(int workspaceArtifactId, CancellationToken token)
 		{
 			using (IObjectManager objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
@@ -37,7 +39,7 @@ namespace Relativity.Sync.Executors
 
 				try
 				{
-					queryResult = await objectManager.QueryAsync(workspaceId, request, start, length).ConfigureAwait(false);
+					queryResult = await objectManager.QueryAsync(workspaceId, request, start, length, token, new EmptyProgress<ProgressReport>()).ConfigureAwait(false);
 				}
 				catch (Exception ex)
 				{

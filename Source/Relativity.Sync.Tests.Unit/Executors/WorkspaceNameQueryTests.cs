@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Services.DataContracts.DTOs;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Executors;
@@ -32,11 +34,12 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		public void ItShouldThrowExceptionWhenQueryFails()
 		{
 			Mock<IObjectManager> objectManager = new Mock<IObjectManager>();
-			objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).Throws<InvalidOperationException>();
+			objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(),
+				CancellationToken.None, It.IsAny<IProgress<ProgressReport>>())).Throws<InvalidOperationException>();
 			_serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(objectManager.Object);
 
 			// act
-			Func<Task> action = async () => await _sut.GetWorkspaceNameAsync(1).ConfigureAwait(false);
+			Func<Task> action = async () => await _sut.GetWorkspaceNameAsync(1, CancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			action.Should().Throw<InvalidOperationException>();
@@ -46,11 +49,12 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		public void ItShouldThrowSyncExceptionWhenQueryReturnsNoResults()
 		{
 			Mock<IObjectManager> objectManager = new Mock<IObjectManager>();
-			objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(new QueryResult());
+			objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(),
+				CancellationToken.None, It.IsAny<IProgress<ProgressReport>>())).ReturnsAsync(new QueryResult());
 			_serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(objectManager.Object);
 
 			// act
-			Func<Task> action = async () => await _sut.GetWorkspaceNameAsync(1).ConfigureAwait(false);
+			Func<Task> action = async () => await _sut.GetWorkspaceNameAsync(1, CancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			action.Should().Throw<SyncException>();
@@ -67,11 +71,12 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			});
 
 			Mock<IObjectManager> objectManager = new Mock<IObjectManager>();
-			objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(queryResult);
+			objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(),
+				CancellationToken.None, It.IsAny<IProgress<ProgressReport>>())).ReturnsAsync(queryResult);
 			_serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(objectManager.Object);
 
 			// act
-			string actualWorkspaceName = await _sut.GetWorkspaceNameAsync(1).ConfigureAwait(false);
+			string actualWorkspaceName = await _sut.GetWorkspaceNameAsync(1, CancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			Assert.AreEqual(expectedWorkspaceName, actualWorkspaceName);

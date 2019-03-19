@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.Services.DataContracts.DTOs;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -70,10 +72,11 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			};
 
 			queryResult.Objects.Add(relativityObject);
-			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(queryResult);
+			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(),
+				CancellationToken.None, It.IsAny<IProgress<ProgressReport>>())).ReturnsAsync(queryResult);
 
 			// act
-			DestinationWorkspaceTag tag = await _sut.ReadAsync(0, 0).ConfigureAwait(false);
+			DestinationWorkspaceTag tag = await _sut.ReadAsync(0, 0, CancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			Assert.AreEqual(relativityObject.ArtifactID, tag.ArtifactId);
@@ -86,10 +89,11 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		public async Task ItShouldReturnNullWhenReadingNotExistingTag()
 		{
 			QueryResult queryResult = new QueryResult();
-			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(queryResult);
+			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), 
+				CancellationToken.None, It.IsAny<IProgress<ProgressReport>>())).ReturnsAsync(queryResult);
 
 			// act
-			DestinationWorkspaceTag tag = await _sut.ReadAsync(0, 0).ConfigureAwait(false);
+			DestinationWorkspaceTag tag = await _sut.ReadAsync(0, 0, CancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			Assert.IsNull(tag);
@@ -98,10 +102,11 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[Test]
 		public void ItShouldThrowRepositoryExceptionWhenQueryingObjectManagerFails()
 		{
-			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).Throws<ServiceException>();
+			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(),
+				CancellationToken.None, It.IsAny<IProgress<ProgressReport>>())).Throws<ServiceException>();
 
 			// act
-			Func<Task> action = async () => await _sut.ReadAsync(0, 0).ConfigureAwait(false);
+			Func<Task> action = async () => await _sut.ReadAsync(0, 0, CancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			action.Should().Throw<DestinationWorkspaceTagRepositoryException>();
