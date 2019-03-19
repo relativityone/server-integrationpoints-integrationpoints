@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using Relativity.Services.DataContracts.DTOs;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -32,12 +34,12 @@ namespace Relativity.Sync.Executors
 			_logger = logger;
 		}
 		
-		public async Task<DestinationWorkspaceTag> ReadAsync(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId)
+		public async Task<DestinationWorkspaceTag> ReadAsync(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId, CancellationToken token)
 		{
 			_logger.LogVerbose($"Reading {nameof(DestinationWorkspaceTag)}. Source workspace artifact ID: {{sourceWorkspaceArtifactId}} " +
 				"Destination workspace artifact ID: {destinationWorkspaceArtifactId}",
 				sourceWorkspaceArtifactId, destinationWorkspaceArtifactId);
-			RelativityObject tag = await QueryRelativityObjectTagAsync(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId).ConfigureAwait(false);
+			RelativityObject tag = await QueryRelativityObjectTagAsync(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, token).ConfigureAwait(false);
 
 			if (tag != null)
 			{
@@ -54,7 +56,7 @@ namespace Relativity.Sync.Executors
 			return null;
 		}
 
-		private async Task<RelativityObject> QueryRelativityObjectTagAsync(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId)
+		private async Task<RelativityObject> QueryRelativityObjectTagAsync(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId, CancellationToken token)
 		{
 			using (IObjectManager objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
@@ -78,7 +80,7 @@ namespace Relativity.Sync.Executors
 				{
 					const int start = 0;
 					const int length = 1;
-					queryResult = await objectManager.QueryAsync(sourceWorkspaceArtifactId, request, start, length).ConfigureAwait(false);
+					queryResult = await objectManager.QueryAsync(sourceWorkspaceArtifactId, request, start, length, token, new EmptyProgress<ProgressReport>()).ConfigureAwait(false);
 				}
 				catch (ServiceException ex)
 				{

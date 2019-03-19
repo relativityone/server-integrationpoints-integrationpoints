@@ -93,7 +93,7 @@ namespace Relativity.Sync.Tests.Integration
 				It.Is<QueryRequest>(y => y.Condition.Contains(destinationWorkspaceArtifactID.ToString(CultureInfo.InvariantCulture))),
 				It.IsAny<int>(),
 				It.IsAny<int>(),
-				It.IsAny<CancellationToken>(),
+				CancellationToken.None, 
 				It.IsAny<IProgress<ProgressReport>>()))
 				.Returns(Task.FromResult(new QueryResult() { Objects = new List<RelativityObject> { new RelativityObject() { Name = destinationWorkspaceName } } }));
 
@@ -101,7 +101,9 @@ namespace Relativity.Sync.Tests.Integration
 				sourceWorkspaceArtifactID,
 				It.IsAny<QueryRequest>(),
 				It.IsAny<int>(),
-				It.IsAny<int>())
+				It.IsAny<int>(), 
+				CancellationToken.None, 
+				It.IsAny<IProgress<ProgressReport>>())
 				).Returns(Task.FromResult(new QueryResult()));
 
 			_objectManagerMock.Setup(x => x.CreateAsync(
@@ -146,7 +148,7 @@ namespace Relativity.Sync.Tests.Integration
 				It.Is<QueryRequest>(y => y.Condition.Contains(destinationWorkspaceArtifactID.ToString(CultureInfo.InvariantCulture))),
 				It.IsAny<int>(),
 				It.IsAny<int>(),
-				It.IsAny<CancellationToken>(),
+				CancellationToken.None, 
 				It.IsAny<IProgress<ProgressReport>>()))
 				.Returns(Task.FromResult(new QueryResult() { Objects = new List<RelativityObject> { new RelativityObject() { Name = expectedDestinationWorkspaceName } } }));
 
@@ -154,7 +156,9 @@ namespace Relativity.Sync.Tests.Integration
 				sourceWorkspaceArtifactID,
 				It.IsAny<QueryRequest>(),
 				It.IsAny<int>(),
-				It.IsAny<int>())
+				It.IsAny<int>(),
+				CancellationToken.None,
+				It.IsAny<IProgress<ProgressReport>>())
 				).Returns(Task.FromResult(new QueryResult
 			{
 					Objects = new List<RelativityObject>
@@ -238,7 +242,7 @@ namespace Relativity.Sync.Tests.Integration
 				It.Is<QueryRequest>(y => y.Condition.Contains(destinationWorkspaceArtifactID.ToString(CultureInfo.InvariantCulture))),
 				It.IsAny<int>(),
 				It.IsAny<int>(),
-				It.IsAny<CancellationToken>(),
+				CancellationToken.None,
 				It.IsAny<IProgress<ProgressReport>>()))
 				.Returns(Task.FromResult(new QueryResult() { Objects = new List<RelativityObject> { new RelativityObject() { Name = expectedDestinationInstanceName } } }));
 
@@ -246,7 +250,9 @@ namespace Relativity.Sync.Tests.Integration
 				sourceWorkspaceArtifactID,
 				It.IsAny<QueryRequest>(),
 				It.IsAny<int>(),
-				It.IsAny<int>())
+				It.IsAny<int>(),
+				CancellationToken.None,
+				It.IsAny<IProgress<ProgressReport>>())
 				).Returns(Task.FromResult(new QueryResult
 			{
 					Objects = new List<RelativityObject>
@@ -330,7 +336,7 @@ namespace Relativity.Sync.Tests.Integration
 				It.Is<QueryRequest>(y => y.Condition.Contains(destinationWorkspaceArtifactID.ToString(CultureInfo.InvariantCulture))),
 				It.IsAny<int>(),
 				It.IsAny<int>(),
-				It.IsAny<CancellationToken>(),
+				CancellationToken.None, 
 				It.IsAny<IProgress<ProgressReport>>()))
 				.Returns(Task.FromResult(new QueryResult() { Objects = new List<RelativityObject> { new RelativityObject() { Name = destinationWorkspaceName } } }));
 
@@ -338,7 +344,9 @@ namespace Relativity.Sync.Tests.Integration
 				sourceWorkspaceArtifactID,
 				It.IsAny<QueryRequest>(),
 				It.IsAny<int>(),
-				It.IsAny<int>())
+				It.IsAny<int>(),
+				CancellationToken.None,
+				It.IsAny<IProgress<ProgressReport>>())
 				).Returns(Task.FromResult(new QueryResult
 			{
 					Objects = new List<RelativityObject>
@@ -412,7 +420,7 @@ namespace Relativity.Sync.Tests.Integration
 				It.Is<QueryRequest>(y => y.Condition.Contains(destinationWorkspaceArtifactID.ToString(CultureInfo.InvariantCulture))),
 				It.IsAny<int>(),
 				It.IsAny<int>(),
-				It.IsAny<CancellationToken>(),
+				CancellationToken.None, 
 				It.IsAny<IProgress<ProgressReport>>()))
 				.Returns(Task.FromResult(new QueryResult()));
 
@@ -440,7 +448,7 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<QueryRequest>(),
 				It.IsAny<int>(),
 				It.IsAny<int>(),
-				It.IsAny<CancellationToken>(),
+				CancellationToken.None,
 				It.IsAny<IProgress<ProgressReport>>()))
 				.Returns(Task.FromResult(new QueryResult() { Objects = new List<RelativityObject> { new RelativityObject() { Name = destWorkspaceName } } }));
 
@@ -448,7 +456,9 @@ namespace Relativity.Sync.Tests.Integration
 				srcWorkspaceArtifactId,
 				It.IsAny<QueryRequest>(),
 				It.IsAny<int>(),
-				It.IsAny<int>())
+				It.IsAny<int>(),
+				CancellationToken.None,
+				It.IsAny<IProgress<ProgressReport>>())
 				).Returns(Task.FromResult(new QueryResult()));
 
 			_objectManagerMock.Setup(x => x.CreateAsync(
@@ -484,7 +494,7 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<QueryRequest>(),
 				It.IsAny<int>(),
 				It.IsAny<int>(),
-				It.IsAny<CancellationToken>(),
+				CancellationToken.None,
 				It.IsAny<IProgress<ProgressReport>>()))
 				.Returns(Task.FromResult(new QueryResult() { Objects = new List<RelativityObject> { new RelativityObject() { Name = destinationWorkspaceName } } }));
 
@@ -492,7 +502,9 @@ namespace Relativity.Sync.Tests.Integration
 				sourceWorkspaceArtifactID,
 				It.IsAny<QueryRequest>(),
 				It.IsAny<int>(),
-				It.IsAny<int>())
+				It.IsAny<int>(),
+				CancellationToken.None,
+				It.IsAny<IProgress<ProgressReport>>())
 				).Returns(Task.FromResult(new QueryResult
 			{
 					Objects = new List<RelativityObject>
@@ -565,7 +577,7 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<QueryRequest>(),
 				It.IsAny<int>(),
 				It.IsAny<int>(),
-				It.IsAny<CancellationToken>(),
+				CancellationToken.None,
 				It.IsAny<IProgress<ProgressReport>>()))
 				.Returns(Task.FromResult(new QueryResult() { Objects = new List<RelativityObject> { new RelativityObject() { Name = destinationWorkspaceName } } }));
 
@@ -573,7 +585,9 @@ namespace Relativity.Sync.Tests.Integration
 				sourceWorkspaceArtifactID,
 				It.IsAny<QueryRequest>(),
 				It.IsAny<int>(),
-				It.IsAny<int>())
+				It.IsAny<int>(),
+				CancellationToken.None,
+				It.IsAny<IProgress<ProgressReport>>())
 				).Returns(Task.FromResult(new QueryResult()));
 
 			_objectManagerMock.Setup(x => x.CreateAsync(
@@ -612,7 +626,7 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<QueryRequest>(),
 				It.IsAny<int>(),
 				It.IsAny<int>(),
-				It.IsAny<CancellationToken>(),
+				CancellationToken.None,
 				It.IsAny<IProgress<ProgressReport>>()))
 				.Returns(Task.FromResult(new QueryResult() { Objects = new List<RelativityObject> { new RelativityObject() { Name = destinationWorkspaceName } } }));
 
@@ -620,7 +634,9 @@ namespace Relativity.Sync.Tests.Integration
 				sourceWorkspaceArtifactID,
 				It.IsAny<QueryRequest>(),
 				It.IsAny<int>(),
-				It.IsAny<int>()
+				It.IsAny<int>(),
+				CancellationToken.None,
+				It.IsAny<IProgress<ProgressReport>>()
 				)).Throws(new Exception("blah blah blah"));
 
 			DestinationWorkspaceTagRepositoryException thrownException = Assert.Throws<DestinationWorkspaceTagRepositoryException>(() =>

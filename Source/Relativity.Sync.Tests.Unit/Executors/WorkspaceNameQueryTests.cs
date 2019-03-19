@@ -34,8 +34,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		public void ItShouldThrowExceptionWhenQueryFails()
 		{
 			Mock<IObjectManager> objectManager = new Mock<IObjectManager>();
-			objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>(), It.IsAny<IProgress<ProgressReport>>()))
-				.Throws<InvalidOperationException>();
+			objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(),
+				CancellationToken.None, It.IsAny<IProgress<ProgressReport>>())).Throws<InvalidOperationException>();
 			_serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(objectManager.Object);
 
 			// act
@@ -49,8 +49,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		public void ItShouldThrowSyncExceptionWhenQueryReturnsNoResults()
 		{
 			Mock<IObjectManager> objectManager = new Mock<IObjectManager>();
-			objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>(), It.IsAny<IProgress<ProgressReport>>()))
-				.ReturnsAsync(new QueryResult());
+			objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(),
+				CancellationToken.None, It.IsAny<IProgress<ProgressReport>>())).ReturnsAsync(new QueryResult());
 			_serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(objectManager.Object);
 
 			// act
@@ -71,8 +71,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			});
 
 			Mock<IObjectManager> objectManager = new Mock<IObjectManager>();
-			objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>(), It.IsAny<IProgress<ProgressReport>>()))
-				.ReturnsAsync(queryResult);
+			objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(),
+				CancellationToken.None, It.IsAny<IProgress<ProgressReport>>())).ReturnsAsync(queryResult);
 			_serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(objectManager.Object);
 
 			// act
