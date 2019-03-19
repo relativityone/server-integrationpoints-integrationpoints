@@ -100,7 +100,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		}
 
 		[Test]
-		public void ItShouldThrowRepositoryExceptionWhenQueryingObjectManagerFails()
+		public void ItShouldThrowRepositoryExceptionWhenReadServiceCallFails()
 		{
 			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(),
 				CancellationToken.None, It.IsAny<IProgress<ProgressReport>>())).Throws<ServiceException>();
@@ -109,7 +109,20 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Func<Task> action = async () => await _sut.ReadAsync(0, 0, CancellationToken.None).ConfigureAwait(false);
 
 			// assert
-			action.Should().Throw<DestinationWorkspaceTagRepositoryException>();
+			action.Should().Throw<DestinationWorkspaceTagRepositoryException>().WithInnerException<ServiceException>();
+		}
+
+		[Test]
+		public void ItShouldThrowRepositoryExceptionWhenReadFails()
+		{
+			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(),
+				CancellationToken.None, It.IsAny<IProgress<ProgressReport>>())).Throws<InvalidOperationException>();
+
+			// act
+			Func<Task> action = async () => await _sut.ReadAsync(0, 0, CancellationToken.None).ConfigureAwait(false);
+
+			// assert
+			action.Should().Throw<DestinationWorkspaceTagRepositoryException>().WithInnerException<InvalidOperationException>();
 		}
 
 		[Test]
@@ -142,7 +155,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		}
 
 		[Test]
-		public void ItShouldThrowRepositoryExceptionWhenCreatingTagFails()
+		public void ItShouldThrowRepositoryExceptionWhenCreatingTagServiceCallFails()
 		{
 			_objectManager.Setup(x => x.CreateAsync(It.IsAny<int>(), It.IsAny<CreateRequest>())).Throws<ServiceException>();
 
@@ -150,7 +163,19 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Func<Task> action = async () => await _sut.CreateAsync(0, 0, string.Empty).ConfigureAwait(false);
 
 			// assert
-			action.Should().Throw<DestinationWorkspaceTagRepositoryException>();
+			action.Should().Throw<DestinationWorkspaceTagRepositoryException>().WithInnerException<ServiceException>();
+		}
+
+		[Test]
+		public void ItShouldThrowRepositoryExceptionWhenCreatingTagFails()
+		{
+			_objectManager.Setup(x => x.CreateAsync(It.IsAny<int>(), It.IsAny<CreateRequest>())).Throws<InvalidOperationException>();
+
+			// act
+			Func<Task> action = async () => await _sut.CreateAsync(0, 0, string.Empty).ConfigureAwait(false);
+
+			// assert
+			action.Should().Throw<DestinationWorkspaceTagRepositoryException>().WithInnerException<InvalidOperationException>();
 		}
 
 		[Test]
@@ -209,7 +234,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		}
 
 		[Test]
-		public void ItShouldThrowRepositoryExceptionWhenUpdatingTagFails()
+		public void ItShouldThrowRepositoryExceptionWhenUpdatingTagServiceCallFails()
 		{
 			_objectManager.Setup(x => x.UpdateAsync(It.IsAny<int>(), It.IsAny<UpdateRequest>())).Throws<ServiceException>();
 
@@ -217,7 +242,19 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Func<Task> action = async () => await _sut.UpdateAsync(0, new DestinationWorkspaceTag()).ConfigureAwait(false);
 
 			// assert
-			action.Should().Throw<DestinationWorkspaceTagRepositoryException>();
+			action.Should().Throw<DestinationWorkspaceTagRepositoryException>().WithInnerException<ServiceException>();
+		}
+
+		[Test]
+		public void ItShouldThrowRepositoryExceptionWhenUpdatingTagFails()
+		{
+			_objectManager.Setup(x => x.UpdateAsync(It.IsAny<int>(), It.IsAny<UpdateRequest>())).Throws<InvalidOperationException>();
+
+			// act
+			Func<Task> action = async () => await _sut.UpdateAsync(0, new DestinationWorkspaceTag()).ConfigureAwait(false);
+
+			// assert
+			action.Should().Throw<DestinationWorkspaceTagRepositoryException>().WithInnerException<InvalidOperationException>();
 		}
 
 		[Test]
