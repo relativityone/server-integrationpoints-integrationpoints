@@ -40,7 +40,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Mock<ISourceWorkspaceTagsCreationConfiguration> configuration = new Mock<ISourceWorkspaceTagsCreationConfiguration>();
 			configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(sourceWorkspaceArtifactId);
 			configuration.Setup(x => x.DestinationWorkspaceArtifactId).Returns(destinationWorkspaceArtifactId);
-			_workspaceNameQuery.Setup(x => x.GetWorkspaceNameAsync(destinationWorkspaceArtifactId)).ReturnsAsync(destinationWorkspaceName);
+			_workspaceNameQuery.Setup(x => x.GetWorkspaceNameAsync(destinationWorkspaceArtifactId, It.IsAny<CancellationToken>())).ReturnsAsync(destinationWorkspaceName);
 			_destinationWorkspaceTagRepository.Setup(x => x.CreateAsync(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, destinationWorkspaceName)).ReturnsAsync(new DestinationWorkspaceTag());
 			
 			// act
@@ -67,7 +67,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			configuration.Setup(x => x.DestinationWorkspaceArtifactId).Returns(destinationWorkspaceArtifactId);
 
 			_destinationWorkspaceTagRepository.Setup(x => x.ReadAsync(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId)).ReturnsAsync(outdatedTag);
-			_workspaceNameQuery.Setup(x => x.GetWorkspaceNameAsync(destinationWorkspaceArtifactId)).ReturnsAsync(destinationWorkspaceNewName);
+			_workspaceNameQuery.Setup(x => x.GetWorkspaceNameAsync(destinationWorkspaceArtifactId, CancellationToken.None)).ReturnsAsync(destinationWorkspaceNewName);
 
 			// act
 			await _sut.ExecuteAsync(configuration.Object, CancellationToken.None).ConfigureAwait(false);
@@ -95,7 +95,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			configuration.Setup(x => x.DestinationWorkspaceArtifactId).Returns(destinationWorkspaceArtifactId);
 
 			_destinationWorkspaceTagRepository.Setup(x => x.ReadAsync(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId)).ReturnsAsync(outdatedTag);
-			_workspaceNameQuery.Setup(x => x.GetWorkspaceNameAsync(destinationWorkspaceArtifactId)).ReturnsAsync(destinationWorkspaceName);
+			_workspaceNameQuery.Setup(x => x.GetWorkspaceNameAsync(destinationWorkspaceArtifactId, CancellationToken.None)).ReturnsAsync(destinationWorkspaceName);
 			_federatedInstance.Setup(x => x.GetInstanceNameAsync()).ReturnsAsync(federatedInstanceNewName);
 
 			// act
@@ -127,7 +127,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			configuration.Setup(x => x.DestinationWorkspaceArtifactId).Returns(destinationWorkspaceArtifactId);
 			configuration.Setup(x => x.JobArtifactId).Returns(jobArtifactId);
 
-			_workspaceNameQuery.Setup(x => x.GetWorkspaceNameAsync(destinationWorkspaceArtifactId)).ReturnsAsync(destinationWorkspaceName);
+			_workspaceNameQuery.Setup(x => x.GetWorkspaceNameAsync(destinationWorkspaceArtifactId, CancellationToken.None)).ReturnsAsync(destinationWorkspaceName);
 			_federatedInstance.Setup(x => x.GetInstanceNameAsync()).ReturnsAsync(federatedInstanceName);
 			_destinationWorkspaceTagRepository.Setup(x => x.ReadAsync(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId)).ReturnsAsync(tag);
 
@@ -158,7 +158,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			configuration.Setup(x => x.DestinationWorkspaceArtifactId).Returns(destinationWorkspaceArtifactId);
 			configuration.Setup(x => x.JobArtifactId).Returns(jobArtifactId);
 
-			_workspaceNameQuery.Setup(x => x.GetWorkspaceNameAsync(destinationWorkspaceArtifactId)).ReturnsAsync(destinationWorkspaceName);
+			_workspaceNameQuery.Setup(x => x.GetWorkspaceNameAsync(destinationWorkspaceArtifactId, CancellationToken.None)).ReturnsAsync(destinationWorkspaceName);
 			_federatedInstance.Setup(x => x.GetInstanceNameAsync()).ReturnsAsync(federatedInstanceName);
 			_destinationWorkspaceTagRepository.Setup(x => x.ReadAsync(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId)).ReturnsAsync(tag);
 
@@ -172,7 +172,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[Test]
 		public void ItShouldThrowExceptionWhenWorkspaceNameQueryFails()
 		{
-			_workspaceNameQuery.Setup(x => x.GetWorkspaceNameAsync(It.IsAny<int>())).Throws<InvalidOperationException>();
+			_workspaceNameQuery.Setup(x => x.GetWorkspaceNameAsync(It.IsAny<int>(), It.IsAny<CancellationToken>())).Throws<InvalidOperationException>();
 
 			// act
 			Func<Task> action = async () => await _sut.ExecuteAsync(Mock.Of<ISourceWorkspaceTagsCreationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
@@ -227,7 +227,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			{
 				DestinationWorkspaceName = "old workspace name"
 			};
-			_workspaceNameQuery.Setup(x => x.GetWorkspaceNameAsync(It.IsAny<int>())).ReturnsAsync(destinationWorkspaceNewName);
+			_workspaceNameQuery.Setup(x => x.GetWorkspaceNameAsync(It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(destinationWorkspaceNewName);
 			_destinationWorkspaceTagRepository.Setup(x => x.ReadAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(outdatedTag);
 			_destinationWorkspaceTagRepository.Setup(x => x.UpdateAsync(It.IsAny<int>(), outdatedTag)).Throws<InvalidOperationException>();
 
