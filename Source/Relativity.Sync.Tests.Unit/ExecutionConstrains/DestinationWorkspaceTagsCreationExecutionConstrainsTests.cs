@@ -16,7 +16,7 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
 		{
 			DestinationWorkspaceTagsCreationExecutionConstrains instance = new DestinationWorkspaceTagsCreationExecutionConstrains();
 
-			bool result = await instance.CanExecuteAsync(It.IsAny<IDestinationWorkspaceTagsCreationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+			bool result = await instance.CanExecuteAsync(Mock.Of<IDestinationWorkspaceTagsCreationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
 
 			result.Should().BeTrue();
 		}
