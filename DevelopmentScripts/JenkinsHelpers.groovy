@@ -813,7 +813,7 @@ private storeIntegrationTestsInQuarantineResults()
 		{
 			def branchId = env.BRANCH_NAME
 			def buildName = currentBuild.displayName
-			def testType = TestType.integrationInQuarantine.name().capitalize()
+			def testType = TestType.integrationInQuarantine.capitalize()
 			def testResultsPath = "$env.WORKSPACE/$Constants.INTEGRATION_TESTS_IN_QUARANTINE_RESULTS_REPORT_PATH"
 
 			powershell script: """. ./DevelopmentScripts/test-results-analyzer.ps1; store_tests_results "$branchId" "$buildName" "$testType" "$testResultsPath" "$securityCode" """
