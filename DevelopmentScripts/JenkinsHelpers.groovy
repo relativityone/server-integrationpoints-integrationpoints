@@ -479,13 +479,20 @@ def reporting()
 }
 
 def updateChromeToLatestVersion()
-{
-    
+{      
+    try 
+    {
+        echo "Downloading chromium as ui tests browser"
         powershell """
-            Copy-Item ${getChromiumDownloadPath(chromiumVersion)} 'chromium_installer.exe'
+            Copy-Item ${getChromiumDownloadPath('72.0.3626.0')} 'chromium_installer.exe'
             Start-Process -FilePath "chromium_installer.exe" -Args "/system-level" -Verb RunAs -Wait
         """
-        echo "Chromium Version - ${chromiumVersion} installation complete"
+        echo "Chromium Version - '72.0.3626.0' installation complete"
+    }
+    catch(err)
+    {
+         echo "An error occured while installing chromium: $err"
+    }
 
 	// try
     // {
