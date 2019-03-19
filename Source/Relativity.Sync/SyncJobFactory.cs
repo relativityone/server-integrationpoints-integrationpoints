@@ -8,6 +8,18 @@ namespace Relativity.Sync
 	/// <inheritdoc />
 	public sealed class SyncJobFactory : ISyncJobFactory
 	{
+		private readonly IContainerFactory _containerFactory;
+
+		/// <inheritdoc />
+		public SyncJobFactory() : this(new ContainerFactory())
+		{
+		}
+
+		internal SyncJobFactory(IContainerFactory containerFactory)
+		{
+			_containerFactory = containerFactory;
+		}
+
 		/// <inheritdoc />
 		public ISyncJob Create(IContainer container, SyncJobParameters syncJobParameters)
 		{
@@ -53,9 +65,7 @@ namespace Relativity.Sync
 			{
 				LogWriter.SetFactory(new SyncLogWriterFactory(logger));
 
-				IContainerFactory containerFactory = new ContainerFactory(syncJobParameters, configuration, logger);
-
-				using (ILifetimeScope scope = container.BeginLifetimeScope(builder => containerFactory.RegisterSyncDependencies(builder)))
+				using (ILifetimeScope scope = container.BeginLifetimeScope(builder => _containerFactory.RegisterSyncDependencies(builder, syncJobParameters, configuration, logger)))
 				{
 					return scope.Resolve<ISyncJob>();
 				}
