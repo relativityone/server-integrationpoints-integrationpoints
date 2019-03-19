@@ -481,6 +481,8 @@ def reporting()
 
 def downloadAndSetUpBrowser()
 {
+    echo "Downloading browser for UI tests. Selected browser: ${params.UITestsBrowser}"
+
     switch(params.UITestsBrowser) {
         case 'chromium':
             downloadChromiumInSetVersion('72.0.3626.0')
@@ -494,6 +496,7 @@ def downloadAndSetUpBrowser()
 
 def downloadChromiumInSetVersion(version)
 {
+    echo "Installing Chromium - ${version}"
     try 
     {
         powershell """
