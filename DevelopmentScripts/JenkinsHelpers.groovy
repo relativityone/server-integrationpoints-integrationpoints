@@ -478,21 +478,58 @@ def reporting()
     }
 }
 
-def updateChromeToLatestVersion()
+
+def downloadAndSetUpBrowser()
 {
+    switch(params.UITestsBrowser) {
+        case 'chromium':
+            downloadChromiumInSetVersion('72.0.3626.0')
+        break
+        default:
+            updateChromeToLatestVersion()
+        break
+    }
+}
+
+
+def downloadChromiumInSetVersion(version)
+{
+    try 
+    {
+        powershell """
+            Copy-Item ${getChromiumDownloadPath(version)} 'chromium_installer.exe'
+            Start-Process -FilePath "chromium_installer.exe" -Args "/system-level" -Verb RunAs -Wait
+        """
+        echo "Chromium Version - ${version} installation complete"
+    }
+    catch(err)
+    {
+         echo "An error occured while installing Chromium: $err"
+    }
+}
+
+def updateChromeToLatestVersion()
+{      
 	try
     {
 		powershell """
             Invoke-WebRequest "http://dl.google.com/chrome/install/latest/chrome_installer.exe" -OutFile chrome_installer.exe
             Start-Process -FilePath chrome_installer.exe -Args "/silent /install" -Verb RunAs -Wait
             (Get-Item (Get-ItemProperty "HKLM:/SOFTWARE/Microsoft/Windows/CurrentVersion/App Paths/chrome.exe")."(Default)").VersionInfo
-        """
+         """
     }
     catch(err)
     {
         echo "An error occured while updating Chrome: $err"
     }
 }
+
+def getChromiumDownloadPath(chromiumVersion)
+{
+    def path = "\\\\kcura.corp\\sdlc\\testing\\TestingData\\RelativityTestAutomation\\BrowserInstallers\\Chromium\\${chromiumVersion}\\Installer.exe"
+    return path
+}
+
 
 def deleteDirectoryIfExists(String directoryToDelete)
 {
