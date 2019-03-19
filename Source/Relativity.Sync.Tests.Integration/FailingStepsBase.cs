@@ -12,7 +12,6 @@ namespace Relativity.Sync.Tests.Integration
 {
 	internal abstract class FailingStepsBase<T> where T : IConfiguration
 	{
-		private SyncJobFactory _syncJobFactory;
 		private List<Type> _executorTypes;
 		private ContainerBuilder _containerBuilder;
 
@@ -20,8 +19,8 @@ namespace Relativity.Sync.Tests.Integration
 		public void SetUp()
 		{
 			_executorTypes = new List<Type>();
-			_syncJobFactory = new SyncJobFactory();
-			_containerBuilder = IntegrationTestsContainerBuilder.CreateContainerBuilder(_executorTypes);
+			_containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
+			IntegrationTestsContainerBuilder.RegisterStubsForPipelineBuilderTests(_containerBuilder, _executorTypes);
 		}
 
 		[Test]
@@ -31,7 +30,7 @@ namespace Relativity.Sync.Tests.Integration
 
 			_containerBuilder.RegisterInstance(executor).As<IExecutor<T>>();
 
-			ISyncJob syncJob = _syncJobFactory.Create(_containerBuilder.Build(), new List<IInstaller>(), new SyncJobParameters(1, 1));
+			ISyncJob syncJob = _containerBuilder.Build().Resolve<ISyncJob>();
 
 			// ACT
 			Func<Task> action = async () => await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
@@ -54,7 +53,7 @@ namespace Relativity.Sync.Tests.Integration
 
 			_containerBuilder.RegisterInstance(executionConstrains).As<IExecutionConstrains<T>>();
 
-			ISyncJob syncJob = _syncJobFactory.Create(_containerBuilder.Build(), new List<IInstaller>(), new SyncJobParameters(1, 1));
+			ISyncJob syncJob = _containerBuilder.Build().Resolve<ISyncJob>();
 
 			// ACT
 			Func<Task> action = async () => await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);

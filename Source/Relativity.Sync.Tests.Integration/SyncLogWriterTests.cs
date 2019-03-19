@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
+using Banzai.Logging;
 using Moq;
 using NUnit.Framework;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.Integration.Stubs;
 
 namespace Relativity.Sync.Tests.Integration
@@ -16,10 +18,13 @@ namespace Relativity.Sync.Tests.Integration
 		[SetUp]
 		public void SetUp()
 		{
-			_logger = new Mock<ISyncLog>();
+			ContainerBuilder containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
+			IntegrationTestsContainerBuilder.RegisterStubsForIntegrationTests(containerBuilder);
 
-			SyncJobFactory factory = new SyncJobFactory();
-			_syncJob = factory.Create(IntegrationTestsContainerBuilder.CreateContainer(), new List<IInstaller>(), new SyncJobParameters(1, 1), new SyncConfiguration(), _logger.Object);
+			_logger = new Mock<ISyncLog>();
+			LogWriter.SetFactory(new SyncLogWriterFactory(_logger.Object));
+
+			_syncJob = containerBuilder.Build().Resolve<ISyncJob>();
 		}
 
 		[Test]
