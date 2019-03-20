@@ -27,6 +27,12 @@ namespace Relativity.Sync.Tests.Integration
 		private Mock<IObjectManager> _objectManagerMock;
 		private Mock<ISourceServiceFactoryForUser> _serviceFactoryMock;
 
+		private static readonly Guid _NAME_FIELD_GUID = Guid.Parse("155649c0-db15-4ee7-b449-bfdf2a54b7b5");
+		private static readonly Guid _DESTINATION_WORKSPACE_ARTIFACTID_FIELD_GUID = Guid.Parse("207E6836-2961-466B-A0D2-29974A4FAD36");
+		private static readonly Guid _DESTINATION_WORKSPACE_NAME_FIELD_GUID = Guid.Parse("348D7394-2658-4DA4-87D0-8183824ADF98");
+		private static readonly Guid _DESTINATION_INSTANCE_NAME_FIELD_GUID = Guid.Parse("909ADC7C-2BB9-46CA-9F85-DA32901D6554");
+		private static readonly Guid _DESTINATION_INSTANCE_ARTIFACTID_FIELD_GUID = Guid.Parse("323458DB-8A06-464B-9402-AF2516CF47E0");
+
 		protected override void AssertExecutedSteps(List<Type> executorTypes)
 		{
 			executorTypes.Should().Contain(x => x == typeof(IDestinationWorkspaceTagsCreationConfiguration));
@@ -43,18 +49,9 @@ namespace Relativity.Sync.Tests.Integration
 		[SetUp]
 		public void MySetUp()
 		{
-			// The setup will be changed once the new Containerbuilder changes are merged in.
-			ContainerBuilder containerBuilder = IntegrationTestsContainerBuilder.CreateContainerBuilder(new List<Type>());
-			List<IInstaller> installers = Assembly.GetAssembly(typeof(IInstaller))
-				.GetTypes()
-				.Where(t => !t.IsAbstract && t.IsAssignableTo<IInstaller>())
-				.Select(t => (IInstaller)Activator.CreateInstance(t))
-				.ToList();
-			installers.Add(new OutsideDependenciesStubInstaller());
-			foreach (IInstaller installer in installers)
-			{
-				installer.Install(containerBuilder);
-			}
+			// TODO: Refactor this setup once the IContainerFactory changes are merged in.
+			ContainerBuilder containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
+			IntegrationTestsContainerBuilder.RegisterStubsForIntegrationTests(containerBuilder);
 
 			_objectManagerMock = new Mock<IObjectManager>();
 			_serviceFactoryMock = new Mock<ISourceServiceFactoryForUser>();
@@ -72,6 +69,8 @@ namespace Relativity.Sync.Tests.Integration
 			IContainer container = containerBuilder.Build();
 			_executor = container.Resolve<IExecutor<ISourceWorkspaceTagsCreationConfiguration>>();
 		}
+
+		// TODO: Write integration tests to ensure we are querying for/setting NULL for DestinationInstanceArtifactID when it's -1
 
 		[Test]
 		public void ItCreatesTagIfItDoesntExist()
@@ -93,7 +92,7 @@ namespace Relativity.Sync.Tests.Integration
 				It.Is<QueryRequest>(y => y.Condition.Contains(destinationWorkspaceArtifactID.ToString(CultureInfo.InvariantCulture))),
 				It.IsAny<int>(),
 				It.IsAny<int>(),
-				CancellationToken.None, 
+				CancellationToken.None,
 				It.IsAny<IProgress<ProgressReport>>()))
 				.Returns(Task.FromResult(new QueryResult() { Objects = new List<RelativityObject> { new RelativityObject() { Name = destinationWorkspaceName } } }));
 
@@ -101,8 +100,8 @@ namespace Relativity.Sync.Tests.Integration
 				sourceWorkspaceArtifactID,
 				It.IsAny<QueryRequest>(),
 				It.IsAny<int>(),
-				It.IsAny<int>(), 
-				CancellationToken.None, 
+				It.IsAny<int>(),
+				CancellationToken.None,
 				It.IsAny<IProgress<ProgressReport>>())
 				).Returns(Task.FromResult(new QueryResult()));
 
@@ -148,7 +147,7 @@ namespace Relativity.Sync.Tests.Integration
 				It.Is<QueryRequest>(y => y.Condition.Contains(destinationWorkspaceArtifactID.ToString(CultureInfo.InvariantCulture))),
 				It.IsAny<int>(),
 				It.IsAny<int>(),
-				CancellationToken.None, 
+				CancellationToken.None,
 				It.IsAny<IProgress<ProgressReport>>()))
 				.Returns(Task.FromResult(new QueryResult() { Objects = new List<RelativityObject> { new RelativityObject() { Name = expectedDestinationWorkspaceName } } }));
 
@@ -159,50 +158,29 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<int>(),
 				CancellationToken.None,
 				It.IsAny<IProgress<ProgressReport>>())
-				).Returns(Task.FromResult(new QueryResult
+			).Returns(Task.FromResult(new QueryResult
 			{
-					Objects = new List<RelativityObject>
+				Objects = new List<RelativityObject>
 				{
 					new RelativityObject()
 					{
 						ArtifactID = destinationWorkspaceTagArtifactId,
-						FieldValues = new List<FieldValuePair>
+						FieldValues = BuildFieldValuePairs(new Dictionary<Guid, object>
 						{
-							new FieldValuePair
-							{
-								Field = new Field { Guids = new List<Guid> { new Guid("348d7394-2658-4da4-87d0-8183824adf98") } },
-								Value = destinationWorkspaceName
-							},
-							new FieldValuePair
-							{
-								Field = new Field { Guids = new List<Guid> { new Guid("909adc7c-2bb9-46ca-9f85-da32901d6554") } },
-								Value = "This Instance"
-							},
-							new FieldValuePair
-							{
-								Field = new Field { Guids = new List<Guid> { new Guid("323458db-8a06-464b-9402-af2516cf47e0") } },
-								Value = instanceArtifactId
-							},
-							new FieldValuePair
-							{
-								Field = new Field { Guids = new List<Guid> { new Guid("207e6836-2961-466b-a0d2-29974a4fad36") } },
-								Value = destinationWorkspaceArtifactID
-							},
-							new FieldValuePair
-							{
-								Field = new Field { Guids = new List<Guid> { new Guid("155649c0-db15-4ee7-b449-bfdf2a54b7b5") } },
-								Value = "kjdsfhkjsdhfjksdn"
-							}
-						}
+							{ _NAME_FIELD_GUID, "kjdsfhkjsdhfjksdn" },
+							{ _DESTINATION_WORKSPACE_NAME_FIELD_GUID, destinationWorkspaceName },
+							{ _DESTINATION_INSTANCE_NAME_FIELD_GUID, "This Instance" },
+							{ _DESTINATION_INSTANCE_ARTIFACTID_FIELD_GUID, instanceArtifactId },
+							{ _DESTINATION_INSTANCE_ARTIFACTID_FIELD_GUID, destinationWorkspaceArtifactID }
+						})
 					}
 				}
-			}
-					));
+			}));
 
 			_objectManagerMock.Setup(x => x.UpdateAsync(
 				sourceWorkspaceArtifactID,
 				It.Is<UpdateRequest>(y =>
-					y.FieldValues.First(fv => fv.Field.Guid == new Guid("348d7394-2658-4da4-87d0-8183824adf98")).Value.Equals(expectedDestinationWorkspaceName)))
+					y.FieldValues.First(fv => fv.Field.Guid == _DESTINATION_WORKSPACE_NAME_FIELD_GUID).Value.Equals(expectedDestinationWorkspaceName)))
 				).Returns(Task.FromResult(new UpdateResult())
 				).Verifiable();
 
@@ -255,7 +233,7 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<IProgress<ProgressReport>>())
 				).Returns(Task.FromResult(new QueryResult
 			{
-					Objects = new List<RelativityObject>
+				Objects = new List<RelativityObject>
 				{
 					new RelativityObject()
 					{
@@ -264,27 +242,27 @@ namespace Relativity.Sync.Tests.Integration
 						{
 							new FieldValuePair
 							{
-								Field = new Field { Guids = new List<Guid> { new Guid("348d7394-2658-4da4-87d0-8183824adf98") } },
+								Field = new Field { Guids = new List<Guid> { _DESTINATION_WORKSPACE_NAME_FIELD_GUID } },
 								Value = destinationWorkspaceName
 							},
 							new FieldValuePair
 							{
-								Field = new Field { Guids = new List<Guid> { new Guid("909adc7c-2bb9-46ca-9f85-da32901d6554") } },
+								Field = new Field { Guids = new List<Guid> { _DESTINATION_INSTANCE_NAME_FIELD_GUID } },
 								Value = "Some Other Weird Instance"
 							},
 							new FieldValuePair
 							{
-								Field = new Field { Guids = new List<Guid> { new Guid("323458db-8a06-464b-9402-af2516cf47e0") } },
+								Field = new Field { Guids = new List<Guid> { _DESTINATION_INSTANCE_ARTIFACTID_FIELD_GUID } },
 								Value = instanceArtifactId
 							},
 							new FieldValuePair
 							{
-								Field = new Field { Guids = new List<Guid> { new Guid("207e6836-2961-466b-a0d2-29974a4fad36") } },
+								Field = new Field { Guids = new List<Guid> { _DESTINATION_WORKSPACE_ARTIFACTID_FIELD_GUID } },
 								Value = destinationWorkspaceArtifactID
 							},
 							new FieldValuePair
 							{
-								Field = new Field { Guids = new List<Guid> { new Guid("155649c0-db15-4ee7-b449-bfdf2a54b7b5") } },
+								Field = new Field { Guids = new List<Guid> { _NAME_FIELD_GUID } },
 								Value = "kjdsfhkjsdhfjksdn"
 							}
 						}
@@ -296,7 +274,7 @@ namespace Relativity.Sync.Tests.Integration
 			_objectManagerMock.Setup(x => x.UpdateAsync(
 				sourceWorkspaceArtifactID,
 				It.Is<UpdateRequest>(y =>
-					y.FieldValues.First(fv => fv.Field.Guid == new Guid("909adc7c-2bb9-46ca-9f85-da32901d6554")).Value.Equals(expectedDestinationInstanceName)))
+					y.FieldValues.First(fv => fv.Field.Guid == _DESTINATION_INSTANCE_NAME_FIELD_GUID).Value.Equals(expectedDestinationInstanceName)))
 				).Returns(Task.FromResult(new UpdateResult())
 				).Verifiable();
 
@@ -336,7 +314,7 @@ namespace Relativity.Sync.Tests.Integration
 				It.Is<QueryRequest>(y => y.Condition.Contains(destinationWorkspaceArtifactID.ToString(CultureInfo.InvariantCulture))),
 				It.IsAny<int>(),
 				It.IsAny<int>(),
-				CancellationToken.None, 
+				CancellationToken.None,
 				It.IsAny<IProgress<ProgressReport>>()))
 				.Returns(Task.FromResult(new QueryResult() { Objects = new List<RelativityObject> { new RelativityObject() { Name = destinationWorkspaceName } } }));
 
@@ -347,9 +325,9 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<int>(),
 				CancellationToken.None,
 				It.IsAny<IProgress<ProgressReport>>())
-				).Returns(Task.FromResult(new QueryResult
+			).Returns(Task.FromResult(new QueryResult
 			{
-					Objects = new List<RelativityObject>
+				Objects = new List<RelativityObject>
 				{
 					new RelativityObject()
 					{
@@ -420,7 +398,7 @@ namespace Relativity.Sync.Tests.Integration
 				It.Is<QueryRequest>(y => y.Condition.Contains(destinationWorkspaceArtifactID.ToString(CultureInfo.InvariantCulture))),
 				It.IsAny<int>(),
 				It.IsAny<int>(),
-				CancellationToken.None, 
+				CancellationToken.None,
 				It.IsAny<IProgress<ProgressReport>>()))
 				.Returns(Task.FromResult(new QueryResult()));
 
@@ -465,7 +443,7 @@ namespace Relativity.Sync.Tests.Integration
 				srcWorkspaceArtifactId,
 				It.IsAny<CreateRequest>())
 				).Throws(new Exception("Blech blooch blar"));
-			
+
 			DestinationWorkspaceTagRepositoryException thrownException = Assert.Throws<DestinationWorkspaceTagRepositoryException>(() =>
 				_executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult());
 			Assert.AreEqual(
@@ -505,9 +483,9 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<int>(),
 				CancellationToken.None,
 				It.IsAny<IProgress<ProgressReport>>())
-				).Returns(Task.FromResult(new QueryResult
+			).Returns(Task.FromResult(new QueryResult
 			{
-					Objects = new List<RelativityObject>
+				Objects = new List<RelativityObject>
 				{
 					new RelativityObject()
 					{
@@ -542,8 +520,7 @@ namespace Relativity.Sync.Tests.Integration
 						}
 					}
 				}
-			}
-					));
+			}));
 
 			_objectManagerMock.Setup(x => x.UpdateAsync(
 				sourceWorkspaceArtifactID,
@@ -644,6 +621,13 @@ namespace Relativity.Sync.Tests.Integration
 			Assert.AreEqual(
 				$"Failed to query {nameof(DestinationWorkspaceTag)} in workspace {sourceWorkspaceArtifactID}",
 				thrownException.Message);
+		}
+
+		private List<FieldValuePair> BuildFieldValuePairs(Dictionary<Guid, object> fieldValues)
+		{
+			return fieldValues
+				.Select(kv => new FieldValuePair { Field = new Field { Guids = new List<Guid> { kv.Key } }, Value = kv.Value })
+				.ToList();
 		}
 	}
 }
