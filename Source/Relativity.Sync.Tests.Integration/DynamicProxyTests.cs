@@ -5,8 +5,9 @@ using Moq;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Objects;
+using Relativity.Services.ServiceProxy;
 using Relativity.Sync.KeplerFactory;
-using Relativity.Sync.Telemetry;
+using Relativity.Sync.Tests.Integration.Stubs;
 
 namespace Relativity.Sync.Tests.Integration
 {
@@ -14,45 +15,79 @@ namespace Relativity.Sync.Tests.Integration
 	public sealed class DynamicProxyTests
 	{
 		private IContainer _container;
-		private Mock<IServicesMgr> _servicesMgr;
-		private Mock<IDynamicProxyFactory> _dynamicProxyFactory;
+		private IObjectManager _wrappedObjectManager;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_servicesMgr = new Mock<IServicesMgr>();
-			_dynamicProxyFactory = new Mock<IDynamicProxyFactory>();
+			ContainerBuilder containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
+			IntegrationTestsContainerBuilder.RegisterStubsForIntegrationTests(containerBuilder);
 
-			ContainerBuilder containerBuilder = new ContainerBuilder();
-			containerBuilder.RegisterInstance(_servicesMgr.Object).As<IServicesMgr>();
+			var servicesMgr = new Mock<IServicesMgr>();
+			var serviceFactory = new Mock<IServiceFactory>();
+			var dynamicProxyFactory = new Mock<IDynamicProxyFactory>();
 
-			KeplerInstaller keplerInstaller = new KeplerInstaller();
-			keplerInstaller.Install(containerBuilder);
-
-			TelemetryInstaller telemetryInstaller = new TelemetryInstaller();
-			telemetryInstaller.Install(containerBuilder);
-
-			containerBuilder.RegisterInstance(_dynamicProxyFactory.Object).As<IDynamicProxyFactory>();
+			containerBuilder.RegisterInstance(servicesMgr.Object).As<IServicesMgr>();
+			containerBuilder.Register(k => new ServiceFactoryForUser(serviceFactory.Object, dynamicProxyFactory.Object)).As<ISourceServiceFactoryForUser>();
+			containerBuilder.Register(k => new ServiceFactoryForUser(serviceFactory.Object, dynamicProxyFactory.Object)).As<IDestinationServiceFactoryForUser>();
+			containerBuilder.RegisterInstance(dynamicProxyFactory.Object).As<IDynamicProxyFactory>();
 
 			_container = containerBuilder.Build();
+
+			IObjectManager objectManager = Mock.Of<IObjectManager>();
+			_wrappedObjectManager = Mock.Of<IObjectManager>();
+
+			servicesMgr.Setup(x => x.CreateProxy<IObjectManager>(ExecutionIdentity.System)).Returns(objectManager);
+			serviceFactory.Setup(x => x.CreateProxy<IObjectManager>()).Returns(objectManager);
+			dynamicProxyFactory.Setup(x => x.WrapKeplerService(objectManager)).Returns(_wrappedObjectManager);
 		}
 
 		[Test]
-		public async Task ItShouldWrapKeplerServiceForUser()
+		public async Task ItShouldWrapSourceKeplerServiceForAdmin()
 		{
-			IObjectManager objectManager = Mock.Of<IObjectManager>();
-			IObjectManager wrappedObjectManager = Mock.Of<IObjectManager>();
-
-			_servicesMgr.Setup(x => x.CreateProxy<IObjectManager>(ExecutionIdentity.System)).Returns(objectManager);
-			_dynamicProxyFactory.Setup(x => x.WrapKeplerService(objectManager)).Returns(wrappedObjectManager);
-
 			ISourceServiceFactoryForAdmin serviceFactory = _container.Resolve<ISourceServiceFactoryForAdmin>();
 
 			// ACT
 			IObjectManager actualObjectManager = await serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false);
 
 			// ASSERT
-			actualObjectManager.Should().Be(wrappedObjectManager);
+			actualObjectManager.Should().Be(_wrappedObjectManager);
+		}
+
+		[Test]
+		public async Task ItShouldWrapSourceKeplerServiceForUser()
+		{
+			ISourceServiceFactoryForUser serviceFactory = _container.Resolve<ISourceServiceFactoryForUser>();
+
+			// ACT
+			IObjectManager actualObjectManager = await serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false);
+
+			// ASSERT
+			actualObjectManager.Should().Be(_wrappedObjectManager);
+		}
+
+		[Test]
+		public async Task ItShouldWrapDestinationKeplerServiceForAdmin()
+		{
+			IDestinationServiceFactoryForAdmin serviceFactory = _container.Resolve<IDestinationServiceFactoryForAdmin>();
+
+			// ACT
+			IObjectManager actualObjectManager = await serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false);
+
+			// ASSERT
+			actualObjectManager.Should().Be(_wrappedObjectManager);
+		}
+
+		[Test]
+		public async Task ItShouldWrapDestinationKeplerServiceForUser()
+		{
+			IDestinationServiceFactoryForUser serviceFactory = _container.Resolve<IDestinationServiceFactoryForUser>();
+
+			// ACT
+			IObjectManager actualObjectManager = await serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false);
+
+			// ASSERT
+			actualObjectManager.Should().Be(_wrappedObjectManager);
 		}
 	}
 }

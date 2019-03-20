@@ -7,6 +7,7 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.OAuth2Client.Interfaces;
 using Relativity.Sync.Authentication;
+using Relativity.Sync.Logging;
 
 namespace Relativity.Sync.Tests.Unit.Authentication
 {
@@ -24,8 +25,7 @@ namespace Relativity.Sync.Tests.Unit.Authentication
 			_tokenProviderFactoryFactory = new Mock<ITokenProviderFactoryFactory>();
 			Mock<IProvideServiceUris> provideServiceUris = new Mock<IProvideServiceUris>();
 			provideServiceUris.Setup(x => x.AuthenticationUri()).Returns(new Uri("https://fakeaddress"));
-			Mock<IAPILog> log = new Mock<IAPILog>();
-			_sut = new OAuth2TokenGenerator(_oAuth2ClientFactory.Object, _tokenProviderFactoryFactory.Object, provideServiceUris.Object, log.Object);
+			_sut = new OAuth2TokenGenerator(_oAuth2ClientFactory.Object, _tokenProviderFactoryFactory.Object, provideServiceUris.Object, new EmptyLogger());
 		}
 
 		[Test]

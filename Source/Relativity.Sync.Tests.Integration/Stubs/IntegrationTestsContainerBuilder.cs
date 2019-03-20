@@ -1,35 +1,72 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Autofac;
+using Moq;
+using Relativity.API;
+using Relativity.Services;
+using Relativity.Services.InstanceSetting;
 using Relativity.Sync.Telemetry;
+using Relativity.Telemetry.APM;
 
 namespace Relativity.Sync.Tests.Integration.Stubs
 {
 	internal static class IntegrationTestsContainerBuilder
 	{
-		public static IContainer CreateContainer()
+		public static void RegisterStubsForPipelineBuilderTests(ContainerBuilder containerBuilder, List<Type> executorTypes)
 		{
-			return CreateContainer(new List<Type>());
+			RegisterStubsForIntegrationTests(containerBuilder);
+			containerBuilder.RegisterGeneric(typeof(ExecutorCollectionExecutedTypesStub<>)).As(typeof(IExecutor<>));
+			containerBuilder.RegisterInstance(executorTypes).As<List<Type>>();
 		}
 
-		public static IContainer CreateContainer(List<Type> executorTypes)
+		public static void RegisterStubsForSyncFactoryTests(ContainerBuilder containerBuilder)
 		{
-			return CreateContainerBuilder(executorTypes).Build();
+			RegisterStubsForIntegrationTests(containerBuilder);
+
+			// Relativity.Telemetry.APM
+			Mock<IAPM> apmMock = new Mock<IAPM>();
+			Mock<ICounterMeasure> counterMock = new Mock<ICounterMeasure>();
+			apmMock.Setup(a => a.CountOperation(It.IsAny<string>(),
+				It.IsAny<Guid>(),
+				It.IsAny<string>(),
+				It.IsAny<string>(),
+				It.IsAny<bool>(),
+				It.IsAny<int?>(),
+				It.IsAny<Dictionary<string, object>>(),
+				It.IsAny<IEnumerable<ISink>>())
+			).Returns(counterMock.Object);
+			containerBuilder.RegisterInstance(apmMock.Object).As<IAPM>();
+
+			// Relativity.API
+			Mock<IHelper> helperMock = new Mock<IHelper>();
+			Mock<IDBContext> dbContextMock = new Mock<IDBContext>();
+			Mock<IServicesMgr> servicesMgrMock = new Mock<IServicesMgr>();
+			helperMock.Setup(h => h.GetDBContext(It.IsAny<int>())).Returns(dbContextMock.Object);
+			containerBuilder.RegisterInstance(helperMock.Object).As<IHelper>();
+			containerBuilder.RegisterInstance(servicesMgrMock.Object).As<IServicesMgr>();
+
+			// Relativity.Services.InstanceSettings
+			Mock<IInstanceSettingManager> instanceSettingsManagerMock = new Mock<IInstanceSettingManager>();
+			servicesMgrMock.Setup(x => x.CreateProxy<IInstanceSettingManager>(It.IsAny<ExecutionIdentity>()))
+				.Returns(instanceSettingsManagerMock.Object);
+			var instanceSettingQueryResultSet = new InstanceSettingQueryResultSet
+			{
+				Success = true,
+				Results = new List<Result<Services.InstanceSetting.InstanceSetting>>()
+			};
+			instanceSettingsManagerMock.Setup(x => x.QueryAsync(It.IsAny<Services.Query>()))
+				.Returns(Task.FromResult(instanceSettingQueryResultSet));
 		}
 
-		public static ContainerBuilder CreateContainerBuilder(List<Type> executorTypes)
+		public static void RegisterStubsForIntegrationTests(ContainerBuilder containerBuilder)
 		{
-			ContainerBuilder containerBuilder = new ContainerBuilder();
-
 			containerBuilder.RegisterInstance(new ConfigurationStub()).AsImplementedInterfaces();
 			containerBuilder.RegisterGeneric(typeof(ExecutionConstrainsStub<>)).As(typeof(IExecutionConstrains<>));
 			containerBuilder.RegisterGeneric(typeof(ExecutorStub<>)).As(typeof(IExecutor<>));
-			containerBuilder.RegisterInstance(executorTypes).As<List<Type>>();
 			containerBuilder.RegisterType<SyncMetricsStub>().As<ISyncMetrics>();
 			containerBuilder.RegisterType<APMClientStub>().As<IAPMClient>();
 			containerBuilder.RegisterType<StopwatchStub>().As<IStopwatch>();
-
-			return containerBuilder;
 		}
 	}
 }

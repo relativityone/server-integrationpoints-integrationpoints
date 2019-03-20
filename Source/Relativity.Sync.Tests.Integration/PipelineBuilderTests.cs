@@ -15,14 +15,17 @@ namespace Relativity.Sync.Tests.Integration
 	[TestFixture]
 	public sealed class PipelineBuilderTests
 	{
-		private SyncJobFactory _syncJobFactory;
 		private List<Type> _executorTypes;
+		private ContainerBuilder _containerBuilder;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_executorTypes = new List<Type>();
-			_syncJobFactory = new SyncJobFactory();
+
+			_containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
+
+			IntegrationTestsContainerBuilder.RegisterStubsForPipelineBuilderTests(_containerBuilder, _executorTypes);
 		}
 
 		[Test]
@@ -30,8 +33,7 @@ namespace Relativity.Sync.Tests.Integration
 		{
 			List<Type[]> expectedOrder = ExpectedExecutionOrder();
 
-			IContainer container = IntegrationTestsContainerBuilder.CreateContainer(_executorTypes);
-			ISyncJob syncJob = _syncJobFactory.Create(container, new List<IInstaller>(), new SyncJobParameters(1, 1));
+			ISyncJob syncJob = _containerBuilder.Build().Resolve<ISyncJob>();
 
 			// ACT
 			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
@@ -43,8 +45,7 @@ namespace Relativity.Sync.Tests.Integration
 		[Test]
 		public async Task NotificationShouldBeExecutedInCaseOfSuccessfulPipeline()
 		{
-			IContainer container = IntegrationTestsContainerBuilder.CreateContainer(_executorTypes);
-			ISyncJob syncJob = _syncJobFactory.Create(container, new List<IInstaller>(), new SyncJobParameters(1, 1));
+			ISyncJob syncJob = _containerBuilder.Build().Resolve<ISyncJob>();
 
 			// ACT
 			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
@@ -56,11 +57,9 @@ namespace Relativity.Sync.Tests.Integration
 		[Test]
 		public void NotificationShouldBeExecutedInCaseOfFailedPipeline()
 		{
-			ContainerBuilder containerBuilder = IntegrationTestsContainerBuilder.CreateContainerBuilder(_executorTypes);
+			_containerBuilder.RegisterType<FailingExecutorStub<IValidationConfiguration>>().As<IExecutor<IValidationConfiguration>>();
 
-			containerBuilder.RegisterType<FailingExecutorStub<IValidationConfiguration>>().As<IExecutor<IValidationConfiguration>>();
-
-			ISyncJob syncJob = _syncJobFactory.Create(containerBuilder.Build(), new List<IInstaller>(), new SyncJobParameters(1, 1));
+			ISyncJob syncJob = _containerBuilder.Build().Resolve<ISyncJob>();
 
 			// ACT
 			Func<Task> action = async () => await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
@@ -73,10 +72,9 @@ namespace Relativity.Sync.Tests.Integration
 		[Test]
 		public async Task MetricShouldBeReportedWhileRunningPipeline()
 		{
-			ContainerBuilder containerBuilder = IntegrationTestsContainerBuilder.CreateContainerBuilder(_executorTypes);
 			Mock<ISyncMetrics> syncMetrics = new Mock<ISyncMetrics>();
-			containerBuilder.RegisterInstance(syncMetrics.Object).As<ISyncMetrics>();
-			ISyncJob syncJob = _syncJobFactory.Create(containerBuilder.Build(), new List<IInstaller>(), new SyncJobParameters(1, 1));
+			_containerBuilder.RegisterInstance(syncMetrics.Object).As<ISyncMetrics>();
+			ISyncJob syncJob = _containerBuilder.Build().Resolve<ISyncJob>();
 
 			// ACT
 			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
