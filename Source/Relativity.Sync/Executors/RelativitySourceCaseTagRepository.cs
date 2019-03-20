@@ -157,6 +157,7 @@ namespace Relativity.Sync.Executors
 
 		public async Task<RelativitySourceCaseTag> UpdateAsync(int sourceWorkspaceArtifactTypeId, RelativitySourceCaseTag sourceCaseTag, CancellationToken token)
 		{
+			await Task.Yield();
 			throw new System.NotImplementedException();
 		}
 	}
