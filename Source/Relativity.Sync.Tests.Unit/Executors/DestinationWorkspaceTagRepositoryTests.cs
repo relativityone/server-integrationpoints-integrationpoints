@@ -21,6 +21,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private Mock<ISourceServiceFactoryForUser> _serviceFactory;
 		private Mock<IFederatedInstance> _federatedInstance;
 		private Mock<ISyncLog> _logger;
+		private Mock<ITagNameFormatter> _tagNameFormatter;
 		private Mock<IObjectManager> _objectManager;
 
 		private DestinationWorkspaceTagRepository _sut;
@@ -32,9 +33,11 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_federatedInstance = new Mock<IFederatedInstance>();
 			_logger = new Mock<ISyncLog>();
 			_objectManager = new Mock<IObjectManager>();
+			_tagNameFormatter = new Mock<ITagNameFormatter>();
+			_tagNameFormatter.Setup(x => x.FormatWorkspaceDestinationTagName(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())).Returns("foo bar");
 			_serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
 
-			_sut = new DestinationWorkspaceTagRepository(_serviceFactory.Object, _federatedInstance.Object, _logger.Object);
+			_sut = new DestinationWorkspaceTagRepository(_serviceFactory.Object, _federatedInstance.Object, _tagNameFormatter.Object, _logger.Object);
 		}
 
 		[Test]
@@ -194,6 +197,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			const string destinationInstanceName = "instance";
 			const string destinationWorkspaceName = "workspace";
 			string destinationTagName = $"{destinationInstanceName} - {destinationWorkspaceName} - {destinationWorkspaceArtifactId}";
+			_tagNameFormatter.Setup(x => x.FormatWorkspaceDestinationTagName(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())).Returns(destinationTagName);
 
 			DestinationWorkspaceTag destinationWorkspaceTag = new DestinationWorkspaceTag()
 			{
@@ -255,77 +259,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			// assert
 			action.Should().Throw<DestinationWorkspaceTagRepositoryException>().WithInnerException<InvalidOperationException>();
-		}
-
-		[Test]
-		public async Task ItShouldShortenTagNameWhenCreating()
-		{
-			Guid nameGuid = new Guid("155649c0-db15-4ee7-b449-bfdf2a54b7b5");
-
-			const int tagArtifactId = 1;
-			const int sourceWorkspaceArtifactId = 2;
-			const int destinationWorkspaceArtifactId = 3;
-			const int destinationInstanceArtifactId = 4;
-			const string destinationInstanceName = "instance";
-			const string tooLongDestinationWorkspaceName = "TooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongName" +
-						"TooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLo";
-			const string shortenedTagName = "i - TooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongName" +
-						"TooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLo - 3";
-
-			CreateResult createResult = new CreateResult()
-			{
-				Object = new RelativityObject()
-				{
-					ArtifactID = tagArtifactId,
-				}
-			};
-			_objectManager.Setup(x => x.CreateAsync(sourceWorkspaceArtifactId, It.IsAny<CreateRequest>())).ReturnsAsync(createResult);
-
-			_federatedInstance.Setup(x => x.GetInstanceNameAsync()).ReturnsAsync(destinationInstanceName);
-			_federatedInstance.Setup(x => x.GetInstanceIdAsync()).ReturnsAsync(destinationInstanceArtifactId);
-
-			// act
-			await _sut.CreateAsync(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, tooLongDestinationWorkspaceName).ConfigureAwait(false);
-
-			// assert
-			_objectManager.Verify(x => x.CreateAsync(sourceWorkspaceArtifactId, It.Is<CreateRequest>(request =>
-				request.FieldValues.ToList().Exists(f => nameGuid.Equals(f.Field.Guid) &&
-				                                         string.Equals(shortenedTagName, f.Value)))));
-		}
-
-		[Test]
-		public async Task ItShouldShortenTagNameWhenUpdating()
-		{
-			Guid nameGuid = new Guid("155649c0-db15-4ee7-b449-bfdf2a54b7b5");
-
-			const int tagArtifactId = 1;
-			const int sourceWorkspaceArtifactId = 2;
-			const int destinationWorkspaceArtifactId = 3;
-			const int destinationInstanceArtifactId = 4;
-			const string destinationInstanceName = "instance";
-			const string tooLongDestinationWorkspaceName = "TooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongName" +
-						"TooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLo";
-			const string shortenedTagName = "i - TooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongName" +
-						"TooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLo - 3";
-
-			DestinationWorkspaceTag destinationWorkspaceTag = new DestinationWorkspaceTag()
-			{
-				ArtifactId = tagArtifactId,
-				DestinationWorkspaceArtifactId = destinationWorkspaceArtifactId,
-				DestinationWorkspaceName = tooLongDestinationWorkspaceName,
-				DestinationInstanceName = destinationInstanceName,
-			};
-
-			_federatedInstance.Setup(x => x.GetInstanceNameAsync()).ReturnsAsync(destinationInstanceName);
-			_federatedInstance.Setup(x => x.GetInstanceIdAsync()).ReturnsAsync(destinationInstanceArtifactId);
-
-			// act
-			await _sut.UpdateAsync(sourceWorkspaceArtifactId, destinationWorkspaceTag).ConfigureAwait(false);
-
-			// assert
-			_objectManager.Verify(x => x.UpdateAsync(sourceWorkspaceArtifactId, It.Is<UpdateRequest>(request => 
-					request.FieldValues.ToList().Exists(f => nameGuid.Equals(f.Field.Guid) &&
-					string.Equals(shortenedTagName, f.Value)))));
 		}
 	}
 }
