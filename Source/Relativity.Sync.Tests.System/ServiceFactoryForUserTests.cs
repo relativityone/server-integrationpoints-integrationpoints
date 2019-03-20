@@ -13,6 +13,7 @@ using Relativity.Services.Permission;
 using Relativity.Sync.Authentication;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.System.Stub;
 using TextCondition = kCura.Relativity.Client.TextCondition;
 using TextConditionEnum = kCura.Relativity.Client.TextConditionEnum;
@@ -59,9 +60,8 @@ namespace Relativity.Sync.Tests.System
 			Mock<IUserContextConfiguration> userContextConfiguration = new Mock<IUserContextConfiguration>();
 			userContextConfiguration.SetupGet(x => x.ExecutingUserId).Returns(UserHelpers.FindUserArtifactID(_client, userName));
 
-			Mock<IAPILog> apiLog = new Mock<IAPILog>();
-			IAuthTokenGenerator authTokenGenerator = new OAuth2TokenGenerator(new OAuth2ClientFactory(_servicesManager, apiLog.Object),
-				new TokenProviderFactoryFactory(), _provideServiceUris, apiLog.Object);
+			IAuthTokenGenerator authTokenGenerator = new OAuth2TokenGenerator(new OAuth2ClientFactory(_servicesManager, new EmptyLogger()),
+				new TokenProviderFactoryFactory(), _provideServiceUris, new EmptyLogger());
 			PermissionRef permissionRef = new PermissionRef
 			{
 				ArtifactType = new ArtifactTypeIdentifier((int)ArtifactType.Batch),
@@ -69,7 +69,7 @@ namespace Relativity.Sync.Tests.System
 			};
 
 			IDynamicProxyFactory dynamicProxyFactory = new DynamicProxyFactoryStub();
-			ServiceFactoryForUser sut = new ServiceFactoryForUser(userContextConfiguration.Object, _servicesManager, authTokenGenerator, dynamicProxyFactory);
+			ServiceFactoryForUser sut = new ServiceFactoryForUser(userContextConfiguration.Object, _servicesManager, authTokenGenerator, dynamicProxyFactory, new ServiceFactoryFactory());
 			List<PermissionValue> permissionValues;
 			using (IPermissionManager permissionManager = await sut.CreateProxyAsync<IPermissionManager>().ConfigureAwait(false))
 			{
