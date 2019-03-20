@@ -32,14 +32,14 @@ namespace Relativity.Sync.Executors
 					ObjectType = new ObjectTypeRef() { ArtifactTypeID = (int)ArtifactType.Case },
 					IncludeNameInQueryResult = true
 				};
-				const int workspaceId = -1;
+				const int adminWorkspaceId = -1;
 				const int start = 0;
 				const int length = 1;
 				QueryResult queryResult;
 
 				try
 				{
-					queryResult = await objectManager.QueryAsync(workspaceId, request, start, length, token, new EmptyProgress<ProgressReport>()).ConfigureAwait(false);
+					queryResult = await objectManager.QueryAsync(adminWorkspaceId, request, start, length, token, new EmptyProgress<ProgressReport>()).ConfigureAwait(false);
 				}
 				catch (Exception ex)
 				{

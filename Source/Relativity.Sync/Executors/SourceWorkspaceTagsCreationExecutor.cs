@@ -37,7 +37,7 @@ namespace Relativity.Sync.Executors
 			{
 				tag = await _destinationWorkspaceTagRepository.CreateAsync(configuration.SourceWorkspaceArtifactId, configuration.DestinationWorkspaceArtifactId, destinationWorkspaceName).ConfigureAwait(false);
 			}
-			else if (ShouldUpdateDestinationWorkspaceTag(tag, destinationWorkspaceName, destinationInstanceName))
+			else if (tag.RequiresUpdate(destinationWorkspaceName, destinationInstanceName))
 			{
 				tag.DestinationWorkspaceName = destinationWorkspaceName;
 				tag.DestinationInstanceName = destinationInstanceName;
@@ -48,12 +48,6 @@ namespace Relativity.Sync.Executors
 				configuration.SourceWorkspaceArtifactId, tag.ArtifactId, configuration.JobArtifactId).ConfigureAwait(false);
 
 			return tag.ArtifactId;
-		}
-
-		private static bool ShouldUpdateDestinationWorkspaceTag(DestinationWorkspaceTag tag, string destinationWorkspaceName, string destinationInstanceName)
-		{
-			return !string.Equals(destinationWorkspaceName, tag.DestinationWorkspaceName, StringComparison.InvariantCulture) ||
-				!string.Equals(destinationInstanceName, tag.DestinationInstanceName, StringComparison.InvariantCulture);
 		}
 	}
 }
