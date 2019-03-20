@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
 
-namespace Relativity.Sync.Tests.Integration.Stubs
+namespace Relativity.Sync.Tests.System.Stubs
 {
 	internal sealed class ExecutionConstrainsStub<T> : IExecutionConstrains<T> where T : IConfiguration
 	{

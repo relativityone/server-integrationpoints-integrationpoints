@@ -30,7 +30,7 @@ namespace Relativity.Sync.Executors
 				{
 					Condition = $"'ArtifactID' == {workspaceArtifactId}",
 					ObjectType = new ObjectTypeRef() { ArtifactTypeID = (int)ArtifactType.Case },
-					Fields = new List<FieldRef>() { new FieldRef() { Name = "Name" } }
+					IncludeNameInQueryResult = true
 				};
 				const int workspaceId = -1;
 				const int start = 0;

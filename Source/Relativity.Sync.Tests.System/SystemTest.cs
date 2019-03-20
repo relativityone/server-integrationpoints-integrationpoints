@@ -1,24 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
-using Moq;
 using NUnit.Framework;
-using Platform.Keywords.RSAPI;
-using Relativity.API;
-using Relativity.Services;
-using Relativity.Services.Permission;
 using Relativity.Services.ServiceProxy;
-using Relativity.Sync.Authentication;
-using Relativity.Sync.Configuration;
-using Relativity.Sync.KeplerFactory;
-using Relativity.Sync.Tests.System.Stub;
-using BearerTokenCredentials = Relativity.Services.ServiceProxy.BearerTokenCredentials;
+using Relativity.Sync.Tests.System.Stubs;
 using TextCondition = kCura.Relativity.Client.TextCondition;
 using TextConditionEnum = kCura.Relativity.Client.TextConditionEnum;
-using User = kCura.Relativity.Client.DTOs.User;
 using UsernamePasswordCredentials = kCura.Relativity.Client.UsernamePasswordCredentials;
 
 namespace Relativity.Sync.Tests.System
@@ -27,11 +16,13 @@ namespace Relativity.Sync.Tests.System
 	{
 		private readonly List<Workspace> _workspaces = new List<Workspace>();
 		protected IRSAPIClient Client { get; private set; }
+		protected ServiceFactory ServiceFactory { get; private set; }
 
 		[OneTimeSetUp]
 		public void SuiteSetup()
 		{
 			Client = new RSAPIClient(AppSettings.RelativityServicesUrl, new UsernamePasswordCredentials(AppSettings.RelativityUserName, AppSettings.RelativityUserPassword));
+			ServiceFactory = new ServiceFactoryFromAppConfig().CreateServiceFactory();
 			ChildSuiteSetup();
 		}
 
@@ -93,13 +84,6 @@ namespace Relativity.Sync.Tests.System
 			query.Fields.Add(new FieldValue("*"));
 			Workspace workspace = Client.Repositories.Workspace.Query(query).Results[0].Artifact;
 			return workspace;
-		}
-
-		protected ServiceFactory CreateServideFactory()
-		{
-			Credentials credentials = new Services.ServiceProxy.UsernamePasswordCredentials(AppSettings.RelativityUserName, AppSettings.RelativityUserPassword);
-			ServiceFactorySettings settings = new ServiceFactorySettings(AppSettings.RelativityServicesUrl, AppSettings.RelativityRestUrl, credentials);
-			return new ServiceFactory(settings);
 		}
 
 		protected virtual void Dispose(bool disposing)
