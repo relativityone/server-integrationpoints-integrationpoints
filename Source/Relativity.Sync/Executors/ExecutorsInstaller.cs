@@ -12,6 +12,7 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<DestinationWorkspaceTagLinker>().As<IDestinationWorkspaceTagsLinker>();
 			builder.RegisterType<FederatedInstance>().As<IFederatedInstance>();
 			builder.RegisterType<WorkspaceNameQuery>().As<IWorkspaceNameQuery>();
+			builder.RegisterType<TagNameFormatter>().As<ITagNameFormatter>();
 
 			builder.RegisterType<SourceWorkspaceTagsCreationExecutor>().As<IExecutor<ISourceWorkspaceTagsCreationConfiguration>>();
 			builder.RegisterType<SourceWorkspaceTagsCreationExecutionConstrains>().As<IExecutionConstrains<ISourceWorkspaceTagsCreationConfiguration>>();

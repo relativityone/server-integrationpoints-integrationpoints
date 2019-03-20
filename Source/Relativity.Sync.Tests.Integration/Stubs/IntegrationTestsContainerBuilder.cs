@@ -29,7 +29,6 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 			containerBuilder.RegisterType<SyncMetricsStub>().As<ISyncMetrics>();
 			containerBuilder.RegisterType<APMClientStub>().As<IAPMClient>();
 			containerBuilder.RegisterType<StopwatchStub>().As<IStopwatch>();
-			containerBuilder.RegisterType<TagNameFormatter>().As<ITagNameFormatter>();
 
 			return containerBuilder;
 		}

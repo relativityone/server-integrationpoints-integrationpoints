@@ -9,6 +9,7 @@ using kCura.Relativity.Client.DTOs;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.ApplicationInstallManager;
+using Relativity.Services.Exceptions;
 using Relativity.Services.LibraryApplicationsManager;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -187,9 +188,107 @@ namespace Relativity.Sync.Tests.System
 			Assert.AreEqual(jobHistoryArtifactId, relativityObjectValues.First().ArtifactID);
 		}
 
-		[Test]
-		public void ItShouldUpdateTagIfItDoesExist()
+		private async Task<DestinationWorkspaceTag> CreateDestinationWorkspaceTag(string tagName, Workspace destinationWorkspace, string federatedInstanceName, int federatedInstanceId,
+			Workspace sourceWorkspace)
 		{
+			using (IObjectManager objectManager = ServiceFactory.CreateProxy<IObjectManager>())
+			{
+				CreateRequest request = new CreateRequest
+				{
+					ObjectType = new ObjectTypeRef
+					{
+						Guid = _destinationWorkspaceObjectTypeGuid
+					},
+					FieldValues = new[]
+					{
+						new FieldRefValuePair
+						{
+							Field = new FieldRef
+							{
+								Name = "Name"
+							},
+							Value = tagName
+						},
+						new FieldRefValuePair
+						{
+							Field = new FieldRef
+							{
+								Guid = _destinationWorkspaceNameFieldInDestinationWorkspaceGuid
+							},
+							Value = destinationWorkspace.Name
+						},
+						new FieldRefValuePair
+						{
+							Field = new FieldRef
+							{
+								Guid = _destinationWorkspaceArtifactIdFieldInDestinationWorkspaceGuid
+							},
+							Value = destinationWorkspace.ArtifactID
+						},
+						new FieldRefValuePair
+						{
+							Field = new FieldRef
+							{
+								Guid = _destinationInstanceNameFieldInDestinationWorkspaceGuid
+							},
+							Value = federatedInstanceName
+						},
+						new FieldRefValuePair
+						{
+							Field = new FieldRef
+							{
+								Guid = _destinationInstanceArtifactIdFieldInDestinationWorkspaceGuid
+							},
+							Value = federatedInstanceId
+						}
+					}
+				};
+
+				CreateResult result = await objectManager.CreateAsync(sourceWorkspace.ArtifactID, request).ConfigureAwait(false);
+
+				DestinationWorkspaceTag createdTag = new DestinationWorkspaceTag
+				{
+					ArtifactId = result.Object.ArtifactID,
+					DestinationWorkspaceName = destinationWorkspace.Name,
+					DestinationInstanceName = federatedInstanceName,
+					DestinationWorkspaceArtifactId = destinationWorkspace.ArtifactID
+				};
+				return createdTag;
+			}
+		}
+
+		[Test]
+		public async Task ItShouldUpdateTagIfItDoesExist()
+		{
+			int jobHistoryArtifactId = await CreateJobHistoryInstance(_sourceWorkspace.ArtifactID).ConfigureAwait(false);
+			const int userId = 9;
+
+			ConfigurationStub configuration = new ConfigurationStub
+			{
+				DestinationWorkspaceArtifactId = _destinationWorkspace.ArtifactID,
+				SourceWorkspaceArtifactId = _sourceWorkspace.ArtifactID,
+				JobArtifactId = jobHistoryArtifactId,
+				ExecutingUserId = userId
+			};
+
+			ISyncJob syncJob = CreateSyncJob(configuration);
+
+			DestinationWorkspaceTag destinationWorkspaceTag = await CreateDestinationWorkspaceTag("whatever", _destinationWorkspace, "This Instance", -1, _sourceWorkspace).ConfigureAwait(false);
+
+			// ACT
+			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+
+			// ASSERT
+			RelativityObject tag = await QueryForCreatedTag(configuration.DestinationWorkspaceTagArtifactId)
+				.ConfigureAwait(false);
+
+			Assert.AreEqual(_destinationWorkspace.ArtifactID, tag.FieldValues.First(x => x.Field.Guids.Contains(_destinationWorkspaceArtifactIdFieldInDestinationWorkspaceGuid)).Value);
+			Assert.AreEqual(_destinationWorkspace.Name, tag.FieldValues.First(x => x.Field.Guids.Contains(_destinationWorkspaceNameFieldInDestinationWorkspaceGuid)).Value);
+
+			var relativityObjectValues = (List<RelativityObjectValue>)tag.FieldValues
+				.First(x => x.Field.Guids.Contains(_jobHistoryFieldInDestinationWorkspaceGuid)).Value;
+			Assert.AreEqual(1, relativityObjectValues.Count);
+			Assert.AreEqual(jobHistoryArtifactId, relativityObjectValues.First().ArtifactID);
 		}
 	}
 }
