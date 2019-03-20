@@ -7,4 +7,5 @@
 #pragma warning disable RG2001 // Character Per Line
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated via container", Scope = "type", Target = "~T:Relativity.Sync.Tests.System.Stubs.ExecutionConstrainsStub`1")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated via container", Scope = "type", Target = "~T:Relativity.Sync.Tests.System.Stubs.ExecutorStub`1")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Used for debugging", Scope = "type", Target = "~T:Relativity.Sync.Tests.System.ConsoleLogger")]
 #pragma warning restore RG2001 // Character Per Line
