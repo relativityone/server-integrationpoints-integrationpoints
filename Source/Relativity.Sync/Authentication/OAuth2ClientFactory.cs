@@ -12,9 +12,9 @@ namespace Relativity.Sync.Authentication
 	{
 		private const string _OAUTH2_CLIENT_NAME_PREFIX = "F6B8C2B4B3E8465CA00775F699375D3C";
 		private readonly IServicesMgr _servicesMgr;
-		private readonly IAPILog _logger;
+		private readonly ISyncLog _logger;
 
-		public OAuth2ClientFactory(IServicesMgr servicesMgr, IAPILog logger)
+		public OAuth2ClientFactory(IServicesMgr servicesMgr, ISyncLog logger)
 		{
 			_servicesMgr = servicesMgr;
 			_logger = logger;

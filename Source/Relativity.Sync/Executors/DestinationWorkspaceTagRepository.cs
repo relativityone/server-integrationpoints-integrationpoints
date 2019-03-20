@@ -62,10 +62,17 @@ namespace Relativity.Sync.Executors
 			using (IObjectManager objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				int federatedInstanceId = await _federatedInstance.GetInstanceIdAsync().ConfigureAwait(false);
-				QueryRequest request = new QueryRequest()
+
+				// TODO: We use -1 as the instance ID for the local instance, but RIP uses NULL, so we have to use NULL instead in that case.
+				// TODO: Once the Sync code is entirely in this project, this should be changed to just use -1.
+				string federatedInstanceIdSearchTerm = federatedInstanceId == -1
+					? $"NOT '{_DESTINATION_INSTANCE_ARTIFACTID_GUID}' ISSET"
+					: $"'{_DESTINATION_INSTANCE_ARTIFACTID_GUID}' == {federatedInstanceId}";
+
+				QueryRequest request = new QueryRequest
 				{
 					ObjectType = new ObjectTypeRef { Guid = _OBJECT_TYPE_GUID },
-					Condition = $"'{_DESTINATION_WORKSPACE_ARTIFACTID_GUID}' == {destinationWorkspaceArtifactId} AND '{_DESTINATION_INSTANCE_ARTIFACTID_GUID}' == {federatedInstanceId}",
+					Condition = $"'{_DESTINATION_WORKSPACE_ARTIFACTID_GUID}' == {destinationWorkspaceArtifactId} AND ({federatedInstanceIdSearchTerm})",
 					Fields = new List<FieldRef>
 					{
 						new FieldRef { Name = "ArtifactId" },
@@ -105,7 +112,11 @@ namespace Relativity.Sync.Executors
 					"Destination workspace name: {destinationWorkspaceName}",
 					sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, destinationWorkspaceName);
 			string federatedInstanceName = await _federatedInstance.GetInstanceNameAsync().ConfigureAwait(false);
-			int federatedInstanceId = await _federatedInstance.GetInstanceIdAsync().ConfigureAwait(false);
+
+			// TODO: We use -1 as the instance ID for the local instance, but RIP uses NULL, so we have to use NULL instead in that case.
+			// TODO: Once the Sync code is entirely in this project, this should be changed to just use -1.
+			int rawFederatedInstanceId = await _federatedInstance.GetInstanceIdAsync().ConfigureAwait(false);
+			int? federatedInstanceId = rawFederatedInstanceId == -1 ? null : (int?) rawFederatedInstanceId;
 
 			using (IObjectManager objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
@@ -176,7 +187,7 @@ namespace Relativity.Sync.Executors
 			}
 		}
 
-		private IEnumerable<FieldRefValuePair> CreateFieldValues(int destinationWorkspaceArtifactId, string destinationWorkspaceName, string federatedInstanceName, int federatedInstanceId)
+		private IEnumerable<FieldRefValuePair> CreateFieldValues(int destinationWorkspaceArtifactId, string destinationWorkspaceName, string federatedInstanceName, int? federatedInstanceId)
 		{
 			string destinationTagName = _tagNameFormatter.FormatWorkspaceDestinationTagName(federatedInstanceName, destinationWorkspaceName, destinationWorkspaceArtifactId);
 			FieldRefValuePair[] pairs =
@@ -210,7 +221,5 @@ namespace Relativity.Sync.Executors
 
 			return pairs;
 		}
-
-		
 	}
 }
