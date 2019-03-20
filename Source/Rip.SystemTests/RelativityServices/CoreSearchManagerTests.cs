@@ -29,7 +29,7 @@ namespace Rip.SystemTests.RelativityServices
 	[TestFixture]
 	public class CoreSearchManagerTests
 	{
-		private Lazy<ITestHelper> _testHelperLazy;
+		private ITestHelper _testHelper;
 		private IRelativityObjectManager _objectManager;
 		private IViewManager _viewManager;
 		private int _workspaceID;
@@ -40,10 +40,10 @@ namespace Rip.SystemTests.RelativityServices
 		public void OneSetup()
 		{
 			_workspaceID = SystemTestsFixture.WorkspaceID;
-			_testHelperLazy = new Lazy<ITestHelper>(() => new TestHelper());
-			IRelativityObjectManagerFactory objectManagerFactory = new RelativityObjectManagerFactory(_testHelperLazy.Value);
+			_testHelper = SystemTestsFixture.TestHelper;
+			IRelativityObjectManagerFactory objectManagerFactory = new RelativityObjectManagerFactory(_testHelper);
 			_objectManager = objectManagerFactory.CreateRelativityObjectManager(_workspaceID);
-			_viewManager = _testHelperLazy.Value.CreateUserProxy<IViewManager>();
+			_viewManager = _testHelper.CreateUserProxy<IViewManager>();
 		}
 
 		[Test]
@@ -154,9 +154,9 @@ namespace Rip.SystemTests.RelativityServices
 		private CoreSearchManager CreateCoreSearchManager()
 		{
 			var baseServiceContextMock = new Mock<BaseServiceContext>(); // TODO remove when CoreSearchManager has Relativity.Core dependencies removed
-			IViewFieldManager viewFieldManager = _testHelperLazy.Value.CreateUserProxy<IViewFieldManager>();
+			IViewFieldManager viewFieldManager = _testHelper.CreateUserProxy<IViewFieldManager>();
 			IExternalServiceInstrumentationProvider instrumentationProvider =
-				new ExternalServiceInstrumentationProviderWithoutJobContext(_testHelperLazy.Value.GetLoggerFactory().GetLogger());
+				new ExternalServiceInstrumentationProviderWithoutJobContext(_testHelper.GetLoggerFactory().GetLogger());
 			IViewFieldRepository viewFieldRepository = new ViewFieldRepository(viewFieldManager, instrumentationProvider);
 			var coreSearchManager = new CoreSearchManager(baseServiceContextMock.Object, viewFieldRepository);
 			return coreSearchManager;

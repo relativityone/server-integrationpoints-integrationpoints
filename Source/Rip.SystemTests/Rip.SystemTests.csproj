@@ -31,6 +31,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Castle.Windsor, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc" />
     <Reference Include="Relativity, Version=10.2.61.77, Culture=neutral, PublicKeyToken=null" />
     <Reference Include="System" />
     <Reference Include="System.Xml" />
@@ -43,6 +44,7 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="IntegrationPointServices\IntegrationPointServiceTests.cs" />
     <Compile Include="RelativityServices\CoreSearchManagerTests.cs" />
     <Compile Include="SystemTestsFixture.cs" />
   </ItemGroup>
@@ -61,9 +63,17 @@
       <Project>{32bcb03b-4980-4434-9392-f72334e6e348}</Project>
       <Name>kCura.IntegrationPoints.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">
+      <Project>{A1AE667B-1B6E-4BB9-AF1D-912620292283}</Project>
+      <Name>kCura.IntegrationPoints.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
       <Project>{599D771D-2AE7-4321-9BAC-BE06F827CE0A}</Project>
       <Name>kCura.IntegrationPoints.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
+      <Project>{5D5B52B4-8769-431A-9743-B96F15FED5FD}</Project>
+      <Name>kCura.IntegrationPoints.Domain</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.FilesDestinationProvider.Core\kCura.IntegrationPoints.FilesDestinationProvider.Core.csproj">
       <Project>{1fc70536-a8ef-48ce-b20a-e5c5c6723f23}</Project>
