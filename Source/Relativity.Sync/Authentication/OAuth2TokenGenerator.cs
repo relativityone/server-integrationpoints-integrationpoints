@@ -13,9 +13,9 @@ namespace Relativity.Sync.Authentication
 		private readonly IOAuth2ClientFactory _oAuth2ClientFactory;
 		private readonly ITokenProviderFactoryFactory _tokenProviderFactoryFactory;
 		private readonly IProvideServiceUris _provideServiceUris;
-		private readonly IAPILog _logger;
+		private readonly ISyncLog _logger;
 
-		public OAuth2TokenGenerator(IOAuth2ClientFactory oAuth2ClientFactory, ITokenProviderFactoryFactory tokenProviderFactoryFactory, IProvideServiceUris provideServiceUris, IAPILog logger)
+		public OAuth2TokenGenerator(IOAuth2ClientFactory oAuth2ClientFactory, ITokenProviderFactoryFactory tokenProviderFactoryFactory, IProvideServiceUris provideServiceUris, ISyncLog logger)
 		{
 			_oAuth2ClientFactory = oAuth2ClientFactory;
 			_tokenProviderFactoryFactory = tokenProviderFactoryFactory;

@@ -9,6 +9,7 @@ using Relativity.API;
 using Relativity.Services.Security;
 using Relativity.Services.Security.Models;
 using Relativity.Sync.Authentication;
+using Relativity.Sync.Logging;
 
 namespace Relativity.Sync.Tests.Unit.Authentication
 {
@@ -23,9 +24,8 @@ namespace Relativity.Sync.Tests.Unit.Authentication
 		[OneTimeSetUp]
 		public void SetUp()
 		{
-			Mock<IAPILog> log = new Mock<IAPILog>();
 			_servicesMgr = new Mock<IServicesMgr>();
-			_sut = new OAuth2ClientFactory(_servicesMgr.Object, log.Object);
+			_sut = new OAuth2ClientFactory(_servicesMgr.Object, new EmptyLogger());
 		}
 
 		[Test]
