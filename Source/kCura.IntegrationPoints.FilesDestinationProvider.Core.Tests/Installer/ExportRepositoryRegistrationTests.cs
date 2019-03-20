@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories.Implementations;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Services.Interfaces.ViewField;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Installer
@@ -55,10 +56,17 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Installer
 
 		private static void RegisterDependencies(IWindsorContainer container)
 		{
+			var viewFieldManagerMock = new Mock<IViewFieldManager>();
+			var servicesMgrMock = new Mock<IServicesMgr>();
+			servicesMgrMock.Setup(x => x.CreateProxy<IViewFieldManager>(ExecutionIdentity.CurrentUser))
+				.Returns(viewFieldManagerMock.Object);
+
 			IRegistration[] dependencies =
 			{
-				Component.For<IViewFieldManager>().Instance(new Mock<IViewFieldManager>().Object),
-				Component.For<IExternalServiceInstrumentationProvider>().Instance(new Mock<IExternalServiceInstrumentationProvider>().Object)
+				Component.For<IServicesMgr>().Instance(servicesMgrMock.Object),
+				Component.For<IViewFieldManager>().Instance(viewFieldManagerMock.Object),
+				Component.For<IExternalServiceInstrumentationProvider>()
+					.Instance(new Mock<IExternalServiceInstrumentationProvider>().Object)
 			};
 
 			container.Register(dependencies);
