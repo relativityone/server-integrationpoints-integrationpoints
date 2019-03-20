@@ -123,7 +123,7 @@ namespace Relativity.Sync.Executors
 				catch (ServiceException ex)
 				{
 					_logger.LogError(ex, $"Service call failed while creating {nameof(DestinationWorkspaceTag)}: {{request}}", request);
-					throw new DestinationWorkspaceTagRepositoryException($"Service call failed while creating {nameof(DestinationWorkspaceTag)}: {{request}}", ex);
+					throw new DestinationWorkspaceTagRepositoryException($"Service call failed while creating {nameof(DestinationWorkspaceTag)}: {request}", ex);
 				}
 				catch (Exception ex)
 				{
