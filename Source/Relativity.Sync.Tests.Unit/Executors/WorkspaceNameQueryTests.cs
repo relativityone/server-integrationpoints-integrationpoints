@@ -14,7 +14,7 @@ using Relativity.Sync.KeplerFactory;
 namespace Relativity.Sync.Tests.Unit.Executors
 {
 	[TestFixture]
-	public class WorkspaceNameQueryTests
+	public sealed class WorkspaceNameQueryTests
 	{
 		private Mock<ISourceServiceFactoryForUser> _serviceFactory;
 		private Mock<IAPILog> _logger;

@@ -5,7 +5,7 @@ using Relativity.Sync.Executors;
 namespace Relativity.Sync.Tests.Unit.Executors
 {
 	[TestFixture]
-	public class FederatedInstanceTests
+	public sealed class FederatedInstanceTests
 	{
 		private FederatedInstance _sut;
 

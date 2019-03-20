@@ -465,7 +465,7 @@ namespace Relativity.Sync.Tests.Integration
 				srcWorkspaceArtifactId,
 				It.IsAny<CreateRequest>())
 				).Throws(new Exception("Blech blooch blar"));
-
+			
 			DestinationWorkspaceTagRepositoryException thrownException = Assert.Throws<DestinationWorkspaceTagRepositoryException>(() =>
 				_executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult());
 			Assert.AreEqual(

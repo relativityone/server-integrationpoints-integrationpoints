@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace Relativity.Sync.Executors
 {
@@ -25,7 +26,7 @@ namespace Relativity.Sync.Executors
 		}
 
 		/// <inheritdoc />
-		private DestinationWorkspaceTagRepositoryException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base(info, context)
+		private DestinationWorkspaceTagRepositoryException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 		}
 	}
