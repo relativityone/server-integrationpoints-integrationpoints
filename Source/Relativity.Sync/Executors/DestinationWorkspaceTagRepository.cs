@@ -14,10 +14,9 @@ namespace Relativity.Sync.Executors
 {
 	internal sealed class DestinationWorkspaceTagRepository : IDestinationWorkspaceTagRepository
 	{
-		private const int _NAME_MAX_LENGTH = 255;
-
 		private readonly ISourceServiceFactoryForUser _sourceServiceFactoryForUser;
 		private readonly IFederatedInstance _federatedInstance;
+		private readonly ITagNameFormatter _tagNameFormatter;
 		private readonly ISyncLog _logger;
 
 		private static readonly Guid _OBJECT_TYPE_GUID = new Guid("3F45E490-B4CF-4C7D-8BB6-9CA891C0C198");
@@ -27,11 +26,13 @@ namespace Relativity.Sync.Executors
 		private static readonly Guid _NAME_GUID = new Guid("155649c0-db15-4ee7-b449-bfdf2a54b7b5");
 		private static readonly Guid _DESTINATION_WORKSPACE_ARTIFACTID_GUID = new Guid("207e6836-2961-466b-a0d2-29974a4fad36");
 
-		public DestinationWorkspaceTagRepository(ISourceServiceFactoryForUser sourceServiceFactoryForUser, IFederatedInstance federatedInstance, ISyncLog logger)
+		public DestinationWorkspaceTagRepository(ISourceServiceFactoryForUser sourceServiceFactoryForUser, IFederatedInstance federatedInstance, ITagNameFormatter tagNameFormatter,
+			ISyncLog logger)
 		{
 			_sourceServiceFactoryForUser = sourceServiceFactoryForUser;
 			_federatedInstance = federatedInstance;
 			_logger = logger;
+			_tagNameFormatter = tagNameFormatter;
 		}
 		
 		public async Task<DestinationWorkspaceTag> ReadAsync(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId, CancellationToken token)
@@ -177,12 +178,13 @@ namespace Relativity.Sync.Executors
 
 		private IEnumerable<FieldRefValuePair> CreateFieldValues(int destinationWorkspaceArtifactId, string destinationWorkspaceName, string federatedInstanceName, int federatedInstanceId)
 		{
+			string destinationTagName = _tagNameFormatter.FormatWorkspaceDestinationTagName(federatedInstanceName, destinationWorkspaceName, destinationWorkspaceArtifactId);
 			FieldRefValuePair[] pairs =
 			{
 				new FieldRefValuePair
 				{
 					Field = new FieldRef {Guid = _NAME_GUID},
-					Value = FormatWorkspaceDestinationTagName(federatedInstanceName, destinationWorkspaceName, destinationWorkspaceArtifactId)
+					Value = destinationTagName
 				},
 				new FieldRefValuePair
 				{
@@ -209,29 +211,6 @@ namespace Relativity.Sync.Executors
 			return pairs;
 		}
 
-		private string FormatWorkspaceDestinationTagName(string federatedInstanceName, string destinationWorkspaceName, int destinationWorkspaceArtifactId)
-		{
-			string name = GetFormatForWorkspaceOrJobDisplay(federatedInstanceName, destinationWorkspaceName, destinationWorkspaceArtifactId);
-			if (name.Length > _NAME_MAX_LENGTH)
-			{
-				_logger.LogWarning("Relativity Source Case Name exceeded max length and has been shortened. Full name {name}.", name);
-
-				int overflow = name.Length - _NAME_MAX_LENGTH;
-				string trimmedInstanceName = federatedInstanceName.Substring(0, federatedInstanceName.Length - overflow);
-				name = GetFormatForWorkspaceOrJobDisplay(trimmedInstanceName, destinationWorkspaceName, destinationWorkspaceArtifactId);
-			}
-
-			return name;
-		}
-
-		private static string GetFormatForWorkspaceOrJobDisplay(string prefix, string name, int? id)
-		{
-			return $"{prefix} - {GetFormatForWorkspaceOrJobDisplay(name, id)}";
-		}
-
-		private static string GetFormatForWorkspaceOrJobDisplay(string name, int? id)
-		{
-			return id.HasValue ? $"{name} - {id}" : name;
-		}
+		
 	}
 }

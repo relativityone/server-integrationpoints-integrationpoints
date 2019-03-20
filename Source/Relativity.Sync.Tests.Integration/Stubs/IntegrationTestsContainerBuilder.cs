@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Autofac;
+using Relativity.Sync.Executors;
 using Relativity.Sync.Telemetry;
 
 namespace Relativity.Sync.Tests.Integration.Stubs
@@ -28,6 +29,7 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 			containerBuilder.RegisterType<SyncMetricsStub>().As<ISyncMetrics>();
 			containerBuilder.RegisterType<APMClientStub>().As<IAPMClient>();
 			containerBuilder.RegisterType<StopwatchStub>().As<IStopwatch>();
+			containerBuilder.RegisterType<TagNameFormatterStub>().As<ITagNameFormatter>();
 
 			return containerBuilder;
 		}
