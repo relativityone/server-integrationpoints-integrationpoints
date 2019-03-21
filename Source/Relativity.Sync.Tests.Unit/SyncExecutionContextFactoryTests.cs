@@ -29,7 +29,7 @@ namespace Relativity.Sync.Tests.Unit
 			_configuration.NumberOfStepsRunInParallel = stepsInParallel;
 
 			// ACT
-			IExecutionContext<SyncExecutionContext> context = _instance.Create(new EmptyProgress(), CancellationToken.None);
+			IExecutionContext<SyncExecutionContext> context = _instance.Create(new EmptyProgress<SyncProgress>(), CancellationToken.None);
 
 			// ASSERT
 			context.GlobalOptions.ThrowOnError.Should().BeFalse();
@@ -40,7 +40,7 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public void ItShouldCreateSyncExecutionContext()
 		{
-			IProgress<SyncProgress> progress = new EmptyProgress();
+			IProgress<SyncProgress> progress = new EmptyProgress<SyncProgress>();
 			CancellationToken token = new CancellationToken();
 
 			// ACT
@@ -56,7 +56,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			CancellationTokenSource tokenSource = new CancellationTokenSource();
 
-			IExecutionContext<SyncExecutionContext> context = _instance.Create(new EmptyProgress(), tokenSource.Token);
+			IExecutionContext<SyncExecutionContext> context = _instance.Create(new EmptyProgress<SyncProgress>(), tokenSource.Token);
 			context.CancelProcessing.Should().BeFalse();
 
 			// ACT

@@ -4,9 +4,9 @@ using System.Diagnostics.CodeAnalysis;
 namespace Relativity.Sync
 {
 	[ExcludeFromCodeCoverage]
-	internal sealed class EmptyProgress : IProgress<SyncProgress>
+	internal sealed class EmptyProgress<T> : IProgress<T>
 	{
-		public void Report(SyncProgress value)
+		public void Report(T value)
 		{
 			// Method intentionally left empty.
 		}

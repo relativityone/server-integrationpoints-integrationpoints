@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using Autofac;
+﻿using Autofac;
 using FluentAssertions;
 using NUnit.Framework;
 using Relativity.Sync.Tests.Integration.Stubs;
@@ -23,17 +19,12 @@ namespace Relativity.Sync.Tests.Integration
 		[Test]
 		public void ItShouldCreateSyncJob()
 		{
-			IContainer container = IntegrationTestsContainerBuilder.CreateContainer();
+			ContainerBuilder containerBuilder = new ContainerBuilder();
+			IntegrationTestsContainerBuilder.RegisterStubsForSyncFactoryTests(containerBuilder);
 			SyncJobParameters syncJobParameters = new SyncJobParameters(1, 1);
-			List<IInstaller> installers = Assembly.GetAssembly(typeof(IInstaller))
-				.GetTypes()
-				.Where(t => !t.IsAbstract && t.IsAssignableTo<IInstaller>())
-				.Select(t => (IInstaller)Activator.CreateInstance(t))
-				.ToList();
-			installers.Add(new OutsideDependenciesStubInstaller());
 
 			// ACT
-			ISyncJob job = _instance.Create(container, installers, syncJobParameters);
+			ISyncJob job = _instance.Create(containerBuilder.Build(), syncJobParameters);
 
 			// ASSERT
 			job.Should().NotBeNull();
