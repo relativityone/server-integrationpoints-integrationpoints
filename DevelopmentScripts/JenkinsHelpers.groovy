@@ -16,6 +16,7 @@ interface Constants
     // This repo's package name for purposes of versioning & publishing
     final String PACKAGE_NAME = 'IntegrationPoints'
     final String NIGHTLY_JOB_NAME = "IntegrationPointsNightly"
+    final String UI_NIGHTLY_JOB_NAME = "IntegrationPointsUITests"
     final String ARTIFACTS_PATH = 'Artifacts'
     final String QUARANTINED_TESTS_CATEGORY = 'InQuarantine'
     final String INTEGRATION_TESTS_RESULTS_REPORT_PATH = "$ARTIFACTS_PATH/IntegrationTestsResults.xml"
@@ -98,6 +99,11 @@ def initializeRIPPipeline(script, env, params)
 def isNightly()
 {
 	return env.JOB_NAME.contains(Constants.NIGHTLY_JOB_NAME)
+}
+
+def isUiNightly()
+{
+	return env.JOB_NAME.contains(Constants.UI_NIGHTLY_JOB_NAME)
 }
 
 def getVersion()
@@ -545,6 +551,10 @@ private getSlackChannelName()
 	if (isNightly() && env.BRANCH_NAME == "develop")
 	{
 		return "#cd_rip_nightly"
+	}
+    if (isUiNightly() && env.BRANCH_NAME == "develop")
+	{
+		return "#cd_rip_ui_nightly"
 	}
 	return "#cd_rip_${env.BRANCH_NAME}"
 }
