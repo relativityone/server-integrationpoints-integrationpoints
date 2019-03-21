@@ -43,7 +43,7 @@
         public const char MULTI_VALUE_DELIMITER = ';';
         public const char NESTED_VALUE_DELIMITER = '/';
 
-        internal static class IntegrationPoints
+        public static class IntegrationPoints
         {
             public const string APP_DOMAIN_DATA_CONNECTION_STRING = "IntegrationPointsConnectionString";
             public const string APP_DOMAIN_SUBSYSTEM_NAME = "IntegrationPoints";

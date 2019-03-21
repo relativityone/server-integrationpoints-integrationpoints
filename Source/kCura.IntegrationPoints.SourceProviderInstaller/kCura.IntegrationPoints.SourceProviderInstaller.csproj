@@ -54,33 +54,11 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="IntegrationPointSourceProviderUninstaller.cs" />
-    <Compile Include="PostInstallEventHandlerBase.cs" />
-    <Compile Include="Services\IImportService.cs" />
-    <Compile Include="Services\ImportService.cs" />
     <Compile Include="IntegrationPointSourceProviderInstaller.cs" />
     <Compile Include="InvalidSourceProviderException.cs" />
     <Compile Include="SourceProvider.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
-      <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
-      <Name>kCura.IntegrationPoints.Contracts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">
-      <Project>{a1ae667b-1b6e-4bb9-af1d-912620292283}</Project>
-      <Name>kCura.IntegrationPoints.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
-      <Project>{599d771d-2ae7-4321-9bac-be06f827ce0a}</Project>
-      <Name>kCura.IntegrationPoints.Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
-      <Project>{5d5b52b4-8769-431a-9743-b96f15fed5fd}</Project>
-      <Name>kCura.IntegrationPoints.Domain</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
@@ -92,6 +70,16 @@
     <Analyzer Include="..\..\packages\CSharpGuidelineAnalyzer\analyzers\dotnet\cs\CSharpGuidelineAnalyzer.dll">
       <Paket>True</Paket>
     </Analyzer>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
+      <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
+      <Name>kCura.IntegrationPoints.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Services.Interfaces.Private\kCura.IntegrationPoints.Services.Interfaces.Private.csproj">
+      <Project>{B8BF6D01-E190-4C2C-B07F-3B627FFC1BFC}</Project>
+      <Name>kCura.IntegrationPoints.Services.Interfaces.Private</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">

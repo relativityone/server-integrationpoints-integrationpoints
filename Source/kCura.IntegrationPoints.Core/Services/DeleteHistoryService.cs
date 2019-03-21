@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using Relativity.Services.Objects.DataContracts;
@@ -22,19 +21,18 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public void DeleteHistoriesAssociatedWithIPs(List<int> integrationPointsId, IRelativityObjectManager objectManager)
 		{
-
-			QueryRequest request = new QueryRequest
+			var request = new QueryRequest
 			{
-				Condition = $"'ArtifactId' in [{String.Join(",", integrationPointsId)}]"
+				Condition = $"'ArtifactId' in [{string.Join(",", integrationPointsId)}]"
 
 			};
-			var integrationPoints = objectManager.Query<Data.IntegrationPoint>(request);
+			List<Data.IntegrationPoint> integrationPoints = objectManager.Query<Data.IntegrationPoint>(request);
 
 			// Since 9.4 release we're not deleting job history RDOs (they've being used by ECA Dashboard)
 			// We're also not removing JobHistoryErrors as it was taking too long (SQL timeouts)
 			// JobHistoryErrors will be now removed by Management Agent
 
-			foreach (var integrationPoint in integrationPoints)
+			foreach (Data.IntegrationPoint integrationPoint in integrationPoints)
 			{
 				integrationPoint.JobHistory = null;
 				objectManager.Update(integrationPoint);

@@ -134,7 +134,6 @@
     <Compile Include="Monitoring\MessageSink\Aggregated\JobStatus.cs" />
     <Compile Include="Monitoring\MessageSink\ExternalCalls\ExternalCallsJobSummaryMessage.cs" />
     <Compile Include="Monitoring\MessageSink\ExternalCalls\ExternalCallsSink.cs" />
-    <Compile Include="Queries\IGetSourceProviderRdoByApplicationIdentifier.cs" />
     <Compile Include="Queries\IGetSourceProviderRdoByIdentifier.cs" />
     <Compile Include="Serialization\SerializerWithLogging.cs" />
     <Compile Include="ServiceManagerProvider.cs" />
@@ -341,7 +340,6 @@
       <DependentUpon>ErrorMessages.resx</DependentUpon>
     </Compile>
     <Compile Include="Queries\GetSourceProviderRdoByIdentifier.cs" />
-    <Compile Include="Queries\GetSourceProviderRdoByApplicationIdentifier.cs" />
     <Compile Include="Services\Exporter\DocumentTransferDataReader.cs" />
     <Compile Include="Services\Exporter\ExportApiDataHelper.cs" />
     <Compile Include="Factories\Implementations\ExporterFactory.cs" />

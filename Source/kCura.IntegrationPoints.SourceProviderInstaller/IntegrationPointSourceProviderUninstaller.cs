@@ -1,12 +1,7 @@
-﻿using System;
-using kCura.EventHandler;
-using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Factories.Implementations;
-using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.SourceProviderInstaller.Services;
+﻿using kCura.EventHandler;
+using kCura.IntegrationPoints.Services;
+using Relativity.API;
+using System;
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller
 {
@@ -25,7 +20,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 	/// <summary>
 	/// Removes a data source provider when the user uninstalls the application from a workspace.
 	/// </summary>
-	public abstract class IntegrationPointSourceProviderUninstaller : kCura.EventHandler.PreUninstallEventHandler
+	public abstract class IntegrationPointSourceProviderUninstaller : PreUninstallEventHandler
 	{
 		/// <summary>
 		/// Occurs before the removal of the data source provider.
@@ -40,82 +35,15 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		/// <summary>
 		/// Creates a new instance of the data source uninstall provider.
 		/// </summary>
-		protected IntegrationPointSourceProviderUninstaller()
+		protected IntegrationPointSourceProviderUninstaller() // TODO do we need it???
 		{
-		}
-
-		private IWorkspaceDBContext _workspaceDbContext;
-		internal IWorkspaceDBContext GetWorkspaceDbContext()
-		{
-			return _workspaceDbContext ??
-						 (_workspaceDbContext = new WorkspaceContext(base.Helper.GetDBContext(base.Helper.GetActiveCaseID())));
-		}
-
-		private ICaseServiceContext _caseContext;
-		internal ICaseServiceContext CaseServiceContext
-		{
-			get
-			{
-				return _caseContext ?? (_caseContext = ServiceContextFactory.CreateCaseServiceContext(base.Helper, base.Helper.GetActiveCaseID()));
-			}
-			set { _caseContext = value; }
-		}
-		private IntegrationPointQuery _integrationPointQuery;
-		private DeleteHistoryService _deleteHistoryService;
-
-		internal IntegrationPointQuery IntegrationPoint
-		{
-			get
-			{
-				return _integrationPointQuery ?? (_integrationPointQuery = new IntegrationPointQuery(CreateObjectManager()));
-			}
-		}
-
-		internal DeleteHistoryService DeleteHistory
-		{
-			get { return _deleteHistoryService ?? (_deleteHistoryService = new DeleteHistoryService(CreateObjectManagerFactory())); }
-		}
-
-		private DeleteIntegrationPoints _deleteIntegrationPoints;
-		internal DeleteIntegrationPoints DeleteIntegrationPoints
-		{
-			get
-			{
-				return _deleteIntegrationPoints ?? (_deleteIntegrationPoints = new DeleteIntegrationPoints(IntegrationPoint, DeleteHistory, CreateObjectManager()));
-			}
-			set { _deleteIntegrationPoints = value; }
-		}
-
-		private IEddsServiceContext _eddsContext;
-		internal IEddsServiceContext EddsServiceContext
-		{
-			get
-			{
-				return _eddsContext ?? (_eddsContext = ServiceContextFactory.CreateEddsServiceContext(base.Helper));
-			}
-			set { _eddsContext = value; }
-		}
-
-		private IImportService _importService;
-		internal IImportService ImportService
-		{
-			get
-			{
-				if (_importService == null)
-				{
-					_importService = new ImportService(this.CaseServiceContext, this.EddsServiceContext, this.DeleteIntegrationPoints, base.Helper);
-				}
-
-				return _importService;
-			}
-			set { _importService = value; }
 		}
 
 		/// <summary>
 		/// Runs when the event handler is called during the removal of the data source provider.
 		/// </summary>
 		/// <returns>An object of type Response, which frequently contains a message.</returns>
-		public override sealed Response Execute()
+		public sealed override Response Execute()
 		{
 			bool isSuccess = false;
 			Exception ex = null;
@@ -144,19 +72,24 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 
 		private void UninstallSourceProvider()
 		{
-			ImportService.UninstallProviders(base.ApplicationArtifactId);
-		}
+			var request = new UninstallProviderRequest
+			{
+				ApplicationID = ApplicationArtifactId,
+				WorkspaceID = Helper.GetActiveCaseID()
+			};
 
+			using (var providerManager = Helper.GetServicesManager().CreateProxy<IProviderManager>(ExecutionIdentity.CurrentUser))
+			{
+				providerManager.UninstallProvider(request);
+			}
+		}
 
 		/// <summary>
 		/// Raises the RaisePreUninstallPreExecuteEvent.
 		/// </summary>
 		protected void OnRaisePreUninstallPreExecuteEvent()
 		{
-			if (RaisePreUninstallPreExecuteEvent != null)
-			{
-				RaisePreUninstallPreExecuteEvent();
-			}
+			RaisePreUninstallPreExecuteEvent?.Invoke();
 		}
 
 		/// <summary>
@@ -164,20 +97,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		/// </summary>
 		protected void OnRaisePreUninstallPostExecuteEvent(bool isUninstalled, Exception ex)
 		{
-			if (RaisePreUninstallPostExecuteEvent != null)
-			{
-				RaisePreUninstallPostExecuteEvent(isUninstalled, ex);
-			}
-		}
-
-		private IRelativityObjectManager CreateObjectManager()
-		{
-			return CreateObjectManagerFactory().CreateRelativityObjectManager(Helper.GetActiveCaseID());
-		}
-
-		private IRelativityObjectManagerFactory CreateObjectManagerFactory()
-		{
-			return new RelativityObjectManagerFactory(Helper);
+			RaisePreUninstallPostExecuteEvent?.Invoke(isUninstalled, ex);
 		}
 	}
 }

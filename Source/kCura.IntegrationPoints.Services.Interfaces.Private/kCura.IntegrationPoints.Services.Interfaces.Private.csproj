@@ -2,6 +2,8 @@
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{B8BF6D01-E190-4C2C-B07F-3B627FFC1BFC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -10,15 +12,15 @@
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
-    <OutputPath>..\bin\$(Configuration)\</OutputPath>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x64\</OutputPath>
-    <PlatformTarget>x64</PlatformTarget>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -46,8 +48,6 @@
     </Compile>
     <Compile Include="Exceptions\InsufficientPermissionException.cs" />
     <Compile Include="Exceptions\InternalServerErrorException.cs" />
-    <Compile Include="Helpers\IIntegrationPointRuntimeServiceFactory.cs" />
-    <Compile Include="Helpers\IPermissionRepositoryFactory.cs" />
     <Compile Include="IDocumentManager.cs" />
     <Compile Include="IIntegrationPointHealthCheckManager.cs" />
     <Compile Include="IIntegrationPointManager.cs" />
@@ -74,6 +74,10 @@
     <Compile Include="Models\IntegrationPoint\ProviderModel.cs" />
     <Compile Include="Models\IntegrationPoint\RelativityProviderDestinationConfiguration.cs" />
     <Compile Include="Models\IntegrationPoint\RelativityProviderSourceConfiguration.cs" />
+    <Compile Include="Requests\InstallProviderRequest.cs" />
+    <Compile Include="Requests\ProviderToInstallConfigurationDto.cs" />
+    <Compile Include="Requests\ProviderToInstallDto.cs" />
+    <Compile Include="Requests\UninstallProviderRequest.cs" />
     <Compile Include="Requests\UpdateIntegrationPointRequest.cs" />
     <Compile Include="Requests\CreateIntegrationPointRequest.cs" />
     <Compile Include="Requests\HistoricalPromotionStatusRequest.cs" />
@@ -82,48 +86,29 @@
     <Compile Include="Requests\JobHistoryRequest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
-      <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
-      <Name>kCura.IntegrationPoints.Contracts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">
-      <Project>{a1ae667b-1b6e-4bb9-af1d-912620292283}</Project>
-      <Name>kCura.IntegrationPoints.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
-      <Project>{599d771d-2ae7-4321-9bac-be06f827ce0a}</Project>
-      <Name>kCura.IntegrationPoints.Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
-      <Project>{5d5b52b4-8769-431a-9743-b96f15fed5fd}</Project>
-      <Name>kCura.IntegrationPoints.Domain</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="paket.references" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
-  </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
-  <Import Project="..\..\.paket\paket.targets" />
   <ItemGroup>
     <Analyzer Include="..\..\packages\CSharpGuidelineAnalyzer\analyzers\dotnet\cs\CSharpGuidelineAnalyzer.dll">
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
+      <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
+      <Name>kCura.IntegrationPoints.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
+      <Project>{5d5b52b4-8769-431a-9743-b96f15fed5fd}</Project>
+      <Name>kCura.IntegrationPoints.Domain</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\..\.paket\paket.targets" />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>

@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using kCura.IntegrationPoints.Core;
+﻿using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
-using kCura.IntegrationPoints.Services.Interfaces.Private.Helpers;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Services.Helpers

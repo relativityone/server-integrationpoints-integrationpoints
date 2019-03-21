@@ -198,6 +198,7 @@
     <Compile Include="IntegrationPoints\PreLoadEventHandler.cs" />
     <Compile Include="IntegrationPoints\IntegrationPointMigrationEventHandlerBase.cs" />
     <Compile Include="PageInteractionHelper.cs" />
+    <Compile Include="PostInstallEventHandlerBase.cs" />
     <Compile Include="TagBuilder.cs" />
   </ItemGroup>
   <ItemGroup>

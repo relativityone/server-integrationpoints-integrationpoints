@@ -38,5 +38,11 @@ namespace kCura.IntegrationPoints.Services
 		/// <param name="workspaceArtifactId">The Workspace artifact Id of which has installed integration point application</param>
 		/// <returns>All destination providers</returns>
 		Task<IList<ProviderModel>> GetDestinationProviders(int workspaceArtifactId);
+
+		// TODO
+		Task<bool> InstallProvider(InstallProviderRequest request);
+
+		// TODO
+		Task<bool> UninstallProvider(UninstallProviderRequest request);
 	}
 }

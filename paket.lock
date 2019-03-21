@@ -253,6 +253,7 @@ NUGET
       Relativity.OAuth2Client (>= 1.0.27)
       Relativity.OAuth2Client.Interfaces (>= 1.0.27)
     Relativity.OAuth2Client.Interfaces (1.0.27)
+    Relativity.ObjectManager (10.2.66.96-DEV)
     Relativity.Productions.Services.Interfaces (10.2.16)
     Relativity.SecretCatalog (1.0.19)
     Relativity.SecretCatalog.AzureKeyVault (1.0.19)

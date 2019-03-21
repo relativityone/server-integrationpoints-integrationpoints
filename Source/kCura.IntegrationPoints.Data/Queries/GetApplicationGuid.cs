@@ -5,7 +5,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.Queries
 {
-	public class GetApplicationGuid
+	public class GetApplicationGuid // TODO move it to proper project
 	{
 		private readonly IDBContext _caseDBcontext;
 

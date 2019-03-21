@@ -2,13 +2,16 @@
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Core.Installers;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Installers;
 using kCura.IntegrationPoints.Domain.Authentication;
+using kCura.IntegrationPoints.Services.Provider;
 using kCura.IntegrationPoints.Services.Repositories;
 using kCura.IntegrationPoints.Services.Repositories.Implementations;
 using Relativity.API;
 using System.Collections.Generic;
+using kCura.IntegrationPoints.Core.Services;
 
 namespace kCura.IntegrationPoints.Services.Installers
 {
@@ -33,6 +36,34 @@ namespace kCura.IntegrationPoints.Services.Installers
 			container.Register(Component.For<IRSAPIService>().UsingFactoryMethod(k => new RSAPIService(k.Resolve<IHelper>(), workspaceId), true));
 			container.Register(Component.For<IProviderRepository>().ImplementedBy<ProviderRepository>().LifestyleTransient());
 			container.Register(Component.For<IAuthTokenGenerator>().ImplementedBy<ClaimsTokenGenerator>().LifestyleTransient());
+
+			RegisterProviderUninstaller(container, workspaceId);
+		}
+
+		private void RegisterProviderUninstaller(IWindsorContainer container, int workspaceId) // TODO rename it when import service is renamed
+		{
+			container.Register(Component
+				.For<IServiceContextHelper>()
+				.UsingFactoryMethod(k =>
+				{
+					IServiceHelper helper = k.Resolve<IServiceHelper>();
+					return new ServiceContextHelperForKeplerService(helper, workspaceId);
+				})
+			);
+
+			//DeleteIntegrationPoints 
+
+			container.Register(Component
+				.For<IDBContext>()
+				.UsingFactoryMethod(k =>
+				{
+					IServiceHelper helper = k.Resolve<IServiceHelper>();
+					return helper.GetDBContext(workspaceId);
+				})
+			);
+
+			container.Register(Component.For<DeleteIntegrationPoints>().LifestyleTransient());
+			container.Register(Component.For<ProviderUninstaller>().LifestyleTransient());
 		}
 	}
 }

@@ -7,11 +7,11 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Queries
 {
-	public class GetSourceProviderRdoByIdentifier : GetObjectBase, IGetSourceProviderRdoByIdentifier
+	public class GetSourceProviderRdoByIdentifier : IGetSourceProviderRdoByIdentifier
 	{
 		private readonly ICaseServiceContext _context;
-		public GetSourceProviderRdoByIdentifier(ICaseServiceContext context)
-			: base(typeof(SourceProvider))
+
+		public GetSourceProviderRdoByIdentifier(ICaseServiceContext context) // TODO pass object manageger
 		{
 			_context = context;
 		}

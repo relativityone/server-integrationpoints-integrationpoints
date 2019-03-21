@@ -1,14 +1,11 @@
-﻿using System;
+﻿using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.SourceProviderInstaller;
+using Relativity.API;
+using Relativity.Services.Objects.DataContracts;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.SourceProviderInstaller;
-using kCura.IntegrationPoints.SourceProviderInstaller.Services;
-using kCura.Relativity.Client.DTOs;
-using Relativity.API;
-using Relativity.Services.Objects.DataContracts;
 using SourceProvider = kCura.IntegrationPoints.SourceProviderInstaller.SourceProvider;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
@@ -18,7 +15,10 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 	public class SourceProvidersMigrationEventHandler : IntegrationPointMigrationEventHandlerBase
 	{
 		private IAPILog _logger;
-		internal IImportService Importer;
+
+		private IAPILog Logger =>
+			_logger
+			?? (_logger = Helper.GetLoggerFactory().GetLogger().ForContext<SourceProvidersMigrationEventHandler>());
 
 		public SourceProvidersMigrationEventHandler()
 		{ }
@@ -26,17 +26,10 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		public SourceProvidersMigrationEventHandler(IErrorService errorService) : base(errorService)
 		{ }
 
-
-		public IAPILog Logger
-		{
-			get { return _logger ?? (_logger = Helper.GetLoggerFactory().GetLogger().ForContext<SourceProvidersMigrationEventHandler>()); }
-			set { _logger = value; }
-		}
-
 		protected override void Run()
 		{
 			List<SourceProvider> sourceProviders = GetSourceProvidersToInstall();
-			var migrationJob = new SourceProvidersMigration(sourceProviders, Helper, Importer);
+			var migrationJob = new SourceProvidersMigration(sourceProviders, Helper);
 			migrationJob.Execute();
 		}
 
@@ -48,7 +41,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		{
 			List<Data.SourceProvider> sourceProviders = GetSourceProvidersFromPreviousWorkspace();
 
-			List<SourceProviderInstaller.SourceProvider> results = sourceProviders.Select(provider => new SourceProviderInstaller.SourceProvider()
+			List<SourceProvider> results = sourceProviders.Select(provider => new SourceProvider
 			{
 				Name = provider.Name,
 				Url = provider.SourceConfigurationUrl,
@@ -63,9 +56,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 		protected virtual List<Data.SourceProvider> GetSourceProvidersFromPreviousWorkspace()
 		{
-			Query<RDO> query = new Query<RDO>();
-			query.Fields = GetAllSourceProviderFields();
-
 			List<Data.SourceProvider> sourceProviderRdos = WorkspaceTemplateServiceContext.RsapiService.RelativityObjectManager.Query<Data.SourceProvider>(new QueryRequest());
 
 			if (sourceProviderRdos == null || sourceProviderRdos.Count == 0)
@@ -76,12 +66,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			return sourceProviderRdos;
 		}
 
-		private List<Relativity.Client.DTOs.FieldValue> GetAllSourceProviderFields()
-		{
-			List<Relativity.Client.DTOs.FieldValue> fields = BaseRdo.GetFieldMetadata(typeof(Data.SourceProvider)).Select(pair => new Relativity.Client.DTOs.FieldValue(pair.Value.FieldGuid)).ToList();
-			return fields;
-		}
-
 		/// Even private class needs a Guid :(. SAMO - 02/08/2016
 		/// This private event handler will show on Relativity.
 		[Guid("DDF4C569-AE1D-45F8-9E0F-740399BA059F")]
@@ -89,11 +73,10 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		{
 			private readonly List<SourceProvider> _sourceProviders;
 
-			public SourceProvidersMigration(List<SourceProvider> sourceProvidersToMigrate, IEHHelper helper, IImportService importService)
+			public SourceProvidersMigration(List<SourceProvider> sourceProvidersToMigrate, IEHHelper helper)
 			{
 				_sourceProviders = sourceProvidersToMigrate;
 				Helper = helper;
-				ImportService = importService;
 			}
 
 			public override IDictionary<Guid, SourceProvider> GetSourceProviders()

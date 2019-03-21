@@ -13,6 +13,7 @@ nuget Relativity.Core 10.2.66.96-DEV
 nuget Relativity.CustomPages 10.2.66.96-DEV
 nuget Relativity.Data 10.2.66.96-DEV
 nuget Relativity.ImportExport 10.2.66.96-DEV
+nuget Relativity.ObjectManager 10.2.66.96-DEV
 nuget RelativityCore 10.2.66.96-DEV
 nuget Relativity.Services.Interfaces 10.2.66.96-DEV
 

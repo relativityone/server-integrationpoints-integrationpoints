@@ -6,7 +6,6 @@ using Castle.Windsor;
 using kCura.IntegrationPoints.Services.Helpers;
 using kCura.IntegrationPoints.Services.Installers;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Exceptions;
-using kCura.IntegrationPoints.Services.Interfaces.Private.Helpers;
 using Relativity.Logging;
 
 namespace kCura.IntegrationPoints.Services
@@ -80,14 +79,14 @@ namespace kCura.IntegrationPoints.Services
 			SafePermissionCheck(() =>
 			{
 #pragma warning disable CS0618 // Type or member is obsolete REL-292860
-				var permissionRepository = _permissionRepositoryFactory.Create(global::Relativity.API.Services.Helper, workspaceId);
+				Data.Repositories.IPermissionRepository permissionRepository = _permissionRepositoryFactory.Create(global::Relativity.API.Services.Helper, workspaceId);
 #pragma warning restore CS0618 // Type or member is obsolete
 				var missingPermissions = new List<string>();
 				if (!permissionRepository.UserHasPermissionToAccessWorkspace())
 				{
 					missingPermissions.Add("Workspace");
 				}
-				foreach (var permissionModel in permissionsToCheck)
+				foreach (PermissionModel permissionModel in permissionsToCheck)
 				{
 					if (!permissionRepository.UserHasArtifactTypePermission(new Guid(permissionModel.ObjectTypeGuid), permissionModel.ArtifactPermission))
 					{

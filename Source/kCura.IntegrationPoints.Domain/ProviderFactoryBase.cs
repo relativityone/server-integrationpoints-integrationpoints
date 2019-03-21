@@ -10,7 +10,7 @@ namespace kCura.IntegrationPoints.Domain
 	/// <summary>
 	/// The abstract class from which all provider factory classes are derived.
 	/// </summary>
-	public abstract class ProviderFactoryBase : MarshalByRefObject, IProviderFactory
+	public abstract class ProviderFactoryBase : MarshalByRefObject, IProviderFactory // TODO move to kCura.IntegrationPoints.Contracts
 	{
 		private List<Type> _typesWithDataSourceProviderAttribute;
 

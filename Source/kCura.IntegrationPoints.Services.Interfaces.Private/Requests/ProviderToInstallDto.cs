@@ -1,40 +1,29 @@
 ﻿using System;
-using kCura.IntegrationPoints.Contracts;
 
-namespace kCura.IntegrationPoints.SourceProviderInstaller
+namespace kCura.IntegrationPoints.Services
 {
-	/// <summary>
-	/// Provides the information for the registration of a data source provider.
-	/// </summary>
-	public class SourceProvider
+	public class ProviderToInstallDto
 	{
-		/// <summary>
-		/// Initializes an instance of the SourceProvider class.
-		/// </summary>
-		public SourceProvider()
-		{
-		}
-
 		/// <summary>
 		/// Gets or sets the GUID identifying the data source provider.
 		/// </summary>
-		internal Guid GUID { get; set; }
-		
+		public Guid GUID { get; set; }
+
 		/// <summary>
 		/// Gets or sets the GUID identifying the Relativity application.
 		/// </summary>
-		internal Guid ApplicationGUID { get; set; }
+		public Guid ApplicationGUID { get; set; }
 
 		/// <summary>
 		/// Gets or sets the artifact id identifying the Relativity application.
 		/// </summary>
-		internal int ApplicationID { get; set; }
+		public int ApplicationID { get; set; }
 
 		/// <summary>
 		/// Gets or sets the name of the data source provider displayed in the Relativity UI.
 		/// </summary>
 		public string Name { get; set; }
-		
+
 		/// <summary>
 		/// Gets or sets the URL used to configure the data source provider.
 		/// </summary>
@@ -51,6 +40,6 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		/// <summary>
 		/// Gets or sets a SourceProviderConfiguration object, which contains properties that control source provider behavior.
 		/// </summary>
-		public SourceProviderConfiguration Configuration { set; get; }
+		public ProviderToInstallConfigurationDto Configuration { set; get; }
 	}
 }

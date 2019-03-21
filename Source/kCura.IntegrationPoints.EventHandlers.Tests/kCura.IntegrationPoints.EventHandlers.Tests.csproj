@@ -121,6 +121,10 @@
       <Project>{3e33dd7e-266f-48f8-86a2-3cdb836f2947}</Project>
       <Name>kCura.IntegrationPoints.FtpProvider.Helpers</Name>
     </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Services.Interfaces.Private\kCura.IntegrationPoints.Services.Interfaces.Private.csproj">
+      <Project>{b8bf6d01-e190-4c2c-b07f-3b627ffc1bfc}</Project>
+      <Name>kCura.IntegrationPoints.Services.Interfaces.Private</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.SourceProviderInstaller\kCura.IntegrationPoints.SourceProviderInstaller.csproj">
       <Project>{fcaf52cd-0f8f-4d71-ac61-b7591a181a08}</Project>
       <Name>kCura.IntegrationPoints.SourceProviderInstaller</Name>
