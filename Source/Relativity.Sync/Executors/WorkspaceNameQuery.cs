@@ -14,9 +14,9 @@ namespace Relativity.Sync.Executors
 	internal sealed class WorkspaceNameQuery : IWorkspaceNameQuery
 	{
 		private readonly ISourceServiceFactoryForUser _sourceServiceFactoryForUser;
-		private readonly IAPILog _logger;
+		private readonly ISyncLog _logger;
 
-		public WorkspaceNameQuery(ISourceServiceFactoryForUser sourceServiceFactoryForUser, IAPILog logger)
+		public WorkspaceNameQuery(ISourceServiceFactoryForUser sourceServiceFactoryForUser, ISyncLog logger)
 		{
 			_sourceServiceFactoryForUser = sourceServiceFactoryForUser;
 			_logger = logger;

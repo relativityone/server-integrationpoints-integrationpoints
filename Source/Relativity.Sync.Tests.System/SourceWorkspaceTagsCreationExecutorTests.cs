@@ -148,7 +148,6 @@ namespace Relativity.Sync.Tests.System
 
 		private ISyncJob CreateSyncJob(ConfigurationStub configuration)
 		{
-			// TODO: This setup should be changed once the IContainerFactory changes are merged in.
 			ContainerBuilder containerBuilder = new ContainerBuilder();
 			List<IInstaller> installers = Assembly.GetAssembly(typeof(IInstaller))
 				.GetTypes()
@@ -169,7 +168,7 @@ namespace Relativity.Sync.Tests.System
 			IContainer container = containerBuilder.Build();
 
 			var syncJobFactory = new SyncJobFactory();
-			return syncJobFactory.Create(container, installers, new SyncJobParameters(configuration.JobArtifactId, configuration.SourceWorkspaceArtifactId));
+			return syncJobFactory.Create(container, new SyncJobParameters(configuration.JobArtifactId, configuration.SourceWorkspaceArtifactId));
 		}
 
 		private async Task<RelativityObject> QueryForCreatedTag(int destinationWorkspaceTagArtifactId)
@@ -267,7 +266,10 @@ namespace Relativity.Sync.Tests.System
 							{
 								Guid = _DESTINATION_WORKSPACE_DESTINATION_INSTANCE_ARTIFACTID_FIELD_GUID
 							},
-							Value = null // TODO: This should be changed to -1 in the future. See relevant TODOs in DestinationWorkspaceTagRepository.
+							Value = null
+#pragma warning disable S1135 // Track uses of "TODO" tags
+							 // TODO REL-304664: This should be changed to -1 in the future. See relevant TODOs in DestinationWorkspaceTagRepository.
+#pragma warning restore S1135 // Track uses of "TODO" tags
 						}
 					}
 				};

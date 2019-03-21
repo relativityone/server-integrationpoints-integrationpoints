@@ -10,11 +10,11 @@ namespace Relativity.Sync.Executors
 	internal sealed class DestinationWorkspaceTagLinker : IDestinationWorkspaceTagsLinker
 	{
 		private readonly ISourceServiceFactoryForUser _sourceServiceFactoryForUser;
-		private readonly IAPILog _logger;
+		private readonly ISyncLog _logger;
 
 		private static readonly Guid DestinationWorkspaceInformationGuid = new Guid("20a24c4e-55e8-4fc2-abbe-f75c07fad91b");
 
-		public DestinationWorkspaceTagLinker(ISourceServiceFactoryForUser sourceServiceFactoryForUser, IAPILog logger)
+		public DestinationWorkspaceTagLinker(ISourceServiceFactoryForUser sourceServiceFactoryForUser, ISyncLog logger)
 		{
 			_sourceServiceFactoryForUser = sourceServiceFactoryForUser;
 			_logger = logger;

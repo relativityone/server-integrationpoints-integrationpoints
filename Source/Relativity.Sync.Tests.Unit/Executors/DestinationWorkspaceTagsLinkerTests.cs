@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Executors;
@@ -17,7 +16,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 	public sealed class DestinationWorkspaceTagsLinkerTests
 	{
 		private Mock<ISourceServiceFactoryForUser> _serviceFactory;
-		private Mock<IAPILog> _logger;
+		private Mock<ISyncLog> _logger;
 
 		private DestinationWorkspaceTagLinker _sut;
 
@@ -25,7 +24,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		public void SetUp()
 		{
 			_serviceFactory = new Mock<ISourceServiceFactoryForUser>();
-			_logger = new Mock<IAPILog>();
+			_logger = new Mock<ISyncLog>();
 
 			_sut = new DestinationWorkspaceTagLinker(_serviceFactory.Object, _logger.Object);
 		}

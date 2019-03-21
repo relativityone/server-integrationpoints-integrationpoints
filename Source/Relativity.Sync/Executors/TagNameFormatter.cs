@@ -5,9 +5,9 @@ namespace Relativity.Sync.Executors
 	internal sealed class TagNameFormatter : ITagNameFormatter
 	{
 		private const int _NAME_MAX_LENGTH = 255;
-		private readonly IAPILog _logger;
+		private readonly ISyncLog _logger;
 
-		public TagNameFormatter(IAPILog logger)
+		public TagNameFormatter(ISyncLog logger)
 		{
 			_logger = logger;
 		}

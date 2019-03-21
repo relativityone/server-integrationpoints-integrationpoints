@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Autofac;
 using Moq;
 using Relativity.API;
 using Relativity.Services;
 using Relativity.Services.InstanceSetting;
-using Relativity.Sync.Executors;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.Telemetry;
 using Relativity.Telemetry.APM;
 
@@ -17,7 +19,13 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 		public static void RegisterStubsForPipelineBuilderTests(ContainerBuilder containerBuilder, List<Type> executorTypes)
 		{
 			RegisterStubsForIntegrationTests(containerBuilder);
-			containerBuilder.RegisterGeneric(typeof(ExecutorCollectionExecutedTypesStub<>)).As(typeof(IExecutor<>));
+
+			// We can't register these as generics, because the concrete IExecutor<T> registrations override the generic ones for stubs.
+			// Therefore, we have to construct the IExecutor<TStub> from IExecutor<> and TStub, and then register that. Ugh.
+			GetAllConfigurationInterfaces().ForEach(t =>
+			{
+				containerBuilder.RegisterGenericAs(t, typeof(ExecutorCollectionExecutedTypesStub<>), typeof(IExecutor<>));
+			});
 			containerBuilder.RegisterInstance(executorTypes).As<List<Type>>();
 		}
 
@@ -63,11 +71,35 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 		public static void RegisterStubsForIntegrationTests(ContainerBuilder containerBuilder)
 		{
 			containerBuilder.RegisterInstance(new ConfigurationStub()).AsImplementedInterfaces();
-			containerBuilder.RegisterGeneric(typeof(ExecutionConstrainsStub<>)).As(typeof(IExecutionConstrains<>));
-			containerBuilder.RegisterGeneric(typeof(ExecutorStub<>)).As(typeof(IExecutor<>));
+			
+			// We can't register these as generics, because the concrete IExecutor<T> registrations override the generic ones for stubs.
+			// Therefore, we have to construct the IExecutor<TStub> from IExecutor<> and TStub, and then register that. Ugh.
+			GetAllConfigurationInterfaces().ForEach(t =>
+			{
+				containerBuilder.RegisterGenericAs(t, typeof(ExecutionConstrainsStub<>), typeof(IExecutionConstrains<>));
+				containerBuilder.RegisterGenericAs(t, typeof(ExecutorStub<>), typeof(IExecutor<>));
+			});
+
 			containerBuilder.RegisterType<SyncMetricsStub>().As<ISyncMetrics>();
 			containerBuilder.RegisterType<APMClientStub>().As<IAPMClient>();
 			containerBuilder.RegisterType<StopwatchStub>().As<IStopwatch>();
+			containerBuilder.RegisterInstance(Mock.Of<IServicesMgr>()).As<IServicesMgr>();
+			containerBuilder.RegisterInstance(Mock.Of<IProvideServiceUris>()).As<IProvideServiceUris>();
+		}
+
+		private static List<Type> GetAllConfigurationInterfaces()
+		{
+			return Assembly.GetAssembly(typeof(IConfiguration))
+				.GetTypes()
+				.Where(t => t.IsInterface && t.IsAssignableTo<IConfiguration>() && t != typeof(IConfiguration))
+				.ToList();
+		}
+
+		private static void RegisterGenericAs(this ContainerBuilder builder, Type t, Type concreteGeneric, Type interfaceGeneric)
+		{
+			Type concrete = concreteGeneric.MakeGenericType(t);
+			Type intrface = interfaceGeneric.MakeGenericType(t);
+			builder.RegisterType(concrete).As(intrface);
 		}
 	}
 }
