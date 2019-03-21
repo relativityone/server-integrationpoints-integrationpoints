@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 
 			var integrationPointModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, $"IP{Utils.FormattedDateTimeNow}", "Append Only");
 			integrationPointModel = CreateOrUpdateIntegrationPoint(integrationPointModel);
-			_integrationPoint = IntegrationPointRepository.Read(integrationPointModel.ArtifactID);
+			_integrationPoint = IntegrationPointRepository.ReadAsync(integrationPointModel.ArtifactID).GetAwaiter().GetResult();
 
 			_jobHistory = _jobHistoryService.CreateRdo(_integrationPoint, Guid.NewGuid(), JobTypeChoices.JobHistoryRun, DateTime.Now);
 

@@ -63,8 +63,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		{
 			base.InitializeIocContainer();
 			Container.Register(Component.For<IAgentValidator>().ImplementedBy<AgentValidator>().LifestyleTransient());
-			Container.Register(Component.For<IIntegrationPointRepository>().Instance(
-				new IntegrationPointRepository(Container.Resolve<ICaseServiceContext>().RsapiService.RelativityObjectManager)));
 		}
 
 		public override void SuiteTeardown()

@@ -2,7 +2,6 @@
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
-using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;

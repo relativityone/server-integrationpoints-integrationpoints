@@ -141,7 +141,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 
 			IJobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(caseServiceContext, Helper);
 
-			IIntegrationPointRepository integrationPointRepository = new IntegrationPointRepository(caseServiceContext.RsapiService.RelativityObjectManager);
+			IIntegrationPointRepository integrationPointRepository = new IntegrationPointRepository(
+				caseServiceContext.RsapiService.RelativityObjectManager,
+				integrationPointSerializer,
+				Logger);
 
 			_integrationPointService = new IntegrationPointService(Helper, caseServiceContext, contextContainerFactory,
 				integrationPointSerializer, choiceQuery, jobManager, _jobHistoryService, jobHistoryErrorService, managerFactory,

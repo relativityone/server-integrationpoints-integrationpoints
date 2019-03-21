@@ -49,6 +49,25 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			_consoleBuilder = consoleBuilder;
 		}
 
+		public override FieldCollection RequiredFields => new FieldCollection
+		{
+			new Field(IntegrationPointFields.Name)
+		};
+
+		public override void OnButtonClick(ConsoleButton consoleButton)
+		{
+		}
+
+		public override Console GetConsole(PageEvent pageEvent)
+		{
+			ButtonStateDTO buttonState = ButtonStateBuilder.CreateButtonState(Application.ArtifactID, ActiveArtifact.ArtifactID);
+			var integrationPointName = ActiveArtifact.Fields[IntegrationPointFields.Name].Value.Value.ToString();
+			OnClickEventDTO onClickEvents = OnClickEventConstructor.GetOnClickEvents(Application.ArtifactID, ActiveArtifact.ArtifactID,
+				integrationPointName, buttonState);
+
+			return _consoleBuilder.CreateConsole(buttonState, onClickEvents);
+		}
+
 		private IManagerFactory ManagerFactory
 		{
 			get
@@ -78,15 +97,19 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				{
 					var logger = Helper.GetLoggerFactory().GetLogger();
 					IRelativityObjectManager objectManager = CreateObjectManager(Helper, Helper.GetActiveCaseID());
-					IIntegrationPointRepository integrationPointRepository = CreateIntegrationPointRepository(objectManager);
+					IIntegrationPointSerializer integrationPointSerializer = CreateIntegrationPointSerializer(logger);
+					IIntegrationPointRepository integrationPointRepository =
+						CreateIntegrationPointRepository(objectManager, integrationPointSerializer, logger);
 
 					IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(Helper);
 					IQueueManager queueManager = ManagerFactory.CreateQueueManager(contextContainer);
 					IJobHistoryManager jobHistoryManager = ManagerFactory.CreateJobHistoryManager(contextContainer);
 					IStateManager stateManager = ManagerFactory.CreateStateManager();
 					IRepositoryFactory repositoryFactory = new RepositoryFactory(Helper, Helper.GetServicesManager());
-					IIntegrationPointPermissionValidator permissionValidator = 
-						new IntegrationPointPermissionValidator(new[] { new ViewErrorsPermissionValidator(repositoryFactory) }, new IntegrationPointSerializer(logger));
+					IIntegrationPointPermissionValidator permissionValidator =
+						new IntegrationPointPermissionValidator(new[] 
+							{ new ViewErrorsPermissionValidator(repositoryFactory) }, 
+							new IntegrationPointSerializer(logger));
 					IPermissionRepository permissionRepository = new PermissionRepository(Helper, Helper.GetActiveCaseID());
 					IProviderTypeService providerTypeService = new ProviderTypeService(objectManager);
 					_buttonStateBuilder = new ButtonStateBuilder(providerTypeService, queueManager, jobHistoryManager, stateManager,
@@ -101,9 +124,14 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			return new RelativityObjectManagerFactory(helper).CreateRelativityObjectManager(workspaceId);
 		}
 
-		private IIntegrationPointRepository CreateIntegrationPointRepository(IRelativityObjectManager objectManager)
+		private IIntegrationPointSerializer CreateIntegrationPointSerializer(IAPILog logger)
 		{
-			return new IntegrationPointRepository(objectManager);
+			return new IntegrationPointSerializer(logger);
+		}
+
+		private IIntegrationPointRepository CreateIntegrationPointRepository(IRelativityObjectManager objectManager, IIntegrationPointSerializer serializer, IAPILog logger)
+		{
+			return new IntegrationPointRepository(objectManager, serializer, logger);
 		}
 
 		private IOnClickEventConstructor OnClickEventConstructor
@@ -117,25 +145,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				}
 				return _onClickEventConstructor;
 			}
-		}
-
-		public override FieldCollection RequiredFields => new FieldCollection
-		{
-			new Field(IntegrationPointFields.Name)
-		};
-
-		public override void OnButtonClick(ConsoleButton consoleButton)
-		{
-		}
-
-		public override Console GetConsole(PageEvent pageEvent)
-		{
-			ButtonStateDTO buttonState = ButtonStateBuilder.CreateButtonState(Application.ArtifactID, ActiveArtifact.ArtifactID);
-			var integrationPointName = ActiveArtifact.Fields[IntegrationPointFields.Name].Value.Value.ToString();
-			OnClickEventDTO onClickEvents = OnClickEventConstructor.GetOnClickEvents(Application.ArtifactID, ActiveArtifact.ArtifactID,
-				integrationPointName, buttonState);
-
-			return _consoleBuilder.CreateConsole(buttonState, onClickEvents);
 		}
 	}
 }

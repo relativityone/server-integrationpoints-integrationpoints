@@ -46,6 +46,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Castle.Windsor, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Users\piotr.szmigielski\.nuget\packages\castle.windsor\3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
+    </Reference>
     <Reference Include="kCura, Version=10.1.33.3, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\kCura\lib\net462\kCura.dll</HintPath>
@@ -131,6 +135,7 @@
     <Compile Include="Facades\Implementations\TestCases\CollectionFieldValueTestCase.cs" />
     <Compile Include="Facades\Implementations\TestCases\CollectionFieldValueTestCases.cs" />
     <Compile Include="Helpers\MatchHelper.cs" />
+    <Compile Include="Installers\RepositoryRegistrationTests.cs" />
     <Compile Include="Repositories\AuditRepositoryTests.cs" />
     <Compile Include="Repositories\CaseRepositoryTests.cs" />
     <Compile Include="Repositories\FieldRepositoryTests.cs" />

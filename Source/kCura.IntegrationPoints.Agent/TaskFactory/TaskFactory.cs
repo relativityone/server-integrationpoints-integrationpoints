@@ -20,9 +20,12 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 		private readonly ITaskFactoryJobHistoryServiceFactory _jobHistoryServiceFactory;
 		private readonly IIntegrationPointRepository _integrationPointRepository;
 
-		public TaskFactory(IAgentHelper helper, ITaskExceptionMediator taskExceptionMediator,
-			IJobSynchronizationChecker jobSynchronizationChecker, ITaskFactoryJobHistoryServiceFactory jobHistoryServiceFactory,
-			IWindsorContainer container, IIntegrationPointRepository integrationPointRepository)
+		public TaskFactory(IAgentHelper helper, 
+			ITaskExceptionMediator taskExceptionMediator,
+			IJobSynchronizationChecker jobSynchronizationChecker, 
+			ITaskFactoryJobHistoryServiceFactory jobHistoryServiceFactory,
+			IWindsorContainer container, 
+			IIntegrationPointRepository integrationPointRepository)
 		{
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<TaskFactory>();
 			_taskExceptionMediator = taskExceptionMediator;
@@ -100,7 +103,8 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 		private IntegrationPoint GetIntegrationPoint(Job job)
 		{
 			LogGetIntegrationPointStart(job);
-			IntegrationPoint integrationPoint = _integrationPointRepository.Read(job.RelatedObjectArtifactID);
+			IntegrationPoint integrationPoint =
+				_integrationPointRepository.ReadAsync(job.RelatedObjectArtifactID).GetAwaiter().GetResult();
 
 			if (integrationPoint == null)
 			{

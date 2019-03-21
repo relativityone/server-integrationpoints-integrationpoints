@@ -95,7 +95,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 
 			_dataTransferLocationMigration.Migrate();
 
-			Data.IntegrationPoint integrationPointAfterMigration = IntegrationPointRepository.Read(_savedIntegrationPointId);
+			Data.IntegrationPoint integrationPointAfterMigration =
+				IntegrationPointRepository.ReadAsync(_savedIntegrationPointId).GetAwaiter().GetResult();
 			Dictionary<string, object> deserializedSourceConfigurationAfterMigration =
 				_serializer.Deserialize<Dictionary<string, object>>(integrationPointAfterMigration.SourceConfiguration);
 

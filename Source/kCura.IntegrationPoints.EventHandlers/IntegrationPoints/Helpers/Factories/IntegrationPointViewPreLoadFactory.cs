@@ -15,7 +15,12 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
 		public static IIntegrationPointViewPreLoad Create(IEHHelper helper, IIntegrationPointBaseFieldsConstants integrationPointBaseFieldsConstants)
 		{
 			ICaseServiceContext caseServiceContext = ServiceContextFactory.CreateCaseServiceContext(helper, helper.GetActiveCaseID());
-			IIntegrationPointRepository integrationPointRepository = new IntegrationPointRepository(caseServiceContext.RsapiService.RelativityObjectManager);
+			IAPILog logger = helper.GetLoggerFactory().GetLogger();
+			IIntegrationPointSerializer integrationPointSerializer = new IntegrationPointSerializer(logger);
+			IIntegrationPointRepository integrationPointRepository = new IntegrationPointRepository(
+				caseServiceContext.RsapiService.RelativityObjectManager,
+				integrationPointSerializer,
+				logger);
 
 			IFederatedInstanceModelFactory federatedInstanceModelFactory;
 			if (integrationPointBaseFieldsConstants.Name == IntegrationPointFieldGuids.Name)

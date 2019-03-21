@@ -196,7 +196,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		protected IntegrationPointModel RefreshIntegrationModel(IntegrationPointModel model)
 		{
-			IntegrationPoints.Data.IntegrationPoint ip = IntegrationPointRepository.Read(model.ArtifactID);
+			IntegrationPoints.Data.IntegrationPoint ip = IntegrationPointRepository.ReadAsync(model.ArtifactID)
+				.GetAwaiter().GetResult();
 			return IntegrationPointModel.FromIntegrationPoint(ip);
 		}
 
@@ -214,7 +215,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			Relativity.Client.DTOs.Choice jobStatusChoice = null, bool jobEnded = false)
 		{
 			IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
-			IntegrationPoints.Data.IntegrationPoint integrationPoint = IntegrationPointRepository.Read(integrationPointArtifactId);
+			IntegrationPoints.Data.IntegrationPoint integrationPoint =
+				IntegrationPointRepository.ReadAsync(integrationPointArtifactId).GetAwaiter().GetResult();
 			JobHistory jobHistory = jobHistoryService.CreateRdo(integrationPoint, batchInstance, jobTypeChoice, DateTime.Now);
 
 			if (jobEnded)

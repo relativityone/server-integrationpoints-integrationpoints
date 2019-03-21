@@ -47,6 +47,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 		private const string _RETRY_AUDIT_MESSAGE = "Retry error was attempted.";
 		private const string _RUN_AUDIT_MESSAGE = "Transfer was attempted.";
 		private const string _STOP_AUDIT_MESSAGE = "Stop transfer was attempted.";
+		private const string _EMPTY_SECURED_CONFIG = "{}";
+
 		private readonly string _userIdString = _USERID.ToString();
 
 		[SetUp]
@@ -94,7 +96,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			var integrationPoint = new Data.IntegrationPoint()
 			{
 				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId }),
-				SecuredConfiguration = "{}"
+				SecuredConfiguration = _EMPTY_SECURED_CONFIG
 			};
 			const string expectedErrorMessage = @"Unable to determine the user id. Please contact your system administrator.";
 
@@ -102,7 +104,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 
 			_helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId, _CREDENTIALS).Returns(_targetHelper);
 
-			_integrationPointRepository.Read(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
+			_integrationPointRepository.ReadAsync(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
 
 			_integrationPointService.When(
 				service => service.RunIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, 0))
@@ -137,12 +139,12 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			var integrationPoint = new Data.IntegrationPoint()
 			{
 				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId }),
-				SecuredConfiguration = "{}"
+				SecuredConfiguration = _EMPTY_SECURED_CONFIG
 			};
 
 			_helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId, _CREDENTIALS).Returns(_targetHelper);
 
-			_integrationPointRepository.Read(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
+			_integrationPointRepository.ReadAsync(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
 
 			_integrationPointService.When(
 				service => service.RunIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, _USERID))
@@ -164,11 +166,11 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			var integrationPoint = new Data.IntegrationPoint()
 			{
 				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId }),
-				SecuredConfiguration = "{}"
+				SecuredConfiguration = _EMPTY_SECURED_CONFIG
 			};
 
 			_helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId, _CREDENTIALS).Returns(_targetHelper);
-			_integrationPointRepository.Read(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
+			_integrationPointRepository.ReadAsync(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
 			_instance.User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(0)));
 
 			// Act
@@ -192,11 +194,11 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			var integrationPoint = new Data.IntegrationPoint()
 			{
 				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId }),
-				SecuredConfiguration = "{}"
+				SecuredConfiguration = _EMPTY_SECURED_CONFIG
 			};
 
 			_helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId, _CREDENTIALS).Returns(_targetHelper);
-			_integrationPointRepository.Read(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
+			_integrationPointRepository.ReadAsync(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
 			_instance.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
 
 			// Act
@@ -220,11 +222,11 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			var integrationPoint = new Data.IntegrationPoint()
 			{
 				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId }),
-				SecuredConfiguration = "{}"
+				SecuredConfiguration = _EMPTY_SECURED_CONFIG
 			};
 
 			_instance.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
-			_integrationPointRepository.Read(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
+			_integrationPointRepository.ReadAsync(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
 			_helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId, integrationPoint.SecuredConfiguration).Returns(_targetHelper);
 
 			// Act
@@ -246,14 +248,14 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			var integrationPoint = new Data.IntegrationPoint()
 			{
 				DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId }),
-				SecuredConfiguration = "{}"
+				SecuredConfiguration = _EMPTY_SECURED_CONFIG
 			};
 
 			_instance.User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(0)));
 			var exception = new Exception(Core.Constants.IntegrationPoints.NO_USERID);
 			_integrationPointService.When(x => x.RetryIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, 0))
 				.Throw(exception);
-			_integrationPointRepository.Read(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
+			_integrationPointRepository.ReadAsync(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
 			_helperFactory.CreateTargetHelper(_helper, federatedInstanceArtifactId, integrationPoint.SecuredConfiguration).Returns(_targetHelper);
 
 			// Act

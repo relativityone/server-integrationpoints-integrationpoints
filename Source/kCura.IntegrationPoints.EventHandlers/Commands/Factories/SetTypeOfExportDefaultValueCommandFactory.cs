@@ -92,7 +92,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 			IValidationExecutor validationExecutor = new ValidationExecutor(ipValidator, permissionValidator, helper);
 
 			IJobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(caseServiceContext, helper);
-			IIntegrationPointRepository integrationPointRepository = new IntegrationPointRepository(caseServiceContext.RsapiService.RelativityObjectManager);
+			IIntegrationPointRepository integrationPointRepository = new IntegrationPointRepository(
+				caseServiceContext.RsapiService.RelativityObjectManager,
+				integrationPointSerializer,
+				logger);
 			IIntegrationPointService integrationPointService = new IntegrationPointService(helper, caseServiceContext,
 				contextContainerFactory, integrationPointSerializer, choiceQuery, jobManager, jobHistoryService,
 				jobHistoryErrorService, managerFactory, validationExecutor, providerTypeService, messageService, integrationPointRepository);

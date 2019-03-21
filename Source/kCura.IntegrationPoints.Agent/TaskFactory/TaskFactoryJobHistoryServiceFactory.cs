@@ -1,5 +1,4 @@
-﻿using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Core.Factories;
+﻿using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;

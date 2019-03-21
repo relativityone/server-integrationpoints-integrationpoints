@@ -22,7 +22,8 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 		private readonly IIntegrationPointPermissionValidator _permissionValidator;
 
 		public ButtonStateBuilder(IProviderTypeService providerTypeService, 
-			IQueueManager queueManager, IJobHistoryManager jobHistoryManager,
+			IQueueManager queueManager, 
+			IJobHistoryManager jobHistoryManager,
 			IStateManager stateManager,
 			IPermissionRepository permissionRepository, 
 			IIntegrationPointPermissionValidator permissionValidator,
@@ -39,8 +40,10 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
 		public ButtonStateDTO CreateButtonState(int applicationArtifactId, int integrationPointArtifactId)
 		{
-			IntegrationPoint integrationPoint = _integrationPointRepository.Read(integrationPointArtifactId);
-			ProviderType providerType = _providerTypeService.GetProviderType(integrationPoint.SourceProvider.Value, integrationPoint.DestinationProvider.Value);
+			IntegrationPoint integrationPoint =
+				_integrationPointRepository.ReadAsync(integrationPointArtifactId).GetAwaiter().GetResult();
+			ProviderType providerType = _providerTypeService.GetProviderType(integrationPoint.SourceProvider.Value,
+				integrationPoint.DestinationProvider.Value);
 
 			ValidationResult jobHistoryErrorViewPermissionCheck = _permissionValidator.ValidateViewErrors(applicationArtifactId);
 

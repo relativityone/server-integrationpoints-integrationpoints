@@ -156,7 +156,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 					JobContextProvider jobContextProvider = k.Resolve<JobContextProvider>();
 					int integrationPointId = jobContextProvider.Job.RelatedObjectArtifactID;
 					IIntegrationPointRepository integrationPointRepository = k.Resolve<IIntegrationPointRepository>();
-					IntegrationPoint integrationPoint = integrationPointRepository.Read(integrationPointId);
+					IntegrationPoint integrationPoint = integrationPointRepository.ReadAsync(integrationPointId).GetAwaiter().GetResult();
 					if (integrationPoint == null)
 					{
 						throw new ArgumentException("Failed to retrieved corresponding Integration Point.");

@@ -49,7 +49,10 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		{
 			IJobHistoryService jobHistoryService = CreateJobHistoryService(helper, targetHelper);
 			IJobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(_caseServiceContext, helper);
-			IIntegrationPointRepository integrationPointRepository = new IntegrationPointRepository(_caseServiceContext.RsapiService.RelativityObjectManager);
+			IIntegrationPointRepository integrationPointRepository = new IntegrationPointRepository(
+				_caseServiceContext.RsapiService.RelativityObjectManager, 
+				_serializer, 
+				helper.GetLoggerFactory().GetLogger());
 			return new IntegrationPointService(
 				helper,
 				_caseServiceContext,

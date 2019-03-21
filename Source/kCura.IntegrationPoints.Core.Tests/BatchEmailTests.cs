@@ -86,7 +86,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 				EmailNotificationRecipients = string.Empty,
 			};
 
-			_integrationPointRepository.Read(_INTEGRATION_POINT_ID).Returns(integrationPoint);
+			_integrationPointRepository.ReadAsync(_INTEGRATION_POINT_ID).Returns(integrationPoint);
 
 			// ACT + ASSERT
 			Assert.DoesNotThrow(()=> { _testInstance.OnJobComplete(job); }, "Sending of email logic should have been skipped");

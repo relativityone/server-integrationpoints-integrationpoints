@@ -5,7 +5,6 @@ using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
-using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
@@ -97,7 +96,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
 			};
 			IntegrationPointModel integrationModelCreated = CreateOrUpdateIntegrationPoint(integrationModel);
-			Data.IntegrationPoint integrationPoint = IntegrationPointRepository.Read(integrationModelCreated.ArtifactID);
+			Data.IntegrationPoint integrationPoint = IntegrationPointRepository.ReadAsync(integrationModelCreated.ArtifactID).GetAwaiter().GetResult();
 			JobHistory jobHistory = _jobHistoryService.GetOrCreateScheduledRunHistoryRdo(integrationPoint, Guid.NewGuid(), DateTime.Now);
 
 			string destinationConfig = AppendWebAPIPathToImportSettings(integrationModelCreated.Destination);

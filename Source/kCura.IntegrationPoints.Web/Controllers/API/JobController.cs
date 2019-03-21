@@ -61,7 +61,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			AuditAction(payload, _RUN_AUDIT_MESSAGE);
 
-			IntegrationPoint integrationPoint = _integrationPointRepository.Read(Convert.ToInt32(payload.ArtifactId));
+			IntegrationPoint integrationPoint = _integrationPointRepository.ReadAsync(Convert.ToInt32(payload.ArtifactId))
+				.GetAwaiter().GetResult();
 			DestinationConfiguration importSettings = JsonConvert.DeserializeObject<DestinationConfiguration>(integrationPoint.DestinationConfiguration);
 
 			// this validation was introduced due to an issue with ARMed workspaces (REL-171985)
@@ -90,7 +91,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			AuditAction(payload, _RETRY_AUDIT_MESSAGE);
 
-			IntegrationPoint integrationPoint = _integrationPointRepository.Read(Convert.ToInt32(payload.ArtifactId));
+			IntegrationPoint integrationPoint = _integrationPointRepository.ReadAsync(Convert.ToInt32(payload.ArtifactId))
+				.GetAwaiter().GetResult();
 			DestinationConfiguration importSettings = JsonConvert.DeserializeObject<DestinationConfiguration>(integrationPoint.DestinationConfiguration);
 			IHelper targetHelper = _helperFactory.CreateTargetHelper(_helper, importSettings.FederatedInstanceArtifactId, integrationPoint.SecuredConfiguration);
 

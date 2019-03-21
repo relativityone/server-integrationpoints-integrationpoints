@@ -177,7 +177,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_mappings = new List<FieldMap>();
 			_updateStatusType = new JobHistoryErrorDTO.UpdateStatusType();
 
-			_integrationPointRepository.Read(job.RelatedObjectArtifactID).Returns(_integrationPoint);
+			_integrationPointRepository.ReadAsync(job.RelatedObjectArtifactID).Returns(_integrationPoint);
 			_serializer.Deserialize<SourceConfiguration>(_integrationPoint.SourceConfiguration).Returns(_configuration);
 			_serializer.Deserialize<TaskParameters>(job.JobDetails).Returns(_taskParameters);
 			_jobHistoryService.GetOrCreateScheduledRunHistoryRdo(_integrationPoint, _taskParameters.BatchInstance, Arg.Any<DateTime>()).Returns(_jobHistory);
@@ -228,7 +228,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		public void Execute_FailToLoadIntegrationPointRDO()
 		{
 			// ARRANGE
-			_integrationPointRepository.Read(_job.RelatedObjectArtifactID).Returns((Data.IntegrationPoint) null);
+			_integrationPointRepository.ReadAsync(_job.RelatedObjectArtifactID).Returns((Data.IntegrationPoint) null);
 
 			// ACT
 			_instance.Execute(_job);
