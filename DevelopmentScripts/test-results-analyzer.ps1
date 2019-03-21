@@ -49,7 +49,7 @@ function format_to_xml_parsable_form($rawcontent)
 
 function get_rid_of_quotes_from_attribute_values($rawcontent)
 {
-    $matchesToReplace = Select-String '\(.*?(?<!\))\".*?\".*?\)' -input $rawcontent -AllMatches | Foreach {$_.matches.Value}
+    $matchesToReplace = Select-String '\(.*?(?<!\))\".*?\".*?\)' -input $rawcontent -AllMatches | ForEach-Object {$_.matches.Value}
 
     foreach ($match in $matchesToReplace)
     {
@@ -65,7 +65,7 @@ function find_categories($testCaseNode)
     $node = $testCaseNode
     while ($node.type -ne 'TestSuite') 
 	{
-        $categories += $node.properties.property | where name -eq "Category" | select -ExpandProperty value
+        $categories += $node.properties.property | Where-Object name -eq "Category" | Select-Object -ExpandProperty value
         $node = $node.ParentNode
     }
     $categories
@@ -80,7 +80,7 @@ function find_message($testCaseNode)
         {
             $message = $testCase.output.'#cdata-section'
         }
-        else if($testCase.result -eq "Failed")
+        elseif($testCase.result -eq "Failed")
         {
             $failure = $testCase.failure
             $message = "$($failure.message.'#cdata-section')$($failure.'stack-trace'.'#cdata-section')"
