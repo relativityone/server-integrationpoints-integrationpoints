@@ -22,7 +22,7 @@ namespace Relativity.Sync
 
 		public async Task ExecuteAsync(CancellationToken token)
 		{
-			await ExecuteAsync(new EmptyProgress(), token).ConfigureAwait(false);
+			await ExecuteAsync(new EmptyProgress<SyncProgress>(), token).ConfigureAwait(false);
 		}
 
 		public async Task ExecuteAsync(IProgress<SyncProgress> progress, CancellationToken token)
@@ -57,7 +57,7 @@ namespace Relativity.Sync
 
 		public async Task RetryAsync(CancellationToken token)
 		{
-			await RetryAsync(new EmptyProgress(), token).ConfigureAwait(false);
+			await RetryAsync(new EmptyProgress<SyncProgress>(), token).ConfigureAwait(false);
 		}
 
 		public Task RetryAsync(IProgress<SyncProgress> progress, CancellationToken token)

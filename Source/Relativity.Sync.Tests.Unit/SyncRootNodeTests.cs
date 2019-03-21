@@ -26,7 +26,7 @@ namespace Relativity.Sync.Tests.Unit
 
 			_childNode = new Mock<INode<SyncExecutionContext>>();
 
-			IProgress<SyncProgress> progress = new EmptyProgress();
+			IProgress<SyncProgress> progress = new EmptyProgress<SyncProgress>();
 			_syncExecutionContext = new SyncExecutionContext(progress, CancellationToken.None);
 
 			_instance = new SyncRootNode(_command.Object);
