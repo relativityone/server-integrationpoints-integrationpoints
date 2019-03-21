@@ -7,7 +7,9 @@ using Relativity.Services.Objects.DataContracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using Relativity.Kepler.Transport;
 using FieldRef = Relativity.Services.Objects.DataContracts.FieldRef;
 using QueryResult = Relativity.Services.Objects.DataContracts.QueryResult;
 using RelativityObjectRef = Relativity.Services.Objects.DataContracts.RelativityObjectRef;
@@ -370,6 +372,55 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
+		public Task<System.IO.Stream> StreamLongTextAsync(
+			int relativityObjectArtifactId,
+			FieldRef longTextFieldRef,
+			ExecutionIdentity executionIdentity)
+		{
+			try
+			{
+				using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(executionIdentity))
+				{
+					var exportObject = new RelativityObjectRef() { ArtifactID = relativityObjectArtifactId };
+					IKeplerStream keplerStream = client.StreamLongTextAsync(
+							_workspaceArtifactId,
+							exportObject,
+							longTextFieldRef)
+						.GetAwaiter()
+						.GetResult();
+					return keplerStream.GetStreamAsync();
+				}
+			}
+			catch (IntegrationPointsException)
+			{
+				throw;
+			}
+			catch (Exception ex)
+			{
+				string message = GetStreamLongTextAsyncErrorMessage(
+					_workspaceArtifactId,
+					relativityObjectArtifactId,
+					longTextFieldRef,
+					executionIdentity);
+				throw LogObjectManagerException(message, ex);
+			}
+		}
+
+		private string GetStreamLongTextAsyncErrorMessage(
+			int workspaceArtifactID,
+			int relativityObjectArtifactId,
+			FieldRef longTextFieldRef,
+			ExecutionIdentity executionIdentity)
+		{
+			var msgBuilder = new StringBuilder();
+			msgBuilder.Append($"Error occurred when calling {nameof(StreamLongTextAsync)} method. ");
+			msgBuilder.Append($"Workspace: ({workspaceArtifactID}) ");
+			msgBuilder.Append($"ExportObject artifact id: ({relativityObjectArtifactId}) ");
+			msgBuilder.Append($"Long text field ({longTextFieldRef?.Name}) artifact id: ({longTextFieldRef?.ArtifactID}) ");
+			msgBuilder.Append($"Execution identity: {executionIdentity}");
+			return msgBuilder.ToString();
+		}
+
 		private static void BootstrapQuery<T>(QueryRequest q, bool noFields) where T : BaseRdo, new()
 		{
 			T rdo = new T();
@@ -505,6 +556,16 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					ArtifactID = rdo.ParentArtifactId.Value
 				};
 			}
+		}
+
+		private IntegrationPointsException LogObjectManagerException(string message, Exception ex)
+		{
+			_logger.LogError(ex, message);
+			return new IntegrationPointsException(message, ex)
+			{
+				ShouldAddToErrorsTab = true,
+				ExceptionSource = IntegrationPointsExceptionSource.KEPLER
+			};
 		}
 
 		private IntegrationPointsException LogObjectManagerException(string operationName, string typeName, Exception ex)

@@ -10,6 +10,8 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using System;
 using System.Threading.Tasks;
+using Moq;
+using Relativity.Kepler.Transport;
 
 namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 {
@@ -481,6 +483,27 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.Implementations
 			{
 				Assert.AreEqual(exception, ex.InnerException);
 			}
+		}
+
+		[Test]
+		public async Task StreamLongTextAsync_ShouldReturnSameResultAsObjectManager()
+		{
+			//arrange
+			const int workspaceId = 101;
+			var relativityObjectRef = new RelativityObjectRef();
+			var fieldRef = new FieldRef();
+			IKeplerStream result = new Mock<IKeplerStream>().Object;
+
+			_objectManager.StreamLongTextAsync(
+				Arg.Any<int>(),
+				Arg.Any<RelativityObjectRef>(),
+				Arg.Any<FieldRef>()).Returns(Task.FromResult(result));
+
+			//act
+			IKeplerStream actualResult = await _sut.StreamLongTextAsync(workspaceId, relativityObjectRef, fieldRef);
+
+			//assert
+			Assert.AreEqual(result, actualResult);
 		}
 	}
 }

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Common.Constants;
+using Relativity.Kepler.Transport;
 using IObjectManager = Relativity.Services.Objects.IObjectManager;
 
 namespace kCura.IntegrationPoints.Data.Facades.Implementations
@@ -76,6 +77,14 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 					.ConfigureAwait(false);
 			CompleteResultWithEventHandlers(result.EventHandlerStatuses, startedInstrumentation);
 			return result;
+		}
+
+		public Task<IKeplerStream> StreamLongTextAsync(int workspaceArtifactID, RelativityObjectRef exportObject, FieldRef longTextField)
+		{
+			return _objectManager.Value.StreamLongTextAsync(
+				workspaceArtifactID,
+				exportObject,
+				longTextField);
 		}
 
 		private void CompleteResultWithEventHandlers(List<EventHandlerStatus> eventHandlerStatuses,
