@@ -12,15 +12,14 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Executors;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Logging;
 
 namespace Relativity.Sync.Tests.Unit.Executors
 {
 	[TestFixture]
 	public sealed class DestinationWorkspaceTagRepositoryTests
 	{
-		private Mock<ISourceServiceFactoryForUser> _serviceFactory;
 		private Mock<IFederatedInstance> _federatedInstance;
-		private Mock<ISyncLog> _logger;
 		private Mock<ITagNameFormatter> _tagNameFormatter;
 		private Mock<IObjectManager> _objectManager;
 
@@ -30,15 +29,14 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[SetUp]
 		public void SetUp()
 		{
-			_serviceFactory = new Mock<ISourceServiceFactoryForUser>();
+			var serviceFactory = new Mock<ISourceServiceFactoryForUser>();
 			_federatedInstance = new Mock<IFederatedInstance>();
-			_logger = new Mock<ISyncLog>();
 			_objectManager = new Mock<IObjectManager>();
 			_tagNameFormatter = new Mock<ITagNameFormatter>();
 			_tagNameFormatter.Setup(x => x.FormatWorkspaceDestinationTagName(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())).Returns("foo bar");
-			_serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
+			serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
 
-			_sut = new DestinationWorkspaceTagRepository(_serviceFactory.Object, _federatedInstance.Object, _tagNameFormatter.Object, _logger.Object);
+			_sut = new DestinationWorkspaceTagRepository(serviceFactory.Object, _federatedInstance.Object, _tagNameFormatter.Object, new EmptyLogger());
 		}
 
 		[Test]
