@@ -490,10 +490,10 @@ def downloadAndSetUpBrowser()
         case 'firefox':
             //Do not download firefox. Use the version installed on node.
         break
-        case 'chrome'
+        case 'chrome':
             updateChromeToLatestVersion()
         break
-        default
+        default:
             echo "No browser selected. Using chrome"
             updateChromeToLatestVersion()
         break
