@@ -24,7 +24,7 @@ function store_tests_results($branch_id, $build_name, $test_type, $test_results_
 		    TestType = $test_type
 		    Duration = $testCase.duration
 		    Categories = @(find_categories $testCase)
-		    Message = $testCase.output.'#cdata-section'
+		    Message = @(find_message $testCase)
 	    } | ConvertTo-Json
 
         $request = Invoke-WebRequest -Uri $url -UseBasicParsing -ContentType "application/json" -Method POST -Body $body
@@ -69,4 +69,26 @@ function find_categories($testCaseNode)
         $node = $node.ParentNode
     }
     $categories
+}
+
+function find_message($testCaseNode)
+{
+    $message = ""
+    try
+    {
+        if($testCase.result -eq "Passed")
+        {
+            $message = $testCase.output.'#cdata-section'
+        }
+        else if($testCase.result -eq "Failed")
+        {
+            $failure = $testCase.failure
+            $message = "$($failure.message.'#cdata-section')$($failure.'stack-trace'.'#cdata-section')"
+        }
+    }
+    catch
+    {
+        Write-Host "Failed to find message of test case: $($_.Exception.Message)"
+    }
+    $message
 }
