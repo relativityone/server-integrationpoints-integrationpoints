@@ -63,8 +63,10 @@ namespace Relativity.Sync.Executors
 			{
 				int federatedInstanceId = await _federatedInstance.GetInstanceIdAsync().ConfigureAwait(false);
 
-				// TODO: We use -1 as the instance ID for the local instance, but RIP uses NULL, so we have to use NULL instead in that case.
-				// TODO: Once the Sync code is entirely in this project, this should be changed to just use -1.
+#pragma warning disable S1135 // Track uses of "TODO" tags
+				// TODO REL-304544: We use -1 as the instance ID for the local instance, but RIP uses NULL, so we have to use NULL instead in that case.
+				// TODO REL-304544: Once the Sync code is entirely in this project, this should be changed to just use -1.
+#pragma warning restore S1135 // Track uses of "TODO" tags
 				string federatedInstanceIdSearchTerm = federatedInstanceId == -1
 					? $"NOT '{_DESTINATION_INSTANCE_ARTIFACTID_GUID}' ISSET"
 					: $"'{_DESTINATION_INSTANCE_ARTIFACTID_GUID}' == {federatedInstanceId}";
@@ -113,8 +115,10 @@ namespace Relativity.Sync.Executors
 					sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, destinationWorkspaceName);
 			string federatedInstanceName = await _federatedInstance.GetInstanceNameAsync().ConfigureAwait(false);
 
-			// TODO: We use -1 as the instance ID for the local instance, but RIP uses NULL, so we have to use NULL instead in that case.
-			// TODO: Once the Sync code is entirely in this project, this should be changed to just use -1.
+#pragma warning disable S1135 // Track uses of "TODO" tags
+			// TODO REL-304544: We use -1 as the instance ID for the local instance, but RIP uses NULL, so we have to use NULL instead in that case.
+			// TODO REL-304544: Once the Sync code is entirely in this project, this should be changed to just use -1.
+#pragma warning restore S1135 // Track uses of "TODO" tags
 			int rawFederatedInstanceId = await _federatedInstance.GetInstanceIdAsync().ConfigureAwait(false);
 			int? federatedInstanceId = rawFederatedInstanceId == -1 ? null : (int?) rawFederatedInstanceId;
 

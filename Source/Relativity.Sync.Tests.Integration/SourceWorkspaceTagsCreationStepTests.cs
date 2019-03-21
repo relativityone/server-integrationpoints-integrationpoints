@@ -49,7 +49,6 @@ namespace Relativity.Sync.Tests.Integration
 		[SetUp]
 		public void MySetUp()
 		{
-			// TODO: Refactor this setup once the IContainerFactory changes are merged in.
 			ContainerBuilder containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
 			IntegrationTestsContainerBuilder.RegisterStubsForIntegrationTests(containerBuilder);
 
@@ -70,7 +69,9 @@ namespace Relativity.Sync.Tests.Integration
 			_executor = container.Resolve<IExecutor<ISourceWorkspaceTagsCreationConfiguration>>();
 		}
 
-		// TODO: Write integration tests to ensure we are querying for/setting NULL for DestinationInstanceArtifactID when it's -1
+#pragma warning disable S1135 // Track uses of "TODO" tags
+		// TODO REL-304544: Write integration tests to ensure we are querying for/setting NULL for DestinationInstanceArtifactID when it's -1
+#pragma warning restore S1135 // Track uses of "TODO" tags
 
 		[Test]
 		public void ItCreatesTagIfItDoesntExist()

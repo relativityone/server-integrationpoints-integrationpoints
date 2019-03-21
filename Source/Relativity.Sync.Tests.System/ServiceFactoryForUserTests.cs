@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using Moq;
 using NUnit.Framework;
@@ -14,12 +12,7 @@ using Relativity.Sync.Authentication;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
-using Relativity.Sync.Tests.System.Stub;
 using Relativity.Sync.Tests.System.Stubs;
-using TextCondition = kCura.Relativity.Client.TextCondition;
-using TextConditionEnum = kCura.Relativity.Client.TextConditionEnum;
-using User = kCura.Relativity.Client.DTOs.User;
-using UsernamePasswordCredentials = kCura.Relativity.Client.UsernamePasswordCredentials;
 
 namespace Relativity.Sync.Tests.System
 {
@@ -35,41 +28,6 @@ namespace Relativity.Sync.Tests.System
 			_servicesManager = new ServicesManagerStub();
 			_provideServiceUris = new ProvideServiceUrisStub();
 			_workspace = CreateWorkspaceAsync().Result;
-		}
-
-		[Test]
-		public async Task UserShouldNotHavePermissionToWorkspace()
-		{
-			const string groupName = "Test Group";
-			const string userName = "testuser@relativity.com";
-			const string password = "Test1234!";
-			SetUpGroup(groupName);
-			SetUpUser(userName, password, groupName);
-			AddGroupToWorkspace(groupName);
-
-			Mock<IUserContextConfiguration> userContextConfiguration = new Mock<IUserContextConfiguration>();
-			userContextConfiguration.SetupGet(x => x.ExecutingUserId).Returns(UserHelpers.FindUserArtifactID(Client, userName));
-
-			IAuthTokenGenerator authTokenGenerator = new OAuth2TokenGenerator(new OAuth2ClientFactory(_servicesManager, new EmptyLogger()),
-				new TokenProviderFactoryFactory(), _provideServiceUris, new EmptyLogger());
-			PermissionRef permissionRef = new PermissionRef
-			{
-				ArtifactType = new ArtifactTypeIdentifier((int)ArtifactType.Batch),
-				PermissionType = PermissionType.Edit
-			};
-
-			IDynamicProxyFactory dynamicProxyFactory = new DynamicProxyFactoryStub();
-			ServiceFactoryForUser sut = new ServiceFactoryForUser(userContextConfiguration.Object, _servicesManager, authTokenGenerator, dynamicProxyFactory, new ServiceFactoryFactory());
-			List<PermissionValue> permissionValues;
-			using (IPermissionManager permissionManager = await sut.CreateProxyAsync<IPermissionManager>().ConfigureAwait(false))
-			{
-				// ACT
-				permissionValues = await permissionManager.GetPermissionSelectedAsync(_workspace.ArtifactID, new List<PermissionRef> {permissionRef}).ConfigureAwait(false);
-			}
-
-			// ASSERT
-			bool hasPermission = permissionValues.All(x => x.Selected);
-			Assert.False(hasPermission);
 		}
 
 		private void SetUpGroup(string groupName)
@@ -119,6 +77,41 @@ namespace Relativity.Sync.Tests.System
 				Group group = GroupHelpers.GroupGetOrCreateByName(Client, groupName);
 				PermissionHelpers.AddGroupToWorkspace(permissionManager, _workspace.ArtifactID, group);
 			}
+		}
+
+		[Test]
+		public async Task UserShouldNotHavePermissionToWorkspace()
+		{
+			const string groupName = "Test Group";
+			const string userName = "testuser@relativity.com";
+			const string password = "Test1234!";
+			SetUpGroup(groupName);
+			SetUpUser(userName, password, groupName);
+			AddGroupToWorkspace(groupName);
+
+			Mock<IUserContextConfiguration> userContextConfiguration = new Mock<IUserContextConfiguration>();
+			userContextConfiguration.SetupGet(x => x.ExecutingUserId).Returns(UserHelpers.FindUserArtifactID(Client, userName));
+
+			IAuthTokenGenerator authTokenGenerator = new OAuth2TokenGenerator(new OAuth2ClientFactory(_servicesManager, new EmptyLogger()),
+				new TokenProviderFactoryFactory(), _provideServiceUris, new EmptyLogger());
+			PermissionRef permissionRef = new PermissionRef
+			{
+				ArtifactType = new ArtifactTypeIdentifier((int) ArtifactType.Batch),
+				PermissionType = PermissionType.Edit
+			};
+
+			IDynamicProxyFactory dynamicProxyFactory = new DynamicProxyFactoryStub();
+			ServiceFactoryForUser sut = new ServiceFactoryForUser(userContextConfiguration.Object, _servicesManager, authTokenGenerator, dynamicProxyFactory, new ServiceFactoryFactory());
+			List<PermissionValue> permissionValues;
+			using (IPermissionManager permissionManager = await sut.CreateProxyAsync<IPermissionManager>().ConfigureAwait(false))
+			{
+				// ACT
+				permissionValues = await permissionManager.GetPermissionSelectedAsync(_workspace.ArtifactID, new List<PermissionRef> {permissionRef}).ConfigureAwait(false);
+			}
+
+			// ASSERT
+			bool hasPermission = permissionValues.All(x => x.Selected);
+			Assert.False(hasPermission);
 		}
 	}
 }
