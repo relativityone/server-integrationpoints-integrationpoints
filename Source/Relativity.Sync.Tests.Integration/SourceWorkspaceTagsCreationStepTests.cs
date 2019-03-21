@@ -172,7 +172,7 @@ namespace Relativity.Sync.Tests.Integration
 							{ _DESTINATION_WORKSPACE_NAME_FIELD_GUID, destinationWorkspaceName },
 							{ _DESTINATION_INSTANCE_NAME_FIELD_GUID, "This Instance" },
 							{ _DESTINATION_INSTANCE_ARTIFACTID_FIELD_GUID, instanceArtifactId },
-							{ _DESTINATION_INSTANCE_ARTIFACTID_FIELD_GUID, destinationWorkspaceArtifactID }
+							{ _DESTINATION_WORKSPACE_ARTIFACTID_FIELD_GUID, destinationWorkspaceArtifactID }
 						})
 					}
 				}

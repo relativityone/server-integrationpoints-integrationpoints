@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Relativity.API;
 using Relativity.Services.DataContracts.DTOs;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -17,7 +16,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 	public sealed class WorkspaceNameQueryTests
 	{
 		private Mock<ISourceServiceFactoryForUser> _serviceFactory;
-		private Mock<IAPILog> _logger;
+		private Mock<ISyncLog> _logger;
 
 		private WorkspaceNameQuery _sut;
 
@@ -25,7 +24,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		public void SetUp()
 		{
 			_serviceFactory = new Mock<ISourceServiceFactoryForUser>();
-			_logger = new Mock<IAPILog>();
+			_logger = new Mock<ISyncLog>();
 
 			_sut = new WorkspaceNameQuery(_serviceFactory.Object, _logger.Object);
 		}
