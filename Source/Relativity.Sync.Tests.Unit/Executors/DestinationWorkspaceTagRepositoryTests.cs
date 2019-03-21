@@ -25,6 +25,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private Mock<IObjectManager> _objectManager;
 
 		private DestinationWorkspaceTagRepository _sut;
+		private static readonly Guid _destinationInstanceArtifactIdGuid = new Guid("323458db-8a06-464b-9402-af2516cf47e0");
 
 		[SetUp]
 		public void SetUp()
@@ -188,7 +189,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Guid destinationWorkspaceNameGuid = new Guid("348d7394-2658-4da4-87d0-8183824adf98");
 			Guid destinationInstanceNameGuid = new Guid("909adc7c-2bb9-46ca-9f85-da32901d6554");
 			Guid destinationWorkspaceArtifactidGuid = new Guid("207e6836-2961-466b-a0d2-29974a4fad36");
-			Guid destinationInstanceArtifactidGuid = new Guid("323458db-8a06-464b-9402-af2516cf47e0");
 
 			const int tagArtifactId = 1;
 			const int sourceWorkspaceArtifactId = 2;
@@ -221,7 +221,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 					f => destinationWorkspaceNameGuid.Equals(f.Field.Guid) && string.Equals(f.Value, destinationWorkspaceName),
 					f => destinationWorkspaceArtifactidGuid.Equals(f.Field.Guid) && Equals(f.Value, destinationWorkspaceArtifactId),
 					f => destinationInstanceNameGuid.Equals(f.Field.Guid) && string.Equals(f.Value, destinationInstanceName),
-					f => destinationInstanceArtifactidGuid.Equals(f.Field.Guid) && Equals(f.Value, destinationInstanceArtifactId)))));
+					f => _destinationInstanceArtifactIdGuid.Equals(f.Field.Guid) && Equals(f.Value, destinationInstanceArtifactId)))));
 		}
 
 		private bool VerifyUpdateRequest(UpdateRequest request, int tagArtifactId, params Predicate<FieldRefValuePair>[] predicates)
@@ -259,6 +259,52 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			// assert
 			action.Should().Throw<DestinationWorkspaceTagRepositoryException>().WithInnerException<InvalidOperationException>();
+		}
+
+		[Test]
+		public async Task ItShouldBuildProperQueryForLocalInstance()
+		{
+			// ARRANGE
+			const int localInstanceId = -1;
+			const int sourceWorkspaceId = 123;
+			const int destinationWorkspaceId = 234;
+			
+			_federatedInstance.Setup(fi => fi.GetInstanceIdAsync()).ReturnsAsync(localInstanceId);
+			QueryResult queryResult = new QueryResult();
+			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), 
+				CancellationToken.None, It.IsAny<IProgress<ProgressReport>>())).ReturnsAsync(queryResult);
+
+			// ACT
+			await _sut.ReadAsync(sourceWorkspaceId, destinationWorkspaceId, CancellationToken.None).ConfigureAwait(false);
+
+			// ASSERT
+			string properQueryFragment = $"NOT '{_destinationInstanceArtifactIdGuid}' ISSET";
+			_objectManager.Verify(
+				om => om.QueryAsync(sourceWorkspaceId, It.Is<QueryRequest>(q => q.Condition.Contains(properQueryFragment)), 0, 1, CancellationToken.None, It.IsAny<IProgress<ProgressReport>>()),
+				Times.Once);
+		}
+
+		[Test]
+		public async Task ItShouldBuildProperQueryForFederatedInstance()
+		{
+			// ARRANGE
+			const int federatedInstanceId = 456;
+			const int sourceWorkspaceId = 123;
+			const int destinationWorkspaceId = 234;
+			
+			_federatedInstance.Setup(fi => fi.GetInstanceIdAsync()).ReturnsAsync(federatedInstanceId);
+			QueryResult queryResult = new QueryResult();
+			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), 
+				CancellationToken.None, It.IsAny<IProgress<ProgressReport>>())).ReturnsAsync(queryResult);
+
+			// ACT
+			await _sut.ReadAsync(sourceWorkspaceId, destinationWorkspaceId, CancellationToken.None).ConfigureAwait(false);
+
+			// ASSERT
+			string properQueryFragment = $"'{_destinationInstanceArtifactIdGuid}' == {federatedInstanceId}";
+			_objectManager.Verify(
+				om => om.QueryAsync(sourceWorkspaceId, It.Is<QueryRequest>(q => q.Condition.Contains(properQueryFragment)), 0, 1, CancellationToken.None, It.IsAny<IProgress<ProgressReport>>()),
+				Times.Once);
 		}
 	}
 }

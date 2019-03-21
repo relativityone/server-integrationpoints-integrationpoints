@@ -74,7 +74,7 @@ namespace Relativity.Sync.Tests.Integration
 #pragma warning restore S1135 // Track uses of "TODO" tags
 
 		[Test]
-		public void ItCreatesTagIfItDoesntExist()
+		public void ItCreatesTagIfItDoesNotExist()
 		{
 			const int sourceWorkspaceArtifactID = 1014853;
 			const int destinationWorkspaceArtifactID = 1014853;
