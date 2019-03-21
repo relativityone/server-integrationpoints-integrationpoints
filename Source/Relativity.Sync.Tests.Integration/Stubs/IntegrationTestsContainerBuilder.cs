@@ -14,18 +14,32 @@ using Relativity.Telemetry.APM;
 
 namespace Relativity.Sync.Tests.Integration.Stubs
 {
-	internal static class IntegrationTestsContainerBuilder
+	public static class IntegrationTestsContainerBuilder
 	{
+		public static void RegisterExternalDependenciesAsMocks(ContainerBuilder containerBuilder)
+		{
+			// Relativity.Telemetry.APM
+			Mock<IAPM> apmMock = new Mock<IAPM>();
+			Mock<ICounterMeasure> counterMock = new Mock<ICounterMeasure>();
+			apmMock.Setup(a => a.CountOperation(It.IsAny<string>(),
+				It.IsAny<Guid>(),
+				It.IsAny<string>(),
+				It.IsAny<string>(),
+				It.IsAny<bool>(),
+				It.IsAny<int?>(),
+				It.IsAny<Dictionary<string, object>>(),
+				It.IsAny<IEnumerable<ISink>>())
+			).Returns(counterMock.Object);
+			containerBuilder.RegisterInstance(apmMock.Object).As<IAPM>();
+		}
+
 		public static void RegisterStubsForPipelineBuilderTests(ContainerBuilder containerBuilder, List<Type> executorTypes)
 		{
 			RegisterStubsForIntegrationTests(containerBuilder);
 
 			// We can't register these as generics, because the concrete IExecutor<T> registrations override the generic ones for stubs.
 			// Therefore, we have to construct the IExecutor<TStub> from IExecutor<> and TStub, and then register that. Ugh.
-			GetAllConfigurationInterfaces().ForEach(t =>
-			{
-				containerBuilder.RegisterGenericAs(t, typeof(ExecutorCollectionExecutedTypesStub<>), typeof(IExecutor<>));
-			});
+			GetAllConfigurationInterfaces().ForEach(t => containerBuilder.RegisterGenericAs(t, typeof(ExecutorCollectionExecutedTypesStub<>), typeof(IExecutor<>)));
 			containerBuilder.RegisterInstance(executorTypes).As<List<Type>>();
 		}
 
@@ -71,7 +85,7 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 		public static void RegisterStubsForIntegrationTests(ContainerBuilder containerBuilder)
 		{
 			containerBuilder.RegisterInstance(new ConfigurationStub()).AsImplementedInterfaces();
-			
+
 			// We can't register these as generics, because the concrete IExecutor<T> registrations override the generic ones for stubs.
 			// Therefore, we have to construct the IExecutor<TStub> from IExecutor<> and TStub, and then register that. Ugh.
 			GetAllConfigurationInterfaces().ForEach(t =>
@@ -85,6 +99,20 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 			containerBuilder.RegisterType<StopwatchStub>().As<IStopwatch>();
 			containerBuilder.RegisterInstance(Mock.Of<IServicesMgr>()).As<IServicesMgr>();
 			containerBuilder.RegisterInstance(Mock.Of<IProvideServiceUris>()).As<IProvideServiceUris>();
+		}
+
+		public static void MockStepsExcept<T>(ContainerBuilder containerBuilder)
+		{
+			GetAllConfigurationInterfacesExcept<T>().ForEach(t =>
+			{
+				containerBuilder.RegisterGenericAs(t, typeof(ExecutionConstrainsStub<>), typeof(IExecutionConstrains<>));
+				containerBuilder.RegisterGenericAs(t, typeof(ExecutorStub<>), typeof(IExecutor<>));
+			});
+		}
+
+		private static List<Type> GetAllConfigurationInterfacesExcept<T>()
+		{
+			return GetAllConfigurationInterfaces().Where(t => t != typeof(T)).ToList();
 		}
 
 		private static List<Type> GetAllConfigurationInterfaces()

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
@@ -11,11 +10,9 @@ using Relativity.Services.ApplicationInstallManager;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.ExecutionConstrains;
-using Relativity.Sync.Executors;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.Integration.Stubs;
 using Relativity.Sync.Tests.System.Stubs;
-using QueryResult = Relativity.Services.Objects.DataContracts.QueryResult;
 
 namespace Relativity.Sync.Tests.System
 {
@@ -77,7 +74,7 @@ namespace Relativity.Sync.Tests.System
 			Assert.AreEqual(_destinationWorkspace.ArtifactID, tag.FieldValues.First(x => x.Field.Guids.Contains(_DESTINATION_WORKSPACE_DESTINATION_WORKSPACE_ARTIFACTID_FIELD_GUID)).Value);
 			Assert.AreEqual(_destinationWorkspace.Name, tag.FieldValues.First(x => x.Field.Guids.Contains(_DESTINATION_WORKSPACE_DESTINATION_WORKSPACE_NAME_FIELD_GUID)).Value);
 
-			var relativityObjectValues = (List<RelativityObjectValue>)tag.FieldValues
+			var relativityObjectValues = (List<RelativityObjectValue>) tag.FieldValues
 				.First(x => x.Field.Guids.Contains(_DESTINATION_WORKSPACE_JOB_HISTORY_FIELD_GUID)).Value;
 			Assert.AreEqual(1, relativityObjectValues.Count);
 			Assert.AreEqual(jobHistoryArtifactId, relativityObjectValues.First().ArtifactID);
@@ -99,7 +96,8 @@ namespace Relativity.Sync.Tests.System
 
 			ISyncJob syncJob = CreateSyncJob(configuration);
 
-			int destinationWorkspaceTagArtifactId = await CreateDestinationWorkspaceTag(_sourceWorkspace.ArtifactID, "whatever", "Wrong Workspace Name", _destinationWorkspace.ArtifactID).ConfigureAwait(false);
+			int destinationWorkspaceTagArtifactId =
+				await CreateDestinationWorkspaceTag(_sourceWorkspace.ArtifactID, "whatever", "Wrong Workspace Name", _destinationWorkspace.ArtifactID).ConfigureAwait(false);
 
 			// ACT
 			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
@@ -113,7 +111,7 @@ namespace Relativity.Sync.Tests.System
 			Assert.AreEqual(_destinationWorkspace.ArtifactID, tag.FieldValues.First(x => x.Field.Guids.Contains(_DESTINATION_WORKSPACE_DESTINATION_WORKSPACE_ARTIFACTID_FIELD_GUID)).Value);
 			Assert.AreEqual(_destinationWorkspace.Name, tag.FieldValues.First(x => x.Field.Guids.Contains(_DESTINATION_WORKSPACE_DESTINATION_WORKSPACE_NAME_FIELD_GUID)).Value);
 
-			var relativityObjectValues = (List<RelativityObjectValue>)tag.FieldValues
+			var relativityObjectValues = (List<RelativityObjectValue>) tag.FieldValues
 				.First(x => x.Field.Guids.Contains(_DESTINATION_WORKSPACE_JOB_HISTORY_FIELD_GUID)).Value;
 			Assert.AreEqual(1, relativityObjectValues.Count);
 			Assert.AreEqual(jobHistoryArtifactId, relativityObjectValues.First().ArtifactID);
@@ -123,20 +121,20 @@ namespace Relativity.Sync.Tests.System
 		{
 			using (var objectManager = ServiceFactory.CreateProxy<IObjectManager>())
 			{
-				CreateRequest request = new CreateRequest()
+				CreateRequest request = new CreateRequest
 				{
 					FieldValues = new[]
 					{
-						new FieldRefValuePair()
+						new FieldRefValuePair
 						{
 							Value = Guid.NewGuid().ToString(),
-							Field = new FieldRef()
+							Field = new FieldRef
 							{
 								Name = "Name"
 							}
 						}
 					},
-					ObjectType = new ObjectTypeRef()
+					ObjectType = new ObjectTypeRef
 					{
 						Guid = _JOB_HISTORY_GUID
 					}
@@ -149,26 +147,19 @@ namespace Relativity.Sync.Tests.System
 		private ISyncJob CreateSyncJob(ConfigurationStub configuration)
 		{
 			ContainerBuilder containerBuilder = new ContainerBuilder();
-			List<IInstaller> installers = Assembly.GetAssembly(typeof(IInstaller))
-				.GetTypes()
-				.Where(t => !t.IsAbstract && t.IsAssignableTo<IInstaller>())
-				.Select(t => (IInstaller)Activator.CreateInstance(t))
-				.ToList();
-			installers.Add(new SystemTestsInstaller());
 
-			containerBuilder.RegisterGeneric(typeof(ExecutorStub<>)).As(typeof(IExecutor<>));
-			containerBuilder.RegisterGeneric(typeof(ExecutionConstrainsStub<>)).As(typeof(IExecutionConstrains<>));
+			ContainerFactory factory = new ContainerFactory();
+			SyncJobParameters syncParameters = new SyncJobParameters(configuration.JobArtifactId, configuration.SourceWorkspaceArtifactId);
+			factory.RegisterSyncDependencies(containerBuilder, syncParameters, new SyncConfiguration(), new EmptyLogger());
 
-			containerBuilder.RegisterType<SourceWorkspaceTagsCreationExecutionConstrains>()
-				.As<IExecutionConstrains<ISourceWorkspaceTagsCreationConfiguration>>();
-			containerBuilder.RegisterType<SourceWorkspaceTagsCreationExecutor>().As<IExecutor<ISourceWorkspaceTagsCreationConfiguration>>();
+			new SystemTestsInstaller().Install(containerBuilder);
+
+			IntegrationTestsContainerBuilder.RegisterExternalDependenciesAsMocks(containerBuilder);
+			IntegrationTestsContainerBuilder.MockStepsExcept<ISourceWorkspaceTagsCreationConfiguration>(containerBuilder);
 
 			containerBuilder.RegisterInstance(configuration).AsImplementedInterfaces();
 
-			IContainer container = containerBuilder.Build();
-
-			var syncJobFactory = new SyncJobFactory();
-			return syncJobFactory.Create(container, new SyncJobParameters(configuration.JobArtifactId, configuration.SourceWorkspaceArtifactId));
+			return containerBuilder.Build().Resolve<ISyncJob>();
 		}
 
 		private async Task<RelativityObject> QueryForCreatedTag(int destinationWorkspaceTagArtifactId)
@@ -176,33 +167,33 @@ namespace Relativity.Sync.Tests.System
 			RelativityObject tag;
 			using (var objectManager = ServiceFactory.CreateProxy<IObjectManager>())
 			{
-				QueryRequest request = new QueryRequest()
+				QueryRequest request = new QueryRequest
 				{
 					Condition = $"'ArtifactId' == {destinationWorkspaceTagArtifactId}",
 					Fields = new[]
 					{
-						new FieldRef()
+						new FieldRef
 						{
 							Guid = _DESTINATION_WORKSPACE_JOB_HISTORY_FIELD_GUID
 						},
-						new FieldRef()
+						new FieldRef
 						{
 							Guid = _DESTINATION_WORKSPACE_DESTINATION_WORKSPACE_ARTIFACTID_FIELD_GUID
 						},
-						new FieldRef()
+						new FieldRef
 						{
 							Guid = _DESTINATION_WORKSPACE_DESTINATION_WORKSPACE_NAME_FIELD_GUID
 						},
-						new FieldRef()
+						new FieldRef
 						{
 							Guid = _DESTINATION_WORKSPACE_DESTINATION_INSTANCE_NAME_FIELD_GUID
 						},
-						new FieldRef()
+						new FieldRef
 						{
 							Guid = _DESTINATION_WORKSPACE_DESTINATION_INSTANCE_ARTIFACTID_FIELD_GUID
 						}
 					},
-					ObjectType = new ObjectTypeRef()
+					ObjectType = new ObjectTypeRef
 					{
 						Guid = _DESTINATION_WORKSPACE_GUID
 					}
@@ -268,7 +259,7 @@ namespace Relativity.Sync.Tests.System
 							},
 							Value = null
 #pragma warning disable S1135 // Track uses of "TODO" tags
-							 // TODO REL-304664: This should be changed to -1 in the future. See relevant TODOs in DestinationWorkspaceTagRepository.
+							// TODO REL-304664: This should be changed to -1 in the future. See relevant TODOs in DestinationWorkspaceTagRepository.
 #pragma warning restore S1135 // Track uses of "TODO" tags
 						}
 					}
