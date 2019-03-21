@@ -41,7 +41,7 @@ namespace Relativity.Sync.Executors
 			return name;
 		}
 
-		public string CreateSourceCaseTagName(string instanceName, string sourceWorkspaceName, int workspaceArtifactId)
+		public string FormatSourceCaseTagName(string instanceName, string sourceWorkspaceName, int workspaceArtifactId)
 		{
 			string name = GetFormatForSourceCaseTagName(instanceName, sourceWorkspaceName, workspaceArtifactId);
 			if (name.Length > _NAME_MAX_LENGTH)
@@ -74,6 +74,5 @@ namespace Relativity.Sync.Executors
 		{
 			return $"{instanceName} - {workspaceName} - {workspaceArtifactId}";
 		}
-
 	}
 }
