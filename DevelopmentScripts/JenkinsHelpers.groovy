@@ -485,7 +485,7 @@ def downloadAndSetUpBrowser()
 
     switch(params.UITestsBrowser) {
         case 'chromium':
-            downloadChromiumInSetVersion(${params.chromiumVersion})
+            downloadChromiumInSetVersion(params.chromiumVersion)
         break
         case 'firefox':
             //Do not download firefox. Use the version installed on node.
@@ -519,7 +519,8 @@ def downloadChromiumInSetVersion(version)
 }
 
 def updateChromeToLatestVersion()
-{      
+{
+    echo "Installing Chrome - ${version}"
 	try
     {
 		powershell """
