@@ -21,7 +21,8 @@ namespace Relativity.Sync.Tests.Integration
 		public void SetUp()
 		{
 			ContainerBuilder containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
-			IntegrationTestsContainerBuilder.RegisterStubsForIntegrationTests(containerBuilder);
+			IntegrationTestsContainerBuilder.MockAllSteps(containerBuilder);
+			IntegrationTestsContainerBuilder.MockMetrics(containerBuilder);
 
 			var servicesMgr = new Mock<IServicesMgr>();
 			var serviceFactory = new Mock<IServiceFactory>();
