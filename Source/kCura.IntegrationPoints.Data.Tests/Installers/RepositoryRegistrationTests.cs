@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.Tests.Installers
 {
@@ -55,7 +56,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Installers
 		{
 			IRegistration[] dependencies =
 			{
-				Component.For<IRelativityObjectManager>().Instance(new Mock<IRelativityObjectManager>().Object)
+				Component.For<IRelativityObjectManager>().Instance(new Mock<IRelativityObjectManager>().Object),
+				Component.For<IIntegrationPointSerializer>().Instance(new Mock<IIntegrationPointSerializer>().Object),
+				Component.For<IAPILog>().Instance(new Mock<IAPILog>().Object)
 			};
 
 			container.Register(dependencies);
