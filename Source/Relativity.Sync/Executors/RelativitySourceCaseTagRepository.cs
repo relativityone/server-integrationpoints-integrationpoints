@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.Services.DataContracts.DTOs;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -27,16 +29,23 @@ namespace Relativity.Sync.Executors
 			_logger = logger;
 		}
 
-		public async Task<RelativitySourceCaseTag> ReadAsync(int destinationWorkspaceArtifactId, int sourceWorkspaceArtifactTypeId, 
-			int sourceWorkspaceArtifactId, string sourceInstanceName, CancellationToken token)
+		public async Task<RelativitySourceCaseTag> ReadAsync(int destinationWorkspaceArtifactId, int sourceWorkspaceArtifactId, string sourceInstanceName, CancellationToken token)
 		{
-			RelativityObject tag = await QueryRelativityObjectTagAsync(destinationWorkspaceArtifactId, sourceWorkspaceArtifactId, sourceInstanceName).ConfigureAwait(false);
+			_logger.LogVerbose($"Reading {nameof(RelativitySourceCaseTag)}. Source workspace artifact ID: {{sourceWorkspaceArtifactId}} " +
+							   "Destination workspace artifact ID: {destinationWorkspaceArtifactId} " +
+							   "Source instance name: {sourceInstanceName}",
+								sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, sourceInstanceName);
+			RelativityObject tag = await QueryRelativityObjectTagAsync(destinationWorkspaceArtifactId, sourceWorkspaceArtifactId, sourceInstanceName, token).ConfigureAwait(false);
 
 			if (tag != null)
 			{
 				RelativitySourceCaseTag sourceCaseTag = new RelativitySourceCaseTag()
 				{
-
+					ArtifactId = tag.ArtifactID,
+					Name = tag[CaseNameFieldNameGuid].Value.ToString(),
+					SourceInstanceName = tag[InstanceNameFieldGuid].Value.ToString(),
+					SourceWorkspaceName = tag[SourceWorkspaceNameGuid].Value.ToString(),
+					SourceWorkspaceArtifactId = Convert.ToInt32(tag[CaseIdFieldNameGuid].Value, CultureInfo.InvariantCulture)
 				};
 				return sourceCaseTag;
 			}
@@ -44,7 +53,7 @@ namespace Relativity.Sync.Executors
 			return null;
 		}
 
-		private async Task<RelativityObject> QueryRelativityObjectTagAsync(int destinationWorkspaceArtifactId, int sourceWorkspaceArtifactId, string sourceInstanceName)
+		private async Task<RelativityObject> QueryRelativityObjectTagAsync(int destinationWorkspaceArtifactId, int sourceWorkspaceArtifactId, string sourceInstanceName, CancellationToken token)
 		{
 			using (IObjectManager objectManager = await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
@@ -57,6 +66,7 @@ namespace Relativity.Sync.Executors
 					},
 					Fields = new List<FieldRef>()
 					{
+						new FieldRef { Name = "ArtifactId" },
 						new FieldRef(){Guid = CaseIdFieldNameGuid},
 						new FieldRef(){Guid = CaseNameFieldNameGuid},
 						new FieldRef(){Guid = SourceWorkspaceNameGuid},
@@ -69,7 +79,7 @@ namespace Relativity.Sync.Executors
 				{
 					const int start = 0;
 					const int length = 1;
-					queryResult = await objectManager.QueryAsync(destinationWorkspaceArtifactId, request, start, length).ConfigureAwait(false);
+					queryResult = await objectManager.QueryAsync(destinationWorkspaceArtifactId, request, start, length, token, new EmptyProgress<ProgressReport>()).ConfigureAwait(false);
 				}
 				catch (ServiceException ex)
 				{
@@ -88,6 +98,8 @@ namespace Relativity.Sync.Executors
 
 		public async Task<RelativitySourceCaseTag> CreateAsync(int destinationWorkspaceArtifactId, int sourceWorkspaceArtifactTypeId, RelativitySourceCaseTag sourceCaseTag)
 		{
+			_logger.LogVerbose($"Creating {nameof(RelativitySourceCaseTag)} in destination workspace artifact ID: {{destinationWorkspaceArtifactId}} " +
+							   "Source workspace artifact ID: {sourceWorkspaceArtifactTypeId}", destinationWorkspaceArtifactId, sourceWorkspaceArtifactTypeId);
 			using (IObjectManager objectManager = await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				CreateRequest request = new CreateRequest
@@ -96,7 +108,7 @@ namespace Relativity.Sync.Executors
 					{
 						ArtifactTypeID = sourceWorkspaceArtifactTypeId
 					},
-					FieldValues = CreateFields(sourceCaseTag.Name, sourceCaseTag.SourceWorkspaceArtifactId, sourceCaseTag.SourceWorkspaceName, sourceCaseTag.SourceInstanceName)
+					FieldValues = CreateFieldValues(sourceCaseTag.Name, sourceCaseTag.SourceWorkspaceArtifactId, sourceCaseTag.SourceWorkspaceName, sourceCaseTag.SourceInstanceName)
 				};
 
 				CreateResult createResult;
@@ -128,9 +140,39 @@ namespace Relativity.Sync.Executors
 			}
 		}
 
-		private List<FieldRefValuePair> CreateFields(string tagName, int sourceWorkspaceArtifactId, string sourceWorkspaceName, string instanceName)
+		public async Task UpdateAsync(int destinationWorkspaceArtifactId, RelativitySourceCaseTag sourceCaseTag)
 		{
-			return new List<FieldRefValuePair>
+			_logger.LogVerbose($"Updating {nameof(RelativitySourceCaseTag)} in destination workspace artifact ID: {{destinationWorkspaceArtifactId}}", destinationWorkspaceArtifactId);
+			UpdateRequest request = new UpdateRequest()
+			{
+				Object = new RelativityObjectRef() { ArtifactID = sourceCaseTag.ArtifactId },
+				FieldValues = CreateFieldValues(sourceCaseTag.Name, sourceCaseTag.SourceWorkspaceArtifactId, sourceCaseTag.SourceWorkspaceName, sourceCaseTag.SourceInstanceName)
+			};
+
+			using (IObjectManager objectManager = await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			{
+				try
+				{
+					await objectManager.UpdateAsync(destinationWorkspaceArtifactId, request).ConfigureAwait(false);
+				}
+				catch (ServiceException ex)
+				{
+					_logger.LogError(ex, $"Service call failed while updating {nameof(RelativitySourceCaseTag)}: {{request}}", request);
+					throw new DestinationWorkspaceTagRepositoryException($"Failed to update {nameof(RelativitySourceCaseTag)} with id {sourceCaseTag.ArtifactId} in workspace {destinationWorkspaceArtifactId}",
+						ex);
+				}
+				catch (Exception ex)
+				{
+					_logger.LogError(ex, $"Failed to update {nameof(RelativitySourceCaseTag)}: {{request}}", request);
+					throw new DestinationWorkspaceTagRepositoryException($"Failed to update {nameof(RelativitySourceCaseTag)} with id {sourceCaseTag.ArtifactId} in workspace {destinationWorkspaceArtifactId}",
+						ex);
+				}
+			}
+		}
+
+		private IEnumerable<FieldRefValuePair> CreateFieldValues(string tagName, int sourceWorkspaceArtifactId, string sourceWorkspaceName, string instanceName)
+		{
+			FieldRefValuePair[] pairs =
 			{
 				new FieldRefValuePair
 				{
@@ -153,12 +195,8 @@ namespace Relativity.Sync.Executors
 					Value = instanceName
 				}
 			};
-		}
 
-		public async Task<RelativitySourceCaseTag> UpdateAsync(int sourceWorkspaceArtifactTypeId, RelativitySourceCaseTag sourceCaseTag, CancellationToken token)
-		{
-			await Task.Yield();
-			throw new System.NotImplementedException();
+			return pairs;
 		}
 	}
 }

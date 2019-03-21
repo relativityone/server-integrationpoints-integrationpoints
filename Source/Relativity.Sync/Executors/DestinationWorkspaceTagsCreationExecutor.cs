@@ -41,7 +41,7 @@ namespace Relativity.Sync.Executors
 			string sourceCaseTagName = _tagNameFormatter.CreateSourceCaseTagName(federatedInstanceName, sourceWorkspaceName, configuration.SourceWorkspaceArtifactId);
 
 			RelativitySourceCaseTag sourceCaseTag = await _relativitySourceCaseTagRepository
-				.ReadAsync(configuration.DestinationWorkspaceArtifactId, configuration.SourceWorkspaceArtifactTypeId, configuration.SourceWorkspaceArtifactId, federatedInstanceName, token).ConfigureAwait(false);
+				.ReadAsync(configuration.DestinationWorkspaceArtifactId, configuration.SourceWorkspaceArtifactId, federatedInstanceName, token).ConfigureAwait(false);
 
 			if (sourceCaseTag == null)
 			{
@@ -61,7 +61,7 @@ namespace Relativity.Sync.Executors
 				sourceCaseTag.SourceInstanceName = federatedInstanceName;
 				sourceCaseTag.SourceWorkspaceName = sourceWorkspaceName;
 				sourceCaseTag.Name = sourceCaseTagName;
-				sourceCaseTag = await _relativitySourceCaseTagRepository.UpdateAsync(configuration.SourceWorkspaceArtifactTypeId, sourceCaseTag, token).ConfigureAwait(false);
+				await _relativitySourceCaseTagRepository.UpdateAsync(configuration.DestinationWorkspaceArtifactId, sourceCaseTag).ConfigureAwait(false);
 			}
 
 			return sourceCaseTag;
