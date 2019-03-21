@@ -485,9 +485,16 @@ def downloadAndSetUpBrowser()
 
     switch(params.UITestsBrowser) {
         case 'chromium':
-            downloadChromiumInSetVersion('72.0.3626.0')
+            downloadChromiumInSetVersion(${params.chromiumVersion})
         break
-        default:
+        case 'firefox':
+            //Do not download firefox. Use the version installed on node.
+        break
+        case 'chrome'
+            updateChromeToLatestVersion()
+        break
+        default
+            echo "No browser selected. Using chrome"
             updateChromeToLatestVersion()
         break
     }

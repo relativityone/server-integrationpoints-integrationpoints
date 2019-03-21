@@ -60,6 +60,11 @@ properties([
 			name: 'UITestsBrowser',
 			choices: ['chromium', 'chrome'],
 			description: 'Name of browser the UI tests should be run on. Default: chrome'
+		),
+		string(
+			name: 'chromiumVersion', 
+			defaultValue: '72.0.3626.0', 
+			description: 'Set chromium version to be installed for UI tests.'
 		)
 	])
 ])
@@ -134,10 +139,9 @@ timestamps
 				{
 					stage ('UI Tests')
 					{
-						echo "ui tests browser in stage view = ${params.UITestsBrowser}"
+						echo "Browser used for running UI Tests: ${params.UITestsBrowser}"
 						withEnv(["UITestsBrowser=${params.UITestsBrowser}"]) 
 						{
-							echo "Now I will download browser"
 							jenkinsHelpers.downloadAndSetUpBrowser()
 							jenkinsHelpers.runUiTests()
 						}
