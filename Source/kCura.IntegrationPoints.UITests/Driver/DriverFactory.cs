@@ -72,7 +72,8 @@ public static class ChromeOptionsExtensions
 			// Disables "Chrome is being controlled by automated test software." bar
 			["disable-infobars"] = SharedVariables.UiOptionsArgumentsDisableInfobars,
 			["headless"] = SharedVariables.UiOptionsArgumentsHeadless,
-			["ignore-certificate-errors"] = SharedVariables.UiOptionsArgumentsIgnoreCertificateErrors
+			["ignore-certificate-errors"] = SharedVariables.UiOptionsArgumentsIgnoreCertificateErrors,
+			["no-sandbox"] = SharedVariables.UiOptionsArgumentsNoSandbox
 		};
 
 		foreach (var option in optionsFromAppConfig.Where(x => x.Value))
