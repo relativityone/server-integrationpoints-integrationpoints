@@ -7,81 +7,22 @@ namespace Relativity.Sync.Executors
 {
 	internal sealed class DestinationWorkspaceTagsCreationExecutor : IExecutor<IDestinationWorkspaceTagsCreationConfiguration>
 	{
-		private readonly IRelativitySourceCaseTagRepository _relativitySourceCaseTagRepository;
-		private readonly IRelativitySourceJobTagRepository _relativitySourceJobTagRepository;
-		private readonly IWorkspaceNameQuery _workspaceNameQuery;
-		private readonly IJobHistoryNameQuery _jobHistoryNameQuery;
-		private readonly ITagNameFormatter _tagNameFormatter;
-		private readonly IFederatedInstance _federatedInstance;
+		private readonly ISourceCaseTagService _sourceCaseTagService;
+		private readonly ISourceJobTagService _sourceJobTagService;
 
-		public DestinationWorkspaceTagsCreationExecutor(IRelativitySourceCaseTagRepository relativitySourceCaseTagRepository, IRelativitySourceJobTagRepository relativitySourceJobTagRepository,
-			IWorkspaceNameQuery workspaceNameQuery, IJobHistoryNameQuery jobHistoryNameQuery, ITagNameFormatter tagNameFormatter, IFederatedInstance federatedInstance)
+		public DestinationWorkspaceTagsCreationExecutor(ISourceCaseTagService sourceCaseTagService, ISourceJobTagService sourceJobTagService)
 		{
-			_relativitySourceCaseTagRepository = relativitySourceCaseTagRepository;
-			_relativitySourceJobTagRepository = relativitySourceJobTagRepository;
-			_workspaceNameQuery = workspaceNameQuery;
-			_jobHistoryNameQuery = jobHistoryNameQuery;
-			_tagNameFormatter = tagNameFormatter;
-			_federatedInstance = federatedInstance;
+			_sourceCaseTagService = sourceCaseTagService;
+			_sourceJobTagService = sourceJobTagService;
 		}
 
 		public async Task ExecuteAsync(IDestinationWorkspaceTagsCreationConfiguration configuration, CancellationToken token)
 		{
-			RelativitySourceCaseTag sourceCaseTag = await CreateOrUpdateSourceCaseTagAsync(configuration, token).ConfigureAwait(false);
+			RelativitySourceCaseTag sourceCaseTag = await _sourceCaseTagService.CreateOrUpdateSourceCaseTagAsync(configuration, token).ConfigureAwait(false);
 			configuration.SetSourceWorkspaceTag(sourceCaseTag.ArtifactId, sourceCaseTag.Name);
 
-			RelativitySourceJobTag sourceJobTag = await CreateSourceJobTagAsync(configuration, sourceCaseTag.ArtifactId, token).ConfigureAwait(false);
+			RelativitySourceJobTag sourceJobTag = await _sourceJobTagService.CreateSourceJobTagAsync(configuration, sourceCaseTag.ArtifactId, token).ConfigureAwait(false);
 			configuration.SetSourceJobTag(sourceJobTag.ArtifactId, sourceJobTag.Name);
-		}
-
-		private async Task<RelativitySourceCaseTag> CreateOrUpdateSourceCaseTagAsync(IDestinationWorkspaceTagsCreationConfiguration configuration, CancellationToken token)
-		{
-			string federatedInstanceName = await _federatedInstance.GetInstanceNameAsync().ConfigureAwait(false);
-			string sourceWorkspaceName = await _workspaceNameQuery.GetWorkspaceNameAsync(configuration.SourceWorkspaceArtifactId, token).ConfigureAwait(false);
-			string sourceCaseTagName = _tagNameFormatter.FormatSourceCaseTagName(federatedInstanceName, sourceWorkspaceName, configuration.SourceWorkspaceArtifactId);
-
-			RelativitySourceCaseTag sourceCaseTag = await _relativitySourceCaseTagRepository
-				.ReadAsync(configuration.DestinationWorkspaceArtifactId, configuration.SourceWorkspaceArtifactId, federatedInstanceName, token).ConfigureAwait(false);
-
-			if (sourceCaseTag == null)
-			{
-				RelativitySourceCaseTag newSourceCaseTag = new RelativitySourceCaseTag
-				{
-					SourceWorkspaceArtifactId = configuration.SourceWorkspaceArtifactId,
-					SourceWorkspaceName = sourceWorkspaceName,
-					SourceInstanceName = federatedInstanceName,
-					Name = sourceCaseTagName
-				};
-				sourceCaseTag = await _relativitySourceCaseTagRepository.CreateAsync(configuration.DestinationWorkspaceArtifactId, configuration.SourceWorkspaceArtifactTypeId, newSourceCaseTag).ConfigureAwait(false);
-			}
-			else if (sourceCaseTag.RequiresUpdate(sourceCaseTagName, federatedInstanceName, sourceWorkspaceName))
-			{
-				sourceCaseTag.SourceInstanceName = federatedInstanceName;
-				sourceCaseTag.SourceWorkspaceName = sourceWorkspaceName;
-				sourceCaseTag.Name = sourceCaseTagName;
-				await _relativitySourceCaseTagRepository.UpdateAsync(configuration.DestinationWorkspaceArtifactId, sourceCaseTag).ConfigureAwait(false);
-			}
-
-			return sourceCaseTag;
-		}
-
-		private async Task<RelativitySourceJobTag> CreateSourceJobTagAsync(IDestinationWorkspaceTagsCreationConfiguration configuration, int sourceCaseTagArtifactId, CancellationToken token)
-		{
-			string sourceJobHistoryName = await _jobHistoryNameQuery.GetJobNameAsync(configuration.JobArtifactId, token).ConfigureAwait(false);
-			string sourceJobTagName = _tagNameFormatter.FormatSourceJobTagName(sourceJobHistoryName, configuration.JobArtifactId);
-
-			RelativitySourceJobTag newSourceJobTag = new RelativitySourceJobTag
-			{
-				Name = sourceJobTagName,
-				ArtifactTypeId = configuration.SourceJobArtifactTypeId,
-				JobHistoryArtifactId = configuration.JobArtifactId,
-				JobHistoryName = sourceJobHistoryName,
-				SourceCaseTagArtifactId = sourceCaseTagArtifactId
-			};
-			RelativitySourceJobTag sourceJobTag = await _relativitySourceJobTagRepository.CreateAsync(
-				configuration.SourceJobArtifactTypeId, configuration.DestinationWorkspaceArtifactId, newSourceJobTag, token).ConfigureAwait(false);
-
-			return sourceJobTag;
 		}
 	}
 }
