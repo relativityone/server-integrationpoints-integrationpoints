@@ -4,6 +4,7 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Helpers;
 
@@ -13,12 +14,17 @@ namespace kCura.IntegrationPoints.Web.Controllers
 	{
 		private readonly ICaseServiceContext _context;
 		private readonly IProviderTypeService _providerTypeService;
+		private readonly IIntegrationPointRepository _integrationPointRepository;
 		private readonly SummaryPageSelector _summaryPageSelector;
 
-		public SummaryPageController(ICaseServiceContext context, IProviderTypeService providerTypeService, SummaryPageSelector summaryPageSelector)
+		public SummaryPageController(ICaseServiceContext context, 
+			IProviderTypeService providerTypeService, 
+			IIntegrationPointRepository integrationPointRepository, 
+			SummaryPageSelector summaryPageSelector)
 		{
 			_context = context;
 			_providerTypeService = providerTypeService;
+			_integrationPointRepository = integrationPointRepository;
 			_summaryPageSelector = summaryPageSelector;
 		}
 
@@ -46,7 +52,8 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		{
 			if (controllerType == IntegrationPointApiControllerNames.IntegrationPointApiControllerName)
 			{
-				IntegrationPoint integrationPoint = _context.RsapiService.RelativityObjectManager.Read<IntegrationPoint>(integrationPointId);
+				IntegrationPoint integrationPoint =
+					_integrationPointRepository.ReadAsync(integrationPointId).GetAwaiter().GetResult();
 
 				return new Tuple<int, int>(integrationPoint.SourceProvider.Value, integrationPoint.DestinationProvider.Value);
 			}

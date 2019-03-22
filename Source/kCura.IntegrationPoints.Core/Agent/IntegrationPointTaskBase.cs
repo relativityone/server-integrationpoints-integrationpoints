@@ -14,6 +14,7 @@ using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
@@ -39,6 +40,7 @@ namespace kCura.IntegrationPoints.Core.Agent
 		protected IJobService JobService;
 		protected IManagerFactory ManagerFactory;
 		protected ISerializer Serializer;
+		protected IIntegrationPointRepository IntegrationPointRepository;
 
 		public IntegrationPointTaskBase(
 			ICaseServiceContext caseServiceContext,
@@ -51,7 +53,8 @@ namespace kCura.IntegrationPoints.Core.Agent
 			IJobManager jobManager,
 			IManagerFactory managerFactory,
 			IContextContainerFactory contextContainerFactory,
-			IJobService jobService)
+			IJobService jobService,
+			IIntegrationPointRepository integrationPointRepository)
 		{
 			CaseServiceContext = caseServiceContext;
 			Helper = helper;
@@ -64,6 +67,7 @@ namespace kCura.IntegrationPoints.Core.Agent
 			ManagerFactory = managerFactory;
 			JobService = jobService;
 			ContextContainerFactory = contextContainerFactory;
+			IntegrationPointRepository = integrationPointRepository;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<IntegrationPointTaskBase>();
 		}
 
@@ -121,8 +125,8 @@ namespace kCura.IntegrationPoints.Core.Agent
 				factory.TaskJobSubmitter = new TaskJobSubmitter(JobManager, job, TaskType.SyncEntityManagerWorker, BatchInstance);
 				factory.SourceProvider = SourceProvider;
 			}
-			var integrationPoint = CaseServiceContext.RsapiService.RelativityObjectManager.Read<IntegrationPoint>(job.RelatedObjectArtifactID);
-			IDataSynchronizer sourceProvider = AppDomainRdoSynchronizerFactoryFactory.CreateSynchronizer(providerGuid, configuration, integrationPoint.SecuredConfiguration);
+			string securedConfiguration = IntegrationPointRepository.GetSecuredConfiguration(job.RelatedObjectArtifactID);
+			IDataSynchronizer sourceProvider = AppDomainRdoSynchronizerFactoryFactory.CreateSynchronizer(providerGuid, configuration, securedConfiguration);
 			LogGetDestinationProviderSuccesfulEnd(job, sourceProvider);
 			return sourceProvider;
 		}
@@ -184,7 +188,7 @@ namespace kCura.IntegrationPoints.Core.Agent
 			}
 
 			int integrationPointId = job.RelatedObjectArtifactID;
-			IntegrationPoint = CaseServiceContext.RsapiService.RelativityObjectManager.Read<IntegrationPoint>(integrationPointId);
+			IntegrationPoint = IntegrationPointRepository.ReadAsync(integrationPointId).GetAwaiter().GetResult();
 			if (IntegrationPoint == null)
 			{
 				LogSettingIntegrationPointError(job);

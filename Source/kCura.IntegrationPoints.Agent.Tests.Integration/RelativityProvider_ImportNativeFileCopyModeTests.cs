@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Castle.MicroKernel.Registration;
+﻿using Castle.MicroKernel.Registration;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
@@ -13,7 +12,6 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Domain;
@@ -33,7 +31,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		private ExportServiceManager _exportManager;
 		private IIntegrationPointService _integrationPointService;
 		private IJobService _jobService;
-		private ICaseServiceContext _caseContext;
 		private Relativity.Client.DTOs.Workspace _sourceWorkspaceDto;
 		private const int _ADMIN_USER_ID = 9;
 		private const string _SOURCE_WORKSPACE_NAME = "Push_NativeFileCopy";
@@ -63,7 +60,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 		public override void TestSetup()
 		{
-			_caseContext = Container.Resolve<ICaseServiceContext>();
 			IHelperFactory helperFactory = Container.Resolve<IHelperFactory>();
 			IContextContainerFactory contextContainerFactory = Container.Resolve<IContextContainerFactory>();
 			ISynchronizerFactory synchronizerFactory = Container.Resolve<ISynchronizerFactory>();
@@ -90,7 +86,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				dateTimeHelper);
 
 			_exportManager = new ExportServiceManager(Helper, helperFactory,
-				_caseContext, contextContainerFactory,
+				CaseContext,
+				contextContainerFactory,
 				synchronizerFactory,
 				exporterFactory,
 				onBehalfOfUserClaimsPrincipalFactory,
@@ -104,7 +101,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				jobHistoryErrorService,
 				jobStatisticsService,
 				null,
-				agentValidator
+				agentValidator,
+				IntegrationPointRepository
 			);
 
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();

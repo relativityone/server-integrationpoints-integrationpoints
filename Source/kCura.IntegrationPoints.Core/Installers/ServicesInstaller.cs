@@ -216,11 +216,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IConfig>().Instance(Config.Config.Instance).LifestyleSingleton());
 			container.Register(Component.For<IMessageService>().ImplementedBy<IntegrationPointsMessageService>().LifestyleSingleton());
 
-			container.Register(
-				Component
-					.For<IIntegrationPointRepository>()
-					.ImplementedBy<IntegrationPointRepository>()
-					.LifestyleTransient());
+			container.Register(Component.For<IIntegrationPointRepository>().ImplementedBy<IntegrationPointRepository>().LifestyleTransient());
 		}
 
 		private SqlServerToggleProvider CreateSqlServerToggleProvider(IHelper helper)

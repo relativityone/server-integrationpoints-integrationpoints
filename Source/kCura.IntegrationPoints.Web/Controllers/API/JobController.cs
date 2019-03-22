@@ -11,9 +11,9 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data.Models;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
@@ -34,24 +34,24 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly IServiceFactory _serviceFactory;
 		private readonly ICPHelper _helper;
 		private readonly IHelperFactory _helperFactory;
-		private readonly ICaseServiceContext _context;
 		private readonly IContextContainerFactory _contextContainerFactory;
 		private readonly IManagerFactory _managerFactory;
+		private readonly IIntegrationPointRepository _integrationPointRepository;
 
 		public JobController(
 			IServiceFactory serviceFactory, 
 			ICPHelper helper, 
 			IHelperFactory helperFactory,
-			ICaseServiceContext context,
 			IContextContainerFactory contextContainerFactory,
-			IManagerFactory managerFactory)
+			IManagerFactory managerFactory,
+			IIntegrationPointRepository integrationPointRepository)
 		{
 			_serviceFactory = serviceFactory;
 			_helper = helper;
 			_helperFactory = helperFactory;
-			_context = context;
 			_contextContainerFactory = contextContainerFactory;
 			_managerFactory = managerFactory;
+			_integrationPointRepository = integrationPointRepository;
 		}
 
 		// POST API/Job/Run
@@ -61,7 +61,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			AuditAction(payload, _RUN_AUDIT_MESSAGE);
 
-			var integrationPoint = _context.RsapiService.RelativityObjectManager.Read<IntegrationPoint>(Convert.ToInt32(payload.ArtifactId));
+			IntegrationPoint integrationPoint = _integrationPointRepository.ReadAsync(Convert.ToInt32(payload.ArtifactId))
+				.GetAwaiter().GetResult();
 			DestinationConfiguration importSettings = JsonConvert.DeserializeObject<DestinationConfiguration>(integrationPoint.DestinationConfiguration);
 
 			// this validation was introduced due to an issue with ARMed workspaces (REL-171985)
@@ -90,7 +91,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			AuditAction(payload, _RETRY_AUDIT_MESSAGE);
 
-			IntegrationPoint integrationPoint = _context.RsapiService.RelativityObjectManager.Read<IntegrationPoint>(Convert.ToInt32(payload.ArtifactId));
+			IntegrationPoint integrationPoint = _integrationPointRepository.ReadAsync(Convert.ToInt32(payload.ArtifactId))
+				.GetAwaiter().GetResult();
 			DestinationConfiguration importSettings = JsonConvert.DeserializeObject<DestinationConfiguration>(integrationPoint.DestinationConfiguration);
 			IHelper targetHelper = _helperFactory.CreateTargetHelper(_helper, importSettings.FederatedInstanceArtifactId, integrationPoint.SecuredConfiguration);
 

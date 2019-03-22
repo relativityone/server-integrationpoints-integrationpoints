@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 		private readonly IManagerFactory _managerFactory;
 		private readonly int _updateInterval = 5000;
 
-		public IntegrationPointDataHub() : this(new ContextContainer((IHelper)ConnectionHelper.Helper()), new HelperClassFactory())
+		public IntegrationPointDataHub() : this(new ContextContainer(ConnectionHelper.Helper()), new HelperClassFactory())
 		{
 			IHelper helper = ConnectionHelper.Helper();
 			IAPILog logger = helper.GetLoggerFactory().GetLogger();
@@ -107,12 +107,15 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 					{
 						IntegrationPointDataHubInput input = _tasks[key];
 
-						var permissionRepository = new PermissionRepository((IHelper)ConnectionHelper.Helper(), input.WorkspaceId);
+						var permissionRepository = new PermissionRepository(ConnectionHelper.Helper(), input.WorkspaceId);
 						IRelativityObjectManager objectManager = CreateObjectManager(ConnectionHelper.Helper(), input.WorkspaceId);
+						IIntegrationPointRepository integrationPointRepository = new IntegrationPointRepository(objectManager);
 						var _providerTypeService = new ProviderTypeService(objectManager);
-						var _buttonStateBuilder = new ButtonStateBuilder(_providerTypeService, _queueManager, _jobHistoryManager, _stateManager, permissionRepository, _permissionValidator, objectManager);
+						var _buttonStateBuilder = new ButtonStateBuilder(_providerTypeService, _queueManager, _jobHistoryManager,
+							_stateManager, permissionRepository, _permissionValidator, integrationPointRepository);
 
-						IntegrationPoint integrationPoint = objectManager.Read<IntegrationPoint>(input.ArtifactId);
+						IntegrationPoint integrationPoint =
+							integrationPointRepository.ReadAsync(input.ArtifactId).GetAwaiter().GetResult();
 
 						ProviderType providerType = _providerTypeService.GetProviderType(integrationPoint.SourceProvider.Value,
 							integrationPoint.DestinationProvider.Value);

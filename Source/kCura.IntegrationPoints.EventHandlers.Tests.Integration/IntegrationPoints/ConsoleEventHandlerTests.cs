@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 			_jobHistoryManager = Substitute.For<IJobHistoryManager>();
 			_permissionRepository = Substitute.For<IPermissionRepository>();
 			_permissionValidator = Substitute.For<IIntegrationPointPermissionValidator>();
-			_objectManager = Substitute.For<IRelativityObjectManager>();
+			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
 			_serializer = new JSONSerializer();
 
 			var activeArtifact = new Artifact(_ARTIFACT_ID, null, 0, "", false, new FieldCollection
@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 
 			_instance =
 				new EventHandlers.IntegrationPoints.ConsoleEventHandler(
-					new ButtonStateBuilder(_providerTypeService, _queueManager, _jobHistoryManager, _stateManager, _permissionRepository, _permissionValidator, _objectManager),
+					new ButtonStateBuilder(_providerTypeService, _queueManager, _jobHistoryManager, _stateManager, _permissionRepository, _permissionValidator, _integrationPointRepository),
 					_onClickEventHelper, new ConsoleBuilder())
 				{
 					ActiveArtifact = activeArtifact,
@@ -73,7 +73,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 		private const string _RETRY_ENDPOINT = "IP.retryJob";
 		private const string _STOP_ENDPOINT = "IP.stopJob";
 
-		private IRelativityObjectManager _objectManager;
+		private IIntegrationPointRepository _integrationPointRepository;
 		private IManagerFactory _managerFactory;
 		private IProviderTypeService _providerTypeService;
 		private IContextContainerFactory _contextContainerFactory;
@@ -128,7 +128,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 
 			_helperClassFactory.CreateOnClickEventHelper(_managerFactory, _contextContainer).Returns(_onClickEventHelper);
 
-			_objectManager.Read<Data.IntegrationPoint>(_ARTIFACT_ID).Returns(integrationPoint);
+			_integrationPointRepository.ReadAsync(_ARTIFACT_ID).Returns(integrationPoint);
 			_providerTypeService.GetProviderType(integrationPoint.SourceProvider.Value, integrationPoint.DestinationProvider.Value).Returns(providerType);
 
 			StoppableJobCollection stoppableJobCollection = null;
@@ -306,7 +306,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 
 			_permissionRepository.UserHasArtifactTypePermission(Arg.Any<Guid>(), ArtifactPermission.Create).Returns(true);
 
-			_objectManager.Read<Data.IntegrationPoint>(_ARTIFACT_ID).Returns(integrationPoint);
+			_integrationPointRepository.ReadAsync(_ARTIFACT_ID).Returns(integrationPoint);
 			_providerTypeService.GetProviderType(integrationPoint.SourceProvider.Value, integrationPoint.DestinationProvider.Value).Returns(providerType);
 
 			_permissionValidator.ValidateViewErrors(_APPLICATION_ID).Returns(new ValidationResult());
