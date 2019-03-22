@@ -5,7 +5,7 @@ using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 {
-	internal class ViewFieldInfoMockFactory
+	internal static class ViewFieldInfoMockFactory
 	{
 		public static ViewFieldInfo[] CreateMockedViewFieldInfoArray(List<int> expected,
 			bool addFileField = false, int fileFieldId = 0)

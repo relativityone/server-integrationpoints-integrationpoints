@@ -29,10 +29,11 @@ using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 using System;
 using System.Linq;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 {
-	public class SetTypeOfExportDefaultValueCommandFactory
+	public static class SetTypeOfExportDefaultValueCommandFactory
 	{
 		public static SetTypeOfExportDefaultValueCommand Create(IEHHelper helper, int workspaceArtifactId)
 		{
@@ -91,9 +92,13 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 			IValidationExecutor validationExecutor = new ValidationExecutor(ipValidator, permissionValidator, helper);
 
 			IJobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(caseServiceContext, helper);
+			IIntegrationPointRepository integrationPointRepository = new IntegrationPointRepository(
+				caseServiceContext.RsapiService.RelativityObjectManager,
+				integrationPointSerializer,
+				logger);
 			IIntegrationPointService integrationPointService = new IntegrationPointService(helper, caseServiceContext,
 				contextContainerFactory, integrationPointSerializer, choiceQuery, jobManager, jobHistoryService,
-				jobHistoryErrorService, managerFactory, validationExecutor, providerTypeService, messageService);
+				jobHistoryErrorService, managerFactory, validationExecutor, providerTypeService, messageService, integrationPointRepository);
 
 			IIntegrationPointProfileService integrationPointProfileService = new IntegrationPointProfileService(helper,
 				caseServiceContext, contextContainerFactory, integrationPointSerializer, choiceQuery, managerFactory, validationExecutor);

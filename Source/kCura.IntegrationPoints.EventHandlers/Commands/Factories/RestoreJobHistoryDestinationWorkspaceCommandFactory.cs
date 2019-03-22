@@ -8,7 +8,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 {
-	public class RestoreJobHistoryDestinationWorkspaceCommandFactory
+	public static class RestoreJobHistoryDestinationWorkspaceCommandFactory
 	{
 		public static ICommand Create(IHelper helper, int workspaceArtifactId)
 		{

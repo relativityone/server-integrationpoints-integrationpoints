@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Monitoring;
 using kCura.IntegrationPoints.Core.Services.JobHistory;

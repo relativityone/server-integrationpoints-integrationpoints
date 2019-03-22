@@ -18,6 +18,8 @@
     <assembly path="kCura.IntegrationPoints.RelativitySync.Tests.Integration.dll"/>
     <assembly path="kCura.IntegrationPoints.Web.Tests.Integration.dll"/>
     <assembly path="kCura.ScheduleQueue.Core.Tests.Integration.dll"/>
+	<assembly path="Rip.E2ETests.dll"/>
+	<assembly path="Rip.SystemTests.dll"/>
   </Config>
   <Config name="UITests"
           appbase="lib/UnitTests/"

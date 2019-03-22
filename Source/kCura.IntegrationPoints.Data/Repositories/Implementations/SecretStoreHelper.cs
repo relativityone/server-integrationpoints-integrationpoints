@@ -11,22 +11,24 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class SecretStoreHelper : ISecretStoreHelper
 	{
+		private ISecretCatalog _secretCatalog;
+		private readonly IAPILog _logger;
+		private readonly IHelper _helper;
+
+		private readonly int _workspaceArtifactId;
+		private readonly ISecretCatalogFactory _secretCatalogFactory;
+		private readonly ISecretManager _secretManager;
 		private ISecretCatalog SecretCatalog
 		{
 			get
 			{
 				if (_secretCatalog == null)
+				{
 					_secretCatalog = _secretCatalogFactory.Create(_workspaceArtifactId);
+				}
 				return _secretCatalog;
 			}
 		}
-
-		private int _workspaceArtifactId;
-		private ISecretCatalogFactory _secretCatalogFactory;
-		private ISecretManager _secretManager;
-		private readonly IAPILog _logger;
-		private IHelper _helper;
-		private ISecretCatalog _secretCatalog;
 
 		public SecretStoreHelper(int workspaceArtifactId, IHelper helper, ISecretManager secretManager, ISecretCatalogFactory secretCatalogFactory)
 		{

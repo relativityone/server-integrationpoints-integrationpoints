@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.Agent.Context
 
 		private class JobContextDisposable : IDisposable
 		{
-			private JobContextProvider _jobContext;
+			private readonly JobContextProvider _jobContext;
 
 			public JobContextDisposable(JobContextProvider jobContext)
 			{

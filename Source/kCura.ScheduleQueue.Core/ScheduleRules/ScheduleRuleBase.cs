@@ -338,9 +338,15 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 			DaysOfWeek nextDayOfWeek = (DaysOfWeek)1;
 			for (int i = 0; i < 8; i++)
 			{
-				if ((daysOfWeek & nextDayOfWeek) == nextDayOfWeek) weekDays += Enum.GetName(typeof(DaysOfWeek), nextDayOfWeek) + ", ";
+				if ((daysOfWeek & nextDayOfWeek) == nextDayOfWeek)
+				{
+					weekDays += Enum.GetName(typeof(DaysOfWeek), nextDayOfWeek) + ", ";
+				}
 				nextDayOfWeek = (DaysOfWeek)((byte)nextDayOfWeek << 1);
-				if ((nextDayOfWeek & DaysOfWeek.All) == DaysOfWeek.None) break;
+				if ((nextDayOfWeek & DaysOfWeek.All) == DaysOfWeek.None)
+				{
+					break;
+				}
 			}
 			if (!string.IsNullOrEmpty(weekDays))
 			{

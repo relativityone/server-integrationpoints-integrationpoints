@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace kCura.IntegrationPoints.Core
+namespace kCura.IntegrationPoints.Data
 {
 	public interface IIntegrationPointSerializer
 	{

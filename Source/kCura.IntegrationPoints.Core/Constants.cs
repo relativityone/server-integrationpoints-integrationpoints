@@ -38,8 +38,8 @@ namespace kCura.IntegrationPoints.Core
 			public const string UNABLE_TO_RETRY_INTEGRATION_POINT_USER_MESSAGE = "Unable to retry this Integration Point. Please contact your system administrator.";
 			public const string UNABLE_TO_RETRY_INTEGRATION_POINT_ADMIN_ERROR_MESSAGE = "Unable to retry Integration Point.";
 			public const string UNABLE_TO_SAVE_INTEGRATION_POINT_VALIDATION_FAILED = "Unable to save the Integration Point. Validation has failed.";
-			public static Regex InvalidMultiChoicesValueFormat = new Regex($".*{kCura.IntegrationPoints.Domain.Constants.MULTI_VALUE_DELIMITER}|{kCura.IntegrationPoints.Domain.Constants.NESTED_VALUE_DELIMITER}.*", RegexOptions.Compiled);
-			public static Regex InvalidMultiObjectsValueFormat = new Regex($".*{kCura.IntegrationPoints.Domain.Constants.MULTI_VALUE_DELIMITER}.*", RegexOptions.Compiled);
+			public static readonly Regex InvalidMultiChoicesValueFormat = new Regex($".*{kCura.IntegrationPoints.Domain.Constants.MULTI_VALUE_DELIMITER}|{kCura.IntegrationPoints.Domain.Constants.NESTED_VALUE_DELIMITER}.*", RegexOptions.Compiled);
+			public static readonly Regex InvalidMultiObjectsValueFormat = new Regex($".*{kCura.IntegrationPoints.Domain.Constants.MULTI_VALUE_DELIMITER}.*", RegexOptions.Compiled);
 
 			public const string API_CONTROLLER_NAME = "IntegrationPointsAPI";
 			public const string OAUTH2_CLIENT_NAME_PREFIX = "F6B8C2B4B3E8465CA00775F699375D3C";
@@ -47,10 +47,10 @@ namespace kCura.IntegrationPoints.Core
 
 			public static class IntegrationPointTypes
 			{
-				public static Guid ImportGuid = new Guid("700D94A7-014C-4C7C-B1A2-B53229E3A1C4");
-				public static string ImportName = @"Import";
-				public static Guid ExportGuid = new Guid("DBB2860A-5691-449B-BC4A-E18D8519EB3A");
-				public static string ExportName = @"Export";
+				public static readonly Guid ImportGuid = new Guid("700D94A7-014C-4C7C-B1A2-B53229E3A1C4");
+				public static readonly string ImportName = @"Import";
+				public static readonly Guid ExportGuid = new Guid("DBB2860A-5691-449B-BC4A-E18D8519EB3A");
+				public static readonly string ExportName = @"Export";
 			}
 
 			public static class PermissionErrors
@@ -84,7 +84,7 @@ namespace kCura.IntegrationPoints.Core
 				public const string INTEGRATION_POINT_SAVE_FAILURE_USER_MESSAGE = "You do not have all required permissions to save this Integration Point. Please contact your system administrator.";
 			}
 
-			public class Telemetry
+			public static class Telemetry
 			{
 				public const string TELEMETRY_CATEGORY = "Integration Points";
 
@@ -119,7 +119,7 @@ namespace kCura.IntegrationPoints.Core
 
 			}
 
-			public class SourceProviders
+			public static class SourceProviders
 			{
 				public const string RELATIVITY = "423B4D43-EAE9-4E14-B767-17D629DE4BB2";
 				public const string FTP = "85120BC8-B2B9-4F05-99E9-DE37BB6C0E15";
@@ -127,7 +127,7 @@ namespace kCura.IntegrationPoints.Core
 				public const string IMPORTLOADFILE = "548f0873-8e5e-4da6-9f27-5f9cda764636";
 			}
 
-			public class DestinationProviders
+			public static class DestinationProviders
 			{
 				public const string RELATIVITY = "74A863B9-00EC-4BB7-9B3E-1E22323010C6";
 				public const string LOADFILE = "1D3AD995-32C5-48FE-BAA5-5D97089C8F18";
@@ -154,7 +154,7 @@ namespace kCura.IntegrationPoints.Core
 				public const string UNABLE_TO_SAVE_INTEGRATION_POINT_PROFILE_USER_MESSAGE = "Unable to save the Integration Point Profile. Please contact your system administrator.";
 			}
 
-			public class Validation
+			public static class Validation
 			{
 				public const string EMAIL = "B69D1072-63EF-4C31-9857-BCE13D1B7379";
 				public const string SCHEDULE = "D036003D-32FF-4297-84D5-2C9009C559BA";
@@ -165,14 +165,14 @@ namespace kCura.IntegrationPoints.Core
 
 		public static class Fields
 		{
-			internal static string Name = "Name";
-			internal static string ArtifactId = "ArtifactID";
-			internal static string Choices = "Choices";
-			internal static string ObjectTypeArtifactTypeId = "Object Type Artifact Type ID";
-			internal static string FieldType = "Field Type";
-			internal static string FieldTypeName = "Field Type Name";
-			internal static string IsIdentifier = "Is Identifier";
-			internal static string MultipleChoice = "Multiple Choice";
+			internal static readonly string Name = "Name";
+			internal static readonly string ArtifactId = "ArtifactID";
+			internal static readonly string Choices = "Choices";
+			internal static readonly string ObjectTypeArtifactTypeId = "Object Type Artifact Type ID";
+			internal static readonly string FieldType = "Field Type";
+			internal static readonly string FieldTypeName = "Field Type Name";
+			internal static readonly string IsIdentifier = "Is Identifier";
+			internal static readonly string MultipleChoice = "Multiple Choice";
 		}
 
 		public static class ObjectTypeArtifactTypesGuid

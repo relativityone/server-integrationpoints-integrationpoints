@@ -1,5 +1,4 @@
 ﻿using kCura.IntegrationPoints.Agent.Tasks;
-using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Exceptions;
@@ -28,7 +27,10 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			IIntegrationPointSerializer serializer = Substitute.For<IIntegrationPointSerializer>();
 			IAPILog logger = Substitute.For<IAPILog>();
 			_jobHistoryDto = new JobHistory();
-			_subjectUnderTest = new TaskExceptionService(logger, _jobHistoryErrorServiceMock, _jobHistoryServiceMock,_jobServiceMock, serializer);
+			_subjectUnderTest = new TaskExceptionService(logger, 
+				_jobHistoryErrorServiceMock, 
+				_jobHistoryServiceMock,
+				_jobServiceMock, serializer);
 		}
 
 		[Test]

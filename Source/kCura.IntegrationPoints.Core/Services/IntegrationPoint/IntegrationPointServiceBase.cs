@@ -21,7 +21,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 {
 	public abstract class IntegrationPointServiceBase<T> where T : BaseRdo, new()
 	{
-		private readonly IIntegrationPointBaseFieldGuidsConstants _guidsConstants;
 		private readonly Lazy<IRelativityObjectManager> _objectManager;
 		protected IIntegrationPointSerializer Serializer;
 		protected ICaseServiceContext Context;
@@ -44,15 +43,13 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			IIntegrationPointSerializer serializer,
 			IManagerFactory managerFactory,
 			IContextContainerFactory contextContainerFactory,
-			IValidationExecutor validationExecutor,
-			IIntegrationPointBaseFieldGuidsConstants guidsConstants)
+			IValidationExecutor validationExecutor)
 		{
 			Serializer = serializer;
 			Context = context;
 			ChoiceQuery = choiceQuery;
 			ManagerFactory = managerFactory;
 			_validationExecutor = validationExecutor;
-			_guidsConstants = guidsConstants;
 			_helper = helper;
 			SourceContextContainer = contextContainerFactory.CreateContextContainer(helper);
 			_objectManager = new Lazy<IRelativityObjectManager>(CreateObjectManager);
@@ -98,22 +95,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			{
 				throw new Exception(Constants.IntegrationPoints.UNABLE_TO_RETRIEVE_INTEGRATION_POINT, ex);
 			}
-		}
-
-		public IEnumerable<FieldMap> GetFieldMap(int artifactId)
-		{
-			IEnumerable<FieldMap> mapping = new List<FieldMap>();
-			if (artifactId > 0)
-			{
-				string fieldmap =
-						Context.RsapiService.RelativityObjectManager.Read<T>(artifactId).GetField<string>(new Guid(_guidsConstants.FieldMappings));
-
-				if (!String.IsNullOrEmpty(fieldmap))
-				{
-					mapping = Serializer.Deserialize<IEnumerable<FieldMap>>(fieldmap);
-				}
-			}
-			return mapping;
 		}
 
 		protected abstract IntegrationPointModelBase GetModel(int artifactId);

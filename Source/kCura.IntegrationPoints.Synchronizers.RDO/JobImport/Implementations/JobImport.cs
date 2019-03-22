@@ -5,7 +5,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 {
-	public abstract class JobImport<TJob> : IJobImport where TJob : IImportNotifier, IImportBulkArtifactJob, new()
+	public abstract class JobImport<TJob> : IJobImport where TJob : class, IImportNotifier, IImportBulkArtifactJob, new()
 	{
 		private TJob _job;
 		private readonly IAPILog _logger;
@@ -48,11 +48,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 		{
 			get
 			{
-				if (_job == null)
-				{
-					_job = CreateJob();
-				}
-				return _job;
+				return _job ?? (_job = CreateJob());
 			}
 		}
 

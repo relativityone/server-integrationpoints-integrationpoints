@@ -12,20 +12,21 @@ namespace kCura.IntegrationPoints.Domain.Models
 
 		public bool Equals(WorkspaceDTO other)
 		{
-			if (other == null)
-				return false;
-
-			return this.ArtifactId == other.ArtifactId;
+			return other != null && this.ArtifactId == other.ArtifactId;
 		}
 
 		public override bool Equals(object obj)
 		{
 			if (obj == null)
+			{
 				return false;
+			}
 
 			WorkspaceDTO workspaceDto = obj as WorkspaceDTO;
 			if (workspaceDto == null)
+			{
 				return false;
+			}
 
 			return Equals(workspaceDto);
 		}

@@ -58,7 +58,7 @@ properties([
 		),
 		string(
 			name: 'testsFilter', 
-			defaultValue: 'cat == SmokeTest', 
+			defaultValue: '', 
 			description: 'Set filter for integration and UI tests'
 		),
 		string(
@@ -183,7 +183,10 @@ timestamps
 
 			node ('PolandBuild')
 			{
-				dir('publishArtifactsWorkspace')
+				def publishArtifactsDirectory = 'publishArtifactsWorkspace'
+				
+				jenkinsHelpers.deleteDirectoryIfExists(publishArtifactsDirectory)
+				dir(publishArtifactsDirectory)
 				{
 					stage ('Unstash Package artifacts')
 					{

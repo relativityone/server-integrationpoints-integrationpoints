@@ -136,13 +136,10 @@
     <Compile Include="Monitoring\MessageSink\ExternalCalls\ExternalCallsSink.cs" />
     <Compile Include="Queries\IGetSourceProviderRdoByApplicationIdentifier.cs" />
     <Compile Include="Queries\IGetSourceProviderRdoByIdentifier.cs" />
-    <Compile Include="Serialization\SerializerWithLogging.cs" />
     <Compile Include="ServiceManagerProvider.cs" />
     <Compile Include="IContextContainer.cs" />
     <Compile Include="Factories\IContextContainerFactory.cs" />
-    <Compile Include="IIntegrationPointSerializer.cs" />
     <Compile Include="Installers\ValidationInstaller.cs" />
-    <Compile Include="IntegrationPointSerializer.cs" />
     <Compile Include="Managers\Implementations\FederatedInstanceManager.cs" />
     <Compile Include="Managers\Implementations\InstanceSettingsManager.cs" />
     <Compile Include="RelativitySourceRdo\IRelativitySourceJobRdoInitializer.cs" />

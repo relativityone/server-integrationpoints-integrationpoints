@@ -90,7 +90,6 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			Workspace.EnableDataGrid(GetWorkspaceId());
 
 			// TODO change implementation to IFieldManager Kepler service
-			// ChangeFieldToDataGrid(fieldNames);
 		}
 
 		public TestContext InitUser()

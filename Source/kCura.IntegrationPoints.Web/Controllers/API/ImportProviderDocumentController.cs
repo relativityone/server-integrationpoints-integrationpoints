@@ -22,15 +22,15 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 {
 	public class ImportProviderDocumentController : ApiController
 	{
-		private IFieldParserFactory _fieldParserFactory;
-		private IImportTypeService _importTypeService;
-		private IRepositoryFactory _repositoryFactory;
-		private ISerializer _serializer;
-		private IImportFileLocationService _importFileLocationService;
-		private IFile _fileIo;
-		private IStreamFactory _streamFactory;
-		private ICPHelper _helper;
-		private IAPILog _logger;
+		private readonly IFieldParserFactory _fieldParserFactory;
+		private readonly IImportTypeService _importTypeService;
+		private readonly IRepositoryFactory _repositoryFactory;
+		private readonly ISerializer _serializer;
+		private readonly IImportFileLocationService _importFileLocationService;
+		private readonly IFile _fileIo;
+		private readonly IStreamFactory _streamFactory;
+		private readonly ICPHelper _helper;
+		private readonly IAPILog _logger;
 
 		public ImportProviderDocumentController(IFieldParserFactory fieldParserFactory,
 			IImportTypeService importTypeService,

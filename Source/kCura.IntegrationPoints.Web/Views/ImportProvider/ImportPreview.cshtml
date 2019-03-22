@@ -1,162 +1,154 @@
 ﻿@{
-    Layout = "~/Views/Shared/_StepLayout.cshtml";
+	Layout = "~/Views/Shared/_StepLayout.cshtml";
 }
-
 <link href="~/Content/import-preview.css" rel="stylesheet" />
-
 <div id="preview-import">
-    <div class="preview-file-card" id="preview-file-header">
-        <p id="preview-file-header-container">
-            <span id="preview-file-text">Preview Load File</span>
-        </p>
-        <div id="preview-file-button">
-            <button class="button generic preview-file-closeBtn">Close</button>
-        </div>
-    </div>
+	<div class="preview-file-card" id="preview-file-header">
+		<p id="preview-file-header-container">
+			<span id="preview-file-text">Preview Load File</span>
+		</p>
+		<div id="preview-file-button">
+			<button class="button generic preview-file-closeBtn">Close</button>
+		</div>
+	</div>
 
-
-    <div class="card" id="step-progress-container">
-        <p class="card-header">
-            <span>Load File Summary</span>
-        </p>
-        <div id="preview-file-collapse">
-            <span class="arrow-collapsed-summary" id="import-load-file-summary-toggle"></span>
-        </div>
-        <table style="width: 100%" id="preview-file-table">
-            <tr>
-                <td style="width: 48%">
-                    <div id="preview-file-processing-container-left">
-                        <div id="preview-file-progress-bar-container">
-                            <div id="preview-import-processingBar-text">
-                                Preparing Preview
-                            </div>
-                            <div class="progress-bar-outline">
-                                <div class="progress-bar-indicator progress-active" id="progressBar" style="width: 0%"></div>
-                            </div>
-                        </div>
-
-                        <div id="preview-file-percent-container">
-                            <div id="previewFilePercent">0%</div>
-                        </div>
-
-                    </div>
-                </td>
-                <td style="width: 48%">
-                    <div id="transfer-time-stats" class="height-width-100">
-                        <div id="active-transfer-stats">
-                            <div class="active-transfer-stats-line">
-                                <p class="summary-title">PROGRESS SUMMARY</p>
-                                <div class="card-line display-flex flex-container-row">
-                                    <div class="card-label-div">
-                                        <label>Status</label>
-                                    </div>
-                                    <div class="card-value-div">
-                                        <p class="active-transfer-status-active" id="statusMessage">-</p>
-                                    </div>
-                                </div>
-                                <br />
-                                <div class="card-line display-flex flex-container-row">
-                                    <div class="card-label-div">
-                                        <label>Time Elapsed</label>
-                                    </div>
-                                    <div class="card-value-div">
-                                        <p class="elapsed-time">00:00:00</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="active-transfer-stats-line">
-                                <p class="summary-title">Load File Breakdown</p>
-                                <div class="card-line display-flex flex-container-row">
-                                    <div class="card-label-div">
-                                        <label>Total Records</label>
-                                    </div>
-                                    <div class="card-value-div">
-                                        <p class="transferred-files" id="totalRecord">--</p>
-                                    </div>
-                                </div>
-                                <br />
-                                <div class="card-line display-flex flex-container-row">
-                                    <div class="card-label-div">
-                                        <label>Total Bytes Read</label>
-                                    </div>
-                                    <div class="card-value-div">
-                                        <p id="total-bytes-read">--</p>
-                                    </div>
-                                </div>
-                                <br />
-                                <div class="card-line display-flex flex-container-row">
-                                    <div class="card-label-div">
-                                        <label>Total Bytes</label>
-                                    </div>
-                                    <div class="card-value-div">
-                                        <p id="total-bytes">--</p>
-                                    </div>
-                                </div>
-                                @*<br/>
-                                    <div class="card-line display-flex flex-container-row">
-                                        <div class="card-label-div">
-                                            <label>Warnings</label>
-                                        </div>
-                                        <div class="card-value-div">
-                                            <p>3</p>
-                                        </div>
-                                    </div>*@
-                                <br />
-                                <div class="card-line display-flex flex-container-row">
-                                    <div class="card-label-div">
-                                        <label>Errors</label>
-                                    </div>
-                                    <div class="card-value-div">
-                                        <p id="errors-div">--</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </td>
-            </tr>
-        </table>
-    </div>
-
-    <div class="row" style="display: none">
-        <div class="card" id="tableData">
-            <p class="card-header preview-card-header">Records</p>
-            <span class="pagination-controls">
-                <span class="pag-text">Items</span>
-                <input id="row-number" value="0" />
-                <span class="pag-items">-</span>
-                <span class="itemCountContainer">
-                    <select id="itemsPerPageSelect">
-                        <option value="10">10</option>
-                        <option selected value="15">15</option>
-                        <option value="25">25</option>
-                        <option value="50">50</option>
-                        <option value="100">100</option>
-                        <option value="200">200</option>
-                        <option value="500">500</option>
-                        <option value="1000">1000</option>
-                    </select>
-                </span>
-                <span class="pag-text"> per page</span>
-                <span class="pag-nav-button-holder">
-                    <span id="pag-nav-move-first"></span>
-                    <span id="pag-nav-move-previous"></span>
-                    <span id="pag-nav-move-next"></span>
-                    <span id="pag-nav-move-last"></span>
-                </span>
-            </span>
-            <div class="transfers-table">
-                <table id="csvData-table" class="table compact"></table>
-            </div>
-        </div>
-    </div>
+	<div class="card" id="step-progress-container">
+		<p class="card-header">
+			<span>Load File Summary</span>
+		</p>
+		<div id="preview-file-collapse">
+			<span class="arrow-collapsed-summary" id="import-load-file-summary-toggle"></span>
+		</div>
+		<table style="width: 100%" id="preview-file-table">
+			<tr>
+				<td style="width: 48%">
+					<div id="preview-file-processing-container-left">
+						<div id="preview-file-progress-bar-container">
+							<div id="preview-import-processingBar-text">
+								Preparing Preview
+							</div>
+							<div class="progress-bar-outline">
+								<div class="progress-bar-indicator progress-active" id="progressBar" style="width: 0%"></div>
+							</div>
+						</div>
+						<div id="preview-file-percent-container">
+							<div id="previewFilePercent">0%</div>
+						</div>
+					</div>
+				</td>
+				<td style="width: 48%">
+					<div id="transfer-time-stats" class="height-width-100">
+						<div id="active-transfer-stats">
+							<div class="active-transfer-stats-line">
+								<p class="summary-title">PROGRESS SUMMARY</p>
+								<div class="card-line display-flex flex-container-row">
+									<div class="card-label-div">
+										<label>Status</label>
+									</div>
+									<div class="card-value-div">
+										<p class="active-transfer-status-active" id="statusMessage">-</p>
+									</div>
+								</div>
+								<br />
+								<div class="card-line display-flex flex-container-row">
+									<div class="card-label-div">
+										<label>Time Elapsed</label>
+									</div>
+									<div class="card-value-div">
+										<p class="elapsed-time">00:00:00</p>
+									</div>
+								</div>
+							</div>
+							<div class="active-transfer-stats-line">
+								<p class="summary-title">Load File Breakdown</p>
+								<div class="card-line display-flex flex-container-row">
+									<div class="card-label-div">
+										<label>Total Records</label>
+									</div>
+									<div class="card-value-div">
+										<p class="transferred-files" id="totalRecord">--</p>
+									</div>
+								</div>
+								<br />
+								<div class="card-line display-flex flex-container-row">
+									<div class="card-label-div">
+										<label>Total Bytes Read</label>
+									</div>
+									<div class="card-value-div">
+										<p id="total-bytes-read">--</p>
+									</div>
+								</div>
+								<br />
+								<div class="card-line display-flex flex-container-row">
+									<div class="card-label-div">
+										<label>Total Bytes</label>
+									</div>
+									<div class="card-value-div">
+										<p id="total-bytes">--</p>
+									</div>
+								</div>
+								@*<br/>
+									<div class="card-line display-flex flex-container-row">
+										<div class="card-label-div">
+											<label>Warnings</label>
+										</div>
+										<div class="card-value-div">
+											<p>3</p>
+										</div>
+									</div>*@
+								<br />
+								<div class="card-line display-flex flex-container-row">
+									<div class="card-label-div">
+										<label>Errors</label>
+									</div>
+									<div class="card-value-div">
+										<p id="errors-div">--</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div class="row" style="display: none">
+		<div class="card" id="tableData">
+			<p class="card-header preview-card-header">Records</p>
+			<span class="pagination-controls">
+				<span class="pag-text">Items</span>
+				<input id="row-number" value="0" />
+				<span class="pag-items">-</span>
+				<span class="itemCountContainer">
+					<select id="itemsPerPageSelect">
+						<option value="10">10</option>
+						<option selected value="15">15</option>
+						<option value="25">25</option>
+						<option value="50">50</option>
+						<option value="100">100</option>
+						<option value="200">200</option>
+						<option value="500">500</option>
+						<option value="1000">1000</option>
+					</select>
+				</span>
+				<span class="pag-text"> per page</span>
+				<span class="pag-nav-button-holder">
+					<span id="pag-nav-move-first"></span>
+					<span id="pag-nav-move-previous"></span>
+					<span id="pag-nav-move-next"></span>
+					<span id="pag-nav-move-last"></span>
+				</span>
+			</span>
+			<div class="transfers-table">
+				<table id="csvData-table" class="table compact"></table>
+			</div>
+		</div>
+	</div>
 </div>
-
 @section scripts
 {
-    <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
-    <script src="~/Scripts/core/data.js"></script>
-    <script src="~/Scripts/core/utils.js"></script>
-    <script src="~/Scripts/Import/import-preview.js"></script>
-
+	<script src="~/Scripts/jquery.dataTables.min.js"></script>
+	<script src="~/Scripts/core/data.js"></script>
+	<script src="~/Scripts/core/utils.js"></script>
+	<script src="~/Scripts/Import/import-preview.js"></script>
 }
