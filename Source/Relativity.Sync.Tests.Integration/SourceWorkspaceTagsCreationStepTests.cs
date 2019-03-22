@@ -17,6 +17,7 @@ using Relativity.Services.Objects.DataContracts;
 using Moq;
 using Relativity.Services.DataContracts.DTOs;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Logging;
 
 namespace Relativity.Sync.Tests.Integration
 {
@@ -25,7 +26,6 @@ namespace Relativity.Sync.Tests.Integration
 	{
 		private IExecutor<ISourceWorkspaceTagsCreationConfiguration> _executor;
 		private Mock<IObjectManager> _objectManagerMock;
-		private Mock<ISourceServiceFactoryForUser> _serviceFactoryMock;
 
 		private static readonly Guid _NAME_FIELD_GUID = Guid.Parse("155649c0-db15-4ee7-b449-bfdf2a54b7b5");
 		private static readonly Guid _DESTINATION_WORKSPACE_ARTIFACTID_FIELD_GUID = Guid.Parse("207E6836-2961-466B-A0D2-29974A4FAD36");
@@ -53,16 +53,15 @@ namespace Relativity.Sync.Tests.Integration
 			IntegrationTestsContainerBuilder.MockStepsExcept<ISourceWorkspaceTagsCreationConfiguration>(containerBuilder);
 
 			_objectManagerMock = new Mock<IObjectManager>();
-			_serviceFactoryMock = new Mock<ISourceServiceFactoryForUser>();
-			_serviceFactoryMock.Setup(x => x.CreateProxyAsync<IObjectManager>()).Returns(Task.FromResult(_objectManagerMock.Object));
+			var serviceFactoryMock = new Mock<ISourceServiceFactoryForUser>();
+			serviceFactoryMock.Setup(x => x.CreateProxyAsync<IObjectManager>()).Returns(Task.FromResult(_objectManagerMock.Object));
 
-			containerBuilder.RegisterInstance(_serviceFactoryMock.Object).As<ISourceServiceFactoryForUser>();
+			containerBuilder.RegisterInstance(serviceFactoryMock.Object).As<ISourceServiceFactoryForUser>();
 			containerBuilder.RegisterType<SourceWorkspaceTagsCreationExecutor>().As<IExecutor<ISourceWorkspaceTagsCreationConfiguration>>();
 
 			CorrelationId correlationId = new CorrelationId(Guid.NewGuid().ToString());
 
-			Mock<ISyncLog> loggerMock = new Mock<ISyncLog>();
-			containerBuilder.RegisterInstance(loggerMock.Object).As<ISyncLog>();
+			containerBuilder.RegisterInstance(new EmptyLogger()).As<ISyncLog>();
 			containerBuilder.RegisterInstance(correlationId).As<CorrelationId>();
 
 			IContainer container = containerBuilder.Build();
@@ -443,7 +442,7 @@ namespace Relativity.Sync.Tests.Integration
 			_objectManagerMock.Setup(x => x.CreateAsync(
 				srcWorkspaceArtifactId,
 				It.IsAny<CreateRequest>())
-				).Throws(new Exception("Blech blooch blar"));
+				).Throws<Exception>();
 
 			DestinationWorkspaceTagRepositoryException thrownException = Assert.Throws<DestinationWorkspaceTagRepositoryException>(() =>
 				_executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult());
@@ -526,7 +525,7 @@ namespace Relativity.Sync.Tests.Integration
 			_objectManagerMock.Setup(x => x.UpdateAsync(
 				sourceWorkspaceArtifactID,
 				It.Is<UpdateRequest>(y => y.Object.ArtifactID == destinationWorkspaceTagArtifactId))
-				).Throws(new Exception("blah blah blah"));
+			).Throws<Exception>();
 
 			DestinationWorkspaceTagRepositoryException thrownException = Assert.Throws<DestinationWorkspaceTagRepositoryException>(() =>
 				_executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult());
@@ -576,7 +575,7 @@ namespace Relativity.Sync.Tests.Integration
 			_objectManagerMock.Setup(x => x.UpdateAsync(
 				sourceWorkspaceArtifactID,
 				It.Is<UpdateRequest>(y => y.Object.ArtifactID == jobArtifactId))
-				).Throws(new Exception("blah blah blah"));
+			).Throws<Exception>();
 
 			DestinationWorkspaceTagsLinkerException thrownException = Assert.Throws<DestinationWorkspaceTagsLinkerException>(() =>
 				_executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult());
@@ -615,7 +614,7 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<int>(),
 				CancellationToken.None,
 				It.IsAny<IProgress<ProgressReport>>()
-				)).Throws(new Exception("blah blah blah"));
+			)).Throws<Exception>();
 
 			DestinationWorkspaceTagRepositoryException thrownException = Assert.Throws<DestinationWorkspaceTagRepositoryException>(() =>
 				_executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult());
