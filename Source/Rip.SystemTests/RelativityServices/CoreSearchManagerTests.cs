@@ -37,7 +37,7 @@ namespace Rip.SystemTests.RelativityServices
 		private const int _DOCUMENT_ARTIFACT_TYPE_ID = 10;
 
 		[OneTimeSetUp]
-		public void OneSetup()
+		public void OneTimeSetup()
 		{
 			_workspaceID = SystemTestsFixture.WorkspaceID;
 			_testHelper = SystemTestsFixture.TestHelper;

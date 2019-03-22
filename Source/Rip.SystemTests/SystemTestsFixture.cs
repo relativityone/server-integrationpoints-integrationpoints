@@ -33,12 +33,11 @@ namespace Rip.SystemTests
 		[OneTimeSetUp]
 		public void InitializeFixture()
 		{
-			CreateAndConfigureWorkspaces().GetAwaiter().GetResult();
-
 			Container = new WindsorContainer();
 			ConfigurationStore = new DefaultConfigurationStore();
 			TestHelper = new TestHelper();
 
+			CreateAndConfigureWorkspaces().GetAwaiter().GetResult();
 			InitializeContainer();
 		}
 
