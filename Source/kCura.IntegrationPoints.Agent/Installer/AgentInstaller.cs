@@ -34,6 +34,7 @@ using kCura.WinEDDS.Service.Export;
 using Relativity.API;
 using Relativity.Toggles;
 using System;
+using kCura.IntegrationPoints.Data.Repositories;
 using ITaskFactory = kCura.IntegrationPoints.Agent.TaskFactory.ITaskFactory;
 
 namespace kCura.IntegrationPoints.Agent.Installer
@@ -158,8 +159,8 @@ namespace kCura.IntegrationPoints.Agent.Installer
 					IRepositoryFactory sourceRepositoryFactory = k.Resolve<IRepositoryFactory>();
 					JobContextProvider jobContextProvider = k.Resolve<JobContextProvider>();
 					int integrationPointId = jobContextProvider.Job.RelatedObjectArtifactID;
-					ICaseServiceContext caseServiceContext = k.Resolve<ICaseServiceContext>();
-					IntegrationPoint integrationPoint = caseServiceContext.RsapiService.RelativityObjectManager.Read<IntegrationPoint>(integrationPointId);
+					IIntegrationPointRepository integrationPointRepository = k.Resolve<IIntegrationPointRepository>();
+					IntegrationPoint integrationPoint = integrationPointRepository.ReadAsync(integrationPointId).GetAwaiter().GetResult();
 					if (integrationPoint == null)
 					{
 						throw new ArgumentException("Failed to retrieved corresponding Integration Point.");
