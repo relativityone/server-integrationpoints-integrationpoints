@@ -24,7 +24,7 @@ function store_tests_results($branch_id, $build_name, $test_type, $test_results_
 		    TestType = $test_type
 		    Duration = $testCase.duration
 		    Categories = @(find_categories $testCase)
-		    Message = @(find_message $testCase)
+		    Message = find_message $testCase
 	    } | ConvertTo-Json
 
         $request = Invoke-WebRequest -Uri $url -UseBasicParsing -ContentType "application/json" -Method POST -Body $body
@@ -91,4 +91,4 @@ function find_message($testCaseNode)
         Write-Host "Failed to find message of test case: $($_.Exception.Message)"
     }
     $message
-}
+}
