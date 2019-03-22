@@ -41,7 +41,13 @@ namespace kCura.IntegrationPoints.UITests.Driver
 		private static RemoteWebDriver CreateDriver(ChromeDriverService driverService, ChromeOptions options)
 		{
 			RemoteWebDriver driver = new ChromeDriver(driverService, options);
+			HandleIncompatibleDriverAndBrowserVersions(driver);
 
+			return driver;
+		}
+
+		private static void HandleIncompatibleDriverAndBrowserVersions(RemoteWebDriver driver)
+		{
 			string browserVersion = DriverFactory.GetBrowserVersion(driver);
 			string driverVersion = GetChromeDriverVersion(driver);
 			if (!IsDriverAndBrowserCompatible(browserVersion, driverVersion))
@@ -49,16 +55,14 @@ namespace kCura.IntegrationPoints.UITests.Driver
 				driver.Dispose();
 				throw new UiTestException($"Please update Selenium.WebDriver.ChromeDriver package {driverVersion}, as it is not compatible with Chrome {browserVersion}.");
 			}
-
-			return driver;
 		}
 
-		private static bool IsDriverAndBrowserCompatible(string browserVersionAsString, string driverVersionAsString)
+		private static bool IsDriverAndBrowserCompatible(string browserVersion, string driverVersion)
 		{
-			string browserMajorVersion = GetMajorVersion(browserVersionAsString);
-			string driverMajorVersion = GetMajorVersion(driverVersionAsString);
+			string browserMajorVersion = GetMajorVersion(browserVersion);
+			string driverMajorVersion = GetMajorVersion(driverVersion);
 
-			if (string.IsNullOrEmpty(browserVersionAsString) || string.IsNullOrEmpty(driverMajorVersion))
+			if (string.IsNullOrEmpty(browserVersion) || string.IsNullOrEmpty(driverMajorVersion))
 			{
 				return false;
 			}
