@@ -17,7 +17,6 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Monitoring;
 using kCura.IntegrationPoints.Core.Monitoring.JobLifetime;
 using kCura.IntegrationPoints.Core.Queries;
-using kCura.IntegrationPoints.Core.Serialization;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.DestinationTypes;
 using kCura.IntegrationPoints.Core.Services.Domain;
@@ -56,7 +55,7 @@ using Relativity.Toggles.Providers;
 using System;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
-using Castle.MicroKernel.Resolvers;
+using kCura.IntegrationPoints.Data.Installers;
 using IFederatedInstanceManager = kCura.IntegrationPoints.Domain.Managers.IFederatedInstanceManager;
 
 namespace kCura.IntegrationPoints.Core.Installers
@@ -216,6 +215,8 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IMetricsManagerFactory>().ImplementedBy<MetricsManagerFactory>().LifestyleSingleton());
 			container.Register(Component.For<IConfig>().Instance(Config.Config.Instance).LifestyleSingleton());
 			container.Register(Component.For<IMessageService>().ImplementedBy<IntegrationPointsMessageService>().LifestyleSingleton());
+
+			container.AddRepositories();
 		}
 
 		private SqlServerToggleProvider CreateSqlServerToggleProvider(IHelper helper)

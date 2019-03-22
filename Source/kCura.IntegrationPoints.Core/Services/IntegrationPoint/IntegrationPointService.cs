@@ -12,12 +12,14 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
-using kCura.Relativity.Client.DTOs;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
+using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 {
@@ -31,6 +33,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		private readonly IJobManager _jobService;
 		private readonly IMessageService _messageService;
 		private readonly IProviderTypeService _providerTypeService;
+		private readonly IIntegrationPointRepository _integrationPointRepository;
 
 		protected override string UnableToSaveFormat
 			=> "Unable to save Integration Point:{0} cannot be changed once the Integration Point has been run";
@@ -39,15 +42,17 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			IHelper helper,
 			ICaseServiceContext context,
 			IContextContainerFactory contextContainerFactory,
-			IIntegrationPointSerializer serializer, IChoiceQuery choiceQuery,
+			IIntegrationPointSerializer serializer, 
+			IChoiceQuery choiceQuery,
 			IJobManager jobService,
 			IJobHistoryService jobHistoryService,
 			IJobHistoryErrorService jobHistoryErrorService,
 			IManagerFactory managerFactory,
 			IValidationExecutor validationExecutor, 
 			IProviderTypeService providerTypeService, 
-			IMessageService messageService)
-			: base(helper, context, choiceQuery, serializer, managerFactory, contextContainerFactory, validationExecutor, new IntegrationPointFieldGuidsConstants())
+			IMessageService messageService,
+			IIntegrationPointRepository integrationPointRepository)
+			: base(helper, context, choiceQuery, serializer, managerFactory, contextContainerFactory, validationExecutor)
 		{
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<IntegrationPointService>();
 			_jobService = jobService;
@@ -56,17 +61,18 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			_providerTypeService = providerTypeService;
 			_messageService = messageService;
 			_validationExecutor = validationExecutor;
+			_integrationPointRepository = integrationPointRepository;
 		}
 
-		protected override IntegrationPointModelBase GetModel(int artifactId)
+		protected override IntegrationPointModelBase GetModel(int artifactID)
 		{
-			return ReadIntegrationPoint(artifactId);
+			return ReadIntegrationPoint(artifactID);
 		}
 
-		public virtual IntegrationPointModel ReadIntegrationPoint(int artifactId)
+		public virtual IntegrationPointModel ReadIntegrationPoint(int artifactID)
 		{
-			Data.IntegrationPoint integrationPoint = GetRdo(artifactId);
-			var integrationModel = IntegrationPointModel.FromIntegrationPoint(integrationPoint);
+			Data.IntegrationPoint integrationPoint = _integrationPointRepository.ReadAsync(artifactID).GetAwaiter().GetResult();
+			IntegrationPointModel integrationModel = IntegrationPointModel.FromIntegrationPoint(integrationPoint);
 			return integrationModel;
 		}
 
@@ -173,7 +179,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 			try
 			{
-				integrationPoint = GetRdo(integrationPointArtifactId);
+				integrationPoint = _integrationPointRepository.ReadAsync(integrationPointArtifactId).GetAwaiter().GetResult();
 				sourceProvider = GetSourceProvider(integrationPoint.SourceProvider);
 				destinationProvider = GetDestinationProvider(integrationPoint.DestinationProvider);
 			}
@@ -201,7 +207,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 			try
 			{
-				integrationPoint = GetRdo(integrationPointArtifactId);
+				integrationPoint = _integrationPointRepository.ReadAsync(integrationPointArtifactId).GetAwaiter().GetResult();
 				sourceProvider = GetSourceProvider(integrationPoint.SourceProvider);
 				destinationProvider = GetDestinationProvider(integrationPoint.DestinationProvider);
 			}
@@ -255,7 +261,8 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 		private void CheckStopPermission(int integrationPointArtifactId)
 		{
-			Data.IntegrationPoint integrationPoint = GetRdo(integrationPointArtifactId);
+			Data.IntegrationPoint integrationPoint =
+				_integrationPointRepository.ReadAsync(integrationPointArtifactId).GetAwaiter().GetResult();
 			SourceProvider sourceProvider = GetSourceProvider(integrationPoint.SourceProvider);
 			DestinationProvider destinationProvider = GetDestinationProvider(integrationPoint.DestinationProvider);
 			IntegrationPointType integrationPointType = GetIntegrationPointType(integrationPoint.Type);
@@ -296,17 +303,17 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			HashSet<int> erroredPendingJobs = new HashSet<int>();
 
 			// Mark jobs to be stopped in queue table
-			foreach (int artifactId in allStoppableJobArtifactIds)
+			foreach (int artifactID in allStoppableJobArtifactIds)
 			{
 				try
 				{
-					StopScheduledAgentJobs(jobs, artifactId);
+					StopScheduledAgentJobs(jobs, artifactID);
 				}
 				catch (Exception exception)
 				{
-					if (stoppableJobCollection.PendingJobArtifactIds.Contains(artifactId))
+					if (stoppableJobCollection.PendingJobArtifactIds.Contains(artifactID))
 					{
-						erroredPendingJobs.Add(artifactId);
+						erroredPendingJobs.Add(artifactID);
 					}
 					exceptions.Add(exception);
 				}
@@ -461,9 +468,15 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 		private void SetHasErrorOnIntegrationPoint(int integrationPointArtifactId)
 		{
-			Data.IntegrationPoint integrationPoint = GetRdo(integrationPointArtifactId);
+			Data.IntegrationPoint integrationPoint =
+				_integrationPointRepository.ReadAsync(integrationPointArtifactId).GetAwaiter().GetResult();
 			integrationPoint.HasErrors = true;
 			Context.RsapiService.RelativityObjectManager.Update(integrationPoint);
+		}
+
+		public IEnumerable<FieldMap> GetFieldMap(int artifactID)
+		{
+			return _integrationPointRepository.GetFieldMappingAsync(artifactID).GetAwaiter().GetResult();
 		}
 
 		private static string GetValidationErrorMessage(Exception ex)

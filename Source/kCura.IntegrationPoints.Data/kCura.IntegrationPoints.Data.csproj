@@ -33,6 +33,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="kCura.Apps.Common.Utils, Version=2.1.8.2, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\kCura.Apps.Common.Utils\lib\net462\kCura.Apps.Common.Utils.dll</HintPath>
+    </Reference>
     <Reference Include="Relativity.APIHelper, Version=10.0.85.14, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\RelativityCore\lib\net462\Relativity.APIHelper.dll</HintPath>
@@ -87,7 +91,10 @@
     <Compile Include="IIntegrationPointBaseFieldGuidsConstants.cs" />
     <Compile Include="IIntegrationPointBaseFieldsConstants.cs" />
     <Compile Include="IIntegrationPointQuery.cs" />
+    <Compile Include="IIntegrationPointSerializer.cs" />
+    <Compile Include="Installers\RepositoryRegistration.cs" />
     <Compile Include="IntegrationPointBaseQuery.cs" />
+    <Compile Include="IntegrationPointSerializer.cs" />
     <Compile Include="Interfaces\IRetryHandlerFactory.cs" />
     <Compile Include="IResourceDbProvider.cs" />
     <Compile Include="IResourcePoolContext.cs" />
@@ -117,9 +124,11 @@
     <Compile Include="Repositories\ICaseRepository.cs" />
     <Compile Include="Repositories\IFileRepository.cs" />
     <Compile Include="Repositories\IFoundationRepositoryFactory.cs" />
+    <Compile Include="Repositories\IIntegrationPointRepository.cs" />
     <Compile Include="Repositories\Implementations\AuditRepository.cs" />
     <Compile Include="Repositories\Implementations\CaseRepository.cs" />
     <Compile Include="Repositories\Implementations\DTO\CaseInfoDto.cs" />
+    <Compile Include="Repositories\Implementations\IntegrationPointRepository.cs" />
     <Compile Include="Repositories\Implementations\ViewFieldInfoFieldTypeExtender.cs" />
     <Compile Include="Repositories\Implementations\FileRepository.cs" />
     <Compile Include="Repositories\Implementations\FoundationRepositoryFactory.cs" />
@@ -146,6 +155,7 @@
     <Compile Include="SecretStore\ISecretManagerFactory.cs" />
     <Compile Include="SecretStore\SecretManagerFactory.cs" />
     <Compile Include="RsapiClientWithWorkspaceFactory.cs" />
+    <Compile Include="SerializerWithLogging.cs" />
     <Compile Include="Statistics\IErrorFilesSizeStatistics.cs" />
     <Compile Include="Statistics\Implementations\DocumentTotalStatistics.cs" />
     <Compile Include="Statistics\IDocumentTotalStatistics.cs" />

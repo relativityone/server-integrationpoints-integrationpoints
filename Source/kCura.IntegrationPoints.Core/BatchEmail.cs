@@ -10,6 +10,7 @@ using kCura.IntegrationPoints.Core.Services.Keywords;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
@@ -21,29 +22,33 @@ namespace kCura.IntegrationPoints.Core
 	{
 		private readonly IJobStatusUpdater _jobStatusUpdater;
 		private readonly KeywordConverter _converter;
+
 		public BatchEmail(ICaseServiceContext caseServiceContext,
-		  IHelper helper,
-		  IDataProviderFactory dataProviderFactory,
-		  Apps.Common.Utils.Serializers.ISerializer serializer,
-		  ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
-		  IJobHistoryService jobHistoryService,
-		  IJobHistoryErrorService jobHistoryErrorService,
-		  IJobManager jobManager,
-		  IJobStatusUpdater jobStatusUpdater,
-		  KeywordConverter converter,
-		  IManagerFactory managerFactory,
-		  IContextContainerFactory contextContainerFactory,
-		  IJobService jobService) : base(caseServiceContext,
-		   helper,
-		   dataProviderFactory,
-		   serializer,
-		   appDomainRdoSynchronizerFactoryFactory,
-		   jobHistoryService,
-		   jobHistoryErrorService,
-		   jobManager,
-		   managerFactory,
-		   contextContainerFactory,
-		   jobService)
+			IHelper helper,
+			IDataProviderFactory dataProviderFactory,
+			Apps.Common.Utils.Serializers.ISerializer serializer,
+			ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
+			IJobHistoryService jobHistoryService,
+			IJobHistoryErrorService jobHistoryErrorService,
+			IJobManager jobManager,
+			IJobStatusUpdater jobStatusUpdater,
+			KeywordConverter converter,
+			IManagerFactory managerFactory,
+			IContextContainerFactory contextContainerFactory,
+			IJobService jobService,
+			IIntegrationPointRepository integrationPointRepository)
+			: base(caseServiceContext,
+				helper,
+				dataProviderFactory,
+				serializer,
+				appDomainRdoSynchronizerFactoryFactory,
+				jobHistoryService,
+				jobHistoryErrorService,
+				jobManager,
+				managerFactory,
+				contextContainerFactory,
+				jobService,
+				integrationPointRepository)
 		{
 			_jobStatusUpdater = jobStatusUpdater;
 			_converter = converter;
