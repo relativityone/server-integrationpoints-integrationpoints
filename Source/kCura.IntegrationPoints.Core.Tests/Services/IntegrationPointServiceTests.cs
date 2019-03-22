@@ -172,6 +172,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			_jobHistoryManager.GetLastJobHistoryArtifactId(_sourceWorkspaceArtifactId, _integrationPointArtifactId)
 				.Returns(_previousJobHistoryArtifactId);
+			_caseServiceContext.RsapiService.RelativityObjectManager.Read<Data.JobHistory>(_previousJobHistoryArtifactId).Returns(_previousJobHistory);
+
 			_integrationPointRepository.ReadAsync(_integrationPointArtifactId).Returns(_integrationPoint);
 
 			_caseServiceContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(_integrationPointArtifactId).Returns(_integrationPoint);
