@@ -19,7 +19,7 @@ namespace Relativity.Sync.Executors
 
 		private static readonly Guid JobHistoryNameGuid = new Guid("07061466-5fab-4581-979c-c801e8207370");
 		private static readonly Guid JobHistoryIdFieldGuid = new Guid("2bf54e79-7f75-4a51-a99a-e4d68f40a231");
-		private static readonly Guid JobNameFieldGuid = new Guid(""); // TODO
+		private static readonly Guid JobNameFieldGuid = Guid.NewGuid(); // TODO
 
 		public RelativitySourceJobTagRepository(ISourceServiceFactoryForUser sourceServiceFactoryForUser, ITagNameFormatter tagNameFormatter, ISyncLog logger)
 		{
@@ -28,9 +28,9 @@ namespace Relativity.Sync.Executors
 			_logger = logger;
 		}
 
-		public async Task<RelativitySourceJobTag> CreateAsync(int sourceJobArtifactTypeId, int destinationWorkspaceArtifactId, RelativitySourceJobTag sourceJobTag, CancellationToken token)
+		public async Task<RelativitySourceJobTag> CreateAsync(int destinationWorkspaceArtifactId, RelativitySourceJobTag sourceJobTag, CancellationToken token)
 		{
-			string jobHistoryName = await GetJobHistoryNameAsync(sourceJobTag.SourceCaseTagArtifactId, sourceJobArtifactTypeId, token).ConfigureAwait(false);
+			string jobHistoryName = await GetJobHistoryNameAsync(sourceJobTag.SourceCaseTagArtifactId, sourceJobTag.ArtifactId, token).ConfigureAwait(false);
 			string tagName = _tagNameFormatter.FormatSourceJobTagName(jobHistoryName, sourceJobTag.JobHistoryArtifactId);
 
 			using (IObjectManager objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
@@ -41,7 +41,7 @@ namespace Relativity.Sync.Executors
 					{
 						ArtifactTypeID = sourceJobTag.ArtifactTypeId
 					},
-					FieldValues = CreateFieldValues(tagName, sourceJobArtifactTypeId, jobHistoryName)
+					FieldValues = CreateFieldValues(tagName, sourceJobTag.ArtifactId, jobHistoryName)
 				};
 
 				CreateResult result;
@@ -67,7 +67,7 @@ namespace Relativity.Sync.Executors
 					ArtifactTypeId = sourceJobTag.ArtifactTypeId,
 					Name = tagName,
 					SourceCaseTagArtifactId = sourceJobTag.SourceCaseTagArtifactId,
-					JobHistoryArtifactId = sourceJobArtifactTypeId,
+					JobHistoryArtifactId = sourceJobTag.JobHistoryArtifactId,
 					JobHistoryName = jobHistoryName
 				};
 				

@@ -31,8 +31,7 @@ namespace Relativity.Sync.Executors
 				SourceCaseTagArtifactId = sourceCaseTagArtifactId
 			};
 
-			RelativitySourceJobTag newSourceJobTag = await _relativitySourceJobTagRepository.CreateAsync(
-				configuration.SourceJobArtifactTypeId, configuration.DestinationWorkspaceArtifactId, sourceJobTag, token).ConfigureAwait(false);
+			RelativitySourceJobTag newSourceJobTag = await _relativitySourceJobTagRepository.CreateAsync(configuration.DestinationWorkspaceArtifactId, sourceJobTag, token).ConfigureAwait(false);
 
 			return newSourceJobTag;
 		}
