@@ -1,20 +1,19 @@
 ﻿using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Executors;
+using Relativity.Sync.Logging;
 
 namespace Relativity.Sync.Tests.Unit.Executors
 {
 	[TestFixture]
 	public sealed class TagNameFormatterTests
 	{
-		private Mock<ISyncLog> _logger;
 		private TagNameFormatter _sut;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_logger = new Mock<ISyncLog>();
-			_sut = new TagNameFormatter(_logger.Object);
+			_sut = new TagNameFormatter(new EmptyLogger());
 		}
 
 		[Test]

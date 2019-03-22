@@ -67,6 +67,7 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 
 		public void SetSourceWorkspaceTag(int artifactId, string name)
 		{
+			// Method intentionally left empty.
 		}
 
 

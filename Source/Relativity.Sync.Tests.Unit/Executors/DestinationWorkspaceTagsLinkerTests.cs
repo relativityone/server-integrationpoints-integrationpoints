@@ -9,6 +9,7 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Executors;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Logging;
 
 namespace Relativity.Sync.Tests.Unit.Executors
 {
@@ -16,7 +17,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 	public sealed class DestinationWorkspaceTagsLinkerTests
 	{
 		private Mock<ISourceServiceFactoryForUser> _serviceFactory;
-		private Mock<ISyncLog> _logger;
 
 		private DestinationWorkspaceTagLinker _sut;
 
@@ -24,9 +24,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		public void SetUp()
 		{
 			_serviceFactory = new Mock<ISourceServiceFactoryForUser>();
-			_logger = new Mock<ISyncLog>();
 
-			_sut = new DestinationWorkspaceTagLinker(_serviceFactory.Object, _logger.Object);
+			_sut = new DestinationWorkspaceTagLinker(_serviceFactory.Object, new EmptyLogger());
 		}
 
 		[Test]

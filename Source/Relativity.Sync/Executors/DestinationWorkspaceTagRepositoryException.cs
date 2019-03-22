@@ -4,14 +4,14 @@ using System.Runtime.Serialization;
 namespace Relativity.Sync.Executors
 {
 	/// <summary>
-	///     Exception thrown by methods of <see cref="IDestinationWorkspaceTagRepository"/>
+	///     Exception thrown by methods of <see cref="IDestinationWorkspaceTagRepository" />
 	///     when errors occur in external services.
 	/// </summary>
 	[Serializable]
 	public sealed class DestinationWorkspaceTagRepositoryException : Exception
 	{
 		/// <inheritdoc />
-		public DestinationWorkspaceTagRepositoryException() : base()
+		public DestinationWorkspaceTagRepositoryException()
 		{
 		}
 
@@ -21,7 +21,7 @@ namespace Relativity.Sync.Executors
 		}
 
 		/// <inheritdoc />
-		public DestinationWorkspaceTagRepositoryException(string message, System.Exception innerException) : base(message, innerException)
+		public DestinationWorkspaceTagRepositoryException(string message, Exception innerException) : base(message, innerException)
 		{
 		}
 
