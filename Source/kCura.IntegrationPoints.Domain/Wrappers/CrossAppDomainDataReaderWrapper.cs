@@ -2,20 +2,25 @@
 using System.Data;
 using System.Runtime.Remoting;
 
-namespace kCura.IntegrationPoints.Domain
+namespace kCura.IntegrationPoints.Domain.Wrappers
 {
-	//represents a wrapper to allow for certain safeties to be guaranteed when marshalling
-	internal class DataReaderWrapper : MarshalByRefObject, IDataReader
+	/// <summary>
+	/// This class wraps <see cref="IDataReader"/> from another AppDomain
+	/// <see cref="CrossAppDomainDataReaderWrapper"/> objects shouldn't be used directly in parent's AppDomain because of issues
+	/// with multiple calls to <see cref="Dispose"/>. Proxy in parent AppDomain tries to call Dispose in child AppDomain
+	/// but this objects was already disposed there, so <see cref="ObjectDisposedException"/> is thrown. Instead we should
+	/// use <see cref="SafeDisposingDataReaderWrapper"/> which guarantees proper IDisposable implementation.
+	/// </summary>
+	/// <inheritdoc cref="MarshalByRefObject"/>
+	/// <inheritdoc cref="IDataReader"/>
+	internal class CrossAppDomainDataReaderWrapper : MarshalByRefObject, IDataReader
 	{
 		private bool _isDisposed;
 		private readonly IDataReader _dataReader;
-		internal DataReaderWrapper(IDataReader dataReader)
+
+		internal CrossAppDomainDataReaderWrapper(IDataReader dataReader)
 		{
-			if (dataReader == null)
-			{
-				throw new ArgumentNullException("dataReader");
-			}
-			_dataReader = dataReader;
+			_dataReader = dataReader ?? throw new ArgumentNullException(nameof(dataReader));
 		}
 
 		#region Decorated Methods
@@ -180,7 +185,7 @@ namespace kCura.IntegrationPoints.Domain
 		}
 		#endregion
 
-		#region Cross AppDomain comunication
+		#region Cross AppDomain communication
 		public override object InitializeLifetimeService()
 		{
 			return null;
@@ -209,7 +214,7 @@ namespace kCura.IntegrationPoints.Domain
 			_isDisposed = true;
 		}
 
-		~DataReaderWrapper()
+		~CrossAppDomainDataReaderWrapper()
 		{
 			Dispose(false);
 		}
