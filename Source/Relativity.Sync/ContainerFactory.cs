@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Autofac;
+using Relativity.Sync.Configuration;
+using Relativity.Sync.ExecutionConstrains;
+using Relativity.Sync.Executors;
 using Relativity.Sync.Logging;
 
 namespace Relativity.Sync
@@ -23,7 +26,10 @@ namespace Relativity.Sync
 			containerBuilder.RegisterInstance(configuration).As<SyncConfiguration>();
 			containerBuilder.RegisterType<SyncExecutionContextFactory>().As<ISyncExecutionContextFactory>();
 			containerBuilder.RegisterType<AppDomainWrapper>().As<IAppDomain>();
-
+			
+			containerBuilder.RegisterType<SourceWorkspaceTagsCreationExecutionConstrains>().As<IExecutionConstrains<ISourceWorkspaceTagsCreationConfiguration>>();
+			containerBuilder.RegisterType<SourceWorkspaceTagsCreationExecutor>().As<IExecutor<ISourceWorkspaceTagsCreationConfiguration>>();
+			
 			IPipelineBuilder pipelineBuilder = new PipelineBuilder();
 			pipelineBuilder.RegisterFlow(containerBuilder);
 
@@ -31,16 +37,16 @@ namespace Relativity.Sync
 			containerBuilder.RegisterGeneric(typeof(Command<>)).Named(command, typeof(ICommand<>));
 			containerBuilder.RegisterGenericDecorator(typeof(CommandWithMetrics<>), typeof(ICommand<>), command);
 
-			IEnumerable<IInstaller> installers = GetInstallersInExecutingAssembly();
+			IEnumerable<IInstaller> installers = GetInstallersInCurrentAssembly();
 			foreach (IInstaller installer in installers)
 			{
 				installer.Install(containerBuilder);
 			}
 		}
 
-		private static IEnumerable<IInstaller> GetInstallersInExecutingAssembly()
+		private static IEnumerable<IInstaller> GetInstallersInCurrentAssembly()
 		{
-			return Assembly.GetExecutingAssembly()
+			return Assembly.GetCallingAssembly()
 				.GetTypes()
 				.Where(t => !t.IsAbstract && t.IsAssignableTo<IInstaller>())
 				.Select(t => (IInstaller) Activator.CreateInstance(t));

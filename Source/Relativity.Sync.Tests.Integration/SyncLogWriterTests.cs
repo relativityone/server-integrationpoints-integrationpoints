@@ -19,7 +19,8 @@ namespace Relativity.Sync.Tests.Integration
 		public void SetUp()
 		{
 			ContainerBuilder containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
-			IntegrationTestsContainerBuilder.RegisterStubsForIntegrationTests(containerBuilder);
+			IntegrationTestsContainerBuilder.MockAllSteps(containerBuilder);
+			IntegrationTestsContainerBuilder.MockMetrics(containerBuilder);
 
 			_logger = new Mock<ISyncLog>();
 			LogWriter.SetFactory(new SyncLogWriterFactory(_logger.Object));

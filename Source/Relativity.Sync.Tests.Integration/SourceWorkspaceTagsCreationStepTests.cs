@@ -50,7 +50,7 @@ namespace Relativity.Sync.Tests.Integration
 		public void MySetUp()
 		{
 			ContainerBuilder containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
-			IntegrationTestsContainerBuilder.RegisterStubsForIntegrationTests(containerBuilder);
+			IntegrationTestsContainerBuilder.MockStepsExcept<ISourceWorkspaceTagsCreationConfiguration>(containerBuilder);
 
 			_objectManagerMock = new Mock<IObjectManager>();
 			_serviceFactoryMock = new Mock<ISourceServiceFactoryForUser>();
