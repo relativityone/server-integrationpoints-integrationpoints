@@ -23,6 +23,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.SourceProviderInstaller;
@@ -133,8 +134,12 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 
 			IJobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(caseServiceContext, Helper);
 
-			_integrationPointService = new IntegrationPointService(Helper, caseServiceContext, contextContainerFactory, integrationPointSerializer,
-				choiceQuery, jobManager, _jobHistoryService, jobHistoryErrorService, managerFactory, validationExecutor, providerTypeService, messageService);
+			IIntegrationPointRepository integrationPointRepository =
+				new IntegrationPointRepository(caseServiceContext.RsapiService.RelativityObjectManager);
+
+			_integrationPointService = new IntegrationPointService(Helper, caseServiceContext, contextContainerFactory, 
+				integrationPointSerializer, choiceQuery, jobManager, _jobHistoryService, jobHistoryErrorService, managerFactory, 
+				validationExecutor, providerTypeService, messageService, integrationPointRepository);
 		}
 
 		private IRelativityObjectManager CreateObjectManager(IEHHelper helper, int workspaceID)

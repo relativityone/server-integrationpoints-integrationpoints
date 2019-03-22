@@ -1,5 +1,4 @@
 ﻿using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.SecretStore;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
@@ -15,16 +14,16 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		private const int _INTEGRATION_POINT_ID = 659252;
 
 		private IntegrationPointSecretDelete _integrationPointSecretDelete;
-		private IRelativityObjectManager _objectManager;
 		private ISecretCatalog _secretCatalog;
 		private ISecretManager _secretManager;
+		private IIntegrationPointRepository _integrationPointRepository;
 
 		public override void SetUp()
 		{
 			_secretManager = Substitute.For<ISecretManager>();
 			_secretCatalog = Substitute.For<ISecretCatalog>();
-			_objectManager = Substitute.For<IRelativityObjectManager>();
-			_integrationPointSecretDelete = new IntegrationPointSecretDelete(_secretManager, _secretCatalog, _objectManager);
+			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
+			_integrationPointSecretDelete = new IntegrationPointSecretDelete(_secretManager, _secretCatalog, _integrationPointRepository);
 		}
 
 		[Test]
@@ -33,10 +32,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		[TestCase(null)]
 		public void ItShouldSkipForEmptySecret(string secret)
 		{
-			_objectManager.Read<Data.IntegrationPoint>(_INTEGRATION_POINT_ID).Returns(new Data.IntegrationPoint
-			{
-				SecuredConfiguration = secret
-			});
+			_integrationPointRepository.GetSecuredConfiguration(_INTEGRATION_POINT_ID).Returns(secret);
 
 			_integrationPointSecretDelete.DeleteSecret(_INTEGRATION_POINT_ID);
 
@@ -48,10 +44,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		{
 			string securedConfiguration = "expected_secured_configuration";
 
-			_objectManager.Read<Data.IntegrationPoint>(_INTEGRATION_POINT_ID).Returns(new Data.IntegrationPoint
-			{
-				SecuredConfiguration = securedConfiguration
-			});
+			_integrationPointRepository.GetSecuredConfiguration(_INTEGRATION_POINT_ID).Returns(securedConfiguration);
 
 			_integrationPointSecretDelete.DeleteSecret(_INTEGRATION_POINT_ID);
 
@@ -63,10 +56,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		{
 			var expectedSecretRef = new SecretRef();
 
-			_objectManager.Read<Data.IntegrationPoint>(_INTEGRATION_POINT_ID).Returns(new Data.IntegrationPoint
-			{
-				SecuredConfiguration = "secured_configuration"
-			});
+			_integrationPointRepository.GetSecuredConfiguration(_INTEGRATION_POINT_ID).Returns("secured_configuration");
 
 			_secretManager.RetrieveIdentifier(Arg.Any<string>()).Returns(expectedSecretRef);
 

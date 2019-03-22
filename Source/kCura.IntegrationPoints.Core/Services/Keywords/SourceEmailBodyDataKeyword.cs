@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core;
@@ -31,7 +32,8 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
 		  IJobManager jobManager,
 		  IManagerFactory managerFactory,
 		  IContextContainerFactory contextContainerFactory,
-		  IJobService jobService) : base(caseServiceContext,
+		  IJobService jobService,
+		  IIntegrationPointRepository integrationPointRepository) : base(caseServiceContext,
 		   helper,
 		   dataProviderFactory,
 		   serializer,
@@ -41,7 +43,8 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
 		   jobManager,
 		   managerFactory,
 		   contextContainerFactory,
-		   jobService)
+		   jobService,
+		   integrationPointRepository)
 		{
 			_job = job;
 		}
@@ -50,7 +53,7 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
 		{
 			SetIntegrationPoint(_job);
 			string sourceConfiguration = IntegrationPoint.SourceConfiguration;
-			IEnumerable<FieldMap> fieldMap = GetFieldMap(this.IntegrationPoint.FieldMappings);
+			IEnumerable<FieldMap> fieldMap = GetFieldMap(IntegrationPoint.FieldMappings);
 			FieldMap[] fieldMaps = fieldMap as FieldMap[] ?? fieldMap.ToArray();
 			List<FieldEntry> sourceFields = GetSourceFields(fieldMaps);
 			IDataSourceProvider sourceProvider = GetSourceProvider(SourceProvider, _job);

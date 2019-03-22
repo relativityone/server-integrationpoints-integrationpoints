@@ -1,4 +1,4 @@
-﻿using kCura.IntegrationPoints.Data;
+﻿using kCura.IntegrationPoints.Data.Repositories;
 using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Core.Services.Keywords
@@ -7,17 +7,18 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
 	{
 		public string KeywordName { get { return "\\[RIP.NAME]"; } }
 
+		private readonly IIntegrationPointRepository _integrationPointRepository;
 		private readonly Job _job;
-		private readonly IRSAPIService _service;
-		public RipNameKeyword(Job job, IRSAPIService service)
+
+		public RipNameKeyword(Job job, IIntegrationPointRepository integrationPointRepository)
 		{
 			_job = job;
-			_service = service;
+			_integrationPointRepository = integrationPointRepository;
 		}
 		
 		public string Convert()
 		{
-			return _service.RelativityObjectManager.Read<Data.IntegrationPoint>(_job.RelatedObjectArtifactID).Name;
+			return _integrationPointRepository.GetName(_job.RelatedObjectArtifactID);
 		}
 	}
 }

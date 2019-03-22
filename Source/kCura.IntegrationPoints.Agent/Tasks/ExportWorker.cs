@@ -10,6 +10,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
@@ -44,7 +45,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IJobService jobService,
 			IDataTransferLocationService dataTransferLocationService,
 			IProcessingSourceLocationService processingSourceLocationService,
-			IProviderTypeService providerTypeService
+			IProviderTypeService providerTypeService,
+			IIntegrationPointRepository integrationPointRepository
 		) : base(
 			caseServiceContext,
 			helper,
@@ -59,7 +61,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			managerFactory,
 			contextContainerFactory,
 			jobService,
-			providerTypeService)
+			providerTypeService,
+			integrationPointRepository)
 		{
 			_exportProcessRunner = exportProcessRunner;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ExportWorker>();

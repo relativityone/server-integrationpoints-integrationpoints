@@ -10,6 +10,7 @@ using kCura.IntegrationPoints.Core.Services.Keywords;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
@@ -33,7 +34,8 @@ namespace kCura.IntegrationPoints.Core
 		  KeywordConverter converter,
 		  IManagerFactory managerFactory,
 		  IContextContainerFactory contextContainerFactory,
-		  IJobService jobService) : base(caseServiceContext,
+		  IJobService jobService,
+		  IIntegrationPointRepository integrationPointRepository) : base(caseServiceContext,
 		   helper,
 		   dataProviderFactory,
 		   serializer,
@@ -43,7 +45,8 @@ namespace kCura.IntegrationPoints.Core
 		   jobManager,
 		   managerFactory,
 		   contextContainerFactory,
-		   jobService)
+		   jobService,
+		   integrationPointRepository)
 		{
 			_jobStatusUpdater = jobStatusUpdater;
 			_converter = converter;

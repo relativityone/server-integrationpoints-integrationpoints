@@ -1,6 +1,4 @@
 ﻿using System;
-using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Validators
@@ -10,16 +8,16 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Validators
 		#region Fields
 
 		private readonly IQueueRepository _queueRepository;
-		private readonly IRSAPIServiceFactory _rsapiServiceFactory;
+		private readonly IIntegrationPointRepository _integrationPointRepository;
 
 		#endregion Fields
 
 		#region Constructors
 
-		public PreCascadeDeleteEventHandlerValidator(IQueueRepository queueRepository, IRSAPIServiceFactory rsapiServiceFactory)
+		public PreCascadeDeleteEventHandlerValidator(IQueueRepository queueRepository, IIntegrationPointRepository integrationPointRepository)
 		{
 			_queueRepository = queueRepository;
-			_rsapiServiceFactory = rsapiServiceFactory;
+			_integrationPointRepository = integrationPointRepository;
 		}
 
 		#endregion //Constructors
@@ -30,8 +28,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Validators
 		{
 			if (_queueRepository.GetNumberOfJobsExecutingOrInQueue(workspaceId, integrationPointId) > 0)
 			{
-				IntegrationPoint integrationPoint = _rsapiServiceFactory.Create(workspaceId).RelativityObjectManager.Read<IntegrationPoint>(integrationPointId);
-				throw new Exception($"Integration Point '{integrationPoint.Name}' can not be deleted as the associated agent job has been already started!");
+				string integrationPointName = _integrationPointRepository.GetName(integrationPointId);
+				throw new Exception($"Integration Point '{integrationPointName}' can not be deleted as the associated agent job has been already started!");
 			}
 		}
 

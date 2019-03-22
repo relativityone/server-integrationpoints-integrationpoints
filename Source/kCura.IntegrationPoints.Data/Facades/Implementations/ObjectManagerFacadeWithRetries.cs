@@ -1,6 +1,7 @@
 ﻿using kCura.IntegrationPoints.Data.Interfaces;
 using Relativity.Services.Objects.DataContracts;
 using System.Threading.Tasks;
+using Relativity.Kepler.Transport;
 
 namespace kCura.IntegrationPoints.Data.Facades.Implementations
 {
@@ -53,6 +54,12 @@ namespace kCura.IntegrationPoints.Data.Facades.Implementations
 		{
 			return _retryHandler.ExecuteWithRetriesAsync(
 				() => _objectManager.UpdateAsync(workspaceArtifactID, request));
+		}
+
+		public Task<IKeplerStream> StreamLongTextAsync(int workspaceArtifactID, RelativityObjectRef exportObject, FieldRef longTextField)
+		{
+			return _retryHandler.ExecuteWithRetriesAsync(
+				() => _objectManager.StreamLongTextAsync(workspaceArtifactID, exportObject, longTextField));
 		}
 
 		protected virtual void Dispose(bool disposing)

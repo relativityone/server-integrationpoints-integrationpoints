@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
@@ -24,14 +25,15 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
 		  ICaseServiceContext caseServiceContext,
 		  IHelper helper,
 		  IDataProviderFactory dataProviderFactory,
-		  kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
+		  Apps.Common.Utils.Serializers.ISerializer serializer,
 		  ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
 		  IJobHistoryService jobHistoryService,
 		  IJobHistoryErrorService jobHistoryErrorService,
 		  IJobManager jobManager,
 		  IManagerFactory managerFactory,
 		  IContextContainerFactory contextContainerFactory,
-		  IJobService jobService) : base(caseServiceContext,
+		  IJobService jobService,
+		  IIntegrationPointRepository integrationPointRepository) : base(caseServiceContext,
 		   helper,
 		   dataProviderFactory,
 		   serializer,
@@ -41,7 +43,8 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
 		   jobManager,
 		   managerFactory,
 		   contextContainerFactory,
-		   jobService)
+		   jobService,
+		   integrationPointRepository)
 		{
 			_job = job;
 		}

@@ -9,7 +9,6 @@ using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Monitoring;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -60,7 +59,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		private IJobHistoryService _jobHistoryService;
 		private IJobHistoryErrorService _jobHistoryErrorService;
 		private IManagerFactory _managerFactory;
-		private IServiceFactory _serviceFactory;
 		private Data.IntegrationPoint _integrationPoint;
 		private SourceProvider _sourceProvider;
 		private DestinationProvider _destinationProvider;
@@ -75,6 +73,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		private IValidationExecutor _validationExecutor;
 		private IProviderTypeService _providerTypeService;
 		private IMessageService _messageService;
+		private IIntegrationPointRepository _integrationPointRepository;
 
 		[SetUp]
 		public override void SetUp()
@@ -91,7 +90,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_jobHistoryService = Substitute.For<IJobHistoryService>();
 			_jobHistoryErrorService = Substitute.For<IJobHistoryErrorService>();
 			_managerFactory = Substitute.For<IManagerFactory>();
-			_serviceFactory = Substitute.For<IServiceFactory>();
 			_queueManager = Substitute.For<IQueueManager>();
 			_choiceQuery = Substitute.For<IChoiceQuery>();
 			_errorManager = Substitute.For<IErrorManager>();
@@ -99,6 +97,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
 			_providerTypeService = Substitute.For<IProviderTypeService>();
 			_messageService = Substitute.For<IMessageService>();
+			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
 
 
 			_validationExecutor = Substitute.For<IValidationExecutor>();
@@ -115,7 +114,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				_managerFactory,
 				_validationExecutor,
 				_providerTypeService,
-				_messageService
+				_messageService,
+				_integrationPointRepository
 			);
 
 			_caseServiceContext.RsapiService = Substitute.For<IRSAPIService>();
@@ -173,6 +173,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_jobHistoryManager.GetLastJobHistoryArtifactId(_sourceWorkspaceArtifactId, _integrationPointArtifactId)
 				.Returns(_previousJobHistoryArtifactId);
 			_caseServiceContext.RsapiService.RelativityObjectManager.Read<Data.JobHistory>(_previousJobHistoryArtifactId).Returns(_previousJobHistory);
+
+			_integrationPointRepository.ReadAsync(_integrationPointArtifactId).Returns(_integrationPoint);
 
 			_caseServiceContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(_integrationPointArtifactId).Returns(_integrationPoint);
 			_caseServiceContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(_sourceProviderId).Returns(_sourceProvider);
@@ -942,7 +944,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			// Act
 			const string errorMessage = "KHAAAAAANN!!!";
 			var exception = new Exception(errorMessage);
-			_caseServiceContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(0).ThrowsForAnyArgs(exception);
+			_integrationPointRepository.ReadAsync(0).ThrowsForAnyArgs(exception);
 			_managerFactory.CreateErrorManager(_contextContainer).Returns(_errorManager);
 
 			// Assert

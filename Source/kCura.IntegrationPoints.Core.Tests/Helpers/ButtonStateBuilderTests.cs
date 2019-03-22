@@ -27,9 +27,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 			_permissionRepository = Substitute.For<IPermissionRepository>();
 			_permissionValidator = Substitute.For<IIntegrationPointPermissionValidator>();
 			_objectManager = Substitute.For<IRelativityObjectManager>();
+			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
 
-			_buttonStateBuilder = new ButtonStateBuilder(_providerTypeService, _queueManager, _jobHistoryManager, _stateManager, _permissionRepository, _permissionValidator,
-				_objectManager);
+			_buttonStateBuilder = new ButtonStateBuilder(_providerTypeService, _queueManager, _jobHistoryManager, _stateManager,
+				_permissionRepository, _permissionValidator, _integrationPointRepository);
 		}
 
 		private IRelativityObjectManager _objectManager;
@@ -39,6 +40,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 		private IStateManager _stateManager;
 		private IPermissionRepository _permissionRepository;
 		private IIntegrationPointPermissionValidator _permissionValidator;
+		private IIntegrationPointRepository _integrationPointRepository;
 
 		private ButtonStateBuilder _buttonStateBuilder;
 
@@ -62,7 +64,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 			int sourceProviderArtifactId = 841;
 			int destinationProviderArtifactId = 273;
 			var importSettings = new ImportSettings {ImageImport = imageImport};
-			_objectManager.Read<Data.IntegrationPoint>(integrationPointArtifactId).Returns(new Data.IntegrationPoint
+			_integrationPointRepository.ReadAsync(integrationPointArtifactId).Returns(new Data.IntegrationPoint
 			{
 				HasErrors = hasErrors,
 				SourceProvider = sourceProviderArtifactId,
