@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -18,10 +18,10 @@ namespace Relativity.Sync.Executors
 		private readonly ISyncLog _logger;
 
 		private static readonly Guid ObjectTypeGuid = new Guid("7E03308C-0B58-48CB-AFA4-BB718C3F5CAC");
-		private static readonly Guid CaseIdFieldNameGuid = new Guid("90c3472c-3592-4c5a-af01-51e23e7f89a5");
-		private static readonly Guid CaseNameFieldNameGuid = new Guid("a16f7beb-b3b0-4658-bb52-1c801ba920f0");
+		private static readonly Guid NameGuid = new Guid("155649c0-db15-4ee7-b449-bfdf2a54b7b5");
+		private static readonly Guid CaseIdFieldGuid = new Guid("90c3472c-3592-4c5a-af01-51e23e7f89a5");
 		private static readonly Guid InstanceNameFieldGuid = new Guid("C5212F20-BEC4-426C-AD5C-8EBE2697CB19");
-		private static readonly Guid SourceWorkspaceNameGuid = new Guid("A16F7BEB-B3B0-4658-BB52-1C801BA920F0");
+		private static readonly Guid SourceWorkspaceNameFieldGuid = new Guid("A16F7BEB-B3B0-4658-BB52-1C801BA920F0");
 
 		public RelativitySourceCaseTagRepository(IDestinationServiceFactoryForUser serviceFactoryForUser, ISyncLog logger)
 		{
@@ -42,10 +42,10 @@ namespace Relativity.Sync.Executors
 				RelativitySourceCaseTag sourceCaseTag = new RelativitySourceCaseTag()
 				{
 					ArtifactId = tag.ArtifactID,
-					Name = tag[CaseNameFieldNameGuid].Value.ToString(),
+					Name = tag.Name,
 					SourceInstanceName = tag[InstanceNameFieldGuid].Value.ToString(),
-					SourceWorkspaceName = tag[SourceWorkspaceNameGuid].Value.ToString(),
-					SourceWorkspaceArtifactId = Convert.ToInt32(tag[CaseIdFieldNameGuid].Value, CultureInfo.InvariantCulture)
+					SourceWorkspaceName = tag[SourceWorkspaceNameFieldGuid].Value.ToString(),
+					SourceWorkspaceArtifactId = Convert.ToInt32(tag[CaseIdFieldGuid].Value, CultureInfo.InvariantCulture)
 				};
 				return sourceCaseTag;
 			}
@@ -59,7 +59,7 @@ namespace Relativity.Sync.Executors
 			{
 				QueryRequest request = new QueryRequest()
 				{
-					Condition = $"('{CaseIdFieldNameGuid}' == {sourceWorkspaceArtifactId}) AND ('{InstanceNameFieldGuid}' == {sourceInstanceName})",
+					Condition = $"('{CaseIdFieldGuid}' == {sourceWorkspaceArtifactId}) AND ('{InstanceNameFieldGuid}' == {sourceInstanceName})",
 					ObjectType = new ObjectTypeRef()
 					{
 						Guid = ObjectTypeGuid
@@ -67,9 +67,8 @@ namespace Relativity.Sync.Executors
 					Fields = new List<FieldRef>()
 					{
 						new FieldRef { Name = "ArtifactId" },
-						new FieldRef(){Guid = CaseIdFieldNameGuid},
-						new FieldRef(){Guid = CaseNameFieldNameGuid},
-						new FieldRef(){Guid = SourceWorkspaceNameGuid},
+						new FieldRef(){Guid = CaseIdFieldGuid},
+						new FieldRef(){Guid = SourceWorkspaceNameFieldGuid},
 						new FieldRef(){Guid = InstanceNameFieldGuid}
 					}
 				};
@@ -170,23 +169,23 @@ namespace Relativity.Sync.Executors
 			}
 		}
 
-		private IEnumerable<FieldRefValuePair> CreateFieldValues(string tagName, int sourceWorkspaceArtifactId, string sourceWorkspaceName, string instanceName)
+		private IEnumerable<FieldRefValuePair> CreateFieldValues(string sourceTagName, int sourceWorkspaceArtifactId, string sourceWorkspaceName, string instanceName)
 		{
 			FieldRefValuePair[] pairs =
 			{
 				new FieldRefValuePair
 				{
-					Field = new FieldRef { Guid = CaseNameFieldNameGuid},
-					Value = tagName
+					Field = new FieldRef { Guid = NameGuid},
+					Value = sourceTagName
 				},
 				new FieldRefValuePair
 				{
-					Field = new FieldRef { Guid = CaseIdFieldNameGuid},
+					Field = new FieldRef { Guid = CaseIdFieldGuid},
 					Value = sourceWorkspaceArtifactId
 				},
 				new FieldRefValuePair
 				{
-					Field = new FieldRef { Guid = SourceWorkspaceNameGuid },
+					Field = new FieldRef { Guid = SourceWorkspaceNameFieldGuid },
 					Value = sourceWorkspaceName
 				},
 				new FieldRefValuePair
