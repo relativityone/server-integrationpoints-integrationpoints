@@ -115,6 +115,18 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			_logger.LogVerbose("SignalR add task completed: {method} (key = {key})", nameof(GetIntegrationPointUpdate), key);
 		}
 
+		public void AddTask(IntegrationPointDataHubKey key)
+		{
+			Groups.Add(Context.ConnectionId, key.ToString());
+			if (!_tasks.TryAdd(key, new HashSet<string>() { Context.ConnectionId }))
+			{
+				if (!_tasks[key].Add(Context.ConnectionId))
+				{
+					_logger.LogDebug("SignalR when adding task: {method} the key is already present", nameof(AddTask));
+				}
+			}
+		}
+
 		private void UpdateTimerElapsed(object sender, ElapsedEventArgs e)
 		{
 			try
@@ -158,12 +170,16 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			{
 				var permissionRepository = new PermissionRepository(ConnectionHelper.Helper(), key.WorkspaceId);
 				IRelativityObjectManager objectManager = CreateObjectManager(ConnectionHelper.Helper(), key.WorkspaceId);
-				IIntegrationPointRepository integrationPointRepository = CreateIntegrationPointRepository(objectManager);
+				IAPILog logger = ConnectionHelper.Helper().GetLoggerFactory().GetLogger();
+				IIntegrationPointSerializer integrationPointSerializer = CreateIntegrationPointSerializer(logger);
+				IIntegrationPointRepository integrationPointRepository =
+					CreateIntegrationPointRepository(objectManager, integrationPointSerializer, logger);
 				var providerTypeService = new ProviderTypeService(objectManager);
 				var buttonStateBuilder = new ButtonStateBuilder(providerTypeService, _queueManager, _jobHistoryManager,
 					_stateManager, permissionRepository, _permissionValidator, integrationPointRepository);
 
-				IntegrationPoint integrationPoint = integrationPointRepository.Read(key.IntegrationPointId);
+				IntegrationPoint integrationPoint =
+					integrationPointRepository.ReadAsync(key.IntegrationPointId).GetAwaiter().GetResult();
 
 				ProviderType providerType = providerTypeService.GetProviderType(
 					integrationPoint.SourceProvider.Value,
@@ -194,26 +210,21 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			}
 		}
 
-		private IRelativityObjectManager CreateObjectManager(ICPHelper helper, int workspaceId)
+		private static IRelativityObjectManager CreateObjectManager(ICPHelper helper, int workspaceId)
 		{
 			return new RelativityObjectManagerFactory(helper).CreateRelativityObjectManager(workspaceId);
 		}
 
-		private IIntegrationPointRepository CreateIntegrationPointRepository(IRelativityObjectManager relativityObjectManager)
+		private static IIntegrationPointSerializer CreateIntegrationPointSerializer(IAPILog logger)
 		{
-			return new IntegrationPointRepository(relativityObjectManager);
+			return new IntegrationPointSerializer(logger);
 		}
 
-		public void AddTask(IntegrationPointDataHubKey key)
+		private static IIntegrationPointRepository CreateIntegrationPointRepository(IRelativityObjectManager relativityObjectManager,
+			IIntegrationPointSerializer serializer, 
+			IAPILog logger)
 		{
-			Groups.Add(Context.ConnectionId, key.ToString());
-			if (!_tasks.TryAdd(key, new HashSet<string>() { Context.ConnectionId }))
-			{
-				if (!_tasks[key].Add(Context.ConnectionId))
-				{
-					_logger.LogDebug("SignalR when adding task: {method} the key is already present", nameof(AddTask));
-				}
-			}
+			return new IntegrationPointRepository(relativityObjectManager, serializer, logger);
 		}
 
 		private List<IntegrationPointDataHubKey> RemoveTask(string connectionId)

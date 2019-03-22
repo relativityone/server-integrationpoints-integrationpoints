@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.Attributes;
-using kCura.IntegrationPoints.Agent.Validation;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
@@ -282,7 +281,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			LogLoadInformationPointDtoStart(job);
 
 			int integrationPointId = job.RelatedObjectArtifactID;
-			IntegrationPoint integrationPoint = IntegrationPointRepository.Read(integrationPointId);
+			IntegrationPoint integrationPoint =
+				IntegrationPointRepository.ReadAsync(integrationPointId).GetAwaiter().GetResult();
 			if (integrationPoint == null)
 			{
 				LogLoadingIntegrationPointDtoError(job);

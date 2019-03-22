@@ -193,7 +193,7 @@ namespace kCura.IntegrationPoints.Core.Agent
 			}
 
 			int integrationPointId = job.RelatedObjectArtifactID;
-			IntegrationPoint = IntegrationPointRepository.Read(integrationPointId);
+			IntegrationPoint = IntegrationPointRepository.ReadAsync(integrationPointId).GetAwaiter().GetResult();
 			if (IntegrationPoint == null)
 			{
 				LogSettingIntegrationPointError(job);

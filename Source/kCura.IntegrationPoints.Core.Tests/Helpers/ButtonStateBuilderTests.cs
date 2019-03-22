@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 			int sourceProviderArtifactId = 841;
 			int destinationProviderArtifactId = 273;
 			var importSettings = new ImportSettings {ImageImport = imageImport};
-			_integrationPointRepository.Read(integrationPointArtifactId).Returns(new Data.IntegrationPoint
+			_integrationPointRepository.ReadAsync(integrationPointArtifactId).Returns(new Data.IntegrationPoint
 			{
 				HasErrors = hasErrors,
 				SourceProvider = sourceProviderArtifactId,

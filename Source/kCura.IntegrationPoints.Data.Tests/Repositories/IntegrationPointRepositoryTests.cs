@@ -1,25 +1,39 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
+using FluentAssertions;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
+using kCura.IntegrationPoints.Domain.Models;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
+using FieldType = kCura.IntegrationPoints.Contracts.Models.FieldType;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories
 {
 	[TestFixture]
 	public class IntegrationPointRepositoryTests
 	{
-		private Mock<IRelativityObjectManager> _objectManager;
+		private Mock<IRelativityObjectManager> _objectManagerMock;
+		private Mock<IIntegrationPointSerializer> _serializerMock;
+		private Mock<IAPILog> _loggerMock;
+		private Mock<IAPILog> _internalLoggerMock;
 		private IntegrationPoint _integrationPoint;
-		private Stream _fieldMappingsStream;
+		private IEnumerable<FieldMap> _fieldMapping;
+		private IEnumerable<FieldMap> _emptyFieldMapping;
+		private Stream _fieldMappingStream;
+		private Stream _fieldMappingInvalidStream;
+		private Stream _fieldMappingEmptyStream;
 		private Guid _guid = Guid.Parse(IntegrationPointFieldGuids.FieldMappings);
 		private DateTime _nextScheduledRuntime;
 		private DateTime _lastRuntime;
+		private IntegrationPointRepository _sut;
 
 		private const int _SOURCE_PROVIDER = 2;
 		private const int _DESTINATION_PROVIDER = 4;
@@ -27,17 +41,437 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 		private const int _JOB_HISTORY_1 = 12;
 		private const int _JOB_HISTORY_2 = 15;
 		private const int _ARTIFACT_ID = 1025823;
-		private const string _FIELD_MAPPINGS_LONG = "fieldMappingsLong";
+		private const string _FIELD_MAPPING_LONG = "fieldMappingLong";
+		private const string _FIELD_MAPPING_INVALID = "fieldMappingInvalid";
 		private const string _SECURED_CONFIGURATION = "securedConf";
 		private const string _NAME = "Test Integration Point";
 
 		[SetUp]
 		public void SetUp()
 		{
-			_objectManager = new Mock<IRelativityObjectManager>();
-			_fieldMappingsStream = GenerateStreamFromString(_FIELD_MAPPINGS_LONG);
-			_nextScheduledRuntime = DateTime.Now.AddDays(1);
-			_lastRuntime = DateTime.Now.AddDays(-1);
+			_objectManagerMock = new Mock<IRelativityObjectManager>();
+			_serializerMock = new Mock<IIntegrationPointSerializer>();
+			_loggerMock = new Mock<IAPILog>();
+			_internalLoggerMock = new Mock<IAPILog>();
+			_loggerMock.Setup(x => x.ForContext<IntegrationPointRepository>()).Returns(_internalLoggerMock.Object);
+			_fieldMapping = CreateFieldMapping();
+			_emptyFieldMapping = new List<FieldMap>();
+			_fieldMappingStream = GenerateStreamFromString(_FIELD_MAPPING_LONG);
+			_fieldMappingInvalidStream = GenerateStreamFromString(_FIELD_MAPPING_INVALID);
+			_fieldMappingEmptyStream = GenerateStreamFromString(string.Empty);
+			_serializerMock.Setup(x => x.Deserialize<IEnumerable<FieldMap>>(_FIELD_MAPPING_LONG)).Returns(_fieldMapping);
+			_serializerMock.Setup(x => x.Deserialize<IEnumerable<FieldMap>>(_FIELD_MAPPING_INVALID))
+				.Throws<SerializationException>();
+			_nextScheduledRuntime = DateTime.UtcNow.AddDays(1);
+			_lastRuntime = DateTime.UtcNow.AddDays(-1);
+			_sut = new IntegrationPointRepository(_objectManagerMock.Object, _serializerMock.Object, _loggerMock.Object);
+		}
+
+		[Test]
+		public void Read_ShouldReturnValidIntegrationPoint()
+		{
+			// Arrange
+			_integrationPoint = CreateTestIntegrationPoint();
+			_objectManagerMock.Setup(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser)).Returns(_integrationPoint);
+			_objectManagerMock.Setup(x => x.StreamLongTextAsync(
+					_ARTIFACT_ID,
+					It.Is<FieldRef>(f => f.Guid.ToString() == _guid.ToString()),
+					ExecutionIdentity.CurrentUser))
+				.Returns(Task.FromResult(_fieldMappingStream));
+			IntegrationPoint expectedResult = CreateTestIntegrationPoint();
+			expectedResult.FieldMappings = _FIELD_MAPPING_LONG;
+
+			// Act
+			IntegrationPoint actualResult = _sut.ReadAsync(_ARTIFACT_ID).GetAwaiter().GetResult();
+
+			// Assert
+			_objectManagerMock.Verify(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser), Times.Once);
+			_objectManagerMock.Verify(
+				x => x.StreamLongTextAsync(
+					_ARTIFACT_ID,
+					It.Is<FieldRef>(f => f.Guid.ToString() == _guid.ToString()),
+					ExecutionIdentity.CurrentUser),
+				Times.Once());
+			_internalLoggerMock.Verify(
+				x => x.LogError(
+					It.IsAny<Exception>(), 
+					It.IsAny<string>(), 
+					It.IsAny<object[]>()),
+				Times.Never);
+			AreIntegrationPointsEqual(expectedResult, actualResult).Should().BeTrue();
+		}
+
+		[Test]
+		public void Read_ShouldThrowException_WhenObjectManagerReadThrowsException()
+		{
+			// Arrange
+			_objectManagerMock.Setup(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser)).Throws<Exception>();
+
+			// Act
+			Action action = () => _sut.ReadAsync(_ARTIFACT_ID).GetAwaiter().GetResult();
+
+			// Assert
+			action.ShouldThrow<Exception>();
+			_objectManagerMock.Verify(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser), Times.Once);
+			_objectManagerMock.Verify(
+				x => x.StreamLongTextAsync(
+					It.IsAny<int>(),
+					It.IsAny<FieldRef>(),
+					It.IsAny<ExecutionIdentity>()),
+				Times.Never);
+			_internalLoggerMock.Verify(
+				x => x.LogError(
+					It.IsAny<Exception>(),
+					It.IsAny<string>(),
+					It.IsAny<object[]>()),
+				Times.Never);
+		}
+
+		[Test]
+		public void Read_ShouldThrowException_WhenObjectManagerStreamLongTextAsyncThrowsException()
+		{
+			// Arrange
+			_integrationPoint = CreateTestIntegrationPoint();
+			_objectManagerMock.Setup(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser)).Returns(_integrationPoint);
+			_objectManagerMock.Setup(x => x.StreamLongTextAsync(
+					_ARTIFACT_ID,
+					It.Is<FieldRef>(f => f.Guid.ToString() == _guid.ToString()),
+					ExecutionIdentity.CurrentUser))
+				.Throws<Exception>();
+
+			// Act
+			Action action = () => _sut.ReadAsync(_ARTIFACT_ID).GetAwaiter().GetResult();
+
+			// Assert
+			action.ShouldThrow<Exception>();
+			_objectManagerMock.Verify(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser), Times.Once);
+			_objectManagerMock.Verify(
+				x => x.StreamLongTextAsync(
+					It.IsAny<int>(),
+					It.IsAny<FieldRef>(),
+					It.IsAny<ExecutionIdentity>()),
+				Times.Once);
+			_internalLoggerMock.Verify(
+				x => x.LogError(
+					It.IsAny<Exception>(),
+					It.IsAny<string>(),
+					It.IsAny<object[]>()),
+				Times.Never);
+		}
+
+		[Test]
+		public void Read_ShouldThrowException_WhenObjectManagerIsNull()
+		{
+			// Arrange
+			IntegrationPointRepository sut = new IntegrationPointRepository(null, _serializerMock.Object, _loggerMock.Object);
+
+			// Act
+			Action action = () => sut.ReadAsync(_ARTIFACT_ID).GetAwaiter().GetResult();
+
+			// Assert
+			action.ShouldThrow<NullReferenceException>();
+		}
+
+		[Test]
+		public void GetFieldMapJsonAsync_ShouldReturnValidFieldMapping()
+		{
+			// Arrange
+			_integrationPoint = CreateTestIntegrationPoint();
+			_objectManagerMock.Setup(x => x.StreamLongTextAsync(
+					_ARTIFACT_ID,
+					It.Is<FieldRef>(f => f.Guid.ToString() == _guid.ToString()),
+					ExecutionIdentity.CurrentUser))
+				.Returns(Task.FromResult(_fieldMappingStream));
+
+			// Act
+			IEnumerable<FieldMap> actualResult = _sut.GetFieldMappingAsync(_ARTIFACT_ID).GetAwaiter().GetResult();
+
+			// Assert
+			_objectManagerMock.Verify(
+				x => x.StreamLongTextAsync(
+					_ARTIFACT_ID,
+					It.Is<FieldRef>(f => f.Guid.ToString() == _guid.ToString()),
+					ExecutionIdentity.CurrentUser),
+				Times.Once());
+			_serializerMock.Verify(x => x.Deserialize<IEnumerable<FieldMap>>(_FIELD_MAPPING_LONG), Times.Once);
+			_internalLoggerMock.Verify(
+				x => x.LogError(
+					It.IsAny<Exception>(),
+					It.IsAny<string>(),
+					It.IsAny<object[]>()),
+				Times.Never);
+			actualResult.Should().Equal(_fieldMapping);
+		}
+
+		[Test]
+		public void GetFieldMapJsonAsync_ShouldReturnEmptyFieldMapping_WhenWorkspaceArtifactIDIsZero()
+		{
+			// Arrange
+			_integrationPoint = CreateTestIntegrationPoint();
+
+			// Act
+			IEnumerable<FieldMap> actualResult = _sut.GetFieldMappingAsync(0).GetAwaiter().GetResult();
+
+			// Assert
+			_objectManagerMock.Verify(
+				x => x.StreamLongTextAsync(
+					It.IsAny<int>(),
+					It.IsAny<FieldRef>(),
+					It.IsAny<ExecutionIdentity>()),
+				Times.Never);
+			_serializerMock.Verify(x => x.Deserialize<IEnumerable<FieldMap>>(It.IsAny<string>()), Times.Never);
+			_internalLoggerMock.Verify(
+				x => x.LogError(
+					It.IsAny<Exception>(),
+					It.IsAny<string>(),
+					It.IsAny<object[]>()),
+				Times.Never);
+			actualResult.Should().Equal(_emptyFieldMapping);
+		}
+
+		[Test]
+		public void GetFieldMapJsonAsync_ShouldReturnEmptyFieldMapping_WhenFieldMappingJsonIsEmpty()
+		{
+			// Arrange
+			_integrationPoint = CreateTestIntegrationPoint();
+			_objectManagerMock.Setup(x => x.StreamLongTextAsync(
+					_ARTIFACT_ID,
+					It.Is<FieldRef>(f => f.Guid.ToString() == _guid.ToString()),
+					ExecutionIdentity.CurrentUser))
+				.Returns(Task.FromResult(_fieldMappingEmptyStream));
+
+			// Act
+			IEnumerable<FieldMap> actualResult = _sut.GetFieldMappingAsync(_ARTIFACT_ID).GetAwaiter().GetResult();
+
+			// Assert
+			_objectManagerMock.Verify(
+				x => x.StreamLongTextAsync(
+					_ARTIFACT_ID,
+					It.Is<FieldRef>(f => f.Guid.ToString() == _guid.ToString()),
+					ExecutionIdentity.CurrentUser),
+				Times.Once());
+			_serializerMock.Verify(x => x.Deserialize<IEnumerable<FieldMap>>(It.IsAny<string>()), Times.Never);
+			_internalLoggerMock.Verify(
+				x => x.LogError(
+					It.IsAny<Exception>(),
+					It.IsAny<string>(),
+					It.IsAny<object[]>()),
+				Times.Never);
+			actualResult.Should().Equal(_emptyFieldMapping);
+		}
+
+		[Test]
+		public void GetFieldMapJsonAsync_ShouldThrowException_WhenObjectManagerStreamLongTextAsyncThrowsException()
+		{
+			// Arrange
+			_objectManagerMock.Setup(x => x.StreamLongTextAsync(
+					_ARTIFACT_ID,
+					It.Is<FieldRef>(f => f.Guid.ToString() == _guid.ToString()),
+					ExecutionIdentity.CurrentUser))
+				.Throws<Exception>();
+
+			// Act
+			Action action = () => _sut.GetFieldMappingAsync(_ARTIFACT_ID).GetAwaiter().GetResult();
+
+			// Assert
+			action.ShouldThrow<Exception>();
+			_objectManagerMock.Verify(
+				x => x.StreamLongTextAsync(
+					_ARTIFACT_ID,
+					It.Is<FieldRef>(f => f.Guid.ToString() == _guid.ToString()),
+					ExecutionIdentity.CurrentUser),
+				Times.Once());
+			_serializerMock.Verify(x => x.Deserialize<IEnumerable<FieldMap>>(_FIELD_MAPPING_LONG), Times.Never);
+			_internalLoggerMock.Verify(
+				x => x.LogError(
+					It.IsAny<Exception>(),
+					It.IsAny<string>(),
+					It.IsAny<object[]>()),
+				Times.Never);
+		}
+
+		[Test]
+		public void GetFieldMapJsonAsync_ShouldThrowException_WhenFieldMappingIsInvalid()
+		{
+			// Arrange
+			_integrationPoint = CreateTestIntegrationPoint();
+			_objectManagerMock.Setup(x => x.StreamLongTextAsync(
+					_ARTIFACT_ID,
+					It.Is<FieldRef>(f => f.Guid.ToString() == _guid.ToString()),
+					ExecutionIdentity.CurrentUser))
+				.Returns(Task.FromResult(_fieldMappingInvalidStream));
+
+			// Act
+			Action action = () => _sut.GetFieldMappingAsync(_ARTIFACT_ID).GetAwaiter().GetResult();
+
+			// Assert
+			action.ShouldThrow<SerializationException>();
+			_objectManagerMock.Verify(
+				x => x.StreamLongTextAsync(
+					_ARTIFACT_ID,
+					It.Is<FieldRef>(f => f.Guid.ToString() == _guid.ToString()),
+					ExecutionIdentity.CurrentUser),
+				Times.Once());
+			_serializerMock.Verify(x => x.Deserialize<IEnumerable<FieldMap>>(_FIELD_MAPPING_INVALID), Times.Once);
+			_internalLoggerMock.Verify(
+				x => x.LogError(
+					It.IsAny<SerializationException>(),
+					It.IsAny<string>(),
+					It.IsAny<object[]>()),
+				Times.Once);
+		}
+
+		[Test]
+		public void GetFieldMapJsonAsync_ShouldThrowException_WhenObjectManagerIsNull()
+		{
+			// Arrange
+			IntegrationPointRepository sut = new IntegrationPointRepository(null, _serializerMock.Object, _loggerMock.Object);
+
+			// Act
+			Action action = () => sut.GetFieldMappingAsync(_ARTIFACT_ID).GetAwaiter().GetResult();
+
+			// Assert
+			action.ShouldThrow<NullReferenceException>();
+		}
+
+		[Test]
+		public void GetSecuredConfiguration_ShouldReturnValidSecuredConfiguration()
+		{
+			// Arrange
+			_integrationPoint = CreateTestIntegrationPoint();
+			_objectManagerMock.Setup(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser)).Returns(_integrationPoint);
+
+			// Act
+			string actualResult = _sut.GetSecuredConfiguration(_ARTIFACT_ID);
+
+			// Assert
+			_objectManagerMock.Verify(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser), Times.Once);
+			_internalLoggerMock.Verify(
+				x => x.LogError(
+					It.IsAny<Exception>(),
+					It.IsAny<string>(),
+					It.IsAny<object[]>()),
+				Times.Never);
+			actualResult.Should().Be(_SECURED_CONFIGURATION);
+		}
+
+		[Test]
+		public void GetSecuredConfiguration_ShouldThrowException_WhenObjectManagerReadThrowsException()
+		{
+			// Arrange
+			_objectManagerMock.Setup(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser)).Throws<Exception>();
+
+			// Act
+			Action action = () => _sut.GetSecuredConfiguration(_ARTIFACT_ID);
+
+			// Assert
+			action.ShouldThrow<Exception>();
+			_internalLoggerMock.Verify(
+				x => x.LogError(
+					It.IsAny<Exception>(),
+					It.IsAny<string>(),
+					It.IsAny<object[]>()),
+				Times.Never);
+			_objectManagerMock.Verify(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser), Times.Once);
+		}
+
+		[Test]
+		public void GetSecuredConfiguration_ShouldThrowException_WhenObjectManagerIsNull()
+		{
+			// Arrange
+			IntegrationPointRepository sut = new IntegrationPointRepository(null, _serializerMock.Object, _loggerMock.Object);
+
+			// Act
+			Action action = () => sut.GetSecuredConfiguration(_ARTIFACT_ID);
+
+			// Assert
+			action.ShouldThrow<NullReferenceException>();
+		}
+
+		[Test]
+		public void GetName_ShouldReturnValidName()
+		{
+			// Arrange
+			_integrationPoint = CreateTestIntegrationPoint();
+			_objectManagerMock.Setup(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser)).Returns(_integrationPoint);
+
+			// Act
+			string actualResult = _sut.GetName(_ARTIFACT_ID);
+
+			// Assert
+			_objectManagerMock.Verify(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser), Times.Once);
+			_internalLoggerMock.Verify(
+				x => x.LogError(
+					It.IsAny<Exception>(),
+					It.IsAny<string>(),
+					It.IsAny<object[]>()),
+				Times.Never);
+			actualResult.Should().Be(_NAME);
+		}
+
+		[Test]
+		public void GetName_ShouldThrowException_WhenObjectManagerReadThrowsException()
+		{
+			// Arrange
+			_objectManagerMock.Setup(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser)).Throws<Exception>();
+
+			// Act
+			Action action = () => _sut.GetName(_ARTIFACT_ID);
+
+			// Assert
+			action.ShouldThrow<Exception>();
+			_objectManagerMock.Verify(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser), Times.Once);
+			_internalLoggerMock.Verify(
+				x => x.LogError(
+					It.IsAny<Exception>(),
+					It.IsAny<string>(),
+					It.IsAny<object[]>()),
+				Times.Never);
+		}
+
+		[Test]
+		public void GetName_ShouldThrowException_WhenObjectManagerIsNull()
+		{
+			// Arrange
+			IntegrationPointRepository sut = new IntegrationPointRepository(null, _serializerMock.Object, _loggerMock.Object);
+
+			// Act
+			Action action = () => sut.GetName(_ARTIFACT_ID);
+
+			// Assert
+			action.ShouldThrow<NullReferenceException>();
+		}
+
+		private static IEnumerable<FieldMap> CreateFieldMapping()
+		{
+			var sourceField = new FieldEntry
+			{
+				DisplayName = "Control Number",
+				FieldIdentifier = "1000123",
+				FieldType = FieldType.String,
+				IsIdentifier = true,
+				IsRequired = false,
+				Type = "Long Text"
+			};
+
+			var destinationField = new FieldEntry
+			{
+				DisplayName = "Control Number",
+				FieldIdentifier = "1000456",
+				FieldType = FieldType.String,
+				IsIdentifier = true,
+				IsRequired = false,
+				Type = "Long Text"
+			};
+
+			var fieldMap = new FieldMap
+			{
+				SourceField = sourceField,
+				DestinationField = destinationField,
+				FieldMapType = FieldMapTypeEnum.Identifier
+			};
+
+			return new List<FieldMap> {fieldMap};
 		}
 
 		private IntegrationPoint CreateTestIntegrationPoint()
@@ -97,92 +531,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories
 				   integrationPoint1.JobHistory.SequenceEqual(integrationPoint2.JobHistory) &&
 				   Equals(integrationPoint1.NextScheduledRuntimeUTC, integrationPoint2.NextScheduledRuntimeUTC) &&
 				   Equals(integrationPoint1.LastRuntimeUTC, integrationPoint2.LastRuntimeUTC);
-		}
-
-		[Test]
-		public void ItShouldReturnValidIntegrationPoint()
-		{
-			// Arrange
-			_integrationPoint = CreateTestIntegrationPoint();
-			_objectManager.Setup(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser)).Returns(_integrationPoint);
-			_objectManager.Setup(x => x.StreamLongTextAsync(
-					_ARTIFACT_ID,
-					It.Is<FieldRef>(f => f.Guid.ToString() == _guid.ToString()),
-					ExecutionIdentity.CurrentUser))
-				.Returns(Task.FromResult(_fieldMappingsStream));
-			IntegrationPoint expectedResult = CreateTestIntegrationPoint();
-			expectedResult.FieldMappings = _FIELD_MAPPINGS_LONG;
-			var integrationPointRepository = new IntegrationPointRepository(_objectManager.Object);
-
-			// Act
-			IntegrationPoint actualResult = integrationPointRepository.Read(_ARTIFACT_ID);
-
-			// Assert
-			_objectManager.Verify(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser), Times.Once);
-			_objectManager.Verify(
-				x => x.StreamLongTextAsync(
-					_ARTIFACT_ID,
-					It.Is<FieldRef>(f => f.Guid.ToString() == _guid.ToString()),
-					ExecutionIdentity.CurrentUser),
-				Times.Once());
-			Assert.IsTrue(AreIntegrationPointsEqual(expectedResult, actualResult));
-		}
-
-		[Test]
-		public void ItShouldReturnValidFieldMap()
-		{
-			// Arrange
-			_integrationPoint = CreateTestIntegrationPoint();
-			_objectManager.Setup(x => x.StreamLongTextAsync(
-					_ARTIFACT_ID,
-					It.Is<FieldRef>(f => f.Guid.ToString() == _guid.ToString()),
-					ExecutionIdentity.CurrentUser))
-				.Returns(Task.FromResult(_fieldMappingsStream));
-			var integrationPointRepository = new IntegrationPointRepository(_objectManager.Object);
-
-			// Act
-			string actualResult = integrationPointRepository.GetFieldMapJson(_ARTIFACT_ID);
-
-			// Assert
-			_objectManager.Verify(
-				x => x.StreamLongTextAsync(
-					_ARTIFACT_ID,
-					It.Is<FieldRef>(f => f.Guid.ToString() == _guid.ToString()),
-					ExecutionIdentity.CurrentUser),
-				Times.Once());
-			Assert.AreEqual(_FIELD_MAPPINGS_LONG, actualResult);
-		}
-
-		[Test]
-		public void ItShouldReturnValidSecuredConfiguration()
-		{
-			// Arrange
-			_integrationPoint = CreateTestIntegrationPoint();
-			_objectManager.Setup(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser)).Returns(_integrationPoint);
-			var integrationPointRepository = new IntegrationPointRepository(_objectManager.Object);
-
-			// Act
-			string actualResult = integrationPointRepository.GetSecuredConfiguration(_ARTIFACT_ID);
-
-			// Assert
-			_objectManager.Verify(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser), Times.Once);
-			Assert.AreEqual(_SECURED_CONFIGURATION, actualResult);
-		}
-
-		[Test]
-		public void ItShouldReturnValidName()
-		{
-			// Arrange
-			_integrationPoint = CreateTestIntegrationPoint();
-			_objectManager.Setup(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser)).Returns(_integrationPoint);
-			var integrationPointRepository = new IntegrationPointRepository(_objectManager.Object);
-
-			// Act
-			string actualResult = integrationPointRepository.GetName(_ARTIFACT_ID);
-
-			// Assert
-			_objectManager.Verify(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser), Times.Once);
-			Assert.AreEqual(_NAME, actualResult);
 		}
 	}
 }

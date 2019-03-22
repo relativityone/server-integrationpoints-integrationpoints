@@ -175,7 +175,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 			var integrationPoint = new Data.IntegrationPoint();
 
 			IIntegrationPointRepository integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
-			integrationPointRepository.Read(Arg.Any<int>()).Returns(integrationPoint);
+			integrationPointRepository.ReadAsync(Arg.Any<int>()).Returns(integrationPoint);
 			return integrationPointRepository;
 		}
 

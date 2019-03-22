@@ -52,7 +52,8 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		{
 			if (controllerType == IntegrationPointApiControllerNames.IntegrationPointApiControllerName)
 			{
-				IntegrationPoint integrationPoint = _integrationPointRepository.Read(integrationPointId);
+				IntegrationPoint integrationPoint =
+					_integrationPointRepository.ReadAsync(integrationPointId).GetAwaiter().GetResult();
 
 				return new Tuple<int, int>(integrationPoint.SourceProvider.Value, integrationPoint.DestinationProvider.Value);
 			}

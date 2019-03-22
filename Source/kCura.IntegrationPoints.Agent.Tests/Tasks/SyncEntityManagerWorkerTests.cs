@@ -244,7 +244,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			
 			_associatedJobs = new List<Job> { _job };
 			_fieldsMap = new List<FieldMap>();
-			_integrationPointRepository.Read(_job.RelatedObjectArtifactID).Returns(_integrationPoint);
+			_integrationPointRepository.ReadAsync(_job.RelatedObjectArtifactID).Returns(_integrationPoint);
 			_integrationPointRepository.GetSecuredConfiguration(_job.RelatedObjectArtifactID).Returns(_integrationPoint.SecuredConfiguration);
 			_caseServiceContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider.Value).Returns(_sourceProvider);
 			_caseServiceContext.RsapiService.RelativityObjectManager.Read<DestinationProvider>(_integrationPoint.DestinationProvider.Value).Returns(_destinationProvider);

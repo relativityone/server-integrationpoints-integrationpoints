@@ -184,10 +184,8 @@ timestamps
 			node ('PolandBuild')
 			{
 				def publishArtifactsDirectory = 'publishArtifactsWorkspace'
-				dir(publishArtifactsDirectory)
-				{
-					deleteDir()
-				}
+				
+				jenkinsHelpers.deleteDirectoryIfExists(publishArtifactsDirectory)
 				dir(publishArtifactsDirectory)
 				{
 					stage ('Unstash Package artifacts')

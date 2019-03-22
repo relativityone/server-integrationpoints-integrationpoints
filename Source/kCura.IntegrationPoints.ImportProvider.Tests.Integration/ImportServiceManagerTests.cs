@@ -136,7 +136,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 			_ip.SecuredConfiguration = "";
 			_ip.SourceProvider = -1;
 
-			_integrationPointRepository.Read(Arg.Any<int>()).Returns(_ip);
+			_integrationPointRepository.ReadAsync(Arg.Any<int>()).Returns(_ip);
 
 			//JobStopManager
 

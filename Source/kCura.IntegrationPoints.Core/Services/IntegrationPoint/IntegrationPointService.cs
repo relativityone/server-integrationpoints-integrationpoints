@@ -64,14 +64,14 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			_integrationPointRepository = integrationPointRepository;
 		}
 
-		protected override IntegrationPointModelBase GetModel(int artifactId)
+		protected override IntegrationPointModelBase GetModel(int artifactID)
 		{
-			return ReadIntegrationPoint(artifactId);
+			return ReadIntegrationPoint(artifactID);
 		}
 
-		public virtual IntegrationPointModel ReadIntegrationPoint(int artifactId)
+		public virtual IntegrationPointModel ReadIntegrationPoint(int artifactID)
 		{
-			Data.IntegrationPoint integrationPoint = _integrationPointRepository.Read(artifactId);
+			Data.IntegrationPoint integrationPoint = _integrationPointRepository.ReadAsync(artifactID).GetAwaiter().GetResult();
 			IntegrationPointModel integrationModel = IntegrationPointModel.FromIntegrationPoint(integrationPoint);
 			return integrationModel;
 		}
@@ -179,7 +179,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 			try
 			{
-				integrationPoint = _integrationPointRepository.Read(integrationPointArtifactId);
+				integrationPoint = _integrationPointRepository.ReadAsync(integrationPointArtifactId).GetAwaiter().GetResult();
 				sourceProvider = GetSourceProvider(integrationPoint.SourceProvider);
 				destinationProvider = GetDestinationProvider(integrationPoint.DestinationProvider);
 			}
@@ -207,7 +207,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 			try
 			{
-				integrationPoint = _integrationPointRepository.Read(integrationPointArtifactId);
+				integrationPoint = _integrationPointRepository.ReadAsync(integrationPointArtifactId).GetAwaiter().GetResult();
 				sourceProvider = GetSourceProvider(integrationPoint.SourceProvider);
 				destinationProvider = GetDestinationProvider(integrationPoint.DestinationProvider);
 			}
@@ -261,7 +261,8 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 		private void CheckStopPermission(int integrationPointArtifactId)
 		{
-			Data.IntegrationPoint integrationPoint = _integrationPointRepository.Read(integrationPointArtifactId);
+			Data.IntegrationPoint integrationPoint =
+				_integrationPointRepository.ReadAsync(integrationPointArtifactId).GetAwaiter().GetResult();
 			SourceProvider sourceProvider = GetSourceProvider(integrationPoint.SourceProvider);
 			DestinationProvider destinationProvider = GetDestinationProvider(integrationPoint.DestinationProvider);
 			IntegrationPointType integrationPointType = GetIntegrationPointType(integrationPoint.Type);
@@ -302,17 +303,17 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			HashSet<int> erroredPendingJobs = new HashSet<int>();
 
 			// Mark jobs to be stopped in queue table
-			foreach (int artifactId in allStoppableJobArtifactIds)
+			foreach (int artifactID in allStoppableJobArtifactIds)
 			{
 				try
 				{
-					StopScheduledAgentJobs(jobs, artifactId);
+					StopScheduledAgentJobs(jobs, artifactID);
 				}
 				catch (Exception exception)
 				{
-					if (stoppableJobCollection.PendingJobArtifactIds.Contains(artifactId))
+					if (stoppableJobCollection.PendingJobArtifactIds.Contains(artifactID))
 					{
-						erroredPendingJobs.Add(artifactId);
+						erroredPendingJobs.Add(artifactID);
 					}
 					exceptions.Add(exception);
 				}
@@ -467,24 +468,15 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 		private void SetHasErrorOnIntegrationPoint(int integrationPointArtifactId)
 		{
-			Data.IntegrationPoint integrationPoint = _integrationPointRepository.Read(integrationPointArtifactId);
+			Data.IntegrationPoint integrationPoint =
+				_integrationPointRepository.ReadAsync(integrationPointArtifactId).GetAwaiter().GetResult();
 			integrationPoint.HasErrors = true;
 			Context.RsapiService.RelativityObjectManager.Update(integrationPoint);
 		}
 
-		public IEnumerable<FieldMap> GetFieldMap(int artifactId)
+		public IEnumerable<FieldMap> GetFieldMap(int artifactID)
 		{
-			IEnumerable<FieldMap> mapping = new List<FieldMap>();
-			if (artifactId > 0)
-			{
-				string fieldMap = _integrationPointRepository.GetFieldMapJson(artifactId);
-
-				if (!string.IsNullOrEmpty(fieldMap))
-				{
-					mapping = Serializer.Deserialize<IEnumerable<FieldMap>>(fieldMap);
-				}
-			}
-			return mapping;
+			return _integrationPointRepository.GetFieldMappingAsync(artifactID).GetAwaiter().GetResult();
 		}
 
 		private static string GetValidationErrorMessage(Exception ex)

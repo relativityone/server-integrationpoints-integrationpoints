@@ -173,7 +173,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				.Returns(_previousJobHistoryArtifactId);
 			_caseServiceContext.RsapiService.RelativityObjectManager.Read<Data.JobHistory>(_previousJobHistoryArtifactId).Returns(_previousJobHistory);
 
-			_integrationPointRepository.Read(_integrationPointArtifactId).Returns(_integrationPoint);
+			_integrationPointRepository.ReadAsync(_integrationPointArtifactId).Returns(_integrationPoint);
 			_caseServiceContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(_sourceProviderId).Returns(_sourceProvider);
 			_caseServiceContext.RsapiService.RelativityObjectManager.Read<DestinationProvider>(_destinationProviderId).Returns(_destinationProvider);
 			_caseServiceContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(_integrationPointArtifactId).Returns(_integrationPoint);
@@ -941,7 +941,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			// Act
 			const string errorMessage = "KHAAAAAANN!!!";
 			var exception = new Exception(errorMessage);
-			_integrationPointRepository.Read(0).ThrowsForAnyArgs(exception);
+			_integrationPointRepository.ReadAsync(0).ThrowsForAnyArgs(exception);
 			_managerFactory.CreateErrorManager(_contextContainer).Returns(_errorManager);
 
 			// Assert

@@ -215,6 +215,9 @@
     </Content>
     <Content Include="Content\controls.grid.css" />
     <Content Include="Content\create-production-set.css" />
+    <Content Include="Content\fonts\open-sans-v15-latin-regular.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\header.css">
       <DependentUpon>header.scss</DependentUpon>
     </Content>
@@ -336,6 +339,12 @@
     <Content Include="..\Dependencies\kCura.FluidUI.Widgets.1.1.306\css\fonts\fluid-ui.woff">
       <Link>Content\fonts\fluid-ui.woff</Link>
     </Content>
+    <Content Include="Content\fonts\open-sans-v15-latin-regular.woff">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\fonts\open-sans-v15-latin-regular.woff2">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="oi\unmanaged\cmmap000.bin" />
     <None Include="Properties\PublishProfiles\default.pubxml" />
     <Content Include="LICENSE.txt">
@@ -380,6 +389,7 @@
     <Content Include="Scripts\jquery-migrate-3.0.1.min.js" />
     <Content Include="Scripts\jquery-ui-1.12.1.js" />
     <Content Include="Scripts\jquery-ui-1.12.1.min.js" />
+    <Content Include="Scripts\jquery.dataTables.min.js" />
     <Content Include="Scripts\jquery.signalR-2.3.0.js" />
     <Content Include="Scripts\jquery.signalR-2.3.0.min.js" />
     <Content Include="Scripts\modals\create-production-set-modal-vm.js" />
