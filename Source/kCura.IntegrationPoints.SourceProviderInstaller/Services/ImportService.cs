@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 		public void InstallProviders(IList<SourceProvider> providers)
 		{
 			IPluginProvider pluginProvider = new DefaultSourcePluginProvider(new GetApplicationBinaries(_eddsServiceContext.SqlContext));
-			var domainHelper = new DomainHelper(pluginProvider, _helper, new RelativityFeaturePathService());
+			var domainHelper = new AppDomainHelper(pluginProvider, _helper, new RelativityFeaturePathService());
 			var strategy = new AppDomainIsolatedFactoryLifecycleStrategy(domainHelper);
 			using (var vendor = new ProviderFactoryVendor(strategy))
 			{

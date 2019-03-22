@@ -2,7 +2,7 @@
 
 namespace kCura.IntegrationPoints.Domain
 {
-	public interface IDomainManager
+	public interface IAppDomainManager
 	{
 		/// <summary>
 		/// Called to initialized the provider's app domain and do any setup work needed

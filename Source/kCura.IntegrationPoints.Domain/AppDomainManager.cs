@@ -12,13 +12,13 @@ namespace kCura.IntegrationPoints.Domain
 	/// Internal use only:
 	/// This class should not be referenced by any consuming library
 	///  </summary>
-	public class DomainManager : MarshalByRefObject, IDomainManager
+	public class AppDomainManager : MarshalByRefObject, IAppDomainManager
 	{
 		private IProviderFactory _customProviderFactory;
 		private readonly WindsorContainerSetup _windsorContainerSetup;
 		private readonly IHelper _helper;
 
-		public DomainManager(IHelper helper)
+		public AppDomainManager(IHelper helper)
 		{
 			_helper = helper;
 			_windsorContainerSetup = new WindsorContainerSetup();

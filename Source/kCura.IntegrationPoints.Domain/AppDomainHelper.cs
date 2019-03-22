@@ -8,14 +8,14 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Domain
 {
-	public class DomainHelper : IDomainHelper
+	public class AppDomainHelper : IAppDomainHelper
 	{
 		private AssemblyDomainLoader _appDomainLoader;
 		private readonly IPluginProvider _pluginProvider;
 		private readonly IHelper _helper;
 		private readonly RelativityFeaturePathService _relativityFeaturePathService;
 
-		public DomainHelper(IPluginProvider pluginProvider, IHelper helper, RelativityFeaturePathService relativityFeaturePathService)
+		public AppDomainHelper(IPluginProvider pluginProvider, IHelper helper, RelativityFeaturePathService relativityFeaturePathService)
 		{
 			_pluginProvider = pluginProvider;
 			_helper = helper;
@@ -170,12 +170,12 @@ namespace kCura.IntegrationPoints.Domain
 			return newDomain;
 		}
 
-		public virtual IDomainManager SetupDomainAndCreateManager(AppDomain domain,
+		public virtual IAppDomainManager SetupDomainAndCreateManager(AppDomain domain,
 			Guid applicationGuid)
 		{
 			LoadRequiredAssemblies(domain);
 			LoadClientLibraries(domain, applicationGuid);
-			DomainManager manager = CreateInstance<DomainManager>(domain, _helper);
+			AppDomainManager manager = CreateInstance<AppDomainManager>(domain, _helper);
 
 			manager.Init();
 

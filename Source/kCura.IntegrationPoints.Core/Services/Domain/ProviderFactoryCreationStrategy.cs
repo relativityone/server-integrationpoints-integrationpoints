@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.Core.Services.Domain
 		private readonly IHelper _helper;
 		private readonly IWindsorContainerSetup _windsorContainerSetup;
 
-		public ProviderFactoryLifecycleStrategy(IHelper helper, IDomainHelper domainHelper, IWindsorContainerSetup windsorContainerSetup) : base(domainHelper)
+		public ProviderFactoryLifecycleStrategy(IHelper helper, IAppDomainHelper domainHelper, IWindsorContainerSetup windsorContainerSetup) : base(domainHelper)
 		{
 			_helper = helper;
 			_applicationId = Guid.Parse(Constants.IntegrationPoints.APPLICATION_GUID_STRING);
