@@ -3,12 +3,16 @@ using kCura.IntegrationPoints.UITests.Common;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Remote;
-using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace kCura.IntegrationPoints.UITests.Driver
 {
 	public static class ChromeDriverFactory
 	{
+		private const string _CHROME_CAPABILITIES_NAME = "chrome";
+		private const string _CHROME_DRIVER_VERSION_CAPABILITY_NAME = "chromedriverVersion";
+
 		public static RemoteWebDriver Create()
 		{
 			ChromeDriverService driverService = ChromeDriverService.CreateDefaultService();
@@ -31,23 +35,62 @@ namespace kCura.IntegrationPoints.UITests.Driver
 			options.AddBrowserOptions();
 			options.AddAdditionalCapabilities();
 
-			RemoteWebDriver driver = new ChromeDriver(driverService, options);
+			return CreateDriver(driverService, options);
+		}
 
-			CheckDriverAndBrowserCompatibility(DriverFactory.GetBrowserVersion(driver));
+		private static RemoteWebDriver CreateDriver(ChromeDriverService driverService, ChromeOptions options)
+		{
+			RemoteWebDriver driver = new ChromeDriver(driverService, options);
+			HandleIncompatibleDriverAndBrowserVersions(driver);
 
 			return driver;
 		}
 
-		private static Version MaxChromeSupportedVersion => new Version(SharedVariables.UiMaxChromeSupportedVersion);
-		
-		private static void CheckDriverAndBrowserCompatibility(string browserVersion)
+		private static void HandleIncompatibleDriverAndBrowserVersions(RemoteWebDriver driver)
 		{
-			var version = new Version(browserVersion);
-			if (MaxChromeSupportedVersion.Major < version.Major)
+			string browserVersion = DriverFactory.GetBrowserVersion(driver);
+			string driverVersion = GetChromeDriverVersion(driver);
+			if (!IsDriverAndBrowserCompatible(browserVersion, driverVersion))
 			{
-				throw new UiTestException($"Please update Selenium.WebDriver.ChromeDriver package, as it is too old for Chrome version {version}.");
+				driver.Dispose();
+				throw new UiTestException($"Please update Selenium.WebDriver.ChromeDriver package {driverVersion}, as it is not compatible with Chrome {browserVersion}.");
 			}
 		}
-		
+
+		private static bool IsDriverAndBrowserCompatible(string browserVersion, string driverVersion)
+		{
+			string browserMajorVersion = GetMajorVersion(browserVersion);
+			string driverMajorVersion = GetMajorVersion(driverVersion);
+
+			if (string.IsNullOrEmpty(browserVersion) || string.IsNullOrEmpty(driverMajorVersion))
+			{
+				return false;
+			}
+
+			return browserMajorVersion == driverMajorVersion;
+		}
+
+		private static string GetChromeDriverVersion(RemoteWebDriver driver)
+		{
+			ICapabilities capabilities = driver.Capabilities;
+			if (!capabilities.HasCapability(_CHROME_CAPABILITIES_NAME))
+			{
+				return string.Empty;
+			}
+
+			var chromeCapabilities = capabilities[_CHROME_CAPABILITIES_NAME] as IDictionary<string, object>;
+			if (!chromeCapabilities.ContainsKey(_CHROME_DRIVER_VERSION_CAPABILITY_NAME))
+			{
+				return string.Empty;
+			}
+
+			var chromeDriverVersion = chromeCapabilities[_CHROME_DRIVER_VERSION_CAPABILITY_NAME] as string;
+			return chromeDriverVersion;
+		}
+
+		private static string GetMajorVersion(string version)
+		{
+			return version?.Split('.').FirstOrDefault();
+		}
 	}
 }
