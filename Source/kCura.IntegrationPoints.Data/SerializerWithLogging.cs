@@ -3,7 +3,7 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using Relativity.API;
 
-namespace kCura.IntegrationPoints.Core.Serialization
+namespace kCura.IntegrationPoints.Data
 {
 	public class SerializerWithLogging : ISerializer
 	{

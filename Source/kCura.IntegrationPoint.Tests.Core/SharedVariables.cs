@@ -183,18 +183,18 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static bool UiDriverServiceHideCommandPromptWindow => AppSettingBool("UI.DriverService.HideCommandPromptWindow");
 
-		public static string UiMaxChromeSupportedVersion => AppSettingString("UI.ChromeDriver.MaxSupportedVersion");
-
 		public static string UiDriverServiceLogPath => AppSettingString("UI.DriverService.LogPath");
 
 		public static bool UiOptionsAcceptInsecureCertificates => AppSettingBool("UI.Options.AcceptInsecureCertificates");
 
 		public static bool UiOptionsArgumentsDisableInfobars => AppSettingBool("UI.Options.Arguments.DisableInfoBars");
-
+		
 		public static bool UiOptionsArgumentsHeadless => AppSettingBool("UI.Options.Arguments.Headless");
 
 		public static bool UiOptionsArgumentsIgnoreCertificateErrors => AppSettingBool("UI.Options.Arguments.IgnoreCertificateErrors");
 
+		public static bool UiOptionsArgumentsNoSandbox => AppSettingBool("UI.Options.Arguments.NoSandbox");
+		
 		public static bool UiOptionsAdditionalCapabilitiesAcceptSslCertificates =>
 			AppSettingBool("UI.Options.AdditionalCapabilities.AcceptSslCertificates");
 

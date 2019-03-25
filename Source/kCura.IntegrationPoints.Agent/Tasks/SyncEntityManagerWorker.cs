@@ -51,17 +51,38 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private int _workspaceArtifactId;
 
-		public SyncEntityManagerWorker(ICaseServiceContext caseServiceContext, IDataProviderFactory dataProviderFactory,
-			IHelper helper, ISerializer serializer, ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
-			IJobHistoryService jobHistoryService, IJobHistoryErrorService jobHistoryErrorService, IJobManager jobManager,
-			IManagerQueueService managerQueueService, JobStatisticsService statisticsService, IManagerFactory managerFactory,
+		public SyncEntityManagerWorker(ICaseServiceContext caseServiceContext, 
+			IDataProviderFactory dataProviderFactory,
+			IHelper helper, 
+			ISerializer serializer, 
+			ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
+			IJobHistoryService jobHistoryService, 
+			IJobHistoryErrorService jobHistoryErrorService, 
+			IJobManager jobManager,
+			IManagerQueueService managerQueueService, 
+			JobStatisticsService statisticsService, 
+			IManagerFactory managerFactory,
 			IContextContainerFactory contextContainerFactory,
-			IJobService jobService, IRepositoryFactory repositoryFactory, IHelperFactory helperFactory, IRelativityObjectManager relativityObjectManager,
-			IProviderTypeService providerTypeService)
-			: base(caseServiceContext, helper, dataProviderFactory, serializer,
-				appDomainRdoSynchronizerFactoryFactory, jobHistoryService, jobHistoryErrorService,
-				jobManager, null, statisticsService, managerFactory,
-				contextContainerFactory, jobService, providerTypeService)
+			IJobService jobService, 
+			IRepositoryFactory repositoryFactory, 
+			IHelperFactory helperFactory, 
+			IRelativityObjectManager relativityObjectManager,
+			IProviderTypeService providerTypeService,
+			IIntegrationPointRepository integrationPointRepository)
+			: base(caseServiceContext, 
+				helper, 
+				dataProviderFactory, 
+				serializer,
+				appDomainRdoSynchronizerFactoryFactory, 
+				jobHistoryService, jobHistoryErrorService,
+				jobManager, 
+				null, 
+				statisticsService, 
+				managerFactory,
+				contextContainerFactory, 
+				jobService, 
+				providerTypeService,
+				integrationPointRepository)
 		{
 			_managerQueueService = managerQueueService;
 			_repositoryFactory = repositoryFactory;
