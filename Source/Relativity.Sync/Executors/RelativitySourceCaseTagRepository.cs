@@ -82,12 +82,12 @@ namespace Relativity.Sync.Executors
 				catch (ServiceException ex)
 				{
 					_logger.LogError(ex, $"Service call failed while querying {nameof(RelativitySourceCaseTag)} object: {{request}}", request);
-					throw new DestinationWorkspaceTagRepositoryException($"Service call failed while querying {nameof(RelativitySourceCaseTag)} in workspace {destinationWorkspaceArtifactId}", ex);
+					throw new RelativitySourceCaseTagRepositoryException($"Service call failed while querying {nameof(RelativitySourceCaseTag)} in workspace {destinationWorkspaceArtifactId}", ex);
 				}
 				catch (Exception ex)
 				{
 					_logger.LogError(ex, $"Failed to query {nameof(RelativitySourceCaseTag)} object: {{request}}", request);
-					throw new DestinationWorkspaceTagRepositoryException($"Failed to query {nameof(RelativitySourceCaseTag)} in workspace {destinationWorkspaceArtifactId}", ex);
+					throw new RelativitySourceCaseTagRepositoryException($"Failed to query {nameof(RelativitySourceCaseTag)} in workspace {destinationWorkspaceArtifactId}", ex);
 				}
 
 				return queryResult.Objects.FirstOrDefault();
@@ -117,12 +117,12 @@ namespace Relativity.Sync.Executors
 				catch (ServiceException ex)
 				{
 					_logger.LogError(ex, $"Service call failed while creating {nameof(RelativitySourceCaseTag)}: {{request}}", request);
-					throw new DestinationWorkspaceTagRepositoryException($"Service call failed while creating {nameof(RelativitySourceCaseTag)}: {request}", ex);
+					throw new RelativitySourceCaseTagRepositoryException($"Service call failed while creating {nameof(RelativitySourceCaseTag)}: {request}", ex);
 				}
 				catch (Exception ex)
 				{
 					_logger.LogError(ex, $"Failed to create {nameof(RelativitySourceCaseTag)}: {{request}}", request);
-					throw new DestinationWorkspaceTagRepositoryException($"Failed to create {nameof(RelativitySourceCaseTag)} '{sourceCaseTag.Name}' in workspace {destinationWorkspaceArtifactId}",
+					throw new RelativitySourceCaseTagRepositoryException($"Failed to create {nameof(RelativitySourceCaseTag)} '{sourceCaseTag.Name}' in workspace {destinationWorkspaceArtifactId}",
 						ex);
 				}
 
@@ -156,13 +156,13 @@ namespace Relativity.Sync.Executors
 				catch (ServiceException ex)
 				{
 					_logger.LogError(ex, $"Service call failed while updating {nameof(RelativitySourceCaseTag)}: {{request}}", request);
-					throw new DestinationWorkspaceTagRepositoryException($"Failed to update {nameof(RelativitySourceCaseTag)} with id {sourceCaseTag.ArtifactId} in workspace {destinationWorkspaceArtifactId}",
+					throw new RelativitySourceCaseTagRepositoryException($"Failed to update {nameof(RelativitySourceCaseTag)} with id {sourceCaseTag.ArtifactId} in workspace {destinationWorkspaceArtifactId}",
 						ex);
 				}
 				catch (Exception ex)
 				{
 					_logger.LogError(ex, $"Failed to update {nameof(RelativitySourceCaseTag)}: {{request}}", request);
-					throw new DestinationWorkspaceTagRepositoryException($"Failed to update {nameof(RelativitySourceCaseTag)} with id {sourceCaseTag.ArtifactId} in workspace {destinationWorkspaceArtifactId}",
+					throw new RelativitySourceCaseTagRepositoryException($"Failed to update {nameof(RelativitySourceCaseTag)} with id {sourceCaseTag.ArtifactId} in workspace {destinationWorkspaceArtifactId}",
 						ex);
 				}
 			}
