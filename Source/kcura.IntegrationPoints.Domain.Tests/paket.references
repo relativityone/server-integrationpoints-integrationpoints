@@ -1,5 +1,6 @@
 CSharpGuidelineAnalyzer
 FluentAssertions
+Moq
 NSubstitute
 NUnit
 Relativity.API

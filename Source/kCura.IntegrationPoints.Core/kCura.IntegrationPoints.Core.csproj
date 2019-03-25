@@ -154,7 +154,6 @@
     <Compile Include="RelativitySourceRdo\RelativitySourceRdoHelpersFactory.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceRdoObjectType.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceWorkspaceRdoInitializer.cs" />
-    <Compile Include="Services\Domain\AppDomainFactory.cs" />
     <Compile Include="Services\Domain\AppDomainIsolatedFactoryCreationStrategy.cs" />
     <Compile Include="Services\Domain\IProviderFactoryLifecycleStrategy.cs" />
     <Compile Include="Services\Domain\ProviderFactoryCreationStrategy.cs" />

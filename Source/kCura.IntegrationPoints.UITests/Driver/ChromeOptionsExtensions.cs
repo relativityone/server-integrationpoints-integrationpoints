@@ -28,7 +28,8 @@ namespace kCura.IntegrationPoints.UITests.Driver
 				// Disables "Chrome is being controlled by automated test software." bar
 				["disable-infobars"] = SharedVariables.UiOptionsArgumentsDisableInfobars,
 				["headless"] = SharedVariables.UiOptionsArgumentsHeadless,
-				["ignore-certificate-errors"] = SharedVariables.UiOptionsArgumentsIgnoreCertificateErrors
+				["ignore-certificate-errors"] = SharedVariables.UiOptionsArgumentsIgnoreCertificateErrors,
+				["no-sandbox"] = SharedVariables.UiOptionsArgumentsNoSandbox
 			};
 
 			foreach (KeyValuePair<string, bool> option in optionsFromAppConfig.Where(x => x.Value))
