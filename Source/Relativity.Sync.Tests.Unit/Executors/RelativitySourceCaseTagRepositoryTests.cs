@@ -114,7 +114,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Func<Task> action = async () => await _sut.ReadAsync(0, 0, string.Empty, CancellationToken.None).ConfigureAwait(false);
 
 			// assert
-			action.Should().Throw<DestinationWorkspaceTagRepositoryException>().WithInnerException<ServiceException>();
+			action.Should().Throw<RelativitySourceCaseTagRepositoryException>().WithInnerException<ServiceException>();
 		}
 
 		[Test]
@@ -127,7 +127,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Func<Task> action = async () => await _sut.ReadAsync(0, 0, string.Empty, CancellationToken.None).ConfigureAwait(false);
 
 			// assert
-			action.Should().Throw<DestinationWorkspaceTagRepositoryException>().WithInnerException<InvalidOperationException>();
+			action.Should().Throw<RelativitySourceCaseTagRepositoryException>().WithInnerException<InvalidOperationException>();
 		}
 		
 
@@ -178,7 +178,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Func<Task> action = async () => await _sut.CreateAsync(0, 0, new RelativitySourceCaseTag()).ConfigureAwait(false);
 
 			// assert
-			action.Should().Throw<DestinationWorkspaceTagRepositoryException>().WithInnerException<ServiceException>();
+			action.Should().Throw<RelativitySourceCaseTagRepositoryException>().WithInnerException<ServiceException>();
 		}
 
 		[Test]
@@ -190,7 +190,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Func<Task> action = async () => await _sut.CreateAsync(0, 0, new RelativitySourceCaseTag()).ConfigureAwait(false);
 
 			// assert
-			action.Should().Throw<DestinationWorkspaceTagRepositoryException>().WithInnerException<InvalidOperationException>();
+			action.Should().Throw<RelativitySourceCaseTagRepositoryException>().WithInnerException<InvalidOperationException>();
 		}
 
 		[Test]
@@ -260,7 +260,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Func<Task> action = async () => await _sut.UpdateAsync(0, new RelativitySourceCaseTag()).ConfigureAwait(false);
 
 			// assert
-			action.Should().Throw<DestinationWorkspaceTagRepositoryException>().WithInnerException<ServiceException>();
+			action.Should().Throw<RelativitySourceCaseTagRepositoryException>().WithInnerException<ServiceException>();
 		}
 
 		[Test]
@@ -272,7 +272,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Func<Task> action = async () => await _sut.UpdateAsync(0, new RelativitySourceCaseTag()).ConfigureAwait(false);
 
 			// assert
-			action.Should().Throw<DestinationWorkspaceTagRepositoryException>().WithInnerException<InvalidOperationException>();
+			action.Should().Throw<RelativitySourceCaseTagRepositoryException>().WithInnerException<InvalidOperationException>();
 		}
 
 	}
