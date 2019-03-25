@@ -58,7 +58,7 @@ properties([
 		),
 		choice(
 			name: 'UITestsBrowser',
-			choices: ['chrome', 'chromium'],
+			choices: ['chrome', 'chromium', 'firefox'],
 			description: 'Name of browser the UI tests should be run on. Default: chrome'
 		),
 		string(

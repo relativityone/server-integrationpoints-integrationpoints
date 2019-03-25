@@ -13,6 +13,11 @@ namespace kCura.IntegrationPoints.UITests.Driver
 		private const string _CHROME_CAPABILITIES_NAME = "chrome";
 		private const string _CHROME_DRIVER_VERSION_CAPABILITY_NAME = "chromedriverVersion";
 
+		/// <summary>
+		/// This method creates Selenium Web Driver for Chromium based browser.
+		/// If no 'binary location' parameter specified it uses default Chrome installation path.
+		/// </summary>
+		/// <param name="binaryLocation">Specify custom path for chromium based browser executable file.</param>
 		public static RemoteWebDriver Create(string binaryLocation = "")
 		{
 			ChromeDriverService driverService = ChromeDriverService.CreateDefaultService();

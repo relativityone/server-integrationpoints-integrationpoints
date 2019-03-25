@@ -169,13 +169,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static bool UiSkipUserCreation => AppSettingBool("UI.SkipUserCreation");
 
-		public static string UiBrowser
-		{
-			get
-			{
-				return Environment.GetEnvironmentVariable("UITestsBrowser") ?? AppSettingString("UI.Browser");
-			}
-		}
+		public static string UiBrowser => GetEnvVariableOrAppSettingString("UITestsBrowser", "UI.Browser");
 
 		public static int UiBrowserWidth => AppSettingInt("UI.BrowserWidth");
 
@@ -375,6 +369,15 @@ namespace kCura.IntegrationPoint.Tests.Core
 				}
 			}
 			return false;
+		}
+
+		private static string GetEnvVariableOrAppSettingString(string envVariableName, string appSettingName)
+		{
+			string envVariableValue = Environment.GetEnvironmentVariable(envVariableName);
+
+			return !string.IsNullOrEmpty(envVariableValue)
+				? envVariableValue
+				: AppSettingString(appSettingName);
 		}
 
 		private static string GetAppSettingStringOrDefault(string settingName, Func<string> defaultValueProvider)
