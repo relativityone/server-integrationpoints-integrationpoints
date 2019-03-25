@@ -76,7 +76,7 @@ namespace Relativity.Sync.Tests.Integration
 		public void ItCreatesTagIfItDoesNotExist()
 		{
 			const int sourceWorkspaceArtifactID = 1014853;
-			const int destinationWorkspaceArtifactID = 1014853;
+			const int destinationWorkspaceArtifactID = 1014854;
 			const int jobArtifactId = 101000;
 			const int newDestinationWorkspaceTagArtifactId = 1031000;
 			const string destinationWorkspaceName = "Cool Workspace";
