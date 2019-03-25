@@ -28,10 +28,10 @@ namespace Relativity.Sync.Tests.Integration
 		private Mock<IObjectManager> _objectManagerMock;
 
 		private static readonly Guid _NAME_FIELD_GUID = Guid.Parse("155649c0-db15-4ee7-b449-bfdf2a54b7b5");
-		private static readonly Guid _DESTINATION_WORKSPACE_ARTIFACTID_FIELD_GUID = Guid.Parse("207E6836-2961-466B-A0D2-29974A4FAD36");
+		private static readonly Guid _DESTINATION_WORKSPACE_ARTIFACT_ID_FIELD_GUID = Guid.Parse("207E6836-2961-466B-A0D2-29974A4FAD36");
 		private static readonly Guid _DESTINATION_WORKSPACE_NAME_FIELD_GUID = Guid.Parse("348D7394-2658-4DA4-87D0-8183824ADF98");
 		private static readonly Guid _DESTINATION_INSTANCE_NAME_FIELD_GUID = Guid.Parse("909ADC7C-2BB9-46CA-9F85-DA32901D6554");
-		private static readonly Guid _DESTINATION_INSTANCE_ARTIFACTID_FIELD_GUID = Guid.Parse("323458DB-8A06-464B-9402-AF2516CF47E0");
+		private static readonly Guid _DESTINATION_INSTANCE_ARTIFACT_ID_FIELD_GUID = Guid.Parse("323458DB-8A06-464B-9402-AF2516CF47E0");
 
 		protected override void AssertExecutedSteps(List<Type> executorTypes)
 		{
@@ -170,8 +170,8 @@ namespace Relativity.Sync.Tests.Integration
 							{ _NAME_FIELD_GUID, "kjdsfhkjsdhfjksdn" },
 							{ _DESTINATION_WORKSPACE_NAME_FIELD_GUID, destinationWorkspaceName },
 							{ _DESTINATION_INSTANCE_NAME_FIELD_GUID, "This Instance" },
-							{ _DESTINATION_INSTANCE_ARTIFACTID_FIELD_GUID, instanceArtifactId },
-							{ _DESTINATION_WORKSPACE_ARTIFACTID_FIELD_GUID, destinationWorkspaceArtifactID }
+							{ _DESTINATION_INSTANCE_ARTIFACT_ID_FIELD_GUID, instanceArtifactId },
+							{ _DESTINATION_WORKSPACE_ARTIFACT_ID_FIELD_GUID, destinationWorkspaceArtifactID }
 						})
 					}
 				}
@@ -252,12 +252,12 @@ namespace Relativity.Sync.Tests.Integration
 							},
 							new FieldValuePair
 							{
-								Field = new Field { Guids = new List<Guid> { _DESTINATION_INSTANCE_ARTIFACTID_FIELD_GUID } },
+								Field = new Field { Guids = new List<Guid> { _DESTINATION_INSTANCE_ARTIFACT_ID_FIELD_GUID } },
 								Value = instanceArtifactId
 							},
 							new FieldValuePair
 							{
-								Field = new Field { Guids = new List<Guid> { _DESTINATION_WORKSPACE_ARTIFACTID_FIELD_GUID } },
+								Field = new Field { Guids = new List<Guid> { _DESTINATION_WORKSPACE_ARTIFACT_ID_FIELD_GUID } },
 								Value = destinationWorkspaceArtifactID
 							},
 							new FieldValuePair
