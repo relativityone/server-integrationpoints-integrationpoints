@@ -97,6 +97,5 @@ namespace kCura.IntegrationPoints.UITests.Driver
 		{
 			return version?.Split('.').FirstOrDefault();
 		}
-
 	}
 }

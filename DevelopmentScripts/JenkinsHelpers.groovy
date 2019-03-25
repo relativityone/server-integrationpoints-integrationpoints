@@ -484,7 +484,6 @@ def reporting()
     }
 }
 
-
 def downloadAndSetUpBrowser()
 {
     echo "Downloading browser for UI tests. Selected browser: ${params.UITestsBrowser}"
@@ -505,7 +504,6 @@ def downloadAndSetUpBrowser()
         break
     }
 }
-
 
 def downloadChromiumInSetVersion(version)
 {
@@ -546,7 +544,6 @@ def getChromiumDownloadPath(chromiumVersion)
     def path = "\\\\kcura.corp\\sdlc\\testing\\TestingData\\RelativityTestAutomation\\BrowserInstallers\\Chromium\\${chromiumVersion}\\Installer.exe"
     return path
 }
-
 
 def deleteDirectoryIfExists(String directoryToDelete)
 {
