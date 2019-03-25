@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
@@ -14,7 +13,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private Mock<IRelativitySourceCaseTagRepository> _relativitySourceCaseTagRepository;
 		private Mock<IWorkspaceNameQuery> _workspaceNameQuery;
 		private Mock<IFederatedInstance> _federatedInstance;
-		private Mock<ITagNameFormatter> _tagNameFormatter;
 
 		private SourceCaseTagService _sut;
 
@@ -24,9 +22,9 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_relativitySourceCaseTagRepository = new Mock<IRelativitySourceCaseTagRepository>();
 			_workspaceNameQuery = new Mock<IWorkspaceNameQuery>();
 			_federatedInstance = new Mock<IFederatedInstance>();
-			_tagNameFormatter = new Mock<ITagNameFormatter>();
 
-			_sut = new SourceCaseTagService(_relativitySourceCaseTagRepository.Object, _workspaceNameQuery.Object, _federatedInstance.Object, _tagNameFormatter.Object);
+			Mock<ITagNameFormatter> tagNameFormatter = new Mock<ITagNameFormatter>();
+			_sut = new SourceCaseTagService(_relativitySourceCaseTagRepository.Object, _workspaceNameQuery.Object, _federatedInstance.Object, tagNameFormatter.Object);
 		}
 
 		[Test]

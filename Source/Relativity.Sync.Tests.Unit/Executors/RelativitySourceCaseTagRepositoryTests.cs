@@ -18,7 +18,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 {
 	public sealed class RelativitySourceCaseTagRepositoryTests
 	{
-		private Mock<IDestinationServiceFactoryForUser> _serviceFactory;
 		private Mock<IFederatedInstance> _federatedInstance;
 		private Mock<ITagNameFormatter> _tagNameFormatter;
 		private Mock<IObjectManager> _objectManager;
@@ -28,14 +27,14 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[SetUp]
 		public void SetUp()
 		{
-			_serviceFactory = new Mock<IDestinationServiceFactoryForUser>();
+			Mock<IDestinationServiceFactoryForUser> serviceFactory = new Mock<IDestinationServiceFactoryForUser>();
 			_federatedInstance = new Mock<IFederatedInstance>();
 			_objectManager = new Mock<IObjectManager>();
 			_tagNameFormatter = new Mock<ITagNameFormatter>();
 			_tagNameFormatter.Setup(x => x.FormatWorkspaceDestinationTagName(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())).Returns("foo bar");
-			_serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
+			serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
 
-			_sut = new RelativitySourceCaseTagRepository(_serviceFactory.Object, new EmptyLogger());
+			_sut = new RelativitySourceCaseTagRepository(serviceFactory.Object, new EmptyLogger());
 		}
 
 

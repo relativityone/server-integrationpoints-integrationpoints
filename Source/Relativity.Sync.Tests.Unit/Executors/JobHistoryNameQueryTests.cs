@@ -19,7 +19,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 	public sealed class JobHistoryNameQueryTests
 	{
 		private Mock<IObjectManager> _objectManager;
-		private Mock<ISourceServiceFactoryForUser> _serviceFactory;
 
 		private JobHistoryNameQuery _sut;
 
@@ -27,10 +26,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		public void SetUp()
 		{
 			_objectManager = new Mock<IObjectManager>();
-			_serviceFactory = new Mock<ISourceServiceFactoryForUser>();
-			_serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
+			Mock<ISourceServiceFactoryForUser> serviceFactory = new Mock<ISourceServiceFactoryForUser>();
+			serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
 
-			_sut = new JobHistoryNameQuery(_serviceFactory.Object, new EmptyLogger());
+			_sut = new JobHistoryNameQuery(serviceFactory.Object, new EmptyLogger());
 		}
 
 		[Test]

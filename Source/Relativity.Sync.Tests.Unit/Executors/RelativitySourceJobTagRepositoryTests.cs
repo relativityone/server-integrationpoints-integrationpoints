@@ -18,7 +18,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 	[TestFixture]
 	public sealed class RelativitySourceJobTagRepositoryTests
 	{
-		private Mock<ISourceServiceFactoryForUser> _serviceFactory;
 		private Mock<IObjectManager> _objectManager;
 
 		private RelativitySourceJobTagRepository _sut;
@@ -26,11 +25,11 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[SetUp]
 		public void SetUp()
 		{
-			_serviceFactory = new Mock<ISourceServiceFactoryForUser>();
+			Mock<ISourceServiceFactoryForUser> serviceFactory = new Mock<ISourceServiceFactoryForUser>();
 			_objectManager = new Mock<IObjectManager>();
-			_serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
+			serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
 
-			_sut = new RelativitySourceJobTagRepository(_serviceFactory.Object, new EmptyLogger());
+			_sut = new RelativitySourceJobTagRepository(serviceFactory.Object, new EmptyLogger());
 		}
 
 		[Test]
