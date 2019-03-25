@@ -19,7 +19,7 @@ namespace Relativity.Sync.Executors
 
 		public async Task<RelativitySourceJobTag> CreateSourceJobTagAsync(IDestinationWorkspaceTagsCreationConfiguration configuration, int sourceCaseTagArtifactId, CancellationToken token)
 		{
-			string sourceJobHistoryName = await _jobHistoryNameQuery.GetJobNameAsync(configuration.JobArtifactId, token).ConfigureAwait(false);
+			string sourceJobHistoryName = await _jobHistoryNameQuery.GetJobNameAsync(configuration.JobArtifactId, configuration.SourceWorkspaceArtifactId, token).ConfigureAwait(false);
 			string sourceJobTagName = _tagNameFormatter.FormatSourceJobTagName(sourceJobHistoryName, configuration.JobArtifactId);
 
 			RelativitySourceJobTag sourceJobTag = new RelativitySourceJobTag
@@ -32,7 +32,7 @@ namespace Relativity.Sync.Executors
 			};
 
 			RelativitySourceJobTag newSourceJobTag = await _relativitySourceJobTagRepository.CreateAsync(
-				configuration.SourceJobArtifactTypeId, configuration.DestinationWorkspaceArtifactId, sourceJobTag, token).ConfigureAwait(false);
+				configuration.SourceWorkspaceArtifactId, configuration.DestinationWorkspaceArtifactId, sourceJobTag, token).ConfigureAwait(false);
 
 			return newSourceJobTag;
 		}

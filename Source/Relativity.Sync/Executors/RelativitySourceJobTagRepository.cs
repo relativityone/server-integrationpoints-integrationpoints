@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Relativity.Services.DataContracts.DTOs;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -14,34 +12,30 @@ namespace Relativity.Sync.Executors
 	internal sealed class RelativitySourceJobTagRepository : IRelativitySourceJobTagRepository
 	{
 		private readonly ISourceServiceFactoryForUser _sourceServiceFactoryForUser;
-		private readonly ITagNameFormatter _tagNameFormatter;
 		private readonly ISyncLog _logger;
 
-		private static readonly Guid JobHistoryNameGuid = new Guid("07061466-5fab-4581-979c-c801e8207370");
+		private static readonly Guid JobHistoryNameGuid = new Guid("0b8fcebf-4149-4f1b-a8bc-d88ff5917169");
 		private static readonly Guid JobHistoryIdFieldGuid = new Guid("2bf54e79-7f75-4a51-a99a-e4d68f40a231");
-		private static readonly Guid JobNameFieldGuid = new Guid(""); // TODO
 
-		public RelativitySourceJobTagRepository(ISourceServiceFactoryForUser sourceServiceFactoryForUser, ITagNameFormatter tagNameFormatter, ISyncLog logger)
+		public RelativitySourceJobTagRepository(ISourceServiceFactoryForUser sourceServiceFactoryForUser, ISyncLog logger)
 		{
 			_sourceServiceFactoryForUser = sourceServiceFactoryForUser;
-			_tagNameFormatter = tagNameFormatter;
 			_logger = logger;
 		}
 
-		public async Task<RelativitySourceJobTag> CreateAsync(int sourceJobArtifactTypeId, int destinationWorkspaceArtifactId, RelativitySourceJobTag sourceJobTag, CancellationToken token)
+		public async Task<RelativitySourceJobTag> CreateAsync(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId, RelativitySourceJobTag sourceJobTag, CancellationToken token)
 		{
-			string jobHistoryName = await GetJobHistoryNameAsync(sourceJobTag.SourceCaseTagArtifactId, sourceJobArtifactTypeId, token).ConfigureAwait(false);
-			string tagName = _tagNameFormatter.FormatSourceJobTagName(jobHistoryName, sourceJobTag.JobHistoryArtifactId);
-
 			using (IObjectManager objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				CreateRequest request = new CreateRequest()
 				{
 					ObjectType = new ObjectTypeRef()
 					{
-						ArtifactTypeID = sourceJobTag.ArtifactTypeId
+						Guid = new Guid("6f4dd346-d398-4e76-8174-f0cd8236cbe7"),
+						Name = sourceJobTag.Name
 					},
-					FieldValues = CreateFieldValues(tagName, sourceJobArtifactTypeId, jobHistoryName)
+					ParentObject = new RelativityObjectRef {ArtifactID = sourceJobTag.SourceCaseTagArtifactId},
+					FieldValues = CreateFieldValues(sourceWorkspaceArtifactId, sourceJobTag.JobHistoryName)
 				};
 
 				CreateResult result;
@@ -57,7 +51,7 @@ namespace Relativity.Sync.Executors
 				catch (Exception ex)
 				{
 					_logger.LogError(ex, $"Failed to create {nameof(RelativitySourceJobTag)}: {{request}}", request);
-					throw new DestinationWorkspaceTagRepositoryException($"Failed to create {nameof(RelativitySourceJobTag)} '{tagName}' in workspace {sourceJobTag.SourceCaseTagArtifactId}",
+					throw new DestinationWorkspaceTagRepositoryException($"Failed to create {nameof(RelativitySourceJobTag)} '{sourceJobTag.Name}' in workspace {sourceJobTag.SourceCaseTagArtifactId}",
 						ex);
 				}
 
@@ -65,64 +59,20 @@ namespace Relativity.Sync.Executors
 				{
 					ArtifactId = result.Object.ArtifactID,
 					ArtifactTypeId = sourceJobTag.ArtifactTypeId,
-					Name = tagName,
+					Name = sourceJobTag.Name,
 					SourceCaseTagArtifactId = sourceJobTag.SourceCaseTagArtifactId,
-					JobHistoryArtifactId = sourceJobArtifactTypeId,
-					JobHistoryName = jobHistoryName
+					JobHistoryArtifactId = sourceWorkspaceArtifactId,
+					JobHistoryName = sourceJobTag.JobHistoryName
 				};
 				
 				return createdTag;
 			}
 		}
 
-		private async Task<string> GetJobHistoryNameAsync(int sourceWorkspaceArtifactId, int jobArtifactId, CancellationToken token)
-		{
-			using (IObjectManager objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
-			{
-				QueryRequest request = new QueryRequest()
-				{
-					ObjectType = new ObjectTypeRef() { ArtifactID = jobArtifactId },
-					Fields = new []
-					{
-						new FieldRef()
-						{
-							Guid = JobHistoryNameGuid
-						}
-					}
-				};
-
-				QueryResult queryResult;
-				try
-				{
-					const int start = 0;
-					const int length = 1;
-					queryResult = await objectManager.QueryAsync(sourceWorkspaceArtifactId, request, start, length, token, new EmptyProgress<ProgressReport>()).ConfigureAwait(false);
-				}
-				catch (ServiceException ex)
-				{
-					_logger.LogError(ex, $"Service call failed while querying job history name object: {{request}}", request);
-					throw new DestinationWorkspaceTagRepositoryException($"Service call failed while querying job history name in workspace {sourceWorkspaceArtifactId}", ex);
-				}
-				catch (Exception ex)
-				{
-					_logger.LogError(ex, $"Failed to query job history name object: {{request}}", request);
-					throw new DestinationWorkspaceTagRepositoryException($"Failed to query job history name in workspace {sourceWorkspaceArtifactId}", ex);
-				}
-
-				RelativityObject relativityObject = queryResult.Objects.FirstOrDefault();
-				return relativityObject?.Name;
-			}
-		}
-
-		private IEnumerable<FieldRefValuePair> CreateFieldValues(string tagName, int sourceJobArtifactTypeId, string jobHistoryName)
+		private IEnumerable<FieldRefValuePair> CreateFieldValues(int sourceJobArtifactTypeId, string jobHistoryName)
 		{
 			FieldRefValuePair[] pairs =
 			{
-				new FieldRefValuePair
-				{
-					Field = new FieldRef {Guid = JobNameFieldGuid},
-					Value = tagName
-				},
 				new FieldRefValuePair
 				{
 					Field = new FieldRef {Guid = JobHistoryIdFieldGuid},

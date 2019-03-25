@@ -5,6 +5,6 @@ namespace Relativity.Sync.Executors
 {
 	internal interface IJobHistoryNameQuery
 	{
-		Task<string> GetJobNameAsync(int jobHistoryArtifactId, CancellationToken token);
+		Task<string> GetJobNameAsync(int jobHistoryArtifactId, int sourceWorkspaceArtifactId, CancellationToken token);
 	}
 }

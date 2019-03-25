@@ -67,6 +67,7 @@ namespace Relativity.Sync.Tests.System.Stubs
 
 		public void SetSourceWorkspaceTag(int artifactId, string name)
 		{
+			SourceWorkspaceTagArtifactId = artifactId;
 		}
 
 
