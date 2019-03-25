@@ -19,12 +19,12 @@ namespace Relativity.Sync.Executors
 		private readonly ITagNameFormatter _tagNameFormatter;
 		private readonly ISyncLog _logger;
 
-		private static readonly Guid _OBJECT_TYPE_GUID = new Guid("3F45E490-B4CF-4C7D-8BB6-9CA891C0C198");
-		private static readonly Guid _DESTINATION_WORKSPACE_NAME_GUID = new Guid("348d7394-2658-4da4-87d0-8183824adf98");
-		private static readonly Guid _DESTINATION_INSTANCE_NAME_GUID = new Guid("909adc7c-2bb9-46ca-9f85-da32901d6554");
-		private static readonly Guid _DESTINATION_INSTANCE_ARTIFACTID_GUID = new Guid("323458db-8a06-464b-9402-af2516cf47e0");
-		private static readonly Guid _NAME_GUID = new Guid("155649c0-db15-4ee7-b449-bfdf2a54b7b5");
-		private static readonly Guid _DESTINATION_WORKSPACE_ARTIFACTID_GUID = new Guid("207e6836-2961-466b-a0d2-29974a4fad36");
+		private static readonly Guid ObjectTypeGuid = new Guid("3F45E490-B4CF-4C7D-8BB6-9CA891C0C198");
+		private static readonly Guid DestinationWorkspaceNameGuid = new Guid("348d7394-2658-4da4-87d0-8183824adf98");
+		private static readonly Guid DestinationInstanceNameGuid = new Guid("909adc7c-2bb9-46ca-9f85-da32901d6554");
+		private static readonly Guid DestinationInstanceArtifactidGuid = new Guid("323458db-8a06-464b-9402-af2516cf47e0");
+		private static readonly Guid NameGuid = new Guid("155649c0-db15-4ee7-b449-bfdf2a54b7b5");
+		private static readonly Guid DestinationWorkspaceArtifactidGuid = new Guid("207e6836-2961-466b-a0d2-29974a4fad36");
 
 		public DestinationWorkspaceTagRepository(ISourceServiceFactoryForUser sourceServiceFactoryForUser, IFederatedInstance federatedInstance, ITagNameFormatter tagNameFormatter,
 			ISyncLog logger)
@@ -47,9 +47,9 @@ namespace Relativity.Sync.Executors
 				DestinationWorkspaceTag destinationWorkspaceTag = new DestinationWorkspaceTag
 				{
 					ArtifactId = tag.ArtifactID,
-					DestinationWorkspaceName = tag[_DESTINATION_WORKSPACE_NAME_GUID].Value.ToString(),
-					DestinationInstanceName = tag[_DESTINATION_INSTANCE_NAME_GUID].Value.ToString(),
-					DestinationWorkspaceArtifactId = Convert.ToInt32(tag[_DESTINATION_WORKSPACE_ARTIFACTID_GUID].Value, CultureInfo.InvariantCulture)
+					DestinationWorkspaceName = tag[DestinationWorkspaceNameGuid].Value.ToString(),
+					DestinationInstanceName = tag[DestinationInstanceNameGuid].Value.ToString(),
+					DestinationWorkspaceArtifactId = Convert.ToInt32(tag[DestinationWorkspaceArtifactidGuid].Value, CultureInfo.InvariantCulture)
 				};
 				return destinationWorkspaceTag;
 			}
@@ -68,21 +68,21 @@ namespace Relativity.Sync.Executors
 				// TODO REL-304544: Once the Sync code is entirely in this project, this should be changed to just use -1.
 #pragma warning restore S1135 // Track uses of "TODO" tags
 				string federatedInstanceIdSearchTerm = federatedInstanceId == -1
-					? $"NOT '{_DESTINATION_INSTANCE_ARTIFACTID_GUID}' ISSET"
-					: $"'{_DESTINATION_INSTANCE_ARTIFACTID_GUID}' == {federatedInstanceId}";
+					? $"NOT '{DestinationInstanceArtifactidGuid}' ISSET"
+					: $"'{DestinationInstanceArtifactidGuid}' == {federatedInstanceId}";
 
 				QueryRequest request = new QueryRequest
 				{
-					ObjectType = new ObjectTypeRef { Guid = _OBJECT_TYPE_GUID },
-					Condition = $"'{_DESTINATION_WORKSPACE_ARTIFACTID_GUID}' == {destinationWorkspaceArtifactId} AND ({federatedInstanceIdSearchTerm})",
+					ObjectType = new ObjectTypeRef { Guid = ObjectTypeGuid },
+					Condition = $"'{DestinationWorkspaceArtifactidGuid}' == {destinationWorkspaceArtifactId} AND ({federatedInstanceIdSearchTerm})",
 					Fields = new List<FieldRef>
 					{
 						new FieldRef { Name = "ArtifactId" },
-						new FieldRef { Guid = _DESTINATION_WORKSPACE_NAME_GUID},
-						new FieldRef { Guid = _DESTINATION_INSTANCE_NAME_GUID },
-						new FieldRef { Guid = _DESTINATION_WORKSPACE_ARTIFACTID_GUID },
-						new FieldRef { Guid = _DESTINATION_INSTANCE_ARTIFACTID_GUID },
-						new FieldRef { Guid = _NAME_GUID }
+						new FieldRef { Guid = DestinationWorkspaceNameGuid},
+						new FieldRef { Guid = DestinationInstanceNameGuid },
+						new FieldRef { Guid = DestinationWorkspaceArtifactidGuid },
+						new FieldRef { Guid = DestinationInstanceArtifactidGuid },
+						new FieldRef { Guid = NameGuid }
 					}
 				};
 				QueryResult queryResult;
@@ -126,7 +126,7 @@ namespace Relativity.Sync.Executors
 			{
 				CreateRequest request = new CreateRequest
 				{
-					ObjectType = new ObjectTypeRef { Guid = _OBJECT_TYPE_GUID },
+					ObjectType = new ObjectTypeRef { Guid = ObjectTypeGuid },
 					FieldValues = CreateFieldValues(destinationWorkspaceArtifactId, destinationWorkspaceName, federatedInstanceName, federatedInstanceId)
 				};
 
@@ -138,12 +138,12 @@ namespace Relativity.Sync.Executors
 				catch (ServiceException ex)
 				{
 					_logger.LogError(ex, $"Service call failed while creating {nameof(DestinationWorkspaceTag)}: {{request}}", request);
-					throw new DestinationWorkspaceTagRepositoryException($"Service call failed while creating {nameof(DestinationWorkspaceTag)}: {{request}}", ex);
+					throw new DestinationWorkspaceTagRepositoryException($"Service call failed while creating {nameof(DestinationWorkspaceTag)}: {request}", ex);
 				}
 				catch (Exception ex)
 				{
 					_logger.LogError(ex, $"Failed to create {nameof(DestinationWorkspaceTag)}: {{request}}", request);
-					string tagName = request.FieldValues.First(x => x.Field.Guid == _NAME_GUID).Value.ToString();
+					string tagName = request.FieldValues.First(x => x.Field.Guid == NameGuid).Value.ToString();
 					throw new DestinationWorkspaceTagRepositoryException(
 						$"Failed to create {nameof(DestinationWorkspaceTag)} '{tagName}' in workspace {sourceWorkspaceArtifactId}",
 						ex);
@@ -198,27 +198,27 @@ namespace Relativity.Sync.Executors
 			{
 				new FieldRefValuePair
 				{
-					Field = new FieldRef {Guid = _NAME_GUID},
+					Field = new FieldRef {Guid = NameGuid},
 					Value = destinationTagName
 				},
 				new FieldRefValuePair
 				{
-					Field = new FieldRef {Guid = _DESTINATION_WORKSPACE_NAME_GUID},
+					Field = new FieldRef {Guid = DestinationWorkspaceNameGuid},
 					Value = destinationWorkspaceName
 				},
 				new FieldRefValuePair
 				{
-					Field = new FieldRef {Guid = _DESTINATION_WORKSPACE_ARTIFACTID_GUID},
+					Field = new FieldRef {Guid = DestinationWorkspaceArtifactidGuid},
 					Value = destinationWorkspaceArtifactId
 				},
 				new FieldRefValuePair
 				{
-					Field = new FieldRef {Guid = _DESTINATION_INSTANCE_NAME_GUID},
+					Field = new FieldRef {Guid = DestinationInstanceNameGuid},
 					Value = federatedInstanceName
 				},
 				new FieldRefValuePair
 				{
-					Field = new FieldRef {Guid = _DESTINATION_INSTANCE_ARTIFACTID_GUID},
+					Field = new FieldRef {Guid = DestinationInstanceArtifactidGuid},
 					Value = federatedInstanceId
 				}
 			};

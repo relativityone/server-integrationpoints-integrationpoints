@@ -60,14 +60,15 @@ namespace Relativity.Sync.Tests.System.Stubs
 
 		public void SetSourceJobTag(int artifactId, string name)
 		{
-			// Method intentionally left empty.
+			SourceJobTagArtifactId = artifactId;
+			SourceJobTagName = name;
 		}
 
 		public bool IsSourceWorkspaceTagSet { get; set; }
 
 		public void SetSourceWorkspaceTag(int artifactId, string name)
 		{
-			// Method intentionally left empty.
+			SourceWorkspaceTagArtifactId = artifactId;
 		}
 
 

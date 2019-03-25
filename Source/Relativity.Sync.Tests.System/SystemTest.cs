@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using NUnit.Framework;
 using Relativity.Services.ServiceProxy;
+using Relativity.Services.Workspace;
 using Relativity.Sync.Tests.System.Stubs;
 using TextCondition = kCura.Relativity.Client.TextCondition;
 using TextConditionEnum = kCura.Relativity.Client.TextConditionEnum;
@@ -27,10 +30,15 @@ namespace Relativity.Sync.Tests.System
 		}
 
 		[OneTimeTearDown]
-		public void SuiteTeardown()
+		public async Task SuiteTeardown()
 		{
 			ChildSuiteTeardown();
-			Client.Repositories.Workspace.Delete(_workspaces);
+			using (var manager = ServiceFactory.CreateProxy<IWorkspaceManager>())
+			{
+				// ReSharper disable once AccessToDisposedClosure
+				await Task.WhenAll(_workspaces.Select(w => manager.DeleteAsync(new WorkspaceRef(w.ArtifactID)))).ConfigureAwait(false);
+			}
+
 			Client?.Dispose();
 			Client = null;
 		}

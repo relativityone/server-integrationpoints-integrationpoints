@@ -8,6 +8,11 @@ namespace Relativity.Sync.Executors
 	{
 		public void Install(ContainerBuilder builder)
 		{
+			builder.RegisterType<SourceCaseTagService>().As<ISourceCaseTagService>();
+			builder.RegisterType<RelativitySourceCaseTagRepository>().As<IRelativitySourceCaseTagRepository>();
+			builder.RegisterType<SourceJobTagService>().As<ISourceJobTagService>();
+			builder.RegisterType<JobHistoryNameQuery>().As<IJobHistoryNameQuery>();
+			builder.RegisterType<RelativitySourceJobTagRepository>().As<IRelativitySourceJobTagRepository>();
 			builder.RegisterType<DestinationWorkspaceTagRepository>().As<IDestinationWorkspaceTagRepository>();
 			builder.RegisterType<DestinationWorkspaceTagLinker>().As<IDestinationWorkspaceTagsLinker>();
 			builder.RegisterType<FederatedInstance>().As<IFederatedInstance>();
