@@ -32,14 +32,13 @@ namespace Relativity.Sync.Executors
 		public async Task<RelativitySourceCaseTag> ReadAsync(int destinationWorkspaceArtifactId, int sourceWorkspaceArtifactId, string sourceInstanceName, CancellationToken token)
 		{
 			_logger.LogVerbose($"Reading {nameof(RelativitySourceCaseTag)}. Source workspace artifact ID: {{sourceWorkspaceArtifactId}} " +
-							   "Destination workspace artifact ID: {destinationWorkspaceArtifactId} " +
-							   "Source instance name: {sourceInstanceName}",
-								sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, sourceInstanceName);
+				"Destination workspace artifact ID: {destinationWorkspaceArtifactId} Source instance name: {sourceInstanceName}",
+				sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, sourceInstanceName);
 			RelativityObject tag = await QueryRelativityObjectTagAsync(destinationWorkspaceArtifactId, sourceWorkspaceArtifactId, sourceInstanceName, token).ConfigureAwait(false);
 
 			if (tag != null)
 			{
-				RelativitySourceCaseTag sourceCaseTag = new RelativitySourceCaseTag()
+				RelativitySourceCaseTag sourceCaseTag = new RelativitySourceCaseTag
 				{
 					ArtifactId = tag.ArtifactID,
 					Name = tag.Name,
@@ -57,19 +56,19 @@ namespace Relativity.Sync.Executors
 		{
 			using (IObjectManager objectManager = await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
-				QueryRequest request = new QueryRequest()
+				QueryRequest request = new QueryRequest
 				{
 					Condition = $"('{CaseIdFieldGuid}' == {sourceWorkspaceArtifactId}) AND ('{InstanceNameFieldGuid}' == '{sourceInstanceName}')",
-					ObjectType = new ObjectTypeRef()
+					ObjectType = new ObjectTypeRef
 					{
 						Guid = ObjectTypeGuid
 					},
-					Fields = new List<FieldRef>()
+					IncludeNameInQueryResult = true,
+					Fields = new List<FieldRef>
 					{
-						new FieldRef(){Name = "Name"},
-						new FieldRef(){Guid = CaseIdFieldGuid},
-						new FieldRef(){Guid = SourceWorkspaceNameFieldGuid},
-						new FieldRef(){Guid = InstanceNameFieldGuid}
+						new FieldRef {Guid = CaseIdFieldGuid},
+						new FieldRef {Guid = SourceWorkspaceNameFieldGuid},
+						new FieldRef {Guid = InstanceNameFieldGuid}
 					}
 				};
 
@@ -98,12 +97,12 @@ namespace Relativity.Sync.Executors
 		public async Task<RelativitySourceCaseTag> CreateAsync(int destinationWorkspaceArtifactId, int sourceWorkspaceArtifactTypeId, RelativitySourceCaseTag sourceCaseTag)
 		{
 			_logger.LogVerbose($"Creating {nameof(RelativitySourceCaseTag)} in destination workspace artifact ID: {{destinationWorkspaceArtifactId}} " +
-							   "Source workspace artifact ID: {sourceWorkspaceArtifactTypeId}", destinationWorkspaceArtifactId, sourceWorkspaceArtifactTypeId);
+				"Source workspace artifact ID: {sourceWorkspaceArtifactTypeId}", destinationWorkspaceArtifactId, sourceWorkspaceArtifactTypeId);
 			using (IObjectManager objectManager = await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				CreateRequest request = new CreateRequest
 				{
-					ObjectType = new ObjectTypeRef()
+					ObjectType = new ObjectTypeRef
 					{
 						Guid = ObjectTypeGuid
 					},
@@ -127,7 +126,7 @@ namespace Relativity.Sync.Executors
 						ex);
 				}
 
-				RelativitySourceCaseTag createdTag = new RelativitySourceCaseTag()
+				RelativitySourceCaseTag createdTag = new RelativitySourceCaseTag
 				{
 					ArtifactId = createResult.Object.ArtifactID,
 					Name = sourceCaseTag.Name,
@@ -142,9 +141,9 @@ namespace Relativity.Sync.Executors
 		public async Task UpdateAsync(int destinationWorkspaceArtifactId, RelativitySourceCaseTag sourceCaseTag)
 		{
 			_logger.LogVerbose($"Updating {nameof(RelativitySourceCaseTag)} in destination workspace artifact ID: {{destinationWorkspaceArtifactId}}", destinationWorkspaceArtifactId);
-			UpdateRequest request = new UpdateRequest()
+			UpdateRequest request = new UpdateRequest
 			{
-				Object = new RelativityObjectRef() { ArtifactID = sourceCaseTag.ArtifactId },
+				Object = new RelativityObjectRef { ArtifactID = sourceCaseTag.ArtifactId },
 				FieldValues = CreateFieldValues(sourceCaseTag.Name, sourceCaseTag.SourceWorkspaceArtifactId, sourceCaseTag.SourceWorkspaceName, sourceCaseTag.SourceInstanceName)
 			};
 
