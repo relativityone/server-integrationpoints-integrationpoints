@@ -250,7 +250,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 					checkPredicates;
 		}
 
-
 		[Test]
 		public void ItShouldThrowRepositoryExceptionWhenUpdatingTagServiceCallFails()
 		{
