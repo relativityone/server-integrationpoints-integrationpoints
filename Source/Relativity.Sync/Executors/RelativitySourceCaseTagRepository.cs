@@ -66,10 +66,10 @@ namespace Relativity.Sync.Executors
 					},
 					Fields = new List<FieldRef>()
 					{
-						new FieldRef(){Name = "Name"},
-						new FieldRef(){Guid = CaseIdFieldGuid},
-						new FieldRef(){Guid = SourceWorkspaceNameFieldGuid},
-						new FieldRef(){Guid = InstanceNameFieldGuid}
+						new FieldRef { Name = "ArtifactId" },
+						new FieldRef { Guid = CaseIdFieldGuid },
+						new FieldRef { Guid = SourceWorkspaceNameFieldGuid },
+						new FieldRef { Guid = InstanceNameFieldGuid }
 					}
 				};
 
