@@ -23,7 +23,7 @@ namespace Relativity.Sync.Executors
 			_logger = logger;
 		}
 
-		public async Task<RelativitySourceJobTag> CreateAsync(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId, RelativitySourceJobTag sourceJobTag, CancellationToken token)
+		public async Task<RelativitySourceJobTag> CreateAsync(int destinationWorkspaceArtifactId, RelativitySourceJobTag sourceJobTag, CancellationToken token)
 		{
 			using (IObjectManager objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
@@ -35,7 +35,7 @@ namespace Relativity.Sync.Executors
 						Name = sourceJobTag.Name
 					},
 					ParentObject = new RelativityObjectRef {ArtifactID = sourceJobTag.SourceCaseTagArtifactId},
-					FieldValues = CreateFieldValues(sourceWorkspaceArtifactId, sourceJobTag.JobHistoryName)
+					FieldValues = CreateFieldValues(sourceJobTag.JobHistoryArtifactId, sourceJobTag.JobHistoryName)
 				};
 
 				CreateResult result;
@@ -61,7 +61,7 @@ namespace Relativity.Sync.Executors
 					ArtifactTypeId = sourceJobTag.ArtifactTypeId,
 					Name = sourceJobTag.Name,
 					SourceCaseTagArtifactId = sourceJobTag.SourceCaseTagArtifactId,
-					JobHistoryArtifactId = sourceWorkspaceArtifactId,
+					JobHistoryArtifactId = sourceJobTag.JobHistoryArtifactId,
 					JobHistoryName = sourceJobTag.JobHistoryName
 				};
 				
@@ -69,14 +69,14 @@ namespace Relativity.Sync.Executors
 			}
 		}
 
-		private IEnumerable<FieldRefValuePair> CreateFieldValues(int sourceJobArtifactTypeId, string jobHistoryName)
+		private IEnumerable<FieldRefValuePair> CreateFieldValues(int jobHistoryArtifactId, string jobHistoryName)
 		{
 			FieldRefValuePair[] pairs =
 			{
 				new FieldRefValuePair
 				{
 					Field = new FieldRef {Guid = JobHistoryIdFieldGuid},
-					Value = sourceJobArtifactTypeId
+					Value = jobHistoryArtifactId
 				},
 				new FieldRefValuePair
 				{
