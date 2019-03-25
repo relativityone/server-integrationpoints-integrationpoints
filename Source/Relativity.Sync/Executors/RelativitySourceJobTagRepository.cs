@@ -48,12 +48,12 @@ namespace Relativity.Sync.Executors
 				catch (ServiceException ex)
 				{
 					_logger.LogError(ex, $"Service call failed while creating {nameof(RelativitySourceJobTag)}: {{request}}", request);
-					throw new DestinationWorkspaceTagRepositoryException($"Service call failed while creating {nameof(RelativitySourceJobTag)}: {request}", ex);
+					throw new RelativitySourceJobTagRepositoryException($"Service call failed while creating {nameof(RelativitySourceJobTag)}: {request}", ex);
 				}
 				catch (Exception ex)
 				{
 					_logger.LogError(ex, $"Failed to create {nameof(RelativitySourceJobTag)}: {{request}}", request);
-					throw new DestinationWorkspaceTagRepositoryException($"Failed to create {nameof(RelativitySourceJobTag)} '{sourceJobTag.Name}' in workspace {sourceJobTag.SourceCaseTagArtifactId}",
+					throw new RelativitySourceJobTagRepositoryException($"Failed to create {nameof(RelativitySourceJobTag)} '{sourceJobTag.Name}' in workspace {sourceJobTag.SourceCaseTagArtifactId}",
 						ex);
 				}
 

@@ -100,7 +100,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Func<Task> action = async () => await _sut.CreateAsync(0, new RelativitySourceJobTag(), CancellationToken.None).ConfigureAwait(false);
 
 			// assert
-			action.Should().Throw<DestinationWorkspaceTagRepositoryException>().WithInnerException<ServiceException>();
+			action.Should().Throw<RelativitySourceJobTagRepositoryException>().WithInnerException<ServiceException>();
 		}
 
 		[Test]
@@ -114,7 +114,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Func<Task> action = async () => await _sut.CreateAsync(0, new RelativitySourceJobTag(), CancellationToken.None).ConfigureAwait(false);
 
 			// assert
-			action.Should().Throw<DestinationWorkspaceTagRepositoryException>().WithInnerException<InvalidOperationException>();
+			action.Should().Throw<RelativitySourceJobTagRepositoryException>().WithInnerException<InvalidOperationException>();
 		}
 	}
 }

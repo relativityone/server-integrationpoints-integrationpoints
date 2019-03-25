@@ -17,9 +17,9 @@ namespace Relativity.Sync.Executors
 		public bool RequiresUpdate(string tagName, string sourceInstanceName, string sourceWorkspaceName)
 		{
 			return
-				!Name.Equals(tagName, StringComparison.InvariantCulture) ||
-				!SourceInstanceName.Equals(sourceInstanceName, StringComparison.InvariantCulture) ||
-				!SourceWorkspaceName.Equals(sourceWorkspaceName, StringComparison.InvariantCulture);
+				!string.Equals(Name, tagName, StringComparison.InvariantCulture) ||
+				!string.Equals(SourceInstanceName, sourceInstanceName, StringComparison.InvariantCulture) ||
+				!string.Equals(SourceWorkspaceName, sourceWorkspaceName, StringComparison.InvariantCulture);
 		}
 	}
 }

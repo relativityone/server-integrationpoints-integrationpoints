@@ -15,6 +15,8 @@ namespace Relativity.Sync.Executors
 		private readonly ISourceServiceFactoryForUser _sourceServiceFactoryForUser;
 		private readonly ISyncLog _logger;
 
+		private static readonly Guid _JOB_HISTORY_GUID = new Guid("08F4B1F7-9692-4A08-94AB-B5F3A88B6CC9");
+
 		public JobHistoryNameQuery(ISourceServiceFactoryForUser sourceServiceFactoryForUser, ISyncLog logger)
 		{
 			_sourceServiceFactoryForUser = sourceServiceFactoryForUser;
@@ -28,12 +30,8 @@ namespace Relativity.Sync.Executors
 				QueryRequest request = new QueryRequest()
 				{
 					Condition = $"'ArtifactID' == {jobHistoryArtifactId}",
-					ObjectType = new ObjectTypeRef() {Guid = new Guid("08F4B1F7-9692-4A08-94AB-B5F3A88B6CC9")},
+					ObjectType = new ObjectTypeRef() {Guid = _JOB_HISTORY_GUID },
 					IncludeNameInQueryResult = true
-					//Fields = new List<FieldRef>
-					//{
-					//	new FieldRef {Name = "Name"}
-					//}
 				};
 				const int start = 0;
 				const int length = 1;
