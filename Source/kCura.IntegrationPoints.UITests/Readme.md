@@ -4,12 +4,6 @@
 
 More details about RIP UI tests: https://einstein.kcura.com/display/DV/RIP+UI+Tests
 
-## Updating WebDriver packages
-
-After upgrading `Selenium.WebDriver.ChromeDriver` package, please update `UI.ChromeDriver.MaxSupportedVersion` in `app.config` to maximum version supported by this driver.
-For example, maximum supported Chrome version by `Selenium.WebDriver.ChromeDriver 2.45` is 72.
-Check https://sites.google.com/a/chromium.org/chromedriver/downloads for details.
-
 ---
 
 ## Choosing web browser
