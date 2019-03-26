@@ -62,7 +62,7 @@
     <Compile Include="CurrentUser.cs" />
     <Compile Include="Wrappers\CrossAppDomainDataReaderWrapper.cs" />
     <Compile Include="DefaultProviderFactory.cs" />
-    <Compile Include="DomainHelper.cs" />
+    <Compile Include="AppDomainHelper.cs" />
     <Compile Include="Exceptions\IntegrationPointsException.cs" />
     <Compile Include="Exceptions\IntegrationPointsExceptionMessages.cs" />
     <Compile Include="Exceptions\IntegrationPointsExceptionSource.cs" />
@@ -70,8 +70,8 @@
     <Compile Include="Extensions\ExceptionExtensions.cs" />
     <Compile Include="Extensions\ArtifactExtensions.cs" />
     <Compile Include="Extensions\IAPILogExtensions.cs" />
-    <Compile Include="IDomainHelper.cs" />
-    <Compile Include="IDomainManager.cs" />
+    <Compile Include="IAppDomainHelper.cs" />
+    <Compile Include="IAppDomainManager.cs" />
     <Compile Include="IEmailBodyData.cs" />
     <Compile Include="InternalProviderFactory.cs" />
     <Compile Include="IPermissionValidator.cs" />
@@ -123,7 +123,7 @@
     <Compile Include="Models\JsTreeItemWithParentIdDTO.cs" />
     <Compile Include="Models\ViewDTO.cs" />
     <Compile Include="Models\WorkspaceDTO.cs" />
-    <Compile Include="DomainManager.cs" />
+    <Compile Include="AppDomainManager.cs" />
     <Compile Include="ProviderFactoryBase.cs" />
     <Compile Include="Wrappers\SafeDisposingDataReaderWrapper.cs" />
     <Compile Include="Wrappers\IProviderAggregatedInterfaces.cs" />
