@@ -16,7 +16,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.FTPProvider
 {
 	[TestFixture]
 	[Category(TestCategory.IMPORT_FROM_FTP_AND_LDAP)]
-    public class ImportFromFtpTest : UiTest
+	[Category(TestCategory.BROKEN_ON_REGRESSION_ENVIRONMENT)] // no access to FTP from R1
+	public class ImportFromFtpTest : UiTest
 	{
 		private IRSAPIService _service;
 

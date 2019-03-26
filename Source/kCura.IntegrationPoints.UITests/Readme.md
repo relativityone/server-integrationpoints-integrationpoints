@@ -36,6 +36,11 @@ UI tests can be executed as part of these pielines:
 * Integration Points Nightly (https://jenkins.kcura.corp/job/DataTransfer/job/IntegrationPointsNightly/) - the same as default.
 * Integration Points UI tests (https://jenkins.kcura.corp/job/DataTransfer/job/IntegrationPointsUITests/) - all UI tests are executed by default.
 
+## Running tests on Regressions environments
+
+Tests which does not work or regressions environments are categorized as `BrokenOnRegressionEnvironment`. In order to skip them, following filter
+`cat != $Constants.QUARANTINED_TESTS_CATEGORY` has to be used.
+
 ---
 
 ## General development rules

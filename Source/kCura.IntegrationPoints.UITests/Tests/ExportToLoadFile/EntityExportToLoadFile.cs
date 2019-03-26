@@ -17,6 +17,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 {
 	[TestFixture]
 	[Category(TestCategory.EXPORT_TO_LOAD_FILE)]
+	[Category(TestCategory.BROKEN_ON_REGRESSION_ENVIRONMENT)] // REL-294344
 	public class EntityExportToLoadFile : UiTest
 	{
 		private IntegrationPointsAction _integrationPointsAction;
