@@ -308,7 +308,7 @@ def runIntegrationTests()
 
 def runUiTests()
 {
-    timeout(time: 8, unit: 'HOURS')
+    timeout(time: 10, unit: 'HOURS')
     {
         runTestsAndSetBuildResult(TestType.ui, params.skipUITests)
     }
