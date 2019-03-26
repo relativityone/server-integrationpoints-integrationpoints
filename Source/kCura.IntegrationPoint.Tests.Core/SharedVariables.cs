@@ -135,9 +135,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		#region User Settings
 
-		public static string RelativityUserName => AppSettingString("AdminUsername");
+		public static string RelativityUserName => GetEnvVariableOrAppSettingString("ripTestsAdminUsername", "AdminUsername");
 
-		public static string RelativityPassword => AppSettingString("AdminPassword");
+		public static string RelativityPassword => GetEnvVariableOrAppSettingString("ripTestsAdminPassword", "AdminPassword");
 
 		public static string RelativityUserFirstName => AppSettingString("relativityUserFirstName");
 
