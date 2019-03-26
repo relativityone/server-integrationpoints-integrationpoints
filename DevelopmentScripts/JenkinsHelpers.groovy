@@ -660,11 +660,18 @@ private getNewBranchAndVersion(
 
 private updateChromiumToGivenVersion(version)
 {
+    def installerFileName = 'chromium_installer.exe'
     echo "Installing Chromium - ${version}"
     try 
     {
         powershell """
-            Copy-Item ${getChromiumDownloadPath(version)} 'chromium_installer.exe'
+            Copy-Item ${getChromiumDownloadPath(version)} '${installerFileName}'
+        """
+
+        def installerFile = new File(installerFileName)
+        assert installerFile.exists() : "Installer file not found"
+
+        powershell """
             Start-Process -FilePath "chromium_installer.exe" -Args "/system-level" -Verb RunAs -Wait
         """
         echo "Chromium Version - ${version} installation complete"
@@ -672,6 +679,7 @@ private updateChromiumToGivenVersion(version)
     catch(err)
     {
          echo "An error occured while installing Chromium: $err"
+         throw err
     }
 }
 
@@ -689,6 +697,7 @@ private updateChromeToLatestVersion()
     catch(err)
     {
         echo "An error occured while updating Chrome: $err"
+        throw err
     }
 }
 
