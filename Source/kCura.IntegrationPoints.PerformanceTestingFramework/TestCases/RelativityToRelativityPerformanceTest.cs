@@ -2,10 +2,10 @@
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
-using kCura.IntegrationPoints.Data.Factories;
 using NUnit.Framework;
 using System;
 using System.Diagnostics;
+using System.IO;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -20,10 +20,12 @@ namespace kCura.IntegrationPoints.PerformanceTestingFramework
 
 		private readonly string _fieldMappingsJson;
 		
-		public RelativityToRelativityPerformanceTest() : base(Convert.ToInt32(TestContext.Parameters["SourceWorkspaceArtifactID"]), $"RipPushPerfTest {DateTime.Now:yyyy-MM-dd HH-mm}")
+		public RelativityToRelativityPerformanceTest() : base(
+			Convert.ToInt32(TestContextParametersHelper.GetParameterFromTestContextOrAuxilaryFile("SourceWorkspaceArtifactID")),
+			$"RipPushPerfTest {DateTime.Now:yyyy-MM-dd HH-mm}")
 		{
-			_fieldMappingsJson = TestContext.Parameters["FieldMappingsJSON"];
-		}
+			_fieldMappingsJson = File.ReadAllText(TestContextParametersHelper.GetParameterFromTestContextOrAuxilaryFile("FieldMappingsJSONPath"));
+		}	
 
 		public override void SuiteSetup()
 		{
@@ -86,13 +88,13 @@ namespace kCura.IntegrationPoints.PerformanceTestingFramework
 		private string DestinationConfiguration(int targetWorkspaceId)
 		{
 			ImportNativeFileCopyModeEnum importNativeFileCopyMode;
-			Enum.TryParse(TestContext.Parameters["ImportNativeFileCopyModeEnum"], out importNativeFileCopyMode);
+			Enum.TryParse(TestContextParametersHelper.GetParameterFromTestContextOrAuxilaryFile("ImportNativeFileCopyModeEnum"), out importNativeFileCopyMode);
 
 			bool imageImport;
-			bool.TryParse(TestContext.Parameters["ImageImport"], out imageImport);
+			bool.TryParse(TestContextParametersHelper.GetParameterFromTestContextOrAuxilaryFile("ImageImport"), out imageImport);
 
 			bool importNativeFile;
-			bool.TryParse(TestContext.Parameters["ImportNativeFile"], out importNativeFile);
+			bool.TryParse(TestContextParametersHelper.GetParameterFromTestContextOrAuxilaryFile("ImportNativeFile"), out importNativeFile);
 
 			var destinationConfiguration = new ImportSettings()
 			{
@@ -128,7 +130,7 @@ namespace kCura.IntegrationPoints.PerformanceTestingFramework
 		private string SourceConfiguration(int targetWorkspaceId, int savedSearchArtifactId)
 		{
 			int sourceWorkspaceId;
-			int.TryParse(TestContext.Parameters["SourceWorkspaceArtifactID"], out sourceWorkspaceId);
+			int.TryParse(TestContextParametersHelper.GetParameterFromTestContextOrAuxilaryFile("SourceWorkspaceArtifactID"), out sourceWorkspaceId);
 
 			var sourceConfiguration = new SourceConfiguration()
 			{
