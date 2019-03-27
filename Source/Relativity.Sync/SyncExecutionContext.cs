@@ -7,9 +7,9 @@ namespace Relativity.Sync
 	{
 		public CancellationToken CancellationToken { get; }
 
-		public IProgress<SyncProgress> Progress { get; }
+		public IProgress<SyncJobState> Progress { get; }
 
-		public SyncExecutionContext(IProgress<SyncProgress> progress, CancellationToken cancellationToken)
+		public SyncExecutionContext(IProgress<SyncJobState> progress, CancellationToken cancellationToken)
 		{
 			CancellationToken = cancellationToken;
 			Progress = progress;

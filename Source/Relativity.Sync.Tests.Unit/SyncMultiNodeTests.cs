@@ -40,7 +40,7 @@ namespace Relativity.Sync.Tests.Unit
 			await _instance.ExecuteAsync(context).ConfigureAwait(false);
 
 			// ASSERT
-			progressStub.SyncProgress.State.Should().BeOneOf($"{_CHILD_1_NAME}{Environment.NewLine}{_CHILD_2_NAME}", $"{_CHILD_2_NAME}{Environment.NewLine}{_CHILD_1_NAME}");
+			progressStub.SyncJobState.State.Should().BeOneOf($"{_CHILD_1_NAME}{Environment.NewLine}{_CHILD_2_NAME}", $"{_CHILD_2_NAME}{Environment.NewLine}{_CHILD_1_NAME}");
 		}
 	}
 }

@@ -13,7 +13,7 @@ namespace Relativity.Sync
 			_configuration = configuration;
 		}
 
-		public IExecutionContext<SyncExecutionContext> Create(IProgress<SyncProgress> progress, CancellationToken token)
+		public IExecutionContext<SyncExecutionContext> Create(IProgress<SyncJobState> progress, CancellationToken token)
 		{
 			if (progress == null)
 			{

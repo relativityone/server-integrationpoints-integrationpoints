@@ -1,7 +1,7 @@
 ﻿namespace Relativity.Sync
 {
 	/// <summary>
-	///     Represents Sync configuration
+	///     Represents Sync job execution configuration
 	/// </summary>
 	public sealed class SyncJobExecutionConfiguration
 	{

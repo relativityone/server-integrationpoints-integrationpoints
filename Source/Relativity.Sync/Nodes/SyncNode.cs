@@ -44,8 +44,8 @@ namespace Relativity.Sync.Nodes
 
 		protected override void OnBeforeExecute(IExecutionContext<SyncExecutionContext> context)
 		{
-			SyncProgress progress = new SyncProgress(Id);
-			context.Subject.Progress.Report(progress);
+			SyncJobState jobState = new SyncJobState(Id);
+			context.Subject.Progress.Report(jobState);
 		}
 	}
 }
