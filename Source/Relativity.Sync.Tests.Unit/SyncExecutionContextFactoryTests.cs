@@ -11,12 +11,12 @@ namespace Relativity.Sync.Tests.Unit
 	{
 		private SyncExecutionContextFactory _instance;
 
-		private SyncConfiguration _configuration;
+		private SyncJobExecutionConfiguration _configuration;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_configuration = new SyncConfiguration();
+			_configuration = new SyncJobExecutionConfiguration();
 
 			_instance = new SyncExecutionContextFactory(_configuration);
 		}

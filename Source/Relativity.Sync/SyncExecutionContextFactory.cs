@@ -6,9 +6,9 @@ namespace Relativity.Sync
 {
 	internal sealed class SyncExecutionContextFactory : ISyncExecutionContextFactory
 	{
-		private readonly SyncConfiguration _configuration;
+		private readonly SyncJobExecutionConfiguration _configuration;
 
-		public SyncExecutionContextFactory(SyncConfiguration configuration)
+		public SyncExecutionContextFactory(SyncJobExecutionConfiguration configuration)
 		{
 			_configuration = configuration;
 		}

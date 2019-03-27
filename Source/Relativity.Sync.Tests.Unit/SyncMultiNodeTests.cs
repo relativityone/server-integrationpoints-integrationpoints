@@ -25,7 +25,7 @@ namespace Relativity.Sync.Tests.Unit
 			INode<SyncExecutionContext> child2 = new FuncNode<SyncExecutionContext>();
 			child2.Id = _CHILD_2_NAME;
 
-			_instance = new SyncMultiNode(new SyncExecutionContextFactory(new SyncConfiguration()));
+			_instance = new SyncMultiNode(new SyncExecutionContextFactory(new SyncJobExecutionConfiguration()));
 			_instance.AddChild(child1);
 			_instance.AddChild(child2);
 		}

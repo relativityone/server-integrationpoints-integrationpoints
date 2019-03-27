@@ -3,7 +3,7 @@
 	/// <summary>
 	///     Represents Sync configuration
 	/// </summary>
-	public sealed class SyncConfiguration
+	public sealed class SyncJobExecutionConfiguration
 	{
 		/// <summary>
 		///     Defines size of a single batch
