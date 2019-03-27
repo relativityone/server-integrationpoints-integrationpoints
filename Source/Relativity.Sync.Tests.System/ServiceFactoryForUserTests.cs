@@ -8,11 +8,13 @@ using Platform.Keywords.RSAPI;
 using Relativity.API;
 using Relativity.Services;
 using Relativity.Services.Permission;
+using Relativity.Services.Workspace;
 using Relativity.Sync.Authentication;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.System.Stubs;
+using Client = kCura.Relativity.Client.DTOs.Client;
 
 namespace Relativity.Sync.Tests.System
 {
@@ -21,13 +23,14 @@ namespace Relativity.Sync.Tests.System
 	{
 		private ServicesManagerStub _servicesManager;
 		private ProvideServiceUrisStub _provideServiceUris;
-		private Workspace _workspace;
+		private WorkspaceRef _workspace;
 
-		protected override void ChildSuiteSetup()
+		[SetUp]
+		public async Task SetUp()
 		{
 			_servicesManager = new ServicesManagerStub();
 			_provideServiceUris = new ProvideServiceUrisStub();
-			_workspace = CreateWorkspaceAsync().Result;
+			_workspace = await Environment.CreateWorkspaceAsync().ConfigureAwait(false);
 		}
 
 		private void SetUpGroup(string groupName)
@@ -46,7 +49,6 @@ namespace Relativity.Sync.Tests.System
 			{
 				Name = name,
 				Users = new MultiUserFieldValueList(),
-				Client = _workspace.Client
 			};
 			Client.Repositories.Group.Create(newGroup);
 		}
@@ -58,7 +60,7 @@ namespace Relativity.Sync.Tests.System
 			User user;
 			if (userArtifactId == 0)
 			{
-				Client client = Client.Repositories.Client.ReadSingle(_workspace.Client.ArtifactID);
+				Client client = Client.Repositories.Client.ReadSingle(_workspace.ArtifactID);
 				user = UserHelpers.CreateUserWithPassword(Client, "Test", "Test", userName, client.Name, password);
 			}
 			else
@@ -96,7 +98,7 @@ namespace Relativity.Sync.Tests.System
 				new TokenProviderFactoryFactory(), _provideServiceUris, new EmptyLogger());
 			PermissionRef permissionRef = new PermissionRef
 			{
-				ArtifactType = new ArtifactTypeIdentifier((int) ArtifactType.Batch),
+				ArtifactType = new ArtifactTypeIdentifier((int)ArtifactType.Batch),
 				PermissionType = PermissionType.Edit
 			};
 
@@ -106,7 +108,7 @@ namespace Relativity.Sync.Tests.System
 			using (IPermissionManager permissionManager = await sut.CreateProxyAsync<IPermissionManager>().ConfigureAwait(false))
 			{
 				// ACT
-				permissionValues = await permissionManager.GetPermissionSelectedAsync(_workspace.ArtifactID, new List<PermissionRef> {permissionRef}).ConfigureAwait(false);
+				permissionValues = await permissionManager.GetPermissionSelectedAsync(_workspace.ArtifactID, new List<PermissionRef> { permissionRef }).ConfigureAwait(false);
 			}
 
 			// ASSERT

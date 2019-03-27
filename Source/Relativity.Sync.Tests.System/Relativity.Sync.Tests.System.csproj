@@ -15,5 +15,13 @@
 		<ProjectReference Include="..\Relativity.Sync.Tests.Integration\Relativity.Sync.Tests.Integration.csproj" />
 		<ProjectReference Include="..\Relativity.Sync\Relativity.Sync.csproj" />
 	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Resources\" />
+	</ItemGroup>
+	<ItemGroup>
+	  <None Update="Resources\Relativity_Sync_Test_Helper.rap">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
 	<Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
