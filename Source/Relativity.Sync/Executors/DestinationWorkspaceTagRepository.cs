@@ -34,31 +34,24 @@ namespace Relativity.Sync.Executors
 			_logger = logger;
 			_tagNameFormatter = tagNameFormatter;
 		}
-		
+
 		public async Task<DestinationWorkspaceTag> ReadAsync(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId, CancellationToken token)
 		{
 			_logger.LogVerbose($"Reading {nameof(DestinationWorkspaceTag)}. Source workspace artifact ID: {{sourceWorkspaceArtifactId}} " +
 				"Destination workspace artifact ID: {destinationWorkspaceArtifactId}",
 				sourceWorkspaceArtifactId, destinationWorkspaceArtifactId);
-			try
-			{
-				RelativityObject tag = await QueryRelativityObjectTagAsync(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, token).ConfigureAwait(false);
+			RelativityObject tag = await QueryRelativityObjectTagAsync(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, token).ConfigureAwait(false);
 
-				if (tag != null)
-				{
-					DestinationWorkspaceTag destinationWorkspaceTag = new DestinationWorkspaceTag
-					{
-						ArtifactId = tag.ArtifactID,
-						DestinationWorkspaceName = tag[DestinationWorkspaceNameGuid].Value.ToString(),
-						DestinationInstanceName = tag[DestinationInstanceNameGuid].Value.ToString(),
-						DestinationWorkspaceArtifactId = Convert.ToInt32(tag[DestinationWorkspaceArtifactidGuid].Value, CultureInfo.InvariantCulture)
-					};
-					return destinationWorkspaceTag;
-				}
-			}
-			catch (Exception ex)
+			if (tag != null)
 			{
-				_logger.LogError(ex, "");
+				DestinationWorkspaceTag destinationWorkspaceTag = new DestinationWorkspaceTag
+				{
+					ArtifactId = tag.ArtifactID,
+					DestinationWorkspaceName = tag[DestinationWorkspaceNameGuid].Value.ToString(),
+					DestinationInstanceName = tag[DestinationInstanceNameGuid].Value.ToString(),
+					DestinationWorkspaceArtifactId = Convert.ToInt32(tag[DestinationWorkspaceArtifactidGuid].Value, CultureInfo.InvariantCulture)
+				};
+				return destinationWorkspaceTag;
 			}
 
 			return null;
