@@ -79,10 +79,9 @@ namespace Relativity.Sync.Tests.Unit
 
 			// ACT
 			Func<Task<NodeResult>> action = async () => await _instance.ExecuteAsync(_syncExecutionContext).ConfigureAwait(false);
-			//NodeResult result = await _instance.ExecuteAsync(_syncExecutionContext).ConfigureAwait(false);
 
 			// ASSERT
-			action.Should().NotThrow();//.WithMessage("*FooBarBaz*");
+			action.Should().NotThrow();
 			_logger.Verify(x => x.LogError(
 				It.Is<Exception>(ex => ex.Message.Equals(expectedExceptionMessage, StringComparison.InvariantCulture)),
 				It.IsAny<string>(),
