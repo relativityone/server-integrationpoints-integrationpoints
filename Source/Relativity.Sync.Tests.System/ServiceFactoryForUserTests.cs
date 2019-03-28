@@ -78,11 +78,10 @@ namespace Relativity.Sync.Tests.System
 			GroupHelpers.GroupAddUserIfNotInGroup(Client, group, user);
 		}
 
-		private void AddGroupToWorkspace(string groupName)
+		private void AddGroupToWorkspace(Group group)
 		{
 			using (IPermissionManager permissionManager = _servicesManager.CreateProxy<IPermissionManager>(ExecutionIdentity.System))
 			{
-				Group group = GroupHelpers.GroupGetOrCreateByName(Client, groupName);
 				PermissionHelpers.AddGroupToWorkspace(permissionManager, _workspace.ArtifactID, group);
 			}
 		}
@@ -95,7 +94,7 @@ namespace Relativity.Sync.Tests.System
 			const string password = "Test1234!";
 			Group group = SetUpGroup(groupName);
 			SetUpUser(userName, password, group);
-			AddGroupToWorkspace(groupName);
+			AddGroupToWorkspace(group);
 
 			Mock<IUserContextConfiguration> userContextConfiguration = new Mock<IUserContextConfiguration>();
 			userContextConfiguration.SetupGet(x => x.ExecutingUserId).Returns(UserHelpers.FindUserArtifactID(Client, userName));
