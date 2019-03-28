@@ -37,6 +37,10 @@ namespace Relativity.Sync.Tests.System
 				WorkspaceRef template = await GetTemplateWorkspace(workspaceManager).ConfigureAwait(false);
 				WorkspaceSetttings settings = new WorkspaceSetttings { Name = name, TemplateArtifactId = template.ArtifactID};
 				WorkspaceRef newWorkspace =  await workspaceManager.CreateWorkspaceAsync(settings).ConfigureAwait(false);
+				if (newWorkspace == null)
+				{
+					throw new InvalidOperationException("Workspace creation failed. WorkspaceManager kepler service returned null");
+				}
 				_workspaces.Add(newWorkspace);
 				return newWorkspace;
 			}
@@ -78,15 +82,10 @@ namespace Relativity.Sync.Tests.System
 				ICollection<LibraryApplication> apps = await applicationLibraryManager.GetAllLibraryApplicationsAsync().ConfigureAwait(false);
 				if (!apps.Any(app => app.GUID == _libraryApplicationGuid))
 				{
-					string dllDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-					if (string.IsNullOrWhiteSpace(dllDir))
-					{
-						throw new InvalidOperationException("Cannot locate executing dll folder.");
-					}
-					string appFilePath = Path.Combine(dllDir, "Resources", _RELATIVITY_SYNC_TEST_HELPER_RAP);
+					string appFilePath = GetHelperApplicationFilePath();
 					using (var fileStream = File.OpenRead(appFilePath))
+					using(var keplerStream = new KeplerStream(fileStream))
 					{
-						var keplerStream = new KeplerStream(fileStream);
 						await applicationLibraryManager.EnsureApplication(_RELATIVITY_SYNC_TEST_HELPER_RAP, keplerStream, false, false).ConfigureAwait(false);
 					}
 				}
@@ -95,6 +94,18 @@ namespace Relativity.Sync.Tests.System
 			{
 				await applicationInstallManager.InstallLibraryApplicationByGuid(workspaceArtifactId, _libraryApplicationGuid).ConfigureAwait(false);
 			}
+		}
+
+		private static string GetHelperApplicationFilePath()
+		{
+			string dllDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+			if (string.IsNullOrWhiteSpace(dllDir))
+			{
+				throw new InvalidOperationException("Cannot locate executing dll folder.");
+			}
+
+			string appFilePath = Path.Combine(dllDir, "Resources", _RELATIVITY_SYNC_TEST_HELPER_RAP);
+			return appFilePath;
 		}
 
 		public void Dispose()

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.Relativity.Client.DTOs;
@@ -14,7 +15,6 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.System.Stubs;
-using Client = kCura.Relativity.Client.DTOs.Client;
 
 namespace Relativity.Sync.Tests.System
 {
@@ -33,42 +33,48 @@ namespace Relativity.Sync.Tests.System
 			_workspace = await Environment.CreateWorkspaceAsync().ConfigureAwait(false);
 		}
 
-		private void SetUpGroup(string groupName)
+		private Group SetUpGroup(string groupName)
 		{
 			Group group = GroupHelpers.GroupGetByName(Client, groupName);
 			if (group == null)
 			{
-				CreateGroup(groupName);
-				GroupHelpers.GroupGetByName(Client, groupName);
+				return CreateGroup(groupName);
 			}
+
+			return group;
 		}
 
-		private void CreateGroup(string name)
+		private Group CreateGroup(string name)
 		{
 			Group newGroup = new Group
 			{
 				Name = name,
-				Users = new MultiUserFieldValueList(),
+				Users = new MultiUserFieldValueList()
 			};
-			Client.Repositories.Group.Create(newGroup);
+			
+			WriteResultSet<Group> result = Client.Repositories.Group.Create(newGroup);
+			if (!result.Success)
+			{
+				throw new InvalidOperationException($"Cannot create group. Group name: {name}");
+			}
+
+			return result.Results.First().Artifact;
 		}
 
-		private void SetUpUser(string userName, string password, string groupName)
+		private void SetUpUser(string userName, string password, Group group)
 		{
 			int userArtifactId = UserHelpers.FindUserArtifactID(Client, userName);
 
 			User user;
 			if (userArtifactId == 0)
 			{
-				Client client = Client.Repositories.Client.ReadSingle(_workspace.ArtifactID);
-				user = UserHelpers.CreateUserWithPassword(Client, "Test", "Test", userName, client.Name, password);
+				user = UserHelpers.CreateUserWithPassword(Client, "Test", "Test", userName, "Relativity", password);
 			}
 			else
 			{
 				user = Client.Repositories.User.ReadSingle(userArtifactId);
 			}
 
-			Group group = GroupHelpers.GroupGetByName(Client, groupName);
 			GroupHelpers.GroupAddUserIfNotInGroup(Client, group, user);
 		}
 
@@ -84,11 +90,11 @@ namespace Relativity.Sync.Tests.System
 		[Test]
 		public async Task UserShouldNotHavePermissionToWorkspace()
 		{
-			const string groupName = "Test Group";
-			const string userName = "testuser@relativity.com";
+			const string groupName = "Test Group2";
+			const string userName = "testuser2@relativity.com";
 			const string password = "Test1234!";
-			SetUpGroup(groupName);
-			SetUpUser(userName, password, groupName);
+			Group group = SetUpGroup(groupName);
+			SetUpUser(userName, password, group);
 			AddGroupToWorkspace(groupName);
 
 			Mock<IUserContextConfiguration> userContextConfiguration = new Mock<IUserContextConfiguration>();
