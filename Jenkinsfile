@@ -171,6 +171,7 @@ timestamps
 							]) {
 							jenkinsHelpers.downloadAndSetUpBrowser()
 							jenkinsHelpers.runUiTests()
+							}
 					}
 				}
 				finally
