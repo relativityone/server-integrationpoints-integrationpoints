@@ -90,8 +90,8 @@ namespace Relativity.Sync.Tests.System
 		[Test]
 		public async Task UserShouldNotHavePermissionToWorkspace()
 		{
-			const string groupName = "Test Group2";
-			const string userName = "testuser2@relativity.com";
+			const string groupName = "Test Group";
+			const string userName = "testuser@relativity.com";
 			const string password = "Test1234!";
 			Group group = SetUpGroup(groupName);
 			SetUpUser(userName, password, group);
