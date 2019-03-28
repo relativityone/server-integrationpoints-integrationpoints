@@ -2,13 +2,13 @@
 
 namespace Relativity.Sync.Tests.Unit.Stubs
 {
-	internal sealed class ProgressStub : IProgress<SyncProgress>
+	internal sealed class ProgressStub : IProgress<SyncJobState>
 	{
-		public SyncProgress SyncProgress { get; private set; }
+		public SyncJobState SyncJobState { get; private set; }
 
-		public void Report(SyncProgress value)
+		public void Report(SyncJobState value)
 		{
-			SyncProgress = value;
+			SyncJobState = value;
 		}
 	}
 }

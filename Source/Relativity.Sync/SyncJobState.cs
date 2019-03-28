@@ -3,14 +3,14 @@
 	/// <summary>
 	///     Represents Sync job progress
 	/// </summary>
-	public sealed class SyncProgress
+	public sealed class SyncJobState
 	{
 		/// <summary>
 		///     Sync job state
 		/// </summary>
 		public string State { get; }
 
-		internal SyncProgress(string state)
+		internal SyncJobState(string state)
 		{
 			State = state;
 		}

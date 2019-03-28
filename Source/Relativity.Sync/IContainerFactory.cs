@@ -4,6 +4,6 @@ namespace Relativity.Sync
 {
 	internal interface IContainerFactory
 	{
-		void RegisterSyncDependencies(ContainerBuilder containerBuilder, SyncJobParameters syncJobParameters, SyncConfiguration configuration, ISyncLog logger);
+		void RegisterSyncDependencies(ContainerBuilder containerBuilder, SyncJobParameters syncJobParameters, SyncJobExecutionConfiguration configuration, ISyncLog logger);
 	}
 }

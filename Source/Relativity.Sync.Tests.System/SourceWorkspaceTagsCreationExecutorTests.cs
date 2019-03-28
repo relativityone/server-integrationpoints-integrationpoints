@@ -150,7 +150,7 @@ namespace Relativity.Sync.Tests.System
 
 			ContainerFactory factory = new ContainerFactory();
 			SyncJobParameters syncParameters = new SyncJobParameters(configuration.JobArtifactId, configuration.SourceWorkspaceArtifactId);
-			factory.RegisterSyncDependencies(containerBuilder, syncParameters, new SyncConfiguration(), new EmptyLogger());
+			factory.RegisterSyncDependencies(containerBuilder, syncParameters, new SyncJobExecutionConfiguration(), new EmptyLogger());
 
 			new SystemTestsInstaller().Install(containerBuilder);
 
