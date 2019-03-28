@@ -1,6 +1,8 @@
 ﻿using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.Exceptions;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.UITests.Common;
@@ -28,20 +30,21 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 {
 	public class TestContext
 	{
+		private int? _entityObjectTypeArtifactId;
 
 		private const int _ADMIN_USER_ID = 9;
-		
+
 		private const string _RIP_GUID_STRING = Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING;
 
 		private const string _LEGAL_HOLD_GUID_STRING = "98F31698-90A0-4EAD-87E3-DAC723FED2A6";
-		
+
 		private readonly Lazy<ITestHelper> _helper;
 
 		private readonly string _timeStamp;
 
 		private static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(TestContext));
 
-		
+
 		public ITestHelper Helper => _helper.Value;
 
 		public int? WorkspaceId { get; set; }
@@ -53,6 +56,10 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		public RelativityUser User { get; private set; }
 
 		public int? ProductionId { get; private set; }
+
+		private int? EntityObjectTypeArtifactId =>
+			_entityObjectTypeArtifactId
+			?? (_entityObjectTypeArtifactId = GetEntityTypeArtifactId());
 
 		public TestContext()
 		{
@@ -133,44 +140,48 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			return this;
 		}
 
-		public TestContext InstallIntegrationPoints()
+		public TestContext AddEntityObjectToWorkspace()
 		{
-			return InstallApplication(_RIP_GUID_STRING, "Integration Points");
+			Log.Information("Adding Entity object to '{WorkspaceName}' ({WorkspaceId}).", WorkspaceName, WorkspaceId);
+			if (!EntityObjectTypeArtifactId.HasValue)
+			{
+				InstallLegalHold();
+
+				if (!EntityObjectTypeArtifactId.HasValue)
+				{
+					throw new TestSetupException("Entity object type is missing after installing Legal Hold application");
+				}
+			}
+			else
+			{
+				Log.Information("Entity object was already present in '{WorkspaceName}' ({WorkspaceId}).", WorkspaceName, WorkspaceId);
+			}
+
+			return this;
 		}
 
-		public TestContext InstallLegalHold()
+		public async Task CreateEntityView(string viewName)
 		{
-			return InstallApplication(_LEGAL_HOLD_GUID_STRING, "Legal Hold");
-		}
+			if (!EntityObjectTypeArtifactId.HasValue)
+			{
+				Log.Error("Cannot add Entity view, because Entity object type is missing in a workspace '{WorkspaceName}' ({WorkspaceId}).", WorkspaceName, WorkspaceId);
+				throw new TestSetupException("Cannot add Entity view, because Entity object type is missing in a workspace");
+			}
 
-		public TestContext InstallApplication(string guid, string name)
-		{
-			Assert.NotNull(WorkspaceId, $"{nameof(WorkspaceId)} is null. Was workspace created correctly?.");
-
-			Log.Information("Checking application '{AppName}' ({AppGUID}) in workspace '{WorkspaceName}' ({WorkspaceId}).", name, guid, WorkspaceName, WorkspaceId);
-			Stopwatch stopwatch = Stopwatch.StartNew();
+			int workspaceId = GetWorkspaceId();
 			try
 			{
-				var ipAppManager = new RelativityApplicationManager(Helper);
-				bool isAppInstalledAndUpToDate = ipAppManager.IsApplicationInstalledAndUpToDate((int)WorkspaceId, guid);
-				if (!isAppInstalledAndUpToDate)
-				{
-					Log.Information("Installing application '{AppName}' ({AppGUID}) in workspace '{WorkspaceName}' ({WorkspaceId}).", name, guid, WorkspaceName, WorkspaceId);
-					ipAppManager.InstallApplicationFromLibrary((int)WorkspaceId, guid);
-					Log.Information("Application '{AppName}' ({AppGUID}) has been installed in workspace '{WorkspaceName}' ({WorkspaceId}) after {AppInstallTime} seconds.", 
-						name, guid, WorkspaceName, WorkspaceId, stopwatch.Elapsed.Seconds);
-				}
-				else
-				{
-					Log.Information("Application '{AppName}' ({AppGUID}) is already installed in workspace '{WorkspaceName}' ({WorkspaceId}).", name, guid, WorkspaceName, WorkspaceId);
-				}
+				Guid[] viewFieldsGuids = { Guid.Parse(EntityFieldGuids.FullName) };
+				await IntegrationPoint.Tests.Core.View.CreateViewAsync(
+					workspaceId,
+					viewName,
+					EntityObjectTypeArtifactId.Value,
+					viewFieldsGuids);
 			}
 			catch (Exception ex)
 			{
-				Log.Error(ex, "Detecting or installing application '{AppName}' ({AppGUID}) in the workspace '{WorkspaceName}' ({WorkspaceId}) failed.", name, guid, WorkspaceName, WorkspaceId);
-				throw;
+				throw new TestSetupException("Exception occured while creating entity view", ex);
 			}
-			return this;
 		}
 
 		public async Task InstallIntegrationPointsAsync()
@@ -201,7 +212,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		{
 			await ImportDocumentsAsync(false, testDataType);
 		}
-		
+
 		public TestContext ImportDocuments(bool withNatives = true, DocumentTestDataBuilder.TestDataType testDataType = DocumentTestDataBuilder.TestDataType.ModerateWithFoldersStructure)
 		{
 			Log.Information(@"Importing documents...");
@@ -225,7 +236,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 				string suffix = importHelper.Messages.Any() ? " Messages: " + string.Join("; ", importHelper.Messages) : " No messages.";
 				Log.Verbose(@"Documents imported." + suffix);
 			}
-			
+
 			return this;
 		}
 
@@ -278,7 +289,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 				RelativityScript relativityScript = FindRelativityFolderPathScript(client);
 				Assert.That(relativityScript, Is.Not.Null, "Cannot find Relativity Script to set folder paths");
-				
+
 				var inputParameter = new RelativityScriptInput("FolderPath", "DocumentFolderPath");
 
 				try
@@ -297,65 +308,6 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 					return false;
 				}
 			}
-			return true;
-		}
-
-		public bool ChangeFieldToDataGrid(params string[] fieldNames)
-		{
-			using (var client = Helper.CreateAdminProxy<IRSAPIClient>())
-			{
-				client.APIOptions.WorkspaceID = WorkspaceId.GetValueOrDefault();
-
-				foreach (string fieldName in fieldNames)
-				{
-					if (!EnableDataGridOnField(fieldName, client))
-					{
-						return false;
-					}
-				}
-
-			}
-			return true;
-		}
-
-		private static bool EnableDataGridOnField(string fieldName, IRSAPIClient client)
-		{
-			var nameCondition = new TextCondition(FieldFieldNames.Name, TextConditionEnum.EqualTo, fieldName);
-
-			var fieldQuery = new Query<Field>
-			{
-				Condition = nameCondition,
-				Fields = FieldValue.AllFields
-			};
-
-			try
-			{
-				QueryResultSet<Field> queryResult = client.Repositories.Field.Query(fieldQuery);
-
-				if (!queryResult.Success)
-				{
-					Log.Error(@"Unable to query Relativity field: {0}", queryResult.Message);
-					return false;
-				}
-
-				Field field = queryResult.Results[0].Artifact;
-
-				field.EnableDataGrid = true;
-
-				WriteResultSet<Field> updateResult = client.Repositories.Field.Update(new List<Field> { field });
-
-				if (!updateResult.Success)
-				{
-					Log.Error(@"Unable to update Relativity field: {0}", updateResult.Message);
-					return false;
-				}
-			}
-			catch (Exception ex)
-			{
-				Log.Error(ex, @"An error occurred during querying or updating Relativity field: {0}", ex.Message);
-				return false;
-			}
-
 			return true;
 		}
 
@@ -391,12 +343,84 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			IRelativityObjectManager objectManager = CreateObjectManager();
 			var savedSearchRequest = new QueryRequest
 			{
-				ObjectType = new ObjectTypeRef { ArtifactTypeID = (int) ArtifactType.Search },
+				ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Search },
 				Condition = $"'Name' == '{savedSearchName}'",
 				Fields = new FieldRef[0]
 			};
 			RelativityObject savedSearch = objectManager.Query(savedSearchRequest).First();
 			return savedSearch.ArtifactID;
+		}
+
+		private int? GetEntityTypeArtifactId()
+		{
+			const string artifactTypeIdFieldName = "Artifact Type ID";
+			const string entityObjectName = "Entity";
+
+			var objectTypeRef = new ObjectTypeRef
+			{
+				ArtifactTypeID = (int)Relativity.Client.ArtifactType.ObjectType
+			};
+
+			string condition = $"'Name' == '{entityObjectName}'";
+			var artifactTypeIdField = new FieldRef
+			{
+				Name = artifactTypeIdFieldName
+			};
+			var queryRequest = new QueryRequest
+			{
+				ObjectType = objectTypeRef,
+				Fields = new[] { artifactTypeIdField },
+				Condition = condition
+			};
+
+			IRelativityObjectManager objectManager = CreateObjectManager();
+			List<RelativityObject> result = objectManager.Query(queryRequest);
+			RelativityObject entityObjectType = result?.FirstOrDefault();
+
+			return entityObjectType
+				?.FieldValues
+				?.Single(x => x.Field.Name == artifactTypeIdFieldName)
+				.Value as int?;
+		}
+
+		private TestContext InstallIntegrationPoints()
+		{
+			return InstallApplication(_RIP_GUID_STRING, "Integration Points");
+		}
+
+		private TestContext InstallLegalHold()
+		{
+			return InstallApplication(_LEGAL_HOLD_GUID_STRING, "Legal Hold");
+		}
+
+		private TestContext InstallApplication(string guid, string name)
+		{
+			Assert.NotNull(WorkspaceId, $"{nameof(WorkspaceId)} is null. Was workspace created correctly?.");
+
+			Log.Information("Checking application '{AppName}' ({AppGUID}) in workspace '{WorkspaceName}' ({WorkspaceId}).", name, guid, WorkspaceName, WorkspaceId);
+			Stopwatch stopwatch = Stopwatch.StartNew();
+			try
+			{
+				var ipAppManager = new RelativityApplicationManager(Helper);
+				bool isAppInstalledAndUpToDate = ipAppManager.IsApplicationInstalledAndUpToDate((int)WorkspaceId, guid);
+				if (!isAppInstalledAndUpToDate)
+				{
+					Log.Information("Installing application '{AppName}' ({AppGUID}) in workspace '{WorkspaceName}' ({WorkspaceId}).", name, guid, WorkspaceName, WorkspaceId);
+					ipAppManager.InstallApplicationFromLibrary((int)WorkspaceId, guid);
+					Log.Information("Application '{AppName}' ({AppGUID}) has been installed in workspace '{WorkspaceName}' ({WorkspaceId}) after {AppInstallTime} seconds.",
+						name, guid, WorkspaceName, WorkspaceId, stopwatch.Elapsed.Seconds);
+				}
+				else
+				{
+					Log.Information("Application '{AppName}' ({AppGUID}) is already installed in workspace '{WorkspaceName}' ({WorkspaceId}).", name, guid, WorkspaceName, WorkspaceId);
+				}
+			}
+			catch (Exception ex)
+			{
+				Log.Error(ex, "Detecting or installing application '{AppName}' ({AppGUID}) in the workspace '{WorkspaceName}' ({WorkspaceId}) failed.", name, guid, WorkspaceName, WorkspaceId);
+				throw;
+			}
+			return this;
 		}
 
 		private IRelativityObjectManager CreateObjectManager()
