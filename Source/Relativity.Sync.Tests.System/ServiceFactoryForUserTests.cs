@@ -35,13 +35,7 @@ namespace Relativity.Sync.Tests.System
 
 		private Group SetUpGroup(string groupName)
 		{
-			Group group = GroupHelpers.GroupGetByName(Client, groupName);
-			if (group == null)
-			{
-				return CreateGroup(groupName);
-			}
-
-			return group;
+			return GroupHelpers.GroupGetByName(Client, groupName) ?? CreateGroup(groupName);
 		}
 
 		private Group CreateGroup(string name)
@@ -58,7 +52,7 @@ namespace Relativity.Sync.Tests.System
 				throw new InvalidOperationException($"Cannot create group. Group name: {name}");
 			}
 
-			return result.Results.First().Artifact;
+			return GroupHelpers.GroupGetByName(Client, name);
 		}
 
 		private void SetUpUser(string userName, string password, Group group)
@@ -113,7 +107,7 @@ namespace Relativity.Sync.Tests.System
 			using (IPermissionManager permissionManager = await sut.CreateProxyAsync<IPermissionManager>().ConfigureAwait(false))
 			{
 				// ACT
-				permissionValues = await permissionManager.GetPermissionSelectedAsync(_workspace.ArtifactID, new List<PermissionRef> { permissionRef }).ConfigureAwait(false);
+				permissionValues = await permissionManager.GetPermissionSelectedAsync(_workspace.ArtifactID, new List<PermissionRef> {permissionRef}).ConfigureAwait(false);
 			}
 
 			// ASSERT

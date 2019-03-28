@@ -35,17 +35,12 @@ namespace Relativity.Sync.Tests.System
 		[SetUp]
 		public async Task SetUp()
 		{
-			var stopwatch = new Stopwatch();
-			stopwatch.Start();
-
 			Task<WorkspaceRef> sourceWorkspaceCreationTask = Environment.CreateWorkspaceAsync();
 			Task<WorkspaceRef> destinationWorkspaceCreationTask = Environment.CreateWorkspaceAsync();
 			await Task.WhenAll(sourceWorkspaceCreationTask, destinationWorkspaceCreationTask).ConfigureAwait(false);
 			_sourceWorkspace = sourceWorkspaceCreationTask.Result;
 			_destinationWorkspace = destinationWorkspaceCreationTask.Result;
 			await Environment.CreateFieldsInWorkspace(_sourceWorkspace.ArtifactID).ConfigureAwait(false);
-			stopwatch.Stop();
-			Console.WriteLine(stopwatch.Elapsed);
 		}
 
 		[Test]
