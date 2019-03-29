@@ -51,8 +51,6 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 		public string WorkspaceName { get; set; }
 
-		public int? GroupId { get; private set; }
-
 		public RelativityUser User { get; private set; }
 
 		public int? ProductionId { get; private set; }
@@ -313,22 +311,11 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 		public TestContext TearDown()
 		{
-			if (GroupId.HasValue)
-			{
-				Group.DeleteGroup(GetGroupId());
-			}
-
 			if (User != null && User.CreatedInTest)
 			{
 				UserService.DeleteUser(User.ArtifactId);
 			}
 			return this;
-		}
-
-		public int GetGroupId()
-		{
-			Assert.NotNull(GroupId, $"{nameof(GroupId)} is null. Group wasn't created.");
-			return GroupId.Value;
 		}
 
 		public int GetWorkspaceId()
