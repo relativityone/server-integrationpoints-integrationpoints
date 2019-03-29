@@ -100,6 +100,12 @@
     <Compile Include="Components\PropertiesTable.cs" />
     <Compile Include="Components\SavedSearchDialog.cs" />
     <Compile Include="Components\TreeSelect.cs" />
+    <Compile Include="Configuration\Helpers\ApplicationInstallationHelper.cs" />
+    <Compile Include="Configuration\Helpers\EntityObjectTypeHelper.cs" />
+    <Compile Include="Configuration\Helpers\ImportDocumentsHelper.cs" />
+    <Compile Include="Configuration\Helpers\ProductionHelper.cs" />
+    <Compile Include="Configuration\Helpers\RelativityFolderPathScriptHelper.cs" />
+    <Compile Include="Configuration\Helpers\UserHelper.cs" />
     <Compile Include="Configuration\RelativityUser.cs" />
     <Compile Include="Configuration\TestConfiguration.cs" />
     <Compile Include="Configuration\TestContext.cs" />
@@ -269,6 +275,7 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
