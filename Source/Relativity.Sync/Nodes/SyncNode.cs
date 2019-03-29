@@ -29,17 +29,26 @@ namespace Relativity.Sync.Nodes
 
 		protected override async Task<NodeResultStatus> PerformExecuteAsync(IExecutionContext<SyncExecutionContext> context)
 		{
+			ExecutionResult result;
 			try
 			{
-				await _command.ExecuteAsync(context.Subject.CancellationToken).ConfigureAwait(false);
+				result = await _command.ExecuteAsync(context.Subject.CancellationToken).ConfigureAwait(false);
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, "Exception occurred when executing step.");
+				_logger.LogError(ex, "Uncaught exception when executing step {step}.", Id);
 				throw;
 			}
 
-			return NodeResultStatus.Succeeded;
+			if (result.Status == ExecutionStatus.Failed)
+			{
+				_logger.LogError(result.Exception, "Error occurred during execution of step {step}: {message}", Id, result.Message);
+				return NodeResultStatus.Failed;
+			}
+			else
+			{
+				return NodeResultStatus.Succeeded;
+			}
 		}
 
 		protected override void OnBeforeExecute(IExecutionContext<SyncExecutionContext> context)
