@@ -19,22 +19,22 @@ namespace Relativity.Sync.Tests.System
 		private WorkspaceRef _templateWorkspace;
 		private const string _RELATIVITY_SYNC_TEST_HELPER_RAP = "Relativity_Sync_Test_Helper.rap";
 		private readonly List<WorkspaceRef> _workspaces = new List<WorkspaceRef>();
-		private readonly SemaphoreSlim _templateWorkspaceSettingSemaphore = new SemaphoreSlim(1);
+		private readonly SemaphoreSlim _templateWorkspaceSemaphore = new SemaphoreSlim(1);
 		private readonly ServiceFactory _serviceFactory;
-		private static readonly Guid _libraryApplicationGuid = new Guid("e08fd0d9-c3a1-4654-87ad-104f08980b84");
+		private static readonly Guid _HELPER_APP_GUID = new Guid("e08fd0d9-c3a1-4654-87ad-104f08980b84");
 
 		public TestEnvironment()
 		{
 			_serviceFactory = new ServiceFactoryFromAppConfig().CreateServiceFactory();
 		}
 
-		public async Task<WorkspaceRef> CreateWorkspaceAsync()
+		public async Task<WorkspaceRef> CreateWorkspaceAsync(string templateWorkspaceName = "Relativity Starter Template")
 		{
-			string name = $"{Guid.NewGuid().ToString()}";
+			string name = Guid.NewGuid().ToString();
 
 			using (var workspaceManager = _serviceFactory.CreateProxy<IWorkspaceManager>())
 			{
-				WorkspaceRef template = await GetTemplateWorkspace(workspaceManager).ConfigureAwait(false);
+				WorkspaceRef template = await GetTemplateWorkspace(workspaceManager, templateWorkspaceName).ConfigureAwait(false);
 				WorkspaceSetttings settings = new WorkspaceSetttings { Name = name, TemplateArtifactId = template.ArtifactID};
 				WorkspaceRef newWorkspace =  await workspaceManager.CreateWorkspaceAsync(settings).ConfigureAwait(false);
 				if (newWorkspace == null)
@@ -46,22 +46,22 @@ namespace Relativity.Sync.Tests.System
 			}
 		}
 
-		private async Task<WorkspaceRef> GetTemplateWorkspace(IWorkspaceManager workspaceManager)
+		private async Task<WorkspaceRef> GetTemplateWorkspace(IWorkspaceManager workspaceManager, string templateWorkspaceName)
 		{
 			try
 			{
-				await _templateWorkspaceSettingSemaphore.WaitAsync().ConfigureAwait(false);
+				await _templateWorkspaceSemaphore.WaitAsync().ConfigureAwait(false);
 				if (_templateWorkspace == null)
 				{
 					IEnumerable<WorkspaceRef> workspaces = await workspaceManager.RetrieveAllActive().ConfigureAwait(false);
-					return _templateWorkspace = workspaces.First(w => w.Name == "Relativity Starter Template");
+					return _templateWorkspace = workspaces.First(w => w.Name == templateWorkspaceName);
 				}
 
 				return _templateWorkspace;
 			}
 			finally
 			{
-				_templateWorkspaceSettingSemaphore.Release();
+				_templateWorkspaceSemaphore.Release();
 			}
 		}
 
@@ -69,7 +69,7 @@ namespace Relativity.Sync.Tests.System
 		{
 			using (var manager = _serviceFactory.CreateProxy<IWorkspaceManager>())
 			{
-				// ReSharper disable once AccessToDisposedClosure
+				// ReSharper disable once AccessToDisposedClosure - False positive. We're awaiting all tasks, so we can be sure dispose will be done after each call is handled
 				await Task.WhenAll(_workspaces.Select(w => manager.DeleteAsync(new WorkspaceRef(w.ArtifactID)))).ConfigureAwait(false);
 			}
 			_workspaces.Clear();
@@ -80,7 +80,7 @@ namespace Relativity.Sync.Tests.System
 			using (var applicationLibraryManager = _serviceFactory.CreateProxy<ILibraryApplicationsManager>())
 			{
 				ICollection<LibraryApplication> apps = await applicationLibraryManager.GetAllLibraryApplicationsAsync().ConfigureAwait(false);
-				if (!apps.Any(app => app.GUID == _libraryApplicationGuid))
+				if (!apps.Any(app => app.GUID == _HELPER_APP_GUID))
 				{
 					string appFilePath = GetHelperApplicationFilePath();
 					using (var fileStream = File.OpenRead(appFilePath))
@@ -92,7 +92,7 @@ namespace Relativity.Sync.Tests.System
 			}
 			using (var applicationInstallManager = _serviceFactory.CreateProxy<IApplicationInstallManager>())
 			{
-				await applicationInstallManager.InstallLibraryApplicationByGuid(workspaceArtifactId, _libraryApplicationGuid).ConfigureAwait(false);
+				await applicationInstallManager.InstallLibraryApplicationByGuid(workspaceArtifactId, _HELPER_APP_GUID).ConfigureAwait(false);
 			}
 		}
 
@@ -110,7 +110,7 @@ namespace Relativity.Sync.Tests.System
 
 		public void Dispose()
 		{
-			_templateWorkspaceSettingSemaphore.Dispose();
+			_templateWorkspaceSemaphore.Dispose();
 		}
 	}
 }
