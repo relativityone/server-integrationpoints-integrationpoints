@@ -386,6 +386,7 @@ task copy_test_dlls_to_lib_dir -depends create_lib_dir -precondition { return -n
             "Source\kCura.IntegrationPoints.UITests\bin\x64\*.config",
             "Source\kCura.IntegrationPoints.UITests\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.UITests\bin\x64\*.xml",
+            "Source\kCura.IntegrationPoints.UITests\UiTestsConfig",
             "Source\kCura.IntegrationPoints.Web.Tests\bin\x64\*.dll",
             "Source\kCura.IntegrationPoints.Web.Tests\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.Web.Tests\bin\x64\*.config",

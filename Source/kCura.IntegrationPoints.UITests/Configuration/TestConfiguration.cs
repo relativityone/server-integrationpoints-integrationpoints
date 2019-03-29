@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 		private const int _DEFAULT_SQL_COMMAND_TIMEOUT_IN_SECONDS = 60 * 5;
 
-		private const string _ENVIRONMENT_VARIABLE_CONFIG_NAME = "uiTestsConfig";
+		private const string _ENVIRONMENT_VARIABLE_CONFIG_NAME = "ripUiTestsConfig";
 
 		private const string _NULL_CONFIG_NAME = "<NOT SET>";
 
@@ -76,6 +76,5 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			}
 			return this;
 		}
-
 	}
 }

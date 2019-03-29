@@ -13,6 +13,9 @@ import groovy.transform.Field
 properties([
     [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '30', artifactNumToKeepStr: '', daysToKeepStr: '30', numToKeepStr: '']],
     parameters([
+		string(name: 'ripUiTestsConfig', defaultValue: '', description: 'Set UI tests config file'),
+		string(name: 'ripTestsAdminUsername', defaultValue: '', description: 'Set test user username'),
+		password(name: 'ripTestsAdminPassword', defaultValue: '', description: 'Set test user password'),
         string(defaultValue: '', description: 'Set Relativity branch', name: 'relativityBranch'),
         string(defaultValue: 'DEV', description: 'Set Relativity build type (DEV, GOLD, etc.)', name: 'relativityBuildType'),
         string(defaultValue: '', description: 'Set Relativity version on which RIP will be tested. Leave blank to set the latest version.', name: 'relativityBuildVersion'),
@@ -208,10 +211,20 @@ timestamps
 					stage ('UI Tests')
 					{
 						updateChromeToLatestVersion()
-						timeout(time: 8, unit: 'HOURS')
+						timeout(time: 10, unit: 'HOURS')
 						{
-							runTests(params.skipUITests, "-ui", "UI", nightlyJobName)
-						}
+							withEnv([
+								"ripUiTestsConfig=$params.ripUiTestsConfig",
+								"ripTestsAdminUsername=$params.ripTestsAdminUsername",
+								"ripTestsAdminPassword=$params.ripTestsAdminPassword"
+							]) 
+							{
+								echo "Value of ripUiTestsConfig environment variable: $env.ripUiTestsConfig"
+								echo "Value of ripTestsAdminUsername environment variable: $env.ripTestsAdminUsername"
+
+								runTests(params.skipUITests, "-ui", "UI", nightlyJobName)
+							}
+						}						
 					}
 					currentBuild.result = 'SUCCESS'
 				}
