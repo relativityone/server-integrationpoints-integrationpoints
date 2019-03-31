@@ -128,9 +128,34 @@ namespace Relativity.Sync.Tests.Unit
 			_objectManager.Verify(x => x.ReadAsync(_WORKSPACE_ID, It.Is<ReadRequest>(rr => AssertReadRequest(rr))), Times.Once);
 		}
 
+		[Test]
+		public async Task ItShouldHandleNullValues()
+		{
+			// total items count and starting index are set during creation and cannot be modified
+			const string status = null;
+			int? failedItemsCount = null;
+			int? transferredItemsCount = null;
+			decimal? progress = null;
+			const string lockedBy = null;
+
+			ReadResult readResult = PrepareReadResult(status: status, failedItemsCount: failedItemsCount, transferredItemsCount: transferredItemsCount, progress: progress, lockedBy: lockedBy);
+
+			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(readResult);
+
+			// ACT
+			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
+
+			// ASSERT
+			batch.Status.Should().Be(status);
+			batch.FailedItemsCount.Should().Be(0);
+			batch.TransferredItemsCount.Should().Be(0);
+			batch.Progress.Should().Be(0);
+			batch.LockedBy.Should().Be(lockedBy);
+		}
+
 #pragma warning disable RG2011 // Method Argument Count Analyzer
-		private static ReadResult PrepareReadResult(int totalItemsCount = 1, int startingIndex = 1, string status = "status", int failedItemsCount = 1, int transferredItemsCount = 1, decimal progress = 1,
-			string lockedBy = "id")
+		private static ReadResult PrepareReadResult(int totalItemsCount = 1, int startingIndex = 1, string status = "status", int? failedItemsCount = 1, int? transferredItemsCount = 1,
+			decimal? progress = 1, string lockedBy = "id")
 #pragma warning restore RG2011 // Method Argument Count Analyzer
 		{
 			ReadResult readResult = new ReadResult

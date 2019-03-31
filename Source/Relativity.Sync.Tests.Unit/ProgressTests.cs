@@ -110,6 +110,26 @@ namespace Relativity.Sync.Tests.Unit
 			_objectManager.Verify(x => x.ReadAsync(_WORKSPACE_ID, It.Is<ReadRequest>(rr => AssertReadRequest(rr))), Times.Once);
 		}
 
+		[Test]
+		public async Task ItShouldHandleNullValues()
+		{
+			// only status, exception and message can be null - name and order are set during creation and cannot be modified
+			const string status = null;
+			const string exception = null;
+			const string message = null;
+
+			ReadResult result = PrepareReadResult(status: status, exception: exception, message: message);
+
+			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(result);
+
+			// ACT
+			IProgress progress = await _progressRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
+
+			// ASSERT
+			progress.Exception.Should().Be(exception);
+			progress.Message.Should().Be(message);
+		}
+
 		private static ReadResult PrepareReadResult(string name = "name", int order = 1, string status = "status", string exception = "exception", string message = "message")
 		{
 			ReadResult readResult = new ReadResult
@@ -308,6 +328,36 @@ namespace Relativity.Sync.Tests.Unit
 			updateRequest.FieldValues.Should().Contain(x => x.Field.Guid == fieldGuid);
 			updateRequest.FieldValues.Should().Contain(x => ((T) x.Value).Equals(value));
 			return true;
+		}
+
+		[Test]
+		[TestCase(null)]
+		[TestCase("")]
+		public void ItShouldThrowOnEmptyName(string name)
+		{
+			const int order = 1;
+			const string status = "status";
+
+			// ACT
+			Func<Task> action = async () => await _progressRepository.CreateAsync(_WORKSPACE_ID, 1, name, order, status).ConfigureAwait(false);
+
+			// ASSERT
+			action.Should().Throw<ArgumentNullException>();
+		}
+
+		[Test]
+		[TestCase(null)]
+		[TestCase("")]
+		public void ItShouldThrowOnEmptyStatus(string status)
+		{
+			const int order = 1;
+			const string name = "name";
+
+			// ACT
+			Func<Task> action = async () => await _progressRepository.CreateAsync(_WORKSPACE_ID, 1, name, order, status).ConfigureAwait(false);
+
+			// ASSERT
+			action.Should().Throw<ArgumentNullException>();
 		}
 	}
 }

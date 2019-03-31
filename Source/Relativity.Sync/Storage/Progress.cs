@@ -22,6 +22,16 @@ namespace Relativity.Sync.Storage
 
 		private Progress(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationArtifactId, string name, int order, string status)
 		{
+			if (string.IsNullOrWhiteSpace(name))
+			{
+				throw new ArgumentNullException(nameof(name));
+			}
+
+			if (string.IsNullOrWhiteSpace(status))
+			{
+				throw new ArgumentNullException(nameof(status));
+			}
+
 			_serviceFactory = serviceFactory;
 			_workspaceArtifactId = workspaceArtifactId;
 			_syncConfigurationArtifactId = syncConfigurationArtifactId;
