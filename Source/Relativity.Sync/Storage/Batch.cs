@@ -192,24 +192,7 @@ namespace Relativity.Sync.Storage
 		{
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
-				UpdateRequest request = new UpdateRequest
-				{
-					Object = new RelativityObjectRef
-					{
-						ArtifactID = ArtifactId
-					},
-					FieldValues = new[]
-					{
-						new FieldRefValuePair
-						{
-							Field = new FieldRef
-							{
-								Guid = fieldGuid
-							},
-							Value = value
-						}
-					}
-				};
+				UpdateRequest request = UpdateRequestExtensions.CreateForSingleField(ArtifactId, fieldGuid, value);
 				await objectManager.UpdateAsync(_workspaceArtifactId, request).ConfigureAwait(false);
 			}
 		}

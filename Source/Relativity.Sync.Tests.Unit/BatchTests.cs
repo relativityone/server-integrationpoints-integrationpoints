@@ -115,6 +115,7 @@ namespace Relativity.Sync.Tests.Unit
 			// ACT
 			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
 
+			// ASSERT
 			batch.ArtifactId.Should().Be(_ARTIFACT_ID);
 			batch.TotalItemsCount.Should().Be(totalItemsCount);
 			batch.StartingIndex.Should().Be(startingIndex);
@@ -128,8 +129,8 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 #pragma warning disable RG2011 // Method Argument Count Analyzer
-		private static ReadResult PrepareReadResult(int totalItemsCount, int startingIndex, string status, int failedItemsCount, int transferredItemsCount, double progress,
-			string lockedBy)
+		private static ReadResult PrepareReadResult(int totalItemsCount = 1, int startingIndex = 1, string status = "status", int failedItemsCount = 1, int transferredItemsCount = 1, double progress = 1,
+			string lockedBy = "id")
 #pragma warning restore RG2011 // Method Argument Count Analyzer
 		{
 			ReadResult readResult = new ReadResult
@@ -428,19 +429,6 @@ namespace Relativity.Sync.Tests.Unit
 			updateRequest.FieldValues.Should().Contain(x => x.Field.Guid == fieldGuid);
 			updateRequest.FieldValues.Should().Contain(x => ((T) x.Value).Equals(value));
 			return true;
-		}
-
-		private static ReadResult PrepareReadResult()
-		{
-			const int totalItemsCount = 1111;
-			const int startingIndex = 222;
-			const string status = "status";
-			const int failedItemsCount = 333;
-			const int transferredItemsCount = 444;
-			const double progress = 53.1;
-			const string lockedBy = "id";
-
-			return PrepareReadResult(totalItemsCount, startingIndex, status, failedItemsCount, transferredItemsCount, progress, lockedBy);
 		}
 	}
 }

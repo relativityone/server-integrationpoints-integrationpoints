@@ -24,6 +24,7 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<SourceWorkspaceTagsCreationExecutionConstrains>().As<IExecutionConstrains<ISourceWorkspaceTagsCreationConfiguration>>();
 
 			builder.RegisterType<BatchRepository>().As<IBatchRepository>();
+			builder.RegisterType<ProgressRepository>().As<IProgressRepository>();
 		}
 	}
 }
