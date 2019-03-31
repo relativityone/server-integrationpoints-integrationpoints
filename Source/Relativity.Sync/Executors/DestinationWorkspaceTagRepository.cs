@@ -34,7 +34,7 @@ namespace Relativity.Sync.Executors
 			_logger = logger;
 			_tagNameFormatter = tagNameFormatter;
 		}
-		
+
 		public async Task<DestinationWorkspaceTag> ReadAsync(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId, CancellationToken token)
 		{
 			_logger.LogVerbose($"Reading {nameof(DestinationWorkspaceTag)}. Source workspace artifact ID: {{sourceWorkspaceArtifactId}} " +

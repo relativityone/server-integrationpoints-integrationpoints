@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.Relativity.Client.DTOs;
@@ -8,6 +9,7 @@ using Platform.Keywords.RSAPI;
 using Relativity.API;
 using Relativity.Services;
 using Relativity.Services.Permission;
+using Relativity.Services.Workspace;
 using Relativity.Sync.Authentication;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
@@ -21,60 +23,59 @@ namespace Relativity.Sync.Tests.System
 	{
 		private ServicesManagerStub _servicesManager;
 		private ProvideServiceUrisStub _provideServiceUris;
-		private Workspace _workspace;
+		private WorkspaceRef _workspace;
 
-		protected override void ChildSuiteSetup()
+		[SetUp]
+		public async Task SetUp()
 		{
 			_servicesManager = new ServicesManagerStub();
 			_provideServiceUris = new ProvideServiceUrisStub();
-			_workspace = CreateWorkspaceAsync().Result;
+			_workspace = await Environment.CreateWorkspaceAsync().ConfigureAwait(false);
 		}
 
-		private void SetUpGroup(string groupName)
+		private Group SetUpGroup(string groupName)
 		{
-			Group group = GroupHelpers.GroupGetByName(Client, groupName);
-			if (group == null)
-			{
-				CreateGroup(groupName);
-				GroupHelpers.GroupGetByName(Client, groupName);
-			}
+			return GroupHelpers.GroupGetByName(Client, groupName) ?? CreateGroup(groupName);
 		}
 
-		private void CreateGroup(string name)
+		private Group CreateGroup(string name)
 		{
 			Group newGroup = new Group
 			{
 				Name = name,
-				Users = new MultiUserFieldValueList(),
-				Client = _workspace.Client
+				Users = new MultiUserFieldValueList()
 			};
-			Client.Repositories.Group.Create(newGroup);
+			
+			WriteResultSet<Group> result = Client.Repositories.Group.Create(newGroup);
+			if (!result.Success)
+			{
+				throw new InvalidOperationException($"Cannot create group. Group name: {name}");
+			}
+
+			return GroupHelpers.GroupGetByName(Client, name);
 		}
 
-		private void SetUpUser(string userName, string password, string groupName)
+		private void SetUpUser(string userName, string password, Group group)
 		{
 			int userArtifactId = UserHelpers.FindUserArtifactID(Client, userName);
 
 			User user;
 			if (userArtifactId == 0)
 			{
-				Client client = Client.Repositories.Client.ReadSingle(_workspace.Client.ArtifactID);
-				user = UserHelpers.CreateUserWithPassword(Client, "Test", "Test", userName, client.Name, password);
+				user = UserHelpers.CreateUserWithPassword(Client, "Test", "Test", userName, "Relativity", password);
 			}
 			else
 			{
 				user = Client.Repositories.User.ReadSingle(userArtifactId);
 			}
 
-			Group group = GroupHelpers.GroupGetByName(Client, groupName);
 			GroupHelpers.GroupAddUserIfNotInGroup(Client, group, user);
 		}
 
-		private void AddGroupToWorkspace(string groupName)
+		private void AddGroupToWorkspace(Group group)
 		{
 			using (IPermissionManager permissionManager = _servicesManager.CreateProxy<IPermissionManager>(ExecutionIdentity.System))
 			{
-				Group group = GroupHelpers.GroupGetOrCreateByName(Client, groupName);
 				PermissionHelpers.AddGroupToWorkspace(permissionManager, _workspace.ArtifactID, group);
 			}
 		}
@@ -85,9 +86,9 @@ namespace Relativity.Sync.Tests.System
 			const string groupName = "Test Group";
 			const string userName = "testuser@relativity.com";
 			const string password = "Test1234!";
-			SetUpGroup(groupName);
-			SetUpUser(userName, password, groupName);
-			AddGroupToWorkspace(groupName);
+			Group group = SetUpGroup(groupName);
+			SetUpUser(userName, password, group);
+			AddGroupToWorkspace(group);
 
 			Mock<IUserContextConfiguration> userContextConfiguration = new Mock<IUserContextConfiguration>();
 			userContextConfiguration.SetupGet(x => x.ExecutingUserId).Returns(UserHelpers.FindUserArtifactID(Client, userName));
@@ -96,7 +97,7 @@ namespace Relativity.Sync.Tests.System
 				new TokenProviderFactoryFactory(), _provideServiceUris, new EmptyLogger());
 			PermissionRef permissionRef = new PermissionRef
 			{
-				ArtifactType = new ArtifactTypeIdentifier((int) ArtifactType.Batch),
+				ArtifactType = new ArtifactTypeIdentifier((int)ArtifactType.Batch),
 				PermissionType = PermissionType.Edit
 			};
 
