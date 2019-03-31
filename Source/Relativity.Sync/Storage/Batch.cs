@@ -14,6 +14,7 @@ namespace Relativity.Sync.Storage
 
 		private static readonly Guid BatchObjectTypeGuid = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
 
+		private static readonly Guid NameGuid = new Guid("3AB49704-F843-4E09-AFF2-5380B1BF7A35");
 		private static readonly Guid TotalItemsCountGuid = new Guid("F84589FE-A583-4EB3-BA8A-4A2EEE085C81");
 		private static readonly Guid StartingIndexGuid = new Guid("B56F4F70-CEB3-49B8-BC2B-662D481DDC8A");
 		private static readonly Guid StatusGuid = new Guid("D16FAF24-BC87-486C-A0AB-6354F36AF38E");
@@ -104,7 +105,7 @@ namespace Relativity.Sync.Storage
 						{
 							Field = new FieldRef
 							{
-								Name = "Name"
+								Guid = NameGuid
 							},
 							Value = Guid.NewGuid()
 						},
