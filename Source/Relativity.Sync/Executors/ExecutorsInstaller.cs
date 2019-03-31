@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.ExecutionConstrains;
+using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Executors
 {
@@ -21,6 +22,8 @@ namespace Relativity.Sync.Executors
 
 			builder.RegisterType<SourceWorkspaceTagsCreationExecutor>().As<IExecutor<ISourceWorkspaceTagsCreationConfiguration>>();
 			builder.RegisterType<SourceWorkspaceTagsCreationExecutionConstrains>().As<IExecutionConstrains<ISourceWorkspaceTagsCreationConfiguration>>();
+
+			builder.RegisterType<BatchRepository>().As<IBatchRepository>();
 		}
 	}
 }

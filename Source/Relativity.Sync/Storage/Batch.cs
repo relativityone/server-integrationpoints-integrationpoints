@@ -4,7 +4,7 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
 
-namespace Relativity.Sync
+namespace Relativity.Sync.Storage
 {
 	internal sealed class Batch : IBatch
 	{
@@ -22,7 +22,7 @@ namespace Relativity.Sync
 		private static readonly Guid ProgressGuid = new Guid("8C6DAF67-9428-4F5F-98D7-3C71A1FF3AE8");
 		private static readonly Guid LockedByGuid = new Guid("BEFC75D3-5825-4479-B499-58C6EF719DDB");
 
-		public Batch(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationArtifactId, int totalItemsCount, int startingIndex)
+		private Batch(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationArtifactId, int totalItemsCount, int startingIndex)
 		{
 			_serviceFactory = serviceFactory;
 			_syncConfigurationArtifactId = syncConfigurationArtifactId;
@@ -31,7 +31,7 @@ namespace Relativity.Sync
 			StartingIndex = startingIndex;
 		}
 
-		public Batch(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int artifactId)
+		private Batch(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int artifactId)
 		{
 			_serviceFactory = serviceFactory;
 			_workspaceArtifactId = workspaceArtifactId;
@@ -42,15 +42,15 @@ namespace Relativity.Sync
 
 		public int FailedItemsCount { get; private set; }
 
-		public async Task SetFailedItemsCount(int failedItemsCount)
+		public async Task SetFailedItemsCountAsync(int failedItemsCount)
 		{
-			await UpdateFieldValue(FailedItemsCountGuid, FailedItemsCount).ConfigureAwait(false);
+			await UpdateFieldValue(FailedItemsCountGuid, failedItemsCount).ConfigureAwait(false);
 			FailedItemsCount = failedItemsCount;
 		}
 
 		public int TransferredItemsCount { get; private set; }
 
-		public async Task SetTransferredItemsCount(int transferredItemsCount)
+		public async Task SetTransferredItemsCountAsync(int transferredItemsCount)
 		{
 			await UpdateFieldValue(TransferredItemsCountGuid, transferredItemsCount).ConfigureAwait(false);
 			TransferredItemsCount = transferredItemsCount;
@@ -62,7 +62,7 @@ namespace Relativity.Sync
 
 		public string LockedBy { get; private set; }
 
-		public async Task SetLockedBy(string lockedBy)
+		public async Task SetLockedByAsync(string lockedBy)
 		{
 			await UpdateFieldValue(LockedByGuid, lockedBy).ConfigureAwait(false);
 			LockedBy = lockedBy;
@@ -70,7 +70,7 @@ namespace Relativity.Sync
 
 		public double Progress { get; private set; }
 
-		public async Task SetProgress(double progress)
+		public async Task SetProgressAsync(double progress)
 		{
 			await UpdateFieldValue(ProgressGuid, progress).ConfigureAwait(false);
 			Progress = progress;
@@ -78,13 +78,13 @@ namespace Relativity.Sync
 
 		public string Status { get; private set; }
 
-		public async Task SetStatus(string status)
+		public async Task SetStatusAsync(string status)
 		{
 			await UpdateFieldValue(StatusGuid, status).ConfigureAwait(false);
 			Status = status;
 		}
 
-		public async Task CreateAsync()
+		private async Task CreateAsync()
 		{
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
@@ -125,7 +125,7 @@ namespace Relativity.Sync
 			}
 		}
 
-		public async Task ReadAsync()
+		private async Task ReadAsync()
 		{
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
@@ -187,7 +187,7 @@ namespace Relativity.Sync
 				{
 					Object = new RelativityObjectRef
 					{
-						Guid = BatchObjectTypeGuid
+						ArtifactID = ArtifactId
 					},
 					FieldValues = new[]
 					{
@@ -203,6 +203,25 @@ namespace Relativity.Sync
 				};
 				await objectManager.UpdateAsync(_workspaceArtifactId, request).ConfigureAwait(false);
 			}
+		}
+
+		public static async Task<IBatch> CreateAsync(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationArtifactId, int totalItemsCount, int startingIndex)
+		{
+			if (startingIndex > totalItemsCount)
+			{
+				throw new ArgumentException($"Starting index cannot be greater than total items count ({startingIndex} > {totalItemsCount}).");
+			}
+
+			Batch batch = new Batch(serviceFactory, workspaceArtifactId, syncConfigurationArtifactId, totalItemsCount, startingIndex);
+			await batch.CreateAsync().ConfigureAwait(false);
+			return batch;
+		}
+
+		public static async Task<IBatch> GetAsync(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int artifactId)
+		{
+			Batch batch = new Batch(serviceFactory, workspaceArtifactId, artifactId);
+			await batch.ReadAsync().ConfigureAwait(false);
+			return batch;
 		}
 	}
 }

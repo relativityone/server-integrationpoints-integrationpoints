@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Relativity.Sync
+namespace Relativity.Sync.Storage
 {
 	internal interface IBatch
 	{
@@ -12,10 +12,10 @@ namespace Relativity.Sync
 		string LockedBy { get; }
 		double Progress { get; }
 		string Status { get; }
-		Task SetFailedItemsCount(int failedItemsCount);
-		Task SetTransferredItemsCount(int transferredItemsCount);
-		Task SetLockedBy(string lockedBy);
-		Task SetProgress(double progress);
-		Task SetStatus(string status);
+		Task SetFailedItemsCountAsync(int failedItemsCount);
+		Task SetTransferredItemsCountAsync(int transferredItemsCount);
+		Task SetLockedByAsync(string lockedBy);
+		Task SetProgressAsync(double progress);
+		Task SetStatusAsync(string status);
 	}
 }
