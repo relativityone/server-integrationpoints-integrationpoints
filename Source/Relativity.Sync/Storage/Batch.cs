@@ -104,6 +104,14 @@ namespace Relativity.Sync.Storage
 						{
 							Field = new FieldRef
 							{
+								Name = "Name"
+							},
+							Value = Guid.NewGuid()
+						},
+						new FieldRefValuePair
+						{
+							Field = new FieldRef
+							{
 								Guid = TotalItemsCountGuid
 							},
 							Value = TotalItemsCount

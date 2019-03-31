@@ -84,8 +84,10 @@ namespace Relativity.Sync.Tests.Unit
 		private bool AssertCreateRequest(CreateRequest createRequest, int totalItemsCount, int startingIndex)
 		{
 			createRequest.ObjectType.Guid.Should().Be(BatchObjectTypeGuid);
-			const int two = 2;
-			createRequest.FieldValues.Count().Should().Be(two);
+			const int three = 3;
+			createRequest.FieldValues.Count().Should().Be(three);
+			createRequest.FieldValues.Should().Contain(x => x.Field.Name == "Name");
+			createRequest.FieldValues.First(x => x.Field.Name == "Name").Value.ToString().Should().NotBeNullOrWhiteSpace();
 			createRequest.FieldValues.Should().Contain(x => x.Field.Guid == TotalItemsCountGuid);
 			createRequest.FieldValues.First(x => x.Field.Guid == TotalItemsCountGuid).Value.Should().Be(totalItemsCount);
 			createRequest.FieldValues.Should().Contain(x => x.Field.Guid == StartingIndexGuid);
