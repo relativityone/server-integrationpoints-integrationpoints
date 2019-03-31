@@ -79,12 +79,13 @@ namespace Relativity.Sync.Tests.Unit
 			batch.StartingIndex.Should().Be(startingIndex);
 			batch.ArtifactId.Should().Be(_ARTIFACT_ID);
 
-			_objectManager.Verify(x => x.CreateAsync(_WORKSPACE_ID, It.Is<CreateRequest>(cr => AssertCreateRequest(cr, totalItemsCount, startingIndex))), Times.Once);
+			_objectManager.Verify(x => x.CreateAsync(_WORKSPACE_ID, It.Is<CreateRequest>(cr => AssertCreateRequest(cr, totalItemsCount, startingIndex, syncConfigurationArtifactId))), Times.Once);
 		}
 
-		private bool AssertCreateRequest(CreateRequest createRequest, int totalItemsCount, int startingIndex)
+		private bool AssertCreateRequest(CreateRequest createRequest, int totalItemsCount, int startingIndex, int syncConfigurationArtifactId)
 		{
 			createRequest.ObjectType.Guid.Should().Be(BatchObjectTypeGuid);
+			createRequest.ParentObject.ArtifactID.Should().Be(syncConfigurationArtifactId);
 			const int three = 3;
 			createRequest.FieldValues.Count().Should().Be(three);
 			createRequest.FieldValues.Should().Contain(x => x.Field.Guid == NameGuid);
