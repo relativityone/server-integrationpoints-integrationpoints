@@ -12,13 +12,13 @@ namespace Relativity.Sync.Storage
 		private readonly int _syncConfigurationArtifactId;
 		private readonly int _workspaceArtifactId;
 
-		private static readonly Guid ProgressObjectTypeGuid = new Guid("7BA4FE64-683C-4492-BC1E-73E8E9CA8761");
+		private static readonly Guid ProgressObjectTypeGuid = new Guid("3D107450-DB18-4FE1-8219-73EE1F921ED9");
 
-		private static readonly Guid OrderGuid = new Guid("537FADE3-8C6C-412B-9A16-CBF97151AB97");
-		private static readonly Guid StatusGuid = new Guid("536B1C81-59DB-41E5-8658-863AC8409E64");
-		private static readonly Guid NameGuid = new Guid("319E2B89-26EC-4449-B3EC-8CEF553DB5EE");
-		private static readonly Guid ExceptionGuid = new Guid("102F0B84-2122-4D2D-9B87-B877A033A6DD");
-		private static readonly Guid MessageGuid = new Guid("E1CED416-38DB-49A8-90EC-BB8AD1DD1E6E");
+		private static readonly Guid OrderGuid = new Guid("610A1E44-7AAA-47FC-8FA0-92F8C8C8A94A");
+		private static readonly Guid StatusGuid = new Guid("698E1BBE-13B7-445C-8A28-7D40FD232E1B");
+		private static readonly Guid NameGuid = new Guid("AE2FCA2B-0E5C-4F35-948F-6C1654D5CF95");
+		private static readonly Guid ExceptionGuid = new Guid("2F2CFC2B-C9C0-406D-BD90-FB0133BCB939");
+		private static readonly Guid MessageGuid = new Guid("2E296F79-1B81-4BF6-98AD-68DA13F8DA44");
 
 		private Progress(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationArtifactId, string name, int order, string status)
 		{
@@ -156,11 +156,11 @@ namespace Relativity.Sync.Storage
 
 				ReadResult result = await objectManager.ReadAsync(_workspaceArtifactId, request).ConfigureAwait(false);
 
-				Name = result.Object[NameGuid].Value.ToString();
+				Name = (string) result.Object[NameGuid].Value;
 				Order = (int) result.Object[OrderGuid].Value;
-				Status = result.Object[StatusGuid].Value.ToString();
-				Exception = result.Object[ExceptionGuid].Value.ToString();
-				Message = result.Object[MessageGuid].Value.ToString();
+				Status = (string) result.Object[StatusGuid].Value;
+				Exception = (string) result.Object[ExceptionGuid].Value;
+				Message = (string) result.Object[MessageGuid].Value;
 			}
 		}
 

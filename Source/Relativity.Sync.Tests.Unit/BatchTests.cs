@@ -106,9 +106,9 @@ namespace Relativity.Sync.Tests.Unit
 			const int failedItemsCount = 111;
 			const int transferredItemsCount = 222;
 			const double progress = 3.1;
-			const string lockedBy = "id";
+			const string lockedBy = "id 2";
 
-			ReadResult readResult = PrepareReadResult(totalItemsCount, startingIndex, status, failedItemsCount, transferredItemsCount, progress, lockedBy);
+			ReadResult readResult = PrepareReadResult(totalItemsCount, startingIndex, status, failedItemsCount, transferredItemsCount, new decimal(progress), lockedBy);
 
 			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<ReadRequest>())).ReturnsAsync(readResult);
 
@@ -129,7 +129,7 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 #pragma warning disable RG2011 // Method Argument Count Analyzer
-		private static ReadResult PrepareReadResult(int totalItemsCount = 1, int startingIndex = 1, string status = "status", int failedItemsCount = 1, int transferredItemsCount = 1, double progress = 1,
+		private static ReadResult PrepareReadResult(int totalItemsCount = 1, int startingIndex = 1, string status = "status", int failedItemsCount = 1, int transferredItemsCount = 1, decimal progress = 1,
 			string lockedBy = "id")
 #pragma warning restore RG2011 // Method Argument Count Analyzer
 		{

@@ -180,11 +180,11 @@ namespace Relativity.Sync.Storage
 
 				TotalItemsCount = (int) readResult.Object[TotalItemsCountGuid].Value;
 				StartingIndex = (int) readResult.Object[StartingIndexGuid].Value;
-				Status = readResult.Object[StatusGuid].Value.ToString();
-				FailedItemsCount = (int) readResult.Object[FailedItemsCountGuid].Value;
-				TransferredItemsCount = (int) readResult.Object[TransferredItemsCountGuid].Value;
-				Progress = (double) readResult.Object[ProgressGuid].Value;
-				LockedBy = readResult.Object[LockedByGuid].Value.ToString();
+				Status = (string) readResult.Object[StatusGuid].Value;
+				FailedItemsCount = (int) (readResult.Object[FailedItemsCountGuid].Value ?? default(int));
+				TransferredItemsCount = (int) (readResult.Object[TransferredItemsCountGuid].Value ?? default(int));
+				Progress = decimal.ToDouble((decimal?) readResult.Object[ProgressGuid].Value ?? default(decimal));
+				LockedBy = (string) readResult.Object[LockedByGuid].Value;
 			}
 		}
 

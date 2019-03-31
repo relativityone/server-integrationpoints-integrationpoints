@@ -19,8 +19,8 @@ namespace Relativity.Sync.Tests.System
 		{
 			Client = new RSAPIClient(AppSettings.RelativityServicesUrl, new UsernamePasswordCredentials(AppSettings.RelativityUserName, AppSettings.RelativityUserPassword));
 			ServiceFactory = new ServiceFactoryFromAppConfig().CreateServiceFactory();
-			await ChildSuiteSetup().ConfigureAwait(false);
 			Environment = new TestEnvironment();
+			await ChildSuiteSetup().ConfigureAwait(false);
 		}
 
 		[OneTimeTearDown]
