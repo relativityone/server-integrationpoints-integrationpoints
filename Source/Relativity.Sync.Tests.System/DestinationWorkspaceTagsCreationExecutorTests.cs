@@ -4,12 +4,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
-using kCura.Relativity.Client.DTOs;
 using NUnit.Framework;
 using Relativity.Services.ApplicationInstallManager;
 using Relativity.Services.ArtifactGuid;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.Integration.Stubs;
@@ -23,8 +23,8 @@ namespace Relativity.Sync.Tests.System
 	[TestFixture]
 	public sealed class DestinationWorkspaceTagsCreationExecutorTests : SystemTest
 	{
-		private Workspace _destinationWorkspace;
-		private Workspace _sourceWorkspace;
+		private WorkspaceRef _destinationWorkspace;
+		private WorkspaceRef _sourceWorkspace;
 
 		private const int _DEFAULT_NAME_FIELD_LENGTH = 255;
 		private const string _RELATIVITY_SOURCE_CASE_OBJECT_TYPE_NAME = "Relativity Source Case";
@@ -53,13 +53,11 @@ namespace Relativity.Sync.Tests.System
 		[SetUp]
 		public async Task SetUp()
 		{
-			_sourceWorkspace = await CreateWorkspaceAsync().ConfigureAwait(false);
-			_destinationWorkspace = await CreateWorkspaceAsync().ConfigureAwait(false);
-
-			await InstallIntegrationPoints(_sourceWorkspace.ArtifactID).ConfigureAwait(false);
-
-			int artifactTypeId = await CreateRelativitySourceCaseObjectType(_destinationWorkspace.ArtifactID).ConfigureAwait(false);
-			await CreateRelativitySourceJobObjectType(_destinationWorkspace.ArtifactID, artifactTypeId).ConfigureAwait(false);
+			Task<WorkspaceRef> sourceWorkspaceCreationTask = CreateWorkspaceWithFields();
+			Task<WorkspaceRef> destinationWorkspaceCreationTask = CreateWorkspaceWithFields();
+			await Task.WhenAll(sourceWorkspaceCreationTask, destinationWorkspaceCreationTask).ConfigureAwait(false);
+			_sourceWorkspace = sourceWorkspaceCreationTask.Result;
+			_destinationWorkspace = destinationWorkspaceCreationTask.Result;
 		}
 
 		[Test]
@@ -472,6 +470,13 @@ namespace Relativity.Sync.Tests.System
 			}
 
 			return tag;
+		}
+
+		private async Task<WorkspaceRef> CreateWorkspaceWithFields()
+		{
+			WorkspaceRef workspace = await Environment.CreateWorkspaceAsync().ConfigureAwait(false);
+			await Environment.CreateFieldsInWorkspace(workspace.ArtifactID).ConfigureAwait(false);
+			return workspace;
 		}
 	}
 }
