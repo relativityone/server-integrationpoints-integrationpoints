@@ -8,7 +8,7 @@ namespace Relativity.Sync.Tests.System.Helpers
 {
 	internal static class Rdos
 	{
-		public static async Task<int> CreateJobHistoryInstance(ServiceFactory serviceFactory, int workspaceId)
+		public static async Task<int> CreateJobHistoryInstance(ServiceFactory serviceFactory, int workspaceId, string name = "Name")
 		{
 			using (var objectManager = serviceFactory.CreateProxy<IObjectManager>())
 			{
@@ -18,7 +18,7 @@ namespace Relativity.Sync.Tests.System.Helpers
 					{
 						new FieldRefValuePair
 						{
-							Value = Guid.NewGuid().ToString(),
+							Value = name,
 							Field = new FieldRef
 							{
 								Name = "Name"
