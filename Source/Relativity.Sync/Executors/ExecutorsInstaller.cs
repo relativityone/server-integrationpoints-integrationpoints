@@ -25,6 +25,7 @@ namespace Relativity.Sync.Executors
 
 			builder.RegisterType<BatchRepository>().As<IBatchRepository>();
 			builder.RegisterType<ProgressRepository>().As<IProgressRepository>();
+			builder.RegisterType<SemaphoreSlimWrapper>().As<ISemaphoreSlim>();
 		}
 	}
 }
