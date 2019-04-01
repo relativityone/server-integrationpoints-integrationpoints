@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml;
 using Relativity.Kepler.Transport;
 using Relativity.Services.ApplicationInstallManager;
 using Relativity.Services.LibraryApplicationsManager;
@@ -17,7 +19,7 @@ namespace Relativity.Sync.Tests.System
 	public sealed class TestEnvironment : IDisposable
 	{
 		private WorkspaceRef _templateWorkspace;
-		private const string _RELATIVITY_SYNC_TEST_HELPER_RAP = "Relativity_Sync_Test_Helper.rap";
+		private const string _RELATIVITY_SYNC_TEST_HELPER_RAP = "Relativity_Sync_Test_Helper.xml";
 		private readonly List<WorkspaceRef> _workspaces = new List<WorkspaceRef>();
 		private readonly SemaphoreSlim _templateWorkspaceSemaphore = new SemaphoreSlim(1);
 		private readonly ServiceFactory _serviceFactory;
@@ -77,23 +79,80 @@ namespace Relativity.Sync.Tests.System
 
 		public async Task CreateFieldsInWorkspace(int workspaceArtifactId)
 		{
-			using (var applicationLibraryManager = _serviceFactory.CreateProxy<ILibraryApplicationsManager>())
-			{
-				ICollection<LibraryApplication> apps = await applicationLibraryManager.GetAllLibraryApplicationsAsync().ConfigureAwait(false);
-				if (!apps.Any(app => app.GUID == _HELPER_APP_GUID))
-				{
-					string appFilePath = GetHelperApplicationFilePath();
-					using (var fileStream = File.OpenRead(appFilePath))
-					using(var keplerStream = new KeplerStream(fileStream))
-					{
-						await applicationLibraryManager.EnsureApplication(_RELATIVITY_SYNC_TEST_HELPER_RAP, keplerStream, false, false).ConfigureAwait(false);
-					}
-				}
-			}
+			await InstallHelperAppIfNeeded().ConfigureAwait(false);
 			using (var applicationInstallManager = _serviceFactory.CreateProxy<IApplicationInstallManager>())
 			{
 				await applicationInstallManager.InstallLibraryApplicationByGuid(workspaceArtifactId, _HELPER_APP_GUID).ConfigureAwait(false);
 			}
+		}
+
+		private async Task InstallHelperAppIfNeeded()
+		{
+			string appFilePath = GetHelperApplicationFilePath();
+			using (var fileStream = File.OpenRead(appFilePath))
+			using (var applicationLibraryManager = _serviceFactory.CreateProxy<ILibraryApplicationsManager>())
+			{
+				ICollection<LibraryApplication> apps = await applicationLibraryManager.GetAllLibraryApplicationsAsync().ConfigureAwait(false);
+				LibraryApplication libraryApp = apps.FirstOrDefault(app => app.GUID == _HELPER_APP_GUID);
+				var libraryAppVersion = new Version(libraryApp?.Version ?? "0.0.0.0");
+				Version appXmlAppVersion = GetVersionFromApplicationXmlStream(fileStream);
+
+				if (libraryAppVersion < appXmlAppVersion)
+				{
+					// Rewinding stream as it will be reused.
+					fileStream.Seek(0, SeekOrigin.Begin);
+					using (var outStream = await CreateRapFileInMemory(fileStream).ConfigureAwait(false))
+					using (var keplerStream = new KeplerStream(outStream))
+					{
+						await applicationLibraryManager.EnsureApplication(Path.ChangeExtension(_RELATIVITY_SYNC_TEST_HELPER_RAP, "rap"), keplerStream, false, false).ConfigureAwait(false);
+					}
+				}
+			}
+		}
+
+		private static async Task<MemoryStream> CreateRapFileInMemory(FileStream applicationXmlFileStream)
+		{
+			MemoryStream outStream = new MemoryStream();
+			using (var archive = new ZipArchive(outStream, ZipArchiveMode.Create, true))
+			{
+				ZipArchiveEntry fileEntry = archive.CreateEntry("application.xml", CompressionLevel.Fastest);
+				using (var entryStream = fileEntry.Open())
+				{
+					await applicationXmlFileStream.CopyToAsync(entryStream).ConfigureAwait(false);
+				}
+			}
+
+			// Rewinding stream as it is meant to be reused.
+			outStream.Seek(0, SeekOrigin.Begin);
+			return outStream;
+		}
+
+		private static Version GetVersionFromApplicationXmlStream(FileStream fileStream)
+		{
+			XmlDocument appXml = SafeLoadXml(fileStream);
+			string versionStringFromXml = appXml?.SelectSingleNode("//Version")?.InnerText;
+			if (versionStringFromXml == null)
+			{
+				throw new InvalidOperationException("Application XML could not be parsed. Cannot find Version node.");
+			}
+
+			Version appXmlAppVersion = new Version(versionStringFromXml);
+			return appXmlAppVersion;
+		}
+
+		/// <summary>
+		/// To prevent insecure DTD processing we have to load the XML in a specific way.
+		/// See https://docs.microsoft.com/en-us/visualstudio/code-quality/ca3075-insecure-dtd-processing?view=vs-2017 for more info
+		/// </summary>
+		/// <param name="fileStream">Stream to be read</param>
+		/// <returns>XML document loaded from given stream</returns>
+		private static XmlDocument SafeLoadXml(FileStream fileStream)
+		{
+			var xmlReaderSettings = new XmlReaderSettings {XmlResolver = null};
+			XmlReader reader = XmlReader.Create(fileStream, xmlReaderSettings);
+			XmlDocument appXml = new XmlDocument {XmlResolver = null};
+			appXml.Load(reader);
+			return appXml;
 		}
 
 		private static string GetHelperApplicationFilePath()
