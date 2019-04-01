@@ -1,4 +1,15 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using kCura.IntegrationPoints.Core.Utils;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
+using Polly;
+using Relativity;
+using Relativity.API;
+using Relativity.Logging;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
@@ -9,11 +20,63 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 	/// </summary>
 	internal sealed class SelfDisposingStream : Stream
 	{
-		private readonly Stream _stream;
+		private Stream _stream;
+		private IAPILog _logger;
+		private IRelativityObjectManager _relativityObjectManager;
+		private IQueryFieldLookupRepository _fieldLookupRepository;
+		private int _artifactID;
+		private FieldRef _fieldRef;
+		private int _fieldArtifactID;
+		private Policy<Stream> retryPolicy;
+		private int maxAttempts = 3;
 
-		public SelfDisposingStream(Stream stream)
+		public SelfDisposingStream(
+			int artifactID,
+			int fieldArtifactID,
+			IRelativityObjectManager relativityObjectManager, 
+			IQueryFieldLookupRepository fieldLookupRepository, 
+			IAPILog logger)
 		{
-			_stream = stream;
+			_relativityObjectManager = relativityObjectManager;
+			_fieldLookupRepository = fieldLookupRepository;
+			_artifactID = artifactID;
+			_fieldArtifactID = fieldArtifactID;
+			retryPolicy = Policy
+				.HandleResult<Stream>(s => s == null || !s.CanRead)
+				.Or<Exception>()
+				.WaitAndRetry(maxAttempts, i => TimeSpan.FromSeconds(1), onRetry: (outcome, timespan, retryAttempt, context) =>
+				{
+					_stream?.Dispose();
+					_logger.LogWarning("Retrying Kepler Stream creation inside SelfDisposingStream. Attempt {0} of {1}", retryAttempt, maxAttempts);
+				});
+
+			_stream = retryPolicy.Execute(() => GetKeplerStream(_artifactID, _fieldArtifactID));
+
+			_logger = logger;
+		}
+
+		private Stream GetKeplerStream(int artifactID, int fieldArtifactID)
+		{
+			try
+			{
+				_fieldRef = new FieldRef {ArtifactID = _fieldArtifactID};
+				Stream stream = _relativityObjectManager.StreamLongTextAsync(artifactID, _fieldRef)
+					.GetAwaiter()
+					.GetResult();
+
+				ViewFieldInfo field = _fieldLookupRepository.GetFieldByArtifactId(fieldArtifactID);
+				if (!field.IsUnicodeEnabled)
+				{
+					stream = new AsciiToUnicodeStream(stream);
+				}
+
+				return stream;
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Unable to create KeplerStream inside SelfDisposingStream");
+				throw;
+			}
 		}
 
 		public override void Flush()
@@ -33,13 +96,20 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 		public override int Read(byte[] buffer, int offset, int count)
 		{
-			int readBytes = _stream.Read(buffer, offset, count);
-			if (readBytes == 0)
+			try
 			{
-				_stream.Dispose();
-			}
+				int readBytes = _stream.Read(buffer, offset, count);
+				if (readBytes == 0)
+				{
+					_stream.Dispose();
+				}
 
-			return readBytes;
+				return readBytes;
+			}catch (System.Exception ex)
+			{
+				_logger.LogError(ex, "Failed reading {0} bytes from SelfDisposingStream at index: {1}", count, offset);
+				throw;
+			}
 		}
 
 		public override void Write(byte[] buffer, int offset, int count)
@@ -47,7 +117,18 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			_stream.Write(buffer, offset, count);
 		}
 
-		public override bool CanRead => _stream.CanRead;
+		public override bool CanRead
+		{
+			get
+			{
+				if (!_stream.CanRead)
+				{
+					_stream = retryPolicy.Execute(() => GetKeplerStream(_artifactID, _fieldArtifactID));
+				}
+
+				return _stream.CanRead;
+			}
+		}
 
 		public override bool CanSeek => _stream.CanSeek;
 
