@@ -11,16 +11,19 @@ namespace Relativity.Sync.Executors
 		private readonly IDestinationWorkspaceTagsLinker _destinationWorkspaceTagsLinker;
 		private readonly IWorkspaceNameQuery _workspaceNameQuery;
 		private readonly IFederatedInstance _federatedInstance;
+		private readonly ISyncLog _logger;
 
 		public SourceWorkspaceTagsCreationExecutor(IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository,
 			IDestinationWorkspaceTagsLinker destinationWorkspaceTagsLinker,
 			IWorkspaceNameQuery workspaceNameQuery,
-			IFederatedInstance federatedInstance)
+			IFederatedInstance federatedInstance,
+			ISyncLog logger)
 		{
 			_destinationWorkspaceTagRepository = destinationWorkspaceTagRepository;
 			_destinationWorkspaceTagsLinker = destinationWorkspaceTagsLinker;
 			_workspaceNameQuery = workspaceNameQuery;
 			_federatedInstance = federatedInstance;
+			_logger = logger;
 		}
 
 		public async Task<ExecutionResult> ExecuteAsync(ISourceWorkspaceTagsCreationConfiguration configuration, CancellationToken token)
@@ -33,7 +36,9 @@ namespace Relativity.Sync.Executors
 			}
 			catch (Exception ex)
 			{
-				result = ExecutionResult.Failure("Failed to create tags in source workspace", ex);
+				const string errorMessage = "Failed to create tags in source workspace";
+				_logger.LogError(ex, errorMessage);
+				result = ExecutionResult.Failure(errorMessage, ex);
 			}
 
 			return result;
