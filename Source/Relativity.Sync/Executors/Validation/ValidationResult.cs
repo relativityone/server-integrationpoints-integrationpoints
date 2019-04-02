@@ -56,6 +56,15 @@ namespace Relativity.Sync.Executors
 				Add(message);
 			}
 		}
+		
+		/// <summary>
+		/// Constructor, sets validation result and message
+		/// </summary>
+		/// <param name="messages">Validation message</param>
+		public ValidationResult(IEnumerable<ValidationMessage> messages)
+		{
+			AddRange(messages);
+		}
 
 		/// <summary>
 		/// Constructor, sets validation messages

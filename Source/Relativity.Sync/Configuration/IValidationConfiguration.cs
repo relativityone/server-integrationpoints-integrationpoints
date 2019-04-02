@@ -8,7 +8,13 @@
 		string TypeIdentifier { get; }
 		string SourceProviderIdentifier { get; }
 
-		int SourceWorkspaceArtifactId { get; set; }
-		int DestinationWorkspaceArtifactId { get; set; }
+		int SourceWorkspaceArtifactId { get; }
+		int DestinationWorkspaceArtifactId { get; }
+
+		int SavedSearchArtifactId { get; }
+		int DestinationFolderArtifactId { get; }
+
+		string FieldsMap { get; }
+		int FolderPathSourceFieldArtifactId { get; }
 	}
 }
