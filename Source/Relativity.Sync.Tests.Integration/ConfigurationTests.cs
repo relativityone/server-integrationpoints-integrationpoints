@@ -15,7 +15,7 @@ using Relativity.Sync.Tests.Integration.Stubs;
 namespace Relativity.Sync.Tests.Integration
 {
 	[TestFixture]
-	public sealed class ConfigurationCacheTests : IDisposable
+	public sealed class ConfigurationTests : IDisposable
 	{
 		private ISourceServiceFactoryForAdmin _serviceFactory;
 		private Mock<IObjectManager> _objectManager;

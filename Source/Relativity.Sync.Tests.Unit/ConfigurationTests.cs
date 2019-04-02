@@ -14,7 +14,7 @@ using Relativity.Sync.Storage;
 namespace Relativity.Sync.Tests.Unit
 {
 	[TestFixture]
-	public sealed class ConfigurationCacheTests
+	public sealed class ConfigurationTests
 	{
 		private ISourceServiceFactoryForAdmin _serviceFactory;
 		private Mock<IObjectManager> _objectManager;
