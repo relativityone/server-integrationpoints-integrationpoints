@@ -685,7 +685,6 @@ private updateChromiumToGivenVersion(version)
 
 private updateChromeToLatestVersion()
 {
-    echo "Installing Chrome - ${version}"
 	try
     {
 		powershell """
