@@ -14,7 +14,7 @@ using Relativity.Sync.Storage;
 namespace Relativity.Sync.Tests.Unit
 {
 	[TestFixture]
-	public sealed class ConfigurationCacheTests
+	public sealed class ConfigurationTests
 	{
 		private ISourceServiceFactoryForAdmin _serviceFactory;
 		private Mock<IObjectManager> _objectManager;
@@ -75,7 +75,7 @@ namespace Relativity.Sync.Tests.Unit
 			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, 1)).ReturnsAsync(result);
 
 			// ACT
-			IConfigurationCache cache = await ConfigurationCache.GetAsync(_serviceFactory, _WORKSPACE_ID, _ARTIFACT_ID, new EmptyLogger(), Mock.Of<ISemaphoreSlim>()).ConfigureAwait(false);
+			IConfiguration cache = await Storage.Configuration.GetAsync(_serviceFactory, _WORKSPACE_ID, _ARTIFACT_ID, new EmptyLogger(), Mock.Of<ISemaphoreSlim>()).ConfigureAwait(false);
 
 			// ASSERT
 			cache.GetFieldValue<int>(field1Guid).Should().Be(field1);
@@ -129,7 +129,7 @@ namespace Relativity.Sync.Tests.Unit
 			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, 1)).ReturnsAsync(result);
 
 			// ACT
-			Func<Task> action = async () => await ConfigurationCache.GetAsync(_serviceFactory, _WORKSPACE_ID, _ARTIFACT_ID, new EmptyLogger(), Mock.Of<ISemaphoreSlim>()).ConfigureAwait(false);
+			Func<Task> action = async () => await Storage.Configuration.GetAsync(_serviceFactory, _WORKSPACE_ID, _ARTIFACT_ID, new EmptyLogger(), Mock.Of<ISemaphoreSlim>()).ConfigureAwait(false);
 
 			// ASSERT
 			action.Should().Throw<SyncException>();
@@ -145,7 +145,7 @@ namespace Relativity.Sync.Tests.Unit
 
 			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, 1)).ReturnsAsync(result);
 
-			IConfigurationCache cache = await ConfigurationCache.GetAsync(_serviceFactory, _WORKSPACE_ID, _ARTIFACT_ID, new EmptyLogger(), Mock.Of<ISemaphoreSlim>()).ConfigureAwait(false);
+			IConfiguration cache = await Storage.Configuration.GetAsync(_serviceFactory, _WORKSPACE_ID, _ARTIFACT_ID, new EmptyLogger(), Mock.Of<ISemaphoreSlim>()).ConfigureAwait(false);
 
 			// ACT
 			Action action = () => cache.GetFieldValue<int>(Guid.NewGuid());
@@ -164,7 +164,7 @@ namespace Relativity.Sync.Tests.Unit
 
 			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, 1)).ReturnsAsync(result);
 
-			IConfigurationCache cache = await ConfigurationCache.GetAsync(_serviceFactory, _WORKSPACE_ID, _ARTIFACT_ID, new EmptyLogger(), Mock.Of<ISemaphoreSlim>()).ConfigureAwait(false);
+			IConfiguration cache = await Storage.Configuration.GetAsync(_serviceFactory, _WORKSPACE_ID, _ARTIFACT_ID, new EmptyLogger(), Mock.Of<ISemaphoreSlim>()).ConfigureAwait(false);
 
 			// ACT
 			Func<Task> action = async () => await cache.UpdateFieldValueAsync(Guid.NewGuid(), 0).ConfigureAwait(false);
@@ -184,7 +184,7 @@ namespace Relativity.Sync.Tests.Unit
 
 			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, 1)).ReturnsAsync(result);
 
-			IConfigurationCache cache = await ConfigurationCache.GetAsync(_serviceFactory, _WORKSPACE_ID, _ARTIFACT_ID, new EmptyLogger(), Mock.Of<ISemaphoreSlim>()).ConfigureAwait(false);
+			IConfiguration cache = await Storage.Configuration.GetAsync(_serviceFactory, _WORKSPACE_ID, _ARTIFACT_ID, new EmptyLogger(), Mock.Of<ISemaphoreSlim>()).ConfigureAwait(false);
 
 			// ACT
 			await cache.UpdateFieldValueAsync(guid, newValue).ConfigureAwait(false);
@@ -216,7 +216,7 @@ namespace Relativity.Sync.Tests.Unit
 			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, 1)).ReturnsAsync(result);
 			_objectManager.Setup(x => x.UpdateAsync(_WORKSPACE_ID, It.IsAny<UpdateRequest>())).Throws<InvalidOperationException>();
 
-			IConfigurationCache cache = await ConfigurationCache.GetAsync(_serviceFactory, _WORKSPACE_ID, _ARTIFACT_ID, new EmptyLogger(), Mock.Of<ISemaphoreSlim>()).ConfigureAwait(false);
+			IConfiguration cache = await Storage.Configuration.GetAsync(_serviceFactory, _WORKSPACE_ID, _ARTIFACT_ID, new EmptyLogger(), Mock.Of<ISemaphoreSlim>()).ConfigureAwait(false);
 
 			// ACT
 			Func<Task> action = async () => await cache.UpdateFieldValueAsync(guid, newValue).ConfigureAwait(false);
@@ -239,7 +239,7 @@ namespace Relativity.Sync.Tests.Unit
 
 			Mock<ISemaphoreSlim> semaphore = new Mock<ISemaphoreSlim>();
 
-			IConfigurationCache cache = await ConfigurationCache.GetAsync(_serviceFactory, _WORKSPACE_ID, _ARTIFACT_ID, new EmptyLogger(), semaphore.Object).ConfigureAwait(false);
+			IConfiguration cache = await Storage.Configuration.GetAsync(_serviceFactory, _WORKSPACE_ID, _ARTIFACT_ID, new EmptyLogger(), semaphore.Object).ConfigureAwait(false);
 
 			// ACT
 			cache.Dispose();

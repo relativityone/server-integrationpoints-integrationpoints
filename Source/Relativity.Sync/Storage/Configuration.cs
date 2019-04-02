@@ -7,7 +7,7 @@ using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Storage
 {
-	internal sealed class ConfigurationCache : IConfigurationCache
+	internal sealed class Configuration : IConfiguration
 	{
 		private readonly ISourceServiceFactoryForAdmin _serviceFactory;
 		private readonly int _workspaceArtifactId;
@@ -20,7 +20,7 @@ namespace Relativity.Sync.Storage
 
 		private static readonly Guid ConfigurationObjectTypeGuid = new Guid("3BE3DE56-839F-4F0E-8446-E1691ED5FD57");
 
-		private ConfigurationCache(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationArtifactId, ISyncLog logger, ISemaphoreSlim semaphoreSlim)
+		private Configuration(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationArtifactId, ISyncLog logger, ISemaphoreSlim semaphoreSlim)
 		{
 			_serviceFactory = serviceFactory;
 			_workspaceArtifactId = workspaceArtifactId;
@@ -136,12 +136,12 @@ namespace Relativity.Sync.Storage
 			}
 		}
 
-		public static async Task<IConfigurationCache> GetAsync(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationArtifactId, ISyncLog logger,
+		public static async Task<IConfiguration> GetAsync(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationArtifactId, ISyncLog logger,
 			ISemaphoreSlim semaphoreSlim)
 		{
-			ConfigurationCache configurationCache = new ConfigurationCache(serviceFactory, workspaceArtifactId, syncConfigurationArtifactId, logger, semaphoreSlim);
-			await configurationCache.ReadAsync().ConfigureAwait(false);
-			return configurationCache;
+			Configuration configuration = new Configuration(serviceFactory, workspaceArtifactId, syncConfigurationArtifactId, logger, semaphoreSlim);
+			await configuration.ReadAsync().ConfigureAwait(false);
+			return configuration;
 		}
 
 		public void Dispose()

@@ -15,7 +15,7 @@ using Relativity.Sync.Tests.Integration.Stubs;
 namespace Relativity.Sync.Tests.Integration
 {
 	[TestFixture]
-	public sealed class ConfigurationCacheTests : IDisposable
+	public sealed class ConfigurationTests : IDisposable
 	{
 		private ISourceServiceFactoryForAdmin _serviceFactory;
 		private Mock<IObjectManager> _objectManager;
@@ -49,7 +49,7 @@ namespace Relativity.Sync.Tests.Integration
 			const int second = 1000;
 			_semaphoreSlim = new SemaphoreSlimStub(() => Thread.Sleep(second));
 
-			IConfigurationCache cache = await ConfigurationCache.GetAsync(_serviceFactory, _WORKSPACE_ID, _ARTIFACT_ID, new EmptyLogger(), _semaphoreSlim).ConfigureAwait(false);
+			IConfiguration cache = await Storage.Configuration.GetAsync(_serviceFactory, _WORKSPACE_ID, _ARTIFACT_ID, new EmptyLogger(), _semaphoreSlim).ConfigureAwait(false);
 
 			// ACT
 			Task updateTask = cache.UpdateFieldValueAsync(guid, newValue);

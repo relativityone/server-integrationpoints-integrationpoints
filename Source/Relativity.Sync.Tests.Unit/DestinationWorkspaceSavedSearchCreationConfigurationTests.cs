@@ -12,7 +12,7 @@ namespace Relativity.Sync.Tests.Unit
 	{
 		private DestinationWorkspaceSavedSearchCreationConfiguration _instance;
 
-		private Mock<IConfigurationCache> _cache;
+		private Mock<IConfiguration> _cache;
 
 		private static readonly Guid DestinationWorkspaceArtifactIdGuid = new Guid("15B88438-6CF7-47AB-B630-424633159C69");
 		private static readonly Guid SourceJobTagNameGuid = new Guid("DA0E1931-9460-4A61-9033-A8035697C1A4");
@@ -25,7 +25,7 @@ namespace Relativity.Sync.Tests.Unit
 		[SetUp]
 		public void SetUp()
 		{
-			_cache = new Mock<IConfigurationCache>();
+			_cache = new Mock<IConfiguration>();
 
 			_instance = new DestinationWorkspaceSavedSearchCreationConfiguration(_cache.Object);
 		}

@@ -11,14 +11,14 @@ namespace Relativity.Sync.Tests.Unit
 	{
 		private DataDestinationFinalizationConfiguration _instance;
 
-		private Mock<IConfigurationCache> _cache;
+		private Mock<IConfiguration> _cache;
 
 		private static readonly Guid DataDestinationArtifactIdGuid = new Guid("0E9D7B8E-4643-41CC-9B07-3A66C98248A1");
 
 		[SetUp]
 		public void SetUp()
 		{
-			_cache = new Mock<IConfigurationCache>();
+			_cache = new Mock<IConfiguration>();
 
 			_instance = new DataDestinationFinalizationConfiguration(_cache.Object);
 		}
