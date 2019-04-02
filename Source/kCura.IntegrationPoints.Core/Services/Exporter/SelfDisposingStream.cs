@@ -42,11 +42,10 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			_fieldLookupRepository = fieldLookupRepository;
 			_artifactID = artifactID;
 			_fieldArtifactID = fieldArtifactID;
-			_getStreamRetryPolicy = CreateStreamRetryPolicy();
-
-			_stream = _getStreamRetryPolicy.Execute(() => GetKeplerStream(_artifactID, _fieldArtifactID));
-
 			_logger = logger;
+
+			_getStreamRetryPolicy = CreateStreamRetryPolicy();
+			_stream = _getStreamRetryPolicy.Execute(() => GetKeplerStream(_artifactID, _fieldArtifactID));
 		}
 
 		public override void Flush()
