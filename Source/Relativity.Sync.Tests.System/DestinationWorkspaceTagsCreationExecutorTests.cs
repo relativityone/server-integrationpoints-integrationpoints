@@ -12,6 +12,7 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Logging;
+using Relativity.Sync.Tests.Integration;
 using Relativity.Sync.Tests.Integration.Stubs;
 using Relativity.Sync.Tests.System.Stubs;
 using Field = kCura.Relativity.Client.DTOs.Field;

@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.ExecutionConstrains;
+using Relativity.Sync.Executors.Validation;
 
 namespace Relativity.Sync.Executors
 {
@@ -18,9 +19,12 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<FederatedInstance>().As<IFederatedInstance>();
 			builder.RegisterType<WorkspaceNameQuery>().As<IWorkspaceNameQuery>();
 			builder.RegisterType<TagNameFormatter>().As<ITagNameFormatter>();
+			builder.RegisterType<WorkspaceNameValidator>().As<IWorkspaceNameValidator>();
 
-			builder.RegisterType<SourceWorkspaceTagsCreationExecutor>().As<IExecutor<ISourceWorkspaceTagsCreationConfiguration>>();
 			builder.RegisterType<SourceWorkspaceTagsCreationExecutionConstrains>().As<IExecutionConstrains<ISourceWorkspaceTagsCreationConfiguration>>();
+			builder.RegisterType<SourceWorkspaceTagsCreationExecutor>().As<IExecutor<ISourceWorkspaceTagsCreationConfiguration>>();
+			builder.RegisterType<DestinationWorkspaceTagsCreationExecutionConstrains>().As<IExecutionConstrains<IDestinationWorkspaceTagsCreationConfiguration>>();
+			builder.RegisterType<DestinationWorkspaceTagsCreationExecutor>().As<IExecutor<IDestinationWorkspaceTagsCreationConfiguration>>();
 		}
 	}
 }

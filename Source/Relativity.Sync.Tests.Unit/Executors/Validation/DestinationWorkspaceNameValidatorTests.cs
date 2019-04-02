@@ -33,7 +33,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		[Test]
 		public async Task ItShouldHandleValidDestinationFolderName()
 		{
-			bool workspaceNameValidationResult = true;
+			const bool workspaceNameValidationResult = true;
 			_workspaceNameValidatorMock.Setup(v => v.ValidateWorkspaceNameAsync(_WORKSPACE_ARTIFACT_ID, CancellationToken.None)).ReturnsAsync(workspaceNameValidationResult);
 
 			ValidationResult result = await _sut.ValidateAsync(_configurationMock.Object, CancellationToken.None).ConfigureAwait(false);
@@ -45,7 +45,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		[Test]
 		public async Task ItShouldHandleInvalidDestinationFolderName()
 		{
-			bool workspaceNameValidationResult = false;
+			const bool workspaceNameValidationResult = false;
 			_workspaceNameValidatorMock.Setup(v => v.ValidateWorkspaceNameAsync(_WORKSPACE_ARTIFACT_ID, CancellationToken.None)).ReturnsAsync(workspaceNameValidationResult);
 
 			ValidationResult result = await _sut.ValidateAsync(_configurationMock.Object, CancellationToken.None).ConfigureAwait(false);
