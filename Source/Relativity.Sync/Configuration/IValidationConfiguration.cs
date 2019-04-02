@@ -1,4 +1,6 @@
-﻿namespace Relativity.Sync.Configuration
+﻿using Relativity.Sync.Executors.Validation;
+
+namespace Relativity.Sync.Configuration
 {
 	internal interface IValidationConfiguration : IConfiguration
 	{
@@ -16,5 +18,7 @@
 
 		string FieldsMap { get; }
 		int FolderPathSourceFieldArtifactId { get; }
+		ImportOverwriteMode ImportOverwriteMode { get; }
+		string FieldOverlayBehavior { get; }
 	}
 }
