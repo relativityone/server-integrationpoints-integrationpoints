@@ -12,14 +12,18 @@ namespace Relativity.Sync.Executors.Validation
 	{
 		private const string _ARTIFACT_NOT_EXIST_MESSAGE = "Destination folder does not exist. Folder artifact ID: {0}";
 		private readonly IDestinationServiceFactoryForUser _destinationServiceFactoryForUser;
+		private readonly ISyncLog _logger;
 
-		public DestinationFolderValidator(IDestinationServiceFactoryForUser destinationServiceFactoryForUser)
+		public DestinationFolderValidator(IDestinationServiceFactoryForUser destinationServiceFactoryForUser, ISyncLog logger)
 		{
 			_destinationServiceFactoryForUser = destinationServiceFactoryForUser;
+			_logger = logger;
 		}
 
 		public async Task<ValidationResult> ValidateAsync(IValidationConfiguration configuration, CancellationToken token)
 		{
+			_logger.LogVerbose("Validating if destination folder exists. {destinationWorkspaceArtifactId}, {destinationFolderArtifactId}", configuration.DestinationWorkspaceArtifactId,
+				configuration.DestinationFolderArtifactId);
 			ValidationResult validationResult = new ValidationResult();
 
 			using (IFolderManager folderManager = await _destinationServiceFactoryForUser.CreateProxyAsync<IFolderManager>().ConfigureAwait(false))
@@ -27,6 +31,8 @@ namespace Relativity.Sync.Executors.Validation
 				FolderStatus folderStatus = await folderManager.GetAccessStatusAsync(configuration.DestinationWorkspaceArtifactId, configuration.DestinationFolderArtifactId).ConfigureAwait(false);
 				if (!folderStatus.Exists)
 				{
+					_logger.LogError("Folder with id {destinationFolderArtifactId} does not exist in destination workspace {destinationWorkspaceArtifactId}", configuration.DestinationFolderArtifactId,
+						configuration.DestinationWorkspaceArtifactId);
 					string message = string.Format(CultureInfo.InvariantCulture, _ARTIFACT_NOT_EXIST_MESSAGE, configuration.DestinationFolderArtifactId);
 					validationResult.Add(message);
 				}
