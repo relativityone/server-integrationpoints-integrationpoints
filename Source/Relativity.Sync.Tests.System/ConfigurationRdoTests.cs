@@ -82,33 +82,33 @@ namespace Relativity.Sync.Tests.System
 				syncConfigurationArtifactId = result.Object.ArtifactID;
 			}
 
-			IConfigurationCache configurationCache = await ConfigurationCache
+			IConfiguration configuration = await Storage.Configuration
 				.GetAsync(_serviceFactory, _workspaceId, syncConfigurationArtifactId, new EmptyLogger(), new SemaphoreSlimWrapper(new SemaphoreSlim(1))).ConfigureAwait(false);
 
 			// ASSERT
-			configurationCache.GetFieldValue<bool>(CreateSavedSearchInDestinationGuid);
-			configurationCache.GetFieldValue<int>(DataDestinationArtifactIdGuid);
-			configurationCache.GetFieldValue<string>(DataDestinationTypeGuid);
-			configurationCache.GetFieldValue<int>(DataSourceArtifactIdGuid);
-			configurationCache.GetFieldValue<string>(DataSourceTypeGuid);
-			configurationCache.GetFieldValue<string>(DestinationFolderStructureBehaviorGuid);
-			configurationCache.GetFieldValue<int>(DestinationWorkspaceArtifactIdGuid);
-			configurationCache.GetFieldValue<int>(DestinationWorkspaceTagArtifactIdGuid);
-			configurationCache.GetFieldValue<string>(EmailNotificationRecipientsGuid);
-			configurationCache.GetFieldValue<string>(FieldMappingsGuid);
-			configurationCache.GetFieldValue<string>(FieldOverlayBehaviorGuid);
-			configurationCache.GetFieldValue<string>(ImportOverwriteModeGuid);
-			configurationCache.GetFieldValue<RelativityObjectValue>(JobHistoryGuid);
-			configurationCache.GetFieldValue<bool>(MoveExistingDocumentsGuid);
-			configurationCache.GetFieldValue<string>(NativesBehaviorGuid);
-			configurationCache.GetFieldValue<int>(RdoArtifactTypeIdGuid);
-			configurationCache.GetFieldValue<int>(SavedSearchInDestinationArtifactIdGuid);
-			configurationCache.GetFieldValue<string>(SnapshotIdGuid);
-			configurationCache.GetFieldValue<int>(SnapshotRecordsCountGuid);
-			configurationCache.GetFieldValue<int>(SourceJobTagArtifactIdGuid);
-			configurationCache.GetFieldValue<string>(SourceJobTagNameGuid);
-			configurationCache.GetFieldValue<int>(SourceWorkspaceTagArtifactIdGuid);
-			configurationCache.GetFieldValue<string>(SourceWorkspaceTagNameGuid);
+			configuration.GetFieldValue<bool>(CreateSavedSearchInDestinationGuid);
+			configuration.GetFieldValue<int>(DataDestinationArtifactIdGuid);
+			configuration.GetFieldValue<string>(DataDestinationTypeGuid);
+			configuration.GetFieldValue<int>(DataSourceArtifactIdGuid);
+			configuration.GetFieldValue<string>(DataSourceTypeGuid);
+			configuration.GetFieldValue<string>(DestinationFolderStructureBehaviorGuid);
+			configuration.GetFieldValue<int>(DestinationWorkspaceArtifactIdGuid);
+			configuration.GetFieldValue<int>(DestinationWorkspaceTagArtifactIdGuid);
+			configuration.GetFieldValue<string>(EmailNotificationRecipientsGuid);
+			configuration.GetFieldValue<string>(FieldMappingsGuid);
+			configuration.GetFieldValue<string>(FieldOverlayBehaviorGuid);
+			configuration.GetFieldValue<string>(ImportOverwriteModeGuid);
+			configuration.GetFieldValue<RelativityObjectValue>(JobHistoryGuid);
+			configuration.GetFieldValue<bool>(MoveExistingDocumentsGuid);
+			configuration.GetFieldValue<string>(NativesBehaviorGuid);
+			configuration.GetFieldValue<int>(RdoArtifactTypeIdGuid);
+			configuration.GetFieldValue<int>(SavedSearchInDestinationArtifactIdGuid);
+			configuration.GetFieldValue<string>(SnapshotIdGuid);
+			configuration.GetFieldValue<int>(SnapshotRecordsCountGuid);
+			configuration.GetFieldValue<int>(SourceJobTagArtifactIdGuid);
+			configuration.GetFieldValue<string>(SourceJobTagNameGuid);
+			configuration.GetFieldValue<int>(SourceWorkspaceTagArtifactIdGuid);
+			configuration.GetFieldValue<string>(SourceWorkspaceTagNameGuid);
 		}
 
 		[Test]

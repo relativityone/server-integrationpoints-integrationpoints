@@ -6,7 +6,7 @@ namespace Relativity.Sync.Storage
 {
 	internal sealed class DestinationWorkspaceSavedSearchCreationConfiguration : IDestinationWorkspaceSavedSearchCreationConfiguration
 	{
-		private readonly IConfigurationCache _cache;
+		private readonly IConfiguration _cache;
 
 		private static readonly Guid DestinationWorkspaceArtifactIdGuid = new Guid("15B88438-6CF7-47AB-B630-424633159C69");
 		private static readonly Guid SourceJobTagNameGuid = new Guid("DA0E1931-9460-4A61-9033-A8035697C1A4");
@@ -16,7 +16,7 @@ namespace Relativity.Sync.Storage
 		private static readonly Guid CreateSavedSearchInDestinationGuid = new Guid("BFAB4AF6-4704-4A12-A8CA-C96A1FBCB77D");
 		private static readonly Guid SavedSearchInDestinationArtifactIdGuid = new Guid("83F4DD7A-2231-4C54-BAAA-D1D5B0FE6E31");
 
-		public DestinationWorkspaceSavedSearchCreationConfiguration(IConfigurationCache cache)
+		public DestinationWorkspaceSavedSearchCreationConfiguration(IConfiguration cache)
 		{
 			_cache = cache;
 		}

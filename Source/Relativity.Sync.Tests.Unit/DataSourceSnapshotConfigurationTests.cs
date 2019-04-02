@@ -12,7 +12,7 @@ namespace Relativity.Sync.Tests.Unit
 	{
 		private DataSourceSnapshotConfiguration _instance;
 
-		private Mock<IConfigurationCache> _cache;
+		private Mock<IConfiguration> _cache;
 
 		private const int _WORKSPACE_ID = 589632;
 
@@ -24,7 +24,7 @@ namespace Relativity.Sync.Tests.Unit
 		[SetUp]
 		public void SetUp()
 		{
-			_cache = new Mock<IConfigurationCache>();
+			_cache = new Mock<IConfiguration>();
 
 			_instance = new DataSourceSnapshotConfiguration(_cache.Object, _WORKSPACE_ID);
 		}
