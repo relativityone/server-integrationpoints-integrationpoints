@@ -15,8 +15,6 @@ namespace Relativity.Sync.Executors
 		private const string _SAVED_SEARCH_NOT_PUBLIC = "The saved search must be public.";
 		private readonly ISourceServiceFactoryForUser _serviceFactory;
 		private readonly ISyncLog _logger;
-		private static readonly Guid _NAME_FIELD_GUID = new Guid(); // TODO
-		private static readonly Guid _OWNER_FIELD_GUID = new Guid(); // TODO
 		private static readonly ValidationMessage SavedSearchNoAccess = new ValidationMessage(
 			errorCode: $"20.004",
 			shortMessage: $"Saved search is not available or has been secured from this user. Contact your system administrator."
@@ -36,6 +34,7 @@ namespace Relativity.Sync.Executors
 
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
+				const string owner = "Owner";
 				QueryRequest queryRequest = new QueryRequest()
 				{
 					ObjectType = new ObjectTypeRef()
@@ -44,9 +43,9 @@ namespace Relativity.Sync.Executors
 					},
 					Fields = new[]
 					{
-						new FieldRef() {Guid = _NAME_FIELD_GUID},
-						new FieldRef() {Guid = _OWNER_FIELD_GUID}
-					}
+						new FieldRef() {Name = owner}
+					},
+					IncludeNameInQueryResult = true
 				};
 
 				const int start = 0;
@@ -68,8 +67,8 @@ namespace Relativity.Sync.Executors
 				}
 				else
 				{
-					string owner = queryResult.Objects[0].FieldValues.First(x => x.Field.Guids.Contains(_OWNER_FIELD_GUID)).Value.ToString();
-					bool savedSearchIsPublic = string.IsNullOrEmpty(owner);
+					string actualOwner = queryResult.Objects[0].FieldValues.First(x => x.Field.Name.Equals(owner, StringComparison.InvariantCulture)).Value.ToString();
+					bool savedSearchIsPublic = string.IsNullOrEmpty(actualOwner);
 					if (!savedSearchIsPublic)
 					{
 						validationResult.Add(_SAVED_SEARCH_NOT_PUBLIC);

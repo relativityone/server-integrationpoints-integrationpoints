@@ -41,8 +41,16 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 			// Method intentionally left empty.
 		}
 
+		public string JobName { get; }
+		public string NotificationEmails { get; }
+		public string TypeIdentifier { get; }
+		public string SourceProviderIdentifier { get; }
 		public int SourceWorkspaceArtifactId { get; set; }
 		public int DestinationWorkspaceArtifactId { get; set; }
+		public int SavedSearchArtifactId { get; }
+		public int DestinationFolderArtifactId { get; }
+		public string FieldsMap { get; }
+		public int FolderPathSourceFieldArtifactId { get; }
 		public string SourceJobTagName { get; set; }
 		public int SourceJobTagArtifactId { get; set; }
 		public int SourceWorkspaceTagArtifactId { get; set; }
