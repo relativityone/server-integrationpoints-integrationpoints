@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
-			Context.InstallLegalHold();
+			Context.AddEntityObjectToWorkspace();
 
 			Install(Context.WorkspaceId.Value);
 			_service = Container.Resolve<IRSAPIService>();

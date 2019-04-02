@@ -2,6 +2,7 @@
 using kCura.IntegrationPoint.Tests.Core.Models.Constants.Shared;
 using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.NUnitExtensions;
 using kCura.IntegrationPoints.UITests.Pages;
@@ -10,6 +11,7 @@ using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 {
@@ -18,14 +20,20 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 	public class EntityExportToLoadFile : UiTest
 	{
 		private IntegrationPointsAction _integrationPointsAction;
-		private IRSAPIService _service;
+		private IRSAPIService _rsapiService;
+
+		private const string _VIEW_NAME = "RIP_TC_ELF_CUST_UI_TEST";
+
+		private IRelativityObjectManager ObjectManager => _rsapiService.RelativityObjectManager;
 
 		[OneTimeSetUp]
-		public void OneTimeSetup()
+		public async Task OneTimeSetup()
 		{
-			Context.InstallLegalHold();
+			Context.AddEntityObjectToWorkspace();
+			await Context.CreateEntityView(_VIEW_NAME);
+
 			Install(Context.WorkspaceId.Value);
-			_service = Container.Resolve<IRSAPIService>();
+			_rsapiService = Container.Resolve<IRSAPIService>();
 
 			SetupEntities();
 		}
@@ -40,11 +48,11 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 		[RetryOnError]
 		public void EntityExportToLoadFile_TC_ELF_CUST_1()
 		{
-			EntityExportToLoadFileModel model = new EntityExportToLoadFileModel("TC-ELF-CUST-1");
+			var model = new EntityExportToLoadFileModel("TC-ELF-CUST-1");
 			model.TransferredObject = TransferredObjectConstants.ENTITY;
 			model.ExportDetails = new EntityExportToLoadFileDetails
 			{
-				View = "Entities - Legal Hold View",
+				View = _VIEW_NAME,
 				SelectAllFields = true,
 				ExportTextFieldsAsFiles = true,
 				DestinationFolder = ExportToLoadFileProviderModel.DestinationFolderTypeEnum.Root
@@ -87,28 +95,31 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 
 		private void SetupEntities()
 		{
-			_service.RelativityObjectManager.Create(new ObjectTypeRef()
+			var objectTypeReference = new ObjectTypeRef
 			{
 				Guid = Core.Contracts.Entity.ObjectTypeGuids.Entity
-			},
-				new List<FieldRefValuePair>()
+			};
+
+			var fieldValues = new List<FieldRefValuePair>
+			{
+				new FieldRefValuePair
 				{
-					new FieldRefValuePair()
-					{
-						Field = new FieldRef {Guid = Guid.Parse(EntityFieldGuids.FirstName)},
-						Value = "Grzegorz"
-					},
-					new FieldRefValuePair()
-					{
-						Field = new FieldRef {Guid = Guid.Parse(EntityFieldGuids.LastName)},
-						Value = "Brzeczyszczykiewicz"
-					},
-					new FieldRefValuePair()
-					{
-						Field = new FieldRef {Guid = Guid.Parse(EntityFieldGuids.Email)},
-						Value = "Grzegorz.Brzeczyszczykiewicz@company.com"
-					}
-				});
+					Field = new FieldRef {Guid = Guid.Parse(EntityFieldGuids.FirstName)},
+					Value = "Grzegorz"
+				},
+				new FieldRefValuePair
+				{
+					Field = new FieldRef {Guid = Guid.Parse(EntityFieldGuids.LastName)},
+					Value = "Brzeczyszczykiewicz"
+				},
+				new FieldRefValuePair
+				{
+					Field = new FieldRef {Guid = Guid.Parse(EntityFieldGuids.Email)},
+					Value = "Grzegorz.Brzeczyszczykiewicz@company.com"
+				}
+			};
+
+			ObjectManager.Create(objectTypeReference, fieldValues);
 		}
 	}
 }
