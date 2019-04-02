@@ -56,6 +56,7 @@
     </Compile>
     <Compile Include="ApplicationBinary.cs" />
     <Compile Include="AssemblyDomainLoader.cs" />
+    <Compile Include="AssemblyExtension.cs" />
     <Compile Include="Authentication\IAuthTokenGenerator.cs" />
     <Compile Include="Authentication\ClaimsTokenGenerator.cs" />
     <Compile Include="Constants.cs" />

@@ -1,19 +1,18 @@
 ﻿using kCura.EventHandler;
-using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Services;
 using Relativity.API;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Contracts;
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller
 {
-	// TODO remove it
-#pragma warning disable 1591
 	/// <summary>
 	/// Occurs immediately before the execution of a Post Install event handler.
 	/// </summary>
 	public delegate void PostInstallPreExecuteEvent();
+
 	/// <summary>
 	/// Occurs after all source providers are registered.
 	/// </summary>
@@ -24,8 +23,10 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 	/// <summary>
 	/// Registers the new data source providers with Relativity Integration Points.
 	/// </summary>
-	public abstract class IntegrationPointSourceProviderInstaller : PostInstallEventHandler // TODO : PostInstallEventHandlerBase
+	public abstract class IntegrationPointSourceProviderInstaller : PostInstallEventHandler
 	{
+		private readonly Lazy<IAPILog> _logggerLazy;
+
 		// TODO handle success errro message: PostInstallEventHandlerBase
 
 		/// <summary>
@@ -37,16 +38,29 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		/// </summary>
 		public event PostInstallPostExecuteEvent RaisePostInstallPostExecuteEvent;
 
+		private IAPILog Logger => _logggerLazy.Value;
+
+		/// <summary>
+		/// Initializes <see cref="IntegrationPointSourceProviderInstaller"/>
+		/// </summary>
+		protected IntegrationPointSourceProviderInstaller()
+		{
+			_logggerLazy = new Lazy<IAPILog>(
+				() => Helper.GetLoggerFactory().GetLogger().ForContext<IntegrationPointSourceProviderInstaller>()
+			);
+		}
+
 		/// <summary>
 		/// Retrieves the data source providers for registration with the application.
 		/// </summary>
 		/// <returns>The data source providers for registration.</returns>
 		public abstract IDictionary<Guid, SourceProvider> GetSourceProviders();
 
+		/// <inheritdoc cref="PostInstallEventHandler"/>
 		public sealed override Response Execute() // TODO improve error handling
 		{
 			IDictionary<Guid, SourceProvider> sourceProviders = GetSourceProviders();
-			//Logger.LogDebug("Starting Post-installation process for {sourceProviders} provider", sourceProviders.Values.Select(item => item.Name));
+			Logger.LogDebug("Starting Post-installation process for {sourceProviders} provider", sourceProviders.Values.Select(item => item.Name));
 			if (sourceProviders.Count == 0)
 			{
 				//throw new IntegrationPointsException($"Provider does not implement the contract (Empty source provider list retrieved from {GetType().Name} class)"); // tODO
@@ -102,9 +116,18 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 				ProvidersToInstall = sourceProviders.Select(ConvertSourceProviderToDto).ToList()
 			};
 
-			using (var providerManager = Helper.GetServicesManager().CreateProxy<IProviderManager>(ExecutionIdentity.CurrentUser))
+			// TODO add retries here, without Polly
+			using (var providerManager =
+				Helper.GetServicesManager().CreateProxy<IProviderManager>(ExecutionIdentity.CurrentUser))
 			{
-				providerManager.InstallProvider(request);
+				try
+				{
+					bool isSuccess = providerManager.InstallProviderAsync(request).GetAwaiter().GetResult();
+				}
+				catch (Exception ex)
+				{
+					throw ex;
+				}
 			}
 		}
 
@@ -157,10 +180,9 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		/// </summary>
 		/// <param name="isInstalled">Indicates whether the data source providers were installed.</param>
 		/// <param name="ex">An exception thrown when errors occur during the installation of the data source provider.</param>
-		protected void OnRaisePostInstallPostExecuteEvent(bool isInstalled, Exception ex) // TODO call it where needed
+		protected void OnRaisePostInstallPostExecuteEvent(bool isInstalled, Exception ex)
 		{
 			RaisePostInstallPostExecuteEvent?.Invoke(isInstalled, ex);
 		}
 	}
 }
-#pragma warning restore 1591

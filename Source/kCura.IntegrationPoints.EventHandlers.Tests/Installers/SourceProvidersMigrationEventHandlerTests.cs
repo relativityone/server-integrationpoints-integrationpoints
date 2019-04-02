@@ -165,7 +165,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 
 			bool Predicate(InstallProviderRequest request) =>
 				request.ProvidersToInstall.SingleOrDefault(p => p.Name == providerName) != null;
-			
+
 			VerifyInstallationUsingProductionManager(failureMessage, Predicate);
 		}
 
@@ -175,7 +175,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 		{
 			_providerManagerMock
 				.Verify(x =>
-						x.InstallProvider(It.Is<InstallProviderRequest>(request => predicate(request))),
+						x.InstallProviderAsync(It.Is<InstallProviderRequest>(request => predicate(request))),
 					failureMessage
 				);
 		}

@@ -112,7 +112,7 @@ namespace kCura.IntegrationPoints.Services
 			}
 		}
 
-		public async Task<bool> InstallProvider(InstallProviderRequest request)
+		public async Task<bool> InstallProviderAsync(InstallProviderRequest request)
 		{
 			PermissionModel[] requiredPermissions =
 			{
@@ -135,12 +135,12 @@ namespace kCura.IntegrationPoints.Services
 			}
 			catch (Exception e)
 			{
-				LogException(nameof(UninstallProvider), e);
+				LogException(nameof(UninstallProviderAsync), e);
 				throw CreateInternalServerErrorException(); // TODO verify it
 			}
 		}
 
-		public async Task<bool> UninstallProvider(UninstallProviderRequest request)
+		public async Task<bool> UninstallProviderAsync(UninstallProviderRequest request)
 		{
 			PermissionModel[] requiredPermissions =
 			{
@@ -164,7 +164,7 @@ namespace kCura.IntegrationPoints.Services
 			}
 			catch (Exception e)
 			{
-				LogException(nameof(UninstallProvider), e);
+				LogException(nameof(UninstallProviderAsync), e);
 				throw CreateInternalServerErrorException(); // TODO verify it
 			}
 		}

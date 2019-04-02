@@ -49,7 +49,6 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="AssemblyExtension.cs" />
     <Compile Include="DataSourceProviderAttribute.cs" />
     <Compile Include="ImportSettingVisibility.cs" />
     <Compile Include="IProviderFactory.cs" />

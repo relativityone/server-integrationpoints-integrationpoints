@@ -203,7 +203,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
-      <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
+      <Project>{0CEDB7AF-DB89-47DE-9587-8CCD58621F2F}</Project>
       <Name>kCura.IntegrationPoints.Contracts</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Core.Contracts\kCura.IntegrationPoints.Core.Contracts.csproj">

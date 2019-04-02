@@ -17,20 +17,22 @@ namespace kCura.IntegrationPoints.Services.Provider
 {
 	internal class ProviderInstaller
 	{
+		private readonly IAPILog _logger;
 		private readonly IRelativityObjectManager _objectManager;
-
 		private readonly ICaseServiceContext _caseContext;
 		private readonly IEddsServiceContext _eddsServiceContext;
 		private readonly IDBContext _dbContext;
 		private readonly IHelper _helper;
 
 		public ProviderInstaller(
+			IAPILog logger,
 			IRelativityObjectManager objectManager,
 			ICaseServiceContext caseContext,
 			IEddsServiceContext eddsServiceContext,
 			IDBContext dbContext,
 			IHelper helper)
 		{
+			_logger = logger;
 			_objectManager = objectManager;
 			_caseContext = caseContext;
 			_eddsServiceContext = eddsServiceContext;

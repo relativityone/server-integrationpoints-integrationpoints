@@ -12,16 +12,18 @@ namespace kCura.IntegrationPoints.Services.Provider
 {
 	internal class ProviderUninstaller
 	{
+		private readonly IAPILog _logger;
 		private readonly IRelativityObjectManager _objectManager;
 		private readonly IDBContext _dbContext;
-
 		private readonly DeleteIntegrationPoints _deleteIntegrationPoint;
 
 		public ProviderUninstaller(
-			IRelativityObjectManager objectManager, 
-			IDBContext dbContext, 
+			IAPILog logger,
+			IRelativityObjectManager objectManager,
+			IDBContext dbContext,
 			DeleteIntegrationPoints deleteIntegrationPoint)
 		{
+			_logger = logger;
 			_objectManager = objectManager;
 			_dbContext = dbContext;
 			_deleteIntegrationPoint = deleteIntegrationPoint;

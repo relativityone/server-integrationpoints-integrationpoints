@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 
 			using (var providerManager = Helper.GetServicesManager().CreateProxy<IProviderManager>(ExecutionIdentity.CurrentUser))
 			{
-				providerManager.UninstallProvider(request);
+				providerManager.UninstallProviderAsync(request);
 			}
 		}
 
