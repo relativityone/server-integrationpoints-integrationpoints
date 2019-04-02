@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,6 +11,7 @@ using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.Integration.Stubs;
+using Relativity.Sync.Tests.System.Helpers;
 using Relativity.Sync.Tests.System.Stubs;
 
 namespace Relativity.Sync.Tests.System
@@ -28,25 +28,21 @@ namespace Relativity.Sync.Tests.System
 		private static readonly Guid _DESTINATION_WORKSPACE_GUID = Guid.Parse("3F45E490-B4CF-4C7D-8BB6-9CA891C0C198");
 
 		private static readonly Guid _DESTINATION_WORKSPACE_JOB_HISTORY_FIELD_GUID = Guid.Parse("07B8A468-DEC8-45BD-B50A-989A35150BE2");
-
-		private static readonly Guid _JOB_HISTORY_GUID = Guid.Parse("08F4B1F7-9692-4A08-94AB-B5F3A88B6CC9");
-
-
+		
 		[SetUp]
 		public async Task SetUp()
 		{
-			Task<WorkspaceRef> sourceWorkspaceCreationTask = Environment.CreateWorkspaceAsync();
+			Task<WorkspaceRef> sourceWorkspaceCreationTask = Environment.CreateWorkspaceWithFieldsAsync();
 			Task<WorkspaceRef> destinationWorkspaceCreationTask = Environment.CreateWorkspaceAsync();
 			await Task.WhenAll(sourceWorkspaceCreationTask, destinationWorkspaceCreationTask).ConfigureAwait(false);
 			_sourceWorkspace = sourceWorkspaceCreationTask.Result;
 			_destinationWorkspace = destinationWorkspaceCreationTask.Result;
-			await Environment.CreateFieldsInWorkspace(_sourceWorkspace.ArtifactID).ConfigureAwait(false);
 		}
 
 		[Test]
 		public async Task ItShouldCreateTagIfItDoesNotExist()
 		{
-			int jobHistoryArtifactId = await CreateJobHistoryInstance(_sourceWorkspace.ArtifactID).ConfigureAwait(false);
+			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, _sourceWorkspace.ArtifactID).ConfigureAwait(false);
 			const int relativityAdminUserId = 9;
 
 			ConfigurationStub configuration = new ConfigurationStub
@@ -78,7 +74,7 @@ namespace Relativity.Sync.Tests.System
 		[Test]
 		public async Task ItShouldUpdateTagIfItDoesExist()
 		{
-			int jobHistoryArtifactId = await CreateJobHistoryInstance(_sourceWorkspace.ArtifactID).ConfigureAwait(false);
+			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, _sourceWorkspace.ArtifactID).ConfigureAwait(false);
 			const int userId = 9;
 
 			ConfigurationStub configuration = new ConfigurationStub
@@ -110,33 +106,6 @@ namespace Relativity.Sync.Tests.System
 				.First(x => x.Field.Guids.Contains(_DESTINATION_WORKSPACE_JOB_HISTORY_FIELD_GUID)).Value;
 			Assert.AreEqual(1, relativityObjectValues.Count);
 			Assert.AreEqual(jobHistoryArtifactId, relativityObjectValues.First().ArtifactID);
-		}
-
-		private async Task<int> CreateJobHistoryInstance(int workspaceId)
-		{
-			using (var objectManager = ServiceFactory.CreateProxy<IObjectManager>())
-			{
-				CreateRequest request = new CreateRequest
-				{
-					FieldValues = new[]
-					{
-						new FieldRefValuePair
-						{
-							Value = Guid.NewGuid().ToString(),
-							Field = new FieldRef
-							{
-								Name = "Name"
-							}
-						}
-					},
-					ObjectType = new ObjectTypeRef
-					{
-						Guid = _JOB_HISTORY_GUID
-					}
-				};
-				CreateResult result = await objectManager.CreateAsync(workspaceId, request).ConfigureAwait(false);
-				return result.Object.ArtifactID;
-			}
 		}
 
 		private ISyncJob CreateSyncJob(ConfigurationStub configuration)

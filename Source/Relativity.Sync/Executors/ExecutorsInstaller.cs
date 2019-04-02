@@ -22,7 +22,9 @@ namespace Relativity.Sync.Executors
 
 			builder.RegisterType<SourceWorkspaceTagsCreationExecutor>().As<IExecutor<ISourceWorkspaceTagsCreationConfiguration>>();
 			builder.RegisterType<SourceWorkspaceTagsCreationExecutionConstrains>().As<IExecutionConstrains<ISourceWorkspaceTagsCreationConfiguration>>();
-			
+
+			builder.RegisterType<BatchRepository>().As<IBatchRepository>();
+			builder.RegisterType<ProgressRepository>().As<IProgressRepository>();
 			builder.RegisterType<SemaphoreSlimWrapper>().As<ISemaphoreSlim>();
 		}
 	}
