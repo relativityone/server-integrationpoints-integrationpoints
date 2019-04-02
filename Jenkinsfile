@@ -55,6 +55,16 @@ properties([
 			name: 'enableSonarAnalysis',
 			defaultValue: true,
 			description: 'Enable SonarQube analysis for develop branch.'
+		),
+		choice(
+			name: 'UITestsBrowser',
+			choices: ['chrome', 'chromium', 'firefox'],
+			description: 'Name of browser the UI tests should be run on. Default: chrome'
+		),
+		string(
+			name: 'chromiumVersion', 
+			defaultValue: '72.0.3626.0', 
+			description: 'Set chromium version to be installed for UI tests.'
 		)
 	])
 ])
@@ -156,8 +166,12 @@ timestamps
 					}
 					stage ('UI Tests')
 					{
-						jenkinsHelpers.updateChromeToLatestVersion()
-						jenkinsHelpers.runUiTests()
+						withEnv([
+							"UITestsBrowser=$params.UITestsBrowser"
+							]) {
+							jenkinsHelpers.downloadAndSetUpBrowser()
+							jenkinsHelpers.runUiTests()
+							}
 					}
 				}
 				finally

@@ -502,19 +502,24 @@ def reporting()
     }
 }
 
-def updateChromeToLatestVersion()
+def downloadAndSetUpBrowser()
 {
-	try
-    {
-		powershell """
-            Invoke-WebRequest "http://dl.google.com/chrome/install/latest/chrome_installer.exe" -OutFile chrome_installer.exe
-            Start-Process -FilePath chrome_installer.exe -Args "/silent /install" -Verb RunAs -Wait
-            (Get-Item (Get-ItemProperty "HKLM:/SOFTWARE/Microsoft/Windows/CurrentVersion/App Paths/chrome.exe")."(Default)").VersionInfo
-        """
-    }
-    catch(err)
-    {
-        echo "An error occured while updating Chrome: $err"
+    echo "Downloading browser for UI tests. Selected browser: ${params.UITestsBrowser}"
+
+    switch(params.UITestsBrowser) {
+        case 'chromium':
+            updateChromiumToGivenVersion(params.chromiumVersion)
+        break
+        case 'firefox':
+            echo "Do not download firefox. Use the version installed on node."
+        break
+        case 'chrome':
+            updateChromeToLatestVersion()
+        break
+        default:
+            echo "No browser selected. Using chrome"
+            updateChromeToLatestVersion()
+        break
     }
 }
 
@@ -669,6 +674,55 @@ private getNewBranchAndVersion(
 
 	error 'Failed to retrieve Relativity branch/version'
 }
+
+private updateChromiumToGivenVersion(version)
+{
+    def installerFileName = 'chromium_installer.exe'
+    echo "Installing Chromium - ${version}"
+    try 
+    {
+        powershell """
+            Copy-Item ${getChromiumDownloadPath(version)} '${installerFileName}'
+        """
+
+        def installerFile = new File(installerFileName)
+        assert installerFile.exists() : "Installer file not found"
+
+        powershell """
+            Start-Process -FilePath "chromium_installer.exe" -Args "/system-level" -Verb RunAs -Wait
+        """
+        echo "Chromium Version - ${version} installation complete"
+    }
+    catch(err)
+    {
+         echo "An error occured while installing Chromium: $err"
+         throw err
+    }
+}
+
+private updateChromeToLatestVersion()
+{
+	try
+    {
+		powershell """
+            Invoke-WebRequest "http://dl.google.com/chrome/install/latest/chrome_installer.exe" -OutFile chrome_installer.exe
+            Start-Process -FilePath chrome_installer.exe -Args "/silent /install" -Verb RunAs -Wait
+            (Get-Item (Get-ItemProperty "HKLM:/SOFTWARE/Microsoft/Windows/CurrentVersion/App Paths/chrome.exe")."(Default)").VersionInfo
+         """
+    }
+    catch(err)
+    {
+        echo "An error occured while updating Chrome: $err"
+        throw err
+    }
+}
+
+private getChromiumDownloadPath(chromiumVersion)
+{
+    def path = "\\\\kcura.corp\\sdlc\\testing\\TestingData\\RelativityTestAutomation\\BrowserInstallers\\Chromium\\${chromiumVersion}\\Installer.exe"
+    return path
+}
+
 
 
 /**********************
