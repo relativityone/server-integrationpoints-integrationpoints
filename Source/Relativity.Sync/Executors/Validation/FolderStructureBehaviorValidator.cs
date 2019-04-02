@@ -7,7 +7,7 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 
-namespace Relativity.Sync.Executors
+namespace Relativity.Sync.Executors.Validation
 {
 	internal sealed class FolderStructureBehaviorValidator : IValidator
 	{

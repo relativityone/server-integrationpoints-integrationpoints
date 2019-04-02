@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace Relativity.Sync.Executors
+namespace Relativity.Sync.Executors.Validation
 {
 	internal interface IWorkspaceNameValidator
 	{

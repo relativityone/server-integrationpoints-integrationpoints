@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Relativity.Sync.Executors
+namespace Relativity.Sync.Executors.Validation
 {
 	/// <summary>
 	/// Holds single validation result and aggregated messages

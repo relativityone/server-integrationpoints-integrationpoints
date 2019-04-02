@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Relativity.Sync.Executors
+namespace Relativity.Sync.Executors.Validation
 {
 	internal sealed class ValidationMessage
 	{

@@ -1,4 +1,4 @@
-﻿namespace Relativity.Sync.Executors
+﻿namespace Relativity.Sync.Executors.Validation
 {
 	/// <summary>
 	/// Defines the mapping of fields in the data source to fields in a workspace.
