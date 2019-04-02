@@ -28,7 +28,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_federatedInstance = new Mock<IFederatedInstance>();
 
 			_sut = new SourceWorkspaceTagsCreationExecutor(_destinationWorkspaceTagRepository.Object, _destinationWorkspaceTagsLinker.Object,
-				_workspaceNameQuery.Object, _federatedInstance.Object);
+				_workspaceNameQuery.Object, _federatedInstance.Object, Mock.Of<ISyncLog>());
 		}
 
 		[Test]
