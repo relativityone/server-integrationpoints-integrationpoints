@@ -1,0 +1,20 @@
+﻿using FluentAssertions;
+using NUnit.Framework;
+using Relativity.Sync.Storage;
+
+namespace Relativity.Sync.Tests.Unit
+{
+	[TestFixture]
+	public static class EmptyDataDestinationInitializationConfigurationTests
+	{
+		[Test]
+		public static void ItShouldReturnDefaultValues()
+		{
+			EmptyDataDestinationInitializationConfiguration configuration = new EmptyDataDestinationInitializationConfiguration();
+
+			// ASSERT
+			configuration.DataDestinationName.Should().BeEmpty();
+			configuration.IsDataDestinationArtifactIdSet.Should().BeTrue();
+		}
+	}
+}

@@ -25,7 +25,7 @@ namespace Relativity.Sync.Tests.Unit
 			INode<SyncExecutionContext> child2 = new FuncNode<SyncExecutionContext>();
 			child2.Id = _CHILD_2_NAME;
 
-			_instance = new SyncMultiNode(new SyncExecutionContextFactory(new SyncConfiguration()));
+			_instance = new SyncMultiNode(new SyncExecutionContextFactory(new SyncJobExecutionConfiguration()));
 			_instance.AddChild(child1);
 			_instance.AddChild(child2);
 		}
@@ -40,7 +40,7 @@ namespace Relativity.Sync.Tests.Unit
 			await _instance.ExecuteAsync(context).ConfigureAwait(false);
 
 			// ASSERT
-			progressStub.SyncProgress.State.Should().BeOneOf($"{_CHILD_1_NAME}{Environment.NewLine}{_CHILD_2_NAME}", $"{_CHILD_2_NAME}{Environment.NewLine}{_CHILD_1_NAME}");
+			progressStub.SyncJobState.State.Should().BeOneOf($"{_CHILD_1_NAME}{Environment.NewLine}{_CHILD_2_NAME}", $"{_CHILD_2_NAME}{Environment.NewLine}{_CHILD_1_NAME}");
 		}
 	}
 }
