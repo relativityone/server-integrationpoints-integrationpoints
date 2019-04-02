@@ -16,6 +16,14 @@ namespace Relativity.Sync
 		}
 
 		/// <summary>
+		///     Creates a <see cref="ExecutionResult"/> for a failed operation with the given message and exception.
+		/// </summary>
+		public static ExecutionResult Failure(string message, Exception exception)
+		{
+			return new ExecutionResult(ExecutionStatus.Failed, message, exception);
+		}
+
+		/// <summary>
 		///     Creates a <see cref="ExecutionResult"/> for a successful operation.
 		/// </summary>
 		public static ExecutionResult Success()

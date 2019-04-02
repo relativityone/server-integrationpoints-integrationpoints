@@ -24,9 +24,11 @@ namespace Relativity.Sync.Nodes
 			if (_command.CanExecuteAsync(context.Subject.CancellationToken).ConfigureAwait(false).GetAwaiter().GetResult())
 			{
 				ExecutionResult result = _command.ExecuteAsync(context.Subject.CancellationToken).ConfigureAwait(false).GetAwaiter().GetResult();
+
+				// We really shouldn't be throwing if we can't return a proper result, so we'll just log the error here.
 				if (result.Status == ExecutionStatus.Failed)
 				{
-					// We really shouldn't be throwing if we can't return a proper result, so we'll just log the error here.
+					// result.Exception may be null, but this should not cause any issues.
 					_logger.LogError(result.Exception, "Failed to send notifications: {message}", result.Message);
 				}
 			}
