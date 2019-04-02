@@ -179,7 +179,10 @@ timestamps
 	{
 		stage('Cleanup VMs')
 		{
-			jenkinsHelpers.cleanupVMs()
+			parallel([
+				CleanupVms: { jenkinsHelpers.cleanupVMs() },
+				CleanupChefArtifacts: { jenkinsHelpers.cleanupChefArtifacts() }
+			])
 		}
 
 		stage('Reporting')
