@@ -102,7 +102,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			const int totalItemsCount = 1123;
 			const int startingIndex = 532;
-			const string status = "status";
+			const string status = "status 2";
 			const int failedItemsCount = 111;
 			const int transferredItemsCount = 222;
 			const double progress = 3.1;
