@@ -34,6 +34,7 @@ namespace Relativity.Sync.Tests.System
 		private static readonly Guid EmailNotificationRecipientsGuid = new Guid("4F03914D-9E86-4B72-B75C-EE48FEEBB583");
 		private static readonly Guid FieldMappingsGuid = new Guid("E3CB5C64-C726-47F8-9CB0-1391C5911628");
 		private static readonly Guid FieldOverlayBehaviorGuid = new Guid("34ECB263-1370-4D6C-AC11-558447504EC4");
+		private static readonly Guid FolderPathSourceFieldArtifactIdGuid = new Guid("BF5F07A3-6349-47EE-9618-1DD32C9FD998");
 		private static readonly Guid ImportOverwriteModeGuid = new Guid("1914D2A3-A1FF-480B-81DC-7A2AA563047A");
 		private static readonly Guid JobHistoryGuid = new Guid("5D8F7F01-25CF-4246-B2E2-C05882539BB2");
 		private static readonly Guid MoveExistingDocumentsGuid = new Guid("26F9BF88-420D-4EFF-914B-C47BA36E10BF");
@@ -97,6 +98,7 @@ namespace Relativity.Sync.Tests.System
 			configuration.GetFieldValue<string>(EmailNotificationRecipientsGuid);
 			configuration.GetFieldValue<string>(FieldMappingsGuid);
 			configuration.GetFieldValue<string>(FieldOverlayBehaviorGuid);
+			configuration.GetFieldValue<int>(FolderPathSourceFieldArtifactIdGuid);
 			configuration.GetFieldValue<string>(ImportOverwriteModeGuid);
 			configuration.GetFieldValue<RelativityObjectValue>(JobHistoryGuid);
 			configuration.GetFieldValue<bool>(MoveExistingDocumentsGuid);
@@ -223,6 +225,14 @@ namespace Relativity.Sync.Tests.System
 					Guid = FieldOverlayBehaviorGuid
 				},
 				Value = "overlay behavior"
+			};
+			yield return new FieldRefValuePair
+			{
+				Field = new FieldRef
+				{
+					Guid = FolderPathSourceFieldArtifactIdGuid
+				},
+				Value = 748521
 			};
 			yield return new FieldRefValuePair
 			{
