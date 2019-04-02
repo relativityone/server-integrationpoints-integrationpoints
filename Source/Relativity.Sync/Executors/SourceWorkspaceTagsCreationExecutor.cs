@@ -13,7 +13,9 @@ namespace Relativity.Sync.Executors
 		private readonly IFederatedInstance _federatedInstance;
 
 		public SourceWorkspaceTagsCreationExecutor(IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository,
-			IDestinationWorkspaceTagsLinker destinationWorkspaceTagsLinker, IWorkspaceNameQuery workspaceNameQuery, IFederatedInstance federatedInstance)
+			IDestinationWorkspaceTagsLinker destinationWorkspaceTagsLinker,
+			IWorkspaceNameQuery workspaceNameQuery,
+			IFederatedInstance federatedInstance)
 		{
 			_destinationWorkspaceTagRepository = destinationWorkspaceTagRepository;
 			_destinationWorkspaceTagsLinker = destinationWorkspaceTagsLinker;
@@ -21,10 +23,20 @@ namespace Relativity.Sync.Executors
 			_federatedInstance = federatedInstance;
 		}
 
-		public async Task ExecuteAsync(ISourceWorkspaceTagsCreationConfiguration configuration, CancellationToken token)
+		public async Task<ExecutionResult> ExecuteAsync(ISourceWorkspaceTagsCreationConfiguration configuration, CancellationToken token)
 		{
-			int destinationWorkspaceTagArtifactId = await CreateOrUpdateDestinationWorkspaceTagAsync(configuration, token).ConfigureAwait(false);
-			configuration.SetDestinationWorkspaceTagArtifactId(destinationWorkspaceTagArtifactId);
+			ExecutionResult result = ExecutionResult.Success();
+			try
+			{
+				int destinationWorkspaceTagArtifactId = await CreateOrUpdateDestinationWorkspaceTagAsync(configuration, token).ConfigureAwait(false);
+				configuration.SetDestinationWorkspaceTagArtifactId(destinationWorkspaceTagArtifactId);
+			}
+			catch (Exception ex)
+			{
+				result = ExecutionResult.Failure("Failed to create tags in source workspace", ex);
+			}
+
+			return result;
 		}
 
 		private async Task<int> CreateOrUpdateDestinationWorkspaceTagAsync(ISourceWorkspaceTagsCreationConfiguration configuration, CancellationToken token)

@@ -381,7 +381,7 @@ namespace Relativity.Sync.Tests.Integration
 		}
 
 		[Test]
-		public void ItThrowsProperExceptionIfDestinationWorkspaceDoesNotExist()
+		public async Task ItReturnsFailedResultIfDestinationWorkspaceDoesNotExist()
 		{
 			const int sourceWorkspaceArtifactID = 1014853;
 			const int destinationWorkspaceArtifactID = 1014853;
@@ -402,12 +402,18 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<IProgress<ProgressReport>>()))
 				.Returns(Task.FromResult(new QueryResult()));
 
-			SyncException thrownException = Assert.Throws<SyncException>(() => _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult());
-			Assert.IsTrue(thrownException.Message.Contains(destinationWorkspaceArtifactID.ToString(CultureInfo.InvariantCulture)));
+			// Act
+			ExecutionResult result = await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
+			Assert.IsNotNull(result.Exception);
+			Assert.IsInstanceOf<SyncException>(result.Exception);
+			Assert.IsTrue(result.Exception.Message.Contains(destinationWorkspaceArtifactID.ToString(CultureInfo.InvariantCulture)));
 		}
 
 		[Test]
-		public void ItThrowsProperExceptionIfTagCreationThrows()
+		public async Task ItReturnsFailedResultIfTagCreationThrows()
 		{
 			const int srcWorkspaceArtifactId = 1014853;
 			const int destWorkspaceArtifactId = 1015853;
@@ -444,15 +450,20 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<CreateRequest>())
 				).Throws<Exception>();
 
-			DestinationWorkspaceTagRepositoryException thrownException = Assert.Throws<DestinationWorkspaceTagRepositoryException>(() =>
-				_executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult());
+			// Act
+			ExecutionResult result = await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
+			Assert.IsNotNull(result.Exception);
+			Assert.IsInstanceOf<DestinationWorkspaceTagRepositoryException>(result.Exception);
 			Assert.AreEqual(
 				$"Failed to create {nameof(DestinationWorkspaceTag)} '{destInstanceName} - {destWorkspaceName} - {destWorkspaceArtifactId}' in workspace {srcWorkspaceArtifactId}",
-				thrownException.Message);
+				result.Exception.Message);
 		}
 
 		[Test]
-		public void ItThrowsProperExceptionIfTagUpdateThrows()
+		public async Task ItReturnsFailedResultIfTagUpdateThrows()
 		{
 			const int sourceWorkspaceArtifactID = 1014853;
 			const int destinationWorkspaceArtifactID = 1014853;
@@ -527,15 +538,20 @@ namespace Relativity.Sync.Tests.Integration
 				It.Is<UpdateRequest>(y => y.Object.ArtifactID == destinationWorkspaceTagArtifactId))
 			).Throws<Exception>();
 
-			DestinationWorkspaceTagRepositoryException thrownException = Assert.Throws<DestinationWorkspaceTagRepositoryException>(() =>
-				_executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult());
+			// Act
+			ExecutionResult result = await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
+			Assert.IsNotNull(result.Exception);
+			Assert.IsInstanceOf<DestinationWorkspaceTagRepositoryException>(result.Exception);
 			Assert.AreEqual(
 				$"Failed to update {nameof(DestinationWorkspaceTag)} with id {destinationWorkspaceTagArtifactId} in workspace {sourceWorkspaceArtifactID}",
-				thrownException.Message);
+				result.Exception.Message);
 		}
 
 		[Test]
-		public void ItThrowsProperExceptionIfTagLinkingThrows()
+		public async Task ItReturnsFailedResultIfTagLinkingThrows()
 		{
 			const int sourceWorkspaceArtifactID = 1014853;
 			const int destinationWorkspaceArtifactID = 1014853;
@@ -577,15 +593,20 @@ namespace Relativity.Sync.Tests.Integration
 				It.Is<UpdateRequest>(y => y.Object.ArtifactID == jobArtifactId))
 			).Throws<Exception>();
 
-			DestinationWorkspaceTagsLinkerException thrownException = Assert.Throws<DestinationWorkspaceTagsLinkerException>(() =>
-				_executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult());
+			// Act
+			ExecutionResult result = await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
+			Assert.IsNotNull(result.Exception);
+			Assert.IsInstanceOf<DestinationWorkspaceTagsLinkerException>(result.Exception);
 			Assert.AreEqual(
 				$"Failed to link {nameof(DestinationWorkspaceTag)} to Job History",
-				thrownException.Message);
+				result.Exception.Message);
 		}
 
 		[Test]
-		public void ItThrowsProperExceptionIfTagQueryThrows()
+		public async Task ItReturnsFailedResultIfTagQueryThrows()
 		{
 			const int sourceWorkspaceArtifactID = 1014853;
 			const int destinationWorkspaceArtifactID = 1014853;
@@ -616,11 +637,16 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<IProgress<ProgressReport>>()
 			)).Throws<Exception>();
 
-			DestinationWorkspaceTagRepositoryException thrownException = Assert.Throws<DestinationWorkspaceTagRepositoryException>(() =>
-				_executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult());
+			// Act
+			ExecutionResult result = await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
+			Assert.IsNotNull(result.Exception);
+			Assert.IsInstanceOf<DestinationWorkspaceTagRepositoryException>(result.Exception);
 			Assert.AreEqual(
 				$"Failed to query {nameof(DestinationWorkspaceTag)} in workspace {sourceWorkspaceArtifactID}",
-				thrownException.Message);
+				result.Exception.Message);
 		}
 
 		private List<FieldValuePair> BuildFieldValuePairs(Dictionary<Guid, object> fieldValues)

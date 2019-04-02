@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
@@ -16,13 +18,24 @@ namespace Relativity.Sync.Executors
 			_sourceJobTagService = sourceJobTagService;
 		}
 
-		public async Task ExecuteAsync(IDestinationWorkspaceTagsCreationConfiguration configuration, CancellationToken token)
+		public async Task<ExecutionResult> ExecuteAsync(IDestinationWorkspaceTagsCreationConfiguration configuration, CancellationToken token)
 		{
-			RelativitySourceCaseTag sourceCaseTag = await _sourceCaseTagService.CreateOrUpdateSourceCaseTagAsync(configuration, token).ConfigureAwait(false);
-			configuration.SetSourceWorkspaceTag(sourceCaseTag.ArtifactId, sourceCaseTag.Name);
+			ExecutionResult result = ExecutionResult.Success();
 
-			RelativitySourceJobTag sourceJobTag = await _sourceJobTagService.CreateSourceJobTagAsync(configuration, sourceCaseTag.ArtifactId, token).ConfigureAwait(false);
-			configuration.SetSourceJobTag(sourceJobTag.ArtifactId, sourceJobTag.Name);
+			try
+			{
+				RelativitySourceCaseTag sourceCaseTag = await _sourceCaseTagService.CreateOrUpdateSourceCaseTagAsync(configuration, token).ConfigureAwait(false);
+				configuration.SetSourceWorkspaceTag(sourceCaseTag.ArtifactId, sourceCaseTag.Name);
+
+				RelativitySourceJobTag sourceJobTag = await _sourceJobTagService.CreateSourceJobTagAsync(configuration, sourceCaseTag.ArtifactId, token).ConfigureAwait(false);
+				configuration.SetSourceJobTag(sourceJobTag.ArtifactId, sourceJobTag.Name);
+			}
+			catch (Exception ex)
+			{
+				result = ExecutionResult.Failure("Failed to create tags in destination workspace", ex);
+			}
+
+			return result;
 		}
 	}
 }

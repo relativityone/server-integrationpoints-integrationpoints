@@ -15,10 +15,10 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 			_types = types;
 		}
 
-		public Task ExecuteAsync(T configuration, CancellationToken token)
+		public Task<ExecutionResult> ExecuteAsync(T configuration, CancellationToken token)
 		{
 			_types.Add(typeof(T));
-			return Task.CompletedTask;
+			return Task.FromResult(ExecutionResult.Success());
 		}
 	}
 }

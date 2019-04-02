@@ -170,57 +170,65 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		}
 
 		[Test]
-		public void ItShouldThrowExceptionWhenWorkspaceNameQueryFails()
+		public async Task ItShouldReturnFailedResultWhenWorkspaceNameQueryFails()
 		{
 			_workspaceNameQuery.Setup(x => x.GetWorkspaceNameAsync(It.IsAny<int>(), CancellationToken.None)).Throws<InvalidOperationException>();
 
 			// act
-			Func<Task> action = async () => await _sut.ExecuteAsync(Mock.Of<ISourceWorkspaceTagsCreationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _sut.ExecuteAsync(Mock.Of<ISourceWorkspaceTagsCreationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
 
 			// assert
-			action.Should().Throw<InvalidOperationException>();
+			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
+			Assert.IsNotNull(result.Exception);
+			Assert.IsInstanceOf<InvalidOperationException>(result.Exception);
 		}
 
 		[Test]
-		public void ItShouldThrowExceptionWhenFederatedInstanceNameReadFails()
+		public async Task ItShouldReturnFailedResultWhenFederatedInstanceNameReadFails()
 		{
 			_federatedInstance.Setup(x => x.GetInstanceNameAsync()).Throws<InvalidOperationException>();
 
 			// act
-			Func<Task> action = async () => await _sut.ExecuteAsync(Mock.Of<ISourceWorkspaceTagsCreationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _sut.ExecuteAsync(Mock.Of<ISourceWorkspaceTagsCreationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
 
 			// assert
-			action.Should().Throw<InvalidOperationException>();
+			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
+			Assert.IsNotNull(result.Exception);
+			Assert.IsInstanceOf<InvalidOperationException>(result.Exception);
 		}
 
 		[Test]
-		public void ItShouldThrowExceptionWhenDestinationWorkspaceTagReadFails()
+		public async Task ItShouldReturnFailedResultWhenDestinationWorkspaceTagReadFails()
 		{
 			_destinationWorkspaceTagRepository.Setup(x => x.ReadAsync(It.IsAny<int>(), It.IsAny<int>(), CancellationToken.None)).Throws<InvalidOperationException>();
 
 			// act
-			Func<Task> action = async () => await _sut.ExecuteAsync(Mock.Of<ISourceWorkspaceTagsCreationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _sut.ExecuteAsync(Mock.Of<ISourceWorkspaceTagsCreationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
 
 			// assert
-			action.Should().Throw<InvalidOperationException>();
+			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
+			Assert.IsNotNull(result.Exception);
+			Assert.IsInstanceOf<InvalidOperationException>(result.Exception);
 		}
 
 		[Test]
-		public void ItShouldThrowExceptionWhenCreateTagFails()
+		public async Task ItShouldReturnFailedResultWhenCreateTagFails()
 		{
 			DestinationWorkspaceTag tag = null;
 			_destinationWorkspaceTagRepository.Setup(x => x.ReadAsync(It.IsAny<int>(), It.IsAny<int>(), CancellationToken.None)).ReturnsAsync(tag);
 			_destinationWorkspaceTagRepository.Setup(x => x.CreateAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>())).Throws<InvalidOperationException>();
 
 			// act
-			Func<Task> action = async () => await _sut.ExecuteAsync(Mock.Of<ISourceWorkspaceTagsCreationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _sut.ExecuteAsync(Mock.Of<ISourceWorkspaceTagsCreationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
 
 			// assert
-			action.Should().Throw<InvalidOperationException>();
+			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
+			Assert.IsNotNull(result.Exception);
+			Assert.IsInstanceOf<InvalidOperationException>(result.Exception);
 		}
 
 		[Test]
-		public void ItShouldThrowExceptionWhenUpdateTagFails()
+		public async Task ItShouldReturnFailedResultWhenUpdateTagFails()
 		{
 			const string destinationWorkspaceNewName = "new workspace name";
 			DestinationWorkspaceTag outdatedTag = new DestinationWorkspaceTag()
@@ -232,24 +240,28 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_destinationWorkspaceTagRepository.Setup(x => x.UpdateAsync(It.IsAny<int>(), outdatedTag)).Throws<InvalidOperationException>();
 
 			// act
-			Func<Task> action = async () => await _sut.ExecuteAsync(Mock.Of<ISourceWorkspaceTagsCreationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _sut.ExecuteAsync(Mock.Of<ISourceWorkspaceTagsCreationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
 
 			// assert
-			action.Should().Throw<InvalidOperationException>();
+			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
+			Assert.IsNotNull(result.Exception);
+			Assert.IsInstanceOf<InvalidOperationException>(result.Exception);
 		}
 
 		[Test]
-		public void ItShouldThrowExceptionWhenLinkDestinationWorkspaceTagWithJobHistoryFails()
+		public async Task ItShouldReturnFailedResultWhenLinkDestinationWorkspaceTagWithJobHistoryFails()
 		{
 			DestinationWorkspaceTag tag = new DestinationWorkspaceTag();
 			_destinationWorkspaceTagRepository.Setup(x => x.ReadAsync(It.IsAny<int>(), It.IsAny<int>(), CancellationToken.None)).ReturnsAsync(tag);
 			_destinationWorkspaceTagsLinker.Setup(x => x.LinkDestinationWorkspaceTagToJobHistoryAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>())).Throws<InvalidOperationException>();
 
 			// act
-			Func<Task> action = async () => await _sut.ExecuteAsync(Mock.Of<ISourceWorkspaceTagsCreationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _sut.ExecuteAsync(Mock.Of<ISourceWorkspaceTagsCreationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
 
 			// assert
-			action.Should().Throw<InvalidOperationException>();
+			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
+			Assert.IsNotNull(result.Exception);
+			Assert.IsInstanceOf<InvalidOperationException>(result.Exception);
 		}
 	}
 }

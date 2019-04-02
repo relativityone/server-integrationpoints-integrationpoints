@@ -40,8 +40,11 @@ namespace Relativity.Sync.Nodes
 				throw;
 			}
 
+			_logger.LogVerbose($"Step '{{step}}' received {nameof(ExecutionResult)} from command: {{result}}", Id, result);
+
 			if (result.Status == ExecutionStatus.Failed)
 			{
+				// result.Exception may be null, but this should not cause any issues.
 				_logger.LogError(result.Exception, "Error occurred during execution of step {step}: {message}", Id, result.Message);
 				return NodeResultStatus.Failed;
 			}
