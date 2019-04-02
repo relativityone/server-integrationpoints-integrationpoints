@@ -70,6 +70,16 @@ properties([
 			name: 'enableSonarAnalysis', 
 			defaultValue: false, 
 			description: 'Enable SonarQube analysis for develop branch.'
+		),
+		choice(
+			name: 'UITestsBrowser',
+			choices: ['chrome', 'chromium', 'firefox'],
+			description: 'Name of browser the UI tests should be run on. Default: chrome'
+		),
+		string(
+			name: 'chromiumVersion', 
+			defaultValue: '72.0.3626.0', 
+			description: 'Set chromium version to be installed for UI tests.'			
 		)
 	])
 ])
@@ -144,18 +154,20 @@ timestamps
 				{
 					stage ('UI Tests')
 					{
-						jenkinsHelpers.updateChromeToLatestVersion()
-
+						
 						withEnv([
+							"UITestsBrowser=$params.UITestsBrowser",
 							"ripUiTestsConfig=$params.ripUiTestsConfig",
 							"ripTestsAdminUsername=$params.ripTestsAdminUsername",
 							"ripTestsAdminPassword=$params.ripTestsAdminPassword"
-						]) {
+							]) {
+							echo "Browser used for running UI Tests: $params.UITestsBrowser"
 							echo "Value of ripUiTestsConfig environment variable: $env.ripUiTestsConfig"
 							echo "Value of ripTestsAdminUsername environment variable: $env.ripTestsAdminUsername"
 
+							jenkinsHelpers.downloadAndSetUpBrowser()
 							jenkinsHelpers.runUiTests()
-						}						
+						}
 					}
 				}
 				finally
