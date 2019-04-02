@@ -14,88 +14,16 @@
       <Name>kCura.IntegrationPoints.SourceProviderInstaller.dll</Name>
       <Notes />
     </Assembly>
+	<Assembly>
+      <ArtifactId>1748144</ArtifactId> <!-- TODO tt-img-app -->
+      <Keywords />
+      <Name>kCura.IntegrationPoints.Services.Interfaces.Private.dll</Name>
+      <Notes />
+    </Assembly>
     <Assembly>
       <ArtifactId>1748143</ArtifactId>
       <Keywords />
       <Name>Provider.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>1748144</ArtifactId>
-      <Keywords />
-      <Name>kCura.IntegrationPoints.Domain.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>1748148</ArtifactId>
-      <Keywords />
-      <Name>kCura.IntegrationPoints.Core.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>1748149</ArtifactId>
-      <Keywords />
-      <Name>kCura.IntegrationPoints.Data.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>1748150</ArtifactId>
-      <Keywords />
-      <Name>kCura.IntegrationPoints.Core.Contracts.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>1748151</ArtifactId>
-      <Keywords />
-      <Name>kCura.ScheduleQueue.Core.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>1748152</ArtifactId>
-      <Keywords />
-      <Name>kCura.Apps.Common.Utils.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>1748154</ArtifactId>
-      <Keywords />
-      <Name>kCura.IntegrationPoints.Synchronizers.RDO.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>1748155</ArtifactId>
-      <Keywords />
-      <Name>kCura.Apps.Common.Data.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>1748156</ArtifactId>
-      <Keywords />
-      <Name>kCura.Apps.Common.Config.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>1748157</ArtifactId>
-      <Keywords />
-      <Name>kCura.IntegrationPoints.Config.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>1748160</ArtifactId>
-      <Keywords />
-      <Name>Relativity.DataTransfer.MessageService.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>1748153</ArtifactId>
-      <Keywords />
-      <Name>SystemInterface.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>3100668</ArtifactId>
-      <Keywords />
-      <Name>kCura.IntegrationPoints.Common.dll</Name>
       <Notes />
     </Assembly>
   </Assemblies>
