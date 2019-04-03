@@ -29,6 +29,19 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 			CreateOrUpdateDestinationProvider("Load File", FILES_SYNC_TYPE_GUID);
 		}
 
+		public int GetRdoSynchronizerId()
+		{
+			DestinationProvider destinationProvider = GetDestinationProvider(RDO_SYNC_TYPE_GUID);
+			if (destinationProvider != null)
+			{
+				return destinationProvider.ArtifactId;
+			}
+			string errorMessage = FormatUnableToRetrieveDestinationProviderErrorMessage(RDO_SYNC_TYPE_GUID);
+			_logger.LogError(errorMessage);
+
+			throw new Exception(errorMessage);
+		}
+
 		private void CreateOrUpdateDestinationProvider(string name, string providerGuid)
 		{
 			DestinationProvider destinationProvider = GetDestinationProvider(providerGuid);
@@ -49,19 +62,6 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 				destinationProvider.Name = name;
 				_objectManager.Update(destinationProvider);
 			}
-		}
-
-		public int GetRdoSynchronizerId()
-		{
-			DestinationProvider destinationProvider = GetDestinationProvider(RDO_SYNC_TYPE_GUID);
-			if (destinationProvider != null)
-			{
-				return destinationProvider.ArtifactId;
-			}
-			string errorMessage = FormatUnableToRetrieveDestinationProviderErrorMessage(RDO_SYNC_TYPE_GUID);
-			_logger.LogError(errorMessage);
-
-			throw new Exception(errorMessage);
 		}
 
 		private DestinationProvider GetDestinationProvider(string providerGuid)

@@ -12,17 +12,20 @@ namespace kCura.IntegrationPoints.Core.Provider
 	public class ProviderUninstaller
 	{
 		private readonly IAPILog _logger;
+		private readonly ISourceProviderRepository _sourceProviderRepository;
 		private readonly IRelativityObjectManager _objectManager;
 		private readonly IDBContext _dbContext;
 		private readonly DeleteIntegrationPoints _deleteIntegrationPoint;
 
 		public ProviderUninstaller(
 			IAPILog logger,
+			ISourceProviderRepository sourceProviderRepository,
 			IRelativityObjectManager objectManager,
 			IDBContext dbContext,
 			DeleteIntegrationPoints deleteIntegrationPoint)
 		{
 			_logger = logger;
+			_sourceProviderRepository = sourceProviderRepository;
 			_objectManager = objectManager;
 			_dbContext = dbContext;
 			_deleteIntegrationPoint = deleteIntegrationPoint;
@@ -30,19 +33,20 @@ namespace kCura.IntegrationPoints.Core.Provider
 
 		public async Task UninstallProvidersAsync(int applicationID)
 		{
-			await Task.Yield(); // TODO delete it
 			try
 			{
 				Guid applicationGuid = GetApplicationGuid(applicationID);
+				List<SourceProvider> installedRdoProviders = await _sourceProviderRepository
+					.GetSourceProviderRdoByApplicationIdentifierAsync(applicationGuid)
+					.ConfigureAwait(false);
 
-				List<SourceProvider> installedRdoProviders =
-					new GetSourceProviderRdoByApplicationIdentifier(_objectManager).Execute(applicationGuid);
 				_deleteIntegrationPoint.DeleteIPsWithSourceProvider(installedRdoProviders.Select(x => x.ArtifactId).ToList());
 				RemoveProviders(installedRdoProviders);
 			}
-			catch
+			catch (Exception ex)
 			{
-				// TODO KK - logs??>
+				_logger.LogError(ex, "Exception occured while uninstalling provider: {applicationID}", applicationID);
+				// TODO should we throw???
 			}
 		}
 

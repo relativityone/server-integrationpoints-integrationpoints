@@ -16,14 +16,16 @@ namespace kCura.IntegrationPoints.Core.Provider
 	public class ProviderInstaller // TODO introduce interface
 	{
 		private const int _ADMIN_CASE_ID = -1;
-		
+
 		private readonly IAPILog _logger;
+		private readonly ISourceProviderRepository _sourceProviderRepository;
 		private readonly IRelativityObjectManager _objectManager;
 		private readonly IDBContext _dbContext;
 		private readonly IHelper _helper;
-		
+
 		public ProviderInstaller(
 			IAPILog logger,
+			ISourceProviderRepository sourceProviderRepository,
 			IRelativityObjectManager objectManager,
 			IDBContext dbContext,
 			IHelper helper)
@@ -32,12 +34,12 @@ namespace kCura.IntegrationPoints.Core.Provider
 			_objectManager = objectManager;
 			_dbContext = dbContext;
 			_helper = helper;
+
+			_sourceProviderRepository = sourceProviderRepository;
 		}
 
 		public async Task InstallProvidersAsync(IEnumerable<IntegrationPoints.Contracts.SourceProvider> providersToInstall)
 		{
-			await Task.Yield(); // TODO remove it
-
 			IDBContext adminCaseDbContext = _helper.GetDBContext(_ADMIN_CASE_ID);
 			IPluginProvider pluginProvider = new DefaultSourcePluginProvider(new GetApplicationBinaries(adminCaseDbContext));
 			var domainHelper = new DomainHelper(pluginProvider, _helper, new RelativityFeaturePathService());
@@ -58,14 +60,14 @@ namespace kCura.IntegrationPoints.Core.Provider
 					InstallSynchronizerForCoreOnly(provider.ApplicationGUID);
 					ValidateProvider(dataProviderBuilder, provider);
 
-					AddOrUpdateProvider(provider);
+					await AddOrUpdateProvider(provider).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private void AddOrUpdateProvider(IntegrationPoints.Contracts.SourceProvider provider)
+		private async Task AddOrUpdateProvider(IntegrationPoints.Contracts.SourceProvider provider)
 		{
-			Dictionary<Guid, SourceProvider> installedRdoProviderDict = GetInstalledRdoProviders(provider);
+			IDictionary<Guid, SourceProvider> installedRdoProviderDict = await GetInstalledRdoProviders(provider).ConfigureAwait(false);
 
 			if (installedRdoProviderDict.ContainsKey(provider.GUID))
 			{
@@ -78,16 +80,18 @@ namespace kCura.IntegrationPoints.Core.Provider
 			}
 		}
 
-		private Dictionary<Guid, SourceProvider> GetInstalledRdoProviders(IntegrationPoints.Contracts.SourceProvider provider)
+		private async Task<IDictionary<Guid, SourceProvider>> GetInstalledRdoProviders(IntegrationPoints.Contracts.SourceProvider provider)
 		{
-			List<SourceProvider> installedRdoProviders =
-				new GetSourceProviderRdoByApplicationIdentifier(_objectManager).Execute(provider.ApplicationGUID);
+			List<SourceProvider> installedRdoProviders = await _sourceProviderRepository
+				.GetSourceProviderRdoByApplicationIdentifierAsync(provider.ApplicationGUID)
+				.ConfigureAwait(false);
+
 			Dictionary<Guid, SourceProvider> installedRdoProviderDict =
 				installedRdoProviders.ToDictionary(x => Guid.Parse(x.Identifier), x => x);
 			return installedRdoProviderDict;
 		}
 
-		private void InstallSynchronizerForCoreOnly(Guid applicationGuid) // TODO KK - maybe we should create decorator which should be used for RIP providers????
+		private void InstallSynchronizerForCoreOnly(Guid applicationGuid) // TODO KK - maybe we should create separate event handler for it?
 		{
 			//This is hack until we introduce installation of Destination Providers
 			if (applicationGuid == new Guid(Domain.Constants.IntegrationPoints.APPLICATION_GUID_STRING))

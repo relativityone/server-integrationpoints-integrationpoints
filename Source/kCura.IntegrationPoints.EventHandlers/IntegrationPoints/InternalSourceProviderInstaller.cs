@@ -1,12 +1,13 @@
-﻿using kCura.IntegrationPoints.Core.Provider;
+﻿using kCura.IntegrationPoints.Contracts;
+using kCura.IntegrationPoints.Core.Provider;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.SourceProviderInstaller;
 using Relativity.API;
 using System;
 using System.Collections.Generic;
-using kCura.IntegrationPoints.Contracts;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
@@ -26,7 +27,12 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		internal override void InstallSourceProvider(IEnumerable<SourceProvider> sourceProviders)
 		{
 			Logger.LogError("Installing internal RIP source provider"); // TODO debug/info
-			var providerInstaller = new ProviderInstaller(Logger, CreateObjectManager(), Helper.GetDBContext(Helper.GetActiveCaseID()), Helper);
+
+			IDBContext workspaceDbContext = Helper.GetDBContext(Helper.GetActiveCaseID());
+			IRelativityObjectManager objectManager = CreateObjectManager();
+			var sourceProviderRepository = new SourceProviderRepository(objectManager);
+
+			var providerInstaller = new ProviderInstaller(Logger, sourceProviderRepository, objectManager, workspaceDbContext, Helper);
 
 			providerInstaller.InstallProvidersAsync(sourceProviders).GetAwaiter().GetResult();
 		}
