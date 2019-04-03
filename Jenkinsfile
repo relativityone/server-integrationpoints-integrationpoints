@@ -8,53 +8,63 @@ library 'SlackHelpers@3.0.0'
 properties([
 	pipelineTriggers(env.JOB_NAME.contains("IntegrationPointsNightly") ? [cron('H 16 * * *')] : []),
 	[$class: 'BuildDiscarderProperty', strategy: [
-			$class: 'LogRotator', 
+			$class: 'LogRotator',
 			artifactDaysToKeepStr: '30',
-			artifactNumToKeepStr: '', 
-			daysToKeepStr: '30', 
+			artifactNumToKeepStr: '',
+			daysToKeepStr: '30',
 			numToKeepStr: ''
 		]
 	],
 	parameters([
 		string(
-			name: 'relativityBranch', 
-			defaultValue: '', 
+			name: 'relativityBranch',
+			defaultValue: '',
 			description: 'Set Relativity branch'
 		),
 		string(
-			name: 'relativityBuildType', 
-			defaultValue: 'DEV', 
+			name: 'relativityBuildType',
+			defaultValue: 'DEV',
 			description: 'Set Relativity build type (DEV, GOLD, etc.)'
 		),
 		string(
-			name: 'relativityBuildVersion', 
-			defaultValue: '', 
+			name: 'relativityBuildVersion',
+			defaultValue: '',
 			description: 'Set Relativity version on which RIP will be tested. Leave blank to set the latest version.'
 		),
 		booleanParam(
-			name: 'skipIntegrationTests', 
-			defaultValue: false, 
+			name: 'skipIntegrationTests',
+			defaultValue: false,
 			description: 'Check if you want to skip Integrations Tests stage.'
 		),
 		booleanParam(
-			name: 'skipUITests', 
-			defaultValue: true, 
+			name: 'skipUITests',
+			defaultValue: true,
 			description: 'Check if you want to skip UI Tests stage.'
 		),
 		string(
-			name: 'testsFilter', 
-			defaultValue: '', 
+			name: 'testsFilter',
+			defaultValue: '',
 			description: 'Set filter for integration and UI tests'
 		),
 		string(
-			name: 'nightlyTestsFilter', 
-			defaultValue: '', 
+			name: 'nightlyTestsFilter',
+			defaultValue: '',
 			description: 'Set filter for nightly integration and UI tests'
 		),
 		booleanParam(
-			name: 'enableSonarAnalysis', 
-			defaultValue: true, 
+			name: 'enableSonarAnalysis',
+			defaultValue: true,
 			description: 'Enable SonarQube analysis for develop branch.'
+		),
+		choice(
+			name: 'UITestsBrowser',
+			choices: ['chrome', 'chromium', 'firefox'],
+			description: 'Name of browser the UI tests should be run on. Default: chrome'
+		),
+		string(
+			name: 'chromiumVersion', 
+			defaultValue: '72.0.3626.0', 
+			description: 'Set chromium version to be installed for UI tests.'
 		)
 	])
 ])
@@ -102,12 +112,12 @@ timestamps
 			}
 
 			if (jenkinsHelpers.testingVMsAreRequired(params))
-			{	
+			{
 				stage ('Stash Tests and Package Artifacts')
 				{
 					jenkinsHelpers.stashTestsAndPackageArtifacts()
 				}
-			} 
+			}
 			else
 			{
 				stage ('Publish to NuGet')
@@ -121,7 +131,7 @@ timestamps
 				}
 			}
 		}
-		
+
 		if (jenkinsHelpers.testingVMsAreRequired(params))
 		{
 			node('SCVMM-AGENTS-POOL')
@@ -156,8 +166,12 @@ timestamps
 					}
 					stage ('UI Tests')
 					{
-						jenkinsHelpers.updateChromeToLatestVersion()
-						jenkinsHelpers.runUiTests()
+						withEnv([
+							"UITestsBrowser=$params.UITestsBrowser"
+							]) {
+							jenkinsHelpers.downloadAndSetUpBrowser()
+							jenkinsHelpers.runUiTests()
+							}
 					}
 				}
 				finally
@@ -172,7 +186,7 @@ timestamps
 			node ('PolandBuild')
 			{
 				def publishArtifactsDirectory = 'publishArtifactsWorkspace'
-				
+
 				jenkinsHelpers.deleteDirectoryIfExists(publishArtifactsDirectory)
 				dir(publishArtifactsDirectory)
 				{
@@ -191,7 +205,7 @@ timestamps
 				}
 			}
 		}
-		
+
 		currentBuild.result = 'SUCCESS'
 	}
 	catch (err)
@@ -201,9 +215,12 @@ timestamps
 	}
 	finally
 	{
-		stage('Cleanup VMs')
+		stage('Cleanup')
 		{
-			jenkinsHelpers.cleanupVMs()
+			parallel([
+				CleanupVms: { jenkinsHelpers.cleanupVMs() },
+				CleanupChefArtifacts: { jenkinsHelpers.cleanupChefArtifacts() }
+			])
 		}
 
 		stage('Reporting')

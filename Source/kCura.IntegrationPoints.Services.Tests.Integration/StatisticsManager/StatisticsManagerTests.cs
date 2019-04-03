@@ -25,20 +25,16 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.StatisticsManager
 			new GetImagesTotalForFolder(),
 			new GetNativesTotalForFolder(),
 			new GetDocumentsTotalForProduction(),
-			new GetNativesTotalForProduction()
+			new GetNativesTotalForProduction(),
+			new GetImagesFileSizeForProduction(),
+			new GetImagesTotalForProduction(),
+			new GetNativesFileSizeForProduction()
 		};
 
 		private static IEnumerable<IStatisticsTestCase> _quarantinedBrokenTestCases = new IStatisticsTestCase[]
 		{
-			new GetImagesFileSizeForFolder(), //TODO: Correct this test case. It's checking non-existent folder with ID = 0
-			new GetNativesFileSizeForFolder(), //TODO: Correct this test case. It's checking non-existent folder with ID = 0
-		};
-
-		private static IEnumerable<IStatisticsTestCase> _quarantinedDueToREL301226 = new IStatisticsTestCase[]
-		{
-			new GetImagesFileSizeForProduction(),
-			new GetImagesTotalForProduction(),
-			new GetNativesFileSizeForProduction()
+			new GetImagesFileSizeForFolder(),
+			new GetNativesFileSizeForFolder() 
 		};
 		
 		public StatisticsManagerTests() : base($"Statistics_{Utils.FormattedDateTimeNow}")
@@ -71,15 +67,9 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.StatisticsManager
 		}
 
 		[TestCaseSource(nameof(_quarantinedBrokenTestCases))]
-		[TestInQuarantine(TestQuarantineState.FailsContinuously)]
+		[TestInQuarantine(TestQuarantineState.FailsContinuously,
+			"REL-307479 - Correct these test cases. They're checking non-existent folder with ID = 0")]
 		public void ItShouldGetDocumentTotalQuarantinedBrokentests(IStatisticsTestCase statisticsTestCase)
-		{
-			statisticsTestCase.Execute(Helper, WorkspaceArtifactId, _testCaseSettings);
-		}
-
-		[TestCaseSource(nameof(_quarantinedDueToREL301226))]
-		[TestInQuarantine(TestQuarantineState.DetectsDefectInExternalDependency, "REL-301226")]
-		public void ItShouldGetDocumentTotalQuarantinedDueToREL301226(IStatisticsTestCase statisticsTestCase)
 		{
 			statisticsTestCase.Execute(Helper, WorkspaceArtifactId, _testCaseSettings);
 		}

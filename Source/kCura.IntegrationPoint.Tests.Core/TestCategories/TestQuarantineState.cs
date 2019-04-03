@@ -17,7 +17,7 @@
         /// <summary>
         /// A test fails because of some defect in external dependency
         /// like library, component or API that a test consumes
-        /// and cannot be fixed without involvment of different team.
+        /// and cannot be fixed without involvement of different team.
         /// The reason of failure should be described and appropriate
         /// JIRA issue linked. After fixing, it should be marked with
         /// SeemsToBeStable.

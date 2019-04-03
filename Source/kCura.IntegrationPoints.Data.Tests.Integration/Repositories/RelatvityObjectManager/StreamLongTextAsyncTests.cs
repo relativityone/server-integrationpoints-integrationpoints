@@ -66,9 +66,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.Relativity
 
 		[Test]
 		[StressTest]
-		[TestInQuarantine(
-			TestQuarantineState.DetectsDefectInExternalDependency,
-			"IAPI failure prevents import of test data - REL-293423")]
+		[TestInQuarantine(TestQuarantineState.ShowsInstability,
+			"REL-307474 - It randomly throws System.IO.IOException and System.InvalidOperationException from LINQ")]
 		public void ItShouldFetchDocumentWith1500MBExtractedText()
 		{
 			int bytes = GetBytesFromMB(1500);

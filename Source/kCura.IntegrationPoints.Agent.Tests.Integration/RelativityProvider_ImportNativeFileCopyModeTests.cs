@@ -124,8 +124,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
         [Test]
 		[TestCase(ImportNativeFileCopyModeEnum.CopyFiles)]
 		[TestCase(ImportNativeFileCopyModeEnum.SetFileLinks)]
-		[TestInQuarantine(TestQuarantineState.SeemsToBeStable, 
-			"This test fails randomly. Internal Defect was created in Jira: REL-268242")]
 		public void NativesShouldBeDeletedInTargetWorkspace_InImportNativesModes(ImportNativeFileCopyModeEnum importNativeFileCopyMode)
 		{
 			TestNativeFilesImport(false, true, true, importNativeFileCopyMode, false);

@@ -201,7 +201,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 
 		[Test, Timeout(300000)]
 		[Description("This test takes sometime to process. It requires the IP agent to be running.")]
-		[TestInQuarantine(TestQuarantineState.ShowsInstability)]
+		[TestInQuarantine(TestQuarantineState.ShowsInstability, "REL-307481")]
 		public void OneExecutedScheduledJobInTheQueue_ExpectCountZero()
 		{
 			Agent.EnableAllAgents();
