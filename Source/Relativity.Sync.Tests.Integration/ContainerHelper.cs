@@ -9,7 +9,7 @@ namespace Relativity.Sync.Tests.Integration
 		{
 			ContainerBuilder containerBuilder = new ContainerBuilder();
 			ContainerFactory containerFactory = new ContainerFactory();
-			containerFactory.RegisterSyncDependencies(containerBuilder, new SyncJobParameters(1, 1), new SyncConfiguration(), new EmptyLogger());
+			containerFactory.RegisterSyncDependencies(containerBuilder, new SyncJobParameters(1, 1), new SyncJobExecutionConfiguration(), new EmptyLogger());
 			return containerBuilder;
 		}
 	}

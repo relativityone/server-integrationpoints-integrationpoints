@@ -83,7 +83,7 @@ namespace Relativity.Sync.Tests.Unit
 			await _instance.ExecuteAsync(_executionContext).ConfigureAwait(false);
 
 			// ASSERT
-			_progress.SyncProgress.State.Should().Be(_STEP_NAME);
+			_progress.SyncJobState.State.Should().Be(_STEP_NAME);
 		}
 
 		[TestCase(ExecutionStatus.Canceled, NodeResultStatus.Failed)]

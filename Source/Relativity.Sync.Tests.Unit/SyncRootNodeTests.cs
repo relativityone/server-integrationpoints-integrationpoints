@@ -29,7 +29,7 @@ namespace Relativity.Sync.Tests.Unit
 
 			_logger = new Mock<ISyncLog>();
 
-			IProgress<SyncProgress> progress = new EmptyProgress<SyncProgress>();
+			IProgress<SyncJobState> progress = new EmptyProgress<SyncJobState>();
 			_syncExecutionContext = new SyncExecutionContext(progress, CancellationToken.None);
 
 			_instance = new SyncRootNode(_command.Object, _logger.Object);
