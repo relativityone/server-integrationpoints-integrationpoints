@@ -88,6 +88,7 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="TestCases\RelativityToRelativityPerformanceTest.cs" />
+    <Compile Include="TestCases\TestContextParametersHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />
