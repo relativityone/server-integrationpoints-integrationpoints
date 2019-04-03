@@ -12,14 +12,18 @@ namespace Relativity.Sync.Executors.Validation
 	internal sealed class FolderStructureBehaviorValidator : IValidator
 	{
 		private readonly ISourceServiceFactoryForUser _sourceServiceFactoryForUser;
+		private readonly ISyncLog _logger;
 
-		public FolderStructureBehaviorValidator(ISourceServiceFactoryForUser sourceServiceFactoryForUser)
+		public FolderStructureBehaviorValidator(ISourceServiceFactoryForUser sourceServiceFactoryForUser, ISyncLog logger)
 		{
 			_sourceServiceFactoryForUser = sourceServiceFactoryForUser;
+			_logger = logger;
 		}
 
 		public async Task<ValidationResult> ValidateAsync(IValidationConfiguration configuration, CancellationToken token)
 		{
+			_logger.LogVerbose("Validating folder structure behavior");
+
 			ValidationResult result = new ValidationResult();
 
 			using (IObjectManager objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))

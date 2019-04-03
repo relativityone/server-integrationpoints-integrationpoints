@@ -23,8 +23,17 @@ namespace Relativity.Sync.Executors.Validation
 		private const string _MISSING_EMAIL_MESSAGE = "Missing email.";
 		private const string _EMAIL_VALIDATION_EXCEPTION_MESSAGE = "Email Validation exception: ";
 
+		private readonly ISyncLog _logger;
+
+		public EmailValidator(ISyncLog logger)
+		{
+			_logger = logger;
+		}
+
 		public Task<ValidationResult> ValidateAsync(IValidationConfiguration configuration, CancellationToken token)
 		{
+			_logger.LogVerbose("Validating notification emails format.");
+
 			ValidationResult result = new ValidationResult();
 
 			try
@@ -38,11 +47,14 @@ namespace Relativity.Sync.Executors.Validation
 				{
 					if (string.IsNullOrEmpty(email))
 					{
+						_logger.LogError(_MISSING_EMAIL_MESSAGE);
 						result.Add(_MISSING_EMAIL_MESSAGE);
 					}
 					else if (!IsValidEmail(email))
 					{
-						result.Add(_INVALID_EMAIL_MESSAGE + email);
+						string shortMessage = _INVALID_EMAIL_MESSAGE + email;
+						_logger.LogError(shortMessage);
+						result.Add(shortMessage);
 					}
 				}
 
@@ -50,6 +62,7 @@ namespace Relativity.Sync.Executors.Validation
 			}
 			catch (Exception ex)
 			{
+				_logger.LogError(ex, "Failed to validate notification emails format.");
 				return Task.FromResult(new ValidationResult(false, _EMAIL_VALIDATION_EXCEPTION_MESSAGE + ex.Message));
 			}
 		}

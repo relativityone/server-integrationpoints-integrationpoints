@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Executors.Validation;
 
 namespace Relativity.Sync.Tests.System.Stubs
 {
@@ -51,6 +52,8 @@ namespace Relativity.Sync.Tests.System.Stubs
 		public int DestinationFolderArtifactId { get; }
 		public string FieldsMap { get; }
 		public int FolderPathSourceFieldArtifactId { get; }
+		public ImportOverwriteMode ImportOverwriteMode { get; }
+		public string FieldOverlayBehavior { get; }
 		public string SourceJobTagName { get; set; }
 		public int SourceJobTagArtifactId { get; set; }
 		public int SourceWorkspaceTagArtifactId { get; set; }
