@@ -59,8 +59,17 @@ namespace kCura.IntegrationPoints.PerformanceTestingFramework
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactId, integrationPoint.ArtifactID);
 			testDurationStopWatch.Stop();
 
-			//it is yet to be decided on how to return the time it took for the job to finish back to the Performance Testing Framework.
 			Console.WriteLine($"PerformanceTest - RIP job duration -> {Math.Round(testDurationStopWatch.Elapsed.TotalSeconds, 2)}s");
+
+			/* <<== IMPORTANT ==>>
+			 * This is the place, where we write the result in seconds to stdout.
+			 * Grazyna then reads this output and looks for number between '<<<<\t' '\t>>>>' tags.
+			 * The code lies in `Grazyna.Core.Utilities.OutputParser.ConsoleRunnerOutputResultsParser`.
+			 * The exact regex that the output is matched against is: "<<<<\t([\d\.+-]+)\t>>>>".
+			 * Please consider that when changing the code.
+			 */
+			Console.WriteLine($"<<<<\t{testDurationStopWatch.Elapsed.TotalSeconds}\t>>>>");
+			/* <<==    END    ==>> */
 		}
 
 		private IntegrationPointModel PrepareIntegrationPointsModel(int targetWorkspaceId)
