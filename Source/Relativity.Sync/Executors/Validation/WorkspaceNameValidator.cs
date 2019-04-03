@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Executors.Validation
 {
@@ -17,11 +18,11 @@ namespace Relativity.Sync.Executors.Validation
 			_logger = logger;
 		}
 
-		public async Task<bool> ValidateWorkspaceNameAsync(int workspaceArtifactId, CancellationToken token)
+		public async Task<bool> ValidateWorkspaceNameAsync(IProxyFactory proxyFactory, int workspaceArtifactId, CancellationToken token)
 		{
 			try
 			{
-				string workspaceName = await _workspaceNameQuery.GetWorkspaceNameAsync(workspaceArtifactId, token).ConfigureAwait(false);
+				string workspaceName = await _workspaceNameQuery.GetWorkspaceNameAsync(proxyFactory, workspaceArtifactId, token).ConfigureAwait(false);
 				_logger.LogVerbose("Validating workspace name: {workspaceName}", workspaceName);
 				bool isWorkspaceNameValid = !workspaceName.Contains(_WORKSPACE_INVALID_NAME_CHAR);
 				if (!isWorkspaceNameValid)
