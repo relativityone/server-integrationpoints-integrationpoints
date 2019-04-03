@@ -12,7 +12,7 @@ namespace Relativity.Sync
 {
 	internal sealed class ContainerFactory : IContainerFactory
 	{
-		public void RegisterSyncDependencies(ContainerBuilder containerBuilder, SyncJobParameters syncJobParameters, SyncConfiguration configuration, ISyncLog logger)
+		public void RegisterSyncDependencies(ContainerBuilder containerBuilder, SyncJobParameters syncJobParameters, SyncJobExecutionConfiguration configuration, ISyncLog logger)
 		{
 			CorrelationId correlationId = new CorrelationId(syncJobParameters.CorrelationId);
 
@@ -23,7 +23,7 @@ namespace Relativity.Sync
 			containerBuilder.RegisterInstance(new ContextLogger(correlationId, logger)).As<ISyncLog>();
 			containerBuilder.RegisterInstance(syncJobParameters).As<SyncJobParameters>();
 			containerBuilder.RegisterInstance(correlationId).As<CorrelationId>();
-			containerBuilder.RegisterInstance(configuration).As<SyncConfiguration>();
+			containerBuilder.RegisterInstance(configuration).As<SyncJobExecutionConfiguration>();
 			containerBuilder.RegisterType<SyncExecutionContextFactory>().As<ISyncExecutionContextFactory>();
 			containerBuilder.RegisterType<AppDomainWrapper>().As<IAppDomain>();
 					

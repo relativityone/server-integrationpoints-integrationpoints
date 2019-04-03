@@ -19,7 +19,7 @@
 	  <Folder Include="Resources\" />
 	</ItemGroup>
 	<ItemGroup>
-	  <None Update="Resources\Relativity_Sync_Test_Helper.rap">
+	  <None Update="Resources\Relativity_Sync_Test_Helper.xml">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>
 	</ItemGroup>

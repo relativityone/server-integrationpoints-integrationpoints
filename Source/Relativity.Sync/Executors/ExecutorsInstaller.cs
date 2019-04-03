@@ -1,7 +1,7 @@
 ﻿using Autofac;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.ExecutionConstrains;
-using Relativity.Sync.Executors.Validation;
+using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Executors
 {
@@ -25,6 +25,10 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<SourceWorkspaceTagsCreationExecutor>().As<IExecutor<ISourceWorkspaceTagsCreationConfiguration>>();
 			builder.RegisterType<DestinationWorkspaceTagsCreationExecutionConstrains>().As<IExecutionConstrains<IDestinationWorkspaceTagsCreationConfiguration>>();
 			builder.RegisterType<DestinationWorkspaceTagsCreationExecutor>().As<IExecutor<IDestinationWorkspaceTagsCreationConfiguration>>();
+
+			builder.RegisterType<BatchRepository>().As<IBatchRepository>();
+			builder.RegisterType<ProgressRepository>().As<IProgressRepository>();
+			builder.RegisterType<SemaphoreSlimWrapper>().As<ISemaphoreSlim>();
 		}
 	}
 }
