@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.SecretStore;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Models;
@@ -123,10 +124,11 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 				IntegrationPoint = integrationPointModel
 			};
 
-			var createdIntegrationPoint = _client.CreateIntegrationPointAsync(createRequest).Result;
+			IntegrationPointModel createdIntegrationPoint = _client.CreateIntegrationPointAsync(createRequest).Result;
 
-			var actualIntegrationPoint = CaseContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(createdIntegrationPoint.ArtifactId);
-			var expectedIntegrationPointModel = createRequest.IntegrationPoint;
+			Data.IntegrationPoint actualIntegrationPoint =
+				IntegrationPointRepository.ReadAsync(createdIntegrationPoint.ArtifactId).GetAwaiter().GetResult();
+			IntegrationPointModel expectedIntegrationPointModel = createRequest.IntegrationPoint;
 
 			Assert.That(expectedIntegrationPointModel.Name, Is.EqualTo(actualIntegrationPoint.Name));
 			Assert.That(expectedIntegrationPointModel.DestinationProvider, Is.EqualTo(actualIntegrationPoint.DestinationProvider));
@@ -138,13 +140,16 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 		[Test]
 		public void ItShouldCreateIntegrationPointBasedOnProfile()
 		{
-			string integrationPointName = "ip_name_234";
+			const string integrationPointName = "ip_name_234";
 
-			var profile = CreateOrUpdateIntegrationPointProfile(CreateDefaultIntegrationPointProfileModel(ImportOverwriteModeEnum.AppendOnly, "profile_name", "Append Only", true));
+			IntegrationPointProfileModel profile = CreateOrUpdateIntegrationPointProfile(
+				CreateDefaultIntegrationPointProfileModel(ImportOverwriteModeEnum.AppendOnly, "profile_name", "Append Only", true));
 
-			var integrationPointModel = _client.CreateIntegrationPointFromProfileAsync(SourceWorkspaceArtifactId, profile.ArtifactID, integrationPointName).Result;
+			IntegrationPointModel integrationPointModel = _client
+				.CreateIntegrationPointFromProfileAsync(SourceWorkspaceArtifactId, profile.ArtifactID, integrationPointName).Result;
 
-			var actualIntegrationPoint = CaseContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(integrationPointModel.ArtifactId);
+			Data.IntegrationPoint actualIntegrationPoint =
+				IntegrationPointRepository.ReadAsync(integrationPointModel.ArtifactId).GetAwaiter().GetResult();
 
 			Assert.That(actualIntegrationPoint.Name, Is.EqualTo(integrationPointName));
 			Assert.That(actualIntegrationPoint.SourceProvider, Is.EqualTo(profile.SourceProvider));
@@ -202,10 +207,13 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 
 			IntegrationPointModel createdIntegrationPoint = _client.CreateIntegrationPointAsync(createRequest).Result;
 
-			Data.IntegrationPoint actualIntegrationPoint = CaseContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(createdIntegrationPoint.ArtifactId);
+			Data.IntegrationPoint actualIntegrationPoint =
+				IntegrationPointRepository.ReadAsync(createdIntegrationPoint.ArtifactId).GetAwaiter().GetResult();
 			IntegrationPointModel expectedIntegrationPointModel = createRequest.IntegrationPoint;
 
-			IntegrationPointBaseHelper.AssertIntegrationPointModelBase(actualIntegrationPoint, expectedIntegrationPointModel, new IntegrationPointFieldGuidsConstants());
+			IntegrationPointBaseHelper.AssertIntegrationPointModelBase(actualIntegrationPoint, 
+				expectedIntegrationPointModel,
+				new IntegrationPointFieldGuidsConstants());
 		}
 	}
 }

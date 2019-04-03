@@ -139,13 +139,10 @@
     <Compile Include="Monitoring\MessageSink\ExternalCalls\ExternalCallsJobSummaryMessage.cs" />
     <Compile Include="Monitoring\MessageSink\ExternalCalls\ExternalCallsSink.cs" />
     <Compile Include="Queries\IGetSourceProviderRdoByIdentifier.cs" />
-    <Compile Include="Serialization\SerializerWithLogging.cs" />
     <Compile Include="ServiceManagerProvider.cs" />
     <Compile Include="IContextContainer.cs" />
     <Compile Include="Factories\IContextContainerFactory.cs" />
-    <Compile Include="IIntegrationPointSerializer.cs" />
     <Compile Include="Installers\ValidationInstaller.cs" />
-    <Compile Include="IntegrationPointSerializer.cs" />
     <Compile Include="Managers\Implementations\FederatedInstanceManager.cs" />
     <Compile Include="Managers\Implementations\InstanceSettingsManager.cs" />
     <Compile Include="RelativitySourceRdo\IRelativitySourceJobRdoInitializer.cs" />
@@ -160,7 +157,6 @@
     <Compile Include="RelativitySourceRdo\RelativitySourceRdoHelpersFactory.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceRdoObjectType.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceWorkspaceRdoInitializer.cs" />
-    <Compile Include="Services\Domain\AppDomainFactory.cs" />
     <Compile Include="Services\Domain\AppDomainIsolatedFactoryCreationStrategy.cs" />
     <Compile Include="Services\Domain\IProviderFactoryLifecycleStrategy.cs" />
     <Compile Include="Services\Domain\ProviderFactoryCreationStrategy.cs" />

@@ -1,46 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using Castle.Windsor;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Agent.Tasks;
-using kCura.IntegrationPoints.Agent.Validation;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
-using kCura.IntegrationPoints.Data.Extensions;
-using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
-using kCura.WinEDDS;
 using kCura.WinEDDS.Api;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
-using Choice = kCura.Relativity.Client.DTOs.Choice;
-
-using kCura.IntegrationPoints.ImportProvider.Parser;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
@@ -81,6 +67,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IImportFileLocationService _importFileLocationService;
 		private IDataReader _opticonFileReader;
 		private IDataReader _loadFileReader;
+		private IIntegrationPointRepository _integrationPointRepository;
 
 		private Job _job;
 		private Data.IntegrationPoint _integrationPoint;
@@ -117,6 +104,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_sourceWorkspaceManager = Substitute.For<ISourceWorkspaceManager>();
 			_sourceJobManager = Substitute.For<ISourceJobManager>();
 			_managerFactory = Substitute.For<IManagerFactory>();
+			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
 
 			_sendingEmailNotification = Substitute.For<IBatchStatus>();
 			_updateJobHistoryStatus = Substitute.For<IBatchStatus>();
@@ -170,7 +158,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_mappings = new List<FieldMap>();
 			_updateStatusType = new JobHistoryErrorDTO.UpdateStatusType();
 
-			_caseContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(job.RelatedObjectArtifactID).Returns(_integrationPoint);
+			_integrationPointRepository.ReadAsync(job.RelatedObjectArtifactID).Returns(_integrationPoint);
 			_serializer.Deserialize<SourceConfiguration>(_integrationPoint.SourceConfiguration).Returns(_configuration);
 			_serializer.Deserialize<TaskParameters>(job.JobDetails).Returns(_taskParameters);
 			_jobHistoryService.GetOrCreateScheduledRunHistoryRdo(_integrationPoint, _taskParameters.BatchInstance, Arg.Any<DateTime>()).Returns(_jobHistory);
@@ -200,12 +188,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_serializer.Deserialize<TaskParameters>(job.JobDetails)
 				.Returns(_taskParameters);
 			_jobHistoryService.GetRdo(Arg.Is<Guid>( guid => guid == _taskParameters.BatchInstance)).Returns(_jobHistory);
-			_instance = new ImportServiceManager(_helper,
-				_caseContext, _contextContainerFactory,
-				_synchronizerFactory,
-				_claimPrincipleFactory,	_managerFactory, _batchStatuses, _serializer, _jobService, _scheduleRuleFactory, _jobHistoryService,
-				_jobHistoryErrorService, _jobStatisticsService,
-				_dataReaderFactory, _importFileLocationService, _agentValidator);
+			_instance = new ImportServiceManager(_helper, _caseContext, _contextContainerFactory, _synchronizerFactory,
+				_claimPrincipleFactory, _managerFactory, _batchStatuses, _serializer, _jobService, _scheduleRuleFactory,
+				_jobHistoryService, _jobHistoryErrorService, _jobStatisticsService, _dataReaderFactory, _importFileLocationService,
+				_agentValidator, _integrationPointRepository);
 		}
 
 

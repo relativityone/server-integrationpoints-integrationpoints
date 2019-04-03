@@ -1,9 +1,8 @@
 ﻿using System;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Core.Serialization;
 using Relativity.API;
 
-namespace kCura.IntegrationPoints.Core
+namespace kCura.IntegrationPoints.Data
 {
 	public class IntegrationPointSerializer : IIntegrationPointSerializer
 	{

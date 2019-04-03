@@ -7,7 +7,6 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Agent.Tasks;
-using kCura.IntegrationPoints.Agent.Validation;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
@@ -79,6 +78,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IDocumentRepository _documentRepository;
 		private IWorkspaceRepository _workspaceRepository;
 		private IExporterService _exporterService;
+		private IIntegrationPointRepository _integrationPointRepository;
 
 		private Job _job;
 		private Data.IntegrationPoint _integrationPoint;
@@ -120,6 +120,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_tagSavedSearchManager = Substitute.For<ITagSavedSearchManager>();
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
 			_managerFactory = Substitute.For<IManagerFactory>();
+			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
 
 			_sendingEmailNotification = Substitute.For<IBatchStatus>();
 			_updateJobHistoryStatus = Substitute.For<IBatchStatus>();
@@ -176,7 +177,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_mappings = new List<FieldMap>();
 			_updateStatusType = new JobHistoryErrorDTO.UpdateStatusType();
 
-			_caseContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(job.RelatedObjectArtifactID).Returns(_integrationPoint);
+			_integrationPointRepository.ReadAsync(job.RelatedObjectArtifactID).Returns(_integrationPoint);
 			_serializer.Deserialize<SourceConfiguration>(_integrationPoint.SourceConfiguration).Returns(_configuration);
 			_serializer.Deserialize<TaskParameters>(job.JobDetails).Returns(_taskParameters);
 			_jobHistoryService.GetOrCreateScheduledRunHistoryRdo(_integrationPoint, _taskParameters.BatchInstance, Arg.Any<DateTime>()).Returns(_jobHistory);
@@ -218,7 +219,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				_jobHistoryErrorService,
 				_jobStatisticsService,
 				null,
-				_agentValidator);
+				_agentValidator,
+				_integrationPointRepository);
 			_managerFactory.CreateJobHistoryManager(_contextContainer).Returns(_historyManager);
 		}
 
@@ -226,7 +228,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		public void Execute_FailToLoadIntegrationPointRDO()
 		{
 			// ARRANGE
-			_caseContext.RsapiService.RelativityObjectManager.Read<Data.IntegrationPoint>(_job.RelatedObjectArtifactID).Returns((Data.IntegrationPoint)null);
+			_integrationPointRepository.ReadAsync(_job.RelatedObjectArtifactID).Returns((Data.IntegrationPoint) null);
 
 			// ACT
 			_instance.Execute(_job);
@@ -432,7 +434,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				_jobHistoryErrorService,
 				_jobStatisticsService,
 				null,
-				_agentValidator);
+				_agentValidator,
+				_integrationPointRepository);
 			try
 			{
 				instance.Execute(_job);

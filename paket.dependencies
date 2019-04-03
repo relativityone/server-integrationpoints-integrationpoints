@@ -4,18 +4,17 @@ strategy: min
 source https://proget.kcura.corp/nuget/NuGet
 
 //Main Relativity packages
-nuget kCura 10.2.66.96-DEV
-nuget kCura.Agent 10.2.66.96-DEV
-nuget kCura.EventHandler 10.2.66.96-DEV
-nuget kCura.Relativity.Client 10.2.66.96-DEV
-nuget Relativity.Authentication 10.2.66.96-DEV
-nuget Relativity.Core 10.2.66.96-DEV
-nuget Relativity.CustomPages 10.2.66.96-DEV
-nuget Relativity.Data 10.2.66.96-DEV
-nuget Relativity.ImportExport 10.2.66.96-DEV
-nuget Relativity.ObjectManager 10.2.66.96-DEV
-nuget RelativityCore 10.2.66.96-DEV
-nuget Relativity.Services.Interfaces 10.2.66.96-DEV
+nuget kCura 10.2.71.112-DEV
+nuget kCura.Agent 10.2.71.112-DEV
+nuget kCura.EventHandler 10.2.71.112-DEV
+nuget kCura.Relativity.Client 10.2.71.112-DEV
+nuget Relativity.Authentication 10.2.71.112-DEV
+nuget Relativity.Core 10.2.71.112-DEV
+nuget Relativity.CustomPages 10.2.71.112-DEV
+nuget Relativity.Data 10.2.71.112-DEV
+nuget Relativity.ImportExport 10.2.71.112-DEV
+nuget RelativityCore 10.2.71.112-DEV
+nuget Relativity.Services.Interfaces 10.2.71.112-DEV
 
 //Other Relativity packages
 nuget Relativity.DataTransfer.MessageService ~> 10.2.0
@@ -24,8 +23,8 @@ nuget kCura.LongPath 1.0.19
 nuget Relativity.Audit.SDK 1.1.13
 nuget Relativity.OAuth2Client 1.0.27
 nuget Relativity.Productions.Services.Interfaces 10.2.16
-nuget Relativity.Telemetry.APM 2019.1.0
-nuget Relativity.Telemetry.Services.Interface 2019.1.0
+nuget Relativity.Telemetry.APM 2019.1.1
+nuget Relativity.Telemetry.Services.Interface 2019.1.1
 nuget kCura.FreeImage 3.17.0.1
 nuget Relativity.DataGrid 12.0.0
 
@@ -60,7 +59,7 @@ nuget NUnit 3.4.1
 nuget Selenium.Support 3.141.0
 nuget DotNetSeleniumExtras.PageObjects 3.11.0
 nuget DotNetSeleniumExtras.WaitHelpers 3.11.0
-nuget Selenium.WebDriver.ChromeDriver 72.0.3626.69
+nuget Selenium.WebDriver.ChromeDriver 73.0.3683.68
 nuget Selenium.WebDriver.GeckoDriver 0.24.0
 
 //Analyzers

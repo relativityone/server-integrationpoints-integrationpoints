@@ -135,9 +135,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		#region User Settings
 
-		public static string RelativityUserName => AppSettingString("AdminUsername");
+		public static string RelativityUserName => GetEnvVariableOrAppSettingString("ripTestsAdminUsername", "AdminUsername");
 
-		public static string RelativityPassword => AppSettingString("AdminPassword");
+		public static string RelativityPassword => GetEnvVariableOrAppSettingString("ripTestsAdminPassword", "AdminPassword");
 
 		public static string RelativityUserFirstName => AppSettingString("relativityUserFirstName");
 
@@ -177,18 +177,18 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static bool UiDriverServiceHideCommandPromptWindow => AppSettingBool("UI.DriverService.HideCommandPromptWindow");
 
-		public static string UiMaxChromeSupportedVersion => AppSettingString("UI.ChromeDriver.MaxSupportedVersion");
-
 		public static string UiDriverServiceLogPath => AppSettingString("UI.DriverService.LogPath");
 
 		public static bool UiOptionsAcceptInsecureCertificates => AppSettingBool("UI.Options.AcceptInsecureCertificates");
 
 		public static bool UiOptionsArgumentsDisableInfobars => AppSettingBool("UI.Options.Arguments.DisableInfoBars");
-
+		
 		public static bool UiOptionsArgumentsHeadless => AppSettingBool("UI.Options.Arguments.Headless");
 
 		public static bool UiOptionsArgumentsIgnoreCertificateErrors => AppSettingBool("UI.Options.Arguments.IgnoreCertificateErrors");
 
+		public static bool UiOptionsArgumentsNoSandbox => AppSettingBool("UI.Options.Arguments.NoSandbox");
+		
 		public static bool UiOptionsAdditionalCapabilitiesAcceptSslCertificates =>
 			AppSettingBool("UI.Options.AdditionalCapabilities.AcceptSslCertificates");
 
@@ -369,6 +369,15 @@ namespace kCura.IntegrationPoint.Tests.Core
 				}
 			}
 			return false;
+		}
+
+		private static string GetEnvVariableOrAppSettingString(string envVariableName, string appSettingName)
+		{
+			string envVariableValue = Environment.GetEnvironmentVariable(envVariableName);
+
+			return !string.IsNullOrEmpty(envVariableValue)
+				? envVariableValue
+				: AppSettingString(appSettingName);
 		}
 
 		private static string GetAppSettingStringOrDefault(string settingName, Func<string> defaultValueProvider)

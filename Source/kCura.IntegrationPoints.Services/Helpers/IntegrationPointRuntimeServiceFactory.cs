@@ -1,7 +1,7 @@
-﻿using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Core.Contracts;
+﻿using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Data;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Services.Helpers

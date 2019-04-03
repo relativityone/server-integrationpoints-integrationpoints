@@ -72,7 +72,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IJobHistoryErrorService jobHistoryErrorService,
 			JobStatisticsService statisticsService, 
 			IToggleProvider toggleProvider,
-			IAgentValidator agentValidator)
+			IAgentValidator agentValidator,
+			IIntegrationPointRepository integrationPointRepository)
 			: base(helper,
 				jobService,
 				serializer,
@@ -86,7 +87,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				onBehalfOfUserClaimsPrincipalFactory,
 				statisticsService,
 				synchronizerFactory,
-				agentValidator)
+				agentValidator,
+				integrationPointRepository)
 		{
 
 			_contextContainerFactory = contextContainerFactory;

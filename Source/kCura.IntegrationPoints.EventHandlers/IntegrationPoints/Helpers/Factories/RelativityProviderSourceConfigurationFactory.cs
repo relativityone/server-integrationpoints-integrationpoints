@@ -4,6 +4,7 @@ using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Domain.Managers;

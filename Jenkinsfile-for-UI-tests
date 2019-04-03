@@ -17,6 +17,21 @@ properties([
 	],
 	parameters([
 		string(
+			name: 'ripUiTestsConfig', 
+			defaultValue: '', 
+			description: 'Set UI tests config file'
+		),
+		string(
+			name: 'ripTestsAdminUsername', 
+			defaultValue: '', 
+			description: 'Set test user username'
+		),
+		password(
+			name: 'ripTestsAdminPassword', 
+			defaultValue: '', 
+			description: 'Set test user password'
+		),
+		string(
 			name: 'relativityBranch', 
 			defaultValue: '', 
 			description: 'Set Relativity branch'
@@ -64,7 +79,7 @@ properties([
 // *********
 // Set variable below to the branch name, when you create new release branch!!!
 // This should be changed on the release branch
-def relativityBranchFallback = "develop"
+def relativityBranchFallback = "release-10.2-foxglove"
 
 def jenkinsHelpers = null
 
@@ -130,7 +145,17 @@ timestamps
 					stage ('UI Tests')
 					{
 						jenkinsHelpers.updateChromeToLatestVersion()
-						jenkinsHelpers.runUiTests()
+
+						withEnv([
+							"ripUiTestsConfig=$params.ripUiTestsConfig",
+							"ripTestsAdminUsername=$params.ripTestsAdminUsername",
+							"ripTestsAdminPassword=$params.ripTestsAdminPassword"
+						]) {
+							echo "Value of ripUiTestsConfig environment variable: $env.ripUiTestsConfig"
+							echo "Value of ripTestsAdminUsername environment variable: $env.ripTestsAdminUsername"
+
+							jenkinsHelpers.runUiTests()
+						}						
 					}
 				}
 				finally

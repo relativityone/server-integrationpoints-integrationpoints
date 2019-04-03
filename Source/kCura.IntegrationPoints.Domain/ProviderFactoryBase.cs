@@ -4,6 +4,7 @@ using System.Linq;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Domain.Exceptions;
+using kCura.IntegrationPoints.Domain.Wrappers;
 
 namespace kCura.IntegrationPoints.Domain
 {
@@ -32,7 +33,7 @@ namespace kCura.IntegrationPoints.Domain
 		{
 			Type t = GetType(identifier);
 			IDataSourceProvider provider = CreateInstance(t);
-			return new ProviderWrapper(provider);
+			return new CrossAppDomainProviderWrapper(provider);
 		}
 
 		/// <summary>

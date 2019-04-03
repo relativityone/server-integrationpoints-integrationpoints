@@ -19,6 +19,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
@@ -57,7 +58,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IManagerFactory managerFactory,
 			IContextContainerFactory contextContainerFactory,
 			IJobService jobService, 
-			IProviderTypeService providerTypeService) :
+			IProviderTypeService providerTypeService,
+			IIntegrationPointRepository integrationPointRepository) :
 			this(caseServiceContext,
 				helper,
 				dataProviderFactory,
@@ -70,7 +72,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				statisticsService,
 				managerFactory,
 				contextContainerFactory,
-				jobService, 
+				jobService,
+				integrationPointRepository,
 				true)
 		{
 			_providerTypeService = providerTypeService;
@@ -89,7 +92,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			JobStatisticsService statisticsService,
 			IManagerFactory managerFactory,
 			IContextContainerFactory contextContainerFactory,
-			IJobService jobService, 
+			IJobService jobService,
+			IIntegrationPointRepository integrationPointRepository,
 			bool isStoppable) :
 			base(caseServiceContext,
 				helper,
@@ -101,7 +105,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				jobManager,
 				managerFactory,
 				contextContainerFactory,
-				jobService)
+				jobService,
+				integrationPointRepository)
 		{
 			BatchStatus = statuses;
 			_statisticsService = statisticsService;
