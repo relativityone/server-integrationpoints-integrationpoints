@@ -5,7 +5,7 @@ using kCura.IntegrationPoints.Core.Services.Provider;
 
 namespace kCura.IntegrationPoints.Core.Services.Domain
 {
-	public class DataProviderBuilder : IDataProviderFactory
+	internal class DataProviderBuilder : IDataProviderFactory
 	{
 		private readonly ProviderFactoryVendor _providerFactoryVendor;
 

@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.SourceProviderInstaller;
 using Relativity.API;
 using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoints.Contracts;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {

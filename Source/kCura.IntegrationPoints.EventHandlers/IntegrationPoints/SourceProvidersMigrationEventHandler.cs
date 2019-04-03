@@ -1,12 +1,11 @@
 ﻿using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.SourceProviderInstaller;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using SourceProvider = kCura.IntegrationPoints.SourceProviderInstaller.SourceProvider;
+using SourceProvider = kCura.IntegrationPoints.Contracts.SourceProvider;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {

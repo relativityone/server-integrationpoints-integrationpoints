@@ -4,7 +4,7 @@ using kCura.IntegrationPoints.Contracts;
 
 namespace kCura.IntegrationPoints.Core.Services.Domain
 {
-	public class ProviderFactoryVendor : IDisposable
+	internal class ProviderFactoryVendor : IDisposable
 	{
 		private readonly ConcurrentDictionary<Guid, IProviderFactory> _factories = new ConcurrentDictionary<Guid, IProviderFactory>();
 

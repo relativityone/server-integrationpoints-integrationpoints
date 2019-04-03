@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Core.Services
 				Condition = $"'ArtifactId' in [{string.Join(",", integrationPointsId)}]"
 
 			};
-			List<Data.IntegrationPoint> integrationPoints = objectManager.Query<Data.IntegrationPoint>(request);
+			IList<Data.IntegrationPoint> integrationPoints = objectManager.Query<Data.IntegrationPoint>(request);
 
 			// Since 9.4 release we're not deleting job history RDOs (they've being used by ECA Dashboard)
 			// We're also not removing JobHistoryErrors as it was taking too long (SQL timeouts)

@@ -1,6 +1,5 @@
 ﻿using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Repositories;
 using Relativity.API;
 using System;
@@ -8,9 +7,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace kCura.IntegrationPoints.Services.Provider
+namespace kCura.IntegrationPoints.Core.Provider
 {
-	internal class ProviderUninstaller
+	public class ProviderUninstaller
 	{
 		private readonly IAPILog _logger;
 		private readonly IRelativityObjectManager _objectManager;

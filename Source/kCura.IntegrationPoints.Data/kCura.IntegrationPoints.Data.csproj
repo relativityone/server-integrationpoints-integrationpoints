@@ -242,7 +242,6 @@
     <Compile Include="Queries\GetJobEntityManagerLinks.cs" />
     <Compile Include="Queries\CreateEntityManagerResourceTable.cs" />
     <Compile Include="Queries\GetApplicationBinaries.cs" />
-    <Compile Include="Queries\GetApplicationGuid.cs" />
     <Compile Include="Queries\JobHistoryErrorQuery.cs" />
     <Compile Include="Queries\JobStatisticsQuery.cs" />
     <Compile Include="RdoHelper.cs" />

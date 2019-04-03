@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 	[TestFixture]
 	internal class SourceProvidersMigrationEventHandlerTests : SourceProvidersMigrationEventHandler
 	{
-		private List<SourceProvider> _providersStub;
+		private List<Data.SourceProvider> _providersStub;
 		private Mock<IProviderManager> _providerManagerMock;
 
 		private static readonly Mock<IErrorService> _errorServiceMock = new Mock<IErrorService>();
@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 			Helper = helper.Object;
 		}
 
-		protected override List<SourceProvider> GetSourceProvidersFromPreviousWorkspace()
+		protected override List<Data.SourceProvider> GetSourceProvidersFromPreviousWorkspace()
 		{
 			return _providersStub;
 		}
@@ -55,7 +55,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 		public void NoProviderInPreviousWorkspace()
 		{
 			// arrange
-			_providersStub = new List<SourceProvider>();
+			_providersStub = new List<Data.SourceProvider>();
 
 			// act
 			Response actual = Execute();
@@ -82,7 +82,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 			const string dataUrl = "config url";
 
 			// arrange
-			var providerToInstalled = new SourceProvider
+			var providerToInstalled = new Data.SourceProvider
 			{
 				ApplicationIdentifier = appIdentifier.ToString(),
 				Identifier = identifier.ToString(),
@@ -93,7 +93,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 				Config = new SourceProviderConfiguration()
 			};
 
-			_providersStub = new List<SourceProvider>
+			_providersStub = new List<Data.SourceProvider>
 			{
 				providerToInstalled
 			};
@@ -112,7 +112,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 		public void MultipleProvidersInPreviousWorkspace()
 		{
 			// arrange
-			var providerToInstalled = new SourceProvider
+			var providerToInstalled = new Data.SourceProvider
 			{
 				ApplicationIdentifier = "72194851-ad15-4769-bec5-04011498a1b4",
 				Identifier = "e01ff2d2-2ac7-4390-bbc3-64c6c17758bc",
@@ -123,7 +123,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 				Config = new SourceProviderConfiguration()
 			};
 
-			var provider2ToInstalled = new SourceProvider
+			var provider2ToInstalled = new Data.SourceProvider
 			{
 				ApplicationIdentifier = "cf3ab0f2-d26f-49fb-bd11-547423a692c1",
 				Identifier = "e01ff2d2-2ac7-4390-bbc3-64c6c17758bd",
@@ -134,7 +134,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 				Config = new SourceProviderConfiguration()
 			};
 
-			_providersStub = new List<SourceProvider>
+			_providersStub = new List<Data.SourceProvider>
 			{
 				providerToInstalled,
 				provider2ToInstalled

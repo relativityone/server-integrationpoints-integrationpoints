@@ -71,8 +71,10 @@
     <Compile Include="BatchStatusCommands\Implementations\TargetDocumentsTaggingManager.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TargetDocumentsTaggingManagerFactory.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TempTableReader.cs" />
+    <Compile Include="Provider\GetApplicationGuid.cs" />
     <Compile Include="Provider\GetSourceProviderRDOByApplicationIdentifier.cs" />
     <Compile Include="Provider\ProviderInstaller.cs" />
+    <Compile Include="Provider\ProviderUninstaller.cs" />
     <Compile Include="Validation\IAgentValidator.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="ContextContainer.cs" />

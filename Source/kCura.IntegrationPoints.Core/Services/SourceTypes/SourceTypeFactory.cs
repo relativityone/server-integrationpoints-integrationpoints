@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using kCura.IntegrationPoints.Contracts;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Extensions;
+﻿using kCura.IntegrationPoints.Contracts;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Transformers;
 using Relativity.Services.Objects.DataContracts;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace kCura.IntegrationPoints.Core.Services.SourceTypes
 {
@@ -21,22 +18,22 @@ namespace kCura.IntegrationPoints.Core.Services.SourceTypes
 
 	public class SourceTypeFactory : ISourceTypeFactory
 	{
-		private readonly ICaseServiceContext _context;
+		private readonly IRelativityObjectManager _objectManager;
 
-		public SourceTypeFactory(ICaseServiceContext context)
+		public SourceTypeFactory(IRelativityObjectManager objectManager)
 		{
-			_context = context;
+			_objectManager = objectManager;
 		}
 
 		public virtual IEnumerable<SourceType> GetSourceTypes()
 		{
-			QueryRequest request = new QueryRequest()
+			var request = new QueryRequest
 			{
-				Fields = new SourceProvider().ToFieldList()
+				Fields = new Data.SourceProvider().ToFieldList()
 			};
 
-			var types = _context.RsapiService.RelativityObjectManager.Query<SourceProvider>(request);
-			return types.Select(x => new SourceType { Name = x.Name, ID = x.Identifier, SourceURL = x.SourceConfigurationUrl, ArtifactID = x.ArtifactId, Config = x.Config}).OrderBy(x => x.Name).ToList();
+			IList<Data.SourceProvider> types = _objectManager.Query<Data.SourceProvider>(request);
+			return types.Select(x => new SourceType { Name = x.Name, ID = x.Identifier, SourceURL = x.SourceConfigurationUrl, ArtifactID = x.ArtifactId, Config = x.Config }).OrderBy(x => x.Name).ToList();
 		}
 	}
 }

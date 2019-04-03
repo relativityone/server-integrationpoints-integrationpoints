@@ -4,13 +4,13 @@ using kCura.IntegrationPoints.Core.Provider;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Services.Helpers;
 using kCura.IntegrationPoints.Services.Installers;
-using kCura.IntegrationPoints.Services.Provider;
 using kCura.IntegrationPoints.Services.Repositories;
 using Relativity.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SourceProvider = kCura.IntegrationPoints.Contracts.SourceProvider;
 
 namespace kCura.IntegrationPoints.Services
 {
@@ -172,14 +172,14 @@ namespace kCura.IntegrationPoints.Services
 			}
 		}
 
-		private SourceProviderInstaller.SourceProvider ConvertToSourceProvider(ProviderToInstallDto dto)
+		private SourceProvider ConvertToSourceProvider(ProviderToInstallDto dto)
 		{
 			if (dto == null)
 			{
 				return null;
 			}
 
-			return new SourceProviderInstaller.SourceProvider
+			return new SourceProvider
 			{
 				Name = dto.Name,
 				Url = dto.Url,

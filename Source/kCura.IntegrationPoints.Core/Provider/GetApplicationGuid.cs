@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Relativity.API;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using Relativity.API;
 
-namespace kCura.IntegrationPoints.Data.Queries
+namespace kCura.IntegrationPoints.Core.Provider
 {
-	public class GetApplicationGuid // TODO move it to proper project
+	public class GetApplicationGuid
 	{
 		private readonly IDBContext _caseDBcontext;
 
@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Data.Queries
 		public Guid? Execute(int applicationID)
 		{
 			Guid? applicationGuid = null;
-			var sql = Resources.Resource.GetApplicationGuid;
+			var sql = Data.Resources.Resource.GetApplicationGuid;
 			var sqlParams = new List<SqlParameter>();
 			sqlParams.Add(new SqlParameter("@ApplicationID", applicationID));
 

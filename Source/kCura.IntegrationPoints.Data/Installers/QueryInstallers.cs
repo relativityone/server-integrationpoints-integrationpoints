@@ -19,7 +19,6 @@ namespace kCura.IntegrationPoints.Data.Installers
 		{
 			container.Register(Component.For<CreateEntityManagerResourceTable>().ImplementedBy<CreateEntityManagerResourceTable>().LifestyleTransient());
 			container.Register(Component.For<CreateErrorRdoQuery>().ImplementedBy<CreateErrorRdoQuery>().LifestyleTransient());
-			container.Register(Component.For<GetApplicationGuid>().ImplementedBy<GetApplicationGuid>().LifestyleTransient());
 			container.Register(Component.For<GetJobEntityManagerLinks>().ImplementedBy<GetJobEntityManagerLinks>().LifestyleTransient());
 			container.Register(Component.For<GetJobsCount>().ImplementedBy<GetJobsCount>().LifestyleTransient());
 			container.Register(Component.For<IJobResourceTracker>().ImplementedBy<JobResourceTracker>().LifestyleTransient());

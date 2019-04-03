@@ -15,13 +15,13 @@ namespace kCura.IntegrationPoints.Core.Provider
 {
 	public class ProviderInstaller // TODO introduce interface
 	{
+		private const int _ADMIN_CASE_ID = -1;
+		
 		private readonly IAPILog _logger;
 		private readonly IRelativityObjectManager _objectManager;
 		private readonly IDBContext _dbContext;
 		private readonly IHelper _helper;
-
-		private const int _ADMIN_CASE_ID = -1;
-
+		
 		public ProviderInstaller(
 			IAPILog logger,
 			IRelativityObjectManager objectManager,
@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Core.Provider
 			_helper = helper;
 		}
 
-		public async Task InstallProvidersAsync(IEnumerable<SourceProviderInstaller.SourceProvider> providersToInstall)
+		public async Task InstallProvidersAsync(IEnumerable<IntegrationPoints.Contracts.SourceProvider> providersToInstall)
 		{
 			await Task.Yield(); // TODO remove it
 
@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.Core.Provider
 				var dataProviderBuilder = new DataProviderBuilder(vendor);
 
 				// install one provider at a time
-				foreach (SourceProviderInstaller.SourceProvider provider in providersToInstall)
+				foreach (IntegrationPoints.Contracts.SourceProvider provider in providersToInstall)
 				{
 					// when we migrate providers, we should already know which app does the provider belong to.
 					if (provider.ApplicationGUID == Guid.Empty)
@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoints.Core.Provider
 			}
 		}
 
-		private void AddOrUpdateProvider(SourceProviderInstaller.SourceProvider provider)
+		private void AddOrUpdateProvider(IntegrationPoints.Contracts.SourceProvider provider)
 		{
 			Dictionary<Guid, SourceProvider> installedRdoProviderDict = GetInstalledRdoProviders(provider);
 
@@ -78,7 +78,7 @@ namespace kCura.IntegrationPoints.Core.Provider
 			}
 		}
 
-		private Dictionary<Guid, SourceProvider> GetInstalledRdoProviders(SourceProviderInstaller.SourceProvider provider)
+		private Dictionary<Guid, SourceProvider> GetInstalledRdoProviders(IntegrationPoints.Contracts.SourceProvider provider)
 		{
 			List<SourceProvider> installedRdoProviders =
 				new GetSourceProviderRdoByApplicationIdentifier(_objectManager).Execute(provider.ApplicationGUID);
@@ -96,7 +96,7 @@ namespace kCura.IntegrationPoints.Core.Provider
 			}
 		}
 
-		private void UpdateExistingProvider(SourceProvider existingProviderDto, SourceProviderInstaller.SourceProvider provider)
+		private void UpdateExistingProvider(SourceProvider existingProviderDto, IntegrationPoints.Contracts.SourceProvider provider)
 		{
 			existingProviderDto.Name = provider.Name;
 			existingProviderDto.SourceConfigurationUrl = provider.Url;
@@ -107,7 +107,7 @@ namespace kCura.IntegrationPoints.Core.Provider
 			_objectManager.Update(existingProviderDto);
 		}
 
-		private void AddProvider(SourceProviderInstaller.SourceProvider newProvider)
+		private void AddProvider(IntegrationPoints.Contracts.SourceProvider newProvider)
 		{
 			if (newProvider == null)
 			{
@@ -126,12 +126,12 @@ namespace kCura.IntegrationPoints.Core.Provider
 			_objectManager.Create(providerDto);
 		}
 
-		private void ValidateProvider(DataProviderBuilder dataProviderBuilder, SourceProviderInstaller.SourceProvider provider)
+		private void ValidateProvider(DataProviderBuilder dataProviderBuilder, IntegrationPoints.Contracts.SourceProvider provider)
 		{
 			TryLoadingProvider(dataProviderBuilder, provider);
 		}
 
-		private void TryLoadingProvider(DataProviderBuilder factory, SourceProviderInstaller.SourceProvider provider)
+		private void TryLoadingProvider(DataProviderBuilder factory, IntegrationPoints.Contracts.SourceProvider provider)
 		{
 			try
 			{
