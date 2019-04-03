@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.Core.Provider
 {
-	public class ProviderInstaller // TODO introduce interface
+	public class ProviderInstaller : IProviderInstaller
 	{
 		private const int _ADMIN_CASE_ID = -1;
 
@@ -38,7 +38,20 @@ namespace kCura.IntegrationPoints.Core.Provider
 			_sourceProviderRepository = sourceProviderRepository;
 		}
 
-		public async Task InstallProvidersAsync(IEnumerable<IntegrationPoints.Contracts.SourceProvider> providersToInstall)
+		public async Task<bool> InstallProvidersAsync(IEnumerable<IntegrationPoints.Contracts.SourceProvider> providersToInstall)
+		{
+			try
+			{
+				return await InstallProvidersInternalAsync(providersToInstall);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Unhandled error occured while installing providers");
+				return false;
+			}
+		}
+
+		public async Task<bool> InstallProvidersInternalAsync(IEnumerable<IntegrationPoints.Contracts.SourceProvider> providersToInstall)
 		{
 			IDBContext adminCaseDbContext = _helper.GetDBContext(_ADMIN_CASE_ID);
 			IPluginProvider pluginProvider = new DefaultSourcePluginProvider(new GetApplicationBinaries(adminCaseDbContext));
@@ -63,6 +76,8 @@ namespace kCura.IntegrationPoints.Core.Provider
 					await AddOrUpdateProvider(provider).ConfigureAwait(false);
 				}
 			}
+
+			return true;
 		}
 
 		private async Task AddOrUpdateProvider(IntegrationPoints.Contracts.SourceProvider provider)

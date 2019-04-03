@@ -27,6 +27,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 	public abstract class IntegrationPointSourceProviderInstaller : PostInstallEventHandler
 	{
 		private const int _SEND_INSTALL_REQUEST_MAX_RETRIES_NUMBER = 3;
+		private const int _SEND_INSTALL_REQUEST_DELAY_BETWEEN_RETRIES_IN_MS = 3000;
 
 		private readonly Lazy<IAPILog> _logggerLazy;
 
@@ -110,10 +111,14 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 				Configuration = x.Value.Configuration
 			});
 
-			InstallSourceProvider(sourceProviders);
+			bool areSourceProvidersInstalledSuccessfully =	InstallSourceProviders(sourceProviders).GetAwaiter().GetResult();
+			if (!areSourceProvidersInstalledSuccessfully)
+			{
+				throw new InvalidSourceProviderException("An error occured while installing source providers");
+			}
 		}
 
-		internal virtual void InstallSourceProvider(IEnumerable<SourceProvider> sourceProviders) // TODO private protected
+		internal virtual Task<bool> InstallSourceProviders(IEnumerable<SourceProvider> sourceProviders)
 		{
 			var request = new InstallProviderRequest
 			{
@@ -121,24 +126,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 				ProvidersToInstall = sourceProviders.Select(ConvertSourceProviderToDto).ToList()
 			};
 
-			bool isProviderInstalled = SendInstallProviderRequest(request);
-			if (!isProviderInstalled)
-			{
-				// TODO throw proper exception
-			}
-		}
-
-		private bool SendInstallProviderRequest(InstallProviderRequest request)
-		{
-			try
-			{
-				return SendInstallProviderRequestWithRetriesAsync(request).GetAwaiter().GetResult();
-			}
-			catch (Exception ex)
-			{
-				Logger.LogError(ex, "Installing source provider failed");
-				throw; // TODO throw proper exception
-			}
+			return SendInstallProviderRequestWithRetriesAsync(request);
 		}
 
 		/// <summary>
@@ -159,13 +147,14 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 					attemptNumber,
 					_SEND_INSTALL_REQUEST_MAX_RETRIES_NUMBER
 				);
-				if (attemptNumber == _SEND_INSTALL_REQUEST_MAX_RETRIES_NUMBER)
+				if (attemptNumber >= _SEND_INSTALL_REQUEST_MAX_RETRIES_NUMBER)
 				{
-					throw;
+					return false;
 				}
 			}
 
-			return await SendInstallProviderRequestWithRetriesAsync(request, attemptNumber + 1);
+			await Task.Delay(_SEND_INSTALL_REQUEST_DELAY_BETWEEN_RETRIES_IN_MS).ConfigureAwait(false);
+			return await SendInstallProviderRequestWithRetriesAsync(request, attemptNumber + 1).ConfigureAwait(false);
 		}
 
 		private ProviderToInstallDto ConvertSourceProviderToDto(SourceProvider provider)

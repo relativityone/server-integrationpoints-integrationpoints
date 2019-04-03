@@ -131,9 +131,8 @@ namespace kCura.IntegrationPoints.Services
 			{
 				using (IWindsorContainer container = GetDependenciesContainer(request.WorkspaceID))
 				{
-					ProviderInstaller providerInstaller = container.Resolve<ProviderInstaller>();
-					await providerInstaller.InstallProvidersAsync(request.ProvidersToInstall.Select(ConvertToSourceProvider));
-					return true;
+					IProviderInstaller providerInstaller = container.Resolve<IProviderInstaller>();
+					return await providerInstaller.InstallProvidersAsync(request.ProvidersToInstall.Select(ConvertToSourceProvider));
 				}
 			}
 			catch (Exception e)

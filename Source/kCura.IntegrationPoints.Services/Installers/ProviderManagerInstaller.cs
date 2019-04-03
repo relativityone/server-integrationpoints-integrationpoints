@@ -2,7 +2,9 @@
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Core.Installers;
+using kCura.IntegrationPoints.Core.Provider;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Installers;
 using kCura.IntegrationPoints.Domain.Authentication;
@@ -10,8 +12,6 @@ using kCura.IntegrationPoints.Services.Repositories;
 using kCura.IntegrationPoints.Services.Repositories.Implementations;
 using Relativity.API;
 using System.Collections.Generic;
-using kCura.IntegrationPoints.Core.Provider;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 
 namespace kCura.IntegrationPoints.Services.Installers
 {
@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoints.Services.Installers
 			container.Register(Component.For<DeleteIntegrationPoints>().LifestyleTransient());
 			container.Register(Component.For<GetApplicationGuid>().ImplementedBy<GetApplicationGuid>().LifestyleTransient());
 
-			container.Register(Component.For<ProviderInstaller>().LifestyleTransient());
+			container.Register(Component.For<IProviderInstaller>().ImplementedBy<ProviderInstaller>().LifestyleTransient());
 			container.Register(Component.For<ProviderUninstaller>().LifestyleTransient());
 		}
 	}

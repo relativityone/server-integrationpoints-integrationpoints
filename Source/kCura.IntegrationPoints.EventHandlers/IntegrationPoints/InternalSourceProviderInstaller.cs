@@ -1,6 +1,5 @@
 ﻿using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Core.Provider;
-using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
@@ -8,6 +7,7 @@ using kCura.IntegrationPoints.SourceProviderInstaller;
 using Relativity.API;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
@@ -20,33 +20,54 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		protected InternalSourceProviderInstaller()
 		{
 			_logggerLazy = new Lazy<IAPILog>(
-				() => Helper.GetLoggerFactory().GetLogger().ForContext<IntegrationPointSourceProviderInstaller>()
+				() => Helper.GetLoggerFactory().GetLogger().ForContext<InternalSourceProviderInstaller>()
 			);
 		}
 
-		internal override void InstallSourceProvider(IEnumerable<SourceProvider> sourceProviders)
+		internal override async Task<bool> InstallSourceProviders(IEnumerable<SourceProvider> sourceProviders)
 		{
-			Logger.LogError("Installing internal RIP source provider"); // TODO debug/info
+			Logger.LogWarning("Installing internal RIP source providers, providers: {@sourceProviders}", sourceProviders); // TODO log info instead of warning
 
-			IDBContext workspaceDbContext = Helper.GetDBContext(Helper.GetActiveCaseID());
-			IRelativityObjectManager objectManager = CreateObjectManager();
-			var sourceProviderRepository = new SourceProviderRepository(objectManager);
+			IProviderInstaller providerInstaller = CreateProviderInstaller();
 
-			var providerInstaller = new ProviderInstaller(Logger, sourceProviderRepository, objectManager, workspaceDbContext, Helper);
-
-			providerInstaller.InstallProvidersAsync(sourceProviders).GetAwaiter().GetResult();
+			try
+			{
+				return await providerInstaller.InstallProvidersAsync(sourceProviders).ConfigureAwait(false);
+			}
+			catch (Exception ex)
+			{
+				Logger.LogError(ex, "Error occured while installing internal RIP source providers.");
+				return false;
+			}
 		}
 
-		#region ToRefactor
+		private IProviderInstaller CreateProviderInstaller()
+		{
+			try
+			{
+				IDBContext workspaceDbContext = Helper.GetDBContext(Helper.GetActiveCaseID());
+				IRelativityObjectManager objectManager = CreateObjectManager();
+				var sourceProviderRepository = new SourceProviderRepository(objectManager);
+
+				return new ProviderInstaller(
+					Logger,
+					sourceProviderRepository,
+					objectManager,
+					workspaceDbContext,
+					Helper
+				);
+			}
+			catch (Exception ex)
+			{
+				Logger.LogError(ex, "Error occured while creating instance of {type}", nameof(IProviderInstaller));
+				return null;
+			}
+		}
+
 		private IRelativityObjectManager CreateObjectManager()
 		{
-			return CreateObjectManagerFactory().CreateRelativityObjectManager(Helper.GetActiveCaseID());
+			var objectManagerFactory = new RelativityObjectManagerFactory(Helper);
+			return objectManagerFactory.CreateRelativityObjectManager(Helper.GetActiveCaseID());
 		}
-
-		private IRelativityObjectManagerFactory CreateObjectManagerFactory()
-		{
-			return new RelativityObjectManagerFactory(Helper);
-		}
-		#endregion
 	}
 }
