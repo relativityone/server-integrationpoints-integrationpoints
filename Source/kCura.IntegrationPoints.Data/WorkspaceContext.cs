@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
+using System.Threading;
+using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.API.Context;
 
@@ -11,6 +13,7 @@ namespace kCura.IntegrationPoints.Data
 	public class WorkspaceContext : IWorkspaceDBContext
 	{
 		private readonly IDBContext _context;
+
 		public WorkspaceContext(IDBContext context)
 		{
 			_context = context;
@@ -221,8 +224,53 @@ namespace kCura.IntegrationPoints.Data
 			_context.ExecuteSqlBulkCopy(dataReader, bulkCopyParameters);
 		}
 
-		public string Database { get { return _context.Database; } }
-		public string ServerName { get { return _context.ServerName; } }
-		public bool IsMasterDatabase { get { return _context.IsMasterDatabase; } }
+		public Task<IDbConnection> GetConnectionAsync(CancellationToken cancelToken)
+		{
+			return _context.GetConnectionAsync(cancelToken);
+		}
+
+		public Task BeginTransactionAsync(CancellationToken cancelToken)
+		{
+			return _context.BeginTransactionAsync(cancelToken);
+		}
+
+		public Task ExecuteBulkCopyAsync(IDataReader source, ISqlBulkCopyParameters parameters, CancellationToken cancelToken)
+		{
+			return _context.ExecuteBulkCopyAsync(source, parameters, cancelToken);
+		}
+
+		public Task<DataTable> ExecuteDataTableAsync(IQuery query)
+		{
+			return _context.ExecuteDataTableAsync(query);
+		}
+
+		public Task<IDataReader> ExecuteReaderAsync(IQuery query)
+		{
+			return _context.ExecuteReaderAsync(query);
+		}
+
+		public Task<int> ExecuteNonQueryAsync(IQuery query)
+		{
+			return _context.ExecuteNonQueryAsync(query);
+		}
+
+		public Task<T> ExecuteObjectAsync<T>(IQuery query, Func<IDataReader, CancellationToken, Task<T>> converter)
+		{
+			return _context.ExecuteObjectAsync(query, converter);
+		}
+
+		public Task<T> ExecuteScalarAsync<T>(IQuery query)
+		{
+			return _context.ExecuteScalarAsync<T>(query);
+		}
+
+		public Task<IEnumerable<T>> ExecuteEnumerableAsync<T>(IQuery query, Func<IDataRecord, CancellationToken, Task<T>> converter)
+		{
+			return _context.ExecuteEnumerableAsync<T>(query, converter);
+		}
+
+		public string Database => _context.Database;
+		public string ServerName => _context.ServerName;
+		public bool IsMasterDatabase => _context.IsMasterDatabase;
 	}
 }

@@ -341,6 +341,10 @@ task copy_test_dlls_to_lib_dir -depends create_lib_dir -precondition { return -n
             "Source\kCura.IntegrationPoints.Domain.Tests\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.Domain.Tests\bin\x64\*.config",
             "Source\kCura.IntegrationPoints.Domain.Tests\bin\x64\*.xml",
+			"Source\kCura.IntegrationPoints.Domain.Tests.Integration\bin\x64\*.dll",
+			"Source\kCura.IntegrationPoints.Domain.Tests.Integration\bin\x64\*.pdb",
+			"Source\kCura.IntegrationPoints.Domain.Tests.Integration\bin\x64\*.config",
+			"Source\kCura.IntegrationPoints.Domain.Tests.Integration\bin\x64\*.xml",
             "Source\kCura.IntegrationPoints.Email.Tests\bin\x64\*.dll",
             "Source\kCura.IntegrationPoints.Email.Tests\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.Email.Tests\bin\x64\*.config",
@@ -422,6 +426,7 @@ task copy_test_dlls_to_lib_dir -depends create_lib_dir -precondition { return -n
             "Source\kCura.IntegrationPoints.UITests\bin\x64\*.config",
             "Source\kCura.IntegrationPoints.UITests\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.UITests\bin\x64\*.xml",
+            "Source\kCura.IntegrationPoints.UITests\UiTestsConfig",
             "Source\kCura.IntegrationPoints.Web.Tests\bin\x64\*.dll",
             "Source\kCura.IntegrationPoints.Web.Tests\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.Web.Tests\bin\x64\*.config",
@@ -445,7 +450,7 @@ task copy_test_dlls_to_lib_dir -depends create_lib_dir -precondition { return -n
 			"Source\Rip.SystemTests\bin\x64\*.dll",
 			"Source\Rip.SystemTests\bin\x64\*.pdb",
 			"Source\Rip.SystemTests\bin\x64\*.config",
-			"Source\Rip.SystemTests\bin\x64\*.xml"
+			"Source\Rip.SystemTests\bin\x64\*.xml"			
 
     foreach ($file in $test_files)
     {

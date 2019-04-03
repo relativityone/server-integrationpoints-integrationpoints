@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Threading;
+using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.API.Context;
 
@@ -28,6 +30,11 @@ namespace kCura.IntegrationPoint.Tests.Core
 		public SqlConnection GetConnection()
 		{
 			return _context.GetConnection();
+		}
+
+		public Task<IEnumerable<T>> ExecuteEnumerableAsync<T>(IQuery query, Func<IDataRecord, CancellationToken, Task<T>> converter)
+		{
+			throw new NotImplementedException();
 		}
 
 		/// <summary>
@@ -501,10 +508,49 @@ namespace kCura.IntegrationPoint.Tests.Core
 		#endregion
 		#endregion
 
+		public Task BeginTransactionAsync(CancellationToken cancelToken)
+		{
+			return _context.BeginTransactionAsync(cancelToken);
+		}
+
 		public void ExecuteSqlBulkCopy(IDataReader dataReader, ISqlBulkCopyParameters bulkCopyParameters)
 		{
 			throw new NotImplementedException();
 		}
 
+		public Task<IDbConnection> GetConnectionAsync(CancellationToken cancelToken)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task ExecuteBulkCopyAsync(IDataReader source, ISqlBulkCopyParameters parameters, CancellationToken cancelToken)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task<DataTable> ExecuteDataTableAsync(IQuery query)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task<IDataReader> ExecuteReaderAsync(IQuery query)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task<int> ExecuteNonQueryAsync(IQuery query)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task<T> ExecuteObjectAsync<T>(IQuery query, Func<IDataReader, CancellationToken, Task<T>> converter)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task<T> ExecuteScalarAsync<T>(IQuery query)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

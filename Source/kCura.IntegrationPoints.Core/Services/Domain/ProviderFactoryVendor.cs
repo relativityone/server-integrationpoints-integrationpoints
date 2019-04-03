@@ -10,7 +10,7 @@ namespace kCura.IntegrationPoints.Core.Services.Domain
 
 		private readonly IProviderFactoryLifecycleStrategy _providerFactoryStrategy;
 
-		internal ProviderFactoryVendor() { }
+		internal ProviderFactoryVendor() { } // this constructor is required to mock this class
 
 		public ProviderFactoryVendor(IProviderFactoryLifecycleStrategy providerFactoryStrategy)
 		{

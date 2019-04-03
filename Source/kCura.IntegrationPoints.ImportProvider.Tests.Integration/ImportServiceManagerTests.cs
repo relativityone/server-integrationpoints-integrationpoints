@@ -207,8 +207,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 
         [Test]
 		[SmokeTest]
-		[TestInQuarantine(TestQuarantineState.FailsContinuously, 
-						@"REL-225244 TODO: Broken test needs to be fixed!
+		[TestInQuarantine(TestQuarantineState.FailsContinuously,
+						@"REL-307470 TODO: Broken test needs to be fixed!
 						Ignore tests until verification mechanism will be fixed.
 						DocumentService.GetNativeMD5String(workspaceId, docResult)
 						needs to be reimplemented.")]
@@ -248,7 +248,9 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 			InitContainer();
 			return new[]
 			{
-				_windsorContainer.Resolve<ItShouldLoadNativesFromPaths>()
+				_windsorContainer
+					.ResolveAll<IImportTestCase>()
+					.First(x => x.GetType() == typeof(ItShouldLoadNativesFromPaths))
 			};
 		}
 

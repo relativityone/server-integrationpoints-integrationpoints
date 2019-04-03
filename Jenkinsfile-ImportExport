@@ -1,0 +1,119 @@
+#!groovy
+
+library 'PipelineTools@RMT-9.3.2'
+library 'SCVMMHelpers@3.3.0'
+library 'SlackHelpers@3.0.0'
+
+properties([
+    [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '7', artifactNumToKeepStr: '30', daysToKeepStr: '7', numToKeepStr: '30']],
+    pipelineTriggers([
+        cron('H 20 * * *')
+    ]),
+    parameters([
+        choice(choices: ['DEV', 'GOLD'], description: 'The type of Relativity build to install', name: 'relativityBuildType'),
+        string(defaultValue: '', description: 'The Relativity build version to install', name: 'relativityBuildVersion'),
+        string(defaultValue: 'develop', description: 'The Relativity branch whose version should be installed', name: 'relativityBranch')
+    ])
+])
+
+// Do not modify.
+def NUnit = nunit()
+def relativityFallbackBranch = 'develop'
+def slackChannel = '#cd_rel_impexp_nightly'
+def ripPipelineState = null
+
+timestamps
+{
+    timeout(time: 3, unit: 'HOURS')
+    {
+        try
+        {
+            node('PolandBuild')
+            {
+                stage('Checkout')
+                {
+                    timeout(time: 10, unit: 'MINUTES')
+                    {
+                        checkout scm
+                        step([$class: 'StashNotifier', ignoreUnverifiedSSLPeer: true])
+                    }
+                    jenkinsHelpers = load "DevelopmentScripts/JenkinsHelpers.groovy"
+                    jenkinsHelpers.initializeRIPPipeline(this, env, params)
+                    ripPipelineState = jenkinsHelpers.ripPipelineState
+                }
+
+                stage('Install RAID')
+                {
+                    jenkinsHelpers.raid(relativityFallbackBranch)
+                }
+
+                try
+                {
+                    stage('Tests')
+                    {
+                        // We use custom test execution logic here, since our test results are
+                        // from Relativity and not RIP.
+                        NUnit.test(this,
+                            ripPipelineState.sessionId,
+                            ripPipelineState.sut.name,
+                            ripPipelineState.sut.domain,
+                            "relativity",
+                            ripPipelineState.relativityBuildVersion,
+                            ripPipelineState.relativityBranch,
+                            ripPipelineState.relativityBuildType,
+                            'Relativity.Services.NUnit.Integration',
+                            '--where "cat =~ /feature.import_export.*/"',
+                            "${ripPipelineState.sessionId} && dependencies",
+                            '60',
+                            'nunit',
+                            true)
+                        currentBuild.result = "SUCCESS"
+                    }
+                }
+                finally
+                {
+                    stage('Gather Test Stats')
+                    {
+                        // We use custom test stats gathering logic here, since our test results are
+                        // from Relativity and not RIP.
+                        NUnit.publish(this, ripPipelineState.sessionId)
+                        def(passedTests, failedTests, ignoredTests) = getTestCounts(this)
+                        ripPipelineState.numberOfFailedTests = failedTests
+                        ripPipelineState.numberOfPassedTests = passedTests
+                        ripPipelineState.numberOfSkippedTests = ignoredTests
+                    }
+                }
+            }
+        }
+        catch(err)
+        {
+            echo err.toString()
+            currentBuild.result = "FAILURE"
+        }
+        finally
+        {
+            stage('Cleanup')
+            {
+                parallel([
+                    CleanupVms: { jenkinsHelpers.cleanupVMs() },
+                    CleanupChefArtifacts: { jenkinsHelpers.cleanupChefArtifacts() }
+                ])
+            }
+
+            stage('Reporting')
+            {
+                sendCDSlackNotification(this,
+                    ripPipelineState?.sut?.name ?: "",
+                    ripPipelineState?.relativityBuildVersion ?: "",
+                    ripPipelineState?.relativityBranch ?: "",
+                    ripPipelineState?.relativityBuildType ?: "",
+                    slackChannel,
+                    "",
+                    ripPipelineState?.numberOfFailedTests ?: 0,
+                    ripPipelineState?.numberOfPassedTests ?: 0,
+                    ripPipelineState?.numberOfSkippedTests ?: 0,
+                    ripPipelineState == null ? 'Checkout & initialization failed' : '')
+            }
+        }
+    }
+}

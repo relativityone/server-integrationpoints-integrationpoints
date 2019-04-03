@@ -8,9 +8,9 @@ namespace kCura.IntegrationPoints.Core.Services.Domain
 	public class AppDomainIsolatedFactoryLifecycleStrategy : IProviderFactoryLifecycleStrategy
 	{
 		private readonly Dictionary<Guid, AppDomain> _appDomains;
-		protected readonly IDomainHelper DomainHelper;
+		protected readonly IAppDomainHelper DomainHelper;
 
-		public AppDomainIsolatedFactoryLifecycleStrategy(IDomainHelper domainHelper)
+		public AppDomainIsolatedFactoryLifecycleStrategy(IAppDomainHelper domainHelper)
 		{
 			DomainHelper = domainHelper;
 
@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.Core.Services.Domain
 		public virtual IProviderFactory CreateProviderFactory(Guid applicationId)
 		{
 			AppDomain newDomain = CreateNewDomain(applicationId);
-			IDomainManager domainManager = DomainHelper.SetupDomainAndCreateManager(newDomain, applicationId);
+			IAppDomainManager domainManager = DomainHelper.SetupDomainAndCreateManager(newDomain, applicationId);
 			return domainManager.CreateProviderFactory();
 		}
 

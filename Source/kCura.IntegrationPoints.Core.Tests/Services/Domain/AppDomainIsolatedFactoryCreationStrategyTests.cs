@@ -13,16 +13,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Domain
 	{
 		private AppDomain _appDomainMock;
 		private AppDomainIsolatedFactoryLifecycleStrategy _creationStrategy;
-		private IDomainHelper _domainHelperMock;
-		private IDomainManager _domainManagerMock;
+		private IAppDomainHelper _domainHelperMock;
+		private IAppDomainManager _domainManagerMock;
 		private IProviderFactory _providerFactoryMock;
 		private readonly Guid _applicationGuid = Guid.NewGuid();
 
 		public override void SetUp()
 		{
-			_domainHelperMock = Substitute.For<IDomainHelper>();
+			_domainHelperMock = Substitute.For<IAppDomainHelper>();
 			_providerFactoryMock = Substitute.For<IProviderFactory>();
-			_domainManagerMock = Substitute.For<IDomainManager>();
+			_domainManagerMock = Substitute.For<IAppDomainManager>();
 			_domainManagerMock.CreateProviderFactory().Returns(_providerFactoryMock);
 			_appDomainMock = AppDomain.CreateDomain("AppDomainIsolatedFactoryCreationStrategyTestsAppDomain");
 			_domainHelperMock.CreateNewDomain().Returns(_appDomainMock);
@@ -64,7 +64,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Domain
 		public void OnReleaseProviderFactory_ManyAppGuidsInCache_DoNotCallReleaseDomainForSpecificGuid()
 		{
 			Guid otherApplicationGuid = Guid.NewGuid();
-			IDomainManager otherDomainManagerMock = Substitute.For<IDomainManager>();
+			IAppDomainManager otherDomainManagerMock = Substitute.For<IAppDomainManager>();
 			otherDomainManagerMock.CreateProviderFactory().Returns(_providerFactoryMock);
 			AppDomain otherAppDomainMock = AppDomain.CreateDomain("AppDomainIsolatedFactoryCreationStrategyTestsAppDomain");
 

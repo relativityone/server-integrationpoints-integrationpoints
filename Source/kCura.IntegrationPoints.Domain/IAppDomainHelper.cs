@@ -2,7 +2,7 @@
 
 namespace kCura.IntegrationPoints.Domain
 {
-	public interface IDomainHelper
+	public interface IAppDomainHelper
 	{
 		void LoadRequiredAssemblies(AppDomain domain);
 		T CreateInstance<T>(AppDomain domain, params object[] constructorArgs) where T : class;
@@ -10,7 +10,7 @@ namespace kCura.IntegrationPoints.Domain
 		void ReleaseDomain(AppDomain domain);
 		AppDomain CreateNewDomain();
 
-		IDomainManager SetupDomainAndCreateManager(AppDomain domain,
+		IAppDomainManager SetupDomainAndCreateManager(AppDomain domain,
 			Guid applicationGuid);
 	}
 }

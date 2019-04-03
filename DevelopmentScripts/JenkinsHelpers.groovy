@@ -21,6 +21,8 @@ interface Constants
     final String QUARANTINED_TESTS_CATEGORY = 'InQuarantine'
     final String INTEGRATION_TESTS_RESULTS_REPORT_PATH = "$ARTIFACTS_PATH/IntegrationTestsResults.xml"
     final String INTEGRATION_TESTS_IN_QUARANTINE_RESULTS_REPORT_PATH = "$ARTIFACTS_PATH/QuarantineIntegrationTestsResults.xml"
+    final String JEEVES_KNIFE_PATH = 'C:\\Python27\\Lib\\site-packages\\jeeves\\knife.rb'
+
 }
 
 class RIPPipelineState
@@ -72,11 +74,11 @@ class RIPPipelineState
         def numberOfExecutors = '1'
         scvmmInstance.createNodes(numberOfSlaves, 60, numberOfExecutors)
         script.bootstrapDependencies(
-            script, 
-            pythonPackages, 
-            relativityBranch, 
-            relativityBuildVersion, 
-            relativityBuildType, 
+            script,
+            pythonPackages,
+            relativityBranch,
+            relativityBuildVersion,
+            relativityBuildType,
             sessionId
         )
         script.echo "Provisioning DONE"
@@ -216,7 +218,6 @@ def raid(String relativityBranchFallback)
         // Do not modify.
         final runList = createRunList(installingRelativity, installingInvariant, installingAnalytics, installingDatagrid)
         final profile = createProfile(installingRelativity, installingInvariant, installingAnalytics, installingDatagrid)
-        final knife = 'C:\\Python27\\Lib\\site-packages\\jeeves\\knife.rb'
         def chefAttributes = 'fluidOn:1,cdonprem:1'
         def ripCookbooks = getCookbooks()
 
@@ -234,10 +235,10 @@ def raid(String relativityBranchFallback)
                 if (installingRelativity)
                 {
                     (relativityBuildVersion, relativityBranch, relativityBuildType) = getNewBranchAndVersion(
-                        relativityBranchFallback, 
-                        relativityBranch, 
-                        params.relativityBuildVersion, 
-                        params.relativityBuildType, 
+                        relativityBranchFallback,
+                        relativityBranch,
+                        params.relativityBuildVersion,
+                        params.relativityBuildType,
                         sessionId
                     )
                     ripPipelineState.relativityBuildVersion = relativityBuildVersion
@@ -249,36 +250,36 @@ def raid(String relativityBranchFallback)
 
                 echo "Uploading environment files"
                 uploadEnvironmentFile(
-                    script, 
-                    sut.name, 
-                    relativityBuildVersion, 
-                    relativityBranch, 
+                    script,
+                    sut.name,
+                    relativityBuildVersion,
+                    relativityBranch,
                     relativityBuildType,
                     "", //invariant version
                     "", //invariant branch
-                    ripCookbooks, 
-                    chefAttributes, 
-                    knife,
+                    ripCookbooks,
+                    chefAttributes,
+                    Constants.JEEVES_KNIFE_PATH,
                     "", //analytics version
                     "", //analytics branch
-                    sessionId, 
-                    installingRelativity, 
-                    installingInvariant, 
+                    sessionId,
+                    installingRelativity,
+                    installingInvariant,
                     installingAnalytics
                 )
 
                 echo "Calling addRunList"
                 addRunlist(
-                    script, 
-                    sessionId, 
-                    sut.name, 
-                    sut.domain, 
-                    sut.ip, 
-                    runList, 
-                    knife, 
-                    profile, 
-                    eventHash, 
-                    "", 
+                    script,
+                    sessionId,
+                    sut.name,
+                    sut.domain,
+                    sut.ip,
+                    runList,
+                    Constants.JEEVES_KNIFE_PATH,
+                    profile,
+                    eventHash,
+                    "",
                     ""
                 )
 
@@ -308,7 +309,7 @@ def runIntegrationTests()
 
 def runUiTests()
 {
-    timeout(time: 8, unit: 'HOURS')
+    timeout(time: 10, unit: 'HOURS')
     {
         runTestsAndSetBuildResult(TestType.ui, params.skipUITests)
     }
@@ -336,7 +337,7 @@ def gatherTestStats()
             archiveArtifacts artifacts: "lib/UnitTests/*.png", fingerprint: true, allowEmptyArchive: true
         }
 
-        powershell "Import-Module ./Vendor/psake/tools/psake.psm1; Invoke-psake ./DevelopmentScripts/psake-test.ps1 generate_nunit_reports" 
+        powershell "Import-Module ./Vendor/psake/tools/psake.psm1; Invoke-psake ./DevelopmentScripts/psake-test.ps1 generate_nunit_reports"
         def artifactsPath = Constants.ARTIFACTS_PATH
         archiveArtifacts artifacts: "$artifactsPath/**/*", fingerprint: true, allowEmptyArchive: true
 
@@ -375,8 +376,8 @@ def publishToBldPkgs()
     // * @param password      Password to use when authenticating with blg-pkgs.
     def credentials = [
         usernamePassword(
-            credentialsId: 'jenkins_packages_svc', 
-            passwordVariable: 'BLDPKGSPASSWORD', 
+            credentialsId: 'jenkins_packages_svc',
+            passwordVariable: 'BLDPKGSPASSWORD',
             usernameVariable: 'BLDPKGSUSERNAME'
         )
     ]
@@ -426,9 +427,9 @@ def cleanupVMs()
                         {
                             //it returns username who submitted the request to save vms
                             user = input(
-                                message: 'Save the VMs?', 
-                                ok: 'Save', 
-                                submitter: 'JNK-Basic', 
+                                message: 'Save the VMs?',
+                                ok: 'Save',
+                                submitter: 'JNK-Basic',
                                 submitterParameter: 'submitter'
                             )
                         }
@@ -449,7 +450,24 @@ def cleanupVMs()
     {
         echo "Cleanup VMs FAILED."
     }
+}
 
+def cleanupChefArtifacts()
+{
+    node("SCVMM-AGENTS-POOL")
+    {
+        if (ripPipelineState.sut?.name)
+        {
+            try
+            {
+                bat "python -m jeeves.chef_functions -f delete_chef_artifacts -n ${ripPipelineState.sut.name} -r '${Constants.JEEVES_KNIFE_PATH}'"
+            }
+            catch (err)
+            {
+                echo "Cleanup Chef artifacts FAILED."
+            }
+        }
+    }
 }
 
 def reporting()
@@ -484,19 +502,24 @@ def reporting()
     }
 }
 
-def updateChromeToLatestVersion()
+def downloadAndSetUpBrowser()
 {
-	try
-    {
-		powershell """
-            Invoke-WebRequest "http://dl.google.com/chrome/install/latest/chrome_installer.exe" -OutFile chrome_installer.exe
-            Start-Process -FilePath chrome_installer.exe -Args "/silent /install" -Verb RunAs -Wait
-            (Get-Item (Get-ItemProperty "HKLM:/SOFTWARE/Microsoft/Windows/CurrentVersion/App Paths/chrome.exe")."(Default)").VersionInfo
-        """
-    }
-    catch(err)
-    {
-        echo "An error occured while updating Chrome: $err"
+    echo "Downloading browser for UI tests. Selected browser: ${params.UITestsBrowser}"
+
+    switch(params.UITestsBrowser) {
+        case 'chromium':
+            updateChromiumToGivenVersion(params.chromiumVersion)
+        break
+        case 'firefox':
+            echo "Do not download firefox. Use the version installed on node."
+        break
+        case 'chrome':
+            updateChromeToLatestVersion()
+        break
+        default:
+            echo "No browser selected. Using chrome"
+            updateChromeToLatestVersion()
+        break
     }
 }
 
@@ -507,7 +530,6 @@ def deleteDirectoryIfExists(String directoryToDelete)
 		deleteDir()
 	}
 }
-
 
 /*****************
  **** PRIVATE ****
@@ -594,9 +616,9 @@ private checkRelativityArtifacts(String branch, String version, String type)
 }
 
 private tryGetBuildVersion(
-	String relativityBranch, 
-	String paramRelativityBuildVersion, 
-	String paramRelativityBuildType, 
+	String relativityBranch,
+	String paramRelativityBuildVersion,
+	String paramRelativityBuildType,
 	String sessionId)
 {
 	try
@@ -620,19 +642,19 @@ private tryGetBuildVersion(
 }
 
 private getNewBranchAndVersion(
-	String relativityBranchFallback, 
-	String relativityBranch, 
-	String paramRelativityBuildVersion, 
-	String paramRelativityBuildType, 
+	String relativityBranchFallback,
+	String relativityBranch,
+	String paramRelativityBuildVersion,
+	String paramRelativityBuildType,
 	String sessionId)
 {
 	def firstFallbackBranch = relativityBranchFallback // we should change first fallback branch on RIP release branches
 	def GOLD_BUILD_TYPE = "GOLD"
 	def DEV_BUILD_TYPE = "DEV"
 	def relativityBranchesToTry = [
-		[relativityBranch, paramRelativityBuildType], 
-		[firstFallbackBranch, DEV_BUILD_TYPE], 
-		[firstFallbackBranch, GOLD_BUILD_TYPE], 
+		[relativityBranch, paramRelativityBuildType],
+		[firstFallbackBranch, DEV_BUILD_TYPE],
+		[firstFallbackBranch, GOLD_BUILD_TYPE],
 		["master", GOLD_BUILD_TYPE]
 	]
 
@@ -652,6 +674,55 @@ private getNewBranchAndVersion(
 
 	error 'Failed to retrieve Relativity branch/version'
 }
+
+private updateChromiumToGivenVersion(version)
+{
+    def installerFileName = 'chromium_installer.exe'
+    echo "Installing Chromium - ${version}"
+    try 
+    {
+        powershell """
+            Copy-Item ${getChromiumDownloadPath(version)} '${installerFileName}'
+        """
+
+        def installerFile = new File(installerFileName)
+        assert installerFile.exists() : "Installer file not found"
+
+        powershell """
+            Start-Process -FilePath "chromium_installer.exe" -Args "/system-level" -Verb RunAs -Wait
+        """
+        echo "Chromium Version - ${version} installation complete"
+    }
+    catch(err)
+    {
+         echo "An error occured while installing Chromium: $err"
+         throw err
+    }
+}
+
+private updateChromeToLatestVersion()
+{
+	try
+    {
+		powershell """
+            Invoke-WebRequest "http://dl.google.com/chrome/install/latest/chrome_installer.exe" -OutFile chrome_installer.exe
+            Start-Process -FilePath chrome_installer.exe -Args "/silent /install" -Verb RunAs -Wait
+            (Get-Item (Get-ItemProperty "HKLM:/SOFTWARE/Microsoft/Windows/CurrentVersion/App Paths/chrome.exe")."(Default)").VersionInfo
+         """
+    }
+    catch(err)
+    {
+        echo "An error occured while updating Chrome: $err"
+        throw err
+    }
+}
+
+private getChromiumDownloadPath(chromiumVersion)
+{
+    def path = "\\\\kcura.corp\\sdlc\\testing\\TestingData\\RelativityTestAutomation\\BrowserInstallers\\Chromium\\${chromiumVersion}\\Installer.exe"
+    return path
+}
+
 
 
 /**********************
@@ -700,13 +771,13 @@ private testCmdOptions(testType)
 
 /*
  * Function creates configuration file using some python helper library for integration and ui tests
- * @param sut - sut returned from ScvmmInstance.getServerFromPool() 
+ * @param sut - sut returned from ScvmmInstance.getServerFromPool()
  */
 private configureNunitTests(sut)
 {
 	def credentials = usernamePassword(
-		credentialsId: 'eddsdbo', 
-		passwordVariable: 'eddsdboPassword', 
+		credentialsId: 'eddsdbo',
+		passwordVariable: 'eddsdboPassword',
 		usernameVariable: 'eddsdboUsername'
 	)
 	withCredentials([credentials])
@@ -745,7 +816,7 @@ private getTestsFilter(testType, params)
 		: unionTestFilters(paramsTestsFilter, exceptQuarantinedTestFilter())
 }
 
-/* 
+/*
  * Helper function for running specific type of test
  * @param - params - the params object in the pipeline
  */
@@ -758,8 +829,8 @@ private runTests(testType, params)
 	return result
 }
 
-private runTestsAndSetBuildResult(testType, Boolean skipTests) 
-{ 
+private runTestsAndSetBuildResult(testType, Boolean skipTests)
+{
     echo "runTestsAndSetBuildResult test: $testType"
 	def stageName = testStageName(testType)
 
@@ -769,13 +840,13 @@ private runTestsAndSetBuildResult(testType, Boolean skipTests)
 		return
 	}
 
-    def result = runTests(testType, params) 
-    if (result != 0) 
-    { 
+    def result = runTests(testType, params)
+    if (result != 0)
+    {
 		currentBuild.result = "FAILED"
         error "$stageName FAILED with status: $result"
-    } 
-    echo "$stageName OK" 
+    }
+    echo "$stageName OK"
 }
 
 private unionTestFilters(String testFilter, String andTestFilter)
@@ -798,7 +869,7 @@ private getTestsStatistic(String prop)
 	{
 		def cmd = ('''
 			[xml]$testResults = Get-Content '''
-			+ Constants.INTEGRATION_TESTS_RESULTS_REPORT_PATH  
+			+ Constants.INTEGRATION_TESTS_RESULTS_REPORT_PATH
 			+ '''; $testResults.'test-run'.'''
 			+ "'$prop'")
 
@@ -850,7 +921,7 @@ private stashCommonArtifacts()
 }
 
 private unstashCommonArtifacts()
-{	
+{
     unstash 'buildScripts'
 	unstash 'buildps1'
     unstash 'psake'
@@ -861,7 +932,7 @@ private unstashCommonArtifacts()
 private stashPackageOnlyArtifacts()
 {
 	stash includes: 'BuildPackages/**', name: 'buildPackages'
-	stash includes: 'DevelopmentScripts/NuGet/*', name: 'nugets'   
+	stash includes: 'DevelopmentScripts/NuGet/*', name: 'nugets'
 }
 
 private unstashPackageOnlyArtifacts()

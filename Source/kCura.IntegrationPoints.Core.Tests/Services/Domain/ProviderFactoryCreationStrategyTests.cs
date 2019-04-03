@@ -18,8 +18,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Domain
 		private ProviderFactoryLifecycleStrategy _creationStrategy;
 		private IWindsorContainerSetup _windsorContainerSetup;
 		private IWindsorContainer _windsorContainer;
-		private IDomainHelper _domainHelperMock;
-		private IDomainManager _domainManagerMock;
+		private IAppDomainHelper _domainHelperMock;
+		private IAppDomainManager _domainManagerMock;
 		private IProviderFactory _providerFactoryMock;
 		private readonly Guid _thirdPartyApplicationGuid = Guid.NewGuid();
 		private readonly Guid _internalApplicationGuid = Guid.Parse(Constants.IntegrationPoints.APPLICATION_GUID_STRING);
@@ -27,9 +27,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Domain
 		public override void SetUp()
 		{
 			_helper = Substitute.For<IHelper>();
-			_domainHelperMock = Substitute.For<IDomainHelper>();
+			_domainHelperMock = Substitute.For<IAppDomainHelper>();
 			_providerFactoryMock = Substitute.For<IProviderFactory>();
-			_domainManagerMock = Substitute.For<IDomainManager>();
+			_domainManagerMock = Substitute.For<IAppDomainManager>();
 			_domainManagerMock.CreateProviderFactory().Returns(_providerFactoryMock);
 			_appDomainMock = AppDomain.CreateDomain("AppDomainIsolatedFactoryCreationStrategyTestsAppDomain");
 			_domainHelperMock.CreateNewDomain().Returns(_appDomainMock);
