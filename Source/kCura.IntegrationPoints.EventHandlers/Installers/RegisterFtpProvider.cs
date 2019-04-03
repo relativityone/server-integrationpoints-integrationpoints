@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using kCura.IntegrationPoints.EventHandlers.IntegrationPoints;
 using kCura.IntegrationPoints.SourceProviderInstaller;
 
 namespace kCura.IntegrationPoints.EventHandlers.Installers
@@ -8,8 +9,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
     [kCura.EventHandler.CustomAttributes.Description("Register the RIP FTP Provider")]
     [kCura.EventHandler.CustomAttributes.RunOnce(false)]
     [Guid("D1578A7B-E662-4DEE-BD59-C224E27F5296")]
-    public class RegisterFtpProvider : IntegrationPointSourceProviderInstaller
-    {
+    public class RegisterFtpProvider : InternalSourceProviderInstaller
+	{
         public override IDictionary<Guid, SourceProvider> GetSourceProviders()
         {
             return new Dictionary<Guid, SourceProvider>()

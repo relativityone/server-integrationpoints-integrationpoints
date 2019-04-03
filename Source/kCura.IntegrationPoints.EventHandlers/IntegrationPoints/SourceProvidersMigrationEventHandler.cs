@@ -69,7 +69,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		/// Even private class needs a Guid :(. SAMO - 02/08/2016
 		/// This private event handler will show on Relativity.
 		[Guid("DDF4C569-AE1D-45F8-9E0F-740399BA059F")]
-		private sealed class SourceProvidersMigration : IntegrationPointSourceProviderInstaller
+		private sealed class SourceProvidersMigration : InternalSourceProviderInstaller
 		{
 			private readonly List<SourceProvider> _sourceProviders;
 

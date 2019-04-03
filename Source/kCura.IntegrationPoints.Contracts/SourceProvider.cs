@@ -1,7 +1,7 @@
 ﻿using System;
 using kCura.IntegrationPoints.Contracts;
 
-namespace kCura.IntegrationPoints.SourceProviderInstaller
+namespace kCura.IntegrationPoints.SourceProviderInstaller // TODO adjust namespace
 {
 	/// <summary>
 	/// Provides the information for the registration of a data source provider.

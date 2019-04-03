@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		/// <summary>
 		/// Creates a new instance of the data source uninstall provider.
 		/// </summary>
-		protected IntegrationPointSourceProviderUninstaller() // TODO do we need it???
+		protected IntegrationPointSourceProviderUninstaller()
 		{
 		}
 
@@ -45,28 +45,26 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		/// <returns>An object of type Response, which frequently contains a message.</returns>
 		public sealed override Response Execute()
 		{
-			bool isSuccess = false;
-			Exception ex = null;
+			Exception thrownException = null;
+
 			try
 			{
 				OnRaisePreUninstallPreExecuteEvent();
 				UninstallSourceProvider();
-
-				isSuccess = true;
 			}
 			catch (Exception e)
 			{
-				ex = e;
-				isSuccess = false;
+				thrownException = e;
 				throw;
 			}
 			finally
 			{
-				OnRaisePreUninstallPostExecuteEvent(isSuccess, ex);
+				bool isSuccess = thrownException == null;
+				OnRaisePreUninstallPostExecuteEvent(isSuccess, thrownException);
 			}
 			return new Response
 			{
-				Success = isSuccess
+				Success = true
 			};
 		}
 
@@ -78,6 +76,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 				WorkspaceID = Helper.GetActiveCaseID()
 			};
 
+			// TODO retries
 			using (var providerManager = Helper.GetServicesManager().CreateProxy<IProviderManager>(ExecutionIdentity.CurrentUser))
 			{
 				providerManager.UninstallProviderAsync(request);
@@ -89,6 +88,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		/// </summary>
 		protected void OnRaisePreUninstallPreExecuteEvent()
 		{
+			// TODO logging
 			RaisePreUninstallPreExecuteEvent?.Invoke();
 		}
 
@@ -97,6 +97,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		/// </summary>
 		protected void OnRaisePreUninstallPostExecuteEvent(bool isUninstalled, Exception ex)
 		{
+			// TODO
 			RaisePreUninstallPostExecuteEvent?.Invoke(isUninstalled, ex);
 		}
 	}

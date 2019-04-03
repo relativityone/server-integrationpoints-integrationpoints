@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using kCura.IntegrationPoints.EventHandlers.IntegrationPoints;
 using kCura.IntegrationPoints.SourceProviderInstaller;
 
 namespace kCura.IntegrationPoints.EventHandlers.Installers
@@ -8,7 +9,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 	[kCura.EventHandler.CustomAttributes.Description("Update Integration Points Entities - On Every Install")]
 	[kCura.EventHandler.CustomAttributes.RunOnce(false)]
 	[Guid("02ec5d64-208a-44fb-a5e3-c3a1103e7da7")]
-	public class RegisterLDAPInstaller : SourceProviderInstaller.IntegrationPointSourceProviderInstaller
+	public class RegisterLDAPInstaller : InternalSourceProviderInstaller
 	{
 		public override System.Collections.Generic.IDictionary<System.Guid, SourceProviderInstaller.SourceProvider>
 			GetSourceProviders()

@@ -95,8 +95,7 @@
     <Compile Include="Models\RelativityProviderSourceConfigurationBackwardCompatibility.cs" />
     <Compile Include="Models\TotalItemsCountSearchDto.cs" />
     <Compile Include="HealthChecks\RelativityManagerSoapHealthCheck.cs" />
-    <Compile Include="Provider\GetSourceProviderRDOByApplicationIdentifier.cs" />
-    <Compile Include="Provider\ProviderInstaller.cs" />
+    <Compile Include="Provider\GetSourceProviderRDOByApplicationIdentifierToBeDeleted.cs" />
     <Compile Include="Provider\ProviderUninstaller.cs" />
     <Compile Include="Repositories\IIntegrationPointProfileRepository.cs" />
     <Compile Include="Repositories\IIntegrationPointTypeRepository.cs" />

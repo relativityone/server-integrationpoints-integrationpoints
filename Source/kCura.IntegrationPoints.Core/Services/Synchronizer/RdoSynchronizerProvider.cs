@@ -1,24 +1,25 @@
-﻿using System;
-using System.Linq;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Data;
+﻿using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Transformers;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 {
 	public class RdoSynchronizerProvider : IRdoSynchronizerProvider
 	{
+		private readonly IRelativityObjectManager _objectManager;
+		private readonly IAPILog _logger;
+
 		public const string RDO_SYNC_TYPE_GUID = "74A863B9-00EC-4BB7-9B3E-1E22323010C6";
 		public const string FILES_SYNC_TYPE_GUID = "1D3AD995-32C5-48FE-BAA5-5D97089C8F18";
 
-		private readonly ICaseServiceContext _context;
-		private readonly IAPILog _logger;
-
-		public RdoSynchronizerProvider(ICaseServiceContext context, IHelper helper)
+		public RdoSynchronizerProvider(IRelativityObjectManager objectManager, IHelper helper)
 		{
-			_context = context;
+			_objectManager = objectManager;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<RdoSynchronizerProvider>();
 		}
 
@@ -30,32 +31,34 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 
 		private void CreateOrUpdateDestinationProvider(string name, string providerGuid)
 		{
-			var destinationProvider = GetDestinationProvider(providerGuid);
+			DestinationProvider destinationProvider = GetDestinationProvider(providerGuid);
 			if (destinationProvider == null)
 			{
 				LogCreatingProvider(name, providerGuid);
-				destinationProvider = new DestinationProvider();
-				destinationProvider.Name = name;
-				destinationProvider.Identifier = providerGuid;
-				destinationProvider.ApplicationIdentifier = Constants.IntegrationPoints.APPLICATION_GUID_STRING;
-				_context.RsapiService.RelativityObjectManager.Create(destinationProvider);
+				destinationProvider = new DestinationProvider
+				{
+					Name = name,
+					Identifier = providerGuid,
+					ApplicationIdentifier = Constants.IntegrationPoints.APPLICATION_GUID_STRING
+				};
+				_objectManager.Create(destinationProvider);
 			}
 			else
 			{
 				LogUpdatingProvider(name, providerGuid);
 				destinationProvider.Name = name;
-				_context.RsapiService.RelativityObjectManager.Update(destinationProvider);
+				_objectManager.Update(destinationProvider);
 			}
 		}
 
 		public int GetRdoSynchronizerId()
 		{
-			var destinationProvider = GetDestinationProvider(RDO_SYNC_TYPE_GUID);
+			DestinationProvider destinationProvider = GetDestinationProvider(RDO_SYNC_TYPE_GUID);
 			if (destinationProvider != null)
 			{
 				return destinationProvider.ArtifactId;
 			}
-			var errorMessage = FormatUnableToRetrieveDestinationProviderErrorMessage(RDO_SYNC_TYPE_GUID);
+			string errorMessage = FormatUnableToRetrieveDestinationProviderErrorMessage(RDO_SYNC_TYPE_GUID);
 			_logger.LogError(errorMessage);
 
 			throw new Exception(errorMessage);
@@ -63,7 +66,7 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 
 		private DestinationProvider GetDestinationProvider(string providerGuid)
 		{
-			var q = new QueryRequest
+			var queryRequest = new QueryRequest
 			{
 				ObjectType = new ObjectTypeRef
 				{
@@ -72,9 +75,8 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 				Fields = RDOConverter.ConvertPropertiesToFields<DestinationProvider>(),
 				Condition = $"'{DestinationProviderFields.Identifier}' == '{providerGuid}'"
 			};
-			var destinationProviders = _context.RsapiService.RelativityObjectManager.Query<DestinationProvider>(q);
-
-
+			IList<DestinationProvider> destinationProviders = _objectManager.Query<DestinationProvider>(queryRequest);
+			
 			if (destinationProviders.Count > 1)
 			{
 				LogMoreThanOneProviderFoundWarning(providerGuid);

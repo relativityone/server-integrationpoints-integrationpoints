@@ -1,7 +1,5 @@
-﻿using kCura.IntegrationPoints.Contracts;
-using kCura.IntegrationPoints.Core.Services.Domain;
+﻿using kCura.IntegrationPoints.Core.Services.Domain;
 using kCura.IntegrationPoints.Core.Services.Provider;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -13,38 +11,35 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace kCura.IntegrationPoints.Services.Provider
+namespace kCura.IntegrationPoints.Core.Provider
 {
-	internal class ProviderInstaller
+	public class ProviderInstaller // TODO introduce interface
 	{
 		private readonly IAPILog _logger;
 		private readonly IRelativityObjectManager _objectManager;
-		private readonly ICaseServiceContext _caseContext;
-		private readonly IEddsServiceContext _eddsServiceContext;
 		private readonly IDBContext _dbContext;
 		private readonly IHelper _helper;
+
+		private const int _ADMIN_CASE_ID = -1;
 
 		public ProviderInstaller(
 			IAPILog logger,
 			IRelativityObjectManager objectManager,
-			ICaseServiceContext caseContext,
-			IEddsServiceContext eddsServiceContext,
 			IDBContext dbContext,
 			IHelper helper)
 		{
 			_logger = logger;
 			_objectManager = objectManager;
-			_caseContext = caseContext;
-			_eddsServiceContext = eddsServiceContext;
 			_dbContext = dbContext;
 			_helper = helper;
 		}
 
-		public async Task InstallProvidersAsync(IEnumerable<ProviderToInstallDto> providersToInstall)
+		public async Task InstallProvidersAsync(IEnumerable<SourceProviderInstaller.SourceProvider> providersToInstall)
 		{
 			await Task.Yield(); // TODO remove it
 
-			IPluginProvider pluginProvider = new DefaultSourcePluginProvider(new GetApplicationBinaries(_eddsServiceContext.SqlContext));
+			IDBContext adminCaseDbContext = _helper.GetDBContext(_ADMIN_CASE_ID);
+			IPluginProvider pluginProvider = new DefaultSourcePluginProvider(new GetApplicationBinaries(adminCaseDbContext));
 			var domainHelper = new DomainHelper(pluginProvider, _helper, new RelativityFeaturePathService());
 			var strategy = new AppDomainIsolatedFactoryLifecycleStrategy(domainHelper);
 			using (var vendor = new ProviderFactoryVendor(strategy))
@@ -52,7 +47,7 @@ namespace kCura.IntegrationPoints.Services.Provider
 				var dataProviderBuilder = new DataProviderBuilder(vendor);
 
 				// install one provider at a time
-				foreach (ProviderToInstallDto provider in providersToInstall)
+				foreach (SourceProviderInstaller.SourceProvider provider in providersToInstall)
 				{
 					// when we migrate providers, we should already know which app does the provider belong to.
 					if (provider.ApplicationGUID == Guid.Empty)
@@ -68,7 +63,7 @@ namespace kCura.IntegrationPoints.Services.Provider
 			}
 		}
 
-		private void AddOrUpdateProvider(ProviderToInstallDto provider)
+		private void AddOrUpdateProvider(SourceProviderInstaller.SourceProvider provider)
 		{
 			Dictionary<Guid, SourceProvider> installedRdoProviderDict = GetInstalledRdoProviders(provider);
 
@@ -83,7 +78,7 @@ namespace kCura.IntegrationPoints.Services.Provider
 			}
 		}
 
-		private Dictionary<Guid, SourceProvider> GetInstalledRdoProviders(ProviderToInstallDto provider)
+		private Dictionary<Guid, SourceProvider> GetInstalledRdoProviders(SourceProviderInstaller.SourceProvider provider)
 		{
 			List<SourceProvider> installedRdoProviders =
 				new GetSourceProviderRdoByApplicationIdentifier(_objectManager).Execute(provider.ApplicationGUID);
@@ -97,22 +92,22 @@ namespace kCura.IntegrationPoints.Services.Provider
 			//This is hack until we introduce installation of Destination Providers
 			if (applicationGuid == new Guid(Domain.Constants.IntegrationPoints.APPLICATION_GUID_STRING))
 			{
-				new Core.Services.Synchronizer.RdoSynchronizerProvider(_caseContext, _helper).CreateOrUpdateDestinationProviders();
+				new Services.Synchronizer.RdoSynchronizerProvider(_objectManager, _helper).CreateOrUpdateDestinationProviders();
 			}
 		}
 
-		private void UpdateExistingProvider(SourceProvider existingProviderDto, ProviderToInstallDto provider)
+		private void UpdateExistingProvider(SourceProvider existingProviderDto, SourceProviderInstaller.SourceProvider provider)
 		{
 			existingProviderDto.Name = provider.Name;
 			existingProviderDto.SourceConfigurationUrl = provider.Url;
 			existingProviderDto.ViewConfigurationUrl = provider.ViewDataUrl;
-			existingProviderDto.Config = ConvertConfigurationToSourceProviderConfiguration(provider.Configuration);
+			existingProviderDto.Config = provider.Configuration;
 			existingProviderDto.Configuration = JsonConvert.SerializeObject(provider.Configuration);
 
 			_objectManager.Update(existingProviderDto);
 		}
 
-		private void AddProvider(ProviderToInstallDto newProvider)
+		private void AddProvider(SourceProviderInstaller.SourceProvider newProvider)
 		{
 			if (newProvider == null)
 			{
@@ -126,33 +121,17 @@ namespace kCura.IntegrationPoints.Services.Provider
 				Identifier = newProvider.GUID.ToString(),
 				SourceConfigurationUrl = newProvider.Url,
 				ViewConfigurationUrl = newProvider.ViewDataUrl,
-				Config = ConvertConfigurationToSourceProviderConfiguration(newProvider.Configuration)
+				Config = newProvider.Configuration
 			};
 			_objectManager.Create(providerDto);
 		}
 
-		private SourceProviderConfiguration ConvertConfigurationToSourceProviderConfiguration(ProviderToInstallConfigurationDto dto)
-		{
-			if (dto == null)
-			{
-				return null;
-			}
-
-			return new SourceProviderConfiguration
-			{
-				AlwaysImportNativeFileNames = dto.AlwaysImportNativeFileNames,
-				AlwaysImportNativeFiles = dto.AlwaysImportNativeFiles,
-				CompatibleRdoTypes = dto.CompatibleRdoTypes,
-				OnlyMapIdentifierToIdentifier = dto.OnlyMapIdentifierToIdentifier
-			};
-		}
-
-		private void ValidateProvider(DataProviderBuilder dataProviderBuilder, ProviderToInstallDto provider)
+		private void ValidateProvider(DataProviderBuilder dataProviderBuilder, SourceProviderInstaller.SourceProvider provider)
 		{
 			TryLoadingProvider(dataProviderBuilder, provider);
 		}
 
-		private void TryLoadingProvider(DataProviderBuilder factory, ProviderToInstallDto provider)
+		private void TryLoadingProvider(DataProviderBuilder factory, SourceProviderInstaller.SourceProvider provider)
 		{
 			try
 			{

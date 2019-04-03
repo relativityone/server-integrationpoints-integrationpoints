@@ -1,4 +1,6 @@
 ﻿using Castle.Windsor;
+using kCura.IntegrationPoints.Contracts;
+using kCura.IntegrationPoints.Core.Provider;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Services.Helpers;
 using kCura.IntegrationPoints.Services.Installers;
@@ -7,6 +9,7 @@ using kCura.IntegrationPoints.Services.Repositories;
 using Relativity.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.Services
@@ -129,13 +132,13 @@ namespace kCura.IntegrationPoints.Services
 				using (IWindsorContainer container = GetDependenciesContainer(request.WorkspaceID))
 				{
 					ProviderInstaller providerInstaller = container.Resolve<ProviderInstaller>();
-					await providerInstaller.InstallProvidersAsync(request.ProvidersToInstall);
+					await providerInstaller.InstallProvidersAsync(request.ProvidersToInstall.Select(ConvertToSourceProvider));
 					return true;
 				}
 			}
 			catch (Exception e)
 			{
-				LogException(nameof(UninstallProviderAsync), e);
+				LogException(nameof(InstallProviderAsync), e);
 				throw CreateInternalServerErrorException(); // TODO verify it
 			}
 		}
@@ -167,6 +170,45 @@ namespace kCura.IntegrationPoints.Services
 				LogException(nameof(UninstallProviderAsync), e);
 				throw CreateInternalServerErrorException(); // TODO verify it
 			}
+		}
+
+		private SourceProviderInstaller.SourceProvider ConvertToSourceProvider(ProviderToInstallDto dto)
+		{
+			if (dto == null)
+			{
+				return null;
+			}
+
+			return new SourceProviderInstaller.SourceProvider
+			{
+				Name = dto.Name,
+				Url = dto.Url,
+				ViewDataUrl = dto.ViewDataUrl,
+				ApplicationID = dto.ApplicationID,
+				ApplicationGUID = dto.ApplicationGUID,
+				GUID = dto.GUID,
+				Configuration = ConvertToSourceProviderConfiguration(dto.Configuration)
+			};
+		}
+
+		private SourceProviderConfiguration ConvertToSourceProviderConfiguration(ProviderToInstallConfigurationDto dto)
+		{
+			if (dto == null)
+			{
+				return null;
+			}
+
+			return new SourceProviderConfiguration
+			{
+				AlwaysImportNativeFileNames = dto.AlwaysImportNativeFileNames,
+				AlwaysImportNativeFiles = dto.AlwaysImportNativeFiles,
+				CompatibleRdoTypes = dto.CompatibleRdoTypes,
+				OnlyMapIdentifierToIdentifier = dto.OnlyMapIdentifierToIdentifier,
+				AvailableImportSettings = new ImportSettingVisibility
+				{
+					AllowUserToMapNativeFileField = dto.AllowUserToMapNativeFileField
+				}
+			};
 		}
 	}
 }

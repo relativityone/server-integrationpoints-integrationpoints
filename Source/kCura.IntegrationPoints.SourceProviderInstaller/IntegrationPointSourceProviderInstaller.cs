@@ -1,10 +1,11 @@
 ﻿using kCura.EventHandler;
+using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Services;
 using Relativity.API;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoints.Contracts;
+using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller
 {
@@ -25,14 +26,15 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 	/// </summary>
 	public abstract class IntegrationPointSourceProviderInstaller : PostInstallEventHandler
 	{
-		private readonly Lazy<IAPILog> _logggerLazy;
+		private const int _SEND_INSTALL_REQUEST_MAX_RETRIES_NUMBER = 3;
 
-		// TODO handle success errro message: PostInstallEventHandlerBase
+		private readonly Lazy<IAPILog> _logggerLazy;
 
 		/// <summary>
 		/// Raised immediately before the execution of a Post Install event handler.
 		/// </summary>
 		public event PostInstallPreExecuteEvent RaisePostInstallPreExecuteEvent;
+
 		/// <summary>
 		/// Raised after all source providers are registered.
 		/// </summary>
@@ -57,38 +59,36 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		public abstract IDictionary<Guid, SourceProvider> GetSourceProviders();
 
 		/// <inheritdoc cref="PostInstallEventHandler"/>
-		public sealed override Response Execute() // TODO improve error handling
+		public sealed override Response Execute()
 		{
 			IDictionary<Guid, SourceProvider> sourceProviders = GetSourceProviders();
 			Logger.LogDebug("Starting Post-installation process for {sourceProviders} provider", sourceProviders.Values.Select(item => item.Name));
 			if (sourceProviders.Count == 0)
 			{
-				//throw new IntegrationPointsException($"Provider does not implement the contract (Empty source provider list retrieved from {GetType().Name} class)"); // tODO
+				// TODO
+				//throw new IntegrationPointsException($"Provider does not implement the contract (Empty source provider list retrieved from {GetType().Name} class)");
 			}
 
-
-			bool isSuccess = false;
-			Exception ex = null;
+			Exception thrownException = null;
 			try
 			{
 				OnRaisePostInstallPreExecuteEvent();
 				InstallSourceProvider(sourceProviders);
-
-				isSuccess = true;
 			}
 			catch (Exception e)
 			{
-				ex = e;
-				isSuccess = false;
+				thrownException = e;
 				throw;
 			}
 			finally
 			{
-				OnRaisePostInstallPostExecuteEvent(isSuccess, ex);
+				bool isSuccess = thrownException == null;
+				OnRaisePostInstallPostExecuteEvent(isSuccess, thrownException);
 			}
+
 			return new Response
 			{
-				Success = isSuccess
+				Success = true
 			};
 		}
 
@@ -110,25 +110,62 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 				Configuration = x.Value.Configuration
 			});
 
+			InstallSourceProvider(sourceProviders);
+		}
+
+		internal virtual void InstallSourceProvider(IEnumerable<SourceProvider> sourceProviders) // TODO private protected
+		{
 			var request = new InstallProviderRequest
 			{
 				WorkspaceID = Helper.GetActiveCaseID(),
 				ProvidersToInstall = sourceProviders.Select(ConvertSourceProviderToDto).ToList()
 			};
 
-			// TODO add retries here, without Polly
-			using (var providerManager =
-				Helper.GetServicesManager().CreateProxy<IProviderManager>(ExecutionIdentity.CurrentUser))
+			bool isProviderInstalled = SendInstallProviderRequest(request);
+			if (!isProviderInstalled)
 			{
-				try
+				// TODO throw proper exception
+			}
+		}
+
+		private bool SendInstallProviderRequest(InstallProviderRequest request)
+		{
+			try
+			{
+				return SendInstallProviderRequestWithRetriesAsync(request).GetAwaiter().GetResult();
+			}
+			catch (Exception ex)
+			{
+				Logger.LogError(ex, "Installing source provider failed");
+				throw; // TODO throw proper exception
+			}
+		}
+
+		/// <summary>
+		/// We cannot use Polly, because it would require adding external dependency to our SDK
+		/// </summary>
+		private async Task<bool> SendInstallProviderRequestWithRetriesAsync(InstallProviderRequest request, int attemptNumber = 0)
+		{
+			try
+			{
+				using (var providerManager = Helper.GetServicesManager().CreateProxy<IProviderManager>(ExecutionIdentity.CurrentUser))
 				{
-					bool isSuccess = providerManager.InstallProviderAsync(request).GetAwaiter().GetResult();
-				}
-				catch (Exception ex)
-				{
-					throw ex;
+					return await providerManager.InstallProviderAsync(request).ConfigureAwait(false);
 				}
 			}
+			catch (Exception ex)
+			{
+				Logger.LogWarning(ex, "Installing provider failed, attempt {attemptNumber} out of {numberOfRetries}.",
+					attemptNumber,
+					_SEND_INSTALL_REQUEST_MAX_RETRIES_NUMBER
+				);
+				if (attemptNumber == _SEND_INSTALL_REQUEST_MAX_RETRIES_NUMBER)
+				{
+					throw;
+				}
+			}
+
+			return await SendInstallProviderRequestWithRetriesAsync(request, attemptNumber + 1);
 		}
 
 		private ProviderToInstallDto ConvertSourceProviderToDto(SourceProvider provider)
@@ -172,6 +209,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		/// </summary>
 		protected void OnRaisePostInstallPreExecuteEvent()
 		{
+			// TODO log error
 			RaisePostInstallPreExecuteEvent?.Invoke();
 		}
 
@@ -182,6 +220,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		/// <param name="ex">An exception thrown when errors occur during the installation of the data source provider.</param>
 		protected void OnRaisePostInstallPostExecuteEvent(bool isInstalled, Exception ex)
 		{
+			// TODO log error
 			RaisePostInstallPostExecuteEvent?.Invoke(isInstalled, ex);
 		}
 	}

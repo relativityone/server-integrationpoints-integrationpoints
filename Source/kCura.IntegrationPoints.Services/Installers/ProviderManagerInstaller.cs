@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Services.Repositories;
 using kCura.IntegrationPoints.Services.Repositories.Implementations;
 using Relativity.API;
 using System.Collections.Generic;
+using kCura.IntegrationPoints.Core.Provider;
 
 namespace kCura.IntegrationPoints.Services.Installers
 {
@@ -37,7 +38,7 @@ namespace kCura.IntegrationPoints.Services.Installers
 			container.Register(Component.For<IProviderRepository>().ImplementedBy<ProviderRepository>().LifestyleTransient());
 			container.Register(Component.For<IAuthTokenGenerator>().ImplementedBy<ClaimsTokenGenerator>().LifestyleTransient());
 
-			container.Register(Component
+			container.Register(Component // TODO can it be deleted ???
 				.For<IServiceContextHelper>()
 				.UsingFactoryMethod(k =>
 				{

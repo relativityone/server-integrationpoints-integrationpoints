@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using kCura.IntegrationPoints.EventHandlers.IntegrationPoints;
 using kCura.IntegrationPoints.SourceProviderInstaller;
 
 namespace kCura.IntegrationPoints.EventHandlers.Installers
@@ -8,8 +9,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
     [kCura.EventHandler.CustomAttributes.Description("Register the RIP Import Provider")]
     [kCura.EventHandler.CustomAttributes.RunOnce(false)]
     [Guid("01E26CBC-98CA-48A6-942E-FD546E2D5F7E")]
-    public class RegisterImportProvider : IntegrationPointSourceProviderInstaller
-    {
+    public class RegisterImportProvider : InternalSourceProviderInstaller
+	{
         public override IDictionary<Guid, SourceProvider> GetSourceProviders()
         {
             return new Dictionary<Guid, SourceProvider>()
