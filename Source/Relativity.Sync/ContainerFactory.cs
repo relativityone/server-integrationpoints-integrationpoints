@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Autofac;
-using Relativity.Sync.Configuration;
-using Relativity.Sync.ExecutionConstrains;
-using Relativity.Sync.Executors;
+using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Logging;
 
 namespace Relativity.Sync
@@ -34,6 +32,11 @@ namespace Relativity.Sync
 			containerBuilder.RegisterGeneric(typeof(Command<>)).Named(command, typeof(ICommand<>));
 			containerBuilder.RegisterGenericDecorator(typeof(CommandWithMetrics<>), typeof(ICommand<>), command);
 
+			containerBuilder
+				.RegisterAssemblyTypes(Assembly.GetCallingAssembly())
+				.Where(t => !t.IsAbstract && t.IsAssignableTo<IValidator>())
+				.AsImplementedInterfaces();
+			
 			IEnumerable<IInstaller> installers = GetInstallersInCurrentAssembly();
 			foreach (IInstaller installer in installers)
 			{
