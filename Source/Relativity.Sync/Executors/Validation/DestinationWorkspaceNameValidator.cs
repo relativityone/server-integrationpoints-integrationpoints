@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
@@ -10,12 +11,14 @@ namespace Relativity.Sync.Executors.Validation
 		private const string _WORKSPACE_INVALID_NAME_MESSAGE = "Destination workspace name contains an invalid character.";
 
 		private readonly IDestinationServiceFactoryForUser _serviceFactory;
+		private readonly IWorkspaceNameQuery _workspaceNameQuery;
 		private readonly IWorkspaceNameValidator _workspaceNameValidator;
 		private readonly ISyncLog _logger;
 
-		public DestinationWorkspaceNameValidator(IDestinationServiceFactoryForUser serviceFactory, IWorkspaceNameValidator workspaceNameValidator, ISyncLog logger)
+		public DestinationWorkspaceNameValidator(IDestinationServiceFactoryForUser serviceFactory, IWorkspaceNameQuery workspaceNameQuery, IWorkspaceNameValidator workspaceNameValidator, ISyncLog logger)
 		{
 			_serviceFactory = serviceFactory;
+			_workspaceNameQuery = workspaceNameQuery;
 			_workspaceNameValidator = workspaceNameValidator;
 			_logger = logger;
 		}
@@ -24,12 +27,19 @@ namespace Relativity.Sync.Executors.Validation
 		{
 			_logger.LogVerbose("Validating if destination workspace does not contain invalid characters. {destinationWorkspaceArtifactId}", configuration.DestinationWorkspaceArtifactId);
 			ValidationResult result = new ValidationResult();
-
-			bool isValidName = await _workspaceNameValidator.ValidateWorkspaceNameAsync(_serviceFactory, configuration.DestinationWorkspaceArtifactId, token).ConfigureAwait(false);
-			if (!isValidName)
+			try
 			{
-				_logger.LogError("Source workspace name is invalid.");
-				result.Add(_WORKSPACE_INVALID_NAME_MESSAGE);
+				string workspaceName = await _workspaceNameQuery.GetWorkspaceNameAsync(_serviceFactory, configuration.DestinationWorkspaceArtifactId, token).ConfigureAwait(false);
+				bool isValidName = _workspaceNameValidator.Validate(workspaceName, token);
+				if (!isValidName)
+				{
+					_logger.LogError("Source workspace name is invalid.");
+					result.Add(_WORKSPACE_INVALID_NAME_MESSAGE);
+				}
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error occurred while querying for workspace artifact ID: {destinationWorkspaceArtifactId}", configuration.DestinationWorkspaceArtifactId);
 			}
 
 			return result;
