@@ -53,6 +53,8 @@
     <Compile Include="Helpers\FieldConverter.cs" />
     <Compile Include="Helpers\CoreViewFieldInfo.cs" />
     <Compile Include="Installer\ExportRepositoryRegistration.cs" />
+    <Compile Include="Repositories\IFileQueryRepository.cs" />
+    <Compile Include="Repositories\Implementations\FileQueryRepository.cs" />
     <Compile Include="Repositories\Implementations\ViewFieldRepository.cs" />
     <Compile Include="Repositories\IViewFieldRepository.cs" />
     <Compile Include="SharedLibrary\ExportServiceFactory.cs" />
