@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Services.DataContracts.DTOs.Folder;
@@ -26,16 +27,25 @@ namespace Relativity.Sync.Executors.Validation
 				configuration.DestinationFolderArtifactId);
 			ValidationResult validationResult = new ValidationResult();
 
-			using (IFolderManager folderManager = await _destinationServiceFactoryForUser.CreateProxyAsync<IFolderManager>().ConfigureAwait(false))
+			try
 			{
-				FolderStatus folderStatus = await folderManager.GetAccessStatusAsync(configuration.DestinationWorkspaceArtifactId, configuration.DestinationFolderArtifactId).ConfigureAwait(false);
-				if (!folderStatus.Exists)
+				using (IFolderManager folderManager = await _destinationServiceFactoryForUser.CreateProxyAsync<IFolderManager>().ConfigureAwait(false))
 				{
-					_logger.LogError("Folder with id {destinationFolderArtifactId} does not exist in destination workspace {destinationWorkspaceArtifactId}", configuration.DestinationFolderArtifactId,
-						configuration.DestinationWorkspaceArtifactId);
-					string message = string.Format(CultureInfo.InvariantCulture, _ARTIFACT_NOT_EXIST_MESSAGE, configuration.DestinationFolderArtifactId);
-					validationResult.Add(message);
+					FolderStatus folderStatus = await folderManager.GetAccessStatusAsync(configuration.DestinationWorkspaceArtifactId, configuration.DestinationFolderArtifactId).ConfigureAwait(false);
+					if (!folderStatus.Exists)
+					{
+						_logger.LogError("Folder with id {destinationFolderArtifactId} does not exist in destination workspace {destinationWorkspaceArtifactId}", configuration.DestinationFolderArtifactId,
+							configuration.DestinationWorkspaceArtifactId);
+						string message = string.Format(CultureInfo.InvariantCulture, _ARTIFACT_NOT_EXIST_MESSAGE, configuration.DestinationFolderArtifactId);
+						validationResult.Add(message);
+					}
 				}
+			}
+			catch (Exception ex)
+			{
+				const string message = "Exception occurred when validating destination folder";
+				_logger.LogError(ex, message);
+				validationResult.Add(message);
 			}
 
 			return validationResult;

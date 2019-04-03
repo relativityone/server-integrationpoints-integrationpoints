@@ -32,48 +32,57 @@ namespace Relativity.Sync.Executors.Validation
 
 			ValidationResult validationResult = new ValidationResult();
 
-			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			try
 			{
-				const string owner = "Owner";
-				QueryRequest queryRequest = new QueryRequest()
+				using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 				{
-					ObjectType = new ObjectTypeRef()
+					const string owner = "Owner";
+					QueryRequest queryRequest = new QueryRequest()
 					{
-						ArtifactID = configuration.SavedSearchArtifactId
-					},
-					Fields = new[]
-					{
-						new FieldRef() {Name = owner}
-					},
-					IncludeNameInQueryResult = true
-				};
+						ObjectType = new ObjectTypeRef()
+						{
+							ArtifactID = configuration.SavedSearchArtifactId
+						},
+						Fields = new[]
+						{
+							new FieldRef() {Name = owner}
+						},
+						IncludeNameInQueryResult = true
+					};
 
-				const int start = 0;
-				const int length = 1;
-				QueryResult queryResult;
-				try
-				{
-					queryResult = await objectManager.QueryAsync(configuration.SourceWorkspaceArtifactId, queryRequest, start, length, token, new EmptyProgress<ProgressReport>()).ConfigureAwait(false);
-				}
-				catch (Exception ex)
-				{
-					_logger.LogError(ex, "Failed to query for saved search artifact ID: {savedSearchArtifactId}", configuration.SavedSearchArtifactId);
-					throw;
-				}
-
-				if (queryResult == null || queryResult.Objects.Count == 0)
-				{
-					validationResult.Add(SavedSearchNoAccess);
-				}
-				else
-				{
-					string actualOwner = queryResult.Objects[0].FieldValues.First(x => x.Field.Name.Equals(owner, StringComparison.InvariantCulture)).Value.ToString();
-					bool savedSearchIsPublic = string.IsNullOrEmpty(actualOwner);
-					if (!savedSearchIsPublic)
+					const int start = 0;
+					const int length = 1;
+					QueryResult queryResult;
+					try
 					{
-						validationResult.Add(_SAVED_SEARCH_NOT_PUBLIC);
+						queryResult = await objectManager.QueryAsync(configuration.SourceWorkspaceArtifactId, queryRequest, start, length, token, new EmptyProgress<ProgressReport>()).ConfigureAwait(false);
+					}
+					catch (Exception ex)
+					{
+						_logger.LogError(ex, "Failed to query for saved search artifact ID: {savedSearchArtifactId}", configuration.SavedSearchArtifactId);
+						throw;
+					}
+
+					if (queryResult == null || queryResult.Objects.Count == 0)
+					{
+						validationResult.Add(SavedSearchNoAccess);
+					}
+					else
+					{
+						string actualOwner = queryResult.Objects[0].FieldValues.First(x => x.Field.Name.Equals(owner, StringComparison.InvariantCulture)).Value.ToString();
+						bool savedSearchIsPublic = string.IsNullOrEmpty(actualOwner);
+						if (!savedSearchIsPublic)
+						{
+							validationResult.Add(_SAVED_SEARCH_NOT_PUBLIC);
+						}
 					}
 				}
+			}
+			catch (Exception ex)
+			{
+				const string message = "Exception occurred during saved search validation.";
+				_logger.LogError(ex, message);
+				validationResult.Add(message);
 			}
 
 			return validationResult;
