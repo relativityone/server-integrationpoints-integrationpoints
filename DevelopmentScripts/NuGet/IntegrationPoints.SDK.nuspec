@@ -10,22 +10,11 @@
     <releaseNotes>Release</releaseNotes>
     <copyright>Copyright (c) 2018, Relativity ODA LLC</copyright>
     <tags>Relativity IntegrationPoints Office365 O365 Custom Provider Import</tags>
-    <dependencies>
-      <dependency id="kCura.Apps.Common.Config" version="2.1.3" />
-      <dependency id="SystemWrapper.Interfaces" version="0.19.0.115" />
-      <dependency id="Relativity.DataTransfer.MessageService" version="1.0.4" />
-    </dependencies>
   </metadata>
   <files>
-    <file src="..\..\lib\UnitTests\kCura.IntegrationPoints.Common.dll" target="lib" />
-    <file src="..\..\lib\UnitTests\kCura.IntegrationPoints.Config.dll" target="lib" />
-    <file src="..\..\lib\UnitTests\kCura.IntegrationPoints.Contracts.dll" target="lib" />
-    <file src="..\..\lib\UnitTests\kCura.IntegrationPoints.Core.dll" target="lib" />
-    <file src="..\..\lib\UnitTests\kCura.IntegrationPoints.Core.Contracts.dll" target="lib" />
-    <file src="..\..\lib\UnitTests\kCura.IntegrationPoints.Data.dll" target="lib" />
-    <file src="..\..\lib\UnitTests\kCura.IntegrationPoints.Domain.dll" target="lib" />
+    <file src="..\..\lib\UnitTests\kCura.IntegrationPoints.Contracts.dll" target="lib" />   
     <file src="..\..\lib\UnitTests\kCura.IntegrationPoints.SourceProviderInstaller.dll" target="lib" />
-    <file src="..\..\lib\UnitTests\kCura.IntegrationPoints.Synchronizers.RDO.dll" target="lib" />
-    <file src="..\..\lib\UnitTests\kCura.ScheduleQueue.Core.dll" target="lib" />
+    <file src="..\..\lib\UnitTests\kCura.IntegrationPoints.Services.Interfaces.Private.dll" target="lib" />
+    <file src="..\..\lib\UnitTests\kCura.IntegrationPoints.Domain.dll" target="lib" />
   </files>
 </package>
