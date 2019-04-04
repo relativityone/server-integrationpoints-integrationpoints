@@ -5,7 +5,7 @@ using Relativity.Services.FileField.Models;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories.Implementations
 {
-	class FileFieldRepository : IFileFieldRepository
+	public class FileFieldRepository : IFileFieldRepository
 	{
 		private IFileFieldManager _fileFieldManager;
 		private IExternalServiceInstrumentationProvider _instrumentationProvider;

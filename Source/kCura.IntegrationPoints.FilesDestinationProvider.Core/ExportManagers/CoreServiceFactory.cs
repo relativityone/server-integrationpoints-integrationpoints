@@ -11,15 +11,21 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 {
 	public class CoreServiceFactory : IServiceFactory
 	{
-		private readonly ExportFile _exportFile;
-		private readonly int _contextUserId;
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly IViewFieldRepository _viewFieldRepository;
+		private readonly IFileFieldRepository _fileFieldRepository;
+		private readonly IFileRepository _fileRepository;
+		private readonly ExportFile _exportFile;
+		private readonly int _contextUserId;
 
-		public CoreServiceFactory(IRepositoryFactory repositoryFactory, IViewFieldRepository viewFieldRepository, ExportFile exportFile, int contextUserId)
+		public CoreServiceFactory(IRepositoryFactory repositoryFactory, IViewFieldRepository viewFieldRepository,
+			IFileFieldRepository fileFieldRepository, IFileRepository fileRepository, ExportFile exportFile,
+			int contextUserId)
 		{
 			_repositoryFactory = repositoryFactory;
 			_viewFieldRepository = viewFieldRepository;
+			_fileFieldRepository = fileFieldRepository;
+			_fileRepository = fileRepository;
 			_exportFile = exportFile;
 			_contextUserId = contextUserId;
 		}
@@ -30,13 +36,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 
 		public IFieldManager CreateFieldManager() => new CoreFieldManager(_repositoryFactory);
 
-		//public ISearchManager CreateSearchManager() => new CoreSearchManager(GetBaseServiceContext(_exportFile.CaseArtifactID), _viewFieldRepository);
+		public ISearchManager CreateSearchManager() => new CoreSearchManager(GetBaseServiceContext(_exportFile.CaseArtifactID), _fileRepository, _fileFieldRepository, _viewFieldRepository);
 
 		public IProductionManager CreateProductionManager() => new CoreProductionManager(GetBaseServiceContext(_exportFile.CaseArtifactID));
-		public ISearchManager CreateSearchManager()
-		{
-			throw new System.NotImplementedException();
-		}
 
 		public IExportFileDownloader CreateExportFileDownloader()
 		{

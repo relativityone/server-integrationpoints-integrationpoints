@@ -1,12 +1,12 @@
 ﻿using System.Data;
 using System.Linq;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Extensions;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Utilities;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Service.Export;
 using Relativity.Core;
-using Relativity.Core.Api.Manager.UI;
 using Relativity.Core.Service;
 using Relativity.Services.Interfaces.ViewField.Models;
 using RelativityViewFieldInfo = Relativity.ViewFieldInfo;
@@ -17,12 +17,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 	{
 		private readonly BaseServiceContext _baseServiceContext;
 		private readonly IFileRepository _fileRepository;
+		private readonly IFileFieldRepository _fileFieldRepository;
 		private readonly IViewFieldRepository _viewFieldRepository;
 
-		public CoreSearchManager( BaseServiceContext baseServiceContext, IFileRepository fileRepository, IViewFieldRepository viewFieldRepository)
+		public CoreSearchManager( BaseServiceContext baseServiceContext, IFileRepository fileRepository, IFileFieldRepository fileFieldRepository, IViewFieldRepository viewFieldRepository)
 		{
 			_baseServiceContext = baseServiceContext;
 			_fileRepository = fileRepository;
+			_fileFieldRepository = fileFieldRepository;
 			_viewFieldRepository = viewFieldRepository;
 		}
 
@@ -31,7 +33,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 			var a = new DataTable();
 			int[] documentIDs =
 				CommaSeparatedNumbersToArrayConverter.ConvertCommaSeparatedStringToArrayOfInts(documentArtifactIDs);
-			return _fileRepository.GetNativesForSearchAsync(caseContextArtifactID, documentIDs).ToDataSet("DataTable");
+			return _fileRepository.GetNativesForSearchAsync(caseContextArtifactID, documentIDs).ToDataSet();
 		}
 
 		public DataSet RetrieveNativesForProduction(int caseContextArtifactID, int productionArtifactID,
@@ -39,15 +41,15 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 		{
 			int[] documentIDs =
 				CommaSeparatedNumbersToArrayConverter.ConvertCommaSeparatedStringToArrayOfInts(documentArtifactIDs);
-			return _fileRepository.GetNativesForProductionAsync(caseContextArtifactID, productionArtifactID, documentIDs).ToDataSet("DataTable");
+			return _fileRepository.GetNativesForProductionAsync(caseContextArtifactID, productionArtifactID, documentIDs).ToDataSet();
 
 		}
 
 		public DataSet RetrieveFilesForDynamicObjects(int caseContextArtifactID, int fileFieldArtifactID,
 			int[] objectIds)
 		{
-			Init(caseContextArtifactID);
-			return FileQuery.RetrieveFilesForDynamicObjects(_baseServiceContext, fileFieldArtifactID, objectIds)
+			return _fileFieldRepository
+				.GetFilesForDynamicObjectsAsync(caseContextArtifactID, fileFieldArtifactID, objectIds)
 				?.ToDataSet();
 		}
 
@@ -56,20 +58,20 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 		{
 			return _fileRepository
 				.GetImagesForProductionDocumentsAsync(caseContextArtifactID, productionArtifactID, documentArtifactIDs)
-				.ToDataSet("DataTable");
+				.ToDataSet();
 
 		}
 
 		public DataSet RetrieveImagesForDocuments(int caseContextArtifactID, int[] documentArtifactIDs)
 		{
 			return _fileRepository.GetImagesForDocumentsAsync(caseContextArtifactID, documentArtifactIDs)
-				.ToDataSet("DataTable");
+				.ToDataSet();
 		}
 
 		public DataSet RetrieveProducedImagesForDocument(int caseContextArtifactID, int documentArtifactID)
 		{
 			return _fileRepository.GetProducedImagesForDocumentAsync(caseContextArtifactID, documentArtifactID)
-				.ToDataSet("TableName");
+				.ToDataSet();
 		}
 
 		public DataSet RetrieveImagesByProductionIDsAndDocumentIDsForExport(int caseContextArtifactID,
@@ -77,7 +79,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 		{
 			return _fileRepository
 				.GetImagesForExportAsync(caseContextArtifactID, productionArtifactIDs, documentArtifactIDs)
-				.ToDataSet("DataTable");
+				.ToDataSet();
 		}
 
 		public ViewFieldInfo[] RetrieveAllExportableViewFields(int caseContextArtifactID, int artifactTypeID)
