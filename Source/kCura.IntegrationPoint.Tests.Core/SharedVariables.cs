@@ -169,7 +169,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static bool UiSkipUserCreation => AppSettingBool("UI.SkipUserCreation");
 
-		public static string UiBrowser => AppSettingString("UI.Browser");
+		public static string UiBrowser => GetEnvVariableOrAppSettingString("UITestsBrowser", "UI.Browser");
 
 		public static int UiBrowserWidth => AppSettingInt("UI.BrowserWidth");
 

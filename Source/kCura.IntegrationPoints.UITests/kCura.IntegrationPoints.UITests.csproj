@@ -111,6 +111,8 @@
     <Compile Include="Configuration\TestContext.cs" />
     <Compile Include="Driver\ChromeDriverFactory.cs" />
     <Compile Include="Driver\ChromeOptionsExtensions.cs" />
+    <Compile Include="Driver\ChromiumBasedDriverFactory.cs" />
+    <Compile Include="Driver\ChromiumDriverFactory.cs" />    
     <Compile Include="Driver\DriverExtensions.cs" />
     <Compile Include="Driver\DriverFactory.cs" />
     <Compile Include="Driver\FirefoxDriverFactory.cs" />
