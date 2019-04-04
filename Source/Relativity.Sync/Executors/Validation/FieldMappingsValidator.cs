@@ -63,7 +63,7 @@ namespace Relativity.Sync.Executors.Validation
 			_logger.LogVerbose("Validating unique identifier");
 
 			ValidationMessage validationMessage = null;
-			bool isIdentifierMapped = mappedFields.Any(x => x.FieldMapType == FieldMapTypeEnum.Identifier &&
+			bool isIdentifierMapped = mappedFields.Any(x => x.FieldMapType == FieldMapType.Identifier &&
 													x.SourceField != null &&
 													x.SourceField.IsIdentifier);
 

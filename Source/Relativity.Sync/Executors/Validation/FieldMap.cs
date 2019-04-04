@@ -1,9 +1,12 @@
-﻿namespace Relativity.Sync.Executors.Validation
+﻿using System;
+
+namespace Relativity.Sync.Executors.Validation
 {
 	/// <summary>
 	/// Defines the mapping of fields in the data source to fields in a workspace.
 	/// </summary>
-	public class FieldMap
+	[Serializable]
+	internal sealed class FieldMap
 	{
 		/// <summary>
 		/// Gets or sets the field in the source where the data is stored.
@@ -16,8 +19,8 @@
 		public FieldEntry DestinationField { get; set; }
 
 		/// <summary>
-		/// Gets or sets the FieldMapTypeEnum, which indicates the type of mapping.
+		/// Gets or sets the FieldMapType, which indicates the type of mapping.
 		/// </summary>
-		public FieldMapTypeEnum FieldMapType { get; set; }
+		public FieldMapType FieldMapType { get; set; }
 	}
 }
