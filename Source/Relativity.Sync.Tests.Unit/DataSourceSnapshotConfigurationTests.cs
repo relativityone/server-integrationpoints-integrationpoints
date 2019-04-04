@@ -20,6 +20,8 @@ namespace Relativity.Sync.Tests.Unit
 		private static readonly Guid FieldMappingsGuid = new Guid("E3CB5C64-C726-47F8-9CB0-1391C5911628");
 		private static readonly Guid SnapshotIdGuid = new Guid("D1210A1B-C461-46CB-9B73-9D22D05880C5");
 		private static readonly Guid SnapshotRecordsCountGuid = new Guid("57B93F20-2648-4ACF-973B-BCBA8A08E2BD");
+		private static readonly Guid DestinationFolderStructureBehaviorGuid = new Guid("A1593105-BD99-4A15-A51A-3AA8D4195908");
+		private static readonly Guid FolderPathSourceFieldArtifactIdGuid = new Guid("BF5F07A3-6349-47EE-9618-1DD32C9FD998");
 
 		[SetUp]
 		public void SetUp()
@@ -53,6 +55,26 @@ namespace Relativity.Sync.Tests.Unit
 			_cache.Setup(x => x.GetFieldValue<string>(FieldMappingsGuid)).Returns(expectedValue);
 
 			_instance.FieldMappings.Should().Be(expectedValue);
+		}
+
+		[Test]
+		public void ItShouldRetrieveDestinationFolderStructureBehavior()
+		{
+			const string expectedValue = "structure";
+
+			_cache.Setup(x => x.GetFieldValue<string>(DestinationFolderStructureBehaviorGuid)).Returns(expectedValue);
+
+			_instance.DestinationFolderStructureBehavior.Should().Be(expectedValue);
+		}
+
+		[Test]
+		public void ItShouldRetrieveFolderPathSourceFieldArtifactId()
+		{
+			const int expectedValue = 845967;
+
+			_cache.Setup(x => x.GetFieldValue<int>(FolderPathSourceFieldArtifactIdGuid)).Returns(expectedValue);
+
+			_instance.FolderPathSourceFieldArtifactId.Should().Be(expectedValue);
 		}
 
 		[Test]
