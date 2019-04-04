@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 			container.Register(Component.For<IFileRepository>().ImplementedBy<FileRepository>().LifestyleTransient());
 
 			container.Register(Component.For<IFileFieldManager>().UsingFactoryMethod(f => 
-				f.Resolve<IServicesMgr>().CreateProxy<IFileFieldManager>(ExecutionIdentity.CurrentUser)).LifestyleTransient());
+				f.Resolve<IServicesMgr>().CreateProxy<IFileFieldManager>(ExecutionIdentity.CurrentUser)));
 			container.Register(Component.For<IFileFieldRepository>().ImplementedBy<FileFieldRepository>().LifestyleTransient());
 			return container;
 		}
