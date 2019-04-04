@@ -17,6 +17,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 	{
 		private Mock<BaseServiceContext> _baseServiceContextMock;
 		private Mock<IViewFieldRepository> _viewFieldRepositoryMock;
+		private Mock<IFileRepository> _fileRepositoryMock;
+		private Mock<IFileFieldRepository> _fileFieldRepositoryMock;
 
 		private const int _WORKSPACE_ID = 1001000;
 		private const int _ARTIFACT_ID = 1000100;
@@ -70,6 +72,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 		{
 			_baseServiceContextMock = new Mock<BaseServiceContext>();
 			_viewFieldRepositoryMock = new Mock<IViewFieldRepository>();
+			_fileFieldRepositoryMock = new Mock<IFileFieldRepository>();
+			_fileRepositoryMock = new Mock<IFileRepository>();
+
 		}
 
 		[Test]
@@ -83,7 +88,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 				.Setup(x => x.ReadViewFieldIDsFromSearch(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _ARTIFACT_ID))
 				.Returns(viewFieldIDResponseArray);
 
-			var coreSearchManager = new CoreSearchManager(_baseServiceContextMock.Object, _viewFieldRepositoryMock.Object);
+			var coreSearchManager = new CoreSearchManager(_baseServiceContextMock.Object, _fileRepositoryMock.Object, _fileFieldRepositoryMock.Object,_viewFieldRepositoryMock.Object);
 
 			// act
 			int[] result = coreSearchManager.RetrieveDefaultViewFieldIds(_WORKSPACE_ID, _ARTIFACT_ID, _ARTIFACT_TYPE_ID, false);
@@ -106,7 +111,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 				.Setup(x => x.ReadViewFieldIDsFromProduction(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _ARTIFACT_ID))
 				.Returns(viewFieldIDResponseArray);
 
-			var coreSearchManager = new CoreSearchManager(_baseServiceContextMock.Object, _viewFieldRepositoryMock.Object);
+			var coreSearchManager = new CoreSearchManager(_baseServiceContextMock.Object, _fileRepositoryMock.Object, _fileFieldRepositoryMock.Object, _viewFieldRepositoryMock.Object);
 
 			// act
 			int[] result = coreSearchManager.RetrieveDefaultViewFieldIds(_WORKSPACE_ID, _ARTIFACT_ID, _ARTIFACT_TYPE_ID, true);
@@ -136,7 +141,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 			ViewFieldResponse[] viewFieldResponseArray = {viewFieldResponse};
 			_viewFieldRepositoryMock.Setup(x => x.ReadExportableViewFields(_WORKSPACE_ID, _ARTIFACT_TYPE_ID))
 				.Returns(viewFieldResponseArray);
-			var coreSearchManager = new CoreSearchManager(_baseServiceContextMock.Object, _viewFieldRepositoryMock.Object);
+			var coreSearchManager = new CoreSearchManager(_baseServiceContextMock.Object, _fileRepositoryMock.Object, _fileFieldRepositoryMock.Object, _viewFieldRepositoryMock.Object);
 
 			// act
 			ViewFieldInfo[] result = coreSearchManager.RetrieveAllExportableViewFields(_WORKSPACE_ID, _ARTIFACT_TYPE_ID);

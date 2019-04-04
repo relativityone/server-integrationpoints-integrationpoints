@@ -12,6 +12,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
 using Constants = kCura.IntegrationPoints.Domain.Constants;
+using IFileRepository = kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories.IFileRepository;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibrary
 {
@@ -31,13 +32,15 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			logger.ForContext<ExportServiceFactory>().Returns(logger);
 			IRepositoryFactory repositoryFactory = Substitute.For<IRepositoryFactory>();
 			IViewFieldRepository viewFieldRepository = Substitute.For<IViewFieldRepository>();
+			IFileRepository fileRepository = Substitute.For<IFileRepository>();
+			IFileFieldRepository fileFieldRepository = Substitute.For<IFileFieldRepository>();
 			var contextUser = new CurrentUser
 			{
 				ID = 9
 			};
 			_exportDataContext = new ExportDataContext() {ExportFile = new ExtendedExportFile(1234)};
 			
-			_instance = new ExportServiceFactory(logger, _instanceSettingRepository, repositoryFactory, viewFieldRepository, contextUser);
+			_instance = new ExportServiceFactory(logger, _instanceSettingRepository, repositoryFactory, fileRepository, fileFieldRepository, viewFieldRepository, contextUser);
 		}
 
 		[Test]
