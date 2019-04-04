@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.PerformanceTestingFramework
 
 		private static void LoadParameters()
 		{
-			string parametersJsonPath = SharedVariables.AppSettingString("RunSettingsJsonPath");
+			string parametersJsonPath = SharedVariables.AppSettingString("GrazynaRunSettingsJsonPath");
 			string json = File.ReadAllText(parametersJsonPath);
 			_parameters = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
 		}
