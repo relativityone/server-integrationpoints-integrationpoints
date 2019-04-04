@@ -11,18 +11,16 @@ namespace Relativity.Sync.Executors
 {
 	internal sealed class WorkspaceNameQuery : IWorkspaceNameQuery
 	{
-		private readonly ISourceServiceFactoryForUser _sourceServiceFactoryForUser;
 		private readonly ISyncLog _logger;
 
-		public WorkspaceNameQuery(ISourceServiceFactoryForUser sourceServiceFactoryForUser, ISyncLog logger)
+		public WorkspaceNameQuery(ISyncLog logger)
 		{
-			_sourceServiceFactoryForUser = sourceServiceFactoryForUser;
 			_logger = logger;
 		}
 
-		public async Task<string> GetWorkspaceNameAsync(int workspaceArtifactId, CancellationToken token)
+		public async Task<string> GetWorkspaceNameAsync(IProxyFactory proxyFactory, int workspaceArtifactId, CancellationToken token)
 		{
-			using (IObjectManager objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			using (IObjectManager objectManager = await proxyFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				QueryRequest request = new QueryRequest()
 				{

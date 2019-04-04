@@ -1,0 +1,107 @@
+﻿using System;
+using FluentAssertions;
+using Moq;
+using NUnit.Framework;
+using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.Executors.Validation;
+using Relativity.Sync.Storage;
+
+namespace Relativity.Sync.Tests.Unit
+{
+	[TestFixture]
+	public class ValidationConfigurationTests
+	{
+		private ValidationConfiguration _configuration;
+		private Mock<IConfiguration> _cache;
+		private const int _WORKSPACE_ID = 111;
+
+		private static readonly Guid DestinationWorkspaceArtifactIdGuid = new Guid("15B88438-6CF7-47AB-B630-424633159C69");
+		private static readonly Guid DataDestinationArtifactIdGuid = new Guid("0E9D7B8E-4643-41CC-9B07-3A66C98248A1");
+		private static readonly Guid DataSourceArtifactIdGuid = new Guid("6D8631F9-0EA1-4EB9-B7B2-C552F43959D0");
+		private static readonly Guid EmailNotificationRecipientsGuid = new Guid("4F03914D-9E86-4B72-B75C-EE48FEEBB583");
+		private static readonly Guid FieldMappingsGuid = new Guid("E3CB5C64-C726-47F8-9CB0-1391C5911628");
+		private static readonly Guid FieldOverlayBehaviorGuid = new Guid("34ECB263-1370-4D6C-AC11-558447504EC4");
+		private static readonly Guid FolderPathSourceFieldArtifactIdGuid = new Guid("BF5F07A3-6349-47EE-9618-1DD32C9FD998");
+		private static readonly Guid ImportOverwriteModeGuid = new Guid("1914D2A3-A1FF-480B-81DC-7A2AA563047A");
+		private static readonly Guid JobHistoryGuid = new Guid("5D8F7F01-25CF-4246-B2E2-C05882539BB2");
+
+		[SetUp]
+		public void SetUp()
+		{
+			_cache = new Mock<IConfiguration>();
+			_configuration = new ValidationConfiguration(_cache.Object, _WORKSPACE_ID);
+		}
+
+		[Test]
+		public void ItShouldRetrieveDestinationWorkspaceArtifactId()
+		{
+			const int expected = 1;
+			_cache.Setup(x => x.GetFieldValue<int>(DestinationWorkspaceArtifactIdGuid)).Returns(expected);
+			_configuration.DestinationWorkspaceArtifactId.Should().Be(expected);
+		}
+
+		[Test]
+		public void ItShouldRetrieveDataDestinationArtifactId()
+		{
+			const int expected = 1;
+			_cache.Setup(x => x.GetFieldValue<int>(DataDestinationArtifactIdGuid)).Returns(expected);
+			_configuration.DestinationFolderArtifactId.Should().Be(expected);
+		}
+
+		[Test]
+		public void ItShouldRetrieveDataSourceArtifactId()
+		{
+			const int expected = 1;
+			_cache.Setup(x => x.GetFieldValue<int>(DataSourceArtifactIdGuid)).Returns(expected);
+			_configuration.SavedSearchArtifactId.Should().Be(expected);
+		}
+
+		[Test]
+		public void ItShouldRetrieveEmailNotificationRecipients()
+		{
+			const string expected = "email1@example.com;email2@example.com";
+			_cache.Setup(x => x.GetFieldValue<string>(EmailNotificationRecipientsGuid)).Returns(expected);
+			_configuration.NotificationEmails.Should().Be(expected);
+		}
+
+		[Test]
+		public void ItShouldRetrieveFieldMappings()
+		{
+			const string expected = "{}";
+			_cache.Setup(x => x.GetFieldValue<string>(FieldMappingsGuid)).Returns(expected);
+			_configuration.FieldsMap.Should().Be(expected);
+		}
+
+		[Test]
+		public void ItShouldRetrieveFieldOverlayBehavior()
+		{
+			const string expected = "Use field settings or whatever";
+			_cache.Setup(x => x.GetFieldValue<string>(FieldOverlayBehaviorGuid)).Returns(expected);
+			_configuration.FieldOverlayBehavior.Should().Be(expected);
+		}
+
+		[Test]
+		public void ItShouldRetrieveFolderPathSourceFieldArtifactId()
+		{
+			const int expected = 1;
+			_cache.Setup(x => x.GetFieldValue<int>(FolderPathSourceFieldArtifactIdGuid)).Returns(expected);
+			_configuration.FolderPathSourceFieldArtifactId.Should().Be(expected);
+		}
+
+		[Test]
+		public void ItShouldRetrieveImportOverwriteMode()
+		{
+			ImportOverwriteMode expected = ImportOverwriteMode.AppendOverlay;
+			_cache.Setup(x => x.GetFieldValue<string>(ImportOverwriteModeGuid)).Returns("AppendOverlay");
+			_configuration.ImportOverwriteMode.Should().Be(expected);
+		}
+
+		[Test]
+		public void ItShouldRetrieveJobHistory()
+		{
+			const string jobName = "Job name";
+			_cache.Setup(x => x.GetFieldValue<RelativityObjectValue>(JobHistoryGuid)).Returns(new RelativityObjectValue() {Name = jobName});
+			_configuration.JobName.Should().Be(jobName);
+		}
+	}
+}

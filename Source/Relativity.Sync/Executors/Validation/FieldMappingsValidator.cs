@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -33,17 +34,28 @@ namespace Relativity.Sync.Executors.Validation
 
 		public async Task<ValidationResult> ValidateAsync(IValidationConfiguration configuration, CancellationToken token)
 		{
-			List<FieldMap> fieldMaps = _serializer.Deserialize<List<FieldMap>>(configuration.FieldsMap);
-			Task<ValidationMessage> validateDestinationFieldsTask = ValidateDestinationFields(configuration, fieldMaps, token);
-			Task<ValidationMessage> validateSourceFieldsTask = ValidateSourceFields(configuration, fieldMaps, token);
+			_logger.LogVerbose("Validating field mappings");
 
-			List<ValidationMessage> allMessages = new List<ValidationMessage>();
-			ValidationMessage[] fieldMappingValidationMessages = await Task.WhenAll(validateDestinationFieldsTask, validateSourceFieldsTask).ConfigureAwait(false);
-			allMessages.AddRange(fieldMappingValidationMessages);
-			allMessages.Add(ValidateUniqueIdentifier(fieldMaps));
-			allMessages.Add(ValidateFieldOverlayBehavior(configuration));
+			try
+			{
+				List<FieldMap> fieldMaps = _serializer.Deserialize<List<FieldMap>>(configuration.FieldsMap);
+				Task<ValidationMessage> validateDestinationFieldsTask = ValidateDestinationFields(configuration, fieldMaps, token);
+				Task<ValidationMessage> validateSourceFieldsTask = ValidateSourceFields(configuration, fieldMaps, token);
 
-			return new ValidationResult(allMessages);
+				List<ValidationMessage> allMessages = new List<ValidationMessage>();
+				ValidationMessage[] fieldMappingValidationMessages = await Task.WhenAll(validateDestinationFieldsTask, validateSourceFieldsTask).ConfigureAwait(false);
+				allMessages.AddRange(fieldMappingValidationMessages);
+				allMessages.Add(ValidateUniqueIdentifier(fieldMaps));
+				allMessages.Add(ValidateFieldOverlayBehavior(configuration));
+
+				return new ValidationResult(allMessages);
+			}
+			catch (Exception ex)
+			{
+				const string message = "Exception occurred during field mappings validation.";
+				_logger.LogError(ex, message);
+				return new ValidationResult(new ValidationMessage(message));
+			}
 		}
 
 		private ValidationMessage ValidateUniqueIdentifier(IList<FieldMap> mappedFields)

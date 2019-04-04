@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
 
-namespace Relativity.Sync.Executors.Validation
+namespace Relativity.Sync.Executors.Validation.Executors
 {
 	internal sealed class ValidationExecutor : IExecutor<IValidationConfiguration>
 	{

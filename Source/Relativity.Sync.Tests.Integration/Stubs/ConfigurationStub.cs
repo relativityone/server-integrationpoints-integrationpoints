@@ -33,8 +33,6 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 
 		public string JobName { get; }
 		public string NotificationEmails { get; }
-		public string TypeIdentifier { get; }
-		public string SourceProviderIdentifier { get; }
 		public int SourceWorkspaceArtifactId { get; set; }
 		public int DestinationWorkspaceArtifactId { get; set; }
 		public int SavedSearchArtifactId { get; }
