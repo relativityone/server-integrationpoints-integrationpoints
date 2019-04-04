@@ -3,7 +3,7 @@
 	/// <summary>
 	/// Specifies the type of mapping between data fields in a source and a workspace.
 	/// </summary>
-	public enum FieldMapTypeEnum
+	internal enum FieldMapType
 	{
 		/// <summary>
 		/// No type specified.
