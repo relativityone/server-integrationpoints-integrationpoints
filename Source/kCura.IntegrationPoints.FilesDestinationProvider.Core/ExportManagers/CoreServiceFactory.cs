@@ -30,9 +30,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 
 		public IFieldManager CreateFieldManager() => new CoreFieldManager(_repositoryFactory);
 
-		public ISearchManager CreateSearchManager() => new CoreSearchManager(GetBaseServiceContext(_exportFile.CaseArtifactID), _viewFieldRepository);
+		//public ISearchManager CreateSearchManager() => new CoreSearchManager(GetBaseServiceContext(_exportFile.CaseArtifactID), _viewFieldRepository);
 
 		public IProductionManager CreateProductionManager() => new CoreProductionManager(GetBaseServiceContext(_exportFile.CaseArtifactID));
+		public ISearchManager CreateSearchManager()
+		{
+			throw new System.NotImplementedException();
+		}
 
 		public IExportFileDownloader CreateExportFileDownloader()
 		{

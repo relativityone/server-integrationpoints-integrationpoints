@@ -80,6 +80,7 @@
     <Compile Include="SharedLibrary\ExtendedFieldNameProviderTests.cs" />
     <Compile Include="SharedLibrary\FactoryConfigBuilderTests.cs" />
     <Compile Include="SharedLibrary\StoppableExporterTests.cs" />
+    <Compile Include="Utilities\CommaSeparatedNumbersToArrayConverterTests.cs" />
     <Compile Include="Validation\Parts\DocumentExportSettingsValidatorTests.cs" />
     <Compile Include="Validation\Parts\ExportFileValidatorTests.cs" />
     <Compile Include="Validation\Parts\ExportNativeSettingsValidatorTests.cs" />

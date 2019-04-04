@@ -5,12 +5,12 @@ using Relativity.Services.Interfaces.File.Models;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories.Implementations
 {
-	public class FileQueryRepository : IFileQueryRepository
+	public class FileRepository : IFileRepository
 	{
 		private readonly IFileManager _fileManager;
 		private readonly IExternalServiceInstrumentationProvider _instrumentationProvider;
 
-		public FileQueryRepository(IFileManager fileManager, IExternalServiceInstrumentationProvider instrumentationProvider)
+		public FileRepository(IFileManager fileManager, IExternalServiceInstrumentationProvider instrumentationProvider)
 		{
 			_fileManager = fileManager;
 			_instrumentationProvider = instrumentationProvider;

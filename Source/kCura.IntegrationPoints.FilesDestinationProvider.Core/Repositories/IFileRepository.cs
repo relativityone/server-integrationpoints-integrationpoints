@@ -2,7 +2,7 @@
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories
 {
-	public interface IFileQueryRepository
+	public interface IFileRepository
 	{
 		FileResponse[] GetNativesForSearchAsync(int workspaceID, int[] documentIDs);
 
