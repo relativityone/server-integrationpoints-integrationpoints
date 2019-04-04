@@ -18,10 +18,10 @@ namespace kCura.IntegrationPoints.Services
 		/// </remarks>
 		public bool AlwaysImportNativeFiles { get; set; }
 
-		/// <summary>
-		/// TODO
-		/// </summary>
-		public bool AllowUserToMapNativeFileField { set; get; }
+        /// <summary>
+        /// Gets or sets a Boolean value used in a configuration to determine whether user should be able to map native file field
+        /// </summary>
+        public bool AllowUserToMapNativeFileField { set; get; }
 
 		/// <summary>
 		/// Gets or sets a list of GUIDs for RDOs that the provider is compatible with.

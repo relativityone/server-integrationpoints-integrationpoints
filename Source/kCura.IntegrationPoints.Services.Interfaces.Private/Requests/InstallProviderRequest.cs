@@ -5,12 +5,12 @@ namespace kCura.IntegrationPoints.Services
 	public class InstallProviderRequest
 	{
 		/// <summary>
-		/// TODO
+		/// Workspace Id where source providers will be installed
 		/// </summary>
 		public int WorkspaceID { get; set; }
 
 		/// <summary>
-		/// TODO
+		/// List if soruce providers to install
 		/// </summary>
 		public List<ProviderToInstallDto> ProvidersToInstall { get; set; }
 	}

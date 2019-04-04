@@ -55,7 +55,9 @@
     </Compile>
     <Compile Include="IntegrationPointSourceProviderUninstaller.cs" />
     <Compile Include="IntegrationPointSourceProviderInstaller.cs" />
+    <Compile Include="Internals\Converters\SourceProviderExtensions.cs" />
     <Compile Include="InvalidSourceProviderException.cs" />
+    <Compile Include="Internals\KeplerSourceProviderInstaller.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="paket.references" />

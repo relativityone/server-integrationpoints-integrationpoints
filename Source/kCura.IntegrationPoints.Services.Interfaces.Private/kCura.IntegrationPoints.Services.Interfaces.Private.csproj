@@ -84,6 +84,8 @@
     <Compile Include="Requests\CurrentPromotionStatusRequest.cs" />
     <Compile Include="Requests\PercentagePushedToReviewRequest.cs" />
     <Compile Include="Requests\JobHistoryRequest.cs" />
+    <Compile Include="Response\InstallProviderResponse.cs" />
+    <Compile Include="Response\UninstallProviderResponse.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

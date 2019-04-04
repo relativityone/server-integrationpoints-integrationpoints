@@ -33,7 +33,9 @@ namespace kCura.IntegrationPoints.Services
 		/// Gets or sets key-value pairs used as source provider settings for display on a custom page.
 		/// </summary>
 		/// <remarks>
-		/// The key-value pairs represent the names of fields that a user can set on a source provider, and the values that the user has entered for these fields. After a user has created a new integration point, the custom page displays these key-value pairs for reference purposes.
+		/// The key-value pairs represent the names of fields that a user can set on a source provider,
+		/// and the values that the user has entered for these fields. After a user has created a new integration point,
+		/// the custom page displays these key-value pairs for reference purposes.
 		/// </remarks>
 		public string ViewDataUrl { get; set; }
 

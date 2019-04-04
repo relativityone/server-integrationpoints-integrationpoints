@@ -55,7 +55,6 @@ namespace kCura.IntegrationPoints.Services.Installers
 			);
 
 			container.Register(Component.For<DeleteIntegrationPoints>().LifestyleTransient());
-			container.Register(Component.For<GetApplicationGuid>().ImplementedBy<GetApplicationGuid>().LifestyleTransient());
 
 			container.Register(Component.For<IProviderInstaller>().ImplementedBy<ProviderInstaller>().LifestyleTransient());
 			container.Register(Component.For<ProviderUninstaller>().LifestyleTransient());
