@@ -20,7 +20,7 @@ namespace Relativity.Sync
 		/// </summary>
 		/// <param name="progress">The progress object</param>
 		/// <param name="token">Cancellation token</param>
-		Task ExecuteAsync(IProgress<SyncProgress> progress, CancellationToken token);
+		Task ExecuteAsync(IProgress<SyncJobState> progress, CancellationToken token);
 
 		/// <summary>
 		///     Retries last run of the job
@@ -33,6 +33,6 @@ namespace Relativity.Sync
 		/// </summary>
 		/// <param name="progress">The progress object</param>
 		/// <param name="token">Cancellation token</param>
-		Task RetryAsync(IProgress<SyncProgress> progress, CancellationToken token);
+		Task RetryAsync(IProgress<SyncJobState> progress, CancellationToken token);
 	}
 }

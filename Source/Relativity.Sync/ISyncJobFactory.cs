@@ -28,7 +28,7 @@ namespace Relativity.Sync
 		/// <param name="container">Container initialized with all required adapters</param>
 		/// <param name="syncJobParameters">Parameters of job to be created</param>
 		/// <param name="configuration">Sync configuration</param>
-		ISyncJob Create(IContainer container, SyncJobParameters syncJobParameters, SyncConfiguration configuration);
+		ISyncJob Create(IContainer container, SyncJobParameters syncJobParameters, SyncJobExecutionConfiguration configuration);
 
 		/// <summary>
 		///     Creates <see cref="ISyncJob" />
@@ -37,6 +37,6 @@ namespace Relativity.Sync
 		/// <param name="syncJobParameters">Parameters of job to be created</param>
 		/// <param name="configuration">Sync configuration</param>
 		/// <param name="logger">Logger</param>
-		ISyncJob Create(IContainer container, SyncJobParameters syncJobParameters, SyncConfiguration configuration, ISyncLog logger);
+		ISyncJob Create(IContainer container, SyncJobParameters syncJobParameters, SyncJobExecutionConfiguration configuration, ISyncLog logger);
 	}
 }

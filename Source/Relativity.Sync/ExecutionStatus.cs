@@ -7,6 +7,7 @@
 	{
 		None,
 		Completed,
+		CompletedWithErrors,
 		Canceled,
 		Failed
 	}

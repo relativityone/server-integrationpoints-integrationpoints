@@ -27,7 +27,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			_pipeline = new NodeWithResultStub();
 
-			_executionContextFactory = new SyncExecutionContextFactory(new SyncConfiguration());
+			_executionContextFactory = new SyncExecutionContextFactory(new SyncJobExecutionConfiguration());
 
 			_executionOptions = new ExecutionOptions
 			{
@@ -38,10 +38,11 @@ namespace Relativity.Sync.Tests.Unit
 			_instance = new SyncJob(_pipeline, _executionContextFactory, _correlationId, new EmptyLogger());
 		}
 
-		[Test]
-		public async Task ItShouldExecuteJob()
+		[TestCase(NodeResultStatus.Succeeded)]
+		[TestCase(NodeResultStatus.SucceededWithErrors)]
+		public async Task ItShouldExecuteJob(NodeResultStatus nonErrorStatus)
 		{
-			_pipeline.ResultStatus = NodeResultStatus.Succeeded;
+			_pipeline.ResultStatus = nonErrorStatus;
 
 			// ACT
 			await _instance.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);

@@ -18,8 +18,8 @@ namespace Relativity.Sync.Nodes
 
 		protected override void OnAfterExecute(IExecutionContext<SyncExecutionContext> context)
 		{
-			SyncProgress progress = new SyncProgress("Sending notifications");
-			context.Subject.Progress.Report(progress);
+			SyncJobState jobState = new SyncJobState("Sending notifications");
+			context.Subject.Progress.Report(jobState);
 
 			if (_command.CanExecuteAsync(context.Subject.CancellationToken).ConfigureAwait(false).GetAwaiter().GetResult())
 			{

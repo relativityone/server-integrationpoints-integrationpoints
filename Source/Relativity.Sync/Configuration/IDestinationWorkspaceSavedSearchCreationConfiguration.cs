@@ -1,4 +1,6 @@
-﻿namespace Relativity.Sync.Configuration
+﻿using System.Threading.Tasks;
+
+namespace Relativity.Sync.Configuration
 {
 	internal interface IDestinationWorkspaceSavedSearchCreationConfiguration : IConfiguration
 	{
@@ -10,10 +12,12 @@
 
 		int SourceWorkspaceTagArtifactId { get; }
 
+		string SourceWorkspaceTagName { get; }
+
 		bool CreateSavedSearchForTags { get; }
 
 		bool IsSavedSearchArtifactIdSet { get; }
 
-		void SetSavedSearchArtifactId(int artifactId);
+		Task SetSavedSearchInDestinationArtifactIdAsync(int artifactId);
 	}
 }

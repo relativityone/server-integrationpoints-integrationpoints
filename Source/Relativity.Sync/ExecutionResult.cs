@@ -24,6 +24,15 @@ namespace Relativity.Sync
 		}
 
 		/// <summary>
+		///     Creates a <see cref="ExecutionResult"/> for an operation that completed but encountered non-fatal
+		///     errors during execution.
+		/// </summary>
+		public static ExecutionResult SuccessWithErrors(Exception exception)
+		{
+			return new ExecutionResult(ExecutionStatus.CompletedWithErrors, exception.Message, exception);
+		}
+
+		/// <summary>
 		///     Creates a <see cref="ExecutionResult"/> for a successful operation.
 		/// </summary>
 		public static ExecutionResult Success()
@@ -32,8 +41,8 @@ namespace Relativity.Sync
 		}
 
 		/// <summary>
-		///     Status of the execution. <see cref="Exception"/> and <see cref="Message"/> will only have meaningful values
-		///     when this property is <see cref="ExecutionStatus.Failed"/>.
+		///     Status of the execution. <see cref="Exception"/> and <see cref="Message"/> will only have meaningful
+		///     values when this property is not <see cref="ExecutionStatus.Completed"/>.
 		/// </summary>
 		public ExecutionStatus Status { get; }
 
@@ -47,7 +56,7 @@ namespace Relativity.Sync
 		/// </summary>
 		public Exception Exception { get; }
 
-		private ExecutionResult(ExecutionStatus status, string message, Exception exception)
+		internal ExecutionResult(ExecutionStatus status, string message, Exception exception)
 		{
 			Status = status;
 			Message = message;

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Banzai;
@@ -22,10 +24,10 @@ namespace Relativity.Sync
 
 		public async Task ExecuteAsync(CancellationToken token)
 		{
-			await ExecuteAsync(new EmptyProgress<SyncProgress>(), token).ConfigureAwait(false);
+			await ExecuteAsync(new EmptyProgress<SyncJobState>(), token).ConfigureAwait(false);
 		}
 
-		public async Task ExecuteAsync(IProgress<SyncProgress> progress, CancellationToken token)
+		public async Task ExecuteAsync(IProgress<SyncJobState> progress, CancellationToken token)
 		{
 			NodeResult executionResult;
 			try
@@ -49,18 +51,22 @@ namespace Relativity.Sync
 				throw new SyncException("Error occured during Sync job execution. See inner exception for more details.", e, _correlationId.Value);
 			}
 
-			if (executionResult.Status != NodeResultStatus.Succeeded)
+			if (executionResult.Status != NodeResultStatus.Succeeded && executionResult.Status != NodeResultStatus.SucceededWithErrors)
 			{
-				throw new SyncException("Sync job failed. See inner exceptions for more details.", new AggregateException(executionResult.GetFailExceptions()), _correlationId.Value);
+				SyncExecutionContext subject = (SyncExecutionContext) executionResult.Subject;
+				IEnumerable<Exception> failingExceptions = subject.Results
+					.Where(r => r.Exception != null)
+					.Select(r => r.Exception);
+				throw new SyncException("Sync job failed. See inner exceptions for more details.", new AggregateException(failingExceptions), _correlationId.Value);
 			}
 		}
 
 		public async Task RetryAsync(CancellationToken token)
 		{
-			await RetryAsync(new EmptyProgress<SyncProgress>(), token).ConfigureAwait(false);
+			await RetryAsync(new EmptyProgress<SyncJobState>(), token).ConfigureAwait(false);
 		}
 
-		public Task RetryAsync(IProgress<SyncProgress> progress, CancellationToken token)
+		public Task RetryAsync(IProgress<SyncJobState> progress, CancellationToken token)
 		{
 			throw new NotImplementedException();
 		}
