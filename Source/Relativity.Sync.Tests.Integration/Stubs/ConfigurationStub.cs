@@ -17,7 +17,7 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 		public string FieldMappings { get; set; }
 		public bool IsSnapshotCreated { get; set; }
 		
-		public async Task SetSnapshotDataAsync(Guid runId, int totalRecordsCount)
+		public async Task SetSnapshotDataAsync(Guid runId, long totalRecordsCount)
 		{
 			await Task.Yield();
 		}

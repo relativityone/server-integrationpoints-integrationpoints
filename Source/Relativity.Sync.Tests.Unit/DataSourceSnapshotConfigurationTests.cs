@@ -70,7 +70,7 @@ namespace Relativity.Sync.Tests.Unit
 		public async Task ItShouldUpdateSnapshotData()
 		{
 			Guid snapshotId = Guid.NewGuid();
-			const int totalRecordsCount = 789654;
+			const long totalRecordsCount = 789654;
 
 			await _instance.SetSnapshotDataAsync(snapshotId, totalRecordsCount).ConfigureAwait(false);
 

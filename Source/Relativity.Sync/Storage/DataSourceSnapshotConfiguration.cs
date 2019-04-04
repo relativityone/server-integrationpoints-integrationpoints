@@ -27,7 +27,7 @@ namespace Relativity.Sync.Storage
 
 		public bool IsSnapshotCreated => !string.IsNullOrWhiteSpace(_cache.GetFieldValue<string>(SnapshotIdGuid));
 
-		public async Task SetSnapshotDataAsync(Guid runId, int totalRecordsCount)
+		public async Task SetSnapshotDataAsync(Guid runId, long totalRecordsCount)
 		{
 			await _cache.UpdateFieldValueAsync(SnapshotIdGuid, runId.ToString()).ConfigureAwait(false);
 			await _cache.UpdateFieldValueAsync(SnapshotRecordsCountGuid, totalRecordsCount).ConfigureAwait(false);
