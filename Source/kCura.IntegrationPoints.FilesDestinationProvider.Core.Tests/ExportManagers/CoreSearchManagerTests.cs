@@ -1,9 +1,12 @@
-﻿using kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers;
+﻿using System;
+using System.Data;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories;
 using Moq;
 using NUnit.Framework;
 using Relativity;
 using Relativity.Core;
+using Relativity.Services.Interfaces.File.Models;
 using Relativity.Services.Interfaces.Shared.Models;
 using Relativity.Services.Interfaces.ViewField.Models;
 using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
@@ -67,6 +70,21 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 		private const bool _ENABLE_DATA_GRID = false;
 		private const bool _IS_VIRTUAL_ASSOCIATIVE_ARTIFACT_TYPE = true;
 
+		private const int _DOCUMENT_ARTIFACT_ID = 1700;
+		private const string _FILENAME = "Filename";
+		private const string _GUID = "82644DB3-3865-4B99-9DB4-60CE40401BD1";
+		private const string _IDENTIFIER = "Identifier";
+		private const string _LOCATION = "Location";
+		private const int _ORDER = 0;
+		private const int _ROTATION = 1;
+		private const int _TYPE = 2;
+		private const bool _IN_REPOSITORY = true;
+		private const long _SIZE = 1234;
+		private const string _DETAILS = "Details";
+		private const bool _BILLABLE = true;
+		private const int _PRODUCTION_ID = 1710;
+
+
 		[SetUp]
 		public void SetUp()
 		{
@@ -74,7 +92,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 			_viewFieldRepositoryMock = new Mock<IViewFieldRepository>();
 			_fileFieldRepositoryMock = new Mock<IFileFieldRepository>();
 			_fileRepositoryMock = new Mock<IFileRepository>();
-
 		}
 
 		[Test]
@@ -150,6 +167,114 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 			_viewFieldRepositoryMock.Verify(x => x.ReadExportableViewFields(_WORKSPACE_ID, _ARTIFACT_TYPE_ID), Times.Once);
 			Assert.AreEqual(1, result.Length);
 			ValidateViewFieldInfo(result[0]);
+		}
+
+		[Test]
+		public void RetrieveNativesForSearchTest()
+		{
+			//arrange
+			int[] documentIDs = { _DOCUMENT_ARTIFACT_ID };
+			string documentIDsAsString = $@"{_DOCUMENT_ARTIFACT_ID}";
+			FileResponse fileResponse = CreateTestFileResponse();
+			FileResponse[] fileResponses = {fileResponse};
+			_fileRepositoryMock.Setup(x => x.GetNativesForSearchAsync(_WORKSPACE_ID, documentIDs))
+				.Returns(fileResponses);
+			var coreSearchManager = new CoreSearchManager(_baseServiceContextMock.Object, _fileRepositoryMock.Object, _fileFieldRepositoryMock.Object, _viewFieldRepositoryMock.Object);
+			
+			//act
+			DataRowCollection result = coreSearchManager.RetrieveNativesForSearch(_WORKSPACE_ID, documentIDsAsString).Tables[0].Rows;
+			
+			//assert
+			_fileRepositoryMock.Verify(x=> x.GetNativesForSearchAsync(_WORKSPACE_ID, documentIDs), Times.Once);
+			Assert.AreEqual(1, result.Count);
+			ValidateFileResponse(result);
+		}
+
+		[Test]
+		public void RetrieveNativesForProductionTest()
+		{
+			//arrange
+			int[] documentIDs = { _DOCUMENT_ARTIFACT_ID };
+			int productionId = _PRODUCTION_ID;
+			string documentIDsAsString = $@"{_DOCUMENT_ARTIFACT_ID}";
+			FileResponse fileResponse = CreateTestFileResponse();
+			FileResponse[] fileResponses = { fileResponse };
+			_fileRepositoryMock.Setup(x => x.GetNativesForProductionAsync(_WORKSPACE_ID, productionId, documentIDs))
+				.Returns(fileResponses);
+			var coreSearchManager = new CoreSearchManager(_baseServiceContextMock.Object, _fileRepositoryMock.Object, _fileFieldRepositoryMock.Object, _viewFieldRepositoryMock.Object);
+
+			//act
+			DataRowCollection result = coreSearchManager.RetrieveNativesForProduction(_WORKSPACE_ID, productionId, documentIDsAsString).Tables[0].Rows;
+
+			//assert
+			_fileRepositoryMock.Verify(x => x.GetNativesForProductionAsync(_WORKSPACE_ID, productionId, documentIDs), Times.Once);
+			Assert.AreEqual(1, result.Count);
+			ValidateFileResponse(result);
+		}
+
+		[Test]
+		public void RetrieveImagesForProductionDocumentsTest()
+		{
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void RetrieveImagesForDocumentsTest()
+		{
+			throw new NotImplementedException();
+
+		}
+
+		[Test]
+		public void RetrieveImagesByProductionIDsAndDocumentIDsForExportTest()
+		{
+			throw new NotImplementedException();
+
+		}
+
+		[Test]
+		public void RetrieveFilesForDynamicObjectsTest()
+		{
+			throw new NotImplementedException();
+		}
+		[Test]
+		public void RetrieveProducedImagesForDocumentTest()
+		{
+			//arrange
+			int documentID =  _DOCUMENT_ARTIFACT_ID ;
+			FileResponse fileResponse = CreateTestFileResponse();
+			FileResponse[] fileResponses = { fileResponse };
+			_fileRepositoryMock.Setup(x => x.GetProducedImagesForDocumentAsync(_WORKSPACE_ID, documentID))
+				.Returns(fileResponses);
+			var coreSearchManager = new CoreSearchManager(_baseServiceContextMock.Object, _fileRepositoryMock.Object, _fileFieldRepositoryMock.Object, _viewFieldRepositoryMock.Object);
+
+			//act
+			DataRowCollection result = coreSearchManager.RetrieveProducedImagesForDocument(_WORKSPACE_ID, documentID).Tables[0].Rows;
+
+			//assert
+			_fileRepositoryMock.Verify(x => x.GetProducedImagesForDocumentAsync(_WORKSPACE_ID, documentID), Times.Once);
+			Assert.AreEqual(1, result.Count);
+			ValidateFileResponse(result);
+		}
+
+		private static FileResponse CreateTestFileResponse()
+		{
+			var fileResponse = new FileResponse()
+			{
+				DocumentArtifactID = _DOCUMENT_ARTIFACT_ID,
+				Filename = _FILENAME,
+				Guid = _GUID,
+				Identifier = _IDENTIFIER,
+				Location = _LOCATION,
+				Order = _ORDER,
+				Rotation = _ROTATION,
+				Type = _TYPE,
+				InRepository = _IN_REPOSITORY,
+				Size = _SIZE,
+				Details = _DETAILS,
+				Billable = _BILLABLE
+			};
+			return fileResponse;
 		}
 
 		private static ViewFieldResponse CreateTestViewFieldResponse()
@@ -238,6 +363,22 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 			Assert.AreEqual(_REFLECTED_CONNECTOR_IDENTIFIER_COLUMN_NAME, viewFieldInfo.ReflectedConnectorIdentifierColumnName);
 			Assert.AreEqual(_ENABLE_DATA_GRID, viewFieldInfo.EnableDataGrid);
 			Assert.AreEqual(_IS_VIRTUAL_ASSOCIATIVE_ARTIFACT_TYPE, viewFieldInfo.IsVirtualAssociativeArtifactType);
+		}
+
+		private static void ValidateFileResponse(DataRowCollection result)
+		{
+			Assert.AreEqual(_DOCUMENT_ARTIFACT_ID, result[0]["DocumentArtifactID"]);
+			Assert.AreEqual(_FILENAME, result[0]["Filename"]);
+			Assert.AreEqual(_GUID, result[0]["Guid"]);
+			Assert.AreEqual(_IDENTIFIER, result[0]["Identifier"]);
+			Assert.AreEqual(_LOCATION, result[0]["Location"]);
+			Assert.AreEqual(_ORDER, result[0]["Order"]);
+			Assert.AreEqual(_ROTATION, result[0]["Rotation"]);
+			Assert.AreEqual(_TYPE, result[0]["Type"]);
+			Assert.AreEqual(_IN_REPOSITORY, result[0]["InRepository"]);
+			Assert.AreEqual(_SIZE, result[0]["Size"]);
+			Assert.AreEqual(_DETAILS, result[0]["Details"]);
+			Assert.AreEqual(_BILLABLE, result[0]["Billable"]);
 		}
 	}
 }
