@@ -9,6 +9,7 @@ using Relativity.API;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using static LanguageExt.Prelude;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
@@ -17,6 +18,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
         private readonly Lazy<IAPILog> _logggerLazy;
 
         private IAPILog Logger => _logggerLazy.Value;
+
+        internal IProviderInstaller ProviderInstallerForTests { get; set; }
 
         protected InternalSourceProviderInstaller()
         {
@@ -29,18 +32,23 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
         {
             Logger.LogInformation("Installing internal RIP source providers, providers: {@sourceProviders}", sourceProviders);
 
-            Either<string, Unit> result = await CreateProviderInstaller()
-                .BindAsync(providerInstaller => providerInstaller.InstallProvidersAsync(sourceProviders))
+            await CreateProviderInstaller() // TODO make sure async will work fine with our flow
+                .ToAsync()
+                .Bind(providerInstaller => providerInstaller.InstallProvidersAsync(sourceProviders).ToAsync())
+                .Match(
+                    success => Logger.LogInformation("Internal source providers installed successfully."),
+                    error => throw new InvalidSourceProviderException(error)
+                 )
                 .ConfigureAwait(false);
-
-            result.Match(
-                success => Logger.LogInformation("Internal source providers installed successfully."),
-                error => throw new InvalidSourceProviderException(error)
-            );
         }
 
         private Either<string, IProviderInstaller> CreateProviderInstaller()
         {
+            if (ProviderInstallerForTests != null) // TODO It's hack for testsing 
+            {
+                return Right<string, IProviderInstaller>(ProviderInstallerForTests);
+            }
+
             try
             {
                 IDBContext workspaceDbContext = Helper.GetDBContext(Helper.GetActiveCaseID());
