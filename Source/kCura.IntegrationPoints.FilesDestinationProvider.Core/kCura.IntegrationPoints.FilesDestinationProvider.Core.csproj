@@ -50,13 +50,16 @@
     <Compile Include="EnumHelper.cs" />
     <Compile Include="ExportManagers\CoreFieldManager.cs" />
     <Compile Include="ExportManagers\CoreSearchManager.cs" />
+    <Compile Include="Extensions\EnumerableToDataSetExtensions.cs" />
     <Compile Include="Helpers\FieldConverter.cs" />
     <Compile Include="Helpers\CoreViewFieldInfo.cs" />
     <Compile Include="Installer\ExportRepositoryRegistration.cs" />
     <Compile Include="Repositories\IFileRepository.cs" />
+    <Compile Include="Repositories\Implementations\FileFieldRepository.cs" />
     <Compile Include="Repositories\Implementations\FileRepository.cs" />
     <Compile Include="Repositories\Implementations\ViewFieldRepository.cs" />
     <Compile Include="Repositories\IViewFieldRepository.cs" />
+    <Compile Include="Repositories\IFileFieldRepository.cs" />
     <Compile Include="SharedLibrary\ExportServiceFactory.cs" />
     <Compile Include="SharedLibrary\IExportServiceFactory.cs" />
     <Compile Include="Extensions\ExportFileExtension.cs" />
@@ -145,7 +148,9 @@
     <Compile Include="Validation\FileDestinationProviderValidatorsFactory.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
