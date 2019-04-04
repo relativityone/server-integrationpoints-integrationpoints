@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Autofac;
 using FluentAssertions;
@@ -45,10 +46,10 @@ namespace Relativity.Sync.Tests.Integration
 
 			const int expectedInnerExceptions = 2;
 			aggregateException.InnerExceptions.Count.Should().Be(expectedInnerExceptions);
-			aggregateException.InnerExceptions[0].Should().BeOfType<ArgumentException>();
-			aggregateException.InnerExceptions[0].Message.Should().Be("foo");
-			aggregateException.InnerExceptions[1].Should().BeOfType<InvalidOperationException>();
-			aggregateException.InnerExceptions[1].Message.Should().Be("bar");
+			aggregateException.InnerExceptions.Any(x => x is ArgumentException && x.Message.Equals("foo", StringComparison.InvariantCulture))
+				.Should().BeTrue();
+			aggregateException.InnerExceptions.Any(x => x is InvalidOperationException && x.Message.Equals("bar", StringComparison.InvariantCulture))
+				.Should().BeTrue();
 		}
 
 		private static void RegisterExecutorMock<T>(ContainerBuilder containerBuilder, ExecutionResult result) where T : IConfiguration
