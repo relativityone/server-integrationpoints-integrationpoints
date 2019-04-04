@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using File = System.IO.File;
 
-namespace kCura.IntegrationPoints.PerformanceTestingFramework
+namespace kCura.IntegrationPoints.PerformanceTestingFramework.Helpers
 {
 	public class TestContextParametersHelper
 	{
@@ -35,7 +34,7 @@ namespace kCura.IntegrationPoints.PerformanceTestingFramework
 				value = _parameters[parameterName];
 				if (value == null)
 				{
-					throw new Exception("Value of the parameter could not be obtained!");
+					throw new TestContextParametersHelperException("Value of the parameter could not be obtained!");
 				}
 			}
 

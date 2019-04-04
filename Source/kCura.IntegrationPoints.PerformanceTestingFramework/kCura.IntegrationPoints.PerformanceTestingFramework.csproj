@@ -51,7 +51,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
-    <Folder Include="TestCases\RelativityToRelativity\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
@@ -88,7 +87,8 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="TestCases\RelativityToRelativityPerformanceTest.cs" />
-    <Compile Include="TestCases\TestContextParametersHelper.cs" />
+    <Compile Include="Helpers\TestContextParametersHelper.cs" />
+    <Compile Include="Helpers\TestContextParametersHelperException.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />

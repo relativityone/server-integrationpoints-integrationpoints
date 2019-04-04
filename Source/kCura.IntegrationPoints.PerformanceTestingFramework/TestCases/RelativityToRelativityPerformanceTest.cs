@@ -1,16 +1,17 @@
-﻿using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoint.Tests.Core.Templates;
-using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
+using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.PerformanceTestingFramework.Helpers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using NUnit.Framework;
 
-namespace kCura.IntegrationPoints.PerformanceTestingFramework
+namespace kCura.IntegrationPoints.PerformanceTestingFramework.TestCases
 {
 	[TestFixture]
 	public class RelativityToRelativityPerformanceTest : RelativityProviderTemplate
