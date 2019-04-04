@@ -8,6 +8,7 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Tests.Integration.Stubs;
 using Relativity.Telemetry.APM;
+using Relativity.API;
 
 namespace Relativity.Sync.Tests.Integration
 {

@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
 
@@ -22,9 +23,9 @@ namespace Relativity.Sync
 			return await _executionConstrains.CanExecuteAsync(_configuration, token).ConfigureAwait(false);
 		}
 
-		public async Task ExecuteAsync(CancellationToken token)
+		public async Task<ExecutionResult> ExecuteAsync(CancellationToken token)
 		{
-			await _executor.ExecuteAsync(_configuration, token).ConfigureAwait(false);
+			return await _executor.ExecuteAsync(_configuration, token).ConfigureAwait(false);
 		}
 	}
 }

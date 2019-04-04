@@ -45,23 +45,26 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public async Task ItShouldExecuteCommand()
 		{
+			_executor.Setup(x => x.ExecuteAsync(_configuration, CancellationToken.None)).ReturnsAsync(ExecutionResult.Success());
+
 			// ACT
-			await _command.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _command.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
 			_executor.Verify(x => x.ExecuteAsync(_configuration, CancellationToken.None));
+			Assert.AreEqual(result.Status, ExecutionStatus.Completed);
 		}
 
 		[Test]
-		public void ItShouldNotBlockExceptions()
+		public void ItShouldThrowOnException()
 		{
-			_executor.Setup(x => x.ExecuteAsync(_configuration, CancellationToken.None)).Throws<Exception>();
+			_executor.Setup(x => x.ExecuteAsync(_configuration, CancellationToken.None)).Throws(new Exception("Foo bar baz"));
 
 			// ACT
 			Func<Task> action = async () => await _command.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			action.Should().Throw<Exception>();
+			action.Should().Throw<Exception>().WithMessage("Foo bar baz");
 		}
 	}
 }
