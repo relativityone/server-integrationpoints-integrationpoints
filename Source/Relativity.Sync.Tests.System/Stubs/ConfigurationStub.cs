@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Tests.System.Stubs
@@ -16,29 +17,17 @@ namespace Relativity.Sync.Tests.System.Stubs
 		public string FieldMappings { get; set; }
 		public bool IsSnapshotCreated { get; set; }
 
-		public void SetSnapshotData(Guid runId, int totalRecordsCount)
+		public async Task SetSnapshotDataAsync(Guid runId, int totalRecordsCount)
 		{
-			// Method intentionally left empty.
+			await Task.Yield();
 		}
 
+		public string SourceWorkspaceTagName { get; set; }
 		public bool CreateSavedSearchForTags { get; set; }
 		public bool IsSavedSearchArtifactIdSet { get; set; }
-		public void SetSavedSearchArtifactId(int artifactId)
+		public async Task SetSavedSearchInDestinationArtifactIdAsync(int artifactId)
 		{
-			// Method intentionally left empty.
-		}
-		public bool IsSourceWorkspaceArtifactTypeIdSet { get; set; }
-
-		public void SetSourceWorkspaceArtifactTypeId(int artifactTypeId)
-		{
-			// Method intentionally left empty.
-		}
-
-		public bool IsSourceJobArtifactTypeIdSet { get; set; }
-
-		public void SetSourceJobArtifactTypeId(int artifactTypeId)
-		{
-			// Method intentionally left empty.
+			await Task.Yield();
 		}
 
 		public int SourceWorkspaceArtifactId { get; set; }

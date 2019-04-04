@@ -37,7 +37,7 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public async Task ItShouldCallInnerExecuteWithProgressAsync()
 		{
-			IProgress<SyncProgress> progress = new Progress<SyncProgress>();
+			IProgress<SyncJobState> progress = new Progress<SyncJobState>();
 
 			// ACT
 			await _sut.ExecuteAsync(progress, CancellationToken.None).ConfigureAwait(false);
@@ -58,7 +58,7 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public async Task ItShouldCallInnerRetryWithProgressAsync()
 		{
-			IProgress<SyncProgress> progress = new Progress<SyncProgress>();
+			IProgress<SyncJobState> progress = new Progress<SyncJobState>();
 
 			// ACT
 			await _sut.RetryAsync(progress, CancellationToken.None).ConfigureAwait(false);
@@ -70,12 +70,12 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public async Task ItShouldLogUnhandledExceptionWhenExecuted()
 		{
-			_syncJob.Setup(x => x.ExecuteAsync(It.IsAny<IProgress<SyncProgress>>(), It.IsAny<CancellationToken>())).Returns(() =>
+			_syncJob.Setup(x => x.ExecuteAsync(It.IsAny<IProgress<SyncJobState>>(), It.IsAny<CancellationToken>())).Returns(() =>
 			{
 				_appDomain.FireUnhandledException();
 				return Task.CompletedTask;
 			});
-			IProgress<SyncProgress> progress = new Progress<SyncProgress>();
+			IProgress<SyncJobState> progress = new Progress<SyncJobState>();
 
 			// ACT
 			await _sut.ExecuteAsync(progress, CancellationToken.None).ConfigureAwait(false);
@@ -87,12 +87,12 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public async Task ItShouldLogUnhandledExceptionWhenRetried()
 		{
-			_syncJob.Setup(x => x.RetryAsync(It.IsAny<IProgress<SyncProgress>>(), It.IsAny<CancellationToken>())).Returns(() =>
+			_syncJob.Setup(x => x.RetryAsync(It.IsAny<IProgress<SyncJobState>>(), It.IsAny<CancellationToken>())).Returns(() =>
 			{
 				_appDomain.FireUnhandledException();
 				return Task.CompletedTask;
 			});
-			IProgress<SyncProgress> progress = new Progress<SyncProgress>();
+			IProgress<SyncJobState> progress = new Progress<SyncJobState>();
 
 			// ACT
 			await _sut.RetryAsync(progress, CancellationToken.None).ConfigureAwait(false);

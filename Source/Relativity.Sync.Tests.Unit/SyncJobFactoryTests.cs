@@ -25,14 +25,14 @@ namespace Relativity.Sync.Tests.Unit
 		public void ItShouldCreateSyncJob()
 		{
 			SyncJobParameters syncJobParameters = new SyncJobParameters(1, 1);
-			SyncConfiguration configuration = new SyncConfiguration();
+			SyncJobExecutionConfiguration configuration = new SyncJobExecutionConfiguration();
 			ISyncLog logger = new EmptyLogger();
 
 			IContainer container = new ContainerBuilder().Build();
 
 			ISyncJob expectedSyncJob = Mock.Of<ISyncJob>();
 			_containerFactory.Setup(x => x.RegisterSyncDependencies(It.IsAny<ContainerBuilder>(), syncJobParameters, configuration, logger))
-				.Callback((ContainerBuilder cb, SyncJobParameters p, SyncConfiguration c, ISyncLog l) => cb.RegisterInstance(expectedSyncJob).As<ISyncJob>());
+				.Callback((ContainerBuilder cb, SyncJobParameters p, SyncJobExecutionConfiguration c, ISyncLog l) => cb.RegisterInstance(expectedSyncJob).As<ISyncJob>());
 
 			// ACT
 			ISyncJob syncJob = _instance.Create(container, syncJobParameters, configuration, logger);
@@ -46,13 +46,13 @@ namespace Relativity.Sync.Tests.Unit
 		public void ItShouldRegisterDependenciesInScope()
 		{
 			SyncJobParameters syncJobParameters = new SyncJobParameters(1, 1);
-			SyncConfiguration configuration = new SyncConfiguration();
+			SyncJobExecutionConfiguration configuration = new SyncJobExecutionConfiguration();
 			ISyncLog logger = new EmptyLogger();
 
 			IContainer container = new ContainerBuilder().Build();
 
 			_containerFactory.Setup(x => x.RegisterSyncDependencies(It.IsAny<ContainerBuilder>(), syncJobParameters, configuration, logger))
-				.Callback((ContainerBuilder cb, SyncJobParameters p, SyncConfiguration c, ISyncLog l) => cb.RegisterInstance(Mock.Of<ISyncJob>()).As<ISyncJob>());
+				.Callback((ContainerBuilder cb, SyncJobParameters p, SyncJobExecutionConfiguration c, ISyncLog l) => cb.RegisterInstance(Mock.Of<ISyncJob>()).As<ISyncJob>());
 
 			// ACT
 			_instance.Create(container, syncJobParameters, configuration, logger);

@@ -4,14 +4,14 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
-using kCura.Relativity.Client.DTOs;
 using NUnit.Framework;
-using Relativity.Services.ApplicationInstallManager;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.Integration.Stubs;
+using Relativity.Sync.Tests.System.Helpers;
 using Relativity.Sync.Tests.System.Stubs;
 
 namespace Relativity.Sync.Tests.System
@@ -19,39 +19,30 @@ namespace Relativity.Sync.Tests.System
 	[TestFixture]
 	public sealed class SourceWorkspaceTagsCreationExecutorTests : SystemTest
 	{
-		private Workspace _sourceWorkspace;
-		private Workspace _destinationWorkspace;
-
-		private static readonly Guid _JOB_HISTORY_GUID = Guid.Parse("08F4B1F7-9692-4A08-94AB-B5F3A88B6CC9");
-		private static readonly Guid _DESTINATION_WORKSPACE_GUID = Guid.Parse("3F45E490-B4CF-4C7D-8BB6-9CA891C0C198");
-		private static readonly Guid _INTEGRATION_POINT_GUID = Guid.Parse("DCF6E9D1-22B6-4DA3-98F6-41381E93C30C");
-
-		private static readonly Guid _DESTINATION_WORKSPACE_JOB_HISTORY_FIELD_GUID = Guid.Parse("07B8A468-DEC8-45BD-B50A-989A35150BE2");
+		private WorkspaceRef _destinationWorkspace;
+		private WorkspaceRef _sourceWorkspace;
+		private static readonly Guid _DESTINATION_WORKSPACE_DESTINATION_INSTANCE_ARTIFACTID_FIELD_GUID = Guid.Parse("323458DB-8A06-464B-9402-AF2516CF47E0");
+		private static readonly Guid _DESTINATION_WORKSPACE_DESTINATION_INSTANCE_NAME_FIELD_GUID = Guid.Parse("909ADC7C-2BB9-46CA-9F85-DA32901D6554");
 		private static readonly Guid _DESTINATION_WORKSPACE_DESTINATION_WORKSPACE_ARTIFACTID_FIELD_GUID = Guid.Parse("207E6836-2961-466B-A0D2-29974A4FAD36");
 		private static readonly Guid _DESTINATION_WORKSPACE_DESTINATION_WORKSPACE_NAME_FIELD_GUID = Guid.Parse("348D7394-2658-4DA4-87D0-8183824ADF98");
-		private static readonly Guid _DESTINATION_WORKSPACE_DESTINATION_INSTANCE_NAME_FIELD_GUID = Guid.Parse("909ADC7C-2BB9-46CA-9F85-DA32901D6554");
-		private static readonly Guid _DESTINATION_WORKSPACE_DESTINATION_INSTANCE_ARTIFACTID_FIELD_GUID = Guid.Parse("323458DB-8A06-464B-9402-AF2516CF47E0");
+		private static readonly Guid _DESTINATION_WORKSPACE_GUID = Guid.Parse("3F45E490-B4CF-4C7D-8BB6-9CA891C0C198");
 
+		private static readonly Guid _DESTINATION_WORKSPACE_JOB_HISTORY_FIELD_GUID = Guid.Parse("07B8A468-DEC8-45BD-B50A-989A35150BE2");
+		
 		[SetUp]
 		public async Task SetUp()
 		{
-			_sourceWorkspace = CreateWorkspaceAsync().Result;
-			_destinationWorkspace = CreateWorkspaceAsync().Result;
-			await InstallIntegrationPoints(_sourceWorkspace.ArtifactID).ConfigureAwait(false);
-		}
-
-		private async Task InstallIntegrationPoints(int workspaceArtifactId)
-		{
-			using (var applicationInstallManager = ServiceFactory.CreateProxy<IApplicationInstallManager>())
-			{
-				await applicationInstallManager.InstallLibraryApplicationByGuid(workspaceArtifactId, _INTEGRATION_POINT_GUID).ConfigureAwait(false);
-			}
+			Task<WorkspaceRef> sourceWorkspaceCreationTask = Environment.CreateWorkspaceWithFieldsAsync();
+			Task<WorkspaceRef> destinationWorkspaceCreationTask = Environment.CreateWorkspaceAsync();
+			await Task.WhenAll(sourceWorkspaceCreationTask, destinationWorkspaceCreationTask).ConfigureAwait(false);
+			_sourceWorkspace = sourceWorkspaceCreationTask.Result;
+			_destinationWorkspace = destinationWorkspaceCreationTask.Result;
 		}
 
 		[Test]
 		public async Task ItShouldCreateTagIfItDoesNotExist()
 		{
-			int jobHistoryArtifactId = await CreateJobHistoryInstance(_sourceWorkspace.ArtifactID).ConfigureAwait(false);
+			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, _sourceWorkspace.ArtifactID).ConfigureAwait(false);
 			const int relativityAdminUserId = 9;
 
 			ConfigurationStub configuration = new ConfigurationStub
@@ -83,7 +74,7 @@ namespace Relativity.Sync.Tests.System
 		[Test]
 		public async Task ItShouldUpdateTagIfItDoesExist()
 		{
-			int jobHistoryArtifactId = await CreateJobHistoryInstance(_sourceWorkspace.ArtifactID).ConfigureAwait(false);
+			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, _sourceWorkspace.ArtifactID).ConfigureAwait(false);
 			const int userId = 9;
 
 			ConfigurationStub configuration = new ConfigurationStub
@@ -117,40 +108,13 @@ namespace Relativity.Sync.Tests.System
 			Assert.AreEqual(jobHistoryArtifactId, relativityObjectValues.First().ArtifactID);
 		}
 
-		private async Task<int> CreateJobHistoryInstance(int workspaceId)
-		{
-			using (var objectManager = ServiceFactory.CreateProxy<IObjectManager>())
-			{
-				CreateRequest request = new CreateRequest
-				{
-					FieldValues = new[]
-					{
-						new FieldRefValuePair
-						{
-							Value = Guid.NewGuid().ToString(),
-							Field = new FieldRef
-							{
-								Name = "Name"
-							}
-						}
-					},
-					ObjectType = new ObjectTypeRef
-					{
-						Guid = _JOB_HISTORY_GUID
-					}
-				};
-				CreateResult result = await objectManager.CreateAsync(workspaceId, request).ConfigureAwait(false);
-				return result.Object.ArtifactID;
-			}
-		}
-
 		private ISyncJob CreateSyncJob(ConfigurationStub configuration)
 		{
 			ContainerBuilder containerBuilder = new ContainerBuilder();
 
 			ContainerFactory factory = new ContainerFactory();
 			SyncJobParameters syncParameters = new SyncJobParameters(configuration.JobArtifactId, configuration.SourceWorkspaceArtifactId);
-			factory.RegisterSyncDependencies(containerBuilder, syncParameters, new SyncConfiguration(), new EmptyLogger());
+			factory.RegisterSyncDependencies(containerBuilder, syncParameters, new SyncJobExecutionConfiguration(), new EmptyLogger());
 
 			new SystemTestsInstaller().Install(containerBuilder);
 

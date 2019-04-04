@@ -6,6 +6,6 @@ namespace Relativity.Sync
 {
 	internal interface ISyncExecutionContextFactory
 	{
-		IExecutionContext<SyncExecutionContext> Create(IProgress<SyncProgress> progress, CancellationToken token);
+		IExecutionContext<SyncExecutionContext> Create(IProgress<SyncJobState> progress, CancellationToken token);
 	}
 }

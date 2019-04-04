@@ -27,7 +27,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			_pipeline = new NodeWithResultStub();
 
-			_executionContextFactory = new SyncExecutionContextFactory(new SyncConfiguration());
+			_executionContextFactory = new SyncExecutionContextFactory(new SyncJobExecutionConfiguration());
 
 			_executionOptions = new ExecutionOptions
 			{

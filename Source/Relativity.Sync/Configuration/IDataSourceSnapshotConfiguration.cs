@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Relativity.Sync.Configuration
 {
@@ -15,6 +16,6 @@ namespace Relativity.Sync.Configuration
 
 		bool IsSnapshotCreated { get; }
 
-		void SetSnapshotData(Guid runId, int totalRecordsCount);
+		Task SetSnapshotDataAsync(Guid runId, int totalRecordsCount);
 	}
 }

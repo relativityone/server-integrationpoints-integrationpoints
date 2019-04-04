@@ -24,10 +24,10 @@ namespace Relativity.Sync
 
 		public async Task ExecuteAsync(CancellationToken token)
 		{
-			await ExecuteAsync(new EmptyProgress<SyncProgress>(), token).ConfigureAwait(false);
+			await ExecuteAsync(new EmptyProgress<SyncJobState>(), token).ConfigureAwait(false);
 		}
 
-		public async Task ExecuteAsync(IProgress<SyncProgress> progress, CancellationToken token)
+		public async Task ExecuteAsync(IProgress<SyncJobState> progress, CancellationToken token)
 		{
 			NodeResult executionResult;
 			try
@@ -63,10 +63,10 @@ namespace Relativity.Sync
 
 		public async Task RetryAsync(CancellationToken token)
 		{
-			await RetryAsync(new EmptyProgress<SyncProgress>(), token).ConfigureAwait(false);
+			await RetryAsync(new EmptyProgress<SyncJobState>(), token).ConfigureAwait(false);
 		}
 
-		public Task RetryAsync(IProgress<SyncProgress> progress, CancellationToken token)
+		public Task RetryAsync(IProgress<SyncJobState> progress, CancellationToken token)
 		{
 			throw new NotImplementedException();
 		}

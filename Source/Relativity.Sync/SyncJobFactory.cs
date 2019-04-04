@@ -23,23 +23,23 @@ namespace Relativity.Sync
 		/// <inheritdoc />
 		public ISyncJob Create(IContainer container, SyncJobParameters syncJobParameters)
 		{
-			return Create(container, syncJobParameters, new SyncConfiguration(), new EmptyLogger());
+			return Create(container, syncJobParameters, new SyncJobExecutionConfiguration(), new EmptyLogger());
 		}
 
 		/// <inheritdoc />
 		public ISyncJob Create(IContainer container, SyncJobParameters syncJobParameters, ISyncLog logger)
 		{
-			return Create(container, syncJobParameters, new SyncConfiguration(), logger);
+			return Create(container, syncJobParameters, new SyncJobExecutionConfiguration(), logger);
 		}
 
 		/// <inheritdoc />
-		public ISyncJob Create(IContainer container, SyncJobParameters syncJobParameters, SyncConfiguration configuration)
+		public ISyncJob Create(IContainer container, SyncJobParameters syncJobParameters, SyncJobExecutionConfiguration configuration)
 		{
 			return Create(container, syncJobParameters, configuration, new EmptyLogger());
 		}
 
 		/// <inheritdoc />
-		public ISyncJob Create(IContainer container, SyncJobParameters syncJobParameters, SyncConfiguration configuration, ISyncLog logger)
+		public ISyncJob Create(IContainer container, SyncJobParameters syncJobParameters, SyncJobExecutionConfiguration configuration, ISyncLog logger)
 		{
 			if (container == null)
 			{
