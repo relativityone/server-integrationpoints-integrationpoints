@@ -15,49 +15,49 @@ using System.Collections.Generic;
 
 namespace kCura.IntegrationPoints.Services.Installers
 {
-	public class ProviderManagerInstaller : Installer
-	{
-		private readonly List<IWindsorInstaller> _dependencies;
+    public class ProviderManagerInstaller : Installer
+    {
+        private readonly List<IWindsorInstaller> _dependencies;
 
-		public ProviderManagerInstaller()
-		{
-			_dependencies = new List<IWindsorInstaller>
-			{
-				new QueryInstallers(),
-				new SharedAgentInstaller(),
-				new ServicesInstaller()
-			};
-		}
+        public ProviderManagerInstaller()
+        {
+            _dependencies = new List<IWindsorInstaller>
+            {
+                new QueryInstallers(),
+                new SharedAgentInstaller(),
+                new ServicesInstaller()
+            };
+        }
 
-		protected override IList<IWindsorInstaller> Dependencies => _dependencies;
+        protected override IList<IWindsorInstaller> Dependencies => _dependencies;
 
-		protected override void RegisterComponents(IWindsorContainer container, IConfigurationStore store, int workspaceId)
-		{
-			container.Register(Component.For<IRSAPIService>().UsingFactoryMethod(k => new RSAPIService(k.Resolve<IHelper>(), workspaceId), true));
-			container.Register(Component.For<IProviderRepository>().ImplementedBy<ProviderRepository>().LifestyleTransient());
-			container.Register(Component.For<IAuthTokenGenerator>().ImplementedBy<ClaimsTokenGenerator>().LifestyleTransient());
+        protected override void RegisterComponents(IWindsorContainer container, IConfigurationStore store, int workspaceId)
+        {
+            container.Register(Component.For<IRSAPIService>().UsingFactoryMethod(k => new RSAPIService(k.Resolve<IHelper>(), workspaceId), true));
+            container.Register(Component.For<IProviderRepository>().ImplementedBy<ProviderRepository>().LifestyleTransient());
+            container.Register(Component.For<IAuthTokenGenerator>().ImplementedBy<ClaimsTokenGenerator>().LifestyleTransient());
 
-			container.Register(Component
-				.For<IServiceContextHelper>()
-				.UsingFactoryMethod(k =>
-				{
-					IServiceHelper helper = k.Resolve<IServiceHelper>();
-					return new ServiceContextHelperForKeplerService(helper, workspaceId);
-				})
-			);
-			container.Register(Component
-				.For<IDBContext>()
-				.UsingFactoryMethod(k =>
-				{
-					IServiceHelper helper = k.Resolve<IServiceHelper>();
-					return helper.GetDBContext(workspaceId);
-				})
-			);
+            container.Register(Component
+                .For<IServiceContextHelper>()
+                .UsingFactoryMethod(k =>
+                {
+                    IServiceHelper helper = k.Resolve<IServiceHelper>();
+                    return new ServiceContextHelperForKeplerService(helper, workspaceId);
+                })
+            );
+            container.Register(Component
+                .For<IDBContext>()
+                .UsingFactoryMethod(k =>
+                {
+                    IServiceHelper helper = k.Resolve<IServiceHelper>();
+                    return helper.GetDBContext(workspaceId);
+                })
+            );
 
-			container.Register(Component.For<DeleteIntegrationPoints>().LifestyleTransient());
+            container.Register(Component.For<DeleteIntegrationPoints>().LifestyleTransient());
 
-			container.Register(Component.For<IProviderInstaller>().ImplementedBy<ProviderInstaller>().LifestyleTransient());
-			container.Register(Component.For<ProviderUninstaller>().LifestyleTransient());
-		}
-	}
+            container.Register(Component.For<IProviderInstaller>().ImplementedBy<ProviderInstaller>().LifestyleTransient());
+            container.Register(Component.For<IProviderUninstaller>().ImplementedBy<ProviderUninstaller>().LifestyleTransient());
+        }
+    }
 }

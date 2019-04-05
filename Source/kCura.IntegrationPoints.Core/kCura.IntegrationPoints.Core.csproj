@@ -73,6 +73,7 @@
     <Compile Include="BatchStatusCommands\Implementations\TempTableReader.cs" />
     <Compile Include="Provider\GetApplicationGuid.cs" />
     <Compile Include="Provider\IProviderInstaller.cs" />
+    <Compile Include="Provider\IProviderUninstaller.cs" />
     <Compile Include="Provider\ProviderInstaller.cs" />
     <Compile Include="Provider\ProviderUninstaller.cs" />
     <Compile Include="Validation\IAgentValidator.cs" />

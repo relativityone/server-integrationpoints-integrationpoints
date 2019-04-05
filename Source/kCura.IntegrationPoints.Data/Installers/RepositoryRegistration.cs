@@ -5,20 +5,20 @@ using kCura.IntegrationPoints.Data.Repositories.Implementations;
 
 namespace kCura.IntegrationPoints.Data.Installers
 {
-	public static class RepositoryRegistration
-	{
-		public static IWindsorContainer AddRepositories(this IWindsorContainer container)
-		{
-			return container.Register(
-				Component
-					.For<IIntegrationPointRepository>()
-					.ImplementedBy<IntegrationPointRepository>()
-					.LifestyleTransient(),
-				Component
-					.For<ISourceProviderRepository>()
-					.ImplementedBy<SourceProviderRepository>()
-					.LifestyleTransient() // TODO unit tests
-				);
-		}
-	}
+    public static class RepositoryRegistration
+    {
+        public static IWindsorContainer AddRepositories(this IWindsorContainer container)
+        {
+            return container.Register(
+                Component
+                    .For<IIntegrationPointRepository>()
+                    .ImplementedBy<IntegrationPointRepository>()
+                    .LifestyleTransient(),
+                Component
+                    .For<ISourceProviderRepository>()
+                    .ImplementedBy<SourceProviderRepository>()
+                    .LifestyleTransient()
+                );
+        }
+    }
 }

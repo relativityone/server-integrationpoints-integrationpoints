@@ -82,10 +82,10 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
             private readonly List<SourceProvider> _sourceProviders;
 
             public SourceProvidersMigration(List<SourceProvider> sourceProvidersToMigrate, IEHHelper helper, IProviderInstaller providerInstallerForTests)
+            : base(providerInstallerForTests)
             {
                 _sourceProviders = sourceProvidersToMigrate;
                 Helper = helper;
-                ProviderInstallerForTests = providerInstallerForTests;
             }
 
             public override IDictionary<Guid, SourceProvider> GetSourceProviders()

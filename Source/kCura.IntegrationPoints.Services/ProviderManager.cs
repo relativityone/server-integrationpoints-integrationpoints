@@ -10,6 +10,7 @@ using Relativity.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.Services
@@ -137,8 +138,9 @@ namespace kCura.IntegrationPoints.Services
                         .ConfigureAwait(false);
 
                     return result.Match(
-                        Right: success => new InstallProviderResponse { Success = true },
-                        Left: error => new InstallProviderResponse { Success = false, ErrorMessage = error }
+                        success => new InstallProviderResponse(),
+                        errorMessage => new InstallProviderResponse(errorMessage),
+                        Bottom: () => new InstallProviderResponse(GetAndLogErrorMessageForBottomEitherState())
                     );
                 }
             }
@@ -149,11 +151,17 @@ namespace kCura.IntegrationPoints.Services
             }
         }
 
+        private string GetAndLogErrorMessageForBottomEitherState([CallerMemberName] string callerName = "")
+        {
+            Logger.LogFatal("Unexpected state of Either");
+            return $"Unexpected error occured in {callerName}";
+        }
+
         public async Task<UninstallProviderResponse> UninstallProviderAsync(UninstallProviderRequest request)
         {
             PermissionModel[] requiredPermissions =
             {
-                new PermissionModel(ObjectTypeGuids.DestinationProvider, ObjectTypes.DestinationProvider, ArtifactPermission.Delete),
+                new PermissionModel(ObjectTypeGuids.SourceProvider, ObjectTypes.SourceProvider, ArtifactPermission.Delete),
                 new PermissionModel(ObjectTypeGuids.IntegrationPoint, ObjectTypes.IntegrationPoint, ArtifactPermission.Edit),
                 new PermissionModel(ObjectTypeGuids.IntegrationPoint, ObjectTypes.IntegrationPoint, ArtifactPermission.Delete)
             };
@@ -166,14 +174,15 @@ namespace kCura.IntegrationPoints.Services
             {
                 using (IWindsorContainer container = GetDependenciesContainer(request.WorkspaceID))
                 {
-                    ProviderUninstaller providerUninstaller = container.Resolve<ProviderUninstaller>();
+                    IProviderUninstaller providerUninstaller = container.Resolve<IProviderUninstaller>();
                     Either<string, Unit> result = await providerUninstaller
                         .UninstallProvidersAsync(request.ApplicationID)
                         .ConfigureAwait(false);
 
                     return result.Match(
-                        Right: unit => new UninstallProviderResponse { Success = true },
-                        Left: errorMessage => new UninstallProviderResponse { Success = false, ErrorMessage = errorMessage }
+                        success => new UninstallProviderResponse(),
+                        errorMessage => new UninstallProviderResponse(errorMessage),
+                        Bottom: () => new UninstallProviderResponse(GetAndLogErrorMessageForBottomEitherState())
                     );
                 }
             }

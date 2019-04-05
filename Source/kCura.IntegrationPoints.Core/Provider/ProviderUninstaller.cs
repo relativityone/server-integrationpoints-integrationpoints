@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.Core.Provider
 {
-    public class ProviderUninstaller
+    public class ProviderUninstaller : IProviderUninstaller
     {
         private readonly IAPILog _logger;
         private readonly ISourceProviderRepository _sourceProviderRepository;

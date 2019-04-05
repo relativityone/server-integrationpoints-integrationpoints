@@ -15,11 +15,10 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
     public abstract class InternalSourceProviderInstaller : IntegrationPointSourceProviderInstaller
     {
+        private readonly IProviderInstaller _providerInstaller;
         private readonly Lazy<IAPILog> _logggerLazy;
 
         private IAPILog Logger => _logggerLazy.Value;
-
-        internal IProviderInstaller ProviderInstallerForTests { get; set; }
 
         protected InternalSourceProviderInstaller()
         {
@@ -28,46 +27,66 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
             );
         }
 
-        internal override async Task InstallSourceProviders(IEnumerable<SourceProvider> sourceProviders)
+        protected InternalSourceProviderInstaller(IProviderInstaller providerInstaller) : this()
+        {
+            _providerInstaller = providerInstaller;
+        }
+
+        internal override Task InstallSourceProviders(IEnumerable<SourceProvider> sourceProviders)
         {
             Logger.LogInformation("Installing internal RIP source providers, providers: {@sourceProviders}", sourceProviders);
 
-            await CreateProviderInstaller() // TODO make sure async will work fine with our flow
-                .ToAsync()
-                .Bind(providerInstaller => providerInstaller.InstallProvidersAsync(sourceProviders).ToAsync())
+            // we are not using EitherAsync, because language-ext in version 3.1.15 does not call ConfigureAwait(false)
+            GetProviderInstaller()
+                .Bind(providerInstaller => InstallProviders(providerInstaller, sourceProviders))
                 .Match(
                     success => Logger.LogInformation("Internal source providers installed successfully."),
-                    error => throw new InvalidSourceProviderException(error)
-                 )
-                .ConfigureAwait(false);
+                    error => throw new InvalidSourceProviderException(error),
+                    Bottom: () => Logger.LogFatal("Unexpected state of Either")
+                 );
+
+            return Task.CompletedTask;
         }
 
-        private Either<string, IProviderInstaller> CreateProviderInstaller()
+        private static Either<string, Unit> InstallProviders(
+            IProviderInstaller providerInstaller,
+            IEnumerable<SourceProvider> sourceProviders)
         {
-            if (ProviderInstallerForTests != null) // TODO It's hack for testsing 
+            return providerInstaller.InstallProvidersAsync(sourceProviders).GetAwaiter().GetResult();
+        }
+
+        private Either<string, IProviderInstaller> GetProviderInstaller()
+        {
+            if (_providerInstaller != null)
             {
-                return Right<string, IProviderInstaller>(ProviderInstallerForTests);
+                return Right<string, IProviderInstaller>(_providerInstaller);
             }
 
             try
             {
-                IDBContext workspaceDbContext = Helper.GetDBContext(Helper.GetActiveCaseID());
-                IRelativityObjectManager objectManager = CreateObjectManager();
-                var sourceProviderRepository = new SourceProviderRepository(objectManager);
-
-                return new ProviderInstaller(
-                    Logger,
-                    sourceProviderRepository,
-                    objectManager,
-                    workspaceDbContext,
-                    Helper
-                );
+                IProviderInstaller providerInstaller = CreateProviderInstaller();
+                return Right<string, IProviderInstaller>(providerInstaller);
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Error occured while creating instance of {type}", nameof(IProviderInstaller));
                 return $"Error occured while creating instance of {nameof(IProviderInstaller)}. Exception: {ex}";
             }
+        }
+
+        private IProviderInstaller CreateProviderInstaller()
+        {
+            IDBContext workspaceDbContext = Helper.GetDBContext(Helper.GetActiveCaseID());
+            IRelativityObjectManager objectManager = CreateObjectManager();
+            var sourceProviderRepository = new SourceProviderRepository(objectManager);
+
+            return new ProviderInstaller(
+                Logger,
+                sourceProviderRepository,
+                objectManager,
+                workspaceDbContext,
+                Helper
+            );
         }
 
         private IRelativityObjectManager CreateObjectManager()

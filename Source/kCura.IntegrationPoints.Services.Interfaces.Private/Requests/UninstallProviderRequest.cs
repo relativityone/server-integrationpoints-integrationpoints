@@ -2,13 +2,13 @@
 {
 	public class UninstallProviderRequest
 	{
-		/// <summary>
-		/// TODO
-		/// </summary>
-		public int WorkspaceID { get; set; }
+	    /// <summary>
+	    /// Workspace Id where source providers will be uninstalled
+	    /// </summary>
+        public int WorkspaceID { get; set; }
 
 		/// <summary>
-		/// TODO
+		/// Id of source provider to uninstall
 		/// </summary>
 		public int ApplicationID { get; set; }
 	}
