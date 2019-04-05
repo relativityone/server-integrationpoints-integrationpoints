@@ -39,7 +39,7 @@ namespace Relativity.Sync.Tests.Integration
 		{
 			_containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
 			IntegrationTestsContainerBuilder.MockAllSteps(_containerBuilder);
-			IntegrationTestsContainerBuilder.MockMetrics(_containerBuilder);
+			IntegrationTestsContainerBuilder.MockReporting(_containerBuilder);
 
 			_serviceFactoryFactoryStub = new ServiceFactoryFactoryStub();
 			_containerBuilder.RegisterInstance(_serviceFactoryFactoryStub).As<IServiceFactoryFactory>();

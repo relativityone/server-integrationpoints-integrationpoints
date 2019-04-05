@@ -64,7 +64,6 @@ namespace Relativity.Sync.Tests.System
 			// ACT
 			ISyncJob syncJob = CreateSyncJob(configuration);
 
-
 			// ASSERT
 			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
 

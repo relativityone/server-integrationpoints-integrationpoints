@@ -31,6 +31,7 @@ namespace Relativity.Sync.Nodes
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Uncaught exception when checking whether step '{step}' should execute.", Id);
+				context.Subject.Progress.ReportFailure(Id, ex);
 				throw;
 			}
 		}
@@ -49,40 +50,48 @@ namespace Relativity.Sync.Nodes
 			}
 
 			_logger.LogVerbose($"Step '{{step}}' received {nameof(ExecutionResult)} from command: {{result}}", Id, result);
+
 			context.Subject.Results.Add(result);
 
-			NodeResultStatus status = HandleExecutionResult(result);
+			NodeResultStatus status = HandleExecutionResult(context, result);
 			return status;
 		}
 
-		private NodeResultStatus HandleExecutionResult(ExecutionResult result)
+		private NodeResultStatus HandleExecutionResult(IExecutionContext<SyncExecutionContext> context, ExecutionResult result)
 		{
 			if (result.Status == ExecutionStatus.Failed)
 			{
 				_logger.LogError(result.Exception, "Error occurred during execution of step '{step}': {message}", Id, result.Message);
+				context.Subject.Progress.ReportFailure(Id, result.Exception);
+
 				return NodeResultStatus.Failed;
 			}
 			else if (result.Status == ExecutionStatus.Canceled)
 			{
 				_logger.LogDebug("Step '{step}' was canceled during execution.", Id);
+				context.Subject.Progress.ReportCanceled(Id);
+
 				return NodeResultStatus.Failed;
 			}
 			else if (result.Status == ExecutionStatus.CompletedWithErrors)
 			{
 				_logger.LogWarning(result.Exception, "Step '{step}' completed with errors: {message}", Id, result.Message);
+				context.Subject.Progress.ReportCompletedWithErrors(Id);
+
 				return NodeResultStatus.SucceededWithErrors;
 			}
 			else
 			{
 				_logger.LogDebug("Step '{step}' completed successfully.", Id);
+				context.Subject.Progress.ReportCompleted(Id);
+
 				return NodeResultStatus.Succeeded;
 			}
 		}
 
 		protected override void OnBeforeExecute(IExecutionContext<SyncExecutionContext> context)
 		{
-			SyncJobState jobState = new SyncJobState(Id);
-			context.Subject.Progress.Report(jobState);
+			context.Subject.Progress.ReportStarted(Id);
 		}
 	}
 }

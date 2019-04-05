@@ -18,8 +18,9 @@ namespace Relativity.Sync.Nodes
 
 		protected override void OnAfterExecute(IExecutionContext<SyncExecutionContext> context)
 		{
-			SyncJobState jobState = new SyncJobState("Sending notifications");
-			context.Subject.Progress.Report(jobState);
+			const string id = "Sending notifications";
+
+			context.Subject.Progress.ReportStarted(id);
 
 			if (_command.CanExecuteAsync(context.Subject.CancellationToken).ConfigureAwait(false).GetAwaiter().GetResult())
 			{
@@ -30,6 +31,7 @@ namespace Relativity.Sync.Nodes
 				{
 					// result.Exception may be null, but this should not cause any issues.
 					_logger.LogError(result.Exception, "Failed to send notifications: {message}", result.Message);
+					context.Subject.Progress.ReportFailure(id, result.Exception);
 				}
 			}
 		}

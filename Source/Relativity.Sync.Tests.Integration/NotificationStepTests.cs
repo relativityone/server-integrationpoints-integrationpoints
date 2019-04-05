@@ -22,7 +22,7 @@ namespace Relativity.Sync.Tests.Integration
 			_executorTypes = new List<Type>();
 			_containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
 			IntegrationTestsContainerBuilder.RegisterStubsForPipelineBuilderTests(_containerBuilder, _executorTypes);
-			IntegrationTestsContainerBuilder.MockMetrics(_containerBuilder);
+			IntegrationTestsContainerBuilder.MockReporting(_containerBuilder);
 		}
 
 		[Test]
