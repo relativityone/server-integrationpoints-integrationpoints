@@ -89,5 +89,19 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			// assert
 			action.Should().NotThrow<InvalidOperationException>();
 		}
+
+		[Test]
+		public async Task ItShouldMeasureExecutionTimeProperly()
+		{
+			_internalValidator.Setup(x => x.ValidateAsync(It.IsAny<IValidationConfiguration>(), CancellationToken.None)).ReturnsAsync(new ValidationResult());
+			TimeSpan expected = TimeSpan.FromSeconds(1);
+			_stopwatch.SetupGet(x => x.Elapsed).Returns(expected);
+
+			// act
+			await _validatorWithMetrics.ValidateAsync(Mock.Of<IValidationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+
+			// assert
+			_syncMetrics.Verify(x => x.TimedOperation(It.IsAny<string>(), expected, It.IsAny<ExecutionStatus>()));
+		}
 	}
 }
