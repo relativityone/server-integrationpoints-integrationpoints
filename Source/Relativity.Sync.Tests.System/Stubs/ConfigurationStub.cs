@@ -40,7 +40,7 @@ namespace Relativity.Sync.Tests.System.Stubs
 		public string FieldsMap { get; set; }
 		public int FolderPathSourceFieldArtifactId { get; set; }
 		public ImportOverwriteMode ImportOverwriteMode { get; set; }
-		public string FieldOverlayBehavior { get; set; }
+		public FieldOverlayBehavior FieldOverlayBehavior { get; set; }
 		public string SourceJobTagName { get; set; }
 		public int SourceJobTagArtifactId { get; set; }
 		public int SourceWorkspaceTagArtifactId { get; set; }

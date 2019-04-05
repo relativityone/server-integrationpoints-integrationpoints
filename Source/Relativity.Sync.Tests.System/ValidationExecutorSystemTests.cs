@@ -63,7 +63,7 @@ namespace Relativity.Sync.Tests.System
 				FieldsMap = fieldsMap,
 				FolderPathSourceFieldArtifactId = folderPathSourceFieldArtifactId,
 				ImportOverwriteMode = ImportOverwriteMode.AppendOverlay,
-				FieldOverlayBehavior = "Use Field Settings"
+				FieldOverlayBehavior = FieldOverlayBehavior.Default
 			};
 
 			// act

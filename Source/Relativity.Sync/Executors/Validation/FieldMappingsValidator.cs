@@ -15,10 +15,6 @@ namespace Relativity.Sync.Executors.Validation
 {
 	internal sealed class FieldMappingsValidator : IValidator
 	{
-		private const string _FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_MERGE = "Merge Values";
-		private const string _FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_REPLACE = "Replace Values";
-		private const string _FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT = "Use Field Settings";
-
 		private readonly ISourceServiceFactoryForUser _sourceServiceFactoryForUser;
 		private readonly IDestinationServiceFactoryForUser _destinationServiceFactoryForUser;
 		private readonly ISerializer _serializer;
@@ -81,21 +77,10 @@ namespace Relativity.Sync.Executors.Validation
 
 			ValidationMessage validationMessage = null;
 
-			if (configuration.ImportOverwriteMode == ImportOverwriteMode.AppendOnly)
+			if (configuration.ImportOverwriteMode == ImportOverwriteMode.AppendOnly &&
+				configuration.FieldOverlayBehavior != FieldOverlayBehavior.Default)
 			{
-				if (configuration.FieldOverlayBehavior != _FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT)
-				{
-					validationMessage = new ValidationMessage("For Append Only should be set \"Use Field Settings\" overlay behaior.");
-				}
-			}
-			else
-			{
-				if (configuration.FieldOverlayBehavior != _FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_MERGE &&
-					configuration.FieldOverlayBehavior != _FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_REPLACE &&
-					configuration.FieldOverlayBehavior != _FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT)
-				{
-					validationMessage = new ValidationMessage($"Invalid Overlay Behavior: {configuration.FieldOverlayBehavior}");
-				}
+				validationMessage = new ValidationMessage("For Append Only should be set \"Use Field Settings\" overlay behavior.");
 			}
 
 			return validationMessage;
