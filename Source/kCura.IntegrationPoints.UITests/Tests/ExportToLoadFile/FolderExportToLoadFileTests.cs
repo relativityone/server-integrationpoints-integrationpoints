@@ -173,13 +173,18 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 
 		private async Task CreateDocumentView()
 		{
-			int workspaceId = Context.GetWorkspaceId();
+			int workspaceID = Context.GetWorkspaceId();
 
 			try
 			{
 				Guid[] viewFieldsGuids = { Guid.Parse(DocumentFieldGuids.ControlNumber) };
-				await View.CreateViewAsync(workspaceId, _VIEW_NAME, Constants.DOCUMENT_ARTIFACT_TYPE_ID,
-					viewFieldsGuids);
+				await View
+                    .CreateViewAsync(
+                        workspaceID, 
+                        _VIEW_NAME, 
+                        Constants.DOCUMENT_ARTIFACT_TYPE_ID,
+					    viewFieldsGuids)
+                    .ConfigureAwait(false);
 			}
 			catch (Exception ex)
 			{

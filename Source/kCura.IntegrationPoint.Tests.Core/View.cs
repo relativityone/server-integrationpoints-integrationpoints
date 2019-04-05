@@ -15,11 +15,11 @@ namespace kCura.IntegrationPoint.Tests.Core
 	{
 		private static ITestHelper Helper => new TestHelper();
 
-		public static int QueryView(int workspaceId, string viewName)
+		public static int QueryView(int workspaceID, string viewName)
 		{
 			using (IRSAPIClient rsapiClient = Rsapi.CreateRsapiClient())
 			{
-				rsapiClient.APIOptions.WorkspaceID = workspaceId;
+				rsapiClient.APIOptions.WorkspaceID = workspaceID;
 				var viewQuery = new Query<Relativity.Client.DTOs.View>
 				{
 					Condition = new TextCondition(ViewFieldNames.Name, TextConditionEnum.EqualTo, viewName)
@@ -28,9 +28,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public static async Task<int> CreateViewAsync(int workspaceId, string viewName, int objectTypeId, IEnumerable<Guid> fieldsGuids)
+		public static async Task<int> CreateViewAsync(int workspaceID, string viewName, int objectTypeId, IEnumerable<Guid> fieldsGuids)
 		{
-			List<FieldRef> viewFields = await GetViewFieldsReferences(workspaceId, objectTypeId, fieldsGuids).ConfigureAwait(false);
+			List<FieldRef> viewFields = await GetViewFieldsReferences(workspaceID, objectTypeId, fieldsGuids).ConfigureAwait(false);
 
 			var viewToCreate = new global::Relativity.Services.View.View
 			{
@@ -43,16 +43,16 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			using (IViewManager viewManager = Helper.CreateAdminProxy<IViewManager>())
 			{
-				return await viewManager.CreateSingleAsync(workspaceId, viewToCreate).ConfigureAwait(false);
+				return await viewManager.CreateSingleAsync(workspaceID, viewToCreate).ConfigureAwait(false);
 			}
 		}
 
-		private static async Task<List<FieldRef>> GetViewFieldsReferences(int workspaceId, int objectTypeId, IEnumerable<Guid> fieldsGuids)
+		private static async Task<List<FieldRef>> GetViewFieldsReferences(int workspaceID, int objectTypeID, IEnumerable<Guid> fieldsGuids)
 		{
 			using (IItemListViewManager viewManager = Helper.CreateAdminProxy<IItemListViewManager>())
 			{
 				Dictionary<int, ItemListFieldRef> objectTypeViewFields = await viewManager
-					.GetFieldsAsync(workspaceId, objectTypeId)
+					.GetFieldsAsync(workspaceID, objectTypeID)
 					.ConfigureAwait(false);
 
 				return objectTypeViewFields.Values
