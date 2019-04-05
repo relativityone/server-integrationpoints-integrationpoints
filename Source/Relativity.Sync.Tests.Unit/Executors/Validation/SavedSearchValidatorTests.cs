@@ -183,8 +183,10 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 
 		private void VerifyObjectManagerQueryRequest()
 		{
+			const int searchArtifactTypeId = 15;
+
 			_objectManager.Verify(x => x.QueryAsync(It.Is<int>(y => y == _TEST_WORKSPACE_ARTIFACT_ID),
-				It.Is<QueryRequest>(y => y.ObjectType.ArtifactID == _TEST_SAVED_SEARCH_ARTIFACT_ID && y.Fields.First().Name == _EXPECTED_QUERY_FIELD_TYPE && y.IncludeNameInQueryResult == true),
+				It.Is<QueryRequest>(y => y.ObjectType.ArtifactTypeID == searchArtifactTypeId && y.Fields.First().Name == _EXPECTED_QUERY_FIELD_TYPE),
 				It.Is<int>(y => y == 0), It.Is<int>(y => y == 1), It.Is<CancellationToken>(y => y == _cancellationToken), It.IsAny<IProgress<ProgressReport>>()));
 		}
 	}
