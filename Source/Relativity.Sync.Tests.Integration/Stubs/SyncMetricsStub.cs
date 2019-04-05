@@ -15,5 +15,10 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 		{
 			// Intentionally left empty
 		}
+
+		public void CountOperation(string name, ExecutionStatus status)
+		{
+			// Intentionally left empty
+		}
 	}
 }

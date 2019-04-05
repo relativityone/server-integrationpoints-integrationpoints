@@ -24,5 +24,12 @@ namespace Relativity.Sync.Telemetry
 		/// <param name="executionStatus">Execution status.</param>
 		/// <param name="customData">Custom data.</param>
 		void TimedOperation(string name, TimeSpan duration, ExecutionStatus executionStatus, Dictionary<string, object> customData);
+
+		/// <summary>
+		/// Logs a single count operation along with execution status.
+		/// </summary>
+		/// <param name="name">Name of the counter.</param>
+		/// <param name="status">Execution status of the command.</param>
+		void CountOperation(string name, ExecutionStatus status);
 	}
 }
