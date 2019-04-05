@@ -47,7 +47,7 @@ namespace Relativity.Sync
 				string decoratorName = validatorType.FullName;
 				containerBuilder.RegisterType(validatorType).Named(decoratorName, typeof(IValidator));
 				containerBuilder.RegisterDecorator<IValidator>((context, validator) => 
-					new ValidatorWithMetrics(validator, context.Resolve<ISyncMetrics>()), decoratorName);
+					new ValidatorWithMetrics(validator, context.Resolve<ISyncMetrics>(), context.Resolve<IStopwatch>()), decoratorName);
 			}
 
 		}
