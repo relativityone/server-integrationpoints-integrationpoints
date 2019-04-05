@@ -13,17 +13,39 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 	{
 		public static IWindsorContainer AddExportRepositories(this IWindsorContainer container)
 		{
-			container.Register(Component.For<IViewFieldManager>().UsingFactoryMethod(f =>
-				f.Resolve<IServicesMgr>().CreateProxy<IViewFieldManager>(ExecutionIdentity.CurrentUser)));
-			container.Register(Component.For<IViewFieldRepository>().ImplementedBy<ViewFieldRepository>().LifestyleTransient());
+			container.Register(
+				Component.For<IViewFieldManager>().UsingFactoryMethod(f =>
+					f.Resolve<IServicesMgr>().CreateProxy<IViewFieldManager>(ExecutionIdentity.CurrentUser)
+				)
+			);
+			container.Register(
+				Component.For<IViewFieldRepository>()
+					.ImplementedBy<ViewFieldRepository>()
+					.LifestyleTransient()
+			);
 
-			container.Register(Component.For<IFileManager>().UsingFactoryMethod(f =>
-				f.Resolve<IServicesMgr>().CreateProxy<IFileManager>(ExecutionIdentity.CurrentUser)));
-			container.Register(Component.For<IFileRepository>().ImplementedBy<FileRepository>().LifestyleTransient());
+			container.Register(
+				Component.For<IFileManager>().UsingFactoryMethod(f =>
+					f.Resolve<IServicesMgr>().CreateProxy<IFileManager>(ExecutionIdentity.CurrentUser)
+				)
+			);
+			container.Register(
+				Component.For<IFileRepository>()
+					.ImplementedBy<FileRepository>()
+					.LifestyleTransient()
+			);
 
-			container.Register(Component.For<IFileFieldManager>().UsingFactoryMethod(f => 
-				f.Resolve<IServicesMgr>().CreateProxy<IFileFieldManager>(ExecutionIdentity.CurrentUser)));
-			container.Register(Component.For<IFileFieldRepository>().ImplementedBy<FileFieldRepository>().LifestyleTransient());
+			container.Register(
+				Component.For<IFileFieldManager>().UsingFactoryMethod(f => 
+					f.Resolve<IServicesMgr>().CreateProxy<IFileFieldManager>(ExecutionIdentity.CurrentUser)
+				)
+			);
+			container.Register(
+				Component.For<IFileFieldRepository>()
+					.ImplementedBy<FileFieldRepository>()
+					.LifestyleTransient()
+			);
+
 			return container;
 		}
 	}

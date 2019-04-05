@@ -18,8 +18,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 		private readonly ExportFile _exportFile;
 		private readonly int _contextUserId;
 
-		public CoreServiceFactory(IRepositoryFactory repositoryFactory, IViewFieldRepository viewFieldRepository,
-			IFileFieldRepository fileFieldRepository, IFileRepository fileRepository, ExportFile exportFile,
+		public CoreServiceFactory(
+			IRepositoryFactory repositoryFactory, 
+			IViewFieldRepository viewFieldRepository,
+			IFileFieldRepository fileFieldRepository, 
+			IFileRepository fileRepository, 
+			ExportFile exportFile,
 			int contextUserId)
 		{
 			_repositoryFactory = repositoryFactory;
@@ -36,7 +40,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 
 		public IFieldManager CreateFieldManager() => new CoreFieldManager(_repositoryFactory);
 
-		public ISearchManager CreateSearchManager() => new CoreSearchManager(GetBaseServiceContext(_exportFile.CaseArtifactID), _fileRepository, _fileFieldRepository, _viewFieldRepository);
+		public ISearchManager CreateSearchManager() => new CoreSearchManager(
+			GetBaseServiceContext(_exportFile.CaseArtifactID), 
+			_fileRepository, 
+			_fileFieldRepository, 
+			_viewFieldRepository
+		);
 
 		public IProductionManager CreateProductionManager() => new CoreProductionManager(GetBaseServiceContext(_exportFile.CaseArtifactID));
 

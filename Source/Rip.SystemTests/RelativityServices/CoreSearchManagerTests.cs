@@ -17,12 +17,16 @@ using Moq;
 using NUnit.Framework;
 using Relativity.API.Foundation;
 using Relativity.Core;
+using Relativity.Services.FileField;
+using Relativity.Services.Interfaces.File;
 using Relativity.Services.Interfaces.ViewField;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.User;
 using Relativity.Services.View;
 using FieldCategory = Relativity.Services.Objects.DataContracts.FieldCategory;
 using FieldRef = Relativity.Services.Field.FieldRef;
+using IFileRepository = kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories.IFileRepository;
+using IViewManager = Relativity.Services.View.IViewManager;
 
 namespace Rip.SystemTests.RelativityServices
 {
@@ -155,10 +159,19 @@ namespace Rip.SystemTests.RelativityServices
 		{
 			var baseServiceContextMock = new Mock<BaseServiceContext>(); // TODO remove when CoreSearchManager has Relativity.Core dependencies removed
 			IViewFieldManager viewFieldManager = _testHelperLazy.Value.CreateUserProxy<IViewFieldManager>();
+			IFileManager fileManager = _testHelperLazy.Value.CreateUserProxy<IFileManager>();
+			IFileFieldManager fileFieldManager = _testHelperLazy.Value.CreateUserProxy<IFileFieldManager>();
 			IExternalServiceInstrumentationProvider instrumentationProvider =
 				new ExternalServiceInstrumentationProviderWithoutJobContext(_testHelperLazy.Value.GetLoggerFactory().GetLogger());
 			IViewFieldRepository viewFieldRepository = new ViewFieldRepository(viewFieldManager, instrumentationProvider);
-			var coreSearchManager = new CoreSearchManager(baseServiceContextMock.Object, viewFieldRepository);
+			IFileRepository fileRepository = new FileRepository(fileManager, instrumentationProvider);
+			IFileFieldRepository fileFieldRepository = new FileFieldRepository(fileFieldManager, instrumentationProvider);
+			var coreSearchManager = new CoreSearchManager(
+				baseServiceContextMock.Object,
+				fileRepository,
+				fileFieldRepository,
+				viewFieldRepository
+			);
 			return coreSearchManager;
 		}
 	}

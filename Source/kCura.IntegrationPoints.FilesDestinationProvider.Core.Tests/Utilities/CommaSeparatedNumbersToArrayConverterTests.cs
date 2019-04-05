@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Utilities
 			//arrange
 			string data = "123,321,1,9999";
 			//act
-			int[] parsed = CommaSeparatedNumbersToArrayConverter.ConvertCommaSeparatedStringToArrayOfInts(data);
+			int[] parsed = CommaSeparatedNumbersToArrayConverter.ConvertToArray(data);
 			//assert
 			parsed.Should().BeSameAs(new int[]{ 123, 321, 1, 9999 });
 		}

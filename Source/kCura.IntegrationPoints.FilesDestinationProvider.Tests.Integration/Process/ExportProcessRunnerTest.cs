@@ -38,7 +38,6 @@ using ArtifactType = Relativity.ArtifactType;
 using DateTime = System.DateTime;
 using Directory = kCura.Utility.Directory;
 using ExportSettings = kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportSettings;
-using IFileRepository = kCura.IntegrationPoints.Data.Repositories.IFileRepository;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Process
 {

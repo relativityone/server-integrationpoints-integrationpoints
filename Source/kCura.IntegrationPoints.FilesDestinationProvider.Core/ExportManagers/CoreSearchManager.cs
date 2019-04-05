@@ -20,7 +20,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 		private readonly IFileFieldRepository _fileFieldRepository;
 		private readonly IViewFieldRepository _viewFieldRepository;
 
-		public CoreSearchManager( BaseServiceContext baseServiceContext, IFileRepository fileRepository, IFileFieldRepository fileFieldRepository, IViewFieldRepository viewFieldRepository)
+		public CoreSearchManager(
+			BaseServiceContext baseServiceContext, 
+			IFileRepository fileRepository, 
+			IFileFieldRepository fileFieldRepository, 
+			IViewFieldRepository viewFieldRepository)
 		{
 			_baseServiceContext = baseServiceContext;
 			_fileRepository = fileRepository;
@@ -30,19 +34,21 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 
 		public DataSet RetrieveNativesForSearch(int caseContextArtifactID, string documentArtifactIDs)
 		{
-			var a = new DataTable();
-			int[] documentIDs =
-				CommaSeparatedNumbersToArrayConverter.ConvertCommaSeparatedStringToArrayOfInts(documentArtifactIDs);
-			return _fileRepository.GetNativesForSearchAsync(caseContextArtifactID, documentIDs).ToDataSet();
+			int[] documentIDs = CommaSeparatedNumbersToArrayConverter
+				.ConvertToArray(documentArtifactIDs);
+			return _fileRepository
+				.GetNativesForSearchAsync(caseContextArtifactID, documentIDs)
+				.ToDataSet();
 		}
 
 		public DataSet RetrieveNativesForProduction(int caseContextArtifactID, int productionArtifactID,
 			string documentArtifactIDs)
 		{
-			int[] documentIDs =
-				CommaSeparatedNumbersToArrayConverter.ConvertCommaSeparatedStringToArrayOfInts(documentArtifactIDs);
-			return _fileRepository.GetNativesForProductionAsync(caseContextArtifactID, productionArtifactID, documentIDs).ToDataSet();
-
+			int[] documentIDs = CommaSeparatedNumbersToArrayConverter
+				.ConvertToArray(documentArtifactIDs);
+			return _fileRepository
+				.GetNativesForProductionAsync(caseContextArtifactID, productionArtifactID, documentIDs)
+				.ToDataSet();
 		}
 
 		public DataSet RetrieveFilesForDynamicObjects(int caseContextArtifactID, int fileFieldArtifactID,
@@ -53,29 +59,34 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 				?.ToDataSet();
 		}
 
-		public DataSet RetrieveImagesForProductionDocuments(int caseContextArtifactID, int[] documentArtifactIDs,
+		public DataSet RetrieveImagesForProductionDocuments(
+			int caseContextArtifactID, 
+			int[] documentArtifactIDs,
 			int productionArtifactID)
 		{
 			return _fileRepository
 				.GetImagesForProductionDocumentsAsync(caseContextArtifactID, productionArtifactID, documentArtifactIDs)
 				.ToDataSet();
-
 		}
 
 		public DataSet RetrieveImagesForDocuments(int caseContextArtifactID, int[] documentArtifactIDs)
 		{
-			return _fileRepository.GetImagesForDocumentsAsync(caseContextArtifactID, documentArtifactIDs)
+			return _fileRepository
+				.GetImagesForDocumentsAsync(caseContextArtifactID, documentArtifactIDs)
 				.ToDataSet();
 		}
 
 		public DataSet RetrieveProducedImagesForDocument(int caseContextArtifactID, int documentArtifactID)
 		{
-			return _fileRepository.GetProducedImagesForDocumentAsync(caseContextArtifactID, documentArtifactID)
+			return _fileRepository
+				.GetProducedImagesForDocumentAsync(caseContextArtifactID, documentArtifactID)
 				.ToDataSet();
 		}
 
-		public DataSet RetrieveImagesByProductionIDsAndDocumentIDsForExport(int caseContextArtifactID,
-			int[] productionArtifactIDs, int[] documentArtifactIDs)
+		public DataSet RetrieveImagesByProductionIDsAndDocumentIDsForExport(
+			int caseContextArtifactID,
+			int[] productionArtifactIDs, 
+			int[] documentArtifactIDs)
 		{
 			return _fileRepository
 				.GetImagesForExportAsync(caseContextArtifactID, productionArtifactIDs, documentArtifactIDs)
@@ -84,34 +95,29 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 
 		public ViewFieldInfo[] RetrieveAllExportableViewFields(int caseContextArtifactID, int artifactTypeID)
 		{
-			ViewFieldResponse[] viewFieldResponseArray =
-				_viewFieldRepository.ReadExportableViewFields(caseContextArtifactID, artifactTypeID);
-			ViewFieldInfo[] viewFieldInfoArray = ToViewFieldInfoArray(viewFieldResponseArray);
-			return viewFieldInfoArray;
-		}
-
-		private static ViewFieldInfo[] ToViewFieldInfoArray(ViewFieldResponse[] viewFieldResponseArray)
-		{
-			return viewFieldResponseArray
+			return _viewFieldRepository
+				.ReadExportableViewFields(caseContextArtifactID, artifactTypeID)
 				.Select(ToViewFieldInfo)
 				.ToArray();
 		}
 
-		private static ViewFieldInfo ToViewFieldInfo(ViewFieldResponse viewFieldResponse)
-		{
-			RelativityViewFieldInfo coreViewFieldInfo = new CoreViewFieldInfo(viewFieldResponse);
-			ViewFieldInfo viewFieldInfo = new ViewFieldInfo(coreViewFieldInfo);
-			return viewFieldInfo;
-		}
-
-		public int[] RetrieveDefaultViewFieldIds(int caseContextArtifactID, int viewArtifactID, int artifactTypeID,
+		public int[] RetrieveDefaultViewFieldIds(
+			int caseContextArtifactID, 
+			int viewArtifactID, 
+			int artifactTypeID,
 			bool isProduction)
 		{
 			ViewFieldIDResponse[] viewFieldIDResponseArray = isProduction
-				? _viewFieldRepository.ReadViewFieldIDsFromProduction(caseContextArtifactID, artifactTypeID,
-					viewArtifactID)
-				: _viewFieldRepository.ReadViewFieldIDsFromSearch(caseContextArtifactID, artifactTypeID,
-					viewArtifactID);
+				? _viewFieldRepository.ReadViewFieldIDsFromProduction(
+					caseContextArtifactID, 
+					artifactTypeID,
+					viewArtifactID
+				  )
+				: _viewFieldRepository.ReadViewFieldIDsFromSearch(
+					caseContextArtifactID, 
+					artifactTypeID,
+					viewArtifactID
+				  );
 
 			return viewFieldIDResponseArray
 				.Where(x => x.ArtifactID.Equals(viewArtifactID))
@@ -125,10 +131,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 				.ExternalRetrieveViews(_baseServiceContext, artifactTypeID, isSearch);
 		}
 
-		public void Dispose()
-		{
-		}
-
 		private ViewManager InitViewManager(int appArtifactId)
 		{
 			Init(appArtifactId);
@@ -138,6 +140,16 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 		private void Init(int appArtifactId)
 		{
 			_baseServiceContext.AppArtifactID = appArtifactId;
+		}
+
+		private static ViewFieldInfo ToViewFieldInfo(ViewFieldResponse viewFieldResponse)
+		{
+			RelativityViewFieldInfo coreViewFieldInfo = new CoreViewFieldInfo(viewFieldResponse);
+			return new ViewFieldInfo(coreViewFieldInfo);
+		}
+
+		public void Dispose()
+		{
 		}
 	}
 }

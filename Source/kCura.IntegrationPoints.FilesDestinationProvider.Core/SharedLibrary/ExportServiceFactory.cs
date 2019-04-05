@@ -41,7 +41,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 			if (UseCoreApi())
 			{
 				LogUsingRelativityCore();
-				return new CoreServiceFactory(_repositoryFactory, _viewFieldRepository, _fileFieldRepository, _fileRepository, exportDataContext.ExportFile, _contextUser.ID);
+				return new CoreServiceFactory(
+					_repositoryFactory, 
+					_viewFieldRepository, 
+					_fileFieldRepository, 
+					_fileRepository, 
+					exportDataContext.ExportFile, 
+					_contextUser.ID
+				);
 			}
 
 			LogUsingWebApi();

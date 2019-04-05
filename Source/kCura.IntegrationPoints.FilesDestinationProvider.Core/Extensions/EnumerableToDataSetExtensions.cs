@@ -14,19 +14,19 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Extensions
 
 		internal static DataTable ToDataTable<T>(this IEnumerable<T> collection) where T : class
 		{
-			DataTable dt = new DataTable("DataTable");
+			DataTable dt = new DataTable();
 			Type t = typeof(T);
 			PropertyInfo[] pia = t.GetProperties();
 
 			//Inspect the properties and create the columns in the DataTable
 			foreach (PropertyInfo pi in pia)
 			{
-				Type ColumnType = pi.PropertyType;
-				if ((ColumnType.IsGenericType))
+				Type columnType = pi.PropertyType;
+				if (columnType.IsGenericType)
 				{
-					ColumnType = ColumnType.GetGenericArguments()[0];
+					columnType = columnType.GetGenericArguments()[0];
 				}
-				dt.Columns.Add(pi.Name, ColumnType);
+				dt.Columns.Add(pi.Name, columnType);
 			}
 
 			//Populate the data table

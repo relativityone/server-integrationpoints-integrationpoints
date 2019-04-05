@@ -38,9 +38,20 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			{
 				ID = 9
 			};
-			_exportDataContext = new ExportDataContext() {ExportFile = new ExtendedExportFile(1234)};
+			_exportDataContext = new ExportDataContext
+			{
+				ExportFile = new ExtendedExportFile(1234)
+			};
 			
-			_instance = new ExportServiceFactory(logger, _instanceSettingRepository, repositoryFactory, fileRepository, fileFieldRepository, viewFieldRepository, contextUser);
+			_instance = new ExportServiceFactory(
+				logger, 
+				_instanceSettingRepository, 
+				repositoryFactory, 
+				fileRepository, 
+				fileFieldRepository, 
+				viewFieldRepository, 
+				contextUser
+			);
 		}
 
 		[Test]
