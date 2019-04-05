@@ -33,7 +33,7 @@ namespace Relativity.Sync.Executors.Validation
 		{
 			_logger.LogVerbose("Validating notification emails format.");
 
-			ValidationResult result = new ValidationResult();
+			ValidationResult validationResult = new ValidationResult();
 
 			try
 			{
@@ -47,24 +47,24 @@ namespace Relativity.Sync.Executors.Validation
 					if (string.IsNullOrEmpty(email))
 					{
 						_logger.LogError(_MISSING_EMAIL_MESSAGE);
-						result.Add(_MISSING_EMAIL_MESSAGE);
+						validationResult.Add(_MISSING_EMAIL_MESSAGE);
 					}
 					else if (!IsValidEmail(email))
 					{
 						string shortMessage = _INVALID_EMAIL_MESSAGE + email;
 						_logger.LogError(shortMessage);
-						result.Add(shortMessage);
+						validationResult.Add(shortMessage);
 					}
 				}
-
-				return Task.FromResult(result);
 			}
 			catch (Exception ex)
 			{
 				const string message = "Failed to validate notification emails format.";
 				_logger.LogError(ex, message);
-				return Task.FromResult(new ValidationResult(false, message));
+				validationResult.Add(message);
 			}
+
+			return Task.FromResult(validationResult);
 		}
 
 		private bool IsValidEmail(string email)

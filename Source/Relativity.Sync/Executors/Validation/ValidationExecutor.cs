@@ -7,31 +7,33 @@ namespace Relativity.Sync.Executors.Validation
 {
 	internal sealed class ValidationExecutor : IExecutor<IValidationConfiguration>
 	{
-		private readonly IEnumerable<IValidator> _validatorsMap;
+		private readonly IEnumerable<IValidator> _validators;
 		private readonly ISyncLog _logger;
 
-		public ValidationExecutor(IEnumerable<IValidator> validatorsMap, ISyncLog logger)
+		public ValidationExecutor(IEnumerable<IValidator> validators, ISyncLog logger)
 		{
-			_validatorsMap = validatorsMap;
+			_validators = validators;
 			_logger = logger;
 		}
 
-		public async Task ExecuteAsync(IValidationConfiguration configuration, CancellationToken token)
+		public async Task<ExecutionResult> ExecuteAsync(IValidationConfiguration configuration, CancellationToken token)
 		{
-			ValidationResult validationResult = await ValidateExecutionConstraintsAsync(configuration, token).ConfigureAwait(false);
+			ValidationResult validationResult = await ValidateAll(configuration, token).ConfigureAwait(false);
 			LogValidationErrors(validationResult);
 
 			if (!validationResult.IsValid)
 			{
-				throw new ValidationException(validationResult.ToString());
+				return ExecutionResult.Failure(new ValidationException(validationResult));
 			}
+
+			return ExecutionResult.Success();
 		}
 
-		private async Task<ValidationResult> ValidateExecutionConstraintsAsync(IValidationConfiguration configuration, CancellationToken token)
+		private async Task<ValidationResult> ValidateAll(IValidationConfiguration configuration, CancellationToken token)
 		{
 			ValidationResult result = new ValidationResult();
 
-			foreach (IValidator validator in _validatorsMap)
+			foreach (IValidator validator in _validators)
 			{
 				result.Add(await validator.ValidateAsync(configuration, token).ConfigureAwait(false));
 			}

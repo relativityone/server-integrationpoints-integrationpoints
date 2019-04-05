@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Autofac;
+using kCura.Apps.Common.Utils.Serializers;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Logging;
 
@@ -24,6 +25,7 @@ namespace Relativity.Sync
 			containerBuilder.RegisterInstance(configuration).As<SyncJobExecutionConfiguration>();
 			containerBuilder.RegisterType<SyncExecutionContextFactory>().As<ISyncExecutionContextFactory>();
 			containerBuilder.RegisterType<AppDomainWrapper>().As<IAppDomain>();
+			containerBuilder.RegisterType<JSONSerializer>().As<ISerializer>();
 					
 			IPipelineBuilder pipelineBuilder = new PipelineBuilder();
 			pipelineBuilder.RegisterFlow(containerBuilder);
@@ -31,12 +33,11 @@ namespace Relativity.Sync
 			const string command = "command";
 			containerBuilder.RegisterGeneric(typeof(Command<>)).Named(command, typeof(ICommand<>));
 			containerBuilder.RegisterGenericDecorator(typeof(CommandWithMetrics<>), typeof(ICommand<>), command);
-
-			containerBuilder
-				.RegisterAssemblyTypes(Assembly.GetCallingAssembly())
-				.Where(t => !t.IsAbstract && t.IsAssignableTo<IValidator>())
-				.AsImplementedInterfaces();
 			
+			containerBuilder
+				.RegisterTypes(GetValidatorTypes())
+				.AsImplementedInterfaces();
+
 			IEnumerable<IInstaller> installers = GetInstallersInCurrentAssembly();
 			foreach (IInstaller installer in installers)
 			{
@@ -44,9 +45,19 @@ namespace Relativity.Sync
 			}
 		}
 
+		private static Type[] GetValidatorTypes()
+		{
+			return Assembly
+				.GetExecutingAssembly()
+				.GetTypes()
+				.Where(t => !t.IsAbstract && t.IsAssignableTo<IValidator>())
+				.ToArray();
+		}
+
 		private static IEnumerable<IInstaller> GetInstallersInCurrentAssembly()
 		{
-			return Assembly.GetCallingAssembly()
+			return Assembly
+				.GetCallingAssembly()
 				.GetTypes()
 				.Where(t => !t.IsAbstract && t.IsAssignableTo<IInstaller>())
 				.Select(t => (IInstaller) Activator.CreateInstance(t));

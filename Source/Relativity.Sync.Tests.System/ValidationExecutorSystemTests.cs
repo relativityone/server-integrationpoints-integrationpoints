@@ -4,6 +4,7 @@ using Autofac;
 using NUnit.Framework;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.Integration;
 using Relativity.Sync.Tests.Integration.Stubs;
@@ -13,7 +14,7 @@ using Relativity.Sync.Tests.System.Stubs;
 namespace Relativity.Sync.Tests.System
 {
 	[TestFixture]
-	public sealed class ValidationExecutorTests : SystemTest
+	public sealed class ValidationExecutorSystemTests : SystemTest
 	{
 		private WorkspaceRef _destinationWorkspace;
 		private WorkspaceRef _sourceWorkspace;
@@ -24,8 +25,12 @@ namespace Relativity.Sync.Tests.System
 		[SetUp]
 		public async Task SetUp()
 		{
-			Task<WorkspaceRef> sourceWorkspaceCreationTask = Environment.CreateWorkspaceWithFieldsAsync();
-			Task<WorkspaceRef> destinationWorkspaceCreationTask = Environment.CreateWorkspaceWithFieldsAsync();
+#pragma warning disable RG2009 // Hardcoded Numeric Value
+#pragma warning disable S125 // Sections of code should not be commented out
+			Task<WorkspaceRef> sourceWorkspaceCreationTask = Task.FromResult(new WorkspaceRef(1018393)); //Environment.CreateWorkspaceWithFieldsAsync();
+			Task<WorkspaceRef> destinationWorkspaceCreationTask = Task.FromResult(new WorkspaceRef(1018394)); //Environment.CreateWorkspaceAsync();
+#pragma warning restore RG2009 // Hardcoded Numeric Value
+#pragma warning restore S125 // Sections of code should not be commented out
 			await Task.WhenAll(sourceWorkspaceCreationTask, destinationWorkspaceCreationTask).ConfigureAwait(false);
 			_sourceWorkspace = sourceWorkspaceCreationTask.Result;
 			_destinationWorkspace = destinationWorkspaceCreationTask.Result;
@@ -36,13 +41,29 @@ namespace Relativity.Sync.Tests.System
 		{
 			int expectedSourceWorkspaceArtifactId = _sourceWorkspace.ArtifactID;
 			int expectedJobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, expectedSourceWorkspaceArtifactId, _JOB_HISTORY_NAME).ConfigureAwait(false);
+			int savedSearchArtifactId = await Rdos.GetSavedSearchInstance(ServiceFactory, expectedSourceWorkspaceArtifactId).ConfigureAwait(false);
+			int destinationFolderArtifactId = await Rdos.GetRootFolderInstance(ServiceFactory, _destinationWorkspace.ArtifactID).ConfigureAwait(false);
+			int folderPathSourceFieldArtifactId = await Rdos.GetFolderPathSourceField(ServiceFactory, expectedSourceWorkspaceArtifactId).ConfigureAwait(false);
+
+			const string fieldsMap = "[{\"sourceField\":{\"displayName\":\"Control Number [Object Identifier]\",\"isIdentifier\":true," +
+							"\"fieldIdentifier\":\"1003667\",\"isRequired\":true},\"destinationField\":" +
+							"{\"displayName\":\"Control Number [Object Identifier]\",\"isIdentifier\":true,\"fieldIdentifier\":\"1003667\"," +
+							"\"isRequired\":true},\"fieldMapType\":\"Identifier\"}]";
 
 			ConfigurationStub configuration = new ConfigurationStub
 			{
 				DestinationWorkspaceArtifactId = _destinationWorkspace.ArtifactID,
 				SourceWorkspaceArtifactId = expectedSourceWorkspaceArtifactId,
 				JobArtifactId = expectedJobHistoryArtifactId,
-				ExecutingUserId = _USER_ID
+				JobName = _JOB_HISTORY_NAME,
+				ExecutingUserId = _USER_ID,
+				NotificationEmails = string.Empty,
+				SavedSearchArtifactId = savedSearchArtifactId,
+				DestinationFolderArtifactId = destinationFolderArtifactId,
+				FieldsMap = fieldsMap,
+				FolderPathSourceFieldArtifactId = folderPathSourceFieldArtifactId,
+				ImportOverwriteMode = ImportOverwriteMode.AppendOverlay,
+				FieldOverlayBehavior = "Use Field Settings"
 			};
 
 			// act
@@ -63,7 +84,7 @@ namespace Relativity.Sync.Tests.System
 			new SystemTestsInstaller().Install(containerBuilder);
 
 			IntegrationTestsContainerBuilder.RegisterExternalDependenciesAsMocks(containerBuilder);
-			IntegrationTestsContainerBuilder.MockStepsExcept<IDestinationWorkspaceTagsCreationConfiguration>(containerBuilder);
+			IntegrationTestsContainerBuilder.MockStepsExcept<IValidationConfiguration>(containerBuilder);
 
 			containerBuilder.RegisterInstance(configuration).AsImplementedInterfaces();
 

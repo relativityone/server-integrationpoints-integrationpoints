@@ -24,6 +24,7 @@ namespace Relativity.Sync.Tests.Integration
 		private SourceWorkspaceNameValidator _sut;
 		private Mock<IObjectManager> _objectManagerMock;
 		private const int _WORKSPACE_ARTIFACT_ID = 123;
+		private const int _ADMIN_WORKSPACE_ARTIFACT_ID = -1;
 
 		[SetUp]
 		public void SetUp()
@@ -48,14 +49,15 @@ namespace Relativity.Sync.Tests.Integration
 		{
 			string validWorkspaceName = "So much valid";
 
-			_objectManagerMock.Setup(x => x.QueryAsync(
-				-1,
-				It.Is<QueryRequest>(y => y.Condition.Contains(_WORKSPACE_ARTIFACT_ID.ToString(CultureInfo.InvariantCulture))),
-				It.IsAny<int>(),
-				It.IsAny<int>(),
-				CancellationToken.None,
-				It.IsAny<IProgress<ProgressReport>>())
-			).Returns(Task.FromResult(new QueryResult
+			_objectManagerMock.Setup(x =>
+				x.QueryAsync(
+					_ADMIN_WORKSPACE_ARTIFACT_ID,
+					It.Is<QueryRequest>(y => y.Condition.Contains(_WORKSPACE_ARTIFACT_ID.ToString(CultureInfo.InvariantCulture))),
+					It.IsAny<int>(),
+					It.IsAny<int>(),
+					CancellationToken.None,
+					It.IsAny<IProgress<ProgressReport>>())
+				).Returns(Task.FromResult(new QueryResult
 			{
 				Objects = new List<RelativityObject> { new RelativityObject() { Name = validWorkspaceName } }
 			}));

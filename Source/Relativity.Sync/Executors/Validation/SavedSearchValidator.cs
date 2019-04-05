@@ -36,18 +36,19 @@ namespace Relativity.Sync.Executors.Validation
 			{
 				using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 				{
+					const int savedSearchArtifactTypeId = 15;
 					const string owner = "Owner";
 					QueryRequest queryRequest = new QueryRequest()
 					{
 						ObjectType = new ObjectTypeRef()
 						{
-							ArtifactID = configuration.SavedSearchArtifactId
+							ArtifactTypeID = savedSearchArtifactTypeId
 						},
+						Condition = $"(('ArtifactId' == {configuration.SavedSearchArtifactId}))",
 						Fields = new[]
 						{
 							new FieldRef() {Name = owner}
-						},
-						IncludeNameInQueryResult = true
+						}
 					};
 
 					const int start = 0;

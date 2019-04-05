@@ -5,12 +5,10 @@ using System.Linq;
 namespace Relativity.Sync.Executors.Validation
 {
 	/// <summary>
-	/// Holds single validation result and aggregated messages
+	/// Represents validation result and aggregated messages
 	/// </summary>
-	internal sealed class ValidationResult
+	public sealed class ValidationResult
 	{
-		private const string _MESSAGE_PREFIX = "Integration Point validation failed.";
-
 		private readonly List<ValidationMessage> _messages = new List<ValidationMessage>();
 
 		/// <summary>
@@ -22,35 +20,12 @@ namespace Relativity.Sync.Executors.Validation
 		}
 
 		/// <summary>
-		/// Constructor, set validation result
-		/// </summary>
-		/// <param name="result">Validation result</param>
-		public ValidationResult(bool result)
-		{
-			IsValid = result;
-		}
-
-		/// <summary>
-		/// Constructor, sets validation result and message
-		/// </summary>
-		/// <param name="result">Validation result</param>
-		/// <param name="message">Validation message</param>
-		public ValidationResult(bool result, string message)
-		{
-			IsValid = result;
-
-			if (!string.IsNullOrWhiteSpace(message))
-			{
-				_messages.Add(new ValidationMessage(message));
-			}
-		}
-
-		/// <summary>
 		/// Constructor, sets validation result and message
 		/// </summary>
 		/// <param name="message">Validation message</param>
 		public ValidationResult(ValidationMessage message)
 		{
+			IsValid = true;
 			if (message != null)
 			{
 				Add(message);
@@ -63,15 +38,7 @@ namespace Relativity.Sync.Executors.Validation
 		/// <param name="messages">Validation message</param>
 		public ValidationResult(IEnumerable<ValidationMessage> messages)
 		{
-			AddRange(messages);
-		}
-
-		/// <summary>
-		/// Constructor, sets validation messages
-		/// </summary>
-		/// <param name="messages">Validation messages</param>
-		public ValidationResult(IEnumerable<string> messages)
-		{
+			IsValid = true;
 			AddRange(messages);
 		}
 
@@ -84,8 +51,6 @@ namespace Relativity.Sync.Executors.Validation
 		/// Collection of validation messages
 		/// </summary>
 		public IEnumerable<ValidationMessage> Messages => _messages;
-
-		public IEnumerable<string> MessageTexts => _messages.Select(m => m.ToString());
 
 		/// <summary>
 		/// Adds validation result to itself and aggregates non-empty messages
@@ -111,8 +76,11 @@ namespace Relativity.Sync.Executors.Validation
 		/// <remarks>Only non-empty messages will be added and change validation state to false</remarks>
 		public void Add(ValidationMessage validationMessage)
 		{
-			IsValid = false;
-			_messages.Add(validationMessage);
+			if (validationMessage != null)
+			{
+				IsValid = false;
+				_messages.Add(validationMessage);
+			}
 		}
 
 		/// <summary>
@@ -143,17 +111,6 @@ namespace Relativity.Sync.Executors.Validation
 			_messages.Add(new ValidationMessage(errorCode, shortMessage));
 		}
 
-		private void AddRange(IEnumerable<string> messages)
-		{
-			if (messages != null)
-			{
-				foreach (var message in messages)
-				{
-					Add(message);
-				}
-			}
-		}
-
 		private void AddRange(IEnumerable<ValidationMessage> messages)
 		{
 			if (messages != null)
@@ -165,11 +122,11 @@ namespace Relativity.Sync.Executors.Validation
 			}
 		}
 
+		/// <inheritdoc />
 		public override string ToString()
 		{
 			IEnumerable<string> messageStrings = _messages.Select(m => m.ToString());
-			string resultMessage = string.Join(Environment.NewLine, messageStrings);
-			return $"{_MESSAGE_PREFIX}{Environment.NewLine}{resultMessage}";
+			return string.Join(Environment.NewLine, messageStrings);
 		}
 	}
 }

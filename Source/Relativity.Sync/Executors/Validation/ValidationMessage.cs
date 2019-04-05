@@ -2,22 +2,41 @@
 
 namespace Relativity.Sync.Executors.Validation
 {
-	internal sealed class ValidationMessage
+	/// <summary>
+	/// Contains message from <see cref="IValidator"/>
+	/// </summary>
+	public sealed class ValidationMessage
 	{
+		/// <summary>
+		/// Creates instance of this class with short message.
+		/// </summary>
+		/// <param name="shortMessage">Short message.</param>
 		public ValidationMessage(string shortMessage) : this(string.Empty, shortMessage)
 		{
 		}
 
+		/// <summary>
+		/// Creates instance of this class with error code and short message.
+		/// </summary>
+		/// <param name="errorCode">Error code.</param>
+		/// <param name="shortMessage">Short message.</param>
 		public ValidationMessage(string errorCode, string shortMessage)
 		{
 			ErrorCode = errorCode;
 			ShortMessage = shortMessage;
 		}
 
+		/// <summary>
+		/// Gets or sets the error code.
+		/// </summary>
 		public string ErrorCode { get; set; }
 
+		/// <summary>
+		/// Gets or sets the short message.
+		/// </summary>
 		public string ShortMessage { get; set; }
 
+		/// <inheritdoc />
 		public override string ToString()
 		{
 			return string.IsNullOrEmpty(ErrorCode) ? ShortMessage : $"{ErrorCode} {ShortMessage}";
@@ -28,6 +47,7 @@ namespace Relativity.Sync.Executors.Validation
 			return string.Equals(ErrorCode, other.ErrorCode, StringComparison.InvariantCulture) && string.Equals(ShortMessage, other.ShortMessage, StringComparison.InvariantCulture);
 		}
 
+		/// <inheritdoc />
 		public override bool Equals(object obj)
 		{
 			if (ReferenceEquals(null, obj))
@@ -47,6 +67,7 @@ namespace Relativity.Sync.Executors.Validation
 			return Equals((ValidationMessage)obj);
 		}
 
+		/// <inheritdoc />
 		public override int GetHashCode()
 		{
 			const int multiplier = 397;

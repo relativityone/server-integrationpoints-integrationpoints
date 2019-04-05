@@ -9,6 +9,11 @@ namespace Relativity.Sync.Executors.Validation
 	[Serializable]
 	public sealed class ValidationException : Exception
 	{
+		/// <summary>
+		/// Holds information about validation.
+		/// </summary>
+		public ValidationResult ValidationResult { get; }
+
 		/// <inheritdoc />
 		public ValidationException()
 		{
@@ -22,6 +27,24 @@ namespace Relativity.Sync.Executors.Validation
 		/// <inheritdoc />
 		public ValidationException(string message, Exception innerException) : base(message, innerException)
 		{
+		}
+
+		/// <inheritdoc />
+		public ValidationException(ValidationResult validationResult)
+		{
+			ValidationResult = validationResult;
+		}
+
+		/// <inheritdoc />
+		public ValidationException(string message, ValidationResult validationResult) : base(message)
+		{
+			ValidationResult = validationResult;
+		}
+
+		/// <inheritdoc />
+		public ValidationException(string message, Exception innerException, ValidationResult validationResult) : base(message, innerException)
+		{
+			ValidationResult = validationResult;
 		}
 
 		/// <inheritdoc />

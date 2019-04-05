@@ -33,6 +33,14 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
+		public void ItShouldRetrieveSourceWorkspaceArtifactId()
+		{
+			const int expected = 1;
+			ValidationConfiguration configuration = new ValidationConfiguration(_cache.Object, expected);
+			configuration.SourceWorkspaceArtifactId.Should().Be(expected);
+		}
+
+		[Test]
 		public void ItShouldRetrieveDestinationWorkspaceArtifactId()
 		{
 			const int expected = 1;

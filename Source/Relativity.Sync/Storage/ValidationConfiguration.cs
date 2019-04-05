@@ -18,7 +18,7 @@ namespace Relativity.Sync.Storage
 		private static readonly Guid FolderPathSourceFieldArtifactIdGuid = new Guid("BF5F07A3-6349-47EE-9618-1DD32C9FD998");
 		private static readonly Guid ImportOverwriteModeGuid = new Guid("1914D2A3-A1FF-480B-81DC-7A2AA563047A");
 		private static readonly Guid JobHistoryGuid = new Guid("5D8F7F01-25CF-4246-B2E2-C05882539BB2");
-		
+
 		public ValidationConfiguration(IConfiguration cache, int sourceWorkspaceArtifactId)
 		{
 			_cache = cache;

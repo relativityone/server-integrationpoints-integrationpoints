@@ -31,14 +31,13 @@ namespace Relativity.Sync.Executors.Validation
 			{
 				using (IObjectManager objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 				{
-					const int documentArtifactTypeId = 10;
 					const string fieldType = "Field Type";
 					const string longText = "Long Text";
 					QueryRequest queryRequest = new QueryRequest()
 					{
 						ObjectType = new ObjectTypeRef()
 						{
-							ArtifactTypeID = documentArtifactTypeId
+							Name = "Field"
 						},
 						Condition = $"(('ArtifactID' == {configuration.FolderPathSourceFieldArtifactId}))",
 						Fields = new[]
