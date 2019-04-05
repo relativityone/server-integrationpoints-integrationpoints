@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Validators
 			foreach (ArtifactDTO dto in dtos)
 			{
 				var name = (string)dto.Fields[0].Value;
-				if (invalidPattern.IsMatch(name))
+				if (!string.IsNullOrWhiteSpace(name) && invalidPattern.IsMatch(name))
 				{
 					var exception = new Exception($"Invalid '{fieldName}' : {name}");
 					exceptions.Add(exception);
