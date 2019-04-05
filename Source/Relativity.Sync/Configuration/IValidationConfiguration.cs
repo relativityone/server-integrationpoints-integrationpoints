@@ -14,5 +14,6 @@ namespace Relativity.Sync.Configuration
 		int FolderPathSourceFieldArtifactId { get; }
 		ImportOverwriteMode ImportOverwriteMode { get; }
 		FieldOverlayBehavior FieldOverlayBehavior { get; }
+		DestinationFolderStructureBehavior DestinationFolderStructureBehavior { get; }
 	}
 }

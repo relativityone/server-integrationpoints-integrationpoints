@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
@@ -39,7 +40,9 @@ namespace Relativity.Sync.Executors.Validation
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, "Error occurred while querying for workspace artifact ID: {destinationWorkspaceArtifactId}", configuration.DestinationWorkspaceArtifactId);
+				string message = "Error occurred while querying for workspace artifact ID: {destinationWorkspaceArtifactId}";
+				_logger.LogError(ex, message, configuration.DestinationWorkspaceArtifactId);
+				result.Add(string.Format(CultureInfo.InvariantCulture, message, configuration.DestinationWorkspaceArtifactId));
 			}
 
 			return result;

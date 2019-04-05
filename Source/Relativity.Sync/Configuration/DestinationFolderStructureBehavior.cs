@@ -16,7 +16,7 @@
 		RetainSourceWorkspaceStructure,
 
 		/// <summary>
-		/// Reads behavior from specified field
+		/// Reads structure from specific field
 		/// </summary>
 		ReadFromField
 	}

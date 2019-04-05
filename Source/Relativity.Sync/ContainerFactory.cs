@@ -6,6 +6,7 @@ using Autofac;
 using kCura.Apps.Common.Utils.Serializers;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Logging;
+using Relativity.Sync.Telemetry;
 
 namespace Relativity.Sync
 {
@@ -33,24 +34,32 @@ namespace Relativity.Sync
 			const string command = "command";
 			containerBuilder.RegisterGeneric(typeof(Command<>)).Named(command, typeof(ICommand<>));
 			containerBuilder.RegisterGenericDecorator(typeof(CommandWithMetrics<>), typeof(ICommand<>), command);
-			
-			containerBuilder
-				.RegisterTypes(GetValidatorTypes())
-				.AsImplementedInterfaces();
 
 			IEnumerable<IInstaller> installers = GetInstallersInCurrentAssembly();
 			foreach (IInstaller installer in installers)
 			{
 				installer.Install(containerBuilder);
 			}
+
+			Type[] validatorTypes = GetValidatorTypesExcept<ValidatorWithMetrics>();
+			foreach (Type validatorType in validatorTypes)
+			{
+				string decoratorName = validatorType.FullName;
+				containerBuilder.RegisterType(validatorType).Named(decoratorName, typeof(IValidator));
+				containerBuilder.RegisterDecorator<IValidator>((context, validator) => 
+					new ValidatorWithMetrics(validator, context.Resolve<ISyncMetrics>(), context.Resolve<IStopwatch>()), decoratorName);
+			}
+
 		}
 
-		private static Type[] GetValidatorTypes()
+		private static Type[] GetValidatorTypesExcept<T>()
 		{
-			return Assembly
-				.GetExecutingAssembly()
+			return 
+				typeof(IValidator).Assembly
 				.GetTypes()
-				.Where(t => !t.IsAbstract && t.IsAssignableTo<IValidator>())
+				.Where(t => !t.IsAbstract && 
+				            t.IsAssignableTo<IValidator>() &&
+				            !t.IsAssignableTo<T>())
 				.ToArray();
 		}
 

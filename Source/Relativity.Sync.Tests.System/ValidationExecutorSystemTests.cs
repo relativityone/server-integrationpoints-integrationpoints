@@ -25,12 +25,8 @@ namespace Relativity.Sync.Tests.System
 		[SetUp]
 		public async Task SetUp()
 		{
-#pragma warning disable RG2009 // Hardcoded Numeric Value
-#pragma warning disable S125 // Sections of code should not be commented out
-			Task<WorkspaceRef> sourceWorkspaceCreationTask = Task.FromResult(new WorkspaceRef(1018393)); //Environment.CreateWorkspaceWithFieldsAsync();
-			Task<WorkspaceRef> destinationWorkspaceCreationTask = Task.FromResult(new WorkspaceRef(1018394)); //Environment.CreateWorkspaceAsync();
-#pragma warning restore RG2009 // Hardcoded Numeric Value
-#pragma warning restore S125 // Sections of code should not be commented out
+			Task<WorkspaceRef> sourceWorkspaceCreationTask = Environment.CreateWorkspaceWithFieldsAsync();
+			Task<WorkspaceRef> destinationWorkspaceCreationTask = Environment.CreateWorkspaceAsync();
 			await Task.WhenAll(sourceWorkspaceCreationTask, destinationWorkspaceCreationTask).ConfigureAwait(false);
 			_sourceWorkspace = sourceWorkspaceCreationTask.Result;
 			_destinationWorkspace = destinationWorkspaceCreationTask.Result;
@@ -63,6 +59,7 @@ namespace Relativity.Sync.Tests.System
 				FieldsMap = fieldsMap,
 				FolderPathSourceFieldArtifactId = folderPathSourceFieldArtifactId,
 				ImportOverwriteMode = ImportOverwriteMode.AppendOverlay,
+				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.ReadFromField,
 				FieldOverlayBehavior = FieldOverlayBehavior.Default
 			};
 

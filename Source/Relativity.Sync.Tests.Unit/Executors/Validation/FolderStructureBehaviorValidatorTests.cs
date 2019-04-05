@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.DataContracts.DTOs;
@@ -42,6 +43,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 
 			_validationConfiguration.SetupGet(x => x.FolderPathSourceFieldArtifactId).Returns(_TEST_FOLDER_ARTIFACT_ID);
 			_validationConfiguration.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(_TEST_WORKSPACE_ARTIFACT_ID);
+			_validationConfiguration.SetupGet(x => x.DestinationFolderStructureBehavior).Returns(DestinationFolderStructureBehavior.ReadFromField);
 
 			_instance = new FolderStructureBehaviorValidator(_sourceServiceFactoryForUser.Object, _syncLog.Object);
 		}
@@ -152,6 +154,32 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 
 			Mock.VerifyAll(_sourceServiceFactoryForUser, _objectManager);
 			_objectManager.Verify(x => x.Dispose(), Times.Once);
+		}
+
+		[Test]
+		public async Task ItShouldNotValidateWhenBehaviorIsSetToNone()
+		{
+			_validationConfiguration.SetupGet(x => x.DestinationFolderStructureBehavior).Returns(DestinationFolderStructureBehavior.None);
+
+			// Act
+			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+
+			// Assert
+			_sourceServiceFactoryForUser.Verify(x => x.CreateProxyAsync<IObjectManager>(), Times.Never);
+			actualResult.IsValid.Should().Be(true);
+		}
+
+		[Test]
+		public async Task ItShouldNotValidateWhenBehaviorIsSetToRetainFromSourceWorkspace()
+		{
+			_validationConfiguration.SetupGet(x => x.DestinationFolderStructureBehavior).Returns(DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure);
+
+			// Act
+			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+
+			// Assert
+			_sourceServiceFactoryForUser.Verify(x => x.CreateProxyAsync<IObjectManager>(), Times.Never);
+			actualResult.IsValid.Should().Be(true);
 		}
 
 		private QueryResult BuildQueryResult(string testFieldValue)

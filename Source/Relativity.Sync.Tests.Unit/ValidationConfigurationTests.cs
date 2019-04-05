@@ -3,8 +3,10 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Storage;
+using IConfiguration = Relativity.Sync.Storage.IConfiguration;
 
 namespace Relativity.Sync.Tests.Unit
 {
@@ -15,6 +17,7 @@ namespace Relativity.Sync.Tests.Unit
 		private Mock<IConfiguration> _cache;
 		private const int _WORKSPACE_ID = 111;
 
+		private static readonly Guid DestinationFolderStructureBehaviorGuid = new Guid("A1593105-BD99-4A15-A51A-3AA8D4195908");
 		private static readonly Guid DestinationWorkspaceArtifactIdGuid = new Guid("15B88438-6CF7-47AB-B630-424633159C69");
 		private static readonly Guid DataDestinationArtifactIdGuid = new Guid("0E9D7B8E-4643-41CC-9B07-3A66C98248A1");
 		private static readonly Guid DataSourceArtifactIdGuid = new Guid("6D8631F9-0EA1-4EB9-B7B2-C552F43959D0");
@@ -102,6 +105,14 @@ namespace Relativity.Sync.Tests.Unit
 			ImportOverwriteMode expected = ImportOverwriteMode.AppendOverlay;
 			_cache.Setup(x => x.GetFieldValue<string>(ImportOverwriteModeGuid)).Returns("AppendOverlay");
 			_configuration.ImportOverwriteMode.Should().Be(expected);
+		}
+
+		[Test]
+		public void ItShouldRetrieveDestinationFolderStructureBehavior()
+		{
+			DestinationFolderStructureBehavior expected = DestinationFolderStructureBehavior.ReadFromField;
+			_cache.Setup(x => x.GetFieldValue<string>(DestinationFolderStructureBehaviorGuid)).Returns("ReadFromField");
+			_configuration.DestinationFolderStructureBehavior.Should().Be(expected);
 		}
 
 		[Test]
