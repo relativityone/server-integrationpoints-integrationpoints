@@ -86,8 +86,8 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public void ItShouldRetrieveFieldOverlayBehavior()
 		{
-			const string expected = "Use field settings or whatever";
-			_cache.Setup(x => x.GetFieldValue<string>(FieldOverlayBehaviorGuid)).Returns(expected);
+			const FieldOverlayBehavior expected = FieldOverlayBehavior.Default;
+			_cache.Setup(x => x.GetFieldValue<string>(FieldOverlayBehaviorGuid)).Returns("Default");
 			_configuration.FieldOverlayBehavior.Should().Be(expected);
 		}
 
