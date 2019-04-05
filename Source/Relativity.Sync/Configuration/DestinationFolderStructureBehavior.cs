@@ -6,7 +6,7 @@
 	internal enum DestinationFolderStructureBehavior
 	{
 		/// <summary>
-		/// Keep all documents in same destination folder (???)
+		/// Keep all documents in same destination folder
 		/// </summary>
 		None,
 
