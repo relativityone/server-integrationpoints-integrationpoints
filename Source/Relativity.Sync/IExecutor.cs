@@ -6,6 +6,6 @@ namespace Relativity.Sync
 {
 	internal interface IExecutor<in T> where T : IConfiguration
 	{
-		Task ExecuteAsync(T configuration, CancellationToken token);
+		Task<ExecutionResult> ExecuteAsync(T configuration, CancellationToken token);
 	}
 }

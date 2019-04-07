@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Executors
 {
@@ -11,25 +12,40 @@ namespace Relativity.Sync.Executors
 		private readonly IDestinationWorkspaceTagsLinker _destinationWorkspaceTagsLinker;
 		private readonly IWorkspaceNameQuery _workspaceNameQuery;
 		private readonly IFederatedInstance _federatedInstance;
+		private readonly IDestinationServiceFactoryForUser _serviceFactory;
 
 		public SourceWorkspaceTagsCreationExecutor(IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository,
-			IDestinationWorkspaceTagsLinker destinationWorkspaceTagsLinker, IWorkspaceNameQuery workspaceNameQuery, IFederatedInstance federatedInstance)
+			IDestinationWorkspaceTagsLinker destinationWorkspaceTagsLinker,
+			IWorkspaceNameQuery workspaceNameQuery,
+			IFederatedInstance federatedInstance, 
+			IDestinationServiceFactoryForUser serviceFactory)
 		{
 			_destinationWorkspaceTagRepository = destinationWorkspaceTagRepository;
 			_destinationWorkspaceTagsLinker = destinationWorkspaceTagsLinker;
 			_workspaceNameQuery = workspaceNameQuery;
 			_federatedInstance = federatedInstance;
+			_serviceFactory = serviceFactory;
 		}
 
-		public async Task ExecuteAsync(ISourceWorkspaceTagsCreationConfiguration configuration, CancellationToken token)
+		public async Task<ExecutionResult> ExecuteAsync(ISourceWorkspaceTagsCreationConfiguration configuration, CancellationToken token)
 		{
-			int destinationWorkspaceTagArtifactId = await CreateOrUpdateDestinationWorkspaceTagAsync(configuration, token).ConfigureAwait(false);
-			configuration.SetDestinationWorkspaceTagArtifactId(destinationWorkspaceTagArtifactId);
+			ExecutionResult result = ExecutionResult.Success();
+			try
+			{
+				int destinationWorkspaceTagArtifactId = await CreateOrUpdateDestinationWorkspaceTagAsync(configuration, token).ConfigureAwait(false);
+				configuration.SetDestinationWorkspaceTagArtifactId(destinationWorkspaceTagArtifactId);
+			}
+			catch (Exception ex)
+			{
+				result = ExecutionResult.Failure("Failed to create tags in source workspace", ex);
+			}
+
+			return result;
 		}
 
 		private async Task<int> CreateOrUpdateDestinationWorkspaceTagAsync(ISourceWorkspaceTagsCreationConfiguration configuration, CancellationToken token)
 		{
-			string destinationWorkspaceName = await _workspaceNameQuery.GetWorkspaceNameAsync(configuration.DestinationWorkspaceArtifactId, token).ConfigureAwait(false);
+			string destinationWorkspaceName = await _workspaceNameQuery.GetWorkspaceNameAsync(_serviceFactory, configuration.DestinationWorkspaceArtifactId, token).ConfigureAwait(false);
 			string destinationInstanceName = await _federatedInstance.GetInstanceNameAsync().ConfigureAwait(false);
 
 			DestinationWorkspaceTag tag = await _destinationWorkspaceTagRepository.ReadAsync(configuration.SourceWorkspaceArtifactId, configuration.DestinationWorkspaceArtifactId, token).ConfigureAwait(false);

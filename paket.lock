@@ -8,6 +8,8 @@ NUGET
     CSharpGuidelineAnalyzer (2.3.0.0)
     FluentAssertions (5.6.0)
       System.ValueTuple (>= 4.4)
+    kCura.Apps.Common.Utils (2.1.8)
+      Newtonsoft.Json (>= 6.0)
     kCura.NUnit.Integration (10.2.48.1)
     kCura.Relativity.Client (10.2.48.1)
     Microsoft.CodeAnalysis.FxCopAnalyzers (2.6.3)

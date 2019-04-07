@@ -6,9 +6,9 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 {
 	internal sealed class ExecutorStub<T> : IExecutor<T> where T : IConfiguration
 	{
-		public Task ExecuteAsync(T configuration, CancellationToken token)
+		public Task<ExecutionResult> ExecuteAsync(T configuration, CancellationToken token)
 		{
-			return Task.CompletedTask;
+			return Task.FromResult(ExecutionResult.Success());
 		}
 	}
 }

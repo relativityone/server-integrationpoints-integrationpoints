@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Autofac;
-using Relativity.Sync.Configuration;
-using Relativity.Sync.ExecutionConstrains;
-using Relativity.Sync.Executors;
+using kCura.Apps.Common.Utils.Serializers;
+using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Logging;
+using Relativity.Sync.Telemetry;
 
 namespace Relativity.Sync
 {
@@ -26,12 +26,8 @@ namespace Relativity.Sync
 			containerBuilder.RegisterInstance(configuration).As<SyncJobExecutionConfiguration>();
 			containerBuilder.RegisterType<SyncExecutionContextFactory>().As<ISyncExecutionContextFactory>();
 			containerBuilder.RegisterType<AppDomainWrapper>().As<IAppDomain>();
-			
-			containerBuilder.RegisterType<SourceWorkspaceTagsCreationExecutionConstrains>().As<IExecutionConstrains<ISourceWorkspaceTagsCreationConfiguration>>();
-			containerBuilder.RegisterType<SourceWorkspaceTagsCreationExecutor>().As<IExecutor<ISourceWorkspaceTagsCreationConfiguration>>();
-			containerBuilder.RegisterType<DestinationWorkspaceTagsCreationExecutionConstrains>().As<IExecutionConstrains<IDestinationWorkspaceTagsCreationConfiguration>>();
-			containerBuilder.RegisterType<DestinationWorkspaceTagsCreationExecutor>().As<IExecutor<IDestinationWorkspaceTagsCreationConfiguration>>();
-			
+			containerBuilder.RegisterType<JSONSerializer>().As<ISerializer>();
+					
 			IPipelineBuilder pipelineBuilder = new PipelineBuilder();
 			pipelineBuilder.RegisterFlow(containerBuilder);
 
@@ -44,11 +40,33 @@ namespace Relativity.Sync
 			{
 				installer.Install(containerBuilder);
 			}
+
+			Type[] validatorTypes = GetValidatorTypesExcept<ValidatorWithMetrics>();
+			foreach (Type validatorType in validatorTypes)
+			{
+				string decoratorName = validatorType.FullName;
+				containerBuilder.RegisterType(validatorType).Named(decoratorName, typeof(IValidator));
+				containerBuilder.RegisterDecorator<IValidator>((context, validator) => 
+					new ValidatorWithMetrics(validator, context.Resolve<ISyncMetrics>(), context.Resolve<IStopwatch>()), decoratorName);
+			}
+
+		}
+
+		private static Type[] GetValidatorTypesExcept<T>()
+		{
+			return 
+				typeof(IValidator).Assembly
+				.GetTypes()
+				.Where(t => !t.IsAbstract && 
+				            t.IsAssignableTo<IValidator>() &&
+				            !t.IsAssignableTo<T>())
+				.ToArray();
 		}
 
 		private static IEnumerable<IInstaller> GetInstallersInCurrentAssembly()
 		{
-			return Assembly.GetCallingAssembly()
+			return Assembly
+				.GetCallingAssembly()
 				.GetTypes()
 				.Where(t => !t.IsAbstract && t.IsAssignableTo<IInstaller>())
 				.Select(t => (IInstaller) Activator.CreateInstance(t));
