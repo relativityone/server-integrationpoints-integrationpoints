@@ -19,15 +19,15 @@ namespace Relativity.Sync.Tests.Unit
 		private SyncExecutionContext _executionContext;
 
 		private Mock<ICommand<IConfiguration>> _command;
-		private ProgressStub _progress;
+		private SyncJobProgressStub _syncJobProgress;
 
 		private const string _STEP_NAME = "step name";
 
 		[SetUp]
 		public void SetUp()
 		{
-			_progress = new ProgressStub();
-			_executionContext = new SyncExecutionContext(_progress, CancellationToken.None);
+			_syncJobProgress = new SyncJobProgressStub();
+			_executionContext = new SyncExecutionContext(_syncJobProgress, CancellationToken.None);
 
 			_command = new Mock<ICommand<IConfiguration>>();
 
@@ -83,7 +83,7 @@ namespace Relativity.Sync.Tests.Unit
 			await _instance.ExecuteAsync(_executionContext).ConfigureAwait(false);
 
 			// ASSERT
-			_progress.SyncJobState.State.Should().Be(_STEP_NAME);
+			_syncJobProgress.SyncJobState.Id.Should().Be(_STEP_NAME);
 		}
 
 		[TestCase(ExecutionStatus.Canceled, NodeResultStatus.Failed)]

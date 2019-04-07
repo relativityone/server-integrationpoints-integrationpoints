@@ -22,7 +22,7 @@ namespace Relativity.Sync.Tests.Integration
 		{
 			ContainerBuilder containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
 			IntegrationTestsContainerBuilder.MockAllSteps(containerBuilder);
-			IntegrationTestsContainerBuilder.MockMetrics(containerBuilder);
+			IntegrationTestsContainerBuilder.MockReporting(containerBuilder);
 
 			var servicesMgr = new Mock<IServicesMgr>();
 			var serviceFactory = new Mock<IServiceFactory>();

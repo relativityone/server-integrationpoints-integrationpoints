@@ -19,6 +19,7 @@ namespace Relativity.Sync.Storage
 		private static readonly Guid NameGuid = new Guid("AE2FCA2B-0E5C-4F35-948F-6C1654D5CF95");
 		private static readonly Guid ExceptionGuid = new Guid("2F2CFC2B-C9C0-406D-BD90-FB0133BCB939");
 		private static readonly Guid MessageGuid = new Guid("2E296F79-1B81-4BF6-98AD-68DA13F8DA44");
+		private static readonly Guid ParentArtifactGuid = new Guid("E0188DD7-4B1B-454D-AFA4-3CCC7F9DC001");
 
 		private Progress(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationArtifactId, string name, int order, string status)
 		{
@@ -49,6 +50,15 @@ namespace Relativity.Sync.Storage
 			ArtifactId = artifactId;
 		}
 
+		public Progress(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationArtifactId, string name)
+		{
+			_serviceFactory = serviceFactory;
+			_workspaceArtifactId = workspaceArtifactId;
+			_syncConfigurationArtifactId = syncConfigurationArtifactId;
+
+			Name = name;
+		}
+
 		public int ArtifactId { get; private set; }
 
 		public string Name { get; private set; }
@@ -67,7 +77,7 @@ namespace Relativity.Sync.Storage
 
 		public async Task SetExceptionAsync(Exception exception)
 		{
-			string exceptionString = exception.ToString();
+			string exceptionString = exception?.ToString();
 			await UpdateFieldValue(ExceptionGuid, exceptionString).ConfigureAwait(false);
 			Exception = exceptionString;
 		}
@@ -174,6 +184,56 @@ namespace Relativity.Sync.Storage
 			}
 		}
 
+		private async Task<bool> QueryAsync()
+		{
+			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			{
+				QueryRequest request = new QueryRequest
+				{
+					ObjectType = new ObjectTypeRef
+					{
+						Guid = ProgressObjectTypeGuid
+					},
+					Condition = $"'{NameGuid}' == '{Name}' AND '{ParentArtifactGuid}' == {_syncConfigurationArtifactId}",
+					Fields = new[]
+					{
+						new FieldRef
+						{
+							Guid = OrderGuid
+						},
+						new FieldRef
+						{
+							Guid = StatusGuid
+						},
+						new FieldRef
+						{
+							Guid = ExceptionGuid
+						},
+						new FieldRef
+						{
+							Guid = MessageGuid
+						}
+					}
+				};
+
+				QueryResult result = await objectManager.QueryAsync(_workspaceArtifactId, request, 1, 1).ConfigureAwait(false);
+
+				if (result.Objects.Count > 0)
+				{
+					RelativityObject resultObject = result.Objects[0];
+					ArtifactId = resultObject.ArtifactID;
+					Order = (int) resultObject[OrderGuid].Value;
+					Status = (string) resultObject[StatusGuid].Value;
+					Exception = (string) resultObject[ExceptionGuid].Value;
+					Message = (string) resultObject[MessageGuid].Value;
+
+					return true;
+				}
+
+				return false;
+			}
+		}
+
 		private async Task UpdateFieldValue<T>(Guid fieldGuid, T value)
 		{
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
@@ -197,6 +257,13 @@ namespace Relativity.Sync.Storage
 			Progress progress = new Progress(serviceFactory, workspaceArtifactId, artifactId);
 			await progress.ReadAsync().ConfigureAwait(false);
 			return progress;
+		}
+
+		public static async Task<IProgress> QueryAsync(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationArtifactId, string name)
+		{
+			Progress progress = new Progress(serviceFactory, workspaceArtifactId, syncConfigurationArtifactId, name);
+			bool exists = await progress.QueryAsync().ConfigureAwait(false);
+			return exists ? progress : null;
 		}
 	}
 }

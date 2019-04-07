@@ -33,14 +33,14 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public async Task ItShouldReportMergedProgress()
 		{
-			ProgressStub progressStub = new ProgressStub();
-			SyncExecutionContext context = new SyncExecutionContext(progressStub, CancellationToken.None);
+			SyncJobProgressStub syncJobProgressStub = new SyncJobProgressStub();
+			SyncExecutionContext context = new SyncExecutionContext(syncJobProgressStub, CancellationToken.None);
 
 			// ACT
 			await _instance.ExecuteAsync(context).ConfigureAwait(false);
 
 			// ASSERT
-			progressStub.SyncJobState.State.Should().BeOneOf($"{_CHILD_1_NAME}{Environment.NewLine}{_CHILD_2_NAME}", $"{_CHILD_2_NAME}{Environment.NewLine}{_CHILD_1_NAME}");
+			syncJobProgressStub.SyncJobState.Id.Should().BeOneOf($"{_CHILD_1_NAME}{Environment.NewLine}{_CHILD_2_NAME}", $"{_CHILD_2_NAME}{Environment.NewLine}{_CHILD_1_NAME}");
 		}
 	}
 }

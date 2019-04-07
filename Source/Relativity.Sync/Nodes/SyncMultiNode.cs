@@ -16,7 +16,7 @@ namespace Relativity.Sync.Nodes
 
 		protected override Task<NodeResultStatus> ExecuteChildrenAsync(IExecutionContext<SyncExecutionContext> context)
 		{
-			IExecutionContext<SyncExecutionContext> childrenExecutionContext = _contextFactory.Create(new EmptyProgress<SyncJobState>(), context.Subject.CancellationToken);
+			IExecutionContext<SyncExecutionContext> childrenExecutionContext = _contextFactory.Create(context.Subject.Progress, context.Subject.CancellationToken);
 			return base.ExecuteChildrenAsync(childrenExecutionContext);
 		}
 
@@ -24,7 +24,7 @@ namespace Relativity.Sync.Nodes
 		{
 			string mergedStep = string.Join(Environment.NewLine, Children.Select(x => x.Id));
 
-			context.Subject.Progress.Report(new SyncJobState(mergedStep));
+			context.Subject.Progress.ReportStarted(mergedStep);
 		}
 	}
 }

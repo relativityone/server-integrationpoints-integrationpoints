@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Autofac;
-using kCura.Apps.Common.Utils.Serializers;
-using Relativity.Sync.Executors.Validation;
+using Relativity.Sync.Configuration;
+using Relativity.Sync.ExecutionConstrains;
+using Relativity.Sync.Executors;
 using Relativity.Sync.Logging;
-using Relativity.Sync.Telemetry;
+using Relativity.Sync.Telemetry;using kCura.Apps.Common.Utils.Serializers;
+using Relativity.Sync.Executors.Validation;
 
 namespace Relativity.Sync
 {
@@ -27,7 +29,14 @@ namespace Relativity.Sync
 			containerBuilder.RegisterType<SyncExecutionContextFactory>().As<ISyncExecutionContextFactory>();
 			containerBuilder.RegisterType<AppDomainWrapper>().As<IAppDomain>();
 			containerBuilder.RegisterType<JSONSerializer>().As<ISerializer>();
-					
+			containerBuilder.RegisterType<ProgressStateCounter>().As<IProgressStateCounter>();
+			containerBuilder.RegisterType<SyncJobProgress>().As<IProgress<SyncJobState>>();
+			
+			containerBuilder.RegisterType<SourceWorkspaceTagsCreationExecutionConstrains>().As<IExecutionConstrains<ISourceWorkspaceTagsCreationConfiguration>>();
+			containerBuilder.RegisterType<SourceWorkspaceTagsCreationExecutor>().As<IExecutor<ISourceWorkspaceTagsCreationConfiguration>>();
+			containerBuilder.RegisterType<DestinationWorkspaceTagsCreationExecutionConstrains>().As<IExecutionConstrains<IDestinationWorkspaceTagsCreationConfiguration>>();
+			containerBuilder.RegisterType<DestinationWorkspaceTagsCreationExecutor>().As<IExecutor<IDestinationWorkspaceTagsCreationConfiguration>>();
+			
 			IPipelineBuilder pipelineBuilder = new PipelineBuilder();
 			pipelineBuilder.RegisterFlow(containerBuilder);
 
