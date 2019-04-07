@@ -7,7 +7,6 @@ using Moq;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Telemetry;
 using Relativity.Telemetry.APM;
-using Relativity.API;
 
 namespace Relativity.Sync.Tests.Integration.Stubs
 {
@@ -30,9 +29,10 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 			containerBuilder.RegisterInstance(apmMock.Object).As<IAPM>();
 		}
 
-		public static void MockMetrics(ContainerBuilder containerBuilder)
+		public static void MockReporting(ContainerBuilder containerBuilder)
 		{
 			containerBuilder.RegisterInstance(Mock.Of<ISyncMetrics>()).As<ISyncMetrics>();
+			containerBuilder.RegisterInstance(Mock.Of<IProgress<SyncJobState>>()).As<IProgress<SyncJobState>>();
 		}
 
 		public static void RegisterStubsForPipelineBuilderTests(ContainerBuilder containerBuilder, List<Type> executorTypes)

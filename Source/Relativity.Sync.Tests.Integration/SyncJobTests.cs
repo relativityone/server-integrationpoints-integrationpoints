@@ -23,7 +23,7 @@ namespace Relativity.Sync.Tests.Integration
 		{
 			_containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
 			IntegrationTestsContainerBuilder.MockAllSteps(_containerBuilder);
-			IntegrationTestsContainerBuilder.MockMetrics(_containerBuilder);
+			IntegrationTestsContainerBuilder.MockReporting(_containerBuilder);
 		}
 
 		[Test]
@@ -64,7 +64,8 @@ namespace Relativity.Sync.Tests.Integration
 			IContainer container = containerBuilder.Build();
 			return new SyncJob(container.Resolve<INode<SyncExecutionContext>>(),
 				container.Resolve<ISyncExecutionContextFactory>(),
-				new CorrelationId("lksjdf"),
+				new CorrelationId(Guid.NewGuid().ToString()),
+				Mock.Of<IProgress<SyncJobState>>(),
 				Mock.Of<ISyncLog>());
 		}
 	}
