@@ -14,6 +14,7 @@ using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Nodes;
+using Relativity.Sync.Tests.Integration;
 using Relativity.Sync.Tests.Integration.Stubs;
 using Relativity.Sync.Tests.System.Helpers;
 using Relativity.Sync.Tests.System.Stubs;

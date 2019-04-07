@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Executors.Validation;
 
 namespace Relativity.Sync.Tests.System.Stubs
 {
@@ -30,8 +31,17 @@ namespace Relativity.Sync.Tests.System.Stubs
 			await Task.Yield();
 		}
 
+		public string JobName { get; set; }
+		public string NotificationEmails { get; set; }
 		public int SourceWorkspaceArtifactId { get; set; }
 		public int DestinationWorkspaceArtifactId { get; set; }
+		public int SavedSearchArtifactId { get; set; }
+		public int DestinationFolderArtifactId { get; set; }
+		public string FieldsMap { get; set; }
+		public int FolderPathSourceFieldArtifactId { get; set; }
+		public ImportOverwriteMode ImportOverwriteMode { get; set; }
+		public FieldOverlayBehavior FieldOverlayBehavior { get; set; }
+		public DestinationFolderStructureBehavior DestinationFolderStructureBehavior { get; set; }
 		public string SourceJobTagName { get; set; }
 		public int SourceJobTagArtifactId { get; set; }
 		public int SourceWorkspaceTagArtifactId { get; set; }

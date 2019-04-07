@@ -76,7 +76,7 @@ namespace Relativity.Sync.Telemetry
 		/// </summary>
 		/// <param name="name">Name or bucket for the metric</param>
 		/// <param name="duration">Duration of the operation</param>
-		/// <param name="executionStatus">Result of the oepration</param>
+		/// <param name="executionStatus">Result of the operation</param>
 		/// <param name="correlationId">ID which correlates all metrics across a job</param>
 		/// <returns></returns>
 		public static Metric TimedOperation(string name, TimeSpan duration, ExecutionStatus executionStatus, string correlationId)
@@ -84,6 +84,21 @@ namespace Relativity.Sync.Telemetry
 			return new Metric(name, MetricType.TimedOperation, correlationId)
 			{
 				Value = duration.TotalMilliseconds,
+				ExecutionStatus = executionStatus
+			};
+		}
+
+		/// <summary>
+		/// Creates a <see cref="Metric"/> representing the result of a counter operation.
+		/// </summary>
+		/// <param name="name">Name or bucket for the metric</param>
+		/// <param name="executionStatus">Result of the operation</param>
+		/// <param name="correlationId">ID which correlates all metrics across a job</param>
+		/// <returns></returns>
+		public static Metric CountOperation(string name, ExecutionStatus executionStatus, string correlationId)
+		{
+			return new Metric(name, MetricType.Counter, correlationId)
+			{
 				ExecutionStatus = executionStatus
 			};
 		}
