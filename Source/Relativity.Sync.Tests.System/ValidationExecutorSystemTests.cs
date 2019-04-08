@@ -56,7 +56,7 @@ namespace Relativity.Sync.Tests.System
 				NotificationEmails = string.Empty,
 				SavedSearchArtifactId = savedSearchArtifactId,
 				DestinationFolderArtifactId = destinationFolderArtifactId,
-				FieldsMap = fieldsMap,
+				FieldMappings = fieldsMap,
 				FolderPathSourceFieldArtifactId = folderPathSourceFieldArtifactId,
 				ImportOverwriteMode = ImportOverwriteMode.AppendOverlay,
 				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.ReadFromField,

@@ -83,7 +83,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			_validationConfiguration = new Mock<IValidationConfiguration>();
 			_validationConfiguration.SetupGet(x => x.DestinationWorkspaceArtifactId).Returns(_TEST_DEST_WORKSPACE_ARTIFACT_ID).Verifiable();
 			_validationConfiguration.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(_TEST_SOURCE_WORKSPACE_ARTIFACT_ID).Verifiable();
-			_validationConfiguration.SetupGet(x => x.FieldsMap).Returns(_TEST_FIELDS_MAP).Verifiable();
+			_validationConfiguration.SetupGet(x => x.FieldMappings).Returns(_TEST_FIELDS_MAP).Verifiable();
 			_validationConfiguration.SetupGet(x => x.ImportOverwriteMode).Returns(ImportOverwriteMode.AppendOverlay);
 			_validationConfiguration.SetupGet(x => x.FieldOverlayBehavior).Returns(FieldOverlayBehavior.Default);
 
@@ -203,7 +203,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		public async Task ValidateAsyncUniqueIdentifierInvalidTest(string testInvalidFieldMap, string expectedErrorMessage)
 		{
 			// Arrange
-			_validationConfiguration.SetupGet(x => x.FieldsMap).Returns(testInvalidFieldMap).Verifiable();
+			_validationConfiguration.SetupGet(x => x.FieldMappings).Returns(testInvalidFieldMap).Verifiable();
 
 			// Act
 			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);

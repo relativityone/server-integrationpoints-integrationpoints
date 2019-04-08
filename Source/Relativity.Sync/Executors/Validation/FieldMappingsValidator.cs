@@ -34,7 +34,7 @@ namespace Relativity.Sync.Executors.Validation
 
 			try
 			{
-				List<FieldMap> fieldMaps = _serializer.Deserialize<List<FieldMap>>(configuration.FieldsMap);
+				List<FieldMap> fieldMaps = _serializer.Deserialize<List<FieldMap>>(configuration.FieldMappings);
 				Task<ValidationMessage> validateDestinationFieldsTask = ValidateDestinationFields(configuration, fieldMaps, token);
 				Task<ValidationMessage> validateSourceFieldsTask = ValidateSourceFields(configuration, fieldMaps, token);
 
