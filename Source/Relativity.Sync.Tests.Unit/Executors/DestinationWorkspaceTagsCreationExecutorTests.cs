@@ -22,7 +22,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_sourceJobTagService = new Mock<ISourceJobTagService>();
 			_sourceCaseTagService = new Mock<ISourceCaseTagService>();
 
-			_sut = new DestinationWorkspaceTagsCreationExecutor(_sourceCaseTagService.Object, _sourceJobTagService.Object);
+			_sut = new DestinationWorkspaceTagsCreationExecutor(_sourceCaseTagService.Object, _sourceJobTagService.Object, Mock.Of<ISyncLog>());
 		}
 
 		[Test]

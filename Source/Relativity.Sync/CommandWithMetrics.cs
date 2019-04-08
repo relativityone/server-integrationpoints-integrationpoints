@@ -26,12 +26,11 @@ namespace Relativity.Sync
 				token).ConfigureAwait(false);
 		}
 
-		public async Task ExecuteAsync(CancellationToken token)
+		public async Task<ExecutionResult> ExecuteAsync(CancellationToken token)
 		{
-			await MeasureExecutionTime(async () =>
+			return await MeasureExecutionTime(async () =>
 			{
-				await _innerCommand.ExecuteAsync(token).ConfigureAwait(false);
-				return new object();
+				return await _innerCommand.ExecuteAsync(token).ConfigureAwait(false);
 			}, token).ConfigureAwait(false);
 		}
 

@@ -9,6 +9,7 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Logging;
+using Relativity.Sync.Tests.Integration;
 using Relativity.Sync.Tests.Integration.Stubs;
 using Relativity.Sync.Tests.System.Helpers;
 using Relativity.Sync.Tests.System.Stubs;
@@ -63,7 +64,6 @@ namespace Relativity.Sync.Tests.System
 
 			// ACT
 			ISyncJob syncJob = CreateSyncJob(configuration);
-
 
 			// ASSERT
 			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);

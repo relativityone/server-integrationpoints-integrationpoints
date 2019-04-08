@@ -12,22 +12,22 @@ using Relativity.Sync.Tests.Unit.Stubs;
 namespace Relativity.Sync.Tests.Unit
 {
 	[TestFixture]
-	public sealed class SyncNodeTests
+	internal sealed class SyncNodeTests
 	{
 		private SyncNodeStub _instance;
 
 		private SyncExecutionContext _executionContext;
 
 		private Mock<ICommand<IConfiguration>> _command;
-		private ProgressStub _progress;
+		private SyncJobProgressStub _syncJobProgress;
 
 		private const string _STEP_NAME = "step name";
 
 		[SetUp]
 		public void SetUp()
 		{
-			_progress = new ProgressStub();
-			_executionContext = new SyncExecutionContext(_progress, CancellationToken.None);
+			_syncJobProgress = new SyncJobProgressStub();
+			_executionContext = new SyncExecutionContext(_syncJobProgress, CancellationToken.None);
 
 			_command = new Mock<ICommand<IConfiguration>>();
 
@@ -59,22 +59,19 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public void ItShouldNotCatchExceptions()
+		public async Task ItShouldReturnFailedResultOnException()
 		{
 			_command.Setup(x => x.CanExecuteAsync(CancellationToken.None)).ReturnsAsync(true);
-			_command.Setup(x => x.ExecuteAsync(CancellationToken.None)).Throws<Exception>();
-
-			ExecutionOptions options = new ExecutionOptions
-			{
-				ThrowOnError = true
-			};
-			SyncNodeStub instance = new SyncNodeStub(options, _command.Object, new EmptyLogger(), _STEP_NAME);
+			_command.Setup(x => x.ExecuteAsync(CancellationToken.None)).Throws<InvalidOperationException>();
 
 			// ACT
-			Func<Task> action = async () => await instance.ExecuteAsync(_executionContext).ConfigureAwait(false);
+			NodeResult result = await _instance.ExecuteAsync(_executionContext).ConfigureAwait(false);
 
 			// ASSERT
-			action.Should().Throw<Exception>();
+			result.Status.Should().Be(NodeResultStatus.Failed);
+			_executionContext.Results.Count.Should().Be(1);
+			_executionContext.Results[0].Exception.Should().NotBeNull();
+			_executionContext.Results[0].Exception.Should().BeOfType<InvalidOperationException>();
 		}
 
 		[Test]
@@ -86,7 +83,23 @@ namespace Relativity.Sync.Tests.Unit
 			await _instance.ExecuteAsync(_executionContext).ConfigureAwait(false);
 
 			// ASSERT
-			_progress.SyncJobState.State.Should().Be(_STEP_NAME);
+			_syncJobProgress.SyncJobState.Id.Should().Be(_STEP_NAME);
+		}
+
+		[TestCase(ExecutionStatus.Canceled, NodeResultStatus.Failed)]
+		[TestCase(ExecutionStatus.Failed, NodeResultStatus.Failed)]
+		[TestCase(ExecutionStatus.CompletedWithErrors, NodeResultStatus.SucceededWithErrors)]
+		[TestCase(ExecutionStatus.Completed, NodeResultStatus.Succeeded)]
+		public async Task ItShouldConvertExecutionResult(ExecutionStatus resultStatus, NodeResultStatus expectedStatus)
+		{
+			_command.Setup(x => x.CanExecuteAsync(CancellationToken.None)).ReturnsAsync(true);
+			_command.Setup(x => x.ExecuteAsync(CancellationToken.None)).ReturnsAsync(new ExecutionResult(resultStatus, null, null));
+
+			// ACT
+			NodeResult result = await _instance.ExecuteAsync(_executionContext).ConfigureAwait(false);
+
+			// ASSERT
+			result.Status.Should().Be(expectedStatus);
 		}
 	}
 }

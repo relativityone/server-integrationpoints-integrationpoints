@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
@@ -7,6 +9,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Nodes;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Tests.Integration.Stubs;
 
@@ -25,7 +28,7 @@ namespace Relativity.Sync.Tests.Integration
 
 			_containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
 
-			IntegrationTestsContainerBuilder.MockMetrics(_containerBuilder);
+			IntegrationTestsContainerBuilder.MockReporting(_containerBuilder);
 			IntegrationTestsContainerBuilder.RegisterStubsForPipelineBuilderTests(_containerBuilder, _executorTypes);
 		}
 
@@ -84,6 +87,23 @@ namespace Relativity.Sync.Tests.Integration
 			syncMetrics.Verify(x => x.TimedOperation(It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<ExecutionStatus>()));
 		}
 
+		[Test]
+		public async Task ProgressShouldBeCalledOnEachStep()
+		{
+			Mock<IProgress<SyncJobState>> progress = new Mock<IProgress<SyncJobState>>();
+			_containerBuilder.RegisterInstance(progress.Object).As<IProgress<SyncJobState>>();
+			ISyncJob syncJob = _containerBuilder.Build().Resolve<ISyncJob>();
+
+			// ACT
+			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+
+			// ASSERT
+			// We're expecting at least invocations two per node; there will be more for notification steps, etc.
+			List<Type> nodes = GetSyncNodes();
+			const int two = 2;
+			progress.Verify(x => x.Report(It.IsAny<SyncJobState>()), Times.AtLeast(nodes.Count * two));
+		}
+
 		private void AssertExecutionOrder(List<Type[]> expectedOrder)
 		{
 			int counter = 0;
@@ -126,6 +146,15 @@ namespace Relativity.Sync.Tests.Integration
 				new[] {typeof(IJobCleanupConfiguration)},
 				new[] {typeof(INotificationConfiguration)}
 			};
+		}
+
+		private List<Type> GetSyncNodes()
+		{
+			return Assembly.GetAssembly(typeof(SyncNode<>))
+				.GetTypes()
+				.Where(t => t.BaseType?.IsConstructedGenericType ?? false)
+				.Where(t => t.BaseType.GetGenericTypeDefinition() == typeof(SyncNode<>))
+				.ToList();
 		}
 	}
 }

@@ -23,13 +23,15 @@ namespace Relativity.Sync.Tests.Integration
 	internal sealed class SourceWorkspaceTagsCreationStepTests : FailingStepsBase<ISourceWorkspaceTagsCreationConfiguration>
 	{
 		private IExecutor<ISourceWorkspaceTagsCreationConfiguration> _executor;
-		private Mock<IObjectManager> _objectManagerMock;
+		private Mock<IObjectManager> _destinationObjectManagerMock;
+		private Mock<IObjectManager> _sourceObjectManagerMock;
 
-		private static readonly Guid _NAME_FIELD_GUID = Guid.Parse("155649c0-db15-4ee7-b449-bfdf2a54b7b5");
+		private static readonly Guid _DESTINATION_INSTANCE_ARTIFACT_ID_FIELD_GUID = Guid.Parse("323458DB-8A06-464B-9402-AF2516CF47E0");
+		private static readonly Guid _DESTINATION_INSTANCE_NAME_FIELD_GUID = Guid.Parse("909ADC7C-2BB9-46CA-9F85-DA32901D6554");
 		private static readonly Guid _DESTINATION_WORKSPACE_ARTIFACT_ID_FIELD_GUID = Guid.Parse("207E6836-2961-466B-A0D2-29974A4FAD36");
 		private static readonly Guid _DESTINATION_WORKSPACE_NAME_FIELD_GUID = Guid.Parse("348D7394-2658-4DA4-87D0-8183824ADF98");
-		private static readonly Guid _DESTINATION_INSTANCE_NAME_FIELD_GUID = Guid.Parse("909ADC7C-2BB9-46CA-9F85-DA32901D6554");
-		private static readonly Guid _DESTINATION_INSTANCE_ARTIFACT_ID_FIELD_GUID = Guid.Parse("323458DB-8A06-464B-9402-AF2516CF47E0");
+
+		private static readonly Guid _NAME_FIELD_GUID = Guid.Parse("155649c0-db15-4ee7-b449-bfdf2a54b7b5");
 
 		protected override void AssertExecutedSteps(List<Type> executorTypes)
 		{
@@ -50,11 +52,16 @@ namespace Relativity.Sync.Tests.Integration
 			ContainerBuilder containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
 			IntegrationTestsContainerBuilder.MockStepsExcept<ISourceWorkspaceTagsCreationConfiguration>(containerBuilder);
 
-			_objectManagerMock = new Mock<IObjectManager>();
-			var serviceFactoryMock = new Mock<ISourceServiceFactoryForUser>();
-			serviceFactoryMock.Setup(x => x.CreateProxyAsync<IObjectManager>()).Returns(Task.FromResult(_objectManagerMock.Object));
+			_sourceObjectManagerMock = new Mock<IObjectManager>();
+			var sourceServiceFactoryMock = new Mock<ISourceServiceFactoryForUser>();
+			sourceServiceFactoryMock.Setup(x => x.CreateProxyAsync<IObjectManager>()).Returns(Task.FromResult(_sourceObjectManagerMock.Object));
+			
+			_destinationObjectManagerMock = new Mock<IObjectManager>();
+			var destinationServiceFactoryMock = new Mock<IDestinationServiceFactoryForUser>();
+			destinationServiceFactoryMock.Setup(x => x.CreateProxyAsync<IObjectManager>()).Returns(Task.FromResult(_destinationObjectManagerMock.Object));
 
-			containerBuilder.RegisterInstance(serviceFactoryMock.Object).As<ISourceServiceFactoryForUser>();
+			containerBuilder.RegisterInstance(sourceServiceFactoryMock.Object).As<ISourceServiceFactoryForUser>();
+			containerBuilder.RegisterInstance(destinationServiceFactoryMock.Object).As<IDestinationServiceFactoryForUser>();
 			containerBuilder.RegisterType<SourceWorkspaceTagsCreationExecutor>().As<IExecutor<ISourceWorkspaceTagsCreationConfiguration>>();
 
 			CorrelationId correlationId = new CorrelationId(Guid.NewGuid().ToString());
@@ -85,7 +92,7 @@ namespace Relativity.Sync.Tests.Integration
 				JobArtifactId = jobArtifactId
 			};
 
-			_objectManagerMock.Setup(x => x.QueryAsync(
+			_destinationObjectManagerMock.Setup(x => x.QueryAsync(
 				-1,
 				It.Is<QueryRequest>(y => y.Condition.Contains(destinationWorkspaceArtifactID.ToString(CultureInfo.InvariantCulture))),
 				It.IsAny<int>(),
@@ -94,7 +101,7 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<IProgress<ProgressReport>>()))
 				.Returns(Task.FromResult(new QueryResult() { Objects = new List<RelativityObject> { new RelativityObject() { Name = destinationWorkspaceName } } }));
 
-			_objectManagerMock.Setup(x => x.QueryAsync(
+			_sourceObjectManagerMock.Setup(x => x.QueryAsync(
 				sourceWorkspaceArtifactID,
 				It.IsAny<QueryRequest>(),
 				It.IsAny<int>(),
@@ -103,13 +110,13 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<IProgress<ProgressReport>>())
 				).Returns(Task.FromResult(new QueryResult()));
 
-			_objectManagerMock.Setup(x => x.CreateAsync(
+			_sourceObjectManagerMock.Setup(x => x.CreateAsync(
 				sourceWorkspaceArtifactID,
 				It.IsAny<CreateRequest>())
 				).Returns(Task.FromResult(new CreateResult { Object = new RelativityObject { ArtifactID = newDestinationWorkspaceTagArtifactId } })
 				).Verifiable();
 
-			_objectManagerMock.Setup(x => x.UpdateAsync(
+			_sourceObjectManagerMock.Setup(x => x.UpdateAsync(
 				sourceWorkspaceArtifactID,
 				It.Is<UpdateRequest>(r => r.Object.ArtifactID == jobArtifactId))
 				).Returns(Task.FromResult(new UpdateResult())
@@ -119,7 +126,8 @@ namespace Relativity.Sync.Tests.Integration
 			_executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
 
 			// Assert
-			_objectManagerMock.Verify();
+			_sourceObjectManagerMock.Verify();
+			_destinationObjectManagerMock.Verify();
 			Assert.AreEqual(newDestinationWorkspaceTagArtifactId, configuration.DestinationWorkspaceTagArtifactId);
 		}
 
@@ -140,7 +148,7 @@ namespace Relativity.Sync.Tests.Integration
 				JobArtifactId = jobArtifactId
 			};
 
-			_objectManagerMock.Setup(x => x.QueryAsync(
+			_destinationObjectManagerMock.Setup(x => x.QueryAsync(
 				-1,
 				It.Is<QueryRequest>(y => y.Condition.Contains(destinationWorkspaceArtifactID.ToString(CultureInfo.InvariantCulture))),
 				It.IsAny<int>(),
@@ -149,7 +157,7 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<IProgress<ProgressReport>>()))
 				.Returns(Task.FromResult(new QueryResult() { Objects = new List<RelativityObject> { new RelativityObject() { Name = expectedDestinationWorkspaceName } } }));
 
-			_objectManagerMock.Setup(x => x.QueryAsync(
+			_sourceObjectManagerMock.Setup(x => x.QueryAsync(
 				sourceWorkspaceArtifactID,
 				It.IsAny<QueryRequest>(),
 				It.IsAny<int>(),
@@ -175,14 +183,14 @@ namespace Relativity.Sync.Tests.Integration
 				}
 			}));
 
-			_objectManagerMock.Setup(x => x.UpdateAsync(
+			_sourceObjectManagerMock.Setup(x => x.UpdateAsync(
 				sourceWorkspaceArtifactID,
 				It.Is<UpdateRequest>(y =>
 					y.FieldValues.First(fv => fv.Field.Guid == _DESTINATION_WORKSPACE_NAME_FIELD_GUID).Value.Equals(expectedDestinationWorkspaceName)))
 				).Returns(Task.FromResult(new UpdateResult())
 				).Verifiable();
 
-			_objectManagerMock.Setup(x => x.UpdateAsync(
+			_sourceObjectManagerMock.Setup(x => x.UpdateAsync(
 				sourceWorkspaceArtifactID,
 				It.Is<UpdateRequest>(r => r.Object.ArtifactID == jobArtifactId))
 				).Returns(Task.FromResult(new UpdateResult())
@@ -192,7 +200,8 @@ namespace Relativity.Sync.Tests.Integration
 			_executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
 
 			// Assert
-			_objectManagerMock.Verify();
+			_sourceObjectManagerMock.Verify();
+			_destinationObjectManagerMock.Verify();
 			Assert.AreEqual(destinationWorkspaceTagArtifactId, configuration.DestinationWorkspaceTagArtifactId);
 		}
 
@@ -213,7 +222,7 @@ namespace Relativity.Sync.Tests.Integration
 				JobArtifactId = jobArtifactId
 			};
 
-			_objectManagerMock.Setup(x => x.QueryAsync(
+			_destinationObjectManagerMock.Setup(x => x.QueryAsync(
 				-1,
 				It.Is<QueryRequest>(y => y.Condition.Contains(destinationWorkspaceArtifactID.ToString(CultureInfo.InvariantCulture))),
 				It.IsAny<int>(),
@@ -222,7 +231,7 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<IProgress<ProgressReport>>()))
 				.Returns(Task.FromResult(new QueryResult() { Objects = new List<RelativityObject> { new RelativityObject() { Name = expectedDestinationInstanceName } } }));
 
-			_objectManagerMock.Setup(x => x.QueryAsync(
+			_sourceObjectManagerMock.Setup(x => x.QueryAsync(
 				sourceWorkspaceArtifactID,
 				It.IsAny<QueryRequest>(),
 				It.IsAny<int>(),
@@ -269,14 +278,14 @@ namespace Relativity.Sync.Tests.Integration
 			}
 					));
 
-			_objectManagerMock.Setup(x => x.UpdateAsync(
+			_sourceObjectManagerMock.Setup(x => x.UpdateAsync(
 				sourceWorkspaceArtifactID,
 				It.Is<UpdateRequest>(y =>
 					y.FieldValues.First(fv => fv.Field.Guid == _DESTINATION_INSTANCE_NAME_FIELD_GUID).Value.Equals(expectedDestinationInstanceName)))
 				).Returns(Task.FromResult(new UpdateResult())
 				).Verifiable();
 
-			_objectManagerMock.Setup(x => x.UpdateAsync(
+			_sourceObjectManagerMock.Setup(x => x.UpdateAsync(
 				sourceWorkspaceArtifactID,
 				It.Is<UpdateRequest>(r => r.Object.ArtifactID == jobArtifactId))
 				).Returns(Task.FromResult(new UpdateResult())
@@ -286,7 +295,8 @@ namespace Relativity.Sync.Tests.Integration
 			_executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
 
 			// Assert
-			_objectManagerMock.Verify();
+			_sourceObjectManagerMock.Verify();
+			_destinationObjectManagerMock.Verify();
 			Assert.AreEqual(destinationWorkspaceTagArtifactId, configuration.DestinationWorkspaceTagArtifactId);
 		}
 
@@ -307,7 +317,7 @@ namespace Relativity.Sync.Tests.Integration
 				JobArtifactId = jobArtifactId
 			};
 
-			_objectManagerMock.Setup(x => x.QueryAsync(
+			_destinationObjectManagerMock.Setup(x => x.QueryAsync(
 				-1,
 				It.Is<QueryRequest>(y => y.Condition.Contains(destinationWorkspaceArtifactID.ToString(CultureInfo.InvariantCulture))),
 				It.IsAny<int>(),
@@ -316,7 +326,7 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<IProgress<ProgressReport>>()))
 				.Returns(Task.FromResult(new QueryResult() { Objects = new List<RelativityObject> { new RelativityObject() { Name = destinationWorkspaceName } } }));
 
-			_objectManagerMock.Setup(x => x.QueryAsync(
+			_sourceObjectManagerMock.Setup(x => x.QueryAsync(
 				sourceWorkspaceArtifactID,
 				It.IsAny<QueryRequest>(),
 				It.IsAny<int>(),
@@ -363,7 +373,7 @@ namespace Relativity.Sync.Tests.Integration
 			}
 					));
 
-			_objectManagerMock.Setup(x => x.UpdateAsync(
+			_sourceObjectManagerMock.Setup(x => x.UpdateAsync(
 				sourceWorkspaceArtifactID,
 				It.Is<UpdateRequest>(r => r.Object.ArtifactID == jobArtifactId))
 				).Returns(Task.FromResult(new UpdateResult())
@@ -373,13 +383,14 @@ namespace Relativity.Sync.Tests.Integration
 			_executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
 
 			// Assert
-			_objectManagerMock.Verify();
-			_objectManagerMock.Verify(x => x.UpdateAsync(sourceWorkspaceArtifactID, It.Is<UpdateRequest>(y => y.Object.ArtifactID == destinationWorkspaceTagArtifactId)), Times.Never);
+			_destinationObjectManagerMock.Verify();
+			_sourceObjectManagerMock.Verify();
+			_sourceObjectManagerMock.Verify(x => x.UpdateAsync(sourceWorkspaceArtifactID, It.Is<UpdateRequest>(y => y.Object.ArtifactID == destinationWorkspaceTagArtifactId)), Times.Never);
 			Assert.AreEqual(destinationWorkspaceTagArtifactId, configuration.DestinationWorkspaceTagArtifactId);
 		}
 
 		[Test]
-		public void ItThrowsProperExceptionIfDestinationWorkspaceDoesNotExist()
+		public async Task ItReturnsFailedResultIfDestinationWorkspaceDoesNotExist()
 		{
 			const int sourceWorkspaceArtifactID = 1014853;
 			const int destinationWorkspaceArtifactID = 1014853;
@@ -391,7 +402,7 @@ namespace Relativity.Sync.Tests.Integration
 				JobArtifactId = jobArtifactId
 			};
 
-			_objectManagerMock.Setup(x => x.QueryAsync(
+			_destinationObjectManagerMock.Setup(x => x.QueryAsync(
 				-1,
 				It.Is<QueryRequest>(y => y.Condition.Contains(destinationWorkspaceArtifactID.ToString(CultureInfo.InvariantCulture))),
 				It.IsAny<int>(),
@@ -400,12 +411,18 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<IProgress<ProgressReport>>()))
 				.Returns(Task.FromResult(new QueryResult()));
 
-			SyncException thrownException = Assert.Throws<SyncException>(() => _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult());
-			Assert.IsTrue(thrownException.Message.Contains(destinationWorkspaceArtifactID.ToString(CultureInfo.InvariantCulture)));
+			// Act
+			ExecutionResult result = await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
+			Assert.IsNotNull(result.Exception);
+			Assert.IsInstanceOf<SyncException>(result.Exception);
+			Assert.IsTrue(result.Exception.Message.Contains(destinationWorkspaceArtifactID.ToString(CultureInfo.InvariantCulture)));
 		}
 
 		[Test]
-		public void ItThrowsProperExceptionIfTagCreationThrows()
+		public async Task ItReturnsFailedResultIfTagCreationThrows()
 		{
 			const int srcWorkspaceArtifactId = 1014853;
 			const int destWorkspaceArtifactId = 1015853;
@@ -419,7 +436,7 @@ namespace Relativity.Sync.Tests.Integration
 				JobArtifactId = jobArtifactId
 			};
 
-			_objectManagerMock.Setup(x => x.QueryAsync(
+			_destinationObjectManagerMock.Setup(x => x.QueryAsync(
 				-1,
 				It.IsAny<QueryRequest>(),
 				It.IsAny<int>(),
@@ -428,7 +445,7 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<IProgress<ProgressReport>>()))
 				.Returns(Task.FromResult(new QueryResult() { Objects = new List<RelativityObject> { new RelativityObject() { Name = destWorkspaceName } } }));
 
-			_objectManagerMock.Setup(x => x.QueryAsync(
+			_sourceObjectManagerMock.Setup(x => x.QueryAsync(
 				srcWorkspaceArtifactId,
 				It.IsAny<QueryRequest>(),
 				It.IsAny<int>(),
@@ -437,20 +454,25 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<IProgress<ProgressReport>>())
 				).Returns(Task.FromResult(new QueryResult()));
 
-			_objectManagerMock.Setup(x => x.CreateAsync(
+			_sourceObjectManagerMock.Setup(x => x.CreateAsync(
 				srcWorkspaceArtifactId,
 				It.IsAny<CreateRequest>())
 				).Throws<Exception>();
 
-			DestinationWorkspaceTagRepositoryException thrownException = Assert.Throws<DestinationWorkspaceTagRepositoryException>(() =>
-				_executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult());
+			// Act
+			ExecutionResult result = await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
+			Assert.IsNotNull(result.Exception);
+			Assert.IsInstanceOf<DestinationWorkspaceTagRepositoryException>(result.Exception);
 			Assert.AreEqual(
 				$"Failed to create {nameof(DestinationWorkspaceTag)} '{destInstanceName} - {destWorkspaceName} - {destWorkspaceArtifactId}' in workspace {srcWorkspaceArtifactId}",
-				thrownException.Message);
+				result.Exception.Message);
 		}
 
 		[Test]
-		public void ItThrowsProperExceptionIfTagUpdateThrows()
+		public async Task ItReturnsFailedResultIfTagUpdateThrows()
 		{
 			const int sourceWorkspaceArtifactID = 1014853;
 			const int destinationWorkspaceArtifactID = 1014853;
@@ -465,7 +487,7 @@ namespace Relativity.Sync.Tests.Integration
 				JobArtifactId = jobArtifactId
 			};
 
-			_objectManagerMock.Setup(x => x.QueryAsync(
+			_destinationObjectManagerMock.Setup(x => x.QueryAsync(
 				-1,
 				It.IsAny<QueryRequest>(),
 				It.IsAny<int>(),
@@ -474,7 +496,7 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<IProgress<ProgressReport>>()))
 				.Returns(Task.FromResult(new QueryResult() { Objects = new List<RelativityObject> { new RelativityObject() { Name = destinationWorkspaceName } } }));
 
-			_objectManagerMock.Setup(x => x.QueryAsync(
+			_sourceObjectManagerMock.Setup(x => x.QueryAsync(
 				sourceWorkspaceArtifactID,
 				It.IsAny<QueryRequest>(),
 				It.IsAny<int>(),
@@ -520,20 +542,25 @@ namespace Relativity.Sync.Tests.Integration
 				}
 			}));
 
-			_objectManagerMock.Setup(x => x.UpdateAsync(
+			_sourceObjectManagerMock.Setup(x => x.UpdateAsync(
 				sourceWorkspaceArtifactID,
 				It.Is<UpdateRequest>(y => y.Object.ArtifactID == destinationWorkspaceTagArtifactId))
 			).Throws<Exception>();
 
-			DestinationWorkspaceTagRepositoryException thrownException = Assert.Throws<DestinationWorkspaceTagRepositoryException>(() =>
-				_executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult());
+			// Act
+			ExecutionResult result = await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
+			Assert.IsNotNull(result.Exception);
+			Assert.IsInstanceOf<DestinationWorkspaceTagRepositoryException>(result.Exception);
 			Assert.AreEqual(
 				$"Failed to update {nameof(DestinationWorkspaceTag)} with id {destinationWorkspaceTagArtifactId} in workspace {sourceWorkspaceArtifactID}",
-				thrownException.Message);
+				result.Exception.Message);
 		}
 
 		[Test]
-		public void ItThrowsProperExceptionIfTagLinkingThrows()
+		public async Task ItReturnsFailedResultIfTagLinkingThrows()
 		{
 			const int sourceWorkspaceArtifactID = 1014853;
 			const int destinationWorkspaceArtifactID = 1014853;
@@ -547,7 +574,7 @@ namespace Relativity.Sync.Tests.Integration
 				JobArtifactId = jobArtifactId
 			};
 
-			_objectManagerMock.Setup(x => x.QueryAsync(
+			_destinationObjectManagerMock.Setup(x => x.QueryAsync(
 				-1,
 				It.IsAny<QueryRequest>(),
 				It.IsAny<int>(),
@@ -556,7 +583,7 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<IProgress<ProgressReport>>()))
 				.Returns(Task.FromResult(new QueryResult() { Objects = new List<RelativityObject> { new RelativityObject() { Name = destinationWorkspaceName } } }));
 
-			_objectManagerMock.Setup(x => x.QueryAsync(
+			_sourceObjectManagerMock.Setup(x => x.QueryAsync(
 				sourceWorkspaceArtifactID,
 				It.IsAny<QueryRequest>(),
 				It.IsAny<int>(),
@@ -565,25 +592,30 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<IProgress<ProgressReport>>())
 				).Returns(Task.FromResult(new QueryResult()));
 
-			_objectManagerMock.Setup(x => x.CreateAsync(
+			_sourceObjectManagerMock.Setup(x => x.CreateAsync(
 					It.IsAny<int>(),
 					It.IsAny<CreateRequest>()
 				)).Returns(Task.FromResult(new CreateResult { Object = new RelativityObject { ArtifactID = destinationWorkspaceTagArtifactId } }));
 
-			_objectManagerMock.Setup(x => x.UpdateAsync(
+			_sourceObjectManagerMock.Setup(x => x.UpdateAsync(
 				sourceWorkspaceArtifactID,
 				It.Is<UpdateRequest>(y => y.Object.ArtifactID == jobArtifactId))
 			).Throws<Exception>();
 
-			DestinationWorkspaceTagsLinkerException thrownException = Assert.Throws<DestinationWorkspaceTagsLinkerException>(() =>
-				_executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult());
+			// Act
+			ExecutionResult result = await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
+			Assert.IsNotNull(result.Exception);
+			Assert.IsInstanceOf<DestinationWorkspaceTagsLinkerException>(result.Exception);
 			Assert.AreEqual(
 				$"Failed to link {nameof(DestinationWorkspaceTag)} to Job History",
-				thrownException.Message);
+				result.Exception.Message);
 		}
 
 		[Test]
-		public void ItThrowsProperExceptionIfTagQueryThrows()
+		public async Task ItReturnsFailedResultIfTagQueryThrows()
 		{
 			const int sourceWorkspaceArtifactID = 1014853;
 			const int destinationWorkspaceArtifactID = 1014853;
@@ -596,7 +628,7 @@ namespace Relativity.Sync.Tests.Integration
 				JobArtifactId = jobArtifactId
 			};
 
-			_objectManagerMock.Setup(x => x.QueryAsync(
+			_destinationObjectManagerMock.Setup(x => x.QueryAsync(
 				-1,
 				It.IsAny<QueryRequest>(),
 				It.IsAny<int>(),
@@ -605,7 +637,7 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<IProgress<ProgressReport>>()))
 				.Returns(Task.FromResult(new QueryResult() { Objects = new List<RelativityObject> { new RelativityObject() { Name = destinationWorkspaceName } } }));
 
-			_objectManagerMock.Setup(x => x.QueryAsync(
+			_sourceObjectManagerMock.Setup(x => x.QueryAsync(
 				sourceWorkspaceArtifactID,
 				It.IsAny<QueryRequest>(),
 				It.IsAny<int>(),
@@ -614,11 +646,16 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<IProgress<ProgressReport>>()
 			)).Throws<Exception>();
 
-			DestinationWorkspaceTagRepositoryException thrownException = Assert.Throws<DestinationWorkspaceTagRepositoryException>(() =>
-				_executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult());
+			// Act
+			ExecutionResult result = await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
+			Assert.IsNotNull(result.Exception);
+			Assert.IsInstanceOf<DestinationWorkspaceTagRepositoryException>(result.Exception);
 			Assert.AreEqual(
 				$"Failed to query {nameof(DestinationWorkspaceTag)} in workspace {sourceWorkspaceArtifactID}",
-				thrownException.Message);
+				result.Exception.Message);
 		}
 
 		private List<FieldValuePair> BuildFieldValuePairs(Dictionary<Guid, object> fieldValues)
