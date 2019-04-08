@@ -71,13 +71,13 @@ namespace Relativity.Sync.Executors.Validation
 				return new ValidationMessage("The unique identifier must be mapped.");
 			}
 
-			bool identifiersMatching = mappedFields.Any(x =>
+			bool anyIdentifierNotMatchingAnother = mappedFields.Any(x =>
 													x.SourceField != null &&
 													x.DestinationField != null &&
 													x.SourceField.IsIdentifier &&
 													!x.DestinationField.IsIdentifier);
 
-			if (!identifiersMatching)
+			if (anyIdentifierNotMatchingAnother)
 			{
 				return new ValidationMessage("Identifier must be mapped with another identifier.");
 			}
