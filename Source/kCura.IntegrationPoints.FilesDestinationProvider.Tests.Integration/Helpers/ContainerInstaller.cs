@@ -20,6 +20,7 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers.FileNaming;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories;
@@ -32,7 +33,6 @@ using Relativity.API;
 using Relativity.Services.FileField;
 using Relativity.Services.Interfaces.File;
 using Relativity.Services.Interfaces.ViewField;
-using IFileRepository = kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories.IFileRepository;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers
 {

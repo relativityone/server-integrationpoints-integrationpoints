@@ -101,7 +101,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 			IRepositoryFactory repositoryFactory = _windsorContainer.Resolve<IRepositoryFactory>();
 			IViewFieldRepository viewFieldRepository = _windsorContainer.Resolve<IViewFieldRepository>();
-			Core.Repositories.IFileRepository fileRepository = _windsorContainer.Resolve<Core.Repositories.IFileRepository>();
+			IFileRepository fileRepository = _windsorContainer.Resolve<IFileRepository>();
 			IFileFieldRepository fileFieldRepository = _windsorContainer.Resolve<IFileFieldRepository>();
 			IInstanceSettingRepository instanceSettingRepository =
 				_windsorContainer.Resolve<IInstanceSettingRepository>();

@@ -12,7 +12,6 @@ using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
 using Constants = kCura.IntegrationPoints.Domain.Constants;
-using IFileRepository = kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories.IFileRepository;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibrary
 {

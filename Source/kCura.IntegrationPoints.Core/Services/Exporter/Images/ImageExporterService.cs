@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Core.Services.Exporter.Base;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -34,7 +35,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 			IJobStopManager jobStopManager, 
 			IHelper helper, 
 			IBaseServiceContextProvider baseServiceContextProvider, 
-			FieldMap[] mappedFields, int startAt,
+			FieldMap[] mappedFields, 
+			int startAt,
 			string config, 
 			int searchArtifactId, 
 			ImportSettings settings)
@@ -42,7 +44,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 				config, searchArtifactId)
 		{
 			_settings = settings;
-			_fileRepository = sourceRepositoryFactory.GetFileRepository(SourceConfiguration.SourceWorkspaceArtifactId);
+			_fileRepository = sourceRepositoryFactory.GetFileRepository();
 		}
 
 		public override IDataTransferContext GetDataTransferContext(IExporterTransferConfiguration transferConfiguration)
@@ -107,9 +109,19 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 			}
 		}
 
-		private void SetOriginalImages(int documentArtifactId, object[] fieldsValue, List<ArtifactFieldDTO> fields, int artifactType, List<ArtifactDTO> result)
+		private void SetOriginalImages(
+			int documentArtifactId, 
+			object[] fieldsValue, 
+			List<ArtifactFieldDTO> fields, 
+			int artifactType, 
+			List<ArtifactDTO> result)
 		{
-			DataView imagesDataView = _fileRepository.RetrieveAllImagesForDocuments(documentArtifactId);
+			DataSet imagesDataSet= _fileRepository
+				.GetImagesForDocuments(
+					SourceConfiguration.SourceWorkspaceArtifactId, 
+					documentIDs: new[] { documentArtifactId })
+				.ToDataSet();
+			DataView imagesDataView = new DataView(imagesDataSet);
 			if (imagesDataView.Count > 0)
 			{
 				CreateImageArtifactDtos(imagesDataView, documentArtifactId, fields, fieldsValue, artifactType, result);
@@ -130,14 +142,25 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 			return 0;
 		}
 
-		private int SetProducedImagesByProductionId(int documentArtifactId, List<ArtifactFieldDTO> fields, object[] fieldsValue, int artifactType,
-			List<ArtifactDTO> result, int productionArtifactId)
+		private int SetProducedImagesByProductionId(
+			int documentArtifactId, 
+			List<ArtifactFieldDTO> fields, 
+			object[] fieldsValue, 
+			int artifactType,
+			List<ArtifactDTO> result, 
+			int productionArtifactId)
 		{
-			DataView producedImages = _fileRepository.RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSet(productionArtifactId, documentArtifactId);
-			if (producedImages.Count > 0)
+			DataSet producedImagesDataSet = _fileRepository
+				.GetImagesForProductionDocuments(
+					SourceConfiguration.SourceWorkspaceArtifactId,
+					productionArtifactId, 
+					documentIDs: new[] { documentArtifactId })
+				.ToDataSet();
+			DataView producedImagesDataView = new DataView(producedImagesDataSet);
+			if (producedImagesDataView.Count > 0)
 			{
-				CreateImageArtifactDtos(producedImages, documentArtifactId, fields, fieldsValue, artifactType, result);
-				return producedImages.Count;
+				CreateImageArtifactDtos(producedImagesDataView, documentArtifactId, fields, fieldsValue, artifactType, result);
+				return producedImagesDataView.Count;
 			}
 			return 0;
 		}

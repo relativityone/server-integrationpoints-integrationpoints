@@ -298,12 +298,12 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return queryFieldLookupRepository;
 		}
 
-		public IFileRepository GetFileRepository(int workspaceArtifactId)
+		public IFileRepository GetFileRepository()
 		{
-			BaseServiceContext baseServiceContext = GetBaseServiceContextForWorkspace(workspaceArtifactId);
-
-			IFileRepository fileRepository = new FileRepository(baseServiceContext);
-			return fileRepository;
+			return new DisposableFileRepository(
+				_sourceServiceMgr, 
+				InstrumentationProvider
+			);
 		}
 
 		public IAuditRepository GetAuditRepository(int workspaceArtifactId)

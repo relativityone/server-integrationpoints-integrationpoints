@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Data;
+using FluentAssertions;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories;
 using Moq;
@@ -118,8 +120,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 			// assert
 			_viewFieldRepositoryMock.Verify(
 				x => x.ReadViewFieldIDsFromSearch(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _ARTIFACT_ID), Times.Once);
-			Assert.AreEqual(1, result.Length);
-			Assert.AreEqual(_ARTIFACT_VIEW_FIELD_ID, result[0]);
+			result.Length.Should().Be(1);
+			result[0].Should().Be(_ARTIFACT_VIEW_FIELD_ID);
 		}
 
 		[Test]
@@ -141,19 +143,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 			// assert
 			_viewFieldRepositoryMock.Verify(
 				x => x.ReadViewFieldIDsFromProduction(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _ARTIFACT_ID), Times.Once);
-			Assert.AreEqual(1, result.Length);
-			Assert.AreEqual(_ARTIFACT_VIEW_FIELD_ID, result[0]);
+			result.Length.Should().Be(1);
+			result[0].Should().Be(_ARTIFACT_VIEW_FIELD_ID);
 		}
 
-		private static ViewFieldIDResponse CreateTestViewFieldIDResponse(int artifactID, int artifactViewFieldID)
-		{
-			var viewFieldIDResponse = new ViewFieldIDResponse
-			{
-				ArtifactID = artifactID,
-				ArtifactViewFieldID = artifactViewFieldID
-			};
-			return viewFieldIDResponse;
-		}
+		
 
 		[Test]
 		public void RetrieveAllExportableViewFieldsTest()
@@ -170,7 +164,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 
 			// assert
 			_viewFieldRepositoryMock.Verify(x => x.ReadExportableViewFields(_WORKSPACE_ID, _ARTIFACT_TYPE_ID), Times.Once);
-			Assert.AreEqual(1, result.Length);
+			result.Length.Should().Be(1);
 			ValidateViewFieldInfo(result[0]);
 		}
 
@@ -182,7 +176,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 			string documentIDsAsString = $@"{_DOCUMENT_ARTIFACT_ID}";
 			FileResponse fileResponse = CreateTestFileResponse();
 			FileResponse[] fileResponses = {fileResponse};
-			_fileRepositoryMock.Setup(x => x.GetNativesForSearchAsync(_WORKSPACE_ID, documentIDs))
+			_fileRepositoryMock.Setup(x => x.GetNativesForSearch(_WORKSPACE_ID, documentIDs))
 				.Returns(fileResponses);
 			var coreSearchManager = new CoreSearchManager(_baseServiceContextMock.Object, _fileRepositoryMock.Object, _fileFieldRepositoryMock.Object, _viewFieldRepositoryMock.Object);
 			
@@ -190,8 +184,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 			DataRowCollection result = coreSearchManager.RetrieveNativesForSearch(_WORKSPACE_ID, documentIDsAsString).Tables[0].Rows;
 			
 			//assert
-			_fileRepositoryMock.Verify(x=> x.GetNativesForSearchAsync(_WORKSPACE_ID, documentIDs), Times.Once);
-			Assert.AreEqual(1, result.Count);
+			_fileRepositoryMock.Verify(x=> x.GetNativesForSearch(_WORKSPACE_ID, documentIDs), Times.Once);
+			result.Count.Should().Be(1);
 			ValidateFileResponse(result);
 		}
 
@@ -204,7 +198,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 			string documentIDsAsString = $@"{_DOCUMENT_ARTIFACT_ID}";
 			FileResponse fileResponse = CreateTestFileResponse();
 			FileResponse[] fileResponses = { fileResponse };
-			_fileRepositoryMock.Setup(x => x.GetNativesForProductionAsync(_WORKSPACE_ID, productionId, documentIDs))
+			_fileRepositoryMock.Setup(x => x.GetNativesForProduction(_WORKSPACE_ID, productionId, documentIDs))
 				.Returns(fileResponses);
 			var coreSearchManager = new CoreSearchManager(_baseServiceContextMock.Object, _fileRepositoryMock.Object, _fileFieldRepositoryMock.Object, _viewFieldRepositoryMock.Object);
 
@@ -212,8 +206,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 			DataRowCollection result = coreSearchManager.RetrieveNativesForProduction(_WORKSPACE_ID, productionId, documentIDsAsString).Tables[0].Rows;
 
 			//assert
-			_fileRepositoryMock.Verify(x => x.GetNativesForProductionAsync(_WORKSPACE_ID, productionId, documentIDs), Times.Once);
-			Assert.AreEqual(1, result.Count);
+			_fileRepositoryMock.Verify(x => x.GetNativesForProduction(_WORKSPACE_ID, productionId, documentIDs), Times.Once);
+			result.Count.Should().Be(1);
 			ValidateFileResponse(result);
 		}
 
@@ -249,7 +243,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 			int documentID =  _DOCUMENT_ARTIFACT_ID ;
 			FileResponse fileResponse = CreateTestFileResponse();
 			FileResponse[] fileResponses = { fileResponse };
-			_fileRepositoryMock.Setup(x => x.GetProducedImagesForDocumentAsync(_WORKSPACE_ID, documentID))
+			_fileRepositoryMock.Setup(x => x.GetProducedImagesForDocument(_WORKSPACE_ID, documentID))
 				.Returns(fileResponses);
 			var coreSearchManager = new CoreSearchManager(_baseServiceContextMock.Object, _fileRepositoryMock.Object, _fileFieldRepositoryMock.Object, _viewFieldRepositoryMock.Object);
 
@@ -257,9 +251,19 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 			DataRowCollection result = coreSearchManager.RetrieveProducedImagesForDocument(_WORKSPACE_ID, documentID).Tables[0].Rows;
 
 			//assert
-			_fileRepositoryMock.Verify(x => x.GetProducedImagesForDocumentAsync(_WORKSPACE_ID, documentID), Times.Once);
-			Assert.AreEqual(1, result.Count);
+			_fileRepositoryMock.Verify(x => x.GetProducedImagesForDocument(_WORKSPACE_ID, documentID), Times.Once);
+			result.Count.Should().Be(1);
 			ValidateFileResponse(result);
+		}
+
+		private static ViewFieldIDResponse CreateTestViewFieldIDResponse(int artifactID, int artifactViewFieldID)
+		{
+			var viewFieldIDResponse = new ViewFieldIDResponse
+			{
+				ArtifactID = artifactID,
+				ArtifactViewFieldID = artifactViewFieldID
+			};
+			return viewFieldIDResponse;
 		}
 
 		private static FileResponse CreateTestFileResponse()
@@ -330,60 +334,60 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 
 		private static void ValidateViewFieldInfo(ViewFieldInfo viewFieldInfo)
 		{
-			Assert.AreEqual(_ARTIFACT_ID, viewFieldInfo.FieldArtifactId);
-			Assert.AreEqual(_ARTIFACT_VIEW_FIELD_ID, viewFieldInfo.AvfId);
-			Assert.AreEqual(_CATEGORY_CONVERTED, viewFieldInfo.Category);
-			Assert.AreEqual(_DISPLAY_NAME, viewFieldInfo.DisplayName);
-			Assert.AreEqual(_ARTIFACT_VIEW_FIELD_COLUMN_NAME, viewFieldInfo.AvfColumnName);
-			Assert.AreEqual(_ARTIFACT_VIEW_FIELD_HEADER_NAME, viewFieldInfo.AvfHeaderName);
-			Assert.AreEqual(_ALLOW_FIELD_NAME, viewFieldInfo.AllowFieldName);
-			Assert.AreEqual(_COLUMN_SOURCE_TYPE_CONVERTED, viewFieldInfo.ColumnSource);
-			Assert.AreEqual(_DATA_SOURCE, viewFieldInfo.DataSource);
-			Assert.AreEqual(_SOURCE_FIELD_NAME, viewFieldInfo.SourceFieldName);
-			Assert.AreEqual(_SOURCE_FIELD_ARTIFACT_TYPE_ID, viewFieldInfo.SourceFieldArtifactTypeID);
-			Assert.AreEqual(_SOURCE_FIELD_ARTIFACT_ID, viewFieldInfo.SourceFieldArtifactID);
-			Assert.AreEqual(_CONNECTOR_FIELD_ARTIFACT_ID, viewFieldInfo.ConnectorFieldArtifactID);
-			Assert.AreEqual(_SOURCE_FIELD_ARTIFACT_TYPE_TABLE_NAME, viewFieldInfo.SourceFieldArtifactTypeTableName);
-			Assert.AreEqual(_CONNECTOR_FIELD_NAME, viewFieldInfo.ConnectorFieldName);
-			Assert.AreEqual(_CONNECTOR_FIELD_CATEGORY_CONVERTED, viewFieldInfo.ConnectorFieldCategory);
-			Assert.AreEqual(_FIELD_TYPE_CONVERTED, viewFieldInfo.FieldType);
-			Assert.AreEqual(_IS_LINKED, viewFieldInfo.IsLinked);
-			Assert.AreEqual(_FIELD_CODE_TYPE_ID, viewFieldInfo.FieldCodeTypeID);
-			Assert.AreEqual(_ARTIFACT_TYPE_ID, viewFieldInfo.ArtifactTypeID);
-			Assert.AreEqual(_ARTIFACT_TYPE_TABLE_NAME, viewFieldInfo.ArtifactTypeTableName);
-			Assert.AreEqual(_FIELD_IS_ARTIFACT_BASE_FIELD, viewFieldInfo.FieldIsArtifactBaseField);
-			Assert.AreEqual(_FORMAT_STRING, viewFieldInfo.FormatString);
-			Assert.AreEqual(_IS_UNICODE_ENABLED, viewFieldInfo.IsUnicodeEnabled);
-			Assert.AreEqual(_ALLOW_HTML, viewFieldInfo.AllowHtml);
-			Assert.AreEqual(_PARENT_FILE_FIELD_ARTIFACT_ID, viewFieldInfo.ParentFileFieldArtifactID);
-			Assert.AreEqual(_PARENT_FILE_FIELD_DISPLAY_NAME, viewFieldInfo.ParentFileFieldDisplayName);
-			Assert.AreEqual(_ASSOCIATIVE_ARTIFACT_TYPE_ID, viewFieldInfo.AssociativeArtifactTypeID);
-			Assert.AreEqual(_RELATIONAL_TABLE_NAME, viewFieldInfo.RelationalTableName);
-			Assert.AreEqual(_RELATIONAL_TABLE_COLUMN_NAME, viewFieldInfo.RelationalTableColumnName);
-			Assert.AreEqual(_RELATIONAL_TABLE_COLUMN_NAME_2, viewFieldInfo.RelationalTableColumnName2);
-			Assert.AreEqual(_PARENT_REFLECTION_TYPE_CONVERTED, viewFieldInfo.ParentReflectionType);
-			Assert.AreEqual(_REFLECTED_FIELD_ARTIFACT_TYPE_TABLE_NAME, viewFieldInfo.ReflectedFieldArtifactTypeTableName);
-			Assert.AreEqual(_REFLECTED_FIELD_IDENTIFIER_COLUMN_NAME, viewFieldInfo.ReflectedFieldIdentifierColumnName);
-			Assert.AreEqual(_REFLECTED_FIELD_CONNECTOR_FIELD_NAME, viewFieldInfo.ReflectedFieldConnectorFieldName);
-			Assert.AreEqual(_REFLECTED_CONNECTOR_IDENTIFIER_COLUMN_NAME, viewFieldInfo.ReflectedConnectorIdentifierColumnName);
-			Assert.AreEqual(_ENABLE_DATA_GRID, viewFieldInfo.EnableDataGrid);
-			Assert.AreEqual(_IS_VIRTUAL_ASSOCIATIVE_ARTIFACT_TYPE, viewFieldInfo.IsVirtualAssociativeArtifactType);
+			viewFieldInfo.FieldArtifactId.Should().Be(_ARTIFACT_ID);
+			viewFieldInfo.AvfId.Should().Be(_ARTIFACT_VIEW_FIELD_ID);
+			viewFieldInfo.Category.Should().Be(_CATEGORY_CONVERTED);
+			viewFieldInfo.DisplayName.Should().Be(_DISPLAY_NAME);
+			viewFieldInfo.AvfColumnName.Should().Be(_ARTIFACT_VIEW_FIELD_COLUMN_NAME);
+			viewFieldInfo.AvfHeaderName.Should().Be(_ARTIFACT_VIEW_FIELD_HEADER_NAME);
+			viewFieldInfo.AllowFieldName.Should().Be(_ALLOW_FIELD_NAME);
+			viewFieldInfo.ColumnSource.Should().Be(_COLUMN_SOURCE_TYPE_CONVERTED);
+			viewFieldInfo.DataSource.Should().Be(_DATA_SOURCE);
+			viewFieldInfo.SourceFieldName.Should().Be(_SOURCE_FIELD_NAME);
+			viewFieldInfo.SourceFieldArtifactTypeID.Should().Be(_SOURCE_FIELD_ARTIFACT_TYPE_ID);
+			viewFieldInfo.SourceFieldArtifactID.Should().Be(_SOURCE_FIELD_ARTIFACT_ID);
+			viewFieldInfo.ConnectorFieldArtifactID.Should().Be(_CONNECTOR_FIELD_ARTIFACT_ID);
+			viewFieldInfo.SourceFieldArtifactTypeTableName.Should().Be(_SOURCE_FIELD_ARTIFACT_TYPE_TABLE_NAME);
+			viewFieldInfo.ConnectorFieldName.Should().Be(_CONNECTOR_FIELD_NAME);
+			viewFieldInfo.ConnectorFieldCategory.Should().Be(_CONNECTOR_FIELD_CATEGORY_CONVERTED);
+			viewFieldInfo.FieldType.Should().Be(_FIELD_TYPE_CONVERTED);
+			viewFieldInfo.IsLinked.Should().Be(_IS_LINKED);
+			viewFieldInfo.FieldCodeTypeID.Should().Be(_FIELD_CODE_TYPE_ID);
+			viewFieldInfo.ArtifactTypeID.Should().Be(_ARTIFACT_TYPE_ID);
+			viewFieldInfo.ArtifactTypeTableName.Should().Be(_ARTIFACT_TYPE_TABLE_NAME);
+			viewFieldInfo.FieldIsArtifactBaseField.Should().Be(_FIELD_IS_ARTIFACT_BASE_FIELD);
+			viewFieldInfo.FormatString.Should().Be(_FORMAT_STRING);
+			viewFieldInfo.IsUnicodeEnabled.Should().Be(_IS_UNICODE_ENABLED);
+			viewFieldInfo.AllowHtml.Should().Be(_ALLOW_HTML);
+			viewFieldInfo.ParentFileFieldArtifactID.Should().Be(_PARENT_FILE_FIELD_ARTIFACT_ID);
+			viewFieldInfo.ParentFileFieldDisplayName.Should().Be(_PARENT_FILE_FIELD_DISPLAY_NAME);
+			viewFieldInfo.AssociativeArtifactTypeID.Should().Be(_ASSOCIATIVE_ARTIFACT_TYPE_ID);
+			viewFieldInfo.RelationalTableName.Should().Be(_RELATIONAL_TABLE_NAME);
+			viewFieldInfo.RelationalTableColumnName.Should().Be(_RELATIONAL_TABLE_COLUMN_NAME);
+			viewFieldInfo.RelationalTableColumnName2.Should().Be(_RELATIONAL_TABLE_COLUMN_NAME_2);
+			viewFieldInfo.ParentReflectionType.Should().Be(_PARENT_REFLECTION_TYPE_CONVERTED);
+			viewFieldInfo.ReflectedFieldArtifactTypeTableName.Should().Be(_REFLECTED_FIELD_ARTIFACT_TYPE_TABLE_NAME);
+			viewFieldInfo.ReflectedFieldIdentifierColumnName.Should().Be(_REFLECTED_FIELD_IDENTIFIER_COLUMN_NAME);
+			viewFieldInfo.ReflectedFieldConnectorFieldName.Should().Be(_REFLECTED_FIELD_CONNECTOR_FIELD_NAME);
+			viewFieldInfo.ReflectedConnectorIdentifierColumnName.Should().Be(_REFLECTED_CONNECTOR_IDENTIFIER_COLUMN_NAME);
+			viewFieldInfo.EnableDataGrid.Should().Be(_ENABLE_DATA_GRID);
+			viewFieldInfo.IsVirtualAssociativeArtifactType.Should().Be(_IS_VIRTUAL_ASSOCIATIVE_ARTIFACT_TYPE);
 		}
 
 		private static void ValidateFileResponse(DataRowCollection result)
 		{
-			Assert.AreEqual(_DOCUMENT_ARTIFACT_ID, result[0]["DocumentArtifactID"]);
-			Assert.AreEqual(_FILENAME, result[0]["Filename"]);
-			Assert.AreEqual(_GUID, result[0]["Guid"]);
-			Assert.AreEqual(_IDENTIFIER, result[0]["Identifier"]);
-			Assert.AreEqual(_LOCATION, result[0]["Location"]);
-			Assert.AreEqual(_ORDER, result[0]["Order"]);
-			Assert.AreEqual(_ROTATION, result[0]["Rotation"]);
-			Assert.AreEqual(_TYPE, result[0]["Type"]);
-			Assert.AreEqual(_IN_REPOSITORY, result[0]["InRepository"]);
-			Assert.AreEqual(_SIZE, result[0]["Size"]);
-			Assert.AreEqual(_DETAILS, result[0]["Details"]);
-			Assert.AreEqual(_BILLABLE, result[0]["Billable"]);
+			result[0]["DocumentArtifactID"].Should().Be(_DOCUMENT_ARTIFACT_ID);
+			result[0]["Filename"].Should().Be(_FILENAME);
+			result[0]["Guid"].Should().Be(_GUID);
+			result[0]["Identifier"].Should().Be(_IDENTIFIER);
+			result[0]["Location"].Should().Be(_LOCATION);
+			result[0]["Order"].Should().Be(_ORDER);
+			result[0]["Rotation"].Should().Be(_ROTATION);
+			result[0]["Type"].Should().Be(_TYPE);
+			result[0]["InRepository"].Should().Be(_IN_REPOSITORY);
+			result[0]["Size"].Should().Be(_SIZE);
+			result[0]["Details"].Should().Be(_DETAILS);
+			result[0]["Billable"].Should().Be(_BILLABLE);
 		}
 	}
 }

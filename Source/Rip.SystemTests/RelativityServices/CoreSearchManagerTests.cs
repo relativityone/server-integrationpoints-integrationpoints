@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Data.UtilityDTO;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories;
@@ -25,7 +26,6 @@ using Relativity.Services.User;
 using Relativity.Services.View;
 using FieldCategory = Relativity.Services.Objects.DataContracts.FieldCategory;
 using FieldRef = Relativity.Services.Field.FieldRef;
-using IFileRepository = kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories.IFileRepository;
 using IViewManager = Relativity.Services.View.IViewManager;
 
 namespace Rip.SystemTests.RelativityServices

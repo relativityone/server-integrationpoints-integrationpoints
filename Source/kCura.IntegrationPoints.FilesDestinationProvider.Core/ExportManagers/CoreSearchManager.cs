@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.Linq;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Extensions;
+using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Utilities;
@@ -37,7 +38,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 			int[] documentIDs = CommaSeparatedNumbersToArrayConverter
 				.ConvertToArray(documentArtifactIDs);
 			return _fileRepository
-				.GetNativesForSearchAsync(caseContextArtifactID, documentIDs)
+				.GetNativesForSearch(caseContextArtifactID, documentIDs)
 				.ToDataSet();
 		}
 
@@ -47,7 +48,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 			int[] documentIDs = CommaSeparatedNumbersToArrayConverter
 				.ConvertToArray(documentArtifactIDs);
 			return _fileRepository
-				.GetNativesForProductionAsync(caseContextArtifactID, productionArtifactID, documentIDs)
+				.GetNativesForProduction(caseContextArtifactID, productionArtifactID, documentIDs)
 				.ToDataSet();
 		}
 
@@ -65,21 +66,21 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 			int productionArtifactID)
 		{
 			return _fileRepository
-				.GetImagesForProductionDocumentsAsync(caseContextArtifactID, productionArtifactID, documentArtifactIDs)
+				.GetImagesForProductionDocuments(caseContextArtifactID, productionArtifactID, documentArtifactIDs)
 				.ToDataSet();
 		}
 
 		public DataSet RetrieveImagesForDocuments(int caseContextArtifactID, int[] documentArtifactIDs)
 		{
 			return _fileRepository
-				.GetImagesForDocumentsAsync(caseContextArtifactID, documentArtifactIDs)
+				.GetImagesForDocuments(caseContextArtifactID, documentArtifactIDs)
 				.ToDataSet();
 		}
 
 		public DataSet RetrieveProducedImagesForDocument(int caseContextArtifactID, int documentArtifactID)
 		{
 			return _fileRepository
-				.GetProducedImagesForDocumentAsync(caseContextArtifactID, documentArtifactID)
+				.GetProducedImagesForDocument(caseContextArtifactID, documentArtifactID)
 				.ToDataSet();
 		}
 
@@ -89,7 +90,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 			int[] documentArtifactIDs)
 		{
 			return _fileRepository
-				.GetImagesForExportAsync(caseContextArtifactID, productionArtifactIDs, documentArtifactIDs)
+				.GetImagesForExport(caseContextArtifactID, productionArtifactIDs, documentArtifactIDs)
 				.ToDataSet();
 		}
 

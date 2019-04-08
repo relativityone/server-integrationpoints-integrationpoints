@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
@@ -19,6 +20,7 @@ using Relativity;
 using Relativity.API;
 using Relativity.Core;
 using Relativity.Core.Api.Shared.Manager.Export;
+using Relativity.Services.Interfaces.File.Models;
 using DataView = kCura.Data.DataView;
 using ExportSettings = kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportSettings;
 
@@ -83,14 +85,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 				Arg.Any<int[]>(), _START_AT).Returns(exportJobInfo);
 
 
-			var queryFieldLookupRepository = Substitute.For<IQueryFieldLookupRepository>();
+			IQueryFieldLookupRepository queryFieldLookupRepository = Substitute.For<IQueryFieldLookupRepository>();
 			var viewFieldInfo = new ViewFieldInfo("", "", FieldTypeHelper.FieldType.Empty);
 			queryFieldLookupRepository.GetFieldByArtifactId(_FIELD_IDENTIFIER).Returns(viewFieldInfo);
 			_sourceRepositoryFactory.GetQueryFieldLookupRepository(_SOURCE_WORKSPACE_ARTIFACT_ID).Returns(queryFieldLookupRepository);
 
 			_fileRepository = Substitute.For<IFileRepository>();
-			_sourceRepositoryFactory.GetFileRepository(_SOURCE_WORKSPACE_ARTIFACT_ID).Returns(_fileRepository);
-			}
+			_sourceRepositoryFactory.GetFileRepository().Returns(_fileRepository);
+		}
 
 
 		#region "Tests"
@@ -104,7 +106,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 			_instance = new ImageExporterService(_exporter, _relativityObjectManager, _sourceRepositoryFactory, _targetRepositoryFactory,
 				_jobStopManager, _helper, _baseServiceContextProvider, _mappedFields, _START_AT, config, _SEARCH_ARTIFACT_ID, settings: null);
 
-			var transferConfiguration = Substitute.For<IExporterTransferConfiguration>();
+			IExporterTransferConfiguration transferConfiguration = Substitute.For<IExporterTransferConfiguration>();
 
 			// Act
 			IDataTransferContext actual = _instance.GetDataTransferContext(transferConfiguration);
@@ -127,9 +129,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 
 			_exporter.RetrieveResults(Arg.Any<Guid>(), Arg.Any<int[]>(), Arg.Any<int>()).Returns(PrepareRetrievedData(documentArtifactId));
 
-			string imageIdentifier = "AZIPPER_0007293";
-			_fileRepository.RetrieveAllImagesForDocuments(documentArtifactId).Returns(
-				CreateDocumentImageDataView(SourceConfiguration.ExportType.SavedSearch, imageIdentifier));
+			_fileRepository
+				.GetImagesForDocuments(
+					_SOURCE_WORKSPACE_ARTIFACT_ID, 
+					documentIDs: new [] { documentArtifactId })
+				.Returns(CreateDocumentImageResponses());
 
 			_instance = new ImageExporterService(_exporter, _relativityObjectManager, _sourceRepositoryFactory, _targetRepositoryFactory,
 				_jobStopManager, _helper, _baseServiceContextProvider, _mappedFields, _START_AT, config, _SEARCH_ARTIFACT_ID, _settings);
@@ -160,9 +164,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 
 			_exporter.RetrieveResults(Arg.Any<Guid>(), Arg.Any<int[]>(), Arg.Any<int>()).Returns(PrepareRetrievedData(documentArtifactId));
 
-			string imageIdentifier = "AZIPPER_0007293";
-			_fileRepository.RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSet(productionArtifactId, documentArtifactId).Returns(
-				CreateDocumentImageDataView(SourceConfiguration.ExportType.ProductionSet, imageIdentifier));
+			_fileRepository
+				.GetImagesForProductionDocuments(
+					_SOURCE_WORKSPACE_ARTIFACT_ID, 
+					productionArtifactId, 
+					documentIDs: new []{ documentArtifactId })
+				.Returns(CreateProductionDocumentImageResponses());
 
 			_instance = new ImageExporterService(_exporter, _relativityObjectManager, _sourceRepositoryFactory, _targetRepositoryFactory,
 				_jobStopManager, _helper, _baseServiceContextProvider, _mappedFields, _START_AT, config, _SEARCH_ARTIFACT_ID, _settings);
@@ -183,7 +190,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 			// Arrange
 			const int productionArtifactId = 10010;
 			const int documentArtifactId = 10000;
-			const string imageIdentifier = "AZIPPER_0007293";
 
 			string config = GetConfig(SourceConfiguration.ExportType.ProductionSet, productionArtifactId);
 
@@ -195,11 +201,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 
 			_exporter.RetrieveResults(Arg.Any<Guid>(), Arg.Any<int[]>(), Arg.Any<int>()).Returns(PrepareRetrievedData(documentArtifactId));
 			
-			_fileRepository.RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSet(productionArtifactId, documentArtifactId).Returns(info => {
-				DataView dataView = CreateDocumentImageDataView(SourceConfiguration.ExportType.ProductionSet, imageIdentifier);
-				dataView.Table.Rows[0]["Location"] = null;
-				return dataView;
-			});
+			_fileRepository.GetImagesForProductionDocuments(
+					_SOURCE_WORKSPACE_ARTIFACT_ID, 
+					productionArtifactId, 
+					documentIDs: new []{ documentArtifactId })
+				.Returns(info =>
+				{
+					ProductionDocumentImageResponse[] responses = CreateProductionDocumentImageResponses();
+					responses.First().Location = null;
+					return responses;
+				});
 
 			_instance = new ImageExporterService(_exporter, _relativityObjectManager, _sourceRepositoryFactory, _targetRepositoryFactory,
 				_jobStopManager, _helper, _baseServiceContextProvider, _mappedFields, _START_AT, config, _SEARCH_ARTIFACT_ID, settings);
@@ -217,13 +228,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 		#endregion
 
 		#region "Helpers"
-
-		//private void MockRetrievedViewFieldInfoInExporterServiceBaseConstructor(ViewFieldInfo viewFieldInfo)
-		//{
-		//    var queryFieldLookupRepository = Substitute.For<IQueryFieldLookupRepository>();
-		//    queryFieldLookupRepository.GetFieldByArtifactId(_FIELD_IDENTIFIER).Returns(viewFieldInfo);
-		//    _sourceRepositoryFactory.GetQueryFieldLookupRepository(_SOURCE_WORKSPACE_ARTIFACT_ID).Returns(queryFieldLookupRepository);
-		//}
 
 		private string GetConfig(SourceConfiguration.ExportType exportType, int sourceProductionId = 0)
 		{
@@ -246,23 +250,28 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 			return retrievedData;
 		}
 
-		private DataView CreateDocumentImageDataView(SourceConfiguration.ExportType exportType, string identifier)
+		private DocumentImageResponse[] CreateDocumentImageResponses()
 		{
-			var dataTable = new DataTable();
+			return new[]
+			{
+				new DocumentImageResponse
+				{
+					Identifier = "AZIPPER_0007293",
+					Location = "\\somelocation"
+				}
+			};
+		}
 
-			string identifierColumn = null;
-			if (exportType == SourceConfiguration.ExportType.SavedSearch)
-				identifierColumn = "Identifier";
-			else
-				identifierColumn = "NativeIdentifier"; // for production
-
-			dataTable.Columns.Add(identifierColumn);
-			dataTable.Columns.Add("Location");
-			DataRow row = dataTable.NewRow();
-			row[identifierColumn] = "AZIPPER_0007293";
-			row["Location"] = "\\somelocation";
-			dataTable.Rows.Add(row);
-			return new DataView(dataTable);
+		private ProductionDocumentImageResponse[] CreateProductionDocumentImageResponses()
+		{
+			return new[]
+			{
+				new ProductionDocumentImageResponse
+				{
+					NativeIdentifier = "AZIPPER_0007293",
+					Location = "\\somelocation"
+				}
+			};
 		}
 
 		#endregion

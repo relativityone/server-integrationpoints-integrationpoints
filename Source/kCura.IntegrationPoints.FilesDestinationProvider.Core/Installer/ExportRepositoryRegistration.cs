@@ -1,5 +1,7 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories.Implementations;
 using Relativity.API;
