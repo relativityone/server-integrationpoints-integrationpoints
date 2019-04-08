@@ -10,7 +10,7 @@ namespace Relativity.Sync.Configuration
 		int DestinationWorkspaceArtifactId { get; }
 		int SavedSearchArtifactId { get; }
 		int DestinationFolderArtifactId { get; }
-		string FieldsMap { get; }
+		string FieldMappings { get; }
 		int FolderPathSourceFieldArtifactId { get; }
 		ImportOverwriteMode ImportOverwriteMode { get; }
 		FieldOverlayBehavior FieldOverlayBehavior { get; }
