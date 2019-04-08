@@ -58,17 +58,27 @@ namespace Relativity.Sync.Executors.Validation
 		{
 			_logger.LogVerbose("Validating unique identifier");
 
-			ValidationMessage validationMessage = null;
 			bool isIdentifierMapped = mappedFields.Any(x => x.FieldMapType == FieldMapType.Identifier &&
 													x.SourceField != null &&
 													x.SourceField.IsIdentifier);
 
 			if (!isIdentifierMapped)
 			{
-				validationMessage = new ValidationMessage("The unique identifier must be mapped.");
+				return new ValidationMessage("The unique identifier must be mapped.");
 			}
 
-			return validationMessage;
+			bool identifiersMatching = mappedFields.Any(x =>
+													x.SourceField != null &&
+													x.DestinationField != null &&
+													x.SourceField.IsIdentifier &&
+													!x.DestinationField.IsIdentifier);
+
+			if (!identifiersMatching)
+			{
+				return new ValidationMessage("Identifier must be mapped with another identifier.");
+			}
+
+			return null;
 		}
 
 		private ValidationMessage ValidateFieldOverlayBehavior(IValidationConfiguration configuration)
