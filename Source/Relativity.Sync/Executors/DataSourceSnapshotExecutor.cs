@@ -57,7 +57,7 @@ namespace Relativity.Sync.Executors
 			catch (Exception e)
 			{
 				_logger.LogError(e, "ExportAPI failed to initialize export.");
-				throw;
+				return ExecutionResult.Failure("ExportAPI failed to initialize export.", e);
 			}
 
 			//ExportInitializationResult provide list of fields with order they will be returned when retrieving metadata
@@ -78,7 +78,7 @@ namespace Relativity.Sync.Executors
 			{
 				Name = _RELATIVITY_NATIVE_TYPE_FIELD_NAME
 			};
-			if (configuration.DestinationFolderStructureBehavior == "Field")
+			if (configuration.DestinationFolderStructureBehavior == DestinationFolderStructureBehavior.ReadFromField)
 			{
 				_logger.LogVerbose("Including field {artifactId} used to retrieving destination folder structure.", configuration.FolderPathSourceFieldArtifactId);
 				yield return new FieldRef

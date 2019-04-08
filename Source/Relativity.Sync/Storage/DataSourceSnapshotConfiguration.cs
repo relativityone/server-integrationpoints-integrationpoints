@@ -25,7 +25,10 @@ namespace Relativity.Sync.Storage
 
 		public int DataSourceArtifactId => _cache.GetFieldValue<int>(DataSourceArtifactIdGuid);
 		public string FieldMappings => _cache.GetFieldValue<string>(FieldMappingsGuid);
-		public string DestinationFolderStructureBehavior => _cache.GetFieldValue<string>(DestinationFolderStructureBehaviorGuid);
+
+		public DestinationFolderStructureBehavior DestinationFolderStructureBehavior =>
+			(DestinationFolderStructureBehavior) Enum.Parse(typeof(DestinationFolderStructureBehavior), _cache.GetFieldValue<string>(DestinationFolderStructureBehaviorGuid));
+
 		public int FolderPathSourceFieldArtifactId => _cache.GetFieldValue<int>(FolderPathSourceFieldArtifactIdGuid);
 
 		public bool IsSnapshotCreated => !string.IsNullOrWhiteSpace(_cache.GetFieldValue<string>(SnapshotIdGuid));

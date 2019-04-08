@@ -14,7 +14,7 @@ namespace Relativity.Sync.Configuration
 		/// </summary>
 		string FieldMappings { get; }
 
-		string DestinationFolderStructureBehavior { get; }
+		DestinationFolderStructureBehavior DestinationFolderStructureBehavior { get; }
 
 		int FolderPathSourceFieldArtifactId { get; }
 

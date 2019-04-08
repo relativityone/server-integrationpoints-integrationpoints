@@ -16,8 +16,6 @@ namespace Relativity.Sync.Tests.System.Stubs
 		public int DataDestinationArtifactId { get; set; }
 		public int DataSourceArtifactId { get; set; }
 		public string FieldMappings { get; set; }
-		public string DestinationFolderStructureBehavior { get; set; }
-		public int FolderPathSourceFieldArtifactId { get; set; }
 		public bool IsSnapshotCreated { get; set; }
 
 		public async Task SetSnapshotDataAsync(Guid runId, long totalRecordsCount)

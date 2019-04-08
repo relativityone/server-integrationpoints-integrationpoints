@@ -15,7 +15,7 @@ using Relativity.Sync.Logging;
 namespace Relativity.Sync.Tests.Unit.Executors
 {
 	[TestFixture]
-	public sealed class DataSourceSnapshotExecutorTests
+	internal sealed class DataSourceSnapshotExecutorTests
 	{
 		private DataSourceSnapshotExecutor _instance;
 
@@ -121,7 +121,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			};
 			_objectManager.Setup(x => x.InitializeExportAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1)).ReturnsAsync(exportInitializationResults);
 
-			_configuration.Setup(x => x.DestinationFolderStructureBehavior).Returns("Field");
+			_configuration.Setup(x => x.DestinationFolderStructureBehavior).Returns(DestinationFolderStructureBehavior.ReadFromField);
 			_configuration.Setup(x => x.FolderPathSourceFieldArtifactId).Returns(folderPathSourceFieldId);
 
 			// ACT
@@ -138,9 +138,9 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		}
 
 		[Test]
-		[TestCase("None")]
-		[TestCase("Structure")]
-		public async Task ItShouldNotIncludeFolderPathSourceField(string destinationFolderStructureBehavior)
+		[TestCase(DestinationFolderStructureBehavior.None)]
+		[TestCase(DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure)]
+		public async Task ItShouldNotIncludeFolderPathSourceField(DestinationFolderStructureBehavior destinationFolderStructureBehavior)
 		{
 			const int folderPathSourceFieldId = 589632;
 
