@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoint.Tests.Core.Models;
+﻿using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Models.Constants.ExportToLoadFile;
 using kCura.IntegrationPoint.Tests.Core.Models.Constants.Shared;
 using kCura.IntegrationPoint.Tests.Core.Models.Shared;
@@ -8,15 +9,27 @@ using kCura.IntegrationPoints.UITests.NUnitExtensions;
 using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoints.UITests.Validation;
 using NUnit.Framework;
+using System;
+using System.Threading.Tasks;
+using kCura.IntegrationPoint.Tests.Core.Exceptions;
+using Constants = kCura.IntegrationPoint.Tests.Core.Constants;
 using IntegrationPointType = kCura.IntegrationPoint.Tests.Core.Models.IntegrationPointType;
 
 namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 {
 	[TestFixture]
 	[Category(TestCategory.EXPORT_TO_LOAD_FILE)]
-    public class FolderExportToLoadFileTests : ExportToLoadFileTests
+	public class FolderExportToLoadFileTests : ExportToLoadFileTests
 	{
 		private IntegrationPointsAction _integrationPointsAction;
+
+		private const string _VIEW_NAME = "RIP_TC_ELF_DIR_UI_TEST";
+
+		[OneTimeSetUp]
+		public async Task OneTimeSetup()
+		{
+			await CreateDocumentView();
+		}
 
 		[SetUp]
 		public void SetUp()
@@ -40,10 +53,10 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			// Step 2
 			model.SourceInformationModel.Source = ExportToLoadFileSourceConstants.FOLDER;
 			model.SourceInformationModel.Folder = "One";
-			model.SourceInformationModel.View = "Documents";
+			model.SourceInformationModel.View = _VIEW_NAME;
 			model.SourceInformationModel.StartAtRecord = 1;
 			model.SourceInformationModel.SelectAllFields = true;
-			
+
 			// Step 3
 			model.ExportDetails.LoadFile = true;
 			model.ExportDetails.ExportImages = true;
@@ -107,7 +120,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			// Step 2
 			model.SourceInformationModel.Source = ExportToLoadFileSourceConstants.FOLDER_AND_SUBFOLDERS;
 			model.SourceInformationModel.Folder = "One";
-			model.SourceInformationModel.View = "Documents";
+			model.SourceInformationModel.View = _VIEW_NAME;
 			model.SourceInformationModel.StartAtRecord = 5;
 			model.SourceInformationModel.SelectAllFields = true;
 
@@ -156,6 +169,27 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 
 			// Assert
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
+		}
+
+		private async Task CreateDocumentView()
+		{
+			int workspaceID = Context.GetWorkspaceId();
+
+			try
+			{
+				Guid[] viewFieldsGuids = { Guid.Parse(DocumentFieldGuids.ControlNumber) };
+				await View
+                    .CreateViewAsync(
+                        workspaceID, 
+                        _VIEW_NAME, 
+                        Constants.DOCUMENT_ARTIFACT_TYPE_ID,
+					    viewFieldsGuids)
+                    .ConfigureAwait(false);
+			}
+			catch (Exception ex)
+			{
+				throw new TestSetupException("Exception occured while creating document view", ex);
+			}
 		}
 	}
 }
