@@ -29,12 +29,12 @@ namespace Relativity.Sync.Executors.Validation
 		/// <summary>
 		/// Gets or sets the error code.
 		/// </summary>
-		public string ErrorCode { get; set; }
+		public string ErrorCode { get; }
 
 		/// <summary>
 		/// Gets or sets the short message.
 		/// </summary>
-		public string ShortMessage { get; set; }
+		public string ShortMessage { get; }
 
 		/// <inheritdoc />
 		public override string ToString()

@@ -48,7 +48,7 @@ namespace Relativity.Sync.Executors.Validation
 				ValidationMessage validateFieldOverlayBehavior = ValidateFieldOverlayBehavior(configuration);
 				allMessages.Add(validateFieldOverlayBehavior);
 
-				return new ValidationResult(allMessages);
+				return new ValidationResult(allMessages.ToArray());
 			}
 			catch (Exception ex)
 			{
