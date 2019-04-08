@@ -10,31 +10,32 @@ using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.Core.Provider
 {
-    public class ProviderUninstaller : IProviderUninstaller
+    public class RipProviderUninstaller : IRipProviderUninstaller
     {
         private readonly IAPILog _logger;
         private readonly ISourceProviderRepository _sourceProviderRepository;
         private readonly IRelativityObjectManager _objectManager;
-        private readonly IDBContext _dbContext;
+        private readonly IApplicationGuidFinder _applicationGuidFinder;
         private readonly DeleteIntegrationPoints _deleteIntegrationPoint;
 
-        public ProviderUninstaller(
+        public RipProviderUninstaller(
             IAPILog logger,
             ISourceProviderRepository sourceProviderRepository,
             IRelativityObjectManager objectManager,
-            IDBContext dbContext,
+            IApplicationGuidFinder applicationGuidFinder,
             DeleteIntegrationPoints deleteIntegrationPoint)
         {
             _logger = logger;
             _sourceProviderRepository = sourceProviderRepository;
             _objectManager = objectManager;
-            _dbContext = dbContext;
+            _applicationGuidFinder = applicationGuidFinder;
             _deleteIntegrationPoint = deleteIntegrationPoint;
         }
 
         public Task<Either<string, Unit>> UninstallProvidersAsync(int applicationID)
         {
-            return GetApplicationGuid(applicationID)
+            return _applicationGuidFinder
+                .GetApplicationGuid(applicationID)
                 .BindAsync(applicationGuid => UninstallProvidersAsync(applicationID, applicationGuid));
         }
 
@@ -56,11 +57,6 @@ namespace kCura.IntegrationPoints.Core.Provider
             }
 
             return Unit.Default;
-        }
-
-        private Either<string, Guid> GetApplicationGuid(int applicationID)
-        {
-            return new GetApplicationGuid(_dbContext).Execute(applicationID);
         }
 
         private void RemoveProviders(IEnumerable<SourceProvider> providersToBeRemoved)

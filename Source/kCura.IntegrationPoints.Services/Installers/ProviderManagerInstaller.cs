@@ -54,10 +54,26 @@ namespace kCura.IntegrationPoints.Services.Installers
                 })
             );
 
-            container.Register(Component.For<DeleteIntegrationPoints>().LifestyleTransient());
+            container.Register(Component
+                .For<DeleteIntegrationPoints>()
+                .LifestyleTransient()
+            );
+            container.Register(Component
+                .For<IApplicationGuidFinder>()
+                .ImplementedBy<ApplicationGuidFinder>()
+                .LifestyleTransient()
+            );
 
-            container.Register(Component.For<IProviderInstaller>().ImplementedBy<ProviderInstaller>().LifestyleTransient());
-            container.Register(Component.For<IProviderUninstaller>().ImplementedBy<ProviderUninstaller>().LifestyleTransient());
+            container.Register(Component
+                .For<IRipProviderInstaller>()
+                .ImplementedBy<RipProviderInstaller>()
+                .LifestyleTransient()
+            );
+            container.Register(Component
+                .For<IRipProviderUninstaller>()
+                .ImplementedBy<RipProviderUninstaller>()
+                .LifestyleTransient()
+            );
         }
     }
 }

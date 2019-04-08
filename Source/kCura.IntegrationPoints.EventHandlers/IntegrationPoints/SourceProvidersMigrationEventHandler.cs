@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
             _logger
             ?? (_logger = Helper.GetLoggerFactory().GetLogger().ForContext<SourceProvidersMigrationEventHandler>());
 
-        internal IProviderInstaller ProviderInstallerForTests { get; set; }
+        internal IRipProviderInstaller ProviderInstallerForTests { get; set; }
 
         public SourceProvidersMigrationEventHandler()
         { }
@@ -81,7 +81,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
         {
             private readonly List<SourceProvider> _sourceProviders;
 
-            public SourceProvidersMigration(List<SourceProvider> sourceProvidersToMigrate, IEHHelper helper, IProviderInstaller providerInstallerForTests)
+            public SourceProvidersMigration(List<SourceProvider> sourceProvidersToMigrate, IEHHelper helper, IRipProviderInstaller providerInstallerForTests)
             : base(providerInstallerForTests)
             {
                 _sourceProviders = sourceProvidersToMigrate;

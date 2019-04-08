@@ -132,7 +132,7 @@ namespace kCura.IntegrationPoints.Services
             {
                 using (IWindsorContainer container = GetDependenciesContainer(request.WorkspaceID))
                 {
-                    IProviderInstaller providerInstaller = container.Resolve<IProviderInstaller>();
+                    IRipProviderInstaller providerInstaller = container.Resolve<IRipProviderInstaller>();
                     Either<string, Unit> result = await providerInstaller
                         .InstallProvidersAsync(request.ProvidersToInstall.Select(x => x.ToSourceProvider()))
                         .ConfigureAwait(false);
@@ -174,7 +174,7 @@ namespace kCura.IntegrationPoints.Services
             {
                 using (IWindsorContainer container = GetDependenciesContainer(request.WorkspaceID))
                 {
-                    IProviderUninstaller providerUninstaller = container.Resolve<IProviderUninstaller>();
+                    IRipProviderUninstaller providerUninstaller = container.Resolve<IRipProviderUninstaller>();
                     Either<string, Unit> result = await providerUninstaller
                         .UninstallProvidersAsync(request.ApplicationID)
                         .ConfigureAwait(false);

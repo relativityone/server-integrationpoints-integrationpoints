@@ -11,35 +11,36 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ContractsSourceProvider = kCura.IntegrationPoints.Contracts.SourceProvider;
 
 namespace kCura.IntegrationPoints.Core.Provider
 {
-    public class ProviderInstaller : IProviderInstaller
+    public class RipProviderInstaller : IRipProviderInstaller
     {
         private const int _ADMIN_CASE_ID = -1;
 
         private readonly IAPILog _logger;
         private readonly ISourceProviderRepository _sourceProviderRepository;
         private readonly IRelativityObjectManager _objectManager;
-        private readonly IDBContext _dbContext;
+        private readonly IApplicationGuidFinder _applicationGuidFinder;
         private readonly IHelper _helper;
 
-        public ProviderInstaller(
+        public RipProviderInstaller(
             IAPILog logger,
             ISourceProviderRepository sourceProviderRepository,
             IRelativityObjectManager objectManager,
-            IDBContext dbContext,
+            IApplicationGuidFinder applicationGuidFinder,
             IHelper helper)
         {
             _logger = logger;
             _objectManager = objectManager;
-            _dbContext = dbContext;
+            _applicationGuidFinder = applicationGuidFinder;
             _helper = helper;
 
             _sourceProviderRepository = sourceProviderRepository;
         }
 
-        public async Task<Either<string, Unit>> InstallProvidersAsync(IEnumerable<IntegrationPoints.Contracts.SourceProvider> providersToInstall)
+        public async Task<Either<string, Unit>> InstallProvidersAsync(IEnumerable<ContractsSourceProvider> providersToInstall)
         {
             try
             {
@@ -54,7 +55,7 @@ namespace kCura.IntegrationPoints.Core.Provider
         }
 
         private async Task<Either<string, Unit>> InstallProvidersInternalAsync(
-            IEnumerable<IntegrationPoints.Contracts.SourceProvider> providersToInstall)
+            IEnumerable<ContractsSourceProvider> providersToInstall)
         {
             IProviderFactoryLifecycleStrategy strategy = CreateProviderFactoryLifecycleStrategy();
             if (strategy == null)
@@ -65,15 +66,15 @@ namespace kCura.IntegrationPoints.Core.Provider
             using (var vendor = new ProviderFactoryVendor(strategy))
             {
                 IDataProviderFactory dataProviderBuilder = new DataProviderBuilder(vendor);
-                return await InstallProvidersInternalAsync(dataProviderBuilder, providersToInstall);
+                return await InstallProvidersOneByOneAsync(dataProviderBuilder, providersToInstall).ConfigureAwait(false);
             }
         }
 
-        private async Task<Either<string, Unit>> InstallProvidersInternalAsync(
+        private async Task<Either<string, Unit>> InstallProvidersOneByOneAsync(
             IDataProviderFactory dataProviderFactory,
-            IEnumerable<IntegrationPoints.Contracts.SourceProvider> providersToInstall)
+            IEnumerable<ContractsSourceProvider> providersToInstall)
         {
-            foreach (IntegrationPoints.Contracts.SourceProvider provider in providersToInstall) // install one provider at a time
+            foreach (ContractsSourceProvider provider in providersToInstall)
             {
                 Either<string, Unit> installProviderResult = await InstallProviderAsync(dataProviderFactory, provider).ConfigureAwait(false);
                 if (installProviderResult.IsLeft)
@@ -89,8 +90,10 @@ namespace kCura.IntegrationPoints.Core.Provider
             try
             {
                 IDBContext adminCaseDbContext = _helper.GetDBContext(_ADMIN_CASE_ID);
-                IPluginProvider pluginProvider = new DefaultSourcePluginProvider(new GetApplicationBinaries(adminCaseDbContext));
-                var domainHelper = new DomainHelper(pluginProvider, _helper, new RelativityFeaturePathService());
+                var getAppBinaries = new GetApplicationBinaries(adminCaseDbContext);
+                IPluginProvider pluginProvider = new DefaultSourcePluginProvider(getAppBinaries);
+                var relativityFeaturePathService = new RelativityFeaturePathService();
+                var domainHelper = new DomainHelper(pluginProvider, _helper, relativityFeaturePathService);
                 var strategy = new AppDomainIsolatedFactoryLifecycleStrategy(domainHelper);
                 return strategy;
             }
@@ -103,14 +106,14 @@ namespace kCura.IntegrationPoints.Core.Provider
 
         private Task<Either<string, Unit>> InstallProviderAsync(
             IDataProviderFactory dataProviderFactory,
-            IntegrationPoints.Contracts.SourceProvider provider)
+            ContractsSourceProvider provider)
         {
-            Either<string, IntegrationPoints.Contracts.SourceProvider> sourceProviderWithApplicationGuid = UpdateApplicationGuidIfMissing(provider);
+            Either<string, ContractsSourceProvider> sourceProviderWithApplicationGuid = UpdateApplicationGuidIfMissing(provider);
 
             InstallSynchronizerForCoreOnly(provider.ApplicationGUID);
 
             return sourceProviderWithApplicationGuid
-                .Bind(x => ValidateProvider(dataProviderFactory, x))
+                .Bind(providerWithAppGuid => ValidateProvider(dataProviderFactory, providerWithAppGuid))
                 .BindAsync(AddOrUpdateProvider);
         }
 
@@ -133,16 +136,16 @@ namespace kCura.IntegrationPoints.Core.Provider
             }
         }
 
-        private Either<string, IntegrationPoints.Contracts.SourceProvider> ValidateProvider(
+        private Either<string, ContractsSourceProvider> ValidateProvider(
             IDataProviderFactory dataProviderFactory,
-            IntegrationPoints.Contracts.SourceProvider provider)
+            ContractsSourceProvider provider)
         {
             return TryLoadingProvider(dataProviderFactory, provider);
         }
 
-        private Either<string, IntegrationPoints.Contracts.SourceProvider> TryLoadingProvider(
+        private Either<string, ContractsSourceProvider> TryLoadingProvider(
             IDataProviderFactory dataProviderFactory,
-            IntegrationPoints.Contracts.SourceProvider provider)
+            ContractsSourceProvider provider)
         {
             try
             {
@@ -156,7 +159,7 @@ namespace kCura.IntegrationPoints.Core.Provider
             }
         }
 
-        private async Task<Either<string, Unit>> AddOrUpdateProvider(IntegrationPoints.Contracts.SourceProvider provider)
+        private async Task<Either<string, Unit>> AddOrUpdateProvider(ContractsSourceProvider provider)
         {
             IDictionary<Guid, SourceProvider> installedRdoProviderDict = await GetInstalledRdoProviders(provider).ConfigureAwait(false);
 
@@ -168,7 +171,7 @@ namespace kCura.IntegrationPoints.Core.Provider
             return AddProvider(provider);
         }
 
-        private async Task<IDictionary<Guid, SourceProvider>> GetInstalledRdoProviders(IntegrationPoints.Contracts.SourceProvider provider)
+        private async Task<IDictionary<Guid, SourceProvider>> GetInstalledRdoProviders(ContractsSourceProvider provider)
         {
             List<SourceProvider> installedRdoProviders = await _sourceProviderRepository
                 .GetSourceProviderRdoByApplicationIdentifierAsync(provider.ApplicationGUID)
@@ -179,7 +182,7 @@ namespace kCura.IntegrationPoints.Core.Provider
             return installedRdoProviderDict;
         }
 
-        private Either<string, Unit> UpdateExistingProvider(SourceProvider existingProviderDto, IntegrationPoints.Contracts.SourceProvider provider)
+        private Either<string, Unit> UpdateExistingProvider(SourceProvider existingProviderDto, ContractsSourceProvider provider)
         {
             existingProviderDto.Name = provider.Name;
             existingProviderDto.SourceConfigurationUrl = provider.Url;
@@ -199,7 +202,7 @@ namespace kCura.IntegrationPoints.Core.Provider
             }
         }
 
-        private Either<string, Unit> AddProvider(IntegrationPoints.Contracts.SourceProvider newProvider)
+        private Either<string, Unit> AddProvider(ContractsSourceProvider newProvider)
         {
             if (newProvider == null)
             {
@@ -228,27 +231,23 @@ namespace kCura.IntegrationPoints.Core.Provider
             }
         }
 
-        private Either<string, IntegrationPoints.Contracts.SourceProvider> UpdateApplicationGuidIfMissing(IntegrationPoints.Contracts.SourceProvider provider)
+        private Either<string, ContractsSourceProvider> UpdateApplicationGuidIfMissing(ContractsSourceProvider provider)
         {
             // when we migrate providers, we should already know which app does the provider belong to.
             if (provider.ApplicationGUID == Guid.Empty)
             {
-                return GetApplicationGuid(provider.ApplicationID)
+                return _applicationGuidFinder
+                    .GetApplicationGuid(provider.ApplicationID)
                     .Map(applicationGuid => UpdateApplicationGuid(provider, applicationGuid));
             }
             return provider;
         }
 
-        private IntegrationPoints.Contracts.SourceProvider UpdateApplicationGuid(
-            IntegrationPoints.Contracts.SourceProvider provider, Guid newApplicationGuid)
+        private ContractsSourceProvider UpdateApplicationGuid(
+            ContractsSourceProvider provider, Guid newApplicationGuid)
         {
             provider.ApplicationGUID = newApplicationGuid;
             return provider;
-        }
-
-        private Either<string, Guid> GetApplicationGuid(int applicationID)
-        {
-            return new GetApplicationGuid(_dbContext).Execute(applicationID);
         }
     }
 }

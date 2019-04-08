@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
     internal class SourceProvidersMigrationEventHandlerTests : SourceProvidersMigrationEventHandler
     {
         private List<Data.SourceProvider> _providersStub;
-        private Mock<IProviderInstaller> _providerInstallerMock;
+        private Mock<IRipProviderInstaller> _providerInstallerMock;
         private static readonly Mock<IErrorService> _errorServiceMock = new Mock<IErrorService>();
 
         public SourceProvidersMigrationEventHandlerTests() : base(_errorServiceMock.Object)
@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
         [OneTimeSetUp]
         public void Setup()
         {
-            _providerInstallerMock = new Mock<IProviderInstaller>();
+            _providerInstallerMock = new Mock<IRipProviderInstaller>();
             _providerInstallerMock.Setup(x => x.InstallProvidersAsync(It.IsAny<IEnumerable<SourceProvider>>()))
                 .Returns(Task.FromResult(Right<string, Unit>(Unit.Default)));
 

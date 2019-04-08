@@ -6,27 +6,27 @@ using System.Data.SqlClient;
 
 namespace kCura.IntegrationPoints.Core.Provider
 {
-    public class GetApplicationGuid
+    public class ApplicationGuidFinder : IApplicationGuidFinder
     {
         private readonly IDBContext _caseDBcontext;
 
-        public GetApplicationGuid(IDBContext caseDBcontext)
+        public ApplicationGuidFinder(IDBContext caseDBcontext)
         {
             _caseDBcontext = caseDBcontext;
         }
 
-        public Either<string, Guid> Execute(int applicationID)
+        public Either<string, Guid> GetApplicationGuid(int workspaceApplicationID)
         {
-            return GetApplicationGuidObjectFromDatabase(applicationID)
+            return GetApplicationGuidObjectFromDatabase(workspaceApplicationID)
                 .Bind(ConvertGuidObjectValueToGuid);
         }
 
-        private Either<string, object> GetApplicationGuidObjectFromDatabase(int applicationID)
+        private Either<string, object> GetApplicationGuidObjectFromDatabase(int workspaceApplicationID)
         {
             string sql = Data.Resources.Resource.GetApplicationGuid;
             var sqlParams = new List<SqlParameter>
             {
-                new SqlParameter("@ApplicationID", applicationID)
+                new SqlParameter("@ApplicationID", workspaceApplicationID)
             };
 
             try
@@ -35,14 +35,14 @@ namespace kCura.IntegrationPoints.Core.Provider
 
                 if (applicationGuidValueAsObject == null)
                 {
-                    return $"Application Guid is not available for given ApplicationID: {applicationID}";
+                    return $"Application Guid is not available for given ApplicationID: {workspaceApplicationID}";
                 }
 
                 return applicationGuidValueAsObject;
             }
             catch (Exception ex)
             {
-                return $"Exception occured while querying for Application Guid. ApplicationID: {applicationID}, Exception: {ex}";
+                return $"Exception occured while querying for Application Guid. ApplicationID: {workspaceApplicationID}, Exception: {ex}";
             }
         }
 

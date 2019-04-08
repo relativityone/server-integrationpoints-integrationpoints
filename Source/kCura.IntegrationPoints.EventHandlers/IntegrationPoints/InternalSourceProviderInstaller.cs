@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
     public abstract class InternalSourceProviderInstaller : IntegrationPointSourceProviderInstaller
     {
-        private readonly IProviderInstaller _providerInstaller;
+        private readonly IRipProviderInstaller _providerInstaller;
         private readonly Lazy<IAPILog> _logggerLazy;
 
         private IAPILog Logger => _logggerLazy.Value;
@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
             );
         }
 
-        protected InternalSourceProviderInstaller(IProviderInstaller providerInstaller) : this()
+        protected InternalSourceProviderInstaller(IRipProviderInstaller providerInstaller) : this()
         {
             _providerInstaller = providerInstaller;
         }
@@ -49,42 +49,42 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
         }
 
         private static Either<string, Unit> InstallProviders(
-            IProviderInstaller providerInstaller,
+            IRipProviderInstaller providerInstaller,
             IEnumerable<SourceProvider> sourceProviders)
         {
             return providerInstaller.InstallProvidersAsync(sourceProviders).GetAwaiter().GetResult();
         }
 
-        private Either<string, IProviderInstaller> GetProviderInstaller()
+        private Either<string, IRipProviderInstaller> GetProviderInstaller()
         {
             if (_providerInstaller != null)
             {
-                return Right<string, IProviderInstaller>(_providerInstaller);
+                return Right<string, IRipProviderInstaller>(_providerInstaller);
             }
 
             try
             {
-                IProviderInstaller providerInstaller = CreateProviderInstaller();
-                return Right<string, IProviderInstaller>(providerInstaller);
+                IRipProviderInstaller providerInstaller = CreateProviderInstaller();
+                return Right<string, IRipProviderInstaller>(providerInstaller);
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "Error occured while creating instance of {type}", nameof(IProviderInstaller));
-                return $"Error occured while creating instance of {nameof(IProviderInstaller)}. Exception: {ex}";
+                Logger.LogError(ex, "Error occured while creating instance of {type}", nameof(IRipProviderInstaller));
+                return $"Error occured while creating instance of {nameof(IRipProviderInstaller)}. Exception: {ex}";
             }
         }
 
-        private IProviderInstaller CreateProviderInstaller()
+        private IRipProviderInstaller CreateProviderInstaller()
         {
-            IDBContext workspaceDbContext = Helper.GetDBContext(Helper.GetActiveCaseID());
+            IApplicationGuidFinder applicationGuidFinder = CreateApplicationGuidFinder();
             IRelativityObjectManager objectManager = CreateObjectManager();
             var sourceProviderRepository = new SourceProviderRepository(objectManager);
 
-            return new ProviderInstaller(
+            return new RipProviderInstaller(
                 Logger,
                 sourceProviderRepository,
                 objectManager,
-                workspaceDbContext,
+                applicationGuidFinder,
                 Helper
             );
         }
@@ -93,6 +93,12 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
         {
             var objectManagerFactory = new RelativityObjectManagerFactory(Helper);
             return objectManagerFactory.CreateRelativityObjectManager(Helper.GetActiveCaseID());
+        }
+
+        private IApplicationGuidFinder CreateApplicationGuidFinder()
+        {
+            IDBContext workspaceDbContext = Helper.GetDBContext(Helper.GetActiveCaseID());
+            return new ApplicationGuidFinder(workspaceDbContext);
         }
     }
 }

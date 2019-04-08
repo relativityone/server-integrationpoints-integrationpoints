@@ -71,11 +71,12 @@
     <Compile Include="BatchStatusCommands\Implementations\TargetDocumentsTaggingManager.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TargetDocumentsTaggingManagerFactory.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TempTableReader.cs" />
-    <Compile Include="Provider\GetApplicationGuid.cs" />
-    <Compile Include="Provider\IProviderInstaller.cs" />
-    <Compile Include="Provider\IProviderUninstaller.cs" />
-    <Compile Include="Provider\ProviderInstaller.cs" />
-    <Compile Include="Provider\ProviderUninstaller.cs" />
+    <Compile Include="Provider\ApplicationGuidFinder.cs" />
+    <Compile Include="Provider\IApplicationGuidFinder.cs" />
+    <Compile Include="Provider\IRipProviderInstaller.cs" />
+    <Compile Include="Provider\IRipProviderUninstaller.cs" />
+    <Compile Include="Provider\RipProviderInstaller.cs" />
+    <Compile Include="Provider\RipProviderUninstaller.cs" />
     <Compile Include="Validation\IAgentValidator.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="ContextContainer.cs" />

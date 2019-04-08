@@ -4,7 +4,7 @@ using LanguageExt;
 
 namespace kCura.IntegrationPoints.Core.Provider
 {
-	public interface IProviderInstaller
+	public interface IRipProviderInstaller
 	{
 		Task<Either<string, Unit>> InstallProvidersAsync(IEnumerable<IntegrationPoints.Contracts.SourceProvider> providersToInstall);
 	}
