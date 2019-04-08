@@ -81,11 +81,14 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			});
 
 			_validationConfiguration = new Mock<IValidationConfiguration>();
-			_validationConfiguration.SetupGet(x => x.DestinationWorkspaceArtifactId).Returns(_TEST_DEST_WORKSPACE_ARTIFACT_ID);
-			_validationConfiguration.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(_TEST_SOURCE_WORKSPACE_ARTIFACT_ID);
+			_validationConfiguration.SetupGet(x => x.DestinationWorkspaceArtifactId).Returns(_TEST_DEST_WORKSPACE_ARTIFACT_ID).Verifiable();
+			_validationConfiguration.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(_TEST_SOURCE_WORKSPACE_ARTIFACT_ID).Verifiable();
 			_validationConfiguration.SetupGet(x => x.FieldsMap).Returns(_TEST_FIELDS_MAP).Verifiable();
 			_validationConfiguration.SetupGet(x => x.ImportOverwriteMode).Returns(ImportOverwriteMode.AppendOverlay);
 			_validationConfiguration.SetupGet(x => x.FieldOverlayBehavior).Returns(FieldOverlayBehavior.Default);
+
+			SetUpObjectManagerQuery(_TEST_SOURCE_WORKSPACE_ARTIFACT_ID, _TEST_SOURCE_FIELD_ARTIFACT_ID);
+			SetUpObjectManagerQuery(_TEST_DEST_WORKSPACE_ARTIFACT_ID, _TEST_DEST_FIELD_ARTIFACT_ID);
 
 			_instance = new FieldMappingsValidator(_sourceServiceFactoryForUser.Object, _destinationServiceFactoryForUser.Object, _serializer.Object, _syncLog.Object);
 		}
@@ -93,10 +96,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		[Test]
 		public async Task ValidateAsyncGoldFlowTest()
 		{
-			// Arrange
-			SetUpObjectManagerQuery(_TEST_SOURCE_WORKSPACE_ARTIFACT_ID, _TEST_SOURCE_FIELD_ARTIFACT_ID);
-			SetUpObjectManagerQuery(_TEST_DEST_WORKSPACE_ARTIFACT_ID, _TEST_DEST_FIELD_ARTIFACT_ID);
-
 			// Act
 			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
@@ -104,6 +103,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			Assert.IsTrue(actualResult.IsValid);
 
 			VerifyObjectManagerQueryRequest();
+			Mock.Verify(_validationConfiguration, _serializer);
 		}
 
 		[Test]
@@ -119,14 +119,13 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			Assert.IsFalse(actualResult.IsValid);
 			Assert.IsNotEmpty(actualResult.Messages);
 
-			Mock.Verify(_validationConfiguration, _serializer);
+			Mock.Verify(_serializer);
 		}
 
 		[Test]
 		public async Task ValidateAsyncDestinationFieldMissingTest()
 		{
 			// Arrange
-			SetUpObjectManagerQuery(_TEST_SOURCE_WORKSPACE_ARTIFACT_ID, _TEST_SOURCE_FIELD_ARTIFACT_ID);
 			SetUpObjectManagerQuery(_TEST_DEST_WORKSPACE_ARTIFACT_ID, 0);
 
 			// Act
@@ -140,6 +139,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			actualMessage.ShortMessage.Should().StartWith("Destination field(s) mapped");
 
 			VerifyObjectManagerQueryRequest();
+			Mock.Verify(_validationConfiguration, _serializer);
 		}
 
 		[Test]
@@ -147,7 +147,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		{
 			// Arrange
 			SetUpObjectManagerQuery(_TEST_SOURCE_WORKSPACE_ARTIFACT_ID, 0);
-			SetUpObjectManagerQuery(_TEST_DEST_WORKSPACE_ARTIFACT_ID, _TEST_DEST_FIELD_ARTIFACT_ID);
 
 			// Act
 			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
@@ -158,14 +157,13 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			actualResult.Messages.First().ShortMessage.Should().StartWith("Source field(s) mapped");
 
 			VerifyObjectManagerQueryRequest();
+			Mock.Verify(_validationConfiguration, _serializer);
 		}
 
 		[Test]
 		public async Task ValidateAsyncSourceObjectQueryThrowsExceptionTest()
 		{
 			// Arrange
-			SetUpObjectManagerQuery(_TEST_DEST_WORKSPACE_ARTIFACT_ID, _TEST_DEST_FIELD_ARTIFACT_ID);
-
 			_objectManager.Setup(x => x.QueryAsync(It.Is<int>(y => y == _TEST_SOURCE_WORKSPACE_ARTIFACT_ID), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>(),
 				It.IsAny<IProgress<ProgressReport>>())).ThrowsAsync(new Exception());
 
@@ -178,14 +176,13 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			actualResult.Messages.First().ShortMessage.Should().Be("Exception occurred during field mappings validation.");
 
 			VerifyObjectManagerQueryRequest();
+			Mock.Verify(_validationConfiguration, _serializer);
 		}
 
 		[Test]
 		public async Task ValidateAsyncDestinationObjectQueryThrowsExceptionTest()
 		{
 			// Arrange
-			SetUpObjectManagerQuery(_TEST_SOURCE_WORKSPACE_ARTIFACT_ID, _TEST_SOURCE_FIELD_ARTIFACT_ID);
-
 			_objectManager.Setup(x => x.QueryAsync(It.Is<int>(y => y == _TEST_DEST_WORKSPACE_ARTIFACT_ID), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>(),
 				It.IsAny<IProgress<ProgressReport>>())).ThrowsAsync(new Exception());
 
@@ -198,6 +195,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			actualResult.Messages.First().ShortMessage.Should().Be("Exception occurred during field mappings validation.");
 
 			VerifyObjectManagerQueryRequest();
+			Mock.Verify(_validationConfiguration, _serializer);
 		}
 
 		[Test]
@@ -205,9 +203,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		public async Task ValidateAsyncUniqueIdentifierInvalidTest(string testInvalidFieldMap, string expectedErrorMessage)
 		{
 			// Arrange
-			SetUpObjectManagerQuery(_TEST_SOURCE_WORKSPACE_ARTIFACT_ID, _TEST_SOURCE_FIELD_ARTIFACT_ID);
-			SetUpObjectManagerQuery(_TEST_DEST_WORKSPACE_ARTIFACT_ID, _TEST_DEST_FIELD_ARTIFACT_ID);
-
 			_validationConfiguration.SetupGet(x => x.FieldsMap).Returns(testInvalidFieldMap).Verifiable();
 
 			// Act
@@ -218,7 +213,60 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			Assert.IsNotEmpty(actualResult.Messages);
 			actualResult.Messages.First().ShortMessage.Should().Be(expectedErrorMessage);
 
+			VerifyObjectManagerQueryRequest();
 			Mock.Verify(_validationConfiguration, _serializer);
+		}
+
+		[Test]
+		public async Task ValidateAsyncFieldOverlayBehaviorInvalidTest()
+		{
+			// Arrange
+			_validationConfiguration.SetupGet(x => x.ImportOverwriteMode).Returns(ImportOverwriteMode.AppendOnly);
+			_validationConfiguration.SetupGet(x => x.FieldOverlayBehavior).Returns(FieldOverlayBehavior.Replace);
+
+			// Act
+			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+
+			// Assert
+			Assert.False(actualResult.IsValid);
+			Assert.IsNotEmpty(actualResult.Messages);
+			actualResult.Messages.First().ShortMessage.Should().Contain("overlay behavior");
+
+			VerifyObjectManagerQueryRequest();
+			Mock.Verify(_validationConfiguration, _serializer);
+		}
+
+		private void SetUpObjectManagerQuery(int testWorkspaceArtifactId, int testFieldArtifactId)
+		{
+			var queryResult = new QueryResult
+			{
+				Objects = new List<RelativityObject>
+				{
+					new RelativityObject
+					{
+						ArtifactID = testFieldArtifactId,
+					}
+				}
+			};
+			_objectManager.Setup(x => x.QueryAsync(It.Is<int>(y => y == testWorkspaceArtifactId), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>(),
+				It.IsAny<IProgress<ProgressReport>>())).ReturnsAsync(queryResult);
+		}
+
+		private void VerifyObjectManagerQueryRequest()
+		{
+			const int expectedFieldArtifactTypeId = 10;
+			const string expectedObjectTypeName = "Field";
+
+			string expectedDestQueryCondition = $"(('FieldArtifactTypeID' == {expectedFieldArtifactTypeId} AND 'ArtifactID' IN [{_TEST_DEST_FIELD_ARTIFACT_ID}]))";
+			string expectedSourceQueryCondition = $"(('FieldArtifactTypeID' == {expectedFieldArtifactTypeId} AND 'ArtifactID' IN [{_TEST_SOURCE_FIELD_ARTIFACT_ID}]))";
+
+			_objectManager.Verify(x => x.QueryAsync(It.Is<int>(y => y == _TEST_DEST_WORKSPACE_ARTIFACT_ID),
+				It.Is<QueryRequest>(y => y.ObjectType.Name == expectedObjectTypeName && y.Condition == expectedDestQueryCondition && y.IncludeNameInQueryResult == true),
+				It.Is<int>(y => y == 0), It.Is<int>(y => y == 1), It.Is<CancellationToken>(y => y == _cancellationToken), It.IsAny<IProgress<ProgressReport>>()));
+
+			_objectManager.Verify(x => x.QueryAsync(It.Is<int>(y => y == _TEST_SOURCE_WORKSPACE_ARTIFACT_ID),
+				It.Is<QueryRequest>(y => y.ObjectType.Name == expectedObjectTypeName && y.Condition == expectedSourceQueryCondition && y.IncludeNameInQueryResult == true),
+				It.Is<int>(y => y == 0), It.Is<int>(y => y == 1), It.Is<CancellationToken>(y => y == _cancellationToken), It.IsAny<IProgress<ProgressReport>>()));
 		}
 
 		private static IEnumerable<TestCaseData> _invalidUniqueIdentifiersFieldMap => new[]
@@ -254,59 +302,5 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		        ""fieldMapType"": ""Identifier""
 		    }]", "Identifier must be mapped with another identifier.").SetName($"{nameof(ValidateAsyncUniqueIdentifierInvalidTest)}_DestinationInvalid"),
 		};
-
-		[Test]
-		public async Task ValidateAsyncFieldOverlayBehaviorInvalidTest()
-		{
-			// Arrange
-			SetUpObjectManagerQuery(_TEST_SOURCE_WORKSPACE_ARTIFACT_ID, _TEST_SOURCE_FIELD_ARTIFACT_ID);
-			SetUpObjectManagerQuery(_TEST_DEST_WORKSPACE_ARTIFACT_ID, _TEST_DEST_FIELD_ARTIFACT_ID);
-
-			_validationConfiguration.SetupGet(x => x.ImportOverwriteMode).Returns(ImportOverwriteMode.AppendOnly);
-			_validationConfiguration.SetupGet(x => x.FieldOverlayBehavior).Returns(FieldOverlayBehavior.Replace);
-
-			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
-
-			// Assert
-			Assert.False(actualResult.IsValid);
-			Assert.IsNotEmpty(actualResult.Messages);
-			actualResult.Messages.First().ShortMessage.Should().Contain("overlay behavior");
-
-			VerifyObjectManagerQueryRequest();
-		}
-
-		private void SetUpObjectManagerQuery(int testWorkspaceArtifactId, int testFieldArtifactId)
-		{
-			var queryResult = new QueryResult
-			{
-				Objects = new List<RelativityObject>
-				{
-					new RelativityObject
-					{
-						ArtifactID = testFieldArtifactId,
-					}
-				}
-			};
-			_objectManager.Setup(x => x.QueryAsync(It.Is<int>(y => y == testWorkspaceArtifactId), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>(),
-				It.IsAny<IProgress<ProgressReport>>())).ReturnsAsync(queryResult);
-		}
-
-		private void VerifyObjectManagerQueryRequest()
-		{
-			const int expectedFieldArtifactTypeId = 10;
-			const string expectedObjectTypeName = "Field";
-
-			string expectedDestQueryCondition = $"(('FieldArtifactTypeID' == {expectedFieldArtifactTypeId} AND 'ArtifactID' IN [{_TEST_DEST_FIELD_ARTIFACT_ID}]))";
-			string expectedSourceQueryCondition = $"(('FieldArtifactTypeID' == {expectedFieldArtifactTypeId} AND 'ArtifactID' IN [{_TEST_SOURCE_FIELD_ARTIFACT_ID}]))";
-
-			_objectManager.Verify(x => x.QueryAsync(It.Is<int>(y => y == _TEST_DEST_WORKSPACE_ARTIFACT_ID),
-				It.Is<QueryRequest>(y => y.ObjectType.Name == expectedObjectTypeName && y.Condition == expectedDestQueryCondition && y.IncludeNameInQueryResult == true),
-				It.Is<int>(y => y == 0), It.Is<int>(y => y == 1), It.Is<CancellationToken>(y => y == _cancellationToken), It.IsAny<IProgress<ProgressReport>>()));
-
-			_objectManager.Verify(x => x.QueryAsync(It.Is<int>(y => y == _TEST_SOURCE_WORKSPACE_ARTIFACT_ID),
-				It.Is<QueryRequest>(y => y.ObjectType.Name == expectedObjectTypeName && y.Condition == expectedSourceQueryCondition && y.IncludeNameInQueryResult == true),
-				It.Is<int>(y => y == 0), It.Is<int>(y => y == 1), It.Is<CancellationToken>(y => y == _cancellationToken), It.IsAny<IProgress<ProgressReport>>()));
-		}
 	}
 }
