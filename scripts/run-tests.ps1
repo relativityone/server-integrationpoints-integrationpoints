@@ -18,6 +18,9 @@
 
 .PARAMETER logsDir
     logs directory
+
+.PARAMETER sutAddress
+    Hostname of the target Relativity instance
 #>
 
 [CmdletBinding()]

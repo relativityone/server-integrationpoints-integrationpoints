@@ -46,5 +46,15 @@ namespace Relativity.Sync.Telemetry
 				sink.Log(metric);
 			}
 		}
+
+		/// <inheritdoc />
+		public void CountOperation(string name, ExecutionStatus status)
+		{
+			foreach (ISyncMetricsSink sink in _sinks)
+			{
+				Metric metric = Metric.CountOperation(name, status, _correlationId.Value);
+				sink.Log(metric);
+			}
+		}
 	}
 }

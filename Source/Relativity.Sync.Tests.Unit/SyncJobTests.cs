@@ -35,13 +35,14 @@ namespace Relativity.Sync.Tests.Unit
 			};
 
 			_correlationId = new CorrelationId(_CORRELATION_ID);
-			_instance = new SyncJob(_pipeline, _executionContextFactory, _correlationId, new EmptyLogger());
+			_instance = new SyncJob(_pipeline, _executionContextFactory, _correlationId, new EmptyProgress<SyncJobState>(), new EmptyLogger());
 		}
 
-		[Test]
-		public async Task ItShouldExecuteJob()
+		[TestCase(NodeResultStatus.Succeeded)]
+		[TestCase(NodeResultStatus.SucceededWithErrors)]
+		public async Task ItShouldExecuteJob(NodeResultStatus nonErrorStatus)
 		{
-			_pipeline.ResultStatus = NodeResultStatus.Succeeded;
+			_pipeline.ResultStatus = nonErrorStatus;
 
 			// ACT
 			await _instance.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
@@ -66,7 +67,7 @@ namespace Relativity.Sync.Tests.Unit
 		public void ItShouldPassOperationCanceledException()
 		{
 			FailingNodeStub<OperationCanceledException> pipeline = new FailingNodeStub<OperationCanceledException>(_executionOptions);
-			SyncJob instance = new SyncJob(pipeline, _executionContextFactory, _correlationId, new EmptyLogger());
+			SyncJob instance = new SyncJob(pipeline, _executionContextFactory, _correlationId, new EmptyProgress<SyncJobState>(), new EmptyLogger());
 
 			// ACT
 			Func<Task> action = async () => await instance.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
@@ -79,7 +80,7 @@ namespace Relativity.Sync.Tests.Unit
 		public void ItShouldPassSyncException()
 		{
 			FailingNodeStub<SyncException> pipeline = new FailingNodeStub<SyncException>(_executionOptions);
-			SyncJob instance = new SyncJob(pipeline, _executionContextFactory, _correlationId, new EmptyLogger());
+			SyncJob instance = new SyncJob(pipeline, _executionContextFactory, _correlationId, new EmptyProgress<SyncJobState>(), new EmptyLogger());
 
 			// ACT
 			Func<Task> action = async () => await instance.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
@@ -92,7 +93,7 @@ namespace Relativity.Sync.Tests.Unit
 		public void ItShouldChangeExceptionToSyncException()
 		{
 			FailingNodeStub<IOException> pipeline = new FailingNodeStub<IOException>(_executionOptions);
-			SyncJob instance = new SyncJob(pipeline, _executionContextFactory, _correlationId, new EmptyLogger());
+			SyncJob instance = new SyncJob(pipeline, _executionContextFactory, _correlationId, new EmptyProgress<SyncJobState>(), new EmptyLogger());
 
 			// ACT
 			Func<Task> action = async () => await instance.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);

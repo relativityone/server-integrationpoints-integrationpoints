@@ -8,6 +8,7 @@ nuget Relativity.OAuth2Client 1.0.27
 nuget Relativity.Platform.Keywords ~> 10.2
 nuget Relativity.Services.Interfaces ~> 10.2
 nuget Relativity.Services.Interfaces.Private ~> 10.2
+nuget kCura.Apps.Common.Utils ~> 2.1.8
 nuget kCura.Relativity.Client ~> 10.2
 nuget Relativity.Kepler.Client ~> 1.0
 nuget Relativity.Telemetry.APM ~> 2019.1.0

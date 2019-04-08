@@ -5,6 +5,7 @@
 	/// </summary>
 	internal enum MetricType
 	{
-		TimedOperation
+		TimedOperation,
+		Counter
 	}
 }

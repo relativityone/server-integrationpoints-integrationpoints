@@ -402,7 +402,7 @@ namespace Relativity.Sync.Tests.Integration
 		}
 
 		[Test]
-		public void ItThrowsProperExceptionIfSourceWorkspaceNameQueryThrows()
+		public async Task ItReturnsFailedResultIfSourceWorkspaceNameQueryThrows()
 		{
 			const int sourceWorkspaceArtifactId = 1014853;
 			const int destinationWorkspaceArtifactId = 1014854;
@@ -428,11 +428,17 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<IProgress<ProgressReport>>())
 			).Throws<ServiceException>();
 
-			Assert.ThrowsAsync<ServiceException>(async () => await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false));
+			// ACT
+			ExecutionResult result = await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+
+			// ASSERT
+			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
+			Assert.IsNotNull(result.Exception);
+			Assert.IsInstanceOf<ServiceException>(result.Exception);
 		}
 
 		[Test]
-		public void ItThrowsProperExceptionIfSourceWorkspaceTagQueryThrows()
+		public async Task ItReturnsFailedResultIfSourceWorkspaceTagQueryThrows()
 		{
 			const int sourceWorkspaceArtifactId = 1014853;
 			const int destinationWorkspaceArtifactId = 1014854;
@@ -471,14 +477,19 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<IProgress<ProgressReport>>())
 			).Throws<ServiceException>();
 
-			RelativitySourceCaseTagRepositoryException thrownException = Assert.ThrowsAsync<RelativitySourceCaseTagRepositoryException>(
-				async () => await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false));
-			Assert.IsNotNull(thrownException.InnerException);
-			Assert.IsInstanceOf<ServiceException>(thrownException.InnerException);
+			// ACT
+			ExecutionResult result = await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+
+			// ASSERT
+			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
+			Assert.IsNotNull(result.Exception);
+			Assert.IsInstanceOf<RelativitySourceCaseTagRepositoryException>(result.Exception);
+			Assert.IsNotNull(result.Exception.InnerException);
+			Assert.IsInstanceOf<ServiceException>(result.Exception.InnerException);
 		}
 
 		[Test]
-		public void ItThrowsProperExceptionIfSourceWorkspaceTagCreationThrows()
+		public async Task ItReturnsFailedResultIfSourceWorkspaceTagCreationThrows()
 		{
 			const int sourceWorkspaceArtifactId = 1014853;
 			const int destinationWorkspaceArtifactId = 1014854;
@@ -522,14 +533,19 @@ namespace Relativity.Sync.Tests.Integration
 				It.Is<CreateRequest>(y => y.ObjectType.Guid.Equals(SourceCaseTagObjectTypeGuid)))
 			).Throws<ServiceException>();
 
-			RelativitySourceCaseTagRepositoryException thrownException = Assert.ThrowsAsync<RelativitySourceCaseTagRepositoryException>(
-				async () => await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false));
-			Assert.IsNotNull(thrownException.InnerException);
-			Assert.IsInstanceOf<ServiceException>(thrownException.InnerException);
+			// ACT
+			ExecutionResult result = await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
+			Assert.IsNotNull(result.Exception);
+			Assert.IsInstanceOf<RelativitySourceCaseTagRepositoryException>(result.Exception);
+			Assert.IsNotNull(result.Exception.InnerException);
+			Assert.IsInstanceOf<ServiceException>(result.Exception.InnerException);
 		}
 
 		[Test]
-		public void ItThrowsProperExceptionIfJobHistoryQueryThrows()
+		public async Task ItReturnsFailedResultIfJobHistoryQueryThrows()
 		{
 			const int sourceWorkspaceArtifactId = 1014853;
 			const int destinationWorkspaceArtifactId = 1014854;
@@ -584,11 +600,17 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<IProgress<ProgressReport>>()
 			)).Throws<ServiceException>();
 
-			Assert.ThrowsAsync<ServiceException>(async () => await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false));
+			// ACT
+			ExecutionResult result = await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+
+			// ASSERT
+			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
+			Assert.IsNotNull(result.Exception);
+			Assert.IsInstanceOf<ServiceException>(result.Exception);
 		}
 
 		[Test]
-		public void ItThrowsProperExceptionIfSourceJobTagCreationThrows()
+		public async Task ItReturnsFailedResultIfSourceJobTagCreationThrows()
 		{
 			const int sourceWorkspaceArtifactId = 1014853;
 			const int destinationWorkspaceArtifactId = 1014854;
@@ -649,14 +671,19 @@ namespace Relativity.Sync.Tests.Integration
 				It.Is<CreateRequest>(y => y.ObjectType.Guid.Equals(SourceJobTagObjectType))
 			)).Throws<ServiceException>();
 
-			RelativitySourceJobTagRepositoryException thrownException = Assert.ThrowsAsync<RelativitySourceJobTagRepositoryException>(
-				async () => await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false));
-			Assert.IsNotNull(thrownException.InnerException);
-			Assert.IsInstanceOf<ServiceException>(thrownException.InnerException);
+			// ACT
+			ExecutionResult result = await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+
+			// ASSERT
+			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
+			Assert.IsNotNull(result.Exception);
+			Assert.IsInstanceOf<RelativitySourceJobTagRepositoryException>(result.Exception);
+			Assert.IsNotNull(result.Exception.InnerException);
+			Assert.IsInstanceOf<ServiceException>(result.Exception.InnerException);
 		}
 
 		[Test]
-		public void ItThrowsProperExceptionIfDestinationWorkspaceDoesNotExist()
+		public async Task ItReturnsFailedResultIfDestinationWorkspaceDoesNotExist()
 		{
 			const int sourceWorkspaceArtifactId = 1014853;
 			const int destinationWorkspaceArtifactId = 1014853;
@@ -677,12 +704,19 @@ namespace Relativity.Sync.Tests.Integration
 					It.IsAny<IProgress<ProgressReport>>()))
 					.Returns(Task.FromResult(new QueryResult()));
 
-			SyncException thrownException = Assert.Throws<SyncException>(() => _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult());
-			Assert.IsTrue(thrownException.Message.Contains(destinationWorkspaceArtifactId.ToString(CultureInfo.InvariantCulture)));
+			// ACT
+			ExecutionResult result =
+				await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+
+			// ASSERT
+			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
+			Assert.IsNotNull(result.Exception);
+			Assert.IsInstanceOf<SyncException>(result.Exception);
+			Assert.IsTrue(result.Exception.Message.Contains(destinationWorkspaceArtifactId.ToString(CultureInfo.InvariantCulture)));
 		}
 
 		[Test]
-		public void ItThrowsProperExceptionIfSourceWorkspaceDoesNotExist()
+		public async Task ItReturnsFailedResultIfSourceWorkspaceDoesNotExist()
 		{
 			const int sourceWorkspaceArtifactId = 1014853;
 			const int destinationWorkspaceArtifactId = 1014853;
@@ -703,8 +737,14 @@ namespace Relativity.Sync.Tests.Integration
 					It.IsAny<IProgress<ProgressReport>>()))
 					.Returns(Task.FromResult(new QueryResult()));
 
-			SyncException thrownException = Assert.Throws<SyncException>(() => _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult());
-			Assert.IsTrue(thrownException.Message.Contains(sourceWorkspaceArtifactId.ToString(CultureInfo.InvariantCulture)));
+			// ACT
+			ExecutionResult result = await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+
+			// ASSERT
+			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
+			Assert.IsNotNull(result.Exception);
+			Assert.IsInstanceOf<SyncException>(result.Exception);
+			Assert.IsTrue(result.Exception.Message.Contains(sourceWorkspaceArtifactId.ToString(CultureInfo.InvariantCulture)));
 		}
 	}
 }

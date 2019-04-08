@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Banzai;
@@ -10,27 +12,24 @@ namespace Relativity.Sync
 		private readonly INode<SyncExecutionContext> _pipeline;
 		private readonly ISyncExecutionContextFactory _executionContextFactory;
 		private readonly CorrelationId _correlationId;
+		private readonly IProgress<SyncJobState> _progress;
 		private readonly ISyncLog _logger;
 
-		public SyncJob(INode<SyncExecutionContext> pipeline, ISyncExecutionContextFactory executionContextFactory, CorrelationId correlationId, ISyncLog logger)
+		public SyncJob(INode<SyncExecutionContext> pipeline, ISyncExecutionContextFactory executionContextFactory, CorrelationId correlationId, IProgress<SyncJobState> progress, ISyncLog logger)
 		{
 			_pipeline = pipeline;
 			_executionContextFactory = executionContextFactory;
 			_correlationId = correlationId;
+			_progress = progress;
 			_logger = logger;
 		}
 
 		public async Task ExecuteAsync(CancellationToken token)
 		{
-			await ExecuteAsync(new EmptyProgress<SyncJobState>(), token).ConfigureAwait(false);
-		}
-
-		public async Task ExecuteAsync(IProgress<SyncJobState> progress, CancellationToken token)
-		{
 			NodeResult executionResult;
 			try
 			{
-				IExecutionContext<SyncExecutionContext> executionContext = _executionContextFactory.Create(progress, token);
+				IExecutionContext<SyncExecutionContext> executionContext = _executionContextFactory.Create(_progress, token);
 				executionResult = await _pipeline.ExecuteAsync(executionContext).ConfigureAwait(false);
 			}
 			catch (OperationCanceledException e)
@@ -49,18 +48,17 @@ namespace Relativity.Sync
 				throw new SyncException("Error occured during Sync job execution. See inner exception for more details.", e, _correlationId.Value);
 			}
 
-			if (executionResult.Status != NodeResultStatus.Succeeded)
+			if (executionResult.Status != NodeResultStatus.Succeeded && executionResult.Status != NodeResultStatus.SucceededWithErrors)
 			{
-				throw new SyncException("Sync job failed. See inner exceptions for more details.", new AggregateException(executionResult.GetFailExceptions()), _correlationId.Value);
+				SyncExecutionContext subject = (SyncExecutionContext) executionResult.Subject;
+				IEnumerable<Exception> failingExceptions = subject.Results
+					.Where(r => r.Exception != null)
+					.Select(r => r.Exception);
+				throw new SyncException("Sync job failed. See inner exceptions for more details.", new AggregateException(failingExceptions), _correlationId.Value);
 			}
 		}
 
-		public async Task RetryAsync(CancellationToken token)
-		{
-			await RetryAsync(new EmptyProgress<SyncJobState>(), token).ConfigureAwait(false);
-		}
-
-		public Task RetryAsync(IProgress<SyncJobState> progress, CancellationToken token)
+		public Task RetryAsync(CancellationToken token)
 		{
 			throw new NotImplementedException();
 		}

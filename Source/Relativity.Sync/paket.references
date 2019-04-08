@@ -4,6 +4,7 @@ Relativity.Services.Interfaces
 Relativity.Services.Interfaces.Private
 Relativity.Kepler.Client
 Relativity.Telemetry.APM
+kCura.Apps.Common.Utils
 
 Microsoft.CodeAnalysis.FxCopAnalyzers
 CSharpGuidelineAnalyzer
@@ -13,3 +14,4 @@ Autofac
 Banzai
 Banzai.Autofac
 SexyProxy.Emit
+Newtonsoft.Json

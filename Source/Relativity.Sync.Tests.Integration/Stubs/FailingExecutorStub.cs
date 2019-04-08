@@ -7,9 +7,9 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 {
 	internal sealed class FailingExecutorStub<T> : IExecutor<T> where T : IConfiguration
 	{
-		public Task ExecuteAsync(T configuration, CancellationToken token)
+		public Task<ExecutionResult> ExecuteAsync(T configuration, CancellationToken token)
 		{
-			throw new InvalidOperationException();
+			return Task.FromResult(ExecutionResult.Failure(new Exception()));
 		}
 	}
 }
