@@ -82,15 +82,12 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 			Task.Run(async () => await SetupAsync()).Wait();
 
-			if (CreatingWorkspaceEnabled)
-			{
-				CaseContext = Container.Resolve<ICaseServiceContext>();
-				ObjectManager = CaseContext.RsapiService.RelativityObjectManager;
-				IntegrationPointRepository = Container.Resolve<IIntegrationPointRepository>();
+			CaseContext = Container.Resolve<ICaseServiceContext>();
+			ObjectManager = CaseContext.RsapiService.RelativityObjectManager;
+			IntegrationPointRepository = Container.Resolve<IIntegrationPointRepository>();
 
-				SourceProviders = GetSourceProviders();
-				RelativityDestinationProviderArtifactId = GetRelativityDestinationProviderArtifactId();
-			}
+			SourceProviders = GetSourceProviders();
+			RelativityDestinationProviderArtifactId = GetRelativityDestinationProviderArtifactId();
 		}
 
 		public override void SuiteTeardown()
@@ -355,7 +352,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		private IEnumerable<SourceProvider> GetSourceProviders()
 		{
 			var queryRequest = new QueryRequest();
-			return ObjectManager.Query<SourceProvider>(queryRequest);
+			List<SourceProvider> sourceProviders = ObjectManager.Query<SourceProvider>(queryRequest);
+			return sourceProviders;
 		}
 
 		private int GetRelativityDestinationProviderArtifactId()
