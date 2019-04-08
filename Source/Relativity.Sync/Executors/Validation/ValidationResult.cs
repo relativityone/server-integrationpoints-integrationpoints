@@ -7,6 +7,7 @@ namespace Relativity.Sync.Executors.Validation
 	/// <summary>
 	/// Represents validation result and aggregated messages
 	/// </summary>
+	[Serializable]
 	public sealed class ValidationResult
 	{
 		private readonly List<ValidationMessage> _messages = new List<ValidationMessage>();
