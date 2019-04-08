@@ -202,7 +202,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 
 		[Test]
 		[TestCaseSource(nameof(_invalidUniqueIdentifiersFieldMap))]
-		public async Task ValidateAsyncUniqueIdentifierSourceInvalidTest(string testInvalidFieldMap)
+		public async Task ValidateAsyncUniqueIdentifierInvalidTest(string testInvalidFieldMap, string expectedErrorMessage)
 		{
 			// Arrange
 			SetUpObjectManagerQuery(_TEST_SOURCE_WORKSPACE_ARTIFACT_ID, _TEST_SOURCE_FIELD_ARTIFACT_ID);
@@ -216,14 +216,14 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			// Assert
 			Assert.IsFalse(actualResult.IsValid);
 			Assert.IsNotEmpty(actualResult.Messages);
-			actualResult.Messages.First().ShortMessage.Should().Be("The unique identifier must be mapped.");
+			actualResult.Messages.First().ShortMessage.Should().Be(expectedErrorMessage);
 
 			Mock.Verify(_validationConfiguration, _serializer);
 		}
 
-		private static IEnumerable<string> _invalidUniqueIdentifiersFieldMap => new []
+		private static IEnumerable<TestCaseData> _invalidUniqueIdentifiersFieldMap => new[]
 		{
-			@"[{
+			new TestCaseData(@"[{
 		        ""sourceField"": {
 		            ""displayName"": ""Control Number [Object Identifier]"",
 		            ""isIdentifier"": false,
@@ -237,8 +237,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		            ""isRequired"": true
 		        },
 		        ""fieldMapType"": ""Identifier""
-		    }]",
-			@"[{
+		    }]", "The unique identifier must be mapped.").SetName($"{nameof(ValidateAsyncUniqueIdentifierInvalidTest)}_SourceInvalid"),
+			new TestCaseData(@"[{
 		        ""sourceField"": {
 		            ""displayName"": ""Control Number [Object Identifier]"",
 		            ""isIdentifier"": true,
@@ -252,7 +252,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		            ""isRequired"": true
 		        },
 		        ""fieldMapType"": ""Identifier""
-		    }]"
+		    }]", "Identifier must be mapped with another identifier.").SetName($"{nameof(ValidateAsyncUniqueIdentifierInvalidTest)}_DestinationInvalid"),
 		};
 
 		[Test]
