@@ -22,7 +22,7 @@ namespace Relativity.Sync.Executors
 			_logger = logger;
 		}
 
-		public async Task ExecuteAsync(IDataSourceSnapshotConfiguration configuration, CancellationToken token)
+		public async Task<ExecutionResult> ExecuteAsync(IDataSourceSnapshotConfiguration configuration, CancellationToken token)
 		{
 			_logger.LogVerbose("Initializing export in workpsace {workspaceId} with saved search {savedSearchId} and fields {fields}.", configuration.SourceWorkspaceArtifactId,
 				configuration.DataSourceArtifactId, configuration.FieldMappings);
@@ -72,6 +72,7 @@ namespace Relativity.Sync.Executors
 			//ExportInitializationResult provide list of fields with order they will be returned when retrieving metadata
 			//however, order is the same as order of fields in QueryRequest when they are provided explicitly
 			await configuration.SetSnapshotDataAsync(results.RunID, results.RecordCount).ConfigureAwait(false);
+			return ExecutionResult.Success();
 		}
 	}
 }
