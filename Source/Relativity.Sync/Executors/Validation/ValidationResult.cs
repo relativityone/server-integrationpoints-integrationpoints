@@ -31,7 +31,7 @@ namespace Relativity.Sync.Executors.Validation
 		/// <summary>
 		/// Validation result
 		/// </summary>
-		public bool IsValid { get; internal set; } = true;
+		public bool IsValid { get; set; } = true;
 
 		/// <summary>
 		/// Collection of validation messages
