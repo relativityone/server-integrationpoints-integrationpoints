@@ -125,7 +125,7 @@ namespace kCura.IntegrationPoints.Services
             };
 
             CheckPermissions(
-                nameof(GetDestinationProviders),
+                nameof(InstallProviderAsync),
                 request.WorkspaceID,
                 requiredPermissions);
             try
@@ -150,13 +150,7 @@ namespace kCura.IntegrationPoints.Services
                 throw CreateInternalServerErrorException();
             }
         }
-
-        private string GetAndLogErrorMessageForBottomEitherState([CallerMemberName] string callerName = "")
-        {
-            Logger.LogFatal("Unexpected state of Either");
-            return $"Unexpected error occured in {callerName}";
-        }
-
+        
         public async Task<UninstallProviderResponse> UninstallProviderAsync(UninstallProviderRequest request)
         {
             PermissionModel[] requiredPermissions =
@@ -167,7 +161,7 @@ namespace kCura.IntegrationPoints.Services
             };
 
             CheckPermissions(
-                nameof(GetDestinationProviders),
+                nameof(UninstallProviderAsync),
                 request.WorkspaceID,
                 requiredPermissions);
             try
@@ -191,6 +185,12 @@ namespace kCura.IntegrationPoints.Services
                 LogException(nameof(UninstallProviderAsync), e);
                 throw CreateInternalServerErrorException();
             }
+        }
+
+        private string GetAndLogErrorMessageForBottomEitherState([CallerMemberName] string callerName = "")
+        {
+            Logger.LogFatal("Unexpected state of Either");
+            return $"Unexpected error occured in {callerName}";
         }
     }
 }
