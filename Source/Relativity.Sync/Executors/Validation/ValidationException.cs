@@ -12,7 +12,7 @@ namespace Relativity.Sync.Executors.Validation
 		/// <summary>
 		/// Holds information about validation.
 		/// </summary>
-		public ValidationResult ValidationResult { get; }
+		public ValidationResult ValidationResult { get; } = new ValidationResult();
 
 		/// <inheritdoc />
 		public ValidationException()
@@ -50,6 +50,19 @@ namespace Relativity.Sync.Executors.Validation
 		/// <inheritdoc />
 		private ValidationException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
+			ValidationResult = (ValidationResult) info.GetValue(nameof(ValidationResult), typeof(ValidationResult));
+		}
+
+		/// <inheritdoc />
+		public override void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			if (info == null)
+			{
+				throw new ArgumentNullException(nameof(info));
+			}
+
+			info.AddValue(nameof(ValidationResult), ValidationResult);
+			base.GetObjectData(info, context);
 		}
 	}
 }

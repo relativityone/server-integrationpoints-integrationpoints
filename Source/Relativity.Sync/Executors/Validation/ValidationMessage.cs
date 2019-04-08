@@ -5,8 +5,16 @@ namespace Relativity.Sync.Executors.Validation
 	/// <summary>
 	/// Contains message from <see cref="IValidator"/>
 	/// </summary>
+	[Serializable]
 	public sealed class ValidationMessage
 	{
+		/// <summary>
+		/// Default constructor used for JSON serialization.
+		/// </summary>
+		public ValidationMessage()
+		{
+		}
+
 		/// <summary>
 		/// Creates instance of this class with short message.
 		/// </summary>
