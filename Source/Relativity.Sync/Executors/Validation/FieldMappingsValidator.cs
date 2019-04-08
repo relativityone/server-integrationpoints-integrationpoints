@@ -38,11 +38,15 @@ namespace Relativity.Sync.Executors.Validation
 				Task<ValidationMessage> validateDestinationFieldsTask = ValidateDestinationFields(configuration, fieldMaps, token);
 				Task<ValidationMessage> validateSourceFieldsTask = ValidateSourceFields(configuration, fieldMaps, token);
 
-				List<ValidationMessage> allMessages = new List<ValidationMessage>();
+				var allMessages = new List<ValidationMessage>();
 				ValidationMessage[] fieldMappingValidationMessages = await Task.WhenAll(validateDestinationFieldsTask, validateSourceFieldsTask).ConfigureAwait(false);
 				allMessages.AddRange(fieldMappingValidationMessages);
-				allMessages.Add(ValidateUniqueIdentifier(fieldMaps));
-				allMessages.Add(ValidateFieldOverlayBehavior(configuration));
+
+				ValidationMessage validateUniqueIdentifier = ValidateUniqueIdentifier(fieldMaps);
+				allMessages.Add(validateUniqueIdentifier);
+
+				ValidationMessage validateFieldOverlayBehavior = ValidateFieldOverlayBehavior(configuration);
+				allMessages.Add(validateFieldOverlayBehavior);
 
 				return new ValidationResult(allMessages);
 			}
