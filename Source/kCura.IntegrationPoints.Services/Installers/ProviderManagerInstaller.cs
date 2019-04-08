@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Services.Repositories;
 using kCura.IntegrationPoints.Services.Repositories.Implementations;
 using Relativity.API;
 using System.Collections.Generic;
+using kCura.IntegrationPoints.Core.Provider.Internals;
 
 namespace kCura.IntegrationPoints.Services.Installers
 {
@@ -63,7 +64,11 @@ namespace kCura.IntegrationPoints.Services.Installers
                 .ImplementedBy<ApplicationGuidFinder>()
                 .LifestyleTransient()
             );
-
+            container.Register(Component
+                .For<IDataProviderFactoryFactory>()
+                .ImplementedBy<DataProviderFactoryFactory>()
+                .LifestyleTransient()
+            );
             container.Register(Component
                 .For<IRipProviderInstaller>()
                 .ImplementedBy<RipProviderInstaller>()

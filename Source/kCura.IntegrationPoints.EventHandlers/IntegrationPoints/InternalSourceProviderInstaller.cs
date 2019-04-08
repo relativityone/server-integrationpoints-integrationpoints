@@ -1,5 +1,6 @@
 ﻿using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Core.Provider;
+using kCura.IntegrationPoints.Core.Provider.Internals;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
@@ -77,6 +78,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
         private IRipProviderInstaller CreateProviderInstaller()
         {
             IApplicationGuidFinder applicationGuidFinder = CreateApplicationGuidFinder();
+            IDataProviderFactoryFactory dataProviderFactoryFactory = CreateDataProviderFactoryFactory();
             IRelativityObjectManager objectManager = CreateObjectManager();
             var sourceProviderRepository = new SourceProviderRepository(objectManager);
 
@@ -85,6 +87,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
                 sourceProviderRepository,
                 objectManager,
                 applicationGuidFinder,
+                dataProviderFactoryFactory,
                 Helper
             );
         }
@@ -99,6 +102,11 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
         {
             IDBContext workspaceDbContext = Helper.GetDBContext(Helper.GetActiveCaseID());
             return new ApplicationGuidFinder(workspaceDbContext);
+        }
+
+        private IDataProviderFactoryFactory CreateDataProviderFactoryFactory()
+        {
+            return new DataProviderFactoryFactory(Logger, Helper);
         }
     }
 }

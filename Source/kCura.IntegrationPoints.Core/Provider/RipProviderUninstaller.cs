@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Core.Provider.Internals;
 
 namespace kCura.IntegrationPoints.Core.Provider
 {

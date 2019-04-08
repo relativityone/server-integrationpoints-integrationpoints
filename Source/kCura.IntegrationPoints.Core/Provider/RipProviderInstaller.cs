@@ -1,9 +1,8 @@
-﻿using kCura.IntegrationPoints.Core.Services.Domain;
+﻿using kCura.IntegrationPoints.Core.Provider.Internals;
+using kCura.IntegrationPoints.Core.Services.Domain;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain;
 using LanguageExt;
 using Newtonsoft.Json;
 using Relativity.API;
@@ -17,9 +16,8 @@ namespace kCura.IntegrationPoints.Core.Provider
 {
     public class RipProviderInstaller : IRipProviderInstaller
     {
-        private const int _ADMIN_CASE_ID = -1;
-
         private readonly IAPILog _logger;
+        private readonly IDataProviderFactoryFactory _dataProviderFactoryFactory;
         private readonly ISourceProviderRepository _sourceProviderRepository;
         private readonly IRelativityObjectManager _objectManager;
         private readonly IApplicationGuidFinder _applicationGuidFinder;
@@ -30,13 +28,15 @@ namespace kCura.IntegrationPoints.Core.Provider
             ISourceProviderRepository sourceProviderRepository,
             IRelativityObjectManager objectManager,
             IApplicationGuidFinder applicationGuidFinder,
+            IDataProviderFactoryFactory dataProviderFactoryFactory,
             IHelper helper)
         {
             _logger = logger;
-            _objectManager = objectManager;
-            _applicationGuidFinder = applicationGuidFinder;
             _helper = helper;
 
+            _objectManager = objectManager;
+            _applicationGuidFinder = applicationGuidFinder;
+            _dataProviderFactoryFactory = dataProviderFactoryFactory;
             _sourceProviderRepository = sourceProviderRepository;
         }
 
@@ -54,19 +54,22 @@ namespace kCura.IntegrationPoints.Core.Provider
             }
         }
 
-        private async Task<Either<string, Unit>> InstallProvidersInternalAsync(
+        private Task<Either<string, Unit>> InstallProvidersInternalAsync(
             IEnumerable<ContractsSourceProvider> providersToInstall)
         {
-            IProviderFactoryLifecycleStrategy strategy = CreateProviderFactoryLifecycleStrategy();
-            if (strategy == null)
-            {
-                return $"Cannot install source providers when {nameof(IProviderFactoryLifecycleStrategy)} is null";
-            }
+            return _dataProviderFactoryFactory
+                .CreateProviderFactoryVendor()
+                .BindAsync(providerFactoryVendor => InstallProvidersOneByOneAsync(providerFactoryVendor, providersToInstall));
+        }
 
-            using (var vendor = new ProviderFactoryVendor(strategy))
+        private async Task<Either<string, Unit>> InstallProvidersOneByOneAsync(
+            ProviderFactoryVendor providerFactoryVendor,
+            IEnumerable<ContractsSourceProvider> providersToInstall)
+        {
+            using (providerFactoryVendor)
             {
-                IDataProviderFactory dataProviderBuilder = new DataProviderBuilder(vendor);
-                return await InstallProvidersOneByOneAsync(dataProviderBuilder, providersToInstall).ConfigureAwait(false);
+                IDataProviderFactory dataProviderFactory = _dataProviderFactoryFactory.CreateDataProviderFactory(providerFactoryVendor);
+                return await InstallProvidersOneByOneAsync(dataProviderFactory, providersToInstall).ConfigureAwait(false);
             }
         }
 
@@ -83,25 +86,6 @@ namespace kCura.IntegrationPoints.Core.Provider
                 }
             }
             return Unit.Default;
-        }
-
-        private IProviderFactoryLifecycleStrategy CreateProviderFactoryLifecycleStrategy()
-        {
-            try
-            {
-                IDBContext adminCaseDbContext = _helper.GetDBContext(_ADMIN_CASE_ID);
-                var getAppBinaries = new GetApplicationBinaries(adminCaseDbContext);
-                IPluginProvider pluginProvider = new DefaultSourcePluginProvider(getAppBinaries);
-                var relativityFeaturePathService = new RelativityFeaturePathService();
-                var domainHelper = new DomainHelper(pluginProvider, _helper, relativityFeaturePathService);
-                var strategy = new AppDomainIsolatedFactoryLifecycleStrategy(domainHelper);
-                return strategy;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occured while creating instance of {type}", nameof(IProviderFactoryLifecycleStrategy));
-                return null;
-            }
         }
 
         private Task<Either<string, Unit>> InstallProviderAsync(

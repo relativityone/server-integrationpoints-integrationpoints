@@ -1,7 +1,7 @@
 ﻿using System;
 using LanguageExt;
 
-namespace kCura.IntegrationPoints.Core.Provider
+namespace kCura.IntegrationPoints.Core.Provider.Internals
 {
     public interface IApplicationGuidFinder
     {
