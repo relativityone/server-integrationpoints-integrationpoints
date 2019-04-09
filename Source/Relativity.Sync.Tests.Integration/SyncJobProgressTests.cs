@@ -7,14 +7,12 @@ namespace Relativity.Sync.Tests.Integration
 	[TestFixture]
 	public sealed class SyncJobProgressTests
 	{
-		private ContainerBuilder _containerBuilder;
-
 		[SetUp]
 		public void SetUp()
 		{
-			_containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
-			IntegrationTestsContainerBuilder.MockAllSteps(_containerBuilder);
-			IntegrationTestsContainerBuilder.MockReporting(_containerBuilder);
+			ContainerBuilder containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
+			IntegrationTestsContainerBuilder.MockAllSteps(containerBuilder);
+			IntegrationTestsContainerBuilder.MockReporting(containerBuilder);
 		}
 
 		[Test]
