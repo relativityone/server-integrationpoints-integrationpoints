@@ -39,7 +39,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_sourceJobTagService.Setup(x => x.CreateSourceJobTagAsync(It.IsAny<IDestinationWorkspaceTagsCreationConfiguration>(), It.IsAny<int>(), CancellationToken.None))
 				.ReturnsAsync(new RelativitySourceJobTag());
 
-			Mock<IDestinationWorkspaceTagsCreationConfiguration> configuration = new Mock<IDestinationWorkspaceTagsCreationConfiguration>();
+			var configuration = new Mock<IDestinationWorkspaceTagsCreationConfiguration>();
 
 			// act
 			await _sut.ExecuteAsync(configuration.Object, CancellationToken.None).ConfigureAwait(false);

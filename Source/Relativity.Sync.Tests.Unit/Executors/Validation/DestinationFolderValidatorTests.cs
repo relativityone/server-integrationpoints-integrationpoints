@@ -29,10 +29,10 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		{
 			_getAccessStatusAsyncResult = new FolderStatus();
 
-			Mock<IFolderManager> folderManagerMock = new Mock<IFolderManager>();
+			var folderManagerMock = new Mock<IFolderManager>();
 			folderManagerMock.Setup(fm => fm.GetAccessStatusAsync(_WORKSPACE_ARTIFACT_ID, _FOLDER_ARTIFACT_ID)).ReturnsAsync(_getAccessStatusAsyncResult);
 
-			Mock<IDestinationServiceFactoryForUser>  serviceFactoryMock = new Mock<IDestinationServiceFactoryForUser>();
+			var serviceFactoryMock = new Mock<IDestinationServiceFactoryForUser>();
 			serviceFactoryMock.Setup(sf => sf.CreateProxyAsync<IFolderManager>()).ReturnsAsync(folderManagerMock.Object);
 
 			_configurationMock = new Mock<IValidationConfiguration>();

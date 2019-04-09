@@ -63,8 +63,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		{
 			_cancellationToken = CancellationToken.None;
 
-			Mock<IDestinationServiceFactoryForUser> destinationServiceFactoryForUser = new Mock<IDestinationServiceFactoryForUser>();
-			Mock<ISourceServiceFactoryForUser> sourceServiceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
+			var destinationServiceFactoryForUser = new Mock<IDestinationServiceFactoryForUser>();
+			var sourceServiceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
 			_serializer = new Mock<ISerializer>();
 			_objectManager = new Mock<IObjectManager>();
 
@@ -107,7 +107,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		public async Task ValidateAsyncDeserializeThrowsExceptionTest()
 		{
 			// Arrange
-			_serializer.Setup(x => x.Deserialize<List<FieldMap>>(It.IsAny<string>())).Throws(new InvalidOperationException()).Verifiable();
+			_serializer.Setup(x => x.Deserialize<List<FieldMap>>(It.IsAny<string>())).Throws<InvalidOperationException>().Verifiable();
 
 			// Act
 			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);

@@ -29,7 +29,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			_serviceFactory = new Mock<ISourceServiceFactoryForUser>();
 			_workspaceNameValidatorMock = new Mock<IWorkspaceNameValidator>();
 
-			Mock<IWorkspaceNameQuery> workspaceNameQuery = new Mock<IWorkspaceNameQuery>();
+			var workspaceNameQuery = new Mock<IWorkspaceNameQuery>();
 			workspaceNameQuery.Setup(wnq => wnq.GetWorkspaceNameAsync(_serviceFactory.Object, _WORKSPACE_ARTIFACT_ID, CancellationToken.None)).ReturnsAsync(_WORKSPACE_NAME);
 
 			_configurationMock = new Mock<IValidationConfiguration>();

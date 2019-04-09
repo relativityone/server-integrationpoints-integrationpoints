@@ -34,7 +34,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			const int sourceWorkspaceArtifactId = 1;
 			const int destinationWorkspaceTagArtifactId = 2;
 			const int jobArtifactId = 3;
-			Mock<IObjectManager> objectManager = new Mock<IObjectManager>();
+			var objectManager = new Mock<IObjectManager>();
 			_serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(objectManager.Object);
 
 			// act
