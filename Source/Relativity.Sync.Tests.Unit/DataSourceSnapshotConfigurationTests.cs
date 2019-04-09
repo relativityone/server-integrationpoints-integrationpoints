@@ -3,7 +3,9 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
+using IConfiguration = Relativity.Sync.Storage.IConfiguration;
 
 namespace Relativity.Sync.Tests.Unit
 {
@@ -60,9 +62,9 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public void ItShouldRetrieveDestinationFolderStructureBehavior()
 		{
-			const string expectedValue = "structure";
+			DestinationFolderStructureBehavior expectedValue = DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure;
 
-			_cache.Setup(x => x.GetFieldValue<string>(DestinationFolderStructureBehaviorGuid)).Returns(expectedValue);
+			_cache.Setup(x => x.GetFieldValue<string>(DestinationFolderStructureBehaviorGuid)).Returns(expectedValue.ToString);
 
 			_instance.DestinationFolderStructureBehavior.Should().Be(expectedValue);
 		}

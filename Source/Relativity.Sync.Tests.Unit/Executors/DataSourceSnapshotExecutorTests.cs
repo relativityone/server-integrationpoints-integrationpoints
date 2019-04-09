@@ -54,9 +54,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_objectManager.Setup(x => x.InitializeExportAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1)).ReturnsAsync(exportInitializationResults);
 
 			// ACT
-			await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
+			result.Status.Should().Be(ExecutionStatus.Completed);
 			_objectManager.Verify(x => x.InitializeExportAsync(_WORKSPACE_ID, It.Is<QueryRequest>(qr => AssertQueryRequest(qr)), 1));
 			_configuration.Verify(x => x.SetSnapshotDataAsync(runId, totalRecords));
 		}
@@ -71,15 +72,16 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		}
 
 		[Test]
-		public void ItShouldFailWhenExportApiFails()
+		public async Task ItShouldFailWhenExportApiFails()
 		{
 			_objectManager.Setup(x => x.InitializeExportAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1)).Throws<InvalidOperationException>();
 
 			// ACT
-			Func<Task> action = async () => await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult executionResult = await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			action.Should().Throw<InvalidOperationException>();
+			executionResult.Status.Should().Be(ExecutionStatus.Failed);
+			executionResult.Exception.Should().BeOfType<InvalidOperationException>();
 		}
 
 		[Test]
