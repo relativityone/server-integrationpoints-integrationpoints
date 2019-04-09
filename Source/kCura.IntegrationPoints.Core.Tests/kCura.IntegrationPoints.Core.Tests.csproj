@@ -74,6 +74,7 @@
     <Compile Include="Monitoring\Instrumentation\ExternalServiceInstrumentationTests.cs" />
     <Compile Include="Monitoring\Instrumentation\ExternalServiceSimpleInstrumentationTests.cs" />
     <Compile Include="Monitoring\MessageSink\ExternalCalls\ExternalCallsSinkTests.cs" />
+    <Compile Include="Provider\RipProviderInstallerTests.cs" />
     <Compile Include="QueryOptions\JobHistoryQueryOptionsTests.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceJobRdoInitializerTests.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceRdoDocumentFieldTests.cs" />
@@ -401,6 +402,17 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="LanguageExt.Core">
+          <HintPath>..\..\packages\LanguageExt.Core\lib\net45\LanguageExt.Core.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Sodium">
           <HintPath>..\..\packages\libsodium-net\lib\Net40\Sodium.dll</HintPath>
           <Private>True</Private>
@@ -415,6 +427,15 @@
         <Reference Include="Microsoft.AspNet.Identity.Core">
           <HintPath>..\..\packages\Microsoft.AspNet.Identity.Core\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
           <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Microsoft.CSharp">
           <Paket>True</Paket>
         </Reference>
       </ItemGroup>
@@ -1362,6 +1383,20 @@
       <ItemGroup>
         <Reference Include="System.IdentityModel.Tokens.Jwt">
           <HintPath>..\..\packages\System.IdentityModel.Tokens.Jwt\lib\net45\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="mscorlib">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.ValueTuple">
+          <HintPath>..\..\packages\System.ValueTuple\lib\net461\System.ValueTuple.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

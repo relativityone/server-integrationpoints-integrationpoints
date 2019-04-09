@@ -1,6 +1,7 @@
 CSharpGuidelineAnalyzer
 kCura.Apps.Common.Utils
 kCura.Relativity.Client
+LanguageExt.Core
 Moq
 NSubstitute
 NUnit
