@@ -4,6 +4,7 @@ using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.Validation;
+using Relativity.Sync.Logging;
 
 namespace Relativity.Sync.Tests.Unit.Executors.Validation
 {
@@ -11,19 +12,13 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 	public class JobNameValidatorTests
 	{
 		private CancellationToken _cancellationToken;
-
-		private Mock<ISyncLog> _syncLog;
-
 		private JobNameValidator _instance;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_cancellationToken = CancellationToken.None;
-
-			_syncLog = new Mock<ISyncLog>();
-
-			_instance = new JobNameValidator(_syncLog.Object);
+			_instance = new JobNameValidator(new EmptyLogger());
 		}
 
 		[Test]

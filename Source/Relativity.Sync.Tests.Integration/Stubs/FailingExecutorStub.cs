@@ -9,7 +9,7 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 	{
 		public Task<ExecutionResult> ExecuteAsync(T configuration, CancellationToken token)
 		{
-			return Task.FromResult(ExecutionResult.Failure(new Exception()));
+			return Task.FromResult(ExecutionResult.Failure(new InvalidOperationException()));
 		}
 	}
 }

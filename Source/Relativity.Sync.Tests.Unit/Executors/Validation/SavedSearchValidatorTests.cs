@@ -120,7 +120,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		public async Task ValidateAsyncCreateProxyThrowsExceptionTest()
 		{
 			// Arrange
-			_sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ThrowsAsync(new Exception()).Verifiable();
+			_sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ThrowsAsync(new InvalidOperationException()).Verifiable();
 
 			// Act
 			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
@@ -141,7 +141,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			_sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object).Verifiable();
 
 			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>(), It.IsAny<IProgress<ProgressReport>>()))
-				.ThrowsAsync(new Exception());
+				.ThrowsAsync(new InvalidOperationException());
 
 			// Act
 			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);

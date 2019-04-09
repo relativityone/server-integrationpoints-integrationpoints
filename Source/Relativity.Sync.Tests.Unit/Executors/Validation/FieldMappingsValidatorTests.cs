@@ -13,6 +13,7 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Logging;
 
 namespace Relativity.Sync.Tests.Unit.Executors.Validation
 {
@@ -21,10 +22,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 	{
 		private CancellationToken _cancellationToken;
 
-		private Mock<IDestinationServiceFactoryForUser> _destinationServiceFactoryForUser;
-		private Mock<ISourceServiceFactoryForUser> _sourceServiceFactoryForUser;
 		private Mock<ISerializer> _serializer;
-		private Mock<ISyncLog> _syncLog;
 		private Mock<IObjectManager> _objectManager;
 
 		private Mock<IValidationConfiguration> _validationConfiguration;
@@ -65,14 +63,13 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		{
 			_cancellationToken = CancellationToken.None;
 
-			_destinationServiceFactoryForUser = new Mock<IDestinationServiceFactoryForUser>();
-			_sourceServiceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
+			Mock<IDestinationServiceFactoryForUser> destinationServiceFactoryForUser = new Mock<IDestinationServiceFactoryForUser>();
+			Mock<ISourceServiceFactoryForUser> sourceServiceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
 			_serializer = new Mock<ISerializer>();
-			_syncLog = new Mock<ISyncLog>();
 			_objectManager = new Mock<IObjectManager>();
 
-			_destinationServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
-			_sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
+			destinationServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
+			sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
 
 			_serializer.Setup(x => x.Deserialize<List<FieldMap>>(It.IsAny<string>())).Returns((string x) =>
 			{
@@ -90,7 +87,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			SetUpObjectManagerQuery(_TEST_SOURCE_WORKSPACE_ARTIFACT_ID, _TEST_SOURCE_FIELD_ARTIFACT_ID);
 			SetUpObjectManagerQuery(_TEST_DEST_WORKSPACE_ARTIFACT_ID, _TEST_DEST_FIELD_ARTIFACT_ID);
 
-			_instance = new FieldMappingsValidator(_sourceServiceFactoryForUser.Object, _destinationServiceFactoryForUser.Object, _serializer.Object, _syncLog.Object);
+			_instance = new FieldMappingsValidator(sourceServiceFactoryForUser.Object, destinationServiceFactoryForUser.Object, _serializer.Object, new EmptyLogger());
 		}
 
 		[Test]
@@ -110,7 +107,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		public async Task ValidateAsyncDeserializeThrowsExceptionTest()
 		{
 			// Arrange
-			_serializer.Setup(x => x.Deserialize<List<FieldMap>>(It.IsAny<string>())).Throws(new Exception()).Verifiable();
+			_serializer.Setup(x => x.Deserialize<List<FieldMap>>(It.IsAny<string>())).Throws(new InvalidOperationException()).Verifiable();
 
 			// Act
 			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
@@ -165,7 +162,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		{
 			// Arrange
 			_objectManager.Setup(x => x.QueryAsync(It.Is<int>(y => y == _TEST_SOURCE_WORKSPACE_ARTIFACT_ID), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>(),
-				It.IsAny<IProgress<ProgressReport>>())).ThrowsAsync(new Exception());
+				It.IsAny<IProgress<ProgressReport>>())).ThrowsAsync(new InvalidOperationException());
 
 			// Act
 			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
@@ -184,7 +181,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		{
 			// Arrange
 			_objectManager.Setup(x => x.QueryAsync(It.Is<int>(y => y == _TEST_DEST_WORKSPACE_ARTIFACT_ID), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>(),
-				It.IsAny<IProgress<ProgressReport>>())).ThrowsAsync(new Exception());
+				It.IsAny<IProgress<ProgressReport>>())).ThrowsAsync(new InvalidOperationException());
 
 			// Act
 			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
