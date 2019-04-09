@@ -79,7 +79,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			const string expected = "{}";
 			_cache.Setup(x => x.GetFieldValue<string>(FieldMappingsGuid)).Returns(expected);
-			_configuration.FieldsMap.Should().Be(expected);
+			_configuration.FieldMappings.Should().Be(expected);
 		}
 
 		[Test]

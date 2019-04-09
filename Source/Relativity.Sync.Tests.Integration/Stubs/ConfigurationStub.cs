@@ -35,9 +35,8 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 		public string NotificationEmails { get; }
 		public int SourceWorkspaceArtifactId { get; set; }
 		public int DestinationWorkspaceArtifactId { get; set; }
-		public int SavedSearchArtifactId { get; }
+		public int SavedSearchArtifactId { get; set; }
 		public int DestinationFolderArtifactId { get; }
-		public string FieldsMap { get; }
 		public int FolderPathSourceFieldArtifactId { get; }
 		public ImportOverwriteMode ImportOverwriteMode { get; }
 		public FieldOverlayBehavior FieldOverlayBehavior { get; }

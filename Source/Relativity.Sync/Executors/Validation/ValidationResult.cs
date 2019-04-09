@@ -7,6 +7,7 @@ namespace Relativity.Sync.Executors.Validation
 	/// <summary>
 	/// Represents validation result and aggregated messages
 	/// </summary>
+	[Serializable]
 	public sealed class ValidationResult
 	{
 		private readonly List<ValidationMessage> _messages = new List<ValidationMessage>();
@@ -16,36 +17,21 @@ namespace Relativity.Sync.Executors.Validation
 		/// </summary>
 		public ValidationResult()
 		{
-			IsValid = true;
 		}
 
 		/// <summary>
 		/// Constructor, sets validation result and message
 		/// </summary>
-		/// <param name="message">Validation message</param>
-		public ValidationResult(ValidationMessage message)
+		/// <param name="messages">Validation messages to add</param>
+		public ValidationResult(params ValidationMessage[] messages)
 		{
-			IsValid = true;
-			if (message != null)
-			{
-				Add(message);
-			}
-		}
-		
-		/// <summary>
-		/// Constructor, sets validation result and message
-		/// </summary>
-		/// <param name="messages">Validation message</param>
-		public ValidationResult(IEnumerable<ValidationMessage> messages)
-		{
-			IsValid = true;
 			AddRange(messages);
 		}
 
 		/// <summary>
 		/// Validation result
 		/// </summary>
-		public bool IsValid { get; set; }
+		public bool IsValid { get; set; } = true;
 
 		/// <summary>
 		/// Collection of validation messages
@@ -90,32 +76,18 @@ namespace Relativity.Sync.Executors.Validation
 		/// <remarks>Only non-empty messages will be added and change validation state to false</remarks>
 		public void Add(string shortMessage)
 		{
-			Add(string.Empty, shortMessage);
-		}
-
-		/// <summary>
-		/// Adds validation message to internal collection
-		/// </summary>
-		/// <param name="errorCode">Message error code</param>
-		/// <param name="shortMessage">Message short text</param>
-		/// <remarks>Only non-empty messages will be added and change validation state to false</remarks>
-		public void Add(string errorCode, string shortMessage)
-		{
 			if (string.IsNullOrWhiteSpace(shortMessage))
 			{
 				return;
 			}
-
-			IsValid = false;
-
-			_messages.Add(new ValidationMessage(errorCode, shortMessage));
+			Add(new ValidationMessage(shortMessage));
 		}
 
 		private void AddRange(IEnumerable<ValidationMessage> messages)
 		{
 			if (messages != null)
 			{
-				foreach (var message in messages)
+				foreach (var message in messages.Where(m => m != null))
 				{
 					Add(message);
 				}
