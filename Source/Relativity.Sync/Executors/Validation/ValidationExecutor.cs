@@ -26,14 +26,14 @@ namespace Relativity.Sync.Executors.Validation
 
 				if (!validationResult.IsValid)
 				{
-					return ExecutionResult.Failure(new ValidationException(validationResult));
+					return ExecutionResult.Failure(new ValidationException("Validation failed. See ValidationResult property for more details.", validationResult));
 				}
 
 				return ExecutionResult.Success();
 			}
 			catch (Exception ex)
 			{
-				throw new ValidationException("Exception occurred during validation.", ex);
+				throw new ValidationException("Exception occurred during validation. See inner exception for more details.", ex);
 			}
 		}
 

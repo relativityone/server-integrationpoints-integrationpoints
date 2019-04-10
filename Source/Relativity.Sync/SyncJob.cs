@@ -38,11 +38,6 @@ namespace Relativity.Sync
 				_logger.LogWarning(e, "Operation cancelled.");
 				throw;
 			}
-			catch (ValidationException ex)
-			{
-				_logger.LogError(ex, "Error occurred during validation.");
-				throw;
-			}
 			catch (SyncException e)
 			{
 				_logger.LogError(e, "SyncException has been thrown during job execution.");
@@ -57,9 +52,17 @@ namespace Relativity.Sync
 			if (executionResult.Status != NodeResultStatus.Succeeded && executionResult.Status != NodeResultStatus.SucceededWithErrors)
 			{
 				SyncExecutionContext subject = (SyncExecutionContext) executionResult.Subject;
-				IEnumerable<Exception> failingExceptions = subject.Results
+				IList<Exception> failingExceptions = subject.Results
 					.Where(r => r.Exception != null)
-					.Select(r => r.Exception);
+					.Select(r => r.Exception)
+					.ToList();
+
+				ValidationException validationException = failingExceptions.OfType<ValidationException>().FirstOrDefault();
+				if (validationException != null)
+				{
+					throw new ValidationException(validationException.Message, new AggregateException(failingExceptions), validationException.ValidationResult);
+				}
+
 				throw new SyncException("Sync job failed. See inner exceptions for more details.", new AggregateException(failingExceptions), _correlationId.Value);
 			}
 		}
