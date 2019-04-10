@@ -1,5 +1,6 @@
 ﻿using kCura.EventHandler;
 using kCura.IntegrationPoints.Services;
+using kCura.IntegrationPoints.SourceProviderInstaller.Internals;
 using Relativity.API;
 using System;
 using System.Threading.Tasks;
@@ -102,29 +103,16 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
         /// <summary>
         /// We cannot use Polly, because it would require adding external dependency to our SDK
         /// </summary>
-        private async Task<UninstallProviderResponse> SendUninstallProviderRequestWithRetriesAsync(UninstallProviderRequest request, int attemptNumber = 1)
+        private Task<UninstallProviderResponse> SendUninstallProviderRequestWithRetriesAsync(UninstallProviderRequest request, int attemptNumber = 1)
         {
-            try
-            {
-                using (var providerManager = Helper.GetServicesManager().CreateProxy<IProviderManager>(ExecutionIdentity.CurrentUser))
-                {
-                    return await providerManager.UninstallProviderAsync(request).ConfigureAwait(false);
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogWarning(ex, "Uninstalling provider failed, attempt {attemptNumber} out of {numberOfRetries}.",
-                    attemptNumber,
-                    _SEND_INSTALL_REQUEST_MAX_RETRIES_NUMBER
-                );
-                if (attemptNumber > _SEND_INSTALL_REQUEST_MAX_RETRIES_NUMBER)
-                {
-                    throw new InvalidSourceProviderException($"Error occured while sending request to {nameof(IProviderManager.UninstallProviderAsync)}");
-                }
-            }
+            IServicesMgr servicesManager = Helper.GetServicesManager();
+            var retryHelper = new KeplerRequestHelper(Logger, servicesManager, _SEND_INSTALL_REQUEST_MAX_RETRIES_NUMBER, _SEND_INSTALL_REQUEST_DELAY_BETWEEN_RETRIES_IN_MS);
 
-            await Task.Delay(_SEND_INSTALL_REQUEST_DELAY_BETWEEN_RETRIES_IN_MS).ConfigureAwait(false);
-            return await SendUninstallProviderRequestWithRetriesAsync(request, attemptNumber + 1).ConfigureAwait(false);
+            return retryHelper
+                .ExecuteWithRetriesAsync<IProviderManager, UninstallProviderRequest, UninstallProviderResponse>(
+                    (providerManager, r) => providerManager.UninstallProviderAsync(r),
+                    request
+                 );
         }
 
         /// <summary>

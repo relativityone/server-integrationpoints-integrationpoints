@@ -1,12 +1,12 @@
 ﻿using kCura.EventHandler;
 using kCura.IntegrationPoints.Contracts;
+using kCura.IntegrationPoints.SourceProviderInstaller.Internals;
 using Relativity.API;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.SourceProviderInstaller.Internals;
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller
 {
@@ -27,6 +27,9 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
     /// </summary>
     public abstract class IntegrationPointSourceProviderInstaller : PostInstallEventHandler
     {
+        private const int _SEND_INSTALL_REQUEST_MAX_RETRIES_NUMBER = 3;
+        private const int _SEND_INSTALL_REQUEST_DELAY_BETWEEN_RETRIES_IN_MS = 3000;
+
         private const string _SUCCESS_MESSAGE = "Source Providers created or updated successfully.";
 
         private readonly Lazy<IAPILog> _logggerLazy;
@@ -160,7 +163,8 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
         internal virtual Task InstallSourceProviders(IEnumerable<SourceProvider> sourceProviders)
         {
             IServicesMgr servicesManager = Helper.GetServicesManager();
-            var keplerSourceProviderInstaller = new KeplerSourceProviderInstaller(Logger, servicesManager);
+            var retryHelper = new KeplerRequestHelper(Logger, servicesManager, _SEND_INSTALL_REQUEST_MAX_RETRIES_NUMBER, _SEND_INSTALL_REQUEST_DELAY_BETWEEN_RETRIES_IN_MS);
+            var keplerSourceProviderInstaller = new KeplerSourceProviderInstaller(retryHelper);
             return keplerSourceProviderInstaller.InstallSourceProviders(Helper.GetActiveCaseID(), sourceProviders);
         }
 

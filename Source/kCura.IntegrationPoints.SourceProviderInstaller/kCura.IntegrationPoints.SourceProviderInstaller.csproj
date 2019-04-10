@@ -56,6 +56,7 @@
     <Compile Include="IntegrationPointSourceProviderUninstaller.cs" />
     <Compile Include="IntegrationPointSourceProviderInstaller.cs" />
     <Compile Include="Internals\Converters\SourceProviderExtensions.cs" />
+    <Compile Include="Internals\KeplerRequestHelper.cs" />
     <Compile Include="InvalidSourceProviderException.cs" />
     <Compile Include="Internals\KeplerSourceProviderInstaller.cs" />
     <Compile Include="Properties\LocalAssemblyInfo.cs" />
