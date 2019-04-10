@@ -447,6 +447,10 @@ task copy_test_dlls_to_lib_dir -depends create_lib_dir -precondition { return -n
 			"Source\Rip.SystemTests\bin\x64\*.pdb",
 			"Source\Rip.SystemTests\bin\x64\*.config",
 			"Source\Rip.SystemTests\bin\x64\*.xml"
+            "Source\kCura.IntegrationPoints.SourceProviderInstaller.Tests\bin\x64\*.dll",
+            "Source\kCura.IntegrationPoints.SourceProviderInstaller.Tests\bin\x64\*.pdb",
+            "Source\kCura.IntegrationPoints.SourceProviderInstaller.Tests\bin\x64\*.config",
+            "Source\kCura.IntegrationPoints.SourceProviderInstaller.Tests\bin\x64\*.xml",
 
     foreach ($file in $test_files)
     {
