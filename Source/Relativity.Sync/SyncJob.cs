@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Banzai;
+using Relativity.Sync.Executors.Validation;
 
 namespace Relativity.Sync
 {
@@ -35,6 +36,11 @@ namespace Relativity.Sync
 			catch (OperationCanceledException e)
 			{
 				_logger.LogWarning(e, "Operation cancelled.");
+				throw;
+			}
+			catch (ValidationException ex)
+			{
+				_logger.LogError(ex, "Error occurred during validation.");
 				throw;
 			}
 			catch (SyncException e)
