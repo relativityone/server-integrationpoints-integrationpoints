@@ -5,6 +5,7 @@ kCura.Agent
 kCura.Apps.Common.Data
 kCura.Apps.Common.Utils
 kCura.Relativity.Client
+LanguageExt.Core
 NSubstitute
 NUnit
 Moq
