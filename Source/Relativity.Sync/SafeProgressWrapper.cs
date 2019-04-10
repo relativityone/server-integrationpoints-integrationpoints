@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Relativity.Sync
 {
@@ -26,7 +22,7 @@ namespace Relativity.Sync
 			catch (Exception ex)
 			{
 				_logger.LogWarning(ex, 
-					$"Received error when invoking externally-provided implementation of {nameof(IProgress<T>.Report)} ({{type}})",
+					$"Received error when invoking externally-provided implementation of {typeof(IProgress<T>)} ({{type}})",
 					_progress.GetType().FullName);
 			}
 		}
