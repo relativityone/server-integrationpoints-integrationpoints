@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace kCura.IntegrationPoints.Services
 {
-	public class ProviderToInstallConfigurationDto
+	public class InstallProviderConfigurationDto
 	{
 		/// <summary>
 		/// Gets or sets a Boolean value used in a configuration to determine whether native files should be linked to or imported into Relativity.

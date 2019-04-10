@@ -73,8 +73,8 @@
     <Compile Include="Models\IntegrationPoint\RelativityProviderDestinationConfiguration.cs" />
     <Compile Include="Models\IntegrationPoint\RelativityProviderSourceConfiguration.cs" />
     <Compile Include="Requests\InstallProviderRequest.cs" />
-    <Compile Include="Requests\ProviderToInstallConfigurationDto.cs" />
-    <Compile Include="Requests\ProviderToInstallDto.cs" />
+    <Compile Include="Requests\InstallProviderConfigurationDto.cs" />
+    <Compile Include="Requests\InstallProviderDto.cs" />
     <Compile Include="Requests\UninstallProviderRequest.cs" />
     <Compile Include="Requests\UpdateIntegrationPointRequest.cs" />
     <Compile Include="Requests\CreateIntegrationPointRequest.cs" />

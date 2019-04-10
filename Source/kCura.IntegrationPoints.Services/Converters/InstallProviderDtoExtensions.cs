@@ -2,9 +2,9 @@
 
 namespace kCura.IntegrationPoints.Services.Converters
 {
-    internal static class ProviderToInstallDtoExtensions
+    internal static class InstallProviderDtoExtensions
     {
-        public static SourceProvider ToSourceProvider(this ProviderToInstallDto dto)
+        public static SourceProvider ToSourceProvider(this InstallProviderDto dto)
         {
             if (dto == null)
             {
@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Services.Converters
             };
         }
 
-        private static SourceProviderConfiguration ConvertToSourceProviderConfiguration(ProviderToInstallConfigurationDto dto)
+        private static SourceProviderConfiguration ConvertToSourceProviderConfiguration(InstallProviderConfigurationDto dto)
         {
             if (dto == null)
             {

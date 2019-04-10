@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Internals
             var request = new InstallProviderRequest
             {
                 WorkspaceID = workspaceID,
-                ProvidersToInstall = sourceProviders.Select(x => x.ToProviderToInstallDto()).ToList()
+                ProvidersToInstall = sourceProviders.Select(x => x.ToInstallProviderDto()).ToList()
             };
 
             InstallProviderResponse response = await SendInstallProviderRequestWithRetriesAsync(request);

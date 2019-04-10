@@ -12,6 +12,6 @@ namespace kCura.IntegrationPoints.Services
 		/// <summary>
 		/// List if soruce providers to install
 		/// </summary>
-		public List<ProviderToInstallDto> ProvidersToInstall { get; set; }
+		public List<InstallProviderDto> ProvidersToInstall { get; set; }
 	}
 }

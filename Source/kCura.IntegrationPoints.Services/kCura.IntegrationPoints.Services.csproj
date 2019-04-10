@@ -51,7 +51,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
-    <Compile Include="Converters\ProviderToInstallDtoExtensions.cs" />
+    <Compile Include="Converters\InstallProviderDtoExtensions.cs" />
     <Compile Include="DocumentManager.cs" />
     <Compile Include="Extensions\IntegrationPointExtensions.cs" />
     <Compile Include="Extensions\IntegrationPointModelExtensions.cs" />

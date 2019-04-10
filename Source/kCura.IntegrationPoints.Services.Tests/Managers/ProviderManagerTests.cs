@@ -432,7 +432,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Managers
             return new InstallProviderRequest
             {
                 WorkspaceID = _WORKSPACE_ID,
-                ProvidersToInstall = new List<ProviderToInstallDto> { new ProviderToInstallDto() }
+                ProvidersToInstall = new List<InstallProviderDto> { new InstallProviderDto() }
             };
         }
 

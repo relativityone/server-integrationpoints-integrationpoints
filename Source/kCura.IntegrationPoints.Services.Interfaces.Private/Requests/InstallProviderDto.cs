@@ -2,7 +2,7 @@
 
 namespace kCura.IntegrationPoints.Services
 {
-	public class ProviderToInstallDto
+	public class InstallProviderDto
 	{
 		/// <summary>
 		/// Gets or sets the GUID identifying the data source provider.
@@ -42,6 +42,6 @@ namespace kCura.IntegrationPoints.Services
 		/// <summary>
 		/// Gets or sets a SourceProviderConfiguration object, which contains properties that control source provider behavior.
 		/// </summary>
-		public ProviderToInstallConfigurationDto Configuration { set; get; }
+		public InstallProviderConfigurationDto Configuration { set; get; }
 	}
 }
