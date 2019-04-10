@@ -101,7 +101,7 @@ NUGET
     Relativity.Services.Layout.Interfaces (1.1.46)
       Relativity.Kepler (>= 1.0.1.297)
       Relativity.Services.DataContracts (>= 9.4.346.73)
-    Relativity.Telemetry.APM (2019.1.0)
+    Relativity.Telemetry.APM (2019.1.1)
     Relativity.Telemetry.DataContracts.Shared (9.4.74)
     SexyProxy.Emit (2.0.97)
     System.AppContext (4.3.0)
