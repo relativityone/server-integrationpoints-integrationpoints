@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
         private Mock<ISourceProviderRepository> _sourceProviderRepositoryMock;
         private Mock<IRelativityObjectManager> _objectManagerMock;
         private Mock<IApplicationGuidFinder> _appGuidFinderMock;
-        private Mock<IDeleteIntegrationPoints> _deleteIntegrationPoints;
+        private Mock<IIntegrationPointsRemover> _integrationPointRemoverMock;
 
         private RipProviderUninstaller _sut;
 
@@ -36,14 +36,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
             _sourceProviderRepositoryMock = new Mock<ISourceProviderRepository>();
             _objectManagerMock = new Mock<IRelativityObjectManager>();
             _appGuidFinderMock = new Mock<IApplicationGuidFinder>();
-            _deleteIntegrationPoints = new Mock<IDeleteIntegrationPoints>();
+            _integrationPointRemoverMock = new Mock<IIntegrationPointsRemover>();
 
             _sut = new RipProviderUninstaller(
                 _loggerMock.Object,
                 _sourceProviderRepositoryMock.Object,
                 _objectManagerMock.Object,
                 _appGuidFinderMock.Object,
-                _deleteIntegrationPoints.Object
+                _integrationPointRemoverMock.Object
             );
 
             _appGuidFinderMock.Setup(x => x.GetApplicationGuid(It.IsAny<int>()))
@@ -117,9 +117,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
             await _sut.UninstallProvidersAsync(_APPLICATION_ID);
 
             // assert
-            _deleteIntegrationPoints
+            _integrationPointRemoverMock
                 .Verify(x =>
-                    x.DeleteIPsWithSourceProvider(
+                    x.DeleteIntegrationPointsBySourceProvider(
                         It.Is<List<int>>(list => list.Contains(_sourceProviderToDelete.ArtifactId))
                 )
             );

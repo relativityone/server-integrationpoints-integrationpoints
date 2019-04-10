@@ -16,11 +16,11 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
     [EventHandler.CustomAttributes.Description("This is an event handler to register back provider after creating workspace using the template that has integration point installed.")]
     public class SourceProvidersMigrationEventHandler : IntegrationPointMigrationEventHandlerBase
     {
-        private IAPILog _logger;
+        private IAPILog _loggerValue;
 
         private IAPILog Logger =>
-            _logger
-            ?? (_logger = Helper.GetLoggerFactory().GetLogger().ForContext<SourceProvidersMigrationEventHandler>());
+            _loggerValue
+            ?? (_loggerValue = Helper.GetLoggerFactory().GetLogger().ForContext<SourceProvidersMigrationEventHandler>());
 
         internal IRipProviderInstaller ProviderInstallerForTests { get; set; }
 

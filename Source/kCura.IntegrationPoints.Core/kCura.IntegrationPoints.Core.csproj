@@ -75,7 +75,7 @@
     <Compile Include="Provider\Internals\DataProviderFactoryFactory.cs" />
     <Compile Include="Provider\Internals\IApplicationGuidFinder.cs" />
     <Compile Include="Provider\Internals\IDataProviderFactoryFactory.cs" />
-    <Compile Include="Provider\Internals\IDeleteIntegrationPoints.cs" />
+    <Compile Include="Provider\Internals\IIntegrationPointsRemover.cs" />
     <Compile Include="Provider\IRipProviderInstaller.cs" />
     <Compile Include="Provider\IRipProviderUninstaller.cs" />
     <Compile Include="Provider\RipProviderInstaller.cs" />
@@ -337,7 +337,7 @@
     <Compile Include="Services\EntityManager\ManagerQueueService.cs" />
     <Compile Include="Services\DeleteHistoryErrorService.cs" />
     <Compile Include="Services\DeleteHistoryService.cs" />
-    <Compile Include="Provider\Internals\DeleteIntegrationPoints.cs" />
+    <Compile Include="Provider\Internals\IntegrationPointsRemover.cs" />
     <Compile Include="Services\DestinationTypes\DestinationTypeFactory.cs" />
     <Compile Include="Properties\ErrorMessages.Designer.cs">
       <AutoGen>True</AutoGen>

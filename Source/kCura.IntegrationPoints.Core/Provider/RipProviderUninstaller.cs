@@ -16,20 +16,20 @@ namespace kCura.IntegrationPoints.Core.Provider
         private readonly ISourceProviderRepository _sourceProviderRepository;
         private readonly IRelativityObjectManager _objectManager;
         private readonly IApplicationGuidFinder _applicationGuidFinder;
-        private readonly IDeleteIntegrationPoints _deleteIntegrationPoint;
+        private readonly IIntegrationPointsRemover _integrationPointsRemover;
 
         public RipProviderUninstaller(
             IAPILog logger,
             ISourceProviderRepository sourceProviderRepository,
             IRelativityObjectManager objectManager,
             IApplicationGuidFinder applicationGuidFinder,
-            IDeleteIntegrationPoints deleteIntegrationPoint)
+            IIntegrationPointsRemover integrationPointsRemover)
         {
             _logger = logger;
             _sourceProviderRepository = sourceProviderRepository;
             _objectManager = objectManager;
             _applicationGuidFinder = applicationGuidFinder;
-            _deleteIntegrationPoint = deleteIntegrationPoint;
+            _integrationPointsRemover = integrationPointsRemover;
         }
 
         public Task<Either<string, Unit>> UninstallProvidersAsync(int applicationID)
@@ -47,8 +47,8 @@ namespace kCura.IntegrationPoints.Core.Provider
                     .GetSourceProviderRdoByApplicationIdentifierAsync(applicationGuid)
                     .ConfigureAwait(false);
 
-                _deleteIntegrationPoint.DeleteIPsWithSourceProvider(installedRdoProviders.Select(x => x.ArtifactId).ToList());
-                RemoveProviders(installedRdoProviders);
+                _integrationPointsRemover.DeleteIntegrationPointsBySourceProvider(installedRdoProviders.Select(x => x.ArtifactId).ToList());
+                RemoveSourceProviders(installedRdoProviders);
             }
             catch (Exception ex)
             {
@@ -59,7 +59,7 @@ namespace kCura.IntegrationPoints.Core.Provider
             return Unit.Default;
         }
 
-        private void RemoveProviders(IEnumerable<SourceProvider> providersToBeRemoved)
+        private void RemoveSourceProviders(IEnumerable<SourceProvider> providersToBeRemoved)
         {
             //TODO: before deleting SourceProviderRDO, 
             //TODO: deactivate corresponding IntegrationPointRDO and delete corresponding queue job

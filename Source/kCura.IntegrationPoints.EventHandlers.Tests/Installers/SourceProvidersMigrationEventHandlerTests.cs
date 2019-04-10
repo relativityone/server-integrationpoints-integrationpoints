@@ -85,7 +85,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
             const string dataUrl = "config url";
 
             // arrange
-            var providerToInstalled = new Data.SourceProvider
+            var providerToInstall = new Data.SourceProvider
             {
                 ApplicationIdentifier = appIdentifier.ToString(),
                 Identifier = identifier.ToString(),
@@ -98,7 +98,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 
             _providersStub = new List<Data.SourceProvider>
             {
-                providerToInstalled
+                providerToInstall
             };
 
             // act
@@ -108,14 +108,14 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
             result.Success.Should().BeTrue();
 
             VerifyCorrectNumberOfProviderWasInstalledUsingProductionManager(_providersStub.Count);
-            VerifyProviderWasInstalledUsingProductionManager(providerToInstalled.Name);
+            VerifyProviderWasInstalledUsingProductionManager(providerToInstall.Name);
         }
 
         [Test]
         public void MultipleProvidersInPreviousWorkspace()
         {
             // arrange
-            var providerToInstalled = new Data.SourceProvider
+            var providerToInstall = new Data.SourceProvider
             {
                 ApplicationIdentifier = "72194851-ad15-4769-bec5-04011498a1b4",
                 Identifier = "e01ff2d2-2ac7-4390-bbc3-64c6c17758bc",
@@ -126,7 +126,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
                 Config = new SourceProviderConfiguration()
             };
 
-            var provider2ToInstalled = new Data.SourceProvider
+            var provider2ToInstall = new Data.SourceProvider
             {
                 ApplicationIdentifier = "cf3ab0f2-d26f-49fb-bd11-547423a692c1",
                 Identifier = "e01ff2d2-2ac7-4390-bbc3-64c6c17758bd",
@@ -139,8 +139,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 
             _providersStub = new List<Data.SourceProvider>
             {
-                providerToInstalled,
-                provider2ToInstalled
+                providerToInstall,
+                provider2ToInstall
             };
 
             // act
@@ -151,8 +151,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 
 
             VerifyCorrectNumberOfProviderWasInstalledUsingProductionManager(_providersStub.Count);
-            VerifyProviderWasInstalledUsingProductionManager(providerToInstalled.Name);
-            VerifyProviderWasInstalledUsingProductionManager(provider2ToInstalled.Name);
+            VerifyProviderWasInstalledUsingProductionManager(providerToInstall.Name);
+            VerifyProviderWasInstalledUsingProductionManager(provider2ToInstall.Name);
         }
 
         private void VerifyCorrectNumberOfProviderWasInstalledUsingProductionManager(int expectedNumberOfProviders)

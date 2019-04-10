@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Internals
                 ProvidersToInstall = sourceProviders.Select(x => x.ToInstallProviderDto()).ToList()
             };
 
-            InstallProviderResponse response = await SendInstallProviderRequestWithRetriesAsync(request);
+            InstallProviderResponse response = await SendInstallProviderRequestWithRetriesAsync(request).ConfigureAwait(false);
             if (!response.Success)
             {
                 throw new InvalidSourceProviderException($"An error occured while installing source providers: {response.ErrorMessage}");

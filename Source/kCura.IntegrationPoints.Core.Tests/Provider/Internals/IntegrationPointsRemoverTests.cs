@@ -12,7 +12,7 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.Core.Tests.Provider.Internals
 {
 	[TestFixture]
-	public class DeleteIntegrationPointsTests : TestBase
+	public class IntegrationPointsRemoverTests : TestBase
 	{
 		private IIntegrationPointQuery _integrationPointQuery;
 		private IDeleteHistoryService _deleteHistoryService;
@@ -31,22 +31,22 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider.Internals
 		public void ItShouldThrowExceptionWhenIntegrationPointQueryIsNullTest()
 		{
 			// arrange
-			var deleteIntegrationPoints = new DeleteIntegrationPoints(null, _deleteHistoryService, _relativityObjectManager);
+			var deleteIntegrationPoints = new IntegrationPointsRemover(null, _deleteHistoryService, _relativityObjectManager);
 			var ids = new List<int> { 1, 2, 3 };
 
 			// act & assert
-			Assert.Throws<NullReferenceException>(() => deleteIntegrationPoints.DeleteIPsWithSourceProvider(ids));
+			Assert.Throws<NullReferenceException>(() => deleteIntegrationPoints.DeleteIntegrationPointsBySourceProvider(ids));
 		}
 
 		[Test]
 		public void ItShouldThrowExceptionWhenDeleteHistoryServiceIsNullTest()
 		{
 			// arrange
-			var deleteIntegrationPoints = new DeleteIntegrationPoints(_integrationPointQuery, null, _relativityObjectManager);
+			var deleteIntegrationPoints = new IntegrationPointsRemover(_integrationPointQuery, null, _relativityObjectManager);
 			var ids = new List<int> { 1, 2, 3 };
 
 			// act & assert
-			Assert.Throws<NullReferenceException>(() => deleteIntegrationPoints.DeleteIPsWithSourceProvider(ids));
+			Assert.Throws<NullReferenceException>(() => deleteIntegrationPoints.DeleteIntegrationPointsBySourceProvider(ids));
 		}
 
 		[TestCase(new int[] { })]
@@ -55,10 +55,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider.Internals
 		public void ItShouldCallWithProperArgumentIntegrationPointQueryTest(int[] sourceProvider)
 		{
 			// arrange
-			var deleteIntegrationPoints = new DeleteIntegrationPoints(_integrationPointQuery, _deleteHistoryService, _relativityObjectManager);
+			var deleteIntegrationPoints = new IntegrationPointsRemover(_integrationPointQuery, _deleteHistoryService, _relativityObjectManager);
 
 			// act
-			deleteIntegrationPoints.DeleteIPsWithSourceProvider(sourceProvider.ToList());
+			deleteIntegrationPoints.DeleteIntegrationPointsBySourceProvider(sourceProvider.ToList());
 
 			// assert
 			_integrationPointQuery.Received(1).GetIntegrationPoints(Arg.Is<List<int>>(x => x.SequenceEqual(sourceProvider)));
@@ -71,10 +71,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider.Internals
 			// arrange
 			var integrationPoints = GetMockIntegrationsPoints(artifactIds).ToList();
 			_integrationPointQuery.GetIntegrationPoints(Arg.Any<List<int>>()).Returns(integrationPoints);
-			var deleteIntegrationPoints = new DeleteIntegrationPoints(_integrationPointQuery, _deleteHistoryService, _relativityObjectManager);
+			var deleteIntegrationPoints = new IntegrationPointsRemover(_integrationPointQuery, _deleteHistoryService, _relativityObjectManager);
 
 			// act
-			deleteIntegrationPoints.DeleteIPsWithSourceProvider(sourceProvider.ToList());
+			deleteIntegrationPoints.DeleteIntegrationPointsBySourceProvider(sourceProvider.ToList());
 
 			// assert
 			_deleteHistoryService.Received(1).DeleteHistoriesAssociatedWithIPs(Arg.Is<List<int>>(x => x.SequenceEqual(artifactIds)), _relativityObjectManager);
@@ -87,10 +87,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider.Internals
 			// arrange
 			var integrationPoints = GetMockIntegrationsPoints(artifactIds).ToList();
 			_integrationPointQuery.GetIntegrationPoints(Arg.Any<List<int>>()).Returns(integrationPoints);
-			var deleteIntegrationPoints = new DeleteIntegrationPoints(_integrationPointQuery, _deleteHistoryService, _relativityObjectManager);
+			var deleteIntegrationPoints = new IntegrationPointsRemover(_integrationPointQuery, _deleteHistoryService, _relativityObjectManager);
 
 			// act
-			deleteIntegrationPoints.DeleteIPsWithSourceProvider(sourceProvider.ToList());
+			deleteIntegrationPoints.DeleteIntegrationPointsBySourceProvider(sourceProvider.ToList());
 
 			// assert
 			foreach (var ip in integrationPoints)
@@ -105,20 +105,20 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider.Internals
 		{
 			// arrange
 			var sourceProvider = new List<int> { 1 };
-			var deleteIntegrationPoints = new DeleteIntegrationPoints(_integrationPointQuery, _deleteHistoryService, _relativityObjectManager);
+			var deleteIntegrationPoints = new IntegrationPointsRemover(_integrationPointQuery, _deleteHistoryService, _relativityObjectManager);
 
 			var artifactIds = new[] { 7 };
 			var integrationPoints = GetMockIntegrationsPoints(artifactIds).ToList();
 			_integrationPointQuery.GetIntegrationPoints(Arg.Any<List<int>>()).Returns(integrationPoints);
 
-			deleteIntegrationPoints.DeleteIPsWithSourceProvider(sourceProvider);
+			deleteIntegrationPoints.DeleteIntegrationPointsBySourceProvider(sourceProvider);
 
 			var secondArtifactIds = new[] { 8 };
 			var secondintegrationPoints = GetMockIntegrationsPoints(secondArtifactIds).ToList();
 			_integrationPointQuery.GetIntegrationPoints(Arg.Any<List<int>>()).Returns(secondintegrationPoints);
 
 			// act
-			deleteIntegrationPoints.DeleteIPsWithSourceProvider(sourceProvider);
+			deleteIntegrationPoints.DeleteIntegrationPointsBySourceProvider(sourceProvider);
 
 			// assert
 			foreach (var ip in integrationPoints)

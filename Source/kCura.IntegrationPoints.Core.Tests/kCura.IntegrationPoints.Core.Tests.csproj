@@ -92,7 +92,7 @@
     <Compile Include="Services\JobHistory\CachedIntegrationPointProviderTypeServiceTests.cs" />
     <Compile Include="Services\ProcessingSourceLocationTests.cs" />
     <Compile Include="Services\DataTransferLocationServiceTests.cs" />
-    <Compile Include="Provider\Internals\DeleteIntegrationPointsTests.cs" />
+    <Compile Include="Provider\Internals\IntegrationPointsRemoverTests.cs" />
     <Compile Include="Services\Exporter\DynamicFolderPathReaderTests.cs" />
     <Compile Include="Services\Exporter\ExportTransferDataReaderTestsBase.cs" />
     <Compile Include="Services\Exporter\ImageTransferDataReaderTests.cs" />
