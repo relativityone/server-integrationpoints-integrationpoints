@@ -56,7 +56,8 @@ namespace kCura.IntegrationPoints.Services.Installers
             );
 
             container.Register(Component
-                .For<DeleteIntegrationPoints>()
+                .For<IDeleteIntegrationPoints>()
+                .ImplementedBy<DeleteIntegrationPoints>()
                 .LifestyleTransient()
             );
             container.Register(Component

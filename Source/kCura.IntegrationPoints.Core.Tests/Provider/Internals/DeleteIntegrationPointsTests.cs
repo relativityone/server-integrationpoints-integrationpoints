@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Core.Provider.Internals;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using NSubstitute;
 using NUnit.Framework;
 
-namespace kCura.IntegrationPoints.Core.Tests.Services
+namespace kCura.IntegrationPoints.Core.Tests.Provider.Internals
 {
 	[TestFixture]
 	public class DeleteIntegrationPointsTests : TestBase

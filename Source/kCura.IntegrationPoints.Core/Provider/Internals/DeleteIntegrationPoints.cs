@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 
-namespace kCura.IntegrationPoints.Core.Services
+namespace kCura.IntegrationPoints.Core.Provider.Internals
 {
-	public class DeleteIntegrationPoints
+	public class DeleteIntegrationPoints : IDeleteIntegrationPoints
 	{
 		private readonly IIntegrationPointQuery _integrationPointQuery;
 		private readonly IDeleteHistoryService _deleteHistoryService;
@@ -20,9 +21,9 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public void DeleteIPsWithSourceProvider(List<int> sourceProvider)
 		{
-			IList<Data.IntegrationPoint> integrationPoints = _integrationPointQuery.GetIntegrationPoints(sourceProvider);
+			IList<IntegrationPoint> integrationPoints = _integrationPointQuery.GetIntegrationPoints(sourceProvider);
 			_deleteHistoryService.DeleteHistoriesAssociatedWithIPs(integrationPoints.Select(x => x.ArtifactId).ToList(), _objectManager);
-			foreach (Data.IntegrationPoint ip in integrationPoints)
+			foreach (IntegrationPoint ip in integrationPoints)
 			{
 				_objectManager.Delete(ip);
 			}

@@ -75,6 +75,7 @@
     <Compile Include="Monitoring\Instrumentation\ExternalServiceSimpleInstrumentationTests.cs" />
     <Compile Include="Monitoring\MessageSink\ExternalCalls\ExternalCallsSinkTests.cs" />
     <Compile Include="Provider\RipProviderInstallerTests.cs" />
+    <Compile Include="Provider\RipProviderUninstallerTests.cs" />
     <Compile Include="QueryOptions\JobHistoryQueryOptionsTests.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceJobRdoInitializerTests.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceRdoDocumentFieldTests.cs" />
@@ -91,7 +92,7 @@
     <Compile Include="Services\JobHistory\CachedIntegrationPointProviderTypeServiceTests.cs" />
     <Compile Include="Services\ProcessingSourceLocationTests.cs" />
     <Compile Include="Services\DataTransferLocationServiceTests.cs" />
-    <Compile Include="Services\DeleteIntegrationPointsTests.cs" />
+    <Compile Include="Provider\Internals\DeleteIntegrationPointsTests.cs" />
     <Compile Include="Services\Exporter\DynamicFolderPathReaderTests.cs" />
     <Compile Include="Services\Exporter\ExportTransferDataReaderTestsBase.cs" />
     <Compile Include="Services\Exporter\ImageTransferDataReaderTests.cs" />

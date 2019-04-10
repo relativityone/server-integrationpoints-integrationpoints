@@ -1,5 +1,4 @@
-﻿using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Data;
+﻿using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using LanguageExt;
 using Relativity.API;
@@ -17,14 +16,14 @@ namespace kCura.IntegrationPoints.Core.Provider
         private readonly ISourceProviderRepository _sourceProviderRepository;
         private readonly IRelativityObjectManager _objectManager;
         private readonly IApplicationGuidFinder _applicationGuidFinder;
-        private readonly DeleteIntegrationPoints _deleteIntegrationPoint;
+        private readonly IDeleteIntegrationPoints _deleteIntegrationPoint;
 
         public RipProviderUninstaller(
             IAPILog logger,
             ISourceProviderRepository sourceProviderRepository,
             IRelativityObjectManager objectManager,
             IApplicationGuidFinder applicationGuidFinder,
-            DeleteIntegrationPoints deleteIntegrationPoint)
+            IDeleteIntegrationPoints deleteIntegrationPoint)
         {
             _logger = logger;
             _sourceProviderRepository = sourceProviderRepository;

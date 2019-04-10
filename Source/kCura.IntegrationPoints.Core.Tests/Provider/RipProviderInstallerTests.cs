@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using kCura.IntegrationPoint.Tests.Core.FluentAssertions;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core.Provider;
@@ -88,7 +89,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
             Either<string, Unit> result = await _sut.InstallProvidersAsync(_sourceProvidersToCreate);
 
             // assert
-            AssertResultIsSuccess(result);
+            result.Should().BeRight("because provider should be added");
 
             _objectManagerMock.Verify(z =>
                 z.Create(
@@ -108,7 +109,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
             Either<string, Unit> result = await _sut.InstallProvidersAsync(_sourceProvidersToCreate);
 
             // assert
-            AssertResultIsSuccess(result);
+            result.Should().BeRight("because provider should be updated");
 
             SourceProvider expectedSourceProvider = _sourceProviderToCreate;
             expectedSourceProvider.ApplicationGUID = _existingProviderApplicationGuid;
@@ -135,7 +136,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
 
             // assert
             string expectedErrorMessage = $"Error while loading '{_sourceProviderToCreate.Name}' provider: {exceptionMessage}";
-            AssertResultIsError(result, expectedErrorMessage);
+            result.Should().BeLeft(expectedErrorMessage, "because cannot load provider");
         }
 
         [Test]
@@ -151,7 +152,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
             Either<string, Unit> result = await _sut.InstallProvidersAsync(_sourceProvidersToCreate);
 
             // assert
-            AssertResultIsSuccess(result);
+            result.Should().BeRight("because application guid should be updated for provider");
 
             _sourceProviderToCreate.ApplicationGUID.Should().Be(expectedApplicationGuid, "because application guid should be updated");
 
@@ -178,7 +179,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
 
             // assert
             string expectedErrorMessage = $"Unhandled error occured while installing providers. Exception: {exceptionToThrow}";
-            AssertResultIsError(result, expectedErrorMessage);
+            result.Should().BeLeft(expectedErrorMessage, "because cannot find application guid");
         }
 
         [Test]
@@ -195,7 +196,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
 
             // assert
             string expectedErrorMessage = $"Unhandled error occured while installing providers. Exception: {exceptionToThrow}";
-            AssertResultIsError(result, expectedErrorMessage);
+            result.Should().BeLeft(expectedErrorMessage, "because cannot retrieve installed providers");
         }
 
         /// <summary>
@@ -254,7 +255,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
             Either<string, Unit> result = await _sut.InstallProvidersAsync(_sourceProvidersToCreate);
 
             // assert
-            AssertResultIsError(result, "Error while installing destination providers");
+            string expectedErrorMessage = "Error while installing destination providers";
+            result.Should().BeLeft(expectedErrorMessage, "because cannot create destination provider object");
         }
 
         private void SetupDataProviderFactoryFactory(Exception exceptionToThrow = null)
@@ -308,24 +310,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
                 SourceConfigurationUrl = string.Empty,
                 ViewConfigurationUrl = string.Empty
             };
-        }
-
-        private void AssertResultIsSuccess(Either<string, Unit> result)
-        {
-            result.Match(
-                success => { },
-                error => Assert.Fail($"Expected success, received an error: {error}"),
-                Bottom: () => Assert.Fail()
-            );
-        }
-
-        private void AssertResultIsError(Either<string, Unit> result, string expectedErrorMessage)
-        {
-            result.Match(
-                success => Assert.Fail("Expected failure, found success"),
-                error => error.Should().Be(expectedErrorMessage),
-                Bottom: Assert.Fail
-            );
         }
 
         private bool AssertAreEqual(SourceProvider expected, Data.SourceProvider actual)
