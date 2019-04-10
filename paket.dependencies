@@ -1,4 +1,5 @@
 framework: auto-detect
+strategy: min
 
 source https://proget.kcura.corp/nuget/NuGet
 
@@ -11,9 +12,9 @@ nuget Relativity.Services.Interfaces.Private 10.2.84.3
 nuget kCura.Apps.Common.Utils ~> 2.1.8
 nuget kCura.Relativity.Client 10.2.84.3
 nuget Relativity.Kepler.Client ~> 1.0
-nuget Relativity.Telemetry.APM ~> 2019.1.0
+nuget Relativity.Telemetry.APM 2019.1.0
 
-nuget Microsoft.CodeAnalysis.FxCopAnalyzers ~> 2.6
+nuget Microsoft.CodeAnalysis.FxCopAnalyzers 2.6.3
 nuget CSharpGuidelineAnalyzer ~> 2.3
 nuget Autofac ~> 4.9 redirects: force
 nuget Polly ~> 6.1
