@@ -1,7 +1,6 @@
 Microsoft.CodeAnalysis.FxCopAnalyzers
 CSharpGuidelineAnalyzer
 
-Polly
 Autofac
 Newtonsoft.Json
 
