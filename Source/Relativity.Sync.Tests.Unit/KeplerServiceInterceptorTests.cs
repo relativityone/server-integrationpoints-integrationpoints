@@ -116,7 +116,7 @@ namespace Relativity.Sync.Tests.Unit
 		[TestCaseSource(nameof(ExceptionsToRetry))]
 		public void ItShouldRetryFailedExecution(Type exceptionType)
 		{
-			const int numberOfTries = 4;
+			const int numberOfTries = 3;
 
 			_stubForInterception.Setup(x => x.ExecuteAsync()).Throws((Exception) Activator.CreateInstance(exceptionType));
 
