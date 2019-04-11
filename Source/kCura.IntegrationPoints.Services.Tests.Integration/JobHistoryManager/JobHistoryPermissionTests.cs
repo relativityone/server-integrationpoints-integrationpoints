@@ -76,6 +76,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 		}
 
         [Test]
+		[TestInQuarantine(TestQuarantineState.UnderObservation)]
 		public void MissingTargetWorkspacePermission()
 		{
 			Group.AddGroupToWorkspace(SourceWorkspaceArtifactId, _groupId);
