@@ -57,7 +57,7 @@ namespace Relativity.Sync.KeplerFactory
 							throw;
 						}
 						const int msBetweenRetries = 500;
-						Thread.Sleep(TimeSpan.FromMilliseconds(msBetweenRetries));
+						await Task.Delay(TimeSpan.FromMilliseconds(msBetweenRetries)).ConfigureAwait(false);
 					}
 				}
 				return invocationHandler;
