@@ -53,14 +53,14 @@ namespace kCura.IntegrationPoints.Web.Attributes
 			string msg = msgBuilder.ToString();
 			string sanitizedMsg = _sanitizer.Sanitize(msg).CleanHTML;
 
-			SetSanitizedMessageToResponse(actionExecutedContext, sanitizedMsg);
+			SetMessageToResponse(actionExecutedContext, sanitizedMsg);
 			_apiLog.LogError(actionExecutedContext.Exception, sanitizedMsg);
 		}
 
-		private void SetSanitizedMessageToResponse(HttpActionExecutedContext actionExecutedContext, string sanitizedMsg)
+		private void SetMessageToResponse(HttpActionExecutedContext actionExecutedContext, string message)
 		{
-			actionExecutedContext.Response = actionExecutedContext.Request.CreateResponse(HttpStatusCode.InternalServerError, sanitizedMsg);
-			actionExecutedContext.Response.Content = new StringContent(sanitizedMsg);
+			actionExecutedContext.Response = actionExecutedContext.Request.CreateResponse(HttpStatusCode.InternalServerError, message);
+			actionExecutedContext.Response.Content = new StringContent(message);
 		}
 
 		private string GetMostSpecificMessage(Exception exception)
