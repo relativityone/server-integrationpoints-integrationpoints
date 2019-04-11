@@ -14,28 +14,28 @@
       <Name>kCura.IntegrationPoints.SourceProviderInstaller.dll</Name>
       <Notes />
     </Assembly>
-	<Assembly>
-      <ArtifactId>1748144</ArtifactId> <!-- TODO tt-img-app -->
-      <Keywords />
-      <Name>kCura.IntegrationPoints.Services.Interfaces.Private.dll</Name>
-      <Notes />
-    </Assembly>
     <Assembly>
       <ArtifactId>1748143</ArtifactId>
       <Keywords />
       <Name>Provider.dll</Name>
       <Notes />
     </Assembly>
+    <Assembly>
+      <ArtifactId>4702050</ArtifactId>
+      <Keywords />
+      <Name>kCura.IntegrationPoints.Services.Interfaces.Private.dll</Name>
+      <Notes />
+    </Assembly>
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2018-04-28T09:30:11.3673082Z</ExtractionDate>
+  <ExtractionDate>2019-04-11T10:20:32.6217364Z</ExtractionDate>
   <Guid>616c3c78-aa2c-46b9-b81c-21be354f323d</Guid>
   <Name>MyFirstProvider</Name>
   <Objects />
   <ParentTabs />
-  <RelativityVersion>9.7.6.21</RelativityVersion>
-  <Version>0.0.0.1</Version>
+  <RelativityVersion>10.2.78.89</RelativityVersion>
+  <Version>9.6.0.1</Version>
   <TabDisplay>false</TabDisplay>
   <OriginSignature>5e8b02a8-6e33-4426-a0f0-3594d83725d0</OriginSignature>
   <MasterScripts />
@@ -65,7 +65,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>10</Order>
       <AssemblyName>Provider.dll</AssemblyName>
-      <ApplicationVersion>0.0.0.1</ApplicationVersion>
+      <ApplicationVersion>9.6.0.1</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -77,7 +77,7 @@
       <ExecutionType>12</ExecutionType>
       <Order>20</Order>
       <AssemblyName>Provider.dll</AssemblyName>
-      <ApplicationVersion>0.0.0.1</ApplicationVersion>
+      <ApplicationVersion>9.6.0.1</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
   </InstallEventHandlers>

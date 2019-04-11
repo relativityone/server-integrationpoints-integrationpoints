@@ -79,7 +79,7 @@
       <Notes />
     </Assembly>
 	<Assembly>
-      <ArtifactId>1748144</ArtifactId> <!-- TODO tt-img-app -->
+      <ArtifactId>4702051</ArtifactId>
       <Keywords />
       <Name>kCura.IntegrationPoints.Services.Interfaces.Private.dll</Name>
       <Notes />
