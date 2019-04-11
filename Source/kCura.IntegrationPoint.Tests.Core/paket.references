@@ -4,6 +4,7 @@ CSharpGuidelineAnalyzer
 FluentAssertions
 kCura.Apps.Common.Config
 kCura.Relativity.Client
+LanguageExt.Core
 NSubstitute
 NUnit
 Relativity

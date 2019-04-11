@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoints.Data.Factories;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data.QueryBuilders;
 using kCura.IntegrationPoints.Data.QueryBuilders.Implementations;
+using kCura.IntegrationPoints.Data.Transformers;
 using kCura.IntegrationPoints.Domain.Exceptions;
-using kCura.IntegrationPoints.Domain.Models;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
@@ -20,36 +20,13 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_relativityObjectManager = relativityObjectManager;
 		}
 
-		public SourceProviderDTO Read(int artifactId)
-		{
-			var nameFieldRef = new FieldRef { Name = SourceProviderFields.Name };
-			var identifierFieldRef = new FieldRef { Name = SourceProviderFields.Identifier };
-			var queryRequest = new QueryRequest
-			{
-				Condition = $"'{Domain.Constants.SOURCEPROVIDER_ARTIFACTID_FIELD_NAME}' == {artifactId}",
-				Fields = new List<FieldRef> { nameFieldRef, identifierFieldRef },
-				ObjectType = new ObjectTypeRef { Guid = new Guid(ObjectTypeGuids.SourceProvider) }
-			};
-			List<SourceProvider> queryResults;
-			try
-			{
-				queryResults = _relativityObjectManager.Query<SourceProvider>(queryRequest);
-				return CreateSourceProviderDTO(queryResults.Single());
-			}
-			catch (Exception e)
-			{
-				throw new IntegrationPointsException($"Failed to retrieve Source Provider for artifact Id: {artifactId}", e);
-			}
-		}
-
 		public int GetArtifactIdFromSourceProviderTypeGuidIdentifier(string sourceProviderGuidIdentifier)
 		{
-			var query = _artifactIdByGuid.Create(sourceProviderGuidIdentifier);
+			QueryRequest query = _artifactIdByGuid.Create(sourceProviderGuidIdentifier);
 
-			List<RelativityObject> queryResults;
 			try
 			{
-				queryResults = _relativityObjectManager.Query(query);
+				List<RelativityObject> queryResults = _relativityObjectManager.Query(query);
 				return queryResults.Single().ArtifactID;
 			}
 			catch (Exception e)
@@ -58,14 +35,19 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		private static SourceProviderDTO CreateSourceProviderDTO(SourceProvider result)
+		public Task<List<SourceProvider>> GetSourceProviderRdoByApplicationIdentifierAsync(Guid appGuid)
 		{
-			return new SourceProviderDTO
+			var request = new QueryRequest
 			{
-				ArtifactId = result.ArtifactId,
-				Name = result.Name,
-				Identifier = new Guid(result.Identifier)
+				ObjectType = new ObjectTypeRef
+				{
+					Guid = Guid.Parse(ObjectTypeGuids.SourceProvider)
+				},
+				Fields = RDOConverter.ConvertPropertiesToFields<SourceProvider>(),
+				Condition = $"'{SourceProviderFields.ApplicationIdentifier}' == '{appGuid}'"
 			};
+
+			return _relativityObjectManager.QueryAsync<SourceProvider>(request);
 		}
 	}
 }

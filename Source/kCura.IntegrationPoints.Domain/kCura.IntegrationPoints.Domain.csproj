@@ -56,6 +56,7 @@
     </Compile>
     <Compile Include="ApplicationBinary.cs" />
     <Compile Include="AssemblyDomainLoader.cs" />
+    <Compile Include="AssemblyExtension.cs" />
     <Compile Include="Authentication\IAuthTokenGenerator.cs" />
     <Compile Include="Authentication\ClaimsTokenGenerator.cs" />
     <Compile Include="Constants.cs" />
@@ -91,7 +92,6 @@
     <Compile Include="Models\ArtifactFieldDTO.cs" />
     <Compile Include="Models\BaseDTO.cs" />
     <Compile Include="Models\ButtonStateDTO.cs" />
-    <Compile Include="Models\DestinationProviderDTO.cs" />
     <Compile Include="Models\FileNamePartModel.cs" />
     <Compile Include="Models\ImportProviderSettings.cs" />
     <Compile Include="Models\ImportSettingsBase.cs" />
@@ -118,7 +118,6 @@
     <Compile Include="Models\ProductionDTO.cs" />
     <Compile Include="Models\SavedSearchDTO.cs" />
     <Compile Include="Models\SourceJobDTO.cs" />
-    <Compile Include="Models\SourceProviderDTO.cs" />
     <Compile Include="Models\SourceWorkspaceDTO.cs" />
     <Compile Include="Models\JsTreeItemWithParentIdDTO.cs" />
     <Compile Include="Models\ViewDTO.cs" />

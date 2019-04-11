@@ -71,6 +71,15 @@
     <Compile Include="BatchStatusCommands\Implementations\TargetDocumentsTaggingManager.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TargetDocumentsTaggingManagerFactory.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TempTableReader.cs" />
+    <Compile Include="Provider\Internals\ApplicationGuidFinder.cs" />
+    <Compile Include="Provider\Internals\DataProviderFactoryFactory.cs" />
+    <Compile Include="Provider\Internals\IApplicationGuidFinder.cs" />
+    <Compile Include="Provider\Internals\IDataProviderFactoryFactory.cs" />
+    <Compile Include="Provider\Internals\IIntegrationPointsRemover.cs" />
+    <Compile Include="Provider\IRipProviderInstaller.cs" />
+    <Compile Include="Provider\IRipProviderUninstaller.cs" />
+    <Compile Include="Provider\RipProviderInstaller.cs" />
+    <Compile Include="Provider\RipProviderUninstaller.cs" />
     <Compile Include="Validation\IAgentValidator.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="ContextContainer.cs" />
@@ -134,7 +143,6 @@
     <Compile Include="Monitoring\MessageSink\Aggregated\JobStatus.cs" />
     <Compile Include="Monitoring\MessageSink\ExternalCalls\ExternalCallsJobSummaryMessage.cs" />
     <Compile Include="Monitoring\MessageSink\ExternalCalls\ExternalCallsSink.cs" />
-    <Compile Include="Queries\IGetSourceProviderRdoByApplicationIdentifier.cs" />
     <Compile Include="Queries\IGetSourceProviderRdoByIdentifier.cs" />
     <Compile Include="ServiceManagerProvider.cs" />
     <Compile Include="IContextContainer.cs" />
@@ -329,7 +337,7 @@
     <Compile Include="Services\EntityManager\ManagerQueueService.cs" />
     <Compile Include="Services\DeleteHistoryErrorService.cs" />
     <Compile Include="Services\DeleteHistoryService.cs" />
-    <Compile Include="Services\DeleteIntegrationPoints.cs" />
+    <Compile Include="Provider\Internals\IntegrationPointsRemover.cs" />
     <Compile Include="Services\DestinationTypes\DestinationTypeFactory.cs" />
     <Compile Include="Properties\ErrorMessages.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -337,7 +345,6 @@
       <DependentUpon>ErrorMessages.resx</DependentUpon>
     </Compile>
     <Compile Include="Queries\GetSourceProviderRdoByIdentifier.cs" />
-    <Compile Include="Queries\GetSourceProviderRdoByApplicationIdentifier.cs" />
     <Compile Include="Services\Exporter\DocumentTransferDataReader.cs" />
     <Compile Include="Services\Exporter\ExportApiDataHelper.cs" />
     <Compile Include="Factories\Implementations\ExporterFactory.cs" />
@@ -675,6 +682,17 @@
       <ItemGroup>
         <Reference Include="kCura.Relativity.Client">
           <HintPath>..\..\packages\kCura.Relativity.Client\lib\net462\kCura.Relativity.Client.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="LanguageExt.Core">
+          <HintPath>..\..\packages\LanguageExt.Core\lib\net45\LanguageExt.Core.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -1612,6 +1630,20 @@
       <ItemGroup>
         <Reference Include="System.IdentityModel.Tokens.Jwt">
           <HintPath>..\..\packages\System.IdentityModel.Tokens.Jwt\lib\net45\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="mscorlib">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.ValueTuple">
+          <HintPath>..\..\packages\System.ValueTuple\lib\net461\System.ValueTuple.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

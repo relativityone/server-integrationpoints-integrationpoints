@@ -1,6 +1,7 @@
 Castle.Windsor
 CSharpGuidelineAnalyzer
 kCura.Relativity.Client
+LanguageExt.Core
 NSubstitute
 NUnit
 Polly
