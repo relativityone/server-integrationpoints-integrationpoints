@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
-using Polly;
 using Relativity.Sync.Telemetry;
 using SexyProxy;
 
@@ -10,9 +10,6 @@ namespace Relativity.Sync.KeplerFactory
 {
 	internal sealed class KeplerServiceInterceptor : IProxy
 	{
-		private const int _NUMBER_OF_RETRIES = 3;
-		private const int _MS_BETWEEN_RETRIES = 500;
-
 		private const string _RETRIES_COUNT_METRIC_NAME = "KeplerRetries";
 		private const string _EXCEPTION_METRIC_NAME = "KeplerException";
 
@@ -38,14 +35,32 @@ namespace Relativity.Sync.KeplerFactory
 
 			ExecutionStatus status = ExecutionStatus.Completed;
 			Exception exception = null;
-			int numberOfRetries = 0;
+			int attempts = 0;
 			_stopwatch.Start();
 			try
 			{
-				return await Policy
-					.Handle<HttpRequestException>() //Thrown when remote endpoint cannot be resolved - connection error
-					.WaitAndRetryAsync(_NUMBER_OF_RETRIES, (i, c) => TimeSpan.FromMilliseconds(_MS_BETWEEN_RETRIES), (e, waitTime, retryCount, context) => numberOfRetries = retryCount)
-					.ExecuteAsync(async () => await invocation.Proceed().ConfigureAwait(false)).ConfigureAwait(false);
+				const int numberOfRetries = 3;
+				object invocationHandler = null;
+
+				while (attempts < numberOfRetries)
+				{
+					try
+					{
+						invocationHandler = await invocation.Proceed().ConfigureAwait(false);
+						break;
+					}
+					catch (HttpRequestException)
+					{
+						attempts++;
+						if (attempts == numberOfRetries)
+						{
+							throw;
+						}
+						const int msBetweenRetries = 500;
+						Thread.Sleep(TimeSpan.FromMilliseconds(msBetweenRetries));
+					}
+				}
+				return invocationHandler;
 			}
 			catch (Exception e)
 			{
@@ -58,7 +73,7 @@ namespace Relativity.Sync.KeplerFactory
 				_stopwatch.Stop();
 				try
 				{
-					_syncMetrics.TimedOperation(GetMetricName(invocation), _stopwatch.Elapsed, status, CreateCustomData(numberOfRetries, exception));
+					_syncMetrics.TimedOperation(GetMetricName(invocation), _stopwatch.Elapsed, status, CreateCustomData(attempts, exception));
 				}
 				catch (Exception e)
 				{
