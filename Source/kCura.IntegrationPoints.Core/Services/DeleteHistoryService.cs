@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using Relativity.Services.Objects.DataContracts;
@@ -21,6 +22,11 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public void DeleteHistoriesAssociatedWithIPs(List<int> integrationPointsId, IRelativityObjectManager objectManager)
 		{
+		    if (!integrationPointsId.Any())
+		    {
+		        return;
+		    }
+
 			var request = new QueryRequest
 			{
 				Condition = $"'ArtifactId' in [{string.Join(",", integrationPointsId)}]"
