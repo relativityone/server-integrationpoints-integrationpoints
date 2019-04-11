@@ -60,6 +60,20 @@ namespace Relativity.Sync.Tests.Integration
 			MockSteps(containerBuilder, steps);
 		}
 
+		public static void MockFailingStep<T>(ContainerBuilder containerBuilder)
+		{
+			containerBuilder.RegisterGenericAs<T>(typeof(ExecutionConstrainsStub<>), typeof(IExecutionConstrains<>));
+			containerBuilder.RegisterGenericAs<T>(typeof(FailingExecutorStub<>), typeof(IExecutor<>));
+			containerBuilder.RegisterInstance(new ConfigurationStub()).As<T>();
+		}
+
+		public static void MockCompletedWithErrorsStep<T>(ContainerBuilder containerBuilder)
+		{
+			containerBuilder.RegisterGenericAs<T>(typeof(ExecutionConstrainsStub<>), typeof(IExecutionConstrains<>));
+			containerBuilder.RegisterGenericAs<T>(typeof(CompletedWithErrorsExecutorStub<>), typeof(IExecutor<>));
+			containerBuilder.RegisterInstance(new ConfigurationStub()).As<T>();
+		}
+
 		private static List<Type> GetAllConfigurationInterfacesExcept<T>()
 		{
 			return GetAllConfigurationInterfaces().Where(t => t != typeof(T)).ToList();
@@ -82,6 +96,8 @@ namespace Relativity.Sync.Tests.Integration
 				containerBuilder.RegisterInstance(new ConfigurationStub()).As(type);
 			}
 		}
+
+		private static void RegisterGenericAs<T>(this ContainerBuilder builder, Type concreteGeneric, Type interfaceGeneric) => RegisterGenericAs(builder, typeof(T), concreteGeneric, interfaceGeneric);
 
 		private static void RegisterGenericAs(this ContainerBuilder builder, Type t, Type concreteGeneric, Type interfaceGeneric)
 		{
