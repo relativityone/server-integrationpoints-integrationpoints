@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Banzai;
-using Relativity.Sync.Nodes;
+using Relativity.Sync.Executors.Validation;
 
 namespace Relativity.Sync
 {
