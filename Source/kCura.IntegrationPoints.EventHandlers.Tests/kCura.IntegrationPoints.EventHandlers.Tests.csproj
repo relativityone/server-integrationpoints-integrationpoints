@@ -86,6 +86,7 @@
     <Compile Include="IntegrationPoints\Helpers\IntegrationPointSecretDeleteTests.cs" />
     <Compile Include="IntegrationPoints\Helpers\RelativityProviderDestinationConfigurationTests.cs" />
     <Compile Include="IntegrationPoints\Helpers\RelativityProviderSourceConfigurationTests.cs" />
+    <Compile Include="IntegrationPoints\InternalSourceProviderInstallerTests.cs" />
     <Compile Include="IntegrationPoints\Validators\PreCascadeDeleteEventHandlerValidatorTests.cs" />
   </ItemGroup>
   <ItemGroup>
