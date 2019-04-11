@@ -238,10 +238,10 @@ namespace Relativity.Sync.Tests.Integration
 		private static bool Equals(SyncJobState me, SyncJobState you)
 		{
 			return string.Equals(me.Id, you.Id, StringComparison.InvariantCulture) &&
-			       string.Equals(me.Status, you.Status, StringComparison.InvariantCulture) &&
-			       string.Equals(me.Message, you.Message, StringComparison.InvariantCulture) &&
-			       me.Exception?.GetType() == you.Exception?.GetType() &&
-			       string.Equals(me.Exception?.Message, you.Exception?.Message, StringComparison.InvariantCulture);
+				string.Equals(me.Status, you.Status, StringComparison.InvariantCulture) &&
+				string.Equals(me.Message, you.Message, StringComparison.InvariantCulture) &&
+				me.Exception?.GetType() == you.Exception?.GetType() &&
+				string.Equals(me.Exception?.Message, you.Exception?.Message, StringComparison.InvariantCulture);
 		}
 	}
 }
