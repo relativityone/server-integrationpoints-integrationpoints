@@ -41,6 +41,7 @@
     <Compile Include="..\..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="IntegrationPointSourceProviderInstallerTests.cs" />
     <Compile Include="IntegrationPointSourceProviderUninstallerTests.cs" />
     <Compile Include="Internals\Converters\SourceProviderExtensionsTests.cs" />
     <Compile Include="Internals\KeplerRequestHelperTests.cs" />

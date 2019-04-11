@@ -1,17 +1,17 @@
-﻿using kCura.IntegrationPoints.Services;
+﻿using FluentAssertions;
+using kCura.EventHandler;
+using kCura.IntegrationPoints.Services;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
 using System.Threading.Tasks;
-using FluentAssertions;
-using kCura.EventHandler;
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller.Tests
 {
     [TestFixture]
     public class IntegrationPointSourceProviderUninstallerTests
     {
-        private Mock<IProviderManager> _providerManager;
+        private Mock<IProviderManager> _providerManagerMock;
 
         private SubjectUnderTests _sut;
 
@@ -21,25 +21,25 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Tests
         [SetUp]
         public void SetUp()
         {
-            _providerManager = new Mock<IProviderManager>();
+            _providerManagerMock = new Mock<IProviderManager>();
 
-            var servicesManager = new Mock<IServicesMgr>();
-            servicesManager
+            var servicesManagerMock = new Mock<IServicesMgr>();
+            servicesManagerMock
                 .Setup(x => x.CreateProxy<IProviderManager>(It.IsAny<ExecutionIdentity>()))
-                .Returns(_providerManager.Object);
+                .Returns(_providerManagerMock.Object);
 
-            var helper = new Mock<IEHHelper>
+            var helperMock = new Mock<IEHHelper>
             {
                 DefaultValue = DefaultValue.Mock
             };
-            helper
+            helperMock
                 .Setup(x => x.GetServicesManager())
-                .Returns(servicesManager.Object);
-            helper
+                .Returns(servicesManagerMock.Object);
+            helperMock
                 .Setup(x => x.GetActiveCaseID())
                 .Returns(_WORKSPACE_ID);
 
-            _sut = new SubjectUnderTests(helper.Object);
+            _sut = new SubjectUnderTests(helperMock.Object);
         }
 
         [Test]
@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Tests
         {
             // arrange
             var response = new UninstallProviderResponse();
-            _providerManager
+            _providerManagerMock
                 .Setup(x => x.UninstallProviderAsync(It.IsAny<UninstallProviderRequest>()))
                 .Returns(Task.FromResult(response));
 
@@ -55,7 +55,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Tests
             _sut.Execute();
 
             // assert
-            _providerManager.Verify(x =>
+            _providerManagerMock.Verify(x =>
                 x.UninstallProviderAsync(
                     It.Is<UninstallProviderRequest>(request => ValidateUninstallRequestIsValid(request))
                 )
@@ -66,7 +66,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Tests
         public void ShouldReturnSuccessWhenKeplerReturnedSuccess()
         {
             var response = new UninstallProviderResponse();
-            _providerManager
+            _providerManagerMock
                 .Setup(x => x.UninstallProviderAsync(It.IsAny<UninstallProviderRequest>()))
                 .Returns(Task.FromResult(response));
 
@@ -82,7 +82,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Tests
         {
             string errorMessage = "error in kepler";
             var response = new UninstallProviderResponse(errorMessage);
-            _providerManager
+            _providerManagerMock
                 .Setup(x => x.UninstallProviderAsync(It.IsAny<UninstallProviderRequest>()))
                 .Returns(Task.FromResult(response));
 
@@ -96,9 +96,11 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Tests
 
         private bool ValidateUninstallRequestIsValid(UninstallProviderRequest request)
         {
-            return request.ApplicationID == _APPLICATION_ID && request.WorkspaceID == _WORKSPACE_ID;
-        }
+            request.ApplicationID.Should().Be(_APPLICATION_ID);
+            request.WorkspaceID.Should().Be(_WORKSPACE_ID);
 
+            return true;
+        }
 
         private class SubjectUnderTests : IntegrationPointSourceProviderUninstaller
         {
