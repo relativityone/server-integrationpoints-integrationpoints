@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Banzai;
 using FluentAssertions;
+using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.Unit.Stubs;
@@ -109,6 +110,51 @@ namespace Relativity.Sync.Tests.Unit
 
 			// ASSERT
 			action.Should().Throw<NotImplementedException>();
+		}
+
+		[Test]
+		public async Task ItShouldInvokeSyncProgress()
+		{
+			INode<SyncExecutionContext> pipeline = new NodeWithProgressStub();
+			var syncProgressMock = new Mock<IProgress<SyncJobState>>();
+			_instance = new SyncJob(pipeline, _executionContextFactory, _correlationId, syncProgressMock.Object, new EmptyLogger());
+
+			// ACT
+			await _instance.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+
+			// ASSERT
+			syncProgressMock.Verify(x => x.Report(It.IsAny<SyncJobState>()));
+		}
+
+		[Test]
+		public async Task ItShouldInvokeBothProgresses()
+		{
+			INode<SyncExecutionContext> pipeline = new NodeWithProgressStub();
+			var syncProgressMock = new Mock<IProgress<SyncJobState>>();
+			var customProgressMock = new Mock<IProgress<SyncJobState>>();
+			_instance = new SyncJob(pipeline, _executionContextFactory, _correlationId, syncProgressMock.Object, new EmptyLogger());
+
+			// ACT
+			await _instance.ExecuteAsync(customProgressMock.Object, CancellationToken.None).ConfigureAwait(false);
+
+			// ASSERT
+			syncProgressMock.Verify(x => x.Report(It.IsAny<SyncJobState>()));
+			customProgressMock.Verify(x => x.Report(It.IsAny<SyncJobState>()));
+		}
+
+		[Test]
+		public async Task ItShouldNotThrowWhenCustomProgressThrows()
+		{
+			INode<SyncExecutionContext> pipeline = new NodeWithProgressStub();
+			var progressMock = new Mock<IProgress<SyncJobState>>();
+			progressMock.Setup(x => x.Report(It.IsAny<SyncJobState>())).Throws<InvalidOperationException>();
+			_instance = new SyncJob(pipeline, _executionContextFactory, _correlationId, new EmptyProgress<SyncJobState>(), new EmptyLogger());
+
+			// ACT
+			await _instance.ExecuteAsync(progressMock.Object, CancellationToken.None).ConfigureAwait(false);
+
+			// ASSERT
+			progressMock.Verify(x => x.Report(It.IsAny<SyncJobState>()));
 		}
 	}
 }
