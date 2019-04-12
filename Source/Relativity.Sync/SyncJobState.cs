@@ -101,5 +101,16 @@ namespace Relativity.Sync
 		{
 			return new SyncJobState(id, "Executing...", null, null);
 		}
+
+		/// <inheritdoc />
+		public override string ToString()
+		{
+			if (Exception != null)
+			{
+				return $"{Id} | {Status} | {Message} | {Exception.GetType().FullName}({Exception.Message})";
+			}
+
+			return $"{Id} | {Status} | {Message}";
+		}
 	}
 }

@@ -45,7 +45,7 @@ namespace Relativity.Sync
 		/// <param name="id">ID of the Sync step</param>
 		public static void ReportCompleted(this IProgress<SyncJobState> progress, string id)
 		{
-			SyncJobState jobState = SyncJobState.CompletedWithErrors(id);
+			SyncJobState jobState = SyncJobState.Completed(id);
 			progress.Report(jobState);
 		}
 
@@ -56,7 +56,7 @@ namespace Relativity.Sync
 		/// <param name="id">ID of the Sync step</param>
 		public static void ReportCompletedWithErrors(this IProgress<SyncJobState> progress, string id)
 		{
-			SyncJobState jobState = SyncJobState.Completed(id);
+			SyncJobState jobState = SyncJobState.CompletedWithErrors(id);
 			progress.Report(jobState);
 		}
 
