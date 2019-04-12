@@ -1,185 +1,187 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using FluentAssertions;
 using kCura.EventHandler;
-using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Provider;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints;
-using kCura.IntegrationPoints.SourceProviderInstaller.Services;
-using NSubstitute;
+using kCura.IntegrationPoints.Services;
+using LanguageExt;
+using Moq;
 using NUnit.Framework;
 using Relativity.API;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using static LanguageExt.Prelude;
+using SourceProvider = kCura.IntegrationPoints.Contracts.SourceProvider;
 
-namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
+namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 {
-	/// <summary>
-	/// Objective : this test suite is to test the simulation of source provider install eventhandler during migration.
-	/// These set of tests verify that all source providers are passed in to import service properly.
-	/// </summary>
-	[TestFixture]
-	internal class SourceProvidersMigrationEventHandlerTests : SourceProvidersMigrationEventHandler
-	{
-		private static readonly IErrorService _errorService = Substitute.For<IErrorService>();
+    /// <summary>
+    /// Objective : this test suite is to test the simulation of source provider install eventhandler during migration.
+    /// These set of tests verify that all source providers are passed in to <see cref="IProviderManager"/> properly.
+    /// </summary>
+    [TestFixture]
+    internal class SourceProvidersMigrationEventHandlerTests : SourceProvidersMigrationEventHandler
+    {
+        private List<Data.SourceProvider> _providersStub;
+        private Mock<IRipProviderInstaller> _providerInstallerMock;
+        private static readonly Mock<IErrorService> _errorServiceMock = new Mock<IErrorService>();
 
-		public SourceProvidersMigrationEventHandlerTests() : base(_errorService)
-		{ }
+        public SourceProvidersMigrationEventHandlerTests() : base(_errorServiceMock.Object)
+        { }
 
-		[OneTimeSetUp]
-		public void Setup()
-		{
-			Importer = new MockImportService();
-		}
+        [OneTimeSetUp]
+        public void Setup()
+        {
+            _providerInstallerMock = new Mock<IRipProviderInstaller>();
+            _providerInstallerMock.Setup(x => x.InstallProvidersAsync(It.IsAny<IEnumerable<SourceProvider>>()))
+                .Returns(Task.FromResult(Right<string, Unit>(Unit.Default)));
 
-		private List<SourceProvider> _providersStub;
+            var helper = new Mock<IEHHelper>
+            {
+                DefaultValue = DefaultValue.Mock
+            };
 
-		protected override List<SourceProvider> GetSourceProvidersFromPreviousWorkspace()
-		{
-			return _providersStub;
-		}
+            Helper = helper.Object;
+            ProviderInstallerForTests = _providerInstallerMock.Object;
+        }
 
-		[Test]
-		public void NoProviderInPreviousWorkspace()
-		{
-			// arrange
-			_providersStub = new List<SourceProvider>();
-			Logger = Substitute.For<IAPILog>();
-
-			Helper = CreateHelperWithLogger(Logger);
-
-			Response actual = Execute();
-
-			// act & assert
-			Assert.IsNotNull(actual);
-			Assert.IsFalse(actual.Success);
-			_errorService.Received().Log(Arg.Is<ErrorModel>(error => error.Message == "Failed to migrate Source Provider."));
-		}
+        protected override List<Data.SourceProvider> GetSourceProvidersFromPreviousWorkspace()
+        {
+            return _providersStub;
+        }
 
         [Test]
-		[SmokeTest]
-		public void OneProviderInPreviousWorkspace()
-		{
-			Guid identifier = new Guid("e01ff2d2-2ac7-4390-bbc3-64c6c17758bc");
-			Guid appIdentifier = new Guid("7cd4c64f-747b-4962-9647-671ee65b6ea4");
-			const int artifactId = 798;
-			const string name = "Test";
-			const string url = "fake url";
-			const string dataUrl = "config url";
+        public void NoProviderInPreviousWorkspace()
+        {
+            // arrange
+            _providersStub = new List<Data.SourceProvider>();
 
-			// arrange
-			SourceProvider providerToInstalled = new SourceProvider()
-			{
-				ApplicationIdentifier = appIdentifier.ToString(),
-				Identifier = identifier.ToString(),
-				ArtifactId = artifactId,
-				Name = name,
-				SourceConfigurationUrl = url,
-				ViewConfigurationUrl = dataUrl,
-				Config = new SourceProviderConfiguration()
-			};
+            // act
+            Response result = Execute();
 
-			_providersStub = new List<SourceProvider>()
-			{
-				providerToInstalled
-			};
+            // assert
+            result.Success.Should().BeFalse("because provider was not present in previous workspace");
+            _errorServiceMock
+                .Verify(x =>
+                    x.Log(It.Is<ErrorModel>(error => error.Message == "Failed to migrate Source Provider.")),
+                    "because no providers were installed in a previous workspace"
+                );
+        }
 
-			Helper = Substitute.For<IEHHelper>();
-			// act
-			var result = Execute();
+        [Test]
+        [SmokeTest]
+        public void OneProviderInPreviousWorkspace()
+        {
+            Guid identifier = new Guid("e01ff2d2-2ac7-4390-bbc3-64c6c17758bc");
+            Guid appIdentifier = new Guid("7cd4c64f-747b-4962-9647-671ee65b6ea4");
+            const int artifactId = 798;
+            const string name = "Test";
+            const string url = "fake url";
+            const string dataUrl = "config url";
 
-			//assert
-			Assert.That(result.Success, Is.True);
-			MockImportService importService = (MockImportService)Importer;
-			Assert.IsNotNull(importService.InstalledProviders);
-			Assert.AreEqual(1, importService.InstalledProviders.Count());
-			VerifyInstalledProvider(providerToInstalled, importService.InstalledProviders.ElementAt(0));
-		}
+            // arrange
+            var providerToInstall = new Data.SourceProvider
+            {
+                ApplicationIdentifier = appIdentifier.ToString(),
+                Identifier = identifier.ToString(),
+                ArtifactId = artifactId,
+                Name = name,
+                SourceConfigurationUrl = url,
+                ViewConfigurationUrl = dataUrl,
+                Config = new SourceProviderConfiguration()
+            };
 
-		[Test]
-		public void MultipleProvidersInPreviousWorkspace()
-		{
-			// arrange
-			SourceProvider providerToInstalled = new SourceProvider()
-			{
-				ApplicationIdentifier = "72194851-ad15-4769-bec5-04011498a1b4",
-				Identifier = "e01ff2d2-2ac7-4390-bbc3-64c6c17758bc",
-				ArtifactId = 789,
-				Name = "test",
-				SourceConfigurationUrl = "fake url",
-				ViewConfigurationUrl = "config url",
-				Config = new SourceProviderConfiguration()
-			};
+            _providersStub = new List<Data.SourceProvider>
+            {
+                providerToInstall
+            };
 
-			SourceProvider provider2ToInstalled = new SourceProvider()
-			{
-				ApplicationIdentifier = "cf3ab0f2-d26f-49fb-bd11-547423a692c1",
-				Identifier = "e01ff2d2-2ac7-4390-bbc3-64c6c17758bd",
-				ArtifactId = 777,
-				Name = "test2",
-				SourceConfigurationUrl = "fake url2",
-				ViewConfigurationUrl = "config url2",
-				Config = new SourceProviderConfiguration()
-			};
+            // act
+            Response result = Execute();
 
-			_providersStub = new List<SourceProvider>()
-			{
-				providerToInstalled,
-				provider2ToInstalled
-			};
+            // assert
+            result.Success.Should().BeTrue();
 
-			IAPILog logger = Substitute.For<IAPILog>();
-			Helper = CreateHelperWithLogger(logger);
+            VerifyCorrectNumberOfProviderWasInstalledUsingProductionManager(_providersStub.Count);
+            VerifyProviderWasInstalledUsingProductionManager(providerToInstall.Name);
+        }
 
-			// act
-			Execute();
+        [Test]
+        public void MultipleProvidersInPreviousWorkspace()
+        {
+            // arrange
+            var providerToInstall = new Data.SourceProvider
+            {
+                ApplicationIdentifier = "72194851-ad15-4769-bec5-04011498a1b4",
+                Identifier = "e01ff2d2-2ac7-4390-bbc3-64c6c17758bc",
+                ArtifactId = 789,
+                Name = "test",
+                SourceConfigurationUrl = "fake url",
+                ViewConfigurationUrl = "config url",
+                Config = new SourceProviderConfiguration()
+            };
 
-			//assert
-			MockImportService importService = (MockImportService)Importer;
-			Assert.IsNotNull(importService.InstalledProviders);
+            var provider2ToInstall = new Data.SourceProvider
+            {
+                ApplicationIdentifier = "cf3ab0f2-d26f-49fb-bd11-547423a692c1",
+                Identifier = "e01ff2d2-2ac7-4390-bbc3-64c6c17758bd",
+                ArtifactId = 777,
+                Name = "test2",
+                SourceConfigurationUrl = "fake url2",
+                ViewConfigurationUrl = "config url2",
+                Config = new SourceProviderConfiguration()
+            };
 
-			List<SourceProviderInstaller.SourceProvider> installedProviders = importService.InstalledProviders.ToList();
-			Assert.AreEqual(2, installedProviders.Count);
-			VerifyInstalledProvider(providerToInstalled, importService.InstalledProviders.ElementAt(0));
-			VerifyInstalledProvider(provider2ToInstalled, importService.InstalledProviders.ElementAt(1));
-		}
+            _providersStub = new List<Data.SourceProvider>
+            {
+                providerToInstall,
+                provider2ToInstall
+            };
 
-		private IEHHelper CreateHelperWithLogger(IAPILog logger)
-		{
-			logger.ForContext<SourceProvidersMigrationEventHandler>().Returns(logger);
+            // act
+            Response result = Execute();
 
-			ILogFactory loggerFactory = Substitute.For<ILogFactory>();
-			loggerFactory.GetLogger().Returns(logger);
+            //assert
+            result.Success.Should().BeTrue();
 
-			IEHHelper helper = Substitute.For<IEHHelper>();
-			helper.GetLoggerFactory().Returns(loggerFactory);
-			return helper;
-		}
 
-		private class MockImportService : IImportService
-		{
-			public IEnumerable<SourceProviderInstaller.SourceProvider> InstalledProviders;
+            VerifyCorrectNumberOfProviderWasInstalledUsingProductionManager(_providersStub.Count);
+            VerifyProviderWasInstalledUsingProductionManager(providerToInstall.Name);
+            VerifyProviderWasInstalledUsingProductionManager(provider2ToInstall.Name);
+        }
 
-			public void InstallProviders(IList<SourceProviderInstaller.SourceProvider> providers)
-			{
-				InstalledProviders = providers;
-			}
+        private void VerifyCorrectNumberOfProviderWasInstalledUsingProductionManager(int expectedNumberOfProviders)
+        {
+            string failureMessage = $"because {expectedNumberOfProviders} provider was installed in previous workspace";
+            bool Predicate(IEnumerable<SourceProvider> sourceProviders) => sourceProviders.Count() == expectedNumberOfProviders;
 
-			public void UninstallProviders(int applicationID)
-			{
-				throw new System.NotImplementedException();
-			}
-		}
+            VerifyInstallationUsingProviderInstaller(failureMessage, Predicate);
+        }
 
-		private void VerifyInstalledProvider(SourceProvider providerToBeInstalled, SourceProviderInstaller.SourceProvider installedProvider)
-		{
-			Assert.AreEqual(providerToBeInstalled.ApplicationIdentifier, installedProvider.ApplicationGUID.ToString());
-			Assert.AreEqual(providerToBeInstalled.Identifier, installedProvider.GUID.ToString());
-			Assert.AreEqual(providerToBeInstalled.Name, installedProvider.Name);
-			Assert.AreEqual(providerToBeInstalled.SourceConfigurationUrl, installedProvider.Url);
-			Assert.AreEqual(providerToBeInstalled.ViewConfigurationUrl, installedProvider.ViewDataUrl);
-		}
-	}
+        private void VerifyProviderWasInstalledUsingProductionManager(string providerName)
+        {
+            string failureMessage = $"because '{providerName}' provider was installed in previous workspace";
+
+            bool Predicate(IEnumerable<SourceProvider> sourceProviders) =>
+                sourceProviders.SingleOrDefault(p => p.Name == providerName) != null;
+
+            VerifyInstallationUsingProviderInstaller(failureMessage, Predicate);
+        }
+
+        private void VerifyInstallationUsingProviderInstaller(
+            string failureMessage,
+            Func<IEnumerable<SourceProvider>, bool> predicate)
+        {
+            _providerInstallerMock
+                .Verify(x =>
+                        x.InstallProvidersAsync(It.Is<IEnumerable<SourceProvider>>(request => predicate(request))),
+                    failureMessage
+                );
+        }
+    }
 }

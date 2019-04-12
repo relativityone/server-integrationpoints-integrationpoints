@@ -8,7 +8,6 @@ using kCura.IntegrationPoints.Data.Installers;
 using kCura.IntegrationPoints.Data.RSAPIClient;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Services.Helpers;
-using kCura.IntegrationPoints.Services.Interfaces.Private.Helpers;
 using kCura.IntegrationPoints.Services.Repositories;
 using kCura.IntegrationPoints.Services.Repositories.Implementations;
 using kCura.Relativity.Client;

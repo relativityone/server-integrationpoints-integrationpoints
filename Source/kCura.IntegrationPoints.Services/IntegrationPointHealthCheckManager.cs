@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Services.Helpers;
 using kCura.IntegrationPoints.Services.Installers;
-using kCura.IntegrationPoints.Services.Interfaces.Private.Helpers;
 using Relativity.Logging;
 using Relativity.Telemetry.APM;
 

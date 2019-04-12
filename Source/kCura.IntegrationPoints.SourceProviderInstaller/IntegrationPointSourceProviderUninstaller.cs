@@ -1,183 +1,134 @@
-﻿using System;
-using kCura.EventHandler;
-using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Factories.Implementations;
-using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.SourceProviderInstaller.Services;
+﻿using kCura.EventHandler;
+using kCura.IntegrationPoints.Services;
+using kCura.IntegrationPoints.SourceProviderInstaller.Internals;
+using Relativity.API;
+using System;
+using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller
 {
-	/// <summary>
-	/// Occurs immediately before the execution of a Pre Uninstall event handler.
-	/// </summary>
-	public delegate void PreUninstallPreExecuteEvent();
+    /// <summary>
+    /// Occurs immediately before the execution of a Pre Uninstall event handler.
+    /// </summary>
+    public delegate void PreUninstallPreExecuteEvent();
 
-	/// <summary>
-	/// Occurs after the source provider is removed from the database table.
-	/// </summary>
-	/// <param name="isUninstalled"></param>
-	/// <param name="ex"></param>
-	public delegate void PreUninstallPostExecuteEvent(bool isUninstalled, Exception ex);
+    /// <summary>
+    /// Occurs after the source provider is removed from the database table.
+    /// </summary>
+    /// <param name="isUninstalled"></param>
+    /// <param name="ex"></param>
+    public delegate void PreUninstallPostExecuteEvent(bool isUninstalled, Exception ex);
 
-	/// <summary>
-	/// Removes a data source provider when the user uninstalls the application from a workspace.
-	/// </summary>
-	public abstract class IntegrationPointSourceProviderUninstaller : kCura.EventHandler.PreUninstallEventHandler
-	{
-		/// <summary>
-		/// Occurs before the removal of the data source provider.
-		/// </summary>
-		public event PreUninstallPreExecuteEvent RaisePreUninstallPreExecuteEvent;
+    /// <summary>
+    /// Removes a data source provider when the user uninstalls the application from a workspace.
+    /// </summary>
+    public abstract class IntegrationPointSourceProviderUninstaller : PreUninstallEventHandler
+    {
+        private const int _SEND_INSTALL_REQUEST_MAX_RETRIES_NUMBER = 3;
+        private const int _SEND_INSTALL_REQUEST_DELAY_BETWEEN_RETRIES_IN_MS = 3000;
+        private const string _SUCCESS_MESSAGE = "Source Provider uninstalled successfully.";
+        private const string _FAILURE_MESSAGE = "Uninstalling source provider failed.";
 
-		/// <summary>
-		/// Occurs after the removal of all the data source providers in the current application.
-		/// </summary>
-		public event PreUninstallPostExecuteEvent RaisePreUninstallPostExecuteEvent;
+        private readonly Lazy<IAPILog> _logggerLazy;
 
-		/// <summary>
-		/// Creates a new instance of the data source uninstall provider.
-		/// </summary>
-		protected IntegrationPointSourceProviderUninstaller()
-		{
-		}
+        /// <summary>
+        /// Occurs before the removal of the data source provider.
+        /// </summary>
+        public event PreUninstallPreExecuteEvent RaisePreUninstallPreExecuteEvent;
 
-		private IWorkspaceDBContext _workspaceDbContext;
-		internal IWorkspaceDBContext GetWorkspaceDbContext()
-		{
-			return _workspaceDbContext ??
-						 (_workspaceDbContext = new WorkspaceContext(base.Helper.GetDBContext(base.Helper.GetActiveCaseID())));
-		}
+        /// <summary>
+        /// Occurs after the removal of all the data source providers in the current application.
+        /// </summary>
+        public event PreUninstallPostExecuteEvent RaisePreUninstallPostExecuteEvent;
 
-		private ICaseServiceContext _caseContext;
-		internal ICaseServiceContext CaseServiceContext
-		{
-			get
-			{
-				return _caseContext ?? (_caseContext = ServiceContextFactory.CreateCaseServiceContext(base.Helper, base.Helper.GetActiveCaseID()));
-			}
-			set { _caseContext = value; }
-		}
-		private IntegrationPointQuery _integrationPointQuery;
-		private DeleteHistoryService _deleteHistoryService;
+        private IAPILog Logger => _logggerLazy.Value;
 
-		internal IntegrationPointQuery IntegrationPoint
-		{
-			get
-			{
-				return _integrationPointQuery ?? (_integrationPointQuery = new IntegrationPointQuery(CreateObjectManager()));
-			}
-		}
+        /// <summary>
+        /// Creates a new instance of the data source uninstall provider.
+        /// </summary>
+        protected IntegrationPointSourceProviderUninstaller()
+        {
+            _logggerLazy = new Lazy<IAPILog>(
+                () => Helper.GetLoggerFactory().GetLogger().ForContext<IntegrationPointSourceProviderInstaller>()
+            );
+        }
 
-		internal DeleteHistoryService DeleteHistory
-		{
-			get { return _deleteHistoryService ?? (_deleteHistoryService = new DeleteHistoryService(CreateObjectManagerFactory())); }
-		}
+        /// <summary>
+        /// Runs when the event handler is called during the removal of the data source provider.
+        /// </summary>
+        /// <returns>An object of type Response, which frequently contains a message.</returns>
+        public sealed override Response Execute()
+        {
+            Exception thrownException = null;
 
-		private DeleteIntegrationPoints _deleteIntegrationPoints;
-		internal DeleteIntegrationPoints DeleteIntegrationPoints
-		{
-			get
-			{
-				return _deleteIntegrationPoints ?? (_deleteIntegrationPoints = new DeleteIntegrationPoints(IntegrationPoint, DeleteHistory, CreateObjectManager()));
-			}
-			set { _deleteIntegrationPoints = value; }
-		}
+            try
+            {
+                OnRaisePreUninstallPreExecuteEvent();
+                UninstallProviderResponse uninstallProviderResponse = UninstallSourceProvider().GetAwaiter().GetResult();
 
-		private IEddsServiceContext _eddsContext;
-		internal IEddsServiceContext EddsServiceContext
-		{
-			get
-			{
-				return _eddsContext ?? (_eddsContext = ServiceContextFactory.CreateEddsServiceContext(base.Helper));
-			}
-			set { _eddsContext = value; }
-		}
+                return new Response
+                {
+                    Success = uninstallProviderResponse.Success,
+                    Message = uninstallProviderResponse.Success ? _SUCCESS_MESSAGE : uninstallProviderResponse.ErrorMessage
+                };
+            }
+            catch (Exception ex)
+            {
+                thrownException = ex;
+                return new Response
+                {
+                    Success = false,
+                    Message = _FAILURE_MESSAGE,
+                    Exception = ex
+                };
+            }
+            finally
+            {
+                bool isSuccess = thrownException == null;
+                OnRaisePreUninstallPostExecuteEvent(isSuccess, thrownException);
+            }
+        }
 
-		private IImportService _importService;
-		internal IImportService ImportService
-		{
-			get
-			{
-				if (_importService == null)
-				{
-					_importService = new ImportService(this.CaseServiceContext, this.EddsServiceContext, this.DeleteIntegrationPoints, base.Helper);
-				}
+        private async Task<UninstallProviderResponse> UninstallSourceProvider()
+        {
+            var request = new UninstallProviderRequest
+            {
+                ApplicationID = ApplicationArtifactId,
+                WorkspaceID = Helper.GetActiveCaseID()
+            };
 
-				return _importService;
-			}
-			set { _importService = value; }
-		}
+            return await SendUninstallProviderRequestWithRetriesAsync(request).ConfigureAwait(false);
+        }
 
-		/// <summary>
-		/// Runs when the event handler is called during the removal of the data source provider.
-		/// </summary>
-		/// <returns>An object of type Response, which frequently contains a message.</returns>
-		public override sealed Response Execute()
-		{
-			bool isSuccess = false;
-			Exception ex = null;
-			try
-			{
-				OnRaisePreUninstallPreExecuteEvent();
-				UninstallSourceProvider();
+        /// <summary>
+        /// We cannot use Polly, because it would require adding external dependency to our SDK
+        /// </summary>
+        private Task<UninstallProviderResponse> SendUninstallProviderRequestWithRetriesAsync(UninstallProviderRequest request, int attemptNumber = 1)
+        {
+            IServicesMgr servicesManager = Helper.GetServicesManager();
+            var retryHelper = new KeplerRequestHelper(Logger, servicesManager, _SEND_INSTALL_REQUEST_MAX_RETRIES_NUMBER, _SEND_INSTALL_REQUEST_DELAY_BETWEEN_RETRIES_IN_MS);
 
-				isSuccess = true;
-			}
-			catch (Exception e)
-			{
-				ex = e;
-				isSuccess = false;
-				throw;
-			}
-			finally
-			{
-				OnRaisePreUninstallPostExecuteEvent(isSuccess, ex);
-			}
-			return new Response
-			{
-				Success = isSuccess
-			};
-		}
+            return retryHelper
+                .ExecuteWithRetriesAsync<IProviderManager, UninstallProviderRequest, UninstallProviderResponse>(
+                    (providerManager, r) => providerManager.UninstallProviderAsync(r),
+                    request
+                 );
+        }
 
-		private void UninstallSourceProvider()
-		{
-			ImportService.UninstallProviders(base.ApplicationArtifactId);
-		}
+        /// <summary>
+        /// Raises the RaisePreUninstallPreExecuteEvent.
+        /// </summary>
+        protected void OnRaisePreUninstallPreExecuteEvent()
+        {
+            RaisePreUninstallPreExecuteEvent?.Invoke();
+        }
 
-
-		/// <summary>
-		/// Raises the RaisePreUninstallPreExecuteEvent.
-		/// </summary>
-		protected void OnRaisePreUninstallPreExecuteEvent()
-		{
-			if (RaisePreUninstallPreExecuteEvent != null)
-			{
-				RaisePreUninstallPreExecuteEvent();
-			}
-		}
-
-		/// <summary>
-		/// Raises the RaisePreUninstallPostExecuteEvent.
-		/// </summary>
-		protected void OnRaisePreUninstallPostExecuteEvent(bool isUninstalled, Exception ex)
-		{
-			if (RaisePreUninstallPostExecuteEvent != null)
-			{
-				RaisePreUninstallPostExecuteEvent(isUninstalled, ex);
-			}
-		}
-
-		private IRelativityObjectManager CreateObjectManager()
-		{
-			return CreateObjectManagerFactory().CreateRelativityObjectManager(Helper.GetActiveCaseID());
-		}
-
-		private IRelativityObjectManagerFactory CreateObjectManagerFactory()
-		{
-			return new RelativityObjectManagerFactory(Helper);
-		}
-	}
+        /// <summary>
+        /// Raises the RaisePreUninstallPostExecuteEvent.
+        /// </summary>
+        protected void OnRaisePreUninstallPostExecuteEvent(bool isUninstalled, Exception ex)
+        {
+            RaisePreUninstallPostExecuteEvent?.Invoke(isUninstalled, ex);
+        }
+    }
 }

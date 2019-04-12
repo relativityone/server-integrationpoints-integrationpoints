@@ -3,6 +3,7 @@ CSharpGuidelineAnalyzer
 kCura.Apps.Common.Config
 kCura.EventHandler
 kCura.Relativity.Client
+LanguageExt.Core
 Relativity
 Relativity.Core
 Relativity.Data

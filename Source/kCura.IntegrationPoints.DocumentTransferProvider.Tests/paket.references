@@ -1,5 +1,6 @@
 CSharpGuidelineAnalyzer
 kCura.Relativity.Client
+LanguageExt.Core
 NSubstitute
 NUnit
 Relativity.API

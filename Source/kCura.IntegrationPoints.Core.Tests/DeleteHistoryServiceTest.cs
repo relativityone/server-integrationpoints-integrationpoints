@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Tests
@@ -32,8 +33,8 @@ namespace kCura.IntegrationPoints.Core.Tests
 		[Test]
 		public void ItShouldSetJobHistoryNull()
 		{
-			//ARRANGE
-			var integrationPointsId = new List<int> {1, 2};
+		    // arrange
+            var integrationPointsId = new List<int> {1, 2};
 
 			var integrationPoint = new List<Data.IntegrationPoint>
 			{
@@ -49,11 +50,25 @@ namespace kCura.IntegrationPoints.Core.Tests
 
 			_objectManager.Query<Data.IntegrationPoint>(Arg.Any<QueryRequest>()).Returns(integrationPoint);
 
-			//ACT
+			// act
 			_instance.DeleteHistoriesAssociatedWithIPs(integrationPointsId, _objectManager);
 
-			//ASSERT
+			// assert
 			_objectManager.Received(2).Update(Arg.Is<Data.IntegrationPoint>( x => !x.JobHistory.Any()));
 		}
-	}
+
+        [Test]
+	    public void ItShouldNotQueryForIntegrationPointsWhenIdsListIsEmpty()
+	    {
+	        // arrange
+	        var integrationPointsId = new List<int>();
+
+            // act
+	        _instance.DeleteHistoriesAssociatedWithIPs(integrationPointsId, _objectManager);
+
+            // assert
+	        _objectManager.DidNotReceiveWithAnyArgs()
+	            .Query<Data.IntegrationPoint>(Arg.Any<QueryRequest>(), Arg.Any<ExecutionIdentity>());
+	    }
+    }
 }

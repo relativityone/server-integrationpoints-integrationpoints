@@ -1,6 +1,5 @@
 ﻿using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using kCura.IntegrationPoints.Services.Interfaces.Private.Helpers;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Services.Helpers

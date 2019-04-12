@@ -1,7 +1,7 @@
 ﻿using kCura.IntegrationPoints.Data.Repositories;
 using Relativity.API;
 
-namespace kCura.IntegrationPoints.Services.Interfaces.Private.Helpers
+namespace kCura.IntegrationPoints.Services.Helpers
 {
 	public interface IPermissionRepositoryFactory
 	{

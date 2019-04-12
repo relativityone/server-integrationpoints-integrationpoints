@@ -3,7 +3,6 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
@@ -251,7 +250,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			var importSettings = new ImportSettings { ArtifactTypeId = 1111111, CaseArtifactId = 2222222, ImportNativeFile = false, ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.SetFileLinks };
 			string options = JsonConvert.SerializeObject(importSettings);
 			TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
-			rdoSynchronizer.SourceProvider = new SourceProvider()
+			rdoSynchronizer.SourceProvider = new Data.SourceProvider()
 			{
 				Config = new SourceProviderConfiguration()
 				{

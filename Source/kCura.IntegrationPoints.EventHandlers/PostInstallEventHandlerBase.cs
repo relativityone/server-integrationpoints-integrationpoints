@@ -1,4 +1,7 @@
-﻿using kCura.EventHandler;
+﻿using System;
+using System.Linq;
+using System.Runtime.InteropServices;
+using kCura.EventHandler;
 using kCura.IntegrationPoints.Core.Helpers.Logging;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
@@ -11,13 +14,10 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Logging;
 using Relativity.API;
-using System;
-using System.Linq;
-using System.Runtime.InteropServices;
 
-namespace kCura.IntegrationPoints.SourceProviderInstaller
+namespace kCura.IntegrationPoints.EventHandlers
 {
-#pragma warning disable 1591
+
 	/// <summary>
 	/// Represents the base class for Post Install event handlers.
 	/// </summary>
@@ -146,7 +146,4 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 			return guid == null ? Guid.Empty : new Guid(guid.Value);
 		}
 	}
-
 }
-
-#pragma warning restore 1591

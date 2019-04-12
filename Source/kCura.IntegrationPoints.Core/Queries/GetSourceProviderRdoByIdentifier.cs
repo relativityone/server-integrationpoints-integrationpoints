@@ -1,19 +1,19 @@
-﻿using System;
-using System.Linq;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Data;
+﻿using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Transformers;
 using Relativity.Services.Objects.DataContracts;
+using System;
+using System.Linq;
 
 namespace kCura.IntegrationPoints.Core.Queries
 {
-	public class GetSourceProviderRdoByIdentifier : GetObjectBase, IGetSourceProviderRdoByIdentifier
+	public class GetSourceProviderRdoByIdentifier : IGetSourceProviderRdoByIdentifier
 	{
-		private readonly ICaseServiceContext _context;
-		public GetSourceProviderRdoByIdentifier(ICaseServiceContext context)
-			: base(typeof(SourceProvider))
+		private readonly IRelativityObjectManager _objectManager;
+
+		public GetSourceProviderRdoByIdentifier(IRelativityObjectManager objectManager)
 		{
-			_context = context;
+			_objectManager = objectManager;
 		}
 
 		public SourceProvider Execute(Guid providerGuid)
@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Core.Queries
 				Fields = RDOConverter.ConvertPropertiesToFields<SourceProvider>(),
 				Condition = $"'{SourceProviderFields.Identifier}' == '{providerGuid}'"
 			};
-			return _context.RsapiService.RelativityObjectManager.Query<SourceProvider>(request).First();
+			return _objectManager.Query<SourceProvider>(request).First();
 		}
 	}
 }

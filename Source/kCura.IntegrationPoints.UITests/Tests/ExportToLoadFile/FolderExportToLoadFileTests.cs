@@ -1,4 +1,5 @@
 ﻿using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.Exceptions;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Models.Constants.ExportToLoadFile;
 using kCura.IntegrationPoint.Tests.Core.Models.Constants.Shared;
@@ -11,7 +12,6 @@ using kCura.IntegrationPoints.UITests.Validation;
 using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
-using kCura.IntegrationPoint.Tests.Core.Exceptions;
 using Constants = kCura.IntegrationPoint.Tests.Core.Constants;
 using IntegrationPointType = kCura.IntegrationPoint.Tests.Core.Models.IntegrationPointType;
 
@@ -179,12 +179,12 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			{
 				Guid[] viewFieldsGuids = { Guid.Parse(DocumentFieldGuids.ControlNumber) };
 				await View
-                    .CreateViewAsync(
-                        workspaceID, 
-                        _VIEW_NAME, 
-                        Constants.DOCUMENT_ARTIFACT_TYPE_ID,
-					    viewFieldsGuids)
-                    .ConfigureAwait(false);
+					.CreateViewAsync(
+						workspaceID,
+						_VIEW_NAME,
+						Constants.DOCUMENT_ARTIFACT_TYPE_ID,
+						viewFieldsGuids)
+					.ConfigureAwait(false);
 			}
 			catch (Exception ex)
 			{
