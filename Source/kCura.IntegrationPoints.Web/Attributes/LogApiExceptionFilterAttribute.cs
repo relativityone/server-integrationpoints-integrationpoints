@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Text;
 using System.Web.Http.Filters;
 using kCura.IntegrationPoints.Domain.Exceptions;
+using Relativity.Core.Service;
 using Relativity.Logging;
 
 namespace kCura.IntegrationPoints.Web.Attributes
@@ -16,6 +17,7 @@ namespace kCura.IntegrationPoints.Web.Attributes
 	[AttributeUsage(AttributeTargets.All)]
 	public class LogApiExceptionFilterAttribute : ExceptionFilterAttribute
 	{
+		private readonly IHtmlSanitizerManager _sanitizer = new HtmlSanitizerManager();
 		private const string _CONTACT_ADMIN_MESSAGE_ENDING = " Please check Error tab for more details";
 
 		#region Fields
@@ -49,11 +51,18 @@ namespace kCura.IntegrationPoints.Web.Attributes
 			}
 
 			string msg = msgBuilder.ToString();
-			actionExecutedContext.Response = actionExecutedContext.Request.CreateResponse(HttpStatusCode.InternalServerError, msg);
-			actionExecutedContext.Response.Content = new StringContent(msg);
-			
+
+			SetMessageToResponse(actionExecutedContext, msg);
 			_apiLog.LogError(actionExecutedContext.Exception, msg);
 		}
+
+		private void SetMessageToResponse(HttpActionExecutedContext actionExecutedContext, string msg)
+		{
+			string sanitizedMsg = _sanitizer.Sanitize(msg).CleanHTML;
+			actionExecutedContext.Response = actionExecutedContext.Request.CreateResponse(HttpStatusCode.InternalServerError, sanitizedMsg);
+			actionExecutedContext.Response.Content = new StringContent(sanitizedMsg);
+		}
+
 
 		private string GetMostSpecificMessage(Exception exception)
 		{
