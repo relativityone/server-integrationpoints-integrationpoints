@@ -7,7 +7,6 @@ using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.ServiceProxy;
 using Relativity.Sync.KeplerFactory;
-using Relativity.Sync.Tests.Integration.Stubs;
 
 namespace Relativity.Sync.Tests.Integration
 {
@@ -44,7 +43,6 @@ namespace Relativity.Sync.Tests.Integration
 		}
 
 		[Test]
-		[Ignore("DynamicProxy issue REL-310378")]
 		public async Task ItShouldWrapSourceKeplerServiceForAdmin()
 		{
 			ISourceServiceFactoryForAdmin serviceFactory = _container.Resolve<ISourceServiceFactoryForAdmin>();
@@ -57,7 +55,6 @@ namespace Relativity.Sync.Tests.Integration
 		}
 
 		[Test]
-		[Ignore("DynamicProxy issue REL-310378")]
 		public async Task ItShouldWrapSourceKeplerServiceForUser()
 		{
 			ISourceServiceFactoryForUser serviceFactory = _container.Resolve<ISourceServiceFactoryForUser>();
@@ -70,7 +67,6 @@ namespace Relativity.Sync.Tests.Integration
 		}
 
 		[Test]
-		[Ignore("DynamicProxy issue REL-310378")]
 		public async Task ItShouldWrapDestinationKeplerServiceForAdmin()
 		{
 			IDestinationServiceFactoryForAdmin serviceFactory = _container.Resolve<IDestinationServiceFactoryForAdmin>();
@@ -83,7 +79,6 @@ namespace Relativity.Sync.Tests.Integration
 		}
 
 		[Test]
-		[Ignore("DynamicProxy issue REL-310378")]
 		public async Task ItShouldWrapDestinationKeplerServiceForUser()
 		{
 			IDestinationServiceFactoryForUser serviceFactory = _container.Resolve<IDestinationServiceFactoryForUser>();
