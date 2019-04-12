@@ -7,6 +7,7 @@ kCura.Relativity.Client
 Microsoft.CodeAnalysis.FxCopAnalyzers
 CSharpGuidelineAnalyzer
 
+Polly
 Autofac
 SexyProxy.Emit
 
