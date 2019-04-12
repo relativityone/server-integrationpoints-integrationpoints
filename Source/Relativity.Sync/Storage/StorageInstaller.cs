@@ -13,7 +13,7 @@ namespace Relativity.Sync.Storage
 
 			builder.RegisterType<ValidationConfiguration>().As<IValidationConfiguration>();
 
-			builder.Register(CreateConfiguration).As<IConfiguration>().ExternallyOwned();
+			builder.Register(CreateConfiguration).As<IConfiguration>();
 		}
 
 		private IConfiguration CreateConfiguration(IComponentContext componentContext)

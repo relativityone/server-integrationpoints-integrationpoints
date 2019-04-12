@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Autofac;
 using Autofac.Core.Registration;
 using FluentAssertions;
@@ -13,54 +15,61 @@ namespace Relativity.Sync.Tests.Unit
 	{
 		private SyncJobFactory _instance;
 		private Mock<IContainerFactory> _containerFactory;
+		private Mock<IContainer> _container;
+		private ISyncLog _logger;
+		private SyncJobParameters _syncJobParameters;
+		private SyncJobExecutionConfiguration _configuration;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_containerFactory = new Mock<IContainerFactory>();
+			_container = new Mock<IContainer>();
+
+			_syncJobParameters = new SyncJobParameters(1, 1);
+			_configuration = new SyncJobExecutionConfiguration();
+			_logger = new EmptyLogger();
 			_instance = new SyncJobFactory(_containerFactory.Object);
 		}
 
 		[Test]
 		public void ItShouldCreateSyncJob()
 		{
-			SyncJobParameters syncJobParameters = new SyncJobParameters(1, 1);
-			SyncJobExecutionConfiguration configuration = new SyncJobExecutionConfiguration();
-			ISyncLog logger = new EmptyLogger();
+			ISyncJob result = _instance.Create(_container.Object, _syncJobParameters, _configuration, _logger);
 
-			IContainer container = new ContainerBuilder().Build();
-
-			ISyncJob expectedSyncJob = Mock.Of<ISyncJob>();
-			_containerFactory.Setup(x => x.RegisterSyncDependencies(It.IsAny<ContainerBuilder>(), syncJobParameters, configuration, logger))
-				.Callback((ContainerBuilder cb, SyncJobParameters p, SyncJobExecutionConfiguration c, ISyncLog l) => cb.RegisterInstance(expectedSyncJob).As<ISyncJob>());
-
-			// ACT
-			ISyncJob syncJob = _instance.Create(container, syncJobParameters, configuration, logger);
-
-			// ASSERT
-			syncJob.Should().Be(expectedSyncJob);
-			_containerFactory.Verify(x => x.RegisterSyncDependencies(It.IsAny<ContainerBuilder>(), syncJobParameters, configuration, logger), Times.Once);
+			result.Should().BeOfType<SyncJobInLifetimeScope>();
 		}
 
 		[Test]
-		public void ItShouldRegisterDependenciesInScope()
+		public void ItShouldThrowArgumentNullExceptionOnNullContainer()
 		{
-			SyncJobParameters syncJobParameters = new SyncJobParameters(1, 1);
-			SyncJobExecutionConfiguration configuration = new SyncJobExecutionConfiguration();
-			ISyncLog logger = new EmptyLogger();
+			Action action = () => _instance.Create(null, _syncJobParameters, _configuration, _logger);
 
-			IContainer container = new ContainerBuilder().Build();
+			action.Should().Throw<ArgumentNullException>();
+		}
 
-			_containerFactory.Setup(x => x.RegisterSyncDependencies(It.IsAny<ContainerBuilder>(), syncJobParameters, configuration, logger))
-				.Callback((ContainerBuilder cb, SyncJobParameters p, SyncJobExecutionConfiguration c, ISyncLog l) => cb.RegisterInstance(Mock.Of<ISyncJob>()).As<ISyncJob>());
+		[Test]
+		public void ItShouldThrowArgumentNullExceptionOnNullParameters()
+		{
+			Action action = () => _instance.Create(_container.Object, null, _configuration, _logger);
 
-			// ACT
-			_instance.Create(container, syncJobParameters, configuration, logger);
+			action.Should().Throw<ArgumentNullException>();
+		}
 
-			Action action = () => container.Resolve<ISyncJob>();
+		[Test]
+		public void ItShouldThrowArgumentNullExceptionOnNullConfiguration()
+		{
+			Action action = () => _instance.Create(_container.Object, _syncJobParameters, null, _logger);
 
-			// ASSERT
-			action.Should().Throw<ComponentNotRegisteredException>();
+			action.Should().Throw<ArgumentNullException>();
+		}
+
+		[Test]
+		public void ItShouldThrowArgumentNullExceptionOnNullLogger()
+		{
+			Action action = () => _instance.Create(_container.Object, _syncJobParameters, _configuration, null);
+
+			action.Should().Throw<ArgumentNullException>();
 		}
 	}
 }

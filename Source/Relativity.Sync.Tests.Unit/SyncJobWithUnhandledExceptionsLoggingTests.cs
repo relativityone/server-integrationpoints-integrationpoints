@@ -36,6 +36,18 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
+		public async Task ItShouldCallInnerExecuteWithProgressAsync()
+		{
+			IProgress<SyncJobState> progress = new Progress<SyncJobState>();
+
+			// ACT
+			await _sut.ExecuteAsync(progress, CancellationToken.None).ConfigureAwait(false);
+
+			// ASSERT
+			_syncJob.Verify(x => x.ExecuteAsync(progress, CancellationToken.None));
+		}
+
+		[Test]
 		public async Task ItShouldCallInnerRetryAsync()
 		{
 			// ACT
@@ -46,16 +58,29 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
+		public async Task ItShouldCallInnerRetryWithProgressAsync()
+		{
+			IProgress<SyncJobState> progress = new Progress<SyncJobState>();
+
+			// ACT
+			await _sut.RetryAsync(progress, CancellationToken.None).ConfigureAwait(false);
+
+			// ASSERT
+			_syncJob.Verify(x => x.RetryAsync(progress, CancellationToken.None));
+		}
+
+		[Test]
 		public async Task ItShouldLogUnhandledExceptionWhenExecuted()
 		{
-			_syncJob.Setup(x => x.ExecuteAsync(It.IsAny<CancellationToken>())).Returns(() =>
+			_syncJob.Setup(x => x.ExecuteAsync(It.IsAny<IProgress<SyncJobState>>(), It.IsAny<CancellationToken>())).Returns(() =>
 			{
 				_appDomain.FireUnhandledException();
 				return Task.CompletedTask;
 			});
+			IProgress<SyncJobState> progress = new Progress<SyncJobState>();
 
 			// ACT
-			await _sut.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			await _sut.ExecuteAsync(progress, CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
 			_syncLog.Verify(x => x.LogFatal(It.IsAny<Exception>(), It.IsAny<string>()));
@@ -64,14 +89,15 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public async Task ItShouldLogUnhandledExceptionWhenRetried()
 		{
-			_syncJob.Setup(x => x.RetryAsync(It.IsAny<CancellationToken>())).Returns(() =>
+			_syncJob.Setup(x => x.RetryAsync(It.IsAny<IProgress<SyncJobState>>(), It.IsAny<CancellationToken>())).Returns(() =>
 			{
 				_appDomain.FireUnhandledException();
 				return Task.CompletedTask;
 			});
+			IProgress<SyncJobState> progress = new Progress<SyncJobState>();
 
 			// ACT
-			await _sut.RetryAsync(CancellationToken.None).ConfigureAwait(false);
+			await _sut.RetryAsync(progress, CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
 			_syncLog.Verify(x => x.LogFatal(It.IsAny<Exception>(), It.IsAny<string>()));
