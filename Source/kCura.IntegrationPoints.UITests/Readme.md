@@ -38,8 +38,8 @@ UI tests can be executed as part of these pielines:
 
 ## Running tests on Regressions environments
 
-Tests which does not work or regressions environments are categorized as `BrokenOnRegressionEnvironment`. In order to skip them, following filter
-`cat != $Constants.QUARANTINED_TESTS_CATEGORY` has to be used.
+Tests which does not work or regressions environments are categorized as `NotWorkingOnRegressionEnvironment`. In order to skip them, following filter
+`cat != NotWorkingOnRegressionEnvironment` has to be used.
 
 ---
 

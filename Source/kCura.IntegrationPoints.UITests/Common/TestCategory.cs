@@ -9,6 +9,6 @@
 	    public const string IMPORT_FROM_LOAD_FILE = "ImportFromLoadFile";
 		public const string DATA_GRID_RELATED = "DataGridRelated";
 		public const string MISCELLANEOUS = "Miscellaneous";
-		public const string NOT_WORKING_ON_REGRESSION_ENVIRONMENT = "BrokenOnRegressionEnvironment";
+		public const string NOT_WORKING_ON_REGRESSION_ENVIRONMENT = "NotWorkingOnRegressionEnvironment";
 	}
 }
