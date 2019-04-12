@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Polly;
 using Relativity.Kepler.Transport;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -139,7 +140,15 @@ namespace Relativity.Sync.Storage
 							!string.IsNullOrEmpty(fieldValuePair.Value.ToString()) &&
 							fieldValuePair.Value.ToString().EndsWith(longTextTruncateMark, StringComparison.InvariantCulture))
 						{
-							string longTextField = await ReadLongTextFieldAsync(objectManager, guid).ConfigureAwait(false);
+							const int maxNumberOfRetries = 3;
+							const int maxWaitTime = 500;
+
+							string longTextField = await Policy
+								.Handle<Exception>()
+								.WaitAndRetryAsync(maxNumberOfRetries, i => TimeSpan.FromMilliseconds(maxWaitTime))
+								.ExecuteAsync(async () => await ReadLongTextFieldAsync(objectManager, guid).ConfigureAwait(false))
+								.ConfigureAwait(false);
+
 							_logger.LogVerbose("Long text field with guid {guid} read.", guid);
 							_cache.Add(guid, longTextField);
 						}
