@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Banzai;
+using kCura.Relativity.Client;
 
 namespace Relativity.Sync.Tests.Unit.Stubs
 {
@@ -9,6 +10,7 @@ namespace Relativity.Sync.Tests.Unit.Stubs
 		
 		protected override Task<NodeResultStatus> PerformExecuteAsync(IExecutionContext<SyncExecutionContext> context)
 		{
+			
 			return Task.FromResult(ResultStatus);
 		}
 	}

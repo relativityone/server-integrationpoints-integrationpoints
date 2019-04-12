@@ -15,6 +15,7 @@ namespace Relativity.Sync.Tests.Unit
 			// ASSERT
 			configuration.DataDestinationName.Should().BeEmpty();
 			configuration.IsDataDestinationArtifactIdSet.Should().BeTrue();
+			configuration.DataDestinationArtifactId.Should().Be(0);
 		}
 	}
 }

@@ -106,10 +106,12 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public void ItShouldRetryJob()
 		{
-			Func<Task> action = async () => await _instance.RetryAsync(CancellationToken.None).ConfigureAwait(false);
+			Func<Task> actionWithoutProgress = async () => await _instance.RetryAsync(CancellationToken.None).ConfigureAwait(false);
+			Func<Task> actionWithProgress = async () => await _instance.RetryAsync(Mock.Of<IProgress<SyncJobState>>(), CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			action.Should().Throw<NotImplementedException>();
+			actionWithoutProgress.Should().Throw<NotImplementedException>();
+			actionWithProgress.Should().Throw<NotImplementedException>();
 		}
 
 		[Test]

@@ -113,7 +113,7 @@ namespace Relativity.Sync.Executors.Validation
 				IEnumerable<string> fieldNames =
 					fieldMaps.Where(fm => missingFields.Contains(int.Parse(fm.DestinationField.FieldIdentifier, CultureInfo.InvariantCulture))).Select(fm => $"'{fm.DestinationField.DisplayName}'");
 				validationMessage =
-					new ValidationMessage("20.005", $"Destination field(s) mapped may no longer be available or has been renamed. Review the mapping for the following field(s): {fieldNames}.");
+					new ValidationMessage("20.005", $"Destination field(s) mapped may no longer be available or has been renamed. Review the mapping for the following field(s): {string.Join(",", fieldNames)}.");
 			}
 
 			return validationMessage;
@@ -132,7 +132,7 @@ namespace Relativity.Sync.Executors.Validation
 				IEnumerable<string> fieldNames =
 					fieldMaps.Where(fm => missingFields.Contains(int.Parse(fm.SourceField.FieldIdentifier, CultureInfo.InvariantCulture))).Select(fm => $"'{fm.SourceField.DisplayName}'");
 				validationMessage =
-					new ValidationMessage($"Source field(s) mapped may no longer be available or has been renamed. Review the mapping for the following field(s): {fieldNames}.");
+					new ValidationMessage($"Source field(s) mapped may no longer be available or has been renamed. Review the mapping for the following field(s): {string.Join(",", fieldNames)}.");
 			}
 
 			return validationMessage;

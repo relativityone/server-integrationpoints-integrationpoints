@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -60,6 +61,16 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 
 			result.IsValid.Should().BeFalse();
 			result.Messages.Should().NotBeEmpty();
+		}
+
+		[Test]
+		public async Task ItShouldHandleExceptionDuringValidation()
+		{
+			_workspaceNameValidatorMock.Setup(x => x.Validate(_WORKSPACE_NAME, CancellationToken.None)).Throws<InvalidOperationException>();
+
+			ValidationResult result = await _sut.ValidateAsync(_configurationMock.Object, CancellationToken.None).ConfigureAwait(false);
+
+			result.IsValid.Should().BeFalse();
 		}
 	}
 }

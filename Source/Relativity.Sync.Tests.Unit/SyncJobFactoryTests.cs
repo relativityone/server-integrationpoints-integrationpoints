@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Autofac;
-using Autofac.Core.Registration;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -33,11 +30,12 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public void ItShouldCreateSyncJob()
+		public void ItShouldCreateSyncJobWithAllOverrides()
 		{
-			ISyncJob result = _instance.Create(_container.Object, _syncJobParameters, _configuration, _logger);
-
-			result.Should().BeOfType<SyncJobInLifetimeScope>();
+			_instance.Create(_container.Object, _syncJobParameters, _configuration, _logger).Should().BeOfType<SyncJobInLifetimeScope>();
+			_instance.Create(_container.Object, _syncJobParameters, _configuration).Should().BeOfType<SyncJobInLifetimeScope>();
+			_instance.Create(_container.Object, _syncJobParameters, _logger).Should().BeOfType<SyncJobInLifetimeScope>();
+			_instance.Create(_container.Object, _syncJobParameters).Should().BeOfType<SyncJobInLifetimeScope>();
 		}
 
 		[Test]
