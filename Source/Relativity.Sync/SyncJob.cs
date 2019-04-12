@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Banzai;
-using Relativity.Sync.Nodes;
+using Relativity.Sync.Executors.Validation;
 
 namespace Relativity.Sync
 {
@@ -64,9 +64,17 @@ namespace Relativity.Sync
 			if (executionResult.Status != NodeResultStatus.Succeeded && executionResult.Status != NodeResultStatus.SucceededWithErrors)
 			{
 				SyncExecutionContext subject = (SyncExecutionContext)executionResult.Subject;
-				IEnumerable<Exception> failingExceptions = subject.Results
+				IList<Exception> failingExceptions = subject.Results
 					.Where(r => r.Exception != null)
-					.Select(r => r.Exception);
+					.Select(r => r.Exception)
+					.ToList();
+
+				ValidationException validationException = failingExceptions.OfType<ValidationException>().FirstOrDefault();
+				if (validationException != null)
+				{
+					throw new ValidationException(validationException.Message, new AggregateException(failingExceptions), validationException.ValidationResult);
+				}
+
 				throw new SyncException("Sync job failed. See inner exceptions for more details.", new AggregateException(failingExceptions), _correlationId.Value);
 			}
 		}
