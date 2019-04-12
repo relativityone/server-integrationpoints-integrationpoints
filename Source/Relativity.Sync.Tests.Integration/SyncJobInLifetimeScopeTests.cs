@@ -23,7 +23,7 @@ namespace Relativity.Sync.Tests.Integration
 		public void SetUp()
 		{
 			_syncJob = new Mock<ISyncJob>();
-			
+
 			var containerBuilder = new ContainerBuilder();
 			containerBuilder.RegisterInstance(_syncJob.Object).As<ISyncJob>();
 			_container = containerBuilder.Build();
@@ -38,10 +38,21 @@ namespace Relativity.Sync.Tests.Integration
 		public async Task ItShouldPassExecuteAsync()
 		{
 			var instance = new SyncJobInLifetimeScope(_containerFactory.Object, _container, _syncJobParameters, _configuration, _logger);
-			
+
 			await instance.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
 
 			_syncJob.Verify(x => x.ExecuteAsync(CancellationToken.None), Times.Once);
+		}
+
+		[Test]
+		public async Task ItShouldPassExecuteWithProgressAsync()
+		{
+			IProgress<SyncJobState> progress = Mock.Of<IProgress<SyncJobState>>();
+			var instance = new SyncJobInLifetimeScope(_containerFactory.Object, _container, _syncJobParameters, _configuration, _logger);
+
+			await instance.ExecuteAsync(progress, CancellationToken.None).ConfigureAwait(false);
+
+			_syncJob.Verify(x => x.ExecuteAsync(progress, CancellationToken.None), Times.Once);
 		}
 
 		[Test]
@@ -52,6 +63,17 @@ namespace Relativity.Sync.Tests.Integration
 			await instance.RetryAsync(CancellationToken.None).ConfigureAwait(false);
 
 			_syncJob.Verify(x => x.RetryAsync(CancellationToken.None), Times.Once);
+		}
+
+		[Test]
+		public async Task ItShouldPassRetryWithProgressAsync()
+		{
+			IProgress<SyncJobState> progress = Mock.Of<IProgress<SyncJobState>>();
+			var instance = new SyncJobInLifetimeScope(_containerFactory.Object, _container, _syncJobParameters, _configuration, _logger);
+
+			await instance.RetryAsync(progress, CancellationToken.None).ConfigureAwait(false);
+
+			_syncJob.Verify(x => x.RetryAsync(progress, CancellationToken.None), Times.Once);
 		}
 
 		[Test]
