@@ -140,7 +140,7 @@ namespace Relativity.Sync.Storage
 							!string.IsNullOrEmpty(fieldValuePair.Value.ToString()) &&
 							fieldValuePair.Value.ToString().EndsWith(longTextTruncateMark, StringComparison.InvariantCulture))
 						{
-							const int maxNumberOfRetries = 3;
+							const int maxNumberOfRetries = 2;
 							const int maxWaitTime = 500;
 
 							string longTextField = await Policy
