@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
+using Banzai;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -98,10 +99,69 @@ namespace Relativity.Sync.Tests.Integration
 			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			// We're expecting at least invocations two per node; there will be more for notification steps, etc.
-			List<Type> nodes = GetSyncNodes();
+			// We're expecting at least two invocations per node; there will be more for notification steps, etc.
+			List<Type> nodes = ContainerHelper.GetSyncNodeImplementationTypes();
 			const int two = 2;
 			progress.Verify(x => x.Report(It.IsAny<SyncJobState>()), Times.AtLeast(nodes.Count * two));
+		}
+
+		[Test]
+		public async Task ItShouldCreateCompletedProgressStates()
+		{
+			Mock<IProgress<SyncJobState>> progress = new Mock<IProgress<SyncJobState>>();
+			_containerBuilder.RegisterInstance(progress.Object).As<IProgress<SyncJobState>>();
+			IContainer container = _containerBuilder.Build();
+			ISyncJob syncJob = container.Resolve<ISyncJob>();
+
+			// ACT
+			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+
+			// ASSERT
+			INode<SyncExecutionContext>[] allSyncNodeImplementations = ContainerHelper.GetSyncNodeImplementationTypes()
+				.Select(x => (INode<SyncExecutionContext>)container.Resolve(x)).ToArray();
+			AssertNodesReportedCompleted(progress, allSyncNodeImplementations);
+		}
+
+		[Test]
+		public void ItShouldCreateFailedProgressState()
+		{
+			Mock<IProgress<SyncJobState>> progress = new Mock<IProgress<SyncJobState>>();
+			_containerBuilder.RegisterInstance(progress.Object).As<IProgress<SyncJobState>>();
+			IntegrationTestsContainerBuilder.MockFailingStep<IDataSourceSnapshotConfiguration>(_containerBuilder);
+			IContainer container = _containerBuilder.Build();
+			ISyncJob syncJob = container.Resolve<ISyncJob>();
+
+			// ACT
+			Action action = () => syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
+
+			// ASSERT
+			action.Should().Throw<SyncException>();
+			AssertNodesReportedCompleted(progress,
+				container.ResolveNode<IPermissionsCheckConfiguration>(),
+				container.ResolveNode<IValidationConfiguration>(),
+				container.ResolveNode<IDestinationWorkspaceObjectTypesCreationConfiguration>());
+			AssertNodesReportedFailed(progress, container.ResolveNode<IDataSourceSnapshotConfiguration>());
+		}
+
+		[Test]
+		public async Task ItShouldCreateCompletedWithErrorsProgressState()
+		{
+			Mock<IProgress<SyncJobState>> progress = new Mock<IProgress<SyncJobState>>();
+			_containerBuilder.RegisterInstance(progress.Object).As<IProgress<SyncJobState>>();
+			IntegrationTestsContainerBuilder.MockCompletedWithErrorsStep<IDataSourceSnapshotConfiguration>(_containerBuilder);
+			IContainer container = _containerBuilder.Build();
+			ISyncJob syncJob = container.Resolve<ISyncJob>();
+
+			// ACT
+			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+
+			// ASSERT
+			INode<SyncExecutionContext>[] completedNodes = ContainerHelper.GetSyncNodeImplementationTypes()
+				.Where(x => x.BaseType != typeof(SyncNode<IDataSourceSnapshotConfiguration>))
+				.Select(x => (INode<SyncExecutionContext>)container.Resolve(x))
+				.ToArray();
+			AssertNodesReportedCompleted(progress, completedNodes);
+			AssertNodesReportedCompletedWithErrors(progress, container.ResolveNode<IDataSourceSnapshotConfiguration>());
 		}
 
 		private void AssertExecutionOrder(List<Type[]> expectedOrder)
@@ -148,13 +208,40 @@ namespace Relativity.Sync.Tests.Integration
 			};
 		}
 
-		private List<Type> GetSyncNodes()
+		private static void AssertNodesReportedCompleted(Mock<IProgress<SyncJobState>> progress, params INode<SyncExecutionContext>[] nodes)
 		{
-			return Assembly.GetAssembly(typeof(SyncNode<>))
-				.GetTypes()
-				.Where(t => t.BaseType?.IsConstructedGenericType ?? false)
-				.Where(t => t.BaseType.GetGenericTypeDefinition() == typeof(SyncNode<>))
-				.ToList();
+			foreach (INode<SyncExecutionContext> node in nodes)
+			{
+				SyncJobState expected = SyncJobState.Completed(node.Id);
+				progress.Verify(x => x.Report(It.Is<SyncJobState>(v => Equals(expected, v))));
+			}
+		}
+
+		private static void AssertNodesReportedFailed(Mock<IProgress<SyncJobState>> progress, params INode<SyncExecutionContext>[] nodes)
+		{
+			foreach (INode<SyncExecutionContext> node in nodes)
+			{
+				SyncJobState expected = SyncJobState.Failure(node.Id, new InvalidOperationException());
+				progress.Verify(x => x.Report(It.Is<SyncJobState>(v => Equals(expected, v))));
+			}
+		}
+
+		private static void AssertNodesReportedCompletedWithErrors(Mock<IProgress<SyncJobState>> progress, params INode<SyncExecutionContext>[] nodes)
+		{
+			foreach (INode<SyncExecutionContext> node in nodes)
+			{
+				SyncJobState expected = SyncJobState.CompletedWithErrors(node.Id);
+				progress.Verify(x => x.Report(It.Is<SyncJobState>(v => Equals(expected, v))));
+			}
+		}
+
+		private static bool Equals(SyncJobState me, SyncJobState you)
+		{
+			return string.Equals(me.Id, you.Id, StringComparison.InvariantCulture) &&
+				string.Equals(me.Status, you.Status, StringComparison.InvariantCulture) &&
+				string.Equals(me.Message, you.Message, StringComparison.InvariantCulture) &&
+				me.Exception?.GetType() == you.Exception?.GetType() &&
+				string.Equals(me.Exception?.Message, you.Exception?.Message, StringComparison.InvariantCulture);
 		}
 	}
 }
