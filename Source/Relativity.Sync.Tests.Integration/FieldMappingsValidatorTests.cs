@@ -19,8 +19,6 @@ namespace Relativity.Sync.Tests.Integration
 	public sealed class FieldMappingsValidatorTests
 	{
 		private ConfigurationStub _configuration;
-		private Mock<IDestinationServiceFactoryForUser> _destinationServiceFactoryForUser;
-		private Mock<ISourceServiceFactoryForUser> _sourceServiceFactoryForUser;
 		private FieldMappingsValidator _sut;
 		private Mock<IObjectManager> _objectManager;
 
@@ -34,15 +32,15 @@ namespace Relativity.Sync.Tests.Integration
 		{
 			_objectManager = new Mock<IObjectManager>();
 
-			_destinationServiceFactoryForUser = new Mock<IDestinationServiceFactoryForUser>();
-			_sourceServiceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
+			Mock<IDestinationServiceFactoryForUser> destinationServiceFactoryForUser = new Mock<IDestinationServiceFactoryForUser>();
+			Mock<ISourceServiceFactoryForUser> sourceServiceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
 
-			_destinationServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
-			_sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
+			destinationServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
+			sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
 			
 			ContainerBuilder containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
-			containerBuilder.RegisterInstance(_destinationServiceFactoryForUser.Object).As<IDestinationServiceFactoryForUser>();
-			containerBuilder.RegisterInstance(_sourceServiceFactoryForUser.Object).As<ISourceServiceFactoryForUser>();
+			containerBuilder.RegisterInstance(destinationServiceFactoryForUser.Object).As<IDestinationServiceFactoryForUser>();
+			containerBuilder.RegisterInstance(sourceServiceFactoryForUser.Object).As<ISourceServiceFactoryForUser>();
 			containerBuilder.RegisterType<FieldMappingsValidator>();
 			IContainer container = containerBuilder.Build();
 

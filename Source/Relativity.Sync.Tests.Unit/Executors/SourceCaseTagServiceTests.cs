@@ -26,7 +26,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_federatedInstance = new Mock<IFederatedInstance>();
 			_serviceFactory = new Mock<ISourceServiceFactoryForUser>();
 
-			Mock<ITagNameFormatter> tagNameFormatter = new Mock<ITagNameFormatter>();
+			var tagNameFormatter = new Mock<ITagNameFormatter>();
 			_sut = new SourceCaseTagService(_relativitySourceCaseTagRepository.Object, _workspaceNameQuery.Object, _federatedInstance.Object, tagNameFormatter.Object, _serviceFactory.Object);
 		}
 

@@ -6,7 +6,7 @@ namespace Relativity.Sync.Executors.Validation
 	/// Contains message from <see cref="IValidator"/>
 	/// </summary>
 	[Serializable]
-	public sealed class ValidationMessage
+	public sealed class ValidationMessage : IEquatable<ValidationMessage>
 	{
 		/// <summary>
 		/// Default constructor used for JSON serialization.
@@ -50,8 +50,14 @@ namespace Relativity.Sync.Executors.Validation
 			return string.IsNullOrEmpty(ErrorCode) ? ShortMessage : $"{ErrorCode} {ShortMessage}";
 		}
 
-		private bool Equals(ValidationMessage other)
+		/// <inheritdoc />
+		public bool Equals(ValidationMessage other)
 		{
+			if (other == null)
+			{
+				return false;
+			}
+
 			return string.Equals(ErrorCode, other.ErrorCode, StringComparison.InvariantCulture) && string.Equals(ShortMessage, other.ShortMessage, StringComparison.InvariantCulture);
 		}
 

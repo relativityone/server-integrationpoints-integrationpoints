@@ -61,20 +61,9 @@ namespace Relativity.Sync
 				throw new ArgumentNullException(nameof(logger));
 			}
 
-			try
-			{
-				LogWriter.SetFactory(new SyncLogWriterFactory(logger));
+			LogWriter.SetFactory(new SyncLogWriterFactory(logger));
 
-				using (ILifetimeScope scope = container.BeginLifetimeScope(builder => _containerFactory.RegisterSyncDependencies(builder, syncJobParameters, configuration, logger)))
-				{
-					return scope.Resolve<ISyncJob>();
-				}
-			}
-			catch (Exception e)
-			{
-				logger.LogError(e, "Failed to create Sync job {correlationId}.", syncJobParameters.CorrelationId);
-				throw new SyncException("Unable to create Sync job. See inner exception for more details.", e, syncJobParameters.CorrelationId);
-			}
+			return new SyncJobInLifetimeScope(_containerFactory, container, syncJobParameters, configuration, logger);
 		}
 	}
 }

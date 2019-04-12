@@ -49,7 +49,8 @@ namespace Relativity.Sync.Tests.Integration
 			const int second = 1000;
 			_semaphoreSlim = new SemaphoreSlimStub(() => Thread.Sleep(second));
 
-			IConfiguration cache = await Storage.Configuration.GetAsync(_serviceFactory, _WORKSPACE_ID, _ARTIFACT_ID, new EmptyLogger(), _semaphoreSlim).ConfigureAwait(false);
+			SyncJobParameters jobParameters = new SyncJobParameters(_ARTIFACT_ID, _WORKSPACE_ID);
+			IConfiguration cache = await Storage.Configuration.GetAsync(_serviceFactory, jobParameters, new EmptyLogger(), _semaphoreSlim).ConfigureAwait(false);
 
 			// ACT
 			Task updateTask = cache.UpdateFieldValueAsync(guid, newValue);

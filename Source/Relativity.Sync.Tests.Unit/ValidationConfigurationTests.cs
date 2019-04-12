@@ -32,15 +32,14 @@ namespace Relativity.Sync.Tests.Unit
 		public void SetUp()
 		{
 			_cache = new Mock<IConfiguration>();
-			_configuration = new ValidationConfiguration(_cache.Object, _WORKSPACE_ID);
+			SyncJobParameters jobParameters = new SyncJobParameters(1, _WORKSPACE_ID);
+			_configuration = new ValidationConfiguration(_cache.Object, jobParameters);
 		}
 
 		[Test]
 		public void ItShouldRetrieveSourceWorkspaceArtifactId()
 		{
-			const int expected = 1;
-			ValidationConfiguration configuration = new ValidationConfiguration(_cache.Object, expected);
-			configuration.SourceWorkspaceArtifactId.Should().Be(expected);
+			_configuration.SourceWorkspaceArtifactId.Should().Be(_WORKSPACE_ID);
 		}
 
 		[Test]

@@ -39,12 +39,7 @@ namespace Relativity.Sync.Tests.System
 		[SetUp]
 		public async Task SetUp()
 		{
-			//Task<WorkspaceRef> sourceWorkspaceCreationTask = await Environment.CreateWorkspaceWithFieldsAsync();
 			_sourceWorkspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
-			//Task<WorkspaceRef> destinationWorkspaceCreationTask = Environment.CreateWorkspaceWithFieldsAsync();
-			//await Task.WhenAll(sourceWorkspaceCreationTask, destinationWorkspaceCreationTask).ConfigureAwait(false);
-			//_sourceWorkspace = sourceWorkspaceCreationTask.Result;
-			//_destinationWorkspace = destinationWorkspaceCreationTask.Result;
 		}
 
 		[Test]

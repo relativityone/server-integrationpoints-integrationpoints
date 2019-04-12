@@ -24,7 +24,7 @@ namespace Relativity.Sync.Tests.Integration
 		[SetUp]
 		public void SetUp()
 		{
-			_innerException = new Exception("foo");
+			_innerException = new InvalidOperationException("foo");
 			_validationMessage = new ValidationMessage(_ERROR_CODE, _VALIDATION_MESSAGE);
 			_validationResult = new ValidationResult(_validationMessage);
 		}

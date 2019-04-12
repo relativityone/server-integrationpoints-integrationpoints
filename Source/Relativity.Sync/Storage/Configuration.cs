@@ -20,11 +20,11 @@ namespace Relativity.Sync.Storage
 
 		private static readonly Guid ConfigurationObjectTypeGuid = new Guid("3BE3DE56-839F-4F0E-8446-E1691ED5FD57");
 
-		private Configuration(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationArtifactId, ISyncLog logger, ISemaphoreSlim semaphoreSlim)
+		private Configuration(ISourceServiceFactoryForAdmin serviceFactory, SyncJobParameters syncJobParameters, ISyncLog logger, ISemaphoreSlim semaphoreSlim)
 		{
 			_serviceFactory = serviceFactory;
-			_workspaceArtifactId = workspaceArtifactId;
-			_syncConfigurationArtifactId = syncConfigurationArtifactId;
+			_workspaceArtifactId = syncJobParameters.WorkspaceId;
+			_syncConfigurationArtifactId = syncJobParameters.JobId;
 			_logger = logger;
 			_semaphoreSlim = semaphoreSlim;
 		}
@@ -136,10 +136,10 @@ namespace Relativity.Sync.Storage
 			}
 		}
 
-		public static async Task<IConfiguration> GetAsync(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationArtifactId, ISyncLog logger,
+		public static async Task<IConfiguration> GetAsync(ISourceServiceFactoryForAdmin serviceFactory, SyncJobParameters syncJobParameters, ISyncLog logger,
 			ISemaphoreSlim semaphoreSlim)
 		{
-			Configuration configuration = new Configuration(serviceFactory, workspaceArtifactId, syncConfigurationArtifactId, logger, semaphoreSlim);
+			Configuration configuration = new Configuration(serviceFactory, syncJobParameters, logger, semaphoreSlim);
 			await configuration.ReadAsync().ConfigureAwait(false);
 			return configuration;
 		}
