@@ -32,6 +32,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers
 				CreatedBy = field.CreatedBy,
 				CreatedOn = field.CreatedOn,
 				DeleteFlag = field.DeleteFlag,
+				DisplayName = field.Name,
 				DisplayValueFalse = field.DisplayValueFalse,
 				DisplayValueTrue = field.DisplayValueTrue,
 				EnableDataGrid = field.EnableDataGrid,
