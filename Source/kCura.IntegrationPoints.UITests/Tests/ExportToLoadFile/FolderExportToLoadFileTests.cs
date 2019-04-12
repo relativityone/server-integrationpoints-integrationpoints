@@ -13,7 +13,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 {
 	[TestFixture]
 	[Category(TestCategory.EXPORT_TO_LOAD_FILE)]
-    public class FolderExportToLoadFileTests : ExportToLoadFileTests
+	[Category(TestCategory.NOT_WORKING_ON_REGRESSION_ENVIRONMENT)] // REL-293795
+	public class FolderExportToLoadFileTests : ExportToLoadFileTests
 	{
 		private IntegrationPointsAction _integrationPointsAction;
 
