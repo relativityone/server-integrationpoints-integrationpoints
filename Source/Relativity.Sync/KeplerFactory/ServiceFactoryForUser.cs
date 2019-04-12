@@ -44,7 +44,8 @@ namespace Relativity.Sync.KeplerFactory
 			}
 
 			T keplerService = _serviceFactory.CreateProxy<T>();
-			return _dynamicProxyFactory.WrapKeplerService(keplerService);
+			return keplerService;
+			//return _dynamicProxyFactory.WrapKeplerService(keplerService);
 		}
 
 		private async Task<IServiceFactory> CreateServiceFactoryAsync()

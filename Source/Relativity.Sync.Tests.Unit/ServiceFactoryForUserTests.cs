@@ -40,6 +40,7 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
+		[Ignore("DynamicProxy issue REL-310378")]
 		public async Task ItShouldWrapKeplerServiceWithProxy()
 		{
 			IObjectManager wrappedObjectManager = Mock.Of<IObjectManager>();
