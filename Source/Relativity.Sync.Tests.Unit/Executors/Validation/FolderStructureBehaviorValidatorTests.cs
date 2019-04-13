@@ -12,6 +12,7 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Logging;
 
 namespace Relativity.Sync.Tests.Unit.Executors.Validation
 {
@@ -21,7 +22,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		private CancellationToken _cancellationToken;
 
 		private Mock<ISourceServiceFactoryForUser> _sourceServiceFactoryForUser;
-		private Mock<ISyncLog> _syncLog;
 		private Mock<IObjectManager> _objectManager;
 		private Mock<IValidationConfiguration> _validationConfiguration;
 
@@ -37,7 +37,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			_cancellationToken = CancellationToken.None;
 
 			_sourceServiceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
-			_syncLog = new Mock<ISyncLog>();
 			_objectManager = new Mock<IObjectManager>();
 			_validationConfiguration = new Mock<IValidationConfiguration>();
 
@@ -45,7 +44,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			_validationConfiguration.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(_TEST_WORKSPACE_ARTIFACT_ID);
 			_validationConfiguration.SetupGet(x => x.DestinationFolderStructureBehavior).Returns(DestinationFolderStructureBehavior.ReadFromField);
 
-			_instance = new FolderStructureBehaviorValidator(_sourceServiceFactoryForUser.Object, _syncLog.Object);
+			_instance = new FolderStructureBehaviorValidator(_sourceServiceFactoryForUser.Object, new EmptyLogger());
 		}
 
 		[Test]
@@ -122,7 +121,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		public async Task ValidateAsyncCreateProxyThrowsExceptionTest()
 		{
 			// Arrange
-			_sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ThrowsAsync(new Exception()).Verifiable();
+			_sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).Throws<InvalidOperationException>().Verifiable();
 
 			// Act
 			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
@@ -142,7 +141,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			_sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object).Verifiable();
 
 			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>(), It.IsAny<IProgress<ProgressReport>>()))
-				.ThrowsAsync(new Exception());
+				.Throws<InvalidOperationException>();
 
 			// Act
 			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);

@@ -43,7 +43,7 @@ namespace Relativity.Sync.KeplerFactory
 			try
 			{
 				return await Policy
-					.Handle<HttpRequestException>() //Thrown when remote endpoint cannot be resolved - connection error
+					.Handle<HttpRequestException>()	// Thrown when remote endpoint cannot be resolved - connection error
 					.WaitAndRetryAsync(_NUMBER_OF_RETRIES, (i, c) => TimeSpan.FromMilliseconds(_MS_BETWEEN_RETRIES), (e, waitTime, retryCount, context) => numberOfRetries = retryCount)
 					.ExecuteAsync(async () => await invocation.Proceed().ConfigureAwait(false)).ConfigureAwait(false);
 			}

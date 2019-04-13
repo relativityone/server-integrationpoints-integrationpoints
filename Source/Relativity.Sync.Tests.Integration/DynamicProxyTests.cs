@@ -7,7 +7,6 @@ using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.ServiceProxy;
 using Relativity.Sync.KeplerFactory;
-using Relativity.Sync.Tests.Integration.Stubs;
 
 namespace Relativity.Sync.Tests.Integration
 {

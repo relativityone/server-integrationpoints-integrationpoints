@@ -5,11 +5,11 @@ using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Tests.Integration.Stubs
 {
-	internal sealed class FailingExecutorStub<T> : IExecutor<T> where T : IConfiguration
+	internal sealed class CompletedWithErrorsExecutorStub<T> : IExecutor<T> where T : IConfiguration
 	{
 		public Task<ExecutionResult> ExecuteAsync(T configuration, CancellationToken token)
 		{
-			return Task.FromResult(ExecutionResult.Failure(new InvalidOperationException()));
+			return Task.FromResult(ExecutionResult.SuccessWithErrors(new InvalidOperationException()));
 		}
 	}
 }

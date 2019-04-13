@@ -87,7 +87,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			Func<Task> action = async () => await _validatorWithMetrics.ValidateAsync(Mock.Of<IValidationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
 
 			// assert
-			action.Should().NotThrow<InvalidOperationException>();
+			action.Should().Throw<InvalidOperationException>();
 		}
 
 		[Test]

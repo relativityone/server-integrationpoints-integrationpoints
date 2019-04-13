@@ -75,7 +75,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			const string expectedExceptionMessage = "FooBarBaz";
 			_command.Setup(x => x.CanExecuteAsync(CancellationToken.None)).ReturnsAsync(true);
-			_command.Setup(x => x.ExecuteAsync(CancellationToken.None)).ReturnsAsync(ExecutionResult.Failure(new Exception(expectedExceptionMessage)));
+			_command.Setup(x => x.ExecuteAsync(CancellationToken.None)).ReturnsAsync(ExecutionResult.Failure(new InvalidOperationException(expectedExceptionMessage)));
 
 			// ACT
 			Func<Task<NodeResult>> action = async () => await _instance.ExecuteAsync(_syncExecutionContext).ConfigureAwait(false);

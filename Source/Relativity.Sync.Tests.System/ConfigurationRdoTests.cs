@@ -83,8 +83,9 @@ namespace Relativity.Sync.Tests.System
 				syncConfigurationArtifactId = result.Object.ArtifactID;
 			}
 
+			SyncJobParameters jobParameters = new SyncJobParameters(syncConfigurationArtifactId, _workspaceId);
 			IConfiguration configuration = await Storage.Configuration
-				.GetAsync(_serviceFactory, _workspaceId, syncConfigurationArtifactId, new EmptyLogger(), new SemaphoreSlimWrapper(new SemaphoreSlim(1))).ConfigureAwait(false);
+				.GetAsync(_serviceFactory, jobParameters, new EmptyLogger(), new SemaphoreSlimWrapper(new SemaphoreSlim(1))).ConfigureAwait(false);
 
 			// ASSERT
 			configuration.GetFieldValue<bool>(CreateSavedSearchInDestinationGuid);
