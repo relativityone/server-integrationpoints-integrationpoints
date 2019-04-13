@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -11,6 +12,7 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
+using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Tests.Unit.Executors
 {
@@ -36,6 +38,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_configuration = new Mock<IDataSourceSnapshotConfiguration>();
 			_configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(_WORKSPACE_ID);
 			_configuration.Setup(x => x.DataSourceArtifactId).Returns(_DATA_SOURCE_ID);
+			_configuration.Setup(x => x.FieldMappings).Returns(new List<FieldMap>());
 
 			_instance = new DataSourceSnapshotExecutor(serviceFactory.Object, new EmptyLogger());
 		}
@@ -166,6 +169,53 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private bool AssertNotIncludingFolderPathSourceField(QueryRequest queryRequest, int folderPathSourceFieldId)
 		{
 			queryRequest.Fields.Should().NotContain(x => x.ArtifactID == folderPathSourceFieldId);
+			return true;
+		}
+
+		[Test]
+		public async Task ItShouldIncludeFieldsFromFieldMapping()
+		{
+			const int field1Id = 741258;
+			const int field2Id = 985632;
+
+			List<FieldMap> fieldMap = new List<FieldMap>
+			{
+				new FieldMap
+				{
+					SourceField = new FieldEntry
+					{
+						FieldIdentifier = field1Id
+					}
+				},
+				new FieldMap
+				{
+					SourceField = new FieldEntry
+					{
+						FieldIdentifier = field2Id
+					}
+				}
+			};
+
+			_configuration.Setup(x => x.FieldMappings).Returns(fieldMap);
+			
+			ExportInitializationResults exportInitializationResults = new ExportInitializationResults
+			{
+				RecordCount = 1L,
+				RunID = Guid.NewGuid()
+			};
+			_objectManager.Setup(x => x.InitializeExportAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1)).ReturnsAsync(exportInitializationResults);
+
+			// ACT
+			await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
+
+			// ASSERT
+			_objectManager.Verify(x => x.InitializeExportAsync(_WORKSPACE_ID, It.Is<QueryRequest>(qr => AssertFieldMapping(qr, field1Id, field2Id)), 1));
+		}
+
+		private bool AssertFieldMapping(QueryRequest queryRequest, int field1Id, int field2Id)
+		{
+			queryRequest.Fields.Should().Contain(x => x.ArtifactID == field1Id);
+			queryRequest.Fields.Should().Contain(x => x.ArtifactID == field2Id);
 			return true;
 		}
 	}
