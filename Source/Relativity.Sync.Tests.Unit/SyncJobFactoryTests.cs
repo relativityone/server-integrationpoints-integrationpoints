@@ -11,7 +11,6 @@ namespace Relativity.Sync.Tests.Unit
 	public sealed class SyncJobFactoryTests
 	{
 		private SyncJobFactory _instance;
-		private Mock<IContainerFactory> _containerFactory;
 		private Mock<IContainer> _container;
 		private ISyncLog _logger;
 		private SyncJobParameters _syncJobParameters;
@@ -20,13 +19,12 @@ namespace Relativity.Sync.Tests.Unit
 		[SetUp]
 		public void SetUp()
 		{
-			_containerFactory = new Mock<IContainerFactory>();
 			_container = new Mock<IContainer>();
 
 			_syncJobParameters = new SyncJobParameters(1, 1);
 			_configuration = new SyncJobExecutionConfiguration();
 			_logger = new EmptyLogger();
-			_instance = new SyncJobFactory(_containerFactory.Object);
+			_instance = new SyncJobFactory(new Mock<IContainerFactory>().Object);
 		}
 
 		[Test]
