@@ -12,9 +12,11 @@ namespace Relativity.Sync.Telemetry
 	{
 		private IDictionary<string, object> _customData;
 
+		private const string _SYNC_APPLICATION_NAME = "Relativity.Sync";
+
 		// Info for public properties with get methods on this class.
 		// These are set by compile time, so we can calculate these ahead of time.
-		private static readonly IEnumerable<PropertyInfo> _PUBLIC_READABLE_PROPERTIES = 
+		private static readonly IEnumerable<PropertyInfo> _PUBLIC_READABLE_PROPERTIES =
 			typeof(Metric)
 				.GetProperties(BindingFlags.Instance | BindingFlags.Public)
 				.Where(p => p.GetMethod != null);
@@ -25,6 +27,14 @@ namespace Relativity.Sync.Telemetry
 			Type = type;
 			CorrelationId = correlationId;
 		}
+
+		/// <summary>
+		///     Name of the application.
+		/// </summary>
+		/// <remarks>
+		///     Set to Relativity.Sync to easy distinguish between Sync and RIP
+		/// </remarks>
+		public string Application { get; } = _SYNC_APPLICATION_NAME;
 
 		/// <summary>
 		///     Name of this metric.
@@ -62,17 +72,15 @@ namespace Relativity.Sync.Telemetry
 				{
 					_customData = new Dictionary<string, object>();
 				}
+
 				return _customData;
 			}
 
-			set
-			{
-				_customData = value;
-			}
+			set => _customData = value;
 		}
 
 		/// <summary>
-		///     Creates a <see cref="Metric"/> representing the result of a timed operation.
+		///     Creates a <see cref="Metric" /> representing the result of a timed operation.
 		/// </summary>
 		/// <param name="name">Name or bucket for the metric</param>
 		/// <param name="duration">Duration of the operation</param>
@@ -89,7 +97,7 @@ namespace Relativity.Sync.Telemetry
 		}
 
 		/// <summary>
-		/// Creates a <see cref="Metric"/> representing the result of a counter operation.
+		///     Creates a <see cref="Metric" /> representing the result of a counter operation.
 		/// </summary>
 		/// <param name="name">Name or bucket for the metric</param>
 		/// <param name="executionStatus">Result of the operation</param>
@@ -104,7 +112,7 @@ namespace Relativity.Sync.Telemetry
 		}
 
 		/// <summary>
-		///     Creates a Dictionary out of the given <see cref="Metric"/>'s public readable properties.
+		///     Creates a Dictionary out of the given <see cref="Metric" />'s public readable properties.
 		/// </summary>
 		public Dictionary<string, object> ToDictionary()
 		{
@@ -112,11 +120,11 @@ namespace Relativity.Sync.Telemetry
 		}
 
 		/// <summary>
-		///     Creates an array of <see cref="object"/>s out of the the given <see cref="Metric"/>'s public readable properties.
+		///     Creates an array of <see cref="object" />s out of the the given <see cref="Metric" />'s public readable properties.
 		/// </summary>
 		public object[] ToPropertyArray()
 		{
-			return _PUBLIC_READABLE_PROPERTIES.Select(p => (object)new KeyValuePair<string, object>(p.Name, p.GetValue(this))).ToArray();
+			return _PUBLIC_READABLE_PROPERTIES.Select(p => (object) new KeyValuePair<string, object>(p.Name, p.GetValue(this))).ToArray();
 		}
 	}
 }
