@@ -13,6 +13,10 @@ namespace Relativity.Sync.Configuration
 
 		List<FieldMap> FieldMappings { get; }
 
+		DestinationFolderStructureBehavior DestinationFolderStructureBehavior { get; }
+
+		int FolderPathSourceFieldArtifactId { get; }
+
 		bool IsSnapshotCreated { get; }
 
 		Task SetSnapshotDataAsync(Guid runId, long totalRecordsCount);
