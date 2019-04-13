@@ -19,7 +19,7 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 		public int DataSourceArtifactId { get; set; }
 		public string FieldMappings { get; set; }
 		public bool IsSnapshotCreated { get; set; }
-		
+
 		public async Task SetSnapshotDataAsync(Guid runId, long totalRecordsCount)
 		{
 			await Task.Yield();
@@ -28,18 +28,18 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 		public string SourceWorkspaceTagName { get; set; }
 		public bool CreateSavedSearchForTags { get; set; }
 		public bool IsSavedSearchArtifactIdSet { get; set; }
+
 		public async Task SetSavedSearchInDestinationArtifactIdAsync(int artifactId)
 		{
 			await Task.Yield();
 		}
 
-		public string JobName { get; }
-		public string NotificationEmails { get; }
+		public string JobName { get; set; }
+		public string NotificationEmails { get; set; }
 		public int SourceWorkspaceArtifactId { get; set; }
 		public int DestinationWorkspaceArtifactId { get; set; }
 		public int SavedSearchArtifactId { get; set; }
-		public int DestinationFolderArtifactId { get; }
-		public string FieldsMap { get; }
+		public int DestinationFolderArtifactId { get; set; }
 		public int FolderPathSourceFieldArtifactId { get; set; }
 		public ImportOverwriteMode ImportOverwriteMode { get; set; }
 		public FieldOverlayBehavior FieldOverlayBehavior { get; set; }
@@ -49,10 +49,12 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 		public int SourceWorkspaceTagArtifactId { get; set; }
 		public int JobArtifactId { get; set; }
 		public bool IsDestinationWorkspaceTagArtifactIdSet { get; set; }
+
 		public void SetDestinationWorkspaceTagArtifactId(int artifactId)
 		{
 			DestinationWorkspaceTagArtifactId = artifactId;
 		}
+
 		public int DestinationWorkspaceTagArtifactId { get; set; }
 
 		public int SourceWorkspaceArtifactTypeId { get; set; }
@@ -80,6 +82,7 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 		public int TotalRecordsCount { get; set; }
 		public Guid ExportRunId { get; set; }
 		public bool IsSnapshotPartitioned { get; set; }
+
 		public void SetSnapshotPartitions(List<int> batchesIds)
 		{
 			// Method intentionally left empty.
