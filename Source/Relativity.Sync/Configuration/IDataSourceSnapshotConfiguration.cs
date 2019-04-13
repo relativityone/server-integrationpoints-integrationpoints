@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Configuration
 {
@@ -9,10 +11,7 @@ namespace Relativity.Sync.Configuration
 
 		int DataSourceArtifactId { get; }
 
-		/// <summary>
-		///     Change from string to list of objects
-		/// </summary>
-		string FieldMappings { get; }
+		List<FieldMap> FieldMappings { get; }
 
 		bool IsSnapshotCreated { get; }
 

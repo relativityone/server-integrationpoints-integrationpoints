@@ -4,12 +4,12 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using kCura.Apps.Common.Utils.Serializers;
 using Relativity.Services.DataContracts.DTOs;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Executors.Validation
 {
@@ -17,14 +17,12 @@ namespace Relativity.Sync.Executors.Validation
 	{
 		private readonly ISourceServiceFactoryForUser _sourceServiceFactoryForUser;
 		private readonly IDestinationServiceFactoryForUser _destinationServiceFactoryForUser;
-		private readonly ISerializer _serializer;
 		private readonly ISyncLog _logger;
 
-		public FieldMappingsValidator(ISourceServiceFactoryForUser sourceServiceFactoryForUser, IDestinationServiceFactoryForUser destinationServiceFactoryForUser, ISerializer serializer, ISyncLog logger)
+		public FieldMappingsValidator(ISourceServiceFactoryForUser sourceServiceFactoryForUser, IDestinationServiceFactoryForUser destinationServiceFactoryForUser, ISyncLog logger)
 		{
 			_sourceServiceFactoryForUser = sourceServiceFactoryForUser;
 			_destinationServiceFactoryForUser = destinationServiceFactoryForUser;
-			_serializer = serializer;
 			_logger = logger;
 		}
 
@@ -34,7 +32,7 @@ namespace Relativity.Sync.Executors.Validation
 
 			try
 			{
-				List<FieldMap> fieldMaps = _serializer.Deserialize<List<FieldMap>>(configuration.FieldMappings);
+				List<FieldMap> fieldMaps = configuration.FieldMappings;
 				Task<ValidationMessage> validateDestinationFieldsTask = ValidateDestinationFields(configuration, fieldMaps, token);
 				Task<ValidationMessage> validateSourceFieldsTask = ValidateSourceFields(configuration, fieldMaps, token);
 

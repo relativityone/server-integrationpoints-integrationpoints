@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Relativity.Sync.Executors.Validation
+namespace Relativity.Sync.Storage
 {
 	/// <summary>
 	/// Retrieves fields from the data source that users can map in the Relativity UI.
