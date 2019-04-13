@@ -29,10 +29,6 @@ namespace Relativity.Sync.Executors.Validation
 			{
 				result = await _validator.ValidateAsync(configuration, token).ConfigureAwait(false);
 			}
-			catch
-			{
-				result.IsValid = false;
-			}
 			finally
 			{
 				_stopwatch.Stop();

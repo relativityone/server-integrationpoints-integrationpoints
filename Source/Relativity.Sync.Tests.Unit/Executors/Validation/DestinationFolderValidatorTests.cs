@@ -19,8 +19,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 
 		private FolderStatus _getAccessStatusAsyncResult;
 
-		private Mock<IDestinationServiceFactoryForUser> _serviceFactoryMock;
-		private Mock<IFolderManager> _folderManagerMock;
 		private Mock<IValidationConfiguration> _configurationMock;
 
 		private const int _FOLDER_ARTIFACT_ID = 456;
@@ -31,17 +29,17 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		{
 			_getAccessStatusAsyncResult = new FolderStatus();
 
-			_folderManagerMock = new Mock<IFolderManager>();
-			_folderManagerMock.Setup(fm => fm.GetAccessStatusAsync(_WORKSPACE_ARTIFACT_ID, _FOLDER_ARTIFACT_ID)).ReturnsAsync(_getAccessStatusAsyncResult);
+			var folderManagerMock = new Mock<IFolderManager>();
+			folderManagerMock.Setup(fm => fm.GetAccessStatusAsync(_WORKSPACE_ARTIFACT_ID, _FOLDER_ARTIFACT_ID)).ReturnsAsync(_getAccessStatusAsyncResult);
 
-			_serviceFactoryMock = new Mock<IDestinationServiceFactoryForUser>();
-			_serviceFactoryMock.Setup(sf => sf.CreateProxyAsync<IFolderManager>()).ReturnsAsync(_folderManagerMock.Object);
+			var serviceFactoryMock = new Mock<IDestinationServiceFactoryForUser>();
+			serviceFactoryMock.Setup(sf => sf.CreateProxyAsync<IFolderManager>()).ReturnsAsync(folderManagerMock.Object);
 
 			_configurationMock = new Mock<IValidationConfiguration>();
 			_configurationMock.Setup(c => c.DestinationFolderArtifactId).Returns(_FOLDER_ARTIFACT_ID);
 			_configurationMock.Setup(c => c.DestinationWorkspaceArtifactId).Returns(_WORKSPACE_ARTIFACT_ID);
 
-			_sut = new DestinationFolderValidator(_serviceFactoryMock.Object, new EmptyLogger());
+			_sut = new DestinationFolderValidator(serviceFactoryMock.Object, new EmptyLogger());
 		}
 		
 		[Test]

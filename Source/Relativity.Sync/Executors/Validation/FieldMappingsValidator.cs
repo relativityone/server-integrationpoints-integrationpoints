@@ -34,17 +34,21 @@ namespace Relativity.Sync.Executors.Validation
 
 			try
 			{
-				List<FieldMap> fieldMaps = _serializer.Deserialize<List<FieldMap>>(configuration.FieldsMap);
+				List<FieldMap> fieldMaps = _serializer.Deserialize<List<FieldMap>>(configuration.FieldMappings);
 				Task<ValidationMessage> validateDestinationFieldsTask = ValidateDestinationFields(configuration, fieldMaps, token);
 				Task<ValidationMessage> validateSourceFieldsTask = ValidateSourceFields(configuration, fieldMaps, token);
 
-				List<ValidationMessage> allMessages = new List<ValidationMessage>();
+				var allMessages = new List<ValidationMessage>();
 				ValidationMessage[] fieldMappingValidationMessages = await Task.WhenAll(validateDestinationFieldsTask, validateSourceFieldsTask).ConfigureAwait(false);
 				allMessages.AddRange(fieldMappingValidationMessages);
-				allMessages.Add(ValidateUniqueIdentifier(fieldMaps));
-				allMessages.Add(ValidateFieldOverlayBehavior(configuration));
 
-				return new ValidationResult(allMessages);
+				ValidationMessage validateUniqueIdentifier = ValidateUniqueIdentifier(fieldMaps);
+				allMessages.Add(validateUniqueIdentifier);
+
+				ValidationMessage validateFieldOverlayBehavior = ValidateFieldOverlayBehavior(configuration);
+				allMessages.Add(validateFieldOverlayBehavior);
+
+				return new ValidationResult(allMessages.ToArray());
 			}
 			catch (Exception ex)
 			{
@@ -58,17 +62,27 @@ namespace Relativity.Sync.Executors.Validation
 		{
 			_logger.LogVerbose("Validating unique identifier");
 
-			ValidationMessage validationMessage = null;
 			bool isIdentifierMapped = mappedFields.Any(x => x.FieldMapType == FieldMapType.Identifier &&
 													x.SourceField != null &&
 													x.SourceField.IsIdentifier);
 
 			if (!isIdentifierMapped)
 			{
-				validationMessage = new ValidationMessage("The unique identifier must be mapped.");
+				return new ValidationMessage("The unique identifier must be mapped.");
 			}
 
-			return validationMessage;
+			bool anyIdentifierNotMatchingAnother = mappedFields.Any(x =>
+													x.SourceField != null &&
+													x.DestinationField != null &&
+													x.SourceField.IsIdentifier &&
+													!x.DestinationField.IsIdentifier);
+
+			if (anyIdentifierNotMatchingAnother)
+			{
+				return new ValidationMessage("Identifier must be mapped with another identifier.");
+			}
+
+			return null;
 		}
 
 		private ValidationMessage ValidateFieldOverlayBehavior(IValidationConfiguration configuration)

@@ -58,13 +58,13 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public void ItShouldThrowOnException()
 		{
-			_executor.Setup(x => x.ExecuteAsync(_configuration, CancellationToken.None)).Throws(new Exception("Foo bar baz"));
+			_executor.Setup(x => x.ExecuteAsync(_configuration, CancellationToken.None)).Throws(new InvalidOperationException("Foo bar baz"));
 
 			// ACT
 			Func<Task> action = async () => await _command.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			action.Should().Throw<Exception>().WithMessage("Foo bar baz");
+			action.Should().Throw<InvalidOperationException>().WithMessage("Foo bar baz");
 		}
 	}
 }

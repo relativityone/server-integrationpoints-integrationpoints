@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
@@ -19,15 +19,22 @@ namespace Relativity.Sync.Executors.Validation
 
 		public async Task<ExecutionResult> ExecuteAsync(IValidationConfiguration configuration, CancellationToken token)
 		{
-			ValidationResult validationResult = await ValidateAll(configuration, token).ConfigureAwait(false);
-			LogValidationErrors(validationResult);
-
-			if (!validationResult.IsValid)
+			try
 			{
-				return ExecutionResult.Failure(new ValidationException(validationResult));
-			}
+				ValidationResult validationResult = await ValidateAll(configuration, token).ConfigureAwait(false);
+				LogValidationErrors(validationResult);
 
-			return ExecutionResult.Success();
+				if (!validationResult.IsValid)
+				{
+					return ExecutionResult.Failure(new ValidationException("Validation failed. See ValidationResult property for more details.", validationResult));
+				}
+
+				return ExecutionResult.Success();
+			}
+			catch (Exception ex)
+			{
+				throw new ValidationException("Exception occurred during validation. See inner exception for more details.", ex);
+			}
 		}
 
 		private async Task<ValidationResult> ValidateAll(IValidationConfiguration configuration, CancellationToken token)

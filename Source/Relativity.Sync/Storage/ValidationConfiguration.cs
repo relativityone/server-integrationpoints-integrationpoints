@@ -20,10 +20,10 @@ namespace Relativity.Sync.Storage
 		private static readonly Guid ImportOverwriteModeGuid = new Guid("1914D2A3-A1FF-480B-81DC-7A2AA563047A");
 		private static readonly Guid JobHistoryGuid = new Guid("5D8F7F01-25CF-4246-B2E2-C05882539BB2");
 
-		public ValidationConfiguration(IConfiguration cache, int sourceWorkspaceArtifactId)
+		public ValidationConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters)
 		{
 			_cache = cache;
-			SourceWorkspaceArtifactId = sourceWorkspaceArtifactId;
+			SourceWorkspaceArtifactId = syncJobParameters.WorkspaceId;
 		}
 
 		public int SourceWorkspaceArtifactId { get; }
@@ -32,7 +32,7 @@ namespace Relativity.Sync.Storage
 		public string NotificationEmails => _cache.GetFieldValue<string>(EmailNotificationRecipientsGuid);
 		public int SavedSearchArtifactId => _cache.GetFieldValue<int>(DataSourceArtifactIdGuid);
 		public int DestinationFolderArtifactId => _cache.GetFieldValue<int>(DataDestinationArtifactIdGuid);
-		public string FieldsMap => _cache.GetFieldValue<string>(FieldMappingsGuid);
+		public string FieldMappings => _cache.GetFieldValue<string>(FieldMappingsGuid);
 		public int FolderPathSourceFieldArtifactId => _cache.GetFieldValue<int>(FolderPathSourceFieldArtifactIdGuid);
 		public ImportOverwriteMode ImportOverwriteMode => (ImportOverwriteMode) (Enum.Parse(typeof(ImportOverwriteMode), _cache.GetFieldValue<string>(ImportOverwriteModeGuid)));
 		public FieldOverlayBehavior FieldOverlayBehavior => (FieldOverlayBehavior) Enum.Parse(typeof(FieldOverlayBehavior), _cache.GetFieldValue<string>(FieldOverlayBehaviorGuid));

@@ -31,45 +31,54 @@ namespace Relativity.Sync.Executors.Validation
 			{
 				try
 				{
-					using (IObjectManager objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
-					{
-						const string fieldType = "Field Type";
-						const string longText = "Long Text";
-						QueryRequest queryRequest = new QueryRequest()
-						{
-							ObjectType = new ObjectTypeRef()
-							{
-								Name = "Field"
-							},
-							Condition = $"(('ArtifactID' == {configuration.FolderPathSourceFieldArtifactId}))",
-							Fields = new[]
-							{
-								new FieldRef() { Name = fieldType},
-							}
-						};
-						const int start = 0;
-						const int length = 1;
-						QueryResult queryResult = await objectManager.QueryAsync(configuration.SourceWorkspaceArtifactId, queryRequest, start, length, token,
-							new EmptyProgress<ProgressReport>()).ConfigureAwait(false);
-						if (queryResult.Objects.Count > 0)
-						{
-							string fieldTypeName = queryResult.Objects.First()[fieldType].Value.ToString();
-							if (longText != fieldTypeName)
-							{
-								result.Add($"Folder Path Source Field has invalid type: '{fieldTypeName}' but expected '{longText}'");
-							}
-						}
-						else
-						{
-							result.Add($"Field Artifact ID: {configuration.FolderPathSourceFieldArtifactId} not found.");
-						}
-					}
+					result = await ValidateFolderStructureBehaviorAsync(configuration, token).ConfigureAwait(false);
 				}
 				catch (Exception ex)
 				{
 					string message = $"Exception occurred when validating folder structure behavior";
 					_logger.LogError(ex, message);
 					result.Add(message);
+				}
+			}
+
+			return result;
+		}
+
+		private async Task<ValidationResult> ValidateFolderStructureBehaviorAsync(IValidationConfiguration configuration, CancellationToken token)
+		{
+			ValidationResult result = new ValidationResult();
+
+			using (IObjectManager objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			{
+				const string fieldType = "Field Type";
+				const string longText = "Long Text";
+				QueryRequest queryRequest = new QueryRequest()
+				{
+					ObjectType = new ObjectTypeRef()
+					{
+						Name = "Field"
+					},
+					Condition = $"(('ArtifactID' == {configuration.FolderPathSourceFieldArtifactId}))",
+					Fields = new[]
+					{
+						new FieldRef() {Name = fieldType},
+					}
+				};
+				const int start = 0;
+				const int length = 1;
+				QueryResult queryResult = await objectManager.QueryAsync(configuration.SourceWorkspaceArtifactId, queryRequest, start, length, token,
+					new EmptyProgress<ProgressReport>()).ConfigureAwait(false);
+				if (queryResult.Objects.Count > 0)
+				{
+					string fieldTypeName = queryResult.Objects.First()[fieldType].Value.ToString();
+					if (longText != fieldTypeName)
+					{
+						result.Add($"Folder Path Source Field has invalid type: '{fieldTypeName}' but expected '{longText}'");
+					}
+				}
+				else
+				{
+					result.Add($"Field Artifact ID: {configuration.FolderPathSourceFieldArtifactId} not found.");
 				}
 			}
 
