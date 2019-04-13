@@ -6,7 +6,7 @@ using Autofac;
 using FluentAssertions;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Tests.Integration.Stubs;
+using Relativity.Sync.Tests.Common;
 
 namespace Relativity.Sync.Tests.Integration
 {

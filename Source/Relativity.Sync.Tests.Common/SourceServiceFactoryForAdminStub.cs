@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Relativity.Services.ServiceProxy;
 using Relativity.Sync.KeplerFactory;
 
-namespace Relativity.Sync.Tests.System.Stubs
+namespace Relativity.Sync.Tests.Common
 {
 	internal sealed class SourceServiceFactoryForAdminStub : ISourceServiceFactoryForAdmin
 	{

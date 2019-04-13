@@ -14,6 +14,7 @@ using Relativity.Sync.Authentication;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
+using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Stubs;
 
 namespace Relativity.Sync.Tests.System

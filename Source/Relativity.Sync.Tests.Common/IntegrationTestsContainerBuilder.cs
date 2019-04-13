@@ -6,10 +6,9 @@ using Autofac;
 using Moq;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Telemetry;
-using Relativity.Sync.Tests.Integration.Stubs;
 using Relativity.Telemetry.APM;
 
-namespace Relativity.Sync.Tests.Integration
+namespace Relativity.Sync.Tests.Common
 {
 	public static class IntegrationTestsContainerBuilder
 	{

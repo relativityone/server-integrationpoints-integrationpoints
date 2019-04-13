@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Storage;
 
-namespace Relativity.Sync.Tests.Integration.Stubs
+namespace Relativity.Sync.Tests.Common
 {
 	internal sealed class SemaphoreSlimStub : ISemaphoreSlim
 	{
