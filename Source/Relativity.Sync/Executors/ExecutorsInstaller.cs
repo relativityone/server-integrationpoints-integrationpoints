@@ -28,6 +28,8 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<DestinationWorkspaceTagsCreationExecutor>().As<IExecutor<IDestinationWorkspaceTagsCreationConfiguration>>();
 			builder.RegisterType<ValidationExecutionConstrains>().As<IExecutionConstrains<IValidationConfiguration>>();
 			builder.RegisterType<ValidationExecutor>().As<IExecutor<IValidationConfiguration>>();
+			builder.RegisterType<DataSourceSnapshotExecutor>().As<IExecutor<IDataSourceSnapshotConfiguration>>();
+			builder.RegisterType<DataSourceSnapshotExecutionConstrains>().As<IExecutionConstrains<IDataSourceSnapshotConfiguration>>();
 
 			builder.RegisterType<BatchRepository>().As<IBatchRepository>();
 			builder.RegisterType<ProgressRepository>().As<IProgressRepository>();
