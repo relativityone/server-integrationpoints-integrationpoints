@@ -77,7 +77,7 @@ namespace Relativity.Sync.Executors.Validation
 			for (int i = 0; i < validationMessages.Count; i++)
 			{
 				ValidationMessage message = validationMessages[i];
-				string errorCode = string.IsNullOrEmpty(message.ErrorCode) ? "" : $"(Error code: {message.ErrorCode}) ";
+				string errorCode = string.IsNullOrEmpty(message.ErrorCode) ? String.Empty : $"(Error code: {message.ErrorCode}) ";
 
 				messages.AppendLine($"{i+1}. {errorCode}{message.ShortMessage}");
 			}
