@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Relativity.Sync.Storage;
 
-namespace Relativity.Sync.Tests.Integration.Stubs
+namespace Relativity.Sync.Tests.Common
 {
 	/// <summary>
 	///     Small stub for testing classes with a dependency on <see cref="IProgressRepository"/>. Stores RDOs in a list.

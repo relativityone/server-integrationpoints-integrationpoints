@@ -1,6 +1,6 @@
 ﻿using Relativity.Sync.KeplerFactory;
 
-namespace Relativity.Sync.Tests.System.Stubs
+namespace Relativity.Sync.Tests.Common
 {
 	internal sealed class DynamicProxyFactoryStub : IDynamicProxyFactory
 	{

@@ -5,7 +5,7 @@ using Banzai.Logging;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Logging;
-using Relativity.Sync.Tests.Integration.Stubs;
+using Relativity.Sync.Tests.Common;
 
 namespace Relativity.Sync.Tests.Integration
 {

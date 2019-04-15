@@ -49,7 +49,7 @@ namespace Relativity.Sync.Executors.Validation
 			}
 			catch (Exception ex)
 			{
-				const string message = "Exception occurred during field mappings validation.";
+				const string message = "Exception occurred during field mappings validation. See logs for more details.";
 				_logger.LogError(ex, message);
 				return new ValidationResult(new ValidationMessage(message));
 			}
@@ -89,7 +89,7 @@ namespace Relativity.Sync.Executors.Validation
 			ValidationMessage validationMessage = null;
 
 			if (configuration.ImportOverwriteMode == ImportOverwriteMode.AppendOnly &&
-				configuration.FieldOverlayBehavior != FieldOverlayBehavior.Default)
+				configuration.FieldOverlayBehavior != FieldOverlayBehavior.UseFieldSettings)
 			{
 				validationMessage = new ValidationMessage("For Append Only should be set \"Use Field Settings\" overlay behavior.");
 			}
@@ -110,7 +110,7 @@ namespace Relativity.Sync.Executors.Validation
 				IEnumerable<string> fieldNames =
 					fieldMaps.Where(fm => missingFields.Contains(fm.DestinationField.FieldIdentifier)).Select(fm => $"'{fm.DestinationField.DisplayName}'");
 				validationMessage =
-					new ValidationMessage("20.005", $"Destination field(s) mapped may no longer be available or has been renamed. Review the mapping for the following field(s): {fieldNames}.");
+					new ValidationMessage("20.005", $"Destination field(s) mapped may no longer be available or has been renamed. Review the mapping for the following field(s): {string.Join(",", fieldNames)}.");
 			}
 
 			return validationMessage;
@@ -129,7 +129,7 @@ namespace Relativity.Sync.Executors.Validation
 				IEnumerable<string> fieldNames =
 					fieldMaps.Where(fm => missingFields.Contains(fm.SourceField.FieldIdentifier)).Select(fm => $"'{fm.SourceField.DisplayName}'");
 				validationMessage =
-					new ValidationMessage($"Source field(s) mapped may no longer be available or has been renamed. Review the mapping for the following field(s): {fieldNames}.");
+					new ValidationMessage($"Source field(s) mapped may no longer be available or has been renamed. Review the mapping for the following field(s): {string.Join(",", fieldNames)}.");
 			}
 
 			return validationMessage;

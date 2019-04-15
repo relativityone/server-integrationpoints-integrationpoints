@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Relativity.API;
+using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Stubs;
 
 namespace Relativity.Sync.Tests.Integration.Stubs
