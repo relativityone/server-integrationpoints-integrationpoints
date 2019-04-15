@@ -11,7 +11,7 @@ namespace Relativity.Sync.Configuration
 
 		int DataSourceArtifactId { get; }
 
-		List<FieldMap> FieldMappings { get; }
+		IList<FieldMap> FieldMappings { get; }
 
 		DestinationFolderStructureBehavior DestinationFolderStructureBehavior { get; }
 

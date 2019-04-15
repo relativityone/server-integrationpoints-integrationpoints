@@ -26,7 +26,7 @@ namespace Relativity.Sync.Storage
 		public int SourceWorkspaceArtifactId { get; }
 
 		public int DataSourceArtifactId => _cache.GetFieldValue<int>(DataSourceArtifactIdGuid);
-		public List<FieldMap> FieldMappings => _fieldMappings.GetFieldMappings();
+		public IList<FieldMap> FieldMappings => _fieldMappings.GetFieldMappings();
 
 		public DestinationFolderStructureBehavior DestinationFolderStructureBehavior =>
 			(DestinationFolderStructureBehavior) Enum.Parse(typeof(DestinationFolderStructureBehavior), _cache.GetFieldValue<string>(DestinationFolderStructureBehaviorGuid));
