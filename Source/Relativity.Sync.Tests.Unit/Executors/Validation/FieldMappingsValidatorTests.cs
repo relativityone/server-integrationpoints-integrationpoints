@@ -170,7 +170,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			// Assert
 			Assert.IsFalse(actualResult.IsValid);
 			Assert.IsNotEmpty(actualResult.Messages);
-			actualResult.Messages.First().ShortMessage.Should().Be("Exception occurred during field mappings validation.");
+			actualResult.Messages.First().ShortMessage.Should().Be("Exception occurred during field mappings validation. See logs for more details.");
 
 			VerifyObjectManagerQueryRequest();
 			Mock.Verify(_validationConfiguration, _serializer);
@@ -189,7 +189,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			// Assert
 			Assert.IsFalse(actualResult.IsValid);
 			Assert.IsNotEmpty(actualResult.Messages);
-			actualResult.Messages.First().ShortMessage.Should().Be("Exception occurred during field mappings validation.");
+			actualResult.Messages.First().ShortMessage.Should().Be("Exception occurred during field mappings validation. See logs for more details.");
 
 			VerifyObjectManagerQueryRequest();
 			Mock.Verify(_validationConfiguration, _serializer);

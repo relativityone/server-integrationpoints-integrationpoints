@@ -216,5 +216,38 @@ namespace Relativity.Sync.Tests.Integration
 			validationMessages.Should().HaveCount(validationResult.Messages.Count());
 			validationMessages.Should().Contain(_validationMessage);
 		}
+
+		[Test]
+		public void ItShouldFormatToStringWithValidationMessage()
+		{
+			ValidationResult validationResult = new ValidationResult();
+			validationResult.Add(new ValidationMessage(_ERROR_CODE, _VALIDATION_MESSAGE));
+
+			ValidationException exception = new ValidationException(validationResult);
+
+			// act
+			string formattedException = exception.ToString();
+
+			// assert
+			string expected = $"Is valid: False{Environment.NewLine}Error code: {_ERROR_CODE}{Environment.NewLine}Message: {_VALIDATION_MESSAGE}{Environment.NewLine}";
+			Assert.AreEqual(expected, formattedException);
+		}
+		[Test]
+		public void ItShouldFormatToStringWithoutValidationMessage()
+		{
+			ValidationResult validationResult = new ValidationResult()
+			{
+				IsValid = false
+			};
+
+			ValidationException exception = new ValidationException(validationResult);
+
+			// act
+			string formattedException = exception.ToString();
+
+			// assert
+			string expected = $"Is valid: False{Environment.NewLine}";
+			Assert.AreEqual(expected, formattedException);
+		}
 	}
 }
