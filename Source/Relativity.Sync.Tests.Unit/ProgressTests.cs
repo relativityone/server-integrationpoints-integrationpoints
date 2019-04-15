@@ -192,7 +192,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			queryRequest.ObjectType.Guid.Should().Be(ProgressObjectTypeGuid);
 			queryRequest.Condition.Should().Be($"'{NameGuid}' == '{name}' AND '{ParentArtifactGuid}' == {syncConfigurationArtifactId}");
-			//TODO
+
 			const int four = 4;
 			queryRequest.Fields.Count().Should().Be(four);
 			queryRequest.Fields.Should().Contain(x => x.Guid == ExceptionGuid);
