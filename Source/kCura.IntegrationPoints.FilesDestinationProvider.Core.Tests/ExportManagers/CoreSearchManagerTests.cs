@@ -2,7 +2,6 @@
 using System.Data;
 using System.Linq;
 using FluentAssertions;
-using Google.Protobuf.WellKnownTypes;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories;
@@ -16,8 +15,6 @@ using Relativity.Services.Interfaces.Shared.Models;
 using Relativity.Services.Interfaces.ViewField.Models;
 using Action = System.Action;
 using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
-using ColumnSourceType = Relativity.ViewFieldInfo.ColumnSourceType;
-using FieldType = Relativity.FieldTypeHelper.FieldType;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportManagers
 {
@@ -187,59 +184,109 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 			}
 		};
 
+		private readonly ViewFieldIDResponse[] _testViewFieldIDResponses =
+		{
+			new ViewFieldIDResponse
+			{
+				ArtifactID = 1000100,
+				ArtifactViewFieldID = 1000200
+			},
+			new ViewFieldIDResponse
+			{
+				ArtifactID = 1002100,
+				ArtifactViewFieldID = 1002200
+			}
+		};
+
+		private readonly ViewFieldResponse[] _testViewFieldResponses =
+		{
+			new ViewFieldResponse
+			{
+				ArtifactID = 121,
+				ArtifactViewFieldID = 133,
+				Category = FieldCategoryEnum.Batch,
+				DisplayName = "DisplayName",
+				ArtifactViewFieldColumnName = "AvfColumnName",
+				ArtifactViewFieldHeaderName = "AvfHeaderName",
+				AllowFieldName = "AllowFieldName",
+				ColumnSourceType = ColumnSourceTypeEnum.Computed,
+				DataSource = "DataSource",
+				SourceFieldName = "SourceFieldName",
+				SourceFieldArtifactTypeID = 10,
+				SourceFieldArtifactID = 10004300,
+				ConnectorFieldArtifactID = 1000400,
+				SourceFieldArtifactTypeTableName = "SourceFieldArtifactTypeTableName",
+				ConnectorFieldName = "ConnectorFieldName",
+				ConnectorFieldCategory = FieldCategoryEnum.Comments,
+				FieldType = FieldTypeEnum.Boolean,
+				IsLinked = false,
+				FieldCodeTypeID = 11,
+				ArtifactTypeID = 12,
+				ArtifactTypeTableName = "ArtifactTypeTableName",
+				FieldIsArtifactBaseField = true,
+				FormatString = "FormatString",
+				IsUnicodeEnabled = false,
+				AllowHtml = true,
+				ParentFileFieldArtifactID = 1000500,
+				ParentFileFieldDisplayName = "ParentFileFieldDisplayName",
+				AssociativeArtifactTypeID = 13,
+				RelationalTableName = "RelationalTableName",
+				RelationalTableColumnName = "RelationalTableColumnName",
+				RelationalTableColumnName2 = "RelationalTableColumnName2",
+				ParentReflectionType = ParentReflectionTypeEnum.GrandParent,
+				ReflectedFieldArtifactTypeTableName = "ReflectedFieldArtifactTypeTableName",
+				ReflectedFieldIdentifierColumnName = "ReflectedFieldIdentifierColumnName",
+				ReflectedFieldConnectorFieldName = "ReflectedFieldConnectorFieldName",
+				ReflectedConnectorIdentifierColumnName = "ReflectedConnectorIdentifierColumnName",
+				EnableDataGrid = false,
+				IsVirtualAssociativeArtifactType = true
+			},
+			new ViewFieldResponse
+			{
+				ArtifactID = 1211,
+				ArtifactViewFieldID = 1332,
+				Category = FieldCategoryEnum.Batch,
+				DisplayName = "DisplayName1",
+				ArtifactViewFieldColumnName = "AvfColumnName1",
+				ArtifactViewFieldHeaderName = "AvfHeaderName1",
+				AllowFieldName = "AllowFieldName2",
+				ColumnSourceType = ColumnSourceTypeEnum.Computed,
+				DataSource = "DataSource2",
+				SourceFieldName = "SourceFieldName2",
+				SourceFieldArtifactTypeID = 101,
+				SourceFieldArtifactID = 100043001,
+				ConnectorFieldArtifactID = 10004001,
+				SourceFieldArtifactTypeTableName = "SourceFieldArtifactTypeTableName1",
+				ConnectorFieldName = "ConnectorFieldName",
+				ConnectorFieldCategory = FieldCategoryEnum.Comments,
+				FieldType = FieldTypeEnum.Boolean,
+				IsLinked = true,
+				FieldCodeTypeID = 111,
+				ArtifactTypeID = 112,
+				ArtifactTypeTableName = "ArtifactTypeTableName1",
+				FieldIsArtifactBaseField = true,
+				FormatString = "FormatString1",
+				IsUnicodeEnabled = false,
+				AllowHtml = true,
+				ParentFileFieldArtifactID = 10005020,
+				ParentFileFieldDisplayName = "ParentFileFieldDisplayName1",
+				AssociativeArtifactTypeID = 131,
+				RelationalTableName = "RelationalTableName1",
+				RelationalTableColumnName = "RelationalTableColumnName1",
+				RelationalTableColumnName2 = "RelationalTableColumnName21",
+				ParentReflectionType = ParentReflectionTypeEnum.GrandParent,
+				ReflectedFieldArtifactTypeTableName = "ReflectedFieldArtifactTypeTableName1",
+				ReflectedFieldIdentifierColumnName = "ReflectedFieldIdentifierColumnName1",
+				ReflectedFieldConnectorFieldName = "ReflectedFieldConnectorFieldName1",
+				ReflectedConnectorIdentifierColumnName = "ReflectedConnectorIdentifierColumnName1",
+				EnableDataGrid = true,
+				IsVirtualAssociativeArtifactType = false
+			}
+		};
+
 		private const int _WORKSPACE_ID = 1001000;
 		private const int _PRODUCTION_ID = 1710;
 		private const int _PRODUCTION_ID_2 = 1711;
-
-		#region VIEW FIELD CONSTS
-
-		private const int _ARTIFACT_ID = 1000100;
-		private const int _ARTIFACT_ID_2 = 1002100;
-		private const int _ARTIFACT_VIEW_FIELD_ID = 1000200;
-		private const int _ARTIFACT_VIEW_FIELD_ID_2 = 1002200;
-		private const FieldCategoryEnum _CATEGORY = FieldCategoryEnum.Batch;
-		private const FieldCategory _CATEGORY_CONVERTED = FieldCategory.Batch;
-		private const string _DISPLAY_NAME = "DisplayName";
-		private const string _ARTIFACT_VIEW_FIELD_COLUMN_NAME = "AvfColumnName";
-		private const string _ARTIFACT_VIEW_FIELD_HEADER_NAME = "AvfHeaderName";
-		private const string _ALLOW_FIELD_NAME = "AllowFieldName";
-		private const ColumnSourceTypeEnum _COLUMN_SOURCE_TYPE = ColumnSourceTypeEnum.Computed;
-		private const ColumnSourceType _COLUMN_SOURCE_TYPE_CONVERTED = ColumnSourceType.Computed;
-		private const string _DATA_SOURCE = "DataSource";
-		private const string _SOURCE_FIELD_NAME = "SourceFieldName";
-		private const int _SOURCE_FIELD_ARTIFACT_TYPE_ID = 10;
-		private const int _SOURCE_FIELD_ARTIFACT_ID = 10004300;
-		private const int _CONNECTOR_FIELD_ARTIFACT_ID = 1000400;
-		private const string _SOURCE_FIELD_ARTIFACT_TYPE_TABLE_NAME = "SourceFieldArtifactTypeTableName";
-		private const string _CONNECTOR_FIELD_NAME = "ConnectorFieldName";
-		private const FieldCategoryEnum _CONNECTOR_FIELD_CATEGORY = FieldCategoryEnum.Comments;
-		private const FieldCategory _CONNECTOR_FIELD_CATEGORY_CONVERTED = FieldCategory.Comments;
-		private const FieldTypeEnum _FIELD_TYPE = FieldTypeEnum.Boolean;
-		private const FieldType _FIELD_TYPE_CONVERTED = FieldType.Boolean;
-		private const bool _IS_LINKED = false;
-		private const int _FIELD_CODE_TYPE_ID = 11;
-		private const int _ARTIFACT_TYPE_ID = 12;
-		private const string _ARTIFACT_TYPE_TABLE_NAME = "ArtifactTypeTableName";
-		private const bool _FIELD_IS_ARTIFACT_BASE_FIELD = true;
-		private const string _FORMAT_STRING = "FormatString";
-		private const bool _IS_UNICODE_ENABLED = false;
-		private const bool _ALLOW_HTML = true;
-		private const int _PARENT_FILE_FIELD_ARTIFACT_ID = 1000500;
-		private const string _PARENT_FILE_FIELD_DISPLAY_NAME = "ParentFileFieldDisplayName";
-		private const int _ASSOCIATIVE_ARTIFACT_TYPE_ID = 13;
-		private const string _RELATIONAL_TABLE_NAME = "RelationalTableName";
-		private const string _RELATIONAL_TABLE_COLUMN_NAME = "RelationalTableColumnName";
-		private const string _RELATIONAL_TABLE_COLUMN_NAME_2 = "RelationalTableColumnName2";
-		private const ParentReflectionTypeEnum _PARENT_REFLECTION_TYPE = ParentReflectionTypeEnum.GrandParent;
-		private const ParentReflectionType _PARENT_REFLECTION_TYPE_CONVERTED = ParentReflectionType.GrandParent;
-		private const string _REFLECTED_FIELD_ARTIFACT_TYPE_TABLE_NAME = "ReflectedFieldArtifactTypeTableName";
-		private const string _REFLECTED_FIELD_IDENTIFIER_COLUMN_NAME = "ReflectedFieldIdentifierColumnName";
-		private const string _REFLECTED_FIELD_CONNECTOR_FIELD_NAME = "ReflectedFieldConnectorFieldName";
-		private const string _REFLECTED_CONNECTOR_IDENTIFIER_COLUMN_NAME = "ReflectedConnectorIdentifierColumnName";
-		private const bool _ENABLE_DATA_GRID = false;
-		private const bool _IS_VIRTUAL_ASSOCIATIVE_ARTIFACT_TYPE = true;
-
-		#endregion VIEW FIELD CONSTS
 
 		[SetUp]
 		public void SetUp()
@@ -258,84 +305,85 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 		}
 
 		[Test]
-		public void RetrieveDefaultViewFieldIdsForSavedSearchTest()
+		public void RetrieveDefaultViewFieldIdsForSavedSearch_ShouldReturnViewFieldIDForSavedSearch()
 		{
 			// arrange
-			ViewFieldIDResponse viewFieldIDResponse1 = CreateTestViewFieldIDResponse(_ARTIFACT_ID, _ARTIFACT_VIEW_FIELD_ID);
-			ViewFieldIDResponse viewFieldIdResponse2 = CreateTestViewFieldIDResponse(_ARTIFACT_ID_2, _ARTIFACT_VIEW_FIELD_ID_2);
-			ViewFieldIDResponse[] viewFieldIDResponseArray = { viewFieldIDResponse1, viewFieldIdResponse2 };
+			const int artifactTypeID = 12;
+			int viewID = _testViewFieldIDResponses.First().ArtifactID;
+			int viewFieldID = _testViewFieldIDResponses.First().ArtifactViewFieldID;
 			_viewFieldRepositoryMock
-				.Setup(x => x.ReadViewFieldIDsFromSearch(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _ARTIFACT_ID))
-				.Returns(viewFieldIDResponseArray);
+				.Setup(x => x.ReadViewFieldIDsFromSearch(_WORKSPACE_ID, artifactTypeID, viewID))
+				.Returns(_testViewFieldIDResponses);
 
 			// act
 			int[] result = _sut.RetrieveDefaultViewFieldIds(
-				_WORKSPACE_ID, 
-				_ARTIFACT_ID, 
-				_ARTIFACT_TYPE_ID, 
+				_WORKSPACE_ID,
+				viewID,
+				artifactTypeID, 
 				isProduction: false
 			);
 
 			// assert
 			_viewFieldRepositoryMock.Verify(
-				x => x.ReadViewFieldIDsFromSearch(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _ARTIFACT_ID), Times.Once);
+				x => x.ReadViewFieldIDsFromSearch(_WORKSPACE_ID, artifactTypeID, viewID), 
+				Times.Once
+			);
 			result.Length.Should().Be(1);
-			result[0].Should().Be(_ARTIFACT_VIEW_FIELD_ID);
+			result[0].Should().Be(viewFieldID);
 		}
 
 		[Test]
-		public void RetrieveDefaultViewFieldIdsForProductionTest()
+		public void RetrieveDefaultViewFieldIdsForSavedSearch_ShouldReturnViewFieldIDForProduction()
 		{
 			// arrange
-			ViewFieldIDResponse viewFieldIDResponse1 = CreateTestViewFieldIDResponse(_ARTIFACT_ID, _ARTIFACT_VIEW_FIELD_ID);
-			ViewFieldIDResponse viewFieldIdResponse2 = CreateTestViewFieldIDResponse(_ARTIFACT_ID_2, _ARTIFACT_VIEW_FIELD_ID_2);
-			ViewFieldIDResponse[] viewFieldIDResponseArray = { viewFieldIDResponse1, viewFieldIdResponse2 };
+			const int artifactTypeID = 12;
+			int viewID = _testViewFieldIDResponses.First().ArtifactID;
+			int viewFieldID = _testViewFieldIDResponses.First().ArtifactViewFieldID;
 			_viewFieldRepositoryMock
-				.Setup(x => x.ReadViewFieldIDsFromProduction(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _ARTIFACT_ID))
-				.Returns(viewFieldIDResponseArray);
+				.Setup(x => x.ReadViewFieldIDsFromProduction(_WORKSPACE_ID, artifactTypeID, viewID))
+				.Returns(_testViewFieldIDResponses);
 
 			// act
 			int[] result = _sut.RetrieveDefaultViewFieldIds(
-				_WORKSPACE_ID, 
-				_ARTIFACT_ID, 
-				_ARTIFACT_TYPE_ID, 
+				_WORKSPACE_ID,
+				viewID,
+				artifactTypeID, 
 				isProduction: true
 			);
 
 			// assert
 			_viewFieldRepositoryMock.Verify(
 				x => x.ReadViewFieldIDsFromProduction(
-					_WORKSPACE_ID, 
-					_ARTIFACT_TYPE_ID, 
-					_ARTIFACT_ID
+					_WORKSPACE_ID,
+					artifactTypeID,
+					viewID
 				), Times.Once);
 			result.Length.Should().Be(1);
-			result[0].Should().Be(_ARTIFACT_VIEW_FIELD_ID);
+			result[0].Should().Be(viewFieldID);
 		}
 
 		[Test]
-		public void RetrieveAllExportableViewFieldsTest()
+		public void RetrieveAllExportableViewFields_ShouldReturnCorrectInfos()
 		{
 			// arrange
-			ViewFieldResponse viewFieldResponse = CreateTestViewFieldResponse();
-			ViewFieldResponse[] viewFieldResponseArray = {viewFieldResponse};
-			_viewFieldRepositoryMock.Setup(x => x.ReadExportableViewFields(_WORKSPACE_ID, _ARTIFACT_TYPE_ID))
-				.Returns(viewFieldResponseArray);
+			const int artifactTypeID = 12;
+			ViewFieldResponse[] viewFieldResponses = _testViewFieldResponses.Take(1).ToArray();
+			_viewFieldRepositoryMock.Setup(x => x.ReadExportableViewFields(_WORKSPACE_ID, artifactTypeID))
+				.Returns(viewFieldResponses);
 
 			// act
 			ViewFieldInfo[] result = _sut.RetrieveAllExportableViewFields(
-				_WORKSPACE_ID, 
-				_ARTIFACT_TYPE_ID
+				_WORKSPACE_ID,
+				artifactTypeID
 			);
 
 			// assert
 			_viewFieldRepositoryMock.Verify(
 				x => x.ReadExportableViewFields(
-					_WORKSPACE_ID, 
-					_ARTIFACT_TYPE_ID
+					_WORKSPACE_ID,
+					artifactTypeID
 				), Times.Once);
-			result.Length.Should().Be(1);
-			AssertViewFieldInfoAreSameAsExpected(result[0]);
+			AssertViewFieldInfosAreSameAsExpected(viewFieldResponses, result);
 		}
 
 		[Test]
@@ -677,104 +725,62 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 				Times.Once);
 		}
 
-		private static ViewFieldIDResponse CreateTestViewFieldIDResponse(int artifactID, int artifactViewFieldID)
+
+
+		private static void AssertViewFieldInfosAreSameAsExpected(ViewFieldResponse[] expectedInfos, ViewFieldInfo[] currentInfos)
 		{
-			var viewFieldIDResponse = new ViewFieldIDResponse
+			currentInfos.Length.Should().Be(expectedInfos.Length);
+
+			var asserts = expectedInfos.Zip(currentInfos, (e, a) => new
 			{
-				ArtifactID = artifactID,
-				ArtifactViewFieldID = artifactViewFieldID
-			};
-			return viewFieldIDResponse;
-		}
+				Expected = e,
+				Actual = a
+			});
 
-		private static ViewFieldResponse CreateTestViewFieldResponse()
-		{
-			var viewFieldResponse = new ViewFieldResponse
+			foreach (var assert in asserts)
 			{
-				ArtifactID = _ARTIFACT_ID,
-				ArtifactViewFieldID = _ARTIFACT_VIEW_FIELD_ID,
-				Category = _CATEGORY,
-				DisplayName = _DISPLAY_NAME,
-				ArtifactViewFieldColumnName = _ARTIFACT_VIEW_FIELD_COLUMN_NAME,
-				ArtifactViewFieldHeaderName = _ARTIFACT_VIEW_FIELD_HEADER_NAME,
-				AllowFieldName = _ALLOW_FIELD_NAME,
-				ColumnSourceType = _COLUMN_SOURCE_TYPE,
-				DataSource = _DATA_SOURCE,
-				SourceFieldName = _SOURCE_FIELD_NAME,
-				SourceFieldArtifactTypeID = _SOURCE_FIELD_ARTIFACT_TYPE_ID,
-				SourceFieldArtifactID = _SOURCE_FIELD_ARTIFACT_ID,
-				ConnectorFieldArtifactID = _CONNECTOR_FIELD_ARTIFACT_ID,
-				SourceFieldArtifactTypeTableName = _SOURCE_FIELD_ARTIFACT_TYPE_TABLE_NAME,
-				ConnectorFieldName = _CONNECTOR_FIELD_NAME,
-				ConnectorFieldCategory = _CONNECTOR_FIELD_CATEGORY,
-				FieldType = _FIELD_TYPE,
-				IsLinked = _IS_LINKED,
-				FieldCodeTypeID = _FIELD_CODE_TYPE_ID,
-				ArtifactTypeID = _ARTIFACT_TYPE_ID,
-				ArtifactTypeTableName = _ARTIFACT_TYPE_TABLE_NAME,
-				FieldIsArtifactBaseField = _FIELD_IS_ARTIFACT_BASE_FIELD,
-				FormatString = _FORMAT_STRING,
-				IsUnicodeEnabled = _IS_UNICODE_ENABLED,
-				AllowHtml = _ALLOW_HTML,
-				ParentFileFieldArtifactID = _PARENT_FILE_FIELD_ARTIFACT_ID,
-				ParentFileFieldDisplayName = _PARENT_FILE_FIELD_DISPLAY_NAME,
-				AssociativeArtifactTypeID = _ASSOCIATIVE_ARTIFACT_TYPE_ID,
-				RelationalTableName = _RELATIONAL_TABLE_NAME,
-				RelationalTableColumnName = _RELATIONAL_TABLE_COLUMN_NAME,
-				RelationalTableColumnName2 = _RELATIONAL_TABLE_COLUMN_NAME_2,
-				ParentReflectionType = _PARENT_REFLECTION_TYPE,
-				ReflectedFieldArtifactTypeTableName = _REFLECTED_FIELD_ARTIFACT_TYPE_TABLE_NAME,
-				ReflectedFieldIdentifierColumnName = _REFLECTED_FIELD_IDENTIFIER_COLUMN_NAME,
-				ReflectedFieldConnectorFieldName = _REFLECTED_FIELD_CONNECTOR_FIELD_NAME,
-				ReflectedConnectorIdentifierColumnName = _REFLECTED_CONNECTOR_IDENTIFIER_COLUMN_NAME,
-				EnableDataGrid = _ENABLE_DATA_GRID,
-				IsVirtualAssociativeArtifactType = _IS_VIRTUAL_ASSOCIATIVE_ARTIFACT_TYPE
-			};
-			return viewFieldResponse;
-		}
+				ViewFieldInfo actual = assert.Actual;
+				ViewFieldResponse expected = assert.Expected;
 
-		private static string ConvertToCommaSeparatedString(int[] values) => string.Join(",", values);
-
-		private static void AssertViewFieldInfoAreSameAsExpected(ViewFieldInfo viewFieldInfo)
-		{
-			viewFieldInfo.FieldArtifactId.Should().Be(_ARTIFACT_ID);
-			viewFieldInfo.AvfId.Should().Be(_ARTIFACT_VIEW_FIELD_ID);
-			viewFieldInfo.Category.Should().Be(_CATEGORY_CONVERTED);
-			viewFieldInfo.DisplayName.Should().Be(_DISPLAY_NAME);
-			viewFieldInfo.AvfColumnName.Should().Be(_ARTIFACT_VIEW_FIELD_COLUMN_NAME);
-			viewFieldInfo.AvfHeaderName.Should().Be(_ARTIFACT_VIEW_FIELD_HEADER_NAME);
-			viewFieldInfo.AllowFieldName.Should().Be(_ALLOW_FIELD_NAME);
-			viewFieldInfo.ColumnSource.Should().Be(_COLUMN_SOURCE_TYPE_CONVERTED);
-			viewFieldInfo.DataSource.Should().Be(_DATA_SOURCE);
-			viewFieldInfo.SourceFieldName.Should().Be(_SOURCE_FIELD_NAME);
-			viewFieldInfo.SourceFieldArtifactTypeID.Should().Be(_SOURCE_FIELD_ARTIFACT_TYPE_ID);
-			viewFieldInfo.SourceFieldArtifactID.Should().Be(_SOURCE_FIELD_ARTIFACT_ID);
-			viewFieldInfo.ConnectorFieldArtifactID.Should().Be(_CONNECTOR_FIELD_ARTIFACT_ID);
-			viewFieldInfo.SourceFieldArtifactTypeTableName.Should().Be(_SOURCE_FIELD_ARTIFACT_TYPE_TABLE_NAME);
-			viewFieldInfo.ConnectorFieldName.Should().Be(_CONNECTOR_FIELD_NAME);
-			viewFieldInfo.ConnectorFieldCategory.Should().Be(_CONNECTOR_FIELD_CATEGORY_CONVERTED);
-			viewFieldInfo.FieldType.Should().Be(_FIELD_TYPE_CONVERTED);
-			viewFieldInfo.IsLinked.Should().Be(_IS_LINKED);
-			viewFieldInfo.FieldCodeTypeID.Should().Be(_FIELD_CODE_TYPE_ID);
-			viewFieldInfo.ArtifactTypeID.Should().Be(_ARTIFACT_TYPE_ID);
-			viewFieldInfo.ArtifactTypeTableName.Should().Be(_ARTIFACT_TYPE_TABLE_NAME);
-			viewFieldInfo.FieldIsArtifactBaseField.Should().Be(_FIELD_IS_ARTIFACT_BASE_FIELD);
-			viewFieldInfo.FormatString.Should().Be(_FORMAT_STRING);
-			viewFieldInfo.IsUnicodeEnabled.Should().Be(_IS_UNICODE_ENABLED);
-			viewFieldInfo.AllowHtml.Should().Be(_ALLOW_HTML);
-			viewFieldInfo.ParentFileFieldArtifactID.Should().Be(_PARENT_FILE_FIELD_ARTIFACT_ID);
-			viewFieldInfo.ParentFileFieldDisplayName.Should().Be(_PARENT_FILE_FIELD_DISPLAY_NAME);
-			viewFieldInfo.AssociativeArtifactTypeID.Should().Be(_ASSOCIATIVE_ARTIFACT_TYPE_ID);
-			viewFieldInfo.RelationalTableName.Should().Be(_RELATIONAL_TABLE_NAME);
-			viewFieldInfo.RelationalTableColumnName.Should().Be(_RELATIONAL_TABLE_COLUMN_NAME);
-			viewFieldInfo.RelationalTableColumnName2.Should().Be(_RELATIONAL_TABLE_COLUMN_NAME_2);
-			viewFieldInfo.ParentReflectionType.Should().Be(_PARENT_REFLECTION_TYPE_CONVERTED);
-			viewFieldInfo.ReflectedFieldArtifactTypeTableName.Should().Be(_REFLECTED_FIELD_ARTIFACT_TYPE_TABLE_NAME);
-			viewFieldInfo.ReflectedFieldIdentifierColumnName.Should().Be(_REFLECTED_FIELD_IDENTIFIER_COLUMN_NAME);
-			viewFieldInfo.ReflectedFieldConnectorFieldName.Should().Be(_REFLECTED_FIELD_CONNECTOR_FIELD_NAME);
-			viewFieldInfo.ReflectedConnectorIdentifierColumnName.Should().Be(_REFLECTED_CONNECTOR_IDENTIFIER_COLUMN_NAME);
-			viewFieldInfo.EnableDataGrid.Should().Be(_ENABLE_DATA_GRID);
-			viewFieldInfo.IsVirtualAssociativeArtifactType.Should().Be(_IS_VIRTUAL_ASSOCIATIVE_ARTIFACT_TYPE);
+				actual.FieldArtifactId.Should().Be(expected.ArtifactID);
+				actual.AvfId.Should().Be(expected.ArtifactViewFieldID);
+				actual.Category.Should().Be(ConvertEnum<FieldCategory>(expected.Category));
+				actual.DisplayName.Should().Be(expected.DisplayName);
+				actual.AvfColumnName.Should().Be(expected.ArtifactViewFieldColumnName);
+				actual.AvfHeaderName.Should().Be(expected.ArtifactViewFieldHeaderName);
+				actual.AllowFieldName.Should().Be(expected.AllowFieldName);
+				actual.ColumnSource.Should().Be(ConvertEnum<global::Relativity.ViewFieldInfo.ColumnSourceType>(expected.ColumnSourceType));
+				actual.DataSource.Should().Be(expected.DataSource);
+				actual.SourceFieldName.Should().Be(expected.SourceFieldName);
+				actual.SourceFieldArtifactTypeID.Should().Be(expected.SourceFieldArtifactTypeID);
+				actual.SourceFieldArtifactID.Should().Be(expected.SourceFieldArtifactID);
+				actual.ConnectorFieldArtifactID.Should().Be(expected.ConnectorFieldArtifactID);
+				actual.SourceFieldArtifactTypeTableName.Should().Be(expected.SourceFieldArtifactTypeTableName);
+				actual.ConnectorFieldName.Should().Be(expected.ConnectorFieldName);
+				actual.ConnectorFieldCategory.Should().Be(ConvertEnum<FieldCategory>(expected.ConnectorFieldCategory));
+				actual.FieldType.Should().Be(ConvertEnum<FieldTypeHelper.FieldType>(expected.FieldType));
+				actual.IsLinked.Should().Be(expected.IsLinked);
+				actual.FieldCodeTypeID.Should().Be(expected.FieldCodeTypeID);
+				actual.ArtifactTypeID.Should().Be(expected.ArtifactTypeID);
+				actual.ArtifactTypeTableName.Should().Be(expected.ArtifactTypeTableName);
+				actual.FieldIsArtifactBaseField.Should().Be(expected.FieldIsArtifactBaseField);
+				actual.FormatString.Should().Be(expected.FormatString);
+				actual.IsUnicodeEnabled.Should().Be(expected.IsUnicodeEnabled);
+				actual.AllowHtml.Should().Be(expected.AllowHtml);
+				actual.ParentFileFieldArtifactID.Should().Be(expected.ParentFileFieldArtifactID);
+				actual.ParentFileFieldDisplayName.Should().Be(expected.ParentFileFieldDisplayName);
+				actual.AssociativeArtifactTypeID.Should().Be(expected.AssociativeArtifactTypeID);
+				actual.RelationalTableName.Should().Be(expected.RelationalTableName);
+				actual.RelationalTableColumnName.Should().Be(expected.RelationalTableColumnName);
+				actual.RelationalTableColumnName2.Should().Be(expected.RelationalTableColumnName2);
+				actual.ParentReflectionType.Should().Be(ConvertEnum<ParentReflectionType>(expected.ParentReflectionType));
+				actual.ReflectedFieldArtifactTypeTableName.Should().Be(expected.ReflectedFieldArtifactTypeTableName);
+				actual.ReflectedFieldIdentifierColumnName.Should().Be(expected.ReflectedFieldIdentifierColumnName);
+				actual.ReflectedFieldConnectorFieldName.Should().Be(expected.ReflectedFieldConnectorFieldName);
+				actual.ReflectedConnectorIdentifierColumnName.Should().Be(expected.ReflectedConnectorIdentifierColumnName);
+				actual.EnableDataGrid.Should().Be(expected.EnableDataGrid);
+				actual.IsVirtualAssociativeArtifactType.Should().Be(expected.IsVirtualAssociativeArtifactType);
+			}
 		}
 
 		private static void AssertFileResponsesAreSameAsExpected(
@@ -979,6 +985,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 				actual[nameof(DynamicFileResponse.Size)]
 					.Should().Be(expected.Size);
 			}
+		}
+
+		private static string ConvertToCommaSeparatedString(int[] values) => string.Join(",", values);
+
+		private static TEnum ConvertEnum<TEnum>(Enum source)
+		{
+			return (TEnum)Enum.Parse(typeof(TEnum), source.ToString(), true);
 		}
 	}
 }
