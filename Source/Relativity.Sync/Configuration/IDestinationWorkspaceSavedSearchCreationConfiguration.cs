@@ -4,6 +4,8 @@ namespace Relativity.Sync.Configuration
 {
 	internal interface IDestinationWorkspaceSavedSearchCreationConfiguration : IConfiguration
 	{
+		int SourceWorkspaceArtifactId { get; }
+
 		int DestinationWorkspaceArtifactId { get; }
 
 		string SourceJobTagName { get; }
