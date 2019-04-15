@@ -52,7 +52,7 @@ namespace Relativity.Sync.Executors.Validation
 			}
 			catch (Exception ex)
 			{
-				const string message = "Exception occurred during field mappings validation.";
+				const string message = "Exception occurred during field mappings validation. See logs for more details.";
 				_logger.LogError(ex, message);
 				return new ValidationResult(new ValidationMessage(message));
 			}

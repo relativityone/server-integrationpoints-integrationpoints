@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Runtime.Serialization;
+using System.Text;
 
 namespace Relativity.Sync.Executors.Validation
 {
@@ -63,6 +65,18 @@ namespace Relativity.Sync.Executors.Validation
 
 			info.AddValue(nameof(ValidationResult), ValidationResult);
 			base.GetObjectData(info, context);
+		}
+
+		/// <inheritdoc />
+		public override string ToString()
+		{
+			StringBuilder messages = new StringBuilder();
+			foreach (ValidationMessage validationMessage in ValidationResult.Messages)
+			{
+				messages.AppendLine($"Error code: {validationMessage.ErrorCode}{Environment.NewLine}Message: {validationMessage.ShortMessage}");
+			}
+
+			return $"Is valid: {ValidationResult.IsValid}{Environment.NewLine}{messages}";
 		}
 	}
 }
