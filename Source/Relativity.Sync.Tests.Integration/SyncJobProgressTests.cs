@@ -15,19 +15,18 @@ namespace Relativity.Sync.Tests.Integration
 	public sealed class SyncJobProgressTests
 	{
 		private ISyncJob _instance;
-		private ContainerBuilder _containerBuilder; 
 		private IContainer _container;
 		private ProgressRepositoryStub _progressRepository;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
-			IntegrationTestsContainerBuilder.MockAllSteps(_containerBuilder);
-			_containerBuilder.RegisterInstance(Mock.Of<ISyncMetrics>()).As<ISyncMetrics>();
+			ContainerBuilder containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
+			IntegrationTestsContainerBuilder.MockAllSteps(containerBuilder);
+			containerBuilder.RegisterInstance(Mock.Of<ISyncMetrics>()).As<ISyncMetrics>();
 			_progressRepository = new ProgressRepositoryStub();
-			_containerBuilder.RegisterInstance(_progressRepository).As<IProgressRepository>();
-			_container = _containerBuilder.Build();
+			containerBuilder.RegisterInstance(_progressRepository).As<IProgressRepository>();
+			_container = containerBuilder.Build();
 			_instance = _container.Resolve<ISyncJob>();
 		}
 

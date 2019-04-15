@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Autofac;
-using Autofac.Core.Registration;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -14,7 +11,6 @@ namespace Relativity.Sync.Tests.Unit
 	public sealed class SyncJobFactoryTests
 	{
 		private SyncJobFactory _instance;
-		private Mock<IContainerFactory> _containerFactory;
 		private Mock<IContainer> _container;
 		private ISyncLog _logger;
 		private SyncJobParameters _syncJobParameters;
@@ -23,21 +19,21 @@ namespace Relativity.Sync.Tests.Unit
 		[SetUp]
 		public void SetUp()
 		{
-			_containerFactory = new Mock<IContainerFactory>();
 			_container = new Mock<IContainer>();
 
 			_syncJobParameters = new SyncJobParameters(1, 1);
 			_configuration = new SyncJobExecutionConfiguration();
 			_logger = new EmptyLogger();
-			_instance = new SyncJobFactory(_containerFactory.Object);
+			_instance = new SyncJobFactory(new Mock<IContainerFactory>().Object);
 		}
 
 		[Test]
-		public void ItShouldCreateSyncJob()
+		public void ItShouldCreateSyncJobWithAllOverrides()
 		{
-			ISyncJob result = _instance.Create(_container.Object, _syncJobParameters, _configuration, _logger);
-
-			result.Should().BeOfType<SyncJobInLifetimeScope>();
+			_instance.Create(_container.Object, _syncJobParameters, _configuration, _logger).Should().BeOfType<SyncJobInLifetimeScope>();
+			_instance.Create(_container.Object, _syncJobParameters, _configuration).Should().BeOfType<SyncJobInLifetimeScope>();
+			_instance.Create(_container.Object, _syncJobParameters, _logger).Should().BeOfType<SyncJobInLifetimeScope>();
+			_instance.Create(_container.Object, _syncJobParameters).Should().BeOfType<SyncJobInLifetimeScope>();
 		}
 
 		[Test]

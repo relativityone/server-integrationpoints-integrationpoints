@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
@@ -42,9 +43,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			var configuration = new Mock<IDestinationWorkspaceTagsCreationConfiguration>();
 
 			// act
-			await _sut.ExecuteAsync(configuration.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult executionResult = await _sut.ExecuteAsync(configuration.Object, CancellationToken.None).ConfigureAwait(false);
 
 			// assert
+			executionResult.Status.Should().Be(ExecutionStatus.Completed);
 			configuration.Verify(x => x.SetSourceWorkspaceTag(It.Is<int>(i => i == sourceCaseArtifactId), It.Is<string>(s => s.Equals(sourceCaseTagName, StringComparison.InvariantCulture))));
 		}
 
@@ -65,10 +67,24 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Mock<IDestinationWorkspaceTagsCreationConfiguration> configuration = new Mock<IDestinationWorkspaceTagsCreationConfiguration>();
 
 			// act
-			await _sut.ExecuteAsync(configuration.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult executionResult = await _sut.ExecuteAsync(configuration.Object, CancellationToken.None).ConfigureAwait(false);
 
 			// assert
+			executionResult.Status.Should().Be(ExecutionStatus.Completed);
 			configuration.Verify(x => x.SetSourceJobTag(It.Is<int>(i => i == sourceJobTagArtifactId), It.Is<string>(s => s.Equals(sourceJobTagName, StringComparison.InvariantCulture))));
+		}
+
+		[Test]
+		public async Task ItShouldReturnFailureWhenErrorOccurred()
+		{
+			_sourceCaseTagService.Setup(x => x.CreateOrUpdateSourceCaseTagAsync(It.IsAny<IDestinationWorkspaceTagsCreationConfiguration>(), CancellationToken.None)).Throws<InvalidOperationException>();
+
+			// act
+			ExecutionResult executionResult = await _sut.ExecuteAsync(Mock.Of<IDestinationWorkspaceTagsCreationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+
+			// assert
+			executionResult.Status.Should().Be(ExecutionStatus.Failed);
+			executionResult.Exception.Should().BeOfType<InvalidOperationException>();
 		}
 	}
 }

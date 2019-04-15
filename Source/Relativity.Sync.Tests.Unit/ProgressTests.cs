@@ -28,6 +28,7 @@ namespace Relativity.Sync.Tests.Unit
 		private static readonly Guid NameGuid = new Guid("AE2FCA2B-0E5C-4F35-948F-6C1654D5CF95");
 		private static readonly Guid ExceptionGuid = new Guid("2F2CFC2B-C9C0-406D-BD90-FB0133BCB939");
 		private static readonly Guid MessageGuid = new Guid("2E296F79-1B81-4BF6-98AD-68DA13F8DA44");
+		private static readonly Guid ParentArtifactGuid = new Guid("E0188DD7-4B1B-454D-AFA4-3CCC7F9DC001");
 
 		[SetUp]
 		public void SetUp()
@@ -108,6 +109,97 @@ namespace Relativity.Sync.Tests.Unit
 			progress.Message.Should().Be(message);
 
 			_objectManager.Verify(x => x.ReadAsync(_WORKSPACE_ID, It.Is<ReadRequest>(rr => AssertReadRequest(rr))), Times.Once);
+		}
+
+		[Test]
+		public async Task ItShouldQueryProgress()
+		{
+			const string name = "progress name 1";
+			const int order = 3;
+			const string status = "status 3";
+			const string exception = "exception 5";
+			const string message = "message 9";
+			const int syncConfigurationArtifactId = 854796;
+
+			QueryResult result = PrepareQueryResult(order, status, exception, message);
+
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, 1)).ReturnsAsync(result);
+
+			// ACT
+			IProgress progress = await _progressRepository.QueryAsync(_WORKSPACE_ID, syncConfigurationArtifactId, name).ConfigureAwait(false);
+
+			// ASSERT
+			progress.ArtifactId.Should().Be(_ARTIFACT_ID);
+			progress.Name.Should().Be(name);
+			progress.Order.Should().Be(order);
+			progress.Status.Should().Be(status);
+			progress.Exception.Should().Be(exception);
+			progress.Message.Should().Be(message);
+
+			_objectManager.Verify(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(qr => AssertQueryRequest(qr, name, syncConfigurationArtifactId)), 1, 1), Times.Once);
+		}
+
+		private QueryResult PrepareQueryResult(int order, string status, string exception, string message)
+		{
+			return new QueryResult
+			{
+				Objects = new List<RelativityObject>
+				{
+					new RelativityObject
+					{
+						ArtifactID = _ARTIFACT_ID,
+						FieldValues = new List<FieldValuePair>
+						{
+							new FieldValuePair
+							{
+								Field = new Field
+								{
+									Guids = new List<Guid> {OrderGuid}
+								},
+								Value = order
+							},
+							new FieldValuePair
+							{
+								Field = new Field
+								{
+									Guids = new List<Guid> {StatusGuid}
+								},
+								Value = status
+							},
+							new FieldValuePair
+							{
+								Field = new Field
+								{
+									Guids = new List<Guid> {ExceptionGuid}
+								},
+								Value = exception
+							},
+							new FieldValuePair
+							{
+								Field = new Field
+								{
+									Guids = new List<Guid> {MessageGuid}
+								},
+								Value = message
+							}
+						}
+					}
+				}
+			};
+		}
+
+		private bool AssertQueryRequest(QueryRequest queryRequest, string name, int syncConfigurationArtifactId)
+		{
+			queryRequest.ObjectType.Guid.Should().Be(ProgressObjectTypeGuid);
+			queryRequest.Condition.Should().Be($"'{NameGuid}' == '{name}' AND '{ParentArtifactGuid}' == {syncConfigurationArtifactId}");
+
+			const int four = 4;
+			queryRequest.Fields.Count().Should().Be(four);
+			queryRequest.Fields.Should().Contain(x => x.Guid == ExceptionGuid);
+			queryRequest.Fields.Should().Contain(x => x.Guid == OrderGuid);
+			queryRequest.Fields.Should().Contain(x => x.Guid == StatusGuid);
+			queryRequest.Fields.Should().Contain(x => x.Guid == MessageGuid);
+			return true;
 		}
 
 		[Test]
