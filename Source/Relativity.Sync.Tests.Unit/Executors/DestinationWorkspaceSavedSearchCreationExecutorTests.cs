@@ -1,5 +1,7 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
@@ -35,10 +37,24 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				.ReturnsAsync(savedSearchId);
 
 			// act
-			await _instance.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult executionResult = await _instance.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			_config.Verify(x => x.SetSavedSearchInDestinationArtifactIdAsync(savedSearchId));
+			Assert.AreEqual(ExecutionStatus.Completed, executionResult.Status);
+		}
+
+		[Test]
+		public async Task ItShouldReturnFailedExecutionStatus()
+		{
+			_tagSavedSearchFolder.Setup(x => x.GetFolderId(It.IsAny<int>())).Throws<InvalidOperationException>();
+
+			// act
+			ExecutionResult executionResult = await _instance.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
+
+			// assert
+			executionResult.Status.Should().Be(ExecutionStatus.Failed);
+			executionResult.Exception.Should().BeOfType<InvalidOperationException>();
 		}
 	}
 }

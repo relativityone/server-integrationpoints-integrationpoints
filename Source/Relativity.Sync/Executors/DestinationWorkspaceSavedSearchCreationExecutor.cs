@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
 
@@ -20,12 +21,22 @@ namespace Relativity.Sync.Executors
 		public async Task<ExecutionResult> ExecuteAsync(IDestinationWorkspaceSavedSearchCreationConfiguration configuration, CancellationToken token)
 		{
 			_logger.LogVerbose("Creating saved search in destination workspace artifact ID: {destinationWorkspaceArtifactId}", configuration.DestinationWorkspaceArtifactId);
-			
-			int savedSearchFolderArtifactId = await _tagSavedSearchFolder.GetFolderId(configuration.DestinationWorkspaceArtifactId).ConfigureAwait(false);
-			int savedSearchId = await _tagSavedSearch.CreateTagSavedSearchAsync(configuration, savedSearchFolderArtifactId, token).ConfigureAwait(false);
 
-			await configuration.SetSavedSearchInDestinationArtifactIdAsync(savedSearchId).ConfigureAwait(false);
-			return ExecutionResult.Success();
+			ExecutionResult result = ExecutionResult.Success();
+
+			try
+			{
+				int savedSearchFolderArtifactId = await _tagSavedSearchFolder.GetFolderId(configuration.DestinationWorkspaceArtifactId).ConfigureAwait(false);
+				int savedSearchId = await _tagSavedSearch.CreateTagSavedSearchAsync(configuration, savedSearchFolderArtifactId, token).ConfigureAwait(false);
+
+				await configuration.SetSavedSearchInDestinationArtifactIdAsync(savedSearchId).ConfigureAwait(false);
+			}
+			catch (Exception ex)
+			{
+				result = ExecutionResult.Failure("Failed to create saved search in destination workspace.", ex);
+			}
+
+			return result;
 		}
 	}
 }
