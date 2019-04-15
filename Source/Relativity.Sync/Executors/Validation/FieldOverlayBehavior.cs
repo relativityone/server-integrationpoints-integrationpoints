@@ -5,12 +5,12 @@ namespace Relativity.Sync.Executors.Validation
 	internal enum FieldOverlayBehavior
 	{
 		[Description("Use Field Settings")]
-		Default = 0,
+		UseFieldSettings = 0,
 
 		[Description("Replace Values")]
-		Replace = 1,
+		ReplaceValues = 1,
 
 		[Description("Merge Values")]
-		Merge = 2,
+		MergeValues = 2,
 	}
 }

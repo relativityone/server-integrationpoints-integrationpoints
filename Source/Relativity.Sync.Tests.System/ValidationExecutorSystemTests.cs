@@ -60,7 +60,7 @@ namespace Relativity.Sync.Tests.System
 				FolderPathSourceFieldArtifactId = folderPathSourceFieldArtifactId,
 				ImportOverwriteMode = ImportOverwriteMode.AppendOverlay,
 				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.ReadFromField,
-				FieldOverlayBehavior = FieldOverlayBehavior.Default
+				FieldOverlayBehavior = FieldOverlayBehavior.UseFieldSettings
 			};
 
 			// act
