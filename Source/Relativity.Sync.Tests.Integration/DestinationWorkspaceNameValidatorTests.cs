@@ -20,7 +20,6 @@ namespace Relativity.Sync.Tests.Integration
 	public sealed class DestinationWorkspaceNameValidatorTests
 	{
 		private ConfigurationStub _configuration;
-		private Mock<IDestinationServiceFactoryForUser> _serviceFactory;
 		private DestinationWorkspaceNameValidator _sut;
 		private Mock<IObjectManager> _objectManagerMock;
 		private const int _WORKSPACE_ARTIFACT_ID = 123;
@@ -31,11 +30,11 @@ namespace Relativity.Sync.Tests.Integration
 		{
 			_objectManagerMock = new Mock<IObjectManager>();
 
-			_serviceFactory = new Mock<IDestinationServiceFactoryForUser>();
-			_serviceFactory.Setup(sf => sf.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManagerMock.Object);
+			var serviceFactory = new Mock<IDestinationServiceFactoryForUser>();
+			serviceFactory.Setup(sf => sf.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManagerMock.Object);
 
 			ContainerBuilder containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
-			containerBuilder.RegisterInstance(_serviceFactory.Object).As<IDestinationServiceFactoryForUser>();
+			containerBuilder.RegisterInstance(serviceFactory.Object).As<IDestinationServiceFactoryForUser>();
 			containerBuilder.RegisterType<DestinationWorkspaceNameValidator>();
 			IContainer container = containerBuilder.Build();
 
