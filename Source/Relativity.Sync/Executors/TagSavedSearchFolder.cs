@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Relativity.API;
 using Relativity.Services;
 using Relativity.Services.Search;
 using Relativity.Sync.KeplerFactory;
