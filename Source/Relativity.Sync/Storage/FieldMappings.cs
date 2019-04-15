@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using kCura.Apps.Common.Utils.Serializers;
-using Relativity.Sync.Executors.Validation;
 
 namespace Relativity.Sync.Storage
 {
@@ -22,7 +21,7 @@ namespace Relativity.Sync.Storage
 			_logger = logger;
 		}
 
-		public List<FieldMap> GetFieldMappings()
+		public IList<FieldMap> GetFieldMappings()
 		{
 			if (_fieldMappings != null)
 			{

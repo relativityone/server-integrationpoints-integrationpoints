@@ -25,7 +25,7 @@ namespace Relativity.Sync.Storage
 
 		public int DataSourceArtifactId => _cache.GetFieldValue<int>(DataSourceArtifactIdGuid);
 
-		public List<FieldMap> FieldMappings => _fieldMappings.GetFieldMappings();
+		public IList<FieldMap> FieldMappings => _fieldMappings.GetFieldMappings();
 
 		public bool IsSnapshotCreated => !string.IsNullOrWhiteSpace(_cache.GetFieldValue<string>(SnapshotIdGuid));
 

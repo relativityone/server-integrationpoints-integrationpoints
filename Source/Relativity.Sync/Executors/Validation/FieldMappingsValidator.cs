@@ -31,7 +31,7 @@ namespace Relativity.Sync.Executors.Validation
 
 			try
 			{
-				List<FieldMap> fieldMaps = configuration.FieldMappings;
+				IList<FieldMap> fieldMaps = configuration.FieldMappings;
 				Task<ValidationMessage> validateDestinationFieldsTask = ValidateDestinationFields(configuration, fieldMaps, token);
 				Task<ValidationMessage> validateSourceFieldsTask = ValidateSourceFields(configuration, fieldMaps, token);
 

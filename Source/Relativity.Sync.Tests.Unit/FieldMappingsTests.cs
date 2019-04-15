@@ -40,7 +40,7 @@ namespace Relativity.Sync.Tests.Unit
 			_serializer.Setup(x => x.Deserialize<List<FieldMap>>(_FIELD_MAP)).Returns(fieldMappings);
 
 			// ACT
-			List<FieldMap> actualResult = _instance.GetFieldMappings();
+			IList<FieldMap> actualResult = _instance.GetFieldMappings();
 
 			// ASSERT
 			actualResult.Should().BeSameAs(fieldMappings);

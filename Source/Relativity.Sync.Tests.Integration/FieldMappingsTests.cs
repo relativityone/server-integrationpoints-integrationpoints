@@ -46,7 +46,7 @@ namespace Relativity.Sync.Tests.Integration
 		public void ItShouldProperlyDeserializeFieldMappings()
 		{
 			// act
-			List<FieldMap> fieldMap = _sut.GetFieldMappings();
+			IList<FieldMap> fieldMap = _sut.GetFieldMappings();
 
 			// assert
 			fieldMap.Should().NotBeNullOrEmpty();
