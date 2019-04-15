@@ -9,10 +9,9 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
-using Relativity.Sync.Tests.Integration;
+using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.Integration.Stubs;
 using Relativity.Sync.Tests.System.Helpers;
-using Relativity.Sync.Tests.System.Stubs;
 
 namespace Relativity.Sync.Tests.System
 {
@@ -39,7 +38,7 @@ namespace Relativity.Sync.Tests.System
 		}
 
 		[Test]
-		public async Task ItShouldSuccessfullyValidateJob()
+		public async Task ItShouldSuccessfulyValidateJob()
 		{
 			int expectedSourceWorkspaceArtifactId = _sourceWorkspace.ArtifactID;
 			int expectedJobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, expectedSourceWorkspaceArtifactId, _JOB_HISTORY_NAME).ConfigureAwait(false);
@@ -47,11 +46,12 @@ namespace Relativity.Sync.Tests.System
 			int destinationFolderArtifactId = await Rdos.GetRootFolderInstance(ServiceFactory, _destinationWorkspace.ArtifactID).ConfigureAwait(false);
 			int folderPathSourceFieldArtifactId = await Rdos.GetFolderPathSourceField(ServiceFactory, expectedSourceWorkspaceArtifactId).ConfigureAwait(false);
 
-			const string fieldsMap = "[{\"sourceField\":{\"displayName\":\"Control Number [Object Identifier]\",\"isIdentifier\":true," +
-							"\"fieldIdentifier\":\"1003667\",\"isRequired\":true},\"destinationField\":" +
-							"{\"displayName\":\"Control Number [Object Identifier]\",\"isIdentifier\":true,\"fieldIdentifier\":\"1003667\"," +
-							"\"isRequired\":true},\"fieldMapType\":\"Identifier\"}]";
-			
+			const string fieldsMap =
+				"[{\"sourceField\":{\"displayName\":\"Control Number [Object Identifier]\",\"isIdentifier\":true," +
+				"\"fieldIdentifier\":\"1003667\",\"isRequired\":true},\"destinationField\":" +
+				"{\"displayName\":\"Control Number [Object Identifier]\",\"isIdentifier\":true,\"fieldIdentifier\":\"1003667\"," +
+				"\"isRequired\":true},\"fieldMapType\":\"Identifier\"}]";
+
 			ConfigurationStub configuration = new ConfigurationStub
 			{
 				DestinationWorkspaceArtifactId = _destinationWorkspace.ArtifactID,
@@ -66,7 +66,7 @@ namespace Relativity.Sync.Tests.System
 				FolderPathSourceFieldArtifactId = folderPathSourceFieldArtifactId,
 				ImportOverwriteMode = ImportOverwriteMode.AppendOverlay,
 				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.ReadFromField,
-				FieldOverlayBehavior = FieldOverlayBehavior.Default
+				FieldOverlayBehavior = FieldOverlayBehavior.UseFieldSettings
 			};
 
 			// act

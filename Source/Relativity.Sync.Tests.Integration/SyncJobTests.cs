@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Autofac;
@@ -7,9 +6,8 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Tests.Integration.Stubs;
 using Banzai;
-using Relativity.Sync.Nodes;
+using Relativity.Sync.Tests.Common;
 
 namespace Relativity.Sync.Tests.Integration
 {

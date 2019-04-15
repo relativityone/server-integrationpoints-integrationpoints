@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentAssertions;
 using NUnit.Framework;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -10,6 +11,7 @@ using Relativity.Services.Workspace;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Helpers;
 using Relativity.Sync.Tests.System.Stubs;
 
@@ -112,6 +114,40 @@ namespace Relativity.Sync.Tests.System
 			configuration.GetFieldValue<string>(SourceJobTagNameGuid);
 			configuration.GetFieldValue<int>(SourceWorkspaceTagArtifactIdGuid);
 			configuration.GetFieldValue<string>(SourceWorkspaceTagNameGuid);
+		}
+
+		[Test]
+		public async Task ItShouldHandleLongTextFromStream()
+		{
+			const string fieldMapping = "in theory, very long text, but we check for ellipsis really...";
+			CreateRequest request = new CreateRequest
+			{
+				ParentObject = new RelativityObjectRef
+				{
+					ArtifactID = _jobHistoryArtifactId
+				},
+				ObjectType = new ObjectTypeRef
+				{
+					Guid = new Guid("3BE3DE56-839F-4F0E-8446-E1691ED5FD57")
+				},
+				FieldValues = PrepareFields().ToList()
+			};
+
+			request.FieldValues.First(x => x.Field.Guid == FieldMappingsGuid).Value = fieldMapping;
+
+			int syncConfigurationArtifactId;
+			using (IObjectManager objectManager = ServiceFactory.CreateProxy<IObjectManager>())
+			{
+				CreateResult result = await objectManager.CreateAsync(_workspaceId, request).ConfigureAwait(false);
+				syncConfigurationArtifactId = result.Object.ArtifactID;
+			}
+
+			SyncJobParameters jobParameters = new SyncJobParameters(syncConfigurationArtifactId, _workspaceId);
+			IConfiguration configuration = await Storage.Configuration
+				.GetAsync(_serviceFactory, jobParameters, new EmptyLogger(), new SemaphoreSlimWrapper(new SemaphoreSlim(1))).ConfigureAwait(false);
+
+			// ASSERT
+			configuration.GetFieldValue<string>(FieldMappingsGuid).Should().Be(fieldMapping);
 		}
 
 		[Test]

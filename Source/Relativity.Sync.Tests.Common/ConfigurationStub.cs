@@ -6,7 +6,7 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Storage;
 
-namespace Relativity.Sync.Tests.Integration.Stubs
+namespace Relativity.Sync.Tests.Common
 {
 	[ExcludeFromCodeCoverage]
 	internal sealed class ConfigurationStub : IDataDestinationFinalizationConfiguration, IDataDestinationInitializationConfiguration, IDataSourceSnapshotConfiguration,
@@ -20,7 +20,7 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 		public int DataSourceArtifactId { get; set; }
 		public IList<FieldMap> FieldMappings { get; set; }
 		public bool IsSnapshotCreated { get; set; }
-
+		
 		public async Task SetSnapshotDataAsync(Guid runId, long totalRecordsCount)
 		{
 			await Task.Yield();
@@ -29,7 +29,6 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 		public string SourceWorkspaceTagName { get; set; }
 		public bool CreateSavedSearchForTags { get; set; }
 		public bool IsSavedSearchArtifactIdSet { get; set; }
-
 		public async Task SetSavedSearchInDestinationArtifactIdAsync(int artifactId)
 		{
 			await Task.Yield();
@@ -50,12 +49,10 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 		public int SourceWorkspaceTagArtifactId { get; set; }
 		public int JobArtifactId { get; set; }
 		public bool IsDestinationWorkspaceTagArtifactIdSet { get; set; }
-
 		public void SetDestinationWorkspaceTagArtifactId(int artifactId)
 		{
 			DestinationWorkspaceTagArtifactId = artifactId;
 		}
-
 		public int DestinationWorkspaceTagArtifactId { get; set; }
 
 		public int SourceWorkspaceArtifactTypeId { get; set; }
@@ -83,7 +80,6 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 		public int TotalRecordsCount { get; set; }
 		public Guid ExportRunId { get; set; }
 		public bool IsSnapshotPartitioned { get; set; }
-
 		public void SetSnapshotPartitions(List<int> batchesIds)
 		{
 			// Method intentionally left empty.

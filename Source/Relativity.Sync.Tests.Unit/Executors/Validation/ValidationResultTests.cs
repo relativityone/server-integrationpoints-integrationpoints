@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using Relativity.Sync.Executors.Validation;
@@ -75,6 +76,19 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			validationResult.IsValid.Should().BeFalse();
 			validationResult.Messages.Should().HaveCount(expectedRecordCount);
 			validationResult.Messages.Should().Contain(validationMessage => validationMessage.ShortMessage == theMessage);
+		}
+
+		[Test]
+		public void ItShouldReturnMessageInToString()
+		{
+			var firstMessage = new ValidationMessage("first", "message");
+			var secondMessage = new ValidationMessage("second", "message");
+
+			ValidationResult validationResult = new ValidationResult(firstMessage, secondMessage);
+
+			string result = validationResult.ToString();
+
+			result.Should().Be($"first message{Environment.NewLine}second message");
 		}
 	}
 }

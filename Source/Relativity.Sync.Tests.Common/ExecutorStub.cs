@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
 
-namespace Relativity.Sync.Tests.Integration.Stubs
+namespace Relativity.Sync.Tests.Common
 {
 	internal sealed class ExecutorStub<T> : IExecutor<T> where T : IConfiguration
 	{

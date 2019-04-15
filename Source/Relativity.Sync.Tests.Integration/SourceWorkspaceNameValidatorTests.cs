@@ -12,7 +12,7 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.KeplerFactory;
-using Relativity.Sync.Tests.Integration.Stubs;
+using Relativity.Sync.Tests.Common;
 
 namespace Relativity.Sync.Tests.Integration
 {

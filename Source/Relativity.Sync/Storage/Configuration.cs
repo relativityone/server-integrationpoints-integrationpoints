@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
+using Polly;
+using Relativity.Kepler.Transport;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
@@ -47,7 +51,7 @@ namespace Relativity.Sync.Storage
 					return default(T);
 				}
 
-				return (T) value;
+				return (T)value;
 			}
 			finally
 			{
@@ -99,9 +103,10 @@ namespace Relativity.Sync.Storage
 		private async Task ReadAsync()
 		{
 			_logger.LogVerbose("Reading Sync Configuration {artifactId}.", _syncConfigurationArtifactId);
+
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
-				QueryRequest request = new QueryRequest
+				var request = new QueryRequest
 				{
 					ObjectType = new ObjectTypeRef
 					{
@@ -129,10 +134,51 @@ namespace Relativity.Sync.Storage
 				{
 					foreach (Guid guid in fieldValuePair.Field.Guids)
 					{
-						_logger.LogVerbose("Field with guid {guid} read.", guid);
-						_cache.Add(guid, fieldValuePair.Value);
+						const string longTextTruncateMark = "...";
+
+						if (fieldValuePair.Field.FieldType == FieldType.LongText &&
+							!string.IsNullOrEmpty(fieldValuePair.Value.ToString()) &&
+							fieldValuePair.Value.ToString().EndsWith(longTextTruncateMark, StringComparison.InvariantCulture))
+						{
+							const int maxNumberOfRetries = 2;
+							const int maxWaitTime = 500;
+
+							string longTextField = await Policy
+								.Handle<Exception>()
+								.WaitAndRetryAsync(maxNumberOfRetries, i => TimeSpan.FromMilliseconds(maxWaitTime))
+								.ExecuteAsync(async () => await ReadLongTextFieldAsync(objectManager, guid).ConfigureAwait(false))
+								.ConfigureAwait(false);
+
+							_logger.LogVerbose("Long text field with guid {guid} read.", guid);
+							_cache.Add(guid, longTextField);
+						}
+						else
+						{
+							_logger.LogVerbose("Field with guid {guid} read.", guid);
+							_cache.Add(guid, fieldValuePair.Value);
+						}
 					}
 				}
+			}
+		}
+
+		private async Task<string> ReadLongTextFieldAsync(IObjectManager objectManager, Guid longTextFieldGuid)
+		{
+			var exportObject = new RelativityObjectRef
+			{
+				Guid = ConfigurationObjectTypeGuid,
+				ArtifactID = _syncConfigurationArtifactId
+			};
+			var fieldRef = new FieldRef
+			{
+				Guid = longTextFieldGuid
+			};
+			using (IKeplerStream longTextResult = await objectManager.StreamLongTextAsync(_workspaceArtifactId, exportObject, fieldRef).ConfigureAwait(false))
+			using (Stream longTextStream = await longTextResult.GetStreamAsync().ConfigureAwait(false))
+			using (var streamReader = new StreamReader(longTextStream, Encoding.Unicode))
+			{
+				string longTextField = await streamReader.ReadToEndAsync().ConfigureAwait(false);
+				return longTextField;
 			}
 		}
 

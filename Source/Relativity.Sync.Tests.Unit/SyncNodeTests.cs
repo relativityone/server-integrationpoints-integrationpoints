@@ -101,5 +101,19 @@ namespace Relativity.Sync.Tests.Unit
 			// ASSERT
 			result.Status.Should().Be(expectedStatus);
 		}
+
+		[Test]
+		public void ItShouldReportFailureWhenConstrainsFailedWithException()
+		{
+			_command.Setup(x => x.CanExecuteAsync(CancellationToken.None)).Throws<InvalidOperationException>();
+			
+			// ACT
+			Func<Task> action = async () => await _instance.ExecuteAsync(_executionContext).ConfigureAwait(false);
+
+			// ASSERT
+			action.Should().Throw<InvalidOperationException>();
+			_syncJobProgress.SyncJobState.Id.Should().Be(_STEP_NAME);
+			_syncJobProgress.SyncJobState.Exception.Should().BeOfType<InvalidOperationException>();
+		}
 	}
 }
