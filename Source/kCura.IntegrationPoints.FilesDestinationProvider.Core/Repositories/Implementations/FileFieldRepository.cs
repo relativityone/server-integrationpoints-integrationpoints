@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories.Imp
 			_instrumentationProvider = instrumentationProvider;
 		}
 
-		public DynamicFileResponse[] GetFilesForDynamicObjectsAsync(int workspaceID, int fileFieldArtifactID, int[] objectIDs)
+		public DynamicFileResponse[] GetFilesForDynamicObjects(int workspaceID, int fileFieldArtifactID, int[] objectIDs)
 		{
 			if (objectIDs == null)
 			{

@@ -684,7 +684,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 				.Select(x => x.ObjectArtifactID)
 				.ToArray();
 			_fileFieldRepositoryMock
-				.Setup(x => x.GetFilesForDynamicObjectsAsync(_WORKSPACE_ID, fileFieldID, objectIDs))
+				.Setup(x => x.GetFilesForDynamicObjects(_WORKSPACE_ID, fileFieldID, objectIDs))
 				.Returns(_testDynamicFileResponses);
 
 			//act
@@ -696,7 +696,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 
 			//assert
 			_fileFieldRepositoryMock.Verify(
-				x => x.GetFilesForDynamicObjectsAsync(_WORKSPACE_ID, fileFieldID, objectIDs),
+				x => x.GetFilesForDynamicObjects(_WORKSPACE_ID, fileFieldID, objectIDs),
 				Times.Once
 			);
 			AssertDynamicFileResponsesAreSameAsExpected(
@@ -721,7 +721,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 			//assert
 			action.ShouldNotThrow();
 			_fileFieldRepositoryMock.Verify(
-				x => x.GetFilesForDynamicObjectsAsync(_WORKSPACE_ID, fileFieldID, null),
+				x => x.GetFilesForDynamicObjects(_WORKSPACE_ID, fileFieldID, null),
 				Times.Once);
 		}
 

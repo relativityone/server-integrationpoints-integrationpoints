@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 			int[] objectIds)
 		{
 			return _fileFieldRepository
-				.GetFilesForDynamicObjectsAsync(caseContextArtifactID, fileFieldArtifactID, objectIds)
+				.GetFilesForDynamicObjects(caseContextArtifactID, fileFieldArtifactID, objectIds)
 				.ToDataSet();
 		}
 

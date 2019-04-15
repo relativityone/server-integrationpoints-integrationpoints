@@ -72,6 +72,7 @@
     <Compile Include="Process\ExportProcessRunnerTests.cs" />
     <Compile Include="Process\VolumeInfoBuilderTests.cs" />
     <Compile Include="Logging\ExportUserNotificationTests.cs" />
+    <Compile Include="Repositories\FileFieldRepositoryTests.cs" />
     <Compile Include="Repositories\ViewFieldRepositoryTests.cs" />
     <Compile Include="Services\ArtifactTreeServiceTests.cs" />
     <Compile Include="Services\ExportInitProcessServiceTests.cs" />
