@@ -92,7 +92,7 @@ namespace Relativity.Sync.Executors.Validation
 			ValidationMessage validationMessage = null;
 
 			if (configuration.ImportOverwriteMode == ImportOverwriteMode.AppendOnly &&
-				configuration.FieldOverlayBehavior != FieldOverlayBehavior.Default)
+				configuration.FieldOverlayBehavior != FieldOverlayBehavior.UseFieldSettings)
 			{
 				validationMessage = new ValidationMessage("For Append Only should be set \"Use Field Settings\" overlay behavior.");
 			}
