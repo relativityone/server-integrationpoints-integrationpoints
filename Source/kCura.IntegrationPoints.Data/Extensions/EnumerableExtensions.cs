@@ -24,7 +24,10 @@ namespace kCura.IntegrationPoints.Data.Extensions
 
 		public static DataSet ToDataSet<T>(this IEnumerable<T> collection) where T : class
 		{
-			return collection.ToDataTable().DataSet;
+			var dataSet = new DataSet();
+			DataTable dataTable = collection.ToDataTable();
+			dataSet.Tables.Add(dataTable);
+			return dataSet;
 		}
 
 		public static DataTable ToDataTable<T>(this IEnumerable<T> collection) where T : class

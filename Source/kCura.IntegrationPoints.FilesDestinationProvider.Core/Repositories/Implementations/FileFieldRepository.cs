@@ -1,4 +1,6 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using kCura.IntegrationPoints.Common.Constants;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using Relativity.Services.FileField;
@@ -21,6 +23,16 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories.Imp
 
 		public DynamicFileResponse[] GetFilesForDynamicObjectsAsync(int workspaceID, int fileFieldArtifactID, int[] objectIDs)
 		{
+			if (objectIDs == null)
+			{
+				throw new ArgumentNullException(nameof(objectIDs));
+			}
+
+			if (!objectIDs.Any())
+			{
+				return Enumerable.Empty<DynamicFileResponse>().ToArray();
+			}
+
 			return CreateInstrumentation().Execute(() =>
 				_fileFieldManager.GetFilesForDynamicObjectsAsync(workspaceID, fileFieldArtifactID, objectIDs)
 					.GetAwaiter()

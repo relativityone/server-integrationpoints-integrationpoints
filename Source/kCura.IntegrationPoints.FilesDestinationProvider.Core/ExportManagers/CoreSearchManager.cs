@@ -1,5 +1,7 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.Linq;
+using System.Text.RegularExpressions;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
@@ -35,16 +37,23 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 
 		public DataSet RetrieveNativesForSearch(int caseContextArtifactID, string documentArtifactIDs)
 		{
+			ThrowIfDocumentArtifactIDsInvalid(documentArtifactIDs);
+
 			int[] documentIDs = CommaSeparatedNumbersToArrayConverter
 				.ConvertToArray(documentArtifactIDs);
+
 			return _fileRepository
 				.GetNativesForSearch(caseContextArtifactID, documentIDs)
 				.ToDataSet();
 		}
 
-		public DataSet RetrieveNativesForProduction(int caseContextArtifactID, int productionArtifactID,
+		public DataSet RetrieveNativesForProduction(
+			int caseContextArtifactID, 
+			int productionArtifactID,
 			string documentArtifactIDs)
 		{
+			ThrowIfDocumentArtifactIDsInvalid(documentArtifactIDs);
+
 			int[] documentIDs = CommaSeparatedNumbersToArrayConverter
 				.ConvertToArray(documentArtifactIDs);
 			return _fileRepository
@@ -52,12 +61,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 				.ToDataSet();
 		}
 
-		public DataSet RetrieveFilesForDynamicObjects(int caseContextArtifactID, int fileFieldArtifactID,
+		public DataSet RetrieveFilesForDynamicObjects(
+			int caseContextArtifactID, 
+			int fileFieldArtifactID,
 			int[] objectIds)
 		{
 			return _fileFieldRepository
 				.GetFilesForDynamicObjectsAsync(caseContextArtifactID, fileFieldArtifactID, objectIds)
-				?.ToDataSet();
+				.ToDataSet();
 		}
 
 		public DataSet RetrieveImagesForProductionDocuments(
@@ -132,6 +143,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 				.ExternalRetrieveViews(_baseServiceContext, artifactTypeID, isSearch);
 		}
 
+		public void Dispose()
+		{
+		}
+
 		private ViewManager InitViewManager(int appArtifactId)
 		{
 			Init(appArtifactId);
@@ -149,8 +164,27 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 			return new ViewFieldInfo(coreViewFieldInfo);
 		}
 
-		public void Dispose()
+		private void ThrowIfDocumentArtifactIDsInvalid(string documentIDsAsString)
 		{
+			bool invalid = !IsArtifactIDsStringValid(documentIDsAsString);
+
+			if (invalid)
+			{
+				throw new ArgumentException("Invalid documentArtifactIDs");
+			}
 		}
+
+		//validation logic ported from FileQuery
+		//remove it when we will be able to pass array instead of a string
+		private bool IsArtifactIDsStringValid(string artifactIDsAsString)
+		{
+			if (artifactIDsAsString == null)
+			{
+				return false;
+			}
+			var regex = new Regex("^([0-9 ,]+)$");
+			return regex.IsMatch(artifactIDsAsString);
+		}
+
 	}
 }

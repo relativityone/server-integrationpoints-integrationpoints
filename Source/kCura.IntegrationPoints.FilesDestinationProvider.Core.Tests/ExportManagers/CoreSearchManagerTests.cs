@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Data;
+using System.Linq;
 using FluentAssertions;
+using Google.Protobuf.WellKnownTypes;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories;
@@ -8,9 +10,11 @@ using Moq;
 using NUnit.Framework;
 using Relativity;
 using Relativity.Core;
+using Relativity.Services.FileField.Models;
 using Relativity.Services.Interfaces.File.Models;
 using Relativity.Services.Interfaces.Shared.Models;
 using Relativity.Services.Interfaces.ViewField.Models;
+using Action = System.Action;
 using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
 using ColumnSourceType = Relativity.ViewFieldInfo.ColumnSourceType;
 using FieldType = Relativity.FieldTypeHelper.FieldType;
@@ -25,7 +29,170 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 		private Mock<IFileRepository> _fileRepositoryMock;
 		private Mock<IFileFieldRepository> _fileFieldRepositoryMock;
 
+		private CoreSearchManager _sut;
+
+		private readonly FileResponse[] _testFileResponses =
+		{
+			new FileResponse
+			{
+				DocumentArtifactID = 1700,
+				Filename = "Filename12",
+				Guid = "82644DB3-3865-4B99-9DB4-60CE40401BD1",
+				Identifier = "Identifier22",
+				Location = "Location33",
+				Order = 0,
+				Rotation = 1,
+				Type = 2,
+				InRepository = true,
+				Size = 1234,
+				Details = "Details232",
+				Billable = true
+			},
+			new FileResponse
+			{
+				DocumentArtifactID = 17023,
+				Filename = "Filename124",
+				Guid = "82644DB1-3865-4B99-9DB4-60CE40401BD1",
+				Identifier = "Identifier232",
+				Location = "Location331",
+				Order = 0,
+				Rotation = 1,
+				Type = 2,
+				InRepository = true,
+				Size = 1234,
+				Details = "Details2325",
+				Billable = true
+			},
+		};
+
+		private readonly ProductionDocumentImageResponse[] _testProductionDocumentImageResponses =
+		{
+			new ProductionDocumentImageResponse
+			{
+				DocumentArtifactID = 1700,
+				BatesNumber = "Bates123",
+				Location = "Location33",
+				ByteRange = 2,
+				ImageFileName = "FileName1234",
+				ImageGuid = "82644DB3-3865-4B99-9DB4-60CE40401BD1",
+				ImageSize = 1234,
+				NativeIdentifier = "NativeIdentifier888",
+				PageID = 123,
+				SourceGuid = "32644DB3-3865-4B99-9DB4-60CE40401BD1"
+			},
+			new ProductionDocumentImageResponse
+			{
+				DocumentArtifactID = 1702,
+				BatesNumber = "Bates1233",
+				Location = "Location313",
+				ByteRange = 23,
+				ImageFileName = "FileName12134",
+				ImageGuid = "82644DB3-3865-4B99-9DB4-61CE40401BD1",
+				ImageSize = 12234,
+				NativeIdentifier = "NativeIdentifier1888",
+				PageID = 1123,
+				SourceGuid = "32644DB2-3865-4B99-9DB4-60CE40401BD1"
+			},
+		};
+
+		private readonly DocumentImageResponse[] _testDocumentImageResponses =
+		{
+			new DocumentImageResponse
+			{
+				DocumentArtifactID = 1700,
+				FileID = 12,
+				FileName = "FileName123",
+				Guid = "12644DB3-3865-4B99-9DB4-61CE40401BD1",
+				Identifier = "Identifier234",
+				Location = "Location22",
+				Order = 1,
+				Rotation = -1,
+				Type = 2,
+				InRepository = true,
+				Size = 12344,
+				Details = "Details999",
+				Billable = true,
+				PageID = 11,
+				ByteRange = 4555
+			},
+			new DocumentImageResponse
+			{
+				DocumentArtifactID = 1701,
+				FileID = 122,
+				FileName = "FileName121",
+				Guid = "11644DB3-3865-4B99-9DB4-61CE40401BD1",
+				Identifier = "Identifier2341",
+				Location = "Location221",
+				Order = 12,
+				Rotation = 0,
+				Type = 3,
+				InRepository = false,
+				Size = 123441,
+				Details = "Details9991",
+				Billable = false,
+				PageID = 121,
+				ByteRange = 45155
+			},
+		};
+
+		private readonly ExportProductionDocumentImageResponse[] _testExportProductionDocumentImageResponses =
+		{
+			new ExportProductionDocumentImageResponse
+			{
+				DocumentArtifactID = 1700,
+				ProductionArtifactID = _PRODUCTION_ID,
+				BatesNumber = "Bates123",
+				Location = "Location33",
+				ByteRange = 2,
+				ImageFileName = "FileName1234",
+				ImageGuid = "82644DB3-3865-4B99-9DB4-60CE40401BD1",
+				ImageSize = 1234,
+				PageID = 123,
+				SourceGuid = "32644DB3-3865-4B99-9DB4-60CE40401BD1",
+				Order = 1
+			},
+			new ExportProductionDocumentImageResponse
+			{
+				DocumentArtifactID = 1702,
+				ProductionArtifactID = _PRODUCTION_ID_2,
+				BatesNumber = "Bates1233",
+				Location = "Location313",
+				ByteRange = 23,
+				ImageFileName = "FileName12134",
+				ImageGuid = "82644DB3-3865-4B99-9DB4-61CE40401BD1",
+				ImageSize = 12234,
+				PageID = 1123,
+				SourceGuid = "32644DB2-3865-4B99-9DB4-60CE40401BD1",
+				Order = 2
+			},
+		};
+
+		private readonly DynamicFileResponse[] _testDynamicFileResponses =
+		{
+			new DynamicFileResponse
+			{
+				FileID = 123,
+				ObjectArtifactID = 12,
+				FileName = "TestFileName1",
+				Location = "Location11",
+				Size = 23455,
+			},
+			new DynamicFileResponse
+			{
+				FileID = 321,
+				ObjectArtifactID = 121,
+				FileName = "TestFileName12",
+				Location = "Location112",
+				Size = 234551,
+			}
+		};
+
 		private const int _WORKSPACE_ID = 1001000;
+		private const int _PRODUCTION_ID = 1710;
+		private const int _PRODUCTION_ID_2 = 1711;
+
+		#region VIEW FIELD CONSTS
+
 		private const int _ARTIFACT_ID = 1000100;
 		private const int _ARTIFACT_ID_2 = 1002100;
 		private const int _ARTIFACT_VIEW_FIELD_ID = 1000200;
@@ -72,20 +239,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 		private const bool _ENABLE_DATA_GRID = false;
 		private const bool _IS_VIRTUAL_ASSOCIATIVE_ARTIFACT_TYPE = true;
 
-		private const int _DOCUMENT_ARTIFACT_ID = 1700;
-		private const string _FILENAME = "Filename";
-		private const string _GUID = "82644DB3-3865-4B99-9DB4-60CE40401BD1";
-		private const string _IDENTIFIER = "Identifier";
-		private const string _LOCATION = "Location";
-		private const int _ORDER = 0;
-		private const int _ROTATION = 1;
-		private const int _TYPE = 2;
-		private const bool _IN_REPOSITORY = true;
-		private const long _SIZE = 1234;
-		private const string _DETAILS = "Details";
-		private const bool _BILLABLE = true;
-		private const int _PRODUCTION_ID = 1710;
-
+		#endregion VIEW FIELD CONSTS
 
 		[SetUp]
 		public void SetUp()
@@ -94,6 +248,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 			_viewFieldRepositoryMock = new Mock<IViewFieldRepository>();
 			_fileFieldRepositoryMock = new Mock<IFileFieldRepository>();
 			_fileRepositoryMock = new Mock<IFileRepository>();
+
+			_sut = new CoreSearchManager(
+				_baseServiceContextMock.Object,
+				_fileRepositoryMock.Object,
+				_fileFieldRepositoryMock.Object,
+				_viewFieldRepositoryMock.Object
+			);
 		}
 
 		[Test]
@@ -107,15 +268,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 				.Setup(x => x.ReadViewFieldIDsFromSearch(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _ARTIFACT_ID))
 				.Returns(viewFieldIDResponseArray);
 
-			var coreSearchManager = new CoreSearchManager(
-				_baseServiceContextMock.Object, 
-				_fileRepositoryMock.Object, 
-				_fileFieldRepositoryMock.Object,
-				_viewFieldRepositoryMock.Object
-			);
-
 			// act
-			int[] result = coreSearchManager.RetrieveDefaultViewFieldIds(_WORKSPACE_ID, _ARTIFACT_ID, _ARTIFACT_TYPE_ID, false);
+			int[] result = _sut.RetrieveDefaultViewFieldIds(
+				_WORKSPACE_ID, 
+				_ARTIFACT_ID, 
+				_ARTIFACT_TYPE_ID, 
+				isProduction: false
+			);
 
 			// assert
 			_viewFieldRepositoryMock.Verify(
@@ -135,19 +294,24 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 				.Setup(x => x.ReadViewFieldIDsFromProduction(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _ARTIFACT_ID))
 				.Returns(viewFieldIDResponseArray);
 
-			var coreSearchManager = new CoreSearchManager(_baseServiceContextMock.Object, _fileRepositoryMock.Object, _fileFieldRepositoryMock.Object, _viewFieldRepositoryMock.Object);
-
 			// act
-			int[] result = coreSearchManager.RetrieveDefaultViewFieldIds(_WORKSPACE_ID, _ARTIFACT_ID, _ARTIFACT_TYPE_ID, true);
+			int[] result = _sut.RetrieveDefaultViewFieldIds(
+				_WORKSPACE_ID, 
+				_ARTIFACT_ID, 
+				_ARTIFACT_TYPE_ID, 
+				isProduction: true
+			);
 
 			// assert
 			_viewFieldRepositoryMock.Verify(
-				x => x.ReadViewFieldIDsFromProduction(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, _ARTIFACT_ID), Times.Once);
+				x => x.ReadViewFieldIDsFromProduction(
+					_WORKSPACE_ID, 
+					_ARTIFACT_TYPE_ID, 
+					_ARTIFACT_ID
+				), Times.Once);
 			result.Length.Should().Be(1);
 			result[0].Should().Be(_ARTIFACT_VIEW_FIELD_ID);
 		}
-
-		
 
 		[Test]
 		public void RetrieveAllExportableViewFieldsTest()
@@ -157,103 +321,360 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 			ViewFieldResponse[] viewFieldResponseArray = {viewFieldResponse};
 			_viewFieldRepositoryMock.Setup(x => x.ReadExportableViewFields(_WORKSPACE_ID, _ARTIFACT_TYPE_ID))
 				.Returns(viewFieldResponseArray);
-			var coreSearchManager = new CoreSearchManager(_baseServiceContextMock.Object, _fileRepositoryMock.Object, _fileFieldRepositoryMock.Object, _viewFieldRepositoryMock.Object);
 
 			// act
-			ViewFieldInfo[] result = coreSearchManager.RetrieveAllExportableViewFields(_WORKSPACE_ID, _ARTIFACT_TYPE_ID);
+			ViewFieldInfo[] result = _sut.RetrieveAllExportableViewFields(
+				_WORKSPACE_ID, 
+				_ARTIFACT_TYPE_ID
+			);
 
 			// assert
-			_viewFieldRepositoryMock.Verify(x => x.ReadExportableViewFields(_WORKSPACE_ID, _ARTIFACT_TYPE_ID), Times.Once);
+			_viewFieldRepositoryMock.Verify(
+				x => x.ReadExportableViewFields(
+					_WORKSPACE_ID, 
+					_ARTIFACT_TYPE_ID
+				), Times.Once);
 			result.Length.Should().Be(1);
-			ValidateViewFieldInfo(result[0]);
+			AssertViewFieldInfoAreSameAsExpected(result[0]);
 		}
 
 		[Test]
-		public void RetrieveNativesForSearchTest()
+		public void RetrieveNativesForSearch_ShouldReturnResponsesWhenCorrectDocumentIDsPassed()
 		{
 			//arrange
-			int[] documentIDs = { _DOCUMENT_ARTIFACT_ID };
-			string documentIDsAsString = $@"{_DOCUMENT_ARTIFACT_ID}";
-			FileResponse fileResponse = CreateTestFileResponse();
-			FileResponse[] fileResponses = {fileResponse};
-			_fileRepositoryMock.Setup(x => x.GetNativesForSearch(_WORKSPACE_ID, documentIDs))
-				.Returns(fileResponses);
-			var coreSearchManager = new CoreSearchManager(_baseServiceContextMock.Object, _fileRepositoryMock.Object, _fileFieldRepositoryMock.Object, _viewFieldRepositoryMock.Object);
+			int[] documentIDs = _testFileResponses.Select(x => x.DocumentArtifactID).ToArray();
+			string documentIDsAsString = ConvertToCommaSeparatedString(documentIDs);
+			_fileRepositoryMock
+				.Setup(x => x.GetNativesForSearch(_WORKSPACE_ID, documentIDs))
+				.Returns(_testFileResponses);
 			
 			//act
-			DataRowCollection result = coreSearchManager.RetrieveNativesForSearch(_WORKSPACE_ID, documentIDsAsString).Tables[0].Rows;
+			DataSet result = _sut.RetrieveNativesForSearch(
+				_WORKSPACE_ID, 
+				documentIDsAsString
+			);
 			
 			//assert
-			_fileRepositoryMock.Verify(x=> x.GetNativesForSearch(_WORKSPACE_ID, documentIDs), Times.Once);
-			result.Count.Should().Be(1);
-			ValidateFileResponse(result);
+			_fileRepositoryMock.Verify(
+				x => x.GetNativesForSearch(_WORKSPACE_ID, documentIDs), 
+				Times.Once
+			);
+			AssertFileResponsesAreSameAsExpected(result, _testFileResponses);
 		}
 
 		[Test]
-		public void RetrieveNativesForProductionTest()
+		[TestCase("")]
+		[TestCase(null)]
+		public void RetrieveNativesForSearch_ShouldThrowWhenInvalidDocumentIDsPassed(string documentIDsAsString)
 		{
-			//arrange
-			int[] documentIDs = { _DOCUMENT_ARTIFACT_ID };
-			int productionId = _PRODUCTION_ID;
-			string documentIDsAsString = $@"{_DOCUMENT_ARTIFACT_ID}";
-			FileResponse fileResponse = CreateTestFileResponse();
-			FileResponse[] fileResponses = { fileResponse };
-			_fileRepositoryMock.Setup(x => x.GetNativesForProduction(_WORKSPACE_ID, productionId, documentIDs))
-				.Returns(fileResponses);
-			var coreSearchManager = new CoreSearchManager(_baseServiceContextMock.Object, _fileRepositoryMock.Object, _fileFieldRepositoryMock.Object, _viewFieldRepositoryMock.Object);
-
 			//act
-			DataRowCollection result = coreSearchManager.RetrieveNativesForProduction(_WORKSPACE_ID, productionId, documentIDsAsString).Tables[0].Rows;
+			Action action = () => _sut.RetrieveNativesForSearch(
+				_WORKSPACE_ID,
+				documentArtifactIDs: documentIDsAsString
+			);
 
 			//assert
-			_fileRepositoryMock.Verify(x => x.GetNativesForProduction(_WORKSPACE_ID, productionId, documentIDs), Times.Once);
-			result.Count.Should().Be(1);
-			ValidateFileResponse(result);
+			_fileRepositoryMock.Verify(
+				x => x.GetNativesForSearch(It.IsAny<int>(), It.IsAny<int[]>()),
+				Times.Never
+			);
+			action.ShouldThrow<ArgumentException>()
+				.WithMessage("Invalid documentArtifactIDs");
 		}
 
 		[Test]
-		public void RetrieveImagesForProductionDocumentsTest()
-		{
-			throw new NotImplementedException();
-		}
-
-		[Test]
-		public void RetrieveImagesForDocumentsTest()
-		{
-			throw new NotImplementedException();
-
-		}
-
-		[Test]
-		public void RetrieveImagesByProductionIDsAndDocumentIDsForExportTest()
-		{
-			throw new NotImplementedException();
-
-		}
-
-		[Test]
-		public void RetrieveFilesForDynamicObjectsTest()
-		{
-			throw new NotImplementedException();
-		}
-		[Test]
-		public void RetrieveProducedImagesForDocumentTest()
+		public void RetrieveNativesForProduction_ShouldReturnResponsesWhenCorrectDocumentIDsPassed()
 		{
 			//arrange
-			int documentID =  _DOCUMENT_ARTIFACT_ID ;
-			FileResponse fileResponse = CreateTestFileResponse();
-			FileResponse[] fileResponses = { fileResponse };
-			_fileRepositoryMock.Setup(x => x.GetProducedImagesForDocument(_WORKSPACE_ID, documentID))
-				.Returns(fileResponses);
-			var coreSearchManager = new CoreSearchManager(_baseServiceContextMock.Object, _fileRepositoryMock.Object, _fileFieldRepositoryMock.Object, _viewFieldRepositoryMock.Object);
+			int[] documentIDs = _testFileResponses.Select(x => x.DocumentArtifactID).ToArray();
+			string documentIDsAsString = ConvertToCommaSeparatedString(documentIDs);
+			_fileRepositoryMock
+				.Setup(x => x.GetNativesForProduction(_WORKSPACE_ID, _PRODUCTION_ID, documentIDs))
+				.Returns(_testFileResponses);
 
 			//act
-			DataRowCollection result = coreSearchManager.RetrieveProducedImagesForDocument(_WORKSPACE_ID, documentID).Tables[0].Rows;
+			DataSet result = _sut.RetrieveNativesForProduction(
+				_WORKSPACE_ID,
+				_PRODUCTION_ID,
+				documentIDsAsString
+			);
 
 			//assert
-			_fileRepositoryMock.Verify(x => x.GetProducedImagesForDocument(_WORKSPACE_ID, documentID), Times.Once);
-			result.Count.Should().Be(1);
-			ValidateFileResponse(result);
+			_fileRepositoryMock.Verify(
+				x => x.GetNativesForProduction(
+					_WORKSPACE_ID,
+					_PRODUCTION_ID, 
+					documentIDs), Times.Once);
+			AssertFileResponsesAreSameAsExpected(result, _testFileResponses);
+		}
+
+		[Test]
+		[TestCase("")]
+		[TestCase(null)]
+		public void RetrieveNativesForProduction_ShouldThrowWhenInvalidDocumentIDsPassed(string documentIDsAsString)
+		{
+			//act
+			Action action = () => _sut.RetrieveNativesForProduction(
+				_WORKSPACE_ID,
+				_PRODUCTION_ID,
+				documentArtifactIDs: documentIDsAsString
+			);
+
+			//assert
+			_fileRepositoryMock.Verify(
+				x => x.GetNativesForProduction(
+					It.IsAny<int>(), 
+					It.IsAny<int>(), 
+					It.IsAny<int[]>()),
+				Times.Never
+			);
+			action.ShouldThrow<ArgumentException>()
+				.WithMessage("Invalid documentArtifactIDs");
+		}
+
+		[Test]
+		public void RetrieveProducedImagesForDocument_ShouldReturnResponsesWhenCorrectDocumentIDPassed()
+		{
+			//arrange
+			FileResponse[] testFileResponses = _testFileResponses.Take(1).ToArray();
+			int documentID = testFileResponses.First().DocumentArtifactID;
+			_fileRepositoryMock
+				.Setup(x => x.GetProducedImagesForDocument(_WORKSPACE_ID, documentID))
+				.Returns(testFileResponses);
+
+			//act
+			DataSet result = _sut.RetrieveProducedImagesForDocument(
+				_WORKSPACE_ID,
+				documentID
+			);
+
+			//assert
+			_fileRepositoryMock.Verify(
+				x => x.GetProducedImagesForDocument(
+					_WORKSPACE_ID,
+					documentID), Times.Once);
+			AssertFileResponsesAreSameAsExpected(result, testFileResponses);
+		}
+
+		[Test]
+		public void RetrieveImagesForProductionDocuments_ShouldReturnResponsesWhenCorrectDocumentIDsPassed()
+		{
+			//arrange
+			int[] documentIDs = _testProductionDocumentImageResponses
+				.Select(x => x.DocumentArtifactID)
+				.ToArray();
+			_fileRepositoryMock
+				.Setup(x => x.GetImagesForProductionDocuments(
+					_WORKSPACE_ID, _PRODUCTION_ID, documentIDs))
+				.Returns(_testProductionDocumentImageResponses);
+
+			//act
+			DataSet result = _sut.RetrieveImagesForProductionDocuments(
+				_WORKSPACE_ID,
+				documentIDs,
+				_PRODUCTION_ID
+			);
+
+			//assert
+			_fileRepositoryMock.Verify(
+				x => x.GetImagesForProductionDocuments(
+					_WORKSPACE_ID,
+					_PRODUCTION_ID,
+					documentIDs), Times.Once);
+			AssertProductionDocumentImageResponsesAreSameAsExpected(
+				result,
+				_testProductionDocumentImageResponses
+			);
+		}
+
+		[Test]
+		public void RetrieveImagesForProductionDocuments_ShouldNotThrowWhenNullPassedAsDocumentIDs()
+		{
+			//act
+			Action action = () => _sut.RetrieveImagesForProductionDocuments(
+				_WORKSPACE_ID,
+				documentArtifactIDs: null,
+				productionArtifactID: _PRODUCTION_ID
+			);
+
+			//assert
+			action.ShouldNotThrow();
+			_fileRepositoryMock.Verify(
+				x => x.GetImagesForProductionDocuments(
+					_WORKSPACE_ID,
+					_PRODUCTION_ID,
+					null), 
+				Times.Once);
+		}
+
+		[Test]
+		public void RetrieveImagesForDocuments_ShouldReturnResponsesWhenCorrectDocumentIDsPassed()
+		{
+			//arrange
+			int[] documentIDs = _testDocumentImageResponses
+				.Select(x => x.DocumentArtifactID)
+				.ToArray();
+			_fileRepositoryMock
+				.Setup(x => x.GetImagesForDocuments(_WORKSPACE_ID, documentIDs))
+				.Returns(_testDocumentImageResponses);
+
+			//act
+			DataSet result = _sut.RetrieveImagesForDocuments(
+				_WORKSPACE_ID,
+				documentIDs
+			);
+
+			//assert
+			_fileRepositoryMock.Verify(
+				x => x.GetImagesForDocuments(_WORKSPACE_ID, documentIDs), 
+				Times.Once
+			);
+			AssertDocumentImageResponsesAreSameAsExpected(
+				result,
+				_testDocumentImageResponses
+			);
+		}
+
+		[Test]
+		public void RetrieveImagesForDocuments_ShouldNotThrowWhenNullPassedAsDocumentIDs()
+		{
+			//act
+			Action action = () => _sut.RetrieveImagesForDocuments(
+				_WORKSPACE_ID,
+				documentArtifactIDs: null
+			);
+
+			//assert
+			action.ShouldNotThrow();
+			_fileRepositoryMock.Verify(
+				x => x.GetImagesForDocuments(_WORKSPACE_ID, null),
+				Times.Once);
+		}
+
+		[Test]
+		public void RetrieveImagesByProductionIDsAndDocumentIDsForExport_ShouldReturnResponsesWhenCorrectDocumentIDsAndProductionIDsPassed()
+		{
+			//arrange
+			int[] documentIDs = _testExportProductionDocumentImageResponses
+				.Select(x => x.DocumentArtifactID)
+				.ToArray();
+			int[] productionIDs = _testExportProductionDocumentImageResponses
+				.Select(x => x.ProductionArtifactID)
+				.ToArray();
+			_fileRepositoryMock
+				.Setup(x => x.GetImagesForExport(_WORKSPACE_ID, productionIDs, documentIDs))
+				.Returns(_testExportProductionDocumentImageResponses);
+
+			//act
+			DataSet result = _sut.RetrieveImagesByProductionIDsAndDocumentIDsForExport(
+				_WORKSPACE_ID,
+				productionIDs,
+				documentIDs
+			);
+
+			//assert
+			_fileRepositoryMock.Verify(
+				x => x.GetImagesForExport(_WORKSPACE_ID, productionIDs, documentIDs),
+				Times.Once
+			);
+			AssertExportProductionDocumentImageResponsesAreSameAsExpected(
+				result,
+				_testExportProductionDocumentImageResponses
+			);
+		}
+
+		[Test]
+		public void RetrieveImagesByProductionIDsAndDocumentIDsForExport_ShouldNotThrowWhenNullPassedAsDocumentIDs()
+		{
+			//arrange
+			int[] productionIDs = _testExportProductionDocumentImageResponses
+				.Select(x => x.ProductionArtifactID)
+				.ToArray();
+
+			//act
+			Action action = () => _sut.RetrieveImagesByProductionIDsAndDocumentIDsForExport(
+				_WORKSPACE_ID,
+				productionIDs,
+				documentArtifactIDs: null
+			);
+
+			//assert
+			action.ShouldNotThrow();
+			_fileRepositoryMock.Verify(
+				x => x.GetImagesForExport(_WORKSPACE_ID, productionIDs, null),
+				Times.Once);
+		}
+
+		[Test]
+		public void RetrieveImagesByProductionIDsAndDocumentIDsForExport_ShouldNotThrowWhenNullPassedAsProductionIDs()
+		{
+			//arrange
+			int[] documentIDs = _testExportProductionDocumentImageResponses
+				.Select(x => x.DocumentArtifactID)
+				.ToArray();
+
+			//act
+			Action action = () => _sut.RetrieveImagesByProductionIDsAndDocumentIDsForExport(
+				_WORKSPACE_ID,
+				productionArtifactIDs: null,
+				documentArtifactIDs: documentIDs
+			);
+
+			//assert
+			action.ShouldNotThrow();
+			_fileRepositoryMock.Verify(
+				x => x.GetImagesForExport(_WORKSPACE_ID, null, documentIDs),
+				Times.Once);
+		}
+
+		[Test]
+		public void RetrieveFilesForDynamicObjects_ShouldReturnResponsesWhenCorrectObjectIDsPassed()
+		{
+			//arrange
+			const int fileFieldID = 111;
+			int[] objectIDs = _testDynamicFileResponses
+				.Select(x => x.ObjectArtifactID)
+				.ToArray();
+			_fileFieldRepositoryMock
+				.Setup(x => x.GetFilesForDynamicObjectsAsync(_WORKSPACE_ID, fileFieldID, objectIDs))
+				.Returns(_testDynamicFileResponses);
+
+			//act
+			DataSet result = _sut.RetrieveFilesForDynamicObjects(
+				_WORKSPACE_ID,
+				fileFieldID,
+				objectIDs
+			);
+
+			//assert
+			_fileFieldRepositoryMock.Verify(
+				x => x.GetFilesForDynamicObjectsAsync(_WORKSPACE_ID, fileFieldID, objectIDs),
+				Times.Once
+			);
+			AssertDynamicFileResponsesAreSameAsExpected(
+				result,
+				_testDynamicFileResponses
+			);
+		}
+
+		[Test]
+		public void RetrieveFilesForDynamicObjects_ShouldNotThrowWhenNullPassedAsObjectIDs()
+		{
+			//arrange
+			const int fileFieldID = 111;
+
+			//act
+			Action action = () => _sut.RetrieveFilesForDynamicObjects(
+				_WORKSPACE_ID,
+				fileFieldID,
+				objectIds: null
+			);
+
+			//assert
+			action.ShouldNotThrow();
+			_fileFieldRepositoryMock.Verify(
+				x => x.GetFilesForDynamicObjectsAsync(_WORKSPACE_ID, fileFieldID, null),
+				Times.Once);
 		}
 
 		private static ViewFieldIDResponse CreateTestViewFieldIDResponse(int artifactID, int artifactViewFieldID)
@@ -264,26 +685,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 				ArtifactViewFieldID = artifactViewFieldID
 			};
 			return viewFieldIDResponse;
-		}
-
-		private static FileResponse CreateTestFileResponse()
-		{
-			var fileResponse = new FileResponse()
-			{
-				DocumentArtifactID = _DOCUMENT_ARTIFACT_ID,
-				Filename = _FILENAME,
-				Guid = _GUID,
-				Identifier = _IDENTIFIER,
-				Location = _LOCATION,
-				Order = _ORDER,
-				Rotation = _ROTATION,
-				Type = _TYPE,
-				InRepository = _IN_REPOSITORY,
-				Size = _SIZE,
-				Details = _DETAILS,
-				Billable = _BILLABLE
-			};
-			return fileResponse;
 		}
 
 		private static ViewFieldResponse CreateTestViewFieldResponse()
@@ -332,7 +733,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 			return viewFieldResponse;
 		}
 
-		private static void ValidateViewFieldInfo(ViewFieldInfo viewFieldInfo)
+		private static string ConvertToCommaSeparatedString(int[] values) => string.Join(",", values);
+
+		private static void AssertViewFieldInfoAreSameAsExpected(ViewFieldInfo viewFieldInfo)
 		{
 			viewFieldInfo.FieldArtifactId.Should().Be(_ARTIFACT_ID);
 			viewFieldInfo.AvfId.Should().Be(_ARTIFACT_VIEW_FIELD_ID);
@@ -374,20 +777,208 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
 			viewFieldInfo.IsVirtualAssociativeArtifactType.Should().Be(_IS_VIRTUAL_ASSOCIATIVE_ARTIFACT_TYPE);
 		}
 
-		private static void ValidateFileResponse(DataRowCollection result)
+		private static void AssertFileResponsesAreSameAsExpected(
+			DataSet dataSet, 
+			FileResponse[] responses)
 		{
-			result[0]["DocumentArtifactID"].Should().Be(_DOCUMENT_ARTIFACT_ID);
-			result[0]["Filename"].Should().Be(_FILENAME);
-			result[0]["Guid"].Should().Be(_GUID);
-			result[0]["Identifier"].Should().Be(_IDENTIFIER);
-			result[0]["Location"].Should().Be(_LOCATION);
-			result[0]["Order"].Should().Be(_ORDER);
-			result[0]["Rotation"].Should().Be(_ROTATION);
-			result[0]["Type"].Should().Be(_TYPE);
-			result[0]["InRepository"].Should().Be(_IN_REPOSITORY);
-			result[0]["Size"].Should().Be(_SIZE);
-			result[0]["Details"].Should().Be(_DETAILS);
-			result[0]["Billable"].Should().Be(_BILLABLE);
+			DataRow[] rows = dataSet.Tables[0].Rows.Cast<DataRow>().ToArray();
+
+			rows.Length.Should().Be(responses.Length);
+
+			var asserts = responses.Zip(rows, (response, actual) => new
+			{
+				Expected = response,
+				Actual = actual
+			});
+
+			foreach (var assert in asserts)
+			{
+				DataRow actual = assert.Actual;
+				FileResponse expected = assert.Expected;
+
+				actual[nameof(FileResponse.DocumentArtifactID)].Should().Be(expected.DocumentArtifactID);
+				actual[nameof(FileResponse.Filename)].Should().Be(expected.Filename);
+				actual[nameof(FileResponse.Guid)].Should().Be(expected.Guid);
+				actual[nameof(FileResponse.Identifier)].Should().Be(expected.Identifier);
+				actual[nameof(FileResponse.Location)].Should().Be(expected.Location);
+				actual[nameof(FileResponse.Order)].Should().Be(expected.Order);
+				actual[nameof(FileResponse.Rotation)].Should().Be(expected.Rotation);
+				actual[nameof(FileResponse.Type)].Should().Be(expected.Type);
+				actual[nameof(FileResponse.InRepository)].Should().Be(expected.InRepository);
+				actual[nameof(FileResponse.Size)].Should().Be(expected.Size);
+				actual[nameof(FileResponse.Details)].Should().Be(expected.Details);
+				actual[nameof(FileResponse.Billable)].Should().Be(expected.Billable);
+			}
+		}
+
+		private void AssertProductionDocumentImageResponsesAreSameAsExpected(
+			DataSet dataSet, 
+			ProductionDocumentImageResponse[] responses)
+		{
+			DataRow[] rows = dataSet.Tables[0].Rows.Cast<DataRow>().ToArray();
+
+			rows.Length.Should().Be(responses.Length);
+
+			var asserts = responses.Zip(rows, (response, actual) => new
+			{
+				Expected = response,
+				Actual = actual
+			});
+
+			foreach (var assert in asserts)
+			{
+				DataRow actual = assert.Actual;
+				ProductionDocumentImageResponse expected = assert.Expected;
+
+				actual[nameof(ProductionDocumentImageResponse.DocumentArtifactID)]
+					.Should().Be(expected.DocumentArtifactID);
+				actual[nameof(ProductionDocumentImageResponse.SourceGuid)]
+					.Should().Be(expected.SourceGuid);
+				actual[nameof(ProductionDocumentImageResponse.BatesNumber)]
+					.Should().Be(expected.BatesNumber);
+				actual[nameof(ProductionDocumentImageResponse.ImageSize)]
+					.Should().Be(expected.ImageSize);
+				actual[nameof(ProductionDocumentImageResponse.ImageGuid)]
+					.Should().Be(expected.ImageGuid);
+				actual[nameof(ProductionDocumentImageResponse.ImageFileName)]
+					.Should().Be(expected.ImageFileName);
+				actual[nameof(ProductionDocumentImageResponse.Location)]
+					.Should().Be(expected.Location);
+				actual[nameof(ProductionDocumentImageResponse.PageID)]
+					.Should().Be(expected.PageID);
+				actual[nameof(ProductionDocumentImageResponse.ByteRange)]
+					.Should().Be(expected.ByteRange);
+				actual[nameof(ProductionDocumentImageResponse.NativeIdentifier)]
+					.Should().Be(expected.NativeIdentifier);
+			}
+		}
+
+		private void AssertDocumentImageResponsesAreSameAsExpected(
+			DataSet dataSet, 
+			DocumentImageResponse[] responses)
+		{
+			DataRow[] rows = dataSet.Tables[0].Rows.Cast<DataRow>().ToArray();
+
+			rows.Length.Should().Be(responses.Length);
+
+			var asserts = responses.Zip(rows, (response, actual) => new
+			{
+				Expected = response,
+				Actual = actual
+			});
+
+			foreach (var assert in asserts)
+			{
+				DataRow actual = assert.Actual;
+				DocumentImageResponse expected = assert.Expected;
+
+				actual[nameof(DocumentImageResponse.DocumentArtifactID)]
+					.Should().Be(expected.DocumentArtifactID);
+				actual[nameof(DocumentImageResponse.FileID)]
+					.Should().Be(expected.FileID);
+				actual["Filename"] //Response model differs from Db model here
+					.Should().Be(expected.FileName);
+				actual[nameof(DocumentImageResponse.Guid)]
+					.Should().Be(expected.Guid);
+				actual[nameof(DocumentImageResponse.Identifier)]
+					.Should().Be(expected.Identifier);
+				actual[nameof(DocumentImageResponse.Location)]
+					.Should().Be(expected.Location);
+				actual[nameof(DocumentImageResponse.Order)]
+					.Should().Be(expected.Order);
+				actual[nameof(DocumentImageResponse.Rotation)]
+					.Should().Be(expected.Rotation);
+				actual[nameof(DocumentImageResponse.Type)]
+					.Should().Be(expected.Type);
+				actual[nameof(DocumentImageResponse.InRepository)]
+					.Should().Be(expected.InRepository);
+				actual[nameof(DocumentImageResponse.Size)]
+					.Should().Be(expected.Size);
+				actual[nameof(DocumentImageResponse.Details)]
+					.Should().Be(expected.Details);
+				actual[nameof(DocumentImageResponse.Billable)]
+					.Should().Be(expected.Billable);
+				actual[nameof(DocumentImageResponse.PageID)]
+					.Should().Be(expected.PageID);
+				actual[nameof(DocumentImageResponse.ByteRange)]
+					.Should().Be(expected.ByteRange);
+			}
+		}
+
+		private void AssertExportProductionDocumentImageResponsesAreSameAsExpected(
+			DataSet dataSet, 
+			ExportProductionDocumentImageResponse[] responses)
+		{
+			DataRow[] rows = dataSet.Tables[0].Rows.Cast<DataRow>().ToArray();
+
+			rows.Length.Should().Be(responses.Length);
+
+			var asserts = responses.Zip(rows, (response, actual) => new
+			{
+				Expected = response,
+				Actual = actual
+			});
+
+			foreach (var assert in asserts)
+			{
+				DataRow actual = assert.Actual;
+				ExportProductionDocumentImageResponse expected = assert.Expected;
+
+				actual[nameof(ExportProductionDocumentImageResponse.DocumentArtifactID)]
+					.Should().Be(expected.DocumentArtifactID);
+				actual[nameof(ExportProductionDocumentImageResponse.ProductionArtifactID)]
+					.Should().Be(expected.ProductionArtifactID);
+				actual[nameof(ExportProductionDocumentImageResponse.SourceGuid)]
+					.Should().Be(expected.SourceGuid);
+				actual[nameof(ExportProductionDocumentImageResponse.BatesNumber)]
+					.Should().Be(expected.BatesNumber);
+				actual[nameof(ExportProductionDocumentImageResponse.ImageSize)]
+					.Should().Be(expected.ImageSize);
+				actual[nameof(ExportProductionDocumentImageResponse.ImageGuid)]
+					.Should().Be(expected.ImageGuid);
+				actual[nameof(ExportProductionDocumentImageResponse.ImageFileName)]
+					.Should().Be(expected.ImageFileName);
+				actual[nameof(ExportProductionDocumentImageResponse.Location)]
+					.Should().Be(expected.Location);
+				actual[nameof(ExportProductionDocumentImageResponse.PageID)]
+					.Should().Be(expected.PageID);
+				actual[nameof(ExportProductionDocumentImageResponse.ByteRange)]
+					.Should().Be(expected.ByteRange);
+				actual[nameof(ExportProductionDocumentImageResponse.Order)]
+					.Should().Be(expected.Order);
+			}
+		}
+
+		private void AssertDynamicFileResponsesAreSameAsExpected(
+			DataSet dataSet,
+			DynamicFileResponse[] responses)
+		{
+			DataRow[] rows = dataSet.Tables[0].Rows.Cast<DataRow>().ToArray();
+
+			rows.Length.Should().Be(responses.Length);
+
+			var asserts = responses.Zip(rows, (response, actual) => new
+			{
+				Expected = response,
+				Actual = actual
+			});
+
+			foreach (var assert in asserts)
+			{
+				DataRow actual = assert.Actual;
+				DynamicFileResponse expected = assert.Expected;
+
+				actual[nameof(DynamicFileResponse.FileID)]
+					.Should().Be(expected.FileID);
+				actual[nameof(DynamicFileResponse.ObjectArtifactID)]
+					.Should().Be(expected.ObjectArtifactID);
+				actual[nameof(DynamicFileResponse.FileName)]
+					.Should().Be(expected.FileName);
+				actual[nameof(DynamicFileResponse.Location)]
+					.Should().Be(expected.Location);
+				actual[nameof(DynamicFileResponse.Size)]
+					.Should().Be(expected.Size);
+			}
 		}
 	}
 }
