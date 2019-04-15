@@ -66,7 +66,7 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 				SavedSearchArtifactId = SavedSearchArtifactId
 			};
 
-			var destinationConfiguration = new LoadFileExportDestinationConfiguration
+			var destinationConfiguration = new
 			{
 				ArtifactTypeId = (int) ArtifactType.Document,
 				AppendOriginalFileName = false,
@@ -215,40 +215,5 @@ namespace kCura.IntegrationPoints.Services.Tests.Integration.IntegrationPointMan
 				expectedIntegrationPointModel,
 				new IntegrationPointFieldGuidsConstants());
 		}
-
-	    private class LoadFileExportDestinationConfiguration
-	    {
-	        public int ArtifactTypeId { get; set; }
-	        public string ExportType { get; set; }
-	        public string ExportNativesToFileNamedFrom { get; set; }
-	        public int StartExportAtRecord { get; set; }
-	        public bool AppendOriginalFileName { get; set; }
-	        public string Fileshare { get; set; }
-	        public bool ExportNatives { get; set; }
-	        public bool OverwriteFiles { get; set; }
-	        public bool ExportImages { get; set; }
-	        public string SelectedImageFileType { get; set; }
-	        public string SelectedDataFileFormat { get; set; }
-	        public string DataFileEncodingType { get; set; }
-	        public string SelectedImageDataFileFormat { get; set; }
-	        public string SubdirectoryImagePrefix { get; set; }
-	        public string SubdirectoryNativePrefix { get; set; }
-	        public string SubdirectoryTextPrefix { get; set; }
-	        public int SubdirectoryStartNumber { get; set; }
-	        public int SubdirectoryDigitPadding { get; set; }
-	        public int SubdirectoryMaxFiles { get; set; }
-	        public string VolumePrefix { get; set; }
-	        public int VolumeStartNumber { get; set; }
-	        public int VolumeDigitPadding { get; set; }
-	        public int VolumeMaxSize { get; set; }
-	        public string FilePath { get; set; }
-	        public string UserPrefix { get; set; }
-	        public bool ExportMultipleChoiceFieldsAsNested { get; set; }
-	        public bool IncludeNativeFilesPath { get; set; }
-	        public bool ExportFullTextAsFile { get; set; }
-	        public string TextFileEncodingType { get; set; }
-	        public bool IncludeOriginalImages { get; set; }
-	        public bool IsAutomaticFolderCreationEnabled { get; set; }
-	    }
     }
 }
