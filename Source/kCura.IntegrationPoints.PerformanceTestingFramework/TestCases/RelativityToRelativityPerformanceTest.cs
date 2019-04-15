@@ -1,15 +1,19 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.UtilityDTO;
 using kCura.IntegrationPoints.PerformanceTestingFramework.Helpers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.PerformanceTestingFramework.TestCases
 {
@@ -20,13 +24,11 @@ namespace kCura.IntegrationPoints.PerformanceTestingFramework.TestCases
 		private const int _ADMIN_USER_ID = 9;
 
 		private readonly string _fieldMappingsJson;
-		
-		public RelativityToRelativityPerformanceTest() : base(
-			Convert.ToInt32(TestContextParametersHelper.GetParameterFromTestContextOrAuxilaryFile("SourceWorkspaceArtifactID")),
-			$"RipPushPerfTest {DateTime.Now:yyyy-MM-dd HH-mm}")
+
+		public RelativityToRelativityPerformanceTest() : base(Convert.ToInt32(TestContextParametersHelper.GetParameterFromTestContextOrAuxilaryFile("SourceWorkspaceArtifactID")), "")
 		{
 			_fieldMappingsJson = File.ReadAllText(TestContextParametersHelper.GetParameterFromTestContextOrAuxilaryFile("FieldMappingsJSONPath"));
-		}	
+		}
 
 		public override void SuiteSetup()
 		{
@@ -60,7 +62,30 @@ namespace kCura.IntegrationPoints.PerformanceTestingFramework.TestCases
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactId, integrationPoint.ArtifactID);
 			testDurationStopWatch.Stop();
 
-			Console.WriteLine($"PerformanceTest - RIP job duration -> {Math.Round(testDurationStopWatch.Elapsed.TotalSeconds, 2)}s");
+			double elapsedTime = testDurationStopWatch.Elapsed.TotalSeconds;
+
+			var queryRequest = new QueryRequest
+			{
+				Sorts = new[] { new Sort() { Direction = SortEnum.Descending, FieldIdentifier = new FieldRef { Name = "ArtifactID" } } },
+
+			};
+			ResultSet<JobHistory> resultSet = ObjectManager.Query<JobHistory>(queryRequest, 0, 1);
+
+			if (resultSet.ResultCount == 0)
+			{
+				elapsedTime = -1;
+			}
+			else
+			{
+				JobHistory jobHistoryObject = resultSet.Items.First();
+				if (jobHistoryObject.JobStatus != JobStatusChoices.JobHistoryCompleted)
+				{
+					elapsedTime = -1;
+				}
+				Console.WriteLine($"Job status: {jobHistoryObject.JobStatus.Name}");
+			}
+
+			Console.WriteLine($"PerformanceTest - RIP job duration -> {Math.Round(elapsedTime, 2)}s");
 
 			/* <<== IMPORTANT ==>>
 			 * This is the place, where we write the result in seconds to stdout.
@@ -69,7 +94,7 @@ namespace kCura.IntegrationPoints.PerformanceTestingFramework.TestCases
 			 * The exact regex that the output is matched against is: "<<<<\t([\d\.+-]+)\t>>>>".
 			 * Please consider that when changing the code.
 			 */
-			Console.WriteLine($"<<<<\t{testDurationStopWatch.Elapsed.TotalSeconds}\t>>>>");
+			Console.WriteLine($"<<<<\t{elapsedTime}\t>>>>");
 			/* <<==    END    ==>> */
 		}
 
