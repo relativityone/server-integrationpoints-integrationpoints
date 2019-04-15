@@ -4,12 +4,6 @@
 
 More details about RIP UI tests: https://einstein.kcura.com/display/DV/RIP+UI+Tests
 
-## Updating WebDriver packages
-
-After upgrading `Selenium.WebDriver.ChromeDriver` package, please update `UI.ChromeDriver.MaxSupportedVersion` in `app.config` to maximum version supported by this driver.
-For example, maximum supported Chrome version by `Selenium.WebDriver.ChromeDriver 2.45` is 72.
-Check https://sites.google.com/a/chromium.org/chromedriver/downloads for details.
-
 ---
 
 ## Choosing web browser
@@ -41,6 +35,11 @@ UI tests can be executed as part of these pielines:
 * Integration Points (https://jenkins.kcura.corp/job/DataTransfer/job/IntegrationPoints/) - UI test are not executed by default. They can be enabled by running this job manually.
 * Integration Points Nightly (https://jenkins.kcura.corp/job/DataTransfer/job/IntegrationPointsNightly/) - the same as default.
 * Integration Points UI tests (https://jenkins.kcura.corp/job/DataTransfer/job/IntegrationPointsUITests/) - all UI tests are executed by default.
+
+## Running tests on Regressions environments
+
+Tests which does not work or regressions environments are categorized as `NotWorkingOnRegressionEnvironment`. In order to skip them, following filter
+`cat != NotWorkingOnRegressionEnvironment` has to be used.
 
 ---
 

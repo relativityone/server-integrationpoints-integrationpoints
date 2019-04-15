@@ -18,7 +18,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 {
 	[TestFixture]
 	[Category(TestCategory.IMPORT_FROM_FTP_AND_LDAP)]
-    public class ImportLdapProviderTest : UiTest
+	[Category(TestCategory.NOT_WORKING_ON_REGRESSION_ENVIRONMENT)] // no access to LDAP from R1
+	public class ImportLdapProviderTest : UiTest
 	{
 		private IRSAPIService _service;
 		private IntegrationPointsImportLdapAction _integrationPointsAction;
@@ -26,7 +27,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
-			Context.InstallLegalHold();
+			Context.AddEntityObjectToWorkspace();
 
 			Install(Context.WorkspaceId.Value);
 			_service = Container.Resolve<IRSAPIService>();
