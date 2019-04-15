@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using IProgress = Relativity.Sync.Storage.IProgress;
 
-namespace Relativity.Sync.Tests.Integration.Stubs
+namespace Relativity.Sync.Tests.Common
 {
 	internal sealed class ProgressStub : IProgress
 	{

@@ -9,13 +9,13 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
 using System.Linq;
 using Autofac;
-using Relativity.Sync.Tests.Integration.Stubs;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Moq;
 using Relativity.Services.DataContracts.DTOs;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
+using Relativity.Sync.Tests.Common;
 
 namespace Relativity.Sync.Tests.Integration
 {

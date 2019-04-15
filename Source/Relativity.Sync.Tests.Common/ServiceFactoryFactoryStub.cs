@@ -2,7 +2,7 @@
 using Relativity.Services.ServiceProxy;
 using Relativity.Sync.KeplerFactory;
 
-namespace Relativity.Sync.Tests.Integration.Stubs
+namespace Relativity.Sync.Tests.Common
 {
 	internal sealed class ServiceFactoryFactoryStub : IServiceFactoryFactory
 	{
