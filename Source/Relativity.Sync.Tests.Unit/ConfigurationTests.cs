@@ -124,6 +124,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			// ARRANGE
 			string testLongText = "this very long text...";
+			string expectedLongText = "this very long text that is no longer truncated";
 			QueryResult result = BuildLongTextQueryResult(testLongText);
 
 			_objectManager.Setup(x => x.QueryAsync(_TEST_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, 1)).ReturnsAsync(result);
@@ -138,7 +139,7 @@ namespace Relativity.Sync.Tests.Unit
 			var concreteStreamList = new List<Stream>();
 			testKeplerStream.Setup(x => x.GetStreamAsync()).ReturnsAsync(() =>
 			{
-				byte[] text = System.Text.Encoding.Unicode.GetBytes(testLongText);
+				byte[] text = System.Text.Encoding.Unicode.GetBytes(expectedLongText);
 				var memoryStream = new MemoryStream(text);
 				concreteStreamList.Add(memoryStream);
 				return memoryStream;
@@ -158,7 +159,7 @@ namespace Relativity.Sync.Tests.Unit
 				}
 				Assert.AreEqual(1, concreteStreamList.Count);
 
-				cache.GetFieldValue<string>(_testFieldGuid).Should().Be(testLongText);
+				cache.GetFieldValue<string>(_testFieldGuid).Should().Be(expectedLongText);
 
 				Mock.Verify(_objectManager, testKeplerStream);
 				_objectManager.Verify(x => x.QueryAsync(_TEST_WORKSPACE_ID, It.Is<QueryRequest>(qr => AssertQueryRequest(qr)), 1, 1), Times.Once);
