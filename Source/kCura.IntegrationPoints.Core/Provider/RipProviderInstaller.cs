@@ -92,37 +92,9 @@ namespace kCura.IntegrationPoints.Core.Provider
             IDataProviderFactory dataProviderFactory,
             ContractsSourceProvider provider)
         {
-            Either<string, ContractsSourceProvider> sourceProviderWithApplicationGuid = UpdateApplicationGuidIfMissing(provider);
-
-            Either<string, Unit> installedDestinationProviderEither = InstallSynchronizerForCoreOnly(provider.ApplicationGUID);
-            if (!installedDestinationProviderEither.IsRight)
-            {
-                return Task.FromResult(installedDestinationProviderEither);
-            }
-
-            return sourceProviderWithApplicationGuid
+            return UpdateApplicationGuidIfMissing(provider)
                 .Bind(providerWithAppGuid => ValidateProvider(dataProviderFactory, providerWithAppGuid))
                 .BindAsync(AddOrUpdateProvider);
-        }
-
-        // TODO KK - maybe we should create separate event handler for this step???
-        private Either<string, Unit> InstallSynchronizerForCoreOnly(Guid applicationGuid)
-        {
-            //This is hack until we introduce installation of Destination Providers
-            if (applicationGuid == new Guid(Domain.Constants.IntegrationPoints.APPLICATION_GUID_STRING))
-            {
-                try
-                {
-                    new Services.Synchronizer.RdoSynchronizerProvider(_objectManager, _helper)
-                        .CreateOrUpdateDestinationProviders();
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Error occured while installing destination providers");
-                    return "Error while installing destination providers";
-                }
-            }
-            return Unit.Default;
         }
 
         private Either<string, ContractsSourceProvider> ValidateProvider(

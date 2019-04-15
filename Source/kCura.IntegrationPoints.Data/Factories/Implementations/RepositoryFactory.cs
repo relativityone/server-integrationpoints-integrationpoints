@@ -86,7 +86,8 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		{
 			IRelativityObjectManager relativityObjectManager =
 				CreateRelativityObjectManager(workspaceArtifactId);
-			return new DestinationProviderRepository(relativityObjectManager);
+		    IAPILog logger = _helper.GetLoggerFactory().GetLogger();
+            return new DestinationProviderRepository(logger, relativityObjectManager);
 		}
 
 		public IDestinationWorkspaceRepository GetDestinationWorkspaceRepository(int sourceWorkspaceArtifactId)

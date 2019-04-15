@@ -17,6 +17,10 @@ namespace kCura.IntegrationPoints.Data.Installers
                 Component
                     .For<ISourceProviderRepository>()
                     .ImplementedBy<SourceProviderRepository>()
+                    .LifestyleTransient(),
+                Component
+                    .For<IDestinationProviderRepository>()
+                    .ImplementedBy<DestinationProviderRepository>()
                     .LifestyleTransient()
                 );
         }

@@ -120,6 +120,7 @@
     <Compile Include="Installers\Helpers\Implementations\SecretStoreCleanUp.cs" />
     <Compile Include="Installers\Helpers\SecretStoreCleanUpEventHandlerWrapper.cs" />
     <Compile Include="Installers\RegisterDataTransferLocationInstaller.cs" />
+    <Compile Include="Installers\RegisterDestinationProviders.cs" />
     <Compile Include="Installers\RegisterImportProvider.cs" />
     <Compile Include="Installers\RegisterIntegrationPointTypeInstaller.cs" />
     <Compile Include="Installers\RemoveAgentJobLogTableEventHandler.cs" />

@@ -78,6 +78,33 @@ namespace kCura.IntegrationPoints.Data.Tests.Installers
                 .ResolveWithoutThrowing<ISourceProviderRepository>();
         }
 
+        [Test]
+        public void DestinationProviderRepository_ShouldBeRegisteredWithProperLifestyle()
+        {
+            _sut.Should()
+                .HaveRegisteredSingleComponent<IDestinationProviderRepository>()
+                .Which.Should().BeRegisteredWithLifestyle(LifestyleType.Transient);
+        }
+
+        [Test]
+        public void DestinationProviderRepository_ShouldBeRegisteredWithProperImplementation()
+        {
+            // assert
+            _sut.Should()
+                .HaveRegisteredProperImplementation<IDestinationProviderRepository, DestinationProviderRepository>();
+        }
+
+        [Test]
+        public void DestinationProviderRepository_ShouldBeResolvedWithoutThrowing()
+        {
+            // arrage
+            RegisterDependencies(_sut);
+
+            // assert
+            _sut.Should()
+                .ResolveWithoutThrowing<IDestinationProviderRepository>();
+        }
+
         private static void RegisterDependencies(IWindsorContainer container)
         {
             IRegistration[] dependencies =

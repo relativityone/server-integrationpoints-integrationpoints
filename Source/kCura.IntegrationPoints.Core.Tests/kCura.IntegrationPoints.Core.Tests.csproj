@@ -143,6 +143,7 @@
     <Compile Include="Services\IntegrationPointServiceTests.cs" />
     <Compile Include="Services\JobHistory\JobHistoryErrorServiceTest.cs" />
     <Compile Include="Services\JobHistory\JobHistoryServiceTests.cs" />
+    <Compile Include="Services\Synchronizer\RdoSynchronizerProviderTests.cs" />
     <Compile Include="Tagging\TaggerTests.cs" />
     <Compile Include="Tagging\TagSavedSearchFolderTests.cs" />
     <Compile Include="Tagging\TagSavedSearchManagerTests.cs" />

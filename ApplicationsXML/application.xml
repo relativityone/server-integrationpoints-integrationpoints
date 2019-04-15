@@ -11799,6 +11799,18 @@
       <ApplicationVersion>9.7.0.4</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
+    <InstallEventHandler> <!-- TODO tt-img-app -->
+      <ArtifactId>1038593</ArtifactId>
+      <AssemblyArtifactId>1016717</AssemblyArtifactId>
+      <Name>kCura.IntegrationPoints.EventHandlers.Installers.RegisterDestinationProviders</Name>
+      <Guid>4e058cf3-9c3e-41aa-8d3d-2ca8f1e06e08</Guid>
+      <Guids>221acba3-d26f-4e67-9f03-245f0bd3df95</Guids>
+      <ExecutionType>8</ExecutionType>
+      <Order>15</Order>
+      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
+      <ApplicationVersion>10.2.30.106</ApplicationVersion>
+      <RunTarget>0</RunTarget>
+    </InstallEventHandler>
   </InstallEventHandlers>
   <SavedSearches />
   <SearchContainers />

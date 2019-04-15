@@ -6,14 +6,12 @@ using kCura.IntegrationPoints.Core.Provider;
 using kCura.IntegrationPoints.Core.Provider.Internals;
 using kCura.IntegrationPoints.Core.Services.Domain;
 using kCura.IntegrationPoints.Core.Services.Provider;
-using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using LanguageExt;
 using Moq;
 using Moq.Language.Flow;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Services.Objects.DataContracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -198,67 +196,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
             string expectedErrorMessage = $"Unhandled error occured while installing providers. Exception: {exceptionToThrow}";
             result.Should().BeLeft(expectedErrorMessage, "because cannot retrieve installed providers");
         }
-
-        /// <summary>
-        /// This shouldn't be responsibility of IRipProviderInstaller implementation
-        /// We should move this logic to separate event handler
-        /// </summary>
-        /// <returns></returns>
-        [Test]
-        public async Task ShouldUpdateDestinationProvidersForInternalSourceProviders()
-        {
-            // arrange
-            _sourceProviderToCreate.ApplicationGUID = Guid.Parse(Domain.Constants.IntegrationPoints.APPLICATION_GUID_STRING);
-
-            _objectManagerMock
-                .Setup(x =>
-                    x.Query<DestinationProvider>(
-                        It.IsAny<QueryRequest>(),
-                        It.IsAny<ExecutionIdentity>()
-                    )
-                )
-                .Returns(Enumerable.Empty<DestinationProvider>().ToList());
-
-            // act
-            await _sut.InstallProvidersAsync(_sourceProvidersToCreate);
-
-            // assert
-            _objectManagerMock.Verify(x =>
-                x.Create(
-                    It.IsAny<DestinationProvider>(),
-                    It.IsAny<ExecutionIdentity>()
-                )
-            );
-        }
-
-        /// <summary>
-        /// This shouldn't be responsibility of IRipProviderInstaller implementation
-        /// We should move this logic to separate event handler
-        /// </summary>
-        /// <returns></returns>
-        [Test]
-        public async Task ShouldReturnErrorWhenCreatingDestinationProvidersFailed()
-        {
-            // arrange
-            _sourceProviderToCreate.ApplicationGUID = Guid.Parse(Domain.Constants.IntegrationPoints.APPLICATION_GUID_STRING);
-
-            _objectManagerMock
-                .Setup(x =>
-                    x.Query<DestinationProvider>(
-                        It.IsAny<QueryRequest>(),
-                        It.IsAny<ExecutionIdentity>()
-                    )
-                )
-                .Throws<InvalidOperationException>();
-
-            // act
-            Either<string, Unit> result = await _sut.InstallProvidersAsync(_sourceProvidersToCreate);
-
-            // assert
-            string expectedErrorMessage = "Error while installing destination providers";
-            result.Should().BeLeft(expectedErrorMessage, "because cannot create destination provider object");
-        }
-
+        
         private void SetupDataProviderFactoryFactory(Exception exceptionToThrow = null)
         {
             var providerFactoryVendorMock = new Mock<ProviderFactoryVendor>();
