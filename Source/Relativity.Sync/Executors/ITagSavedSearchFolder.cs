@@ -1,7 +1,9 @@
-﻿namespace Relativity.Sync.Executors
+﻿using System.Threading.Tasks;
+
+namespace Relativity.Sync.Executors
 {
 	internal interface ITagSavedSearchFolder
 	{
-		int GetFolderId(int workspaceArtifactId);
+		Task<int> GetFolderId(int workspaceArtifactId);
 	}
 }
