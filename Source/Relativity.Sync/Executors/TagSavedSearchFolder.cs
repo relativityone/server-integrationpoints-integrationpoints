@@ -22,6 +22,7 @@ namespace Relativity.Sync.Executors
 
 		public async Task<int> GetFolderId(int workspaceArtifactId)
 		{
+			_logger.LogVerbose("Getting Saved Search Folder Id for workspace {workspaceArtifactId}", workspaceArtifactId);
 			try
 			{
 				SearchContainer existingFolder = await QuerySearchContainer(workspaceArtifactId, _DESTINATION_WORKSPACE_SAVED_SEARCH_FOLDER_NAME).ConfigureAwait(false);
@@ -35,7 +36,7 @@ namespace Relativity.Sync.Executors
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, "Failed to get saved search folder id for workspace {workspaceId}", workspaceArtifactId);
+				_logger.LogError(ex, "Failed to get Saved Search Folder Id for workspace {workspaceId}", workspaceArtifactId);
 				throw;
 			}
 		}
