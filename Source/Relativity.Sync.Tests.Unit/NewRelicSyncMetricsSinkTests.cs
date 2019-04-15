@@ -84,7 +84,8 @@ namespace Relativity.Sync.Tests.Unit
 					meAsDict["Name"].Equals(you.Name) &&
 					meAsDict["Type"].Equals(you.Type) &&
 					meAsDict["ExecutionStatus"].Equals(you.ExecutionStatus) &&
-					meAsDict["Value"].Equals(you.Value);
+					meAsDict["Value"].Equals(you.Value) &&
+					meAsDict["Application"].Equals("Relativity.Sync");
 			}
 
 			return false;
