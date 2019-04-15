@@ -26,14 +26,16 @@ namespace Relativity.Sync.Executors
 			_syncLog = syncLog;
 		}
 
-		public async Task<int> CreateTagSavedSearchAsync(int workspaceArtifactId, TagsContainer tagsContainer, int savedSearchFolderId, CancellationToken token)
+		public async Task<int> CreateTagSavedSearchAsync(IDestinationWorkspaceSavedSearchCreationConfiguration configuration, int savedSearchFolderArtifactId, CancellationToken token)
 		{
+			int destinationWorkspaceArtifactId = configuration.DestinationWorkspaceArtifactId;
+
 			try
 			{
 				using (var keywordSearchManager = await _destinationServiceFactoryForUser.CreateProxyAsync<IKeywordSearchManager>().ConfigureAwait(false))
 				{
-					KeywordSearch searchDto = CreateKeywordSearchForTagging(null, savedSearchFolderId);
-					int keywordSearchId = await keywordSearchManager.CreateSingleAsync(workspaceArtifactId, searchDto).ConfigureAwait(false);
+					KeywordSearch searchDto = CreateKeywordSearchForTagging(null, savedSearchFolderArtifactId);
+					int keywordSearchId = await keywordSearchManager.CreateSingleAsync(destinationWorkspaceArtifactId, searchDto).ConfigureAwait(false);
 
 					_syncLog.LogDebug("Created tagging keyword search: {keywordSearchId}", keywordSearchId);
 					return keywordSearchId;
@@ -41,8 +43,8 @@ namespace Relativity.Sync.Executors
 			}
 			catch (Exception e)
 			{
-				_syncLog.LogError(e, "Failed to create Saved Search for promoted documents in destination workspace {workspaceArtifactId}.", workspaceArtifactId);
-				throw new DestinationWorkspaceTagRepositoryException($"Failed to create Saved Search for promoted documents in destination workspace {workspaceArtifactId}.", e);
+				_syncLog.LogError(e, "Failed to create Saved Search for promoted documents in destination workspace {workspaceArtifactId}.", destinationWorkspaceArtifactId);
+				throw new DestinationWorkspaceTagRepositoryException($"Failed to create Saved Search for promoted documents in destination workspace {destinationWorkspaceArtifactId}.", e);
 			}
 		}
 
@@ -65,7 +67,7 @@ namespace Relativity.Sync.Executors
 			};
 		}
 
-		private string LimitLength(string name)
+		private static string LimitLength(string name)
 		{
 			const int two = 2;
 			const int three = 3;
