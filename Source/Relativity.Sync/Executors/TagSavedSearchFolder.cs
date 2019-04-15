@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Relativity.API;
@@ -46,7 +46,7 @@ namespace Relativity.Sync.Executors
 			SearchContainerQueryResultSet result;
 			using (var proxy = await _serviceFactoryForUser.CreateProxyAsync<ISearchContainerManager>().ConfigureAwait(false))
 			{
-				result = proxy.QueryAsync(workspaceId, query).Result;
+				result = await proxy.QueryAsync(workspaceId, query).ConfigureAwait(false);
 			}
 
 			if (!result.Success)
@@ -69,7 +69,7 @@ namespace Relativity.Sync.Executors
 					Name = name,
 					ParentSearchContainer = { ArtifactID = 0 }
 				};
-				return proxy.CreateSingleAsync(workspaceId, searchContainer).Result;
+				return await proxy.CreateSingleAsync(workspaceId, searchContainer).ConfigureAwait(false);
 			}
 		}
 	}
