@@ -48,6 +48,9 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[Test]
 		public async Task ItShouldExecute()
 		{
+			_config.SetupGet(x => x.CreateSavedSearchForTags).Returns(true);
+			_config.SetupGet(x => x.IsSavedSearchArtifactIdSet).Returns(false);
+
 			// act
 			bool canExecute = await _instance.CanExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
 

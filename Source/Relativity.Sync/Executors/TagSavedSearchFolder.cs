@@ -12,7 +12,7 @@ namespace Relativity.Sync.Executors
 	{
 		private const string _DESTINATION_WORKSPACE_SAVED_SEARCH_FOLDER_NAME = "Integration Points";
 		private readonly IDestinationServiceFactoryForUser _serviceFactoryForUser;
-		private ISyncLog _logger;
+		private readonly ISyncLog _logger;
 
 		public TagSavedSearchFolder(IDestinationServiceFactoryForUser serviceFactoryForUser, ISyncLog logger)
 		{
