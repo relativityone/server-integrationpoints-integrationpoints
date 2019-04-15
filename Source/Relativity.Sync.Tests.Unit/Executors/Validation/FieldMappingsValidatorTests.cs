@@ -77,7 +77,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			_validationConfiguration.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(_TEST_SOURCE_WORKSPACE_ARTIFACT_ID).Verifiable();
 			_validationConfiguration.SetupGet(x => x.FieldMappings).Returns(_fieldMappings).Verifiable();
 			_validationConfiguration.SetupGet(x => x.ImportOverwriteMode).Returns(ImportOverwriteMode.AppendOverlay);
-			_validationConfiguration.SetupGet(x => x.FieldOverlayBehavior).Returns(FieldOverlayBehavior.Default);
+			_validationConfiguration.SetupGet(x => x.FieldOverlayBehavior).Returns(FieldOverlayBehavior.UseFieldSettings);
 
 			SetUpObjectManagerQuery(_TEST_SOURCE_WORKSPACE_ARTIFACT_ID, _TEST_SOURCE_FIELD_ARTIFACT_ID);
 			SetUpObjectManagerQuery(_TEST_DEST_WORKSPACE_ARTIFACT_ID, _TEST_DEST_FIELD_ARTIFACT_ID);
@@ -163,7 +163,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			// Assert
 			Assert.IsFalse(actualResult.IsValid);
 			Assert.IsNotEmpty(actualResult.Messages);
-			actualResult.Messages.First().ShortMessage.Should().Be("Exception occurred during field mappings validation.");
+			actualResult.Messages.First().ShortMessage.Should().Be("Exception occurred during field mappings validation. See logs for more details.");
 
 			VerifyObjectManagerQueryRequest();
 			Mock.Verify(_validationConfiguration);
@@ -182,7 +182,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			// Assert
 			Assert.IsFalse(actualResult.IsValid);
 			Assert.IsNotEmpty(actualResult.Messages);
-			actualResult.Messages.First().ShortMessage.Should().Be("Exception occurred during field mappings validation.");
+			actualResult.Messages.First().ShortMessage.Should().Be("Exception occurred during field mappings validation. See logs for more details.");
 
 			VerifyObjectManagerQueryRequest();
 			Mock.Verify(_validationConfiguration);
@@ -213,7 +213,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		{
 			// Arrange
 			_validationConfiguration.SetupGet(x => x.ImportOverwriteMode).Returns(ImportOverwriteMode.AppendOnly);
-			_validationConfiguration.SetupGet(x => x.FieldOverlayBehavior).Returns(FieldOverlayBehavior.Replace);
+			_validationConfiguration.SetupGet(x => x.FieldOverlayBehavior).Returns(FieldOverlayBehavior.ReplaceValues);
 
 			// Act
 			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);

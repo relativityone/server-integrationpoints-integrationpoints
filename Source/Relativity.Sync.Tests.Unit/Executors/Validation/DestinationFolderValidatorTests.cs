@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -20,6 +21,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		private FolderStatus _getAccessStatusAsyncResult;
 
 		private Mock<IValidationConfiguration> _configurationMock;
+		private Mock<IFolderManager> _folderManagerMock;
 
 		private const int _FOLDER_ARTIFACT_ID = 456;
 		private const int _WORKSPACE_ARTIFACT_ID = 123;
@@ -29,11 +31,11 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		{
 			_getAccessStatusAsyncResult = new FolderStatus();
 
-			var folderManagerMock = new Mock<IFolderManager>();
-			folderManagerMock.Setup(fm => fm.GetAccessStatusAsync(_WORKSPACE_ARTIFACT_ID, _FOLDER_ARTIFACT_ID)).ReturnsAsync(_getAccessStatusAsyncResult);
+			_folderManagerMock = new Mock<IFolderManager>();
+			_folderManagerMock.Setup(fm => fm.GetAccessStatusAsync(_WORKSPACE_ARTIFACT_ID, _FOLDER_ARTIFACT_ID)).ReturnsAsync(_getAccessStatusAsyncResult);
 
 			var serviceFactoryMock = new Mock<IDestinationServiceFactoryForUser>();
-			serviceFactoryMock.Setup(sf => sf.CreateProxyAsync<IFolderManager>()).ReturnsAsync(folderManagerMock.Object);
+			serviceFactoryMock.Setup(sf => sf.CreateProxyAsync<IFolderManager>()).ReturnsAsync(_folderManagerMock.Object);
 
 			_configurationMock = new Mock<IValidationConfiguration>();
 			_configurationMock.Setup(c => c.DestinationFolderArtifactId).Returns(_FOLDER_ARTIFACT_ID);
@@ -41,7 +43,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 
 			_sut = new DestinationFolderValidator(serviceFactoryMock.Object, new EmptyLogger());
 		}
-		
+
 		[Test]
 		public async Task ItShouldHandleValidConfiguration()
 		{
@@ -52,7 +54,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			result.IsValid.Should().BeTrue();
 			result.Messages.Should().BeEmpty();
 		}
-		
+
 		[Test]
 		public async Task ItShouldHandleInvalidConfiguration()
 		{
@@ -62,6 +64,16 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 
 			result.IsValid.Should().BeFalse();
 			result.Messages.Should().NotBeEmpty();
+		}
+
+		[Test]
+		public async Task ItShouldHandleExceptionDuringValidation()
+		{
+			_folderManagerMock.Setup(x => x.GetAccessStatusAsync(_WORKSPACE_ARTIFACT_ID, _FOLDER_ARTIFACT_ID)).Throws<InvalidOperationException>();
+
+			ValidationResult result = await _sut.ValidateAsync(_configurationMock.Object, CancellationToken.None).ConfigureAwait(false);
+
+			result.IsValid.Should().BeFalse();
 		}
 	}
 }

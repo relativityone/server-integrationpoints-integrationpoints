@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Services.ServiceProxy;
@@ -30,6 +31,7 @@ namespace Relativity.Sync.KeplerFactory
 		/// <summary>
 		///     For testing purposes
 		/// </summary>
+		[ExcludeFromCodeCoverage]
 		internal ServiceFactoryForUser(IServiceFactory serviceFactory, IDynamicProxyFactory dynamicProxyFactory)
 		{
 			_serviceFactory = serviceFactory;

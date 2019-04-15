@@ -6,7 +6,7 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Storage;
 
-namespace Relativity.Sync.Tests.Integration.Stubs
+namespace Relativity.Sync.Tests.Common
 {
 	[ExcludeFromCodeCoverage]
 	internal sealed class ConfigurationStub : IDataDestinationFinalizationConfiguration, IDataDestinationInitializationConfiguration, IDataSourceSnapshotConfiguration,
@@ -34,15 +34,15 @@ namespace Relativity.Sync.Tests.Integration.Stubs
 			await Task.Yield();
 		}
 
-		public string JobName { get; }
-		public string NotificationEmails { get; }
+		public string JobName { get; set; }
+		public string NotificationEmails { get; set; }
 		public int SourceWorkspaceArtifactId { get; set; }
 		public int DestinationWorkspaceArtifactId { get; set; }
 		public int SavedSearchArtifactId { get; set; }
-		public int DestinationFolderArtifactId { get; }
-		public int FolderPathSourceFieldArtifactId { get; }
-		public ImportOverwriteMode ImportOverwriteMode { get; }
-		public FieldOverlayBehavior FieldOverlayBehavior { get; }
+		public int DestinationFolderArtifactId { get; set; }
+		public int FolderPathSourceFieldArtifactId { get; set; }
+		public ImportOverwriteMode ImportOverwriteMode { get; set; }
+		public FieldOverlayBehavior FieldOverlayBehavior { get; set; }
 		public DestinationFolderStructureBehavior DestinationFolderStructureBehavior { get; set; }
 		public string SourceJobTagName { get; set; }
 		public int SourceJobTagArtifactId { get; set; }

@@ -10,7 +10,7 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
-using Relativity.Sync.Tests.Integration.Stubs;
+using Relativity.Sync.Tests.Common;
 
 namespace Relativity.Sync.Tests.Integration
 {
