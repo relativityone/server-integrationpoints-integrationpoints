@@ -8,7 +8,7 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.ArtifactGuid;
 
-namespace kCura.IntegrationPoints.Data.Tests.Repositories
+namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
 	[TestFixture]
 	public class KeplerArtifactGuidRepositoryTests : TestBase

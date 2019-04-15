@@ -1,13 +1,13 @@
 ﻿using System;
+using System.Linq;
+using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity;
-using System.Linq;
-using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
-using kCura.IntegrationPoints.Data.Repositories;
 
-namespace kCura.IntegrationPoints.Data.Tests.Repositories
+namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
 	public class QueryFieldLookupRepositoryTests
 	{

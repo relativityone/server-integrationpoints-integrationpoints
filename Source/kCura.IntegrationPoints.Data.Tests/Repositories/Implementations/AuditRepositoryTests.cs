@@ -7,7 +7,7 @@ using NUnit.Framework;
 using Relativity.API.Foundation;
 using Relativity.API.Foundation.Repositories;
 
-namespace kCura.IntegrationPoints.Data.Tests.Repositories
+namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
 	[TestFixture]
 	public class AuditRepositoryTests
