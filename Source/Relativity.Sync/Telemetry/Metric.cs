@@ -32,7 +32,7 @@ namespace Relativity.Sync.Telemetry
 		///     Name of the application.
 		/// </summary>
 		/// <remarks>
-		///     Set to Relativity.Sync to easy distinguish between Sync and RIP
+		///     Set to Relativity.Sync to easily distinguish between Sync and RIP
 		/// </remarks>
 		public string Application { get; } = _SYNC_APPLICATION_NAME;
 
