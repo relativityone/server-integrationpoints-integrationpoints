@@ -1,7 +1,10 @@
-﻿namespace Relativity.Sync.Executors
+﻿using System.Threading;
+using System.Threading.Tasks;
+
+namespace Relativity.Sync.Executors
 {
 	internal interface ITagSavedSearch
 	{
-		int CreateTagSavedSearch(int workspaceArtifactId, TagsContainer tagsContainer, int savedSearchFolderId);
+		Task<int> CreateTagSavedSearchAsync(int workspaceArtifactId, TagsContainer tagsContainer, int savedSearchFolderId, CancellationToken token);
 	}
 }

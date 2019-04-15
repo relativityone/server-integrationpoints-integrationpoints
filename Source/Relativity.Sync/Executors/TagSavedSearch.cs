@@ -1,10 +1,15 @@
-﻿namespace Relativity.Sync.Executors
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace Relativity.Sync.Executors
 {
 	internal sealed class TagSavedSearch : ITagSavedSearch
 	{
-		public int CreateTagSavedSearch(int workspaceArtifactId, TagsContainer tagsContainer, int savedSearchFolderId)
+		public async Task<int> CreateTagSavedSearchAsync(int workspaceArtifactId, TagsContainer tagsContainer, int savedSearchFolderId, CancellationToken token)
 		{
-			throw new System.NotImplementedException();
+			await Task.FromException(new NotImplementedException()).ConfigureAwait(false);
+			return 0;
 		}
 	}
 }
