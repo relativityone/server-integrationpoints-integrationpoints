@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Relativity.API;
 using Relativity.Services;
 using Relativity.Services.Search;
 using Relativity.Sync.KeplerFactory;
@@ -41,7 +40,7 @@ namespace Relativity.Sync.Executors
 			}
 		}
 
-		public async Task<SearchContainer> QuerySearchContainer(int workspaceId, string name)
+		private async Task<SearchContainer> QuerySearchContainer(int workspaceId, string name)
 		{
 			_logger.LogVerbose("Querying for Saved Search Folder named {name} in {workspaceId}", name, workspaceId);
 			Condition condition = new TextCondition(ClientFieldNames.Name, TextConditionEnum.EqualTo, name);
@@ -70,7 +69,7 @@ namespace Relativity.Sync.Executors
 			return null;
 		}
 
-		public async Task<int> CreateSearchContainerInRoot(int workspaceId, string name)
+		private async Task<int> CreateSearchContainerInRoot(int workspaceId, string name)
 		{
 			_logger.LogVerbose("Creating Saved Search Folder named {name} in {workspaceId}", name, workspaceId);
 			try
