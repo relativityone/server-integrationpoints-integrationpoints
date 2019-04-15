@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Relativity.Sync.Executors.Validation
+namespace Relativity.Sync.Storage
 {
 	/// <summary>
 	/// Defines the mapping of fields in the data source to fields in a workspace.
