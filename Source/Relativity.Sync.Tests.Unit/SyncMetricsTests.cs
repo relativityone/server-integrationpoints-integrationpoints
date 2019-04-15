@@ -16,6 +16,7 @@ namespace Relativity.Sync.Tests.Unit
 		private Mock<ISyncMetricsSink> _sink2;
 
 		private const string _CORRELATION_ID = "id";
+		private const string _NAME = "name";
 
 		[SetUp]
 		public void SetUp()
@@ -34,21 +35,20 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public void ItShouldSendTimedOperation()
 		{
-			const string name = "name";
 			TimeSpan duration = TimeSpan.FromDays(1);
 			ExecutionStatus executionStatus = ExecutionStatus.CompletedWithErrors;
 
 			// ACT
-			_instance.TimedOperation(name, duration, executionStatus);
+			_instance.TimedOperation(_NAME, duration, executionStatus);
 
 			// ASSERT
-			_sink1.Verify(x => x.Log(It.Is<Metric>(m => AssertMetric(m, name, duration, executionStatus, null))));
-			_sink2.Verify(x => x.Log(It.Is<Metric>(m => AssertMetric(m, name, duration, executionStatus, null))));
+			_sink1.Verify(x => x.Log(It.Is<Metric>(m => AssertMetric(m, duration, executionStatus, null))));
+			_sink2.Verify(x => x.Log(It.Is<Metric>(m => AssertMetric(m, duration, executionStatus, null))));
 		}
 
-		private bool AssertMetric(Metric metric, string name, TimeSpan duration, ExecutionStatus executionStatus, Dictionary<string, object> customData)
+		private bool AssertMetric(Metric metric, TimeSpan duration, ExecutionStatus executionStatus, Dictionary<string, object> customData)
 		{
-			metric.Name.Should().Be(name);
+			metric.Name.Should().Be(_NAME);
 			metric.CorrelationId.Should().Be(_CORRELATION_ID);
 			metric.ExecutionStatus.Should().Be(executionStatus);
 			metric.Value.Should().Be(duration.TotalMilliseconds);
@@ -63,7 +63,6 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public void ItShouldSendTimedOperationWithCustomData()
 		{
-			const string name = "name";
 			TimeSpan duration = TimeSpan.FromDays(1);
 			ExecutionStatus executionStatus = ExecutionStatus.Failed;
 			Dictionary<string, object> customData = new Dictionary<string, object>
@@ -72,25 +71,24 @@ namespace Relativity.Sync.Tests.Unit
 			};
 
 			// ACT
-			_instance.TimedOperation(name, duration, executionStatus, customData);
+			_instance.TimedOperation(_NAME, duration, executionStatus, customData);
 
 			// ASSERT
-			_sink1.Verify(x => x.Log(It.Is<Metric>(m => AssertMetric(m, name, duration, executionStatus, customData))));
-			_sink2.Verify(x => x.Log(It.Is<Metric>(m => AssertMetric(m, name, duration, executionStatus, customData))));
+			_sink1.Verify(x => x.Log(It.Is<Metric>(m => AssertMetric(m, duration, executionStatus, customData))));
+			_sink2.Verify(x => x.Log(It.Is<Metric>(m => AssertMetric(m, duration, executionStatus, customData))));
 		}
 
 		[Test]
 		public void ItShouldSendCountOperation()
 		{
-			const string name = "name";
 			ExecutionStatus executionStatus = ExecutionStatus.Canceled;
 
 			// ACT
-			_instance.CountOperation(name, executionStatus);
+			_instance.CountOperation(_NAME, executionStatus);
 
 			// ASSERT
-			_sink1.Verify(x => x.Log(It.Is<Metric>(m => m.Name == name && m.ExecutionStatus == executionStatus)));
-			_sink2.Verify(x => x.Log(It.Is<Metric>(m => m.Name == name && m.ExecutionStatus == executionStatus)));
+			_sink1.Verify(x => x.Log(It.Is<Metric>(m => m.Name == _NAME && m.ExecutionStatus == executionStatus)));
+			_sink2.Verify(x => x.Log(It.Is<Metric>(m => m.Name == _NAME && m.ExecutionStatus == executionStatus)));
 		}
 	}
 }
