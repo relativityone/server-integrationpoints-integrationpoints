@@ -107,7 +107,7 @@ namespace Relativity.Sync.Tests.System
 			configuration.GetFieldValue<int>(RdoArtifactTypeIdGuid);
 			configuration.GetFieldValue<int>(SavedSearchInDestinationArtifactIdGuid);
 			configuration.GetFieldValue<string>(SnapshotIdGuid);
-			configuration.GetFieldValue<long>(SnapshotRecordsCountGuid);
+			configuration.GetFieldValue<int>(SnapshotRecordsCountGuid);
 			configuration.GetFieldValue<int>(SourceJobTagArtifactIdGuid);
 			configuration.GetFieldValue<string>(SourceJobTagNameGuid);
 			configuration.GetFieldValue<int>(SourceWorkspaceTagArtifactIdGuid);
@@ -289,7 +289,7 @@ namespace Relativity.Sync.Tests.System
 				{
 					Guid = SnapshotRecordsCountGuid
 				},
-				Value = 813794L
+				Value = 813794
 			};
 			yield return new FieldRefValuePair
 			{

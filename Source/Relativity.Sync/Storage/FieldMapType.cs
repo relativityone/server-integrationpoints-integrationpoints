@@ -1,4 +1,4 @@
-﻿namespace Relativity.Sync.Executors.Validation
+﻿namespace Relativity.Sync.Storage
 {
 	/// <summary>
 	/// Specifies the type of mapping between data fields in a source and a workspace.

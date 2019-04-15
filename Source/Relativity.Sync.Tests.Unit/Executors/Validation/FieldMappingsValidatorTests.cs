@@ -14,6 +14,7 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
+using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Tests.Unit.Executors.Validation
 {
@@ -22,12 +23,12 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 	{
 		private CancellationToken _cancellationToken;
 
-		private Mock<ISerializer> _serializer;
 		private Mock<IObjectManager> _objectManager;
 
 		private Mock<IValidationConfiguration> _validationConfiguration;
 
 		private JSONSerializer _jsonSerializer;
+		private List<FieldMap> _fieldMappings;
 
 		private FieldMappingsValidator _instance;
 
@@ -56,6 +57,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		public void OneTimeSetUp()
 		{
 			_jsonSerializer = new JSONSerializer();
+			_fieldMappings = _jsonSerializer.Deserialize<List<FieldMap>>(_TEST_FIELDS_MAP);
 		}
 
 		[SetUp]
@@ -65,29 +67,22 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 
 			var destinationServiceFactoryForUser = new Mock<IDestinationServiceFactoryForUser>();
 			var sourceServiceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
-			_serializer = new Mock<ISerializer>();
 			_objectManager = new Mock<IObjectManager>();
 
 			destinationServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
 			sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
-
-			_serializer.Setup(x => x.Deserialize<List<FieldMap>>(It.IsAny<string>())).Returns((string x) =>
-			{
-				List<FieldMap> fieldMaps = _jsonSerializer.Deserialize<List<FieldMap>>(x);
-				return fieldMaps;
-			});
-
+			
 			_validationConfiguration = new Mock<IValidationConfiguration>();
 			_validationConfiguration.SetupGet(x => x.DestinationWorkspaceArtifactId).Returns(_TEST_DEST_WORKSPACE_ARTIFACT_ID).Verifiable();
 			_validationConfiguration.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(_TEST_SOURCE_WORKSPACE_ARTIFACT_ID).Verifiable();
-			_validationConfiguration.SetupGet(x => x.FieldMappings).Returns(_TEST_FIELDS_MAP).Verifiable();
+			_validationConfiguration.SetupGet(x => x.FieldMappings).Returns(_fieldMappings).Verifiable();
 			_validationConfiguration.SetupGet(x => x.ImportOverwriteMode).Returns(ImportOverwriteMode.AppendOverlay);
 			_validationConfiguration.SetupGet(x => x.FieldOverlayBehavior).Returns(FieldOverlayBehavior.Default);
 
 			SetUpObjectManagerQuery(_TEST_SOURCE_WORKSPACE_ARTIFACT_ID, _TEST_SOURCE_FIELD_ARTIFACT_ID);
 			SetUpObjectManagerQuery(_TEST_DEST_WORKSPACE_ARTIFACT_ID, _TEST_DEST_FIELD_ARTIFACT_ID);
 
-			_instance = new FieldMappingsValidator(sourceServiceFactoryForUser.Object, destinationServiceFactoryForUser.Object, _serializer.Object, new EmptyLogger());
+			_instance = new FieldMappingsValidator(sourceServiceFactoryForUser.Object, destinationServiceFactoryForUser.Object, new EmptyLogger());
 		}
 
 		[Test]
@@ -100,14 +95,14 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			Assert.IsTrue(actualResult.IsValid);
 
 			VerifyObjectManagerQueryRequest();
-			Mock.Verify(_validationConfiguration, _serializer);
+			Mock.Verify(_validationConfiguration);
 		}
 
 		[Test]
 		public async Task ValidateAsyncDeserializeThrowsExceptionTest()
 		{
 			// Arrange
-			_serializer.Setup(x => x.Deserialize<List<FieldMap>>(It.IsAny<string>())).Throws<InvalidOperationException>().Verifiable();
+			_validationConfiguration.Setup(x => x.FieldMappings).Throws<InvalidOperationException>().Verifiable();
 
 			// Act
 			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
@@ -115,8 +110,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			// Assert
 			Assert.IsFalse(actualResult.IsValid);
 			Assert.IsNotEmpty(actualResult.Messages);
-
-			Mock.Verify(_serializer);
 		}
 
 		[Test]
@@ -136,7 +129,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			actualMessage.ShortMessage.Should().StartWith("Destination field(s) mapped");
 
 			VerifyObjectManagerQueryRequest();
-			Mock.Verify(_validationConfiguration, _serializer);
+			Mock.Verify(_validationConfiguration);
 		}
 
 		[Test]
@@ -154,7 +147,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			actualResult.Messages.First().ShortMessage.Should().StartWith("Source field(s) mapped");
 
 			VerifyObjectManagerQueryRequest();
-			Mock.Verify(_validationConfiguration, _serializer);
+			Mock.Verify(_validationConfiguration);
 		}
 
 		[Test]
@@ -173,7 +166,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			actualResult.Messages.First().ShortMessage.Should().Be("Exception occurred during field mappings validation.");
 
 			VerifyObjectManagerQueryRequest();
-			Mock.Verify(_validationConfiguration, _serializer);
+			Mock.Verify(_validationConfiguration);
 		}
 
 		[Test]
@@ -192,7 +185,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			actualResult.Messages.First().ShortMessage.Should().Be("Exception occurred during field mappings validation.");
 
 			VerifyObjectManagerQueryRequest();
-			Mock.Verify(_validationConfiguration, _serializer);
+			Mock.Verify(_validationConfiguration);
 		}
 
 		[Test]
@@ -200,7 +193,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		public async Task ValidateAsyncUniqueIdentifierInvalidTest(string testInvalidFieldMap, string expectedErrorMessage)
 		{
 			// Arrange
-			_validationConfiguration.SetupGet(x => x.FieldMappings).Returns(testInvalidFieldMap).Verifiable();
+			List<FieldMap> fieldMap = _jsonSerializer.Deserialize<List<FieldMap>>(testInvalidFieldMap);
+			_validationConfiguration.SetupGet(x => x.FieldMappings).Returns(fieldMap).Verifiable();
 
 			// Act
 			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
@@ -211,7 +205,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			actualResult.Messages.First().ShortMessage.Should().Be(expectedErrorMessage);
 
 			VerifyObjectManagerQueryRequest();
-			Mock.Verify(_validationConfiguration, _serializer);
+			Mock.Verify(_validationConfiguration);
 		}
 
 		[Test]
@@ -230,7 +224,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			actualResult.Messages.First().ShortMessage.Should().Contain("overlay behavior");
 
 			VerifyObjectManagerQueryRequest();
-			Mock.Verify(_validationConfiguration, _serializer);
+			Mock.Verify(_validationConfiguration);
 		}
 
 		private void SetUpObjectManagerQuery(int testWorkspaceArtifactId, int testFieldArtifactId)
