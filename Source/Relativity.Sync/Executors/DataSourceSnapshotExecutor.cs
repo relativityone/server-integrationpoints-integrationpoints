@@ -8,6 +8,7 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Executors
 {
@@ -68,7 +69,13 @@ namespace Relativity.Sync.Executors
 
 		private IEnumerable<FieldRef> PrepareFieldsList(IDataSourceSnapshotConfiguration configuration)
 		{
-			//TODO get fields from mapping
+			foreach (FieldMap fieldMap in configuration.FieldMappings)
+			{
+				yield return new FieldRef
+				{
+					ArtifactID = fieldMap.SourceField.FieldIdentifier
+				};
+			}
 
 			yield return new FieldRef
 			{
