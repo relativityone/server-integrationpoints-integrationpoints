@@ -26,7 +26,7 @@ namespace Relativity.Sync.Executors
 
 			try
 			{
-				int savedSearchFolderArtifactId = await _tagSavedSearchFolder.GetFolderId(configuration.DestinationWorkspaceArtifactId).ConfigureAwait(false);
+				int savedSearchFolderArtifactId = await _tagSavedSearchFolder.GetFolderIdAsync(configuration.DestinationWorkspaceArtifactId).ConfigureAwait(false);
 				int savedSearchId = await _tagSavedSearch.CreateTagSavedSearchAsync(configuration, savedSearchFolderArtifactId, token).ConfigureAwait(false);
 
 				await configuration.SetSavedSearchInDestinationArtifactIdAsync(savedSearchId).ConfigureAwait(false);
