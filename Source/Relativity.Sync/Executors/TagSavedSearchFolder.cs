@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Relativity.Services;
 using Relativity.Services.Search;
@@ -55,7 +56,8 @@ namespace Relativity.Sync.Executors
 				Order = 0,
 				FieldIdentifier = { Name = "ArtifactID" }
 			};
-			var query = new Services.Query(condition.ToQueryString(), new List<Sort> { sort });
+			string queryString = condition.ToQueryString();
+			var query = new Services.Query(queryString, new List<Sort> { sort });
 
 			SearchContainerQueryResultSet result;
 			using (var proxy = await _serviceFactoryForUser.CreateProxyAsync<ISearchContainerManager>().ConfigureAwait(false))
@@ -67,7 +69,7 @@ namespace Relativity.Sync.Executors
 			{
 				throw new SyncException($"Failed to query Saved Search Folder named {_DESTINATION_WORKSPACE_SAVED_SEARCH_FOLDER_NAME} in workspace {workspaceId}: {result.Message}");
 			}
-			if (result.Results.Count > 0)
+			if (result.Results.Any())
 			{
 				return result.Results[0].Artifact;
 			}
