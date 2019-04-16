@@ -75,7 +75,7 @@ namespace Relativity.Sync.Executors
 			var conditionCollection = new CriteriaCollection();
 
 			CriteriaBase sourceJobCriteria = CreateConditionForMultiObject(_jobHistoryFieldOnDocumentGuid, configuration.SourceJobTagArtifactId);
-			CriteriaBase sourceWorkspaceCriteria = CreateConditionForMultiObject(_sourceWorkspaceFieldOnDocumentGuid, configuration.SourceWorkspaceArtifactId);
+			CriteriaBase sourceWorkspaceCriteria = CreateConditionForMultiObject(_sourceWorkspaceFieldOnDocumentGuid, configuration.SourceWorkspaceTagArtifactId);
 
 			conditionCollection.Conditions.Add(sourceJobCriteria);
 			conditionCollection.Conditions.Add(sourceWorkspaceCriteria);
@@ -90,7 +90,7 @@ namespace Relativity.Sync.Executors
 			// Create main condition
 			var criteria = new Criteria
 			{
-				Condition = new CriteriaCondition(fieldIdentifier, CriteriaConditionEnum.AllOfThese, fieldArtifactId),
+				Condition = new CriteriaCondition(fieldIdentifier, CriteriaConditionEnum.AllOfThese, new { fieldArtifactId }),
 				BooleanOperator = BooleanOperatorEnum.And
 			};
 
