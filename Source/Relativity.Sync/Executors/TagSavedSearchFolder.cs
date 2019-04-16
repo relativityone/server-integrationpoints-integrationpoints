@@ -24,14 +24,19 @@ namespace Relativity.Sync.Executors
 			_logger.LogVerbose("Getting Saved Search Folder Id for workspace {workspaceArtifactId}", workspaceArtifactId);
 			try
 			{
-				SearchContainer existingFolder = await QuerySearchContainerAsync(workspaceArtifactId, _DESTINATION_WORKSPACE_SAVED_SEARCH_FOLDER_NAME).ConfigureAwait(false);
+				SearchContainer existingFolder = await QuerySearchContainerAsync(workspaceArtifactId).ConfigureAwait(false);
 
+				int folderArtifactId;
 				if (existingFolder != null)
 				{
-					return existingFolder.ArtifactID;
+					folderArtifactId = existingFolder.ArtifactID;
+				}
+				else
+				{
+					folderArtifactId = await CreateSearchContainerInRootAsync(workspaceArtifactId).ConfigureAwait(false);
 				}
 
-				return await CreateSearchContainerInRootAsync(workspaceArtifactId, _DESTINATION_WORKSPACE_SAVED_SEARCH_FOLDER_NAME).ConfigureAwait(false);
+				return folderArtifactId;
 			}
 			catch (Exception ex)
 			{
@@ -40,10 +45,10 @@ namespace Relativity.Sync.Executors
 			}
 		}
 
-		private async Task<SearchContainer> QuerySearchContainerAsync(int workspaceId, string name)
+		private async Task<SearchContainer> QuerySearchContainerAsync(int workspaceId)
 		{
-			_logger.LogVerbose("Querying for Saved Search Folder named {name} in {workspaceId}", name, workspaceId);
-			Condition condition = new TextCondition(ClientFieldNames.Name, TextConditionEnum.EqualTo, name);
+			_logger.LogVerbose("Querying for Saved Search Folder named {name} in {workspaceId}", _DESTINATION_WORKSPACE_SAVED_SEARCH_FOLDER_NAME, workspaceId);
+			Condition condition = new TextCondition(ClientFieldNames.Name, TextConditionEnum.EqualTo, _DESTINATION_WORKSPACE_SAVED_SEARCH_FOLDER_NAME);
 			var sort = new Sort
 			{
 				Direction = SortEnum.Descending,
@@ -60,7 +65,7 @@ namespace Relativity.Sync.Executors
 
 			if (!result.Success)
 			{
-				throw new SyncException($"Failed to query Saved Search Folder named {name} in workspace {workspaceId}: {result.Message}");
+				throw new SyncException($"Failed to query Saved Search Folder named {_DESTINATION_WORKSPACE_SAVED_SEARCH_FOLDER_NAME} in workspace {workspaceId}: {result.Message}");
 			}
 			if (result.Results.Count > 0)
 			{
@@ -69,24 +74,25 @@ namespace Relativity.Sync.Executors
 			return null;
 		}
 
-		private async Task<int> CreateSearchContainerInRootAsync(int workspaceId, string name)
+		private async Task<int> CreateSearchContainerInRootAsync(int workspaceId)
 		{
-			_logger.LogVerbose("Creating Saved Search Folder named {name} in {workspaceId}", name, workspaceId);
+			_logger.LogVerbose("Creating Saved Search Folder named {name} in {workspaceId}", _DESTINATION_WORKSPACE_SAVED_SEARCH_FOLDER_NAME, workspaceId);
 			try
 			{
 				using (var proxy = await _serviceFactoryForUser.CreateProxyAsync<ISearchContainerManager>().ConfigureAwait(false))
 				{
 					SearchContainer searchContainer = new SearchContainer
 					{
-						Name = name,
+						Name = _DESTINATION_WORKSPACE_SAVED_SEARCH_FOLDER_NAME,
 						ParentSearchContainer = { ArtifactID = 0 }
 					};
-					return await proxy.CreateSingleAsync(workspaceId, searchContainer).ConfigureAwait(false);
+					int folderArtifactId = await proxy.CreateSingleAsync(workspaceId, searchContainer).ConfigureAwait(false);
+					return folderArtifactId;
 				}
 			}
 			catch (Exception ex)
 			{
-				throw new SyncException($"Failed to create Saved Search Folder with name {name} in workspace {workspaceId}: {ex.Message}", ex);
+				throw new SyncException($"Failed to create Saved Search Folder with name {_DESTINATION_WORKSPACE_SAVED_SEARCH_FOLDER_NAME} in workspace {workspaceId}: {ex.Message}", ex);
 			}
 		}
 	}
