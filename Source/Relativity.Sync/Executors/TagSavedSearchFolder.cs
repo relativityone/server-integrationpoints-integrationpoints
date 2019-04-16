@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Relativity.Services;
 using Relativity.Services.Search;
@@ -68,7 +69,7 @@ namespace Relativity.Sync.Executors
 			{
 				throw new SyncException($"Failed to query Saved Search Folder named {_DESTINATION_WORKSPACE_SAVED_SEARCH_FOLDER_NAME} in workspace {workspaceId}: {result.Message}");
 			}
-			if (result.Results.Count > 0)
+			if (result.Results.Any())
 			{
 				return result.Results[0].Artifact;
 			}
