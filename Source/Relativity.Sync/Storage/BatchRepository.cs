@@ -21,5 +21,10 @@ namespace Relativity.Sync.Storage
 		{
 			return await Batch.GetAsync(_serviceFactory, workspaceArtifactId, artifactId).ConfigureAwait(false);
 		}
+
+		public async Task<bool> AreBatchesCreated(int workspaceArtifactId, int syncConfigurationArtifactId)
+		{
+			return await Batch.AreBatchesCreatedAsync(_serviceFactory, workspaceArtifactId, syncConfigurationArtifactId).ConfigureAwait(false);
+		}
 	}
 }

@@ -215,5 +215,22 @@ namespace Relativity.Sync.Storage
 			await batch.ReadAsync().ConfigureAwait(false);
 			return batch;
 		}
+
+		public static async Task<bool> AreBatchesCreatedAsync(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationArtifactId)
+		{
+			using (IObjectManager objectManager = await serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			{
+				QueryRequest request = new QueryRequest
+				{
+					ObjectType = new ObjectTypeRef
+					{
+						Guid = BatchObjectTypeGuid
+					},
+					Condition = $"'SyncConfiguration' == OBJECT {syncConfigurationArtifactId}"
+				};
+				QueryResult result = await objectManager.QueryAsync(workspaceArtifactId, request, 1, 1).ConfigureAwait(false);
+				return result.TotalCount != 0;
+			}
+		}
 	}
 }

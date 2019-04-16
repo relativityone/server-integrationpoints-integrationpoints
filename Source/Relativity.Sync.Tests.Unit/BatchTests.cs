@@ -455,5 +455,35 @@ namespace Relativity.Sync.Tests.Unit
 			updateRequest.FieldValues.Should().Contain(x => ((T) x.Value).Equals(value));
 			return true;
 		}
+
+		[Test]
+		[TestCase(0, false)]
+		[TestCase(1, true)]
+		[TestCase(100, true)]
+		public async Task ItShouldCheckIfBatchesAreCreated(int numberOfBatches, bool areCreated)
+		{
+			const int syncConfigurationArtifactId = 748512;
+
+			QueryResult queryResult = new QueryResult
+			{
+				TotalCount = numberOfBatches
+			};
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, 1)).ReturnsAsync(queryResult);
+
+			// ACT
+			bool actualResult = await _batchRepository.AreBatchesCreated(_WORKSPACE_ID, syncConfigurationArtifactId).ConfigureAwait(false);
+
+			// ASSERT
+			actualResult.Should().Be(areCreated);
+
+			_objectManager.Verify(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(qr => AssertQueryRequest(qr, syncConfigurationArtifactId)), 1, 1), Times.Once);
+		}
+
+		private bool AssertQueryRequest(QueryRequest queryRequest, int syncConfigurationArtifactId)
+		{
+			queryRequest.ObjectType.Guid.Should().Be(BatchObjectTypeGuid);
+			queryRequest.Condition.Should().Be($"'SyncConfiguration' == OBJECT {syncConfigurationArtifactId}");
+			return true;
+		}
 	}
 }
