@@ -119,14 +119,53 @@ namespace Relativity.Sync.Tests.Integration
 			};
 			_searchContainerManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<Services.Query>())).ReturnsAsync(queryResult);
 			_keywordSearchManager.Setup(x => x.CreateSingleAsync(It.IsAny<int>(), It.IsAny<KeywordSearch>())).Throws<InvalidOperationException>();
-			var configuration = new ConfigurationStub();
+			var configuration = new ConfigurationStub()
+			{
+				SourceJobTagName = "Some name"
+			};
 
 			// act
 			ExecutionResult result = await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
 
 			// assert
-			result.Exception.Should().BeOfType<SyncException>();
+			result.Exception.Should().BeOfType<SyncException>().Which.InnerException.Should().BeOfType<InvalidOperationException>();
 			result.Status.Should().Be(ExecutionStatus.Failed);
+		}
+
+		[Test]
+		public async Task ItShouldSetSavedSearchArtifactIdInConfiguration()
+		{
+			const int folderArtifactId = 1;
+			const int savedSearchId = 2;
+
+			SearchContainerQueryResultSet queryResult = new SearchContainerQueryResultSet
+			{
+				Success = true,
+				Results = new List<Result<SearchContainer>>()
+				{
+					new Result<SearchContainer>()
+					{
+						Artifact = new SearchContainer()
+						{
+							ArtifactID = folderArtifactId
+						}
+					}
+				}
+			};
+			_searchContainerManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<Services.Query>())).ReturnsAsync(queryResult);
+			_keywordSearchManager.Setup(x => x.CreateSingleAsync(It.IsAny<int>(), It.IsAny<KeywordSearch>())).ReturnsAsync(savedSearchId);
+			var configuration = new ConfigurationStub()
+			{
+				SourceJobTagName = "Some name"
+			};
+
+			// act
+			ExecutionResult result = await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+
+			// assert
+			result.Status.Should().Be(ExecutionStatus.Completed);
+			configuration.SavedSearchArtifactId.Should().Be(savedSearchId);
+			configuration.IsSavedSearchArtifactIdSet.Should().BeTrue();
 		}
 	}
 }

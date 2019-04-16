@@ -30,6 +30,8 @@ namespace Relativity.Sync.Tests.Common
 		public bool IsSavedSearchArtifactIdSet { get; set; }
 		public async Task SetSavedSearchInDestinationArtifactIdAsync(int artifactId)
 		{
+			SavedSearchArtifactId = artifactId;
+			IsSavedSearchArtifactIdSet = true;
 			await Task.Yield();
 		}
 
