@@ -45,9 +45,22 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		}
 
 		[Test]
-		public async Task ItShouldReturnFailedExecutionStatus()
+		public async Task ItShouldReturnFailedExecutionStatusWhenTagSavedSearchFolderFails()
 		{
 			_tagSavedSearchFolder.Setup(x => x.GetFolderIdAsync(It.IsAny<int>())).Throws<InvalidOperationException>();
+
+			// act
+			ExecutionResult executionResult = await _instance.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
+
+			// assert
+			executionResult.Status.Should().Be(ExecutionStatus.Failed);
+			executionResult.Exception.Should().BeOfType<InvalidOperationException>();
+		}
+
+		[Test]
+		public async Task ItShouldReturnFailedExecutionStatusWhenTagSavedSearchFails()
+		{
+			_tagSavedSearch.Setup(x => x.CreateTagSavedSearchAsync(It.IsAny<IDestinationWorkspaceSavedSearchCreationConfiguration>(), It.IsAny<int>(), CancellationToken.None)).Throws<InvalidOperationException>();
 
 			// act
 			ExecutionResult executionResult = await _instance.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
