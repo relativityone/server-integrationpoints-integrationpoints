@@ -54,7 +54,7 @@ namespace Relativity.Sync.Executors
 			const int maxNameLength = 50;
 			string truncatedSourceJobTagName = StringExtensions.Truncate(configuration.SourceJobTagName, maxNameLength);
 
-			var keywordSearchDto =  new KeywordSearch
+			var keywordSearchDto = new KeywordSearch
 			{
 				Name = truncatedSourceJobTagName,
 				ArtifactTypeID = (int)ArtifactType.Document,
