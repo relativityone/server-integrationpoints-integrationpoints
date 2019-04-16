@@ -32,7 +32,7 @@ param(
 # When symbols package is pushed, ProGet creates package without symbols automatically
 # So we need to push only one package for each NuGet
 Get-ChildItem -Path $nugetOutput -Filter "*.symbols.nupkg" | ForEach-Object {
-    & $nugetExe sign -CertificateSubjectName $certName -Timestamper "http://timestamp.comodoca.com/authenticode" $_.FullName
+    & $nugetExe sign -CertificateSubjectName $certName -Timestamper "http://timestamp.digicert.com" $_.FullName
 
     if ($LASTEXITCODE -ne 0) {
         Throw "An error occured while signing NuGet."
