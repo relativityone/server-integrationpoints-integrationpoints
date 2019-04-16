@@ -16,13 +16,11 @@ namespace Relativity.Sync.Storage
 		private static readonly Guid CreateSavedSearchInDestinationGuid = new Guid("BFAB4AF6-4704-4A12-A8CA-C96A1FBCB77D");
 		private static readonly Guid SavedSearchInDestinationArtifactIdGuid = new Guid("83F4DD7A-2231-4C54-BAAA-D1D5B0FE6E31");
 
-		public DestinationWorkspaceSavedSearchCreationConfiguration(IConfiguration cache, int sourceWorkspaceArtifactId)
+		public DestinationWorkspaceSavedSearchCreationConfiguration(IConfiguration cache)
 		{
 			_cache = cache;
-			SourceWorkspaceArtifactId = sourceWorkspaceArtifactId;
 		}
 
-		public int SourceWorkspaceArtifactId { get; }
 		public int DestinationWorkspaceArtifactId => _cache.GetFieldValue<int>(DestinationWorkspaceArtifactIdGuid);
 		public string SourceJobTagName => _cache.GetFieldValue<string>(SourceJobTagNameGuid);
 		public int SourceJobTagArtifactId => _cache.GetFieldValue<int>(SourceJobTagArtifactIdGuid);
