@@ -55,7 +55,8 @@ namespace Relativity.Sync.Executors
 				Order = 0,
 				FieldIdentifier = { Name = "ArtifactID" }
 			};
-			var query = new Services.Query(condition.ToQueryString(), new List<Sort> { sort });
+			string queryString = condition.ToQueryString();
+			var query = new Services.Query(queryString, new List<Sort> { sort });
 
 			SearchContainerQueryResultSet result;
 			using (var proxy = await _serviceFactoryForUser.CreateProxyAsync<ISearchContainerManager>().ConfigureAwait(false))
