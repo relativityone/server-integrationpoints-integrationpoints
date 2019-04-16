@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
@@ -22,6 +24,12 @@ namespace Relativity.Sync.Tests.Integration
 		private Mock<ISearchContainerManager> _searchContainerManager;
 		private Mock<IKeywordSearchManager> _keywordSearchManager;
 		private IExecutor<IDestinationWorkspaceSavedSearchCreationConfiguration> _executor;
+
+		private const string _SAVED_SEARCH_FOLDER_NAME = "Integration Points";
+		private readonly Guid _jobHistoryFieldOnDocumentGuid = new Guid("7cc3faaf-cbb8-4315-a79f-3aa882f1997f");
+		private readonly Guid _fileIconGuid = new Guid("861295b5-5b1d-4830-89e7-77e0a7ef1c30");
+		private readonly Guid _controlNumberGuid = new Guid("2a3f1212-c8ca-4fa9-ad6b-f76c97f05438");
+
 
 		protected override void AssertExecutedSteps(List<Type> executorTypes)
 		{
@@ -67,7 +75,7 @@ namespace Relativity.Sync.Tests.Integration
 			{
 				Success = false
 			};
-			_searchContainerManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<Services.Query>())).ReturnsAsync(queryResult);
+			_searchContainerManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.Is<Services.Query>(q => VerifyQuery(q)))).ReturnsAsync(queryResult);
 			var configuration = new ConfigurationStub();
 
 			// act
@@ -86,7 +94,7 @@ namespace Relativity.Sync.Tests.Integration
 				Success = true,
 				Results = new List<Result<SearchContainer>>()
 			};
-			_searchContainerManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<Services.Query>())).ReturnsAsync(queryResult);
+			_searchContainerManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.Is<Services.Query>(q => VerifyQuery(q)))).ReturnsAsync(queryResult);
 			_searchContainerManager.Setup(x => x.CreateSingleAsync(It.IsAny<int>(), It.IsAny<SearchContainer>())).Throws<InvalidOperationException>();
 			var configuration = new ConfigurationStub();
 
@@ -117,7 +125,7 @@ namespace Relativity.Sync.Tests.Integration
 					}
 				}
 			};
-			_searchContainerManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<Services.Query>())).ReturnsAsync(queryResult);
+			_searchContainerManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.Is<Services.Query>(q => VerifyQuery(q)))).ReturnsAsync(queryResult);
 			_keywordSearchManager.Setup(x => x.CreateSingleAsync(It.IsAny<int>(), It.IsAny<KeywordSearch>())).Throws<InvalidOperationException>();
 			var configuration = new ConfigurationStub()
 			{
@@ -152,8 +160,8 @@ namespace Relativity.Sync.Tests.Integration
 					}
 				}
 			};
-			_searchContainerManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<Services.Query>())).ReturnsAsync(queryResult);
-			_keywordSearchManager.Setup(x => x.CreateSingleAsync(It.IsAny<int>(), It.IsAny<KeywordSearch>())).ReturnsAsync(savedSearchId);
+			_searchContainerManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.Is<Services.Query>(q => VerifyQuery(q)))).ReturnsAsync(queryResult);
+			_keywordSearchManager.Setup(x => x.CreateSingleAsync(It.IsAny<int>(), It.Is<KeywordSearch>(k => VerifyKeywordSearch(k, folderArtifactId)))).ReturnsAsync(savedSearchId);
 			var configuration = new ConfigurationStub()
 			{
 				SourceJobTagName = "Some name"
@@ -166,6 +174,32 @@ namespace Relativity.Sync.Tests.Integration
 			result.Status.Should().Be(ExecutionStatus.Completed);
 			configuration.SavedSearchArtifactId.Should().Be(savedSearchId);
 			configuration.IsSavedSearchArtifactIdSet.Should().BeTrue();
+		}
+
+		private bool VerifyQuery(Services.Query query)
+		{
+			return query.Condition.Contains(_SAVED_SEARCH_FOLDER_NAME) &&
+					query.Sorts.First().FieldIdentifier.Name == "ArtifactID";
+		}
+
+		private bool VerifyKeywordSearch(KeywordSearch keywordSearch, int savedSearchFolderId)
+		{
+			Criteria criteria = keywordSearch.SearchCriteria.Conditions.FirstOrDefault() as Criteria;
+			if (criteria == null)
+			{
+				return false;
+			}
+			
+			const int expectedNumberOfFields = 3;
+
+			return
+				criteria.Condition.FieldIdentifier.Guids.Contains(_jobHistoryFieldOnDocumentGuid) &&
+				keywordSearch.ArtifactTypeID == (int)ArtifactType.Document &&
+				keywordSearch.SearchContainer.ArtifactID == savedSearchFolderId &&
+				keywordSearch.Fields.Count == expectedNumberOfFields &&
+				keywordSearch.Fields.Exists(f => f.Guids.Contains(_fileIconGuid)) &&
+				keywordSearch.Fields.Exists(f => f.Guids.Contains(_controlNumberGuid)) &&
+				keywordSearch.Fields.Exists(f => f.Name == "Edit");
 		}
 	}
 }
