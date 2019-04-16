@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using kCura.EventHandler;
 using kCura.IntegrationPoints.Services;
 using Moq;
 using NUnit.Framework;
@@ -60,38 +59,6 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Tests
                     It.Is<UninstallProviderRequest>(request => ValidateUninstallRequestIsValid(request))
                 )
             );
-        }
-
-        [Test]
-        public void ShouldReturnSuccessWhenKeplerReturnedSuccess()
-        {
-            var response = new UninstallProviderResponse();
-            _providerManagerMock
-                .Setup(x => x.UninstallProviderAsync(It.IsAny<UninstallProviderRequest>()))
-                .Returns(Task.FromResult(response));
-
-            // act
-            Response result = _sut.Execute();
-
-            // assert
-            result.Success.Should().BeTrue("because kepler returned success response");
-        }
-
-        [Test]
-        public void ShouldReturnErrorWhenKeplerReturnedError()
-        {
-            string errorMessage = "error in kepler";
-            var response = new UninstallProviderResponse(errorMessage);
-            _providerManagerMock
-                .Setup(x => x.UninstallProviderAsync(It.IsAny<UninstallProviderRequest>()))
-                .Returns(Task.FromResult(response));
-
-            // act
-            Response result = _sut.Execute();
-
-            // assert
-            result.Success.Should().BeFalse("because kepler returned error response");
-            result.Message.Should().Be(errorMessage);
         }
 
         private bool ValidateUninstallRequestIsValid(UninstallProviderRequest request)

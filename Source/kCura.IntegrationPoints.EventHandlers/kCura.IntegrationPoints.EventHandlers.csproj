@@ -140,6 +140,7 @@
     <Compile Include="Installers\UpdateLdapSecuredConfiguration.cs" />
     <Compile Include="Installers\UpdateRelativitySecuredConfiguration.cs" />
     <Compile Include="IntegrationPoints\DataTransferLocationMigrationEventHandler.cs" />
+    <Compile Include="IntegrationPoints\DestinationProvidersMigrationEventHandler.cs" />
     <Compile Include="IntegrationPoints\Helpers\Factories\CorrespondingJobDeleteFactory.cs" />
     <Compile Include="IntegrationPoints\Helpers\Factories\IntegrationPointSecretDeleteFactory.cs" />
     <Compile Include="IntegrationPoints\Helpers\Factories\IntegrationPointViewPreLoadFactory.cs" />
@@ -153,6 +154,7 @@
     <Compile Include="IntegrationPoints\Helpers\Implementations\ConsoleBuilder.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\DataTransferLocationMigration.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\DataTransferLocationMigrationHelper.cs" />
+    <Compile Include="IntegrationPoints\Helpers\Implementations\InProcessSourceProviderInstaller.cs" />
     <Compile Include="IntegrationPoints\Helpers\Implementations\FolderPathInformation.cs" />
     <Compile Include="IntegrationPoints\Helpers\IIntegrationPointViewPreLoad.cs" />
     <Compile Include="IntegrationPoints\Helpers\IFolderPathInformation.cs" />

@@ -101,7 +101,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Tests
             Response result = _sut.Execute();
 
             // assert
-            string expectedErrorMessage = $"Provider does not implement the contract (Empty source provider list retrieved from {nameof(SubjectUnderTest)} class)";
+            string expectedErrorMessage = $"Provider does not implement the contract (Empty source provider list returned by GetSourceProviders)";
             result.Success.Should().BeFalse("because source providers list was empty");
             result.Message.Should().Be(expectedErrorMessage);
         }

@@ -16,24 +16,22 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
     [EventHandler.CustomAttributes.Description("This is an event handler to register back provider after creating workspace using the template that has integration point installed.")]
     public class SourceProvidersMigrationEventHandler : IntegrationPointMigrationEventHandlerBase
     {
-        private IAPILog _loggerValue;
-
-        private IAPILog Logger =>
-            _loggerValue
-            ?? (_loggerValue = Helper.GetLoggerFactory().GetLogger().ForContext<SourceProvidersMigrationEventHandler>());
-
-        internal IRipProviderInstaller ProviderInstallerForTests { get; set; }
+        private readonly IRipProviderInstaller _ripProviderInstaller;
 
         public SourceProvidersMigrationEventHandler()
         { }
 
-        public SourceProvidersMigrationEventHandler(IErrorService errorService) : base(errorService)
-        { }
+        public SourceProvidersMigrationEventHandler(IErrorService errorService,
+            IRipProviderInstaller ripProviderInstaller)
+            : base(errorService)
+        {
+            _ripProviderInstaller = ripProviderInstaller;
+        }
 
         protected override void Run()
         {
             List<SourceProvider> sourceProviders = GetSourceProvidersToInstall();
-            var migrationJob = new SourceProvidersMigration(sourceProviders, Helper, ProviderInstallerForTests);
+            var migrationJob = new SourceProvidersMigration(sourceProviders, Helper, _ripProviderInstaller);
             Response migrationJobResult = migrationJob.Execute();
             if (!migrationJobResult.Success)
             {
@@ -81,8 +79,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
         {
             private readonly List<SourceProvider> _sourceProviders;
 
-            public SourceProvidersMigration(List<SourceProvider> sourceProvidersToMigrate, IEHHelper helper, IRipProviderInstaller providerInstallerForTests)
-            : base(providerInstallerForTests)
+            public SourceProvidersMigration(List<SourceProvider> sourceProvidersToMigrate, IEHHelper helper, IRipProviderInstaller providerInstaller)
+            : base(providerInstaller)
             {
                 _sourceProviders = sourceProvidersToMigrate;
                 Helper = helper;

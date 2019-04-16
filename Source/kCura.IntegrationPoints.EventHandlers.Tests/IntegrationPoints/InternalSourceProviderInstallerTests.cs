@@ -111,10 +111,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
             private readonly IDictionary<Guid, SourceProvider> _sourceProviders;
 
             public SubjectUnderTest(
-                IRipProviderInstaller providerInstaller,
+                IRipProviderInstaller ripProviderInstaller,
                 IEHHelper helper,
                 IEnumerable<SourceProvider> sourceProviders)
-            : base(providerInstaller)
+            : base(ripProviderInstaller)
             {
                 Helper = helper;
                 ApplicationArtifactId = _APPLICATION_ID;

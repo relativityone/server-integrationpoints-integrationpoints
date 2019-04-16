@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller.Internals
 {
-    internal class KeplerSourceProviderInstaller
+    internal class KeplerSourceProviderInstaller : ISourceProviderInstaller
     {
-        private readonly KeplerRequestHelper _keplerRetryHelper;
+        private readonly IKeplerRequestHelper _keplerRetryHelper;
 
-        public KeplerSourceProviderInstaller(KeplerRequestHelper keplerRetryHelper)
+        public KeplerSourceProviderInstaller(IKeplerRequestHelper keplerRetryHelper)
         {
             _keplerRetryHelper = keplerRetryHelper;
         }
@@ -30,10 +30,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Internals
                 throw new InvalidSourceProviderException($"An error occured while installing source providers: {response.ErrorMessage}");
             }
         }
-
-        /// <summary>
-        /// We cannot use Polly, because it would require adding external dependency to our SDK
-        /// </summary>
+        
         private Task<InstallProviderResponse> SendInstallProviderRequestWithRetriesAsync(InstallProviderRequest request)
         {
             return _keplerRetryHelper.ExecuteWithRetriesAsync<IProviderManager, InstallProviderRequest, InstallProviderResponse>(

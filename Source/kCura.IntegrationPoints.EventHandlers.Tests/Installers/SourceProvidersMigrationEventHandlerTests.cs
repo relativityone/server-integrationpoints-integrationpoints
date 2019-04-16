@@ -25,18 +25,17 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
     /// These set of tests verify that all source providers are passed in to <see cref="IProviderManager"/> properly.
     /// </summary>
     [TestFixture]
-    internal class SourceProvidersMigrationEventHandlerTests : SourceProvidersMigrationEventHandler
+    public class SourceProvidersMigrationEventHandlerTests
     {
-        private List<Data.SourceProvider> _providersStub;
-        private Mock<IRipProviderInstaller> _providerInstallerMock;
-        private static readonly Mock<IErrorService> _errorServiceMock = new Mock<IErrorService>();
+        private SubjectUnderTests _sut;
 
-        public SourceProvidersMigrationEventHandlerTests() : base(_errorServiceMock.Object)
-        { }
+        private Mock<IRipProviderInstaller> _providerInstallerMock;
+        private Mock<IErrorService> _errorServiceMock;
 
         [OneTimeSetUp]
         public void Setup()
         {
+            _errorServiceMock = new Mock<IErrorService>();
             _providerInstallerMock = new Mock<IRipProviderInstaller>();
             _providerInstallerMock.Setup(x => x.InstallProvidersAsync(It.IsAny<IEnumerable<SourceProvider>>()))
                 .Returns(Task.FromResult(Right<string, Unit>(Unit.Default)));
@@ -46,23 +45,21 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
                 DefaultValue = DefaultValue.Mock
             };
 
-            Helper = helper.Object;
-            ProviderInstallerForTests = _providerInstallerMock.Object;
-        }
-
-        protected override List<Data.SourceProvider> GetSourceProvidersFromPreviousWorkspace()
-        {
-            return _providersStub;
+            _sut = new SubjectUnderTests(
+                helper.Object,
+                _errorServiceMock.Object,
+                _providerInstallerMock.Object
+            );
         }
 
         [Test]
         public void NoProviderInPreviousWorkspace()
         {
             // arrange
-            _providersStub = new List<Data.SourceProvider>();
+            _sut.SourceProvidersToReturn = new List<Data.SourceProvider>();
 
             // act
-            Response result = Execute();
+            Response result = _sut.Execute();
 
             // assert
             result.Success.Should().BeFalse("because provider was not present in previous workspace");
@@ -96,18 +93,20 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
                 Config = new SourceProviderConfiguration()
             };
 
-            _providersStub = new List<Data.SourceProvider>
+            var providersToInstall = new List<Data.SourceProvider>
             {
                 providerToInstall
             };
 
+            _sut.SourceProvidersToReturn = providersToInstall;
+
             // act
-            Response result = Execute();
+            Response result = _sut.Execute();
 
             // assert
             result.Success.Should().BeTrue();
 
-            VerifyCorrectNumberOfProviderWasInstalledUsingProductionManager(_providersStub.Count);
+            VerifyCorrectNumberOfProviderWasInstalledUsingProductionManager(providersToInstall.Count);
             VerifyProviderWasInstalledUsingProductionManager(providerToInstall.Name);
         }
 
@@ -137,20 +136,21 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
                 Config = new SourceProviderConfiguration()
             };
 
-            _providersStub = new List<Data.SourceProvider>
+            var providersToInstall = new List<Data.SourceProvider>
             {
                 providerToInstall,
                 provider2ToInstall
             };
+            _sut.SourceProvidersToReturn = providersToInstall;
 
             // act
-            Response result = Execute();
+            Response result = _sut.Execute();
 
             //assert
             result.Success.Should().BeTrue();
 
 
-            VerifyCorrectNumberOfProviderWasInstalledUsingProductionManager(_providersStub.Count);
+            VerifyCorrectNumberOfProviderWasInstalledUsingProductionManager(providersToInstall.Count);
             VerifyProviderWasInstalledUsingProductionManager(providerToInstall.Name);
             VerifyProviderWasInstalledUsingProductionManager(provider2ToInstall.Name);
         }
@@ -182,6 +182,25 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
                         x.InstallProvidersAsync(It.Is<IEnumerable<SourceProvider>>(request => predicate(request))),
                     failureMessage
                 );
+        }
+
+        private class SubjectUnderTests : SourceProvidersMigrationEventHandler
+        {
+            public List<Data.SourceProvider> SourceProvidersToReturn { get; set; }
+
+            public SubjectUnderTests(
+                IEHHelper helper,
+                IErrorService errorService,
+                IRipProviderInstaller ripProviderInstaller)
+            : base(errorService, ripProviderInstaller)
+            {
+                Helper = helper;
+            }
+
+            protected override List<Data.SourceProvider> GetSourceProvidersFromPreviousWorkspace()
+            {
+                return SourceProvidersToReturn;
+            }
         }
     }
 }

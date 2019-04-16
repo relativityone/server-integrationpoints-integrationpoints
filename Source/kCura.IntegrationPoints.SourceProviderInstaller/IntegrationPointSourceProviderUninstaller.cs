@@ -1,9 +1,7 @@
 ﻿using kCura.EventHandler;
-using kCura.IntegrationPoints.Services;
 using kCura.IntegrationPoints.SourceProviderInstaller.Internals;
 using Relativity.API;
 using System;
-using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller
 {
@@ -26,8 +24,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
     {
         private const int _SEND_INSTALL_REQUEST_MAX_RETRIES_NUMBER = 3;
         private const int _SEND_INSTALL_REQUEST_DELAY_BETWEEN_RETRIES_IN_MS = 3000;
-        private const string _SUCCESS_MESSAGE = "Source Provider uninstalled successfully.";
-        private const string _FAILURE_MESSAGE = "Uninstalling source provider failed.";
+
 
         private readonly Lazy<IAPILog> _logggerLazy;
 
@@ -59,60 +56,15 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
         /// <returns>An object of type Response, which frequently contains a message.</returns>
         public sealed override Response Execute()
         {
-            Exception thrownException = null;
+            IKeplerRequestHelper keplerRequestHelper = CreateKeplerRequestHelper();
+            var internalUninstaller = new IntegrationPointSourceProviderUninstallerInternal(
+                keplerRequestHelper,
+                OnRaisePreUninstallPreExecuteEvent,
+                OnRaisePreUninstallPostExecuteEvent
+            );
 
-            try
-            {
-                OnRaisePreUninstallPreExecuteEvent();
-                UninstallProviderResponse uninstallProviderResponse = UninstallSourceProvider().GetAwaiter().GetResult();
-
-                return new Response
-                {
-                    Success = uninstallProviderResponse.Success,
-                    Message = uninstallProviderResponse.Success ? _SUCCESS_MESSAGE : uninstallProviderResponse.ErrorMessage
-                };
-            }
-            catch (Exception ex)
-            {
-                thrownException = ex;
-                return new Response
-                {
-                    Success = false,
-                    Message = _FAILURE_MESSAGE,
-                    Exception = ex
-                };
-            }
-            finally
-            {
-                bool isSuccess = thrownException == null;
-                OnRaisePreUninstallPostExecuteEvent(isSuccess, thrownException);
-            }
-        }
-
-        private async Task<UninstallProviderResponse> UninstallSourceProvider()
-        {
-            var request = new UninstallProviderRequest
-            {
-                ApplicationID = ApplicationArtifactId,
-                WorkspaceID = Helper.GetActiveCaseID()
-            };
-
-            return await SendUninstallProviderRequestWithRetriesAsync(request).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// We cannot use Polly, because it would require adding external dependency to our SDK
-        /// </summary>
-        private Task<UninstallProviderResponse> SendUninstallProviderRequestWithRetriesAsync(UninstallProviderRequest request, int attemptNumber = 1)
-        {
-            IServicesMgr servicesManager = Helper.GetServicesManager();
-            var retryHelper = new KeplerRequestHelper(Logger, servicesManager, _SEND_INSTALL_REQUEST_MAX_RETRIES_NUMBER, _SEND_INSTALL_REQUEST_DELAY_BETWEEN_RETRIES_IN_MS);
-
-            return retryHelper
-                .ExecuteWithRetriesAsync<IProviderManager, UninstallProviderRequest, UninstallProviderResponse>(
-                    (providerManager, r) => providerManager.UninstallProviderAsync(r),
-                    request
-                 );
+            int workspaceID = Helper.GetActiveCaseID();
+            return internalUninstaller.Execute(workspaceID, ApplicationArtifactId);
         }
 
         /// <summary>
@@ -129,6 +81,12 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
         protected void OnRaisePreUninstallPostExecuteEvent(bool isUninstalled, Exception ex)
         {
             RaisePreUninstallPostExecuteEvent?.Invoke(isUninstalled, ex);
+        }
+
+        internal virtual IKeplerRequestHelper CreateKeplerRequestHelper()
+        {
+            IServicesMgr servicesManager = Helper.GetServicesManager();
+            return new KeplerRequestHelper(Logger, servicesManager, _SEND_INSTALL_REQUEST_MAX_RETRIES_NUMBER, _SEND_INSTALL_REQUEST_DELAY_BETWEEN_RETRIES_IN_MS);
         }
     }
 }

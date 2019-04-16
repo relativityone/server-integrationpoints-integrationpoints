@@ -83,6 +83,7 @@
     <Compile Include="IntegrationPoints\Helpers\CorrespondingJobDeleteTests.cs" />
     <Compile Include="IntegrationPoints\Helpers\DataTransferLocationMigrationHelperTests.cs" />
     <Compile Include="IntegrationPoints\Helpers\FolderPathInformationTests.cs" />
+    <Compile Include="IntegrationPoints\Helpers\Implementations\InProcessSourceProviderInstallerTests.cs" />
     <Compile Include="IntegrationPoints\Helpers\IntegrationPointSecretDeleteTests.cs" />
     <Compile Include="IntegrationPoints\Helpers\RelativityProviderDestinationConfigurationTests.cs" />
     <Compile Include="IntegrationPoints\Helpers\RelativityProviderSourceConfigurationTests.cs" />

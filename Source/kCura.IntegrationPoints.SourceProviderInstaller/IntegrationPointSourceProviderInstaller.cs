@@ -4,9 +4,6 @@ using kCura.IntegrationPoints.SourceProviderInstaller.Internals;
 using Relativity.API;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller
 {
@@ -29,8 +26,6 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
     {
         private const int _SEND_INSTALL_REQUEST_MAX_RETRIES_NUMBER = 3;
         private const int _SEND_INSTALL_REQUEST_DELAY_BETWEEN_RETRIES_IN_MS = 3000;
-
-        private const string _SUCCESS_MESSAGE = "Source Providers created or updated successfully.";
 
         private readonly Lazy<IAPILog> _logggerLazy;
 
@@ -65,60 +60,10 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
         /// <inheritdoc cref="PostInstallEventHandler"/>
         public sealed override Response Execute()
         {
-            IDictionary<Guid, SourceProvider> sourceProviders;
-            try
-            {
-                sourceProviders = GetSourceProviders();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex, "Error occured while getting source providers.");
-                return new Response
-                {
-                    Success = false,
-                    Message = "Error occured while getting source providers.",
-                    Exception = ex,
-                };
-            }
+            IntegrationPointSourceProviderInstallerInternal internalInstaller = CreateIntegrationPointSourceProviderInstallerInternal();
 
-            Logger.LogDebug("Starting Post-installation process for {sourceProviders} provider", sourceProviders.Values.Select(item => item.Name));
-
-            if (sourceProviders.Count == 0)
-            {
-                return new Response
-                {
-                    Success = false,
-                    Message = $"Provider does not implement the contract (Empty source provider list retrieved from {GetType().Name} class)"
-                };
-            }
-
-            Exception thrownException = null;
-            try
-            {
-                OnRaisePostInstallPreExecuteEvent();
-                InstallSourceProvider(sourceProviders);
-
-                return new Response
-                {
-                    Success = true,
-                    Message = _SUCCESS_MESSAGE
-                };
-            }
-            catch (Exception ex)
-            {
-                thrownException = ex;
-                return new Response
-                {
-                    Success = false,
-                    Message = GetFailureMessage(sourceProviders),
-                    Exception = ex
-                };
-            }
-            finally
-            {
-                bool isSuccess = thrownException == null;
-                OnRaisePostInstallPostExecuteEvent(isSuccess, thrownException);
-            }
+            int workspaceID = Helper.GetActiveCaseID();
+            return internalInstaller.Execute(workspaceID, ApplicationArtifactId);
         }
 
         /// <summary>
@@ -139,49 +84,25 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
             RaisePostInstallPostExecuteEvent?.Invoke(isInstalled, ex);
         }
 
-        private void InstallSourceProvider(IDictionary<Guid, SourceProvider> providers)
+        private IntegrationPointSourceProviderInstallerInternal CreateIntegrationPointSourceProviderInstallerInternal()
         {
-            if (!providers.Any())
-            {
-                throw new InvalidSourceProviderException("No Source Providers passed.");
-            }
+            ISourceProviderInstaller sourceProviderInstaller = CreateSourceProviderInstaller();
+            var internalInstaller = new IntegrationPointSourceProviderInstallerInternal(
 
-            IEnumerable<SourceProvider> sourceProviders = providers.Select(x => new SourceProvider
-            {
-                GUID = x.Key,
-                ApplicationID = base.ApplicationArtifactId,
-                ApplicationGUID = x.Value.ApplicationGUID,
-                Name = x.Value.Name,
-                Url = x.Value.Url,
-                ViewDataUrl = x.Value.ViewDataUrl,
-                Configuration = x.Value.Configuration
-            });
-
-            InstallSourceProviders(sourceProviders).GetAwaiter().GetResult();
+                Logger,
+                sourceProviderInstaller,
+                GetSourceProviders,
+                OnRaisePostInstallPreExecuteEvent,
+                OnRaisePostInstallPostExecuteEvent
+            );
+            return internalInstaller;
         }
 
-        internal virtual Task InstallSourceProviders(IEnumerable<SourceProvider> sourceProviders)
+        internal virtual ISourceProviderInstaller CreateSourceProviderInstaller()
         {
             IServicesMgr servicesManager = Helper.GetServicesManager();
             var retryHelper = new KeplerRequestHelper(Logger, servicesManager, _SEND_INSTALL_REQUEST_MAX_RETRIES_NUMBER, _SEND_INSTALL_REQUEST_DELAY_BETWEEN_RETRIES_IN_MS);
-            var keplerSourceProviderInstaller = new KeplerSourceProviderInstaller(retryHelper);
-            return keplerSourceProviderInstaller.InstallSourceProviders(Helper.GetActiveCaseID(), sourceProviders);
-        }
-
-        private static string GetFailureMessage(IDictionary<Guid, SourceProvider> sourceProviders)
-        {
-            var failureMessage = new StringBuilder("Failed to install");
-            if (sourceProviders != null)
-            {
-                foreach (SourceProvider sourceProvider in sourceProviders.Values)
-                {
-                    failureMessage.Append(" [Provider: ");
-                    failureMessage.Append(sourceProvider?.Name);
-                    failureMessage.Append("]");
-                }
-            }
-
-            return failureMessage.ToString();
+            return new KeplerSourceProviderInstaller(retryHelper);
         }
     }
 }

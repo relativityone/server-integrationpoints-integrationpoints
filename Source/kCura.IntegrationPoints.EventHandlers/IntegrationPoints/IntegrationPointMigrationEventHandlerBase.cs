@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 	public abstract class IntegrationPointMigrationEventHandlerBase : PostWorkspaceCreateEventHandlerBase
 	{
 		private ICaseServiceContext _workspaceTemplateServiceContext;
-		private IAPILog _logger;
+		private IAPILog _loggerValue;
 
 		private const string _ACTION_NAME = "Post Workspace Create";
 		private readonly Lazy<IErrorService> _errorService;
@@ -34,9 +34,9 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			_errorService = new Lazy<IErrorService>(() => errorService);
 		}
 
-		private IAPILog Logger =>
-			_logger
-			?? (_logger = Helper.GetLoggerFactory().GetLogger().ForContext<DataTransferLocationMigrationEventHandler>());
+		protected IAPILog Logger =>
+			_loggerValue
+			?? (_loggerValue = Helper.GetLoggerFactory().GetLogger().ForContext<DataTransferLocationMigrationEventHandler>());
 
 		protected ICaseServiceContext WorkspaceTemplateServiceContext =>
 			_workspaceTemplateServiceContext

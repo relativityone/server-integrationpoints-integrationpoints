@@ -11811,6 +11811,18 @@
       <ApplicationVersion>10.2.30.106</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
+    <InstallEventHandler>
+      <ArtifactId>1046769</ArtifactId>
+      <AssemblyArtifactId>1016717</AssemblyArtifactId>
+      <Name>kCura.IntegrationPoints.EventHandlers.IntegrationPoints.DestinationProvidersMigrationEventHandler</Name>
+      <Guid>ae453cbd-2b18-4eee-a66c-a92e1a91c641</Guid>
+      <Guids>cf6f946e-afa1-4250-bc85-0cbb93e8b709</Guids>
+      <ExecutionType>14</ExecutionType>
+      <Order>65</Order>
+      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
+      <ApplicationVersion>10.2.30.108</ApplicationVersion>
+      <RunTarget>0</RunTarget>
+    </InstallEventHandler>
   </InstallEventHandlers>
   <SavedSearches />
   <SearchContainers />

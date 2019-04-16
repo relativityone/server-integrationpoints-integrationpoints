@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller.Internals
 {
-    internal class KeplerRequestHelper
+    internal class KeplerRequestHelper : IKeplerRequestHelper
     {
         private readonly IAPILog _logger;
         private readonly IServicesMgr _servicesManager;
@@ -23,6 +23,9 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Internals
             _waitTimeBetweenRetriesInSeconds = waitTimeTimeBetweenRetriesInSeconds;
         }
 
+        /// <summary>
+        /// We cannot use Polly, because it would require adding external dependency to our SDK
+        /// </summary>
         public async Task<TResponse> ExecuteWithRetriesAsync<TService, TRequest, TResponse>(
             Func<TService, TRequest, Task<TResponse>> function,
             TRequest request

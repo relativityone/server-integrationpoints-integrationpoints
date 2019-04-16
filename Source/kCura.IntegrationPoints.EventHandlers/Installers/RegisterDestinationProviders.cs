@@ -19,10 +19,15 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 
         protected override void Run()
         {
-            var destinationProviderRepository = new DestinationProviderRepository(Logger, ObjectManager);
-            var synchronizerProvider = new RdoSynchronizerProvider(destinationProviderRepository, Logger);
+            IRdoSynchronizerProvider synchronizerProvider = CreateSynchronizerProvider();
 
             synchronizerProvider.CreateOrUpdateDestinationProviders();
+        }
+
+        private IRdoSynchronizerProvider CreateSynchronizerProvider()
+        {
+            var destinationProviderRepository = new DestinationProviderRepository(Logger, ObjectManager);
+            return new RdoSynchronizerProvider(destinationProviderRepository, Logger);
         }
     }
 }
