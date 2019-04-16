@@ -21,6 +21,8 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<WorkspaceNameQuery>().As<IWorkspaceNameQuery>();
 			builder.RegisterType<TagNameFormatter>().As<ITagNameFormatter>();
 			builder.RegisterType<WorkspaceNameValidator>().As<IWorkspaceNameValidator>();
+			builder.RegisterType<TagSavedSearch>().As<ITagSavedSearch>();
+			builder.RegisterType<TagSavedSearchFolder>().As<ITagSavedSearchFolder>();
 
 			builder.RegisterType<SourceWorkspaceTagsCreationExecutionConstrains>().As<IExecutionConstrains<ISourceWorkspaceTagsCreationConfiguration>>();
 			builder.RegisterType<SourceWorkspaceTagsCreationExecutor>().As<IExecutor<ISourceWorkspaceTagsCreationConfiguration>>();
