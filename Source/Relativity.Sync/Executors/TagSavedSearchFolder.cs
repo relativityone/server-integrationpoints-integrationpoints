@@ -69,11 +69,13 @@ namespace Relativity.Sync.Executors
 			{
 				throw new SyncException($"Failed to query Saved Search Folder named {_DESTINATION_WORKSPACE_SAVED_SEARCH_FOLDER_NAME} in workspace {workspaceId}: {result.Message}");
 			}
+
+			SearchContainer existingSearchContainer = null;
 			if (result.Results.Any())
 			{
-				return result.Results[0].Artifact;
+				existingSearchContainer = result.Results[0].Artifact;
 			}
-			return null;
+			return existingSearchContainer;
 		}
 
 		private async Task<int> CreateSearchContainerInRootAsync(int workspaceId)
