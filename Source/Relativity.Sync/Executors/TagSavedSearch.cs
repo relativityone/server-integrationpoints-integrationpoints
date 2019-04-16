@@ -43,7 +43,7 @@ namespace Relativity.Sync.Executors
 			catch (Exception e)
 			{
 				_syncLog.LogError(e, "Failed to create Saved Search for promoted documents in destination workspace {workspaceArtifactId}.", destinationWorkspaceArtifactId);
-				throw new DestinationWorkspaceTagRepositoryException($"Failed to create Saved Search for promoted documents in destination workspace {destinationWorkspaceArtifactId}.", e);
+				throw new SyncException($"Failed to create Saved Search for promoted documents in destination workspace {destinationWorkspaceArtifactId}.", e);
 			}
 		}
 
