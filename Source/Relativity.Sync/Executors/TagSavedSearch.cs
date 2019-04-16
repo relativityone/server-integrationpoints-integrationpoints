@@ -12,7 +12,6 @@ namespace Relativity.Sync.Executors
 	internal sealed class TagSavedSearch : ITagSavedSearch
 	{
 		private readonly Guid _jobHistoryFieldOnDocumentGuid = new Guid("7cc3faaf-cbb8-4315-a79f-3aa882f1997f");
-		private readonly Guid _sourceWorkspaceFieldOnDocumentGuid = new Guid("2fa844e3-44f0-47f9-abb7-d6d8be0c9b8f");
 		private readonly Guid _fileIconGuid = new Guid("861295b5-5b1d-4830-89e7-77e0a7ef1c30");
 		private readonly Guid _controlNumberGuid = new Guid("2a3f1212-c8ca-4fa9-ad6b-f76c97f05438");
 
@@ -71,14 +70,10 @@ namespace Relativity.Sync.Executors
 
 		private CriteriaCollection CreateWorkspaceAndJobCriteria(IDestinationWorkspaceSavedSearchCreationConfiguration configuration)
 		{
-			var conditionCollection = new CriteriaCollection();
-
 			CriteriaBase sourceJobCriteria = CreateConditionForMultiObject(_jobHistoryFieldOnDocumentGuid, configuration.SourceJobTagArtifactId);
-			CriteriaBase sourceWorkspaceCriteria = CreateConditionForMultiObject(_sourceWorkspaceFieldOnDocumentGuid, configuration.SourceWorkspaceTagArtifactId);
 
+			var conditionCollection = new CriteriaCollection();
 			conditionCollection.Conditions.Add(sourceJobCriteria);
-			conditionCollection.Conditions.Add(sourceWorkspaceCriteria);
-
 			return conditionCollection;
 		}
 

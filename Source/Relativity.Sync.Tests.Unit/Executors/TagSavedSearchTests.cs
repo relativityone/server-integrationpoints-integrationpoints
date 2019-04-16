@@ -28,7 +28,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 		private const int _TEST_DEST_WORKSPACE_ARTIFACT_ID = 101987;
 		private const int _TEST_SAVED_SEARCH_FOLDER_ARTIFACT_ID = 101876;
-		private const int _TEST_SOURCE_WORKSPACE_TAG_ARTIFACT_ID = 102123;
 		private const int _TEST_SOURCE_JOB_TAG_ARTIFACT_ID = 102456;
 		private const string _TEST_SOURCE_JOB_TAG_NAME = "Source Workspace Push";
 
@@ -49,7 +48,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_destinationWorkspaceSavedSearchCreationConfiguration.SetupGet(x => x.DestinationWorkspaceArtifactId).Returns(_TEST_DEST_WORKSPACE_ARTIFACT_ID);
 			_destinationWorkspaceSavedSearchCreationConfiguration.SetupGet(x => x.SourceJobTagName).Returns(_TEST_SOURCE_JOB_TAG_NAME);
 			_destinationWorkspaceSavedSearchCreationConfiguration.SetupGet(x => x.SourceJobTagArtifactId).Returns(_TEST_SOURCE_JOB_TAG_ARTIFACT_ID);
-			_destinationWorkspaceSavedSearchCreationConfiguration.SetupGet(x => x.SourceWorkspaceTagArtifactId).Returns(_TEST_SOURCE_WORKSPACE_TAG_ARTIFACT_ID);
 
 			_instance = new TagSavedSearch(_destinationServiceFactoryForUser.Object, _syncLog.Object);
 		}
@@ -76,19 +74,17 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private bool AssertKeywordSearchDto(KeywordSearch actualKeywordSearch)
 		{
 			var expectedJobHistoryFieldOnDocumentGuid = new Guid("7cc3faaf-cbb8-4315-a79f-3aa882f1997f");
-			var expectedSourceWorkspaceFieldOnDocumentGuid = new Guid("2fa844e3-44f0-47f9-abb7-d6d8be0c9b8f");
 
 			Assert.AreEqual(_TEST_SOURCE_JOB_TAG_NAME, actualKeywordSearch.Name);
 			Assert.AreEqual((int)ArtifactType.Document, actualKeywordSearch.ArtifactTypeID);
 			Assert.AreEqual(_TEST_SAVED_SEARCH_FOLDER_ARTIFACT_ID, actualKeywordSearch.SearchContainer.ArtifactID);
 
-			const int expectedNumberOfMultiObjectConditions = 2;
+			const int expectedNumberOfMultiObjectConditions = 1;
 			CriteriaCollection actualCriteria = actualKeywordSearch.SearchCriteria;
 			Assert.IsNotEmpty(actualCriteria.Conditions);
 			Assert.AreEqual(expectedNumberOfMultiObjectConditions, actualCriteria.Conditions.Count);
 
 			AssertKeywordSearchCriteria(actualCriteria.Conditions[0], expectedJobHistoryFieldOnDocumentGuid, _TEST_SOURCE_JOB_TAG_ARTIFACT_ID);
-			AssertKeywordSearchCriteria(actualCriteria.Conditions[1], expectedSourceWorkspaceFieldOnDocumentGuid, _TEST_SOURCE_WORKSPACE_TAG_ARTIFACT_ID);
 
 			return true;
 		}
