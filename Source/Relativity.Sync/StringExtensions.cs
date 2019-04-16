@@ -2,8 +2,9 @@
 {
 	internal static class StringExtensions
 	{
-		internal static string Truncate(string value, int maxLength)
+		internal static string LimitLength(string value)
 		{
+			const int maxLength = 50;
 			const int two = 2;
 			const int three = 3;
 			const string truncationEnding = "...";

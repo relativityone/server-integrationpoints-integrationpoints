@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
@@ -55,8 +56,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			};
 
 			_searchContainerManager
-				.Setup(x => x.QueryAsync(It.Is<int>(y => y == _WORKSPACE_ARTIFACT_ID), It.IsAny<Services.Query>()))
-				.ReturnsAsync(result);
+				.Setup(x => x.QueryAsync(
+					It.Is<int>(y => y == _WORKSPACE_ARTIFACT_ID),
+					It.Is<Services.Query>(y => VerifyQuery(y))
+					)).ReturnsAsync(result);
 
 			// ACT
 			int folderId = await _instance.GetFolderIdAsync(_WORKSPACE_ARTIFACT_ID).ConfigureAwait(false);
@@ -77,8 +80,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			};
 
 			_searchContainerManager
-				.Setup(x => x.QueryAsync(It.Is<int>(y => y == _WORKSPACE_ARTIFACT_ID), It.IsAny<Services.Query>()))
-				.ReturnsAsync(result);
+				.Setup(x => x.QueryAsync(
+					It.Is<int>(y => y == _WORKSPACE_ARTIFACT_ID),
+					It.Is<Services.Query>(y => VerifyQuery(y))
+					)).ReturnsAsync(result);
 
 			_searchContainerManager
 				.Setup(x => x.CreateSingleAsync(It.Is<int>(y => y == _WORKSPACE_ARTIFACT_ID), It.IsAny<SearchContainer>()))
@@ -89,6 +94,20 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			// ASSERT
 			Assert.AreEqual(_SEARCH_CONTAINER_ARTIFACT_ID, folderId);
+		}
+
+		private bool VerifyQuery(Services.Query query)
+		{
+			string queryString = "'Name' == 'Integration Points'";
+			string fieldIdentifierName = "ArtifactID";
+			SortEnum sortDirection = SortEnum.Descending;
+
+			Sort sort = query.Sorts.First();
+
+			return query.Sorts.Count == 1
+					&& query.Condition.Equals(queryString, StringComparison.InvariantCulture)
+					&& sort.FieldIdentifier.Name.Equals(fieldIdentifierName, StringComparison.InvariantCulture)
+					&& sort.Direction == sortDirection;
 		}
 
 		[Test]
