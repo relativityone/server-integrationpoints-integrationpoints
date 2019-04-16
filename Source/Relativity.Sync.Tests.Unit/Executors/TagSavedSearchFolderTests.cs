@@ -59,7 +59,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				.ReturnsAsync(result);
 
 			// ACT
-			int folderId = await _instance.GetFolderId(_WORKSPACE_ARTIFACT_ID).ConfigureAwait(false);
+			int folderId = await _instance.GetFolderIdAsync(_WORKSPACE_ARTIFACT_ID).ConfigureAwait(false);
 
 			// ASSERT
 			Assert.AreEqual(_SEARCH_CONTAINER_ARTIFACT_ID, folderId);
@@ -85,7 +85,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				.ReturnsAsync(_SEARCH_CONTAINER_ARTIFACT_ID);
 
 			// ACT
-			int folderId = await _instance.GetFolderId(_WORKSPACE_ARTIFACT_ID).ConfigureAwait(false);
+			int folderId = await _instance.GetFolderIdAsync(_WORKSPACE_ARTIFACT_ID).ConfigureAwait(false);
 
 			// ASSERT
 			Assert.AreEqual(_SEARCH_CONTAINER_ARTIFACT_ID, folderId);
@@ -105,7 +105,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				.ReturnsAsync(result);
 
 			// ACT & ASSERT
-			Assert.ThrowsAsync<SyncException>(async () => await _instance.GetFolderId(_WORKSPACE_ARTIFACT_ID).ConfigureAwait(false));
+			Assert.ThrowsAsync<SyncException>(async () => await _instance.GetFolderIdAsync(_WORKSPACE_ARTIFACT_ID).ConfigureAwait(false));
 
 			_searchContainerManager.Verify(x => x.CreateSingleAsync(It.IsAny<int>(), It.IsAny<SearchContainer>()), Times.Never);
 		}
@@ -129,7 +129,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				.Throws<Exception>();
 
 			// ACT & ASSERT
-			Assert.ThrowsAsync<SyncException>(async () => await _instance.GetFolderId(_WORKSPACE_ARTIFACT_ID).ConfigureAwait(false));
+			Assert.ThrowsAsync<SyncException>(async () => await _instance.GetFolderIdAsync(_WORKSPACE_ARTIFACT_ID).ConfigureAwait(false));
 		}
 
 		[Test]
@@ -141,7 +141,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				.Throws<Exception>();
 
 			// ACT & ASSERT
-			Assert.ThrowsAsync<Exception>(async () => await _instance.GetFolderId(_WORKSPACE_ARTIFACT_ID).ConfigureAwait(false));
+			Assert.ThrowsAsync<Exception>(async () => await _instance.GetFolderIdAsync(_WORKSPACE_ARTIFACT_ID).ConfigureAwait(false));
 
 			_searchContainerManager.Verify(x => x.CreateSingleAsync(It.IsAny<int>(), It.IsAny<SearchContainer>()), Times.Never);
 		}
@@ -155,7 +155,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				.Throws<Exception>();
 
 			// ACT & ASSERT
-			Assert.ThrowsAsync<Exception>(async () => await _instance.GetFolderId(_WORKSPACE_ARTIFACT_ID).ConfigureAwait(false));
+			Assert.ThrowsAsync<Exception>(async () => await _instance.GetFolderIdAsync(_WORKSPACE_ARTIFACT_ID).ConfigureAwait(false));
 		}
 	}
 }
