@@ -7,7 +7,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
 	/// <summary>
 	/// Repository responsible for Source Provider object
 	/// </summary>
-	public interface ISourceProviderRepository
+	public interface ISourceProviderRepository : IGenericRepository<SourceProvider>
 	{
 		/// <summary>
 		/// Gets the Source Provider artifact id given a guid identifier

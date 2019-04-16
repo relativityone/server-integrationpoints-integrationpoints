@@ -14,20 +14,17 @@ namespace kCura.IntegrationPoints.Core.Provider
     {
         private readonly IAPILog _logger;
         private readonly ISourceProviderRepository _sourceProviderRepository;
-        private readonly IRelativityObjectManager _objectManager;
         private readonly IApplicationGuidFinder _applicationGuidFinder;
         private readonly IIntegrationPointsRemover _integrationPointsRemover;
 
         public RipProviderUninstaller(
             IAPILog logger,
             ISourceProviderRepository sourceProviderRepository,
-            IRelativityObjectManager objectManager,
             IApplicationGuidFinder applicationGuidFinder,
             IIntegrationPointsRemover integrationPointsRemover)
         {
             _logger = logger;
             _sourceProviderRepository = sourceProviderRepository;
-            _objectManager = objectManager;
             _applicationGuidFinder = applicationGuidFinder;
             _integrationPointsRemover = integrationPointsRemover;
         }
@@ -67,7 +64,7 @@ namespace kCura.IntegrationPoints.Core.Provider
 
             foreach (SourceProvider sourceProvider in providersToBeRemoved)
             {
-                _objectManager.Delete(sourceProvider);
+                _sourceProviderRepository.Delete(sourceProvider);
             }
         }
     }

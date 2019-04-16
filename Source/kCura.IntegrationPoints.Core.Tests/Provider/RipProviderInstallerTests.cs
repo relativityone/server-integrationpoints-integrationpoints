@@ -25,10 +25,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
     public class RipProviderInstallerTests
     {
         private Mock<ISourceProviderRepository> _sourceProviderRepositoryMock;
-        private Mock<IRelativityObjectManager> _objectManagerMock;
         private Mock<IApplicationGuidFinder> _appGuidFinderMock;
         private Mock<IDataProviderFactoryFactory> _dataProviderFactoryFactoryMock;
-        private Mock<IHelper> _helperMock;
 
         private RipProviderInstaller _sut;
 
@@ -42,21 +40,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
             var loggerMock = new Mock<IAPILog>();
 
             _sourceProviderRepositoryMock = new Mock<ISourceProviderRepository>();
-            _objectManagerMock = new Mock<IRelativityObjectManager>();
             _appGuidFinderMock = new Mock<IApplicationGuidFinder>();
             _dataProviderFactoryFactoryMock = new Mock<IDataProviderFactoryFactory>();
-            _helperMock = new Mock<IHelper>()
-            {
-                DefaultValue = DefaultValue.Mock
-            };
 
             _sut = new RipProviderInstaller(
                 loggerMock.Object,
                 _sourceProviderRepositoryMock.Object,
-                _objectManagerMock.Object,
                 _appGuidFinderMock.Object,
-                _dataProviderFactoryFactoryMock.Object,
-                _helperMock.Object
+                _dataProviderFactoryFactoryMock.Object
             );
 
             SetupDataProviderFactoryFactory();
@@ -89,10 +80,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
             // assert
             result.Should().BeRight("because provider should be added");
 
-            _objectManagerMock.Verify(z =>
+            _sourceProviderRepositoryMock.Verify(z =>
                 z.Create(
-                    It.Is<Data.SourceProvider>(actualSourceProvider => AssertAreEqual(_sourceProviderToCreate, actualSourceProvider)),
-                    It.IsAny<ExecutionIdentity>()
+                    It.Is<Data.SourceProvider>(actualSourceProvider => AssertAreEqual(_sourceProviderToCreate, actualSourceProvider))
                 )
             );
         }
@@ -112,10 +102,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
             SourceProvider expectedSourceProvider = _sourceProviderToCreate;
             expectedSourceProvider.ApplicationGUID = _existingProviderApplicationGuid;
 
-            _objectManagerMock.Verify(z =>
+            _sourceProviderRepositoryMock.Verify(z =>
                 z.Update(
-                    It.Is<Data.SourceProvider>(actualSourceProvider => AssertAreEqual(expectedSourceProvider, actualSourceProvider)),
-                    It.IsAny<ExecutionIdentity>()
+                    It.Is<Data.SourceProvider>(actualSourceProvider => AssertAreEqual(expectedSourceProvider, actualSourceProvider))
                 )
             );
         }
@@ -154,10 +143,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
 
             _sourceProviderToCreate.ApplicationGUID.Should().Be(expectedApplicationGuid, "because application guid should be updated");
 
-            _objectManagerMock.Verify(z =>
+            _sourceProviderRepositoryMock.Verify(z =>
                 z.Create(
-                    It.Is<Data.SourceProvider>(actualSourceProvider => AssertAreEqual(_sourceProviderToCreate, actualSourceProvider)),
-                    It.IsAny<ExecutionIdentity>()
+                    It.Is<Data.SourceProvider>(actualSourceProvider => AssertAreEqual(_sourceProviderToCreate, actualSourceProvider))
                 )
             );
         }
@@ -196,7 +184,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
             string expectedErrorMessage = $"Unhandled error occured while installing providers. Exception: {exceptionToThrow}";
             result.Should().BeLeft(expectedErrorMessage, "because cannot retrieve installed providers");
         }
-        
+
         private void SetupDataProviderFactoryFactory(Exception exceptionToThrow = null)
         {
             var providerFactoryVendorMock = new Mock<ProviderFactoryVendor>();

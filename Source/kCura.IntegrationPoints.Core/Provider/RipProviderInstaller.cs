@@ -19,22 +19,16 @@ namespace kCura.IntegrationPoints.Core.Provider
         private readonly IAPILog _logger;
         private readonly IDataProviderFactoryFactory _dataProviderFactoryFactory;
         private readonly ISourceProviderRepository _sourceProviderRepository;
-        private readonly IRelativityObjectManager _objectManager;
         private readonly IApplicationGuidFinder _applicationGuidFinder;
-        private readonly IHelper _helper;
 
         public RipProviderInstaller(
             IAPILog logger,
             ISourceProviderRepository sourceProviderRepository,
-            IRelativityObjectManager objectManager,
             IApplicationGuidFinder applicationGuidFinder,
-            IDataProviderFactoryFactory dataProviderFactoryFactory,
-            IHelper helper)
+            IDataProviderFactoryFactory dataProviderFactoryFactory)
         {
             _logger = logger;
-            _helper = helper;
 
-            _objectManager = objectManager;
             _applicationGuidFinder = applicationGuidFinder;
             _dataProviderFactoryFactory = dataProviderFactoryFactory;
             _sourceProviderRepository = sourceProviderRepository;
@@ -153,7 +147,7 @@ namespace kCura.IntegrationPoints.Core.Provider
 
             try
             {
-                _objectManager.Update(existingProviderDto);
+                _sourceProviderRepository.Update(existingProviderDto);
                 _logger.LogInformation("Updated existing {object} - {artifactID}", nameof(SourceProvider), existingProviderDto.ArtifactId);
                 return Unit.Default;
             }
@@ -182,7 +176,7 @@ namespace kCura.IntegrationPoints.Core.Provider
 
             try
             {
-                int sourceProviderArtifactId = _objectManager.Create(providerDto);
+                int sourceProviderArtifactId = _sourceProviderRepository.Create(providerDto);
                 _logger.LogInformation("Created new {object} - {artifactID}", nameof(SourceProvider), sourceProviderArtifactId);
                 return Unit.Default;
             }

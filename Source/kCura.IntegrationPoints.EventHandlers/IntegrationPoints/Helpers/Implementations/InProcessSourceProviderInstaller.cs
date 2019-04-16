@@ -83,10 +83,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
             return new RipProviderInstaller(
                 _logger,
                 sourceProviderRepository,
-                objectManager,
                 applicationGuidFinder,
-                dataProviderFactoryFactory,
-                _helper
+                dataProviderFactoryFactory
             );
         }
 

@@ -18,5 +18,10 @@
         {
             return _objectManager.Update(rdo);
         }
+
+        public bool Delete(T rdo)
+        {
+            return _objectManager.Delete(rdo);
+        }
     }
 }

@@ -17,7 +17,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
     {
         private Mock<IAPILog> _loggerMock;
         private Mock<ISourceProviderRepository> _sourceProviderRepositoryMock;
-        private Mock<IRelativityObjectManager> _objectManagerMock;
         private Mock<IApplicationGuidFinder> _appGuidFinderMock;
         private Mock<IIntegrationPointsRemover> _integrationPointRemoverMock;
 
@@ -34,14 +33,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
         {
             _loggerMock = new Mock<IAPILog>();
             _sourceProviderRepositoryMock = new Mock<ISourceProviderRepository>();
-            _objectManagerMock = new Mock<IRelativityObjectManager>();
             _appGuidFinderMock = new Mock<IApplicationGuidFinder>();
             _integrationPointRemoverMock = new Mock<IIntegrationPointsRemover>();
 
             _sut = new RipProviderUninstaller(
                 _loggerMock.Object,
                 _sourceProviderRepositoryMock.Object,
-                _objectManagerMock.Object,
                 _appGuidFinderMock.Object,
                 _integrationPointRemoverMock.Object
             );
@@ -70,10 +67,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
             // assert
             result.Should().BeRight("because provider should be uninstalled");
 
-            _objectManagerMock.Verify(x =>
+            _sourceProviderRepositoryMock.Verify(x =>
                 x.Delete(
-                    It.Is<Data.SourceProvider>(y => y.ArtifactId == _sourceProviderToDelete.ArtifactId),
-                    It.IsAny<ExecutionIdentity>()
+                    It.Is<Data.SourceProvider>(y => y.ArtifactId == _sourceProviderToDelete.ArtifactId)
                 )
             );
         }
