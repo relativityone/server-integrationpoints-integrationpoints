@@ -90,7 +90,7 @@ namespace Relativity.Sync.Executors
 			// Create main condition
 			var criteria = new Criteria
 			{
-				Condition = new CriteriaCondition(fieldIdentifier, CriteriaConditionEnum.AllOfThese, new { fieldArtifactId }),
+				Condition = new CriteriaCondition(fieldIdentifier, CriteriaConditionEnum.AllOfThese, new []{ fieldArtifactId }),
 				BooleanOperator = BooleanOperatorEnum.And
 			};
 

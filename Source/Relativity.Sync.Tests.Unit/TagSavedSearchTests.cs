@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,7 +28,7 @@ namespace Relativity.Sync.Tests.Unit
 
 		private const int _TEST_DEST_WORKSPACE_ARTIFACT_ID = 101987;
 		private const int _TEST_SAVED_SEARCH_FOLDER_ARTIFACT_ID = 101876;
-		private const int _TEST_SOURCE_WORKSPACE_ARTIFACT_ID = 102123;
+		private const int _TEST_SOURCE_WORKSPACE_TAG_ARTIFACT_ID = 102123;
 		private const int _TEST_SOURCE_JOB_TAG_ARTIFACT_ID = 102456;
 		private const string _TEST_SOURCE_JOB_TAG_NAME = "Source Workspace Push";
 
@@ -48,7 +49,7 @@ namespace Relativity.Sync.Tests.Unit
 			_destinationWorkspaceSavedSearchCreationConfiguration.SetupGet(x => x.DestinationWorkspaceArtifactId).Returns(_TEST_DEST_WORKSPACE_ARTIFACT_ID);
 			_destinationWorkspaceSavedSearchCreationConfiguration.SetupGet(x => x.SourceJobTagName).Returns(_TEST_SOURCE_JOB_TAG_NAME);
 			_destinationWorkspaceSavedSearchCreationConfiguration.SetupGet(x => x.SourceJobTagArtifactId).Returns(_TEST_SOURCE_JOB_TAG_ARTIFACT_ID);
-			_destinationWorkspaceSavedSearchCreationConfiguration.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(_TEST_SOURCE_WORKSPACE_ARTIFACT_ID);
+			_destinationWorkspaceSavedSearchCreationConfiguration.SetupGet(x => x.SourceWorkspaceTagArtifactId).Returns(_TEST_SOURCE_WORKSPACE_TAG_ARTIFACT_ID);
 
 			_instance = new TagSavedSearch(_destinationServiceFactoryForUser.Object, _syncLog.Object);
 		}
@@ -87,7 +88,7 @@ namespace Relativity.Sync.Tests.Unit
 			Assert.AreEqual(expectedNumberOfMultiObjectConditions, actualCriteria.Conditions.Count);
 
 			AssertKeywordSearchCriteria(actualCriteria.Conditions[0], expectedJobHistoryFieldOnDocumentGuid, _TEST_SOURCE_JOB_TAG_ARTIFACT_ID);
-			AssertKeywordSearchCriteria(actualCriteria.Conditions[1], expectedSourceWorkspaceFieldOnDocumentGuid, _TEST_SOURCE_WORKSPACE_ARTIFACT_ID);
+			AssertKeywordSearchCriteria(actualCriteria.Conditions[1], expectedSourceWorkspaceFieldOnDocumentGuid, _TEST_SOURCE_WORKSPACE_TAG_ARTIFACT_ID);
 
 			return true;
 		}
@@ -108,8 +109,8 @@ namespace Relativity.Sync.Tests.Unit
 			Assert.IsNotNull(innerCriteria);
 
 			CollectionAssert.Contains(innerCriteria.Condition.FieldIdentifier.Guids, expectedFieldIdentifier);
-			Assert.AreEqual(innerCriteria.Condition.Value, expectedFieldArtifactId);
-			Assert.AreEqual(innerCriteria.BooleanOperator, BooleanOperatorEnum.And);
+			CollectionAssert.Contains(innerCriteria.Condition.Value as IEnumerable, expectedFieldArtifactId);
+			Assert.AreEqual(BooleanOperatorEnum.And, innerCriteria.BooleanOperator);
 		}
 
 		[Test]
