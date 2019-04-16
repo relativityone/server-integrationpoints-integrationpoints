@@ -78,7 +78,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Repositori
 
 			//assert
 			VerifyIfInstrumentationHasBeenCalled<DynamicFileResponse[]>(
-				methodName: nameof(FileFieldRepository.GetFilesForDynamicObjects)
+				operationName: nameof(IFileFieldManager.GetFilesForDynamicObjectsAsync)
 			);
 			AssertIfResponsesAreSameAsExpected(_testDynamicFileResponses, result);
 		}
@@ -99,7 +99,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Repositori
 			//assert
 			action.ShouldThrow<ArgumentNullException>().WithMessage("Value cannot be null.\r\nParameter name: objectIDs");
 			VerifyIfInstrumentationHasNeverBeenCalled<DynamicFileResponse[]>(
-				methodName: nameof(FileFieldRepository.GetFilesForDynamicObjects)
+				operationName: nameof(IFileFieldManager.GetFilesForDynamicObjectsAsync)
 			);
 		}
 
@@ -119,7 +119,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Repositori
 			//assert
 			result.Should().BeEmpty();
 			VerifyIfInstrumentationHasNeverBeenCalled<DynamicFileResponse[]>(
-				methodName: nameof(FileFieldRepository.GetFilesForDynamicObjects)
+				operationName: nameof(IFileFieldManager.GetFilesForDynamicObjectsAsync)
 			);
 		}
 
@@ -149,13 +149,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Repositori
 			}
 		}
 
-		private void VerifyIfInstrumentationHasBeenCalled<T>(string methodName)
+		private void VerifyIfInstrumentationHasBeenCalled<T>(string operationName)
 		{
 			_instrumentationProviderMock.Verify(
 				x => x.CreateSimple(
 					_KEPLER_SERVICE_TYPE,
 					_KEPLER_SERVICE_NAME,
-					methodName
+					operationName
 				),
 				Times.Once
 			);
@@ -165,13 +165,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Repositori
 			);
 		}
 
-		private void VerifyIfInstrumentationHasNeverBeenCalled<T>(string methodName)
+		private void VerifyIfInstrumentationHasNeverBeenCalled<T>(string operationName)
 		{
 			_instrumentationProviderMock.Verify(
 				x => x.CreateSimple(
 					_KEPLER_SERVICE_TYPE,
 					_KEPLER_SERVICE_NAME,
-					methodName
+					operationName
 				),
 				Times.Never
 			);

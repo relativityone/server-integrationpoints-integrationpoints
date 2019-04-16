@@ -4,7 +4,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Utilities
 {
 	public static class CommaSeparatedNumbersToArrayConverter
 	{
-		public static int[] ConvertToArray(string commaSeparatedNumbers)
+		public static int[] Convert(string commaSeparatedNumbers)
 		{
 			return commaSeparatedNumbers
 				.Split(',')

@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 			ThrowIfDocumentArtifactIDsInvalid(documentArtifactIDs);
 
 			int[] documentIDs = CommaSeparatedNumbersToArrayConverter
-				.ConvertToArray(documentArtifactIDs);
+				.Convert(documentArtifactIDs);
 
 			return _fileRepository
 				.GetNativesForSearch(caseContextArtifactID, documentIDs)
@@ -55,7 +55,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 			ThrowIfDocumentArtifactIDsInvalid(documentArtifactIDs);
 
 			int[] documentIDs = CommaSeparatedNumbersToArrayConverter
-				.ConvertToArray(documentArtifactIDs);
+				.Convert(documentArtifactIDs);
 			return _fileRepository
 				.GetNativesForProduction(caseContextArtifactID, productionArtifactID, documentIDs)
 				.ToDataSet();

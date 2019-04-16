@@ -33,19 +33,23 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories.Imp
 				return Enumerable.Empty<DynamicFileResponse>().ToArray();
 			}
 
-			return CreateInstrumentation().Execute(() =>
+			IExternalServiceSimpleInstrumentation instrumentation = CreateInstrumentation(
+				operationName: nameof(IFileFieldManager.GetFilesForDynamicObjectsAsync)
+			);
+
+			return instrumentation.Execute(() =>
 				_fileFieldManager.GetFilesForDynamicObjectsAsync(workspaceID, fileFieldArtifactID, objectIDs)
 					.GetAwaiter()
 					.GetResult()
 			);
 		}
 
-		private IExternalServiceSimpleInstrumentation CreateInstrumentation([CallerMemberName]string methodName = "")
+		private IExternalServiceSimpleInstrumentation CreateInstrumentation(string operationName)
 		{
 			return _instrumentationProvider.CreateSimple(
 				ExternalServiceTypes.KEPLER,
 				nameof(IFileFieldManager),
-				methodName);
+				operationName);
 		}
 	}
 }

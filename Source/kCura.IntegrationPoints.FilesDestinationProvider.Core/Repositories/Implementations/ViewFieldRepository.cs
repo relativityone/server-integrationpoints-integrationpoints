@@ -21,7 +21,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories.Imp
 
 		public ViewFieldResponse[] ReadExportableViewFields(int workspaceID, int artifactTypeID)
 		{
-			return CreateInstrumentation().Execute(
+			IExternalServiceSimpleInstrumentation instrumentation = CreateInstrumentation(
+				operationName: nameof(IViewFieldManager.ReadExportableViewFieldsAsync)
+			);
+			return instrumentation.Execute(
 				() => _viewFieldManager.ReadExportableViewFieldsAsync(workspaceID, artifactTypeID)
 					.GetAwaiter()
 					.GetResult()
@@ -30,7 +33,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories.Imp
 
 		public ViewFieldIDResponse[] ReadViewFieldIDsFromSearch(int workspaceID, int artifactTypeID, int viewArtifactID)
 		{
-			return CreateInstrumentation().Execute(
+			IExternalServiceSimpleInstrumentation instrumentation = CreateInstrumentation(
+				operationName: nameof(IViewFieldManager.ReadViewFieldIDsFromSearchAsync)
+			);
+			return instrumentation.Execute(
 				() => _viewFieldManager.ReadViewFieldIDsFromSearchAsync(workspaceID, artifactTypeID, viewArtifactID)
 					.GetAwaiter()
 					.GetResult()
@@ -39,19 +45,22 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Repositories.Imp
 
 		public ViewFieldIDResponse[] ReadViewFieldIDsFromProduction(int workspaceID, int artifactTypeID, int viewArtifactID)
 		{
-			return CreateInstrumentation().Execute(
+			IExternalServiceSimpleInstrumentation instrumentation = CreateInstrumentation(
+				operationName: nameof(IViewFieldManager.ReadViewFieldIDsFromProductionAsync)
+			);
+			return instrumentation.Execute(
 				() =>_viewFieldManager.ReadViewFieldIDsFromProductionAsync(workspaceID, artifactTypeID, viewArtifactID)
 					.GetAwaiter()
 					.GetResult()
 			);
 		}
 
-		private IExternalServiceSimpleInstrumentation CreateInstrumentation([CallerMemberName]string methodName = "")
+		private IExternalServiceSimpleInstrumentation CreateInstrumentation(string operationName)
 		{
 			return _instrumentationProvider.CreateSimple(
 				ExternalServiceTypes.KEPLER,
 				nameof(IViewFieldManager),
-				methodName);
+				operationName);
 		}
 	}
 }

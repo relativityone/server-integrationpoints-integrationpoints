@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Contracts.Models;
@@ -21,7 +20,6 @@ using Relativity.API;
 using Relativity.Core;
 using Relativity.Core.Api.Shared.Manager.Export;
 using Relativity.Services.Interfaces.File.Models;
-using DataView = kCura.Data.DataView;
 using ExportSettings = kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportSettings;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
@@ -41,9 +39,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 		private FieldMap[] _mappedFields;
 		private IFileRepository _fileRepository;
 		private IRelativityObjectManager _relativityObjectManager;
-
 		#endregion
-
 
 		private const int _START_AT = 0;
 		private const int _SEARCH_ARTIFACT_ID = 0;
@@ -121,22 +117,36 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 		{
 			// Arrange
 			string config = GetConfig(SourceConfiguration.ExportType.SavedSearch);
-			ImportSettings _settings = new ImportSettings()
+			ImportSettings settings = new ImportSettings
 			{
-				ProductionPrecedence = String.Empty
+				ProductionPrecedence = string.Empty
 			};
-			int documentArtifactId = 10000;
+			const int documentArtifactID = 10000;
 
-			_exporter.RetrieveResults(Arg.Any<Guid>(), Arg.Any<int[]>(), Arg.Any<int>()).Returns(PrepareRetrievedData(documentArtifactId));
+			_exporter
+				.RetrieveResults(Arg.Any<Guid>(), Arg.Any<int[]>(), Arg.Any<int>())
+				.Returns(PrepareRetrievedData(documentArtifactID));
 
 			_fileRepository
 				.GetImagesForDocuments(
-					_SOURCE_WORKSPACE_ARTIFACT_ID, 
-					documentIDs: new [] { documentArtifactId })
+					_SOURCE_WORKSPACE_ARTIFACT_ID,
+					Arg.Is<int[]>(x => x.Single() == documentArtifactID))
 				.Returns(CreateDocumentImageResponses());
 
-			_instance = new ImageExporterService(_exporter, _relativityObjectManager, _sourceRepositoryFactory, _targetRepositoryFactory,
-				_jobStopManager, _helper, _baseServiceContextProvider, _mappedFields, _START_AT, config, _SEARCH_ARTIFACT_ID, _settings);
+			_instance = new ImageExporterService(
+				_exporter, 
+				_relativityObjectManager, 
+				_sourceRepositoryFactory, 
+				_targetRepositoryFactory,
+				_jobStopManager, 
+				_helper, 
+				_baseServiceContextProvider, 
+				_mappedFields, 
+				_START_AT, 
+				config, 
+				_SEARCH_ARTIFACT_ID,
+				settings
+			);
 
 			_instance.GetDataTransferContext(Substitute.For<IExporterTransferConfiguration>());
 
@@ -152,23 +162,24 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 		public void ItShouldRetrieveProductionImages()
 		{
 			// Arrange
-			int productionArtifactId = 10010;
-			string config = GetConfig(SourceConfiguration.ExportType.ProductionSet, productionArtifactId);
+			const int productionArtifactID = 10010;
+			const int documentArtifactID = 10000;
+
+			string config = GetConfig(SourceConfiguration.ExportType.ProductionSet, productionArtifactID);
 
 			ImportSettings _settings = new ImportSettings()
 			{
 				ProductionPrecedence = ExportSettings.ProductionPrecedenceType.Produced.ToString(),
-				ImagePrecedence = new[] { new ProductionDTO() { ArtifactID = productionArtifactId.ToString() } },
+				ImagePrecedence = new[] { new ProductionDTO() { ArtifactID = productionArtifactID.ToString() } },
 			};
-			int documentArtifactId = 10000;
 
-			_exporter.RetrieveResults(Arg.Any<Guid>(), Arg.Any<int[]>(), Arg.Any<int>()).Returns(PrepareRetrievedData(documentArtifactId));
+			_exporter.RetrieveResults(Arg.Any<Guid>(), Arg.Any<int[]>(), Arg.Any<int>()).Returns(PrepareRetrievedData(documentArtifactID));
 
 			_fileRepository
 				.GetImagesForProductionDocuments(
 					_SOURCE_WORKSPACE_ARTIFACT_ID, 
-					productionArtifactId, 
-					documentIDs: new []{ documentArtifactId })
+					productionArtifactID, 
+					Arg.Is<int[]>(x => x.Single() == documentArtifactID))
 				.Returns(CreateProductionDocumentImageResponses());
 
 			_instance = new ImageExporterService(_exporter, _relativityObjectManager, _sourceRepositoryFactory, _targetRepositoryFactory,
@@ -188,23 +199,25 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 		public void ItShouldReturnEmptyImageLocationWhenProductionImageLocationIsDbNull()
 		{
 			// Arrange
-			const int productionArtifactId = 10010;
-			const int documentArtifactId = 10000;
+			const int productionArtifactID = 10010;
+			const int documentArtifactID = 10000;
 
-			string config = GetConfig(SourceConfiguration.ExportType.ProductionSet, productionArtifactId);
+			string config = GetConfig(SourceConfiguration.ExportType.ProductionSet, productionArtifactID);
 
 			ImportSettings settings = new ImportSettings()
 			{
 				ProductionPrecedence = ExportSettings.ProductionPrecedenceType.Produced.ToString(),
-				ImagePrecedence = new[] { new ProductionDTO() { ArtifactID = productionArtifactId.ToString() } },
+				ImagePrecedence = new[] { new ProductionDTO() { ArtifactID = productionArtifactID.ToString() } },
 			};		
 
-			_exporter.RetrieveResults(Arg.Any<Guid>(), Arg.Any<int[]>(), Arg.Any<int>()).Returns(PrepareRetrievedData(documentArtifactId));
+			_exporter
+				.RetrieveResults(Arg.Any<Guid>(), Arg.Any<int[]>(), Arg.Any<int>())
+				.Returns(PrepareRetrievedData(documentArtifactID));
 			
 			_fileRepository.GetImagesForProductionDocuments(
 					_SOURCE_WORKSPACE_ARTIFACT_ID, 
-					productionArtifactId, 
-					documentIDs: new []{ documentArtifactId })
+					productionArtifactID, 
+					Arg.Is<int[]>(x => x.Single() == documentArtifactID))
 				.Returns(info =>
 				{
 					ProductionDocumentImageResponse[] responses = CreateProductionDocumentImageResponses();

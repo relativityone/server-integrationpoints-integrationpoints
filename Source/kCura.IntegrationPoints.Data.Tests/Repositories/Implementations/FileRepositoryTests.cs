@@ -201,7 +201,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 
 			//assert
 			VerifyIfInstrumentationHasBeenCalled<FileResponse[]>(
-				methodName: nameof(FileRepository.GetNativesForSearch)
+				operationName: nameof(IFileManager.GetNativesForSearchAsync)
 			);
 			AssertIfResponsesAreSameAsExpected(_testFileResponses, result);
 		}
@@ -218,7 +218,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			//assert
 			action.ShouldThrow<ArgumentNullException>().WithMessage("Value cannot be null.\r\nParameter name: documentIDs");
 			VerifyIfInstrumentationHasNeverBeenCalled<FileResponse[]>(
-				methodName: nameof(FileRepository.GetNativesForSearch)
+				operationName: nameof(IFileManager.GetNativesForSearchAsync)
 			);
 		}
 
@@ -234,7 +234,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			//assert
 			result.Should().BeEmpty();
 			VerifyIfInstrumentationHasNeverBeenCalled<FileResponse[]>(
-				methodName: nameof(FileRepository.GetNativesForSearch)
+				operationName: nameof(IFileManager.GetNativesForSearchAsync)
 			);
 		}
 
@@ -257,7 +257,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 
 			//assert
 			VerifyIfInstrumentationHasBeenCalled<FileResponse[]>(
-				methodName: nameof(FileRepository.GetNativesForProduction)
+				operationName: nameof(IFileManager.GetNativesForProductionAsync)
 			);
 			AssertIfResponsesAreSameAsExpected(_testFileResponses, result);
 		}
@@ -278,7 +278,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			//assert
 			action.ShouldThrow<ArgumentNullException>().WithMessage("Value cannot be null.\r\nParameter name: documentIDs");
 			VerifyIfInstrumentationHasNeverBeenCalled<FileResponse[]>(
-				methodName: nameof(FileRepository.GetNativesForProduction)
+				operationName: nameof(IFileManager.GetNativesForProductionAsync)
 			);
 		}
 
@@ -298,7 +298,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			//assert
 			result.Should().BeEmpty();
 			VerifyIfInstrumentationHasNeverBeenCalled<FileResponse[]>(
-				methodName: nameof(FileRepository.GetNativesForProduction)
+				operationName: nameof(IFileManager.GetNativesForProductionAsync)
 			);
 		}
 
@@ -321,7 +321,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 
 			//assert
 			VerifyIfInstrumentationHasBeenCalled<ProductionDocumentImageResponse[]>(
-				methodName: nameof(FileRepository.GetImagesForProductionDocuments)
+				operationName: nameof(IFileManager.GetImagesForProductionDocumentsAsync)
 			);
 			AssertIfResponsesAreSameAsExpected(
 				_testProductionDocumentImageResponses, 
@@ -345,7 +345,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			//assert
 			action.ShouldThrow<ArgumentNullException>().WithMessage("Value cannot be null.\r\nParameter name: documentIDs");
 			VerifyIfInstrumentationHasNeverBeenCalled<ProductionDocumentImageResponse[]>(
-				methodName: nameof(FileRepository.GetImagesForProductionDocuments)
+				operationName: nameof(IFileManager.GetImagesForProductionDocumentsAsync)
 			);
 		}
 
@@ -365,7 +365,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			//assert
 			result.Should().BeEmpty();
 			VerifyIfInstrumentationHasNeverBeenCalled<ProductionDocumentImageResponse[]>(
-				methodName: nameof(FileRepository.GetImagesForProductionDocuments)
+				operationName: nameof(IFileManager.GetImagesForProductionDocumentsAsync)
 			);
 		}
 
@@ -386,7 +386,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 
 			//assert
 			VerifyIfInstrumentationHasBeenCalled<DocumentImageResponse[]>(
-				methodName: nameof(FileRepository.GetImagesForDocuments)
+				operationName: nameof(IFileManager.GetImagesForDocumentsAsync)
 			);
 			AssertIfResponsesAreSameAsExpected(
 				_testDocumentImageResponses,
@@ -406,7 +406,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			//assert
 			action.ShouldThrow<ArgumentNullException>().WithMessage("Value cannot be null.\r\nParameter name: documentIDs");
 			VerifyIfInstrumentationHasNeverBeenCalled<DocumentImageResponse[]>(
-				methodName: nameof(FileRepository.GetImagesForDocuments)
+				operationName: nameof(IFileManager.GetImagesForDocumentsAsync)
 			);
 		}
 
@@ -422,7 +422,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			//assert
 			result.Should().BeEmpty();
 			VerifyIfInstrumentationHasNeverBeenCalled<DocumentImageResponse[]>(
-				methodName: nameof(FileRepository.GetImagesForDocuments)
+				operationName: nameof(IFileManager.GetImagesForDocumentsAsync)
 			);
 		}
 
@@ -446,7 +446,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 
 			//assert
 			VerifyIfInstrumentationHasBeenCalled<FileResponse[]>(
-				methodName: nameof(FileRepository.GetProducedImagesForDocument)
+				operationName: nameof(IFileManager.GetProducedImagesForDocumentAsync)
 			);
 			AssertIfResponsesAreSameAsExpected(
 				fileResponses,
@@ -477,7 +477,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 
 			//assert
 			VerifyIfInstrumentationHasBeenCalled<ExportProductionDocumentImageResponse[]>(
-				methodName: nameof(FileRepository.GetImagesForExport)
+				operationName: nameof(IFileManager.GetImagesForExportAsync)
 			);
 			AssertIfResponsesAreSameAsExpected(
 				_testExportProductionDocumentImageResponses,
@@ -503,7 +503,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			//assert
 			action.ShouldThrow<ArgumentNullException>().WithMessage("Value cannot be null.\r\nParameter name: documentIDs");
 			VerifyIfInstrumentationHasNeverBeenCalled<ExportProductionDocumentImageResponse[]>(
-				methodName: nameof(FileRepository.GetImagesForExport)
+				operationName: nameof(IFileManager.GetImagesForExportAsync)
 			);
 		}
 
@@ -525,7 +525,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			//assert
 			action.ShouldThrow<ArgumentNullException>().WithMessage("Value cannot be null.\r\nParameter name: productionIDs");
 			VerifyIfInstrumentationHasNeverBeenCalled<ExportProductionDocumentImageResponse[]>(
-				methodName: nameof(FileRepository.GetImagesForExport)
+				operationName: nameof(IFileManager.GetImagesForExportAsync)
 			);
 		}
 
@@ -547,7 +547,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			//assert
 			result.Should().BeEmpty();
 			VerifyIfInstrumentationHasNeverBeenCalled<ExportProductionDocumentImageResponse[]>(
-				methodName: nameof(FileRepository.GetImagesForExport)
+				operationName: nameof(IFileManager.GetImagesForExportAsync)
 			);
 		}
 
@@ -569,7 +569,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			//assert
 			result.Should().BeEmpty();
 			VerifyIfInstrumentationHasNeverBeenCalled<ExportProductionDocumentImageResponse[]>(
-				methodName: nameof(FileRepository.GetImagesForExport)
+				operationName: nameof(IFileManager.GetImagesForExportAsync)
 			);
 		}
 
@@ -698,13 +698,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		}
 
 
-		private void VerifyIfInstrumentationHasBeenCalled<T>(string methodName)
+		private void VerifyIfInstrumentationHasBeenCalled<T>(string operationName)
 		{
 			_instrumentationProviderMock.Verify(
 				x => x.CreateSimple(
 					_KEPLER_SERVICE_TYPE,
 					_KEPLER_SERVICE_NAME,
-					methodName
+					operationName
 				),
 				Times.Once
 			);
@@ -714,13 +714,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			);
 		}
 
-		private void VerifyIfInstrumentationHasNeverBeenCalled<T>(string methodName)
+		private void VerifyIfInstrumentationHasNeverBeenCalled<T>(string operationName)
 		{
 			_instrumentationProviderMock.Verify(
 				x => x.CreateSimple(
 					_KEPLER_SERVICE_TYPE,
 					_KEPLER_SERVICE_NAME,
-					methodName
+					operationName
 				),
 				Times.Never
 			);

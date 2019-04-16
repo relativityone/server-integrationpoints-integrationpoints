@@ -30,7 +30,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				return Enumerable.Empty<FileResponse>().ToArray();
 			}
 
-			return CreateInstrumentation().Execute(
+			IExternalServiceSimpleInstrumentation instrumentation = CreateInstrumentation(
+				operationName: nameof(IFileManager.GetNativesForSearchAsync)
+			);
+
+			return instrumentation.Execute(
 				() => _fileManager.GetNativesForSearchAsync(workspaceID, documentIDs)
 					.GetAwaiter()
 					.GetResult()
@@ -49,7 +53,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				return Enumerable.Empty<FileResponse>().ToArray();
 			}
 
-			return CreateInstrumentation().Execute(
+
+			IExternalServiceSimpleInstrumentation instrumentation = CreateInstrumentation(
+				operationName: nameof(IFileManager.GetNativesForProductionAsync)
+			);
+			return instrumentation.Execute(
 				() => _fileManager.GetNativesForProductionAsync(workspaceID, productionID, documentIDs)
 					.GetAwaiter()
 					.GetResult()
@@ -68,7 +76,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				return Enumerable.Empty<ProductionDocumentImageResponse>().ToArray();
 			}
 
-			return CreateInstrumentation().Execute(
+			IExternalServiceSimpleInstrumentation instrumentation = CreateInstrumentation(
+				operationName: nameof(IFileManager.GetImagesForProductionDocumentsAsync)
+			);
+
+			return instrumentation.Execute(
 				() => _fileManager.GetImagesForProductionDocumentsAsync(workspaceID, productionID, documentIDs)
 					.GetAwaiter()
 					.GetResult()
@@ -84,7 +96,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				return Enumerable.Empty<DocumentImageResponse>().ToArray();
 			}
 
-			return CreateInstrumentation().Execute(
+			IExternalServiceSimpleInstrumentation instrumentation = CreateInstrumentation(
+				operationName: nameof(IFileManager.GetImagesForDocumentsAsync)
+			);
+
+			return instrumentation.Execute(
 				() => _fileManager.GetImagesForDocumentsAsync(workspaceID, documentIDs)
 					.GetAwaiter()
 					.GetResult()
@@ -93,7 +109,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public FileResponse[] GetProducedImagesForDocument(int workspaceID, int documentID)
 		{
-			return CreateInstrumentation().Execute(
+			IExternalServiceSimpleInstrumentation instrumentation = CreateInstrumentation(
+				operationName: nameof(IFileManager.GetProducedImagesForDocumentAsync)
+			);
+
+			return instrumentation.Execute(
 				() => _fileManager.GetProducedImagesForDocumentAsync(workspaceID, documentID)
 					.GetAwaiter()
 					.GetResult()
@@ -110,7 +130,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				return Enumerable.Empty<ExportProductionDocumentImageResponse>().ToArray();
 			}
 
-			return CreateInstrumentation().Execute(
+			IExternalServiceSimpleInstrumentation instrumentation = CreateInstrumentation(
+				operationName: nameof(IFileManager.GetImagesForExportAsync)
+			);
+
+			return instrumentation.Execute(
 				() => _fileManager.GetImagesForExportAsync(workspaceID, productionIDs, documentIDs)
 					.GetAwaiter()
 					.GetResult()
@@ -125,12 +149,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		private IExternalServiceSimpleInstrumentation CreateInstrumentation([CallerMemberName] string methodName = "")
+		private IExternalServiceSimpleInstrumentation CreateInstrumentation(string operationName)
 		{
 			return _instrumentationProvider.CreateSimple(
 				ExternalServiceTypes.KEPLER,
 				nameof(IFileManager),
-				methodName
+				operationName
 			);
 		}
 	}
